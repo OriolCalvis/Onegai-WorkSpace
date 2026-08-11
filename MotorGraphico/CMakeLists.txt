@@ -118,6 +118,14 @@ add_executable(demo_mundo examples/demo_mundo.cpp)
 target_link_libraries(demo_mundo PRIVATE motor_level)
 set_target_properties(demo_mundo PROPERTIES CXX_STANDARD 17)
 
+# ====================================================================
+# demo_boundington — el primer dia en Boundington (1981 b.f.), la primera
+# aventura con final ramificado. Juega tres rutas, comprueba los tres
+# cierres y que no queden beats muertos. GL-free, corre en CI.
+add_executable(demo_boundington examples/demo_boundington.cpp)
+target_link_libraries(demo_boundington PRIVATE motor_level)
+set_target_properties(demo_boundington PROPERTIES CXX_STANDARD 17)
+
 # Fase 10: catalogo generico de objetos ("todo es un objeto") + accion
 # Item en BattleState + ObjectSpawn en LevelDefinition. GL-free entero.
 # Lee assets/objects/test_objects.json y assets/levels/test_level.json

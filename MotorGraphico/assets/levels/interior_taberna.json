@@ -1,29 +1,43 @@
 {
-  "name": "Taberna",
-  "map": "assets/maps/interior_taberna.tmx",
-  "playerStart": {
+ "name": "Taberna",
+ "map": "assets/maps/interior_taberna.tmx",
+ "playerStart": {
+  "x": 6,
+  "y": 9
+ },
+ "objects": [
+  {
+   "objectId": "skilla",
+   "position": {
     "x": 6,
-    "y": 9
+    "y": 4
+   }
   },
-  "objects": [
-    {
-      "objectId": "tabernero",
-      "position": {
-        "x": 6,
-        "y": 4
-      }
-    },
-    {
-      "objectId": "salida_interior_taberna",
-      "position": {
-        "x": 6,
-        "y": 10
-      },
-      "targetLevel": "assets/levels/ciudad_centro.json",
-      "targetPosition": {
-        "x": 20,
-        "y": 54
-      }
-    }
-  ]
+  {
+   "objectId": "salida_interior_taberna",
+   "position": {
+    "x": 6,
+    "y": 10
+   },
+   "targetLevel": "assets/levels/ciudad_centro.json",
+   "targetPosition": {
+    "x": 20,
+    "y": 54
+   }
+  },
+  {
+   "objectId": "venides",
+   "position": {
+    "x": 3,
+    "y": 4
+   }
+  },
+  {
+   "objectId": "parroquiano_humilde",
+   "position": {
+    "x": 9,
+    "y": 4
+   }
+  }
+ ]
 }

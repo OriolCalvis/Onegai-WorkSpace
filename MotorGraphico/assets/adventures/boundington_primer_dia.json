@@ -1,0 +1,579 @@
+{
+  "id": "adv_boundington_primer_dia",
+  "name": "El Primer Dia en Boundington",
+  "description": "Boundington, ano 757 del Despertar Elemental (1981 b.f.). Un forastero llega al sur de Aegroum el dia antes de que la ciudad arda. Basada en la campana canonica 'La Matanza de Boundington (Aventura de Venides)'.",
+  "_canon": {
+    "evento": "EV-1981-BOUNDINGTON — La Matanza de Boundington",
+    "fuente": "THE ONEGAI PROJECT/Campanas/Canon/Campana 01: La Matanza de Boundington (Aventura de Venides).docx",
+    "personajes": "Skilla, Venides, Aigren, Luisarda y Xila salen del documento canonico con su oficio y su papel intactos.",
+    "final_abierto": "Los tres cierres reproducen la regla del canon para el Dia 2: pruebas suficientes = Venides con 20 hombres (Punto de los Creadores); pruebas el mismo dia = 10 hombres (Punto de Sho-Noco); nada = Venides solo.",
+    "nota": "El jugador NO puede evitar la Matanza. Solo puede decidir cuanta gente sobrevive a ella."
+  },
+  "objectives": [
+    {
+      "id": "obj_posada",
+      "text": "Buscar cama en la Taberna Humilde",
+      "doneFlag": "bnd_skilla"
+    },
+    {
+      "id": "obj_preguntar",
+      "text": "Preguntar por la ciudad",
+      "doneFlag": "bnd_rumor"
+    },
+    {
+      "id": "obj_pruebas",
+      "text": "Reunir pruebas de lo que traman los Perdidos",
+      "doneFlag": "bnd_pruebas_suficientes"
+    },
+    {
+      "id": "obj_venides",
+      "text": "Contarselo al caballero antes de que amanezca",
+      "doneFlag": "bnd_aviso_dado"
+    }
+  ],
+  "beats": [
+    {
+      "id": "beat_llegada",
+      "trigger": {
+        "type": "enter",
+        "target": "assets/levels/ciudad_centro.json"
+      },
+      "requires": {
+        "notFlags": [
+          "bnd_llegada"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Boundington huele a piedra mojada y a humo de cocina.",
+        "Las casas se atan unas a otras con cuerdas de ropa tendida, y las cortinas bordadas llegan del techo al suelo, como en todo el sur de Aegroum.",
+        "Es una ciudad tranquila. Manana no lo sera."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_llegada"
+        },
+        {
+          "type": "log",
+          "arg": "Boundington, 757 del Despertar Elemental."
+        }
+      ]
+    },
+    {
+      "id": "beat_skilla_primera",
+      "trigger": {
+        "type": "talk",
+        "target": "skilla"
+      },
+      "requires": {
+        "notFlags": [
+          "bnd_skilla"
+        ]
+      },
+      "speaker": "Skilla",
+      "lines": [
+        "Veinticinco de plata la noche. Y no, no hay descuento por cara de cansado.",
+        "Si eres de los que preguntan, hazlo bajito. Aqui las paredes tienen cunados."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_skilla"
+        },
+        {
+          "type": "grantGold",
+          "value": -25
+        },
+        {
+          "type": "log",
+          "arg": "Cama pagada en la Taberna Humilde."
+        }
+      ]
+    },
+    {
+      "id": "beat_skilla_espada",
+      "trigger": {
+        "type": "talk",
+        "target": "skilla"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_skilla"
+        ],
+        "notFlags": [
+          "bnd_skilla_confianza"
+        ]
+      },
+      "speaker": "Skilla",
+      "lines": [
+        "Sobre la chimenea habia una espada. La Furia de Alaro. Era de mi familia.",
+        "Se la llevaron unos que acampan cerca de Pico Dragon. Bandidos, dicen.",
+        "Bandidos que nunca roban comida y siempre roban antorchas. Tu sabras."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_skilla_confianza"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd_rumor"
+        }
+      ]
+    },
+    {
+      "id": "beat_skilla_dormir",
+      "trigger": {
+        "type": "talk",
+        "target": "skilla"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_skilla",
+          "bnd_skilla_confianza"
+        ],
+        "notFlags": [
+          "bnd_noche"
+        ]
+      },
+      "speaker": "Skilla",
+      "lines": [
+        "Ya no vas a sacar nada mas de esta ciudad hoy. Sube.",
+        "La escalera cruje en el cuarto escalon. Aprendetelo, por si alguna noche te conviene bajar sin que se entere nadie."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_noche"
+        },
+        {
+          "type": "log",
+          "arg": "Cae la noche sobre Boundington."
+        }
+      ]
+    },
+    {
+      "id": "beat_parroquiano",
+      "trigger": {
+        "type": "talk",
+        "target": "parroquiano_humilde"
+      },
+      "requires": {
+        "notFlags": [
+          "bnd_rumor_parroquiano"
+        ]
+      },
+      "speaker": "Parroquiano",
+      "lines": [
+        "Esta mesa estaba llena hace medio ano.",
+        "No se han muerto, ojo. Se han ido con ellos. Mi cunado el primero.",
+        "Dice que por fin alguien le escucha. Y a mi me da una pena que no puedo con ella."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_rumor_parroquiano"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd_rumor"
+        }
+      ]
+    },
+    {
+      "id": "beat_aigren",
+      "trigger": {
+        "type": "talk",
+        "target": "aigren"
+      },
+      "requires": {
+        "notFlags": [
+          "bnd_pista_aigren"
+        ]
+      },
+      "speaker": "Aigren",
+      "lines": [
+        "Llevo tres semanas afilando mas hierro del que se rompe en un ano.",
+        "Y no lo compran soldados. Lo compran hombres que pagan bien y no dan nombre.",
+        "...",
+        "Mira, olvida lo que he dicho. Mi hijo esta malo y hoy cierro temprano. Vete."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pista_aigren"
+        },
+        {
+          "type": "log",
+          "arg": "Pista: alguien esta armando a mucha gente en Boundington."
+        }
+      ]
+    },
+    {
+      "id": "beat_aigren_cerrado",
+      "trigger": {
+        "type": "talk",
+        "target": "aigren"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pista_aigren"
+        ]
+      },
+      "speaker": "Aigren",
+      "lines": [
+        "Ya te he dicho lo que sabia, que era nada.",
+        "Tengo un hijo. Entiendelo."
+      ],
+      "effects": []
+    },
+    {
+      "id": "beat_luisarda",
+      "trigger": {
+        "type": "talk",
+        "target": "luisarda"
+      },
+      "requires": {
+        "notFlags": [
+          "bnd_pista_luisarda"
+        ]
+      },
+      "speaker": "Luisarda",
+      "lines": [
+        "Antorchas no me quedan. Ni una.",
+        "Vino un hombre, Sandes se llamaba, y se llevo el genero entero. Pago sin regatear.",
+        "Nadie compra doscientas antorchas para alumbrarse la casa, forastero.",
+        "Si quieres saber mas, en Pico Drago hay un tal Xila que bebe de tarde. Por la manana habla mejor."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pista_luisarda"
+        },
+        {
+          "type": "log",
+          "arg": "Pista: Sandes compro todas las antorchas de la ciudad."
+        }
+      ]
+    },
+    {
+      "id": "beat_xila",
+      "trigger": {
+        "type": "talk",
+        "target": "xila"
+      },
+      "requires": {
+        "notFlags": [
+          "bnd_pista_xila"
+        ]
+      },
+      "speaker": "Xila",
+      "lines": [
+        "Yo tenia una familia y un carro. Ahora tengo esto.",
+        "Hable con las autoridades una vez. Una. Y me lo cobraron entero.",
+        "Se reunen en la iglesia vieja del Casco Antiguo. La que no tiene techo.",
+        "Y no cantan, ojo. Susurran. Una iglesia llena de gente que susurra."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pista_xila"
+        },
+        {
+          "type": "log",
+          "arg": "Pista: los Perdidos se reunen en la iglesia derruida del Casco Antiguo."
+        }
+      ]
+    },
+    {
+      "id": "beat_sectarios",
+      "trigger": {
+        "type": "talk",
+        "target": "sectario_perdido"
+      },
+      "requires": {
+        "notFlags": [
+          "bnd_pista_sectarios"
+        ]
+      },
+      "speaker": "Sectario de los Perdidos",
+      "lines": [
+        "No te pedimos que creas nada. Eso es cosa de curas.",
+        "Te pedimos brazos. Buscamos hombres fuertes para lo que viene.",
+        "Y viene pronto. Pregunta por nosotros cuando te canses de pasar hambre con la conciencia limpia."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pista_sectarios"
+        },
+        {
+          "type": "log",
+          "arg": "Pista: reclutan hombres fuertes, y tienen prisa."
+        }
+      ]
+    },
+    {
+      "id": "beat_iglesia",
+      "trigger": {
+        "type": "enter",
+        "target": "assets/levels/interior_iglesia.json"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pista_xila"
+        ],
+        "notFlags": [
+          "bnd_iglesia_vista"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "La iglesia sigue en pie de milagro y de puro cabezoneria.",
+        "En el suelo, cera. Mucha cera, y fresca, formando un circulo que no es de esta liturgia.",
+        "En el centro del circulo, marcado con hollin, un nombre que no deberia estar escrito en una iglesia: Gurkazaal."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_iglesia_vista"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd_pruebas_suficientes"
+        },
+        {
+          "type": "log",
+          "arg": "PRUEBA: el circulo de cera y el nombre de Gurkazaal."
+        }
+      ]
+    },
+    {
+      "id": "beat_castillo_cerrado",
+      "trigger": {
+        "type": "enter",
+        "target": "assets/levels/interior_castillo.json"
+      },
+      "requires": {
+        "notFlags": [
+          "bnd_castillo_intentado"
+        ]
+      },
+      "speaker": "Guardia del castillo",
+      "lines": [
+        "Sin autorizacion no. Hoy no, manana tampoco, y pasado ya veremos.",
+        "Si tienes algo que decir, diselo al caballero de Nefaria. Para en la Taberna Humilde.",
+        "Bebiendo, normalmente."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_castillo_intentado"
+        }
+      ]
+    },
+    {
+      "id": "beat_venides_completo",
+      "trigger": {
+        "type": "talk",
+        "target": "venides"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pruebas_suficientes",
+          "bnd_pista_luisarda",
+          "bnd_pista_aigren"
+        ],
+        "notFlags": [
+          "bnd_aviso_dado"
+        ]
+      },
+      "speaker": "Venides",
+      "lines": [
+        "Cera. Antorchas. Hierro que nadie encarga. Y un nombre escrito con hollin.",
+        "Llevo dos semanas oyendo rumores y tu me traes las tres patas de la mesa en una tarde.",
+        "Esto ya no es un rumor: es un plan con fecha.",
+        "Voy al castillo ahora mismo. Con esto me dan hombres. Veinte, si el capitan no esta borracho tambien.",
+        "Duerme vestido, forastero."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_aviso_dado"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd_venides_20"
+        },
+        {
+          "type": "log",
+          "arg": "Venides reunira 20 hombres. Punto de los Creadores."
+        }
+      ]
+    },
+    {
+      "id": "beat_venides_parcial",
+      "trigger": {
+        "type": "talk",
+        "target": "venides"
+      },
+      "requires": {
+        "anyFlags": [
+          "bnd_pista_aigren",
+          "bnd_pista_luisarda",
+          "bnd_pista_xila",
+          "bnd_pista_sectarios",
+          "bnd_skilla_confianza"
+        ],
+        "notFlags": [
+          "bnd_aviso_dado"
+        ]
+      },
+      "speaker": "Venides",
+      "lines": [
+        "Ya. Yo tambien lo he oido.",
+        "El problema no es oirlo, forastero, es probarlo. A mi capitan no le sirve un tendero nervioso.",
+        "Sigue tirando del hilo. Yo pedire hombres igualmente, pero con esto me daran diez y con cara de estar haciendome un favor."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_aviso_dado"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd_venides_10"
+        },
+        {
+          "type": "log",
+          "arg": "Venides reunira 10 hombres. Punto de Sho-Noco."
+        }
+      ]
+    },
+    {
+      "id": "beat_venides_nada",
+      "trigger": {
+        "type": "talk",
+        "target": "venides"
+      },
+      "requires": {
+        "notFlags": [
+          "bnd_aviso_dado"
+        ]
+      },
+      "speaker": "Venides",
+      "lines": [
+        "Sientate si quieres. O no.",
+        "Me nombraron caballero hace un ano y me mandan aqui a contar rumores como quien cuenta ovejas.",
+        "Hoy juraria que he visto a Edul por la calle. Edul, que era herrero y era amigo mio.",
+        "Pero he bebido lo justo para no fiarme de mis propios ojos."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_venides_hablado"
+        }
+      ]
+    },
+    {
+      "id": "cierre_creadores",
+      "trigger": {
+        "type": "auto",
+        "target": ""
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_noche",
+          "bnd_venides_20"
+        ],
+        "notFlags": [
+          "bnd_dia_cerrado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Anochece. Desde la ventana de la Taberna Humilde se ve al caballero cruzar la plaza sin hacer eses.",
+        "Manana Boundington ardera. Eso ya estaba escrito antes de que tu llegaras.",
+        "Pero manana, cuando suenen las campanas, habra veinte hombres armados esperando en el sitio correcto.",
+        "Y por veinte hombres, algunas familias del Casco Antiguo llegaran a viejas."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_dia_cerrado"
+        },
+        {
+          "type": "log",
+          "arg": "FIN DEL PRIMER DIA — Punto de los Creadores."
+        }
+      ]
+    },
+    {
+      "id": "cierre_shonoco",
+      "trigger": {
+        "type": "auto",
+        "target": ""
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_noche",
+          "bnd_venides_10"
+        ],
+        "notFlags": [
+          "bnd_dia_cerrado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Anochece. El caballero se ha ido al castillo a pedir hombres con las manos medio vacias.",
+        "Le daran diez. Diez es mejor que ninguno y peor que suficiente.",
+        "Manana Boundington ardera igual. La diferencia entre diez y veinte se contara en nombres,",
+        "y tu no llegaras a saber cuales."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_dia_cerrado"
+        },
+        {
+          "type": "log",
+          "arg": "FIN DEL PRIMER DIA — Punto de Sho-Noco."
+        }
+      ]
+    },
+    {
+      "id": "cierre_silencio",
+      "trigger": {
+        "type": "auto",
+        "target": ""
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_noche"
+        ],
+        "notFlags": [
+          "bnd_dia_cerrado",
+          "bnd_aviso_dado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Anochece y no ha pasado nada. Es una ciudad tranquila, ya te lo habian dicho.",
+        "Skilla recoge los vasos. El caballero duerme sobre la mesa del fondo.",
+        "En algun sitio de esta ciudad hay doscientas antorchas nuevas esperando a que alguien las encienda,",
+        "y manana nadie estara mirando hacia alli."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_dia_cerrado"
+        },
+        {
+          "type": "log",
+          "arg": "FIN DEL PRIMER DIA — Venides estara solo."
+        }
+      ]
+    }
+  ]
+}
