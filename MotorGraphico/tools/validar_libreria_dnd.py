@@ -11,7 +11,8 @@ import json
 import sys
 from pathlib import Path
 
-DIR = Path("/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico/assets/objects")
+# Relativa al repo: antes apuntaba al disco concreto de una maquina.
+DIR = Path(__file__).resolve().parent.parent / "assets" / "objects"
 CATEGORIAS_OK = {"prop", "enemy", "pickup", "npc"}
 EFECTOS_OK = {"none", "heal", "restoreMana"}
 

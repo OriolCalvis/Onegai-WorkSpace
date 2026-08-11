@@ -1,6 +1,7 @@
 """Tileset de ciudad: colores planos por material, con un borde mas oscuro
 para que en la vista isometrica se distinga cada celda. 6 columnas x 4
 filas de 16x16 px -> GIDs 1..24 en orden de lectura (convencion Tiled)."""
+import os
 from PIL import Image, ImageDraw
 
 CELL, COLS, ROWS = 16, 6, 4
@@ -46,7 +47,10 @@ for gid, name, col, _ in TILES:
         for k in range(0, CELL, 5):
             d.line([(x, y+k), (x+k, y)], fill=borde + (255,))
 
-BASE = "/sessions/quirky-nifty-heisenberg/mnt/MotorGraphico-main/MotorGraphico/"
+# Raiz del repo, deducida de la ubicacion de este script. Antes era una ruta
+# absoluta a un sandbox que ya no existe, asi que ningun script corria fuera
+# de la maquina donde se escribio.
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/"
 img.save(BASE + "assets/textures/ciudad_tileset.png")
 print(f"tileset {img.size[0]}x{img.size[1]} px, {len(TILES)} tiles")
 print("colisionan:", [t[1] for t in TILES if t[3]])

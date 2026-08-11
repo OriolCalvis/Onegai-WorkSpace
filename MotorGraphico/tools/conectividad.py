@@ -1,8 +1,12 @@
 """Flood fill desde playerStart: que TODA puerta sea alcanzable andando.
 Un umbral rodeado de muros carga sin error pero es contenido muerto."""
+import os
 import json, re, sys
 from collections import deque
-BASE="/sessions/quirky-nifty-heisenberg/mnt/MotorGraphico-main/MotorGraphico/"
+# Raiz del repo, deducida de la ubicacion de este script. Antes era una ruta
+# absoluta a un sandbox que ya no existe, asi que ningun script corria fuera
+# de la maquina donde se escribio.
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/"
 COLISION={2,4,7,8,9,10,11,12,13,14,15,16,17,18,19,20}
 fallos=0
 for nombre in ["ciudad_centro","ciudad_oeste","ciudad_este"]:

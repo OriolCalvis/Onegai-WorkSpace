@@ -1,8 +1,12 @@
 """Toda puerta debe llevar a un nivel que EXISTE, a una celda transitable
 y que tenga vuelta. Una puerta sin retorno deja al jugador encerrado y
 carga sin dar ningun error."""
+import os
 import json, re, os, sys, glob
-BASE="/sessions/quirky-nifty-heisenberg/mnt/MotorGraphico-main/MotorGraphico/"
+# Raiz del repo, deducida de la ubicacion de este script. Antes era una ruta
+# absoluta a un sandbox que ya no existe, asi que ningun script corria fuera
+# de la maquina donde se escribio.
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/"
 COLISION={2,4,7,8,9,10,11,12,13,14,15,16,17,18,19,20}
 def carga(path):
     lvl=json.load(open(BASE+path))

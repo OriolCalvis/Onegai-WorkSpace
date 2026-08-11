@@ -2,9 +2,13 @@
 Cada puerta del exterior apunta a su interior, y la salida del interior
 devuelve justo a la celda de delante de esa puerta -- si solo se enlaza
 un sentido, entras y te quedas encerrado."""
+import os
 import json
 
-BASE = "/sessions/quirky-nifty-heisenberg/mnt/MotorGraphico-main/MotorGraphico/"
+# Raiz del repo, deducida de la ubicacion de este script. Antes era una ruta
+# absoluta a un sandbox que ya no existe, asi que ningun script corria fuera
+# de la maquina donde se escribio.
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/"
 SUELO, MURALLA, CESPED, AGUA, MARMOL, TIERRA = 1, 2, 3, 4, 5, 6
 MADERA, UMBRAL = 24, 23   # grava hace de suelo de madera
 

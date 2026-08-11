@@ -1,8 +1,12 @@
 """Los tres mapas de la ciudad: centro amurallado 64x64 y dos exteriores
 de 32x64 (oeste militar, este jardines). Determinista."""
+import os
 import json
 
-BASE = "/sessions/quirky-nifty-heisenberg/mnt/MotorGraphico-main/MotorGraphico/"
+# Raiz del repo, deducida de la ubicacion de este script. Antes era una ruta
+# absoluta a un sandbox que ya no existe, asi que ningun script corria fuera
+# de la maquina donde se escribio.
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/"
 ADOQUIN, MURALLA, CESPED, AGUA, MARMOL, TIERRA = 1, 2, 3, 4, 5, 6
 CASTILLO, IGLESIA, UNIV, BIBLIO, OPERA, COLISEO = 7, 8, 9, 10, 11, 12
 MILITAR, TIENDA, ROPA, JOYERIA, BANCO, POSADA = 13, 14, 15, 16, 17, 18
