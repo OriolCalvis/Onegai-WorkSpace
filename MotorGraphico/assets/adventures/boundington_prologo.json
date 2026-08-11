@@ -1,0 +1,337 @@
+{
+  "id": "adv_boundington_prologo",
+  "name": "Prologo: Los Perdidos de Boundington",
+  "description": "Antes de que el forastero llegara a Boundington, antes de la Matanza, hubo una noche en el vacio y un relato en una barca. Capitulo 1 (El Vacio) y Capitulo 2 (El Relato del Pasado) del canon. Ancla el contexto de Venides, Sandes, Edul y Verina para que el Dia 1 sepa de quien hablan.",
+  "_canon": {
+    "fuente": "Campaña 01_ La Matanza de Boundington (Aventura de Venides).docx — Capitulo 1 (El Vacio) y Capitulo 2 (El Relato del Pasado)",
+    "tiradas": "Las dos tiradas del canon (Percepcion DC 12 y Conocimiento Arcano DC 15) se resuelven aqui como Nd6: Percepcion CD 1.0 y conocimiento_arcano CD 1.5. El grado (BOTCH/PARTIAL/SUCCESS/CRITICAL) se traduce a cuatro flags, una por grado.",
+    "encadenamiento": "Al terminar enciende bnd_prologo_terminado (y las de contexto). El Dia 1 (boundington_primer_dia.json) puede leerlas si comparten NarrativeState: las flags son globales y nunca se resetean entre aventuras.",
+    "nota": "Este prologo es canon y lineal: el jugador no puede evitarlo, solo ve mas o menos segun sus tiradas. La barca siempre se sube; el pasado siempre se cuenta. Es la antesala onirica de toda la campana multi-era."
+  },
+  "objectives": [
+    {
+      "id": "obj_prologo",
+      "text": "Escuchar el relato del ser de la barca",
+      "doneFlag": "bnd_prologo_terminado"
+    }
+  ],
+  "beats": [
+    {
+      "id": "prologo_caida",
+      "trigger": {
+        "type": "enter",
+        "target": "assets/levels/interior_vacio.json"
+      },
+      "requires": {
+        "notFlags": ["bnd_prologo_empezado"]
+      },
+      "speaker": "",
+      "lines": [
+        "Despiertas cayendo.",
+        "No hay suelo bajo tus pies ni techo sobre tu cabeza, solo una luz blanca que no viene de ningun sitio y no acaba en ninguno. Caes hacia el vacio desde el vacio, y golpeas algo solido sin hacerte dano.",
+        "Estas solo. O eso crees."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd_prologo_empezado" },
+        { "type": "log", "arg": "Capitulo 1: El Vacio." }
+      ]
+    },
+
+    {
+      "id": "prologo_presentacion",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["bnd_prologo_empezado"],
+        "notFlags": ["bnd_prologo_presentado"]
+      },
+      "speaker": "",
+      "lines": [
+        "A tu alrededor, otros cuerpos golpean el mismo suelo invisible. Caras que no conoces, y una que si: la tuya, reflejada en la nada.",
+        "Cada uno cuenta lo poco que recuerda. Nadie sabe como llego aqui. Nadie sabe donde esta 'aqui'.",
+        "El blanco no se mueve. Tampoco ustedes."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd_prologo_presentado" }
+      ]
+    },
+
+    {
+      "id": "prologo_percepcion",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["bnd_prologo_presentado"],
+        "notFlags": ["bnd_prologo_percibido"]
+      },
+      "speaker": "",
+      "lines": [
+        "Algo en este blanco no es blanco de verdad. Algo en este silencio no es silencio de verdad. Te paras a mirar.",
+        "(Tirada de Percepcion contra el vacio.)"
+      ],
+      "effects": [
+        { "type": "skillCheck", "skillCheck": {
+          "skillId": "percepcion",
+          "cd": 1.0,
+          "flagBotch": "bnd_prologo_percibe_botch",
+          "flagPartial": "bnd_prologo_percibe_parcial",
+          "flagSuccess": "bnd_prologo_percibe_exito",
+          "flagCritical": "bnd_prologo_percibe_critico"
+        }},
+        { "type": "setFlag", "arg": "bnd_prologo_percibido" }
+      ]
+    },
+
+    {
+      "id": "prologo_percepcion_botch",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["bnd_prologo_percibe_botch"],
+        "notFlags": ["bnd_prologo_percibe_relatado"]
+      },
+      "speaker": "",
+      "lines": [
+        "Solo ves blanco. Un blanco cerrado, de gel, que no te dice nada.",
+        "Decides que no hay nada que entender aqui. Decidir eso, en este sitio, es una forma de rendirse."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd_prologo_percibe_relatado" }
+      ]
+    },
+    {
+      "id": "prologo_percepcion_parcial",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["bnd_prologo_percibe_parcial"],
+        "notFlags": ["bnd_prologo_percibe_relatado"]
+      },
+      "speaker": "",
+      "lines": [
+        "Atrapas algo, una intuicion que se escapa: este lugar no es un lugar.",
+        "Mas no sabrias decir. Es como haber leido la primera linea de un libro en un idioma que medio recuerdas."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd_prologo_percibe_relatado" }
+      ]
+    },
+    {
+      "id": "prologo_percepcion_exito",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["bnd_prologo_percibe_exito"],
+        "notFlags": ["bnd_prologo_percibe_relatado"]
+      },
+      "speaker": "",
+      "lines": [
+        "Lo ves claro: esto es un vacio blanco infinito, y esta empapado de una magia que no tiene color ni nombre.",
+        "No sabes de quien es la magia. Pero sabes que no es tuya, y que alguien te esta mirando."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd_prologo_percibe_relatado" }
+      ]
+    },
+    {
+      "id": "prologo_percepcion_critico",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["bnd_prologo_percibe_critico"],
+        "notFlags": ["bnd_prologo_percibe_relatado"]
+      },
+      "speaker": "",
+      "lines": [
+        "Lo ves todo de golpe: el vacio es una construccion, un escenario despojado hasta dejar solo la luz. La magia que lo sostiene es vieja, mucho mas vieja que cualquier reino que conozcas, y respira despacio, como si esperara.",
+        "Y sabes, sin que nadie te lo diga, que el escenario se prepara para que entre alguien."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd_prologo_percibe_relatado" }
+      ]
+    },
+
+    {
+      "id": "prologo_barca",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["bnd_prologo_percibe_relatado"],
+        "notFlags": ["bnd_prologo_barca_vista"]
+      },
+      "speaker": "",
+      "lines": [
+        "A lo lejos, algo se mueve.",
+        "Es una figura envuelta en un manto blanco, con los brazos al aire, y esos brazos cambian: un momento parecen de un joven, al siguiente de un cadaver. Se acerca sobre una barca que flota en una corriente que no puedes ver.",
+        "Viene hacia ustedes."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd_prologo_barca_vista" }
+      ]
+    },
+
+    {
+      "id": "prologo_arcano",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["bnd_prologo_barca_vista"],
+        "notFlags": ["bnd_prologo_arcano_resuelto"]
+      },
+      "speaker": "",
+      "lines": [
+        "El ser se acerca. Su manto no ondea. Sus brazos siguen cambiando de edad con cada latido.",
+        "Algo en su forma chilla para quien sepa escuchar. Te concentras.",
+        "(Tirada de Conocimiento Arcano sobre el ser.)"
+      ],
+      "effects": [
+        { "type": "skillCheck", "skillCheck": {
+          "skillId": "conocimiento_arcano",
+          "cd": 1.5,
+          "flagBotch": "bnd_prologo_arcano_botch",
+          "flagPartial": "bnd_prologo_arcano_parcial",
+          "flagSuccess": "bnd_prologo_arcano_exito",
+          "flagCritical": "bnd_prologo_arcano_critico"
+        }},
+        { "type": "setFlag", "arg": "bnd_prologo_arcano_resuelto" }
+      ]
+    },
+
+    {
+      "id": "prologo_arcano_botch",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["bnd_prologo_arcano_botch"],
+        "notFlags": ["bnd_prologo_arcano_relatado"]
+      },
+      "speaker": "",
+      "lines": [
+        "El ser te pone la piel de gallina y ya. No sabrias decir si esta vivo, si esta muerto, o si esa pregunta significa algo aqui."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd_prologo_arcano_relatado" }
+      ]
+    },
+    {
+      "id": "prologo_arcano_parcial",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["bnd_prologo_arcano_parcial"],
+        "notFlags": ["bnd_prologo_arcano_relatado"]
+      },
+      "speaker": "",
+      "lines": [
+        "Algo en el ser no encaja con nada que hayas estudiado. Da la impresion de no ser del todo solido, como si fuera mas idea que cuerpo.",
+        "Mas alla de eso, nada: la forma se te escapa en cuanto intentas agarrarla."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd_prologo_arcano_relatado" }
+      ]
+    },
+    {
+      "id": "prologo_arcano_exito",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["bnd_prologo_arcano_exito"],
+        "notFlags": ["bnd_prologo_arcano_relatado"]
+      },
+      "speaker": "",
+      "lines": [
+        "Lo que tienes delante no es organico. No tiene carne, ni hueso, ni aliento.",
+        "Es magia. Magia entera, condensada en una forma que se permite parecer un hombre solo para que ustedes no salgan corriendo. Una magia que no te sabes nombrar."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd_prologo_arcano_relatado" }
+      ]
+    },
+    {
+      "id": "prologo_arcano_critico",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["bnd_prologo_arcano_critico"],
+        "notFlags": ["bnd_prologo_arcano_relatado"]
+      },
+      "speaker": "",
+      "lines": [
+        "Lo reconoces, no del todo, pero casi: el ser es un recipiente de una magia tan vieja que el mundo la ha olvidado y la ha vuelto a olvidar varias veces.",
+        "No es un dios. Es algo que un dios dejo caer, o algo que un dios olvido recoger. Y te esta mirando a ti."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd_prologo_arcano_relatado" }
+      ]
+    },
+
+    {
+      "id": "prologo_subida",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["bnd_prologo_arcano_relatado"],
+        "notFlags": ["bnd_prologo_subido"]
+      },
+      "speaker": "",
+      "lines": [
+        "El ser detiene la barca junto a ustedes. Con un gesto, los invita a subir.",
+        "Una voluntad que no es la tuya tira de tus pies hacia la orilla invisible. Puedes resistirte. Es inutil.",
+        "La barca se aparta del vacio y empieza a deslizarse por otro sitio: por un aire que tiene olor a cerveza, a madera vieja, a brasas.",
+        "El ser, sin abrir la boca, empieza a contar una historia. Y ustedes, de golpe, estan dentro de ella."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd_prologo_subido" },
+        { "type": "setFlag", "arg": "bnd_prologo_shonoco" },
+        { "type": "log", "arg": "Capitulo 2: El Relato del Pasado." }
+      ]
+    },
+
+    {
+      "id": "prologo_taberna",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["bnd_prologo_subido"],
+        "notFlags": ["bnd_prologo_en_pasado"]
+      },
+      "speaker": "El relato",
+      "lines": [
+        "Ceaseton, ciudad costera de Nefaria, ano 756 del Despertar Elemental. Una taberna cualquiera, una mesa con cuatro jarras.",
+        "Cuatro amigos. Venides, hijo de Nefaria, recien nombrado caballero: el festejado. Sandes, hijo de Killville, el que rie mas fuerte. Edul, hijo de Perishton, herrero frustrado y mejor persona de las que conoces. Y su hermana Verina, la unica mujer de la mesa, contenta de verdad por el amigo.",
+        "Brindan. Hablan de una excursion a las Santas Montanas, de lo que haran cuando vuelvan, de todo lo que tienen por delante.",
+        "Por un rato, la mesa es el lugar mas seguro del mundo."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd_prologo_en_pasado" }
+      ]
+    },
+
+    {
+      "id": "prologo_giro",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["bnd_prologo_en_pasado"],
+        "notFlags": ["bnd_prologo_girado"]
+      },
+      "speaker": "El relato",
+      "lines": [
+        "La excursion a las Santas Montanas cambio a los tres.",
+        "Sandes, Edul y Verina volvieron hablando distinto, mirando distinto, con una conviccion nueva por una secta que se ponia de moda en Perishton. Un culto que prometia una revelacion a quien supiera escuchar.",
+        "Venides no la escuchaba. Empezo a alejarse, primero despacio, despues del todo. Dedicar su vida a proteger el reino le dolia menos que seguir sentado en esa mesa.",
+        "Y al poco tiempo lo mandaron a investigar unos rumores, nada mas que rumores, sobre un tal los Perdidos. En un pueblo del sur de Aegroum.",
+        "Boundington."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd_prologo_girado" },
+        { "type": "setFlag", "arg": "bnd_prologo_pasado" }
+      ]
+    },
+
+    {
+      "id": "prologo_despertar",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["bnd_prologo_girado"],
+        "notFlags": ["bnd_prologo_terminado"]
+      },
+      "speaker": "",
+      "lines": [
+        "La barca se detiene. La taberna de Ceaseton se deshace como humo.",
+        "El ser te mira con sus dos edades a la vez. Sin decir una palabra, te devuelve al blanco del principio.",
+        "Sabes su nombre, ahora, aunque el no lo ha dicho: Sho-Noco. Y sabes, tambien, que te ha enseñado solo lo que le convenia que supieras.",
+        "Mañana llegaras a Boundington. Hoy solo te queda una cama donde sea que el blanco te deje."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd_prologo_terminado" },
+        { "type": "log", "arg": "Prologo completado. Sho-Noco te ha mostrado el pasado de Venides." }
+      ]
+    }
+  ]
+}

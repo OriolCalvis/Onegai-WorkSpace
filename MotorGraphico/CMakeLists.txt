@@ -133,6 +133,13 @@ add_executable(demo_narrativa_nd6 examples/demo_narrativa_nd6.cpp)
 target_link_libraries(demo_narrativa_nd6 PRIVATE motor_rpg)
 set_target_properties(demo_narrativa_nd6 PROPERTIES CXX_STANDARD 17)
 
+# demo_prologo — el prologo onirico de Boundington (Cap. 1-2 del canon).
+# Reproduce boundington_prologo.json forzando SUCCESS en las dos tiradas
+# Nd6 y comprueba el cierre y la cobertura de beats. GL-free.
+add_executable(demo_prologo examples/demo_prologo.cpp)
+target_link_libraries(demo_prologo PRIVATE motor_rpg)
+set_target_properties(demo_prologo PROPERTIES CXX_STANDARD 17)
+
 # Fase 10: catalogo generico de objetos ("todo es un objeto") + accion
 # Item en BattleState + ObjectSpawn en LevelDefinition. GL-free entero.
 # Lee assets/objects/test_objects.json y assets/levels/test_level.json
