@@ -1,6 +1,7 @@
 """Flood fill desde playerStart: que TODA puerta sea alcanzable andando.
 Un umbral rodeado de muros carga sin error pero es contenido muerto."""
 import os
+import glob
 import json, re, sys
 from collections import deque
 # Raiz del repo, deducida de la ubicacion de este script. Antes era una ruta
@@ -9,7 +10,12 @@ from collections import deque
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/"
 COLISION={2,4,7,8,9,10,11,12,13,14,15,16,17,18,19,20}
 fallos=0
-for nombre in ["ciudad_centro","ciudad_oeste","ciudad_este"]:
+# Antes la lista estaba escrita a mano con las tres ciudades: cualquier nivel
+# nuevo (los mapamundis, los interiores) quedaba fuera de la comprobacion sin
+# que nada lo delatara. Ahora se recorren TODOS los niveles del repo.
+niveles = sorted(os.path.splitext(os.path.basename(p))[0]
+                 for p in glob.glob(BASE + "assets/levels/*.json"))
+for nombre in niveles:
     lvl=json.load(open(BASE+f"assets/levels/{nombre}.json"))
     tmx=re.sub(r"<!--.*?-->","",open(BASE+lvl["map"]).read(),flags=re.S)
     W=int(re.search(r'<map[^>]*?\swidth="(\d+)"',tmx).group(1))

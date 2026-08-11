@@ -500,4 +500,58 @@ struct EventDefinition {
     std::vector<Option> options;
 };
 
+// ---------------------------------------------------------------------------
+// LocationDefinition — el mundo. Cierra la brecha B24 de
+// GAMEMACHINE_NECESIDADES ("no hay 'localizacion' con nombre narrativo,
+// faccion controladora, tier recomendado, quests de zona, events").
+//
+// Fuente: dndWeebCC/data/mapa/geografia.json, el unico sitio del proyecto
+// donde el mundo de Egaroth tiene geometria: 19 poligonos de nacion, 95
+// ciudades con coordenadas y 26 zonas de terreno. Hasta ahora ese dato no
+// salia del motor de cartas y el motor grafico no tenia mundo, solo tres
+// niveles de ciudad sueltos.
+//
+// Las tres clases van en UN solo tipo con discriminador `kind` porque quien
+// consulta ("que hay en Udrax", "dame lo de tier <= 2") no quiere saber si
+// es nacion, ciudad o zona. Sigue el mismo criterio que ObjectCategory.
+//
+// OJO: el mapa esta FECHADO. `epoch` lleva el ano del que es instantanea
+// (2000 b.f., el primer ano de las Grandes Cruzadas). No vale para eras
+// anteriores ni posteriores, y por eso el dato viaja con el catalogo en vez
+// de darse por supuesto.
+// ---------------------------------------------------------------------------
+struct LocationDefinition {
+    enum class Kind { Nation, City, Zone };
+
+    std::string id;
+    std::string name;
+    Kind kind = Kind::City;
+    int tier = 0;                       // dificultad/importancia recomendada
+
+    std::string controlledBy;           // nacion que la controla (ciudad/zona)
+    std::string description;
+
+    // Posicion en el mapa mundi. Las naciones no la tienen: tienen poligono.
+    bool hasPosition = false;
+    int x = 0;
+    int y = 0;
+    std::string polygon;                // "x,y x,y ..." solo para Nation
+
+    // Ciudad
+    std::string settlementSize;         // capital | ciudad | pueblo | aldea
+    std::string population;
+    std::string ruler;
+    std::string trait;
+    bool pendingCanonName = false;      // marcador aun sin nombre canonico
+
+    // Zona
+    std::string terrain;                // montana | bosque | desierto | santuario...
+    std::string danger;
+
+    std::vector<std::string> storyIds;
+    std::vector<std::string> npcIds;
+    std::vector<std::string> deityIds;
+    std::vector<std::string> raceIds;
+};
+
 }  // namespace RPG

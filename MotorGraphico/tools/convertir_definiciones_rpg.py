@@ -673,6 +673,84 @@ def ordena_entries_por_id(entries):
     return sorted(entries, key=lambda e: (e.get("tier",0), e.get("id","")))
 
 
+
+# ---------------------------------------------------------------------------
+# Geografia: data/mapa/geografia.json -> locations.json
+#
+# Cierra la brecha B24 de GAMEMACHINE_NECESIDADES ("no hay 'localizacion' con
+# nombre narrativo, faccion controladora, tier recomendado"). El mapa del mundo
+# vivia solo en el motor de cartas -- 19 naciones con poligono, 95 ciudades con
+# coordenadas y 26 zonas -- y no se exportaba a ningun sitio, asi que el motor
+# grafico no tenia mundo: solo tres niveles de ciudad sueltos.
+#
+# Las tres clases de localizacion van al MISMO catalogo con un discriminador
+# locationType, porque el consumidor generico ("dame todo lo de tier <= 2",
+# "que hay en Udrax") no quiere saber si algo es nacion, ciudad o zona.
+# ---------------------------------------------------------------------------
+TAMANO_A_TIER = {"capital": 3, "ciudad": 2, "pueblo": 1, "aldea": 1}
+PELIGRO_A_TIER = {"bajo": 1, "medio": 2, "alto": 3, "extremo": 4}
+
+
+def exporta_geografia():
+    """Devuelve (entries, warnings, meta). Lista vacia si no hay geografia."""
+    ruta = os.path.join(DND_ROOT, "mapa", "geografia.json")
+    if not os.path.exists(ruta):
+        return [], [f"[locations] no existe {ruta}"], {}
+    g = lee_json(ruta)
+    w, entries = [], []
+    canon = g.get("_canon", {})
+
+    for n in g.get("naciones", []):
+        nid = "nation_" + re.sub(r"[^a-z0-9_]+", "_", n["nombre"].lower()).strip("_")
+        entries.append({
+            "id": nid, "name": n["nombre"], "locationType": "nation",
+            "tier": 0, "rarity": "common",
+            "polygon": n.get("points", ""), "color": n.get("color"),
+            "culture": n.get("cultura") or None,
+            "alignment": n.get("alineacion") or None,
+            "deityIds": n.get("deidadIds") or [], "raceIds": n.get("razaIds") or [],
+        })
+
+    for c in g.get("ciudades", []):
+        tam = (c.get("tamano") or "").lower()
+        if tam not in TAMANO_A_TIER:
+            w.append(f"{c.get('id','?')}: tamano '{tam}' desconocido, tier 1")
+        if c.get("pendienteCanon"):
+            w.append(f"{c.get('id','?')}: sin nombre canonico todavia")
+        entries.append({
+            "id": c.get("id") or ("city_" + str(c.get("nombre", "?"))),
+            "name": c.get("nombre", "?"), "locationType": "city",
+            "tier": TAMANO_A_TIER.get(tam, 1), "rarity": "common",
+            "settlementSize": tam or None,
+            "controlledBy": c.get("nacion"),
+            "position": {"x": c.get("x"), "y": c.get("y")},
+            "population": c.get("poblacion") or None,
+            "ruler": c.get("gobernante") or None,
+            "trait": c.get("rasgo") or None,
+            "description": c.get("descripcion") or None,
+            "storyIds": c.get("historiaIds") or [], "npcIds": c.get("npcIds") or [],
+            "pendingCanonName": bool(c.get("pendienteCanon")),
+        })
+
+    for z in g.get("zonas", []):
+        pel = (z.get("peligro") or "").lower()
+        entries.append({
+            "id": z.get("id") or ("zone_" + str(z.get("nombre", "?"))),
+            "name": z.get("nombre", "?"), "locationType": "zone",
+            "tier": PELIGRO_A_TIER.get(pel, 1), "rarity": "common",
+            "terrain": z.get("tipo") or None,
+            "controlledBy": z.get("nacion") or None,
+            "danger": pel or None,
+            "description": z.get("descripcion") or None,
+            "position": {"x": z.get("x"), "y": z.get("y")},
+            "storyIds": z.get("historiaIds") or [],
+        })
+
+    meta = {"epoca": canon.get("epoca"), "era": canon.get("era"),
+            "fuente_nombres": canon.get("fuente_nombres")}
+    return entries, w, meta
+
+
 def catalogo_wrapper(entries):
     return {"entries": ordena_entries_por_id(entries)}
 
@@ -735,6 +813,26 @@ def main():
         }
         estadisticas[catalogo] = stats
         guarda_json(os.path.join(SALIDA_DIR, f"{catalogo}.json"), catalogo_wrapper(entries))
+
+    # 2b) geografia -> locations.json
+    entries, w, meta = exporta_geografia()
+    todas_warnings.extend(w)
+    if entries:
+        env = catalogo_wrapper(entries)
+        env["_mapa"] = meta
+        guarda_json(os.path.join(SALIDA_DIR, "locations.json"), env)
+        porTipo = {}
+        for e in entries:
+            porTipo[e["locationType"]] = porTipo.get(e["locationType"], 0) + 1
+        estadisticas["locations"] = {
+            "fuente": "mapa/geografia.json", "status": "ok",
+            "entradas": len(entries), "ficheros": 1,
+            "ids_unicos": len({e["id"] for e in entries}), "ids_duplicados": [],
+            "por_tipo": porTipo, "epoca": meta.get("epoca"),
+        }
+    else:
+        estadisticas["locations"] = {"fuente": "mapa/geografia.json",
+                                     "status": "no_existe", "entradas": 0, "ficheros": 0}
 
     # 3) trasfondos = el GDD esperaba 12 pero la carpeta data/cartas/trasfondos no existe.
     #    Consultamos si data/kits/kits_iniciales.json (o similares) pueden proveerlos; si no,

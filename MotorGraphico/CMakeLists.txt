@@ -110,6 +110,14 @@ add_executable(demo_catalogos_rpg examples/demo_catalogos_rpg.cpp)
 target_link_libraries(demo_catalogos_rpg PRIVATE motor_level)
 set_target_properties(demo_catalogos_rpg PROPERTIES CXX_STANDARD 17)
 
+# ====================================================================
+# demo_mundo — B24: el mundo de Egaroth (19 naciones, 95 ciudades, 26 zonas)
+# desde assets/catalogs/locations.json. El mapa esta fechado en 2000 b.f.
+# GL-free, corre en CI.
+add_executable(demo_mundo examples/demo_mundo.cpp)
+target_link_libraries(demo_mundo PRIVATE motor_level)
+set_target_properties(demo_mundo PROPERTIES CXX_STANDARD 17)
+
 # Fase 10: catalogo generico de objetos ("todo es un objeto") + accion
 # Item en BattleState + ObjectSpawn en LevelDefinition. GL-free entero.
 # Lee assets/objects/test_objects.json y assets/levels/test_level.json

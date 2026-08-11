@@ -648,6 +648,53 @@ inline EventDefinition CatalogLoader<EventDefinition>::from_json(const JsonValue
     return ev;
 }
 
+// -----------------------------------------------------------------
+// LocationDefinition
+// -----------------------------------------------------------------
+template<>
+inline LocationDefinition CatalogLoader<LocationDefinition>::from_json(const JsonValue& e) {
+    LocationDefinition l;
+    l.id = e["id"].asString("");
+    l.name = e["name"].asString(l.id);
+    l.tier = e["tier"].asInt(0);
+
+    const std::string kind = e["locationType"].asString(e["kind"].asString("city"));
+    if (kind == "nation") {
+        l.kind = LocationDefinition::Kind::Nation;
+    } else if (kind == "zone") {
+        l.kind = LocationDefinition::Kind::Zone;
+    } else {
+        l.kind = LocationDefinition::Kind::City;
+    }
+
+    l.controlledBy = e["controlledBy"].asString(e["controlled_by"].asString(""));
+    l.description = e["description"].asString("");
+    l.polygon = e["polygon"].asString("");
+
+    // position es un objeto {x,y}; las naciones no lo traen.
+    const JsonValue& pos = e["position"];
+    if (pos.isObject()) {
+        l.x = pos["x"].asInt(0);
+        l.y = pos["y"].asInt(0);
+        l.hasPosition = true;
+    }
+
+    l.settlementSize = e["settlementSize"].asString(e["settlement_size"].asString(""));
+    l.population = e["population"].asString("");
+    l.ruler = e["ruler"].asString("");
+    l.trait = e["trait"].asString("");
+    l.pendingCanonName = e["pendingCanonName"].asBool(false);
+
+    l.terrain = e["terrain"].asString("");
+    l.danger = e["danger"].asString("");
+
+    l.storyIds = copy_json_string_vec(e["storyIds"]);
+    l.npcIds   = copy_json_string_vec(e["npcIds"]);
+    l.deityIds = copy_json_string_vec(e["deityIds"]);
+    l.raceIds  = copy_json_string_vec(e["raceIds"]);
+    return l;
+}
+
 // ============================================================
 // Catalog<T> — implementación de ICatalog<T> con carga JSON.
 //
@@ -769,6 +816,7 @@ using LootTableCatalog   = Catalog<LootTableDefinition>;
 using NpcCatalog         = Catalog<NpcDefinition>;
 using AdventureCatalog   = Catalog<AdventureDefinition>;
 using EventCatalog       = Catalog<EventDefinition>;
+using LocationCatalog    = Catalog<LocationDefinition>;   // el mundo (B24)
 
 }  // namespace Catalogs
 }  // namespace RPG
