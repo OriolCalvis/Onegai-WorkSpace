@@ -51,7 +51,12 @@ SUBIR_A_CATALOGO = {
     # Entidades cartas de data/cartas/*
     "clases":         ("classes",            "class_"),
     "razas":          ("races",              "race_"),
-    "trasfondos":     ("backgrounds",        "bg_"),
+    # La carpeta se llama "transfondos" (con n), no "trasfondos". Por esa letra
+    # el exportador no la encontraba nunca y caia al fallback de kits_iniciales:
+    # el catalogo de backgrounds traia 50 kits genericos en vez de los 12 meses
+    # de nacimiento, que son los que llevan el lore, la astrologia y las
+    # referencias a deidades.
+    "transfondos":    ("backgrounds",        "bg_"),
     "deidades":       ("deities",            "deity_"),
     "pasivas":        ("passives",           "passive_"),
     "habilidades":    ("skills",             "skill_"),
@@ -71,7 +76,12 @@ SUBIR_A_CATALOGO = {
 DATA_RAIZ_A_CATALOGO = {
     "loot":      ("loot_tables",   "loot_"),
     "aventuras": ("adventures",    "adv_"),
-    "personatges":   ("npcs",      "npc_"),
+    # CORREGIDO: 'personatges' son fichas de personaje jugador (claseId, razaId,
+    # stats, tier), no PNJs. Los PNJs de verdad viven en data/npcs/ (134, con
+    # role/faction/location/dialogue/services). Antes se exportaban las 12 fichas
+    # como si fueran el catalogo de PNJs y los 134 PNJs no llegaban al motor.
+    "npcs":          ("npcs",             "npc_"),
+    "personatges":   ("pregen_characters", "pc_"),
     "eventos":   ("events",        "ev_"),
 }
 
@@ -140,10 +150,30 @@ def guarda_json(path, dato):
         json.dump(dato, f, ensure_ascii=False, indent=2, sort_keys=True)
 
 
+# Ids que colisionan entre catalogos si se conservan tal cual (comprobado sobre
+# los 2747 ids explicitos del origen: solo estos tres). Se desempatan a mano.
+COLISIONES = {
+    ("eclipse_menor", "monster_"):    "monster_eclipse_menor",
+    ("paje_traslucido", "monster_"):  "monster_paje_traslucido",
+    ("alce_de_ribera", "mount_"):     "mount_alce_de_ribera",
+}
+
+
 def id_seguro(d, prefijo, fallback=None):
-    raw = d.get("id") if d.get('id') is not None else (fallback or d.get('name') or 'unnamed')
+    """Conserva el id explicito del origen; solo prefija los generados.
+
+    Antes se prefijaba SIEMPRE, lo que renombraba el 86% de los ids (2364 de
+    2747) y dejaba 1910 referencias cruzadas apuntando al vacio: una aventura
+    citaba 'chambelan_roto_real' y el catalogo guardaba
+    'monster_chambelan_roto_real'. Si el autor puso un id, ese id es la
+    identidad y no se toca.
+    """
+    explicito = d.get("id") is not None
+    raw = d.get("id") if explicito else (fallback or d.get("name") or "unnamed")
     raw = str(raw).strip()
     slug = re.sub(r"[^a-z0-9_]+", "_", raw.lower()).strip("_") or "unnamed"
+    if explicito:
+        return COLISIONES.get((slug, prefijo), slug)
     if slug.startswith(prefijo.rstrip("_") + "_"):
         return slug
     return prefijo + slug
@@ -506,9 +536,27 @@ def norm_monstruo(entry, _prefijo, fallback_fname):
 
 
 def norm_npc(entry, _prefijo, fallback_fname):
-    """PNJ desde data/personatges/. Se hace lo mejor que se puede (estructura
-    no catalogada aun)."""
+    """PNJ desde data/npcs/: role, faction, location, dialogue, services,
+    agenda, secretHook."""
     base, w = norm_generico(entry, "npc_", fallback_fname)
+    for k in ("role", "faction", "location", "dialogue", "services", "agenda",
+              "attitude", "secretHook", "month"):
+        if entry.get(k) is not None:
+            base[k] = entry[k]
+    return base, w
+
+
+def norm_pj(entry, _prefijo, fallback_fname):
+    """Ficha de personaje jugador pregenerado desde data/personatges/:
+    claseId, razaId, transfonsId, stats CON/DES/INT/CAR, tier, habilidadIds."""
+    base, w = norm_generico(entry, "pc_", fallback_fname)
+    for k in ("claseId", "razaId", "transfonsId", "doteIds", "equipoIds",
+              "habilidadIds", "tier", "historia"):
+        if entry.get(k) is not None:
+            base[k] = entry[k]
+    st = {c: entry.get("stat" + c.title()) for c in ("con", "des", "int", "car")}
+    if any(v is not None for v in st.values()):
+        base["stats"] = {k.upper(): v for k, v in st.items() if v is not None}
     return base, w
 
 
@@ -664,7 +712,8 @@ def main():
     map_norm = {
         "loot":      norm_loot,
         "aventuras": norm_aventura,
-        "personatges":   norm_npc,
+        "npcs":          norm_npc,
+        "personatges":   norm_pj,
         "eventos":   norm_evento,
     }
     for subdir, (catalogo, prefijo) in DATA_RAIZ_A_CATALOGO.items():

@@ -10,7 +10,7 @@
         "scaling": "none"
       },
       "flavorText": "Toca la cuerda que ya estaba rota en ellos.",
-      "id": "passive_afinacion_rota",
+      "id": "afinacion_rota",
       "limitations": [
         "Una vez por ronda"
       ],
@@ -35,7 +35,7 @@
         "scaling": "none"
       },
       "flavorText": "El viento no espera a que llegues. Él tampoco.",
-      "id": "passive_alcance_del_vendaval",
+      "id": "alcance_del_vendaval",
       "limitations": [
         "Solo con armas de asta (lanzas, picas)"
       ],
@@ -59,7 +59,7 @@
         "scaling": "none"
       },
       "flavorText": "El Vacío no empuja. Espera a que dejes de resistirte.",
-      "id": "passive_anclaje",
+      "id": "anclaje",
       "limitations": [
         "No puedes mantener Anclado si eres forzado a moverte (empuje, derribo)"
       ],
@@ -71,6 +71,807 @@
       ],
       "tier": 1,
       "trigger": "Al jugar Modo Bastión",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "sombra_de_la_duna"
+      ],
+      "description": "Puedes enterrarte (o fundirte con el suelo): cuentas como Oculto y con cobertura ligera hasta que actúes o te muevan a la fuerza.",
+      "effect": {
+        "description": "Puedes enterrarte (o fundirte con el suelo): cuentas como Oculto y con cobertura ligera hasta que actúes o te muevan a la fuerza.",
+        "scaling": "none"
+      },
+      "flavorText": "El desierto no esconde nada. Lo guarda.",
+      "id": "bajo_la_arena",
+      "limitations": [
+        "Necesitas suelo natural o blando (arena, tierra, escombro)"
+      ],
+      "name": "Bajo la Arena",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Sigilo",
+        "Evasion"
+      ],
+      "tier": 1,
+      "trigger": "Al terminar tu turno sin haber atacado",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "muralla_de_udrax"
+      ],
+      "description": "Acumulas 1 de Piedra (máx. 3): cada punto suma +1 a tu CA. Se pierde toda la Piedra al desplazarte.",
+      "effect": {
+        "description": "Acumulas 1 de Piedra (máx. 3): cada punto suma +1 a tu CA. Se pierde toda la Piedra al desplazarte.",
+        "scaling": "none"
+      },
+      "flavorText": "En Udrax no preguntan quién ganó. Preguntan qué muro aguantó.",
+      "id": "baluarte_de_piedra",
+      "limitations": [
+        "La Piedra se pierde también con empujes o derribos"
+      ],
+      "name": "Baluarte de Piedra",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Bloqueo",
+        "Marcial"
+      ],
+      "tier": 1,
+      "trigger": "Al final de cada uno de tus turnos en los que no te hayas desplazado",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "nacido_del_trueno"
+      ],
+      "description": "El estampido te empuja: puedes desplazarte 5 pies sin provocar reacciones.",
+      "effect": {
+        "description": "El estampido te empuja: puedes desplazarte 5 pies sin provocar reacciones.",
+        "scaling": "none"
+      },
+      "flavorText": "El trueno llega tarde. Él, nunca.",
+      "id": "bendicion_del_trueno",
+      "limitations": [
+        "Máximo una vez por turno"
+      ],
+      "name": "Bendición del Trueno",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Magico"
+      ],
+      "tier": 1,
+      "trigger": "Cada vez que juegas una carta de rayo o trueno",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "carcelero_de_hierro"
+      ],
+      "description": "Ese enemigo sufre desventaja en sus ataques contra cualquiera que no seas tú, y tú ganas +1 a tu CA contra los demás (la cadena te cubre).",
+      "effect": {
+        "description": "Ese enemigo sufre desventaja en sus ataques contra cualquiera que no seas tú, y tú ganas +1 a tu CA contra los demás (la cadena te cubre).",
+        "scaling": "none"
+      },
+      "flavorText": "Toda celda empieza siendo una muñeca sujeta.",
+      "id": "cadena_perpetua",
+      "limitations": [
+        "Solo una cadena tendida a la vez en tier 1"
+      ],
+      "name": "Cadena Perpetua",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Control",
+        "Bloqueo"
+      ],
+      "tier": 1,
+      "trigger": "Mientras tengas a un enemigo Agarrado por tus cadenas",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "peregrino_de_los_doce_meses"
+      ],
+      "description": "Eliges el Mes que honras hoy (uno de los 12 trasfondos): ganas una bendición menor acorde a su energía (Tierra: +1 Resistencia física · Agua/Vegetación: 1 vida al descansar corto · Fuego/Rayo: +1 al primer ataque de cada combate · Aire/Energía Suprema: +5 pies de movimiento).",
+      "effect": {
+        "description": "Eliges el Mes que honras hoy (uno de los 12 trasfondos): ganas una bendición menor acorde a su energía (Tierra: +1 Resistencia física · Agua/Vegetación: 1 vida al descansar corto · Fuego/Rayo: +1 al primer ataque de cada combate · Aire/Energía Suprema: +5 pies de movimiento).",
+        "scaling": "none"
+      },
+      "flavorText": "Reza a todos los meses. Alguno siempre está de guardia.",
+      "id": "calendario_viviente",
+      "limitations": [
+        "Solo un Mes honrado a la vez; no puede ser tu propio mes de nacimiento"
+      ],
+      "name": "Calendario Viviente",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Sagrado",
+        "Control"
+      ],
+      "tier": 1,
+      "trigger": "Al terminar un descanso largo",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "caballero_templario"
+      ],
+      "description": "Tú y los aliados a alcance corto ganáis +1 a Defensa mental. Además, 1/ronda, cuando un aliado cercano recibe daño, puedes reducirlo en 1 con una plegaria (acción libre).",
+      "effect": {
+        "description": "Tú y los aliados a alcance corto ganáis +1 a Defensa mental. Además, 1/ronda, cuando un aliado cercano recibe daño, puedes reducirlo en 1 con una plegaria (acción libre).",
+        "scaling": "none"
+      },
+      "flavorText": "Su fe no es un muro. Es una formación.",
+      "id": "camaradas_de_luz",
+      "limitations": [
+        "El bono no se aplica si estás solo"
+      ],
+      "name": "Camaradas de Luz",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Sagrado",
+        "Bloqueo"
+      ],
+      "tier": 1,
+      "trigger": "Mientras tengas al menos un aliado a alcance corto",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "astronomo_errante"
+      ],
+      "description": "Preparas 2 Presagios (elige entre: Impacto, Fallo, Encuentro, Huida). Una vez por combate cada uno, cuando ocurra lo presagiado, conviertes esa tirada implicada en ventaja o desventaja (tu elección).",
+      "effect": {
+        "description": "Preparas 2 Presagios (elige entre: Impacto, Fallo, Encuentro, Huida). Una vez por combate cada uno, cuando ocurra lo presagiado, conviertes esa tirada implicada en ventaja o desventaja (tu elección).",
+        "scaling": "none"
+      },
+      "flavorText": "No predice el futuro. Le toma la delantera.",
+      "id": "carta_astral_preparada",
+      "limitations": [
+        "Presagios no usados se pierden al siguiente descanso largo"
+      ],
+      "name": "Carta Astral Preparada",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Magico",
+        "Control"
+      ],
+      "tier": 1,
+      "trigger": "Al terminar un descanso largo, trazas tu carta del cielo",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "inventor"
+      ],
+      "description": "El artilugio no falla del todo: produce su efecto con 1 éxito. El caos también construye.",
+      "effect": {
+        "description": "El artilugio no falla del todo: produce su efecto con 1 éxito. El caos también construye.",
+        "scaling": "none"
+      },
+      "flavorText": "Sus errores tienen mejor puntería que muchos aciertos.",
+      "id": "chispa_caotica",
+      "limitations": [
+        "Una vez por combate"
+      ],
+      "name": "Chispa Caótica",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Mecanico",
+        "Magico"
+      ],
+      "tier": 1,
+      "trigger": "La primera vez cada combate que una tirada de tus artilugios obtiene 0 éxitos (pifia)",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "bardo_de_las_cuatro_estaciones"
+      ],
+      "description": "Tus canciones ganan el matiz de la Estación activa: Primavera (curan 1 extra), Verano (+1 daño), Otoño (+5 pies a empujes y movimientos), Invierno (el objetivo mueve a la mitad hasta el final de su próximo turno).",
+      "effect": {
+        "description": "Tus canciones ganan el matiz de la Estación activa: Primavera (curan 1 extra), Verano (+1 daño), Otoño (+5 pies a empujes y movimientos), Invierno (el objetivo mueve a la mitad hasta el final de su próximo turno).",
+        "scaling": "none"
+      },
+      "flavorText": "El año entero le cabe en la garganta.",
+      "id": "ciclo_de_estaciones",
+      "limitations": [
+        "Solo una Estación activa; empieza en la estación real de la campaña"
+      ],
+      "name": "Ciclo de las Estaciones",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Naturaleza",
+        "Control"
+      ],
+      "tier": 1,
+      "trigger": "Al inicio de cada uno de tus turnos puedes avanzar tu Estación (Primavera→Verano→Otoño→Invierno→...)",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "guardaespaldas"
+      ],
+      "description": "Mientras estés a alcance corto de tu Cliente, sus enemigos adyacentes te provocan reacciones también a ti, y tu Cliente gana +1 a su CA.",
+      "effect": {
+        "description": "Mientras estés a alcance corto de tu Cliente, sus enemigos adyacentes te provocan reacciones también a ti, y tu Cliente gana +1 a su CA.",
+        "scaling": "none"
+      },
+      "flavorText": "El contrato dice 'ileso'. Lo demás es negociable.",
+      "id": "cliente_asignado",
+      "limitations": [
+        "Solo un Cliente a la vez; puedes cambiarlo con una acción menor"
+      ],
+      "name": "Cliente Asignado",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Bloqueo",
+        "Marcial"
+      ],
+      "tier": 1,
+      "trigger": "Al inicio de cada combate designas a tu Cliente (un aliado)",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "quemador_de_reliquias"
+      ],
+      "description": "La carta gana +1 si consumes un consumible, o +2 si quemas equipo (la pieza se destruye). Lo que arde no vuelve.",
+      "effect": {
+        "description": "La carta gana +1 si consumes un consumible, o +2 si quemas equipo (la pieza se destruye). Lo que arde no vuelve.",
+        "scaling": "none"
+      },
+      "flavorText": "Todo objeto guarda un último servicio. Él lo cobra en llamas.",
+      "id": "combustion_de_reliquias",
+      "limitations": [
+        "Máximo un objeto consumido por turno"
+      ],
+      "name": "Combustión de Reliquias",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Fuego",
+        "Magico"
+      ],
+      "tier": 1,
+      "trigger": "Al jugar una carta de quema puedes consumir un objeto (un consumible tuyo, o una pieza de equipo común que lleves)",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "danzarin_del_filo"
+      ],
+      "description": "Entras en Compás hasta tu próximo turno: +1 a tu CA y tu primer golpe con arma ligera suma +1.",
+      "effect": {
+        "description": "Entras en Compás hasta tu próximo turno: +1 a tu CA y tu primer golpe con arma ligera suma +1.",
+        "scaling": "none"
+      },
+      "flavorText": "No pelea al ritmo de la música. La música le sigue a él.",
+      "id": "compas_de_la_danza",
+      "limitations": [
+        "Se pierde el Compás si terminas el turno sin haberte movido"
+      ],
+      "name": "Compás de la Danza",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Marcial",
+        "Evasion"
+      ],
+      "tier": 1,
+      "trigger": "Cada vez que te desplazas al menos 10 pies en tu turno",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "rompemareas"
+      ],
+      "description": "Le devuelves el impulso: sufre 1 de daño físico y, si venía corriendo (se movió 15+ pies), queda con desventaja en su primer ataque contra ti.",
+      "effect": {
+        "description": "Le devuelves el impulso: sufre 1 de daño físico y, si venía corriendo (se movió 15+ pies), queda con desventaja en su primer ataque contra ti.",
+        "scaling": "none"
+      },
+      "flavorText": "Las olas grandes se rompen contra las piedras pacientes.",
+      "id": "contraola",
+      "limitations": [
+        "Una vez por ronda"
+      ],
+      "name": "Contraola",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Marcial",
+        "Bloqueo"
+      ],
+      "tier": 1,
+      "trigger": "La primera vez cada ronda que un enemigo termina un movimiento adyacente a ti",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "cazarrecompensas_de_bastrea"
+      ],
+      "description": "Contra tu Contrato ganas +1 a las tiradas para rastrearlo y tus golpes le hacen +1 de daño. Si lo abates, el siguiente Contrato del mismo combate hereda ambos bonos.",
+      "effect": {
+        "description": "Contra tu Contrato ganas +1 a las tiradas para rastrearlo y tus golpes le hacen +1 de daño. Si lo abates, el siguiente Contrato del mismo combate hereda ambos bonos.",
+        "scaling": "none"
+      },
+      "flavorText": "En Bastrea la palabra vale oro. La suya, exactamente la recompensa.",
+      "id": "contrato_abierto",
+      "limitations": [
+        "Solo un Contrato activo a la vez"
+      ],
+      "name": "Contrato Abierto",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Marcial",
+        "Control"
+      ],
+      "tier": 1,
+      "trigger": "Al inicio de cada combate nombras a tu Contrato (un enemigo)",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "hoja_venenosa"
+      ],
+      "description": "El objetivo queda Envenenado (GDD 7.4) hasta el final de su próximo turno si falla una prueba de Resistencia física.",
+      "effect": {
+        "description": "El objetivo queda Envenenado (GDD 7.4) hasta el final de su próximo turno si falla una prueba de Resistencia física.",
+        "scaling": "none"
+      },
+      "flavorText": "Sus hojas no brillan. Sudan.",
+      "id": "destilador_de_venenos",
+      "limitations": [
+        "Una vez por enemigo y combate"
+      ],
+      "name": "Destilador de Venenos",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Veneno",
+        "Sigilo"
+      ],
+      "tier": 1,
+      "trigger": "Primer impacto con arma contra cada enemigo en un combate",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "guardian_de_la_presa"
+      ],
+      "description": "Embalsas 1 de Marea (máx. 3). Tus cartas de descarga consumen Marea para crecer. La Marea se vacía al final del combate.",
+      "effect": {
+        "description": "Embalsas 1 de Marea (máx. 3). Tus cartas de descarga consumen Marea para crecer. La Marea se vacía al final del combate.",
+        "scaling": "none"
+      },
+      "flavorText": "El agua no se detiene. Se administra.",
+      "id": "dique_viviente",
+      "limitations": [
+        "Máximo 3 de Marea embalsada"
+      ],
+      "name": "Dique Viviente",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Bloqueo",
+        "Control"
+      ],
+      "tier": 1,
+      "trigger": "Cada vez que reduces daño con una de tus cartas",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "saltador_de_planos"
+      ],
+      "description": "Llegas desde un ángulo imposible: tu primer ataque antes del final del turno gana ventaja.",
+      "effect": {
+        "description": "Llegas desde un ángulo imposible: tu primer ataque antes del final del turno gana ventaja.",
+        "scaling": "none"
+      },
+      "flavorText": "Las distancias son una opinión del plano equivocado.",
+      "id": "entre_mundos",
+      "limitations": [
+        "Una vez por turno"
+      ],
+      "name": "Entre Mundos",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Oscuro",
+        "Sigilo",
+        "Evasion"
+      ],
+      "tier": 1,
+      "trigger": "Después de desplazarte con una carta planar",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "portaestandarte"
+      ],
+      "description": "Los aliados a alcance corto ganan +1 a Defensa mental, y cuando tú caes por debajo de la mitad de vida, todos ellos ganan +1 a su próxima tirada (la bandera no cae).",
+      "effect": {
+        "description": "Los aliados a alcance corto ganan +1 a Defensa mental, y cuando tú caes por debajo de la mitad de vida, todos ellos ganan +1 a su próxima tirada (la bandera no cae).",
+        "scaling": "none"
+      },
+      "flavorText": "No es un trapo. Es el motivo de todos los que miran.",
+      "id": "estandarte_alzado",
+      "limitations": [
+        "Se pierde el aura si te Ocultan o quedas Inconsciente"
+      ],
+      "name": "Estandarte Alzado",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Marcial",
+        "Control"
+      ],
+      "tier": 1,
+      "trigger": "Mientras empuñes tu estandarte (arma de asta) y estés consciente",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "furia_de_los_creadores"
+      ],
+      "description": "La forja golpea más fuerte cuanto más caliente: tu próximo golpe suma +2.",
+      "effect": {
+        "description": "La forja golpea más fuerte cuanto más caliente: tu próximo golpe suma +2.",
+        "scaling": "none"
+      },
+      "flavorText": "Los dioses artesanos no rezan. Martillean.",
+      "id": "fuerza_primigenia",
+      "limitations": [
+        "Una vez por ronda"
+      ],
+      "name": "Fuerza Primigenia",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Divino",
+        "Marcial"
+      ],
+      "tier": 1,
+      "trigger": "Cuando recibes daño estando por debajo de la mitad de tu vida (1/ronda)",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "furia_salvaje"
+      ],
+      "description": "Entras en estado Enfurecido (carta de condición 'enfurecido'). Mientras dure, tus habilidades que lo requieran ganan acceso y tu Resistencia física gana +1.",
+      "effect": {
+        "description": "Entras en estado Enfurecido (carta de condición 'enfurecido'). Mientras dure, tus habilidades que lo requieran ganan acceso y tu Resistencia física gana +1.",
+        "scaling": "none"
+      },
+      "flavorText": "Los espíritus no susurran a la Furia Salvaje. Rugen.",
+      "id": "furia_primigenia",
+      "limitations": [
+        "Solo una Furia activa a la vez"
+      ],
+      "name": "Furia Primigenia",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Naturaleza",
+        "Marcial"
+      ],
+      "tier": 1,
+      "trigger": "Al jugar Furia Elemental, o al caer por debajo de la mitad de tu vida (1/combate)",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "senor_de_los_astros"
+      ],
+      "description": "Corriges el destino: esa tirada pierde la ventaja y se resuelve con la tabla normal.",
+      "effect": {
+        "description": "Corriges el destino: esa tirada pierde la ventaja y se resuelve con la tabla normal.",
+        "scaling": "none"
+      },
+      "flavorText": "Las estrellas no conceden favores que él no haya firmado.",
+      "id": "guardia_celestial",
+      "limitations": [
+        "Una vez por ronda"
+      ],
+      "name": "Guardia Celestial",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Magico",
+        "Control"
+      ],
+      "tier": 1,
+      "trigger": "Cuando un enemigo a la vista declara una tirada con ventaja (1/ronda)",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "portador_de_plagas"
+      ],
+      "description": "Ese enemigo debe superar Resistencia física o queda Envenenado (GDD 7.4) hasta el final de ese turno.",
+      "effect": {
+        "description": "Ese enemigo debe superar Resistencia física o queda Envenenado (GDD 7.4) hasta el final de ese turno.",
+        "scaling": "none"
+      },
+      "flavorText": "No trae la plaga. La presenta en sociedad.",
+      "id": "heraldo_de_la_plaga",
+      "limitations": [
+        "El número de invocaciones activas lo gobierna tu INT (GDD 4)"
+      ],
+      "name": "Heraldo de la Plaga",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Veneno",
+        "Invocacion"
+      ],
+      "tier": 1,
+      "trigger": "Al inicio del turno de un enemigo adyacente a una de tus invocaciones de plaga",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "titiritero_maldito"
+      ],
+      "description": "Los enemigos agarrados por tus hilos no pueden usar reacciones, y tus cartas de manipulación contra ellos ganan +1.",
+      "effect": {
+        "description": "Los enemigos agarrados por tus hilos no pueden usar reacciones, y tus cartas de manipulación contra ellos ganan +1.",
+        "scaling": "none"
+      },
+      "flavorText": "Nadie nota los hilos hasta que intenta irse.",
+      "id": "hilos_malditos",
+      "limitations": [
+        "Máximo de enemigos en hilos simultáneos igual a tu CAR"
+      ],
+      "name": "Hilos Malditos",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Oscuro",
+        "Control"
+      ],
+      "tier": 1,
+      "trigger": "Mientras un enemigo esté Agarrado por tus cartas de hilos",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "devoto_del_bosque"
+      ],
+      "description": "Eliges uno hasta tu próximo descanso largo: Protección (aliados adyacentes ganan +1 CA), Raíces (ganas +1 a Resistencia física y tus cartas de raíces +1), o Espesura (el terreno a 5 pies de ti cuenta como difícil para tus enemigos).",
+      "effect": {
+        "description": "Eliges uno hasta tu próximo descanso largo: Protección (aliados adyacentes ganan +1 CA), Raíces (ganas +1 a Resistencia física y tus cartas de raíces +1), o Espesura (el terreno a 5 pies de ti cuenta como difícil para tus enemigos).",
+        "scaling": "none"
+      },
+      "flavorText": "Gaia no pide fe. Pide constancia.",
+      "id": "juramento_del_bosque",
+      "limitations": [
+        "Solo un Juramento activo"
+      ],
+      "name": "Juramento del Bosque",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Naturaleza",
+        "Sagrado",
+        "Bloqueo"
+      ],
+      "tier": 1,
+      "trigger": "Al terminar un descanso largo pronuncias un Juramento",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "portador_del_farol"
+      ],
+      "description": "Proyectas Luz Segura a 15 pies: tus aliados dentro ganan +1 a Defensa mental y las criaturas Ocultas no pueden empezar su ataque desde dentro de la luz.",
+      "effect": {
+        "description": "Proyectas Luz Segura a 15 pies: tus aliados dentro ganan +1 a Defensa mental y las criaturas Ocultas no pueden empezar su ataque desde dentro de la luz.",
+        "scaling": "none"
+      },
+      "flavorText": "No espanta a la oscuridad. Le marca los límites.",
+      "id": "luz_que_acompana",
+      "limitations": [
+        "Apagar o romper el farol suspende la pasiva (reencenderlo: acción menor)"
+      ],
+      "name": "Luz que Acompaña",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Sagrado",
+        "Control"
+      ],
+      "tier": 1,
+      "trigger": "Mientras tu farol esté encendido",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "rastreador_de_ecos"
+      ],
+      "description": "Detectas a las criaturas Ocultas a 15 pies o menos (oyes su pulso), y la oscuridad o la niebla no imponen desventaja a tus ataques.",
+      "effect": {
+        "description": "Detectas a las criaturas Ocultas a 15 pies o menos (oyes su pulso), y la oscuridad o la niebla no imponen desventaja a tus ataques.",
+        "scaling": "none"
+      },
+      "flavorText": "El mundo nunca calla. Solo baja la voz.",
+      "id": "oido_absoluto",
+      "limitations": [
+        "El silencio mágico anula esta pasiva"
+      ],
+      "name": "Oído Absoluto",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Sigilo",
+        "Control"
+      ],
+      "tier": 1,
+      "trigger": "Constante",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "medium_de_la_tomba"
+      ],
+      "description": "Los espíritus te susurran: una vez por escena puedes hacer una pregunta simple sobre el lugar o sus muertos y obtener una respuesta veraz pero breve. En combate, sabes qué enemigo tiene menos vida.",
+      "effect": {
+        "description": "Los espíritus te susurran: una vez por escena puedes hacer una pregunta simple sobre el lugar o sus muertos y obtener una respuesta veraz pero breve. En combate, sabes qué enemigo tiene menos vida.",
+        "scaling": "none"
+      },
+      "flavorText": "Los muertos hablan poco. Pero nunca mienten por cortesía.",
+      "id": "oido_de_ultratumba",
+      "limitations": [
+        "Los espíritus no responden sobre el futuro"
+      ],
+      "name": "Oído de Ultratumba",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Oscuro",
+        "Control"
+      ],
+      "tier": 1,
+      "trigger": "Constante; se intensifica cerca de muertos recientes o lugares funerarios",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "francotirador"
+      ],
+      "description": "El objetivo queda Marcado (carta de condición 'marcado'). Tus habilidades de disparo mejoran contra objetivos Marcados.",
+      "effect": {
+        "description": "El objetivo queda Marcado (carta de condición 'marcado'). Tus habilidades de disparo mejoran contra objetivos Marcados.",
+        "scaling": "none"
+      },
+      "flavorText": "El primer disparo mide. El segundo firma.",
+      "id": "ojo_calibrado",
+      "limitations": [
+        "Solo un objetivo nuevo Marcado por turno"
+      ],
+      "name": "Ojo Calibrado",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Proyectil",
+        "Control"
+      ],
+      "tier": 1,
+      "trigger": "Al acertar un disparo contra un objetivo que no está Marcado",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "redimido"
+      ],
+      "description": "Conoces la oscuridad desde dentro: tus cartas sagradas pueden apuntar a Defensa mental en vez de CA. Cada vez que retiras una condición negativa a alguien, ganas +1 a tu próxima tirada.",
+      "effect": {
+        "description": "Conoces la oscuridad desde dentro: tus cartas sagradas pueden apuntar a Defensa mental en vez de CA. Cada vez que retiras una condición negativa a alguien, ganas +1 a tu próxima tirada.",
+        "scaling": "none"
+      },
+      "flavorText": "Nadie persigue mejor a un demonio que quien le firmó un contrato.",
+      "id": "pacto_de_la_luz_sagrada",
+      "limitations": [
+        "El bono por purificar no se acumula"
+      ],
+      "name": "Pacto de la Luz Sagrada",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Sagrado",
+        "Oscuro"
+      ],
+      "tier": 1,
+      "trigger": "Constante; se refuerza al purificar",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "usurero_de_almas"
+      ],
+      "description": "Acumulas 1 de Interés (máximo 3). Tus cartas de cobro consumen el Interés acumulado para amplificarse.",
+      "effect": {
+        "description": "Acumulas 1 de Interés (máximo 3). Tus cartas de cobro consumen el Interés acumulado para amplificarse.",
+        "scaling": "none"
+      },
+      "flavorText": "No presta poder. Compra tiempo ajeno.",
+      "id": "pacto_del_interes",
+      "limitations": [
+        "El Interés se pierde al final del combate"
+      ],
+      "name": "Pacto del Interés",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Oscuro",
+        "Control"
+      ],
+      "tier": 1,
+      "trigger": "Cuando un enemigo Endeudado usa su acción principal",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "renacido"
+      ],
+      "description": "El pacto te devuelve: recuperas de inmediato vida igual a tu CAR.",
+      "effect": {
+        "description": "El pacto te devuelve: recuperas de inmediato vida igual a tu CAR.",
+        "scaling": "CAR"
+      },
+      "flavorText": "Morir le pasó una vez. No le gustó lo suficiente para repetir.",
+      "id": "pacto_del_renacido",
+      "limitations": [
+        "Una vez por combate"
+      ],
+      "name": "Pacto del Renacido",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Oscuro",
+        "Curacion"
+      ],
+      "tier": 1,
+      "trigger": "La primera vez cada combate que caes por debajo de la mitad de tu vida",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "mago_del_paso_ligero"
+      ],
+      "description": "Tu primera carta de sombra de ese turno gana +1 éxito de efecto.",
+      "effect": {
+        "description": "Tu primera carta de sombra de ese turno gana +1 éxito de efecto.",
+        "scaling": "none"
+      },
+      "flavorText": "Su magia no deja huella. Sus pies, tampoco.",
+      "id": "paso_ligero",
+      "limitations": [
+        "Una vez por turno"
+      ],
+      "name": "Paso Ligero",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Sigilo",
+        "Magico"
+      ],
+      "tier": 1,
+      "trigger": "Después de desplazarte al menos 10 pies en tu turno",
       "type": "passive",
       "unique": true
     },
@@ -97,255 +898,6 @@
     },
     {
       "classTags": [
-        "sombra_de_la_duna"
-      ],
-      "description": "Puedes enterrarte (o fundirte con el suelo): cuentas como Oculto y con cobertura ligera hasta que actúes o te muevan a la fuerza.",
-      "effect": {
-        "description": "Puedes enterrarte (o fundirte con el suelo): cuentas como Oculto y con cobertura ligera hasta que actúes o te muevan a la fuerza.",
-        "scaling": "none"
-      },
-      "flavorText": "El desierto no esconde nada. Lo guarda.",
-      "id": "passive_bajo_la_arena",
-      "limitations": [
-        "Necesitas suelo natural o blando (arena, tierra, escombro)"
-      ],
-      "name": "Bajo la Arena",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Sigilo",
-        "Evasion"
-      ],
-      "tier": 1,
-      "trigger": "Al terminar tu turno sin haber atacado",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "muralla_de_udrax"
-      ],
-      "description": "Acumulas 1 de Piedra (máx. 3): cada punto suma +1 a tu CA. Se pierde toda la Piedra al desplazarte.",
-      "effect": {
-        "description": "Acumulas 1 de Piedra (máx. 3): cada punto suma +1 a tu CA. Se pierde toda la Piedra al desplazarte.",
-        "scaling": "none"
-      },
-      "flavorText": "En Udrax no preguntan quién ganó. Preguntan qué muro aguantó.",
-      "id": "passive_baluarte_de_piedra",
-      "limitations": [
-        "La Piedra se pierde también con empujes o derribos"
-      ],
-      "name": "Baluarte de Piedra",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Bloqueo",
-        "Marcial"
-      ],
-      "tier": 1,
-      "trigger": "Al final de cada uno de tus turnos en los que no te hayas desplazado",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "nacido_del_trueno"
-      ],
-      "description": "El estampido te empuja: puedes desplazarte 5 pies sin provocar reacciones.",
-      "effect": {
-        "description": "El estampido te empuja: puedes desplazarte 5 pies sin provocar reacciones.",
-        "scaling": "none"
-      },
-      "flavorText": "El trueno llega tarde. Él, nunca.",
-      "id": "passive_bendicion_del_trueno",
-      "limitations": [
-        "Máximo una vez por turno"
-      ],
-      "name": "Bendición del Trueno",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Magico"
-      ],
-      "tier": 1,
-      "trigger": "Cada vez que juegas una carta de rayo o trueno",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "carcelero_de_hierro"
-      ],
-      "description": "Ese enemigo sufre desventaja en sus ataques contra cualquiera que no seas tú, y tú ganas +1 a tu CA contra los demás (la cadena te cubre).",
-      "effect": {
-        "description": "Ese enemigo sufre desventaja en sus ataques contra cualquiera que no seas tú, y tú ganas +1 a tu CA contra los demás (la cadena te cubre).",
-        "scaling": "none"
-      },
-      "flavorText": "Toda celda empieza siendo una muñeca sujeta.",
-      "id": "passive_cadena_perpetua",
-      "limitations": [
-        "Solo una cadena tendida a la vez en tier 1"
-      ],
-      "name": "Cadena Perpetua",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Control",
-        "Bloqueo"
-      ],
-      "tier": 1,
-      "trigger": "Mientras tengas a un enemigo Agarrado por tus cadenas",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "peregrino_de_los_doce_meses"
-      ],
-      "description": "Eliges el Mes que honras hoy (uno de los 12 trasfondos): ganas una bendición menor acorde a su energía (Tierra: +1 Resistencia física · Agua/Vegetación: 1 vida al descansar corto · Fuego/Rayo: +1 al primer ataque de cada combate · Aire/Energía Suprema: +5 pies de movimiento).",
-      "effect": {
-        "description": "Eliges el Mes que honras hoy (uno de los 12 trasfondos): ganas una bendición menor acorde a su energía (Tierra: +1 Resistencia física · Agua/Vegetación: 1 vida al descansar corto · Fuego/Rayo: +1 al primer ataque de cada combate · Aire/Energía Suprema: +5 pies de movimiento).",
-        "scaling": "none"
-      },
-      "flavorText": "Reza a todos los meses. Alguno siempre está de guardia.",
-      "id": "passive_calendario_viviente",
-      "limitations": [
-        "Solo un Mes honrado a la vez; no puede ser tu propio mes de nacimiento"
-      ],
-      "name": "Calendario Viviente",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Sagrado",
-        "Control"
-      ],
-      "tier": 1,
-      "trigger": "Al terminar un descanso largo",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "caballero_templario"
-      ],
-      "description": "Tú y los aliados a alcance corto ganáis +1 a Defensa mental. Además, 1/ronda, cuando un aliado cercano recibe daño, puedes reducirlo en 1 con una plegaria (acción libre).",
-      "effect": {
-        "description": "Tú y los aliados a alcance corto ganáis +1 a Defensa mental. Además, 1/ronda, cuando un aliado cercano recibe daño, puedes reducirlo en 1 con una plegaria (acción libre).",
-        "scaling": "none"
-      },
-      "flavorText": "Su fe no es un muro. Es una formación.",
-      "id": "passive_camaradas_de_luz",
-      "limitations": [
-        "El bono no se aplica si estás solo"
-      ],
-      "name": "Camaradas de Luz",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Sagrado",
-        "Bloqueo"
-      ],
-      "tier": 1,
-      "trigger": "Mientras tengas al menos un aliado a alcance corto",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "astronomo_errante"
-      ],
-      "description": "Preparas 2 Presagios (elige entre: Impacto, Fallo, Encuentro, Huida). Una vez por combate cada uno, cuando ocurra lo presagiado, conviertes esa tirada implicada en ventaja o desventaja (tu elección).",
-      "effect": {
-        "description": "Preparas 2 Presagios (elige entre: Impacto, Fallo, Encuentro, Huida). Una vez por combate cada uno, cuando ocurra lo presagiado, conviertes esa tirada implicada en ventaja o desventaja (tu elección).",
-        "scaling": "none"
-      },
-      "flavorText": "No predice el futuro. Le toma la delantera.",
-      "id": "passive_carta_astral_preparada",
-      "limitations": [
-        "Presagios no usados se pierden al siguiente descanso largo"
-      ],
-      "name": "Carta Astral Preparada",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Magico",
-        "Control"
-      ],
-      "tier": 1,
-      "trigger": "Al terminar un descanso largo, trazas tu carta del cielo",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "inventor"
-      ],
-      "description": "El artilugio no falla del todo: produce su efecto con 1 éxito. El caos también construye.",
-      "effect": {
-        "description": "El artilugio no falla del todo: produce su efecto con 1 éxito. El caos también construye.",
-        "scaling": "none"
-      },
-      "flavorText": "Sus errores tienen mejor puntería que muchos aciertos.",
-      "id": "passive_chispa_caotica",
-      "limitations": [
-        "Una vez por combate"
-      ],
-      "name": "Chispa Caótica",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Mecanico",
-        "Magico"
-      ],
-      "tier": 1,
-      "trigger": "La primera vez cada combate que una tirada de tus artilugios obtiene 0 éxitos (pifia)",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "bardo_de_las_cuatro_estaciones"
-      ],
-      "description": "Tus canciones ganan el matiz de la Estación activa: Primavera (curan 1 extra), Verano (+1 daño), Otoño (+5 pies a empujes y movimientos), Invierno (el objetivo mueve a la mitad hasta el final de su próximo turno).",
-      "effect": {
-        "description": "Tus canciones ganan el matiz de la Estación activa: Primavera (curan 1 extra), Verano (+1 daño), Otoño (+5 pies a empujes y movimientos), Invierno (el objetivo mueve a la mitad hasta el final de su próximo turno).",
-        "scaling": "none"
-      },
-      "flavorText": "El año entero le cabe en la garganta.",
-      "id": "passive_ciclo_de_estaciones",
-      "limitations": [
-        "Solo una Estación activa; empieza en la estación real de la campaña"
-      ],
-      "name": "Ciclo de las Estaciones",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Naturaleza",
-        "Control"
-      ],
-      "tier": 1,
-      "trigger": "Al inicio de cada uno de tus turnos puedes avanzar tu Estación (Primavera→Verano→Otoño→Invierno→...)",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "guardaespaldas"
-      ],
-      "description": "Mientras estés a alcance corto de tu Cliente, sus enemigos adyacentes te provocan reacciones también a ti, y tu Cliente gana +1 a su CA.",
-      "effect": {
-        "description": "Mientras estés a alcance corto de tu Cliente, sus enemigos adyacentes te provocan reacciones también a ti, y tu Cliente gana +1 a su CA.",
-        "scaling": "none"
-      },
-      "flavorText": "El contrato dice 'ileso'. Lo demás es negociable.",
-      "id": "passive_cliente_asignado",
-      "limitations": [
-        "Solo un Cliente a la vez; puedes cambiarlo con una acción menor"
-      ],
-      "name": "Cliente Asignado",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Bloqueo",
-        "Marcial"
-      ],
-      "tier": 1,
-      "trigger": "Al inicio de cada combate designas a tu Cliente (un aliado)",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
         "class_wandering_blade"
       ],
       "description": "Tu próximo ataque tiene ventaja.",
@@ -362,358 +914,6 @@
       ],
       "tier": 1,
       "trigger": "1/combate, al caer bajo el 50% de vida máxima",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "quemador_de_reliquias"
-      ],
-      "description": "La carta gana +1 si consumes un consumible, o +2 si quemas equipo (la pieza se destruye). Lo que arde no vuelve.",
-      "effect": {
-        "description": "La carta gana +1 si consumes un consumible, o +2 si quemas equipo (la pieza se destruye). Lo que arde no vuelve.",
-        "scaling": "none"
-      },
-      "flavorText": "Todo objeto guarda un último servicio. Él lo cobra en llamas.",
-      "id": "passive_combustion_de_reliquias",
-      "limitations": [
-        "Máximo un objeto consumido por turno"
-      ],
-      "name": "Combustión de Reliquias",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Fuego",
-        "Magico"
-      ],
-      "tier": 1,
-      "trigger": "Al jugar una carta de quema puedes consumir un objeto (un consumible tuyo, o una pieza de equipo común que lleves)",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "danzarin_del_filo"
-      ],
-      "description": "Entras en Compás hasta tu próximo turno: +1 a tu CA y tu primer golpe con arma ligera suma +1.",
-      "effect": {
-        "description": "Entras en Compás hasta tu próximo turno: +1 a tu CA y tu primer golpe con arma ligera suma +1.",
-        "scaling": "none"
-      },
-      "flavorText": "No pelea al ritmo de la música. La música le sigue a él.",
-      "id": "passive_compas_de_la_danza",
-      "limitations": [
-        "Se pierde el Compás si terminas el turno sin haberte movido"
-      ],
-      "name": "Compás de la Danza",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Marcial",
-        "Evasion"
-      ],
-      "tier": 1,
-      "trigger": "Cada vez que te desplazas al menos 10 pies en tu turno",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "rompemareas"
-      ],
-      "description": "Le devuelves el impulso: sufre 1 de daño físico y, si venía corriendo (se movió 15+ pies), queda con desventaja en su primer ataque contra ti.",
-      "effect": {
-        "description": "Le devuelves el impulso: sufre 1 de daño físico y, si venía corriendo (se movió 15+ pies), queda con desventaja en su primer ataque contra ti.",
-        "scaling": "none"
-      },
-      "flavorText": "Las olas grandes se rompen contra las piedras pacientes.",
-      "id": "passive_contraola",
-      "limitations": [
-        "Una vez por ronda"
-      ],
-      "name": "Contraola",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Marcial",
-        "Bloqueo"
-      ],
-      "tier": 1,
-      "trigger": "La primera vez cada ronda que un enemigo termina un movimiento adyacente a ti",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "cazarrecompensas_de_bastrea"
-      ],
-      "description": "Contra tu Contrato ganas +1 a las tiradas para rastrearlo y tus golpes le hacen +1 de daño. Si lo abates, el siguiente Contrato del mismo combate hereda ambos bonos.",
-      "effect": {
-        "description": "Contra tu Contrato ganas +1 a las tiradas para rastrearlo y tus golpes le hacen +1 de daño. Si lo abates, el siguiente Contrato del mismo combate hereda ambos bonos.",
-        "scaling": "none"
-      },
-      "flavorText": "En Bastrea la palabra vale oro. La suya, exactamente la recompensa.",
-      "id": "passive_contrato_abierto",
-      "limitations": [
-        "Solo un Contrato activo a la vez"
-      ],
-      "name": "Contrato Abierto",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Marcial",
-        "Control"
-      ],
-      "tier": 1,
-      "trigger": "Al inicio de cada combate nombras a tu Contrato (un enemigo)",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "hoja_venenosa"
-      ],
-      "description": "El objetivo queda Envenenado (GDD 7.4) hasta el final de su próximo turno si falla una prueba de Resistencia física.",
-      "effect": {
-        "description": "El objetivo queda Envenenado (GDD 7.4) hasta el final de su próximo turno si falla una prueba de Resistencia física.",
-        "scaling": "none"
-      },
-      "flavorText": "Sus hojas no brillan. Sudan.",
-      "id": "passive_destilador_de_venenos",
-      "limitations": [
-        "Una vez por enemigo y combate"
-      ],
-      "name": "Destilador de Venenos",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Veneno",
-        "Sigilo"
-      ],
-      "tier": 1,
-      "trigger": "Primer impacto con arma contra cada enemigo en un combate",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "guardian_de_la_presa"
-      ],
-      "description": "Embalsas 1 de Marea (máx. 3). Tus cartas de descarga consumen Marea para crecer. La Marea se vacía al final del combate.",
-      "effect": {
-        "description": "Embalsas 1 de Marea (máx. 3). Tus cartas de descarga consumen Marea para crecer. La Marea se vacía al final del combate.",
-        "scaling": "none"
-      },
-      "flavorText": "El agua no se detiene. Se administra.",
-      "id": "passive_dique_viviente",
-      "limitations": [
-        "Máximo 3 de Marea embalsada"
-      ],
-      "name": "Dique Viviente",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Bloqueo",
-        "Control"
-      ],
-      "tier": 1,
-      "trigger": "Cada vez que reduces daño con una de tus cartas",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "saltador_de_planos"
-      ],
-      "description": "Llegas desde un ángulo imposible: tu primer ataque antes del final del turno gana ventaja.",
-      "effect": {
-        "description": "Llegas desde un ángulo imposible: tu primer ataque antes del final del turno gana ventaja.",
-        "scaling": "none"
-      },
-      "flavorText": "Las distancias son una opinión del plano equivocado.",
-      "id": "passive_entre_mundos",
-      "limitations": [
-        "Una vez por turno"
-      ],
-      "name": "Entre Mundos",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Oscuro",
-        "Sigilo",
-        "Evasion"
-      ],
-      "tier": 1,
-      "trigger": "Después de desplazarte con una carta planar",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "portaestandarte"
-      ],
-      "description": "Los aliados a alcance corto ganan +1 a Defensa mental, y cuando tú caes por debajo de la mitad de vida, todos ellos ganan +1 a su próxima tirada (la bandera no cae).",
-      "effect": {
-        "description": "Los aliados a alcance corto ganan +1 a Defensa mental, y cuando tú caes por debajo de la mitad de vida, todos ellos ganan +1 a su próxima tirada (la bandera no cae).",
-        "scaling": "none"
-      },
-      "flavorText": "No es un trapo. Es el motivo de todos los que miran.",
-      "id": "passive_estandarte_alzado",
-      "limitations": [
-        "Se pierde el aura si te Ocultan o quedas Inconsciente"
-      ],
-      "name": "Estandarte Alzado",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Marcial",
-        "Control"
-      ],
-      "tier": 1,
-      "trigger": "Mientras empuñes tu estandarte (arma de asta) y estés consciente",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "furia_de_los_creadores"
-      ],
-      "description": "La forja golpea más fuerte cuanto más caliente: tu próximo golpe suma +2.",
-      "effect": {
-        "description": "La forja golpea más fuerte cuanto más caliente: tu próximo golpe suma +2.",
-        "scaling": "none"
-      },
-      "flavorText": "Los dioses artesanos no rezan. Martillean.",
-      "id": "passive_fuerza_primigenia",
-      "limitations": [
-        "Una vez por ronda"
-      ],
-      "name": "Fuerza Primigenia",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Divino",
-        "Marcial"
-      ],
-      "tier": 1,
-      "trigger": "Cuando recibes daño estando por debajo de la mitad de tu vida (1/ronda)",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "furia_salvaje"
-      ],
-      "description": "Entras en estado Enfurecido (carta de condición 'enfurecido'). Mientras dure, tus habilidades que lo requieran ganan acceso y tu Resistencia física gana +1.",
-      "effect": {
-        "description": "Entras en estado Enfurecido (carta de condición 'enfurecido'). Mientras dure, tus habilidades que lo requieran ganan acceso y tu Resistencia física gana +1.",
-        "scaling": "none"
-      },
-      "flavorText": "Los espíritus no susurran a la Furia Salvaje. Rugen.",
-      "id": "passive_furia_primigenia",
-      "limitations": [
-        "Solo una Furia activa a la vez"
-      ],
-      "name": "Furia Primigenia",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Naturaleza",
-        "Marcial"
-      ],
-      "tier": 1,
-      "trigger": "Al jugar Furia Elemental, o al caer por debajo de la mitad de tu vida (1/combate)",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "senor_de_los_astros"
-      ],
-      "description": "Corriges el destino: esa tirada pierde la ventaja y se resuelve con la tabla normal.",
-      "effect": {
-        "description": "Corriges el destino: esa tirada pierde la ventaja y se resuelve con la tabla normal.",
-        "scaling": "none"
-      },
-      "flavorText": "Las estrellas no conceden favores que él no haya firmado.",
-      "id": "passive_guardia_celestial",
-      "limitations": [
-        "Una vez por ronda"
-      ],
-      "name": "Guardia Celestial",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Magico",
-        "Control"
-      ],
-      "tier": 1,
-      "trigger": "Cuando un enemigo a la vista declara una tirada con ventaja (1/ronda)",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "portador_de_plagas"
-      ],
-      "description": "Ese enemigo debe superar Resistencia física o queda Envenenado (GDD 7.4) hasta el final de ese turno.",
-      "effect": {
-        "description": "Ese enemigo debe superar Resistencia física o queda Envenenado (GDD 7.4) hasta el final de ese turno.",
-        "scaling": "none"
-      },
-      "flavorText": "No trae la plaga. La presenta en sociedad.",
-      "id": "passive_heraldo_de_la_plaga",
-      "limitations": [
-        "El número de invocaciones activas lo gobierna tu INT (GDD 4)"
-      ],
-      "name": "Heraldo de la Plaga",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Veneno",
-        "Invocacion"
-      ],
-      "tier": 1,
-      "trigger": "Al inicio del turno de un enemigo adyacente a una de tus invocaciones de plaga",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "titiritero_maldito"
-      ],
-      "description": "Los enemigos agarrados por tus hilos no pueden usar reacciones, y tus cartas de manipulación contra ellos ganan +1.",
-      "effect": {
-        "description": "Los enemigos agarrados por tus hilos no pueden usar reacciones, y tus cartas de manipulación contra ellos ganan +1.",
-        "scaling": "none"
-      },
-      "flavorText": "Nadie nota los hilos hasta que intenta irse.",
-      "id": "passive_hilos_malditos",
-      "limitations": [
-        "Máximo de enemigos en hilos simultáneos igual a tu CAR"
-      ],
-      "name": "Hilos Malditos",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Oscuro",
-        "Control"
-      ],
-      "tier": 1,
-      "trigger": "Mientras un enemigo esté Agarrado por tus cartas de hilos",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "devoto_del_bosque"
-      ],
-      "description": "Eliges uno hasta tu próximo descanso largo: Protección (aliados adyacentes ganan +1 CA), Raíces (ganas +1 a Resistencia física y tus cartas de raíces +1), o Espesura (el terreno a 5 pies de ti cuenta como difícil para tus enemigos).",
-      "effect": {
-        "description": "Eliges uno hasta tu próximo descanso largo: Protección (aliados adyacentes ganan +1 CA), Raíces (ganas +1 a Resistencia física y tus cartas de raíces +1), o Espesura (el terreno a 5 pies de ti cuenta como difícil para tus enemigos).",
-        "scaling": "none"
-      },
-      "flavorText": "Gaia no pide fe. Pide constancia.",
-      "id": "passive_juramento_del_bosque",
-      "limitations": [
-        "Solo un Juramento activo"
-      ],
-      "name": "Juramento del Bosque",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Naturaleza",
-        "Sagrado",
-        "Bloqueo"
-      ],
-      "tier": 1,
-      "trigger": "Al terminar un descanso largo pronuncias un Juramento",
       "type": "passive",
       "unique": true
     },
@@ -744,452 +944,6 @@
     },
     {
       "classTags": [
-        "portador_del_farol"
-      ],
-      "description": "Proyectas Luz Segura a 15 pies: tus aliados dentro ganan +1 a Defensa mental y las criaturas Ocultas no pueden empezar su ataque desde dentro de la luz.",
-      "effect": {
-        "description": "Proyectas Luz Segura a 15 pies: tus aliados dentro ganan +1 a Defensa mental y las criaturas Ocultas no pueden empezar su ataque desde dentro de la luz.",
-        "scaling": "none"
-      },
-      "flavorText": "No espanta a la oscuridad. Le marca los límites.",
-      "id": "passive_luz_que_acompana",
-      "limitations": [
-        "Apagar o romper el farol suspende la pasiva (reencenderlo: acción menor)"
-      ],
-      "name": "Luz que Acompaña",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Sagrado",
-        "Control"
-      ],
-      "tier": 1,
-      "trigger": "Mientras tu farol esté encendido",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "rastreador_de_ecos"
-      ],
-      "description": "Detectas a las criaturas Ocultas a 15 pies o menos (oyes su pulso), y la oscuridad o la niebla no imponen desventaja a tus ataques.",
-      "effect": {
-        "description": "Detectas a las criaturas Ocultas a 15 pies o menos (oyes su pulso), y la oscuridad o la niebla no imponen desventaja a tus ataques.",
-        "scaling": "none"
-      },
-      "flavorText": "El mundo nunca calla. Solo baja la voz.",
-      "id": "passive_oido_absoluto",
-      "limitations": [
-        "El silencio mágico anula esta pasiva"
-      ],
-      "name": "Oído Absoluto",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Sigilo",
-        "Control"
-      ],
-      "tier": 1,
-      "trigger": "Constante",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "medium_de_la_tomba"
-      ],
-      "description": "Los espíritus te susurran: una vez por escena puedes hacer una pregunta simple sobre el lugar o sus muertos y obtener una respuesta veraz pero breve. En combate, sabes qué enemigo tiene menos vida.",
-      "effect": {
-        "description": "Los espíritus te susurran: una vez por escena puedes hacer una pregunta simple sobre el lugar o sus muertos y obtener una respuesta veraz pero breve. En combate, sabes qué enemigo tiene menos vida.",
-        "scaling": "none"
-      },
-      "flavorText": "Los muertos hablan poco. Pero nunca mienten por cortesía.",
-      "id": "passive_oido_de_ultratumba",
-      "limitations": [
-        "Los espíritus no responden sobre el futuro"
-      ],
-      "name": "Oído de Ultratumba",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Oscuro",
-        "Control"
-      ],
-      "tier": 1,
-      "trigger": "Constante; se intensifica cerca de muertos recientes o lugares funerarios",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "francotirador"
-      ],
-      "description": "El objetivo queda Marcado (carta de condición 'marcado'). Tus habilidades de disparo mejoran contra objetivos Marcados.",
-      "effect": {
-        "description": "El objetivo queda Marcado (carta de condición 'marcado'). Tus habilidades de disparo mejoran contra objetivos Marcados.",
-        "scaling": "none"
-      },
-      "flavorText": "El primer disparo mide. El segundo firma.",
-      "id": "passive_ojo_calibrado",
-      "limitations": [
-        "Solo un objetivo nuevo Marcado por turno"
-      ],
-      "name": "Ojo Calibrado",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Proyectil",
-        "Control"
-      ],
-      "tier": 1,
-      "trigger": "Al acertar un disparo contra un objetivo que no está Marcado",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "redimido"
-      ],
-      "description": "Conoces la oscuridad desde dentro: tus cartas sagradas pueden apuntar a Defensa mental en vez de CA. Cada vez que retiras una condición negativa a alguien, ganas +1 a tu próxima tirada.",
-      "effect": {
-        "description": "Conoces la oscuridad desde dentro: tus cartas sagradas pueden apuntar a Defensa mental en vez de CA. Cada vez que retiras una condición negativa a alguien, ganas +1 a tu próxima tirada.",
-        "scaling": "none"
-      },
-      "flavorText": "Nadie persigue mejor a un demonio que quien le firmó un contrato.",
-      "id": "passive_pacto_de_la_luz_sagrada",
-      "limitations": [
-        "El bono por purificar no se acumula"
-      ],
-      "name": "Pacto de la Luz Sagrada",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Sagrado",
-        "Oscuro"
-      ],
-      "tier": 1,
-      "trigger": "Constante; se refuerza al purificar",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "usurero_de_almas"
-      ],
-      "description": "Acumulas 1 de Interés (máximo 3). Tus cartas de cobro consumen el Interés acumulado para amplificarse.",
-      "effect": {
-        "description": "Acumulas 1 de Interés (máximo 3). Tus cartas de cobro consumen el Interés acumulado para amplificarse.",
-        "scaling": "none"
-      },
-      "flavorText": "No presta poder. Compra tiempo ajeno.",
-      "id": "passive_pacto_del_interes",
-      "limitations": [
-        "El Interés se pierde al final del combate"
-      ],
-      "name": "Pacto del Interés",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Oscuro",
-        "Control"
-      ],
-      "tier": 1,
-      "trigger": "Cuando un enemigo Endeudado usa su acción principal",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "renacido"
-      ],
-      "description": "El pacto te devuelve: recuperas de inmediato vida igual a tu CAR.",
-      "effect": {
-        "description": "El pacto te devuelve: recuperas de inmediato vida igual a tu CAR.",
-        "scaling": "CAR"
-      },
-      "flavorText": "Morir le pasó una vez. No le gustó lo suficiente para repetir.",
-      "id": "passive_pacto_del_renacido",
-      "limitations": [
-        "Una vez por combate"
-      ],
-      "name": "Pacto del Renacido",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Oscuro",
-        "Curacion"
-      ],
-      "tier": 1,
-      "trigger": "La primera vez cada combate que caes por debajo de la mitad de tu vida",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "mago_del_paso_ligero"
-      ],
-      "description": "Tu primera carta de sombra de ese turno gana +1 éxito de efecto.",
-      "effect": {
-        "description": "Tu primera carta de sombra de ese turno gana +1 éxito de efecto.",
-        "scaling": "none"
-      },
-      "flavorText": "Su magia no deja huella. Sus pies, tampoco.",
-      "id": "passive_paso_ligero",
-      "limitations": [
-        "Una vez por turno"
-      ],
-      "name": "Paso Ligero",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Sigilo",
-        "Magico"
-      ],
-      "tier": 1,
-      "trigger": "Después de desplazarte al menos 10 pies en tu turno",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "el_apostata"
-      ],
-      "description": "Puedes pagar 1 de vida: la carta gana +1 éxito de efecto o daño. La vida pagada así no puede reducirse ni evitarse.",
-      "effect": {
-        "description": "Puedes pagar 1 de vida: la carta gana +1 éxito de efecto o daño. La vida pagada así no puede reducirse ni evitarse.",
-        "scaling": "none"
-      },
-      "flavorText": "Renunció a la luz. La factura llega en carne.",
-      "id": "passive_precio_de_la_apostasia",
-      "limitations": [
-        "Máximo una vez por turno"
-      ],
-      "name": "El Precio de la Apostasía",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Oscuro"
-      ],
-      "tier": 1,
-      "trigger": "La primera vez cada turno que juegas una carta [Oscuro]",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "maestro_de_ceremonias"
-      ],
-      "description": "Los descansos cortos de tu grupo recuperan además 1 carta de la pila Descanso Largo de UN aliado a tu elección (el rito acelera lo lento). Una vez por descanso.",
-      "effect": {
-        "description": "Los descansos cortos de tu grupo recuperan además 1 carta de la pila Descanso Largo de UN aliado a tu elección (el rito acelera lo lento). Una vez por descanso.",
-        "scaling": "none"
-      },
-      "flavorText": "Los dioses atienden mejor con cita previa.",
-      "id": "passive_protocolo_sagrado",
-      "limitations": [
-        "Requiere 10 minutos extra de descanso; no funciona sobre ti mismo"
-      ],
-      "name": "Protocolo Sagrado",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Sagrado",
-        "Control"
-      ],
-      "tier": 1,
-      "trigger": "Durante los descansos que dirijas con ceremonia",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "cocinero_de_campana"
-      ],
-      "description": "Cada aliado que coma recupera 1 de vida extra y gana 1 Ración Templada: puede gastarla en cualquier momento para sumar +0,5 éxitos a una tirada (máx. 1 Ración por aliado).",
-      "effect": {
-        "description": "Cada aliado que coma recupera 1 de vida extra y gana 1 Ración Templada: puede gastarla en cualquier momento para sumar +0,5 éxitos a una tirada (máx. 1 Ración por aliado).",
-        "scaling": "none"
-      },
-      "flavorText": "La moral entra por la cuchara.",
-      "id": "passive_rancho_reconfortante",
-      "limitations": [
-        "Requiere ingredientes básicos (narrativo); las Raciones caducan al siguiente descanso largo"
-      ],
-      "name": "Rancho Reconfortante",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Curacion"
-      ],
-      "tier": 1,
-      "trigger": "Al terminar un descanso corto o largo en el que cocines",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "quebraguardia"
-      ],
-      "description": "Recuperas postura: ganas +1 a tu Clase de Armadura hasta el inicio de tu próximo turno (no acumulable).",
-      "effect": {
-        "description": "Recuperas postura: ganas +1 a tu Clase de Armadura hasta el inicio de tu próximo turno (no acumulable).",
-        "scaling": "none"
-      },
-      "flavorText": "Su defensa es un préstamo. El Quebraguardia cobra intereses.",
-      "id": "passive_rearmar_guardia",
-      "limitations": [
-        "El bono no se acumula con múltiples Guardias Rotas en la misma ronda"
-      ],
-      "name": "Rearmar la Guardia",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Marcial",
-        "Bloqueo"
-      ],
-      "tier": 1,
-      "trigger": "Cada vez que aplicas Guardia Rota a un enemigo",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "coloso_de_ceniza"
-      ],
-      "description": "Tu ceniza se aviva: ese enemigo sufre 1 de daño de fuego al final de su turno si sigue adyacente a ti.",
-      "effect": {
-        "description": "Tu ceniza se aviva: ese enemigo sufre 1 de daño de fuego al final de su turno si sigue adyacente a ti.",
-        "scaling": "none"
-      },
-      "flavorText": "No arde. Recuerda haber ardido, que es peor.",
-      "id": "passive_rescoldo_eterno",
-      "limitations": [
-        "Un mismo enemigo solo sufre este daño una vez por turno"
-      ],
-      "name": "Rescoldo Eterno",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Fuego",
-        "Bloqueo"
-      ],
-      "tier": 1,
-      "trigger": "Cada vez que recibes daño de un enemigo adyacente",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "guerrero_del_puno_cortante"
-      ],
-      "description": "Ganas 1 de Ritmo (máximo 3). Tus cartas de combo consumen Ritmo para crecer. Si fallas un ataque, pierdes todo el Ritmo acumulado.",
-      "effect": {
-        "description": "Ganas 1 de Ritmo (máximo 3). Tus cartas de combo consumen Ritmo para crecer. Si fallas un ataque, pierdes todo el Ritmo acumulado.",
-        "scaling": "none"
-      },
-      "flavorText": "Su estilo no tiene nombre. Tiene compás.",
-      "id": "passive_ritmo_de_combate",
-      "limitations": [
-        "El Ritmo se pierde al final del combate"
-      ],
-      "name": "Ritmo de Combate",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Marcial"
-      ],
-      "tier": 1,
-      "trigger": "Cada vez que impactas con un ataque",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "hoja_del_monzon"
-      ],
-      "description": "El segundo impacto suma +1 (la lluvia siempre insiste). Bajo lluvia o en agua, también el primero.",
-      "effect": {
-        "description": "El segundo impacto suma +1 (la lluvia siempre insiste). Bajo lluvia o en agua, también el primero.",
-        "scaling": "none"
-      },
-      "flavorText": "El monzón no golpea fuerte. Golpea siempre.",
-      "id": "passive_ritmo_del_aguacero",
-      "limitations": [
-        "Solo con armas ligeras"
-      ],
-      "name": "Ritmo del Aguacero",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Marcial"
-      ],
-      "tier": 1,
-      "trigger": "Cada vez que impactas al mismo enemigo por segunda vez en un mismo turno",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "ladron_de_rostros"
-      ],
-      "description": "Puedes llevar su Rostro: tus pruebas sociales haciéndote pasar por ella tienen ventaja, y la primera vez por combate que la imitas ante un enemigo, este pierde su reacción (duda).",
-      "effect": {
-        "description": "Puedes llevar su Rostro: tus pruebas sociales haciéndote pasar por ella tienen ventaja, y la primera vez por combate que la imitas ante un enemigo, este pierde su reacción (duda).",
-        "scaling": "none"
-      },
-      "flavorText": "Yokai de nacimiento, actor por hambre, nadie por elección.",
-      "id": "passive_rostro_prestado",
-      "limitations": [
-        "Solo un Rostro guardado a la vez; se pierde al descanso largo"
-      ],
-      "name": "Rostro Prestado",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Sigilo",
-        "Control"
-      ],
-      "tier": 1,
-      "trigger": "Tras estudiar a una criatura humanoide durante una escena (o tocarla en combate)",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "cambiaformas"
-      ],
-      "description": "Eliges un rasgo bestial activo: Garras (+1 al daño cuerpo a cuerpo), Zancada (+10 pies de movimiento) o Sentidos (ventaja en percepción y rastreo). Solo un rasgo a la vez; cambiarlo requiere otra Mutación.",
-      "effect": {
-        "description": "Eliges un rasgo bestial activo: Garras (+1 al daño cuerpo a cuerpo), Zancada (+10 pies de movimiento) o Sentidos (ventaja en percepción y rastreo). Solo un rasgo a la vez; cambiarlo requiere otra Mutación.",
-        "scaling": "none"
-      },
-      "flavorText": "Su cuerpo es una pregunta que cambia de respuesta.",
-      "id": "passive_sangre_mutable",
-      "limitations": [
-        "Un solo rasgo bestial activo"
-      ],
-      "name": "Sangre Mutable",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Naturaleza",
-        "Sigilo"
-      ],
-      "tier": 1,
-      "trigger": "Al jugar una carta de Mutación",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "verdugo_del_silencio"
-      ],
-      "description": "Queda Sentenciado: tus golpes contra él suman +1 y los enemigos que lo vean caer deberán superar Defensa mental o quedarán Asustados 1 turno.",
-      "effect": {
-        "description": "Queda Sentenciado: tus golpes contra él suman +1 y los enemigos que lo vean caer deberán superar Defensa mental o quedarán Asustados 1 turno.",
-        "scaling": "none"
-      },
-      "flavorText": "No pronuncia la condena. La ejecuta.",
-      "id": "passive_sentencia_silenciosa",
-      "limitations": [
-        "Solo un Sentenciado a la vez"
-      ],
-      "name": "Sentencia Silenciosa",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Marcial",
-        "Control"
-      ],
-      "tier": 1,
-      "trigger": "Cuando reduces a un enemigo por debajo de un cuarto de su vida",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
         "class_road_shadow"
       ],
       "description": "Ventaja en tu próxima prueba de sigilo.",
@@ -1207,31 +961,6 @@
       ],
       "tier": 1,
       "trigger": "Te has movido este turno sin atacar",
-      "type": "passive",
-      "unique": true
-    },
-    {
-      "classTags": [
-        "sanadora_de_esporas"
-      ],
-      "description": "Le dejas esporas simbiontes: la próxima vez que ese aliado reciba daño antes de tu próximo turno, las esporas absorben 1 punto.",
-      "effect": {
-        "description": "Le dejas esporas simbiontes: la próxima vez que ese aliado reciba daño antes de tu próximo turno, las esporas absorben 1 punto.",
-        "scaling": "none"
-      },
-      "flavorText": "Sus remedios crecen solos. Esa es la parte buena. Y la inquietante.",
-      "id": "passive_simbiosis_fungica",
-      "limitations": [
-        "Un aliado solo puede tener un cultivo simbionte a la vez"
-      ],
-      "name": "Simbiosis Fúngica",
-      "rarity": "uncommon",
-      "synergyTags": [
-        "Naturaleza",
-        "Curacion"
-      ],
-      "tier": 1,
-      "trigger": "Cuando curas a un aliado con tus cartas",
       "type": "passive",
       "unique": true
     },
@@ -1259,6 +988,277 @@
     },
     {
       "classTags": [
+        "el_apostata"
+      ],
+      "description": "Puedes pagar 1 de vida: la carta gana +1 éxito de efecto o daño. La vida pagada así no puede reducirse ni evitarse.",
+      "effect": {
+        "description": "Puedes pagar 1 de vida: la carta gana +1 éxito de efecto o daño. La vida pagada así no puede reducirse ni evitarse.",
+        "scaling": "none"
+      },
+      "flavorText": "Renunció a la luz. La factura llega en carne.",
+      "id": "precio_de_la_apostasia",
+      "limitations": [
+        "Máximo una vez por turno"
+      ],
+      "name": "El Precio de la Apostasía",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Oscuro"
+      ],
+      "tier": 1,
+      "trigger": "La primera vez cada turno que juegas una carta [Oscuro]",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "maestro_de_ceremonias"
+      ],
+      "description": "Los descansos cortos de tu grupo recuperan además 1 carta de la pila Descanso Largo de UN aliado a tu elección (el rito acelera lo lento). Una vez por descanso.",
+      "effect": {
+        "description": "Los descansos cortos de tu grupo recuperan además 1 carta de la pila Descanso Largo de UN aliado a tu elección (el rito acelera lo lento). Una vez por descanso.",
+        "scaling": "none"
+      },
+      "flavorText": "Los dioses atienden mejor con cita previa.",
+      "id": "protocolo_sagrado",
+      "limitations": [
+        "Requiere 10 minutos extra de descanso; no funciona sobre ti mismo"
+      ],
+      "name": "Protocolo Sagrado",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Sagrado",
+        "Control"
+      ],
+      "tier": 1,
+      "trigger": "Durante los descansos que dirijas con ceremonia",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "cocinero_de_campana"
+      ],
+      "description": "Cada aliado que coma recupera 1 de vida extra y gana 1 Ración Templada: puede gastarla en cualquier momento para sumar +0,5 éxitos a una tirada (máx. 1 Ración por aliado).",
+      "effect": {
+        "description": "Cada aliado que coma recupera 1 de vida extra y gana 1 Ración Templada: puede gastarla en cualquier momento para sumar +0,5 éxitos a una tirada (máx. 1 Ración por aliado).",
+        "scaling": "none"
+      },
+      "flavorText": "La moral entra por la cuchara.",
+      "id": "rancho_reconfortante",
+      "limitations": [
+        "Requiere ingredientes básicos (narrativo); las Raciones caducan al siguiente descanso largo"
+      ],
+      "name": "Rancho Reconfortante",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Curacion"
+      ],
+      "tier": 1,
+      "trigger": "Al terminar un descanso corto o largo en el que cocines",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "quebraguardia"
+      ],
+      "description": "Recuperas postura: ganas +1 a tu Clase de Armadura hasta el inicio de tu próximo turno (no acumulable).",
+      "effect": {
+        "description": "Recuperas postura: ganas +1 a tu Clase de Armadura hasta el inicio de tu próximo turno (no acumulable).",
+        "scaling": "none"
+      },
+      "flavorText": "Su defensa es un préstamo. El Quebraguardia cobra intereses.",
+      "id": "rearmar_guardia",
+      "limitations": [
+        "El bono no se acumula con múltiples Guardias Rotas en la misma ronda"
+      ],
+      "name": "Rearmar la Guardia",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Marcial",
+        "Bloqueo"
+      ],
+      "tier": 1,
+      "trigger": "Cada vez que aplicas Guardia Rota a un enemigo",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "coloso_de_ceniza"
+      ],
+      "description": "Tu ceniza se aviva: ese enemigo sufre 1 de daño de fuego al final de su turno si sigue adyacente a ti.",
+      "effect": {
+        "description": "Tu ceniza se aviva: ese enemigo sufre 1 de daño de fuego al final de su turno si sigue adyacente a ti.",
+        "scaling": "none"
+      },
+      "flavorText": "No arde. Recuerda haber ardido, que es peor.",
+      "id": "rescoldo_eterno",
+      "limitations": [
+        "Un mismo enemigo solo sufre este daño una vez por turno"
+      ],
+      "name": "Rescoldo Eterno",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Fuego",
+        "Bloqueo"
+      ],
+      "tier": 1,
+      "trigger": "Cada vez que recibes daño de un enemigo adyacente",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "guerrero_del_puno_cortante"
+      ],
+      "description": "Ganas 1 de Ritmo (máximo 3). Tus cartas de combo consumen Ritmo para crecer. Si fallas un ataque, pierdes todo el Ritmo acumulado.",
+      "effect": {
+        "description": "Ganas 1 de Ritmo (máximo 3). Tus cartas de combo consumen Ritmo para crecer. Si fallas un ataque, pierdes todo el Ritmo acumulado.",
+        "scaling": "none"
+      },
+      "flavorText": "Su estilo no tiene nombre. Tiene compás.",
+      "id": "ritmo_de_combate",
+      "limitations": [
+        "El Ritmo se pierde al final del combate"
+      ],
+      "name": "Ritmo de Combate",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Marcial"
+      ],
+      "tier": 1,
+      "trigger": "Cada vez que impactas con un ataque",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "hoja_del_monzon"
+      ],
+      "description": "El segundo impacto suma +1 (la lluvia siempre insiste). Bajo lluvia o en agua, también el primero.",
+      "effect": {
+        "description": "El segundo impacto suma +1 (la lluvia siempre insiste). Bajo lluvia o en agua, también el primero.",
+        "scaling": "none"
+      },
+      "flavorText": "El monzón no golpea fuerte. Golpea siempre.",
+      "id": "ritmo_del_aguacero",
+      "limitations": [
+        "Solo con armas ligeras"
+      ],
+      "name": "Ritmo del Aguacero",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Marcial"
+      ],
+      "tier": 1,
+      "trigger": "Cada vez que impactas al mismo enemigo por segunda vez en un mismo turno",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "ladron_de_rostros"
+      ],
+      "description": "Puedes llevar su Rostro: tus pruebas sociales haciéndote pasar por ella tienen ventaja, y la primera vez por combate que la imitas ante un enemigo, este pierde su reacción (duda).",
+      "effect": {
+        "description": "Puedes llevar su Rostro: tus pruebas sociales haciéndote pasar por ella tienen ventaja, y la primera vez por combate que la imitas ante un enemigo, este pierde su reacción (duda).",
+        "scaling": "none"
+      },
+      "flavorText": "Yokai de nacimiento, actor por hambre, nadie por elección.",
+      "id": "rostro_prestado",
+      "limitations": [
+        "Solo un Rostro guardado a la vez; se pierde al descanso largo"
+      ],
+      "name": "Rostro Prestado",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Sigilo",
+        "Control"
+      ],
+      "tier": 1,
+      "trigger": "Tras estudiar a una criatura humanoide durante una escena (o tocarla en combate)",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "cambiaformas"
+      ],
+      "description": "Eliges un rasgo bestial activo: Garras (+1 al daño cuerpo a cuerpo), Zancada (+10 pies de movimiento) o Sentidos (ventaja en percepción y rastreo). Solo un rasgo a la vez; cambiarlo requiere otra Mutación.",
+      "effect": {
+        "description": "Eliges un rasgo bestial activo: Garras (+1 al daño cuerpo a cuerpo), Zancada (+10 pies de movimiento) o Sentidos (ventaja en percepción y rastreo). Solo un rasgo a la vez; cambiarlo requiere otra Mutación.",
+        "scaling": "none"
+      },
+      "flavorText": "Su cuerpo es una pregunta que cambia de respuesta.",
+      "id": "sangre_mutable",
+      "limitations": [
+        "Un solo rasgo bestial activo"
+      ],
+      "name": "Sangre Mutable",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Naturaleza",
+        "Sigilo"
+      ],
+      "tier": 1,
+      "trigger": "Al jugar una carta de Mutación",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "verdugo_del_silencio"
+      ],
+      "description": "Queda Sentenciado: tus golpes contra él suman +1 y los enemigos que lo vean caer deberán superar Defensa mental o quedarán Asustados 1 turno.",
+      "effect": {
+        "description": "Queda Sentenciado: tus golpes contra él suman +1 y los enemigos que lo vean caer deberán superar Defensa mental o quedarán Asustados 1 turno.",
+        "scaling": "none"
+      },
+      "flavorText": "No pronuncia la condena. La ejecuta.",
+      "id": "sentencia_silenciosa",
+      "limitations": [
+        "Solo un Sentenciado a la vez"
+      ],
+      "name": "Sentencia Silenciosa",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Marcial",
+        "Control"
+      ],
+      "tier": 1,
+      "trigger": "Cuando reduces a un enemigo por debajo de un cuarto de su vida",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
+        "sanadora_de_esporas"
+      ],
+      "description": "Le dejas esporas simbiontes: la próxima vez que ese aliado reciba daño antes de tu próximo turno, las esporas absorben 1 punto.",
+      "effect": {
+        "description": "Le dejas esporas simbiontes: la próxima vez que ese aliado reciba daño antes de tu próximo turno, las esporas absorben 1 punto.",
+        "scaling": "none"
+      },
+      "flavorText": "Sus remedios crecen solos. Esa es la parte buena. Y la inquietante.",
+      "id": "simbiosis_fungica",
+      "limitations": [
+        "Un aliado solo puede tener un cultivo simbionte a la vez"
+      ],
+      "name": "Simbiosis Fúngica",
+      "rarity": "uncommon",
+      "synergyTags": [
+        "Naturaleza",
+        "Curacion"
+      ],
+      "tier": 1,
+      "trigger": "Cuando curas a un aliado con tus cartas",
+      "type": "passive",
+      "unique": true
+    },
+    {
+      "classTags": [
         "tejedora_de_mareas"
       ],
       "description": "Tejes: tu próxima carta de marea este combate gana +0,5 éxitos (máx. +1 acumulado). El agua recuerda cada hilo.",
@@ -1267,7 +1267,7 @@
         "scaling": "none"
       },
       "flavorText": "El mar no tiene forma. Tiene tejedora.",
-      "id": "passive_telar_de_corrientes",
+      "id": "telar_de_corrientes",
       "limitations": [
         "El bono acumulado se pierde al usarse"
       ],
@@ -1292,7 +1292,7 @@
         "scaling": "none"
       },
       "flavorText": "Su yunque cabe en una mochila. Su oficio, en cualquier guerra.",
-      "id": "passive_temple_de_batalla",
+      "id": "temple_de_batalla",
       "limitations": [
         "Solo una pieza templada simultáneamente"
       ],
@@ -1317,7 +1317,7 @@
         "scaling": "none"
       },
       "flavorText": "La ciudad tiene dos pisos. La guardia solo patrulla uno.",
-      "id": "passive_terreno_elevado",
+      "id": "terreno_elevado",
       "limitations": [
         "El bono exige estar claramente por encima del objetivo"
       ],
@@ -1342,7 +1342,7 @@
         "scaling": "none"
       },
       "flavorText": "La segunda vez ya no es sorpresa. Es bibliografía.",
-      "id": "passive_tinta_fresca",
+      "id": "tinta_fresca",
       "limitations": [
         "Solo la primera repetición de cada maniobra"
       ],
@@ -1366,7 +1366,7 @@
         "scaling": "none"
       },
       "flavorText": "Los demás duermen porque alguien decidió no hacerlo.",
-      "id": "passive_vigilia_eterna",
+      "id": "vigilia_eterna",
       "limitations": [
         "La segunda reacción no sirve para cartas de otras clases"
       ],
@@ -1391,7 +1391,7 @@
         "scaling": "none"
       },
       "flavorText": "No lo domó. Llegaron a un acuerdo.",
-      "id": "passive_vinculo_de_montura",
+      "id": "vinculo_de_montura",
       "limitations": [
         "Si el corcel se descarta, caes (prueba de DES o quedas Caído)"
       ],
@@ -1416,7 +1416,7 @@
         "scaling": "none"
       },
       "flavorText": "No colecciona armas. Las recluta.",
-      "id": "passive_vinculo_de_reliquias",
+      "id": "vinculo_de_reliquias",
       "limitations": [
         "Máximo de armas flotantes simultáneas = tu INT (GDD 4)"
       ],
@@ -1442,7 +1442,7 @@
         "scaling": "none"
       },
       "flavorText": "No comparten padres. Comparten heridas.",
-      "id": "passive_vinculo_de_sangre",
+      "id": "vinculo_de_sangre",
       "limitations": [
         "Solo un Hermano a la vez"
       ],
@@ -1467,7 +1467,7 @@
         "scaling": "none"
       },
       "flavorText": "Canta grave porque el planeta lleva el bajo.",
-      "id": "passive_voz_del_basalto",
+      "id": "voz_del_basalto",
       "limitations": [
         "Sobre madera, agua o vuelo pierdes la pasiva"
       ],
@@ -1492,7 +1492,7 @@
         "scaling": "none"
       },
       "flavorText": "Su canto no pide milagros. Los organiza.",
-      "id": "passive_voz_divina",
+      "id": "voz_divina",
       "limitations": [
         "Una vez por ronda"
       ],
