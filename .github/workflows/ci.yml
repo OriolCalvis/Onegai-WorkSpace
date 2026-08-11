@@ -1,0 +1,148 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+  schedule:
+    # Diario 03:00 UTC contra develop, para detectar bit-rot temprano
+    # (dependencias del sistema, nuevas versiones de compilador, etc.)
+    - cron: '0 3 * * *'
+  workflow_dispatch: {}
+
+env:
+  PROJECT_DIR: MotorGraphico
+
+jobs:
+  build-test:
+    name: build-test (${{ matrix.build_type }}, ${{ matrix.compiler }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Debug, Release]
+        compiler: [g++, clang++]
+    steps:
+      - uses: actions/checkout@v4
+
+      # motor_core (Texture/Shader/Window/SpriteBatch) necesita GLFW, que
+      # FetchContent compila desde fuente: hacen falta los headers de
+      # desarrollo de X11 y GL. xvfb es la pantalla virtual para poder
+      # ejecutar demo_textured_quad (crea una ventana real) sin display.
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xorg-dev libgl1-mesa-dev xvfb
+
+      - name: Configure CMake
+        working-directory: ${{ env.PROJECT_DIR }}
+        env:
+          CC: ${{ matrix.compiler == 'g++' && 'gcc' || 'clang' }}
+          CXX: ${{ matrix.compiler }}
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Build
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: cmake --build build -j
+
+      - name: Run demos (smoke test)
+        working-directory: ${{ env.PROJECT_DIR }}
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          ./build/demo_resource_manager
+          ./build/demo_camera
+          ./build/demo_tilemap
+          # demo_textured_quad/demo_isometric_renderer abren una ventana
+          # real (GLFW+GLAD): xvfb-run le da un display virtual. "5" =
+          # corren 5 frames y salen solos (ver examples/*.cpp), no se
+          # quedan colgados esperando que alguien cierre la ventana.
+          xvfb-run -a ./build/demo_textured_quad 5
+          xvfb-run -a ./build/demo_isometric_renderer 5
+
+      - name: Build + run with AddressSanitizer/UBSan (Debug + g++ only)
+        if: matrix.build_type == 'Debug' && matrix.compiler == 'g++'
+        working-directory: ${{ env.PROJECT_DIR }}
+        env:
+          CC: gcc
+          CXX: g++
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          cmake -S . -B build-asan -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
+            -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
+            -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
+          cmake --build build-asan -j
+          ./build-asan/demo_resource_manager
+          ./build-asan/demo_camera
+          ./build-asan/demo_tilemap
+          # detect_leaks=0 solo aqui: el propio driver Mesa/llvmpipe (no
+          # nuestro codigo) reserva cache de shaders/JIT que vive hasta el
+          # final del proceso y LeakSanitizer la marca como fuga (todos
+          # los frames del stack son de libGL/llvmpipe, no de este
+          # proyecto). El resto de demos no tocan GL de verdad y se
+          # siguen comprobando con deteccion de fugas activada.
+          ASAN_OPTIONS=detect_leaks=0 xvfb-run -a ./build-asan/demo_textured_quad 5
+          ASAN_OPTIONS=detect_leaks=0 xvfb-run -a ./build-asan/demo_isometric_renderer 5
+
+  static-analysis:
+    name: static-analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format clang-tidy cppcheck xorg-dev libgl1-mesa-dev
+
+      - name: clang-format --dry-run --Werror
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          find include src examples -name '*.h' -o -name '*.cpp' \
+            | xargs clang-format --dry-run --Werror
+
+      - name: Configure (genera compile_commands.json)
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: clang-tidy
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess, sys
+
+          project_root = os.getcwd()
+          own_dirs = tuple(
+              os.path.join(project_root, d) + os.sep for d in ("include", "src", "examples")
+          )
+
+          with open("build/compile_commands.json") as f:
+              entries = json.load(f)
+          # Excluye dependencias de FetchContent (build/_deps/...): solo
+          # nos interesa el codigo propio del proyecto.
+          files = sorted({e["file"] for e in entries if e["file"].startswith(own_dirs)})
+
+          if not files:
+              print("Sin ficheros propios en compile_commands.json, nada que analizar.")
+              sys.exit(0)
+
+          print(f"Analizando {len(files)} fichero(s) con clang-tidy:")
+          for f in files:
+              print(f"  - {f}")
+
+          subprocess.check_call(["clang-tidy", "-p", "build", *files])
+          PY
+
+      - name: cppcheck
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          # Sin -I a third_party/: cppcheck no necesita resolver GLAD/
+          # stb_image para analizar el codigo propio (ya funcionaba asi
+          # antes de vendorizarlos), y si se le da la ruta se pone a
+          # analizar stb_image.h (codigo de terceros, no nuestro) y
+          # saca ruido/falsos positivos de una libreria de sobra probada.
+          cppcheck --enable=warning,performance,portability \
+            --error-exitcode=1 --inline-suppr --std=c++17 \
+            -I include src examples

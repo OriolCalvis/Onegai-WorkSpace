@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=VT323&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><style>
+body{margin:0;background:#12121a;font-family:'JetBrains Mono',ui-monospace,monospace;-webkit-font-smoothing:antialiased}
+a{color:#4d80f2;text-decoration:none}a:hover{color:#7aa2f7}
+.dv-turn{padding:44px 48px 36px;border-bottom:1px solid rgba(140,140,166,.14);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 22px}
+.dv-tid{font:500 10px 'JetBrains Mono',monospace;padding:3px 7px;background:#e6e6f0;color:#12121a;border-radius:3px;text-decoration:none}
+.dv-tname{font:500 12px/1.2 'JetBrains Mono',monospace;color:#e6e6f0;letter-spacing:.02em}
+.dv-opts{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:10px;scroll-margin-top:16px}
+.dv-oid{font:500 10.5px 'JetBrains Mono',monospace;padding:3px 7px;background:rgba(140,140,166,.18);color:#e6e6f0;border-radius:3px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:9px;font:400 11px/1.4 'JetBrains Mono',monospace;color:#8a8a99;max-width:900px}
+.dv-card{background:#1a1a24;border:1px solid rgba(140,140,166,.28);overflow:hidden;position:relative}
+.dv-opt:target .dv-oid{background:#ffe633;color:#12121a}
+.dv-next{margin:24px 0 0;font:400 11px/1.6 'JetBrains Mono',monospace;color:#6f6f80}
+.px{font-family:'VT323',monospace;text-transform:uppercase;font-size:20px;line-height:14px;letter-spacing:calc(10px - 1ch)}
+.px3{font-family:'VT323',monospace;text-transform:uppercase;font-size:30px;line-height:21px;letter-spacing:calc(15px - 1ch)}
+</style></helmet>
+
+<section class="dv-turn" id="t0" style="background:#16161f">
+<div class="dv-thd"><a class="dv-tid" href="#t0">BRIEF</a><span class="dv-tname">Assumptions, scope and what I found in the code</span></div>
+<div style="display:grid;grid-template-columns:340px 340px 1fr;gap:34px;max-width:1400px;align-items:start">
+
+<div>
+<div style="font:500 10px 'JetBrains Mono',monospace;color:#ffe633;letter-spacing:.14em;margin-bottom:12px">READ FROM THE REPO</div>
+<div style="font:400 11px/1.75 'JetBrains Mono',monospace;color:#b3b3bf">
+<div>include/Render/HudElement.h</div><div>include/Render/HudWidgets.h</div><div>include/Render/HudTextWidgets.h</div><div>include/Render/HudMinimap.h</div><div>include/Render/BitmapFont.h</div><div>include/Render/EditorState.h</div><div>include/Render/ObjectCatalog.h</div><div>include/Render/LevelDefinition.h</div><div>include/Render/Skill.h</div><div>include/Render/TileMap.h</div><div>include/Core/Math/IsoMath.h</div><div>src/Engine/Application.cpp</div><div>src/Render/Hud*.cpp</div><div>examples/level_editor.cpp</div><div>examples/juego.cpp</div><div>assets/{maps,levels,objects}/*</div>
+</div>
+</div>
+
+<div>
+<div style="font:500 10px 'JetBrains Mono',monospace;color:#ffe633;letter-spacing:.14em;margin-bottom:12px">ASSUMPTIONS</div>
+<div style="font:400 11px/1.7 'JetBrains Mono',monospace;color:#b3b3bf;display:flex;flex-direction:column;gap:11px">
+<div><span style="color:#e6e6f0">Canvas 1920&times;1080.</span> The current build calls init(1280,720); every panel below is given as anchor + offset + size so HudTransform resolves it at any viewport.</div>
+<div><span style="color:#e6e6f0">Type = BitmapFont stand-in.</span> Real font is a procedural 5&times;7 monospace, uppercase only. Rendered here at its true metric: scale 2 = 10&times;14 px cell, scale 3 = 15&times;21.</div>
+<div><span style="color:#e6e6f0">Every panel is a HudPanel.</span> No new widget framework is proposed &mdash; the editor is composed from Fase&nbsp;9 widgets so it stays implementable with what exists.</div>
+<div><span style="color:#e6e6f0">UI copy in English</span> as requested. The recreations in turn&nbsp;1 keep the Spanish strings verbatim, because that is literally what the code draws.</div>
+<div><span style="color:#e6e6f0">Blue callouts = the spec layer,</span> not part of the UI. Toggle them off with the <span style="color:#ffe633">A</span> key or the Tweaks panel.</div>
+</div>
+</div>
+
+<div>
+<div style="font:500 10px 'JetBrains Mono',monospace;color:#d93326;letter-spacing:.14em;margin-bottom:12px">FOUND WHILE RECREATING &mdash; SIX REAL DEFECTS</div>
+<div style="display:flex;flex-direction:column;gap:9px">
+<div style="display:flex;gap:12px;font:400 11px/1.55 'JetBrains Mono',monospace;color:#b3b3bf"><span style="color:#d93326;flex:none;width:14px">01</span><span><span style="color:#e6e6f0">Status text overflows its panel.</span> Application.cpp line 2 of m_statusText is 34 chars &rarr; 340px at scale 2, inside a 280px HudPanel starting 12px in. Clips 72px past the frame.</span></div>
+<div style="display:flex;gap:12px;font:400 11px/1.55 'JetBrains Mono',monospace;color:#b3b3bf"><span style="color:#d93326;flex:none;width:14px">02</span><span><span style="color:#e6e6f0">Tiles and objects are pixel-identical in the editor.</span> level_editor.cpp draws both through atlas.getUV(); only regions 1 and 2 were ever defineRegion'd, and every object spriteId is 3&ndash;6. Everything renders as the same 8&times;8 checker.</span></div>
+<div style="display:flex;gap:12px;font:400 11px/1.55 'JetBrains Mono',monospace;color:#b3b3bf"><span style="color:#d93326;flex:none;width:14px">03</span><span><span style="color:#e6e6f0">Enemies and pickups are never drawn in the world.</span> Application::init calls addToQueue() for m_player only. They exist in GameSession and show on the minimap, but the isometric scene never renders them.</span></div>
+<div style="display:flex;gap:12px;font:400 11px/1.55 'JetBrains Mono',monospace;color:#b3b3bf"><span style="color:#d93326;flex:none;width:14px">04</span><span><span style="color:#e6e6f0">A skill id points at nothing.</span> test_objects.json gives the slime combat.skills = ["golpe_gelatinoso"], but Application registers only "tajo" and "cura" in SkillCatalog. find() returns nullptr and the slime silently falls back to a basic attack.</span></div>
+<div style="display:flex;gap:12px;font:400 11px/1.55 'JetBrains Mono',monospace;color:#b3b3bf"><span style="color:#d93326;flex:none;width:14px">05</span><span><span style="color:#e6e6f0">playerStart sits on a collision tile.</span> test_level.json starts the player at {1,1}; the CSV in test_map.tmx puts GID 2 there, and GID 2 carries collision=true.</span></div>
+<div style="display:flex;gap:12px;font:400 11px/1.55 'JetBrains Mono',monospace;color:#b3b3bf"><span style="color:#d93326;flex:none;width:14px">06</span><span><span style="color:#e6e6f0">The command menu panel is four times its content.</span> 248&times;118 of HudPanel around 80&times;70 of text.</span></div>
+</div>
+<div style="margin-top:18px;font:400 11px/1.6 'JetBrains Mono',monospace;color:#6f6f80">The editor below is designed so 01, 02 and 04 cannot happen again: text boxes are measured against their panel, every catalog entry shows its sprite binding, and unresolved ids are surfaced in the inspector.</div>
+</div>
+
+</div>
+</section>
+
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Proposed editor &mdash; navigable. Click the tabs, or use 1-4 tools &middot; Q/E palette &middot; W/S list &middot; A annotations</span></div>
+<div class="dv-opts">
+<div class="dv-opt" id="2a">
+<div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Five workspaces on one anchored shell: MAP, TERRAIN, OBJECTS, ENTITIES, LIBRARY. Every panel annotated with the HudTransform and the C++ class that would draw it.</div>
+<div class="dv-card" style="width:1920px;height:1080px;background:#1a1a24;position:relative;overflow:hidden" data-screen-label="Editor 1920x1080">
+
+  <div style="position:absolute;left:336px;top:64px;width:1200px;height:976px;overflow:hidden;background:#161620">
+    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(140,140,166,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(140,140,166,.05) 1px,transparent 1px);background-size:96px 48px"></div>
+    <sc-for list="{{ isoCells }}" as="c" hint-placeholder-count="24">
+      <div style="position:absolute;width:96px;height:48px;box-sizing:border-box" style-hover="filter:brightness(1.35)" onMouseEnter="{{ c.onEnter }}" onClick="{{ c.onClick }}"></div>
+    </sc-for>
+    <sc-for list="{{ isoMarks }}" as="m" hint-placeholder-count="4">
+      <div style="position:absolute;pointer-events:none"></div>
+    </sc-for>
+
+    <div style="position:absolute;left:16px;top:16px;display:flex;gap:8px;align-items:center">
+      <div class="px" style="color:#8a8a99;background:rgba(13,13,20,.82);border:1px solid rgba(140,140,166,.3);padding:7px 9px 6px">CELL {{ hoverLabel }}</div>
+      <div class="px" style="color:#8a8a99;background:rgba(13,13,20,.82);border:1px solid rgba(140,140,166,.3);padding:7px 9px 6px">GID {{ hoverGid }}</div>
+      <div class="px" style="color:#ffe633;background:rgba(13,13,20,.82);border:1px solid rgba(140,140,166,.3);padding:7px 9px 6px">{{ toolName }}</div>
+    </div>
+
+    <div style="position:absolute;right:16px;top:16px;display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+      <div class="px" style="color:#8a8a99;background:rgba(13,13,20,.82);border:1px solid rgba(140,140,166,.3);padding:7px 9px 6px">ZOOM 1.50X</div>
+      <div class="px" style="color:#8a8a99;background:rgba(13,13,20,.82);border:1px solid rgba(140,140,166,.3);padding:7px 9px 6px">ISO 64X32 &middot; 2:1</div>
+    </div>
+
+    <div style="position:absolute;left:174px;bottom:12px;width:900px;height:96px;background:rgba(13,13,20,.85);border:1px solid rgba(140,140,166,.9);box-sizing:border-box">
+      <div style="padding:6px;display:flex;flex-direction:column">
+        <sc-for list="{{ consoleLines }}" as="ln" hint-placeholder-count="4">
+          <div class="px" style="height:14px;color:#ffffff">{{ ln.text }}</div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div style="position:absolute;left:0;top:0;width:1920px;height:64px;background:rgba(13,13,20,.92);border-bottom:2px solid rgba(140,140,166,.9);box-sizing:border-box;display:flex;align-items:center;padding:0 18px;gap:22px">
+    <div style="display:flex;flex-direction:column;gap:5px;flex:none">
+      <div class="px" style="color:#ffe633">MOTORGRAFICO</div>
+      <div class="px" style="color:#6f6f80">LEVEL EDITOR</div>
+    </div>
+    <div style="width:1px;height:34px;background:rgba(140,140,166,.28);flex:none"></div>
+    <div style="display:flex;flex-direction:column;gap:5px;flex:none;min-width:220px">
+      <div class="px" style="color:#ffffff">CUEVA DE ENTRADA</div>
+      <div class="px" style="color:#6f6f80">ASSETS/LEVELS/EDITOR_LEVEL.JSON</div>
+    </div>
+    <div style="display:flex;gap:2px;flex:none">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+        <div class="px3" style="padding:11px 16px 10px;cursor:pointer;border:1px solid transparent" onClick="{{ t.onClick }}">{{ t.label }}</div>
+      </sc-for>
+    </div>
+    <div style="flex:1"></div>
+    <div style="display:flex;align-items:center;gap:14px;flex:none">
+      <div style="display:flex;align-items:center;gap:7px"><div style="width:8px;height:8px;background:#e6bf33"></div><div class="px" style="color:#e6bf33">UNSAVED</div></div>
+      <div class="px" style="color:#d9d9d9;border:1px solid rgba(140,140,166,.55);padding:8px 11px 7px;cursor:pointer" style-hover="border-color:#ffe633;color:#ffe633">F5 SAVE TMX + JSON</div>
+      <div class="px" style="color:#b3b3bf">60 FPS</div>
+    </div>
+  </div>
+
+  <div style="position:absolute;left:0;top:64px;width:336px;height:976px;background:rgba(13,13,20,.92);border-right:2px solid rgba(140,140,166,.9);box-sizing:border-box;overflow:hidden">
+    <div class="px" style="padding:13px 14px 11px;color:#6f6f80;border-bottom:1px solid rgba(140,140,166,.2)">{{ leftTitle }}</div>
+
+    <sc-if value="{{ isMap }}" hint-placeholder-val="{{ true }}">
+    <div>
+      <div class="px" style="padding:13px 14px 9px;color:#ffe633">TOOLS</div>
+      <sc-for list="{{ tools }}" as="tl" hint-placeholder-count="8">
+        <div style="display:flex;align-items:center;gap:11px;padding:0 14px;height:34px;cursor:pointer" onClick="{{ tl.onClick }}">
+          <div class="px" style="width:16px;flex:none;color:#6f6f80">{{ tl.key }}</div>
+          <div style="width:14px;height:14px;flex:none;border:1px solid rgba(140,140,166,.5)"></div>
+          <div class="px" style="flex:1">{{ tl.label }}</div>
+          <div class="px" style="flex:none;color:#e6bf33">{{ tl.badge }}</div>
+        </div>
+      </sc-for>
+
+      <div class="px" style="padding:16px 14px 9px;color:#ffe633;border-top:1px solid rgba(140,140,166,.2);margin-top:8px">LAYERS</div>
+      <div style="display:flex;align-items:center;gap:11px;padding:0 14px;height:30px">
+        <div style="width:10px;height:10px;flex:none;background:#40bf4d"></div>
+        <div class="px" style="flex:1;color:#ffffff">SUELO</div>
+        <div class="px" style="color:#6f6f80">8X8</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:11px;padding:0 14px;height:30px;opacity:.5">
+        <div style="width:10px;height:10px;flex:none;border:1px dashed rgba(140,140,166,.7)"></div>
+        <div class="px" style="flex:1;color:#8a8a99">+ ADD LAYER</div>
+        <div class="px" style="color:#e6bf33">ROADMAP</div>
+      </div>
+
+      <div class="px" style="padding:16px 14px 9px;color:#ffe633;border-top:1px solid rgba(140,140,166,.2);margin-top:8px">TERRAIN PALETTE &mdash; Q / E</div>
+      <sc-for list="{{ terrains }}" as="tr" hint-placeholder-count="4">
+        <div style="display:flex;align-items:center;gap:11px;padding:0 14px;height:42px;cursor:pointer" onClick="{{ tr.onClick }}">
+          <div class="px" style="width:16px;flex:none;color:#6f6f80">{{ tr.gid }}</div>
+          <div style="width:32px;height:16px;flex:none;border:1px solid rgba(140,140,166,.4)"></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+            <div class="px">{{ tr.name }}</div>
+            <div class="px" style="color:#6f6f80">{{ tr.sub }}</div>
+          </div>
+          <div class="px" style="flex:none;color:#e6bf33">{{ tr.badge }}</div>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isList }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <div style="display:flex;gap:2px;padding:12px 14px 10px">
+        <sc-for list="{{ filters }}" as="f" hint-placeholder-count="4">
+          <div class="px" style="padding:7px 9px 6px;cursor:pointer;border:1px solid rgba(140,140,166,.3)" onClick="{{ f.onClick }}">{{ f.label }}</div>
+        </sc-for>
+      </div>
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="9">
+        <div style="display:flex;align-items:center;gap:11px;padding:0 14px;height:46px;cursor:pointer;border-left:3px solid transparent" onClick="{{ r.onClick }}">
+          <div style="width:20px;height:20px;flex:none;border:1px solid rgba(140,140,166,.4)"></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:5px;min-width:0">
+            <div class="px" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</div>
+            <div class="px" style="color:#6f6f80;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.sub }}</div>
+          </div>
+          <div class="px" style="flex:none;color:#d93326">{{ r.warn }}</div>
+          <div class="px" style="flex:none;color:#6f6f80">{{ r.tag }}</div>
+        </div>
+      </sc-for>
+      <div style="display:flex;align-items:center;gap:11px;padding:0 14px;height:46px;opacity:.55;border-top:1px solid rgba(140,140,166,.2)">
+        <div style="width:20px;height:20px;flex:none;border:1px dashed rgba(140,140,166,.6)"></div>
+        <div class="px" style="flex:1;color:#8a8a99">{{ addLabel }}</div>
+        <div class="px" style="color:#e6bf33">NEW</div>
+      </div>
+    </div>
+    </sc-if>
+  </div>
+
+  <div style="position:absolute;left:1536px;top:64px;width:384px;height:976px;background:rgba(13,13,20,.92);border-left:2px solid rgba(140,140,166,.9);box-sizing:border-box;overflow:hidden">
+    <div class="px" style="padding:13px 14px 11px;color:#6f6f80;border-bottom:1px solid rgba(140,140,166,.2)">INSPECTOR</div>
+    <div style="padding:14px 14px 0">
+      <div class="px3" style="color:#ffffff;margin-bottom:7px">{{ inspTitle }}</div>
+      <div class="px" style="color:#8a8a99">{{ inspSub }}</div>
+    </div>
+    <div style="padding:16px 0 0">
+      <sc-for list="{{ insp }}" as="f" hint-placeholder-count="8">
+        <div style="display:flex;align-items:center;gap:10px;padding:0 14px;height:32px">
+          <div class="px" style="width:132px;flex:none;color:#6f6f80">{{ f.k }}</div>
+          <div class="px" style="flex:1;border:1px solid rgba(140,140,166,.28);padding:8px 8px 7px;background:rgba(38,38,46,.5)">{{ f.v }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="padding:18px 14px 0">
+      <div class="px" style="color:#d93326">{{ inspWarn }}</div>
+    </div>
+    <div style="position:absolute;left:0;right:0;bottom:0;border-top:1px solid rgba(140,140,166,.2);padding:14px">
+      <div class="px" style="color:#6f6f80;margin-bottom:10px">C++ BINDING</div>
+      <div style="font:400 11px/1.6 'JetBrains Mono',monospace;color:#4d80f2;word-break:break-all">{{ inspBinding }}</div>
+    </div>
+  </div>
+
+  <div style="position:absolute;left:0;top:1040px;width:1920px;height:40px;background:rgba(13,13,20,.92);border-top:2px solid rgba(140,140,166,.9);box-sizing:border-box;display:flex;align-items:center;gap:20px;padding:0 18px">
+    <div class="px" style="color:#d9d9d9">{{ statusLine }}</div>
+    <div style="flex:1"></div>
+    <div class="px" style="color:#6f6f80">1-4 TOOL &nbsp; Q/E PALETTE &nbsp; W/S LIST &nbsp; WASD PAN &nbsp; F5 SAVE &nbsp; A ANNOTATIONS &nbsp; ESC EXIT</div>
+  </div>
+
+  <sc-if value="{{ ann }}" hint-placeholder-val="{{ true }}">
+  <div style="position:absolute;inset:0;pointer-events:none">
+    <sc-for list="{{ notes }}" as="n" hint-placeholder-count="9">
+      <div style="position:absolute;max-width:340px;background:rgba(9,14,32,.94);border:1px solid #4d80f2;padding:7px 9px;font:400 10px/1.45 'JetBrains Mono',monospace;color:#9dbcfb"><span style="color:#4d80f2">{{ n.cls }}</span> {{ n.txt }}</div>
+    </sc-for>
+  </div>
+  </sc-if>
+
+</div>
+</div>
+</div>
+<p class="dv-next">Try next: &ldquo;make the terrain palette show real atlas art instead of flat colors&rdquo; &middot; &ldquo;add a dialogue editor tab for NPCs&rdquo; &middot; &ldquo;show the OBJECTS tab with the JSON export preview&rdquo;</p>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:2016,&quot;height&quot;:1400},&quot;showAnnotations&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Spec layer&quot;}}">
+const TW = 96, TH = 48, OX = 552, OY = 296;
+
+const TERRAINS = [
+  { gid: 1, name: 'CAVE FLOOR', sub: 'WALKABLE', color: '#3d4152', badge: '' },
+  { gid: 2, name: 'CAVE WALL', sub: 'COLLISION=TRUE', color: '#23252f', badge: '' },
+  { gid: 3, name: 'WATER', sub: 'COLLISION=TRUE', color: '#2b3f66', badge: 'NEW' },
+  { gid: 4, name: 'BRIDGE', sub: 'WALKABLE', color: '#4a3f33', badge: 'NEW' }
+];
+
+const CATALOG = [
+  { id: 'arbusto', name: 'Arbusto', cat: 'PROP', sprite: 3, blocks: 'ON', inter: 'OFF', pick: '', warn: '' },
+  { id: 'llave_cueva', name: 'Llave de la cueva', cat: 'PICKUP', sprite: 4, blocks: 'OFF', inter: 'ON', pick: 'NONE / 0', warn: '' },
+  { id: 'pocion', name: 'Pocion', cat: 'PICKUP', sprite: 5, blocks: 'OFF', inter: 'ON', pick: 'HEAL / 15', warn: '' },
+  { id: 'eter', name: 'Eter', cat: 'PICKUP', sprite: 6, blocks: 'OFF', inter: 'ON', pick: 'RESTOREMANA / 5', warn: '' },
+  { id: 'slime', name: 'Slime', cat: 'ENEMY', sprite: 2, blocks: 'ON', inter: 'OFF', pick: '', warn: '' }
+];
+
+const ENTITIES = [
+  { id: 'slime', name: 'Slime', cat: 'ENEMY', sprite: 2, hp: 20, mp: 4, skills: 'golpe_gelatinoso', patrol: '2,0 - 3,0', warn: 'SKILL', src: 'assets/objects/test_objects.json' },
+  { id: 'goblin', name: 'Goblin', cat: 'ENEMY', sprite: -1, hp: 10, mp: 0, skills: 'tajo, grito_de_guerra', patrol: '2,2 - 2,2', warn: 'CATALOG', src: 'assets/levels/test_level.json' },
+  { id: 'herrero', name: 'Herrero', cat: 'NPC', sprite: -1, hp: 0, mp: 0, skills: '', patrol: '5,3 - 5,3', warn: 'TYPE', src: 'proposed' },
+  { id: 'guardia', name: 'Guardia', cat: 'NPC', sprite: -1, hp: 0, mp: 0, skills: '', patrol: '6,1 - 6,4', warn: 'TYPE', src: 'proposed' }
+];
+
+const LIBRARY = [
+  { path: 'assets/textures/test_checker.png', mgr: 'TextureManager', tag: '8X8', warn: '' },
+  { path: 'assets/shaders/sprite', mgr: 'ShaderManager', tag: 'VERT+FRAG', warn: '' },
+  { path: 'assets/shaders/lightmap', mgr: 'ShaderManager', tag: 'POSTFX', warn: '' },
+  { path: 'assets/shaders/fog', mgr: 'ShaderManager', tag: 'POSTFX', warn: '' },
+  { path: 'assets/shaders/lut', mgr: 'ShaderManager', tag: 'POSTFX', warn: '' },
+  { path: 'assets/maps/test_map.tmx', mgr: 'TileMap', tag: '4X3 &middot; 1 LAYER', warn: '' },
+  { path: 'assets/maps/editor_map.tmx', mgr: 'TileMap', tag: 'EXPORT', warn: '' },
+  { path: 'assets/levels/test_level.json', mgr: 'LevelLoader', tag: '2 ENEMY / 4 OBJ', warn: 'START' },
+  { path: 'assets/levels/editor_level.json', mgr: 'LevelLoader', tag: 'EXPORT', warn: '' },
+  { path: 'assets/objects/test_objects.json', mgr: 'ObjectCatalog', tag: '5 ENTRIES', warn: '' }
+];
+
+const TOOLS = [
+  { key: '1', label: 'PAINT TILE', badge: '' },
+  { key: '2', label: 'ERASE TILE', badge: '' },
+  { key: '3', label: 'PLACE OBJECT', badge: '' },
+  { key: '4', label: 'REMOVE OBJECT', badge: '' },
+  { key: '5', label: 'FLOOD FILL', badge: 'NEW' },
+  { key: '6', label: 'PICK GID', badge: 'NEW' },
+  { key: '7', label: 'RECTANGLE', badge: 'NEW' },
+  { key: '8', label: 'PLAYER START', badge: 'NEW' }
+];
+
+const NOTES = {
+  map: [
+    { l: 356, t: 78, cls: 'HudPanel', txt: '\u00b7 TopLeft \u00b7 {0,64} \u00b7 336\u00d7976 \u2014 NEW dock. Today the whole editor UI is one 520\u00d764 HudPanel.' },
+    { l: 356, t: 158, cls: 'HudCommandMenu', txt: '\u00b7 4 tools exist as EditorTool; 5-8 are proposed and need no new enum member beyond the tool itself.' },
+    { l: 356, t: 468, cls: 'EditorState::tilePalette()', txt: '\u00b7 Q/E \u2192 prevPaletteEntry()/nextPaletteEntry(). Named terrains are new: the engine stores bare GIDs.' },
+    { l: 700, t: 96, cls: 'IsoMath::gridToScreen', txt: '(grid, 64, 32) \u00d7 Camera zoom 1.50. Quads are axis-aligned 64\u00d732 rects, not diamonds \u2014 the art carries the diamond.' },
+    { l: 1160, t: 900, cls: 'HudDialogueBox', txt: '\u00b7 BottomCenter \u00b7 {0,52} \u00b7 900\u00d796 \u00b7 maxLines 4. Same widget as the battle log.' },
+    { l: 1188, t: 78, cls: 'HudPanel', txt: '\u00b7 TopRight \u00b7 {0,64} \u00b7 384\u00d7976 \u2014 NEW. Field rows are 32px so 15\u00d721 text clears its box; defect 01 was a 14px row.' },
+    { l: 1188, t: 470, cls: 'struct TmxTilesetSettings', txt: '\u2192 EditorState::exportTmx(). Every field here is one member of that struct.' },
+    { l: 620, t: 18, cls: 'HudPanel', txt: '\u00b7 TopLeft \u00b7 {0,0} \u00b7 1920\u00d764. Tabs are the only genuinely new interaction model \u2014 EditorState has no notion of a workspace.' },
+    { l: 620, t: 1000, cls: 'HudText', txt: '\u00b7 BottomLeft \u00b7 {0,0} \u00b7 1920\u00d740. Measured: 88 chars \u00d7 10px = 880px, fits 1920.' }
+  ],
+  terrain: [
+    { l: 356, t: 96, cls: 'EditorState::setTilePalette', txt: '(std::vector<int>) \u2014 the engine palette is a list of ints. A terrain record (name, colour, collision) is new data the editor owns, not the engine.' },
+    { l: 700, t: 96, cls: 'TmxTilesetSettings::collisionGids', txt: '\u2014 toggling COLLISION on a terrain writes this vector, which exportTmx() turns into <property name="collision">.' },
+    { l: 1188, t: 78, cls: 'ObjectCatalog / TextureAtlas', txt: 'defineRegion(gid, col, row) is the missing link behind defect 02: regions 3-6 are never defined.' }
+  ],
+  objects: [
+    { l: 356, t: 96, cls: 'ObjectCatalog', txt: '::loadFromFile() merges files; a repeated id overwrites. The filter row maps to ObjectCategory {Prop, Enemy, Pickup}.' },
+    { l: 1188, t: 78, cls: 'struct ObjectDefinition', txt: '\u2014 id, name, category, spriteId, blocksMovement, interactable, plus CombatData and PickupData as flat members.' },
+    { l: 700, t: 96, cls: 'ObjectSpawn', txt: '\u00b7 placing from this tab calls EditorState::placeObject(x, y, objectId). One object per cell; placing replaces.' }
+  ],
+  entities: [
+    { l: 356, t: 96, cls: 'ObjectCategory', txt: '\u2014 Prop | Enemy | Pickup. There is no Npc member: the two NPC rows are a proposal, and would need ObjectCategory::Npc + a DialogueData struct.' },
+    { l: 1188, t: 78, cls: 'struct CombatData', txt: '\u2014 maxHealth, maxMana, skillIds. skillIds resolve against SkillCatalog::find(), which is where defect 04 goes silent.' },
+    { l: 700, t: 96, cls: 'ObjectSpawn::patrolMin/patrolMax', txt: '\u2014 highlighted on the canvas. LevelLoader defaults both to position, meaning a stationary entity.' }
+  ],
+  library: [
+    { l: 356, t: 96, cls: 'ResourceManager<T>', txt: '\u2014 each row names the manager that owns the asset at runtime. Nothing here is invented: all ten paths exist in the repo.' },
+    { l: 1188, t: 78, cls: 'Result<T>', txt: '\u2014 load failures arrive as Result::Error with a message, never an exception. The inspector shows the last message verbatim.' }
+  ]
+};
+
+const TAB_TITLE = { map: 'MAP \u00b7 8X8 \u00b7 1 LAYER', terrain: 'TERRAIN LIBRARY', objects: 'OBJECT CATALOG', entities: 'ENEMIES & NPCS', library: 'ASSET LIBRARY' };
+
+class Component extends DCLogic {
+  state = {
+    tab: 'map',
+    tool: 0,
+    tileSel: 1,
+    filter: 'ALL',
+    rowSel: { objects: 2, entities: 0, library: 7, terrain: 1 },
+    ann: true,
+    hover: { x: 4, y: 2 },
+    cell: { x: 4, y: 2 },
+    tiles: (() => {
+      const t = new Array(64).fill(0);
+      const floor = [[1,1],[2,1],[3,1],[4,1],[1,2],[2,2],[3,2],[4,2],[5,2],[1,3],[2,3],[3,3],[4,3],[5,3],[2,4],[3,4],[4,4],[5,4],[3,5],[4,5],[5,5],[6,3],[6,4]];
+      floor.forEach(([x, y]) => { t[y * 8 + x] = 1; });
+      [[0,1],[0,2],[0,3],[1,0],[2,0],[3,0],[4,0],[5,1],[6,2],[7,3],[6,5],[5,6],[4,6],[3,6],[2,5],[1,4]].forEach(([x, y]) => { t[y * 8 + x] = 2; });
+      return t;
+    })(),
+    objs: [
+      { id: 'arbusto', x: 2, y: 1 },
+      { id: 'pocion', x: 4, y: 3 },
+      { id: 'llave_cueva', x: 5, y: 5 },
+      { id: 'slime', x: 3, y: 4 },
+      { id: 'herrero', x: 2, y: 3 }
+    ],
+    start: { x: 1, y: 2 }
+  };
+
+  componentDidMount() {
+    this._onKey = (e) => {
+      const k = e.key.toLowerCase();
+      if (k >= '1' && k <= '8') this.setState({ tool: parseInt(k, 10) - 1 });
+      else if (k === 'q') this.cyclePalette(-1);
+      else if (k === 'e') this.cyclePalette(1);
+      else if (k === 'w') this.moveRow(-1);
+      else if (k === 's') this.moveRow(1);
+      else if (k === 'a') this.setState({ ann: !this.state.ann });
+      else return;
+      e.preventDefault();
+    };
+    window.addEventListener('keydown', this._onKey);
+  }
+
+  componentWillUnmount() { window.removeEventListener('keydown', this._onKey); }
+
+  cyclePalette(d) {
+    if (this.state.tab === 'map' || this.state.tab === 'terrain') {
+      const n = TERRAINS.length;
+      this.setState({ tileSel: (this.state.tileSel + d + n) % n });
+    } else this.moveRow(d);
+  }
+
+  moveRow(d) {
+    const tab = this.state.tab;
+    const list = this.rowsFor(tab);
+    if (!list.length) return;
+    const cur = this.state.rowSel[tab] || 0;
+    const next = (cur + d + list.length) % list.length;
+    this.setState({ rowSel: Object.assign({}, this.state.rowSel, { [tab]: next }) });
+  }
+
+  rowsFor(tab) {
+    if (tab === 'objects') {
+      return this.state.filter === 'ALL' ? CATALOG : CATALOG.filter(o => o.cat === this.state.filter);
+    }
+    if (tab === 'entities') return ENTITIES;
+    if (tab === 'library') return LIBRARY;
+    if (tab === 'terrain') return TERRAINS;
+    return [];
+  }
+
+  applyAt(x, y) {
+    const t = this.state.tool;
+    if (t === 1) {
+      const tiles = this.state.tiles.slice(); tiles[y * 8 + x] = 0;
+      this.setState({ tiles, cell: { x, y } });
+    } else if (t === 3) {
+      this.setState({ objs: this.state.objs.filter(o => !(o.x === x && o.y === y)), cell: { x, y } });
+    } else if (t === 2) {
+      const id = (this.rowsFor('objects')[this.state.rowSel.objects] || CATALOG[2]).id;
+      const objs = this.state.objs.filter(o => !(o.x === x && o.y === y)).concat([{ id, x, y }]);
+      this.setState({ objs, cell: { x, y } });
+    } else if (t === 7) {
+      this.setState({ start: { x, y }, cell: { x, y } });
+    } else {
+      const tiles = this.state.tiles.slice(); tiles[y * 8 + x] = TERRAINS[this.state.tileSel].gid;
+      this.setState({ tiles, cell: { x, y } });
+    }
+  }
+
+  terrainByGid(g) { return TERRAINS.find(t => t.gid === g) || null; }
+
+  renderVals() {
+    const s = this.state;
+    const tab = s.tab;
+    const isMap = tab === 'map';
+    const isList = !isMap;
+    const sel = TERRAINS[s.tileSel];
+
+    const isoCells = [];
+    for (let y = 0; y < 8; y++) {
+      for (let x = 0; x < 8; x++) {
+        const gid = s.tiles[y * 8 + x];
+        const ter = this.terrainByGid(gid);
+        const hov = s.hover.x === x && s.hover.y === y;
+        const cur = s.cell.x === x && s.cell.y === y;
+        const isStart = s.start.x === x && s.start.y === y;
+        let bg = ter ? ter.color : 'rgba(255,255,255,0.045)';
+        if (isStart) bg = 'rgba(77,242,102,0.5)';
+        if (hov) bg = ter ? 'rgba(255,255,255,0.34)' : 'rgba(255,255,255,0.22)';
+        isoCells.push({
+          key: x + ',' + y,
+          style: {
+            left: (OX + (x - y) * (TW / 2)) + 'px',
+            top: (OY + (x + y) * (TH / 2)) + 'px',
+            background: bg,
+            outline: cur ? '2px solid #ffe633' : (ter ? '1px solid rgba(0,0,0,0.35)' : 'none'),
+            outlineOffset: cur ? '-2px' : '-1px',
+            zIndex: 10 + x + y
+          },
+          onEnter: () => this.setState({ hover: { x, y } }),
+          onClick: () => this.applyAt(x, y)
+        });
+      }
+    }
+
+    const CATCOLOR = { PROP: '#40bf4d', PICKUP: '#f2d940', ENEMY: '#e64033', NPC: '#4d80f2' };
+    const isoMarks = s.objs.map((o) => {
+      const def = CATALOG.find(c => c.id === o.id) || ENTITIES.find(c => c.id === o.id) || { cat: 'PROP' };
+      const c = CATCOLOR[def.cat] || '#8a8a99';
+      return {
+        key: o.id + o.x + o.y,
+        style: {
+          left: (OX + (o.x - o.y) * (TW / 2) + TW / 2 - 9) + 'px',
+          top: (OY + (o.x + o.y) * (TH / 2) + TH / 2 - 9) + 'px',
+          width: '18px', height: '18px',
+          background: c,
+          border: '2px solid rgba(0,0,0,0.5)',
+          transform: def.cat === 'PICKUP' ? 'rotate(45deg)' : 'none',
+          borderRadius: def.cat === 'NPC' ? '50%' : '0',
+          zIndex: 200 + o.x + o.y
+        }
+      };
+    });
+
+    const hovGid = s.tiles[s.hover.y * 8 + s.hover.x];
+
+    const tabs = ['map', 'terrain', 'objects', 'entities', 'library'].map(id => ({
+      key: id,
+      label: id === 'entities' ? 'ENTITIES' : id.toUpperCase(),
+      style: {
+        color: tab === id ? '#12121a' : '#8a8a99',
+        background: tab === id ? '#ffe633' : 'transparent',
+        borderColor: tab === id ? '#ffe633' : 'rgba(140,140,166,0.25)'
+      },
+      onClick: () => this.setState({ tab: id })
+    }));
+
+    const tools = TOOLS.map((t, i) => ({
+      key: t.key, label: t.label, badge: t.badge,
+      style: { background: s.tool === i ? 'rgba(255,230,51,0.14)' : 'transparent', borderLeft: s.tool === i ? '3px solid #ffe633' : '3px solid transparent' },
+      onClick: () => this.setState({ tool: i })
+    }));
+
+    const terrains = TERRAINS.map((t, i) => ({
+      key: t.gid, gid: t.gid, name: t.name, sub: t.sub, badge: t.badge,
+      style: { background: s.tileSel === i ? 'rgba(255,230,51,0.14)' : 'transparent', borderLeft: s.tileSel === i ? '3px solid #ffe633' : '3px solid transparent' },
+      swatch: { background: t.color },
+      onClick: () => this.setState({ tileSel: i })
+    }));
+
+    const rowList = this.rowsFor(tab);
+    const rowIdx = Math.min(s.rowSel[tab] || 0, Math.max(rowList.length - 1, 0));
+    const rows = rowList.map((r, i) => {
+      let name, sub, tag, warn;
+      if (tab === 'library') { name = r.path.split('/').pop().toUpperCase(); sub = r.mgr; tag = r.tag; warn = r.warn; }
+      else if (tab === 'entities') { name = r.name; sub = r.cat + ' \u00b7 SPRITE ' + r.sprite; tag = r.cat; warn = r.warn; }
+      else if (tab === 'terrain') { name = r.name; sub = 'GID ' + r.gid + ' \u00b7 ' + r.sub; tag = r.badge; warn = ''; }
+      else { name = r.name; sub = r.id; tag = r.cat; warn = r.warn; }
+      return {
+        key: (r.id || r.path || r.gid) + '',
+        name, sub, tag, warn,
+        style: { background: rowIdx === i ? 'rgba(255,230,51,0.12)' : 'transparent', borderLeftColor: rowIdx === i ? '#ffe633' : 'transparent' },
+        swatch: { background: tab === 'terrain' ? r.color : (CATCOLOR[r.cat] || 'transparent'), borderStyle: (r.sprite === -1 || tab === 'library') ? 'dashed' : 'solid' },
+        onClick: () => this.setState({ rowSel: Object.assign({}, s.rowSel, { [tab]: i }) })
+      };
+    });
+
+    const filters = (tab === 'objects' ? ['ALL', 'PROP', 'PICKUP', 'ENEMY'] : tab === 'entities' ? ['ALL', 'ENEMY', 'NPC'] : tab === 'library' ? ['ALL', 'TEXTURES', 'SHADERS', 'MAPS', 'LEVELS'] : ['ALL', 'WALKABLE', 'COLLISION']).map(f => ({
+      key: f, label: f,
+      style: { color: s.filter === f ? '#12121a' : '#8a8a99', background: s.filter === f ? '#d9d9d9' : 'transparent' },
+      onClick: () => this.setState({ filter: f })
+    }));
+
+    let inspTitle = '', inspSub = '', insp = [], inspWarn = '', inspBinding = '';
+    const r = rowList[rowIdx];
+    if (isMap) {
+      const gid = s.tiles[s.cell.y * 8 + s.cell.x];
+      const ter = this.terrainByGid(gid);
+      const obj = s.objs.find(o => o.x === s.cell.x && o.y === s.cell.y);
+      const objDef = obj ? (CATALOG.find(c => c.id === obj.id) || ENTITIES.find(c => c.id === obj.id)) : null;
+      inspTitle = 'CELL ' + s.cell.x + ',' + s.cell.y;
+      inspSub = 'LAYER SUELO \u00b7 ' + (ter ? ter.name : 'EMPTY');
+      insp = [
+        { k: 'GID', v: gid === 0 ? '0 (EMPTY)' : String(gid) },
+        { k: 'TERRAIN', v: ter ? ter.name : '\u2014' },
+        { k: 'COLLISION', v: ter ? (ter.sub.indexOf('COLLISION') === 0 ? 'TRUE' : 'FALSE') : '\u2014' },
+        { k: 'SCREEN POS', v: ((s.cell.x - s.cell.y) * 32) + ', ' + ((s.cell.x + s.cell.y) * 16) },
+        { k: 'OBJECT', v: obj ? obj.id : '(NONE)' },
+        { k: 'CATEGORY', v: objDef ? objDef.cat : '\u2014' },
+        { k: 'PATROL MIN', v: obj ? obj.x + ',' + obj.y : '\u2014' },
+        { k: 'PATROL MAX', v: obj ? obj.x + ',' + obj.y : '\u2014' },
+        { k: 'PLAYER START', v: (s.start.x === s.cell.x && s.start.y === s.cell.y) ? 'THIS CELL' : s.start.x + ',' + s.start.y }
+      ];
+      inspWarn = (this.terrainByGid(s.tiles[s.start.y * 8 + s.start.x]) || {}).sub === 'COLLISION=TRUE' ? 'PLAYER START IS ON A COLLISION TILE \u2014 DEFECT 05' : '';
+      inspBinding = 'EditorState::paintTile(x, y, gid) \u00b7 placeObject(x, y, objectId) \u00b7 objectAt(x, y) \u2192 const ObjectSpawn*';
+    } else if (tab === 'terrain') {
+      inspTitle = r ? r.name : '';
+      inspSub = 'TMXTILESETSETTINGS \u00b7 EXPORT';
+      insp = [
+        { k: 'GID', v: r ? String(r.gid) : '' },
+        { k: 'TILESET NAME', v: 'test_checker' },
+        { k: 'IMAGE SOURCE', v: '../textures/test_checker.png' },
+        { k: 'IMAGE', v: '16 \u00d7 8' },
+        { k: 'ATLAS CELL', v: '8 \u00d7 8' },
+        { k: 'TILE COUNT', v: '2' },
+        { k: 'COLUMNS', v: '2' },
+        { k: 'MAP TILE', v: '64 \u00d7 32' },
+        { k: 'COLLISION GIDS', v: '[ 2 ]' },
+        { k: 'ATLAS REGION', v: r && r.gid <= 2 ? 'DEFINED' : 'NOT DEFINED' }
+      ];
+      inspWarn = r && r.gid > 2 ? 'NO defineRegion() FOR THIS GID \u2014 WOULD DRAW THE FALLBACK UV' : '';
+      inspBinding = 'struct TmxTilesetSettings \u2192 EditorState::exportTmx() \u00b7 TextureAtlas::defineRegion(gid, col, row)';
+    } else if (tab === 'objects') {
+      inspTitle = r ? r.name : '';
+      inspSub = r ? 'OBJECTDEFINITION \u00b7 ' + r.cat : '';
+      insp = r ? [
+        { k: 'ID', v: r.id },
+        { k: 'NAME', v: r.name },
+        { k: 'CATEGORY', v: r.cat },
+        { k: 'SPRITE ID', v: String(r.sprite) },
+        { k: 'BLOCKSMOVEMENT', v: r.blocks },
+        { k: 'INTERACTABLE', v: r.inter },
+        { k: 'PICKUP EFFECT', v: r.pick || '\u2014' },
+        { k: 'MAX HEALTH', v: r.cat === 'ENEMY' ? '20' : '\u2014' },
+        { k: 'MAX MANA', v: r.cat === 'ENEMY' ? '4' : '\u2014' },
+        { k: 'SOURCE FILE', v: 'test_objects.json' }
+      ] : [];
+      inspWarn = r && r.sprite > 2 ? 'SPRITE ' + r.sprite + ' HAS NO ATLAS REGION \u2014 DEFECT 02' : '';
+      inspBinding = 'struct ObjectDefinition \u00b7 ObjectCatalog::add() \u00b7 loadFromFile() \u2192 Result<int>';
+    } else if (tab === 'entities') {
+      inspTitle = r ? r.name : '';
+      inspSub = r ? r.cat + ' \u00b7 ' + (r.src === 'proposed' ? 'PROPOSED TYPE' : r.src.split('/').pop()) : '';
+      insp = r ? [
+        { k: 'ID', v: r.id },
+        { k: 'CATEGORY', v: r.cat + (r.cat === 'NPC' ? ' (NEW)' : '') },
+        { k: 'SPRITE ID', v: r.sprite === -1 ? '-1 (NONE)' : String(r.sprite) },
+        { k: 'MAX HEALTH', v: r.hp ? String(r.hp) : '\u2014' },
+        { k: 'MAX MANA', v: r.mp ? String(r.mp) : '\u2014' },
+        { k: 'SKILL IDS', v: r.skills || '\u2014' },
+        { k: 'PATROL', v: r.patrol },
+        { k: 'BLOCKSMOVEMENT', v: r.cat === 'ENEMY' ? 'ON' : 'ON' },
+        { k: 'DIALOGUE', v: r.cat === 'NPC' ? '4 NODES (NEW)' : '\u2014' }
+      ] : [];
+      inspWarn = !r ? '' : r.warn === 'SKILL' ? '"golpe_gelatinoso" NOT IN SKILLCATALOG \u2014 DEFECT 04' : r.warn === 'CATALOG' ? '"goblin" IS SPAWNED BUT HAS NO CATALOG ENTRY' : r.warn === 'TYPE' ? 'NEEDS ObjectCategory::Npc + DialogueData' : '';
+      inspBinding = 'struct CombatData \u00b7 SkillCatalog::find(id) \u2192 const Skill* \u00b7 ObjectSpawn::patrolMin / patrolMax';
+    } else {
+      inspTitle = r ? r.path.split('/').pop().toUpperCase() : '';
+      inspSub = r ? r.mgr : '';
+      insp = r ? [
+        { k: 'PATH', v: r.path },
+        { k: 'OWNER', v: r.mgr },
+        { k: 'DETAIL', v: r.tag.replace('&middot;', '\u00b7') },
+        { k: 'LOAD RESULT', v: 'Result<bool>::Ok' },
+        { k: 'CACHED', v: 'YES' },
+        { k: 'RELOAD', v: 'F5 / ON SAVE' }
+      ] : [];
+      inspWarn = r && r.warn === 'START' ? 'playerStart {1,1} LANDS ON GID 2 (COLLISION) \u2014 DEFECT 05' : '';
+      inspBinding = 'ResourceManager<T>::load(id, path) \u2192 Result<T*> \u00b7 TileMap::loadFromFile() \u00b7 LevelLoader::loadFromFile()';
+    }
+
+    const consoleLines = [
+      { key: 'a', text: 'LOADED assets/objects/test_objects.json \u2014 5 ENTRIES' },
+      { key: 'b', text: 'LOADED assets/maps/test_map.tmx \u2014 4X3, 1 LAYER' },
+      { key: 'c', text: TOOLS[s.tool].label + ' (' + s.cell.x + ',' + s.cell.y + ') GID ' + s.tiles[s.cell.y * 8 + s.cell.x] },
+      { key: 'd', text: 'WARN SkillCatalog::find("golpe_gelatinoso") RETURNED NULLPTR' }
+    ];
+
+    return {
+      ann: this.props.showAnnotations ?? s.ann,
+      isMap, isList,
+      tab, tabs, tools, terrains, rows, filters, isoCells, isoMarks, consoleLines,
+      leftTitle: TAB_TITLE[tab],
+      addLabel: tab === 'objects' ? '+ NEW OBJECT DEFINITION' : tab === 'entities' ? '+ NEW NPC' : tab === 'library' ? '+ IMPORT ASSET' : '+ NEW TERRAIN',
+      toolName: TOOLS[s.tool].label,
+      hoverLabel: s.hover.x + ',' + s.hover.y,
+      hoverGid: String(hovGid),
+      inspTitle, inspSub, insp, inspWarn, inspBinding,
+      statusLine: 'CELL ' + s.cell.x + ',' + s.cell.y + '  \u00b7  ' + TOOLS[s.tool].label + '  \u00b7  PALETTE ' + sel.name + ' (GID ' + sel.gid + ')  \u00b7  MAP 8X8  \u00b7  TILESET TEST_CHECKER',
+      notes: (NOTES[tab] || []).map((n, i) => ({ key: i, cls: n.cls, txt: n.txt, style: { left: n.l + 'px', top: n.t + 'px' } }))
+    };
+  }
+}
+</script>
+</body>
+</html>

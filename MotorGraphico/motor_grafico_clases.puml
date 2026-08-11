@@ -1,0 +1,862 @@
+@startuml MotorGraficoIsometrico_ClassDiagram
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' ==================== TIPOS BASICOS ====================
+package "Core::Math" {
+  class Vector2 {
+    +float x
+    +float y
+    +Vector2 operator+(const Vector2& other) const
+    +Vector2 operator-(const Vector2& other) const
+    +Vector2 operator*(float scalar) const
+  }
+
+  class GridCoord {
+    +int x
+    +int y
+  }
+
+  class UVRect {
+    +float u0
+    +float v0
+    +float u1
+    +float v1
+  }
+}
+
+' ==================== SISTEMA DE ERRORES ====================
+package "Core::Errors" {
+  class "std::exception" as StdException {
+  }
+
+  class EngineException {
+    #std::string m_message
+    +EngineException(const std::string& msg)
+    +virtual const char* what() const noexcept override
+  }
+
+  class ResourceLoadException {
+    +ResourceLoadException(const std::string& path)
+  }
+
+  class ShaderCompileException {
+    -std::string m_compileLog
+    +ShaderCompileException(const std::string& log)
+    +const std::string& compileLog() const
+  }
+
+  class RenderException {
+    +RenderException(const std::string& msg)
+  }
+
+  class MapParseException {
+    -int m_lineNumber
+    +MapParseException(const std::string& reason, int line)
+    +int line() const
+  }
+
+  StdException <|-- EngineException
+  EngineException <|-- ResourceLoadException
+  EngineException <|-- ShaderCompileException
+  EngineException <|-- RenderException
+  EngineException <|-- MapParseException
+
+  ' Alternativa ligera a excepciones para rutas de alta frecuencia (por frame)
+  class "Result<T>" as ResultT <<template>> {
+    -bool m_success
+    -T m_value
+    -std::string m_errorMsg
+    +{static} Result<T> Ok(T value)
+    +{static} Result<T> Error(std::string msg)
+    +bool isOk() const
+    +T& value()
+    +const std::string& errorMessage() const
+  }
+
+  note bottom of ResultT
+    Se usa en rutas "calientes" (ej. TileMap::getTile,
+    IsometricRenderer::renderFrame) para evitar el coste
+    de excepciones en el bucle principal.
+    Las excepciones (EngineException...) se reservan para
+    carga de recursos e inicialización.
+  end note
+}
+
+' ==================== GESTION DE RECURSOS (TEMPLATES) ====================
+package "Core::Resources" {
+  abstract class "ResourceManager<T>" as ResourceManagerT <<template>> {
+    #std::unordered_map<std::string, std::unique_ptr<T>> m_resources
+    +Result<T*> load(const std::string& id, const std::string& path)
+    +T* get(const std::string& id)
+    +void unload(const std::string& id)
+    +void clear()
+    #{abstract} std::unique_ptr<T> loadFromDisk(const std::string& path) = 0
+  }
+
+  class Texture {
+    -unsigned int m_glID
+    -int m_width
+    -int m_height
+    +Texture()
+    +~Texture()
+    +void bind(unsigned int slot) const
+    +int getWidth() const
+    +int getHeight() const
+  }
+
+  class TextureManager {
+    +std::unique_ptr<Texture> loadFromDisk(const std::string& path) override
+  }
+
+  class Shader {
+    -unsigned int m_programID
+    +Shader()
+    +~Shader()
+    +void use() const
+    +void setUniformMat4(const std::string& name, const glm::mat4& mat)
+    +void setUniformInt(const std::string& name, int value)
+  }
+
+  class ShaderManager {
+    +std::unique_ptr<Shader> loadFromDisk(const std::string& path) override
+  }
+
+  class TextureAtlas {
+    -Texture* m_texture
+    -std::unordered_map<int, UVRect> m_regions
+    +UVRect getUV(int tileID) const
+    +void defineRegion(int id, int col, int row)
+  }
+
+  ResourceManagerT <|-- TextureManager
+  ResourceManagerT <|-- ShaderManager
+  ResourceManagerT ..> Texture : T = Texture >
+  ResourceManagerT ..> Shader : T = Shader >
+  TextureAtlas o-- Texture
+  ResourceManagerT ..> ResultT : devuelve >
+}
+
+' ==================== JERARQUIA DE RENDERIZADO ====================
+package "Render" {
+  interface IRenderable {
+    +{abstract} void render(SpriteBatch& batch) = 0
+    +void renderShadow(SpriteBatch& batch, Texture* shadowTexture)
+    +{abstract} int getSortKey() const = 0
+  }
+
+  interface IUpdatable {
+    +{abstract} void update(float deltaTime) = 0
+  }
+
+  class Camera {
+    -Vector2 m_position
+    -Vector2 m_targetPosition
+    -float m_zoom
+    -float m_lerpSpeed
+    +void update(float deltaTime)
+    +void move(const Vector2& delta)
+    +void setZoom(float zoom)
+    +glm::mat4 getViewProjectionMatrix() const
+    +Vector2 screenToWorld(const Vector2& screenPos) const
+    +GridCoord worldToGrid(const Vector2& worldPos) const
+  }
+
+  IUpdatable <|.. Camera
+
+  class SpriteBatch {
+    -std::vector<Vertex> m_vertexBuffer
+    -unsigned int m_vao
+    -unsigned int m_vbo
+    -Texture* m_currentTexture
+    +void begin()
+    +void submit(const Vector2& pos, const UVRect& uv, Texture* tex)
+    +void end()
+    +Result<bool> flush()
+  }
+
+  class Tile {
+    -int m_tilesetID
+    -int m_variant
+    -bool m_collision
+    +bool hasCollision() const
+    +int getTilesetID() const
+  }
+
+  class TileMap {
+    -std::vector<std::vector<std::vector<Tile>>> m_layers
+    -int m_width
+    -int m_height
+    +Result<bool> loadFromFile(const std::string& path)
+    +Tile& getTile(int layer, int x, int y)
+    +GridCoord screenToGrid(const Vector2& screenPos) const
+    +Vector2 gridToScreen(const GridCoord& grid) const
+  }
+
+  TileMap *-- Tile
+  TileMap ..> MapParseException : lanza >
+
+  abstract class Entity {
+    #GridCoord m_gridPosition
+    #Vector2 m_offset
+    #int m_spriteID
+    #TextureAtlas* m_atlas
+    +void render(SpriteBatch& batch) override
+    +int getSortKey() const override
+    +{abstract} void update(float deltaTime) override = 0
+  }
+
+  IRenderable <|.. Entity
+  IUpdatable <|.. Entity
+
+  class AnimatedEntity {
+    -std::unordered_map<std::string, std::vector<int>> m_animations
+    -float m_frameTime
+    -float m_elapsedTime
+    -int m_currentFrame
+    +void update(float deltaTime) override
+    +void addAnimation(const std::string& name, std::vector<int> frames)
+    +void play(const std::string& name)
+  }
+
+  Entity <|-- AnimatedEntity
+
+  class Player {
+    -int m_health
+    -std::vector<int> m_inventory
+    +void update(float deltaTime) override
+    +void handleInput(const struct InputState& input)
+  }
+
+  AnimatedEntity <|-- Player
+
+  class Enemy {
+    -int m_health
+    -int m_aiState
+    +void update(float deltaTime) override
+  }
+
+  AnimatedEntity <|-- Enemy
+
+  class IsometricRenderer {
+    -Camera* m_camera
+    -SpriteBatch m_spriteBatch
+    -TileMap* m_map
+    -std::vector<IRenderable*> m_renderQueue
+    -Shader* m_shader
+    +void addToQueue(IRenderable* obj)
+    +void sortQueue()
+    +Result<bool> renderFrame()
+    +void setBlobShadows(Texture* shadowTexture)
+    +void setBlobShadowsEnabled(bool enabled)
+    -void renderLayer(int layerIndex)
+    -void applyPostProcessing()
+  }
+
+  IsometricRenderer o-- Camera
+  IsometricRenderer o-- SpriteBatch
+  IsometricRenderer o-- TileMap
+  IsometricRenderer ..> IRenderable : ordena y dibuja >
+  IsometricRenderer ..> RenderException : lanza >
+
+  note bottom of IsometricRenderer
+    sortQueue() aplica el Painter's Algorithm:
+    orden = (grid_x + grid_y) * tile_height/2, luego X.
+    Con sombras blob activas (Fase 11), renderFrame()
+    dibuja renderShadow() de toda la cola DESPUES de los
+    tiles y ANTES de todas las entidades (una sombra
+    nunca pisa un sprite), con GL_BLEND activo durante
+    el batch de escena (primer contenido semitransparente
+    del mundo; lo opaco se dibuja identico que antes).
+  end note
+
+  class PointLight {
+    +Vector2 worldPos
+    +float radius
+    +float intensity
+    +Vector4 color
+  }
+
+  class DynamicLightMap {
+    -std::vector<PointLight> m_lights
+    -Texture* m_texture
+    +void addLight(const PointLight& light)
+    +std::vector<PointLight>& lights()
+    +{static} float attenuationAt(float distance, float radius)
+    +{static} Vector4 sampleLightAt(const std::vector<PointLight>& lights, const Vector2& worldPos)
+    +void updateTexture(const Camera& camera)
+    +Texture* texture() const
+  }
+
+  DynamicLightMap o-- PointLight
+  DynamicLightMap ..> Camera : updateTexture() lee pos/zoom >
+
+  class "CreateBlobShadowTexture()" as BlobShadowFn <<function>> {
+    +void FillBlobShadowPixels(std::vector<unsigned char>& pixels, int size)
+    +Texture* CreateBlobShadowTexture(int size)
+  }
+
+  BlobShadowFn ..> IRenderable : renderShadow() usa su textura >
+
+  note bottom of DynamicLightMap
+    Fase 11 cerrada: N point lights (posicion de mundo,
+    radio, intensidad, COLOR -- el shader "lightmap" ya
+    combina en RGB) compuestas en CPU a una textura de
+    lightmap por frame (mismo patron que FogOfWar::
+    updateTexture, incluido el flip Y). Se enchufa TAL
+    CUAL al pase de la Fase 4: setPostFX(shader,
+    lightMap.texture(), ...) -- cero cambios en renderer
+    ni shader para pasar de lightmap fijo a luces
+    dinamicas. attenuationAt()/sampleLightAt() puras
+    (verificadas sin GL); FillBlobShadowPixels() idem
+    para la textura de sombra.
+  end note
+}
+
+' ==================== MOTOR PRINCIPAL ====================
+package "Engine" {
+  class Application {
+    -TextureManager m_textureManager
+    -ShaderManager m_shaderManager
+    -IsometricRenderer m_renderer
+    -TileMap m_map
+    -ObjectCatalog m_objectCatalog
+    -SkillCatalog m_skillCatalog
+    -Player* m_player
+    -GameSession* m_session
+    -HudManager m_hud
+    -bool m_running
+    +Result<bool> init(int width, int height, const std::string& title, const std::string& levelPath, const std::string& catalogPath)
+    +void run(int maxFrames)
+    +void shutdown()
+    -void processInput()
+    -void update(float deltaTime)
+    -void render()
+    -void refreshHud()
+    -void confirmBattleCommand()
+  }
+
+  Application o-- TextureManager
+  Application o-- ShaderManager
+  Application o-- IsometricRenderer
+  Application o-- TileMap
+  Application o-- GameSession
+  Application o-- HudManager
+  Application o-- Player
+  Application ..> LevelLoader : carga el nivel >
+  Application ..> ObjectCatalog : carga el catalogo >
+  Application ..> EngineException : captura >
+
+  note bottom of Application
+    Implementada de verdad (cierra el bucle que el
+    diagrama listaba desde el principio): une Fases 1-4
+    (ventana, camara, mapa, entidades, sombras) con 6-12
+    (nivel y catalogo desde JSON, habilidades, combate,
+    HUD con texto). NO decide reglas: traduce teclado a
+    llamadas de GameSession y dibuja el resultado -- por
+    eso el ciclo de juego se prueba entero sin ventana
+    (examples/demo_game_session.cpp) y aqui solo queda
+    lo que necesita GL. main del juego: examples/juego.cpp.
+  end note
+}
+
+' ==================== RPG: NIVELES, HABILIDADES Y HUD ====================
+' Ver motor_grafico_gantt_rpg.puml (Fases 6-12, TODAS completas): datos/
+' logica de nivel y habilidades, combate por turnos con accion Item,
+' framework de HUD con fuente bitmap propia + widgets de texto, catalogo
+' generico de objetos, luces dinamicas + sombras blob (en el package
+' Render de arriba), y editor de niveles (package Editor, mas abajo).
+' Ver la nota al final para el estado de verificacion.
+package "Core::Json" {
+  class JsonValue {
+    -Type m_type
+    -std::vector<JsonValue> m_array
+    -std::map<std::string, JsonValue> m_object
+    +{static} Result<JsonValue> parse(const std::string& text)
+    +bool isObject() const
+    +bool isArray() const
+    +const JsonValue& operator[](const std::string& key) const
+    +const JsonValue& operator[](std::size_t index) const
+    +int asInt(int defaultValue) const
+    +std::string asString(const std::string& defaultValue) const
+  }
+
+  JsonValue ..> ResultT : devuelve >
+
+  note bottom of JsonValue
+    Parser JSON propio, sin dependencias de terceros
+    (motor_json): objetos/arrays/strings/numeros/bool/
+    null. Accesores con default seguro, nunca lanza.
+  end note
+}
+
+package "Render" #DDDDDD {
+  class EnemySpawn {
+    +std::string type
+    +GridCoord position
+    +GridCoord patrolMin
+    +GridCoord patrolMax
+    +std::vector<std::string> skillIds
+  }
+
+  class LevelDefinition {
+    +std::string name
+    +std::string mapPath
+    +GridCoord playerStart
+    +std::vector<EnemySpawn> enemies
+  }
+
+  class LevelLoader {
+    +{static} Result<LevelDefinition> loadFromFile(const std::string& path)
+    +{static} Result<LevelDefinition> loadFromString(const std::string& jsonText)
+  }
+
+  class ObjectSpawn {
+    +std::string objectId
+    +GridCoord position
+    +GridCoord patrolMin
+    +GridCoord patrolMax
+  }
+
+  enum ObjectCategory {
+    Prop
+    Enemy
+    Pickup
+  }
+
+  class CombatData {
+    +int maxHealth
+    +int maxMana
+    +std::vector<std::string> skillIds
+  }
+
+  enum PickupEffect {
+    None
+    Heal
+    RestoreMana
+  }
+
+  class PickupData {
+    +PickupEffect effect
+    +int power
+  }
+
+  class ObjectDefinition {
+    +std::string id
+    +std::string name
+    +ObjectCategory category
+    +int spriteId
+    +bool blocksMovement
+    +bool interactable
+    +CombatData combat
+    +PickupData pickup
+  }
+
+  class ObjectCatalog {
+    -std::unordered_map<std::string, ObjectDefinition> m_objects
+    +void add(ObjectDefinition definition)
+    +const ObjectDefinition* find(const std::string& id) const
+    +Result<int> loadFromString(const std::string& jsonText)
+    +Result<int> loadFromFile(const std::string& path)
+  }
+
+  LevelDefinition *-- EnemySpawn
+  LevelDefinition *-- ObjectSpawn
+  LevelLoader ..> JsonValue : usa >
+  LevelLoader ..> LevelDefinition : produce >
+  ObjectDefinition *-- CombatData
+  ObjectDefinition *-- PickupData
+  ObjectCatalog o-- ObjectDefinition
+  ObjectCatalog ..> JsonValue : loadFrom*() usa >
+  ObjectSpawn ..> ObjectCatalog : objectId referencia >
+  CombatData ..> Skill : skillIds referencia >
+
+  note bottom of ObjectCatalog
+    Fase 10 cerrada ("todo es un objeto"): catalogo
+    generico por id -- una llave, un arbusto, un enemigo
+    son ObjectDefinition con distinta categoria. Los datos
+    por categoria (CombatData/PickupData) son miembros
+    planos, no un variant (solo dos categorias con datos,
+    ver el comentario del header). loadFrom*() es
+    todo-o-nada: una entrada invalida no aplica ninguna.
+    Sustituye conceptualmente al "catalogo de enemigos"
+    de la Fase 6: las habilidades de un slime viven en
+    CombatData::skillIds (por TIPO), no en cada spawn.
+  end note
+
+  interface ICombatant {
+    +{abstract} void takeDamage(int amount) = 0
+    +{abstract} void heal(int amount) = 0
+    +{abstract} int health() const = 0
+    +{abstract} int maxHealth() const = 0
+    +{abstract} bool isAlive() const = 0
+  }
+
+  ICombatant <|.. Player
+  ICombatant <|.. Enemy
+
+  class Skill {
+    +std::string id
+    +std::string name
+    +int mpCost
+    +int power
+    +SkillEffect effect
+    +SkillTarget target
+  }
+
+  class "ApplySkillEffect()" as ApplySkillEffectFn <<function>> {
+    +int ApplySkillEffect(const Skill& skill, ICombatant& target)
+  }
+
+  ApplySkillEffectFn ..> Skill : lee >
+  ApplySkillEffectFn ..> ICombatant : takeDamage()/heal() >
+
+  note bottom of ApplySkillEffectFn
+    Fase 7 cerrada: aplica el efecto de verdad
+    (Damage/Heal) sobre cualquier ICombatant, sin
+    saber si es un Player o un Enemy. NO descuenta
+    mana (eso es SkillSet::spend(), aparte) ni elige
+    el objetivo (eso es la Fase 8, BattleState).
+  end note
+
+  class SkillSet {
+    -int m_mana
+    -int m_maxMana
+    -std::unordered_map<std::string, bool> m_known
+    +void learn(const std::string& skillId)
+    +bool canUse(const Skill& skill) const
+    +void spend(const Skill& skill)
+  }
+
+  class SkillCatalog {
+    -std::unordered_map<std::string, Skill> m_skills
+    +void add(Skill skill)
+    +const Skill* find(const std::string& id) const
+  }
+
+  SkillCatalog o-- Skill
+  SkillSet ..> Skill : consulta/consume >
+  EnemySpawn ..> Skill : skillIds referencia >
+
+  note bottom of SkillSet
+    Conectada a Player/Enemy de verdad via ICombatant +
+    ApplySkillEffect() (mas abajo): SkillSet decide
+    "puedo pagarlo"/"pago", ApplySkillEffect() aplica
+    el efecto. Falta solo el BattleState que las
+    orqueste juntas en un combate real (Fase 8).
+  end note
+
+  interface IHudElement {
+    +{abstract} void render(SpriteBatch& batch, int viewportWidth, int viewportHeight) const = 0
+    +void setVisible(bool visible)
+    +bool isVisible() const
+  }
+
+  class HudTransform {
+    +HudAnchor anchor
+    +Vector2 offset
+    +Vector2 size
+    +Vector2 resolveTopLeft(int viewportWidth, int viewportHeight) const
+  }
+
+  class HudManager {
+    -std::vector<IHudElement*> m_elements
+    +void addElement(IHudElement* element)
+    +void render(SpriteBatch& batch, Shader& shader, int viewportWidth, int viewportHeight) const
+  }
+
+  class HudBar {
+    -float m_value
+    -float m_maxValue
+    +void setValue(float value)
+    +void render(SpriteBatch& batch, int viewportWidth, int viewportHeight) const override
+  }
+
+  class HudPanel {
+    +void render(SpriteBatch& batch, int viewportWidth, int viewportHeight) const override
+  }
+
+  class BitmapFont {
+    -Texture* m_atlas
+    -int m_scale
+    -int m_glyphWidth
+    -int m_glyphHeight
+    +{static} UVRect glyphUV(char c)
+    +{static} Vector2 measureText(const std::string& text, int glyphWidth, int glyphHeight)
+    +void drawText(SpriteBatch& batch, const std::string& text, const Vector2& topLeft, const Vector4& color) const
+  }
+
+  note bottom of BitmapFont
+    Fuente 5x7 monoespaciada, solo mayusculas +
+    digitos + puntuacion basica. Atlas PROCEDURAL
+    (generateAtlas(), sin vendorizar ninguna imagen de
+    fuente): 16x4 celdas generadas con patrones de bits
+    a mano. glyphUV()/measureText() son estaticas y
+    puras -- testeables sin contexto OpenGL (ver
+    examples/demo_bitmap_font.cpp, real compile+run);
+    drawText() y el constructor si necesitan GL real.
+  end note
+
+  class HudText {
+    -std::string m_text
+    +void setText(const std::string& text)
+    +void render(SpriteBatch& batch, int viewportWidth, int viewportHeight) const override
+  }
+
+  class HudCommandMenu {
+    -std::vector<std::string> m_options
+    -std::size_t m_selectedIndex
+    +void moveUp()
+    +void moveDown()
+    +std::size_t selectedIndex() const
+    +void render(SpriteBatch& batch, int viewportWidth, int viewportHeight) const override
+  }
+
+  class HudDialogueBox {
+    -std::vector<std::string> m_visibleLines
+    -std::size_t m_maxLines
+    +void setLines(const std::vector<std::string>& lines)
+    +void render(SpriteBatch& batch, int viewportWidth, int viewportHeight) const override
+  }
+
+  IHudElement <|.. HudBar
+  IHudElement <|.. HudPanel
+  IHudElement <|.. HudText
+  IHudElement <|.. HudCommandMenu
+  IHudElement <|.. HudDialogueBox
+  HudBar o-- HudTransform
+  HudPanel o-- HudTransform
+  HudText o-- HudTransform
+  HudCommandMenu o-- HudTransform
+  HudDialogueBox o-- HudTransform
+  HudText ..> BitmapFont : drawText() >
+  HudCommandMenu ..> BitmapFont : drawText() >
+  HudDialogueBox ..> BitmapFont : drawText() >
+  HudManager o-- IHudElement
+  HudManager ..> SpriteBatch : dibuja via >
+  HudManager ..> Shader : fija proyeccion de pantalla >
+
+  note bottom of HudManager
+    Proyeccion ortografica en PIXELES de pantalla,
+    independiente de Camera (el HUD no se mueve ni
+    escala con el zoom/paneo del mundo). Reutiliza el
+    shader "sprite" ya existente, sin shader nuevo.
+  end note
+
+  note bottom of HudCommandMenu
+    Fase 9 cerrada: menu navegable (Atacar/Habilidad/
+    Objeto/Huir) con wraparound en moveUp()/moveDown() y
+    un cursor de texto ("> ") ademas del color de
+    resaltado, para no depender solo del color. No lee
+    input directamente (ver IHudElement, sin update()):
+    quien orqueste el bucle de juego llama a moveUp()/
+    moveDown()/selectedIndex().
+  end note
+
+  note bottom of HudDialogueBox
+    Fase 9 cerrada: panel + ultimas maxLines() lineas de
+    un log de texto, pensado exactamente para
+    BattleState::log() -- ver demo_battle_hud.cpp para
+    el combate completo mostrado en un HudDialogueBox
+    real.
+  end note
+}
+
+  class BattleParticipant {
+    +std::string name
+    +ICombatant* combatant
+    +SkillSet* skills
+    +std::vector<std::string>* inventory
+  }
+
+  enum BattleActionType {
+    Attack
+    UseSkill
+    Item
+    Flee
+  }
+
+  enum BattleOutcome {
+    InProgress
+    Victory
+    Defeat
+    Fled
+  }
+
+  class BattleAction {
+    +BattleActionType type
+    +std::string skillId
+    +int targetIndex
+    +std::string itemId
+  }
+
+  class BattleState {
+    -std::vector<BattleParticipant> m_allies
+    -std::vector<BattleParticipant> m_enemies
+    -SkillCatalog* m_catalog
+    -BattleOutcome m_outcome
+    -std::vector<std::string> m_log
+    +void resolveAllyAction(std::size_t allyIndex, const BattleAction& action)
+    +void resolveEnemyTurn()
+    +BattleOutcome outcome() const
+  }
+
+  BattleState o-- BattleParticipant
+  BattleState ..> BattleAction : recibe >
+  BattleState ..> SkillCatalog : resuelve ids >
+  BattleState ..> ObjectCatalog : accion Item resuelve ids >
+  BattleState ..> ApplySkillEffectFn : usa >
+  BattleState ..> HudDialogueBox : log() se vuelca en >
+  BattleParticipant o-- ICombatant
+  BattleParticipant o-- SkillSet
+
+  note bottom of BattleState
+    Fase 8 cerrada en su MVP: cola de turnos simple
+    (resolveAllyAction() por aliado + resolveEnemyTurn()
+    para todos los enemigos), IA minima determinista
+    (primera Skill que puede pagar, si no ataque basico),
+    Victory/Defeat/Fled. GL-free, operando solo sobre
+    ICombatant/SkillSet (nunca Player/Enemy concretos).
+    La accion Item (Fase 10) consume un Pickup del
+    inventario del actor (BattleParticipant::inventory,
+    no propietario) con el efecto de PickupData
+    (Heal/RestoreMana; None -- una llave -- no hace nada
+    Y no se consume). Sin transicion automatica
+    exploracion<->combate (queda para cuando exista
+    Application, ver motor_grafico_gantt_rpg.puml). Su
+    log() se dibuja de verdad en un HudDialogueBox (ver
+    examples/demo_battle_hud.cpp, Fase 9).
+  end note
+}
+
+' ==================== PARTIDA EN CURSO (CIERRE DEL CICLO) ============
+package "Partida" {
+  enum GameMode {
+    Exploration
+    Battle
+    GameOver
+  }
+
+  class WorldEnemy {
+    +std::string objectId
+    +GridCoord position
+    +std::unique_ptr<ICombatant> body
+    +std::unique_ptr<SkillSet> skills
+  }
+
+  class GameSession {
+    -LevelDefinition m_level
+    -GridCoord m_playerPosition
+    -std::vector<ObjectSpawn> m_worldObjects
+    -std::vector<WorldEnemy> m_enemies
+    -GameMode m_mode
+    -std::unique_ptr<BattleState> m_battle
+    -std::vector<std::string> m_log
+    +bool tryMovePlayer(int dx, int dy)
+    +BattleState* battle()
+    +bool syncBattleOutcome()
+    +GameMode mode() const
+    +const std::vector<std::string>& log() const
+  }
+
+  GameSession *-- WorldEnemy
+  GameSession ..> GameMode
+  GameSession o-- BattleState : crea al haber encuentro >
+  GameSession ..> TileMap : colision de tiles >
+  GameSession ..> ObjectCatalog : resuelve objectId >
+  GameSession ..> ICombatant : jugador (no propietario) >
+  WorldEnemy *-- ICombatant
+
+  note bottom of GameSession
+    Cierra el pendiente que arrastraban las Fases 8-12:
+    la transicion automatica exploracion <-> combate.
+    GL-free (como BattleState/EditorState): movimiento
+    con colision de tiles Y objetos, recogida de pickups
+    al inventario REAL del jugador, encuentro al chocar
+    con un objeto de categoria Enemy (BattleState armado
+    con su CombatData), y los tres desenlaces --
+    Victory elimina al enemigo del mundo, Fled lo deja
+    ahi, Defeat es GameOver terminal. El jugador entra
+    por referencia: vida/mana/objetos gastados en combate
+    se conservan al volver a explorar. Verificado de
+    verdad en examples/demo_game_session.cpp.
+  end note
+}
+
+' ==================== EDITOR DE NIVELES (FASE 12) ====================
+package "Editor" {
+  enum EditorTool {
+    PaintTile
+    EraseTile
+    PlaceObject
+    RemoveObject
+  }
+
+  class TmxTilesetSettings {
+    +int tileWidth
+    +int tileHeight
+    +std::string tilesetName
+    +std::string imageSource
+    +std::vector<int> collisionGids
+  }
+
+  class EditorState {
+    -int m_width
+    -int m_height
+    -std::vector<int> m_tiles
+    -std::vector<ObjectSpawn> m_objects
+    -EditorTool m_tool
+    -std::vector<int> m_tilePalette
+    -std::vector<std::string> m_objectPalette
+    +void setTool(EditorTool tool)
+    +void nextPaletteEntry()
+    +void prevPaletteEntry()
+    +void applyAt(int x, int y)
+    +void paintTile(int x, int y, int gid)
+    +void placeObject(int x, int y, const std::string& objectId)
+    +int tileAt(int x, int y) const
+    +const ObjectSpawn* objectAt(int x, int y) const
+    +std::string exportTmx(const TmxTilesetSettings& settings) const
+    +std::string exportLevelJson(const std::string& levelName, const std::string& mapPath, const GridCoord& playerStart) const
+  }
+
+  EditorState o-- ObjectSpawn
+  EditorState ..> EditorTool
+  EditorState ..> TmxTilesetSettings : exportTmx() recibe >
+  EditorState ..> TileMap : exportTmx() carga en (round-trip) >
+  EditorState ..> LevelLoader : exportLevelJson() carga en (round-trip) >
+
+  note bottom of EditorState
+    Fase 12 cerrada (con matiz): el Gantt planeaba la UI
+    con Dear ImGui vendorizado, imposible sin red en el
+    entorno de desarrollo -- la UI se monto con el HUD
+    PROPIO de la Fase 9 (HudPanel/HudText/BitmapFont, ver
+    examples/level_editor.cpp: raton via Window::handle(),
+    teclas para herramienta/paleta/pan/guardar). Este
+    nucleo es GL-free y NO sabe de widgets: si algun dia
+    se vendoriza ImGui, se migra la vista sin tocarlo.
+    exportTmx()/exportLevelJson() verificados con
+    round-trip REAL contra TileMap::loadFromFile y
+    LevelLoader (demo_editor_state.cpp). MVP: una capa,
+    sin undo, patrulla no editable.
+  end note
+}
+
+note as CombateNota
+  Fases 6-12 cerradas: niveles JSON, habilidades, combate
+  por turnos con accion Item, HUD modular con fuente
+  propia y widgets de texto, catalogo generico de
+  objetos, luces dinamicas + sombras blob, y editor de
+  niveles (nucleo verificado de verdad; UI con el HUD
+  propio en vez de Dear ImGui, ver la nota del Editor).
+  Y por encima, el ciclo de juego completo: GameSession
+  (package Partida) + Application, que era la ultima
+  pieza que faltaba para que todo lo anterior sea una
+  partida jugable (examples/juego.cpp). Ver README.md
+  para el detalle de que esta implementado/verificado
+  y que no.
+end note
+
+@enduml

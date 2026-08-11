@@ -1,0 +1,47 @@
+{
+  "objects": [
+    {
+      "id": "arbusto",
+      "name": "Arbusto",
+      "category": "prop",
+      "spriteId": 3,
+      "blocksMovement": true
+    },
+    {
+      "id": "llave_cueva",
+      "name": "Llave de la cueva",
+      "category": "pickup",
+      "spriteId": 4,
+      "interactable": true,
+      "pickup": { "effect": "none" }
+    },
+    {
+      "id": "pocion",
+      "name": "Pocion",
+      "category": "pickup",
+      "spriteId": 5,
+      "interactable": true,
+      "pickup": { "effect": "heal", "power": 15 }
+    },
+    {
+      "id": "eter",
+      "name": "Eter",
+      "category": "pickup",
+      "spriteId": 6,
+      "interactable": true,
+      "pickup": { "effect": "restoreMana", "power": 5 }
+    },
+    {
+      "id": "slime",
+      "name": "Slime",
+      "category": "enemy",
+      "spriteId": 2,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 20,
+        "maxMana": 4,
+        "skills": ["golpe_gelatinoso"]
+      }
+    }
+  ]
+}

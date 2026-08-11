@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicativo MotorGraphico - Confort del creador</title>
+    <style id="theme-vars">
+:root {
+  --mg-background: #11131a;
+  --mg-foreground: #f2efe7;
+  --mg-card: #181c24;
+  --mg-card-foreground: #f2efe7;
+  --mg-popover: #1d2230;
+  --mg-popover-foreground: #f2efe7;
+  --mg-primary: #d7b15f;
+  --mg-primary-foreground: #15120c;
+  --mg-muted: #202634;
+  --mg-muted-foreground: #9da6b8;
+  --mg-border: #2c3344;
+  --mg-input: #272e3d;
+  --mg-ring: #d7b15f;
+  --mg-radius-sm: 6px;
+  --mg-radius-md: 12px;
+  --mg-radius-lg: 18px;
+
+  --bg: var(--mg-background);
+  --surface: var(--mg-card);
+  --surface-2: #232a39;
+  --ink: var(--mg-foreground);
+  --ink-2: #b6bdca;
+  --ink-3: #727c8f;
+  --line: var(--mg-border);
+  --brand: var(--mg-primary);
+  --brand-ink: var(--mg-primary-foreground);
+  --state-success: #61c083;
+  --state-warning: #d7b15f;
+  --state-error: #d96a58;
+  --state-info: #6ea0ff;
+
+  --shadow-1: 0 10px 30px rgba(6, 8, 12, 0.22);
+  --shadow-2: 0 18px 45px rgba(6, 8, 12, 0.34);
+
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+
+  --mg-shell-bg-top: #141923;
+  --mg-shell-bg-bottom: #0d1118;
+  --mg-surface-strong: #171d27;
+  --mg-surface-mid: #1b2330;
+  --mg-surface-soft: #202837;
+  --mg-surface-quiet: #121822;
+  --mg-border-soft: rgba(157, 166, 184, 0.14);
+  --mg-border-strong: rgba(157, 166, 184, 0.22);
+  --mg-brand-soft: rgba(215, 177, 95, 0.12);
+  --mg-brand-line: rgba(215, 177, 95, 0.24);
+  --mg-brand-text: #d9c48f;
+  --mg-success-soft: rgba(97, 192, 131, 0.14);
+  --mg-success-line: rgba(97, 192, 131, 0.28);
+  --mg-error-soft: rgba(217, 106, 88, 0.14);
+  --mg-error-line: rgba(217, 106, 88, 0.24);
+  --mg-info-soft: rgba(110, 160, 255, 0.14);
+  --mg-info-line: rgba(110, 160, 255, 0.24);
+  --mg-grid-line: rgba(157, 166, 184, 0.08);
+  --mg-stage-wash: rgba(215, 177, 95, 0.08);
+  --mg-stage-blue: rgba(110, 160, 255, 0.10);
+  --mg-stage-ally: rgba(97, 192, 131, 0.12);
+  --mg-stage-enemy: rgba(217, 106, 88, 0.10);
+  --mg-ambient-line: rgba(242, 239, 231, 0.06);
+  --mg-elev-soft: 0 8px 22px rgba(6, 8, 12, 0.16);
+  --mg-elev-panel: 0 12px 28px rgba(6, 8, 12, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+body {
+  min-height: 100vh;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--mg-background);
+    --color-foreground: var(--mg-foreground);
+    --color-card: var(--mg-card);
+    --color-card-foreground: var(--mg-card-foreground);
+    --color-popover: var(--mg-popover);
+    --color-popover-foreground: var(--mg-popover-foreground);
+    --color-primary: var(--mg-primary);
+    --color-primary-foreground: var(--mg-primary-foreground);
+    --color-muted: var(--mg-muted);
+    --color-muted-foreground: var(--mg-muted-foreground);
+    --color-border: var(--mg-border);
+    --color-input: var(--mg-input);
+    --color-ring: var(--mg-ring);
+    --radius-sm: var(--mg-radius-sm);
+    --radius-md: var(--mg-radius-md);
+    --radius-lg: var(--mg-radius-lg);
+  }
+  @layer base {
+    body { background: var(--mg-background); color: var(--mg-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--mg-background); }
+      .text-background { color: var(--mg-background); }
+      .border-background { border-color: var(--mg-background); }
+      .ring-background { --tw-ring-color: var(--mg-background); }
+      .bg-foreground { background-color: var(--mg-foreground); }
+      .text-foreground { color: var(--mg-foreground); }
+      .border-foreground { border-color: var(--mg-foreground); }
+      .ring-foreground { --tw-ring-color: var(--mg-foreground); }
+      .bg-card { background-color: var(--mg-card); }
+      .text-card { color: var(--mg-card); }
+      .border-card { border-color: var(--mg-card); }
+      .ring-card { --tw-ring-color: var(--mg-card); }
+      .bg-card-foreground { background-color: var(--mg-card-foreground); }
+      .text-card-foreground { color: var(--mg-card-foreground); }
+      .border-card-foreground { border-color: var(--mg-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--mg-card-foreground); }
+      .bg-popover { background-color: var(--mg-popover); }
+      .text-popover { color: var(--mg-popover); }
+      .border-popover { border-color: var(--mg-popover); }
+      .ring-popover { --tw-ring-color: var(--mg-popover); }
+      .bg-popover-foreground { background-color: var(--mg-popover-foreground); }
+      .text-popover-foreground { color: var(--mg-popover-foreground); }
+      .border-popover-foreground { border-color: var(--mg-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--mg-popover-foreground); }
+      .bg-primary { background-color: var(--mg-primary); }
+      .text-primary { color: var(--mg-primary); }
+      .border-primary { border-color: var(--mg-primary); }
+      .ring-primary { --tw-ring-color: var(--mg-primary); }
+      .bg-primary-foreground { background-color: var(--mg-primary-foreground); }
+      .text-primary-foreground { color: var(--mg-primary-foreground); }
+      .border-primary-foreground { border-color: var(--mg-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--mg-primary-foreground); }
+      .bg-muted { background-color: var(--mg-muted); }
+      .text-muted { color: var(--mg-muted); }
+      .border-muted { border-color: var(--mg-muted); }
+      .ring-muted { --tw-ring-color: var(--mg-muted); }
+      .bg-muted-foreground { background-color: var(--mg-muted-foreground); }
+      .text-muted-foreground { color: var(--mg-muted-foreground); }
+      .border-muted-foreground { border-color: var(--mg-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--mg-muted-foreground); }
+      .bg-border { background-color: var(--mg-border); }
+      .text-border { color: var(--mg-border); }
+      .border-border { border-color: var(--mg-border); }
+      .ring-border { --tw-ring-color: var(--mg-border); }
+      .bg-input { background-color: var(--mg-input); }
+      .text-input { color: var(--mg-input); }
+      .border-input { border-color: var(--mg-input); }
+      .ring-input { --tw-ring-color: var(--mg-input); }
+      .bg-ring { background-color: var(--mg-ring); }
+      .text-ring { color: var(--mg-ring); }
+      .border-ring { border-color: var(--mg-ring); }
+      .ring-ring { --tw-ring-color: var(--mg-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="font-sans antialiased">
+    <main id="app-shell" data-viewport-mode="app-shell">
+        <div class="mg-scroll-region overflow-y-auto" data-scroll-region="primary">
+            <section class="mg-shell-frame">
+                <header class="mg-topbar" id="topbar">
+                    <div class="mg-brand-block">
+                        <p class="mg-brand-kicker">MotorGraphico / herramienta táctica / modo creador</p>
+                        <div class="mg-brand-line">
+                            <h1>Aplicativo MotorGraphico - Confort del creador</h1>
+                            <span class="mg-badge">Sesión larga · lectura estable · interfaz calmada</span>
+                        </div>
+                        <p class="mg-brand-summary">La pantalla preserva el contexto operativo original y reorganiza los HUD para reducir fatiga visual, mejorar respiración entre bloques y sostener edición prolongada sin perder sensación táctica.</p>
+                    </div>
+
+                    <div class="mg-top-status-grid" id="hud-top-status">
+                        <article class="mg-top-card mg-top-card--hero">
+                            <div class="mg-card-label">HudTopStatus</div>
+                            <div class="mg-top-hero">
+                                <div class="mg-avatar-frame">
+                                    <span class="mg-avatar-ring"></span>
+                                    <div class="mg-avatar-core">
+                                        <i data-lucide="user"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="mg-top-name">Ariadna de Bronce</div>
+                                    <div class="mg-top-meta">Custodia Arcana · Humana · Tier 2</div>
+                                </div>
+                            </div>
+                            <div class="mg-calm-rail">
+                                <span class="mg-pill mg-pill--good">Estado sereno</span>
+                                <span class="mg-mini-note">Entorno de lectura calibrado</span>
+                            </div>
+                        </article>
+
+                        <article class="mg-top-card">
+                            <div class="mg-card-label">Ritmo de sesión</div>
+                            <div class="mg-metric-row">
+                                <span class="mg-metric">21:43 · Día 17</span>
+                                <span class="mg-metric-detail">Distrito de las Calderas · fase de revisión</span>
+                            </div>
+                        </article>
+
+                        <article class="mg-top-card">
+                            <div class="mg-card-label">Recursos visibles</div>
+                            <div class="mg-metric-row">
+                                <span class="mg-metric">482 oro</span>
+                                <span class="mg-metric-detail">Suministros para 2 días · inventario estable</span>
+                            </div>
+                        </article>
+
+                        <article class="mg-top-card">
+                            <div class="mg-card-label">Moral y foco</div>
+                            <div class="mg-pair-line">
+                                <span class="mg-pill mg-pill--good">Firme</span>
+                                <span class="mg-top-subline">Guardia Solar +3 · sin alertas severas</span>
+                            </div>
+                        </article>
+
+                        <article class="mg-top-card mg-top-card--controls">
+                            <div class="mg-card-label">Acciones de sesión</div>
+                            <div class="mg-chip-row">
+                                <span class="mg-chip">C personaje</span>
+                                <span class="mg-chip">K habilidades</span>
+                                <span class="mg-chip">I inventario</span>
+                                <span class="mg-chip">L quest</span>
+                            </div>
+                        </article>
+                    </div>
+                </header>
+
+                <section class="mg-creator-board" id="creator-comfort-board" aria-label="Criterios de confort del creador">
+                    <div class="mg-panel-header mg-panel-header--board">
+                        <div>
+                            <p class="mg-overline">modo creador</p>
+                            <h2>Criterios de confort integrados en la interfaz</h2>
+                        </div>
+                        <p class="mg-panel-note">La prioridad no es el espectáculo, sino una edición táctica consistente, calmada y sostenible.</p>
+                    </div>
+
+                    <div class="mg-criteria-grid">
+                        <article class="mg-criteria-card">
+                            <div class="mg-criteria-head">
+                                <i data-lucide="sliders-horizontal"></i>
+                                <strong>Brillo contenido</strong>
+                            </div>
+                            <p>Sombras más ligeras, ámbar suavizado y superficies escalonadas para que ningún panel compita con el resto.</p>
+                        </article>
+                        <article class="mg-criteria-card">
+                            <div class="mg-criteria-head">
+                                <i data-lucide="book-open"></i>
+                                <strong>Lectura prolongada</strong>
+                            </div>
+                            <p>Padding más generoso, labels consistentes y bloques con aire uniforme para sostener sesiones largas.</p>
+                        </article>
+                        <article class="mg-criteria-card">
+                            <div class="mg-criteria-head">
+                                <i data-lucide="crosshair"></i>
+                                <strong>Foco contextual</strong>
+                            </div>
+                            <p>El objetivo activo y la opción recomendada se distinguen por contraste de superficie y no por resplandores agresivos.</p>
+                        </article>
+                        <article class="mg-criteria-card">
+                            <div class="mg-criteria-head">
+                                <i data-lucide="layout-grid"></i>
+                                <strong>Balance entre HUDs</strong>
+                            </div>
+                            <p>Los seis HUD siguen presentes, pero redistribuidos con una jerarquía más suave y una cadencia editorial/técnica.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="mg-main-grid" aria-label="Vista comparativa confortable">
+                    <aside class="mg-side-column mg-side-column--left">
+                        <article class="mg-panel mg-panel--character" id="hud-character-panel">
+                            <div class="mg-panel-header">
+                                <div>
+                                    <p class="mg-overline">HudCharacterPanel</p>
+                                    <h2>Ficha táctica en lectura sostenida</h2>
+                                </div>
+                                <div class="mg-panel-actions">
+                                    <span class="mg-action-tag">Estado estable</span>
+                                </div>
+                            </div>
+
+                            <div class="mg-vitals">
+                                <div class="mg-vital-block">
+                                    <span class="mg-vital-label">Vida</span>
+                                    <strong>31 / 35</strong>
+                                    <div class="mg-bar"><span style="width:88%"></span></div>
+                                    <small>Ritmo seguro para diálogo o reposicionamiento.</small>
+                                </div>
+                                <div class="mg-vital-block">
+                                    <span class="mg-vital-label">Pilas disponibles</span>
+                                    <strong>4 / 7 activas</strong>
+                                    <div class="mg-bar mg-bar--amber"><span style="width:57%"></span></div>
+                                    <small>Reserva suficiente para resolver el nodo sin urgencia.</small>
+                                </div>
+                            </div>
+
+                            <div class="mg-stat-grid">
+                                <div class="mg-stat-card">
+                                    <span>CON</span>
+                                    <strong>4</strong>
+                                    <small>Resistencia base sostenida</small>
+                                </div>
+                                <div class="mg-stat-card">
+                                    <span>DES</span>
+                                    <strong>3</strong>
+                                    <small>Iniciativa +3 con margen</small>
+                                </div>
+                                <div class="mg-stat-card">
+                                    <span>INT</span>
+                                    <strong>5</strong>
+                                    <small>Canalización precisa</small>
+                                </div>
+                                <div class="mg-stat-card">
+                                    <span>CAR</span>
+                                    <strong>2</strong>
+                                    <small>Negociación funcional</small>
+                                </div>
+                            </div>
+
+                            <div class="mg-split-grid">
+                                <div class="mg-subpanel">
+                                    <div class="mg-subpanel-title">Defensas</div>
+                                    <ul class="mg-key-list">
+                                        <li><span>CA</span><strong>13</strong></li>
+                                        <li><span>Defensa mental</span><strong>12</strong></li>
+                                        <li><span>Resistencia física</span><strong>14</strong></li>
+                                        <li><span>Precisión mágica</span><strong>15</strong></li>
+                                    </ul>
+                                </div>
+                                <div class="mg-subpanel">
+                                    <div class="mg-subpanel-title">Equipo activo</div>
+                                    <ul class="mg-equip-list">
+                                        <li><span>Cabeza</span><strong>Visor de latón templado</strong></li>
+                                        <li><span>Torso</span><strong>Coraza de escriba táctica</strong></li>
+                                        <li><span>Piernas</span><strong>Grebas de marcha gris</strong></li>
+                                        <li><span>Pies</span><strong>Botas de cátodo sellado</strong></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="mg-meta-columns">
+                                <div class="mg-subpanel">
+                                    <div class="mg-subpanel-title">Pasiva y rasgos</div>
+                                    <p class="mg-detail-copy"><strong>Pasiva:</strong> Baluarte calibrado. El primer impacto recibido en cada ronda reduce en 1 el grado de éxito enemigo y mantiene claridad táctica en aperturas defensivas.</p>
+                                    <div class="mg-tag-cloud">
+                                        <span>Linaje de archivo</span>
+                                        <span>Guardia de umbral</span>
+                                        <span>Cartógrafa de campaña</span>
+                                    </div>
+                                </div>
+                                <div class="mg-subpanel">
+                                    <div class="mg-subpanel-title">Condiciones</div>
+                                    <div class="mg-condition-list">
+                                        <div class="mg-condition">
+                                            <span class="mg-condition-dot"></span>
+                                            <div>
+                                                <strong>Marcado</strong>
+                                                <small>2 rondas · foco del vigía autómata · sin deriva de lectura</small>
+                                            </div>
+                                        </div>
+                                        <div class="mg-condition mg-condition--muted">
+                                            <span class="mg-condition-dot"></span>
+                                            <div>
+                                                <strong>Sin efectos críticos</strong>
+                                                <small>No hay sangrado ni fatiga activa en el ciclo actual</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="mg-panel mg-panel--quest" id="hud-quest-tracker">
+                            <div class="mg-panel-header">
+                                <div>
+                                    <p class="mg-overline">HudQuestTracker</p>
+                                    <h2>Quest activa con urgencia legible</h2>
+                                </div>
+                                <span class="mg-quest-progress">3 / 5 hitos</span>
+                            </div>
+
+                            <div class="mg-quest-card mg-quest-card--active">
+                                <div class="mg-quest-head">
+                                    <div>
+                                        <strong>Apagar la caldera coral</strong>
+                                        <span>Aventura: Turno de cenizas en el distrito bajo</span>
+                                    </div>
+                                    <span class="mg-quest-tier">Tier recomendado 2</span>
+                                </div>
+                                <ul class="mg-checklist">
+                                    <li class="is-done"><span class="mg-check"></span>Hablar con la maestra de bombas en el patio este.</li>
+                                    <li class="is-done"><span class="mg-check"></span>Recuperar el sello de presión del almacén inundado.</li>
+                                    <li class="is-done"><span class="mg-check"></span>Desactivar la primera válvula sin romper la guardia.</li>
+                                    <li class="is-active">
+                                        <span class="mg-check"></span>
+                                        <div>
+                                            <strong>Convencer al capataz Telmo o forzar la compuerta interior.</strong>
+                                            <small>Distancia estimada: 2 casillas · ventana crítica: 01:12</small>
+                                        </div>
+                                    </li>
+                                    <li><span class="mg-check"></span>Salir del distrito antes del cambio de turno.</li>
+                                </ul>
+                                <div class="mg-quest-footer">
+                                    <span>Recompensa prevista: 130 oro, story card de facción, acceso al taller solar.</span>
+                                </div>
+                            </div>
+                        </article>
+                    </aside>
+
+                    <section class="mg-center-column">
+                        <article class="mg-panel mg-panel--battlefield" id="battlefield-preview">
+                            <div class="mg-panel-header">
+                                <div>
+                                    <p class="mg-overline">Escena central</p>
+                                    <h2>Escena de combate y mundo en tono editorial</h2>
+                                </div>
+                                <div class="mg-scene-meta">
+                                    <span>Mapa táctico: Calderas 03</span>
+                                    <span>Encuentro: Patrulla de mantenimiento hostil</span>
+                                </div>
+                            </div>
+
+                            <div class="mg-world-stage">
+                                <div class="mg-stage-grid"></div>
+                                <div class="mg-stage-wash"></div>
+                                <div class="mg-stage-lanes"></div>
+
+                                <div class="mg-scene-banner mg-scene-banner--top">
+                                    <span>Lectura ambiental</span>
+                                    <strong>Niebla de vapor +1 cobertura</strong>
+                                </div>
+
+                                <div class="mg-scene-banner mg-scene-banner--bottom">
+                                    <span>Turno actual</span>
+                                    <strong>Ariadna actúa antes del vigía</strong>
+                                </div>
+
+                                <div class="mg-stage-capsule">
+                                    <span>Modo creador</span>
+                                    <strong>Contraste reducido · foco contextual · ruido visual contenido</strong>
+                                </div>
+
+                                <div class="mg-unit mg-unit--ally">
+                                    <div class="mg-unit-ring"></div>
+                                    <div class="mg-unit-core">
+                                        <span>Ariadna</span>
+                                        <small>31 PV · Guardia</small>
+                                    </div>
+                                </div>
+
+                                <div class="mg-unit mg-unit--enemy mg-unit--enemy-a">
+                                    <div class="mg-unit-ring"></div>
+                                    <div class="mg-unit-core">
+                                        <span>Vigía autómata</span>
+                                        <small>12 PV · Marcando</small>
+                                    </div>
+                                </div>
+
+                                <div class="mg-unit mg-unit--enemy mg-unit--enemy-b">
+                                    <div class="mg-unit-ring"></div>
+                                    <div class="mg-unit-core">
+                                        <span>Obrero alterado</span>
+                                        <small>9 PV · Guardia rota</small>
+                                    </div>
+                                </div>
+
+                                <div class="mg-stage-objective">
+                                    <span>Objetivo contextual</span>
+                                    <strong>Válvula interna a 2 casillas</strong>
+                                </div>
+
+                                <div class="mg-log-panel">
+                                    <div class="mg-log-line"><span>21:43:08</span>Lanza-émbolo preparada. Precisión mágica basada en INT.</div>
+                                    <div class="mg-log-line"><span>21:43:11</span>Marcado detectado. Cobertura lateral recomendada antes de dialogar.</div>
+                                    <div class="mg-log-line"><span>21:43:14</span>Compuerta interior estable; presión crítica prevista en 01:12.</div>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="mg-panel mg-panel--dialogue" id="hud-dialogue-options-box">
+                            <div class="mg-panel-header">
+                                <div>
+                                    <p class="mg-overline">HudDialogueOptionsBox</p>
+                                    <h2>Diálogo ramificado con lectura anticipada</h2>
+                                </div>
+                                <span class="mg-dialogue-state">Nodo: compuerta_interior</span>
+                            </div>
+
+                            <div class="mg-dialogue-box">
+                                <div class="mg-speaker-row">
+                                    <span class="mg-speaker">Capataz Telmo</span>
+                                    <span class="mg-speaker-meta">Reputación requerida para trato limpio: neutral</span>
+                                </div>
+                                <p class="mg-dialogue-line">"No abriré esa compuerta a ciegas. Si fallas, el vapor nos revienta a todos. Demuéstrame que tu sello aguanta o trae una ruta de purga."</p>
+
+                                <div class="mg-option-list">
+                                    <button class="mg-option is-active" type="button">
+                                        <span class="mg-option-index">01</span>
+                                        <span class="mg-option-copy">
+                                            <small class="mg-option-tag">Riesgo bajo · inventario</small>
+                                            <strong>Mostrar el sello de presión recuperado</strong>
+                                            <small>Usa inventario + reputación neutral para evitar combate.</small>
+                                        </span>
+                                    </button>
+                                    <button class="mg-option" type="button">
+                                        <span class="mg-option-index">02</span>
+                                        <span class="mg-option-copy">
+                                            <small class="mg-option-tag mg-option-tag--warning">Riesgo medio · CAR</small>
+                                            <strong>Presionar con autoridad de la Guardia Solar</strong>
+                                            <small>Chequeo de CAR. Éxito parcial activa deuda con la facción.</small>
+                                        </span>
+                                    </button>
+                                    <button class="mg-option" type="button">
+                                        <span class="mg-option-index">03</span>
+                                        <span class="mg-option-copy">
+                                            <small class="mg-option-tag mg-option-tag--danger">Riesgo alto · combate</small>
+                                            <strong>Forzar la compuerta por la ruta lateral</strong>
+                                            <small>Inicia encuentro con fatiga de movimiento en la siguiente sala.</small>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </article>
+                    </section>
+
+                    <aside class="mg-side-column mg-side-column--right">
+                        <article class="mg-panel mg-panel--skills" id="hud-skills-panel">
+                            <div class="mg-panel-header">
+                                <div>
+                                    <p class="mg-overline">HudSkillsPanel</p>
+                                    <h2>Pilas de habilidades con orden táctico</h2>
+                                </div>
+                                <span class="mg-panel-note">Combo sugerido para resolver el nodo actual</span>
+                            </div>
+
+                            <div class="mg-flow-lane">
+                                <div class="mg-flow-step">
+                                    <span>Preparar</span>
+                                    <strong>Lectura de sellos</strong>
+                                </div>
+                                <div class="mg-flow-step">
+                                    <span>Resolver</span>
+                                    <strong>Punta de caldera</strong>
+                                </div>
+                                <div class="mg-flow-step">
+                                    <span>Contener</span>
+                                    <strong>Vector defensivo</strong>
+                                </div>
+                            </div>
+
+                            <div class="mg-skill-stacks">
+                                <section class="mg-stack">
+                                    <header>
+                                        <span>Activa</span>
+                                        <strong>4 cartas</strong>
+                                    </header>
+                                    <article class="mg-skill-card">
+                                        <div class="mg-skill-top">
+                                            <strong>Punta de caldera</strong>
+                                            <span>Acción</span>
+                                        </div>
+                                        <p>Ataque preciso. Si impacta sobre objetivo marcado, añade +0.5 al grado.</p>
+                                    </article>
+                                    <article class="mg-skill-card">
+                                        <div class="mg-skill-top">
+                                            <strong>Vector defensivo</strong>
+                                            <span>Reacción</span>
+                                        </div>
+                                        <p>Sube CA durante una ronda y desplaza una casilla sin coste de movimiento.</p>
+                                    </article>
+                                    <article class="mg-skill-card">
+                                        <div class="mg-skill-top">
+                                            <strong>Lectura de sellos</strong>
+                                            <span>Utilidad</span>
+                                        </div>
+                                        <p>Detecta compatibilidades de equipo, trampas y rutas de diálogo técnico.</p>
+                                    </article>
+                                    <article class="mg-skill-card">
+                                        <div class="mg-skill-top">
+                                            <strong>Golpe de bisagra</strong>
+                                            <span>Acción</span>
+                                        </div>
+                                        <p>Daño moderado. Si la defensa rival está rota, reposiciona al enemigo.</p>
+                                    </article>
+                                </section>
+
+                                <section class="mg-stack mg-stack--short">
+                                    <header>
+                                        <span>Descanso corto</span>
+                                        <strong>2 cartas</strong>
+                                    </header>
+                                    <article class="mg-skill-card">
+                                        <div class="mg-skill-top">
+                                            <strong>Descarga de sello</strong>
+                                            <span>Canalización</span>
+                                        </div>
+                                        <p>Libera presión contenida en área corta. Mejor contra maquinaria hostil.</p>
+                                    </article>
+                                    <article class="mg-skill-card">
+                                        <div class="mg-skill-top">
+                                            <strong>Mandato de escuadra</strong>
+                                            <span>Soporte</span>
+                                        </div>
+                                        <p>Concede cobertura y claridad táctica a aliados con moral firme.</p>
+                                    </article>
+                                </section>
+
+                                <section class="mg-stack mg-stack--long">
+                                    <header>
+                                        <span>Descanso largo</span>
+                                        <strong>1 carta</strong>
+                                    </header>
+                                    <article class="mg-skill-card">
+                                        <div class="mg-skill-top">
+                                            <strong>Juramento del umbral</strong>
+                                            <span>Pasiva táctica</span>
+                                        </div>
+                                        <p>Bloquea una derrota puntual y restablece una carta a la pila activa.</p>
+                                    </article>
+                                </section>
+                            </div>
+                        </article>
+
+                        <article class="mg-panel mg-panel--inventory" id="hud-inventory-panel">
+                            <div class="mg-panel-header">
+                                <div>
+                                    <p class="mg-overline">HudInventoryPanel</p>
+                                    <h2>Inventario y comparación inmediata</h2>
+                                </div>
+                                <span class="mg-panel-note">6 slots + consumibles + materiales</span>
+                            </div>
+
+                            <div class="mg-inventory-layout">
+                                <div class="mg-slot-grid">
+                                    <div class="mg-slot"><span>Cabeza</span><strong>Visor de latón</strong><small>Compatibilidad alta</small></div>
+                                    <div class="mg-slot"><span>Torso</span><strong>Coraza táctica</strong><small>+1 estabilidad</small></div>
+                                    <div class="mg-slot"><span>Piernas</span><strong>Grebas de vapor</strong><small>Sin penalización</small></div>
+                                    <div class="mg-slot"><span>Pies</span><strong>Botas selladas</strong><small>Marcha segura</small></div>
+                                    <div class="mg-slot"><span>Arma principal</span><strong>Lanza-émbolo</strong><small>Óptima para objetivo marcado</small></div>
+                                    <div class="mg-slot"><span>Arma secundaria</span><strong>Grimorio vivo</strong><small>Ruta técnica abierta</small></div>
+                                </div>
+
+                                <div class="mg-inventory-columns">
+                                    <div class="mg-subpanel">
+                                        <div class="mg-subpanel-title">Consumibles</div>
+                                        <ul class="mg-key-list">
+                                            <li><span>Vial térmico</span><strong>x3</strong></li>
+                                            <li><span>Pomada de cobre</span><strong>x2</strong></li>
+                                            <li><span>Sales de foco</span><strong>x1</strong></li>
+                                        </ul>
+                                    </div>
+                                    <div class="mg-subpanel">
+                                        <div class="mg-subpanel-title">Materiales</div>
+                                        <ul class="mg-key-list">
+                                            <li><span>Remaches nobles</span><strong>14</strong></li>
+                                            <li><span>Vidrio ahumado</span><strong>6</strong></li>
+                                            <li><span>Fibra coral</span><strong>9</strong></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </aside>
+                </section>
+
+                <section class="mg-improvements-panel" id="hud-improvements">
+                    <div class="mg-panel-header mg-panel-header--improvements">
+                        <div>
+                            <p class="mg-overline">criterios editoriales por HUD</p>
+                            <h2>Matriz de mejora silenciosa</h2>
+                        </div>
+                        <p class="mg-improvements-note">Presentación calmada para documentar ajustes de lectura, foco y ergonomía sin tono promocional.</p>
+                    </div>
+
+                    <div class="mg-improvement-grid">
+                        <article class="mg-improvement-card">
+                            <div class="mg-improvement-title">HudTopStatus</div>
+                            <p><strong>Ajuste:</strong> reducir altura perceptiva, agrupar prioridad global y dejar cada dato en una cápsula de lectura serena.</p>
+                            <p><strong>Efecto:</strong> menos ruido continuo y mejor escaneo al entrar o volver a la sesión.</p>
+                        </article>
+                        <article class="mg-improvement-card">
+                            <div class="mg-improvement-title">HudCharacterPanel</div>
+                            <p><strong>Ajuste:</strong> reforzar separaciones internas, consistencia entre labels y bloques secundarios más claros.</p>
+                            <p><strong>Efecto:</strong> la ficha se consulta durante más tiempo sin fatigar la mirada.</p>
+                        </article>
+                        <article class="mg-improvement-card">
+                            <div class="mg-improvement-title">HudSkillsPanel</div>
+                            <p><strong>Ajuste:</strong> añadir un carril de turno sugerido antes de las pilas y bajar contraste en cartas no prioritarias.</p>
+                            <p><strong>Efecto:</strong> menor carga cognitiva al decidir entre utilidad, acción y reacción.</p>
+                        </article>
+                        <article class="mg-improvement-card">
+                            <div class="mg-improvement-title">HudInventoryPanel</div>
+                            <p><strong>Ajuste:</strong> introducir lectura comparativa inmediata por slot con notas de compatibilidad.</p>
+                            <p><strong>Efecto:</strong> decisiones de equipo más rápidas y con menos navegación secundaria.</p>
+                        </article>
+                        <article class="mg-improvement-card">
+                            <div class="mg-improvement-title">HudDialogueOptionsBox</div>
+                            <p><strong>Ajuste:</strong> anteponer etiquetas de riesgo y requisito a cada opción del nodo actual.</p>
+                            <p><strong>Efecto:</strong> comprensión temprana de consecuencias sin releer todo el bloque.</p>
+                        </article>
+                        <article class="mg-improvement-card">
+                            <div class="mg-improvement-title">HudQuestTracker</div>
+                            <p><strong>Ajuste:</strong> hacer visible distancia y ventana crítica dentro del hito activo.</p>
+                            <p><strong>Efecto:</strong> mejor planificación entre exploración, diálogo y combate bajo presión moderada.</p>
+                        </article>
+                    </div>
+                </section>
+            </section>
+        </div>
+    </main>
+
+    <style id="critical-layout">
+      :root {
+        color-scheme: dark;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        background:
+          radial-gradient(circle at top, var(--mg-brand-soft), transparent 28%),
+          linear-gradient(180deg, var(--mg-shell-bg-top) 0%, var(--mg-shell-bg-bottom) 100%);
+        overflow: hidden;
+      }
+
+      #app-shell {
+        height: 100vh;
+        padding: 18px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .mg-scroll-region {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        padding-right: 6px;
+      }
+
+      .mg-shell-frame {
+        max-width: 1580px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .mg-topbar,
+      .mg-panel,
+      .mg-improvements-panel,
+      .mg-creator-board {
+        background: linear-gradient(180deg, rgba(23, 29, 39, 0.96), rgba(16, 21, 30, 0.98));
+        border: 1px solid var(--mg-border-soft);
+        border-radius: 18px;
+        box-shadow: var(--mg-elev-panel);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .mg-topbar::before,
+      .mg-panel::before,
+      .mg-improvements-panel::before,
+      .mg-creator-board::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--mg-brand-line), transparent);
+      }
+
+      .mg-topbar {
+        padding: 18px 20px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        position: sticky;
+        top: 10px;
+        z-index: 20;
+        backdrop-filter: blur(12px);
+      }
+
+      .mg-brand-block {
+        max-width: 520px;
+      }
+
+      .mg-brand-kicker,
+      .mg-overline,
+      .mg-card-label,
+      .mg-vital-label,
+      .mg-subpanel-title,
+      .mg-speaker,
+      .mg-improvement-title,
+      .mg-stack header span,
+      .mg-slot span,
+      .mg-scene-banner span,
+      .mg-stage-objective span,
+      .mg-criteria-head strong {
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-size: 11px;
+        color: var(--ink-3);
+      }
+
+      .mg-brand-line {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+
+      .mg-brand-line h1,
+      .mg-panel-header h2 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: clamp(1.18rem, 1.5vw, 1.88rem);
+        font-weight: 600;
+        line-height: 1.15;
+        letter-spacing: -0.03em;
+      }
+
+      .mg-brand-summary,
+      .mg-improvements-note,
+      .mg-speaker-meta,
+      .mg-quest-head span,
+      .mg-quest-footer span,
+      .mg-dialogue-line,
+      .mg-skill-card p,
+      .mg-improvement-card p,
+      .mg-detail-copy,
+      .mg-criteria-card p,
+      .mg-slot small {
+        color: var(--ink-2);
+        line-height: 1.55;
+      }
+
+      .mg-badge,
+      .mg-action-tag,
+      .mg-quest-tier,
+      .mg-dialogue-state,
+      .mg-panel-note {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: var(--mg-brand-soft);
+        border: 1px solid var(--mg-brand-line);
+        color: var(--mg-brand-text);
+        font-size: 12px;
+      }
+
+      .mg-top-status-grid {
+        display: grid;
+        grid-template-columns: minmax(260px, 1.25fr) repeat(3, minmax(150px, 0.7fr)) minmax(220px, 1fr);
+        gap: 10px;
+        flex: 1;
+      }
+
+      .mg-top-card {
+        padding: 14px;
+        border-radius: 14px;
+        background: linear-gradient(180deg, rgba(28, 35, 47, 0.86), rgba(18, 24, 34, 0.94));
+        border: 1px solid var(--mg-border-soft);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-height: 82px;
+      }
+
+      .mg-top-card--hero {
+        gap: 12px;
+      }
+
+      .mg-top-hero {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .mg-avatar-frame {
+        width: 48px;
+        height: 48px;
+        position: relative;
+        flex: none;
+      }
+
+      .mg-avatar-ring,
+      .mg-avatar-core {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+      }
+
+      .mg-avatar-ring {
+        border: 1px solid var(--mg-brand-line);
+        box-shadow: inset 0 0 0 3px var(--mg-brand-soft);
+      }
+
+      .mg-avatar-core {
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at top, rgba(215, 177, 95, 0.22), rgba(37, 47, 63, 0.94));
+        color: var(--mg-brand-text);
+      }
+
+      .mg-avatar-core i,
+      [data-lucide] {
+        width: 17px;
+        height: 17px;
+      }
+
+      .mg-top-name {
+        font-size: 0.98rem;
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      .mg-top-meta,
+      .mg-top-subline,
+      .mg-metric-detail,
+      .mg-scene-meta span,
+      .mg-mini-note {
+        color: var(--ink-2);
+        font-size: 12px;
+      }
+
+      .mg-calm-rail,
+      .mg-metric-row,
+      .mg-pair-line {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .mg-pill {
+        display: inline-flex;
+        align-self: flex-start;
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .mg-pill--good {
+        background: var(--mg-success-soft);
+        color: #bfe2cb;
+        border: 1px solid var(--mg-success-line);
+      }
+
+      .mg-metric,
+      .mg-quest-progress,
+      .mg-vital-block strong,
+      .mg-quest-head strong,
+      .mg-stack header strong {
+        font-family: var(--font-mono);
+        color: var(--ink);
+      }
+
+      .mg-metric {
+        font-size: 14px;
+      }
+
+      .mg-chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .mg-chip {
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(39, 47, 63, 0.74);
+        border: 1px solid var(--mg-border-soft);
+        color: var(--ink-2);
+        font-size: 12px;
+      }
+
+      .mg-creator-board,
+      .mg-panel,
+      .mg-improvements-panel {
+        padding: 20px;
+      }
+
+      .mg-panel-header,
+      .mg-panel-header--improvements,
+      .mg-panel-header--board {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+
+      .mg-criteria-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .mg-criteria-card,
+      .mg-vital-block,
+      .mg-subpanel,
+      .mg-skill-card,
+      .mg-slot,
+      .mg-improvement-card,
+      .mg-option,
+      .mg-stat-card,
+      .mg-flow-step {
+        border-radius: 14px;
+        border: 1px solid var(--mg-border-soft);
+        background: linear-gradient(180deg, rgba(21, 27, 37, 0.92), rgba(18, 24, 34, 0.88));
+        transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+      }
+
+      .mg-criteria-card {
+        padding: 14px;
+      }
+
+      .mg-criteria-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        color: var(--mg-brand-text);
+      }
+
+      .mg-criteria-head i {
+        width: 16px;
+        height: 16px;
+      }
+
+      .mg-main-grid {
+        display: grid;
+        grid-template-columns: 340px minmax(0, 1fr) 360px;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .mg-side-column,
+      .mg-center-column {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .mg-vitals {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .mg-vital-block,
+      .mg-stat-card,
+      .mg-subpanel,
+      .mg-skill-card,
+      .mg-slot,
+      .mg-improvement-card {
+        padding: 14px;
+        box-shadow: var(--mg-elev-soft);
+      }
+
+      .mg-vital-block {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .mg-vital-block strong {
+        font-size: 16px;
+      }
+
+      .mg-vital-block small {
+        color: var(--ink-3);
+        line-height: 1.45;
+      }
+
+      .mg-bar {
+        height: 8px;
+        border-radius: 999px;
+        background: var(--mg-ambient-line);
+        overflow: hidden;
+      }
+
+      .mg-bar span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, rgba(110, 160, 255, 0.66), rgba(190, 216, 255, 0.78));
+      }
+
+      .mg-bar--amber span {
+        background: linear-gradient(90deg, rgba(162, 117, 38, 0.76), rgba(214, 177, 95, 0.82));
+      }
+
+      .mg-stat-grid,
+      .mg-split-grid,
+      .mg-meta-columns,
+      .mg-inventory-columns {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .mg-stat-grid {
+        margin-bottom: 14px;
+      }
+
+      .mg-stat-card {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .mg-stat-card strong {
+        font-family: var(--font-mono);
+        font-size: 28px;
+        color: var(--ink);
+      }
+
+      .mg-stat-card small,
+      .mg-condition small,
+      .mg-option-copy small {
+        color: var(--ink-2);
+        line-height: 1.45;
+      }
+
+      .mg-key-list,
+      .mg-equip-list,
+      .mg-checklist {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .mg-key-list li,
+      .mg-equip-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--mg-ambient-line);
+        color: var(--ink-2);
+      }
+
+      .mg-key-list li strong,
+      .mg-equip-list li strong,
+      .mg-option-copy strong,
+      .mg-skill-top strong,
+      .mg-slot strong,
+      .mg-improvement-card strong,
+      .mg-condition strong,
+      .mg-stage-capsule strong,
+      .mg-scene-banner strong,
+      .mg-stage-objective strong,
+      .mg-flow-step strong {
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      .mg-tag-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .mg-tag-cloud span {
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: var(--mg-info-soft);
+        border: 1px solid var(--mg-info-line);
+        color: #c3d7ff;
+        font-size: 12px;
+      }
+
+      .mg-condition-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .mg-condition {
+        display: flex;
+        gap: 10px;
+        padding: 12px;
+        border-radius: 14px;
+        background: rgba(31, 37, 49, 0.62);
+        border: 1px solid var(--mg-border-soft);
+      }
+
+      .mg-condition-dot {
+        width: 10px;
+        height: 10px;
+        margin-top: 5px;
+        border-radius: 50%;
+        background: var(--mg-primary);
+        box-shadow: 0 0 0 5px var(--mg-brand-soft);
+      }
+
+      .mg-condition--muted .mg-condition-dot {
+        background: #5f6980;
+        box-shadow: 0 0 0 5px rgba(95, 105, 128, 0.08);
+      }
+
+      .mg-quest-card {
+        padding: 16px;
+        border-radius: 16px;
+        border: 1px solid var(--mg-border-strong);
+        background: linear-gradient(180deg, rgba(18, 24, 34, 0.96), rgba(15, 20, 29, 0.98));
+      }
+
+      .mg-quest-card--active {
+        box-shadow: inset 0 0 0 1px rgba(215, 177, 95, 0.12);
+      }
+
+      .mg-quest-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .mg-checklist li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        color: var(--ink-2);
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid transparent;
+      }
+
+      .mg-checklist li strong {
+        display: block;
+        margin-bottom: 3px;
+      }
+
+      .mg-check {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        border: 1px solid var(--mg-brand-line);
+        background: var(--mg-brand-soft);
+        flex: none;
+        margin-top: 2px;
+      }
+
+      .mg-checklist .is-done .mg-check {
+        background: linear-gradient(180deg, rgba(214, 177, 95, 0.82), rgba(144, 110, 38, 0.92));
+      }
+
+      .mg-checklist .is-active {
+        border-color: var(--mg-brand-line);
+        background: rgba(214, 177, 95, 0.06);
+      }
+
+      .mg-world-stage {
+        min-height: 540px;
+        border-radius: 18px;
+        background:
+          radial-gradient(circle at 30% 28%, var(--mg-stage-wash), transparent 18%),
+          radial-gradient(circle at 70% 42%, var(--mg-stage-blue), transparent 20%),
+          linear-gradient(180deg, rgba(16, 21, 30, 0.98), rgba(19, 27, 39, 0.94));
+        border: 1px solid var(--mg-border-soft);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .mg-stage-grid,
+      .mg-stage-wash,
+      .mg-stage-lanes {
+        position: absolute;
+        inset: 0;
+      }
+
+      .mg-stage-grid {
+        background-image:
+          linear-gradient(var(--mg-grid-line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--mg-grid-line) 1px, transparent 1px);
+        background-size: 78px 78px;
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.96));
+      }
+
+      .mg-stage-wash {
+        background:
+          radial-gradient(circle at 50% 58%, rgba(215, 177, 95, 0.10), transparent 22%),
+          radial-gradient(circle at 46% 78%, rgba(110, 160, 255, 0.08), transparent 26%);
+      }
+
+      .mg-stage-lanes {
+        background:
+          linear-gradient(125deg, transparent 0%, rgba(255, 255, 255, 0.03) 35%, transparent 48%),
+          linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.02) 100%);
+      }
+
+      .mg-scene-banner,
+      .mg-stage-objective,
+      .mg-log-panel,
+      .mg-stage-capsule {
+        position: absolute;
+        backdrop-filter: blur(8px);
+        background: rgba(12, 16, 23, 0.78);
+        border: 1px solid var(--mg-border-soft);
+      }
+
+      .mg-scene-banner {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 10px 12px;
+        border-radius: 12px;
+      }
+
+      .mg-scene-banner--top {
+        top: 16px;
+        left: 16px;
+      }
+
+      .mg-scene-banner--bottom {
+        right: 18px;
+        bottom: 132px;
+      }
+
+      .mg-stage-capsule {
+        top: 18px;
+        right: 18px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        max-width: 280px;
+      }
+
+      .mg-stage-capsule span {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--mg-brand-text);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+      }
+
+      .mg-stage-objective {
+        left: 50%;
+        bottom: 120px;
+        transform: translateX(-50%);
+        padding: 12px 16px;
+        border-radius: 999px;
+      }
+
+      .mg-unit {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .mg-unit--ally {
+        left: 31%;
+        top: 54%;
+      }
+
+      .mg-unit--enemy-a {
+        left: 58%;
+        top: 34%;
+      }
+
+      .mg-unit--enemy-b {
+        left: 67%;
+        top: 60%;
+      }
+
+      .mg-unit-ring {
+        position: absolute;
+        width: 128px;
+        height: 56px;
+        border-radius: 50%;
+        border: 1px solid rgba(97, 192, 131, 0.26);
+        background: radial-gradient(circle, var(--mg-stage-ally), transparent 64%);
+      }
+
+      .mg-unit--enemy .mg-unit-ring {
+        border-color: rgba(217, 106, 88, 0.24);
+        background: radial-gradient(circle, var(--mg-stage-enemy), transparent 64%);
+      }
+
+      .mg-unit-core {
+        position: relative;
+        min-width: 124px;
+        padding: 15px 14px;
+        border-radius: 14px;
+        background: rgba(12, 16, 23, 0.88);
+        border: 1px solid var(--mg-border-soft);
+        text-align: center;
+      }
+
+      .mg-unit-core span {
+        display: block;
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      .mg-unit-core small {
+        color: var(--ink-2);
+      }
+
+      .mg-log-panel {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        padding: 12px;
+        border-radius: 14px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .mg-log-line {
+        display: flex;
+        gap: 10px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--ink-2);
+      }
+
+      .mg-log-line span {
+        color: var(--mg-brand-text);
+      }
+
+      .mg-dialogue-box {
+        border-radius: 16px;
+        background: linear-gradient(180deg, rgba(15, 20, 29, 0.96), rgba(12, 17, 25, 0.98));
+        border: 1px solid var(--mg-border-soft);
+        padding: 18px;
+      }
+
+      .mg-speaker-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .mg-dialogue-line {
+        margin: 0 0 16px;
+        font-size: 15px;
+      }
+
+      .mg-option-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .mg-option {
+        width: 100%;
+        padding: 14px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        text-align: left;
+        cursor: pointer;
+        color: inherit;
+      }
+
+      .mg-option-index {
+        min-width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        background: rgba(39, 47, 63, 0.88);
+        color: var(--mg-brand-text);
+        font-family: var(--font-mono);
+      }
+
+      .mg-option-copy {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .mg-option-tag {
+        color: var(--mg-brand-text);
+      }
+
+      .mg-option-tag--warning {
+        color: #e3cd9c;
+      }
+
+      .mg-option-tag--danger {
+        color: #d8a29a;
+      }
+
+      .mg-option.is-active {
+        border-color: var(--mg-brand-line);
+        background: linear-gradient(180deg, rgba(37, 31, 20, 0.34), rgba(20, 24, 34, 0.92));
+        box-shadow: inset 0 0 0 1px rgba(215, 177, 95, 0.10);
+      }
+
+      .mg-option:hover,
+      .mg-skill-card:hover,
+      .mg-slot:hover,
+      .mg-improvement-card:hover,
+      .mg-stat-card:hover,
+      .mg-subpanel:hover,
+      .mg-criteria-card:hover,
+      .mg-flow-step:hover {
+        transform: translateY(-1px);
+        border-color: var(--mg-border-strong);
+        background: linear-gradient(180deg, rgba(24, 30, 41, 0.96), rgba(18, 24, 34, 0.92));
+      }
+
+      .mg-flow-lane {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+
+      .mg-flow-step {
+        padding: 12px;
+        box-shadow: var(--mg-elev-soft);
+      }
+
+      .mg-flow-step span {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--mg-brand-text);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+      }
+
+      .mg-skill-stacks,
+      .mg-inventory-layout,
+      .mg-slot-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .mg-stack {
+        padding: 14px;
+        border-radius: 16px;
+        background: linear-gradient(180deg, rgba(18, 24, 34, 0.96), rgba(15, 20, 29, 0.98));
+        border: 1px solid var(--mg-border-soft);
+        display: grid;
+        gap: 10px;
+      }
+
+      .mg-stack header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
+      }
+
+      .mg-stack--short {
+        box-shadow: inset 0 0 0 1px rgba(110, 160, 255, 0.08);
+      }
+
+      .mg-stack--long {
+        box-shadow: inset 0 0 0 1px rgba(97, 192, 131, 0.08);
+      }
+
+      .mg-skill-top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+
+      .mg-skill-top span {
+        color: var(--mg-brand-text);
+        font-size: 12px;
+      }
+
+      .mg-slot-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .mg-slot {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .mg-improvement-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .mg-improvement-card p {
+        margin: 10px 0 0;
+        font-size: 14px;
+      }
+
+      @media (max-width: 1360px) {
+        .mg-topbar {
+          flex-direction: column;
+        }
+
+        .mg-top-status-grid,
+        .mg-criteria-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          width: 100%;
+        }
+
+        .mg-main-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .mg-side-column--left,
+        .mg-side-column--right {
+          order: 2;
+        }
+
+        .mg-center-column {
+          order: 1;
+        }
+
+        .mg-improvement-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 820px) {
+        #app-shell {
+          padding: 12px;
+        }
+
+        .mg-top-status-grid,
+        .mg-vitals,
+        .mg-stat-grid,
+        .mg-split-grid,
+        .mg-meta-columns,
+        .mg-inventory-columns,
+        .mg-slot-grid,
+        .mg-improvement-grid,
+        .mg-criteria-grid,
+        .mg-flow-lane {
+          grid-template-columns: 1fr;
+        }
+
+        .mg-panel-header,
+        .mg-panel-header--improvements,
+        .mg-panel-header--board,
+        .mg-speaker-row,
+        .mg-quest-head {
+          flex-direction: column;
+        }
+
+        .mg-world-stage {
+          min-height: 500px;
+        }
+
+        .mg-stage-objective,
+        .mg-scene-banner--bottom,
+        .mg-stage-capsule {
+          position: static;
+          transform: none;
+          margin: 12px;
+        }
+
+        .mg-log-panel {
+          position: static;
+          margin: 12px;
+        }
+      }
+    </style>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
