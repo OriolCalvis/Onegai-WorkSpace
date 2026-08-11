@@ -61,6 +61,10 @@ bool parseEffectType(const std::string& text, EffectType& out) {
         out = EffectType::Log;
         return true;
     }
+    if (text == "skillCheck") {
+        out = EffectType::SkillCheck;
+        return true;
+    }
     return false;
 }
 
@@ -210,7 +214,7 @@ Result<AdventureScript> AdventureScript::loadFromString(const std::string& jsonT
                 return Result<AdventureScript>::Error(
                     "beats[" + std::to_string(i) + "] (\"" + beat.id + "\").effects[" +
                     std::to_string(e) + "]: tipo desconocido \"" + effectText +
-                    "\" (validos: setFlag/clearFlag/grantGold/log)");
+                    "\" (validos: setFlag/clearFlag/grantGold/log/skillCheck)");
             }
             effect.arg = effectEntry["arg"].asString();
             effect.value = effectEntry["value"].asInt(0);
@@ -219,6 +223,34 @@ Result<AdventureScript> AdventureScript::loadFromString(const std::string& jsonT
                 return Result<AdventureScript>::Error(
                     "beats[" + std::to_string(i) + "] (\"" + beat.id + "\").effects[" +
                     std::to_string(e) + "]: setFlag/clearFlag necesitan \"arg\" con el nombre de la flag");
+            }
+            if (effect.type == EffectType::SkillCheck) {
+                // Sub-objeto dedicado: value (int) no cabe la CD (float) ni
+                // los 4 nombres de flag. Mismo criterio que el catlogo de
+                // skills con overrideCdIfSave: un bloque, no campos sueltos.
+                const JsonValue& sc = effectEntry["skillCheck"];
+                effect.skillCheck.skillId = sc["skillId"].asString();
+                effect.skillCheck.cd = static_cast<float>(sc["cd"].asNumber(1.0));
+                effect.skillCheck.flagBotch = sc["flagBotch"].asString();
+                effect.skillCheck.flagPartial = sc["flagPartial"].asString();
+                effect.skillCheck.flagSuccess = sc["flagSuccess"].asString();
+                effect.skillCheck.flagCritical = sc["flagCritical"].asString();
+                if (effect.skillCheck.skillId.empty() ||
+                    effect.skillCheck.flagBotch.empty() ||
+                    effect.skillCheck.flagPartial.empty() ||
+                    effect.skillCheck.flagSuccess.empty() ||
+                    effect.skillCheck.flagCritical.empty()) {
+                    return Result<AdventureScript>::Error(
+                        "beats[" + std::to_string(i) + "] (\"" + beat.id + "\").effects[" +
+                        std::to_string(e) + "]: skillCheck necesita skillId, cd, flagBotch, "
+                        "flagPartial, flagSuccess y flagCritical (todos no vacios)");
+                }
+                if (effect.skillCheck.cd < 0.0f || effect.skillCheck.cd > 3.0f) {
+                    return Result<AdventureScript>::Error(
+                        "beats[" + std::to_string(i) + "] (\"" + beat.id + "\").effects[" +
+                        std::to_string(e) + "]: skillCheck.cd fuera de rango Nd6 "
+                        "(0.0..3.0, GDD 7.1)");
+                }
             }
             beat.effects.push_back(std::move(effect));
         }
@@ -298,6 +330,13 @@ NarrativeResult NarrativeEngine::fire(TriggerType type, const std::string& targe
                     break;
                 case EffectType::Log:
                     result.log.push_back(effect.arg);
+                    break;
+                // Diferido: el motor no tiene RNG ni catalogo de skills,
+                // asi que solo empaqueta la peticion. GameSession la
+                // resuelve contra DicePoolEngine y enciende la flag del
+                // grado en el mismo NarrativeState (ver applyNarrative).
+                case EffectType::SkillCheck:
+                    result.skillChecks.push_back(effect.skillCheck);
                     break;
             }
         }

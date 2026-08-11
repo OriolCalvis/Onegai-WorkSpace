@@ -12,6 +12,8 @@
 #include "Level/LevelDefinition.h"
 #include "Game/Skill.h"
 #include "RPG/NarrativeEngine.h"
+#include "RPG/RandomEngine.h"
+#include "RPG/Catalogs/RpgCatalogs.h"  // RPG::SkillCatalog (Nd6, distinto del SkillCatalog legacy de Game/Skill.h)
 
 class TileMap;
 class ObjectCatalog;
@@ -206,6 +208,24 @@ public:
     }
     const RPG::NarrativeState* narrativeState() const { return m_narrativeState; }
 
+    // Motor de numeros aleatorios para las TIRADAS Nd6 que la narrativa
+    // pide (effect "skillCheck": percepcion, persuasion, etc.). Mismo
+    // patron que BattleState: instancia propia por sesion + inyeccion para
+    // tests reproducibles con ScriptedRng. Ver el comentario extensivo en
+    // BattleState.h por que esto importa (los seeds se rompen al tocar el
+    // orden de tiradas, no las reglas).
+    void setRandomEngine(RPG::RandomEngine& rng) { m_rngInUse = &rng; }
+
+    // Catalogo Nd6 (RPG::SkillCatalog, entries de RPG::SkillDefinition) que
+    // respalda los skillCheck de la narrativa: "percepcion", "sigilo", etc.
+    // NO propietario. Distinto del SkillCatalog legacy de Game/Skill.h que
+    // usa BattleState para combate: ese describe skills de combate (power,
+    // mpCost), este describe skills Nd6 (castingStat, cd). Se pasa por
+    // setter y no por constructor para no romper los callers existentes
+    // (mismo criterio que setNarrative). nullptr = los skillCheck se
+    // ignoran con un aviso (la aventura sigue, solo sin tirada).
+    void setNd6SkillCatalog(const RPG::Catalogs::SkillCatalog* catalog) { m_nd6Skills = catalog; }
+
     // Dispara el beat "enter" del nivel actual. Lo llama quien carga los
     // niveles (la Application), no la sesion: cambiar de mapa es
     // orquestacion, no estado de partida. Devuelve true si algo se
@@ -366,6 +386,15 @@ private:
     const RPG::NarrativeEngine* m_narrative = nullptr;
     RPG::NarrativeState* m_narrativeState = nullptr;
 
+    // Motor Nd6 para los skillCheck de la narrativa (ver setRandomEngine).
+    // Por defecto apunta al propio; un test inyecta un ScriptedRng para
+    // forzar grados concretos.
+    RPG::Xoroshiro128p m_rng;
+    RPG::RandomEngine* m_rngInUse = &m_rng;
+
+    // Catalogo Nd6 que respalda los skillCheck (ver setNd6SkillCatalog).
+    const RPG::Catalogs::SkillCatalog* m_nd6Skills = nullptr;
+
     // Abre dialogo/tienda con el NPC de "def" (no-op si no es Npc).
     void startInteraction(const ObjectDefinition& def);
     // Precio de venta de un id segun el catalogo (0 = no vendible).
@@ -377,4 +406,11 @@ private:
     // esto y no copiado en cada punto de disparo: cuando NarrativeResult
     // gane campos nuevos (abrir tienda, empezar combate), se anaden aqui.
     bool applyNarrative(const RPG::NarrativeResult& result);
+
+    // Resuelve las tiradas Nd6 que un beat pidio (effect "skillCheck"):
+    // tira la pool del stat de la skill contra la CD del beat y enciende
+    // en m_narrativeState la flag del grado obtenido (BOTCH/PARTIAL/
+    // SUCCESS/CRITICAL). Lo llama applyNarrative; el motor narrativo no
+    // puede hacerlo porque no tiene RNG ni catalogo.
+    void resolveSkillChecks(const std::vector<RPG::SkillCheckRequest>& checks);
 };

@@ -142,13 +142,45 @@ enum class EffectType {
     SetFlag,    // arg = flag a encender
     ClearFlag,  // arg = flag a apagar
     GrantGold,  // value = oro (puede ser negativo: un peaje)
-    Log         // arg = linea suelta para el log de la partida
+    Log,        // arg = linea suelta para el log de la partida
+    // Pide al orquestador que resuelva una tirada Nd6 contra una CD y
+    // encienda la flag del grado obtenido. Diferido como grantGold: el
+    // motor narrativo no tiene RNG ni catalogo de skills, asi que solo
+    // empaqueta la peticion en NarrativeResult.skillChecks y deja que
+    // GameSession la resuelva con DicePoolEngine (ver GameSession::
+    // applyNarrative). El grado Nd6 (BOTCH/PARTIAL/SUCCESS/CRITICAL) se
+    // traduce a CUATRO flags distintas, una por grado: asi el contenido
+    // puede ramificar en cuatro variantes por cada tirada (GDD §7.1).
+    SkillCheck
+};
+
+// Una tirada de habilidad pedida desde un beat. El motor la rellena al
+// parsear el effect "skillCheck" y la pasa tal cual al orquestador.
+//
+//   skillId  -> id en SkillCatalog (ej. "percepcion"); su casting_stat
+//               fija el tamano N de la pool (N = stat del jugador).
+//   cd       -> dificultad Nd6 en escala 0.0..3.0 (GDD §7.1:
+//               0.5 Facil, 1 Normal, 1.5 Dificil, 2 Muy dificil,
+//               2.5+ Extraordinaria).
+//   flag*    -> cuatro flags mutuamente excluyentes: se enciende SOLO la
+//               del grado obtenido. El contenido suele quererlas asi para
+//               poder cerrarlas (clearFlag) y re-tirar, o para acumular
+//               "mejor resultado hasta ahora" con anyFlags.
+struct SkillCheckRequest {
+    std::string skillId;
+    float cd = 1.0f;
+    std::string flagBotch;
+    std::string flagPartial;
+    std::string flagSuccess;
+    std::string flagCritical;
 };
 
 struct NarrativeEffect {
     EffectType type = EffectType::SetFlag;
     std::string arg;
     int value = 0;
+    // Solo para type == SkillCheck. Para los demas tipos se ignora.
+    SkillCheckRequest skillCheck;
 };
 
 // ---------------------------------------------------------------------
@@ -243,6 +275,10 @@ struct NarrativeResult {
     // "openShopId", "startBattleWith", "grantQuestId"... cuando toque.
     int goldDelta = 0;
     std::vector<std::string> log;
+    // Tiradas Nd6 pedidas por el beat: el motor las empaqueta y GameSession
+    // las resuelve con DicePoolEngine (no hay RNG en el motor narrativo).
+    // Plural como "log": un beat puede pedir mas de una tirada.
+    std::vector<SkillCheckRequest> skillChecks;
 };
 
 class NarrativeEngine {

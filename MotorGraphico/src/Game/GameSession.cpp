@@ -2,6 +2,8 @@
 
 #include "Level/ObjectCatalog.h"
 #include "Render/TileMap.h"
+#include "RPG/DicePoolEngine.h"
+#include "RPG/Definitions/SkillDefinition.h"
 
 #include <algorithm>
 
@@ -226,14 +228,13 @@ void GameSession::startInteraction(const ObjectDefinition& def) {
     if (m_narrative != nullptr && m_narrativeState != nullptr) {
         const RPG::NarrativeResult narrated = m_narrative->talkTo(def.id, *m_narrativeState);
         if (narrated.fired) {
-            if (!narrated.speaker.empty()) {
-                m_dialogueSpeaker = narrated.speaker;
-            }
-            m_dialogueLines = narrated.lines;
-            addGold(narrated.goldDelta);
-            for (const std::string& entry : narrated.log) {
-                logLine(entry);
-            }
+            // Un solo sitio para aplicar NarrativeResult (oro, log, y ahora
+            // skillChecks Nd6): antes esto estaba duplicado aqui y en
+            // applyNarrative, y la deuda tecnica saltaba justo ahora, al
+            // anadir un tercer efecto diferido. applyNarrative deja
+            // m_dialogueLines/m_dialogueSpeaker listos; mas abajo se decide
+            // modo Dialogue/Shop.
+            applyNarrative(narrated);
         }
     }
 
@@ -263,6 +264,49 @@ void GameSession::startInteraction(const ObjectDefinition& def) {
     }
 }
 
+void GameSession::resolveSkillChecks(const std::vector<RPG::SkillCheckRequest>& checks) {
+    // Una tirada Nd6 pedida desde un beat (GDD 7.1): N dados = stat del
+    // jugador segun la skill implicada, CD del beat, grado -> flag. Es el
+    // MISMO DicePoolEngine que usa el combate, asi que narrativa y combate
+    // comparten reglas (coherencia pedida para todo el sistema).
+    //
+    // IMPORTANTE: esto convierte a GameSession en un segundo escritor de
+    // flags narrativas (el primero es el propio NarrativeEngine con
+    // setFlag/clearFlag). Es consistente con como ya pasaba con el oro
+    // (GameSession es quien lo aplica, no el motor narrativo), y la regla
+    // de oro sigue en pie: LAS FLAGS SON LA UNICA FUENTE DE VERDAD. Lo
+    // unico que cambia es quien empuja el lapiz.
+    if (m_narrativeState == nullptr) {
+        return;  // Sin estado no hay donde escribir el resultado.
+    }
+    for (const RPG::SkillCheckRequest& c : checks) {
+        const RPG::SkillDefinition* def =
+            m_nd6Skills != nullptr ? m_nd6Skills->find(c.skillId) : nullptr;
+        if (def == nullptr) {
+            logLine("(skillCheck: skill Nd6 desconocida \"" + c.skillId +
+                    "\", se ignora. Falta setNd6SkillCatalog?)");
+            continue;
+        }
+        if (m_playerBody == nullptr) {
+            logLine("(skillCheck: sin jugador para tirar \"" + c.skillId + "\", se ignora)");
+            continue;
+        }
+        const int dice = m_playerBody->stat(def->casting_stat);
+        const RPG::PoolResult pool =
+            RPG::DicePoolEngine::roll_pool(dice, RPG::DiceMod::NORMAL, *m_rngInUse);
+        const RPG::CheckOutcome out = RPG::DicePoolEngine::resolve_against_cd(pool, c.cd);
+        switch (out.degree) {
+            case RPG::Degree::BOTCH:    m_narrativeState->setFlag(c.flagBotch);    break;
+            case RPG::Degree::PARTIAL:  m_narrativeState->setFlag(c.flagPartial);  break;
+            case RPG::Degree::SUCCESS:  m_narrativeState->setFlag(c.flagSuccess);  break;
+            case RPG::Degree::CRITICAL: m_narrativeState->setFlag(c.flagCritical); break;
+        }
+        logLine("(tirada " + c.skillId + " CD " + std::to_string(c.cd) + ": " +
+                std::to_string(pool.successes) + " exitos -> " +
+                std::to_string(static_cast<int>(out.degree)) + ")");
+    }
+}
+
 bool GameSession::applyNarrative(const RPG::NarrativeResult& result) {
     if (!result.fired) {
         return false;
@@ -273,6 +317,7 @@ bool GameSession::applyNarrative(const RPG::NarrativeResult& result) {
     m_mode = GameMode::Dialogue;
 
     addGold(result.goldDelta);
+    resolveSkillChecks(result.skillChecks);
     for (const std::string& entry : result.log) {
         logLine(entry);
     }

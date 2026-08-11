@@ -126,6 +126,13 @@ add_executable(demo_boundington examples/demo_boundington.cpp)
 target_link_libraries(demo_boundington PRIVATE motor_level)
 set_target_properties(demo_boundington PROPERTIES CXX_STANDARD 17)
 
+# demo_narrativa_nd6 — valida el puente NarrativeEngine -> DicePoolEngine:
+# un beat con effect "skillCheck" empaqueta la tirada y la resolucion Nd6
+# enciende la flag del grado (BOTCH/PARTIAL/SUCCESS/CRITICAL). GL-free.
+add_executable(demo_narrativa_nd6 examples/demo_narrativa_nd6.cpp)
+target_link_libraries(demo_narrativa_nd6 PRIVATE motor_rpg)
+set_target_properties(demo_narrativa_nd6 PROPERTIES CXX_STANDARD 17)
+
 # Fase 10: catalogo generico de objetos ("todo es un objeto") + accion
 # Item en BattleState + ObjectSpawn en LevelDefinition. GL-free entero.
 # Lee assets/objects/test_objects.json y assets/levels/test_level.json

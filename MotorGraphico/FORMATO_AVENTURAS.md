@@ -96,6 +96,36 @@ Las tres listas se combinan con AND entre sí. Omitirla entera = siempre cierta.
 | `clearFlag` | `arg`  | Apaga una flag |
 | `grantGold` | `value` | Oro a la partida (negativo = peaje) |
 | `log`       | `arg`  | Línea suelta al log de la partida |
+| `skillCheck` | `skillCheck: {skillId, cd, flagBotch, flagPartial, flagSuccess, flagCritical}` | Resuelve una tirada Nd6 (GDD §7.1): lanza tantos d6 como el `castingStat` de la skill indique (sacado del catálogo Nd6), compara contra `cd` (escala 0.0..3.0: 0.5 Fácil, 1 Normal, 1.5 Difícil, 2 Muy difícil, 2.5+ Extraordinaria) y enciende **una** de las cuatro flags según el grado obtenido (BOTCH/PARTIAL/SUCCESS/CRITICAL). Así un beat puede ramificar en cuatro variantes por tirada. |
+
+El `skillCheck` es **diferido** como `grantGold`: el motor narrativo no
+tiene RNG ni catálogo, así que solo empaqueta la petición y deja que
+`GameSession` la resuelva con `DicePoolEngine` (el mismo del combate, lo
+que keeps narrativa y combate en el mismo sistema de reglas). El grado se
+traduce a flags — no a magnitud — porque en la narrativa lo que importa es
+"qué percibes / convences / averiguas", no cuánto daño.
+
+```jsonc
+{
+  "type": "skillCheck",
+  "skillCheck": {
+    "skillId": "percepcion",
+    "cd": 1.0,                                  // Difícil sería 1.5
+    "flagBotch":    "prologo_percibe_nada",
+    "flagPartial":  "prologo_percibe_parcial",
+    "flagSuccess":  "prologo_percibe_exito",
+    "flagCritical": "prologo_percibe_critico"
+  }
+}
+```
+
+Las skills utilitarias (`percepcion`, `sigilo`, `persuasion`,
+`conocimiento_arcano`, `intimidacion`, `investigacion`, `engano`,
+`atletismo`, `interpretacion`) viven en `assets/catalogs/skills.json`
+generadas por `tools/gen_skills_utilitarias.py`. Para que un `skillCheck`
+funcione, la `GameSession` debe recibir el catálogo Nd6 vía
+`setNd6SkillCatalog(...)`; sin él, el check se ignora con un aviso en el
+log (la aventura sigue, solo sin tirada).
 
 Un tipo de trigger o de efecto desconocido es **error de carga**, no un
 beat que nunca se dispara en silencio. Un objetivo sin `doneFlag`
