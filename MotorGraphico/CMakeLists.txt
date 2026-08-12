@@ -6,10 +6,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-# assets/ (shaders, texturas, mapas TMX) se referencia con rutas relativas
-# desde los ejecutables (ver demo_textured_quad.cpp, demo_tilemap.cpp):
+# assets/ (shaders, texturas, mapas TMX, aventuras) se referencia con rutas
+# relativas desde los ejecutables (ver demo_textured_quad.cpp, demo_tilemap.cpp):
 # se copia junto al binario para que funcionen ejecutados desde build/.
+#
+# OJO CON ESTO: file(COPY ...) corre al CONFIGURAR, no al compilar. Con eso
+# solo, quien anadia un asset nuevo y hacia "cmake --build ." se encontraba con
+# que build/assets/ seguia sin el fichero, y el demo fallaba al cargarlo sin
+# ninguna pista de por que -- el fichero SI estaba en assets/, delante de sus
+# narices. Paso de verdad con boundington_segundo_dia.json y boundington_ocaso.
+#
+# La copia inicial se queda (deja el arbol listo tras configurar) y ademas hay
+# un target que se ejecuta en CADA build y del que cuelgan los demos.
 file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
+
+add_custom_target(copiar_assets ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets
+    COMMENT "Sincronizando assets/ -> build/assets/"
+    VERBATIM
+)
 
 # --- Demo sin dependencias externas: prueba ResourceManager<T> de forma
 # aislada. Compila y pasa en cualquier maquina con g++/clang++ C++17. ---
@@ -109,6 +125,7 @@ set_target_properties(demo_battle_nd6 PROPERTIES CXX_STANDARD 17)
 add_executable(demo_catalogos_rpg examples/demo_catalogos_rpg.cpp)
 target_link_libraries(demo_catalogos_rpg PRIVATE motor_level)
 set_target_properties(demo_catalogos_rpg PROPERTIES CXX_STANDARD 17)
+add_dependencies(demo_catalogos_rpg copiar_assets)
 
 # ====================================================================
 # demo_mundo — B24: el mundo de Egaroth (19 naciones, 95 ciudades, 26 zonas)
@@ -117,6 +134,7 @@ set_target_properties(demo_catalogos_rpg PROPERTIES CXX_STANDARD 17)
 add_executable(demo_mundo examples/demo_mundo.cpp)
 target_link_libraries(demo_mundo PRIVATE motor_level)
 set_target_properties(demo_mundo PROPERTIES CXX_STANDARD 17)
+add_dependencies(demo_mundo copiar_assets)
 
 # ====================================================================
 # demo_boundington — el primer dia en Boundington (1981 b.f.), la primera
@@ -125,6 +143,7 @@ set_target_properties(demo_mundo PROPERTIES CXX_STANDARD 17)
 add_executable(demo_boundington examples/demo_boundington.cpp)
 target_link_libraries(demo_boundington PRIVATE motor_level)
 set_target_properties(demo_boundington PROPERTIES CXX_STANDARD 17)
+add_dependencies(demo_boundington copiar_assets)
 
 # demo_narrativa_nd6 — valida el puente NarrativeEngine -> DicePoolEngine:
 # un beat con effect "skillCheck" empaqueta la tirada y la resolucion Nd6
@@ -132,6 +151,7 @@ set_target_properties(demo_boundington PROPERTIES CXX_STANDARD 17)
 add_executable(demo_narrativa_nd6 examples/demo_narrativa_nd6.cpp)
 target_link_libraries(demo_narrativa_nd6 PRIVATE motor_rpg)
 set_target_properties(demo_narrativa_nd6 PROPERTIES CXX_STANDARD 17)
+add_dependencies(demo_narrativa_nd6 copiar_assets)
 
 # demo_prologo — el prologo onirico de Boundington (Cap. 1-2 del canon).
 # Reproduce boundington_prologo.json forzando SUCCESS en las dos tiradas
@@ -139,6 +159,7 @@ set_target_properties(demo_narrativa_nd6 PROPERTIES CXX_STANDARD 17)
 add_executable(demo_prologo examples/demo_prologo.cpp)
 target_link_libraries(demo_prologo PRIVATE motor_rpg)
 set_target_properties(demo_prologo PROPERTIES CXX_STANDARD 17)
+add_dependencies(demo_prologo copiar_assets)
 
 # ====================================================================
 # demo_campana_boundington — "Los Perdidos de Boundington" entera: prologo
@@ -147,6 +168,7 @@ set_target_properties(demo_prologo PROPERTIES CXX_STANDARD 17)
 add_executable(demo_campana_boundington examples/demo_campana_boundington.cpp)
 target_link_libraries(demo_campana_boundington PRIVATE motor_level)
 set_target_properties(demo_campana_boundington PROPERTIES CXX_STANDARD 17)
+add_dependencies(demo_campana_boundington copiar_assets)
 
 # ====================================================================
 # demo_narrativa_combate — el efecto "startBattle": un beat pide combate,
@@ -156,6 +178,7 @@ set_target_properties(demo_campana_boundington PROPERTIES CXX_STANDARD 17)
 add_executable(demo_narrativa_combate examples/demo_narrativa_combate.cpp)
 target_link_libraries(demo_narrativa_combate PRIVATE motor_level motor_map)
 set_target_properties(demo_narrativa_combate PROPERTIES CXX_STANDARD 17)
+add_dependencies(demo_narrativa_combate copiar_assets)
 
 # Fase 10: catalogo generico de objetos ("todo es un objeto") + accion
 # Item en BattleState + ObjectSpawn en LevelDefinition. GL-free entero.
