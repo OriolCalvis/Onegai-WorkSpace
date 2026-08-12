@@ -232,6 +232,13 @@ public:
     // disparo (y en ese caso deja la sesion en Dialogue).
     bool enterLevelNarrative(const std::string& levelId);
 
+    // Simetrico del anterior para el trigger "talk". interact() ya lo hace
+    // con el NPC que tienes al lado, pero eso obliga a colocar al jugador
+    // en la celda correcta: para un test, o para un dialogo que arranca
+    // solo (una emboscada, un mensajero), hace falta poder decir "habla con
+    // ESTE" sin andar hasta el. Devuelve true si algo se disparo.
+    bool talkNarrative(const std::string& npcId);
+
     // --- Dialogo (mode() == Dialogue) ---
     const std::vector<std::string>& dialogueLines() const { return m_dialogueLines; }
     const std::string& dialogueSpeaker() const { return m_dialogueSpeaker; }
@@ -413,4 +420,22 @@ private:
     // SUCCESS/CRITICAL). Lo llama applyNarrative; el motor narrativo no
     // puede hacerlo porque no tiene RNG ni catalogo.
     void resolveSkillChecks(const std::vector<RPG::SkillCheckRequest>& checks);
+
+    // Arranca el combate que pidio un beat (effect "startBattle").
+    //
+    // A diferencia de una tirada Nd6, esto NO se resuelve dentro de
+    // applyNarrative: el combate dura turnos. Lo que hace es materializar
+    // al enemigo del catalogo junto al jugador, entrar en modo Battle y
+    // APUNTAR que flags hay que encender cuando acabe. Las enciende
+    // syncBattleOutcome, que es quien sabe como termino.
+    //
+    // Si ya hay un combate vivo, los siguientes quedan encolados: el
+    // motor solo sabe pelear de uno en uno, y perder ese dato en silencio
+    // convertiria una emboscada de tres oleadas en una sola.
+    void resolveBattles(const std::vector<RPG::BattleRequest>& battles);
+
+    // Flags pendientes del combate en curso (ver resolveBattles).
+    std::string m_pendingBattleVictoryFlag;
+    std::string m_pendingBattleDefeatFlag;
+    std::vector<RPG::BattleRequest> m_battleQueue;
 };

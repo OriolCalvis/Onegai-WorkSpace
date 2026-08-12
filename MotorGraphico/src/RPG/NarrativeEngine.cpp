@@ -61,6 +61,10 @@ bool parseEffectType(const std::string& text, EffectType& out) {
         out = EffectType::Log;
         return true;
     }
+    if (text == "startBattle") {
+        out = EffectType::StartBattle;
+        return true;
+    }
     if (text == "skillCheck") {
         out = EffectType::SkillCheck;
         return true;
@@ -214,7 +218,7 @@ Result<AdventureScript> AdventureScript::loadFromString(const std::string& jsonT
                 return Result<AdventureScript>::Error(
                     "beats[" + std::to_string(i) + "] (\"" + beat.id + "\").effects[" +
                     std::to_string(e) + "]: tipo desconocido \"" + effectText +
-                    "\" (validos: setFlag/clearFlag/grantGold/log/skillCheck)");
+                    "\" (validos: setFlag/clearFlag/grantGold/log/skillCheck/startBattle)");
             }
             effect.arg = effectEntry["arg"].asString();
             effect.value = effectEntry["value"].asInt(0);
@@ -250,6 +254,24 @@ Result<AdventureScript> AdventureScript::loadFromString(const std::string& jsonT
                         "beats[" + std::to_string(i) + "] (\"" + beat.id + "\").effects[" +
                         std::to_string(e) + "]: skillCheck.cd fuera de rango Nd6 "
                         "(0.0..3.0, GDD 7.1)");
+                }
+            }
+
+            if (effect.type == EffectType::StartBattle) {
+                // Sub-objeto por el mismo motivo que skillCheck: no cabe en
+                // arg+value. Las dos flags son OBLIGATORIAS: un combate del
+                // que no se puede saber como acabo es contenido que no
+                // ramifica, y entonces no hacia falta pedirlo.
+                const JsonValue& bt = effectEntry["startBattle"];
+                effect.battle.monsterId = bt["monsterId"].asString();
+                effect.battle.flagVictory = bt["flagVictory"].asString();
+                effect.battle.flagDefeat = bt["flagDefeat"].asString();
+                if (effect.battle.monsterId.empty() || effect.battle.flagVictory.empty() ||
+                    effect.battle.flagDefeat.empty()) {
+                    return Result<AdventureScript>::Error(
+                        "beats[" + std::to_string(i) + "] (\"" + beat.id + "\").effects[" +
+                        std::to_string(e) + "]: startBattle necesita monsterId, flagVictory "
+                        "y flagDefeat (todos no vacios)");
                 }
             }
             beat.effects.push_back(std::move(effect));
@@ -337,6 +359,13 @@ NarrativeResult NarrativeEngine::fire(TriggerType type, const std::string& targe
                 // grado en el mismo NarrativeState (ver applyNarrative).
                 case EffectType::SkillCheck:
                     result.skillChecks.push_back(effect.skillCheck);
+                    break;
+                // Diferido y ademas ASINCRONO: el combate dura turnos, asi
+                // que la flag de victoria/derrota no se enciende aqui sino
+                // cuando el BattleState se cierra (GameSession::
+                // syncBattleOutcome).
+                case EffectType::StartBattle:
+                    result.battles.push_back(effect.battle);
                     break;
             }
         }

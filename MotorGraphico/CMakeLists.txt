@@ -140,6 +140,23 @@ add_executable(demo_prologo examples/demo_prologo.cpp)
 target_link_libraries(demo_prologo PRIVATE motor_rpg)
 set_target_properties(demo_prologo PROPERTIES CXX_STANDARD 17)
 
+# ====================================================================
+# demo_campana_boundington — "Los Perdidos de Boundington" entera: prologo
+# + tres dias con UN SOLO NarrativeState. Comprueba los finales y que no
+# quede ningun beat muerto (72/72). GL-free, corre en CI.
+add_executable(demo_campana_boundington examples/demo_campana_boundington.cpp)
+target_link_libraries(demo_campana_boundington PRIVATE motor_level)
+set_target_properties(demo_campana_boundington PROPERTIES CXX_STANDARD 17)
+
+# ====================================================================
+# demo_narrativa_combate — el efecto "startBattle": un beat pide combate,
+# GameSession lo ejecuta con BattleState de verdad y la flag de resultado
+# llega DESPUES, al cerrarse la batalla. Prueba las dos ramas y el caso de
+# monsterId inexistente. GL-free.
+add_executable(demo_narrativa_combate examples/demo_narrativa_combate.cpp)
+target_link_libraries(demo_narrativa_combate PRIVATE motor_level motor_map)
+set_target_properties(demo_narrativa_combate PROPERTIES CXX_STANDARD 17)
+
 # Fase 10: catalogo generico de objetos ("todo es un objeto") + accion
 # Item en BattleState + ObjectSpawn en LevelDefinition. GL-free entero.
 # Lee assets/objects/test_objects.json y assets/levels/test_level.json

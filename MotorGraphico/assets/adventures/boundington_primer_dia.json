@@ -374,6 +374,38 @@
       ]
     },
     {
+      "id": "beat_venides_reconoce",
+      "trigger": {
+        "type": "talk",
+        "target": "venides"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_pasado"
+        ],
+        "notFlags": [
+          "bnd_venides_reconocido"
+        ]
+      },
+      "speaker": "Venides",
+      "lines": [
+        "Por la cara que haces, tu tambien has visto la barca.",
+        "No me preguntes como: nadie comparte ese sueno y sigue creyendo que es solo un sueno. Yo llevo un ano intentandolo.",
+        "Si has visto lo que yo vi en Ceaseton, sabes de sobra que esto no termina bien. Asi que no me vengas con medias tintas.",
+        "Dime que has averiguado. Todo."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_venides_reconocido"
+        },
+        {
+          "type": "log",
+          "arg": "Venides sabe que has compartido su sueno. No hay que convencerlo de que los Perdidos son reales."
+        }
+      ]
+    },
+    {
       "id": "beat_venides_completo",
       "trigger": {
         "type": "talk",
@@ -420,6 +452,8 @@
       },
       "requires": {
         "anyFlags": [
+          "bnd_rumor_parroquiano",
+          "bnd_rumor",
           "bnd_pista_aigren",
           "bnd_pista_luisarda",
           "bnd_pista_xila",

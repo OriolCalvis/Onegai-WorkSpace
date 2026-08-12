@@ -220,3 +220,53 @@ Los campos que se dibujan en pantalla (`lines`, `speaker`, `text`) van
 **sin tildes ni ñ**, igual que `assets/objects/ciudad_objetos.json`: la
 `BitmapFont` actual es ASCII. Los campos de autor (`description`,
 comentarios) pueden llevarlos. Cuando la fuente crezca, esto se cae solo.
+
+
+## Efecto `startBattle`
+
+Pide un combate contra un enemigo del `ObjectCatalog`. Como `skillCheck`, el
+motor narrativo no lo resuelve: lo empaqueta en `NarrativeResult.battles` y lo
+ejecuta `GameSession`.
+
+```jsonc
+{
+  "type": "startBattle",
+  "startBattle": {
+    "monsterId":   "perdido_saqueador",   // ObjectDefinition de categoria enemy
+    "flagVictory": "ocaso_saqueadores_muertos",
+    "flagDefeat":  "ocaso_saqueadores_ganan"
+  }
+}
+```
+
+**Las dos flags son obligatorias.** Un combate del que no se puede saber cómo
+acabó es contenido que no ramifica, y entonces no hacía falta pedirlo.
+
+### La diferencia con `skillCheck`: el tiempo
+
+Una tirada Nd6 se resuelve dentro del mismo `applyNarrative` y la flag ya está
+puesta al volver. **Un combate dura turnos**: el beat termina, el jugador pelea,
+y solo después se sabe el resultado. Por eso las flags de victoria/derrota no
+las enciende `applyNarrative` sino `syncBattleOutcome`, cuando el `BattleState`
+se cierra.
+
+El contenido no nota la diferencia — pide una flag y esa flag acaba encendida —
+pero **quien escriba la aventura sí debe tenerlo en cuenta**: el beat `auto` que
+reaccione a `flagVictory` no puede dispararse en el mismo `tick()` que lanzó el
+combate. Tiene que haber un `tick()` después de cerrarse la batalla.
+
+### Oleadas
+
+Si un beat pide varios combates, o llega uno mientras hay otro vivo, los
+siguientes se **encolan**: el motor solo sabe pelear de uno en uno, y perder ese
+dato en silencio convertiría una emboscada de tres oleadas en una sola. Al
+cerrarse cada combate arranca el siguiente automáticamente.
+
+### Casos límite
+
+- **`monsterId` que no existe en el catálogo**: no revienta la partida (mismo
+  criterio permisivo que `LevelLoader`), pero **enciende `flagDefeat`**. Si no lo
+  hiciera, la aventura se quedaría esperando para siempre una flag que nadie va
+  a poner, y el jugador no podría avanzar.
+- **Huir** cuenta como derrota a efectos de trama: el enemigo sigue vivo y lo que
+  fuera a pasar, pasa.

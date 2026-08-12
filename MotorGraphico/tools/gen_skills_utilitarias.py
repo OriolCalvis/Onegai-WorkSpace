@@ -68,9 +68,18 @@ def entrada(skill_id: str, nombre: str, stat: str, descripcion: str) -> dict:
         "type": "skill",
         "description": descripcion,
         "castingStat": stat,
+        # "libre": no gasta la accion principal del turno. Una tirada de
+        # Percepcion al entrar en una sala no cuesta el turno; si costara,
+        # nadie miraria nunca nada. El validador exige uno de los seis
+        # tipos del GDD y sin este campo el catalogo entero quedaba en rojo.
+        "actionType": "libre",
         "target": "self",
         "magnitudeType": "other",
-        "magnitudeByDegree": [0.0, 0.0, 0.0, 0.0],
+        # dict, no lista: es lo que valida validar_catalogos_rpg y lo que
+        # leen las skills de combate. Una utilitaria no hace dano en ningun
+        # grado -- lo que cambia con el grado es lo que te CUENTAN, y eso
+        # vive en los beats, no aqui.
+        "magnitudeByDegree": {"botch": 0.0, "partial": 0.0, "success": 0.0, "critical": 0.0},
         "saveAttribute": "",
         "recovery": "descanso_corto",
         "tier": 1,

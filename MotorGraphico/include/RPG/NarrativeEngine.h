@@ -151,7 +151,20 @@ enum class EffectType {
     // applyNarrative). El grado Nd6 (BOTCH/PARTIAL/SUCCESS/CRITICAL) se
     // traduce a CUATRO flags distintas, una por grado: asi el contenido
     // puede ramificar en cuatro variantes por cada tirada (GDD §7.1).
-    SkillCheck
+    SkillCheck,
+    // Pide al orquestador que arranque un combate contra un enemigo del
+    // ObjectCatalog. Mismo criterio que SkillCheck: el motor narrativo no
+    // tiene BattleState ni catalogo de enemigos, asi que empaqueta la
+    // peticion en NarrativeResult.battles y la resuelve GameSession.
+    //
+    // La diferencia con SkillCheck es el TIEMPO. Una tirada Nd6 se resuelve
+    // dentro del mismo applyNarrative y la flag esta puesta al volver. Un
+    // combate dura turnos: el beat termina, el jugador pelea, y solo
+    // despues se sabe el resultado. Por eso las flags de victoria/derrota
+    // no las enciende applyNarrative sino syncBattleOutcome, cuando el
+    // BattleState se cierra. El contenido no nota la diferencia: pide una
+    // flag y esa flag acaba encendida.
+    StartBattle
 };
 
 // Una tirada de habilidad pedida desde un beat. El motor la rellena al
@@ -166,6 +179,13 @@ enum class EffectType {
 //               del grado obtenido. El contenido suele quererlas asi para
 //               poder cerrarlas (clearFlag) y re-tirar, o para acumular
 //               "mejor resultado hasta ahora" con anyFlags.
+// Combate pedido desde un beat (effect "startBattle").
+struct BattleRequest {
+    std::string monsterId;    // id de un ObjectDefinition de categoria enemy
+    std::string flagVictory;  // se enciende al ganar
+    std::string flagDefeat;   // se enciende al perder o huir
+};
+
 struct SkillCheckRequest {
     std::string skillId;
     float cd = 1.0f;
@@ -181,6 +201,8 @@ struct NarrativeEffect {
     int value = 0;
     // Solo para type == SkillCheck. Para los demas tipos se ignora.
     SkillCheckRequest skillCheck;
+    // Solo para type == StartBattle.
+    BattleRequest battle;
 };
 
 // ---------------------------------------------------------------------
@@ -279,6 +301,10 @@ struct NarrativeResult {
     // las resuelve con DicePoolEngine (no hay RNG en el motor narrativo).
     // Plural como "log": un beat puede pedir mas de una tirada.
     std::vector<SkillCheckRequest> skillChecks;
+    // Combates pedidos por el beat. Plural por el mismo motivo que las
+    // tiradas, aunque de momento GameSession solo puede tener uno vivo:
+    // los siguientes quedan encolados.
+    std::vector<BattleRequest> battles;
 };
 
 class NarrativeEngine {

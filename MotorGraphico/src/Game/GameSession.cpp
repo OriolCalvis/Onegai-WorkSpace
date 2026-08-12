@@ -307,6 +307,49 @@ void GameSession::resolveSkillChecks(const std::vector<RPG::SkillCheckRequest>& 
     }
 }
 
+void GameSession::resolveBattles(const std::vector<RPG::BattleRequest>& battles) {
+    // Materializa al enemigo del catalogo y arranca el combate. Ver el
+    // header para por que las flags no se encienden aqui.
+    for (const RPG::BattleRequest& req : battles) {
+        if (m_battle != nullptr || !m_pendingBattleVictoryFlag.empty()) {
+            m_battleQueue.push_back(req);  // uno de cada vez; el resto espera
+            continue;
+        }
+        const ObjectDefinition* def =
+            m_catalog != nullptr ? m_catalog->find(req.monsterId) : nullptr;
+        if (def == nullptr || def->category != ObjectCategory::Enemy) {
+            // Un id roto no revienta la partida (mismo criterio permisivo
+            // que LevelLoader), pero SI enciende la flag de derrota: si no,
+            // la aventura se queda esperando para siempre una flag que
+            // nadie va a poner, y el jugador no puede avanzar.
+            logLine("(startBattle: enemigo \"" + req.monsterId +
+                    "\" no esta en el catalogo, se da por perdido)");
+            if (m_narrativeState != nullptr) {
+                m_narrativeState->setFlag(req.flagDefeat);
+            }
+            continue;
+        }
+
+        // El enemigo aparece donde esta el jugador: lo ha emboscado la
+        // narrativa, no estaba patrullando el nivel. patrolMin==patrolMax
+        // ==posicion => quieto.
+        WorldEnemy enemy;
+        enemy.objectId = req.monsterId;
+        enemy.position = m_playerPosition;
+        enemy.brain = std::make_unique<EnemyBrain>(m_playerPosition, m_playerPosition,
+                                                    m_playerPosition, def->combat.maxHealth);
+        enemy.skills = std::make_unique<SkillSet>(def->combat.maxMana);
+        for (const std::string& skillId : def->combat.skillIds) {
+            enemy.skills->learn(skillId);
+        }
+        m_enemies.push_back(std::move(enemy));
+
+        m_pendingBattleVictoryFlag = req.flagVictory;
+        m_pendingBattleDefeatFlag = req.flagDefeat;
+        startBattle(static_cast<int>(m_enemies.size()) - 1);
+    }
+}
+
 bool GameSession::applyNarrative(const RPG::NarrativeResult& result) {
     if (!result.fired) {
         return false;
@@ -318,6 +361,7 @@ bool GameSession::applyNarrative(const RPG::NarrativeResult& result) {
 
     addGold(result.goldDelta);
     resolveSkillChecks(result.skillChecks);
+    resolveBattles(result.battles);
     for (const std::string& entry : result.log) {
         logLine(entry);
     }
@@ -333,6 +377,13 @@ bool GameSession::enterLevelNarrative(const std::string& levelId) {
         return false;
     }
     return applyNarrative(m_narrative->enterLevel(levelId, *m_narrativeState));
+}
+
+bool GameSession::talkNarrative(const std::string& npcId) {
+    if (m_narrative == nullptr || m_narrativeState == nullptr) {
+        return false;
+    }
+    return applyNarrative(m_narrative->talkTo(npcId, *m_narrativeState));
 }
 
 int GameSession::occupancyPercent(int rentPercent) {
@@ -648,7 +699,26 @@ bool GameSession::syncBattleOutcome() {
             break;  // inalcanzable (comprobado arriba)
     }
 
+    // Flags del combate pedido por la narrativa (effect "startBattle").
+    // Huir cuenta como derrota a efectos de trama: el enemigo sigue vivo y
+    // lo que fuera a pasar, pasa. Si se quisiera distinguir haria falta una
+    // tercera flag, y de momento ninguna aventura lo necesita.
+    if (m_narrativeState != nullptr && !m_pendingBattleVictoryFlag.empty()) {
+        const bool gano = (outcome == BattleOutcome::Victory);
+        m_narrativeState->setFlag(gano ? m_pendingBattleVictoryFlag
+                                       : m_pendingBattleDefeatFlag);
+    }
+    m_pendingBattleVictoryFlag.clear();
+    m_pendingBattleDefeatFlag.clear();
+
     m_battle.reset();
     m_battleEnemyIndex = -1;
+
+    // Siguiente combate encolado, si lo hay (oleadas).
+    if (!m_battleQueue.empty() && m_mode != GameMode::GameOver) {
+        std::vector<RPG::BattleRequest> siguiente{m_battleQueue.front()};
+        m_battleQueue.erase(m_battleQueue.begin());
+        resolveBattles(siguiente);
+    }
     return true;
 }
