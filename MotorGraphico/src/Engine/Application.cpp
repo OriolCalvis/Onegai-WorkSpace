@@ -276,13 +276,17 @@ Result<bool> Application::init(int width, int height, const std::string& title,
     // antes (ciudad + combate). Por eso m_narrativaLista.
     auto prologoR = RPG::AdventureScript::loadFromFile("assets/adventures/boundington_prologo.json");
     auto dia1R = RPG::AdventureScript::loadFromFile("assets/adventures/boundington_primer_dia.json");
+    auto dia2R = RPG::AdventureScript::loadFromFile("assets/adventures/boundington_segundo_dia.json");
+    auto ocasoR = RPG::AdventureScript::loadFromFile("assets/adventures/boundington_ocaso.json");
     auto nd6R = m_nd6Skills.loadFromFile("assets/catalogs/skills.json");
-    if (prologoR.isOk() && dia1R.isOk() && nd6R.isOk()) {
+    if (prologoR.isOk() && dia1R.isOk() && dia2R.isOk() && ocasoR.isOk() && nd6R.isOk()) {
         m_prologo = prologoR.value();
         m_dia1 = dia1R.value();
+        m_dia2 = dia2R.value();
+        m_ocaso = ocasoR.value();
         m_narrative.setAdventure(&m_prologo);  // arrancamos por el prologo
         m_narrativaLista = true;
-        trace("init: campana de Boundington cargada (prologo + Dia 1)");
+        trace("init: campana de Boundington cargada (prologo + 3 dias)");
     } else {
         // No abortamos: el motor grafico sigue siendo usable sin narrativa.
         // trace() toma const char*; para mensajes con contenido variable
@@ -291,6 +295,10 @@ Result<bool> Application::init(int width, int height, const std::string& title,
                                            prologoR.errorMessage().c_str());
         if (!dia1R.isOk())    std::fprintf(stderr, "init: Dia 1 NO cargo: %s\n",
                                            dia1R.errorMessage().c_str());
+        if (!dia2R.isOk())    std::fprintf(stderr, "init: Dia 2 NO cargo: %s\n",
+                                           dia2R.errorMessage().c_str());
+        if (!ocasoR.isOk())   std::fprintf(stderr, "init: Ocaso NO cargo: %s\n",
+                                           ocasoR.errorMessage().c_str());
         if (!nd6R.isOk())     std::fprintf(stderr, "init: catalogo Nd6 NO cargo: %s\n",
                                            nd6R.errorMessage().c_str());
         m_narrativaLista = false;
@@ -1244,25 +1252,47 @@ void Application::update(float deltaTime) {
     trace("update: transicion pendiente");
     applyPendingTransition();
 
-    // Transicion de AVENTURA (no de nivel): cuando el prologo cierra
-    // (bnd_prologo_terminado), saltamos al Dia 1. Esto NO es una puerta
-    // del mapa -- es un cambio de guion. Se hace aqui, en update, y no en
-    // el beat, porque cambiar de AdventureScript y recargar nivel es
-    // orquestacion que le toca a Application (igual que loadLevel).
+    // Transiciones de AVENTURA (no de nivel): la campana encadena prologo
+    // -> Dia 1 -> Dia 2 -> Ocaso. Cada salto cambia el AdventureScript
+    // activo y, segun el capitulo, recarga o no el nivel. Es orquestacion
+    // que le toca a Application (igual que loadLevel), no a un beat.
     //
-    // bnd_dia1_empezado evita repetir el salto cada frame: se enciende
-    // una sola vez al transicionar. La busca tambien el Dia 1? No -- es
-    // flag privada de la Application para no reentrar. Por eso no esta en
-    // el JSON.
-    if (m_narrativaLista &&
-        m_narrativeState.hasFlag("bnd_prologo_terminado") &&
-        !m_narrativeState.hasFlag("bnd_dia1_empezado")) {
-        m_narrativeState.setFlag("bnd_dia1_empezado");
-        m_narrative.setAdventure(&m_dia1);
-        trace("update: prologo cerrado -> cargando Dia 1 (ciudad_centro)");
-        // loadLevel re-enchufa narrativa (prologo->dia1 ya cambiado) y
-        // dispara el beat "enter" de ciudad_centro.json (beat_llegada).
-        loadLevel("assets/levels/ciudad_centro.json", /*useEntry=*/false, GridCoord{0, 0});
+    // Las flags bnd_diaN_empezado son PRIVADAS de la Application: solo
+    // sirven para no reentrar en la transicion cada frame. No estan en los
+    // JSON. Las flags canonicas de cierre (bnd_dia_cerrado, bnd2_dia_cerrado)
+    // son las que dispara cada aventura al terminar.
+    if (m_narrativaLista) {
+        // prologo -> Dia 1: el Dia 1 abre con un beat "enter" en
+        // ciudad_centro.json, asi que recargamos nivel. loadLevel dispara
+        // ese beat.
+        if (m_narrativeState.hasFlag("bnd_prologo_terminado") &&
+            !m_narrativeState.hasFlag("bnd_dia1_empezado")) {
+            m_narrativeState.setFlag("bnd_dia1_empezado");
+            m_narrative.setAdventure(&m_dia1);
+            trace("update: prologo -> Dia 1");
+            loadLevel("assets/levels/ciudad_centro.json", /*useEntry=*/false, GridCoord{0, 0});
+        }
+        // Dia 1 -> Dia 2: el Dia 2 abre con un beat "auto" (b2_amanece),
+        // NO con un "enter". Asi que NO recargamos nivel (solo resetearia
+        // la posicion del jugador sin beneficio). Al cambiar el guion, el
+        // siguiente tick() (al cerrar el dialogo actual) dispara
+        // b2_amanece, que ya pide bnd_dia_cerrado en su requires.
+        else if (m_narrativeState.hasFlag("bnd_dia_cerrado") &&
+                 !m_narrativeState.hasFlag("bnd_dia2_empezado")) {
+            m_narrativeState.setFlag("bnd_dia2_empezado");
+            m_narrative.setAdventure(&m_dia2);
+            trace("update: Dia 1 -> Dia 2 (sin recarga de nivel, beat auto)");
+        }
+        // Dia 2 -> Ocaso: el Ocaso abre con un beat "enter" (b3_plaza) en
+        // ciudad_centro.json. Recargamos para que ese beat dispare. El
+        // Ocaso reconfigura la ciudad (la Matanza ha empezado).
+        else if (m_narrativeState.hasFlag("bnd2_dia_cerrado") &&
+                 !m_narrativeState.hasFlag("bnd_ocaso_empezado")) {
+            m_narrativeState.setFlag("bnd_ocaso_empezado");
+            m_narrative.setAdventure(&m_ocaso);
+            trace("update: Dia 2 -> Ocaso");
+            loadLevel("assets/levels/ciudad_centro.json", /*useEntry=*/false, GridCoord{0, 0});
+        }
     }
 
     trace("update: syncWorldMarkers");

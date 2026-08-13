@@ -176,6 +176,8 @@ private:
     RPG::NarrativeEngine m_narrative;
     RPG::AdventureScript m_prologo;
     RPG::AdventureScript m_dia1;
+    RPG::AdventureScript m_dia2;
+    RPG::AdventureScript m_ocaso;
     RPG::Catalogs::SkillCatalog m_nd6Skills;  // skills.json (percepcion, sigilo, ...)
     bool m_narrativaLista = false;  // init() lo enciende solo si todo cargo bien
 
