@@ -36,9 +36,16 @@ int main(int argc, char** argv) {
     const int maxFrames = argc > 1 ? std::atoi(argv[1]) : -1;
 
     Application app;
-    auto init = app.init(1280, 720, "Motor Grafico - RPG isometrico",
-                         "assets/levels/ciudad_centro.json",
-                         "assets/objects/ciudad_objetos.json");
+    // Arranca por el prologo de Boundington: interior_vacio.json es donde
+    // cae el jugador en El Vacio (Cap. 1 del canon), y su beat "enter"
+    // dispara prologo_caida. El catalogo boundington_npcs.json lleva a
+    // Skilla, Venides, Aigren, Luisarda y Xila para cuando el Dia 1
+    // arranque en ciudad_centro.json (transicion automatica al cerrar el
+    // prologo, ver Application::update). Si la narrativa no carga, init()
+    // no falla: el motor grafico sigue siendo usable sin ella.
+    auto init = app.init(1280, 720, "Motor Grafico - Boundington",
+                         "assets/levels/interior_vacio.json",
+                         "assets/objects/boundington_npcs.json");
     if (!init.isOk()) {
         // init() nunca lanza: los fallos de arranque (ventana, shaders,
         // assets que faltan) llegan como Result::Error con el motivo.

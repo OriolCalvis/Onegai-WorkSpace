@@ -18,6 +18,7 @@
 #include "Render/IsometricRenderer.h"
 #include "Level/ObjectCatalog.h"
 #include "Game/Skill.h"
+#include "RPG/Catalogs/RpgCatalogs.h"  // RPG::Catalogs::SkillCatalog (Nd6, para skillCheck narrativos)
 #include "Render/SpriteBatch.h"
 #include "Render/TileMap.h"
 
@@ -164,6 +165,19 @@ private:
     SkillSet m_playerSkills;
     std::vector<std::string> m_inventory;
     std::unique_ptr<GameSession> m_session;
+
+    // --- Narrativa (campana de Boundington) ---
+    // El estado (flags) vive en Application y NO en GameSession porque
+    // loadLevel destruye el session en cada transicion de nivel y solo
+    // rescata el oro. Para que las flags del prologo sobrevivan al cambio
+    // de nivel (y a la reconstruccion del session), tienen que estar fuera.
+    // Mismo criterio que m_player/m_playerSkills/m_inventory.
+    RPG::NarrativeState m_narrativeState;
+    RPG::NarrativeEngine m_narrative;
+    RPG::AdventureScript m_prologo;
+    RPG::AdventureScript m_dia1;
+    RPG::Catalogs::SkillCatalog m_nd6Skills;  // skills.json (percepcion, sigilo, ...)
+    bool m_narrativaLista = false;  // init() lo enciende solo si todo cargo bien
 
     // HUD (Fase 9). SpriteBatch propia, independiente de la interna del
     // renderer (ver demo_hud.cpp).

@@ -256,6 +256,46 @@ Result<bool> Application::init(int width, int height, const std::string& title,
     m_player->play("idle");  // frame valido desde el primer render()
 
     trace("init: player OK");
+
+    // --- Stats del jugador para tiradas Nd6 ---
+    // Sin esto m_player->stat() devuelve 0 en los cuatro atributos
+    // (Player.h los inicializa a {0,0,0,0}) y cada skillCheck tiraria 1
+    // solo dado: los cuatro grados (BOTCH/PARTIAL/SUCCESS/CRITICAL)
+    // colapsarian. Le damos un reparto de aventurero novato (0..8, GDD).
+    // Percepcion es DES -> 3 dados; Conocimiento Arcano es INT -> 2 dados.
+    m_player->set_stat(RPG::Stat::CON, 3);
+    m_player->set_stat(RPG::Stat::DES, 3);
+    m_player->set_stat(RPG::Stat::INT, 2);
+    m_player->set_stat(RPG::Stat::CAR, 2);
+
+    // --- Campana narrativa de Boundington (prologo + Dia 1) ---
+    // Se carga aqui y no en loadLevel porque las aventuras son contenido
+    // de toda la partida: sobreviven a las transiciones de nivel. Si una
+    // falla al cargar (fichero perdido, JSON roto), no es fatal para el
+    // motor grafico: arrancamos sin narrativa y el juego funciona como
+    // antes (ciudad + combate). Por eso m_narrativaLista.
+    auto prologoR = RPG::AdventureScript::loadFromFile("assets/adventures/boundington_prologo.json");
+    auto dia1R = RPG::AdventureScript::loadFromFile("assets/adventures/boundington_primer_dia.json");
+    auto nd6R = m_nd6Skills.loadFromFile("assets/catalogs/skills.json");
+    if (prologoR.isOk() && dia1R.isOk() && nd6R.isOk()) {
+        m_prologo = prologoR.value();
+        m_dia1 = dia1R.value();
+        m_narrative.setAdventure(&m_prologo);  // arrancamos por el prologo
+        m_narrativaLista = true;
+        trace("init: campana de Boundington cargada (prologo + Dia 1)");
+    } else {
+        // No abortamos: el motor grafico sigue siendo usable sin narrativa.
+        // trace() toma const char*; para mensajes con contenido variable
+        // (el errorMessage) tiramos de stderr directo.
+        if (!prologoR.isOk()) std::fprintf(stderr, "init: prologo NO cargo: %s\n",
+                                           prologoR.errorMessage().c_str());
+        if (!dia1R.isOk())    std::fprintf(stderr, "init: Dia 1 NO cargo: %s\n",
+                                           dia1R.errorMessage().c_str());
+        if (!nd6R.isOk())     std::fprintf(stderr, "init: catalogo Nd6 NO cargo: %s\n",
+                                           nd6R.errorMessage().c_str());
+        m_narrativaLista = false;
+    }
+
     m_camera = std::make_unique<Camera>(width, height);
     m_renderer = std::make_unique<IsometricRenderer>(m_camera.get(), &m_map, m_atlas.get(),
                                                      m_spriteShader);
@@ -400,19 +440,23 @@ Result<bool> Application::init(int width, int height, const std::string& title,
     // dibujado debajo hace de borde (el fondo lo pinta el propio
     // HudDialogueBox). 640 de ancho, no mas: deja libre la esquina
     // inferior-derecha para m_hintText a 1280 de ancho de ventana.
+    //
+    // maxLines=6 (antes 4): los beats narrativos del prologo llegan a 5
+    // lineas y con 4 se truncaba la primera. Panel/altura crecidos para
+    // acomodar las dos lineas extra (~16px/linea de fuente).
     HudTransform dialogueFrameTransform;
     dialogueFrameTransform.anchor = HudAnchor::BottomCenter;
     dialogueFrameTransform.offset = {0.0f, 12.0f};
-    dialogueFrameTransform.size = {648.0f, 104.0f};
+    dialogueFrameTransform.size = {648.0f, 140.0f};
     m_dialoguePanel = std::make_unique<HudPanel>(dialogueFrameTransform, m_whiteTexture.get(),
                                                  kBorderColor);
 
     HudTransform dialogueTransform;
     dialogueTransform.anchor = HudAnchor::BottomCenter;
     dialogueTransform.offset = {0.0f, 16.0f};
-    dialogueTransform.size = {640.0f, 96.0f};
+    dialogueTransform.size = {640.0f, 132.0f};
     m_dialogue = std::make_unique<HudDialogueBox>(dialogueTransform, m_font.get(),
-                                                 m_whiteTexture.get(), /*maxLines=*/4);
+                                                 m_whiteTexture.get(), /*maxLines=*/6);
 
     // Menu de comandos con su panel MEDIDO CONTRA EL CONTENIDO (defecto
     // 06 del documento de diseno: el panel fijo de 248x118 cuadruplicaba
@@ -616,6 +660,21 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
                                               std::move(level), m_player.get(), &m_playerSkills,
                                               &m_inventory);
     m_session->addGold(carriedGold);
+
+    // Re-enchufa la narrativa en el session recien construido. loadLevel
+    // destruye el GameSession en cada transicion; la narrativa (motor,
+    // estado y catalogo Nd6) vive en Application y sobrevive, asi que
+    // hay que volver a pasarsela al session nuevo. Sin esto, al cambiar
+    // de nivel los beats dejarian de disparar.
+    if (m_narrativaLista) {
+        m_session->setNarrative(&m_narrative, &m_narrativeState);
+        m_session->setNd6SkillCatalog(&m_nd6Skills);
+        // m_session ya tiene su propio Xoroshiro128p por defecto; solo
+        // inyectariamos otro si quisieramos reproducibilidad (tests).
+        // Dispara el beat "enter" del nivel que acaba de cargar.
+        m_session->enterLevelNarrative(levelPath);
+    }
+
     trace("loadLevel: GameSession OK");
     // --- Marcadores del mundo (defecto 03): un Entity por objeto y por
     // enemigo de la sesion, encolados en el renderer.
@@ -898,8 +957,19 @@ void Application::refreshHud() {
     // El cuadro de dialogo muestra el log del combate en curso si lo
     // hay, y si no el de la sesion (exploracion: recogidas, resultados
     // de combates cerrados...).
+    //
+    // EXCEPCION: en modo Dialogue mostramos las lineas del beat/dialogo
+    // ACTIVO (dialogueLines), no la cola del log. La diferencia importa
+    // para la narrativa: un beat empuja sus lineas a m_dialogueLines (ver
+    // applyNarrative), pero el log sigue acumulandose con todo lo que pasa
+    // (tiradas, oro, logs de beats previos). Si mostraramos el log, el
+    // beat actual se desplazaria fuera del cuadro en cuanto se acumulan
+    // cuatro entradas. dialogueLines siempre refleja lo ultimo que el
+    // jugador debe leer antes de pulsar ENTER.
     if (inBattle && battle != nullptr) {
         m_dialogue->setLines(battle->log());
+    } else if (m_session->mode() == GameMode::Dialogue) {
+        m_dialogue->setLines(m_session->dialogueLines());
     } else {
         m_dialogue->setLines(m_session->log());
     }
@@ -1173,6 +1243,28 @@ void Application::update(float deltaTime) {
 
     trace("update: transicion pendiente");
     applyPendingTransition();
+
+    // Transicion de AVENTURA (no de nivel): cuando el prologo cierra
+    // (bnd_prologo_terminado), saltamos al Dia 1. Esto NO es una puerta
+    // del mapa -- es un cambio de guion. Se hace aqui, en update, y no en
+    // el beat, porque cambiar de AdventureScript y recargar nivel es
+    // orquestacion que le toca a Application (igual que loadLevel).
+    //
+    // bnd_dia1_empezado evita repetir el salto cada frame: se enciende
+    // una sola vez al transicionar. La busca tambien el Dia 1? No -- es
+    // flag privada de la Application para no reentrar. Por eso no esta en
+    // el JSON.
+    if (m_narrativaLista &&
+        m_narrativeState.hasFlag("bnd_prologo_terminado") &&
+        !m_narrativeState.hasFlag("bnd_dia1_empezado")) {
+        m_narrativeState.setFlag("bnd_dia1_empezado");
+        m_narrative.setAdventure(&m_dia1);
+        trace("update: prologo cerrado -> cargando Dia 1 (ciudad_centro)");
+        // loadLevel re-enchufa narrativa (prologo->dia1 ya cambiado) y
+        // dispara el beat "enter" de ciudad_centro.json (beat_llegada).
+        loadLevel("assets/levels/ciudad_centro.json", /*useEntry=*/false, GridCoord{0, 0});
+    }
+
     trace("update: syncWorldMarkers");
     syncWorldMarkers();
     trace("update: refreshHud");
