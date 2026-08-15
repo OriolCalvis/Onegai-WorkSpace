@@ -1,10 +1,18 @@
 """Tileset de ciudad: colores planos por material, con un borde mas oscuro
-para que en la vista isometrica se distinga cada celda. 6 columnas x 4
-filas de 16x16 px -> GIDs 1..24 en orden de lectura (convencion Tiled)."""
+para que en la vista isometrica se distinga cada celda. 6 columnas x 6
+filas de 16x16 px -> GIDs 1..36 en orden de lectura (convencion Tiled).
+
+Los GIDs 25-36 son de Boundington. El canon describe la ciudad con bastante
+detalle y el tileset de 24 no daba para contarlo: pedia casas de piedra por
+fuera y madera por dentro, calles con carril de peatones a los lados y sitio
+para carruajes en el centro, cuerdas de ropa entre las casas, un Casco Antiguo
+"deteriorado", chabolas "sin orden alguno" en Pico Dragon y un puente a
+Surysal. Con un solo tile de "tienda" para todo eso, los tres mapas salian
+identicos."""
 import os
 from PIL import Image, ImageDraw
 
-CELL, COLS, ROWS = 16, 6, 4
+CELL, COLS, ROWS = 16, 6, 6
 # (gid, nombre, color, colisiona)
 TILES = [
     (1,  "adoquin",     (108, 104, 100), False),
@@ -31,6 +39,31 @@ TILES = [
     (22, "escenario",   (128, 74,  74),  False),
     (23, "umbral",      (222, 200, 130), False),  # puerta: se pisa
     (24, "grava",       (150, 146, 138), False),
+    # --- Boundington (GIDs 25-36) ---
+    # Casa popular: piedra fuera, madera dentro (canon). Dos tonos para que
+    # una manzana de casas pequenas no lea como un bloque macizo.
+    (25, "casa_piedra",  (128, 120, 110), True),
+    (26, "casa_madera",  (146, 112, 74),  True),
+    # Barrios Altos: mismo material mejor cuidado, y calle mas limpia.
+    (27, "casa_noble",   (170, 160, 148), True),
+    (28, "adoquin_fino", (150, 146, 140), False),
+    # Casco Antiguo: piedra vieja y ruina. La ruina NO colisiona: se puede
+    # entrar en un edificio caido, y ahi es donde estan los secretos.
+    (29, "piedra_vieja",  (96,  92,  88),  True),
+    (30, "ruina",         (118, 112, 104), False),
+    # Calzada con carriles: el centro es para carruajes, los lados para la
+    # gente. Un tile distinto por carril, que es lo que hace que la calle
+    # se lea como calle y no como pasillo.
+    (31, "carril",        (122, 118, 112), False),
+    # Pico Dragon y la Barriada: barro y tablones, sin orden.
+    (32, "barro",         (110, 92,  70),  False),
+    (33, "chabola",       (124, 96,  62),  True),
+    # Cuerdas de ropa tendida entre casa y casa. No colisiona: pasas por
+    # debajo. Es decoracion, pero es LA imagen del barrio popular.
+    (34, "tendedero",     (188, 172, 150), False),
+    # El Puente Principal y el rio que separa Boundington de Surysal.
+    (35, "puente",        (142, 118, 88),  False),
+    (36, "rio",           (72,  116, 172), True),
 ]
 
 img = Image.new("RGBA", (COLS*CELL, ROWS*CELL), (0, 0, 0, 0))

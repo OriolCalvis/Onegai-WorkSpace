@@ -135,7 +135,7 @@ def tmx(nombre, W, H, grid):
 
 # --- Reunir las puertas de los tres mapas exteriores ---
 exteriores = {}
-for m in ["ciudad_centro", "ciudad_oeste", "ciudad_este"]:
+for m in ["ciudad_centro", "ciudad_oeste", "ciudad_este", "ciudad_surysal"]:
     exteriores[m] = json.load(open(BASE + f"assets/levels/{m}.json"))
 
 # Un interior por local (varias puertas pueden compartirlo; la salida
@@ -197,7 +197,7 @@ for (npc_id, _), pos in zip(NPCS_CALLE.items(), sitios):
             {"objectId": npc_id, "position": {"x": pos[0], "y": pos[1]}})
 
 for m, lvl in exteriores.items():
-    open(BASE + f"assets/levels/{m}.json", "w").write(json.dumps(lvl, indent=2) + "\n")
+    open(BASE + f"assets/levels/{m}.json", "w").write(json.dumps(lvl, indent=2, ensure_ascii=False) + "\n")
 
 # --- Catalogo completo ---
 objetos = []

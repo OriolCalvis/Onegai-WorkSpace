@@ -67,7 +67,7 @@ for mapa in ["ciudad_centro", "ciudad_oeste", "ciudad_este"]:
         nuevos.append({"objectId": cartel_id,
                        "position": {"x": sitio[0], "y": sitio[1]}})
     lvl["objects"].extend(nuevos)
-    open(BASE + f"assets/levels/{mapa}.json", "w").write(json.dumps(lvl, indent=2) + "\n")
+    open(BASE + f"assets/levels/{mapa}.json", "w").write(json.dumps(lvl, indent=2, ensure_ascii=False) + "\n")
     print(f"{mapa}: {len(nuevos)} carteles")
 
 # Anadir los carteles al catalogo
