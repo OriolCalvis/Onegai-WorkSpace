@@ -702,7 +702,8 @@ la fase la UI se montó con el **HUD propio de la Fase 9**
 (`HudPanel`/`HudText`/`BitmapFont`) — y el diseño lo aprovecha: el
 núcleo del editor (`EditorState`, GL-free) no sabe nada de widgets ni de
 GL, solo del modelo del nivel (grid de tiles, objetos del catálogo,
-herramientas Pintar/Borrar/Colocar/Quitar, paletas con wraparound), así
+punto inicial del jugador, historial undo/redo y herramientas
+Pintar/Borrar/Colocar/Quitar/Inicio), así
 que si algún día se vendoriza ImGui se migra la vista sin tocar el
 núcleo (misma separación modelo/vista que `BattleState` frente al HUD de
 combate). Los exportadores son strings puros: `exportTmx()` (tileset
@@ -718,11 +719,12 @@ mismos GIDs celda a celda y la misma colisión, y el JSON exportado lo
 carga `LevelLoader` con los mismos objetos (incluido un nombre con
 comillas escapadas). La app visual (`level_editor.cpp`: ratón vía
 `Window::handle()` para pintar/colocar sobre el canvas isométrico con
-resaltado de celda, rejilla tenue en celdas vacías, teclas 1-4/Q/E/WASD/
-F5-guardar, HUD de estado con la fuente propia) solo se pudo
-**verificar en modo sintaxis**, pendiente de `./build/level_editor` en
-macOS. MVP documentado: una capa de tiles, sin undo, sin panel de
-propiedades (patrulla/stats se retocan en el JSON a mano).
+resaltado de celda, rejilla tenue en celdas vacías, teclas 1-5/Q/E/WASD/
+F5-guardar, 5-inicio, Ctrl+Z/Ctrl+Y y F6-validar, HUD de estado con la
+fuente propia) se ejecutó en OpenGL real: 3 frames, captura del editor y
+`glGetError() == GL_NO_ERROR`. MVP pendiente: una capa de tiles, sin
+panel de propiedades para patrulla/stats y sin navegador visual de
+archivos.
 
 ### Cierre del ciclo: `GameSession` + `Application` (el juego)
 

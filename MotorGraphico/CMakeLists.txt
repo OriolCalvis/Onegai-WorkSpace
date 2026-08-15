@@ -34,6 +34,10 @@ add_executable(demo_resource_manager
     examples/TextAssetManager.cpp
 )
 
+# Pool generacional GL-free: evita punteros colgantes al reciclar objetos
+# dinámicos y deja una base común para partículas, proyectiles o encuentros.
+add_executable(demo_handle_pool examples/demo_handle_pool.cpp)
+
 # --- Camera + IsoMath: solo necesitan glm (header-only, sin GL). Se
 # separan de motor_core (que si necesita GLAD/stb_image/GLFW vendorizados,
 # ver mas abajo) para poder compilar y probar la camara y la proyeccion
@@ -83,6 +87,7 @@ add_library(motor_level
     src/Game/BattleState.cpp
     src/Level/ObjectCatalog.cpp
     src/Editor/EditorState.cpp
+    src/Editor/ProjectIndex.cpp
     src/Game/GameSession.cpp
     src/Game/Morality.cpp
     src/Game/EnemyBrain.cpp
@@ -186,6 +191,14 @@ add_executable(demo_narrativa_combate examples/demo_narrativa_combate.cpp)
 target_link_libraries(demo_narrativa_combate PRIVATE motor_level motor_map)
 set_target_properties(demo_narrativa_combate PROPERTIES CXX_STANDARD 17)
 add_dependencies(demo_narrativa_combate copiar_assets)
+
+# ====================================================================
+# demo_proyectos — los proyectos vivos: descubrir, revisar y crear. Es el
+# nucleo de la pantalla de arranque del editor, GL-free y probado en CI.
+add_executable(demo_proyectos examples/demo_proyectos.cpp)
+target_link_libraries(demo_proyectos PRIVATE motor_level)
+set_target_properties(demo_proyectos PROPERTIES CXX_STANDARD 17)
+add_dependencies(demo_proyectos copiar_assets)
 
 # Fase 10: catalogo generico de objetos ("todo es un objeto") + accion
 # Item en BattleState + ObjectSpawn en LevelDefinition. GL-free entero.

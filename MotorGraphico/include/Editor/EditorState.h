@@ -26,13 +26,11 @@
 // la app grafica (examples/level_editor.cpp) solo traduce raton/teclado
 // a llamadas de aqui y dibuja el resultado.
 //
-// MVP deliberado (ver motor_grafico_dafo.md, "un editor visual es
-// facilmente un proyecto en si mismo"): UNA capa de tiles, sin undo, sin
-// seleccion multiple, patrulla de objetos no editable (se exporta sin
-// patrulla = objeto quieto). Cada una de esas cosas se anade despues
-// sin cambiar lo que ya hay.
+// Aun es un editor de UNA capa y no edita las patrullas de los objetos,
+// pero ya mantiene historial de cambios y el punto inicial del jugador.
+// La vista puede crecer sin acoplar estas reglas de contenido a OpenGL.
 
-enum class EditorTool { PaintTile, EraseTile, PlaceObject, RemoveObject };
+enum class EditorTool { PaintTile, EraseTile, PlaceObject, RemoveObject, SetPlayerStart };
 
 // Parametros del tileset para exportTmx(): describen el atlas contra el
 // que se pinta (los mismos datos que la cabecera <tileset> de un TMX de
@@ -108,6 +106,18 @@ public:
     // destinos de las puertas -- ver exportLevelJson.
     void placeSpawn(const ObjectSpawn& spawn);
     void removeObjectAt(int x, int y);
+    // El inicio de jugador siempre pertenece al mapa. Fuera de rango no
+    // cambia nada, igual que las otras herramientas de edicion.
+    void setPlayerStart(GridCoord position);
+    GridCoord playerStart() const { return m_playerStart; }
+
+    // Historial a nivel de operacion: cada click/accion puede deshacerse
+    // sin que la UI necesite conocer tiles, spawns ni serializacion.
+    bool undo();
+    bool redo();
+    bool canUndo() const { return !m_undo.empty(); }
+    bool canRedo() const { return !m_redo.empty(); }
+    void clearHistory();
 
     // --- Consulta ---
     int tileAt(int x, int y) const;  // 0 fuera de rango (celda vacia)
@@ -127,16 +137,27 @@ public:
     // JSON de nivel compatible con LevelLoader (Fase 6/10): "objects"
     // con objectId/position (sin patrulla: objeto quieto, ver el MVP
     // arriba). Mismo round-trip real contra LevelLoader::loadFromString.
-    std::string exportLevelJson(const std::string& levelName, const std::string& mapPath,
-                                const GridCoord& playerStart) const;
+    std::string exportLevelJson(const std::string& levelName, const std::string& mapPath) const;
 
 private:
+    struct Snapshot {
+        std::vector<int> tiles;
+        std::vector<ObjectSpawn> objects;
+        GridCoord playerStart;
+    };
+
     bool inBounds(int x, int y) const { return x >= 0 && x < m_width && y >= 0 && y < m_height; }
+    void recordUndo();
+    Snapshot snapshot() const;
+    void restore(Snapshot state);
 
     int m_width;
     int m_height;
     std::vector<int> m_tiles;  // [y * m_width + x], gid 0 = vacia
     std::vector<ObjectSpawn> m_objects;
+    GridCoord m_playerStart{0, 0};
+    std::vector<Snapshot> m_undo;
+    std::vector<Snapshot> m_redo;
 
     EditorTool m_tool = EditorTool::PaintTile;
     std::vector<int> m_tilePalette;

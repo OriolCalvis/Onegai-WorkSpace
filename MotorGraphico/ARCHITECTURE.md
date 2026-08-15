@@ -1,5 +1,9 @@
 # Reglas de arquitectura y herencia — Motor Gráfico Isométrico
 
+> Para propiedad, ciclos de vida, pools de datos y composición, consulta
+> también [`MEMORY_AND_INHERITANCE.md`](MEMORY_AND_INHERITANCE.md). Sus
+> reglas son obligatorias junto con las de este documento.
+
 Este documento fija las **reglas de coherencia** que debe seguir cualquier
 código nuevo del motor (sea humano o asistente de IA). Existe porque un
 análisis morfológico del motor detectó **7 fracturas de coherencia** que

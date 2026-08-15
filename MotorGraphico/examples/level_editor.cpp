@@ -10,14 +10,16 @@
 //   Raton:  click izq  = aplicar herramienta en la celda bajo el cursor
 //           click der   = herramienta "contraria" rapida (borrar tile /
 //                         quitar objeto, segun el modo actual)
-//   1/2/3/4 = herramienta (pintar tile / borrar tile / colocar objeto /
-//             quitar objeto)
+//   1/2/3/4/5 = herramienta (pintar/borrar tile, colocar/quitar objeto,
+//               fijar punto de inicio del jugador)
 //   Q/E     = ciclar la paleta activa (tiles u objetos, segun herramienta)
+//   Ctrl+Z / Ctrl+Y = deshacer / rehacer
 //   WASD    = pan de camara (SHIFT = x4, para mapas grandes)
 //   +/-     = zoom (0 = volver a 1x), HOME = centrar en el mapa
 //   F5      = guardar: assets/maps/editor_map.tmx +
 //             assets/levels/editor_level.json (rutas relativas al cwd,
 //             ejecutar desde build/ o MotorGraphico/)
+//   F6      = validar el nivel sin salir del editor
 //   ESC     = salir
 //
 // Tamano del mapa (los niveles NO tienen por que ser todos iguales: un
@@ -42,6 +44,7 @@
 // vuelca el ultimo frame a level_editor_output.ppm, para poder revisar
 // el HUD sin una captura de pantalla a mano.
 #include "Core/Math/IsoMath.h"
+#include "Editor/ProjectIndex.h"
 #include "Core/Math/Vector4.h"
 #include "Core/Resources/Shader.h"
 #include "Core/Resources/ShaderManager.h"
@@ -133,6 +136,8 @@ const char* toolName(EditorTool tool) {
             return "COLOCAR OBJETO";
         case EditorTool::RemoveObject:
             return "QUITAR OBJETO";
+        case EditorTool::SetPlayerStart:
+            return "INICIO JUGADOR";
     }
     return "?";
 }
@@ -160,6 +165,13 @@ struct EditorOptions {
     int mapHeight = 8;
     std::string loadLevelPath;  // vacio = mapa nuevo en blanco
     int maxFrames = -1;
+
+    // --- Proyectos (pantalla de arranque) ---
+    std::string projectId;      // proyecto activo: manda donde se GUARDA
+    std::string levelName;      // nivel suyo a abrir; vacio = el primero
+    std::string newProjectId;   // --nuevo: crear y salir
+    std::string newPrefix;
+    bool listProjects = false;  // --proyectos: listar y salir
 };
 
 // "64x48" -> {64, 48}. Devuelve false si no tiene la forma AxB con
@@ -186,11 +198,32 @@ EditorOptions parseArgs(int argc, char** argv) {
             opts.loadLevelPath = argv[++i];
         } else if (!arg.empty() && (std::isdigit(static_cast<unsigned char>(arg[0])) != 0)) {
             opts.maxFrames = std::atoi(arg.c_str());
+        } else if (arg == "--proyectos" || arg == "-p") {
+            opts.listProjects = true;
+        } else if (arg == "--proyecto" && i + 1 < argc) {
+            opts.projectId = argv[++i];
+        } else if (arg == "--nivel" && i + 1 < argc) {
+            opts.levelName = argv[++i];
+        } else if (arg == "--nuevo" && i + 1 < argc) {
+            opts.newProjectId = argv[++i];
+        } else if (arg == "--prefijo" && i + 1 < argc) {
+            opts.newPrefix = argv[++i];
         } else if (arg == "--help" || arg == "-h") {
-            std::cout << "Uso: level_editor [--size AnchoxAlto] [--load nivel.json] [frames]\n"
-                         "  --size 64x64        mapa nuevo en blanco de ese tamano\n"
-                         "  --load ruta.json    abre un nivel existente (su TMX y sus objetos)\n"
-                         "  frames              modo humo: N frames, vuelca PPM y sale\n";
+            std::cout <<
+                "Uso: level_editor [opciones] [frames]\n"
+                "\n  PROYECTOS (no abren ventana)\n"
+                "  --proyectos              lista los proyectos vivos y su estado\n"
+                "  --nuevo <id> --prefijo <p_>\n"
+                "                           crea un proyecto y sale\n"
+                "\n  EDICION\n"
+                "  --proyecto <id>          abre ese proyecto; F5 guarda EN EL,\n"
+                "                           no en editor_map.tmx\n"
+                "  --nivel <fichero.json>   nivel suyo a abrir (por defecto, el primero)\n"
+                "  --size 64x64             mapa nuevo en blanco de ese tamano\n"
+                "  --load ruta.json         abre un nivel suelto (sin proyecto)\n"
+                "  frames                   modo humo: N frames, vuelca PPM y sale\n"
+                "\n  La build de un proyecto se saca con:\n"
+                "    python3 tools/build_proyecto.py <id>\n";
             std::exit(0);
         }
     }
@@ -199,11 +232,106 @@ EditorOptions parseArgs(int argc, char** argv) {
 
 }  // namespace
 
+// Pantalla de arranque en modo texto. Va ANTES de abrir la ventana a
+// proposito: listar proyectos o crear uno no necesita contexto GL, y asi
+// tambien sirve desde un script o desde CI. La misma informacion es la que
+// pinta el editor en su lista cuando arranca con ventana.
+int pantallaDeArranque(const EditorOptions& opts) {
+    auto r = Editor::ProjectIndex::scan("assets");
+    if (!r.isOk()) {
+        std::cerr << "No se pudo leer assets/proyectos: " << r.errorMessage() << "\n";
+        return 1;
+    }
+    const Editor::ProjectIndex idx = r.value();
+
+    if (!opts.newProjectId.empty()) {
+        auto nuevo = Editor::ProjectIndex::create("assets", opts.newProjectId,
+                                                  opts.newProjectId, opts.newPrefix,
+                                                  "editor", "2000 b.f.");
+        if (!nuevo.isOk()) {
+            std::cerr << "No se pudo crear: " << nuevo.errorMessage() << "\n";
+            return 1;
+        }
+        std::cout << "Proyecto '" << nuevo.value().id << "' creado con prefijo '"
+                  << nuevo.value().prefix << "'.\n"
+                  << "Abrelo con:  ./level_editor --proyecto " << nuevo.value().id << "\n";
+        return 0;
+    }
+
+    std::cout << "PROYECTOS VIVOS\n\n";
+    std::printf("  %-13s %-32s %4s %4s %4s  %s\n",
+                "id", "nombre", "niv", "av", "cat", "estado");
+    for (const Editor::Project& p : idx.projects()) {
+        const Editor::ProjectCheck c = idx.check(p.id);
+        std::printf("  %-13s %-32s %4d %4d %4d  %s\n",
+                    p.id.c_str(), p.name.substr(0, 32).c_str(),
+                    (int)p.levels.size(), (int)p.adventures.size(),
+                    (int)p.catalogs.size(),
+                    c.ok() ? "completo" : (std::to_string(c.problems.size()) + " problema(s)").c_str());
+        if (!c.ok()) {
+            for (const std::string& s : c.problems) {
+                std::printf("       - %s\n", s.c_str());
+            }
+        }
+    }
+    for (const std::string& o : idx.orphans()) {
+        std::printf("  [huerfano] %s\n", o.c_str());
+    }
+    std::cout << "\n  abrir:  ./level_editor --proyecto <id>\n"
+                 "  nuevo:  ./level_editor --nuevo <id> --prefijo <p_>\n"
+                 "  build:  python3 tools/build_proyecto.py <id>\n";
+    return 0;
+}
+
 int main(int argc, char** argv) {
     const int width = 1280;
     const int height = 720;
-    const EditorOptions opts = parseArgs(argc, argv);
+    EditorOptions opts = parseArgs(argc, argv);
     const int maxFrames = opts.maxFrames;
+
+    if (opts.listProjects || !opts.newProjectId.empty()) {
+        return pantallaDeArranque(opts);
+    }
+
+    // Con --proyecto, el nivel a abrir y el destino de guardado salen del
+    // manifiesto. Antes F5 escribia SIEMPRE en assets/maps/editor_map.tmx:
+    // editabas Boundington y el trabajo acababa en un fichero que no era de
+    // nadie, y a la siguiente sesion lo pisabas.
+    std::string saveTmx = "assets/maps/editor_map.tmx";
+    std::string saveJson = "assets/levels/editor_level.json";
+    std::string saveName = "Nivel del editor";
+    if (!opts.projectId.empty()) {
+        auto r = Editor::ProjectIndex::scan("assets");
+        if (!r.isOk()) {
+            std::cerr << "No se pudo leer assets/proyectos: " << r.errorMessage() << "\n";
+            return 1;
+        }
+        const Editor::Project* p = r.value().find(opts.projectId);
+        if (p == nullptr) {
+            std::cerr << "No existe el proyecto '" << opts.projectId
+                      << "'. Prueba: ./level_editor --proyectos\n";
+            return 1;
+        }
+        std::string nivel = opts.levelName;
+        if (nivel.empty() && !p->levels.empty()) {
+            nivel = p->levels.front();
+        }
+        if (!nivel.empty()) {
+            opts.loadLevelPath = "assets/levels/" + nivel;
+            saveJson = opts.loadLevelPath;
+            saveName = p->name;
+            const std::string base = nivel.substr(0, nivel.find_last_of('.'));
+            saveTmx = "assets/maps/" + base + ".tmx";
+        } else {
+            // Proyecto recien creado: primer nivel, nombre con su prefijo.
+            const std::string base = p->prefix + "nivel_1";
+            saveTmx = "assets/maps/" + base + ".tmx";
+            saveJson = "assets/levels/" + base + ".json";
+            saveName = p->name;
+        }
+        std::cout << "Proyecto '" << p->id << "' (" << p->name << ", " << p->epoch << ")\n"
+                  << "  niveles: " << p->levels.size() << "  ·  guardara en " << saveJson << "\n";
+    }
 
     try {
         Window window(width, height, "Motor Grafico - Editor de niveles (Fase 12)");
@@ -321,10 +449,14 @@ int main(int argc, char** argv) {
                 // puertas (ver EditorState::exportLevelJson).
                 editor.placeSpawn(spawn);
             }
+            editor.setPlayerStart(loadedLevel.playerStart);
             std::cout << "Cargado \"" << loadedLevel.name << "\" (" << mapW << "x" << mapH
                       << ", " << loadedLevel.objects.size() << " objetos) desde "
                       << opts.loadLevelPath << "\n";
         }
+        // Abrir/importar un nivel establece el documento base: Undo debe
+        // afectar solo a lo que el autor haga DESPUES de abrirlo.
+        editor.clearHistory();
 
         Camera camera(width, height);
         // Camara centrada en el CENTRO del mapa, no en su esquina: con un
@@ -384,7 +516,8 @@ int main(int argc, char** argv) {
             "1 " + std::string(toolName(EditorTool::PaintTile)),
             "2 " + std::string(toolName(EditorTool::EraseTile)),
             "3 " + std::string(toolName(EditorTool::PlaceObject)),
-            "4 " + std::string(toolName(EditorTool::RemoveObject))};
+            "4 " + std::string(toolName(EditorTool::RemoveObject)),
+            "5 " + std::string(toolName(EditorTool::SetPlayerStart))};
         // Medida del propio widget (cuenta el prefijo del cursor y el
         // interlineado): nada de cuentas duplicadas que se desincronicen.
         const Vector2 toolsSize = HudCommandMenu::contentSize(font, toolOptions);
@@ -520,7 +653,7 @@ int main(int argc, char** argv) {
         statusPanel.setBorder(kBorderColor, 2.0f);
 
         const std::string kControlsLine =
-            "1-4 HERRAM  Q/E PALETA  WASD PAN  +/- ZOOM  HOME CENTRO  F5 GUARDAR  ESC SALIR";
+            "1-5 HERRAM  Q/E PALETA  CTRL+Z/Y HISTORIAL  F5 GUARDAR  F6 VALIDAR  ESC SALIR";
         // Peor caso del texto de estado (controles + contadores) para que el
         // panel de fondo cubra siempre la linea, aunque se anada el
         // "...TILES 64  OBJETOS 5" del final.
@@ -586,6 +719,20 @@ int main(int argc, char** argv) {
                 editor.setTool(EditorTool::PlaceObject);
             if (keys.pressed(glfwWin, GLFW_KEY_4))
                 editor.setTool(EditorTool::RemoveObject);
+            if (keys.pressed(glfwWin, GLFW_KEY_5))
+                editor.setTool(EditorTool::SetPlayerStart);
+            const bool controlDown = glfwGetKey(glfwWin, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ||
+                                     glfwGetKey(glfwWin, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS ||
+                                     glfwGetKey(glfwWin, GLFW_KEY_LEFT_SUPER) == GLFW_PRESS ||
+                                     glfwGetKey(glfwWin, GLFW_KEY_RIGHT_SUPER) == GLFW_PRESS;
+            if (controlDown && keys.pressed(glfwWin, GLFW_KEY_Z)) {
+                statusText.setText(editor.undo() ? "DESHECHO" : "NO HAY CAMBIOS QUE DESHACER");
+                savedMessageFrames = 120;
+            }
+            if (controlDown && keys.pressed(glfwWin, GLFW_KEY_Y)) {
+                statusText.setText(editor.redo() ? "REHECHO" : "NO HAY CAMBIOS QUE REHACER");
+                savedMessageFrames = 120;
+            }
             if (keys.pressed(glfwWin, GLFW_KEY_Q))
                 editor.prevPaletteEntry();
             if (keys.pressed(glfwWin, GLFW_KEY_E))
@@ -639,20 +786,46 @@ int main(int argc, char** argv) {
             if (keys.pressed(glfwWin, GLFW_KEY_F5)) {
                 TmxTilesetSettings settings;  // defaults = tileset del checker
                 settings.collisionGids = {2};
-                std::ofstream tmxOut("assets/maps/editor_map.tmx", std::ios::binary);
+                std::ofstream tmxOut(saveTmx, std::ios::binary);
                 tmxOut << editor.exportTmx(settings);
-                std::ofstream jsonOut("assets/levels/editor_level.json", std::ios::binary);
-                jsonOut << editor.exportLevelJson("Nivel del editor", "assets/maps/editor_map.tmx",
-                                                  GridCoord{0, 0});
-                std::cout << "Guardado: assets/maps/editor_map.tmx + "
-                             "assets/levels/editor_level.json\n";
+                std::ofstream jsonOut(saveJson, std::ios::binary);
+                jsonOut << editor.exportLevelJson(saveName, saveTmx);
+                std::cout << "Guardado: " << saveTmx << " + " << saveJson << "\n";
                 // Feedback en la barra de estado (~4s a 60fps); el bucle
                 // la devuelve a los controles al caducar.
-                statusText.setText(
-                    "GUARDADO: ASSETS/MAPS/EDITOR_MAP.TMX + ASSETS/LEVELS/EDITOR_LEVEL.JSON");
+                std::string aviso = "GUARDADO: " + saveJson;
+                for (char& ch : aviso) {
+                    ch = static_cast<char>(std::toupper(static_cast<unsigned char>(ch)));
+                }
+                statusText.setText(aviso);
                 savedMessageFrames = 240;
                 // Disparar el flash de guardado (overlay verde breve).
                 saveFlashAlpha = 1.0f;
+            }
+
+            if (keys.pressed(glfwWin, GLFW_KEY_F6)) {
+                int emptyTiles = 0;
+                int unresolvedObjects = 0;
+                for (int y = 0; y < editor.height(); ++y) {
+                    for (int x = 0; x < editor.width(); ++x) {
+                        emptyTiles += editor.tileAt(x, y) == 0 ? 1 : 0;
+                    }
+                }
+                for (const ObjectSpawn& spawn : editor.objects()) {
+                    unresolvedObjects += catalog.find(spawn.objectId) == nullptr ? 1 : 0;
+                }
+                const GridCoord start = editor.playerStart();
+                const bool startOnEmptyTile = editor.tileAt(start.x, start.y) == 0;
+                if (unresolvedObjects > 0 || startOnEmptyTile) {
+                    statusText.setText("VALIDACION: " + std::to_string(unresolvedObjects) +
+                                       " OBJETOS SIN DEFINIR, INICIO " +
+                                       (startOnEmptyTile ? "SIN TILE" : "OK"));
+                } else {
+                    statusText.setText("VALIDACION OK: " + std::to_string(emptyTiles) +
+                                       " CELDAS VACIAS, " +
+                                       std::to_string(editor.objects().size()) + " OBJETOS");
+                }
+                savedMessageFrames = 240;
             }
 
             // --- Raton -> celda bajo el cursor ---
@@ -741,6 +914,21 @@ int main(int argc, char** argv) {
                                  Vector4{0.9f, 0.9f, 0.3f, 0.5f});
                 }
             }
+            // El punto de inicio forma parte del nivel, no es un dato
+            // oculto en el JSON: se muestra como una ficha cian para poder
+            // recolocarlo con la herramienta 5 y verificarlo de un vistazo.
+            {
+                Vector2 pos = IsoMath::gridToScreen(editor.playerStart(),
+                                                    static_cast<float>(kTileW),
+                                                    static_cast<float>(kTileH)) +
+                              tileDrawOffset;
+                batch.submit(pos + Vector2{static_cast<float>(kTileW) * 0.25f,
+                                            static_cast<float>(kTileH) * 0.25f},
+                             Vector2{static_cast<float>(kTileW) * 0.5f,
+                                     static_cast<float>(kTileH) * 0.5f},
+                             UVRect{0.0f, 0.0f, 1.0f, 1.0f}, &whiteTexture,
+                             Vector4{0.20f, 0.85f, 1.0f, 0.82f});
+            }
             // Celda bajo el cursor: resaltado PULSANTE (onda senoidal). Mucho
             // mas facil de localizar la celda activa que un blanco estatico:
             // el alpha oscila entre ~0.20 y ~0.50 a ~0.6Hz. Mismo offset que
@@ -806,7 +994,12 @@ int main(int argc, char** argv) {
             // avisos de ids sin resolver en su propia linea naranja.
             std::string inspector;
             std::string warnings;
-            if (objectMode) {
+            if (editor.tool() == EditorTool::SetPlayerStart) {
+                const GridCoord start = editor.playerStart();
+                inspector = "INSPECTOR\n\nINICIO JUGADOR\nX " + std::to_string(start.x) +
+                            "  Y " + std::to_string(start.y) +
+                            "\nCLICK EN UNA CELDA\nPARA REUBICARLO";
+            } else if (objectMode) {
                 const std::string selectedId = editor.selectedObjectId();
                 const ObjectDefinition* def = catalog.find(selectedId);
                 if (def == nullptr) {
@@ -847,7 +1040,9 @@ int main(int argc, char** argv) {
             } else {
                 const int gid = editor.selectedTileGid();
                 inspector = "INSPECTOR\n\nTILE " + tileLabel(gid) + "\nCOLISION " +
-                            (gid == 2 ? "SI" : "NO");
+                            (gid == 2 ? "SI" : "NO") + "\nINICIO " +
+                            std::to_string(editor.playerStart().x) + "," +
+                            std::to_string(editor.playerStart().y);
             }
             inspectorText.setText(inspector);
             inspectorWarn.setText(warnings);

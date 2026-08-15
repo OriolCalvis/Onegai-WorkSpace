@@ -102,6 +102,40 @@ void testToolsAndPalettes() {
     std::cout << "[EDITOR] herramientas + paletas (ciclado, wraparound, vacias) correcto.\n";
 }
 
+void testHistoryAndPlayerStart() {
+    EditorState editor(4, 3);
+    editor.setTilePalette({1, 2});
+    editor.paintTile(1, 1, 2);
+    editor.placeObject(2, 1, "slime");
+    editor.setPlayerStart(GridCoord{3, 2});
+    require(editor.canUndo());
+    require(editor.playerStart().x == 3 && editor.playerStart().y == 2);
+
+    require(editor.undo());
+    require(editor.playerStart().x == 0 && editor.playerStart().y == 0);
+    require(editor.undo());
+    require(editor.objectAt(2, 1) == nullptr);
+    require(editor.undo());
+    require(editor.tileAt(1, 1) == 0);
+    require(!editor.canUndo());
+    require(editor.canRedo());
+
+    require(editor.redo());
+    require(editor.tileAt(1, 1) == 2);
+    require(editor.redo());
+    require(editor.objectAt(2, 1) != nullptr);
+    require(editor.redo());
+    require(editor.playerStart().x == 3 && editor.playerStart().y == 2);
+    require(!editor.canRedo());
+
+    editor.setPlayerStart(GridCoord{99, 99});
+    require(editor.playerStart().x == 3 && editor.playerStart().y == 2);
+    editor.clearHistory();
+    require(!editor.canUndo() && !editor.canRedo());
+
+    std::cout << "[EDITOR] historial undo/redo + playerStart correcto.\n";
+}
+
 void testTmxRoundTrip() {
     // Reproduce el contenido de test_map.tmx (4x3, borde de gid 1,
     // centro de gid 2 con colision) desde el editor y comprueba que el
@@ -148,8 +182,8 @@ void testLevelJsonRoundTrip() {
     editor.placeObject(0, 2, "arbusto");
     editor.placeObject(3, 0, "slime");
 
-    std::string json = editor.exportLevelJson("Nivel del editor", "assets/maps/editor_map.tmx",
-                                             GridCoord{1, 1});
+    editor.setPlayerStart(GridCoord{1, 1});
+    std::string json = editor.exportLevelJson("Nivel del editor", "assets/maps/editor_map.tmx");
     auto parsed = LevelLoader::loadFromString(json);
     require(parsed.isOk());
     const LevelDefinition& level = parsed.value();
@@ -166,14 +200,12 @@ void testLevelJsonRoundTrip() {
 
     // Nivel sin objetos: JSON valido con array vacio.
     EditorState bare(2, 2);
-    auto emptyParsed = LevelLoader::loadFromString(
-        bare.exportLevelJson("Vacio", "m.tmx", GridCoord{0, 0}));
+    auto emptyParsed = LevelLoader::loadFromString(bare.exportLevelJson("Vacio", "m.tmx"));
     require(emptyParsed.isOk());
     require(emptyParsed.value().objects.empty());
 
     // Escape: un nombre con comillas sobrevive el round-trip.
-    auto quoted = LevelLoader::loadFromString(
-        bare.exportLevelJson("La \"cueva\"", "m.tmx", GridCoord{0, 0}));
+    auto quoted = LevelLoader::loadFromString(bare.exportLevelJson("La \"cueva\"", "m.tmx"));
     require(quoted.isOk());
     require(quoted.value().name == "La \"cueva\"");
 
@@ -185,6 +217,7 @@ void testLevelJsonRoundTrip() {
 int main() {
     testEditingOps();
     testToolsAndPalettes();
+    testHistoryAndPlayerStart();
     testTmxRoundTrip();
     testLevelJsonRoundTrip();
     std::cout << "\nTodas las comprobaciones (assert) han pasado correctamente.\n";

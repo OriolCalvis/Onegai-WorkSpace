@@ -1,0 +1,147 @@
+{
+  "_type": "Project",
+  "_id": "MG_WORLD_PROJECT",
+  "name": "MotorGraphico World Platform",
+  "ownedElements": [
+    {
+      "_type": "UMLModel",
+      "_id": "MG_MODEL",
+      "name": "MotorGraphico World Platform",
+      "ownedElements": [
+        {
+          "_type": "UMLPackage",
+          "_id": "PKG_FOUNDATION",
+          "_parent": {"$ref": "MG_MODEL"},
+          "name": "01 Foundation",
+          "ownedElements": [
+            {"_type": "UMLClass", "_id": "CORE", "_parent": {"$ref": "PKG_FOUNDATION"}, "name": "Core", "stereotype": "existing", "documentation": "Errors, Result, JSON, math primitives and generic resource contracts."},
+            {"_type": "UMLClass", "_id": "ASSETS", "_parent": {"$ref": "PKG_FOUNDATION"}, "name": "Asset Services", "stereotype": "existing", "documentation": "Texture, shader and catalog resource management."},
+            {"_type": "UMLClass", "_id": "DATA_SCHEMA", "_parent": {"$ref": "PKG_FOUNDATION"}, "name": "Content Schema", "stereotype": "existing", "documentation": "LevelDefinition, ObjectCatalog and typed RPG catalog definitions."}
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "PKG_ENGINE",
+          "_parent": {"$ref": "MG_MODEL"},
+          "name": "02 Reusable Engine",
+          "ownedElements": [
+            {"_type": "UMLClass", "_id": "ENGINE_HOST", "_parent": {"$ref": "PKG_ENGINE"}, "name": "Application Host", "stereotype": "existing", "documentation": "Window, input loop, level orchestration and runtime composition."},
+            {"_type": "UMLClass", "_id": "RENDER", "_parent": {"$ref": "PKG_ENGINE"}, "name": "Rendering", "stereotype": "existing", "documentation": "Camera, tile maps, sprites, entity ordering, HUD and post-processing."},
+            {"_type": "UMLClass", "_id": "WORLD_RUNTIME", "_parent": {"$ref": "PKG_ENGINE"}, "name": "World Runtime", "stereotype": "existing", "documentation": "Map collision, transitions, exploration state and world entities."},
+            {"_type": "UMLClass", "_id": "SAVE_GAME", "_parent": {"$ref": "PKG_ENGINE"}, "name": "Save Game Service", "stereotype": "proposed", "documentation": "Serializes campaign-independent player, world and narrative progression. Required for multiple games."},
+            {"_type": "UMLClass", "_id": "GAME_CONFIG", "_parent": {"$ref": "PKG_ENGINE"}, "name": "Game Definition", "stereotype": "proposed", "documentation": "Manifest selecting a campaign, starting level, catalogs, ruleset, UI theme and save namespace."}
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "PKG_GAMEPLAY",
+          "_parent": {"$ref": "MG_MODEL"},
+          "name": "03 Gameplay Framework",
+          "ownedElements": [
+            {"_type": "UMLClass", "_id": "SESSION", "_parent": {"$ref": "PKG_GAMEPLAY"}, "name": "Game Session", "stereotype": "existing", "documentation": "GL-free session state connecting exploration, combat, shops, dialogue and transitions."},
+            {"_type": "UMLClass", "_id": "RPG_RULES", "_parent": {"$ref": "PKG_GAMEPLAY"}, "name": "RPG Ruleset", "stereotype": "existing", "documentation": "Nd6, character sheet, inventory, conditions, skills, tiers and random engine."},
+            {"_type": "UMLClass", "_id": "NARRATIVE", "_parent": {"$ref": "PKG_GAMEPLAY"}, "name": "Narrative Runtime", "stereotype": "existing", "documentation": "Adventure scripts, flags, beats, checks and effects."},
+            {"_type": "UMLClass", "_id": "GAME_MODULE", "_parent": {"$ref": "PKG_GAMEPLAY"}, "name": "Game Module API", "stereotype": "proposed", "documentation": "Optional game-specific rules and hooks. Keeps unique mechanics out of the reusable engine."},
+            {"_type": "UMLClass", "_id": "CAMPAIGN", "_parent": {"$ref": "PKG_GAMEPLAY"}, "name": "Campaign Definition", "stereotype": "proposed", "documentation": "Groups world locations, narrative arcs, progression rules and game-specific catalogs."}
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "PKG_TOOLING",
+          "_parent": {"$ref": "MG_MODEL"},
+          "name": "04 Creator Toolchain",
+          "ownedElements": [
+            {"_type": "UMLClass", "_id": "LEVEL_EDITOR", "_parent": {"$ref": "PKG_TOOLING"}, "name": "Level Editor", "stereotype": "existing", "documentation": "Visual tile, object and player-start editor. Exports TMX and level JSON."},
+            {"_type": "UMLClass", "_id": "PROJECT_WORKSPACE", "_parent": {"$ref": "PKG_TOOLING"}, "name": "Project Workspace", "stereotype": "partially-existing", "documentation": "ProjectIndex plus proposed visual browser, recent files, document state and save-as workflow."},
+            {"_type": "UMLClass", "_id": "VALIDATION", "_parent": {"$ref": "PKG_TOOLING"}, "name": "Content Validation", "stereotype": "existing+proposed", "documentation": "Structural checks plus visual editor validation for unreachable cells, broken links and unresolved ids."},
+            {"_type": "UMLClass", "_id": "PLAYTEST", "_parent": {"$ref": "PKG_TOOLING"}, "name": "Playtest Runner", "stereotype": "proposed", "documentation": "Runs the active level in an isolated GameSession and returns to the editor."},
+            {"_type": "UMLClass", "_id": "CONTENT_IMPORT", "_parent": {"$ref": "PKG_TOOLING"}, "name": "Content Import Pipeline", "stereotype": "existing+proposed", "documentation": "Generators and converters become import actions inside the workspace instead of mandatory shell commands."}
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "PKG_WORLD",
+          "_parent": {"$ref": "MG_MODEL"},
+          "name": "05 Egaroth Content",
+          "ownedElements": [
+            {"_type": "UMLClass", "_id": "WORLD_BIBLE", "_parent": {"$ref": "PKG_WORLD"}, "name": "World Bible", "stereotype": "existing", "documentation": "Shared fantasy setting: geography, nations, locations, factions, eras and lore."},
+            {"_type": "UMLClass", "_id": "WORLD_ASSETS", "_parent": {"$ref": "PKG_WORLD"}, "name": "Shared World Assets", "stereotype": "existing", "documentation": "Tilesets, portraits, objects, creatures, skills, adventures and locations."},
+            {"_type": "UMLClass", "_id": "CONTENT_PACK", "_parent": {"$ref": "PKG_WORLD"}, "name": "Content Pack", "stereotype": "proposed", "documentation": "Versioned package of maps, catalogs, quests and assets reusable by one or many games."}
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "PKG_GAMES",
+          "_parent": {"$ref": "MG_MODEL"},
+          "name": "06 Games",
+          "ownedElements": [
+            {"_type": "UMLClass", "_id": "GAME_BOUNDINGTON", "_parent": {"$ref": "PKG_GAMES"}, "name": "Boundington Campaign", "stereotype": "existing", "documentation": "Current narrative campaign using the Egaroth world and Nd6 rules."},
+            {"_type": "UMLClass", "_id": "GAME_FUTURE_A", "_parent": {"$ref": "PKG_GAMES"}, "name": "Future Game A", "stereotype": "placeholder", "documentation": "A different story, protagonist and campaign that shares engine and optional world packs."},
+            {"_type": "UMLClass", "_id": "GAME_FUTURE_B", "_parent": {"$ref": "PKG_GAMES"}, "name": "Future Game B", "stereotype": "placeholder", "documentation": "A second independent game, potentially with a distinct rules module and art direction."}
+          ]
+        },
+        {"_type": "UMLDependency", "_id": "D1", "_parent": {"$ref": "MG_MODEL"}, "source": {"$ref": "ENGINE_HOST"}, "target": {"$ref": "RENDER"}, "name": "uses"},
+        {"_type": "UMLDependency", "_id": "D2", "_parent": {"$ref": "MG_MODEL"}, "source": {"$ref": "ENGINE_HOST"}, "target": {"$ref": "SESSION"}, "name": "orchestrates"},
+        {"_type": "UMLDependency", "_id": "D3", "_parent": {"$ref": "MG_MODEL"}, "source": {"$ref": "SESSION"}, "target": {"$ref": "RPG_RULES"}, "name": "applies"},
+        {"_type": "UMLDependency", "_id": "D4", "_parent": {"$ref": "MG_MODEL"}, "source": {"$ref": "SESSION"}, "target": {"$ref": "NARRATIVE"}, "name": "executes"},
+        {"_type": "UMLDependency", "_id": "D5", "_parent": {"$ref": "MG_MODEL"}, "source": {"$ref": "LEVEL_EDITOR"}, "target": {"$ref": "DATA_SCHEMA"}, "name": "edits"},
+        {"_type": "UMLDependency", "_id": "D6", "_parent": {"$ref": "MG_MODEL"}, "source": {"$ref": "PROJECT_WORKSPACE"}, "target": {"$ref": "LEVEL_EDITOR"}, "name": "hosts"},
+        {"_type": "UMLDependency", "_id": "D7", "_parent": {"$ref": "MG_MODEL"}, "source": {"$ref": "PROJECT_WORKSPACE"}, "target": {"$ref": "VALIDATION"}, "name": "runs"},
+        {"_type": "UMLDependency", "_id": "D8", "_parent": {"$ref": "MG_MODEL"}, "source": {"$ref": "PLAYTEST"}, "target": {"$ref": "SESSION"}, "name": "creates"},
+        {"_type": "UMLDependency", "_id": "D9", "_parent": {"$ref": "MG_MODEL"}, "source": {"$ref": "GAME_CONFIG"}, "target": {"$ref": "CAMPAIGN"}, "name": "selects"},
+        {"_type": "UMLDependency", "_id": "D10", "_parent": {"$ref": "MG_MODEL"}, "source": {"$ref": "CAMPAIGN"}, "target": {"$ref": "CONTENT_PACK"}, "name": "uses"},
+        {"_type": "UMLDependency", "_id": "D11", "_parent": {"$ref": "MG_MODEL"}, "source": {"$ref": "CONTENT_PACK"}, "target": {"$ref": "WORLD_BIBLE"}, "name": "extends"},
+        {"_type": "UMLDependency", "_id": "D12", "_parent": {"$ref": "MG_MODEL"}, "source": {"$ref": "GAME_BOUNDINGTON"}, "target": {"$ref": "GAME_CONFIG"}, "name": "configured by"},
+        {"_type": "UMLDependency", "_id": "D13", "_parent": {"$ref": "MG_MODEL"}, "source": {"$ref": "GAME_FUTURE_A"}, "target": {"$ref": "GAME_CONFIG"}, "name": "configured by"},
+        {"_type": "UMLDependency", "_id": "D14", "_parent": {"$ref": "MG_MODEL"}, "source": {"$ref": "GAME_FUTURE_B"}, "target": {"$ref": "GAME_CONFIG"}, "name": "configured by"},
+        {
+          "_type": "UMLClassDiagram",
+          "_id": "DIAGRAM_LANDSCAPE",
+          "_parent": {"$ref": "MG_MODEL"},
+          "name": "01 - Platform Landscape",
+          "documentation": "Open first. Existing pieces are marked <<existing>>; proposed extension points are marked <<proposed>>.",
+          "ownedViews": [
+            {"_type": "UMLClassView", "_id": "V_CORE", "_parent": {"$ref": "DIAGRAM_LANDSCAPE"}, "model": {"$ref": "CORE"}, "left": 40, "top": 60, "width": 180, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_ENGINE", "_parent": {"$ref": "DIAGRAM_LANDSCAPE"}, "model": {"$ref": "ENGINE_HOST"}, "left": 300, "top": 60, "width": 190, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_SESSION", "_parent": {"$ref": "DIAGRAM_LANDSCAPE"}, "model": {"$ref": "SESSION"}, "left": 570, "top": 60, "width": 180, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_WORKSPACE", "_parent": {"$ref": "DIAGRAM_LANDSCAPE"}, "model": {"$ref": "PROJECT_WORKSPACE"}, "left": 830, "top": 60, "width": 210, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_WORLD", "_parent": {"$ref": "DIAGRAM_LANDSCAPE"}, "model": {"$ref": "WORLD_BIBLE"}, "left": 300, "top": 220, "width": 190, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_PACK", "_parent": {"$ref": "DIAGRAM_LANDSCAPE"}, "model": {"$ref": "CONTENT_PACK"}, "left": 570, "top": 220, "width": 180, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_CONFIG", "_parent": {"$ref": "DIAGRAM_LANDSCAPE"}, "model": {"$ref": "GAME_CONFIG"}, "left": 830, "top": 220, "width": 210, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_BOUND", "_parent": {"$ref": "DIAGRAM_LANDSCAPE"}, "model": {"$ref": "GAME_BOUNDINGTON"}, "left": 570, "top": 380, "width": 180, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_GAME_A", "_parent": {"$ref": "DIAGRAM_LANDSCAPE"}, "model": {"$ref": "GAME_FUTURE_A"}, "left": 830, "top": 380, "width": 210, "height": 70}
+          ]
+        },
+        {
+          "_type": "UMLClassDiagram",
+          "_id": "DIAGRAM_RUNTIME",
+          "_parent": {"$ref": "MG_MODEL"},
+          "name": "02 - Reusable Runtime",
+          "ownedViews": [
+            {"_type": "UMLClassView", "_id": "V_ASSETS", "_parent": {"$ref": "DIAGRAM_RUNTIME"}, "model": {"$ref": "ASSETS"}, "left": 40, "top": 80, "width": 190, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_RENDER", "_parent": {"$ref": "DIAGRAM_RUNTIME"}, "model": {"$ref": "RENDER"}, "left": 300, "top": 80, "width": 190, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_WORLD_RUNTIME", "_parent": {"$ref": "DIAGRAM_RUNTIME"}, "model": {"$ref": "WORLD_RUNTIME"}, "left": 560, "top": 80, "width": 210, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_SAVE", "_parent": {"$ref": "DIAGRAM_RUNTIME"}, "model": {"$ref": "SAVE_GAME"}, "left": 840, "top": 80, "width": 190, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_RPG", "_parent": {"$ref": "DIAGRAM_RUNTIME"}, "model": {"$ref": "RPG_RULES"}, "left": 300, "top": 250, "width": 190, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_NARRATIVE", "_parent": {"$ref": "DIAGRAM_RUNTIME"}, "model": {"$ref": "NARRATIVE"}, "left": 560, "top": 250, "width": 210, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_MODULE", "_parent": {"$ref": "DIAGRAM_RUNTIME"}, "model": {"$ref": "GAME_MODULE"}, "left": 840, "top": 250, "width": 190, "height": 70}
+          ]
+        },
+        {
+          "_type": "UMLClassDiagram",
+          "_id": "DIAGRAM_TOOLCHAIN",
+          "_parent": {"$ref": "MG_MODEL"},
+          "name": "03 - Creator Toolchain",
+          "ownedViews": [
+            {"_type": "UMLClassView", "_id": "V_PROJECT", "_parent": {"$ref": "DIAGRAM_TOOLCHAIN"}, "model": {"$ref": "PROJECT_WORKSPACE"}, "left": 60, "top": 80, "width": 220, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_EDITOR", "_parent": {"$ref": "DIAGRAM_TOOLCHAIN"}, "model": {"$ref": "LEVEL_EDITOR"}, "left": 360, "top": 80, "width": 190, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_VALIDATE", "_parent": {"$ref": "DIAGRAM_TOOLCHAIN"}, "model": {"$ref": "VALIDATION"}, "left": 630, "top": 80, "width": 210, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_PLAYTEST", "_parent": {"$ref": "DIAGRAM_TOOLCHAIN"}, "model": {"$ref": "PLAYTEST"}, "left": 920, "top": 80, "width": 190, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_IMPORT", "_parent": {"$ref": "DIAGRAM_TOOLCHAIN"}, "model": {"$ref": "CONTENT_IMPORT"}, "left": 360, "top": 250, "width": 190, "height": 70},
+            {"_type": "UMLClassView", "_id": "V_SCHEMA", "_parent": {"$ref": "DIAGRAM_TOOLCHAIN"}, "model": {"$ref": "DATA_SCHEMA"}, "left": 630, "top": 250, "width": 210, "height": 70}
+          ]
+        }
+      ]
+    }
+  ]
+}

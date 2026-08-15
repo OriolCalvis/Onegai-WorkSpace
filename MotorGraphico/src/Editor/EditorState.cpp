@@ -83,6 +83,9 @@ void EditorState::applyAt(int x, int y) {
         case EditorTool::RemoveObject:
             removeObjectAt(x, y);
             break;
+        case EditorTool::SetPlayerStart:
+            setPlayerStart(GridCoord{x, y});
+            break;
     }
 }
 
@@ -90,7 +93,12 @@ void EditorState::paintTile(int x, int y, int gid) {
     if (!inBounds(x, y) || gid < 0) {
         return;
     }
-    m_tiles[static_cast<std::size_t>(y) * m_width + x] = gid;
+    const std::size_t index = static_cast<std::size_t>(y) * m_width + x;
+    if (m_tiles[index] == gid) {
+        return;
+    }
+    recordUndo();
+    m_tiles[index] = gid;
 }
 
 void EditorState::eraseTile(int x, int y) { paintTile(x, y, 0); }
@@ -99,7 +107,16 @@ void EditorState::placeObject(int x, int y, const std::string& objectId) {
     if (!inBounds(x, y) || objectId.empty()) {
         return;
     }
-    removeObjectAt(x, y);  // una celda, un objeto (ver el header)
+    const ObjectSpawn* existing = objectAt(x, y);
+    if (existing != nullptr && existing->objectId == objectId && existing->targetLevel.empty()) {
+        return;
+    }
+    recordUndo();
+    m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(),
+                                   [&](const ObjectSpawn& o) {
+                                       return o.position.x == x && o.position.y == y;
+                                   }),
+                    m_objects.end());
     ObjectSpawn spawn;
     spawn.objectId = objectId;
     spawn.position = GridCoord{x, y};
@@ -114,16 +131,82 @@ void EditorState::placeSpawn(const ObjectSpawn& spawn) {
     if (!inBounds(spawn.position.x, spawn.position.y) || spawn.objectId.empty()) {
         return;
     }
-    removeObjectAt(spawn.position.x, spawn.position.y);  // una celda, un objeto
+    recordUndo();
+    m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(),
+                                   [&](const ObjectSpawn& o) {
+                                       return o.position.x == spawn.position.x &&
+                                              o.position.y == spawn.position.y;
+                                   }),
+                    m_objects.end());
     m_objects.push_back(spawn);
 }
 
 void EditorState::removeObjectAt(int x, int y) {
+    const auto first = std::find_if(m_objects.begin(), m_objects.end(), [&](const ObjectSpawn& o) {
+        return o.position.x == x && o.position.y == y;
+    });
+    if (first == m_objects.end()) {
+        return;
+    }
+    recordUndo();
     m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(),
                                    [&](const ObjectSpawn& o) {
                                        return o.position.x == x && o.position.y == y;
                                    }),
                     m_objects.end());
+}
+
+void EditorState::setPlayerStart(GridCoord position) {
+    if (!inBounds(position.x, position.y) ||
+        (position.x == m_playerStart.x && position.y == m_playerStart.y)) {
+        return;
+    }
+    recordUndo();
+    m_playerStart = position;
+}
+
+EditorState::Snapshot EditorState::snapshot() const {
+    return Snapshot{m_tiles, m_objects, m_playerStart};
+}
+
+void EditorState::restore(Snapshot state) {
+    m_tiles = std::move(state.tiles);
+    m_objects = std::move(state.objects);
+    m_playerStart = state.playerStart;
+}
+
+void EditorState::recordUndo() {
+    constexpr std::size_t kMaxHistory = 256;
+    if (m_undo.size() == kMaxHistory) {
+        m_undo.erase(m_undo.begin());
+    }
+    m_undo.push_back(snapshot());
+    m_redo.clear();
+}
+
+bool EditorState::undo() {
+    if (m_undo.empty()) {
+        return false;
+    }
+    m_redo.push_back(snapshot());
+    restore(std::move(m_undo.back()));
+    m_undo.pop_back();
+    return true;
+}
+
+bool EditorState::redo() {
+    if (m_redo.empty()) {
+        return false;
+    }
+    m_undo.push_back(snapshot());
+    restore(std::move(m_redo.back()));
+    m_redo.pop_back();
+    return true;
+}
+
+void EditorState::clearHistory() {
+    m_undo.clear();
+    m_redo.clear();
 }
 
 int EditorState::tileAt(int x, int y) const {
@@ -189,13 +272,13 @@ std::string EditorState::exportTmx(const TmxTilesetSettings& s) const {
     return out.str();
 }
 
-std::string EditorState::exportLevelJson(const std::string& levelName, const std::string& mapPath,
-                                         const GridCoord& playerStart) const {
+std::string EditorState::exportLevelJson(const std::string& levelName,
+                                         const std::string& mapPath) const {
     std::ostringstream out;
     out << "{\n";
     out << "  \"name\": \"" << jsonEscape(levelName) << "\",\n";
     out << "  \"map\": \"" << jsonEscape(mapPath) << "\",\n";
-    out << "  \"playerStart\": { \"x\": " << playerStart.x << ", \"y\": " << playerStart.y
+    out << "  \"playerStart\": { \"x\": " << m_playerStart.x << ", \"y\": " << m_playerStart.y
         << " },\n";
     out << "  \"objects\": [";
     for (std::size_t i = 0; i < m_objects.size(); ++i) {
