@@ -236,6 +236,17 @@ def escribir(nombre, m, start, titulo, mostrar=True):
     # como "loadFromFile devolvio error", sin decir por que.
     assert titulo.isascii(), f"{nombre}: el titulo tiene caracteres no ASCII"
     start = m.cerca_libre(*start)
+
+    # EXCAVAR LO PRIMERO. Antes se serializaba el CSV arriba y se llamaba a
+    # conectar() al final: la cadena tmx ya estaba construida con la rejilla
+    # SIN excavar, asi que el assert pasaba (en memoria si quedaba conectada)
+    # y el disco se quedaba con 133 celdas muertas y 15 puertas inalcanzables
+    # en el Casco Antiguo -- incluida la iglesia, que la campana necesita.
+    #
+    # Es el peor tipo de fallo: la ejecucion dice OK y el fichero esta mal.
+    # Solo se ve validando el TMX escrito, no el objeto en memoria.
+    abiertas, sueltos = m.conectar(start)
+    assert sueltos == 0, f"{nombre}: quedan {sueltos} celdas inalcanzables"
     tiles_col = "\n".join(
         f'  <tile id="{gid-1}">\n   <properties>\n'
         f'    <property name="collision" type="bool" value="true"/>\n'
@@ -261,7 +272,6 @@ def escribir(nombre, m, start, titulo, mostrar=True):
         "name": titulo, "map": f"assets/maps/{nombre}.tmx",
         "playerStart": {"x": start[0], "y": start[1]},
         "objects": m.objetos}, indent=1, ensure_ascii=False) + "\n")
-    abiertas, sueltos = m.conectar(start)
     assert m.libre(*start), f"{nombre}: playerStart sobre colision"
     # El perimetro tiene que seguir siendo perimetro. Un callejon que deriva
     # o una apertura de conectividad pueden abrir la muralla sin que nada lo
@@ -270,7 +280,6 @@ def escribir(nombre, m, start, titulo, mostrar=True):
     fuga = [(x, y) for x in range(m.w) for y in (0, m.h - 1) if m.g[y][x] not in PASO]
     fuga += [(x, y) for y in range(m.h) for x in (0, m.w - 1) if m.g[y][x] not in PASO]
     assert not fuga, f"{nombre}: {len(fuga)} boquetes en el perimetro {fuga[:6]}"
-    assert sueltos == 0, f"{nombre}: quedan {sueltos} celdas inalcanzables"
     inalcanzables = [o["objectId"] for o in m.objetos
                      if not m.libre(o["position"]["x"], o["position"]["y"])]
     assert not inalcanzables, f"{nombre}: objetos sobre colision {inalcanzables}"

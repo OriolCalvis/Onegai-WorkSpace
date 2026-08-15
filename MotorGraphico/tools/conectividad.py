@@ -8,16 +8,29 @@ from collections import deque
 # absoluta a un sandbox que ya no existe, asi que ningun script corria fuera
 # de la maquina donde se escribio.
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/"
-COLISION={2,4,7,8,9,10,11,12,13,14,15,16,17,18,19,20}
 fallos=0
 # Antes la lista estaba escrita a mano con las tres ciudades: cualquier nivel
 # nuevo (los mapamundis, los interiores) quedaba fuera de la comprobacion sin
 # que nada lo delatara. Ahora se recorren TODOS los niveles del repo.
 niveles = sorted(os.path.splitext(os.path.basename(p))[0]
                  for p in glob.glob(BASE + "assets/levels/*.json"))
+saltados=[]
 for nombre in niveles:
     lvl=json.load(open(BASE+f"assets/levels/{nombre}.json"))
+    # assets/levels/ es para NIVELES. Alguna contribucion del experimento dejo
+    # ahi un manifiesto (JSON sin 'map'), y el validador reventaba con un
+    # KeyError en vez de decir que ese fichero no pinta nada aqui.
+    if "map" not in lvl:
+        saltados.append(nombre)
+        continue
     tmx=re.sub(r"<!--.*?-->","",open(BASE+lvl["map"]).read(),flags=re.S)
+    # La colision se lee del PROPIO TMX (property collision por GID).
+    # Antes habia aqui un set escrito a mano que se quedo obsoleto en
+    # cuanto gen_tileset anadio los tiles 25-36: las casas de piedra y
+    # madera no contaban como muro y el flood fill "atravesaba" edificios.
+    COLISION={int(m)+1 for m in re.findall(
+        r'<tile id="(\d+)">\s*<properties>\s*'
+        r'<property name="collision"[^/]*/>',tmx)}
     W=int(re.search(r'<map[^>]*?\swidth="(\d+)"',tmx).group(1))
     H=int(re.search(r'<map[^>]*?\sheight="(\d+)"',tmx).group(1))
     g=[int(v) for v in re.search(r'<data encoding="csv">(.*?)</data>',tmx,re.S)
@@ -41,3 +54,8 @@ for nombre in niveles:
     else:
         print(f"   todas las {len(lvl['objects'])} puertas alcanzables")
 sys.exit(1 if fallos else 0)
+
+if saltados:
+    print(f"\n[AVISO] {len(saltados)} JSON en assets/levels/ sin clave 'map' "
+          f"(no son niveles): {saltados}")
+    fallos+=len(saltados)

@@ -186,15 +186,33 @@ import re
 tmx_txt = re.sub(r"<!--.*?-->", "", open(BASE + "assets/maps/ciudad_centro.tmx").read(), flags=re.S)
 gids = [int(v) for v in re.search(r'<data encoding="csv">(.*?)</data>', tmx_txt, re.S)
         .group(1).replace("\n", "").split(",") if v.strip()]
-COLISION = {2,4,7,8,9,10,11,12,13,14,15,16,17,18,19,20}
+# La colision se LEE DEL PROPIO TMX, no se escribe a mano. El set fijo
+# {2..20} se quedo obsoleto al ampliar el tileset a 36: los tiles 25-36
+# (casa de piedra, de madera, noble, piedra vieja, chabola, rio) no estaban,
+# asi que este script creia que las paredes eran caminables y plantaba PNJs
+# DENTRO de las casas. El nivel cargaba y el PNJ era inalcanzable.
+# Mismo fallo que ya tenia conectividad.py, misma solucion.
+COLISION = {int(t) + 1 for t in re.findall(
+    r'<tile id="(\d+)">\s*<properties>\s*<property name="collision"[^>]*value="true"',
+    open(BASE + "assets/maps/ciudad_centro.tmx").read())}
 ocupadas = {(o["position"]["x"], o["position"]["y"]) for o in exteriores["ciudad_centro"]["objects"]}
 libres = [(x, y) for y in range(64) for x in range(64)
           if gids[y*64+x] not in COLISION and (x, y) not in ocupadas]
+# Sitios sugeridos; si uno cae en muro se busca el libre mas cercano en vez
+# de descartar el PNJ en silencio (antes: "if pos in libres" y si no, nada).
 sitios = [(30,24),(34,24),(26,33),(38,33),(20,20),(45,50)]
+libres_set = set(libres)
+usadas = set()
 for (npc_id, _), pos in zip(NPCS_CALLE.items(), sitios):
-    if pos in [(p[0],p[1]) for p in libres]:
-        exteriores["ciudad_centro"]["objects"].append(
-            {"objectId": npc_id, "position": {"x": pos[0], "y": pos[1]}})
+    if pos not in libres_set or pos in usadas:
+        cand = min((c for c in libres_set if c not in usadas),
+                   key=lambda c: (c[0]-pos[0])**2 + (c[1]-pos[1])**2, default=None)
+        if cand is None:
+            continue
+        pos = cand
+    usadas.add(pos)
+    exteriores["ciudad_centro"]["objects"].append(
+        {"objectId": npc_id, "position": {"x": pos[0], "y": pos[1]}})
 
 for m, lvl in exteriores.items():
     open(BASE + f"assets/levels/{m}.json", "w").write(json.dumps(lvl, indent=2, ensure_ascii=False) + "\n")

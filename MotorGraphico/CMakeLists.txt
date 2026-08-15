@@ -136,6 +136,13 @@ target_link_libraries(demo_mundo PRIVATE motor_level)
 set_target_properties(demo_mundo PROPERTIES CXX_STANDARD 17)
 add_dependencies(demo_mundo copiar_assets)
 
+# demo_este_sur — tres prototipos regionales aislados (Taurengrad,
+# Dhin Thyraxion y Naka't-ol). Verifica JSON de nivel y TMX reales.
+add_executable(demo_este_sur examples/demo_este_sur.cpp)
+target_link_libraries(demo_este_sur PRIVATE motor_level motor_map)
+set_target_properties(demo_este_sur PROPERTIES CXX_STANDARD 17)
+add_dependencies(demo_este_sur copiar_assets)
+
 # ====================================================================
 # demo_boundington — el primer dia en Boundington (1981 b.f.), la primera
 # aventura con final ramificado. Juega tres rutas, comprueba los tres
