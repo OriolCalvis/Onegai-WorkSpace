@@ -10,6 +10,7 @@ dos personas modifiquen los mismos subsistemas a la vez.
 | Cargar catálogos compuestos | `juego --catalogo-extra` y F7 del editor ven todos los objetos del proyecto | `Application.*`, `juego.cpp`, `level_editor.cpp` |
 | Biblioteca racial real | 43 sprites idle 64×64 seleccionados por `raceId` en juego | `assets/textures/race_npc_*`, `Application.cpp` |
 | Plaza de las Razas base | Nivel jugable con 12 PNJ de razas distintas y regreso a ciudad | `assets/maps/plaza_de_las_razas.tmx`, `assets/levels/plaza_de_las_razas.json` |
+| Integración y depuración de mundo | Selector, empaquetado, manifiestos, enlaces y puertas comprobados desde `build/` | `ProjectHub.cpp`, `demo_proyectos.cpp`, manifiestos de proyecto |
 
 ## Lista para Claude — sin bloquear a Codex
 

@@ -73,6 +73,7 @@ add_library(motor_rpg
     src/RPG/SkillDefinitionEnums.cpp
     src/RPG/TierRules.cpp
     src/RPG/CharacterSheet.cpp
+    src/RPG/CharacterCreation.cpp
     src/RPG/InventoryEngine.cpp
     src/RPG/ConditionEngine.cpp
     src/RPG/NarrativeEngine.cpp
@@ -205,6 +206,12 @@ add_dependencies(demo_narrativa_combate copiar_assets)
 # ====================================================================
 # demo_proyectos — los proyectos vivos: descubrir, revisar y crear. Es el
 # nucleo de la pantalla de arranque del editor, GL-free y probado en CI.
+# demo_creacion_personaje — de la eleccion a la ficha, con las reglas del GDD.
+add_executable(demo_creacion_personaje examples/demo_creacion_personaje.cpp)
+target_link_libraries(demo_creacion_personaje PRIVATE motor_level)
+set_target_properties(demo_creacion_personaje PROPERTIES CXX_STANDARD 17)
+add_dependencies(demo_creacion_personaje copiar_assets)
+
 # demo_plaza_razas — la Plaza de las Razas, recorrida sin abrir ventana.
 add_executable(demo_plaza_razas examples/demo_plaza_razas.cpp)
 target_link_libraries(demo_plaza_razas PRIVATE motor_level)

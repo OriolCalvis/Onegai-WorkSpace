@@ -181,9 +181,31 @@ inline ClassDefinition CatalogLoader<ClassDefinition>::from_json(const JsonValue
     c.maxArmorWeight  = e["maxArmorWeight"].asString(e["max_armor_weight"].asString(""));
     c.maxWeaponWeight = e["maxWeaponWeight"].asString(e["max_weapon_weight"].asString(""));
     c.passiveId       = e["passiveId"].asString(e["passive_id"].asString(""));
-    c.startingSkillIds     = copy_json_string_vec(e["startingCards"]);
+    // "startingCards" es un OBJETO {skills, spells, passives, learnableSkills},
+    // no un array. Leerlo con copy_json_string_vec devolvia vacio siempre, y
+    // "startingEquipmentIds" no es la clave del JSON (es "startingEquipment"),
+    // asi que las 61 clases se cargaban SIN habilidades y SIN equipo. No daba
+    // ningun error: daba un personaje con la hoja en blanco, que es justo lo
+    // que el GDD dice que no puede pasar ("nadie empieza con una hoja en
+    // blanco"). Salio al montar la creacion de personaje.
+    const JsonValue& cards = e["startingCards"];
+    if (cards.isObject()) {
+        // skills y spells juntos: startingSkillIds documenta "skill_* y spell_*".
+        c.startingSkillIds = copy_json_string_vec(cards["skills"]);
+        for (const std::string& s : copy_json_string_vec(cards["spells"])) {
+            c.startingSkillIds.push_back(s);
+        }
+        const std::vector<std::string> pas = copy_json_string_vec(cards["passives"]);
+        if (c.passiveId.empty() && !pas.empty()) {
+            c.passiveId = pas.front();
+        }
+    } else {
+        c.startingSkillIds = copy_json_string_vec(cards);
+    }
     if (c.startingSkillIds.empty()) c.startingSkillIds = copy_json_string_vec(e["startingSkillIds"]);
-    c.startingEquipmentIds = copy_json_string_vec(e["startingEquipmentIds"]);
+    c.startingEquipmentIds = copy_json_string_vec(e["startingEquipment"]);
+    if (c.startingEquipmentIds.empty())
+        c.startingEquipmentIds = copy_json_string_vec(e["startingEquipmentIds"]);
     c.specializationIds    = copy_json_string_vec(e["specializationIds"]);
     c.canMulticlassInto = e["canMulticlassInto"].asBool(e["can_multiclass_into"].asBool(false));
     c.restrictedTags = copy_json_string_vec(e["restrictedTags"]);

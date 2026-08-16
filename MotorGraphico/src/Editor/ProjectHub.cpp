@@ -2,6 +2,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -46,6 +47,28 @@ bool idSeguro(const std::string& s) {
         }
     }
     return true;
+}
+
+// El editor se puede ejecutar desde la raiz del repositorio o desde build/.
+// El primer caso ve tools/ directamente; el segundo tiene assets/ copiados
+// pero el script sigue dos niveles por encima. No asumir el directorio de
+// trabajo evita que el boton Build diga que todo fue bien en la consola pero
+// no encuentre el empaquetador.
+std::string rutaBuildProyecto(const std::string& assetsRoot) {
+    const std::vector<std::string> candidatas = {
+        "tools/build_proyecto.py",
+        "../tools/build_proyecto.py",
+        "../../tools/build_proyecto.py",
+        assetsRoot + "/../tools/build_proyecto.py",
+        assetsRoot + "/../../tools/build_proyecto.py",
+    };
+    for (const std::string& ruta : candidatas) {
+        std::ifstream f(ruta);
+        if (f.good()) {
+            return ruta;
+        }
+    }
+    return {};
 }
 
 }  // namespace
@@ -193,7 +216,13 @@ void ProjectHub::build() {
                    "Solo [a-z0-9_]. Revisa el manifiesto a mano.");
         return;
     }
-    const std::string cmd = "python3 tools/build_proyecto.py " + p->id + " 2>&1";
+    const std::string script = rutaBuildProyecto(m_root);
+    if (script.empty()) {
+        setMessage(false, "No se encontro tools/build_proyecto.py",
+                   "Ejecuta el editor desde el repositorio o desde build/ con el arbol fuente al lado.");
+        return;
+    }
+    const std::string cmd = "python3 " + script + " " + p->id + " 2>&1";
     std::FILE* tuberia = ABRIR_TUBERIA(cmd.c_str(), "r");
     if (tuberia == nullptr) {
         setMessage(false, "No se pudo lanzar el empaquetado",

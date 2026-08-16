@@ -202,7 +202,9 @@ int main() {
     require(hub.key(27) == Editor::ProjectHub::Action::Quit);
     std::printf("    ENTER devuelve Open('%s'), ESC devuelve Quit. OK\n", hub.openId().c_str());
 
-    // Crear desde la pantalla: 'n', teclear, ENTER.
+    // El filtrado se prueba sin crear nada: asi la demo no destruye un
+    // proyecto de un usuario llamado casualmente "iroy" si se ejecuta en
+    // la raiz en vez de sobre los assets copiados de build/.
     require(hub.key('n') == Editor::ProjectHub::Action::None);
     require(hub.mode() == Editor::ProjectHub::Mode::NewProject);
     const char* tecleado = "Mi Proy 2!";   // mayusculas, espacios y '!' no entran
@@ -213,10 +215,24 @@ int main() {
     hub.key('\b');
     require(hub.draftId() == "iroy");
     std::printf("    el campo filtra a [a-z0-9_]: \"%s\" -> '%s'\n", tecleado, hub.draftId().c_str());
+    hub.key(27);
+    require(hub.mode() == Editor::ProjectHub::Mode::List);
+
+    // Crear desde la pantalla con un id que no exista. La demo debe ser
+    // repetible incluso si una ejecucion anterior se corto antes de limpiar.
+    std::string creado = "demo_hub_tmp";
+    unsigned sufijo = 0;
+    while (ProjectIndex::scan("assets").value().find(creado) != nullptr) {
+        creado = "demo_hub_tmp_" + std::to_string(++sufijo);
+    }
+    require(hub.key('n') == Editor::ProjectHub::Action::None);
+    for (char c : creado) {
+        hub.key(c);
+    }
     hub.key('\n');
     require(hub.mode() == Editor::ProjectHub::Mode::Message);
     require(hub.lastOk());
-    require(hub.current() != nullptr && hub.current()->id == "iroy");  // queda marcado
+    require(hub.current() != nullptr && hub.current()->id == creado);  // queda marcado
     std::printf("    creado y marcado: %s\n", hub.message()[0].c_str());
 
     // Cualquier tecla cierra el mensaje y vuelve a la lista.
@@ -226,8 +242,8 @@ int main() {
 
     // Y no se puede crear dos veces el mismo: el mensaje tiene que decirlo.
     hub.key('n');
-    for (const char* c = "iroy"; *c; ++c) {
-        hub.key(*c);
+    for (char c : creado) {
+        hub.key(c);
     }
     hub.key('\n');
     require(hub.mode() == Editor::ProjectHub::Mode::Message);
@@ -247,7 +263,7 @@ int main() {
     hub.key(' ');
 
     // Y se recoge tambien lo que creo la pantalla.
-    require(ProjectIndex::remove("assets", "iroy"));
+    require(ProjectIndex::remove("assets", creado));
     hub.refresh();
     require(hub.size() == idx.size());
 
