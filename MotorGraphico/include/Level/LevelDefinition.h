@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -72,6 +73,16 @@ struct ObjectSpawn {
     // y si venia o no).
     GridCoord targetPosition;
     bool hasTargetPosition = false;
+
+    // --- Variante local del arquetipo ---
+    // El catalogo define el objeto reutilizable; estos campos solo viven
+    // en ESTA instancia. Asi una misma pocion puede ser curativa, de mana
+    // o de mision sin duplicar la ficha base ni romper los niveles viejos.
+    std::string displayName;
+    std::string variant;
+    float scale = 1.0f;
+    std::string effectOverride;
+    std::map<std::string, std::string> properties;
 };
 
 struct LevelDefinition {

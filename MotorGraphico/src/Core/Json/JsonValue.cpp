@@ -337,3 +337,8 @@ std::size_t JsonValue::size() const {
     }
     return 0;
 }
+
+const std::map<std::string, JsonValue>& JsonValue::objectValues() const {
+    static const std::map<std::string, JsonValue> empty;
+    return isObject() ? m_object : empty;
+}

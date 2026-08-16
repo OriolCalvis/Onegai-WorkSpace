@@ -10,11 +10,14 @@
 
 #include "Check.h"
 #include "RPG/CharacterCreation.h"
+#include "RPG/CharacterCreationScreen.h"
 #include "RPG/TierRules.h"
 
 using RPG::CharacterCreation;
 using RPG::CharacterSheet;
 using RPG::CreationChoice;
+using RPG::CharacterCreationScreen;
+using Paso = RPG::CharacterCreationScreen::Paso;
 
 namespace {
 // Un reparto legal: 12 puntos sobre el minimo de 1.
@@ -133,6 +136,145 @@ int main() {
     const auto muchos = cc.problemas(vacia);
     require(muchos.size() >= 5);
     std::printf("\n  una eleccion vacia da %d problemas de golpe, no uno\n", (int)muchos.size());
+
+    // =================================================================
+    // LA PANTALLA, paso a paso y a golpe de tecla. Va aqui y no en un
+    // fichero GL por el mismo motivo que ProjectHub: lo que se mete en un
+    // .cpp con OpenGL delante solo se puede pasar por el compilador.
+    // =================================================================
+    std::printf("\n[la pantalla, paso a paso]\n");
+    CharacterCreationScreen p(cc);
+    require(p.paso() == Paso::Raza);
+    require(p.opciones().size() == 43);
+    std::printf("  paso %d/%d  %s  (%d opciones)\n", p.numeroDePaso(),
+                CharacterCreationScreen::totalDePasos(), p.tituloPaso(),
+                (int)p.opciones().size());
+
+    // La lista viene ORDENADA y estable: Catalog guarda en unordered_map,
+    // asi que sin ordenar la pantalla se barajaria sola entre ejecuciones.
+    for (std::size_t i = 1; i < p.etiquetas().size(); ++i) {
+        require(p.etiquetas()[i - 1] <= p.etiquetas()[i]);
+    }
+    std::printf("  lista ordenada por nombre. OK\n");
+
+    // --- Filtrar: 43 razas pasan a las que importan ---
+    for (char c : std::string("enan")) p.tecla(c);
+    require(p.filtro() == "enan");
+    require(p.opciones().size() < 43 && !p.opciones().empty());
+    require(p.totalSinFiltrar() == 43);
+    std::printf("  filtro 'enan': %d de %d razas -> %s\n", (int)p.opciones().size(),
+                (int)p.totalSinFiltrar(), p.etiquetas()[0].c_str());
+    // El filtro busca por NOMBRE y por id: "Enano de las Fraguas
+    // Profundas" tiene el id 'race_dwarf_deepforge', asi que buscar por
+    // el id solo dejaria fuera media lista. Se guarda el id que estaba
+    // marcado, sea cual sea.
+    const std::string razaMarcada = p.opciones()[p.marcado()];
+    p.tecla('\n');
+    require(p.paso() == Paso::Clase);
+    require(p.filtro().empty());      // el filtro no se arrastra al paso siguiente
+    require(p.eleccion().raceId == razaMarcada);
+
+    // --- No se puede avanzar sin resolver el paso ---
+    for (char c : std::string("zzzz")) p.tecla(c);
+    require(p.opciones().empty());
+    require(!p.siguiente());
+    require(!p.aviso().empty());
+    std::printf("  con filtro sin resultados no avanza: \"%s\"\n", p.aviso().c_str());
+    p.limpiarFiltro();
+    p.tecla('\n');
+    require(p.paso() == Paso::Trasfondo);
+
+    p.tecla('\n');   // primer trasfondo
+    require(p.paso() == Paso::Reparto);
+    const std::string fondo = p.eleccion().backgroundId;
+    require(!fondo.empty());
+
+    // --- Reparto: no avanza hasta gastar los 12 puntos ---
+    require(p.puntosLibres() == 12);
+    require(!p.siguiente());
+    std::printf("  reparto: no avanza con %d puntos sin gastar\n", p.puntosLibres());
+    // CON empieza en 1: cinco '+' lo dejan en 6, que es el tope. El SEXTO
+    // es el que tiene que avisar, no el quinto.
+    for (int i = 0; i < 5; ++i) p.tecla('+');
+    require(p.aviso().empty());
+    p.tecla('+');
+    require(!p.aviso().empty());
+    std::printf("  tope de stat en tier 1: \"%s\"\n", p.aviso().c_str());
+    p.tecla('s');
+    for (int i = 0; i < 5; ++i) p.tecla('+');       // DES
+    p.tecla('s');
+    for (int i = 0; i < 2; ++i) p.tecla('+');       // INT
+    require(p.puntosLibres() == 0);
+    require(p.siguiente());
+    require(p.paso() == Paso::Vinculo);
+    std::printf("  12 puntos repartidos, avanza. OK\n");
+
+    // --- Las siete narrativas salen del trasfondo elegido ---
+    int narrativas = 0;
+    while (p.paso() >= Paso::Vinculo && p.paso() <= Paso::Virtud) {
+        require(p.opciones().size() == 5);   // cinco opciones por lista
+        require(p.tecla('\n') == CharacterCreationScreen::Accion::Ninguna);
+        ++narrativas;
+    }
+    require(narrativas == 7);
+    require(p.paso() == Paso::Deidad);
+    std::printf("  las 7 listas narrativas, 5 opciones cada una. OK\n");
+
+    // --- La deidad se puede no elegir, y "(ninguna)" va la primera ---
+    require(p.etiquetas()[0] == "(ninguna)");
+    require(p.opciones()[0].empty());
+    p.tecla('\n');
+    require(p.eleccion().deityId.empty());
+    require(p.paso() == Paso::Nombre);
+    std::printf("  deidad opcional, '(ninguna)' la primera. OK\n");
+
+    // --- Nombre ---
+    require(!p.siguiente());             // vacio no cuela
+    for (char c : std::string("Bruna la Forjadora")) p.tecla(c);
+    require(p.eleccion().displayName == "Bruna la Forjadora");
+    p.tecla('\n');
+    require(p.paso() == Paso::Resumen);
+
+    // --- Resumen: sin problemas y construye ---
+    const auto probs = p.problemas();
+    if (!probs.empty()) {
+        for (const auto& s : probs) std::printf("    PROBLEMA: %s\n", s.c_str());
+    }
+    require(probs.empty());
+    require(p.tecla('\n') == CharacterCreationScreen::Accion::Terminado);
+    auto hechaPantalla = p.construir();
+    require(hechaPantalla);
+    RPG::CharacterSheet f = hechaPantalla.value();
+    cc.recalcular(f, reglas);
+    std::printf("\n  %s: %s / %s / %s\n", f.displayName.c_str(), f.raceId.c_str(),
+                f.classId.c_str(), f.backgroundId.c_str());
+    std::printf("  CON %d DES %d INT %d CAR %d   vida %d   %d habilidades\n",
+                f.con(), f.des(), f.int_(), f.car(), f.healthCap(),
+                (int)f.knownSkillIds.size());
+
+    // --- Volver atras y cambiar de trasfondo limpia las narrativas ---
+    // Es el fallo que se cuela solo: los ids elegidos eran de las listas
+    // del trasfondo VIEJO y siguen puestos.
+    CharacterCreationScreen q(cc);
+    q.tecla('\n'); q.tecla('\n');                    // raza, clase
+    q.tecla('\n');                                   // trasfondo #0
+    const std::string primero = q.eleccion().backgroundId;
+    q.anterior();                                    // volver al trasfondo
+    q.tecla('s');                                    // otro distinto
+    q.tecla('\n');
+    require(q.eleccion().backgroundId != primero);
+    require(q.eleccion().bondId.empty());
+    std::printf("\n  cambiar de trasfondo limpia las 7 narrativas. OK\n");
+
+    // ESC en el primer paso cancela; en los demas, vuelve.
+    CharacterCreationScreen r(cc);
+    require(r.tecla(27) == CharacterCreationScreen::Accion::Cancelado);
+    r.tecla('\n');
+    require(r.paso() == Paso::Clase);
+    require(r.tecla(27) == CharacterCreationScreen::Accion::Ninguna);
+    require(r.paso() == Paso::Raza);
+    std::printf("  ESC: cancela en el primer paso, vuelve en los demas. OK\n");
+
 
     std::printf("\ntodas las comprobaciones han pasado\n");
     return 0;

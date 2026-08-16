@@ -74,6 +74,7 @@ add_library(motor_rpg
     src/RPG/TierRules.cpp
     src/RPG/CharacterSheet.cpp
     src/RPG/CharacterCreation.cpp
+    src/RPG/CharacterCreationScreen.cpp
     src/RPG/InventoryEngine.cpp
     src/RPG/ConditionEngine.cpp
     src/RPG/NarrativeEngine.cpp

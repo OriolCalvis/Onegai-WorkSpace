@@ -34,6 +34,7 @@
 //   T       = darle al objeto bajo el cursor la patrulla del rectangulo
 //             marcado. Reutiliza la seleccion en vez de pedir cuatro
 //             numeros a mano.
+//   H       = ciclar la escala del objeto bajo el cursor (50/75/100/150/200%).
 //   Ctrl+Z / Ctrl+Y = deshacer / rehacer
 //   WASD    = pan de camara (SHIFT = x4, para mapas grandes)
 //   +/-     = zoom (0 = volver a 1x), HOME = centrar en el mapa
@@ -1419,6 +1420,31 @@ int main(int argc, char** argv) {
                 savedMessageFrames = 240;
             }
 
+            // H: escala de la instancia bajo el cursor. El gesto es
+            // deliberadamente discreto: elegir entre cinco tamanos que
+            // se ven al instante es mas fiable que teclear decimales sin
+            // contexto. La escala se exporta en el spawn, no en el
+            // catalogo, por lo que no cambia todos los objetos del mundo.
+            if (keys.pressed(glfwWin, GLFW_KEY_H)) {
+                const ObjectSpawn* objeto = editor.objectAt(hovered.x, hovered.y);
+                if (objeto == nullptr) {
+                    statusText.setText("PON EL CURSOR SOBRE EL OBJETO QUE QUIERES ESCALAR");
+                } else {
+                    const float escalas[] = {0.5f, 0.75f, 1.0f, 1.5f, 2.0f};
+                    std::size_t siguiente = 0;
+                    for (std::size_t i = 0; i < 5; ++i) {
+                        if (objeto->scale <= escalas[i] + 0.01f) {
+                            siguiente = (i + 1) % 5;
+                            break;
+                        }
+                    }
+                    editor.setObjectScale(hovered.x, hovered.y, escalas[siguiente]);
+                    statusText.setText("ESCALA " + std::to_string(static_cast<int>(escalas[siguiente] * 100)) +
+                                       "% - CTRL+Z PARA DESHACER");
+                }
+                savedMessageFrames = 180;
+            }
+
             // --- B: buscar en la paleta ---
             if (keys.pressed(glfwWin, GLFW_KEY_B)) {
                 buscando = !buscando;
@@ -1910,6 +1936,10 @@ int main(int argc, char** argv) {
                     hoverInfo += "  [" + (def != nullptr ? def->name : spawn.objectId) + "]";
                     if (!spawn.targetLevel.empty()) {
                         hoverInfo += "  SALIDA -> " + nombreEscenario(spawn.targetLevel);
+                    }
+                    if (spawn.scale != 1.0f) {
+                        hoverInfo += "  ESCALA " +
+                                     std::to_string(static_cast<int>(spawn.scale * 100)) + "%";
                     }
                     break;
                 }

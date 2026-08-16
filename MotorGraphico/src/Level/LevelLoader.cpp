@@ -99,6 +99,25 @@ Result<LevelDefinition> parseDefinition(const JsonValue& root) {
         spawn.hasTargetPosition = targetPos.isObject();
         spawn.targetPosition = parseGridCoord(targetPos, spawn.position);
 
+        // Overrides por instancia: todo es opcional para que el catalogo
+        // siga siendo la fuente de los valores por defecto y los niveles
+        // existentes carguen exactamente igual que antes.
+        spawn.displayName = objectValue["displayName"].asString();
+        spawn.variant = objectValue["variant"].asString();
+        spawn.scale = static_cast<float>(objectValue["scale"].asNumber(1.0));
+        if (spawn.scale <= 0.0f) {
+            spawn.scale = 1.0f;
+        }
+        spawn.effectOverride = objectValue["effectOverride"].asString();
+        const JsonValue& properties = objectValue["properties"];
+        if (properties.isObject()) {
+            for (const auto& pair : properties.objectValues()) {
+                if (!pair.first.empty() && pair.second.isString()) {
+                    spawn.properties[pair.first] = pair.second.asString();
+                }
+            }
+        }
+
         level.objects.push_back(std::move(spawn));
     }
 

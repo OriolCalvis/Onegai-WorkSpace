@@ -73,6 +73,11 @@ public:
     const JsonValue& operator[](std::size_t index) const;
     std::size_t size() const;
 
+    // Vista inmutable de las claves de un objeto. El cargador de niveles
+    // la necesita para conservar propiedades por instancia de contenido;
+    // para valores que no son Object devuelve un mapa vacio.
+    const std::map<std::string, JsonValue>& objectValues() const;
+
 private:
     Type m_type = Type::Null;
     bool m_bool = false;

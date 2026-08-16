@@ -447,6 +447,37 @@ void testFiltroCapasSeleccionYPropiedades() {
         require(js.find("\"targetPosition\": { \"x\": 1, \"y\": 7 }") != std::string::npos);
         std::printf("  patrulla y destino se escriben en el JSON. OK\n");
 
+        // Un arquetipo puede tener una ficha local sin duplicarse en el
+        // catalogo: la escala se edita desde EditorState y el resto de
+        // overrides se conserva al abrir/copiar/guardar un spawn.
+        ObjectSpawn pocion;
+        pocion.objectId = "pocion_base";
+        pocion.position = GridCoord{1, 6};
+        pocion.patrolMin = pocion.position;
+        pocion.patrolMax = pocion.position;
+        pocion.displayName = "Pocion de Ben Kafka";
+        pocion.variant = "curativa";
+        pocion.effectOverride = "curar 12 PV";
+        pocion.properties["rareza"] = "rara";
+        pocion.properties["mision"] = "ninos_perdidos";
+        e.placeSpawn(pocion);
+        e.setObjectScale(1, 6, 1.5f);
+        require(e.objectAt(1, 6)->scale == 1.5f);
+        require(e.undo());
+        require(e.objectAt(1, 6)->scale == 1.0f);
+        require(e.redo());
+
+        auto overrides = LevelLoader::loadFromString(e.exportLevelJson("nivel", "mapa.tmx"));
+        require(overrides.isOk());
+        const ObjectSpawn& cargada = overrides.value().objects[2];
+        require(cargada.displayName == "Pocion de Ben Kafka");
+        require(cargada.variant == "curativa");
+        require(cargada.scale == 1.5f);
+        require(cargada.effectOverride == "curar 12 PV");
+        require(cargada.properties.at("rareza") == "rara");
+        require(cargada.properties.at("mision") == "ninos_perdidos");
+        std::printf("  variantes, escala y propiedades sobreviven el round-trip. OK\n");
+
         // La patrulla se recorta al mapa: mandar a un PNJ fuera del mapa
         // es mandarlo a caminar contra la nada.
         e.setObjectPatrol(2, 2, GridCoord{-3, 0}, GridCoord{99, 99});

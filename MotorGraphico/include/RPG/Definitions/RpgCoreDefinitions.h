@@ -40,6 +40,10 @@ struct ClassDefinition {
     // Cartas iniciales (ids que resuelve SkillCatalog + PassiveCatalog)
     std::string passiveId;                        // Passive de clase identitaria
     std::vector<std::string> startingSkillIds;    // skill_* y spell_*
+    // Lo que esta clase PUEDE aprender despues, no lo que trae puesto.
+    // Venia en startingCards.learnableSkills y se tiraba entero: sin esto
+    // no hay forma de saber que puede subir un personaje al progresar.
+    std::vector<std::string> learnableSkillIds;
     std::vector<std::string> startingEquipmentIds;// equip_*
     std::vector<std::string> specializationIds;   // Especializaciones Tier2+
 

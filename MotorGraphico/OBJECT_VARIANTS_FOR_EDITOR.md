@@ -20,7 +20,19 @@ El catálogo conserva los valores por defecto. La instancia solo guarda lo
 que cambia, de modo que un ajuste de balance afecta a todos los objetos que
 no tengan un override.
 
-## Ficha visual futura
+## Disponible ahora
+
+El formato de nivel y `EditorState` ya conservan `displayName`, `variant`,
+`scale`, `effectOverride` y `properties` por instancia. Copiar, pegar,
+deshacer y guardar no descartan esos campos. En el editor visual, `H` sobre
+un objeto alterna una escala de 50%, 75%, 100%, 150% y 200%; es un override
+local y no modifica el arquetipo del catálogo.
+
+Los demás campos ya pueden venir de niveles creados por herramientas o
+scripts. El siguiente paso de UI es exponer sus controles de texto y listas
+por categoría en el inspector.
+
+## Ficha visual siguiente
 
 Al seleccionar un objeto colocado, el inspector debe mostrar:
 

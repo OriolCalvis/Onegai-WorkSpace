@@ -204,6 +204,9 @@ public:
     // -----------------------------------------------------------------
     void setObjectPatrol(int x, int y, GridCoord min, GridCoord max);
     void setObjectTargetPosition(int x, int y, GridCoord target);
+    // Escala visual por instancia. Se limita a un rango editor-friendly:
+    // evita sprites invisibles o que tapen todo el mapa por un cero/error.
+    void setObjectScale(int x, int y, float scale);
 
     // -----------------------------------------------------------------
     // FILTRO DE PALETA

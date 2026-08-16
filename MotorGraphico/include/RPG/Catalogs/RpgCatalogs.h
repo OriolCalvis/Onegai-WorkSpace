@@ -195,6 +195,7 @@ inline ClassDefinition CatalogLoader<ClassDefinition>::from_json(const JsonValue
         for (const std::string& s : copy_json_string_vec(cards["spells"])) {
             c.startingSkillIds.push_back(s);
         }
+        c.learnableSkillIds = copy_json_string_vec(cards["learnableSkills"]);
         const std::vector<std::string> pas = copy_json_string_vec(cards["passives"]);
         if (c.passiveId.empty() && !pas.empty()) {
             c.passiveId = pas.front();

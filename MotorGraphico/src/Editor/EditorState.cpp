@@ -519,6 +519,19 @@ void EditorState::setObjectTargetPosition(int x, int y, GridCoord target) {
     m->hasTargetPosition = true;
 }
 
+void EditorState::setObjectScale(int x, int y, float scale) {
+    ObjectSpawn* o = mutableObjectAt(x, y);
+    if (o == nullptr) {
+        return;
+    }
+    const float limitada = std::max(0.25f, std::min(scale, 4.0f));
+    if (o->scale == limitada) {
+        return;
+    }
+    recordUndo();
+    mutableObjectAt(x, y)->scale = limitada;
+}
+
 EditorState::Snapshot EditorState::snapshot() const {
     return Snapshot{m_layers, m_activeLayer, m_objects, m_playerStart};
 }
@@ -681,6 +694,30 @@ std::string EditorState::exportLevelJson(const std::string& levelName,
                 out << ", \"targetPosition\": { \"x\": " << o.targetPosition.x
                     << ", \"y\": " << o.targetPosition.y << " }";
             }
+        }
+        if (!o.displayName.empty()) {
+            out << ", \"displayName\": \"" << jsonEscape(o.displayName) << "\"";
+        }
+        if (!o.variant.empty()) {
+            out << ", \"variant\": \"" << jsonEscape(o.variant) << "\"";
+        }
+        if (o.scale != 1.0f) {
+            out << ", \"scale\": " << o.scale;
+        }
+        if (!o.effectOverride.empty()) {
+            out << ", \"effectOverride\": \"" << jsonEscape(o.effectOverride) << "\"";
+        }
+        if (!o.properties.empty()) {
+            out << ", \"properties\": { ";
+            std::size_t propertyIndex = 0;
+            for (const auto& property : o.properties) {
+                if (propertyIndex++ > 0) {
+                    out << ", ";
+                }
+                out << "\"" << jsonEscape(property.first) << "\": \""
+                    << jsonEscape(property.second) << "\"";
+            }
+            out << " }";
         }
         out << " }";
     }
