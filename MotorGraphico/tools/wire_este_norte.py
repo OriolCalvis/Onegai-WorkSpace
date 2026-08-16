@@ -113,14 +113,16 @@ def main():
                 datos["objects"].append(obj)
                 print(f"  + marcador nuevo {nuevo_id} en lm{lm} "
                       f"({ancla[0]},{ancla[1]}) [{nombre}]")
-            if "targetLevel" in obj:
-                # alguien (otro agente o una pasada anterior) ya lo enlazo
-                continue
-            obj["targetLevel"] = nivel_path
-            obj["targetPosition"] = {"x": start["x"], "y": start["y"]}
-            tocados += 1
+            if "targetLevel" not in obj:
+                # se respetan los enlaces ya puestos (por una pasada anterior
+                # o por otro agente en landmass compartido)
+                obj["targetLevel"] = nivel_path
+                obj["targetPosition"] = {"x": start["x"], "y": start["y"]}
+                tocados += 1
 
-            # 2. salida del asentimiento -> landmass, celda caminable cercana
+            # 2. salida del asentimiento -> landmass, celda caminable cercana.
+            #    SIEMPRE se repone: gen_este_norte.py regenera los niveles
+            #    desde cero y las salidas vuelven a nacer sin target.
             mx, my = snap(w, h, gids, col,
                           obj["position"]["x"], obj["position"]["y"])
             salida = next(o for o in mios["objects"]

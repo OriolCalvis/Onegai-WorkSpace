@@ -502,3 +502,12 @@ else ()
         "third_party/stb (ver instrucciones en CMakeLists.txt). "
         "demo_resource_manager sigue disponible sin ellos.")
 endif ()
+
+# demo_este_norte — el cuadrante Este-Norte de Egaroth (experimento 4-IAs,
+# ZCode): 22 asentimientos + 33 interiores en Choubar, Gongorguma,
+# Mistarium y Nocturnsea. Carga todo lo generado desde el manifiesto y
+# comprueba puertas y fichas de catalogo. GL-free, corre en CI.
+add_executable(demo_este_norte examples/demo_este_norte.cpp)
+target_link_libraries(demo_este_norte PRIVATE motor_level)
+set_target_properties(demo_este_norte PROPERTIES CXX_STANDARD 17)
+add_dependencies(demo_este_norte copiar_assets)

@@ -447,6 +447,27 @@ def main():
                  "interactable": True, "price": precio,
                  "pickup": {"effect": efecto, "power": poder}})
 
+    # Fichas de MARCADOR para los objectId-ciudad de los landmass que mis
+    # salidas tocan (2/4/7/8). build_proyecto.py arrastra esos mapas por las
+    # puertas de vuelta y un objectId sin ficha es un objeto invisible en
+    # una build suelta. Incluye marcadores del Este-Sur que comparten
+    # landmass_2: son ids-strings con su _nombre, no contenido ajeno.
+    for lm in (2, 4, 7, 8):
+        ruta_lm = BASE + f"assets/levels/mundi_landmass_{lm}.json"
+        if not os.path.exists(ruta_lm):
+            continue
+        datos_lm = json.load(open(ruta_lm, encoding="utf-8"))
+        for o in datos_lm.get("objects", []):
+            oid = o.get("objectId", "")
+            if not oid.startswith("ciudad_"):
+                continue
+            add_cat({"id": oid,
+                     "name": o.get("_nombre") or oid,
+                     "category": "prop", "spriteId": 23,
+                     "blocksMovement": False, "interactable": False,
+                     "_nacion": o.get("_nacion", ""),
+                     "_nota": "marcador de mapamundi"})
+
     open(BASE + "assets/objects/este_norte_objetos.json", "w").write(
         json.dumps({"_fuente": "Experimento 4-IAs (ZCode, Este-Norte). "
                     "Dialogos y nombres capital de Nocturnsea: PROPUESTA.",
