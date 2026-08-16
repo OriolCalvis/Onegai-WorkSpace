@@ -58,7 +58,8 @@ public:
     Result<bool> init(int width, int height, const std::string& title,
                       const std::string& levelPath = "assets/levels/test_level.json",
                       const std::string& catalogPath = "assets/objects/test_objects.json",
-                      const std::string& initialAdventurePath = "");
+                      const std::string& initialAdventurePath = "",
+                      const std::vector<std::string>& extraCatalogPaths = {});
 
     // Bucle principal hasta que se cierre la ventana o se pulse ESC.
     // maxFrames >= 0 corre exactamente ese numero de frames y sale (modo
@@ -126,6 +127,11 @@ private:
     // personaje.png, 12 frames de 64x64 con alpha). Lo que cambia entre
     // niveles es m_atlas (el tileset); este sobrevive igual que el Player.
     std::unique_ptr<TextureAtlas> m_characterAtlas;
+    // Atlas 7x7 de idle para los PNJ raciales. Se mantiene separado de
+    // personaje.png: este ultimo sigue siendo la hoja animada provisional
+    // de jugador/enemigos, mientras que cada raceId tiene aqui su frame
+    // real de 64x64.
+    std::unique_ptr<TextureAtlas> m_raceNpcAtlas;
     TileMap m_map;
     ObjectCatalog m_objectCatalog;
     SkillCatalog m_skillCatalog;

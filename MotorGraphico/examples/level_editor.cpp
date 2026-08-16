@@ -112,6 +112,8 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <unordered_map>
+#include <utility>
 #include <vector>
 
 // glad ANTES que GLFW (mismo orden y motivo que src/Engine/Window.cpp):
@@ -302,6 +304,15 @@ RaceNpcPreview previewNpcRacial(const ObjectDefinition& definition) {
     };
     const auto found = previews.find(id);
     return found != previews.end() ? found->second : RaceNpcPreview{};
+}
+
+// TextureManager carga los PNG con Y invertida. Los previews se envían
+// directamente al SpriteBatch (no pasan por Entity), por lo que necesitan
+// invertir V aqui para que cabeza y pies no queden al revés.
+UVRect uvPreviewPng(const TextureAtlas& atlas, int frame) {
+    UVRect uv = atlas.getUV(frame);
+    std::swap(uv.v0, uv.v1);
+    return uv;
 }
 
 // La barra de estado va en mayusculas (BitmapFont solo tiene caja alta).
@@ -845,7 +856,7 @@ int main(int argc, char** argv) {
         TextureAtlas objectIconAtlas(iconTextureResult.value(), 313, 313);
         for (int row = 0; row < 4; ++row) {
             for (int col = 0; col < 4; ++col) {
-                objectIconAtlas.defineRegion(1 + row * 4 + col, col, row);
+                objectIconAtlas.defineRegion(1 + row * 4 + col, col, 3 - row);
             }
         }
 
@@ -862,7 +873,7 @@ int main(int argc, char** argv) {
         TextureAtlas enemyIconAtlas(enemyIconTextureResult.value(), 362, 362);
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 4; ++col) {
-                enemyIconAtlas.defineRegion(1 + row * 4 + col, col, row);
+                enemyIconAtlas.defineRegion(1 + row * 4 + col, col, 2 - row);
             }
         }
 
@@ -888,14 +899,14 @@ int main(int argc, char** argv) {
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 4; ++col) {
                 const int frame = 1 + row * 4 + col;
-                raceNpcAtlas1.defineRegion(frame, col, row);
-                raceNpcAtlas2.defineRegion(frame, col, row);
-                raceNpcAtlas3.defineRegion(frame, col, row);
+                raceNpcAtlas1.defineRegion(frame, col, 2 - row);
+                raceNpcAtlas2.defineRegion(frame, col, 2 - row);
+                raceNpcAtlas3.defineRegion(frame, col, 2 - row);
             }
         }
         for (int col = 0; col < 4; ++col) {
-            raceNpcAtlas4.defineRegion(1 + col, col, 0);
-            raceNpcAtlas4.defineRegion(5 + col, col, 1);
+            raceNpcAtlas4.defineRegion(1 + col, col, 1);
+            raceNpcAtlas4.defineRegion(5 + col, col, 0);
         }
 
         EditorState editor(mapW, mapH);
@@ -1653,13 +1664,16 @@ int main(int argc, char** argv) {
                 guardarNivel();
                 // El catalogo del proyecto, si declara alguno; si no, el
                 // de Boundington, que es el unico completo hoy.
-                std::string catalogoDePrueba = "assets/objects/boundington_npcs.json";
+                std::string catalogoDePrueba = "assets/objects/test_objects.json";
+                std::vector<std::string> catalogosExtraDePrueba;
                 if (!opts.projectId.empty()) {
                     auto ri = Editor::ProjectIndex::scan("assets");
                     if (ri.isOk()) {
                         const Editor::Project* pp = ri.value().find(opts.projectId);
-                        if (pp != nullptr && !pp->catalogs.empty()) {
-                            catalogoDePrueba = "assets/objects/" + pp->catalogs.front();
+                        if (pp != nullptr) {
+                            for (const std::string& catalogo : pp->catalogs) {
+                                catalogosExtraDePrueba.push_back("assets/objects/" + catalogo);
+                            }
                         }
                     }
                 }
@@ -1671,8 +1685,11 @@ int main(int argc, char** argv) {
                     std::fclose(f);
                     exe = "./build/juego";
                 }
-                const std::string orden =
+                std::string orden =
                     exe + " --nivel \"" + saveJson + "\" --catalogo \"" + catalogoDePrueba + "\"";
+                for (const std::string& catalogo : catalogosExtraDePrueba) {
+                    orden += " --catalogo-extra \"" + catalogo + "\"";
+                }
                 std::cout << "Probando: " << orden << "\n";
                 statusText.setText("MODO JUGADOR... (cierra el juego para volver al editor)");
                 savedMessageFrames = 240;
@@ -1782,13 +1799,13 @@ int main(int argc, char** argv) {
                         const TextureAtlas* raceAtlases[] = {
                             nullptr, &raceNpcAtlas1, &raceNpcAtlas2, &raceNpcAtlas3, &raceNpcAtlas4};
                         const TextureAtlas* previewAtlas = raceAtlases[racePreview.atlas];
-                        batch.submit(pos, tileSize, previewAtlas->getUV(racePreview.frame),
+                        batch.submit(pos, tileSize, uvPreviewPng(*previewAtlas, racePreview.frame),
                                      previewAtlas->texture(), Vector4{1.0f, 1.0f, 1.0f, 1.0f});
                     } else if (enemyIcon != 0) {
-                        batch.submit(pos, tileSize, enemyIconAtlas.getUV(enemyIcon),
+                        batch.submit(pos, tileSize, uvPreviewPng(enemyIconAtlas, enemyIcon),
                                      enemyIconAtlas.texture(), Vector4{1.0f, 1.0f, 1.0f, 1.0f});
                     } else {
-                        batch.submit(pos, tileSize, objectIconAtlas.getUV(iconoEditor(*def)),
+                        batch.submit(pos, tileSize, uvPreviewPng(objectIconAtlas, iconoEditor(*def)),
                                      objectIconAtlas.texture(), Vector4{1.0f, 1.0f, 1.0f, 1.0f});
                     }
                 } else {

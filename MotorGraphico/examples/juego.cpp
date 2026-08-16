@@ -52,19 +52,23 @@ int main(int argc, char** argv) {
     std::string nivel = "assets/levels/interior_vacio.json";
     std::string catalogo = "assets/objects/boundington_npcs.json";
     std::string aventuraInicial;
+    std::vector<std::string> catalogosExtra;
     for (int i = 1; i < argc; ++i) {
         const std::string a = argv[i];
         if (a == "--nivel" && i + 1 < argc) {
             nivel = argv[++i];
         } else if (a == "--catalogo" && i + 1 < argc) {
             catalogo = argv[++i];
+        } else if (a == "--catalogo-extra" && i + 1 < argc) {
+            catalogosExtra.push_back(argv[++i]);
         } else if (a == "--precuela") {
             nivel = "assets/levels/interior_taberna.json";
             aventuraInicial = "assets/adventures/boundington_precuela_taberna.json";
         } else if (!a.empty() && a[0] != '-') {
             maxFrames = std::atoi(a.c_str());
         } else {
-            std::cerr << "Uso: juego [--precuela] [--nivel ruta.json] [--catalogo ruta.json] [nFrames]\n";
+            std::cerr << "Uso: juego [--precuela] [--nivel ruta.json] [--catalogo ruta.json] "
+                         "[--catalogo-extra ruta.json] [nFrames]\n";
             return 2;
         }
     }
@@ -78,7 +82,7 @@ int main(int argc, char** argv) {
     // prologo, ver Application::update). Si la narrativa no carga, init()
     // no falla: el motor grafico sigue siendo usable sin ella.
     auto init = app.init(1280, 720, "Motor Grafico - Boundington", nivel, catalogo,
-                         aventuraInicial);
+                         aventuraInicial, catalogosExtra);
     if (!init.isOk()) {
         // init() nunca lanza: los fallos de arranque (ventana, shaders,
         // assets que faltan) llegan como Result::Error con el motivo.

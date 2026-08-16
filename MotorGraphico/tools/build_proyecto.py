@@ -112,11 +112,20 @@ def construye(pid, con_binario=False):
             shutil.copy2(org, os.path.join(destino, "assets", sub, f))
             copiados += 1
     # Texturas: las comparten todos los proyectos, no hay que declararlas.
+    # Texturas: las comparten todos los proyectos, no hay que declararlas.
+    # copytree y no un bucle de copy2: dentro de textures/ hay CARPETAS
+    # (race_npc_sprites, 43 ficheros), y copy2 sobre un directorio revienta
+    # con IsADirectoryError a mitad de la build.
     tex = os.path.join(ASSETS, "textures")
     if os.path.isdir(tex):
-        for f in os.listdir(tex):
-            shutil.copy2(os.path.join(tex, f), os.path.join(destino, "assets", "textures", f))
-            copiados += 1
+        for raiz, _, ficheros in os.walk(tex):
+            rel = os.path.relpath(raiz, tex)
+            sub = os.path.join(destino, "assets", "textures", rel) if rel != "." \
+                else os.path.join(destino, "assets", "textures")
+            os.makedirs(sub, exist_ok=True)
+            for f in ficheros:
+                shutil.copy2(os.path.join(raiz, f), os.path.join(sub, f))
+                copiados += 1
 
     # --- Comprobacion: todo objectId usado debe tener ficha DENTRO ---
     catalogo = set()

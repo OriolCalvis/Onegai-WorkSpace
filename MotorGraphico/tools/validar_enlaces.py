@@ -26,7 +26,11 @@ def carga(path):
     return lvl,W,H,[g[y*W:(y+1)*W] for y in range(H)],colision
 
 niveles=sorted(os.path.basename(p) for p in glob.glob(BASE+"assets/levels/*.json"))
-niveles=[n for n in niveles if n.startswith(("ciudad_","interior_"))]
+# Antes solo miraba "ciudad_" e "interior_". La Plaza de las Razas se
+# llamo "plaza_de_las_razas" y quedo FUERA del validador: tenia salida a
+# la ciudad y ninguna entrada, y nadie se entero. Un validador que solo
+# mira los nombres que espera confirma su propia hipotesis.
+niveles=[n for n in niveles if n.startswith(("ciudad_","interior_","plaza_"))]
 fallos=0; puertas=0
 for n in niveles:
     lvl,W,H,grid,_=carga(f"assets/levels/{n}")

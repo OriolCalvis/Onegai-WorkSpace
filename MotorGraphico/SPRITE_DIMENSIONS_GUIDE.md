@@ -29,6 +29,8 @@ vería aplastado o saldría de su celda; el destino correcto es 128×64.
 | `editor_construction_tiles.png`, filas 3–4 | 1252×1252 | aprox. 313×313, alto | Aún no | Muros, vallas, torreones y setos: son **tiles altos**, no suelo. |
 | `personaje.png` | 768×64 | **64×64**, 12 frames | 64×64, ancla Y −32 | Actor temporal: jugador, PNJ y enemigos. Sus pies se apoyan en la base de una celda 64×32. |
 | `editor_enemy_library_v1.png` | 1448×1086 | **362×362**, 4×3 | Solo editor | Preview de enemigos. No asignar como `spriteId` hasta crear hoja animada. |
+| `editor_race_npcs_01..03.png` | 1448×1086 cada uno | **362×362**, 4×3 | Solo editor | 36 previews de PNJ raciales, seleccionados por `raceId`. |
+| `editor_race_npcs_04.png` | 1774×887 | **443×443**, 4×2 | Solo editor | 7 previews raciales restantes y una ciudadana genérica de reserva. |
 | `editor_object_icons.png` | 1252×1252 | aprox. 313×313, 4×4 | Solo editor | Pictogramas de autoría, no sprites finales. |
 
 ## Conversión de suelo: de editor a juego

@@ -19,6 +19,7 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <unordered_map>
 #include <vector>
 
 // glad ANTES que GLFW (mismo orden y motivo que src/Engine/Window.cpp).
@@ -69,6 +70,37 @@ constexpr int kCharacterDrawH = kTileW;             // 64: cuadrado (el sprite l
 inline Vector2 characterAnchor() {
     return Vector2{static_cast<float>(kTileW - kCharacterDrawW) * 0.5f,
                    static_cast<float>(kTileH - kCharacterDrawH)};
+}
+
+// Frame del atlas race_npc_idle.png (GID 1-based). Este contrato se
+// genera junto a los PNG individuales en tools/gen_race_npc_sprites.py.
+// Un id ausente deja al NPC en el sprite animado provisional, en vez de
+// mostrar una region UV accidental.
+int raceNpcFrame(const std::string& raceId) {
+    static const std::unordered_map<std::string, int> frames{
+        {"aarakocra_de_las_montanas", 1}, {"aarakocra_del_viento", 2},
+        {"alquimistas_de_aegroum", 3}, {"cara_loca", 4}, {"cazador_nocturno", 5},
+        {"diplomaticos_de_bastrea", 6}, {"draconidos_de_fuego", 7},
+        {"draconidos_de_hielo", 8}, {"drow_de_la_casa_noble", 9},
+        {"drow_explorador", 10}, {"elfos_de_las_estrellas", 11},
+        {"elfos_del_bosque", 12}, {"enanos_forjadores", 13},
+        {"enanos_historiadores", 14}, {"espectros", 15},
+        {"guardianes_de_la_luz", 16}, {"guardianes_del_elemento", 17},
+        {"hechiceros_oscuros", 18}, {"hombres_lagarto_de_la_selva", 19},
+        {"hombres_lagarto_del_pantano", 20}, {"medianos_del_bosque", 21},
+        {"medianos_urbanos", 22}, {"mercenarios_de_ascaria", 23},
+        {"minotauros_de_la_llanura", 24}, {"minotauros_del_laberinto", 25},
+        {"nagas_arcanos", 26}, {"nagas_venenosos", 27}, {"nobles_de_ascaria", 28},
+        {"orcos_del_consejo", 29}, {"orcos_dramaticos", 30},
+        {"race_ascaria_fey_blood", 31}, {"race_dwarf_deepforge", 32},
+        {"race_elf_canopy", 33}, {"race_human_marches", 34},
+        {"race_orc_gongorguma", 35}, {"revenants", 36}, {"sagas_de_la_locura", 37},
+        {"sagas_del_abismo", 38}, {"tieflings_de_la_sombra", 39},
+        {"tieflings_del_vacio", 40}, {"traidores_oscuros", 41},
+        {"yokai_de_las_sombras", 42}, {"yokai_de_los_vientos", 43},
+    };
+    const auto found = frames.find(raceId);
+    return found == frames.end() ? 0 : found->second;
 }
 
 // Traza de arranque/bucle a stderr (SIN buffer, a diferencia de stdout:
@@ -161,7 +193,8 @@ Application::~Application() { shutdown(); }
 
 Result<bool> Application::init(int width, int height, const std::string& title,
                                const std::string& levelPath, const std::string& catalogPath,
-                               const std::string& initialAdventurePath) {
+                               const std::string& initialAdventurePath,
+                               const std::vector<std::string>& extraCatalogPaths) {
     m_width = width;
     m_height = height;
 
@@ -192,6 +225,13 @@ Result<bool> Application::init(int width, int height, const std::string& title,
     if (!catalogResult.isOk()) {
         return Result<bool>::Error("Catalogo de objetos: " + catalogResult.errorMessage());
     }
+    for (const std::string& extraPath : extraCatalogPaths) {
+        auto extraResult = m_objectCatalog.loadFromFile(extraPath);
+        if (!extraResult.isOk()) {
+            return Result<bool>::Error("Catalogo adicional " + extraPath + ": " +
+                                       extraResult.errorMessage());
+        }
+    }
 
     // Habilidades disponibles. A mano y no desde JSON: no hay todavia un
     // archivo de habilidades (el Gantt lo deja fuera de la Fase 7, que
@@ -212,7 +252,7 @@ Result<bool> Application::init(int width, int height, const std::string& title,
     m_playerSkills.learn("tajo");
     m_playerSkills.learn("cura");
 
-    trace("init: catalogo + skills OK");
+    trace("init: catalogos + skills OK");
     // --- Atlas de PERSONAJES (jugador, NPCs, enemigos). Hoja independiente
     // del tileset del mapa: los actores no son tiles. Se carga una sola vez
     // en init() y sobrevive a los cambios de nivel igual que el Player (el
@@ -234,6 +274,21 @@ Result<bool> Application::init(int width, int height, const std::string& title,
     // play("idle") de abajo lo deja fino.)
     for (int i = 1; i <= kCharacterFrameCount; ++i) {
         m_characterAtlas->defineRegion(i, /*col=*/i - 1, /*row=*/0);
+    }
+
+    auto raceNpcTexResult = m_textureManager.load("race_npc_idle",
+                                                   "assets/textures/race_npc_idle.png");
+    if (!raceNpcTexResult.isOk()) {
+        return Result<bool>::Error("Atlas racial de PNJ: " + raceNpcTexResult.errorMessage());
+    }
+    m_raceNpcAtlas = std::make_unique<TextureAtlas>(raceNpcTexResult.value(), 64, 64);
+    for (int frame = 1; frame <= 43; ++frame) {
+        // TextureManager invierte todos los PNG al cargarlos. Entity ya
+        // invierte V dentro del frame para que el personaje no quede boca
+        // abajo; para un atlas de VARIAS filas hay que compensar tambien
+        // qué fila contiene el frame, o la fila 1 acaba leyendo la 7.
+        const int logicalRow = (frame - 1) / 7;
+        m_raceNpcAtlas->defineRegion(frame, (frame - 1) % 7, 6 - logicalRow);
     }
     trace("init: atlas de personaje OK");
 
@@ -726,9 +781,17 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
             // igual: la animacion es cosmética, no acoplada al movimiento.
             auto anim = std::make_unique<AnimatedEntity>(position, m_atlas.get(), kTileW, kTileH,
                                                           /*frameTime=*/0.22f);
-            anim->setCharacterSprite(m_characterAtlas.get(), kCharacterDrawW, kCharacterDrawH,
-                                     characterAnchor());
-            anim->addAnimation("idle", {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
+            const int racialFrame = def->category == ObjectCategory::Npc
+                                        ? raceNpcFrame(def->raceId)
+                                        : 0;
+            const bool hasRacialSprite = racialFrame != 0 && m_raceNpcAtlas != nullptr;
+            anim->setCharacterSprite(hasRacialSprite ? m_raceNpcAtlas.get() : m_characterAtlas.get(),
+                                     kCharacterDrawW, kCharacterDrawH, characterAnchor());
+            if (hasRacialSprite) {
+                anim->addAnimation("idle", {racialFrame});
+            } else {
+                anim->addAnimation("idle", {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
+            }
             anim->play("idle");
             marker.entity = std::move(anim);
         } else {
