@@ -205,6 +205,12 @@ add_dependencies(demo_narrativa_combate copiar_assets)
 # ====================================================================
 # demo_proyectos — los proyectos vivos: descubrir, revisar y crear. Es el
 # nucleo de la pantalla de arranque del editor, GL-free y probado en CI.
+# demo_plaza_razas — la Plaza de las Razas, recorrida sin abrir ventana.
+add_executable(demo_plaza_razas examples/demo_plaza_razas.cpp)
+target_link_libraries(demo_plaza_razas PRIVATE motor_level)
+set_target_properties(demo_plaza_razas PROPERTIES CXX_STANDARD 17)
+add_dependencies(demo_plaza_razas copiar_assets)
+
 add_executable(demo_proyectos examples/demo_proyectos.cpp)
 target_link_libraries(demo_proyectos PRIVATE motor_level)
 set_target_properties(demo_proyectos PROPERTIES CXX_STANDARD 17)
