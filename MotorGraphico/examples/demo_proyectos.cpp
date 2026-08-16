@@ -103,8 +103,20 @@ int main() {
     require(!r2.value().find("prueba_tmp")->playable());
     std::printf("    recien creado no es jugable (%s). OK\n", cn.problems[0].c_str());
 
+    // --- Y se recoge: la demo no deja basura en assets ---
+    // La primera version dejaba 'prueba_tmp' puesto, y acabo commiteado.
+    // Una prueba que ensucia el arbol de trabajo se paga cada vez.
+    require(ProjectIndex::remove("assets", "prueba_tmp"));
+    require(!ProjectIndex::remove("assets", "prueba_tmp").isOk());  // ya no esta
+    auto r3 = ProjectIndex::scan("assets");
+    require(r3);
+    require(r3.value().find("prueba_tmp") == nullptr);
+    require(r3.value().size() == idx.size());
+    require(r3.value().find("boundington") != nullptr);   // no se llevo por delante a nadie
+    std::printf("    borrado: vuelve a %d proyectos y Boundington sigue. OK\n",
+                (int)r3.value().size());
+
     std::printf("\n  %d de %d proyectos completos\n", completos, (int)idx.size());
     std::printf("\ntodas las comprobaciones han pasado\n");
-    std::printf("(queda 'prueba_tmp' en assets/proyectos: borralo si molesta)\n");
     return 0;
 }

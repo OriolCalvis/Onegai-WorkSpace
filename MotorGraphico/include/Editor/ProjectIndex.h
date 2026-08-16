@@ -98,6 +98,13 @@ public:
                                   const std::string& author,
                                   const std::string& epoch);
 
+    // Quita el proyecto del indice y borra su manifiesto. NO borra niveles
+    // ni mapas: son ficheros que puede estar usando otro proyecto, y un
+    // borrado en cascada desde el editor es justo la clase de operacion
+    // que no se puede deshacer. Quien quiera limpiar assets, que mire los
+    // huerfanos que reporta orphans().
+    static Result<bool> remove(const std::string& assetsRoot, const std::string& id);
+
 private:
     std::vector<Project> m_projects;
     std::vector<std::string> m_orphans;

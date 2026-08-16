@@ -62,6 +62,25 @@ std::string esc(const std::string& s) {
     return r;
 }
 
+// Reescribe assets/proyectos/index.json con esta lista de ids. Lo usan
+// create() y remove(): el manifiesto en disco y el indice tienen que
+// moverse juntos o el proyecto existe y no lo ve nadie (o al reves).
+bool escribeIndice(const std::string& assetsRoot, const std::vector<std::string>& ids) {
+    const std::string ruta = assetsRoot + "/proyectos/index.json";
+    std::FILE* f = std::fopen(ruta.c_str(), "wb");
+    if (f == nullptr) {
+        return false;
+    }
+    std::fprintf(f, "{\n \"_nota\": \"Lista de proyectos vivos. La lee Editor/ProjectIndex.\",\n"
+                    " \"proyectos\": [\n");
+    for (std::size_t i = 0; i < ids.size(); ++i) {
+        std::fprintf(f, "  \"%s\"%s\n", esc(ids[i]).c_str(), i + 1 < ids.size() ? "," : "");
+    }
+    std::fprintf(f, " ]\n}\n");
+    std::fclose(f);
+    return true;
+}
+
 }  // namespace
 
 Result<ProjectIndex> ProjectIndex::scan(const std::string& assetsRoot) {
@@ -186,6 +205,15 @@ Result<Project> ProjectIndex::create(const std::string& assetsRoot, const std::s
     if (existente.isOk() && existente.value().find(id) != nullptr) {
         return Result<Project>::Error("ya existe un proyecto con id '" + id + "'");
     }
+    // Y tampoco si hay manifiesto suelto sin entrada en el indice. Pasa
+    // cuando alguien edita index.json a mano: el proyecto no aparece en la
+    // lista, create() lo daria por libre y machacaria el fichero con un
+    // esqueleto vacio. Se recupera con remove() y volver a crearlo.
+    const std::string destino = assetsRoot + "/proyectos/" + id + ".json";
+    if (existe(destino)) {
+        return Result<Project>::Error("ya hay un manifiesto en " + destino +
+                                      " (no listado en index.json): borralo o anadelo al indice");
+    }
 
     Project p;
     p.id = id;
@@ -194,10 +222,9 @@ Result<Project> ProjectIndex::create(const std::string& assetsRoot, const std::s
     p.author = author;
     p.epoch = epoch;
 
-    const std::string ruta = assetsRoot + "/proyectos/" + id + ".json";
-    std::FILE* f = std::fopen(ruta.c_str(), "wb");
+    std::FILE* f = std::fopen(destino.c_str(), "wb");
     if (f == nullptr) {
-        return Result<Project>::Error("no se pudo escribir " + ruta);
+        return Result<Project>::Error("no se pudo escribir " + destino);
     }
     std::fprintf(f,
                  "{\n"
@@ -218,20 +245,39 @@ Result<Project> ProjectIndex::create(const std::string& assetsRoot, const std::s
         }
     }
     ids.push_back(id);
-    const std::string rutaIdx = assetsRoot + "/proyectos/index.json";
-    std::FILE* fi = std::fopen(rutaIdx.c_str(), "wb");
-    if (fi == nullptr) {
-        return Result<Project>::Error("no se pudo actualizar " + rutaIdx);
+    if (!escribeIndice(assetsRoot, ids)) {
+        return Result<Project>::Error("no se pudo actualizar " + assetsRoot + "/proyectos/index.json");
     }
-    std::fprintf(fi, "{\n \"_nota\": \"Lista de proyectos vivos. La lee Editor/ProjectIndex.\",\n"
-                     " \"proyectos\": [\n");
-    for (std::size_t i = 0; i < ids.size(); ++i) {
-        std::fprintf(fi, "  \"%s\"%s\n", esc(ids[i]).c_str(), i + 1 < ids.size() ? "," : "");
-    }
-    std::fprintf(fi, " ]\n}\n");
-    std::fclose(fi);
 
     return Result<Project>::Ok(std::move(p));
+}
+
+Result<bool> ProjectIndex::remove(const std::string& assetsRoot, const std::string& id) {
+    auto actual = scan(assetsRoot);
+    if (!actual.isOk()) {
+        return Result<bool>::Error(actual.errorMessage());
+    }
+    if (actual.value().find(id) == nullptr) {
+        return Result<bool>::Error("no existe un proyecto con id '" + id + "'");
+    }
+
+    // Primero el indice: si el manifiesto no se deja borrar (permisos, un
+    // mount raro), el proyecto ya no aparece y no se queda un id en la
+    // lista apuntando a algo que el editor va a intentar abrir.
+    std::vector<std::string> ids;
+    for (const Project& q : actual.value().projects()) {
+        if (q.id != id) {
+            ids.push_back(q.id);
+        }
+    }
+    if (!escribeIndice(assetsRoot, ids)) {
+        return Result<bool>::Error("no se pudo actualizar el indice");
+    }
+    const std::string ruta = assetsRoot + "/proyectos/" + id + ".json";
+    if (std::remove(ruta.c_str()) != 0 && existe(ruta)) {
+        return Result<bool>::Error("fuera del indice, pero no se pudo borrar " + ruta);
+    }
+    return Result<bool>::Ok(true);
 }
 
 }  // namespace Editor
