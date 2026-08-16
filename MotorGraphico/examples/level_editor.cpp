@@ -1200,6 +1200,28 @@ int main(int argc, char** argv) {
         HudText inspectorWarn(inspectorWarnT, &font);
         inspectorWarn.setColor(kWarnText);
 
+        // Guía de creación: el panel de herramientas dice QUÉ tecla hace
+        // cada cosa, pero no en qué orden se construye un escenario. Este
+        // panel convierte el estado actual en los siguientes pasos y evita
+        // que el autor tenga que retener la receta mentalmente.
+        const float guideTop = headerBottom + inspectorPanelT.size.y + 10.0f;
+        HudTransform guidePanelT;
+        guidePanelT.anchor = HudAnchor::TopRight;
+        guidePanelT.offset = {8.0f, guideTop};
+        // Ocho renglones reales (título, separador, cinco estados y
+        // siguiente paso) con el interlineado de BitmapFont: 200 deja
+        // margen inferior y evita que "SIGUE" se salga del marco.
+        guidePanelT.size = {300.0f, 200.0f};
+        HudPanel guidePanel(guidePanelT, &whiteTexture, kPanelColor);
+        guidePanel.setBorder(kBorderColor, 2.0f);
+
+        HudTransform guideTextT;
+        guideTextT.anchor = HudAnchor::TopRight;
+        guideTextT.offset = {8.0f + kPad, guideTop + kPad};
+        guideTextT.size = {280.0f, lineH};
+        HudText guideText(guideTextT, &font);
+        guideText.setColor(kDimText);
+
         // Barra de estado (abajo, ancho completo): controles, y el
         // resultado del ultimo guardado durante unos segundos.
         HudTransform statusPanelT;
@@ -1210,7 +1232,7 @@ int main(int argc, char** argv) {
         statusPanel.setBorder(kBorderColor, 2.0f);
 
         const std::string kControlsLine =
-            "1-7 HERRAM  Q/E PALETA  [/] SUBGRUPO  B BUSCAR  C CAPA  R SELECCION  CTRL+C/V/X  T PATRULLA  CTRL+Z/Y HIST  G GUARDAR  V VALIDAR  P JUGAR  ,/. ESCENARIO  M PROYECTOS";
+            "1-7 HERRAM  Q/E PALETA  [/] SUBGRUPO  B BUSCAR  C CAPA  R SELECCION  CTRL+C/V/X  T PATRULLA  H ESCALA  CTRL+Z/Y HIST  G GUARDAR  V VALIDAR  P JUGAR  ,/. ESCENARIO  M PROYECTOS";
         // Peor caso del texto de estado (controles + contadores) para que el
         // panel de fondo cubra siempre la linea, aunque se anada el
         // "...TILES 64  OBJETOS 5" del final.
@@ -1238,6 +1260,8 @@ int main(int argc, char** argv) {
         hud.addElement(&inspectorPanel);
         hud.addElement(&inspectorText);
         hud.addElement(&inspectorWarn);
+        hud.addElement(&guidePanel);
+        hud.addElement(&guideText);
         hud.addElement(&statusPanel);
         hud.addElement(&statusText);
 
@@ -2009,6 +2033,46 @@ int main(int argc, char** argv) {
             inspectorText.setText(inspector);
             inspectorWarn.setText(warnings);
 
+            // Estado mínimo de creación. No exige objetos ni salida: un
+            // interior de combate o una sala de prueba puede no llevarlos.
+            // Sí los hace visibles para que se añadan conscientemente y no
+            // por acordarse de una lista externa.
+            int activeLayerTiles = 0;
+            for (int y = 0; y < editor.height(); ++y) {
+                for (int x = 0; x < editor.width(); ++x) {
+                    if (editor.tileAt(x, y) != 0) {
+                        ++activeLayerTiles;
+                    }
+                }
+            }
+            int exits = 0;
+            for (const ObjectSpawn& spawn : editor.objects()) {
+                if (!spawn.targetLevel.empty()) {
+                    ++exits;
+                }
+            }
+            std::string nextStep;
+            if (activeLayerTiles == 0) {
+                nextStep = "SIGUE: 1 PINTA";
+            } else if (editor.objects().empty()) {
+                nextStep = "SIGUE: 3 OBJETOS";
+            } else if (opts.projectId.size() > 0 && exits == 0) {
+                nextStep = "SIGUE: 7 SALIDA";
+            } else {
+                nextStep = "SIGUE: V Y P";
+            }
+            guideText.setText(
+                "GUIA DEL NIVEL\n\n"
+                "[" + std::string(activeLayerTiles > 0 ? "OK" : "--") + "] SUELO " +
+                std::to_string(activeLayerTiles) + "  C" + std::to_string(editor.activeLayer() + 1) + "\n"
+                "[OK] INICIO " + std::to_string(editor.playerStart().x) + "," +
+                std::to_string(editor.playerStart().y) + " (5)\n"
+                "[" + std::string(editor.objects().empty() ? "--" : "OK") + "] OBJETOS " +
+                std::to_string(editor.objects().size()) + "  (3)\n"
+                "[" + std::string(exits == 0 ? "--" : "OK") + "] SALIDAS " +
+                std::to_string(exits) + "  (7)\n"
+                "V VALIDA / P JUEGA\nG GUARDA\n\n" + nextStep);
+
             // Barra de estado: vuelve a los controles cuando caduca el
             // aviso de guardado (ver el manejador de F5). Cuando muestra los
             // controles, anade contadores en tiempo real (tiles pintados /
@@ -2019,14 +2083,7 @@ int main(int argc, char** argv) {
                     statusText.setText(kControlsLine);
                 }
             } else {
-                int tileCount = 0;
-                for (int y = 0; y < editor.height(); ++y) {
-                    for (int x = 0; x < editor.width(); ++x) {
-                        if (editor.tileAt(x, y) != 0)
-                            ++tileCount;
-                    }
-                }
-                statusText.setText(kControlsLine + "   |   TILES " + std::to_string(tileCount) +
+                statusText.setText(kControlsLine + "   |   TILES " + std::to_string(activeLayerTiles) +
                                    "  OBJETOS " + std::to_string(editor.objects().size()));
             }
             // El HUD va en su propia tanda begin()/end() (ver

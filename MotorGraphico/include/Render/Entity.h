@@ -74,6 +74,12 @@ public:
     }
     void clearCharacterSprite() { m_characterAtlas = nullptr; }
 
+    // Escala visual local (props grandes, PNJs pequeños…). Mantiene los
+    // pies apoyados en la misma celda: cambiar de tamaño no debe hacer que
+    // el objeto parezca flotar ni mover su colisión de GameSession.
+    void setVisualScale(float scale);
+    float visualScale() const { return m_visualScale; }
+
     // Tint RGBA que multiplicara el color del sprite en el fragment shader
     // (Fase 4: post-procesado/iluminacion). Por defecto blanco opaco:
     // ninguna entidad cambia de color salvo que se lo pidan explicito
@@ -101,6 +107,7 @@ protected:
     int m_characterDrawW = 0;
     int m_characterDrawH = 0;
     Vector2 m_characterAnchor{0.0f, 0.0f};
+    float m_visualScale = 1.0f;
 
 private:
     int m_tileWidth;

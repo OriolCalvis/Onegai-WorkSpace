@@ -4,6 +4,7 @@
 #include "Core/Resources/TextureAtlas.h"
 #include "Render/SpriteBatch.h"
 
+#include <algorithm>
 #include <utility>  // std::swap (compensacion de flip en el sprite de personaje)
 
 namespace {
@@ -21,6 +22,12 @@ Entity::Entity(GridCoord gridPosition, int spriteID, TextureAtlas* atlas, int ti
     , m_tileWidth(tileWidth)
     , m_tileHeight(tileHeight) {}
 
+void Entity::setVisualScale(float scale) {
+    // El mismo rango que el editor: el runtime no debe aceptar un JSON
+    // externo que convierta un sprite en un punto o tape el mapa entero.
+    m_visualScale = std::max(0.25f, std::min(scale, 4.0f));
+}
+
 void Entity::render(SpriteBatch& batch) {
     Vector2 basePos = IsoMath::gridToScreen(m_gridPosition, static_cast<float>(m_tileWidth),
                                             static_cast<float>(m_tileHeight));
@@ -30,9 +37,13 @@ void Entity::render(SpriteBatch& batch) {
     // setCharacterSprite). Sin override (tiles, props, pickups) se cae al
     // camino original: un quad del tamano del tile contra m_atlas.
     if (m_characterAtlas != nullptr) {
-        Vector2 finalPos = basePos + m_offset + m_characterAnchor;
-        Vector2 size{static_cast<float>(m_characterDrawW),
-                     static_cast<float>(m_characterDrawH)};
+        const Vector2 originalSize{static_cast<float>(m_characterDrawW),
+                                   static_cast<float>(m_characterDrawH)};
+        Vector2 size{originalSize.x * m_visualScale, originalSize.y * m_visualScale};
+        // Se compensa la diferencia contra el sprite sin escalar: centro
+        // horizontal y borde inferior idéntico, es decir, pies en tierra.
+        Vector2 finalPos = basePos + m_offset + m_characterAnchor +
+                           Vector2{(originalSize.x - size.x) * 0.5f, originalSize.y - size.y};
         UVRect uv = m_characterAtlas->getUV(m_spriteID);
         // Compensacion del flip vertical de TextureManager
         // (stbi_set_flip_vertically_on_load(true) en loadFromDisk) dada la
@@ -51,8 +62,10 @@ void Entity::render(SpriteBatch& batch) {
         return;
     }
 
-    Vector2 finalPos = basePos + m_offset;
-    Vector2 size{static_cast<float>(m_tileWidth), static_cast<float>(m_tileHeight)};
+    const Vector2 originalSize{static_cast<float>(m_tileWidth), static_cast<float>(m_tileHeight)};
+    Vector2 size{originalSize.x * m_visualScale, originalSize.y * m_visualScale};
+    Vector2 finalPos = basePos + m_offset +
+                       Vector2{(originalSize.x - size.x) * 0.5f, originalSize.y - size.y};
 
     batch.submit(finalPos, size, m_atlas->getUV(m_spriteID), m_atlas->texture(), m_tint);
 }
@@ -76,8 +89,8 @@ void Entity::renderShadow(SpriteBatch& batch, Texture* shadowTexture) {
     // Proporciones fijas, no configurables: no hay hoy ningun caso que
     // pida otra sombra (mismo criterio que kTextPadding en
     // HudTextWidgets.cpp).
-    Vector2 shadowSize{static_cast<float>(m_tileWidth) * 0.5f,
-                       static_cast<float>(m_tileHeight) * 0.4f};
+    Vector2 shadowSize{static_cast<float>(m_tileWidth) * 0.5f * m_visualScale,
+                       static_cast<float>(m_tileHeight) * 0.4f * m_visualScale};
     Vector2 shadowPos{finalPos.x + (static_cast<float>(m_tileWidth) - shadowSize.x) * 0.5f,
                       finalPos.y + static_cast<float>(m_tileHeight) - shadowSize.y * 0.75f};
 

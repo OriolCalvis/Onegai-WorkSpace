@@ -760,7 +760,8 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
     // init). Los Pickup/Prop siguen siendo StaticEntity contra el tileset
     // con tint por categoria, porque un "bebé-pocion" no tiene sentido: el
     // override de personaje es solo para actores. ---
-    auto makeMarker = [&](const std::string& id, const GridCoord& position, bool isEnemy) {
+    auto makeMarker = [&](const std::string& id, const GridCoord& position, bool isEnemy,
+                          float scale = 1.0f) {
         const ObjectDefinition* def = m_objectCatalog.find(id);
         if (def == nullptr) {
             return;  // id sin definicion: nada que dibujar (permisivo)
@@ -814,11 +815,12 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
                     break;
             }
         }
+        marker.entity->setVisualScale(scale);
         m_renderer->addToQueue(marker.entity.get());
         m_worldMarkers.push_back(std::move(marker));
     };
     for (const ObjectSpawn& object : m_session->worldObjects()) {
-        makeMarker(object.objectId, object.position, /*isEnemy=*/false);
+        makeMarker(object.objectId, object.position, /*isEnemy=*/false, object.scale);
     }
     for (const WorldEnemy& enemy : m_session->enemies()) {
         makeMarker(enemy.objectId, enemy.position, /*isEnemy=*/true);

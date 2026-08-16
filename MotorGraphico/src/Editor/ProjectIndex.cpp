@@ -301,7 +301,16 @@ Result<bool> ProjectIndex::remove(const std::string& assetsRoot, const std::stri
     if (!actual.isOk()) {
         return Result<bool>::Error(actual.errorMessage());
     }
-    if (actual.value().find(id) == nullptr) {
+    const std::string ruta = assetsRoot + "/proyectos/" + id + ".json";
+    const bool enIndice = actual.value().find(id) != nullptr;
+    const bool enDisco = existe(ruta);
+    // Basta con que exista de UNA de las dos formas. Si solo se aceptara
+    // "esta en el indice", un manifiesto huerfano -- fichero suelto que
+    // alguien saco del indice a mano, o que dejo una prueba abortada --
+    // seria imposible de limpiar: remove() lo rechaza por no estar en el
+    // indice y create() lo rechaza por estar en disco. El proyecto queda
+    // atascado y no hay forma de salir sin borrar a mano.
+    if (!enIndice && !enDisco) {
         return Result<bool>::Error("no existe un proyecto con id '" + id + "'");
     }
 
@@ -314,10 +323,9 @@ Result<bool> ProjectIndex::remove(const std::string& assetsRoot, const std::stri
             ids.push_back(q.id);
         }
     }
-    if (!escribeIndice(assetsRoot, ids)) {
+    if (enIndice && !escribeIndice(assetsRoot, ids)) {
         return Result<bool>::Error("no se pudo actualizar el indice");
     }
-    const std::string ruta = assetsRoot + "/proyectos/" + id + ".json";
     if (std::remove(ruta.c_str()) != 0 && existe(ruta)) {
         return Result<bool>::Error("fuera del indice, pero no se pudo borrar " + ruta);
     }

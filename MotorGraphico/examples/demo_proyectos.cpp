@@ -90,6 +90,13 @@ int main() {
 
     // --- Crear uno nuevo, y que las reglas se cumplan ---
     std::printf("\n[crear proyecto nuevo]\n");
+    // Se limpia ANTES, no solo despues. Si una corrida anterior aborto a
+    // mitad, dejo 'prueba_tmp'/'iroy' en disco, y el guard de create()
+    // contra manifiestos sueltos hace fallar la siguiente... y la
+    // siguiente. Una prueba que se envenena con los restos de su propio
+    // fallo no se recupera nunca sola.
+    (void)ProjectIndex::remove("assets", "prueba_tmp");
+    (void)ProjectIndex::remove("assets", "iroy");
     // El id con mayusculas o espacios se rechaza: acaba siendo nombre de
     // fichero y prefijo de ids.
     require(!ProjectIndex::create("assets", "Con Mayusculas", "x", "cm_", "test", "0").isOk());
@@ -220,11 +227,13 @@ int main() {
 
     // Crear desde la pantalla con un id que no exista. La demo debe ser
     // repetible incluso si una ejecucion anterior se corto antes de limpiar.
-    std::string creado = "demo_hub_tmp";
-    unsigned sufijo = 0;
-    while (ProjectIndex::scan("assets").value().find(creado) != nullptr) {
-        creado = "demo_hub_tmp_" + std::to_string(++sufijo);
-    }
+    // Se limpia el resto de una corrida anterior en vez de esquivarlo con
+    // un sufijo. El sufijo miraba scan(), que solo ve el INDICE: un
+    // manifiesto suelto en disco no aparecia ahi, create() lo rechazaba
+    // igual, y cada intento dejaba otro fichero (demo_hub_tmp_1, _2...).
+    // remove() si limpia los huerfanos.
+    const std::string creado = "demo_hub_tmp";
+    (void)ProjectIndex::remove("assets", creado);
     require(hub.key('n') == Editor::ProjectHub::Action::None);
     for (char c : creado) {
         hub.key(c);
