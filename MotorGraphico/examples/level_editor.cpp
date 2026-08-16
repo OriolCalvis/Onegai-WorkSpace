@@ -17,6 +17,23 @@
 //   Q/E     = ciclar la paleta activa (tiles u objetos, segun herramienta)
 //   [ / ]   = subgrupo de objetos anterior / siguiente (la paleta de
 //             objetos es larga: los subgrupos la parten en tandas)
+//   B       = BUSCAR en la paleta. Abre un campo y filtra por texto:
+//             "taber" deja tabernero, taberna... B otra vez lo cierra.
+//             Con miles de entradas, pasarlas de una en una no es una
+//             opcion. BACKSPACE borra.
+//   C       = capa siguiente (SHIFT+C anterior), CTRL+N capa nueva.
+//             Las herramientas de tile actuan solo sobre la capa activa;
+//             los objetos y el inicio del jugador son del nivel.
+//   R       = marcar una esquina del rectangulo; R otra vez lo cierra.
+//             Con teclado y no arrastrando porque el boton izquierdo ya
+//             pinta: un modificador de arrastre seria pintar sin querer
+//             cada vez que se falle.
+//   CTRL+C / CTRL+V / CTRL+X = copiar la seleccion / pegarla en la celda
+//             bajo el cursor / borrarla. Pegar y borrar son UN paso de
+//             historial aunque toquen mil celdas.
+//   T       = darle al objeto bajo el cursor la patrulla del rectangulo
+//             marcado. Reutiliza la seleccion en vez de pedir cuatro
+//             numeros a mano.
 //   Ctrl+Z / Ctrl+Y = deshacer / rehacer
 //   WASD    = pan de camara (SHIFT = x4, para mapas grandes)
 //   +/-     = zoom (0 = volver a 1x), HOME = centrar en el mapa
@@ -198,6 +215,44 @@ std::string nombreDePaleta(const ObjectCatalog& catalog, const std::string& id) 
     return std::string(nombreCategoria(definition->category)) + " · " + definition->name;
 }
 
+// Posiciones 1..16 del atlas editor_object_icons.png. No son sprites de
+// combate: son pictogramas de autoría, consistentes aunque un objeto aún no
+// tenga arte final. Así una puerta, un PNJ o una llave se reconocen antes
+// de leer una sola letra.
+int iconoEditor(const ObjectDefinition& definition) {
+    const std::string& id = definition.id;
+    if (id.find("salida") != std::string::npos || id.find("puerta") != std::string::npos) return 1;
+    if (id.find("puente") != std::string::npos) return 4;
+    if (definition.category == ObjectCategory::Npc) {
+        if (id.find("luisarda") != std::string::npos) return 6;
+        if (id.find("griffin") != std::string::npos) return 8;
+        if (id.find("venides") != std::string::npos || id.find("guard") != std::string::npos) return 7;
+        return 5;
+    }
+    if (definition.category == ObjectCategory::Enemy) {
+        if (id.find("naga") != std::string::npos) return 10;
+        if (id.find("perdido") != std::string::npos || id.find("mascara") != std::string::npos) return 11;
+        if (id.find("draug") != std::string::npos || id.find("saga") != std::string::npos) return 12;
+        return 9;
+    }
+    if (definition.category == ObjectCategory::Pickup) {
+        if (id.find("llave") != std::string::npos) return 14;
+        if (id.find("cofre") != std::string::npos) return 15;
+        return 13;
+    }
+    if (id.find("antorcha") != std::string::npos) return 16;
+    return 3;  // edificio/prop genérico
+}
+
+// La barra de estado va en mayusculas (BitmapFont solo tiene caja alta).
+std::string aMayus(const std::string& t) {
+    std::string r = t;
+    for (char& c : r) {
+        c = static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
+    }
+    return r;
+}
+
 // Deteccion de flanco de subida de teclas (GLFW da estado, no eventos, y
 // sin esto una pulsacion de 100ms cicla la paleta 6 veces a 60fps).
 class KeyEdge {
@@ -243,6 +298,7 @@ struct EditorOptions {
     std::string newProjectId;   // --nuevo: crear y salir
     std::string newPrefix;
     bool listProjects = false;  // --proyectos: listar y salir
+    bool useConstructionTiles = false;  // atlas básico para crear mapa nuevo
 };
 
 // "64x48" -> {64, 48}. Devuelve false si no tiene la forma AxB con
@@ -279,6 +335,8 @@ EditorOptions parseArgs(int argc, char** argv) {
             opts.newProjectId = argv[++i];
         } else if (arg == "--prefijo" && i + 1 < argc) {
             opts.newPrefix = argv[++i];
+        } else if (arg == "--construction" || arg == "--construccion") {
+            opts.useConstructionTiles = true;
         } else if (arg == "--help" || arg == "-h") {
             std::cout <<
                 "Uso: level_editor [opciones] [frames]\n"
@@ -291,6 +349,8 @@ EditorOptions parseArgs(int argc, char** argv) {
                 "                           no en editor_map.tmx\n"
                 "  --nivel <fichero.json>   nivel suyo a abrir (por defecto, el primero)\n"
                 "  --size 64x64             mapa nuevo en blanco de ese tamano\n"
+                "  --construccion            usa el atlas de suelos, muros y vallas\n"
+                "                           para un mapa nuevo\n"
                 "  --load ruta.json         abre un nivel suelto (sin proyecto)\n"
                 "  frames                   modo humo: N frames, vuelca PPM y sale\n"
                 "\n  Dentro del editor: F7 modo jugador, F8/F9 cambia de escenario,\n"
@@ -682,31 +742,50 @@ int main(int argc, char** argv) {
         // se declaran en bloque con la convencion de Tiled -- GID
         // firstGid+i = celda i en orden de lectura -- en vez de a mano,
         // asi cualquier tileset queda cubierto sin tocar codigo.
+        const bool usingConstructionTiles = opts.useConstructionTiles && !loaded;
         const std::string tilesetPath =
             loaded && !loadedMap.tilesetImagePath().empty()
                 ? loadedMap.tilesetImagePath()
-                : std::string("assets/textures/test_checker.png");
+                : (usingConstructionTiles ? std::string("assets/textures/editor_construction_tiles.png")
+                                          : std::string("assets/textures/test_checker.png"));
         auto textureResult = textureManager.load("tileset", tilesetPath);
         if (!textureResult.isOk()) {
             std::cerr << "Error cargando tileset " << tilesetPath << ": "
                       << textureResult.errorMessage() << "\n";
             return 1;
         }
-        const int cellW = loaded && loadedMap.getTilesetTileWidth() > 0
+        const int cellW = usingConstructionTiles ? 313 : (loaded && loadedMap.getTilesetTileWidth() > 0
                               ? loadedMap.getTilesetTileWidth()
-                              : 8;
-        const int cellH = loaded && loadedMap.getTilesetTileHeight() > 0
+                              : 8);
+        const int cellH = usingConstructionTiles ? 313 : (loaded && loadedMap.getTilesetTileHeight() > 0
                               ? loadedMap.getTilesetTileHeight()
-                              : 8;
+                              : 8);
         TextureAtlas atlas(textureResult.value(), cellW, cellH);
-        const int atlasCols = loaded && loadedMap.getTilesetColumns() > 0
+        const int atlasCols = usingConstructionTiles ? 4 : (loaded && loadedMap.getTilesetColumns() > 0
                                   ? loadedMap.getTilesetColumns()
-                                  : std::max(1, textureResult.value()->getWidth() / cellW);
+                                  : std::max(1, textureResult.value()->getWidth() / cellW));
         const int atlasRows = std::max(1, textureResult.value()->getHeight() / cellH);
         const int firstGid = loaded ? loadedMap.getTilesetFirstGid() : 1;
         for (int row = 0; row < atlasRows; ++row) {
             for (int col = 0; col < atlasCols; ++col) {
                 atlas.defineRegion(firstGid + row * atlasCols + col, col, row);
+            }
+        }
+
+        // Atlas exclusivamente editorial: iconos pixel-art para objetos.
+        // Mantenerlo separado del tileset evita que un sprite provisional
+        // cambie cómo se ve el juego final.
+        auto iconTextureResult =
+            textureManager.load("editor_object_icons", "assets/textures/editor_object_icons.png");
+        if (!iconTextureResult.isOk()) {
+            std::cerr << "Error cargando iconos del editor: "
+                      << iconTextureResult.errorMessage() << "\n";
+            return 1;
+        }
+        TextureAtlas objectIconAtlas(iconTextureResult.value(), 313, 313);
+        for (int row = 0; row < 4; ++row) {
+            for (int col = 0; col < 4; ++col) {
+                objectIconAtlas.defineRegion(1 + row * 4 + col, col, row);
             }
         }
 
@@ -747,19 +826,31 @@ int main(int argc, char** argv) {
         editor.setLevelPalette(std::move(destinosDeNivel));
 
         if (loaded) {
-            // Volcado del TMX al editor. Solo la capa 0: EditorState
-            // maneja UNA capa (ver su nota de alcance), asi que abrir un
-            // mapa multicapa y volver a guardar PERDERIA las demas --
-            // por eso se avisa en vez de hacerlo callando.
-            if (loadedMap.getLayerCount() > 1) {
-                std::cerr << "Aviso: el mapa tiene " << loadedMap.getLayerCount()
-                          << " capas y el editor solo maneja la primera; si guardas, "
-                             "las demas se pierden.\n";
-            }
-            for (int y = 0; y < mapH; ++y) {
-                for (int x = 0; x < mapW; ++x) {
-                    editor.paintTile(x, y, loadedMap.getTile(0, x, y).getTilesetID());
+            // Volcado del TMX al editor, TODAS las capas. Antes se cargaba
+            // solo la 0 y se avisaba por consola de que guardar se llevaria
+            // las demas por delante: eso no es un aviso, es una trampa
+            // cargada -- el aviso sale al abrir y el destrozo ocurre media
+            // hora despues, cuando ya nadie lo recuerda.
+            for (int capa = 0; capa < loadedMap.getLayerCount(); ++capa) {
+                if (capa > 0) {
+                    // TileMap no guarda el nombre de la capa, asi que al
+                    // reabrir un mapa los nombres se pierden y salen
+                    // "capa2", "capa3". Se documenta aqui en vez de
+                    // callarlo: el dato sigue en el TMX del disco, lo que
+                    // falta es que el parser lo lea.
+                    editor.addLayer("capa" + std::to_string(capa + 1));
                 }
+                editor.setActiveLayer(capa);
+                for (int y = 0; y < mapH; ++y) {
+                    for (int x = 0; x < mapW; ++x) {
+                        editor.paintTile(x, y, loadedMap.getTile(capa, x, y).getTilesetID());
+                    }
+                }
+            }
+            editor.setActiveLayer(0);
+            if (loadedMap.getLayerCount() > 1) {
+                std::cout << "  " << loadedMap.getLayerCount()
+                          << " capas cargadas (F/H cambian de capa)\n";
             }
             for (const ObjectSpawn& spawn : loadedLevel.objects) {
                 // placeSpawn y no placeObject: conserva el destino de las
@@ -998,7 +1089,7 @@ int main(int argc, char** argv) {
         statusPanel.setBorder(kBorderColor, 2.0f);
 
         const std::string kControlsLine =
-            "1-7 HERRAM  Q/E PALETA  [/] SUBGRUPO  CTRL+Z/Y HIST  G GUARDAR  V VALIDAR  P JUGAR  ,/. ESCENARIO  M PROYECTOS";
+            "1-7 HERRAM  Q/E PALETA  [/] SUBGRUPO  B BUSCAR  C CAPA  R SELECCION  CTRL+C/V/X  T PATRULLA  CTRL+Z/Y HIST  G GUARDAR  V VALIDAR  P JUGAR  ,/. ESCENARIO  M PROYECTOS";
         // Peor caso del texto de estado (controles + contadores) para que el
         // panel de fondo cubra siempre la linea, aunque se anada el
         // "...TILES 64  OBJETOS 5" del final.
@@ -1034,6 +1125,10 @@ int main(int argc, char** argv) {
         keys.prime(glfwWin);   // el ENTER con que abriste el proyecto no cuenta
         int frame = 0;
         bool volverAlHub = false;   // ESC en la edicion -> pantalla de proyectos
+        bool marcando = false;      // R pulsado una vez: esperando la 2a esquina
+        GridCoord esquina{0, 0};
+        bool buscando = false;      // B abre el campo de busqueda de la paleta
+        std::string filtro;
         bool cambiarEscenario = false;  // F8/F9: reconstruye el documento con otro nivel
 
         // Estado de animacion del editor. Los widgets HUD no tienen
@@ -1094,6 +1189,156 @@ int main(int argc, char** argv) {
                                      glfwGetKey(glfwWin, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS ||
                                      glfwGetKey(glfwWin, GLFW_KEY_LEFT_SUPER) == GLFW_PRESS ||
                                      glfwGetKey(glfwWin, GLFW_KEY_RIGHT_SUPER) == GLFW_PRESS;
+            const bool shiftDown = glfwGetKey(glfwWin, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ||
+                                   glfwGetKey(glfwWin, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
+
+            // La celda bajo el cursor se calcula AQUI, antes de las
+            // teclas, porque varias de ellas actuan sobre ella (pegar,
+            // marcar esquina, dar patrulla). Antes se calculaba mas
+            // abajo, junto al raton, y no habia nada que lo necesitara
+            // hasta entonces.
+            double mouseX = 0.0;
+            double mouseY = 0.0;
+            glfwGetCursorPos(glfwWin, &mouseX, &mouseY);
+            const Vector2 world = camera.screenToWorld(
+                Vector2{static_cast<float>(mouseX), static_cast<float>(mouseY)});
+            const GridCoord hovered = IsoMath::screenToGrid(world, static_cast<float>(kTileW),
+                                                            static_cast<float>(kTileH));
+
+            // =========================================================
+            // CAPAS, SELECCION, PORTAPAPELES Y BUSQUEDA
+            //
+            // Todo esto vive en EditorState y esta probado en
+            // demo_editor_state; aqui solo se enchufan las teclas.
+            // =========================================================
+
+            // --- Capas: C siguiente, SHIFT+C anterior, Ctrl+N nueva ---
+            if (keys.pressed(glfwWin, GLFW_KEY_C) && !controlDown) {
+                const int n = editor.layerCount();
+                const int siguiente = shiftDown ? (editor.activeLayer() + n - 1) % n
+                                                : (editor.activeLayer() + 1) % n;
+                editor.setActiveLayer(siguiente);
+                statusText.setText("CAPA " + std::to_string(siguiente + 1) + "/" +
+                                   std::to_string(n) + ": " + aMayus(editor.layerName(siguiente)));
+                savedMessageFrames = 150;
+            }
+            if (controlDown && keys.pressed(glfwWin, GLFW_KEY_N)) {
+                const int nueva = editor.addLayer("");
+                statusText.setText("CAPA NUEVA: " + std::to_string(nueva + 1) + " DE " +
+                                   std::to_string(editor.layerCount()));
+                savedMessageFrames = 180;
+            }
+
+            // --- Seleccion: R marca esquina, R otra vez cierra el rect ---
+            // Con teclado y no arrastrando con el raton porque el boton
+            // izquierdo ya pinta: anadir un modificador de arrastre
+            // significaria pintar sin querer cada vez que se falle.
+            if (keys.pressed(glfwWin, GLFW_KEY_R)) {
+                if (!marcando) {
+                    esquina = hovered;
+                    marcando = true;
+                    editor.clearSelection();
+                    statusText.setText("ESQUINA MARCADA - R OTRA VEZ PARA CERRAR, ESC CANCELA");
+                    savedMessageFrames = 240;
+                } else {
+                    editor.setSelection(esquina.x, esquina.y, hovered.x, hovered.y);
+                    marcando = false;
+                    statusText.setText("SELECCION " + std::to_string(editor.selection().width()) +
+                                       "X" + std::to_string(editor.selection().height()) +
+                                       "   CTRL+C COPIAR   CTRL+X BORRAR   T PATRULLA");
+                    savedMessageFrames = 300;
+                }
+            }
+
+            // --- Portapapeles ---
+            if (controlDown && keys.pressed(glfwWin, GLFW_KEY_C)) {
+                editor.copySelection();
+                statusText.setText(editor.hasClipboard()
+                                       ? "COPIADO " + std::to_string(editor.clipboardWidth()) + "X" +
+                                             std::to_string(editor.clipboardHeight())
+                                       : "NO HAY NADA SELECCIONADO (R MARCA UN RECTANGULO)");
+                savedMessageFrames = 180;
+            }
+            if (controlDown && keys.pressed(glfwWin, GLFW_KEY_V)) {
+                if (editor.hasClipboard()) {
+                    editor.pasteAt(hovered.x, hovered.y);
+                    statusText.setText("PEGADO EN " + std::to_string(hovered.x) + "," +
+                                       std::to_string(hovered.y));
+                } else {
+                    statusText.setText("EL PORTAPAPELES ESTA VACIO");
+                }
+                savedMessageFrames = 180;
+            }
+            if (controlDown && keys.pressed(glfwWin, GLFW_KEY_X)) {
+                if (editor.hasSelection()) {
+                    editor.eraseSelection();
+                    statusText.setText("SELECCION BORRADA (CTRL+Z LA DEVUELVE)");
+                } else {
+                    statusText.setText("NO HAY NADA SELECCIONADO");
+                }
+                savedMessageFrames = 180;
+            }
+
+            // --- T: darle al objeto bajo el cursor la patrulla del rect ---
+            // Reutiliza la seleccion en vez de inventar un modo aparte:
+            // marcar el recorrido y decir "este PNJ patrulla ahi" es el
+            // gesto natural, y no hay que teclear cuatro numeros.
+            if (keys.pressed(glfwWin, GLFW_KEY_T)) {
+                if (!editor.hasSelection()) {
+                    statusText.setText("MARCA ANTES EL RECORRIDO CON R");
+                } else if (editor.objectAt(hovered.x, hovered.y) == nullptr) {
+                    statusText.setText("PON EL CURSOR SOBRE EL OBJETO QUE VA A PATRULLAR");
+                } else {
+                    const EditorState::Rect r = editor.selection();
+                    editor.setObjectPatrol(hovered.x, hovered.y, GridCoord{r.x0, r.y0},
+                                           GridCoord{r.x1, r.y1});
+                    statusText.setText("PATRULLA " + std::to_string(r.x0) + "," +
+                                       std::to_string(r.y0) + " A " + std::to_string(r.x1) + "," +
+                                       std::to_string(r.y1));
+                }
+                savedMessageFrames = 240;
+            }
+
+            // --- B: buscar en la paleta ---
+            if (keys.pressed(glfwWin, GLFW_KEY_B)) {
+                buscando = !buscando;
+                if (!buscando) {
+                    statusText.setText("BUSQUEDA CERRADA");
+                    savedMessageFrames = 120;
+                }
+            }
+            if (buscando) {
+                bool cambio = false;
+                for (int k = GLFW_KEY_A; k <= GLFW_KEY_Z; ++k) {
+                    if (k != GLFW_KEY_B && keys.pressed(glfwWin, k)) {
+                        filtro += static_cast<char>('a' + (k - GLFW_KEY_A));
+                        cambio = true;
+                    }
+                }
+                for (int k = GLFW_KEY_0; k <= GLFW_KEY_9; ++k) {
+                    if (keys.pressed(glfwWin, k)) {
+                        filtro += static_cast<char>('0' + (k - GLFW_KEY_0));
+                        cambio = true;
+                    }
+                }
+                if (keys.pressed(glfwWin, GLFW_KEY_MINUS)) {
+                    filtro += '_';
+                    cambio = true;
+                }
+                if (keys.pressed(glfwWin, GLFW_KEY_BACKSPACE) && !filtro.empty()) {
+                    filtro.pop_back();
+                    cambio = true;
+                }
+                if (cambio) {
+                    editor.setPaletteFilter(filtro);
+                    objectOptions = editor.objectPalette();
+                    tileOptions.clear();
+                    for (int gid : editor.tilePalette()) {
+                        tileOptions.push_back("GID " + std::to_string(gid));
+                    }
+                }
+            }
+
             if (controlDown && keys.pressed(glfwWin, GLFW_KEY_Z)) {
                 statusText.setText(editor.undo() ? "DESHECHO" : "NO HAY CAMBIOS QUE DESHACER");
                 savedMessageFrames = 120;
@@ -1172,6 +1417,20 @@ int main(int argc, char** argv) {
             auto guardarNivel = [&]() {
                 TmxTilesetSettings settings;  // defaults = tileset del checker
                 settings.collisionGids = {2};
+                if (usingConstructionTiles) {
+                    settings.tilesetName = "editor_construction_tiles";
+                    settings.imageSource = "../textures/editor_construction_tiles.png";
+                    settings.imageWidth = 1252;
+                    settings.imageHeight = 1252;
+                    settings.tilesetTileWidth = 313;
+                    settings.tilesetTileHeight = 313;
+                    settings.tileCount = 16;
+                    settings.columns = 4;
+                    // Muros, murallas, vallas, setos y decoración bloquean
+                    // el paso; suelo, camino y agua siguen transitables en
+                    // esta primera biblioteca editorial.
+                    settings.collisionGids = {9, 10, 11, 12, 13, 14, 15, 16};
+                }
                 std::ofstream tmxOut(saveTmx, std::ios::binary);
                 tmxOut << editor.exportTmx(settings);
                 std::ofstream jsonOut(saveJson, std::ios::binary);
@@ -1308,15 +1567,7 @@ int main(int argc, char** argv) {
                 savedMessageFrames = 240;
             }
 
-            // --- Raton -> celda bajo el cursor ---
-            double mouseX = 0.0;
-            double mouseY = 0.0;
-            glfwGetCursorPos(glfwWin, &mouseX, &mouseY);
-            Vector2 world = camera.screenToWorld(
-                Vector2{static_cast<float>(mouseX), static_cast<float>(mouseY)});
-            GridCoord hovered = IsoMath::screenToGrid(world, static_cast<float>(kTileW),
-                                                      static_cast<float>(kTileH));
-
+            // --- Raton (la celda 'hovered' se calculo con las teclas) ---
             bool leftDown = glfwGetMouseButton(glfwWin, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
             bool rightDown = glfwGetMouseButton(glfwWin, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
             if (leftDown) {
@@ -1386,9 +1637,9 @@ int main(int argc, char** argv) {
                                                     static_cast<float>(kTileH)) +
                               tileDrawOffset;
                 const ObjectDefinition* def = catalog.find(spawn.objectId);
-                if (def != nullptr && def->spriteId >= 0) {
-                    batch.submit(pos, tileSize, atlas.getUV(def->spriteId), atlas.texture(),
-                                 Vector4{1.0f, 1.0f, 1.0f, 1.0f});
+                if (def != nullptr) {
+                    batch.submit(pos, tileSize, objectIconAtlas.getUV(iconoEditor(*def)),
+                                 objectIconAtlas.texture(), Vector4{1.0f, 1.0f, 1.0f, 1.0f});
                 } else {
                     batch.submit(pos, tileSize, UVRect{0.0f, 0.0f, 1.0f, 1.0f}, &whiteTexture,
                                  Vector4{0.9f, 0.9f, 0.3f, 0.5f});

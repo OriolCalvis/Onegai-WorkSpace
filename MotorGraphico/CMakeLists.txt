@@ -496,6 +496,10 @@ if (EXISTS ${GLAD_DIR}/src/glad.c AND EXISTS ${STB_DIR}/stb_image.h)
     # Window::handle(), ademas de motor_core/motor_math/motor_level.
     add_executable(level_editor examples/level_editor.cpp)
     target_link_libraries(level_editor PRIVATE motor_core motor_math motor_level)
+    # El editor consume sus iconos de previsualización desde assets/:
+    # sincronizarlos en cada build evita que un asset nuevo falle solo
+    # cuando el ejecutable se lanza desde build/.
+    add_dependencies(level_editor copiar_assets)
 
     # El juego: Application (bucle completo) sobre GameSession. Cierra el
     # motor de punta a punta -- Fases 1-4 del Gantt original + 6-12 del

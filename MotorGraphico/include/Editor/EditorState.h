@@ -141,8 +141,91 @@ public:
     bool canRedo() const { return !m_redo.empty(); }
     void clearHistory();
 
+    // -----------------------------------------------------------------
+    // CAPAS
+    //
+    // Antes habia UNA capa. Abrir un mapa multicapa y volver a guardarlo
+    // se llevaba por delante las demas -- el editor avisaba por consola,
+    // pero eso es una trampa cargada, no un aviso.
+    //
+    // Las herramientas de tile (pintar, borrar, rellenar) actuan SOLO
+    // sobre la capa activa. Los objetos y el inicio del jugador NO son de
+    // ninguna capa: pertenecen al nivel.
+    // -----------------------------------------------------------------
+    int layerCount() const { return static_cast<int>(m_layers.size()); }
+    int activeLayer() const { return m_activeLayer; }
+    void setActiveLayer(int index);           // fuera de rango: no-op
+    const std::string& layerName(int index) const;
+    void setLayerName(int index, const std::string& name);
+    // Devuelve el indice de la capa nueva, que queda ARRIBA (se dibuja
+    // encima) y pasa a ser la activa: quien crea una capa la quiere usar.
+    int addLayer(const std::string& name);
+    // No deja quedarse sin capas: un mapa sin capa de tiles no es un mapa.
+    bool removeLayer(int index);
+
+    // -----------------------------------------------------------------
+    // SELECCION Y PORTAPAPELES
+    //
+    // Es lo que separa pintar de construir. Sin esto, una ciudad hay que
+    // generarla con un script (que es exactamente lo que se hizo con
+    // gen_ciudad.py) porque a celda por click no sale.
+    //
+    // Copia TODAS las capas y los objetos de dentro del rectangulo. Pegar
+    // y borrar son UN paso de historial aunque toquen mil celdas.
+    // -----------------------------------------------------------------
+    struct Rect {
+        int x0 = 0, y0 = 0, x1 = -1, y1 = -1;   // inclusivo, ya normalizado
+        bool valid() const { return x1 >= x0 && y1 >= y0; }
+        int width() const { return valid() ? x1 - x0 + 1 : 0; }
+        int height() const { return valid() ? y1 - y0 + 1 : 0; }
+    };
+    void setSelection(int x0, int y0, int x1, int y1);   // se normaliza y recorta al mapa
+    void clearSelection();
+    bool hasSelection() const { return m_selection.valid(); }
+    Rect selection() const { return m_selection; }
+
+    void copySelection();
+    bool hasClipboard() const { return m_clipboard.width > 0 && m_clipboard.height > 0; }
+    int clipboardWidth() const { return m_clipboard.width; }
+    int clipboardHeight() const { return m_clipboard.height; }
+    // Pega con la esquina superior-izquierda en (x,y). Lo que caiga fuera
+    // del mapa se recorta en vez de rechazar la operacion entera: pegar
+    // pegado a un borde es normal y fallar del todo seria peor.
+    void pasteAt(int x, int y);
+    void eraseSelection();   // tiles y objetos de dentro, un solo paso
+
+    // -----------------------------------------------------------------
+    // PROPIEDADES DE UN OBJETO YA COLOCADO
+    //
+    // ObjectSpawn ya llevaba patrolMin/patrolMax y targetPosition, pero
+    // el editor no sabia tocarlos: habia que abrir el JSON a mano. Y
+    // exportLevelJson tampoco los escribia, asi que un spawn con patrulla
+    // abierto y vuelto a guardar la perdia en silencio.
+    // -----------------------------------------------------------------
+    void setObjectPatrol(int x, int y, GridCoord min, GridCoord max);
+    void setObjectTargetPosition(int x, int y, GridCoord target);
+
+    // -----------------------------------------------------------------
+    // FILTRO DE PALETA
+    //
+    // El catalogo tiene miles de entradas y se recorrian de una en una
+    // con Q/E. Buscar "taber" deja a la vista tabernero, taberna... y
+    // convierte el catalogo de obstaculo en recurso.
+    //
+    // Las paletas publicas devuelven la vista FILTRADA, que es la que se
+    // pinta y la que ciclan next/prevPaletteEntry: el filtro no es una
+    // ayuda visual, es la paleta.
+    // -----------------------------------------------------------------
+    void setPaletteFilter(const std::string& texto);
+    const std::string& paletteFilter() const { return m_filter; }
+    // Cuantas entradas hay en total, para poder decir "12 de 5439".
+    std::size_t tilePaletteTotal() const { return m_tilePaletteAll.size(); }
+    std::size_t objectPaletteTotal() const { return m_objectPaletteAll.size(); }
+    std::size_t levelPaletteTotal() const { return m_levelPaletteAll.size(); }
+
     // --- Consulta ---
-    int tileAt(int x, int y) const;  // 0 fuera de rango (celda vacia)
+    int tileAt(int x, int y) const;  // capa activa; 0 fuera de rango
+    int tileAt(int layer, int x, int y) const;
     const std::vector<ObjectSpawn>& objects() const { return m_objects; }
     // nullptr si la celda no tiene objeto.
     const ObjectSpawn* objectAt(int x, int y) const;
@@ -162,29 +245,58 @@ public:
     std::string exportLevelJson(const std::string& levelName, const std::string& mapPath) const;
 
 private:
+    struct Layer {
+        std::string name;
+        std::vector<int> tiles;   // [y * m_width + x], gid 0 = vacia
+    };
+
+    // El historial guarda el estado ENTERO (todas las capas). Es caro en
+    // memoria y a cambio no hay una sola operacion que pueda deshacerse a
+    // medias -- que es justo lo que se necesita ahora que pegar toca mil
+    // celdas de varias capas de golpe.
     struct Snapshot {
-        std::vector<int> tiles;
+        std::vector<Layer> layers;
+        int activeLayer = 0;
         std::vector<ObjectSpawn> objects;
         GridCoord playerStart;
+    };
+
+    struct Clipboard {
+        int width = 0;
+        int height = 0;
+        std::vector<std::vector<int>> layers;   // una por capa del origen
+        std::vector<ObjectSpawn> objects;       // posiciones RELATIVAS al rect
     };
 
     bool inBounds(int x, int y) const { return x >= 0 && x < m_width && y >= 0 && y < m_height; }
     void recordUndo();
     Snapshot snapshot() const;
     void restore(Snapshot state);
+    ObjectSpawn* mutableObjectAt(int x, int y);
+    void rebuildFilteredPalettes();
 
     int m_width;
     int m_height;
-    std::vector<int> m_tiles;  // [y * m_width + x], gid 0 = vacia
+    std::vector<Layer> m_layers;
+    int m_activeLayer = 0;
     std::vector<ObjectSpawn> m_objects;
     GridCoord m_playerStart{0, 0};
     std::vector<Snapshot> m_undo;
     std::vector<Snapshot> m_redo;
 
+    Rect m_selection;
+    Clipboard m_clipboard;
+
     EditorTool m_tool = EditorTool::PaintTile;
+    // Completas y filtradas. Las publicas devuelven las filtradas; el
+    // filtro no puede perder entradas, asi que el original se guarda.
+    std::vector<int> m_tilePaletteAll;
+    std::vector<std::string> m_objectPaletteAll;
+    std::vector<std::string> m_levelPaletteAll;
     std::vector<int> m_tilePalette;
     std::vector<std::string> m_objectPalette;
     std::vector<std::string> m_levelPalette;
+    std::string m_filter;
     std::size_t m_tileSelection = 0;
     std::size_t m_objectSelection = 0;
     std::size_t m_levelSelection = 0;

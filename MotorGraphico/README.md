@@ -759,6 +759,11 @@ abajo) y desde ahí se entra a editar.
 | `1`..`7` | herramienta: pintar, borrar, colocar objeto, quitar objeto, inicio jugador, rellenar, enlazar nivel |
 | `Q`/`E` | ciclar la paleta activa |
 | `[` / `]` | subgrupo de objetos anterior / siguiente |
+| **`B`** | **buscar en la paleta**: filtra por texto (`taber` → tabernero, taberna…). `B` cierra, `BACKSPACE` borra |
+| **`C`** / `SHIFT+C` | capa siguiente / anterior. `CTRL+N` crea una |
+| **`R`** | marcar esquina del rectángulo; `R` otra vez lo cierra |
+| **`CTRL+C`** / **`CTRL+V`** / **`CTRL+X`** | copiar la selección / pegar bajo el cursor / borrarla |
+| **`T`** | dar al objeto bajo el cursor la patrulla del rectángulo marcado |
 | `WASD` | pan de cámara (`SHIFT` = ×4) |
 | `+`/`-` | zoom (`0` vuelve a 1×), `HOME` centra |
 | `Ctrl+Z` / `Ctrl+Y` | deshacer / rehacer |
@@ -772,6 +777,33 @@ abajo) y desde ahí se entra a editar.
 pero **manda la letra**: en un portátil Mac las teclas de función son
 teclas de medios, así que `F5` de verdad pide `Fn+F5` — con las dos manos
 ocupadas en el mapa eso no es una tecla, es una maniobra.
+
+#### Lo que se añadió para poder hacer niveles a mano
+
+La ciudad de Boundington se generó con `tools/gen_ciudad.py` y no se dibujó,
+y la razón está en los números: **5.439 objetos** en el catálogo y **95
+niveles** a los que puede apuntar una puerta, todos pasando de uno en uno
+con `Q`/`E`. Cuatro cosas cambian eso:
+
+- **Buscar** (`B`) filtra la paleta por texto, sin mayúsculas y por
+  subcadena — quien busca `taber` no sabe si el id es `tabernero_xila` o
+  `npc_taberna`.
+- **Capas.** Antes había una sola, y abrir un mapa multicapa y guardar
+  **destruía las demás**: el editor avisaba por consola al abrir y el
+  destrozo ocurría media hora después. Ahora se cargan todas, las
+  herramientas de tile actúan sobre la activa, y el TMX las devuelve
+  enteras (round-trip verificado contra `TileMap`).
+- **Selección y portapapeles** (`R`, `CTRL+C/V/X`). Copia todas las capas
+  y los objetos de dentro; pegar y borrar son **un solo paso de
+  historial** aunque toquen mil celdas.
+- **Patrulla y destino.** `ObjectSpawn` ya los soportaba, pero el editor
+  no los sabía tocar *y `exportLevelJson` ni siquiera los escribía*: abrir
+  un nivel con PNJs que patrullan y volver a guardarlo los dejaba a todos
+  quietos, sin un solo error. `T` da al objeto bajo el cursor la patrulla
+  del rectángulo marcado.
+
+Todo eso vive en `EditorState` (GL-free) y está verificado en
+`demo_editor_state`, incluido el round-trip multicapa real.
 
 `P` lanza el juego como **proceso aparte**, no como un modo dentro del
 editor: `Application` monta su propia ventana y su propio contexto GL, y
