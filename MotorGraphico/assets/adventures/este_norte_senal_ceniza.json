@@ -1,0 +1,556 @@
+{
+  "id": "adv_en_senal_ceniza",
+  "name": "La Senal de la Ceniza",
+  "description": "Ano 2000 b.f., el ano exacto del mapa: en el oeste, los Perdidos de Perishton intentan liberar a Gurkazaal sin que nadie lo vea; en el este, Choubar firma el tributo de los Sagas y cae sobre las tierras de los Hombres Gato. Entre medias, Guskedor: una enviada tiefling llega al Gran Consejo orco con lo que las Cortes de Mistarium llevan tres noches sintiendo y no saben nombrar. Espejo oriental de 'Los Perdidos de Boundington': no puedes evitar la Primera Cruzada. Solo decides si el Este entra en ella ciego o con los ojos abiertos.",
+  "_canon": {
+    "evento": "EV-2000-CRUZADA01E (Choubar contra Bosmurg, frente Este) y EV-2000-CRUZADA01O (los Perdidos de Aegroum, frente Oeste) — Cronologia Maestra, ERA XIII. El mapa de Egaroth esta fechado en este ano.",
+    "sensores_canonicos": "INTRODUCION NACIONES Y RAZAS: Mistarium 'lately notan algo en el ambiente, una magia subyacente que les esta empezando a perturbar' y Gongorguma 'hay algunos entre los mas sabios que hablan de un peligro que esta naciendo en el continente del oeste'. Ambas frases existen en el corpus apuntando a este momento.",
+    "invariante": "La Primera Cruzada oriental OCURRE (es canon) y nadie en el este nombrara a Gurkazaal (la recontencion del 1990 b.f. fue invisible tambien para el este). El jugador no puede evitar la guerra: solo decidir si queda registro y canal.",
+    "espejo": "Boundington (1981 b.f.): no puedes evitar la Matanza, solo decidir cuanta gente sobrevive. Aqui: no puedes evitar la Cruzada, solo decidir si el Este la empieza ciego.",
+    "propuestas": "Nombres propios de los PNJ (Enviada Neblinia, Anciana del Consejo, Archivera de los Espejos, Cronista, Capitan Ventobelico) salen de clanes e instituciones canonicos (clan Neblinia, Gran Consejo, Corte de los Espejos Eternos, universidad de Qethatos, casa Ventobelico del rey Skriir) pero los individuos son creacion de esta aventura.",
+    "nota": "El Gran Pacto (8865 b.f., nacimiento de Envidia por las aberraciones de Kazra en Mistarium) es canon y es el paralelo que el Cronista encuentra: la propia sangre tiefling es consecuencia de aquel pecado. Diecinueve inviernos despues de este ano, una aldea llamada Boundington ardera en el oeste por la misma razon que aqui nadie supo nombrar."
+  },
+  "objectives": [
+    { "id": "obj_enviada", "text": "Enterarte de lo que trae la enviada de las Cortes", "doneFlag": "en_sc_enviada" },
+    { "id": "obj_cortes", "text": "Saber que ha sentido Mistarium", "doneFlag": "en_sc_cortes_hecho" },
+    { "id": "obj_archivo", "text": "Hallar el paralelo en los archivos de Qethatos", "doneFlag": "en_sc_paralelo" },
+    { "id": "obj_consejo", "text": "Hacer que el Gran Consejo oiga la senal", "doneFlag": "en_sc_consejo_decidido" },
+    { "id": "obj_guerra", "text": "Ver empezar la guerra", "doneFlag": "en_sc_cerrado" }
+  ],
+  "beats": [
+    {
+      "id": "beat_llegada_guskedor",
+      "trigger": { "type": "enter", "target": "assets/levels/ciudad_en_guskedor.json" },
+      "requires": { "notFlags": ["en_sc_empezado"] },
+      "speaker": "",
+      "lines": [
+        "Ano 2000 desde la Fundacion. Guskedor, a los pies de la Gran Montana de la Ceniza.",
+        "El aire huele a azufre suave, como siempre, pero hoy el Gran Consejo lleva tres dias en sesion sin levantarse. En el patio de banderas hay un visitante que nadie invito: una tiefling de librea oscura, sola, con el sello de tres torres.",
+        "Los orcos no desvian la mirada. Pero la miran."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "en_sc_empezado" },
+        { "type": "log", "arg": "Guskedor, 2000 b.f. La Senal de la Ceniza." }
+      ]
+    },
+    {
+      "id": "beat_enviada",
+      "trigger": { "type": "talk", "target": "en_enviada_neblinia" },
+      "requires": { "allFlags": ["en_sc_empezado"], "notFlags": ["en_sc_enviada"] },
+      "speaker": "Enviada Neblinia",
+      "lines": [
+        "Vengo de parte de las Tres Cortes de Mistarium, y si, cruce el mar sola. Eso deberia decirte lo urgente que es esto.",
+        "Tres noches lleva la trama magica temblando. No es nuestra magia. No es tuya. Viene de tan al oeste que las Cortes ni tienen mapa.",
+        "La Corte de la Llama quiere vigilar las costas. La de las Sombras, callar. Y la de los Espejos... la de los Espejos me mando aqui. Dice que quien debe oirlo primero es quien tiene la memoria mas larga del este: el Gran Consejo.",
+        "Problema: el Consejo no escucha a los de fuera. Ayudame a que escuchen. La Anciana del Consejo pesa mas que los diez vocales juntos."
+      ],
+      "effects": [ { "type": "setFlag", "arg": "en_sc_enviada" } ]
+    },
+    {
+      "id": "beat_enviada_repite",
+      "trigger": { "type": "talk", "target": "en_enviada_neblinia" },
+      "requires": { "allFlags": ["en_sc_enviada"] },
+      "speaker": "Enviada Neblinia",
+      "lines": [
+        "La Anciana quiere pruebas que pueda pesar. Las Cortes pesan raro y los archivos pesan como plomo.",
+        "Traeme su palabra, y yo traere la de las Cortes. Entre las dos, quizas el Consejo abre los ojos antes de que el cielo se llene de Sagas."
+      ]
+    },
+    {
+      "id": "beat_anciana_primera",
+      "trigger": { "type": "talk", "target": "en_anciana_consejo" },
+      "requires": { "allFlags": ["en_sc_enviada"], "notFlags": ["en_sc_anciana"] },
+      "speaker": "Anciana del Consejo",
+      "lines": [
+        "Una enviada demoniaca pidiendo cita y un forastero escoltandola. Los dias raros vienen en pareja, como los cuervos.",
+        "Escucho. Pero lo que oiga tiene que pesar. El oeste esta lejos, la montana esta cerca, y Choubar se mueve en la Cordillera como si ya nos hubiera declarado algo.",
+        "Traeme dos cosas: lo que las Cortes han sentido, bien dicho, y lo que digan vuestros propios archivos sobre veces parecidas. Los orcos no creemos en presagios. Creemos en cuentas.",
+        "Cuando tengas las dos, vuelve. Y trae argumentos, no miedo."
+      ],
+      "effects": [ { "type": "setFlag", "arg": "en_sc_anciana" } ]
+    },
+    {
+      "id": "beat_anciana_repite",
+      "trigger": { "type": "talk", "target": "en_anciana_consejo" },
+      "requires": { "allFlags": ["en_sc_anciana"] },
+      "speaker": "Anciana del Consejo",
+      "lines": [
+        "Dos cosas te pedi: la voz de las Cortes y la letra de los archivos. Ni una ni otra pesan en tu zurrón todavia."
+      ]
+    },
+    {
+      "id": "beat_persuadir_consejo",
+      "trigger": { "type": "talk", "target": "en_anciana_consejo" },
+      "requires": {
+        "allFlags": ["en_sc_anciana", "en_sc_paralelo"],
+        "anyFlags": ["en_sc_cortes_enterada", "en_sc_ciudad_sabe"],
+        "notFlags": ["en_sc_consejo_decidido"]
+      },
+      "speaker": "Anciana del Consejo",
+      "lines": [
+        "Asi que las Cortes tiemblan, los archivos recuerdan y medio Qethatos ya canta la historia. Vale la pena miraros la cara.",
+        "Habla. El Consejo escucha.",
+        "(Tirada de Persuasion ante el Gran Consejo.)"
+      ],
+      "effects": [
+        { "type": "skillCheck", "skillCheck": {
+            "skillId": "persuasion", "cd": 1.5,
+            "flagBotch": "en_sc_consejo_cerro", "flagPartial": "en_sc_consejo_duda",
+            "flagSuccess": "en_sc_consejo_sabe", "flagCritical": "en_sc_consejo_sella"
+        }},
+        { "type": "setFlag", "arg": "en_sc_consejo_decidido" }
+      ]
+    },
+    {
+      "id": "beat_consejo_cerro",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_consejo_cerro"], "notFlags": ["en_sc_consejo_relatado"] },
+      "speaker": "Anciana del Consejo",
+      "lines": [
+        "Palabras. Palabras tiefling, palabras de forastero, palabras de comediantes.",
+        "El Consejo levanta la sesion. Hay una guerra real a la puerta y me traes un temblor de allende los mares.",
+        "Largate. Y tu, enviada, vuelve a tus islas antes de que alguien recuerde que no debe fiaros."
+      ],
+      "effects": [ { "type": "setFlag", "arg": "en_sc_consejo_relatado" } ]
+    },
+    {
+      "id": "beat_consejo_duda",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_consejo_duda"], "notFlags": ["en_sc_consejo_relatado"] },
+      "speaker": "Anciana del Consejo",
+      "lines": [
+        "No me convences. Pero no me aburres, y eso ya es mas de lo que consigue la mayoria.",
+        "El Consejo no abrira los ojos. Pero yo puedo hacer una cosa: no cerrarlos del todo. Si llega algo del oeste por canal tiefling, quiero leerlo primero.",
+        "No es estar avisados. Es no estar solos. A veces es lo unico que se consigue."
+      ],
+      "effects": [ { "type": "setFlag", "arg": "en_sc_consejo_relatado" } ]
+    },
+    {
+      "id": "beat_consejo_sabe",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_consejo_sabe"], "notFlags": ["en_sc_consejo_relatado"] },
+      "speaker": "Anciana del Consejo",
+      "lines": [
+        "Tres generaciones llevamos los sabios diciendo que algo se estaba cocinando en el oeste. Ninguno supo decir que. Vosotros dos tampoco. Pero sois los primeros que traen el temblor contado y el archivo abierto.",
+        "El Consejo escuchara formalmente. Quedara acta, quedara observador, y quedara canal con las Cortes. Si el este va a arder por Choubar, que al menos arda mirando al oeste.",
+        "No se que hemos empezado a evitar. Ojala lo sepa algun dia alguien."
+      ],
+      "effects": [ { "type": "setFlag", "arg": "en_sc_consejo_relatado" } ]
+    },
+    {
+      "id": "beat_consejo_sella_relato",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_consejo_sella"], "notFlags": ["en_sc_consejo_relatado"] },
+      "speaker": "Anciana del Consejo",
+      "lines": [
+        "Pocos discursos han puesto al Consejo en pie. El tuyo, si.",
+        "No basta acta: lo que el Consejo firma hoy viajara a Qethatos por duplicado, y una copia ira a las Cortes. Lo que no se escribe, no existe; lo que no se representa, no se recuerda.",
+        "La senal queda registrada. Ahora, que la guerra haga lo que quiera con nosotros: esto, ya no nos lo quita nadie."
+      ],
+      "effects": [ { "type": "setFlag", "arg": "en_sc_consejo_relatado" } ]
+    },
+    {
+      "id": "beat_venordemn_llegada",
+      "trigger": { "type": "enter", "target": "assets/levels/ciudad_en_venordemn.json" },
+      "requires": { "notFlags": ["en_sc_venordemn"] },
+      "speaker": "",
+      "lines": [
+        "Venordemn, la isla mayor de Mistarium. La bruma no es decorado aqui: es muralla, cortina y archivo.",
+        "Tres torres se reparten el cielo. En la del centro, dicen, la Corte de los Espejos Eternos lleva tres noches sin apagar las lamparas."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "en_sc_venordemn" },
+        { "type": "log", "arg": "Venordemn, Mistarium. Las tres islas del norte." }
+      ]
+    },
+    {
+      "id": "beat_archivera",
+      "trigger": { "type": "talk", "target": "en_archivera_espejos" },
+      "requires": { "allFlags": ["en_sc_enviada"], "notFlags": ["en_sc_cortes_hecho"] },
+      "speaker": "Archivera de los Espejos",
+      "lines": [
+        "La enviada ya esta en Guskedor? Bien. Yo hice la parte facil: cruzar un mar. La dificil es esa.",
+        "Quiere saber que hemos sentido. Mejor que lo sientas tu: pon la palma aqui y calla la mente.",
+        "(Tirada de Conocimiento Arcano sobre la trama.)"
+      ],
+      "effects": [
+        { "type": "skillCheck", "skillCheck": {
+            "skillId": "conocimiento_arcano", "cd": 1.5,
+            "flagBotch": "en_sc_cortes_nada", "flagPartial": "en_sc_cortes_roza",
+            "flagSuccess": "en_sc_cortes_ve", "flagCritical": "en_sc_cortes_ve_claro"
+        }},
+        { "type": "setFlag", "arg": "en_sc_cortes_hecho" }
+      ]
+    },
+    {
+      "id": "beat_cortes_nada_relato",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_cortes_nada"], "notFlags": ["en_sc_cortes_relatado"] },
+      "speaker": "Archivera de los Espejos",
+      "lines": [
+        "Frio. Solo frio. La trama no se cuenta con quien no la ha sonado nunca.",
+        "No te sientas mal: la mitad de la Corte de la Llama tampoco sintio nada, y por eso piden vigilancia en vez de escucha.",
+        "Llevale a la Anciana lo que puedas contar: que aqui nadie se rie del temblor. A veces un testigo seco vale mas que un profeta mojado."
+      ],
+      "effects": [ { "type": "setFlag", "arg": "en_sc_cortes_relatado" } ]
+    },
+    {
+      "id": "beat_cortes_roza_relato",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_cortes_roza"], "notFlags": ["en_sc_cortes_relatado"] },
+      "speaker": "Archivera de los Espejos",
+      "lines": [
+        "Lo has rozado. Ese escalofrio que no sabes donde dejar: eso es.",
+        "Algo muy lejos ha desgarrado y el desgarro canta. Hacia el oeste. La Corte de las Sombras cree que es un nacimiento. La Llama, que es una puerta.",
+        "Di exactamente eso en Guskedor. Un desgarro que canta. Los orcos respetan las cosas que suenan."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "en_sc_cortes_enterada" },
+        { "type": "setFlag", "arg": "en_sc_cortes_relatado" }
+      ]
+    },
+    {
+      "id": "beat_cortes_ve_relato",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_cortes_ve"], "notFlags": ["en_sc_cortes_relatado"] },
+      "speaker": "Archivera de los Espejos",
+      "lines": [
+        "Has visto lo mismo que yo: una tension con direccion. Oeste. Detras del oeste, una montana. Detras de la montana, algo que empuja.",
+        "No es una puerta. Las puertas se abren de golpe. Esto se dobla. Como un sello bajo esfuerzo.",
+        "Dilo asi ante el Consejo: un sello que se dobla. Los orcos saben de sellos: el suyo propio les costo tres generaciones."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "en_sc_cortes_enterada" },
+        { "type": "setFlag", "arg": "en_sc_cortes_relatado" }
+      ]
+    },
+    {
+      "id": "beat_cortes_claro_relato",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_cortes_ve_claro"], "notFlags": ["en_sc_cortes_relatado"] },
+      "speaker": "Archivera de los Espejos",
+      "lines": [
+        "Por los Espejos. Tu has VISTO la forma detras.",
+        "Un sello bajo una montana occidental, doblado por dentro, y detras una paciencia que no es animal ni humana ni divina de las nuestras. La Llama hablaba de puerta por no atreverse a decir la palabra.",
+        "La Corte de los Espejos teme un nacimiento. Y si nace lo que se intento sellar, no habra frontera que cuente. Esto es lo que la enviada no sabe decir con palabras: damelo tu, en Guskedor, con esta imagen."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "en_sc_cortes_enterada" },
+        { "type": "setFlag", "arg": "en_sc_cortes_relatado" }
+      ]
+    },
+    {
+      "id": "beat_qethatos_llegada",
+      "trigger": { "type": "enter", "target": "assets/levels/ciudad_en_qethatos.json" },
+      "requires": { "notFlags": ["en_sc_qethatos"] },
+      "speaker": "",
+      "lines": [
+        "Qethatos, la ciudad costera que estudio a medio mundo. Hoy ensaya encima del mar.",
+        "Desde tres teatros a la vez llegan fragmentos de obras distintas, y los gaviotas hacen de publico. La universidad no distingue archivo de escenario: aqui lo que no se representa se considera perdido."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "en_sc_qethatos" },
+        { "type": "log", "arg": "Qethatos, universidad teatral de Gongorguma." }
+      ]
+    },
+    {
+      "id": "beat_cronista_primera",
+      "trigger": { "type": "talk", "target": "en_cronista_qethatos" },
+      "requires": { "notFlags": ["en_sc_cronista"] },
+      "speaker": "Cronista de Qethatos",
+      "lines": [
+        "Un temblor sentido en tres islas y oido en un consejo de orcos. Dame una tarde y un mapa antiguo.",
+        "La historia no se repite, pero marca pautas como un sastre. Veamos que costuras se parecen.",
+        "(Tirada de Percepcion sobre los archivos.)"
+      ],
+      "effects": [
+        { "type": "skillCheck", "skillCheck": {
+            "skillId": "percepcion", "cd": 1.0,
+            "flagBotch": "en_sc_archivo_nada", "flagPartial": "en_sc_archivo_roza",
+            "flagSuccess": "en_sc_archivo_halla", "flagCritical": "en_sc_archivo_halla_claro"
+        }},
+        { "type": "setFlag", "arg": "en_sc_cronista" }
+      ]
+    },
+    {
+      "id": "beat_archivo_nada_relato",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_archivo_nada"], "notFlags": ["en_sc_archivo_relatado"] },
+      "speaker": "Cronista de Qethatos",
+      "lines": [
+        "Nada. O yo estoy ciego o la pauta no existe todavia.",
+        "Vuelve conmigo otro dia. O no: los dias empiezan a tener prisa, no se porque."
+      ],
+      "effects": [ { "type": "setFlag", "arg": "en_sc_archivo_relatado" } ]
+    },
+    {
+      "id": "beat_archivo_roza_relato",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_archivo_roza"], "notFlags": ["en_sc_archivo_relatado"] },
+      "speaker": "Cronista de Qethatos",
+      "lines": [
+        "Hay una sola costura parecida y esta cosida con nuestra propia sangre.",
+        "El Gran Pacto. Nythengrid, hace casi nueve mil anos. Un tiefling busco poder hasta que su busqueda ENGENDRO algo. Los hornos de los tieflings, la sangre maldita de los humanos del este: todo viene de aquel pecado.",
+        "No se si es el mismo mal. Pero el precedente pesa: lo que se siente antes de verse, suele estar naciendo."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "en_sc_paralelo" },
+        { "type": "setFlag", "arg": "en_sc_archivo_relatado" }
+      ]
+    },
+    {
+      "id": "beat_archivo_halla_relato",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_archivo_halla"], "notFlags": ["en_sc_archivo_relatado"] },
+      "speaker": "Cronista de Qethatos",
+      "lines": [
+        "Dos costuras. La primera, el Gran Pacto: cuando la aberracion de uno engendro a Envidia, y la sangre tiefling fue el precio que pagamos todos.",
+        "La segunda, en un margen de un cartografo que vio sectas de montana en el oeste hace dos siglos. Anoto: 'adoran lo que esta sellado'. Y encima, otra mano posterior: 'que siga sellado'.",
+        "Un sello que se dobla y gente que reza para que aguante. La Anciana podra pesar esto."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "en_sc_paralelo" },
+        { "type": "setFlag", "arg": "en_sc_archivo_relatado" }
+      ]
+    },
+    {
+      "id": "beat_archivo_claro_relato",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_archivo_halla_claro"], "notFlags": ["en_sc_archivo_relatado"] },
+      "speaker": "Cronista de Qethatos",
+      "lines": [
+        "Tres documentos y una cadena entera.",
+        "El Gran Pacto: la aberracion engendra Envidia, nacemos malditos, leccion aprendida a medias. El cartografo: sectas occidentales 'adoran lo que esta sellado'. Y una carta de un obispo del oeste, sin fecha, pidiendo silencio sobre 'los que viven bajo la montana'.",
+        "Bajo. La. Montana. No en el cielo, no al otro lado del mar: debajo. Alguien del oeste lo sabia y mando callar. Esto no es presagio, es denuncia atrasada."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "en_sc_paralelo" },
+        { "type": "setFlag", "arg": "en_sc_archivo_relatado" }
+      ]
+    },
+    {
+      "id": "beat_teatro",
+      "trigger": { "type": "talk", "target": "en_cronista_qethatos" },
+      "requires": { "allFlags": ["en_sc_paralelo"], "notFlags": ["en_sc_teatro_hecho"] },
+      "speaker": "Cronista de Qethatos",
+      "lines": [
+        "El Consejo escuchara actas. La ciudad escucha ACTOS. Y entre acta y acto, solo uno llega a los que no saben leer.",
+        "Esta noche, en el arena mayor: La Senal. El temblor de las Cortes, el archivo, la montana. Todo. Elenco de estudiantes, ciudad entera de publico.",
+        "Lo que no se representa no se recuerda. Sal al escenario conmigo.",
+        "(Tirada de Interpretacion en el arena de Qethatos.)"
+      ],
+      "effects": [
+        { "type": "skillCheck", "skillCheck": {
+            "skillId": "interpretacion", "cd": 1.0,
+            "flagBotch": "en_sc_teatro_flop", "flagPartial": "en_sc_teatro_medio",
+            "flagSuccess": "en_sc_teatro_bien", "flagCritical": "en_sc_teatro_obra"
+        }},
+        { "type": "setFlag", "arg": "en_sc_teatro_hecho" }
+      ]
+    },
+    {
+      "id": "beat_teatro_flop_relato",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_teatro_flop"], "notFlags": ["en_sc_teatro_relatado"] },
+      "speaker": "Cronista de Qethatos",
+      "lines": [
+        "El publico se rio en la escena de la montana. Eso nos pasa por ponerle rima al sello.",
+        "No importa. Quedara el texto. Los textos esperan su siglo."
+      ],
+      "effects": [ { "type": "setFlag", "arg": "en_sc_teatro_relatado" } ]
+    },
+    {
+      "id": "beat_teatro_medio_relato",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_teatro_medio"], "notFlags": ["en_sc_teatro_relatado"] },
+      "speaker": "Cronista de Qethatos",
+      "lines": [
+        "Mitad de la ciudad sali pensando. La otra mitad, bostezando. Con la mitad basta por ahora.",
+        "Por los pasillos ya se cuenta la escena del sello. Mal, pero se cuenta."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "en_sc_teatro_relatado" }
+      ]
+    },
+    {
+      "id": "beat_teatro_bien_relato",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_teatro_bien"], "notFlags": ["en_sc_teatro_relatado"] },
+      "speaker": "Cronista de Qethatos",
+      "lines": [
+        "Silencio en el arena y nadie cobra la entrada de vuelta: eso aqui es un triunfo.",
+        "Manana lo cantaran en los muelles y pasado en las caravanas. La ciudad ya sabe lo que dicen las islas.",
+        "Llevate esto a Guskedor: Qethatos entera de testigo."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "en_sc_ciudad_sabe" },
+        { "type": "setFlag", "arg": "en_sc_teatro_relatado" }
+      ]
+    },
+    {
+      "id": "beat_teatro_obra_relato",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_teatro_obra"], "notFlags": ["en_sc_teatro_relatado"] },
+      "speaker": "Cronista de Qethatos",
+      "lines": [
+        "La Senal ha quedado. No como noticia: como OBRA.",
+        "La escena del sello doblandose con el coro de las Cortes detras... el arena completo en pie, y hasta los gaviotas callados.",
+        "Entrara en el repertorio. Se representara cada ano cuando la ceniza cambie de olor, y mientras se represente, el este tendra memoria de esta noche. Yo solo escribi la letra. La levantaste tu."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "en_sc_ciudad_sabe" },
+        { "type": "setFlag", "arg": "en_sc_teatro_relatado" }
+      ]
+    },
+    {
+      "id": "beat_klimnebra_llegada",
+      "trigger": { "type": "enter", "target": "assets/levels/ciudad_en_klimnebra.json" },
+      "requires": { "notFlags": ["en_sc_klimnebra"] },
+      "speaker": "",
+      "lines": [
+        "Klimnebra, capital del reino del rio. Los puentes no duermen: hoy todos llevan el mismo rumor.",
+        "En la Casa de Fletamento copistas pasan a limpio un tributo. Un tributo a los Sagas. Nadie firma todavia, pero el pergamino ya huele a cielo prestado."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "en_sc_klimnebra" },
+        { "type": "log", "arg": "Klimnebra, Choubar. El tributo de los Sagas en marcha." }
+      ]
+    },
+    {
+      "id": "beat_capitan_primera",
+      "trigger": { "type": "talk", "target": "en_capitan_ventobelico" },
+      "requires": { "notFlags": ["en_sc_capitan"] },
+      "speaker": "Capitan Ventobelico",
+      "lines": [
+        "El rey Skriir ha hablado con el clan Kraahs. Los Sagas de Grashak sobrevolaran lo nuestro y a cambio... bueno. A cambio esta lo que esas tierras fertiles de los Hombres Gato van a valer.",
+        "¿Un temblor en unas islas de brujos? ¿Una obra de teatro en una ciudad de comediantes? Guardatelo para el escenario.",
+        "Pero habla. Soy soldado del cielo, no piedra.",
+        "(Tirada de Persuasion ante el Capitan.)"
+      ],
+      "effects": [
+        { "type": "skillCheck", "skillCheck": {
+            "skillId": "persuasion", "cd": 2.0,
+            "flagBotch": "en_sc_choubar_porton", "flagPartial": "en_sc_choubar_oido",
+            "flagSuccess": "en_sc_choubar_aviso", "flagCritical": "en_sc_choubar_anotado"
+        }},
+        { "type": "setFlag", "arg": "en_sc_capitan" }
+      ]
+    },
+    {
+      "id": "beat_choubar_porton_relato",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_choubar_porton"], "notFlags": ["en_sc_choubar_relatado"] },
+      "speaker": "Capitan Ventobelico",
+      "lines": [
+        "La guardia te acompana hasta el puente. Con educacion. Con las manos en las lanzas, pero con educacion.",
+        "Atras queda Klimnebra, firmandose a si mismo para la guerra."
+      ],
+      "effects": [ { "type": "setFlag", "arg": "en_sc_choubar_relatado" } ]
+    },
+    {
+      "id": "beat_choubar_oido_relato",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_choubar_oido"], "notFlags": ["en_sc_choubar_relatado"] },
+      "speaker": "Capitan Ventobelico",
+      "lines": [
+        "Te he oido. Oir no cuesta.",
+        "El tributo seguira. La primera lanza ya esta en el aire y no vuelve por bonita que sea la mano que la lanzo. Pero el rey sabra que hubo alguien diciendo que miraramos al oeste. No se para que le servira.",
+        "Vete antes de que me arrepienta de haber escuchado."
+      ],
+      "effects": [ { "type": "setFlag", "arg": "en_sc_choubar_relatado" } ]
+    },
+    {
+      "id": "beat_choubar_aviso_relato",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_choubar_aviso"], "notFlags": ["en_sc_choubar_relatado"] },
+      "speaker": "Capitan Ventobelico",
+      "lines": [
+        "Maldita sea. Maldita sea por escucharte.",
+        "No paro el tributo: nadie puede. Pero mandare el aviso al rey con mis palabras: 'en el este dicen que el peligro no es el que miramos'. Que lo lea entre linea y lanza.",
+        "Si la guerra sale mal, recordad que un Ventobelico quizo saber lo que pasaba en el oeste antes de llenar el cielo de Sagas."
+      ],
+      "effects": [ { "type": "setFlag", "arg": "en_sc_choubar_relatado" } ]
+    },
+    {
+      "id": "beat_choubar_anotado_relato",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_choubar_anotado"], "notFlags": ["en_sc_choubar_relatado"] },
+      "speaker": "Capitan Ventobelico",
+      "lines": [
+        "Espera. Trae tinta.",
+        "En el margen del propio tributo, con letra de oficial: 'Firmado con los Sagas para el cielo. Sobre aviso del oeste, recibido y creido por la casa Ventobelico'. Que lo lean los archiveros dentro de mil anos, cuando traten de entender como empezamos.",
+        "La primera lanza esta en el aire. Pero el papel dira que supimos. Ahora fuera de mi ciudad: la guerra no espera comedias."
+      ],
+      "effects": [ { "type": "setFlag", "arg": "en_sc_choubar_relatado" } ]
+    },
+    {
+      "id": "beat_noticia",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["en_sc_enviada"],
+        "anyFlags": ["en_sc_cortes_hecho", "en_sc_cronista", "en_sc_capitan"],
+        "notFlags": ["en_sc_noticia"]
+      },
+      "speaker": "",
+      "lines": [
+        "La noticia te alcanza donde estes, porque alcanza a todos a la vez: Choubar ha atacado.",
+        "Los Sagas de Grashak sobrevolaron las tierras fertiles de los Hombres Gato con el clan Kraahs suelto detras. La Primera Cruzada del frente oriental ha empezado, y empezara a parecer que no va a acabar nunca.",
+        "En Guskedor, la enviada Neblinia mira al oeste y luego a ti. 'Ahora', dice, 'vamos a descubrir para que servia todo esto.'"
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "en_sc_noticia" },
+        { "type": "log", "arg": "EV-2000-CRUZADA01E: la Primera Cruzada oriental ha comenzado." }
+      ]
+    },
+    {
+      "id": "cierre_ojos",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_noticia", "en_sc_consejo_sabe"], "notFlags": ["en_sc_cerrado"] },
+      "speaker": "",
+      "lines": [
+        "La guerra corre como el canon manda y no la va a parar nadie. Nueve siglos tendra, si las cuentas no mienten.",
+        "Pero el acta del Consejo viaja a Qethatos por duplicado, el observador orco embarca hacia las islas, y el canal con las Cortes queda abierto: el este entra en su cruzada mirando al oeste, que es distinto a entrar ciego aunque la sangre corra igual.",
+        "Y en el oeste, bajo una montana de la que ningun mapa orienta, algo que se doblaba hace unos dias... ha dejado de doblarse. Nadie aqui sabra nunca lo que eso significa.",
+        "Mientras Qethatos siga representando La Senal, alguien lo contara."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "en_sc_cerrado" },
+        { "type": "log", "arg": "FIN — El este entra en la guerra con los ojos abiertos." }
+      ]
+    },
+    {
+      "id": "cierre_parcial",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["en_sc_noticia"],
+        "anyFlags": ["en_sc_consejo_duda", "en_sc_cortes_enterada", "en_sc_ciudad_sabe", "en_sc_choubar_aviso"],
+        "notFlags": ["en_sc_consejo_sabe", "en_sc_cerrado"]
+      },
+      "speaker": "",
+      "lines": [
+        "La guerra corre como el canon manda.",
+        "No hubo acta ni observador. Pero quedo algo: un rumor con direccion en dos ciudades, media corte tiefling en alerta, o un capitan que no cerro del todo la puerta. Lo que queda no avisa: insinua.",
+        "A veces una insinuacion sobrevive a nueve siglos de guerra y despierta justo cuando hace falta. A veces no. El este entro en su cruzada medio dormido, con la molesta sensacion de haber sido avisado."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "en_sc_cerrado" },
+        { "type": "log", "arg": "FIN — El este entra en la guerra medio despierto." }
+      ]
+    },
+    {
+      "id": "cierre_ciego",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["en_sc_noticia"], "notFlags": ["en_sc_cerrado"] },
+      "speaker": "",
+      "lines": [
+        "La guerra corre como el canon manda, y el este corre dentro de ella sin haber mirado nada que no fuera la Cordillera.",
+        "La enviada Neblinia se embarca de vuelta sin su audiencia. Las Cortes archivaran el temblor entre los expedientes que nadie relee. En Qethatos se estrenan tres comedias y ninguna habla de senales.",
+        "Diecinueve inviernos despues, una aldea llamada Boundington ardera en el oeste por la misma razon que aqui nadie supo nombrar. Y nadie, en todo el este, recordara haber sido avisado."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "en_sc_cerrado" },
+        { "type": "log", "arg": "FIN — El este entra en la guerra ciego." }
+      ]
+    }
+  ]
+}

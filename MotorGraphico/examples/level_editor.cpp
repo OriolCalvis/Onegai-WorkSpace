@@ -16,11 +16,22 @@
 //   Ctrl+Z / Ctrl+Y = deshacer / rehacer
 //   WASD    = pan de camara (SHIFT = x4, para mapas grandes)
 //   +/-     = zoom (0 = volver a 1x), HOME = centrar en el mapa
-//   F5      = guardar: assets/maps/editor_map.tmx +
-//             assets/levels/editor_level.json (rutas relativas al cwd,
-//             ejecutar desde build/ o MotorGraphico/)
-//   F6      = validar el nivel sin salir del editor
-//   ESC     = salir
+//   G       = guardar en los ficheros DEL PROYECTO abierto (rutas
+//             relativas al cwd: ejecutar desde build/ o MotorGraphico/)
+//   V       = validar el nivel sin salir del editor
+//   P       = probar: guarda y lanza ./juego sobre este nivel
+//   M       = volver a la pantalla de proyectos (ESC hace lo mismo)
+//
+//   F5/F6/F7 siguen valiendo como alias de G/V/P. Las teclas de funcion
+//   en un portatil Mac son teclas de medios: F5 de verdad pide Fn+F5, que
+//   con las dos manos ocupadas en el mapa no es una tecla, es una
+//   maniobra. Por eso manda la letra y la tecla de funcion es el alias, y
+//   no al reves.
+//
+// PENDIENTE, documentado aqui antes de existir (que es como llego a estar
+// escrito el F7 de "modo jugador" durante un tiempo sin que hubiera
+// ninguno): nivel anterior/siguiente del proyecto sin pasar por la
+// pantalla. Hoy se cambia de nivel volviendo con M.
 //
 // Tamano del mapa (los niveles NO tienen por que ser todos iguales: un
 // mundo puede repartirse en varios mapas pequenos, cada uno con su JSON
@@ -242,7 +253,8 @@ EditorOptions parseArgs(int argc, char** argv) {
                 "  --size 64x64             mapa nuevo en blanco de ese tamano\n"
                 "  --load ruta.json         abre un nivel suelto (sin proyecto)\n"
                 "  frames                   modo humo: N frames, vuelca PPM y sale\n"
-                "\n  Dentro del editor: F7 prueba el nivel, ESC vuelve a la pantalla.\n"
+                "\n  Dentro del editor: F7 modo jugador, F8/F9 cambia de escenario,\n"
+                "  ESC vuelve a la pantalla.\n"
                 "\n  La build de un proyecto se saca con:\n"
                 "    python3 tools/build_proyecto.py <id>\n";
             std::exit(0);
@@ -877,7 +889,7 @@ int main(int argc, char** argv) {
         statusPanel.setBorder(kBorderColor, 2.0f);
 
         const std::string kControlsLine =
-            "1-5 HERRAM  Q/E PALETA  CTRL+Z/Y HIST  F5 GUARDAR  F6 VALIDAR  F7 PROBAR  ESC PROYECTOS";
+            "1-5 HERRAM  Q/E PALETA  CTRL+Z/Y HIST  F5 GUARDAR  F6 VALIDAR  F7 JUGAR  F8/F9 ESCENARIO  ESC PROYECTOS";
         // Peor caso del texto de estado (controles + contadores) para que el
         // panel de fondo cubra siempre la linea, aunque se anada el
         // "...TILES 64  OBJETOS 5" del final.
@@ -913,6 +925,7 @@ int main(int argc, char** argv) {
         keys.prime(glfwWin);   // el ENTER con que abriste el proyecto no cuenta
         int frame = 0;
         bool volverAlHub = false;   // ESC en la edicion -> pantalla de proyectos
+        bool cambiarEscenario = false;  // F8/F9: reconstruye el documento con otro nivel
 
         // Estado de animacion del editor. Los widgets HUD no tienen
         // update(), asi que el estado que cambia con el tiempo (cursor
@@ -937,7 +950,7 @@ int main(int argc, char** argv) {
             // ESC vuelve a la pantalla de proyectos, no cierra el editor.
             // Para cerrar del todo hay que pulsarlo otra vez alli. Cambiar
             // de proyecto no puede costar relanzar el binario.
-            if (keys.pressed(glfwWin, GLFW_KEY_ESCAPE)) {
+            if (keys.pressed(glfwWin, GLFW_KEY_ESCAPE) || keys.pressed(glfwWin, GLFW_KEY_M)) {
                 volverAlHub = true;
                 break;
             }
@@ -1013,7 +1026,21 @@ int main(int argc, char** argv) {
                                     camera.zoom(), 0.25f, Camera::Easing::EaseOutCubic);
             }
 
-            // Guardar es ahora una funcion porque F7 (probar) tiene que
+            // Las teclas de funcion en un portatil Mac son teclas de
+            // medios: F5 de verdad pide Fn+F5, que con las dos manos ya
+            // ocupadas en el mapa no es una tecla, es una maniobra. Asi
+            // que cada accion tiene una LETRA, y la tecla de funcion se
+            // mantiene como alias porque no cuesta nada y hay quien la
+            // tiene en la memoria de los dedos.
+            //
+            // Las letras son la inicial en espanol: Guardar, Validar,
+            // Probar, Menu. Ninguna choca con lo que ya usa el editor
+            // (WASD camara, Q/E paleta, Z/Y historial, 1-5 herramientas).
+            auto pedida = [&](int letra, int funcion) {
+                return keys.pressed(glfwWin, letra) || keys.pressed(glfwWin, funcion);
+            };
+
+            // Guardar es una funcion porque probar tiene que
             // guardar antes: probar lo que hay en disco mientras miras
             // otra cosa en pantalla es la peor forma de perder una hora.
             auto guardarNivel = [&]() {
@@ -1036,12 +1063,56 @@ int main(int argc, char** argv) {
                 saveFlashAlpha = 1.0f;
             };
 
-            if (keys.pressed(glfwWin, GLFW_KEY_F5)) {
+            if (pedida(GLFW_KEY_G, GLFW_KEY_F5)) {
                 guardarNivel();
             }
 
-            // F7 — PROBAR EL NIVEL. Guarda y lanza ./juego sobre este
-            // nivel, como proceso aparte.
+            // F8/F9 — NAVEGAR EL PROYECTO. El manifiesto declara el orden
+            // de los escenarios; no se adivina por el nombre de archivo.
+            // Guardamos ANTES de salir del documento: cambiar de mapa no
+            // puede convertirse en otra forma de perder una tarde de
+            // pintura. Los niveles dan la vuelta, como la lista de
+            // proyectos, para que un proyecto grande sea navegable.
+            const int direccionEscenario =
+                keys.pressed(glfwWin, GLFW_KEY_F8) ? -1 :
+                (keys.pressed(glfwWin, GLFW_KEY_F9) ? 1 : 0);
+            if (direccionEscenario != 0) {
+                if (opts.projectId.empty()) {
+                    statusText.setText("F8/F9 NECESITA UN PROYECTO: ABRELO DESDE LA PANTALLA");
+                    savedMessageFrames = 240;
+                } else {
+                    auto indice = Editor::ProjectIndex::scan("assets");
+                    const Editor::Project* proyecto =
+                        indice.isOk() ? indice.value().find(opts.projectId) : nullptr;
+                    if (proyecto == nullptr || proyecto->levels.empty()) {
+                        statusText.setText("EL PROYECTO NO DECLARA OTROS ESCENARIOS");
+                        savedMessageFrames = 240;
+                    } else {
+                        guardarNivel();
+                        std::size_t actual = 0;
+                        for (std::size_t i = 0; i < proyecto->levels.size(); ++i) {
+                            if (proyecto->levels[i] == opts.levelName) {
+                                actual = i;
+                                break;
+                            }
+                        }
+                        const std::size_t total = proyecto->levels.size();
+                        const std::size_t siguiente =
+                            direccionEscenario > 0 ? (actual + 1) % total
+                                                   : (actual + total - 1) % total;
+                        opts.levelName = proyecto->levels[siguiente];
+                        opts.loadLevelPath.clear();
+                        std::cout << "Cambiando a escenario " << (siguiente + 1) << "/" << total
+                                  << ": " << opts.levelName << "\n";
+                        cambiarEscenario = true;
+                        break;
+                    }
+                }
+            }
+
+            // F7 — MODO JUGADOR. Guarda y lanza ./juego sobre este nivel,
+            // como proceso aparte. Al cerrar la ventana del juego se vuelve
+            // al modo desarrollador exactamente donde se estaba editando.
             //
             // Aparte y no dentro: Application monta su propia ventana y su
             // propio contexto GL, asi que no cabe dentro del editor; y
@@ -1051,7 +1122,7 @@ int main(int argc, char** argv) {
             // El editor se queda bloqueado mientras el juego corre. Es lo
             // que se quiere: volver al editor con el juego abierto detras
             // y no saber cual de las dos ventanas manda es peor.
-            if (keys.pressed(glfwWin, GLFW_KEY_F7)) {
+            if (pedida(GLFW_KEY_P, GLFW_KEY_F7)) {
                 guardarNivel();
                 // El catalogo del proyecto, si declara alguno; si no, el
                 // de Boundington, que es el unico completo hoy.
@@ -1076,7 +1147,7 @@ int main(int argc, char** argv) {
                 const std::string orden =
                     exe + " --nivel \"" + saveJson + "\" --catalogo \"" + catalogoDePrueba + "\"";
                 std::cout << "Probando: " << orden << "\n";
-                statusText.setText("PROBANDO EL NIVEL... (cierra el juego para volver)");
+                statusText.setText("MODO JUGADOR... (cierra el juego para volver al editor)");
                 savedMessageFrames = 240;
                 const int codigo = std::system(orden.c_str());
                 if (codigo != 0) {
@@ -1091,7 +1162,7 @@ int main(int argc, char** argv) {
                 keys.prime(glfwWin);
             }
 
-            if (keys.pressed(glfwWin, GLFW_KEY_F6)) {
+            if (pedida(GLFW_KEY_V, GLFW_KEY_F6)) {
                 const EditorValidationResult validation =
                     EditorValidation::check(editor, catalog, {2});
                 if (!validation.ok()) {
@@ -1415,8 +1486,14 @@ int main(int argc, char** argv) {
         // pantalla de proyectos, y para eso hay que olvidar cual estaba
         // abierto: si no, resolverProyecto() lo reabriria en la siguiente
         // vuelta y ESC no llevaria a ninguna parte.
-        if (!volverAlHub) {
+        if (!volverAlHub && !cambiarEscenario) {
             break;
+        }
+        if (cambiarEscenario) {
+            if (!resolverProyecto()) {
+                return 1;
+            }
+            continue;
         }
         opts.projectId.clear();
         opts.loadLevelPath.clear();
