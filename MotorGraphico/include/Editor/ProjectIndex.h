@@ -36,12 +36,28 @@ struct Project {
     std::string epoch;        // "1981 b.f." — el mundo esta fechado
     std::string author;
     std::string prefix;       // prefijo de ids; vacio = sin prefijo (Boundington)
-    std::string entry;        // aventura por la que arranca, si tiene
+
+    // Por donde arranca el proyecto. Se admiten dos formas porque las dos
+    // se escribieron de verdad sin ponerse de acuerdo:
+    //
+    //   "assets/adventures/boundington_prologo.json"  ruta desde la raiz
+    //   "ciudad_en_guskedor.json"                     solo el nombre
+    //
+    // El nombre suelto se resuelve contra assets/adventures/ y luego
+    // assets/levels/. Un proyecto puede arrancar en un NIVEL y no en una
+    // aventura: un pack de escenario sin historia es legitimo, se abre y
+    // se camina por el. Ver entryKind().
+    std::string entry;
 
     std::vector<std::string> levels;     // nombres de fichero, sin ruta
     std::vector<std::string> maps;
     std::vector<std::string> adventures;
     std::vector<std::string> catalogs;
+
+    // Que resulto ser 'entry'. Lo rellena ProjectIndex::scan().
+    enum class EntryKind { None, Adventure, Level, Missing };
+    EntryKind entryKind = EntryKind::None;
+    std::string entryPath;    // ruta ya resuelta, vacia si None/Missing
 
     std::size_t assetCount() const {
         return levels.size() + maps.size() + adventures.size() + catalogs.size();

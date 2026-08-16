@@ -62,6 +62,48 @@ std::string esc(const std::string& s) {
     return r;
 }
 
+// Averigua a que apunta 'entrada'. El campo se escribio de dos formas
+// distintas -- ruta completa en boundington y oeste_norte, nombre suelto
+// en este_norte -- porque nunca se documento cual era. En vez de declarar
+// buena una de las dos y romper el trabajo de otro, se admiten ambas y se
+// deja anotado en el propio Project a que resolvio.
+void resuelveEntrada(Project& p, const std::string& assetsRoot) {
+    p.entryKind = Project::EntryKind::None;
+    p.entryPath.clear();
+    if (p.entry.empty()) {
+        return;
+    }
+    // Con barra: es una ruta y se toma tal cual, sin adivinar.
+    if (p.entry.find('/') != std::string::npos) {
+        if (existe(p.entry)) {
+            p.entryPath = p.entry;
+            // La carpeta dice que es. No se abre el fichero para mirarlo
+            // dentro: scan() lo hace al listar el editor y leer 96
+            // ficheros para pintar una lista es caro y no hace falta.
+            p.entryKind = p.entry.find("/adventures/") != std::string::npos
+                              ? Project::EntryKind::Adventure
+                              : Project::EntryKind::Level;
+        } else {
+            p.entryKind = Project::EntryKind::Missing;
+        }
+        return;
+    }
+    // Nombre suelto: aventuras primero, que es el caso normal.
+    const std::string comoAv = assetsRoot + "/adventures/" + p.entry;
+    if (existe(comoAv)) {
+        p.entryPath = comoAv;
+        p.entryKind = Project::EntryKind::Adventure;
+        return;
+    }
+    const std::string comoNivel = assetsRoot + "/levels/" + p.entry;
+    if (existe(comoNivel)) {
+        p.entryPath = comoNivel;
+        p.entryKind = Project::EntryKind::Level;
+        return;
+    }
+    p.entryKind = Project::EntryKind::Missing;
+}
+
 // Reescribe assets/proyectos/index.json con esta lista de ids. Lo usan
 // create() y remove(): el manifiesto en disco y el indice tienen que
 // moverse juntos o el proyecto existe y no lo ve nadie (o al reves).
@@ -128,6 +170,7 @@ Result<ProjectIndex> ProjectIndex::scan(const std::string& assetsRoot) {
         pr.maps = lista(v["mapas"]);
         pr.adventures = lista(v["aventuras"]);
         pr.catalogs = lista(v["catalogos"]);
+        resuelveEntrada(pr, assetsRoot);
         idx.m_projects.push_back(std::move(pr));
     }
     return Result<ProjectIndex>::Ok(std::move(idx));
@@ -173,9 +216,10 @@ ProjectCheck ProjectIndex::check(const std::string& id) const {
     // -- un pack puede ser solo escenarios -- pero el editor tiene que
     // poder decirlo antes de ofrecer el boton de jugar.
     if (p->entry.empty()) {
-        c.problems.push_back("sin 'entrada': no hay aventura por la que arrancar");
-    } else if (!existe(p->entry)) {
-        c.problems.push_back("entrada '" + p->entry + "' no existe");
+        c.problems.push_back("sin 'entrada': no hay aventura ni nivel por el que arrancar");
+    } else if (p->entryKind == Project::EntryKind::Missing) {
+        c.problems.push_back("entrada '" + p->entry + "' no aparece ni en " + m_root +
+                             "/adventures/ ni en " + m_root + "/levels/");
         ++c.missingFiles;
     }
     return c;

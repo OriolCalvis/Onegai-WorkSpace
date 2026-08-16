@@ -44,6 +44,9 @@
 // vuelca el ultimo frame a level_editor_output.ppm, para poder revisar
 // el HUD sin una captura de pantalla a mano.
 #include "Core/Math/IsoMath.h"
+#include <memory>
+
+#include "Editor/ProjectHub.h"
 #include "Editor/ProjectIndex.h"
 #include "Core/Math/Vector4.h"
 #include "Core/Resources/Shader.h"
@@ -301,17 +304,21 @@ int main(int argc, char** argv) {
     std::string saveTmx = "assets/maps/editor_map.tmx";
     std::string saveJson = "assets/levels/editor_level.json";
     std::string saveName = "Nivel del editor";
-    if (!opts.projectId.empty()) {
+
+    // Se resuelve en una lambda porque ahora hay DOS momentos en que se
+    // sabe el proyecto: por --proyecto antes de abrir la ventana, o por la
+    // pantalla de proyectos, que ya necesita contexto GL para pintarse.
+    auto resolverProyecto = [&]() -> bool {
         auto r = Editor::ProjectIndex::scan("assets");
         if (!r.isOk()) {
             std::cerr << "No se pudo leer assets/proyectos: " << r.errorMessage() << "\n";
-            return 1;
+            return false;
         }
         const Editor::Project* p = r.value().find(opts.projectId);
         if (p == nullptr) {
             std::cerr << "No existe el proyecto '" << opts.projectId
                       << "'. Prueba: ./level_editor --proyectos\n";
-            return 1;
+            return false;
         }
         std::string nivel = opts.levelName;
         if (nivel.empty() && !p->levels.empty()) {
@@ -332,6 +339,11 @@ int main(int argc, char** argv) {
         }
         std::cout << "Proyecto '" << p->id << "' (" << p->name << ", " << p->epoch << ")\n"
                   << "  niveles: " << p->levels.size() << "  ·  guardara en " << saveJson << "\n";
+        return true;
+    };
+
+    if (!opts.projectId.empty() && !resolverProyecto()) {
+        return 1;
     }
 
     try {
@@ -343,6 +355,187 @@ int main(int argc, char** argv) {
         if (!spriteShader.isOk()) {
             std::cerr << "Error cargando shader sprite: " << spriteShader.errorMessage() << "\n";
             return 1;
+        }
+
+        // =============================================================
+        // FASE 1 — LA PANTALLA DE PROYECTOS
+        //
+        // Va antes de cargar nada porque es la que decide QUE se carga.
+        // Tiene sus propios batch/font/textura en un ambito cerrado: son
+        // baratos y asi el editor no arranca con recursos que solo hacen
+        // falta en el menu.
+        //
+        // Toda la logica (que hay marcado, que pasa con cada tecla, que
+        // dijo el build) vive en Editor::ProjectHub, GL-free y probada en
+        // demo_proyectos. Aqui solo se pinta lo que diga y se le pasan las
+        // teclas traducidas a caracteres. Ese reparto es a proposito: la
+        // primera version de esta pantalla era un printf a stdout, y lo
+        // fue porque lo que se mete en este fichero no se puede probar.
+        // =============================================================
+        if (opts.projectId.empty() && opts.loadLevelPath.empty() && maxFrames < 0) {
+            auto hr = Editor::ProjectHub::load("assets");
+            if (!hr.isOk()) {
+                std::cerr << "No se pudo leer assets/proyectos: " << hr.errorMessage() << "\n";
+                return 1;
+            }
+            Editor::ProjectHub hub = hr.value();
+
+            SpriteBatch menuBatch;
+            Texture menuWhite = makeWhiteTexture();
+            BitmapFont menuFont(/*scale=*/2);
+            const float lh = static_cast<float>(menuFont.lineHeight());
+            const Vector4 kFondo{0.05f, 0.05f, 0.08f, 0.92f};
+            const Vector4 kMarco{0.55f, 0.55f, 0.65f, 0.9f};
+
+            KeyEdge menuKeys;
+            GLFWwindow* win = window.handle();
+            bool salir = false;
+
+            // Teclas que producen un caracter, para el campo del id. Se
+            // recorren A-Z y 0-9 en vez de usar el callback de texto de
+            // GLFW porque Window ya gestiona sus propios callbacks y
+            // enchufar otro desde aqui es meterse en su terreno.
+            auto caracterPulsado = [&]() -> char {
+                for (int k = GLFW_KEY_A; k <= GLFW_KEY_Z; ++k) {
+                    if (menuKeys.pressed(win, k)) {
+                        return static_cast<char>('a' + (k - GLFW_KEY_A));
+                    }
+                }
+                for (int k = GLFW_KEY_0; k <= GLFW_KEY_9; ++k) {
+                    if (menuKeys.pressed(win, k)) {
+                        return static_cast<char>('0' + (k - GLFW_KEY_0));
+                    }
+                }
+                if (menuKeys.pressed(win, GLFW_KEY_MINUS)) {
+                    return '_';   // el guion bajo pide Shift; se acepta el guion a secas
+                }
+                return 0;
+            };
+
+            while (!window.shouldClose() && !salir) {
+                window.pollEvents();
+
+                if (hub.mode() == Editor::ProjectHub::Mode::NewProject) {
+                    const char c = caracterPulsado();
+                    if (c != 0) {
+                        hub.key(c);
+                    }
+                    if (menuKeys.pressed(win, GLFW_KEY_BACKSPACE)) hub.key('\b');
+                    if (menuKeys.pressed(win, GLFW_KEY_ENTER))     hub.key('\n');
+                    if (menuKeys.pressed(win, GLFW_KEY_ESCAPE))    hub.key(27);
+                } else {
+                    // En modo Message cualquier tecla cierra; se mandan las
+                    // mismas y ProjectHub ya sabe que hacer con ellas.
+                    Editor::ProjectHub::Action act = Editor::ProjectHub::Action::None;
+                    if (menuKeys.pressed(win, GLFW_KEY_W) || menuKeys.pressed(win, GLFW_KEY_UP))
+                        act = hub.key('w');
+                    if (menuKeys.pressed(win, GLFW_KEY_S) || menuKeys.pressed(win, GLFW_KEY_DOWN))
+                        act = hub.key('s');
+                    if (menuKeys.pressed(win, GLFW_KEY_N))      act = hub.key('n');
+                    if (menuKeys.pressed(win, GLFW_KEY_B))      act = hub.key('b');
+                    if (menuKeys.pressed(win, GLFW_KEY_ENTER))  act = hub.key('\n');
+                    if (menuKeys.pressed(win, GLFW_KEY_ESCAPE)) act = hub.key(27);
+
+                    if (act == Editor::ProjectHub::Action::Quit) {
+                        std::cout << "Sin proyecto: nada que editar.\n";
+                        return 0;
+                    }
+                    if (act == Editor::ProjectHub::Action::Open) {
+                        opts.projectId = hub.openId();
+                        salir = true;
+                    }
+                }
+
+                glClearColor(0.08f, 0.09f, 0.12f, 1.0f);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+                HudManager menu;
+                std::vector<std::unique_ptr<IHudElement>> vivos;
+                auto guardar = [&](IHudElement* e) {
+                    vivos.emplace_back(e);
+                    menu.addElement(e);
+                };
+                auto panel = [&](HudAnchor a, Vector2 off, Vector2 size) {
+                    auto* p = new HudPanel(HudTransform{a, off, size}, &menuWhite, kFondo);
+                    p->setBorder(kMarco, 2.0f);
+                    guardar(p);
+                };
+                auto texto = [&](HudAnchor a, Vector2 off, const std::string& s,
+                                 const Vector4& col) {
+                    auto* t = new HudText(HudTransform{a, off, {0.0f, 0.0f}}, &menuFont);
+                    t->setText(s);
+                    t->setColor(col);
+                    guardar(t);
+                };
+
+                const Vector4 kBlanco{1.0f, 1.0f, 1.0f, 1.0f};
+                const Vector4 kApagado{0.70f, 0.70f, 0.75f, 1.0f};
+                const Vector4 kAviso{1.0f, 0.60f, 0.25f, 1.0f};
+                const Vector4 kBien{0.45f, 0.90f, 0.55f, 1.0f};
+
+                panel(HudAnchor::TopLeft, {20.0f, 20.0f}, {static_cast<float>(width) - 40.0f, 46.0f});
+                texto(HudAnchor::TopLeft, {34.0f, 34.0f}, "MOTOR GRAFICO - PROYECTOS", kBlanco);
+
+                // Lista
+                panel(HudAnchor::TopLeft, {20.0f, 80.0f}, {620.0f, lh * 12.0f + 24.0f});
+                for (std::size_t i = 0; i < hub.lines().size() && i < 12; ++i) {
+                    const bool marcado = (i == hub.selected());
+                    texto(HudAnchor::TopLeft, {34.0f, 94.0f + lh * static_cast<float>(i)},
+                          (marcado ? "> " : "  ") + hub.lines()[i], marcado ? kBlanco : kApagado);
+                }
+
+                // Detalle del marcado
+                const std::vector<std::string> det = hub.detail();
+                panel(HudAnchor::TopRight, {20.0f, 80.0f}, {580.0f, lh * 12.0f + 24.0f});
+                for (std::size_t i = 0; i < det.size() && i < 12; ++i) {
+                    const bool malo = !det[i].empty() &&
+                                      (det[i][0] == '!' || det[i].find("NO SE ENCUENTRA") != std::string::npos);
+                    texto(HudAnchor::TopRight, {566.0f, 94.0f + lh * static_cast<float>(i)},
+                          det[i], malo ? kAviso : kApagado);
+                }
+
+                // Barra de teclas
+                panel(HudAnchor::BottomLeft, {20.0f, 20.0f},
+                      {static_cast<float>(width) - 40.0f, 40.0f});
+                texto(HudAnchor::BottomLeft, {34.0f, 32.0f},
+                      "W/S mover   ENTER abrir   N nuevo   B compilar (build)   ESC salir",
+                      kApagado);
+
+                // Modales encima de todo
+                if (hub.mode() == Editor::ProjectHub::Mode::NewProject) {
+                    panel(HudAnchor::Center, {0.0f, 0.0f}, {720.0f, 130.0f});
+                    texto(HudAnchor::Center, {-330.0f, -46.0f}, "ID DEL PROYECTO NUEVO", kBlanco);
+                    // El cursor no parpadea: en una pantalla que se pinta
+                    // entera cada frame, un '_' fijo se lee igual de bien y
+                    // no hay que llevar el tiempo hasta aqui.
+                    texto(HudAnchor::Center, {-330.0f, -8.0f}, "> " + hub.draftId() + "_", kBien);
+                    texto(HudAnchor::Center, {-330.0f, 34.0f},
+                          "solo a-z 0-9 _    ENTER crea    ESC cancela", kApagado);
+                } else if (hub.mode() == Editor::ProjectHub::Mode::Message) {
+                    const std::vector<std::string>& m = hub.message();
+                    const std::size_t filas = m.size() < 16 ? m.size() : 16;
+                    const float alto = lh * static_cast<float>(filas) + 60.0f;
+                    panel(HudAnchor::Center, {0.0f, 0.0f}, {1100.0f, alto});
+                    for (std::size_t i = 0; i < filas; ++i) {
+                        texto(HudAnchor::Center,
+                              {-520.0f, -alto * 0.5f + 20.0f + lh * static_cast<float>(i)},
+                              m[i], i == 0 ? (hub.lastOk() ? kBien : kAviso) : kApagado);
+                    }
+                    texto(HudAnchor::Center, {-520.0f, alto * 0.5f - 24.0f},
+                          "(una tecla para volver)", kApagado);
+                }
+
+                menuBatch.begin();
+                menu.render(menuBatch, *spriteShader.value(), width, height);
+                menuBatch.end();
+                window.swapBuffers();
+            }
+            if (!salir) {
+                return 0;   // cerraron la ventana en el menu
+            }
+            if (!resolverProyecto()) {
+                return 1;
+            }
         }
 
         // El tileset se decide DESPUES de saber que mapa se edita (con

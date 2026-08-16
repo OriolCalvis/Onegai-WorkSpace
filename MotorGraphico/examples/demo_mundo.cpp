@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "Check.h"
+#include "Level/WorldTopology.h"
 #include "RPG/Catalogs/RpgCatalogs.h"
 
 using RPG::LocationDefinition;
@@ -29,9 +30,12 @@ namespace {
 
 const char* nombreDe(LocationDefinition::Kind k) {
     switch (k) {
-        case LocationDefinition::Kind::Nation: return "nacion";
-        case LocationDefinition::Kind::City:   return "ciudad";
-        case LocationDefinition::Kind::Zone:   return "zona";
+        case LocationDefinition::Kind::Nation:
+            return "nacion";
+        case LocationDefinition::Kind::City:
+            return "ciudad";
+        case LocationDefinition::Kind::Zone:
+            return "zona";
     }
     return "?";
 }
@@ -57,9 +61,11 @@ int main() {
         }
         if (l.kind == LocationDefinition::Kind::City) {
             ciudadesPorNacion[l.controlledBy]++;
-            if (l.pendingCanonName) ++sinNombreCanonico;
+            if (l.pendingCanonName)
+                ++sinNombreCanonico;
         }
-        if (l.terrain == "santuario") santuarios.push_back(&l);
+        if (l.terrain == "santuario")
+            santuarios.push_back(&l);
     });
 
     std::printf("Egaroth cargado: %d localizaciones\n", static_cast<int>(mundo.size()));
@@ -70,21 +76,22 @@ int main() {
     require(porTipo["nacion"] == 19);
     require(porTipo["ciudad"] == 95);
     require(porTipo["zona"] == 26);
-    require(nacionesConPoligono == 19);   // toda nacion tiene forma
+    require(nacionesConPoligono == 19);  // toda nacion tiene forma
 
     // Una capital concreta, para ver que los campos narrativos llegan enteros.
     const LocationDefinition* bomengrid = nullptr;
     mundo.forEach([&](const LocationDefinition& l) {
-        if (l.name == "Bomengrid") bomengrid = &l;
+        if (l.name == "Bomengrid")
+            bomengrid = &l;
     });
     require(bomengrid != nullptr);
     require(bomengrid->settlementSize == "capital");
     require(bomengrid->controlledBy == "Udrax");
     require(bomengrid->hasPosition);
-    std::printf("\n%s: %s de %s, gobierna %s, %s habitantes, en (%d,%d)\n",
-                bomengrid->name.c_str(), bomengrid->settlementSize.c_str(),
-                bomengrid->controlledBy.c_str(), bomengrid->ruler.c_str(),
-                bomengrid->population.c_str(), bomengrid->x, bomengrid->y);
+    std::printf("\n%s: %s de %s, gobierna %s, %s habitantes, en (%d,%d)\n", bomengrid->name.c_str(),
+                bomengrid->settlementSize.c_str(), bomengrid->controlledBy.c_str(),
+                bomengrid->ruler.c_str(), bomengrid->population.c_str(), bomengrid->x,
+                bomengrid->y);
 
     // Los santuarios son los sitios sagrados del panteon: Himetsumota, el
     // Templo de Sofia, el de Chronos, el de Envidia y la Torre del Viento.
@@ -104,6 +111,24 @@ int main() {
     // dice literalmente "mas Ostad sin capital").
     std::printf("\nciudades sin nombre canonico todavia: %d\n", sinNombreCanonico);
     require(sinNombreCanonico == 1);
+
+    // El catalogo cuenta el mundo; WorldTopology comprueba que se puede
+    // RECORRER. Boundington tiene una ciudad central conectada a todos sus
+    // interiores y cada destino se carga de verdad, no como una ruta de
+    // texto sin comprobar.
+    auto boundington = WorldTopology::load({"assets/levels/ciudad_centro.json"});
+    require(boundington.isOk());
+    require(boundington.value().size() >= 15);
+    require(boundington.value().links().size() >= 20);
+    require(boundington.value().canReach("assets/levels/ciudad_centro.json",
+                                         "assets/levels/interior_castillo.json"));
+    require(boundington.value().canReach("assets/levels/ciudad_centro.json",
+                                         "assets/levels/interior_posada.json"));
+    require(boundington.value().canReach("assets/levels/interior_castillo.json",
+                                         "assets/levels/ciudad_centro.json"));
+    std::printf("\nBoundington conectado: %d niveles y %d puertas transitables\n",
+                static_cast<int>(boundington.value().size()),
+                static_cast<int>(boundington.value().links().size()));
 
     std::printf("\ntodas las comprobaciones han pasado\n");
     return 0;

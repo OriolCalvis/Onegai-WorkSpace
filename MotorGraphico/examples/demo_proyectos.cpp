@@ -12,6 +12,7 @@
 #include <string>
 
 #include "Check.h"
+#include "Editor/ProjectHub.h"
 #include "Editor/ProjectIndex.h"
 
 using Editor::Project;
@@ -115,6 +116,123 @@ int main() {
     require(r3.value().find("boundington") != nullptr);   // no se llevo por delante a nadie
     std::printf("    borrado: vuelve a %d proyectos y Boundington sigue. OK\n",
                 (int)r3.value().size());
+
+    // =================================================================
+    // La PANTALLA de arranque. Esto es lo que ve el editor, y se prueba
+    // aqui justo porque lo que vive dentro de level_editor.cpp no se
+    // puede comprobar sin GL: la primera version de esta pantalla se
+    // entrego siendo un printf a stdout precisamente por eso.
+    // =================================================================
+    std::printf("\n[pantalla de arranque]\n");
+    auto h = Editor::ProjectHub::load("assets");
+    require(h);
+    Editor::ProjectHub hub = h.value();
+    require(hub.mode() == Editor::ProjectHub::Mode::List);
+    require(hub.lines().size() == idx.size());
+    for (const std::string& l : hub.lines()) {
+        std::printf("    %s\n", l.c_str());
+    }
+
+    // Navegar: 's' baja, 'w' sube, y da la vuelta por los dos extremos.
+    const std::size_t n = hub.size();
+    require(hub.selected() == 0);
+    hub.key('s');
+    require(hub.selected() == 1);
+    hub.key('w');
+    require(hub.selected() == 0);
+    hub.key('w');
+    require(hub.selected() == n - 1);   // desde el primero al ultimo
+    hub.key('s');
+    require(hub.selected() == 0);       // y vuelta
+    std::printf("    navegacion con vuelta en los dos extremos. OK\n");
+
+    // --- 'entrada' se escribio de dos formas y las dos tienen que valer ---
+    // boundington puso la ruta entera; este_norte (otro autor, otro dia)
+    // puso solo el nombre del fichero. Nunca se documento cual era, asi
+    // que las dos se resuelven y el proyecto anota a que resolvio. Esta
+    // comprobacion existe para que no se rompa el trabajo de nadie el dia
+    // que alguien decida que solo vale una forma.
+    const Project* pb = idx.find("boundington");
+    require(pb->entry.find('/') != std::string::npos);            // ruta entera
+    require(pb->entryKind == Project::EntryKind::Adventure);
+    const Project* pe = idx.find("este_norte");
+    require(pe->entry.find('/') == std::string::npos);            // nombre suelto
+    require(pe->entryKind != Project::EntryKind::Missing);        // y aun asi resuelve
+    std::printf("    entrada '%s' (ruta) -> aventura\n", pb->entry.c_str());
+    std::printf("    entrada '%s' (nombre suelto) -> %s\n", pe->entry.c_str(),
+                pe->entryPath.c_str());
+
+    // El detalle del marcado dice lo que hay que saber ANTES de abrirlo:
+    // no lo que pone el manifiesto, sino a que resolvio de verdad.
+    while (hub.current() != nullptr && hub.current()->id != "este_norte") {
+        hub.key('s');
+    }
+    bool dicePorDondeArranca = false;
+    for (const std::string& l : hub.detail()) {
+        if (l.find("arranque:") != std::string::npos && l.find(pe->entryPath) != std::string::npos) {
+            dicePorDondeArranca = true;
+        }
+    }
+    require(dicePorDondeArranca);
+    std::printf("    el detalle muestra la ruta resuelta, no la del manifiesto. OK\n");
+
+    // Abrir: la pantalla NO abre nada, dice a quien hay que abrir.
+    while (hub.current() != nullptr && hub.current()->id != "boundington") {
+        hub.key('s');
+    }
+    require(hub.key('\n') == Editor::ProjectHub::Action::Open);
+    require(hub.openId() == "boundington");
+    require(hub.key(27) == Editor::ProjectHub::Action::Quit);
+    std::printf("    ENTER devuelve Open('%s'), ESC devuelve Quit. OK\n", hub.openId().c_str());
+
+    // Crear desde la pantalla: 'n', teclear, ENTER.
+    require(hub.key('n') == Editor::ProjectHub::Action::None);
+    require(hub.mode() == Editor::ProjectHub::Mode::NewProject);
+    const char* tecleado = "Mi Proy 2!";   // mayusculas, espacios y '!' no entran
+    for (const char* c = tecleado; *c; ++c) {
+        hub.key(*c);
+    }
+    require(hub.draftId() == "iroy2");     // solo [a-z0-9_] sobrevive
+    hub.key('\b');
+    require(hub.draftId() == "iroy");
+    std::printf("    el campo filtra a [a-z0-9_]: \"%s\" -> '%s'\n", tecleado, hub.draftId().c_str());
+    hub.key('\n');
+    require(hub.mode() == Editor::ProjectHub::Mode::Message);
+    require(hub.lastOk());
+    require(hub.current() != nullptr && hub.current()->id == "iroy");  // queda marcado
+    std::printf("    creado y marcado: %s\n", hub.message()[0].c_str());
+
+    // Cualquier tecla cierra el mensaje y vuelve a la lista.
+    hub.key(' ');
+    require(hub.mode() == Editor::ProjectHub::Mode::List);
+    require(hub.size() == idx.size() + 1);
+
+    // Y no se puede crear dos veces el mismo: el mensaje tiene que decirlo.
+    hub.key('n');
+    for (const char* c = "iroy"; *c; ++c) {
+        hub.key(*c);
+    }
+    hub.key('\n');
+    require(hub.mode() == Editor::ProjectHub::Mode::Message);
+    require(!hub.lastOk());
+    std::printf("    duplicado rechazado en pantalla: %s\n", hub.message()[0].c_str());
+    hub.key(' ');
+
+    // Compilar el marcado, de verdad: lanza tools/build_proyecto.py.
+    while (hub.current() != nullptr && hub.current()->id != "boundington") {
+        hub.key('s');
+    }
+    hub.key('b');
+    require(hub.mode() == Editor::ProjectHub::Mode::Message);
+    require(hub.lastOk());
+    require(hub.message().size() > 1);   // la salida del script, no solo el titulo
+    std::printf("    build desde la pantalla: %s\n", hub.message()[0].c_str());
+    hub.key(' ');
+
+    // Y se recoge tambien lo que creo la pantalla.
+    require(ProjectIndex::remove("assets", "iroy"));
+    hub.refresh();
+    require(hub.size() == idx.size());
 
     std::printf("\n  %d de %d proyectos completos\n", completos, (int)idx.size());
     std::printf("\ntodas las comprobaciones han pasado\n");

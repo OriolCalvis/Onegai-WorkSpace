@@ -88,6 +88,7 @@ add_library(motor_level
     src/Level/ObjectCatalog.cpp
     src/Editor/EditorState.cpp
     src/Editor/ProjectIndex.cpp
+    src/Editor/ProjectHub.cpp
     src/Game/GameSession.cpp
     src/Game/Morality.cpp
     src/Game/EnemyBrain.cpp
