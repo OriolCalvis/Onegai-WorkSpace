@@ -55,6 +55,7 @@
 #include "Render/BitmapFont.h"
 #include "Render/Camera.h"
 #include "Editor/EditorState.h"
+#include "Editor/EditorValidation.h"
 #include "Render/HudElement.h"
 #include "Render/HudManager.h"
 #include "Render/HudTextWidgets.h"
@@ -804,26 +805,17 @@ int main(int argc, char** argv) {
             }
 
             if (keys.pressed(glfwWin, GLFW_KEY_F6)) {
-                int emptyTiles = 0;
-                int unresolvedObjects = 0;
-                for (int y = 0; y < editor.height(); ++y) {
-                    for (int x = 0; x < editor.width(); ++x) {
-                        emptyTiles += editor.tileAt(x, y) == 0 ? 1 : 0;
-                    }
-                }
-                for (const ObjectSpawn& spawn : editor.objects()) {
-                    unresolvedObjects += catalog.find(spawn.objectId) == nullptr ? 1 : 0;
-                }
-                const GridCoord start = editor.playerStart();
-                const bool startOnEmptyTile = editor.tileAt(start.x, start.y) == 0;
-                if (unresolvedObjects > 0 || startOnEmptyTile) {
-                    statusText.setText("VALIDACION: " + std::to_string(unresolvedObjects) +
-                                       " OBJETOS SIN DEFINIR, INICIO " +
-                                       (startOnEmptyTile ? "SIN TILE" : "OK"));
+                const EditorValidationResult validation =
+                    EditorValidation::check(editor, catalog, {2});
+                if (!validation.ok()) {
+                    statusText.setText("VALIDACION: " + std::to_string(validation.errors.size()) +
+                                       " ERROR(ES) - " + validation.errors.front());
                 } else {
-                    statusText.setText("VALIDACION OK: " + std::to_string(emptyTiles) +
-                                       " CELDAS VACIAS, " +
-                                       std::to_string(editor.objects().size()) + " OBJETOS");
+                    statusText.setText("VALIDACION OK: " +
+                                       std::to_string(validation.reachableTiles) + "/" +
+                                       std::to_string(validation.walkableTiles) +
+                                       " TILES ALCANZABLES" +
+                                       (validation.warnings.empty() ? "" : " - REVISA ZONAS AISLADAS"));
                 }
                 savedMessageFrames = 240;
             }

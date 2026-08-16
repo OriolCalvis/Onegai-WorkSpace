@@ -13,6 +13,7 @@
 //  - Round-trip JSON REAL: exportLevelJson() -> LevelLoader::
 //    loadFromString(): mismo nombre/mapa/playerStart/objetos.
 #include "Editor/EditorState.h"
+#include "Editor/EditorValidation.h"
 #include "Level/LevelLoader.h"
 #include "Render/TileMap.h"
 
@@ -136,6 +137,41 @@ void testHistoryAndPlayerStart() {
     std::cout << "[EDITOR] historial undo/redo + playerStart correcto.\n";
 }
 
+void testValidation() {
+    EditorState editor(4, 3);
+    ObjectCatalog catalog;
+    ObjectDefinition slime;
+    slime.id = "slime";
+    catalog.add(slime);
+
+    // Dos zonas: el inicio puede llegar a la primera, pero la segunda
+    // queda separada por collisionGids y debe avisarse al autor.
+    editor.paintTile(0, 0, 1);
+    editor.paintTile(1, 0, 1);
+    editor.paintTile(2, 0, 2);
+    editor.paintTile(3, 0, 1);
+    editor.setPlayerStart(GridCoord{0, 0});
+    editor.placeObject(1, 0, "slime");
+    auto valid = EditorValidation::check(editor, catalog, {2});
+    require(valid.ok());
+    require(valid.walkableTiles == 3);
+    require(valid.reachableTiles == 2);
+    require(valid.unreachableTiles == 1);
+    require(valid.warnings.size() == 1);
+
+    editor.placeObject(0, 1, "id_inexistente");
+    auto invalidObject = EditorValidation::check(editor, catalog, {2});
+    require(!invalidObject.ok());
+    require(invalidObject.errors.size() == 1);
+
+    editor.setPlayerStart(GridCoord{2, 0});
+    auto invalidStart = EditorValidation::check(editor, catalog, {2});
+    require(!invalidStart.ok());
+    require(invalidStart.errors.size() == 2);
+
+    std::cout << "[EDITOR] validacion de inicio, objetos y conectividad correcta.\n";
+}
+
 void testTmxRoundTrip() {
     // Reproduce el contenido de test_map.tmx (4x3, borde de gid 1,
     // centro de gid 2 con colision) desde el editor y comprueba que el
@@ -218,6 +254,7 @@ int main() {
     testEditingOps();
     testToolsAndPalettes();
     testHistoryAndPlayerStart();
+    testValidation();
     testTmxRoundTrip();
     testLevelJsonRoundTrip();
     std::cout << "\nTodas las comprobaciones (assert) han pasado correctamente.\n";
