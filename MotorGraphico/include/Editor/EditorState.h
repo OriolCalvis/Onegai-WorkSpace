@@ -30,7 +30,15 @@
 // pero ya mantiene historial de cambios y el punto inicial del jugador.
 // La vista puede crecer sin acoplar estas reglas de contenido a OpenGL.
 
-enum class EditorTool { PaintTile, EraseTile, PlaceObject, RemoveObject, SetPlayerStart };
+enum class EditorTool {
+    PaintTile,
+    EraseTile,
+    PlaceObject,
+    RemoveObject,
+    SetPlayerStart,
+    FillTiles,
+    LinkLevel
+};
 
 // Parametros del tileset para exportTmx(): describen el atlas contra el
 // que se pinta (los mismos datos que la cabecera <tileset> de un TMX de
@@ -72,8 +80,13 @@ public:
     // cargado para que solo se ofrezcan ids reales).
     void setTilePalette(std::vector<int> gids);
     void setObjectPalette(std::vector<std::string> objectIds);
+    // Destinos disponibles para la herramienta LinkLevel. Son rutas de
+    // nivel completas (assets/levels/*.json), justo el formato que guarda
+    // ObjectSpawn::targetLevel.
+    void setLevelPalette(std::vector<std::string> levelPaths);
     const std::vector<int>& tilePalette() const { return m_tilePalette; }
     const std::vector<std::string>& objectPalette() const { return m_objectPalette; }
+    const std::vector<std::string>& levelPalette() const { return m_levelPalette; }
 
     // Ciclan la seleccion de la paleta ACTIVA segun la herramienta
     // (PaintTile -> tiles, PlaceObject -> objetos; con Erase*/paleta
@@ -85,6 +98,7 @@ public:
     // (0 y "" son exactamente "nada que pintar/colocar").
     int selectedTileGid() const;
     std::string selectedObjectId() const;
+    std::string selectedLevelPath() const;
 
     // --- Operaciones de edicion ---
     // Aplica la herramienta activa en la celda (lo que llama la app al
@@ -97,6 +111,10 @@ public:
     // paleta"). Todas no-op fuera de rango.
     void paintTile(int x, int y, int gid);
     void eraseTile(int x, int y);
+    // Rellena la región ortogonalmente conectada que tenga el mismo GID
+    // que (x,y). Es un único paso de historial, incluso si modifica cientos
+    // de celdas: imprescindible para suelos e interiores grandes.
+    void fillTiles(int x, int y, int gid);
     // Una celda solo puede tener UN objeto: colocar sobre una celda
     // ocupada reemplaza al que hubiera (el comportamiento que se espera
     // al "repintar" un objeto mal puesto).
@@ -106,6 +124,10 @@ public:
     // destinos de las puertas -- ver exportLevelJson.
     void placeSpawn(const ObjectSpawn& spawn);
     void removeObjectAt(int x, int y);
+    // Convierte un objeto ya colocado en una conexión a otro nivel. No
+    // crea una puerta ficticia: el autor decide qué prop/puerta usar y
+    // esta operación solo le añade su destino.
+    void setObjectTransition(int x, int y, const std::string& targetLevel);
     // El inicio de jugador siempre pertenece al mapa. Fuera de rango no
     // cambia nada, igual que las otras herramientas de edicion.
     void setPlayerStart(GridCoord position);
@@ -162,6 +184,8 @@ private:
     EditorTool m_tool = EditorTool::PaintTile;
     std::vector<int> m_tilePalette;
     std::vector<std::string> m_objectPalette;
+    std::vector<std::string> m_levelPalette;
     std::size_t m_tileSelection = 0;
     std::size_t m_objectSelection = 0;
+    std::size_t m_levelSelection = 0;
 };

@@ -89,6 +89,28 @@ void testToolsAndPalettes() {
     editor.applyAt(3, 2);
     require(editor.objectAt(3, 2) == nullptr);
 
+    // Cubo de relleno: toda la región conectada cambia en una operación
+    // deshacible; la isla separada no se toca.
+    editor.paintTile(0, 0, 1);
+    editor.paintTile(1, 0, 1);
+    editor.paintTile(3, 2, 1);
+    editor.setTool(EditorTool::FillTiles);
+    editor.applyAt(0, 0);
+    require(editor.tileAt(0, 0) == 2 && editor.tileAt(1, 0) == 2);
+    require(editor.tileAt(3, 2) == 1);
+    require(editor.undo());
+    require(editor.tileAt(0, 0) == 1 && editor.tileAt(1, 0) == 1);
+
+    // Enlace visual: un objeto existente conserva su identidad y gana un
+    // targetLevel serializable; undo lo elimina de nuevo.
+    editor.placeObject(2, 2, "puerta");
+    editor.setLevelPalette({"assets/levels/interior_casa.json"});
+    editor.setTool(EditorTool::LinkLevel);
+    editor.applyAt(2, 2);
+    require(editor.objectAt(2, 2)->targetLevel == "assets/levels/interior_casa.json");
+    require(editor.undo());
+    require(editor.objectAt(2, 2)->targetLevel.empty());
+
     // Paletas vacias: seleccion "nada", applyAt no-op sin crash.
     EditorState empty(2, 2);
     require(empty.selectedTileGid() == 0);

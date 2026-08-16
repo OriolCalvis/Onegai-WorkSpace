@@ -132,9 +132,10 @@ examples/demo_battle_hud.cpp         Fase 9 (RPG, cierre): BattleState + HudComm
 examples/demo_object_catalog.cpp     Fase 10 (RPG, sin GL): ObjectCatalog + ObjectSpawn + accion Item en combate
 examples/demo_dynamic_lights.cpp     Fase 11: DynamicLightMap (luces animadas) + sombras blob + post-FX
 examples/demo_editor_state.cpp       Fase 12 (sin GL): EditorState + round-trips reales TMX/JSON
-examples/level_editor.cpp            Fase 12: editor visual (raton + HUD propio, guarda TMX + JSON con F5)
+examples/demo_proyectos.cpp          Proyectos (sin GL): ProjectIndex + ProjectHub, la pantalla de arranque entera
+examples/level_editor.cpp            Fase 12: editor visual (pantalla de proyectos + raton + HUD propio; G guarda TMX + JSON)
 examples/demo_game_session.cpp       Partida (sin GL): ciclo exploracion <-> combate completo
-examples/juego.cpp                   EL JUEGO: main sobre Application (WASD explorar, W/S+ENTER combatir)
+examples/juego.cpp                   EL JUEGO: main sobre Application (WASD explorar, W/S+ENTER combatir; --nivel/--catalogo)
 
 assets/shaders/sprite.{vert,frag}    Shader minimo de demo_textured_quad/demo_isometric_renderer, reutilizado por el HUD
 assets/shaders/lightmap.{vert,frag}  Fase 4: fullscreen-triangle + combinacion escena*luz+ambient
@@ -719,12 +720,70 @@ mismos GIDs celda a celda y la misma colisión, y el JSON exportado lo
 carga `LevelLoader` con los mismos objetos (incluido un nombre con
 comillas escapadas). La app visual (`level_editor.cpp`: ratón vía
 `Window::handle()` para pintar/colocar sobre el canvas isométrico con
-resaltado de celda, rejilla tenue en celdas vacías, teclas 1-5/Q/E/WASD/
-F5-guardar, 5-inicio, Ctrl+Z/Ctrl+Y y F6-validar, HUD de estado con la
+resaltado de celda, rejilla tenue en celdas vacías, HUD de estado con la
 fuente propia) se ejecutó en OpenGL real: 3 frames, captura del editor y
 `glGetError() == GL_NO_ERROR`. MVP pendiente: una capa de tiles, sin
 panel de propiedades para patrulla/stats y sin navegador visual de
 archivos.
+
+#### Proyectos
+
+El editor arranca por una pantalla que lista los **proyectos vivos**
+(`assets/proyectos/*.json`): abrirlos, crear uno nuevo y sacar su build.
+El formato del manifiesto, las reglas de id y prefijo, y qué es el campo
+`entrada` están en **[`FORMATO_PROYECTOS.md`](FORMATO_PROYECTOS.md)**.
+
+```bash
+./level_editor                              # la pantalla de proyectos
+./level_editor --proyectos                  # lo mismo, por consola
+./level_editor --proyecto boundington       # saltarsela
+python3 tools/build_proyecto.py boundington # -> builds/boundington/
+```
+
+#### Controles del editor
+
+El editor arranca por una **pantalla de proyectos** (ver *Proyectos* más
+abajo) y desde ahí se entra a editar.
+
+| Pantalla de proyectos | |
+|---|---|
+| `W`/`S` | moverse por la lista (da la vuelta en los extremos) |
+| `ENTER` | abrir el marcado |
+| `N` | crear uno nuevo (`BACKSPACE` borra, `ENTER` crea, `ESC` cancela) |
+| `B` | compilar: saca su build en `builds/<id>/` |
+| `ESC` | cerrar el editor |
+
+| Edición | |
+|---|---|
+| ratón izq / der | aplicar herramienta / la contraria |
+| `1`..`7` | herramienta: pintar, borrar, colocar objeto, quitar objeto, inicio jugador, rellenar, enlazar nivel |
+| `Q`/`E` | ciclar la paleta activa |
+| `[` / `]` | subgrupo de objetos anterior / siguiente |
+| `WASD` | pan de cámara (`SHIFT` = ×4) |
+| `+`/`-` | zoom (`0` vuelve a 1×), `HOME` centra |
+| `Ctrl+Z` / `Ctrl+Y` | deshacer / rehacer |
+| **`G`** | guardar en los ficheros **del proyecto abierto** |
+| **`V`** | validar el nivel sin salir |
+| **`P`** | probar: guarda y lanza `./juego` sobre este nivel |
+| **`,`** / **`.`** | escenario anterior / siguiente del proyecto (guarda antes) |
+| **`M`** | volver a la pantalla de proyectos (`ESC` hace lo mismo) |
+
+`F5`/`F6`/`F7`/`F8`/`F9` siguen valiendo como alias de `G`/`V`/`P`/`,`/`.`,
+pero **manda la letra**: en un portátil Mac las teclas de función son
+teclas de medios, así que `F5` de verdad pide `Fn+F5` — con las dos manos
+ocupadas en el mapa eso no es una tecla, es una maniobra.
+
+`P` lanza el juego como **proceso aparte**, no como un modo dentro del
+editor: `Application` monta su propia ventana y su propio contexto GL, y
+además así un cuelgue probando no se lleva por delante lo que estabas
+editando. Es el botón de play de Godot. Guarda antes a propósito.
+
+**Que lo documentado exista** lo comprueba
+`python3 tools/verificar_controles.py`, en las dos direcciones: ninguna
+tecla anunciada sin enlazar (la cabecera llegó a prometer un `F7` de
+«modo jugador» que no existía) y ninguna tecla enlazada sin anunciar.
+También cuadra el número de herramientas entre el enum, las teclas, el
+menú y la barra de estado — cuatro sitios que hay que tocar a la vez.
 
 ### Cierre del ciclo: `GameSession` + `Application` (el juego)
 

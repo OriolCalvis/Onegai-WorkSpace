@@ -1,5 +1,6 @@
 #include "Level/ObjectCatalog.h"
 
+#include <algorithm>
 #include "Core/Json/JsonValue.h"
 
 #include <fstream>
@@ -64,6 +65,27 @@ bool ObjectCatalog::has(const std::string& id) const { return m_objects.count(id
 const ObjectDefinition* ObjectCatalog::find(const std::string& id) const {
     auto it = m_objects.find(id);
     return it != m_objects.end() ? &it->second : nullptr;
+}
+
+std::vector<std::string> ObjectCatalog::ids() const {
+    std::vector<std::string> result;
+    result.reserve(m_objects.size());
+    for (const auto& entry : m_objects) {
+        result.push_back(entry.first);
+    }
+    std::sort(result.begin(), result.end());
+    return result;
+}
+
+std::vector<std::string> ObjectCatalog::ids(ObjectCategory category) const {
+    std::vector<std::string> result;
+    for (const auto& entry : m_objects) {
+        if (entry.second.category == category) {
+            result.push_back(entry.first);
+        }
+    }
+    std::sort(result.begin(), result.end());
+    return result;
 }
 
 Result<int> ObjectCatalog::loadFromString(const std::string& jsonText) {

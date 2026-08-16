@@ -159,6 +159,13 @@ public:
     // SkillCatalog::find / ResourceManager<T>::find).
     const ObjectDefinition* find(const std::string& id) const override;
     std::size_t size() const override { return m_objects.size(); }
+    // Identificadores ordenados para UI de autoría (editor, selector de
+    // spawns). El mapa interno sigue sin exponerse ni poder mutarse desde
+    // fuera; devolver una copia evita que una vista altere el catálogo.
+    std::vector<std::string> ids() const;
+    // Subgrupo de autoría: evita que la paleta visual sea una lista plana
+    // de cientos de entradas cuando el contenido de un proyecto crece.
+    std::vector<std::string> ids(ObjectCategory category) const;
 
     // Anaden (merge) las entradas de un JSON a este catalogo -- no lo
     // vacian antes, para poder cargar varios archivos (objetos base +

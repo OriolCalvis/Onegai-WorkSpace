@@ -10,9 +10,13 @@
 //   Raton:  click izq  = aplicar herramienta en la celda bajo el cursor
 //           click der   = herramienta "contraria" rapida (borrar tile /
 //                         quitar objeto, segun el modo actual)
-//   1/2/3/4/5 = herramienta (pintar/borrar tile, colocar/quitar objeto,
-//               fijar punto de inicio del jugador)
+//   1..7    = herramienta, en el orden del enum EditorTool:
+//             1 pintar tile     2 borrar tile     3 colocar objeto
+//             4 quitar objeto   5 inicio jugador  6 rellenar
+//             7 enlazar nivel (la puerta que lleva a otro escenario)
 //   Q/E     = ciclar la paleta activa (tiles u objetos, segun herramienta)
+//   [ / ]   = subgrupo de objetos anterior / siguiente (la paleta de
+//             objetos es larga: los subgrupos la parten en tandas)
 //   Ctrl+Z / Ctrl+Y = deshacer / rehacer
 //   WASD    = pan de camara (SHIFT = x4, para mapas grandes)
 //   +/-     = zoom (0 = volver a 1x), HOME = centrar en el mapa
@@ -20,18 +24,18 @@
 //             relativas al cwd: ejecutar desde build/ o MotorGraphico/)
 //   V       = validar el nivel sin salir del editor
 //   P       = probar: guarda y lanza ./juego sobre este nivel
+//   , / .   = escenario anterior / siguiente del proyecto (guarda antes;
+//             dan la vuelta al llegar al final de la lista)
 //   M       = volver a la pantalla de proyectos (ESC hace lo mismo)
 //
-//   F5/F6/F7 siguen valiendo como alias de G/V/P. Las teclas de funcion
-//   en un portatil Mac son teclas de medios: F5 de verdad pide Fn+F5, que
-//   con las dos manos ocupadas en el mapa no es una tecla, es una
-//   maniobra. Por eso manda la letra y la tecla de funcion es el alias, y
-//   no al reves.
+//   F5/F6/F7/F8/F9 siguen valiendo como alias de G/V/P/,/. Las teclas de
+//   funcion en un portatil Mac son teclas de medios: F5 de verdad pide
+//   Fn+F5, que con las dos manos ocupadas en el mapa no es una tecla, es
+//   una maniobra. Por eso manda la letra y la tecla de funcion es el
+//   alias, y no al reves.
 //
-// PENDIENTE, documentado aqui antes de existir (que es como llego a estar
-// escrito el F7 de "modo jugador" durante un tiempo sin que hubiera
-// ninguno): nivel anterior/siguiente del proyecto sin pasar por la
-// pantalla. Hoy se cambia de nivel volviendo con M.
+// Y la pantalla de proyectos, por la que se arranca:
+//   W/S = mover   ENTER = abrir   N = nuevo   B = compilar   ESC = cerrar
 //
 // Tamano del mapa (los niveles NO tienen por que ser todos iguales: un
 // mundo puede repartirse en varios mapas pequenos, cada uno con su JSON
@@ -154,8 +158,44 @@ const char* toolName(EditorTool tool) {
             return "QUITAR OBJETO";
         case EditorTool::SetPlayerStart:
             return "INICIO JUGADOR";
+        case EditorTool::FillTiles:
+            return "RELLENAR ZONA";
+        case EditorTool::LinkLevel:
+            return "ENLAZAR NIVEL";
     }
     return "?";
+}
+
+// Las rutas son necesarias para el motor, pero no son un lenguaje de
+// autoría. La UI siempre muestra el nombre que una persona reconoce:
+// "interior_taberna.json" pasa a ser "Interior taberna".
+std::string nombreEscenario(const std::string& path) {
+    const std::size_t slash = path.find_last_of('/');
+    std::string name = path.substr(slash == std::string::npos ? 0 : slash + 1);
+    const std::size_t extension = name.rfind(".json");
+    if (extension != std::string::npos) {
+        name.erase(extension);
+    }
+    std::replace(name.begin(), name.end(), '_', ' ');
+    return name;
+}
+
+const char* nombreCategoria(ObjectCategory category) {
+    switch (category) {
+        case ObjectCategory::Npc:    return "PNJ";
+        case ObjectCategory::Enemy:  return "ENEMIGO";
+        case ObjectCategory::Pickup: return "RECOGIBLE";
+        case ObjectCategory::Prop:   return "OBJETO";
+    }
+    return "OBJETO";
+}
+
+std::string nombreDePaleta(const ObjectCatalog& catalog, const std::string& id) {
+    const ObjectDefinition* definition = catalog.find(id);
+    if (definition == nullptr) {
+        return "SIN DEFINIR";
+    }
+    return std::string(nombreCategoria(definition->category)) + " · " + definition->name;
 }
 
 // Deteccion de flanco de subida de teclas (GLFW da estado, no eventos, y
@@ -552,7 +592,7 @@ int main(int argc, char** argv) {
                     // no hay que llevar el tiempo hasta aqui.
                     texto(HudAnchor::Center, {-330.0f, -8.0f}, "> " + hub.draftId() + "_", kBien);
                     texto(HudAnchor::Center, {-330.0f, 34.0f},
-                          "solo a-z 0-9 _    ENTER crea    ESC cancela", kApagado);
+                          "solo a-z 0-9 _    BACKSPACE borra    ENTER crea    ESC cancela", kApagado);
                 } else if (hub.mode() == Editor::ProjectHub::Mode::Message) {
                     const std::vector<std::string>& m = hub.message();
                     const std::size_t filas = m.size() < 16 ? m.size() : 16;
@@ -584,13 +624,28 @@ int main(int argc, char** argv) {
         // --load, el TMX declara el suyo): ver mas abajo, tras la carga.
         TextureManager textureManager;
 
-        // Catalogo real del repo: la paleta de objetos del editor se
-        // rellena desde aqui (solo ids que existen de verdad).
+        // Catálogo de objetos. En un proyecto se fusionan sus catálogos
+        // declarados, para que la paleta ofrezca contenido real y no una
+        // lista fija de objetos de prueba.
         ObjectCatalog catalog;
         auto catalogResult = catalog.loadFromFile("assets/objects/test_objects.json");
         if (!catalogResult.isOk()) {
             std::cerr << "Error cargando catalogo: " << catalogResult.errorMessage() << "\n";
             return 1;
+        }
+        if (!opts.projectId.empty()) {
+            auto indice = Editor::ProjectIndex::scan("assets");
+            const Editor::Project* proyecto =
+                indice.isOk() ? indice.value().find(opts.projectId) : nullptr;
+            if (proyecto != nullptr) {
+                for (const std::string& nombre : proyecto->catalogs) {
+                    auto extra = catalog.loadFromFile("assets/objects/" + nombre);
+                    if (!extra.isOk()) {
+                        std::cerr << "Aviso: no se pudo cargar el catalogo de proyecto " << nombre
+                                  << ": " << extra.errorMessage() << "\n";
+                    }
+                }
+            }
         }
 
         // Mapa nuevo del tamano pedido, o el nivel que se haya indicado
@@ -663,7 +718,33 @@ int main(int argc, char** argv) {
             tileGids.push_back(firstGid + i);
         }
         editor.setTilePalette(tileGids);
-        editor.setObjectPalette({"arbusto", "llave_cueva", "pocion", "eter", "slime"});
+        // Subgrupos de la paleta de objetos. Un nivel terminado contiene
+        // muchos más props que PNJ; separar por intención de diseño evita
+        // convertir Q/E en una lotería de memoria.
+        const std::vector<std::string> objectGroupNames{
+            "TODO", "PNJ", "ENEMIGOS", "RECOGIBLES", "DECORADO"};
+        const std::vector<ObjectCategory> objectGroupCategories{
+            ObjectCategory::Prop, ObjectCategory::Npc, ObjectCategory::Enemy,
+            ObjectCategory::Pickup, ObjectCategory::Prop};
+        auto objectGroupEntries = [&](std::size_t group) {
+            return group == 0 ? catalog.ids() : catalog.ids(objectGroupCategories[group]);
+        };
+        std::size_t objectGroup = 0;
+        editor.setObjectPalette(objectGroupEntries(objectGroup));
+        std::vector<std::string> destinosDeNivel;
+        if (!opts.projectId.empty()) {
+            auto indice = Editor::ProjectIndex::scan("assets");
+            const Editor::Project* proyecto =
+                indice.isOk() ? indice.value().find(opts.projectId) : nullptr;
+            if (proyecto != nullptr) {
+                for (const std::string& nivel : proyecto->levels) {
+                    if (nivel != opts.levelName) {
+                        destinosDeNivel.push_back("assets/levels/" + nivel);
+                    }
+                }
+            }
+        }
+        editor.setLevelPalette(std::move(destinosDeNivel));
 
         if (loaded) {
             // Volcado del TMX al editor. Solo la capa 0: EditorState
@@ -733,8 +814,21 @@ int main(int argc, char** argv) {
         headerTextT.anchor = HudAnchor::TopLeft;
         headerTextT.offset = {8.0f + kPad, 8.0f + kPad};
         HudText headerText(headerTextT, &font);
-        headerText.setText("MOTORGRAFICO LEVEL EDITOR - " + levelTitle + "  " +
-                           std::to_string(mapW) + "X" + std::to_string(mapH));
+        // El nombre del PROYECTO va delante del nivel: con cinco
+        // proyectos abiertos a lo largo de una sesion y niveles que se
+        // llaman parecido (ciudad_centro, ciudad_en_grytoz...), saber en
+        // cual estas guardando no puede depender de recordarlo.
+        {
+            std::string cab = "EDITOR";
+            if (!opts.projectId.empty()) {
+                cab += " - " + saveName;
+            }
+            cab += " - " + levelTitle + "  " + std::to_string(mapW) + "X" + std::to_string(mapH);
+            for (char& ch : cab) {
+                ch = static_cast<char>(std::toupper(static_cast<unsigned char>(ch)));
+            }
+            headerText.setText(cab);
+        }
 
         HudTransform hoverTextT;
         hoverTextT.anchor = HudAnchor::TopRight;
@@ -753,7 +847,9 @@ int main(int argc, char** argv) {
             "2 " + std::string(toolName(EditorTool::EraseTile)),
             "3 " + std::string(toolName(EditorTool::PlaceObject)),
             "4 " + std::string(toolName(EditorTool::RemoveObject)),
-            "5 " + std::string(toolName(EditorTool::SetPlayerStart))};
+            "5 " + std::string(toolName(EditorTool::SetPlayerStart)),
+            "6 " + std::string(toolName(EditorTool::FillTiles)),
+            "7 " + std::string(toolName(EditorTool::LinkLevel))};
         // Medida del propio widget (cuenta el prefijo del cursor y el
         // interlineado): nada de cuentas duplicadas que se desincronicen.
         const Vector2 toolsSize = HudCommandMenu::contentSize(font, toolOptions);
@@ -771,7 +867,7 @@ int main(int argc, char** argv) {
         toolsTitleT.anchor = HudAnchor::TopLeft;
         toolsTitleT.offset = {8.0f + kPad, headerBottom + kPad};
         HudText toolsTitle(toolsTitleT, &font);
-        toolsTitle.setText("HERRAMIENTAS");
+        toolsTitle.setText("HERRAMIENTAS  1-7");
         toolsTitle.setColor(kDimText);
 
         HudTransform toolsMenuT;
@@ -792,7 +888,18 @@ int main(int argc, char** argv) {
         for (int gid : editor.tilePalette()) {
             tileOptions.push_back(tileLabel(gid));
         }
-        std::vector<std::string> objectOptions = editor.objectPalette();
+        auto etiquetasObjeto = [&]() {
+            std::vector<std::string> labels;
+            for (const std::string& id : editor.objectPalette()) {
+                labels.push_back(nombreDePaleta(catalog, id));
+            }
+            return labels;
+        };
+        std::vector<std::string> objectOptions = etiquetasObjeto();
+        std::vector<std::string> levelOptions;
+        for (const std::string& path : editor.levelPalette()) {
+            levelOptions.push_back("SALIDA -> " + nombreEscenario(path));
+        }
 
         // El panel de la paleta hospeda los DOS menus (solo uno visible
         // a la vez), asi que se dimensiona con el maximo de ambos: al
@@ -822,9 +929,11 @@ int main(int argc, char** argv) {
             HudCommandMenu::contentSize(font, paletteWindow(tileOptions, 0, dummyFirst));
         const Vector2 objectSizeC =
             HudCommandMenu::contentSize(font, paletteWindow(objectOptions, 0, dummyFirst));
-        const float paletteW = std::max({tileSizeC.x, objectSizeC.x,
+        const Vector2 levelSizeC =
+            HudCommandMenu::contentSize(font, paletteWindow(levelOptions, 0, dummyFirst));
+        const float paletteW = std::max({tileSizeC.x, objectSizeC.x, levelSizeC.x,
                                          font.measureText("PALETA  Q/E").x});
-        const float paletteH = std::max(tileSizeC.y, objectSizeC.y);
+        const float paletteH = std::max({tileSizeC.y, objectSizeC.y, levelSizeC.y});
         const float toolsBottom = headerBottom + toolsPanelT.size.y + 10.0f;
 
         HudTransform palettePanelT;
@@ -838,7 +947,7 @@ int main(int argc, char** argv) {
         paletteTitleT.anchor = HudAnchor::TopLeft;
         paletteTitleT.offset = {8.0f + kPad, toolsBottom + kPad};
         HudText paletteTitle(paletteTitleT, &font);
-        paletteTitle.setText("PALETA  Q/E");
+        paletteTitle.setText("PALETA  Q/E   SUBGRUPO  [/]");
         paletteTitle.setColor(kDimText);
 
         HudTransform paletteMenuT;
@@ -889,7 +998,7 @@ int main(int argc, char** argv) {
         statusPanel.setBorder(kBorderColor, 2.0f);
 
         const std::string kControlsLine =
-            "1-5 HERRAM  Q/E PALETA  CTRL+Z/Y HIST  F5 GUARDAR  F6 VALIDAR  F7 JUGAR  F8/F9 ESCENARIO  ESC PROYECTOS";
+            "1-7 HERRAM  Q/E PALETA  [/] SUBGRUPO  CTRL+Z/Y HIST  G GUARDAR  V VALIDAR  P JUGAR  ,/. ESCENARIO  M PROYECTOS";
         // Peor caso del texto de estado (controles + contadores) para que el
         // panel de fondo cubra siempre la linea, aunque se anada el
         // "...TILES 64  OBJETOS 5" del final.
@@ -964,6 +1073,23 @@ int main(int argc, char** argv) {
                 editor.setTool(EditorTool::RemoveObject);
             if (keys.pressed(glfwWin, GLFW_KEY_5))
                 editor.setTool(EditorTool::SetPlayerStart);
+            if (keys.pressed(glfwWin, GLFW_KEY_6))
+                editor.setTool(EditorTool::FillTiles);
+            if (keys.pressed(glfwWin, GLFW_KEY_7))
+                editor.setTool(EditorTool::LinkLevel);
+            const bool colocandoObjetos = editor.tool() == EditorTool::PlaceObject;
+            if (colocandoObjetos &&
+                (keys.pressed(glfwWin, GLFW_KEY_LEFT_BRACKET) ||
+                 keys.pressed(glfwWin, GLFW_KEY_RIGHT_BRACKET))) {
+                const bool next = glfwGetKey(glfwWin, GLFW_KEY_RIGHT_BRACKET) == GLFW_PRESS;
+                objectGroup = next ? (objectGroup + 1) % objectGroupNames.size()
+                                   : (objectGroup == 0 ? objectGroupNames.size() - 1
+                                                       : objectGroup - 1);
+                editor.setObjectPalette(objectGroupEntries(objectGroup));
+                objectOptions = etiquetasObjeto();
+                statusText.setText("SUBGRUPO DE OBJETOS: " + objectGroupNames[objectGroup]);
+                savedMessageFrames = 150;
+            }
             const bool controlDown = glfwGetKey(glfwWin, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ||
                                      glfwGetKey(glfwWin, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS ||
                                      glfwGetKey(glfwWin, GLFW_KEY_LEFT_SUPER) == GLFW_PRESS ||
@@ -1073,12 +1199,16 @@ int main(int argc, char** argv) {
             // puede convertirse en otra forma de perder una tarde de
             // pintura. Los niveles dan la vuelta, como la lista de
             // proyectos, para que un proyecto grande sea navegable.
+            // Coma y punto son el anterior/siguiente de toda la vida y
+            // estan pegadas; F8/F9 se mantienen como alias, pero en un
+            // portatil Mac piden Fn igual que F5, que es de lo que
+            // veniamos huyendo.
             const int direccionEscenario =
-                keys.pressed(glfwWin, GLFW_KEY_F8) ? -1 :
-                (keys.pressed(glfwWin, GLFW_KEY_F9) ? 1 : 0);
+                pedida(GLFW_KEY_COMMA, GLFW_KEY_F8) ? -1 :
+                (pedida(GLFW_KEY_PERIOD, GLFW_KEY_F9) ? 1 : 0);
             if (direccionEscenario != 0) {
                 if (opts.projectId.empty()) {
-                    statusText.setText("F8/F9 NECESITA UN PROYECTO: ABRELO DESDE LA PANTALLA");
+                    statusText.setText("CAMBIAR DE ESCENARIO NECESITA UN PROYECTO: ABRELO DESDE LA PANTALLA");
                     savedMessageFrames = 240;
                 } else {
                     auto indice = Editor::ProjectIndex::scan("assets");
@@ -1110,7 +1240,7 @@ int main(int argc, char** argv) {
                 }
             }
 
-            // F7 — MODO JUGADOR. Guarda y lanza ./juego sobre este nivel,
+            // P (o F7) — MODO JUGADOR. Guarda y lanza ./juego sobre este nivel,
             // como proceso aparte. Al cerrar la ventana del juego se vuelve
             // al modo desarrollador exactamente donde se estaba editando.
             //
@@ -1263,6 +1393,16 @@ int main(int argc, char** argv) {
                     batch.submit(pos, tileSize, UVRect{0.0f, 0.0f, 1.0f, 1.0f}, &whiteTexture,
                                  Vector4{0.9f, 0.9f, 0.3f, 0.5f});
                 }
+                // Todo objeto conectado recibe una baliza naranja. No hay
+                // que recordar qué prop es una salida: se ve en el mapa.
+                if (!spawn.targetLevel.empty()) {
+                    batch.submit(pos + Vector2{static_cast<float>(kTileW) * 0.32f,
+                                                static_cast<float>(kTileH) * 0.18f},
+                                 Vector2{static_cast<float>(kTileW) * 0.36f,
+                                         static_cast<float>(kTileH) * 0.36f},
+                                 UVRect{0.0f, 0.0f, 1.0f, 1.0f}, &whiteTexture,
+                                 Vector4{1.0f, 0.55f, 0.08f, 0.92f});
+                }
             }
             // El punto de inicio forma parte del nivel, no es un dato
             // oculto en el JSON: se muestra como una ficha cian para poder
@@ -1297,6 +1437,7 @@ int main(int argc, char** argv) {
             // --- HUD: sincronizar widgets con el estado del editor ---
             const bool objectMode = editor.tool() == EditorTool::PlaceObject ||
                                     editor.tool() == EditorTool::RemoveObject;
+            const bool linkMode = editor.tool() == EditorTool::LinkLevel;
 
             // El menu de herramientas refleja editor.tool() (el orden de
             // toolOptions es el del enum, ver su comentario).
@@ -1305,18 +1446,29 @@ int main(int argc, char** argv) {
             // Paleta visible segun herramienta, con su cursor en la
             // entrada activa (busqueda lineal: las paletas tienen un
             // punado de entradas).
-            tileMenu.setVisible(!objectMode);
-            objectMenu.setVisible(objectMode);
+            tileMenu.setVisible(!objectMode && !linkMode);
+            objectMenu.setVisible(objectMode || linkMode);
+            if (linkMode) {
+                paletteTitle.setText("DESTINOS  Q/E");
+            } else if (editor.tool() == EditorTool::PlaceObject) {
+                paletteTitle.setText("OBJETOS: " + objectGroupNames[objectGroup] +
+                                     "  [/ ] GRUPO  Q/E ELEGIR");
+            } else {
+                paletteTitle.setText("PALETA  Q/E");
+            }
             // Indice absoluto de la seleccion en la paleta completa...
             const std::vector<int>& paletteGids = editor.tilePalette();
             std::size_t tileSel = 0;
             for (std::size_t i = 0; i < paletteGids.size(); ++i) {
                 if (paletteGids[i] == editor.selectedTileGid()) tileSel = i;
             }
-            const std::vector<std::string>& paletteIds = editor.objectPalette();
+            const std::vector<std::string>& paletteIds =
+                linkMode ? editor.levelPalette() : editor.objectPalette();
             std::size_t objSel = 0;
             for (std::size_t i = 0; i < paletteIds.size(); ++i) {
-                if (paletteIds[i] == editor.selectedObjectId()) objSel = i;
+                const std::string selected =
+                    linkMode ? editor.selectedLevelPath() : editor.selectedObjectId();
+                if (paletteIds[i] == selected) objSel = i;
             }
             // ...y ventana visible + indice RELATIVO a ella (el menu solo
             // conoce lo que se esta mostrando).
@@ -1324,7 +1476,8 @@ int main(int argc, char** argv) {
             std::size_t objFirst = 0;
             tileMenu.setOptions(paletteWindow(tileOptions, tileSel, tileFirst));
             tileMenu.setSelectedIndex(tileSel - tileFirst);
-            objectMenu.setOptions(paletteWindow(objectOptions, objSel, objFirst));
+            objectMenu.setOptions(paletteWindow(linkMode ? levelOptions : objectOptions,
+                                                objSel, objFirst));
             objectMenu.setSelectedIndex(objSel - objFirst);
 
             // Celda bajo el cursor (cabecera, derecha): coordenada + gid
@@ -1334,7 +1487,11 @@ int main(int argc, char** argv) {
                                     std::to_string(editor.tileAt(hovered.x, hovered.y));
             for (const ObjectSpawn& spawn : editor.objects()) {
                 if (spawn.position.x == hovered.x && spawn.position.y == hovered.y) {
-                    hoverInfo += "  [" + spawn.objectId + "]";
+                    const ObjectDefinition* def = catalog.find(spawn.objectId);
+                    hoverInfo += "  [" + (def != nullptr ? def->name : spawn.objectId) + "]";
+                    if (!spawn.targetLevel.empty()) {
+                        hoverInfo += "  SALIDA -> " + nombreEscenario(spawn.targetLevel);
+                    }
                     break;
                 }
             }
@@ -1349,6 +1506,12 @@ int main(int argc, char** argv) {
                 inspector = "INSPECTOR\n\nINICIO JUGADOR\nX " + std::to_string(start.x) +
                             "  Y " + std::to_string(start.y) +
                             "\nCLICK EN UNA CELDA\nPARA REUBICARLO";
+            } else if (linkMode) {
+                const std::string destino = editor.selectedLevelPath();
+                inspector = "INSPECTOR\n\nCREAR SALIDA A\n" +
+                            (destino.empty() ? std::string("SIN DESTINOS EN EL PROYECTO")
+                                             : nombreEscenario(destino)) +
+                            "\n\nCLICK SOBRE LA PUERTA\nQUE DEBE LLEVAR ALLI";
             } else if (objectMode) {
                 const std::string selectedId = editor.selectedObjectId();
                 const ObjectDefinition* def = catalog.find(selectedId);

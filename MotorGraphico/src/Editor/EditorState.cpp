@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include <vector>
 
 namespace {
 
@@ -38,11 +39,18 @@ void EditorState::setObjectPalette(std::vector<std::string> objectIds) {
     m_objectSelection = 0;
 }
 
+void EditorState::setLevelPalette(std::vector<std::string> levelPaths) {
+    m_levelPalette = std::move(levelPaths);
+    m_levelSelection = 0;
+}
+
 void EditorState::nextPaletteEntry() {
     if (m_tool == EditorTool::PaintTile && !m_tilePalette.empty()) {
         m_tileSelection = (m_tileSelection + 1) % m_tilePalette.size();
     } else if (m_tool == EditorTool::PlaceObject && !m_objectPalette.empty()) {
         m_objectSelection = (m_objectSelection + 1) % m_objectPalette.size();
+    } else if (m_tool == EditorTool::LinkLevel && !m_levelPalette.empty()) {
+        m_levelSelection = (m_levelSelection + 1) % m_levelPalette.size();
     }
 }
 
@@ -54,6 +62,9 @@ void EditorState::prevPaletteEntry() {
     } else if (m_tool == EditorTool::PlaceObject && !m_objectPalette.empty()) {
         m_objectSelection =
             (m_objectSelection == 0) ? m_objectPalette.size() - 1 : m_objectSelection - 1;
+    } else if (m_tool == EditorTool::LinkLevel && !m_levelPalette.empty()) {
+        m_levelSelection =
+            (m_levelSelection == 0) ? m_levelPalette.size() - 1 : m_levelSelection - 1;
     }
 }
 
@@ -63,6 +74,10 @@ int EditorState::selectedTileGid() const {
 
 std::string EditorState::selectedObjectId() const {
     return m_objectPalette.empty() ? std::string() : m_objectPalette[m_objectSelection];
+}
+
+std::string EditorState::selectedLevelPath() const {
+    return m_levelPalette.empty() ? std::string() : m_levelPalette[m_levelSelection];
 }
 
 void EditorState::applyAt(int x, int y) {
@@ -86,6 +101,12 @@ void EditorState::applyAt(int x, int y) {
         case EditorTool::SetPlayerStart:
             setPlayerStart(GridCoord{x, y});
             break;
+        case EditorTool::FillTiles:
+            fillTiles(x, y, selectedTileGid());
+            break;
+        case EditorTool::LinkLevel:
+            setObjectTransition(x, y, selectedLevelPath());
+            break;
     }
 }
 
@@ -102,6 +123,31 @@ void EditorState::paintTile(int x, int y, int gid) {
 }
 
 void EditorState::eraseTile(int x, int y) { paintTile(x, y, 0); }
+
+void EditorState::fillTiles(int x, int y, int gid) {
+    if (!inBounds(x, y) || gid < 0) {
+        return;
+    }
+    const int original = tileAt(x, y);
+    if (original == gid) {
+        return;
+    }
+    recordUndo();
+    std::vector<GridCoord> pending;
+    pending.push_back(GridCoord{x, y});
+    while (!pending.empty()) {
+        const GridCoord current = pending.back();
+        pending.pop_back();
+        if (!inBounds(current.x, current.y) || tileAt(current.x, current.y) != original) {
+            continue;
+        }
+        m_tiles[static_cast<std::size_t>(current.y) * m_width + current.x] = gid;
+        pending.push_back(GridCoord{current.x + 1, current.y});
+        pending.push_back(GridCoord{current.x - 1, current.y});
+        pending.push_back(GridCoord{current.x, current.y + 1});
+        pending.push_back(GridCoord{current.x, current.y - 1});
+    }
+}
 
 void EditorState::placeObject(int x, int y, const std::string& objectId) {
     if (!inBounds(x, y) || objectId.empty()) {
@@ -154,6 +200,22 @@ void EditorState::removeObjectAt(int x, int y) {
                                        return o.position.x == x && o.position.y == y;
                                    }),
                     m_objects.end());
+}
+
+void EditorState::setObjectTransition(int x, int y, const std::string& targetLevel) {
+    if (targetLevel.empty()) {
+        return;
+    }
+    auto object = std::find_if(m_objects.begin(), m_objects.end(), [&](const ObjectSpawn& spawn) {
+        return spawn.position.x == x && spawn.position.y == y;
+    });
+    if (object == m_objects.end() ||
+        (object->targetLevel == targetLevel && !object->hasTargetPosition)) {
+        return;
+    }
+    recordUndo();
+    object->targetLevel = targetLevel;
+    object->hasTargetPosition = false;  // destino = playerStart del nivel de llegada
 }
 
 void EditorState::setPlayerStart(GridCoord position) {
