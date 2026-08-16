@@ -9,7 +9,7 @@ No son intercambiables.
 
 | Quiero crear… | Molde que usar | Recurso visual actual | Resultado |
 | --- | --- | --- | --- |
-| Camino, plaza, bosque, pantano o interior | `Tile` / capa de mapa | `ciudad_tileset.png` en juego; bibliotecas `editor_terrain_*.png` al diseñar | Tile de suelo, no objeto. |
+| Camino, plaza, bosque, pantano o interior | `Tile` / capa de mapa | `terreno_iso.png` para suelo nuevo; `ciudad_tileset.png` en ciudades existentes | Tile de suelo, no objeto. |
 | Pared, muralla, valla, seto o puerta visual | Tile en capa superior + colisión | `editor_construction_tiles.png` | Estructura; marcar colisión si bloquea. |
 | Edificio, árbol, roca, cofre o cartel | `ObjectDefinition` categoría `prop` | `editor_object_icons.png` | Preview editorial; el arte final se asigna después. |
 | Personaje con diálogo o tienda | `ObjectDefinition` categoría `npc` | `personaje.png` hoy; icono PNJ en editor | PNJ interactuable. Añadir `raceId` si pertenece a una raza RPG. |
@@ -20,7 +20,8 @@ No son intercambiables.
 
 | Archivo | Tamaño / rejilla | Estado | Usar para |
 | --- | --- | --- | --- |
-| `assets/textures/ciudad_tileset.png` | 96×96, tiles 32×32 | Runtime | Mapas TMX existentes de ciudades e interiores. |
+| `assets/textures/terreno_iso.png` | 8×5, 40 celdas de 128×64 | Runtime | Suelos nuevos 2:1: naturaleza, civilización y construcción baja. |
+| `assets/textures/ciudad_tileset.png` | 96×96, 36 celdas de 16×16 | Runtime heredado | Mapas TMX urbanos existentes y sus edificios sólidos. |
 | `assets/textures/personaje.png` | 768×64, 12 frames de 64×64 | Runtime temporal | Jugador, PNJ y enemigos mientras no tengan hoja propia. Frames 1–4 abajo, 5–8 arriba y 9–12 lateral. |
 | `assets/textures/editor_object_icons.png` | 4×4 | Solo editor | Pictogramas de props, PNJ, enemigos, pickups y conexiones. |
 | `assets/textures/editor_construction_tiles.png` | 4×4 | Solo editor / nuevo mapa | Muros, murallas, vallas, setos y bordes. No usar como suelo plano. |
@@ -95,8 +96,9 @@ lugar de duplicar una familia de archivos.
 1. Escoge el molde de la primera tabla.
 2. Añade o reutiliza `ObjectDefinition` en el catálogo del proyecto.
 3. Para exploración rápida, enlaza una preview editorial existente.
-4. Cuando el diseño esté validado, crea una hoja de runtime con frames
-   consistentes, registra sus UVs y asigna `spriteId`.
+4. Cuando el diseño esté validado, convierte los suelos a 2:1 (128×64),
+   o crea una hoja de actor con frames consistentes; registra sus UVs y
+   asigna `spriteId` solo a actores/objetos de runtime.
 5. Si el actor se mueve, define `idle`, `walk_down`, `walk_up`,
    `walk_right` y `walk_left` antes de considerarlo terminado.
 6. Comprueba el nivel en modo jugador: un tile sólido frente al jugador se
@@ -104,3 +106,6 @@ lugar de duplicar una familia de archivos.
 
 Esta separación permite crecer deprisa con el editor sin que los recursos
 provisionales se cuelen en el juego final.
+
+Las medidas exactas, anclajes y la regla de convertir suelo cuadrado a
+rombo 2:1 están en [SPRITE_DIMENSIONS_GUIDE.md](SPRITE_DIMENSIONS_GUIDE.md).

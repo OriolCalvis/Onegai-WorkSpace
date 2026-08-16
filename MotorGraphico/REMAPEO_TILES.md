@@ -1,12 +1,27 @@
-# Remapeo del tileset viejo al nuevo — propuesta para revisar
+# Remapeo del tileset al arte nuevo
 
-**No se ha aplicado nada.** Este documento es la tabla que pediste revisar
-antes de tocar los 81 mapas, y trae un problema que no estaba a la vista
-cuando lo decidimos.
+> **APLICADO.** Los suelos ya están en los 91 mapas del mundo. Lo que
+> sigue pendiente son los **edificios**: ver «El problema» más abajo.
+>
+> Se hizo con `tools/gen_terreno_mundo.py` + `tools/remapear_suelos.py`,
+> ambos idempotentes. La comprobación clave —que ninguna celda cambiara de
+> transitable a bloqueada— pasó: **108.991 celdas comparadas, 0 cambios**.
+
+## Cómo se aplicó sin romper la ciudad
+
+No se puede remapear «solo la mitad» dejando la otra en el atlas viejo,
+porque `TileMap` admite **un solo `<tileset>` por mapa**. Así que el atlas
+de runtime lleva las dos cosas:
+
+    GID  1..40   suelos nuevos (arte nuevo)
+    GID 41..76   los 36 tiles viejos, conservados con su colisión
+
+Los suelos pasaron al arte nuevo; los edificios siguen exactamente donde
+estaban, con su bloqueo, hasta que existan tiles de muro de verdad.
 
 ---
 
-## El problema: el 25 % de la ciudad dejaría de existir
+## El problema que queda: los edificios
 
 El tileset viejo (`ciudad_tileset.png`, 36 tiles) no era solo suelo:
 **22 de sus 36 tiles bloquean el paso** y representan edificios y muros
@@ -19,11 +34,15 @@ En los 81 mapas hay **82.366 celdas pintadas**, de las cuales **20.578
 El tileset nuevo (`terreno_iso.png`, 40 tiles) es **todo suelo**. Solo
 tres bloquean: `rio`, `estanque`, `alcantarilla`.
 
-Un remapeo directo convertiría cada edificio de la ciudad en suelo
-transitable. Boundington pasaría a ser una explanada por la que se cruza
-andando de lado a lado, y la campaña —que depende de puertas, casas y
-murallas— dejaría de tener sentido. No daría ningún error: se cargaría
-perfectamente y estaría mal.
+Un remapeo directo habría convertido cada edificio de la ciudad en suelo
+transitable. Boundington sería una explanada por la que se cruza andando
+de lado a lado, y la campaña —que depende de puertas, casas y murallas—
+dejaría de tener sentido. No daría ningún error: cargaría perfectamente y
+estaría mal.
+
+Por eso se conservaron en la zona 41..76 en vez de traducirlos. **Hoy
+siguen viéndose como los cuadrados de color de antes**, ahora dibujados
+como rombo para que encajen con los suelos nuevos.
 
 ## Por qué el arte nuevo no lo resuelve solo
 
@@ -57,9 +76,9 @@ tiles altos este motor no puede dibujar una ciudad que parezca una ciudad.
 
 ---
 
-## La tabla, para cuando se desbloquee
+## La tabla
 
-Suelos (se pueden remapear ya, no bloquean nada):
+Suelos — **ya aplicados** en los 91 mapas:
 
 | GID viejo | Era | GID nuevo | Pasa a ser |
 |---:|---|---:|---|
@@ -78,12 +97,12 @@ Suelos (se pueden remapear ya, no bloquean nada):
 | 34 | tendedero | 34 | tierra_piedras |
 | 35 | puente | 37 | tarima_madera |
 
-Bloqueantes (**dependen de la decisión de arriba**):
+Bloqueantes — **conservados en 41..76**, pendientes de la decisión de arriba:
 
 | GID viejo | Era | Destino propuesto | Nota |
 |---:|---|---|---|
 | 2 | muralla | muro de piedra (construcción, fila 3) | necesita tiles altos |
-| 4 | agua | 14 rio | ya bloquea en el nuevo |
+| 4 | agua | 14 rio | **aplicado**: bloquea igual |
 | 7 | castillo | torreón (construcción, fila 4) | necesita tiles altos |
 | 8 | iglesia | 23 mosaico_templo + muro | el suelo existe, el edificio no |
 | 9 | universidad | 24 suelo_biblioteca + muro | ídem |
@@ -103,7 +122,7 @@ Bloqueantes (**dependen de la decisión de arriba**):
 | 27 | casa_noble | 20 marmol_real + muro | ídem |
 | 29 | piedra_vieja | 16 piedra_antigua + muro | ídem |
 | 33 | chabola | 39 losa_oscura + muro | ídem |
-| 36 | rio | 14 rio | ya bloquea en el nuevo |
+| 36 | rio | 14 rio | **aplicado**: bloquea igual |
 
 > «+ muro» significa que el edificio deja de ser **un** tile y pasa a ser
 > suelo con un contorno de muro alrededor. Es cómo se dibuja un edificio
@@ -112,7 +131,19 @@ Bloqueantes (**dependen de la decisión de arriba**):
 
 ---
 
-## Lo que sí se hizo ya, y no dependía de esto
+## Un validador que adivinaba
+
+`validar_enlaces.py` llevaba `COLISION={2,4,7..20}` escrito a mano: los
+GIDs del tileset de entonces. Al cambiar el arte del mundo esos números
+pasaron a ser suelos nuevos, y el validador denunció **19 puertas
+perfectamente buenas**. Ahora lee la colisión del propio TMX, como el
+motor. `gen_carteles.py` tenía el mismo set y también se arregló;
+`conectividad.py` ya se había curado de esto mismo hace tiempo.
+
+Un validador que hay que actualizar a mano cuando cambia el arte no
+valida: adivina.
+
+## Lo demás que se hizo
 
 - **`terreno_iso.png`**: 40 suelos a 128×64, aplastados a 2:1 desde los
   atlas editoriales, con su índice en `terreno_iso.json`.

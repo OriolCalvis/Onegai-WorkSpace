@@ -36,6 +36,8 @@ sección "Sistema RPG" más abajo para el estado exacto de cada pieza.
 Para crear contenido nuevo manteniendo el estilo, consultar primero la
 [guía visual de sprites y moldes](SPRITE_AUTHORING_GUIDE.md): separa los
 assets de runtime de las previsualizaciones exclusivas del editor.
+Las medidas y el proceso de convertir suelo a isométrica 2:1 están en la
+[guía de dimensiones de sprites](SPRITE_DIMENSIONS_GUIDE.md).
 
 ## Estructura
 

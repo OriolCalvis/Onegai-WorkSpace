@@ -266,6 +266,44 @@ int iconoBibliotecaEnemigos(const ObjectDefinition& definition) {
     return 0;
 }
 
+// Un sprite editorial por raza. El catálogo conserva raceId como fuente de
+// verdad; esta tabla solo decide en qué atlas/celda se ve en el editor.
+struct RaceNpcPreview {
+    int atlas = 0;  // 1..4; 0 = usar icono PNJ genérico
+    int frame = 0;
+};
+
+RaceNpcPreview previewNpcRacial(const ObjectDefinition& definition) {
+    if (definition.category != ObjectCategory::Npc) return {};
+    const std::string& id = definition.raceId;
+    static const std::unordered_map<std::string, RaceNpcPreview> previews{
+        {"aarakocra_de_las_montanas", {1, 1}}, {"aarakocra_del_viento", {1, 2}},
+        {"alquimistas_de_aegroum", {1, 3}}, {"cara_loca", {1, 4}},
+        {"cazador_nocturno", {1, 5}}, {"diplomaticos_de_bastrea", {1, 6}},
+        {"draconidos_de_fuego", {1, 7}}, {"draconidos_de_hielo", {1, 8}},
+        {"drow_de_la_casa_noble", {1, 9}}, {"drow_explorador", {1, 10}},
+        {"elfos_de_las_estrellas", {1, 11}}, {"elfos_del_bosque", {1, 12}},
+        {"enanos_forjadores", {2, 1}}, {"enanos_historiadores", {2, 2}},
+        {"espectros", {2, 3}}, {"guardianes_de_la_luz", {2, 4}},
+        {"guardianes_del_elemento", {2, 5}}, {"hechiceros_oscuros", {2, 6}},
+        {"hombres_lagarto_de_la_selva", {2, 7}}, {"hombres_lagarto_del_pantano", {2, 8}},
+        {"medianos_del_bosque", {2, 9}}, {"medianos_urbanos", {2, 10}},
+        {"mercenarios_de_ascaria", {2, 11}}, {"minotauros_de_la_llanura", {2, 12}},
+        {"minotauros_del_laberinto", {3, 1}}, {"nagas_arcanos", {3, 2}},
+        {"nagas_venenosos", {3, 3}}, {"nobles_de_ascaria", {3, 4}},
+        {"orcos_del_consejo", {3, 5}}, {"orcos_dramaticos", {3, 6}},
+        {"race_ascaria_fey_blood", {3, 7}}, {"race_dwarf_deepforge", {3, 8}},
+        {"race_elf_canopy", {3, 9}}, {"race_human_marches", {3, 10}},
+        {"race_orc_gongorguma", {3, 11}}, {"revenants", {3, 12}},
+        {"sagas_de_la_locura", {4, 1}}, {"sagas_del_abismo", {4, 2}},
+        {"tieflings_de_la_sombra", {4, 3}}, {"tieflings_del_vacio", {4, 4}},
+        {"traidores_oscuros", {4, 5}}, {"yokai_de_las_sombras", {4, 6}},
+        {"yokai_de_los_vientos", {4, 7}},
+    };
+    const auto found = previews.find(id);
+    return found != previews.end() ? found->second : RaceNpcPreview{};
+}
+
 // La barra de estado va en mayusculas (BitmapFont solo tiene caja alta).
 std::string aMayus(const std::string& t) {
     std::string r = t;
@@ -826,6 +864,38 @@ int main(int argc, char** argv) {
             for (int col = 0; col < 4; ++col) {
                 enemyIconAtlas.defineRegion(1 + row * 4 + col, col, row);
             }
+        }
+
+        // Cuatro atlas editoriales, 43 siluetas: una por raceId del
+        // catálogo RPG. No se usan como sprites animados de runtime.
+        auto raceNpcTexture1 = textureManager.load("editor_race_npcs_01",
+                                                    "assets/textures/editor_race_npcs_01.png");
+        auto raceNpcTexture2 = textureManager.load("editor_race_npcs_02",
+                                                    "assets/textures/editor_race_npcs_02.png");
+        auto raceNpcTexture3 = textureManager.load("editor_race_npcs_03",
+                                                    "assets/textures/editor_race_npcs_03.png");
+        auto raceNpcTexture4 = textureManager.load("editor_race_npcs_04",
+                                                    "assets/textures/editor_race_npcs_04.png");
+        if (!raceNpcTexture1.isOk() || !raceNpcTexture2.isOk() || !raceNpcTexture3.isOk() ||
+            !raceNpcTexture4.isOk()) {
+            std::cerr << "Error cargando biblioteca visual de razas\n";
+            return 1;
+        }
+        TextureAtlas raceNpcAtlas1(raceNpcTexture1.value(), 362, 362);
+        TextureAtlas raceNpcAtlas2(raceNpcTexture2.value(), 362, 362);
+        TextureAtlas raceNpcAtlas3(raceNpcTexture3.value(), 362, 362);
+        TextureAtlas raceNpcAtlas4(raceNpcTexture4.value(), 443, 443);
+        for (int row = 0; row < 3; ++row) {
+            for (int col = 0; col < 4; ++col) {
+                const int frame = 1 + row * 4 + col;
+                raceNpcAtlas1.defineRegion(frame, col, row);
+                raceNpcAtlas2.defineRegion(frame, col, row);
+                raceNpcAtlas3.defineRegion(frame, col, row);
+            }
+        }
+        for (int col = 0; col < 4; ++col) {
+            raceNpcAtlas4.defineRegion(1 + col, col, 0);
+            raceNpcAtlas4.defineRegion(5 + col, col, 1);
         }
 
         EditorState editor(mapW, mapH);
@@ -1707,7 +1777,14 @@ int main(int argc, char** argv) {
                 const ObjectDefinition* def = catalog.find(spawn.objectId);
                 if (def != nullptr) {
                     const int enemyIcon = iconoBibliotecaEnemigos(*def);
-                    if (enemyIcon != 0) {
+                    const RaceNpcPreview racePreview = previewNpcRacial(*def);
+                    if (racePreview.atlas != 0) {
+                        const TextureAtlas* raceAtlases[] = {
+                            nullptr, &raceNpcAtlas1, &raceNpcAtlas2, &raceNpcAtlas3, &raceNpcAtlas4};
+                        const TextureAtlas* previewAtlas = raceAtlases[racePreview.atlas];
+                        batch.submit(pos, tileSize, previewAtlas->getUV(racePreview.frame),
+                                     previewAtlas->texture(), Vector4{1.0f, 1.0f, 1.0f, 1.0f});
+                    } else if (enemyIcon != 0) {
                         batch.submit(pos, tileSize, enemyIconAtlas.getUV(enemyIcon),
                                      enemyIconAtlas.texture(), Vector4{1.0f, 1.0f, 1.0f, 1.0f});
                     } else {

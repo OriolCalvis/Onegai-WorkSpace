@@ -8,7 +8,13 @@ import json, re
 # absoluta a un sandbox que ya no existe, asi que ningun script corria fuera
 # de la maquina donde se escribio.
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/"
-COLISION = {2,4,7,8,9,10,11,12,13,14,15,16,17,18,19,20}
+# La colision se lee del TMX de cada mapa (ver colision_de()), no de un
+# set fijo: el de aqui eran los GIDs del tileset viejo y dejo de valer al
+# cambiar el arte del mundo.
+def colision_de(tmx):
+    return {int(m) + 1 for m in re.findall(
+        r'<tile id="(\d+)">\s*<properties>\s*'
+        r'<property name="collision"[^/]*/>', tmx)}
 
 # puerta -> (nombre del negocio, precio, ingreso por ciclo a alquiler justo)
 NEGOCIOS = {
@@ -36,12 +42,12 @@ def carga_grid(map_path):
     H = int(re.search(r'<map[^>]*?\sheight="(\d+)"', tmx).group(1))
     g = [int(v) for v in re.search(r'<data encoding="csv">(.*?)</data>', tmx, re.S)
          .group(1).replace("\n", "").split(",") if v.strip()]
-    return W, H, [g[y*W:(y+1)*W] for y in range(H)]
+    return W, H, [g[y*W:(y+1)*W] for y in range(H)], colision_de(tmx)
 
 carteles_creados = {}
 for mapa in ["ciudad_centro", "ciudad_oeste", "ciudad_este"]:
     lvl = json.load(open(BASE + f"assets/levels/{mapa}.json"))
-    W, H, grid = carga_grid(lvl["map"])
+    W, H, grid, COLISION = carga_grid(lvl["map"])
     ocupadas = {(o["position"]["x"], o["position"]["y"]) for o in lvl["objects"]}
     nuevos = []
     for obj in lvl["objects"]:

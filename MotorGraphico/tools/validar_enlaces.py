@@ -7,7 +7,6 @@ import json, re, os, sys, glob
 # absoluta a un sandbox que ya no existe, asi que ningun script corria fuera
 # de la maquina donde se escribio.
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/"
-COLISION={2,4,7,8,9,10,11,12,13,14,15,16,17,18,19,20}
 def carga(path):
     lvl=json.load(open(BASE+path))
     tmx=re.sub(r"<!--.*?-->","",open(BASE+lvl["map"]).read(),flags=re.S)
@@ -15,24 +14,33 @@ def carga(path):
     H=int(re.search(r'<map[^>]*?\sheight="(\d+)"',tmx).group(1))
     g=[int(v) for v in re.search(r'<data encoding="csv">(.*?)</data>',tmx,re.S)
        .group(1).replace("\n","").split(",") if v.strip()]
-    return lvl,W,H,[g[y*W:(y+1)*W] for y in range(H)]
+    # La colision se lee DEL PROPIO TMX, no de un set escrito a mano.
+    # Antes habia aqui COLISION={2,4,7..20}, los GIDs del tileset de
+    # entonces; al cambiar el tileset del mundo esos numeros pasaron a ser
+    # suelos nuevos y el validador denuncio 19 puertas perfectamente
+    # buenas. Un validador que hay que actualizar a mano cuando cambia el
+    # arte no valida: adivina.
+    colision={int(m)+1 for m in re.findall(
+        r'<tile id="(\d+)">\s*<properties>\s*'
+        r'<property name="collision"[^/]*/>',tmx)}
+    return lvl,W,H,[g[y*W:(y+1)*W] for y in range(H)],colision
 
 niveles=sorted(os.path.basename(p) for p in glob.glob(BASE+"assets/levels/*.json"))
 niveles=[n for n in niveles if n.startswith(("ciudad_","interior_"))]
 fallos=0; puertas=0
 for n in niveles:
-    lvl,W,H,grid=carga(f"assets/levels/{n}")
+    lvl,W,H,grid,_=carga(f"assets/levels/{n}")
     for o in lvl["objects"]:
         if not o.get("targetLevel"): continue
         puertas+=1
         dest=o["targetLevel"].replace("assets/levels/","")
         if not os.path.exists(BASE+o["targetLevel"]):
             print(f"[ERROR] {n}: {o['objectId']} -> nivel inexistente {dest}"); fallos+=1; continue
-        dl,dW,dH,dg=carga(o["targetLevel"])
+        dl,dW,dH,dg,dcol=carga(o["targetLevel"])
         tp=o.get("targetPosition") or dl["playerStart"]
         if not (0<=tp["x"]<dW and 0<=tp["y"]<dH):
             print(f"[ERROR] {n}: {o['objectId']} -> destino fuera del mapa {dest}"); fallos+=1; continue
-        if dg[tp["y"]][tp["x"]] in COLISION:
+        if dg[tp["y"]][tp["x"]] in dcol:
             print(f"[ERROR] {n}: {o['objectId']} -> aterriza en celda con colision de {dest}"); fallos+=1
         # vuelta: el destino debe tener alguna puerta que regrese aqui
         vuelve=any(d.get("targetLevel","").endswith(n) for d in dl["objects"])
