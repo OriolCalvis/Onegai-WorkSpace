@@ -158,6 +158,12 @@ target_link_libraries(demo_boundington PRIVATE motor_level)
 set_target_properties(demo_boundington PROPERTIES CXX_STANDARD 17)
 add_dependencies(demo_boundington copiar_assets)
 
+# Precuela de la Taberna Humilde: rutas de rescate y tragedia persistentes.
+add_executable(demo_precuela_boundington examples/demo_precuela_boundington.cpp)
+target_link_libraries(demo_precuela_boundington PRIVATE motor_rpg)
+set_target_properties(demo_precuela_boundington PROPERTIES CXX_STANDARD 17)
+add_dependencies(demo_precuela_boundington copiar_assets)
+
 # demo_narrativa_nd6 — valida el puente NarrativeEngine -> DicePoolEngine:
 # un beat con effect "skillCheck" empaqueta la tirada y la resolucion Nd6
 # enciende la flag del grado (BOTCH/PARTIAL/SUCCESS/CRITICAL). GL-free.

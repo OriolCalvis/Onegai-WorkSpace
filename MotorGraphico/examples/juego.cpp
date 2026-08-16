@@ -30,10 +30,44 @@
 #include "Engine/Application.h"
 
 #include <cstdlib>
+#include <string>
 #include <iostream>
 
 int main(int argc, char** argv) {
-    const int maxFrames = argc > 1 ? std::atoi(argv[1]) : -1;
+    // Por defecto arranca la campana de Boundington. El editor necesita
+    // poder decir "prueba ESTE nivel" sin recompilar nada, asi que el
+    // nivel y el catalogo se pueden pasar por argumento:
+    //
+    //   ./juego                                       la campana
+    //   ./juego --nivel assets/levels/ciudad_sur.json prueba ese nivel
+    //   ./juego --nivel X --catalogo Y                y con ese catalogo
+    //   ./juego 3                                     modo humo, 3 frames
+    //
+    // Se lanza como PROCESO APARTE desde el editor (tecla F7). Application
+    // crea su propia ventana y su propio contexto GL, asi que no se puede
+    // meter dentro del editor; y ademas asi un cuelgue probando un nivel
+    // no se lleva por delante el trabajo sin guardar. Es lo que hacen
+    // Godot y Unity con su boton de play.
+    int maxFrames = -1;
+    std::string nivel = "assets/levels/interior_vacio.json";
+    std::string catalogo = "assets/objects/boundington_npcs.json";
+    std::string aventuraInicial;
+    for (int i = 1; i < argc; ++i) {
+        const std::string a = argv[i];
+        if (a == "--nivel" && i + 1 < argc) {
+            nivel = argv[++i];
+        } else if (a == "--catalogo" && i + 1 < argc) {
+            catalogo = argv[++i];
+        } else if (a == "--precuela") {
+            nivel = "assets/levels/interior_taberna.json";
+            aventuraInicial = "assets/adventures/boundington_precuela_taberna.json";
+        } else if (!a.empty() && a[0] != '-') {
+            maxFrames = std::atoi(a.c_str());
+        } else {
+            std::cerr << "Uso: juego [--precuela] [--nivel ruta.json] [--catalogo ruta.json] [nFrames]\n";
+            return 2;
+        }
+    }
 
     Application app;
     // Arranca por el prologo de Boundington: interior_vacio.json es donde
@@ -43,9 +77,8 @@ int main(int argc, char** argv) {
     // arranque en ciudad_centro.json (transicion automatica al cerrar el
     // prologo, ver Application::update). Si la narrativa no carga, init()
     // no falla: el motor grafico sigue siendo usable sin ella.
-    auto init = app.init(1280, 720, "Motor Grafico - Boundington",
-                         "assets/levels/interior_vacio.json",
-                         "assets/objects/boundington_npcs.json");
+    auto init = app.init(1280, 720, "Motor Grafico - Boundington", nivel, catalogo,
+                         aventuraInicial);
     if (!init.isOk()) {
         // init() nunca lanza: los fallos de arranque (ventana, shaders,
         // assets que faltan) llegan como Result::Error con el motivo.

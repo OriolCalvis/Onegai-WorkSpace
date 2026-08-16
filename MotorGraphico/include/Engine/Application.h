@@ -57,7 +57,8 @@ public:
     // assets/).
     Result<bool> init(int width, int height, const std::string& title,
                       const std::string& levelPath = "assets/levels/test_level.json",
-                      const std::string& catalogPath = "assets/objects/test_objects.json");
+                      const std::string& catalogPath = "assets/objects/test_objects.json",
+                      const std::string& initialAdventurePath = "");
 
     // Bucle principal hasta que se cierre la ventana o se pulse ESC.
     // maxFrames >= 0 corre exactamente ese numero de frames y sale (modo
@@ -180,6 +181,8 @@ private:
     RPG::AdventureScript m_ocaso;
     RPG::Catalogs::SkillCatalog m_nd6Skills;  // skills.json (percepcion, sigilo, ...)
     bool m_narrativaLista = false;  // init() lo enciende solo si todo cargo bien
+    // Las aventuras autónomas no deben activar la cronología de Venides.
+    bool m_narrativeCampaignTransitions = false;
 
     // HUD (Fase 9). SpriteBatch propia, independiente de la interna del
     // renderer (ver demo_hud.cpp).

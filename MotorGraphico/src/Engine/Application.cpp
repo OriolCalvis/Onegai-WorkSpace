@@ -160,7 +160,8 @@ Application::Application() : m_playerSkills(/*maxMana=*/8) {}
 Application::~Application() { shutdown(); }
 
 Result<bool> Application::init(int width, int height, const std::string& title,
-                               const std::string& levelPath, const std::string& catalogPath) {
+                               const std::string& levelPath, const std::string& catalogPath,
+                               const std::string& initialAdventurePath) {
     m_width = width;
     m_height = height;
 
@@ -286,6 +287,17 @@ Result<bool> Application::init(int width, int height, const std::string& title,
         m_ocaso = ocasoR.value();
         m_narrative.setAdventure(&m_prologo);  // arrancamos por el prologo
         m_narrativaLista = true;
+        m_narrativeCampaignTransitions = true;
+        if (!initialAdventurePath.empty()) {
+            auto customAdventure = RPG::AdventureScript::loadFromFile(initialAdventurePath);
+            if (!customAdventure.isOk()) {
+                return Result<bool>::Error("Aventura inicial: " + customAdventure.errorMessage());
+            }
+            m_prologo = customAdventure.value();
+            m_narrative.setAdventure(&m_prologo);
+            m_narrativeCampaignTransitions = false;
+            trace("init: aventura inicial alternativa cargada");
+        }
         trace("init: campana de Boundington cargada (prologo + 3 dias)");
     } else {
         // No abortamos: el motor grafico sigue siendo usable sin narrativa.
@@ -674,7 +686,7 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
     // estado y catalogo Nd6) vive en Application y sobrevive, asi que
     // hay que volver a pasarsela al session nuevo. Sin esto, al cambiar
     // de nivel los beats dejarian de disparar.
-    if (m_narrativaLista) {
+    if (m_narrativaLista && m_narrativeCampaignTransitions) {
         m_session->setNarrative(&m_narrative, &m_narrativeState);
         m_session->setNd6SkillCatalog(&m_nd6Skills);
         // m_session ya tiene su propio Xoroshiro128p por defecto; solo

@@ -282,6 +282,28 @@ CALLE = {
                     "Cuando se apague, no habra a donde volver."]),
 }
 
+# PNJs de mision de "La Senal de la Ceniza" (assets/adventures/). Anclajes
+# de canon en el _canon de la propia aventura; los nombres propios con
+# apellido (Neblinia, Ventobelico) salen de clanes canonicos del corpus.
+# (slug_del_asentamiento, npc_id, nombre, dialogo, celda_ancla)
+QUEST_NPC = [
+    ("guskedor", "en_enviada_neblinia", "Enviada Neblinia",
+     ["Vengo de parte de las Tres Cortes. Y si, cruzo el mar sola.",
+      "Hay algo en el aire. Las Cortes lo sienten y no saben nombrarlo."], (34, 34)),
+    ("guskedor", "en_anciana_consejo", "Anciana del Consejo",
+     ["El Gran Consejo escucha a cada ciudad. A los de fuera, cuando sobra tiempo.",
+      "Si traes miedo, traeslo medido."], (36, 38)),
+    ("venordemn", "en_archivera_espejos", "Archivera de los Espejos",
+     ["La Corte de los Espejos Eternos guarda lo que la bruma borra.",
+      "Tres noches temblando la trama. No es nuestra. Viene de lejos."], (34, 30)),
+    ("qethatos", "en_cronista_qethatos", "Cronista de Qethatos",
+     ["Aqui se estudia, se cartografia y se sube a un escenario. En ese orden.",
+      "Lo que no se representa, no se recuerda."], (26, 26)),
+    ("klimnebra", "en_capitan_ventobelico", "Capitan Ventobelico",
+     ["El rey Skriir ha hablado y el cielo hablara por el.",
+      "Los Sagas sobrevuelan; nosotros cobramos. El resto es historia."], (36, 40)),
+]
+
 ARTICULOS = {
     "pocion":        ("Pocion",            "heal", 15, 30),
     "eter":          ("Eter",              "restoreMana", 5, 45),
@@ -394,6 +416,15 @@ def main():
             add_cat({"id": nid, "name": nnombre, "category": "npc",
                      "spriteId": 18, "blocksMovement": True,
                      "interactable": True, "dialogue": dlineas})
+
+        # PNJs de mision de "La Senal de la Ceniza" en su asentamiento
+        for (qslug, qid, qnombre, qdialogo, qcell) in QUEST_NPC:
+            if qslug == slug:
+                qx, qy = m.cerca_libre(*qcell)
+                m.objetos.append({"objectId": qid, "position": {"x": qx, "y": qy}})
+                add_cat({"id": qid, "name": qnombre, "category": "npc",
+                         "spriteId": 18, "blocksMovement": True,
+                         "interactable": True, "dialogue": qdialogo})
 
         nivel = C.nivel_exterior(slug)
         titulo = f"{C.NACIONES[nacion]['nombre']} - {nombre}"

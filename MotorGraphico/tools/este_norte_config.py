@@ -52,12 +52,13 @@ ASENTAMIENTOS = [
     ("pueblo_m_ii","mistarium", "Pueblo II",  "pueblo",  8, (2, 12)),  # sin marcador
     ("aldea_m",    "mistarium", "Aldea",      "aldea",   8, (5, 12)),  # sin marcador
 
-    # --- Nocturnsea (mar nocturno; SIN asentimientos en el canon) ---
-    # PROPUESTA de capital: Nocturnsea no tiene ni una ciudad en
-    # geografia.json. "Umbrahal" es nombre propuesto por este experimento,
-    # registrado como PROPUESTA en la biblia hasta decision de Oriol.
+    # --- Nocturnsea (mar nocturno; SIN asentimientos en geografia.json) ---
+    # La capital canonica de Nocturnsea es la "Ciudad de Grytoz" (solo
+    # nombre, en indice_lugares.md; ausente de geografia.json). Este
+    # experimento la materializa como nivel. La propuesta anterior
+    # ("Umbrahal") queda RETIRADA al descubrir el nombre canonico.
     # landmass_4 es 32x16 todo transitable: ancla dentro.
-    ("umbrahal",   "nocturnsea", "Umbrahal", "capital", 4, (16, 8)),   # sin marcador
+    ("grytoz",     "nocturnsea", "Grytoz", "capital", 4, (16, 8)),   # sin marcador canonico
 ]
 
 # Ids de ciudad del canon (geografia.json) por slug, para que wire pueda
@@ -95,7 +96,7 @@ DISTINTIVO = {
     "guskedor":  ("arena",    "Arena de clanes"),
     "klimnebra": ("banco",    "Casa de fletamento"),
     "venordemn": ("biblioteca","Archivo de la Bruma"),
-    "umbrahal":  ("posada",   "Posada del Faro"),
+    "grytoz":     ("posada",   "Posada del Faro"),
 }
 
 NACIONES = {

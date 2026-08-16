@@ -44,6 +44,7 @@
 // vuelca el ultimo frame a level_editor_output.ppm, para poder revisar
 // el HUD sin una captura de pantalla a mano.
 #include "Core/Math/IsoMath.h"
+#include <cstdio>
 #include <memory>
 
 #include "Editor/ProjectHub.h"
@@ -157,6 +158,21 @@ public:
         return edge;
     }
 
+    // Da por vistas las teclas que ya estan pulsadas AHORA, sin reportar
+    // flanco por ellas.
+    //
+    // Hace falta al cambiar de fase (edicion <-> pantalla de proyectos).
+    // Un KeyEdge recien creado cree que no habia nada pulsado, asi que la
+    // tecla que te trajo aqui -- ESC, que sigue fisicamente hundida --
+    // cuenta como flanco nuevo en el primer frame de la fase siguiente:
+    // ESC en el editor te devolvia a la pantalla y esa misma pulsacion
+    // cerraba el editor. Se veia como que ESC cerraba y ya.
+    void prime(GLFWwindow* window) {
+        for (int k = 0; k <= GLFW_KEY_LAST; ++k) {
+            m_wasDown[k] = glfwGetKey(window, k) == GLFW_PRESS;
+        }
+    }
+
 private:
     bool m_wasDown[GLFW_KEY_LAST + 1] = {};
 };
@@ -226,6 +242,7 @@ EditorOptions parseArgs(int argc, char** argv) {
                 "  --size 64x64             mapa nuevo en blanco de ese tamano\n"
                 "  --load ruta.json         abre un nivel suelto (sin proyecto)\n"
                 "  frames                   modo humo: N frames, vuelca PPM y sale\n"
+                "\n  Dentro del editor: F7 prueba el nivel, ESC vuelve a la pantalla.\n"
                 "\n  La build de un proyecto se saca con:\n"
                 "    python3 tools/build_proyecto.py <id>\n";
             std::exit(0);
@@ -357,6 +374,18 @@ int main(int argc, char** argv) {
             return 1;
         }
 
+        // El editor tiene DOS fases y se puede ir y volver entre ellas:
+        // la pantalla de proyectos y la edicion. ESC en la edicion vuelve
+        // aqui en vez de cerrar el programa -- cerrar del todo es ESC otra
+        // vez, ya en la pantalla. Cambiar de proyecto no deberia costar
+        // relanzar el binario.
+        //
+        // Cada vuelta rehace tileset, mapa y HUD a proposito: dos
+        // proyectos no comparten tileset, y reaprovecharlos era la via
+        // rapida para acabar editando Boundington con la paleta de otro.
+        bool cerrarDelTodo = false;
+        while (!cerrarDelTodo && !window.shouldClose()) {
+
         // =============================================================
         // FASE 1 — LA PANTALLA DE PROYECTOS
         //
@@ -389,6 +418,7 @@ int main(int argc, char** argv) {
 
             KeyEdge menuKeys;
             GLFWwindow* win = window.handle();
+            menuKeys.prime(win);   // el ESC que venia del editor no cuenta
             bool salir = false;
 
             // Teclas que producen un caracter, para el campo del id. Se
@@ -437,8 +467,8 @@ int main(int argc, char** argv) {
                     if (menuKeys.pressed(win, GLFW_KEY_ESCAPE)) act = hub.key(27);
 
                     if (act == Editor::ProjectHub::Action::Quit) {
-                        std::cout << "Sin proyecto: nada que editar.\n";
-                        return 0;
+                        cerrarDelTodo = true;
+                        salir = true;
                     }
                     if (act == Editor::ProjectHub::Action::Open) {
                         opts.projectId = hub.openId();
@@ -498,7 +528,7 @@ int main(int argc, char** argv) {
                 panel(HudAnchor::BottomLeft, {20.0f, 20.0f},
                       {static_cast<float>(width) - 40.0f, 40.0f});
                 texto(HudAnchor::BottomLeft, {34.0f, 32.0f},
-                      "W/S mover   ENTER abrir   N nuevo   B compilar (build)   ESC salir",
+                      "W/S mover   ENTER abrir   N nuevo   B compilar (build)   ESC cerrar el editor",
                       kApagado);
 
                 // Modales encima de todo
@@ -530,8 +560,8 @@ int main(int argc, char** argv) {
                 menuBatch.end();
                 window.swapBuffers();
             }
-            if (!salir) {
-                return 0;   // cerraron la ventana en el menu
+            if (cerrarDelTodo || !salir) {
+                break;   // ESC en la pantalla, o cerraron la ventana
             }
             if (!resolverProyecto()) {
                 return 1;
@@ -847,7 +877,7 @@ int main(int argc, char** argv) {
         statusPanel.setBorder(kBorderColor, 2.0f);
 
         const std::string kControlsLine =
-            "1-5 HERRAM  Q/E PALETA  CTRL+Z/Y HISTORIAL  F5 GUARDAR  F6 VALIDAR  ESC SALIR";
+            "1-5 HERRAM  Q/E PALETA  CTRL+Z/Y HIST  F5 GUARDAR  F6 VALIDAR  F7 PROBAR  ESC PROYECTOS";
         // Peor caso del texto de estado (controles + contadores) para que el
         // panel de fondo cubra siempre la linea, aunque se anada el
         // "...TILES 64  OBJETOS 5" del final.
@@ -880,7 +910,9 @@ int main(int argc, char** argv) {
 
         KeyEdge keys;
         GLFWwindow* glfwWin = window.handle();
+        keys.prime(glfwWin);   // el ENTER con que abriste el proyecto no cuenta
         int frame = 0;
+        bool volverAlHub = false;   // ESC en la edicion -> pantalla de proyectos
 
         // Estado de animacion del editor. Los widgets HUD no tienen
         // update(), asi que el estado que cambia con el tiempo (cursor
@@ -902,7 +934,11 @@ int main(int argc, char** argv) {
             }
 
             // --- Input de teclado ---
-            if (glfwGetKey(glfwWin, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            // ESC vuelve a la pantalla de proyectos, no cierra el editor.
+            // Para cerrar del todo hay que pulsarlo otra vez alli. Cambiar
+            // de proyecto no puede costar relanzar el binario.
+            if (keys.pressed(glfwWin, GLFW_KEY_ESCAPE)) {
+                volverAlHub = true;
                 break;
             }
             if (keys.pressed(glfwWin, GLFW_KEY_1))
@@ -977,7 +1013,10 @@ int main(int argc, char** argv) {
                                     camera.zoom(), 0.25f, Camera::Easing::EaseOutCubic);
             }
 
-            if (keys.pressed(glfwWin, GLFW_KEY_F5)) {
+            // Guardar es ahora una funcion porque F7 (probar) tiene que
+            // guardar antes: probar lo que hay en disco mientras miras
+            // otra cosa en pantalla es la peor forma de perder una hora.
+            auto guardarNivel = [&]() {
                 TmxTilesetSettings settings;  // defaults = tileset del checker
                 settings.collisionGids = {2};
                 std::ofstream tmxOut(saveTmx, std::ios::binary);
@@ -995,6 +1034,61 @@ int main(int argc, char** argv) {
                 savedMessageFrames = 240;
                 // Disparar el flash de guardado (overlay verde breve).
                 saveFlashAlpha = 1.0f;
+            };
+
+            if (keys.pressed(glfwWin, GLFW_KEY_F5)) {
+                guardarNivel();
+            }
+
+            // F7 — PROBAR EL NIVEL. Guarda y lanza ./juego sobre este
+            // nivel, como proceso aparte.
+            //
+            // Aparte y no dentro: Application monta su propia ventana y su
+            // propio contexto GL, asi que no cabe dentro del editor; y
+            // ademas un cuelgue probando no se lleva por delante lo que
+            // estas editando. Es lo que hace el boton de play de Godot.
+            //
+            // El editor se queda bloqueado mientras el juego corre. Es lo
+            // que se quiere: volver al editor con el juego abierto detras
+            // y no saber cual de las dos ventanas manda es peor.
+            if (keys.pressed(glfwWin, GLFW_KEY_F7)) {
+                guardarNivel();
+                // El catalogo del proyecto, si declara alguno; si no, el
+                // de Boundington, que es el unico completo hoy.
+                std::string catalogoDePrueba = "assets/objects/boundington_npcs.json";
+                if (!opts.projectId.empty()) {
+                    auto ri = Editor::ProjectIndex::scan("assets");
+                    if (ri.isOk()) {
+                        const Editor::Project* pp = ri.value().find(opts.projectId);
+                        if (pp != nullptr && !pp->catalogs.empty()) {
+                            catalogoDePrueba = "assets/objects/" + pp->catalogs.front();
+                        }
+                    }
+                }
+                // El binario esta junto al del editor cuando se compila con
+                // CMake, pero el cwd es la raiz del repo (los assets son
+                // rutas relativas): se prueban los dos sitios.
+                std::string exe = "./juego";
+                if (std::FILE* f = std::fopen("build/juego", "rb")) {
+                    std::fclose(f);
+                    exe = "./build/juego";
+                }
+                const std::string orden =
+                    exe + " --nivel \"" + saveJson + "\" --catalogo \"" + catalogoDePrueba + "\"";
+                std::cout << "Probando: " << orden << "\n";
+                statusText.setText("PROBANDO EL NIVEL... (cierra el juego para volver)");
+                savedMessageFrames = 240;
+                const int codigo = std::system(orden.c_str());
+                if (codigo != 0) {
+                    std::cout << "El juego termino con codigo " << codigo << "\n";
+                    statusText.setText("NO SE PUDO PROBAR: COMPILA EL OBJETIVO 'juego' PRIMERO");
+                    savedMessageFrames = 240;
+                }
+                // Las teclas que se pulsaron mientras el juego tenia el
+                // foco no son del editor. Se resincroniza con lo que este
+                // pulsado AHORA: crear un KeyEdge limpio haria justo lo
+                // contrario, dar por nueva cualquier tecla aun hundida.
+                keys.prime(glfwWin);
             }
 
             if (keys.pressed(glfwWin, GLFW_KEY_F6)) {
@@ -1316,6 +1410,19 @@ int main(int argc, char** argv) {
             window.swapBuffers();
             ++frame;
         }
+
+        // Fin de la fase de edicion. Si se salio con ESC se vuelve a la
+        // pantalla de proyectos, y para eso hay que olvidar cual estaba
+        // abierto: si no, resolverProyecto() lo reabriria en la siguiente
+        // vuelta y ESC no llevaria a ninguna parte.
+        if (!volverAlHub) {
+            break;
+        }
+        opts.projectId.clear();
+        opts.loadLevelPath.clear();
+        opts.levelName.clear();
+        std::cout << "\nVuelta a la pantalla de proyectos.\n";
+        }  // while (!cerrarDelTodo)
 
         GLenum glError = glGetError();
         std::cout << "[GL] glGetError() al salir = " << glError << " (esperado: 0)\n";

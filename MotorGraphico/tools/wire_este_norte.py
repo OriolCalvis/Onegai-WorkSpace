@@ -12,8 +12,8 @@ Reglas del experimento (biblia, Parte 0):
     se miran: si un objeto ya tiene targetLevel, se salta SIEMPRE, sea
     de quien sea.
   - Los 8 asentimientos sin marcador (Qethatos + 6 de Mistarium +
-    Umbrahal) se anaden como objetos nuevos con su id canon cuando
-    existe (geografia.json) o el id del experimento (Umbrahal).
+    Grytoz) se anaden como objetos nuevos con su id canon cuando
+    existe (geografia.json) o el id del experimento (Grytoz).
 
 Caminabilidad del landmass: gid SIN propiedad collision = transitable.
 En estos mapas el mar (gid 1) es transitable y la tierra firme (gid 2)

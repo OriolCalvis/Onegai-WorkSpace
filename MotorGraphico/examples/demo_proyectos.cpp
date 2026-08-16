@@ -42,8 +42,25 @@ int main() {
     const Project* b = idx.find("boundington");
     require(b != nullptr);
     require(b->playable());
-    require(b->adventures.size() == 4);      // prologo + tres dias
     require(b->epoch == "1981 b.f.");        // el mundo esta fechado
+
+    // La campana tiene que estar entera. Se comprueba POR NOMBRE y no por
+    // cuenta: la version anterior exigia "== 4" y salto sola en cuanto
+    // Oriol anadio boundington_precuela_taberna.json. Un proyecto vivo
+    // gana contenido; una prueba que se rompe porque el trabajo avanza no
+    // esta comprobando nada util, solo estorbando.
+    const char* kCampana[] = {"boundington_prologo.json", "boundington_primer_dia.json",
+                              "boundington_segundo_dia.json", "boundington_ocaso.json"};
+    for (const char* av : kCampana) {
+        bool esta = false;
+        for (const std::string& s : b->adventures) {
+            if (s == av) {
+                esta = true;
+            }
+        }
+        require(esta);
+    }
+    require(b->adventures.size() >= 4);
 
     std::printf("\n[revision de cada proyecto]\n");
     int completos = 0;
