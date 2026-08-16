@@ -134,6 +134,12 @@ struct ObjectDefinition {
     // suelta.
     int spriteId = -1;
 
+    // Id opcional de la raza RPG del personaje. Solo es significativo
+    // para NPCs, pero permanece como dato de autoría plano para que un
+    // nivel pueda referenciarlo sin duplicar el nombre de la raza en cada
+    // dialogo o depender de convenciones en el id del objeto.
+    std::string raceId;
+
     bool blocksMovement = false;
     bool interactable = false;
 

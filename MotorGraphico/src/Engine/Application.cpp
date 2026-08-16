@@ -1339,6 +1339,13 @@ void Application::render(bool capture) {
     glClearColor(0.10f, 0.10f, 0.14f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    // El mapa se dibuja antes que las entidades. Indicamos al renderer la
+    // celda actual del jugador para atenuar los muros solidos inmediatos
+    // que, de otro modo, se pintarían encima de su sprite.
+    if (m_session != nullptr) {
+        m_renderer->setOcclusionFocus(m_session->playerPosition());
+    }
+
     trace("render: renderFrame (escena)");
     auto result = m_renderer->renderFrame();
     if (!result.isOk()) {

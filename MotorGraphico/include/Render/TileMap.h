@@ -62,6 +62,21 @@ public:
     int getTilesetColumns() const { return m_tilesetColumns; }
     int getTilesetFirstGid() const { return m_tilesetFirstGid; }
 
+    // El resto de lo que declara el <tileset>. Se expone porque el editor
+    // tiene que poder VOLVER A ESCRIBIRLO: guardaba siempre los valores
+    // por defecto (test_checker, 2 tiles) y eso destruyo la declaracion de
+    // ciudad_centro.tmx, que usa hasta el GID 34. Un mapa que se abre y se
+    // guarda no puede perder de que atlas era.
+    const std::string& getTilesetName() const { return m_tilesetName; }
+    // Tal cual venia en el TMX ("../textures/x.png"), sin resolver contra
+    // la carpeta del mapa: es lo que hay que volver a escribir.
+    const std::string& getTilesetImageSource() const { return m_tilesetImageSource; }
+    int getTilesetImageWidth() const { return m_tilesetImageWidth; }
+    int getTilesetImageHeight() const { return m_tilesetImageHeight; }
+    int getTilesetTileCount() const { return m_tilesetTileCount; }
+    // GIDs (1-based) con collision=true, en el orden del TMX.
+    const std::vector<int>& getCollisionGids() const { return m_collisionGids; }
+
     // Lanza std::out_of_range si layer/x/y estan fuera de rango: un
     // indice invalido aqui es un bug del llamador (ver
     // IsometricRenderer, Fase 3), no un fallo "esperable" de I/O como
@@ -110,4 +125,10 @@ private:
     int m_tilesetTileHeight = 0;
     int m_tilesetColumns = 0;
     int m_tilesetFirstGid = 1;
+    std::string m_tilesetName;
+    std::string m_tilesetImageSource;
+    int m_tilesetImageWidth = 0;
+    int m_tilesetImageHeight = 0;
+    int m_tilesetTileCount = 0;
+    std::vector<int> m_collisionGids;
 };

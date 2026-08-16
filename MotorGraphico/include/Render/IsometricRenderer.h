@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Core/Errors/Result.h"
+#include "Core/Math/GridCoord.h"
 #include "Core/Math/Vector4.h"
 #include "Render/Framebuffer.h"
 #include "Render/SpriteBatch.h"
@@ -39,6 +40,16 @@ public:
     // el tileset del mapa nuevo, y el renderer guarda un puntero al
     // viejo. No propietario, como el original.
     void setAtlas(TextureAtlas* atlas) { m_atlas = atlas; }
+
+    // Mantiene visible al personaje cuando una celda solida queda delante
+    // de el. Application actualiza el foco con la posicion real de la
+    // sesion antes de cada frame; los demos que no lo usan conservan el
+    // render opaco de siempre.
+    void setOcclusionFocus(const GridCoord& focus) { m_occlusionFocus = focus; }
+    void clearOcclusionFocus() { m_occlusionFocus.reset(); }
+    void setOcclusionEnabled(bool enabled) { m_occlusionEnabled = enabled; }
+    bool occlusionEnabled() const { return m_occlusionEnabled; }
+    void setOcclusionAlpha(float alpha);
 
     // Saca "obj" de la cola de render (no-op si no estaba): necesario
     // desde que Application dibuja pickups y enemigos del mundo -- un
@@ -181,6 +192,9 @@ private:
     Texture* m_shadowTexture = nullptr;
     bool m_shadowsEnabled = false;
     bool m_postFXEnabled = false;
+    std::optional<GridCoord> m_occlusionFocus;
+    bool m_occlusionEnabled = true;
+    float m_occlusionAlpha = 0.40f;
     int m_viewportWidth = 0;
     int m_viewportHeight = 0;
 };

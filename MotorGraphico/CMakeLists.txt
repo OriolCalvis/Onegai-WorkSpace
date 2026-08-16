@@ -38,6 +38,9 @@ add_executable(demo_resource_manager
 # dinámicos y deja una base común para partículas, proyectiles o encuentros.
 add_executable(demo_handle_pool examples/demo_handle_pool.cpp)
 
+# Regla pura de oclusion: test rapido sin OpenGL ni el editor visual.
+add_executable(demo_occlusion_rules examples/demo_occlusion_rules.cpp)
+
 # --- Camera + IsoMath: solo necesitan glm (header-only, sin GL). Se
 # separan de motor_core (que si necesita GLAD/stb_image/GLFW vendorizados,
 # ver mas abajo) para poder compilar y probar la camara y la proyeccion

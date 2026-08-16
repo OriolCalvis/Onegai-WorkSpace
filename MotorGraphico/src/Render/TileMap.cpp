@@ -203,6 +203,11 @@ void TileMap::parseOrThrow(const std::string& path) {
     // es obligatorio -- un TMX sin <image> sigue cargando, y quien lo
     // dibuje tendra que decidir que textura usar.
     std::string tilesetImage;
+    std::string tilesetName;
+    std::string tilesetImageSource;
+    int tilesetImageWidth = 0;
+    int tilesetImageHeight = 0;
+    int tilesetTileCount = 0;
     int tilesetTileWidth = 0;
     int tilesetTileHeight = 0;
     int tilesetColumns = 0;
@@ -213,6 +218,10 @@ void TileMap::parseOrThrow(const std::string& path) {
         tilesetElem->QueryIntAttribute("tilewidth", &tilesetTileWidth);
         tilesetElem->QueryIntAttribute("tileheight", &tilesetTileHeight);
         tilesetElem->QueryIntAttribute("columns", &tilesetColumns);
+        tilesetElem->QueryIntAttribute("tilecount", &tilesetTileCount);
+        if (const char* n = tilesetElem->Attribute("name")) {
+            tilesetName = n;
+        }
         if (tinyxml2::XMLElement* imageElem = tilesetElem->FirstChildElement("image");
             imageElem != nullptr) {
             const char* source = imageElem->Attribute("source");
@@ -220,9 +229,14 @@ void TileMap::parseOrThrow(const std::string& path) {
                 // La ruta del TMX es relativa AL PROPIO TMX ("../textures/
                 // x.png"); aqui se resuelve contra su carpeta para que el
                 // llamador pueda pasarla a TextureManager tal cual, sin
-                // tener que saber donde estaba el mapa.
+                // tener que saber donde estaba el mapa. La original se
+                // guarda aparte porque es la que hay que volver a escribir
+                // al guardar.
                 tilesetImage = resolveRelativeTo(path, source);
+                tilesetImageSource = source;
             }
+            imageElem->QueryIntAttribute("width", &tilesetImageWidth);
+            imageElem->QueryIntAttribute("height", &tilesetImageHeight);
         }
     }
 
@@ -232,6 +246,22 @@ void TileMap::parseOrThrow(const std::string& path) {
     m_tileHeight = tileHeight;
     m_layers = std::move(layers);
     m_tilesetImage = std::move(tilesetImage);
+    m_tilesetName = std::move(tilesetName);
+    m_tilesetImageSource = std::move(tilesetImageSource);
+    m_tilesetImageWidth = tilesetImageWidth;
+    m_tilesetImageHeight = tilesetImageHeight;
+    m_tilesetTileCount = tilesetTileCount;
+    // Ordenados: el TMX no garantiza orden y el editor los vuelve a
+    // escribir; que la lista baile entre guardados haria que el diff de
+    // un mapa cambiara sin que nadie lo haya tocado.
+    m_collisionGids.clear();
+    m_collisionGids.reserve(collisionByGid.size());
+    for (const auto& par : collisionByGid) {
+        if (par.second) {
+            m_collisionGids.push_back(par.first);
+        }
+    }
+    std::sort(m_collisionGids.begin(), m_collisionGids.end());
     m_tilesetTileWidth = tilesetTileWidth;
     m_tilesetTileHeight = tilesetTileHeight;
     m_tilesetColumns = tilesetColumns;

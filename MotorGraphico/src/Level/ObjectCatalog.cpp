@@ -126,6 +126,7 @@ Result<int> ObjectCatalog::loadFromString(const std::string& jsonText) {
 
         def.name = entry["name"].asString(def.id);  // sin nombre: el id sirve de nombre
         def.spriteId = entry["spriteId"].asInt(-1);
+        def.raceId = entry["raceId"].asString();
         def.blocksMovement = entry["blocksMovement"].asBool(false);
         def.interactable = entry["interactable"].asBool(false);
 

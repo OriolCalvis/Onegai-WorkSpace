@@ -33,6 +33,10 @@ completo, Fases 6-12. Todo ello unido en una **partida jugable** por
 `Application` (el bucle de juego), con `juego` como ejecutable. Ver la
 sección "Sistema RPG" más abajo para el estado exacto de cada pieza.
 
+Para crear contenido nuevo manteniendo el estilo, consultar primero la
+[guía visual de sprites y moldes](SPRITE_AUTHORING_GUIDE.md): separa los
+assets de runtime de las previsualizaciones exclusivas del editor.
+
 ## Estructura
 
 ```

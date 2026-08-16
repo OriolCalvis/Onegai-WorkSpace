@@ -9,6 +9,7 @@
 #include "Render/ColorLUT.h"
 #include "Render/FogOfWar.h"
 #include "Render/IRenderable.h"
+#include "Render/OcclusionRules.h"
 #include "Render/TileMap.h"
 
 #include <algorithm>
@@ -25,6 +26,10 @@ void IsometricRenderer::addToQueue(IRenderable* obj) { m_renderQueue.push_back(o
 void IsometricRenderer::removeFromQueue(IRenderable* obj) {
     m_renderQueue.erase(std::remove(m_renderQueue.begin(), m_renderQueue.end(), obj),
                         m_renderQueue.end());
+}
+
+void IsometricRenderer::setOcclusionAlpha(float alpha) {
+    m_occlusionAlpha = std::clamp(alpha, 0.05f, 1.0f);
 }
 
 void IsometricRenderer::sortQueue() {
@@ -81,8 +86,14 @@ void IsometricRenderer::renderLayer(int layerIndex) {
                 continue;
             }
             Vector2 pos = m_map->gridToScreen(GridCoord{x, y});
+            float alpha = 1.0f;
+            if (m_occlusionEnabled && m_occlusionFocus.has_value() &&
+                OcclusionRules::shouldFadeTile(*m_occlusionFocus, GridCoord{x, y},
+                                               tile.hasCollision())) {
+                alpha = m_occlusionAlpha;
+            }
             m_spriteBatch.submit(pos, tileSize, m_atlas->getUV(tile.getTilesetID()),
-                                 m_atlas->texture(), Vector4{1.0f, 1.0f, 1.0f, 1.0f});
+                                 m_atlas->texture(), Vector4{1.0f, 1.0f, 1.0f, alpha});
         }
     }
 }

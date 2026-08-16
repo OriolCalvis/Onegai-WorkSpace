@@ -15,55 +15,58 @@ from PIL import Image, ImageDraw
 CELL, COLS, ROWS = 16, 6, 6
 # (gid, nombre, color, colisiona)
 TILES = [
-    (1,  "adoquin",     (108, 104, 100), False),
-    (2,  "muralla",     (74,  70,  66),  True),
-    (3,  "cesped",      (86,  132, 74),  False),
-    (4,  "agua",        (58,  102, 160), True),
-    (5,  "marmol",      (198, 194, 186), False),
-    (6,  "tierra",      (134, 110, 82),  False),
-    (7,  "castillo",    (122, 122, 138), True),
-    (8,  "iglesia",     (176, 168, 200), True),
-    (9,  "universidad", (150, 122, 90),  True),
-    (10, "biblioteca",  (128, 96,  72),  True),
-    (11, "opera",       (196, 150, 96),  True),
-    (12, "coliseo",     (190, 176, 148), True),
-    (13, "militar",     (96,  106, 82),  True),
-    (14, "tienda",      (170, 96,  76),  True),
-    (15, "ropa",        (168, 92,  140), True),
-    (16, "joyeria",     (206, 176, 62),  True),
-    (17, "banco",       (140, 140, 96),  True),
-    (18, "posada",      (150, 106, 62),  True),
-    (19, "banos",       (110, 160, 172), True),
-    (20, "seto",        (60,  104, 58),  True),
-    (21, "arena",       (206, 188, 148), False),
-    (22, "escenario",   (128, 74,  74),  False),
-    (23, "umbral",      (222, 200, 130), False),  # puerta: se pisa
-    (24, "grava",       (150, 146, 138), False),
+    # Paleta tomada de las bibliotecas editoriales de civilizacion: piedra
+    # calida, madera oscura y acentos azul/oro. Se conservan los GIDs para
+    # que los 81 mapas urbanos existentes reciban el cambio sin migracion.
+    (1,  "adoquin",     (157, 151, 130), False),
+    (2,  "muralla",     (73,  81,  87),  True),
+    (3,  "cesped",      (92,  132, 72),  False),
+    (4,  "agua",        (52,  112, 144), True),
+    (5,  "marmol",      (213, 218, 207), False),
+    (6,  "tierra",      (151, 112, 70),  False),
+    (7,  "castillo",    (92,  101, 112), True),
+    (8,  "iglesia",     (210, 207, 186), True),
+    (9,  "universidad", (151, 104, 61),  True),
+    (10, "biblioteca",  (110, 73,  42),  True),
+    (11, "opera",       (173, 77,  55),  True),
+    (12, "coliseo",     (198, 174, 122), True),
+    (13, "militar",     (79,  88,  91),  True),
+    (14, "tienda",      (181, 116, 61),  True),
+    (15, "ropa",        (123, 79,  119), True),
+    (16, "joyeria",     (193, 157, 55),  True),
+    (17, "banco",       (116, 123, 108), True),
+    (18, "posada",      (130, 82,  43),  True),
+    (19, "banos",       (109, 166, 174), True),
+    (20, "seto",        (47,  93,  55),  True),
+    (21, "arena",       (216, 177, 103), False),
+    (22, "escenario",   (116, 63,  64),  False),
+    (23, "umbral",      (224, 194, 117), False),  # puerta: se pisa
+    (24, "grava",       (132, 128, 117), False),
     # --- Boundington (GIDs 25-36) ---
     # Casa popular: piedra fuera, madera dentro (canon). Dos tonos para que
     # una manzana de casas pequenas no lea como un bloque macizo.
-    (25, "casa_piedra",  (128, 120, 110), True),
-    (26, "casa_madera",  (146, 112, 74),  True),
+    (25, "casa_piedra",  (119, 118, 109), True),
+    (26, "casa_madera",  (128, 83,  49),  True),
     # Barrios Altos: mismo material mejor cuidado, y calle mas limpia.
-    (27, "casa_noble",   (170, 160, 148), True),
-    (28, "adoquin_fino", (150, 146, 140), False),
+    (27, "casa_noble",   (197, 191, 169), True),
+    (28, "adoquin_fino", (181, 175, 151), False),
     # Casco Antiguo: piedra vieja y ruina. La ruina NO colisiona: se puede
     # entrar en un edificio caido, y ahi es donde estan los secretos.
-    (29, "piedra_vieja",  (96,  92,  88),  True),
-    (30, "ruina",         (118, 112, 104), False),
+    (29, "piedra_vieja",  (90,  92,  88),  True),
+    (30, "ruina",         (124, 113, 96),  False),
     # Calzada con carriles: el centro es para carruajes, los lados para la
     # gente. Un tile distinto por carril, que es lo que hace que la calle
     # se lea como calle y no como pasillo.
-    (31, "carril",        (122, 118, 112), False),
+    (31, "carril",        (142, 137, 119), False),
     # Pico Dragon y la Barriada: barro y tablones, sin orden.
-    (32, "barro",         (110, 92,  70),  False),
-    (33, "chabola",       (124, 96,  62),  True),
+    (32, "barro",         (103, 76,  55),  False),
+    (33, "chabola",       (112, 74,  43),  True),
     # Cuerdas de ropa tendida entre casa y casa. No colisiona: pasas por
     # debajo. Es decoracion, pero es LA imagen del barrio popular.
-    (34, "tendedero",     (188, 172, 150), False),
+    (34, "tendedero",     (186, 156, 126), False),
     # El Puente Principal y el rio que separa Boundington de Surysal.
-    (35, "puente",        (142, 118, 88),  False),
-    (36, "rio",           (72,  116, 172), True),
+    (35, "puente",        (137, 93,  51),  False),
+    (36, "rio",           (43,  102, 145), True),
 ]
 
 img = Image.new("RGBA", (COLS*CELL, ROWS*CELL), (0, 0, 0, 0))
@@ -74,11 +77,37 @@ for gid, name, col, _ in TILES:
     d.rectangle([x, y, x+CELL-1, y+CELL-1], fill=col + (255,))
     borde = tuple(max(0, c - 34) for c in col)
     d.rectangle([x, y, x+CELL-1, y+CELL-1], outline=borde + (255,))
-    # Trama diagonal en los muros: los distingue del suelo aunque el
-    # color se parezca, y ayuda a leer el mapa en blanco y negro.
-    if any(t[0] == gid and t[3] for t in TILES):
+    # Texturas de baja frecuencia: a 16px una textura debe ser una pista
+    # clara, no ruido. Cada familia conserva una silueta legible al verse
+    # comprimida sobre el rombo isometrico de 64x32.
+    claro = tuple(min(255, c + 22) for c in col) + (255,)
+    oscuro = borde + (255,)
+    if name in {"adoquin", "adoquin_fino", "marmol", "arena", "grava", "carril"}:
+        for yy in range(y + 3, y + CELL, 5):
+            d.line([(x + 1, yy), (x + CELL - 2, yy)], fill=oscuro)
+        for xx in range(x + 4, x + CELL, 6):
+            d.line([(xx, y + 1), (xx - 2, y + CELL - 2)], fill=claro)
+    elif name in {"casa_madera", "biblioteca", "posada", "chabola", "puente"}:
+        for yy in range(y + 3, y + CELL, 4):
+            d.line([(x + 1, yy), (x + CELL - 2, yy)], fill=oscuro)
+        d.line([(x + 2, y + 2), (x + CELL - 3, y + CELL - 3)], fill=claro)
+    elif name in {"agua", "rio", "banos"}:
+        for yy in range(y + 3, y + CELL, 5):
+            d.line([(x + 2, yy), (x + 6, yy)], fill=claro)
+            d.line([(x + 10, yy + 1), (x + CELL - 3, yy + 1)], fill=oscuro)
+    elif name in {"cesped", "seto"}:
+        for xx, yy in ((3, 4), (9, 3), (6, 10), (13, 12)):
+            d.point((x + xx, y + yy), fill=claro)
+            d.point((x + xx + 1, y + yy), fill=oscuro)
+    elif name in {"barro", "tierra", "ruina", "piedra_vieja"}:
+        for xx, yy in ((3, 3), (10, 5), (6, 11), (13, 13)):
+            d.rectangle([x + xx, y + yy, x + xx + 1, y + yy + 1], fill=oscuro)
+    elif any(t[0] == gid and t[3] for t in TILES):
+        # Muros y edificios: junta de bloques diagonal, más clara en la
+        # parte superior, para diferenciar estructura de suelo.
         for k in range(0, CELL, 5):
-            d.line([(x, y+k), (x+k, y)], fill=borde + (255,))
+            d.line([(x, y + k), (x + k, y)], fill=oscuro)
+        d.line([(x + 2, y + 2), (x + CELL - 3, y + 2)], fill=claro)
 
 # Raiz del repo, deducida de la ubicacion de este script. Antes era una ruta
 # absoluta a un sandbox que ya no existe, asi que ningun script corria fuera

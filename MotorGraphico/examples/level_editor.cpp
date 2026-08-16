@@ -244,6 +244,28 @@ int iconoEditor(const ObjectDefinition& definition) {
     return 3;  // edificio/prop genérico
 }
 
+// Frame de la biblioteca visual de enemigos (4 columnas x 3 filas), o 0
+// cuando el objeto usa el pictograma editorial general. Mantener este
+// mapeo por ID evita depender de nombres traducidos: el autor puede
+// renombrar un enemigo sin cambiar cómo se reconoce sobre el mapa.
+int iconoBibliotecaEnemigos(const ObjectDefinition& definition) {
+    if (definition.category != ObjectCategory::Enemy) return 0;
+    const std::string& id = definition.id;
+    if (id == "enemy_slime_verde") return 1;
+    if (id == "enemy_slime_venenoso") return 2;
+    if (id == "enemy_murcielago_cueva") return 3;
+    if (id == "enemy_murcielago_gigante") return 4;
+    if (id == "enemy_vampiro_noble") return 5;
+    if (id == "enemy_vampiro_acorazado") return 6;
+    if (id == "enemy_zombi_musgoso") return 7;
+    if (id == "enemy_zombi_esqueletico") return 8;
+    if (id == "enemy_dragon_rojo_joven") return 9;
+    if (id == "enemy_dragon_negro_anciano") return 10;
+    if (id == "enemy_arlequin_enmascarado") return 11;
+    if (id == "enemy_maestro_arlequin") return 12;
+    return 0;
+}
+
 // La barra de estado va en mayusculas (BitmapFont solo tiene caja alta).
 std::string aMayus(const std::string& t) {
     std::string r = t;
@@ -786,6 +808,23 @@ int main(int argc, char** argv) {
         for (int row = 0; row < 4; ++row) {
             for (int col = 0; col < 4; ++col) {
                 objectIconAtlas.defineRegion(1 + row * 4 + col, col, row);
+            }
+        }
+
+        // Biblioteca visual específica de enemigos. Es un atlas de
+        // referencia del editor, separado del atlas que usará el juego
+        // final; por eso no toca spriteId ni el render de runtime.
+        auto enemyIconTextureResult = textureManager.load(
+            "editor_enemy_library_v1", "assets/textures/editor_enemy_library_v1.png");
+        if (!enemyIconTextureResult.isOk()) {
+            std::cerr << "Error cargando biblioteca visual de enemigos: "
+                      << enemyIconTextureResult.errorMessage() << "\n";
+            return 1;
+        }
+        TextureAtlas enemyIconAtlas(enemyIconTextureResult.value(), 362, 362);
+        for (int row = 0; row < 3; ++row) {
+            for (int col = 0; col < 4; ++col) {
+                enemyIconAtlas.defineRegion(1 + row * 4 + col, col, row);
             }
         }
 
@@ -1417,6 +1456,35 @@ int main(int argc, char** argv) {
             auto guardarNivel = [&]() {
                 TmxTilesetSettings settings;  // defaults = tileset del checker
                 settings.collisionGids = {2};
+
+                // Si el nivel se ABRIO de disco, se devuelve SU tileset,
+                // no el de por defecto.
+                //
+                // Esto era un destructor de mapas. Guardar escribia
+                // siempre test_checker (2 tiles), asi que abrir un mapa de
+                // ciudad y pulsar guardar dejaba el TMX declarando un
+                // atlas de dos casillas para un mapa que usa 34. No daba
+                // error: daba un mapa que se dibuja mal. Le paso a
+                // ciudad_centro.tmx, el mapa principal de Boundington, y
+                // le habria pasado a cualquiera que se editara.
+                if (loaded && !loadedMap.getTilesetImageSource().empty()) {
+                    settings.tileWidth = loadedMap.getTileWidth();
+                    settings.tileHeight = loadedMap.getTileHeight();
+                    settings.tilesetName = loadedMap.getTilesetName();
+                    settings.imageSource = loadedMap.getTilesetImageSource();
+                    settings.imageWidth = loadedMap.getTilesetImageWidth();
+                    settings.imageHeight = loadedMap.getTilesetImageHeight();
+                    settings.tilesetTileWidth = loadedMap.getTilesetTileWidth();
+                    settings.tilesetTileHeight = loadedMap.getTilesetTileHeight();
+                    settings.tileCount = loadedMap.getTilesetTileCount();
+                    settings.columns = loadedMap.getTilesetColumns();
+                    // Las colisiones tambien: se declaran por tile en el
+                    // tileset, y perderlas convierte los muros en aire.
+                    if (!loadedMap.getCollisionGids().empty()) {
+                        settings.collisionGids = loadedMap.getCollisionGids();
+                    }
+                }
+
                 if (usingConstructionTiles) {
                     settings.tilesetName = "editor_construction_tiles";
                     settings.imageSource = "../textures/editor_construction_tiles.png";
@@ -1638,8 +1706,14 @@ int main(int argc, char** argv) {
                               tileDrawOffset;
                 const ObjectDefinition* def = catalog.find(spawn.objectId);
                 if (def != nullptr) {
-                    batch.submit(pos, tileSize, objectIconAtlas.getUV(iconoEditor(*def)),
-                                 objectIconAtlas.texture(), Vector4{1.0f, 1.0f, 1.0f, 1.0f});
+                    const int enemyIcon = iconoBibliotecaEnemigos(*def);
+                    if (enemyIcon != 0) {
+                        batch.submit(pos, tileSize, enemyIconAtlas.getUV(enemyIcon),
+                                     enemyIconAtlas.texture(), Vector4{1.0f, 1.0f, 1.0f, 1.0f});
+                    } else {
+                        batch.submit(pos, tileSize, objectIconAtlas.getUV(iconoEditor(*def)),
+                                     objectIconAtlas.texture(), Vector4{1.0f, 1.0f, 1.0f, 1.0f});
+                    }
                 } else {
                     batch.submit(pos, tileSize, UVRect{0.0f, 0.0f, 1.0f, 1.0f}, &whiteTexture,
                                  Vector4{0.9f, 0.9f, 0.3f, 0.5f});
