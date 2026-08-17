@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title th:text="${historia.title}" layout:fragment="title">Historia</title>
+    <th:block layout:fragment="extra-css">
+    <link th:href="@{/css/carta-fisica.css}" rel="stylesheet">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+            <p class="gm-sidebar__eyebrow u-p-0">Historias · <span th:text="${historia.factionNombre}">facción</span></p>
+            <div class="u-detail-layout-340">
+
+                <!-- Carta física de historia (wireframe 7e): hook/antagonist/
+                     reward/complication del esquema §10. -->
+                <article class="cf-card u-cursor-default">
+                    <div class="cf-head">
+                        <span class="cf-name" th:text="${historia.title}">Título</span>
+                        <span class="cf-gem cf-gem--rango" th:text="'T' + ${historia.tierMin} + '–T' + ${historia.tierRange.size() > 1 ? historia.tierRange[1] : historia.tierMin}">T1–T3</span>
+                    </div>
+
+                    <div class="cf-illustration">📜</div>
+
+                    <div class="cf-typeline">
+                        <span>Gancho — <span th:text="${historia.location}">lugar</span></span>
+                    </div>
+
+                    <div class="cf-rules">
+                        <p><span th:text="${historia.hook}">Gancho</span> Antagonista: <span th:text="${historia.antagonist}">antagonista</span>.</p>
+                        <p class="cf-meta">Complicación: <span th:text="${historia.complication}">complicación</span> Recompensa: <span th:text="${historia.reward}">recompensa</span></p>
+                        <p class="cf-flavor" th:if="${historia.flavorText}" th:text="${historia.flavorText}">flavor</p>
+                    </div>
+
+                    <p class="cf-id" th:text="'historias · ' + ${historia.id}">id</p>
+                </article>
+
+                <div>
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Dónde y contra quién ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong>Lugar:</strong> <span th:text="${historia.location}">lugar</span></p>
+                            <p><strong>Antagonista:</strong>
+                                <a th:if="${antagonistaEnlazable}" th:href="@{/cartas/enemigos/{id}(id=${historia.antagonist})}" th:text="${nombreAntagonista}">enemigo</a>
+                                <span th:unless="${antagonistaEnlazable}" th:text="${nombreAntagonista}">enemigo</span>
+                            </p>
+                            <p><strong>Recompensa:</strong>
+                                <a th:if="${tesoroEnlazable}" th:href="@{/tesoros/{id}(id=${historia.reward})}" th:text="${nombreTesoro}">tesoro</a>
+                                <span th:unless="${tesoroEnlazable}" th:text="${nombreTesoro}">tesoro</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded" th:if="${!#lists.isEmpty(pnjsRelacionados)}">
+                        <button type="button" class="gm-panel-section__toggle">PNJs que conocen este secreto ▾</button>
+                        <div class="gm-panel-section__content">
+                            <a th:each="n : ${pnjsRelacionados}" th:href="@{/npcs/{id}(id=${n.id})}"
+class="gm-badge u-mr-4-no-underline" th:text="${n.name}">pnj</a>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">La decisión ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p th:text="${historia.decision}">Decisión de la mesa</p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Complicación ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p th:text="${historia.complication}">Complicación</p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded" th:if="${!#strings.isEmpty(historia.consequence)}">
+                        <button type="button" class="gm-panel-section__toggle">Si el grupo falla o tarda ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p th:text="${historia.consequence}">Consecuencia</p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Meses afines ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p>Los personajes nacidos en estos meses tienen un vínculo natural con esta historia:</p>
+                            <p>
+                                <a class="u-mr-sp2" th:each="m,it : ${historia.months}" th:href="@{/cartas/transfondos/{id}(id=${m})}"
+th:text="${#strings.replace(#strings.replace(m, 'mes_', 'mes '), '_', ' ')}">mes</a>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="u-actions--wrap">
+                        <a class="gm-btn gm-btn--outline" th:href="@{/historias}">Volver al catálogo</a>
+                        <a class="gm-btn gm-btn--primary" th:href="@{/aventuras/crear}">Usar en una aventura</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Línea de tiempo de escenas (wireframe 13a): cada escena es un punto
+                 con su propio reparto (chips) y su tabla de acción → consecuencia. -->
+            <section th:if="${!#lists.isEmpty(historia.escenas)}" class="u-mt-sp4">
+                <h2 class="u-heading-gap">🎬 Escenas — línea de tiempo</h2>
+                <div class="tl-escenas">
+                    <div class="tl-escena" th:each="esc,it : ${historia.escenas}">
+                        <div class="tl-rail">
+                            <div class="tl-punto"></div>
+                            <div class="tl-linea" th:if="${!it.last}"></div>
+                        </div>
+                        <div class="tl-caja">
+                            <div class="tl-caja__lugar">
+                                <span>📍 <span th:text="${esc.lugar}">Lugar</span></span>
+                                <span class="tl-caja__momento" th:if="${!#strings.isEmpty(esc.momento)}" th:text="${esc.momento}">momento</span>
+                            </div>
+                            <div class="tl-chips">
+                                <a class="gm-badge" th:each="a : ${esc.aliados}" th:href="@{/npcs/{id}(id=${a})}" th:text="'🧑 ' + ${catalogo.nombreDe(a)}">aliado</a>
+                                <a class="gm-badge" th:each="e : ${esc.enemigos}" th:href="@{/cartas/enemigos/{id}(id=${e})}" th:text="'💀 ' + ${catalogo.nombreDe(e)}">enemigo</a>
+                                <span class="gm-badge" th:each="ev : ${esc.eventos}" th:text="'📜 ' + ${catalogo.nombreDe(ev)}">evento</span>
+                                <span class="gm-badge" th:each="t : ${esc.trampas}" th:text="'🪤 ' + ${catalogo.nombreDe(t)}">trampa</span>
+                                <a class="gm-badge" th:each="l : ${esc.loot}" th:href="@{/tesoros/{id}(id=${l})}" th:text="'💰 ' + ${catalogo.nombreDe(l)}">loot</a>
+                            </div>
+                            <div class="tl-acciones" th:if="${!#lists.isEmpty(esc.acciones)}">
+                                <div class="tl-acciones__titulo">Acción → Consecuencia</div>
+                                <div class="tl-accion" th:each="acc : ${esc.acciones}">
+                                    <span th:text="${acc.accion}">acción</span>
+                                    <span class="tl-accion__consecuencia">→ <span th:text="${acc.consecuencia}">consecuencia</span><th:block
+                                            th:if="${!#strings.isEmpty(acc.llevaA)}"> (lleva a <span th:text="${acc.llevaA}">escena</span>)</th:block></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section></main>
+</body>
+</html>

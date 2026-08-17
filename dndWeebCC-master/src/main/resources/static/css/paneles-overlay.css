@@ -1,0 +1,204 @@
+/* ============================================================
+   Paneles modulares superpuestos al Mapa Mundi.
+   Un rail vertical de iconos sobre el lienzo abre/cierra paneles
+   acoplados a la izquierda o derecha DEL MAPA (no ventanas
+   sueltas): interacción por paneles, estilo editor GIS.
+   Bajo 820px el rail pasa a horizontal y los paneles se apilan
+   como hojas sobre el mapa a ancho completo.
+   ============================================================ */
+
+/* El lienzo del mapa se envuelve en un workspace relativo */
+.gm-mapa-workspace { position: relative; }
+
+/* ---------- Rail de iconos (encima del mapa, borde izquierdo) ---------- */
+.gm-dock-rail {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 66;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.gm-dock-rail__btn {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    border: 1px solid var(--border-strong, var(--border));
+    border-radius: var(--radius-md, 8px);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    cursor: pointer;
+    box-shadow: 0 4px 12px var(--shadow-color, rgba(0, 0, 0, .25));
+    opacity: .92;
+}
+
+.gm-dock-rail__btn:hover { opacity: 1; }
+
+.gm-dock-rail__btn.is-activo {
+    background: var(--accent-secondary, var(--text-primary));
+    color: var(--accent-secondary-contrast, var(--bg-elevated));
+    border-color: transparent;
+    opacity: 1;
+}
+
+/* ---------- Contenedores laterales de paneles ---------- */
+.gm-dock-lado {
+    position: absolute;
+    top: 14px;
+    bottom: 14px;
+    z-index: 64;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: min(330px, 40%);
+    pointer-events: none;            /* solo los paneles capturan clics */
+}
+
+.gm-dock-lado--izq { left: 62px; }
+.gm-dock-lado--der { right: 14px; }
+
+/* ---------- Panel acoplado ---------- */
+.gm-dock-panel {
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;                   /* deja encoger el body scrollable */
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong, var(--border));
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 30px var(--shadow-color, rgba(0, 0, 0, .35));
+    overflow: hidden;
+    max-height: 100%;
+}
+
+.gm-dock-panel.is-cerrado { display: none; }
+
+.gm-dock-panel__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: var(--bg-sunken, rgba(0, 0, 0, .06));
+    border-bottom: 1px solid var(--border);
+    flex: none;
+}
+
+.gm-dock-panel__titulo {
+    flex: 1;
+    margin: 0;
+    font-size: var(--fs-small);
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.gm-dock-panel__boton {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md, 6px);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.gm-dock-panel__boton:hover { color: var(--text-primary); background: var(--bg-elevated); }
+
+.gm-dock-panel__body {
+    padding: 8px 10px;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+/* Los bloques recolocados pierden sus márgenes de página */
+.gm-dock-panel__body > * { margin-top: 0; }
+.gm-dock-panel__body .gm-mapa-toolbar { margin: 0; flex-wrap: wrap; }
+
+/* ---------- Menú "➕ Nuevo ▾" de la toolbar (doc 6.8) ---------- */
+.gm-nuevo-menu { position: relative; display: inline-block; }
+
+.gm-nuevo-menu > summary {
+    list-style: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+}
+
+.gm-nuevo-menu > summary::-webkit-details-marker { display: none; }
+
+.gm-nuevo-menu__lista {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 75;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong, var(--border));
+    border-radius: var(--radius-md, 8px);
+    box-shadow: 0 8px 24px var(--shadow-color, rgba(0, 0, 0, .3));
+    min-width: 180px;
+}
+
+/* si el modo edición tiene ocultos todos los botones, el menú desaparece */
+.gm-nuevo-menu:not(:has(.gm-nuevo-menu__lista button:not([hidden]))) { display: none; }
+
+/* ---------- Ficha de nación/ciudad/zona acoplada (solo escritorio) ---------- */
+@media (min-width: 821px) {
+    .gm-panel--dock {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        bottom: 14px;
+        left: auto;
+        width: min(360px, 46%);
+        max-height: none;
+        transform: translateX(12px) scale(1);
+        z-index: 70;                 /* por encima de los paneles laterales */
+    }
+
+    .gm-panel--dock.is-open { transform: none; }
+
+    /* la ficha acoplada no bloquea el mapa: sin telón de fondo */
+    #gm-panel-backdrop.gm-backdrop-oculto { display: none !important; }
+}
+
+/* ---------- Adaptabilidad: bajo 820px ---------- */
+@media (max-width: 820px) {
+    .gm-dock-rail {
+        flex-direction: row;
+        flex-wrap: wrap;
+        top: 8px;
+        left: 8px;
+        right: 8px;
+    }
+
+    /* los paneles pasan a hojas a ancho completo sobre el mapa:
+       izquierda = pegadas arriba (bajo el rail), derecha = pegadas abajo */
+    .gm-dock-lado {
+        left: 8px;
+        right: 8px;
+        width: auto;
+        pointer-events: none;
+    }
+
+    .gm-dock-lado--izq { top: 54px; bottom: auto; max-height: 45%; }
+    .gm-dock-lado--der { top: auto; bottom: 8px; max-height: 55%; }
+
+    .gm-dock-panel__body { max-height: 32vh; }
+}

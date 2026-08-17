@@ -1,0 +1,9 @@
+<nav th:fragment="subnav(activo)" class="d-flex gap-2 mb-4 flex-wrap">
+    <a th:href="@{/cartas}" class="btn btn-sm" th:classappend="${activo == 'resumen'} ? 'btn-dark' : 'btn-outline-dark'">Resumen</a>
+    <a th:href="@{/cartas/clases}" class="btn btn-sm" th:classappend="${activo == 'clases'} ? 'btn-dark' : 'btn-outline-dark'">Clases</a>
+    <a th:href="@{/cartas/razas}" class="btn btn-sm" th:classappend="${activo == 'razas'} ? 'btn-dark' : 'btn-outline-dark'">Razas</a>
+    <a th:href="@{/cartas/transfondos}" class="btn btn-sm" th:classappend="${activo == 'transfondos'} ? 'btn-dark' : 'btn-outline-dark'">Trasfondos</a>
+    <a th:href="@{/cartas/habilidades}" class="btn btn-sm" th:classappend="${activo == 'habilidades'} ? 'btn-dark' : 'btn-outline-dark'">Habilidades</a>
+    <a th:href="@{/cartas/armas}" class="btn btn-sm" th:classappend="${activo == 'armas'} ? 'btn-dark' : 'btn-outline-dark'">Armas y objetos</a>
+    <a th:href="@{/cartas/dotes}" class="btn btn-sm" th:classappend="${activo == 'dotes'} ? 'btn-dark' : 'btn-outline-dark'">Dotes</a>
+</nav>

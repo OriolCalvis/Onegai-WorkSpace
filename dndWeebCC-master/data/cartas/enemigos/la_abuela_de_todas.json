@@ -1,0 +1,96 @@
+{
+ "id": "la_abuela_de_todas",
+ "name": "La Abuela de Todas",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "corruptor",
+ "faction": "sagas_de_la_luna_hueca",
+ "stats": {
+  "CON": 8,
+  "DES": 9,
+  "INT": 10,
+  "CAR": 10
+ },
+ "derived": {
+  "vida": 70,
+  "ca": 21,
+  "defensaMental": 20,
+  "resistenciaFisica": 18,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Reprimenda",
+   "defense": "defensa_mental",
+   "effect": "Daño psíquico que suma su CAR; si el objetivo es su 'nieto favorito', también queda Encantado si falla."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "defensa_mental",
+   "effect": "Si el objetivo falla, queda Encantado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en Desesperación: su ataque firma se calcula como éxito crítico (GDD 7.6)."
+  }
+ ],
+ "passive": {
+  "name": "Nieta Favorita",
+  "description": "Nieta Favorita: al inicio del combate elige a un personaje — sus pifias le dan a ella +1 (los errores del favorito alimentan)."
+ },
+ "conditionsInflicted": [
+  "encantado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Magico"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Sigue su método con calma: aún cree que sobra tiempo."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Activa la arena a pleno: El caldero: cada ronda hierve algo distinto — el DJ anuncia el efecto (niebla, olor a infancia, chispas)"
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final; su debilidad narrativa queda a la vista (el DJ da la pista si no la tienen)."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Cobrarse los mil favores pequeños que todo el valle le debe desde hace tres generaciones",
+  "metodo": "Convierte cortesías en contratos: aceptar su ayuda es la trampa",
+  "debilidad_narrativa": "Rechazar tres veces sus ofertas en combate (declaración explícita) rompe su hechizo de favores: pierde su pasiva",
+  "vinculo": "la_luna_hueca"
+ },
+ "arena": {
+  "name": "La Cocina de la Colina",
+  "hazard": "El caldero: cada ronda hierve algo distinto — el DJ anuncia el efecto (niebla, olor a infancia, chispas)"
+ },
+ "legendaryActions": [
+  "Favorcito (1/ronda): ofrece +1 a la próxima tirada de un personaje; si lo acepta, queda Encantado"
+ ],
+ "storyCard": {
+  "title": "La Abuela de Todas",
+  "text": "No maldice a nadie. Deja que acepten regalos.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Cada bruja del valle aprendió de alguien. Ese alguien."
+}

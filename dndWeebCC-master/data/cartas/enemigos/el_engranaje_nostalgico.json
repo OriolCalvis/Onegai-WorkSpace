@@ -1,0 +1,84 @@
+{
+ "id": "el_engranaje_nostalgico",
+ "name": "El Engranaje Nostálgico",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "tanque",
+ "faction": "forjados_sin_amo",
+ "stats": {
+  "CON": 8,
+  "DES": 5,
+  "INT": 5,
+  "CAR": 6
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 16,
+  "defensaMental": 16,
+  "resistenciaFisica": 18,
+  "movimiento": 4
+ },
+ "attacks": [
+  {
+   "name": "Pinza de Precisión",
+   "defense": "CA",
+   "effect": "Daño que suma su CON; el impactado que falle queda Agarrado contra su pecho de latón."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "CA",
+   "effect": "Si el objetivo falla, queda Agarrado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Abrazo de Mantenimiento",
+  "description": "Abrazo de Mantenimiento: retiene a su presa con delicadeza terrible — sus Agarrados no reciben daño de otros Forjados (es SU persona)."
+ },
+ "conditionsInflicted": [
+  "agarrado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico",
+  "Importante"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Encadena su técnica tras el ataque firma y +1 al daño."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Encontrar a su operario original o a alguien con las mismas manos",
+  "metodo": "Agarra a quien se parezca y no entiende los gritos",
+  "debilidad_narrativa": "Las manos correctas: manos de artesano (Forjacantos, Inventor o prueba de oficio) pueden 'operarlo' — se calma una ronda",
+  "vinculo": "forjacantos"
+ },
+ "arena": {
+  "name": "La Cadena de Montaje Muerta",
+  "hazard": "Cintas transportadoras: mueven 5 pies por ronda a quien esté encima (dirección fija)"
+ },
+ "legendaryActions": [],
+ "storyCard": {
+  "title": "El Engranaje Nostálgico",
+  "text": "No es agresivo. Es meticulosamente cariñoso.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Recuerda manos que ya no existen. Las busca."
+}

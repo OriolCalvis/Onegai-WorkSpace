@@ -1,0 +1,84 @@
+{
+ "id": "ruk_el_mordedor",
+ "name": "Ruk el Mordedor",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "bruto",
+ "faction": "clan_de_gongorguma_renegado",
+ "stats": {
+  "CON": 7,
+  "DES": 6,
+  "INT": 5,
+  "CAR": 5
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 17,
+  "defensaMental": 15,
+  "resistenciaFisica": 17,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Mordisco de Guerra",
+   "defense": "CA",
+   "effect": "Daño que suma su CON; en éxito crítico, arranca — el objetivo suelta el objeto de su mano secundaria."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "CA",
+   "effect": "Si el objetivo falla, queda Sangrado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Mandíbula del Clan",
+  "description": "Mandíbula del Clan: sus golpes contra personajes con Guardia Rota o Caídos aplican Sangrado sin tirada."
+ },
+ "conditionsInflicted": [
+  "sangrado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico",
+  "Importante"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Encadena su técnica tras el ataque firma y +1 al daño."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Ganarse un nombre que no dé risa: el respeto se muerde",
+  "metodo": "Va directo al que más grita: el respeto se gana arriba",
+  "debilidad_narrativa": "Su nombre real (ridículo, se descubre): pronunciarlo lo enfurece — ataca sin técnica (solo golpes, con desventaja)",
+  "vinculo": "el_toro_de_gongorguma"
+ },
+ "arena": {
+  "name": "La Explanada de los Retos",
+  "hazard": "Gradas del clan: los renegados jalean — cada crítico de cualquier bando les arranca +0,5 a su próxima tirada (público)"
+ },
+ "legendaryActions": [],
+ "storyCard": {
+  "title": "Ruk el Mordedor",
+  "text": "Mordió a un lobo del Rei Llop. El lobo pidió disculpas.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Su apodo no es metáfora."
+}

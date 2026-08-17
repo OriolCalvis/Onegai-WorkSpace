@@ -1,0 +1,23 @@
+{
+ "id": "cegado",
+ "name": "Cegado",
+ "type": "condition",
+ "category": "negativa",
+ "source": "estado",
+ "stackable": false,
+ "duration": "hasta_curarse",
+ "effects": [
+  {
+   "description": "Desventaja en tus ataques.",
+   "mechanicHook": "desventaja:ataque"
+  },
+  {
+   "description": "Las habilidades que requieren ver al objetivo fallan automáticamente.",
+   "mechanicHook": "bloquea:vision"
+  }
+ ],
+ "cureConditions": [
+  "Lo que indique la fuente (normalmente el final de un turno o una cura)"
+ ],
+ "flavorText": "El mundo sigue ahí. Tú ya no le encuentras."
+}

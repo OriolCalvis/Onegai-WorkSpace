@@ -1,0 +1,38 @@
+{
+ "id": "deity_wolf_king",
+ "name": "El Rey Lobo",
+ "type": "deity",
+ "domain": "invierno, muerte y manada",
+ "favor": {
+  "description": "1/descanso largo: hueles la sangre — sabes automáticamente qué criatura a la vista está más herida y ganas +1 a tu próximo ataque contra ella.",
+  "scaling": "CAR"
+ },
+ "compatibleWith": [
+  "race_orc_gongorguma",
+  "mes_dels_aullits",
+  "furia_salvaje"
+ ],
+ "obligations": [
+  "Nunca abandones a un miembro de tu manada (tu grupo) en peligro de muerte."
+ ],
+ "grantedSpells": [
+  "lobo_lamer_las_heridas",
+  "lobo_instinto_de_manada",
+  "lobo_dentellada_invernal",
+  "lobo_pelaje_del_invierno",
+  "lobo_aullido_lejano",
+  "lobo_reunir_la_manada",
+  "lobo_sentencia_del_alfa",
+  "lobo_caceria_compartida",
+  "lobo_cerco_de_lobos",
+  "lobo_el_ultimo_invierno"
+ ],
+ "flavorText": "Su tumba tiene nombre propio y lista de visitas.",
+ "rank": "deidad_local",
+ "_correccion": {
+  "identidad_anterior": "death / Muerte",
+  "motivo": "El nombre de Creador estaba pegado sobre contenido ajeno.",
+  "evidencia": "dominio 'invierno, muerte y manada' + lobo_* · Mes de los Aullidos",
+  "aplicado_por": "Onegai-Core/bridge/restaurar_identidad_deidades.py"
+ }
+}

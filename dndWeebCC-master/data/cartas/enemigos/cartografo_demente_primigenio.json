@@ -1,0 +1,64 @@
+{
+ "id": "cartografo_demente_primigenio",
+ "name": "Cartografo Demente Primigenio",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 5,
+ "role": "control",
+ "faction": "horrores_del_cielo_fragmentado",
+ "factionName": "Los Horrores del Cielo Fragmentado",
+ "stats": {
+  "CON": 8,
+  "DES": 7,
+  "INT": 9,
+  "CAR": 8
+ },
+ "derived": {
+  "vida": 46,
+  "ca": 18,
+  "defensaMental": 18,
+  "resistenciaFisica": 18,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Linea Torcida",
+   "defense": "CA",
+   "effect": "Ataque de magico: daño que suma su INT (pool de INT, regla 7.6)."
+  },
+  {
+   "name": "Redibujar la Sala",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: si el objetivo falla, queda Cegado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Al inicio de cada ronda cae un fragmento de cielo: un punto del campo a elección del DJ se vuelve peligroso (1 de daño al pisarlo)."
+ },
+ "conditionsInflicted": [
+  "cegado"
+ ],
+ "loot": [
+  "orbe_de_mano_de_milicia",
+  "vara_de_aprendiz_de_viaje",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Magico"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Gana una segunda técnica por ronda y +1 al daño."
+  }
+ ],
+ "flavorText": "El cielo se rompió hace eras. Estas son las astillas que aprendieron a moverse."
+}

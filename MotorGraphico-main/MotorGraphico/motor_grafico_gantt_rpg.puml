@@ -1,0 +1,171 @@
+@startgantt
+title Motor Grafico Isometrico - RPG estilo Dragon Quest (niveles JSON, habilidades, combate, HUD)
+Project starts 2026-08-17
+saturday are closed
+sunday are closed
+
+note top
+  Continuacion de motor_grafico_gantt.puml (Fases 0-5, motor base) una vez
+  cerrada la Fase 4 (iluminacion, niebla, LUT, transiciones de camara,
+  sprite batching dinamico - ver README.md). Alcance: convertir el motor
+  isometrico generico en la base jugable de un RPG por turnos estilo
+  Dragon Quest clasico, con contenido (niveles, enemigos, habilidades)
+  dirigido por datos (JSON) en vez de hardcodeado en C++.
+
+  Riesgo de "feature creep" ya senalado en motor_grafico_dafo.md: las
+  Fases 8 (combate) y 9 (HUD) eran las mas grandes y las que mas facil se
+  disparaban. ESTADO ACTUAL: Fases 6, 7, 8 y 9 completas (ver README.md,
+  "Sistema RPG"): niveles JSON, habilidades, combate por turnos (MVP: un
+  enemigo, sin variacion de IA -- el corte previsto aqui mismo, aplicado
+  tal cual) y HUD modular CON texto (fuente bitmap propia + menu de
+  comandos + cuadro de dialogo, no solo la version minima sin texto que
+  se contemplaba como corte de emergencia -- no hizo falta cortar).
+
+  Fase 10 TAMBIEN completa (ver README, "Sistema RPG"): ObjectCatalog/
+  ObjectDefinition con categorias prop/enemy/pickup, ObjectSpawn en
+  LevelDefinition (conviviendo con "enemies" por compatibilidad), y la
+  accion Item de BattleState apoyada en PickupData -- el hueco que la
+  Fase 8 dejo documentado, cerrado. Matiz de alcance frente a lo
+  planificado abajo: cubre consumibles e items de inventario, NO equipo
+  (armas/armaduras que cambien el dano del ataque basico) -- eso queda
+  como extension futura del catalogo.
+
+  Fase 11 TAMBIEN completa (ver README, "Sistema RPG"): DynamicLightMap
+  (N point lights con color, compuestas en CPU por frame, enchufadas al
+  pase de post-FX de la Fase 4 sin tocar renderer ni shader) + sombras
+  blob procedurales bajo entidades (IRenderable::renderShadow, con
+  GL_BLEND activado por primera vez en el batch de escena). Matiz de
+  alcance: las "sombras" son blobs (elipse difusa a los pies), NO
+  sombras proyectadas con oclusion real -- lo estandar en isometrico 2D
+  de esta estetica, documentado en BlobShadow.h.
+
+  Fase 12 TAMBIEN completa, con UNA desviacion del plan de abajo: la
+  tarea "Vendorizar Dear ImGui" NO se hizo (sin red en el entorno de
+  desarrollo, imposible descargarlo) y la UI se monto con el HUD PROPIO
+  de la Fase 9 (HudPanel/HudText/BitmapFont) en su lugar -- ver
+  EditorState.h para la decision completa. El resto del plan se cumplio:
+  canvas isometrico editable con raton (examples/level_editor.cpp),
+  paleta de tiles, paleta de objetos del ObjectCatalog (Fase 10), y
+  exportar a TMX + LevelDefinition JSON (verificado con round-trip REAL
+  contra TileMap/LevelLoader, ver demo_editor_state.cpp). Recortes de
+  MVP documentados: una capa de tiles, sin undo, sin panel de
+  propiedades (la patrulla/stats se editan en el JSON a mano de
+  momento), y la "prueba manual end-to-end" queda pendiente de una
+  maquina con GLFW real (este entorno no puede abrir ventanas).
+
+  Con esto, el roadmap RPG completo (Fases 6-12) esta cerrado. Y por
+  encima de el, el CICLO DE JUEGO: GameSession (exploracion <-> combate,
+  GL-free, verificada de verdad) + Application (el bucle real que el
+  diagrama de clases listaba desde el principio), que convierten todo lo
+  anterior en una partida jugable -- ejecutable "juego",
+  examples/juego.cpp. Eso cierra tambien la "transicion automatica
+  exploracion<->combate" que las Fases 8-12 fueron arrastrando como
+  pendiente.
+
+  Extensiones naturales si se continua: migrar la UI del editor a ImGui
+  cuando se pueda vendorizar, panel de propiedades y undo en el editor,
+  equipo en el catalogo (armas/armaduras que alimenten la formula de
+  dano en vez del kBasicAttackPower fijo), varios enemigos por combate,
+  y niveles encadenados.
+end note
+
+-- Fase 6: Sistema de niveles y contenido (JSON) --
+[Parser JSON propio (motor_json, sin dependencias)] lasts 3 days
+[Esquema de nivel: LevelDefinition/EnemySpawn] lasts 2 days
+[LevelLoader: JSON -> LevelDefinition] lasts 3 days
+[Catalogo de enemigos (stats base, sprite, habilidades por tipo)] lasts 3 days
+[Demo/test de carga de nivel (sin GL)] lasts 2 days
+[Parser JSON propio (motor_json, sin dependencias)] -> [Esquema de nivel: LevelDefinition/EnemySpawn]
+[Esquema de nivel: LevelDefinition/EnemySpawn] -> [LevelLoader: JSON -> LevelDefinition]
+[LevelLoader: JSON -> LevelDefinition] -> [Catalogo de enemigos (stats base, sprite, habilidades por tipo)]
+[Catalogo de enemigos (stats base, sprite, habilidades por tipo)] -> [Demo/test de carga de nivel (sin GL)]
+
+-- Fase 7: Sistema de habilidades --
+[Clase Skill (dano/curacion, coste de mana, objetivo)] lasts 2 days
+[SkillSet: habilidades conocidas + mana por entidad] lasts 3 days
+[SkillCatalog: catalogo de Skill por id] lasts 1 day
+[Interfaz comun Player/Enemy para recibir efectos (dano/curacion)] lasts 3 days
+[Vincular EnemySpawn.skillIds / catalogo de enemigos con SkillSet real] lasts 2 days
+[Demo/test del sistema de habilidades (sin GL)] lasts 2 days
+[Catalogo de enemigos (stats base, sprite, habilidades por tipo)] -> [Clase Skill (dano/curacion, coste de mana, objetivo)]
+[Clase Skill (dano/curacion, coste de mana, objetivo)] -> [SkillSet: habilidades conocidas + mana por entidad]
+[SkillSet: habilidades conocidas + mana por entidad] -> [SkillCatalog: catalogo de Skill por id]
+[SkillCatalog: catalogo de Skill por id] -> [Interfaz comun Player/Enemy para recibir efectos (dano/curacion)]
+[Interfaz comun Player/Enemy para recibir efectos (dano/curacion)] -> [Vincular EnemySpawn.skillIds / catalogo de enemigos con SkillSet real]
+[Vincular EnemySpawn.skillIds / catalogo de enemigos con SkillSet real] -> [Demo/test del sistema de habilidades (sin GL)]
+
+-- Fase 8: Combate por turnos --
+[BattleState: cola de turnos jugador/enemigo] lasts 4 days
+[Transicion exploracion <-> combate (encuentro por colision)] lasts 3 days
+[Resolucion de accion (atacar/habilidad/objeto/huir)] lasts 4 days
+[IA basica de enemigo en combate (elegir ataque o habilidad)] lasts 3 days
+[Fin de combate (victoria/derrota, recompensas minimas)] lasts 2 days
+[Demo/test de combate (sin GL, BattleState puro)] lasts 3 days
+[Demo/test del sistema de habilidades (sin GL)] -> [BattleState: cola de turnos jugador/enemigo]
+[BattleState: cola de turnos jugador/enemigo] -> [Transicion exploracion <-> combate (encuentro por colision)]
+[Transicion exploracion <-> combate (encuentro por colision)] -> [Resolucion de accion (atacar/habilidad/objeto/huir)]
+[Resolucion de accion (atacar/habilidad/objeto/huir)] -> [IA basica de enemigo en combate (elegir ataque o habilidad)]
+[IA basica de enemigo en combate (elegir ataque o habilidad)] -> [Fin de combate (victoria/derrota, recompensas minimas)]
+[Fin de combate (victoria/derrota, recompensas minimas)] -> [Demo/test de combate (sin GL, BattleState puro)]
+
+-- Fase 9: HUD modular --
+[Framework: IHudElement + HudAnchor/HudTransform (anclas, sin GL)] lasts 3 days
+[HudManager: composicion, orden, proyeccion ortografica en pantalla] lasts 2 days
+[Widgets base: HudBar (vida/mana), HudPanel] lasts 3 days
+[Sistema de fuentes bitmap (prerrequisito de texto en HUD)] lasts 5 days
+[Widget de menu de comandos estilo DQ (Atacar/Habilidad/Objeto/Huir)] lasts 4 days
+[Widget de cuadro de dialogo] lasts 3 days
+[Integrar HUD de combate con BattleState (Fase 8)] lasts 3 days
+[Demo/test del HUD con contexto OpenGL real] lasts 2 days
+[Demo/test de combate (sin GL, BattleState puro)] -> [Framework: IHudElement + HudAnchor/HudTransform (anclas, sin GL)]
+[Framework: IHudElement + HudAnchor/HudTransform (anclas, sin GL)] -> [HudManager: composicion, orden, proyeccion ortografica en pantalla]
+[HudManager: composicion, orden, proyeccion ortografica en pantalla] -> [Widgets base: HudBar (vida/mana), HudPanel]
+[Widgets base: HudBar (vida/mana), HudPanel] -> [Sistema de fuentes bitmap (prerrequisito de texto en HUD)]
+[Sistema de fuentes bitmap (prerrequisito de texto en HUD)] -> [Widget de menu de comandos estilo DQ (Atacar/Habilidad/Objeto/Huir)]
+[Widget de menu de comandos estilo DQ (Atacar/Habilidad/Objeto/Huir)] -> [Widget de cuadro de dialogo]
+[Widget de cuadro de dialogo] -> [Integrar HUD de combate con BattleState (Fase 8)]
+[Integrar HUD de combate con BattleState (Fase 8)] -> [Demo/test del HUD con contexto OpenGL real]
+
+-- Fase 10: Catalogo de objetos (todo es un objeto) --
+[Disenar ObjectDefinition generico (id, categoria, sprite, colision, interactuable)] lasts 3 days
+[ObjectCatalog: catalogo unico por id, reemplaza al catalogo de enemigos de la Fase 6] lasts 3 days
+[Datos por categoria: CombatData (enemigos, usa Skill/SkillSet) / PickupData (items)] lasts 4 days
+[Generalizar EnemySpawn -> ObjectSpawn en LevelDefinition (Fase 6)] lasts 3 days
+[Migrar assets/levels/test_level.json y el catalogo de enemigos al nuevo esquema] lasts 2 days
+[Demo/test del catalogo de objetos (sin GL)] lasts 2 days
+[Demo/test del HUD con contexto OpenGL real] -> [Disenar ObjectDefinition generico (id, categoria, sprite, colision, interactuable)]
+[Disenar ObjectDefinition generico (id, categoria, sprite, colision, interactuable)] -> [ObjectCatalog: catalogo unico por id, reemplaza al catalogo de enemigos de la Fase 6]
+[ObjectCatalog: catalogo unico por id, reemplaza al catalogo de enemigos de la Fase 6] -> [Datos por categoria: CombatData (enemigos, usa Skill/SkillSet) / PickupData (items)]
+[Datos por categoria: CombatData (enemigos, usa Skill/SkillSet) / PickupData (items)] -> [Generalizar EnemySpawn -> ObjectSpawn en LevelDefinition (Fase 6)]
+[Generalizar EnemySpawn -> ObjectSpawn en LevelDefinition (Fase 6)] -> [Migrar assets/levels/test_level.json y el catalogo de enemigos al nuevo esquema]
+[Migrar assets/levels/test_level.json y el catalogo de enemigos al nuevo esquema] -> [Demo/test del catalogo de objetos (sin GL)]
+
+-- Fase 11: Iluminacion avanzada y sombras --
+[Point lights dinamicos (varias fuentes, no solo un lightmap global fijo)] lasts 4 days
+[Composicion de point lights en la textura de lightmap (CPU, mismo patron que FogOfWar)] lasts 4 days
+[Sombras "blob" bajo entidades (sprite de sombra, Painter's Algorithm)] lasts 3 days
+[Integrar con niebla de guerra existente (evitar doble-oscurecido)] lasts 2 days
+[Demo/test con contexto OpenGL real] lasts 2 days
+[Demo/test del catalogo de objetos (sin GL)] -> [Point lights dinamicos (varias fuentes, no solo un lightmap global fijo)]
+[Point lights dinamicos (varias fuentes, no solo un lightmap global fijo)] -> [Composicion de point lights en la textura de lightmap (CPU, mismo patron que FogOfWar)]
+[Composicion de point lights en la textura de lightmap (CPU, mismo patron que FogOfWar)] -> [Sombras "blob" bajo entidades (sprite de sombra, Painter's Algorithm)]
+[Sombras "blob" bajo entidades (sprite de sombra, Painter's Algorithm)] -> [Integrar con niebla de guerra existente (evitar doble-oscurecido)]
+[Integrar con niebla de guerra existente (evitar doble-oscurecido)] -> [Demo/test con contexto OpenGL real]
+
+-- Fase 12: Editor de niveles visual (sustituye a Tiled) --
+[Vendorizar Dear ImGui (immediate-mode GUI, mismo patron que GLAD/stb/tinyxml2)] lasts 2 days
+[Canvas de edicion: reutiliza TileMap/IsometricRenderer dentro de la ventana del editor] lasts 5 days
+[Paleta de tiles (pintar capas del TileMap con el mouse)] lasts 4 days
+[Paleta de objetos (Fase 10: colocar cualquier ObjectDefinition del catalogo)] lasts 4 days
+[Panel de propiedades (editar patrulla/skills/stats del objeto seleccionado)] lasts 4 days
+[Exportar a LevelDefinition JSON (Fase 6) + guardar/cargar la capa de tiles] lasts 4 days
+[Prueba manual end-to-end (crear un nivel completo desde cero en el editor)] lasts 2 days
+[Demo/test con contexto OpenGL real] -> [Vendorizar Dear ImGui (immediate-mode GUI, mismo patron que GLAD/stb/tinyxml2)]
+[Vendorizar Dear ImGui (immediate-mode GUI, mismo patron que GLAD/stb/tinyxml2)] -> [Canvas de edicion: reutiliza TileMap/IsometricRenderer dentro de la ventana del editor]
+[Canvas de edicion: reutiliza TileMap/IsometricRenderer dentro de la ventana del editor] -> [Paleta de tiles (pintar capas del TileMap con el mouse)]
+[Paleta de tiles (pintar capas del TileMap con el mouse)] -> [Paleta de objetos (Fase 10: colocar cualquier ObjectDefinition del catalogo)]
+[Paleta de objetos (Fase 10: colocar cualquier ObjectDefinition del catalogo)] -> [Panel de propiedades (editar patrulla/skills/stats del objeto seleccionado)]
+[Panel de propiedades (editar patrulla/skills/stats del objeto seleccionado)] -> [Exportar a LevelDefinition JSON (Fase 6) + guardar/cargar la capa de tiles]
+[Exportar a LevelDefinition JSON (Fase 6) + guardar/cargar la capa de tiles] -> [Prueba manual end-to-end (crear un nivel completo desde cero en el editor)]
+
+@endgantt

@@ -1,0 +1,52 @@
+{
+ "id": "farolillo_burlon",
+ "name": "Farolillo Burlon",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 2,
+ "role": "corruptor",
+ "faction": "yokai_del_umbral",
+ "factionName": "Los Yokai del Umbral",
+ "stats": {
+  "CON": 2,
+  "DES": 3,
+  "INT": 4,
+  "CAR": 4
+ },
+ "derived": {
+  "vida": 16,
+  "ca": 13,
+  "defensaMental": 14,
+  "resistenciaFisica": 12,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Chispa Fria",
+   "defense": "CA",
+   "effect": "Ataque de oscuro: daño que suma su INT (pool de INT, regla 7.6)."
+  },
+  {
+   "name": "Luz que Miente",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: si el objetivo falla, queda Encantado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "La primera vez que se les golpea cada combate, el atacante debe superar Defensa mental o golpea a una ilusión."
+ },
+ "conditionsInflicted": [
+  "encantado"
+ ],
+ "loot": [
+  "estilete_de_viaje",
+  "faldar_de_explorador"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Oscuro"
+ ],
+ "phases": [],
+ "flavorText": "Viven en el marco de las puertas. Cobran peaje en certezas."
+}

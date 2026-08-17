@@ -1,0 +1,96 @@
+{
+ "id": "san_lazaro_el_hinchado",
+ "name": "San Lázaro el Hinchado",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "invocador",
+ "faction": "plaga_de_san_lazaro",
+ "stats": {
+  "CON": 9,
+  "DES": 8,
+  "INT": 11,
+  "CAR": 9
+ },
+ "derived": {
+  "vida": 70,
+  "ca": 20,
+  "defensaMental": 19,
+  "resistenciaFisica": 19,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Bendición Reventada",
+   "defense": "resistencia_fisica",
+   "effect": "Estalla parcialmente: daño de veneno en área corta; los que fallen quedan Envenenados."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "resistencia_fisica",
+   "effect": "Si el objetivo falla, queda Envenenado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en Desesperación: su ataque firma se calcula como éxito crítico (GDD 7.6)."
+  }
+ ],
+ "passive": {
+  "name": "Milagro Constante",
+  "description": "Milagro Constante: al inicio de su turno, si hay algún personaje Envenenado, invoca una Larva de Plaga (criatura t1) adyacente a él."
+ },
+ "conditionsInflicted": [
+  "envenenado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Veneno"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Sigue su método con calma: aún cree que sobra tiempo."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Activa la arena a pleno: Camas ocupadas: los pacientes (civiles) no deben morir — cada baja da +1 permanente al santo"
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final; su debilidad narrativa queda a la vista (el DJ da la pista si no la tienen)."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Que nadie vuelva a morir solo: unirlo todo en una sola carne febril",
+  "metodo": "Abraza: su piedad es contagiosa en el sentido más literal",
+  "debilidad_narrativa": "La medicina honesta: curar una condición a la vista le hace 2 de daño (la salud lo refuta)",
+  "vinculo": "plaga_de_san_lazaro"
+ },
+ "arena": {
+  "name": "El Hospital de los Milagros",
+  "hazard": "Camas ocupadas: los pacientes (civiles) no deben morir — cada baja da +1 permanente al santo"
+ },
+ "legendaryActions": [
+  "Última Unción (1/ronda): cura 2 a uno de sus enjambres o larvas"
+ ],
+ "storyCard": {
+  "title": "San Lázaro el Hinchado",
+  "text": "Los milagros no se le acabaron. Se le acabó el criterio.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "El santo cumplió su promesa. Por eso hay que pararlo."
+}

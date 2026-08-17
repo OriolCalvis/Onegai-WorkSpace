@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="'Constructor · ' + ${aventura.nom}">Constructor</title>
+    <link th:href="@{/css/tokens.css}" rel="stylesheet">
+    <link th:href="@{/css/base.css}" rel="stylesheet">
+    <link th:href="@{/css/components.css}" rel="stylesheet">
+    <link th:href="@{/css/utilities.css}" rel="stylesheet">
+    <link th:href="@{/css/constructor.css}" rel="stylesheet">
+</head>
+<body>
+<div class="gm-app">
+    <div th:replace="~{Blocks/header-v2 :: header}"></div>
+    <div class="gm-body">
+        <div th:replace="~{Blocks/sidebar-v2 :: sidebar}"></div>
+        <main class="gm-main">
+            <div class="u-page-header">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-p-0">
+                        <a th:href="@{/aventuras/{id}(id=${aventura.id})}">‹ Volver a la aventura</a>
+                    </p>
+                    <h1 class="u-mb-sp1" th:text="'🛠 Constructor · ' + ${aventura.nom}">Constructor</h1>
+                    <p class="u-lead">Mazo de historia por actos (GDD §20): 🔵 Base · ⚡ Condicional · 🔗 Cadena · 💥 Inyectada · 🏁 Balance final.</p>
+                </div>
+                <div>
+                    <a class="gm-btn gm-btn--outline" th:if="${aventura.esPorActos()}"
+                       th:href="@{/aventuras/{id}/dependencias(id=${aventura.id})}">🧪 Dependencias y validación</a>
+                </div>
+            </div>
+
+            <div class="cn-wrap">
+
+                <!-- Columna de Actos con contadores -->
+                <div>
+                    <div class="cn-actos-h">Actos</div>
+                    <div class="cn-acto" th:each="acto : ${ {1,2,3} }">
+                        <b th:text="'Acto ' + ${acto}">Acto</b>
+                        <span class="cn-meta">
+                            <span th:text="${#lists.size(aventura.cartasDeActo(acto))}">0</span> cartas
+                        </span><br>
+                        <span class="cn-meta"
+                              th:classappend="${aventura.porcentajeBase(acto) >= 40} ? 'cn-ok' : 'cn-bad'"
+                              th:text="${aventura.porcentajeBase(acto)} + '% Base (mín. 40%)'">% Base</span>
+                    </div>
+                    <p class="cn-meta cn-rule-note">Regla §20.4: cada acto ≥40% Base y ≥6 cartas para no quedarse en blanco.</p>
+                </div>
+
+                <!-- Tablero por acto -->
+                <div>
+                    <div th:each="acto : ${ {1,2,3} }" class="cn-acto-block">
+                        <h3 class="cn-acto-title" th:text="'Acto ' + ${acto}">Acto</h3>
+                        <p th:if="${#lists.isEmpty(aventura.cartasDeActo(acto))}" class="cn-meta">Sin cartas todavía.</p>
+                        <div class="cn-card" th:each="c : ${aventura.cartasDeActo(acto)}">
+                            <span class="cn-code" th:text="${c.code}">A1-01</span>
+                            <span class="cn-kind" th:switch="${c.tipo.name()}">
+                                <span th:case="'BASE'">🔵</span>
+                                <span th:case="'CONDICIONAL'">⚡</span>
+                                <span th:case="'CADENA'">🔗</span>
+                                <span th:case="'INYECTADA'">💥</span>
+                                <span th:case="'BALANCE_FINAL'">🏁</span>
+                            </span>
+                            <span class="cn-title" th:text="${c.titulo}">Título</span>
+                            <a class="gm-chip" th:href="@{/aventuras/{id}/constructor(id=${aventura.id},edit=${c.code})}">editar</a>
+                            <form th:action="@{/aventuras/{id}/cartas/{code}/borrar(id=${aventura.id},code=${c.code})}" method="post" class="u-inline">
+                                <button class="gm-chip" type="submit">✕</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulario de carta -->
+                <div class="cn-form">
+                    <h3 class="cn-form-title"
+                        th:text="${editando != null} ? ('Editar ' + ${editando}) : 'Añadir carta'">Añadir carta</h3>
+
+                    <form th:action="${editando != null}
+                            ? @{/aventuras/{id}/cartas/{code}/editar(id=${aventura.id},code=${editando})}
+                            : @{/aventuras/{id}/cartas(id=${aventura.id})}"
+                          method="post" th:object="${cartaForm}">
+
+                        <div class="cn-row2">
+                            <div><label>Acto</label>
+                                <select th:field="*{acto}"><option th:value="1">Acto I</option><option th:value="2">Acto II</option><option th:value="3">Acto III</option></select>
+                            </div>
+                            <div><label>Tipo</label>
+                                <select th:field="*{tipo}">
+                                    <option value="base">Base</option>
+                                    <option value="condicional">Condicional</option>
+                                    <option value="inyectada">Inyectada</option>
+                                    <option value="cadena">Cadena 🔗</option>
+                                    <option value="balance_final">Balance final</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <label>Título</label>
+                        <input type="text" th:field="*{titulo}" placeholder="El Mapa del Tesoro">
+
+                        <label>Escena (cara jugador)</label>
+                        <textarea th:field="*{escena}" rows="3" placeholder="Texto que lee el director…"></textarea>
+
+                        <label>Gancho «Si ignoran esto…» (copia del Director)</label>
+                        <input type="text" th:field="*{ganchoIgnorar}" placeholder="Si ignoran esto, …">
+
+                        <label>Requisito de entrada (solo Condicional)</label>
+                        <div class="cn-row2">
+                            <input type="text" th:field="*{requiereCode}" placeholder="A1-03">
+                            <select th:field="*{requiereEstado}"><option value="">—</option><option value="verde">= Verde</option><option value="roja">= Roja</option></select>
+                        </div>
+
+                        <label>Inyección (solo Inyectada): carta observada</label>
+                        <input type="text" th:field="*{inyeccionCode}" placeholder="A1-02">
+                        <div class="cn-row2">
+                            <div><label>Texto si Roja</label><textarea th:field="*{inyeccionTextoRoja}" rows="2"></textarea></div>
+                            <div><label>Texto si Verde</label><textarea th:field="*{inyeccionTextoVerde}" rows="2"></textarea></div>
+                        </div>
+
+                        <label>Cadena (solo 🔗): orden / total</label>
+                        <div class="cn-row2">
+                            <input type="number" th:field="*{cadenaOrden}" min="0">
+                            <input type="number" th:field="*{cadenaTotal}" min="0">
+                        </div>
+
+                        <label>Referencias · enemigos (ids, coma)</label>
+                        <input type="text" th:field="*{enemigoIdsCsv}" placeholder="enemigo_bandido, …">
+                        <label>Referencias · loot / localización</label>
+                        <div class="cn-row2">
+                            <input type="text" th:field="*{lootTableId}" placeholder="loot_…">
+                            <input type="text" th:field="*{localizacionId}" placeholder="ciudad_…">
+                        </div>
+
+                        <div class="cn-form-actions">
+                            <button class="gm-btn gm-btn--primary" type="submit"
+                                    th:text="${editando != null} ? 'Guardar' : 'Añadir'">Añadir</button>
+                            <a th:if="${editando != null}" class="gm-btn gm-btn--outline"
+                               th:href="@{/aventuras/{id}/constructor(id=${aventura.id})}">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    <div th:replace="~{Blocks/footer-v2 :: footer}"></div>
+</div>
+<script th:src="@{/js/theme.js}"></script>
+</body>
+</html>

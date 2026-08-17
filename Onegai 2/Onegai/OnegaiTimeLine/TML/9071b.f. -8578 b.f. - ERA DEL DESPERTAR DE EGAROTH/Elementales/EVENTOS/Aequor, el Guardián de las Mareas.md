@@ -1,0 +1,1 @@
+Una figura líquida y cambiante que se movía como un océano encarnado, simbolizando la adaptabilidad y la inmensidad del agua.

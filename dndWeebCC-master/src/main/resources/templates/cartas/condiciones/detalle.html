@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Carta de condición</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('condiciones')}"></div>
+
+            <div class="u-page-header--start">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-p-0">Ficha completa</p>
+                    <h1 th:text="${carta.name}">Nombre</h1>
+                    <p>
+                        <span class="gm-badge" th:text="${carta.category}">neutro</span>
+                        <span class="gm-badge" th:text="${carta.source}">estado</span>
+                        <span class="gm-badge" th:text="'ID ' + ${carta.id}">id</span>
+                    </p>
+                </div>
+                <a class="gm-btn gm-btn--outline" th:href="@{/cartas/condiciones/{id}/editar(id=${carta.id})}">Editar</a>
+            </div>
+
+            <div class="u-detail-layout-300">
+                <article class="gm-card gm-card--detalle u-cursor-default">
+                    <span class="gm-card__tier" th:text="${carta.source}">estado</span>
+                    <h2 class="gm-card__title" th:text="${carta.name}">Nombre</h2>
+                    <span class="gm-card__role" th:text="${carta.category}">neutro</span>
+
+                    <div class="gm-card__illustration" th:switch="${carta.category}">
+                        <span th:case="'buff'">✨</span>
+                        <span th:case="'debuff'">☠</span>
+                        <span th:case="*">🌀</span>
+                    </div>
+
+                    <div class="gm-card__rules">
+                        <p class="gm-card__meta">Duración: <span th:text="${carta.duration}">1_turn</span></p>
+                        <p th:each="efecto : ${carta.effects}" class="gm-card__desc u-clamp-unset" th:text="${efecto.description}">Efecto</p>
+                        <p class="gm-card__meta u-italic" th:if="${carta.flavorText}" th:text="${carta.flavorText}">Texto narrativo</p>
+                    </div>
+
+                    <div class="gm-card__footer">
+                        <span class="gm-badge" th:text="${carta.stackable} ? 'Acumulable' : 'No acumulable'">No acumulable</span>
+                    </div>
+
+                    <p class="gm-card__id" th:text="'condiciones · ' + ${carta.id}">condiciones · id</p>
+                </article>
+
+                <div>
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Efectos y hooks mecánicos ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p th:each="efecto : ${carta.effects}">
+                                <span th:text="${efecto.description}">Descripción</span>
+                                <span th:if="${efecto.mechanicHook}" class="gm-badge u-ml-4" th:text="${efecto.mechanicHook}">hook</span>
+                            </p>
+                            <p th:if="${#lists.isEmpty(carta.effects)}">Sin efectos definidos.</p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Cómo se cura ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p th:each="c : ${carta.cureConditions}" class="gm-badge u-mr-4" th:text="${c}">cura</p>
+                            <p th:if="${#lists.isEmpty(carta.cureConditions)}">Hasta el final de la escena.</p>
+                        </div>
+                    </div>
+
+                    <div class="u-actions--wrap">
+                        <a class="gm-btn gm-btn--outline" th:href="@{/cartas/condiciones}">Volver al listado</a>
+                        <form th:action="@{/cartas/condiciones/{id}/eliminar(id=${carta.id})}" method="post" th:data-nombre="${carta.name}" onsubmit="return confirm(\'¿Borrar el condicion &quot;' + this.dataset.nombre + '&quot;? No se puede deshacer.');">
+                            <button class="gm-btn gm-btn--danger" type="submit">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div></main>
+</body>
+</html>

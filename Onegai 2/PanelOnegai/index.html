@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Panel Onegai</title>
+<style>
+  :root {
+    --bg: #12100f; --panel: #1c1917; --line: #2f2926;
+    --ink: #ece7e1; --dim: #9a8f86; --accent: #d98c4a; --ok: #6fa86f; --bad: #c26a5c;
+    --writer: #c68ae2; --critic: #7cc2c2;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  header { padding: 16px 24px; border-bottom: 1px solid var(--line);
+           display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+           position: sticky; top: 0; background: var(--bg); z-index: 5; }
+  h1 { font-size: 19px; margin: 0; letter-spacing: .4px; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+  .chip { font-size: 12px; padding: 3px 10px; border-radius: 999px;
+          border: 1px solid var(--line); color: var(--dim); }
+  .chip.on { color: var(--ok); border-color: var(--ok); }
+  .chip.off { color: var(--bad); border-color: var(--bad); }
+  main { display: grid; grid-template-columns: 320px 1fr; gap: 18px; padding: 20px 24px;
+         align-items: start; }
+  @media (max-width: 980px) { main { grid-template-columns: 1fr; } }
+  section { background: var(--panel); border: 1px solid var(--line);
+            border-radius: 10px; padding: 16px 18px; margin-bottom: 18px; }
+  h2 { font-size: 13px; margin: 0 0 4px; text-transform: uppercase;
+       letter-spacing: 1px; color: var(--accent); }
+  p.hint { margin: 0 0 12px; color: var(--dim); font-size: 13px; }
+  textarea, input, select {
+    width: 100%; background: #171310; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 7px; padding: 9px 11px;
+    font: inherit; margin-bottom: 10px;
+  }
+  textarea { min-height: 100px; resize: vertical; }
+  button { background: var(--accent); color: #1a1310; border: 0; border-radius: 7px;
+           padding: 9px 16px; font: inherit; font-weight: 600; cursor: pointer; }
+  button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line);
+                 font-weight: 400; }
+  button:hover { filter: brightness(1.12); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .presets button { background: transparent; border: 1px solid var(--line);
+                    color: var(--dim); font-size: 12.5px; font-weight: 400; padding: 5px 10px; }
+  /* selector de archivos */
+  #tree { max-height: 46vh; overflow: auto; border: 1px solid var(--line);
+          border-radius: 7px; padding: 6px; background: #171310; }
+  .grp { margin-bottom: 4px; }
+  .grp > summary { cursor: pointer; color: var(--dim); font-size: 12.5px;
+                   padding: 3px 4px; list-style: none;
+                   display: flex; gap: 7px; align-items: baseline; }
+  .grp > summary:hover { color: var(--ink); }
+  .grp > summary .arw::before { content: "▸"; }
+  .grp[open] > summary .arw::before { content: "▾"; }
+  .grp > summary input { width: auto; margin: 0; }
+  .grp > summary .nm { flex: 1; overflow: hidden; text-overflow: ellipsis;
+                       white-space: nowrap; }
+  .f { display: flex; gap: 7px; align-items: baseline; padding: 3px 4px 3px 16px;
+       font-size: 13px; border-radius: 5px; }
+  .f:hover { background: #201a16; }
+  .f input { width: auto; margin: 0; }
+  .f label { flex: 1; cursor: pointer; overflow: hidden; text-overflow: ellipsis;
+             white-space: nowrap; }
+  .f .sz { color: var(--dim); font-size: 11px; }
+  .sel { font-size: 12.5px; color: var(--accent); margin: 10px 0 8px; min-height: 19px; }
+  .seg { border-radius: 0; flex: 1; font-size: 13px; padding: 7px 10px; }
+  .seg:first-child { border-radius: 7px 0 0 7px; }
+  .seg:last-child { border-radius: 0 7px 7px 0; border-left: 0; }
+  .seg.on { background: var(--accent); color: #1a1310; border-color: var(--accent);
+            font-weight: 600; }
+  #results { max-height: 46vh; overflow: auto; }
+  .hit { border: 1px solid var(--line); border-radius: 7px; padding: 9px 11px;
+         margin-bottom: 7px; background: #171310; }
+  .hit .top { display: flex; gap: 7px; align-items: baseline; }
+  .hit .top input { width: auto; margin: 0; }
+  .hit .top label { flex: 1; cursor: pointer; font-size: 13px; overflow: hidden;
+                    text-overflow: ellipsis; white-space: nowrap; }
+  .hit .path { color: var(--dim); font-size: 11px; margin: 2px 0 6px 20px;
+               overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hit .snip { font-size: 12px; color: #bdb3aa; margin: 4px 0 0 20px;
+               border-left: 2px solid var(--line); padding-left: 8px; }
+  .hit mark { background: rgba(217,140,74,.28); color: var(--ink); border-radius: 2px; }
+  /* encargos */
+  .job { border-top: 1px solid var(--line); padding: 10px 0; }
+  .job:first-child { border-top: 0; }
+  .job summary { cursor: pointer; display: flex; gap: 10px; align-items: center;
+                 flex-wrap: wrap; }
+  .st { font-size: 11px; padding: 2px 8px; border-radius: 999px;
+        border: 1px solid var(--line); color: var(--dim); white-space: nowrap; }
+  .st[data-s="en marcha"] { color: var(--accent); border-color: var(--accent); }
+  .st[data-s="hecho"] { color: var(--ok); border-color: var(--ok); }
+  .st[data-s="con errores"] { color: var(--bad); border-color: var(--bad); }
+  pre { background: #0f0d0c; border: 1px solid var(--line); border-radius: 7px;
+        padding: 12px; overflow: auto; max-height: 340px; white-space: pre-wrap;
+        font: 12.5px/1.55 ui-monospace, Menlo, monospace; color: #cfc6bd; }
+  .lbl { font-size: 12px; color: var(--dim); display: block; margin-bottom: 4px; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+  .tabs button { flex: 1; background: transparent; border: 1px solid var(--line);
+                 color: var(--dim); font-weight: 400; }
+  .tabs button.on { background: var(--accent); color: #1a1310; border-color: var(--accent);
+                    font-weight: 600; }
+  .pane { display: none; } .pane.on { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧠 Panel Onegai</h1>
+  <div class="row" style="margin-left:0;gap:10px;flex:1">
+    <label class="lbl" style="margin:0;color:var(--dim);font-size:12px">Modo agente:</label>
+    <div class="row" style="gap:0;margin:0">
+      <button class="seg on" id="pWriter" onclick="setProfile('writer')" style="border-color:var(--writer);color:var(--writer)">✍️ Escritor</button>
+      <button class="seg" id="pCritic" onclick="setProfile('critic')" style="border-color:var(--critic);color:var(--critic)">🧐 Crítico</button>
+    </div>
+    <span id="pInfo" class="hint" style="font-size:12px;margin:0;min-width:280px"></span>
+  </div>
+  <div class="chips" id="chips"></div>
+</header>
+
+<main>
+
+  <div>
+    <section>
+      <h2>Documentos</h2>
+      <p class="hint">Marca los que el agente debe leer. Su texto va dentro del encargo.</p>
+      <div class="row" style="gap:0; margin-bottom:10px">
+        <button class="ghost seg on" id="segName" onclick="setMode('name')">Por nombre</button>
+        <button class="ghost seg" id="segText" onclick="setMode('text')">Dentro del texto</button>
+      </div>
+      <input id="filter" placeholder="Buscar por nombre…"
+             oninput="onFilter()" onkeydown="if(event.key==='Enter') doSearch()">
+      <div id="idx" class="hint" style="margin:-4px 0 8px"></div>
+      <div id="tree"></div>
+      <div id="results"></div>
+      <div class="sel" id="selInfo"></div>
+      <div class="row">
+        <button class="ghost" onclick="clearSel()">Quitar todos</button>
+        <button class="ghost" onclick="selAllShown()">Marcar lo visible</button>
+        <button class="ghost" onclick="post('/api/reindex',{},'Reindexando…')">Reindexar</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Cómo procesarlos</h2>
+      <label class="f" style="padding-left:0">
+        <input type="radio" name="mode" value="juntos" checked onchange="modeInfo()">
+        <span>Todo junto — una sola respuesta</span>
+      </label>
+      <label class="f" style="padding-left:0">
+        <input type="radio" name="mode" value="uno" onchange="modeInfo()">
+        <span>Uno por uno — un pase por documento</span>
+      </label>
+      <label class="f" style="padding-left:0; margin-top:4px" id="synthRow">
+        <input type="checkbox" id="synthesis" checked>
+        <span>y al final juntar los resultados</span>
+      </label>
+      <p class="hint" id="modeHint" style="margin:8px 0 0"></p>
+    </section>
+
+    <section>
+      <h2>Contexto</h2>
+      <p class="hint">Cuánto texto cabe por documento. Más contexto es más lento.</p>
+      <span class="lbl">Máximo: <b id="budgetLbl">40.000</b> caracteres</span>
+      <input type="range" id="budget" min="8000" max="120000" step="4000" value="40000"
+             oninput="$('budgetLbl').textContent = (+this.value).toLocaleString('es')">
+    </section>
+  </div>
+
+  <div>
+    <section>
+      <div class="tabs">
+        <button class="on" onclick="tab('aa', this)">AuthorAgent</button>
+        <button onclick="tab('ol', this)">Ollama directo</button>
+        <button onclick="tab('sc', this)">StoryCraftr</button>
+        <button onclick="tab('st', this)">⚙️ Stack IA</button>
+      </div>
+
+      <div class="pane on" id="pane-aa">
+        <p class="hint">Encargo en lenguaje normal. Lee los documentos marcados a la izquierda.</p>
+        <div class="row" style="margin-bottom:10px">
+          <button onclick="post('/api/authoragent/start', {}, 'Arrancando…')">Arrancar</button>
+          <button class="ghost" onclick="post('/api/authoragent/stop', {}, 'Parando…')">Parar</button>
+          <button class="ghost" onclick="post('/api/authoragent/restart', {}, 'Reiniciando…')">Reiniciar</button>
+          <button class="ghost" onclick="window.open('http://127.0.0.1:3847')">Abrir su panel</button>
+        </div>
+        <div class="row" style="margin-bottom:12px">
+          <button class="ghost" onclick="post('/api/stack/start',{},'Arrancando Ollama + agentes…')">Arrancar todo</button>
+          <button class="ghost" onclick="post('/api/stack/stop',{},'Parando todo…')">Parar todo</button>
+          <button class="ghost" onclick="stackStatus()">Estado del sistema</button>
+        </div>
+        <div class="row" style="margin-bottom:12px;gap:6px">
+          <span class="lbl" style="margin:0;color:var(--dim)">Perfil rápido AuthorAgent:</span>
+          <button onclick="switchAA('writer')" class="ghost" style="padding:5px 12px;font-size:12px;border-color:var(--writer);color:var(--writer)">Aplicar ✍️ Escritor</button>
+          <button onclick="switchAA('critic')" class="ghost" style="padding:5px 12px;font-size:12px;border-color:var(--critic);color:var(--critic)">Aplicar 🧐 Crítico</button>
+        </div>
+        <div class="presets" id="aaPresets"></div>
+        <textarea id="aaText" placeholder="Por ejemplo: corrige este capítulo y márcame los saltos de tono"></textarea>
+        <button onclick="send('authoragent','aaText')">Encargar</button>
+      </div>
+
+      <div class="pane" id="pane-ol">
+        <p class="hint" id="agentHint">Va directo al modelo local, sin la maquinaria de AuthorAgent en medio.</p>
+        <div class="row" style="gap:10px;align-items:flex-end;margin-bottom:10px">
+          <div style="flex:1">
+            <span class="lbl">Modelo</span>
+            <select id="model" onchange="agentPresets()"></select>
+          </div>
+          <button class="ghost" onclick="setModelForProfile('writer')" style="border-color:var(--writer);color:var(--writer)">✍️ Escritor</button>
+          <button class="ghost" onclick="setModelForProfile('critic')" style="border-color:var(--critic);color:var(--critic)">🧐 Crítico</button>
+        </div>
+        <div class="presets" id="olPresets"></div>
+        <textarea id="olText" placeholder="Qué quieres que haga con los documentos marcados"></textarea>
+        <button onclick="send('ollama','olText')">Preguntar</button>
+      </div>
+
+      <div class="pane" id="pane-sc">
+        <p class="hint">Comandos de StoryCraftr, ejecutados en la carpeta Onegai.</p>
+        <div class="presets">
+          <button onclick="fill('scText','outline general-outline &quot;Arco actual de Onegai&quot;')">esquema</button>
+          <button onclick="fill('scText','outline character-summary &quot;Personajes principales&quot;')">personajes</button>
+          <button onclick="fill('scText','worldbuilding history &quot;Historia del mundo de Onegai&quot;')">historia</button>
+          <button onclick="fill('scText','iterate check-consistency &quot;Revisa coherencia global&quot;')">coherencia</button>
+        </div>
+        <textarea id="scText" placeholder='outline general-outline "Resumen del arco actual"'></textarea>
+        <button onclick="send('storycraftr','scText')">Ejecutar</button>
+      </div>
+
+      <div class="pane" id="pane-st">
+        <h2 style="margin-bottom:6px">⚙️ Stack IA Onegai</h2>
+        <p class="hint">Gestiona Ollama + AuthorAgent simultáneamente mediante los scripts de <code>.onegai_ai_config/scripts/</code>.</p>
+        <div class="row" style="margin-bottom:16px">
+          <button onclick="post('/api/stack/start', {}, 'Arrancando stack (Ollama + AuthorAgent)…')" style="background:var(--ok);color:#12100f">▶️ Arrancar Stack IA</button>
+          <button class="ghost" onclick="post('/api/stack/stop', {}, 'Parando stack…')" style="border-color:var(--bad);color:var(--bad)">⏹️ Parar Stack IA</button>
+          <button class="ghost" onclick="runStackStatus()">🔍 Comprobar estado detallado</button>
+          <button class="ghost" onclick="stackStatus()">📋 Resumen chips</button>
+        </div>
+        <label class="lbl">Estado del stack (salida <code>status-agents.sh</code>):</label>
+        <pre id="stackStatus" style="max-height:50vh;margin-top:0">(pulsa "Comprobar estado detallado")</pre>
+        <h2 style="margin-top:16px;margin-bottom:6px">Scripts disponibles en <code>.onegai_ai_config/scripts/</code></h2>
+        <ul style="color:var(--dim);font-size:13px;margin:6px 0 0 18px;padding:0;line-height:1.7">
+          <li><b>start-agents.sh</b> — variables de paralelismo + healthcheck Ollama + warmup + arranca AuthorAgent</li>
+          <li><b>stop-agents.sh</b> — descarga modelos keep_alive=0 + para AuthorAgent</li>
+          <li><b>status-agents.sh</b> — dashboard con colores: health, modelos, RAM/VRAM, logs, ollama ps</li>
+          <li><b>switch-authoragent-profile.sh writer|critic|status</b> — cambia perfil en config JSON AuthorAgent</li>
+          <li><b>tests-rapidos.py</b> — batería 10 tests (~3 min): identidad, outline, crítico, paralelo, alternancia</li>
+          <li><b>build-models.sh</b> — reconstruye <code>ollama create onegai/story-writer</code> y <code>onegai/author-critic</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>Encargos</h2>
+      <p class="hint">Se ejecutan uno tras otro y se guardan en la carpeta <b>salidas</b>.</p>
+      <div id="jobs"></div>
+    </section>
+
+    <section>
+      <h2>Registro</h2>
+      <pre id="log"></pre>
+    </section>
+  </div>
+
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const val = id => $(id).value.trim();
+const fill = (id, t) => { $(id).value = t; $(id).focus(); };
+const esc = s => String(s).replace(/[&<>"]/g, c =>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let FILES = [], SELECTED = new Set();
+
+function tab(name, btn) {
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('on'));
+  $('pane-' + name).classList.add('on');
+  btn.classList.add('on');
+}
+
+async function loadFiles(force) {
+  const r = await fetch('/api/files' + (force ? '?refresh=1' : ''));
+  FILES = (await r.json()).files;
+  renderTree();
+}
+
+let SHOWN = [];
+
+function renderTree() {
+  const q = val('filter').toLowerCase();
+  SHOWN = q ? FILES.filter(f => f.rel.toLowerCase().includes(q)) : FILES;
+  const groups = {};
+  SHOWN.forEach(f => (groups[f.folder] ||= []).push(f));
+  const keys = Object.keys(groups).sort();
+
+  $('tree').innerHTML = keys.length ? keys.map((k, i) => {
+    const inFolder = groups[k];
+    const marked = inFolder.filter(f => SELECTED.has(f.rel)).length;
+    const state = marked === 0 ? '' : (marked === inFolder.length ? 'checked' : 'indet');
+    return `
+    <details class="grp" ${q || keys.length < 4 ? 'open' : ''}>
+      <summary>
+        <span class="arw"></span>
+        <input type="checkbox" data-folder="${i}" ${state === 'checked' ? 'checked' : ''}
+               onclick="event.stopPropagation()"
+               onchange="toggleFolder(${JSON.stringify(k).replace(/"/g,'&quot;')}, this.checked)">
+        <span class="nm" title="${esc(k)}">${esc(k)}</span>
+        <span class="sz">${marked ? marked + '/' : ''}${inFolder.length}</span>
+      </summary>
+      ${inFolder.map(f => `
+        <div class="f">
+          <input type="checkbox" id="c${esc(f.rel)}" ${SELECTED.has(f.rel) ? 'checked' : ''}
+                 onchange="toggle(${JSON.stringify(f.rel).replace(/"/g,'&quot;')}, this.checked)">
+          <label for="c${esc(f.rel)}" title="${esc(f.rel)}">${esc(f.name)}</label>
+          <span class="sz">${f.ext} · ${Math.round(f.size/1024)} KB</span>
+        </div>`).join('')}
+    </details>`;
+  }).join('') : '<p class="hint">Nada encontrado.</p>';
+
+  // estado intermedio de las casillas de carpeta
+  keys.forEach((k, i) => {
+    const box = document.querySelector(`[data-folder="${i}"]`);
+    const inFolder = groups[k];
+    const marked = inFolder.filter(f => SELECTED.has(f.rel)).length;
+    if (box) box.indeterminate = marked > 0 && marked < inFolder.length;
+  });
+  updateSel();
+}
+
+function toggle(rel, on) { on ? SELECTED.add(rel) : SELECTED.delete(rel); redraw(); }
+
+function toggleFolder(folder, on) {
+  // incluye subcarpetas: cualquier ruta que empiece por esta carpeta
+  FILES.filter(f => f.folder === folder || f.folder.startsWith(folder + '/'))
+       .forEach(f => on ? SELECTED.add(f.rel) : SELECTED.delete(f.rel));
+  redraw();
+}
+
+function selAllShown() {
+  (SEARCH_MODE === 'text' ? HITS : SHOWN).forEach(f => SELECTED.add(f.rel));
+  redraw();
+}
+function clearSel() { SELECTED.clear(); redraw(); }
+const redraw = () => SEARCH_MODE === 'text' ? renderHits() : renderTree();
+
+// ── búsqueda dentro del texto ────────────────────────────────────────────────
+let SEARCH_MODE = 'name', HITS = [], searchTimer = null;
+
+function setMode(m) {
+  SEARCH_MODE = m;
+  $('segName').classList.toggle('on', m === 'name');
+  $('segText').classList.toggle('on', m === 'text');
+  $('filter').placeholder = m === 'name'
+    ? 'Buscar por nombre…' : 'Escribe una palabra y pulsa Enter…';
+  $('tree').style.display = m === 'name' ? '' : 'none';
+  $('results').style.display = m === 'text' ? '' : 'none';
+  redraw();
+}
+
+function onFilter() {
+  if (SEARCH_MODE === 'name') return renderTree();
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(doSearch, 600);      // busca solo cuando dejas de teclear
+}
+
+async function doSearch() {
+  const q = val('filter');
+  if (q.length < 2) { HITS = []; return renderHits(); }
+  $('results').innerHTML = '<p class="hint">Buscando…</p>';
+  const d = await (await fetch('/api/search', {method:'POST',
+      headers:{'Content-Type':'application/json'}, body: JSON.stringify({q})})).json();
+  HITS = d.hits;
+  renderHits();
+}
+
+function renderHits() {
+  const q = val('filter');
+  if (!HITS.length) {
+    $('results').innerHTML = q.length < 2
+      ? '<p class="hint">Escribe al menos dos letras.</p>'
+      : '<p class="hint">Ningún documento contiene eso.</p>';
+    return updateSel();
+  }
+  $('results').innerHTML = HITS.map(h => `
+    <div class="hit">
+      <div class="top">
+        <input type="checkbox" id="h${esc(h.rel)}" ${SELECTED.has(h.rel) ? 'checked' : ''}
+               onchange="toggle(${JSON.stringify(h.rel).replace(/"/g,'&quot;')}, this.checked)">
+        <label for="h${esc(h.rel)}">${esc(h.name)}</label>
+        <span class="sz">${h.count}×</span>
+      </div>
+      <div class="path" title="${esc(h.folder)}">${esc(h.folder)}</div>
+      ${h.snippets.map(s => `<div class="snip">${hl(s, q)}</div>`).join('')}
+    </div>`).join('');
+  updateSel();
+}
+
+const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+function hl(text, q) {
+  const hay = norm(text), needle = norm(q);
+  let out = '', i = 0;
+  for (;;) {
+    const at = hay.indexOf(needle, i);
+    if (at < 0 || !needle) break;
+    out += esc(text.slice(i, at)) + '<mark>' + esc(text.slice(at, at + q.length)) + '</mark>';
+    i = at + needle.length;
+  }
+  return out + esc(text.slice(i));
+}
+
+async function pollIndex() {
+  try {
+    const s = await (await fetch('/api/index')).json();
+    $('idx').textContent = s.building
+      ? `Leyendo documentos para poder buscar dentro… ${s.done} de ${s.total}`
+      : '';
+  } catch (e) {}
+}
+
+function updateSel() {
+  const n = SELECTED.size;
+  const kb = FILES.filter(f => SELECTED.has(f.rel))
+                  .reduce((a, f) => a + f.size, 0) / 1024;
+  $('selInfo').textContent = n
+    ? `${n} documento(s) marcados · ${Math.round(kb)} KB en total`
+    : 'Ningún documento marcado — el agente responderá a ciegas.';
+  modeInfo();
+}
+
+function modeInfo() {
+  const mode = document.querySelector('[name=mode]:checked').value;
+  const n = SELECTED.size;
+  $('synthRow').style.display = mode === 'uno' ? 'flex' : 'none';
+  $('modeHint').textContent = mode === 'juntos'
+    ? (n > 3 ? `Los ${n} documentos se recortan para caber en un solo mensaje. Con muchos, mejor "uno por uno".`
+             : 'Todos los documentos van en un mismo mensaje.')
+    : `${n || 0} pase(s)` + ($('synthesis').checked && n > 1 ? ' + uno final para juntarlo' : '')
+      + '. Cada documento entero, sin recortes por compartir sitio — pero tarda bastante más.';
+}
+
+async function post(url, body, note) {
+  if (note) toast(note);
+  const d = await (await fetch(url, {method:'POST',
+      headers:{'Content-Type':'application/json'}, body: JSON.stringify(body||{})})).json();
+  if (d.message) toast(d.message);
+  refresh();
+  return d;
+}
+
+function toast(text) {
+  const pre = $('log');
+  pre.textContent += (pre.textContent ? '\n' : '') + '· ' + text;
+  pre.scrollTop = pre.scrollHeight;
+}
+
+async function send(kind, textId) {
+  const prompt = val(textId);
+  if (!prompt) return toast('Escribe el encargo primero.');
+  if (kind !== 'storycraftr' && !SELECTED.size &&
+      !confirm('No has marcado ningún documento. El agente no verá tus textos. ¿Sigo?')) return;
+  const mode = document.querySelector('[name=mode]:checked').value;
+  if (kind !== 'storycraftr' && mode === 'uno' && SELECTED.size > 8 &&
+      !confirm(`Son ${SELECTED.size} pases seguidos. Con un modelo local esto puede tardar horas. ¿Sigo?`)) return;
+  await post('/api/enqueue', {
+    kind, prompt,
+    files: kind === 'storycraftr' ? [] : [...SELECTED],
+    model: $('model').value,
+    budget: +$('budget').value,
+    mode, synthesis: $('synthesis').checked,
+    label: prompt.slice(0, 70),
+  });
+}
+
+let lastModels = '';
+async function refresh() {
+  try {
+    const s = await (await fetch('/api/status')).json();
+    const onegai = s.ollama.filter(m => m.startsWith('onegai/')).length;
+    $('chips').innerHTML = chip('AuthorAgent', s.authoragent)
+      + chip('Agentes onegai · ' + onegai + '/2', onegai >= 2)
+      + chip('StoryCraftr', s.storycraftr)
+      + chip('Ollama · ' + s.ollama.length + ' modelos', s.ollama_alive);
+    const key = s.ollama.join('|');
+    if (key !== lastModels) {
+      lastModels = key;
+      const keep = $('model').value;
+      $('model').innerHTML = s.ollama.length
+        ? s.ollama.map(m => `<option>${esc(m)}</option>`).join('')
+        : '<option>(Ollama no responde)</option>';
+      if ([...$('model').options].some(o => o.value === keep)) $('model').value = keep;
+      else paintProfile();
+    }
+
+    const j = (await (await fetch('/api/jobs')).json()).jobs;
+    $('jobs').innerHTML = j.length ? j.map(job => `
+      <details class="job">
+        <summary><span class="st" data-s="${job.status}">${job.status}</span>
+          <span>#${job.id} ${esc(job.label)}</span>
+          ${job.step ? `<span class="sz" style="color:var(--accent);font-size:11.5px">${esc(job.step)}</span>` : ''}
+          ${job.files.length ? `<span class="sz" style="color:var(--dim);font-size:11.5px">${job.files.length} doc.</span>` : ''}
+          ${job.saved ? `<span class="sz" style="color:var(--ok);font-size:11.5px">→ ${esc(job.saved)}</span>` : ''}
+        </summary>
+        <pre>${esc(job.output || '(sin salida todavía)')}</pre>
+      </details>`).join('') : '<p class="hint">Nada encargado aún.</p>';
+
+    const l = (await (await fetch('/api/log')).json()).log;
+    const pre = $('log');
+    const atBottom = pre.scrollTop + pre.clientHeight >= pre.scrollHeight - 30;
+    pre.textContent = l.map(e => `[${e.t}] ${e.source}: ${e.text}`).join('\n');
+    if (atBottom) pre.scrollTop = pre.scrollHeight;
+  } catch (e) { /* el servidor puede estar reiniciándose */ }
+}
+
+const chip = (label, on) => `<span class="chip ${on ? 'on' : 'off'}">${label}</span>`;
+
+// ── Los dos agentes: escritor y crítico ──────────────────────────────────────
+let PROFILES = {}, AGENT_MODELS = {}, ACTIVE = 'writer';
+
+async function loadProfiles() {
+  try {
+    const d = await (await fetch('/api/profiles')).json();
+    PROFILES = d.profiles || {};
+    AGENT_MODELS = d.agent_models || {};
+    // el perfil que AuthorAgent tiene puesto ahora mismo
+    const cur = String(d.current || '').toLowerCase();
+    ACTIVE = cur.includes('critic') ? 'critic' : 'writer';
+    paintProfile();
+  } catch (e) {}
+}
+
+async function setProfile(p) {
+  if (!PROFILES[p]) return toast('Ese perfil no está configurado.');
+  ACTIVE = p;
+  paintProfile();
+  const d = await post('/api/authoragent/switch-profile', {profile: p});
+  if (d.ok) toast('AuthorAgent usará ' + PROFILES[p].name + ' al reiniciarlo.');
+}
+
+function paintProfile() {
+  const p = PROFILES[ACTIVE];
+  $('pWriter').classList.toggle('on', ACTIVE === 'writer');
+  $('pCritic').classList.toggle('on', ACTIVE === 'critic');
+  $('pInfo').textContent = p ? `${p.base} · temperatura ${p.temp}` : '';
+  // el desplegable de Ollama salta al modelo de este agente
+  const want = AGENT_MODELS[ACTIVE];
+  if (want && [...$('model').options].some(o => o.value === want)) $('model').value = want;
+  renderPresets();
+}
+
+function renderPresets() {
+  const p = PROFILES[ACTIVE];
+  const generic = [
+    ['corregir', 'Corrige este documento: ortografía, gramática y estilo. Devuélvemelo entero ya corregido, sin comentarios.'],
+    ['resumir', 'Resume estos documentos en diez puntos.'],
+    ['contradicciones', 'Lista las contradicciones que encuentres, citando la frase exacta de cada lado.'],
+  ];
+  const list = p && p.presets && p.presets.length ? p.presets : generic;
+  const html = target => list.map(([name, text]) =>
+    `<button title="${esc(text)}" onclick="fill('${target}', ${JSON.stringify(text).replace(/"/g,'&quot;')})">${esc(name)}</button>`
+  ).join('');
+  $('aaPresets').innerHTML = html('aaText');
+  $('olPresets').innerHTML = html('olText');
+  $('agentHint').textContent = p
+    ? `${p.name} — va directo al modelo, sin la maquinaria de AuthorAgent en medio.`
+    : 'Va directo al modelo local.';
+}
+
+function agentPresets() {
+  // si eliges a mano el modelo del otro agente, cambia también los atajos
+  const m = $('model').value;
+  for (const [k, v] of Object.entries(AGENT_MODELS)) {
+    if (m === v && k !== ACTIVE) { ACTIVE = k; return paintProfile(); }
+  }
+  renderPresets();
+}
+
+async function stackStatus() {
+  toast('Consultando estado…');
+  const d = await (await fetch('/api/stack/status')).json();
+  const clean = (d.output || '').replace(/\x1b\[[0-9;]*m/g, '');
+  clean.split('\n').filter(l => l.trim()).forEach(l => toast(l));
+}
+
+async function switchAA(profile) {
+  toast(`Aplicando perfil ${profile} a AuthorAgent…`);
+  const d = await post('/api/authoragent/switch-profile', {profile});
+  if (!d.ok) return toast('Fallo: ' + (d.output || d.message || ''));
+  toast('Listo. Perfil aplicado. Pulsa "Reiniciar" para que surja efecto.');
+}
+
+function setModelForProfile(profile) {
+  const want = AGENT_MODELS[profile];
+  if (!want) return toast('Modelo del perfil ' + profile + ' no encontrado.');
+  if (![...$('model').options].some(o => o.value === want))
+    return toast('El modelo ' + want + ' no está instalado en Ollama. Usa ⚙️ Stack IA → Arrancar.');
+  if (want && ACTIVE !== profile) { ACTIVE = profile; paintProfile(); return; }
+  if (want) $('model').value = want;
+  toast('Seleccionado: ' + want);
+}
+
+async function runStackStatus() {
+  const d = await (await fetch('/api/stack/status')).json();
+  const clean = (d.output || '').replace(/\x1b\[[0-9;]*m/g, '');
+  $('stackStatus').textContent = clean || '(sin salida)';
+}
+
+$('synthesis').onchange = modeInfo;
+setMode('name');
+loadFiles();
+loadProfiles();
+modeInfo();
+refresh();
+pollIndex();
+setInterval(refresh, 2500);
+setInterval(pollIndex, 1500);
+</script>
+</body>
+</html>

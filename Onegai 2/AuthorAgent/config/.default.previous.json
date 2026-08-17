@@ -1,0 +1,37 @@
+{
+  "server": { "port": 3847, "host": "127.0.0.1" },
+  "security": { "permissionPreset": "standard", "requireAuth": false },
+  "ai": {
+    "preferredProvider": "ollama",
+    "preferredImageProvider": null,
+    "maxHistoryMessages": 30,
+    "defaultTemperature": 0.25,
+    "ollama": {
+      "enabled": true,
+      "endpoint": "http://localhost:11434",
+      "model": "onegai/author-critic:latest"
+    },
+    "gemini":     { "model": "gemini-2.5-flash" },
+    "deepseek":   { "model": "deepseek-chat" },
+    "claude":     { "model": "claude-sonnet-4-5-20250929" },
+    "openai":     { "model": "gpt-4o" },
+    "openrouter": { "model": "anthropic/claude-sonnet-4-5" }
+  },
+  "memory": { "maxConversationHistory": 80, "maxMemoryEntries": 500, "autoSummarize": true },
+  "branding": {
+    "footerLinks": {
+      "website":  "https://www.getwritingsecrets.com",
+      "youtube":  "https://www.youtube.com/@WritingSecrets",
+      "substack": "https://writingbeginner.substack.com",
+      "kofi":     "https://ko-fi.com/ckokoski/shop"
+    }
+  },
+  "heartbeat": { "intervalMinutes": 15, "dailyWordGoal": 2000, "enableReminders": false, "quietHoursStart": 0, "quietHoursEnd": 0 },
+  "costs": { "dailyLimit": 99999999, "monthlyLimit": 999999999, "alertAt": 0.8 },
+  "bridges": {
+    "telegram": { "enabled": false, "allowedUsers": [], "pairingEnabled": true },
+    "discord":  { "enabled": false }
+  },
+  "_onegai_profile": "author-critic",
+  "_onegai_description": "PERFIL 2 — MODO CRÍTICO (Agente Author-Critic). Temperatura baja (0.25) para ser objetivo y no inventar nada, gemma2 9B. Ideal para revisar capítulos, detectar contradicciones, validar personajes, crítica literaria estructurada."
+}

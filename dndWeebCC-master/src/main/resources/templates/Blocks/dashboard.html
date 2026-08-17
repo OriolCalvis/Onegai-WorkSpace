@@ -1,0 +1,19 @@
+<section th:fragment="dashboard" class="d-grid gap-2">
+    <div class="row g-3">
+        <div class="col-md-3">
+            <div class="metric-card"><span>Personatges</span><strong th:text="${numPersonatges}">0</strong></div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card"><span>Classes</span><strong th:text="${numTierClases}">0</strong></div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card"><span>Races</span><strong th:text="${numTierRazas}">0</strong></div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card"><span>Transfons</span><strong th:text="${numTierTransfondos}">0</strong></div>
+        </div>
+    </div>
+    <p class="text-muted small mb-0">
+        Cifras del <a th:href="@{/cartas}">sistema de Cartas y Tiers</a>, tu sistema activo.
+    </p>
+</section>

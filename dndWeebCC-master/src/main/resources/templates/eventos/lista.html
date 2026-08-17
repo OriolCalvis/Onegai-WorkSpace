@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Eventos</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div class="u-page-header">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-eyebrow">Sistema de Cartas y Tiers</p>
+                    <h1>⚡ Eventos</h1>
+                    <p class="gm-hint">
+                        Cosas que pasan en el mundo, no ganchos de aventura: un disparador, efectos automáticos
+                        y, si procede, opciones para que el grupo reaccione.
+                    </p>
+                </div>
+                <div class="u-inline-row">
+                    <span class="gm-hud" th:text="${#lists.size(eventos)} + ' eventos'">n eventos</span>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/eventos/crear}">➕ Nuevo evento</a>
+                </div>
+            </div>
+
+            <p class="u-text-muted" th:if="${#lists.isEmpty(eventos)}">
+                Todavía no hay eventos en <code>data/eventos</code>. <a th:href="@{/eventos/crear}">Crea el primero</a>.
+            </p>
+
+            <div class="gm-album">
+                <article class="gm-card" th:each="e : ${eventos}">
+                    <span class="gm-card__tier" th:text="'TIER ' + ${e.tier}">TIER 1</span>
+                    <h2 class="gm-card__title" th:text="${e.name}">Nombre</h2>
+                    <span class="gm-card__role" th:text="${#strings.isEmpty(e.faction) ? 'Sin facción' : e.factionNombre}">facción</span>
+
+                    <div class="gm-card__illustration">⚡</div>
+
+                    <div class="gm-card__rules">
+                        <p class="gm-card__meta" th:text="${#strings.abbreviate(e.description, 140)}">descripción</p>
+                        <p class="gm-card__meta" th:if="${e.oneTime}">🔂 Solo ocurre una vez</p>
+                    </div>
+
+                    <div class="gm-card__actions">
+                        <a class="gm-btn gm-btn--outline gm-btn--sm" th:href="@{/eventos/{id}(id=${e.id})}">Ver</a>
+                        <a class="gm-btn gm-btn--outline gm-btn--sm" th:href="@{/eventos/{id}/editar(id=${e.id})}">Editar</a>
+                    </div>
+
+                    <p class="gm-card__id" th:text="'eventos · ' + ${e.id}">eventos · id</p>
+                </article>
+            </div></main>
+</body>
+</html>

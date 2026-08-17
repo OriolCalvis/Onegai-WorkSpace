@@ -1,0 +1,64 @@
+{
+ "id": "eclipse_menor",
+ "name": "Eclipse Menor",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "conjurador",
+ "faction": "horrores_del_cielo_fragmentado",
+ "factionName": "Los Horrores del Cielo Fragmentado",
+ "stats": {
+  "CON": 5,
+  "DES": 5,
+  "INT": 8,
+  "CAR": 6
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 16,
+  "defensaMental": 16,
+  "resistenciaFisica": 15,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de magico: daño que suma su INT (pool de INT, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: si el objetivo falla, queda Cegado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Una vez por ronda convierte una ventaja enemiga en tirada normal."
+ },
+ "conditionsInflicted": [
+  "cegado"
+ ],
+ "loot": [
+  "orbe_de_mano_de_milicia",
+  "vara_de_aprendiz_de_viaje",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Magico"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Gana una segunda técnica por ronda y +1 al daño."
+  }
+ ],
+ "flavorText": "Astromante que roba luz para doblar destinos pequenos."
+}

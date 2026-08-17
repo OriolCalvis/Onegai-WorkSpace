@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Sistema de Cartas y Tiers</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('resumen')}"></div>
+
+            <p class="gm-sidebar__eyebrow u-eyebrow">Sistema de Cartas y Tiers</p>
+            <h1 class="u-mb-sp2">Crea y combina tus propias cartas</h1>
+            <p class="u-intro-760">
+                Editor del sistema nuevo (tiers, stats CON/DES/CAR/INT y vida calculada) descrito en
+                <code>docs/Sistema_Cartas_Tiers.md</code>. Es independiente del catálogo clásico por niveles
+                (Classes/Races) — aquí creas tus propias cartas de clase y raza, se guardan como JSON en
+                <code>data/cartas/</code> y puedes combinarlas para tus personajes.
+            </p>
+
+            <div class="u-card-grid-280">
+                <article class="u-card-panel">
+                    <span class="gm-badge u-self-start">Clases</span>
+                    <h2>Cartas de Clase</h2>
+                    <p class="u-grow-1">Rol, vida base, escalado de CON, recursos, equipo y habilidades iniciales.</p>
+                    <p class="gm-hint" th:text="${numTierClases} + ' carta(s) creada(s)'">0 cartas creadas</p>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/clases}">Ver clases</a>
+                </article>
+
+                <article class="u-card-panel">
+                    <span class="gm-badge u-self-start">Razas</span>
+                    <h2>Cartas de Raza</h2>
+                    <p class="u-grow-1">Bonos de stats, rasgo pasivo, rasgo activo opcional y afinidades.</p>
+                    <p class="gm-hint" th:text="${numTierRazas} + ' carta(s) creada(s)'">0 cartas creadas</p>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/razas}">Ver razas</a>
+                </article>
+
+                <article class="u-card-panel">
+                    <span class="gm-badge u-self-start">Trasfondos</span>
+                    <h2>Cartas de Trasfondo</h2>
+                    <p class="u-grow-1">Bonos de stats, competencias narrativas, contactos, pasiva y complicación.</p>
+                    <p class="gm-hint" th:text="${numTierTransfondos} + ' carta(s) creada(s)'">0 cartas creadas</p>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/transfondos}">Ver trasfondos</a>
+                </article>
+
+                <article class="u-card-panel">
+                    <span class="gm-badge u-self-start">Habilidades</span>
+                    <h2>Cartas de Habilidad</h2>
+                    <p class="u-grow-1">Recuperación (pilas), acción, alcance, duración y efecto que un personaje puede elegir según su clase y tier.</p>
+                    <p class="gm-hint" th:text="${numTierHabilidades} + ' carta(s) creada(s)'">0 cartas creadas</p>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/habilidades}">Ver habilidades</a>
+                </article>
+
+                <article class="u-card-panel">
+                    <span class="gm-badge u-self-start">Armas y objetos</span>
+                    <h2>Cartas de Arma, Armadura y Objeto</h2>
+                    <p class="u-grow-1">Armas, armaduras, escudos y accesorios: bonos, penalizaciones y restricciones estandarizadas.</p>
+                    <p class="gm-hint" th:text="${numTierArmas} + ' carta(s) creada(s)'">0 cartas creadas</p>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/armas}">Ver armas y objetos</a>
+                </article>
+
+                <article class="u-card-panel">
+                    <span class="gm-badge u-self-start">Dotes</span>
+                    <h2>Cartas de Dote</h2>
+                    <p class="u-grow-1">Mejoras permanentes puntuales: requisitos, tags concedidos y efecto narrativo/mecánico.</p>
+                    <p class="gm-hint" th:text="${numTierDotes} + ' carta(s) creada(s)'">0 cartas creadas</p>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/dotes}">Ver dotes</a>
+                </article>
+
+                <article class="u-card-panel">
+                    <span class="gm-badge u-self-start">Pasivas</span>
+                    <h2>Cartas de Pasiva</h2>
+                    <p class="u-grow-1">Identidad mecánica de cada clase: condición de activación, beneficio constante y sinergias.</p>
+                    <p class="gm-hint" th:text="${numTierPasivas} + ' carta(s) creada(s)'">0 cartas creadas</p>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/pasivas}">Ver pasivas</a>
+                </article>
+
+                <article class="u-card-panel">
+                    <span class="gm-badge u-self-start">Hechizos</span>
+                    <h2>Cartas de Hechizo</h2>
+                    <p class="u-grow-1">Escuela, stat de conjuración (INT arcano / CAR divino), recuperación, alcance y efecto.</p>
+                    <p class="gm-hint" th:text="${numTierHechizos} + ' carta(s) creada(s)'">0 cartas creadas</p>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/hechizos}">Ver hechizos</a>
+                </article>
+
+                <article class="u-card-panel">
+                    <span class="gm-badge u-self-start">Consumibles</span>
+                    <h2>Cartas de Objeto Consumible</h2>
+                    <p class="u-grow-1">Efecto de un solo uso o limitado; máximo 3 simultáneos en la ranura de consumibles.</p>
+                    <p class="gm-hint" th:text="${numTierConsumibles} + ' carta(s) creada(s)'">0 cartas creadas</p>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/consumibles}">Ver consumibles</a>
+                </article>
+
+                <article class="u-card-panel">
+                    <span class="gm-badge u-self-start">Rasgos</span>
+                    <h2>Cartas de Rasgo Especial</h2>
+                    <p class="u-grow-1">Otorgados por raza, trasfondo o hitos narrativos de campaña.</p>
+                    <p class="gm-hint" th:text="${numTierRasgos} + ' carta(s) creada(s)'">0 cartas creadas</p>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/rasgos}">Ver rasgos</a>
+                </article>
+
+                <article class="u-card-panel">
+                    <span class="gm-badge u-self-start">Invocaciones</span>
+                    <h2>Cartas de Invocación</h2>
+                    <p class="u-grow-1">Criaturas invocadas: vida, ataques, movimiento, pasiva y quién las controla.</p>
+                    <p class="gm-hint" th:text="${numTierInvocaciones} + ' carta(s) creada(s)'">0 cartas creadas</p>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/invocaciones}">Ver invocaciones</a>
+                </article>
+
+                <article class="u-card-panel">
+                    <span class="gm-badge u-self-start">Monstruos</span>
+                    <h2>Álbum de Monstruos</h2>
+                    <p class="u-grow-1">Enemigos sueltos y jefes/villanos: stats, ataques, pasiva, fases de combate y botín.</p>
+                    <p class="gm-hint" th:text="${numMonstruos} + ' monstruo(s) en el catálogo'">0 monstruos</p>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/enemigos}">Ver monstruos</a>
+                </article>
+
+                <article class="u-card-panel">
+                    <span class="gm-badge u-self-start">Deidades</span>
+                    <h2>Cartas de Deidad / Afinidad</h2>
+                    <p class="u-grow-1">Dominio, favor ligado a CAR, compatibilidad con razas/trasfondos/clases y obligaciones.</p>
+                    <p class="gm-hint" th:text="${numTierDeidades} + ' carta(s) creada(s)'">0 cartas creadas</p>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/deidades}">Ver deidades</a>
+                </article>
+
+                <article class="u-card-panel">
+                    <span class="gm-badge u-self-start">Condiciones</span>
+                    <h2>Cartas de Condición</h2>
+                    <p class="u-grow-1">Estado, Bendición y Maldición unificados: una mecánica reutilizable por clases, enemigos, jefes y objetos.</p>
+                    <p class="gm-hint" th:text="${numTierCondiciones} + ' carta(s) creada(s)'">0 cartas creadas</p>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/condiciones}">Ver condiciones</a>
+                </article>
+            </div></main>
+</body>
+</html>

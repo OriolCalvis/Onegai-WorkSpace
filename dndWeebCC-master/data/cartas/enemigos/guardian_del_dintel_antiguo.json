@@ -1,0 +1,64 @@
+{
+ "id": "guardian_del_dintel_antiguo",
+ "name": "Guardian del Dintel Antiguo",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 4,
+ "role": "defensa",
+ "faction": "yokai_del_umbral",
+ "factionName": "Los Yokai del Umbral",
+ "stats": {
+  "CON": 8,
+  "DES": 7,
+  "INT": 6,
+  "CAR": 7
+ },
+ "derived": {
+  "vida": 40,
+  "ca": 18,
+  "defensaMental": 17,
+  "resistenciaFisica": 18,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Cierre de Marco",
+   "defense": "CA",
+   "effect": "Ataque de oscuro: daño que suma su CON (pool de CON, regla 7.6)."
+  },
+  {
+   "name": "Umbral Negado",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: si el objetivo falla, queda Encantado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "La primera vez que se les golpea cada combate, el atacante debe superar Defensa mental o golpea a una ilusión."
+ },
+ "conditionsInflicted": [
+  "encantado"
+ ],
+ "loot": [
+  "estilete_de_viaje",
+  "faldar_de_explorador",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Oscuro"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Gana una segunda técnica por ronda y +1 al daño."
+  }
+ ],
+ "flavorText": "Viven en el marco de las puertas. Cobran peaje en certezas."
+}

@@ -1,0 +1,1045 @@
+/*
+ * components.css — Piloto de rediseño visual
+ * Botones, cartas (álbum de cromos místico), paneles flotantes, badges, formularios.
+ * Requiere tokens.css.
+ */
+
+/* ================= BOTONES =================
+   Todo botón da feedback visual usando el color SECUNDARIO del tema al pulsarlo,
+   independientemente de su color base (game feel: "respuesta" siempre reconocible). */
+
+.gm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    height: 40px;
+    padding: 0 var(--sp-4);
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    font-family: var(--font-body);
+    font-size: var(--fs-small);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 90ms ease, background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+.gm-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-secondary);
+}
+
+.gm-btn--primary {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary-dark);
+    color: var(--accent-primary-contrast);
+}
+.gm-btn--primary:hover { background: var(--accent-primary-dark); }
+
+.gm-btn--outline {
+    background: var(--bg-elevated);
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+}
+.gm-btn--outline:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+
+.gm-btn--danger {
+    background: transparent;
+    border-color: var(--accent-secondary);
+    color: var(--accent-secondary);
+}
+.gm-btn--danger:hover { background: var(--accent-secondary); color: var(--accent-secondary-contrast); }
+
+/* Feedback de pulsación: todos los botones "flashean" en el color secundario */
+.gm-btn:active {
+    transform: scale(0.94);
+    background-color: var(--accent-secondary) !important;
+    border-color: var(--accent-secondary-dark) !important;
+    color: var(--accent-secondary-contrast) !important;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-secondary) 30%, transparent);
+}
+
+.gm-btn--sm { height: 32px; padding: 0 var(--sp-3); font-size: var(--fs-micro); }
+.gm-btn--icon { width: 40px; padding: 0; }
+
+/* ================= CARTAS (paleta FIJA, no cambia con el tema) =================
+   Estética "álbum de cromos místico": marco dorado envejecido, papel tipo vitela,
+   gema de rareza fija en la esquina, tinta sepia. */
+
+.gm-album {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--sp-5);
+}
+
+.gm-card {
+    position: relative;
+    background: var(--card-bg);
+    border: 3px solid var(--card-frame);
+    border-radius: var(--radius-card);
+    box-shadow: 0 6px 16px var(--card-shadow), inset 0 0 0 1px var(--card-frame-bright);
+    padding: var(--sp-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    cursor: pointer;
+    transition: transform 140ms ease, box-shadow 140ms ease;
+}
+.gm-card::before {
+    /* filete interior dorado, look de cromo enmarcado */
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 1px solid var(--card-frame-bright);
+    border-radius: calc(var(--radius-card) - 4px);
+    pointer-events: none;
+    opacity: 0.6;
+}
+.gm-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px var(--card-shadow), inset 0 0 0 1px var(--card-frame-bright);
+}
+.gm-card:active { transform: translateY(-1px) scale(0.98); }
+
+.gm-card__tier {
+    position: absolute;
+    top: -10px;
+    left: var(--sp-3);
+    height: 22px;
+    padding: 0 var(--sp-2);
+    background: var(--card-frame);
+    color: var(--card-bg);
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-micro);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 4px var(--card-shadow);
+}
+
+.gm-card__gem {
+    position: absolute;
+    top: var(--sp-2);
+    right: var(--sp-2);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--card-frame-bright);
+    background: var(--card-gem);
+    box-shadow: 0 0 6px var(--card-gem);
+}
+.gm-card__gem--common { background: var(--rarity-common); box-shadow: 0 0 6px var(--rarity-common); }
+.gm-card__gem--uncommon { background: var(--rarity-uncommon); box-shadow: 0 0 6px var(--rarity-uncommon); }
+.gm-card__gem--rare { background: var(--rarity-rare); box-shadow: 0 0 6px var(--rarity-rare); }
+.gm-card__gem--epic { background: var(--rarity-epic); box-shadow: 0 0 6px var(--rarity-epic); }
+
+.gm-card__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    color: var(--card-ink);
+    margin: var(--sp-2) 0 0 0;
+}
+.gm-card__role {
+    display: inline-flex;
+    align-self: flex-start;
+    height: 20px;
+    padding: 0 var(--sp-2);
+    border-radius: var(--radius-sm);
+    background: var(--card-frame);
+    color: var(--card-bg);
+    font-size: var(--fs-micro);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.gm-card__meta {
+    font-size: var(--fs-small);
+    color: var(--card-ink-soft);
+}
+.gm-card__desc {
+    font-size: var(--fs-small);
+    color: var(--card-ink-soft);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    flex-grow: 1;
+}
+.gm-card__actions {
+    display: flex;
+    gap: var(--sp-2);
+    margin-top: var(--sp-2);
+}
+.gm-card__actions .gm-btn { flex: 1; }
+
+/* ====== Plantilla universal de 5 zonas (GDD 19.1) ======
+   ① Cabecera = __tier + __title + __role (ya existentes, arriba de la carta)
+   ② Ilustración = __illustration, marcador de arte por tipo de carta mientras no
+      exista infraestructura de imágenes real
+   ③ Reglas = __rules, envuelve __meta + __desc con separador visual
+   ④ Pie = __footer, tags · rareza · coste
+   ⑤ Identificador = __id, referencia técnica en la esquina inferior */
+.gm-card__illustration {
+    height: 92px;
+    margin: 0 calc(var(--sp-4) * -1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.4rem;
+    line-height: 1;
+    background: linear-gradient(160deg, var(--card-frame) 0%, transparent 130%);
+    border-top: 1px solid var(--card-frame-bright);
+    border-bottom: 1px solid var(--card-frame-bright);
+    color: var(--card-bg);
+    opacity: 0.94;
+}
+.gm-card--detalle .gm-card__illustration { height: 140px; font-size: 3.6rem; }
+
+.gm-card__rules {
+    border-top: 1px dashed var(--card-frame-bright);
+    padding-top: var(--sp-2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+    flex-grow: 1;
+}
+
+.gm-card__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    border-top: 1px dashed var(--card-frame-bright);
+    padding-top: var(--sp-2);
+}
+/* Los badges del pie comunican REGLAS (peso, rareza, tier): nunca por debajo de small
+   en pantalla (revisión de diseño 2.2). El formato físico de impresión va aparte. */
+.gm-card__footer .gm-badge { font-size: var(--fs-small); }
+
+.gm-card__id {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 10px;
+    letter-spacing: 0.03em;
+    color: var(--card-ink-soft);
+    opacity: 0.7;
+    text-align: right;
+    margin-top: -2px;
+}
+
+/* ================= PANELES FLOTANTES ================= */
+
+.gm-panel-backdrop {
+    position: fixed;
+    inset: 0;
+    background: var(--overlay);
+    z-index: 90;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 140ms ease;
+}
+.gm-panel-backdrop.is-open { opacity: 1; pointer-events: auto; }
+
+.gm-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -48%) scale(0.96);
+    width: min(var(--panel-width), calc(100vw - 32px));
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 20px 48px var(--shadow-color);
+    z-index: 91;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 140ms ease, transform 140ms ease;
+}
+.gm-panel.is-open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.gm-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--sp-4);
+    border-bottom: 1px solid var(--border);
+}
+.gm-panel__title { font-size: var(--fs-h2); margin: 0; }
+.gm-panel__close {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--bg-sunken);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: var(--fs-body);
+}
+.gm-panel__close:active { background: var(--accent-secondary); color: var(--accent-secondary-contrast); }
+.gm-panel__body { padding: var(--sp-4); }
+
+/* Panel "anclado" (filtros, subsecciones): bloque normal de la página, NO flotante.
+   No usa position sticky/fixed a propósito — el usuario lo encontró molesto al hacer scroll,
+   así que se queda fijo en su sitio dentro de la columna, como cualquier tarjeta más. */
+.gm-panel--anchored {
+    position: static;
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+    width: auto;
+    max-height: none;
+}
+.gm-panel--anchored.gm-panel { box-shadow: 0 4px 12px var(--card-shadow); }
+
+.gm-panel-section {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--sp-2);
+    overflow: hidden;
+}
+.gm-panel-section__toggle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--sp-2) var(--sp-3);
+    background: var(--bg-sunken);
+    border: none;
+    color: var(--text-primary);
+    font-size: var(--fs-small);
+    font-weight: 700;
+    cursor: pointer;
+}
+.gm-panel-section__toggle:active { background: var(--accent-secondary); color: var(--accent-secondary-contrast); }
+.gm-panel-section__content {
+    padding: var(--sp-3);
+    font-size: var(--fs-small);
+    color: var(--text-secondary);
+    display: none;
+}
+.gm-panel-section.is-expanded .gm-panel-section__content { display: block; }
+.gm-panel-section.is-expanded .gm-panel-section__toggle { color: var(--accent-primary); }
+
+/* ================= SELECTOR DE CARTAS (chips clicables) =================
+   Usado en la creación de personaje para elegir habilidades/equipo/dotes:
+   una rejilla de fichas seleccionables (no una lista de checkboxes plana),
+   consistente con el resto del sistema donde todo se presenta como carta. */
+
+.gm-chip-search {
+    margin-bottom: var(--sp-3);
+}
+
+.gm-chip-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--sp-2);
+}
+
+.gm-chip {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--sp-2) var(--sp-3);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    background: var(--bg-elevated);
+    cursor: pointer;
+    transition: border-color 120ms ease, background-color 120ms ease, transform 90ms ease;
+}
+.gm-chip:hover { border-color: var(--accent-primary); }
+.gm-chip:active { transform: scale(0.98); }
+.gm-chip input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+.gm-chip:has(input:checked) {
+    border-color: var(--accent-primary);
+    background: color-mix(in srgb, var(--accent-primary) 14%, var(--bg-elevated));
+}
+.gm-chip__title {
+    font-size: var(--fs-small);
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.gm-chip__meta {
+    font-size: var(--fs-micro);
+    color: var(--text-muted);
+}
+.gm-chip:has(input:checked)::after {
+    content: "✓";
+    position: absolute;
+    top: var(--sp-2);
+    right: var(--sp-2);
+    color: var(--accent-primary);
+    font-weight: 700;
+}
+.gm-chip-empty {
+    color: var(--text-muted);
+    font-size: var(--fs-small);
+}
+.gm-chip--incompatible {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(60%);
+}
+
+/* ================= MESA DE PERSONAJE (ficha como decklist) =================
+   La ficha de personaje no es un documento de texto: es la misma distribución
+   física de cartas que tendría un jugador delante en la mesa. Ver
+   docs/Sistema_Cartas_Tiers.md, sección "Distribución de mesa de personaje". */
+
+.gm-mesa-zona {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-elevated);
+    padding: var(--sp-4);
+    margin-bottom: var(--sp-4);
+}
+.gm-mesa-zona__titulo {
+    font-family: var(--font-display);
+    font-size: var(--fs-small);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin: 0 0 var(--sp-3) 0;
+}
+
+.gm-mini-card {
+    border: 1px solid var(--card-frame);
+    border-radius: var(--radius-md);
+    background: var(--card-bg);
+    color: var(--card-ink);
+    padding: var(--sp-3);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.gm-mini-card__eyebrow {
+    font-size: var(--fs-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--card-ink-soft);
+}
+.gm-mini-card__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-body);
+    font-weight: 700;
+}
+.gm-mini-card__desc {
+    font-size: var(--fs-micro);
+    color: var(--card-ink-soft);
+    flex-grow: 1;
+}
+.gm-mini-card--empty {
+    border-style: dashed;
+    color: var(--text-muted);
+    background: var(--bg-sunken);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: var(--fs-micro);
+}
+
+/* Silueta de equipamiento: casco arriba, arma/torso/arma-secundaria en fila
+   media, piernas y pies debajo — recuerda la forma de una persona equipada. */
+.gm-silueta {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas:
+        ".      cabeza  ."
+        "armaP  torso   armaS"
+        ".      piernas ."
+        ".      pies    .";
+    gap: var(--sp-2);
+    max-width: 520px;
+    margin: 0 auto;
+}
+.gm-silueta [data-slot="cabeza"] { grid-area: cabeza; }
+.gm-silueta [data-slot="arma_principal"] { grid-area: armaP; }
+.gm-silueta [data-slot="torso"] { grid-area: torso; }
+.gm-silueta [data-slot="arma_secundaria"] { grid-area: armaS; }
+.gm-silueta [data-slot="piernas"] { grid-area: piernas; }
+.gm-silueta [data-slot="pies"] { grid-area: pies; }
+
+/* Variante compacta de gm-card para la mesa de personaje: mismas 5 zonas
+   universales (cabecera/ilustración/reglas/pie/id) pero a tamaño de ficha,
+   para que la mesa sea un decklist real y no solo texto en cajas. */
+.gm-card--mini {
+    padding: var(--sp-2);
+    gap: 2px;
+    cursor: default;
+}
+.gm-card--mini:hover { transform: none; }
+.gm-card--mini .gm-card__tier { top: -8px; height: 18px; font-size: 9px; }
+.gm-card--mini .gm-card__title { font-size: var(--fs-body); margin-top: var(--sp-1); }
+.gm-card--mini .gm-card__role { font-size: 9px; height: 16px; }
+.gm-card--mini .gm-card__illustration { height: 40px; font-size: 1.3rem; margin: 2px calc(var(--sp-2) * -1); }
+.gm-card--mini .gm-card__rules { padding-top: 4px; gap: 2px; }
+.gm-card--mini .gm-card__desc { font-size: 10px; -webkit-line-clamp: 3; }
+.gm-card--mini .gm-card__meta { font-size: 10px; }
+.gm-card--mini .gm-card__footer { padding-top: 4px; }
+.gm-card--mini .gm-card__id { font-size: 8px; }
+
+.gm-pila {
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-md);
+    background: var(--bg-sunken);
+    padding: var(--sp-3);
+    text-align: center;
+}
+.gm-pila__titulo {
+    font-size: var(--fs-small);
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin: 0 0 var(--sp-1) 0;
+}
+.gm-pila__cuenta {
+    font-family: var(--font-display);
+    font-size: var(--fs-h2);
+    color: var(--text-muted);
+    margin: 0;
+}
+
+@media (max-width: 820px) {
+    .gm-silueta { grid-template-columns: 1fr 1fr; grid-template-areas: "cabeza cabeza" "armaP armaS" "torso torso" "piernas piernas" "pies pies"; max-width: none; }
+}
+
+/* ================= BADGES / FORMULARIOS ================= */
+
+.gm-badge {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 var(--sp-2);
+    border-radius: var(--radius-sm);
+    background: var(--bg-sunken);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: var(--fs-micro);
+    font-weight: 700;
+}
+
+.gm-field { display: flex; flex-direction: column; gap: var(--sp-1); margin-bottom: var(--sp-3); }
+.gm-field label { font-size: var(--fs-small); font-weight: 700; color: var(--text-primary); }
+.gm-field .gm-hint { font-size: var(--fs-micro); color: var(--text-muted); }
+
+.gm-input, .gm-select, .gm-textarea {
+    height: 40px;
+    padding: 0 var(--sp-3);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-strong);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    font-size: var(--fs-body);
+    font-family: var(--font-body);
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.gm-textarea { height: auto; padding: var(--sp-3); resize: vertical; }
+.gm-input:focus, .gm-select:focus, .gm-textarea:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-primary) 25%, transparent);
+}
+
+.gm-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--sp-4);
+}
+
+@media (max-width: 820px) {
+    .gm-album { grid-template-columns: 1fr 1fr; gap: var(--sp-3); }
+    .gm-panel--anchored { position: static; display: none; }
+    .gm-panel--anchored.is-visible-movil { display: block; }
+}
+@media (max-width: 520px) {
+    .gm-album { grid-template-columns: 1fr; }
+}
+
+/* ================= MODO PANTALLA — lectura de videojuego =================
+   La carta física (plantilla de 5 zonas, paleta pergamino) es el formato de
+   IMPRESIÓN y sigue intacta. En pantalla priorizamos lectura y feedback:
+   color por rareza, estados claros al pasar/seleccionar/deshabilitar, y
+   focus visible para teclado. Todo dentro de @media screen. */
+@media screen {
+
+    /* --- Lenguaje de rareza: borde izquierdo + texto coloreado --- */
+    .gm-chip[data-rarity] { border-left-width: 4px; }
+    .gm-chip[data-rarity="common"]   { border-left-color: var(--rarity-common); }
+    .gm-chip[data-rarity="uncommon"] { border-left-color: var(--rarity-uncommon); }
+    .gm-chip[data-rarity="rare"]     { border-left-color: var(--rarity-rare); }
+    .gm-chip[data-rarity="epic"]     { border-left-color: var(--rarity-epic); }
+    .gm-chip[data-rarity="mythic"]   { border-left-color: var(--rarity-mythic); }
+    .gm-chip[data-rarity="common"]   .gm-chip__meta { color: var(--rarity-common); }
+    .gm-chip[data-rarity="uncommon"] .gm-chip__meta { color: var(--rarity-uncommon); }
+    .gm-chip[data-rarity="rare"]     .gm-chip__meta { color: var(--rarity-rare); }
+    .gm-chip[data-rarity="epic"]     .gm-chip__meta { color: var(--rarity-epic); }
+    .gm-chip[data-rarity="mythic"]   .gm-chip__meta { color: var(--rarity-mythic); }
+
+    /* Tier como pequeña insignia coloreada dentro del chip */
+    .gm-chip__tier {
+        display: inline-block;
+        min-width: 22px;
+        text-align: center;
+        padding: 0 4px;
+        border-radius: var(--radius-sm);
+        font-size: var(--fs-small);
+        font-weight: 800;
+        color: var(--accent-primary-contrast);
+        background: var(--tier-1);
+    }
+    .gm-chip[data-tier="2"] .gm-chip__tier { background: var(--tier-2); }
+    .gm-chip[data-tier="3"] .gm-chip__tier { background: var(--tier-3); }
+    .gm-chip[data-tier="4"] .gm-chip__tier { background: var(--tier-4); }
+    .gm-chip[data-tier="5"] .gm-chip__tier { background: var(--tier-5); }
+
+    /* --- Feedback de juego: hover levanta, selección brilla, teclado se ve --- */
+    .gm-chip { min-height: 44px; }             /* zona táctil mínima accesible */
+    .gm-chip__meta { font-size: var(--fs-small); }  /* nada de reglas en microtexto */
+    .gm-chip:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px var(--shadow-color);
+    }
+    .gm-chip:has(input:checked) {
+        box-shadow: var(--glow-ok);
+        border-color: var(--accent-primary);
+    }
+    .gm-chip:has(input:checked) .gm-chip__title { color: var(--accent-primary); }
+    .gm-chip:has(input:focus-visible),
+    .gm-select:focus-visible, .gm-input:focus-visible, .gm-btn:focus-visible,
+    .gm-panel-section__toggle:focus-visible, .gm-picker > summary:focus-visible {
+        outline: 3px solid var(--accent-primary);
+        outline-offset: 2px;
+    }
+    .gm-chip--incompatible::after {
+        content: "✕ peso superior al de tu clase";
+        position: static;
+        display: block;
+        font-size: var(--fs-small);
+        color: var(--accent-secondary);
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .gm-chip, .gm-chip:hover { transform: none; transition: none; }
+    }
+
+    /* --- Picker plegable por grupos (slots de equipo, grupos de habilidades) --- */
+    .gm-picker {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: var(--bg-elevated);
+        margin-bottom: var(--sp-2);
+    }
+    .gm-picker > summary {
+        list-style: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        padding: var(--sp-3) var(--sp-4);
+        font-weight: 700;
+        color: var(--text-primary);
+        border-radius: var(--radius-md);
+    }
+    .gm-picker > summary::-webkit-details-marker { display: none; }
+    .gm-picker > summary::after {
+        content: "▸";
+        margin-left: auto;
+        color: var(--text-muted);
+        transition: transform 120ms ease;
+    }
+    .gm-picker[open] > summary::after { transform: rotate(90deg); }
+    .gm-picker > summary:hover { background: var(--bg-sunken); }
+    .gm-picker__body { padding: 0 var(--sp-4) var(--sp-4); }
+    .gm-picker__eleccion {
+        font-weight: 600;
+        font-size: var(--fs-small);
+        color: var(--text-muted);
+    }
+    .gm-picker--lleno > summary { border-left: 4px solid var(--accent-primary); }
+    .gm-picker--lleno .gm-picker__eleccion { color: var(--accent-primary); }
+
+    /* --- Contadores tipo HUD (mano 4/10, divinas 1/3, slots 3/6) --- */
+    .gm-hud {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        padding: var(--sp-1) var(--sp-3);
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--bg-sunken);
+        font-size: var(--fs-small);
+        font-weight: 700;
+        color: var(--text-secondary);
+    }
+    .gm-hud--ok    { border-color: var(--rarity-uncommon); color: var(--rarity-uncommon); }
+    .gm-hud--lleno { border-color: var(--tier-4); color: var(--tier-4); }
+    .gm-hud--exceso {
+        border-color: var(--accent-secondary);
+        color: var(--accent-secondary-contrast);
+        background: var(--accent-secondary);
+        animation: gm-pulso 600ms ease 2;
+    }
+    @keyframes gm-pulso {
+        0%, 100% { box-shadow: none; }
+        50% { box-shadow: var(--glow-warn); }
+    }
+
+    /* --- Barra de construcción fija (resumen vivo del personaje) --- */
+    .gm-buildbar {
+        position: sticky;
+        bottom: 0;
+        z-index: 30;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--sp-3);
+        padding: var(--sp-3) var(--sp-4);
+        margin-top: var(--sp-4);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        background: color-mix(in srgb, var(--bg-elevated) 92%, var(--accent-primary));
+        box-shadow: 0 -6px 18px var(--shadow-color);
+    }
+
+    /* Grupos del selector de habilidades */
+    .gm-grupo-titulo {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        margin: var(--sp-3) 0 var(--sp-2);
+        font-size: var(--fs-h3);
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+    .gm-grupo-titulo .gm-hud { font-size: var(--fs-micro); }
+    .gm-chip-grid:empty::after {
+        content: "Nada que mostrar con los filtros actuales.";
+        color: var(--text-muted);
+        font-size: var(--fs-small);
+    }
+}
+
+/* ================= IMPRESIÓN — manda el formato físico =================
+   Al imprimir desaparece el chrome de la web y las cartas conservan la
+   plantilla de 5 zonas con paleta de pergamino (formato estandarizado en
+   los .md / GDD 19.1). Nada del lenguaje de pantalla se imprime. */
+@media print {
+    .gm-header, .gm-sidebar, .gm-footer, .gm-menu-toggle, .gm-sidebar-backdrop,
+    .gm-btn, .gm-chip-search, .gm-buildbar, .gm-theme-toggle, .gm-hud { display: none !important; }
+    .gm-body { grid-template-columns: 1fr; }
+    .gm-main { padding: 0; }
+    .gm-card {
+        break-inside: avoid;
+        box-shadow: none;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .gm-panel-section { display: block; }
+    .gm-panel-section__content { display: block !important; }
+}
+
+/* ================= IMPRESIÓN DE MAZOS (todas las cartas de una aventura) =================
+   Formato físico FIJO (tamaño estándar de carta de juego, 63.5x88.9mm) para que cualquier
+   número de cartas de cualquier tipo (historia, deidad, npc, enemigo, botín, trampa) salga
+   del mismo tamaño en papel: recortables, apilables, sin sorpresas de maquetación. */
+.gm-print-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    flex-wrap: wrap;
+    margin-bottom: var(--sp-4);
+}
+.gm-print-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: var(--sp-4);
+}
+.gm-print-grupo-titulo {
+    flex-basis: 100%;
+    margin: var(--sp-3) 0 0 0;
+}
+
+.gm-card--print {
+    width: 63.5mm;
+    height: 88.9mm;
+    flex: 0 0 auto;
+    padding: var(--sp-2);
+    gap: 2px;
+    cursor: default;
+    overflow: hidden;
+}
+.gm-card--print:hover { transform: none; }
+.gm-card--print .gm-card__tier { top: -8px; height: 18px; font-size: 9px; }
+.gm-card--print .gm-card__title {
+    font-size: var(--fs-body);
+    margin-top: var(--sp-1);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.gm-card--print .gm-card__role { font-size: 9px; height: 16px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gm-card--print .gm-card__illustration { height: 34px; font-size: 1.2rem; margin: 2px calc(var(--sp-2) * -1); }
+.gm-card--print .gm-card__rules { padding-top: 4px; gap: 2px; overflow: hidden; }
+.gm-card--print .gm-card__desc { font-size: 9px; -webkit-line-clamp: 6; }
+.gm-card--print .gm-card__meta { font-size: 9px; }
+.gm-card--print .gm-card__footer { padding-top: 4px; max-height: 20px; overflow: hidden; }
+.gm-card--print .gm-card__footer .gm-badge { font-size: 8px; height: 16px; padding: 0 6px; }
+.gm-card--print .gm-card__id { font-size: 7px; }
+
+/* Página FIJA única para todo lo que se imprime (mazos de aventura y ficha de
+   personaje comparten esta misma hoja de estilos): @page no admite scoping por
+   selector, así que solo puede haber una declaración con estos márgenes — los
+   dos grids de abajo están calculados para caber ambos con el mismo margen. */
+@media print {
+    @page { size: A4; margin: 8mm; }
+}
+
+@media print {
+    /* CAMBIO DE FONDO (3ª vuelta, la definitiva): ya no se intenta "paginar bien"
+       un contenedor largo con CSS (grid, flex e inline-block lo han demostrado
+       poco fiables en distintos motores de impresión). La aventura llega desde
+       el controlador YA TROCEADA en páginas de 9 cartas (AventuraController,
+       CartaImpresion) — aquí .gm-print-grid representa SIEMPRE una única hoja
+       completa, nunca más de 9 cartas, así que jamás necesita fragmentarse: no
+       hay nada que "avoid" tenga que evitar. Dentro de cada página el 3×3 se
+       hace con flex, exactamente igual de seguro que con inline-block porque
+       nunca cruza un salto de hoja. El salto de página lo pone
+       page-break-after en el propio contenedor de la página, no en las cartas. */
+    .gm-print-toolbar { display: none !important; }
+    .gm-print-pages { display: block; }
+    /* 4ª vuelta, la de verdad: break-after puesto directamente en un elemento
+       display:grid/flex NO es fiable en Firefox — el salto se ignora y el
+       contenido de la "página" siguiente sigue fluyendo justo detrás de la
+       anterior, así que es el corte natural de la hoja física (ajeno a
+       nuestras agrupaciones de 9) el que acaba cortando cartas a mitad.
+       Por eso el salto de página vive en un <div> de bloque normal
+       (.gm-print-page), que no es grid ni flex y con el que break-after SÍ
+       es fiable en todos los motores. La rejilla 3×3 va ANIDADA dentro, sin
+       ninguna propiedad de salto — solo maqueta, no fragmenta nada. */
+    .gm-print-page {
+        display: block;
+        break-after: page;
+        page-break-after: always;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    .gm-print-pages .gm-print-page:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
+    .gm-print-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 63.5mm);
+        grid-auto-rows: 88.9mm;
+        gap: 1mm;
+        width: 192.5mm; /* 3×63,5 + 2×1 = 192,5mm, con margen de sobra sobre los 194mm útiles de A4 */
+        justify-content: start;
+    }
+    .gm-card--print {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        box-shadow: none;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+
+/* ================= IMPRESIÓN DE LA FICHA DE PERSONAJE =================
+   Misma filosofía que el mazo de aventura (arriba): tamaño físico FIJO (45×63mm)
+   para las cartas mini de la mesa de personaje. Las zonas pequeñas (Identidad,
+   Dotes) son un único bloque con break-inside:avoid porque nunca necesitan
+   ocupar más de una hoja. La zona de Habilidades es la única que puede crecer
+   más de una página (hasta 20 cartas en tier 3): llega ya troceada en páginas
+   de 16 desde PersonatgeController, así que cada .gm-album suyo es una página
+   acotada con el mismo patrón "contenedor con página forzada" del mazo de
+   aventura — nunca fragmento de grid/flex a mitad de hoja. */
+@media print {
+    /* .gm-mesa-zona--paginada (Habilidades preparadas) queda FUERA de este avoid:
+       forzar avoid en una zona que a propósito contiene saltos de página internos
+       es contradictorio y confunde al motor de impresión. */
+    .gm-mesa-zona:not(.gm-mesa-zona--paginada) { break-inside: avoid; page-break-inside: avoid; }
+
+    /* Identidad y Dotes: siempre caben en una hoja (pocas cartas fijas), así que
+       es seguro darles un grid fijo de columnas de 45mm sin miedo a fragmentación. */
+    .gm-mesa-zona:not(.gm-mesa-zona--paginada) .gm-album {
+        display: grid;
+        grid-template-columns: repeat(4, 45mm) !important;
+        gap: 4mm !important;
+    }
+
+    /* Habilidades: el salto de página vive en .gm-mesa-pagina, un <div> de
+       bloque normal (no grid/flex — ver nota larga junto a .gm-print-page
+       arriba: break-after en un elemento grid/flex no es fiable en Firefox).
+       .gm-album va anidado dentro, solo para maquetar el 4×4, sin ninguna
+       propiedad de salto. */
+    .gm-mesa-pagina {
+        display: block;
+        break-after: page;
+        page-break-after: always;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    .gm-mesa-zona--paginada .gm-mesa-pagina:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
+    .gm-mesa-zona--paginada .gm-album {
+        display: grid !important;
+        grid-template-columns: repeat(4, 45mm) !important;
+        grid-auto-rows: 63mm;
+        gap: 3mm !important;
+        width: 189mm; /* 4×45 + 3×3 = 189mm, margen de sobra sobre los 194mm útiles */
+        justify-content: start;
+    }
+
+    .gm-mesa-zona .gm-card--mini {
+        width: 45mm;
+        height: 63mm;
+        break-inside: avoid;
+        page-break-inside: avoid;
+        box-shadow: none;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    /* La silueta de equipo son siempre 6 cartas fijas (nunca crece, nunca
+       necesita paginar), así que conserva su grid con forma de cuerpo. */
+    .gm-silueta {
+        grid-template-columns: repeat(3, 50mm);
+        gap: 4mm;
+        max-width: none;
+        width: 158mm;
+    }
+    .gm-silueta .gm-card--mini {
+        width: 50mm;
+        height: 63mm;
+        margin: 0;
+    }
+}
+
+@media screen {
+    /* Carta bloqueada por tier (GDD 10.5): visible pero claramente fuera de alcance */
+    .gm-chip--tier-bloqueado {
+        opacity: 0.45;
+        cursor: not-allowed;
+        filter: saturate(30%);
+    }
+    .gm-chip--tier-bloqueado::after {
+        content: "🔒 tier superior al tuyo";
+        position: static;
+        display: block;
+        font-size: var(--fs-small);
+        color: var(--tier-4);
+    }
+    .gm-chip--tier-bloqueado:hover { transform: none; box-shadow: none; }
+}
+
+/* ── Selector CSV: chips + desplegable, sin escribir ids a mano ─────────────
+   Campos que referencian cosas ya creadas (classTags, startingSkills, etc.).
+   Lo pinta /js/selector-csv.js sobre los fragmentos de Blocks/selector-referencias. */
+.gm-csvsel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+}
+.gm-csvsel__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.gm-csvsel__chips:empty { display: none; }
+.gm-csvsel__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 6px 3px 10px;
+    border: 1px solid var(--accent-primary);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--accent-primary) 12%, var(--bg-elevated));
+    color: var(--text-primary);
+    font-size: var(--fs-small);
+    line-height: 1.3;
+}
+.gm-csvsel__chip--desconocido {
+    border-color: var(--tier-4);
+    border-style: dashed;
+    background: transparent;
+}
+.gm-csvsel__chip--desconocido::before {
+    content: "⚠";
+    font-size: var(--fs-micro);
+}
+.gm-csvsel__quitar {
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0 2px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+.gm-csvsel__quitar:hover { color: var(--accent-primary); }
+
+/* ================= TOAST =================
+   Notificación flotante "✓ guardado" tras crear/editar.
+   El JS del layout (layout-gm.html / layout-gm-print.html) lo activa con .is-visible
+   cuando la URL lleva ?guardado=1, y lo oculta a los 2,5s. */
+
+.gm-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    background: var(--success);
+    color: var(--success-contrast);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font: 600 13px/1.4 system-ui, sans-serif;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .25);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .25s, transform .25s;
+}
+
+.gm-toast.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ============================================================
+   Fila activa de una tabla (p. ej. mesa de combate, D10): resalta de quién es el
+   turno ahora dentro de la tabla de iniciativa.
+   ============================================================ */
+.gm-fila-activa {
+    background: color-mix(in srgb, var(--accent-primary) 14%, var(--bg-elevated));
+    font-weight: 700;
+}
+
+/* ============================================================
+   Avatar de personaje (image-slot circular) — ficha de personaje.
+   ============================================================ */
+.gm-avatar--88 {
+    width: 88px;
+    height: 88px;
+    flex: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gm-toast { transition: none; }
+}

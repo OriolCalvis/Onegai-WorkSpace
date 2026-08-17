@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Carta de invocación</title>
+    <th:block layout:fragment="extra-css">
+    <link th:href="@{/css/carta-fisica.css}" rel="stylesheet">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('invocaciones')}"></div>
+
+            <div class="u-page-header--start">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-p-0">Ficha completa</p>
+                    <h1 th:text="${carta.name}">Nombre</h1>
+                    <p>
+                        <span class="gm-badge">Tier <span th:text="${carta.tier}">1</span></span>
+                        <span class="gm-badge" th:text="${carta.control}">automatica</span>
+                        <span class="gm-badge" th:text="'ID ' + ${carta.id}">id</span>
+                    </p>
+                </div>
+                <a class="gm-btn gm-btn--outline" th:href="@{/cartas/invocaciones/{id}/editar(id=${carta.id})}">Editar</a>
+            </div>
+
+            <div class="u-detail-layout-300">
+                <!-- Carta física de invocación (wireframe 7i): summonedBy/health/
+                     attacks/control del esquema §6. -->
+                <article class="cf-card u-cursor-default">
+                    <div class="cf-head">
+                        <span class="cf-name" th:text="${carta.name}">Nombre</span>
+                        <span class="cf-gem" th:classappend="'cf-gem--t' + ${carta.tier}">TIER <span th:text="${carta.tier}">1</span></span>
+                    </div>
+
+                    <div class="cf-illustration">🗿</div>
+
+                    <div class="cf-typeline">
+                        <span>Invocación — control: <span th:text="${carta.control}">automatica</span></span>
+                    </div>
+
+                    <div class="cf-statrow">
+                        <span class="cf-stat cf-stat--vida">VIDA <span th:text="${carta.health}">0</span></span>
+                        <span class="cf-stat">MOV. <span th:text="${carta.movement}">0</span></span>
+                    </div>
+
+                    <div class="cf-rules">
+                        <p th:each="ataque : ${carta.attacks}"><strong th:text="${ataque.name}">Ataque</strong> — <span th:text="${ataque.effect}">efecto</span></p>
+                        <p th:if="${carta.passive != null and carta.passive.description != null}" th:text="${carta.passive.description}">Pasiva</p>
+                        <p class="cf-meta">Invocado por: <span th:text="${carta.summonedBy}">habilidad</span> · Duración: <span th:text="${carta.duration}">duración</span></p>
+                        <p class="cf-flavor" th:if="${carta.flavorText}" th:text="${carta.flavorText}">Texto narrativo</p>
+                    </div>
+
+                    <p class="cf-id" th:text="'invocaciones · ' + ${carta.id}">invocaciones · id</p>
+                </article>
+
+                <div>
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Ataques ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p th:each="ataque : ${carta.attacks}"><strong th:text="${ataque.name}">Nombre</strong> — <span th:text="${ataque.effect}">efecto</span></p>
+                            <p th:if="${#lists.isEmpty(carta.attacks)}">Sin ataques definidos.</p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Pasiva ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong th:text="${carta.passive != null ? carta.passive.name : ''}">Nombre</strong></p>
+                            <p th:text="${carta.passive != null ? carta.passive.description : ''}">Descripción</p>
+                        </div>
+                    </div>
+
+                    <div class="u-actions--wrap">
+                        <a class="gm-btn gm-btn--outline" th:href="@{/cartas/invocaciones}">Volver al listado</a>
+                        <form th:action="@{/cartas/invocaciones/{id}/eliminar(id=${carta.id})}" method="post" th:data-nombre="${carta.name}" onsubmit="return confirm(\'¿Borrar el invocacion &quot;' + this.dataset.nombre + '&quot;? No se puede deshacer.');">
+                            <button class="gm-btn gm-btn--danger" type="submit">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div></main>
+</body>
+</html>

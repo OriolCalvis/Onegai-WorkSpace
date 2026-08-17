@@ -1,0 +1,52 @@
+{
+ "id": "arquero_hueco_veterano",
+ "name": "Arquero Hueco Veterano",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 3,
+ "role": "tirador",
+ "faction": "renacidos_de_la_fosa",
+ "factionName": "Los Renacidos de la Fosa",
+ "stats": {
+  "CON": 3,
+  "DES": 5,
+  "INT": 5,
+  "CAR": 3
+ },
+ "derived": {
+  "vida": 20,
+  "ca": 15,
+  "defensaMental": 13,
+  "resistenciaFisica": 13,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Flecha sin Silbido",
+   "defense": "CA",
+   "effect": "Ataque de oscuro: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Andanada Pacient",
+   "defense": "resistencia_fisica",
+   "effect": "Técnica de facción: si el objetivo falla, queda Fatiga hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "La primera vez que caen a 0 cada combate, se levantan con 1 de vida (el barro insiste)."
+ },
+ "conditionsInflicted": [
+  "fatiga"
+ ],
+ "loot": [
+  "maza_de_viaje",
+  "yelmo_de_milicia"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Oscuro"
+ ],
+ "phases": [],
+ "flavorText": "No volvieron a la vida. Volvieron al trabajo."
+}

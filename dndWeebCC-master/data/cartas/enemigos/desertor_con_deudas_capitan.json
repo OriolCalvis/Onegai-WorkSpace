@@ -1,0 +1,64 @@
+{
+ "id": "desertor_con_deudas_capitan",
+ "name": "Desertor con Deudas Capitán",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "defensa",
+ "faction": "bandidos_del_camino_de_ceniza",
+ "factionName": "Los Bandidos del Camino de Ceniza",
+ "stats": {
+  "CON": 7,
+  "DES": 6,
+  "INT": 5,
+  "CAR": 6
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 17,
+  "defensaMental": 16,
+  "resistenciaFisica": 17,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Escudo Robado",
+   "defense": "CA",
+   "effect": "Ataque de fisico: daño que suma su CON (pool de CON, regla 7.6)."
+  },
+  {
+   "name": "Resistencia Desesperada",
+   "defense": "CA",
+   "effect": "Técnica de facción: si el objetivo falla, queda Sangrado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Ganan +1 al daño contra viajeros con carga (mochilas, carros, heridos a cuestas)."
+ },
+ "conditionsInflicted": [
+  "sangrado"
+ ],
+ "loot": [
+  "item_short_sword",
+  "armadura_de_cuero",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Gana una segunda técnica por ronda y +1 al daño."
+  }
+ ],
+ "flavorText": "No cobran peaje. Cobran todo."
+}

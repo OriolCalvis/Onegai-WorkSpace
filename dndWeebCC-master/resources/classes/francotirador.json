@@ -1,0 +1,192 @@
+{
+    "nombre": "Francotirador",
+    "descripcion": "Maestro del combate a distancia que combina precisión letal con tecnología mágica. Especialista en armas de proyectiles, trampas y cañones arcanotecnológicos.",
+    "rolTematico": "Combatiente de largo alcance con daño crítico, construcciones mágicas y dominio absoluto del terreno.",
+    "dadoGolpe": "1d8",
+    "puntosGolpeNivel1": "8 + modificador de Constitución",
+    "puntosGolpePorNivel": "1d8 (o 5) + modificador de Constitución",
+    "atributoConjuro": "Inteligencia",
+    "atributosRelevantes": ["Destreza", "Inteligencia", "Constitución"],
+    "competencias": {
+      "armaduras": ["Ligeras", "Intermedias"],
+      "armas": [
+        "Arcos largos", "Ballestas ligeras", "Ballestas de mano",
+        "Dagas", "Espadas cortas"
+      ],
+      "habilidadesElegir": [
+        "Arcano", "Atletismo", "Historia", "Perspicacia",
+        "Investigación", "Medicina", "Naturaleza", "Percepción", "Juego de Manos"
+      ],
+      "salvaciones": ["Inteligencia", "Destreza"]
+    },
+    "mecanicas": {},
+    "accionesEspeciales": {},
+    "niveles": {
+      "1": {
+        "habilidades": [
+          {
+            "nombre": "Tiro Preciso",
+            "descripcion": "Tienes ventaja en el primer ataque a distancia de cada combate.",
+            "efecto": "1d6 daño adicional si es crítico.",
+            "escalado": "Nivel 5: 2d6, Nivel 10: acción adicional, Nivel 15: 3d6, Nivel 20: ataque letal 4d6",
+            "accion": "Pasiva"
+          },
+          {
+            "nombre": "Disparo Certero",
+            "descripcion": "Ignoras cobertura ligera al disparar.",
+            "efecto": "Nivel 5: cobertura total, Nivel 10: desventaja en TS enemigos, Nivel 15: +1d6 si tienen cobertura, Nivel 20: impacta a dos enemigos",
+            "accion": "Pasiva"
+          }
+        ]
+      },
+      "2": {
+        "habilidades": [
+          {
+            "nombre": "Construcción de Arma de Proyectiles",
+            "descripcion": "Creas una ballesta pesada o cañón arcano por 3 turnos.",
+            "efecto": "2d6 daño de fuerza.",
+            "usos": "Modificador de Inteligencia por descanso largo",
+            "escalado": "Nivel 9: acción adicional, Nivel 13: 3d6 en crítico, Nivel 17: ataque letal 4d6",
+            "accion": "Normal"
+          }
+        ]
+      },
+      "3": {
+        "habilidades": [
+          {
+            "nombre": "Golpe Crítico Mejorado",
+            "descripcion": "Añades 1d6 de daño al hacer golpe crítico.",
+            "accion": "Pasiva"
+          }
+        ]
+      },
+      "4": {
+        "habilidades": [{"nombre": "Mejora de Características"}]
+      },
+      "5": {
+        "habilidades": [
+          {
+            "nombre": "Cañón de Asedio",
+            "descripcion": "Invocas un cañón que ataca un área de 15 pies durante 2 turnos.",
+            "efecto": "4d6 de fuerza.",
+            "usos": "1 por descanso largo",
+            "escalado": "Nivel 9: 5d6, Nivel 13: 6d6, Nivel 17: 7d6",
+            "accion": "Normal"
+          }
+        ]
+      },
+      "6": {
+        "habilidades": [
+          {
+            "nombre": "Flechas o Proyectiles Críticos",
+            "descripcion": "Tus críticos se activan con 19-20.",
+            "accion": "Pasiva"
+          }
+        ]
+      },
+      "7": {
+        "habilidades": [
+          {
+            "nombre": "Trampa de Proyectiles",
+            "descripcion": "Colocas una trampa que se activa al paso de un enemigo.",
+            "efecto": "2d6 daño + ralentiza",
+            "usos": "Modificador de Inteligencia por descanso largo",
+            "escalado": "Nivel 11: 3d6, Nivel 15: 4d6, Nivel 19: 5d6",
+            "accion": "Especial"
+          }
+        ]
+      },
+      "8": {
+        "habilidades": [{"nombre": "Mejora de Características"}]
+      },
+      "9": {
+        "habilidades": [
+          {
+            "nombre": "Balista de Energía",
+            "descripcion": "Disparas un rayo recto de 60 pies.",
+            "efecto": "5d6 daño de fuerza a todos en la línea.",
+            "duracion": "3 turnos",
+            "usos": "1 por descanso largo",
+            "accion": "Normal"
+          }
+        ]
+      },
+      "10": {
+        "habilidades": [
+          {
+            "nombre": "Crítico Perfeccionado",
+            "descripcion": "Tus golpes críticos infligen 2d6 de daño adicional.",
+            "accion": "Pasiva"
+          }
+        ]
+      },
+      "11": {
+        "habilidades": [
+          {
+            "nombre": "Torreta de Proyectiles",
+            "descripcion": "Torretas automáticas que disparan durante 3 turnos.",
+            "efecto": "3d6 daño de fuerza por turno.",
+            "escalado": "Nivel 15: 6d6, Nivel 19: 8d6",
+            "usos": "1 por descanso largo",
+            "accion": "Automático"
+          }
+        ]
+      },
+      "12": {
+        "habilidades": [{"nombre": "Mejora de Características"}]
+      },
+      "13": {
+        "habilidades": [
+          {
+            "nombre": "Disparo Letal",
+            "descripcion": "Al hacer crítico, puedes atacar a otro enemigo cercano.",
+            "accion": "Pasiva"
+          }
+        ]
+      },
+      "14": {
+        "habilidades": [
+          {
+            "nombre": "Desenfreno Crítico",
+            "descripcion": "Añades 3d6 extra si haces golpe crítico.",
+            "accion": "Pasiva"
+          }
+        ]
+      },
+      "15": {
+        "habilidades": [
+          {
+            "nombre": "Explosión de Proyectiles",
+            "descripcion": "Área de 30 pies. TS de Destreza o recibe 6d6 daño de fuerza.",
+            "usos": "1 por descanso largo",
+            "accion": "Normal"
+          }
+        ]
+      },
+      "16": {
+        "habilidades": [{"nombre": "Mejora de Características"}]
+      },
+      "18": {
+        "habilidades": [
+          {
+            "nombre": "Maestro Francotirador",
+            "descripcion": "Puedes hacer 2 críticos en un turno si ambos impactos aciertan.",
+            "accion": "Pasiva"
+          }
+        ]
+      },
+      "20": {
+        "habilidades": [
+          {
+            "nombre": "Destructor de Proyectiles",
+            "descripcion": "Invocas un arma que dispara 3 proyectiles.",
+            "efecto": "Cada uno hace 10d6 en área de 10 pies.",
+            "duracion": "3 turnos",
+            "usos": "1 por descanso largo",
+            "accion": "Acción Completa"
+          }
+        ]
+      }
+    }
+  }
+  

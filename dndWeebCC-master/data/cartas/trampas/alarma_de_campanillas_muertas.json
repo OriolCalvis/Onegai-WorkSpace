@@ -1,0 +1,26 @@
+{
+ "id": "alarma_de_campanillas_muertas",
+ "name": "Alarma de Campanillas Muertas",
+ "type": "trap",
+ "tier": 1,
+ "rarity": "common",
+ "category": "narrativa",
+ "trigger": "mover el hilo a la altura del tobillo",
+ "detection": {
+  "stat": "INT",
+  "cd": 0.5
+ },
+ "disarm": {
+  "stat": "DES",
+  "cd": 0.5,
+  "herramienta": null
+ },
+ "effect": {
+  "description": "No daña: toda la estancia sabe que estáis aquí (refuerzos en 2 rondas).",
+  "defensa": "resistencia_fisica",
+  "condicionInfligida": null
+ },
+ "onFail": "La campanilla no calla: desventaja en sigilo el resto de la escena.",
+ "reset": "única",
+ "flavorText": "Quien la montó pensaba volver. No volvió."
+}

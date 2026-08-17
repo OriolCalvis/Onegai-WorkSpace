@@ -1,0 +1,64 @@
+{
+ "id": "bibliotecario_exiliado_coronado",
+ "name": "Bibliotecario Exiliado Coronado",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 5,
+ "role": "corruptor",
+ "faction": "hechiceros_del_vacio",
+ "factionName": "Los Hechiceros del Vacío",
+ "stats": {
+  "CON": 7,
+  "DES": 8,
+  "INT": 9,
+  "CAR": 9
+ },
+ "derived": {
+  "vida": 46,
+  "ca": 19,
+  "defensaMental": 19,
+  "resistenciaFisica": 17,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Pagina en Blanco",
+   "defense": "CA",
+   "effect": "Ataque de magico: daño que suma su INT (pool de INT, regla 7.6)."
+  },
+  {
+   "name": "Cita Olvidada",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: si el objetivo falla, queda Anclado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "El espacio a 5 pies de ellos cuesta el doble de movimiento a sus enemigos (el vacío pesa)."
+ },
+ "conditionsInflicted": [
+  "anclado"
+ ],
+ "loot": [
+  "vara_de_aprendiz_de_milicia",
+  "tunica_del_conjurador",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Magico"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Gana una segunda técnica por ronda y +1 al daño."
+  }
+ ],
+ "flavorText": "Estudiaron el hueco entre las cosas. El hueco les devolvió la mirada."
+}

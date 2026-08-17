@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="'Cartas — ' + ${aventura.nom}">Cartas de la aventura</title>
+    <link th:href="@{/css/tokens.css(cb='print-fix-2')}" rel="stylesheet">
+    <link th:href="@{/css/base.css(cb='print-fix-2')}" rel="stylesheet">
+    <!-- cb=cache-bust: fuerza al navegador a pedir el CSS de nuevo cada vez que
+         cambiamos este valor, sin depender de que el usuario haga hard-refresh
+         o borre caché a mano (fue la causa real de varios "el fix no funciona"
+         cuando en realidad el navegador seguía sirviendo el CSS de antes). -->
+    <link th:href="@{/css/components.css(cb='print-fix-2')}" rel="stylesheet">
+    <link th:href="@{/css/utilities.css}" rel="stylesheet">
+</head>
+<body>
+<div class="gm-app">
+    <div th:replace="~{Blocks/header-v2 :: header}"></div>
+    <div class="gm-body">
+        <div th:replace="~{Blocks/sidebar-v2 :: sidebar}"></div>
+        <main class="gm-main">
+            <div class="gm-print-toolbar">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-p-0">Aventuras · Impresión</p>
+                    <h1 class="u-mb-sp1" th:text="${aventura.nom}">Aventura</h1>
+                    <p class="u-text-muted" th:text="${totalCartas} + ' cartas, al mismo tamaño (63,5×88,9 mm), en ' + ${#lists.size(paginas)} + ' hojas de 9 — listas para recortar.'">
+                        Todas las cartas de la aventura, listas para recortar.
+                    </p>
+                </div>
+                <div class="u-flex-gap2">
+                    <a class="gm-btn gm-btn--outline" th:href="@{/aventuras/{id}(id=${aventura.id})}">Volver a la aventura</a>
+                    <button class="gm-btn gm-btn--primary" onclick="window.print()" type="button">🖨 Imprimir</button>
+                </div>
+            </div>
+
+            <!-- Cada aventura ya llega troceada en páginas de 9 cartas desde el controlador
+                 (AventuraController#imprimir): así el motor de impresión nunca tiene que
+                 fragmentar un contenedor largo entre hojas — cada .gm-print-grid de aquí
+                 abajo cabe siempre en una sola hoja A4 por construcción, sin excepciones. -->
+            <div class="gm-print-pages">
+                <div class="gm-print-page" th:each="pagina : ${paginas}">
+                    <div class="gm-print-grid">
+                        <article class="gm-card gm-card--print" th:each="c : ${pagina}">
+                            <span class="gm-card__tier" th:text="${c.tier}">TIER</span>
+                            <h2 class="gm-card__title" th:text="${c.titulo}">Título</h2>
+                            <span class="gm-card__role" th:text="${c.rol}">Rol</span>
+                            <div class="gm-card__illustration" th:text="${c.tipoIcono}">📜</div>
+                            <div class="gm-card__rules">
+                                <p class="gm-card__meta" th:if="${c.meta != null and !#strings.isEmpty(c.meta)}" th:text="${c.meta}">meta</p>
+                                <p class="gm-card__desc" th:text="${c.desc}">Descripción</p>
+                            </div>
+                            <div class="gm-card__footer">
+                                <span class="gm-badge" th:each="b : ${c.badges}" th:if="${!#strings.isEmpty(b)}" th:text="${b}">badge</span>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+
+            <p class="gm-chip-empty" th:if="${totalCartas == 0}">
+                Esta aventura todavía no tiene cartas asignadas. <a th:href="@{/aventuras/{id}/editar(id=${aventura.id})}">Añádelas</a>.
+            </p>
+        </main>
+    </div>
+    <div th:replace="~{Blocks/footer-v2 :: footer}"></div>
+</div>
+<script th:src="@{/js/theme.js}"></script>
+<script th:src="@{/js/panels.js}"></script>
+</body>
+</html>

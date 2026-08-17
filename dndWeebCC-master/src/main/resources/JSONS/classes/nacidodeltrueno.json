@@ -1,0 +1,183 @@
+{
+  "nombre": "Nacido del Trueno",
+  "descripcion": "Guerrero arcano bendecido por el poder del trueno, especializado en velocidad, destreza y control de energía eléctrica.",
+  "rolTematico": "Combatiente ágil que canaliza relámpagos y movimientos fulminantes para atacar y reposicionarse con precisión inigualable.",
+  "dadoGolpe": "1d6",
+  "puntosGolpeNivel1": "6 + modificador de Constitución",
+  "puntosGolpePorNivel": "1d6 (o 4) + modificador de Constitución",
+  "atributoConjuro": "Sabiduría",
+  "atributosRelevantes": ["Destreza", "Sabiduría", "Constitución"],
+  "competencias": {
+    "armaduras": ["Ligeras", "Túnicas"],
+    "armas": ["Daga", "Dardo", "Honda", "Bastón", "Ballesta ligera"],
+    "habilidadesElegir": ["Arcano", "Engaño", "Perspicacia", "Intimidación", "Persuasión", "Religión"],
+    "salvaciones": ["Sabiduría", "Destreza"]
+  },
+  "mecanicas": {
+    "canalizacionTrueno": "Añade daño de trueno a tus ataques cuerpo a cuerpo y hechizos según nivel de habilidad.",
+    "movimientoRelampago": "Permite teletransportarse o desplazarse rápidamente usando energía eléctrica."
+  },
+  "accionesEspeciales": {},
+  "niveles": {
+    "1": {
+      "habilidades": [
+        {
+          "nombre": "Golpe de Trueno",
+          "descripcion": "Canalizas energía eléctrica en tu arma para impactar a tu enemigo.",
+          "efecto": "Añade 1d6 de daño de trueno a tus ataques cuerpo a cuerpo.",
+          "usos": "Mod. Sabiduría por descanso corto",
+          "accion": "Acción",
+          "duracion": "Instantáneo"
+        }
+      ]
+    },
+    "2": {
+      "habilidades": [
+        {
+          "nombre": "Movimiento Rápido",
+          "descripcion": "Te desplazas con la velocidad del rayo por el campo.",
+          "efecto": "Teletransportarte hasta 30 pies a un espacio desocupado.",
+          "usos": "Mod. Destreza por descanso corto",
+          "accion": "Acción Adicional"
+        }
+      ]
+    },
+    "3": {
+      "habilidades": [
+        {
+          "nombre": "Aura de Tormenta",
+          "descripcion": "Desatas un aura eléctrica que daña a los cercanos.",
+          "efecto": "Enemigos a 10 pies reciben 1d4 de daño de trueno al inicio de su turno.",
+          "usos": "Mod. Sabiduría por descanso largo",
+          "accion": "Acción",
+          "duracion": "1 minuto"
+        }
+      ]
+    },
+    "4": { "habilidades": [ { "nombre": "Mejora de Características" } ] },
+    "5": {
+      "habilidades": [
+        {
+          "nombre": "Rayo a Distancia",
+          "descripcion": "Lanzas un rayo eléctrico hacia un objetivo lejano.",
+          "efecto": "Inflige 2d6 de daño de trueno a un enemigo dentro de 60 pies.",
+          "usos": "Mod. Sabiduría por descanso corto",
+          "accion": "Acción"
+        }
+      ]
+    },
+    "6": {
+      "habilidades": [
+        {
+          "nombre": "Golpe de Trueno Mejorado",
+          "descripcion": "Tu canalización de trueno se intensifica.",
+          "efecto": "Añades 2d6 de daño de trueno a tus ataques cuerpo a cuerpo.",
+          "usos": "Mod. Sabiduría por descanso corto",
+          "accion": "Acción"
+        }
+      ]
+    },
+    "7": {
+      "habilidades": [
+        {
+          "nombre": "Rayo de Tormenta",
+          "descripcion": "Desatas un rayo que atraviesa adversarios en línea.",
+          "efecto": "Línea de 30 pies; cada enemigo recibe 2d6 de daño de trueno.",
+          "usos": "1 por descanso largo",
+          "accion": "Acción"
+        }
+      ]
+    },
+    "8": { "habilidades": [ { "nombre": "Mejora de Características" } ] },
+    "9": {
+      "habilidades": [
+        {
+          "nombre": "Movimiento Relámpago",
+          "descripcion": "Te mueves como un rayo sin provocar ataques de oportunidad.",
+          "efecto": "Desplazamiento instantáneo de 60 pies.",
+          "usos": "1 por descanso corto",
+          "accion": "Acción"
+        }
+      ]
+    },
+    "10": {
+      "habilidades": [
+        {
+          "nombre": "Trueno Imparable",
+          "descripcion": "Al impactar, desatas una explosión de trueno.",
+          "efecto": "Enemigos a 10 pies deben TS Fuerza o ser derribados y recibir 2d6 trueno.",
+          "usos": "Mod. Sabiduría por descanso largo",
+          "accion": "Acción"
+        }
+      ]
+    },
+    "11": {
+      "habilidades": [
+        {
+          "nombre": "Aura de Tormenta Mejorada",
+          "descripcion": "Tu aura alcanza más lejos y golpea más fuerte.",
+          "efecto": "Enemigos a 15 pies reciben 2d4 de daño de trueno al inicio de su turno.",
+          "accion": "Pasiva",
+          "duracion": "1 minuto"
+        }
+      ]
+    },
+    "12": { "habilidades": [ { "nombre": "Mejora de Características" } ] },
+    "13": {
+      "habilidades": [
+        {
+          "nombre": "Rayo Destructivo",
+          "descripcion": "Arremetes con un rayo devastador atraviesa múltiples enemigos.",
+          "efecto": "Línea de 60 pies; cada enemigo recibe 4d6 de daño de trueno.",
+          "usos": "1 por descanso largo",
+          "accion": "Acción"
+        }
+      ]
+    },
+    "14": {
+      "habilidades": [
+        {
+          "nombre": "Invocación del Trueno",
+          "descripcion": "Invocas un Elemental de Trueno que te asiste.",
+          "efecto": "Elemental combate por 1 minuto.",
+          "usos": "1 por descanso largo",
+          "accion": "Acción"
+        }
+      ]
+    },
+    "15": {
+      "habilidades": [
+        {
+          "nombre": "Relámpago Cegador",
+          "descripcion": "Desatas un destello sordo y cegador.",
+          "efecto": "Enemigos a 30 pies TS Constitución (DC 13) o quedan cegados hasta tu próximo turno; reciben 4d6 de trueno.",
+          "usos": "1 por descanso largo",
+          "accion": "Acción"
+        }
+      ]
+    },
+    "18": {
+      "habilidades": [
+        {
+          "nombre": "Maestro del Trueno",
+          "descripcion": "Dominas tu golpe de trueno sin descanso.",
+          "efecto": "Usa Golpe de Trueno ilimitadas veces.",
+          "usos": "Ilimitado",
+          "accion": "Pasiva"
+        }
+      ]
+    },
+    "20": {
+      "habilidades": [
+        {
+          "nombre": "Maestro de la Tormenta",
+          "descripcion": "En tu máximo poder, controlas la tormenta a tu antojo.",
+          "efecto": "1 min: cada ataque exitoso desencadena rayo de 3d6 a un aliado; velocidad +60 pies como acción adicional; enemigos a 30 pies TS Sabiduría o aturdidos.",
+          "usos": "1 por descanso largo",
+          "accion": "Acción Completa",
+          "duracion": "1 minuto"
+        }
+      ]
+    }
+  }
+}

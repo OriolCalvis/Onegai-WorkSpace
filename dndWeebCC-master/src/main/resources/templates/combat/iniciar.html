@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Iniciar combate</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="u-page-header">
+        <div>
+            <p class="gm-sidebar__eyebrow u-eyebrow">Combate (D10)</p>
+            <h1>Iniciar combate</h1>
+            <p class="u-lead--760">
+                Elige qué personajes entran en la escena y, si hace falta, añade NPCs/enemigos a
+                mano (nombre + Iniciativa + DES base para el desempate). El orden de turno se
+                calcula solo, por Iniciativa descendente (regla 7.3 del GDD).
+            </p>
+        </div>
+    </div>
+
+    <p class="u-callout-note" th:if="${error != null}" th:text="${error}">Error</p>
+
+    <form th:action="@{/combat/iniciar}" method="post">
+        <div class="gm-field u-mb-sp4" style="max-width:420px">
+            <label>Nombre del combate</label>
+            <input class="gm-input" type="text" name="nom" placeholder="Emboscada en el puente" value="Combate">
+        </div>
+
+        <h2 class="u-mb-sp2">Personajes</h2>
+        <p class="u-text-muted" th:if="${#lists.isEmpty(personatges)}">
+            Todavía no has creado ningún personaje.
+        </p>
+        <div class="gm-chip-grid u-mb-sp5" th:if="${!#lists.isEmpty(personatges)}">
+            <label class="gm-chip" th:each="p : ${personatges}">
+                <input type="checkbox" name="personatgeIds" th:value="${p.id}">
+                <span class="gm-chip__title" th:text="${p.nom}">Nombre</span>
+                <span class="gm-chip__meta">Tier <span th:text="${p.tier}">1</span></span>
+            </label>
+        </div>
+
+        <h2 class="u-mb-sp2">NPCs / enemigos (dock manual)</h2>
+        <p class="u-text-muted u-mb-sp3">
+            No se resuelven todavía contra el catálogo de enemigos (queda como mejora futura):
+            escribe nombre, Iniciativa y DES base tú mismo. Las filas sin nombre se ignoran.
+        </p>
+        <div class="gm-form-grid u-mb-sp5">
+            <div class="gm-field" th:each="slot : ${slotsNpc}">
+                <label th:text="'NPC ' + (${slot} + 1)">NPC</label>
+                <div class="u-flex-gap2">
+                    <input class="gm-input" type="text" name="npcNombre" placeholder="Nombre">
+                    <input class="gm-input" type="number" name="npcIniciativa" placeholder="Iniciativa" step="0.5" style="max-width:110px">
+                    <input class="gm-input" type="number" name="npcDes" placeholder="DES" style="max-width:90px">
+                </div>
+            </div>
+        </div>
+
+        <div class="u-actions--wrap">
+            <button class="gm-btn gm-btn--primary" type="submit">▶ Empezar combate</button>
+            <a class="gm-btn gm-btn--outline" th:href="@{/}">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

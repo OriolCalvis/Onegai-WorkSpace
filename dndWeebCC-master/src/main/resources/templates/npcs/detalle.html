@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title th:text="${carta.path('name').asText()}" layout:fragment="title">PNJ</title>
+    <th:block layout:fragment="extra-css">
+    <link th:href="@{/css/carta-fisica.css}" rel="stylesheet">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+            <div class="u-page-header--start">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-p-0">Ficha completa</p>
+                    <h1 th:text="${carta.path('name').asText()}">Nombre</h1>
+                    <p>
+                        <span class="gm-badge" th:text="${#strings.capitalize(carta.path('role').asText(''))}">rol</span>
+                        <span class="gm-badge" th:text="${carta.path('location').asText()}">lugar</span>
+                        <span class="gm-badge" th:if="${!#strings.isEmpty(carta.path('faction').asText(''))}" th:text="${#strings.replace(carta.path('faction').asText(), '_', ' ')}">facción</span>
+                    </p>
+                </div>
+                <a class="gm-btn gm-btn--outline" th:href="@{/npcs}">Volver al álbum</a>
+            </div>
+
+            <div class="u-detail-layout-300">
+                <!-- Carta de catálogo del PNJ (wireframe 7d): agenda/palanca/
+                     secretHook/mes del esquema §12. -->
+                <article class="cf-card u-cursor-default">
+                    <div class="cf-head">
+                        <span class="cf-name" th:text="${carta.path('name').asText()}">Nombre</span>
+                        <span class="cf-gem cf-gem--rango" th:text="${#strings.capitalize(carta.path('role').asText(''))}">Rol</span>
+                    </div>
+
+                    <div class="cf-illustration">🧑</div>
+
+                    <div class="cf-typeline">
+                        <span><span th:text="${carta.path('location').asText()}">lugar</span> — <span th:text="${carta.path('attitude').path('inicial').asText('neutral')}">neutral</span></span>
+                    </div>
+
+                    <div class="cf-rules">
+                        <p><strong>Agenda:</strong> <span th:text="${carta.path('agenda').asText()}">agenda</span></p>
+                        <p class="cf-meta">
+                            <th:block th:if="${!#strings.isEmpty(carta.path('attitude').path('palanca').asText(''))}"><strong>Palanca:</strong> <span th:text="${carta.path('attitude').path('palanca').asText()}">palanca</span>. </th:block>
+                            <th:block th:if="${!#strings.isEmpty(carta.path('secretHook').asText(''))}"><strong>Secreto:</strong> conoce la ruta de la <span th:text="${carta.path('secretHook').asText()}">historia</span>.</th:block>
+                        </p>
+                        <p class="cf-flavor" th:if="${!#strings.isEmpty(carta.path('flavorText').asText(''))}" th:text="${carta.path('flavorText').asText()}">Texto narrativo</p>
+                    </div>
+
+                    <p class="cf-id" th:text="'npcs · ' + ${carta.path('id').asText()}">npcs · id</p>
+                </article>
+
+                <!-- Ficha "de mesa" del GM (wireframe 10b): agenda y secreto en
+                     bloques propios; el secreto marcado en amarillo (solo GM). -->
+                <div>
+                    <div class="gm-ficha-bloque">
+                        <strong>Agenda</strong>
+                        <span th:text="${carta.path('agenda').asText()}">Qué quiere conseguir</span>
+                        <p class="u-p-0" th:if="${!#strings.isEmpty(carta.path('attitude').path('inicial').asText(''))}">
+                            Actitud inicial: <span th:text="${#strings.capitalize(carta.path('attitude').path('inicial').asText(''))}">neutral</span>
+                        </p>
+                    </div>
+
+                    <div class="gm-ficha-bloque" th:if="${!#strings.isEmpty(carta.path('attitude').path('palanca').asText(''))}">
+                        <strong>Palanca</strong>
+                        <span th:text="${carta.path('attitude').path('palanca').asText()}">Con qué negocia</span>
+                    </div>
+
+                    <div class="gm-ficha-bloque gm-ficha-bloque--secreto" th:if="${!#strings.isEmpty(carta.path('secretHook').asText(''))}">
+                        <strong>🔒 Secreto (solo GM)</strong>
+                        <span>Conoce la ruta de la <span th:text="${carta.path('secretHook').asText()}">historia</span></span>
+                        <p class="u-p-0" th:if="${historiaSecreta != null}">
+                            Historia vinculada:
+                            <a th:href="@{/historias/{id}(id=${historiaSecreta.id})}" th:text="${historiaSecreta.title}">Historia</a>
+                        </p>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded" th:if="${!carta.path('dialogue').isEmpty()}">
+                        <button type="button" class="gm-panel-section__toggle">Frases ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p class="u-italic" th:each="linea : ${carta.path('dialogue')}">
+                                "<span th:text="${linea.asText()}">frase</span>"
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section" th:if="${!carta.path('services').isNull() and !carta.path('services').isMissingNode()}">
+                        <button type="button" class="gm-panel-section__toggle">Servicios ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p th:text="${carta.path('services').asText()}">servicios</p>
+                        </div>
+                    </div>
+
+                    <div class="u-actions--wrap">
+                        <a class="gm-btn gm-btn--outline" th:href="@{/npcs}">Volver al listado</a>
+                    </div>
+                </div>
+            </div></main>
+</body>
+</html>

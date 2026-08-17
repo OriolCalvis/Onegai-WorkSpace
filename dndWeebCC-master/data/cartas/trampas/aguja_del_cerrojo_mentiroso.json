@@ -1,0 +1,26 @@
+{
+ "id": "aguja_del_cerrojo_mentiroso",
+ "name": "Aguja del Cerrojo Mentiroso",
+ "type": "trap",
+ "tier": 1,
+ "rarity": "common",
+ "category": "mecánica",
+ "trigger": "forzar la cerradura equivocada",
+ "detection": {
+  "stat": "INT",
+  "cd": 0.5
+ },
+ "disarm": {
+  "stat": "DES",
+  "cd": 0.5,
+  "herramienta": "herramientas de ladrón"
+ },
+ "effect": {
+  "description": "Aguja untada: 1 de daño y Envenenado si falla Resistencia física.",
+  "defensa": "resistencia_fisica",
+  "condicionInfligida": "envenenado"
+ },
+ "onFail": "El veneno entra en vena: Envenenado sin tirada y −1 a DES hasta descansar.",
+ "reset": "recargable",
+ "flavorText": "Quien la montó pensaba volver. No volvió."
+}

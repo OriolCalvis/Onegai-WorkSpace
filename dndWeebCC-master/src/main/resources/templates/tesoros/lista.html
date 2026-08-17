@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Tesoros</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div class="u-page-header">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-eyebrow">Sistema de Cartas y Tiers</p>
+                    <h1>💰 Álbum de Tesoros</h1>
+                    <p class="gm-hint">Tablas de botín: oro y objetos con probabilidad, la recompensa que promete cada historia.</p>
+                </div>
+                <span class="gm-hud" th:text="${#lists.size(tesoros)} + ' tesoros'">n tesoros</span>
+            </div>
+
+            <div class="u-filter-row">
+                <input type="text" class="gm-input u-flex-item-240" id="filtro-texto" placeholder="Buscar por nombre...">
+                <select class="gm-select u-w-auto" id="filtro-tier" aria-label="Filtrar por tier">
+                    <option value="">Todos los tiers</option>
+                    <option value="1">Tier 1</option><option value="2">Tier 2</option>
+                    <option value="3">Tier 3</option><option value="4">Tier 4</option>
+                    <option value="5">Tier 5</option>
+                </select>
+                <p class="gm-hint u-m-0" id="filtro-resultado"></p>
+            </div>
+
+            <p class="u-text-muted" th:if="${#lists.isEmpty(tesoros)}">
+                Todavía no hay tesoros en <code>data/loot</code>.
+            </p>
+
+            <div class="gm-album" id="gm-album-tesoros">
+                <article class="gm-card" th:each="t : ${tesoros}"
+                         th:attr="data-nombre=${t.name}, data-tier=${t.tier}">
+                    <span class="gm-card__tier" th:text="'TIER ' + ${t.tier}">TIER 1</span>
+                    <h2 class="gm-card__title" th:text="${t.name}">Nombre</h2>
+
+                    <div class="gm-card__illustration">💰</div>
+
+                    <div class="gm-card__actions">
+                        <a class="gm-btn gm-btn--outline gm-btn--sm" th:href="@{/tesoros/{id}(id=${t.id})}">Ver ficha</a>
+                    </div>
+
+                    <p class="gm-card__id" th:text="'loot · ' + ${t.id}">loot · id</p>
+                </article>
+            </div></main>
+<th:block layout:fragment="extra-js">
+    <script th:inline="javascript">
+    (function () {
+        var texto = document.getElementById('filtro-texto');
+        var tier = document.getElementById('filtro-tier');
+        var resultado = document.getElementById('filtro-resultado');
+        var tarjetas = document.querySelectorAll('#gm-album-tesoros .gm-card');
+
+        function aplicarFiltro() {
+            var t = (texto.value || '').toLowerCase();
+            var ti = tier.value || '';
+            var visibles = 0;
+            tarjetas.forEach(function (carta) {
+                var nombre = (carta.getAttribute('data-nombre') || '').toLowerCase();
+                var tierCarta = carta.getAttribute('data-tier') || '';
+                var coincide = nombre.indexOf(t) !== -1 && (ti === '' || tierCarta === ti);
+                carta.style.display = coincide ? '' : 'none';
+                if (coincide) visibles++;
+            });
+            resultado.textContent = visibles + ' de ' + tarjetas.length + ' tesoros';
+        }
+
+        if (texto && tier) {
+            texto.addEventListener('input', aplicarFiltro);
+            tier.addEventListener('change', aplicarFiltro);
+            aplicarFiltro();
+        }
+    })();
+</script>
+</th:block>
+</body>
+</html>

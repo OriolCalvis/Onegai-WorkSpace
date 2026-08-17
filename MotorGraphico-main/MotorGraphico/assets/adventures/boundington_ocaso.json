@@ -1,0 +1,295 @@
+{
+  "id": "adv_boundington_ocaso",
+  "name": "El Ocaso de Boundington",
+  "description": "Capitulo 5 del canon: EV-1981-BOUNDINGTON. Las campanas suenan a deshora y la ciudad arde. No hay forma de impedirlo. Solo hay forma de salir, y de decidir con quien.",
+
+  "_canon": {
+    "capitulo": "Cap. 5 — El Ocaso de Boundington: La Gran Escapada",
+    "evento": "EV-1981-BOUNDINGTON — La Matanza de Boundington",
+    "fuente": "THE ONEGAI PROJECT/Campanas/Canon/Campana 01: La Matanza de Boundington (Aventura de Venides).docx",
+    "rutas": "Las tres del documento: oeste (recomendada, mejor con aliados), norte (alta peligrosidad), quedarse y luchar (alta peligrosidad).",
+    "combates": "Primer combate: 3 Perdidos Saqueadores. Segundo: 2 Fanaticos del Culto. Opcional: el rescate de Verina.",
+    "nota": "Del canon: 'Al final, solo unos pocos sobreviviran. Venides, Xila y los aventureros que logren sobrevivir seran los unicos que logren escapar con vida de la ciudad.' La ciudad cae SIEMPRE. Lo que cambia es la cuenta."
+  },
+
+  "objectives": [
+    { "id": "obj3_plaza",   "text": "Ver lo que pasa en la plaza del Casco Antiguo", "doneFlag": "bnd3_plaza_vista" },
+    { "id": "obj3_avisar",  "text": "Avisar a Venides",                              "doneFlag": "bnd3_avisado" },
+    { "id": "obj3_salir",   "text": "Salir de Boundington con vida",                 "doneFlag": "bnd3_fuera" }
+  ],
+
+  "beats": [
+    {
+      "id": "b3_plaza",
+      "trigger": { "type": "enter", "target": "assets/levels/ciudad_centro.json" },
+      "requires": { "allFlags": ["bnd2_dia_cerrado"], "notFlags": ["bnd3_plaza_vista"] },
+      "speaker": "",
+      "lines": [
+        "En la plaza del Casco Antiguo hay mas gente que en el mercado un dia de feria, y nadie compra nada.",
+        "Sobre el brocal del pozo hay tres personas hablando a la multitud. A dos no las conoces.",
+        "A la tercera la viste anoche en un sueno, brindando en una taberna de Ceaseton por el nombramiento de un amigo.",
+        "Sandes. Y a su lado, Edul y Verina.",
+        "No estan predicando. Estan repartiendo calles."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd3_plaza_vista" },
+        { "type": "log", "arg": "Dia 3: los lideres de los Perdidos reparten las calles." }
+      ]
+    },
+    {
+      "id": "b3_verina_mira",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd3_plaza_vista", "bnd_prologo_pasado"], "notFlags": ["bnd3_verina_vista"] },
+      "speaker": "",
+      "lines": [
+        "Verina no habla. Mira a la multitud como quien cuenta cuantos van a caber.",
+        "Y por un momento, entre dos caras, te mira a ti. Y aparta la vista demasiado deprisa para alguien que no tiene nada que esconder."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd3_verina_vista" }
+      ]
+    },
+
+    {
+      "id": "b3_avisar_venides",
+      "trigger": { "type": "talk", "target": "venides" },
+      "requires": { "allFlags": ["bnd3_plaza_vista"], "notFlags": ["bnd3_avisado"] },
+      "speaker": "Venides",
+      "lines": [
+        "¿Sandes? ¿Has dicho Sandes?",
+        "...",
+        "Vale. Vale. Al cuartel, ahora. Si estan repartiendo calles es que empiezan esta noche.",
+        "Y forastero: si me ves dudar en algun momento de lo que viene, empujame."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd3_avisado" },
+        { "type": "log", "arg": "Venides sabe que son sus amigos. Empieza el Ocaso." }
+      ]
+    },
+
+    {
+      "id": "b3_campanas",
+      "trigger": { "type": "enter", "target": "assets/levels/interior_cuartel.json" },
+      "requires": { "allFlags": ["bnd3_avisado"], "notFlags": ["bnd3_campanas"] },
+      "speaker": "",
+      "lines": [
+        "Las campanas empiezan a sonar mal. Demasiado rapido, sin ritmo, como si el que tira de la cuerda tuviera prisa por acabar.",
+        "Desde el patio de la base militar se ve el humo levantarse sobre el Casco Antiguo.",
+        "Las puertas del cuartel se sacuden con un golpe. Entran tres exploradores heridos.",
+        "«¡Estan aqui! ¡Los Perdidos estan en la ciudad... vienen a por nosotros!»"
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd3_campanas" },
+        { "type": "log", "arg": "EV-1981-BOUNDINGTON. La Matanza ha empezado." }
+      ]
+    },
+    {
+      "id": "b3_venides_arenga_20",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd3_campanas", "bnd_venides_20"], "notFlags": ["bnd3_arenga"] },
+      "speaker": "Venides",
+      "lines": [
+        "Veinte hombres formados en el patio, con las corazas puestas desde ayer por la tarde. Porque tu se lo dijiste a tiempo.",
+        "«¡Al Casco Antiguo, por parejas! ¡Sacad a la gente por el oeste y no os entretengais peleando!»",
+        "«Aventurero: conmigo. Si caemos nosotros, cae el reino detras. Esto es solo el principio.»"
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd3_arenga" },
+        { "type": "setFlag", "arg": "bnd3_escolta" },
+        { "type": "log", "arg": "Veinte hombres cubriendo la salida oeste." }
+      ]
+    },
+    {
+      "id": "b3_venides_arenga_10",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd3_campanas", "bnd_venides_10"], "notFlags": ["bnd3_arenga"] },
+      "speaker": "Venides",
+      "lines": [
+        "Diez hombres, y la mitad todavia atandose las correas.",
+        "«¡Los que esteis vestidos, conmigo! ¡Los demas, cuando podais!»",
+        "Sabe igual que tu que diez no bastan. Va igual."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd3_arenga" },
+        { "type": "setFlag", "arg": "bnd3_escolta" },
+        { "type": "log", "arg": "Diez hombres. No bastan." }
+      ]
+    },
+    {
+      "id": "b3_venides_arenga_solo",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd3_campanas"], "notFlags": ["bnd3_arenga"] },
+      "speaker": "Venides",
+      "lines": [
+        "No hay nadie formado en el patio. El capitan lleva desde ayer diciendo que son rumores de taberna.",
+        "Venides se ata la espada solo, en mitad del patio, mientras los soldados corren en direcciones distintas.",
+        "«Tu y yo, entonces.»"
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd3_arenga" },
+        { "type": "log", "arg": "Venides esta solo. Como estaba escrito." }
+      ]
+    },
+
+    {
+      "id": "b3_saqueadores",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd3_arenga"], "notFlags": ["bnd3_saqueadores_lanzado"] },
+      "speaker": "",
+      "lines": [
+        "En la puerta del cuartel os cortan el paso tres Perdidos con las espadas cortas ya rojas.",
+        "No dicen nada. Ya han pasado de la parte de hablar."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd3_saqueadores_lanzado" },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "perdido_saqueador",
+            "flagVictory": "bnd3_saqueadores_vencidos",
+            "flagDefeat": "bnd3_saqueadores_ganan"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_fanaticos",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd3_saqueadores_vencidos"], "notFlags": ["bnd3_fanaticos_lanzado"] },
+      "speaker": "",
+      "lines": [
+        "Detras de los saqueadores vienen dos que no van armados, y eso es peor.",
+        "Levantan las manos a la vez y el aire sobre la calle se vuelve espeso."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd3_fanaticos_lanzado" },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "perdido_fanatico",
+            "flagVictory": "bnd3_fanaticos_vencidos",
+            "flagDefeat": "bnd3_fanaticos_ganan"
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "b3_verina_cautiva",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd3_fanaticos_vencidos", "bnd3_verina_vista"], "notFlags": ["bnd3_verina_resuelto"] },
+      "speaker": "Venides",
+      "lines": [
+        "En un callejon lateral, dos cultistas tienen a una mujer de rodillas. La acusan de haber hablado con las autoridades.",
+        "«Esa es Verina.»",
+        "No espera a que decidas."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd3_verina_resuelto" },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "cultista_carcelero",
+            "flagVictory": "bnd3_verina_libre",
+            "flagDefeat": "bnd3_verina_muerta"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_verina_salvada",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd3_verina_libre"], "notFlags": ["bnd3_verina_cerrada"] },
+      "speaker": "Verina",
+      "lines": [
+        "«Llevo cuatro meses pasandoles nombres a la guardia. Cuatro meses. Y no ha servido de nada.»",
+        "«Edul sigue ahi dentro y no sabe lo que ha ayudado a montar. Sacadme de aqui y os llevo a el.»"
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd3_verina_con_grupo" },
+        { "type": "setFlag", "arg": "bnd3_verina_cerrada" },
+        { "type": "log", "arg": "Verina se une al grupo." }
+      ]
+    },
+    {
+      "id": "b3_verina_perdida",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd3_verina_muerta"], "notFlags": ["bnd3_verina_cerrada"] },
+      "speaker": "",
+      "lines": [
+        "No llegas. O llegas y no basta, que para el caso es lo mismo.",
+        "Venides no dice nada durante el resto de la noche."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd3_verina_cerrada" }
+      ]
+    },
+
+    {
+      "id": "b3_huida_gitanos",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd2_aliado_gitanos"], "anyFlags": ["bnd3_verina_cerrada", "bnd3_fanaticos_vencidos"], "notFlags": ["bnd3_fuera"] },
+      "speaker": "",
+      "lines": [
+        "En la puerta oeste hay carros. Los de Surysal han enganchado los caballos sin esperar a nadie y aun asi han esperado.",
+        "El viejo no dice «te lo dije». Solo aparta un fardo para hacer sitio.",
+        "Detras, Boundington entera es una linea naranja contra el cielo. Delante, el camino del oeste esta oscuro y vacio, que es lo mejor que puede estar un camino esta noche."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd3_fuera" },
+        { "type": "setFlag", "arg": "bnd3_final_oeste" },
+        { "type": "log", "arg": "FINAL: salida oeste con los gitanos de Surysal." }
+      ]
+    },
+    {
+      "id": "b3_huida_sola",
+      "trigger": { "type": "auto" },
+      "requires": { "anyFlags": ["bnd3_verina_cerrada", "bnd3_fanaticos_vencidos"], "notFlags": ["bnd3_fuera"] },
+      "speaker": "",
+      "lines": [
+        "Salis por el oeste porque es la unica direccion en la que no se ve fuego, no porque nadie os espere alli.",
+        "A la altura del ultimo muro, Venides se para a mirar atras. Le cuesta tres pasos volver a andar.",
+        "Del canon de esta noche solo se sabe una cosa: al final, muy pocos salieron."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd3_fuera" },
+        { "type": "setFlag", "arg": "bnd3_final_solos" },
+        { "type": "log", "arg": "FINAL: salida oeste sin ayuda." }
+      ]
+    },
+    {
+      "id": "b3_caida",
+      "trigger": { "type": "auto" },
+      "requires": { "anyFlags": ["bnd3_saqueadores_ganan", "bnd3_fanaticos_ganan"], "notFlags": ["bnd3_fuera"] },
+      "speaker": "",
+      "lines": [
+        "La calle se te acaba antes que las fuerzas.",
+        "Boundington ardera igual esta noche, con o sin ti. Esa era la parte que no dependia de nadie.",
+        "La otra parte, la de cuanta gente sale, esa si dependia. Y hoy sale menos."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd3_fuera" },
+        { "type": "setFlag", "arg": "bnd3_final_caido" },
+        { "type": "log", "arg": "FINAL: caido en Boundington." }
+      ]
+    },
+
+    {
+      "id": "b3_epilogo",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd3_fuera"], "notFlags": ["bnd3_epilogo"] },
+      "speaker": "Sho-Noco",
+      "lines": [
+        "El aire vuelve a oler a nada. El blanco otra vez, y la barca.",
+        "«Ya has visto lo que queria que vieras.»",
+        "«Boundington cayo el ano 757 del Despertar Elemental y volvera a caer cada vez que alguien lo recuerde. Eso no lo cambia nadie, ni tu ni yo.»",
+        "«Pero la cuenta de los que salieron no estaba escrita en ninguna parte antes de esta noche. Ahora si.»",
+        "«Duerme. Queda mucha cruzada.»"
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd3_epilogo" },
+        { "type": "log", "arg": "FIN DE LA PRIMERA AVENTURA — Los Perdidos de Boundington." }
+      ]
+    }
+  ]
+}

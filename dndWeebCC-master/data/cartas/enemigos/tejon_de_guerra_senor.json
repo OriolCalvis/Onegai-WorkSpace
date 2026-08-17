@@ -1,0 +1,64 @@
+{
+ "id": "tejon_de_guerra_senor",
+ "name": "Tejon de Guerra Señor",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "bruto",
+ "faction": "corte_de_espinas",
+ "factionName": "La Corte de Espinas",
+ "stats": {
+  "CON": 7,
+  "DES": 6,
+  "INT": 5,
+  "CAR": 5
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 17,
+  "defensaMental": 15,
+  "resistenciaFisica": 17,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Embestida Baja",
+   "defense": "CA",
+   "effect": "Ataque de naturaleza: daño que suma su CON (pool de CON, regla 7.6)."
+  },
+  {
+   "name": "Excavar y Morder",
+   "defense": "resistencia_fisica",
+   "effect": "Técnica de facción: si el objetivo falla, queda Agarrado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "El terreno a 5 pies de cada miembro cuenta como difícil para sus enemigos."
+ },
+ "conditionsInflicted": [
+  "agarrado"
+ ],
+ "loot": [
+  "arco_cazador_de_milicia",
+  "grebas_de_cuero",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Naturaleza"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Gana una segunda técnica por ronda y +1 al daño."
+  }
+ ],
+ "flavorText": "El bosque no perdona. La Corte toma nota de quién debía saberlo."
+}

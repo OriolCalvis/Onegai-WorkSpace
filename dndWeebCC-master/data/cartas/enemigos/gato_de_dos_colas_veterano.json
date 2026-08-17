@@ -1,0 +1,52 @@
+{
+ "id": "gato_de_dos_colas_veterano",
+ "name": "Gato de Dos Colas Veterano",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 3,
+ "role": "escaramuzador",
+ "faction": "yokai_del_umbral",
+ "factionName": "Los Yokai del Umbral",
+ "stats": {
+  "CON": 3,
+  "DES": 6,
+  "INT": 4,
+  "CAR": 3
+ },
+ "derived": {
+  "vida": 20,
+  "ca": 16,
+  "defensaMental": 13,
+  "resistenciaFisica": 13,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Zarpazo Doble",
+   "defense": "CA",
+   "effect": "Ataque de oscuro: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Salto Imposible",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: si el objetivo falla, queda Encantado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "La primera vez que se les golpea cada combate, el atacante debe superar Defensa mental o golpea a una ilusión."
+ },
+ "conditionsInflicted": [
+  "encantado"
+ ],
+ "loot": [
+  "estilete_de_viaje",
+  "faldar_de_explorador"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Oscuro"
+ ],
+ "phases": [],
+ "flavorText": "Viven en el marco de las puertas. Cobran peaje en certezas."
+}

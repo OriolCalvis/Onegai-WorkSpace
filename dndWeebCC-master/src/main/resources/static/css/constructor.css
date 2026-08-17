@@ -1,0 +1,139 @@
+/*
+ * constructor.css — Constructor de aventuras por actos
+ * Estilos propios de la pantalla /aventuras/constructor (WS-E).
+ * Layout de 3 columnas (actos | editor | validación) + cartas de acto y avisos.
+ * Requiere tokens.css y components.css (usa var(--sp-4), --surface-1, etc.).
+ */
+
+.cn-wrap {
+    display: grid;
+    grid-template-columns: 150px 1fr 320px;
+    gap: var(--sp-4);
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .cn-wrap { grid-template-columns: 1fr; }
+}
+
+/* Columna de actos (lista de actos con meta) */
+.cn-acto {
+    border: 1.4px solid var(--card-line, #4a463c);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    background: var(--surface-1, #faf7ee);
+}
+
+.cn-acto b {
+    display: block;
+    font-size: 13px;
+}
+
+.cn-meta {
+    font-size: 11px;
+    color: var(--muted, #6f6a5d);
+}
+
+.cn-ok { color: #3f9b57; }
+.cn-bad { color: #8a2b2b; }
+
+/* Carta de historia dentro de un acto */
+.cn-card {
+    border: 1.3px solid var(--card-line, #4a463c);
+    border-radius: 6px;
+    padding: 6px 9px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fffdf8;
+}
+
+.cn-code {
+    font: 600 11px ui-monospace, Menlo, monospace;
+    background: rgba(43, 43, 43, .08);
+    border-radius: 4px;
+    padding: 1px 6px;
+}
+
+.cn-kind { font-size: 14px; }
+
+.cn-title {
+    font-size: 12.5px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Aviso de validación */
+.cn-warn {
+    font-size: 10.5px;
+    color: #8a4a12;
+    background: rgba(176, 106, 31, .12);
+    border-left: 3px solid #b06a1f;
+    padding: 4px 7px;
+    border-radius: 0 4px 4px 0;
+    margin: 6px 0;
+}
+
+/* Formulario inline del editor */
+.cn-form label {
+    display: block;
+    font-size: 11px;
+    color: var(--muted, #6f6a5d);
+    margin: 8px 0 2px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.cn-form input,
+.cn-form select,
+.cn-form textarea {
+    width: 100%;
+    font-size: 13px;
+    padding: 5px 7px;
+    border: 1.3px solid #b7b0a0;
+    border-radius: 5px;
+    background: #fffdf8;
+}
+
+.cn-row2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.cn-actos-h {
+    font-size: 11px;
+    color: var(--muted, #6f6a5d);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: 6px;
+}
+
+.cn-rule-note {
+    margin-top: 10px;
+}
+
+.cn-acto-block {
+    margin-bottom: 16px;
+}
+
+.cn-acto-title {
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.cn-form-title {
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.cn-form-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}

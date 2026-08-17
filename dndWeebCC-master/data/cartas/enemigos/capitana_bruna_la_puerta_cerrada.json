@@ -1,0 +1,96 @@
+{
+ "id": "capitana_bruna_la_puerta_cerrada",
+ "name": "Capitana Bruna, la Puerta Cerrada",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 3,
+ "role": "defensa",
+ "faction": "milicia_corrupta_de_llerba",
+ "stats": {
+  "CON": 9,
+  "DES": 8,
+  "INT": 7,
+  "CAR": 8
+ },
+ "derived": {
+  "vida": 60,
+  "ca": 20,
+  "defensaMental": 18,
+  "resistenciaFisica": 19,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Culatazo Reglamentario",
+   "defense": "CA",
+   "effect": "Golpe que suma su CON y aplica Guardia Rota; contra portadores de documentos oficiales, ventaja (sabe dónde duele el papeleo)."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "CA",
+   "effect": "Si el objetivo falla, queda Guardia Rota hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en Desesperación: su ataque firma se calcula como éxito crítico (GDD 7.6)."
+  }
+ ],
+ "passive": {
+  "name": "Ordenanza",
+  "description": "Ordenanza: mientras esté a 5 pies de una puerta, muro o barricada, +2 a su CA y sus reacciones no se gastan (la posición es la ley)."
+ },
+ "conditionsInflicted": [
+  "guardia_rota"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico",
+  "Importante"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Sigue su método con calma: aún cree que sobra tiempo."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Activa la arena a pleno: Aspilleras: cada 2 rondas, la guardia dispara una andanada a la zona más poblada"
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final; su debilidad narrativa queda a la vista (el DJ da la pista si no la tienen)."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Mantener la puerta norte cerrada hasta que 'la situación se aclare' (la situación: su soborno)",
+  "metodo": "Burocracia armada: convierte cada paso del grupo en una infracción con multa física",
+  "debilidad_narrativa": "El reglamento real: citarle el artículo que la obliga a abrir (se encuentra en la campaña) la paraliza una ronda de dudas",
+  "vinculo": "milicia_corrupta_de_llerba"
+ },
+ "arena": {
+  "name": "La Puerta Norte de Llerba",
+  "hazard": "Aspilleras: cada 2 rondas, la guardia dispara una andanada a la zona más poblada"
+ },
+ "legendaryActions": [
+  "Refuerzos (1/ronda): un miliciano criatura entra por la poterna"
+ ],
+ "storyCard": {
+  "title": "Capitana Bruna, la Puerta Cerrada",
+  "text": "Fue la mejor capitana de Llerba. El precio de la puerta subió más rápido que su sueldo.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Juró que nadie entraría. Ya no recuerda para protegerlos de qué."
+}

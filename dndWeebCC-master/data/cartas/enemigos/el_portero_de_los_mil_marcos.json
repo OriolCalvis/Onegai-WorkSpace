@@ -1,0 +1,96 @@
+{
+ "id": "el_portero_de_los_mil_marcos",
+ "name": "El Portero de los Mil Marcos",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "control",
+ "faction": "yokai_del_umbral",
+ "stats": {
+  "CON": 9,
+  "DES": 8,
+  "INT": 10,
+  "CAR": 9
+ },
+ "derived": {
+  "vida": 70,
+  "ca": 20,
+  "defensaMental": 19,
+  "resistenciaFisica": 19,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Puerta en la Cara",
+   "defense": "defensa_mental",
+   "effect": "Materializa un marco delante del objetivo: su ataque o movimiento actual se cancela si falla Defensa mental."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "defensa_mental",
+   "effect": "Si el objetivo falla, queda Encantado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en Desesperación: su ataque firma se calcula como éxito crítico (GDD 7.6)."
+  }
+ ],
+ "passive": {
+  "name": "Peaje",
+  "description": "Peaje: la primera vez que cada personaje cruza cualquier umbral de la arena, paga — 1 de vida o su acción menor (elige el jugador)."
+ },
+ "conditionsInflicted": [
+  "encantado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Oscuro"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Sigue su método con calma: aún cree que sobra tiempo."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Activa la arena a pleno: Puertas mentirosas: 5 marcos — dos conectan, dos devuelven al inicio, uno muerde (1 de daño)"
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final; su debilidad narrativa queda a la vista (el DJ da la pista si no la tienen)."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Reunir las llaves de todas las casas: la intimidad es su colección",
+  "metodo": "Reorganiza el espacio: donde había salida hay pared, donde había pared hay invitación",
+  "debilidad_narrativa": "Su propia puerta: encontrar el marco original del que salió (en la arena) y cerrarlo lo debilita (pierde 1 acción legendaria)",
+  "vinculo": "yokai_del_umbral"
+ },
+ "arena": {
+  "name": "El Corredor Infinito",
+  "hazard": "Puertas mentirosas: 5 marcos — dos conectan, dos devuelven al inicio, uno muerde (1 de daño)"
+ },
+ "legendaryActions": [
+  "Cerrojo (1/ronda): una puerta elegida deja de funcionar hasta su próximo turno"
+ ],
+ "storyCard": {
+  "title": "El Portero de los Mil Marcos",
+  "text": "Nadie lo invitó a ser portero. Esa es su queja fundacional.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Decide qué puertas existen. Incluidas las tuyas."
+}

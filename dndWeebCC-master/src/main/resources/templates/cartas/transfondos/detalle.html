@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Carta de trasfondo</title>
+    <th:block layout:fragment="extra-css">
+    <link th:href="@{/css/carta-fisica.css}" rel="stylesheet">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('transfondos')}"></div>
+
+            <div class="u-page-header--start">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-p-0">Ficha completa</p>
+                    <h1 th:text="${carta.name}">Nombre</h1>
+                    <p>
+                        <span class="gm-badge">Tier mínimo <span th:text="${carta.tier}">1</span></span>
+                        <span class="gm-badge" th:text="'ID ' + ${carta.id}">id</span>
+                    </p>
+                </div>
+                <a class="gm-btn gm-btn--outline" th:href="@{/cartas/transfondos/{id}/editar(id=${carta.id})}">Editar</a>
+            </div>
+
+            <!-- La propia carta, en el mismo marco visual que el álbum -->
+            <div class="u-detail-layout-300">
+                <!-- Carta física de trasfondo (wireframe 7b): SIN gema ni tier de
+                     poder — GDD §4b: "nunca aporta poder mecánico". Solo lore y
+                     elecciones de personalidad. -->
+                <article class="cf-card u-cursor-default">
+                    <div class="cf-head">
+                        <span class="cf-name" th:text="${carta.name}">Nombre</span>
+                    </div>
+
+                    <div class="cf-illustration">📖</div>
+
+                    <div class="cf-typeline">
+                        <span>Trasfondo — sin poder mecánico</span>
+                    </div>
+
+                    <div class="cf-rules">
+                        <p class="cf-meta">Elige 1: Personalidad · Virtud · Defecto · Objetivo · Miedo · Ideal · Vínculo</p>
+                        <p th:if="${carta.alignment != null and carta.alignment.title != null}">Arquetipo: <strong th:text="'“' + ${carta.alignment.title} + '”'">Arquetipo</strong></p>
+                        <p class="cf-flavor" th:text="${carta.description != null} ? ${carta.description} : ${carta.flavorText}">Descripción</p>
+                    </div>
+
+                    <p class="cf-id" th:text="'transfondos · ' + ${carta.id}">transfondos · id</p>
+                </article>
+
+                <div th:with="cc=${carta.characterCreation}">
+                    <div class="gm-panel-section is-expanded" th:if="${carta.alignment != null and carta.alignment.title != null}">
+                        <button type="button" class="gm-panel-section__toggle">Arquetipo narrativo ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong th:text="${carta.alignment.title}">Título</strong></p>
+                            <p th:text="${carta.alignment.description}">Descripción</p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded" th:if="${carta.lore != null and carta.lore.origin != null}">
+                        <button type="button" class="gm-panel-section__toggle">Lore — de dónde vienes ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong>Origen:</strong> <span th:text="${carta.lore.origin}">origen</span></p>
+                            <p><strong>Cultura:</strong> <span th:text="${carta.lore.culture}">cultura</span></p>
+                            <p><strong>Entorno:</strong> <span th:text="${carta.lore.environment}">entorno</span></p>
+                            <p><strong>Hechos importantes:</strong></p>
+                            <ul><li th:each="e : ${carta.lore.importantEvents}" th:text="${e}">hecho</li></ul>
+                            <p><strong>Deidades del mes:</strong>
+                                <a class="u-mr-6" th:each="d,it : ${carta.lore.deities}" th:href="@{/cartas/deidades/{id}(id=${d})}"
+th:text="${#strings.replace(d, '_', ' ')}">deidad</a>
+                            </p>
+                            <p><strong>Símbolos:</strong>
+                                <span class="gm-badge u-mr-4" th:each="s : ${carta.lore.symbols}" th:text="${s}">símbolo</span>
+                            </p>
+                            <p><strong>Tradiciones:</strong></p>
+                            <ul><li th:each="tr : ${carta.lore.traditions}" th:text="${tr}">tradición</li></ul>
+                        </div>
+                    </div>
+
+                    <th:block th:if="${cc != null and !#lists.isEmpty(cc.personalities)}">
+                        <div class="gm-panel-section is-expanded">
+                            <button type="button" class="gm-panel-section__toggle"
+                                    th:text="'🎭 Personalidades (elige ' + ${cc.choosePersonality} + ') ▾'">Personalidades ▾</button>
+                            <div class="gm-panel-section__content">
+                                <p th:each="o : ${cc.personalities}"><strong th:text="${o.etiqueta}">título</strong> — <span th:text="${o.description}">desc</span></p>
+                            </div>
+                        </div>
+                        <div class="gm-panel-section">
+                            <button type="button" class="gm-panel-section__toggle"
+                                    th:text="'🌱 Virtudes (elige ' + ${cc.chooseVirtue} + ') ▾'">Virtudes ▾</button>
+                            <div class="gm-panel-section__content">
+                                <p th:each="o : ${cc.virtues}"><strong th:text="${o.etiqueta}">nombre</strong> — <span th:text="${o.description}">desc</span></p>
+                            </div>
+                        </div>
+                        <div class="gm-panel-section">
+                            <button type="button" class="gm-panel-section__toggle"
+                                    th:text="'🕳 Defectos (elige ' + ${cc.chooseFlaw} + ') ▾'">Defectos ▾</button>
+                            <div class="gm-panel-section__content">
+                                <p th:each="o : ${cc.flaws}"><strong th:text="${o.etiqueta}">nombre</strong> — <span th:text="${o.description}">desc</span></p>
+                            </div>
+                        </div>
+                        <div class="gm-panel-section">
+                            <button type="button" class="gm-panel-section__toggle"
+                                    th:text="'🎯 Objetivos (elige ' + ${cc.chooseGoal} + ') ▾'">Objetivos ▾</button>
+                            <div class="gm-panel-section__content">
+                                <p th:each="o : ${cc.goals}"><strong th:text="${o.etiqueta}">nombre</strong> — <span th:text="${o.description}">desc</span></p>
+                            </div>
+                        </div>
+                        <div class="gm-panel-section">
+                            <button type="button" class="gm-panel-section__toggle"
+                                    th:text="'😨 Miedos (elige ' + ${cc.chooseFear} + ') ▾'">Miedos ▾</button>
+                            <div class="gm-panel-section__content">
+                                <p th:each="o : ${cc.fears}"><strong th:text="${o.etiqueta}">nombre</strong> — <span th:text="${o.description}">desc</span></p>
+                            </div>
+                        </div>
+                        <div class="gm-panel-section">
+                            <button type="button" class="gm-panel-section__toggle"
+                                    th:text="'⚖ Ideales (elige ' + ${cc.chooseIdeal} + ') ▾'">Ideales ▾</button>
+                            <div class="gm-panel-section__content">
+                                <p th:each="o : ${cc.ideals}"><strong th:text="${o.etiqueta}">nombre</strong> — <span th:text="${o.description}">desc</span></p>
+                            </div>
+                        </div>
+                        <div class="gm-panel-section">
+                            <button type="button" class="gm-panel-section__toggle"
+                                    th:text="'🔗 Vínculos (elige ' + ${cc.chooseBond} + ') ▾'">Vínculos ▾</button>
+                            <div class="gm-panel-section__content">
+                                <p th:each="o : ${cc.bonds}"><strong th:text="${o.etiqueta}">nombre</strong> — <span th:text="${o.description}">desc</span></p>
+                            </div>
+                        </div>
+                    </th:block>
+
+                    <div class="u-actions--wrap">
+                        <a class="gm-btn gm-btn--outline" th:href="@{/cartas/transfondos}">Volver al álbum</a>
+                        <form th:action="@{/cartas/transfondos/{id}/eliminar(id=${carta.id})}" method="post" th:data-nombre="${carta.name}" onsubmit="return confirm(\'¿Borrar el trasfondo &quot;' + this.dataset.nombre + '&quot;? No se puede deshacer.');">
+                            <button class="gm-btn gm-btn--danger" type="submit">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div></main>
+</body>
+</html>

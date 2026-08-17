@@ -1,0 +1,19 @@
+<header th:fragment="header" class="gm-header">
+    <button type="button" class="gm-menu-toggle" data-menu-toggle
+            aria-label="Abrir menú de navegación" aria-controls="gm-sidebar"
+            aria-expanded="false" aria-haspopup="true">☰</button>
+    <a class="gm-header__brand" th:href="@{/}">⚔️ ONEGAI</a>
+    <nav class="gm-header__nav">
+        <a class="gm-navlink" th:classappend="${currentPage == 'home'} ? 'is-active'" th:href="@{/}">
+            <span class="gm-navlink__label">Inicio</span></a>
+        <a class="gm-navlink" th:classappend="${currentPage == 'personatges'} ? 'is-active'" th:href="@{/personatges}">
+            <span class="gm-navlink__label">Personajes</span></a>
+        <a class="gm-navlink" th:classappend="${currentPage != null and #strings.startsWith(currentPage, 'cartas')} ? 'is-active'" th:href="@{/cartas}">
+            <span class="gm-navlink__label">Cartas</span></a>
+        <a class="gm-navlink" th:classappend="${currentPage == 'exportacions'} ? 'is-active'" th:href="@{/exportacions}">
+            <span class="gm-navlink__label">Exportaciones</span></a>
+        <a class="gm-navlink" th:classappend="${currentPage == 'configuracio'} ? 'is-active'" th:href="@{/configuracio}">
+            <span class="gm-navlink__label">Configuración</span></a>
+        <button type="button" class="gm-theme-toggle" data-theme-toggle aria-label="Cambiar a modo noche">🌙</button>
+    </nav>
+</header>

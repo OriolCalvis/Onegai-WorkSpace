@@ -1,0 +1,23 @@
+{
+ "id": "guardia_rota",
+ "name": "Guardia Rota",
+ "type": "condition",
+ "category": "negativa",
+ "source": "estado",
+ "stackable": false,
+ "duration": "1_turn",
+ "effects": [
+  {
+   "description": "Tu Clase de Armadura baja 2 puntos.",
+   "mechanicHook": "penal_ca:2"
+  },
+  {
+   "description": "La primera reacción que intentes mientras dure, falla.",
+   "mechanicHook": "pierde_reaccion"
+  }
+ ],
+ "cureConditions": [
+  "Final de tu próximo turno"
+ ],
+ "flavorText": "Una guardia no se rompe dos veces: la segunda ya no estaba."
+}

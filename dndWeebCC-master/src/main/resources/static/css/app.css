@@ -1,0 +1,122 @@
+:root {
+    --ink: #1f1726;
+    --muted: #766982;
+    --paper: #fff8ec;
+    --gold: #d9a441;
+    --ember: #9b3d2e;
+    --violet: #38294d;
+}
+
+body {
+    min-height: 100vh;
+    color: var(--ink);
+    background: radial-gradient(circle at top left, rgba(217, 164, 65, .28), transparent 34%), linear-gradient(135deg, #f7efe0 0%, #e8ddcf 100%);
+    font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.app-navbar {
+    background: linear-gradient(90deg, var(--ink), var(--violet));
+    box-shadow: 0 12px 30px rgba(31, 23, 38, .25);
+}
+
+.nav-link.active {
+    color: var(--gold) !important;
+    font-weight: 700;
+}
+
+.page-shell {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 260px minmax(0, 1fr);
+    padding: 2rem 0;
+}
+
+.sidebar-card, .content-card, .hero-panel, .metric-card {
+    border: 1px solid rgba(56, 41, 77, .12);
+    border-radius: 22px;
+    background: rgba(255, 248, 236, .9);
+    box-shadow: 0 18px 45px rgba(31, 23, 38, .12);
+}
+
+.sidebar-card {
+    position: sticky;
+    top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    height: fit-content;
+    padding: 1rem;
+}
+
+.sidebar-card a {
+    border-radius: 14px;
+    color: var(--ink);
+    padding: .8rem 1rem;
+    text-decoration: none;
+}
+
+.sidebar-card a:hover, .sidebar-card a.active {
+    background: var(--violet);
+    color: #fff;
+}
+
+.hero-panel {
+    overflow: hidden;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(56, 41, 77, .95), rgba(155, 61, 46, .9));
+    color: #fff;
+}
+
+.eyebrow {
+    color: var(--gold);
+    font-size: .78rem;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+}
+
+.metric-card {
+    padding: 1.25rem;
+}
+
+.metric-card span {
+    color: var(--muted);
+    display: block;
+    font-weight: 700;
+}
+
+.metric-card strong {
+    color: var(--ember);
+    font-size: 2.6rem;
+    line-height: 1;
+}
+
+.content-card {
+    padding: 1.5rem;
+}
+
+.catalog-card {
+    height: 100%;
+    border: 0;
+    border-radius: 18px;
+    background: #fffdf8;
+    box-shadow: 0 10px 24px rgba(31, 23, 38, .08);
+}
+
+.app-footer {
+    align-items: center;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    padding: 1.5rem 0 2rem;
+}
+
+@media (max-width: 992px) {
+    .page-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar-card {
+        position: static;
+    }
+}

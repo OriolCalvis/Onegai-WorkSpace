@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Carta de dote</title>
+    <th:block layout:fragment="extra-css">
+    <link th:href="@{/css/carta-fisica.css}" rel="stylesheet">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('dotes')}"></div>
+
+            <div class="u-page-header--start">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-p-0">Ficha completa</p>
+                    <h1 th:text="${carta.name}">Nombre</h1>
+                    <p>
+                        <span class="gm-badge" th:text="${carta.rarity}">common</span>
+                        <span class="gm-badge">Tier <span th:text="${carta.tier}">1</span></span>
+                        <span class="gm-badge" th:text="'ID ' + ${carta.id}">id</span>
+                    </p>
+                </div>
+                <a class="gm-btn gm-btn--outline" th:href="@{/cartas/dotes/{id}/editar(id=${carta.id})}">Editar</a>
+            </div>
+
+            <!-- La propia carta, en el mismo marco visual que el álbum -->
+            <div class="u-detail-layout-300">
+                <!-- Carta física de dote (wireframe 6d): requiredStats/effect/
+                     limitations del esquema §5 — ni vida, ni slot, ni recovery. -->
+                <article class="cf-card u-cursor-default">
+                    <div class="cf-head">
+                        <span class="cf-name" th:text="${carta.name}">Nombre</span>
+                        <span class="cf-gem" th:classappend="'cf-gem--t' + ${carta.tier}">TIER <span th:text="${carta.tier}">1</span></span>
+                    </div>
+
+                    <div class="cf-illustration">🎖</div>
+
+                    <div class="cf-typeline">
+                        <span>Dote<th:block th:if="${!carta.requiredStats.isEmpty()}"> — requiere <th:block th:each="rs,it : ${carta.requiredStats}"><span th:text="${rs.key} + ' ' + ${rs.value}">CON 2</span><th:block th:if="${!it.last}">, </th:block></th:block></th:block></span>
+                    </div>
+
+                    <div class="cf-rules">
+                        <p th:text="${carta.effect != null ? carta.effect.description : ''}">Descripción del efecto</p>
+                        <p class="cf-meta" th:if="${!#lists.isEmpty(carta.limitations)}" th:text="'Limitación: ' + ${#strings.listJoin(carta.limitations, ', ')}">Limitación</p>
+                        <p class="cf-flavor" th:if="${carta.flavorText}" th:text="${carta.flavorText}">Texto narrativo</p>
+                    </div>
+
+                    <p class="cf-id" th:text="'dotes · ' + ${carta.id}">dotes · id</p>
+                </article>
+
+                <div>
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Clases, tags concedidos y limitaciones ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong>Clases:</strong></p>
+                            <p th:each="tag : ${carta.classTags}" class="gm-badge u-mr-4" th:text="${tag}">tag</p>
+                            <p><strong>Tags concedidos:</strong></p>
+                            <p th:each="tag : ${carta.grantedTags}" class="gm-badge u-mr-4" th:text="${tag}">tag</p>
+                            <p><strong>Limitaciones:</strong></p>
+                            <p th:each="item : ${carta.limitations}" class="gm-badge u-mr-4" th:text="${item}">item</p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Requisitos de stat ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p>CON ≥ <span th:text="${carta.reqCon}">0</span> · DES ≥ <span th:text="${carta.reqDes}">0</span> ·
+                                CAR ≥ <span th:text="${carta.reqCar}">0</span> · INT ≥ <span th:text="${carta.reqInt}">0</span></p>
+                        </div>
+                    </div>
+
+                    <div class="u-actions--wrap">
+                        <a class="gm-btn gm-btn--outline" th:href="@{/cartas/dotes}">Volver al listado</a>
+                        <form th:action="@{/cartas/dotes/{id}/eliminar(id=${carta.id})}" method="post" th:data-nombre="${carta.name}" onsubmit="return confirm(\'¿Borrar el dote &quot;' + this.dataset.nombre + '&quot;? No se puede deshacer.');">
+                            <button class="gm-btn gm-btn--danger" type="submit">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div></main>
+</body>
+</html>

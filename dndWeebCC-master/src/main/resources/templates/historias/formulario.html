@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Crear historia</title>
+    <link th:href="@{/css/tokens.css}" rel="stylesheet">
+    <link th:href="@{/css/base.css}" rel="stylesheet">
+    <link th:href="@{/css/components.css}" rel="stylesheet">
+    <link th:href="@{/css/utilities.css}" rel="stylesheet">
+    <link th:href="@{/css/carta-fisica.css}" rel="stylesheet">
+</head>
+<body>
+<div class="gm-app">
+    <div th:replace="~{Blocks/header-v2 :: header}"></div>
+    <div class="gm-body">
+        <div th:replace="~{Blocks/sidebar-v2 :: sidebar}"></div>
+        <main class="gm-main">
+            <p class="gm-sidebar__eyebrow u-p-0">Sistema de Cartas y Tiers</p>
+            <h1 class="u-mb-sp2">📜 Crear historia</h1>
+            <p class="u-lead--760">
+                Máximo control por historia, cero uso del script: una historia suelta hecha a medida.
+                Para poblar el mundo en lote sigue existiendo <code>scripts/generar_historias_npcs.py</code>.
+            </p>
+
+            <form th:action="@{/historias/crear}" method="post" class="u-maxw-640" id="form-historia">
+
+                <div class="gm-form-grid u-mb-sp3">
+                    <div class="gm-field">
+                        <label>Nombre</label>
+                        <input class="gm-input" name="title" placeholder="Contrabando de Sal" required>
+                    </div>
+                    <div class="gm-field">
+                        <label>Tier mínimo</label>
+                        <select class="gm-select" name="tierMin">
+                            <option th:each="t : ${#numbers.sequence(1,5)}" th:value="${t}" th:text="'Tier ' + ${t}">Tier 1</option>
+                        </select>
+                    </div>
+                    <div class="gm-field">
+                        <label>Tier máximo</label>
+                        <select class="gm-select" name="tierMax">
+                            <option th:each="t : ${#numbers.sequence(1,5)}" th:value="${t}" th:text="'Tier ' + ${t}">Tier 1</option>
+                        </select>
+                    </div>
+                    <div class="gm-field">
+                        <label>Facción</label>
+                        <select class="gm-select" name="faction">
+                            <option value="">Sin facción</option>
+                            <option th:each="f : ${facciones}" th:value="${f}" th:text="${#strings.replace(f, '_', ' ')}">facción</option>
+                        </select>
+                    </div>
+                    <div class="gm-field">
+                        <label>Ubicación (gancho de lugar)</label>
+                        <input class="gm-input" name="location" placeholder="Puerto de Mijorn">
+                    </div>
+                </div>
+
+                <div class="gm-field u-mb-sp3">
+                    <label>Gancho (hook) — cómo se entera el grupo</label>
+                    <textarea class="gm-textarea" rows="2" name="hook"
+                              placeholder="Un cargamento robado implica al mercader Adiel..."></textarea>
+                </div>
+
+                <div class="gm-form-grid u-mb-sp3">
+                    <div class="gm-field">
+                        <label>Antagonista — vincular enemigo existente</label>
+                        <select class="gm-select" name="antagonist">
+                            <option value="">Sin antagonista</option>
+                            <optgroup label="Jefes / Villanos">
+                                <option th:each="v : ${villanos}" th:value="${v.id}"
+                                        th:text="${v.name} + ' (T' + ${v.tier} + ')'">villano</option>
+                            </optgroup>
+                            <optgroup label="Criaturas">
+                                <option th:each="e : ${enemigos}" th:value="${e.id}"
+                                        th:text="${e.name} + ' (T' + ${e.tier} + ')'">enemigo</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="gm-field">
+                        <label>Recompensa — vincular tabla de botín</label>
+                        <select class="gm-select" name="reward">
+                            <option value="">Sin recompensa</option>
+                            <option th:each="l : ${lootTables}" th:value="${l.id}"
+                                    th:text="${l.name} + ' (T' + ${l.tier} + ')'">loot</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="gm-field u-mb-sp3">
+                    <label>Complicación</label>
+                    <textarea class="gm-textarea" rows="2" name="complication"
+                              placeholder="La guardia ya sospecha..."></textarea>
+                </div>
+
+                <div class="gm-field u-mb-sp3">
+                    <label>La decisión de la mesa (opcional)</label>
+                    <input class="gm-input" name="decision" placeholder="¿Entregarlo o quedarse el alijo?">
+                </div>
+
+                <div class="gm-field u-mb-sp3">
+                    <label>Si el grupo falla o tarda (opcional)</label>
+                    <input class="gm-input" name="consequence" placeholder="Qué cambia en el mundo si nadie actúa">
+                </div>
+
+                <div class="gm-field u-mb-sp4">
+                    <label>Texto narrativo (flavor, opcional)</label>
+                    <input class="gm-input" name="flavorText">
+                </div>
+
+                <!-- ==================== ESCENAS (wireframe 13a) ==================== -->
+                <h2 class="u-heading-gap">🎬 Escenas — lugares y consecuencias</h2>
+                <p class="gm-hint">
+                    Opcional: la historia puede moverse por varios lugares/momentos, cada uno con su
+                    reparto propio y una tabla de acción → consecuencia. Se muestran como línea de
+                    tiempo en la ficha.
+                </p>
+
+                <div id="escenas-lista" class="tl-escenas u-mb-sp2"></div>
+                <button type="button" class="gm-btn gm-btn--outline u-mb-sp4" id="btn-add-escena">+ Añadir escena</button>
+
+                <input type="hidden" name="escenasJson" id="escenasJson">
+
+                <div class="u-actions--wrap">
+                    <button class="gm-btn gm-btn--primary" type="submit">Guardar historia</button>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/historias}">Cancelar</a>
+                </div>
+            </form>
+
+            <!-- Plantilla de escena que clona el JS -->
+            <template id="tpl-escena">
+                <div class="tl-escena" data-escena>
+                    <div class="tl-rail"><div class="tl-punto"></div><div class="tl-linea"></div></div>
+                    <div class="tl-caja">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>📍 Lugar</label>
+                                <input class="gm-input" data-campo="lugar" placeholder="Puerto de Mijorn — muelle">
+                            </div>
+                            <div class="gm-field">
+                                <label>Momento</label>
+                                <input class="gm-input" data-campo="momento" placeholder="de noche">
+                            </div>
+                        </div>
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>💀 Enemigos</label>
+                                <select class="gm-select" data-campo="enemigos" multiple size="3">
+                                    <option th:each="v : ${villanos}" th:value="${v.id}" th:text="'👑 ' + ${v.name}">villano</option>
+                                    <option th:each="e : ${enemigos}" th:value="${e.id}" th:text="'💀 ' + ${e.name}">enemigo</option>
+                                </select>
+                            </div>
+                            <div class="gm-field">
+                                <label>🧑 Aliados (PNJs)</label>
+                                <select class="gm-select" data-campo="aliados" multiple size="3">
+                                    <option th:each="n : ${npcs}" th:value="${n.id}" th:text="${n.name}">pnj</option>
+                                </select>
+                            </div>
+                            <div class="gm-field">
+                                <label>🪤 Trampas</label>
+                                <select class="gm-select" data-campo="trampas" multiple size="3">
+                                    <option th:each="t : ${trampas}" th:value="${t.id}" th:text="${t.name}">trampa</option>
+                                </select>
+                            </div>
+                            <div class="gm-field">
+                                <label>💰 Loot</label>
+                                <select class="gm-select" data-campo="loot" multiple size="3">
+                                    <option th:each="l : ${lootTables}" th:value="${l.id}" th:text="${l.name}">loot</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="tl-acciones">
+                            <div class="tl-acciones__titulo">Acción → Consecuencia</div>
+                            <div data-acciones></div>
+                            <button type="button" class="gm-btn gm-btn--outline gm-btn--sm" data-add-accion>+ Añadir acción</button>
+                        </div>
+                        <button type="button" class="gm-btn gm-btn--danger gm-btn--sm" data-borrar-escena>Quitar escena</button>
+                    </div>
+                </div>
+            </template>
+
+            <template id="tpl-accion">
+                <div class="u-filter-row" data-accion>
+                    <input class="gm-input u-flex-item-240" data-campo="accion" placeholder="Negociar con Adiel">
+                    <input class="gm-input u-flex-item-240" data-campo="consecuencia" placeholder="→ descuento, pero avisa a la guardia">
+                    <input class="gm-input u-w-auto" data-campo="lleva_a" placeholder="lleva a escena nº (opcional)" size="8">
+                    <button type="button" class="gm-btn gm-btn--danger gm-btn--sm" data-borrar-accion>×</button>
+                </div>
+            </template>
+        </main>
+    </div>
+    <div th:replace="~{Blocks/footer-v2 :: footer}"></div>
+</div>
+<script th:src="@{/js/theme.js}"></script>
+<script>
+    (function () {
+        var lista = document.getElementById('escenas-lista');
+        var tplEscena = document.getElementById('tpl-escena');
+        var tplAccion = document.getElementById('tpl-accion');
+
+        function addAccion(contenedor) {
+            contenedor.appendChild(tplAccion.content.cloneNode(true));
+        }
+
+        document.getElementById('btn-add-escena').addEventListener('click', function () {
+            var nodo = tplEscena.content.cloneNode(true);
+            lista.appendChild(nodo);
+            var escena = lista.lastElementChild;
+            addAccion(escena.querySelector('[data-acciones]'));
+        });
+
+        lista.addEventListener('click', function (e) {
+            if (e.target.matches('[data-add-accion]')) {
+                addAccion(e.target.closest('.tl-caja').querySelector('[data-acciones]'));
+            } else if (e.target.matches('[data-borrar-accion]')) {
+                e.target.closest('[data-accion]').remove();
+            } else if (e.target.matches('[data-borrar-escena]')) {
+                e.target.closest('[data-escena]').remove();
+            }
+        });
+
+        function valoresMultiples(select) {
+            return Array.prototype.slice.call(select.selectedOptions).map(function (o) { return o.value; });
+        }
+
+        document.getElementById('form-historia').addEventListener('submit', function () {
+            var escenas = [];
+            lista.querySelectorAll('[data-escena]').forEach(function (esc) {
+                var caja = esc.querySelector('.tl-caja');
+                var acciones = [];
+                caja.querySelectorAll('[data-accion]').forEach(function (a) {
+                    var accion = a.querySelector('[data-campo="accion"]').value.trim();
+                    var consecuencia = a.querySelector('[data-campo="consecuencia"]').value.trim();
+                    var llevaA = a.querySelector('[data-campo="lleva_a"]').value.trim();
+                    if (accion || consecuencia) {
+                        acciones.push({ accion: accion, consecuencia: consecuencia, lleva_a: llevaA || null });
+                    }
+                });
+                escenas.push({
+                    lugar: caja.querySelector('[data-campo="lugar"]').value.trim(),
+                    momento: caja.querySelector('[data-campo="momento"]').value.trim(),
+                    enemigos: valoresMultiples(caja.querySelector('[data-campo="enemigos"]')),
+                    aliados: valoresMultiples(caja.querySelector('[data-campo="aliados"]')),
+                    eventos: [],
+                    trampas: valoresMultiples(caja.querySelector('[data-campo="trampas"]')),
+                    loot: valoresMultiples(caja.querySelector('[data-campo="loot"]')),
+                    acciones: acciones
+                });
+            });
+            document.getElementById('escenasJson').value = escenas.length ? JSON.stringify(escenas) : '';
+        });
+    })();
+</script>
+</body>
+</html>

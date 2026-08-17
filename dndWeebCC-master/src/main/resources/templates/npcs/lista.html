@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">PNJs</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div class="u-page-header">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-eyebrow">Sistema de Cartas y Tiers</p>
+                    <h1>🧑 Álbum de PNJs</h1>
+                    <p class="gm-hint">
+                        Reparto reutilizable: rol, ubicación, agenda, actitud inicial y el secreto que los liga a
+                        una <a th:href="@{/historias}">historia</a> real.
+                    </p>
+                </div>
+                <div class="u-actions--wrap">
+                    <a class="gm-btn gm-btn--primary" th:href="@{/npcs/crear}">+ Crear PNJ</a>
+                    <span class="gm-hud" th:text="${#lists.size(npcs)} + ' pnjs'">n pnjs</span>
+                </div>
+            </div>
+
+            <div class="u-filter-row">
+                <input type="text" class="gm-input u-flex-item-240" id="filtro-texto" placeholder="Buscar por nombre o lugar...">
+                <select class="gm-select u-w-auto" id="filtro-rol" aria-label="Filtrar por rol">
+                    <option value="">Todos los roles</option>
+                    <option th:each="r : ${roles}" th:value="${r}" th:text="${#strings.capitalize(r)}">rol</option>
+                </select>
+                <p class="gm-hint u-m-0" id="filtro-resultado"></p>
+            </div>
+
+            <p class="u-text-muted" th:if="${#lists.isEmpty(npcs)}">
+                Todavía no hay pnjs en <code>data/npcs</code>.
+            </p>
+
+            <div class="gm-album" id="gm-album-npcs">
+                <article class="gm-card" th:each="n : ${npcs}"
+                         th:attr="data-nombre=${n.name + ' ' + n.extra}, data-rol=${n.rank}">
+                    <!-- ① Cabecera -->
+                    <span class="gm-card__tier" th:text="${#strings.capitalize(n.rank)}">rol</span>
+                    <h2 class="gm-card__title" th:text="${n.name}">Nombre</h2>
+                    <span class="gm-card__role" th:text="${n.extra}">lugar</span>
+
+                    <!-- ② Ilustración -->
+                    <div class="gm-card__illustration">🧑</div>
+
+                    <!-- ③ Reglas -->
+                    <div class="gm-card__rules">
+                        <p class="gm-card__meta" th:text="${n.extra}">lugar</p>
+                    </div>
+
+                    <div class="gm-card__actions">
+                        <a class="gm-btn gm-btn--outline gm-btn--sm" th:href="@{/npcs/{id}(id=${n.id})}">Ver ficha</a>
+                    </div>
+
+                    <!-- ⑤ Identificador -->
+                    <p class="gm-card__id" th:text="'npcs · ' + ${n.id}">npcs · id</p>
+                </article>
+            </div></main>
+<th:block layout:fragment="extra-js">
+    <script th:inline="javascript">
+    (function () {
+        var texto = document.getElementById('filtro-texto');
+        var rol = document.getElementById('filtro-rol');
+        var resultado = document.getElementById('filtro-resultado');
+        var tarjetas = document.querySelectorAll('#gm-album-npcs .gm-card');
+
+        function aplicarFiltro() {
+            var t = (texto.value || '').toLowerCase();
+            var r = rol.value || '';
+            var visibles = 0;
+            tarjetas.forEach(function (carta) {
+                var nombre = (carta.getAttribute('data-nombre') || '').toLowerCase();
+                var rolCarta = carta.getAttribute('data-rol') || '';
+                var coincide = nombre.indexOf(t) !== -1 && (r === '' || rolCarta === r);
+                carta.style.display = coincide ? '' : 'none';
+                if (coincide) visibles++;
+            });
+            resultado.textContent = visibles + ' de ' + tarjetas.length + ' pnjs';
+        }
+
+        if (texto && rol) {
+            texto.addEventListener('input', aplicarFiltro);
+            rol.addEventListener('change', aplicarFiltro);
+            aplicarFiltro();
+        }
+    })();
+</script>
+</th:block>
+</body>
+</html>

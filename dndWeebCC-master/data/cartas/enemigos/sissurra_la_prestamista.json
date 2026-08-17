@@ -1,0 +1,84 @@
+{
+ "id": "sissurra_la_prestamista",
+ "name": "Sissurra la Prestamista",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "control",
+ "faction": "nagas_del_pozo_azul",
+ "stats": {
+  "CON": 6,
+  "DES": 5,
+  "INT": 7,
+  "CAR": 6
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 16,
+  "defensaMental": 16,
+  "resistenciaFisica": 16,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Apretón de Cierre",
+   "defense": "defensa_mental",
+   "effect": "Constricción que suma su CON; el Endeudado que falle queda Agarrado (garantía física)."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "defensa_mental",
+   "effect": "Si el objetivo falla, queda Endeudado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Interés Compuesto",
+  "description": "Interés Compuesto: cada personaje Endeudado que falle una tirada le da +0,5 a su siguiente (el fracaso ajeno cotiza)."
+ },
+ "conditionsInflicted": [
+  "endeudado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Veneno"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Encadena su técnica tras el ataque firma y +1 al daño."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Abrir sucursal en la superficie: el pozo se le ha quedado pequeño",
+  "metodo": "Ofrece ayuda letal en el peor momento del grupo",
+  "debilidad_narrativa": "Liquidez: el fuego seca — daño de fuego le impide usar su técnica el turno siguiente",
+  "vinculo": "la_serpiente_de_contratos"
+ },
+ "arena": {
+  "name": "La Sucursal Inundada",
+  "hazard": "Mostradores sumergidos: el agua por la cintura — melé sin penalización, correr imposible"
+ },
+ "legendaryActions": [],
+ "storyCard": {
+  "title": "Sissurra la Prestamista",
+  "text": "Su sonrisa tiene demasiados dientes para ser solo cortesía.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Presta esperanza. El interés se paga en pulmones."
+}

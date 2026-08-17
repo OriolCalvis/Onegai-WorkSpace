@@ -1,0 +1,166 @@
+{
+  "nombre": "Quebraguardia",
+  "descripcion": "Duelista que convierte su defensa en filo: sacrifica su guardia para abrir brechas imposibles y rematar con técnicas implacables.",
+  "rolTematico": "Ofensivo-táctico que gasta Puntos de Guardia (derivados de CA) para potenciar golpes, reacciones y rupturas.",
+  "dadoGolpe": "1d8",
+  "puntosGolpeNivel1": "1d8 + modificador de Constitución",
+  "puntosGolpePorNivel": "1d8 (o 5) + modificador de Constitución",
+  "atributoConjuro": null,
+  "atributosRelevantes": ["Destreza", "Constitución", "Sabiduría"],
+  "competencias": {
+    "armaduras": ["Ligeras", "Medias"],
+    "armas": ["Simples", "Marciales (a dos manos o sutiles)"],
+    "habilidadesElegir": ["Acrobacias", "Atletismo", "Percepción", "Perspicacia", "Sigilo", "Supervivencia"],
+    "salvaciones": ["Destreza", "Sabiduría"]
+  },
+  "mecanicas": {
+    "usaPuntosDeGuardia": true,
+    "definicionPG": "PG = (CA_base - 10) + bonif. de competencia (mín. 1). Se recuperan todos al final de un descanso corto o largo.",
+    "desproteccionAlAgotar": "Si PG llega a 0: -2 a CA y desventaja en salvaciones de Destreza hasta usar 'Rearmar Guardia' (acción adicional, recupera PG = bonif. competencia).",
+    "consumosTipicos": [
+      {"tecnica":"Filo Rompeplacas","coste":"2 PG","efecto":"+1d6 daño y Ignora 2 puntos de CA del objetivo este ataque."},
+      {"tecnica":"Paso por la Brecha","coste":"1 PG","efecto":"Te desplazas 10 pies sin provocar ataques de oportunidad antes o después del ataque."},
+      {"tecnica":"Contra-AAtaque","coste":"2 PG","efecto":"Reacción: tras ser objetivo de ataque cuerpo a cuerpo, haces 1 ataque; si impacta, reduces el daño recibido en 1d6."}
+    ]
+  },
+  "accionesEspeciales": {
+    "rearmarGuardia": {
+      "descripcion": "Acción adicional. Recupera PG = bonificador de competencia. Elimina 'Desprotección'.",
+      "coste": {"tipo":"GUARDIA","modo":"PAGO_INSTANTANEO","monto":0}
+    },
+    "rupturaPerfecta": {
+      "descripcion": "Una vez por descanso corto, convierte 3 PG en una 'Ruptura' que otorga ventaja y +2d6 de daño; este golpe reduce la CA del objetivo en 1 (apilable) hasta el final de tu próximo turno.",
+      "coste": {"tipo":"GUARDIA","modo":"PAGO_INSTANTANEO","monto":3}
+    }
+  },
+  "niveles": {
+    "1": {
+      "habilidades": [
+        {
+          "nombre": "Economía de Guardia",
+          "tipo": "Clase",
+          "efecto": "Obtienes y administras PG. Accedes a técnicas básicas: Filo Rompeplacas, Paso por la Brecha.",
+          "usos": "Mientras tengas PG",
+          "accion": "Varía"
+        }
+      ]
+    },
+    "2": {
+      "habilidades": [
+        {
+          "nombre": "Contra-Ataque",
+          "tipo": "Reacción",
+          "efecto": "Si te golpean en melee, reacción para atacar; si impactas, reduce daño en 1d6.",
+          "usos": "2 PG",
+          "accion": "Reacción"
+        }
+      ]
+    },
+    "3": {
+      "habilidades": [
+        {
+          "nombre": "Ruptura Perfecta",
+          "tipo": "Explosión",
+          "efecto": "Ventaja +2d6 y -1 CA temporal al objetivo (hasta tu próximo turno).",
+          "usos": "1/descanso corto",
+          "accion": "Ataque"
+        }
+      ],
+      "subclases": [
+        {"nombre":"Duelo del Vacío","descripcion":"Más movilidad y debuffs a CA."},
+        {"nombre":"Martir del Escudo","descripcion":"Soak y protección aliada gastando PG."}
+      ]
+    },
+    "4": {"habilidades": ["Mejora de Características"]},
+    "5": {
+      "habilidades": [
+        {
+          "nombre": "Brecha Imparable",
+          "efecto": "Cuando gastas ≥2 PG en un ataque, añade +1d8 en lugar de +1d6.",
+          "usos": "Pasiva",
+          "accion": "—"
+        }
+      ]
+    },
+    "6": {"habilidades": ["Mejora de Características"]},
+    "7": {
+      "habilidades": [
+        {
+          "nombre": "Paso de la Hoja",
+          "efecto": "Al reducir a 0 a un enemigo con técnica que gaste PG, recuperas 1 PG.",
+          "usos": "Pasiva"
+        }
+      ]
+    },
+    "8": {"habilidades": ["Mejora de Características"]},
+    "9": {
+      "habilidades": [
+        {
+          "nombre": "Ráfaga Quebrante",
+          "efecto": "Si comienzas tu turno con 0 PG (Desprotección), puedes acción adicional 'Rearmar Guardia' sin gastar tu acción adicional de este turno.",
+          "usos": "1/turno",
+          "accion": "Pasiva"
+        }
+      ]
+    },
+    "10": {
+      "habilidades": [
+        {
+          "nombre": "Guardia a Sangre",
+          "efecto": "Puedes convertir 1d6 de tu vida en 2 PG (máx. 1 vez/turno).",
+          "usos": "Libre 1/turno",
+          "accion": "Especial"
+        }
+      ]
+    },
+    "11": {
+      "habilidades": [
+        {
+          "nombre": "Ruptura Maestra",
+          "efecto": "Ruptura Perfecta ahora añade +3d6 y -2 CA temporal.",
+          "usos": "1/descanso corto"
+        }
+      ]
+    },
+    "12": {"habilidades": ["Mejora de Características"]},
+    "13": {
+      "habilidades": [
+        {
+          "nombre": "Quebraespíritu",
+          "efecto": "Si impactas con Ventaja, puedes gastar 2 PG para forzar salvación de Sabiduría (CD = 8 + competencia + DEX/CON, a elegir). En fallo: el objetivo queda Asustado hasta fin de tu próximo turno.",
+          "usos": "2 PG"
+        }
+      ]
+    },
+    "14": {"habilidades": ["Mejora de Características"]},
+    "15": {
+      "habilidades": [
+        {
+          "nombre": "Guardia Inquebrantable",
+          "efecto": "Mientras tengas ≥1 PG, +1 CA.",
+          "usos": "Pasiva"
+        }
+      ]
+    },
+    "16": {"habilidades": ["Mejora de Características"]},
+    "18": {
+      "habilidades": [
+        {
+          "nombre": "Rearme Instantáneo",
+          "efecto": "Rearmar Guardia pasa a ser acción gratuita 1/turno.",
+          "usos": "1/turno"
+        }
+      ]
+    },
+    "20": {
+      "habilidades": [
+        {
+          "nombre": "Corte de la Última Guardia",
+          "efecto": "Una vez por descanso largo, gasta todo tu PG (mín. 3) para un ataque: +X d8 (X = PG gastado), ignora cobertura y reduce CA del objetivo en 3 hasta el fin de tu próximo turno.",
+          "usos": "1/descanso largo",
+          "accion": "Acción"
+        }
+      ]
+    }
+  }
+}

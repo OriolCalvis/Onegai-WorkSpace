@@ -1,0 +1,64 @@
+{
+  "_fuente": [
+    "Enemigos de la campana canonica de Aegroum, 'Campana 01: La Matanza de",
+    "Boundington (Aventura de Venides)', seccion BASE MILITAR y combates del",
+    "Ocaso. Las vidas son las del documento tal cual:",
+    "  Perdidos Saqueadores (x3): CA 14, HP 22, espada corta +4 (1d6+2)",
+    "  Fanaticos del Culto (x2):  CA 13, HP 18, usan magia",
+    "",
+    "CombatData del motor solo guarda maxHealth/maxMana/skills: la CA y el",
+    "dado de dano del documento los resuelve el Nd6 (ApplyBasicAttackNd6 tira",
+    "contra la defensa del objetivo), asi que no se copian como campos.",
+    "El mana de los fanaticos sale de que el canon dice que 'usaran magia'."
+  ],
+  "objects": [
+    {
+      "id": "perdido_saqueador",
+      "name": "Perdido saqueador",
+      "category": "enemy",
+      "spriteId": 2,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 22,
+        "maxMana": 0,
+        "skills": []
+      }
+    },
+    {
+      "id": "perdido_fanatico",
+      "name": "Fanatico del culto",
+      "category": "enemy",
+      "spriteId": 3,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 18,
+        "maxMana": 6,
+        "skills": []
+      }
+    },
+    {
+      "id": "cultista_carcelero",
+      "name": "Cultista carcelero",
+      "category": "enemy",
+      "spriteId": 4,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 16,
+        "maxMana": 0,
+        "skills": []
+      }
+    },
+    {
+      "id": "gorran_bandido",
+      "name": "Gorran, jefe de los bandidos",
+      "category": "enemy",
+      "spriteId": 5,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 34,
+        "maxMana": 0,
+        "skills": []
+      }
+    }
+  ]
+}

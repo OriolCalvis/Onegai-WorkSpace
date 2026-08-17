@@ -1,0 +1,52 @@
+{
+ "id": "caballero_de_sal",
+ "name": "Caballero de Sal",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 2,
+ "role": "defensa",
+ "faction": "espectros_de_la_tomba",
+ "factionName": "Los Espectros de la Tomba",
+ "stats": {
+  "CON": 4,
+  "DES": 3,
+  "INT": 2,
+  "CAR": 3
+ },
+ "derived": {
+  "vida": 16,
+  "ca": 13,
+  "defensaMental": 13,
+  "resistenciaFisica": 14,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de fisico: daño que suma su CON (pool de CON, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: si el objetivo falla, queda Guardia Rota hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "La primera vez que golpea cada ronda, reduce la armadura del objetivo hasta el final del turno."
+ },
+ "conditionsInflicted": [
+  "guardia_rota"
+ ],
+ "loot": [
+  "cetro_de_bronce_de_milicia",
+  "amuleto_de_foco"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico"
+ ],
+ "phases": [],
+ "flavorText": "Guardian reseco de fortalezas tragadas por el mar."
+}

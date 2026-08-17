@@ -1,0 +1,100 @@
+{
+ "id": "reina_hoja_venenosa",
+ "name": "Reina Hoja Venenosa",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "escaramuzador",
+ "faction": "corte_de_espinas",
+ "factionName": "La Corte de Espinas",
+ "stats": {
+  "CON": 8,
+  "DES": 11,
+  "INT": 9,
+  "CAR": 8
+ },
+ "derived": {
+  "vida": 70,
+  "ca": 23,
+  "defensaMental": 18,
+  "resistenciaFisica": 18,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de veneno: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "resistencia_fisica",
+   "effect": "Técnica de facción: si el objetivo falla, queda Envenenado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en fase de Desesperación: daño de veneno como éxito crítico (todos sus dados cuentan éxito completo)."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Sus venenos duran 1 turno adicional contra objetivos aislados."
+ },
+ "conditionsInflicted": [
+  "envenenado"
+ ],
+ "loot": [
+  "arco_cazador_de_milicia",
+  "grebas_de_cuero",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Veneno"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal: alterna golpe y técnica."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Su técnica de facción no gasta acción: la encadena tras el golpe. Sus venenos duran 1 turno adicional contra objetivos aislados."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final y actúa con agresividad total (ignora amenaza, va al más herido)."
+  }
+ ],
+ "flavorText": "Matriarca asesina rodeada de jardines letales.",
+ "villainProfile": {
+  "objetivo": "Que su jardín dé fruto: un heredero inmune a todos los venenos, incluido el amor",
+  "metodo": "Cultiva el campo de batalla: cada ronda su jardín crece y muerde",
+  "debilidad_narrativa": "Los antídotos la ofenden: curar Envenenado delante de ella la fuerza a atacar a quien curó (pierde el plan)",
+  "vinculo": "hoja_venenosa"
+ },
+ "arena": {
+  "name": "El Jardín Nocturno",
+  "hazard": "Flores letales: terminar turno adyacente a una flor exige Resistencia física o Envenenado"
+ },
+ "legendaryActions": [
+  "Poda (1/ronda): su látigo vegetal golpea al personaje más cercano a una flor"
+ ],
+ "storyCard": {
+  "title": "Reina Hoja Venenosa",
+  "text": "Todos sus pretendientes están en el jardín. Son el jardín.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae si el grupo alcanzó la fase de Desesperación",
+  "drops": [
+   "arco_cazador_de_milicia",
+   "grebas_de_cuero",
+   "pocion_de_vigor"
+  ]
+ }
+}

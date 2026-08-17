@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Editor de carta de deidad</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('deidades')}"></div>
+            <p class="gm-sidebar__eyebrow u-p-0">Sistema de Cartas y Tiers</p>
+            <h1 class="u-mb-sp5" th:text="${esNueva} ? 'Nueva carta de deidad' : 'Editar carta de deidad'">Nueva carta de deidad</h1>
+
+            <form th:action="${esNueva} ? @{/cartas/deidades} : @{/cartas/deidades/{id}/editar(id=${form.id})}"
+                  th:object="${form}" method="post">
+
+                <div class="gm-form-grid u-mb-sp4">
+                    <div class="gm-field" th:if="${esNueva}">
+                        <label>ID (opcional)</label>
+                        <input class="gm-input" th:field="*{id}" placeholder="Se genera automático a partir del nombre">
+                    </div>
+                    <div class="gm-field" th:unless="${esNueva}">
+                        <label>ID</label>
+                        <input class="gm-input" th:field="*{id}" readonly>
+                    </div>
+                    <div class="gm-field">
+                        <label>Nombre</label>
+                        <input class="gm-input" th:field="*{name}" placeholder="La Llama Eterna" required>
+                    </div>
+                    <div class="gm-field">
+                        <label>Dominio</label>
+                        <input class="gm-input" th:field="*{domain}" placeholder="guerra, naturaleza, muerte, conocimiento...">
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Favor otorgado ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field u-col-span-all">
+                                <label>Descripción del favor</label>
+                                <textarea class="gm-textarea" rows="3" th:field="*{favorDescription}"></textarea>
+                            </div>
+                            <div class="gm-field">
+                                <label>Escalado</label>
+                                <select class="gm-select" th:field="*{favorScaling}">
+                                    <option value="CAR">CAR</option>
+                                    <option value="none">Ninguno</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Compatibilidad y obligaciones ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Compatible con (razas o clases)</label>
+                                <div th:replace="~{Blocks/selector-referencias :: csv('compatibleWith', ${opcionesRazasYClases}, 'añadir raza o clase')}"></div>
+                            </div>
+                            <div class="gm-field">
+                                <label>Obligaciones / tabúes</label>
+                                <input class="gm-input" th:field="*{obligations}">
+                            </div>
+                            <div class="gm-field">
+                                <label>Texto narrativo</label>
+                                <input class="gm-input" th:field="*{flavorText}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="u-actions">
+                    <button class="gm-btn gm-btn--primary" type="submit">Guardar</button>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/cartas/deidades}">Cancelar</a>
+                </div>
+            </form></main>
+<th:block layout:fragment="extra-js">
+    <script th:src="@{/js/selector-csv.js}"></script>
+    <script th:src="@{/js/selector-csv.js}"></script>
+</th:block>
+</body>
+</html>

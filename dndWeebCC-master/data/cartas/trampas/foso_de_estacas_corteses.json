@@ -1,0 +1,26 @@
+{
+ "id": "foso_de_estacas_corteses",
+ "name": "Foso de Estacas Corteses",
+ "type": "trap",
+ "tier": 1,
+ "rarity": "common",
+ "category": "mecánica",
+ "trigger": "pisar la losa floja",
+ "detection": {
+  "stat": "INT",
+  "cd": 0.5
+ },
+ "disarm": {
+  "stat": "DES",
+  "cd": 0.5,
+  "herramienta": "herramientas de ladrón"
+ },
+ "effect": {
+  "description": "Caída con estacas: 2 de daño y Caído.",
+  "defensa": "resistencia_fisica",
+  "condicionInfligida": "caido"
+ },
+ "onFail": "La losa cede del todo: 3 de daño y Agarrado entre estacas.",
+ "reset": "única",
+ "flavorText": "Quien la montó pensaba volver. No volvió."
+}

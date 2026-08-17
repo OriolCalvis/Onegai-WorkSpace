@@ -1,0 +1,84 @@
+{
+ "id": "la_ecuacion_huerfana",
+ "name": "La Ecuación Huérfana",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "conjurador",
+ "faction": "hechiceros_del_vacio",
+ "stats": {
+  "CON": 5,
+  "DES": 5,
+  "INT": 8,
+  "CAR": 6
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 16,
+  "defensaMental": 16,
+  "resistenciaFisica": 15,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Resultado Parcial",
+   "defense": "defensa_mental",
+   "effect": "Daño mágico que suma su INT; el impactado que falle queda Anclado (pasa a ser constante)."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "defensa_mental",
+   "effect": "Si el objetivo falla, queda Anclado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Despeje",
+  "description": "Despeje: cada vez que un personaje usa la misma carta por segunda vez en el combate, la Ecuación lo 'simplifica' — 1 de daño automático (los términos repetidos se eliminan)."
+ },
+ "conditionsInflicted": [
+  "anclado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Magico"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Encadena su técnica tras el ataque firma y +1 al daño."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Resolverse: encontrar el valor que su creador nunca despejó",
+  "metodo": "Reduce el combate a variables y elimina las redundantes",
+  "debilidad_narrativa": "El absurdo: una acción genuinamente impredecible (a juicio del DJ) la bloquea una ronda entera (no computa)",
+  "vinculo": "hechiceros_del_vacio"
+ },
+ "arena": {
+  "name": "La Pizarra Infinita",
+  "hazard": "Tiza viva: las líneas del suelo se redibujan — cada ronda un pasillo cambia de sitio"
+ },
+ "legendaryActions": [],
+ "storyCard": {
+  "title": "La Ecuación Huérfana",
+  "text": "Nadie sabe qué calculaba. Ella tampoco. Por eso sigue.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Un cálculo que sobrevivió a su calculador."
+}

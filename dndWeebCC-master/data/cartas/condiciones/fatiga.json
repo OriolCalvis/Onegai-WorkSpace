@@ -1,0 +1,23 @@
+{
+ "id": "fatiga",
+ "name": "Fatiga",
+ "type": "condition",
+ "category": "negativa",
+ "source": "estado",
+ "stackable": true,
+ "duration": "hasta_curarse",
+ "effects": [
+  {
+   "description": "Cada nivel de Fatiga resta 1 dado a todas tus tiradas de característica (mínimo 1 dado).",
+   "mechanicHook": "penal_dados:1_por_nivel"
+  },
+  {
+   "description": "Al llegar a nivel 6, el personaje muere.",
+   "mechanicHook": "muerte:nivel_6"
+  }
+ ],
+ "cureConditions": [
+  "Descanso largo (recupera 2 niveles)"
+ ],
+ "flavorText": "El cansancio es una deuda con interés compuesto."
+}

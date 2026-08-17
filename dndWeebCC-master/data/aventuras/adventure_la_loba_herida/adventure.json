@@ -1,0 +1,39 @@
+{
+ "id": "adventure_la_loba_herida",
+ "type": "adventure",
+ "name": "La Loba Herida",
+ "description": "Una loba enorme sangra junto al molino de Llerba. Lleva un collar con el sello real, y la Manada del Rei Llop la busca para rematarla. Versión jugable por actos (GDD sección 20) de la trama 'la_loba_herida': Acto I en Llerba y sus alrededores, Acto II en los bosques del norte, Acto III en la guarida de la manada.",
+ "architecture": "espina_de_pescado",
+ "recommendedTier": [1, 2],
+ "storyDeck": [
+  "carta_hist_loba_A1-01", "carta_hist_loba_A1-02", "carta_hist_loba_A1-03",
+  "carta_hist_loba_A1-04", "carta_hist_loba_A1-05", "carta_hist_loba_A1-06",
+  "carta_hist_loba_A1-07", "carta_hist_loba_A1-08", "carta_hist_loba_A1-09",
+  "carta_hist_loba_A1-10",
+  "carta_hist_loba_B2-01", "carta_hist_loba_B2-02", "carta_hist_loba_B2-03",
+  "carta_hist_loba_B2-04", "carta_hist_loba_B2-05", "carta_hist_loba_B2-06",
+  "carta_hist_loba_B2-07", "carta_hist_loba_B2-08",
+  "carta_hist_loba_C3-01", "carta_hist_loba_C3-02", "carta_hist_loba_C3-03",
+  "carta_hist_loba_C3-04", "carta_hist_loba_C3-05", "carta_hist_loba_C3-06"
+ ],
+ "lootTables": ["loot_manada_del_rei_llop_t1", "loot_manada_del_rei_llop_t2", "loot_manada_del_rei_llop_t3"],
+ "eventDeck": [],
+ "npcs": ["npc_capitana_bruna", "npc_vidal_el_callado"],
+ "monsters": [
+  "lobo_famelico", "lobo_famelico_veterano", "rastreador_de_nieve",
+  "chaman_de_la_manada", "carronero_del_deshielo", "guardian_de_la_loba"
+ ],
+ "bossId": "guardian_de_la_loba_alfa",
+ "objectives": [
+  { "id": "obj_destino_loba", "description": "Descubrir por qué la manada caza a la loba del collar real y decidir su destino.", "type": "principal" },
+  { "id": "obj_puerta_norte", "description": "Ganarse a la Capitana Bruna y asegurar la Puerta Norte antes del invierno.", "type": "secundario" },
+  { "id": "obj_ruta_vidal", "description": "Proteger la ruta comercial de Vidal el Callado a través del bosque.", "type": "secundario" }
+ ],
+ "secrets": [],
+ "possibleEndings": [
+  { "id": "final_pacto_del_sello", "condition": "A1-01 Verde y B2-06 Verde (se juega C3-04): el collar prueba el pacto con la corona.", "description": "La loba vive y porta el sello: la corona reconoce la tregua con la manada. El bosque se abre a Llerba." },
+  { "id": "final_caceria_consumada", "condition": "A1-01 Roja: la manada llegó primero.", "description": "La loba muere. La manada reclama el bosque del norte y Llerba cierra su puerta todo el invierno." },
+  { "id": "final_tregua_fragil", "condition": "Alfa derrotado o parlamentado sin el sello probado.", "description": "El grupo sale del bosque con vida y botín, pero sin resolver el porqué del collar. La manada recuerda." },
+  { "id": "final_huida", "condition": "El grupo se retira del Acto III sin resolver a C3-05.", "description": "Huida del bosque. Todos los hilos quedan abiertos y la manada os reconoce como presas." }
+ ]
+}

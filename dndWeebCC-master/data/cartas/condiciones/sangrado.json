@@ -1,0 +1,20 @@
+{
+ "id": "sangrado",
+ "name": "Sangrado",
+ "type": "condition",
+ "category": "negativa",
+ "source": "estado",
+ "stackable": false,
+ "duration": "hasta_curarse",
+ "effects": [
+  {
+   "description": "Al empezar tu turno recibes 1 de daño (o el que indique la fuente).",
+   "mechanicHook": "dano_por_turno:1"
+  }
+ ],
+ "cureConditions": [
+  "Un descanso corto",
+  "Una habilidad de curación"
+ ],
+ "flavorText": "La herida no discute. Descuenta."
+}

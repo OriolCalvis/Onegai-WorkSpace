@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Editor de carta de rasgo especial</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('rasgos')}"></div>
+            <p class="gm-sidebar__eyebrow u-p-0">Sistema de Cartas y Tiers</p>
+            <h1 class="u-mb-sp5" th:text="${esNueva} ? 'Nueva carta de rasgo especial' : 'Editar carta de rasgo especial'">Nueva carta de rasgo especial</h1>
+
+            <form th:action="${esNueva} ? @{/cartas/rasgos} : @{/cartas/rasgos/{id}/editar(id=${form.id})}"
+                  th:object="${form}" method="post">
+
+                <div class="gm-form-grid u-mb-sp4">
+                    <div class="gm-field" th:if="${esNueva}">
+                        <label>ID (opcional)</label>
+                        <input class="gm-input" th:field="*{id}" placeholder="Se genera automático a partir del nombre">
+                    </div>
+                    <div class="gm-field" th:unless="${esNueva}">
+                        <label>ID</label>
+                        <input class="gm-input" th:field="*{id}" readonly>
+                    </div>
+                    <div class="gm-field">
+                        <label>Nombre</label>
+                        <input class="gm-input" th:field="*{name}" placeholder="Cicatriz del Destino" required>
+                    </div>
+                    <div class="gm-field">
+                        <label>Origen</label>
+                        <select class="gm-select" th:field="*{origin}">
+                            <option value="race">Raza</option>
+                            <option value="background">Trasfondo</option>
+                            <option value="story">Historia</option>
+                            <option value="tier">Tier</option>
+                        </select>
+                    </div>
+                    <div class="gm-field">
+                        <label>Tier</label>
+                        <input class="gm-input" type="number" min="0" max="5" th:field="*{tier}">
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Efecto y limitaciones ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field u-col-span-all">
+                                <label>Efecto</label>
+                                <textarea class="gm-textarea" rows="3" th:field="*{effectDescription}"></textarea>
+                            </div>
+                            <div class="gm-field">
+                                <label>Limitaciones</label>
+                                <input class="gm-input" th:field="*{limitations}">
+                            </div>
+                            <div class="gm-field">
+                                <label>Texto narrativo</label>
+                                <input class="gm-input" th:field="*{flavorText}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="u-actions">
+                    <button class="gm-btn gm-btn--primary" type="submit">Guardar</button>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/cartas/rasgos}">Cancelar</a>
+                </div>
+            </form></main>
+</body>
+</html>

@@ -1,0 +1,64 @@
+{
+ "id": "verdugo_del_clan_jefe_de_guerra",
+ "name": "Verdugo del Clan Jefe de Guerra",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 4,
+ "role": "control",
+ "faction": "clan_de_gongorguma_renegado",
+ "factionName": "El Clan Renegado de Gongorguma",
+ "stats": {
+  "CON": 7,
+  "DES": 6,
+  "INT": 8,
+  "CAR": 7
+ },
+ "derived": {
+  "vida": 40,
+  "ca": 17,
+  "defensaMental": 17,
+  "resistenciaFisica": 17,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Gancho de Cadena",
+   "defense": "CA",
+   "effect": "Ataque de fisico: daño que suma su INT (pool de INT, regla 7.6)."
+  },
+  {
+   "name": "Arrastre Publico",
+   "defense": "CA",
+   "effect": "Técnica de facción: si el objetivo falla, queda Caido hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Cuando un aliado del clan cae, los demás ganan +1 a su próximo ataque (la sangre pide)."
+ },
+ "conditionsInflicted": [
+  "caido"
+ ],
+ "loot": [
+  "gran_hacha_de_milicia",
+  "cota_de_malla",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Gana una segunda técnica por ronda y +1 al daño."
+  }
+ ],
+ "flavorText": "Los echaron por brutales. Ni siquiera Gongorguma quiso mirar."
+}

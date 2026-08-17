@@ -1,0 +1,27 @@
+{
+ "id": "caido",
+ "name": "Caído",
+ "type": "condition",
+ "category": "negativa",
+ "source": "estado",
+ "stackable": false,
+ "duration": "hasta_curarse",
+ "effects": [
+  {
+   "description": "Desventaja en tus ataques.",
+   "mechanicHook": "desventaja:ataque"
+  },
+  {
+   "description": "Los ataques cuerpo a cuerpo contra ti tienen ventaja.",
+   "mechanicHook": "ventaja_contra:melee"
+  },
+  {
+   "description": "Levantarte cuesta tu Acción de Movimiento.",
+   "mechanicHook": "coste_levantarse:movimiento"
+  }
+ ],
+ "cureConditions": [
+  "Levantarse (Acción de Movimiento)"
+ ],
+ "flavorText": "El suelo siempre gana la primera ronda."
+}

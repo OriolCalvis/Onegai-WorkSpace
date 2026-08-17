@@ -1,0 +1,19 @@
+<nav th:fragment="header" class="navbar navbar-expand-lg navbar-dark app-navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" th:href="@{/}">⚔️ ONEGAI</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Obrir navegació">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" th:classappend="${currentPage == 'home'} ? 'active'" th:href="@{/}">Inici</a></li>
+                <li class="nav-item"><a class="nav-link" th:classappend="${currentPage == 'personatges'} ? 'active'" th:href="@{/personatges}">Personatges</a></li>
+                <li class="nav-item"><a class="nav-link" th:classappend="${currentPage == 'cartas-clases'} ? 'active'" th:href="@{/cartas/clases}">Classes</a></li>
+                <li class="nav-item"><a class="nav-link" th:classappend="${currentPage == 'cartas-razas'} ? 'active'" th:href="@{/cartas/razas}">Races</a></li>
+                <li class="nav-item"><a class="nav-link" th:classappend="${currentPage == 'cartas-transfondos'} ? 'active'" th:href="@{/cartas/transfondos}">Transfons</a></li>
+                <li class="nav-item"><a class="nav-link" th:classappend="${currentPage == 'exportacions'} ? 'active'" th:href="@{/exportacions}">Exportacions</a></li>
+                <li class="nav-item"><a class="nav-link" th:classappend="${currentPage == 'configuracio'} ? 'active'" th:href="@{/configuracio}">Configuració</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>

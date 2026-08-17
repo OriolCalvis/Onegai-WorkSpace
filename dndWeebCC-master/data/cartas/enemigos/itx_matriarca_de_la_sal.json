@@ -1,0 +1,92 @@
+{
+ "id": "itx_matriarca_de_la_sal",
+ "name": "Itx Matriarca de la Sal",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "control",
+ "faction": "espectros_de_la_tomba",
+ "factionName": "Espectros de la Tomba",
+ "stats": {
+  "CON": 9,
+  "DES": 6,
+  "INT": 8,
+  "CAR": 9
+ },
+ "derived": {
+  "vida": 64,
+  "ca": 18,
+  "defensaMental": 18,
+  "resistenciaFisica": 17,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Sentencia de marea",
+   "defense": "defensa_mental",
+   "effect": "Quien falle queda Anclado: no puede alejarse de ella mientras dure su concentración."
+  },
+  {
+   "name": "Coral rompehuesos",
+   "defense": "CA",
+   "effect": "Daño físico que suma su CON, más 2 si el objetivo ya está Anclado."
+  },
+  {
+   "name": "Ola de sal",
+   "defense": "resistencia_fisica",
+   "effect": "Solo en fase de Desesperación: área grande, daño y Cegado a quien falle."
+  }
+ ],
+ "passive": {
+  "name": "Deuda con la marea",
+  "description": "Mientras haya al menos un personaje Anclado, sus ataques ganan ventaja."
+ },
+ "conditionsInflicted": [
+  "anclado",
+  "cegado"
+ ],
+ "loot": [
+  "pocion_de_vigor",
+  "amuleto_de_foco"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Jefe",
+  "Agua",
+  "Control"
+ ],
+ "phases": [
+  {
+   "name": "Cortesía",
+   "healthThreshold": 100,
+   "change": "Ofrece un trato cada ronda: quien lo acepte cura 3 y queda Anclado."
+  },
+  {
+   "name": "Cobro",
+   "healthThreshold": 60,
+   "change": "Deja de ofrecer tratos; gana una acción legendaria adicional por ronda."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Inunda la arena: Ola de sal se activa y el terreno pasa a ser difícil para todos."
+  }
+ ],
+ "legendaryActions": [
+  "Reflujo (1/ronda): tras el turno de un jugador, se desplaza su movimiento completo sin provocar reacciones.",
+  "Marca de sal (1/ronda): señala a un personaje; su próxima tirada de ataque contra ella tiene desventaja."
+ ],
+ "arena": {
+  "name": "El Muelle Hundido de Mijorn",
+  "hazard": "Tablones podridos: moverse a la carrera obliga a una tirada de DES CD 1 o caer al agua salada."
+ },
+ "villainProfile": {
+  "objetivo": "Que ningún barco vuelva a salir del puerto sin pagarle a la marea",
+  "metodo": "No ataca primero: ofrece un trato, y cobra el rechazo con sal en las heridas",
+  "debilidad_narrativa": "Devolverle al mar algo robado del muelle rompe su concentración y salta una fase",
+  "vinculo": "death"
+ },
+ "storyCard": "hist_itx_la_marea_que_recuerda",
+ "lootTable": "loot_itx_alijo_de_sal",
+ "flavorText": "Firmó con el mar cuando el mar aún sabía escribir."
+}

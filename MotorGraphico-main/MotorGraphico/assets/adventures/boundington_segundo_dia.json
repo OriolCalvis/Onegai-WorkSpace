@@ -1,0 +1,387 @@
+{
+  "id": "adv_boundington_segundo_dia",
+  "name": "El Segundo Dia en Boundington",
+  "description": "Capitulo 4 del canon: la investigacion. Venides se reparte la ciudad contigo y se abren los dos frentes: Pico Dragon y el Barrio Alto. Lo que ates hoy es lo que te salvara manana.",
+
+  "_canon": {
+    "capitulo": "Cap. 4 — La Investigacion en Boundington",
+    "fuente": "THE ONEGAI PROJECT/Campanas/Canon/Campana 01: La Matanza de Boundington (Aventura de Venides).docx",
+    "hilos": [
+      "Subquest de Skilla 'Recuperar el Legado Perdido': la Furia de Alaro en manos de Gorran, cerca de Pico Dragon.",
+      "Subquest de la fiesta 'Noche de disfraces': la tienda abandonada, el vigilante nocturno y la elite del Barrio Alto.",
+      "Alianza con los gitanos de la Barriada, que en el Ocaso dan cobertura durante la huida."
+    ],
+    "nota": "Todo lo que se encienda hoy con prefijo bnd2_aliado_ decide cuanta gente sobrevive manana. Ese es el punto del dia: no descubrir mas, sino tener a alguien detras."
+  },
+
+  "objectives": [
+    { "id": "obj2_encargo",  "text": "Recibir el encargo de Venides",                    "doneFlag": "bnd2_encargo" },
+    { "id": "obj2_espada",   "text": "Recuperar la Furia de Alaro para Skilla",          "doneFlag": "bnd2_furia_alaro" },
+    { "id": "obj2_fiesta",   "text": "Colarse en la fiesta del Barrio Alto",             "doneFlag": "bnd2_fiesta_dentro" },
+    { "id": "obj2_aliados",  "text": "Conseguir que alguien te deba un favor",           "doneFlag": "bnd2_tiene_aliados" }
+  ],
+
+  "beats": [
+    {
+      "id": "b2_amanece",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd_dia_cerrado"], "notFlags": ["bnd2_encargo"] },
+      "speaker": "Venides",
+      "lines": [
+        "Desayuna rapido. Hoy nos repartimos la ciudad.",
+        "Yo subo a los Barrios Altos y a la base militar: alli me abren puertas por el escudo. A ti te las cerrarian.",
+        "Tu bajas a la zona comercial y a Pico Dragon. A ti te hablan porque no eres nadie, que es una ventaja que yo perdi el dia que me nombraron.",
+        "Nos vemos al anochecer. Y trae algo que se pueda ensenar, no algo que se pueda contar."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd2_encargo" },
+        { "type": "log", "arg": "Dia 2: la investigacion. Se abren los dos frentes." }
+      ]
+    },
+
+    {
+      "id": "b2_skilla_encargo",
+      "trigger": { "type": "talk", "target": "skilla" },
+      "requires": { "allFlags": ["bnd2_encargo", "bnd_skilla_confianza"], "notFlags": ["bnd2_skilla_encargo"] },
+      "speaker": "Skilla",
+      "lines": [
+        "Si vas a Pico Dragon de todas formas, hazme un favor y mira en la cueva de la ladera.",
+        "Ahi acampan los que se llevaron la Furia de Alaro. El que manda se llama Gorran.",
+        "No te pido que le hagas nada. Te pido que me traigas la espada. Lo que pase por el camino es cosa tuya."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd2_skilla_encargo" },
+        { "type": "log", "arg": "Encargo: recuperar la Furia de Alaro en la cueva de Pico Dragon." }
+      ]
+    },
+
+    {
+      "id": "b2_cueva_llegada",
+      "trigger": { "type": "enter", "target": "assets/levels/mazmorra_64x64.json" },
+      "requires": { "allFlags": ["bnd2_skilla_encargo"], "notFlags": ["bnd2_cueva_entrada"] },
+      "speaker": "",
+      "lines": [
+        "La cueva no huele a guarida de bandidos. Huele a cera.",
+        "Hay hachones apilados en el fondo, mas de los que gasta un campamento en un ano, y sobre un cajon volcado, papeles.",
+        "Y delante de los papeles, un hombre grande con una espada que no es suya."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd2_cueva_entrada" }
+      ]
+    },
+    {
+      "id": "b2_gorran_sigilo",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd2_cueva_entrada"], "notFlags": ["bnd2_gorran_resuelto"] },
+      "speaker": "",
+      "lines": [
+        "Gorran esta de espaldas. Los papeles estan a tres pasos.",
+        "Puedes intentar llegar antes de que se gire.",
+        "(Tirada de Sigilo.)"
+      ],
+      "effects": [
+        {
+          "type": "skillCheck",
+          "skillCheck": {
+            "skillId": "sigilo",
+            "cd": 1.5,
+            "flagBotch": "bnd2_sigilo_botch",
+            "flagPartial": "bnd2_sigilo_parcial",
+            "flagSuccess": "bnd2_sigilo_exito",
+            "flagCritical": "bnd2_sigilo_critico"
+          }
+        },
+        { "type": "setFlag", "arg": "bnd2_gorran_resuelto" }
+      ]
+    },
+    {
+      "id": "b2_gorran_robo_limpio",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd2_gorran_resuelto"], "anyFlags": ["bnd2_sigilo_critico"], "notFlags": ["bnd2_cueva_cerrada"] },
+      "speaker": "",
+      "lines": [
+        "Coges los papeles y la espada sin que Gorran llegue a saber que has estado ahi.",
+        "La Furia de Alaro pesa mas de lo que parece. Los papeles, mucho mas."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd2_furia_alaro" },
+        { "type": "setFlag", "arg": "bnd2_documentos" },
+        { "type": "setFlag", "arg": "bnd2_cueva_cerrada" },
+        { "type": "log", "arg": "Sin pelear: la espada y los documentos." }
+      ]
+    },
+    {
+      "id": "b2_gorran_combate",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd2_gorran_resuelto"], "notFlags": ["bnd2_cueva_cerrada", "bnd2_gorran_lanzado"] },
+      "speaker": "Gorran",
+      "lines": [
+        "Se gira antes de tiempo.",
+        "«Tu no eres de los nuestros y no eres de los suyos. Peor para ti: los mios al menos rezan.»"
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd2_gorran_lanzado" },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "gorran_bandido",
+            "flagVictory": "bnd2_gorran_vencido",
+            "flagDefeat": "bnd2_gorran_gana"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b2_gorran_victoria",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd2_gorran_vencido"], "notFlags": ["bnd2_cueva_cerrada"] },
+      "speaker": "",
+      "lines": [
+        "Gorran cae y la cueva se queda en el silencio raro de despues.",
+        "La Furia de Alaro esta donde la solto. Los papeles siguen sobre el cajon: listas de casas del Casco Antiguo, marcadas una a una.",
+        "No es una lista de robos. Es una lista de puertas."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd2_furia_alaro" },
+        { "type": "setFlag", "arg": "bnd2_documentos" },
+        { "type": "setFlag", "arg": "bnd2_cueva_cerrada" },
+        { "type": "log", "arg": "Los documentos: una lista de puertas del Casco Antiguo." }
+      ]
+    },
+    {
+      "id": "b2_gorran_derrota",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd2_gorran_gana"], "notFlags": ["bnd2_cueva_cerrada"] },
+      "speaker": "",
+      "lines": [
+        "Despiertas fuera de la cueva, en la ladera, con la boca llena de tierra y sin nada en las manos.",
+        "Te han dejado vivo a proposito. Eso deberia preocuparte mas que la paliza."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd2_cueva_cerrada" },
+        { "type": "log", "arg": "Gorran conserva la espada y los papeles." }
+      ]
+    },
+    {
+      "id": "b2_skilla_espada_devuelta",
+      "trigger": { "type": "talk", "target": "skilla" },
+      "requires": { "allFlags": ["bnd2_furia_alaro"], "notFlags": ["bnd2_skilla_pagada"] },
+      "speaker": "Skilla",
+      "lines": [
+        "...",
+        "Veinte anos sin tocarla y todavia se donde tiene el peso. Que asco de cuerpo, que no olvida.",
+        "Quedatela tu. A mi ya me sirvio para lo que servia, que era para dejar de necesitarla.",
+        "Y cuando esto empiece, forastero, no vengas a buscarme: yo no me muevo de mi taberna. Pero manda aqui a quien puedas."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd2_skilla_pagada" },
+        { "type": "setFlag", "arg": "bnd2_aliado_skilla" },
+        { "type": "setFlag", "arg": "bnd2_tiene_aliados" },
+        { "type": "log", "arg": "ALIADO: la Taberna Humilde sera refugio." }
+      ]
+    },
+
+    {
+      "id": "b2_tienda_abandonada",
+      "trigger": { "type": "enter", "target": "assets/levels/ciudad_oeste.json" },
+      "requires": { "allFlags": ["bnd2_encargo"], "notFlags": ["bnd2_tienda_vista"] },
+      "speaker": "",
+      "lines": [
+        "En el limite de Pico Dragon hay una tienda que lleva anos cerrada: ventanas rotas, polvo, y bultos de tela bajo el polvo.",
+        "Si en el Barrio Alto hay fiesta esta noche, aqui esta la forma de entrar.",
+        "(Tirada de Investigacion entre los restos.)"
+      ],
+      "effects": [
+        {
+          "type": "skillCheck",
+          "skillCheck": {
+            "skillId": "investigacion",
+            "cd": 1.0,
+            "flagBotch": "bnd2_disfraz_botch",
+            "flagPartial": "bnd2_disfraz_parcial",
+            "flagSuccess": "bnd2_disfraz_exito",
+            "flagCritical": "bnd2_disfraz_critico"
+          }
+        },
+        { "type": "setFlag", "arg": "bnd2_tienda_vista" }
+      ]
+    },
+    {
+      "id": "b2_disfraz_hallado",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd2_tienda_vista"], "anyFlags": ["bnd2_disfraz_exito", "bnd2_disfraz_critico"], "notFlags": ["bnd2_disfraz_resuelto"] },
+      "speaker": "",
+      "lines": [
+        "Bajo la tela podrida hay trajes enteros: ropa sobria de musico, y un atuendo de noble ascariano con demasiados bordados para ser de aqui.",
+        "Con esto se pasa una puerta. Con esto y con cara dura, dos."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd2_disfraz" },
+        { "type": "setFlag", "arg": "bnd2_disfraz_resuelto" }
+      ]
+    },
+    {
+      "id": "b2_disfraz_fallado",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd2_tienda_vista"], "notFlags": ["bnd2_disfraz_resuelto"] },
+      "speaker": "",
+      "lines": [
+        "Todo lo que queda se deshace entre los dedos. Telas que fueron ropa hace demasiado tiempo.",
+        "Si esta noche hay que subir al Barrio Alto, habra que subir vestido de lo que eres."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd2_disfraz_resuelto" }
+      ]
+    },
+
+    {
+      "id": "b2_gitanos",
+      "trigger": { "type": "talk", "target": "nina_del_gato" },
+      "requires": { "allFlags": ["bnd2_encargo"], "notFlags": ["bnd2_gitanos_hablado"] },
+      "speaker": "",
+      "lines": [
+        "La nina te lleva de la manga hasta un corro de carros en el borde de la Barriada. Gente de Surysal, de paso, como siempre.",
+        "El mas viejo te mira las botas antes que la cara.",
+        "«Los de la ciudad solo bajan aqui cuando quieren algo. Tu sabras que quieres, y yo sabre si te lo doy.»",
+        "(Tirada de Persuasion.)"
+      ],
+      "effects": [
+        {
+          "type": "skillCheck",
+          "skillCheck": {
+            "skillId": "persuasion",
+            "cd": 1.5,
+            "flagBotch": "bnd2_gitanos_botch",
+            "flagPartial": "bnd2_gitanos_parcial",
+            "flagSuccess": "bnd2_gitanos_exito",
+            "flagCritical": "bnd2_gitanos_critico"
+          }
+        },
+        { "type": "setFlag", "arg": "bnd2_gitanos_hablado" }
+      ]
+    },
+    {
+      "id": "b2_gitanos_alianza",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd2_gitanos_hablado"], "anyFlags": ["bnd2_gitanos_exito", "bnd2_gitanos_critico"], "notFlags": ["bnd2_gitanos_resuelto"] },
+      "speaker": "El viejo de Surysal",
+      "lines": [
+        "«Llevamos tres dias sin poder cruzar el puente a Surysal sin que nos registren. Tres dias.",
+        "Nosotros no sabemos que traman los tuyos, pero sabemos cuando una ciudad esta a punto de hacer algo feo: se nota en quien deja de saludarte.",
+        "Si esto revienta, nuestros carros salen por el oeste esa misma noche. Cabe uno mas. Acuerdate.»"
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd2_aliado_gitanos" },
+        { "type": "setFlag", "arg": "bnd2_tiene_aliados" },
+        { "type": "setFlag", "arg": "bnd2_gitanos_resuelto" },
+        { "type": "log", "arg": "ALIADO: los gitanos de Surysal saldran por el oeste." }
+      ]
+    },
+    {
+      "id": "b2_gitanos_no",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd2_gitanos_hablado"], "notFlags": ["bnd2_gitanos_resuelto"] },
+      "speaker": "El viejo de Surysal",
+      "lines": [
+        "«No. Y no te lo tomes a mal: a nosotros nunca nos ha salvado nadie de la ciudad, y ya estamos mayores para estrenarnos.»"
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd2_gitanos_resuelto" }
+      ]
+    },
+
+    {
+      "id": "b2_fiesta_puerta",
+      "trigger": { "type": "enter", "target": "assets/levels/ciudad_este.json" },
+      "requires": { "allFlags": ["bnd2_encargo"], "notFlags": ["bnd2_fiesta_intentada"] },
+      "speaker": "Vigilante nocturno",
+      "lines": [
+        "El Barrio Alto de noche esta mejor iluminado que el Casco Antiguo de dia, y eso ya dice algo de esta ciudad.",
+        "«La casa es privada. Si no le esperan, no le esperan.»",
+        "(Tirada de Intimidacion o labia ante el vigilante.)"
+      ],
+      "effects": [
+        {
+          "type": "skillCheck",
+          "skillCheck": {
+            "skillId": "intimidacion",
+            "cd": 1.5,
+            "flagBotch": "bnd2_vigilante_botch",
+            "flagPartial": "bnd2_vigilante_parcial",
+            "flagSuccess": "bnd2_vigilante_exito",
+            "flagCritical": "bnd2_vigilante_critico"
+          }
+        },
+        { "type": "setFlag", "arg": "bnd2_fiesta_intentada" }
+      ]
+    },
+    {
+      "id": "b2_fiesta_dentro",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["bnd2_fiesta_intentada", "bnd2_disfraz"],
+        "anyFlags": ["bnd2_vigilante_exito", "bnd2_vigilante_critico", "bnd2_vigilante_parcial"],
+        "notFlags": ["bnd2_fiesta_resuelta"]
+      },
+      "speaker": "",
+      "lines": [
+        "El traje ascariano hace el resto. Dentro huele a cera cara y a vino del sur.",
+        "Nadie habla de los Perdidos. Es exactamente por eso por lo que se nota: en una ciudad donde todo el mundo habla de ellos, aqui nadie los menciona.",
+        "Cuentas las casas representadas en esta sala. Luego te acuerdas de la lista de puertas del Casco Antiguo.",
+        "Ninguna de estas casas esta en esa lista."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd2_fiesta_dentro" },
+        { "type": "setFlag", "arg": "bnd2_fiesta_nobles" },
+        { "type": "setFlag", "arg": "bnd2_fiesta_resuelta" },
+        { "type": "log", "arg": "PRUEBA: los Barrios Altos saben lo que viene y no estan en la lista." }
+      ]
+    },
+    {
+      "id": "b2_fiesta_fuera",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["bnd2_fiesta_intentada"], "notFlags": ["bnd2_fiesta_resuelta"] },
+      "speaker": "",
+      "lines": [
+        "El vigilante no se mueve y no vas a moverlo tu.",
+        "Desde la calle se oye la fiesta hasta tarde. Alguien, ahi dentro, duerme tranquilo sabiendo lo que va a pasar manana."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd2_fiesta_resuelta" }
+      ]
+    },
+
+    {
+      "id": "b2_venides_noche",
+      "trigger": { "type": "talk", "target": "venides" },
+      "requires": { "allFlags": ["bnd2_encargo"], "anyFlags": ["bnd2_documentos", "bnd2_fiesta_nobles"], "notFlags": ["bnd2_informe_dado"] },
+      "speaker": "Venides",
+      "lines": [
+        "Una lista de puertas. Y una sala llena de gente cuyas puertas no estan en la lista.",
+        "Eso no es un culto, forastero. Eso es un reparto.",
+        "Manana el capitan me escucha o le parto la cara delante de sus hombres. Duerme lo que puedas."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd2_informe_dado" },
+        { "type": "log", "arg": "Venides tiene con que presionar al capitan." }
+      ]
+    },
+
+    {
+      "id": "b2_cierre",
+      "trigger": { "type": "talk", "target": "skilla" },
+      "requires": { "allFlags": ["bnd2_encargo", "bnd2_gitanos_resuelto", "bnd2_fiesta_resuelta"], "notFlags": ["bnd2_dia_cerrado"] },
+      "speaker": "",
+      "lines": [
+        "Segunda noche en la Taberna Humilde. Skilla no pregunta donde has estado.",
+        "Desde la ventana, el Casco Antiguo esta mas oscuro que ayer: faltan faroles en media calle.",
+        "Doscientas antorchas. Una lista de puertas. Y una fiesta arriba donde nadie tiene miedo.",
+        "Manana."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "bnd2_dia_cerrado" },
+        { "type": "log", "arg": "FIN DEL SEGUNDO DIA." }
+      ]
+    }
+  ]
+}

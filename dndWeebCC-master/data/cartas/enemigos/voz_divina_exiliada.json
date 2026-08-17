@@ -1,0 +1,98 @@
+{
+ "id": "voz_divina_exiliada",
+ "name": "Voz Divina Exiliada",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "apoyo",
+ "faction": "milicia_corrupta_de_llerba",
+ "factionName": "La Milicia Corrupta de Llerba",
+ "stats": {
+  "CON": 9,
+  "DES": 8,
+  "INT": 9,
+  "CAR": 11
+ },
+ "derived": {
+  "vida": 70,
+  "ca": 20,
+  "defensaMental": 21,
+  "resistenciaFisica": 19,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de sagrado: daño que suma su CAR (pool de CAR, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "CA",
+   "effect": "Técnica de facción: efecto táctico según su pasiva."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en fase de Desesperación: daño de sagrado como éxito crítico (todos sus dados cuentan éxito completo)."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Sus aliados cercanos ganan +0,5 a su siguiente tirada tras una de sus canciones."
+ },
+ "conditionsInflicted": [],
+ "loot": [
+  "pica_de_guardia_de_milicia",
+  "yelmo_de_milicia",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Sagrado"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal: alterna golpe y técnica."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Su técnica de facción no gasta acción: la encadena tras el golpe. Sus aliados cercanos ganan +0,5 a su siguiente tirada tras una de sus canciones."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final y actúa con agresividad total (ignora amenaza, va al más herido)."
+  }
+ ],
+ "flavorText": "Milagrera expulsada que aun puede llamar al cielo.",
+ "villainProfile": {
+  "objetivo": "Obligar al cielo a readmitirla a base de milagros que nadie pueda ignorar",
+  "metodo": "Bendice y condena en la misma frase; sus milagros exigen público",
+  "debilidad_narrativa": "La indiferencia: si nadie reza, grita ni la nombra durante una ronda, su coro pierde una voz (−1 a sus tiradas)",
+  "vinculo": "bardo_de_la_voz_divina"
+ },
+ "arena": {
+  "name": "La Basílica sin Techo",
+  "hazard": "Eco divino: los milagros (curas) en la arena se oyen — curan 1 extra pero revelan la posición de quien cura"
+ },
+ "legendaryActions": [
+  "Antífona (1/ronda): responde a la última carta divina jugada con su versión invertida (efecto menor contrario)"
+ ],
+ "storyCard": {
+  "title": "Voz Divina Exiliada",
+  "text": "El cielo no contesta sus cartas. Ella sigue enviando testigos.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae si el grupo alcanzó la fase de Desesperación",
+  "drops": [
+   "pica_de_guardia_de_milicia",
+   "yelmo_de_milicia",
+   "pocion_de_vigor"
+  ]
+ }
+}

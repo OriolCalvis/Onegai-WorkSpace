@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Carta de hechizo</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('hechizos')}"></div>
+
+            <div class="u-page-header--start">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-p-0">Ficha completa</p>
+                    <h1 th:text="${carta.name}">Nombre</h1>
+                    <p>
+                        <span class="gm-badge" th:text="${carta.rarity}">common</span>
+                        <span class="gm-badge">Tier <span th:text="${carta.tier}">1</span></span>
+                        <span class="gm-badge" th:text="'ID ' + ${carta.id}">id</span>
+                    </p>
+                </div>
+                <a class="gm-btn gm-btn--outline" th:href="@{/cartas/hechizos/{id}/editar(id=${carta.id})}">Editar</a>
+            </div>
+
+            <div class="u-detail-layout-300">
+                <article class="gm-card gm-card--detalle u-cursor-default">
+                    <span class="gm-card__tier">TIER <span th:text="${carta.tier}">1</span></span>
+                    <h2 class="gm-card__title" th:text="${carta.name}">Nombre</h2>
+                    <span class="gm-card__role" th:text="${carta.rarity}">common</span>
+
+                    <div class="gm-card__illustration">🔮</div>
+
+                    <div class="gm-card__rules">
+                        <p class="gm-card__meta"><span th:text="${carta.school}">Escuela</span> · <span th:text="${carta.castingStat}">INT</span></p>
+                        <p class="gm-card__desc u-clamp-unset" th:text="${carta.effect != null ? carta.effect.description : ''}">Descripción del efecto</p>
+                        <p class="gm-card__meta u-italic" th:if="${carta.flavorText}" th:text="${carta.flavorText}">Texto narrativo</p>
+                    </div>
+
+                    <div class="gm-card__footer">
+                        <span class="gm-badge" th:text="${carta.recovery}">recovery</span>
+                        <span class="gm-badge" th:each="tag : ${carta.mechanicTags}" th:text="${tag}">tag</span>
+                    </div>
+
+                    <p class="gm-card__id" th:text="'hechizos · ' + ${carta.id}">hechizos · id</p>
+                </article>
+
+                <div>
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Conjuración ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong>Alcance:</strong> <span th:text="${carta.range}"></span></p>
+                            <p><strong>Área:</strong> <span th:text="${carta.area}">—</span></p>
+                            <p><strong>Duración:</strong> <span th:text="${carta.duration}"></span></p>
+                            <p th:if="${carta.upgradeConditions}"><strong>Condiciones de mejora:</strong> <span th:text="${carta.upgradeConditions}"></span></p>
+                            <p th:if="${carta.evolvesInto}"><strong>Evoluciona a:</strong> <span th:text="${carta.evolvesInto}"></span></p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Clases y limitaciones ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong>Clases:</strong></p>
+                            <p th:each="tag : ${carta.classTags}" class="gm-badge u-mr-4" th:text="${tag}">tag</p>
+                            <p th:if="${#lists.isEmpty(carta.classTags)}">—</p>
+                            <p><strong>Limitaciones:</strong></p>
+                            <p th:each="item : ${carta.limitations}" class="gm-badge u-mr-4" th:text="${item}">item</p>
+                            <p th:if="${#lists.isEmpty(carta.limitations)}">Sin limitaciones.</p>
+                        </div>
+                    </div>
+
+                    <div class="u-actions--wrap">
+                        <a class="gm-btn gm-btn--outline" th:href="@{/cartas/hechizos}">Volver al listado</a>
+                        <form th:action="@{/cartas/hechizos/{id}/eliminar(id=${carta.id})}" method="post" th:data-nombre="${carta.name}" onsubmit="return confirm(\'¿Borrar el hechizo &quot;' + this.dataset.nombre + '&quot;? No se puede deshacer.');">
+                            <button class="gm-btn gm-btn--danger" type="submit">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div></main>
+</body>
+</html>

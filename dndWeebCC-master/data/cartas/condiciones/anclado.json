@@ -1,0 +1,19 @@
+{
+  "id": "anclado",
+  "name": "Anclado",
+  "type": "condition",
+  "category": "neutro",
+  "source": "estado",
+  "stackable": false,
+  "duration": "hasta_curarse",
+  "effects": [
+    { "description": "Tu velocidad pasa a 0: no puedes usar tu Acción de Movimiento para desplazarte.", "mechanicHook": "velocidad_0" },
+    { "description": "Ganas +2 a tu Clase de Armadura mientras dure.", "mechanicHook": "bono_ca:2" },
+    { "description": "El alcance de tus habilidades que lo requieran aumenta en 2 categorías.", "mechanicHook": "bono_alcance:2" }
+  ],
+  "cureConditions": [
+    "Moverte voluntariamente (tú mismo puedes romper tu propio Anclaje en cualquier momento)",
+    "Ser forzado a moverte por un empuje o derribo"
+  ],
+  "flavorText": "No es que no puedas moverte. Es que has decidido que el mundo se mueva a tu alrededor."
+}

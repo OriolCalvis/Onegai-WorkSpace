@@ -1,0 +1,84 @@
+{
+ "id": "colmillo_blanco_heraldo_del_rei_llop",
+ "name": "Colmillo Blanco, Heraldo del Rei Llop",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "escaramuzador",
+ "faction": "manada_del_rei_llop",
+ "stats": {
+  "CON": 5,
+  "DES": 8,
+  "INT": 6,
+  "CAR": 5
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 19,
+  "defensaMental": 15,
+  "resistenciaFisica": 15,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Colmillo de Escarcha",
+   "defense": "resistencia_fisica",
+   "effect": "Daño de hielo que suma su DES y aplica Sangrado helado (no se cura con descanso corto, solo con calor)."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "resistencia_fisica",
+   "effect": "Si el objetivo falla, queda Sangrado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Anuncio",
+  "description": "Anuncio: la primera vez que hiere a cada personaje, este oye el aullido del Rei (Asustado si falla Defensa mental)."
+ },
+ "conditionsInflicted": [
+  "sangrado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Hielo",
+  "Importante"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Encadena su técnica tras el ataque firma y +1 al daño."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Preparar el terreno: que el miedo llegue antes que la manada",
+  "metodo": "Golpea y desaparece en la nieve",
+  "debilidad_narrativa": "El fuego alto: junto a una hoguera encendida no se atreve a entrar en melé",
+  "vinculo": "deity_wolf_king"
+ },
+ "arena": {
+  "name": "El Bosque de los Tres Aullidos",
+  "hazard": "Nieve profunda: sin raquetas o zancada, movimiento a la mitad"
+ },
+ "legendaryActions": [],
+ "storyCard": {
+  "title": "Colmillo Blanco, Heraldo del Rei Llop",
+  "text": "Tres noches de aullido. A la cuarta, el rey.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Llega tres noches antes que su rey."
+}

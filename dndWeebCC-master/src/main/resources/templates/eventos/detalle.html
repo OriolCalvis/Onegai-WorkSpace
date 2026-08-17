@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title th:text="${evento.name}" layout:fragment="title">Evento</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <p class="gm-sidebar__eyebrow u-p-0">Eventos</p>
+            <div class="u-page-header--tight">
+                <div>
+                    <h1 class="u-mb-sp1" th:text="'⚡ ' + ${evento.name}">Evento</h1>
+                    <p class="u-lead" th:text="${evento.description}">Descripción</p>
+                </div>
+                <div class="u-flex-gap2">
+                    <span class="gm-hud" th:text="'TIER ' + ${evento.tier}">TIER 1</span>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/eventos/{id}/editar(id=${evento.id})}">Editar</a>
+                    <form class="u-inline" th:action="@{/eventos/{id}/eliminar(id=${evento.id})}" method="post"
+onsubmit="return confirm('¿Borrar este evento? No se puede deshacer.');">
+                        <button type="submit" class="gm-btn gm-btn--danger">Eliminar</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="u-chip-row">
+                <span class="gm-badge" th:if="${!#strings.isEmpty(evento.faction)}" th:text="${evento.factionNombre}">facción</span>
+                <span class="gm-badge" th:if="${evento.oneTime}">🔂 Solo una vez</span>
+                <span class="gm-badge" th:if="${!#strings.isEmpty(evento.continuesTo)}" th:text="'Continúa en: ' + ${evento.continuesTo}">continúa</span>
+            </div>
+
+            <div class="gm-panel-section is-expanded" th:if="${!#strings.isEmpty(evento.trigger.type) or !#strings.isEmpty(evento.trigger.condition)}">
+                <button type="button" class="gm-panel-section__toggle">Disparador ▾</button>
+                <div class="gm-panel-section__content">
+                    <p th:if="${!#strings.isEmpty(evento.trigger.type)}"><strong>Tipo:</strong> <span th:text="${evento.trigger.type}">tipo</span></p>
+                    <p th:if="${!#strings.isEmpty(evento.trigger.condition)}"><strong>Condición:</strong> <span th:text="${evento.trigger.condition}">condición</span></p>
+                </div>
+            </div>
+
+            <div class="gm-panel-section is-expanded" th:if="${!#lists.isEmpty(evento.effects)}">
+                <button type="button" class="gm-panel-section__toggle">Efectos ▾</button>
+                <div class="gm-panel-section__content">
+                    <p th:each="ef : ${evento.effects}" th:text="'· ' + ${ef}">efecto</p>
+                </div>
+            </div>
+
+            <div class="gm-panel-section is-expanded" th:if="${!#lists.isEmpty(evento.playerOptions)}">
+                <button type="button" class="gm-panel-section__toggle">Opciones del grupo ▾</button>
+                <div class="gm-panel-section__content">
+                    <div class="u-section-divider" th:each="o : ${evento.playerOptions}">
+                        <p><strong th:text="${o.text}">opción</strong></p>
+                        <p class="gm-hint" th:if="${!#strings.isEmpty(o.requirementText)}" th:text="'Requisito: ' + ${o.requirementText}">requisito</p>
+                        <p class="gm-hint" th:if="${!#strings.isEmpty(o.consequenceText)}" th:text="'Consecuencia: ' + ${o.consequenceText}">consecuencia</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="u-inline-row-mt4" id="gm-mapa-vinculos-evento" th:if="${!#sets.isEmpty(faccionesTocadas) or !#lists.isEmpty(puntosVinculados)}">
+                <span class="gm-hint u-m-0">🧭 Ver en el mapa:</span>
+                <a th:each="f : ${faccionesTocadas}" class="gm-chip u-no-underline" th:href="@{/mapa(faccion=${f})}" th:text="${#strings.replace(f, '_', ' ')}">facción</a>
+                <a th:each="p : ${puntosVinculados}" class="gm-chip u-no-underline" th:href="@{/mapa(punto=${p.id})}" th:text="${p.icono} + ' ' + ${p.nombre}">punto</a>
+            </div></main>
+<th:block layout:fragment="extra-js">
+    <script>
+    document.querySelectorAll('.gm-panel-section').forEach(function (s) { s.classList.add('is-expanded'); });
+</script>
+</th:block>
+</body>
+</html>

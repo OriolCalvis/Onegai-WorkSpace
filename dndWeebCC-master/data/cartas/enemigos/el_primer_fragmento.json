@@ -1,0 +1,96 @@
+{
+ "id": "el_primer_fragmento",
+ "name": "El Primer Fragmento",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 5,
+ "role": "conjurador",
+ "faction": "horrores_del_cielo_fragmentado",
+ "stats": {
+  "CON": 9,
+  "DES": 9,
+  "INT": 12,
+  "CAR": 10
+ },
+ "derived": {
+  "vida": 80,
+  "ca": 21,
+  "defensaMental": 20,
+  "resistenciaFisica": 19,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Lluvia Primordial",
+   "defense": "defensa_mental",
+   "effect": "Daño mágico en área que suma su INT; los que fallen quedan Cegados por el resplandor."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "defensa_mental",
+   "effect": "Si el objetivo falla, queda Cegado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en Desesperación: su ataque firma se calcula como éxito crítico (GDD 7.6)."
+  }
+ ],
+ "passive": {
+  "name": "Gravedad Invertida",
+  "description": "Gravedad Invertida: una vez por ronda, cuando le impactan, el atacante 'cae hacia arriba' 5 pies (queda expuesto: +1 al próximo ataque contra él)."
+ },
+ "conditionsInflicted": [
+  "cegado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Magico"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Sigue su método con calma: aún cree que sobra tiempo."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Activa la arena a pleno: Mareas de gravedad: cada ronda alterna — ligera (saltos dobles) o pesada (movimiento a la mitad)"
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final; su debilidad narrativa queda a la vista (el DJ da la pista si no la tienen)."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Reunir los fragmentos y volver a subir: el cielo entero, recompuesto, con memoria del suelo",
+  "metodo": "Reordena la física local hasta que luchar sea un problema de astronomía",
+  "debilidad_narrativa": "El peso de una promesa: un juramento solemne pronunciado en la arena (mecánica de mesa) le devuelve gravedad normal una ronda",
+  "vinculo": "el_oraculo_fragmentado"
+ },
+ "arena": {
+  "name": "El Cráter Primero",
+  "hazard": "Mareas de gravedad: cada ronda alterna — ligera (saltos dobles) o pesada (movimiento a la mitad)"
+ },
+ "legendaryActions": [
+  "Órbita (1/ronda): atrae 5 pies hacia sí a todos los personajes a 15 pies"
+ ],
+ "storyCard": {
+  "title": "El Primer Fragmento",
+  "text": "El cielo no se rompió. Saltó. Este fue el primero en arrepentirse.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "El primer pedazo de cielo que cayó. Los demás lo imitan."
+}

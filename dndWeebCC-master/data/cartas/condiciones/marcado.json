@@ -1,0 +1,23 @@
+{
+ "id": "marcado",
+ "name": "Marcado",
+ "type": "condition",
+ "category": "negativa",
+ "source": "estado",
+ "stackable": false,
+ "duration": "hasta_curarse",
+ "effects": [
+  {
+   "description": "Los disparos del Francotirador contra ti ignoran la cobertura ligera.",
+   "mechanicHook": "ignora_cobertura_ligera"
+  },
+  {
+   "description": "Sus disparos te hacen +1 de daño.",
+   "mechanicHook": "bono_dano_contra:1"
+  }
+ ],
+ "cureConditions": [
+  "Romper la línea de visión con el Francotirador durante una ronda completa"
+ ],
+ "flavorText": "La campana ya sonó por ti. Aún no lo sabes."
+}

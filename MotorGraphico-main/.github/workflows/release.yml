@@ -1,0 +1,83 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  PROJECT_DIR: MotorGraphico
+
+jobs:
+  package:
+    name: package (${{ matrix.name }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: linux
+          - os: windows-latest
+            name: win64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure CMake (Release)
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: cmake --build build --config Release -j
+
+      # De momento el unico binario real del proyecto es
+      # demo_resource_manager (motor_core/sandbox_window solo se
+      # construyen si third_party/glad y third_party/stb estan
+      # vendorizados, ver CMakeLists.txt). Cuando eso cambie, este paso
+      # debe empaquetar tambien sandbox_window (o el ejecutable final
+      # del juego) y los assets minimos.
+      - name: Package (linux)
+        if: matrix.name == 'linux'
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          mkdir -p dist
+          cp build/demo_resource_manager dist/
+          [ -f build/sandbox_window ] && cp build/sandbox_window dist/ || true
+          tar -czf motor-iso-${{ github.ref_name }}-linux.tar.gz -C dist .
+
+      - name: Package (windows)
+        if: matrix.name == 'win64'
+        working-directory: ${{ env.PROJECT_DIR }}
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp build/Release/demo_resource_manager.exe dist/
+          [ -f build/Release/sandbox_window.exe ] && cp build/Release/sandbox_window.exe dist/ || true
+          7z a motor-iso-${{ github.ref_name }}-win64.zip ./dist/*
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: motor-iso-${{ matrix.name }}
+          path: ${{ env.PROJECT_DIR }}/motor-iso-*
+          if-no-files-found: error
+
+  publish:
+    name: publish GitHub Release
+    needs: package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/**/motor-iso-*
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}

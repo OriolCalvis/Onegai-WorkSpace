@@ -1,0 +1,50 @@
+{
+ "id": "cazador_cambiapieles",
+ "name": "Cazador Cambiapieles",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 2,
+ "role": "escaramuzador",
+ "faction": "yokai_del_umbral",
+ "factionName": "Los Yokai del Umbral",
+ "stats": {
+  "CON": 2,
+  "DES": 5,
+  "INT": 3,
+  "CAR": 2
+ },
+ "derived": {
+  "vida": 16,
+  "ca": 15,
+  "defensaMental": 12,
+  "resistenciaFisica": 12,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de naturaleza: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: efecto táctico según su pasiva."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Tras recibir daño puede cambiar de forma y desplazarse 5 pies."
+ },
+ "conditionsInflicted": [],
+ "loot": [
+  "estilete_de_viaje",
+  "faldar_de_explorador"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Naturaleza"
+ ],
+ "phases": [],
+ "flavorText": "Rastreador que alterna manos humanas y garras de bestia."
+}

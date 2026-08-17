@@ -1,0 +1,96 @@
+{
+ "id": "el_rei_llop_despierto",
+ "name": "El Rei Llop Despierto",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 5,
+ "role": "bruto",
+ "faction": "manada_del_rei_llop",
+ "stats": {
+  "CON": 11,
+  "DES": 10,
+  "INT": 9,
+  "CAR": 9
+ },
+ "derived": {
+  "vida": 80,
+  "ca": 22,
+  "defensaMental": 19,
+  "resistenciaFisica": 21,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Dentellada Real",
+   "defense": "defensa_mental",
+   "effect": "Daño de hielo como éxito crítico si el objetivo está Asustado; si no, daño normal + Sangrado."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "defensa_mental",
+   "effect": "Si el objetivo falla, queda Asustado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en Desesperación: su ataque firma se calcula como éxito crítico (GDD 7.6)."
+  }
+ ],
+ "passive": {
+  "name": "Corona de Invierno",
+  "description": "Corona de Invierno: al inicio de cada ronda, el personaje con menos vida a la vista queda Asustado si falla Defensa mental."
+ },
+ "conditionsInflicted": [
+  "asustado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Hielo",
+  "Importante"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Sigue su método con calma: aún cree que sobra tiempo."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Activa la arena a pleno: Frío sepulcral: al final de cada ronda, quien no se haya movido gana 1 nivel de Fatiga"
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final; su debilidad narrativa queda a la vista (el DJ da la pista si no la tienen)."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Reclamar el reino de los vivos como coto de caza de los muertos",
+  "metodo": "Caza en persona: elige a la presa más débil y obliga al grupo a decidir entre protegerla o aprovechar",
+  "debilidad_narrativa": "Su nombre verdadero, grabado en su tumba: pronunciarlo (se descubre en la campaña) lo vuelve mortal una ronda (pierde fases)",
+  "vinculo": "deity_wolf_king"
+ },
+ "arena": {
+  "name": "La Tomba del Rei Llop",
+  "hazard": "Frío sepulcral: al final de cada ronda, quien no se haya movido gana 1 nivel de Fatiga"
+ },
+ "legendaryActions": [
+  "Aullido del Reino (1/ronda): todos los personajes Asustados se alejan 5 pies de él"
+ ],
+ "storyCard": {
+  "title": "El Rei Llop Despierto",
+  "text": "La campaña entera es la historia de su siesta. Esto es el despertar.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "El rey enterrado ha recordado por qué lo enterraron."
+}

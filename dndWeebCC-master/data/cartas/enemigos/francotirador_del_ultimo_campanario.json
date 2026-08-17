@@ -1,0 +1,100 @@
+{
+ "id": "francotirador_del_ultimo_campanario",
+ "name": "Francotirador del Ultimo Campanario",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "tirador",
+ "faction": "bandidos_del_camino_de_ceniza",
+ "factionName": "Los Bandidos del Camino de Ceniza",
+ "stats": {
+  "CON": 8,
+  "DES": 10,
+  "INT": 10,
+  "CAR": 8
+ },
+ "derived": {
+  "vida": 70,
+  "ca": 22,
+  "defensaMental": 18,
+  "resistenciaFisica": 18,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de fisico: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "CA",
+   "effect": "Técnica de facción: si el objetivo falla, queda Marcado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en fase de Desesperación: daño de fisico como éxito crítico (todos sus dados cuentan éxito completo)."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Ignora cobertura ligera contra criaturas Marcadas."
+ },
+ "conditionsInflicted": [
+  "marcado"
+ ],
+ "loot": [
+  "item_short_sword",
+  "armadura_de_cuero",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal: alterna golpe y técnica."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Su técnica de facción no gasta acción: la encadena tras el golpe. Ignora cobertura ligera contra criaturas Marcadas."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final y actúa con agresividad total (ignora amenaza, va al más herido)."
+  }
+ ],
+ "flavorText": "Disparo legendario que marca a sus presas con campanas.",
+ "villainProfile": {
+  "objetivo": "Cobrar la última lista de nombres que le encargaron antes de morir el campanario",
+  "metodo": "Marca con campanadas: cada tañido es un blanco anunciado",
+  "debilidad_narrativa": "Romper la línea de visión al campanario lo obliga a recolocarse una ronda entera",
+  "vinculo": "bandidos_del_camino_de_ceniza"
+ },
+ "arena": {
+  "name": "La Plaza del Campanario Mudo",
+  "hazard": "Campanadas: al inicio de ronda marca al personaje más expuesto (Marcado)"
+ },
+ "legendaryActions": [
+  "Disparo de Réplica (1/ronda): dispara como reacción al primer personaje Marcado que se mueva"
+ ],
+ "storyCard": {
+  "title": "Francotirador del Ultimo Campanario",
+  "text": "El campanario cayó hace años. Las campanas no se han enterado.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae si el grupo alcanzó la fase de Desesperación",
+  "drops": [
+   "item_short_sword",
+   "armadura_de_cuero",
+   "pocion_de_vigor"
+  ]
+ }
+}

@@ -1,0 +1,38 @@
+{
+ "id": "itx_marea_negra",
+ "name": "Itx Marea Negra",
+ "description": "Durante tres noches, la marea sube negra y salada por encima del muelle de Mijorn. Lo que toca queda cubierto de una costra que no se raspa.",
+ "tier": 3,
+ "faction": "espectros_de_la_tomba",
+ "trigger": {
+  "type": "temporal",
+  "condition": "Al terminar el tercer día tras la primera visita del grupo al muelle"
+ },
+ "effects": [
+  "El muelle viejo pasa a ser terreno difícil hasta que alguien rompa la costra.",
+  "Los PNJ del puerto bajan su actitud un escalón mientras dure la marea.",
+  "Cualquier criatura de la facción gana +1 a sus tiradas de noche."
+ ],
+ "playerOptions": [
+  {
+   "id": "itx_opcion_romper",
+   "text": "Romper la costra a golpes antes del amanecer",
+   "requirementText": "Una tirada de CON CD 1,5 por cada personaje que participe",
+   "consequenceText": "El muelle vuelve a la normalidad, pero la Matriarca sabe quién lo hizo."
+  },
+  {
+   "id": "itx_opcion_pagar",
+   "text": "Pagar el peaje que pide el agua",
+   "requirementText": "Entregar un objeto de tier 2 o superior al mar",
+   "consequenceText": "La marea se retira sola y el grupo evita el combate, pero pierde el objeto."
+  },
+  {
+   "id": "itx_opcion_ignorar",
+   "text": "Ignorarla y seguir con lo suyo",
+   "requirementText": "",
+   "consequenceText": "La costra llega al almacén: el alijo de sal pierde la mitad de su oro."
+  }
+ ],
+ "continuesTo": "hist_itx_el_pacto_de_sal",
+ "oneTime": true
+}

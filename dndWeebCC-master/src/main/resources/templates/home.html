@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">ONEGAI · Inicio</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="u-card-panel--lg">
+        <p class="gm-sidebar__eyebrow u-eyebrow-mb2">Sistema de Cartas y Tiers</p>
+        <h1 class="u-mb-sp2">La aventura de ONEGAI</h1>
+        <p class="u-intro-640">
+            Crea personajes, consulta clases/razas/trasfondos y exporta fichas desde una navegación centralizada.
+        </p>
+        <div class="u-chip-row--flat">
+            <a th:href="@{/personatges/crear}" class="gm-btn gm-btn--primary">Crear personaje</a>
+            <a th:href="@{/cartas}" class="gm-btn gm-btn--outline">Ver sistema de Cartas</a>
+        </div>
+    </div>
+
+    <div class="u-grid-fit-160-mb2">
+        <div class="u-stat-box">
+            <p class="gm-hint u-m0-mb1">Personajes</p>
+            <p class="u-display-title" th:text="${numPersonatges}">0</p>
+        </div>
+        <div class="u-stat-box">
+            <p class="gm-hint u-m0-mb1">Clases</p>
+            <p class="u-display-title" th:text="${numTierClases}">0</p>
+        </div>
+        <div class="u-stat-box">
+            <p class="gm-hint u-m0-mb1">Razas</p>
+            <p class="u-display-title" th:text="${numTierRazas}">0</p>
+        </div>
+        <div class="u-stat-box">
+            <p class="gm-hint u-m0-mb1">Trasfondos</p>
+            <p class="u-display-title" th:text="${numTierTransfondos}">0</p>
+        </div>
+    </div>
+    <p class="gm-hint u-mb-sp5">
+        Cifras del <a th:href="@{/cartas}">sistema de Cartas y Tiers</a>, tu sistema activo.
+    </p>
+
+    <div class="u-card-panel--plain">
+        <h2>Flujo de navegación</h2>
+        <p class="u-text-muted">Un único sistema activo (Cartas y Tiers) más un archivo de solo lectura con el contenido clásico.</p>
+        <ol class="u-note-indent">
+            <li><strong>Inicio</strong> (<code>/</code>) — este dashboard.</li>
+            <li><strong>Personajes</strong> (<code>/personatges</code>) — crear, editar, exportar personajes.</li>
+            <li><strong>Clases / Razas / Trasfondos</strong> (<code>/cartas/clases</code>, <code>/cartas/razas</code>, <code>/cartas/transfondos</code>) — crear, combinar y editar tus propias cartas del sistema de tiers; <code>/cartas</code> es el resumen con los tres contadores.</li>
+            <li><strong>Exportaciones</strong> (<code>/exportacions</code>) — descargas en PDF/JSON.</li>
+        </ol>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Editor de carta de hechizo</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('hechizos')}"></div>
+            <p class="gm-sidebar__eyebrow u-p-0">Sistema de Cartas y Tiers</p>
+            <h1 class="u-mb-sp5" th:text="${esNueva} ? 'Nueva carta de hechizo' : 'Editar carta de hechizo'">Nueva carta de hechizo</h1>
+
+            <form th:action="${esNueva} ? @{/cartas/hechizos} : @{/cartas/hechizos/{id}/editar(id=${form.id})}"
+                  th:object="${form}" method="post">
+
+                <div class="gm-form-grid u-mb-sp4">
+                    <div class="gm-field" th:if="${esNueva}">
+                        <label>ID (opcional)</label>
+                        <input class="gm-input" th:field="*{id}" placeholder="Se genera automático a partir del nombre">
+                    </div>
+                    <div class="gm-field" th:unless="${esNueva}">
+                        <label>ID</label>
+                        <input class="gm-input" th:field="*{id}" readonly>
+                    </div>
+                    <div class="gm-field">
+                        <label>Nombre</label>
+                        <input class="gm-input" th:field="*{name}" placeholder="Lanza de Brasas" required>
+                    </div>
+                    <div class="gm-field">
+                        <label>Escuela mágica</label>
+                        <select th:replace="~{Blocks/selector-referencias :: uno('school', ${opcionesEscuelas}, 'elegir escuela')}"></select>
+                    </div>
+                    <div class="gm-field">
+                        <label>Tier</label>
+                        <input class="gm-input" type="number" min="0" max="5" th:field="*{tier}">
+                    </div>
+                    <div class="gm-field">
+                        <label>Rareza</label>
+                        <select class="gm-select" th:field="*{rarity}">
+                            <option value="common">Común</option>
+                            <option value="uncommon">Poco común</option>
+                            <option value="rare">Rara</option>
+                            <option value="epic">Épica</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Conjuración ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Stat de conjuración</label>
+                                <select class="gm-select" th:field="*{castingStat}">
+                                    <option value="INT">INT (arcano)</option>
+                                    <option value="CAR">CAR (divino/afinidad)</option>
+                                </select>
+                            </div>
+                            <div class="gm-field">
+                                <label>Recuperación</label>
+                                <select class="gm-select" th:field="*{recovery}">
+                                    <option value="activa">Activa</option>
+                                    <option value="descanso_corto">Descanso corto</option>
+                                    <option value="descanso_largo">Descanso largo</option>
+                                </select>
+                            </div>
+                            <div class="gm-field">
+                                <label>Alcance</label>
+                                <select class="gm-select" th:field="*{range}">
+                                    <option value="melee">Cuerpo a cuerpo</option>
+                                    <option value="short">Corto</option>
+                                    <option value="medium">Medio</option>
+                                    <option value="long">Largo</option>
+                                    <option value="self">Uno mismo</option>
+                                </select>
+                            </div>
+                            <div class="gm-field">
+                                <label>Área (opcional)</label>
+                                <input class="gm-input" th:field="*{area}" placeholder="radio 10 pies">
+                            </div>
+                            <div class="gm-field">
+                                <label>Duración</label>
+                                <select class="gm-select" th:field="*{duration}">
+                                    <option value="instant">Instantánea</option>
+                                    <option value="1_turn">1 turno</option>
+                                    <option value="1_min">1 minuto</option>
+                                    <option value="concentration">Concentración</option>
+                                    <option value="permanent">Permanente</option>
+                                </select>
+                            </div>
+                            <div class="gm-field">
+                                <label>Clases que pueden lanzarlo</label>
+                                <div th:replace="~{Blocks/selector-referencias :: csv('classTags', ${opcionesClases}, 'añadir clase')}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Efecto ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field u-col-span-all">
+                                <label>Descripción / daño</label>
+                                <textarea class="gm-textarea" rows="3" th:field="*{effectDescription}"></textarea>
+                            </div>
+                            <div class="gm-field">
+                                <label>Escalado</label>
+                                <select class="gm-select" th:field="*{effectScaling}">
+                                    <option value="INT">INT</option>
+                                    <option value="CAR">CAR</option>
+                                </select>
+                            </div>
+                            <div class="gm-field">
+                                <label>Condiciones de mejora</label>
+                                <input class="gm-input" th:field="*{upgradeConditions}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Tags, límites y evolución ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Tags mecánicos</label>
+                                <div th:replace="~{Blocks/selector-referencias :: csv('mechanicTags', ${opcionesMecanicas}, 'añadir mecánica')}"></div>
+                            </div>
+                            <div class="gm-field">
+                                <label>Tags requeridos</label>
+                                <div th:replace="~{Blocks/selector-referencias :: csv('requiredTags', ${opcionesTagsTodos}, 'añadir tag')}"></div>
+                            </div>
+                            <div class="gm-field">
+                                <label>Tags incompatibles</label>
+                                <div th:replace="~{Blocks/selector-referencias :: csv('incompatibleTags', ${opcionesTagsTodos}, 'añadir tag')}"></div>
+                            </div>
+                            <div class="gm-field">
+                                <label>Limitaciones</label>
+                                <input class="gm-input" th:field="*{limitations}">
+                            </div>
+                            <div class="gm-field">
+                                <label>Evoluciona a (carta mejorada)</label>
+                                <select th:replace="~{Blocks/selector-referencias :: uno('evolvesInto', ${opcionesHechizos}, 'no evoluciona')}"></select>
+                            </div>
+                            <div class="gm-field">
+                                <label>Texto narrativo</label>
+                                <input class="gm-input" th:field="*{flavorText}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="u-actions">
+                    <button class="gm-btn gm-btn--primary" type="submit">Guardar</button>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/cartas/hechizos}">Cancelar</a>
+                </div>
+            </form></main>
+<th:block layout:fragment="extra-js">
+    <script th:src="@{/js/selector-csv.js}"></script>
+    <script th:src="@{/js/selector-csv.js}"></script>
+</th:block>
+</body>
+</html>

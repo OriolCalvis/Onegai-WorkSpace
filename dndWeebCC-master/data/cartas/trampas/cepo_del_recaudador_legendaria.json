@@ -1,0 +1,26 @@
+{
+ "id": "cepo_del_recaudador_legendaria",
+ "name": "Cepo del Recaudador Legendaria",
+ "type": "trap",
+ "tier": 5,
+ "rarity": "mythic",
+ "category": "mecánica",
+ "trigger": "recoger la bolsa de monedas cebo",
+ "detection": {
+  "stat": "INT",
+  "cd": 2.5
+ },
+ "disarm": {
+  "stat": "DES",
+  "cd": 2.5,
+  "herramienta": "herramientas de ladrón"
+ },
+ "effect": {
+  "description": "Cepo al brazo: 1 de daño y Agarrado. (escala: +4 de daño en este tier)",
+  "defensa": "resistencia_fisica",
+  "condicionInfligida": "agarrado"
+ },
+ "onFail": "El cepo lleva cadena y la cadena campana: Agarrado + refuerzos avisados.",
+ "reset": "recargable",
+ "flavorText": "Quien la montó pensaba volver. No volvió."
+}

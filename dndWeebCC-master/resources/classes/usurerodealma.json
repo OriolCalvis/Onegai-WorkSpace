@@ -1,0 +1,121 @@
+{
+  "nombre": "Usurero de Almas",
+  "descripcion": "Hechicero de pactos impíos que empeña fragmentos de su alma para adquirir un maná profano volátil.",
+  "rolTematico": "Explosiones de poder a cambio de deterioro espiritual. Maneja umbrales peligrosos (Mella del Alma).",
+  "dadoGolpe": "1d6",
+  "puntosGolpeNivel1": "1d6 + CON",
+  "puntosGolpePorNivel": "1d6 (o 4) + CON",
+  "atributoConjuro": "Carisma",
+  "atributosRelevantes": ["Carisma", "Constitución", "Inteligencia"],
+  "competencias": {
+    "armaduras": ["Ligeras"],
+    "armas": ["Simples"],
+    "habilidadesElegir": ["Arcana", "Engaño", "Intimidación", "Persuasión", "Religión", "Percepción"],
+    "salvaciones": ["Carisma", "Constitución"]
+  },
+  "mecanicas": {
+    "fragmentosAlma": {
+      "base": "FA = 1 + Carisma_mod (mín. 1) a nivel 1; aumenta en 5, 11 y 17.",
+      "quemarFA": "Acción adicional: quemas 1 FA → ganas 2 (3 a partir de nivel 11) puntos de Maná Profano (MP). Dura 1 minuto o hasta gastarlos.",
+      "recuperacion": "Recuperas todos los FA al final de un descanso largo. 1 FA al final de descanso corto."
+    },
+    "mellaDelAlma": [
+      {"umbral":"≤50% FA máximo","penalizacion":"+1 dificultad a concentración y -1 a tiradas de Sabiduría (percepción)."},
+      {"umbral":"≤25% FA máximo","penalizacion":"Desventaja en Miedo/Encanto y -1 CA."},
+      {"umbral":"0 FA","penalizacion":"Exhausto (1 nivel) y no puedes ganar MP hasta terminar un descanso corto."}
+    ],
+    "gastoManaProfano": "Habilidades y conjuros especiales gastan MP. Si te quedas sin MP, puedes quemar FA de nuevo (si tienes)."
+  },
+  "accionesEspeciales": {
+    "pactoDelInteres": {
+      "descripcion": "Cuando infliges daño necrótico con conjuro de la clase, recuperas 1 MP (máx. 1/turno).",
+      "coste": {"tipo":"MANA_PROFANO","modo":"CONVERSION_RECURSO","monto":-1}
+    },
+    "avalDelAbismo": {
+      "descripcion": "1/descanso corto: quema 1 FA y obtén inmediatamente 3 MP (4 MP a nivel 11). No consume acción.",
+      "coste": {"tipo":"ALMA","modo":"CONVERSION_RECURSO","monto":1}
+    }
+  },
+  "niveles": {
+    "1": {
+      "habilidades": [
+        {
+          "nombre": "Libro de Deudas",
+          "tipo": "Clase",
+          "efecto": "Ganas FA y MP. Conoces ‘Dardo Profano’ (1 MP: 1d8+Carisma necrótico, 60 pies).",
+          "usos": "MP",
+          "accion": "Acción"
+        }
+      ]
+    },
+    "2": {
+      "habilidades": [
+        {
+          "nombre": "Interés Compuesto",
+          "efecto": "Si gastas ≥2 MP en un mismo turno, tu siguiente tirada de daño de conjuro gana +Carisma (1/turno).",
+          "usos": "Pasiva"
+        }
+      ]
+    },
+    "3": {
+      "habilidades": [
+        {"nombre":"Sangría de Voluntad","efecto":"Acción: objetivo CON salvación; en fallo, -1 MP de su reserva si usa magia o -1d4 a su siguiente tirada si no; tú ganas 1 MP.", "usos":"2/descanso corto"}
+      ],
+      "subclases": [
+        {"nombre":"Notario del Pacto","descripcion":"Control y drenaje sostenido."},
+        {"nombre":"Cobrador Sombrío","descripcion":"Burst alto y ‘ejecuciones’ con MP."}
+      ]
+    },
+    "4": {"habilidades": ["Mejora de Características"]},
+    "5": {
+      "habilidades": [
+        {"nombre":"Dardo Profano (5º)","efecto":"Pasa a 2d8+Carisma.", "usos":"Pasiva"}
+      ]
+    },
+    "6": {"habilidades": ["Mejora de Características"]},
+    "7": {
+      "habilidades": [
+        {"nombre":"Cláusula de Penumbra","efecto":"Mientras ≤50% FA, tus conjuros de la clase imponen -1 a CA del objetivo hasta el fin de tu próximo turno (1/objetivo/turno).", "usos":"Pasiva"}
+      ]
+    },
+    "8": {"habilidades": ["Mejora de Características"]},
+    "9": {
+      "habilidades": [
+        {"nombre":"Fianza Inhumana","efecto":"Cuando caes a 0 MP, puedes quemar 1 FA para ganar 2 MP como reacción.", "usos":"Reacción 1/turno"}
+      ]
+    },
+    "10": {
+      "habilidades": [
+        {"nombre":"Pacto del Interés Mayor","efecto":"+1 MP extra recuperado por turno con daño necrótico (total 2/turno).", "usos":"Pasiva"}
+      ]
+    },
+    "11": {
+      "habilidades": [
+        {"nombre":"Escala de Deuda","efecto":"Quemar FA ahora otorga 3 MP. Dardo Profano: 3d8+Carisma.", "usos":"Pasiva"}
+      ]
+    },
+    "12": {"habilidades": ["Mejora de Características"]},
+    "13": {
+      "habilidades": [
+        {"nombre":"Aval Perpetuo","efecto":"1/descanso largo: durante 1 minuto, la primera vez cada turno que gastes MP, gana +1d6 daño necrótico extra.", "usos":"1/descanso largo"}
+      ]
+    },
+    "14": {"habilidades": ["Mejora de Características"]},
+    "15": {
+      "habilidades": [
+        {"nombre":"Firma con Sangre","efecto":"Puedes pagar el coste de un conjuro de la clase en MP usando 1d6 vida en su lugar (por 1 MP).", "usos":"Libre (máx. 1d6/turno)"}
+      ]
+    },
+    "16": {"habilidades": ["Mejora de Características"]},
+    "18": {
+      "habilidades": [
+        {"nombre":"Moratoria del Abismo","efecto":"Al terminar un combate con 0 FA, recuperas 1 FA automáticamente.", "usos":"Pasiva"}
+      ]
+    },
+    "20": {
+      "habilidades": [
+        {"nombre":"Dueño del Contrato","efecto":"1/descanso largo: durante 1 minuto, quemar FA no genera Mella del Alma y otorga +1 MP adicional por FA quemado. Dardo Profano duplica el Carisma en daño.", "usos":"1/descanso largo"}
+      ]
+    }
+  }
+}

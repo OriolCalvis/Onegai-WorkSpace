@@ -1,0 +1,96 @@
+{
+ "id": "el_capitan_de_ceniza",
+ "name": "El Capitán de Ceniza",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 3,
+ "role": "atacante",
+ "faction": "bandidos_del_camino_de_ceniza",
+ "stats": {
+  "CON": 8,
+  "DES": 10,
+  "INT": 7,
+  "CAR": 7
+ },
+ "derived": {
+  "vida": 60,
+  "ca": 22,
+  "defensaMental": 17,
+  "resistenciaFisica": 18,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Tajo del Recaudador",
+   "defense": "CA",
+   "effect": "Corte que suma su DES y aplica Sangrado si falla Resistencia física."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "CA",
+   "effect": "Si el objetivo falla, queda Sangrado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en Desesperación: su ataque firma se calcula como éxito crítico (GDD 7.6)."
+  }
+ ],
+ "passive": {
+  "name": "Peaje de Sangre",
+  "description": "Peaje de Sangre: sus golpes contra personajes que ya Sangran suman +2."
+ },
+ "conditionsInflicted": [
+  "sangrado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico",
+  "Importante"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Sigue su método con calma: aún cree que sobra tiempo."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Activa la arena a pleno: Ceniza suelta: correr levanta nube — el corredor queda con desventaja al ser visto pero también para ver"
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final; su debilidad narrativa queda a la vista (el DJ da la pista si no la tienen)."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Retirarse rico o morir famoso, en ese orden si se puede",
+  "metodo": "Golpea la retaguardia: carros, provisiones y al que lleve la bolsa",
+  "debilidad_narrativa": "La codicia: una bolsa arrojada (oro real) lo distrae — su próxima acción es recogerla, siempre",
+  "vinculo": "bandidos_del_camino_de_ceniza"
+ },
+ "arena": {
+  "name": "El Desfiladero Gris",
+  "hazard": "Ceniza suelta: correr levanta nube — el corredor queda con desventaja al ser visto pero también para ver"
+ },
+ "legendaryActions": [
+  "A Por la Bolsa (1/ronda): un bandido criatura se reposiciona hacia el personaje con más botín visible"
+ ],
+ "storyCard": {
+  "title": "El Capitán de Ceniza",
+  "text": "Cobra en metálico, en especie o en dedos. Acepta negociar el orden.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "El camino es suyo porque nadie más lo quiso mantener."
+}

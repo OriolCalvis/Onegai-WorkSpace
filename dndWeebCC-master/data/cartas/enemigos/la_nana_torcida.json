@@ -1,0 +1,84 @@
+{
+ "id": "la_nana_torcida",
+ "name": "La Nana Torcida",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "corruptor",
+ "faction": "sagas_de_la_luna_hueca",
+ "stats": {
+  "CON": 5,
+  "DES": 6,
+  "INT": 7,
+  "CAR": 7
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 17,
+  "defensaMental": 17,
+  "resistenciaFisica": 15,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Verso que Pesa",
+   "defense": "defensa_mental",
+   "effect": "Daño psíquico que suma su CAR; el que falle queda Encantado por la melodía hasta que reciba daño."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "defensa_mental",
+   "effect": "Si el objetivo falla, queda Encantado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Estribillo",
+  "description": "Estribillo: al final de cada ronda, el personaje que más daño hizo oye la nana — Defensa mental o su próxima tirada pierde 0,5 (se le pegan los párpados)."
+ },
+ "conditionsInflicted": [
+  "encantado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Magico"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Encadena su técnica tras el ataque firma y +1 al daño."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Dormir al valle entero: los despiertos hacen demasiadas preguntas",
+  "metodo": "Canta capas: cada ronda la nana suma un verso más pesado",
+  "debilidad_narrativa": "El ruido honesto: música alta y desafinada (declararla) rompe su estribillo una ronda",
+  "vinculo": "la_luna_hueca"
+ },
+ "arena": {
+  "name": "La Alcoba de la Colina",
+  "hazard": "Somnolencia: la pila Activa 'pesa' — jugar la tercera carta en una misma ronda exige Defensa mental"
+ },
+ "legendaryActions": [],
+ "storyCard": {
+  "title": "La Nana Torcida",
+  "text": "Nadie recuerda la letra. El sueño sí.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Una canción de cuna que aprendió a cantarse sola."
+}

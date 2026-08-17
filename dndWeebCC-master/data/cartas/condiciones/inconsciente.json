@@ -1,0 +1,24 @@
+{
+ "id": "inconsciente",
+ "name": "Inconsciente",
+ "type": "condition",
+ "category": "negativa",
+ "source": "estado",
+ "stackable": false,
+ "duration": "hasta_curarse",
+ "effects": [
+  {
+   "description": "Caes (condición Caído). No puedes actuar ni moverte.",
+   "mechanicHook": "incapacitado"
+  },
+  {
+   "description": "Los ataques contra ti tienen ventaja y son críticos si aciertan.",
+   "mechanicHook": "critico_contra"
+  }
+ ],
+ "cureConditions": [
+  "Recuperar al menos 1 de vida",
+  "Ser despertado si era sueño no mágico"
+ ],
+ "flavorText": "El mundo continúa. Sin consultarte."
+}

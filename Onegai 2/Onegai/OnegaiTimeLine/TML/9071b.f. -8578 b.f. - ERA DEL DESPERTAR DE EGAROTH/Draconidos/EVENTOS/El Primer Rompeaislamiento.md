@@ -1,0 +1,1 @@
+Un grupo de Guardianes de la Ceniza, liderados por la capitana Varyx la Escama Rota, desertó y ayudó a un grupo de humanos a escapar de una erupción. El Congreso los declaró traidores, pero algunos ciudadanos los ven como héroes. Su paradero es desconocido, pero se rumorea que fundaron un asentamiento en las Llanuras Humeantes.

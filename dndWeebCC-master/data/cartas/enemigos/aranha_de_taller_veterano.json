@@ -1,0 +1,52 @@
+{
+ "id": "aranha_de_taller_veterano",
+ "name": "Aranha de Taller Veterano",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 3,
+ "role": "escaramuzador",
+ "faction": "forjados_sin_amo",
+ "factionName": "Los Forjados sin Amo",
+ "stats": {
+  "CON": 3,
+  "DES": 6,
+  "INT": 4,
+  "CAR": 3
+ },
+ "derived": {
+  "vida": 20,
+  "ca": 16,
+  "defensaMental": 13,
+  "resistenciaFisica": 13,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Pata Afilada",
+   "defense": "CA",
+   "effect": "Ataque de fisico: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Red de Alambre",
+   "defense": "CA",
+   "effect": "Técnica de facción: si el objetivo falla, queda Guardia Rota hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Inmunes a Encantado y Asustado; al quedar bajo media vida, chirrían: −1 a su CA."
+ },
+ "conditionsInflicted": [
+  "guardia_rota"
+ ],
+ "loot": [
+  "martillo_de_guerra_de_viaje",
+  "rodela_de_hierro_de_milicia"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico"
+ ],
+ "phases": [],
+ "flavorText": "Sus creadores murieron. Las órdenes, no."
+}

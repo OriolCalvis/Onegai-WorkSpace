@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  launchd agent para OLLAMA con paralelismo configurado.
+  Instrucciones de uso (leer README_ONEGAI_AI.md § Paso 1):
+    1) launchctl unload ~/Library/LaunchAgents/com.onegai.ollama.plist 2>/dev/null
+    2) cp este_archivo  ~/Library/LaunchAgents/com.onegai.ollama.plist
+    3) launchctl load   ~/Library/LaunchAgents/com.onegai.ollama.plist
+    4) launchctl start  com.onegai.ollama
+  Ver: http://localhost:11434/api/tags
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>             <string>com.onegai.ollama</string>
+
+    <!-- ============== PROGRAMA ============== -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/env</string>
+        <string>bash</string>
+        <string>-lc</string>
+        <string>
+            # PATH necesario (homebrew)
+            export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+
+            # ======== PARALELISMO OLLAMA ========
+            # Cuántas peticiones pueden correr simultáneamente en el daemon.
+            # Ponlo igual que el nº de modelos que quieras tener activos
+            # sin descargas de KV-cache entre ellos.
+            export OLLAMA_NUM_PARALLEL=3
+
+            # Cuántos modelos MANTENER CARGADOS EN RAM a la vez.
+            # 2 = Writer + Critic residentes (no se expulsan entre sí).
+            # +1 extra = modelo de emergencia si quieres.
+            export OLLAMA_MAX_LOADED_MODELS=3
+
+            # Número máximo de "batch" tokens (velocidad de prompt eval).
+            export OLLAMA_MAX_BATCH=512
+
+            # Aceleración METAL en Apple Silicon (M1/M2/M3/M4).
+            # OLLAMA_GPU_LAYERS = 999 -> TODO a GPU.
+            export OLLAMA_GPU_LAYERS=999
+
+            # Host (no cambiar)
+            export OLLAMA_HOST="127.0.0.1:11434"
+
+            # Orígenes permitidos (CORS) — AuthorAgent corre en localhost:3847
+            export OLLAMA_ORIGINS="http://localhost:*,http://127.0.0.1:*"
+
+            # Flush / Keep-alive: cuánto tiempo mantener los modelos en
+            # memoria después de la última petición. 2h = bastante.
+            export OLLAMA_KEEP_ALIVE="2h"
+
+            # ======== INICIAR SERVIDOR ========
+            exec ollama serve
+        </string>
+    </array>
+
+    <!-- ============== CICLO DE VIDA ============== -->
+    <key>RunAtLoad</key>           <true/>
+    <key>KeepAlive</key>           <true/>
+    <key>WorkingDirectory</key>    <string>/Users/admin/Documents/Onegai 2</string>
+
+    <!-- ============== LOGS ============== -->
+    <key>StandardOutPath</key>     <string>/Users/admin/Documents/Onegai 2/.onegai_ai_config/logs/ollama.stdout.log</string>
+    <key>StandardErrorPath</key>   <string>/Users/admin/Documents/Onegai 2/.onegai_ai_config/logs/ollama.stderr.log</string>
+</dict>
+</plist>

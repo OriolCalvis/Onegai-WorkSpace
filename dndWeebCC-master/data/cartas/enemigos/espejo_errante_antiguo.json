@@ -1,0 +1,64 @@
+{
+ "id": "espejo_errante_antiguo",
+ "name": "Espejo Errante Antiguo",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 4,
+ "role": "tirador",
+ "faction": "yokai_del_umbral",
+ "factionName": "Los Yokai del Umbral",
+ "stats": {
+  "CON": 6,
+  "DES": 8,
+  "INT": 8,
+  "CAR": 6
+ },
+ "derived": {
+  "vida": 40,
+  "ca": 19,
+  "defensaMental": 16,
+  "resistenciaFisica": 16,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Astilla de Reflejo",
+   "defense": "CA",
+   "effect": "Ataque de oscuro: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Devolver la Imagen",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: si el objetivo falla, queda Encantado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "La primera vez que se les golpea cada combate, el atacante debe superar Defensa mental o golpea a una ilusión."
+ },
+ "conditionsInflicted": [
+  "encantado"
+ ],
+ "loot": [
+  "estilete_de_viaje",
+  "faldar_de_explorador",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Oscuro"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Gana una segunda técnica por ronda y +1 al daño."
+  }
+ ],
+ "flavorText": "Viven en el marco de las puertas. Cobran peaje en certezas."
+}

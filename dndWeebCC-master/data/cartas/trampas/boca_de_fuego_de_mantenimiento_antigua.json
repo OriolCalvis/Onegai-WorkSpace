@@ -1,0 +1,26 @@
+{
+ "id": "boca_de_fuego_de_mantenimiento_antigua",
+ "name": "Boca de Fuego de Mantenimiento Antigua",
+ "type": "trap",
+ "tier": 4,
+ "rarity": "epic",
+ "category": "mecánica",
+ "trigger": "abrir la puerta sin purgar la presión",
+ "detection": {
+  "stat": "INT",
+  "cd": 2
+ },
+ "disarm": {
+  "stat": "INT",
+  "cd": 2,
+  "herramienta": "herramientas de ladrón"
+ },
+ "effect": {
+  "description": "Vaharada: 2 de fuego en cono corto. (escala: +3 de daño en este tier)",
+  "defensa": "resistencia_fisica",
+  "condicionInfligida": null
+ },
+ "onFail": "La caldera revienta: 3 de fuego y la sala se incendia (1 por ronda dentro).",
+ "reset": "única",
+ "flavorText": "Quien la montó pensaba volver. No volvió."
+}

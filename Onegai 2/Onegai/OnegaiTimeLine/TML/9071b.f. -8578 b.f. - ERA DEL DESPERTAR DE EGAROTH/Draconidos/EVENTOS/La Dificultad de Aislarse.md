@@ -1,0 +1,2 @@
+Algunos dracónidos jóvenes anhelaban explorar el mundo exterior, pero el Congreso determinó que el contacto con otras razas podría corromper su cultura.
+Se estableció el Rito del Exilio, donde aquellos que quisieran abandonar Wulcain debían renunciar a su linaje y nunca volver.

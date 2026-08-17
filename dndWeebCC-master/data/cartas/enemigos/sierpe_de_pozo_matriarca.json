@@ -1,0 +1,64 @@
+{
+ "id": "sierpe_de_pozo_matriarca",
+ "name": "Sierpe de Pozo Matriarca",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 4,
+ "role": "escaramuzador",
+ "faction": "nagas_del_pozo_azul",
+ "factionName": "Las Nagas del Pozo Azul",
+ "stats": {
+  "CON": 6,
+  "DES": 9,
+  "INT": 7,
+  "CAR": 6
+ },
+ "derived": {
+  "vida": 40,
+  "ca": 20,
+  "defensaMental": 16,
+  "resistenciaFisica": 16,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Mordedura Rapida",
+   "defense": "CA",
+   "effect": "Ataque de veneno: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Constriccion",
+   "defense": "resistencia_fisica",
+   "effect": "Técnica de facción: si el objetivo falla, queda Agarrado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "En agua o lluvia ganan +1 a todas sus tiradas; las monedas que tocan quedan marcadas."
+ },
+ "conditionsInflicted": [
+  "agarrado"
+ ],
+ "loot": [
+  "latigo_de_cuero_de_viaje",
+  "orbe_de_mano_de_viaje",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Veneno"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Gana una segunda técnica por ronda y +1 al daño."
+  }
+ ],
+ "flavorText": "El pozo no tiene fondo. Tiene acreedoras."
+}

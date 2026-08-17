@@ -1,0 +1,50 @@
+{
+ "id": "dron_chispeante",
+ "name": "Dron Chispeante",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 1,
+ "role": "tirador",
+ "faction": "forjados_sin_amo",
+ "factionName": "Los Forjados sin Amo",
+ "stats": {
+  "CON": 1,
+  "DES": 3,
+  "INT": 3,
+  "CAR": 1
+ },
+ "derived": {
+  "vida": 12,
+  "ca": 13,
+  "defensaMental": 11,
+  "resistenciaFisica": 11,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de magico: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "CA",
+   "effect": "Técnica de facción: efecto táctico según su pasiva."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Al recibir daño cuerpo a cuerpo devuelve una descarga menor (1 de rayo)."
+ },
+ "conditionsInflicted": [],
+ "loot": [
+  "martillo_de_guerra_de_viaje",
+  "rodela_de_hierro_de_milicia"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Magico"
+ ],
+ "phases": [],
+ "flavorText": "Artefacto menor que protege talleres abandonados."
+}

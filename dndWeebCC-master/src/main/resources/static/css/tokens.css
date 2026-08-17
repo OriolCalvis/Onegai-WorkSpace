@@ -1,0 +1,155 @@
+/*
+ * tokens.css — Piloto de rediseño visual (Sistema de Cartas y Tiers)
+ * ---------------------------------------------------------------
+ * Variables de color, tipografía y espaciado. TODO en unidades absolutas (px).
+ * No se usan vw/vh/rem fluidos para tamaños de texto: hay un juego de valores
+ * para escritorio y otro distinto (no un "escalado") para móvil, cada uno fijo.
+ *
+ * Dos temas de PÁGINA: día (azul/rojo) y noche (negro/morado), controlados por
+ * el atributo data-theme="dia" / data-theme="noche" en <html> (ver theme.js).
+ *
+ * La paleta de las CARTAS (--card-*) es fija y NO cambia con el tema: una carta
+ * debe verse igual de día que de noche, como un cromo físico de verdad.
+ */
+
+:root {
+    /* ===== Tema DÍA (azul / rojo, fondo claro) ===== */
+    --bg: #eef1f8;
+    --bg-elevated: #ffffff;
+    --bg-sunken: #dfe4f1;
+    --text-primary: #171b2c;
+    --text-secondary: #4a5268;
+    --text-muted: #7b8296;
+    --border: #c7cfe0;
+    --border-strong: #a9b4cc;
+
+    --accent-primary: #2952cc;      /* azul: acciones principales */
+    --accent-primary-dark: #1c3a94;
+    --accent-primary-contrast: #ffffff;
+
+    --accent-secondary: #c62839;    /* rojo: feedback, énfasis, peligro */
+    --accent-secondary-dark: #8f1b27;
+    --accent-secondary-contrast: #ffffff;
+
+    --success: #1f6b3a;             /* verde: confirmación, toast "guardado" */
+    --success-contrast: #ffffff;
+
+    --shadow-color: rgba(23, 27, 44, 0.16);
+    --overlay: rgba(20, 24, 40, 0.55);
+}
+
+html[data-theme="noche"] {
+    /* ===== Tema NOCHE (negro / morado) ===== */
+    --bg: #0e0a17;
+    --bg-elevated: #1c1329;
+    --bg-sunken: #150e20;
+    --text-primary: #f2eefb;
+    --text-secondary: #bfaee0;
+    --text-muted: #8d7bab;
+    --border: #3a2a52;
+    --border-strong: #55407a;
+
+    --accent-primary: #9b5de5;      /* morado: acciones principales */
+    --accent-primary-dark: #6d2fbd;
+    --accent-primary-contrast: #ffffff;
+
+    --accent-secondary: #ff4d6d;    /* rojo/magenta: feedback, énfasis */
+    --accent-secondary-dark: #b8283f;
+    --accent-secondary-contrast: #ffffff;
+
+    --success: #2f8f5b;
+    --success-contrast: #ffffff;
+
+    --shadow-color: rgba(0, 0, 0, 0.6);
+    --overlay: rgba(5, 2, 10, 0.7);
+}
+
+:root {
+    /* ===== Paleta FIJA de cartas — tomo mágico / álbum de cromos =====
+       No depende del tema. Un cromo se ve igual en modo día que en modo noche. */
+    --card-bg: #f4e9cd;
+    --card-bg-alt: #ecdcae;
+    --card-frame: #8a6a2f;
+    --card-frame-bright: #d8b45c;
+    --card-ink: #2b1d10;
+    --card-ink-soft: #5b4526;
+    --card-gem: #5b2a86;
+    --card-shadow: rgba(30, 20, 5, 0.45);
+
+    --rarity-common: #7d8796;
+    --rarity-uncommon: #2f8f5b;
+    --rarity-rare: #2461c9;
+    --rarity-epic: #8b3fd1;
+    --rarity-mythic: #c9861a;
+
+    /* ===== Lenguaje de juego en pantalla (no afecta a la carta física) ===== */
+    --tier-1: #5f8f4e;
+    --tier-2: #3d7fc4;
+    --tier-3: #8b3fd1;
+    --tier-4: #c9861a;
+    --tier-5: #c62839;
+    --glow-ok: 0 0 0 2px color-mix(in srgb, var(--accent-primary) 55%, transparent),
+               0 4px 14px color-mix(in srgb, var(--accent-primary) 35%, transparent);
+    --glow-warn: 0 0 0 2px color-mix(in srgb, var(--accent-secondary) 55%, transparent);
+
+    /* ===== Tipografía — ESCRITORIO (px fijos, sin escalado fluido) ===== */
+    --fs-display: 32px;
+    --fs-h1: 26px;
+    --fs-h2: 20px;
+    --fs-h3: 17px;
+    --fs-body: 15px;
+    --fs-small: 13px;
+    /* Suelo tipográfico subido (revisión de diseño 2.2): micro SOLO para el id técnico.
+       Cualquier dato de regla (peso, rareza, tier) usa como mínimo --fs-small. */
+    --fs-micro: 12px;
+    --lh-body: 22px;
+    --lh-heading: 1.2;
+
+    --font-display: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+    --font-body: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+    /* ===== Espaciado (px) ===== */
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 16px;
+    --sp-5: 24px;
+    --sp-6: 32px;
+    --sp-7: 48px;
+    --sp-8: 64px;
+
+    /* ===== Radios ===== */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 14px;
+    --radius-card: 12px;
+
+    /* ===== Layout ===== */
+    --header-height: 64px;
+    --sidebar-width: 232px;
+    --panel-width: 340px;
+}
+
+/* Móvil: NO es un "escalado" del set de escritorio, es un segundo juego de
+   valores fijos pensado para pantallas pequeñas (evita texto/paddings rotos). */
+@media (max-width: 820px) {
+    :root {
+        --fs-display: 24px;
+        --fs-h1: 20px;
+        --fs-h2: 17px;
+        --fs-h3: 15px;
+        --fs-body: 14px;
+        --fs-small: 12px;
+        --fs-micro: 11px;
+        --lh-body: 20px;
+
+        --sp-5: 20px;
+        --sp-6: 24px;
+        --sp-7: 32px;
+        --sp-8: 40px;
+
+        --header-height: 56px;
+        --sidebar-width: 0px;
+        --panel-width: 100%;
+    }
+}

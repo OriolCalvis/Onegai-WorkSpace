@@ -1,0 +1,181 @@
+{
+  "nombre": "Furia Salvaje",
+  "descripcion": "Guerrero bárbaro chamánico que fusiona la furia del bárbaro con magia druídica primigenia, canalizando la ira de la naturaleza y los espíritus animales para dominar el campo de batalla.",
+  "rolTematico": "Bárbaro-druida que utiliza la ferocidad animal y el poder elemental de Gaia: transforma su cuerpo y convoca los elementos mientras desata su furia salvaje.",
+  "dadoGolpe": "1d12",
+  "puntosGolpeNivel1": "12 + modificador de Constitución",
+  "puntosGolpePorNivel": "1d12 (o 7) + modificador de Constitución",
+  "atributoConjuro": "Sabiduría",
+  "atributosRelevantes": ["Fuerza", "Constitución", "Sabiduría"],
+  "competencias": {
+    "armaduras": ["Ligeras", "Medianas"],
+    "armas": ["Simples", "Marciales"],
+    "habilidadesElegir": ["Trato con animales", "Arcano", "Perspicacia", "Medicina", "Naturaleza", "Percepción", "Religión", "Supervivencia"],
+    "salvaciones": ["Fuerza", "Constitución"]
+  },
+  "mecanicas": {
+    "fuelemental": "Canaliza un elemento al entrar en furia para daño adicional y resistencia.",
+    "instintoBestial": "Transforma extremidades en garras o colmillos para daño extra.",
+    "transformacionPrimigenia": "Cambia de forma en bestia menor o elemental.",
+    "invocacionElemental": "Invoca área de daño elemental en oleada de furia."
+  },
+  "accionesEspeciales": {},
+  "niveles": {
+    "1": {
+      "habilidades": [
+        {
+          "nombre": "Furia Elemental",
+          "descripcion": "Al entrar en furia, elige fuego, frío, rayo o tierra para potenciar tus ataques y ganar resistencia al daño elegido.",
+          "efecto": "+1d6 del elemento elegido a ataques; resistencia al mismo elemento",
+          "usos": "Mod. Constitución por descanso corto",
+          "accion": "Pasiva",
+          "duracion": "1 minuto"
+        }
+      ]
+    },
+    "2": {
+      "habilidades": [
+        {
+          "nombre": "Instinto Bestial",
+          "descripcion": "Transforma tus manos en garras o colmillos para infligir daño extra en ataques desarmados.",
+          "efecto": "+1d6 daño desarmado",
+          "usos": "Mod. Sabiduría por descanso corto",
+          "accion": "Acción Adicional",
+          "duracion": "1 minuto"
+        }
+      ]
+    },
+    "3": {
+      "habilidades": [
+        {
+          "nombre": "Transformación Primigenia",
+          "descripcion": "Transformación en bestia de CR 1 o menor (como druidas).",
+          "efecto": "Forma de bestia: velocidad y ataques de la criatura",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción",
+          "duracion": "1 minuto"
+        }
+      ]
+    },
+    "4": {"habilidades":[{"nombre":"Mejora de Características"}]},
+    "5": {
+      "habilidades": [
+        {
+          "nombre": "Ira de la Naturaleza",
+          "descripcion": "Invoca la furia de los elementos para dañar a múltiples enemigos.",
+          "efecto": "3d6 daño de elemento elegido en 15 pies (TS Destreza), CD = 8+ModSab+Prof",
+          "usos": "Mod. Sabiduría por descanso largo",
+          "accion": "Acción"
+        }
+      ]
+    },
+    "6": {
+      "habilidades": [
+        {
+          "nombre": "Protección del Espíritu Animal",
+          "descripcion": "Invoca un espíritu animal protector que otorga resistencia a un tipo de daño.",
+          "efecto": "Resistencia a contundente/cortante/perforante o elemento elegido",
+          "usos": "Mod. Constitución por descanso largo",
+          "accion": "Acción",
+          "duracion": "1 minuto"
+        }
+      ]
+    },
+    "7": {
+      "habilidades": [
+        {
+          "nombre": "Garras de la Bestia",
+          "descripcion": "Mientras estás transformado, haces un ataque adicional con garras o colmillos.",
+          "efecto": "1 ataque extra, +2d6 daño bestial",
+          "usos": "Automático",
+          "accion": "Pasiva",
+          "duracion": "Mientras dure la furia"
+        }
+      ]
+    },
+    "8": {"habilidades":[{"nombre":"Mejora de Características"}]},
+    "9": {
+      "habilidades": [
+        {
+          "nombre": "Furia Devastadora",
+          "descripcion": "Oleada de furia que empuja y daña con fuerza elemental.",
+          "efecto": "TS Fuerza o empujado 15 pies +4d6 daño de elemento elegido",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción"
+        }
+      ]
+    },
+    "10": {
+      "habilidades": [
+        {
+          "nombre": "Transformación Salvaje",
+          "descripcion": "Transformación en bestia de CR 2 o menor.",
+          "efecto": "Forma de CR 2: estadísticas y ataques",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción",
+          "duracion": "1 minuto"
+        }
+      ]
+    },
+    "11": {
+      "habilidades": [
+        {
+          "nombre": "Furia Imparable",
+          "descripcion": "Ganas inmunidad al daño no mágico mientras estés en furia.",
+          "efecto": "Inmunidad al daño no mágico",
+          "usos": "Automático",
+          "accion": "Pasiva",
+          "duracion": "Mientras dure la furia"
+        }
+      ]
+    },
+    "12": {"habilidades":[{"nombre":"Mejora de Características"}]},
+    "13": {
+      "habilidades": [
+        {
+          "nombre": "Rugido del Espíritu Animal",
+          "descripcion": "Rugido que atemoriza a tus enemigos.",
+          "efecto": "TS Sabiduría o asustado 1 minuto",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción"
+        }
+      ]
+    },
+    "15": {
+      "habilidades": [
+        {
+          "nombre": "Bestia Desatada",
+          "descripcion": "Transformación en bestia de CR 3 o menor con resistencia a daño no mágico.",
+          "efecto": "Forma CR 3 + resistencia a daño no mágico",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción",
+          "duracion": "1 minuto"
+        }
+      ]
+    },
+    "18": {
+      "habilidades": [
+        {
+          "nombre": "Avatar de la Naturaleza",
+          "descripcion": "Transformación en elemental de CR 5 o menor.",
+          "efecto": "Forma elemental + todas sus resistencias y habilidades",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción",
+          "duracion": "1 minuto"
+        }
+      ]
+    },
+    "20": {
+      "habilidades": [
+        {
+          "nombre": "Espíritu de la Furia Salvaje",
+          "descripcion": "Avatar supremo de la naturaleza: ataques adicionales, resistencia total e invocación de tormenta.",
+          "efecto": "2 ataques extra; resistencia a todo daño; tormenta elemental 6d6 en 60 pies",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción Completa",
+          "duracion": "1 minuto"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+ "id": "circulo_de_hongos_pacientes_maestra",
+ "name": "Círculo de Hongos Pacientes Maestra",
+ "type": "trap",
+ "tier": 3,
+ "rarity": "rare",
+ "category": "narrativa",
+ "trigger": "dormir dentro del corro",
+ "detection": {
+  "stat": "INT",
+  "cd": 1.5
+ },
+ "disarm": {
+  "stat": "INT",
+  "cd": 1.5,
+  "herramienta": null
+ },
+ "effect": {
+  "description": "No daña: los durmientes sueñan la misma deuda (gancho con las Sagas). (escala: +2 de daño en este tier)",
+  "defensa": "resistencia_fisica",
+  "condicionInfligida": null
+ },
+ "onFail": "El corro se cierra: 1 nivel de Fatiga y una deuda onírica real (el DJ la apunta).",
+ "reset": "persistente",
+ "flavorText": "Quien la montó pensaba volver. No volvió."
+}

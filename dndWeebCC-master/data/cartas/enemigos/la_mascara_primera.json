@@ -1,0 +1,96 @@
+{
+ "id": "la_mascara_primera",
+ "name": "La Máscara Primera",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 5,
+ "role": "corruptor",
+ "faction": "cofradia_de_mascaras_de_plata",
+ "stats": {
+  "CON": 9,
+  "DES": 10,
+  "INT": 11,
+  "CAR": 11
+ },
+ "derived": {
+  "vida": 80,
+  "ca": 22,
+  "defensaMental": 21,
+  "resistenciaFisica": 19,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Pregunta Definitiva",
+   "defense": "defensa_mental",
+   "effect": "Daño oscuro que suma su INT; si el objetivo está Marcado, también olvida su última carta jugada (vuelve a la pila)."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "defensa_mental",
+   "effect": "Si el objetivo falla, queda Marcado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en Desesperación: su ataque firma se calcula como éxito crítico (GDD 7.6)."
+  }
+ ],
+ "passive": {
+  "name": "Rostro Legión",
+  "description": "Rostro Legión: la primera vez que cada personaje la golpea, descubre que lleva la cara de alguien que ama (Defensa mental o pierde el ataque)."
+ },
+ "conditionsInflicted": [
+  "marcado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Oscuro"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Sigue su método con calma: aún cree que sobra tiempo."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Activa la arena a pleno: Retratos: cada ronda uno cobra vida como doble menor (criatura t1) si nadie lo raja antes"
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final; su debilidad narrativa queda a la vista (el DJ da la pista si no la tienen)."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Sustituir a cada figura de poder del reino por una máscara",
+  "metodo": "Nunca pelea primero: sus dobles pelean; ella pregunta",
+  "debilidad_narrativa": "Un espejo bendecido le muestra lo que no tiene: se paraliza una ronda (una vez por combate)",
+  "vinculo": "cofradia_de_mascaras_de_plata"
+ },
+ "arena": {
+  "name": "El Salón de los Retratos Cambiados",
+  "hazard": "Retratos: cada ronda uno cobra vida como doble menor (criatura t1) si nadie lo raja antes"
+ },
+ "legendaryActions": [
+  "Cambio de Reparto (1/ronda): intercambia su posición con un doble o retrato"
+ ],
+ "storyCard": {
+  "title": "La Máscara Primera",
+  "text": "La Cofradía tiene mil máscaras. Esta se las puso todas primero.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Debajo no hay cara. Hay otra pregunta."
+}

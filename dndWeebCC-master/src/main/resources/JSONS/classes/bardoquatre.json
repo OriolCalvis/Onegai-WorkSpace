@@ -1,0 +1,297 @@
+{
+    "nombre": "Bardo de las Cuatro Estaciones",
+    "descripcion": "Maestro musical que canaliza el poder de la naturaleza a través de canciones estacionales para influir en aliados y enemigos.",
+    "rolTematico": "Controlador mágico con efectos elementales, curativos y debilitantes que cambian según la estación invocada.",
+    "dadoGolpe": "1d8",
+    "puntosGolpeNivel1": "8 + modificador de Constitución",
+    "puntosGolpePorNivel": "1d8 (o 5) + modificador de Constitución",
+    "atributoConjuro": "Carisma",
+    "atributosRelevantes": ["Carisma", "Destreza", "Constitución"],
+    "competencias": {
+      "armaduras": ["Ligeras"],
+      "armas": ["Espada larga", "Espada corta", "Arco corto", "Instrumentos musicales"],
+      "habilidadesElegir": [
+        "Acrobacias", "Arcano", "Engaño", "Perspicacia",
+        "Intimidación", "Persuasión", "Historia"
+      ],
+      "salvaciones": ["Destreza", "Carisma"]
+    },
+    "mecanicas": {},
+    "accionesEspeciales": {},
+    "niveles": {
+      "1": {
+        "habilidades": [
+          {
+            "nombre": "Canción de las Estaciones",
+            "descripcion": "Canaliza una estación para aplicar daño de fuego o frío a tus ataques.",
+            "efecto": "Añade 1d6 de daño de fuego o frío",
+            "accion": "Pasiva"
+          },
+          {
+            "nombre": "Canción de Invierno",
+            "descripcion": "Melodía que congela y debilita a los enemigos.",
+            "efecto": "2d4 daño de frío y desventaja en ataques (TS Constitución)",
+            "duracion": "1 minuto",
+            "usos": "Modificador de Carisma por descanso largo",
+            "accion": "Normal"
+          },
+          {
+            "nombre": "Luz de las Estaciones",
+            "descripcion": "Otorga un bono según estación elegida.",
+            "efecto": "+1 a tiradas de ataque o curación",
+            "accion": "Pasiva"
+          }
+        ]
+      },
+      "2": {
+        "habilidades": [
+          {
+            "nombre": "Canción de Primavera",
+            "descripcion": "Canción sanadora que rejuvenece aliados.",
+            "efecto": "1d8 + Carisma HP y ventaja contra veneno (área 20 pies)",
+            "usos": "Modificador de Carisma por descanso largo",
+            "accion": "Normal"
+          },
+          {
+            "nombre": "Invocación de Espíritus",
+            "descripcion": "El espíritu elemental mejora sus capacidades ofensivas y puede realizar más acciones.",
+            "efecto": "Inflige 1d6 de daño elemental y acción menor",
+            "usos": "1 por descanso largo",
+            "accion": "Normal"
+          }
+        ]
+      },
+      "3": {
+        "habilidades": [
+          {
+            "nombre": "Canción de Verano",
+            "descripcion": "Crea una explosión ardiente que quema enemigos.",
+            "efecto": "3d6 de daño de fuego en área de 30 pies (TS Destreza)",
+            "usos": "Modificador de Carisma por descanso largo",
+            "accion": "Normal"
+          },
+          {
+            "nombre": "Estación Dual",
+            "descripcion": "Combina dos estaciones activas.",
+            "efecto": "Aplica ambos beneficios simultáneamente",
+            "usos": "1 por descanso corto",
+            "accion": "Normal"
+          },
+          {
+            "nombre": "Espíritu Mejorado",
+            "descripcion": "El espíritu ahora inflige 2d6 y tiene doble acción menor.",
+            "usos": "1 por descanso largo",
+            "accion": "Normal"
+          }
+        ]
+      },
+      "4": {
+        "habilidades": [{"nombre": "Mejora de Características"}]
+      },
+      "5": {
+        "habilidades": [
+          {
+            "nombre": "Canción de Otoño",
+            "descripcion": "Canción melancólica que drena energía a enemigos.",
+            "efecto": "2d6 necrótico (enemigos) + resistencia necrótica (aliados)",
+            "usos": "Modificador de Carisma por descanso largo",
+            "accion": "Normal"
+          },
+          {
+            "nombre": "Ola de Elementos",
+            "descripcion": "Explosión elemental masiva.",
+            "efecto": "4d6 daño elemental en área de 30 pies",
+            "usos": "1 por descanso largo",
+            "accion": "Normal"
+          }
+        ]
+      },
+      "6": {
+        "habilidades": [
+          {
+            "nombre": "Combinaciones de Canciones",
+            "descripcion": "Invierno + Primavera: daño y curación simultánea.",
+            "efecto": "2d4 frío (enemigos) + 1d8 + Carisma HP (aliados)",
+            "accion": "Normal"
+          },
+          {
+            "nombre": "Armonía de las Estaciones",
+            "descripcion": "Usa dos canciones en un solo turno.",
+            "efecto": "Aplica efectos duales",
+            "usos": "1 por descanso largo (2 veces en nivel 14)",
+            "accion": "Normal"
+          },
+          {
+            "nombre": "Maestría de las Estaciones",
+            "descripcion": "Canción de las Estaciones ahora hace +2d6 daño",
+            "accion": "Pasiva"
+          }
+        ]
+      },
+      "7": {
+        "habilidades": [
+          {
+            "nombre": "Tormenta Estacional",
+            "descripcion": "Combinación de elementos masiva.",
+            "efecto": "5d6 de cada elemento en 60 pies",
+            "usos": "1 por descanso largo",
+            "accion": "Normal"
+          },
+          {
+            "nombre": "Melodía del Cambio Estacional",
+            "descripcion": "Permite cambiar de estación en combate.",
+            "efecto": "+2 al daño al cambiar de estación",
+            "accion": "Pasiva"
+          }
+        ]
+      },
+      "8": {
+        "habilidades": [{"nombre": "Mejora de Características"}]
+      },
+      "9": {
+        "habilidades": [
+          {
+            "nombre": "Bendición de la Estación",
+            "descripcion": "Aplica beneficios de estación a aliados cercanos.",
+            "efecto": "Beneficios durante 1 minuto en radio de 30 pies",
+            "usos": "1 por descanso largo",
+            "accion": "Normal"
+          }
+        ]
+      },
+      "10": {
+        "habilidades": [
+          {
+            "nombre": "Invocación de la Estación Suprema",
+            "descripcion": "Versión potenciada de canción estacional.",
+            "efecto": "8d6 daño elemental en 60 pies",
+            "usos": "1 por descanso largo",
+            "accion": "Normal"
+          },
+          {
+            "nombre": "Canción de las Estaciones Potenciada",
+            "efecto": "Invierno: 3d6 frío, desventaja y ralentizar. Otoño: 3d6 necrótico + parálisis.",
+            "accion": "Pasiva"
+          }
+        ]
+      },
+      "11": {
+        "habilidades": [
+          {
+            "nombre": "Maestro de la Estación Trio",
+            "descripcion": "Puedes activar tres estaciones al mismo tiempo.",
+            "efecto": "Aplica tres beneficios de estaciones",
+            "usos": "1 por descanso largo",
+            "accion": "Normal"
+          }
+        ]
+      },
+      "12": {
+        "habilidades": [{"nombre": "Mejora de Características"}]
+      },
+      "13": {
+        "habilidades": [
+          {
+            "nombre": "Tormenta Estacional Mejorada",
+            "descripcion": "Versión mejorada de la tormenta elemental.",
+            "efecto": "7d6 de cada elemento en área de 60 pies",
+            "usos": "1 por descanso largo",
+            "accion": "Normal"
+          }
+        ]
+      },
+      "14": {
+        "habilidades": [
+          {
+            "nombre": "Convergencia de las Estaciones",
+            "descripcion": "Unifica el poder de las estaciones en una única melodía.",
+            "efecto": "1d6 curación o daño por turno (30 pies)",
+            "usos": "1 por descanso largo",
+            "accion": "Especial"
+          }
+        ]
+      },
+      "15": {
+        "habilidades": [
+          {
+            "nombre": "Forma Elemental",
+            "descripcion": "Te conviertes en un avatar elemental.",
+            "efecto": "+4d6 de daño elemental, inmunidad a un tipo",
+            "duracion": "1 minuto",
+            "usos": "1 por descanso largo",
+            "accion": "Especial"
+          },
+          {
+            "nombre": "Furia de la Tormenta Estacional",
+            "descripcion": "Desatas el poder completo de todas las estaciones.",
+            "efecto": "4d8 de frío, necrótico, fuego y fuerza (TS Constitución)",
+            "usos": "1 por descanso largo",
+            "accion": "Especial"
+          }
+        ]
+      },
+      "16": {
+        "habilidades": [{"nombre": "Mejora de Características"}]
+      },
+      "17": {
+        "habilidades": [
+          {
+            "nombre": "Tiempo Perfecto Definitiva",
+            "descripcion": "Infliges todo el daño elemental combinado.",
+            "efecto": "8d6 de cada tipo (área 60 pies)",
+            "usos": "1 por descanso largo",
+            "accion": "Especial"
+          }
+        ]
+      },
+      "18": {
+        "habilidades": [
+          {
+            "nombre": "Forma Elemental Mejorada",
+            "descripcion": "Mejora tu avatar elemental.",
+            "efecto": "+6d6 daño elemental, dura 2 minutos",
+            "usos": "1 por descanso largo",
+            "accion": "Especial"
+          },
+          {
+            "nombre": "Maestro de las Estaciones",
+            "descripcion": "Cambia de estación libremente y afecta a todos.",
+            "efecto": "Inflige o cura 5d6 a todos en 60 pies por cambio de estación",
+            "duracion": "1 minuto",
+            "usos": "1 por descanso largo",
+            "accion": "Especial"
+          }
+        ]
+      },
+      "19": {
+        "habilidades": [
+          {
+            "nombre": "Convergencia de las Estaciones Mejorada",
+            "descripcion": "Versión potenciada de convergencia.",
+            "efecto": "+2d6 curación o daño por turno (radio completo)",
+            "usos": "1 por descanso largo",
+            "accion": "Especial"
+          }
+        ]
+      },
+      "20": {
+        "habilidades": [
+          {
+            "nombre": "Maestro de las Estaciones Supremas",
+            "descripcion": "Dominas por completo el ciclo estacional.",
+            "efecto": "5d12 de curación o daño al cambiar de estación",
+            "usos": "Ilimitado",
+            "accion": "Especial"
+          },
+          {
+            "nombre": "Convergencia de las Estaciones Suprema",
+            "descripcion": "Durante 1 minuto puedes usar todo sin límites.",
+            "efecto": "6d6 daño o curación masiva en 60 pies, sin restricciones",
+            "usos": "1 por descanso largo",
+            "accion": "Acción Completa"
+          }
+        ]
+      }
+    }
+  }
+  

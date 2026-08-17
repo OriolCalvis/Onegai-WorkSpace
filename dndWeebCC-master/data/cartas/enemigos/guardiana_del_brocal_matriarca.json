@@ -1,0 +1,64 @@
+{
+ "id": "guardiana_del_brocal_matriarca",
+ "name": "Guardiana del Brocal Matriarca",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 4,
+ "role": "defensa",
+ "faction": "nagas_del_pozo_azul",
+ "factionName": "Las Nagas del Pozo Azul",
+ "stats": {
+  "CON": 8,
+  "DES": 7,
+  "INT": 6,
+  "CAR": 7
+ },
+ "derived": {
+  "vida": 40,
+  "ca": 18,
+  "defensaMental": 17,
+  "resistenciaFisica": 18,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Escama Alzada",
+   "defense": "CA",
+   "effect": "Ataque de veneno: daño que suma su CON (pool de CON, regla 7.6)."
+  },
+  {
+   "name": "Anillo de Cuerpo",
+   "defense": "resistencia_fisica",
+   "effect": "Técnica de facción: si el objetivo falla, queda Agarrado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "En agua o lluvia ganan +1 a todas sus tiradas; las monedas que tocan quedan marcadas."
+ },
+ "conditionsInflicted": [
+  "agarrado"
+ ],
+ "loot": [
+  "latigo_de_cuero_de_viaje",
+  "orbe_de_mano_de_viaje",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Veneno"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Gana una segunda técnica por ronda y +1 al daño."
+  }
+ ],
+ "flavorText": "El pozo no tiene fondo. Tiene acreedoras."
+}

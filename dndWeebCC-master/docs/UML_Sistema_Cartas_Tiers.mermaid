@@ -1,0 +1,261 @@
+%%{init: {"theme": "neutral"}}%%
+classDiagram
+    direction TB
+
+    %% ============================================================
+    %% LEYENDA
+    %%  - Clases verdes (implementado): existen hoy en el código Java
+    %%    (cat.dnd.cc.model.*), tal como quedaron tras el rename SAB->CAR.
+    %%  - Clases naranjas (propuesto): no existen en código todavía;
+    %%    se deducen del ejemplo de campaña "La Tomba del Rei Llop"
+    %%    (bestiario con fases, mazo de aventura, estancias) y siguen
+    %%    la misma filosofía "todo es una carta" que el resto del sistema.
+    %% ============================================================
+
+    class Carta {
+        <<abstract>>
+        +String id
+        +String name
+        +int tier
+        +List~String~ tags
+    }
+
+    %% ---------- IMPLEMENTADO: cartas de personaje ----------
+    class TierClass {
+        +String role
+        +int baseHealth
+        +double healthScalingCon
+        +String primaryStat
+        +String secondaryStat
+        +String primaryResource
+        +List~String~ startingEquipment
+        +List~String~ allowedEquipmentTags
+        +List~String~ specializations
+        +String description
+    }
+
+    class TierRace {
+        +int statBonusCon
+        +int statBonusDes
+        +int statBonusCar
+        +int statBonusInt
+        +Trait passiveTrait
+        +Trait activeTrait
+    }
+
+    class TierBackground {
+        +int statBonusCon
+        +int statBonusDes
+        +int statBonusCar
+        +int statBonusInt
+        +String passive
+        +String complication
+        +String flavorText
+    }
+
+    class TierSkill {
+        +String type
+        +int reqCon
+        +int reqDes
+        +int reqCar
+        +int reqInt
+        +String recovery
+        +Effect effect
+    }
+
+    class TierEquipment {
+        +String slot
+        +String rarity
+        +Map~String,int~ statBonuses
+        +Map~String,int~ penalties
+        +int bonusArmor
+        +List~String~ grantedTags
+        +String linkedSkill
+        +List~String~ restrictions
+    }
+
+    class TierFeat {
+        +String rarity
+        +List~String~ classTags
+        +Map~String,int~ requiredStats
+        +List~String~ incompatibleTags
+        +Effect effect
+        +String limitations
+    }
+
+    Carta <|-- TierClass
+    Carta <|-- TierRace
+    Carta <|-- TierBackground
+    Carta <|-- TierSkill
+    Carta <|-- TierEquipment
+    Carta <|-- TierFeat
+
+    %% ---------- IMPLEMENTADO: instancia de personaje (NO es una carta) ----------
+    class Personatge {
+        +Long id
+        +String nom
+        +String razaId
+        +String claseId
+        +String transfonsId
+        +int tier
+        +int statCon
+        +int statDes
+        +int statCar
+        +int statInt
+        +List~String~ habilidadIds
+        +List~String~ equipoIds
+        +List~String~ doteIds
+        +String historia
+    }
+
+    class FichaPersonatge {
+        <<computed, no persistido>>
+        +int finalCon
+        +int finalDes
+        +int finalCar
+        +int finalInt
+        +double vida
+        +int claseArmadura
+        +int defensaMental
+        +int resistenciaFisica
+        +int iniciativa
+    }
+
+    Personatge "1" --> "0..1" TierClass : claseId
+    Personatge "1" --> "0..1" TierRace : razaId
+    Personatge "1" --> "0..1" TierBackground : transfonsId
+    Personatge "1" --> "*" TierSkill : habilidadIds
+    Personatge "1" --> "*" TierEquipment : equipoIds
+    Personatge "1" --> "*" TierFeat : doteIds
+    FichaPersonatge "1" ..> "1" Personatge : resuelve
+
+    %% ============================================================
+    %% PROPUESTO: sistema de Enemigos (a partir del bestiario de
+    %% "La Tomba del Rei Llop": Criatura -> Èlite -> Jefe con fases)
+    %% ============================================================
+
+    class Enemigo {
+        <<abstract, propuesto>>
+        +String tipo
+        +int vida
+        +int claseArmadura
+        +int movimiento
+        +int statCon
+        +int statDes
+        +int statCar
+        +int statInt
+        +List~Ataque~ ataques
+        +List~String~ pasivas
+    }
+
+    class Criatura {
+        <<propuesto>>
+    }
+
+    class Elite {
+        <<propuesto>>
+        +String pasivaFaseA
+        +String pasivaFaseB
+        +int umbralCambioFasePct
+    }
+
+    class Jefe {
+        <<propuesto>>
+        +List~FaseJefe~ fases
+        +List~String~ invocaciones
+        +List~String~ botinIds
+    }
+
+    class FaseJefe {
+        <<propuesto>>
+        +int umbralVidaPct
+        +List~Ataque~ ataques
+        +List~String~ pasivas
+    }
+
+    Carta <|-- Enemigo
+    Enemigo <|-- Criatura
+    Enemigo <|-- Elite
+    Elite <|-- Jefe
+    Jefe "1" *-- "1..*" FaseJefe : fases
+    Jefe "1" ..> "*" Criatura : invoca
+
+    %% ============================================================
+    %% PROPUESTO: mazo de aventura (Tresor/Trampa/Evento/Encuentro/
+    %% Misterio) + Estancia + Aventura, según el módulo de ejemplo
+    %% ============================================================
+
+    class CartaAventura {
+        <<abstract, propuesto>>
+        +String tipoCarta
+    }
+
+    class Tesoro {
+        <<propuesto>>
+        +String rareza
+        +String equipoRefId
+    }
+
+    class Trampa {
+        <<propuesto>>
+        +String statSalvamento
+        +int cd
+        +String dano
+    }
+
+    class Evento {
+        <<propuesto>>
+        +boolean persistente
+        +int duracionTurnos
+        +String efecto
+    }
+
+    class Encuentro {
+        <<propuesto>>
+        +String pnj
+        +String dialogo
+    }
+
+    class Misterio {
+        <<propuesto>>
+        +String pista
+        +String desbloqueaRefId
+    }
+
+    Carta <|-- CartaAventura
+    CartaAventura <|-- Tesoro
+    CartaAventura <|-- Trampa
+    CartaAventura <|-- Evento
+    CartaAventura <|-- Encuentro
+    CartaAventura <|-- Misterio
+    Tesoro ..> TierEquipment : referencia
+
+    class Estancia {
+        <<propuesto>>
+        +String id
+        +String nombre
+        +String descripcion
+        +List~String~ enemigoIds
+        +List~String~ cartaAventuraIds
+        +List~String~ salidaIds
+    }
+
+    class Aventura {
+        <<propuesto>>
+        +String id
+        +String nombre
+        +int tier
+        +List~Estancia~ estancias
+        +Map~String,int~ composicionMazo
+        +List~String~ epilogos
+    }
+
+    Aventura "1" *-- "1..*" Estancia : estancias
+    Estancia "1" o-- "*" Enemigo : enemigoIds
+    Estancia "1" o-- "*" CartaAventura : cartaAventuraIds
+
+    classDef implementado fill:#dff5e1,stroke:#2f9e44,color:#1b4332
+    classDef propuesto fill:#ffe8cc,stroke:#e8590c,color:#7f3300
+
+    class Carta,TierClass,TierRace,TierBackground,TierSkill,TierEquipment,TierFeat,Personatge,FichaPersonatge implementado
+    class Enemigo,Criatura,Elite,Jefe,FaseJefe,CartaAventura,Tesoro,Trampa,Evento,Encuentro,Misterio,Estancia,Aventura propuesto

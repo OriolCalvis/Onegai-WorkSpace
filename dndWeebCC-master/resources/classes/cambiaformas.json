@@ -1,0 +1,97 @@
+{
+  "nombre": "Cambiaformas",
+  "descripcion": "El Cambiaformas es un cazador especializado en mutación y emboscada, usando magia de transformación para adaptarse y cazar a sus presas.",
+  "rolTematico": "Maestro del camuflaje, trampas y tácticas de emboscada, alternando entre forma humana y animales para dominar el campo de batalla.",
+  "dadoGolpe": "1d10",
+  "puntosGolpeNivel1": "10 + modificador de Constitución",
+  "puntosGolpePorNivel": "1d10 (o 6) + modificador de Constitución",
+  "atributoConjuro": "Sabiduría",
+  "atributosRelevantes": ["Destreza","Sabiduría","Constitución"],
+  "competencias": {
+    "armaduras": ["Ligeras","Medias"],
+    "armas": ["Simples","Marciales","Arcos","Lanzas"],
+    "habilidadesElegir": ["Trato con animales","Atletismo","Perspicacia","Naturaleza","Percepción","Sigilo","Supervivencia"],
+    "salvaciones": ["Destreza","Sabiduría"]
+  },
+  "mecanicas": {
+    "mutacionAnimal": "Altera partes del cuerpo para obtener garras, visión nocturna, piel dura u otras ventajas según la mutación.",
+    "sistemaTrampas": "Permite colocar trampas naturales que dañan o inmovilizan a los enemigos en el entorno."
+  },
+  "accionesEspeciales": {},
+  "niveles": {
+    "1": {
+      "habilidades": [
+        { "nombre": "Mutación Menor", "descripcion": "Alteras partes de tu cuerpo para ventajas físicas.", "efecto": "Garras: +1d6 daño cuerpo a cuerpo | Piel endurecida: +1 CA | Visión mejorada: ventaja en Percepción.", "usos": "2 por descanso largo", "accion": "Normal", "duracion": "1 minuto" }
+      ]
+    },
+    "2": {
+      "habilidades": [
+        { "nombre": "Trampas Naturales", "descripcion": "Colocas trampas que afectan el terreno.", "efecto": "Trampa en 10 ft inflige 2d6 daño y detiene movimiento.", "usos": "Mod. Sabiduría por descanso corto", "accion": "Acción"
+        }
+      ]
+    },
+    "3": {
+      "habilidades": [
+        { "nombre": "Forma de la Bestia", "descripcion": "Te transformas en criatura menor.", "efecto": "Obtienes velocidad, ataques o sigilo de la bestia.", "usos": "1 por descanso largo", "accion": "Acción","duracion":"1 minuto" }
+      ]
+    },
+    "4": { "habilidades": [ { "nombre": "Mejora de Características" } ] },
+    "5": {
+      "habilidades": [
+        { "nombre": "Emboscada", "descripcion": "Atacas a un enemigo desprevenido.", "efecto": "Ventaja y +1d6 daño si no te han detectado.", "usos": "2 por descanso corto", "accion": "Pasiva" }
+      ]
+    },
+    "6": {
+      "habilidades": [
+        { "nombre": "Furia de la Bestia", "descripcion": "Desatas furia animal al entrar en combate.", "efecto": "+2 a ataques y resistencia contundente/cortante/perforante.", "usos": "1 por descanso largo", "accion": "Reaccion","duracion":"1 minuto" }
+      ]
+    },
+    "7": {
+      "habilidades": [
+        { "nombre": "Forma Salvaje Mejorada", "descripcion": "Transformación en criatura grande.", "efecto": "Obtienes habilidades de criatura grande (daño y resistencia).", "usos": "1 por descanso largo", "accion": "Acción","duracion":"1 minuto" }
+      ]
+    },
+    "8": { "habilidades": [ { "nombre": "Mejora de Características" } ] },
+    "9": {
+      "habilidades": [
+        { "nombre": "Invocación de Criaturas Salvajes", "descripcion": "Invocas un aliado animal.", "efecto": "La criatura lucha a tu lado 1 min.", "usos": "1 por descanso largo", "accion": "Acción" }
+      ]
+    },
+    "10": {
+      "habilidades": [
+        { "nombre": "Camuflaje Natural", "descripcion": "Te ocultas en el entorno.", "efecto": "Ventaja en Sigilo en terreno natural.", "usos": "Automático", "accion": "Pasiva" }
+      ]
+    },
+    "11": {
+      "habilidades": [
+        { "nombre": "Mutación Avanzada", "descripcion": "Combinas dos mutaciones.", "efecto": "Usa dos opciones de Mutación Menor simultáneamente.", "usos": "1 por descanso corto", "accion": "Acción","duracion":"1 minuto" }
+      ]
+    },
+    "12": { "habilidades": [ { "nombre": "Mejora de Características" } ] },
+    "13": {
+      "habilidades": [
+        { "nombre": "Trampa de Energía Salvaje", "descripcion": "Colocas una trampa elemental.", "efecto": "4d6 daño elemental en área cuando se activa.", "usos": "Mod. Sabiduría por descanso largo", "accion": "Acción" }
+      ]
+    },
+    "14": {
+      "habilidades": [
+        { "nombre": "Adaptación del Entorno", "descripcion": "Ganas resistencia ambiental.", "efecto": "Resistencia a daño ambiental elegido 1 hora.", "usos": "1 por descanso largo", "accion": "Acción" }
+      ]
+    },
+    "15": {
+      "habilidades": [
+        { "nombre": "Aura de Caza", "descripcion": "Aura que potencia la caza.", "efecto": "Aliados a 10 ft ventaja en ataques contra enemigos emboscados.", "usos": "Automático", "accion": "Pasiva" }
+      ]
+    },
+    "18": {
+      "habilidades": [
+        { "nombre": "Maestro de la Caza", "descripcion": "Emboscas sin fallo.", "efecto": "Siempre ventaja y +2d6 daño al emboscar.", "usos": "Sin límite", "accion": "Pasiva" }
+      ]
+    },
+    "20": {
+      "habilidades": [
+        { "nombre": "Maestría Salvaje", "descripcion": "Control total de mutaciones avanzadas.", "efecto": "1 min: cada turno elige dos mejoras: Garras 4d6 | Piel de Piedra inmunidad elegida | Velocidad duplicada + acción extra | Visión verdadera 120 ft + ventaja | 50 HP temporales + 1d10 curación.", "usos": "1 por descanso largo", "accion": "Acción Completa" }
+      ]
+    }
+  }
+}

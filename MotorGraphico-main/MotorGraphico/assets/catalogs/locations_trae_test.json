@@ -1,0 +1,1930 @@
+{
+  "_mapa": {
+    "epoca": "2000 b.f. — test TRAE OUEST SUR (2 naciones + 24 ciudades + 5 zonas)",
+    "era": "ERA XIII",
+    "generator": "TRAE",
+    "region": "OCCIDENTE MERIDIONAL"
+  },
+  "entries": [
+    {
+      "id": "nation_ecla",
+      "locationType": "nation",
+      "name": "Ecla",
+      "origin": "ATLAS_CANON",
+      "alignment": "neutral_good",
+      "color": "#9ec89a",
+      "culture": "Silvano-Vietic (Elfos Refugiados + Humanos Alquimistas)",
+      "deityIds": [
+        "deity_veiled_queen",
+        "deity_morning_light",
+        "deity_arcane_spire"
+      ],
+      "raceIds": [
+        "race_elf_silvan",
+        "race_human_vietic",
+        "race_gnome_deep",
+        "race_half_elf"
+      ],
+      "rarity": "uncommon",
+      "tier": 0,
+      "capitalId": "city_ecla_umedan_capital",
+      "polygon": "142,390 224,398 330,402 435,414 494,446 524,510 510,600 450,650 340,655 250,630 190,560 155,480 145,420",
+      "coord": {
+        "x": 70,
+        "y": 100
+      },
+      "metadata": {
+        "gobierno": "Triunvirato: Cámara Cinabrio (alquimistas), Consejo Silvano (elfos), Mariscalato Fronterizo (militares Cruzadas). Rotación anual de primacía; 2000bf toca Cinabrio.",
+        "biomaGeneral": "Selva tropical en el tercio sur; Humedales/Canales en el centro (Cuenca Negra); Franja templada-fronteriza al norte (Ascaria). Costa occidental acantilada.",
+        "tierRange": {
+          "min": 1,
+          "max": 5
+        },
+        "regions": [
+          "REGION_FRONTERA_HOZ (N, plaza fuerte cruzada, tier 3-5)",
+          "REGION_VALLE_JOREN (centro-NW, refugiados, tier 2)",
+          "REGION_HUMEDALES_ETRIATH (centro, canal aguas negras, tier 2)",
+          "REGION_COSTA_ITHON (O, isla elfa, tier 1-3)",
+          "REGION_UMEDAN (capital, tier 3-5)",
+          "REGION_BOSQUE_PROHIBIDO (S, cordillera fin mundo, tier 2)"
+        ],
+        "eraXIIIEvents": [
+          {
+            "id": "era13_ev_003_invasion_ecla",
+            "year": 2001,
+            "title": "Invasión Cruzada Franja Norte Ecla — Fortaleza de la Hoz",
+            "summary": "3 playas de desembarco en el norte (Golfo de Uluth, Cuenca Norte). Construcción rápida fortaleza de la Hoz sobre yacimiento de plata. Ecla declara no intervenir mientras no entren al sur del río Joren. (En 2004 CASO ROMPEN esto → ASALTO ITHON.)"
+          },
+          {
+            "id": "era13_ev_008_asedio_ithon",
+            "year": 2004,
+            "title": "Asedio Cruzado de la Isla Ithon (3 meses)",
+            "summary": "Cruzados rompen pacto Franja Norte: intentan tomar Ithon (isla elfa). Rendición por hambre tras 93 días. Consejo Silvano de Ecla rompe alianza no agresión. Es el PRIMER conflicto DIRECTO en el Occidente Meridional de ERA XIII."
+          },
+          {
+            "id": "era13_ev_011_asaltonubes_tail",
+            "year": 1995,
+            "title": "EV-1995-AsaltoNubes: aeronaves Esmua caen sobre Edea",
+            "summary": "Columna de 17 aeronaves huyendo de la Batalla de Ascaria-sur (CLOUDE/ZCODE) intentan refugiarse en Edea. 3 estrelladas matan 120, las otras aterrizan y 600 soldados solicitan asilo político. Mariscalato devuelve 340 prisioneros a CLOUDE (caso humillante)."
+          }
+        ],
+        "factions": [
+          {
+            "id": "faction_ecla_camara_cinabrio",
+            "name": "Cámara Cinabrio — Gremio Alquimistas",
+            "role": "Gobierno 1/3 + monopolio Alquimia (pócimas, colorantes, fertilizantes) + Universidad Umedan Biologica.",
+            "leader": "Gran Alquimista Elenya Silvanos (elfa silvana, class_wizard_transmutation, tier 4)",
+            "alignmentId": "alignment_neutral_good"
+          },
+          {
+            "id": "faction_ecla_consejo_silvano",
+            "name": "Consejo Silvano Elfo de Ecla",
+            "role": "Gobierno 2/3, Jefe de Élficos refugiados, Patrimonio natural (bosques, islas, humedales).",
+            "leader": "Archidruida Vordir CazadorLunar (elfo silvano, class_druid_moon, tier 4)",
+            "alignmentId": "alignment_true_neutral"
+          },
+          {
+            "id": "faction_ecla_mariscalato",
+            "name": "Mariscalato Fronterizo y Orden de la Plata",
+            "role": "Gobierno 3/3, Ejercito regular + defensa Fortaleza de la Hoz (no interviene en Tierras Cruzadas pero vigila).",
+            "leader": "Mariscal Rook Cinderveil (tiefling, class_fighter_battle_master, tier 5)",
+            "alignmentId": "alignment_lawful_neutral"
+          },
+          {
+            "id": "faction_ecla_circulo_joren_refugio",
+            "name": "Círculo del Refugio de Joren",
+            "role": "Caridad, albergue a 600 refugiados (actuales, 2000bf; crece cada mes). Red hospitalaria. Aliado de Clerigos Vida.",
+            "leader": "Matriarca Alya Ashye (humana, class_cleric_life, tier 3)",
+            "alignmentId": "alignment_neutral_good"
+          }
+        ],
+        "dungeons": [
+          {
+            "id": "dungeon_hoz_ocavernes_inferiores",
+            "name": "Cavernas Inferiores Fortaleza de la Hoz",
+            "tier": 4,
+            "theme": "Fortaleza cruzada excavada sobre vetas de plata; celdas para prisioneros de guerra; sepulcro de 12 capitanes primeros cruzados; ritual ignífero ilegal.",
+            "coord": {
+              "x": 420,
+              "y": 910
+            },
+            "bossMonsterId": "monster_capitan_cruzado_tirano_04",
+            "relicIds": [
+              "equip_unique_ecla_lanza_plata_hoz"
+            ]
+          },
+          {
+            "id": "dungeon_ecla_ithon_tumba_primera_elfa",
+            "name": "Tumba de la Primera Reina Elfa de Ithon",
+            "tier": 3,
+            "theme": "Cripta pre ERA XI bajo el santuario mayor de la Isla. Guardianes constructos élficos, tres pasadizos ilusorios. Reliquia: capa protectora lunar.",
+            "coord": {
+              "x": 206,
+              "y": 398
+            },
+            "bossMonsterId": "monster_constructo_guardia_elfa_03",
+            "relicIds": [
+              "equip_unique_ecla_capa_de_la_luna_creciente"
+            ]
+          }
+        ],
+        "lore": [
+          "Ecla se fundó el año 2832 ERA VI (Humana) por una fusión tri-étnica: la tribu Humana Víet que bajó de las montañas, los Elfos silvanos refugiados de la Caída de Ithanor, y los Gnomos profundos que abrieron las primeras minas de cinabrio. De ahí su bandera: triángulo rojo, verde y ocre, unidos por un nudo.",
+          "En el año 2000 b.f. el equilibrio interno es FÚGIL: la Cámara Cinabrio quiere modernizar (acoger la alquimia transmutación ilegal) y el Consejo Silvano lo considera una afrenta a la naturaleza. La Mariscalato aprovecha la distracción para ir ganando cuotas de poder y prepararse para el colapso de la Franja Norte en cuanto Cruzados quieran avanzar hacia Umedan.",
+          "El bioma sur (bosque prohibido) es territorio de sacerdotes de la Diosa Velada (deity_veiled_queen): nadie entra, nadie sale; se rumorea que las sacerdotisas mantienen un portal a un plano de sombras. Las rutas comerciales lo rodean estrictamente por la costa, lo que hace de ITHON un puerto clave por necesidad más que por elección."
+        ]
+      }
+    },
+    {
+      "id": "nation_udrax",
+      "locationType": "nation",
+      "origin": "ATLAS_CANON",
+      "name": "Udrax — Confederación de los 9 Pozos",
+      "alignment": "lawful_neutral",
+      "color": "#b3c4b8",
+      "culture": "Marinero-Pozuelo (razas mezcla: humanos marineros, lagartos, yuan-ti [ocultos], Minotauros portuarios)",
+      "deityIds": [
+        "deity_ocean_serenity",
+        "deity_deep_king",
+        "deity_iron_oath",
+        "deity_nocturne"
+      ],
+      "raceIds": [
+        "race_human_mariner",
+        "race_lizardfolk",
+        "race_naga_blooded",
+        "race_minotaur",
+        "race_tortle"
+      ],
+      "rarity": "uncommon",
+      "tier": 0,
+      "capitalId": "city_udrax_bomengrid_capital",
+      "polygon": "540,500 605,512 700,520 780,540 830,590 820,680 780,750 680,760 600,740 550,690 525,620 530,560",
+      "coord": {
+        "x": 130,
+        "y": 105
+      },
+      "metadata": {
+        "gobierno": "Confederación de Nueve Pozos — 9 grandes ciudades-estado con voto por peso de población. Presidente semestral (Cónsul) rotativo. Asamblea se reúne en Bomengrid (capital por mayoría, 32k votos).",
+        "biomaGeneral": "Cordillera al norte (Paso de los Danzantes frontera con Ecla); Estepa herbácea central con ríos serpenteantes; Delta y Marismas de los Pozos (Sur); Costa sur archipiélago con pactos comerciales Naga.",
+        "tierRange": {
+          "min": 1,
+          "max": 5
+        },
+        "regions": [
+          "REGION_FRONTERA_DANZANTES (N, frontera Ecla-Udrax, paso montaña, tier 2)",
+          "REGION_MINAS_EOTTETIKA (NE, hierro/níquel, crisis: agotamiento, tier 2-4)",
+          "REGION_PLAZA_FERIAS (CENTRO, Aherhia, ferias anuales, tier 1-2)",
+          "REGION_BOMENGRID (CAPITAL, tier 3-5, Muralla a medio caer)",
+          "REGION_POZOS_SUSURRANTES (S, Eabotara/Jggotti, Yuan-ti, tier 2)",
+          "REGION_PUENTE_ACLOSOS (EST, puente estratégico, orden militar, tier 2)",
+          "REGION_MAR_ESPERA (S-EST, Wait Harbor, Pacto de Sangre 1997, frontera Naga, tier 3)"
+        ],
+        "eraXIIIEvents": [
+          {
+            "id": "era13_ev_004_naga_refuerzo",
+            "year": 2001,
+            "title": "Ola de Ataques Naga — Eabotara y Jggotti en llamas",
+            "summary": "La llegada de Cruzados y su bloqueo naval OCCIDENTAL rompe el equilibrio marítimo con los Nagas. Ataques de retorsión: 2/3 de Eabotara se incendia; Jggotti pierde 500 habitantes. Solo 7 sacerdotes de la Reina Marina detienen la tercera oleada."
+          },
+          {
+            "id": "era13_ev_010_pacto_sangre",
+            "year": 1997,
+            "title": "Pacto de Sangre Udrax — Naga (4 años tregua)",
+            "summary": "Cónsul Halfdran se reúne en secreto con 3 Matriarcas Naga en Wait Harbor. El pacto: Udrax entrega ciertas mercancías prohibidas (prisioneros débiles, venenos, artículos arcanos) → Nagas cesan hostilidades y compran hierro a Eottetika. Punto 2000: quedan 3 años. Los cónsules ya negocian cómo NO renovarlo."
+          }
+        ],
+        "factions": [
+          {
+            "id": "faction_udrax_asamblea_pozos",
+            "name": "Asamblea de los Nueve Pozos",
+            "role": "Gobierno central, legislación común, ejército confederal (Orden del Puente + Ejércitos de Frontera).",
+            "leader": "Cónsul Varran Halfdran (humano, class_paladin_devotion, tier 4)",
+            "alignmentId": "alignment_lawful_neutral"
+          },
+          {
+            "id": "faction_udrax_gremio_minero",
+            "name": "Gremio Minas y Herrerías del Este",
+            "role": "Minas Eottetika + exportación de hierro. Crisis: vetas se agotan (declive 37% en 5 años). Presión para abrir minas bajo Pozos Susurrantes (tabú).",
+            "leader": "Gremialmaestre Brunhild Stonehand (enana colina, class_barbarian_berserker, tier 3)",
+            "alignmentId": "alignment_lawful_neutral"
+          },
+          {
+            "id": "faction_udrax_contrabandistas_pozos",
+            "name": "Los Susurrantes del Pozo",
+            "role": "Contrabando sustancias Naga, reliquias ERA XII, venenos, esclavitud voluntaria/oculta. A veces buenos (tienen rutas de huida para refugiados).",
+            "leader": "El Silbador (yuan-ti malison, class_rogue_thief, tier 3) [anonimo real: Yrisseth]",
+            "alignmentId": "alignment_chaotic_neutral"
+          },
+          {
+            "id": "faction_udrax_orden_puente",
+            "name": "Orden del Puente Milenario",
+            "role": "Guardia fronteriza. Custodia Aclosos (puente estratégico canon trait) + la muralla de Bomengrid.",
+            "leader": "Prioste Delgar Ironvein (duergar, class_cleric_war, tier 4)",
+            "alignmentId": "alignment_lawful_good"
+          },
+          {
+            "id": "faction_udrax_secta_nox",
+            "name": "Secta Estimar Nox — Los Observadores Nocturnos",
+            "role": "Secta oculta en la muralla fantasma Bomengrid. Creen que revivir rituales ERA XII Nagas salvará Udrax de la minería agotada. (ESTA ES LA FACCIÓN 'MALO' DEL AÑO 2000BF.)",
+            "leader": "[TBD Oriol: Gran Sacerdotisa Nox; Yuan-ti Abominación disfrazada humana]",
+            "alignmentId": "alignment_chaotic_evil"
+          }
+        ],
+        "dungeons": [
+          {
+            "id": "dungeon_udrax_pozos_susurrantes_nexo",
+            "name": "Nexo Inferior — Pozos Susurrantes de Eabotara",
+            "tier": 3,
+            "theme": "Red de túneles Naga del ERA XII que conecta Eabotara, Jggotti y el sótano Bomengrid. 2000bf: secta Nox quiere reabrirlo. Guardianes: yuan-ti malisons, constuctos serpiente, Medusa menor de los Pozos.",
+            "coord": {
+              "x": 560,
+              "y": 528
+            },
+            "bossMonsterId": "monster_medusa_menor_pozos_03",
+            "relicIds": [
+              "equip_unique_udrax_daga_sangre_serpiente"
+            ]
+          },
+          {
+            "id": "dungeon_udrax_muralla_fantasma",
+            "name": "La Muralla Fantasma — Tramo Hundido de Bomengrid",
+            "tier": 4,
+            "theme": "El canon trait 'muralla a medio caer' tiene una sección oculta que se derrumbó en ERA XII (ataque Naga original). Es la entrada a la cripta del Primer Cónsul y a los planos de la Secta Nox. Guardianes: muertos vivientes, espectros, barrow wight.",
+            "coord": {
+              "x": 718,
+              "y": 704
+            },
+            "bossMonsterId": "monster_wight_lord_halfbrother_04",
+            "relicIds": [
+              "equip_unique_udrax_martillo_primer_consul",
+              "equip_unique_udrax_casco_fantasma"
+            ]
+          },
+          {
+            "id": "dungeon_udrax_wait_harbor_pacto",
+            "name": "Almacén Secreto Pacto de Sangre — Wait Harbor",
+            "tier": 3,
+            "theme": "Bodega militarizada al final del muelle de espera. Trato Udrax ↔ Naga. Mercancías ilegales, prisioneros que nunca volvieron. Jefe: emisario Naga T4.",
+            "coord": {
+              "x": 830,
+              "y": 720
+            },
+            "bossMonsterId": "monster_naga_emisaria_pacto_03",
+            "relicIds": [
+              "equip_unique_udrax_amuleto_pacto_sangre"
+            ]
+          }
+        ],
+        "lore": [
+          "En el principio Udrax no era una nación, sino 9 pozos independientes que compartían un POZO MAYOR (el actual Bomengrid). Alrededor del 2120 ERA IX (Forjas), los Herreros Forjadores unieron los 9 por tratado y construyeron el acueducto del Pozo Mayor. Durante ERA XII (Naga) fue un infierno: 8 de 9 ciudades cayeron temporalmente. Solo Aclosos aguantó.",
+          "En 2000 b.f. la crisis NO es militar (el Pacto Sangre 1997 ha dado respiro), sino económica y SOCIAL. Eottetika se agota, el gremio minero pide abrir tierras tabú. La Secta Nox aprovecha la nostalgia de tiempos ERA XII, y los ciudadanos humildes creen que 'ser Naga es mejor que ser hambriento'. Hay 3 clivajes muy marcados: Norte (forjeros) vs Sur (Pozos, Naga-simps), Capital vs Puertos, Clase Alta vs Bajos fondos (Pozos).",
+          "Bomengrid es la ciudad más extraña del Occidente Meridional. Su muralla se derrumbó en 2024, la reconstruyeron a medias, se volvió a derrumbar, y ahora hay una sección 'Fantasma' donde nadie pasa de noche. Se dice que el Primer Cónsul camina sobre el alba, cargando su martillo de guerra de obsidiana. Las almas de los que allí mueren NO pasan al cielo: se quedan. Por eso los Udraxenses NO quieren morir en Bomengrid sin ritual de purificación por un clérigo de la Orden del Puente."
+        ]
+      }
+    },
+    {
+      "id": "city_ecla_umedan_capital",
+      "locationType": "city",
+      "name": "Umedan",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_ecla",
+      "controlledBy": "Ecla",
+      "pendingCanonName": false,
+      "settlementSize": "capital",
+      "population": "~31.000",
+      "position": {
+        "x": 268,
+        "y": 521
+      },
+      "coord": {
+        "x": 68,
+        "y": 105
+      },
+      "tier": 3,
+      "rarity": "rare",
+      "ruler": "Triumvirato (Cámara Cinabrio 2000bf)",
+      "trait": "Ciudad de la Alquimia y la Biología (Universidad Magna Biologica)",
+      "alignment": "neutral_good",
+      "culture": "Silvano-Vietic",
+      "deityIds": [
+        "deity_arcane_spire",
+        "deity_veiled_queen"
+      ],
+      "raceIds": [
+        "race_elf_silvan",
+        "race_human_vietic",
+        "race_gnome_deep",
+        "race_half_elf"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Universidad + Alquimia + Biología + Parlamento Triunvirato",
+        "faction": "faction_ecla_camara_cinabrio",
+        "tierRange": {
+          "min": 3,
+          "max": 5
+        },
+        "pnjPrincipal": {
+          "name": "Gran Alquimista Elenya Silvanos",
+          "raceId": "race_elf_silvan",
+          "classId": "class_wizard_transmutation",
+          "role": "Primera del Triunvirato 2000bf, Gobernadora Civil",
+          "tier": 4,
+          "hook": "Sabe que la alquimia transmutación ilegal que persigue su propio gremio crea mutantes que escapan a los canales; oculta el secreto para evitar que Mariscalato tome poder."
+        },
+        "quests": [
+          {
+            "id": "quest_ecla_umedan_canales_mutantes",
+            "title": "La Plaga de los Canales",
+            "tier": 3,
+            "hook": "Tres pescadores han desaparecido en el Canal Norte. Cuerpos aparecen con signos de corrosión alquímica. La Cámara Cinabrio ofrece 2000 po si se limpia 'el foco'; pero no dicen qué es. ¿Es un monstruo… o una evidencia?"
+          },
+          {
+            "id": "quest_ecla_umedan_examen_final",
+            "title": "El Examen Final de la Universidad",
+            "tier": 2,
+            "hook": "La Universidad busca estudiantes aventureros como 'sujetos prácticos' de un nuevo examen de Biología. Recompensa: pócima permanente de +1 CON. Pero el examen es sobre un cadáver que habla."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_ecla_edea",
+      "locationType": "city",
+      "name": "Edea",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_ecla",
+      "controlledBy": "Ecla",
+      "pendingCanonName": false,
+      "settlementSize": "ciudad",
+      "population": "~6.000",
+      "position": {
+        "x": 483,
+        "y": 589
+      },
+      "coord": {
+        "x": 120,
+        "y": 118
+      },
+      "tier": 2,
+      "rarity": "uncommon",
+      "ruler": "Bibliotecaria Mayor Lyra",
+      "trait": "Biblioteca Prohibida (Ev-1995-AsaltoNubes llegó aquí)",
+      "deityIds": [
+        "deity_arcane_spire"
+      ],
+      "raceIds": [
+        "race_gnome_deep",
+        "race_elf_silvan",
+        "race_human_vietic"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Biblioteca Arcadia + archivos de la Universidad Umedan; refugio temporal a 600 prisioneros de guerra de EV-1995.",
+        "faction": "faction_ecla_circulo_joren_refugio",
+        "tierRange": {
+          "min": 2,
+          "max": 4
+        },
+        "pnjPrincipal": {
+          "name": "Bibliotecaria Mayor Lyra Sinthros",
+          "raceId": "race_gnome_rock",
+          "classId": "class_wizard_divination",
+          "role": "Directora Biblioteca Prohibida de Edea",
+          "tier": 3,
+          "hook": "Uno de los libros del ala cerrada (prisioneros aeronaves Esmua) se sale de la estantería solo por las noches. No es hechizo: el libro está VIVO. No se atreve a abrirlo."
+        },
+        "quests": [
+          {
+            "id": "quest_ecla_edea_libro_viviente",
+            "title": "El Libro que Llora",
+            "tier": 2,
+            "hook": "Lyra Sinthros ofrece 1500 po para abrir y 'entrevistar' al libro viviente. El libro parece ser el diario de un soldado ZCODE Esmua de AsaltoNubes. Habla de una reliquia perdida: el 'TrozodeNube'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_ecla_ekait",
+      "locationType": "city",
+      "name": "Ekait",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_ecla",
+      "controlledBy": "Ecla",
+      "settlementSize": "ciudad",
+      "population": "~12.000",
+      "position": {
+        "x": 342,
+        "y": 543
+      },
+      "coord": {
+        "x": 86,
+        "y": 108
+      },
+      "tier": 2,
+      "rarity": "uncommon",
+      "ruler": "Obispo de la Luz del Alba",
+      "trait": "Santuario en discordia (Morning Light vs druidas silvanos)",
+      "deityIds": [
+        "deity_morning_light",
+        "deity_wild_court"
+      ],
+      "raceIds": [
+        "race_human_vietic",
+        "race_elf_silvan"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Santuario del Alba + 4ª ciudad de Ecla por población; peregrinación diaria. Disputa por tierras de pasto.",
+        "faction": "faction_ecla_consejo_silvano",
+        "tierRange": {
+          "min": 2,
+          "max": 4
+        },
+        "pnjPrincipal": {
+          "name": "Obispo Kaiden Haligast",
+          "raceId": "race_aasimar",
+          "classId": "class_cleric_light",
+          "role": "Arcipreste de Ekait (Santuario MorningLight)",
+          "tier": 3,
+          "hook": "Amenaza con excomulgar al Consejo Silvano. Pero tiene un secreto: su hija biológica se ha fugado con un druida del Wild Court. Si sale a la luz, su carrera acaba."
+        },
+        "quests": [
+          {
+            "id": "quest_ecla_ekait_hija_fugitiva",
+            "title": "La Hija del Obispo",
+            "tier": 2,
+            "hook": "Un druida silvano ofrece 1000 po para recuperar un amuleto que su novia (la hija del obispo) dejó antes de huir. El obispo, por su lado, pide que la traigan de vuelta… Y que maten al druida. El jugador elige bando."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_ecla_joren",
+      "locationType": "city",
+      "name": "Joren",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_ecla",
+      "controlledBy": "Ecla",
+      "settlementSize": "ciudad",
+      "population": "~12.000",
+      "position": {
+        "x": 322,
+        "y": 609
+      },
+      "coord": {
+        "x": 81,
+        "y": 122
+      },
+      "tier": 2,
+      "rarity": "uncommon",
+      "ruler": "Matriarca Alya Ashye",
+      "trait": "Refugio de exiliados; albergue 600 desplazados",
+      "deityIds": [
+        "deity_morning_light",
+        "deity_sun_father"
+      ],
+      "raceIds": [
+        "race_human_vietic",
+        "race_half_elf",
+        "race_halfling_lightfoot"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Círculo del Refugio, asistencia a desplazados de Cruzadas. Escuela de oficios para refugiados.",
+        "faction": "faction_ecla_circulo_joren_refugio",
+        "tierRange": {
+          "min": 1,
+          "max": 3
+        },
+        "pnjPrincipal": {
+          "name": "Matriarca Alya Ashye",
+          "raceId": "race_human_vietic",
+          "classId": "class_cleric_life",
+          "role": "Directora Círculo Refugio Joren",
+          "tier": 3,
+          "hook": "Alguien ha estado envenenando la comida de los refugiados: 5 enfermos críticos. Los síntomas son de un veneno que solo fabrica LA CÁMARA CINABRIO. La paz civil de Ecla pende de un hilo."
+        },
+        "quests": [
+          {
+            "id": "quest_ecla_joren_veneno_comida",
+            "title": "El Veneno de los Desplazados",
+            "tier": 3,
+            "hook": "Alya ofrece 3000 po al que encuentre al responsable del envenenamiento y le haga desistir. Las pruebas apuntan a un aprendiz de alquimista. Pero ¿ordenado por quién? Por la Cámara? Por el Mariscalato? ¿O es una tercera columna de la Secta Udrax Nox?"
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_ecla_etriath",
+      "locationType": "city",
+      "name": "Etriath",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_ecla",
+      "controlledBy": "Ecla",
+      "settlementSize": "ciudad",
+      "population": "~9.000",
+      "position": {
+        "x": 409,
+        "y": 650
+      },
+      "coord": {
+        "x": 102,
+        "y": 130
+      },
+      "tier": 2,
+      "rarity": "uncommon",
+      "ruler": "Maestro Canales (Señor del Agua)",
+      "trait": "Canal de Aguas Negras — comercio fluvial hacia Bomengrid/Udrax",
+      "deityIds": [
+        "deity_ocean_serenity",
+        "deity_deep_king"
+      ],
+      "raceIds": [
+        "race_half_elf",
+        "race_lizardfolk",
+        "race_human_vietic"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Canales navegables, comercio fluvial, astilleros barcazas; muelles mercantes. Intercambio Ecla ↔ Udrax.",
+        "faction": "faction_ecla_camara_cinabrio",
+        "tierRange": {
+          "min": 2,
+          "max": 4
+        },
+        "pnjPrincipal": {
+          "name": "Señor de los Canales Noldor 'Ropafrías' Verdánt",
+          "raceId": "race_half_elf",
+          "classId": "class_fighter_elder_knight",
+          "role": "Juez de Canales / Protector del Muelle",
+          "tier": 3,
+          "hook": "Las barcazas mercantes cargadas de harina hacia Udrax desaparecen 1 de cada 4 veces. En el agua salen carteles UDRAX de LA SECTA NOX. Alguien quiere cortar el comercio entre los dos países."
+        },
+        "quests": [
+          {
+            "id": "quest_ecla_etriath_barcaza_perdida",
+            "title": "La Barcaza Perdida de las Harinas",
+            "tier": 2,
+            "hook": "Maestro Canales pide escoltar la próxima barcaza. Si desaparece hay que seguir el rastro por los canales hasta la base de los secuestradores. Se rumorea que el responsable es un noble Udraxense de Bomengrid que quiere inflar los precios del pan."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_ecla_apeartel",
+      "locationType": "city",
+      "name": "Apeartel",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_ecla",
+      "controlledBy": "Ecla",
+      "settlementSize": "ciudad",
+      "population": "~6.000",
+      "position": {
+        "x": 406,
+        "y": 485
+      },
+      "coord": {
+        "x": 102,
+        "y": 97
+      },
+      "tier": 2,
+      "rarity": "uncommon",
+      "ruler": "Reina Gremio Tejedoras",
+      "trait": "Gremio poderoso de Tejedoras de los Hilos",
+      "deityIds": [
+        "deity_veiled_queen"
+      ],
+      "raceIds": [
+        "race_human_vietic",
+        "race_drow_vengeance",
+        "race_halfling_stout"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Gremio tejedores, tintorerías, exportación tejidos de lujo a Bastrea/CLOUDE. Produce el famoso 'terciopelo Eclés' rojo-cinabrio.",
+        "faction": "faction_ecla_camara_cinabrio",
+        "tierRange": {
+          "min": 2,
+          "max": 3
+        },
+        "pnjPrincipal": {
+          "name": "Suprema Tejedora Mora Venatrix",
+          "raceId": "race_drow_vengeance",
+          "classId": "class_rogue_mastermind",
+          "role": "Señora Gremio Apeartel + servicio de inteligencia eclés",
+          "tier": 3,
+          "hook": "El mismo tejido rojo cinabrio es de origen INFRA-MUNDO. Su principal proveedor (casa comercial CLOUDE en la Fortaleza Hoz) acaba de cobrarle el doble. Se pregunta: ¿me están chantajeando o hay escasez genuina?"
+        },
+        "quests": [
+          {
+            "id": "quest_ecla_apeartel_proveedor chantaje",
+            "title": "El Chantaje del Terciopelo",
+            "tier": 2,
+            "hook": "Mora pide al equipo infiltrarse en el almacén CLOUDE del lado sur de la Fortaleza de la Hoz para sacar 3 rollos de tejido de muestra. Si los análisis demuestran que la 'escasez' es inventada, la Cámara Cinabrio declara sanción económica."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_ecla_ithon",
+      "locationType": "city",
+      "name": "Ithon — Isla de los Primeros Elfos",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_ecla",
+      "controlledBy": "Ecla",
+      "settlementSize": "puerto",
+      "population": "~9.000",
+      "position": {
+        "x": 209,
+        "y": 396
+      },
+      "coord": {
+        "x": 52,
+        "y": 79
+      },
+      "tier": 1,
+      "rarity": "uncommon",
+      "ruler": "Praelor Ithon (Consejo Silvano)",
+      "trait": "Colonia pesquera / primera isla Elfa del archipiélago occidental",
+      "deityIds": [
+        "deity_wild_court",
+        "deity_moon_mother"
+      ],
+      "raceIds": [
+        "race_elf_silvan",
+        "race_elf_sea"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Pesca, concha marina, conservas. Santuario Tumba PRIMERA REINA ELFA (ver Dungeon). Sede del Consejo Silvano cuando Umedan está en crisis.",
+        "faction": "faction_ecla_consejo_silvano",
+        "tierRange": {
+          "min": 1,
+          "max": 3
+        },
+        "pnjPrincipal": {
+          "name": "Praelor Kythaela Ithon",
+          "raceId": "race_elf_sea",
+          "classId": "class_druid_coast",
+          "role": "Señora de la Isla Ithon (representante Silvana)",
+          "tier": 3,
+          "hook": "Ella recuerda el Asedio 2004 perfectamente. La Tumba de la Reina se abrió durante el combate y algo SALIÓ. Todavía está en los acantilados. Cada luna llena se escuchan cantos."
+        },
+        "quests": [
+          {
+            "id": "quest_ecla_ithon_tumba_abierta",
+            "title": "Lo que Salió de la Tumba",
+            "tier": 3,
+            "hook": "En la próxima luna llena (3 días) Kythaela pide explorar los acantilados. El algo parece ser UN SPECTRO de la primera reina que pide que se devuelva la Corona de Nácar (perdida en el ASALTO 2004). Buscarla en el campamento cruzado."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_ecla_uluth",
+      "locationType": "city",
+      "name": "Uluth",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_ecla",
+      "controlledBy": "Ecla",
+      "settlementSize": "aldea",
+      "population": "~800",
+      "position": {
+        "x": 485,
+        "y": 524
+      },
+      "coord": {
+        "x": 121,
+        "y": 105
+      },
+      "tier": 1,
+      "rarity": "common",
+      "ruler": "Alcalde Peder",
+      "trait": null,
+      "deityIds": [
+        "deity_sun_father"
+      ],
+      "raceIds": [
+        "race_human_vietic"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Aldeanos pesqueros en la desembocadura Uluth. Produce sal. Último punto antes de la Frontera Norte.",
+        "faction": "faction_ecla_mariscalato",
+        "tierRange": {
+          "min": 1,
+          "max": 2
+        },
+        "pnjPrincipal": {
+          "name": "Alcalde Peder Hearth",
+          "raceId": "race_human_vietic",
+          "classId": "class_militia_spearman",
+          "role": "Alcalde de Uluth + jefe guardias local",
+          "tier": 1,
+          "hook": "Las salinas están secándose desde enero. Se oye ruido bajo tierra. Esos no son animales — son trabajadores del Mariscalato perforando buscando agua para la Fortaleza Hoz. Si Uluth se queda sin sal, se muere."
+        },
+        "quests": [
+          {
+            "id": "quest_ecla_uluth_sal_secas",
+            "title": "Las Salinas que Secan",
+            "tier": 1,
+            "hook": "Peder pide hablar con el Capitán del Mariscalato (campamento 3km de allí). Si se niegan a parar, hay que cerrar la nueva galería manualmente. Hay 40 mineros allí; no atacar — persuadir."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_ecla_portember",
+      "locationType": "city",
+      "name": "Port Ember — Puerto Refugiados",
+      "origin": "TRAE",
+      "nationId": "nation_ecla",
+      "controlledBy": "Ecla",
+      "settlementSize": "puerto",
+      "population": "~1.200",
+      "position": {
+        "x": 430,
+        "y": 470
+      },
+      "coord": {
+        "x": 108,
+        "y": 94
+      },
+      "tier": 2,
+      "rarity": "uncommon",
+      "ruler": "Capitán Mariscalato Donato",
+      "trait": "Puerto Fronterizo Cruzado; último puerto Ecla antes Fortaleza Hoz",
+      "deityIds": [
+        "deity_storm_lord"
+      ],
+      "raceIds": [
+        "race_human_mariner",
+        "race_human_vietic",
+        "race_minotaur"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Puerto refugio y aduana; desembarco de refugiados CLOUDE; astillero barcazas. Aloja ~280 cruzados veteranos (exiliados, desertantes).",
+        "faction": "faction_ecla_mariscalato",
+        "tierRange": {
+          "min": 2,
+          "max": 4
+        },
+        "pnjPrincipal": {
+          "name": "Capitán Donato 'Desertor' Vael",
+          "raceId": "race_human_mariner",
+          "classId": "class_fighter_champion",
+          "role": "Comandante Mariscalato Puerto Ember",
+          "tier": 3,
+          "hook": "Es desertor de Cruzados. Su antiguo General en la Fortaleza le pide una entrevista secreta: traicionar al Mariscalato y abrir el puerto a 4 barcos de invasión. Si no acepta, matan a su hija que vive en Umedan."
+        },
+        "quests": [
+          {
+            "id": "quest_ecla_portember_traidor_o_heroe",
+            "title": "La Entrevista del Desertor",
+            "tier": 3,
+            "hook": "Donato pide a equipo tomar la decisión por él. 3 opciones: (a) Aceptar el sobre y llevarlo al General → DONATO TRAICIONA; (b) Matar al General → Mariscalato premia 5k, pero Cruzados declaran guerra; (c) Interceptar sobre y llevárselo al TRIUNVIRATO → se nombra héroe pero su hija sigue en peligro."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_ecla_hearthstead",
+      "locationType": "city",
+      "name": "Hearthstead",
+      "origin": "TRAE",
+      "nationId": "nation_ecla",
+      "controlledBy": "Ecla",
+      "settlementSize": "aldea",
+      "population": "~600",
+      "position": {
+        "x": 290,
+        "y": 530
+      },
+      "coord": {
+        "x": 72,
+        "y": 106
+      },
+      "tier": 1,
+      "rarity": "common",
+      "ruler": "Patrona Granja Halfling",
+      "trait": "Granja comunal; surte pan y leche a Umedan (cerveza negra muy famosa)",
+      "deityIds": [
+        "deity_sun_father",
+        "deity_laughing_bard"
+      ],
+      "raceIds": [
+        "race_halfling_lightfoot",
+        "race_human_vietic",
+        "race_hill_dwarf"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Agricultura, lechería, ganado lanar, cervecería negra. Grano para 6 mil personas al año.",
+        "faction": "faction_ecla_circulo_joren_refugio",
+        "tierRange": {
+          "min": 1,
+          "max": 2
+        },
+        "pnjPrincipal": {
+          "name": "Granjera May 'Chela' Caskfoot",
+          "raceId": "race_halfling_stout",
+          "classId": "class_militia_brawler",
+          "role": "Propietaria Granja Hearthstead + Cervecería",
+          "tier": 2,
+          "hook": "Cada semana desaparecen 2 barriles de cerveza negra de la bodega. La puerta está cerrada, la alarma de runas no suena. No hay ladrones. El responsable es su hijo adolescente, que los vende al SUSURRANTE del POZO (udrax contrabandistas)."
+        },
+        "quests": [
+          {
+            "id": "quest_ecla_hearthstead_chela_ladron",
+            "title": "El Barril Perdido de Cerveza",
+            "tier": 1,
+            "hook": "May pide vigilar la bodega dos noches. Equipo sorprende al hijo y a un emisario yuan-ti de los Susurrantes. Hay que decidir: denunciar (May se encomienda a justicia, pero su hijo va a galeras); o aceptar el doble de dinero del emisario (lo que hace que el veneno pase por cerveza)."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_ecla_mithriltor",
+      "locationType": "city",
+      "name": "Mithril Tor",
+      "origin": "TRAE",
+      "nationId": "nation_ecla",
+      "controlledBy": "Ecla",
+      "settlementSize": "fortaleza",
+      "population": "~1.800",
+      "position": {
+        "x": 315,
+        "y": 430
+      },
+      "coord": {
+        "x": 79,
+        "y": 86
+      },
+      "tier": 3,
+      "rarity": "rare",
+      "ruler": "Archimaga Torre Myraela",
+      "trait": "Torre Arcana de los Cielos; vigilancia astral",
+      "deityIds": [
+        "deity_arcane_spire",
+        "deity_moon_mother"
+      ],
+      "raceIds": [
+        "race_high_elf",
+        "race_drow_vengeance",
+        "race_tiefling_bloodline_of_asmodeus"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Torre de adivinación astronómica; vigía contra invasiones por aire; escuela de magia adivinatoria.",
+        "faction": "faction_ecla_camara_cinabrio",
+        "tierRange": {
+          "min": 3,
+          "max": 5
+        },
+        "pnjPrincipal": {
+          "name": "Archimaga Myraela Mithrildaughter",
+          "raceId": "race_high_elf",
+          "classId": "class_wizard_divination",
+          "role": "Archimaga Mithril Tor",
+          "tier": 5,
+          "hook": "Su visión astral de hace una semana: 'Sangre cae del sol de Poniente y una daga atraviesa el Triunvirato'. Interpretación: un atentado contra el Trono. Pero no sabe la FECHA — solo que ocurre en una LUNA LLENA."
+        },
+        "quests": [
+          {
+            "id": "quest_ecla_mithriltor_atentado_triunvirato",
+            "title": "El Atentado del Sol Poniente",
+            "tier": 4,
+            "hook": "Myraela pide escoltar a un enviado hasta Umedan. Hay 3 lunas llenas antes del año nuevo. El equipo debe averiguar cual. Si fracasan, el atentado ocurre: Cámara Cinabrio cae, Mariscalato toma poder, y ECLA declara la GUERRA."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_ecla_silverbow",
+      "locationType": "city",
+      "name": "Silverbow — Alcázar Fronterizo Silvano",
+      "origin": "TRAE",
+      "nationId": "nation_ecla",
+      "controlledBy": "Ecla",
+      "settlementSize": "fortaleza",
+      "population": "~900",
+      "position": {
+        "x": 235,
+        "y": 515
+      },
+      "coord": {
+        "x": 59,
+        "y": 103
+      },
+      "tier": 2,
+      "rarity": "uncommon",
+      "ruler": "Capitana Arquera Arwen Nightbow",
+      "trait": "Alcázar arquería frontera occidental; refugio étnico drow",
+      "deityIds": [
+        "deity_silver_hunt"
+      ],
+      "raceIds": [
+        "race_elf_silvan",
+        "race_drow_vengeance",
+        "race_half_elf"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Vigía fronteriza occidente; formación de arqueros; albergue refugiados de casas nobles ecleses caídas (refugio étnico drow).",
+        "faction": "faction_ecla_consejo_silvano",
+        "tierRange": {
+          "min": 2,
+          "max": 4
+        },
+        "pnjPrincipal": {
+          "name": "Capitana Arwen 'Bloodbow' Nightbow",
+          "raceId": "race_drow_vengeance",
+          "classId": "class_ranger_gloom_stalker",
+          "role": "Comandante Alcázar Silverbow",
+          "tier": 3,
+          "hook": "El mismo clan drow que la exilió de casa hace años viene esta luna para negociar una paz. Le entregan una daga de obsidiana sellada. Si la abre: ritual acepta, clan la re-absorbe; si no: atacarán. La daga no tiene trampa visible… pero tiene runas de INVOCACIÓN DEMONIO."
+        },
+        "quests": [
+          {
+            "id": "quest_ecla_silverbow_daga_sellada",
+            "title": "La Daga de Obsidiana Sellada",
+            "tier": 3,
+            "hook": "Arwen pide: (1) identificar runas, (2) hablar con el enviado clan, (3) decidir qué hacer. Si falla — un demonio menor despierta en la fortaleza y hay que destruirlo."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_udrax_bomengrid_capital",
+      "locationType": "city",
+      "name": "Bomengrid — Capital Confederada",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_udrax",
+      "controlledBy": "Udrax",
+      "settlementSize": "capital",
+      "population": "~32.000",
+      "position": {
+        "x": 722,
+        "y": 698
+      },
+      "coord": {
+        "x": 180,
+        "y": 139
+      },
+      "tier": 3,
+      "rarity": "rare",
+      "ruler": "Cónsul Varran Halfdran",
+      "trait": "Muralla a medio caer (tramo fantasma)",
+      "deityIds": [
+        "deity_iron_oath",
+        "deity_deep_king",
+        "deity_nocturne"
+      ],
+      "raceIds": [
+        "race_human_mariner",
+        "race_naga_blooded",
+        "race_lizardfolk",
+        "race_minotaur"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Asamblea 9 pozos; justicia confederal; mercado central (mayor sur); templos IronOath y DeepKing. Sede ejército confederal.",
+        "faction": "faction_udrax_asamblea_pozos",
+        "tierRange": {
+          "min": 3,
+          "max": 5
+        },
+        "pnjPrincipal": {
+          "name": "Cónsul Varran Halfdran 'Oathkeeper'",
+          "raceId": "race_human_mariner",
+          "classId": "class_paladin_devotion",
+          "role": "Cónsul de Asamblea 2000bf",
+          "tier": 4,
+          "hook": "El Pacto de Sangre 1997 expira en 3 años. El mismo cónsul lo firmó, pero hoy lo considera una deshonra. Quiere romperlo en secreto; pero si se entera LA SECTA NOX (aliada Nagas), lo asesinan."
+        },
+        "quests": [
+          {
+            "id": "quest_udrax_bomengrid_romper_pacto",
+            "title": "Romper el Pacto en Secreto",
+            "tier": 4,
+            "hook": "Halfdran pide equipo falsificar las pruebas de que el Pacto lo firmó el Cónsul anterior y cancelarlo. Ruta: infiltrarse en la Torre Secretaría de Asamblea → robar tratado original (mazmorra MURO FANTASMA, dungeon_udrax_muralla_fantasma) → sustituir por uno nuevo firmado por alguien muerto. Recompensa: 10.000 po + rango Honorario Asamblea."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_udrax_ugrolas",
+      "locationType": "city",
+      "name": "Ugrolas",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_udrax",
+      "controlledBy": "Udrax",
+      "settlementSize": "ciudad",
+      "population": "~9.000",
+      "position": {
+        "x": 579,
+        "y": 742
+      },
+      "coord": {
+        "x": 145,
+        "y": 148
+      },
+      "tier": 2,
+      "rarity": "uncommon",
+      "ruler": "Baronesa Minera Kaelie",
+      "trait": "Refugio de exiliados (del norte)",
+      "deityIds": [
+        "deity_morning_light",
+        "deity_sun_father"
+      ],
+      "raceIds": [
+        "race_human_vietic",
+        "race_duergar"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Refugio a exiliados de Ecla Cruzada; taller herrería regional; cuartel auxiliar Orden del Puente.",
+        "faction": "faction_udrax_gremio_minero",
+        "tierRange": {
+          "min": 2,
+          "max": 3
+        },
+        "pnjPrincipal": {
+          "name": "Baronesa Kaelie Ugrol",
+          "raceId": "race_duergar",
+          "classId": "class_fighter_elder_knight",
+          "role": "Señora feudal de Ugrolas",
+          "tier": 3,
+          "hook": "Los refugiados del norte acusan a un herrero (trabajador de su gremio) de matar a tres de ellos. El herrero dice que un monstruo salió del sótano. El sótano es un antiguo pozo."
+        },
+        "quests": [
+          {
+            "id": "quest_udrax_ugrolas_asesinato_herrero",
+            "title": "El Sótanos del Herrero",
+            "tier": 2,
+            "hook": "Baronesa pide investigar. Equipo baja al sótano: encuentra túneles anexados al NEBO PADRE de Bomengrid, sectarios Estimar NOX haciendo sacrificios. El herrero es inocente pero le chantajeaban. Si se limpia, recompensa 2000 po + permiso para armas herrero."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_udrax_ujestrall",
+      "locationType": "city",
+      "name": "Ujestrall",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_udrax",
+      "controlledBy": "Udrax",
+      "settlementSize": "ciudad",
+      "population": "~9.000",
+      "position": {
+        "x": 788,
+        "y": 677
+      },
+      "coord": {
+        "x": 197,
+        "y": 135
+      },
+      "tier": 2,
+      "rarity": "uncommon",
+      "ruler": "Santísima Madre Prioste Nocturna",
+      "trait": "Santuario en Discordia (Nocturne vs. Ocean Serenity clérigos)",
+      "deityIds": [
+        "deity_nocturne",
+        "deity_ocean_serenity"
+      ],
+      "raceIds": [
+        "race_human_mariner",
+        "race_naga_blooded"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Templos duales; aduana puerto del este; pesca; refugio marinero.",
+        "faction": "faction_udrax_secta_nox",
+        "tierRange": {
+          "min": 2,
+          "max": 4
+        },
+        "pnjPrincipal": {
+          "name": "Madre Siobhan of the Night",
+          "raceId": "race_naga_blooded",
+          "classId": "class_cleric_trickery",
+          "role": "Prioste Santuario Ujestrall (miembro encubierto Estimar Nox)",
+          "tier": 3,
+          "hook": "Cada semana 3 pescadores desaparecen en el puerto. Los cuerpos salen con mordeduras Naga. Es ella — la sacerdotisa está alimentando a un dragón marino menor que invocó el año pasado. Lo considera un regalo divino."
+        },
+        "quests": [
+          {
+            "id": "quest_udrax_ujestrall_dragon_marino",
+            "title": "El Regalo de la Diosa",
+            "tier": 3,
+            "hook": "Los pescadores piden investigar. Si se mata al dragón, Siobhan jura venganza y los cazadores marcan para siempre Udrax entera. Si se le dice a la Asamblea — Siobhan es ejecutada. Si se libra y esconderlo en Wait Harbor — pacto de sangre se renueva antes de plazo."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_udrax_aclosos",
+      "locationType": "city",
+      "name": "Aclosos",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_udrax",
+      "controlledBy": "Udrax",
+      "settlementSize": "ciudad",
+      "population": "~6.000",
+      "position": {
+        "x": 680,
+        "y": 732
+      },
+      "coord": {
+        "x": 170,
+        "y": 146
+      },
+      "tier": 2,
+      "rarity": "uncommon",
+      "ruler": "Prioste Delgar Ironvein",
+      "trait": "Puente Estratégico (único de 3 km en el río)",
+      "deityIds": [
+        "deity_iron_oath"
+      ],
+      "raceIds": [
+        "race_duergar",
+        "race_dwarf_hill",
+        "race_minotaur"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Puente de piedra; cuartel Orden Puente Milenario; peaje del río; armería de la Orden.",
+        "faction": "faction_udrax_orden_puente",
+        "tierRange": {
+          "min": 2,
+          "max": 4
+        },
+        "pnjPrincipal": {
+          "name": "Prioste Delgar Ironvein",
+          "raceId": "race_duergar",
+          "classId": "class_cleric_war",
+          "role": "Comandante Puente",
+          "tier": 4,
+          "hook": "15 días atrás pusieron explosivos en la pila central del puente (sabotaje). Sabe que son LA SECTA NOX, pero no puede detenerlos sin una 'prueba de sangre' que los implique directamente. Orden pide equipo infiltrarse en secta y robar actas reunión."
+        },
+        "quests": [
+          {
+            "id": "quest_udrax_aclosos_sabotaje_puente",
+            "title": "El Puente que Explota",
+            "tier": 4,
+            "hook": "Tarea: (1) infiltrarse en Secta Nox como 'novicios' (tienen un ritual de iniciación con pócima); (2) llegar hasta la sala de registros; (3) sacar el acta. Si se falla: puente vuela, 10k muertos, Ecla cierra frontera, guerra civil."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_udrax_aherhia",
+      "locationType": "city",
+      "name": "Aherhia",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_udrax",
+      "controlledBy": "Udrax",
+      "settlementSize": "ciudad",
+      "population": "~6.000",
+      "position": {
+        "x": 614,
+        "y": 635
+      },
+      "coord": {
+        "x": 153,
+        "y": 127
+      },
+      "tier": 2,
+      "rarity": "uncommon",
+      "ruler": "Reina Feria Annabel",
+      "trait": "Feria Anual Famosa — duración 7 días cada equinoccio",
+      "deityIds": [
+        "deity_laughing_bard",
+        "deity_veiled_queen"
+      ],
+      "raceIds": [
+        "race_human_mariner",
+        "race_halfling_lightfoot",
+        "race_lizardfolk"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Mercado anual 7 días; rutas comerciales Ecla/Udrax/Gongorguma/Tabaxi. 40k visitantes. Sede Tribunal Comercial Confederado.",
+        "faction": "faction_udrax_asamblea_pozos",
+        "tierRange": {
+          "min": 1,
+          "max": 3
+        },
+        "pnjPrincipal": {
+          "name": "Señora Feria Annabel Fortuna",
+          "raceId": "race_halfling_lightfoot",
+          "classId": "class_rogue_swashbuckler",
+          "role": "Reina de la Feria (Cargo hereditario)",
+          "tier": 2,
+          "hook": "Ha salido una apuesta de 50.000 po en la feria: ¿sobrevivirá el equipo 3 horas en el 'Circo del Colmillo'? (lucha contra monstruos no-muertos). Los 3 competidores anteriores desaparecieron."
+        },
+        "quests": [
+          {
+            "id": "quest_udrax_aherhia_circo_colmillo",
+            "title": "El Circo del Colmillo",
+            "tier": 3,
+            "hook": "Si equipo acepta la apuesta, entran en el circo. Hay 3 rondas: (1) 6 zombies, (2) 2 ghasts + 1 wight, (3) mini-boss Lich-menor. Si ganan — 50k. Si pierden: son los monstruos del año que viene. Annabel no quiere que nadie entre, pero la apuesta es legal."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_udrax_eottetika",
+      "locationType": "city",
+      "name": "Eottetika",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_udrax",
+      "controlledBy": "Udrax",
+      "settlementSize": "mina",
+      "population": "~12.000",
+      "position": {
+        "x": 552,
+        "y": 599
+      },
+      "coord": {
+        "x": 138,
+        "y": 120
+      },
+      "tier": 2,
+      "rarity": "uncommon",
+      "ruler": "Gremialmaestre Brunhild",
+      "trait": "Minas agotándose (crisis 37% en 5 años)",
+      "deityIds": [
+        "deity_deep_king"
+      ],
+      "raceIds": [
+        "race_dwarf_hill",
+        "race_duergar",
+        "race_gnome_deep"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Minería de hierro, níquel, zinc; Herrerías; 80% de exportación hierro de Udrax. Única ciudad que paga 45% presupuesto confederal.",
+        "faction": "faction_udrax_gremio_minero",
+        "tierRange": {
+          "min": 2,
+          "max": 4
+        },
+        "pnjPrincipal": {
+          "name": "Gremialmaestre Brunhild Stonehand",
+          "raceId": "race_dwarf_hill",
+          "classId": "class_barbarian_berserker",
+          "role": "Jefe Gremio Minas",
+          "tier": 3,
+          "hook": "Tiene plan: abrir minas bajo la ciudad EaBOTARA (tabú). Si la asamblea no aprueba, amenaza con dimitir y que todos se muerdan el sobresueldo. Pero LA SECTA NOX ya está perforando desde el lado sur. La crisis es fabricada."
+        },
+        "quests": [
+          {
+            "id": "quest_udrax_eottetika_crisis_fabricada",
+            "title": "Las Minas que NO se Agotan",
+            "tier": 4,
+            "hook": "Brunhild pide equipo PERFORAR GALERIA 7 (cerrada hace 2 años). Dentro: NO está agotada; hay un puesto de vigilancia con guardias NOX y minerales que sacan secretamente. Si re-abres: crisis se resuelve; pero Brunhild pide que guardes el secreto, porque a ella le convence la asamblea que no apruebe las minas tabú."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_udrax_jggotti",
+      "locationType": "city",
+      "name": "Jggotti",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_udrax",
+      "controlledBy": "Udrax",
+      "settlementSize": "pueblo",
+      "population": "~800",
+      "position": {
+        "x": 578,
+        "y": 669
+      },
+      "coord": {
+        "x": 144,
+        "y": 134
+      },
+      "tier": 1,
+      "rarity": "common",
+      "ruler": "Regidora Bruna",
+      "trait": "Pozo que susurra (voz nocturna que aconseja a los visitantes)",
+      "deityIds": [
+        "deity_nocturne"
+      ],
+      "raceIds": [
+        "race_human_mariner",
+        "race_yuan_ti_pureblood"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Agricultura de secano; pozos antiguos. El Pozo Principal es un punto de peregrinación LOCAL (aunque asamblea lo prohibe, acuden todos los años).",
+        "faction": "faction_udrax_contrabandistas_pozos",
+        "tierRange": {
+          "min": 1,
+          "max": 3
+        },
+        "pnjPrincipal": {
+          "name": "Regidora Bruna Susurrante",
+          "raceId": "race_yuan_ti_pureblood",
+          "classId": "class_warlock_fiend",
+          "role": "Señora Local Jggotti",
+          "tier": 2,
+          "hook": "El pozo le dijo esta noche: 'si 3 chamanes del clan vecino beben, te entregarán un anillo de sangre'. Quiere conseguirlo; pero los chamanes dicen que ella es 'no pura'. Equipo debe intermediar — sin que la Asamblea se entere."
+        },
+        "quests": [
+          {
+            "id": "quest_udrax_jggotti_anillo_sangre",
+            "title": "El Anillo del Pozo Susurrante",
+            "tier": 2,
+            "hook": "Bruna pide: (a) hablar con 3 chamanes vecinos (tribus lagarto), (b) convencerles de que realice la ceremonia. Si se rechaza: el Pozo 'se enfada' y 3 vecinos mueren. Si se hace: Bruna obtiene el anillo y le da 2500 po. Pero el anillo es un pacto fiend, y luego hay que cerrarlo."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_udrax_eabotara",
+      "locationType": "city",
+      "name": "Eabotara",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_udrax",
+      "controlledBy": "Udrax",
+      "settlementSize": "aldea",
+      "population": "~300",
+      "position": {
+        "x": 566,
+        "y": 524
+      },
+      "coord": {
+        "x": 141,
+        "y": 105
+      },
+      "tier": 1,
+      "rarity": "common",
+      "ruler": "Señor Aldric",
+      "trait": "Pozo que susurra (ATAQUES NAGA 2001 aquí)",
+      "deityIds": [
+        "deity_nocturne",
+        "deity_ocean_serenity"
+      ],
+      "raceIds": [
+        "race_human_mariner",
+        "race_lizardfolk",
+        "race_naga_blooded"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Pezcadores; contrabando (susurrantes del pozo); punto de control norte frontera Ecla↔Udrax (Paso de los Danzantes).",
+        "faction": "faction_udrax_contrabandistas_pozos",
+        "tierRange": {
+          "min": 1,
+          "max": 3
+        },
+        "pnjPrincipal": {
+          "name": "Señor Aldric Ropasucia",
+          "raceId": "race_human_mariner",
+          "classId": "class_rogue_thief",
+          "role": "Alcalde Eabotara (ex-guardia de puerto desertor)",
+          "tier": 1,
+          "hook": "El SUSURRANTE le ha pedido un cargamento 'especial' de Umedan a través de Joren: niñas pequeñas. No quiere entregar, pero si no se hace — El Silbador (Yrisseth) le mata a su mujer. Equipo debe: entregar, negarse (luchar contra contrabandistas), o cambiar la carga (por estatuas de niñas + runas)."
+        },
+        "quests": [
+          {
+            "id": "quest_udrax_eabotara_cargamento_especial",
+            "title": "El Cargamento que Nadie Quiere",
+            "tier": 3,
+            "hook": "Equipo elige un bando. Si entregan: Aldric odia para siempre; Secta Nox gana. Si niegan y pelean: Yrisseth jura venganza y nunca pueden caminar por los pozos. Si intercambian: pasan, pero luego una inspección lo descubre y hay 3 frentes de mentira que mantener."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_udrax_waitharbor",
+      "locationType": "city",
+      "name": "Wait Harbor — Puerto de la Espera",
+      "origin": "TRAE",
+      "nationId": "nation_udrax",
+      "controlledBy": "Udrax",
+      "settlementSize": "puerto",
+      "population": "~2.400",
+      "position": {
+        "x": 840,
+        "y": 720
+      },
+      "coord": {
+        "x": 200,
+        "y": 144
+      },
+      "tier": 3,
+      "rarity": "rare",
+      "ruler": "Admiral de Pacto — Emisario Naga + Udrax",
+      "trait": "Sede Pacto Sangre 1997 — intercambio con Naga",
+      "deityIds": [
+        "deity_ocean_serenity",
+        "deity_deep_king",
+        "deity_nocturne"
+      ],
+      "raceIds": [
+        "race_naga_blooded",
+        "race_human_mariner",
+        "race_tortle",
+        "race_triton"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Intercambio Pacto de Sangre (Naga ↔ Udrax). Aduana especial; 3 muelles protegidos por pacto arcano. 4 emisarios Naga residen aquí 365 días.",
+        "faction": "faction_udrax_asamblea_pozos",
+        "tierRange": {
+          "min": 3,
+          "max": 5
+        },
+        "pnjPrincipal": {
+          "name": "Emisaria Naga Sycorax la Fría",
+          "raceId": "race_naga_blooded",
+          "classId": "class_wizard_enchantment",
+          "role": "Representante Nagas en Wait Harbor",
+          "tier": 4,
+          "hook": "Quiere RENOVAR el pacto SANGRE por 100 años más (no 4). Asamblea no sabe — negocia en secreto con los suyos. Se entrega a cambio de la hija del Cónsul (16 años) como 'prenda de honor'."
+        },
+        "quests": [
+          {
+            "id": "quest_udrax_waitharbor_prenda_honor",
+            "title": "La Prenda de Honor del Cónsul",
+            "tier": 5,
+            "hook": "Cónsul Halfdran se entera por espías. Pide equipo: (a) RESCATAR a su hija del barco que la trae a Wait Harbour; (b) sustituirla por una doble que no sea pariente para que Sycorax no note. Si se hace bien — Pacto se renueva 4 años más y nadie se da cuenta. Si se hace mal — Guerra."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_udrax_midgate",
+      "locationType": "city",
+      "name": "Midgate",
+      "origin": "TRAE",
+      "nationId": "nation_udrax",
+      "controlledBy": "Udrax",
+      "settlementSize": "fortaleza",
+      "population": "~1.500",
+      "position": {
+        "x": 640,
+        "y": 660
+      },
+      "coord": {
+        "x": 160,
+        "y": 132
+      },
+      "tier": 2,
+      "rarity": "uncommon",
+      "ruler": "Capitán Carros Volaers",
+      "trait": "Paso Aéreo Carros de Vola (carros balancín sobre el desfiladero)",
+      "deityIds": [
+        "deity_iron_oath"
+      ],
+      "raceIds": [
+        "race_gnome_deep",
+        "race_dwarf_hill",
+        "race_goliath"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Teleférico / paso aéreo carros entre Minas Eottetika y Bomengrid. Transporta 1200 toneladas de mineral al mes. Mayor velocidad; 60% más caro.",
+        "faction": "faction_udrax_gremio_minero",
+        "tierRange": {
+          "min": 2,
+          "max": 4
+        },
+        "pnjPrincipal": {
+          "name": "Capitán 'Balancín' Volaers Halverg",
+          "raceId": "race_goliath",
+          "classId": "class_barbarian_totem_warrior",
+          "role": "Director Paso Aéreo",
+          "tier": 3,
+          "hook": "Los cables de los carros están cortándose de noche. 2 han caído en el desfiladero (37 muertos). No hay sabotaje EXTERIOR — es alguien que puede caminar por el cable. Un semi-diós gigante, quizás, pero Volaers se rie de esa idea… pero su hijo iba en el carro que cayó."
+        },
+        "quests": [
+          {
+            "id": "quest_udrax_midgate_cortacables",
+            "title": "El Cortacables",
+            "tier": 3,
+            "hook": "Queda 1 semana para la siguiente inspección. Equipo debe: (1) vigilar 3 cables, (2) cazar al Cortacables. Se descubre que es UN TROLL DE LAS MONTAÑAS (cuerpo 4m) que usa uñas para cortar. Si lo matan: Gremio premia. Si lo capturan y le enseñan a trabajar: paso aéreo tiene 1 trabajador inmortal, troll leal."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_udrax_narrowsend",
+      "locationType": "city",
+      "name": "Narrows End — Aduana Marítima del Sur",
+      "origin": "TRAE",
+      "nationId": "nation_udrax",
+      "controlledBy": "Udrax",
+      "settlementSize": "puerto",
+      "population": "~1.100",
+      "position": {
+        "x": 760,
+        "y": 760
+      },
+      "coord": {
+        "x": 190,
+        "y": 152
+      },
+      "tier": 2,
+      "rarity": "uncommon",
+      "ruler": "Aduanero General Talde",
+      "trait": "Frontera Marítima Sureste Udrax-Tabaxi (CHATGPT frontera)",
+      "deityIds": [
+        "deity_storm_lord",
+        "deity_ocean_serenity"
+      ],
+      "raceIds": [
+        "race_human_mariner",
+        "race_triton",
+        "race_tabaxi"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Aduana marítima; controla la Frontera CHATGPT (Tabaxi). Todas las mercancías de Udrax sur pasan por aquí; 20% impuestos confederales.",
+        "faction": "faction_udrax_orden_puente",
+        "tierRange": {
+          "min": 2,
+          "max": 4
+        },
+        "pnjPrincipal": {
+          "name": "Aduanero General Talde 'Ojo Lince' Marren",
+          "raceId": "race_tabaxi",
+          "classId": "class_rogue_inquisitive",
+          "role": "Jefe Aduana Narrows End",
+          "tier": 3,
+          "hook": "Ultima semana: 15 cargamentos 'sin inspección' han pasado, firmados por él, que no recuerda. Alguien le está MODIFICANDO LA MEMORIA. En los papeles parece que es inocente; pero el presunto culpable es un clérigo de CHATGPT enviado desde el puerto Tabaxi occidental."
+        },
+        "quests": [
+          {
+            "id": "quest_udrax_narrowsend_memoria_robada",
+            "title": "El Aduanero que Olvidaba",
+            "tier": 3,
+            "hook": "Investigar la capilla del puerto (Tabaxi). Hay un altar de Modify Memory cada noche. Enfrentarse al clérigo CHATGPT: hay que decidir si le denuncian a la Asamblea o si le dejan continuar a cambio de la mitad de los sobornos (opción corrupta)."
+          }
+        ]
+      }
+    },
+    {
+      "id": "city_udrax_boneglass_keep",
+      "locationType": "city",
+      "name": "Boneglass Keep — Plaza Fuerte Sur Pacto Sangre",
+      "origin": "TRAE",
+      "nationId": "nation_udrax",
+      "controlledBy": "Udrax",
+      "settlementSize": "fortaleza",
+      "population": "~700",
+      "position": {
+        "x": 820,
+        "y": 755
+      },
+      "coord": {
+        "x": 200,
+        "y": 151
+      },
+      "tier": 3,
+      "rarity": "rare",
+      "ruler": "Comandante Watchful 'Vigía de la Noche'",
+      "trait": "Vigía 24/7 del Pacto Sangre. Si se cae, comienza guerra Naga.",
+      "deityIds": [
+        "deity_iron_oath",
+        "deity_nocturne"
+      ],
+      "raceIds": [
+        "race_aarakocra",
+        "race_duergar",
+        "race_dwarf_hill",
+        "race_naga_blooded"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "primaryActivity": "Guarnición; vigía fronterizo; alerta rápida ante incursiones Naga; prisión alta seguridad para prisioneros pacto.",
+        "faction": "faction_udrax_orden_puente",
+        "tierRange": {
+          "min": 3,
+          "max": 5
+        },
+        "pnjPrincipal": {
+          "name": "Comandante 'Ojo de Halcón' Vildara",
+          "raceId": "race_aarakocra",
+          "classId": "class_ranger_beast_master",
+          "role": "Señora Boneglass Keep (vigía 24/7 desde la torre)",
+          "tier": 4,
+          "hook": "Hace 3 noches, 8 guardias han desaparecido del turno nocturno. Sus cuerpos no han salido — están CRISTALIZADOS en la bodega de la fortaleza (por un cristal 'hueso-vidrio'). Sospecha: prisionero Naga en celda 13 (de allí el cristal). Pero el prisionero lleva esposas anti-magia."
+        },
+        "quests": [
+          {
+            "id": "quest_udrax_boneglass_cristal_guardias",
+            "title": "Los Guardias de Cristal",
+            "tier": 4,
+            "hook": "Comandante pide investigar. Prisionero Naga celda 13 es inocente. El cristal viene de un MIRROR OF OPPOSITION que alguien insertó en las murallas nocturnas. Al cruzar su reflejo, te cristaliza. Responsable: Prioste Secta Nox Ujestrall (quiere romper pacto sangre desde dentro)."
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone_ecla_frontera_hoz",
+      "locationType": "zone",
+      "name": "Zona Fronteriza — Fortaleza de la Hoz (Ecla ↑ Norte CLOUDE)",
+      "origin": "TRAE",
+      "nationId": "nation_ecla",
+      "position": {
+        "x": 410,
+        "y": 900
+      },
+      "coord": {
+        "x": 105,
+        "y": 140
+      },
+      "color": "#8a4f4f",
+      "tier": 0,
+      "rarity": "rare",
+      "deityIds": [
+        "deity_iron_oath"
+      ],
+      "raceIds": [
+        "race_human_vietic",
+        "race_tiefling_bloodline_of_mephistopheles"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "kind": "frontera militar",
+        "tierRange": {
+          "min": 3,
+          "max": 5
+        },
+        "description": "Primera plaza fuerte cruzada en la Franja Norte Ecla. 3.000 hombres. Fortín central + 3 torres exteriores. Paso solo 3 meses/año. Ataque nubes EV-1995 cerca.",
+        "dungeons": [
+          {
+            "id": "dungeon_hoz_ocavernes_inferiores",
+            "name": "Cavernas Inferiores Fortaleza de la Hoz",
+            "tier": 4,
+            "theme": "Fortaleza excavada + vetas de plata + celdas prisioneros + sepulcro 12 capitanes Cruzados",
+            "coord": {
+              "x": 420,
+              "y": 910
+            },
+            "bossMonsterId": "monster_capitan_cruzado_tirano_04",
+            "relicIds": [
+              "equip_unique_ecla_lanza_de_la_plata"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone_ecla_ithon_elf",
+      "locationType": "zone",
+      "name": "Isla Ithon — Zona Élfica Marítima",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_ecla",
+      "position": {
+        "x": 205,
+        "y": 400
+      },
+      "coord": {
+        "x": 51,
+        "y": 80
+      },
+      "color": "#74c7c1",
+      "tier": 0,
+      "rarity": "rare",
+      "deityIds": [
+        "deity_moon_mother",
+        "deity_wild_court"
+      ],
+      "raceIds": [
+        "race_elf_silvan",
+        "race_elf_sea"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "kind": "isla",
+        "tierRange": {
+          "min": 1,
+          "max": 3
+        },
+        "dungeons": [
+          {
+            "id": "dungeon_ecla_ithon_tumba_primera_elfa",
+            "name": "Tumba de la Primera Reina Elfa de Ithon",
+            "tier": 3,
+            "theme": "Cripta pre-ERA-XI. Guardianes constructos élficos. 3 pasadizos ilusorios.",
+            "coord": {
+              "x": 206,
+              "y": 398
+            },
+            "bossMonsterId": "monster_constructo_guardia_elfa_03",
+            "relicIds": [
+              "equip_unique_ecla_capa_de_la_luna_creciente",
+              "equip_unique_ecla_diadema_ithon"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone_udrax_pozos_susurrantes",
+      "locationType": "zone",
+      "name": "Pozos Susurrantes del Sur Udrax (Eabotara, Jggotti, Bomengrid)",
+      "origin": "TRAE",
+      "nationId": "nation_udrax",
+      "position": {
+        "x": 580,
+        "y": 590
+      },
+      "coord": {
+        "x": 145,
+        "y": 118
+      },
+      "color": "#6f5f4a",
+      "tier": 0,
+      "rarity": "rare",
+      "deityIds": [
+        "deity_nocturne"
+      ],
+      "raceIds": [
+        "race_naga_blooded",
+        "race_yuan_ti_pureblood",
+        "race_human_mariner"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "kind": "mazmorras",
+        "tierRange": {
+          "min": 2,
+          "max": 4
+        },
+        "description": "Red de 4 pozos interconectados ERA XII: Eabotara, Jggotti, y dos pozos secundarios (Nexo Inferior). Conecta al sótano Bomengrid por galería 'Negra'. Secta Nox quiere abrir 4 niveles más.",
+        "dungeons": [
+          {
+            "id": "dungeon_udrax_pozos_susurrantes_nexo",
+            "name": "Nexo Inferior — Pozos Susurrantes",
+            "tier": 3,
+            "theme": "Túneles Naga ERA XII. 3 niveles. Yuan-ti malisons, constructos serpiente, Medusa menor.",
+            "coord": {
+              "x": 560,
+              "y": 528
+            },
+            "bossMonsterId": "monster_medusa_menor_pozos_03",
+            "relicIds": [
+              "equip_unique_udrax_daga_sangre_serpiente"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone_udrax_bomengrid_muralha",
+      "locationType": "zone",
+      "name": "Muralla Fantasma y Cripta Primer Cónsul (Bomengrid)",
+      "origin": "TRAE",
+      "nationId": "nation_udrax",
+      "position": {
+        "x": 720,
+        "y": 700
+      },
+      "coord": {
+        "x": 180,
+        "y": 140
+      },
+      "color": "#4a4a6f",
+      "tier": 0,
+      "rarity": "epic",
+      "deityIds": [
+        "deity_nocturne",
+        "deity_iron_oath"
+      ],
+      "raceIds": [
+        "race_naga_blooded"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "kind": "mazmorras",
+        "tierRange": {
+          "min": 3,
+          "max": 5
+        },
+        "description": "Sección hundida del muro Bomengrid. Cripta Primer Cónsul: Halfbrother Halfdran. Secta Nox tiene aquí su centro de ritos ERA XII.",
+        "dungeons": [
+          {
+            "id": "dungeon_udrax_muralla_fantasma",
+            "name": "Tramo Hundido de la Muralla Fantasma",
+            "tier": 4,
+            "theme": "No-muertos confederados antiguos; espectros; Barrow Wight 'Primer Cónsul'; rituales reanimación.",
+            "coord": {
+              "x": 718,
+              "y": 704
+            },
+            "bossMonsterId": "monster_wight_lord_halfbrother_04",
+            "relicIds": [
+              "equip_unique_udrax_martillo_primer_consul",
+              "equip_unique_udrax_casco_fantasma"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone_udrax_wait_harbor_pacto",
+      "locationType": "zone",
+      "name": "Wait Harbor — Pacto de Sangre (Frontera CHATGPT Tabaxi-sur)",
+      "origin": "TRAE",
+      "nationId": "nation_udrax",
+      "position": {
+        "x": 830,
+        "y": 715
+      },
+      "coord": {
+        "x": 196,
+        "y": 144
+      },
+      "color": "#7a2a5a",
+      "tier": 0,
+      "rarity": "epic",
+      "deityIds": [
+        "deity_nocturne",
+        "deity_ocean_serenity"
+      ],
+      "raceIds": [
+        "race_naga_blooded",
+        "race_triton",
+        "race_human_mariner",
+        "race_tabaxi"
+      ],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "kind": "frontera militar",
+        "tierRange": {
+          "min": 3,
+          "max": 5
+        },
+        "description": "Puerto pacto sangre. 4 muelles arcano-protegidos. 3 emisarios Naga permanentes. Tensión por renovación (expira en 1997+3=1994bf).",
+        "dungeons": [
+          {
+            "id": "dungeon_udrax_wait_harbor_pacto",
+            "name": "Almacén Secreto Bodega-13 (Pacto Sangre)",
+            "tier": 3,
+            "theme": "Mercancías ilegales, prisioneros vivos, ritual de intercambio mensual. Emisaria Naga Sycorax.",
+            "coord": {
+              "x": 830,
+              "y": 720
+            },
+            "bossMonsterId": "monster_naga_emisaria_pacto_03",
+            "relicIds": [
+              "equip_unique_udrax_amuleto_pacto_sangre"
+            ]
+          },
+          {
+            "id": "dungeon_udrax_tabulones_marinos",
+            "name": "Tablerones Marinos Hundidos",
+            "tier": 2,
+            "theme": "Barcos naufragios Pacto Sangre. Tesoros 5 años. Entran por arrecife.",
+            "coord": {
+              "x": 850,
+              "y": 740
+            },
+            "bossMonsterId": "monster_merrow_bruto_02",
+            "relicIds": [
+              "equip_unique_udrax_amuleto_pacto_sangre"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

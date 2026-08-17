@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Cartas de Arma y Objeto</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('armas')}"></div>
+
+            <div class="u-page-header">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-eyebrow">Sistema de Cartas y Tiers</p>
+                    <h1>Álbum de Armas, Armaduras y Objetos</h1>
+                </div>
+                <div class="u-flex-gap2">
+                    <button type="button" class="gm-btn gm-btn--outline" data-panel-anchor-toggle="gm-filtros">🔍 Filtros</button>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/armas/nueva}">+ Nuevo objeto</a>
+                </div>
+            </div>
+
+            <div class="u-detail-layout-260">
+                <!-- Panel anclado: filtros -->
+                <aside id="gm-filtros" class="gm-panel gm-panel--anchored">
+                    <div class="gm-panel__header">
+                        <h3 class="gm-panel__title">Filtrar</h3>
+                    </div>
+                    <div class="gm-panel__body">
+                        <div class="gm-field">
+                            <label for="filtro-texto">Buscar por nombre</label>
+                            <input id="filtro-texto" class="gm-input" type="text" placeholder="Ej. Espada Corta...">
+                        </div>
+                        <div class="gm-field">
+                            <label for="filtro-slot">Slot</label>
+                            <select id="filtro-slot" class="gm-select">
+                                <option value="">Todos</option>
+                                <option value="cabeza">⛑ Cabeza</option>
+                                <option value="torso">👕 Torso</option>
+                                <option value="piernas">👖 Piernas</option>
+                                <option value="pies">👢 Pies</option>
+                                <option value="arma_principal">⚔ Arma principal</option>
+                                <option value="arma_secundaria">🛡 Arma secundaria</option>
+                            </select>
+                        </div>
+                        <div class="gm-field">
+                            <label for="filtro-rareza">Rareza</label>
+                            <select id="filtro-rareza" class="gm-select">
+                                <option value="">Todas</option>
+                                <option value="common">Común</option>
+                                <option value="uncommon">Poco común</option>
+                                <option value="rare">Rara</option>
+                                <option value="epic">Épica</option>
+                            </select>
+                        </div>
+                        <div class="gm-field">
+                            <label for="filtro-peso">Categoría de peso</label>
+                            <select id="filtro-peso" class="gm-select">
+                                <option value="">Todas</option>
+                                <option value="ligera">△ Ligera</option>
+                                <option value="media">○ Media</option>
+                                <option value="pesada">□ Pesada</option>
+                            </select>
+                        </div>
+                        <p class="gm-hint" id="filtro-resultado"></p>
+                    </div>
+                </aside>
+
+                <div>
+                    <p class="u-text-muted" th:if="${#lists.isEmpty(cartas)}">
+                        Todavía no has creado ninguna carta de equipo (arma, armadura u objeto). Empieza con la primera.
+                    </p>
+
+                    <div class="gm-album" id="gm-album-armas">
+                        <article class="gm-card" th:each="carta : ${cartas}"
+                                  th:attr="data-panel-source='panel-tpl-' + ${carta.id}, data-panel-title=${carta.name}, data-slot=${carta.slot}, data-rareza=${carta.rarity}, data-peso=${carta.weightCategory}, data-nombre=${carta.name}">
+                            <!-- ① Cabecera -->
+                            <span class="gm-card__tier">TIER <span th:text="${carta.tier}">1</span></span>
+                            <h2 class="gm-card__title" th:text="${carta.name}">Nombre</h2>
+                            <div class="u-tag-row">
+                                <span class="gm-card__role" th:text="${carta.slot}">slot</span>
+                                <span class="gm-badge" th:text="${carta.rarity}">common</span>
+                                <span class="gm-badge"
+                                      th:text="${carta.weightCategory == 'ligera' ? '△ Ligera' : (carta.weightCategory == 'media' ? '○ Media' : '□ Pesada')}">△ Ligera</span>
+                            </div>
+
+                            <!-- ② Ilustración (icono por slot) -->
+                            <div class="gm-card__illustration" th:switch="${carta.slot}">
+                                <span th:case="'cabeza'">⛑</span>
+                                <span th:case="'torso'">👕</span>
+                                <span th:case="'piernas'">👖</span>
+                                <span th:case="'pies'">👢</span>
+                                <span th:case="'arma_principal'">⚔</span>
+                                <span th:case="'arma_secundaria'">🛡</span>
+                                <span th:case="*">✦</span>
+                            </div>
+
+                            <!-- ③ Reglas -->
+                            <div class="gm-card__rules">
+                                <p class="gm-card__meta">
+                                    <span th:if="${carta.bonusCon != 0}">CON <span th:text="${carta.bonusCon}">0</span> </span>
+                                    <span th:if="${carta.bonusDes != 0}">DES <span th:text="${carta.bonusDes}">0</span> </span>
+                                    <span th:if="${carta.bonusCar != 0}">CAR <span th:text="${carta.bonusCar}">0</span> </span>
+                                    <span th:if="${carta.bonusInt != 0}">INT <span th:text="${carta.bonusInt}">0</span> </span>
+                                    <span th:if="${carta.bonusHealth != 0}">Vida <span th:text="${carta.bonusHealth}">0</span> </span>
+                                    <span th:if="${carta.bonusArmor != 0}">CA <span th:text="${carta.bonusArmor}">0</span></span>
+                                </p>
+                                <p class="gm-card__desc" th:text="${carta.flavorText}">Descripción</p>
+                            </div>
+
+                            <!-- ④ Pie -->
+                            <div class="gm-card__footer">
+                                <span class="gm-badge" th:each="tag,it : ${carta.grantedTags}" th:if="${it.index < 3}" th:text="${tag}">tag</span>
+                            </div>
+                            <div class="gm-card__actions">
+                                <a class="gm-btn gm-btn--outline gm-btn--sm" th:href="@{/cartas/armas/{id}(id=${carta.id})}">Ver ficha</a>
+                                <a class="gm-btn gm-btn--outline gm-btn--sm" th:href="@{/cartas/armas/{id}/editar(id=${carta.id})}">Editar</a>
+                            </div>
+
+                            <!-- ⑤ Identificador -->
+                            <p class="gm-card__id" th:text="'armas · ' + ${carta.id}">armas · id</p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plantillas ocultas: contenido de la vista previa flotante de cada carta -->
+            <template th:each="carta : ${cartas}" th:id="'panel-tpl-' + ${carta.id}">
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Bonos y penalizaciones ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p class="u-italic" th:if="${carta.flavorText}" th:text="${carta.flavorText}">Texto narrativo</p>
+                        <p><strong>Peso:</strong> <span th:text="${carta.weightCategory}">ligera</span></p>
+                        <p><strong>Bonos:</strong> CON +<span th:text="${carta.bonusCon}">0</span> · DES +<span th:text="${carta.bonusDes}">0</span> ·
+                            CAR +<span th:text="${carta.bonusCar}">0</span> · INT +<span th:text="${carta.bonusInt}">0</span> ·
+                            Vida +<span th:text="${carta.bonusHealth}">0</span> ·
+                            CA +<span th:text="${carta.bonusArmor}">0</span></p>
+                        <p><strong>Penalizaciones:</strong> CON −<span th:text="${carta.penaltyCon}">0</span> · DES −<span th:text="${carta.penaltyDes}">0</span> ·
+                            CAR −<span th:text="${carta.penaltyCar}">0</span> · INT −<span th:text="${carta.penaltyInt}">0</span></p>
+                    </div>
+                </div>
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Requisitos de stat ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p>CON ≥ <span th:text="${carta.reqCon}">0</span> · DES ≥ <span th:text="${carta.reqDes}">0</span> ·
+                            CAR ≥ <span th:text="${carta.reqCar}">0</span> · INT ≥ <span th:text="${carta.reqInt}">0</span></p>
+                    </div>
+                </div>
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Tags, habilidad y restricciones ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p><strong>Tags concedidos:</strong>
+                            <span th:each="tag,it : ${carta.grantedTags}" class="gm-badge u-mr-4" th:text="${tag}">tag</span>
+                            <span th:if="${#lists.isEmpty(carta.grantedTags)}">—</span>
+                        </p>
+                        <p><strong>Habilidad vinculada:</strong> <span th:text="${carta.linkedSkill}">—</span></p>
+                        <p><strong>Restricciones:</strong>
+                            <span th:each="item,it : ${carta.restrictions}" class="gm-badge u-mr-4" th:text="${item}">item</span>
+                            <span th:if="${#lists.isEmpty(carta.restrictions)}">—</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="u-actions">
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/armas/{id}(id=${carta.id})}">Abrir ficha completa</a>
+                </div>
+            </template><!-- Panel flotante central: vista previa de carta -->
+<div id="gm-panel-backdrop" class="gm-panel-backdrop" data-panel-close></div>
+<div id="gm-panel-preview" class="gm-panel" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="gm-panel__header">
+        <h3 class="gm-panel__title" id="gm-panel-preview-title">Carta</h3>
+        <button type="button" class="gm-panel__close" data-panel-close aria-label="Cerrar">✕</button>
+    </div>
+    <div class="gm-panel__body" id="gm-panel-preview-body"></div>
+</div>
+</main>
+<th:block layout:fragment="extra-js">
+<script th:inline="javascript">
+    (function () {
+        var texto = document.getElementById('filtro-texto');
+        var slot = document.getElementById('filtro-slot');
+        var rareza = document.getElementById('filtro-rareza');
+        var peso = document.getElementById('filtro-peso');
+        var resultado = document.getElementById('filtro-resultado');
+        var tarjetas = document.querySelectorAll('#gm-album-armas .gm-card');
+
+        function aplicarFiltro() {
+            var t = (texto.value || '').toLowerCase();
+            var s = slot.value || '';
+            var r = rareza.value || '';
+            var p = peso.value || '';
+            var visibles = 0;
+            tarjetas.forEach(function (carta) {
+                var nombre = (carta.getAttribute('data-nombre') || '').toLowerCase();
+                var slotCarta = carta.getAttribute('data-slot') || '';
+                var rarezaCarta = carta.getAttribute('data-rareza') || '';
+                var pesoCarta = carta.getAttribute('data-peso') || '';
+                var coincide = nombre.indexOf(t) !== -1 && (s === '' || slotCarta === s)
+                    && (r === '' || rarezaCarta === r) && (p === '' || pesoCarta === p);
+                carta.style.display = coincide ? '' : 'none';
+                if (coincide) visibles++;
+            });
+            resultado.textContent = visibles + ' de ' + tarjetas.length + ' objetos';
+        }
+
+        if (texto && slot && rareza && peso) {
+            texto.addEventListener('input', aplicarFiltro);
+            slot.addEventListener('change', aplicarFiltro);
+            rareza.addEventListener('change', aplicarFiltro);
+            peso.addEventListener('change', aplicarFiltro);
+            aplicarFiltro();
+        }
+    })();
+</script>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,415 @@
+{
+  "entries": [
+    {
+      "category": "negativa",
+      "cureConditions": [
+        "Superar la tirada de liberación",
+        "Que el agarre termine o su fuente sea incapacitada"
+      ],
+      "description": "Hay abrazos que son sentencias.",
+      "duration": "hasta_curarse",
+      "effects": [
+        {
+          "description": "Tu velocidad baja a 0 y no puedes esquivar.",
+          "mechanicHook": "velocidad_0"
+        },
+        {
+          "description": "Para soltarte, supera una tirada de CON contra la CD de quien te agarra.",
+          "mechanicHook": "liberarse:CON"
+        }
+      ],
+      "flavorText": "Hay abrazos que son sentencias.",
+      "id": "agarrado",
+      "name": "Agarrado",
+      "rarity": "common",
+      "source": "estado",
+      "stackable": false,
+      "tier": 0,
+      "type": "condition"
+    },
+    {
+      "category": "neutro",
+      "cureConditions": [
+        "Moverte voluntariamente (tú mismo puedes romper tu propio Anclaje en cualquier momento)",
+        "Ser forzado a moverte por un empuje o derribo"
+      ],
+      "description": "No es que no puedas moverte. Es que has decidido que el mundo se mueva a tu alrededor.",
+      "duration": "hasta_curarse",
+      "effects": [
+        {
+          "description": "Tu velocidad pasa a 0: no puedes usar tu Acción de Movimiento para desplazarte.",
+          "mechanicHook": "velocidad_0"
+        },
+        {
+          "description": "Ganas +2 a tu Clase de Armadura mientras dure.",
+          "mechanicHook": "bono_ca:2"
+        },
+        {
+          "description": "El alcance de tus habilidades que lo requieran aumenta en 2 categorías.",
+          "mechanicHook": "bono_alcance:2"
+        }
+      ],
+      "flavorText": "No es que no puedas moverte. Es que has decidido que el mundo se mueva a tu alrededor.",
+      "id": "anclado",
+      "name": "Anclado",
+      "rarity": "common",
+      "source": "estado",
+      "stackable": false,
+      "tier": 0,
+      "type": "condition"
+    },
+    {
+      "category": "negativa",
+      "cureConditions": [
+        "Perder de vista la fuente",
+        "Lo que indique la fuente"
+      ],
+      "description": "Las piernas votan antes que la cabeza.",
+      "duration": "hasta_curarse",
+      "effects": [
+        {
+          "description": "Desventaja en ataques y tiradas de habilidad mientras veas la fuente del miedo.",
+          "mechanicHook": "desventaja:todo_con_fuente_visible"
+        },
+        {
+          "description": "No puedes acercarte voluntariamente a la fuente del miedo.",
+          "mechanicHook": "bloquea_acercarse:origen"
+        }
+      ],
+      "flavorText": "Las piernas votan antes que la cabeza.",
+      "id": "asustado",
+      "name": "Asustado",
+      "rarity": "common",
+      "source": "estado",
+      "stackable": false,
+      "tier": 0,
+      "type": "condition"
+    },
+    {
+      "category": "negativa",
+      "cureConditions": [
+        "Levantarse (Acción de Movimiento)"
+      ],
+      "description": "El suelo siempre gana la primera ronda.",
+      "duration": "hasta_curarse",
+      "effects": [
+        {
+          "description": "Desventaja en tus ataques.",
+          "mechanicHook": "desventaja:ataque"
+        },
+        {
+          "description": "Los ataques cuerpo a cuerpo contra ti tienen ventaja.",
+          "mechanicHook": "ventaja_contra:melee"
+        },
+        {
+          "description": "Levantarte cuesta tu Acción de Movimiento.",
+          "mechanicHook": "coste_levantarse:movimiento"
+        }
+      ],
+      "flavorText": "El suelo siempre gana la primera ronda.",
+      "id": "caido",
+      "name": "Caído",
+      "rarity": "common",
+      "source": "estado",
+      "stackable": false,
+      "tier": 0,
+      "type": "condition"
+    },
+    {
+      "category": "negativa",
+      "cureConditions": [
+        "Lo que indique la fuente (normalmente el final de un turno o una cura)"
+      ],
+      "description": "El mundo sigue ahí. Tú ya no le encuentras.",
+      "duration": "hasta_curarse",
+      "effects": [
+        {
+          "description": "Desventaja en tus ataques.",
+          "mechanicHook": "desventaja:ataque"
+        },
+        {
+          "description": "Las habilidades que requieren ver al objetivo fallan automáticamente.",
+          "mechanicHook": "bloquea:vision"
+        }
+      ],
+      "flavorText": "El mundo sigue ahí. Tú ya no le encuentras.",
+      "id": "cegado",
+      "name": "Cegado",
+      "rarity": "common",
+      "source": "estado",
+      "stackable": false,
+      "tier": 0,
+      "type": "condition"
+    },
+    {
+      "category": "negativa",
+      "cureConditions": [
+        "Recibir daño de quien te encantó",
+        "Fin de la escena si la fuente no indica otra cosa"
+      ],
+      "description": "No es amor. Es contabilidad ajena.",
+      "duration": "hasta_curarse",
+      "effects": [
+        {
+          "description": "No puedes atacar a quien te ha encantado.",
+          "mechanicHook": "bloquea_ataque:origen"
+        },
+        {
+          "description": "Sus interacciones sociales contigo tienen ventaja.",
+          "mechanicHook": "ventaja_social:origen"
+        }
+      ],
+      "flavorText": "No es amor. Es contabilidad ajena.",
+      "id": "encantado",
+      "name": "Encantado",
+      "rarity": "common",
+      "source": "estado",
+      "stackable": false,
+      "tier": 0,
+      "type": "condition"
+    },
+    {
+      "category": "negativa",
+      "cureConditions": [
+        "Recibir un Cobro de Deuda (la deuda queda saldada)",
+        "Fin del combate"
+      ],
+      "description": "Firmaste al esquivar la primera pregunta.",
+      "duration": "hasta_curarse",
+      "effects": [
+        {
+          "description": "Cada vez que uses tu acción principal, el Usurero que te endeudó acumula 1 de Interés (máximo 3).",
+          "mechanicHook": "interes:+1"
+        },
+        {
+          "description": "Los cobros del Usurero contra ti consumen su Interés acumulado para crecer.",
+          "mechanicHook": "objetivo_de_cobro"
+        }
+      ],
+      "flavorText": "Firmaste al esquivar la primera pregunta.",
+      "id": "endeudado",
+      "name": "Endeudado",
+      "rarity": "common",
+      "source": "estado",
+      "stackable": false,
+      "tier": 0,
+      "type": "condition"
+    },
+    {
+      "category": "neutro",
+      "cureConditions": [
+        "Terminar la Furia voluntariamente (acción libre)",
+        "Fin del combate"
+      ],
+      "description": "La tormenta no pregunta si puede entrar.",
+      "duration": "hasta_curarse",
+      "effects": [
+        {
+          "description": "Tus ataques cuerpo a cuerpo suman +2 al daño.",
+          "mechanicHook": "bono_dano_melee:2"
+        },
+        {
+          "description": "No puedes jugar cartas con tag [Concentracion].",
+          "mechanicHook": "bloquea_tag:Concentracion"
+        },
+        {
+          "description": "Al final de tu turno, si no atacaste ni recibiste daño, la Furia termina.",
+          "mechanicHook": "fin_si_inactivo"
+        }
+      ],
+      "flavorText": "La tormenta no pregunta si puede entrar.",
+      "id": "enfurecido",
+      "name": "Enfurecido",
+      "rarity": "common",
+      "source": "estado",
+      "stackable": false,
+      "tier": 0,
+      "type": "condition"
+    },
+    {
+      "category": "negativa",
+      "cureConditions": [
+        "Tratamiento (medicina o magia)",
+        "Lo que indique la fuente"
+      ],
+      "description": "Trabaja despacio. Cobra completo.",
+      "duration": "hasta_curarse",
+      "effects": [
+        {
+          "description": "Desventaja en tiradas de ataque y de habilidad.",
+          "mechanicHook": "desventaja:ataque_y_habilidad"
+        },
+        {
+          "description": "Puede evolucionar a daño continuo si no se trata.",
+          "mechanicHook": "escalable:dano_por_turno"
+        }
+      ],
+      "flavorText": "Trabaja despacio. Cobra completo.",
+      "id": "envenenado",
+      "name": "Envenenado",
+      "rarity": "common",
+      "source": "estado",
+      "stackable": false,
+      "tier": 0,
+      "type": "condition"
+    },
+    {
+      "category": "negativa",
+      "cureConditions": [
+        "Descanso largo (recupera 2 niveles)"
+      ],
+      "description": "El cansancio es una deuda con interés compuesto.",
+      "duration": "hasta_curarse",
+      "effects": [
+        {
+          "description": "Cada nivel de Fatiga resta 1 dado a todas tus tiradas de característica (mínimo 1 dado).",
+          "mechanicHook": "penal_dados:1_por_nivel"
+        },
+        {
+          "description": "Al llegar a nivel 6, el personaje muere.",
+          "mechanicHook": "muerte:nivel_6"
+        }
+      ],
+      "flavorText": "El cansancio es una deuda con interés compuesto.",
+      "id": "fatiga",
+      "name": "Fatiga",
+      "rarity": "common",
+      "source": "estado",
+      "stackable": true,
+      "tier": 0,
+      "type": "condition"
+    },
+    {
+      "category": "negativa",
+      "cureConditions": [
+        "Final de tu próximo turno"
+      ],
+      "description": "Una guardia no se rompe dos veces: la segunda ya no estaba.",
+      "duration": "1_turn",
+      "effects": [
+        {
+          "description": "Tu Clase de Armadura baja 2 puntos.",
+          "mechanicHook": "penal_ca:2"
+        },
+        {
+          "description": "La primera reacción que intentes mientras dure, falla.",
+          "mechanicHook": "pierde_reaccion"
+        }
+      ],
+      "flavorText": "Una guardia no se rompe dos veces: la segunda ya no estaba.",
+      "id": "guardia_rota",
+      "name": "Guardia Rota",
+      "rarity": "common",
+      "source": "estado",
+      "stackable": false,
+      "tier": 0,
+      "type": "condition"
+    },
+    {
+      "category": "negativa",
+      "cureConditions": [
+        "Recuperar al menos 1 de vida",
+        "Ser despertado si era sueño no mágico"
+      ],
+      "description": "El mundo continúa. Sin consultarte.",
+      "duration": "hasta_curarse",
+      "effects": [
+        {
+          "description": "Caes (condición Caído). No puedes actuar ni moverte.",
+          "mechanicHook": "incapacitado"
+        },
+        {
+          "description": "Los ataques contra ti tienen ventaja y son críticos si aciertan.",
+          "mechanicHook": "critico_contra"
+        }
+      ],
+      "flavorText": "El mundo continúa. Sin consultarte.",
+      "id": "inconsciente",
+      "name": "Inconsciente",
+      "rarity": "common",
+      "source": "estado",
+      "stackable": false,
+      "tier": 0,
+      "type": "condition"
+    },
+    {
+      "category": "negativa",
+      "cureConditions": [
+        "Romper la línea de visión con el Francotirador durante una ronda completa"
+      ],
+      "description": "La campana ya sonó por ti. Aún no lo sabes.",
+      "duration": "hasta_curarse",
+      "effects": [
+        {
+          "description": "Los disparos del Francotirador contra ti ignoran la cobertura ligera.",
+          "mechanicHook": "ignora_cobertura_ligera"
+        },
+        {
+          "description": "Sus disparos te hacen +1 de daño.",
+          "mechanicHook": "bono_dano_contra:1"
+        }
+      ],
+      "flavorText": "La campana ya sonó por ti. Aún no lo sabes.",
+      "id": "marcado",
+      "name": "Marcado",
+      "rarity": "common",
+      "source": "estado",
+      "stackable": false,
+      "tier": 0,
+      "type": "condition"
+    },
+    {
+      "category": "negativa",
+      "cureConditions": [
+        "Lo que indique la fuente (normalmente el final de un turno)"
+      ],
+      "description": "El cuerpo en huelga. Sin previo aviso.",
+      "duration": "hasta_curarse",
+      "effects": [
+        {
+          "description": "No puedes moverte.",
+          "mechanicHook": "velocidad_0"
+        },
+        {
+          "description": "Desventaja en salvaciones de DES y CON.",
+          "mechanicHook": "desventaja:salvacion_des_con"
+        },
+        {
+          "description": "Los ataques cuerpo a cuerpo contra ti tienen ventaja.",
+          "mechanicHook": "ventaja_contra:melee"
+        }
+      ],
+      "flavorText": "El cuerpo en huelga. Sin previo aviso.",
+      "id": "paralizado",
+      "name": "Paralizado",
+      "rarity": "common",
+      "source": "estado",
+      "stackable": false,
+      "tier": 0,
+      "type": "condition"
+    },
+    {
+      "category": "negativa",
+      "cureConditions": [
+        "Un descanso corto",
+        "Una habilidad de curación"
+      ],
+      "description": "La herida no discute. Descuenta.",
+      "duration": "hasta_curarse",
+      "effects": [
+        {
+          "description": "Al empezar tu turno recibes 1 de daño (o el que indique la fuente).",
+          "mechanicHook": "dano_por_turno:1"
+        }
+      ],
+      "flavorText": "La herida no discute. Descuenta.",
+      "id": "sangrado",
+      "name": "Sangrado",
+      "rarity": "common",
+      "source": "estado",
+      "stackable": false,
+      "tier": 0,
+      "type": "condition"
+    }
+  ]
+}

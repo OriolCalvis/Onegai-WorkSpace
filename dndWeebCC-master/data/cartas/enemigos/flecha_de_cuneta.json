@@ -1,0 +1,52 @@
+{
+ "id": "flecha_de_cuneta",
+ "name": "Flecha de Cuneta",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 1,
+ "role": "tirador",
+ "faction": "bandidos_del_camino_de_ceniza",
+ "factionName": "Los Bandidos del Camino de Ceniza",
+ "stats": {
+  "CON": 1,
+  "DES": 3,
+  "INT": 3,
+  "CAR": 1
+ },
+ "derived": {
+  "vida": 12,
+  "ca": 13,
+  "defensaMental": 11,
+  "resistenciaFisica": 11,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de fisico: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "CA",
+   "effect": "Técnica de facción: si el objetivo falla, queda Marcado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Ignora cobertura ligera contra criaturas Marcadas."
+ },
+ "conditionsInflicted": [
+  "marcado"
+ ],
+ "loot": [
+  "item_short_sword",
+  "armadura_de_cuero"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico"
+ ],
+ "phases": [],
+ "flavorText": "Tirador callejero que siempre dispara desde cobertura."
+}

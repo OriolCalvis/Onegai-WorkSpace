@@ -1,0 +1,24 @@
+{
+ "id": "asustado",
+ "name": "Asustado",
+ "type": "condition",
+ "category": "negativa",
+ "source": "estado",
+ "stackable": false,
+ "duration": "hasta_curarse",
+ "effects": [
+  {
+   "description": "Desventaja en ataques y tiradas de habilidad mientras veas la fuente del miedo.",
+   "mechanicHook": "desventaja:todo_con_fuente_visible"
+  },
+  {
+   "description": "No puedes acercarte voluntariamente a la fuente del miedo.",
+   "mechanicHook": "bloquea_acercarse:origen"
+  }
+ ],
+ "cureConditions": [
+  "Perder de vista la fuente",
+  "Lo que indique la fuente"
+ ],
+ "flavorText": "Las piernas votan antes que la cabeza."
+}

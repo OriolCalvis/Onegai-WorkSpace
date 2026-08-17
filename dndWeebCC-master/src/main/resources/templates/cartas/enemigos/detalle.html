@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title th:text="${carta.path('name').asText()}" layout:fragment="title">Monstruo</title>
+    <th:block layout:fragment="extra-css">
+    <link th:href="@{/css/carta-fisica.css}" rel="stylesheet">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('enemigos')}"></div>
+
+            <div class="u-page-header--start">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-p-0">Ficha completa</p>
+                    <h1 th:text="${carta.path('name').asText()}">Nombre</h1>
+                    <p>
+                        <span class="gm-badge">Tier <span th:text="${carta.path('tier').asInt()}">1</span></span>
+                        <span class="gm-badge" th:text="${carta.has('villainProfile')} ? 'Jefe / Villano' : 'Criatura'">rango</span>
+                        <span class="gm-badge" th:if="${!#strings.isEmpty(carta.path('role').asText(''))}" th:text="${carta.path('role').asText()}">rol</span>
+                        <span class="gm-badge" th:if="${!#strings.isEmpty(carta.path('factionName').asText(''))}" th:text="${carta.path('factionName').asText()}">facción</span>
+                    </p>
+                </div>
+                <a class="gm-btn gm-btn--outline" th:href="@{/cartas/enemigos}">Volver al álbum</a>
+            </div>
+
+            <div class="u-detail-layout-300">
+                <!-- Carta física: zona inferior derivada del esquema real de enemy
+                     (health/armor/attacks/loot — wireframe 6a; jefe extiende con
+                     phases/legendaryActions/arena/villainProfile — wireframe 7g) -->
+                <article class="cf-card u-cursor-default">
+                    <div class="cf-head">
+                        <span class="cf-name" th:text="${carta.path('name').asText()}">Nombre</span>
+                        <span class="cf-gem" th:classappend="'cf-gem--t' + ${carta.path('tier').asInt()}">TIER <span th:text="${carta.path('tier').asInt()}">1</span></span>
+                    </div>
+
+                    <div class="cf-illustration" th:text="${carta.has('villainProfile')} ? '👑' : '💀'">💀</div>
+
+                    <div class="cf-typeline">
+                        <span>
+                            <span th:text="${carta.has('villainProfile')} ? 'Jefe' : 'Criatura'">Criatura</span><th:block
+                                th:if="${!#strings.isEmpty(carta.path('factionName').asText(''))}"> — <span th:text="${carta.path('factionName').asText()}">facción</span></th:block>
+                        </span>
+                    </div>
+
+                    <div class="cf-statrow">
+                        <span class="cf-stat cf-stat--vida">VIDA <span th:text="${carta.path('derived').path('vida').asInt()}">0</span></span>
+                        <span class="cf-stat">CON <span th:text="${carta.path('stats').path('CON').asInt()}">0</span></span>
+                        <span class="cf-stat">DES <span th:text="${carta.path('stats').path('DES').asInt()}">0</span></span>
+                        <span class="cf-stat">INT <span th:text="${carta.path('stats').path('INT').asInt()}">0</span></span>
+                        <span class="cf-stat">CAR <span th:text="${carta.path('stats').path('CAR').asInt()}">0</span></span>
+                    </div>
+
+                    <div class="cf-rules">
+                        <p th:each="ataque : ${carta.path('attacks')}">
+                            <strong th:text="${ataque.path('name').asText()}">Ataque</strong><th:block
+                                th:if="${!#strings.isEmpty(ataque.path('defense').asText(''))}"> — vs <span th:text="${ataque.path('defense').asText()}">defensa</span></th:block>,
+                            <span th:text="${ataque.path('effect').asText()}">efecto</span>
+                        </p>
+                        <p class="cf-meta" th:if="${!carta.path('conditionsInflicted').isEmpty() or !carta.path('loot').isEmpty()}">
+                            <th:block th:if="${!carta.path('conditionsInflicted').isEmpty()}">Inflige: <th:block th:each="c,it : ${carta.path('conditionsInflicted')}"><span th:text="${c.asText()}">condición</span><th:block th:if="${!it.last}">, </th:block></th:block></th:block>
+                            <th:block th:if="${!carta.path('conditionsInflicted').isEmpty() and !carta.path('loot').isEmpty()}"> · </th:block>
+                            <th:block th:if="${!carta.path('loot').isEmpty()}">Botín: <th:block th:each="l,it : ${carta.path('loot')}"><span th:text="${l.asText()}">botín</span><th:block th:if="${!it.last}">, </th:block></th:block></th:block>
+                        </p>
+                        <p class="cf-meta" th:if="${!carta.path('phases').isEmpty() or !carta.path('legendaryActions').isEmpty()}">
+                            <th:block th:if="${!carta.path('phases').isEmpty()}"><span th:text="${carta.path('phases').size()}">1</span> fase(s) de combate</th:block>
+                            <th:block th:if="${!carta.path('phases').isEmpty() and !carta.path('legendaryActions').isEmpty()}"> · </th:block>
+                            <th:block th:if="${!carta.path('legendaryActions').isEmpty()}"><span th:text="${carta.path('legendaryActions').size()}">1</span> acción legendaria/ronda</th:block>
+                        </p>
+                        <p class="cf-meta" th:if="${carta.has('arena')}">
+                            Arena: <span th:text="${carta.path('arena').path('name').asText()}">arena</span> — peligro: <span th:text="${carta.path('arena').path('hazard').asText()}">peligro</span>
+                        </p>
+                        <p class="cf-meta" th:if="${carta.has('villainProfile')}">
+                            Villano — objetivo: <span th:text="${carta.path('villainProfile').path('objetivo').asText()}">objetivo</span> · debilidad: <span th:text="${carta.path('villainProfile').path('debilidad_narrativa').asText()}">debilidad</span>
+                        </p>
+                        <p class="cf-flavor" th:if="${carta.path('flavorText').asText('') != ''}" th:text="${carta.path('flavorText').asText()}">Texto narrativo</p>
+                    </div>
+
+                    <p class="cf-id" th:text="'enemigos · ' + ${carta.path('id').asText()}">enemigos · id</p>
+                </article>
+
+                <div>
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Estadísticas ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p>
+                                <span class="gm-badge" th:text="'CON ' + ${carta.path('stats').path('CON').asInt()}">CON</span>
+                                <span class="gm-badge" th:text="'DES ' + ${carta.path('stats').path('DES').asInt()}">DES</span>
+                                <span class="gm-badge" th:text="'INT ' + ${carta.path('stats').path('INT').asInt()}">INT</span>
+                                <span class="gm-badge" th:text="'CAR ' + ${carta.path('stats').path('CAR').asInt()}">CAR</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Ataques ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p th:each="ataque : ${carta.path('attacks')}">
+                                <strong th:text="${ataque.path('name').asText()}">Nombre</strong>
+                                <span class="gm-badge" th:if="${!#strings.isEmpty(ataque.path('defense').asText(''))}" th:text="'vs ' + ${ataque.path('defense').asText()}">vs CA</span>
+                                — <span th:text="${ataque.path('effect').asText()}">efecto</span>
+                            </p>
+                            <p th:if="${carta.path('attacks').isEmpty()}">Sin ataques definidos.</p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded" th:if="${carta.has('passive')}">
+                        <button type="button" class="gm-panel-section__toggle">Pasiva ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong th:text="${carta.path('passive').path('name').asText()}">Nombre</strong></p>
+                            <p th:text="${carta.path('passive').path('description').asText()}">Descripción</p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section" th:if="${!carta.path('phases').isEmpty()}">
+                        <button type="button" class="gm-panel-section__toggle">Fases de combate ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p th:each="fase : ${carta.path('phases')}">
+                                <strong th:text="${fase.path('name').asText()}">Fase</strong>
+                                <span class="gm-badge" th:text="'≤ ' + ${fase.path('healthThreshold').asInt()} + '% vida'">umbral</span><br>
+                                <span th:text="${fase.path('change').asText()}">cambio</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section" th:if="${carta.has('villainProfile')}">
+                        <button type="button" class="gm-panel-section__toggle">Perfil de villano ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong>Objetivo:</strong> <span th:text="${carta.path('villainProfile').path('objetivo').asText()}">objetivo</span></p>
+                            <p><strong>Método:</strong> <span th:text="${carta.path('villainProfile').path('metodo').asText()}">método</span></p>
+                            <p><strong>Debilidad narrativa:</strong> <span th:text="${carta.path('villainProfile').path('debilidad_narrativa').asText()}">debilidad</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Acción legendaria (wireframe 8b): hoy es texto plano en
+                         legendaryActions[], sin id ni tier propio — se muestra tal
+                         cual es, como mini-carta ligada al jefe. -->
+                    <div class="gm-panel-section is-expanded" th:if="${!carta.path('legendaryActions').isEmpty()}">
+                        <button type="button" class="gm-panel-section__toggle">Acciones legendarias ▾</button>
+                        <div class="gm-panel-section__content">
+                            <article class="cf-card cf-card--legendaria u-cursor-default" th:each="accion : ${carta.path('legendaryActions')}">
+                                <div class="cf-head">
+                                    <span class="cf-name">Acción legendaria</span>
+                                    <span class="cf-gem cf-gem--rango">👑 jefe</span>
+                                </div>
+                                <p class="cf-origen">de: <span th:text="${carta.path('name').asText()}">jefe</span> (enemigos · <span th:text="${carta.path('id').asText()}">id</span>)</p>
+                                <div class="cf-rules">
+                                    <p th:text="'“' + ${accion.asText()} + '”'">acción</p>
+                                </div>
+                                <p class="cf-aviso">⚠ Sin id, sin tier, sin ficha propia — vive solo como texto dentro de la ficha del jefe. Candidata a convertirse en su propia carta si se quiere reutilizar entre jefes.</p>
+                            </article>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section" th:if="${carta.has('arena')}">
+                        <button type="button" class="gm-panel-section__toggle">Arena ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong th:text="${carta.path('arena').path('name').asText()}">Arena</strong></p>
+                            <p th:text="${carta.path('arena').path('hazard').asText()}">peligro</p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section" th:if="${!carta.path('conditionsInflicted').isEmpty() or !carta.path('loot').isEmpty()}">
+                        <button type="button" class="gm-panel-section__toggle">Condiciones y botín ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p th:if="${!carta.path('conditionsInflicted').isEmpty()}">
+                                <strong>Inflige:</strong>
+                                <span class="gm-badge u-mr-4" th:each="c : ${carta.path('conditionsInflicted')}" th:text="${c.asText()}">condición</span>
+                            </p>
+                            <p th:if="${!carta.path('loot').isEmpty()}">
+                                <strong>Botín:</strong>
+                                <span class="gm-badge u-mr-4" th:each="l : ${carta.path('loot')}" th:text="${l.asText()}">objeto</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="u-actions--wrap">
+                        <a class="gm-btn gm-btn--outline" th:href="@{/cartas/enemigos}">Volver al listado</a>
+                    </div>
+                </div>
+            </div></main>
+</body>
+</html>

@@ -1,0 +1,99 @@
+{
+  "_comment": "Sistema Onegai RPG Edicion 2 — Sistema_Cartas_Tiers.md §3, §5: tiers 0-5. Valores canonicos del GDD.",
+  "tiers": [
+    {
+      "tier": 0,
+      "name": "Civil / Aprendiz",
+      "description": "Personaje sin entrenamiento formal. Prologos, supervivencia, PNJ relevantes.",
+      "handLimit": 6,
+      "maxEquipRarity": "common",
+      "healthCap": 27,
+      "healthBonus": 0,
+      "allowMulticlass": false,
+      "maxSummons": 1,
+      "maxFeats": 0,
+      "maxDivineCards": 0
+    },
+    {
+      "tier": 1,
+      "name": "Aventurero Inicial",
+      "description": "Inicio estandar de campaña. Set de clase completo.",
+      "handLimit": 10,
+      "maxEquipRarity": "uncommon",
+      "healthCap": 35,
+      "healthBonus": 0,
+      "allowMulticlass": false,
+      "maxSummons": 2,
+      "maxFeats": 1,
+      "maxDivineCards": 2
+    },
+    {
+      "tier": 2,
+      "name": "Aventurero Competente",
+      "description": "Primeras especializaciones y mejoras de equipo relevantes. Multiclase disponible.",
+      "handLimit": 15,
+      "maxEquipRarity": "rare",
+      "healthCap": 50,
+      "healthBonus": 4,
+      "allowMulticlass": true,
+      "multiclassHandLimit": 12,
+      "maxSummons": 3,
+      "maxFeats": 2,
+      "maxDivineCards": 3
+    },
+    {
+      "tier": 3,
+      "name": "Heroe Consolidado",
+      "description": "Combinaciones potentes, cartas avanzadas de clase. Multiclase disponible.",
+      "handLimit": 20,
+      "maxEquipRarity": "epic",
+      "healthCap": 70,
+      "healthBonus": 9,
+      "allowMulticlass": true,
+      "multiclassHandLimit": 16,
+      "maxSummons": 4,
+      "maxFeats": 3,
+      "maxDivineCards": 5
+    },
+    {
+      "tier": 4,
+      "name": "Campeon / Maestro",
+      "description": "Alto impacto narrativo y tactico, cartas unicas.",
+      "handLimit": 24,
+      "maxEquipRarity": "epic",
+      "healthCap": 95,
+      "healthBonus": 16,
+      "allowMulticlass": true,
+      "multiclassHandLimit": 20,
+      "maxSummons": 5,
+      "maxFeats": 4,
+      "maxDivineCards": 6
+    },
+    {
+      "tier": 5,
+      "name": "Mitico",
+      "description": "Reservado para campanas epicas; cartas extremadamente poderosas y muy restringidas.",
+      "handLimit": 28,
+      "maxEquipRarity": "legendary",
+      "healthCap": 125,
+      "healthBonus": 25,
+      "allowMulticlass": true,
+      "multiclassHandLimit": 24,
+      "maxSummons": 6,
+      "maxFeats": 5,
+      "maxDivineCards": 8
+    }
+  ],
+  "formulas": {
+    "_commentVida": "§5: Vida = min( VidaBaseClase + CON*3 + CAR*1 + BonoTier + BonoEquipo, TechoTier )",
+    "_commentCA": "§5: ClaseArmadura = 10 + DES + BonoArmadura",
+    "_commentDefMental": "§5: DefensaMental = 10 + CAR + Bonos",
+    "_commentResFis": "§5: ResistenciaFisica = 10 + CON",
+    "_commentPrecMag": "§5: PrecisionMagica = 10 + INT",
+    "_commentInitiative": "§5: Iniciativa = DES + Modificadores",
+    "defenseToCD_mapping": {
+      "_comment": "10 => CD 0.0, 11=>0.5, 12=>1.0, 13=>1.5, 14=>2.0, 15=>2.5, 16+=>3.0. Formula: (defValue-10)*0.5, clamped 0..3"
+    }
+  },
+  "rarityOrder": ["common", "uncommon", "rare", "epic", "legendary", "mythic"]
+}

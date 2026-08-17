@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Cartas de Clase</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('clases')}"></div>
+
+    <div class="u-page-header">
+        <div>
+            <p class="gm-sidebar__eyebrow u-eyebrow">Sistema de Cartas y Tiers · piloto visual</p>
+            <h1>Álbum de Clases</h1>
+        </div>
+        <div class="u-flex-gap2">
+            <button type="button" class="gm-btn gm-btn--outline" data-panel-anchor-toggle="gm-filtros">🔍 Filtros</button>
+            <a class="gm-btn gm-btn--primary" th:href="@{/cartas/clases/nueva}">+ Nueva clase</a>
+        </div>
+    </div>
+
+    <div class="u-detail-layout-260">
+        <!-- Panel flotante anclado: filtros -->
+        <aside id="gm-filtros" class="gm-panel gm-panel--anchored">
+            <div class="gm-panel__header">
+                <h3 class="gm-panel__title">Filtrar</h3>
+            </div>
+            <div class="gm-panel__body">
+                <div class="gm-field">
+                    <label for="filtro-texto">Buscar por nombre</label>
+                    <input id="filtro-texto" class="gm-input" type="text" placeholder="Ej. Guardián...">
+                </div>
+                <div class="gm-field">
+                    <label for="filtro-rol">Rol</label>
+                    <select id="filtro-rol" class="gm-select">
+                        <option value="">Todos</option>
+                        <option value="tank">Tanque</option>
+                        <option value="balanced">Equilibrado</option>
+                        <option value="agile">Ágil</option>
+                        <option value="caster">Mago</option>
+                        <option value="support">Apoyo</option>
+                    </select>
+                </div>
+                <p class="gm-hint" id="filtro-resultado"></p>
+            </div>
+        </aside>
+
+        <div>
+            <p class="u-text-muted" th:if="${#lists.isEmpty(cartas)}">
+                Todavía no has creado ninguna carta de clase. Empieza con la primera.
+            </p>
+
+            <div class="gm-album" id="gm-album-clases">
+                <article class="gm-card" th:each="carta : ${cartas}"
+                          th:attr="data-panel-source='panel-tpl-' + ${carta.id}, data-panel-title=${carta.name}, data-rol=${carta.role}, data-nombre=${carta.name}">
+                    <!-- ① Cabecera -->
+                    <span class="gm-card__tier">TIER <span th:text="${carta.tier}">1</span></span>
+                    <h2 class="gm-card__title" th:text="${carta.name}">Nombre</h2>
+                    <span class="gm-card__role" th:text="${carta.role}">Rol</span>
+
+                    <!-- ② Ilustración (marcador por rol, sin arte real todavía) -->
+                    <div class="gm-card__illustration" th:switch="${carta.role}">
+                        <span th:case="'tank'">🛡</span>
+                        <span th:case="'agile'">🗡</span>
+                        <span th:case="'caster'">🔮</span>
+                        <span th:case="'support'">❤</span>
+                        <span th:case="*">⚔</span>
+                    </div>
+
+                    <!-- ③ Reglas -->
+                    <div class="gm-card__rules">
+                        <p class="gm-card__meta">
+                            Vida <span th:text="${carta.baseHealth}">10</span> + CON × <span th:text="${carta.healthScalingCon}">2</span>
+                        </p>
+                        <p class="gm-card__desc" th:text="${carta.description}">Descripción</p>
+                    </div>
+
+                    <!-- ④ Pie -->
+                    <div class="gm-card__footer">
+                        <span class="gm-badge" th:text="${carta.primaryStat}">CON</span>
+                        <span class="gm-badge" th:if="${carta.secondaryStat}" th:text="${carta.secondaryStat}">CAR</span>
+                        <span class="gm-badge" th:text="${carta.primaryResource}">energia</span>
+                    </div>
+                    <div class="gm-card__actions">
+                        <a class="gm-btn gm-btn--outline gm-btn--sm" th:href="@{/cartas/clases/{id}(id=${carta.id})}">Ver ficha</a>
+                        <a class="gm-btn gm-btn--outline gm-btn--sm" th:href="@{/cartas/clases/{id}/editar(id=${carta.id})}">Editar</a>
+                    </div>
+
+                    <!-- ⑤ Identificador -->
+                    <p class="gm-card__id" th:text="'clases · ' + ${carta.id}">clases · id</p>
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plantillas ocultas: contenido de la vista previa flotante de cada carta -->
+    <template th:each="carta : ${cartas}" th:id="'panel-tpl-' + ${carta.id}">
+        <div class="gm-panel-section is-expanded">
+            <button type="button" class="gm-panel-section__toggle">Identidad de clase ▾</button>
+            <div class="gm-panel-section__content">
+                <p th:text="${carta.description}">Descripción</p>
+                <p><strong>Stat principal:</strong> <span th:text="${carta.primaryStat}">CON</span>
+                    <span th:if="${carta.secondaryStat}"> · Secundaria: <span th:text="${carta.secondaryStat}">CAR</span></span></p>
+                <p><strong>Recurso:</strong> <span th:text="${carta.primaryResource}">energia</span></p>
+            </div>
+        </div>
+        <div class="gm-panel-section">
+            <button type="button" class="gm-panel-section__toggle">Equipo y pasiva inicial ▾</button>
+            <div class="gm-panel-section__content">
+                <p><strong>Equipo:</strong>
+                    <span th:each="item,it : ${carta.startingEquipment}"><span th:text="${item}"></span><span th:if="${!it.last}">, </span></span>
+                    <span th:if="${#lists.isEmpty(carta.startingEquipment)}">—</span>
+                </p>
+                <p><strong>Pasiva:</strong>
+                    <span th:each="item,it : ${carta.startingCards.passives}"><span th:text="${item}"></span><span th:if="${!it.last}">, </span></span>
+                    <span th:if="${#lists.isEmpty(carta.startingCards.passives)}">—</span>
+                </p>
+            </div>
+        </div>
+        <div class="gm-panel-section">
+            <button type="button" class="gm-panel-section__toggle">Habilidades y hechizos iniciales ▾</button>
+            <div class="gm-panel-section__content">
+                <p><strong>Habilidades:</strong>
+                    <span th:each="item,it : ${carta.startingCards.skills}"><span th:text="${item}"></span><span th:if="${!it.last}">, </span></span>
+                    <span th:if="${#lists.isEmpty(carta.startingCards.skills)}">—</span>
+                </p>
+                <p><strong>Hechizos:</strong>
+                    <span th:each="item,it : ${carta.startingCards.spells}"><span th:text="${item}"></span><span th:if="${!it.last}">, </span></span>
+                    <span th:if="${#lists.isEmpty(carta.startingCards.spells)}">—</span>
+                </p>
+                <p><strong>Aprendibles (Tier 2+):</strong>
+                    <span th:each="item,it : ${carta.startingCards.learnableSkills}"><span th:text="${item}"></span><span th:if="${!it.last}">, </span></span>
+                    <span th:if="${#lists.isEmpty(carta.startingCards.learnableSkills)}">—</span>
+                </p>
+            </div>
+        </div>
+        <div class="gm-panel-section">
+            <button type="button" class="gm-panel-section__toggle">Especializaciones (Tier 2+) ▾</button>
+            <div class="gm-panel-section__content">
+                <span th:each="spec,it : ${carta.specializations}" class="gm-badge u-mr-4" th:text="${spec}">spec</span>
+                <span th:if="${#lists.isEmpty(carta.specializations)}">Sin especializaciones todavía.</span>
+            </div>
+        </div>
+        <div class="u-actions">
+            <a class="gm-btn gm-btn--primary" th:href="@{/cartas/clases/{id}(id=${carta.id})}">Abrir ficha completa</a>
+        </div>
+    </template>
+
+    <!-- Panel flotante central: vista previa de carta (fuera del .gm-app; position fixed) -->
+    <div id="gm-panel-backdrop" class="gm-panel-backdrop" data-panel-close></div>
+    <div id="gm-panel-preview" class="gm-panel" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="gm-panel__header">
+            <h3 class="gm-panel-preview-title" id="gm-panel-preview-title">Carta</h3>
+            <button type="button" class="gm-panel__close" data-panel-close aria-label="Cerrar">✕</button>
+        </div>
+        <div class="gm-panel__body" id="gm-panel-preview-body"></div>
+    </div>
+</main>
+
+<th:block layout:fragment="extra-js">
+    <script th:inline="javascript">
+        (function () {
+            var texto = document.getElementById('filtro-texto');
+            var rol = document.getElementById('filtro-rol');
+            var resultado = document.getElementById('filtro-resultado');
+            var tarjetas = document.querySelectorAll('#gm-album-clases .gm-card');
+
+            function aplicarFiltro() {
+                var t = (texto.value || '').toLowerCase();
+                var r = rol.value || '';
+                var visibles = 0;
+                tarjetas.forEach(function (carta) {
+                    var nombre = (carta.getAttribute('data-nombre') || '').toLowerCase();
+                    var rolCarta = carta.getAttribute('data-rol') || '';
+                    var coincide = nombre.indexOf(t) !== -1 && (r === '' || rolCarta === r);
+                    carta.style.display = coincide ? '' : 'none';
+                    if (coincide) visibles++;
+                });
+                resultado.textContent = visibles + ' de ' + tarjetas.length + ' clases';
+            }
+
+            if (texto && rol) {
+                texto.addEventListener('input', aplicarFiltro);
+                rol.addEventListener('change', aplicarFiltro);
+                aplicarFiltro();
+            }
+        })();
+    </script>
+</th:block>
+</body>
+</html>

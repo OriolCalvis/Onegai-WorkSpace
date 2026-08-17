@@ -1,0 +1,36 @@
+# Control de versiones del proyecto documental Onegai.
+# Se versiona el MATERIAL NARRATIVO (docx, xlsx, md, svg, canvas) y se dejan
+# fuera las dependencias, los binarios pesados y el material de terceros.
+
+# --- dependencias y entornos ---
+node_modules/
+.tools_venv/
+StoryCraftr/
+AuthorAgent/node_modules/
+__pycache__/
+*.pyc
+.DS_Store
+
+# --- derivados regenerables ---
+.timeline_images_extracted/
+salidas/
+*.log
+.onegai_ai_config/logs/
+
+# --- binarios pesados (originales, no se editan desde aqui) ---
+*.psd
+onegai timeline.pdf
+onegai timeline.pptx
+onegai timeline.docx
+
+# --- material de terceros (manuales D&D, recursos comprados) ---
+INFO/
+**/infologia/*.pdf
+**/infologia/*.epub
+*.zip
+
+# --- material de terceros: recursos de "Where Evil Lives" (MCDM) ---
+WEL-Resources/
+
+# --- cache de herramientas ---
+.cache/

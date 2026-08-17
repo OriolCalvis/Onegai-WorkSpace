@@ -1,0 +1,52 @@
+{
+ "id": "arquero_de_escarcha",
+ "name": "Arquero de Escarcha",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 3,
+ "role": "tirador",
+ "faction": "espectros_de_la_tomba",
+ "factionName": "Los Espectros de la Tomba",
+ "stats": {
+  "CON": 3,
+  "DES": 5,
+  "INT": 5,
+  "CAR": 3
+ },
+ "derived": {
+  "vida": 20,
+  "ca": 15,
+  "defensaMental": 13,
+  "resistenciaFisica": 13,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Saeta Palida",
+   "defense": "CA",
+   "effect": "Ataque de hielo: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Disparo de Vigilia",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: si el objetivo falla, queda Paralizado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Atraviesan muros y terreno; el primer golpe que reciben cada ronda de armas no mágicas se reduce en 2."
+ },
+ "conditionsInflicted": [
+  "paralizado"
+ ],
+ "loot": [
+  "cetro_de_bronce_de_milicia",
+  "amuleto_de_foco"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Hielo"
+ ],
+ "phases": [],
+ "flavorText": "La Tomba del Rei Llop guarda cortesanos. Siguen esperando audiencia."
+}

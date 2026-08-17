@@ -1,0 +1,96 @@
+{
+ "id": "el_coronado_del_hueco",
+ "name": "El Coronado del Hueco",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 5,
+ "role": "conjurador",
+ "faction": "hechiceros_del_vacio",
+ "stats": {
+  "CON": 9,
+  "DES": 9,
+  "INT": 12,
+  "CAR": 10
+ },
+ "derived": {
+  "vida": 80,
+  "ca": 21,
+  "defensaMental": 20,
+  "resistenciaFisica": 19,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Cetro de la Nada",
+   "defense": "defensa_mental",
+   "effect": "Daño mágico que suma su INT; el impactado queda Anclado si falla (el suelo lo reclama)."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "defensa_mental",
+   "effect": "Si el objetivo falla, queda Anclado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en Desesperación: su ataque firma se calcula como éxito crítico (GDD 7.6)."
+  }
+ ],
+ "passive": {
+  "name": "Corte Silenciosa",
+  "description": "Corte Silenciosa: las cartas de movimiento enemigas a 15 pies de él cuestan la acción principal (el espacio pesa)."
+ },
+ "conditionsInflicted": [
+  "anclado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Magico"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Sigue su método con calma: aún cree que sobra tiempo."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Activa la arena a pleno: Distancias mentirosas: cada ronda, una zona duplica su coste de movimiento (rota)"
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final; su debilidad narrativa queda a la vista (el DJ da la pista si no la tienen)."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Ampliar su reino: cada palmo de vacío entre dos cosas es territorio anexionable",
+  "metodo": "Aísla: separa al grupo con distancia inventada hasta que cada uno pelee solo",
+  "debilidad_narrativa": "La compañía: dos personajes adyacentes entre sí son inmunes a su pasiva (el vínculo llena el hueco)",
+  "vinculo": "hechiceros_del_vacio"
+ },
+ "arena": {
+  "name": "El Salón que No Está",
+  "hazard": "Distancias mentirosas: cada ronda, una zona duplica su coste de movimiento (rota)"
+ },
+ "legendaryActions": [
+  "Anexión (1/ronda): 'compra' 5 pies alrededor de un personaje — esa corona de suelo cuesta doble moverse"
+ ],
+ "storyCard": {
+  "title": "El Coronado del Hueco",
+  "text": "Su corona es el único objeto plenamente sólido de su reino. La lleva con ironía.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "El vacío también quiso un rey. Nadie más se presentó."
+}

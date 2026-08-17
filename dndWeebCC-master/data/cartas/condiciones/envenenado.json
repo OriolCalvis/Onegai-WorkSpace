@@ -1,0 +1,24 @@
+{
+ "id": "envenenado",
+ "name": "Envenenado",
+ "type": "condition",
+ "category": "negativa",
+ "source": "estado",
+ "stackable": false,
+ "duration": "hasta_curarse",
+ "effects": [
+  {
+   "description": "Desventaja en tiradas de ataque y de habilidad.",
+   "mechanicHook": "desventaja:ataque_y_habilidad"
+  },
+  {
+   "description": "Puede evolucionar a daño continuo si no se trata.",
+   "mechanicHook": "escalable:dano_por_turno"
+  }
+ ],
+ "cureConditions": [
+  "Tratamiento (medicina o magia)",
+  "Lo que indique la fuente"
+ ],
+ "flavorText": "Trabaja despacio. Cobra completo."
+}

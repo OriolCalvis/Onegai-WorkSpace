@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Editor de carta de raza</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('razas')}"></div>
+            <p class="gm-sidebar__eyebrow u-p-0">Sistema de Cartas y Tiers</p>
+            <h1 class="u-mb-sp5" th:text="${esNueva} ? 'Nueva carta de raza' : 'Editar carta de raza'">Nueva carta de raza</h1>
+
+            <form th:action="${esNueva} ? @{/cartas/razas} : @{/cartas/razas/{id}/editar(id=${form.id})}"
+                  th:object="${form}" method="post">
+
+                <div class="gm-form-grid u-mb-sp4">
+                    <div class="gm-field" th:if="${esNueva}">
+                        <label>ID (opcional)</label>
+                        <input class="gm-input" th:field="*{id}" placeholder="Se genera automático a partir del nombre">
+                        <span class="gm-hint">Déjalo en blanco para que se genere solo, p. ej. "elfo_del_dosel".</span>
+                    </div>
+                    <div class="gm-field" th:unless="${esNueva}">
+                        <label>ID</label>
+                        <input class="gm-input" th:field="*{id}" readonly>
+                    </div>
+                    <div class="gm-field">
+                        <label>Nombre</label>
+                        <input class="gm-input" th:field="*{name}" placeholder="Elfo del Dosel" required>
+                    </div>
+                    <div class="gm-field">
+                        <label>Tier</label>
+                        <input class="gm-input" type="number" min="0" max="5" th:field="*{tier}">
+                    </div>
+                    <div class="gm-field">
+                        <label>CON</label>
+                        <input class="gm-input" type="number" th:field="*{statBonusCon}">
+                    </div>
+                    <div class="gm-field">
+                        <label>DES</label>
+                        <input class="gm-input" type="number" th:field="*{statBonusDes}">
+                    </div>
+                    <div class="gm-field">
+                        <label>CAR</label>
+                        <input class="gm-input" type="number" th:field="*{statBonusCar}">
+                    </div>
+                    <div class="gm-field">
+                        <label>INT</label>
+                        <input class="gm-input" type="number" th:field="*{statBonusInt}">
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Rasgo pasivo ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Nombre</label>
+                                <input class="gm-input" th:field="*{passiveTraitName}" placeholder="Sentidos del Dosel">
+                            </div>
+                            <div class="gm-field">
+                                <label>Descripción</label>
+                                <input class="gm-input" th:field="*{passiveTraitDescription}" placeholder="Ventaja en percepción visual...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Rasgo activo (opcional) ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Nombre</label>
+                                <input class="gm-input" th:field="*{activeTraitName}" placeholder="Paso Élfico">
+                            </div>
+                            <div class="gm-field">
+                                <label>Descripción</label>
+                                <input class="gm-input" th:field="*{activeTraitDescription}" placeholder="1/descanso corto: ...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Afinidades, limitaciones y tags narrativos ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Afinidades</label>
+                                <input class="gm-input" th:field="*{affinities}" placeholder="Arma Ligera, Proyectil">
+                            </div>
+                            <div class="gm-field">
+                                <label>Limitaciones</label>
+                                <input class="gm-input" th:field="*{limitations}" placeholder="-1 DES con Armadura Pesada">
+                            </div>
+                            <div class="gm-field">
+                                <label>Tags narrativos</label>
+                                <input class="gm-input" th:field="*{narrativeTags}" placeholder="Longevo, Silvano">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-field u-mt-sp4">
+                    <label>Texto narrativo / flavor</label>
+                    <textarea class="gm-textarea" rows="4" th:field="*{flavorText}"></textarea>
+                </div>
+
+                <div class="u-actions">
+                    <button class="gm-btn gm-btn--primary" type="submit">Guardar</button>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/cartas/razas}">Cancelar</a>
+                </div>
+            </form></main>
+<th:block layout:fragment="extra-js">
+    <script th:src="@{/js/selector-csv.js}"></script>
+</th:block>
+</body>
+</html>

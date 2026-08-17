@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Historias</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <p class="gm-sidebar__eyebrow u-p-0">Sistema de Cartas y Tiers</p>
+            <div class="u-page-header">
+                <div>
+                    <h1 class="u-mb-sp1">📜 Historias</h1>
+                    <p class="u-lead">
+                        Ganchos de aventura listos para jugar: cada historia nombra a un antagonista real del
+                        bestiario, ocurre en un sitio concreto y premia con botín real. Se encadenan en tramas
+                        madre de 5 escalones — recopílalas en <a th:href="@{/aventuras}">Aventuras</a>.
+                    </p>
+                </div>
+                <div class="u-actions--wrap">
+                    <a class="gm-btn gm-btn--primary" th:href="@{/historias/crear}">+ Crear historia</a>
+                    <span class="gm-hud" th:text="${#lists.size(historias)} + ' historias'">300 historias</span>
+                </div>
+            </div>
+
+            <div class="u-filter-row">
+                <input type="text" class="gm-input u-flex-item-240" id="buscador" placeholder="Buscar por título, lugar o gancho...">
+                <select class="gm-select u-w-auto" id="filtro-faccion" aria-label="Filtrar por facción">
+                    <option value="">Todas las facciones</option>
+                    <option th:each="f : ${facciones}" th:value="${f}"
+                            th:text="${#strings.replace(f, '_', ' ')}">facción</option>
+                </select>
+                <select class="gm-select u-w-auto" id="filtro-tier" aria-label="Filtrar por tier">
+                    <option value="">Todos los tiers</option>
+                    <option value="1">Tier 1</option><option value="2">Tier 2</option>
+                    <option value="3">Tier 3</option><option value="4">Tier 4</option>
+                    <option value="5">Tier 5</option>
+                </select>
+            </div>
+
+            <div class="gm-chip-grid u-grid-fill-300" id="grid-historias">
+                <a class="gm-chip u-no-underline" th:each="h : ${historias}"
+th:href="@{/historias/{id}(id=${h.id})}"
+th:attr="data-chip-name=${h.title + ' ' + h.location + ' ' + h.hook},
+data-faccion=${h.faction},
+data-tier=${h.tierMin}">
+                    <span class="gm-chip__title" th:text="${h.title}">Título</span>
+                    <span class="gm-chip__meta">
+                        <span class="gm-chip__tier" th:text="'T' + ${h.tierMin}">T1</span>
+                        <span th:text="' ' + ${h.factionNombre} + ' · paso ' + ${h.chain.step} + '/' + ${h.chain.of}">facción · paso</span>
+                    </span>
+                    <span class="gm-chip__meta" th:text="${#strings.abbreviate(h.hook, 110)}">Gancho</span>
+                </a>
+            </div>
+            <p th:if="${#lists.isEmpty(historias)}" class="gm-chip-empty">
+                No hay historias en data/historias — genera el catálogo con scripts/generar_historias_npcs.py.
+            </p></main>
+<th:block layout:fragment="extra-js">
+    <script>
+    (function () {
+        var buscador = document.getElementById('buscador');
+        var faccion = document.getElementById('filtro-faccion');
+        var tier = document.getElementById('filtro-tier');
+        function filtrar() {
+            var texto = (buscador.value || '').trim().toLowerCase();
+            var f = faccion.value;
+            var t = tier.value;
+            document.querySelectorAll('#grid-historias .gm-chip').forEach(function (chip) {
+                var visible = true;
+                if (texto && (chip.getAttribute('data-chip-name') || '').toLowerCase().indexOf(texto) === -1) visible = false;
+                if (f && chip.getAttribute('data-faccion') !== f) visible = false;
+                if (t && chip.getAttribute('data-tier') !== t) visible = false;
+                chip.style.display = visible ? '' : 'none';
+            });
+        }
+        [buscador, faccion, tier].forEach(function (el) {
+            el.addEventListener('input', filtrar);
+            el.addEventListener('change', filtrar);
+        });
+    })();
+</script>
+</th:block>
+</body>
+</html>

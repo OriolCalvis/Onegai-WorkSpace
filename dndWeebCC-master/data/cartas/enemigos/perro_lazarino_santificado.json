@@ -1,0 +1,64 @@
+{
+ "id": "perro_lazarino_santificado",
+ "name": "Perro Lazarino Santificado",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "escaramuzador",
+ "faction": "plaga_de_san_lazaro",
+ "factionName": "La Plaga de San Lázaro",
+ "stats": {
+  "CON": 5,
+  "DES": 8,
+  "INT": 6,
+  "CAR": 5
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 19,
+  "defensaMental": 15,
+  "resistenciaFisica": 15,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Mordisco Febril",
+   "defense": "CA",
+   "effect": "Ataque de veneno: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Persecucion Incansable",
+   "defense": "resistencia_fisica",
+   "effect": "Técnica de facción: si el objetivo falla, queda Envenenado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Cuando un miembro muere, libera esporas: 1 de veneno a los enemigos adyacentes."
+ },
+ "conditionsInflicted": [
+  "envenenado"
+ ],
+ "loot": [
+  "daga_de_milicia",
+  "capucha_de_explorador",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Veneno"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Gana una segunda técnica por ronda y +1 al daño."
+  }
+ ],
+ "flavorText": "El santo prometió que nadie volvería a enfermar solo. Cumplió."
+}

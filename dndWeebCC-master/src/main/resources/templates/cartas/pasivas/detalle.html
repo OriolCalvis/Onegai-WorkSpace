@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Carta de pasiva</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('pasivas')}"></div>
+
+            <div class="u-page-header--start">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-p-0">Ficha completa</p>
+                    <h1 th:text="${carta.name}">Nombre</h1>
+                    <p>
+                        <span class="gm-badge">Tier <span th:text="${carta.tier}">1</span></span>
+                        <span class="gm-badge" th:text="${carta.unique} ? 'Pasiva única' : 'No única'">única</span>
+                        <span class="gm-badge" th:text="'ID ' + ${carta.id}">id</span>
+                    </p>
+                </div>
+                <a class="gm-btn gm-btn--outline" th:href="@{/cartas/pasivas/{id}/editar(id=${carta.id})}">Editar</a>
+            </div>
+
+            <div class="u-detail-layout-300">
+                <!-- Carta física de pasiva (wireframe 8a): trigger/effect del
+                     esquema §9.4/17.3 — unique:true = pasiva de clase (nunca hay
+                     dos activas a la vez); unique:false = racial/secundaria. -->
+                <article class="cf-card u-cursor-default">
+                    <div class="cf-head">
+                        <span class="cf-name" th:text="${carta.name}">Nombre</span>
+                        <span class="cf-gem" th:classappend="'cf-gem--t' + ${carta.tier}">TIER <span th:text="${carta.tier}">1</span></span>
+                    </div>
+
+                    <div class="cf-illustration">🛡️</div>
+
+                    <div class="cf-typeline">
+                        <span>Pasiva<th:block th:if="${!#lists.isEmpty(carta.classTags)}"> de clase — <span th:text="${#strings.replace(#strings.listJoin(carta.classTags, ', '), '_', ' ')}">clase</span></th:block></span>
+                        <span class="cf-typeline__flag" th:if="${carta.unique}">ÚNICA</span>
+                    </div>
+
+                    <div class="cf-rules">
+                        <p class="cf-meta" th:if="${carta.trigger}" th:text="'Disparador: ' + ${carta.trigger}">Disparador</p>
+                        <p th:text="${carta.effect != null ? carta.effect.description : ''}">Descripción del efecto</p>
+                        <p class="cf-meta" th:if="${!#lists.isEmpty(carta.limitations)}" th:text="'Limitación: ' + ${#strings.listJoin(carta.limitations, ', ')}">Limitación</p>
+                        <p class="cf-flavor" th:if="${carta.flavorText}" th:text="${carta.flavorText}">Texto narrativo</p>
+                    </div>
+
+                    <p class="cf-id" th:text="'pasivas · ' + ${carta.id}">pasivas · id</p>
+                </article>
+
+                <div>
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Clases y sinergias ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong>Clases:</strong></p>
+                            <p th:each="tag : ${carta.classTags}" class="gm-badge u-mr-4" th:text="${tag}">tag</p>
+                            <p th:if="${#lists.isEmpty(carta.classTags)}">—</p>
+                            <p><strong>Sinergias:</strong></p>
+                            <p th:each="tag : ${carta.synergyTags}" class="gm-badge u-mr-4" th:text="${tag}">tag</p>
+                            <p th:if="${#lists.isEmpty(carta.synergyTags)}">—</p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Limitaciones ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p th:each="item : ${carta.limitations}" class="gm-badge u-mr-4" th:text="${item}">item</p>
+                            <p th:if="${#lists.isEmpty(carta.limitations)}">Sin limitaciones.</p>
+                        </div>
+                    </div>
+
+                    <div class="u-actions--wrap">
+                        <a class="gm-btn gm-btn--outline" th:href="@{/cartas/pasivas}">Volver al listado</a>
+                        <form th:action="@{/cartas/pasivas/{id}/eliminar(id=${carta.id})}" method="post" th:data-nombre="${carta.name}" onsubmit="return confirm(\'¿Borrar el pasiva &quot;' + this.dataset.nombre + '&quot;? No se puede deshacer.');">
+                            <button class="gm-btn gm-btn--danger" type="submit">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div></main>
+</body>
+</html>

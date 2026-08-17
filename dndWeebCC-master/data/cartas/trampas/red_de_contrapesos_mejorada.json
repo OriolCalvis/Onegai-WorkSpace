@@ -1,0 +1,26 @@
+{
+ "id": "red_de_contrapesos_mejorada",
+ "name": "Red de Contrapesos Mejorada",
+ "type": "trap",
+ "tier": 2,
+ "rarity": "uncommon",
+ "category": "mecánica",
+ "trigger": "cruzar el pasillo a media altura",
+ "detection": {
+  "stat": "DES",
+  "cd": 1
+ },
+ "disarm": {
+  "stat": "DES",
+  "cd": 1,
+  "herramienta": "herramientas de ladrón"
+ },
+ "effect": {
+  "description": "Red lastrada: Agarrado hasta liberarse. (escala: +1 de daño en este tier)",
+  "defensa": "resistencia_fisica",
+  "condicionInfligida": "agarrado"
+ },
+ "onFail": "El contrapeso sube al atrapado al techo: Agarrado y colgado (los ataques contra él tienen ventaja).",
+ "reset": "recargable",
+ "flavorText": "Quien la montó pensaba volver. No volvió."
+}

@@ -1,0 +1,27 @@
+{
+ "id": "paralizado",
+ "name": "Paralizado",
+ "type": "condition",
+ "category": "negativa",
+ "source": "estado",
+ "stackable": false,
+ "duration": "hasta_curarse",
+ "effects": [
+  {
+   "description": "No puedes moverte.",
+   "mechanicHook": "velocidad_0"
+  },
+  {
+   "description": "Desventaja en salvaciones de DES y CON.",
+   "mechanicHook": "desventaja:salvacion_des_con"
+  },
+  {
+   "description": "Los ataques cuerpo a cuerpo contra ti tienen ventaja.",
+   "mechanicHook": "ventaja_contra:melee"
+  }
+ ],
+ "cureConditions": [
+  "Lo que indique la fuente (normalmente el final de un turno)"
+ ],
+ "flavorText": "El cuerpo en huelga. Sin previo aviso."
+}

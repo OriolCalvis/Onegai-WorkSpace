@@ -1,0 +1,149 @@
+{
+  "id": "adv_silbido_medianoche",
+  "name": "El Silbido de Medianoche",
+  "description": "Tres noches seguidas, alguien silba la misma melodia en la plaza del centro. Tres vecinos han oido tres cosas distintas. Ninguno tiene la historia entera.",
+
+  "objectives": [
+    {
+      "id": "obj_guardia",
+      "text": "Preguntar al guardia por el silbido nocturno",
+      "doneFlag": "silbido_pista_guardia"
+    },
+    {
+      "id": "obj_anciana",
+      "text": "Preguntar a la anciana si reconoce la melodia",
+      "doneFlag": "silbido_pista_anciana"
+    },
+    {
+      "id": "obj_bardo",
+      "text": "Preguntar al bardo por esa cancion",
+      "doneFlag": "silbido_pista_bardo"
+    }
+  ],
+
+  "beats": [
+    {
+      "id": "beat_apertura",
+      "trigger": { "type": "enter", "target": "assets/levels/ciudad_centro.json" },
+      "requires": { "notFlags": ["silbido_abierta"] },
+      "speaker": "",
+      "lines": [
+        "La plaza esta despierta a deshoras.",
+        "Tres vecinos hablan del mismo silbido, y ninguno cuenta lo mismo."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "silbido_abierta" },
+        { "type": "log", "arg": "Nueva aventura: El Silbido de Medianoche." }
+      ]
+    },
+
+    {
+      "id": "beat_guardia_pista",
+      "trigger": { "type": "talk", "target": "guardia" },
+      "requires": { "notFlags": ["silbido_pista_guardia"] },
+      "speaker": "Guardia",
+      "lines": [
+        "Circulen, no hay nada... espera. Tu tambien lo has oido, verdad?",
+        "Tres noches. Siempre a la misma hora, siempre la misma tonada.",
+        "Registramos la plaza entera y no habia nadie. Y las puertas estaban cerradas desde el anochecer.",
+        "O sea que quien silba duerme dentro de estas murallas."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "silbido_pista_guardia" },
+        { "type": "log", "arg": "Pista: quien silba esta DENTRO de la ciudad." }
+      ]
+    },
+    {
+      "id": "beat_guardia_repite",
+      "trigger": { "type": "talk", "target": "guardia" },
+      "requires": { "allFlags": ["silbido_pista_guardia"] },
+      "speaker": "Guardia",
+      "lines": [
+        "Ya te lo he contado todo: puertas cerradas, plaza vacia, y aun asi el silbido.",
+        "Si averiguas algo, me lo dices a mi antes que al sargento."
+      ],
+      "effects": []
+    },
+
+    {
+      "id": "beat_anciana_pista",
+      "trigger": { "type": "talk", "target": "anciana" },
+      "requires": { "notFlags": ["silbido_pista_anciana"] },
+      "speaker": "Anciana",
+      "lines": [
+        "Esa tonada la conozco desde antes que tu madre.",
+        "Antes esta plaza era un huerto, y se cantaba al cerrar la cosecha.",
+        "Hace cuarenta anos que no la oia. Los que la sabian ya estan bajo tierra.",
+        "Y el que silba... silba la segunda estrofa. Esa no se cantaba nunca en publico."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "silbido_pista_anciana" },
+        { "type": "log", "arg": "Pista: la melodia es una cancion de cosecha de hace 40 anos." }
+      ]
+    },
+    {
+      "id": "beat_anciana_repite",
+      "trigger": { "type": "talk", "target": "anciana" },
+      "requires": { "allFlags": ["silbido_pista_anciana"] },
+      "speaker": "Anciana",
+      "lines": [
+        "La segunda estrofa, muchacho. Eso es lo raro.",
+        "Los jovenes ya no saludan, y ahora ademas silban lo que no deben."
+      ],
+      "effects": []
+    },
+
+    {
+      "id": "beat_bardo_pista",
+      "trigger": { "type": "talk", "target": "bardo" },
+      "requires": { "notFlags": ["silbido_pista_bardo"] },
+      "speaker": "Bardo",
+      "lines": [
+        "Una moneda por una cancion? Ah, no. Esa cancion no.",
+        "Hace una semana vino uno con capucha y me pidio que se la ENSENARA. Solo esa.",
+        "Pago por adelantado, y pago con monedas viejas: cuno de antes del rey.",
+        "No le vi la cara. Pero tenia las manos de alguien que no ha trabajado nunca."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "silbido_pista_bardo" },
+        { "type": "log", "arg": "Pista: alguien encapuchado pago con monedas antiguas por aprenderla." }
+      ]
+    },
+    {
+      "id": "beat_bardo_repite",
+      "trigger": { "type": "talk", "target": "bardo" },
+      "requires": { "allFlags": ["silbido_pista_bardo"] },
+      "speaker": "Bardo",
+      "lines": [
+        "Se canciones de tres reinos, pero esa me la quito del repertorio.",
+        "Si vuelve el de la capucha, no pienso estar aqui."
+      ],
+      "effects": []
+    },
+
+    {
+      "id": "beat_cierre",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": [
+          "silbido_pista_guardia",
+          "silbido_pista_anciana",
+          "silbido_pista_bardo"
+        ],
+        "notFlags": ["silbido_resuelta"]
+      },
+      "speaker": "",
+      "lines": [
+        "Las tres versiones encajan.",
+        "Alguien que vive dentro de las murallas pago con monedas de antes del rey para aprender una cancion que se dejo de cantar hace cuarenta anos.",
+        "No silba por gusto. Silba para que alguien lo oiga.",
+        "Y esta plaza, antes de ser plaza, era un huerto: sea lo que sea lo que llama, lleva mucho tiempo esperando debajo."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "silbido_resuelta" },
+        { "type": "grantGold", "value": 30 },
+        { "type": "log", "arg": "El Silbido de Medianoche: resuelta. El guardia te paga 30 de oro por el informe." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+ "id": "emperatriz_renacida",
+ "name": "Emperatriz Renacida",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 5,
+ "role": "tanque",
+ "faction": "renacidos_de_la_fosa",
+ "factionName": "Los Renacidos de la Fosa",
+ "stats": {
+  "CON": 12,
+  "DES": 9,
+  "INT": 9,
+  "CAR": 10
+ },
+ "derived": {
+  "vida": 80,
+  "ca": 21,
+  "defensaMental": 20,
+  "resistenciaFisica": 22,
+  "movimiento": 4
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de oscuro: daño que suma su CON (pool de CON, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "resistencia_fisica",
+   "effect": "Técnica de facción: si el objetivo falla, queda Fatiga hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en fase de Desesperación: daño de oscuro como éxito crítico (todos sus dados cuentan éxito completo)."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Recupera 2 de vida la primera vez que deja a una criatura por debajo de la mitad."
+ },
+ "conditionsInflicted": [
+  "fatiga"
+ ],
+ "loot": [
+  "maza_de_viaje",
+  "yelmo_de_milicia",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Oscuro"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal: alterna golpe y técnica."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Su técnica de facción no gasta acción: la encadena tras el golpe. Recupera 2 de vida la primera vez que deja a una criatura por debajo de la mitad."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final y actúa con agresividad total (ignora amenaza, va al más herido)."
+  }
+ ],
+ "flavorText": "Soberana muerta que gobierna desde cada tumba.",
+ "villainProfile": {
+  "objetivo": "Reanexionar su imperio empezando por los cementerios, que ya son suyos",
+  "metodo": "Gobierna: sus decretos reordenan el combate como una corte",
+  "debilidad_narrativa": "Protocolo: presentarse formalmente ante ella (acción, prueba de CAR CD 1,5) obliga a concederte audiencia — una ronda sin atacarte",
+  "vinculo": "renacidos_de_la_fosa"
+ },
+ "arena": {
+  "name": "El Salón del Trono Hundido",
+  "hazard": "Cortesanos espectrales: bloquean 2 casillas al azar por ronda (los vivos no pasan)"
+ },
+ "legendaryActions": [
+  "Decreto (1/ronda): prohíbe una palabra táctica ('curar', 'huir', 'recargar'): la próxima carta aliada de ese tipo cuesta la acción menor extra"
+ ],
+ "storyCard": {
+  "title": "Emperatriz Renacida",
+  "text": "Su imperio cayó hace tres dinastías. Su paciencia, todavía no.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae si el grupo alcanzó la fase de Desesperación",
+  "drops": [
+   "maza_de_viaje",
+   "yelmo_de_milicia",
+   "pocion_de_vigor"
+  ]
+ }
+}

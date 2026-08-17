@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Diagnóstico</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <p class="gm-sidebar__eyebrow u-p-0">Sistema de Cartas y Tiers</p>
+            <div class="u-page-header">
+                <div>
+                    <h1 class="u-mb-sp1">🩺 Diagnóstico de la run</h1>
+                    <p class="u-lead--760-nomargin">
+                        Salud del catálogo, rendimiento de las peticiones y estado de las sesiones.
+                        El detalle completo, con el porqué de cada cosa, vive en <code>logs/onegai.log</code>.
+                    </p>
+                </div>
+                <form th:action="@{/diagnostico/reejecutar}" method="post">
+                    <button class="gm-btn gm-btn--primary" type="submit">🔄 Repetir chequeo de integridad</button>
+                </form>
+            </div>
+
+            <!-- ===== HUD general ===== -->
+            <div class="u-chip-row--lg">
+                <span class="gm-hud" th:classappend="${informe != null and informe.sano()} ? 'gm-hud--ok' : 'gm-hud--exceso'"
+                      th:text="${informe == null} ? '🧩 Integridad: sin ejecutar'
+                               : (${informe.sano()} ? '🧩 Integridad: OK' : '🧩 Integridad: ' + ${#lists.size(informe.problemas())} + ' problemas')">Integridad</span>
+                <span class="gm-hud" th:classappend="${metricas.errores() == 0} ? 'gm-hud--ok' : 'gm-hud--exceso'"
+                      th:text="'📡 Peticiones ' + ${metricas.total()} + ' · errores ' + ${metricas.errores()}">Peticiones</span>
+                <span class="gm-hud" th:classappend="${metricas.lentas() == 0} ? 'gm-hud--ok' : 'gm-hud--lleno'"
+                      th:text="'🐢 Lentas (≥' + ${umbralLenta} + 'ms): ' + ${metricas.lentas()} + ' · media ' + ${metricas.mediaMs()} + 'ms'">Lentas</span>
+                <span class="gm-hud gm-hud--ok" th:text="'👥 Sesiones activas: ' + ${sesionesActivas}">Sesiones</span>
+                <span class="gm-hud" th:text="'🧠 Memoria ' + ${entorno['memoriaUsadaMb']} + '/' + ${entorno['memoriaMaxMb']} + ' MB · Java ' + ${entorno['javaVersion']}">Memoria</span>
+            </div>
+
+            <!-- ===== Integridad del catálogo ===== -->
+            <div class="gm-panel-section is-expanded" th:if="${informe != null}">
+                <button type="button" class="gm-panel-section__toggle"
+                        th:text="'🧩 Integridad del catálogo — ' + ${informe.totalReferenciasRevisadas()} + ' referencias revisadas en ' + ${informe.duracionMs()} + ' ms ▾'">Integridad ▾</button>
+                <div class="gm-panel-section__content">
+                    <p class="u-mb-sp2">
+                        <span class="gm-badge u-chip-margin" th:each="c : ${informe.conteos()}"
+th:text="${c.key} + ': ' + ${c.value}">catálogo: n</span>
+                    </p>
+                    <p class="u-rarity-uncommon" th:if="${informe.sano()}">
+                        ✓ Todas las referencias apuntan a cartas que existen. La información está bien guardada.
+                    </p>
+                    <div th:if="${!informe.sano()}">
+                        <p class="u-accent-label" th:text="${#lists.size(informe.problemas())} + ' referencias rotas (errores no críticos: la app funciona, esos datos no):'">problemas</p>
+                        <ul class="u-scroll-list-320">
+                            <li class="u-text-small-secondary" th:each="p : ${informe.problemas()}" th:text="${p}">problema</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== Últimas peticiones ===== -->
+            <div class="gm-panel-section is-expanded u-mt-sp3">
+                <button type="button" class="gm-panel-section__toggle">📡 Últimas peticiones (más reciente primero) ▾</button>
+                <div class="gm-panel-section__content">
+                    <div class="u-scroll-360">
+                        <table class="u-table">
+                            <thead>
+                            <tr class="u-text-muted-left">
+                                <th class="u-p-4">Hora</th><th>Método</th><th>Ruta</th>
+                                <th>Estado</th><th>ms</th><th>Sesión</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="r : ${ultimasPeticiones}"
+                                th:style="${r.esError()} ? 'color: var(--accent-secondary); font-weight:700;'
+                                          : (${r.esLenta()} ? 'color: var(--tier-4); font-weight:700;' : '')">
+                                <td class="u-p-4" th:text="${#temporals.format(r.instante(), 'HH:mm:ss')}">hora</td>
+                                <td th:text="${r.metodo()}">GET</td>
+                                <td th:text="${r.ruta()}">/ruta</td>
+                                <td th:text="${r.status()}">200</td>
+                                <td th:text="${r.duracionMs()}">12</td>
+                                <td th:text="${r.sesion()}">…abc123</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <p th:if="${#lists.isEmpty(ultimasPeticiones)}" class="gm-chip-empty">
+                            Aún no hay peticiones registradas — navega por la app y vuelve.
+                        </p>
+                    </div>
+                    <p class="gm-hint u-mt-sp2">
+                        Naranja = lenta (≥<span th:text="${umbralLenta}">500</span> ms) · rojo = error 4xx/5xx.
+                        Si el sufijo de sesión cambia sin cerrar el navegador, se está perdiendo la sesión.
+                    </p>
+                </div>
+            </div>
+
+            <p class="gm-hint u-mt-sp4">
+                Prueba de rendimiento reproducible: con la app arrancada, ejecuta
+                <code>bash scripts/prueba_rendimiento.sh</code> y compara la media y el p95 entre versiones.
+            </p></main>
+</body>
+</html>

@@ -1,0 +1,234 @@
+{
+  "_meta": {
+    "generator": "TRAE",
+    "region": "OCCIDENTE MERIDIONAL",
+    "year_bf": 2000,
+    "era": "ERA XIII (Catorce Cruzadas)",
+    "source": [
+      "canon locations.json original (atlas 95 cities / 140 entries)",
+      "canon/ERA_XIII_2000BF_extracto.md",
+      "schemas/location_level2.schema.json"
+    ]
+  },
+  "entries": [
+    {
+      "id": "nation_ecla",
+      "locationType": "nation",
+      "name": "Ecla",
+      "origin": "ATLAS_CANON",
+      "alignment": "neutral_good",
+      "color": "#9ec89a",
+      "culture": "Silvano-Vietic (Elfos Refugiados + Humanos Alquimistas)",
+      "deityIds": ["deity_veiled_queen", "deity_morning_light", "deity_arcane_spire"],
+      "raceIds": ["race_elf_silvan", "race_human_vietic", "race_gnome_deep", "race_half_elf"],
+      "rarity": "uncommon",
+      "tier": 0,
+      "capitalId": "city_ecla_umedan_capital",
+      "polygon": "142,390 224,398 330,402 435,414 494,446 524,510 510,600 450,650 340,655 250,630 190,560 155,480 145,420",
+      "coord": { "x": 70, "y": 100 },
+      "metadata": {
+        "gobierno": "Triunvirato: Cámara Cinabrio (alquimistas), Consejo Silvano (elfos), Mariscalato Fronterizo (militares Cruzadas). Rotación anual de primacía; 2000bf toca Cinabrio.",
+        "biomaGeneral": "Selva tropical en el tercio sur; Humedales/Canales en el centro (Cuenca Negra); Franja templada-fronteriza al norte (Ascaria). Costa occidental acantilada.",
+        "tierRange": { "min": 1, "max": 5 },
+        "regions": [
+          "REGION_FRONTERA_HOZ (N, plaza fuerte cruzada, tier 3-5)",
+          "REGION_VALLE_JOREN (centro-NW, refugiados, tier 2)",
+          "REGION_HUMEDALES_ETRIATH (centro, canal aguas negras, tier 2)",
+          "REGION_COSTA_ITHON (O, isla elfa, tier 1-3)",
+          "REGION_UMEDAN (capital, tier 3-5)",
+          "REGION_BOSQUE_PROHIBIDO (S, cordillera fin mundo, tier 2)"
+        ],
+        "eraXIIIEvents": [
+          {
+            "id": "era13_ev_003_invasion_ecla",
+            "year": 2001,
+            "title": "Invasión Cruzada Franja Norte Ecla — Fortaleza de la Hoz",
+            "summary": "3 playas de desembarco en el norte (Golfo de Uluth, Cuenca Norte). Construcción rápida fortaleza de la Hoz sobre yacimiento de plata. Ecla declara no intervenir mientras no entren al sur del río Joren. (En 2004 CASO ROMPEN esto → ASALTO ITHON.)"
+          },
+          {
+            "id": "era13_ev_008_asedio_ithon",
+            "year": 2004,
+            "title": "Asedio Cruzado de la Isla Ithon (3 meses)",
+            "summary": "Cruzados rompen pacto Franja Norte: intentan tomar Ithon (isla elfa). Rendición por hambre tras 93 días. Consejo Silvano de Ecla rompe alianza no agresión. Es el PRIMER conflicto DIRECTO en el Occidente Meridional de ERA XIII."
+          },
+          {
+            "id": "era13_ev_011_asaltonubes_tail",
+            "year": 1995,
+            "title": "EV-1995-AsaltoNubes: aeronaves Esmua caen sobre Edea",
+            "summary": "Columna de 17 aeronaves huyendo de la Batalla de Ascaria-sur (CLOUDE/ZCODE) intentan refugiarse en Edea. 3 estrelladas matan 120, las otras aterrizan y 600 soldados solicitan asilo político. Mariscalato devuelve 340 prisioneros a CLOUDE (caso humillante)."
+          }
+        ],
+        "factions": [
+          {
+            "id": "faction_ecla_camara_cinabrio",
+            "name": "Cámara Cinabrio — Gremio Alquimistas",
+            "role": "Gobierno 1/3 + monopolio Alquimia (pócimas, colorantes, fertilizantes) + Universidad Umedan Biologica.",
+            "leader": "Gran Alquimista Elenya Silvanos (elfa silvana, class_wizard_transmutation, tier 4)",
+            "alignmentId": "alignment_neutral_good"
+          },
+          {
+            "id": "faction_ecla_consejo_silvano",
+            "name": "Consejo Silvano Elfo de Ecla",
+            "role": "Gobierno 2/3, Jefe de Élficos refugiados, Patrimonio natural (bosques, islas, humedales).",
+            "leader": "Archidruida Vordir CazadorLunar (elfo silvano, class_druid_moon, tier 4)",
+            "alignmentId": "alignment_true_neutral"
+          },
+          {
+            "id": "faction_ecla_mariscalato",
+            "name": "Mariscalato Fronterizo y Orden de la Plata",
+            "role": "Gobierno 3/3, Ejercito regular + defensa Fortaleza de la Hoz (no interviene en Tierras Cruzadas pero vigila).",
+            "leader": "Mariscal Rook Cinderveil (tiefling, class_fighter_battle_master, tier 5)",
+            "alignmentId": "alignment_lawful_neutral"
+          },
+          {
+            "id": "faction_ecla_circulo_joren_refugio",
+            "name": "Círculo del Refugio de Joren",
+            "role": "Caridad, albergue a 600 refugiados (actuales, 2000bf; crece cada mes). Red hospitalaria. Aliado de Clerigos Vida.",
+            "leader": "Matriarca Alya Ashye (humana, class_cleric_life, tier 3)",
+            "alignmentId": "alignment_neutral_good"
+          }
+        ],
+        "dungeons": [
+          {
+            "id": "dungeon_hoz_ocavernes_inferiores",
+            "name": "Cavernas Inferiores Fortaleza de la Hoz",
+            "tier": 4,
+            "theme": "Fortaleza cruzada excavada sobre vetas de plata; celdas para prisioneros de guerra; sepulcro de 12 capitanes primeros cruzados; ritual ignífero ilegal.",
+            "coord": { "x": 420, "y": 910 },
+            "bossMonsterId": "monster_capitan_cruzado_tirano_04",
+            "relicIds": ["equip_unique_ecla_lanza_plata_hoz"]
+          },
+          {
+            "id": "dungeon_ecla_ithon_tumba_primera_elfa",
+            "name": "Tumba de la Primera Reina Elfa de Ithon",
+            "tier": 3,
+            "theme": "Cripta pre ERA XI bajo el santuario mayor de la Isla. Guardianes constructos élficos, tres pasadizos ilusorios. Reliquia: capa protectora lunar.",
+            "coord": { "x": 206, "y": 398 },
+            "bossMonsterId": "monster_constructo_guardia_elfa_03",
+            "relicIds": ["equip_unique_ecla_capa_de_la_luna_creciente"]
+          }
+        ],
+        "lore": [
+          "Ecla se fundó el año 2832 ERA VI (Humana) por una fusión tri-étnica: la tribu Humana Víet que bajó de las montañas, los Elfos silvanos refugiados de la Caída de Ithanor, y los Gnomos profundos que abrieron las primeras minas de cinabrio. De ahí su bandera: triángulo rojo, verde y ocre, unidos por un nudo.",
+          "En el año 2000 b.f. el equilibrio interno es FÚGIL: la Cámara Cinabrio quiere modernizar (acoger la alquimia transmutación ilegal) y el Consejo Silvano lo considera una afrenta a la naturaleza. La Mariscalato aprovecha la distracción para ir ganando cuotas de poder y prepararse para el colapso de la Franja Norte en cuanto Cruzados quieran avanzar hacia Umedan.",
+          "El bioma sur (bosque prohibido) es territorio de sacerdotes de la Diosa Velada (deity_veiled_queen): nadie entra, nadie sale; se rumorea que las sacerdotisas mantienen un portal a un plano de sombras. Las rutas comerciales lo rodean estrictamente por la costa, lo que hace de ITHON un puerto clave por necesidad más que por elección."
+        ]
+      }
+    },
+    {
+      "id": "nation_udrax",
+      "locationType": "nation",
+      "origin": "ATLAS_CANON",
+      "name": "Udrax — Confederación de los 9 Pozos",
+      "alignment": "lawful_neutral",
+      "color": "#b3c4b8",
+      "culture": "Marinero-Pozuelo (razas mezcla: humanos marineros, lagartos, yuan-ti [ocultos], Minotauros portuarios)",
+      "deityIds": ["deity_ocean_serenity", "deity_deep_king", "deity_iron_oath", "deity_nocturne"],
+      "raceIds": ["race_human_mariner", "race_lizardfolk", "race_naga_blooded", "race_minotaur", "race_tortle"],
+      "rarity": "uncommon",
+      "tier": 0,
+      "capitalId": "city_udrax_bomengrid_capital",
+      "polygon": "540,500 605,512 700,520 780,540 830,590 820,680 780,750 680,760 600,740 550,690 525,620 530,560",
+      "coord": { "x": 130, "y": 105 },
+      "metadata": {
+        "gobierno": "Confederación de Nueve Pozos — 9 grandes ciudades-estado con voto por peso de población. Presidente semestral (Cónsul) rotativo. Asamblea se reúne en Bomengrid (capital por mayoría, 32k votos).",
+        "biomaGeneral": "Cordillera al norte (Paso de los Danzantes frontera con Ecla); Estepa herbácea central con ríos serpenteantes; Delta y Marismas de los Pozos (Sur); Costa sur archipiélago con pactos comerciales Naga.",
+        "tierRange": { "min": 1, "max": 5 },
+        "regions": [
+          "REGION_FRONTERA_DANZANTES (N, frontera Ecla-Udrax, paso montaña, tier 2)",
+          "REGION_MINAS_EOTTETIKA (NE, hierro/níquel, crisis: agotamiento, tier 2-4)",
+          "REGION_PLAZA_FERIAS (CENTRO, Aherhia, ferias anuales, tier 1-2)",
+          "REGION_BOMENGRID (CAPITAL, tier 3-5, Muralla a medio caer)",
+          "REGION_POZOS_SUSURRANTES (S, Eabotara/Jggotti, Yuan-ti, tier 2)",
+          "REGION_PUENTE_ACLOSOS (EST, puente estratégico, orden militar, tier 2)",
+          "REGION_MAR_ESPERA (S-EST, Wait Harbor, Pacto de Sangre 1997, frontera Naga, tier 3)"
+        ],
+        "eraXIIIEvents": [
+          {
+            "id": "era13_ev_004_naga_refuerzo",
+            "year": 2001,
+            "title": "Ola de Ataques Naga — Eabotara y Jggotti en llamas",
+            "summary": "La llegada de Cruzados y su bloqueo naval OCCIDENTAL rompe el equilibrio marítimo con los Nagas. Ataques de retorsión: 2/3 de Eabotara se incendia; Jggotti pierde 500 habitantes. Solo 7 sacerdotes de la Reina Marina detienen la tercera oleada."
+          },
+          {
+            "id": "era13_ev_010_pacto_sangre",
+            "year": 1997,
+            "title": "Pacto de Sangre Udrax — Naga (4 años tregua)",
+            "summary": "Cónsul Halfdran se reúne en secreto con 3 Matriarcas Naga en Wait Harbor. El pacto: Udrax entrega ciertas mercancías prohibidas (prisioneros débiles, venenos, artículos arcanos) → Nagas cesan hostilidades y compran hierro a Eottetika. Punto 2000: quedan 3 años. Los cónsules ya negocian cómo NO renovarlo."
+          }
+        ],
+        "factions": [
+          {
+            "id": "faction_udrax_asamblea_pozos",
+            "name": "Asamblea de los Nueve Pozos",
+            "role": "Gobierno central, legislación común, ejército confederal (Orden del Puente + Ejércitos de Frontera).",
+            "leader": "Cónsul Varran Halfdran (humano, class_paladin_devotion, tier 4)",
+            "alignmentId": "alignment_lawful_neutral"
+          },
+          {
+            "id": "faction_udrax_gremio_minero",
+            "name": "Gremio Minas y Herrerías del Este",
+            "role": "Minas Eottetika + exportación de hierro. Crisis: vetas se agotan (declive 37% en 5 años). Presión para abrir minas bajo Pozos Susurrantes (tabú).",
+            "leader": "Gremialmaestre Brunhild Stonehand (enana colina, class_barbarian_berserker, tier 3)",
+            "alignmentId": "alignment_lawful_neutral"
+          },
+          {
+            "id": "faction_udrax_contrabandistas_pozos",
+            "name": "Los Susurrantes del Pozo",
+            "role": "Contrabando sustancias Naga, reliquias ERA XII, venenos, esclavitud voluntaria/oculta. A veces buenos (tienen rutas de huida para refugiados).",
+            "leader": "El Silbador (yuan-ti malison, class_rogue_thief, tier 3) [anonimo real: Yrisseth]",
+            "alignmentId": "alignment_chaotic_neutral"
+          },
+          {
+            "id": "faction_udrax_orden_puente",
+            "name": "Orden del Puente Milenario",
+            "role": "Guardia fronteriza. Custodia Aclosos (puente estratégico canon trait) + la muralla de Bomengrid.",
+            "leader": "Prioste Delgar Ironvein (duergar, class_cleric_war, tier 4)",
+            "alignmentId": "alignment_lawful_good"
+          },
+          {
+            "id": "faction_udrax_secta_nox",
+            "name": "Secta Estimar Nox — Los Observadores Nocturnos",
+            "role": "Secta oculta en la muralla fantasma Bomengrid. Creen que revivir rituales ERA XII Nagas salvará Udrax de la minería agotada. (ESTA ES LA FACCIÓN 'MALO' DEL AÑO 2000BF.)",
+            "leader": "[TBD Oriol: Gran Sacerdotisa Nox; Yuan-ti Abominación disfrazada humana]",
+            "alignmentId": "alignment_chaotic_evil"
+          }
+        ],
+        "dungeons": [
+          {
+            "id": "dungeon_udrax_pozos_susurrantes_nexo",
+            "name": "Nexo Inferior — Pozos Susurrantes de Eabotara",
+            "tier": 3,
+            "theme": "Red de túneles Naga del ERA XII que conecta Eabotara, Jggotti y el sótano Bomengrid. 2000bf: secta Nox quiere reabrirlo. Guardianes: yuan-ti malisons, constuctos serpiente, Medusa menor de los Pozos.",
+            "coord": { "x": 560, "y": 528 },
+            "bossMonsterId": "monster_medusa_menor_pozos_03",
+            "relicIds": ["equip_unique_udrax_daga_sangre_serpiente"]
+          },
+          {
+            "id": "dungeon_udrax_muralla_fantasma",
+            "name": "La Muralla Fantasma — Tramo Hundido de Bomengrid",
+            "tier": 4,
+            "theme": "El canon trait 'muralla a medio caer' tiene una sección oculta que se derrumbó en ERA XII (ataque Naga original). Es la entrada a la cripta del Primer Cónsul y a los planos de la Secta Nox. Guardianes: muertos vivientes, espectros, barrow wight.",
+            "coord": { "x": 718, "y": 704 },
+            "bossMonsterId": "monster_wight_lord_halfbrother_04",
+            "relicIds": ["equip_unique_udrax_martillo_primer_consul", "equip_unique_udrax_casco_fantasma"]
+          },
+          {
+            "id": "dungeon_udrax_wait_harbor_pacto",
+            "name": "Almacén Secreto Pacto de Sangre — Wait Harbor",
+            "tier": 3,
+            "theme": "Bodega militarizada al final del muelle de espera. Trato Udrax ↔ Naga. Mercancías ilegales, prisioneros que nunca volvieron. Jefe: emisario Naga T4.",
+            "coord": { "x": 830, "y": 720 },
+            "bossMonsterId": "monster_naga_emisaria_pacto_03",
+            "relicIds": ["equip_unique_udrax_amuleto_pacto_sangre"]
+          }
+        ],
+        "lore": [
+          "En el principio Udrax no era una nación, sino 9 pozos independientes que compartían un POZO MAYOR (el actual Bomengrid). Alrededor del 2120 ERA IX (Forjas), los Herreros Forjadores unieron los 9 por tratado y construyeron el acueducto del Pozo Mayor. Durante ERA XII (Naga) fue un infierno: 8 de 9 ciudades cayeron temporalmente. Solo Aclosos aguantó.",
+          "En 2000 b.f. la crisis NO es militar (el Pacto Sangre 1997 ha dado respiro), sino económica y SOCIAL. Eottetika se agota, el gremio minero pide abrir tierras tabú. La Secta Nox aprovecha la nostalgia de tiempos ERA XII, y los ciudadanos humildes creen que 'ser Naga es mejor que ser hambriento'. Hay 3 clivajes muy marcados: Norte (forjeros) vs Sur (Pozos, Naga-simps), Capital vs Puertos, Clase Alta vs Bajos fondos (Pozos).",
+          "Bomengrid es la ciudad más extraña del Occidente Meridional. Su muralla se derrumbó en 2024, la reconstruyeron a medias, se volvió a derrumbar, y ahora hay una sección 'Fantasma' donde nadie pasa de noche. Se dice que el Primer Cónsul camina sobre el alba, cargando su martillo de guerra de obsidiana. Las almas de los que allí mueren NO pasan al cielo: se quedan. Por eso los Udraxenses NO quieren morir en Bomengrid sin ritual de purificación por un clérigo de la Orden del Puente."
+        ]
+      }
+    }
+  ]
+}

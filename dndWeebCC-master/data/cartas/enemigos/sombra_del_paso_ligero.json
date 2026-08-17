@@ -1,0 +1,50 @@
+{
+ "id": "sombra_del_paso_ligero",
+ "name": "Sombra del Paso Ligero",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 1,
+ "role": "escaramuzador",
+ "faction": "yokai_del_umbral",
+ "factionName": "Los Yokai del Umbral",
+ "stats": {
+  "CON": 1,
+  "DES": 4,
+  "INT": 2,
+  "CAR": 1
+ },
+ "derived": {
+  "vida": 12,
+  "ca": 14,
+  "defensaMental": 11,
+  "resistenciaFisica": 11,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de oscuro: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: efecto táctico según su pasiva."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Si termina el turno sin nadie adyacente, queda Oculto."
+ },
+ "conditionsInflicted": [],
+ "loot": [
+  "estilete_de_viaje",
+  "faldar_de_explorador"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Oscuro"
+ ],
+ "phases": [],
+ "flavorText": "Silueta arcana que castiga a quien mira al lugar equivocado."
+}

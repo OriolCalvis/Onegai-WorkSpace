@@ -1,0 +1,244 @@
+{
+  "nombre": "Inventor",
+  "descripcion": "Genio caótico que fusiona magia y tecnología para crear artilugios impredecibles y potentes.",
+  "rolTematico": "Luchador-mago centrado en artefactos, explosivos y creaciones mágicas mecánicas.",
+  "dadoGolpe": "1d8",
+  "puntosGolpeNivel1": "8 + modificador de Constitución",
+  "puntosGolpePorNivel": "1d8 (o 5) + modificador de Constitución",
+  "atributoConjuro": "Carisma",
+  "atributosRelevantes": [
+    "Carisma",
+    "Inteligencia",
+    "Constitución"
+  ],
+  "competencias": {
+    "armaduras": [
+      "Ligeras",
+      "Intermedias"
+    ],
+    "armas": [
+      "Simples",
+      "Ballesta de mano",
+      "Espada larga",
+      "Espada corta",
+      "Estoque"
+    ],
+    "habilidadesElegir": [
+      "Arcano",
+      "Atletismo",
+      "Historia",
+      "Perspicacia",
+      "Investigación",
+      "Medicina",
+      "Naturaleza",
+      "Percepción",
+      "Juego de Manos"
+    ],
+    "salvaciones": [
+      "Constitución",
+      "Carisma"
+    ]
+  },
+  "mecanicas": {},
+  "accionesEspeciales": {},
+  "niveles": {
+    "1": {
+      "habilidades": [
+        {
+          "nombre": "Artilugio Caótico",
+          "descripcion": "Empiezas tu viaje creando artilugios improvisados y caóticos.",
+          "efecto": "Puedes crear un artefacto con efectos impredecibles que explota en un radio de 10 pies. Haz una tirada de d20 para determinar el efecto:\n1-5: Explosión, inflige 1d6 de daño a todos, incluido tú.\n6-10: Explosión fallida, inflige 1d6 a los enemigos.\n11-15: Proyectil de energía, inflige 2d6 de daño de fuerza.\n16-20: Onda expansiva, inflige 3d6 de daño y empuja a los enemigos.",
+          "usos": "Modificador de Carisma / 2 (redondeado hacia abajo)",
+          "accion": "Especial"
+        }
+      ]
+    },
+    "2": {
+      "habilidades": [
+        {
+          "nombre": "Reparaciones Rápidas",
+          "descripcion": "Puedes reparar rápidamente tus artilugios o armaduras dañadas.",
+          "efecto": "Como acción adicional, creas un robot con 8 puntos de golpe, 9 de CA, que ayuda en el combate. Hace 1d6 de daño y explota con efecto de Artilugio Caótico al morir.",
+          "usos": "Modificador de Inteligencia por descanso corto",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "3": {
+      "habilidades": [
+        {
+          "nombre": "Maestría en Explosivos",
+          "descripcion": "Mejora tus artilugios explosivos, haciéndolos más potentes y seguros.",
+          "efecto": "El daño de tus explosivos aumenta en 1d6 y tienes ventaja en las tiradas de ataque cuando usas explosivos o trampas.",
+          "usos": "Automático",
+          "accion": "Pasiva"
+        }
+      ]
+    },
+    "4": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características"
+        }
+      ]
+    },
+    "5": {
+      "habilidades": [
+        {
+          "nombre": "Drone de Batalla",
+          "descripcion": "Invocas un drone de batalla controlado a distancia que te asiste en combate.",
+          "efecto": "El drone puede atacar (2d6 daño de fuerza), proporcionar cobertura o desactivar trampas.",
+          "duracion": "1 minuto",
+          "usos": "Modificador de Carisma por descanso largo",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "6": {
+      "habilidades": [
+        {
+          "nombre": "Mejora Tecnológica",
+          "descripcion": "Mejora tus creaciones y artilugios, haciéndolos más precisos y letales.",
+          "efecto": "Tus artilugios ahora tienen un 50% menos de probabilidad de fallar. Puedes volver a tirar en la tabla de Artilugio Caótico si no estás satisfecho con el resultado. Además puedes reparar los artefactos que creas, 1d4.",
+          "accion": "Pasiva"
+        }
+      ]
+    },
+    "7": {
+      "habilidades": [
+        {
+          "nombre": "Trampa Mejorada",
+          "descripcion": "Eres experto en colocar trampas en el campo de batalla.",
+          "efecto": "Colocas trampas de veneno (2d6 de daño Salvación por envenenamiento) o trampas explosivas (3d6) que paralizan a los enemigos durante 1 turno.",
+          "usos": "2 veces por descanso largo",
+          "accion": "Especial"
+        }
+      ]
+    },
+    "8": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características"
+        }
+      ]
+    },
+    "9": {
+      "habilidades": [
+        {
+          "nombre": "Golem de Hierro",
+          "descripcion": "Creas un golem mecánico que lucha a tu lado.",
+          "efecto": "El golem tiene 50 puntos de golpe y puede infligir 2d10 de daño contundente.",
+          "duracion": "1 minuto",
+          "usos": "1 vez por descanso largo",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "10": {
+      "habilidades": [
+        {
+          "nombre": "Invención Maestra",
+          "descripcion": "Puedes crear invenciones más poderosas y devastadoras.",
+          "efecto": "Puedes crear una invención que inflige 5d6 de daño de fuerza o ácido.",
+          "usos": "1 vez por descanso corto",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "11": {
+      "habilidades": [
+        {
+          "nombre": "Destrucción Controlada",
+          "descripcion": "Tus artilugios destructivos ahora infligen daño máximo al enemigo más cercano.",
+          "efecto": "Siempre que uses un explosivo, uno de los enemigos en el área sufre el máximo daño posible.",
+          "accion": "Pasiva"
+        }
+      ]
+    },
+    "12": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características"
+        }
+      ]
+    },
+    "13": {
+      "habilidades": [
+        {
+          "nombre": "Cañón de Energía",
+          "descripcion": "Invocas un cañón de energía que dispara rayos de fuerza a los enemigos.",
+          "efecto": "Inflige 6d6 de daño de fuerza en un área de 20 pies.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "14": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características"
+        }
+      ]
+    },
+    "15": {
+      "habilidades": [
+        {
+          "nombre": "Torreta de Batalla",
+          "descripcion": "Construyes una torreta mágica que dispara a los enemigos cercanos.",
+          "efecto": "La torreta inflige 6d6 de daño por turno a los enemigos en un área de 30 pies.",
+          "usos": "Modificador de Inteligencia por descanso largo",
+          "accion": "Especial"
+        }
+      ]
+    },
+    "16": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características"
+        }
+      ]
+    },
+    "17": {
+      "habilidades": [
+        {
+          "nombre": "Invención Definitiva",
+          "descripcion": "Tus invenciones alcanzan el grado supremo de complejidad y eficacia.",
+          "efecto": "Puedes lanzar dos artilugios simultáneamente. Ambos aplican su daño por completo.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción Completa"
+        }
+      ]
+    },
+    "18": {
+      "habilidades": [
+        {
+          "nombre": "Invocación Mecánica Suprema",
+          "descripcion": "Puedes invocar una máquina de guerra devastadora para luchar a tu lado.",
+          "efecto": "Invocas una máquina de guerra gigante que tiene 100 puntos de golpe y puede atacar con dos acciones: disparo de cañón (8d6 de daño) y aplastamiento (6d6 de daño contundente).",
+          "duracion": "1 minuto",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción Completa"
+        }
+      ]
+    },
+    "19": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características"
+        }
+      ]
+    },
+    "20": {
+      "habilidades": [
+        {
+          "nombre": "Máquina de Guerra Definitiva",
+          "descripcion": "Eres capaz de crear la máquina de guerra definitiva, la cúspide de tu ingeniería caótica.",
+          "efecto": "Mejoras la máquina de guerra que puede volar, infligir 10d6 de daño de fuerza y tiene 150 puntos de golpe. Además, puedes controlarla mentalmente y puedes atacar a través de ella.",
+          "duracion": "10 minutos",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción Completa"
+        }
+      ]
+    }
+  }
+}

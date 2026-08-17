@@ -1,0 +1,21 @@
+{
+ "id": "carta_hist_loba_C3-06",
+ "adventureId": "adventure_la_loba_herida",
+ "code": "C3-06",
+ "act": 3,
+ "title": "El eco del aullido (Balance Final)",
+ "cardKind": "balance_final",
+ "chain": null,
+ "activation": null,
+ "scene": "Se juega siempre la última, tras resolver C3-05 (o tras la huida). Contad las fichas de las tres pilas y leed en voz alta cada fila que se cumpla, en orden.",
+ "branches": [],
+ "ignoreHook": "El Balance Final nunca se filtra ni se ignora: es el cierre de todos los hilos, incluidos los que dejasteis morir.",
+ "references": { "npcIds": ["npc_capitana_bruna", "npc_vidal_el_callado"], "enemyIds": [], "locationId": null, "lootTableId": null, "storyId": "hist_la_loba_herida_el_ajuste" },
+ "balanceTable": [
+  { "condition": "A1-01 = Roja", "epilogue": "La loba murió junto al molino, sola. La manada reclama el bosque del norte como tierra sin pacto y Llerba cierra la Puerta Norte todo el invierno. Final: la cacería consumada." },
+  { "condition": "A1-01 = Verde y se jugó C3-04 con éxito", "epilogue": "La última hija del Rei Llop vive y porta el sello. La cancillería confirma el pacto; la manada vuelve a guardar la frontera. En Llerba, vuestro nombre se dice con el aullido de fondo. Final: el pacto del sello." },
+  { "condition": "5 o más fichas Rojas entre Acto I y Acto II", "epilogue": "El bosque os escupió más de lo que os dejó tomar. La Manada del Rei Llop os reconoce como intrusos para siempre: toda futura historia con esta facción empieza en hostil." },
+  { "condition": "Más Verdes que Rojas en el Acto II", "epilogue": "Vidal difunde vuestra solvencia y Bruna vuestra palabra: la próxima vez que crucéis la Puerta Norte, estará abierta. Reputación ganada en Llerba." },
+  { "condition": "A1-05 = Verde", "epilogue": "El lobo joven que liberasteis aúlla tres noches sobre la peña partida. La trama continúa: escalón 5 de 'La Loba Herida' (hist_la_loba_herida_el_ajuste)." }
+ ]
+}

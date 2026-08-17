@@ -1,0 +1,19 @@
+{
+ "id": "carta_hist_loba_B2-04",
+ "adventureId": "adventure_la_loba_herida",
+ "code": "B2-04",
+ "act": 2,
+ "title": "Nieve fuera de estación",
+ "cardKind": "inyectada",
+ "chain": null,
+ "activation": null,
+ "scene": "El cielo se cierra en una hora y la nieve llega horizontal: una tormenta que no toca en este mes. Hay que resolver dónde pasa el grupo la noche. Consultad las fichas del Acto I.",
+ "branches": [
+  { "when": "A1-07=verde", "text": "El mapa del archivo vale su peso en leña: el Abrigo del Carbonero está a menos de una legua y lo alcanzáis antes de lo peor. Noche seca, descanso completo, y en el hollín de la chimenea alguien grabó hace años el dibujo de un lobo con collar." },
+  { "when": "A1-07=roja&A1-09=verde", "text": "Sin refugio conocido, pero bien abrigados: excaváis un vivac y la tormenta pasa de largo. Descanso parcial, sin más daño que el susto." },
+  { "when": "A1-07=roja&A1-09=roja", "text": "Ni refugio ni abrigo. La noche al raso cuesta a cada miembro una ficha de Fatiga, y el olor a sangre fría atrae a un carroñero del deshielo que ataca al amanecer, con el grupo entumecido." }
+ ],
+ "ignoreHook": "No se puede ignorar una tormenta: esta carta se resuelve siempre al robarse.",
+ "references": { "npcIds": [], "enemyIds": ["carronero_del_deshielo"], "locationId": null, "lootTableId": null, "storyId": null },
+ "balanceTable": null
+}

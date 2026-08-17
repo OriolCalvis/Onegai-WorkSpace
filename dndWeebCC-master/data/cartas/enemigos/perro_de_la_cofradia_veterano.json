@@ -1,0 +1,52 @@
+{
+ "id": "perro_de_la_cofradia_veterano",
+ "name": "Perro de la Cofradia Veterano",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 2,
+ "role": "bruto",
+ "faction": "cofradia_de_mascaras_de_plata",
+ "factionName": "La Cofradía de las Máscaras de Plata",
+ "stats": {
+  "CON": 4,
+  "DES": 3,
+  "INT": 2,
+  "CAR": 2
+ },
+ "derived": {
+  "vida": 16,
+  "ca": 13,
+  "defensaMental": 12,
+  "resistenciaFisica": 14,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Embate",
+   "defense": "CA",
+   "effect": "Ataque de oscuro: daño que suma su CON (pool de CON, regla 7.6)."
+  },
+  {
+   "name": "Mordaza",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: si el objetivo falla, queda Marcado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Cuando una Máscara cae, otra a la vista gana +1 a su próxima tirada (la cofradía aprende)."
+ },
+ "conditionsInflicted": [
+  "marcado"
+ ],
+ "loot": [
+  "estilete_de_milicia",
+  "amuleto_de_foco"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Oscuro"
+ ],
+ "phases": [],
+ "flavorText": "Detrás de cada máscara hay otra. Nadie ha llegado a la última."
+}

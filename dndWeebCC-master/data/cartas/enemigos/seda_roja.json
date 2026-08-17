@@ -1,0 +1,84 @@
+{
+ "id": "seda_roja",
+ "name": "Seda Roja",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "atacante",
+ "faction": "bandidos_del_camino_de_ceniza",
+ "stats": {
+  "CON": 6,
+  "DES": 8,
+  "INT": 5,
+  "CAR": 5
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 19,
+  "defensaMental": 15,
+  "resistenciaFisica": 16,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Reverencia Final",
+   "defense": "CA",
+   "effect": "Daño que suma su DES con ventaja contra quien aún no la haya visto atacar este combate."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "CA",
+   "effect": "Si el objetivo falla, queda Sangrado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Corte Limpio",
+  "description": "Corte Limpio: sus Sangrados no avisan — la víctima no nota la condición hasta su propio turno (el DJ la aplica en secreto)."
+ },
+ "conditionsInflicted": [
+  "sangrado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico",
+  "Importante"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Encadena su técnica tras el ataque firma y +1 al daño."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Retirarse con una última obra célebre: robar algo que se cuente en tres reinos",
+  "metodo": "Elegante, precisa, siempre despedida con reverencia",
+  "debilidad_narrativa": "El aplauso: elogiar sinceramente su técnica (CAR, CD 1) la obliga a saludar — pierde su acción menor",
+  "vinculo": "danzarin_del_filo"
+ },
+ "arena": {
+  "name": "El Puente de la Función",
+  "hazard": "Cuerda floja: el puente estrecho — empujes y derribos valen doble aquí"
+ },
+ "legendaryActions": [],
+ "storyCard": {
+  "title": "Seda Roja",
+  "text": "Sus víctimas la recomiendan. Póstumamente.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "La única bandida con lista de espera."
+}

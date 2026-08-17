@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Monstruos</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('enemigos')}"></div>
+
+            <div class="u-page-header">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-eyebrow">Sistema de Cartas y Tiers</p>
+                    <h1>Álbum de Monstruos</h1>
+                    <p class="gm-hint" th:text="${totalRegulares} + ' enemigos sueltos · ' + ${totalVillanos} + ' jefes y villanos'">n enemigos · n jefes</p>
+                </div>
+                <button type="button" class="gm-btn gm-btn--outline" data-panel-anchor-toggle="gm-filtros">🔍 Filtros</button>
+            </div>
+
+            <div class="u-detail-layout-260">
+                <aside id="gm-filtros" class="gm-panel gm-panel--anchored">
+                    <div class="gm-panel__header">
+                        <h3 class="gm-panel__title">Filtrar</h3>
+                    </div>
+                    <div class="gm-panel__body">
+                        <div class="gm-field">
+                            <label for="filtro-texto">Buscar por nombre</label>
+                            <input id="filtro-texto" class="gm-input" type="text" placeholder="Ej. Apostata...">
+                        </div>
+                        <div class="gm-field">
+                            <label for="filtro-tier">Tier</label>
+                            <select id="filtro-tier" class="gm-select">
+                                <option value="">Todos</option>
+                                <option value="1">Tier 1</option>
+                                <option value="2">Tier 2</option>
+                                <option value="3">Tier 3</option>
+                                <option value="4">Tier 4</option>
+                                <option value="5">Tier 5</option>
+                            </select>
+                        </div>
+                        <div class="gm-field">
+                            <label for="filtro-rango">Rango</label>
+                            <select id="filtro-rango" class="gm-select">
+                                <option value="">Todos</option>
+                                <option value="criatura">Criatura</option>
+                                <option value="jefe">Jefe / Villano</option>
+                            </select>
+                        </div>
+                        <p class="gm-hint" id="filtro-resultado"></p>
+                    </div>
+                </aside>
+
+                <div>
+                    <p class="u-text-muted" th:if="${#lists.isEmpty(monstruos)}">
+                        Todavía no hay monstruos en <code>data/cartas/enemigos</code>.
+                    </p>
+
+                    <div class="gm-album" id="gm-album-monstruos">
+                        <article class="gm-card" th:each="m : ${monstruos}"
+                                 th:attr="data-nombre=${m.name}, data-tier=${m.tier}, data-rango=${m.rank}">
+                            <!-- ① Cabecera -->
+                            <span class="gm-card__tier">TIER <span th:text="${m.tier}">1</span></span>
+                            <h2 class="gm-card__title" th:text="${m.name}">Nombre</h2>
+                            <span class="gm-card__role" th:text="${m.extra}">rol</span>
+
+                            <!-- ② Ilustración -->
+                            <div class="gm-card__illustration" th:text="${m.rank == 'jefe'} ? '👑' : '💀'">💀</div>
+
+                            <!-- ③ Reglas -->
+                            <div class="gm-card__rules">
+                                <p class="gm-card__meta" th:text="${m.factionNombre}">facción</p>
+                            </div>
+
+                            <!-- ④ Pie -->
+                            <div class="gm-card__footer">
+                                <span class="gm-badge" th:text="${m.rank == 'jefe'} ? 'Jefe / Villano' : 'Criatura'">rango</span>
+                            </div>
+                            <div class="gm-card__actions">
+                                <a class="gm-btn gm-btn--outline gm-btn--sm" th:href="@{/cartas/enemigos/{id}(id=${m.id})}">Ver ficha</a>
+                            </div>
+
+                            <!-- ⑤ Identificador -->
+                            <p class="gm-card__id" th:text="'enemigos · ' + ${m.id}">enemigos · id</p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+</main>
+<th:block layout:fragment="extra-js">
+<script th:inline="javascript">
+    (function () {
+        var texto = document.getElementById('filtro-texto');
+        var tier = document.getElementById('filtro-tier');
+        var rango = document.getElementById('filtro-rango');
+        var resultado = document.getElementById('filtro-resultado');
+        var tarjetas = document.querySelectorAll('#gm-album-monstruos .gm-card');
+
+        function aplicarFiltro() {
+            var t = (texto.value || '').toLowerCase();
+            var ti = tier.value || '';
+            var r = rango.value || '';
+            var visibles = 0;
+            tarjetas.forEach(function (carta) {
+                var nombre = (carta.getAttribute('data-nombre') || '').toLowerCase();
+                var tierCarta = carta.getAttribute('data-tier') || '';
+                var rangoCarta = carta.getAttribute('data-rango') || '';
+                var coincide = nombre.indexOf(t) !== -1
+                    && (ti === '' || tierCarta === ti)
+                    && (r === '' || rangoCarta === r);
+                carta.style.display = coincide ? '' : 'none';
+                if (coincide) visibles++;
+            });
+            resultado.textContent = visibles + ' de ' + tarjetas.length + ' monstruos';
+        }
+
+        if (texto && tier && rango) {
+            texto.addEventListener('input', aplicarFiltro);
+            tier.addEventListener('change', aplicarFiltro);
+            rango.addEventListener('change', aplicarFiltro);
+            aplicarFiltro();
+        }
+    })();
+</script>
+</th:block>
+</body>
+</html>

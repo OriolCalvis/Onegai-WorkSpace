@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Carta de deidad</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('deidades')}"></div>
+
+            <div class="u-page-header--start">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-p-0">Ficha completa</p>
+                    <h1 th:text="${carta.name}">Nombre</h1>
+                    <p>
+                        <span class="gm-badge" th:text="${carta.domain}">Dominio</span>
+                        <span class="gm-badge" th:text="'ID ' + ${carta.id}">id</span>
+                    </p>
+                </div>
+                <a class="gm-btn gm-btn--outline" th:href="@{/cartas/deidades/{id}/editar(id=${carta.id})}">Editar</a>
+            </div>
+
+            <div class="u-detail-layout-300">
+                <article class="gm-card gm-card--detalle u-cursor-default">
+                    <span class="gm-card__tier" th:text="${carta.domain}">Dominio</span>
+                    <h2 class="gm-card__title" th:text="${carta.name}">Nombre</h2>
+                    <span class="gm-card__role">deidad</span>
+
+                    <div class="gm-card__illustration">✝</div>
+
+                    <div class="gm-card__rules">
+                        <p class="gm-card__desc u-clamp-unset" th:text="${carta.favor != null ? carta.favor.description : ''}">Favor</p>
+                        <p class="gm-card__meta u-italic" th:if="${carta.flavorText}" th:text="${carta.flavorText}">Texto narrativo</p>
+                    </div>
+
+                    <div class="gm-card__footer">
+                        <span class="gm-badge" th:each="c : ${carta.compatibleWith}" th:text="${c}">compatible</span>
+                    </div>
+
+                    <p class="gm-card__id" th:text="'deidades · ' + ${carta.id}">deidades · id</p>
+                </article>
+
+                <div>
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Compatibilidad y obligaciones ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong>Compatible con:</strong></p>
+                            <p th:each="c : ${carta.compatibleWith}" class="gm-badge u-mr-4" th:text="${c}">c</p>
+                            <p th:if="${#lists.isEmpty(carta.compatibleWith)}">—</p>
+                            <p><strong>Obligaciones / tabúes:</strong></p>
+                            <p th:each="o : ${carta.obligations}" class="gm-badge u-mr-4" th:text="${o}">o</p>
+                            <p th:if="${#lists.isEmpty(carta.obligations)}">Ninguna.</p>
+                        </div>
+                    </div>
+
+                    <div class="u-actions--wrap">
+                        <a class="gm-btn gm-btn--outline" th:href="@{/cartas/deidades}">Volver al listado</a>
+                        <form th:action="@{/cartas/deidades/{id}/eliminar(id=${carta.id})}" method="post" th:data-nombre="${carta.name}" onsubmit="return confirm(\'¿Borrar el deidad &quot;' + this.dataset.nombre + '&quot;? No se puede deshacer.');">
+                            <button class="gm-btn gm-btn--danger" type="submit">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div></main>
+</body>
+</html>

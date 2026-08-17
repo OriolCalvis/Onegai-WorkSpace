@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Editor de carta de condición</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('condiciones')}"></div>
+            <p class="gm-sidebar__eyebrow u-p-0">Sistema de Cartas y Tiers</p>
+            <h1 class="u-mb-sp5" th:text="${esNueva} ? 'Nueva carta de condición' : 'Editar carta de condición'">Nueva carta de condición</h1>
+
+            <form th:action="${esNueva} ? @{/cartas/condiciones} : @{/cartas/condiciones/{id}/editar(id=${form.id})}"
+                  th:object="${form}" method="post">
+
+                <div class="gm-form-grid u-mb-sp4">
+                    <div class="gm-field" th:if="${esNueva}">
+                        <label>ID (opcional)</label>
+                        <input class="gm-input" th:field="*{id}" placeholder="Se genera automático a partir del nombre">
+                    </div>
+                    <div class="gm-field" th:unless="${esNueva}">
+                        <label>ID</label>
+                        <input class="gm-input" th:field="*{id}" readonly>
+                    </div>
+                    <div class="gm-field">
+                        <label>Nombre</label>
+                        <input class="gm-input" th:field="*{name}" placeholder="Anclado" required>
+                    </div>
+                    <div class="gm-field">
+                        <label>Categoría</label>
+                        <select class="gm-select" th:field="*{category}">
+                            <option value="buff">Buff</option>
+                            <option value="debuff">Debuff</option>
+                            <option value="neutro">Neutro (mixto)</option>
+                        </select>
+                    </div>
+                    <div class="gm-field">
+                        <label>Origen</label>
+                        <select class="gm-select" th:field="*{source}">
+                            <option value="estado">Estado</option>
+                            <option value="bendicion">Bendición</option>
+                            <option value="maldicion">Maldición</option>
+                        </select>
+                    </div>
+                    <div class="gm-field u-self-end">
+                        <label class="u-inline-row">
+                            <input type="checkbox" th:field="*{stackable}"> Acumulable
+                        </label>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Duración y efectos ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Duración</label>
+                                <select class="gm-select" th:field="*{duration}">
+                                    <option value="instant">Instantánea</option>
+                                    <option value="1_turn">1 turno</option>
+                                    <option value="1_min">1 minuto</option>
+                                    <option value="concentration">Concentración</option>
+                                    <option value="permanent">Permanente</option>
+                                    <option value="hasta_curarse">Hasta curarse</option>
+                                </select>
+                            </div>
+                            <div class="gm-field u-col-span-all">
+                                <label>Efectos (uno por línea o separados por ";", formato "Descripción: hook mecánico")</label>
+                                <textarea class="gm-textarea" rows="3" th:field="*{effects}" placeholder="Tu velocidad pasa a 0: desventaja_movimiento; Ganas +2 de Armadura: bono_armadura"></textarea>
+                            </div>
+                            <div class="gm-field">
+                                <label>Se cura con</label>
+                                <input class="gm-input" th:field="*{cureConditions}" placeholder="descanso_corto, habilidad_curacion">
+                            </div>
+                            <div class="gm-field">
+                                <label>Texto narrativo</label>
+                                <input class="gm-input" th:field="*{flavorText}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="u-actions">
+                    <button class="gm-btn gm-btn--primary" type="submit">Guardar</button>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/cartas/condiciones}">Cancelar</a>
+                </div>
+            </form></main>
+</body>
+</html>

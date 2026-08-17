@@ -1,0 +1,282 @@
+{
+  "nombre": "Caballero Templario",
+  "descripcion": "Un guerrero devoto cuya fe es su mayor arma. Puede ser tanto un tirano como un santo, pero siempre busca guiar a los perdidos hacia el camino que él cree correcto. Es serio y severo, actuando como una figura paternal.",
+  "rolTematico": "Guerrero devoto cuya fe es su mayor arma, equilibrando defensa, apoyo y ataques radiantes con estricta devoción.",
+  "dadoGolpe": "1d8",
+  "puntosGolpeNivel1": "8 + modificador de Constitución",
+  "puntosGolpePorNivel": "1d8 (o 5) + modificador de Constitución",
+  "atributoConjuro": "Sabiduría",
+  "atributosRelevantes": [
+    "Sabiduría",
+    "Destreza",
+    "Carisma"
+  ],
+  "competencias": {
+    "armaduras": [
+      "Todas las armaduras",
+      "Escudos"
+    ],
+    "armas": [
+      "Simples",
+      "Marciales"
+    ],
+    "habilidadesElegir": [
+      "Atletismo",
+      "Perspicacia",
+      "Intimidación",
+      "Percepción",
+      "Religión",
+      "Historia"
+    ],
+    "salvaciones": [
+      "Sabiduría",
+      "Carisma"
+    ]
+  },
+  "mecanicas": {
+    "magiaBasadaEnLaFe": "Sus habilidades mágicas provienen de su devoción y oraciones, enfocadas en potenciaciones y bonificaciones catalizadas a través de la fe.",
+    "estiloDeCombate": "Acciones Adicionales para la mayoría de habilidades; Acciones Completas para efectos mayores."
+  },
+  "accionesEspeciales": {
+    "Invocación de Camaradas de Luz": {
+      "descripcion": "Invoca aliados de luz que le asisten en combate.",
+      "niveles": {
+        "5": "Invoca un aliado espiritual durante 1 minuto. Ataca y defiende en tu nombre."
+      }
+    },
+    "Uso de Elementos Bélicos": {
+      "descripcion": "Puede utilizar armas y escudos para canalizar sus habilidades y oraciones.",
+      "niveles": {
+        "1-20": "Todas las habilidades pueden canalizarse a través de armas y escudos."
+      }
+    }
+  },
+  "niveles": {
+    "1": {
+      "habilidades": [
+        {
+          "nombre": "Escudo de Fe Menor",
+          "descripcion": "Una plegaria rápida que genera un escudo invisible.",
+          "efecto": "+1 a la CA hasta el inicio de tu próximo turno.",
+          "usos": "Modificador de Sabiduría por descanso corto",
+          "accion": "Adicional"
+        },
+        {
+          "nombre": "Oración de Fe",
+          "descripcion": "+4 a cualquier tirada de curación o daño.",
+          "efecto": "+4 a tirada de curación o daño.",
+          "usos": "Modificador de Sabiduría por descanso corto",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "2": {
+      "habilidades": [
+        {
+          "nombre": "Golpe Divino Menor",
+          "descripcion": "Potencias tu siguiente ataque con energía divina.",
+          "efecto": "Tu próximo ataque cuerpo a cuerpo inflige 1d4 de daño radiante adicional.",
+          "usos": "Modificador de Sabiduría por descanso corto",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "3": {
+      "habilidades": [
+        {
+          "nombre": "Martillo Sagrado",
+          "descripcion": "Imbuyes tu arma con energía divina por 1 minuto.",
+          "efecto": "Tus ataques cuerpo a cuerpo infligen 1d8 de daño radiante adicional durante 1 minuto.",
+          "usos": "1 vez por descanso corto",
+          "accion": "Completa"
+        }
+      ]
+    },
+    "4": {
+      "habilidades": [
+        {
+          "nombre": "Luz Sagrada",
+          "descripcion": "Guías tu ataque con una breve oración.",
+          "efecto": "Ganas ventaja en la próxima tirada de ataque antes del final de tu turno.",
+          "usos": "Modificador de Sabiduría por descanso corto",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "5": {
+      "habilidades": [
+        {
+          "nombre": "Invocación de Camarada de Luz",
+          "descripcion": "Invocas un aliado espiritual durante 1 minuto.",
+          "efecto": "El camarada lucha y defiende a tu lado.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Completa"
+        }
+      ]
+    },
+    "6": {
+      "habilidades": [
+        {
+          "nombre": "Reflejos Divinos",
+          "descripcion": "Recibes reflejos momentáneos gracias a tu fe.",
+          "efecto": "Ventaja en la próxima tirada de salvación de Destreza.",
+          "usos": "Modificador de Sabiduría por descanso largo",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "7": {
+      "habilidades": [
+        {
+          "nombre": "Escudo de Fe Mayor",
+          "descripcion": "Generas un escudo más potente con tu fe.",
+          "efecto": "+2 a la CA durante 1 minuto (concentración).",
+          "usos": "1 vez por descanso corto",
+          "accion": "Completa"
+        }
+      ]
+    },
+    "8": {
+      "habilidades": [
+        {
+          "nombre": "Aura de Fe",
+          "descripcion": "Proteges a los aliados cercanos con tu fe.",
+          "efecto": "Aliados a 10 pies ganan resistencia al daño físico durante 1 minuto (concentración).",
+          "usos": "1 vez por descanso largo",
+          "accion": "Completa"
+        }
+      ]
+    },
+    "9": {
+      "habilidades": [
+        {
+          "nombre": "Bendición de la Guerra",
+          "descripcion": "Potencias las habilidades ofensivas de un aliado.",
+          "efecto": "Ventaja en todas las tiradas de ataque de un aliado hasta tu siguiente turno.",
+          "usos": "1 vez por descanso corto",
+          "accion": "Completa"
+        }
+      ]
+    },
+    "10": {
+      "habilidades": [
+        {
+          "nombre": "Luz Sagrada Mejorada",
+          "descripcion": "Tu luz divina brilla con más intensidad.",
+          "efecto": "Ventaja en el ataque y +1d4 de daño radiante adicional.",
+          "usos": "Modificador de Sabiduría por descanso corto",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "11": {
+      "habilidades": [
+        {
+          "nombre": "Escudo de Fe Celestial",
+          "descripcion": "Extiendes tu escudo divino para proteger a varios aliados.",
+          "efecto": "+2 a la CA a todos los aliados a 30 pies por 1 minuto (concentración).",
+          "usos": "1 vez por descanso largo",
+          "accion": "Completa"
+        }
+      ]
+    },
+    "12": {
+      "habilidades": [
+        {
+          "nombre": "Bendición Sagrada Mejorada",
+          "descripcion": "Mejoras tu Oración de la Fortaleza para otorgar más vigor.",
+          "efecto": "Un aliado a 30 pies gana 2d6 puntos de golpe temporales.",
+          "usos": "Modificador de Sabiduría por descanso corto",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "13": {
+      "habilidades": [
+        {
+          "nombre": "Rayo de Justicia",
+          "descripcion": "Canalizas un rayo de energía divina contra un enemigo.",
+          "efecto": "Inflige 4d6 de daño radiante. Alcance 60 pies.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Completa"
+        }
+      ]
+    },
+    "14": {
+      "habilidades": [
+        {
+          "nombre": "Aura de Protección Mayor",
+          "descripcion": "Tu fe envuelve a todos con un poderoso escudo.",
+          "efecto": "Aliados a 10 pies ganan resistencia a todos los tipos de daño por 1 minuto (concentración).",
+          "usos": "1 vez por descanso largo",
+          "accion": "Completa"
+        }
+      ]
+    },
+    "15": {
+      "habilidades": [
+        {
+          "nombre": "Potenciación Suprema",
+          "descripcion": "Tu fe permite oraciones rápidas como acciones gratuitas.",
+          "efecto": "Puedes lanzar una oración rápida como acción gratuita una vez por turno (no puedes repetir la misma).",
+          "usos": "Hasta 1 vez por turno",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "16": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características",
+          "descripcion": "Puedes aumentar dos puntuaciones de habilidad en 1 o elegir una proeza.",
+          "efecto": "",
+          "accion": ""
+        }
+      ]
+    },
+    "17": {
+      "habilidades": [
+        {
+          "nombre": "Estilo de Combate Sagrado",
+          "descripcion": "Elige un estilo de combate: Defensa, Duelo o Protección.",
+          "efecto": "Varía según estilo elegido.",
+          "usos": "",
+          "accion": ""
+        }
+      ]
+    },
+    "18": {
+      "habilidades": [
+        {
+          "nombre": "Canalizar Divinidad",
+          "descripcion": "Ganas un uso de Canalizar Divinidad adicional.",
+          "efecto": "",
+          "usos": "1 vez por descanso corto",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "19": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características Final",
+          "descripcion": "Puedes aumentar dos puntuaciones de habilidad en 1 o elegir una proeza.",
+          "efecto": "",
+          "accion": ""
+        }
+      ]
+    },
+    "20": {
+      "habilidades": [
+        {
+          "nombre": "Invocación del Adalid Divino",
+          "descripcion": "Invocas un adalid celestial que lucha a tu lado.",
+          "efecto": "El adalid tiene HP igual a la mitad de los tuyos, vuela 60 ft, inflige 4d8 radiante/necrótico, brinda resistencia a aliados y puede otorgar bonificaciones.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Completa"
+        }
+      ]
+    }
+  }
+}
+```

@@ -1,0 +1,262 @@
+/* ============================================================
+   Carta física del catálogo — estructura derivada del esquema
+   real de cada tipo (wireframe ONEGAI, turnos 6–8).
+   Zonas comunes: cabecera (nombre + gema de tier), ilustración,
+   línea de tipo, zona inferior POR ESQUEMA, identificador.
+   ============================================================ */
+
+.cf-card {
+  position: relative;
+  width: 270px;
+  max-width: 100%;
+  background: #f4e9cd;
+  border: 3px solid #8a6a2f;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(30, 20, 5, .45), inset 0 0 0 1px #d8b45c;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* ① Cabecera: nombre + gema de tier */
+.cf-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 2px 4px 6px;
+}
+
+.cf-name {
+  font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #2b1d10;
+  line-height: 1.15;
+}
+
+.cf-gem {
+  flex: none;
+  height: 22px;
+  padding: 0 8px;
+  background: #8a6a2f;
+  color: #f4e9cd;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* Color de la gema según tier (1→5) */
+.cf-gem--t1 { background: #5f8f4e; }
+.cf-gem--t2 { background: #3d7fc4; }
+.cf-gem--t3 { background: #c9861a; }
+.cf-gem--t4 { background: #8b3fd1; }
+.cf-gem--t5 { background: #c62839; }
+/* Gema neutra (rol de PNJ, rango de tiers de loot/historia…) */
+.cf-gem--rango { background: #5b4526; }
+
+/* ② Ilustración */
+.cf-illustration {
+  height: 110px;
+  border: 2px solid #8a6a2f;
+  border-radius: 4px 4px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.8rem;
+  background: linear-gradient(160deg, #8a6a2f 0%, #c9a86b 130%);
+  color: #f4e9cd;
+}
+
+/* ③ Línea de tipo */
+.cf-typeline {
+  font-size: 12px;
+  font-style: italic;
+  color: #5b4526;
+  background: #ecdcae;
+  border: 2px solid #8a6a2f;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  padding: 3px 8px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.cf-typeline__flag {
+  flex: none;
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 700;
+  background: #c62839;
+  color: #f4e9cd;
+  border-radius: 3px;
+  padding: 1px 6px;
+}
+
+/* ④ Fila de stats — solo para los tipos cuyo esquema la tiene
+   (enemigo: vida/stats · equipo: bonus · raza: bonus · invocación: vida/mov) */
+.cf-statrow {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.cf-stat {
+  flex: 1;
+  min-width: 42px;
+  text-align: center;
+  background: #8a6a2f;
+  color: #f4e9cd;
+  border-radius: 4px;
+  padding: 3px 0;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cf-stat--vida { background: #c62839; }
+.cf-stat--malus { background: #7a3030; }
+
+/* Chips sueltos (habilidad: acción/alcance/recuperación) */
+.cf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-bottom: 6px;
+}
+
+.cf-chip {
+  background: #8a6a2f;
+  color: #f4e9cd;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* ⑤ Zona de reglas — el contenido sale del esquema JSON del tipo */
+.cf-rules {
+  border: 2px solid #8a6a2f;
+  border-radius: 4px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-height: 70px;
+  background: #faf3e0;
+}
+
+.cf-rules p { margin: 0; font-size: 12px; color: #2b1d10; }
+.cf-rules .cf-meta { font-size: 11px; color: #5b4526; }
+.cf-rules .cf-flavor { font-size: 12px; color: #5b4526; font-style: italic; }
+
+/* ⑥ Identificador */
+.cf-id {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 9px;
+  color: #5b4526;
+  opacity: .7;
+  margin: 6px 2px 0;
+}
+
+/* ------------------------------------------------------------
+   Variante 8b: acción legendaria del jefe — hoy es texto plano
+   dentro de legendaryActions[], no una carta con id propio.
+   ------------------------------------------------------------ */
+.cf-card--legendaria { width: 100%; background: #efe3c4; }
+.cf-card--legendaria .cf-origen {
+  font-size: 11px;
+  color: #5b4526;
+  padding: 0 4px 6px;
+}
+.cf-card--legendaria .cf-aviso {
+  font-size: 10px;
+  color: #7a5a10;
+  background: #fff4d6;
+  border: 1px solid #c9a227;
+  border-radius: 4px;
+  padding: 5px 7px;
+  margin: 6px 0 0;
+}
+
+/* ------------------------------------------------------------
+   Ficha "de mesa" del GM (wireframe 10b): agenda y secreto en
+   bloques propios legibles; el secreto en amarillo para que el
+   GM no lo enseñe sin querer.
+   ------------------------------------------------------------ */
+.gm-ficha-bloque {
+  border: 1px solid var(--border, #d8d2c4);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  background: var(--surface, #fffdf8);
+}
+
+.gm-ficha-bloque strong { display: block; margin-bottom: 2px; }
+
+.gm-ficha-bloque--secreto {
+  background: #fff4d6;
+  border: 2px solid #c9a227;
+  color: #5c4a06;
+}
+
+.gm-ficha-bloque--secreto a { color: #5c4a06; }
+
+/* ------------------------------------------------------------
+   Línea de tiempo de escenas de una historia (wireframe 13a):
+   escenas en orden, cada una con su reparto (chips) y su tabla
+   de acción → consecuencia.
+   ------------------------------------------------------------ */
+.tl-escenas { display: flex; flex-direction: column; gap: 10px; max-width: 560px; }
+
+.tl-escena { display: flex; gap: 10px; align-items: stretch; }
+
+.tl-rail {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding-top: 6px;
+}
+
+.tl-punto { width: 10px; height: 10px; border-radius: 50%; background: var(--text, #2b2b2b); flex: none; }
+.tl-linea { width: 2px; flex: 1; background: var(--border, #ccc); min-height: 40px; }
+
+.tl-caja {
+  flex: 1;
+  border: 1px solid var(--border, #d8d2c4);
+  border-radius: 8px;
+  background: var(--surface, #fffdf8);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tl-caja__lugar {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.tl-caja__momento { font-weight: 400; color: var(--text-muted, #888); }
+
+.tl-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.tl-acciones { font-size: 0.85em; }
+.tl-acciones__titulo { font-weight: 700; color: var(--text-muted, #777); }
+.tl-accion { display: flex; justify-content: space-between; gap: 12px; }
+.tl-accion__consecuencia { color: var(--text-muted, #888); text-align: right; }
+
+/* En la página de detalle la carta se centra en su columna */
+.u-detail-layout-300 > .cf-card { justify-self: start; }

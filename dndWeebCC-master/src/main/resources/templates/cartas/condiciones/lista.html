@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Cartas de Condición</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('condiciones')}"></div>
+
+            <div class="u-page-header">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-eyebrow">Sistema de Cartas y Tiers</p>
+                    <h1>Álbum de Condiciones</h1>
+                    <p class="gm-hint">Estados, bendiciones y maldiciones: una única mecánica reutilizable por clases, enemigos, jefes y objetos.</p>
+                </div>
+                <div class="u-flex-gap2">
+                    <button type="button" class="gm-btn gm-btn--outline" data-panel-anchor-toggle="gm-filtros">🔍 Filtros</button>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/condiciones/nueva}">+ Nueva condición</a>
+                </div>
+            </div>
+
+            <div class="u-detail-layout-260">
+                <aside id="gm-filtros" class="gm-panel gm-panel--anchored">
+                    <div class="gm-panel__header">
+                        <h3 class="gm-panel__title">Filtrar</h3>
+                    </div>
+                    <div class="gm-panel__body">
+                        <div class="gm-field">
+                            <label for="filtro-texto">Buscar por nombre</label>
+                            <input id="filtro-texto" class="gm-input" type="text" placeholder="Ej. Anclado...">
+                        </div>
+                        <div class="gm-field">
+                            <label for="filtro-categoria">Categoría</label>
+                            <select id="filtro-categoria" class="gm-select">
+                                <option value="">Todas</option>
+                                <option value="buff">Buff</option>
+                                <option value="debuff">Debuff</option>
+                                <option value="neutro">Neutro</option>
+                            </select>
+                        </div>
+                        <p class="gm-hint" id="filtro-resultado"></p>
+                    </div>
+                </aside>
+
+                <div>
+                    <p class="u-text-muted" th:if="${#lists.isEmpty(cartas)}">
+                        Todavía no has creado ninguna carta de condición. Empieza con la primera.
+                    </p>
+
+                    <div class="gm-album" id="gm-album-condiciones">
+                        <article class="gm-card" th:each="carta : ${cartas}"
+                                  th:attr="data-panel-source='panel-tpl-' + ${carta.id}, data-panel-title=${carta.name}, data-categoria=${carta.category}, data-nombre=${carta.name}">
+                            <!-- ① Cabecera -->
+                            <span class="gm-card__tier" th:text="${carta.source}">estado</span>
+                            <h2 class="gm-card__title" th:text="${carta.name}">Nombre</h2>
+                            <span class="gm-card__role" th:text="${carta.category}">neutro</span>
+
+                            <!-- ② Ilustración -->
+                            <div class="gm-card__illustration" th:switch="${carta.category}">
+                                <span th:case="'buff'">✨</span>
+                                <span th:case="'debuff'">☠</span>
+                                <span th:case="*">🌀</span>
+                            </div>
+
+                            <!-- ③ Reglas -->
+                            <div class="gm-card__rules">
+                                <p class="gm-card__meta">Duración: <span th:text="${carta.duration}">1_turn</span></p>
+                                <p class="gm-card__desc" th:text="${!#lists.isEmpty(carta.effects)} ? ${carta.effects[0].description} : ''">Efecto</p>
+                            </div>
+
+                            <!-- ④ Pie -->
+                            <div class="gm-card__footer">
+                                <span class="gm-badge" th:if="${carta.stackable}">Acumulable</span>
+                                <span class="gm-badge" th:unless="${carta.stackable}">No acumulable</span>
+                            </div>
+                            <div class="gm-card__actions">
+                                <a class="gm-btn gm-btn--outline gm-btn--sm" th:href="@{/cartas/condiciones/{id}(id=${carta.id})}">Ver ficha</a>
+                                <a class="gm-btn gm-btn--outline gm-btn--sm" th:href="@{/cartas/condiciones/{id}/editar(id=${carta.id})}">Editar</a>
+                            </div>
+
+                            <!-- ⑤ Identificador -->
+                            <p class="gm-card__id" th:text="'condiciones · ' + ${carta.id}">condiciones · id</p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+
+            <template th:each="carta : ${cartas}" th:id="'panel-tpl-' + ${carta.id}">
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Efectos ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p th:each="efecto : ${carta.effects}">
+                            <span th:text="${efecto.description}">Descripción</span>
+                            <span th:if="${efecto.mechanicHook}" class="gm-badge u-ml-4" th:text="${efecto.mechanicHook}">hook</span>
+                        </p>
+                        <p th:if="${#lists.isEmpty(carta.effects)}">Sin efectos definidos.</p>
+                        <p class="u-italic" th:if="${carta.flavorText}" th:text="${carta.flavorText}">Texto narrativo</p>
+                    </div>
+                </div>
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Cómo se cura ▾</button>
+                    <div class="gm-panel-section__content">
+                        <span th:each="c,it : ${carta.cureConditions}" class="gm-badge u-mr-4" th:text="${c}">cura</span>
+                        <span th:if="${#lists.isEmpty(carta.cureConditions)}">Hasta el final de la escena.</span>
+                    </div>
+                </div>
+                <div class="u-actions">
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/condiciones/{id}(id=${carta.id})}">Abrir ficha completa</a>
+                </div>
+            </template><div id="gm-panel-backdrop" class="gm-panel-backdrop" data-panel-close></div>
+<div id="gm-panel-preview" class="gm-panel" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="gm-panel__header">
+        <h3 class="gm-panel__title" id="gm-panel-preview-title">Carta</h3>
+        <button type="button" class="gm-panel__close" data-panel-close aria-label="Cerrar">✕</button>
+    </div>
+    <div class="gm-panel__body" id="gm-panel-preview-body"></div>
+</div>
+</main>
+<th:block layout:fragment="extra-js">
+<script th:inline="javascript">
+    (function () {
+        var texto = document.getElementById('filtro-texto');
+        var categoria = document.getElementById('filtro-categoria');
+        var resultado = document.getElementById('filtro-resultado');
+        var tarjetas = document.querySelectorAll('#gm-album-condiciones .gm-card');
+
+        function aplicarFiltro() {
+            var t = (texto.value || '').toLowerCase();
+            var c = categoria.value || '';
+            var visibles = 0;
+            tarjetas.forEach(function (carta) {
+                var nombre = (carta.getAttribute('data-nombre') || '').toLowerCase();
+                var categoriaCarta = carta.getAttribute('data-categoria') || '';
+                var coincide = nombre.indexOf(t) !== -1 && (c === '' || categoriaCarta === c);
+                carta.style.display = coincide ? '' : 'none';
+                if (coincide) visibles++;
+            });
+            resultado.textContent = visibles + ' de ' + tarjetas.length + ' condiciones';
+        }
+
+        if (texto && categoria) {
+            texto.addEventListener('input', aplicarFiltro);
+            categoria.addEventListener('change', aplicarFiltro);
+            aplicarFiltro();
+        }
+    })();
+</script>
+</th:block>
+</body>
+</html>

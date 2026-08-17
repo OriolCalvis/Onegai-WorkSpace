@@ -1,0 +1,100 @@
+{
+ "id": "deuda_final",
+ "name": "Deuda Final",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 5,
+ "role": "control",
+ "faction": "nagas_del_pozo_azul",
+ "factionName": "Las Nagas del Pozo Azul",
+ "stats": {
+  "CON": 10,
+  "DES": 9,
+  "INT": 11,
+  "CAR": 10
+ },
+ "derived": {
+  "vida": 80,
+  "ca": 21,
+  "defensaMental": 20,
+  "resistenciaFisica": 20,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de oscuro: daño que suma su INT (pool de INT, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "resistencia_fisica",
+   "effect": "Técnica de facción: si el objetivo falla, queda Endeudado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en fase de Desesperación: daño de oscuro como éxito crítico (todos sus dados cuentan éxito completo)."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Cada acción principal de un objetivo Endeudado aumenta en 1 el daño de su próxima cláusula."
+ },
+ "conditionsInflicted": [
+  "endeudado"
+ ],
+ "loot": [
+  "latigo_de_cuero_de_viaje",
+  "orbe_de_mano_de_viaje",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Oscuro"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal: alterna golpe y técnica."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Su técnica de facción no gasta acción: la encadena tras el golpe. Cada acción principal de un objetivo Endeudado aumenta en 1 el daño de su próxima cláusula."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final y actúa con agresividad total (ignora amenaza, va al más herido)."
+  }
+ ],
+ "flavorText": "Entidad contractual que compra campanas enteras.",
+ "villainProfile": {
+  "objetivo": "Ejecutar la hipoteca del reino entero: todos firmaron algo, alguna vez",
+  "metodo": "No ataca primero: ofrece tratos en combate y cobra los rechazos",
+  "debilidad_narrativa": "Pagar una deuda real delante de ella (devolver algo robado, cumplir un pago) le hace 3 de daño y salta su fase",
+  "vinculo": "deity_wolf_king"
+ },
+ "arena": {
+  "name": "La Cámara de los Pagarés",
+  "hazard": "Contratos flotantes: tocar uno (voluntario) da +1 a una tirada y deja Endeudado"
+ },
+ "legendaryActions": [
+  "Embargo (1/ronda): un objeto no equipado de un personaje Endeudado queda retenido hasta el final del combate"
+ ],
+ "storyCard": {
+  "title": "Deuda Final",
+  "text": "Nadie recuerda haberle firmado. Ella tiene copias.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae si el grupo alcanzó la fase de Desesperación",
+  "drops": [
+   "latigo_de_cuero_de_viaje",
+   "orbe_de_mano_de_viaje",
+   "pocion_de_vigor"
+  ]
+ }
+}

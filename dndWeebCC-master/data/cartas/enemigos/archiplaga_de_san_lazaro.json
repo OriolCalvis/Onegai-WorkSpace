@@ -1,0 +1,100 @@
+{
+ "id": "archiplaga_de_san_lazaro",
+ "name": "Archiplaga de San Lazaro",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "invocador",
+ "faction": "plaga_de_san_lazaro",
+ "factionName": "La Plaga de San Lázaro",
+ "stats": {
+  "CON": 9,
+  "DES": 8,
+  "INT": 11,
+  "CAR": 9
+ },
+ "derived": {
+  "vida": 70,
+  "ca": 20,
+  "defensaMental": 19,
+  "resistenciaFisica": 19,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de veneno: daño que suma su INT (pool de INT, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "resistencia_fisica",
+   "effect": "Técnica de facción: si el objetivo falla, queda Envenenado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en fase de Desesperación: daño de veneno como éxito crítico (todos sus dados cuentan éxito completo)."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Al inicio de su turno propaga la infección a una criatura cercana si ya hay un infectado."
+ },
+ "conditionsInflicted": [
+  "envenenado"
+ ],
+ "loot": [
+  "daga_de_milicia",
+  "capucha_de_explorador",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Veneno"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal: alterna golpe y técnica."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Su técnica de facción no gasta acción: la encadena tras el golpe. Al inicio de su turno propaga la infección a una criatura cercana si ya hay un infectado."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final y actúa con agresividad total (ignora amenaza, va al más herido)."
+  }
+ ],
+ "flavorText": "Santo podrido que predica por enjambres.",
+ "villainProfile": {
+  "objetivo": "Que ninguna criatura vuelva a enfermar sola: infectarlo todo por compasión",
+  "metodo": "Predica mientras sus enjambres reparten la comunión",
+  "debilidad_narrativa": "El fuego purificador interrumpe su prédica: daño de fuego le impide invocar en su siguiente turno",
+  "vinculo": "plaga_de_san_lazaro"
+ },
+ "arena": {
+  "name": "La Capilla de los Zumbidos",
+  "hazard": "Nubes de esporas: terminar el turno en una exige Resistencia física o Envenenado"
+ },
+ "legendaryActions": [
+  "Comunión (1/ronda): un enjambre menor brota junto a un personaje Envenenado"
+ ],
+ "storyCard": {
+  "title": "Archiplaga de San Lazaro",
+  "text": "Sus milagros funcionan. Ese es exactamente el problema.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae si el grupo alcanzó la fase de Desesperación",
+  "drops": [
+   "daga_de_milicia",
+   "capucha_de_explorador",
+   "pocion_de_vigor"
+  ]
+ }
+}
