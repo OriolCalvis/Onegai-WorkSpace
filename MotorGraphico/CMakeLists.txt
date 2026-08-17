@@ -539,3 +539,11 @@ add_executable(demo_este_norte examples/demo_este_norte.cpp)
 target_link_libraries(demo_este_norte PRIVATE motor_level)
 set_target_properties(demo_este_norte PROPERTIES CXX_STANDARD 17)
 add_dependencies(demo_este_norte copiar_assets)
+
+# demo_senal_ceniza — "La Senal de la Ceniza": el espejo oriental de la
+# campana de Boundington, ano 2000 b.f. (EV-2000-CRUZADA01E). Cuatro rutas
+# (ojos abiertos / medio / ciego / criticos) y cobertura de beats. GL-free.
+add_executable(demo_senal_ceniza examples/demo_senal_ceniza.cpp)
+target_link_libraries(demo_senal_ceniza PRIVATE motor_rpg)
+set_target_properties(demo_senal_ceniza PROPERTIES CXX_STANDARD 17)
+add_dependencies(demo_senal_ceniza copiar_assets)
