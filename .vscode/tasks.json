@@ -1,0 +1,109 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake · Motor: configurar Debug (macOS)",
+            "type": "process",
+            "command": "cmake",
+            "args": ["--preset", "macos-debug"],
+            "options": { "cwd": "${workspaceFolder:Motor}" },
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "CMake · Motor: compilar todo (Debug)",
+            "type": "process",
+            "command": "cmake",
+            "args": ["--build", "--preset", "macos-debug", "--parallel"],
+            "options": { "cwd": "${workspaceFolder:Motor}" },
+            "dependsOn": "CMake · Motor: configurar Debug (macOS)",
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "CMake · Motor: compilar juego (Debug)",
+            "type": "process",
+            "command": "cmake",
+            "args": ["--build", "--preset", "macos-debug", "--target", "juego", "--parallel"],
+            "options": { "cwd": "${workspaceFolder:Motor}" },
+            "dependsOn": "CMake · Motor: configurar Debug (macOS)",
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "CMake · Motor: compilar un target...",
+            "type": "process",
+            "command": "cmake",
+            "args": ["--build", "--preset", "macos-debug", "--target", "${input:cmakeTarget}", "--parallel"],
+            "options": { "cwd": "${workspaceFolder:Motor}" },
+            "dependsOn": "CMake · Motor: configurar Debug (macOS)",
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "CMake · Motor: compilar todo (Release)",
+            "type": "process",
+            "command": "cmake",
+            "args": ["--build", "--preset", "macos-release", "--parallel"],
+            "options": { "cwd": "${workspaceFolder:Motor}" },
+            "dependsOn": "CMake · Motor: configurar Release (macOS)",
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "CMake · Motor: configurar Release (macOS)",
+            "type": "process",
+            "command": "cmake",
+            "args": ["--preset", "macos-release"],
+            "options": { "cwd": "${workspaceFolder:Motor}" },
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "CMake · Motor: ejecutar juego (Debug)",
+            "type": "process",
+            "command": "${workspaceFolder:Motor}/out/build/macos-debug/juego",
+            "options": { "cwd": "${workspaceFolder:Motor}" },
+            "dependsOn": "CMake · Motor: compilar juego (Debug)",
+            "problemMatcher": []
+        },
+        {
+            "label": "Maven · Cartas: compilar",
+            "type": "process",
+            "command": "./mvnw",
+            "args": ["compile"],
+            "options": { "cwd": "${workspaceFolder:Cartas}" },
+            "group": "none",
+            "problemMatcher": ["$java"]
+        },
+        {
+            "label": "Maven · Cartas: test limpio (Java 25)",
+            "type": "process",
+            "command": "./mvnw",
+            "args": ["clean", "test", "-Dnet.bytebuddy.experimental=true"],
+            "options": { "cwd": "${workspaceFolder:Cartas}" },
+            "group": "test",
+            "problemMatcher": ["$java"]
+        },
+        {
+            "label": "Maven · Cartas: JAR (sin repackage)",
+            "type": "process",
+            "command": "./mvnw",
+            "args": ["clean", "package", "-DskipTests", "-Dspring-boot.repackage.skip=true"],
+            "options": { "cwd": "${workspaceFolder:Cartas}" },
+            "problemMatcher": ["$java"]
+        },
+        {
+            "label": "Maven · Cartas: iniciar Spring Boot",
+            "type": "process",
+            "command": "./mvnw",
+            "args": ["spring-boot:run"],
+            "options": { "cwd": "${workspaceFolder:Cartas}" },
+            "isBackground": true,
+            "problemMatcher": ["$java"]
+        }
+    ],
+    "inputs": [
+        {
+            "id": "cmakeTarget",
+            "type": "promptString",
+            "description": "Nombre de cualquier target CMake (por ejemplo juego, demo_mundo o demo_este_sur)",
+            "default": "juego"
+        }
+    ]
+}
