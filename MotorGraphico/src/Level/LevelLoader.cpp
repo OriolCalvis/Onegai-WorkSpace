@@ -99,6 +99,20 @@ Result<LevelDefinition> parseDefinition(const JsonValue& root) {
         spawn.hasTargetPosition = targetPos.isObject();
         spawn.targetPosition = parseGridCoord(targetPos, spawn.position);
 
+        // Botin y evento de la instancia: opcionales como el resto de
+        // campos locales (ver ObjectSpawn en LevelDefinition.h). Los ids
+        // de loot NO se validan contra el catalogo aqui, igual que
+        // objectId: resolverlos es cosa de quien instancia el nivel.
+        const JsonValue& lootValue = objectValue["loot"];
+        for (std::size_t l = 0; l < lootValue.size(); ++l) {
+            std::string lootId = lootValue[l].asString();
+            if (!lootId.empty()) {
+                spawn.loot.push_back(std::move(lootId));
+            }
+        }
+        spawn.lootTable = objectValue["lootTable"].asString();
+        spawn.eventId = objectValue["eventId"].asString();
+
         // Overrides por instancia: todo es opcional para que el catalogo
         // siga siendo la fuente de los valores por defecto y los niveles
         // existentes carguen exactamente igual que antes.

@@ -92,6 +92,7 @@ add_library(motor_level
     src/Game/BattleState.cpp
     src/Level/ObjectCatalog.cpp
     src/Editor/EditorState.cpp
+    src/Editor/ObjectInspector.cpp
     src/Editor/ProjectIndex.cpp
     src/Editor/ProjectHub.cpp
     src/Game/GameSession.cpp
@@ -243,6 +244,15 @@ target_link_libraries(demo_object_catalog PRIVATE motor_level)
 # REALES, por eso linka tambien motor_map (GL-free, ver arriba).
 add_executable(demo_editor_state examples/demo_editor_state.cpp)
 target_link_libraries(demo_editor_state PRIVATE motor_level motor_map)
+
+# El panel de propiedades de un objeto colocado (ObjectInspector):
+# GL-free como el resto del nucleo del editor. Prueba la edicion por
+# teclado (texto, escala, salidas, botin, eventos, propiedades) y el
+# round-trip de los campos nuevos del spawn contra LevelLoader.
+add_executable(demo_object_inspector examples/demo_object_inspector.cpp)
+target_link_libraries(demo_object_inspector PRIVATE motor_level motor_map)
+set_target_properties(demo_object_inspector PROPERTIES CXX_STANDARD 17)
+add_dependencies(demo_object_inspector copiar_assets)
 
 # Cierre del ciclo de juego: GameSession (exploracion <-> combate). Como
 # demo_editor_state, linka tambien motor_map (colision contra el TileMap

@@ -74,6 +74,26 @@ struct ObjectSpawn {
     GridCoord targetPosition;
     bool hasTargetPosition = false;
 
+    // --- Botin de la instancia (cofres, enemigos con drop propio) ---
+    // El catalogo define el TIPO de objeto; lo que suelta ESTA instancia
+    // es decision del autor del nivel (mismo principio que targetLevel
+    // con las puertas). "loot" lleva ids fijos del ObjectCatalog que se
+    // conceden al abrir/derrotar; "lootTable" referencia opcionalmente
+    // una tabla del catalogo RPG de botin (assets/catalogs/
+    // loot_tables.json). Pueden convivir: quien consuma el spawn decide
+    // como combinarlos (el runtime lo hara cuando llegue el sistema de
+    // botin; hasta entonces el editor guarda la decision del autor).
+    std::vector<std::string> loot;
+    std::string lootTable;
+
+    // Evento/mision que dispara esta instancia: un id estable que el
+    // motor narrativo pueda escuchar (un beat/flag de la aventura
+    // activa reacciona a el). Vacio = la instancia no dispara nada.
+    // Es la semilla de los eventos de mapa del roadmap del editor (S7):
+    // el autor ya puede declararlos desde el editor aunque el runtime
+    // los consuma despues.
+    std::string eventId;
+
     // --- Variante local del arquetipo ---
     // El catalogo define el objeto reutilizable; estos campos solo viven
     // en ESTA instancia. Asi una misma pocion puede ser curativa, de mana

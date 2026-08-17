@@ -532,6 +532,128 @@ void EditorState::setObjectScale(int x, int y, float scale) {
     mutableObjectAt(x, y)->scale = limitada;
 }
 
+void EditorState::setObjectDisplayName(int x, int y, const std::string& displayName) {
+    ObjectSpawn* o = mutableObjectAt(x, y);
+    if (o == nullptr || o->displayName == displayName) {
+        return;
+    }
+    recordUndo();
+    mutableObjectAt(x, y)->displayName = displayName;
+}
+
+void EditorState::setObjectVariant(int x, int y, const std::string& variant) {
+    ObjectSpawn* o = mutableObjectAt(x, y);
+    if (o == nullptr || o->variant == variant) {
+        return;
+    }
+    recordUndo();
+    mutableObjectAt(x, y)->variant = variant;
+}
+
+void EditorState::setObjectEffectOverride(int x, int y, const std::string& effect) {
+    ObjectSpawn* o = mutableObjectAt(x, y);
+    if (o == nullptr || o->effectOverride == effect) {
+        return;
+    }
+    recordUndo();
+    mutableObjectAt(x, y)->effectOverride = effect;
+}
+
+void EditorState::setObjectTargetLevel(int x, int y, const std::string& targetLevel) {
+    ObjectSpawn* o = mutableObjectAt(x, y);
+    if (o == nullptr) {
+        return;
+    }
+    if (targetLevel.empty()) {
+        // Quitar la salida: sin esto no habia forma de desconectar una
+        // puerta desde el editor (setObjectTransition no admite vacio).
+        if (o->targetLevel.empty() && !o->hasTargetPosition) {
+            return;
+        }
+        recordUndo();
+        ObjectSpawn* m = mutableObjectAt(x, y);
+        m->targetLevel.clear();
+        m->targetPosition = m->position;
+        m->hasTargetPosition = false;
+        return;
+    }
+    if (o->targetLevel == targetLevel) {
+        return;
+    }
+    recordUndo();
+    ObjectSpawn* m = mutableObjectAt(x, y);
+    m->targetLevel = targetLevel;
+    // Cambiar el destino invalida la posicion de llegada anterior: como
+    // en setObjectTransition, se vuelve al playerStart del nivel nuevo.
+    m->targetPosition = m->position;
+    m->hasTargetPosition = false;
+}
+
+void EditorState::addObjectLoot(int x, int y, const std::string& objectId) {
+    ObjectSpawn* o = mutableObjectAt(x, y);
+    if (o == nullptr || objectId.empty()) {
+        return;
+    }
+    for (const std::string& existente : o->loot) {
+        if (existente == objectId) {
+            return;   // duplicado: el cofre no suelta dos veces lo mismo
+        }
+    }
+    recordUndo();
+    mutableObjectAt(x, y)->loot.push_back(objectId);
+}
+
+void EditorState::removeLootAt(int x, int y, std::size_t index) {
+    ObjectSpawn* o = mutableObjectAt(x, y);
+    if (o == nullptr || index >= o->loot.size()) {
+        return;
+    }
+    recordUndo();
+    mutableObjectAt(x, y)->loot.erase(mutableObjectAt(x, y)->loot.begin() +
+                                      static_cast<std::ptrdiff_t>(index));
+}
+
+void EditorState::setObjectLootTable(int x, int y, const std::string& lootTable) {
+    ObjectSpawn* o = mutableObjectAt(x, y);
+    if (o == nullptr || o->lootTable == lootTable) {
+        return;
+    }
+    recordUndo();
+    mutableObjectAt(x, y)->lootTable = lootTable;
+}
+
+void EditorState::setObjectEvent(int x, int y, const std::string& eventId) {
+    ObjectSpawn* o = mutableObjectAt(x, y);
+    if (o == nullptr || o->eventId == eventId) {
+        return;
+    }
+    recordUndo();
+    mutableObjectAt(x, y)->eventId = eventId;
+}
+
+void EditorState::setObjectProperty(int x, int y, const std::string& key,
+                                    const std::string& value) {
+    ObjectSpawn* o = mutableObjectAt(x, y);
+    if (o == nullptr || key.empty()) {
+        return;
+    }
+    const auto existente = o->properties.find(key);
+    if (existente != o->properties.end() && existente->second == value) {
+        return;
+    }
+    recordUndo();
+    mutableObjectAt(x, y)->properties[key] = value;
+}
+
+void EditorState::removeObjectProperty(int x, int y, const std::string& key) {
+    ObjectSpawn* o = mutableObjectAt(x, y);
+    if (o == nullptr || o->properties.find(key) == o->properties.end()) {
+        return;
+    }
+    recordUndo();
+    mutableObjectAt(x, y)->properties.erase(key);
+}
+
 EditorState::Snapshot EditorState::snapshot() const {
     return Snapshot{m_layers, m_activeLayer, m_objects, m_playerStart};
 }
@@ -694,6 +816,25 @@ std::string EditorState::exportLevelJson(const std::string& levelName,
                 out << ", \"targetPosition\": { \"x\": " << o.targetPosition.x
                     << ", \"y\": " << o.targetPosition.y << " }";
             }
+        }
+        // Botin y evento: se escriben solo si llevan contenido, igual que
+        // el resto de campos opcionales, para que un nivel sin cofres ni
+        // eventos quede identico a antes de existir estos campos.
+        if (!o.loot.empty()) {
+            out << ", \"loot\": [";
+            for (std::size_t l = 0; l < o.loot.size(); ++l) {
+                if (l > 0) {
+                    out << ", ";
+                }
+                out << "\"" << jsonEscape(o.loot[l]) << "\"";
+            }
+            out << "]";
+        }
+        if (!o.lootTable.empty()) {
+            out << ", \"lootTable\": \"" << jsonEscape(o.lootTable) << "\"";
+        }
+        if (!o.eventId.empty()) {
+            out << ", \"eventId\": \"" << jsonEscape(o.eventId) << "\"";
         }
         if (!o.displayName.empty()) {
             out << ", \"displayName\": \"" << jsonEscape(o.displayName) << "\"";

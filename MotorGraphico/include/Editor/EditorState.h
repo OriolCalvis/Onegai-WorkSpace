@@ -207,6 +207,30 @@ public:
     // Escala visual por instancia. Se limita a un rango editor-friendly:
     // evita sprites invisibles o que tapen todo el mapa por un cero/error.
     void setObjectScale(int x, int y, float scale);
+    // Resto de datos por instancia que el inspector edita (ver
+    // ObjectSpawn en LevelDefinition.h). Todos son no-op si la celda no
+    // tiene objeto, y no graban historial si el valor ya era ese:
+    // teclear el mismo texto no debe gastar un paso de deshacer.
+    void setObjectDisplayName(int x, int y, const std::string& displayName);
+    void setObjectVariant(int x, int y, const std::string& variant);
+    void setObjectEffectOverride(int x, int y, const std::string& effect);
+    // Destino de la transicion. Equivalente a setObjectTransition (que
+    // sigue disponible): se ofrece con este nombre para que el inspector
+    // y el export hablen el mismo idioma ("salida/destino").
+    void setObjectTargetLevel(int x, int y, const std::string& targetLevel);
+    // Botin de la instancia: addObjectLoot no anade ids repetidos ni
+    // vacios; removeLootAt ignora indices fuera de rango.
+    void addObjectLoot(int x, int y, const std::string& objectId);
+    void removeLootAt(int x, int y, std::size_t index);
+    void setObjectLootTable(int x, int y, const std::string& lootTable);
+    // Evento/mision que dispara la instancia (id estable, semilla de los
+    // eventos de mapa del roadmap S7).
+    void setObjectEvent(int x, int y, const std::string& eventId);
+    // Propiedad libre clave/valor (el mapa "properties" del spawn): una
+    // clave vacia se ignora; una clave existente se sobreescribe.
+    void setObjectProperty(int x, int y, const std::string& key, const std::string& value);
+    // Quitar una propiedad. Clave ausente: no-op.
+    void removeObjectProperty(int x, int y, const std::string& key);
 
     // -----------------------------------------------------------------
     // FILTRO DE PALETA
