@@ -24,6 +24,12 @@ public:
     // id sin definir se ve como "textura entera" en vez de crashear.
     UVRect getUV(int id) const;
 
+    // Variante para sprites de atlas con arte cerca del borde de la celda.
+    // Reduce la region en pixeles para impedir que el muestreo arrastre
+    // contenido de la fila/columna vecina. No debe usarse para tiles que
+    // necesitan tocarse entre si.
+    UVRect getUVInset(int id, float pixels) const;
+
     Texture* texture() const { return m_texture; }
 
 private:

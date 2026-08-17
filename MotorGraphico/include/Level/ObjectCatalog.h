@@ -134,6 +134,12 @@ struct ObjectDefinition {
     // suelta.
     int spriteId = -1;
 
+    // Imagen representativa para las paletas del editor. Es una ruta
+    // relativa al proyecto, no sustituye al spriteId runtime. Vacio = el
+    // objeto sigue visible con el icono editorial y entra en la cola de
+    // previews pendientes.
+    std::string previewPng;
+
     // Id opcional de la raza RPG del personaje. Solo es significativo
     // para NPCs, pero permanece como dato de autoría plano para que un
     // nivel pueda referenciarlo sin duplicar el nombre de la raza en cada
@@ -172,6 +178,10 @@ public:
     // Subgrupo de autoría: evita que la paleta visual sea una lista plana
     // de cientos de entradas cuando el contenido de un proyecto crece.
     std::vector<std::string> ids(ObjectCategory category) const;
+    // Objetos que todavía no tienen imagen representativa para la paleta.
+    // Se ordenan igual que ids() para poder exportarlos directamente a una
+    // cola de generación y mostrar el mismo orden en el editor.
+    std::vector<std::string> missingPreviewIds() const;
 
     // Anaden (merge) las entradas de un JSON a este catalogo -- no lo
     // vacian antes, para poder cargar varios archivos (objetos base +

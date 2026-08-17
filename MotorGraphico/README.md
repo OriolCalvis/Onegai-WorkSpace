@@ -42,6 +42,9 @@ Las medidas y el proceso de convertir suelo a isométrica 2:1 están en la
 El [backlog de sprites](SPRITE_BACKLOG.md) prioriza las familias de arte
 necesarias para terminar Boundington y evita duplicar un PNG por objeto.
 
+Para que otro agente se incorpore sin recorrer todo el repositorio, consultar
+el [handoff operativo del proyecto](AGENT_HANDOFF.md).
+
 ## Estructura
 
 ```

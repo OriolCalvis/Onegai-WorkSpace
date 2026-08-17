@@ -99,6 +99,7 @@ objetos de categoría `enemy` dentro de `objects`.
       "name": "Pocion",
       "category": "pickup",
       "spriteId": 5,
+      "previewPng": "assets/textures/editor_object_icons.png",
       "interactable": true,
       "pickup": { "effect": "heal", "power": 15 }
     },
@@ -121,9 +122,10 @@ como estaba, sin aplicar las 6 anteriores.
 | Campo | Tipo | ¿Obligatorio? | Por defecto |
 |---|---|---|---|
 | `id` | string | **Sí** | — (error si falta o está vacío) |
-| `category` | `"prop"` \| `"enemy"` \| `"pickup"` | **Sí** | — (error si es otra cosa) |
+| `category` | `"prop"` \| `"enemy"` \| `"pickup"` \| `"npc"` | **Sí** | — (error si es otra cosa) |
 | `name` | string | No | el propio `id` |
 | `spriteId` | int | No | `-1` (= sin sprite, **no se dibuja**) |
+| `previewPng` | string | No | vacío (= icono editorial y entra en `previews_pendientes.json`) |
 | `blocksMovement` | bool | No | `false` |
 | `interactable` | bool | No | `false` |
 | `combat` | objeto | No | solo se lee si `category` es `enemy` |
@@ -144,6 +146,12 @@ arte**, así que hoy se alternan y la distinción visual real la da el tint
 por categoría. Si usas un `spriteId` sin región declarada, el objeto se
 dibuja con UVs vacías. Cuando exista un atlas de verdad, cada región
 apuntará a su arte propio.
+
+`previewPng` es la imagen representativa que usa la paleta de autoría. Puede
+ser un PNG editorial compartido mientras se prepara el arte definitivo. No
+reemplaza a `spriteId`. Si falta, el objeto sigue apareciendo con el icono
+editorial y se registra en `assets/objects/previews_pendientes.json`; la cola
+se puede regenerar con `tools/generar_cola_previews.py`.
 
 ---
 

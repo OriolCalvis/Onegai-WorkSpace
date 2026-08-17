@@ -15,8 +15,8 @@
 //             4 quitar objeto   5 inicio jugador  6 rellenar
 //             7 enlazar nivel (la puerta que lleva a otro escenario)
 //   Q/E     = ciclar la paleta activa (tiles u objetos, segun herramienta)
-//   [ / ]   = subgrupo de objetos anterior / siguiente (la paleta de
-//             objetos es larga: los subgrupos la parten en tandas)
+//   TAB     = abrir el panel de familias de objetos
+//   ENTER   = entrar en una familia; ESC/BACKSPACE = cerrar y volver
 //   B       = BUSCAR en la paleta. Abre un campo y filtra por texto:
 //             "taber" deja tabernero, taberna... B otra vez lo cierra.
 //             Con miles de entradas, pasarlas de una en una no es una
@@ -77,6 +77,7 @@
 // vuelca el ultimo frame a level_editor_output.ppm, para poder revisar
 // el HUD sin una captura de pantalla a mano.
 #include "Core/Math/IsoMath.h"
+#include "Core/Json/JsonValue.h"
 #include <cstdio>
 #include <memory>
 
@@ -111,7 +112,11 @@
 #include <cstddef>
 #include <cstdlib>
 #include <fstream>
+#include <functional>
+#include <initializer_list>
 #include <iostream>
+#include <iterator>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -200,6 +205,151 @@ std::string nombreEscenario(const std::string& path) {
     return name;
 }
 
+struct TilePaletteInfo {
+    std::string name;
+    std::string affinity;
+    std::string effect;
+    std::string requirement;
+    std::string tag;
+    bool collision = false;
+};
+
+std::string textoDeArchivo(const std::string& path) {
+    std::ifstream file(path, std::ios::binary);
+    if (!file) return {};
+    std::ostringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
+}
+
+TilePaletteInfo semanticasTile(int gid, const std::string& name, bool collision) {
+    static const char* fallbackNames[] = {
+        "Baldosa clara", "Baldosa oscura", "Piedra", "Hierba", "Tierra", "Arena"};
+    const std::string fallback = gid > 0 && gid <= static_cast<int>(std::size(fallbackNames))
+                                     ? fallbackNames[gid - 1]
+                                     : "Material sin nombre " + std::to_string(gid);
+    TilePaletteInfo info{fallback, "CONSTRUCCION", "NEUTRO", "", "OTROS", collision};
+    info.name = name.empty() ? fallback : name;
+    const std::string n = name;
+    auto has = [&](const char* token) { return n.find(token) != std::string::npos; };
+    if (has("nieve") || has("hielo") || has("escarcha")) {
+        info.affinity = "FRIO / NIEVE";
+        info.effect = "FRIO";
+        info.requirement = "ropa termica o bufo de frio";
+    } else if (has("arena") || has("desierto") || has("arenisca") || has("canon")) {
+        info.affinity = "ARIDO / DESIERTO";
+        info.effect = "SED + CALOR";
+        info.requirement = "agua, ropa ligera o bufo de calor";
+    } else if (has("agua") || has("rio") || has("estanque")) {
+        info.affinity = "AGUA / COSTA";
+        info.effect = "HUMEDAD";
+        info.requirement = "botas impermeables o equipo acuatico";
+    } else if (has("ceniza") || has("volcan") || has("lava")) {
+        info.affinity = "VOLCANICO / FUEGO";
+        info.effect = "CALOR + DANIO";
+        info.requirement = "resistencia al fuego o bufo ignifugo";
+    } else if (has("barro") || has("pantano") || has("turba") || has("alcantarilla")) {
+        info.affinity = "PANTANO / HUMEDAL";
+        info.effect = "LENTO + HUMEDAD";
+        info.requirement = "botas de pantano o bufo de movilidad";
+    } else if (has("mina") || has("piedra") || has("roca") || has("adoquin")) {
+        info.affinity = "ROCA / MINA";
+        info.effect = "TERRENO DURO";
+        info.requirement = "botas resistentes (opcional)";
+    } else if (has("bosque") || has("hierba") || has("cesped") || has("musgo") ||
+               has("hojarasca") || has("pradera")) {
+        info.affinity = "BOSQUE / PRADERA";
+        info.effect = "NATURAL";
+        info.requirement = "ninguno";
+    } else if (has("suelo_") || has("mosaico") || has("marmol") || has("pavimento") ||
+               has("plaza") || has("calle") || has("vivienda") || has("taberna")) {
+        info.affinity = "INTERIOR / URBANO";
+        info.effect = "NATURAL";
+        info.requirement = "ninguno";
+    }
+    return info;
+}
+
+std::unordered_map<int, TilePaletteInfo> cargarSemanticaTiles(const std::string& tilesetPath) {
+    std::unordered_map<int, TilePaletteInfo> result;
+    const std::string indexPath = tilesetPath.find("terreno_iso.png") != std::string::npos
+                                      ? "assets/textures/terreno_iso.json"
+                                      : "";
+    if (!indexPath.empty()) {
+        const auto parsed = JsonValue::parse(textoDeArchivo(indexPath));
+        if (parsed.isOk()) {
+            const JsonValue& tiles = parsed.value()["tiles"];
+            for (std::size_t i = 0; i < tiles.size(); ++i) {
+                const JsonValue& tile = tiles[i];
+                const int gid = tile["gid"].asInt(0);
+                if (gid > 0) {
+                    result[gid] = semanticasTile(gid, tile["nombre"].asString(),
+                                                  tile["colisiona"].asBool(false));
+                }
+            }
+        }
+    }
+    const auto labels = JsonValue::parse(textoDeArchivo("assets/textures/terreno_iso_editor.json"));
+    if (labels.isOk()) {
+        const JsonValue& tiles = labels.value()["tiles"];
+        for (const auto& entry : tiles.objectValues()) {
+            const int gid = std::atoi(entry.first.c_str());
+            auto found = result.find(gid);
+            if (gid <= 0 || found == result.end()) continue;
+            found->second.name = entry.second["nombre"].asString(found->second.name);
+            found->second.tag = entry.second["etiqueta"].asString(found->second.tag);
+        }
+    }
+    return result;
+}
+
+bool contieneCualquiera(const std::string& value,
+                        std::initializer_list<const char*> tokens) {
+    for (const char* token : tokens) {
+        if (value.find(token) != std::string::npos) return true;
+    }
+    return false;
+}
+
+using ObjectFilter = std::function<bool(const ObjectDefinition&)>;
+
+ObjectFilter filtroAfinidadObjeto(const std::string& group) {
+    return [group](const ObjectDefinition& def) {
+        const std::string& id = def.id;
+        const std::string identity = def.id + "|" + def.raceId + "|" + def.name;
+        if (group == "PNJ · HUMANOS") return def.category == ObjectCategory::Npc && contieneCualquiera(identity, {"human", "humano", "marches", "noble", "mercader"});
+        if (group == "PNJ · ELFOS / DROWS") return def.category == ObjectCategory::Npc && contieneCualquiera(identity, {"elf", "elfo", "drow"});
+        if (group == "PNJ · ENANOS / GNOMOS") return def.category == ObjectCategory::Npc && contieneCualquiera(identity, {"enan", "dwarf", "gnom"});
+        if (group == "PNJ · ORCOS / GOBLINS") return def.category == ObjectCategory::Npc && contieneCualquiera(identity, {"orc", "orco", "goblin"});
+        if (group == "PNJ · LAGARTOS / NAGAS") return def.category == ObjectCategory::Npc && contieneCualquiera(identity, {"lagarto", "lizard", "naga", "saur"});
+        if (group == "PNJ · OTRAS RAZAS") return def.category == ObjectCategory::Npc;
+        if (group == "RECOGIBLES · CONSUMIBLES") {
+            return def.category == ObjectCategory::Pickup &&
+                   !contieneCualquiera(id, {"arma", "espada", "arco", "baston", "escudo"});
+        }
+        if (group == "RECOGIBLES · EQUIPO") {
+            return def.category == ObjectCategory::Pickup &&
+                   contieneCualquiera(id, {"arma", "espada", "arco", "baston", "escudo", "botas", "tunica", "guante"});
+        }
+        if (group == "MONSTRUOS · ANIMALES") return def.category == ObjectCategory::Enemy &&
+            contieneCualquiera(id, {"lobo", "oso", "ciervo", "jabali", "zorro", "rata", "serpiente", "aran", "murcielago", "ave", "cuervo", "animal"});
+        if (group == "MONSTRUOS · DRAGONES") return def.category == ObjectCategory::Enemy && contieneCualquiera(id, {"dragon", "dracon"});
+        if (group == "MONSTRUOS · NO MUERTOS") return def.category == ObjectCategory::Enemy && contieneCualquiera(id, {"zombi", "esqueleto", "draug", "reven", "fantasma", "espectro", "no_muerto"});
+        if (group == "MONSTRUOS · ELEMENTALES") return def.category == ObjectCategory::Enemy && contieneCualquiera(id, {"elemental", "fuego", "hielo", "rayo", "trueno", "ceniza", "salamandra"});
+        if (group == "MONSTRUOS · BIPEDOS") return def.category == ObjectCategory::Enemy && contieneCualquiera(id, {"goblin", "orc", "orco", "bandido", "humanoide", "naga", "tiefling", "cultista"});
+        if (group == "MONSTRUOS · SAGRADOS / LEGENDARIOS") return def.category == ObjectCategory::Enemy && contieneCualquiera(id, {"sagrado", "santa", "legend", "matriarca", "guardian", "deidad", "angel"});
+        if (group == "MONSTRUOS · OTROS") return def.category == ObjectCategory::Enemy;
+        if (group == "DECORADO · INTERIOR") return def.category == ObjectCategory::Prop && contieneCualquiera(id, {"mesa", "silla", "taburete", "cama", "ventana", "puerta", "cofre", "jarr", "cerveza", "taberna", "posada", "casa", "estanter", "forja", "barril"});
+        if (group == "DECORADO · BOSQUE") return def.category == ObjectCategory::Prop && contieneCualquiera(id, {"arbusto", "matorral", "arbol", "bosque", "hoja", "flor", "seto", "hierba", "helecho"});
+        if (group == "DECORADO · MONTAÑA / MINA") return def.category == ObjectCategory::Prop && contieneCualquiera(id, {"mina", "mineral", "roca", "piedra", "cristal", "gema", "montana", "cueva", "adoquin"});
+        if (group == "DECORADO · SELVA / PANTANO") return def.category == ObjectCategory::Prop && contieneCualquiera(id, {"selva", "pantano", "liana", "hongo", "musgo", "charco", "junco"});
+        if (group == "DECORADO · DESIERTO / VOLCAN") return def.category == ObjectCategory::Prop && contieneCualquiera(id, {"desierto", "arena", "cactus", "volcan", "lava", "ceniza", "brasero", "antorcha"});
+        if (group == "DECORADO · OTROS") return def.category == ObjectCategory::Prop;
+        if (group == "EVENTOS / PUERTAS") return contieneCualquiera(id, {"puerta", "salida", "portal", "runa", "cofre", "guardado", "cartel", "evento", "transicion"});
+        return true;
+    };
+}
+
 const char* nombreCategoria(ObjectCategory category) {
     switch (category) {
         case ObjectCategory::Npc:    return "PNJ";
@@ -215,7 +365,8 @@ std::string nombreDePaleta(const ObjectCatalog& catalog, const std::string& id) 
     if (definition == nullptr) {
         return "SIN DEFINIR";
     }
-    return std::string(nombreCategoria(definition->category)) + " · " + definition->name;
+    const std::string estado = definition->previewPng.empty() ? " · [PNG PENDIENTE]" : "";
+    return std::string(nombreCategoria(definition->category)) + " · " + definition->name + estado;
 }
 
 // Posiciones 1..16 del atlas editor_object_icons.png. No son sprites de
@@ -226,6 +377,14 @@ int iconoEditor(const ObjectDefinition& definition) {
     const std::string& id = definition.id;
     if (id.find("salida") != std::string::npos || id.find("puerta") != std::string::npos) return 1;
     if (id.find("puente") != std::string::npos) return 4;
+    // Un prop natural no puede caer en el icono de casa (frame 3): el
+    // icono de arbol/vegetacion (frame 12) es la representacion editorial
+    // correcta para arbustos, plantas y arboles hasta que exista su PNG.
+    if (id.find("arbusto") != std::string::npos || id.find("matorral") != std::string::npos ||
+        id.find("planta") != std::string::npos || id.find("hierba") != std::string::npos ||
+        id.find("arbol") != std::string::npos || id.find("bosque") != std::string::npos) {
+        return 12;
+    }
     if (definition.category == ObjectCategory::Npc) {
         if (id.find("luisarda") != std::string::npos) return 6;
         if (id.find("griffin") != std::string::npos) return 8;
@@ -311,7 +470,9 @@ RaceNpcPreview previewNpcRacial(const ObjectDefinition& definition) {
 // directamente al SpriteBatch (no pasan por Entity), por lo que necesitan
 // invertir V aqui para que cabeza y pies no queden al revés.
 UVRect uvPreviewPng(const TextureAtlas& atlas, int frame) {
-    UVRect uv = atlas.getUV(frame);
+    // Un pixel de seguridad evita que una pata, hoja o capa de la celda
+    // superior entre en el preview por el borde de la region.
+    UVRect uv = atlas.getUVInset(frame, 1.0f);
     std::swap(uv.v0, uv.v1);
     return uv;
 }
@@ -922,13 +1083,32 @@ int main(int argc, char** argv) {
         // muchos más props que PNJ; separar por intención de diseño evita
         // convertir Q/E en una lotería de memoria.
         const std::vector<std::string> objectGroupNames{
-            "TODO", "PNJ", "ENEMIGOS", "RECOGIBLES", "DECORADO"};
-        const std::vector<ObjectCategory> objectGroupCategories{
-            ObjectCategory::Prop, ObjectCategory::Npc, ObjectCategory::Enemy,
-            ObjectCategory::Pickup, ObjectCategory::Prop};
+            "TODOS", "PNJ · HUMANOS", "PNJ · ELFOS / DROWS", "PNJ · ENANOS / GNOMOS",
+            "PNJ · ORCOS / GOBLINS", "PNJ · LAGARTOS / NAGAS", "PNJ · OTRAS RAZAS",
+            "DECORADO · INTERIOR", "DECORADO · BOSQUE", "DECORADO · MONTAÑA / MINA",
+            "DECORADO · SELVA / PANTANO", "DECORADO · DESIERTO / VOLCAN",
+            "DECORADO · OTROS", "MONSTRUOS · ANIMALES", "MONSTRUOS · BIPEDOS",
+            "MONSTRUOS · NO MUERTOS", "MONSTRUOS · ELEMENTALES", "MONSTRUOS · DRAGONES",
+            "MONSTRUOS · SAGRADOS / LEGENDARIOS", "MONSTRUOS · OTROS",
+            "RECOGIBLES · CONSUMIBLES", "RECOGIBLES · EQUIPO", "EVENTOS / PUERTAS"};
         auto objectGroupEntries = [&](std::size_t group) {
-            return group == 0 ? catalog.ids() : catalog.ids(objectGroupCategories[group]);
+            const ObjectFilter filter = filtroAfinidadObjeto(objectGroupNames[group]);
+            std::vector<std::string> result;
+            for (const std::string& id : catalog.ids()) {
+                const ObjectDefinition* def = catalog.find(id);
+                if (def != nullptr && filter(*def)) result.push_back(id);
+            }
+            return result;
         };
+        const std::vector<std::string> objectRootNames{
+            "NATURALEZA / BIOMAS", "CIUDAD / INTERIORES", "SERES VIVIENTES",
+            "RECOGIBLES / EQUIPO", "EVENTOS / SISTEMAS"};
+        const std::vector<std::vector<std::size_t>> objectRootGroups{
+            {8, 9, 10, 11, 12},       // exteriores y decoración natural
+            {7, 12, 22},              // interiores, otros props y eventos
+            {1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19},
+            {20, 21},
+            {22}};
         std::size_t objectGroup = 0;
         editor.setObjectPalette(objectGroupEntries(objectGroup));
         std::vector<std::string> destinosDeNivel;
@@ -1092,9 +1272,17 @@ int main(int argc, char** argv) {
         // mismo panel; la herramienta decide cual es visible. Nombres de
         // los GIDs fijos del tileset de prueba (cuando el tileset venga
         // de datos, esto saldra de alli).
-        auto tileLabel = [](int gid) {
-            std::string name = (gid == 2) ? "COLISION" : "SUELO";
-            return "GID " + std::to_string(gid) + " " + name;
+        const std::unordered_map<int, TilePaletteInfo> tileSemantics =
+            cargarSemanticaTiles(tilesetPath);
+        auto tileLabel = [&](int gid) {
+            auto it = tileSemantics.find(gid);
+            const TilePaletteInfo info = it != tileSemantics.end()
+                                             ? it->second
+                                             : semanticasTile(gid, "", false);
+            std::string label = "GID " + std::to_string(gid) + " · " + info.name +
+                                " [" + info.tag + "]";
+            if (info.collision) label += " [BLOQUEA]";
+            return label;
         };
         std::vector<std::string> tileOptions;
         for (int gid : editor.tilePalette()) {
@@ -1112,6 +1300,18 @@ int main(int argc, char** argv) {
         for (const std::string& path : editor.levelPalette()) {
             levelOptions.push_back("SALIDA -> " + nombreEscenario(path));
         }
+        std::vector<std::string> objectRootOptions = objectRootNames;
+        objectRootOptions.push_back("← CERRAR MENU");
+        std::vector<std::size_t> objectSubgroupIndexes = objectRootGroups[0];
+        std::vector<std::string> objectSubgroupOptions;
+        auto rebuildSubgroupOptions = [&]() {
+            objectSubgroupOptions.clear();
+            for (std::size_t group : objectSubgroupIndexes) {
+                objectSubgroupOptions.push_back(objectGroupNames[group]);
+            }
+            objectSubgroupOptions.push_back("← VOLVER A CATEGORIAS");
+        };
+        rebuildSubgroupOptions();
 
         // El panel de la paleta hospeda los DOS menus (solo uno visible
         // a la vez), asi que se dimensiona con el maximo de ambos: al
@@ -1141,11 +1341,13 @@ int main(int argc, char** argv) {
             HudCommandMenu::contentSize(font, paletteWindow(tileOptions, 0, dummyFirst));
         const Vector2 objectSizeC =
             HudCommandMenu::contentSize(font, paletteWindow(objectOptions, 0, dummyFirst));
+        const Vector2 objectGroupSizeC =
+            HudCommandMenu::contentSize(font, paletteWindow(objectSubgroupOptions, 0, dummyFirst));
         const Vector2 levelSizeC =
             HudCommandMenu::contentSize(font, paletteWindow(levelOptions, 0, dummyFirst));
-        const float paletteW = std::max({tileSizeC.x, objectSizeC.x, levelSizeC.x,
+        const float paletteW = std::max({tileSizeC.x, objectSizeC.x, objectGroupSizeC.x, levelSizeC.x,
                                          font.measureText("PALETA  Q/E").x});
-        const float paletteH = std::max({tileSizeC.y, objectSizeC.y, levelSizeC.y});
+        const float paletteH = std::max({tileSizeC.y, objectSizeC.y, objectGroupSizeC.y, levelSizeC.y});
         const float toolsBottom = headerBottom + toolsPanelT.size.y + 10.0f;
 
         HudTransform palettePanelT;
@@ -1159,7 +1361,7 @@ int main(int argc, char** argv) {
         paletteTitleT.anchor = HudAnchor::TopLeft;
         paletteTitleT.offset = {8.0f + kPad, toolsBottom + kPad};
         HudText paletteTitle(paletteTitleT, &font);
-        paletteTitle.setText("PALETA  Q/E   SUBGRUPO  [/]");
+        paletteTitle.setText("PALETA  Q/E   TAB FAMILIAS");
         paletteTitle.setColor(kDimText);
 
         HudTransform paletteMenuT;
@@ -1169,7 +1371,7 @@ int main(int argc, char** argv) {
         HudCommandMenu tileMenu(paletteMenuT, &font,
                                 paletteWindow(tileOptions, 0, dummyFirst));
         HudCommandMenu objectMenu(paletteMenuT, &font,
-                                  paletteWindow(objectOptions, 0, dummyFirst));
+                                  objectRootOptions);
 
         // Inspector (derecha): ficha de la entrada seleccionada en la
         // paleta, con AVISOS de ids sin resolver (defecto 04 del
@@ -1179,6 +1381,15 @@ int main(int argc, char** argv) {
         // que las habilidades se carguen desde JSON (mismo comentario
         // alli).
         const std::vector<std::string> knownSkillIds{"tajo", "cura", "golpe_gelatinoso"};
+
+        // La cola se calcula desde el catálogo cargado, así los objetos sin
+        // arte no desaparecen de la paleta: se ven con icono editorial y el
+        // autor sabe exactamente qué PNG falta generar.
+        const std::vector<std::string> missingPreviewIds = catalog.missingPreviewIds();
+        if (!missingPreviewIds.empty()) {
+            std::cout << "  [PALETA] " << missingPreviewIds.size()
+                      << " previews PNG pendientes (icono editorial activo)\n";
+        }
 
         HudTransform inspectorPanelT;
         inspectorPanelT.anchor = HudAnchor::TopRight;
@@ -1232,7 +1443,7 @@ int main(int argc, char** argv) {
         statusPanel.setBorder(kBorderColor, 2.0f);
 
         const std::string kControlsLine =
-            "1-7 HERRAM  Q/E PALETA  [/] SUBGRUPO  B BUSCAR  C CAPA  R SELECCION  CTRL+C/V/X  T PATRULLA  H ESCALA  CTRL+Z/Y HIST  G GUARDAR  V VALIDAR  P JUGAR  ,/. ESCENARIO  M PROYECTOS";
+            "1-7 HERRAM  Q/E PALETA  TAB FAMILIAS  ENTER ENTRAR  ESC CERRAR  B BUSCAR  C CAPA  R SELECCION  CTRL+C/V/X  T PATRULLA  H ESCALA  CTRL+Z/Y HIST  G GUARDAR  V VALIDAR  P JUGAR  ,/. ESCENARIO  M PROYECTOS";
         // Peor caso del texto de estado (controles + contadores) para que el
         // panel de fondo cubra siempre la linea, aunque se anada el
         // "...TILES 64  OBJETOS 5" del final.
@@ -1275,6 +1486,8 @@ int main(int argc, char** argv) {
         bool buscando = false;      // B abre el campo de busqueda de la paleta
         std::string filtro;
         bool cambiarEscenario = false;  // F8/F9: reconstruye el documento con otro nivel
+        // 0 = categorias raiz, 1 = subfamilias, 2 = objetos concretos.
+        int objectMenuLevel = 0;
 
         // Estado de animacion del editor. Los widgets HUD no tienen
         // update(), asi que el estado que cambia con el tiempo (cursor
@@ -1299,7 +1512,21 @@ int main(int argc, char** argv) {
             // ESC vuelve a la pantalla de proyectos, no cierra el editor.
             // Para cerrar del todo hay que pulsarlo otra vez alli. Cambiar
             // de proyecto no puede costar relanzar el binario.
-            if (keys.pressed(glfwWin, GLFW_KEY_ESCAPE) || keys.pressed(glfwWin, GLFW_KEY_M)) {
+            const bool colocandoObjetos = editor.tool() == EditorTool::PlaceObject;
+            if (colocandoObjetos && keys.pressed(glfwWin, GLFW_KEY_ESCAPE)) {
+                if (objectMenuLevel > 0) {
+                    --objectMenuLevel;
+                    statusText.setText("VOLVER ATRAS EN MENU DE OBJETOS");
+                } else {
+                    editor.setTool(EditorTool::PaintTile);
+                    statusText.setText("MENU DE OBJETOS CERRADO");
+                }
+                savedMessageFrames = 120;
+            } else if (colocandoObjetos && keys.pressed(glfwWin, GLFW_KEY_BACKSPACE)) {
+                if (objectMenuLevel > 0) --objectMenuLevel;
+                savedMessageFrames = 120;
+            } else if (!colocandoObjetos &&
+                       (keys.pressed(glfwWin, GLFW_KEY_ESCAPE) || keys.pressed(glfwWin, GLFW_KEY_M))) {
                 volverAlHub = true;
                 break;
             }
@@ -1317,18 +1544,49 @@ int main(int argc, char** argv) {
                 editor.setTool(EditorTool::FillTiles);
             if (keys.pressed(glfwWin, GLFW_KEY_7))
                 editor.setTool(EditorTool::LinkLevel);
-            const bool colocandoObjetos = editor.tool() == EditorTool::PlaceObject;
-            if (colocandoObjetos &&
-                (keys.pressed(glfwWin, GLFW_KEY_LEFT_BRACKET) ||
-                 keys.pressed(glfwWin, GLFW_KEY_RIGHT_BRACKET))) {
-                const bool next = glfwGetKey(glfwWin, GLFW_KEY_RIGHT_BRACKET) == GLFW_PRESS;
-                objectGroup = next ? (objectGroup + 1) % objectGroupNames.size()
-                                   : (objectGroup == 0 ? objectGroupNames.size() - 1
-                                                       : objectGroup - 1);
-                editor.setObjectPalette(objectGroupEntries(objectGroup));
-                objectOptions = etiquetasObjeto();
-                statusText.setText("SUBGRUPO DE OBJETOS: " + objectGroupNames[objectGroup]);
-                savedMessageFrames = 150;
+            if (keys.pressed(glfwWin, GLFW_KEY_3)) {
+                objectMenuLevel = 0;
+                objectMenu.setOptions(objectRootOptions);
+                objectMenu.setSelectedIndex(0);
+            }
+
+            if (colocandoObjetos) {
+                if (keys.pressed(glfwWin, GLFW_KEY_Q)) objectMenu.moveUp();
+                if (keys.pressed(glfwWin, GLFW_KEY_E)) objectMenu.moveDown();
+                if (keys.pressed(glfwWin, GLFW_KEY_ENTER)) {
+                    const std::size_t selected = objectMenu.selectedIndex();
+                    if (objectMenuLevel == 0 && selected < objectRootNames.size()) {
+                        objectSubgroupIndexes = objectRootGroups[selected];
+                        rebuildSubgroupOptions();
+                        objectMenuLevel = 1;
+                        objectMenu.setOptions(objectSubgroupOptions);
+                        objectMenu.setSelectedIndex(0);
+                    } else if (objectMenuLevel == 1 && selected < objectSubgroupIndexes.size()) {
+                        objectGroup = objectSubgroupIndexes[selected];
+                        editor.setObjectPalette(objectGroupEntries(objectGroup));
+                        objectOptions = etiquetasObjeto();
+                        objectMenuLevel = 2;
+                        objectMenu.setOptions(paletteWindow(objectOptions, 0, dummyFirst));
+                        objectMenu.setSelectedIndex(0);
+                    }
+                    savedMessageFrames = 120;
+                }
+                if (keys.pressed(glfwWin, GLFW_KEY_LEFT_BRACKET) ||
+                    keys.pressed(glfwWin, GLFW_KEY_RIGHT_BRACKET)) {
+                    const bool next = keys.pressed(glfwWin, GLFW_KEY_RIGHT_BRACKET);
+                    if (objectMenuLevel == 1 && objectSubgroupIndexes.size() > 1) {
+                        const std::size_t n = objectSubgroupIndexes.size();
+                        const std::size_t current = objectMenu.selectedIndex() < n ? objectMenu.selectedIndex() : 0;
+                        objectMenu.setSelectedIndex(next ? (current + 1) % n : (current == 0 ? n - 1 : current - 1));
+                    } else if (objectMenuLevel == 2 && objectOptions.size() > 10) {
+                        // [/ ] cambia de familia; nunca sustituye a Q/E.
+                        objectGroup = next ? (objectGroup + 1) % objectGroupNames.size()
+                                           : (objectGroup == 0 ? objectGroupNames.size() - 1 : objectGroup - 1);
+                        editor.setObjectPalette(objectGroupEntries(objectGroup));
+                        objectOptions = etiquetasObjeto();
+                    }
+                    savedMessageFrames = 120;
+                }
             }
             const bool controlDown = glfwGetKey(glfwWin, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ||
                                      glfwGetKey(glfwWin, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS ||
@@ -1503,9 +1761,7 @@ int main(int argc, char** argv) {
                     editor.setPaletteFilter(filtro);
                     objectOptions = editor.objectPalette();
                     tileOptions.clear();
-                    for (int gid : editor.tilePalette()) {
-                        tileOptions.push_back("GID " + std::to_string(gid));
-                    }
+                    for (int gid : editor.tilePalette()) tileOptions.push_back(tileLabel(gid));
                 }
             }
 
@@ -1919,9 +2175,13 @@ int main(int argc, char** argv) {
             objectMenu.setVisible(objectMode || linkMode);
             if (linkMode) {
                 paletteTitle.setText("DESTINOS  Q/E");
+            } else if (objectMenuLevel == 0) {
+                paletteTitle.setText("COLOCAR OBJETOS · CATEGORIAS · ENTER ABRIR");
+            } else if (objectMenuLevel == 1) {
+                paletteTitle.setText("SUBCATEGORIAS · Q/E ELEGIR · ENTER ABRIR · [/ ] PAGINA");
             } else if (editor.tool() == EditorTool::PlaceObject) {
                 paletteTitle.setText("OBJETOS: " + objectGroupNames[objectGroup] +
-                                     "  [/ ] GRUPO  Q/E ELEGIR");
+                                     "  Q/E ELEGIR · ESC ATRAS · [/ ] PAGINA");
             } else {
                 paletteTitle.setText("PALETA  Q/E");
             }
@@ -1945,9 +2205,19 @@ int main(int argc, char** argv) {
             std::size_t objFirst = 0;
             tileMenu.setOptions(paletteWindow(tileOptions, tileSel, tileFirst));
             tileMenu.setSelectedIndex(tileSel - tileFirst);
-            objectMenu.setOptions(paletteWindow(linkMode ? levelOptions : objectOptions,
-                                                objSel, objFirst));
-            objectMenu.setSelectedIndex(objSel - objFirst);
+            if (linkMode) {
+                objectMenu.setOptions(paletteWindow(levelOptions, objSel, objFirst));
+                objectMenu.setSelectedIndex(objSel - objFirst);
+            } else if (objectMenuLevel == 0) {
+                objectMenu.setOptions(objectRootOptions);
+                objectMenu.setSelectedIndex(std::min(objectMenu.selectedIndex(), objectRootOptions.size() - 1));
+            } else if (objectMenuLevel == 1) {
+                objectMenu.setOptions(objectSubgroupOptions);
+                objectMenu.setSelectedIndex(std::min(objectMenu.selectedIndex(), objectSubgroupOptions.size() - 1));
+            } else {
+                objectMenu.setOptions(paletteWindow(objectOptions, objSel, objFirst));
+                objectMenu.setSelectedIndex(objSel - objFirst);
+            }
 
             // Celda bajo el cursor (cabecera, derecha): coordenada + gid
             // + objeto si lo hay. tileAt() ya devuelve 0 fuera de rango.
@@ -1999,6 +2269,12 @@ int main(int argc, char** argv) {
                                 "\nCATEGORIA " + category + "\nSPRITE " +
                                 std::to_string(def->spriteId) + "\nBLOQUEA " +
                                 (def->blocksMovement ? "SI" : "NO");
+                    inspector += "\nPREVIEW " +
+                                 (def->previewPng.empty() ? std::string("PNG PENDIENTE")
+                                                          : def->previewPng);
+                    if (def->previewPng.empty()) {
+                        warnings += "! FALTA PNG REPRESENTATIVO\n";
+                    }
                     if (def->category == ObjectCategory::Enemy) {
                         inspector += "\nPV " + std::to_string(def->combat.maxHealth) + "  PM " +
                                      std::to_string(def->combat.maxMana);

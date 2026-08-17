@@ -88,6 +88,17 @@ std::vector<std::string> ObjectCatalog::ids(ObjectCategory category) const {
     return result;
 }
 
+std::vector<std::string> ObjectCatalog::missingPreviewIds() const {
+    std::vector<std::string> result;
+    for (const auto& entry : m_objects) {
+        if (entry.second.previewPng.empty()) {
+            result.push_back(entry.first);
+        }
+    }
+    std::sort(result.begin(), result.end());
+    return result;
+}
+
 Result<int> ObjectCatalog::loadFromString(const std::string& jsonText) {
     Result<JsonValue> parsed = JsonValue::parse(jsonText);
     if (!parsed.isOk()) {
@@ -126,6 +137,7 @@ Result<int> ObjectCatalog::loadFromString(const std::string& jsonText) {
 
         def.name = entry["name"].asString(def.id);  // sin nombre: el id sirve de nombre
         def.spriteId = entry["spriteId"].asInt(-1);
+        def.previewPng = entry["previewPng"].asString();
         def.raceId = entry["raceId"].asString();
         def.blocksMovement = entry["blocksMovement"].asBool(false);
         def.interactable = entry["interactable"].asBool(false);

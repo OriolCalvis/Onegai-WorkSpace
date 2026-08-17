@@ -78,6 +78,7 @@ void testCatalogParsing() {
     require(roca->category == ObjectCategory::Prop);
     require(roca->name == "roca");
     require(roca->spriteId == -1);
+    require(roca->previewPng.empty());
     require(roca->blocksMovement);
     require(!roca->interactable);
 
@@ -96,6 +97,16 @@ void testCatalogParsing() {
     require(slime->combat.maxMana == 4);
     require(slime->combat.skillIds.size() == 1);
     require(slime->combat.skillIds[0] == "golpe_gelatinoso");
+    require(catalog.missingPreviewIds().size() == 3);
+
+    auto withPreview = catalog.loadFromString(R"({
+        "objects": [{"id": "roca", "category": "prop",
+                      "previewPng": "assets/generated/authoring/tiles/roca.png"}]
+    })");
+    require(withPreview.isOk());
+    require(catalog.find("roca")->previewPng ==
+            "assets/generated/authoring/tiles/roca.png");
+    require(catalog.missingPreviewIds().size() == 2);
 
     // No encontrado: nullptr, sin lanzar.
     require(catalog.find("no_existe") == nullptr);

@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Editor/EditorState.h"
+#include "Game/Skill.h"
 #include "Level/ObjectCatalog.h"
 
 // Resultado de validar un nivel antes de guardarlo o abrir el playtest.
@@ -91,6 +92,96 @@ public:
         if (result.walkableTiles == 0) {
             result.errors.push_back("el mapa no tiene tiles transitables");
         }
+        return result;
+    }
+
+    // Validacion de contenido RPG antes del playtest. Mantiene el contrato
+    // ligero de check() y anade la resolucion de referencias entre catalogos:
+    // una entrada puede ser JSON valido y aun asi estar rota para el juego
+    // (por ejemplo, un enemigo que menciona una skill inexistente).
+    //
+    // availableSpriteIds es opcional porque el atlas real pertenece a la
+    // capa de render. Si se pasa, un sprite no registrado se convierte en
+    // error; sin ese argumento solo se avisa de spriteId == -1.
+    static EditorValidationResult checkRpg(const EditorState& editor,
+                                           const ObjectCatalog& catalog,
+                                           const SkillCatalog& skills,
+                                           const std::vector<int>& collisionGids,
+                                           const std::vector<int>& availableSpriteIds = {}) {
+        EditorValidationResult result = check(editor, catalog, collisionGids);
+
+        auto hasSprite = [&](int spriteId) {
+            return std::find(availableSpriteIds.begin(), availableSpriteIds.end(), spriteId) !=
+                   availableSpriteIds.end();
+        };
+        auto spriteLabel = [](const ObjectDefinition& def) {
+            return "objeto '" + def.id + "'";
+        };
+
+        for (const std::string& id : catalog.ids()) {
+            const ObjectDefinition* def = catalog.find(id);
+            if (def == nullptr) {
+                continue;
+            }
+
+            if (def->spriteId < 0) {
+                result.warnings.push_back(spriteLabel(*def) + " no tiene sprite asignado");
+            } else if (!availableSpriteIds.empty() && !hasSprite(def->spriteId)) {
+                result.errors.push_back(spriteLabel(*def) + " referencia spriteId " +
+                                        std::to_string(def->spriteId) + " ausente en el atlas");
+            }
+
+            if (def->category == ObjectCategory::Enemy) {
+                if (def->combat.maxHealth <= 0) {
+                    result.errors.push_back(spriteLabel(*def) +
+                                            " enemigo con maxHealth menor o igual que cero");
+                }
+                if (def->combat.maxMana < 0) {
+                    result.errors.push_back(spriteLabel(*def) +
+                                            " enemigo con maxMana negativo");
+                }
+                for (const std::string& skillId : def->combat.skillIds) {
+                    if (!skills.has(skillId)) {
+                        result.errors.push_back(spriteLabel(*def) + " referencia skill inexistente '" +
+                                                skillId + "'");
+                    }
+                }
+            }
+
+            if (def->category == ObjectCategory::Pickup) {
+                if (def->pickup.power < 0 || def->pickup.price < 0) {
+                    result.errors.push_back(spriteLabel(*def) +
+                                            " tiene power o price negativo");
+                }
+                if (def->pickup.effect != PickupEffect::None && def->pickup.power == 0) {
+                    result.warnings.push_back(spriteLabel(*def) +
+                                              " tiene efecto consumible con power 0");
+                }
+            }
+
+            if (def->category == ObjectCategory::Npc && !def->interactable) {
+                result.warnings.push_back(spriteLabel(*def) +
+                                          " es NPC pero no esta marcado como interactuable");
+            }
+        }
+
+        for (const ObjectSpawn& spawn : editor.objects()) {
+            const ObjectDefinition* def = catalog.find(spawn.objectId);
+            if (def == nullptr) {
+                continue;  // ya informado por check(), no duplicar el error
+            }
+            if (def->category == ObjectCategory::Enemy &&
+                (spawn.patrolMin.x > spawn.patrolMax.x || spawn.patrolMin.y > spawn.patrolMax.y)) {
+                result.errors.push_back("patrulla invalida para '" + spawn.objectId + "' en " +
+                                        std::to_string(spawn.position.x) + "," +
+                                        std::to_string(spawn.position.y));
+            }
+            if (!spawn.targetLevel.empty() && !def->interactable) {
+                result.warnings.push_back("transicion de '" + spawn.objectId +
+                                          "' configurada en objeto no interactuable");
+            }
+        }
+
         return result;
     }
 };

@@ -194,6 +194,52 @@ void testValidation() {
     std::cout << "[EDITOR] validacion de inicio, objetos y conectividad correcta.\n";
 }
 
+void testRpgContentValidation() {
+    EditorState editor(3, 3);
+    editor.paintTile(0, 0, 1);
+    editor.setPlayerStart(GridCoord{0, 0});
+
+    SkillCatalog skills;
+    Skill slash;
+    slash.id = "tajo";
+    slash.name = "Tajo";
+    skills.add(slash);
+
+    ObjectCatalog broken;
+    ObjectDefinition slime;
+    slime.id = "slime";
+    slime.name = "Slime";
+    slime.category = ObjectCategory::Enemy;
+    slime.spriteId = 9;
+    slime.combat.maxHealth = 20;
+    slime.combat.skillIds = {"tajo", "skill_que_no_existe"};
+    broken.add(slime);
+    editor.placeObject(0, 0, "slime");
+
+    const auto invalid = EditorValidation::checkRpg(editor, broken, skills, {2}, {1, 2});
+    require(!invalid.ok());
+    require(invalid.errors.size() == 2);  // sprite ausente + skill rota
+    require(invalid.errors[0].find("spriteId 9") != std::string::npos);
+    require(invalid.errors[1].find("skill_que_no_existe") != std::string::npos);
+
+    ObjectCatalog valid;
+    slime.spriteId = 1;
+    slime.combat.skillIds = {"tajo"};
+    valid.add(slime);
+    ObjectDefinition potion;
+    potion.id = "pocion";
+    potion.category = ObjectCategory::Pickup;
+    potion.spriteId = 2;
+    potion.pickup.effect = PickupEffect::Heal;
+    potion.pickup.power = 15;
+    valid.add(potion);
+    const auto clean = EditorValidation::checkRpg(editor, valid, skills, {2}, {1, 2});
+    require(clean.ok());
+    require(clean.warnings.empty());
+
+    std::cout << "[EDITOR] validacion RPG: sprites, skills y datos por categoria correctos.\n";
+}
+
 void testTmxRoundTrip() {
     // Reproduce el contenido de test_map.tmx (4x3, borde de gid 1,
     // centro de gid 2 con colision) desde el editor y comprueba que el
@@ -496,6 +542,7 @@ int main() {
     testToolsAndPalettes();
     testHistoryAndPlayerStart();
     testValidation();
+    testRpgContentValidation();
     testTmxRoundTrip();
     testLevelJsonRoundTrip();
     testFiltroCapasSeleccionYPropiedades();

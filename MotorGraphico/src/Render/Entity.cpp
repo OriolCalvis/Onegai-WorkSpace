@@ -44,7 +44,10 @@ void Entity::render(SpriteBatch& batch) {
         // horizontal y borde inferior idéntico, es decir, pies en tierra.
         Vector2 finalPos = basePos + m_offset + m_characterAnchor +
                            Vector2{(originalSize.x - size.x) * 0.5f, originalSize.y - size.y};
-        UVRect uv = m_characterAtlas->getUV(m_spriteID);
+        // Los sprites de personaje son independientes; deja un pixel de
+        // seguridad para que el borde de otra celda nunca aparezca como
+        // patas/capa fantasma de la fila superior.
+        UVRect uv = m_characterAtlas->getUVInset(m_spriteID, 1.0f);
         // Compensacion del flip vertical de TextureManager
         // (stbi_set_flip_vertically_on_load(true) en loadFromDisk) dada la
         // convencion de SpriteBatch, que mapea v0 a la parte SUPERIOR del

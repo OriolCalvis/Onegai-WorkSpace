@@ -18,6 +18,16 @@ No son intercambiables.
 
 ## Biblioteca disponible
 
+El nuevo loop de autoría vive en `assets/generated/authoring/`. Sus PNG son
+referencias de diseño y no deben entrar todavía en runtime: el estado, la
+familia, las capas y el criterio de conversión están en
+[`assets/generated/authoring/ASSET_PRODUCTION_LOOP.md`](assets/generated/authoring/ASSET_PRODUCTION_LOOP.md)
+y [`assets/generated/authoring/asset_manifest.json`](assets/generated/authoring/asset_manifest.json).
+
+La paleta de producción debe mostrar únicamente recursos que tengan un PNG
+real y una definición de sprite/tile. Las ideas sin imagen quedan fuera de la
+paleta hasta que pasen el loop `authoring → runtime`.
+
 | Archivo | Tamaño / rejilla | Estado | Usar para |
 | --- | --- | --- | --- |
 | `assets/textures/terreno_iso.png` | 8×5, 40 celdas de 128×64 | Runtime | Suelos nuevos 2:1: naturaleza, civilización y construcción baja. |
