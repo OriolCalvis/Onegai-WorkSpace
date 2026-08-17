@@ -130,9 +130,10 @@ SkillExecutor::Out SkillExecutor::execute(ExecutionContext& ctx) {
             def_dice = ctx.target->stat(stat_defensa);
         }
         if (def_dice < 0) def_dice = 0;
-        // El defensor tira sin ventaja/desventaja por ahora: las
-        // condiciones que afecten a quien defiende se enchufarán aquí.
-        out.defender_pool = DicePoolEngine::roll_pool(def_dice, DiceMod::NORMAL, *ctx.rng);
+        // Bufos/condiciones del defensor: +1 dados y ventaja/desventaja
+        // se cuentan igual que para el atacante (Oriol, 17/08).
+        out.defender_pool = DicePoolEngine::roll_pool(
+            def_dice + ctx.defender_extra_dice, ctx.defender_dice_mod, *ctx.rng);
         out.opposed = true;
         d = DicePoolEngine::opposed_degree(eff_pool, out.defender_pool);
     }

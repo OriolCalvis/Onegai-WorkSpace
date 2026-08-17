@@ -85,6 +85,12 @@ struct ExecutionContext {
     // (opposed_degree). Sin defensor (target==nullptr y esto <0) la skill
     // no se resiste (curaciones, buffs): grado por la tirada propia.
     int override_target_dice = -1;
+    // Modificadores del DEFENSOR (Oriol, 17/08): si el defensor lleva un
+    // bufo/condición que da +1 dado (o ventaja/desventaja), se cuenta —
+    // igual que para el atacante. Quien monte la enfrentada los rellena;
+    // cuando el combate alimente condiciones al defensor, salen de aquí.
+    int defender_extra_dice = 0;
+    DiceMod defender_dice_mod = DiceMod::NORMAL;
     // EN DESUSO desde Ed. 3: la CA/CD se eliminan. Se conserva el campo
     // para no romper firmas hasta retirar los últimos usos; el executor
     // ya lo ignora.
