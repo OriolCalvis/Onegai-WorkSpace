@@ -13,6 +13,12 @@
 // resolve_against_cd devolvia SUCCESS con CERO exitos, porque comprobaba
 // "exitos >= cd" antes que la pifia y 0 >= 0 es cierto. Un jugador que
 // sacaba 1 en 1d6 acertaba igual. Ver el bloque "grados contra CD 0".
+//
+// Ed. 3 (bitacora 2.17, 17/08/2026): la CA y la CD se ELIMINAN del
+// reglamento. Toda resolucion es enfrentada (opposed_degree) y la pifia
+// pasa a ser «ningun 5 ni 6 y minimo dos 1es». Los tests de la capa CD
+// quedan como red de la capa en desuso hasta su retirada; las secciones
+// testPifiaEd3 y testEnfrentadaEd3 fijan el contrato nuevo.
 
 #include <cstdio>
 #include <vector>
@@ -80,7 +86,8 @@ void testVentajaYDesventaja() {
         ScriptedRng b({5, 5, 5});
         PoolResult p = DicePoolEngine::roll_pool(3, DiceMod::DISADVANTAGE, b);
         require(casi(p.successes, 0.0f));
-        require(p.botch == true);       // tres cincos y aun asi pifia
+        require(p.botch == false);      // Ed. 3: con 5s no hay pifia, aunque
+                                        // los exitos sean 0 (ver testPifiaEd3)
         ScriptedRng c({6, 5, 5});
         require(casi(DicePoolEngine::roll_pool(3, DiceMod::DISADVANTAGE, c).successes, 1.0f));
     }
@@ -112,20 +119,22 @@ void testCritico() {
 
 // ---------------------------------------------------------------
 // 4. Pool vacio: quedarse sin dados es un resultado legitimo del juego
-//    (condiciones que restan dados), y debe ser pifia, no exito.
+//    (condiciones que restan dados). Ed. 3: NO es pifia (la pifia
+//    exige dados: ningun 5/6 y minimo dos 1es) — es una tirada que no
+//    suma nada y perdera la enfrentada por comparacion.
 // ---------------------------------------------------------------
 void testSinDados() {
     ScriptedRng rng({6, 6, 6});
     PoolResult p = DicePoolEngine::roll_pool(0, DiceMod::NORMAL, rng);
     require(p.rolls.empty());
     require(casi(p.successes, 0.0f));
-    require(p.botch == true);
+    require(p.botch == false);
     require(rng.consumed() == 0);       // no toca el RNG
 
     // Negativo se trata igual que cero, no revienta ni tira dados.
     ScriptedRng rng2({6});
     PoolResult n = DicePoolEngine::roll_pool(-5, DiceMod::NORMAL, rng2);
-    require(n.botch == true);
+    require(n.botch == false);
     require(rng2.consumed() == 0);
 }
 
@@ -222,6 +231,49 @@ void testEnfrentada() {
 }
 
 // ---------------------------------------------------------------
+// 8b. Pifia Ed. 3 (bitacora 2.17): ningun 5 ni 6, y minimo dos 1es.
+//     Ya no es «0 exitos».
+// ---------------------------------------------------------------
+void testPifiaEd3() {
+    // Dos 1es sin ningun 5/6: pifia, aunque haya otros dados.
+    { ScriptedRng r({1, 1});       require(DicePoolEngine::roll_pool(2, DiceMod::NORMAL, r).botch == true); }
+    { ScriptedRng r({1, 1, 3});    require(DicePoolEngine::roll_pool(3, DiceMod::NORMAL, r).botch == true); }
+    // 0 exitos pero un solo 1: no es pifia.
+    { ScriptedRng r({1, 2, 3, 4}); require(DicePoolEngine::roll_pool(4, DiceMod::NORMAL, r).botch == false); }
+    { ScriptedRng r({1});          require(DicePoolEngine::roll_pool(1, DiceMod::NORMAL, r).botch == false); }
+    // Un 5 o un 6 desactivan la pifia aunque haya dos 1es.
+    { ScriptedRng r({1, 1, 5});    require(DicePoolEngine::roll_pool(3, DiceMod::NORMAL, r).botch == false); }
+    { ScriptedRng r({1, 1, 6});    require(DicePoolEngine::roll_pool(3, DiceMod::NORMAL, r).botch == false); }
+}
+
+// Tira los dados guionizados y devuelve el pool (azucar para Ed. 3).
+PoolResult tira(std::initializer_list<int> caras) {
+    ScriptedRng r(caras);
+    return DicePoolEngine::roll_pool(static_cast<int>(caras.size()), DiceMod::NORMAL, r);
+}
+
+// ---------------------------------------------------------------
+// 8c. Enfrentada Ed. 3: el contrato completo de opposed_degree.
+// ---------------------------------------------------------------
+void testEnfrentadaEd3() {
+    // Gana por 0,5 -> SUCCESS («si gana por 0,5 tambien SUCCES»).
+    require(DicePoolEngine::opposed_degree(tira({6, 5}), tira({6})) == Degree::SUCCESS);
+    // Gana por mas margen -> SUCCESS igualmente.
+    require(DicePoolEngine::opposed_degree(tira({6, 5, 5}), tira({6})) == Degree::SUCCESS);
+    // Gana con todos los dados a 6 -> CRITICAL.
+    require(DicePoolEngine::opposed_degree(tira({6, 6}), tira({6, 5})) == Degree::CRITICAL);
+    // Empate -> BOTCH: el defensor se impone.
+    require(DicePoolEngine::opposed_degree(tira({6, 5}), tira({5, 5, 5})) == Degree::BOTCH);
+    // Defensor gana (sin pifia) -> PARTIAL: mitad de dano, sin debuff.
+    require(DicePoolEngine::opposed_degree(tira({6}), tira({6, 6})) == Degree::PARTIAL);
+    // Pifia propia -> BOTCH aunque la comparacion estuviera ganada.
+    require(DicePoolEngine::opposed_degree(tira({1, 1, 2}), tira({2, 3})) == Degree::BOTCH);
+    // Pifia del defensor -> CRITICAL del atacante [interpretacion
+    // registrada en la bitacora, pendiente de confirmacion visual].
+    require(DicePoolEngine::opposed_degree(tira({2, 3}), tira({1, 1})) == Degree::CRITICAL);
+}
+
+// ---------------------------------------------------------------
 // 9. Reproducibilidad: misma semilla, misma partida. Es la razon de que
 //    RandomEngine se inyecte en vez de ser un singleton global.
 // ---------------------------------------------------------------
@@ -251,6 +303,8 @@ int main() {
     testDefensaACd();
     testGrados();
     testEnfrentada();
+    testPifiaEd3();
+    testEnfrentadaEd3();
     testReproducible();
 
     // Tabla de referencia, util al tocar las reglas: se ve de un vistazo

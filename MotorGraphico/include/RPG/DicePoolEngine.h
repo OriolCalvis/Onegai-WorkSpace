@@ -15,11 +15,15 @@ namespace RPG {
 // `target.takeDamage(skill.power)` del motor actual, donde el daño era
 // plano y no había tirada.
 //
-// Reglas del pool (GDD Llibre II):
+// Reglas del pool (GDD Llibre II + Ed. 3, bitácora 2.17):
 //   - Se tiran N d6. N = stat o valor efectivo de la fuente.
 //   - Cada 6 suma 1 éxito; cada 5 suma medio; 1-4 no suman.
-//   - Crítico: TODOS los dados sacan 6.   Pifia: 0 éxitos.
+//   - Crítico: TODOS los dados sacan 6.
+//   - Pifia (Ed. 3): la tirada no tiene NINGÚN 5 ni 6 Y saca mínimo dos 1es.
+//     (Antes de Ed. 3 era «0 éxitos»; ya no.)
 //   - Ventaja: los 4 también suman medio. Desventaja: solo cuentan los 6.
+//   - Ed. 3: la CA y la CD se eliminan; TODA resolución (combate, hechizos
+//     y checks narrativos) es una tirada enfrentada — ver opposed_degree().
 //
 // GL-free y SIN ESTADO: todos los métodos son estáticos y el azar entra
 // por RandomEngine& (ver RandomEngine.h). Una misma semilla da siempre la
@@ -33,7 +37,7 @@ enum class Degree : uint8_t { BOTCH = 0, PARTIAL = 1, SUCCESS = 2, CRITICAL = 3 
 struct PoolResult {
     float successes = 0.0f;   // 0, 0.5, 1.0, 1.5, ...
     bool critical = false;    // todos los dados == 6
-    bool botch = false;       // 0 éxitos
+    bool botch = false;       // Ed. 3: ningún 5/6 y mínimo dos 1es
     std::vector<int> rolls;   // valores reales, para el log y el HUD
 };
 
@@ -53,9 +57,24 @@ struct OpposedOutcome {
 
 class DicePoolEngine {
 public:
-    // dice <= 0 devuelve un pool vacío marcado como pifia: quedarse sin
-    // dados (por una condición que resta) es un resultado legítimo del
-    // juego, no un error que deba reventar la partida.
+    // Pifia Ed. 3 (bitácora 2.17): la tirada no tiene ningún 5 ni ningún 6
+    // Y saca mínimo dos 1es. «Si no sale ningún 5 ni 6 y mínimo dos 1es,
+    // es pifia» — Oriol, 17/08/2026. Un pool vacío (0 dados, por una
+    // condición que resta) NO es pifia: no hay dados que la materialicen;
+    // simplemente no suma nada y la enfrentada la resolverá.
+    static bool es_pifia(const std::vector<int>& rolls) {
+        bool tiene_5o6 = false;
+        int unos = 0;
+        for (int d : rolls) {
+            if (d == 5 || d == 6) tiene_5o6 = true;
+            if (d == 1) ++unos;
+        }
+        return !tiene_5o6 && unos >= 2;
+    }
+
+    // dice <= 0 devuelve un pool vacío: quedarse sin dados (por una
+    // condición que resta) es un resultado legítimo del juego, no un error
+    // que deba reventar la partida.
     static PoolResult roll_pool(int dice, DiceMod mod, RandomEngine& rng) {
         PoolResult r;
         if (dice < 0) dice = 0;
@@ -77,10 +96,35 @@ public:
             if (d != 6) all_six = false;
         }
         r.critical = all_six;
-        r.botch = (dice == 0) || (r.successes == 0.0f && dice > 0);
+        r.botch = es_pifia(r.rolls);
         return r;
     }
 
+    // Ed. 3 (bitácora 2.17): TODA resolución es enfrentada — la CA y la CD
+    // ya no existen. Grado para el lado ACTIVO (atacante/lanzador):
+    //
+    //     PIFIA propia                       -> BOTCH (anula la comparación)
+    //     PIFIA del defensor                 -> CRITICAL  [interpretación
+    //                                              registrada en la bitácora]
+    //     empate (sin pifia)                 -> BOTCH (el defensor se impone)
+    //     defensor gana                      -> PARTIAL (hechizo/maldición:
+    //                                              mitad de daño, sin debuff)
+    //     atacante gana por cualquier margen -> SUCCESS (incluso por 0,5)
+    //     atacante gana con todos los 6      -> CRITICAL
+    static Degree opposed_degree(const PoolResult& atacante, const PoolResult& defensor) {
+        if (atacante.botch) return Degree::BOTCH;
+        if (defensor.botch) return Degree::CRITICAL;
+        if (atacante.successes == defensor.successes) return Degree::BOTCH;
+        if (atacante.successes < defensor.successes) return Degree::PARTIAL;
+        if (atacante.critical) return Degree::CRITICAL;
+        return Degree::SUCCESS;
+    }
+
+    // EN DESUSO desde Ed. 3 (bitácora 2.17): la CA y la CD se eliminan y
+    // toda resolución pasa a enfrentada (opposed_degree). Se conserva
+    // hasta migrar SkillExecutor/BattleStateOnegai y el skillCheck
+    // narrativo; después, retirar (un paso propio, ver ARCHITECTURE.md).
+    //
     // Tirada contra una CD numérica (0.0 a 3.0).
     //
     //     éxitos == 0                  -> BOTCH   (PRIMERO, siempre)

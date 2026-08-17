@@ -119,6 +119,13 @@ SkillExecutor::Out SkillExecutor::execute(ExecutionContext& ctx) {
                  : DicePoolEngine::defense_to_cd(def_int);
 
     // —— PASO 5.5: Resolver grado contra CD ——
+    // TODO(Ed. 3, bitácora 2.17): la CA/CD se eliminan; este paso pasa a
+    // tirada enfrentada (opposed_degree) contra el pool del stat defensor
+    // (fisico: DES/CON; hechizo: el defenseStat de la carta o el stat del
+    // lanzador; empate: el defensor se impone). El botch sintetico de aqui
+    // abajo usa la regla vieja («0 exitos») porque no hay dados reales que
+    // evaluar con la nueva («ningun 5/6 y minimo dos 1es»); cae con la
+    // migracion, no se parchea a medias.
     PoolResult eff_pool;
     eff_pool.successes = eff;
     eff_pool.botch = (eff == 0.0f);
