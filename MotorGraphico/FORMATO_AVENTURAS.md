@@ -88,6 +88,45 @@ Las tres listas se combinan con AND entre sí. Omitirla entera = siempre cierta.
 | `anyFlags` | hace falta **al menos una** |
 | `notFlags` | no debe haber **ninguna** |
 
+### Temporizadores de misión (F1, bitácora 2.18)
+
+Campo de primer nivel `timers` (opcional). Tiempo **narrativo**: no es el
+calendario del juego ni segundos crudos — es el reloj de UNA misión, y
+solo avanza mientras el jugador explora activamente (el orquestador lo
+congela en combate, diálogo, pausa y AFK). La casa arde si no superas la
+zona antes de irte; el rescate tiene un tiempo; el asesino vuelve a matar
+si tardas demasiado.
+
+| Campo | Significado |
+|---|---|
+| `id` | Identificador del timer (los beats lo arrancan con `startTimer`) |
+| `duracion` | Segundos ACTIVOS (obligatorio si expira por tiempo) |
+| `arrancaPor` | Flag que lo arranca (alternativa al efecto `startTimer`) |
+| `expiraPor` | `["tiempo"]`, `["salir_de_zona"]` o ambas; por defecto `["tiempo"]` |
+| `zona` | Nivel donde corre (obligatorio con `salir_de_zona`) |
+| `flagExpira` | Flag al expirar, por cualquier causa (obligatorio) |
+| `presentacion` | `contador`, `barra` o `secreto` (el jugador no lo ve; solo nota lo que pasa en el mundo) |
+| `avisos` | `[{fraccion, flag}]`: fracción del tiempo RESTANTE (0..1] que enciende la flag al cruzarse |
+
+Al expirar se enciende `flagExpira` y las consecuencias las resuelven los
+beats `auto` de siempre — el timer no inventa efectos nuevos:
+
+```jsonc
+{
+  "timers": [
+    {
+      "id": "casa_en_llamas",
+      "duracion": 60.0,
+      "expiraPor": ["tiempo", "salir_de_zona"],   // la casa arde igual si te vas
+      "zona": "nivel_casa",
+      "flagExpira": "casa_quemada",
+      "presentacion": "secreto",                   // el mundo avisa, no el HUD
+      "avisos": [ { "fraccion": 0.5, "flag": "humo_en_la_escalera" } ]
+    }
+  ]
+}
+```
+
 ### Efectos
 
 | `type`      | Campos | Efecto |
@@ -97,6 +136,7 @@ Las tres listas se combinan con AND entre sí. Omitirla entera = siempre cierta.
 | `grantGold` | `value` | Oro a la partida (negativo = peaje) |
 | `log`       | `arg`  | Línea suelta al log de la partida |
 | `skillCheck` | `skillCheck: {skillId, rivalDice, flagBotch, flagPartial, flagSuccess, flagCritical}` | Resuelve una **tirada enfrentada** (Ed. 3, bitácora 2.17): el jugador lanza tantos d6 como el `castingStat` de la skill (del catálogo Nd6) y el rival declarado por el beat tira `rivalDice` dados; el grado de la enfrentada (BOTCH/PARTIAL/SUCCESS/CRITICAL) enciende **una** de las cuatro flags. Así un beat puede ramificar en cuatro variantes por tirada. |
+| `startTimer` | `arg` | Arranca el temporizador de misión declarado en `timers` con ese id (F1, bitácora 2.18). El reloj solo avanza en exploración activa (ni combate, ni diálogo, ni pausa, ni AFK). |
 
 El `skillCheck` es **diferido** como `grantGold`: el motor narrativo no
 tiene RNG ni catálogo, así que solo empaqueta la petición y deja que

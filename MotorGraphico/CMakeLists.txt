@@ -177,6 +177,13 @@ target_link_libraries(demo_narrativa_nd6 PRIVATE motor_rpg)
 set_target_properties(demo_narrativa_nd6 PROPERTIES CXX_STANDARD 17)
 add_dependencies(demo_narrativa_nd6 copiar_assets)
 
+# demo_temporizadores — temporizadores de mision F1 (bitacora 2.18):
+# tiempo narrativo, avisos por umbral, expiracion por tiempo/salir de zona.
+add_executable(demo_temporizadores examples/demo_temporizadores.cpp)
+target_link_libraries(demo_temporizadores PRIVATE motor_rpg)
+set_target_properties(demo_temporizadores PROPERTIES CXX_STANDARD 17)
+add_dependencies(demo_temporizadores copiar_assets)
+
 # demo_prologo — el prologo onirico de Boundington (Cap. 1-2 del canon).
 # Reproduce boundington_prologo.json forzando SUCCESS en las dos tiradas
 # Nd6 y comprueba el cierre y la cobertura de beats. GL-free.

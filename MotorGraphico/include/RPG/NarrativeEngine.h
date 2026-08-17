@@ -57,6 +57,17 @@ namespace RPG {
 // mundo que el contenido deba consultar. Si una aventura necesita
 // preguntar "¿ya paso esto?", el beat debe poner una flag explicita --
 // asi el contenido nunca depende de ids internos de beats.
+// F1 (bitácora 2.18): estado de un temporizador de misión en curso.
+// Vive en NarrativeState porque ES estado de partida (debe guardarse),
+// pero no es una flag: tiene magnitud continua (el tiempo restante).
+struct TimerState {
+    std::string id;
+    float restante = 0.0f;      // segundos ACTIVOS que quedan
+    bool activo = false;        // arrancado y sin expirar
+    bool expirado = false;
+    std::vector<bool> avisosDados;  // paralelo a TimerDefinition::avisos
+};
+
 class NarrativeState {
 public:
     bool hasFlag(const std::string& flag) const { return m_flags.count(flag) > 0; }
@@ -72,11 +83,18 @@ public:
     // atras (mismo criterio que ObjectCatalog con su mapa).
     std::vector<std::string> flags() const;
 
+    // Temporizadores de misión (F1): referencia viva para el motor
+    // narrativo (se crea al vuelo la primera vez que se menciona el id).
+    // El HUD los lee por copia (timers()) para pintar contador/barra.
+    TimerState& timerRef(const std::string& id);
+    std::vector<TimerState> timers() const { return m_timers; }
+
     void reset();
 
 private:
     std::unordered_set<std::string> m_flags;
     std::unordered_set<std::string> m_beatsFired;
+    std::vector<TimerState> m_timers;
 };
 
 // ---------------------------------------------------------------------
@@ -164,7 +182,12 @@ enum class EffectType {
     // no las enciende applyNarrative sino syncBattleOutcome, cuando el
     // BattleState se cierra. El contenido no nota la diferencia: pide una
     // flag y esa flag acaba encendida.
-    StartBattle
+    StartBattle,
+    // F1 (bitacora 2.18): arranca el temporizador de mision cuyo id va en
+    // "arg". El reloj solo avanza en exploracion activa (ni combate, ni
+    // dialogo, ni pausa, ni AFK — de esas reglas se ocupa el orquestador,
+    // que es quien pasa el dt activo a tickTimers).
+    StartTimer
 };
 
 // Una tirada de habilidad pedida desde un beat. El motor la rellena al
@@ -270,12 +293,48 @@ struct ObjectiveStatus {
 // de su AdventureDefinition, y ahi es donde las 300 cartas ya escritas
 // dejaran de ser metadatos y empezaran a ser partidas. De momento van
 // por separado a proposito -- primero que funcione una.
+// F1 (bitácora 2.18): temporizador de misión — tiempo NARRATIVO, no el
+// calendario del juego ni segundos crudos. Ejemplos del encargo: la casa
+// arde si no superas la zona antes de irte; tiempo para rescatar a
+// alguien; tiempo hasta que el asesino mate a otro.
+//
+//   - El reloj SOLO avanza en exploración activa: el orquestador decide
+//     qué dt es «activo» (ni combate, ni diálogo, ni pausa, ni AFK —
+//     umbral inicial 15 s sin input) y lo pasa a tickTimers.
+//   - Puede expirar por TIEMPO, por SALIR DE LA ZONA, o por ambas.
+//   - Presentación por timer: contador o barra que baja en pantalla, o
+//     SECRETO (no aparece; el jugador solo lo nota por lo que pasa en el
+//     mundo). El feedback general son los avisos por umbral: flags que
+//     encienden beats («se oyen gritos arriba...»).
+//   - Al expirar se enciende flagExpira y las consecuencias las resuelven
+//     los beats Auto de siempre: el timer no inventa efectos nuevos.
+struct TimerDefinition {
+    enum class Presentacion { Contador, Barra, Secreto };
+
+    std::string id;
+    float duracion = 0.0f;              // segundos activos (si expiraPorTiempo)
+    std::string arrancaPor;             // flag que lo arranca (o efecto StartTimer)
+    bool expiraPorTiempo = true;
+    bool expiraPorSalirDeZona = false;
+    std::string zona;                   // nivel donde corre (ruta o id de nivel)
+    std::string flagExpira;             // flag al expirar (por cualquier causa)
+
+    struct Aviso {
+        float fraccion = 0.0f;          // fracción de tiempo RESTANTE (0..1)
+        std::string flag;               // flag que se enciende al cruzarla
+    };
+    std::vector<Aviso> avisos;
+
+    Presentacion presentacion = Presentacion::Contador;
+};
+
 struct AdventureScript {
     std::string id;
     std::string name;
     std::string description;
     std::vector<ObjectiveDefinition> objectives;
     std::vector<NarrativeBeat> beats;
+    std::vector<TimerDefinition> timers;
 
     // Mismo contrato de carga que ObjectCatalog/LevelLoader: Result<T>,
     // nunca excepciones (es contenido, no arranque), y todo-o-nada (si
@@ -342,6 +401,19 @@ public:
     NarrativeResult tick(NarrativeState& state) const {
         return fire(TriggerType::Auto, "", state);
     }
+
+    // F1: reloj de los temporizadores de misión. El orquestador lo llama
+    // cada frame con el dt de EXPLORACIÓN ACTIVA (0.0 si hay combate,
+    // diálogo, pausa o el jugador lleva un rato sin tocar nada — AFK) y
+    // con el nivel donde está el jugador. Arranca los timers cuya flag
+    // arrancaPor esté encendida, enciende las flags de aviso al cruzar
+    // sus umbrales y las de expiración (por tiempo o por salir de la
+    // zona). Las consecuencias las disparan los beats Auto de siempre.
+    void tickTimers(NarrativeState& state, float dtActivo,
+                    const std::string& nivelActual) const;
+
+    // Arranca un timer por id (efecto StartTimer). Id desconocido = no-op.
+    void startTimer(const std::string& timerId, NarrativeState& state) const;
 
     // Diario de misiones: los objetivos de la aventura con su estado
     // resuelto contra las flags actuales. Vacio si no hay aventura.

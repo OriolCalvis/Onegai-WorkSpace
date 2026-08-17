@@ -69,6 +69,10 @@ bool parseEffectType(const std::string& text, EffectType& out) {
         out = EffectType::SkillCheck;
         return true;
     }
+    if (text == "startTimer") {
+        out = EffectType::StartTimer;
+        return true;
+    }
     return false;
 }
 
@@ -87,9 +91,19 @@ std::vector<std::string> NarrativeState::flags() const {
     return out;
 }
 
+TimerState& NarrativeState::timerRef(const std::string& id) {
+    for (TimerState& t : m_timers) {
+        if (t.id == id) return t;
+    }
+    m_timers.push_back(TimerState{});
+    m_timers.back().id = id;
+    return m_timers.back();
+}
+
 void NarrativeState::reset() {
     m_flags.clear();
     m_beatsFired.clear();
+    m_timers.clear();
 }
 
 // ---------------------------------------------------------------------
@@ -289,6 +303,85 @@ Result<AdventureScript> AdventureScript::loadFromString(const std::string& jsonT
         adv.beats.push_back(std::move(beat));
     }
 
+    // F1 (bitacora 2.18): temporizadores de mision. Campo opcional — las
+    // aventuras sin timers cargan igual que antes de existir esto.
+    const JsonValue& timersValue = root["timers"];
+    for (std::size_t i = 0; i < timersValue.size(); ++i) {
+        const JsonValue& entry = timersValue[i];
+        TimerDefinition t;
+        t.id = entry["id"].asString();
+        if (t.id.empty()) {
+            return Result<AdventureScript>::Error("timers[" + std::to_string(i) +
+                                                      "] no tiene campo \"id\"");
+        }
+        t.duracion = static_cast<float>(entry["duracion"].asNumber(0.0));
+        t.arrancaPor = entry["arrancaPor"].asString();
+        t.zona = entry["zona"].asString();
+        t.flagExpira = entry["flagExpira"].asString();
+        if (t.flagExpira.empty()) {
+            return Result<AdventureScript>::Error("timers[" + std::to_string(i) + "] (\"" +
+                                                      t.id + "\") no tiene \"flagExpira\" "
+                                                      "(sin ella nadie se entera de que expiro)");
+        }
+
+        // Causas de expiracion: ["tiempo", "salir_de_zona"] o ambas. Si el
+        // campo falta, el timer expira solo por tiempo (el caso comun).
+        const JsonValue& causas = entry["expiraPor"];
+        if (causas.isArray() && causas.size() > 0) {
+            t.expiraPorTiempo = false;
+            t.expiraPorSalirDeZona = false;
+            for (std::size_t k = 0; k < causas.size(); ++k) {
+                const std::string causa = causas[k].asString();
+                if (causa == "tiempo") {
+                    t.expiraPorTiempo = true;
+                } else if (causa == "salir_de_zona") {
+                    t.expiraPorSalirDeZona = true;
+                } else {
+                    return Result<AdventureScript>::Error("timers[" + std::to_string(i) +
+                                                          "] (\"" + t.id + "\"): expiraPor desconocido \"" +
+                                                          causa + "\" (validos: tiempo, salir_de_zona)");
+                }
+            }
+        }
+        if (t.expiraPorSalirDeZona && t.zona.empty()) {
+            return Result<AdventureScript>::Error("timers[" + std::to_string(i) + "] (\"" +
+                                                      t.id + "\"): expira por salir_de_zona pero "
+                                                      "no declara \"zona\"");
+        }
+        if (t.expiraPorTiempo && t.duracion <= 0.0f) {
+            return Result<AdventureScript>::Error("timers[" + std::to_string(i) + "] (\"" +
+                                                      t.id + "\"): expira por tiempo pero "
+                                                      "\"duracion\" no es positiva");
+        }
+
+        const std::string pres = entry["presentacion"].asString("contador");
+        if (pres == "contador") {
+            t.presentacion = TimerDefinition::Presentacion::Contador;
+        } else if (pres == "barra") {
+            t.presentacion = TimerDefinition::Presentacion::Barra;
+        } else if (pres == "secreto") {
+            t.presentacion = TimerDefinition::Presentacion::Secreto;
+        } else {
+            return Result<AdventureScript>::Error("timers[" + std::to_string(i) + "] (\"" +
+                                                      t.id + "\"): presentacion desconocida \"" +
+                                                      pres + "\" (validos: contador, barra, secreto)");
+        }
+
+        const JsonValue& avisos = entry["avisos"];
+        for (std::size_t k = 0; k < avisos.size(); ++k) {
+            TimerDefinition::Aviso a;
+            a.fraccion = static_cast<float>(avisos[k]["fraccion"].asNumber(0.0));
+            a.flag = avisos[k]["flag"].asString();
+            if (a.flag.empty() || a.fraccion <= 0.0f || a.fraccion > 1.0f) {
+                return Result<AdventureScript>::Error("timers[" + std::to_string(i) + "] (\"" +
+                                                          t.id + "\").avisos[" + std::to_string(k) +
+                                                          "]: necesita \"flag\" y \"fraccion\" en (0, 1]");
+            }
+            t.avisos.push_back(std::move(a));
+        }
+        adv.timers.push_back(std::move(t));
+    }
+
     return Result<AdventureScript>::Ok(std::move(adv));
 }
 
@@ -376,6 +469,11 @@ NarrativeResult NarrativeEngine::fire(TriggerType type, const std::string& targe
                 case EffectType::StartBattle:
                     result.battles.push_back(effect.battle);
                     break;
+                // F1: arrancar un temporizador de mision no es diferido:
+                // el reloj vive en el NarrativeState, que esta aqui mismo.
+                case EffectType::StartTimer:
+                    startTimer(effect.arg, state);
+                    break;
             }
         }
         state.markBeatFired(beat.id);
@@ -383,6 +481,80 @@ NarrativeResult NarrativeEngine::fire(TriggerType type, const std::string& targe
     }
 
     return result;
+}
+
+void NarrativeEngine::startTimer(const std::string& timerId, NarrativeState& state) const {
+    if (m_adventure == nullptr) {
+        return;
+    }
+    for (const TimerDefinition& t : m_adventure->timers) {
+        if (t.id != timerId) {
+            continue;
+        }
+        TimerState& ts = state.timerRef(t.id);
+        if (ts.activo || ts.expirado) {
+            return;  // ya esta en marcha o ya se consumo: no se reinicia
+        }
+        ts.activo = true;
+        ts.restante = t.duracion;
+        ts.avisosDados.assign(t.avisos.size(), false);
+        return;
+    }
+    // Id desconocido = no-op (mismo criterio permisivo que el resto del
+    // motor; validar_todo.py es quien lo denuncia en el contenido).
+}
+
+void NarrativeEngine::tickTimers(NarrativeState& state, float dtActivo,
+                                 const std::string& nivelActual) const {
+    if (m_adventure == nullptr) {
+        return;
+    }
+
+    // 1) Timers que arrancan por flag (ademas del efecto startTimer).
+    for (const TimerDefinition& t : m_adventure->timers) {
+        if (!t.arrancaPor.empty() && state.hasFlag(t.arrancaPor)) {
+            startTimer(t.id, state);
+        }
+    }
+
+    for (const TimerDefinition& t : m_adventure->timers) {
+        TimerState& ts = state.timerRef(t.id);
+        if (!ts.activo) {
+            continue;
+        }
+
+        // 2) Expirar por SALIR DE LA ZONA: la casa arde aunque quedara
+        //    tiempo en el reloj (bitacora 2.18).
+        if (t.expiraPorSalirDeZona && !nivelActual.empty() && nivelActual != t.zona) {
+            ts.activo = false;
+            ts.expirado = true;
+            state.setFlag(t.flagExpira);
+            continue;
+        }
+
+        // 3) El tiempo solo avanza con dt ACTIVO: el orquestador pasa 0
+        //    en combate, dialogo, pausa o AFK.
+        if (!t.expiraPorTiempo || dtActivo <= 0.0f) {
+            continue;
+        }
+        ts.restante -= dtActivo;
+
+        // Avisos por umbral: fraccion sobre el tiempo RESTANTE.
+        for (std::size_t i = 0; i < t.avisos.size(); ++i) {
+            if (!ts.avisosDados[i] &&
+                ts.restante <= t.duracion * t.avisos[i].fraccion) {
+                ts.avisosDados[i] = true;
+                state.setFlag(t.avisos[i].flag);
+            }
+        }
+
+        if (ts.restante <= 0.0f) {
+            ts.restante = 0.0f;
+            ts.activo = false;
+            ts.expirado = true;
+            state.setFlag(t.flagExpira);
+        }
+    }
 }
 
 std::vector<ObjectiveStatus> NarrativeEngine::objectives(const NarrativeState& state) const {
