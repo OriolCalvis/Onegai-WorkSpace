@@ -262,10 +262,10 @@ void testEnfrentadaEd3() {
     require(DicePoolEngine::opposed_degree(tira({6, 5, 5}), tira({6})) == Degree::SUCCESS);
     // Gana con todos los dados a 6 -> CRITICAL.
     require(DicePoolEngine::opposed_degree(tira({6, 6}), tira({6, 5})) == Degree::CRITICAL);
-    // Empate -> BOTCH: el defensor se impone.
-    require(DicePoolEngine::opposed_degree(tira({6, 5}), tira({5, 5, 5})) == Degree::BOTCH);
-    // Defensor gana (sin pifia) -> PARTIAL: mitad de dano, sin debuff.
-    require(DicePoolEngine::opposed_degree(tira({6}), tira({6, 6})) == Degree::PARTIAL);
+    // Empate -> PARTIAL: mitad de dano, sin debuff.
+    require(DicePoolEngine::opposed_degree(tira({6, 5}), tira({5, 5, 5})) == Degree::PARTIAL);
+    // Defensor gana (supera el hechizo) -> BOTCH: se salva del todo.
+    require(DicePoolEngine::opposed_degree(tira({6}), tira({6, 6})) == Degree::BOTCH);
     // Pifia propia -> BOTCH aunque la comparacion estuviera ganada.
     require(DicePoolEngine::opposed_degree(tira({1, 1, 2}), tira({2, 3})) == Degree::BOTCH);
     // Pifia del defensor -> CRITICAL del atacante [interpretacion

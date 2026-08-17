@@ -106,16 +106,18 @@ public:
     //     PIFIA propia                       -> BOTCH (anula la comparación)
     //     PIFIA del defensor                 -> CRITICAL  [interpretación
     //                                              registrada en la bitácora]
-    //     empate (sin pifia)                 -> BOTCH (el defensor se impone)
-    //     defensor gana                      -> PARTIAL (hechizo/maldición:
-    //                                              mitad de daño, sin debuff)
-    //     atacante gana por cualquier margen -> SUCCESS (incluso por 0,5)
+    //     defensor gana (supera el hechizo)  -> BOTCH: se salva del todo
+    //                                          (0 daño, sin debuff)
+    //     empate                             -> PARTIAL: mitad de daño,
+    //                                          sin debuff
+    //     atacante gana por cualquier margen -> SUCCESS (incluso por 0,5):
+    //                                          la habilidad entra entera
     //     atacante gana con todos los 6      -> CRITICAL
     static Degree opposed_degree(const PoolResult& atacante, const PoolResult& defensor) {
         if (atacante.botch) return Degree::BOTCH;
         if (defensor.botch) return Degree::CRITICAL;
-        if (atacante.successes == defensor.successes) return Degree::BOTCH;
-        if (atacante.successes < defensor.successes) return Degree::PARTIAL;
+        if (atacante.successes < defensor.successes) return Degree::BOTCH;
+        if (atacante.successes == defensor.successes) return Degree::PARTIAL;
         if (atacante.critical) return Degree::CRITICAL;
         return Degree::SUCCESS;
     }
