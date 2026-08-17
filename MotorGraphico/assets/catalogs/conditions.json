@@ -391,6 +391,28 @@
     {
       "category": "negativa",
       "cureConditions": [
+        "Lo que indique la fuente (normalmente el final de un turno)"
+      ],
+      "description": "El suelo se vuelve miel.",
+      "duration": "hasta_curarse",
+      "effects": [
+        {
+          "description": "Tu velocidad se reduce a la mitad.",
+          "mechanicHook": "velocidad_mitad"
+        }
+      ],
+      "flavorText": "El suelo se vuelve miel.",
+      "id": "ralentizado",
+      "name": "Ralentizado",
+      "rarity": "common",
+      "source": "estado",
+      "stackable": false,
+      "tier": 0,
+      "type": "condition"
+    },
+    {
+      "category": "negativa",
+      "cureConditions": [
         "Un descanso corto",
         "Una habilidad de curación"
       ],
