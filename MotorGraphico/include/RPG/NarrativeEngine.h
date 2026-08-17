@@ -188,6 +188,11 @@ struct BattleRequest {
 
 struct SkillCheckRequest {
     std::string skillId;
+    // Ed. 3 (bitácora 2.17): la prueba es enfrentada — el rival declarado
+    // por el beat tira rivalDice dados. "cd" queda EN DESUSO, solo como
+    // compatibilidad de beats antiguos (se convierte a dados: 0.5→1,
+    // 1.0→2, 1.5→3, 2.0→4, 2.5→5).
+    int rivalDice = 0;
     float cd = 1.0f;
     std::string flagBotch;
     std::string flagPartial;

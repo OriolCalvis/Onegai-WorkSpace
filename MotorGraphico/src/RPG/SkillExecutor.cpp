@@ -87,51 +87,55 @@ SkillExecutor::Out SkillExecutor::execute(ExecutionContext& ctx) {
     if (eff < 0.0f) eff = 0.0f;
     out.effective_successes = eff;
 
-    // —— PASO 5: Determinar CD contra qué resolver ——
-    int def_int = 10;
-    if (ctx.override_target_defense >= 0) {
-        def_int = ctx.override_target_defense;
-    } else if (ctx.target) {
-        // CharacterSheet API: defenses() requiere ClassDefinition*.
-        // Para cálculos sin clase concreta (sin multiclass, sin regla de
-        // armadura pesada CON alternativa) usamos un cls vacío: la
-        // fórmula que se aplica es la genérica 10+DES+eq que es justo lo
-        // que esperamos cuando solo nos llega un CharacterSheet* sin
-        // contexto de clase.
-        ClassDefinition cls;
-        cls.id = "";
-        cls.name = "";
-        DefenseBlock db = ctx.target->defenses(&cls);
-        if (ctx.skill->save_attribute != SaveAttribute::NONE) {
-            switch (ctx.skill->save_attribute) {
-                case SaveAttribute::CON: def_int = db.get(Defense::PHYSICAL_SAVE); break;
-                case SaveAttribute::DES: def_int = 10 + ctx.target->stat(Stat::DES); break;
-                case SaveAttribute::INT: def_int = db.get(Defense::WILL_SAVE); break;
-                case SaveAttribute::CAR: def_int = 10 + ctx.target->stat(Stat::CAR); break;
-                default:                  def_int = db.get(Defense::ARMOR_CLASS); break;
-            }
-        } else {
-            def_int = db.get(Defense::ARMOR_CLASS);
-        }
-    }
-    float cd = ctx.skill->override_cd_if_save > 0.0f
-                 ? ctx.skill->override_cd_if_save
-                 : DicePoolEngine::defense_to_cd(def_int);
-
-    // —— PASO 5.5: Resolver grado contra CD ——
-    // TODO(Ed. 3, bitácora 2.17): la CA/CD se eliminan; este paso pasa a
-    // tirada enfrentada (opposed_degree) contra el pool del stat defensor
-    // (fisico: DES/CON; hechizo: el defenseStat de la carta o el stat del
-    // lanzador; empate: el defensor se impone). El botch sintetico de aqui
-    // abajo usa la regla vieja («0 exitos») porque no hay dados reales que
-    // evaluar con la nueva («ningun 5/6 y minimo dos 1es»); cae con la
-    // migracion, no se parchea a medias.
+    // —— PASO 5 (Ed. 3, bitácora 2.17): enfrentada o resolución no resistida ——
+    // La CA y la CD se eliminan: si hay defensor, tira su pool (regido por
+    // su stat) y se compara (opposed_degree); si no lo hay (curaciones,
+    // buffs propios), el grado lo decide la tirada propia sin rival.
     PoolResult eff_pool;
     eff_pool.successes = eff;
-    eff_pool.botch = (eff == 0.0f);
+    eff_pool.botch = out.pool.botch;  // pifia real: ningún 5/6 y mínimo dos 1es
     eff_pool.critical = out.pool.critical;
-    CheckOutcome check = DicePoolEngine::resolve_against_cd(eff_pool, cd);
-    Degree d = check.degree;
+
+    Degree d;
+    const bool hay_defensor = (ctx.override_target_dice >= 0) || (ctx.target != nullptr);
+    if (!hay_defensor) {
+        // No resistida: pifia -> BOTCH; 0 éxitos sin pifia -> PARTIAL
+        // (efecto débil, no un fallo contra nadie); todos 6 -> CRITICAL;
+        // cualquier otra -> SUCCESS.
+        if (eff_pool.botch)                  d = Degree::BOTCH;
+        else if (eff <= 0.0f)                d = Degree::PARTIAL;
+        else if (out.pool.critical)          d = Degree::CRITICAL;
+        else                                 d = Degree::SUCCESS;
+    } else {
+        int def_dice = ctx.override_target_dice;
+        if (def_dice < 0 && ctx.target != nullptr) {
+            // Stat gobernante de la defensa (bitácora 2.17, regla 4):
+            // hechizo/maldición -> el stat prefijado en la carta
+            // (save_attribute); físico -> DES o CON, y para defensas no
+            // jugadoras se toma el MAYOR de los dos (cuando defienda el
+            // jugador, elegirá él).
+            Stat stat_defensa;
+            if (ctx.skill->save_attribute != SaveAttribute::NONE) {
+                switch (ctx.skill->save_attribute) {
+                    case SaveAttribute::CON: stat_defensa = Stat::CON; break;
+                    case SaveAttribute::INT: stat_defensa = Stat::INT; break;
+                    case SaveAttribute::CAR: stat_defensa = Stat::CAR; break;
+                    default:                 stat_defensa = Stat::DES; break;
+                }
+            } else {
+                const int des = ctx.target->stat(Stat::DES);
+                const int con = ctx.target->stat(Stat::CON);
+                stat_defensa = (con > des) ? Stat::CON : Stat::DES;
+            }
+            def_dice = ctx.target->stat(stat_defensa);
+        }
+        if (def_dice < 0) def_dice = 0;
+        // El defensor tira sin ventaja/desventaja por ahora: las
+        // condiciones que afecten a quien defiende se enchufarán aquí.
+        out.defender_pool = DicePoolEngine::roll_pool(def_dice, DiceMod::NORMAL, *ctx.rng);
+        out.opposed = true;
+        d = DicePoolEngine::opposed_degree(eff_pool, out.defender_pool);
+    }
 
     // —— PASO 6: Post-process upgrades (BOTCH→PARTIAL, PARTIAL→SUCCESS) ——
     if (d == Degree::BOTCH && ctx.can_upgrade_botch_to_partial && eff > 0.0f) {

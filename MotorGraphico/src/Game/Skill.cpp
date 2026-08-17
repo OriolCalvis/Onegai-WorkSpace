@@ -87,26 +87,27 @@ SkillApplyResult executeViaSkillExecutor(const RPG::SkillDefinition& def, IComba
     // === Overrides Modelo/Vista ===
     // Base dice: 1 + stat del caster (GDD §2.2: "pool N, 1 base").
     ctx.override_base_dice = 1 + caster.stat(def.casting_stat);
-    // Defensa objetivo: según save_attribute de la Skill.
-    int def_int = 10;
-    switch (def.save_attribute) {
-        case SaveAttribute::NONE:
-            def_int = target.defense_value(Defense::ARMOR_CLASS);
-            break;
-        case SaveAttribute::CON:
-            def_int = target.defense_value(Defense::PHYSICAL_SAVE);
-            break;
-        case SaveAttribute::DES:
-            def_int = 10 + target.stat(Stat::DES);
-            break;
-        case SaveAttribute::INT:
-            def_int = target.defense_value(Defense::WILL_SAVE);
-            break;
-        case SaveAttribute::CAR:
-            def_int = 10 + target.stat(Stat::CAR);
-            break;
+    // Ed. 3 (bitácora 2.17): ya no hay CA/CD — el daño se resuelve en
+    // tirada enfrentada y el defensor tira el pool de su stat gobernante
+    // (hechizo/maldición: el stat prefijado por la carta; físico: el MAYOR
+    // de DES/CON, que es lo que elige una defensa no jugadora). Curar y
+    // buffar no se resiste: sin defensor, grado por la tirada propia.
+    if (effect == SkillEffect::Damage) {
+        Stat stat_defensa;
+        switch (def.save_attribute) {
+            case SaveAttribute::CON: stat_defensa = Stat::CON; break;
+            case SaveAttribute::INT: stat_defensa = Stat::INT; break;
+            case SaveAttribute::CAR: stat_defensa = Stat::CAR; break;
+            case SaveAttribute::NONE:
+            default: {
+                const int des = target.stat(Stat::DES);
+                const int con = target.stat(Stat::CON);
+                stat_defensa = (con > des) ? Stat::CON : Stat::DES;
+                break;
+            }
+        }
+        ctx.override_target_dice = target.stat(stat_defensa);
     }
-    ctx.override_target_defense = def_int;
 
     SkillExecutor::Out out = SkillExecutor::execute(ctx);
 

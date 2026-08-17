@@ -265,9 +265,10 @@ void GameSession::startInteraction(const ObjectDefinition& def) {
 }
 
 void GameSession::resolveSkillChecks(const std::vector<RPG::SkillCheckRequest>& checks) {
-    // Una tirada Nd6 pedida desde un beat (GDD 7.1): N dados = stat del
-    // jugador segun la skill implicada, CD del beat, grado -> flag. Es el
-    // MISMO DicePoolEngine que usa el combate, asi que narrativa y combate
+    // Una tirada Nd6 pedida desde un beat: N dados = stat del jugador
+    // segun la skill implicada, enfrentada al pool que declara el beat
+    // (rivalDice, Ed. 3 — bitacora 2.17), grado -> flag. Es el MISMO
+    // DicePoolEngine que usa el combate, asi que narrativa y combate
     // comparten reglas (coherencia pedida para todo el sistema).
     //
     // IMPORTANTE: esto convierte a GameSession en un segundo escritor de
@@ -294,16 +295,31 @@ void GameSession::resolveSkillChecks(const std::vector<RPG::SkillCheckRequest>& 
         const int dice = m_playerBody->stat(def->casting_stat);
         const RPG::PoolResult pool =
             RPG::DicePoolEngine::roll_pool(dice, RPG::DiceMod::NORMAL, *m_rngInUse);
-        const RPG::CheckOutcome out = RPG::DicePoolEngine::resolve_against_cd(pool, c.cd);
-        switch (out.degree) {
+        // Ed. 3 (bitácora 2.17): la prueba es enfrentada — el rival del
+        // beat tira su pool (rivalDice). Beats anteriores a Ed. 3 traen
+        // "cd" en su lugar: se convierte a dados (0.5→1 … 2.5→5) para no
+        // romper aventuras ya escritas.
+        int rivalDice = c.rivalDice;
+        if (rivalDice <= 0 && c.cd > 0.0f) {
+            rivalDice = static_cast<int>(c.cd * 2.0f + 0.5f);
+            if (rivalDice < 1) rivalDice = 1;
+            if (rivalDice > 5) rivalDice = 5;
+        }
+        if (rivalDice < 0) rivalDice = 0;
+        const RPG::PoolResult rival =
+            RPG::DicePoolEngine::roll_pool(rivalDice, RPG::DiceMod::NORMAL, *m_rngInUse);
+        const RPG::Degree grado = RPG::DicePoolEngine::opposed_degree(pool, rival);
+        switch (grado) {
             case RPG::Degree::BOTCH:    m_narrativeState->setFlag(c.flagBotch);    break;
             case RPG::Degree::PARTIAL:  m_narrativeState->setFlag(c.flagPartial);  break;
             case RPG::Degree::SUCCESS:  m_narrativeState->setFlag(c.flagSuccess);  break;
             case RPG::Degree::CRITICAL: m_narrativeState->setFlag(c.flagCritical); break;
         }
-        logLine("(tirada " + c.skillId + " CD " + std::to_string(c.cd) + ": " +
-                std::to_string(pool.successes) + " exitos -> " +
-                std::to_string(static_cast<int>(out.degree)) + ")");
+        logLine("(enfrentada " + c.skillId + ": jugador " +
+                std::to_string(pool.successes) + " exitos vs rival (" +
+                std::to_string(rivalDice) + "d6) " +
+                std::to_string(rival.successes) + " exitos -> " +
+                std::to_string(static_cast<int>(grado)) + ")");
     }
 }
 

@@ -246,6 +246,17 @@ entidad y coordenada/índice.
    alto): vía sheet, esos stats quedan truncados. `demo_catalogos_rpg`
    (C4) comprueba la sincronización brain↔sheet↔catálogo dentro del rango
    representable; el rango de monstruo es una decisión pendiente.
+9. **Reglamento Ed. 3 (bitácora 2.17) ya migrado al runtime**: el
+   `SkillExecutor`, el puente `Skill.cpp` (por donde pasa TODO el combate
+   de `BattleState`) y el `skillCheck` narrativo de `GameSession`
+   resuelven por tirada enfrentada (`opposed_degree`). Quedan EN DESUSO:
+   `resolve_against_cd`, `defense_to_cd`, `SkillDefinition::
+   override_cd_if_save` y el rol de dificultad de `DefenseBlock` — deuda
+   pendiente de retirada cuando no quede ningún lector. Los beats antiguos
+   con `cd` siguen funcionando: se convierten a pool rival
+   (0,5→1 dado … 2,5→5). Stat defensor automatizado: hechizo → el
+   `save_attribute` de la carta; físico → el MAYOR de DES/CON (el jugador
+   elegirá cuando haya UI de defensa).
 
 ---
 

@@ -185,15 +185,20 @@ void testFleeAndInvalidIndices() {
 }
 
 // El grado de la tirada decide el dano: la misma accion, con el mismo
-// atacante y el mismo objetivo, quita 0, lo normal o x1.5 segun lo que
-// salga. Es la diferencia entre el combate de antes (dano plano) y el
-// Nd6, y no habia ni una comprobacion que lo fijara -- por eso el fallo
-// de resolve_against_cd, que anulaba justo la rama de la pifia, no lo
-// detecto nadie.
+// atacante y el mismo objetivo, quita la mitad, lo normal o x1.5 segun
+// lo que salga. Es la diferencia entre el combate de antes (dano plano)
+// y el Nd6, y no habia ni una comprobacion que lo fijara -- por eso el
+// fallo de resolve_against_cd, que anulaba justo la rama de la pifia,
+// no lo detecto nadie.
 void testElGradoDecideElDano() {
     struct Caso { int cara; int esperado; const char* etiqueta; };
-    // Ataque basico: magnitude_by_degree = {0, 5, 10, 15}. Con 1d6 contra
-    // CD 0.0, PARTIAL no es alcanzable (harian falta exitos > 0 y < 0).
+    // Ataque basico: magnitude_by_degree = {0, 5, 10, 15}. Desde Ed. 3
+    // (bitacora 2.17) la resolucion es ENFRENTADA: la diana tiene stat 0
+    // y tira 0 dados, asi que lo mejor que puede hacer es EMPATAR. El 1
+    // y el 4 empatan (0 exitos vs 0) -> PARTIAL -> mitad de dano (5); el
+    // 5 gana por 0,5 -> SUCCESS (10); el 6 gana y es todos-seises ->
+    // CRITICAL. La pifia con un solo dado es imposible (Ed. 3 exige
+    // minimo dos 1es sin ningun 5/6).
     //
     // El 6 da 22 y no 15 porque se acumulan DOS cosas: la magnitud de
     // CRITICAL (15) y ademas el extra de "todos los dados a 6" (x1.5) del
@@ -204,8 +209,8 @@ void testElGradoDecideElDano() {
     // fijado aqui para que se vea: si algun dia se decide que no deben
     // acumularse, este test lo dira en vez de cambiar el dano en silencio.
     const Caso casos[] = {
-        {1,  0, "pifia (1)"},
-        {4,  0, "pifia (4)"},
+        {1,  5, "empate (1) -> mitad"},
+        {4,  5, "empate (4) -> mitad"},
         {5, 10, "acierto (5)"},
         {6, 22, "critico + all-sixes (6)"},
     };
@@ -227,7 +232,7 @@ void testElGradoDecideElDano() {
         require(diana.isAlive());
     }
 
-    std::cout << "[BATTLE] el grado de la tirada decide el dano (0 / 10 / 15) correcto.\n";
+    std::cout << "[BATTLE] el grado de la tirada decide el dano (5 / 10 / 22) correcto.\n";
 }
 
 }  // namespace

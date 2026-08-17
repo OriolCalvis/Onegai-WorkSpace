@@ -229,12 +229,16 @@ Result<AdventureScript> AdventureScript::loadFromString(const std::string& jsonT
                     std::to_string(e) + "]: setFlag/clearFlag necesitan \"arg\" con el nombre de la flag");
             }
             if (effect.type == EffectType::SkillCheck) {
-                // Sub-objeto dedicado: value (int) no cabe la CD (float) ni
-                // los 4 nombres de flag. Mismo criterio que el catlogo de
-                // skills con overrideCdIfSave: un bloque, no campos sueltos.
+                // Sub-objeto dedicado: value (int) no cabe el pool rival ni
+                // los 4 nombres de flag. Un bloque, no campos sueltos.
                 const JsonValue& sc = effectEntry["skillCheck"];
                 effect.skillCheck.skillId = sc["skillId"].asString();
                 effect.skillCheck.cd = static_cast<float>(sc["cd"].asNumber(1.0));
+                // Ed. 3 (bitácora 2.17): la prueba es enfrentada; el beat
+                // declara cuántos dados tira el rival (el guardia «tira» 3,
+                // la trampa «tira» 2). "cd" queda solo como compatibilidad
+                // para beats pre-Ed. 3 (GameSession la convierte a dados).
+                effect.skillCheck.rivalDice = static_cast<int>(sc["rivalDice"].asNumber(0));
                 effect.skillCheck.flagBotch = sc["flagBotch"].asString();
                 effect.skillCheck.flagPartial = sc["flagPartial"].asString();
                 effect.skillCheck.flagSuccess = sc["flagSuccess"].asString();
@@ -246,8 +250,13 @@ Result<AdventureScript> AdventureScript::loadFromString(const std::string& jsonT
                     effect.skillCheck.flagCritical.empty()) {
                     return Result<AdventureScript>::Error(
                         "beats[" + std::to_string(i) + "] (\"" + beat.id + "\").effects[" +
-                        std::to_string(e) + "]: skillCheck necesita skillId, cd, flagBotch, "
+                        std::to_string(e) + "]: skillCheck necesita skillId, flagBotch, "
                         "flagPartial, flagSuccess y flagCritical (todos no vacios)");
+                }
+                if (effect.skillCheck.rivalDice < 0 || effect.skillCheck.rivalDice > 24) {
+                    return Result<AdventureScript>::Error(
+                        "beats[" + std::to_string(i) + "] (\"" + beat.id + "\").effects[" +
+                        std::to_string(e) + "]: skillCheck.rivalDice fuera de rango (0..24)");
                 }
                 if (effect.skillCheck.cd < 0.0f || effect.skillCheck.cd > 3.0f) {
                     return Result<AdventureScript>::Error(

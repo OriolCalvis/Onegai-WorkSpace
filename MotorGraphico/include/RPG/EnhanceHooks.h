@@ -80,6 +80,14 @@ struct ExecutionContext {
     // Skill.cpp / BattleState.cpp que solo tienen acceso a ICombatant*
     // (Render) y no quieren romper la separación modelo/vista.
     int override_base_dice = -1;
+    // Ed. 3 (bitácora 2.17): el defensor TAMBIÉN tira. Si ≥0, el defensor
+    // tira este número de dados y la resolución es enfrentada
+    // (opposed_degree). Sin defensor (target==nullptr y esto <0) la skill
+    // no se resiste (curaciones, buffs): grado por la tirada propia.
+    int override_target_dice = -1;
+    // EN DESUSO desde Ed. 3: la CA/CD se eliminan. Se conserva el campo
+    // para no romper firmas hasta retirar los últimos usos; el executor
+    // ya lo ignora.
     int override_target_defense = -1;  // Entero defensa (CA, TS Física, etc.)
 };
 
@@ -88,6 +96,10 @@ class SkillExecutor {
 public:
     struct Out {
         PoolResult pool;
+        // Ed. 3: la tirada del defensor (visible en HUD/log: una tirada que
+        // no se puede ver no se puede discutir). Vacía si no hubo defensor.
+        PoolResult defender_pool;
+        bool opposed = false;  // true si hubo tirada del defensor
         Degree final_degree;
         float effective_successes;
         int final_magnitude = 0;

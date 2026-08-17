@@ -96,7 +96,7 @@ Las tres listas se combinan con AND entre sí. Omitirla entera = siempre cierta.
 | `clearFlag` | `arg`  | Apaga una flag |
 | `grantGold` | `value` | Oro a la partida (negativo = peaje) |
 | `log`       | `arg`  | Línea suelta al log de la partida |
-| `skillCheck` | `skillCheck: {skillId, cd, flagBotch, flagPartial, flagSuccess, flagCritical}` | Resuelve una tirada Nd6 (GDD §7.1): lanza tantos d6 como el `castingStat` de la skill indique (sacado del catálogo Nd6), compara contra `cd` (escala 0.0..3.0: 0.5 Fácil, 1 Normal, 1.5 Difícil, 2 Muy difícil, 2.5+ Extraordinaria) y enciende **una** de las cuatro flags según el grado obtenido (BOTCH/PARTIAL/SUCCESS/CRITICAL). Así un beat puede ramificar en cuatro variantes por tirada. |
+| `skillCheck` | `skillCheck: {skillId, rivalDice, flagBotch, flagPartial, flagSuccess, flagCritical}` | Resuelve una **tirada enfrentada** (Ed. 3, bitácora 2.17): el jugador lanza tantos d6 como el `castingStat` de la skill (del catálogo Nd6) y el rival declarado por el beat tira `rivalDice` dados; el grado de la enfrentada (BOTCH/PARTIAL/SUCCESS/CRITICAL) enciende **una** de las cuatro flags. Así un beat puede ramificar en cuatro variantes por tirada. |
 
 El `skillCheck` es **diferido** como `grantGold`: el motor narrativo no
 tiene RNG ni catálogo, así que solo empaqueta la petición y deja que
@@ -105,12 +105,19 @@ que keeps narrativa y combate en el mismo sistema de reglas). El grado se
 traduce a flags — no a magnitud — porque en la narrativa lo que importa es
 "qué percibes / convences / averiguas", no cuánto daño.
 
+**Ed. 3:** la dificultad ya no es una CD fija — el reto tira dados: el
+guardia «tira» 3, la trampa «tira» 2, una cerradura maestra «tira» 5.
+Resultado para el jugador: supera al rival → SUCCESS; empate → PARTIAL;
+pierde → BOTCH; pifia (ningún 5/6 y mínimo dos 1es) → BOTCH aunque el
+rival también tire mal. Los beats antiguos con `"cd"` siguen cargando:
+`GameSession` convierte cd a dados (0.5→1, 1.0→2, 1.5→3, 2.0→4, 2.5→5).
+
 ```jsonc
 {
   "type": "skillCheck",
   "skillCheck": {
     "skillId": "percepcion",
-    "cd": 1.0,                                  // Difícil sería 1.5
+    "rivalDice": 3,                               // el guardia tira 3d6
     "flagBotch":    "prologo_percibe_nada",
     "flagPartial":  "prologo_percibe_parcial",
     "flagSuccess":  "prologo_percibe_exito",
