@@ -132,6 +132,10 @@ private:
     // de jugador/enemigos, mientras que cada raceId tiene aqui su frame
     // real de 64x64.
     std::unique_ptr<TextureAtlas> m_raceNpcAtlas;
+    // Actores narrativos de Boundington (Luisarda, Ben, Griffin, Perdidos
+    // y encuentros de sus misiones). Se prioriza sobre el fallback racial
+    // cuando un objectId tiene un retrato específico.
+    std::unique_ptr<TextureAtlas> m_boundingtonStoryAtlas;
     TileMap m_map;
     ObjectCatalog m_objectCatalog;
     SkillCatalog m_skillCatalog;

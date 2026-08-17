@@ -103,6 +103,23 @@ int raceNpcFrame(const std::string& raceId) {
     return found == frames.end() ? 0 : found->second;
 }
 
+// Frame del atlas 4x3 de actores de la campaña. Los aliases intencionales
+// (varios Perdidos comparten silueta) dan variedad por datos sin exigir una
+// lámina por objectId. Un ID no listado usa el atlas racial o el fallback.
+int boundingtonStoryFrame(const std::string& objectId) {
+    static const std::unordered_map<std::string, int> frames{
+        {"luisarda", 1}, {"ben_kafka", 2}, {"griffin", 3},
+        {"duende_porcelana", 4}, {"perdido_saqueador", 5},
+        {"perdido_fanatico", 5}, {"sectario_perdido", 5},
+        {"cultista_carcelero", 6}, {"saga_bosque", 7},
+        {"nina_del_gato", 8}, {"guardia", 9},
+        {"parroquiano_humilde", 10}, {"tendero_mercado", 10},
+        {"naga_desague", 11}, {"rata_alcantarilla", 12},
+    };
+    const auto found = frames.find(objectId);
+    return found == frames.end() ? 0 : found->second;
+}
+
 // Traza de arranque/bucle a stderr (SIN buffer, a diferencia de stdout:
 // sobrevive a un SIGSEGV, que es justo cuando hace falta). Silenciosa
 // salvo que se pida con la variable de entorno MOTOR_TRACE=1, asi que no
@@ -289,6 +306,16 @@ Result<bool> Application::init(int width, int height, const std::string& title,
         // qué fila contiene el frame, o la fila 1 acaba leyendo la 7.
         const int logicalRow = (frame - 1) / 7;
         m_raceNpcAtlas->defineRegion(frame, (frame - 1) % 7, 6 - logicalRow);
+    }
+    auto storyTexResult = m_textureManager.load("boundington_story_actors_idle",
+                                                "assets/textures/boundington_story_actors_idle.png");
+    if (!storyTexResult.isOk()) {
+        return Result<bool>::Error("Atlas de actores de Boundington: " + storyTexResult.errorMessage());
+    }
+    m_boundingtonStoryAtlas = std::make_unique<TextureAtlas>(storyTexResult.value(), 64, 64);
+    for (int frame = 1; frame <= 12; ++frame) {
+        const int logicalRow = (frame - 1) / 4;
+        m_boundingtonStoryAtlas->defineRegion(frame, (frame - 1) % 4, 2 - logicalRow);
     }
     trace("init: atlas de personaje OK");
 
@@ -782,13 +809,19 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
             // igual: la animacion es cosmética, no acoplada al movimiento.
             auto anim = std::make_unique<AnimatedEntity>(position, m_atlas.get(), kTileW, kTileH,
                                                           /*frameTime=*/0.22f);
+            const int storyFrame = boundingtonStoryFrame(id);
             const int racialFrame = def->category == ObjectCategory::Npc
                                         ? raceNpcFrame(def->raceId)
                                         : 0;
+            const bool hasStorySprite = storyFrame != 0 && m_boundingtonStoryAtlas != nullptr;
             const bool hasRacialSprite = racialFrame != 0 && m_raceNpcAtlas != nullptr;
-            anim->setCharacterSprite(hasRacialSprite ? m_raceNpcAtlas.get() : m_characterAtlas.get(),
+            anim->setCharacterSprite(hasStorySprite ? m_boundingtonStoryAtlas.get()
+                                                     : hasRacialSprite ? m_raceNpcAtlas.get()
+                                                                       : m_characterAtlas.get(),
                                      kCharacterDrawW, kCharacterDrawH, characterAnchor());
-            if (hasRacialSprite) {
+            if (hasStorySprite) {
+                anim->addAnimation("idle", {storyFrame});
+            } else if (hasRacialSprite) {
                 anim->addAnimation("idle", {racialFrame});
             } else {
                 anim->addAnimation("idle", {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
