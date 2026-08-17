@@ -68,12 +68,17 @@ public:
 
     // --- Lo que pinta la vista ---
     // Titulo: nombre del objeto, id y celda. Lineas: una por campo, con
-    // el valor actual; la marcada lleva el cursor. Aviso: feedback de la
-    // ultima accion (vacío = nada).
+    // el valor actual; la marcada lleva el cursor (durante los pickers,
+    // las lineas son las del picker). Aviso: feedback de la ultima
+    // accion (vacio = nada). Buffer: lo que se esta tecleando en la
+    // edicion de texto en curso (vacio fuera de ella); la vista lo
+    // pinta como campo activo, con el texto original detras.
     std::string titulo() const;
     const std::vector<std::string>& lines() const { return m_lineas; }
     std::size_t selected() const { return m_sel; }
     bool editando() const { return m_modo != Modo::Navegar; }
+    bool editandoTexto() const { return m_modo == Modo::Texto; }
+    const std::string& buffer() const { return m_buffer; }
     const std::string& aviso() const { return m_aviso; }
 
 private:

@@ -8,8 +8,12 @@
 //
 // Controles:
 //   Raton:  click izq  = aplicar herramienta en la celda bajo el cursor
-//           click der   = herramienta "contraria" rapida (borrar tile /
-//                         quitar objeto, segun el modo actual)
+//           click der  = sobre un OBJETO: abre el panel de PROPIEDADES
+//                        de esa instancia (modal: W/S navegar, ENTER
+//                        editar/elegir, X quitar botin/propiedad, ESC
+//                        cerrar; el boton derecho tambien lo cierra).
+//                        Sobre una celda sin objeto: la herramienta
+//                        "contraria" rapida (borrar tile / quitar objeto)
 //   1..7    = herramienta, en el orden del enum EditorTool:
 //             1 pintar tile     2 borrar tile     3 colocar objeto
 //             4 quitar objeto   5 inicio jugador  6 rellenar
@@ -17,6 +21,8 @@
 //   Q/E     = ciclar la paleta activa (tiles u objetos, segun herramienta)
 //   TAB     = abrir el panel de familias de objetos
 //   ENTER   = entrar en una familia; ESC/BACKSPACE = cerrar y volver
+//   [ / ]   = pagina anterior / siguiente dentro del menu de objetos
+//             (sube/baja familias enteras cuando la lista es larga)
 //   B       = BUSCAR en la paleta. Abre un campo y filtra por texto:
 //             "taber" deja tabernero, taberna... B otra vez lo cierra.
 //             Con miles de entradas, pasarlas de una en una no es una
@@ -94,6 +100,7 @@
 #include "Render/Camera.h"
 #include "Editor/EditorState.h"
 #include "Editor/EditorValidation.h"
+#include "Editor/ObjectInspector.h"
 #include "Render/HudElement.h"
 #include "Render/HudManager.h"
 #include "Render/HudTextWidgets.h"
@@ -1124,7 +1131,17 @@ int main(int argc, char** argv) {
                 }
             }
         }
+        // El panel de propiedades (click derecho sobre un objeto) ofrece
+        // los MISMOS destinos que la herramienta de enlazar: las dos
+        // hablan de las salidas del nivel y no pueden listar cosas
+        // distintas. La copia va antes del move.
+        const std::vector<std::string> destinosInspector = destinosDeNivel;
         editor.setLevelPalette(std::move(destinosDeNivel));
+
+        // Estado GL-free del panel de propiedades (ver ObjectInspector.h):
+        // aqui solo se le pasan teclas y se pinta lo que devuelve. Vive
+        // toda la fase de edicion; se abre y se cierra con el raton.
+        Editor::ObjectInspector inspector(editor, catalog, destinosInspector);
 
         if (loaded) {
             // Volcado del TMX al editor, TODAS las capas. Antes se cargaba
@@ -1433,6 +1450,56 @@ int main(int argc, char** argv) {
         HudText guideText(guideTextT, &font);
         guideText.setColor(kDimText);
 
+        // -------------------------------------------------------------
+        // MODAL DE PROPIEDADES (click derecho sobre un objeto colocado).
+        // Centro de pantalla; oculto hasta que ObjectInspector se abre.
+        // El estado entero (filas, marca, buffer) vive en el inspector;
+        // estos widgets solo lo pintan, igual que el resto del HUD.
+        // -------------------------------------------------------------
+        constexpr float kPropW = 480.0f;
+        constexpr float kPropH = 420.0f;
+
+        HudTransform propPanelT;
+        propPanelT.anchor = HudAnchor::Center;
+        propPanelT.offset = {0.0f, 0.0f};
+        propPanelT.size = {kPropW, kPropH};
+        HudPanel propPanel(propPanelT, &whiteTexture, kPanelColor);
+        propPanel.setBorder(kBorderColor, 2.0f);
+        propPanel.setVisible(false);
+
+        HudTransform propTitleT;
+        propTitleT.anchor = HudAnchor::Center;
+        propTitleT.offset = {-kPropW * 0.5f + kPad, -kPropH * 0.5f + kPad};
+        propTitleT.size = {kPropW - 2.0f * kPad, lineH};
+        HudText propTitle(propTitleT, &font);
+        propTitle.setColor(kWarnText);
+        propTitle.setVisible(false);
+
+        HudTransform propTextT;
+        propTextT.anchor = HudAnchor::Center;
+        propTextT.offset = {-kPropW * 0.5f + kPad, -kPropH * 0.5f + kPad + lineH + 8.0f};
+        propTextT.size = {kPropW - 2.0f * kPad, kPropH - 2.0f * kPad - 4.0f * lineH};
+        HudText propText(propTextT, &font);
+        propText.setVisible(false);
+
+        // Campo de edicion activo: lo que se esta tecleando ahora mismo
+        // (buffer del inspector). Sin edicion abierta no se pinta nada.
+        HudTransform propEditT;
+        propEditT.anchor = HudAnchor::Center;
+        propEditT.offset = {-kPropW * 0.5f + kPad, kPropH * 0.5f - kPad - 2.0f * lineH - 4.0f};
+        propEditT.size = {kPropW - 2.0f * kPad, lineH};
+        HudText propEdit(propEditT, &font);
+        propEdit.setColor(kWarnText);
+        propEdit.setVisible(false);
+
+        HudTransform propAvisoT;
+        propAvisoT.anchor = HudAnchor::Center;
+        propAvisoT.offset = {-kPropW * 0.5f + kPad, kPropH * 0.5f - kPad - lineH};
+        propAvisoT.size = {kPropW - 2.0f * kPad, lineH};
+        HudText propAviso(propAvisoT, &font);
+        propAviso.setColor(kDimText);
+        propAviso.setVisible(false);
+
         // Barra de estado (abajo, ancho completo): controles, y el
         // resultado del ultimo guardado durante unos segundos.
         HudTransform statusPanelT;
@@ -1443,7 +1510,7 @@ int main(int argc, char** argv) {
         statusPanel.setBorder(kBorderColor, 2.0f);
 
         const std::string kControlsLine =
-            "1-7 HERRAM  Q/E PALETA  TAB FAMILIAS  ENTER ENTRAR  ESC CERRAR  B BUSCAR  C CAPA  R SELECCION  CTRL+C/V/X  T PATRULLA  H ESCALA  CTRL+Z/Y HIST  G GUARDAR  V VALIDAR  P JUGAR  ,/. ESCENARIO  M PROYECTOS";
+            "1-7 HERRAM  Q/E PALETA  TAB FAMILIAS  ENTER ENTRAR  ESC CERRAR  B BUSCAR  C CAPA  R SELECCION  CTRL+C/V/X  T PATRULLA  H ESCALA  DER PROPIEDADES  CTRL+Z/Y HIST  G GUARDAR  V VALIDAR  P JUGAR  ,/. ESCENARIO  M PROYECTOS";
         // Peor caso del texto de estado (controles + contadores) para que el
         // panel de fondo cubra siempre la linea, aunque se anada el
         // "...TILES 64  OBJETOS 5" del final.
@@ -1473,6 +1540,13 @@ int main(int argc, char** argv) {
         hud.addElement(&inspectorWarn);
         hud.addElement(&guidePanel);
         hud.addElement(&guideText);
+        // El modal de propiedades se pinta el ultimo: cuando esta abierto
+        // va POR ENCIMA de paneles y del mapa (es modal).
+        hud.addElement(&propPanel);
+        hud.addElement(&propTitle);
+        hud.addElement(&propText);
+        hud.addElement(&propEdit);
+        hud.addElement(&propAviso);
         hud.addElement(&statusPanel);
         hud.addElement(&statusText);
 
@@ -1482,6 +1556,7 @@ int main(int argc, char** argv) {
         int frame = 0;
         bool volverAlHub = false;   // ESC en la edicion -> pantalla de proyectos
         bool marcando = false;      // R pulsado una vez: esperando la 2a esquina
+        bool rightWasDown = false;  // flanco del boton derecho (abrir/cerrar propiedades)
         GridCoord esquina{0, 0};
         bool buscando = false;      // B abre el campo de busqueda de la paleta
         std::string filtro;
@@ -1509,6 +1584,51 @@ int main(int argc, char** argv) {
             }
 
             // --- Input de teclado ---
+            // Con el panel de propiedades abierto, el teclado es SUYO:
+            // el estado del panel (ObjectInspector, GL-free) recibe las
+            // teclas que usa, y el barrido final consume el resto de los
+            // flancos para que NADA llegue al mapa mientras se edita.
+            // Pintar detras del panel sin querer es la clase de susto
+            // que convierte un inspector en una trampa.
+            if (inspector.isOpen()) {
+                if (keys.pressed(glfwWin, GLFW_KEY_ESCAPE)) {
+                    inspector.key(27);
+                }
+                if (keys.pressed(glfwWin, GLFW_KEY_ENTER)) {
+                    inspector.key('\n');
+                }
+                if (keys.pressed(glfwWin, GLFW_KEY_BACKSPACE)) {
+                    inspector.key('\b');
+                }
+                for (int k = GLFW_KEY_A; k <= GLFW_KEY_Z; ++k) {
+                    if (keys.pressed(glfwWin, k)) {
+                        inspector.key(static_cast<char>('a' + (k - GLFW_KEY_A)));
+                    }
+                }
+                for (int k = GLFW_KEY_0; k <= GLFW_KEY_9; ++k) {
+                    if (keys.pressed(glfwWin, k)) {
+                        inspector.key(static_cast<char>('0' + (k - GLFW_KEY_0)));
+                    }
+                }
+                if (keys.pressed(glfwWin, GLFW_KEY_SPACE)) {
+                    inspector.key(' ');
+                }
+                if (keys.pressed(glfwWin, GLFW_KEY_MINUS) ||
+                    keys.pressed(glfwWin, GLFW_KEY_KP_SUBTRACT)) {
+                    inspector.key('-');
+                }
+                if (keys.pressed(glfwWin, GLFW_KEY_PERIOD)) {
+                    inspector.key('.');
+                }
+                if (keys.pressed(glfwWin, GLFW_KEY_COMMA)) {
+                    inspector.key(',');
+                }
+                // El resto del teclado: consumido sin efecto.
+                for (int k = 0; k <= GLFW_KEY_LAST; ++k) {
+                    (void)keys.pressed(glfwWin, k);
+                }
+            }
+
             // ESC vuelve a la pantalla de proyectos, no cierra el editor.
             // Para cerrar del todo hay que pulsarlo otra vez alli. Cambiar
             // de proyecto no puede costar relanzar el binario.
@@ -1805,14 +1925,19 @@ int main(int argc, char** argv) {
             const bool fast = glfwGetKey(glfwWin, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ||
                               glfwGetKey(glfwWin, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
             const float panSpeed = (fast ? 24.0f : 6.0f) / zoomFactor;
-            if (glfwGetKey(glfwWin, GLFW_KEY_W) == GLFW_PRESS)
-                camera.move({0.0f, -panSpeed});
-            if (glfwGetKey(glfwWin, GLFW_KEY_S) == GLFW_PRESS)
-                camera.move({0.0f, panSpeed});
-            if (glfwGetKey(glfwWin, GLFW_KEY_A) == GLFW_PRESS)
-                camera.move({-panSpeed, 0.0f});
-            if (glfwGetKey(glfwWin, GLFW_KEY_D) == GLFW_PRESS)
-                camera.move({panSpeed, 0.0f});
+            // El paneo es por ESTADO (no flanco), asi que el barrido de
+            // teclas del modal no lo consume: se bloquea aqui mientras
+            // el panel de propiedades esta abierto.
+            if (!inspector.isOpen()) {
+                if (glfwGetKey(glfwWin, GLFW_KEY_W) == GLFW_PRESS)
+                    camera.move({0.0f, -panSpeed});
+                if (glfwGetKey(glfwWin, GLFW_KEY_S) == GLFW_PRESS)
+                    camera.move({0.0f, panSpeed});
+                if (glfwGetKey(glfwWin, GLFW_KEY_A) == GLFW_PRESS)
+                    camera.move({-panSpeed, 0.0f});
+                if (glfwGetKey(glfwWin, GLFW_KEY_D) == GLFW_PRESS)
+                    camera.move({panSpeed, 0.0f});
+            }
 
             // HOME: volver al centro del mapa (perderse en un 64x64 es
             // facil, y no habia forma de reorientarse salvo a ojo).
@@ -2031,13 +2156,33 @@ int main(int argc, char** argv) {
             // --- Raton (la celda 'hovered' se calculo con las teclas) ---
             bool leftDown = glfwGetMouseButton(glfwWin, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
             bool rightDown = glfwGetMouseButton(glfwWin, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
-            if (leftDown) {
+            const bool rightEdge = rightDown && !rightWasDown;
+            rightWasDown = rightDown;
+            if (inspector.isOpen()) {
+                // El panel se cierra como se abre: boton derecho fuera de
+                // la edicion. El izquierdo no hace nada mientras esta
+                // abierto (un click accidental no deberia pintar el mapa
+                // que hay detras del panel).
+                if (rightEdge) {
+                    inspector.close();
+                }
+            } else if (leftDown) {
                 // Mantener pulsado pinta en arrastre (deliberado: es lo
                 // comodo para rellenar zonas; para objetos, placeObject
                 // reemplaza en la misma celda asi que no duplica).
                 editor.applyAt(hovered.x, hovered.y);
+            } else if (rightEdge && editor.objectAt(hovered.x, hovered.y) != nullptr) {
+                // Boton derecho SOBRE UN OBJETO: sus propiedades. Es el
+                // gesto de cualquier editor (RPG Maker, Tiled, Godot):
+                // click en la cosa, panel de la cosa. El estado entero
+                // del panel vive en ObjectInspector (GL-free); aqui solo
+                // se abre y se pinta.
+                inspector.open(hovered.x, hovered.y);
+                statusText.setText("PROPIEDADES: W/S NAVEGAR  ENTER EDITAR  ESC O CLICK DER CERRAR");
+                savedMessageFrames = 240;
             } else if (rightDown) {
-                // Boton derecho: el "contrario" rapido de la herramienta.
+                // Boton derecho en celda sin objeto: el "contrario" rapido
+                // de la herramienta (como antes de existir el panel).
                 if (editor.tool() == EditorTool::PlaceObject ||
                     editor.tool() == EditorTool::RemoveObject) {
                     editor.removeObjectAt(hovered.x, hovered.y);
@@ -2242,16 +2387,16 @@ int main(int argc, char** argv) {
 
             // Inspector: ficha de la seleccion de la paleta activa, con
             // avisos de ids sin resolver en su propia linea naranja.
-            std::string inspector;
+            std::string fichaInspector;
             std::string warnings;
             if (editor.tool() == EditorTool::SetPlayerStart) {
                 const GridCoord start = editor.playerStart();
-                inspector = "INSPECTOR\n\nINICIO JUGADOR\nX " + std::to_string(start.x) +
+                fichaInspector = "INSPECTOR\n\nINICIO JUGADOR\nX " + std::to_string(start.x) +
                             "  Y " + std::to_string(start.y) +
                             "\nCLICK EN UNA CELDA\nPARA REUBICARLO";
             } else if (linkMode) {
                 const std::string destino = editor.selectedLevelPath();
-                inspector = "INSPECTOR\n\nCREAR SALIDA A\n" +
+                fichaInspector = "INSPECTOR\n\nCREAR SALIDA A\n" +
                             (destino.empty() ? std::string("SIN DESTINOS EN EL PROYECTO")
                                              : nombreEscenario(destino)) +
                             "\n\nCLICK SOBRE LA PUERTA\nQUE DEBE LLEVAR ALLI";
@@ -2259,27 +2404,27 @@ int main(int argc, char** argv) {
                 const std::string selectedId = editor.selectedObjectId();
                 const ObjectDefinition* def = catalog.find(selectedId);
                 if (def == nullptr) {
-                    inspector = "INSPECTOR\n\n" + selectedId + "\nSIN DEFINICION EN CATALOGO";
+                    fichaInspector = "INSPECTOR\n\n" + selectedId + "\nSIN DEFINICION EN CATALOGO";
                     warnings = "! ID SIN RESOLVER";
                 } else {
                     const char* category = def->category == ObjectCategory::Enemy    ? "ENEMY"
                                            : def->category == ObjectCategory::Pickup ? "PICKUP"
                                                                                      : "PROP";
-                    inspector = "INSPECTOR\n\nID " + def->id + "\nNOMBRE " + def->name +
+                    fichaInspector = "INSPECTOR\n\nID " + def->id + "\nNOMBRE " + def->name +
                                 "\nCATEGORIA " + category + "\nSPRITE " +
                                 std::to_string(def->spriteId) + "\nBLOQUEA " +
                                 (def->blocksMovement ? "SI" : "NO");
-                    inspector += "\nPREVIEW " +
+                    fichaInspector += "\nPREVIEW " +
                                  (def->previewPng.empty() ? std::string("PNG PENDIENTE")
                                                           : def->previewPng);
                     if (def->previewPng.empty()) {
                         warnings += "! FALTA PNG REPRESENTATIVO\n";
                     }
                     if (def->category == ObjectCategory::Enemy) {
-                        inspector += "\nPV " + std::to_string(def->combat.maxHealth) + "  PM " +
+                        fichaInspector += "\nPV " + std::to_string(def->combat.maxHealth) + "  PM " +
                                      std::to_string(def->combat.maxMana);
                         for (const std::string& skillId : def->combat.skillIds) {
-                            inspector += "\nSKILL " + skillId;
+                            fichaInspector += "\nSKILL " + skillId;
                             bool known = false;
                             for (const std::string& registered : knownSkillIds) {
                                 known = known || registered == skillId;
@@ -2293,20 +2438,20 @@ int main(int argc, char** argv) {
                                              : def->pickup.effect == PickupEffect::RestoreMana
                                                  ? "RESTORE MANA"
                                                  : "NONE";
-                        inspector += std::string("\nEFECTO ") + effect;
+                        fichaInspector += std::string("\nEFECTO ") + effect;
                         if (def->pickup.effect != PickupEffect::None) {
-                            inspector += " " + std::to_string(def->pickup.power);
+                            fichaInspector += " " + std::to_string(def->pickup.power);
                         }
                     }
                 }
             } else {
                 const int gid = editor.selectedTileGid();
-                inspector = "INSPECTOR\n\nTILE " + tileLabel(gid) + "\nCOLISION " +
+                fichaInspector = "INSPECTOR\n\nTILE " + tileLabel(gid) + "\nCOLISION " +
                             (gid == 2 ? "SI" : "NO") + "\nINICIO " +
                             std::to_string(editor.playerStart().x) + "," +
                             std::to_string(editor.playerStart().y);
             }
-            inspectorText.setText(inspector);
+            inspectorText.setText(fichaInspector);
             inspectorWarn.setText(warnings);
 
             // Estado mínimo de creación. No exige objetos ni salida: un
@@ -2348,6 +2493,50 @@ int main(int argc, char** argv) {
                 "[" + std::string(exits == 0 ? "--" : "OK") + "] SALIDAS " +
                 std::to_string(exits) + "  (7)\n"
                 "V VALIDA / P JUEGA\nG GUARDA\n\n" + nextStep);
+
+            // --- Modal de propiedades: sincronizar con el inspector ---
+            const bool modalAbierto = inspector.isOpen();
+            propPanel.setVisible(modalAbierto);
+            propTitle.setVisible(modalAbierto);
+            propText.setVisible(modalAbierto);
+            propEdit.setVisible(modalAbierto && inspector.editandoTexto());
+            propAviso.setVisible(modalAbierto);
+            if (modalAbierto) {
+                propTitle.setText(inspector.titulo());
+                const std::vector<std::string>& lineas = inspector.lines();
+                std::string cuerpo;
+                if (inspector.editando() && !inspector.editandoTexto()) {
+                    // Picker abierto (destino/botin): las lineas ya traen
+                    // su propia marca "> "; se pintan tal cual.
+                    for (const std::string& linea : lineas) {
+                        cuerpo += linea + "\n";
+                    }
+                } else {
+                    // Navegacion: ventana de filas alrededor de la
+                    // marcada, mismo patron que la paleta.
+                    constexpr std::size_t kVentanaProp = 13;
+                    std::size_t primera = 0;
+                    if (lineas.size() > kVentanaProp &&
+                        inspector.selected() > kVentanaProp / 2) {
+                        primera = inspector.selected() - kVentanaProp / 2;
+                        if (primera + kVentanaProp > lineas.size()) {
+                            primera = lineas.size() - kVentanaProp;
+                        }
+                    }
+                    for (std::size_t i = primera;
+                         i < lineas.size() && i < primera + kVentanaProp; ++i) {
+                        cuerpo += (i == inspector.selected() ? "> " : "  ") +
+                                  lineas[i] + "\n";
+                    }
+                }
+                propText.setText(cuerpo);
+                if (inspector.editandoTexto()) {
+                    propEdit.setText("ESCRIBIENDO: " + inspector.buffer() + "_");
+                }
+                propAviso.setText(inspector.aviso().empty()
+                                      ? std::string("W/S NAVEGAR  ENTER EDITAR  ESC CERRAR")
+                                      : inspector.aviso());
+            }
 
             // Barra de estado: vuelve a los controles cuando caduca el
             // aviso de guardado (ver el manejador de F5). Cuando muestra los

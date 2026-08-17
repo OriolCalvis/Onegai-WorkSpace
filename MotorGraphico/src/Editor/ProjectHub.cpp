@@ -55,13 +55,20 @@ bool idSeguro(const std::string& s) {
 // trabajo evita que el boton Build diga que todo fue bien en la consola pero
 // no encuentre el empaquetador.
 std::string rutaBuildProyecto(const std::string& assetsRoot) {
-    const std::vector<std::string> candidatas = {
-        "tools/build_proyecto.py",
-        "../tools/build_proyecto.py",
-        "../../tools/build_proyecto.py",
-        assetsRoot + "/../tools/build_proyecto.py",
-        assetsRoot + "/../../tools/build_proyecto.py",
-    };
+    // Subir hacia arriba desde el directorio actual: el editor se ejecuta
+    // desde la raiz del repo, desde build/ (un nivel) y desde
+    // out/build/<preset> (tres niveles, los presets de CMake). La lista
+    // fija de candidatos solo cubria los dos primeros fondos, y desde un
+    // preset el boton de empaquetar decia "no se encontro el script".
+    std::vector<std::string> candidatas;
+    std::string subiendo = ".";
+    for (int i = 0; i < 6; ++i) {
+        candidatas.push_back(subiendo + "/tools/build_proyecto.py");
+        subiendo += "/..";
+    }
+    // Y por si el cwd no tiene nada que ver, relativas a los assets.
+    candidatas.push_back(assetsRoot + "/../tools/build_proyecto.py");
+    candidatas.push_back(assetsRoot + "/../../tools/build_proyecto.py");
     for (const std::string& ruta : candidatas) {
         std::ifstream f(ruta);
         if (f.good()) {

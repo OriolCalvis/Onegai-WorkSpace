@@ -115,7 +115,11 @@ def main():
         cuerpo = f.read().split("enum class EditorTool {", 1)[-1].split("}", 1)[0]
     n_enum = len([l for l in cuerpo.split("\n") if l.strip().rstrip(",").isalnum()])
     n_menu = len(re.findall(r'"\d " \+ std::string\(toolName', src))
-    n_teclas = len(re.findall(r"setTool\(EditorTool", src))
+    # Herramientas CON TECLA DE NUMERO: esa es la correspondencia real.
+    # setTool() sale en mas sitios (p. ej. ESC sobre el menu de objetos
+    # vuelve a PaintTile), y contar toda aparicion descuadraria la cuenta
+    # contra el enum y el menu.
+    n_teclas = len(set(re.findall(r"GLFW_KEY_(\d)\)\)\s+editor\.setTool", src)))
     rango = re.search(r"1-(\d) HERRAM", src)
     n_barra = int(rango.group(1)) if rango else 0
 
