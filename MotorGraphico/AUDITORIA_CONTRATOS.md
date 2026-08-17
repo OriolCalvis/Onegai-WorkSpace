@@ -239,6 +239,13 @@ entidad y coordenada/índice.
 7. La máquina de capítulos de `Application::update()` hace dos
    `loadLevel("assets/levels/ciudad_centro.json")` forzados: cualquier
    trabajo de viaje entre naciones debe condicionarlos.
+8. **Clamp de stats del sheet vs monstruos**: `CharacterSheet::stat()`
+   clampa a `STAT_RANK_MAX = 8` (`Stat.h`, marcado como provisional hasta
+   que `TierRules` defina rangos por tier). 77 de los 432 monstruos del
+   catálogo tienen algún stat por encima de 8 (todos los jefes de tier
+   alto): vía sheet, esos stats quedan truncados. `demo_catalogos_rpg`
+   (C4) comprueba la sincronización brain↔sheet↔catálogo dentro del rango
+   representable; el rango de monstruo es una decisión pendiente.
 
 ---
 

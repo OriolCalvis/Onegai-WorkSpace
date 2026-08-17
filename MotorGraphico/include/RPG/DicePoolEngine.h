@@ -83,10 +83,17 @@ public:
 
     // Tirada contra una CD numérica (0.0 a 3.0).
     //
+    //     éxitos == 0                  -> BOTCH   (PRIMERO, siempre)
     //     todos 6, o éxitos >= cd + 1  -> CRITICAL
     //     éxitos >= cd                 -> SUCCESS
     //     éxitos > 0                   -> PARTIAL  (algo se consigue)
-    //     éxitos == 0                  -> BOTCH
+    //
+    // El BOTCH se comprueba antes que la comparación con la CD a
+    // propósito: cd 0.0 es la defensa 10 (el enemigo típico de tier I),
+    // y si el 0 >= 0 se evaluara antes, una tirada sin éxitos saldría
+    // SUCCESS y TODO ataque acertaría en el tramo inicial del juego
+    // (incidente real, ARCHITECTURE.md §3.7; el test que lo fija está en
+    // demo_dice_engine, testGrados).
     static CheckOutcome resolve_against_cd(const PoolResult& pool, float cd) {
         if (cd < 0.0f) cd = 0.0f;
         if (cd > CD_MAX) cd = CD_MAX;
@@ -94,14 +101,14 @@ public:
         o.successes = pool.successes;
         o.cd = cd;
         o.critical = pool.critical;
-        if (pool.critical || pool.successes >= cd + 1.0f) {
+        if (pool.successes <= 0.0f) {
+            o.degree = Degree::BOTCH;
+        } else if (pool.critical || pool.successes >= cd + 1.0f) {
             o.degree = Degree::CRITICAL;
         } else if (pool.successes >= cd) {
             o.degree = Degree::SUCCESS;
-        } else if (pool.successes > 0.0f) {
-            o.degree = Degree::PARTIAL;
         } else {
-            o.degree = Degree::BOTCH;
+            o.degree = Degree::PARTIAL;
         }
         return o;
     }

@@ -212,13 +212,24 @@ int main() {
     std::printf("=== C4 EnemyBrain populate_from_monster_catalog E2E ===\n");
     {
         require(n_monsters > 0);
-        // Encontrar un monstruo: probamos IDs conocidos y sino cualquier entrada valida
-        const RPG::MonsterDefinition* mon = monsterCat.find("monster_acolito_de_penumbra");
-        if (!mon) mon = monsterCat.find("monster_aprendiz_hueco_03");
+        // Encontrar un monstruo: ids conocidos (el exportador ya no prefija
+        // monster_) y, si no, el primero que quepa en el rango de stats que el
+        // CharacterSheet puede representar: stat() clampa a STAT_RANK_MAX
+        // (0..8 provisional, ver Stat.h) y este test comprueba la
+        // sincronizacion brain <-> sheet <-> catalogo dentro de ese rango.
+        // Los monstruos con stats > 8 quedan fuera del sheet sin representar;
+        // registrado como deuda (AUDITORIA_CONTRATOS.md).
+        const RPG::MonsterDefinition* mon = monsterCat.find("acolito_de_penumbra");
+        if (!mon) mon = monsterCat.find("aprendiz_hueco_03");
         if (!mon) {
-            // fallback: coger el primero valido por forEach — cualquier entrada
             monsterCat.forEach([&](const RPG::MonsterDefinition& m) {  // not const ref
-                if (!mon && !m.id.empty()) mon = &m;
+                if (!mon && !m.id.empty()
+                    && m.stats[0] <= RPG::STAT_RANK_MAX
+                    && m.stats[1] <= RPG::STAT_RANK_MAX
+                    && m.stats[2] <= RPG::STAT_RANK_MAX
+                    && m.stats[3] <= RPG::STAT_RANK_MAX) {
+                    mon = &m;
+                }
             });
         }
         require(mon != nullptr);
