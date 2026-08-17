@@ -185,13 +185,16 @@ Orden propuesto: **F0 → F1 → F2 → F3 → F4 → F5** (F0 y F1 ya pueden
 corrían en paralelo con otras tareas del roadmap; F4 puede adelantarse
 si el multi-título urge más que los paneles).
 
-## 6. Decisiones para Oriol
+## 6. Decisiones tomadas por Oriol (17/08/2026, bitácora 2.18)
 
-1. ¿El orden F0→F5 es el correcto, o adelantas F4 (multi-título)?
-2. Estética del editor: ¿jerárquica tipo RPG Maker (paneles fijos) o
-   acoplable tipo Godot? (El roadmap dice "JRPG clásico, sin copiar la
-   interfaz de RPG Maker".)
-3. Los temporizadores: ¿tiempo real de juego (segundos) o calendario
-   in-game (días/ciclos como el ciclo social de Boundington)?
-4. ¿Los títulos comparten mundo (Egaroth) o son mundos independientes
-   desde el principio?
+1. **Universo único:** todos los títulos ocurren en el universo de
+   Onegai — el multi-título son historias dentro del MISMO mundo.
+2. **Estética:** estilo RPG Maker (paneles jerárquicos, flujo claro),
+   sin copiar su interfaz literal.
+3. **Orden confirmado:** F0 → F1 → F2 → F3 → F4 → F5.
+4. **Temporizadores = tiempo narrativo de misión** (no calendario ni
+   segundos crudos): no avanzan en combate, se pausan con el jugador
+   quieto (AFK), y requieren feedback visible. Mecanismo fino pendiente
+   de negociación (F1). Ejemplos del encargo: la casa se quema si no
+   superas la zona antes de irte; tiempo para rescatar a alguien; tiempo
+   hasta que el asesino mate a otro.
