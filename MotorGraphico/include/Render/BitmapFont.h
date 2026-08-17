@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 
 #include "Core/Math/UVRect.h"
@@ -14,12 +15,16 @@ class SpriteBatch;
 // el menu de comandos y el cuadro de dialogo del HUD -- ver
 // HudTextWidgets.h).
 //
-// SOLO MAYUSCULAS + digitos + puntuacion basica (ver kGlyphs en el .cpp):
-// una fuente 5x7 con mayusculas Y minusculas dobla la tabla de glifos sin
-// anadir legibilidad util a un HUD retro de pixel art -- el propio
-// Dragon Quest clasico va en mayusculas. drawText() convierte a
-// mayusculas automaticamente (ver toupper en el .cpp), asi que el
-// llamador no necesita acordarse.
+// CAJA ALTA + digitos + puntuacion + ACENTUADAS del castellano/catalan
+// (À Á È É Í Ò Ó Ù Ú Ñ Ç Ü «·» ¿ ¡ — fila extendida del atlas, F0 de la
+// auditoria UI: sin ellas los acentos y la ñ se dibujaban como espacio
+// en blanco). Una fuente 5x7 con mayusculas Y minusculas dobla la tabla
+// de glifos sin anadir legibilidad util a un HUD retro de pixel art --
+// el propio Dragon Quest clasico va en mayusculas. drawText() convierte
+// a mayusculas automaticamente (incluidas las minusculas acentuadas),
+// asi que el llamador no necesita acordarse. El texto entra en UTF-8:
+// drawText()/measureText() decodifican codepoints (un carácter acentuado
+// ocupa 2 bytes pero cuenta como UN glifo).
 //
 // El atlas es una textura PROCEDURAL (generateAtlas(), mismo patron que
 // makeProceduralLightmap()/makeWhiteTexture() en los demos de Fase 4/9):
@@ -52,6 +57,10 @@ public:
     // fuera del rango soportado) devuelven la celda del espacio en
     // blanco, nunca lanzan.
     static UVRect glyphUV(char c);
+
+    // Version por codepoint Unicode: es la que usan drawText/measureText
+    // tras decodificar UTF-8 (las acentuadas no caben en un char).
+    static UVRect glyphUVCodepoint(uint32_t codepoint);
 
     // Tamano en pixels de "text" a un tamano de glifo glyphWidth x
     // glyphHeight dado, contando '\n' como salto de linea (ancho = el de

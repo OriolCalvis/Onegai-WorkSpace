@@ -4,22 +4,26 @@
 #include "Render/SpriteBatch.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <vector>
 
 #include <glad/glad.h>
 
 namespace {
 
-// Layout del atlas: 16x4 celdas = 64, una por caracter ASCII imprimible
-// de 32 (espacio) a 95 ('_'). Cubre digitos, mayusculas y la puntuacion
-// que usan los mensajes de BattleState::log() (ver Skill.h/BattleState.h):
-// parentesis, punto, coma, dos puntos, comillas, apostrofe, guion.
+// Layout del atlas: 16x5 celdas = 80. Las 64 primeras son el ASCII
+// imprimible de 32 (espacio) a 95 ('_'): digitos, mayusculas y la
+// puntuacion base. Las 16 de la ultima fila son las letras acentuadas
+// del castellano/catalan (F0 de la auditoria UI, bitacora: sin ellas los
+// acentos, la ñ y «·» se dibujaban como ESPACIO EN BLANCO y media UI
+// mentia en silencio).
 constexpr int kCellW = 5;
 constexpr int kCellH = 7;
 constexpr int kCols = 16;
-constexpr int kRows = 4;
+constexpr int kRows = 5;
 constexpr int kFirstChar = 32;
-constexpr int kLastChar = kFirstChar + kCols * kRows - 1;  // 95
+constexpr int kLastChar = kFirstChar + 64 - 1;  // 95
+constexpr int kExtendedBase = 64;               // celda de la 1ª acentuada
 
 struct GlyphDef {
     char ch;
@@ -38,7 +42,7 @@ constexpr GlyphDef kGlyphs[] = {
     {'3', {0b11111, 0b00010, 0b00100, 0b00010, 0b00001, 0b10001, 0b01110}},
     {'4', {0b00010, 0b00110, 0b01010, 0b10010, 0b11111, 0b00010, 0b00010}},
     {'5', {0b11111, 0b10000, 0b11110, 0b00001, 0b00001, 0b10001, 0b01110}},
-    {'6', {0b00110, 0b01000, 0b10000, 0b11110, 0b10001, 0b10001, 0b01110}},
+    {'6', {0b00011, 0b01000, 0b10000, 0b11110, 0b10001, 0b10001, 0b01110}},
     {'7', {0b11111, 0b00001, 0b00010, 0b00100, 0b01000, 0b01000, 0b01000}},
     {'8', {0b01110, 0b10001, 0b10001, 0b01110, 0b10001, 0b10001, 0b01110}},
     {'9', {0b01110, 0b10001, 0b10001, 0b01111, 0b00001, 0b00010, 0b01100}},
@@ -101,39 +105,114 @@ constexpr GlyphDef kGlyphs[] = {
     {'&', {0b01100, 0b10010, 0b10100, 0b01000, 0b10101, 0b10010, 0b01101}},
 };
 
-char normalizeChar(char c) {
-    return (c >= 'a' && c <= 'z') ? static_cast<char>(c - 'a' + 'A') : c;
+// Fila extendida (celdas 64..79): vocales acentuadas (agudas Y graves:
+// castellano y catalan), Ñ/Ç/Ü, «·» del l·l catalan y ¿/¡. Las letras
+// pierden una fila de cuerpo para dejar sitio al signo diacritico en la
+// fila superior: patron clasico de las fuentes 5x7 con acentos.
+struct GlyphDefX {
+    uint32_t cp;  // codepoint Unicode (Latin-1)
+    unsigned char rows[kCellH];
+};
+
+constexpr GlyphDefX kGlyphsExtra[] = {
+    {0x00C0, {0b01000, 0b01110, 0b10001, 0b10001, 0b11111, 0b10001, 0b10001}},  // À
+    {0x00C1, {0b00010, 0b01110, 0b10001, 0b10001, 0b11111, 0b10001, 0b10001}},  // Á
+    {0x00C8, {0b01000, 0b11111, 0b10000, 0b11110, 0b10000, 0b10000, 0b11111}},  // È
+    {0x00C9, {0b00010, 0b11111, 0b10000, 0b11110, 0b10000, 0b10000, 0b11111}},  // É
+    {0x00CC, {0b01000, 0b01110, 0b00100, 0b00100, 0b00100, 0b00100, 0b01110}},  // Ì
+    {0x00CD, {0b00010, 0b01110, 0b00100, 0b00100, 0b00100, 0b00100, 0b01110}},  // Í
+    {0x00D2, {0b01000, 0b01110, 0b10001, 0b10001, 0b10001, 0b10001, 0b01110}},  // Ò
+    {0x00D3, {0b00010, 0b01110, 0b10001, 0b10001, 0b10001, 0b10001, 0b01110}},  // Ó
+    {0x00D9, {0b01000, 0b10001, 0b10001, 0b10001, 0b10001, 0b10001, 0b01110}},  // Ù
+    {0x00DA, {0b00010, 0b10001, 0b10001, 0b10001, 0b10001, 0b10001, 0b01110}},  // Ú
+    {0x00D1, {0b01010, 0b10001, 0b11001, 0b10101, 0b10011, 0b10001, 0b10001}},  // Ñ
+    {0x00C7, {0b01110, 0b10000, 0b10000, 0b10000, 0b10001, 0b01110, 0b00100}},  // Ç
+    {0x00DC, {0b01010, 0b10001, 0b10001, 0b10001, 0b10001, 0b10001, 0b01110}},  // Ü
+    {0x00BF, {0b00100, 0b00000, 0b00100, 0b00010, 0b00001, 0b10001, 0b01110}},  // ¿
+    {0x00A1, {0b00100, 0b00000, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100}},  // ¡
+    {0x00B7, {0b00000, 0b00000, 0b01100, 0b01100, 0b00000, 0b00000, 0b00000}},  // ·
+};
+constexpr int kNumExtra = static_cast<int>(sizeof(kGlyphsExtra) / sizeof(kGlyphsExtra[0]));
+
+// Normaliza a la forma que existe en el atlas: la fuente sigue siendo de
+// CAJA ALTA (estilo retro del proyecto), asi que minusculas -> mayusculas,
+// incluidas las acentuadas (á -> Á).
+uint32_t normalizeCodepoint(uint32_t cp) {
+    if (cp >= 'a' && cp <= 'z') {
+        return cp - 'a' + 'A';
+    }
+    // Latin-1: las minusculas acentuadas E0..FE (salvo ÷ F7) se
+    // corresponden con sus mayusculas en C0..DE restando 0x20.
+    if (cp >= 0x00E0 && cp <= 0x00FE && cp != 0x00F7) {
+        return cp - 0x20;
+    }
+    return cp;
 }
 
-// nullptr si "c" no tiene glifo definido: generateAtlas() lo trata como
-// celda en blanco, glyphUV() como la celda del espacio.
-const unsigned char* findGlyphRows(char c) {
-    char normalized = normalizeChar(c);
-    for (const GlyphDef& g : kGlyphs) {
-        if (g.ch == normalized) {
-            return g.rows;
+// Decodifica UN codepoint UTF-8 de "text" en la posicion "i" y avanza
+// "i". Secuencias malformadas: se consume un byte y se devuelve tal cual
+// (caera en la celda del espacio como cualquier caracter sin glifo: el
+// criterio permisivo de siempre, nunca revienta).
+uint32_t nextCodepoint(const std::string& text, std::size_t& i) {
+    const auto b0 = static_cast<unsigned char>(text[i]);
+    if (b0 < 0x80) {
+        ++i;
+        return b0;
+    }
+    if ((b0 & 0xE0) == 0xC0 && i + 1 < text.size()) {
+        const uint32_t cp = (static_cast<uint32_t>(b0 & 0x1Fu) << 6) |
+                            (static_cast<unsigned char>(text[i + 1]) & 0x3Fu);
+        i += 2;
+        return cp;
+    }
+    if ((b0 & 0xF0) == 0xE0 && i + 2 < text.size()) {
+        const uint32_t cp = (static_cast<uint32_t>(b0 & 0x0Fu) << 12) |
+                            ((static_cast<unsigned char>(text[i + 1]) & 0x3Fu) << 6) |
+                            (static_cast<unsigned char>(text[i + 2]) & 0x3Fu);
+        i += 3;
+        return cp;
+    }
+    ++i;
+    return b0;
+}
+
+// Indice de celda [0, kCols*kRows) para un codepoint: ASCII 32..95 en
+// las 64 primeras, acentuadas en la fila extendida, el resto cae en el
+// espacio (indice 0) sin salirse nunca de la tabla.
+int cellIndexForCodepoint(uint32_t cp) {
+    cp = normalizeCodepoint(cp);
+    if (cp >= static_cast<uint32_t>(kFirstChar) && cp <= static_cast<uint32_t>(kLastChar)) {
+        return static_cast<int>(cp) - kFirstChar;
+    }
+    for (int k = 0; k < kNumExtra; ++k) {
+        if (kGlyphsExtra[k].cp == cp) {
+            return kExtendedBase + k;
         }
     }
-    return nullptr;
+    return 0;
 }
 
-// Indice de celda [0, kCols*kRows) para "c": fuera del rango soportado
-// (o sin glifo listado) cae en el espacio (indice 0), nunca fuera de la
-// tabla.
-int cellIndexForChar(char c) {
-    char normalized = normalizeChar(c);
-    if (normalized < kFirstChar || normalized > kLastChar) {
-        return 0;
+// Filas del glifo de la celda "idx" (nullptr = celda en blanco).
+const unsigned char* glyphRowsForCell(int idx) {
+    if (idx < kExtendedBase) {
+        const char c = static_cast<char>(kFirstChar + idx);
+        for (const GlyphDef& g : kGlyphs) {
+            if (g.ch == c) {
+                return g.rows;
+            }
+        }
+        return nullptr;
     }
-    return normalized - kFirstChar;
+    const int k = idx - kExtendedBase;
+    if (k >= kNumExtra) {
+        return nullptr;
+    }
+    return kGlyphsExtra[k].rows;
 }
 
-}  // namespace
-
-UVRect BitmapFont::glyphUV(char c) {
-    int idx = cellIndexForChar(c);
-    int col = idx % kCols;
-    int row = idx / kCols;
+UVRect uvForCell(int idx) {
+    const int col = idx % kCols;
+    const int row = idx / kCols;
     return UVRect{
         static_cast<float>(col) / static_cast<float>(kCols),
         static_cast<float>(row) / static_cast<float>(kRows),
@@ -142,17 +221,30 @@ UVRect BitmapFont::glyphUV(char c) {
     };
 }
 
+}  // namespace
+
+UVRect BitmapFont::glyphUVCodepoint(uint32_t codepoint) {
+    return uvForCell(cellIndexForCodepoint(codepoint));
+}
+
+UVRect BitmapFont::glyphUV(char c) {
+    return glyphUVCodepoint(static_cast<unsigned char>(c));
+}
+
 Vector2 BitmapFont::measureText(const std::string& text, int glyphWidth, int glyphHeight) {
     int maxWidth = 0;
     int currentWidth = 0;
     int lines = 1;
-    for (char c : text) {
-        if (c == '\n') {
+    std::size_t i = 0;
+    while (i < text.size()) {
+        if (text[i] == '\n') {
             maxWidth = std::max(maxWidth, currentWidth);
             currentWidth = 0;
             ++lines;
+            ++i;
             continue;
         }
+        nextCodepoint(text, i);  // un codepoint = un glifo, sea 1 o 3 bytes
         currentWidth += glyphWidth;
     }
     maxWidth = std::max(maxWidth, currentWidth);
@@ -169,13 +261,12 @@ Texture* BitmapFont::generateAtlas() {
     std::vector<unsigned char> pixels(static_cast<std::size_t>(kAtlasW) * kAtlasH * 4, 0);
 
     for (int idx = 0; idx < kCols * kRows; ++idx) {
-        char c = static_cast<char>(kFirstChar + idx);
-        const unsigned char* rows = findGlyphRows(c);
+        const unsigned char* rows = glyphRowsForCell(idx);
         if (rows == nullptr) {
             continue;
         }
-        int cellCol = idx % kCols;
-        int cellRow = idx / kCols;
+        const int cellCol = idx % kCols;
+        const int cellRow = idx / kCols;
         for (int py = 0; py < kCellH; ++py) {
             unsigned char rowBits = rows[py];
             for (int px = 0; px < kCellW; ++px) {
@@ -183,8 +274,8 @@ Texture* BitmapFont::generateAtlas() {
                 if (!set) {
                     continue;
                 }
-                int atlasX = cellCol * kCellW + px;
-                int atlasY = cellRow * kCellH + py;
+                const int atlasX = cellCol * kCellW + px;
+                const int atlasY = cellRow * kCellH + py;
                 std::size_t i =
                     (static_cast<std::size_t>(atlasY) * kAtlasW + atlasX) * 4;
                 pixels[i + 0] = 255;
@@ -223,15 +314,18 @@ void BitmapFont::drawText(SpriteBatch& batch, const std::string& text, const Vec
                           const Vector4& color) const {
     Vector2 cursor = topLeft;
     Vector2 size{static_cast<float>(m_glyphWidth), static_cast<float>(m_glyphHeight)};
-    for (char c : text) {
-        if (c == '\n') {
+    std::size_t i = 0;
+    while (i < text.size()) {
+        if (text[i] == '\n') {
             cursor.x = topLeft.x;
             // lineHeight() y no glyphHeight(): sin interlineado las
             // lineas quedan pegadas (ver su comentario en el .h).
             cursor.y += static_cast<float>(lineHeight());
+            ++i;
             continue;
         }
-        batch.submit(cursor, size, glyphUV(c), m_atlas, color);
+        const uint32_t cp = nextCodepoint(text, i);
+        batch.submit(cursor, size, glyphUVCodepoint(cp), m_atlas, color);
         cursor.x += static_cast<float>(m_glyphWidth);
     }
 }

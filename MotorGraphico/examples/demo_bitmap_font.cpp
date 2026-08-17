@@ -22,13 +22,13 @@ void testGlyphUvKnownCells() {
     require(space.u0 == 0.0f);
     require(space.v0 == 0.0f);
 
-    // 'A' (65): indice 65-32=33 -> col=33%16=1, row=33/16=2. Atlas 16x4:
-    // u0=1/16, v0=2/4.
+    // 'A' (65): indice 65-32=33 -> col=33%16=1, row=33/16=2. Atlas 16x5:
+    // u0=1/16, v0=2/5.
     UVRect a = BitmapFont::glyphUV('A');
     require(a.u0 == 1.0f / 16.0f);
-    require(a.v0 == 2.0f / 4.0f);
+    require(a.v0 == 2.0f / 5.0f);
     require(a.u1 == 2.0f / 16.0f);
-    require(a.v1 == 3.0f / 4.0f);
+    require(a.v1 == 3.0f / 5.0f);
 
     // Minuscula: mismo resultado que la mayuscula (ver el comentario de
     // la clase, "min/mayuscula tratada igual").
@@ -38,7 +38,7 @@ void testGlyphUvKnownCells() {
     // '0' (48): indice 48-32=16 -> col=0, row=1.
     UVRect zero = BitmapFont::glyphUV('0');
     require(zero.u0 == 0.0f);
-    require(zero.v0 == 1.0f / 4.0f);
+    require(zero.v0 == 1.0f / 5.0f);
 
     std::cout << "[BITMAPFONT] glyphUV() en celdas conocidas (espacio, 'A'/'a', '0') correcto.\n";
 }
@@ -83,12 +83,44 @@ void testMeasureText() {
     std::cout << "[BITMAPFONT] measureText() (una linea, multilinea, cadena vacia) correcto.\n";
 }
 
+void testAcentuadas() {
+    // F0 de la auditoria UI: las acentuadas existen (antes se dibujaban
+    // como espacio en blanco). Viven en la fila extendida del atlas
+    // (fila 4 de 5).
+    UVRect aAguda = BitmapFont::glyphUVCodepoint(0x00C1);   // Á
+    require(aAguda.v0 == 4.0f / 5.0f);
+    UVRect space = BitmapFont::glyphUV(' ');
+    require(aAguda.u0 != space.u0 || aAguda.v0 != space.v0);
+
+    // Minuscula acentuada -> la MISMA celda que su mayuscula.
+    UVRect aMin = BitmapFont::glyphUVCodepoint(0x00E1);     // á
+    require(aMin.u0 == aAguda.u0 && aMin.v0 == aAguda.v0);
+
+    // Ñ y Ç tienen celda propia; ¿/¡ y «·» tambien.
+    UVRect enye = BitmapFont::glyphUVCodepoint(0x00D1);     // Ñ
+    UVRect cedilla = BitmapFont::glyphUVCodepoint(0x00C7);  // Ç
+    UVRect puntoMedio = BitmapFont::glyphUVCodepoint(0x00B7);  // ·
+    require(enye.u0 != cedilla.u0);
+    require(puntoMedio.v0 == 4.0f / 5.0f);
+
+    // UTF-8 en measureText: "ÁÉ" son 4 bytes pero 2 glifos; "AÑA" son
+    // 5 bytes y 3 glifos. Sin la decodificacion UTF-8 esto media el
+    // doble/ancho de mas (y en drawText salian glifos basura).
+    Vector2 dosAcentos = BitmapFont::measureText("\xC3\x81\xC3\x89", 10, 14);
+    require(dosAcentos.x == 20.0f);
+    Vector2 conEnye = BitmapFont::measureText("A\xC3\x91" "A", 10, 14);
+    require(conEnye.x == 30.0f);
+
+    std::cout << "[BITMAPFONT] acentuadas (fila extendida, UTF-8) correcto.\n";
+}
+
 }  // namespace
 
 int main() {
     testGlyphUvKnownCells();
     testGlyphUvOutOfRangeFallsBackToSpace();
     testMeasureText();
+    testAcentuadas();
     std::cout << "\nTodas las comprobaciones (assert) han pasado correctamente.\n";
     return 0;
 }
