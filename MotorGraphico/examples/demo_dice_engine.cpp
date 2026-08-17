@@ -268,8 +268,8 @@ void testEnfrentadaEd3() {
     require(DicePoolEngine::opposed_degree(tira({6}), tira({6, 6})) == Degree::BOTCH);
     // Pifia propia -> BOTCH aunque la comparacion estuviera ganada.
     require(DicePoolEngine::opposed_degree(tira({1, 1, 2}), tira({2, 3})) == Degree::BOTCH);
-    // Pifia del defensor -> CRITICAL del atacante [interpretacion
-    // registrada en la bitacora, pendiente de confirmacion visual].
+    // Pifia del defensor -> CRITICAL del atacante (confirmado por Oriol,
+    // bitacora 2.17).
     require(DicePoolEngine::opposed_degree(tira({2, 3}), tira({1, 1})) == Degree::CRITICAL);
 }
 

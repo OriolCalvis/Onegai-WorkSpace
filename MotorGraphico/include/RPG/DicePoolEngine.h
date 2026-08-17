@@ -104,8 +104,8 @@ public:
     // ya no existen. Grado para el lado ACTIVO (atacante/lanzador):
     //
     //     PIFIA propia                       -> BOTCH (anula la comparación)
-    //     PIFIA del defensor                 -> CRITICAL  [interpretación
-    //                                              registrada en la bitácora]
+    //     PIFIA del defensor                 -> CRITICAL (confirmado por
+    //                                              Oriol, bitácora 2.17)
     //     defensor gana (supera el hechizo)  -> BOTCH: se salva del todo
     //                                          (0 daño, sin debuff)
     //     empate                             -> PARTIAL: mitad de daño,
