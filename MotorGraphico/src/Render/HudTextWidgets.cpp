@@ -34,9 +34,29 @@ const std::string kUnselectedPrefix = "  ";
 HudText::HudText(const HudTransform& transform, BitmapFont* font)
     : m_transform(transform), m_font(font) {}
 
+void HudText::setText(const std::string& text) {
+    m_text = text;
+    // F0 (auditoria UI): con caja, el texto se envuelve a su ancho; las
+    // lineas largas ya no desbordan el panel. Sin caja (size.x <= 0),
+    // comportamiento antiguo: se dibuja tal cual.
+    if (m_transform.size.x > 0.0f && m_font != nullptr) {
+        const auto lines = BitmapFont::wrapText(
+            text, static_cast<int>(m_transform.size.x), m_font->glyphWidth());
+        m_renderText.clear();
+        for (std::size_t i = 0; i < lines.size(); ++i) {
+            if (i > 0) {
+                m_renderText.push_back('\n');
+            }
+            m_renderText += lines[i];
+        }
+    } else {
+        m_renderText = text;
+    }
+}
+
 void HudText::render(SpriteBatch& batch, int viewportWidth, int viewportHeight) const {
     Vector2 topLeft = m_transform.resolveTopLeft(viewportWidth, viewportHeight);
-    m_font->drawText(batch, m_text, topLeft, m_color);
+    m_font->drawText(batch, m_renderText, topLeft, m_color);
 }
 
 HudCommandMenu::HudCommandMenu(const HudTransform& transform, BitmapFont* font,
@@ -110,10 +130,22 @@ HudDialogueBox::HudDialogueBox(const HudTransform& transform, BitmapFont* font,
     , m_maxLines(maxLines) {}
 
 void HudDialogueBox::setLines(const std::vector<std::string>& lines) {
-    // Solo las ultimas maxLines(): si "lines" trae menos, se quedan todas
-    // tal cual.
-    std::size_t count = std::min(lines.size(), m_maxLines);
-    m_visibleLines.assign(lines.end() - static_cast<std::ptrdiff_t>(count), lines.end());
+    // F0 (auditoria UI): cada linea se ENVUELVE al ancho util del panel
+    // antes de entrar — antes solo se limitaba el NUMERO de lineas y las
+    // largas se salian del cuadro por la derecha. Despues, solo las
+    // ultimas maxLines() (si "lines" trae menos, se quedan todas).
+    std::vector<std::string> wrapped;
+    const int usable = static_cast<int>(m_transform.size.x - 2.0f * kTextPadding);
+    for (const std::string& line : lines) {
+        if (usable > 0 && m_font != nullptr) {
+            const auto parts = BitmapFont::wrapText(line, usable, m_font->glyphWidth());
+            wrapped.insert(wrapped.end(), parts.begin(), parts.end());
+        } else {
+            wrapped.push_back(line);
+        }
+    }
+    std::size_t count = std::min(wrapped.size(), m_maxLines);
+    m_visibleLines.assign(wrapped.end() - static_cast<std::ptrdiff_t>(count), wrapped.end());
 }
 
 void HudDialogueBox::render(SpriteBatch& batch, int viewportWidth, int viewportHeight) const {

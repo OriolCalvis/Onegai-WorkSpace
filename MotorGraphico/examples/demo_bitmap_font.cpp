@@ -114,6 +114,48 @@ void testAcentuadas() {
     std::cout << "[BITMAPFONT] acentuadas (fila extendida, UTF-8) correcto.\n";
 }
 
+void testWrapText() {
+    // 70px a 10px por glifo = 7 glifos por linea: "AAA BBB" cabe justo
+    // (3 + espacio + 3), "CCC" ya no.
+    std::vector<std::string> w = BitmapFont::wrapText("AAA BBB CCC", 70, 10);
+    require(w.size() == 2);
+    require(w[0] == "AAA BBB");
+    require(w[1] == "CCC");
+
+    // Palabra que no cabe en ninguna linea: corte con guion (3 + '-').
+    std::vector<std::string> h = BitmapFont::wrapText("ABCDEFGH", 40, 10);
+    require(h.size() == 3);
+    require(h[0] == "ABC-");
+    require(h[1] == "DEF-");
+    require(h[2] == "GH");
+
+    // Los '\n' existentes se respetan.
+    std::vector<std::string> n = BitmapFont::wrapText("AA\nBB", 50, 10);
+    require(n.size() == 2 && n[0] == "AA" && n[1] == "BB");
+
+    // Sin caja valida no se envuelve.
+    std::vector<std::string> z = BitmapFont::wrapText("AAA BBB", 0, 10);
+    require(z.size() == 1 && z[0] == "AAA BBB");
+
+    // Acentuadas cuentan como UN glifo al envolver.
+    std::vector<std::string> acc =
+        BitmapFont::wrapText("\xC3\x81\xC3\x89 \xC3\x8D\xC3\x93", 20, 10);
+    require(acc.size() == 2);
+    require(acc[0] == "\xC3\x81\xC3\x89");
+    require(acc[1] == "\xC3\x8D\xC3\x93");
+
+    std::cout << "[BITMAPFONT] wrapText() correcto.\n";
+}
+
+void testClipText() {
+    require(BitmapFont::clipText("HOLA", 50, 10) == "HOLA");
+    require(BitmapFont::clipText("HOLA MUNDO", 50, 10) == "HO...");
+    require(BitmapFont::clipText("ABCDEFGH", 30, 10) == "ABC");
+    require(BitmapFont::clipText("LINEA\nOTRA", 100, 10) == "LINEA");
+
+    std::cout << "[BITMAPFONT] clipText() correcto.\n";
+}
+
 }  // namespace
 
 int main() {
@@ -121,6 +163,8 @@ int main() {
     testGlyphUvOutOfRangeFallsBackToSpace();
     testMeasureText();
     testAcentuadas();
+    testWrapText();
+    testClipText();
     std::cout << "\nTodas las comprobaciones (assert) han pasado correctamente.\n";
     return 0;
 }

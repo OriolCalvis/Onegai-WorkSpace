@@ -231,6 +231,141 @@ UVRect BitmapFont::glyphUV(char c) {
     return glyphUVCodepoint(static_cast<unsigned char>(c));
 }
 
+std::vector<std::string> BitmapFont::wrapText(const std::string& text, int maxWidth,
+                                              int glyphWidth) {
+    std::vector<std::string> out;
+    if (maxWidth <= 0 || glyphWidth <= 0) {
+        out.push_back(text);
+        return out;
+    }
+    const int maxGlyphs = maxWidth / glyphWidth;
+    if (maxGlyphs <= 0) {
+        out.push_back(text);
+        return out;
+    }
+
+    // Parte una linea «dura» (sin '\n') en lineas envueltas.
+    const auto wrapHardLine = [&](const std::string& line) {
+        std::string current;
+        int currentGlyphs = 0;
+
+        // Vuelca "word" (de "glyphs" glifos) sobre las lineas de salida,
+        // cortando con guion cuando la palabra sola no cabe en una linea.
+        auto flushWord = [&](std::string word, int glyphs) {
+            while (glyphs > maxGlyphs) {
+                // La palabra no cabe entera en ninguna linea: se corta a
+                // maxGlyphs-1 glifos + '-' y el resto sigue en la
+                // siguiente. (Corte por bytes UTF-8: se recorre por
+                // codepoints para no partir un caracter acentuado.)
+                std::string part;
+                int taken = 0;
+                std::size_t i = 0;
+                while (taken < maxGlyphs - 1 && i < word.size()) {
+                    const std::size_t start = i;
+                    nextCodepoint(word, i);
+                    part.append(word, start, i - start);
+                    ++taken;
+                }
+                part.push_back('-');
+                if (!current.empty()) {
+                    out.push_back(current);
+                    current.clear();
+                    currentGlyphs = 0;
+                }
+                out.push_back(part);
+                word.erase(0, i);
+                glyphs -= taken;
+            }
+            if (glyphs <= 0) {
+                return;
+            }
+            const int needed = currentGlyphs > 0 ? currentGlyphs + 1 + glyphs : glyphs;
+            if (needed > maxGlyphs && currentGlyphs > 0) {
+                out.push_back(current);
+                current.clear();
+                currentGlyphs = 0;
+            }
+            if (!current.empty()) {
+                current.push_back(' ');
+                ++currentGlyphs;
+            }
+            current += word;
+            currentGlyphs += glyphs;
+        };
+
+        // Recorre la linea por palabras (separadas por espacios).
+        std::size_t i = 0;
+        while (i < line.size()) {
+            if (line[i] == ' ') {
+                ++i;
+                continue;
+            }
+            std::string word;
+            int glyphs = 0;
+            while (i < line.size() && line[i] != ' ') {
+                const std::size_t start = i;
+                nextCodepoint(line, i);
+                word.append(line, start, i - start);
+                ++glyphs;
+            }
+            flushWord(std::move(word), glyphs);
+        }
+        out.push_back(current);  // puede ser vacia: linea en blanco valida
+    };
+
+    // Divide primero por '\n' existentes y envuelve cada linea dura.
+    std::size_t pos = 0;
+    while (pos <= text.size()) {
+        const std::size_t nl = text.find('\n', pos);
+        if (nl == std::string::npos) {
+            wrapHardLine(text.substr(pos));
+            break;
+        }
+        wrapHardLine(text.substr(pos, nl - pos));
+        pos = nl + 1;
+    }
+    return out;
+}
+
+std::string BitmapFont::clipText(const std::string& text, int maxWidth, int glyphWidth) {
+    if (maxWidth <= 0 || glyphWidth <= 0) {
+        return text;
+    }
+    const std::size_t nl = text.find('\n');
+    const std::string line = (nl == std::string::npos) ? text : text.substr(0, nl);
+
+    const int maxGlyphs = maxWidth / glyphWidth;
+    int glyphs = 0;
+    std::size_t i = 0;
+    while (i < line.size()) {
+        nextCodepoint(line, i);
+        ++glyphs;
+    }
+    if (glyphs <= maxGlyphs) {
+        return line;
+    }
+    if (maxGlyphs <= 3) {
+        // Sin sitio ni para los puntos suspensivos: corte seco.
+        std::string cut;
+        std::size_t j = 0;
+        for (int g = 0; g < maxGlyphs && j < line.size(); ++g) {
+            const std::size_t start = j;
+            nextCodepoint(line, j);
+            cut.append(line, start, j - start);
+        }
+        return cut;
+    }
+    std::string cut;
+    std::size_t j = 0;
+    for (int g = 0; g < maxGlyphs - 3 && j < line.size(); ++g) {
+        const std::size_t start = j;
+        nextCodepoint(line, j);
+        cut.append(line, start, j - start);
+    }
+    cut += "...";
+    return cut;
+}
+
 Vector2 BitmapFont::measureText(const std::string& text, int glyphWidth, int glyphHeight) {
     int maxWidth = 0;
     int currentWidth = 0;

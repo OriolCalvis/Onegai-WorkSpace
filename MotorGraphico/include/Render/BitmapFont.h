@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include "Core/Math/UVRect.h"
 #include "Core/Math/Vector2.h"
@@ -61,6 +62,21 @@ public:
     // Version por codepoint Unicode: es la que usan drawText/measureText
     // tras decodificar UTF-8 (las acentuadas no caben en un char).
     static UVRect glyphUVCodepoint(uint32_t codepoint);
+
+    // F0 (auditoria UI): partir "text" en lineas que quepan en maxWidth
+    // pixels (glyphWidth por glifo), cortando en los espacios y con
+    // guion cuando una palabra sola no cabe. Respeta los '\n' existentes
+    // y cuenta las acentuadas como UN glifo (UTF-8). maxWidth o
+    // glyphWidth <= 0 = no envolver: devuelve el texto tal cual en una
+    // sola entrada. Pura y sin GL: testeable en demo_bitmap_font.
+    static std::vector<std::string> wrapText(const std::string& text, int maxWidth,
+                                             int glyphWidth);
+
+    // Recortar una etiqueta a maxWidth pixels con puntos suspensivos
+    // ("HO..." en vez de desbordar el panel o truncar sin avisar, el
+    // defecto que tenia la lista de proyectos). Una sola linea: si
+    // "text" trae '\n', solo se mira la primera. Pura y sin GL.
+    static std::string clipText(const std::string& text, int maxWidth, int glyphWidth);
 
     // Tamano en pixels de "text" a un tamano de glifo glyphWidth x
     // glyphHeight dado, contando '\n' como salto de linea (ancho = el de

@@ -21,15 +21,15 @@ class Texture;
 // (ej. Application, o un demo), no aqui.
 
 // Una o varias lineas (separadas por '\n') de texto en una posicion fija
-// del HUD. El widget mas simple posible: sin wrapping automatico, sin
-// alineacion mas alla de la que ya da HudTransform::anchor -- si hace
-// falta texto envuelto a un ancho, se resuelve fuera (partiendo el string
-// en '\n' antes de llamar a setText()).
+// del HUD. F0 (auditoria UI): si el transform trae caja (size.x > 0), el
+// texto SE ENVUELVE a ese ancho en setText() (BitmapFont::wrapText); sin
+// caja se comporta como antes (sin wrapping). Antes la caja se ignoraba
+// y las lineas largas desbordaban el panel.
 class HudText : public IHudElement {
 public:
     HudText(const HudTransform& transform, BitmapFont* font);
 
-    void setText(const std::string& text) { m_text = text; }
+    void setText(const std::string& text);
     const std::string& text() const { return m_text; }
     void setColor(const Vector4& color) { m_color = color; }
 
@@ -39,6 +39,7 @@ private:
     HudTransform m_transform;
     BitmapFont* m_font;
     std::string m_text;
+    std::string m_renderText;  // m_text envuelto a la caja (o identico si no hay caja)
     Vector4 m_color{1.0f, 1.0f, 1.0f, 1.0f};
 };
 
