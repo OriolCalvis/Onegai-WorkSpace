@@ -1,1 +1,0 @@
-Un titán de fuego, cuyas llamas brillaban con tal intensidad que podían ser vistas desde kilómetros de distancia. Representaba la fuerza destructiva y creativa del fuego.

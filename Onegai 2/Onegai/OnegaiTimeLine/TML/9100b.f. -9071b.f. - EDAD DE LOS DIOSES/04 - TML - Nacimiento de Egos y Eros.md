@@ -1,2 +1,0 @@
-## EL DÍA DE LOS NOMBRES
-En ese momento, Egaroth, El Padre Elemental se mueve en su largo sueño. El poder que había sido desatado en ese momento, otorgando a los diferentes seres vivos de su propia identidad, había hecho que la misma razón de la Creación se removiera en sueños, y así la forma del territorio que se formaba sobre ella cambió, dividiéndose en diferentes continentes que separarán a las diferentes razas que pueblan Egaroth durante mucho tiempo.  

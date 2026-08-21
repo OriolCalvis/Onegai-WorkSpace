@@ -1,3 +1,0 @@
-En ese pequeño destello, que duró entre menos y aproximadamente, aún menos que la molécula de segundo, que tarda una abeja en batir sus alas, nacido Chronos. Este nació en el primer intento de Egaroth en despertar. Ya que las magulladuras que le habían dejado la explosión de corrupción aun pasaban factura. Pero el primer ser en despertar. Fue Chronos. El creador del tiempo. Es irónico pensar que el mismísimo creador del tiempo naciera de la menor unidad en la que el tiempo es capaz de ser mesurado. Pero con el nacimiento de este, albergó la necesidad de conocimiento, ya que existir requiere pensar y en eso nació Sofía.
-
-[[02 - TML - SOFIA]]
