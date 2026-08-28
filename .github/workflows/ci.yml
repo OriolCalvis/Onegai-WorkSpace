@@ -16,13 +16,32 @@ env:
 
 jobs:
   build-test:
-    name: build-test (${{ matrix.build_type }}, ${{ matrix.compiler }})
-    runs-on: ubuntu-latest
+    # INF-05 — matriz multiplataforma. Linux sigue siendo la referencia
+    # completa (demos GL bajo xvfb + ASan). macOS compila nativo (Cocoa)
+    # y ejecuta solo la batería GL-free: los runners no tienen sesión
+    # gráfica fiable, así que la verificación GL se queda en Linux.
+    # Windows es EXPERIMENTAL (el motor nunca se compiló allí con MSVC):
+    # corre para registrar los fallos reales, pero no bloquea la rama
+    # hasta que se arreglen (quitar entonces continue-on-error).
+    name: build-test (${{ matrix.os }}, ${{ matrix.build_type }}, ${{ matrix.compiler }})${{ matrix.os == 'windows-latest' && ' [experimental]' || '' }}
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.os == 'windows-latest' }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest]
         build_type: [Debug, Release]
         compiler: [g++, clang++]
+        include:
+          - os: macos-latest
+            build_type: Debug
+            compiler: clang++
+          - os: macos-latest
+            build_type: Release
+            compiler: clang++
+          - os: windows-latest
+            build_type: Debug
+            compiler: msvc
     steps:
       - uses: actions/checkout@v4
 
@@ -30,39 +49,67 @@ jobs:
       # FetchContent compila desde fuente: hacen falta los headers de
       # desarrollo de X11 y GL. xvfb es la pantalla virtual para poder
       # ejecutar demo_textured_quad (crea una ventana real) sin display.
-      - name: Install dependencies
+      # macOS/Windows no necesitan paquetes: Cocoa y el SDK de GL vienen
+      # con el sistema, y MSVC ya está en el runner.
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y xorg-dev libgl1-mesa-dev xvfb
 
-      - name: Configure CMake
+      # En Windows (MSVC) NO se fijan CC/CXX: CMake debe descubrir el
+      # compilador del runner; una variable vacía podía confundirlo.
+      - name: Configure CMake (gcc/clang)
+        if: runner.os != 'Windows'
         working-directory: ${{ env.PROJECT_DIR }}
         env:
           CC: ${{ matrix.compiler == 'g++' && 'gcc' || 'clang' }}
           CXX: ${{ matrix.compiler }}
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
+      - name: Configure CMake (MSVC)
+        if: runner.os == 'Windows'
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
       - name: Build
         working-directory: ${{ env.PROJECT_DIR }}
-        run: cmake --build build -j
+        run: cmake --build build -j --config ${{ matrix.build_type }}
 
-      - name: Run demos (smoke test)
+      # INF-05/INF-01 — ctest en todas las plataformas. --no-tests=ignore:
+      # mientras el scaffolding de tests/ no esté commiteado, un checkout
+      # viejo configura sin pruebas y eso no debe romper el CI.
+      - name: Run ctest
+        working-directory: ${{ env.PROJECT_DIR }}/build
+        run: ctest --output-on-failure --no-tests=ignore --build-config ${{ matrix.build_type }} -L "gl-free"
+
+      # Batería GL de Linux: demo_textured_quad/demo_isometric_renderer
+      # abren una ventana real (GLFW+GLAD); xvfb-run les da un display
+      # virtual. "5" = corren 5 frames y salen solos (ver examples/*.cpp),
+      # no se quedan colgados esperando que alguien cierre la ventana.
+      - name: Run GL demos (Linux)
+        if: runner.os == 'Linux'
         working-directory: ${{ env.PROJECT_DIR }}
         env:
           LIBGL_ALWAYS_SOFTWARE: "1"
         run: |
-          ./build/demo_resource_manager
-          ./build/demo_camera
-          ./build/demo_tilemap
-          # demo_textured_quad/demo_isometric_renderer abren una ventana
-          # real (GLFW+GLAD): xvfb-run le da un display virtual. "5" =
-          # corren 5 frames y salen solos (ver examples/*.cpp), no se
-          # quedan colgados esperando que alguien cierre la ventana.
           xvfb-run -a ./build/demo_textured_quad 5
           xvfb-run -a ./build/demo_isometric_renderer 5
 
+      # Batería GL-free explícita de macOS: la campaña y el mundo, que no
+      # están aún registrados en ctest por la sesión de INF-01. Sin ventana.
+      - name: Run GL-free demos (macOS)
+        if: runner.os == 'macOS'
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          ./build/demo_resource_manager
+          ./build/demo_camera
+          ./build/demo_tilemap
+          ./build/demo_campana_boundington
+          ./build/demo_mundo
+
       - name: Build + run with AddressSanitizer/UBSan (Debug + g++ only)
-        if: matrix.build_type == 'Debug' && matrix.compiler == 'g++'
+        if: matrix.build_type == 'Debug' && matrix.compiler == 'g++' && runner.os == 'Linux'
         working-directory: ${{ env.PROJECT_DIR }}
         env:
           CC: gcc
