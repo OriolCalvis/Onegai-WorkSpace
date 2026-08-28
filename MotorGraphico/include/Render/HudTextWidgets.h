@@ -43,7 +43,7 @@ private:
     Vector4 m_color{1.0f, 1.0f, 1.0f, 1.0f};
 };
 
-// Menu de comandos navegable (Atacar/Habilidad/Objeto/Huir, estilo Dragon
+// Menu de comandos navegable (Atacar/Tajo/Cura/Pocion/Huir, estilo Dragon
 // Quest clasico): una lista de opciones de texto en columna, un indice de
 // seleccion resaltado con m_highlightColor en vez de m_textColor, y
 // navegacion vertical con wraparound (moveUp()/moveDown()). No lee input

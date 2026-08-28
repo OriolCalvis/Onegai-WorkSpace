@@ -14,7 +14,7 @@
 //   Tienda:      W/S elegir, ENTER comprar/vender, E salir
 //   Dialogo:     ENTER continuar
 //   Combate:     W/S elegir comando, ENTER/ESPACIO confirmar
-//                (Atacar / Tajo / Cura / Pocion / Huir)
+//                (Atacar / Tajo / Cura / Poción / Huir)
 //   ESC          salir
 //
 // Con un argumento numerico corre N frames y sale (modo humo para CI,
@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
     // arranque en ciudad_centro.json (transicion automatica al cerrar el
     // prologo, ver Application::update). Si la narrativa no carga, init()
     // no falla: el motor grafico sigue siendo usable sin ella.
-    auto init = app.init(1280, 720, "Motor Grafico - Boundington", nivel, catalogo,
+    auto init = app.init(1280, 720, "Motor Gráfico - Boundington", nivel, catalogo,
                          aventuraInicial, catalogosExtra);
     if (!init.isOk()) {
         // init() nunca lanza: los fallos de arranque (ventana, shaders,

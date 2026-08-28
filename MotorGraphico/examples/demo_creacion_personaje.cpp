@@ -46,6 +46,8 @@ int main() {
     const auto* op = cc.opcionesDe("mes_de_la_cosecha");
     require(op != nullptr);
     require(op->bonds.size() == 5 && op->fears.size() == 5 && op->virtues.size() == 5);
+    // El canon les puso nombre: la pantalla pinta eso, no el id (barrido F0).
+    require(!op->bonds[0].id.empty() && !op->bonds[0].name.empty());
     std::printf("  'mes_de_la_cosecha': %d vinculos, %d miedos, %d virtudes\n",
                 (int)op->bonds.size(), (int)op->fears.size(), (int)op->virtues.size());
 
@@ -58,13 +60,13 @@ int main() {
     e.tier = 1;
     e.baseStats = reparto(4, 5, 3, 4);   // 3+4+2+3 = 12 sobre el minimo
     require(CharacterCreation::puntosGastados(e.baseStats) == 12);
-    e.bondId = op->bonds[0];
-    e.fearId = op->fears[1];
-    e.flawId = op->flaws[2];
-    e.goalId = op->goals[0];
-    e.idealId = op->ideals[3];
-    e.personalityId = op->personalities[1];
-    e.virtueId = op->virtues[4];
+    e.bondId = op->bonds[0].id;
+    e.fearId = op->fears[1].id;
+    e.flawId = op->flaws[2].id;
+    e.goalId = op->goals[0].id;
+    e.idealId = op->ideals[3].id;
+    e.personalityId = op->personalities[1].id;
+    e.virtueId = op->virtues[4].id;
 
     require(cc.problemas(e).empty());
     auto hecha = cc.construir(e);
@@ -122,11 +124,11 @@ int main() {
     { CreationChoice m = e; m.tier = 9; falla(m, "tier fuera de rango"); }
     { CreationChoice m = e; m.bondId = ""; falla(m, "sin elegir vinculo"); }
     // El fallo interesante: un id que EXISTE pero es de otra lista.
-    { CreationChoice m = e; m.bondId = op->fears[0]; falla(m, "vinculo que es un miedo"); }
+    { CreationChoice m = e; m.bondId = op->fears[0].id; falla(m, "vinculo que es un miedo"); }
     // Y de otro trasfondo distinto.
     const auto* otro = cc.opcionesDe("mes_de_la_siembra");
     if (otro != nullptr && !otro->bonds.empty()) {
-        CreationChoice m = e; m.bondId = otro->bonds[0];
+        CreationChoice m = e; m.bondId = otro->bonds[0].id;
         falla(m, "vinculo de otro trasfondo");
     }
 

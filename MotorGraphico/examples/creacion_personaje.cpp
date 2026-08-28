@@ -88,9 +88,20 @@ private:
 };
 
 std::string aMayus(std::string t) {
-    for (char& c : t) {
+    for (std::size_t i = 0; i < t.size(); ++i) {
+        const unsigned char c = static_cast<unsigned char>(t[i]);
         if (c >= 'a' && c <= 'z') {
-            c = static_cast<char>(c - 'a' + 'A');
+            t[i] = static_cast<char>(c - 'a' + 'A');
+        } else if (c == 0xC3 && i + 1 < t.size()) {
+            // Secuencia UTF-8 de letra acentuada: a-z con tilde/dieresis
+            // (U+00E0..U+00FF, salvo el signo de dividir) suben a su
+            // mayuscula (U+00C0..U+00DF). La fuente ya dibuja ambas (F0);
+            // sin esto un aviso en mayusculas saldria "NINGuN".
+            const unsigned char sig = static_cast<unsigned char>(t[i + 1]);
+            if (sig >= 0xA0 && sig <= 0xBF && sig != 0xB7) {
+                t[i + 1] = static_cast<char>(sig - 0x20);
+                ++i;
+            }
         }
     }
     return t;
@@ -160,7 +171,7 @@ int main(int argc, char** argv) {
     CharacterCreationScreen pantalla(reglas);
 
     try {
-        Window window(width, height, "Motor Grafico - Crear personaje");
+        Window window(width, height, "Motor Gráfico - Crear personaje");
         ShaderManager shaders;
         auto shader = shaders.load("sprite", "assets/shaders/sprite");
         if (!shader.isOk()) {
@@ -178,6 +189,33 @@ int main(int argc, char** argv) {
         const Vector4 kApagado{0.70f, 0.70f, 0.75f, 1.0f};
         const Vector4 kAviso{1.0f, 0.60f, 0.25f, 1.0f};
         const Vector4 kBien{0.45f, 0.90f, 0.55f, 1.0f};
+
+        // El resumen pinta NOMBRES, no ids (barrido F0). Lo que el
+        // catalogo no encuentrare se queda con su id: eso delata el bug
+        // de contenido mejor que un nombre inventado.
+        auto nombreDe = [&](const std::string& id) -> std::string {
+            if (id.empty()) {
+                return "-";
+            }
+            if (const auto* r = reglas.races().find(id)) return r->name;
+            if (const auto* c = reglas.classes().find(id)) return c->name;
+            if (const auto* b = reglas.backgrounds().find(id)) return b->name;
+            if (const auto* d = reglas.deities().find(id)) return d->name;
+            const auto* op = reglas.opcionesDe(pantalla.eleccion().backgroundId);
+            if (op != nullptr) {
+                const std::vector<RPG::CharacterCreation::OpcionNarrativa>* listas[7] = {
+                    &op->bonds, &op->fears, &op->flaws, &op->goals,
+                    &op->ideals, &op->personalities, &op->virtues};
+                for (const auto* lista : listas) {
+                    for (const auto& o : *lista) {
+                        if (o.id == id && !o.name.empty()) {
+                            return o.name;
+                        }
+                    }
+                }
+            }
+            return id;
+        };
 
         KeyEdge teclas;
         GLFWwindow* win = window.handle();
@@ -227,7 +265,7 @@ int main(int argc, char** argv) {
                 if (teclas.pressed(win, GLFW_KEY_SPACE)) pantalla.tecla(' ');
 
                 if (accion == CharacterCreationScreen::Accion::Cancelado) {
-                    std::printf("Cancelado: no se ha creado ningun personaje.\n");
+                    std::printf("Cancelado: no se ha creado ningún personaje.\n");
                     return 0;
                 }
                 if (accion == CharacterCreationScreen::Accion::Terminado) {
@@ -300,10 +338,10 @@ int main(int argc, char** argv) {
                 const auto& e = pantalla.eleccion();
                 const std::vector<std::string> filas = {
                     "NOMBRE     " + aMayus(e.displayName),
-                    "RAZA       " + aMayus(e.raceId),
-                    "CLASE      " + aMayus(e.classId),
-                    "TRASFONDO  " + aMayus(e.backgroundId),
-                    "DEIDAD     " + aMayus(e.deityId.empty() ? "(ninguna)" : e.deityId),
+                    "RAZA       " + aMayus(nombreDe(e.raceId)),
+                    "CLASE      " + aMayus(nombreDe(e.classId)),
+                    "TRASFONDO  " + aMayus(nombreDe(e.backgroundId)),
+                    "DEIDAD     " + aMayus(e.deityId.empty() ? "(ninguna)" : nombreDe(e.deityId)),
                     "",
                     "CON " + std::to_string(pantalla.eleccion().baseStats[0]) + "   DES " +
                         std::to_string(pantalla.eleccion().baseStats[1]) + "   INT " +
@@ -347,16 +385,16 @@ int main(int argc, char** argv) {
                 const std::vector<std::string> resumen = {
                     "LO QUE LLEVAS",
                     "",
-                    "raza       " + (e.raceId.empty() ? "-" : e.raceId),
-                    "clase      " + (e.classId.empty() ? "-" : e.classId),
-                    "trasfondo  " + (e.backgroundId.empty() ? "-" : e.backgroundId),
-                    "vinculo    " + (e.bondId.empty() ? "-" : e.bondId),
-                    "miedo      " + (e.fearId.empty() ? "-" : e.fearId),
-                    "defecto    " + (e.flawId.empty() ? "-" : e.flawId),
-                    "meta       " + (e.goalId.empty() ? "-" : e.goalId),
-                    "ideal      " + (e.idealId.empty() ? "-" : e.idealId),
-                    "caracter   " + (e.personalityId.empty() ? "-" : e.personalityId),
-                    "virtud     " + (e.virtueId.empty() ? "-" : e.virtueId),
+                    "raza       " + nombreDe(e.raceId),
+                    "clase      " + nombreDe(e.classId),
+                    "trasfondo  " + nombreDe(e.backgroundId),
+                    "vínculo    " + nombreDe(e.bondId),
+                    "miedo      " + nombreDe(e.fearId),
+                    "defecto    " + nombreDe(e.flawId),
+                    "meta       " + nombreDe(e.goalId),
+                    "ideal      " + nombreDe(e.idealId),
+                    "carácter   " + nombreDe(e.personalityId),
+                    "virtud     " + nombreDe(e.virtueId),
                 };
                 for (std::size_t i = 0; i < resumen.size(); ++i) {
                     texto(HudAnchor::TopRight, {466.0f, 96.0f + lh * static_cast<float>(i)},

@@ -34,20 +34,20 @@ CharacterCreationScreen::CharacterCreationScreen(const CharacterCreation& reglas
 
 const char* CharacterCreationScreen::tituloPaso() const {
     switch (m_paso) {
-        case Paso::Raza:        return "DE QUE PUEBLO VIENES";
-        case Paso::Clase:       return "A QUE TE DEDICAS";
-        case Paso::Trasfondo:   return "EN QUE MES NACISTE";
-        case Paso::Reparto:     return "COMO ERES";
-        case Paso::Vinculo:     return "QUE TE ATA A ALGUIEN";
-        case Paso::Miedo:       return "QUE TE DA MIEDO";
-        case Paso::Defecto:     return "QUE TE ESTROPEA";
-        case Paso::Meta:        return "QUE PERSIGUES";
-        case Paso::Ideal:       return "EN QUE CREES";
-        case Paso::Personalidad:return "COMO TE TRATAN";
-        case Paso::Virtud:      return "QUE TE SALVA";
-        case Paso::Deidad:      return "A QUIEN REZAS (SE PUEDE NO REZAR)";
-        case Paso::Nombre:      return "COMO TE LLAMAS";
-        case Paso::Resumen:     return "ASI QUEDAS";
+        case Paso::Raza:        return "DE QUÉ PUEBLO VIENES";
+        case Paso::Clase:       return "A QUÉ TE DEDICAS";
+        case Paso::Trasfondo:   return "EN QUÉ MES NACISTE";
+        case Paso::Reparto:     return "CÓMO ERES";
+        case Paso::Vinculo:     return "QUÉ TE ATA A ALGUIEN";
+        case Paso::Miedo:       return "QUÉ TE DA MIEDO";
+        case Paso::Defecto:     return "QUÉ TE ESTROPEA";
+        case Paso::Meta:        return "QUÉ PERSIGUES";
+        case Paso::Ideal:       return "EN QUÉ CREES";
+        case Paso::Personalidad:return "CÓMO TE TRATAN";
+        case Paso::Virtud:      return "QUÉ TE SALVA";
+        case Paso::Deidad:      return "A QUIÉN REZAS (SE PUEDE NO REZAR)";
+        case Paso::Nombre:      return "CÓMO TE LLAMAS";
+        case Paso::Resumen:     return "ASÍ QUEDAS";
         default:                return "";
     }
 }
@@ -79,12 +79,15 @@ void CharacterCreationScreen::rehacerLista() {
     // Las siete listas narrativas salen del trasfondo ya elegido.
     const CharacterCreation::OpcionesTrasfondo* op =
         m_eleccion.backgroundId.empty() ? nullptr : m_reglas.opcionesDe(m_eleccion.backgroundId);
-    auto metelistado = [&](const std::vector<std::string>* v) {
+    auto metelistado = [&](const std::vector<CharacterCreation::OpcionNarrativa>* v) {
         if (v == nullptr) {
             return;
         }
-        for (const std::string& id : *v) {
-            mete(id, id);
+        for (const auto& o : *v) {
+            // La etiqueta es el NOMBRE canonico; solo si el canon no le
+            // puso nombre se pinta el id (barrido F0: el usuario ve
+            // nombres, no ids internos).
+            mete(o.id, o.name.empty() ? o.id : o.name);
         }
     };
 
@@ -200,7 +203,7 @@ void CharacterCreationScreen::subirStat() {
     }
     int& v = m_eleccion.baseStats[static_cast<std::size_t>(m_statMarcado)];
     if (m_eleccion.tier <= 1 && v >= CharacterCreation::kStatMaxTier01) {
-        m_aviso = "en tier 0-1 ningun stat pasa de " +
+        m_aviso = "en tier 0-1 ningún stat pasa de " +
                   std::to_string(CharacterCreation::kStatMaxTier01);
         return;
     }
@@ -267,7 +270,7 @@ bool CharacterCreationScreen::siguiente() {
         // Los pasos de lista exigen algo marcado. Deidad no: "(ninguna)"
         // es una respuesta.
         if (m_opciones.empty()) {
-            m_aviso = m_filtro.empty() ? "no hay nada que elegir aqui"
+            m_aviso = m_filtro.empty() ? "no hay nada que elegir aquí"
                                        : "el filtro '" + m_filtro + "' no encuentra nada";
             return false;
         }

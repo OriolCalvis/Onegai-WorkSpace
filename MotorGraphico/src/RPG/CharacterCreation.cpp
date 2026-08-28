@@ -26,24 +26,26 @@ std::string leeFichero(const std::string& ruta, bool& ok) {
     return out;
 }
 
-// Los ids de una lista de opciones del trasfondo.
-std::vector<std::string> idsDe(const JsonValue& lista) {
-    std::vector<std::string> out;
+// Las opciones (id + nombre) de una lista del trasfondo. El nombre puede
+// faltar en el canon: entonces la pantalla pinta el id (ver su comentario).
+std::vector<CharacterCreation::OpcionNarrativa> leeOpciones(const JsonValue& lista) {
+    std::vector<CharacterCreation::OpcionNarrativa> out;
     if (!lista.isArray()) {
         return out;
     }
     for (std::size_t i = 0; i < lista.size(); ++i) {
         const std::string id = lista[i]["id"].asString("");
         if (!id.empty()) {
-            out.push_back(id);
+            out.push_back(CharacterCreation::OpcionNarrativa{id,
+                                                                lista[i]["name"].asString("")});
         }
     }
     return out;
 }
 
-bool contiene(const std::vector<std::string>& v, const std::string& x) {
-    for (const std::string& s : v) {
-        if (s == x) {
+bool contiene(const std::vector<CharacterCreation::OpcionNarrativa>& v, const std::string& x) {
+    for (const auto& o : v) {
+        if (o.id == x) {
             return true;
         }
     }
@@ -54,7 +56,8 @@ bool contiene(const std::vector<std::string>& v, const std::string& x) {
 // Se comprueban las dos cosas juntas porque el fallo interesante no es
 // dejarla vacia (eso se ve), sino pegar el id de otra lista y que cuele.
 void revisaEleccion(std::vector<std::string>& fuera, const char* etiqueta,
-                    const std::string& elegido, const std::vector<std::string>& opciones) {
+                    const std::string& elegido,
+                    const std::vector<CharacterCreation::OpcionNarrativa>& opciones) {
     if (elegido.empty()) {
         fuera.push_back(std::string("falta elegir ") + etiqueta);
         return;
@@ -109,13 +112,13 @@ Result<CharacterCreation> CharacterCreation::load(const std::string& catalogsRoo
                     continue;
                 }
                 OpcionesTrasfondo o;
-                o.bonds = idsDe(cc["bonds"]);
-                o.fears = idsDe(cc["fears"]);
-                o.flaws = idsDe(cc["flaws"]);
-                o.goals = idsDe(cc["goals"]);
-                o.ideals = idsDe(cc["ideals"]);
-                o.personalities = idsDe(cc["personalities"]);
-                o.virtues = idsDe(cc["virtues"]);
+                o.bonds = leeOpciones(cc["bonds"]);
+                o.fears = leeOpciones(cc["fears"]);
+                o.flaws = leeOpciones(cc["flaws"]);
+                o.goals = leeOpciones(cc["goals"]);
+                o.ideals = leeOpciones(cc["ideals"]);
+                o.personalities = leeOpciones(cc["personalities"]);
+                o.virtues = leeOpciones(cc["virtues"]);
                 c.m_opciones.emplace_back(id, std::move(o));
             }
         }

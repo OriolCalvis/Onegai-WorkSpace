@@ -42,5 +42,5 @@ const char* Morality::label() const {
     if (m_value < 75) {
         return "JUSTO";
     }
-    return "HEROE";
+    return "HÉROE";
 }

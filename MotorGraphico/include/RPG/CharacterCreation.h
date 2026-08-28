@@ -96,8 +96,16 @@ public:
     // aplana a tres strings sueltos (virtue/defect/goal) y es compartida
     // con otras tareas. Ampliarla para esto seria tocar el terreno de
     // otro; leerlas donde se usan no le rompe nada a nadie.
+    //
+    // Cada opcion lleva su id Y su nombre: el canon ya les puso nombre
+    // ("La balanza de la familia") y la pantalla debe pintar ESO, no el id
+    // interno (barrido F0 de etiquetas: el usuario ve nombres).
+    struct OpcionNarrativa {
+        std::string id;
+        std::string name;   // vacio = sin nombre en el canon: se pinta el id
+    };
     struct OpcionesTrasfondo {
-        std::vector<std::string> bonds, fears, flaws, goals, ideals, personalities, virtues;
+        std::vector<OpcionNarrativa> bonds, fears, flaws, goals, ideals, personalities, virtues;
         bool vacio() const { return bonds.empty() && fears.empty() && flaws.empty(); }
     };
     const OpcionesTrasfondo* opcionesDe(const std::string& backgroundId) const;

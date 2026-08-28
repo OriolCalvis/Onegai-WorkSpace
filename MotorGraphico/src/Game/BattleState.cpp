@@ -100,7 +100,7 @@ void BattleState::resolveAllyAction(std::size_t allyIndex, const BattleAction& a
         // === Ataque básico vía Nd6 ONEgAI (antes: kBasicAttackPower) ===
         SkillApplyResult r = ApplyBasicAttackNd6(*actor.combatant, *target.combatant, *m_rngInUse);
         logLine(actor.name + " ataca a " + target.name + " (" + degreeLabel(r.degree) + ": " +
-                std::to_string(r.hpChange) + " de dano).");
+                std::to_string(r.hpChange) + " de daño).");
     } else {  // UseSkill
         const Skill* skill = m_catalog != nullptr ? m_catalog->find(action.skillId) : nullptr;
         if (skill == nullptr || actor.skills == nullptr || !actor.skills->canUse(*skill)) {
@@ -213,7 +213,7 @@ void BattleState::resolveEnemyTurn() {
             SkillApplyResult r =
                 ApplyBasicAttackNd6(*enemy.combatant, *target.combatant, *m_rngInUse);
             logLine(enemy.name + " ataca a " + target.name + " (" + degreeLabel(r.degree) + ": " +
-                    std::to_string(r.hpChange) + " de dano).");
+                    std::to_string(r.hpChange) + " de daño).");
         }
 
         checkOutcome();
