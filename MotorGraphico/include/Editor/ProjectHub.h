@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "Editor/ProjectIndex.h"
+#include "Project/ProjectIndex.h"
 
 // ---------------------------------------------------------------------
 // ProjectHub — la pantalla de arranque del editor: que proyectos hay,

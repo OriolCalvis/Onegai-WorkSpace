@@ -120,6 +120,17 @@ void EditorState::setObjectPalette(std::vector<std::string> objectIds) {
     rebuildFilteredPalettes();
 }
 
+void EditorState::setTilePaletteLabels(std::unordered_map<int, std::string> labels) {
+    m_tilePaletteLabels = std::move(labels);
+    rebuildFilteredPalettes();
+}
+
+void EditorState::setObjectPaletteLabels(
+    std::unordered_map<std::string, std::string> labels) {
+    m_objectPaletteLabels = std::move(labels);
+    rebuildFilteredPalettes();
+}
+
 void EditorState::setLevelPalette(std::vector<std::string> levelPaths) {
     m_levelPaletteAll = std::move(levelPaths);
     rebuildFilteredPalettes();
@@ -141,14 +152,24 @@ void EditorState::rebuildFilteredPalettes() {
     m_levelPalette.clear();
 
     for (int gid : m_tilePaletteAll) {
-        // Los tiles no tienen nombre: se busca por su numero. Sirve para
-        // "quiero el 27" cuando el tileset es grande.
-        if (aguja.empty() || std::to_string(gid).find(aguja) != std::string::npos) {
+        // El GID sigue siendo buscable, pero el nombre editorial permite
+        // escribir "arena", "templo" o "hielo" sin conocer el atlas.
+        std::string searchable = std::to_string(gid);
+        const auto label = m_tilePaletteLabels.find(gid);
+        if (label != m_tilePaletteLabels.end()) {
+            searchable += " " + label->second;
+        }
+        if (aguja.empty() || aMinusculas(searchable).find(aguja) != std::string::npos) {
             m_tilePalette.push_back(gid);
         }
     }
     for (const std::string& id : m_objectPaletteAll) {
-        if (aguja.empty() || aMinusculas(id).find(aguja) != std::string::npos) {
+        std::string searchable = id;
+        const auto label = m_objectPaletteLabels.find(id);
+        if (label != m_objectPaletteLabels.end()) {
+            searchable += " " + label->second;
+        }
+        if (aguja.empty() || aMinusculas(searchable).find(aguja) != std::string::npos) {
             m_objectPalette.push_back(id);
         }
     }

@@ -6,3 +6,20 @@ builds/
 
 # La demo del selector crea este proyecto efímero al probar altas/bajas.
 assets/proyectos/demo_hub_tmp*.json
+
+# Metadatos de macOS y salidas locales de demos. Los binarios se ejecutan
+# desde build/ en CTest, pero estas reglas también protegen ejecuciones
+# manuales desde la raíz del repositorio.
+.DS_Store
+/demo_asset.txt
+/editor_roundtrip_test.tmx
+/*_output.ppm
+/level_editor_output.png
+/personaje.json
+
+# RUN-10 — Guardado rapido de la Application (F5/F9) y los ficheros
+# temporales de test_save_game. Se escriben en el cwd, que en CTest es
+# build/, pero estas reglas cubren tambien una ejecucion desde la raiz.
+/savegame.json
+/savegame.json.tmp
+/run10_*.json

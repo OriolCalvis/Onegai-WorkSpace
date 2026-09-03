@@ -355,7 +355,25 @@ void testFiltroCapasSeleccionYPropiedades() {
 
         e.setPaletteFilter("");
         require(e.objectPalette().size() == 5);
-        std::printf("  filtro: 5 -> 3 -> 0 -> 5, sin mayusculas, sin perder el total. OK\n");
+
+        // El autor busca por el nombre editorial, no por el id interno.
+        e.setObjectPaletteLabels({{"npc_tabernero", "Tabernero humano"},
+                                  {"prop_taberna_mesa", "Mesa de taberna"},
+                                  {"npc_herrero", "Herrero enano"},
+                                  {"PROP_Taberna_Silla", "Silla de taberna"},
+                                  {"enemigo_lobo", "Lobo demacrado"}});
+        e.setPaletteFilter("humano");
+        require(e.objectPalette().size() == 1);
+        require(e.selectedObjectId() == "npc_tabernero");
+
+        e.setTilePalette({1, 2, 3});
+        e.setTilePaletteLabels({{1, "Pradera bosque"},
+                                {2, "Arena desertica"},
+                                {3, "Mosaico templo"}});
+        e.setPaletteFilter("arena");
+        require(e.tilePalette().size() == 1);
+        require(e.selectedTileGid() == 2);
+        std::printf("  filtro: ids + nombres editoriales de objetos/tiles, sin perder el total. OK\n");
     }
 
     // ---------------- CAPAS ----------------

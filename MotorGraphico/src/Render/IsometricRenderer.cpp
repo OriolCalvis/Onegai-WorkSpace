@@ -1,23 +1,27 @@
 #include "Render/IsometricRenderer.h"
 
 #include "Core/Errors/EngineException.h"
+#include "Core/Math/GridBounds.h"
 #include "Core/Math/Vector4.h"
 #include "Core/Resources/Shader.h"
 #include "Core/Resources/Texture.h"
 #include "Core/Resources/TextureAtlas.h"
 #include "Render/Camera.h"
+#include "Render/Culling.h"
 #include "Render/ColorLUT.h"
 #include "Render/FogOfWar.h"
 #include "Render/IRenderable.h"
 #include "Render/OcclusionRules.h"
-#include "Render/TileMap.h"
+#include "Runtime/RuntimeTileMap.h"
 
 #include <algorithm>
+#include <array>
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-IsometricRenderer::IsometricRenderer(Camera* camera, TileMap* map, TextureAtlas* atlas,
+
+IsometricRenderer::IsometricRenderer(Camera* camera, RuntimeTileMap* map, TextureAtlas* atlas,
                                      Shader* shader)
     : m_camera(camera), m_map(map), m_atlas(atlas), m_shader(shader) {}
 
@@ -71,7 +75,13 @@ void IsometricRenderer::setLUT(Shader* lutShader, ColorLUT* lut, int viewportWid
 }
 
 void IsometricRenderer::renderLayer(int layerIndex) {
-    GridBounds visible = m_map->visibleRange(*m_camera);
+    const RuntimeTileLayer& layer = m_map->layerAt(layerIndex);
+    if (!layer.visible) {
+        return;
+    }
+    // C-19 — Una sola funcion de culling (Render/Culling.h); antes
+    // aqui vivia una copia literal de TileMap::visibleRange.
+    GridBounds visible = VisibleGridRange(*m_map, *m_camera);
     if (visible.isEmpty()) {
         return;  // culling: nada de esta capa cae dentro del viewport
     }
@@ -81,12 +91,12 @@ void IsometricRenderer::renderLayer(int layerIndex) {
 
     for (int y = visible.minY; y <= visible.maxY; ++y) {
         for (int x = visible.minX; x <= visible.maxX; ++x) {
-            const Tile& tile = m_map->getTile(layerIndex, x, y);
+            const RuntimeTile& tile = m_map->getTile(layerIndex, x, y);
             if (tile.isEmpty()) {
                 continue;
             }
             Vector2 pos = m_map->gridToScreen(GridCoord{x, y});
-            float alpha = 1.0f;
+            float alpha = layer.opacity;
             if (m_occlusionEnabled && m_occlusionFocus.has_value() &&
                 OcclusionRules::shouldFadeTile(*m_occlusionFocus, GridCoord{x, y},
                                                tile.hasCollision())) {
@@ -173,7 +183,7 @@ void IsometricRenderer::applyPostProcessing() {
 Result<bool> IsometricRenderer::renderFrame() {
     try {
         if (m_camera == nullptr || m_map == nullptr || m_atlas == nullptr || m_shader == nullptr) {
-            throw RenderException("Camera/TileMap/TextureAtlas/Shader nulo");
+            throw RenderException("Camera/RuntimeTileMap/TextureAtlas/Shader nulo");
         }
 
         // Si algun post-FX esta activo (luz o niebla), redirigir la escena

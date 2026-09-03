@@ -57,7 +57,16 @@ public:
                 return Result<WorldTopology>::Error("WorldTopology supero el limite de " +
                                                     std::to_string(maxNodes) + " niveles");
             }
-            const std::string& path = pending[cursor];
+            // POR VALOR, no por referencia. Este bucle hace push_back sobre
+            // "pending" mientras lo recorre (cada puerta encontrada encola su
+            // destino), y un push_back puede REALOCAR el vector: una
+            // referencia a pending[cursor] se quedaria colgando justo en
+            // mitad de la iteracion que la esta usando. El sintoma era un
+            // std::length_error dentro de basic_string al copiar la ruta ya
+            // muerta -- demo_mundo abortaba al construir la topologia de
+            // Boundington. Copiar una ruta por nivel es irrelevante al lado
+            // de leer y parsear su JSON.
+            const std::string path = pending[cursor];
             auto loaded = LevelLoader::loadFromFile(path);
             if (!loaded.isOk()) {
                 return Result<WorldTopology>::Error("No se pudo cargar '" + path +
@@ -104,7 +113,9 @@ public:
         std::vector<std::string> pending{sourceLevelPath};
         std::unordered_set<std::string> visited{sourceLevelPath};
         for (std::size_t cursor = 0; cursor < pending.size(); ++cursor) {
-            const std::string& current = pending[cursor];
+            // Por valor por el mismo motivo que en load(): el bucle interior
+            // encola destinos en "pending" mientras se recorre.
+            const std::string current = pending[cursor];
             for (const WorldLink& link : m_links) {
                 if (link.sourceLevelPath != current ||
                     !visited.insert(link.targetLevelPath).second) {

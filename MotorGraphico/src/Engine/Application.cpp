@@ -3,11 +3,14 @@
 #include "Core/Math/IsoMath.h"
 #include "Core/Resources/Shader.h"
 #include "Core/Resources/Texture.h"
+#include "Engine/Input/InputSystem.h"
+#include "Engine/ApplicationLoop.h"
 #include "Engine/Window.h"
 #include "Render/AnimatedEntity.h"
 #include "Render/BlobShadow.h"
 #include "Render/Camera.h"
 #include "Engine/InputState.h"
+#include "Game/SaveGame.h"
 #include "Level/LevelLoader.h"
 #include "Render/Player.h"
 #include "Render/StaticEntity.h"
@@ -156,26 +159,25 @@ Texture* makeWhiteTexture() {
     return new Texture(glID, 1, 1);
 }
 
-// Deteccion de flanco de subida (GLFW da estado, no eventos): sin esto
-// una pulsacion de 100ms mueve al jugador 6 celdas a 60fps. Mismo helper
-// que level_editor.cpp -- se duplica a proposito en vez de sacarlo a un
-// header comun: son 10 lineas y ninguna de las dos apps es "la duena"
-// del concepto (si aparece una tercera, entonces si merece un
-// Engine/KeyEdge.h).
-class KeyEdge {
-public:
-    bool pressed(GLFWwindow* window, int key) {
-        bool down = glfwGetKey(window, key) == GLFW_PRESS;
-        bool edge = down && !m_wasDown[key];
-        m_wasDown[key] = down;
-        return edge;
+// Único adaptador GLFW -> Engine::Input. El sistema de entrada no conoce
+// códigos de GLFW, y Application no conserva flancos por su cuenta (ADR-008).
+Engine::Input::RawInputState readGameKeyboard(GLFWwindow* window) {
+    using Engine::Input::InputKey;
+    const std::pair<InputKey, int> bindings[] = {
+        {InputKey::Escape, GLFW_KEY_ESCAPE}, {InputKey::W, GLFW_KEY_W},
+        {InputKey::A, GLFW_KEY_A},           {InputKey::S, GLFW_KEY_S},
+        {InputKey::D, GLFW_KEY_D},           {InputKey::E, GLFW_KEY_E},
+        {InputKey::Tab, GLFW_KEY_TAB},       {InputKey::F5, GLFW_KEY_F5},
+        {InputKey::F9, GLFW_KEY_F9},         {InputKey::Enter, GLFW_KEY_ENTER},
+        {InputKey::Space, GLFW_KEY_SPACE},
+    };
+
+    Engine::Input::RawInputState state;
+    for (const auto& [key, glfwKey] : bindings) {
+        state.setDown(key, glfwGetKey(window, glfwKey) == GLFW_PRESS);
     }
-
-private:
-    bool m_wasDown[GLFW_KEY_LAST + 1] = {};
-};
-
-KeyEdge g_keys;
+    return state;
+}
 
 // Vuelca el framebuffer a PPM a RESOLUCION COMPLETA (no muestreado como
 // en demo_fog/demo_lighting: aquellos bajan a 160x90 porque su post-FX
@@ -647,6 +649,20 @@ Result<bool> Application::init(int width, int height, const std::string& title,
     m_moralBar->setBorder(kBorderColor, 1.0f);
     m_moralBar->setAnimationSpeed(6.0f);
 
+    // F1 (bitacora 2.18): barra del temporizador de mision, arriba a la
+    // derecha, bajo el panel de enemigo. Solo aparece con un timer ACTIVO
+    // y NO secreto (los Secretos no se dibujan por definicion); el valor
+    // es la fraccion de tiempo restante.
+    HudTransform timerTransform;
+    timerTransform.anchor = HudAnchor::TopRight;
+    timerTransform.offset = {-170.0f, 86.0f};
+    timerTransform.size = {160.0f, 10.0f};
+    m_timerBar = std::make_unique<HudBar>(timerTransform, m_whiteTexture.get());
+    m_timerBar->setMaxValue(1.0f);
+    m_timerBar->setBorder(kBorderColor, 1.0f);
+    m_timerBar->setVisible(false);
+    m_hud.addElement(m_timerBar.get());
+
     trace("init: widgets construidos OK");
     // Orden de insercion = orden de dibujado (ver HudManager): cada panel
     // antes que lo que lleva encima.
@@ -750,25 +766,47 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
     }
     m_worldMarkers.clear();
 
-    // El oro pertenece al jugador, no al mapa: se rescata de la sesion
-    // saliente y se devuelve a la entrante (ver el comentario del .h).
-    const int carriedGold = m_session != nullptr ? m_session->gold() : 0;
+    // C-03 — El estado del JUGADOR (oro, moral, negocios y el contador
+    // de rentas) pertenece al jugador, no al mapa: se rescata entero de
+    // la sesion saliente y se devuelve a la entrante. Antes aqui solo se
+    // rescataba el oro, asi que entrar a una posada reiniciaba la
+    // reputacion, borraba los negocios comprados y perdia el contador de
+    // rentas. Un solo tipo (PlayerCarryOver) en vez de una lista de
+    // campos suelta.
+    const PlayerCarryOver carried =
+        m_session != nullptr ? m_session->captureCarryOver() : PlayerCarryOver{};
 
     const GridCoord start = useEntry ? entry : level.playerStart;
     m_player->setGridPosition(start);
     level.playerStart = start;
 
+    m_currentLevelPath = levelPath;  // F1: timers expiran por salir de la zona
     m_session = std::make_unique<GameSession>(&m_map, &m_objectCatalog, &m_skillCatalog,
                                               std::move(level), m_player.get(), &m_playerSkills,
                                               &m_inventory);
-    m_session->addGold(carriedGold);
+    m_session->applyCarryOver(carried);
+
+    // C-02 — El minimapa se construye una sola vez y el GameSession se
+    // reconstruye en cada carga: hay que volver a enchufarselo, igual
+    // que la narrativa unas lineas mas abajo.
+    if (m_minimap != nullptr) {
+        m_minimap->setSession(m_session.get());
+    }
 
     // Re-enchufa la narrativa en el session recien construido. loadLevel
     // destruye el GameSession en cada transicion; la narrativa (motor,
     // estado y catalogo Nd6) vive en Application y sobrevive, asi que
     // hay que volver a pasarsela al session nuevo. Sin esto, al cambiar
     // de nivel los beats dejarian de disparar.
-    if (m_narrativaLista && m_narrativeCampaignTransitions) {
+    //
+    // C-07 — La condicion era "m_narrativaLista && m_narrativeCampaignTransitions".
+    // Con --precuela (o con cualquier aventura autonoma pasada por
+    // --aventura) la bandera de campana queda a false, no se llamaba
+    // nunca a setNarrative() y la aventura se cargaba para no hacer
+    // absolutamente nada: ni un beat. La bandera decide si se hacen las
+    // TRANSICIONES DE LA CRONOLOGIA de Venides (prologo -> Dia 1 -> ...,
+    // en update()), no si la narrativa existe.
+    if (m_narrativaLista) {
         m_session->setNarrative(&m_narrative, &m_narrativeState);
         m_session->setNd6SkillCatalog(&m_nd6Skills);
         // m_session ya tiene su propio Xoroshiro128p por defecto; solo
@@ -1234,9 +1272,85 @@ void Application::confirmBattleCommand() {
     m_session->syncBattleOutcome();
 }
 
+// --- RUN-10: guardado rapido ---
+//
+// La Application es quien guarda y carga porque es quien conoce las RUTAS
+// (la sesion no hace I/O, ver GameSession.h) y quien sobrevive al cambio
+// de nivel. GameSession solo sabe fotografiarse y volver a su sitio.
+
+bool Application::saveGame(const std::string& path) {
+    if (m_session == nullptr) {
+        return false;
+    }
+    const SaveGameData data = m_session->captureSaveGame(m_currentLevelPath);
+    std::string error;
+    if (!writeSaveGameFile(path, data, &error)) {
+        m_session->logNote("No se pudo guardar: " + error);
+        trace(("saveGame: " + error).c_str());
+        return false;
+    }
+    m_session->logNote("Partida guardada.");
+    return true;
+}
+
+bool Application::loadGame(const std::string& path) {
+    SaveGameData data;
+    std::string error;
+    if (!readSaveGameFile(path, &data, &error)) {
+        if (m_session != nullptr) {
+            m_session->logNote("No se pudo cargar: " + error);
+        }
+        trace(("loadGame: " + error).c_str());
+        return false;
+    }
+
+    // ORDEN IMPORTANTE. La narrativa se restaura ANTES de cargar el nivel:
+    // loadLevel dispara el beat de "entrar al nivel", y si lo hiciera con
+    // las flags de la partida en curso (o sin las del guardado) repetiria
+    // el prologo y volveria a pagar recompensas ya cobradas.
+    m_narrativeState.reset();
+    applyNarrativeState(data, m_narrativeState);
+
+    auto levelResult = loadLevel(data.levelPath, /*useEntry=*/false, GridCoord{});
+    if (!levelResult.isOk()) {
+        trace(("loadGame: " + levelResult.errorMessage()).c_str());
+        if (m_session != nullptr) {
+            m_session->logNote("No se pudo cargar el nivel del guardado.");
+        }
+        return false;
+    }
+
+    if (!m_session->restoreSaveGame(data, &error)) {
+        // El nivel ya esta cargado (partida nueva en ese mapa) pero el
+        // estado guardado no encaja: se dice por que en vez de dejar al
+        // jugador con una partida a medias que parece la suya.
+        m_session->logNote("Guardado incompatible: " + error);
+        trace(("loadGame: " + error).c_str());
+        return false;
+    }
+
+    // La vista se pone al dia con el modelo: sprite del jugador, oro del
+    // guardado (loadLevel habia arrastrado el de la partida anterior) y
+    // marcadores de los objetos/enemigos que ya no estan.
+    m_player->setGridPosition(m_session->playerPosition());
+    syncWorldMarkers();
+    m_session->logNote("Partida cargada.");
+    return true;
+}
+
 void Application::processInput() {
+    using Engine::Input::InputAction;
     GLFWwindow* win = m_window->handle();
-    if (glfwGetKey(win, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    const Engine::Input::InputSnapshot input =
+        m_window->hasInputFocus() ? m_input.update(readGameKeyboard(win)) : m_input.releaseAll();
+    // La marca AFK se actualiza únicamente si hubo actividad real. Antes se
+    // actualizaba por el mero hecho de sondear cada frame, de modo que el
+    // temporizador narrativo nunca llegaba a considerar al jugador ausente.
+    if (input.hasActivity()) {
+        m_lastInput = std::chrono::steady_clock::now();
+    }
+
+    if (input.pressed(InputAction::Quit)) {
         m_running = false;
         return;
     }
@@ -1244,15 +1358,27 @@ void Application::processInput() {
     if (m_session->mode() == GameMode::Exploration) {
         // TAB abre/cierra el panel de inventario (solo exploracion, ver
         // refreshHud sobre el porque).
-        if (g_keys.pressed(win, GLFW_KEY_TAB)) {
+        if (input.pressed(InputAction::ToggleInventory)) {
             m_showInventory = !m_showInventory;
+        }
+
+        // RUN-10 — Guardado rapido. Solo aqui: en combate, dialogo o
+        // tienda las teclas no hacen nada (ver saveGame/loadGame en el .h).
+        if (input.pressed(InputAction::QuickSave)) {
+            saveGame(m_savePath);
+        }
+        if (input.pressed(InputAction::QuickLoad)) {
+            loadGame(m_savePath);
+            // loadGame ha reconstruido la sesion: no se sigue leyendo
+            // input contra el estado viejo en este mismo frame.
+            return;
         }
 
         // E: hablar con el NPC de al lado, o cruzar la puerta que se
         // pisa. La transicion la ejecuta update() (ver
         // applyPendingTransition): cambiar de nivel A MITAD de
         // processInput destruiria la sesion que se esta consultando.
-        if (g_keys.pressed(win, GLFW_KEY_E)) {
+        if (input.pressed(InputAction::Interact)) {
             m_session->interact();
         }
 
@@ -1261,10 +1387,10 @@ void Application::processInput() {
         // comentario). GameSession decide si el movimiento es legal.
         int dx = 0;
         int dy = 0;
-        if (g_keys.pressed(win, GLFW_KEY_W)) dy = -1;
-        else if (g_keys.pressed(win, GLFW_KEY_S)) dy = 1;
-        else if (g_keys.pressed(win, GLFW_KEY_A)) dx = -1;
-        else if (g_keys.pressed(win, GLFW_KEY_D)) dx = 1;
+        if (input.pressed(InputAction::MoveNorth)) dy = -1;
+        else if (input.pressed(InputAction::MoveSouth)) dy = 1;
+        else if (input.pressed(InputAction::MoveWest)) dx = -1;
+        else if (input.pressed(InputAction::MoveEast)) dx = 1;
 
         if (dx != 0 || dy != 0) {
             m_session->tryMovePlayer(dx, dy);
@@ -1284,36 +1410,35 @@ void Application::processInput() {
             m_player->setGridPosition(m_session->playerPosition());
         }
     } else if (m_session->mode() == GameMode::Battle) {
-        if (g_keys.pressed(win, GLFW_KEY_W)) m_commandMenu->moveUp();
-        if (g_keys.pressed(win, GLFW_KEY_S)) m_commandMenu->moveDown();
-        if (g_keys.pressed(win, GLFW_KEY_ENTER) || g_keys.pressed(win, GLFW_KEY_SPACE)) {
+        if (input.pressed(InputAction::MenuUp)) m_commandMenu->moveUp();
+        if (input.pressed(InputAction::MenuDown)) m_commandMenu->moveDown();
+        if (input.pressed(InputAction::Confirm)) {
             confirmBattleCommand();
         }
     } else if (m_session->mode() == GameMode::Shop) {
         // Mismo esquema de teclas que el combate (W/S + ENTER): el
         // jugador no tiene que aprender dos lenguajes de menu.
-        if (g_keys.pressed(win, GLFW_KEY_W)) m_shopMenu->moveUp();
-        if (g_keys.pressed(win, GLFW_KEY_S)) m_shopMenu->moveDown();
-        if (g_keys.pressed(win, GLFW_KEY_ENTER) || g_keys.pressed(win, GLFW_KEY_SPACE)) {
+        if (input.pressed(InputAction::MenuUp)) m_shopMenu->moveUp();
+        if (input.pressed(InputAction::MenuDown)) m_shopMenu->moveDown();
+        if (input.pressed(InputAction::Confirm)) {
             confirmShopCommand();
         }
-        if (g_keys.pressed(win, GLFW_KEY_E) || g_keys.pressed(win, GLFW_KEY_TAB)) {
+        if (input.pressed(InputAction::Cancel)) {
             m_session->closeInteraction();
         }
     } else if (m_session->mode() == GameMode::Business) {
-        if (g_keys.pressed(win, GLFW_KEY_W)) m_businessMenu->moveUp();
-        if (g_keys.pressed(win, GLFW_KEY_S)) m_businessMenu->moveDown();
-        if (g_keys.pressed(win, GLFW_KEY_ENTER) || g_keys.pressed(win, GLFW_KEY_SPACE)) {
+        if (input.pressed(InputAction::MenuUp)) m_businessMenu->moveUp();
+        if (input.pressed(InputAction::MenuDown)) m_businessMenu->moveDown();
+        if (input.pressed(InputAction::Confirm)) {
             confirmBusinessCommand();
         }
-        if (g_keys.pressed(win, GLFW_KEY_E) || g_keys.pressed(win, GLFW_KEY_TAB)) {
+        if (input.pressed(InputAction::Cancel)) {
             m_session->closeInteraction();
         }
     } else if (m_session->mode() == GameMode::Dialogue) {
         // Cualquier tecla de confirmacion cierra: un dialogo sin
         // opciones no necesita mas.
-        if (g_keys.pressed(win, GLFW_KEY_ENTER) || g_keys.pressed(win, GLFW_KEY_SPACE) ||
-            g_keys.pressed(win, GLFW_KEY_E)) {
+        if (input.pressed(InputAction::Confirm) || input.pressed(InputAction::Interact)) {
             m_session->closeInteraction();
         }
     }
@@ -1371,7 +1496,12 @@ void Application::update(float deltaTime) {
     // sirven para no reentrar en la transicion cada frame. No estan en los
     // JSON. Las flags canonicas de cierre (bnd_dia_cerrado, bnd2_dia_cerrado)
     // son las que dispara cada aventura al terminar.
-    if (m_narrativaLista) {
+    // C-07 — AQUI es donde manda la bandera de campana: una aventura
+    // autonoma no debe encadenar los dias de Boundington. Antes la
+    // bandera se comprobaba en loadLevel (matando la narrativa entera) y
+    // no se comprobaba aqui (encadenando la cronologia igualmente):
+    // justo al reves de lo que significa.
+    if (m_narrativaLista && m_narrativeCampaignTransitions) {
         // prologo -> Dia 1: el Dia 1 abre con un beat "enter" en
         // ciudad_centro.json, asi que recargamos nivel. loadLevel dispara
         // ese beat.
@@ -1403,6 +1533,22 @@ void Application::update(float deltaTime) {
             trace("update: Dia 2 -> Ocaso");
             loadLevel("assets/levels/ciudad_centro.json", /*useEntry=*/false, GridCoord{0, 0});
         }
+    }
+
+    // F1 (bitacora 2.18): dt de EXPLORACION ACTIVA para los temporizadores
+    // de mision. El reloj narrativo NO avanza si el jugador esta ocupado
+    // (combate/dialogo/tienda/negocio) o lleva mas de 15 s sin tocar nada
+    // (AFK — umbral inicial fijado por Oriol). La marca de ultimo input
+    // la refresca processInput(); nace en el arranque, no en 0, para que
+    // cargar un nivel no cuente como AFK.
+    {
+        const bool ocupado = m_session->mode() != GameMode::Exploration;
+        const double segundosSinInput =
+            std::chrono::duration<double>(std::chrono::steady_clock::now() -
+                                          m_lastInput).count();
+        const bool afk = segundosSinInput > 15.0;
+        const float dtActivo = (ocupado || afk) ? 0.0f : deltaTime;
+        m_session->updateNarrativeTimers(dtActivo, m_currentLevelPath);
     }
 
     trace("update: syncWorldMarkers");
@@ -1473,22 +1619,33 @@ void Application::render(bool capture) {
 
 void Application::run(int maxFrames) {
     int frame = 0;
-    // deltaTime REAL (glfwGetTime) en vez del 1/60 fijo original: las
-    // animaciones del HUD y la camara van a velocidad constante aunque
-    // el framerate no sea 60, y el contador de FPS mide de verdad. El
-    // clamp evita un salto gigante tras una pausa (debugger, ventana
-    // minimizada): un frame nunca "avanza" mas de 100ms de golpe.
+    // RUN-01: la fuente de tiempo sigue siendo GLFW, pero el ritmo de la
+    // simulacion vive en ApplicationLoop (ADR-007). Asi Application solo
+    // adapta servicios de plataforma/GL y el reloj se prueba sin ventana.
+    Engine::ApplicationLoop loop;
     double lastTime = glfwGetTime();
-    while (m_running && !m_window->shouldClose() && (maxFrames < 0 || frame < maxFrames)) {
+    while (maxFrames < 0 || frame < maxFrames) {
         const double now = glfwGetTime();
-        const float deltaTime = std::min(static_cast<float>(now - lastTime), 0.1f);
+        const float deltaTime = static_cast<float>(now - lastTime);
         lastTime = now;
 
         trace("run: frame nuevo");
-        m_window->pollEvents();
-        trace("run: processInput");
-        processInput();
-        update(deltaTime > 0.0f ? deltaTime : 1.0f / 60.0f);
+        const bool capture = maxFrames >= 0 && frame == maxFrames - 1;
+        const Engine::ApplicationLoopFrame loopFrame = loop.tick(
+            deltaTime,
+            Engine::ApplicationLoopServices{
+                [this] { return m_running && !m_window->shouldClose(); },
+                [this] { m_window->pollEvents(); },
+                [this] {
+                    trace("run: processInput");
+                    processInput();
+                },
+                [this](float fixedDeltaTime) { update(fixedDeltaTime); },
+                [this, capture](float /*interpolationAlpha*/) { render(capture); }});
+
+        if (!loopFrame.rendered) {
+            break;
+        }
         // Modo humo (maxFrames >= 0): en el ULTIMO frame se vuelca el
         // framebuffer, igual que los demos GL. Asi "juego 3" deja un
         // juego_output.ppm inspeccionable con el HUD real dibujado --
@@ -1496,7 +1653,8 @@ void Application::run(int maxFrames) {
         // hace render() JUSTO ANTES de swapBuffers(): despues del
         // intercambio, el buffer que se leeria ya no es el recien
         // dibujado.
-        render(/*capture=*/maxFrames >= 0 && frame == maxFrames - 1);
+        // render() se ejecutó dentro de ApplicationLoop, después de todos los
+        // updates fijos. La interpolación queda disponible para RUN-07.4.
         ++frame;
     }
     std::cout << "Bucle terminado tras " << frame << " frames (modo: "
@@ -1510,6 +1668,12 @@ void Application::shutdown() {
     // GL (texturas, fuente, renderer) muere ANTES que el Window, o sus
     // destructores llamarian a glDeleteTextures sin contexto valido.
     m_running = false;
+    // C-02 — El widget suelta la sesion ANTES de que se destruya: el
+    // orden de shutdown ya lo garantizaba, pero dejarlo explicito evita
+    // que reordenar esta lista vuelva a dejar un puntero colgando.
+    if (m_minimap != nullptr) {
+        m_minimap->setSession(nullptr);
+    }
     m_session.reset();
     m_hud = HudManager{};  // suelta los punteros a widgets antes de destruirlos
     m_commandMenu.reset();
@@ -1546,5 +1710,17 @@ void Application::shutdown() {
     m_camera.reset();
     m_atlas.reset();
     m_characterAtlas.reset();  // mismo criterio que m_atlas (sin GL propio)
-    m_window.reset();
+
+    // C-05 — Los dos ResourceManager se vacian AQUI, con el contexto GL
+    // todavia vivo. Antes no se tocaban en shutdown(): sobrevivian hasta
+    // el destructor de Application, que corre DESPUES de que
+    // ~Window haya llamado a glfwTerminate() -- y entonces
+    // ~Texture/~Shader emitian glDeleteTextures/glDeleteProgram sin
+    // ningun contexto donde ir. Van despues de los atlas, que solo
+    // referencian esas texturas y no las poseen. Idempotente: shutdown()
+    // se llama a mano y otra vez desde el destructor.
+    m_shaderManager.clear();
+    m_textureManager.clear();
+
+    m_window.reset();  // ~Window -> glfwTerminate(): nada de GL despues de esto
 }

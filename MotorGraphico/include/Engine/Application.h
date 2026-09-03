@@ -1,10 +1,12 @@
 #pragma once
 
+#include <chrono>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "Core/Errors/Result.h"
+#include "Engine/Input/InputSystem.h"
 #include "Core/Resources/ShaderManager.h"
 #include "Render/Entity.h"
 #include "Core/Resources/TextureAtlas.h"
@@ -101,6 +103,19 @@ private:
     // (ver LevelTransition en GameSession.h).
     void applyPendingTransition();
 
+    // --- Guardado rapido (RUN-10) ---
+    //
+    // F5 guarda, F9 carga, sobre m_savePath. Solo en exploracion: guardar
+    // a mitad de un turno de combate o con un dialogo abierto obligaria a
+    // serializar el BattleState y el menu, y no aporta nada -- el jugador
+    // guarda ANTES de meterse en la cueva, no durante el bicho.
+    //
+    // Ambas devuelven false y dejan el motivo en el log del HUD si algo
+    // falla (disco lleno, guardado de otra version, nivel que cambio):
+    // un guardado que falla en silencio es peor que no tenerlo.
+    bool saveGame(const std::string& path);
+    bool loadGame(const std::string& path);
+
     // Un turno de tienda/dialogo: traduce la tecla pulsada a
     // buy/sell/closeInteraction sobre la sesion.
     void confirmShopCommand();
@@ -117,8 +132,13 @@ private:
     int m_width = 0;
     int m_height = 0;
     bool m_running = false;
+    Engine::Input::InputSystem m_input;
 
     std::unique_ptr<Window> m_window;
+    // C-05 — Declarados DESPUES de m_window para que el orden inverso de
+    // destruccion los mate antes que la ventana. No basta: shutdown()
+    // suelta m_window explicitamente mucho antes de que corran estos
+    // destructores, asi que ademas los vacia a mano (ver shutdown()).
     TextureManager m_textureManager;
     ShaderManager m_shaderManager;
     std::unique_ptr<TextureAtlas> m_atlas;
@@ -192,7 +212,23 @@ private:
     RPG::Catalogs::SkillCatalog m_nd6Skills;  // skills.json (percepcion, sigilo, ...)
     bool m_narrativaLista = false;  // init() lo enciende solo si todo cargo bien
     // Las aventuras autónomas no deben activar la cronología de Venides.
+    // C-07 — Solo eso: decide si update() encadena prologo -> Dia 1 ->
+    // Dia 2 -> Ocaso, NO si la narrativa se engancha a la sesion. Toda
+    // aventura cargada se engancha (ver loadLevel).
     bool m_narrativeCampaignTransitions = false;
+
+    // F1 (bitácora 2.18): lo que la sesión necesita del orquestador para
+    // los temporizadores — el nivel donde está el jugador (para expirar
+    // por salir de la zona) y cuándo tocó algo por última vez (AFK: el
+    // reloj narrativo se congela tras 15 s sin input, decisión de Oriol).
+    std::string m_currentLevelPath;
+
+    // Fichero del guardado rapido. Relativo al cwd, igual que las rutas
+    // de assets (se ejecuta desde build/). Una unica ranura por ahora:
+    // varias partidas guardadas son interfaz, y eso es TOOL-04.
+    std::string m_savePath = "savegame.json";
+    std::chrono::steady_clock::time_point m_lastInput =
+        std::chrono::steady_clock::now();
 
     // HUD (Fase 9). SpriteBatch propia, independiente de la interna del
     // renderer (ver demo_hud.cpp).
@@ -273,6 +309,11 @@ private:
     // Moral: etiqueta + barra, arriba a la izquierda bajo las de PV/PM.
     std::unique_ptr<HudText> m_moralText;
     std::unique_ptr<HudBar> m_moralBar;
+
+    // F1: barra del temporizador de misión visible (Contador/Barra; los
+    // Secretos no se dibujan por definición — 2.18). Una sola: si hubiera
+    // varios timers visibles a la vez, muestra el primero activo.
+    std::unique_ptr<HudBar> m_timerBar;
 
     HudManager m_hud;
 

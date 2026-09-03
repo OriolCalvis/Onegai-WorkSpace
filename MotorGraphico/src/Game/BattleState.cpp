@@ -41,6 +41,21 @@ int firstAliveIndex(const std::vector<BattleParticipant>& side) {
     return -1;
 }
 
+// C-01 — Bando sobre el que actua una habilidad. Hasta ahora
+// resolveAllyAction ignoraba Skill::target y buscaba SIEMPRE el objetivo
+// dentro de m_enemies: "Cura" gastaba los PM del jugador y curaba al
+// monstruo. Self/SingleAlly/AllAllies apuntan al bando propio; el resto,
+// al contrario.
+//
+// Las variantes All* se resuelven aqui sobre UN solo participante del
+// bando correcto, igual que las Single: el area de efecto es funcion
+// nueva y la fase C no admite ninguna (regla del pla definitiu, punto 6).
+// Lo que se arregla es el BANDO, que era el bug.
+bool skillTargetsOwnSide(SkillTarget target) {
+    return target == SkillTarget::Self || target == SkillTarget::SingleAlly ||
+           target == SkillTarget::AllAllies;
+}
+
 }  // namespace
 
 BattleState::BattleState(std::vector<BattleParticipant> allies,
@@ -89,12 +104,39 @@ void BattleState::resolveAllyAction(std::size_t allyIndex, const BattleAction& a
         return;
     }
 
-    if (action.targetIndex < 0 ||
-        static_cast<std::size_t>(action.targetIndex) >= m_enemies.size() ||
-        !participantAlive(m_enemies[static_cast<std::size_t>(action.targetIndex)])) {
-        return;  // objetivo invalido/muerto: el llamador (HUD/IA) deberia haberlo filtrado
+    // C-01 — La habilidad se resuelve ANTES de validar el objetivo,
+    // porque es ella la que dice contra que bando se valida. De paso, el
+    // orden deja el PM correcto: se comprueba que la habilidad existe y
+    // se puede pagar, se comprueba el objetivo, y solo entonces se gasta
+    // -- una sola vez y solo si el efecto se llega a aplicar. Antes, la
+    // validacion de objetivo iba primero pero SIEMPRE contra m_enemies.
+    const Skill* skill = nullptr;
+    if (action.type == BattleActionType::UseSkill) {
+        skill = m_catalog != nullptr ? m_catalog->find(action.skillId) : nullptr;
+        if (skill == nullptr || actor.skills == nullptr || !actor.skills->canUse(*skill)) {
+            logLine(actor.name + " no puede usar \"" + action.skillId + "\".");
+            return;
+        }
     }
-    BattleParticipant& target = m_enemies[static_cast<std::size_t>(action.targetIndex)];
+
+    // Attack va siempre contra el bando contrario; UseSkill, contra el
+    // que diga Skill::target.
+    const bool ownSide = skill != nullptr && skillTargetsOwnSide(skill->target);
+    std::vector<BattleParticipant>& side = ownSide ? m_allies : m_enemies;
+
+    // Self no admite eleccion: el objetivo es quien actua, y targetIndex
+    // se ignora (mismo criterio que Item/Flee). Para el resto,
+    // targetIndex indexa el bando que se acaba de decidir.
+    std::size_t chosenIndex = allyIndex;
+    if (skill == nullptr || skill->target != SkillTarget::Self) {
+        if (action.targetIndex < 0 ||
+            static_cast<std::size_t>(action.targetIndex) >= side.size() ||
+            !participantAlive(side[static_cast<std::size_t>(action.targetIndex)])) {
+            return;  // objetivo invalido/muerto: el llamador (HUD/IA) deberia haberlo filtrado
+        }
+        chosenIndex = static_cast<std::size_t>(action.targetIndex);
+    }
+    BattleParticipant& target = side[chosenIndex];
 
     if (action.type == BattleActionType::Attack) {
         // === Ataque básico vía Nd6 ONEgAI (antes: kBasicAttackPower) ===
@@ -102,11 +144,6 @@ void BattleState::resolveAllyAction(std::size_t allyIndex, const BattleAction& a
         logLine(actor.name + " ataca a " + target.name + " (" + degreeLabel(r.degree) + ": " +
                 std::to_string(r.hpChange) + " de daño).");
     } else {  // UseSkill
-        const Skill* skill = m_catalog != nullptr ? m_catalog->find(action.skillId) : nullptr;
-        if (skill == nullptr || actor.skills == nullptr || !actor.skills->canUse(*skill)) {
-            logLine(actor.name + " no puede usar \"" + action.skillId + "\".");
-            return;
-        }
         actor.skills->spend(*skill);
         SkillApplyResult r =
             ApplySkillEffect(*skill, *actor.combatant, *target.combatant, *m_rngInUse);

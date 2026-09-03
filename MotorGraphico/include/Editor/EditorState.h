@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "Core/Math/GridCoord.h"
@@ -80,6 +81,10 @@ public:
     // cargado para que solo se ofrezcan ids reales).
     void setTilePalette(std::vector<int> gids);
     void setObjectPalette(std::vector<std::string> objectIds);
+    // Etiquetas editoriales opcionales para que el filtro busque por el
+    // nombre que ve el autor, no solo por el GID/ID técnico.
+    void setTilePaletteLabels(std::unordered_map<int, std::string> labels);
+    void setObjectPaletteLabels(std::unordered_map<std::string, std::string> labels);
     // Destinos disponibles para la herramienta LinkLevel. Son rutas de
     // nivel completas (assets/levels/*.json), justo el formato que guarda
     // ObjectSpawn::targetLevel.
@@ -320,6 +325,8 @@ private:
     std::vector<int> m_tilePaletteAll;
     std::vector<std::string> m_objectPaletteAll;
     std::vector<std::string> m_levelPaletteAll;
+    std::unordered_map<int, std::string> m_tilePaletteLabels;
+    std::unordered_map<std::string, std::string> m_objectPaletteLabels;
     std::vector<int> m_tilePalette;
     std::vector<std::string> m_objectPalette;
     std::vector<std::string> m_levelPalette;

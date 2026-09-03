@@ -11,7 +11,7 @@
 #include "Render/SpriteBatch.h"
 
 class Camera;
-class TileMap;
+class RuntimeTileMap;
 class TextureAtlas;
 class Texture;
 class Shader;
@@ -19,9 +19,9 @@ class IRenderable;
 class FogOfWar;
 class ColorLUT;
 
-// Orquesta un frame completo: fondo (TileMap, con culling, Fase 2) +
+// Orquesta un frame completo: fondo (RuntimeTileMap, con culling, Fase 2) +
 // entidades (IRenderable, con Painter's Algorithm, Fase 3), todo sobre un
-// unico SpriteBatch. No posee Camera/TileMap/Shader (punteros no
+// unico SpriteBatch. No posee Camera/RuntimeTileMap/Shader (punteros no
 // propietarios: los gestiona quien construya el renderer, ver
 // demo_isometric_renderer.cpp), pero si el SpriteBatch (por valor, como
 // en el diagrama de clases) y el TextureAtlas del tileset del mapa.
@@ -31,7 +31,7 @@ class ColorLUT;
 // tiene forma de resolver Tile::getTilesetID() a un UVRect.
 class IsometricRenderer {
 public:
-    IsometricRenderer(Camera* camera, TileMap* map, TextureAtlas* atlas, Shader* shader);
+    IsometricRenderer(Camera* camera, RuntimeTileMap* map, TextureAtlas* atlas, Shader* shader);
 
     void addToQueue(IRenderable* obj);
 
@@ -166,7 +166,7 @@ private:
 
     Camera* m_camera;
     SpriteBatch m_spriteBatch;
-    TileMap* m_map;
+    RuntimeTileMap* m_map;
     TextureAtlas* m_atlas;
     std::vector<IRenderable*> m_renderQueue;
     Shader* m_shader;

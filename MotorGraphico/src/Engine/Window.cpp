@@ -49,5 +49,6 @@ Window::~Window() {
 }
 
 bool Window::shouldClose() const { return glfwWindowShouldClose(m_handle) != 0; }
+bool Window::hasInputFocus() const { return glfwGetWindowAttrib(m_handle, GLFW_FOCUSED) == GLFW_TRUE; }
 void Window::pollEvents() const { glfwPollEvents(); }
 void Window::swapBuffers() const { glfwSwapBuffers(m_handle); }

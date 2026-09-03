@@ -91,6 +91,12 @@ std::vector<std::string> NarrativeState::flags() const {
     return out;
 }
 
+std::vector<std::string> NarrativeState::beatsFired() const {
+    std::vector<std::string> out(m_beatsFired.begin(), m_beatsFired.end());
+    std::sort(out.begin(), out.end());
+    return out;
+}
+
 TimerState& NarrativeState::timerRef(const std::string& id) {
     for (TimerState& t : m_timers) {
         if (t.id == id) return t;
@@ -519,6 +525,22 @@ void NarrativeEngine::tickTimers(NarrativeState& state, float dtActivo,
 
     for (const TimerDefinition& t : m_adventure->timers) {
         TimerState& ts = state.timerRef(t.id);
+
+        // C-08 — El vector de avisos se ajusta a la definicion ACTUAL
+        // antes de que nadie lo indexe. startTimer() lo dimensiona bien,
+        // pero un guardado lo restaura con el tamano que tenia el dia en
+        // que se guardo: anadir un aviso a una aventura convertia todas
+        // las partidas ya empezadas en una escritura fuera de rango
+        // (ts.avisosDados[i] con i < t.avisos.size()).
+        //
+        // resize() y no assign(): conserva el prefijo, es decir los
+        // avisos que el jugador YA recibio, y rellena con false solo los
+        // nuevos. Quitar un aviso tambien queda cubierto (el vector
+        // sobra y se recorta) aunque ese caso no petaba.
+        if (ts.avisosDados.size() != t.avisos.size()) {
+            ts.avisosDados.resize(t.avisos.size(), false);
+        }
+
         if (!ts.activo) {
             continue;
         }

@@ -1,13 +1,13 @@
 #include "Game/GameSession.h"
 
 #include "Level/ObjectCatalog.h"
-#include "Render/TileMap.h"
 #include "RPG/DicePoolEngine.h"
 #include "RPG/Definitions/SkillDefinition.h"
+#include "Runtime/RuntimeTileMap.h"
 
 #include <algorithm>
 
-GameSession::GameSession(TileMap* map, ObjectCatalog* catalog, SkillCatalog* skillCatalog,
+GameSession::GameSession(RuntimeTileMap* map, ObjectCatalog* catalog, SkillCatalog* skillCatalog,
                          LevelDefinition level, ICombatant* playerBody, SkillSet* playerSkills,
                          std::vector<std::string>* inventory)
     : m_map(map)
@@ -26,12 +26,14 @@ GameSession::GameSession(TileMap* map, ObjectCatalog* catalog, SkillCatalog* ski
     // rechaza el nivel: mismo criterio permisivo que LevelLoader, que a
     // proposito no valida ids -- ver su comentario; un id roto se ve en
     // pantalla como un objeto inerte, no revienta la partida).
-    for (const ObjectSpawn& spawn : m_level.objects) {
+    for (std::size_t spawnIndex = 0; spawnIndex < m_level.objects.size(); ++spawnIndex) {
+        const ObjectSpawn& spawn = m_level.objects[spawnIndex];
         const ObjectDefinition* def =
             m_catalog != nullptr ? m_catalog->find(spawn.objectId) : nullptr;
         if (def != nullptr && def->category == ObjectCategory::Enemy) {
             WorldEnemy enemy;
             enemy.objectId = spawn.objectId;
+            enemy.spawnIndex = static_cast<int>(spawnIndex);
             enemy.position = spawn.position;
             // La patrulla viene del SPAWN (donde patrulla ESTE slime), no
             // del catalogo (que describe que es un slime): antes se
@@ -210,6 +212,27 @@ void GameSession::addGold(int amount) {
     m_gold = std::max(0, m_gold + amount);
 }
 
+// C-03 — El traspaso del estado del jugador entre sesiones, en un solo
+// sitio. Ver PlayerCarryOver en GameSession.h.
+PlayerCarryOver GameSession::captureCarryOver() const {
+    PlayerCarryOver state;
+    state.gold = m_gold;
+    state.moralityValue = m_morality.value();
+    state.stepsSinceRent = m_stepsSinceRent;
+    state.businesses = m_businesses;
+    return state;
+}
+
+void GameSession::applyCarryOver(const PlayerCarryOver& state) {
+    // Asignacion, no acumulacion: ver el comentario de la declaracion.
+    // setValue() no registra motivo a proposito -- cruzar una puerta no
+    // es una accion moral, es el mismo estado en otro mapa.
+    m_gold = std::max(0, state.gold);
+    m_morality.setValue(state.moralityValue);
+    m_stepsSinceRent = std::max(0, state.stepsSinceRent);
+    m_businesses = state.businesses;
+}
+
 void GameSession::startInteraction(const ObjectDefinition& def) {
     if (def.category != ObjectCategory::Npc) {
         return;
@@ -323,6 +346,34 @@ void GameSession::resolveSkillChecks(const std::vector<RPG::SkillCheckRequest>& 
     }
 }
 
+// C-04 — Ver la declaracion en GameSession.h.
+bool GameSession::spawnEnemyFromCatalog(const std::string& objectId, GridCoord position,
+                                        bool summoned, int identity, int health) {
+    const ObjectDefinition* def = m_catalog != nullptr ? m_catalog->find(objectId) : nullptr;
+    if (def == nullptr || def->category != ObjectCategory::Enemy) {
+        return false;
+    }
+
+    WorldEnemy enemy;
+    enemy.objectId = objectId;
+    enemy.summoned = summoned;
+    enemy.spawnIndex = identity;
+    enemy.position = position;
+    // patrolMin == patrolMax == posicion => quieto. Un invocado no
+    // patrulla: aparece donde te emboscan y ahi se queda.
+    enemy.brain =
+        std::make_unique<EnemyBrain>(position, position, position, def->combat.maxHealth);
+    if (health >= 0) {
+        enemy.brain->set_health(health);
+    }
+    enemy.skills = std::make_unique<SkillSet>(def->combat.maxMana);
+    for (const std::string& skillId : def->combat.skillIds) {
+        enemy.skills->learn(skillId);
+    }
+    m_enemies.push_back(std::move(enemy));
+    return true;
+}
+
 void GameSession::resolveBattles(const std::vector<RPG::BattleRequest>& battles) {
     // Materializa al enemigo del catalogo y arranca el combate. Ver el
     // header para por que las flags no se encienden aqui.
@@ -347,18 +398,20 @@ void GameSession::resolveBattles(const std::vector<RPG::BattleRequest>& battles)
         }
 
         // El enemigo aparece donde esta el jugador: lo ha emboscado la
-        // narrativa, no estaba patrullando el nivel. patrolMin==patrolMax
-        // ==posicion => quieto.
-        WorldEnemy enemy;
-        enemy.objectId = req.monsterId;
-        enemy.position = m_playerPosition;
-        enemy.brain = std::make_unique<EnemyBrain>(m_playerPosition, m_playerPosition,
-                                                    m_playerPosition, def->combat.maxHealth);
-        enemy.skills = std::make_unique<SkillSet>(def->combat.maxMana);
-        for (const std::string& skillId : def->combat.skillIds) {
-            enemy.skills->learn(skillId);
+        // narrativa, no estaba patrullando el nivel.
+        //
+        // C-04 — Y recibe IDENTIDAD PROPIA: summoned=true y un ordinal de
+        // sesion. Antes se quedaba con el spawnIndex por defecto (-1),
+        // que es el valor de "ninguno": al guardar la partida y volver a
+        // cargarla, restoreSaveGame buscaba un enemigo del nivel con
+        // indice -1, no lo encontraba y rechazaba el guardado entero. Si
+        // huias de una emboscada y guardabas, esa partida no se abria
+        // nunca mas.
+        if (!spawnEnemyFromCatalog(req.monsterId, m_playerPosition, /*summoned=*/true,
+                                   m_nextSummonIndex, /*health=*/-1)) {
+            continue;  // no deberia pasar: def ya se ha validado arriba
         }
-        m_enemies.push_back(std::move(enemy));
+        ++m_nextSummonIndex;
 
         m_pendingBattleVictoryFlag = req.flagVictory;
         m_pendingBattleDefeatFlag = req.flagDefeat;
@@ -393,6 +446,26 @@ bool GameSession::enterLevelNarrative(const std::string& levelId) {
         return false;
     }
     return applyNarrative(m_narrative->enterLevel(levelId, *m_narrativeState));
+}
+
+void GameSession::updateNarrativeTimers(float dtActivo, const std::string& nivelActual) {
+    if (m_narrative == nullptr || m_narrativeState == nullptr) {
+        return;
+    }
+    // flagCount() antes/despues detecta que el tick encendio ALGO nuevo
+    // (aviso por umbral o expiracion). Re-encender una flag ya encendida
+    // no cuenta — ese aviso ya se conto una vez.
+    const std::size_t flagsAntes = m_narrativeState->flagCount();
+    m_narrative->tickTimers(*m_narrativeState, dtActivo, nivelActual);
+    if (m_narrativeState->flagCount() == flagsAntes) {
+        return;
+    }
+    // La consecuencia sale como beat de dialogo, pero solo en Exploration:
+    // no se interrumpe una tienda ni un dialogo abierto (el tick del
+    // cierre de ese dialogo lo recoge igual).
+    if (m_mode == GameMode::Exploration) {
+        applyNarrative(m_narrative->tick(*m_narrativeState));
+    }
 }
 
 bool GameSession::talkNarrative(const std::string& npcId) {

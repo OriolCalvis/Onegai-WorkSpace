@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Math/Vector2.h"
+#include "Render/IUpdatable.h"
 
 class SpriteBatch;
 
@@ -64,9 +65,18 @@ struct HudTransform {
 // el contrato IUpdatable del resto del motor, sin obligar a los widgets
 // estaticos a implementar nada (fractura #3 del analisis de coherencia,
 // ver ARCHITECTURE.md).
-class IHudElement {
+// C-19 — IHudElement ES un IUpdatable. Antes eran dos contratos
+// `update(float)` sin ningun parentesco: la misma firma, el mismo
+// significado ("avanza tu estado dt segundos") y ninguna relacion de
+// tipos, asi que nada impedia que se separaran. Ahora hay UNO.
+//
+// El cuerpo vacio de update() se declara aqui, no en IUpdatable: para una
+// Entity avanzar en el tiempo es obligatorio (su update sigue siendo
+// puro), mientras que la mayoria de widgets no tienen estado temporal y
+// no deben verse obligados a escribir un metodo vacio.
+class IHudElement : public IUpdatable {
 public:
-    virtual ~IHudElement() = default;
+    ~IHudElement() override = default;
 
     // batch: del que sea dueno HudManager::render() (ver su comentario);
     // el elemento solo llama a batch.submit(), nunca begin()/end()/flush()
@@ -84,7 +94,7 @@ public:
     // Cuerpo vacio por defecto: la mayoria de widgets no tienen estado
     // temporal (su valor lo fija quien los posee cada frame), y no deben
     // verse obligados a implementar nada.
-    virtual void update(float /*deltaTime*/) {}
+    void update(float /*deltaTime*/) override {}
 
     void setVisible(bool visible) { m_visible = visible; }
     bool isVisible() const { return m_visible; }

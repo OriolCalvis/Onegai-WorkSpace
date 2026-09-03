@@ -196,6 +196,15 @@ public:
     Result<int> loadFromString(const std::string& jsonText);
     Result<int> loadFromFile(const std::string& path);
 
+    // El camino de vuelta: el catalogo editado (el editor de autoria del
+    // nivel crea y modifica entradas sin tocar el JSON a mano) se vuelve
+    // a escribir con el MISMO formato que entiende loadFromString. El
+    // round-trip exportJson() -> loadFromString() reproduce las entradas
+    // (verificado en demo_object_catalog.cpp). Las salidas salen en el
+    // orden estable de ids(): un guardado repetido no baraja el fichero,
+    // que es lo que necesita el control de versiones.
+    std::string exportJson() const;
+
 private:
     std::unordered_map<std::string, ObjectDefinition> m_objects;
 };

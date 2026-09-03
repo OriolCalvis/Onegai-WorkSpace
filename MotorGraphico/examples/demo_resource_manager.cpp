@@ -4,18 +4,21 @@
 
 #include <fstream>
 #include <iostream>
+#include <string>
 
 int main() {
+    const std::string assetPath = std::string(DEMO_OUTPUT_DIRECTORY) + "/demo_asset.txt";
+
     // Preparar un fichero de prueba en disco.
     {
-        std::ofstream out("demo_asset.txt");
+        std::ofstream out(assetPath);
         out << "Hola desde ResourceManager<T>!";
     }
 
     TextAssetManager manager;
 
     // Caso 1: carga exitosa.
-    auto result = manager.load("saludo", "demo_asset.txt");
+    auto result = manager.load("saludo", assetPath);
     require(result.isOk());
     std::cout << "[OK] Cargado 'saludo': " << result.value()->content() << "\n";
 

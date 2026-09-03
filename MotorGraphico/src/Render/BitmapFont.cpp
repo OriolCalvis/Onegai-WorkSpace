@@ -251,22 +251,44 @@ std::vector<std::string> BitmapFont::wrapText(const std::string& text, int maxWi
 
         // Vuelca "word" (de "glyphs" glifos) sobre las lineas de salida,
         // cortando con guion cuando la palabra sola no cabe en una linea.
+        // C-06 — Con la caja de UN solo glifo de ancho no cabe "glifo +
+        // guion": el guion se comeria la linea entera. La version
+        // anterior lo intentaba igual, tomaba maxGlyphs-1 == 0 glifos y
+        // empujaba "-" sin consumir nada de la palabra -- bucle infinito
+        // y vector creciendo hasta quedarse sin memoria. Le llegaba
+        // cualquier HudText lo bastante estrecho.
+        //
+        // Con maxGlyphs == 1 se corta a pelo, un glifo por linea y sin
+        // inventar guiones: el guion es una ayuda de lectura, no una
+        // obligacion, y una caja de un glifo no tiene sitio para el.
+        const bool canHyphenate = maxGlyphs > 1;
+        const int chunkGlyphs = canHyphenate ? maxGlyphs - 1 : maxGlyphs;
+
         auto flushWord = [&](std::string word, int glyphs) {
             while (glyphs > maxGlyphs) {
                 // La palabra no cabe entera en ninguna linea: se corta a
-                // maxGlyphs-1 glifos + '-' y el resto sigue en la
-                // siguiente. (Corte por bytes UTF-8: se recorre por
-                // codepoints para no partir un caracter acentuado.)
+                // chunkGlyphs glifos (+ '-' si hay sitio) y el resto
+                // sigue en la siguiente. (Corte por bytes UTF-8: se
+                // recorre por codepoints para no partir un caracter
+                // acentuado.)
                 std::string part;
                 int taken = 0;
                 std::size_t i = 0;
-                while (taken < maxGlyphs - 1 && i < word.size()) {
+                while (taken < chunkGlyphs && i < word.size()) {
                     const std::size_t start = i;
                     nextCodepoint(word, i);
                     part.append(word, start, i - start);
                     ++taken;
                 }
-                part.push_back('-');
+                if (taken == 0) {
+                    // No se ha consumido nada: repetir daria otra vuelta
+                    // identica. Se sale en vez de girar para siempre --
+                    // la misma clase de fallo que arregla C-06.
+                    break;
+                }
+                if (canHyphenate) {
+                    part.push_back('-');
+                }
                 if (!current.empty()) {
                     out.push_back(current);
                     current.clear();

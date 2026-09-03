@@ -1,10 +1,12 @@
-#include "Editor/ProjectIndex.h"
+#include "Project/ProjectIndex.h"
 
 #include <cstdio>
 #include <string>
 #include <vector>
 
 #include "Core/Json/JsonValue.h"
+#include "Project/ProjectSerializer.h"
+#include <algorithm>
 
 namespace Editor {
 namespace {
@@ -35,21 +37,7 @@ bool existe(const std::string& ruta) {
     return true;
 }
 
-std::vector<std::string> lista(const JsonValue& v) {
-    std::vector<std::string> out;
-    if (!v.isArray()) {
-        return out;
-    }
-    out.reserve(v.size());
-    for (std::size_t i = 0; i < v.size(); ++i) {
-        out.push_back(v[i].asString(""));
-    }
-    return out;
-}
-
-// Escapa lo justo para volver a escribir un manifiesto. NO se emiten
-// escapes \uXXXX: el parser JSON del motor no los decodifica a proposito
-// (ver JsonValue.cpp), asi que el UTF-8 va crudo y punto.
+// El indice solo escribe ids previamente validados como [a-z0-9_].
 std::string esc(const std::string& s) {
     std::string r;
     r.reserve(s.size() + 8);
@@ -62,46 +50,42 @@ std::string esc(const std::string& s) {
     return r;
 }
 
-// Averigua a que apunta 'entrada'. El campo se escribio de dos formas
-// distintas -- ruta completa en boundington y oeste_norte, nombre suelto
-// en este_norte -- porque nunca se documento cual era. En vez de declarar
-// buena una de las dos y romper el trabajo de otro, se admiten ambas y se
-// deja anotado en el propio Project a que resolvio.
+// Resuelve las rutas de entrada contra la raiz solicitada, tambien al
+// escanear una build copiada fuera del directorio del motor.
 void resuelveEntrada(Project& p, const std::string& assetsRoot) {
     p.entryKind = Project::EntryKind::None;
     p.entryPath.clear();
-    if (p.entry.empty()) {
-        return;
-    }
-    // Con barra: es una ruta y se toma tal cual, sin adivinar.
+    if (p.entry.empty()) return;
+    std::string relative = p.entry;
+    if (relative.compare(0, 7, "assets/") == 0) relative.erase(0, 7);
     if (p.entry.find('/') != std::string::npos) {
-        if (existe(p.entry)) {
-            p.entryPath = p.entry;
-            // La carpeta dice que es. No se abre el fichero para mirarlo
-            // dentro: scan() lo hace al listar el editor y leer 96
-            // ficheros para pintar una lista es caro y no hace falta.
-            p.entryKind = p.entry.find("/adventures/") != std::string::npos
-                              ? Project::EntryKind::Adventure
-                              : Project::EntryKind::Level;
-        } else {
+        const auto path = assetsRoot + "/" + relative;
+        if (!existe(path)) {
             p.entryKind = Project::EntryKind::Missing;
+            return;
         }
+        p.entryPath = path;
+        const auto directory = p.settings.adventuresDirectory + "/";
+        p.entryKind = relative.compare(0, directory.size(), directory) == 0
+            ? Project::EntryKind::Adventure : Project::EntryKind::Level;
         return;
     }
-    // Nombre suelto: aventuras primero, que es el caso normal.
-    const std::string comoAv = assetsRoot + "/adventures/" + p.entry;
-    if (existe(comoAv)) {
-        p.entryPath = comoAv;
-        p.entryKind = Project::EntryKind::Adventure;
-        return;
-    }
-    const std::string comoNivel = assetsRoot + "/levels/" + p.entry;
-    if (existe(comoNivel)) {
-        p.entryPath = comoNivel;
-        p.entryKind = Project::EntryKind::Level;
-        return;
+    for (const auto& group : {std::make_pair(p.settings.adventuresDirectory, Project::EntryKind::Adventure),
+                              std::make_pair(p.settings.levelsDirectory, Project::EntryKind::Level)}) {
+        const auto path = assetsRoot + "/" + group.first + "/" + relative;
+        if (existe(path)) {
+            p.entryPath = path;
+            p.entryKind = group.second;
+            return;
+        }
     }
     p.entryKind = Project::EntryKind::Missing;
+}
+
+bool validId(const std::string& id) {
+    return !id.empty() && std::all_of(id.begin(), id.end(), [](char c) {
+        return (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_';
+    });
 }
 
 // Reescribe assets/proyectos/index.json con esta lista de ids. Lo usan
@@ -138,10 +122,20 @@ Result<ProjectIndex> ProjectIndex::scan(const std::string& assetsRoot) {
     if (!raiz.isOk()) {
         return Result<ProjectIndex>::Error(rutaIndice + ": " + raiz.errorMessage());
     }
-    const std::vector<std::string> ids = lista(raiz.value()["proyectos"]);
-    if (ids.empty()) {
-        return Result<ProjectIndex>::Error(rutaIndice + ": la lista 'proyectos' esta vacia");
+    const auto& entries = raiz.value()["proyectos"];
+    if (!entries.isArray()) {
+        return Result<ProjectIndex>::Error(rutaIndice + ": falta array 'proyectos'");
     }
+    std::vector<std::string> ids;
+    for (std::size_t i = 0; i < entries.size(); ++i) {
+        if (!entries[i].isString() || !validId(entries[i].asString()))
+            return Result<ProjectIndex>::Error(rutaIndice + ": id de proyecto invalido");
+        const auto id = entries[i].asString();
+        if (std::find(ids.begin(), ids.end(), id) != ids.end())
+            return Result<ProjectIndex>::Error(rutaIndice + ": id duplicado '" + id + "'");
+        ids.push_back(id);
+    }
+    idx.m_declaredIds = ids;
 
     for (const std::string& id : ids) {
         const std::string ruta = assetsRoot + "/proyectos/" + id + ".json";
@@ -152,24 +146,16 @@ Result<ProjectIndex> ProjectIndex::scan(const std::string& assetsRoot) {
             idx.m_orphans.push_back("proyectos/" + id + ".json (declarado en index.json, no existe)");
             continue;
         }
-        auto p = JsonValue::parse(t);
-        if (!p.isOk()) {
-            idx.m_orphans.push_back("proyectos/" + id + ".json (JSON invalido: " + p.errorMessage() + ")");
+        auto parsed = ProjectSerializer::deserializeProject(t);
+        if (!parsed.isOk()) {
+            idx.m_orphans.push_back("proyectos/" + id + ".json (" + parsed.errorMessage() + ")");
             continue;
         }
-        const JsonValue& v = p.value();
-        Project pr;
-        pr.id = v["id"].asString(id);
-        pr.name = v["nombre"].asString(pr.id);
-        pr.description = v["descripcion"].asString("");
-        pr.epoch = v["epoca"].asString("");
-        pr.author = v["autor"].asString("");
-        pr.prefix = v["prefijo"].asString("");
-        pr.entry = v["entrada"].asString("");
-        pr.levels = lista(v["niveles"]);
-        pr.maps = lista(v["mapas"]);
-        pr.adventures = lista(v["aventuras"]);
-        pr.catalogs = lista(v["catalogos"]);
+        Project pr = std::move(parsed.value());
+        if (pr.id != id) {
+            idx.m_orphans.push_back("proyectos/" + id + ".json (id no coincide con index.json)");
+            continue;
+        }
         resuelveEntrada(pr, assetsRoot);
         idx.m_projects.push_back(std::move(pr));
     }
@@ -196,11 +182,11 @@ ProjectCheck ProjectIndex::check(const std::string& id) const {
 
     struct Grupo {
         const std::vector<std::string>* lista;
-        const char* carpeta;
+        std::string carpeta;
     };
     const Grupo grupos[] = {
-        {&p->levels, "levels"}, {&p->maps, "maps"},
-        {&p->adventures, "adventures"}, {&p->catalogs, "objects"},
+        {&p->levels, p->settings.levelsDirectory}, {&p->maps, p->settings.mapsDirectory},
+        {&p->adventures, p->settings.adventuresDirectory}, {&p->catalogs, p->settings.catalogsDirectory},
     };
     for (const Grupo& g : grupos) {
         for (const std::string& f : *g.lista) {
@@ -219,7 +205,8 @@ ProjectCheck ProjectIndex::check(const std::string& id) const {
         c.problems.push_back("sin 'entrada': no hay aventura ni nivel por el que arrancar");
     } else if (p->entryKind == Project::EntryKind::Missing) {
         c.problems.push_back("entrada '" + p->entry + "' no aparece ni en " + m_root +
-                             "/adventures/ ni en " + m_root + "/levels/");
+                             "/" + p->settings.adventuresDirectory + "/ ni en " + m_root +
+                             "/" + p->settings.levelsDirectory + "/");
         ++c.missingFiles;
     }
     return c;
@@ -246,7 +233,9 @@ Result<Project> ProjectIndex::create(const std::string& assetsRoot, const std::s
     }
 
     auto existente = scan(assetsRoot);
-    if (existente.isOk() && existente.value().find(id) != nullptr) {
+    if (!existente.isOk()) return Result<Project>::Error(existente.errorMessage());
+    if (std::find(existente.value().m_declaredIds.begin(), existente.value().m_declaredIds.end(), id)
+            != existente.value().m_declaredIds.end()) {
         return Result<Project>::Error("ya existe un proyecto con id '" + id + "'");
     }
     // Y tampoco si hay manifiesto suelto sin entrada en el indice. Pasa
@@ -265,29 +254,17 @@ Result<Project> ProjectIndex::create(const std::string& assetsRoot, const std::s
     p.prefix = prefix;
     p.author = author;
     p.epoch = epoch;
-
-    std::FILE* f = std::fopen(destino.c_str(), "wb");
-    if (f == nullptr) {
-        return Result<Project>::Error("no se pudo escribir " + destino);
+    const Result<bool> validation = p.validate();
+    if (!validation.isOk()) {
+        return Result<Project>::Error(validation.errorMessage());
     }
-    std::fprintf(f,
-                 "{\n"
-                 " \"_nota\": \"Manifiesto de proyecto. Creado desde el editor.\",\n"
-                 " \"id\": \"%s\",\n \"nombre\": \"%s\",\n \"descripcion\": \"\",\n"
-                 " \"epoca\": \"%s\",\n \"autor\": \"%s\",\n \"prefijo\": \"%s\",\n"
-                 " \"niveles\": [],\n \"mapas\": [],\n \"aventuras\": [],\n"
-                 " \"catalogos\": [],\n \"entrada\": \"\"\n}\n",
-                 esc(id).c_str(), esc(p.name).c_str(), esc(epoch).c_str(),
-                 esc(author).c_str(), esc(prefix).c_str());
-    std::fclose(f);
 
-    // Y al indice, o el proyecto existe en disco y nadie lo ve.
-    std::vector<std::string> ids;
-    if (existente.isOk()) {
-        for (const Project& q : existente.value().projects()) {
-            ids.push_back(q.id);
-        }
-    }
+    const auto saved = ProjectSerializer::saveProjectAtomic(destino, p);
+    if (!saved.isOk()) return Result<Project>::Error(saved.errorMessage());
+
+    // Conservar tambien ids con manifiestos ausentes o invalidos: crear
+    // otro proyecto no debe borrarlos silenciosamente del indice.
+    std::vector<std::string> ids = existente.value().m_declaredIds;
     ids.push_back(id);
     if (!escribeIndice(assetsRoot, ids)) {
         return Result<Project>::Error("no se pudo actualizar " + assetsRoot + "/proyectos/index.json");
@@ -297,12 +274,14 @@ Result<Project> ProjectIndex::create(const std::string& assetsRoot, const std::s
 }
 
 Result<bool> ProjectIndex::remove(const std::string& assetsRoot, const std::string& id) {
+    if (!validId(id)) return Result<bool>::Error("id de proyecto invalido");
     auto actual = scan(assetsRoot);
     if (!actual.isOk()) {
         return Result<bool>::Error(actual.errorMessage());
     }
     const std::string ruta = assetsRoot + "/proyectos/" + id + ".json";
-    const bool enIndice = actual.value().find(id) != nullptr;
+    const auto& declared = actual.value().m_declaredIds;
+    const bool enIndice = std::find(declared.begin(), declared.end(), id) != declared.end();
     const bool enDisco = existe(ruta);
     // Basta con que exista de UNA de las dos formas. Si solo se aceptara
     // "esta en el indice", un manifiesto huerfano -- fichero suelto que
@@ -318,9 +297,9 @@ Result<bool> ProjectIndex::remove(const std::string& assetsRoot, const std::stri
     // mount raro), el proyecto ya no aparece y no se queda un id en la
     // lista apuntando a algo que el editor va a intentar abrir.
     std::vector<std::string> ids;
-    for (const Project& q : actual.value().projects()) {
-        if (q.id != id) {
-            ids.push_back(q.id);
+    for (const auto& projectId : declared) {
+        if (projectId != id) {
+            ids.push_back(projectId);
         }
     }
     if (enIndice && !escribeIndice(assetsRoot, ids)) {

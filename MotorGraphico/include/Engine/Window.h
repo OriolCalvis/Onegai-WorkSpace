@@ -27,6 +27,7 @@ public:
     Window& operator=(Window&&) = delete;
 
     bool shouldClose() const;
+    bool hasInputFocus() const;
     void pollEvents() const;
     void swapBuffers() const;
 

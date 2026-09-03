@@ -3,7 +3,7 @@
 #include "Core/Math/UVRect.h"
 #include "Game/GameSession.h"
 #include "Render/SpriteBatch.h"
-#include "Render/TileMap.h"
+#include "Runtime/RuntimeTileMap.h"
 
 #include <algorithm>
 
@@ -20,16 +20,26 @@ constexpr float kInnerPadding = 4.0f;
 
 }  // namespace
 
-HudMinimap::HudMinimap(const HudTransform& transform, Texture* whiteTexture, const TileMap* map,
-                       const GameSession* session)
+HudMinimap::HudMinimap(const HudTransform& transform, Texture* whiteTexture,
+                       const RuntimeTileMap* map, const GameSession* session)
     : m_transform(transform), m_whiteTexture(whiteTexture), m_map(map), m_session(session) {}
 
+bool HudMinimap::isDrawable() const {
+    // C-02 — Sin sesion o sin mapa no se lee NADA: ni getWidth() ni
+    // playerPosition(). Es la unica puerta por la que el widget toca
+    // esos dos punteros.
+    if (m_map == nullptr || m_session == nullptr) {
+        return false;
+    }
+    return m_map->getWidth() > 0 && m_map->getHeight() > 0;
+}
+
 void HudMinimap::render(SpriteBatch& batch, int viewportWidth, int viewportHeight) const {
+    if (!isDrawable()) {
+        return;  // sin sesion/mapa (o mapa sin cargar): no hay nada representable
+    }
     const int mapW = m_map->getWidth();
     const int mapH = m_map->getHeight();
-    if (mapW <= 0 || mapH <= 0) {
-        return;  // mapa sin cargar: no hay nada representable
-    }
 
     Vector2 topLeft = m_transform.resolveTopLeft(viewportWidth, viewportHeight);
 
@@ -81,7 +91,7 @@ void HudMinimap::render(SpriteBatch& batch, int viewportWidth, int viewportHeigh
             bool blocked = false;
             bool hasTile = false;
             for (int layer = 0; layer < layers; ++layer) {
-                const Tile& tile = m_map->getTile(layer, x, y);
+                const RuntimeTile& tile = m_map->getTile(layer, x, y);
                 hasTile = hasTile || !tile.isEmpty();
                 blocked = blocked || tile.hasCollision();
             }

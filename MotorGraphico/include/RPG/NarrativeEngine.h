@@ -83,6 +83,12 @@ public:
     // atras (mismo criterio que ObjectCatalog con su mapa).
     std::vector<std::string> flags() const;
 
+    // Copia ordenada de los beats ya disparados. Mismo criterio que
+    // flags(): es el otro dato que hay que GUARDAR para que cargar una
+    // partida no repita el prologo ni vuelva a pagar recompensas ya
+    // cobradas (RUN-10). Se expone por copia, no el set interno.
+    std::vector<std::string> beatsFired() const;
+
     // Temporizadores de misión (F1): referencia viva para el motor
     // narrativo (se crea al vuelo la primera vez que se menciona el id).
     // El HUD los lee por copia (timers()) para pintar contador/barra.

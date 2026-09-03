@@ -4,6 +4,13 @@ project(MotorGraficoIsometrico CXX C)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# INF-01.1 — Los demos GL-free ya contienen assert() y devuelven un
+# código de error al fallar. CTest los incorpora como primera capa de
+# regresión, sin obligar a que un desarrollador tenga ventana/OpenGL.
+# Los demos gráficos quedan fuera hasta INF-01.4, donde CI podrá envolverlos
+# explícitamente con xvfb-run.
+include(CTest)
+
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # assets/ (shaders, texturas, mapas TMX, aventuras) se referencia con rutas
@@ -19,6 +26,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 # La copia inicial se queda (deja el arbol listo tras configurar) y ademas hay
 # un target que se ejecuta en CADA build y del que cuelgan los demos.
 file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/tests/fixtures DESTINATION ${CMAKE_BINARY_DIR}/tests)
 
 add_custom_target(copiar_assets ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -32,6 +40,12 @@ add_custom_target(copiar_assets ALL
 add_executable(demo_resource_manager
     examples/demo_resource_manager.cpp
     examples/TextAssetManager.cpp
+)
+# INF-06.2 — Los fixtures de este demo se crean junto al binario, nunca
+# en la raíz del repositorio desde la que se haya invocado.
+file(TO_CMAKE_PATH "${CMAKE_CURRENT_BINARY_DIR}" DEMO_RESOURCE_MANAGER_OUTPUT_DIR)
+target_compile_definitions(demo_resource_manager PRIVATE
+    DEMO_OUTPUT_DIRECTORY="${DEMO_RESOURCE_MANAGER_OUTPUT_DIR}"
 )
 
 # Pool generacional GL-free: evita punteros colgantes al reciclar objetos
@@ -60,6 +74,15 @@ target_link_libraries(motor_math PUBLIC glm::glm)
 add_executable(demo_camera examples/demo_camera.cpp)
 target_link_libraries(demo_camera PRIVATE motor_math)
 
+# RUN-01 — El reloj y el contrato del bucle no dependen de GLFW ni de GL.
+# Mantenerlos en su propio target permite probar la salida y el timestep sin
+# abrir una ventana ni inicializar una partida.
+add_library(motor_engine_loop src/Engine/ApplicationLoop.cpp)
+
+# RUN-02 — Estado de teclado, bindings y snapshots de acciones. Es un núcleo
+# puro: GLFW se adapta desde Application y los tests usan teclas simuladas.
+add_library(motor_input src/Engine/Input/InputSystem.cpp)
+
 # --- Fase 6 de motor_grafico_gantt_rpg.puml (sistema de niveles y
 # contenido): JsonValue (parser JSON propio, sin dependencias de terceros
 # -- ver el comentario de include/Core/Json/JsonValue.h) y, sobre el,
@@ -86,6 +109,36 @@ add_library(motor_rpg
 # incluyen Render/*.h ni GL.
 target_link_libraries(motor_rpg PUBLIC motor_json)
 
+# DOC-01 — Los documentos de proyecto son independientes del runtime y
+# del editor visual. ProjectIndex conserva el I/O de manifiestos; Project
+# y ProjectSettings se validan sin abrir ventana ni cargar assets.
+add_library(motor_project
+    src/Project/Project.cpp
+    src/Project/ProjectIndex.cpp
+    src/Project/ProjectSerializer.cpp
+)
+target_link_libraries(motor_project PUBLIC motor_json motor_map_document)
+
+# DOC-02 — Modelo documental de mapas. No depende de TileMap ni de GL: el
+# builder de DOC-03 será el único puente desde estos datos al runtime.
+add_library(motor_map_document src/Map/MapDocument.cpp)
+
+# RUN-03 — Máquina de escenas sin ventana. Una Scene concreta decide cómo
+# carga un mapa; el manager solo ordena su vida y las transiciones diferidas.
+add_library(motor_scene src/Engine/Scene/SceneManager.cpp)
+
+# RUN-04 — Propietario GL-free de entidades runtime y sus handles
+# generacionales. El render queda fuera hasta el proxy de RUN-05.
+add_library(motor_world src/World/World.cpp)
+
+# DOC-03 — Runtime compacto construido desde MapDocument. Permanece libre de
+# render y el adaptador TMX legado (motor_map) depende de él, nunca al revés.
+add_library(motor_runtime_map
+    src/Runtime/RuntimeTileMap.cpp
+    src/Runtime/RuntimeTileMapBuilder.cpp
+)
+target_link_libraries(motor_runtime_map PUBLIC motor_map_document motor_math)
+
 add_library(motor_level
     src/Level/LevelLoader.cpp
     src/Game/Skill.cpp
@@ -93,9 +146,9 @@ add_library(motor_level
     src/Level/ObjectCatalog.cpp
     src/Editor/EditorState.cpp
     src/Editor/ObjectInspector.cpp
-    src/Editor/ProjectIndex.cpp
     src/Editor/ProjectHub.cpp
     src/Game/GameSession.cpp
+    src/Game/SaveGame.cpp
     src/Game/Morality.cpp
     src/Game/EnemyBrain.cpp
 )
@@ -105,7 +158,7 @@ add_library(motor_level
 # que use GameSession linka ambas librerias -- mismo patron que
 # demo_editor_state. Ninguna de las dos trae GLAD/GLFW: siguen siendo
 # GL-free.
-target_link_libraries(motor_level PUBLIC motor_json motor_rpg)
+target_link_libraries(motor_level PUBLIC motor_json motor_project motor_rpg motor_runtime_map)
 
 add_executable(demo_level_loader examples/demo_level_loader.cpp)
 target_link_libraries(demo_level_loader PRIVATE motor_level)
@@ -314,13 +367,18 @@ set(STB_DIR ${CMAKE_SOURCE_DIR}/third_party/stb)
 # se pueden compilar y probar sin X11 ni Xvfb (ver demo_tilemap.cpp). ---
 set(TINYXML2_DIR ${CMAKE_SOURCE_DIR}/third_party/tinyxml2)
 
+add_library(motor_tmx_import
+    src/Import/TmxMapImporter.cpp
+    ${TINYXML2_DIR}/tinyxml2.cpp
+)
+target_include_directories(motor_tmx_import PUBLIC ${TINYXML2_DIR})
+target_link_libraries(motor_tmx_import PUBLIC motor_map_document)
+
 add_library(motor_map
     src/Core/Resources/TextureAtlas.cpp
     src/Render/TileMap.cpp
-    ${TINYXML2_DIR}/tinyxml2.cpp
 )
-target_include_directories(motor_map PUBLIC ${TINYXML2_DIR})
-target_link_libraries(motor_map PUBLIC motor_math)
+target_link_libraries(motor_map PUBLIC motor_runtime_map motor_tmx_import)
 
 if (EXISTS ${GLAD_DIR}/src/glad.c)
     # demo_tilemap.cpp SI construye un Texture real (aunque con glID=0,
@@ -336,6 +394,10 @@ if (EXISTS ${GLAD_DIR}/src/glad.c)
     )
     target_include_directories(demo_tilemap PRIVATE ${GLAD_DIR}/include)
     target_link_libraries(demo_tilemap PRIVATE motor_map)
+    if (WIN32)
+        # glad.c resuelve las funciones OpenGL mediante opengl32 en Windows.
+        target_link_libraries(demo_tilemap PRIVATE opengl32)
+    endif()
 
     # Fase 9: BitmapFont, pero SOLO sus dos metodos estaticos y puros
     # (glyphUV()/measureText(), ver el comentario de BitmapFont.h) -- este
@@ -456,7 +518,7 @@ if (EXISTS ${GLAD_DIR}/src/glad.c AND EXISTS ${STB_DIR}/stb_image.h)
     # expone en su propia interfaz publica, y no trae GLAD/GLFW consigo
     # (ver comentario mas arriba), asi que no reintroduce ninguna
     # dependencia nueva sobre motor_core.
-    target_link_libraries(motor_core PUBLIC glfw glm::glm motor_map)
+    target_link_libraries(motor_core PUBLIC glfw glm::glm motor_map motor_engine_loop motor_input)
 
     add_executable(sandbox_window examples/sandbox_window.cpp)
     target_link_libraries(sandbox_window PRIVATE motor_core)
@@ -528,7 +590,7 @@ if (EXISTS ${GLAD_DIR}/src/glad.c AND EXISTS ${STB_DIR}/stb_image.h)
     # desarrollo, ver EditorState.h); el nucleo GL-free ya esta verificado
     # en demo_editor_state. Usa GLFW directamente (raton) via
     # Window::handle(), ademas de motor_core/motor_math/motor_level.
-    add_executable(level_editor examples/level_editor.cpp)
+    add_executable(level_editor editor/src/level_editor.cpp)
     target_link_libraries(level_editor PRIVATE motor_core motor_math motor_level)
     # El editor consume sus iconos de previsualización desde assets/:
     # sincronizarlos en cada build evita que un asset nuevo falle solo
@@ -570,3 +632,233 @@ include(cmake/ConditionEngineTests.cmake)
 
 # C-22 — Comprobador estático de declaraciones sin definición en include/RPG.
 include(cmake/DeclarationCheck.cmake)
+include(cmake/ProjectManifestTests.cmake)
+
+# INF-01.1 — Registro inicial de los demos GL-free verificados en la línea
+# base. Las pruebas se ejecutan desde el directorio de build porque sus rutas
+# de assets son relativas a ese cwd. Se añaden más demos en INF-01.2/01.3 al
+# convertir sus aserciones y fixtures en tests por dominio.
+if(BUILD_TESTING)
+    # RUN-11.3 — Cada test registrado se apunta en una propiedad global, y
+    # de ella sale el target agregado "suite_gl_free" (al final del
+    # fichero). CI construye ESE target y no una lista de nombres escrita a
+    # mano en el YAML: anadir un test aqui ya no obliga a acordarse de
+    # tocar tambien el workflow, que era como se quedaron fuera de la
+    # compilacion de CI test_project y compania.
+    function(add_motor_gl_free_demo_test target)
+        if(TARGET ${target})
+            add_test(NAME ${target} COMMAND $<TARGET_FILE:${target}>)
+            set_tests_properties(${target} PROPERTIES
+                WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+                LABELS "gl-free;smoke"
+            )
+            set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS ${target})
+        endif()
+    endfunction()
+
+    function(add_motor_unit_test target source)
+        add_executable(${target} ${source})
+        target_include_directories(${target} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+        add_test(NAME ${target} COMMAND $<TARGET_FILE:${target}>)
+        set_tests_properties(${target} PROPERTIES
+            WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+            LABELS "unit;gl-free"
+        )
+        set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS ${target})
+    endfunction()
+
+    add_motor_gl_free_demo_test(demo_resource_manager)
+    add_motor_gl_free_demo_test(demo_handle_pool)
+    add_motor_gl_free_demo_test(demo_occlusion_rules)
+    add_motor_gl_free_demo_test(demo_camera)
+    add_motor_gl_free_demo_test(demo_tilemap)
+    add_motor_gl_free_demo_test(demo_editor_state)
+
+    # RUN-11.3 — El resto de demos GL-free, promovidos a CTest tras
+    # comprobar uno a uno que salen con codigo 0 y que dos ejecuciones
+    # seguidas dan EXACTAMENTE la misma salida (deterministas: los que
+    # tiran dados usan ScriptedRng o semilla fija). Cubren el vertical
+    # slice entero -- carga de niveles, catalogos, combate Nd6, narrativa,
+    # temporizadores, mundo y las campanas completas -- que hasta ahora
+    # solo se verificaba ejecutandolos a mano.
+    #
+    # Todos leen assets/ con rutas relativas al cwd, y por eso el
+    # WORKING_DIRECTORY de add_motor_gl_free_demo_test es el de build.
+    add_motor_gl_free_demo_test(demo_level_loader)
+    add_motor_gl_free_demo_test(demo_object_catalog)
+    add_motor_gl_free_demo_test(demo_catalogos_rpg)
+    add_motor_gl_free_demo_test(demo_skills)
+    add_motor_gl_free_demo_test(demo_battle)
+    add_motor_gl_free_demo_test(demo_battle_nd6)
+    add_motor_gl_free_demo_test(demo_dice_engine)
+    add_motor_gl_free_demo_test(demo_nd6_distribution)
+    add_motor_gl_free_demo_test(demo_enemy_brain)
+    add_motor_gl_free_demo_test(demo_game_session)
+    add_motor_gl_free_demo_test(demo_object_inspector)
+    add_motor_gl_free_demo_test(demo_creacion_personaje)
+    add_motor_gl_free_demo_test(demo_mundo)
+    add_motor_gl_free_demo_test(demo_ciudad)
+    add_motor_gl_free_demo_test(demo_aventura)
+    add_motor_gl_free_demo_test(demo_temporizadores)
+    add_motor_gl_free_demo_test(demo_narrativa_nd6)
+    add_motor_gl_free_demo_test(demo_narrativa_combate)
+    add_motor_gl_free_demo_test(demo_prologo)
+    add_motor_gl_free_demo_test(demo_boundington)
+    add_motor_gl_free_demo_test(demo_precuela_boundington)
+    add_motor_gl_free_demo_test(demo_campana_boundington)
+    add_motor_gl_free_demo_test(demo_senal_ceniza)
+    add_motor_gl_free_demo_test(demo_este_norte)
+    add_motor_gl_free_demo_test(demo_este_sur)
+
+    # demo_proyectos NO entra: ademas de assets/ necesita tools/
+    # build_proyecto.py en el cwd (compila un proyecto de verdad desde la
+    # pantalla del hub), y CMake solo copia assets/ al directorio de build.
+    # Promoverlo pide antes decidir si tools/ se copia tambien -- es
+    # TOOL-09 (empaquetado), no esto.
+
+    # INF-01.2 — Primer test real bajo tests/. HandlePool es header-only y
+    # no necesita assets ni OpenGL, por lo que valida el runner nuevo con el
+    # menor acoplamiento posible.
+    add_motor_unit_test(test_handle_pool tests/Core/HandlePoolTests.cpp)
+
+    add_motor_unit_test(test_strong_id tests/Core/StrongIdTests.cpp)
+
+    # RUN-01 — Smoke determinista del ciclo eventos -> input -> updates fijos
+    # -> render. No depende de GLFW ni de lógica de juego.
+    add_motor_unit_test(test_application_loop tests/Engine/ApplicationLoopTests.cpp)
+    target_link_libraries(test_application_loop PRIVATE motor_engine_loop)
+
+    add_motor_unit_test(test_input_system tests/Engine/InputSystemTests.cpp)
+    target_link_libraries(test_input_system PRIVATE motor_input)
+
+    add_motor_unit_test(test_scene_manager tests/Engine/SceneManagerTests.cpp)
+    target_link_libraries(test_scene_manager PRIVATE motor_scene)
+
+    add_motor_unit_test(test_world tests/World/WorldTests.cpp)
+    target_link_libraries(test_world PRIVATE motor_world)
+
+    # INF-01.3 — Reglas puras del modelo del editor, separadas de los
+    # round-trips con assets y de la UI OpenGL del editor visual.
+    add_motor_unit_test(test_editor_state tests/Editor/EditorStateTests.cpp)
+    target_link_libraries(test_editor_state PRIVATE motor_level)
+
+    add_motor_unit_test(test_project tests/Project/ProjectTests.cpp)
+    target_link_libraries(test_project PRIVATE motor_project)
+
+    add_motor_unit_test(test_project_serialization tests/Project/SerializationTests.cpp)
+    target_link_libraries(test_project_serialization PRIVATE motor_project)
+
+    add_motor_unit_test(test_map_document tests/Map/MapDocumentTests.cpp)
+    target_link_libraries(test_map_document PRIVATE motor_map_document)
+
+    add_motor_unit_test(test_runtime_tilemap tests/Runtime/RuntimeTileMapBuilderTests.cpp)
+    target_link_libraries(test_runtime_tilemap PRIVATE motor_runtime_map)
+
+    add_motor_unit_test(test_tmx_importer tests/Import/TmxImporterTests.cpp)
+    target_link_libraries(test_tmx_importer PRIVATE motor_tmx_import)
+
+    add_motor_unit_test(test_map_round_trip tests/Integration/MapRoundTripTests.cpp)
+    target_link_libraries(test_map_round_trip PRIVATE motor_tmx_import motor_project motor_runtime_map)
+
+    # RUN-10 — Guardado de partida: formato, escritura atomica y round-trip
+    # sobre una GameSession. Sin mapa (TileMap nullptr) y sin fixtures en
+    # assets/: el unico fichero que toca lo escribe y borra el propio test.
+    # motor_map entra por el enlazado de GameSession (TileMap), no porque
+    # el test abra ningun TMX.
+    # Regresion del recorrido del mundo: un nivel con muchas puertas
+    # destapaba una referencia colgante en WorldTopology (ver la cabecera
+    # del test). Sin assets: el propio test escribe y borra sus niveles.
+    add_motor_unit_test(test_world_topology tests/Level/WorldTopologyTests.cpp)
+    target_link_libraries(test_world_topology PRIVATE motor_level)
+
+    add_motor_unit_test(test_save_game tests/Game/SaveGameTests.cpp)
+    target_link_libraries(test_save_game PRIVATE motor_level motor_map motor_rpg motor_json)
+
+    # C-01 — Objetivo de las habilidades en combate. Sin assets ni cwd: el
+    # dado entra por ScriptedRng (examples/, utilidad de tests igual que
+    # Check.h), de ahi el include de examples/ en vez de duplicar la clase
+    # dentro del test.
+    add_motor_unit_test(test_battle_state tests/Game/BattleStateTests.cpp)
+    target_include_directories(test_battle_state PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/examples")
+    target_link_libraries(test_battle_state PRIVATE motor_level motor_rpg motor_json)
+
+    # C-03 — Traspaso del estado del jugador entre sesiones. Sin mapa ni
+    # assets, igual que test_save_game.
+    add_motor_unit_test(test_game_session tests/Game/GameSessionTests.cpp)
+    target_link_libraries(test_game_session PRIVATE motor_level motor_map motor_rpg motor_json)
+
+    # C-02 — Reenganche de la sesion en el minimapa. Mismo patron de
+    # enlazado que demo_bitmap_font / demo_hud_update: HudMinimap.cpp
+    # referencia SpriteBatch (y este, glad) desde render(), que este
+    # binario NUNCA llama -- se enlazan solo para resolver los simbolos,
+    # asi que el test corre sin ventana ni contexto GL. Enlazar
+    # motor_core en su lugar arrastraria GLFW a un test gl-free.
+    if (EXISTS ${GLAD_DIR}/src/glad.c)
+        add_motor_unit_test(test_hud_minimap tests/Render/HudMinimapTests.cpp)
+        target_sources(test_hud_minimap PRIVATE
+            src/Render/HudMinimap.cpp
+            src/Render/HudElement.cpp
+            src/Render/SpriteBatch.cpp
+            src/Core/Resources/Texture.cpp
+            ${GLAD_DIR}/src/glad.c
+        )
+        target_include_directories(test_hud_minimap PRIVATE ${GLAD_DIR}/include)
+        target_link_libraries(test_hud_minimap PRIVATE motor_level motor_map motor_rpg motor_json)
+        # C-06 — wrapText con cajas degeneradas. Mismo patron de enlazado:
+        # BitmapFont.cpp referencia Texture/SpriteBatch desde drawText(),
+        # que este binario nunca llama (las funciones probadas son
+        # estaticas y puras).
+        add_motor_unit_test(test_bitmap_font tests/Render/BitmapFontTests.cpp)
+        target_sources(test_bitmap_font PRIVATE
+            src/Render/BitmapFont.cpp
+            src/Core/Resources/Texture.cpp
+            src/Render/SpriteBatch.cpp
+            ${GLAD_DIR}/src/glad.c
+        )
+        target_include_directories(test_bitmap_font PRIVATE ${GLAD_DIR}/include)
+
+        # C-09 — Propiedad de los recursos GL: la asignacion por movimiento
+        # libera el nombre del destino antes de robar el del origen. Doble GL
+        # falso: el test redirige glad_glDeleteTextures sin abrir contexto.
+        add_motor_unit_test(test_texture tests/Core/TextureTests.cpp)
+        target_sources(test_texture PRIVATE
+            src/Core/Resources/Texture.cpp
+            ${GLAD_DIR}/src/glad.c
+        )
+        target_include_directories(test_texture PRIVATE ${GLAD_DIR}/include)
+    else ()
+        message(STATUS "test_hud_minimap / test_bitmap_font omitidos: falta third_party/glad.")
+    endif ()
+
+    # C-10 — Round-trip JSON: lo que escribe JsonWriter (incluidos los
+    # escapes \uXXXX de los caracteres de control) vuelve a entrar por
+    # JsonValue::parse sin perdidas. Sin assets ni GL.
+    add_motor_unit_test(test_json tests/Core/JsonTests.cpp)
+    target_link_libraries(test_json PRIVATE motor_json)
+
+    # C-19 — Una sola funcion de culling (Render/Culling.h, header-only).
+    # El test lleva dentro la version historica como oraculo y compara los
+    # dos sobre diez camaras y cuatro tamanos de mapa. Sin GL: Camera
+    # (motor_math) y RuntimeTileMap (motor_runtime_map) son GL-free.
+    add_motor_unit_test(test_occlusion tests/Render/OcclusionTests.cpp)
+    target_link_libraries(test_occlusion PRIVATE motor_runtime_map motor_math)
+endif()
+
+# RUN-11.3 — Target agregado con TODO lo que CTest ejecuta bajo la etiqueta
+# gl-free. Se construye con:
+#
+#   cmake --build build --target suite_gl_free
+#   ctest --test-dir build --output-on-failure --label-regex gl-free
+#
+# Es lo que corre CI. Existe para que la lista viva en un solo sitio (las
+# llamadas a add_motor_gl_free_demo_test/add_motor_unit_test de arriba) en
+# vez de duplicada en el YAML del workflow.
+if(BUILD_TESTING)
+    get_property(_motor_gl_free_targets GLOBAL PROPERTY MOTOR_GL_FREE_TARGETS)
+    if(_motor_gl_free_targets)
+        add_custom_target(suite_gl_free)
+        add_dependencies(suite_gl_free ${_motor_gl_free_targets})
+        list(LENGTH _motor_gl_free_targets _motor_gl_free_count)
+        message(STATUS "Suite GL-free: ${_motor_gl_free_count} objetivos")
+    endif()
+endif()

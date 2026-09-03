@@ -1,4 +1,5 @@
 // Fase 12 (motor_grafico_gantt_rpg.puml): editor de niveles visual.
+// INF-03: esta aplicación deja de ser un vertical slice de examples/.
 //
 // UI con el HUD PROPIO del motor (Fase 9: HudPanel/HudText/BitmapFont),
 // NO con Dear ImGui como planeaba el Gantt: sin red en el entorno de
@@ -18,13 +19,14 @@
 //             1 pintar tile     2 borrar tile     3 colocar objeto
 //             4 quitar objeto   5 inicio jugador  6 rellenar
 //             7 enlazar nivel (la puerta que lleva a otro escenario)
-//   Q/E     = ciclar la paleta activa (tiles u objetos, segun herramienta)
+//   Q/E     = navegar la paleta activa; en objetos recorre el arbol y luego
+//             los recursos concretos (tiles u objetos, segun herramienta)
 //   TAB     = abrir el panel de familias de objetos
 //   ENTER   = entrar en una familia; ESC/BACKSPACE = cerrar y volver
 //   [ / ]   = pagina anterior / siguiente dentro del menu de objetos
 //             (sube/baja familias enteras cuando la lista es larga)
 //   B       = BUSCAR en la paleta. Abre un campo y filtra por texto:
-//             "taber" deja tabernero, taberna... B otra vez lo cierra.
+//             "taber" deja tabernero, taberna... ENTER/ESC/B lo cierra.
 //             Con miles de entradas, pasarlas de una en una no es una
 //             opcion. BACKSPACE borra.
 //   C       = capa siguiente (SHIFT+C anterior), CTRL+N capa nueva.
@@ -111,7 +113,7 @@
 #include "Render/SpriteBatch.h"
 #include "Render/TileMap.h"
 
-#include "Check.h"
+#include "Core/Check.h"
 
 #include <algorithm>
 #include <cctype>
@@ -1107,6 +1109,14 @@ int main(int argc, char** argv) {
             }
             return result;
         };
+        std::unordered_map<std::string, std::string> objectPaletteLabels;
+        for (const std::string& id : catalog.ids()) {
+            const ObjectDefinition* def = catalog.find(id);
+            if (def != nullptr) {
+                objectPaletteLabels[id] = def->name + " " + id;
+            }
+        }
+        editor.setObjectPaletteLabels(std::move(objectPaletteLabels));
         const std::vector<std::string> objectRootNames{
             "NATURALEZA / BIOMAS", "CIUDAD / INTERIORES", "SERES VIVIENTES",
             "RECOGIBLES / EQUIPO", "EVENTOS / SISTEMAS"};
@@ -1291,6 +1301,11 @@ int main(int argc, char** argv) {
         // de datos, esto saldra de alli).
         const std::unordered_map<int, TilePaletteInfo> tileSemantics =
             cargarSemanticaTiles(tilesetPath);
+        std::unordered_map<int, std::string> tilePaletteLabels;
+        for (const auto& entry : tileSemantics) {
+            tilePaletteLabels[entry.first] = entry.second.name + " " + entry.second.tag;
+        }
+        editor.setTilePaletteLabels(std::move(tilePaletteLabels));
         auto tileLabel = [&](int gid) {
             auto it = tileSemantics.find(gid);
             const TilePaletteInfo info = it != tileSemantics.end()
@@ -1510,16 +1525,11 @@ int main(int argc, char** argv) {
         statusPanel.setBorder(kBorderColor, 2.0f);
 
         const std::string kControlsLine =
-            "1-7 HERRAM  Q/E PALETA  TAB FAMILIAS  ENTER ENTRAR  ESC CERRAR  B BUSCAR  C CAPA  R SELECCION  CTRL+C/V/X  T PATRULLA  H ESCALA  DER PROPIEDADES  CTRL+Z/Y HIST  G GUARDAR  V VALIDAR  P JUGAR  ,/. ESCENARIO  M PROYECTOS";
-        // Peor caso del texto de estado (controles + contadores) para que el
-        // panel de fondo cubra siempre la linea, aunque se anada el
-        // "...TILES 64  OBJETOS 5" del final.
-        // Peor caso real con mapas grandes: un 64x64 son 4096 tiles.
-        const std::string kControlsLineWorst = kControlsLine + "   |   TILES 4096  OBJETOS 999";
+            "1-7 HERRAM  Q/E PALETA  TAB CATEG  ENTER ABRIR  ESC ATRAS  B BUSCAR  C CAPA  R SEL  Z/Y HIST  G GUARDAR  V VALIDAR  P JUGAR  M PROYECTOS";
         HudTransform statusTextT;
         statusTextT.anchor = HudAnchor::BottomCenter;
         statusTextT.offset = {0.0f, 8.0f + kPad};
-        statusTextT.size = {font.measureText(kControlsLineWorst).x, lineH};
+        statusTextT.size = {static_cast<float>(width) - 32.0f, lineH};
         HudText statusText(statusTextT, &font);
         statusText.setText(kControlsLine);
         int savedMessageFrames = 0;  // frames restantes del aviso de guardado
@@ -1629,50 +1639,110 @@ int main(int argc, char** argv) {
                 }
             }
 
+            // La búsqueda es un modal ligero: mientras está abierta solo
+            // recibe texto, confirmación/cancelación y borrar. Sin este
+            // corte, una tecla escrita para el filtro podía pintar, cambiar
+            // de capa, hacer zoom o incluso guardar el nivel.
+            if (keys.pressed(glfwWin, GLFW_KEY_B)) {
+                buscando = !buscando;
+                statusText.setText(buscando ? "BUSCAR: ESCRIBE Y PULSA ENTER/ESC"
+                                            : "BUSQUEDA CERRADA - FILTRO CONSERVADO");
+                savedMessageFrames = 120;
+            }
+            const bool searchModal = buscando;
+            if (searchModal) {
+                if (keys.pressed(glfwWin, GLFW_KEY_ESCAPE) ||
+                    keys.pressed(glfwWin, GLFW_KEY_ENTER)) {
+                    buscando = false;
+                    statusText.setText("BUSQUEDA CERRADA - FILTRO CONSERVADO");
+                    savedMessageFrames = 120;
+                } else {
+                    bool cambio = false;
+                    for (int k = GLFW_KEY_A; k <= GLFW_KEY_Z; ++k) {
+                        if (keys.pressed(glfwWin, k)) {
+                            filtro += static_cast<char>('a' + (k - GLFW_KEY_A));
+                            cambio = true;
+                        }
+                    }
+                    for (int k = GLFW_KEY_0; k <= GLFW_KEY_9; ++k) {
+                        if (keys.pressed(glfwWin, k)) {
+                            filtro += static_cast<char>('0' + (k - GLFW_KEY_0));
+                            cambio = true;
+                        }
+                    }
+                    if (keys.pressed(glfwWin, GLFW_KEY_MINUS) ||
+                        keys.pressed(glfwWin, GLFW_KEY_KP_SUBTRACT)) {
+                        filtro += '_';
+                        cambio = true;
+                    }
+                    if (keys.pressed(glfwWin, GLFW_KEY_BACKSPACE) && !filtro.empty()) {
+                        filtro.pop_back();
+                        cambio = true;
+                    }
+                    if (cambio) {
+                        editor.setPaletteFilter(filtro);
+                        objectOptions = etiquetasObjeto();
+                        tileOptions.clear();
+                        for (int gid : editor.tilePalette()) {
+                            tileOptions.push_back(tileLabel(gid));
+                        }
+                    }
+                }
+            }
+
             // ESC vuelve a la pantalla de proyectos, no cierra el editor.
             // Para cerrar del todo hay que pulsarlo otra vez alli. Cambiar
             // de proyecto no puede costar relanzar el binario.
             const bool colocandoObjetos = editor.tool() == EditorTool::PlaceObject;
-            if (colocandoObjetos && keys.pressed(glfwWin, GLFW_KEY_ESCAPE)) {
+            if (!searchModal && colocandoObjetos && keys.pressed(glfwWin, GLFW_KEY_ESCAPE)) {
                 if (objectMenuLevel > 0) {
                     --objectMenuLevel;
+                    objectMenu.setSelectedIndex(0);
                     statusText.setText("VOLVER ATRAS EN MENU DE OBJETOS");
                 } else {
                     editor.setTool(EditorTool::PaintTile);
                     statusText.setText("MENU DE OBJETOS CERRADO");
                 }
                 savedMessageFrames = 120;
-            } else if (colocandoObjetos && keys.pressed(glfwWin, GLFW_KEY_BACKSPACE)) {
-                if (objectMenuLevel > 0) --objectMenuLevel;
+            } else if (!searchModal && colocandoObjetos && keys.pressed(glfwWin, GLFW_KEY_BACKSPACE)) {
+                if (objectMenuLevel > 0) {
+                    --objectMenuLevel;
+                    objectMenu.setSelectedIndex(0);
+                }
                 savedMessageFrames = 120;
-            } else if (!colocandoObjetos &&
+            } else if (!searchModal && !colocandoObjetos &&
                        (keys.pressed(glfwWin, GLFW_KEY_ESCAPE) || keys.pressed(glfwWin, GLFW_KEY_M))) {
                 volverAlHub = true;
                 break;
             }
-            if (keys.pressed(glfwWin, GLFW_KEY_1))
+            if (!searchModal && keys.pressed(glfwWin, GLFW_KEY_1))
                 editor.setTool(EditorTool::PaintTile);
-            if (keys.pressed(glfwWin, GLFW_KEY_2))
+            if (!searchModal && keys.pressed(glfwWin, GLFW_KEY_2))
                 editor.setTool(EditorTool::EraseTile);
-            if (keys.pressed(glfwWin, GLFW_KEY_3))
+            if (!searchModal && keys.pressed(glfwWin, GLFW_KEY_3))
                 editor.setTool(EditorTool::PlaceObject);
-            if (keys.pressed(glfwWin, GLFW_KEY_4))
+            if (!searchModal && keys.pressed(glfwWin, GLFW_KEY_4))
                 editor.setTool(EditorTool::RemoveObject);
-            if (keys.pressed(glfwWin, GLFW_KEY_5))
+            if (!searchModal && keys.pressed(glfwWin, GLFW_KEY_5))
                 editor.setTool(EditorTool::SetPlayerStart);
-            if (keys.pressed(glfwWin, GLFW_KEY_6))
+            if (!searchModal && keys.pressed(glfwWin, GLFW_KEY_6))
                 editor.setTool(EditorTool::FillTiles);
-            if (keys.pressed(glfwWin, GLFW_KEY_7))
+            if (!searchModal && keys.pressed(glfwWin, GLFW_KEY_7))
                 editor.setTool(EditorTool::LinkLevel);
-            if (keys.pressed(glfwWin, GLFW_KEY_3)) {
+            if (!searchModal && keys.pressed(glfwWin, GLFW_KEY_3)) {
                 objectMenuLevel = 0;
                 objectMenu.setOptions(objectRootOptions);
                 objectMenu.setSelectedIndex(0);
             }
 
-            if (colocandoObjetos) {
-                if (keys.pressed(glfwWin, GLFW_KEY_Q)) objectMenu.moveUp();
-                if (keys.pressed(glfwWin, GLFW_KEY_E)) objectMenu.moveDown();
+            if (!searchModal && colocandoObjetos) {
+                if (objectMenuLevel < 2) {
+                    if (keys.pressed(glfwWin, GLFW_KEY_Q)) objectMenu.moveUp();
+                    if (keys.pressed(glfwWin, GLFW_KEY_E)) objectMenu.moveDown();
+                } else {
+                    if (keys.pressed(glfwWin, GLFW_KEY_Q)) editor.prevPaletteEntry();
+                    if (keys.pressed(glfwWin, GLFW_KEY_E)) editor.nextPaletteEntry();
+                }
                 if (keys.pressed(glfwWin, GLFW_KEY_ENTER)) {
                     const std::size_t selected = objectMenu.selectedIndex();
                     if (objectMenuLevel == 0 && selected < objectRootNames.size()) {
@@ -1681,12 +1751,20 @@ int main(int argc, char** argv) {
                         objectMenuLevel = 1;
                         objectMenu.setOptions(objectSubgroupOptions);
                         objectMenu.setSelectedIndex(0);
+                    } else if (objectMenuLevel == 0 && selected == objectRootNames.size()) {
+                        editor.setTool(EditorTool::PaintTile);
+                        objectMenuLevel = 0;
+                        statusText.setText("MENU DE OBJETOS CERRADO");
                     } else if (objectMenuLevel == 1 && selected < objectSubgroupIndexes.size()) {
                         objectGroup = objectSubgroupIndexes[selected];
                         editor.setObjectPalette(objectGroupEntries(objectGroup));
                         objectOptions = etiquetasObjeto();
                         objectMenuLevel = 2;
                         objectMenu.setOptions(paletteWindow(objectOptions, 0, dummyFirst));
+                        objectMenu.setSelectedIndex(0);
+                    } else if (objectMenuLevel == 1 && selected == objectSubgroupIndexes.size()) {
+                        objectMenuLevel = 0;
+                        objectMenu.setOptions(objectRootOptions);
                         objectMenu.setSelectedIndex(0);
                     }
                     savedMessageFrames = 120;
@@ -1736,7 +1814,7 @@ int main(int argc, char** argv) {
             // =========================================================
 
             // --- Capas: C siguiente, SHIFT+C anterior, Ctrl+N nueva ---
-            if (keys.pressed(glfwWin, GLFW_KEY_C) && !controlDown) {
+            if (!searchModal && keys.pressed(glfwWin, GLFW_KEY_C) && !controlDown) {
                 const int n = editor.layerCount();
                 const int siguiente = shiftDown ? (editor.activeLayer() + n - 1) % n
                                                 : (editor.activeLayer() + 1) % n;
@@ -1745,7 +1823,7 @@ int main(int argc, char** argv) {
                                    std::to_string(n) + ": " + aMayus(editor.layerName(siguiente)));
                 savedMessageFrames = 150;
             }
-            if (controlDown && keys.pressed(glfwWin, GLFW_KEY_N)) {
+            if (!searchModal && controlDown && keys.pressed(glfwWin, GLFW_KEY_N)) {
                 const int nueva = editor.addLayer("");
                 statusText.setText("CAPA NUEVA: " + std::to_string(nueva + 1) + " DE " +
                                    std::to_string(editor.layerCount()));
@@ -1756,7 +1834,7 @@ int main(int argc, char** argv) {
             // Con teclado y no arrastrando con el raton porque el boton
             // izquierdo ya pinta: anadir un modificador de arrastre
             // significaria pintar sin querer cada vez que se falle.
-            if (keys.pressed(glfwWin, GLFW_KEY_R)) {
+            if (!searchModal && keys.pressed(glfwWin, GLFW_KEY_R)) {
                 if (!marcando) {
                     esquina = hovered;
                     marcando = true;
@@ -1774,7 +1852,7 @@ int main(int argc, char** argv) {
             }
 
             // --- Portapapeles ---
-            if (controlDown && keys.pressed(glfwWin, GLFW_KEY_C)) {
+            if (!searchModal && controlDown && keys.pressed(glfwWin, GLFW_KEY_C)) {
                 editor.copySelection();
                 statusText.setText(editor.hasClipboard()
                                        ? "COPIADO " + std::to_string(editor.clipboardWidth()) + "X" +
@@ -1782,7 +1860,7 @@ int main(int argc, char** argv) {
                                        : "NO HAY NADA SELECCIONADO (R MARCA UN RECTANGULO)");
                 savedMessageFrames = 180;
             }
-            if (controlDown && keys.pressed(glfwWin, GLFW_KEY_V)) {
+            if (!searchModal && controlDown && keys.pressed(glfwWin, GLFW_KEY_V)) {
                 if (editor.hasClipboard()) {
                     editor.pasteAt(hovered.x, hovered.y);
                     statusText.setText("PEGADO EN " + std::to_string(hovered.x) + "," +
@@ -1792,7 +1870,7 @@ int main(int argc, char** argv) {
                 }
                 savedMessageFrames = 180;
             }
-            if (controlDown && keys.pressed(glfwWin, GLFW_KEY_X)) {
+            if (!searchModal && controlDown && keys.pressed(glfwWin, GLFW_KEY_X)) {
                 if (editor.hasSelection()) {
                     editor.eraseSelection();
                     statusText.setText("SELECCION BORRADA (CTRL+Z LA DEVUELVE)");
@@ -1806,7 +1884,7 @@ int main(int argc, char** argv) {
             // Reutiliza la seleccion en vez de inventar un modo aparte:
             // marcar el recorrido y decir "este PNJ patrulla ahi" es el
             // gesto natural, y no hay que teclear cuatro numeros.
-            if (keys.pressed(glfwWin, GLFW_KEY_T)) {
+            if (!searchModal && keys.pressed(glfwWin, GLFW_KEY_T)) {
                 if (!editor.hasSelection()) {
                     statusText.setText("MARCA ANTES EL RECORRIDO CON R");
                 } else if (editor.objectAt(hovered.x, hovered.y) == nullptr) {
@@ -1827,7 +1905,7 @@ int main(int argc, char** argv) {
             // se ven al instante es mas fiable que teclear decimales sin
             // contexto. La escala se exporta en el spawn, no en el
             // catalogo, por lo que no cambia todos los objetos del mundo.
-            if (keys.pressed(glfwWin, GLFW_KEY_H)) {
+            if (!searchModal && keys.pressed(glfwWin, GLFW_KEY_H)) {
                 const ObjectSpawn* objeto = editor.objectAt(hovered.x, hovered.y);
                 if (objeto == nullptr) {
                     statusText.setText("PON EL CURSOR SOBRE EL OBJETO QUE QUIERES ESCALAR");
@@ -1847,55 +1925,19 @@ int main(int argc, char** argv) {
                 savedMessageFrames = 180;
             }
 
-            // --- B: buscar en la paleta ---
-            if (keys.pressed(glfwWin, GLFW_KEY_B)) {
-                buscando = !buscando;
-                if (!buscando) {
-                    statusText.setText("BUSQUEDA CERRADA");
-                    savedMessageFrames = 120;
-                }
-            }
-            if (buscando) {
-                bool cambio = false;
-                for (int k = GLFW_KEY_A; k <= GLFW_KEY_Z; ++k) {
-                    if (k != GLFW_KEY_B && keys.pressed(glfwWin, k)) {
-                        filtro += static_cast<char>('a' + (k - GLFW_KEY_A));
-                        cambio = true;
-                    }
-                }
-                for (int k = GLFW_KEY_0; k <= GLFW_KEY_9; ++k) {
-                    if (keys.pressed(glfwWin, k)) {
-                        filtro += static_cast<char>('0' + (k - GLFW_KEY_0));
-                        cambio = true;
-                    }
-                }
-                if (keys.pressed(glfwWin, GLFW_KEY_MINUS)) {
-                    filtro += '_';
-                    cambio = true;
-                }
-                if (keys.pressed(glfwWin, GLFW_KEY_BACKSPACE) && !filtro.empty()) {
-                    filtro.pop_back();
-                    cambio = true;
-                }
-                if (cambio) {
-                    editor.setPaletteFilter(filtro);
-                    objectOptions = editor.objectPalette();
-                    tileOptions.clear();
-                    for (int gid : editor.tilePalette()) tileOptions.push_back(tileLabel(gid));
-                }
-            }
-
-            if (controlDown && keys.pressed(glfwWin, GLFW_KEY_Z)) {
+            if (!searchModal && controlDown && keys.pressed(glfwWin, GLFW_KEY_Z)) {
                 statusText.setText(editor.undo() ? "DESHECHO" : "NO HAY CAMBIOS QUE DESHACER");
                 savedMessageFrames = 120;
             }
-            if (controlDown && keys.pressed(glfwWin, GLFW_KEY_Y)) {
+            if (!searchModal && controlDown && keys.pressed(glfwWin, GLFW_KEY_Y)) {
                 statusText.setText(editor.redo() ? "REHECHO" : "NO HAY CAMBIOS QUE REHACER");
                 savedMessageFrames = 120;
             }
-            if (keys.pressed(glfwWin, GLFW_KEY_Q))
+            if (!searchModal && editor.tool() != EditorTool::PlaceObject &&
+                keys.pressed(glfwWin, GLFW_KEY_Q))
                 editor.prevPaletteEntry();
-            if (keys.pressed(glfwWin, GLFW_KEY_E))
+            if (!searchModal && editor.tool() != EditorTool::PlaceObject &&
+                keys.pressed(glfwWin, GLFW_KEY_E))
                 editor.nextPaletteEntry();
 
             // Zoom (+/-, y 0 para volver a 1x): imprescindible en cuanto
@@ -1903,14 +1945,15 @@ int main(int argc, char** argv) {
             // pixeles de mundo, mas del triple del viewport. Rango
             // acotado: por debajo de 0.15 los tiles son ilegibles y por
             // encima de 3 no se ve contexto suficiente para editar.
-            if (keys.pressed(glfwWin, GLFW_KEY_EQUAL) || keys.pressed(glfwWin, GLFW_KEY_KP_ADD)) {
+            if (!searchModal &&
+                (keys.pressed(glfwWin, GLFW_KEY_EQUAL) || keys.pressed(glfwWin, GLFW_KEY_KP_ADD))) {
                 camera.setZoom(std::min(camera.zoom() * 1.25f, 3.0f));
             }
-            if (keys.pressed(glfwWin, GLFW_KEY_MINUS) ||
-                keys.pressed(glfwWin, GLFW_KEY_KP_SUBTRACT)) {
+            if (!searchModal && (keys.pressed(glfwWin, GLFW_KEY_MINUS) ||
+                                 keys.pressed(glfwWin, GLFW_KEY_KP_SUBTRACT))) {
                 camera.setZoom(std::max(camera.zoom() / 1.25f, 0.15f));
             }
-            if (keys.pressed(glfwWin, GLFW_KEY_0)) {
+            if (!searchModal && keys.pressed(glfwWin, GLFW_KEY_0)) {
                 camera.setZoom(1.0f);
             }
 
@@ -1928,7 +1971,7 @@ int main(int argc, char** argv) {
             // El paneo es por ESTADO (no flanco), asi que el barrido de
             // teclas del modal no lo consume: se bloquea aqui mientras
             // el panel de propiedades esta abierto.
-            if (!inspector.isOpen()) {
+            if (!inspector.isOpen() && !searchModal) {
                 if (glfwGetKey(glfwWin, GLFW_KEY_W) == GLFW_PRESS)
                     camera.move({0.0f, -panSpeed});
                 if (glfwGetKey(glfwWin, GLFW_KEY_S) == GLFW_PRESS)
@@ -1941,7 +1984,7 @@ int main(int argc, char** argv) {
 
             // HOME: volver al centro del mapa (perderse en un 64x64 es
             // facil, y no habia forma de reorientarse salvo a ojo).
-            if (keys.pressed(glfwWin, GLFW_KEY_HOME)) {
+            if (!searchModal && keys.pressed(glfwWin, GLFW_KEY_HOME)) {
                 camera.transitionTo(IsoMath::gridToScreen(GridCoord{mapW / 2, mapH / 2},
                                                           static_cast<float>(kTileW),
                                                           static_cast<float>(kTileH)),
@@ -1959,7 +2002,8 @@ int main(int argc, char** argv) {
             // Probar, Menu. Ninguna choca con lo que ya usa el editor
             // (WASD camara, Q/E paleta, Z/Y historial, 1-5 herramientas).
             auto pedida = [&](int letra, int funcion) {
-                return keys.pressed(glfwWin, letra) || keys.pressed(glfwWin, funcion);
+                return !searchModal &&
+                       (keys.pressed(glfwWin, letra) || keys.pressed(glfwWin, funcion));
             };
 
             // Guardar es una funcion porque probar tiene que
@@ -2166,6 +2210,9 @@ int main(int argc, char** argv) {
                 if (rightEdge) {
                     inspector.close();
                 }
+            } else if (searchModal) {
+                // El buscador bloquea el mapa: escribir un filtro no puede
+                // pintar debajo del panel ni abrir propiedades por accidente.
             } else if (leftDown) {
                 // Mantener pulsado pinta en arrastre (deliberado: es lo
                 // comodo para rellenar zonas; para objetos, placeObject
@@ -2307,6 +2354,7 @@ int main(int argc, char** argv) {
             // --- HUD: sincronizar widgets con el estado del editor ---
             const bool objectMode = editor.tool() == EditorTool::PlaceObject ||
                                     editor.tool() == EditorTool::RemoveObject;
+            const bool objectPaletteMode = editor.tool() == EditorTool::PlaceObject;
             const bool linkMode = editor.tool() == EditorTool::LinkLevel;
 
             // El menu de herramientas refleja editor.tool() (el orden de
@@ -2317,18 +2365,23 @@ int main(int argc, char** argv) {
             // entrada activa (busqueda lineal: las paletas tienen un
             // punado de entradas).
             tileMenu.setVisible(!objectMode && !linkMode);
-            objectMenu.setVisible(objectMode || linkMode);
+            objectMenu.setVisible(objectPaletteMode || linkMode);
             if (linkMode) {
                 paletteTitle.setText("DESTINOS  Q/E");
-            } else if (objectMenuLevel == 0) {
+            } else if (objectPaletteMode && objectMenuLevel == 0) {
                 paletteTitle.setText("COLOCAR OBJETOS · CATEGORIAS · ENTER ABRIR");
-            } else if (objectMenuLevel == 1) {
+            } else if (objectPaletteMode && objectMenuLevel == 1) {
                 paletteTitle.setText("SUBCATEGORIAS · Q/E ELEGIR · ENTER ABRIR · [/ ] PAGINA");
-            } else if (editor.tool() == EditorTool::PlaceObject) {
+            } else if (objectPaletteMode) {
                 paletteTitle.setText("OBJETOS: " + objectGroupNames[objectGroup] +
                                      "  Q/E ELEGIR · ESC ATRAS · [/ ] PAGINA");
             } else {
                 paletteTitle.setText("PALETA  Q/E");
+            }
+            if (searchModal) {
+                paletteTitle.setText("BUSCAR: " +
+                                     (filtro.empty() ? std::string("<TEXTO>") : aMayus(filtro)) +
+                                     "  ENTER/ESC CERRAR");
             }
             // Indice absoluto de la seleccion en la paleta completa...
             const std::vector<int>& paletteGids = editor.tilePalette();
@@ -2353,13 +2406,13 @@ int main(int argc, char** argv) {
             if (linkMode) {
                 objectMenu.setOptions(paletteWindow(levelOptions, objSel, objFirst));
                 objectMenu.setSelectedIndex(objSel - objFirst);
-            } else if (objectMenuLevel == 0) {
+            } else if (objectPaletteMode && objectMenuLevel == 0) {
                 objectMenu.setOptions(objectRootOptions);
                 objectMenu.setSelectedIndex(std::min(objectMenu.selectedIndex(), objectRootOptions.size() - 1));
-            } else if (objectMenuLevel == 1) {
+            } else if (objectPaletteMode && objectMenuLevel == 1) {
                 objectMenu.setOptions(objectSubgroupOptions);
                 objectMenu.setSelectedIndex(std::min(objectMenu.selectedIndex(), objectSubgroupOptions.size() - 1));
-            } else {
+            } else if (objectPaletteMode) {
                 objectMenu.setOptions(paletteWindow(objectOptions, objSel, objFirst));
                 objectMenu.setSelectedIndex(objSel - objFirst);
             }
@@ -2400,7 +2453,7 @@ int main(int argc, char** argv) {
                             (destino.empty() ? std::string("SIN DESTINOS EN EL PROYECTO")
                                              : nombreEscenario(destino)) +
                             "\n\nCLICK SOBRE LA PUERTA\nQUE DEBE LLEVAR ALLI";
-            } else if (objectMode) {
+            } else if (objectPaletteMode) {
                 const std::string selectedId = editor.selectedObjectId();
                 const ObjectDefinition* def = catalog.find(selectedId);
                 if (def == nullptr) {
@@ -2443,6 +2496,15 @@ int main(int argc, char** argv) {
                             fichaInspector += " " + std::to_string(def->pickup.power);
                         }
                     }
+                }
+            } else if (editor.tool() == EditorTool::RemoveObject) {
+                const ObjectSpawn* objeto = editor.objectAt(hovered.x, hovered.y);
+                fichaInspector = "INSPECTOR\n\nQUITAR OBJETO\nCLICK IZQ SOBRE UN OBJETO\n"
+                                  "O CLICK DER PARA BORRADO RAPIDO";
+                if (objeto != nullptr) {
+                    const ObjectDefinition* def = catalog.find(objeto->objectId);
+                    fichaInspector += "\n\nSELECCIONADO\n" +
+                                      (def != nullptr ? def->name : objeto->objectId);
                 }
             } else {
                 const int gid = editor.selectedTileGid();
@@ -2548,8 +2610,7 @@ int main(int argc, char** argv) {
                     statusText.setText(kControlsLine);
                 }
             } else {
-                statusText.setText(kControlsLine + "   |   TILES " + std::to_string(activeLayerTiles) +
-                                   "  OBJETOS " + std::to_string(editor.objects().size()));
+                statusText.setText(kControlsLine);
             }
             // El HUD va en su propia tanda begin()/end() (ver
             // HudManager::render() y demo_hud.cpp: el llamador rodea la

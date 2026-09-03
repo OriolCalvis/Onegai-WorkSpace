@@ -6,9 +6,9 @@
 class GameSession;
 class SpriteBatch;
 class Texture;
-class TileMap;
+class RuntimeTileMap;
 
-// Minimapa del HUD: dibuja el TileMap en miniatura (un quad de color por
+// Minimapa del HUD: dibuja el RuntimeTileMap en miniatura (un quad de color por
 // celda, via whiteTexture -- mismo mecanismo que HudBar/HudPanel, ver
 // HudWidgets.h) mas los marcadores de la partida leidos de GameSession:
 // jugador, enemigos vivos y objetos del mundo. Vista cenital (x,y de
@@ -28,7 +28,7 @@ class TileMap;
 // las celdas ni desborda el marco.
 class HudMinimap : public IHudElement {
 public:
-    HudMinimap(const HudTransform& transform, Texture* whiteTexture, const TileMap* map,
+    HudMinimap(const HudTransform& transform, Texture* whiteTexture, const RuntimeTileMap* map,
                const GameSession* session);
 
     // Lado maximo, EN CELDAS, de lo que se dibuja. Si el mapa cabe en
@@ -45,12 +45,35 @@ public:
     void setMaxCells(int maxCells);
     int maxCells() const { return m_maxCells; }
 
+    // C-02 — La sesion se puede REEMPLAZAR. El widget se construye una
+    // vez, en initHud(), pero Application destruye y reconstruye el
+    // GameSession en cada loadLevel(): sin esto, el minimapa se quedaba
+    // con el puntero al de la primera carga y lo leia cada frame a
+    // partir de la primera puerta cruzada -- un objeto destruido, que
+    // hasta hoy no petaba por suerte.
+    //
+    // nullptr es un estado legitimo (entre niveles, o en shutdown antes
+    // de destruir el widget): render() no dibuja nada en vez de leer.
+    void setSession(const GameSession* session) { m_session = session; }
+    const GameSession* session() const { return m_session; }
+
+    // Igual que la sesion: el mapa del runtime tambien puede cambiar de
+    // manos. No hay ningun llamador que lo necesite hoy (Application
+    // reutiliza el mismo m_map), pero deja el widget sin punteros
+    // fijados en el constructor.
+    void setMap(const RuntimeTileMap* map) { m_map = map; }
+
+    // true si hay algo que dibujar: mapa y sesion vivos y un mapa con
+    // dimensiones. Es la guarda de render(), expuesta para poder
+    // probarla sin contexto GL (SpriteBatch necesita ventana; esto no).
+    bool isDrawable() const;
+
     void render(SpriteBatch& batch, int viewportWidth, int viewportHeight) const override;
 
 private:
     HudTransform m_transform;
     Texture* m_whiteTexture;
-    const TileMap* m_map;
+    const RuntimeTileMap* m_map;
     const GameSession* m_session;
 
     // 24x24 celdas: en un widget de 180px son ~7px por celda, donde el

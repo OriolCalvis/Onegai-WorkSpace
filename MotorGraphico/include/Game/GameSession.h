@@ -15,9 +15,14 @@
 #include "RPG/RandomEngine.h"
 #include "RPG/Catalogs/RpgCatalogs.h"  // RPG::SkillCatalog (Nd6, distinto del SkillCatalog legacy de Game/Skill.h)
 
-class TileMap;
+class RuntimeTileMap;
 class ObjectCatalog;
 struct ObjectDefinition;
+// RUN-10 — El DTO del guardado se declara en Game/SaveGame.h, que a su vez
+// incluye este fichero (necesita OwnedBusiness). Aqui basta la declaracion
+// adelantada: devolverlo por valor no exige el tipo completo hasta que
+// alguien llama de verdad, y asi no hay inclusion circular.
+struct SaveGameData;
 
 // Estado de una PARTIDA en curso: el pegamento entre todo lo construido
 // en las Fases 6-12 (nivel JSON, catalogo de objetos, habilidades,
@@ -26,7 +31,7 @@ struct ObjectDefinition;
 // ("necesita una Application real, que todavia no existe", README).
 //
 // GL-free a proposito, igual que BattleState/EditorState: opera sobre
-// TileMap (motor_map, sin GL), ObjectCatalog y datos de nivel, nunca
+// RuntimeTileMap (motor_runtime_map, sin GL), ObjectCatalog y datos de nivel, nunca
 // sobre Player/Enemy concretos (que necesitan TextureAtlas). Asi el
 // ciclo de juego completo se puede probar de verdad sin ventana (ver
 // examples/demo_game_session.cpp) y Application (Engine/Application.h)
@@ -70,6 +75,25 @@ struct OwnedBusiness {
     int rentPercent = 100;
 };
 
+// C-03 — Lo que es DEL JUGADOR y no del mapa, y por tanto cruza intacta
+// cada puerta. Existe como tipo (y no como una lista de campos copiados a
+// mano en Application::loadLevel) por el bug que arregla: loadLevel
+// rescataba el oro y nada mas, asi que entrar a una posada te reiniciaba
+// la reputacion a 0, te dejaba sin negocios y borraba el contador de
+// rentas. Con un tipo, anadir manana un campo del jugador es tocar UN
+// sitio, y quien lo olvide lo olvida tambien al guardar la partida (ver
+// SaveGame.cpp, que aplica el mismo traspaso).
+//
+// Que NO va aqui: la vida y el inventario, que ya sobreviven solos porque
+// viven en el Player y en el vector de la Application, no en la sesion.
+struct PlayerCarryOver {
+    int gold = 0;
+    int moralityValue = 0;
+    int stepsSinceRent = 0;
+    std::vector<OwnedBusiness> businesses;
+};
+
+
 // Transicion de nivel pendiente (una puerta pisada). GameSession NO
 // carga niveles: no hace I/O ni conoce rutas de assets, igual que no
 // crea texturas -- solo DETECTA que toca cambiar de mapa y lo expone
@@ -106,6 +130,21 @@ struct ShopOffer {
 // no por posicion.
 struct WorldEnemy {
     std::string objectId;
+    // Posicion de este enemigo dentro de LevelDefinition::objects, fijada
+    // al construir la sesion y nunca reasignada. Es la unica identidad
+    // que sobrevive a una partida guardada: ni el id (varios lobos
+    // comparten definicion) ni la posicion (patrullan) ni el indice en
+    // m_enemies (los derrotados se borran de la lista) sirven para decir
+    // "este mismo" al volver a cargar. Ver Game/SaveGame.h.
+    int spawnIndex = -1;
+    // C-04 — true si NO viene del nivel: lo ha materializado la narrativa
+    // con un startBattle (una emboscada). Para estos, spawnIndex no
+    // indexa LevelDefinition::objects -- no hay ninguna entrada que
+    // indexar -- sino que es un ORDINAL propio de la sesion, unico entre
+    // los invocados. Sin esta distincion, un invocado se guardaba con
+    // spawnIndex -1 y al cargar la partida nadie sabia que era: el
+    // guardado se rechazaba y esa partida ya no volvia a abrirse nunca.
+    bool summoned = false;
     // La posicion AUTORITATIVA vive en brain->position(): este campo se
     // mantiene sincronizado con ella para no romper a quien ya lo lee
     // (minimapa, marcadores de Application). Una sola verdad, un solo
@@ -125,7 +164,7 @@ public:
     // que BattleState con su SkillCatalog). "level" se copia: es dato
     // plano y la sesion lo va mutando (los pickups recogidos
     // desaparecen del mundo).
-    GameSession(TileMap* map, ObjectCatalog* catalog, SkillCatalog* skillCatalog,
+    GameSession(RuntimeTileMap* map, ObjectCatalog* catalog, SkillCatalog* skillCatalog,
                 LevelDefinition level, ICombatant* playerBody, SkillSet* playerSkills,
                 std::vector<std::string>* inventory);
 
@@ -232,6 +271,18 @@ public:
     // disparo (y en ese caso deja la sesion en Dialogue).
     bool enterLevelNarrative(const std::string& levelId);
 
+    // F1 (bitacora 2.18): reloj de los temporizadores de mision. Lo llama
+    // la Application cada frame con el dt de EXPLORACION ACTIVA (0.0 si
+    // combate/dialogo/tienda/negocio/AFK — quien decide eso es la
+    // Application, que es quien ve el input) y la ruta del nivel actual.
+    // Si el tick enciende flags (aviso por umbral, expiracion por tiempo
+    // o por salir de la zona), se dispara UN tick() narrativo para que
+    // la consecuencia salga como beat de dialogo —«se oyen gritos
+    // arriba...»— en vez de pasar en silencio. Solo se surfacea en
+    // Exploration: en mitad de un dialogo abierto no se interrumpe; lo
+    // recoge el tick del cierre.
+    void updateNarrativeTimers(float dtActivo, const std::string& nivelActual);
+
     // Simetrico del anterior para el trigger "talk". interact() ya lo hace
     // con el NPC que tienes al lado, pero eso obliga a colocar al jugador
     // en la celda correcta: para un test, o para un dialogo que arranca
@@ -308,6 +359,20 @@ public:
     Morality& morality() { return m_morality; }
     const Morality& morality() const { return m_morality; }
 
+    // --- Traspaso entre sesiones (C-03) ---
+    //
+    // Una GameSession dura lo que dura un nivel: Application la destruye
+    // y la reconstruye en cada loadLevel(). Estas dos funciones son el
+    // UNICO camino por el que el estado del jugador cruza esa frontera.
+    // captureCarryOver() se llama sobre la sesion que muere;
+    // applyCarryOver(), sobre la recien construida.
+    //
+    // applyCarryOver ASIGNA (no acumula): el oro queda en state.gold, no
+    // en el que hubiera mas state.gold. Aplicarlo dos veces sobre la
+    // misma sesion da el mismo resultado que aplicarlo una.
+    PlayerCarryOver captureCarryOver() const;
+    void applyCarryOver(const PlayerCarryOver& state);
+
     // --- Transicion de nivel (ver LevelTransition) ---
     const LevelTransition& pendingTransition() const { return m_transition; }
     // La consume quien la ejecuta, para que no se dispare dos veces.
@@ -331,6 +396,39 @@ public:
     // efectivamente cerro un combate.
     bool syncBattleOutcome();
 
+    // --- Guardado de partida (RUN-10, ver Game/SaveGame.h) ---
+
+    // Fotografia del estado ACTUAL. "levelPath" lo pasa quien guarda: la
+    // sesion no conoce rutas de assets (mismo criterio que con
+    // LevelTransition), solo sabe que le pidieron etiquetar la partida
+    // con ese nivel.
+    //
+    // No se guarda si hay un combate a medias: mode()==Battle se
+    // fotografia como el mundo ANTES del combate (el enemigo sigue vivo
+    // con la vida que le quede). Guardar en mitad de un turno obligaria a
+    // serializar el BattleState entero para nada -- reabrir el combate al
+    // cargar es equivalente y mucho mas simple.
+    SaveGameData captureSaveGame(const std::string& levelPath) const;
+
+    // Aplica un guardado sobre esta sesion. La sesion debe estar RECIEN
+    // construida sobre el mismo nivel que dice el guardado: aqui no se
+    // carga nada de disco.
+    //
+    // Devuelve false y deja el motivo en "error" (si no es nullptr) sin
+    // tocar nada cuando el guardado no encaja con el nivel cargado
+    // (indices fuera de rango o ids que no coinciden). Es un todo-o-nada
+    // a proposito: una partida restaurada a medias es peor que un mensaje
+    // de error, porque el jugador no ve que le falta hasta mucho despues.
+    bool restoreSaveGame(const SaveGameData& data, std::string* error);
+
+    // Anade una linea al log de la partida desde fuera. Existe para los
+    // avisos que NO nacen de una regla del juego sino de una accion del
+    // jugador sobre el propio juego -- "Partida guardada", "No se pudo
+    // cargar" (RUN-10). Van al mismo log que el resto porque el jugador
+    // no distingue de donde viene un mensaje: los lee todos en la misma
+    // caja del HUD.
+    void logNote(const std::string& line) { logLine(line); }
+
     // Log de la partida (exploracion Y combate): el HUD (Fase 9,
     // HudDialogueBox) muestra las ultimas N lineas sin distinguir de
     // donde vienen. El log del BattleState se copia aqui al cerrar el
@@ -346,7 +444,7 @@ private:
     void startBattle(int enemyIndex);
     bool tileBlocks(int x, int y) const;
 
-    TileMap* m_map;
+    RuntimeTileMap* m_map;
     ObjectCatalog* m_catalog;
     SkillCatalog* m_skillCatalog;
     LevelDefinition m_level;
@@ -433,6 +531,22 @@ private:
     // motor solo sabe pelear de uno en uno, y perder ese dato en silencio
     // convertiria una emboscada de tres oleadas en una sola.
     void resolveBattles(const std::vector<RPG::BattleRequest>& battles);
+
+    // C-04 — Construye un WorldEnemy desde el catalogo y lo mete en
+    // m_enemies. Lo comparten resolveBattles (la emboscada narrativa) y
+    // restoreSaveGame (volver a poner en pie a un invocado que estaba
+    // vivo al guardar): antes solo existia dentro de resolveBattles, y
+    // por eso restaurar uno no era ni siquiera posible.
+    //
+    // health < 0 = arrancar a vida maxima. Devuelve false (y no toca
+    // m_enemies) si el id no esta en el catalogo o no es un enemigo.
+    bool spawnEnemyFromCatalog(const std::string& objectId, GridCoord position, bool summoned,
+                               int identity, int health);
+
+    // Siguiente ordinal libre para un invocado. Empieza en 0 y sube: no
+    // se reutiliza aunque el invocado muera, para que dos emboscadas
+    // seguidas no compartan identidad dentro de la misma partida.
+    int m_nextSummonIndex = 0;
 
     // Flags pendientes del combate en curso (ver resolveBattles).
     std::string m_pendingBattleVictoryFlag;
