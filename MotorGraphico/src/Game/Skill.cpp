@@ -74,7 +74,6 @@ SkillApplyResult executeViaSkillExecutor(const RPG::SkillDefinition& def, IComba
     ctx.target = nullptr;  //   no puede ser CharacterSheet* directamente).
     ctx.skill = &def;
     ctx.flags = ContextBonusFlag::NONE;
-    ctx.qte = nullptr;
     ctx.rng = &rng;
     ctx.is_player_attacking = true;
     ctx.extra_dice = 0;

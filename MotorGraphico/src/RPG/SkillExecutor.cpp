@@ -59,20 +59,7 @@ SkillExecutor::Out SkillExecutor::execute(ExecutionContext& ctx) {
     // —— PASO 1: Contexto pre-tirada (bonificadores pasivos) ——
     calc_passive_bonuses_pre_roll(ctx, applied);
 
-    // —— PASO 2: Timing QTE (si está disponible) ——
-    if (ctx.qte) {
-        if (!ctx.is_player_attacking) {
-            QteResult r = ctx.qte->do_reaction_dodge_qte(1200, ctx.skill->id);
-            if (r == QteResult::GOOD)    { ctx.post_roll_success_bonus += 0.5f; applied.push_back("DODGE GOOD +0.5"); }
-            if (r == QteResult::PERFECT) { ctx.force_dice_mod = DiceMod::ADVANTAGE; applied.push_back("DODGE PERFECT ADV"); }
-        } else {
-            QteResult r = ctx.qte->do_attack_timing_qte(1000, ctx.skill->id);
-            if (r == QteResult::GOOD)    { ctx.post_roll_success_bonus += 0.5f; applied.push_back("ATTACK GOOD +0.5"); }
-            if (r == QteResult::PERFECT) { ctx.extra_dice += 1; ctx.perfect_critical_confirm_allowed = true; applied.push_back("ATTACK PERFECT +1 +CONF CRIT"); }
-        }
-    }
-
-    // —— PASO 3: SIEMPRE: Tirar pool Nd6 (INVIOLABLE) ——
+    // —— PASO 2: SIEMPRE: Tirar pool Nd6 (INVIOLABLE) ——
     int base_dice = 1;
     if (ctx.override_base_dice >= 0) {
         base_dice = ctx.override_base_dice;
@@ -82,12 +69,12 @@ SkillExecutor::Out SkillExecutor::execute(ExecutionContext& ctx) {
     int N = base_dice + ctx.extra_dice;
     out.pool = DicePoolEngine::roll_pool(N, ctx.force_dice_mod, *ctx.rng);
 
-    // —— PASO 4: Post-process successes con bonus de timing/passives ——
+    // —— PASO 3: Post-process successes con bonus de timing/passives ——
     float eff = out.pool.successes + ctx.post_roll_success_bonus;
     if (eff < 0.0f) eff = 0.0f;
     out.effective_successes = eff;
 
-    // —— PASO 5 (Ed. 3, bitácora 2.17): enfrentada o resolución no resistida ——
+    // —— PASO 4 (Ed. 3, bitácora 2.17): enfrentada o resolución no resistida ——
     // La CA y la CD se eliminan: si hay defensor, tira su pool (regido por
     // su stat) y se compara (opposed_degree); si no lo hay (curaciones,
     // buffs propios), el grado lo decide la tirada propia sin rival.
@@ -138,7 +125,7 @@ SkillExecutor::Out SkillExecutor::execute(ExecutionContext& ctx) {
         d = DicePoolEngine::opposed_degree(eff_pool, out.defender_pool);
     }
 
-    // —— PASO 6: Post-process upgrades (BOTCH→PARTIAL, PARTIAL→SUCCESS) ——
+    // —— PASO 5: Post-process upgrades (BOTCH→PARTIAL, PARTIAL→SUCCESS) ——
     if (d == Degree::BOTCH && ctx.can_upgrade_botch_to_partial && eff > 0.0f) {
         d = Degree::PARTIAL;
         applied.push_back("BOTCH→PARTIAL (prot.)");
@@ -148,7 +135,7 @@ SkillExecutor::Out SkillExecutor::execute(ExecutionContext& ctx) {
         applied.push_back("PARTIAL→SUCCESS (inspi.)");
     }
 
-    // —— PASO 7: Critical confirm (timing PERFECT + just SUCCESS) ——
+    // —— PASO 6: Critical confirm (timing PERFECT + just SUCCESS) ——
     if (ctx.perfect_critical_confirm_allowed && d == Degree::SUCCESS) {
         int confirm = ctx.rng->roll_d6();
         if (confirm == 6) {
@@ -157,7 +144,7 @@ SkillExecutor::Out SkillExecutor::execute(ExecutionContext& ctx) {
         }
     }
 
-    // —— PASO 8: Extra bonus crítico all-sixes × 1.5 ——
+    // —— PASO 7: Extra bonus crítico all-sixes × 1.5 ——
     if (out.pool.critical && d == Degree::CRITICAL) {
         out.was_all_sixes_critical = true;
         applied.push_back("ALL-SIXES EXTRA ×1.5");
@@ -165,7 +152,7 @@ SkillExecutor::Out SkillExecutor::execute(ExecutionContext& ctx) {
 
     out.final_degree = d;
 
-    // —— PASO 9: Calcular magnitud final (dany/cura) ——
+    // —— PASO 8: Calcular magnitud final (dany/cura) ——
     out.final_magnitude = ctx.skill->magnitude(d);
     if (out.was_all_sixes_critical) {
         out.final_magnitude = static_cast<int>(out.final_magnitude * 1.5f);

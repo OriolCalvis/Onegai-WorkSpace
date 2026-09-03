@@ -76,14 +76,13 @@ public:
     const TierRule& at(int tier) const;
 
     // ==== Helpers ====
+    // C-22: aquí había siete accessors (healthCap, healthBonus,
+    // allowsMulticlass, canEquipRarity, maxSummons, maxFeats,
+    // maxDivineCards) declarados y nunca definidos — nadie los llamaba,
+    // así que el enlazador nunca se quejó. Retirados: el que los necesite
+    // los añade CON definición (tools/comprobar_declaraciones_rpg.py
+    // vigila que no vuelva a pasar).
     int  handLimit(int tier, bool multiclass = false) const;
-    int  healthCap(int tier) const;
-    int  healthBonus(int tier) const;
-    bool allowsMulticlass(int tier) const;
-    bool canEquipRarity(int tier, const std::string& rarity) const;
-    int  maxSummons(int tier) const;
-    int  maxFeats(int tier) const;
-    int  maxDivineCards(int tier) const;
 
     // Fórmula canónica GAMEMACHINE_NECESIDADES.md:
     //   Vida = min(VidaBaseClase + CON*3 + CAR*1 + BonoTier(tier-0 o de la formula? healthBonus(tier)),

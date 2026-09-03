@@ -36,19 +36,10 @@ inline bool has_flag(ContextBonusFlag x, ContextBonusFlag f) {
     return (static_cast<uint32_t>(x) & static_cast<uint32_t>(f)) != 0;
 }
 
-// Qué resultados puede devolver un QTE timing, para Enhance Layer (Fase 2-3).
-enum class QteResult { MISSED = 0, GOOD = 1, PERFECT = 2 };
-
-// Interfaz inyectable que implementa Application (Render/) con el HUD de
-// timing. BattleStateOnegai (GL-free) la CONSULTA — nunca dibuja.
-class IQteProvider {
-public:
-    virtual ~IQteProvider() = default;
-    // Ventana de timing para ESQUIVAR un ataque enemigo → DES salvage.
-    virtual QteResult do_reaction_dodge_qte(int window_ms, const std::string& enemy_skill_id) = 0;
-    // Ventana de timing para ATAQUE del jugador.
-    virtual QteResult do_attack_timing_qte(int window_ms, const std::string& skill_id) = 0;
-};
+// C-22: IQteProvider y QteResult retirados — no tenían ninguna
+// implementación (el paso de timing de SkillExecutor era inabastable:
+// todos los llamadores pasaban nullptr). Cuando el timing vuelva, vuelve
+// con implementación real, no con la interfaz huérfana.
 
     // Parámetros de entrada a la Ejecución de una Skill (ver SkillExecutor abajo).
 struct ExecutionContext {
@@ -60,7 +51,6 @@ struct ExecutionContext {
     const class SkillDefinition* skill = nullptr;
 
     ContextBonusFlag flags = ContextBonusFlag::NONE;
-    IQteProvider* qte = nullptr;
     class RandomEngine* rng = nullptr; // OBLIGATORIO
 
     bool is_player_attacking = true;
@@ -91,10 +81,8 @@ struct ExecutionContext {
     // cuando el combate alimente condiciones al defensor, salen de aquí.
     int defender_extra_dice = 0;
     DiceMod defender_dice_mod = DiceMod::NORMAL;
-    // EN DESUSO desde Ed. 3: la CA/CD se eliminan. Se conserva el campo
-    // para no romper firmas hasta retirar los últimos usos; el executor
-    // ya lo ignora.
-    int override_target_defense = -1;  // Entero defensa (CA, TS Física, etc.)
+    // C-22: override_target_defense retirado — EN DESUSO desde Ed. 3 y ya
+    // sin ningún uso (el executor lo ignoraba y nadie lo rellenaba).
 };
 
 // Orquestador FINAL que respeta invariante Nd6 siempre.

@@ -567,3 +567,6 @@ add_dependencies(demo_senal_ceniza copiar_assets)
 
 # C-20 — Regresiones del propietario unico de las condiciones.
 include(cmake/ConditionEngineTests.cmake)
+
+# C-22 — Comprobador estático de declaraciones sin definición en include/RPG.
+include(cmake/DeclarationCheck.cmake)
