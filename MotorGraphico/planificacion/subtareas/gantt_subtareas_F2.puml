@@ -1,0 +1,240 @@
+@startgantt
+
+title Fase 2 — Runtime jugable mínimo — subtareas atómicas revisables
+
+' 1 'día' = 1 jornada de esfuerzo (~6 h). Las medias jornadas del
+' roadmap (0,5 j y 1,5 j) se redondean al alza porque PlantUML solo
+' admite días enteros; el esfuerzo exacto va entre corchetes en el
+' nombre de cada subtarea.
+' Las subtareas de paquetes ya avanzados se marcan con su porcentaje
+' heredado del paquete: revísalas antes de darlas por hechas.
+
+Project starts 2026-09-01
+saturday are closed
+sunday are closed
+
+
+-- RUN-01 — Implementar Application y bucle principal  [PARCIAL 80%] --
+
+[RUN-01.1 (1,5 j) definir ciclo de vida] lasts 2 days
+[RUN-01.1 (1,5 j) definir ciclo de vida] is colored in #E3A82B
+[RUN-01.1 (1,5 j) definir ciclo de vida] is 80% completed
+[RUN-01.2 (1,5 j) implementar reloj y salida] lasts 2 days
+[RUN-01.2 (1,5 j) implementar reloj y salida] is colored in #E3A82B
+[RUN-01.2 (1,5 j) implementar reloj y salida] is 80% completed
+[RUN-01.1 (1,5 j) definir ciclo de vida] -> [RUN-01.2 (1,5 j) implementar reloj y salida]
+[RUN-01.3 (1 j) inyectar servicios mínimos] lasts 1 days
+[RUN-01.3 (1 j) inyectar servicios mínimos] is colored in #E3A82B
+[RUN-01.3 (1 j) inyectar servicios mínimos] is 80% completed
+[RUN-01.2 (1,5 j) implementar reloj y salida] -> [RUN-01.3 (1 j) inyectar servicios mínimos]
+[RUN-01.4 (1 j) crear smoke test sin lógica de juego] lasts 1 days
+[RUN-01.4 (1 j) crear smoke test sin lógica de juego] is colored in #E3A82B
+[RUN-01.4 (1 j) crear smoke test sin lógica de juego] is 80% completed
+[RUN-01.3 (1 j) inyectar servicios mínimos] -> [RUN-01.4 (1 j) crear smoke test sin lógica de juego]
+[RUN-01 listo] happens at [RUN-01.4 (1 j) crear smoke test sin lógica de juego]'s end
+
+-- RUN-02 — Implementar InputSystem  [PARCIAL 60%] --
+
+[RUN-02.1 (1 j) capturar eventos GLFW] lasts 1 days
+[RUN-02.1 (1 j) capturar eventos GLFW] is colored in #E3A82B
+[RUN-02.1 (1 j) capturar eventos GLFW] is 60% completed
+[RUN-01.4 (1 j) crear smoke test sin lógica de juego] -> [RUN-02.1 (1 j) capturar eventos GLFW]
+[RUN-02.2 (1 j) construir snapshot] lasts 1 days
+[RUN-02.2 (1 j) construir snapshot] is colored in #E3A82B
+[RUN-02.2 (1 j) construir snapshot] is 60% completed
+[RUN-02.1 (1 j) capturar eventos GLFW] -> [RUN-02.2 (1 j) construir snapshot]
+[RUN-02.3 (1 j) mapear acciones] lasts 1 days
+[RUN-02.3 (1 j) mapear acciones] is colored in #E3A82B
+[RUN-02.3 (1 j) mapear acciones] is 60% completed
+[RUN-02.2 (1 j) construir snapshot] -> [RUN-02.3 (1 j) mapear acciones]
+[RUN-02.4 (1 j) probar transiciones de estado] lasts 1 days
+[RUN-02.4 (1 j) probar transiciones de estado] is colored in #E3A82B
+[RUN-02.4 (1 j) probar transiciones de estado] is 60% completed
+[RUN-02.3 (1 j) mapear acciones] -> [RUN-02.4 (1 j) probar transiciones de estado]
+[RUN-02 listo] happens at [RUN-02.4 (1 j) probar transiciones de estado]'s end
+
+-- RUN-03 — Implementar SceneManager y carga de mapas  [PARCIAL 45%] --
+
+[RUN-03.1 (1,5 j) definir interfaz Scene] lasts 2 days
+[RUN-03.1 (1,5 j) definir interfaz Scene] is colored in #E3A82B
+[RUN-03.1 (1,5 j) definir interfaz Scene] is 45% completed
+[RUN-02.4 (1 j) probar transiciones de estado] -> [RUN-03.1 (1,5 j) definir interfaz Scene]
+[RUN-03.2 (1,5 j) crear state machine] lasts 2 days
+[RUN-03.2 (1,5 j) crear state machine] is colored in #E3A82B
+[RUN-03.2 (1,5 j) crear state machine] is 45% completed
+[RUN-03.1 (1,5 j) definir interfaz Scene] -> [RUN-03.2 (1,5 j) crear state machine]
+[RUN-03.3 (1,5 j) integrar MapId] lasts 2 days
+[RUN-03.3 (1,5 j) integrar MapId] is colored in #E3A82B
+[RUN-03.3 (1,5 j) integrar MapId] is 45% completed
+[RUN-03.2 (1,5 j) crear state machine] -> [RUN-03.3 (1,5 j) integrar MapId]
+[RUN-03.4 (1,5 j) probar fallo de carga y transición] lasts 2 days
+[RUN-03.4 (1,5 j) probar fallo de carga y transición] is colored in #E3A82B
+[RUN-03.4 (1,5 j) probar fallo de carga y transición] is 45% completed
+[RUN-03.3 (1,5 j) integrar MapId] -> [RUN-03.4 (1,5 j) probar fallo de carga y transición]
+[RUN-03 listo] happens at [RUN-03.4 (1,5 j) probar fallo de carga y transición]'s end
+
+-- RUN-04 — Implementar World y ciclo de vida de entidades  [PARCIAL 35%] --
+
+[RUN-04.1 (1,5 j) definir handle] lasts 2 days
+[RUN-04.1 (1,5 j) definir handle] is colored in #E3A82B
+[RUN-04.1 (1,5 j) definir handle] is 35% completed
+[RUN-03.4 (1,5 j) probar fallo de carga y transición] -> [RUN-04.1 (1,5 j) definir handle]
+[RUN-04.2 (1,5 j) implementar almacenamiento] lasts 2 days
+[RUN-04.2 (1,5 j) implementar almacenamiento] is colored in #E3A82B
+[RUN-04.2 (1,5 j) implementar almacenamiento] is 35% completed
+[RUN-04.1 (1,5 j) definir handle] -> [RUN-04.2 (1,5 j) implementar almacenamiento]
+[RUN-04.3 (1,5 j) encolar create/destroy] lasts 2 days
+[RUN-04.3 (1,5 j) encolar create/destroy] is colored in #E3A82B
+[RUN-04.3 (1,5 j) encolar create/destroy] is 35% completed
+[RUN-04.2 (1,5 j) implementar almacenamiento] -> [RUN-04.3 (1,5 j) encolar create/destroy]
+[RUN-04.4 (1,5 j) probar reuse y handle obsoleto] lasts 2 days
+[RUN-04.4 (1,5 j) probar reuse y handle obsoleto] is colored in #E3A82B
+[RUN-04.4 (1,5 j) probar reuse y handle obsoleto] is 35% completed
+[RUN-04.3 (1,5 j) encolar create/destroy] -> [RUN-04.4 (1,5 j) probar reuse y handle obsoleto]
+[RUN-04 listo] happens at [RUN-04.4 (1,5 j) probar reuse y handle obsoleto]'s end
+
+-- RUN-05 — Migrar Entity a composición por componentes  [PENDIENTE 10%] --
+
+[RUN-05.1 (2 j) crear Transform/Sprite] lasts 2 days
+[RUN-05.1 (2 j) crear Transform/Sprite] is colored in #B8BEC7
+[RUN-05.1 (2 j) crear Transform/Sprite] is 10% completed
+[RUN-04.4 (1,5 j) probar reuse y handle obsoleto] -> [RUN-05.1 (2 j) crear Transform/Sprite]
+[RUN-05.2 (2 j) crear registro de componentes] lasts 2 days
+[RUN-05.2 (2 j) crear registro de componentes] is colored in #B8BEC7
+[RUN-05.2 (2 j) crear registro de componentes] is 10% completed
+[RUN-05.1 (2 j) crear Transform/Sprite] -> [RUN-05.2 (2 j) crear registro de componentes]
+[RUN-05.3 (1,5 j) adaptar demo con proxy] lasts 2 days
+[RUN-05.3 (1,5 j) adaptar demo con proxy] is colored in #B8BEC7
+[RUN-05.3 (1,5 j) adaptar demo con proxy] is 10% completed
+[RUN-05.2 (2 j) crear registro de componentes] -> [RUN-05.3 (1,5 j) adaptar demo con proxy]
+[RUN-05.4 (1,5 j) retirar acoplamientos gradualmente] lasts 2 days
+[RUN-05.4 (1,5 j) retirar acoplamientos gradualmente] is colored in #B8BEC7
+[RUN-05.4 (1,5 j) retirar acoplamientos gradualmente] is 10% completed
+[RUN-05.3 (1,5 j) adaptar demo con proxy] -> [RUN-05.4 (1,5 j) retirar acoplamientos gradualmente]
+[RUN-05 listo] happens at [RUN-05.4 (1,5 j) retirar acoplamientos gradualmente]'s end
+
+-- RUN-06 — Implementar animación por frames  [DONE 90%] --
+
+[RUN-06.1 (1,5 j) definir clip] lasts 2 days
+[RUN-06.1 (1,5 j) definir clip] is colored in #5BA85B
+[RUN-06.1 (1,5 j) definir clip] is 90% completed
+[RUN-05.4 (1,5 j) retirar acoplamientos gradualmente] -> [RUN-06.1 (1,5 j) definir clip]
+[RUN-06.2 (1,5 j) implementar avance] lasts 2 days
+[RUN-06.2 (1,5 j) implementar avance] is colored in #5BA85B
+[RUN-06.2 (1,5 j) implementar avance] is 90% completed
+[RUN-06.1 (1,5 j) definir clip] -> [RUN-06.2 (1,5 j) implementar avance]
+[RUN-06.3 (1 j) integrar sprite frame] lasts 1 days
+[RUN-06.3 (1 j) integrar sprite frame] is colored in #5BA85B
+[RUN-06.3 (1 j) integrar sprite frame] is 90% completed
+[RUN-06.2 (1,5 j) implementar avance] -> [RUN-06.3 (1 j) integrar sprite frame]
+[RUN-06.4 (1 j) probar dt grande y no-loop] lasts 1 days
+[RUN-06.4 (1 j) probar dt grande y no-loop] is colored in #5BA85B
+[RUN-06.4 (1 j) probar dt grande y no-loop] is 90% completed
+[RUN-06.3 (1 j) integrar sprite frame] -> [RUN-06.4 (1 j) probar dt grande y no-loop]
+[RUN-06 listo] happens at [RUN-06.4 (1 j) probar dt grande y no-loop]'s end
+
+-- RUN-07 — Implementar movimiento y colisión dinámica  [PARCIAL 65%] --
+
+[RUN-07.1 (1,5 j) consultar passability] lasts 2 days
+[RUN-07.1 (1,5 j) consultar passability] is colored in #E3A82B
+[RUN-07.1 (1,5 j) consultar passability] is 65% completed
+[RUN-06.4 (1 j) probar dt grande y no-loop] -> [RUN-07.1 (1,5 j) consultar passability]
+[RUN-07.2 (1,5 j) resolver intento] lasts 2 days
+[RUN-07.2 (1,5 j) resolver intento] is colored in #E3A82B
+[RUN-07.2 (1,5 j) resolver intento] is 65% completed
+[RUN-07.1 (1,5 j) consultar passability] -> [RUN-07.2 (1,5 j) resolver intento]
+[RUN-07.3 (1,5 j) reservar celda] lasts 2 days
+[RUN-07.3 (1,5 j) reservar celda] is colored in #E3A82B
+[RUN-07.3 (1,5 j) reservar celda] is 65% completed
+[RUN-07.2 (1,5 j) resolver intento] -> [RUN-07.3 (1,5 j) reservar celda]
+[RUN-07.4 (1,5 j) interpolar visual] lasts 2 days
+[RUN-07.4 (1,5 j) interpolar visual] is colored in #E3A82B
+[RUN-07.4 (1,5 j) interpolar visual] is 65% completed
+[RUN-07.3 (1,5 j) reservar celda] -> [RUN-07.4 (1,5 j) interpolar visual]
+[RUN-07.5 (1 j) emitir llegada/bloqueo] lasts 1 days
+[RUN-07.5 (1 j) emitir llegada/bloqueo] is colored in #E3A82B
+[RUN-07.5 (1 j) emitir llegada/bloqueo] is 65% completed
+[RUN-07.4 (1,5 j) interpolar visual] -> [RUN-07.5 (1 j) emitir llegada/bloqueo]
+[RUN-07 listo] happens at [RUN-07.5 (1 j) emitir llegada/bloqueo]'s end
+
+-- RUN-08 — Implementar cámara de seguimiento  [DONE 90%] --
+
+[RUN-08.1 (1 j) añadir target por handle] lasts 1 days
+[RUN-08.1 (1 j) añadir target por handle] is colored in #5BA85B
+[RUN-08.1 (1 j) añadir target por handle] is 90% completed
+[RUN-07.5 (1 j) emitir llegada/bloqueo] -> [RUN-08.1 (1 j) añadir target por handle]
+[RUN-08.2 (1 j) calcular centro y límites] lasts 1 days
+[RUN-08.2 (1 j) calcular centro y límites] is colored in #5BA85B
+[RUN-08.2 (1 j) calcular centro y límites] is 90% completed
+[RUN-08.1 (1 j) añadir target por handle] -> [RUN-08.2 (1 j) calcular centro y límites]
+[RUN-08.3 (0,5 j) resolver snap en transición] lasts 1 days
+[RUN-08.3 (0,5 j) resolver snap en transición] is colored in #5BA85B
+[RUN-08.3 (0,5 j) resolver snap en transición] is 90% completed
+[RUN-08.2 (1 j) calcular centro y límites] -> [RUN-08.3 (0,5 j) resolver snap en transición]
+[RUN-08.4 (0,5 j) probar mapa menor que viewport] lasts 1 days
+[RUN-08.4 (0,5 j) probar mapa menor que viewport] is colored in #5BA85B
+[RUN-08.4 (0,5 j) probar mapa menor que viewport] is 90% completed
+[RUN-08.3 (0,5 j) resolver snap en transición] -> [RUN-08.4 (0,5 j) probar mapa menor que viewport]
+[RUN-08 listo] happens at [RUN-08.4 (0,5 j) probar mapa menor que viewport]'s end
+
+-- RUN-09 — Implementar portales y cambio de mapa  [DONE 80%] --
+
+[RUN-09.1 (1 j) definir enlace documental] lasts 1 days
+[RUN-09.1 (1 j) definir enlace documental] is colored in #5BA85B
+[RUN-09.1 (1 j) definir enlace documental] is 80% completed
+[RUN-08.4 (0,5 j) probar mapa menor que viewport] -> [RUN-09.1 (1 j) definir enlace documental]
+[RUN-09.2 (1 j) crear trigger runtime] lasts 1 days
+[RUN-09.2 (1 j) crear trigger runtime] is colored in #5BA85B
+[RUN-09.2 (1 j) crear trigger runtime] is 80% completed
+[RUN-09.1 (1 j) definir enlace documental] -> [RUN-09.2 (1 j) crear trigger runtime]
+[RUN-09.3 (1 j) resolver spawn] lasts 1 days
+[RUN-09.3 (1 j) resolver spawn] is colored in #5BA85B
+[RUN-09.3 (1 j) resolver spawn] is 80% completed
+[RUN-09.2 (1 j) crear trigger runtime] -> [RUN-09.3 (1 j) resolver spawn]
+[RUN-09.4 (1 j) manejar destino ausente] lasts 1 days
+[RUN-09.4 (1 j) manejar destino ausente] is colored in #5BA85B
+[RUN-09.4 (1 j) manejar destino ausente] is 80% completed
+[RUN-09.3 (1 j) resolver spawn] -> [RUN-09.4 (1 j) manejar destino ausente]
+[RUN-09 listo] happens at [RUN-09.4 (1 j) manejar destino ausente]'s end
+
+-- RUN-10 — Implementar estado y guardado básico  [HECHO 100%] --
+
+[RUN-10.1 (1,5 j) definir DTO] lasts 1 days
+[RUN-10.1 (1,5 j) definir DTO] is colored in #5BA85B
+[RUN-10.1 (1,5 j) definir DTO] is 100% completed
+[RUN-09.4 (1 j) manejar destino ausente] -> [RUN-10.1 (1,5 j) definir DTO]
+[RUN-10.2 (1,5 j) capturar/restaurar estado] lasts 1 days
+[RUN-10.2 (1,5 j) capturar/restaurar estado] is colored in #5BA85B
+[RUN-10.2 (1,5 j) capturar/restaurar estado] is 100% completed
+[RUN-10.1 (1,5 j) definir DTO] -> [RUN-10.2 (1,5 j) capturar/restaurar estado]
+[RUN-10.3 (1,5 j) escritura atómica] lasts 1 days
+[RUN-10.3 (1,5 j) escritura atómica] is colored in #5BA85B
+[RUN-10.3 (1,5 j) escritura atómica] is 100% completed
+[RUN-10.2 (1,5 j) capturar/restaurar estado] -> [RUN-10.3 (1,5 j) escritura atómica]
+[RUN-10.4 (1,5 j) validar mismatch de versión] lasts 1 days
+[RUN-10.4 (1,5 j) validar mismatch de versión] is colored in #5BA85B
+[RUN-10.4 (1,5 j) validar mismatch de versión] is 100% completed
+[RUN-10.3 (1,5 j) escritura atómica] -> [RUN-10.4 (1,5 j) validar mismatch de versión]
+[RUN-10 listo] happens at [RUN-10.4 (1,5 j) validar mismatch de versión]'s end
+
+-- RUN-11 — Crear vertical slice jugable del runtime  [HECHO 100%] --
+
+[RUN-11.1 (1,5 j) crear contenido fixture] lasts 2 days
+[RUN-11.1 (1,5 j) crear contenido fixture] is colored in #5BA85B
+[RUN-11.1 (1,5 j) crear contenido fixture] is 100% completed
+[RUN-10.4 (1,5 j) validar mismatch de versión] -> [RUN-11.1 (1,5 j) crear contenido fixture]
+[RUN-11.2 (1,5 j) conectar subsistemas] lasts 2 days
+[RUN-11.2 (1,5 j) conectar subsistemas] is colored in #5BA85B
+[RUN-11.2 (1,5 j) conectar subsistemas] is 100% completed
+[RUN-11.1 (1,5 j) crear contenido fixture] -> [RUN-11.2 (1,5 j) conectar subsistemas]
+[RUN-11.3 (1 j) añadir modo headless determinista] lasts 1 days
+[RUN-11.3 (1 j) añadir modo headless determinista] is colored in #5BA85B
+[RUN-11.3 (1 j) añadir modo headless determinista] is 100% completed
+[RUN-11.2 (1,5 j) conectar subsistemas] -> [RUN-11.3 (1 j) añadir modo headless determinista]
+[RUN-11.4 (1 j) documentar ejecución] lasts 1 days
+[RUN-11.4 (1 j) documentar ejecución] is colored in #5BA85B
+[RUN-11.4 (1 j) documentar ejecución] is 100% completed
+[RUN-11.3 (1 j) añadir modo headless determinista] -> [RUN-11.4 (1 j) documentar ejecución]
+[RUN-11 listo] happens at [RUN-11.4 (1 j) documentar ejecución]'s end
+
+@endgantt

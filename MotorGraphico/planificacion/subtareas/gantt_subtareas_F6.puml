@@ -1,0 +1,323 @@
+@startgantt
+
+title Fase 6 — Base de datos y sistemas de juego — subtareas atómicas revisables
+
+' 1 'día' = 1 jornada de esfuerzo (~6 h). Las medias jornadas del
+' roadmap (0,5 j y 1,5 j) se redondean al alza porque PlantUML solo
+' admite días enteros; el esfuerzo exacto va entre corchetes en el
+' nombre de cada subtarea.
+' Las subtareas de paquetes ya avanzados se marcan con su porcentaje
+' heredado del paquete: revísalas antes de darlas por hechas.
+
+Project starts 2026-09-01
+saturday are closed
+sunday are closed
+
+
+-- GDB-01 — Crear GameDatabase extensible  [PARCIAL 65%] --
+
+[GDB-01.1 (2 j) definir DataRecord] lasts 2 days
+[GDB-01.1 (2 j) definir DataRecord] is colored in #E3A82B
+[GDB-01.1 (2 j) definir DataRecord] is 65% completed
+[GDB-01.2 (1,5 j) crear registry de tipos] lasts 2 days
+[GDB-01.2 (1,5 j) crear registry de tipos] is colored in #E3A82B
+[GDB-01.2 (1,5 j) crear registry de tipos] is 65% completed
+[GDB-01.1 (2 j) definir DataRecord] -> [GDB-01.2 (1,5 j) crear registry de tipos]
+[GDB-01.3 (1,5 j) CRUD e índices] lasts 2 days
+[GDB-01.3 (1,5 j) CRUD e índices] is colored in #E3A82B
+[GDB-01.3 (1,5 j) CRUD e índices] is 65% completed
+[GDB-01.2 (1,5 j) crear registry de tipos] -> [GDB-01.3 (1,5 j) CRUD e índices]
+[GDB-01.4 (1,5 j) serializar/migrar] lasts 2 days
+[GDB-01.4 (1,5 j) serializar/migrar] is colored in #E3A82B
+[GDB-01.4 (1,5 j) serializar/migrar] is 65% completed
+[GDB-01.3 (1,5 j) CRUD e índices] -> [GDB-01.4 (1,5 j) serializar/migrar]
+[GDB-01.5 (1,5 j) validar refs] lasts 2 days
+[GDB-01.5 (1,5 j) validar refs] is colored in #E3A82B
+[GDB-01.5 (1,5 j) validar refs] is 65% completed
+[GDB-01.4 (1,5 j) serializar/migrar] -> [GDB-01.5 (1,5 j) validar refs]
+[GDB-01 listo] happens at [GDB-01.5 (1,5 j) validar refs]'s end
+
+-- GDB-02 — Crear editor maestro-detalle de registros  [PENDIENTE 10%] --
+
+[GDB-02.1 (2 j) crear ventana/categorías] lasts 2 days
+[GDB-02.1 (2 j) crear ventana/categorías] is colored in #B8BEC7
+[GDB-02.1 (2 j) crear ventana/categorías] is 10% completed
+[GDB-01.5 (1,5 j) validar refs] -> [GDB-02.1 (2 j) crear ventana/categorías]
+[GDB-02.2 (1,5 j) lista virtualizada] lasts 2 days
+[GDB-02.2 (1,5 j) lista virtualizada] is colored in #B8BEC7
+[GDB-02.2 (1,5 j) lista virtualizada] is 10% completed
+[GDB-02.1 (2 j) crear ventana/categorías] -> [GDB-02.2 (1,5 j) lista virtualizada]
+[GDB-02.3 (1,5 j) CRUD] lasts 2 days
+[GDB-02.3 (1,5 j) CRUD] is colored in #B8BEC7
+[GDB-02.3 (1,5 j) CRUD] is 10% completed
+[GDB-02.2 (1,5 j) lista virtualizada] -> [GDB-02.3 (1,5 j) CRUD]
+[GDB-02.4 (1,5 j) inspector registry] lasts 2 days
+[GDB-02.4 (1,5 j) inspector registry] is colored in #B8BEC7
+[GDB-02.4 (1,5 j) inspector registry] is 10% completed
+[GDB-02.3 (1,5 j) CRUD] -> [GDB-02.4 (1,5 j) inspector registry]
+[GDB-02.5 (1,5 j) búsqueda/diagnósticos] lasts 2 days
+[GDB-02.5 (1,5 j) búsqueda/diagnósticos] is colored in #B8BEC7
+[GDB-02.5 (1,5 j) búsqueda/diagnósticos] is 10% completed
+[GDB-02.4 (1,5 j) inspector registry] -> [GDB-02.5 (1,5 j) búsqueda/diagnósticos]
+[GDB-02 listo] happens at [GDB-02.5 (1,5 j) búsqueda/diagnósticos]'s end
+
+-- GDB-03 — Implementar actores, NPC y enemigos  [DONE 80%] --
+
+[GDB-03.1 (1,5 j) definir records] lasts 2 days
+[GDB-03.1 (1,5 j) definir records] is colored in #7FB069
+[GDB-03.1 (1,5 j) definir records] is 80% completed
+[GDB-02.5 (1,5 j) búsqueda/diagnósticos] -> [GDB-03.1 (1,5 j) definir records]
+[GDB-03.2 (1,5 j) crear inspectores] lasts 2 days
+[GDB-03.2 (1,5 j) crear inspectores] is colored in #7FB069
+[GDB-03.2 (1,5 j) crear inspectores] is 80% completed
+[GDB-03.1 (1,5 j) definir records] -> [GDB-03.2 (1,5 j) crear inspectores]
+[GDB-03.3 (1,5 j) factory World] lasts 2 days
+[GDB-03.3 (1,5 j) factory World] is colored in #7FB069
+[GDB-03.3 (1,5 j) factory World] is 80% completed
+[GDB-03.2 (1,5 j) crear inspectores] -> [GDB-03.3 (1,5 j) factory World]
+[GDB-03.4 (1,5 j) integrar placement] lasts 2 days
+[GDB-03.4 (1,5 j) integrar placement] is colored in #7FB069
+[GDB-03.4 (1,5 j) integrar placement] is 80% completed
+[GDB-03.3 (1,5 j) factory World] -> [GDB-03.4 (1,5 j) integrar placement]
+[GDB-03.5 (1 j) tests] lasts 1 days
+[GDB-03.5 (1 j) tests] is colored in #7FB069
+[GDB-03.5 (1 j) tests] is 80% completed
+[GDB-03.4 (1,5 j) integrar placement] -> [GDB-03.5 (1 j) tests]
+[GDB-03 listo] happens at [GDB-03.5 (1 j) tests]'s end
+
+-- GDB-04 — Implementar atributos, estados y progresión  [DONE 80%] --
+
+[GDB-04.1 (1,5 j) definir stats] lasts 2 days
+[GDB-04.1 (1,5 j) definir stats] is colored in #7FB069
+[GDB-04.1 (1,5 j) definir stats] is 80% completed
+[GDB-03.5 (1 j) tests] -> [GDB-04.1 (1,5 j) definir stats]
+[GDB-04.2 (1,5 j) modificadores] lasts 2 days
+[GDB-04.2 (1,5 j) modificadores] is colored in #7FB069
+[GDB-04.2 (1,5 j) modificadores] is 80% completed
+[GDB-04.1 (1,5 j) definir stats] -> [GDB-04.2 (1,5 j) modificadores]
+[GDB-04.3 (1,5 j) estados/duración] lasts 2 days
+[GDB-04.3 (1,5 j) estados/duración] is colored in #7FB069
+[GDB-04.3 (1,5 j) estados/duración] is 80% completed
+[GDB-04.2 (1,5 j) modificadores] -> [GDB-04.3 (1,5 j) estados/duración]
+[GDB-04.4 (1,5 j) progresión] lasts 2 days
+[GDB-04.4 (1,5 j) progresión] is colored in #7FB069
+[GDB-04.4 (1,5 j) progresión] is 80% completed
+[GDB-04.3 (1,5 j) estados/duración] -> [GDB-04.4 (1,5 j) progresión]
+[GDB-04.5 (1 j) inspector/pruebas] lasts 1 days
+[GDB-04.5 (1 j) inspector/pruebas] is colored in #7FB069
+[GDB-04.5 (1 j) inspector/pruebas] is 80% completed
+[GDB-04.4 (1,5 j) progresión] -> [GDB-04.5 (1 j) inspector/pruebas]
+[GDB-04 listo] happens at [GDB-04.5 (1 j) inspector/pruebas]'s end
+
+-- GDB-05 — Implementar objetos, equipo e inventario  [DONE 80%] --
+
+[GDB-05.1 (1,5 j) records item/equipo] lasts 2 days
+[GDB-05.1 (1,5 j) records item/equipo] is colored in #7FB069
+[GDB-05.1 (1,5 j) records item/equipo] is 80% completed
+[GDB-04.5 (1 j) inspector/pruebas] -> [GDB-05.1 (1,5 j) records item/equipo]
+[GDB-05.2 (1,5 j) inventory ops] lasts 2 days
+[GDB-05.2 (1,5 j) inventory ops] is colored in #7FB069
+[GDB-05.2 (1,5 j) inventory ops] is 80% completed
+[GDB-05.1 (1,5 j) records item/equipo] -> [GDB-05.2 (1,5 j) inventory ops]
+[GDB-05.3 (1,5 j) equip slots] lasts 2 days
+[GDB-05.3 (1,5 j) equip slots] is colored in #7FB069
+[GDB-05.3 (1,5 j) equip slots] is 80% completed
+[GDB-05.2 (1,5 j) inventory ops] -> [GDB-05.3 (1,5 j) equip slots]
+[GDB-05.4 (1,5 j) modificadores stats] lasts 2 days
+[GDB-05.4 (1,5 j) modificadores stats] is colored in #7FB069
+[GDB-05.4 (1,5 j) modificadores stats] is 80% completed
+[GDB-05.3 (1,5 j) equip slots] -> [GDB-05.4 (1,5 j) modificadores stats]
+[GDB-05.5 (1 j) save/editor] lasts 1 days
+[GDB-05.5 (1 j) save/editor] is colored in #7FB069
+[GDB-05.5 (1 j) save/editor] is 80% completed
+[GDB-05.4 (1,5 j) modificadores stats] -> [GDB-05.5 (1 j) save/editor]
+[GDB-05 listo] happens at [GDB-05.5 (1 j) save/editor]'s end
+
+-- GDB-06 — Implementar habilidades y efectos  [DONE 85%] --
+
+[GDB-06.1 (1,5 j) definir scope/cost] lasts 2 days
+[GDB-06.1 (1,5 j) definir scope/cost] is colored in #7FB069
+[GDB-06.1 (1,5 j) definir scope/cost] is 85% completed
+[GDB-05.5 (1 j) save/editor] -> [GDB-06.1 (1,5 j) definir scope/cost]
+[GDB-06.2 (1,5 j) effect registry] lasts 2 days
+[GDB-06.2 (1,5 j) effect registry] is colored in #7FB069
+[GDB-06.2 (1,5 j) effect registry] is 85% completed
+[GDB-06.1 (1,5 j) definir scope/cost] -> [GDB-06.2 (1,5 j) effect registry]
+[GDB-06.3 (1,5 j) resolver target] lasts 2 days
+[GDB-06.3 (1,5 j) resolver target] is colored in #7FB069
+[GDB-06.3 (1,5 j) resolver target] is 85% completed
+[GDB-06.2 (1,5 j) effect registry] -> [GDB-06.3 (1,5 j) resolver target]
+[GDB-06.4 (1,5 j) aplicar efectos] lasts 2 days
+[GDB-06.4 (1,5 j) aplicar efectos] is colored in #7FB069
+[GDB-06.4 (1,5 j) aplicar efectos] is 85% completed
+[GDB-06.3 (1,5 j) resolver target] -> [GDB-06.4 (1,5 j) aplicar efectos]
+[GDB-06.5 (1 j) editor/tests] lasts 1 days
+[GDB-06.5 (1 j) editor/tests] is colored in #7FB069
+[GDB-06.5 (1 j) editor/tests] is 85% completed
+[GDB-06.4 (1,5 j) aplicar efectos] -> [GDB-06.5 (1 j) editor/tests]
+[GDB-06 listo] happens at [GDB-06.5 (1 j) editor/tests]'s end
+
+-- GDB-07 — Implementar combate básico configurable  [PARCIAL 70%] --
+
+[GDB-07.1 (2 j) cerrar reglas en ADR] lasts 2 days
+[GDB-07.1 (2 j) cerrar reglas en ADR] is colored in #E3A82B
+[GDB-07.1 (2 j) cerrar reglas en ADR] is 70% completed
+[GDB-06.5 (1 j) editor/tests] -> [GDB-07.1 (2 j) cerrar reglas en ADR]
+[GDB-07.2 (2 j) definir state machine] lasts 2 days
+[GDB-07.2 (2 j) definir state machine] is colored in #E3A82B
+[GDB-07.2 (2 j) definir state machine] is 70% completed
+[GDB-07.1 (2 j) cerrar reglas en ADR] -> [GDB-07.2 (2 j) definir state machine]
+[GDB-07.3 (2 j) resolver iniciativa/turno] lasts 2 days
+[GDB-07.3 (2 j) resolver iniciativa/turno] is colored in #E3A82B
+[GDB-07.3 (2 j) resolver iniciativa/turno] is 70% completed
+[GDB-07.2 (2 j) definir state machine] -> [GDB-07.3 (2 j) resolver iniciativa/turno]
+[GDB-07.4 (2 j) acciones y efectos] lasts 2 days
+[GDB-07.4 (2 j) acciones y efectos] is colored in #E3A82B
+[GDB-07.4 (2 j) acciones y efectos] is 70% completed
+[GDB-07.3 (2 j) resolver iniciativa/turno] -> [GDB-07.4 (2 j) acciones y efectos]
+[GDB-07.5 (2 j) fin/recompensa/UI mínima] lasts 2 days
+[GDB-07.5 (2 j) fin/recompensa/UI mínima] is colored in #E3A82B
+[GDB-07.5 (2 j) fin/recompensa/UI mínima] is 70% completed
+[GDB-07.4 (2 j) acciones y efectos] -> [GDB-07.5 (2 j) fin/recompensa/UI mínima]
+[GDB-07 listo] happens at [GDB-07.5 (2 j) fin/recompensa/UI mínima]'s end
+
+-- GDB-08 — Implementar misiones y objetivos  [PARCIAL 65%] --
+
+[GDB-08.1 (2 j) record/state] lasts 2 days
+[GDB-08.1 (2 j) record/state] is colored in #E3A82B
+[GDB-08.1 (2 j) record/state] is 65% completed
+[GDB-07.5 (2 j) fin/recompensa/UI mínima] -> [GDB-08.1 (2 j) record/state]
+[GDB-08.2 (1,5 j) objetivos tipados] lasts 2 days
+[GDB-08.2 (1,5 j) objetivos tipados] is colored in #E3A82B
+[GDB-08.2 (1,5 j) objetivos tipados] is 65% completed
+[GDB-08.1 (2 j) record/state] -> [GDB-08.2 (1,5 j) objetivos tipados]
+[GDB-08.3 (1,5 j) signal evaluation] lasts 2 days
+[GDB-08.3 (1,5 j) signal evaluation] is colored in #E3A82B
+[GDB-08.3 (1,5 j) signal evaluation] is 65% completed
+[GDB-08.2 (1,5 j) objetivos tipados] -> [GDB-08.3 (1,5 j) signal evaluation]
+[GDB-08.4 (1,5 j) comandos/eventos] lasts 2 days
+[GDB-08.4 (1,5 j) comandos/eventos] is colored in #E3A82B
+[GDB-08.4 (1,5 j) comandos/eventos] is 65% completed
+[GDB-08.3 (1,5 j) signal evaluation] -> [GDB-08.4 (1,5 j) comandos/eventos]
+[GDB-08.5 (1,5 j) editor/tests] lasts 2 days
+[GDB-08.5 (1,5 j) editor/tests] is colored in #E3A82B
+[GDB-08.5 (1,5 j) editor/tests] is 65% completed
+[GDB-08.4 (1,5 j) comandos/eventos] -> [GDB-08.5 (1,5 j) editor/tests]
+[GDB-08 listo] happens at [GDB-08.5 (1,5 j) editor/tests]'s end
+
+-- GDB-09 — Implementar diálogos reutilizables  [PARCIAL 50%] --
+
+[GDB-09.1 (1,5 j) definir record/nodes] lasts 2 days
+[GDB-09.1 (1,5 j) definir record/nodes] is colored in #E3A82B
+[GDB-09.1 (1,5 j) definir record/nodes] is 50% completed
+[GDB-08.5 (1,5 j) editor/tests] -> [GDB-09.1 (1,5 j) definir record/nodes]
+[GDB-09.2 (1,5 j) resolver traversal] lasts 2 days
+[GDB-09.2 (1,5 j) resolver traversal] is colored in #E3A82B
+[GDB-09.2 (1,5 j) resolver traversal] is 50% completed
+[GDB-09.1 (1,5 j) definir record/nodes] -> [GDB-09.2 (1,5 j) resolver traversal]
+[GDB-09.3 (1 j) editor elegido] lasts 1 days
+[GDB-09.3 (1 j) editor elegido] is colored in #E3A82B
+[GDB-09.3 (1 j) editor elegido] is 50% completed
+[GDB-09.2 (1,5 j) resolver traversal] -> [GDB-09.3 (1 j) editor elegido]
+[GDB-09.4 (1 j) integrar comando] lasts 1 days
+[GDB-09.4 (1 j) integrar comando] is colored in #E3A82B
+[GDB-09.4 (1 j) integrar comando] is 50% completed
+[GDB-09.3 (1 j) editor elegido] -> [GDB-09.4 (1 j) integrar comando]
+[GDB-09.5 (1 j) validator] lasts 1 days
+[GDB-09.5 (1 j) validator] is colored in #E3A82B
+[GDB-09.5 (1 j) validator] is 50% completed
+[GDB-09.4 (1 j) integrar comando] -> [GDB-09.5 (1 j) validator]
+[GDB-09 listo] happens at [GDB-09.5 (1 j) validator]'s end
+
+-- GDB-10 — Implementar tablas de loot y encuentros  [PARCIAL 55%] --
+
+[GDB-10.1 (1,5 j) tabla genérica] lasts 2 days
+[GDB-10.1 (1,5 j) tabla genérica] is colored in #E3A82B
+[GDB-10.1 (1,5 j) tabla genérica] is 55% completed
+[GDB-09.5 (1 j) validator] -> [GDB-10.1 (1,5 j) tabla genérica]
+[GDB-10.2 (1,5 j) loot entries] lasts 2 days
+[GDB-10.2 (1,5 j) loot entries] is colored in #E3A82B
+[GDB-10.2 (1,5 j) loot entries] is 55% completed
+[GDB-10.1 (1,5 j) tabla genérica] -> [GDB-10.2 (1,5 j) loot entries]
+[GDB-10.3 (1 j) encounter entries] lasts 1 days
+[GDB-10.3 (1 j) encounter entries] is colored in #E3A82B
+[GDB-10.3 (1 j) encounter entries] is 55% completed
+[GDB-10.2 (1,5 j) loot entries] -> [GDB-10.3 (1 j) encounter entries]
+[GDB-10.4 (1 j) editores] lasts 1 days
+[GDB-10.4 (1 j) editores] is colored in #E3A82B
+[GDB-10.4 (1 j) editores] is 55% completed
+[GDB-10.3 (1 j) encounter entries] -> [GDB-10.4 (1 j) editores]
+[GDB-10.5 (1 j) tests estadísticos/deterministas] lasts 1 days
+[GDB-10.5 (1 j) tests estadísticos/deterministas] is colored in #E3A82B
+[GDB-10.5 (1 j) tests estadísticos/deterministas] is 55% completed
+[GDB-10.4 (1 j) editores] -> [GDB-10.5 (1 j) tests estadísticos/deterministas]
+[GDB-10 listo] happens at [GDB-10.5 (1 j) tests estadísticos/deterministas]'s end
+
+-- GDB-11 — Implementar audio, música y ambiente  [PENDIENTE 0%] --
+
+[GDB-11.1 (1,5 j) seleccionar backend] lasts 2 days
+[GDB-11.1 (1,5 j) seleccionar backend] is colored in #B8BEC7
+[GDB-10.5 (1 j) tests estadísticos/deterministas] -> [GDB-11.1 (1,5 j) seleccionar backend]
+[GDB-11.2 (1,5 j) buses y assets] lasts 2 days
+[GDB-11.2 (1,5 j) buses y assets] is colored in #B8BEC7
+[GDB-11.1 (1,5 j) seleccionar backend] -> [GDB-11.2 (1,5 j) buses y assets]
+[GDB-11.3 (1 j) play/stop/fade] lasts 1 days
+[GDB-11.3 (1 j) play/stop/fade] is colored in #B8BEC7
+[GDB-11.2 (1,5 j) buses y assets] -> [GDB-11.3 (1 j) play/stop/fade]
+[GDB-11.4 (1 j) map ambience] lasts 1 days
+[GDB-11.4 (1 j) map ambience] is colored in #B8BEC7
+[GDB-11.3 (1 j) play/stop/fade] -> [GDB-11.4 (1 j) map ambience]
+[GDB-11.5 (1 j) tests fake] lasts 1 days
+[GDB-11.5 (1 j) tests fake] is colored in #B8BEC7
+[GDB-11.4 (1 j) map ambience] -> [GDB-11.5 (1 j) tests fake]
+[GDB-11 listo] happens at [GDB-11.5 (1 j) tests fake]'s end
+
+-- GDB-12 — Implementar título, menús y carga de partida  [PARCIAL 40%] --
+
+[GDB-12.1 (2 j) title/load] lasts 2 days
+[GDB-12.1 (2 j) title/load] is colored in #E3A82B
+[GDB-12.1 (2 j) title/load] is 40% completed
+[GDB-11.5 (1 j) tests fake] -> [GDB-12.1 (2 j) title/load]
+[GDB-12.2 (1,5 j) pause/options] lasts 2 days
+[GDB-12.2 (1,5 j) pause/options] is colored in #E3A82B
+[GDB-12.2 (1,5 j) pause/options] is 40% completed
+[GDB-12.1 (2 j) title/load] -> [GDB-12.2 (1,5 j) pause/options]
+[GDB-12.3 (1,5 j) inventory/status] lasts 2 days
+[GDB-12.3 (1,5 j) inventory/status] is colored in #E3A82B
+[GDB-12.3 (1,5 j) inventory/status] is 40% completed
+[GDB-12.2 (1,5 j) pause/options] -> [GDB-12.3 (1,5 j) inventory/status]
+[GDB-12.4 (1,5 j) game over] lasts 2 days
+[GDB-12.4 (1,5 j) game over] is colored in #E3A82B
+[GDB-12.4 (1,5 j) game over] is 40% completed
+[GDB-12.3 (1,5 j) inventory/status] -> [GDB-12.4 (1,5 j) game over]
+[GDB-12.5 (1,5 j) navegación input] lasts 2 days
+[GDB-12.5 (1,5 j) navegación input] is colored in #E3A82B
+[GDB-12.5 (1,5 j) navegación input] is 40% completed
+[GDB-12.4 (1,5 j) game over] -> [GDB-12.5 (1,5 j) navegación input]
+[GDB-12 listo] happens at [GDB-12.5 (1,5 j) navegación input]'s end
+
+-- GDB-13 — Validar aventura completa de treinta minutos  [PARCIAL 50%] --
+
+[GDB-13.1 (1,5 j) escribir guion] lasts 2 days
+[GDB-13.1 (1,5 j) escribir guion] is colored in #E3A82B
+[GDB-13.1 (1,5 j) escribir guion] is 50% completed
+[GDB-12.5 (1,5 j) navegación input] -> [GDB-13.1 (1,5 j) escribir guion]
+[GDB-13.2 (1,5 j) crear contenido] lasts 2 days
+[GDB-13.2 (1,5 j) crear contenido] is colored in #E3A82B
+[GDB-13.2 (1,5 j) crear contenido] is 50% completed
+[GDB-13.1 (1,5 j) escribir guion] -> [GDB-13.2 (1,5 j) crear contenido]
+[GDB-13.3 (1,5 j) playthrough feliz] lasts 2 days
+[GDB-13.3 (1,5 j) playthrough feliz] is colored in #E3A82B
+[GDB-13.3 (1,5 j) playthrough feliz] is 50% completed
+[GDB-13.2 (1,5 j) crear contenido] -> [GDB-13.3 (1,5 j) playthrough feliz]
+[GDB-13.4 (1,5 j) rutas de error] lasts 2 days
+[GDB-13.4 (1,5 j) rutas de error] is colored in #E3A82B
+[GDB-13.4 (1,5 j) rutas de error] is 50% completed
+[GDB-13.3 (1,5 j) playthrough feliz] -> [GDB-13.4 (1,5 j) rutas de error]
+[GDB-13.5 (1 j) perfil/rendimiento] lasts 1 days
+[GDB-13.5 (1 j) perfil/rendimiento] is colored in #E3A82B
+[GDB-13.5 (1 j) perfil/rendimiento] is 50% completed
+[GDB-13.4 (1,5 j) rutas de error] -> [GDB-13.5 (1 j) perfil/rendimiento]
+[GDB-13 listo] happens at [GDB-13.5 (1 j) perfil/rendimiento]'s end
+
+@endgantt

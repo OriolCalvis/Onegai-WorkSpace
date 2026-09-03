@@ -68,9 +68,38 @@ Ejemplo completo y verificado: `assets/levels/ejemplo_nivel.json` con
 | `position` | `{x,y}` | No | `{0,0}` |
 | `patrolMin` | `{x,y}` | No | igual a `position` (quieto) |
 | `patrolMax` | `{x,y}` | No | igual a `position` |
+| `targetLevel` | string | No | `""` (no es una salida) |
+| `targetPosition` | `{x,y}` | No | el `playerStart` del nivel destino |
+| `displayName` | string | No | `""` (se usa el nombre del catálogo) |
+| `variant` | string | No | `""` |
+| `scale` | número | No | `1.0` (valores ≤ 0 se corrigen a 1) |
+| `effectOverride` | string | No | `""` (el efecto del catálogo) |
+| `properties` | objeto | No | `{}` (claves y valores de texto) |
+| `loot` | array de strings | No | `[]` |
+| `lootTable` | string | No | `""` |
+| `eventId` | string | No | `""` |
 
 `patrolMin`/`patrolMax` solo tienen sentido para objetos de categoría
 `enemy`; en props y pickups se ignoran.
+
+Todo lo que va más allá de `objectId`/`position` es **datos de la
+instancia**: el catálogo define el tipo y el nivel personaliza ESTA
+colocación concreta. El editor de niveles lo edita con el botón derecho
+sobre el objeto (panel de propiedades); estos son los campos que ese
+panel escribe.
+
+- **`targetLevel` + `targetPosition`:** convierten el objeto en una
+  salida a otro nivel. Sin `targetPosition`, el jugador aparece en el
+  `playerStart` del nivel destino.
+- **`loot`:** ids del catálogo de objetos que suelta esta instancia
+  (el cofre del atrio puede llevar una llave aunque los demás cofres
+  no). **`lootTable`:** referencia opcional a una tabla del catálogo
+  RPG de botín (`assets/catalogs/loot_tables.json`); pueden convivir.
+  El runtime los consumirá cuando llegue el sistema de botín; el dato
+  queda guardado desde ya.
+- **`eventId`:** id estable del evento o misión que dispara esta
+  instancia; el motor narrativo podrá escucharlo (la semilla de los
+  eventos de mapa del roadmap del editor).
 
 **`objectId` no se valida al cargar.** `LevelLoader` no conoce el
 catálogo que usará quien monte el nivel, así que un id inexistente no da
@@ -128,14 +157,34 @@ como estaba, sin aplicar las 6 anteriores.
 | `previewPng` | string | No | vacío (= icono editorial y entra en `previews_pendientes.json`) |
 | `blocksMovement` | bool | No | `false` |
 | `interactable` | bool | No | `false` |
+| `raceId` | string | No | `""` (raza RPG del personaje, relevante en NPCs) |
 | `combat` | objeto | No | solo se lee si `category` es `enemy` |
 | `pickup` | objeto | No | solo se lee si `category` es `pickup` |
+| `price` | int | No | `0` (sin precio; va en la raíz, no dentro de `pickup`) |
+| `dialogue` | array de strings | No | `[]` (solo significativo en `npc`) |
+| `shop` | objeto | No | sin tienda (solo significativo en `npc`) |
+| `business` | objeto | No | no es un negocio (`price` 0) |
 
 **`combat`** (enemigos): `maxHealth` (int), `maxMana` (int), `skills`
 (array de ids que se resuelven contra el `SkillCatalog`).
 
 **`pickup`** (recogibles): `effect` — `"none"`, `"heal"` o
 `"restoreMana"` — y `power` (int, la magnitud; se ignora con `"none"`).
+
+**`dialogue`** (NPCs): las líneas que el NPC dice en orden, una página
+por pulsación del jugador. Sin ramas ni condiciones a propósito: para
+"el tendero te saluda" sobra una lista (un árbol con estado es un
+sistema propio).
+
+**`shop`** (NPCs): `items` — cada artículo es `"id"` (usa el precio del
+catálogo) o `{"objectId": "id", "price": N}` (precio propio de esta
+tienda) — y `buybackPercent` (qué porcentaje del precio paga al
+recomprar; por defecto 50).
+
+**`business`** (cartel de negocio en venta, categoría `prop`): `price`
+(> 0 = en venta), `baseIncome` (ingreso por ciclo a alquiler justo) y
+`name` (nombre del local; sin él, el del propio objeto). El alquiler
+actual no va aquí: es estado de la partida, no del tipo.
 
 ### `spriteId` y el atlas
 

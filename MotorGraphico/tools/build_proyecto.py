@@ -32,14 +32,12 @@ import os
 import shutil
 import sys
 
+from project_manifest import load_manifest
+
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(AQUI)
 ASSETS = os.path.join(RAIZ, "assets")
 BUILDS = os.path.join(RAIZ, "builds")
-
-CARPETAS = {"niveles": "levels", "mapas": "maps",
-            "aventuras": "adventures", "catalogos": "objects"}
-
 
 def carga(p):
     with open(p, encoding="utf-8") as f:
@@ -50,10 +48,13 @@ def manifiesto(pid):
     ruta = os.path.join(ASSETS, "proyectos", pid + ".json")
     if not os.path.exists(ruta):
         sys.exit(f"no existe el proyecto '{pid}' ({ruta})")
-    return carga(ruta)
+    try:
+        return load_manifest(ruta)
+    except (ValueError, OSError) as exc:
+        sys.exit(f"{ruta}: {exc}")
 
 
-def cierre_de_niveles(niveles):
+def cierre_de_niveles(niveles, levels_dir="levels"):
     """Niveles alcanzables siguiendo targetLevel, empezando por los del
     manifiesto. Devuelve (conjunto, arrastrados)."""
     pendientes = list(niveles)
@@ -63,7 +64,7 @@ def cierre_de_niveles(niveles):
         if n in vistos:
             continue
         vistos.add(n)
-        ruta = os.path.join(ASSETS, "levels", n)
+        ruta = os.path.join(ASSETS, levels_dir, n)
         if not os.path.exists(ruta):
             continue
         d = carga(ruta)
@@ -83,27 +84,31 @@ def cierre_de_niveles(niveles):
 
 def construye(pid, con_binario=False):
     m = manifiesto(pid)
+    dirs = {kind: m["settings"][setting] for kind, setting in
+            (("levels", "levelsDirectory"), ("maps", "mapsDirectory"),
+             ("adventures", "adventuresDirectory"), ("objects", "catalogsDirectory"))}
     destino = os.path.join(BUILDS, pid)
     if os.path.exists(destino):
         shutil.rmtree(destino, ignore_errors=True)
-    for sub in ("levels", "maps", "adventures", "objects", "textures"):
+    for sub in (*dirs.values(), "textures"):
         os.makedirs(os.path.join(destino, "assets", sub), exist_ok=True)
 
-    niveles, arrastrados = cierre_de_niveles(list(m.get("niveles", [])))
-    mapas = set(m.get("mapas", []))
+    niveles, arrastrados = cierre_de_niveles(m["levels"], dirs["levels"])
+    mapas = set(m["maps"])
     for n in niveles:                       # los mapas de lo arrastrado tambien
-        r = os.path.join(ASSETS, "levels", n)
+        r = os.path.join(ASSETS, dirs["levels"], n)
         if os.path.exists(r):
             d = carga(r)
             if "map" in d:
                 mapas.add(os.path.basename(d["map"]))
 
     plan = {"levels": sorted(niveles), "maps": sorted(mapas),
-            "adventures": list(m.get("aventuras", [])),
-            "objects": list(m.get("catalogos", []))}
+            "adventures": list(m["adventures"]),
+            "objects": list(m["catalogs"])}
 
     copiados, faltan = 0, []
-    for sub, ficheros in plan.items():
+    for kind, ficheros in plan.items():
+        sub = dirs[kind]
         for f in ficheros:
             org = os.path.join(ASSETS, sub, f)
             if not os.path.exists(org):
@@ -129,7 +134,7 @@ def construye(pid, con_binario=False):
 
     # --- Comprobacion: todo objectId usado debe tener ficha DENTRO ---
     catalogo = set()
-    dir_obj = os.path.join(destino, "assets", "objects")
+    dir_obj = os.path.join(destino, "assets", dirs["objects"])
     for f in os.listdir(dir_obj):
         d = carga(os.path.join(dir_obj, f))
         for o in (d.get("objects") or d.get("entries") or []):
@@ -137,7 +142,7 @@ def construye(pid, con_binario=False):
                 catalogo.add(o["id"])
     sin_ficha = set()
     for n in plan["levels"]:
-        r = os.path.join(destino, "assets", "levels", n)
+        r = os.path.join(destino, "assets", dirs["levels"], n)
         if not os.path.exists(r):
             continue
         d = carga(r)
@@ -154,13 +159,13 @@ def construye(pid, con_binario=False):
 
     info = {
         "_nota": "Build de un proyecto. Generado por tools/build_proyecto.py.",
-        "id": pid, "nombre": m.get("nombre", pid), "epoca": m.get("epoca", ""),
-        "autor": m.get("autor", ""), "entrada": m.get("entrada", ""),
+        "id": pid, "nombre": m["name"], "epoca": m["epoch"],
+        "autor": m["author"], "entrada": m["entry"],
         "contenido": {k: len(v) for k, v in plan.items()},
         "niveles_arrastrados": [{"desde": a, "arrastra": b} for a, b in arrastrados],
         "ficheros_declarados_que_faltan": faltan,
         "objectIds_sin_ficha": sorted(sin_ficha),
-        "jugable": bool(m.get("entrada")) and not faltan and not sin_ficha,
+        "jugable": bool(m["entry"]) and not faltan and not sin_ficha,
     }
     with open(os.path.join(destino, "build.json"), "w", encoding="utf-8") as f:
         json.dump(info, f, ensure_ascii=False, indent=1)
@@ -176,7 +181,7 @@ def construye(pid, con_binario=False):
     if sin_ficha:
         print(f"                {len(sin_ficha)} objectId sin ficha: {sorted(sin_ficha)[:4]}")
     if not info["jugable"]:
-        motivo = ("sin entrada" if not m.get("entrada")
+        motivo = ("sin entrada" if not m["entry"]
                   else "faltan ficheros" if faltan else "objetos sin ficha")
         print(f"                NO JUGABLE: {motivo}")
     return info

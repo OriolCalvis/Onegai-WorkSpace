@@ -29,6 +29,7 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+from project_manifest import load_manifest, resolve_entry
 
 TOOLS = Path(__file__).resolve().parent
 MOTOR = TOOLS.parent
@@ -327,19 +328,17 @@ def validar_proyectos(solo: str | None) -> None:
         if solo and pid != solo:
             continue
 
-        man = leer_json(ASSETS / "proyectos" / f"{pid}.json")
-        if man is None:
-            err(f"assets/proyectos/{pid}.json", pid, "-", "el manifiesto no existe")
+        try:
+            man = load_manifest(ASSETS / "proyectos" / f"{pid}.json")
+        except (ValueError, OSError) as exc:
+            err(f"assets/proyectos/{pid}.json", pid, "-", str(exc))
             continue
 
-        # los manifiestos usan las claves en castellano: niveles/mapas/
-        # aventuras/catalogos (ver FORMATO_PROYECTOS.md); el struct C++
-        # Project las mapea a levels/maps/adventures/catalogs al parsear.
         cat_ids: dict[str, str] = {}
-        for nombre in man.get("catalogos") or []:
+        for nombre in man["catalogs"]:
             if not isinstance(nombre, str):
                 continue
-            ruta = ASSETS / "objects" / nombre
+            ruta = ASSETS / man["settings"]["catalogsDirectory"] / nombre
             if not ruta.exists():
                 err(f"assets/proyectos/{pid}.json", pid, "catalogos",
                     f"'{nombre}' no existe en assets/objects/")
@@ -347,10 +346,10 @@ def validar_proyectos(solo: str | None) -> None:
             cat_ids.update(cargar_objetos(ruta))
 
         niveles_proyecto = 0
-        for nombre in man.get("niveles") or []:
+        for nombre in man["levels"]:
             if not isinstance(nombre, str):
                 continue
-            ruta = ASSETS / "levels" / nombre
+            ruta = ASSETS / man["settings"]["levelsDirectory"] / nombre
             nivel = leer_json(ruta)
             if nivel is None:
                 err(f"assets/proyectos/{pid}.json", pid, "niveles",
@@ -377,25 +376,16 @@ def validar_proyectos(solo: str | None) -> None:
     for pid in vistos:
         if solo and pid != solo:
             continue
-        man = leer_json(ASSETS / "proyectos" / f"{pid}.json")
-        if not isinstance(man, dict):
-            continue
-        entrada = man.get("entrada")
+        try:
+            man = load_manifest(ASSETS / "proyectos" / f"{pid}.json")
+        except (ValueError, OSError):
+            continue  # diagnosticado en el paso anterior
+        entrada = man["entry"]
         if not isinstance(entrada, str) or not entrada:
             aviso(f"assets/proyectos/{pid}.json", pid, "entrada",
                   "sin entrada: el proyecto se edita pero no se juega")
             continue
-        # la ruta del manifiesto es relativa a la raíz del motor (como en
-        # runtime: cwd = build/, assets/ copiado ahí), no a assets/
-        candidata = MOTOR / entrada if entrada.startswith("assets/") else None
-        resuelta = None
-        if candidata is not None and candidata.exists():
-            resuelta = candidata
-        else:
-            for base in (ASSETS / "adventures", ASSETS / "levels"):
-                if (base / entrada).exists():
-                    resuelta = base / entrada
-                    break
+        resuelta = resolve_entry(man, ASSETS)
         if resuelta is None:
             err(f"assets/proyectos/{pid}.json", pid, "entrada",
                 f"'{entrada}' no resuelve a ninguna aventura ni nivel")

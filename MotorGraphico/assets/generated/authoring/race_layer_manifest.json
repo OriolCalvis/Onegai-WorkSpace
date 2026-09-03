@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "status": "authoring",
+  "baseAtlas": "../../textures/race_npc_idle.png",
+  "frameSize": {"width": 64, "height": 64},
+  "anchor": {"x": 32, "y": 59},
+  "raceSource": "../../textures/race_npc_idle.json",
+  "raceFamilies": [
+    "human", "human_black", "drow", "elf", "elemental", "dwarf",
+    "catfolk", "birdfolk", "orc", "tiefling", "lizardfolk", "ghost",
+    "gnome", "goblin", "minotaur", "naga", "yokai", "halfling"
+  ],
+  "slots": [
+    {"id": "body", "z": 10, "required": true},
+    {"id": "socks", "z": 20, "required": false},
+    {"id": "legs", "z": 30, "required": false},
+    {"id": "chest", "z": 40, "required": false},
+    {"id": "gloves", "z": 50, "required": false},
+    {"id": "boots", "z": 60, "required": false},
+    {"id": "head", "z": 70, "required": false},
+    {"id": "back", "z": 80, "required": false},
+    {"id": "weapon_main", "z": 90, "required": false},
+    {"id": "weapon_off", "z": 100, "required": false},
+    {"id": "aura", "z": 110, "required": false}
+  ],
+  "roles": ["bard", "warrior", "mage", "ranger", "cleric", "merchant", "guard"],
+  "tintable": true,
+  "auraPalette": ["none", "moss", "fire", "electric", "ice", "poison", "arcane", "corruption"]
+}

@@ -5,7 +5,9 @@ aventuras y sus catálogos de objetos. «Los Perdidos de Boundington» es un
 proyecto; cada cuadrante del experimento de las cuatro IAs es otro.
 
 Vive en `assets/proyectos/<id>.json`, y su id está listado en
-`assets/proyectos/index.json`. Lo lee `Editor::ProjectIndex`.
+`assets/proyectos/index.json`. El formato unico es **Project v1** (`schemaVersion: 1`).
+`ProjectSerializer` lo lee y escribe; `Editor::ProjectIndex` delega en el
+serializador y resuelve las rutas contra la raiz de assets solicitada.
 
 ---
 
@@ -27,8 +29,9 @@ prefijo del nombre de fichero y se rompió a la primera: un cuadrante llamó
 a sus niveles `ciudad_en_*` y Boundington se los tragó enteros — **86
 niveles en vez de 64**, porque también empieza por `ciudad_`.
 
-Si un fichero no está en ningún manifiesto, el índice lo reporta como
-**huérfano** en vez de repartirlo a ojo. Que sobre contenido es un aviso;
+Si el indice declara un manifiesto ausente o invalido, lo reporta como
+**huérfano**. Crear o borrar otro proyecto conserva esa referencia para
+que el autor pueda repararla. Que sobre contenido es un aviso;
 que se lo quede el proyecto equivocado es un bug silencioso.
 
 ---
@@ -37,48 +40,83 @@ que se lo quede el proyecto equivocado es un bug silencioso.
 
 ```json
 {
+  "schemaVersion": 1,
   "id": "boundington",
-  "nombre": "Los Perdidos de Boundington",
-  "descripcion": "La caída de la ciudad, tres días",
-  "epoca": "1981 b.f.",
-  "autor": "Oriol + Claude",
-  "prefijo": "",
-  "niveles":   ["ciudad_centro.json", "interior_vacio.json"],
-  "mapas":     ["ciudad_centro.tmx"],
-  "aventuras": ["boundington_prologo.json"],
-  "catalogos": ["boundington_npcs.json"],
-  "entrada":   "assets/adventures/boundington_prologo.json"
+  "name": "Los Perdidos de Boundington",
+  "description": "La caída de la ciudad, tres días",
+  "epoch": "1981 b.f.",
+  "author": "Oriol + Claude",
+  "prefix": "",
+  "settings": {
+    "schemaVersion": 1,
+    "mapsDirectory": "maps",
+    "levelsDirectory": "levels",
+    "adventuresDirectory": "adventures",
+    "catalogsDirectory": "objects",
+    "initialMap": "ciudad_centro.tmx"
+  },
+  "entry": "assets/adventures/boundington_prologo.json",
+  "levels": ["ciudad_centro.json", "interior_vacio.json"],
+  "maps": ["ciudad_centro.tmx"],
+  "adventures": ["boundington_prologo.json"],
+  "catalogs": ["boundington_npcs.json"]
 }
 ```
 
 | Campo | Qué es |
 |---|---|
-| `id` | **Solo `[a-z0-9_]`.** Acaba siendo nombre de fichero *y* prefijo de ids |
-| `nombre` | Lo que se ve en la pantalla de proyectos |
-| `epoca` | Fecha del canon, p. ej. `"1981 b.f."`. El mundo está fechado |
-| `prefijo` | **Debe acabar en `_`**. Sin él sale `mmtabernero`, que ni se lee ni se busca. Vacío = sin prefijo |
-| `niveles`, `mapas`, `aventuras`, `catalogos` | Nombres de fichero **sin ruta**. Se resuelven contra `assets/levels/`, `assets/maps/`, `assets/adventures/` y `assets/objects/` |
-| `entrada` | Por dónde arranca. Ver abajo |
+| `schemaVersion` | Version de formato: 1, tanto en la raiz como en settings. |
+| `id` | Solo `[a-z0-9_]`; debe coincidir con el nombre de archivo y el indice. |
+| `name`, `description`, `epoch`, `author` | Metadatos del proyecto. `name` no puede estar vacio. |
+| `prefix` | Vacio o terminado en `_`. |
+| `settings.*Directory` | Directorios relativos a assets, distintos entre si y sin `..`. |
+| `settings.initialMap` | Nombre presente en `maps`, o vacio. |
+| `levels`, `maps`, `adventures`, `catalogs` | Nombres de fichero sin ruta y sin duplicados; resueltos contra sus directorios en settings. |
+| `entry` | Punto de arranque; vacio significa que el proyecto se edita pero no se juega. |
 
-### `entrada`: dos formas, las dos válidas
+El indice conserva su contrato independiente: `index.json` contiene
+`{"proyectos": ["boundington", ...]}`. No es un manifiesto Project.
+
+### Migrar el formato anterior
+
+Los manifiestos con `nombre`, `niveles`, `entrada`, etc. se rechazan con
+un mensaje que indica el comando de migracion. No se mezclan campos de
+ambos formatos ni se intenta adivinar una version.
+
+```bash
+python3 tools/migrar_proyectos.py          # previsualiza, sin escribir
+python3 tools/migrar_proyectos.py --write  # migra los del indice
+```
+
+`--assets <ruta>` permite migrar otro pack. Se valida todo el lote antes
+de escribir, se guarda una copia previa en la ruta temporal indicada y
+cada manifiesto se reemplaza atomicamente. Si un campo no tiene migracion,
+se informa en vez de perderlo. Una segunda ejecucion produce cero cambios.
+`_nota` era una anotacion editorial y se omite; todos los campos de contenido
+se conservan. Las claves y el formato de salida coinciden byte a byte con
+`ProjectSerializer`, incluido UTF-8, orden, indentacion y salto de linea final.
+
+### `entry`: rutas y nombres de archivo
 
 Se admiten las dos porque **las dos se escribieron de verdad** antes de
 que esto estuviera documentado:
 
 ```json
-"entrada": "assets/adventures/boundington_prologo.json"   // ruta desde la raíz
-"entrada": "ciudad_en_guskedor.json"                       // solo el nombre
+"entry": "assets/adventures/boundington_prologo.json"   // ruta desde la raíz
+"entry": "ciudad_en_guskedor.json"                       // solo el nombre
 ```
 
-El nombre suelto se resuelve contra `assets/adventures/` y luego contra
-`assets/levels/`. `Project::entryKind` deja anotado a qué resolvió
+Tambien se acepta una ruta relativa a assets, como `adventures/inicio.json`.
+Las rutas con prefijo `assets/` se resuelven contra la raiz de assets
+solicitada, incluso al abrir una copia del pack. El nombre suelto se busca
+primero en `settings.adventuresDirectory` y despues en `settings.levelsDirectory`. `Project::entryKind` deja anotado a qué resolvió
 (`Adventure`, `Level`, `Missing` o `None`), y la pantalla de proyectos
 muestra **la ruta resuelta**, no la que pone el manifiesto — para que un
-`entrada` que no resuelve se vea en vez de fallar callando.
+`entry` que no resuelve se vea en vez de fallar callando.
 
 **Un proyecto puede arrancar en un nivel y no en una aventura.** Un pack
 de escenario sin historia es legítimo: se abre y se camina por él. Sin
-`entrada` el proyecto se puede editar pero no jugar, y el índice lo dice
+`entry` el proyecto se puede editar pero no jugar, y el índice lo dice
 antes de ofrecer el botón.
 
 ---
@@ -153,3 +191,15 @@ ids inválidos y duplicados, borrar, y sacar una build de verdad. Termina
 dejando `assets/` como lo encontró — una prueba que ensucia el árbol de
 trabajo se paga en cada commit posterior (pasó: `prueba_tmp` acabó
 versionado).
+
+## Regresiones de C-11
+
+`test_project_manifests` carga todos los manifiestos reales a traves del
+serializador y del indice, compara bytes al guardar y comprueba el punto
+de entrada. Tambien recorre crear/borrar con un indice vacio y conserva
+referencias a proyectos ausentes o invalidos. `test_project_migration`
+comprueba la previsualizacion, campos conservados, errores e idempotencia.
+
+```bash
+ctest --test-dir build --output-on-failure -R 'test_project_(manifests|migration|serialization)'
+```

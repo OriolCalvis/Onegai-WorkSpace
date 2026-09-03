@@ -1,6 +1,6 @@
 # Índice — Análisis clase a clase del motor
 
-*El análisis definitivo pedido por Oriol: cada clase con sus variables, funciones, flujo y herencia, para saber qué tenemos y qué falta. Cubierto todo `include/` + `src/` + `examples/` + `tests/` (≈101 headers, ≈59 cpp, ~23.500 líneas de código + 2.708 del editor visual).*
+*El análisis definitivo pedido por Oriol: cada clase con sus variables, funciones, flujo y herencia, para saber qué tenemos y qué falta. Cubierto todo `include/` + `src/` + `examples/` + `tests/` (101 headers, 59 cpp, ~23.500 líneas de código + 2.708 del editor visual). La matriz 08 cierra la trazabilidad cabecera→análisis y separa código integrado de infraestructura aún aislada.*
 
 **Historia del encargo** (por qué tarda): esta tarea se ha comido tres sesiones — Claude (cortada por límite de contexto, nada escrito) → Qwen 31/08 11:36–11:53 (escribió 01 y 02, cortada) → ZCode 31/08 12:15 (relevo documentado en TABLERO; 03–07 + este índice). Formato y numeración de Qwen respetados.
 
@@ -15,6 +15,7 @@
 | [05_game_level_map_world.md](05_game_level_map_world.md) | Game (sesión/combate/save), Level, Map/World/Runtime/Import (nuevos) | Map/World/Runtime/Import + SaveGame sin trackear |
 | [06_engine_editor_proyecto.md](06_engine_editor_proyecto.md) | Engine (Application/Loop/Input/Scene), Editor, Project (nuevo), editor/ | INF-03 a medio ejecutar |
 | [07_demos_tests_y_flujos.md](07_demos_tests_y_flujos.md) | 63 ejecutables, 15 tests, los 6 flujos transversales | tests/ sin trackear |
+| [08_matriz_cobertura_y_diagnostico.md](08_matriz_cobertura_y_diagnostico.md) | Cobertura de las 101 cabeceras, herencias, flujos reales y brechas priorizadas | contrastado contra árbol, CMake y CTest |
 
 ## Qué tenemos (verificado)
 

@@ -1,0 +1,291 @@
+<title>Pla del corte B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+:root{
+  --ground:#f2f4f2; --surface:#ffffff; --surface-2:#ecefec;
+  --ink:#17201e; --muted:#5e6b67; --line:#d7dedb;
+  --accent:#9c6410; --accent-soft:#f0e2c6;
+  --fase-C:#b3402c; --fase-D:#9a6d10; --fase-E:#3f7a45;
+  --fase-F:#3d6a91; --fase-G:#6d5487;
+  --rail:280px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#121817; --surface:#1a2221; --surface-2:#212b29;
+    --ink:#e4eae7; --muted:#95a29d; --line:#2b3634;
+    --accent:#e3a82b; --accent-soft:#3a2f18;
+    --fase-C:#e08573; --fase-D:#e0b25a; --fase-E:#7fc186;
+    --fase-F:#7fb0d8; --fase-G:#b19bcb;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#121817; --surface:#1a2221; --surface-2:#212b29;
+  --ink:#e4eae7; --muted:#95a29d; --line:#2b3634;
+  --accent:#e3a82b; --accent-soft:#3a2f18;
+  --fase-C:#e08573; --fase-D:#e0b25a; --fase-E:#7fc186;
+  --fase-F:#7fb0d8; --fase-G:#b19bcb;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  overflow-wrap:break-word;
+  font-family:"Source Serif 4",Georgia,serif; font-size:17px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+h1,h2,h3,h4{font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif}
+a{color:var(--accent); text-underline-offset:2px}
+a:focus-visible,input:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+.shell{display:grid; grid-template-columns:var(--rail) minmax(0,1fr)}
+aside{position:sticky; top:0; height:100vh; overflow-y:auto; background:var(--surface);
+  border-right:1px solid var(--line); padding:28px 18px 40px;
+  font-family:"IBM Plex Sans",sans-serif}
+.brand{font-size:15px; font-weight:700; margin:0 0 2px; letter-spacing:-.01em}
+.brand-sub{font-size:12px; color:var(--muted); margin:0 0 20px; line-height:1.45}
+.navgroup{font-size:10.5px; text-transform:uppercase; letter-spacing:.1em;
+  color:var(--muted); margin:18px 0 7px; font-weight:600}
+.navlink{display:flex; align-items:center; gap:8px; padding:6px 9px; border-radius:5px;
+  font-size:13px; color:var(--ink); text-decoration:none; margin-bottom:1px}
+.navlink:hover{background:var(--surface-2)}
+.navlink[aria-current="true"]{background:var(--accent-soft); font-weight:600}
+.nav-c{font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600;
+  width:18px; height:18px; display:grid; place-items:center; border-radius:4px;
+  background:var(--surface-2); flex:0 0 auto}
+.nav-j{margin-left:auto; font-size:11px; color:var(--muted);
+  font-variant-numeric:tabular-nums}
+.globalbar{margin:18px 0 4px; height:5px; border-radius:100px;
+  background:var(--surface-2); overflow:hidden}
+.globalbar i{display:block; height:100%; background:var(--accent); width:0%;
+  transition:width .25s ease}
+.globaltxt{font-size:11.5px; color:var(--muted); margin:0}
+@media (prefers-reduced-motion:reduce){.globalbar i,.bar i{transition:none}}
+
+main{padding:56px 48px 120px; min-width:0}
+.wrap{max-width:900px}
+.eyebrow{font-family:"IBM Plex Sans",sans-serif; font-size:11px; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin:0 0 12px}
+h1{font-size:clamp(30px,4.4vw,44px); line-height:1.07; letter-spacing:-.025em;
+  margin:0 0 14px; text-wrap:balance}
+.lede{font-size:19px; color:var(--muted); max-width:66ch; margin:0 0 36px}
+
+.decisions{display:grid; gap:1px; background:var(--line); border:1px solid var(--line);
+  border-radius:8px; overflow:hidden; margin:0 0 40px}
+.decision{background:var(--surface); padding:16px 18px}
+.dec-topic{font-family:"IBM Plex Sans",sans-serif; font-size:10.5px; font-weight:600;
+  letter-spacing:.09em; text-transform:uppercase; color:var(--muted); margin:0 0 5px}
+.dec-choice{font-family:"IBM Plex Sans",sans-serif; font-size:16px; font-weight:600;
+  margin:0 0 6px; letter-spacing:-.01em}
+.dec-why{margin:0; font-size:15px; color:var(--muted); max-width:70ch}
+
+h2{font-size:25px; letter-spacing:-.02em; margin:0 0 6px; text-wrap:balance}
+.sec{padding-top:48px; margin-top:48px; border-top:1px solid var(--line)}
+.sec>p{max-width:66ch}
+
+table{border-collapse:collapse; width:100%; max-width:640px; font-size:14px;
+  font-family:"IBM Plex Sans",sans-serif; margin:18px 0 8px}
+th{text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.06em;
+  color:var(--muted); font-weight:600; border-bottom:1px solid var(--line); padding:8px 12px 8px 0}
+td{padding:8px 12px 8px 0; border-bottom:1px solid var(--line)}
+td.num{text-align:right; font-variant-numeric:tabular-nums}
+tr.tot td{font-weight:600; border-bottom:0}
+.tablewrap{overflow-x:auto; max-width:100%}
+
+/* ---------- fases ---------- */
+.phase{padding-top:52px; margin-top:52px; border-top:1px solid var(--line)}
+.phase-head{display:grid; grid-template-columns:auto 1fr auto; gap:18px;
+  align-items:start; margin-bottom:26px}
+.phase-id{font-family:"IBM Plex Sans",sans-serif; font-size:20px; font-weight:700;
+  width:42px; height:42px; display:grid; place-items:center; border-radius:9px;
+  color:#fff; background:var(--pc)}
+.phase-sub{color:var(--muted); font-size:15px; margin:6px 0 0; max-width:62ch}
+.phase-done{font-size:14.5px; margin:10px 0 0; max-width:62ch}
+.phase-stat{text-align:right; font-family:"IBM Plex Sans",sans-serif; min-width:120px}
+.phase-stat b{display:block; font-size:23px; font-weight:600; line-height:1;
+  font-variant-numeric:tabular-nums}
+.phase-stat span{display:block; font-size:11px; color:var(--muted); margin-top:2px}
+.bar{height:5px; border-radius:100px; background:var(--surface-2); overflow:hidden; margin:9px 0 4px}
+.bar i{display:block; height:100%; background:var(--pc); width:0%; transition:width .25s ease}
+.phase-stat em{font-style:normal; font-size:11px; color:var(--muted);
+  font-variant-numeric:tabular-nums}
+
+#fase-C{--pc:var(--fase-C)} #fase-D{--pc:var(--fase-D)} #fase-E{--pc:var(--fase-E)}
+#fase-F{--pc:var(--fase-F)} #fase-G{--pc:var(--fase-G)}
+
+/* ---------- paquets ---------- */
+.pkg{background:var(--surface); border:1px solid var(--line); border-radius:9px;
+  padding:16px 18px; margin-bottom:12px; scroll-margin-top:20px}
+.pkg.done{opacity:.55}
+.pkg.done h3{text-decoration:line-through}
+.pkg-top{display:flex; align-items:baseline; gap:10px; margin-bottom:9px; flex-wrap:wrap}
+.tick{display:flex; align-items:center; gap:7px; cursor:pointer; flex:0 0 auto}
+.tick input{width:15px; height:15px; accent-color:var(--pc); cursor:pointer; margin:0}
+.pid{font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:500;
+  color:var(--pc); letter-spacing:-.01em}
+.pkg h3{font-size:16.5px; font-weight:600; margin:0; letter-spacing:-.01em; flex:1 1 220px}
+.eff{font-family:"IBM Plex Sans",sans-serif; font-size:12px; color:var(--muted);
+  font-variant-numeric:tabular-nums; flex:0 0 auto}
+.why{margin:0 0 13px; font-size:15.5px; max-width:70ch}
+.meta{display:grid; grid-template-columns:auto 1fr; gap:5px 16px; margin:0;
+  font-size:14.5px; align-items:baseline}
+.meta dt{font-family:"IBM Plex Sans",sans-serif; font-size:10.5px; font-weight:600;
+  letter-spacing:.07em; text-transform:uppercase; color:var(--muted);
+  white-space:nowrap; padding-top:3px}
+.meta dd{margin:0; max-width:66ch}
+.meta .files{display:flex; flex-wrap:wrap; gap:5px}
+.meta .files code{font-size:11.5px}
+.deps a{font-family:"IBM Plex Mono",monospace; font-size:12px; margin-right:8px}
+code{background:var(--surface-2); padding:1px 5px; border-radius:3px; font-size:.85em;
+  overflow-wrap:anywhere}
+.muted{color:var(--muted)}
+
+footer{margin-top:60px; padding-top:22px; border-top:1px solid var(--line);
+  font-family:"IBM Plex Sans",sans-serif; font-size:13px; color:var(--muted); max-width:66ch}
+footer ul{padding-left:18px} footer li{margin-bottom:6px}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}
+  aside{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line)}
+  main{padding:30px 20px 80px}
+  .phase-head{grid-template-columns:auto 1fr}
+  .phase-stat{grid-column:1/-1; text-align:left}
+}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+
+<div class="shell">
+<aside>
+  <p class="brand">Pla del corte B</p>
+  <p class="brand-sub">MotorGraphico Creator · {{N}} paquets · {{TOTAL}} jornades</p>
+  <div class="globalbar"><i id="gbar"></i></div>
+  <p class="globaltxt" id="gtxt">0 de {{N}} paquets</p>
+
+  <div class="navgroup">Marc</div>
+  <a href="#decisions" class="navlink" data-target="decisions">Decisions i número</a>
+
+  <div class="navgroup">Fases</div>
+  <!--NAV-->
+
+  <div class="navgroup">Límits</div>
+  <a href="#fora" class="navlink" data-target="fora">Fora d'abast</a>
+  <a href="#regles" class="navlink" data-target="regles">Regles de treball</a>
+</aside>
+
+<main><div class="wrap">
+  <p class="eyebrow">Planificació executable</p>
+  <h1>El camí fins al cicle d'autor complet</h1>
+  <p class="lede">{{N}} paquets, cadascun amb el seu criteri d'acceptació i la prova que el tanca. Si les dues coses no es poden escriure, el paquet no està prou definit per començar-lo.</p>
+
+  <section id="decisions">
+    <div class="decisions"><!--DECISIONS--></div>
+
+    <h2>El número, i per què no és el de l'auditoria</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Fase</th><th class="num">Paquets</th><th class="num">Jornades</th><th class="num">Setmanes</th></tr></thead>
+        <tbody><!--ROWS--></tbody>
+      </table>
+    </div>
+    <p>Una jornada és unes 6 h de treball enfocat. A ritme de ratos lliures i caps de setmana —al voltant d'1,5 jornades per setmana— les {{TOTAL}} jornades són unes {{SET}} setmanes naturals.</p>
+    <p>L'auditoria xifrava el corte B en 72 jornades. Les tres decisions de dalt el multipliquen: la consolidació prèvia sencera n'afegeix {{NC}} i arreglar els 21 catàlegs en comptes dels quatre que el joc fa servir de veritat n'afegeix més. Són decisions defensables —deixen el projecte sense mons paral·lels i amb dades reals— però el preu és aquest, i val més tenir-lo escrit ara que descobrir-lo al mes vuit.</p>
+  </section>
+
+  <!--PHASES-->
+
+  <section id="fora" class="sec">
+    <h2>Fora d'abast, per escrit</h2>
+    <p>El corte B es defineix tant pel que inclou com pel que no. Això queda per a 1.1, i és aquí perquè ningú ho coli sense adonar-se'n.</p>
+    <div class="tablewrap">
+      <table style="max-width:100%">
+        <thead><tr><th>Queda fora</th><th>Paquets del Gantt vell</th><th>Motiu</th></tr></thead>
+        <tbody><!--FORA--></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="regles" class="sec">
+    <h2>Regles de treball</h2>
+    <ul>
+      <li><strong>Un paquet no es comença sense les seves dependències tancades.</strong> L'ordre en què surten aquí ja les respecta.</li>
+      <li><strong>Un paquet es tanca quan la seva prova passa a CI</strong>, no quan el codi compila a la màquina de qui l'ha escrit.</li>
+      <li><strong>Cap paquet nou entra al pla sense criteri d'acceptació i prova.</strong> Si no es poden escriure, el que falta és entendre el problema, no programar-lo.</li>
+      <li><strong>Si un paquet supera el doble de la seva estimació, es para i es replanteja</strong>, en comptes d'anar-hi afegint jornades.</li>
+      <li><strong>La fase C no admet funcions noves.</strong> Qualsevol idea que aparegui durant la consolidació va a la llista de 1.1.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>Aquesta pàgina, el markdown del repositori i el Gantt es generen de la mateixa font (<code>planificacion/pla/dades.py</code>), de manera que no poden divergir. Les caselles marcades es guarden només en aquest navegador: són per seguir-hi el fil, no un registre compartit.</p>
+  </footer>
+</div></main>
+</div>
+
+<script>
+(function(){
+  var KEY = 'motorgraphico-pla-b';
+  var boxes = [].slice.call(document.querySelectorAll('.pkg input[type=checkbox]'));
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { state = {}; }
+
+  function save(){
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+  }
+
+  function refresh(){
+    var perPhase = {}, totals = {}, doneAll = 0;
+    boxes.forEach(function(b){
+      var card = b.closest('.pkg');
+      var ph = card.dataset.phase;
+      totals[ph] = (totals[ph] || 0) + 1;
+      if(b.checked){
+        perPhase[ph] = (perPhase[ph] || 0) + 1;
+        doneAll++;
+        card.classList.add('done');
+      } else {
+        card.classList.remove('done');
+      }
+    });
+    Object.keys(totals).forEach(function(ph){
+      var n = perPhase[ph] || 0, t = totals[ph];
+      var bar = document.querySelector('.bar i[data-phase="' + ph + '"]');
+      var lbl = document.querySelector('em[data-count="' + ph + '"]');
+      if(bar) bar.style.width = (t ? (n / t * 100) : 0) + '%';
+      if(lbl) lbl.textContent = n + ' de ' + t;
+    });
+    var g = document.getElementById('gbar');
+    var gt = document.getElementById('gtxt');
+    if(g) g.style.width = (boxes.length ? (doneAll / boxes.length * 100) : 0) + '%';
+    if(gt) gt.textContent = doneAll + ' de ' + boxes.length + ' paquets';
+  }
+
+  boxes.forEach(function(b){
+    if(state[b.dataset.id]) b.checked = true;
+    b.addEventListener('change', function(){
+      if(b.checked) state[b.dataset.id] = 1; else delete state[b.dataset.id];
+      save(); refresh();
+    });
+  });
+  refresh();
+
+  var links = [].slice.call(document.querySelectorAll('.navlink'));
+  var targets = links.map(function(l){ return document.getElementById(l.dataset.target); })
+                     .filter(Boolean);
+  if('IntersectionObserver' in window){
+    var seen = {};
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ seen[e.target.id] = e.isIntersecting; });
+      var active = null;
+      targets.forEach(function(t){ if(seen[t.id] && !active) active = t.id; });
+      if(active) links.forEach(function(l){
+        if(l.dataset.target === active) l.setAttribute('aria-current','true');
+        else l.removeAttribute('aria-current');
+      });
+    }, {rootMargin:'-8% 0px -80% 0px'});
+    targets.forEach(function(t){ io.observe(t); });
+  }
+})();
+</script>

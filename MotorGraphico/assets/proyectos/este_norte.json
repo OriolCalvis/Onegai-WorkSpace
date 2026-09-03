@@ -1,12 +1,21 @@
 {
-  "_nota": "Manifiesto de proyecto. Lo leen Editor/ProjectIndex y tools/build_proyecto.py.",
+  "schemaVersion": 1,
   "id": "este_norte",
-  "nombre": "Egaroth - cuadrante este norte",
-  "descripcion": "Experimento 4-IAs, cuadrante Este-Norte (ZCode). Naciones: Choubar, Gongorguma, Mistarium y Nocturnsea (capital Umbrahal = PROPUESTA). 22 asentimientos, 33 interiores.",
-  "epoca": "2000 b.f.",
-  "autor": "Zcode",
-  "prefijo": "en_",
-  "niveles": [
+  "name": "Egaroth - cuadrante este norte",
+  "description": "Experimento 4-IAs, cuadrante Este-Norte (ZCode). Naciones: Choubar, Gongorguma, Mistarium y Nocturnsea (capital Umbrahal = PROPUESTA). 22 asentimientos, 33 interiores.",
+  "epoch": "2000 b.f.",
+  "author": "Zcode",
+  "prefix": "en_",
+  "settings": {
+    "schemaVersion": 1,
+    "mapsDirectory": "maps",
+    "levelsDirectory": "levels",
+    "adventuresDirectory": "adventures",
+    "catalogsDirectory": "objects",
+    "initialMap": ""
+  },
+  "entry": "ciudad_en_guskedor.json",
+  "levels": [
     "ciudad_en_aldea_m.json",
     "ciudad_en_aldea_xix.json",
     "ciudad_en_aldea_xvi.json",
@@ -63,7 +72,7 @@
     "interior_en_venordemn_mercado.json",
     "interior_en_venordemn_taberna.json"
   ],
-  "mapas": [
+  "maps": [
     "ciudad_en_aldea_m.tmx",
     "ciudad_en_aldea_xix.tmx",
     "ciudad_en_aldea_xvi.tmx",
@@ -120,10 +129,10 @@
     "interior_en_venordemn_mercado.tmx",
     "interior_en_venordemn_taberna.tmx"
   ],
-  "aventuras": [
+  "adventures": [
     "este_norte_senal_ceniza.json"
   ],
-  "catalogos": [
+  "catalogs": [
     "accesos_cuadrantes.json",
     "boundington_enemigos.json",
     "boundington_npcs.json",
@@ -141,6 +150,5 @@
     "on_puertas.json",
     "plaza_razas_objetos.json",
     "test_objects.json"
-  ],
-  "entrada": "ciudad_en_guskedor.json"
+  ]
 }
