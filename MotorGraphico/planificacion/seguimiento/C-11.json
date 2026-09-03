@@ -1,0 +1,23 @@
+{
+  "id": "C-11",
+  "date": "2026-09-03",
+  "author": "Codex",
+  "status": "Implementat i verificat al workspace; integració Git i CI pendents",
+  "actions": [
+    "ProjectIndex llegeix i crea manifests mitjançant ProjectSerializer; un únic format v1 amb settings niat. El format antic o mixt es rebutja amb el comandament de migració.",
+    "Migrats els cinc manifests reals amb metadades i referències conservades; migrador amb previsualització, còpia prèvia, validació del lot i substitució atòmica de cada fitxer. Una segona execució no canvia res.",
+    "Actualitzats build_proyecto.py, validar_todo.py, FORMATO_PROYECTOS.md i el schema v1; les rutes es resolen respecte de la carpeta assets indicada.",
+    "Crear o eliminar un projecte conserva referències a altres manifests invàlids o absents; l’índex buit permet crear el primer projecte.",
+    "Afegits test_project_manifests i test_project_migration; els canvis coordinats sobre la base aliena sense versionar queden aplicats al workspace i preservats a C-11-integracion.patch."
+  ],
+  "verification": [
+    "Suite GL-free local: 56/56 proves, 0 errors. Després dels ajustos finals, les tres proves test_project_* tornen a passar.",
+    "Round-trip byte a byte dels cinc manifests reals, equivalència ProjectIndex/ProjectSerializer, rebuig de camps desconeguts i resolució d’entrades sobre assets copiat.",
+    "Migrador: 6/6 casos Python; previsualització sense escriptura, idempotència, índex buit i cap migració parcial per dades invàlides.",
+    "Comparació amb el builder de HEAD sobre els manifests antics: build.json idèntic en els cinc packs. demo_proyectos passa; validar_proyectos dona 0 errors i 2 avisos previs."
+  ],
+  "pending": [
+    "Incorporar en Git la base Project/Map/CTest prèvia amb el seu autor i després els canvis coordinats de C-11. No s’ha commitejat treball aliè ni una migració de dades sense el lector corresponent.",
+    "Validar a CI per tancar formalment el paquet. Els tres packs no jugables mantenen les mateixes mancances de contingut que abans de la migració."
+  ]
+}
