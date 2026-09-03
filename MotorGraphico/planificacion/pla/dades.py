@@ -9,8 +9,10 @@ manera que "fet" no depengui de l'opinió de ningú.
 DECISIONS = [
     ("Objectiu de versió", "Corte B — cicle d'autor complet",
      "Que algú que no sigui l'Oriol pugui fer un joc amb l'editor: mapes, "
-     "esdeveniments i playtest sense tocar codi. Autotiles, plugins, exportació "
-     "a més plataformes i àudio queden fora, a 1.1."),
+     "esdeveniments, dades locals del projecte i playtest sense tocar codi. "
+     "El jugador ha de poder començar, configurar el personatge, gestionar-lo, "
+     "guardar i continuar des de pantalles. Autotiles, plugins, àudio, edició "
+     "avançada dels 21 catàlegs i exportació a més plataformes queden a 1.1."),
     ("Catàlegs RPG", "Arreglar-los tots els 21",
      "Cada carregador ha de llegir de veritat el seu JSON, amb una prova que "
      "comprovi el contingut d'un camp i no només que hi hagi entrades."),
@@ -18,6 +20,12 @@ DECISIONS = [
      "MapDocument, SceneManager, World, HandlePool, ProjectSerializer i el "
      "post-processat es connecten primer. Quan la fase C tanqui, no hi ha d'haver "
      "dues implementacions vives del mateix concepte."),
+    ("Revisió de pantalles · 03/09/2026", "Recorreguts complets d'autor i jugador",
+     "Encàrrec d'Oriol després de comparar les pantalles amb RPG Maker. "
+     "S'afegeixen E-10..16 i G-08..16, amb dependències, acceptació i proves. "
+     "Són activitats pendents, no funcionalitats entregades. Els imports de "
+     "Onegai continuen sent de lectura: l'edició local no publica canon ni "
+     "modifica els projectes de cartes o del vault."),
 ]
 
 PHASES = [
@@ -34,11 +42,12 @@ PHASES = [
      "Els 21 catàlegs carreguen tots els seus camps, un carregador que no "
      "troba el que espera falla en comptes de callar, i CI valida els assets "
      "reals a cada commit."),
-    ("E", "Esdeveniments editables",
-     "El cor del corte B: que una missió es pugui escriure des de l'editor, "
-     "sense tocar C++ ni JSON a mà.",
-     "La missió de la clau, la porta i el cofre s'escriu sencera des de "
-     "l'editor visual, es valida abans d'executar-se i es pot depurar pas a pas."),
+    ("E", "Autoria visual i esdeveniments",
+     "Projectes, mapes, recursos, dades RPG mínimes i esdeveniments accessibles "
+     "des de pantalles. Reutilitzar els models existents; cap segon editor de dades.",
+     "Un autor crea el projecte i la missió de la clau des de l'editor, "
+     "tria o personalitza les dades locals, desa i reobre sense pèrdues, "
+     "corregeix diagnòstics i depura els esdeveniments pas a pas."),
     ("F", "Playtest des de l'editor",
      "El bucle d'autoria: editar, provar, corregir sense sortir de l'eina.",
      "Des d'un mapa obert, una tecla llança la partida en aquell punt, i tornar "
@@ -46,9 +55,14 @@ PHASES = [
     ("G", "Tancament del corte B",
      "El que converteix una eina que funciona en una eina que es pot donar a "
      "algú altre.",
-     "Un tercer instal·la el paquet, segueix el tutorial i publica un joc "
-     "jugable sense ajuda."),
+     "Un tercer segueix el tutorial, crea i exporta un joc; un altre l'obre "
+     "fora del repositori, crea el personatge, juga, equipa, guarda, continua "
+     "i recupera una derrota sense ordres de terminal. G-16 registra la prova."),
 ]
+
+# Estimació inicial completa; no representa feina restant a 03/09.
+BASELINE_PACKAGES = 54
+BASELINE_EFFORT = 177
 
 # id, títol, fase, jornades, dependències, per què, fitxers, criteri, prova
 P = [
@@ -427,7 +441,7 @@ P = [
     ("D-10", "CI valida els assets reals", "D", 2, ["D-01", "D-07"],
      "Res impedeix avui que un canvi al JSON o al carregador els torni a "
      "desaparellar en silenci. És exactament com hi hem arribat.",
-     [".github/workflows/ctest.yml", "tools/validar_catalogos.py", "tests/RPG/CatalogContentTests.cpp"],
+     ["../.github/workflows/ci.yml", "tools/validar_catalogos.py", "tests/RPG/CatalogContentTests.cpp"],
      "CI carrega els catàlegs reals d'<code>assets/</code> a cada commit i falla si una "
      "entrada perd camps mecànics respecte de la línia base registrada.",
      "El job de CI falla si es torna a introduir a mà el desaparellament de "
@@ -476,7 +490,7 @@ P = [
      "<code>test_event_commands</code>: una comanda de cada família, amb el seu efecte "
      "observable sobre una <code>GameSession</code> de prova."),
 
-    ("E-05", "Editor de pàgines d'esdeveniment", "E", 8, ["E-01", "C-14"],
+    ("E-05", "Editor de pàgines d'esdeveniment", "E", 8, ["E-01", "C-14", "E-12", "E-14"],
      "És la primera meitat del que fa que això sigui un creador de jocs i no un "
      "motor: poder crear un esdeveniment sobre una casella i donar-li pàgines "
      "amb condicions.",
@@ -497,7 +511,7 @@ P = [
      "<code>test_command_list</code>: construir una seqüència amb branca i bucle des "
      "de l'API de l'editor i executar-la a l'intèrpret."),
 
-    ("E-07", "Validació estàtica d'aventures", "E", 4, ["E-04"],
+    ("E-07", "Validació estàtica d'aventures", "E", 4, ["E-04", "E-16"],
      "<code>EditorValidation::checkRpg</code> ja resol referències de skills, sprites, "
      "enemics i transicions, i l'editor no la crida mai. Ampliar-la a "
      "esdeveniments és continuació, no obra nova.",
@@ -519,20 +533,124 @@ P = [
      "<code>test_event_interpreter</code>: mode pas a pas; l'estat després de N passos "
      "és igual que executar-ne N de cop."),
 
-    ("E-09", "La missió de la clau, la porta i el cofre", "E", 3, ["E-07", "E-08"],
+    ("E-09", "La missió de la clau, la porta i el cofre", "E", 3, ["E-07", "E-08", "E-15"],
      "La prova d'acceptació de tota la fase: la missió canònica de qualsevol "
      "creador de jocs, escrita sense tocar codi.",
      ["assets/adventures/mision_llave.json", "assets/levels/"],
-     "La missió s'escriu sencera des de l'editor: cofre amb clau, porta tancada "
-     "que la demana, NPC que en parla, i final. Validada i jugable.",
+     "Des d'un projecte nou, la missió s'escriu sencera des de l'editor: cofre "
+     "amb clau, porta tancada que la demana, NPC que en parla, i final. Es desa "
+     "i reobre abans de provar-la; cap pas exigeix editar JSON o escriure un ID.",
      "<code>demo_mision_llave</code> a CTest: recorre la missió sencera de manera "
      "determinista i comprova l'estat final."),
 
+    ("E-10", "Espai de treball visual i controls coherents", "E", 6, ["C-14", "C-16"],
+     "El shell ImGui només està compromès a ADR-001; els formularis nous no "
+     "tenen una base visual integrada. El verificador de controls apunta a una ruta antiga.",
+     ["editor/src/EditorApplication.cpp", "editor/src/level_editor.cpp",
+      "third_party/imgui/", "CMakeLists.txt", "tools/verificar_controles.py"],
+     "Aplicar ADR-001: ImGui privat del motor_editor, un viewport amb docking, "
+     "mapa central, menús i eines visibles. Ratolí i teclat invoquen les mateixes "
+     "accions. Escriure en un camp no pinta el mapa ni dispara dreceres. Hi ha "
+     "indicador de canvis i Desar/Descartar/Cancel·lar abans de tancar o canviar "
+     "de document. El HUD del jugador conserva la seva tecnologia.",
+     "<code>test_editor_actions</code>: cancel·lar conserva el document; guardar "
+     "fallit no el tanca; una tecla en un input no pinta. Smoke de UI a CI amb "
+     "obrir, editar i reobrir; captura llegible a 1280×720 i DPI 2×; "
+     "<code>verificar_controles.py</code> passa sobre editor/src."),
+
+    ("E-11", "Projectes i arbre de mapes", "E", 5, ["E-10", "C-11"],
+     "ProjectHub ja crea i obre; el recorregut continua depenent de noms tècnics "
+     "i de canviar de mapa amb anterior/següent.",
+     ["editor/src/ProjectPanel.cpp", "include/Editor/ProjectHub.h",
+      "include/Project/ProjectIndex.h", "src/Project/ProjectSerializer.cpp"],
+     "Reutilitzar ProjectHub/ProjectIndex en un assistent de nom, carpeta i "
+     "plantilla; IDs generats i noms visibles separats. Arbre amb crear, obrir, "
+     "duplicar i canviar nom visible de mapa. Triar mapa/casella inicials i "
+     "títol del joc. Duplicar remapeja IDs locals; no sobreescriu altres projectes. "
+     "Cancel·lar o fallar una operació no deixa un projecte mig registrat.",
+     "<code>test_project_panel</code>: dos projectes en carpetes amb espais, "
+     "duplicació sense col·lisions i cancel·lació sense fitxers parcials. "
+     "Recorregut UI: crear projecte, dos mapes, triar entrada, desar i reobrir."),
+
+    ("E-12", "Propietats de mapa, capes i instàncies", "E", 4, ["E-11", "C-13"],
+     "Tenir camps al document no equival a poder-los editar: falten el formulari "
+     "de mapa i controls complets de capes. ObjectInspector ja resol part de les instàncies.",
+     ["editor/src/MapPropertiesPanel.cpp", "editor/src/LayerPanel.cpp",
+      "include/Editor/ObjectInspector.h", "src/Editor/EditorState.cpp"],
+     "Editar nom, dimensions, tileset, entrada i opcions de llum/boira ja "
+     "suportades. Capes: crear, renombrar, ordenar, mostrar/ocultar i bloquejar. "
+     "Reduir dimensions avisa de les entitats afectades i permet cancel·lar. "
+     "L'inspector manté nom, escala, variant, botí, patrulla i sortida; tot passa "
+     "per MapDocument i l'historial. Opacitat arbitrària queda per a 1.1.",
+     "<code>test_map_properties</code>: canvi/desfer/desar/reobrir conserva ordre, "
+     "visibilitat i entitats; una capa bloquejada no es pinta. UI: configurar "
+     "una porta i seguir-ne el destí, cancel·lar una reducció destructiva."),
+
+    ("E-13", "Navegador visual i importació de recursos", "E", 4, ["E-11"],
+     "Les llistes amb cerca ajuden a trobar IDs, però no permeten incorporar "
+     "un sprite propi des de la mateixa eina.",
+     ["editor/src/AssetBrowserPanel.cpp", "include/Editor/AssetBrowserState.h",
+      "src/Project/ProjectSerializer.cpp"],
+     "Cerca per nom/tipus, miniatures de tiles i sprites i previsualització de "
+     "l'element seleccionat. Importar PNG i spritesheets compatibles cap al "
+     "projecte amb selector de fitxer, revisió de mides/frames i avís de "
+     "col·lisió; reutilitzar o cancel·lar sense sobreescriure. Es desa una "
+     "referència relativa estable. No inclou autotiles ni editor gràfic.",
+     "<code>test_asset_browser</code>: importar un PNG vàlid, rebutjar format "
+     "invàlid i nom duplicat sense perdre l'original. Moure la carpeta del "
+     "projecte i reobrir conserva el recurs; smoke UI de miniatura i col·locació."),
+
+    ("E-14", "Selectors de dades i referències", "E", 3, ["E-13", "D-10"],
+     "Un camp eventId o skillId lliure trasllada a l'autor el problema de "
+     "conèixer i escriure els identificadors interns.",
+     ["editor/src/CatalogPicker.cpp", "include/Editor/CatalogPickerState.h",
+      "include/Editor/ObjectInspector.h", "include/Editor/CommandListState.h"],
+     "Selectors amb nom, tipus, cerca, descripció i ID intern per a objectes, "
+     "habilitats, enemics, condicions, mapes i esdeveniments. Integrats als "
+     "inspectors actuals; E-05/06 els incorporen als formularis d'esdeveniment. "
+     "Amb Obrir definició i avisos de referències "
+     "inexistents. Catàleg importat de Onegai en lectura; només referències del "
+     "tipus correcte, sense haver d'escriure IDs per completar el tutorial.",
+     "<code>test_catalog_picker</code>: noms iguals amb IDs diferents, filtre "
+     "entre mil entrades, tipus incompatible rebutjat i referència perduda "
+     "localitzable. UI: triar botí i destí d'una porta pel nom."),
+
+    ("E-15", "Problemes i cerca d'esdeveniments", "E", 3, ["E-07", "E-06"],
+     "Els diagnòstics necessiten una pantalla que porti al lloc a corregir; "
+     "un missatge de consola no tanca el recorregut d'autor.",
+     ["editor/src/ProblemsPanel.cpp", "include/Editor/ProblemsState.h"],
+     "Llista de problemes amb severitat, mapa, entitat/pàgina/comanda i acció "
+     "Anar-hi. Cercar esdeveniments per nom i usos de variables/interruptors. "
+     "Errors bloquegen playtest/export; es pot desar feina incompleta amb "
+     "diagnòstics visibles. Actualitzar un diagnòstic conserva el focus quan existeix.",
+     "<code>test_problems_panel</code>: els sis defectes d'E-07 obren el lloc "
+     "correcte; corregir-los buida la llista i habilita provar. Una referència "
+     "esborrada no provoca navegació a una entitat diferent."),
+
+    ("E-16", "Edició RPG mínima del projecte", "E", 8, ["E-14", "D-02", "D-03", "D-05"],
+     "Llegir els 21 catàlegs no deixa crear una habilitat o un enemic des de "
+     "l'editor. És el buit crític de base de dades que aquesta revisió incorpora.",
+     ["editor/src/ProjectDatabasePanel.cpp", "include/Editor/ProjectDatabaseState.h",
+      "src/Project/ProjectSerializer.cpp", "include/RPG/Catalogs/RpgCatalogs.h",
+      "FORMATO_PROYECTOS.md"],
+     "Formularis mínims per a objectes/consumibles, equip, habilitats i enemics: "
+     "crear, duplicar a projecte, editar, validar i desar els camps mecànics "
+     "suportats. Assignar habilitats a la configuració del personatge/enemic. "
+     "Imports canònics de lectura; les còpies locals tenen IDs de projecte, "
+     "origen explícit i s'exporten amb ell. Cap escriptura a cartes/canon ni "
+     "regles noves de Nd6. La resta de famílies es consulten amb E-14; editar "
+     "les 21 famílies, lots i dissenyar fórmules es manté a 1.1.",
+     "<code>test_project_database</code>: duplicar una habilitat, ajustar un "
+     "camp admès i assignar-la; desar/reobrir conserva la còpia. G-15/16 "
+     "verifiquen la còpia dins de l'export final. "
+     "Import immutable per hash, IDs sense col·lisions i referències invàlides "
+     "rebutjades sense desar a mitges. G-13 prova que apareix i funciona al combat."),
+
     # ---------------- FASE F ----------------
     ("F-01", "Playtest des de l'editor", "F", 4, ["C-16", "E-09"],
-     "Avui la tecla P llança <code>./juego</code> com a procés a part, amb el que hi "
-     "hagi desat al disc. No és provar el que estàs editant: és provar l'última "
-     "vegada que vas prémer G.",
+     "Avui P desa el nivell i llança <code>./juego</code> en un procés separat, "
+     "bloquejant l'editor. Ja prova els canvis acabats de desar; falta provar "
+     "el document en memòria sense escriure'l i recuperar l'estat d'edició.",
      ["editor/src/level_editor.cpp", "src/Engine/Application.cpp"],
      "El playtest arrenca dins del mateix procés, amb el document en memòria, "
      "sense desar. Sortir-ne torna exactament a l'estat d'edició.",
@@ -567,7 +685,7 @@ P = [
      "que hi depèn."),
 
     # ---------------- FASE G ----------------
-    ("G-01", "Autosave i recuperació", "G", 2, ["C-15"],
+    ("G-01", "Autosave i recuperació", "G", 2, ["C-15", "E-10"],
      "Perdre feina d'autoria per un tancament inesperat és el defecte que fa que "
      "una eina no es torni a obrir.",
      ["src/Editor/EditorState.cpp", "editor/src/level_editor.cpp"],
@@ -575,7 +693,7 @@ P = [
      "obrir, si n'hi ha un de més nou que el desat, l'editor ho ofereix.",
      "<code>test_autosave</code>: simular una caiguda amb canvis pendents i recuperar-los."),
 
-    ("G-02", "Les eines d'edició que falten", "G", 3, ["C-14"],
+    ("G-02", "Les eines d'edició que falten", "G", 3, ["C-14", "E-12"],
      "L'editor té pinzell, esborrar, omplir, col·locar i enllaçar. Li falten "
      "comptagotes, rectangle i línia — les tres que qualsevol autor busca la "
      "primera hora.",
@@ -595,12 +713,16 @@ P = [
      "<code>test_editor_state</code>: mil operacions barrejades; desfer-les totes "
      "retorna al document inicial i la memòria es manté sota un límit."),
 
-    ("G-04", "Joc d'exemple de trenta minuts", "G", 5, ["E-09", "F-03"],
+    ("G-04", "Joc d'exemple de trenta minuts", "G", 5,
+     ["E-09", "F-03", "G-01", "G-03", "G-11", "G-12", "G-13", "G-14"],
      "La prova que el corte B és real: un joc petit fet només amb l'eina.",
      ["assets/proyectos/ejemplo/", "assets/levels/", "assets/adventures/"],
      "Un joc de trenta minuts amb tres mapes, sis esdeveniments, combat i final, "
-     "construït sense tocar C++.",
-     "<code>demo_juego_ejemplo</code> a CTest el recorre sencer de manera determinista."),
+     "creat des de les pantalles. Inclou nova partida, personatge, menú de "
+     "pausa, inventari/equip, habilitat local, compra/venda, guardat i derrota.",
+     "<code>demo_juego_ejemplo</code> recorre la campanya de manera determinista. "
+     "Smoke de la UI real: crear personatge, equipar, combatre, guardar, "
+     "tancar, continuar i recuperar una derrota; s'adjunten captures."),
 
     ("G-05", "Tutorial de l'editor", "G", 4, ["G-04"],
      "Una eina que necessita que hi siguis tu al costat no és una eina que puguis "
@@ -624,9 +746,194 @@ P = [
      "ha escrit.",
      ["FORMATO_PROYECTOS.md", "FORMATO_NIVELES.md", "FORMATO_AVENTURAS.md"],
      "Els esquemes de projecte, mapa, aventura i guardat es congelen a la versió "
-     "1.0-B, documentats, amb ruta de migració per a cada canvi futur.",
+     "1.0-B, inclosos configuració de títol, dades RPG locals i metadades de "
+     "slots, documentats, amb ruta de migració per a cada canvi futur.",
      "<code>test_schema_freeze</code>: fixtures de la versió 1.0-B es carreguen sense "
      "avisos amb el codi del dia."),
+
+    ("G-08", "Títol i arrencada del projecte", "G", 4, ["C-16", "E-11"],
+     "juego arrenca en un nivell fix; exportar una altra història no garanteix "
+     "que s'obri amb el seu nom, entrada i configuració.",
+     ["src/Engine/Scene/TitleScene.cpp", "examples/juego.cpp",
+      "include/Game/TitleMenuState.h", "src/Engine/Application.cpp"],
+     "Arrencar des del manifest del projecte; mostrar nom/imatge disponibles "
+     "i Nova partida, Continuar, Opcions i Sortir. Continuar desactivat amb "
+     "motiu si no hi ha guardat vàlid; G-11 connecta el selector. Dades absents "
+     "mostren un error comprensible. Playtest contextual continua saltant el títol.",
+     "<code>test_title_flow</code>: dos projectes amb noms i entrades diferents; "
+     "manifest invàlid no cau en Boundington. Smoke del runtime amb manifest "
+     "mostra el títol i les accions reals; G-15/16 repeteixen el recorregut "
+     "sobre el binari exportat."),
+
+    ("G-09", "Creació de personatge dins de Nova partida", "G", 3, ["G-08", "D-06", "E-16"],
+     "CharacterCreationScreen té catorze passos però cap ruta del joc l'obre.",
+     ["src/Engine/Scene/CharacterCreationScene.cpp", "include/RPG/CharacterCreationScreen.h",
+      "examples/creacion_personaje.cpp", "src/Engine/Application.cpp"],
+     "Nova partida obre l'assistent existent, amb tornar/cancel·lar i resum. "
+     "Confirmar crea la sessió real amb fitxa, trets, equip i habilitats del "
+     "projecte; continuar una partida no el repeteix. Sense fitxers intermedis "
+     "que el jugador hagi de copiar a mà.",
+     "<code>test_new_game_flow</code>: personatge de dues combinacions diferents "
+     "arriba al nivell amb els valors esperats. Cancel·lar torna al títol sense "
+     "partida parcial. Smoke recorre els controls de l'assistent integrat."),
+
+    ("G-10", "Menú de partida, opcions i focus", "G", 3, ["G-08"],
+     "Escape surt de cop i les accions de partida només viuen en dreceres poc visibles.",
+     ["src/Engine/Scene/PauseScene.cpp", "include/Game/PauseMenuState.h",
+      "src/Engine/Application.cpp"],
+     "Escape obre el menú amb Reprendre, Personatge, Inventari/Equip, Desar, "
+     "Carregar, Opcions, Tornar al títol i Sortir, connectats en G-11/12. "
+     "Confirmació per abandonar progrés. Opcions mínimes: finestra/pantalla "
+     "completa, escala de text i ajuda de controls persistents per usuari. "
+     "El món i temporitzadors no avancen pausats; el focus no filtra tecles.",
+     "<code>test_pause_flow</code>: pausa no avança temps, reprèn sense moure "
+     "el jugador, cancel·lar sortida conserva sessió. Smoke amb teclat i ratolí "
+     "verifica navegació i llegibilitat després de canviar escala."),
+
+    ("G-11", "Selector de guardats i recuperació de derrota", "G", 4, ["G-09", "G-10", "C-24"],
+     "F5/F9 només són guardat ràpid; no hi ha slots visibles, Continuar ni "
+     "camí de recuperació des de Game Over.",
+     ["include/Game/SaveSlotState.h", "src/Game/SaveGame.cpp",
+      "src/Engine/Scene/SaveLoadScene.cpp", "src/Engine/Scene/GameOverScene.cpp"],
+     "Slots separats per projecte amb personatge, mapa i data; seleccionar, "
+     "desar amb confirmació de sobreescriptura i carregar. Corruptes/incompatibles "
+     "mostren motiu i no destrueixen la sessió. Derrota ofereix Carregar o "
+     "Tornar al títol; Continuar usa el mateix selector. F5/F9 reutilitzen el servei.",
+     "<code>test_save_slots</code>: dos projectes no comparteixen slots; corrupció "
+     "i cancel·lació preserven dades. UI: guardar, tancar procés, continuar i "
+     "recuperar derrota, comprovant fitxa, equip, inventari, moral i flags."),
+
+    ("G-12", "Inventari, equip i fitxa utilitzables", "G", 5, ["G-11", "D-05"],
+     "El panell TAB enumera objectes; el motor d'inventari no té una pantalla "
+     "des d'on consumir, equipar o consultar les conseqüències.",
+     ["include/Game/InventoryMenuState.h", "src/Engine/Scene/InventoryScene.cpp",
+      "src/RPG/InventoryEngine.cpp", "src/Game/GameSession.cpp"],
+     "Llistes per categories, quantitats, descripció i accions Usar/Equipar/"
+     "Desequipar; triar destinatari quan pertoqui. Fitxa amb estadístiques, "
+     "trets i condicions; previsualitzar canvis d'equip. Accions impossibles "
+     "expliquen el motiu i no gasten res. Reutilitzar les regles existents; "
+     "els objectes de missió no es poden perdre amb una acció de gestió.",
+     "<code>test_inventory_menu</code>: consumir una poció una vegada, equipar "
+     "arma de dues mans sense duplicar bonus, cancel·lar objectiu sense consum. "
+     "UI: veure el canvi de PV/stats i retrobar-lo després de guardar/carregar."),
+
+    ("G-13", "Comandes de combat i objectius des de dades", "G", 5, ["G-09", "D-02", "D-09", "E-16"],
+     "El menú Atacar/Tajo/Cura/Pocion/Huir és fix i envia objectiu 0; les "
+     "habilitats configurades pel projecte no apareixen automàticament.",
+     ["include/Game/BattleMenuState.h", "src/Engine/Application.cpp",
+      "src/Game/BattleState.cpp"],
+     "Construir accions des de fitxa i inventari; mostrar nom, cost, disponibilitat "
+     "i motiu de bloqueig. Triar objectius vàlids segons abast i bàndol, amb "
+     "cancel·lació anterior a gastar recursos. Mostrar resultat Nd6, consum i "
+     "condicions coherents amb la sessió. Cap taula de noms d'habilitats al HUD.",
+     "<code>test_battle_menu</code>: habilitat amb ID nou creada en E-16 apareix "
+     "sense recompilar, es tria el segon enemic i només rep ell l'efecte; Cura "
+     "arriba a un aliat. Cancel·lar i manca de PM no gasten torn ni recursos. "
+     "Smoke pel menú real, amb cost i resultat visibles."),
+
+    ("G-14", "HUD, diàlegs i comerç amb accions visibles", "G", 3, ["G-10", "E-04", "D-05"],
+     "Exploració, diàleg, botiga i negocis ja funcionen; cal tancar el feedback "
+     "i controls, inclosa la barra de temporitzador desconnectada de F1.",
+     ["src/Engine/Application.cpp", "src/Game/GameSession.cpp",
+      "src/Render/HudWidgets.cpp", "examples/demo_timers_partida.cpp"],
+     "Mantenir PV/PM, minimapa i moral; temporitzadors visibles segons "
+     "Contador/Barra/Secret i temps actiu. Diàlegs i eleccions navegables amb "
+     "ratolí/teclat; botiga mostra preu, quantitat i resultat, negoci compra/renda "
+     "i impacte moral. Errors expliquen manca d'or/requisits. Coordinar amb "
+     "F1 del TABLERO i reutilitzar-ne el resultat, sense una segona implementació.",
+     "<code>test_runtime_feedback</code>: congelació de timer en pausa/diàleg/"
+     "combat, visualització de l'estat vigent, compra/venda i renda sense "
+     "doble acció. Captures de textos llargs i smoke de cada modal amb retorn a exploració."),
+
+    ("G-15", "Assistent d'exportació des de l'editor", "G", 3, ["G-06", "E-11", "E-15"],
+     "Un script d'empaquetat no tanca la pantalla Exportar que necessita un tercer.",
+     ["editor/src/ExportPanel.cpp", "include/Editor/ExportState.h", "tools/exportar.py"],
+     "Triar projecte, plataforma Linux/Windows disponible i carpeta de sortida; "
+     "validar, mostrar progrés/errors i obrir la carpeta del resultat. El motor "
+     "d'exportació de G-06 s'invoca una sola vegada. Si l'host no té el runtime "
+     "objectiu disponible, s'explica i no es presenta com a exportació correcta. "
+     "No cal terminal ni tenir el repositori per jugar el resultat.",
+     "<code>test_export_panel</code>: cancel·lar o faltar runtime no publica un "
+     "paquet parcial; error d'E-15 navega al problema. UI exporta i arrenca el "
+     "resultat en cada runner Linux/Windows des d'una carpeta externa al build."),
+
+    ("G-16", "Acceptació de pantalles d'autor i jugador", "G", 3,
+     ["G-05", "G-07", "G-15", "F-02", "F-04"],
+     "Una suite GL-free verda no comprova que els botons siguin accessibles "
+     "ni que el destinatari pugui acabar un recorregut sense ajuda.",
+     ["tests/UI/", "docs/acceptance/corte-b-pantalles.md", "../.github/workflows/ci.yml"],
+     "Prova amb autor nou: projecte, mapa, recurs, habilitat local, NPC/missió, "
+     "diagnòstic, desar/reobrir, playtest i exportar, sense C++/JSON/terminal. "
+     "Un altre jugador obre l'export: Nova partida, personatge, diàleg, equip, "
+     "combat, botiga, desar, reiniciar, continuar i recuperar derrota. "
+     "Cap control inert, text essencial tallat o error sense sortida. "
+     "Registrar plataforma, passos, captures, incidències i resultat; tanca G.",
+     "CI executa smoke dels recorreguts de les pantalles reals i proves dels "
+     "seus efectes sobre GameSession/MapDocument. Acta de prova humana amb "
+     "teclat/ratolí a 1280×720 i DPI 2×; bloquejos oberts impedeixen tancar el corte."),
+]
+
+# Matriu de la revisió sol·licitada per Oriol. La fotografia NO és un estat
+# de tasca ni marca res com a fet. Cada pantalla del corte té paquets i una
+# prova de recorregut; les exclusions es vinculen a FORA, sense dates inventades.
+# àmbit, pantalla, fotografia 03/09, abast, paquets, recorregut de tancament
+SCREEN_COVERAGE = [
+    ("Editor", "Inici i projectes", "Hub existent; assistent incomplet", "Corte B",
+     ["E-11", "G-16"], "Crear en una carpeta triada, obrir, desar i reobrir dos projectes independents."),
+    ("Editor", "Espai de treball i controls", "HUD propi; ADR ImGui pendent", "Corte B",
+     ["E-10", "G-16"], "Accions visibles amb ratolí i teclat; focus, text i canvi de document sense pèrdues."),
+    ("Editor", "Arbre de mapes", "Navegació anterior/següent", "Corte B",
+     ["E-11"], "Crear, duplicar, triar entrada i obrir un mapa pel nom."),
+    ("Editor", "Edició de mapa", "Pintura, emplenat, selecció i historial existents", "Corte B",
+     ["C-14", "E-12", "G-02", "G-03"], "Pintar rectangle/línia, mostrejar, desfer, desar i reobrir."),
+    ("Editor", "Capes i propietats del mapa", "Dades parcials sense panell complet", "Corte B",
+     ["E-12"], "Dimensions, tileset, ordre, visibilitat i bloqueig; cancel·lar canvis que eliminen entitats."),
+    ("Editor", "Paleta i recursos", "Llistes filtrades; falta importació guiada", "Corte B",
+     ["E-13"], "Importar un sprite, veure miniatura, col·locar-lo i moure el projecte sense perdre'l."),
+    ("Editor", "Propietats d'instància", "Inspector existent amb camps i pickers", "Corte B",
+     ["E-12", "E-14", "E-05"], "Triar botí/destí pel nom i obrir l'esdeveniment associat."),
+    ("Editor", "Pàgines d'esdeveniment", "No integrades", "Corte B",
+     ["E-01", "E-02", "E-05", "E-09"], "Cofre amb pàgina tancada/oberta i interruptor local, sense escriure IDs."),
+    ("Editor", "Comandes d'esdeveniment", "No integrades", "Corte B",
+     ["E-03", "E-04", "E-06", "E-09"], "Diàleg, elecció, condició, moviment, espera i final construïts amb formularis."),
+    ("Editor", "Consulta i edició RPG mínima", "Catàlegs llegits; sense CRUD visual", "Corte B",
+     ["D-10", "E-14", "E-16", "G-13"], "Crear còpia local d'habilitat, assignar-la i usar-la al combat sense recompilar."),
+    ("Editor", "Problemes i cerca d'esdeveniments", "Validació parcial; no navegació des de diagnòstics", "Corte B",
+     ["E-07", "E-15"], "Anar de l'error a la comanda, corregir-lo i desbloquejar provar/exportar."),
+    ("Editor", "Playtest i depuració", "P desa i llança procés separat", "Corte B",
+     ["E-08", "F-01", "F-02", "F-03", "F-04"], "Provar des d'una casella, inspeccionar, fer passos i tornar al mateix document."),
+    ("Editor", "Exportació", "Empaquetat existent; falta assistent i garanties standalone", "Corte B",
+     ["G-06", "G-15", "G-16"], "Exportar des de pantalla i executar fora del repositori en Linux i Windows."),
+    ("Editor", "Ajuda i recuperació", "Sense tutorial ni recuperació automàtica", "Corte B",
+     ["E-10", "G-01", "G-05", "G-16"], "Autor nou acaba el tutorial i recupera canvis després d'una caiguda simulada."),
+    ("Jugador", "Títol", "Arrencada directa al nivell", "Corte B",
+     ["G-08", "G-11"], "Nova partida, Continuar, Opcions i Sortir corresponen al projecte exportat."),
+    ("Jugador", "Creació de personatge", "Assistent de 14 passos separat del joc", "Corte B",
+     ["D-06", "G-09"], "La fitxa confirmada arriba a la partida; cancel·lar torna al títol."),
+    ("Jugador", "Menú durant la partida", "Escape surt; accions en dreceres", "Corte B",
+     ["G-10", "G-11", "G-12"], "Pausar, gestionar, guardar/carregar i tornar sense tecles filtrades ni avanç de temps."),
+    ("Jugador", "Inventari, equip i fitxa", "Panell informatiu; regles sense accions de menú", "Corte B",
+     ["D-05", "G-12"], "Consumir, equipar i desequipar amb canvi observable de PV/stats i persistència."),
+    ("Jugador", "Combat i selecció d'objectiu", "Cinc comandes i objectiu fixos", "Corte B",
+     ["G-13"], "Habilitat de projecte al menú, cost correcte, segon enemic seleccionable i cancel·lació."),
+    ("Jugador", "Exploració, moral i temporitzadors", "HUD existent; F1 amb connexió pendent", "Corte B",
+     ["G-10", "G-14"], "Informació visible, timer pausat quan toca, minimapa viu després de travessar portes."),
+    ("Jugador", "Diàleg i eleccions", "Motor i modal existents", "Corte B",
+     ["E-06", "E-09", "G-14"], "NPC creat a l'editor mostra eleccions i canvia de resposta segons estat."),
+    ("Jugador", "Botiga i negocis", "Compra/venda i rendes existents", "Corte B",
+     ["G-14"], "Preu, quantitat, error i resultat visibles; efectes en or/inventari/moral sense duplicats."),
+    ("Jugador", "Desar i carregar", "F5/F9 en exploració; sense slots visibles", "Corte B",
+     ["G-11"], "Desar, sortir del procés i continuar; corruptes no esborren la partida actual."),
+    ("Jugador", "Derrota", "Avís sense recorregut de recuperació", "Corte B",
+     ["G-11", "G-16"], "Carregar un slot vàlid o tornar al títol amb controls visibles."),
+    ("Jugador", "Opcions i ajuda de controls", "Sense pantalla pròpia", "Corte B",
+     ["G-10"], "Canviar mode de finestra/escala de text i consultar controls; preferències persistents."),
+    ("Editor", "Base de dades avançada de 21 famílies", "Fora del mínim revisat", "1.1",
+     [], "E-16 només cobreix objectes, equip, habilitats i enemics locals; la resta es consulta."),
+    ("Editor", "Autotiles, plugins i generador gràfic", "No integrats", "1.1",
+     [], "Ampliacions futures; no es confonen amb G-09 ni amb la importació de PNG."),
+    ("Editor/Jugador", "Àudio i exportació macOS/botigues", "Aplaçats expressament", "1.1",
+     [], "Exclusió mantinguda: no prometre música, controls de volum ni export natiu macOS al corte B."),
 ]
 
 # Fora de l'abast, per escrit: el que NO farem al corte B.
@@ -637,10 +944,17 @@ FORA = [
      "API d'extensió abans que l'API interna estigui estable. Depèn de la fase C."),
     ("Àudio, música i ambient", "GDB-11", "Cap peça del motor el toca avui; és una "
      "vertical sencera i no bloqueja el cicle d'autor."),
-    ("Base de dades completa i editor mestre-detall", "GDB-01..12", "La fase D deixa "
-     "els catàlegs llegibles; editar-los des de l'eina és 1.1."),
+    ("Edició avançada dels 21 catàlegs, lots i fórmules", "GDB-01..12 (resta)",
+     "E-14 consulta els imports i E-16 edita les quatre famílies mínimes locals; "
+     "el manteniment complet de regles i canon continua aigües amunt."),
     ("Exportació a macOS i empaquetat de botiga", "TOOL-10", "Linux i Windows "
      "cobreixen la prova del corte B."),
     ("Combat tàctic avançat i IA de grup", "—", "El combat per torns actual és "
      "suficient per validar el cicle d'autor."),
+    ("Generador gràfic de personatges, editor visual de HUD i diari avançat", "GDB-08/12 (resta)",
+     "El corte B connecta personatge, HUD i missions; no inclou aquestes eines "
+     "noves. El generador gràfic no és l'assistent de fitxa de G-09."),
+    ("Opacitat de capes, autotiling avançat i borrat massiu de projectes", "EDT/MAP (resta)",
+     "E-11/12 cobreixen crear, navegar, duplicar i ordenar; aquestes funcions "
+     "de productivitat no són condició dels recorreguts mínims."),
 ]

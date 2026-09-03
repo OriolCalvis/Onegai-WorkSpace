@@ -2,13 +2,15 @@
 
 Generat des de `planificacion/pla/dades.py` i `planificacion/seguimiento/*.json`. Aquest fitxer no s'edita a mà: es regenera, i així el markdown, el Gantt i la pàgina no poden divergir.
 
-## 1. Les tres decisions que fixen el pla
+## 1. Les decisions que fixen el pla
 
-**Objectiu de versió → Corte B — cicle d'autor complet.** Que algú que no sigui l'Oriol pugui fer un joc amb l'editor: mapes, esdeveniments i playtest sense tocar codi. Autotiles, plugins, exportació a més plataformes i àudio queden fora, a 1.1.
+**Objectiu de versió → Corte B — cicle d'autor complet.** Que algú que no sigui l'Oriol pugui fer un joc amb l'editor: mapes, esdeveniments, dades locals del projecte i playtest sense tocar codi. El jugador ha de poder començar, configurar el personatge, gestionar-lo, guardar i continuar des de pantalles. Autotiles, plugins, àudio, edició avançada dels 21 catàlegs i exportació a més plataformes queden a 1.1.
 
 **Catàlegs RPG → Arreglar-los tots els 21.** Cada carregador ha de llegir de veritat el seu JSON, amb una prova que comprovi el contingut d'un camp i no només que hi hagi entrades.
 
 **Codi orfe → Consolidació prèvia, abans de res més.** MapDocument, SceneManager, World, HandlePool, ProjectSerializer i el post-processat es connecten primer. Quan la fase C tanqui, no hi ha d'haver dues implementacions vives del mateix concepte.
+
+**Revisió de pantalles · 03/09/2026 → Recorreguts complets d'autor i jugador.** Encàrrec d'Oriol després de comparar les pantalles amb RPG Maker. S'afegeixen E-10..16 i G-08..16, amb dependències, acceptació i proves. Són activitats pendents, no funcionalitats entregades. Els imports de Onegai continuen sent de lectura: l'edició local no publica canon ni modifica els projectes de cartes o del vault.
 
 ## 2. El número
 
@@ -16,14 +18,14 @@ Generat des de `planificacion/pla/dades.py` i `planificacion/seguimiento/*.json`
 | --- | ---: | ---: | ---: |
 | C — Consolidació | 24 | 62 | 41 |
 | D — Dades reals | 10 | 30 | 20 |
-| E — Esdeveniments editables | 9 | 46 | 31 |
+| E — Autoria visual i esdeveniments | 16 | 79 | 53 |
 | F — Playtest des de l'editor | 4 | 13 | 9 |
-| G — Tancament del corte B | 7 | 26 | 17 |
-| **Total** | **54** | **177** | **118** |
+| G — Tancament del corte B | 16 | 59 | 39 |
+| **Total** | **70** | **243** | **162** |
 
-Una jornada és ~6 h de treball enfocat. A ritme de ratos lliures i caps de setmana (~1,5 jornades per setmana), les 177 jornades són unes 118 setmanes naturals.
+Una jornada és ~6 h de treball enfocat. A ritme de ratos lliures i caps de setmana (~1,5 jornades per setmana), les 243 jornades són unes 162 setmanes naturals.
 
-**Aquest número no és el de l'auditoria i convé saber per què.** El corte B s'hi xifrava en 72 jornades. Les tres decisions preses el multipliquen: la consolidació prèvia sencera afegeix 62 jornades i arreglar els 21 catàlegs en comptes dels quatre que el joc fa servir n'afegeix 30. Són decisions defensables — deixen el projecte sense mons paral·lels i amb dades reals — però el preu és aquest, i és millor tenir-lo escrit ara que descobrir-lo al mes vuit.
+**Revisió de pantalles (03/09):** la base era de 54 paquets i 177 jornades. S'hi afegeixen 16 paquets i 66 jornades per tancar les pantalles i recorreguts. És una estimació completa d'abast, no de feina restant ni una data de lliurament. No es resten paquets parcialment verificats ni es compten caselles locals com a tancaments de CI. El calendari del Gantt és una escala d'esforç amb dependències, no una previsió de dates naturals.
 
 ## 3. Què vol dir «fet» a cada fase
 
@@ -39,11 +41,11 @@ Que el que diu el JSON sigui el que arriba al joc. Avui 19 dels 21 carregadors l
 
 **Tancada quan:** Els 21 catàlegs carreguen tots els seus camps, un carregador que no troba el que espera falla en comptes de callar, i CI valida els assets reals a cada commit.
 
-### Fase E — Esdeveniments editables
+### Fase E — Autoria visual i esdeveniments
 
-El cor del corte B: que una missió es pugui escriure des de l'editor, sense tocar C++ ni JSON a mà.
+Projectes, mapes, recursos, dades RPG mínimes i esdeveniments accessibles des de pantalles. Reutilitzar els models existents; cap segon editor de dades.
 
-**Tancada quan:** La missió de la clau, la porta i el cofre s'escriu sencera des de l'editor visual, es valida abans d'executar-se i es pot depurar pas a pas.
+**Tancada quan:** Un autor crea el projecte i la missió de la clau des de l'editor, tria o personalitza les dades locals, desa i reobre sense pèrdues, corregeix diagnòstics i depura els esdeveniments pas a pas.
 
 ### Fase F — Playtest des de l'editor
 
@@ -55,7 +57,7 @@ El bucle d'autoria: editar, provar, corregir sense sortir de l'eina.
 
 El que converteix una eina que funciona en una eina que es pot donar a algú altre.
 
-**Tancada quan:** Un tercer instal·la el paquet, segueix el tutorial i publica un joc jugable sense ajuda.
+**Tancada quan:** Un tercer segueix el tutorial, crea i exporta un joc; un altre l'obre fora del repositori, crea el personatge, juga, equipa, guarda, continua i recupera una derrota sense ordres de terminal. G-16 registra la prova.
 
 ## 4. Els paquets
 
@@ -159,6 +161,16 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Ho prova.** `test_texture` amb un doble GL fals: assignar sobre una textura viva n'allibera el nom exactament una vegada.
 
+**Seguiment · 2026-09-03 · qwen: Tancat localment; el tanca formalment el pas per CI.**
+
+- Texture::operator=(Texture&&) allibera el recurs del destí abans de robar el de l'origen (fuga del nom GL); la definició passa a Texture.cpp perquè necessita glDeleteTextures.
+- RuntimeTileMap guanya destructor virtual: TileMap n'hereda i IsometricRenderer/HudMinimap guarden punters a la base (la línia viu al fitxer orfe sense commitear del 28/08).
+- test_texture nou (4 casos) amb doble GL fals: redirigeix glad_glDeleteTextures sense obrir context i compta cada alliberació exactament una vegada.
+
+**Verificat.** test_texture verd; el cas de la fuga falla amb el codi anterior. · Build completa de tots els targets en macos-debug i suite gl-free sencera en verd (commit 50098f8).
+
+**Pendent.** El destructor virtual de RuntimeTileMap.h queda dins el bloc orfe sense commitear del 28/08 (regla 2); es commitearà amb la consolidació d'aquest bloc.
+
 #### C-10 — El JSON que escrivim el podem tornar a llegir
 
 `1 j` · depèn de: cap
@@ -170,6 +182,16 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 **Fet quan.** El parser entén `\uXXXX` i el codifica a UTF-8. Tot el que surt de `JsonWriter` torna a entrar per `JsonValue::parse` sense pèrdua.
 
 **Ho prova.** `test_json`: round-trip d'una cadena amb caràcters de control, accents, cometes i barres.
+
+**Seguiment · 2026-09-03 · qwen: Tancat localment; el tanca formalment el pas per CI.**
+
+- JsonValue::parse decodifica \uXXXX a UTF-8, inclosos els parells de substitució; rebutja substituts orfes, dígits no hexadecimals i escapes incomplets amb missatge propi.
+- El round-trip JsonWriter → JsonValue::parse deixa d'estar trencat: els caràcters de control que l'escriptor escapa com \u00xx tornen a entrar sense pèrdues.
+- test_json nou: round-trip amb control/accents/cometes/barres, escapes directes, parells de substitució i casos de rebuig.
+
+**Verificat.** test_json verd; build completa i suite gl-free sencera en verd (commit 50098f8).
+
+**Pendent.** La trampa de la BITACORA Part 3 sobre \uXXXX queda obsoleta des d'aquest paquet; actualitzar-la quan es toqui la BITACORA (ara té capes alienes sense commitear).
 
 #### C-11 — Un sol format de projecte
 
@@ -267,6 +289,15 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Ho prova.** El projecte compila i `ctest` passa sencer amb la interfície retirada.
 
+**Seguiment · 2026-09-03 · qwen: Tancat localment; el tanca formalment el pas per CI.**
+
+- Retirada la interfície morta ::IRng/SeededRng (cap referència al repo i sense definició — Rng.cpp no va existir mai) i els dos adaptadors de RandomEngine.h.
+- RPG::RandomEngine queda com a única interfície d'atzar del motor; el comentari de la capçalera registra la retirada.
+
+**Verificat.** La prova que demana el pla: el projecte compila i ctest passa sencer amb la interfície retirada — build completa i suite gl-free en verd (commit 50098f8).
+
+**Pendent.** El borrado físic d'include/RPG/Rng.h viu a l'arbre des de les 12:25 (el va fer una altra sessió, sense commitear); el fitxer ja no té cap referència. Qui commiteu la retirada ha d'incloure aquest borrado, o restaurar-lo.
+
 #### C-04 — Un enemic invocat per narrativa no trenca el guardat
 
 `2 j` · depèn de: C-03
@@ -329,7 +360,7 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Verificat.** Abans de la retirada, el script reportava exactament els 7 errors que prediu el pla; després, 0 sobre 93 declaracions en 15 capçaleres. · Build completa de tots els targets en macos-debug sense errors (juego i level_editor inclosos). · Suite gl-free 57/57 en verd, inclòs rpg_declaration_check i els tests de la sessió concurrent. · Continuació Codex: en executar el camí real amb els guions antics, prologo i senal_ceniza fallen; després de guionitzar també els daus rivals, les cinc demos passen. · Build completa local de tots els targets, inclosos juego i level_editor: correcta. Suite GL-free: 57/57 proves en verd (macOS Debug). · Comprovador de declaracions RPG: 0 errors sobre 93 declaracions; cerca a include/src/examples/tests: cap referència a la API de dificultat retirada. · Huella SHA-256 dels quatre fitxers reservats GameSession/Application idèntica abans i després.
 
-**Pendent.** Els overrides de RuntimeTileMap (setTileOverride/clearTileOverrides) no els crida cap codi de producció, però viuen al bloc orfe sense commitear del 28/08 amb el seu test; la retirada correspon a qui consolidi aquest bloc (regla 2 del protocol). · Passar la comprovació a CI abans de tancar formalment el paquet (regla 6 del pla).
+**Pendent.** Els overrides de RuntimeTileMap (setTileOverride/clearTileOverrides) no els crida cap codi de producció, però viuen al bloc orfe sense commitear del 28/08 amb el seu test; la retirada correspon a qui consolidi aquest bloc (regla 2 del protocol). · Comprovació registrada al CI: rpg_declaration_check porta l'etiqueta gl-free al CMakeLists commitejat i ci.yml (INF-05) executa ctest -L gl-free — correrà amb el proper push; el paquet es tanca formalment quan això passi (regla 6 del pla).
 
 #### C-23 — El post-processat arriba al joc
 
@@ -507,13 +538,13 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Per què.** Res impedeix avui que un canvi al JSON o al carregador els torni a desaparellar en silenci. És exactament com hi hem arribat.
 
-**Fitxers.** `.github/workflows/ctest.yml`, `tools/validar_catalogos.py`, `tests/RPG/CatalogContentTests.cpp`
+**Fitxers.** `../.github/workflows/ci.yml`, `tools/validar_catalogos.py`, `tests/RPG/CatalogContentTests.cpp`
 
 **Fet quan.** CI carrega els catàlegs reals d'`assets/` a cada commit i falla si una entrada perd camps mecànics respecte de la línia base registrada.
 
 **Ho prova.** El job de CI falla si es torna a introduir a mà el desaparellament de `saveAttribute`/`defenseStat`.
 
-### Fase E — Esdeveniments editables
+### Fase E — Autoria visual i esdeveniments
 
 #### E-01 — L'esdeveniment és part del document de mapa
 
@@ -539,17 +570,17 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Ho prova.** `test_narrative`: dos cofres amb el mateix interrupter local en mapes diferents no s'interfereixen; el guardat els conserva.
 
-#### E-05 — Editor de pàgines d'esdeveniment
+#### E-10 — Espai de treball visual i controls coherents
 
-`8 j` · depèn de: E-01, C-14
+`6 j` · depèn de: C-14, C-16
 
-**Per què.** És la primera meitat del que fa que això sigui un creador de jocs i no un motor: poder crear un esdeveniment sobre una casella i donar-li pàgines amb condicions.
+**Per què.** El shell ImGui només està compromès a ADR-001; els formularis nous no tenen una base visual integrada. El verificador de controls apunta a una ruta antiga.
 
-**Fitxers.** `editor/src/event_editor.cpp`, `include/Editor/EventEditorState.h`, `tests/Editor/EventEditorTests.cpp`
+**Fitxers.** `editor/src/EditorApplication.cpp`, `editor/src/level_editor.cpp`, `third_party/imgui/`, `CMakeLists.txt`, `tools/verificar_controles.py`
 
-**Fet quan.** Des de l'editor es crea un esdeveniment sobre una casella, se li afegeixen pàgines, i cada pàgina té disparador, condicions i aparença. Tot GL-free sota `EventEditorState`.
+**Fet quan.** Aplicar ADR-001: ImGui privat del motor_editor, un viewport amb docking, mapa central, menús i eines visibles. Ratolí i teclat invoquen les mateixes accions. Escriure en un camp no pinta el mapa ni dispara dreceres. Hi ha indicador de canvis i Desar/Descartar/Cancel·lar abans de tancar o canviar de document. El HUD del jugador conserva la seva tecnologia.
 
-**Ho prova.** `test_event_editor`: crear, duplicar, reordenar i esborrar pàgines; desfer restaura l'estat anterior.
+**Ho prova.** `test_editor_actions`: cancel·lar conserva el document; guardar fallit no el tanca; una tecla en un input no pinta. Smoke de UI a CI amb obrir, editar i reobrir; captura llegible a 1280×720 i DPI 2×; `verificar_controles.py` passa sobre editor/src.
 
 #### E-03 — Planificador, esperes i processos paral·lels
 
@@ -563,6 +594,18 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Ho prova.** `test_event_interpreter`: seqüència amb dues esperes; el nombre de ticks fins al final és determinista.
 
+#### E-11 — Projectes i arbre de mapes
+
+`5 j` · depèn de: E-10, C-11
+
+**Per què.** ProjectHub ja crea i obre; el recorregut continua depenent de noms tècnics i de canviar de mapa amb anterior/següent.
+
+**Fitxers.** `editor/src/ProjectPanel.cpp`, `include/Editor/ProjectHub.h`, `include/Project/ProjectIndex.h`, `src/Project/ProjectSerializer.cpp`
+
+**Fet quan.** Reutilitzar ProjectHub/ProjectIndex en un assistent de nom, carpeta i plantilla; IDs generats i noms visibles separats. Arbre amb crear, obrir, duplicar i canviar nom visible de mapa. Triar mapa/casella inicials i títol del joc. Duplicar remapeja IDs locals; no sobreescriu altres projectes. Cancel·lar o fallar una operació no deixa un projecte mig registrat.
+
+**Ho prova.** `test_project_panel`: dos projectes en carpetes amb espais, duplicació sense col·lisions i cancel·lació sense fitxers parcials. Recorregut UI: crear projecte, dos mapes, triar entrada, desar i reobrir.
+
 #### E-04 — El joc de comandes
 
 `7 j` · depèn de: E-03, D-09
@@ -574,6 +617,66 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 **Fet quan.** Les comandes de les cinc famílies estan implementades i documentades a `FORMATO_AVENTURAS.md`, amb el seu efecte sobre la sessió.
 
 **Ho prova.** `test_event_commands`: una comanda de cada família, amb el seu efecte observable sobre una `GameSession` de prova.
+
+#### E-12 — Propietats de mapa, capes i instàncies
+
+`4 j` · depèn de: E-11, C-13
+
+**Per què.** Tenir camps al document no equival a poder-los editar: falten el formulari de mapa i controls complets de capes. ObjectInspector ja resol part de les instàncies.
+
+**Fitxers.** `editor/src/MapPropertiesPanel.cpp`, `editor/src/LayerPanel.cpp`, `include/Editor/ObjectInspector.h`, `src/Editor/EditorState.cpp`
+
+**Fet quan.** Editar nom, dimensions, tileset, entrada i opcions de llum/boira ja suportades. Capes: crear, renombrar, ordenar, mostrar/ocultar i bloquejar. Reduir dimensions avisa de les entitats afectades i permet cancel·lar. L'inspector manté nom, escala, variant, botí, patrulla i sortida; tot passa per MapDocument i l'historial. Opacitat arbitrària queda per a 1.1.
+
+**Ho prova.** `test_map_properties`: canvi/desfer/desar/reobrir conserva ordre, visibilitat i entitats; una capa bloquejada no es pinta. UI: configurar una porta i seguir-ne el destí, cancel·lar una reducció destructiva.
+
+#### E-13 — Navegador visual i importació de recursos
+
+`4 j` · depèn de: E-11
+
+**Per què.** Les llistes amb cerca ajuden a trobar IDs, però no permeten incorporar un sprite propi des de la mateixa eina.
+
+**Fitxers.** `editor/src/AssetBrowserPanel.cpp`, `include/Editor/AssetBrowserState.h`, `src/Project/ProjectSerializer.cpp`
+
+**Fet quan.** Cerca per nom/tipus, miniatures de tiles i sprites i previsualització de l'element seleccionat. Importar PNG i spritesheets compatibles cap al projecte amb selector de fitxer, revisió de mides/frames i avís de col·lisió; reutilitzar o cancel·lar sense sobreescriure. Es desa una referència relativa estable. No inclou autotiles ni editor gràfic.
+
+**Ho prova.** `test_asset_browser`: importar un PNG vàlid, rebutjar format invàlid i nom duplicat sense perdre l'original. Moure la carpeta del projecte i reobrir conserva el recurs; smoke UI de miniatura i col·locació.
+
+#### E-14 — Selectors de dades i referències
+
+`3 j` · depèn de: E-13, D-10
+
+**Per què.** Un camp eventId o skillId lliure trasllada a l'autor el problema de conèixer i escriure els identificadors interns.
+
+**Fitxers.** `editor/src/CatalogPicker.cpp`, `include/Editor/CatalogPickerState.h`, `include/Editor/ObjectInspector.h`, `include/Editor/CommandListState.h`
+
+**Fet quan.** Selectors amb nom, tipus, cerca, descripció i ID intern per a objectes, habilitats, enemics, condicions, mapes i esdeveniments. Integrats als inspectors actuals; E-05/06 els incorporen als formularis d'esdeveniment. Amb Obrir definició i avisos de referències inexistents. Catàleg importat de Onegai en lectura; només referències del tipus correcte, sense haver d'escriure IDs per completar el tutorial.
+
+**Ho prova.** `test_catalog_picker`: noms iguals amb IDs diferents, filtre entre mil entrades, tipus incompatible rebutjat i referència perduda localitzable. UI: triar botí i destí d'una porta pel nom.
+
+#### E-05 — Editor de pàgines d'esdeveniment
+
+`8 j` · depèn de: E-01, C-14, E-12, E-14
+
+**Per què.** És la primera meitat del que fa que això sigui un creador de jocs i no un motor: poder crear un esdeveniment sobre una casella i donar-li pàgines amb condicions.
+
+**Fitxers.** `editor/src/event_editor.cpp`, `include/Editor/EventEditorState.h`, `tests/Editor/EventEditorTests.cpp`
+
+**Fet quan.** Des de l'editor es crea un esdeveniment sobre una casella, se li afegeixen pàgines, i cada pàgina té disparador, condicions i aparença. Tot GL-free sota `EventEditorState`.
+
+**Ho prova.** `test_event_editor`: crear, duplicar, reordenar i esborrar pàgines; desfer restaura l'estat anterior.
+
+#### E-16 — Edició RPG mínima del projecte
+
+`8 j` · depèn de: E-14, D-02, D-03, D-05
+
+**Per què.** Llegir els 21 catàlegs no deixa crear una habilitat o un enemic des de l'editor. És el buit crític de base de dades que aquesta revisió incorpora.
+
+**Fitxers.** `editor/src/ProjectDatabasePanel.cpp`, `include/Editor/ProjectDatabaseState.h`, `src/Project/ProjectSerializer.cpp`, `include/RPG/Catalogs/RpgCatalogs.h`, `FORMATO_PROYECTOS.md`
+
+**Fet quan.** Formularis mínims per a objectes/consumibles, equip, habilitats i enemics: crear, duplicar a projecte, editar, validar i desar els camps mecànics suportats. Assignar habilitats a la configuració del personatge/enemic. Imports canònics de lectura; les còpies locals tenen IDs de projecte, origen explícit i s'exporten amb ell. Cap escriptura a cartes/canon ni regles noves de Nd6. La resta de famílies es consulten amb E-14; editar les 21 famílies, lots i dissenyar fórmules es manté a 1.1.
+
+**Ho prova.** `test_project_database`: duplicar una habilitat, ajustar un camp admès i assignar-la; desar/reobrir conserva la còpia. G-15/16 verifiquen la còpia dins de l'export final. Import immutable per hash, IDs sense col·lisions i referències invàlides rebutjades sense desar a mitges. G-13 prova que apareix i funciona al combat.
 
 #### E-06 — Editor vertical de comandes
 
@@ -589,7 +692,7 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 #### E-07 — Validació estàtica d'aventures
 
-`4 j` · depèn de: E-04
+`4 j` · depèn de: E-04, E-16
 
 **Per què.** `EditorValidation::checkRpg` ja resol referències de skills, sprites, enemics i transicions, i l'editor no la crida mai. Ampliar-la a esdeveniments és continuació, no obra nova.
 
@@ -611,15 +714,27 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Ho prova.** `test_event_interpreter`: mode pas a pas; l'estat després de N passos és igual que executar-ne N de cop.
 
+#### E-15 — Problemes i cerca d'esdeveniments
+
+`3 j` · depèn de: E-07, E-06
+
+**Per què.** Els diagnòstics necessiten una pantalla que porti al lloc a corregir; un missatge de consola no tanca el recorregut d'autor.
+
+**Fitxers.** `editor/src/ProblemsPanel.cpp`, `include/Editor/ProblemsState.h`
+
+**Fet quan.** Llista de problemes amb severitat, mapa, entitat/pàgina/comanda i acció Anar-hi. Cercar esdeveniments per nom i usos de variables/interruptors. Errors bloquegen playtest/export; es pot desar feina incompleta amb diagnòstics visibles. Actualitzar un diagnòstic conserva el focus quan existeix.
+
+**Ho prova.** `test_problems_panel`: els sis defectes d'E-07 obren el lloc correcte; corregir-los buida la llista i habilita provar. Una referència esborrada no provoca navegació a una entitat diferent.
+
 #### E-09 — La missió de la clau, la porta i el cofre
 
-`3 j` · depèn de: E-07, E-08
+`3 j` · depèn de: E-07, E-08, E-15
 
 **Per què.** La prova d'acceptació de tota la fase: la missió canònica de qualsevol creador de jocs, escrita sense tocar codi.
 
 **Fitxers.** `assets/adventures/mision_llave.json`, `assets/levels/`
 
-**Fet quan.** La missió s'escriu sencera des de l'editor: cofre amb clau, porta tancada que la demana, NPC que en parla, i final. Validada i jugable.
+**Fet quan.** Des d'un projecte nou, la missió s'escriu sencera des de l'editor: cofre amb clau, porta tancada que la demana, NPC que en parla, i final. Es desa i reobre abans de provar-la; cap pas exigeix editar JSON o escriure un ID.
 
 **Ho prova.** `demo_mision_llave` a CTest: recorre la missió sencera de manera determinista i comprova l'estat final.
 
@@ -629,7 +744,7 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 `4 j` · depèn de: C-16, E-09
 
-**Per què.** Avui la tecla P llança `./juego` com a procés a part, amb el que hi hagi desat al disc. No és provar el que estàs editant: és provar l'última vegada que vas prémer G.
+**Per què.** Avui P desa el nivell i llança `./juego` en un procés separat, bloquejant l'editor. Ja prova els canvis acabats de desar; falta provar el document en memòria sense escriure'l i recuperar l'estat d'edició.
 
 **Fitxers.** `editor/src/level_editor.cpp`, `src/Engine/Application.cpp`
 
@@ -675,9 +790,33 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 ### Fase G — Tancament del corte B
 
+#### G-01 — Autosave i recuperació
+
+`2 j` · depèn de: C-15, E-10
+
+**Per què.** Perdre feina d'autoria per un tancament inesperat és el defecte que fa que una eina no es torni a obrir.
+
+**Fitxers.** `src/Editor/EditorState.cpp`, `editor/src/level_editor.cpp`
+
+**Fet quan.** El document es desa sol cada N canvis en un fitxer de recuperació. En obrir, si n'hi ha un de més nou que el desat, l'editor ho ofereix.
+
+**Ho prova.** `test_autosave`: simular una caiguda amb canvis pendents i recuperar-los.
+
+#### G-08 — Títol i arrencada del projecte
+
+`4 j` · depèn de: C-16, E-11
+
+**Per què.** juego arrenca en un nivell fix; exportar una altra història no garanteix que s'obri amb el seu nom, entrada i configuració.
+
+**Fitxers.** `src/Engine/Scene/TitleScene.cpp`, `examples/juego.cpp`, `include/Game/TitleMenuState.h`, `src/Engine/Application.cpp`
+
+**Fet quan.** Arrencar des del manifest del projecte; mostrar nom/imatge disponibles i Nova partida, Continuar, Opcions i Sortir. Continuar desactivat amb motiu si no hi ha guardat vàlid; G-11 connecta el selector. Dades absents mostren un error comprensible. Playtest contextual continua saltant el títol.
+
+**Ho prova.** `test_title_flow`: dos projectes amb noms i entrades diferents; manifest invàlid no cau en Boundington. Smoke del runtime amb manifest mostra el títol i les accions reals; G-15/16 repeteixen el recorregut sobre el binari exportat.
+
 #### G-02 — Les eines d'edició que falten
 
-`3 j` · depèn de: C-14
+`3 j` · depèn de: C-14, E-12
 
 **Per què.** L'editor té pinzell, esborrar, omplir, col·locar i enllaçar. Li falten comptagotes, rectangle i línia — les tres que qualsevol autor busca la primera hora.
 
@@ -687,17 +826,17 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Ho prova.** `test_editor_state`: cada eina nova, amb el seu desfer.
 
-#### G-01 — Autosave i recuperació
+#### G-10 — Menú de partida, opcions i focus
 
-`2 j` · depèn de: C-15
+`3 j` · depèn de: G-08
 
-**Per què.** Perdre feina d'autoria per un tancament inesperat és el defecte que fa que una eina no es torni a obrir.
+**Per què.** Escape surt de cop i les accions de partida només viuen en dreceres poc visibles.
 
-**Fitxers.** `src/Editor/EditorState.cpp`, `editor/src/level_editor.cpp`
+**Fitxers.** `src/Engine/Scene/PauseScene.cpp`, `include/Game/PauseMenuState.h`, `src/Engine/Application.cpp`
 
-**Fet quan.** El document es desa sol cada N canvis en un fitxer de recuperació. En obrir, si n'hi ha un de més nou que el desat, l'editor ho ofereix.
+**Fet quan.** Escape obre el menú amb Reprendre, Personatge, Inventari/Equip, Desar, Carregar, Opcions, Tornar al títol i Sortir, connectats en G-11/12. Confirmació per abandonar progrés. Opcions mínimes: finestra/pantalla completa, escala de text i ajuda de controls persistents per usuari. El món i temporitzadors no avancen pausats; el focus no filtra tecles.
 
-**Ho prova.** `test_autosave`: simular una caiguda amb canvis pendents i recuperar-los.
+**Ho prova.** `test_pause_flow`: pausa no avança temps, reprèn sense moure el jugador, cancel·lar sortida conserva sessió. Smoke amb teclat i ratolí verifica navegació i llegibilitat després de canviar escala.
 
 #### G-03 — Historial per comandes
 
@@ -711,17 +850,77 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Ho prova.** `test_editor_state`: mil operacions barrejades; desfer-les totes retorna al document inicial i la memòria es manté sota un límit.
 
+#### G-14 — HUD, diàlegs i comerç amb accions visibles
+
+`3 j` · depèn de: G-10, E-04, D-05
+
+**Per què.** Exploració, diàleg, botiga i negocis ja funcionen; cal tancar el feedback i controls, inclosa la barra de temporitzador desconnectada de F1.
+
+**Fitxers.** `src/Engine/Application.cpp`, `src/Game/GameSession.cpp`, `src/Render/HudWidgets.cpp`, `examples/demo_timers_partida.cpp`
+
+**Fet quan.** Mantenir PV/PM, minimapa i moral; temporitzadors visibles segons Contador/Barra/Secret i temps actiu. Diàlegs i eleccions navegables amb ratolí/teclat; botiga mostra preu, quantitat i resultat, negoci compra/renda i impacte moral. Errors expliquen manca d'or/requisits. Coordinar amb F1 del TABLERO i reutilitzar-ne el resultat, sense una segona implementació.
+
+**Ho prova.** `test_runtime_feedback`: congelació de timer en pausa/diàleg/combat, visualització de l'estat vigent, compra/venda i renda sense doble acció. Captures de textos llargs i smoke de cada modal amb retorn a exploració.
+
+#### G-09 — Creació de personatge dins de Nova partida
+
+`3 j` · depèn de: G-08, D-06, E-16
+
+**Per què.** CharacterCreationScreen té catorze passos però cap ruta del joc l'obre.
+
+**Fitxers.** `src/Engine/Scene/CharacterCreationScene.cpp`, `include/RPG/CharacterCreationScreen.h`, `examples/creacion_personaje.cpp`, `src/Engine/Application.cpp`
+
+**Fet quan.** Nova partida obre l'assistent existent, amb tornar/cancel·lar i resum. Confirmar crea la sessió real amb fitxa, trets, equip i habilitats del projecte; continuar una partida no el repeteix. Sense fitxers intermedis que el jugador hagi de copiar a mà.
+
+**Ho prova.** `test_new_game_flow`: personatge de dues combinacions diferents arriba al nivell amb els valors esperats. Cancel·lar torna al títol sense partida parcial. Smoke recorre els controls de l'assistent integrat.
+
+#### G-11 — Selector de guardats i recuperació de derrota
+
+`4 j` · depèn de: G-09, G-10, C-24
+
+**Per què.** F5/F9 només són guardat ràpid; no hi ha slots visibles, Continuar ni camí de recuperació des de Game Over.
+
+**Fitxers.** `include/Game/SaveSlotState.h`, `src/Game/SaveGame.cpp`, `src/Engine/Scene/SaveLoadScene.cpp`, `src/Engine/Scene/GameOverScene.cpp`
+
+**Fet quan.** Slots separats per projecte amb personatge, mapa i data; seleccionar, desar amb confirmació de sobreescriptura i carregar. Corruptes/incompatibles mostren motiu i no destrueixen la sessió. Derrota ofereix Carregar o Tornar al títol; Continuar usa el mateix selector. F5/F9 reutilitzen el servei.
+
+**Ho prova.** `test_save_slots`: dos projectes no comparteixen slots; corrupció i cancel·lació preserven dades. UI: guardar, tancar procés, continuar i recuperar derrota, comprovant fitxa, equip, inventari, moral i flags.
+
+#### G-13 — Comandes de combat i objectius des de dades
+
+`5 j` · depèn de: G-09, D-02, D-09, E-16
+
+**Per què.** El menú Atacar/Tajo/Cura/Pocion/Huir és fix i envia objectiu 0; les habilitats configurades pel projecte no apareixen automàticament.
+
+**Fitxers.** `include/Game/BattleMenuState.h`, `src/Engine/Application.cpp`, `src/Game/BattleState.cpp`
+
+**Fet quan.** Construir accions des de fitxa i inventari; mostrar nom, cost, disponibilitat i motiu de bloqueig. Triar objectius vàlids segons abast i bàndol, amb cancel·lació anterior a gastar recursos. Mostrar resultat Nd6, consum i condicions coherents amb la sessió. Cap taula de noms d'habilitats al HUD.
+
+**Ho prova.** `test_battle_menu`: habilitat amb ID nou creada en E-16 apareix sense recompilar, es tria el segon enemic i només rep ell l'efecte; Cura arriba a un aliat. Cancel·lar i manca de PM no gasten torn ni recursos. Smoke pel menú real, amb cost i resultat visibles.
+
+#### G-12 — Inventari, equip i fitxa utilitzables
+
+`5 j` · depèn de: G-11, D-05
+
+**Per què.** El panell TAB enumera objectes; el motor d'inventari no té una pantalla des d'on consumir, equipar o consultar les conseqüències.
+
+**Fitxers.** `include/Game/InventoryMenuState.h`, `src/Engine/Scene/InventoryScene.cpp`, `src/RPG/InventoryEngine.cpp`, `src/Game/GameSession.cpp`
+
+**Fet quan.** Llistes per categories, quantitats, descripció i accions Usar/Equipar/Desequipar; triar destinatari quan pertoqui. Fitxa amb estadístiques, trets i condicions; previsualitzar canvis d'equip. Accions impossibles expliquen el motiu i no gasten res. Reutilitzar les regles existents; els objectes de missió no es poden perdre amb una acció de gestió.
+
+**Ho prova.** `test_inventory_menu`: consumir una poció una vegada, equipar arma de dues mans sense duplicar bonus, cancel·lar objectiu sense consum. UI: veure el canvi de PV/stats i retrobar-lo després de guardar/carregar.
+
 #### G-04 — Joc d'exemple de trenta minuts
 
-`5 j` · depèn de: E-09, F-03
+`5 j` · depèn de: E-09, F-03, G-01, G-03, G-11, G-12, G-13, G-14
 
 **Per què.** La prova que el corte B és real: un joc petit fet només amb l'eina.
 
 **Fitxers.** `assets/proyectos/ejemplo/`, `assets/levels/`, `assets/adventures/`
 
-**Fet quan.** Un joc de trenta minuts amb tres mapes, sis esdeveniments, combat i final, construït sense tocar C++.
+**Fet quan.** Un joc de trenta minuts amb tres mapes, sis esdeveniments, combat i final, creat des de les pantalles. Inclou nova partida, personatge, menú de pausa, inventari/equip, habilitat local, compra/venda, guardat i derrota.
 
-**Ho prova.** `demo_juego_ejemplo` a CTest el recorre sencer de manera determinista.
+**Ho prova.** `demo_juego_ejemplo` recorre la campanya de manera determinista. Smoke de la UI real: crear personatge, equipar, combatre, guardar, tancar, continuar i recuperar una derrota; s'adjunten captures.
 
 #### G-05 — Tutorial de l'editor
 
@@ -755,9 +954,33 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Fitxers.** `FORMATO_PROYECTOS.md`, `FORMATO_NIVELES.md`, `FORMATO_AVENTURAS.md`
 
-**Fet quan.** Els esquemes de projecte, mapa, aventura i guardat es congelen a la versió 1.0-B, documentats, amb ruta de migració per a cada canvi futur.
+**Fet quan.** Els esquemes de projecte, mapa, aventura i guardat es congelen a la versió 1.0-B, inclosos configuració de títol, dades RPG locals i metadades de slots, documentats, amb ruta de migració per a cada canvi futur.
 
 **Ho prova.** `test_schema_freeze`: fixtures de la versió 1.0-B es carreguen sense avisos amb el codi del dia.
+
+#### G-15 — Assistent d'exportació des de l'editor
+
+`3 j` · depèn de: G-06, E-11, E-15
+
+**Per què.** Un script d'empaquetat no tanca la pantalla Exportar que necessita un tercer.
+
+**Fitxers.** `editor/src/ExportPanel.cpp`, `include/Editor/ExportState.h`, `tools/exportar.py`
+
+**Fet quan.** Triar projecte, plataforma Linux/Windows disponible i carpeta de sortida; validar, mostrar progrés/errors i obrir la carpeta del resultat. El motor d'exportació de G-06 s'invoca una sola vegada. Si l'host no té el runtime objectiu disponible, s'explica i no es presenta com a exportació correcta. No cal terminal ni tenir el repositori per jugar el resultat.
+
+**Ho prova.** `test_export_panel`: cancel·lar o faltar runtime no publica un paquet parcial; error d'E-15 navega al problema. UI exporta i arrenca el resultat en cada runner Linux/Windows des d'una carpeta externa al build.
+
+#### G-16 — Acceptació de pantalles d'autor i jugador
+
+`3 j` · depèn de: G-05, G-07, G-15, F-02, F-04
+
+**Per què.** Una suite GL-free verda no comprova que els botons siguin accessibles ni que el destinatari pugui acabar un recorregut sense ajuda.
+
+**Fitxers.** `tests/UI/`, `docs/acceptance/corte-b-pantalles.md`, `../.github/workflows/ci.yml`
+
+**Fet quan.** Prova amb autor nou: projecte, mapa, recurs, habilitat local, NPC/missió, diagnòstic, desar/reobrir, playtest i exportar, sense C++/JSON/terminal. Un altre jugador obre l'export: Nova partida, personatge, diàleg, equip, combat, botiga, desar, reiniciar, continuar i recuperar derrota. Cap control inert, text essencial tallat o error sense sortida. Registrar plataforma, passos, captures, incidències i resultat; tanca G.
+
+**Ho prova.** CI executa smoke dels recorreguts de les pantalles reals i proves dels seus efectes sobre GameSession/MapDocument. Acta de prova humana amb teclat/ratolí a 1280×720 i DPI 2×; bloquejos oberts impedeixen tancar el corte.
 
 ## 5. Fora d'abast, per escrit
 
@@ -768,9 +991,11 @@ El corte B es defineix tant pel que inclou com pel que no. Això queda per a 1.1
 | Autotiles i terrenys intel·ligents | MAP-03 | Molta feina d'editor per a un resultat que es pot pintar a mà en mapes de la mida que fem ara. |
 | Sistema de plugins (runtime i editor) | TOOL-06..08 | No té sentit obrir una API d'extensió abans que l'API interna estigui estable. Depèn de la fase C. |
 | Àudio, música i ambient | GDB-11 | Cap peça del motor el toca avui; és una vertical sencera i no bloqueja el cicle d'autor. |
-| Base de dades completa i editor mestre-detall | GDB-01..12 | La fase D deixa els catàlegs llegibles; editar-los des de l'eina és 1.1. |
+| Edició avançada dels 21 catàlegs, lots i fórmules | GDB-01..12 (resta) | E-14 consulta els imports i E-16 edita les quatre famílies mínimes locals; el manteniment complet de regles i canon continua aigües amunt. |
 | Exportació a macOS i empaquetat de botiga | TOOL-10 | Linux i Windows cobreixen la prova del corte B. |
 | Combat tàctic avançat i IA de grup | — | El combat per torns actual és suficient per validar el cicle d'autor. |
+| Generador gràfic de personatges, editor visual de HUD i diari avançat | GDB-08/12 (resta) | El corte B connecta personatge, HUD i missions; no inclou aquestes eines noves. El generador gràfic no és l'assistent de fitxa de G-09. |
+| Opacitat de capes, autotiling avançat i borrat massiu de projectes | EDT/MAP (resta) | E-11/12 cobreixen crear, navegar, duplicar i ordenar; aquestes funcions de productivitat no són condició dels recorreguts mínims. |
 
 ## 6. Regles de treball
 
@@ -779,4 +1004,46 @@ El corte B es defineix tant pel que inclou com pel que no. Això queda per a 1.1
 - **Cap paquet nou entra al pla sense criteri d'acceptació i prova.** Si no es poden escriure, el que falta és entendre el problema, no programar-lo.
 - **Si un paquet supera el doble de la seva estimació, es para i es replanteja**, en comptes d'anar-hi afegint jornades.
 - **Les fases no s'encavalquen.** Cada fase s'obre quan la anterior ha tancat: és el que vol dir «consolidació abans de res més». Al Gantt això són les portes de fase.
-- **La fase C no admet funcions noves.** Qualsevol idea que aparegui durant la consolidació va a la llista de 1.1.
+- **La fase C no admet funcions noves.** Qualsevol idea que aparegui durant la consolidació es registra per després del seu tancament. Les pantalles autoritzades en aquesta revisió viuen a E/G; la resta segueix a 1.1.
+- **Una pantalla no es tanca només amb tests del model.** Cal exercitar el control visible, comprovar l'efecte real i registrar el recorregut de retorn/error. G-16 és la porta final d'acceptació amb persones noves.
+
+## 7. Cobertura de pantalles i funcionalitats
+
+Fotografia de la revisió del 03/09/2026; no és un percentatge ni una declaració de feina acabada. Els IDs són compromisos d'execució. El seguiment de cada paquet continua al seu registre.
+
+| Àmbit / pantalla | Fotografia de partida | Abast / paquets | Recorregut que ho tanca |
+| --- | --- | --- | --- |
+| Editor · Inici i projectes | Hub existent; assistent incomplet | Corte B: E-11, G-16 | Crear en una carpeta triada, obrir, desar i reobrir dos projectes independents. |
+| Editor · Espai de treball i controls | HUD propi; ADR ImGui pendent | Corte B: E-10, G-16 | Accions visibles amb ratolí i teclat; focus, text i canvi de document sense pèrdues. |
+| Editor · Arbre de mapes | Navegació anterior/següent | Corte B: E-11 | Crear, duplicar, triar entrada i obrir un mapa pel nom. |
+| Editor · Edició de mapa | Pintura, emplenat, selecció i historial existents | Corte B: C-14, E-12, G-02, G-03 | Pintar rectangle/línia, mostrejar, desfer, desar i reobrir. |
+| Editor · Capes i propietats del mapa | Dades parcials sense panell complet | Corte B: E-12 | Dimensions, tileset, ordre, visibilitat i bloqueig; cancel·lar canvis que eliminen entitats. |
+| Editor · Paleta i recursos | Llistes filtrades; falta importació guiada | Corte B: E-13 | Importar un sprite, veure miniatura, col·locar-lo i moure el projecte sense perdre'l. |
+| Editor · Propietats d'instància | Inspector existent amb camps i pickers | Corte B: E-12, E-14, E-05 | Triar botí/destí pel nom i obrir l'esdeveniment associat. |
+| Editor · Pàgines d'esdeveniment | No integrades | Corte B: E-01, E-02, E-05, E-09 | Cofre amb pàgina tancada/oberta i interruptor local, sense escriure IDs. |
+| Editor · Comandes d'esdeveniment | No integrades | Corte B: E-03, E-04, E-06, E-09 | Diàleg, elecció, condició, moviment, espera i final construïts amb formularis. |
+| Editor · Consulta i edició RPG mínima | Catàlegs llegits; sense CRUD visual | Corte B: D-10, E-14, E-16, G-13 | Crear còpia local d'habilitat, assignar-la i usar-la al combat sense recompilar. |
+| Editor · Problemes i cerca d'esdeveniments | Validació parcial; no navegació des de diagnòstics | Corte B: E-07, E-15 | Anar de l'error a la comanda, corregir-lo i desbloquejar provar/exportar. |
+| Editor · Playtest i depuració | P desa i llança procés separat | Corte B: E-08, F-01, F-02, F-03, F-04 | Provar des d'una casella, inspeccionar, fer passos i tornar al mateix document. |
+| Editor · Exportació | Empaquetat existent; falta assistent i garanties standalone | Corte B: G-06, G-15, G-16 | Exportar des de pantalla i executar fora del repositori en Linux i Windows. |
+| Editor · Ajuda i recuperació | Sense tutorial ni recuperació automàtica | Corte B: E-10, G-01, G-05, G-16 | Autor nou acaba el tutorial i recupera canvis després d'una caiguda simulada. |
+| Jugador · Títol | Arrencada directa al nivell | Corte B: G-08, G-11 | Nova partida, Continuar, Opcions i Sortir corresponen al projecte exportat. |
+| Jugador · Creació de personatge | Assistent de 14 passos separat del joc | Corte B: D-06, G-09 | La fitxa confirmada arriba a la partida; cancel·lar torna al títol. |
+| Jugador · Menú durant la partida | Escape surt; accions en dreceres | Corte B: G-10, G-11, G-12 | Pausar, gestionar, guardar/carregar i tornar sense tecles filtrades ni avanç de temps. |
+| Jugador · Inventari, equip i fitxa | Panell informatiu; regles sense accions de menú | Corte B: D-05, G-12 | Consumir, equipar i desequipar amb canvi observable de PV/stats i persistència. |
+| Jugador · Combat i selecció d'objectiu | Cinc comandes i objectiu fixos | Corte B: G-13 | Habilitat de projecte al menú, cost correcte, segon enemic seleccionable i cancel·lació. |
+| Jugador · Exploració, moral i temporitzadors | HUD existent; F1 amb connexió pendent | Corte B: G-10, G-14 | Informació visible, timer pausat quan toca, minimapa viu després de travessar portes. |
+| Jugador · Diàleg i eleccions | Motor i modal existents | Corte B: E-06, E-09, G-14 | NPC creat a l'editor mostra eleccions i canvia de resposta segons estat. |
+| Jugador · Botiga i negocis | Compra/venda i rendes existents | Corte B: G-14 | Preu, quantitat, error i resultat visibles; efectes en or/inventari/moral sense duplicats. |
+| Jugador · Desar i carregar | F5/F9 en exploració; sense slots visibles | Corte B: G-11 | Desar, sortir del procés i continuar; corruptes no esborren la partida actual. |
+| Jugador · Derrota | Avís sense recorregut de recuperació | Corte B: G-11, G-16 | Carregar un slot vàlid o tornar al títol amb controls visibles. |
+| Jugador · Opcions i ajuda de controls | Sense pantalla pròpia | Corte B: G-10 | Canviar mode de finestra/escala de text i consultar controls; preferències persistents. |
+| Editor · Base de dades avançada de 21 famílies | Fora del mínim revisat | 1.1: fora del corte | E-16 només cobreix objectes, equip, habilitats i enemics locals; la resta es consulta. |
+| Editor · Autotiles, plugins i generador gràfic | No integrats | 1.1: fora del corte | Ampliacions futures; no es confonen amb G-09 ni amb la importació de PNG. |
+| Editor/Jugador · Àudio i exportació macOS/botigues | Aplaçats expressament | 1.1: fora del corte | Exclusió mantinguda: no prometre música, controls de volum ni export natiu macOS al corte B. |
+
+## 8. Ordre d'execució i correspondència amb plans previs
+
+C → D → E → F → G. Cada arrel de fase espera tots els terminals de l'anterior, no només l'últim ID. La revisió manté els IDs existents. E-10..14 concreten ADR-001/EDT-01..06 i els inspectors; E-15 connecta diagnòstics; E-16 avança el mínim de GDB a dades locals de projecte. G-08..14 connecten pantalles del jugador; G-15 embolcalla G-06; G-16 tanca el recorregut complet.
+
+La pantalla F1 de temporitzadors del TABLERO conserva el seu propietari: G-14 integra el resultat, no crea una tasca rival. Els roadmaps F0–F8/EDT/GDB i les auditories anteriors són referències de procedència; no s'hi sumen jornades per segona vegada. Aquesta revisió només actualitza el Corte B; no resol d'amagat la numeració històrica pendent al TABLERO.

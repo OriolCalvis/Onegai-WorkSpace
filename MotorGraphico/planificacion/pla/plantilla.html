@@ -1,3 +1,8 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Pla del corte B</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -156,6 +161,8 @@ footer ul{padding-left:18px} footer li{margin-bottom:6px}
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
+</head>
+<body>
 
 <div class="shell">
 <aside>
@@ -166,6 +173,7 @@ html{scroll-behavior:smooth}
 
   <div class="navgroup">Marc</div>
   <a href="#decisions" class="navlink" data-target="decisions">Decisions i número</a>
+  <a href="#pantalles" class="navlink" data-target="pantalles">Cobertura de pantalles</a>
 
   <div class="navgroup">Fases</div>
   <!--NAV-->
@@ -183,7 +191,7 @@ html{scroll-behavior:smooth}
   <section id="decisions">
     <div class="decisions"><!--DECISIONS--></div>
 
-    <h2>El número, i per què no és el de l'auditoria</h2>
+    <h2>Esforç complet de l'abast revisat</h2>
     <div class="tablewrap">
       <table>
         <thead><tr><th>Fase</th><th class="num">Paquets</th><th class="num">Jornades</th><th class="num">Setmanes</th></tr></thead>
@@ -191,7 +199,20 @@ html{scroll-behavior:smooth}
       </table>
     </div>
     <p>Una jornada és unes 6 h de treball enfocat. A ritme de ratos lliures i caps de setmana —al voltant d'1,5 jornades per setmana— les {{TOTAL}} jornades són unes {{SET}} setmanes naturals.</p>
-    <p>L'auditoria xifrava el corte B en 72 jornades. Les tres decisions de dalt el multipliquen: la consolidació prèvia sencera n'afegeix {{NC}} i arreglar els 21 catàlegs en comptes dels quatre que el joc fa servir de veritat n'afegeix més. Són decisions defensables —deixen el projecte sense mons paral·lels i amb dades reals— però el preu és aquest, i val més tenir-lo escrit ara que descobrir-lo al mes vuit.</p>
+    <p><strong>Revisió de pantalles · 03/09/2026:</strong> la base de {{BASE_N}} paquets i {{BASE_J}} jornades creix en {{ADDED_N}} paquets i {{ADDED_J}} jornades. És l'estimació completa de l'abast, <strong>no la feina restant ni una data de lliurament</strong>. Les caselles locals no certifiquen tancaments de CI.</p>
+  </section>
+
+  <section id="pantalles" class="sec">
+    <h2>Cobertura de pantalles i funcionalitats</h2>
+    <p>Fotografia del 03/09 i recorregut que ha de quedar verificat. Els paquets enllaçats són activitats pendents o en curs; aquesta matriu no declara pantalles acabades.</p>
+    <div class="tablewrap">
+      <table style="max-width:100%">
+        <thead><tr><th>Àmbit / pantalla</th><th>Fotografia de partida</th><th>Abast / paquets</th><th>Recorregut que ho tanca</th></tr></thead>
+        <tbody><!--COVERAGE--></tbody>
+      </table>
+    </div>
+    <p>E-10..14 concreten l'ADR del shell i els inspectors; E-15 connecta diagnòstics i E-16 afegeix l'edició RPG mínima local. G-08..14 cobreixen el jugador, G-15 l'assistent d'exportació i G-16 la prova amb persones noves.</p>
+    <p>La reserva F1 del TABLERO es respecta: G-14 integra el seu resultat. Les referències EDT/GDB/F0–F8 són procedència, no paquets que s'hagin de sumar una altra vegada.</p>
   </section>
 
   <!--PHASES-->
@@ -214,7 +235,9 @@ html{scroll-behavior:smooth}
       <li><strong>Un paquet es tanca quan la seva prova passa a CI</strong>, no quan el codi compila a la màquina de qui l'ha escrit.</li>
       <li><strong>Cap paquet nou entra al pla sense criteri d'acceptació i prova.</strong> Si no es poden escriure, el que falta és entendre el problema, no programar-lo.</li>
       <li><strong>Si un paquet supera el doble de la seva estimació, es para i es replanteja</strong>, en comptes d'anar-hi afegint jornades.</li>
-      <li><strong>La fase C no admet funcions noves.</strong> Qualsevol idea que aparegui durant la consolidació va a la llista de 1.1.</li>
+      <li><strong>Les fases no s'encavalquen.</strong> Cada arrel espera tots els terminals de la fase anterior, no només l'últim ID.</li>
+      <li><strong>La fase C no admet funcions noves.</strong> Les pantalles d'aquesta revisió es programen a E/G després de consolidar; la resta segueix a 1.1.</li>
+      <li><strong>Una pantalla no es tanca només amb tests del model.</strong> Cal verificar el control visible, l'efecte real i el retorn/error. G-16 és la porta final amb persones noves.</li>
     </ul>
   </section>
 
@@ -289,3 +312,5 @@ html{scroll-behavior:smooth}
   }
 })();
 </script>
+</body>
+</html>

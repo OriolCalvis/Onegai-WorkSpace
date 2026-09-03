@@ -22,6 +22,10 @@ def load_progress(package_ids):
 def markdown(record):
     if not record:
         return ""
+    # Importacions d'anotacions prèvies: conservar autoria i text literal.
+    # La font és el JSON; no llegir mai el markdown generat per regenerar-lo.
+    if record.get("source_markdown"):
+        return record["source_markdown"].rstrip() + "\n"
     lines = [f'**Seguiment · {record["date"]} · {record["author"]}: {record["status"]}.**', ""]
     lines.extend(f'- {action}' for action in record["actions"])
     lines.extend(["", "**Verificat.** " + " · ".join(record["verification"])])
