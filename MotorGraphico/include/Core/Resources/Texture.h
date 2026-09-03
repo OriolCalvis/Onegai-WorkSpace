@@ -24,15 +24,11 @@ public:
         other.m_glID = 0;
     }
 
-    Texture& operator=(Texture&& other) noexcept {
-        if (this != &other) {
-            m_glID = other.m_glID;
-            m_width = other.m_width;
-            m_height = other.m_height;
-            other.m_glID = 0;
-        }
-        return *this;
-    }
+    // NOTA DE CORRECCION (C-09): se declara aqui y se define en
+    // Texture.cpp porque la asignacion debe LIBERAR el recurso que ya
+    // tuviera el destino antes de robar el del origen, y eso necesita
+    // glDeleteTextures (glad), que la cabecera no incluye.
+    Texture& operator=(Texture&& other) noexcept;
 
     void bind(unsigned int slot = 0) const;
 

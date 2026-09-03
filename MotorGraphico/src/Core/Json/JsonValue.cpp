@@ -162,10 +162,11 @@ private:
         return result;
     }
 
-    // Sin soporte de \uXXXX a proposito: el contenido que este parser
-    // necesita leer (nombres/ids/rutas de nivel) no lo necesita, y anadir
-    // decodificacion UTF-16 de escapes solo para no usarla nunca es
-    // complejidad de mas (ver dafo.md, "riesgo de sobre-ingenieria").
+    // C-10: el parser decodifica \uXXXX a UTF-8. Ya no es un capricho:
+    // JsonWriter ESCAPA asi los caracteres de control, y el contrato del
+    // guardado es el round-trip — lo que sale del escritor tiene que
+    // volver a entrar por aqui sin perdidas. Los pares de sustitucion
+    // UTF-16 (\uD83D\uDE00) se combinan en su codepoint.
     std::string parseRawString() {
         expect('"');
         std::string result;
@@ -207,15 +208,78 @@ private:
                     case 'f':
                         result += '\f';
                         break;
+                    case 'u': {
+                        unsigned int codepoint = parseHex4();
+                        if (codepoint >= 0xD800 && codepoint <= 0xDBFF) {
+                            // Sustituto alto: exige el bajo a continuacion.
+                            if (m_pos + 1 < m_text.size() && m_text[m_pos] == '\\' &&
+                                m_text[m_pos + 1] == 'u') {
+                                m_pos += 2;
+                                const unsigned int low = parseHex4();
+                                if (low < 0xDC00 || low > 0xDFFF) {
+                                    throw JsonParseError{"sustituto bajo invalido tras un sustituto alto"};
+                                }
+                                codepoint = 0x10000 + ((codepoint - 0xD800) << 10) + (low - 0xDC00);
+                            } else {
+                                throw JsonParseError{"sustituto alto sin su sustituto bajo"};
+                            }
+                        } else if (codepoint >= 0xDC00 && codepoint <= 0xDFFF) {
+                            throw JsonParseError{"sustituto bajo sin sustituto alto"};
+                        }
+                        appendUtf8(result, codepoint);
+                        break;
+                    }
                     default:
                         throw JsonParseError{std::string("escape no soportado '\\") + esc +
-                                             "' (solo \\\" \\\\ \\/ \\n \\t \\r \\b \\f)"};
+                                             "' (solo \\\" \\\\ \\/ \\n \\t \\r \\b \\f \\uXXXX)"};
                 }
                 continue;
             }
             result += c;
         }
         return result;
+    }
+
+    // C-10: los cuatro digitos hexadecimales de un escape \uXXXX.
+    unsigned int parseHex4() {
+        if (m_pos + 4 > m_text.size()) {
+            throw JsonParseError{"escape \\u incompleto al final del string"};
+        }
+        unsigned int value = 0;
+        for (int i = 0; i < 4; ++i) {
+            const char digit = m_text[m_pos++];
+            value <<= 4;
+            if (digit >= '0' && digit <= '9') {
+                value |= static_cast<unsigned int>(digit - '0');
+            } else if (digit >= 'a' && digit <= 'f') {
+                value |= static_cast<unsigned int>(digit - 'a' + 10);
+            } else if (digit >= 'A' && digit <= 'F') {
+                value |= static_cast<unsigned int>(digit - 'A' + 10);
+            } else {
+                throw JsonParseError{std::string("digito hexadecimal invalido '") + digit +
+                                     "' en un escape \\u"};
+            }
+        }
+        return value;
+    }
+
+    // C-10: codepoint -> UTF-8 (de 1 a 4 bytes).
+    static void appendUtf8(std::string& out, unsigned int codepoint) {
+        if (codepoint < 0x80) {
+            out += static_cast<char>(codepoint);
+        } else if (codepoint < 0x800) {
+            out += static_cast<char>(0xC0 | (codepoint >> 6));
+            out += static_cast<char>(0x80 | (codepoint & 0x3F));
+        } else if (codepoint < 0x10000) {
+            out += static_cast<char>(0xE0 | (codepoint >> 12));
+            out += static_cast<char>(0x80 | ((codepoint >> 6) & 0x3F));
+            out += static_cast<char>(0x80 | (codepoint & 0x3F));
+        } else {
+            out += static_cast<char>(0xF0 | (codepoint >> 18));
+            out += static_cast<char>(0x80 | ((codepoint >> 12) & 0x3F));
+            out += static_cast<char>(0x80 | ((codepoint >> 6) & 0x3F));
+            out += static_cast<char>(0x80 | (codepoint & 0x3F));
+        }
     }
 
     JsonValue parseString() {
