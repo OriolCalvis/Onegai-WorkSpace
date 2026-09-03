@@ -1,0 +1,12 @@
+# C-20: este registro tambien funciona antes de integrar el scaffolding INF-01.
+include(CTest)
+if(BUILD_TESTING)
+    add_executable(test_condition_engine tests/RPG/ConditionEngineTests.cpp)
+    target_link_libraries(test_condition_engine PRIVATE motor_rpg)
+    add_test(NAME test_condition_engine COMMAND test_condition_engine)
+    set_tests_properties(test_condition_engine PROPERTIES LABELS "unit;gl-free")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_condition_engine)
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_condition_engine)
+    endif()
+endif()

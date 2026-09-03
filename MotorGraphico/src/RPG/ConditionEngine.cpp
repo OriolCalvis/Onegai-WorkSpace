@@ -1,7 +1,6 @@
 #include "RPG/ConditionEngine.h"
 
 #include <algorithm>
-#include <cstdio>
 
 namespace RPG {
 
@@ -22,7 +21,8 @@ std::vector<ActiveCondition>::const_iterator ConditionEngine::find_active_c(
 int ConditionEngine::active_stacks(const CharacterSheet& sheet,
                                    const std::string& conditionId) {
     auto it = find_active_c(sheet, conditionId);
-    return (it == sheet.conditions.end()) ? 0 : it->stacks;
+    return (it == sheet.conditions.end() || it->roundsRemaining <= 0 || it->stacks <= 0)
+        ? 0 : it->stacks;
 }
 
 bool ConditionEngine::has_flag(const CharacterSheet& sheet,
@@ -32,13 +32,13 @@ bool ConditionEngine::has_flag(const CharacterSheet& sheet,
     auto it = find_active_c(sheet, conditionId);
     if (it == sheet.conditions.end()) return false;
     const ConditionDefinition* d = cat.find(conditionId);
-    return d && pred(*d) && it->stacks > 0;
+    return d && pred(*d) && it->stacks > 0 && it->roundsRemaining > 0;
 }
 
 bool ConditionEngine::has_prevent_action(const CharacterSheet& sheet,
                                          const Catalogs::ConditionCatalog& cat) {
     for (const auto& c : sheet.conditions) {
-        if (c.stacks <= 0) continue;
+        if (c.stacks <= 0 || c.roundsRemaining <= 0) continue;
         const ConditionDefinition* d = cat.find(c.conditionId);
         if (d && d->preventAction) return true;
     }
@@ -47,7 +47,7 @@ bool ConditionEngine::has_prevent_action(const CharacterSheet& sheet,
 bool ConditionEngine::has_half_speed(const CharacterSheet& sheet,
                                      const Catalogs::ConditionCatalog& cat) {
     for (const auto& c : sheet.conditions) {
-        if (c.stacks <= 0) continue;
+        if (c.stacks <= 0 || c.roundsRemaining <= 0) continue;
         const ConditionDefinition* d = cat.find(c.conditionId);
         if (d && d->halfSpeed) return true;
     }
@@ -56,7 +56,7 @@ bool ConditionEngine::has_half_speed(const CharacterSheet& sheet,
 bool ConditionEngine::grants_advantage_to_enemies(const CharacterSheet& sheet,
                                                   const Catalogs::ConditionCatalog& cat) {
     for (const auto& c : sheet.conditions) {
-        if (c.stacks <= 0) continue;
+        if (c.stacks <= 0 || c.roundsRemaining <= 0) continue;
         const ConditionDefinition* d = cat.find(c.conditionId);
         if (d && d->grantAdvantageToEnemies) return true;
     }
@@ -65,7 +65,7 @@ bool ConditionEngine::grants_advantage_to_enemies(const CharacterSheet& sheet,
 bool ConditionEngine::grants_disadvantage_to_caster(const CharacterSheet& sheet,
                                                     const Catalogs::ConditionCatalog& cat) {
     for (const auto& c : sheet.conditions) {
-        if (c.stacks <= 0) continue;
+        if (c.stacks <= 0 || c.roundsRemaining <= 0) continue;
         const ConditionDefinition* d = cat.find(c.conditionId);
         if (d && d->grantDisadvantageToCaster) return true;
     }
@@ -82,6 +82,7 @@ Result<int> ConditionEngine::apply(CharacterSheet& sheet,
     if (cond.id.empty()) {
         return Result<int>::Error("ConditionEngine::apply: id vacio");
     }
+    purge_expired(sheet, cat);
     auto it = find_active(sheet, cond.id);
     if (it != sheet.conditions.end()) {
         switch (cond.stacking) {
@@ -131,7 +132,6 @@ Result<int> ConditionEngine::remove(CharacterSheet& sheet,
     }
     if (stacks_to_remove <= 0 || stacks_to_remove >= it->stacks) {
         // Remover todos
-        int remaining = it->stacks;
         sheet.conditions.erase(it);
         recalc_condition_modifiers(sheet, cat);
         return Result<int>::Ok(0);
@@ -146,16 +146,32 @@ Result<int> ConditionEngine::remove(CharacterSheet& sheet,
     return Result<int>::Ok(it->stacks);
 }
 
-int ConditionEngine::purge_expired(CharacterSheet& sheet) {
-    auto before = sheet.conditions.end();
-    auto new_end = std::remove_if(sheet.conditions.begin(), sheet.conditions.end(),
-        [](const ActiveCondition& c) { return c.roundsRemaining <= 0 && c.stacks <= 0; });
-    int n = 0;
-    for (auto it = new_end; it != before; ++it) ++n;  // en realidad before es end(), así no
-    // contamos bien: mejor la diferencia:
-    n = static_cast<int>(std::distance(new_end, before));
-    sheet.conditions.erase(new_end, sheet.conditions.end());
-    return n;
+int ConditionEngine::purge_expired(CharacterSheet& sheet,
+                                   const Catalogs::ConditionCatalog& cat) {
+    const auto before = sheet.conditions.size();
+    sheet.conditions.erase(
+        std::remove_if(sheet.conditions.begin(), sheet.conditions.end(),
+            [](const ActiveCondition& c) { return c.roundsRemaining <= 0 || c.stacks <= 0; }),
+        sheet.conditions.end());
+    recalc_condition_modifiers(sheet, cat);
+    return static_cast<int>(before - sheet.conditions.size());
+}
+
+int ConditionEngine::on_damage_received(CharacterSheet& sheet,
+                                        const Catalogs::ConditionCatalog& cat,
+                                        int healthLost) {
+    if (healthLost <= 0) return 0;
+    purge_expired(sheet, cat);
+    const auto before = sheet.conditions.size();
+    sheet.conditions.erase(
+        std::remove_if(sheet.conditions.begin(), sheet.conditions.end(),
+            [&](const ActiveCondition& c) {
+                const auto* def = cat.find(c.conditionId);
+                return def && def->breaksOnDamage;
+            }),
+        sheet.conditions.end());
+    recalc_condition_modifiers(sheet, cat);
+    return static_cast<int>(before - sheet.conditions.size());
 }
 
 // ---------------------------------------------------------------------------
@@ -163,44 +179,20 @@ int ConditionEngine::purge_expired(CharacterSheet& sheet) {
 // ---------------------------------------------------------------------------
 std::vector<ConditionEngine::TickEvent> ConditionEngine::tick_conditions(
     CharacterSheet& sheet, const Catalogs::ConditionCatalog& cat) {
+    purge_expired(sheet, cat);
     std::vector<TickEvent> out;
-
-    // Primero iteramos y marcamos rounds. Atención: borramos in-place con índices
-    // para no invalidar iteradores durante erase por vencimiento.
-    std::vector<size_t> to_remove_indexes;
-    for (size_t i = 0; i < sheet.conditions.size(); ++i) {
-        auto& ac = sheet.conditions[i];
-        ac.roundsRemaining -= 1;
+    out.reserve(sheet.conditions.size());
+    for (auto& ac : sheet.conditions) {
+        --ac.roundsRemaining;
         TickEvent ev;
         ev.conditionId = ac.conditionId;
-        ev.stacksRemaining = ac.stacks;
-
-        // Daño de tick: damagePerRound * stacks (si >0: daño; <0: heal)
+        ev.expired = ac.roundsRemaining == 0;
+        ev.stacksRemaining = ev.expired ? 0 : ac.stacks;
         const ConditionDefinition* def = cat.find(ac.conditionId);
-        if (def && def->damagePerRound != 0) {
-            ev.damageInflicted = def->damagePerRound * ac.stacks;
-        }
-        if (def && def->breaksOnDamage && ev.damageInflicted > 0) {
-            // Condición se rompe al recibir daño (encantado...) — la ponemos a 0
-            ac.roundsRemaining = 0;
-        }
-        if (ac.roundsRemaining <= 0) {
-            ev.expired = true;
-            ev.stacksRemaining = 0;
-            to_remove_indexes.push_back(i);
-        }
-        out.push_back(ev);
+        if (def) ev.damageInflicted = def->damagePerRound * ac.stacks;
+        out.push_back(std::move(ev));
     }
-    // Borramos en orden inverso para que los índices sigan siendo válidos
-    std::sort(to_remove_indexes.begin(), to_remove_indexes.end(),
-              std::greater<size_t>());
-    for (size_t idx : to_remove_indexes) {
-        if (idx < sheet.conditions.size()) {
-            sheet.conditions.erase(sheet.conditions.begin() +
-                                   static_cast<std::ptrdiff_t>(idx));
-        }
-    }
-    recalc_condition_modifiers(sheet, cat);
+    purge_expired(sheet, cat);
     return out;
 }
 
@@ -211,7 +203,7 @@ void ConditionEngine::recalc_condition_modifiers(CharacterSheet& sheet,
                                                  const Catalogs::ConditionCatalog& cat) {
     sheet.conditionModifiers = {0, 0, 0, 0};
     for (const auto& ac : sheet.conditions) {
-        if (ac.stacks <= 0) continue;
+        if (ac.stacks <= 0 || ac.roundsRemaining <= 0) continue;
         const ConditionDefinition* d = cat.find(ac.conditionId);
         if (!d) continue;
         for (int i = 0; i < 4; ++i) {

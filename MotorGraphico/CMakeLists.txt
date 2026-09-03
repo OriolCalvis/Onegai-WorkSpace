@@ -564,3 +564,6 @@ add_executable(demo_senal_ceniza examples/demo_senal_ceniza.cpp)
 target_link_libraries(demo_senal_ceniza PRIVATE motor_rpg)
 set_target_properties(demo_senal_ceniza PROPERTIES CXX_STANDARD 17)
 add_dependencies(demo_senal_ceniza copiar_assets)
+
+# C-20 — Regresiones del propietario unico de las condiciones.
+include(cmake/ConditionEngineTests.cmake)

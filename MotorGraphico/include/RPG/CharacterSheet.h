@@ -102,7 +102,8 @@ public:
     std::vector<std::string> traitIds;
     std::vector<std::string> featIds;
 
-    // Condiciones activas (tick por combate)
+    // Almacen de condiciones. ConditionEngine es el unico escritor de reglas;
+    // la restauracion de datos debe purgar/recalcular usando el catalogo.
     std::vector<ActiveCondition> conditions;
 
     // ===== Stat totals (CON/DES/INT/CAR) = STAT_RANK_MIN..STAT_RANK_MAX
@@ -165,14 +166,9 @@ public:
     // Retorna false si no sube (no hay milestone suficiente O ya en TIER_MAX).
     bool tierUp(const TierRules& rules, int milestoneCount);
 
-    // ===== Condiciones aplicar/quitar
-    void applyCondition(const std::string& conditionId, int rounds, int stacks = 1, const std::string& sourceId = "");
-    void removeCondition(const std::string& conditionId);
+    // ===== Consultas de condiciones; aplicar/quitar/tick viven en ConditionEngine.
     bool hasCondition(const std::string& conditionId) const;
     int  conditionStacks(const std::string& conditionId) const;
-
-    // Tick al final de cada ronda
-    void tickEndOfRound();
 
     // ===== Facción
     int  getRep(const std::string& factionId) const;

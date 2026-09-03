@@ -81,51 +81,15 @@ bool CharacterSheet::tierUp(const TierRules& rules, int milestoneCount) {
 // ============================================================
 // Manejo de condiciones
 // ============================================================
-static ActiveCondition* find_condition(CharacterSheet& cs, const std::string& id) {
-    for (auto& c : cs.conditions) if (c.conditionId == id) return &c;
-    return nullptr;
-}
-void CharacterSheet::applyCondition(const std::string& conditionId, int rounds, int stacks, const std::string& sourceId) {
-    if (rounds <= 0 && stacks <= 0) return;
-    auto* existing = find_condition(*this, conditionId);
-    if (existing) {
-        if (existing->roundsRemaining < rounds) existing->roundsRemaining = rounds;
-        existing->stacks = std::max(existing->stacks, stacks);
-        if (existing->sourceId.empty()) existing->sourceId = sourceId;
-    } else {
-        ActiveCondition nc;
-        nc.conditionId = conditionId;
-        nc.sourceId = sourceId;
-        nc.roundsRemaining = rounds;
-        nc.stacks = stacks;
-        conditions.push_back(std::move(nc));
-    }
-}
-void CharacterSheet::removeCondition(const std::string& conditionId) {
-    // C++17: no tenemos std::erase_if (C++20). Manual remove_if + erase.
-    auto it = std::remove_if(conditions.begin(), conditions.end(),
-        [&](const ActiveCondition& c) { return c.conditionId == conditionId; });
-    conditions.erase(it, conditions.end());
-}
 bool CharacterSheet::hasCondition(const std::string& conditionId) const {
-    for (auto& c : conditions) if (c.conditionId == conditionId) return true;
-    return false;
+    return conditionStacks(conditionId) > 0;
 }
 int  CharacterSheet::conditionStacks(const std::string& conditionId) const {
-    for (auto& c : conditions) if (c.conditionId == conditionId) return c.stacks;
-    return 0;
-}
-
-// Tick final de ronda: 1) decrement conditions, 2) daño de sangrado/veneno (P0 aquí asumimos
-// que todo condition con nombre tipo sagnat|veneno|quemado causa danyo por stack).
-void CharacterSheet::tickEndOfRound() {
-    // Aquí sólo tratamos el TTL. El daño tick lo calcula SkillExecutor/BattleState
-    // que tiene acceso al ConditionCatalog.
-    for (auto it = conditions.begin(); it != conditions.end(); /*erase manual*/) {
-        it->roundsRemaining -= 1;
-        if (it->roundsRemaining <= 0) it = conditions.erase(it);
-        else ++it;
+    for (const auto& c : conditions) {
+        if (c.conditionId == conditionId && c.roundsRemaining > 0 && c.stacks > 0)
+            return c.stacks;
     }
+    return 0;
 }
 
 // ============================================================

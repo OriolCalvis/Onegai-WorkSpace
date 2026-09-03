@@ -1,0 +1,22 @@
+{
+  "id": "C-20",
+  "date": "2026-09-03",
+  "author": "Codex",
+  "status": "Nucli implementat i verificat localment; paquet encara obert",
+  "actions": [
+    "Retirats applyCondition, removeCondition i tickEndOfRound de CharacterSheet: ConditionEngine concentra les regles d'aplicació, apilat, retirada i caducitat.",
+    "purge_expired elimina entrades amb rondes o càrregues esgotades i recalcula modificadors; les consultes ignoren entrades caducades.",
+    "El tick conserva l'efecte de l'última ronda i evita tornar a aplicar efectes ja caducats.",
+    "on_damage_received elimina totes les condicions breaksOnDamage del receptor i recalcula els modificadors; zero, curació i dany bloquejat no les trenquen.",
+    "Afegit test_condition_engine amb 11 casos i registre CTest GL-free independent del scaffolding pendent d'altres sessions."
+  ],
+  "verification": [
+    "Abans del canvi: 2 regressions reproduïdes (purga i ruptura pel dany calculat del tick).",
+    "11/11 casos amb AddressSanitizer i UndefinedBehaviorSanitizer, sense errors.",
+    "Build de suite_gl_free i CTest: 54/54 proves GL-free en verd (macOS Debug)."
+  ],
+  "pending": [
+    "Connectar la notificació de PV realment perduts al combat de producció quan disposi del catàleg de condicions; actualment ConditionEngine només tenia consumidors de demo. No s'han modificat GameSession/Application, reservats per una altra sessió.",
+    "Passar la prova a CI abans de tancar formalment C-20 (regla 6 del pla)."
+  ]
+}
