@@ -1,10 +1,10 @@
 # Revisión global del proyecto + auditoría de menús del motor
 
-*Foto del 3 de septiembre de 2026 (tarde) sobre HEAD `50098f8` + trabajo en vuelo declarado (C-11/C-22 de codex aplicados en el workspace, migración INF-03 sin versionar). Encargo de Oriol: revisar todo el proyecto y, en particular, los menús del motor gráfico — qué flujo hacen, qué elementos contienen, qué % está finalizado/inacabado y qué es crítico frente a qué puede esperar. Complementa a `LINEA_BASE.md` (módulos, 28/08), `analisis_clases/` (clases, 31/08) y `COMPARATIVA_CODIGO_UML_PLANIFICACION.md` (planes, 03/09): aquí el eje son **las pantallas y sus flujos**.*
+*Foto del 3 de septiembre de 2026 (tarde) sobre HEAD `75c9846`. **Errata de foto:** mientras se escribía, qwen ejecutó el rescate autorizado por Oriol del bloque huérfano — la migración INF-03 YA está versionada (`9e40405`, `52d696f`, `dccdbfe`); donde este doc diga «sin commitear», léase «commiteado esa misma tarde; quedan los CI/consolidaciones de C-11/C-20/C-22». Encargo de Oriol: revisar todo el proyecto y, en particular, los menús del motor gráfico — qué flujo hacen, qué elementos contienen, qué % está finalizado/inacabado y qué es crítico frente a qué puede esperar. Complementa a `LINEA_BASE.md` (módulos, 28/08), `analisis_clases/` (clases, 31/08) y `COMPARATIVA_CODIGO_UML_PLANIFICACION.md` (planes, 03/09): aquí el eje son **las pantallas y sus flujos**.*
 
 ## 0. Titular
 
-- **El proyecto va bien ahí donde ha decidido ir.** La Fase C (consolidación) está casi cerrada —C-09, C-10, C-11, C-20, C-21 y C-22 con núcleo hecho en solo dos días—, la campaña es jugable end-to-end y la verificación (15 suites + suite gl-free + validadores Python) es real. El objetivo vigente (corte B: que un tercero haga un juego sin tocar código) está correctamente planificado en `PLA_DEFINITIU.md`.
+- **El proyecto va bien ahí donde ha decidido ir.** La Fase C (consolidación) está casi cerrada —C-09, C-10, C-11, C-20, C-21 y C-22 con núcleo hecho en solo dos días, y el bloque huérfano INF-03 rescatado y versionado esa misma tarde—, la campaña es jugable end-to-end y la verificación (15 suites + suite gl-free + validadores Python) es real. El objetivo vigente (corte B: que un tercero haga un juego sin tocar código) está correctamente planificado en `PLA_DEFINITIU.md`.
 - **Los menús del JUEGO están más hechos de lo que parece** (~70% del flujo exploración→diálogo→combate→tienda/negocio funciona y es data-driven, salvo el menú de combate), **pero les faltan las puertas**: no hay pantalla de título, no hay pausa, y la creación de personaje (14 pasos, terminada) no está cableada al juego.
 - **Los menús del EDITOR son la brecha real del corte B**: lo que existe (hub de proyectos, 7 herramientas, familias, búsqueda, capas, inspector) está sólido (~65–90% por pantalla), pero **el editor de eventos (EVT-11/12) y la base de datos visual (GDB-02) —el corazón del «ciclo de autor»— están a 0–10%** y son los paquetes más caros del plan (19 j y 8 j).
 - **Hallazgo nuevo de esta revisión:** `tools/verificar_controles.py` —el guardián que impide que los menús del editor documenten teclas fantasma— **está roto por la migración INF-03** (busca `examples/level_editor.cpp`, que ahora vive en `editor/src/`). Mientras esté roto, la trampa documentada en la Parte 8.7 de la bitácora (controles anunciados sin existir) puede volver a morder sin que nada lo detecte.
@@ -15,12 +15,12 @@
 
 | Proyecto | Papel | Estado | Señales |
 |---|---|---|---|
-| `MotorGraphico-main` | Ejecución (C++) | **Fase C casi cerrada**; 101 cabeceras, ~23,8k LOC `include+src`; suite gl-free 52–54/54; rama `feature/editor-s1-contratos` | 6 paquetes C tocados en 2 días; **INF-03 sin commitear** (5 módulos + `editor/` + `tests/` untracked, ~25 M) |
+| `MotorGraphico-main` | Ejecución (C++) | **Fase C casi cerrada**; 101 cabeceras, ~23,8k LOC `include+src`; suite gl-free 57/57; rama `feature/editor-s1-contratos` | 6 paquetes C tocados en 2 días; INF-03 **rescatado y versionado** el 03/09 (quedan CI/consolidaciones de C-11/C-20/C-22) |
 | `dndWeebCC-master` | Reglamento y mapa | Estable; Java 25 en rama de upgrade | 1 fichero M (pom del upgrade); Ed.3 aún sin reflejar en el GDD §5 (bandeja antigua) |
 | `Onegai 2` | Canon (LORE) | Estable desde el volcado del atlas (28/08) | 229 ficheros sin commitear (capítulos/canvas en curso de Oriol) — no tocar |
 | `Onegai-Core` | Puente | **Ya tiene git** (la bitácora 4.3 decía que no; se inicializó con los seguimientos de C-22) | 169 ficheros sin commitear — pendiente de cierre de sesión |
 
-**Riesgos transversales** (detalle y preguntas en `COMPARATIVA_CODIGO_UML_PLANIFICACION.md` §4–5): INF-03 sin versionar es el nº1 de colisión; el UML y el flujo .puml congelados desde el commit inicial; tres numeraciones de plan conviviendo; los docs de estado (ESTADO_REAL 28/08) subestiman lo hecho desde entonces.
+**Riesgos transversales** (detalle y preguntas en `COMPARATIVA_CODIGO_UML_PLANIFICACION.md` §4–5): el UML y el flujo .puml congelados desde el commit inicial; tres numeraciones de plan conviviendo; los docs de estado (ESTADO_REAL 28/08) subestiman lo hecho desde entonces. ~~INF-03 sin versionar~~ — resuelto por el rescate del 03/09; el riesgo de colisión que queda es el habitual de trabajar sobre ficheros calientes (GameSession/Application reservados por C-20).
 
 **La cifra de proyecto** (del plan reconciliado): 1.0 completo al 32%; corte B = 177 jornadas ≈ 118 semanas a ritmo real. La Fase C (62 j) está consumiéndose a buen ritmo esta semana.
 
@@ -180,7 +180,7 @@ Lectura: **el déficit no es de calidad sino de cobertura** — lo hecho funcion
 ## 5. Qué es crítico y qué puede esperar
 
 **CRÍTICO — bloquea el corte B o es riesgo activo HOY**
-1. **Commitear INF-03 y reactivar `verificar_controles.py`** (path `examples/`→`editor/src/`). El guardián de los menús del editor lleva roto desde la migración; la trampa de los controles fantasma (bitácora 8.7) ya mordió una vez sin red.
+1. **Reactivar `verificar_controles.py`** (path `examples/`→`editor/src/`; sigue roto incluso tras el rescate de INF-03 — verificado). El guardián de los menús del editor lleva roto desde la migración; la trampa de los controles fantasma (bitácora 8.7) ya mordió una vez sin red.
 2. **Editor de eventos EVT-11+EVT-12** (19 j, 0–5%): sin él no existe el «ciclo de autor completo» que da nombre al corte.
 3. **Puertas del juego**: título con nueva/continuar, pausa con confirmación, y cablear la creación de personaje al arranque (la pantalla ya está hecha).
 4. **Menú de combate data-driven** (Application.cpp:573): hoy un PJ con otras habilidades no las ve en su menú.
@@ -192,7 +192,7 @@ Lectura: **el déficit no es de calidad sino de cobertura** — lo hecho funcion
 
 ## 6. Hallazgos nuevos de esta revisión
 
-1. `tools/verificar_controles.py` **roto por INF-03** (FileNotFoundError contra `examples/level_editor.cpp`) — registrado también en el TABLERO (Pendiente) para quien cierre la migración.
+1. `tools/verificar_controles.py` **roto por INF-03** (FileNotFoundError contra `examples/level_editor.cpp`; re-verificado tras el rescate) — registrado también en el TABLERO (Pendiente). Con la migración ya versionada, arreglar el path ya no toca territorio ajeno.
 2. **Menú de combate hardcodeado** (Application.cpp:573) frente a una tienda que SÍ es data-driven — el contraste delata que fue un atajo puntual que se quedó.
 3. **TOOL-01 (playtest) está más hecho de lo que dice la auditoría del 28/08** (10% → ~70% en mi lectura + Parte 8 de la bitácora): segunda prueba de que `ESTADO_REAL` necesita nota de foto.
 4. **Onegai-Core ya tiene git** (bitácora §4.3 dice «sin git»): inicializado con los seguimientos de C-22.
@@ -204,4 +204,4 @@ Lectura: **el déficit no es de calidad sino de cobertura** — lo hecho funcion
 - Fuentes de código leídas: `ProjectHub.h`, `CharacterCreationScreen.h` (enum Paso completo), `GameSession.h` (GameMode + OwnedBusiness), `HudWidgets/HudTextWidgets/HudMinimap/HudManager.h`, cabecera de `editor/src/level_editor.cpp` (controles completos), `Application.cpp` (init del HUD completo, refreshHud, processInput por modo, confirmBattleCommand, tienda/negocio/gameover), `ObjectInspector.h`, `juego.cpp`, `BattleState.cpp` (degreeLabel).
 - `python3 tools/verificar_controles.py` ejecutado: falla con FileNotFoundError (hallazgo §6.1, evidencia en la salida).
 - Estado de los 4 repos con `git log/status`; % de fichas cruzados con `ESTADO_REAL_vs_ROADMAP.md` y `PLA_DEFINITIU.md`.
-- Sin cambios de código; trabajo concurrente (C-11/C-22 de codex aplicado al workspace, INF-03 sin versionar) intacto.
+- Sin cambios de código; trabajo concurrente respetado (C-11/C-22 de codex y rescate de qwen aterrizaron durante la redacción — errata de foto al inicio).
