@@ -142,7 +142,7 @@ public:
     // consumen, aunque las reglas sigan siendo correctas.
     //
     // Lo descubrio justo eso: al corregir el orden de las ramas de
-    // DicePoolEngine::resolve_against_cd (la pifia iba la ultima y con
+    // la antigua resolucion por dificultad (la pifia iba la ultima y con
     // CD 0 nunca se alcanzaba), demo_battle y demo_game_session
     // empezaron a fallar sin que la regla nueva fuese peor -- solo habia
     // cambiado la cara del dado que tocaba. Ver examples/ScriptedRng.h.

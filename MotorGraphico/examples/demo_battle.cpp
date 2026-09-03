@@ -188,7 +188,7 @@ void testFleeAndInvalidIndices() {
 // atacante y el mismo objetivo, quita la mitad, lo normal o x1.5 segun
 // lo que salga. Es la diferencia entre el combate de antes (dano plano)
 // y el Nd6, y no habia ni una comprobacion que lo fijara -- por eso el
-// fallo de resolve_against_cd, que anulaba justo la rama de la pifia,
+// fallo del antiguo resolutor por CD, que anulaba la rama de la pifia,
 // no lo detecto nadie.
 void testElGradoDecideElDano() {
     struct Caso { int cara; int esperado; const char* etiqueta; };

@@ -8,17 +8,8 @@
 // de nada. Aqui las tiradas son GUIONIZADAS (ScriptedRng): se fija dado a
 // dado lo que sale y se comprueba el resultado exacto.
 //
-// Este fichero nacio cazando un fallo concreto: contra CD 0.0 -- que es
-// la dificultad de la defensa 10, o sea el enemigo base de Tier I --
-// resolve_against_cd devolvia SUCCESS con CERO exitos, porque comprobaba
-// "exitos >= cd" antes que la pifia y 0 >= 0 es cierto. Un jugador que
-// sacaba 1 en 1d6 acertaba igual. Ver el bloque "grados contra CD 0".
-//
-// Ed. 3 (bitacora 2.17, 17/08/2026): la CA y la CD se ELIMINAN del
-// reglamento. Toda resolucion es enfrentada (opposed_degree) y la pifia
-// pasa a ser «ningun 5 ni 6 y minimo dos 1es». Los tests de la capa CD
-// quedan como red de la capa en desuso hasta su retirada; las secciones
-// testPifiaEd3 y testEnfrentadaEd3 fijan el contrato nuevo.
+// Ed. 3 (bitacora 2.17): toda resolucion es enfrentada y la pifia
+// exige ningun 5/6 y al menos dos 1es. Estos tests fijan ese contrato.
 
 #include <cstdio>
 #include <vector>
@@ -150,69 +141,12 @@ void testTecho() {
 }
 
 // ---------------------------------------------------------------
-// 6. Defensa entera -> CD. Cada punto sobre 10 son +0.5, con suelo en 0
-//    y techo en CD_MAX (si no, una defensa alta seria inalcanzable).
-// ---------------------------------------------------------------
-void testDefensaACd() {
-    require(casi(DicePoolEngine::defense_to_cd(10), 0.0f));
-    require(casi(DicePoolEngine::defense_to_cd(11), 0.5f));
-    require(casi(DicePoolEngine::defense_to_cd(12), 1.0f));
-    require(casi(DicePoolEngine::defense_to_cd(15), 2.5f));
-    require(casi(DicePoolEngine::defense_to_cd(16), 3.0f));
-    require(casi(DicePoolEngine::defense_to_cd(99), DicePoolEngine::CD_MAX));  // techo
-    require(casi(DicePoolEngine::defense_to_cd(3), 0.0f));                     // suelo
-}
-
-// ---------------------------------------------------------------
-// 7. Tabla de grados. El caso que dio origen a este fichero.
-//
-// CD 0.0 no es un caso raro: es exactamente lo que sale de la defensa 10,
-// o sea un objetivo sin armadura y con DES 0 -- el enemigo tipico de
-// Tier I -- y tambien el def_int por defecto de SkillExecutor cuando no
-// hay objetivo. Si con 0 exitos ahi el grado sale SUCCESS, en la practica
-// TODO ataque acierta en el tramo inicial del juego y la tirada no
-// decide nada.
-// ---------------------------------------------------------------
-PoolResult pool(float exitos, bool critico = false) {
+// Pools numericos para comprobar la comparacion de exitos, sin pifia
+// ni todo-seises. Los grados reales se prueban debajo con caras de dados.
+PoolResult pool(float exitos) {
     PoolResult p;
     p.successes = exitos;
-    p.critical = critico;
-    p.botch = (exitos <= 0.0f);
     return p;
-}
-
-void testGrados() {
-    // --- CD 0.0 (defensa 10) ---
-    require(DicePoolEngine::resolve_against_cd(pool(0.0f), 0.0f).degree == Degree::BOTCH);
-    require(DicePoolEngine::resolve_against_cd(pool(0.5f), 0.0f).degree == Degree::SUCCESS);
-    require(DicePoolEngine::resolve_against_cd(pool(1.0f), 0.0f).degree == Degree::CRITICAL);
-
-    // --- CD 1.0 (defensa 12) ---
-    require(DicePoolEngine::resolve_against_cd(pool(0.0f), 1.0f).degree == Degree::BOTCH);
-    require(DicePoolEngine::resolve_against_cd(pool(0.5f), 1.0f).degree == Degree::PARTIAL);
-    require(DicePoolEngine::resolve_against_cd(pool(1.0f), 1.0f).degree == Degree::SUCCESS);
-    require(DicePoolEngine::resolve_against_cd(pool(1.5f), 1.0f).degree == Degree::SUCCESS);
-    require(DicePoolEngine::resolve_against_cd(pool(2.0f), 1.0f).degree == Degree::CRITICAL);
-
-    // Todos 6 es critico aunque no llegue a cd+1.
-    require(DicePoolEngine::resolve_against_cd(pool(1.0f, true), 3.0f).degree == Degree::CRITICAL);
-
-    // La CD se recorta al rango [0, CD_MAX] antes de comparar, y se
-    // devuelve recortada: quien lo lea (log, HUD) ve la dificultad real.
-    CheckOutcome alto = DicePoolEngine::resolve_against_cd(pool(3.0f), 99.0f);
-    require(casi(alto.cd, DicePoolEngine::CD_MAX));
-    require(alto.degree == Degree::SUCCESS);
-    CheckOutcome bajo = DicePoolEngine::resolve_against_cd(pool(0.5f), -7.0f);
-    require(casi(bajo.cd, 0.0f));
-
-    // El pool sin dados, extremo a extremo: pifia, no exito gratis.
-    ScriptedRng rng({6});
-    PoolResult vacio = DicePoolEngine::roll_pool(0, DiceMod::NORMAL, rng);
-    require(DicePoolEngine::resolve_against_cd(vacio, 0.0f).degree == Degree::BOTCH);
-
-    // Y por la puerta de la defensa entera, que es la que usa el combate.
-    require(DicePoolEngine::resolve_against_defense(pool(0.0f), 10).degree == Degree::BOTCH);
-    require(DicePoolEngine::resolve_against_defense(pool(1.0f), 12).degree == Degree::SUCCESS);
 }
 
 // ---------------------------------------------------------------
@@ -271,6 +205,15 @@ void testEnfrentadaEd3() {
     // Pifia del defensor -> CRITICAL del atacante (confirmado por Oriol,
     // bitacora 2.17).
     require(DicePoolEngine::opposed_degree(tira({2, 3}), tira({1, 1})) == Degree::CRITICAL);
+    // Las dos pifias: prevalece la propia.
+    require(DicePoolEngine::opposed_degree(tira({1, 1}), tira({1, 1})) == Degree::BOTCH);
+    // Dos pools sin exitos ni pifia empatan; cero dados tampoco inventa pifia.
+    require(DicePoolEngine::opposed_degree(tira({1}), tira({2})) == Degree::PARTIAL);
+    require(DicePoolEngine::opposed_degree(tira({}), tira({})) == Degree::PARTIAL);
+    require(DicePoolEngine::opposed_degree(tira({}), tira({5})) == Degree::BOTCH);
+    // Todo-seises no convierte una derrota o un empate en victoria.
+    require(DicePoolEngine::opposed_degree(tira({6}), tira({6})) == Degree::PARTIAL);
+    require(DicePoolEngine::opposed_degree(tira({6}), tira({6, 6})) == Degree::BOTCH);
 }
 
 // ---------------------------------------------------------------
@@ -300,21 +243,19 @@ int main() {
     testCritico();
     testSinDados();
     testTecho();
-    testDefensaACd();
-    testGrados();
     testEnfrentada();
     testPifiaEd3();
     testEnfrentadaEd3();
     testReproducible();
 
-    // Tabla de referencia, util al tocar las reglas: se ve de un vistazo
-    // que la fila de 0 exitos es pifia en TODAS las dificultades.
-    std::printf("grados por exitos y CD (filas = exitos, columnas = CD)\n");
-    std::printf("        CD 0.0    CD 0.5    CD 1.0    CD 2.0    CD 3.0\n");
+    // Tabla de enfrentadas sin pifias ni todo-seises: empate = PARTIAL,
+    // ganar = SUCCESS. Un margen grande por si solo no da CRITICAL.
+    std::printf("grados por exitos (filas = atacante, columnas = defensor)\n");
+    std::printf("       def 0.0    def 0.5    def 1.0    def 2.0    def 3.0\n");
     for (float e = 0.0f; e <= 3.0f; e += 0.5f) {
         std::printf("  %.1f ", e);
-        for (float cd : {0.0f, 0.5f, 1.0f, 2.0f, 3.0f}) {
-            std::printf("%9s ", nombre(DicePoolEngine::resolve_against_cd(pool(e), cd).degree));
+        for (float defender : {0.0f, 0.5f, 1.0f, 2.0f, 3.0f}) {
+            std::printf("%9s ", nombre(DicePoolEngine::opposed_degree(pool(e), pool(defender))));
         }
         std::printf("\n");
     }

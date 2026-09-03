@@ -174,7 +174,7 @@ add_dependencies(demo_precuela_boundington copiar_assets)
 # un beat con effect "skillCheck" empaqueta la tirada y la resolucion Nd6
 # enciende la flag del grado (BOTCH/PARTIAL/SUCCESS/CRITICAL). GL-free.
 add_executable(demo_narrativa_nd6 examples/demo_narrativa_nd6.cpp)
-target_link_libraries(demo_narrativa_nd6 PRIVATE motor_rpg)
+target_link_libraries(demo_narrativa_nd6 PRIVATE motor_level motor_map)
 set_target_properties(demo_narrativa_nd6 PROPERTIES CXX_STANDARD 17)
 add_dependencies(demo_narrativa_nd6 copiar_assets)
 
@@ -189,7 +189,7 @@ add_dependencies(demo_temporizadores copiar_assets)
 # Reproduce boundington_prologo.json forzando SUCCESS en las dos tiradas
 # Nd6 y comprueba el cierre y la cobertura de beats. GL-free.
 add_executable(demo_prologo examples/demo_prologo.cpp)
-target_link_libraries(demo_prologo PRIVATE motor_rpg)
+target_link_libraries(demo_prologo PRIVATE motor_level motor_map)
 set_target_properties(demo_prologo PROPERTIES CXX_STANDARD 17)
 add_dependencies(demo_prologo copiar_assets)
 
@@ -561,7 +561,7 @@ add_dependencies(demo_este_norte copiar_assets)
 # campana de Boundington, ano 2000 b.f. (EV-2000-CRUZADA01E). Cuatro rutas
 # (ojos abiertos / medio / ciego / criticos) y cobertura de beats. GL-free.
 add_executable(demo_senal_ceniza examples/demo_senal_ceniza.cpp)
-target_link_libraries(demo_senal_ceniza PRIVATE motor_rpg)
+target_link_libraries(demo_senal_ceniza PRIVATE motor_level motor_map)
 set_target_properties(demo_senal_ceniza PROPERTIES CXX_STANDARD 17)
 add_dependencies(demo_senal_ceniza copiar_assets)
 

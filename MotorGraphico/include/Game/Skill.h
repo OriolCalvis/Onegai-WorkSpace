@@ -125,7 +125,7 @@ struct SkillApplyResult {
 
 // Ataque básico mediante Nd6 ONEgAI (Gracia Fundamental):
 //   - pool = 1 dado base + stat(DES) del caster (§1.1 GDD)
-//   - CD = DicePoolEngine::defense_to_cd(target.defense_value(ARMOR_CLASS))
+//   - rival = pool de defensa del objetivo (DES o CON, Ed. 3)
 //   - Magnitudes: BOTCH=0, PARTIAL=5, SUCCESS=10, CRITICAL=15
 //     (SUCCESS coincide con el kBasicAttackPower histórico del MVP).
 SkillApplyResult ApplyBasicAttackNd6(ICombatant& caster, ICombatant& target,
@@ -141,13 +141,9 @@ SkillApplyResult ApplyBasicAttackNd6(ICombatant& caster, ICombatant& target,
 //   • casting_stat:
 //       - Damage → DES (atacar, mismo criterio basic attack)
 //       - Heal   → INT  (curar = conocimiento del sanador; es GDD §1.1)
-//   • save_attribute (CD):
-//       - Damage tipo "golpe cuerpo a cuerpo" → ARMOR_CLASS (mismo
-//         criterio que basic attack). Si quisieramos distinguir hechizos
-//         de dano, la Skill legacy no lo expresa; usamos el caso mas
-//         comun.
-//       - Heal → no hay tirada de salvacion (la curacion NO falla por
-//         "defensa" del aliado). Guardamos el cd = 0.0 y N = stat INT.
+//   • oposicion:
+//       - Damage usa la defensa fisica (DES o CON) como basic attack.
+//       - Heal se resuelve sin rival: la defensa del aliado no lo bloquea.
 //   • pool de dados: N = 1 + caster.stat(casting_stat)
 //   • magnitude_by_degree:
 //       BOTCH    = 0

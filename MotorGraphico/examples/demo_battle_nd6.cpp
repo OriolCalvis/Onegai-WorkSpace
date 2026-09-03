@@ -8,7 +8,7 @@
 //   └─> executeViaSkillExecutor()
 //       └─> ExecutionContext OVERRIDES (Model/Vista OK)
 //           └─> SkillExecutor::execute()
-//               └─> DicePoolEngine::roll_pool() / resolve_against_cd()
+//               └─> DicePoolEngine::roll_pool() / opposed_degree()
 //
 // Escenario: 50 combates independientes.
 //   - Player:  PV=40, DES=3 → N pool = 1+3 = 4;  CA = 10+3+0 = 13.

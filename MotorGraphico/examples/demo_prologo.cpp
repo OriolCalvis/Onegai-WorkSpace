@@ -18,13 +18,14 @@
 
 #include "Check.h"
 #include "ScriptedRng.h"
+#include "NarrativeCheckSession.h"
 #include "RPG/Catalogs/RpgCatalogs.h"
 #include "RPG/DicePoolEngine.h"
 #include "RPG/Definitions/SkillDefinition.h"
 #include "RPG/NarrativeEngine.h"
 
 using RPG::AdventureScript;
-using RPG::Catalogs::SkillCatalog;
+using Nd6SkillCatalog = RPG::Catalogs::SkillCatalog;
 using RPG::NarrativeEngine;
 using RPG::NarrativeResult;
 using RPG::NarrativeState;
@@ -49,28 +50,14 @@ bool esCheckDe(const RPG::NarrativeResult& r, const char* skillId) {
 // real sale de ICombatant::stat; aqui lo fijamos para poder guionizar el
 // resultado via ScriptedRng). Devuelve cuantos checks resolvio.
 //
-// OJO con el RNG: se hace rewind() entre checks para que cada tirada arran
-//que desde el mismo guion. Si no, un pool largo (stat 3 = 3 dados) dejaria
-// el RNG avanzado y la siguiente tirada leeria valores distintos a los
-// previstos. En una partida real esto no importa (cada tirada es azar);
-// aqui si, porque queremos forzar un grado concreto.
-int resolverChecks(const SkillCatalog& cat, int valorStat,
+// Cada check reinicia el guion: primero dados del jugador, luego del rival.
+int resolverChecks(const Nd6SkillCatalog& cat, int valorStat,
                    const RPG::NarrativeResult& r, ScriptedRng& rng,
                    NarrativeState& state) {
     int n = 0;
     for (const auto& c : r.skillChecks) {
-        const SkillDefinition* def = cat.find(c.skillId);
-        require(def != nullptr);
         rng.rewind();
-        const RPG::PoolResult pool =
-            RPG::DicePoolEngine::roll_pool(valorStat, RPG::DiceMod::NORMAL, rng);
-        const RPG::CheckOutcome out = RPG::DicePoolEngine::resolve_against_cd(pool, c.cd);
-        switch (out.degree) {
-            case RPG::Degree::BOTCH:    state.setFlag(c.flagBotch);    break;
-            case RPG::Degree::PARTIAL:  state.setFlag(c.flagPartial);  break;
-            case RPG::Degree::SUCCESS:  state.setFlag(c.flagSuccess);  break;
-            case RPG::Degree::CRITICAL: state.setFlag(c.flagCritical); break;
-        }
+        demo::resolveNarrativeCheck(cat, valorStat, c, rng, state);
         ++n;
     }
     return n;
@@ -98,7 +85,7 @@ int main() {
 
     // Catalogo Nd6: necesita las skills utilitarias (percepcion,
     // conocimiento_arcano) que anyade tools/gen_skills_utilitarias.py.
-    SkillCatalog cat;
+    Nd6SkillCatalog cat;
     auto rc = cat.loadFromFile("assets/catalogs/skills.json");
     require(rc.isOk());
     require(cat.find("percepcion") != nullptr);
@@ -110,16 +97,10 @@ int main() {
 
     std::set<std::string> vistos;  // beats que dispararon (para cobertura)
 
-    // RNG guionizado para forzar SUCCESS en las dos tiradas. Con stat 3 y
-    // tirada {6,1,1} = 1.0 exitos: SUCCESS contra CD 1.0 (>=1.0, <cd+1) y
-    // tambien SUCCESS contra CD 1.5 seria PARTIAL (0.5<1.0)... asi que
-    // para que Conocimiento Arcano (CD 1.5) salga SUCCESS hace falta
-    // >=1.5 exitos: {6,5,1} = 1.5 exitos. Como resolverChecks hace rewind
-    // por check, la tirada se reinicia para cada skill, asi que el mismo
-    // guion sirve para las dos. {6,5,1} = 1.5 exitos: SUCCESS contra CD
-    // 1.0 (1.5>=1.0 y <2.0) Y SUCCESS contra CD 1.5 (1.5>=1.5 y <2.5).
-    // No es CRITICAL porque no todos los dados son 6.
-    ScriptedRng rng({6, 5, 1});
+    // Jugador {6,5,1} = 1.5 exitos; rival {5,2} o {5,2,2} = 0.5.
+    // Los datos legacy del prologo se convierten en pools de 2 y 3 dados
+    // por GameSession. Ganar sin todo-seises ni pifia rival da SUCCESS.
+    ScriptedRng rng({6, 5, 1, 5, 2, 2});
 
     // Beat de entrada: el "enter" en el nivel del vacio. Lo contamos en
     // "vistos" aunque se dispare por enterLevel y no por tick.
@@ -162,6 +143,7 @@ int main() {
     // --- Comprobaciones finales ---
     std::printf("\n[comprobaciones]\n");
 
+    require(rng.consumed() == 11);  // (3+2) + (3+3), dos checks enfrentados
     require(s.hasFlag("bnd_prologo_terminado"));
     std::printf("    cierre bnd_prologo_terminado encendido: OK\n");
 

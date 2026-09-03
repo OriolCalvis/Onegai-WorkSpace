@@ -28,7 +28,7 @@ constexpr int DEFENSE_COUNT = 4;
 
 struct DefenseBlock {
     // Para cada Defense (0..3), el valor ENTERO final (10+stat+eq).
-    // Se usa con DicePoolEngine::defense_to_cd() para pasar a float Cd 0..3.
+    // Datos legacy para consulta/HUD; Ed. 3 usa pools enfrentados de stats.
     std::array<int, DEFENSE_COUNT> values = {10, 10, 10, 8};
 
     int get(Defense d) const { return values[static_cast<int>(d)]; }

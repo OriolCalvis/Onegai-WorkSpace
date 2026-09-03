@@ -17,7 +17,7 @@
 // verde con las reglas bien que con las reglas mal, y se rompe en cuanto
 // alguien cambia CUANTOS dados se tiran aunque el resultado siga siendo
 // correcto -- que es exactamente lo que ocurrio al arreglar el orden de
-// las ramas de resolve_against_cd.
+// las ramas del antiguo resolutor por dificultad numerica.
 //
 // Con esto, un test dice lo que quiere decir:
 //

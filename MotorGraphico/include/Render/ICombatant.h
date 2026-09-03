@@ -33,8 +33,8 @@ public:
     // inicial del GDD (0 pura; equipo/raza añaden).
     virtual int stat(RPG::Stat s) const = 0;
 
-    // Bloque completo de defensas enteras (10+stat+eq). Se convierte a Cd
-    // float con DicePoolEngine::defense_to_cd() en los resolutores.
+    // Bloque de defensas legacy para datos y HUD. Ed. 3 resuelve ataques
+    // enfrentando pools de stats, sin convertir estos valores en dificultad.
     virtual RPG::DefenseBlock defenses() const = 0;
 
     // Bonus de iniciativa (se añade a la pool Nd6 opcional de iniciativa).

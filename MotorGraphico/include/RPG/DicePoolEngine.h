@@ -3,9 +3,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "RPG/Defense.h"
 #include "RPG/RandomEngine.h"
-#include "RPG/Stat.h"
 
 namespace RPG {
 
@@ -39,13 +37,6 @@ struct PoolResult {
     bool critical = false;    // todos los dados == 6
     bool botch = false;       // Ed. 3: ningún 5/6 y mínimo dos 1es
     std::vector<int> rolls;   // valores reales, para el log y el HUD
-};
-
-struct CheckOutcome {
-    Degree degree = Degree::BOTCH;
-    float successes = 0.0f;
-    float cd = 0.0f;          // dificultad contra la que se comparó
-    bool critical = false;
 };
 
 struct OpposedOutcome {
@@ -122,49 +113,6 @@ public:
         return Degree::SUCCESS;
     }
 
-    // EN DESUSO desde Ed. 3 (bitácora 2.17): la CA y la CD se eliminan y
-    // toda resolución pasa a enfrentada (opposed_degree). Se conserva
-    // hasta migrar SkillExecutor/BattleStateOnegai y el skillCheck
-    // narrativo; después, retirar (un paso propio, ver ARCHITECTURE.md).
-    //
-    // Tirada contra una CD numérica (0.0 a 3.0).
-    //
-    //     éxitos == 0                  -> BOTCH   (PRIMERO, siempre)
-    //     todos 6, o éxitos >= cd + 1  -> CRITICAL
-    //     éxitos >= cd                 -> SUCCESS
-    //     éxitos > 0                   -> PARTIAL  (algo se consigue)
-    //
-    // El BOTCH se comprueba antes que la comparación con la CD a
-    // propósito: cd 0.0 es la defensa 10 (el enemigo típico de tier I),
-    // y si el 0 >= 0 se evaluara antes, una tirada sin éxitos saldría
-    // SUCCESS y TODO ataque acertaría en el tramo inicial del juego
-    // (incidente real, ARCHITECTURE.md §3.7; el test que lo fija está en
-    // demo_dice_engine, testGrados).
-    static CheckOutcome resolve_against_cd(const PoolResult& pool, float cd) {
-        if (cd < 0.0f) cd = 0.0f;
-        if (cd > CD_MAX) cd = CD_MAX;
-        CheckOutcome o;
-        o.successes = pool.successes;
-        o.cd = cd;
-        o.critical = pool.critical;
-        if (pool.successes <= 0.0f) {
-            o.degree = Degree::BOTCH;
-        } else if (pool.critical || pool.successes >= cd + 1.0f) {
-            o.degree = Degree::CRITICAL;
-        } else if (pool.successes >= cd) {
-            o.degree = Degree::SUCCESS;
-        } else {
-            o.degree = Degree::PARTIAL;
-        }
-        return o;
-    }
-
-    // Tirada contra una defensa entera (DefenseBlock::get). Traduce con
-    // defense_to_cd y delega en resolve_against_cd.
-    static CheckOutcome resolve_against_defense(const PoolResult& pool, int defense_value) {
-        return resolve_against_cd(pool, defense_to_cd(defense_value));
-    }
-
     // Tirada enfrentada. El empate se marca aparte (tie) en vez de
     // decidirlo aquí: en el GDD suele favorecer al defensor, pero es la
     // regla concreta la que debe decidirlo, no el motor de dados.
@@ -178,19 +126,6 @@ public:
         else { o.attacker_wins = false; o.tie = false; }
         return o;
     }
-
-    // Defensa entera -> CD. Cada punto por encima de 10 son +0.5:
-    // 10 -> 0.0, 12 -> 1.0, 15 -> 2.5, 16+ -> 3.0 (techo).
-    static float defense_to_cd(int defense_value) {
-        float cd = (defense_value - 10) * 0.5f;
-        if (cd < 0.0f) cd = 0.0f;
-        if (cd > CD_MAX) cd = CD_MAX;
-        return cd;
-    }
-
-    // Techo de CD: sin él, una defensa muy alta daría una dificultad
-    // inalcanzable y el jugador no podría acertar jamás.
-    static constexpr float CD_MAX = 3.0f;
 };
 
 } // namespace RPG

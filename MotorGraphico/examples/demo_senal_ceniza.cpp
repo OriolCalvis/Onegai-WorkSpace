@@ -13,8 +13,8 @@
 // abiertos. Este demo juega las tres rutas mas la de criticos, y comprueba
 // que los tres cierres existen y son excluyentes.
 //
-// Las tiradas Nd6 se fuerzan con ScriptedRng (rewind por tirada, patron de
-// demo_prologo). El valor de stat por ruta simula el heroe que la haria:
+// Cada guion contiene los dados del jugador y del rival, en ese orden.
+// GameSession resuelve las tiradas. El stat por ruta simula el heroe:
 // la ruta de criticos usa pools de 4 dados (un heroe carismatico).
 //
 // GL-free: corre en CI.
@@ -25,13 +25,14 @@
 
 #include "Check.h"
 #include "ScriptedRng.h"
+#include "NarrativeCheckSession.h"
 #include "RPG/Catalogs/RpgCatalogs.h"
 #include "RPG/DicePoolEngine.h"
 #include "RPG/Definitions/SkillDefinition.h"
 #include "RPG/NarrativeEngine.h"
 
 using RPG::AdventureScript;
-using RPG::Catalogs::SkillCatalog;
+using Nd6SkillCatalog = RPG::Catalogs::SkillCatalog;
 using RPG::NarrativeEngine;
 using RPG::NarrativeResult;
 using RPG::NarrativeState;
@@ -48,31 +49,20 @@ bool suelta(const RPG::NarrativeResult& r) {
     return true;
 }
 
-// Resuelve los skillCheck de un result con rewind por tirada (patron
-// demo_prologo). valorStat = tamano del pool del heroe de esta ruta.
-int resolver(const SkillCatalog& cat, int valorStat, const NarrativeResult& r,
+// Resuelve los skillCheck mediante la sesion real, sin rewind: cada check
+// consume sus dos pools en orden. valorStat = dados del heroe de esta ruta.
+int resolver(const Nd6SkillCatalog& cat, int valorStat, const NarrativeResult& r,
              ScriptedRng& rng, NarrativeState& s) {
     int n = 0;
     for (const auto& c : r.skillChecks) {
-        const SkillDefinition* def = cat.find(c.skillId);
-        require(def != nullptr);
-        // SIN rewind: cada tirada consume sus dados del guion en orden,
-        // asi una ruta puede exigir resultados DISTINTOS por tirada.
-        auto pool = RPG::DicePoolEngine::roll_pool(valorStat, RPG::DiceMod::NORMAL, rng);
-        auto out = RPG::DicePoolEngine::resolve_against_cd(pool, c.cd);
-        switch (out.degree) {
-            case RPG::Degree::BOTCH:    s.setFlag(c.flagBotch);    break;
-            case RPG::Degree::PARTIAL:  s.setFlag(c.flagPartial);  break;
-            case RPG::Degree::SUCCESS:  s.setFlag(c.flagSuccess);  break;
-            case RPG::Degree::CRITICAL: s.setFlag(c.flagCritical); break;
-        }
+        demo::resolveNarrativeCheck(cat, valorStat, c, rng, s);
         ++n;
     }
     return n;
 }
 
 // Un paso de "talk con posible tirada + tick del resultado".
-void paso(NarrativeEngine& e, NarrativeState& s, const SkillCatalog& cat,
+void paso(NarrativeEngine& e, NarrativeState& s, const Nd6SkillCatalog& cat,
           const char* npc, ScriptedRng& rng, int stat,
           std::set<std::string>* vistos) {
     NarrativeResult r = e.talkTo(npc, s);
@@ -106,7 +96,7 @@ int main() {
     std::printf("[carga] %s: %zu beats, %zu objetivos\n\n",
                 guion.id.c_str(), guion.beats.size(), guion.objectives.size());
 
-    SkillCatalog cat;
+    Nd6SkillCatalog cat;
     require(cat.loadFromFile("assets/catalogs/skills.json").isOk());
 
     std::set<std::string> vistos;
@@ -119,9 +109,14 @@ int main() {
     {
         NarrativeEngine e; e.setAdventure(&guion);
         NarrativeState s;
-        // arcano{6,5} perc{6,5,1} teatro{6,5} persu{6,5} capit{6,6,5}
-// (capit con 3 dados: {6,6} serian todo-seises = critico automatico)
-        ScriptedRng rng({6, 5, 6, 5, 1, 6, 5, 6, 5, 6, 6, 5});
+        // SUCCESS en los cinco checks: 1.5 exitos del heroe vs 0.5 del rival.
+        ScriptedRng rng({
+            6, 5,       5, 2, 2,     // arcano: 2 vs 3 dados
+            6, 5, 1,    5, 2,        // percepcion: 3 vs 2
+            6, 5,       5, 2,        // teatro: 2 vs 2
+            6, 5,       5, 2, 2,     // consejo: 2 vs 3
+            6, 5, 1,    5, 2, 2, 2   // capitan: 3 vs 4
+        });
         entrar(e, s, "assets/levels/ciudad_en_guskedor.json", &vistos);
         paso(e, s, cat, "en_enviada_neblinia", rng, 3, &vistos);
         paso(e, s, cat, "en_anciana_consejo", rng, 2, &vistos);
@@ -141,6 +136,7 @@ int main() {
         require(s.hasFlag("en_sc_consejo_sabe"));
         require(s.hasFlag("en_sc_choubar_aviso"));
         require(!s.hasFlag("en_sc_consejo_sella"));
+        require(rng.consumed() == 26);
         std::printf("  -> cierre OJOS ABIERTOS: OK\n\n");
     }
 
@@ -151,8 +147,13 @@ int main() {
     {
         NarrativeEngine e; e.setAdventure(&guion);
         NarrativeState s;
-        // arcano{5,5}=PARCIAL perc{6,5,1} teatro{1,1} persu{5,5}
-        ScriptedRng rng({5, 5, 6, 5, 1, 1, 1, 5, 5});
+        // Empate en arcano y consejo; exito en percepcion; pifia en teatro.
+        ScriptedRng rng({
+            5, 5,       5, 5, 2,     // 1 vs 1: PARTIAL
+            6, 5, 1,    5, 2,        // 1.5 vs 0.5: SUCCESS
+            1, 1,       5, 2,        // pifia propia: BOTCH
+            5, 5,       5, 5, 2      // 1 vs 1: PARTIAL
+        });
         entrar(e, s, "assets/levels/ciudad_en_guskedor.json", &vistos);
         paso(e, s, cat, "en_enviada_neblinia", rng, 3, &vistos);
         paso(e, s, cat, "en_anciana_consejo", rng, 2, &vistos);
@@ -170,6 +171,7 @@ int main() {
         require(s.hasFlag("en_sc_cerrado"));
         require(s.hasFlag("en_sc_consejo_duda"));
         require(!s.hasFlag("en_sc_consejo_sabe"));
+        require(rng.consumed() == 19);
         std::printf("  -> cierre MEDIO DESPIERTO: OK\n\n");
     }
 
@@ -181,8 +183,10 @@ int main() {
     {
         NarrativeEngine e; e.setAdventure(&guion);
         NarrativeState s;
-        // capit{1,1}=BOTCH perc{5,1,1}=PARCIAL
-        ScriptedRng rng({5, 1, 1, 1, 1});
+        ScriptedRng rng({
+            5, 1, 1,    5, 2,        // percepcion: empate a 0.5
+            1, 1,       5, 2, 2, 2   // capitan: pifia propia
+        });
         entrar(e, s, "assets/levels/ciudad_en_guskedor.json", &vistos);
         paso(e, s, cat, "en_enviada_neblinia", rng, 3, &vistos);
         paso(e, s, cat, "en_enviada_neblinia", rng, 3, &vistos);   // repite
@@ -201,6 +205,7 @@ int main() {
         require(!s.hasFlag("en_sc_consejo_sabe"));
         require(!s.hasFlag("en_sc_consejo_duda"));
         require(!s.hasFlag("en_sc_choubar_aviso"));
+        require(rng.consumed() == 11);
         std::printf("  -> cierre CIEGO: OK\n\n");
     }
 
@@ -212,9 +217,14 @@ int main() {
     {
         NarrativeEngine e; e.setAdventure(&guion);
         NarrativeState s;
-        // 4 tiradas de heroe de 4 dados, todas criticas salvo el capit
-        ScriptedRng rng({6, 6, 5, 1, 6, 6, 5, 1, 6, 6, 5, 1, 6, 6, 5, 1,
-                      6, 6, 5, 1});
+        // Todo-seises del heroe supera al rival en los cinco checks.
+        ScriptedRng rng({
+            6, 6, 6, 6,    5, 2, 2,
+            6, 6, 6, 6,    5, 2,
+            6, 6, 6, 6,    5, 2,
+            6, 6, 6, 6,    5, 2, 2,
+            6, 6, 6, 6,    5, 2, 2, 2
+        });
         entrar(e, s, "assets/levels/ciudad_en_guskedor.json", &vistos);
         paso(e, s, cat, "en_enviada_neblinia", rng, 4, &vistos);
         paso(e, s, cat, "en_anciana_consejo", rng, 4, &vistos);
@@ -236,6 +246,7 @@ int main() {
         require(s.hasFlag("en_sc_teatro_obra"));
         require(s.hasFlag("en_sc_choubar_aviso"));
         require(s.hasFlag("en_sc_cerrado"));
+        require(rng.consumed() == 34);
         std::printf("  -> cierre OJOS ABIERTOS + SELLO: OK\n\n");
     }
 

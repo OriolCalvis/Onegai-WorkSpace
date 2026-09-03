@@ -12,19 +12,19 @@ using namespace RPG;
 int main() {
     const int TRIALS = 20000;
     Xoroshiro128p rng;
-    printf("DicePoolEngine Fase 0 —— %d tirades per pool, seed=%llu\n\n", TRIALS, (unsigned long long)rng.seed());
+    printf("DicePoolEngine Ed. 3 —— %d tirades per pool, seed=%llu\n\n", TRIALS, (unsigned long long)rng.seed());
 
     struct Case {
-        const char* name; int N; DiceMod mod; float cd;
+        const char* name; int N; DiceMod mod; int rivalDice;
     };
     const Case CASES[] = {
-        {"N=1 NORMAL contra CD 0.0", 1, DiceMod::NORMAL, 0.0f},
-        {"N=2 NORMAL contra CD 0.5 (CA 11)", 2, DiceMod::NORMAL, 0.5f},
-        {"N=3 NORMAL contra CD 1.0 (CA 12)", 3, DiceMod::NORMAL, 1.0f},
-        {"N=4 NORMAL contra CD 2.0 (CA 14, molt difícil)", 4, DiceMod::NORMAL, 2.0f},
-        {"N=4 ADVANTAGE contra CD 2.0 (CA 14)", 4, DiceMod::ADVANTAGE, 2.0f},
-        {"N=4 DISADV contra CD 2.0 (fatiga + equip incompatible)", 4, DiceMod::DISADVANTAGE, 2.0f},
-        {"N=0 (clamp a 1d6 DISADV) contra CD 0.0", 0, DiceMod::NORMAL, 0.0f}
+        {"N=1 NORMAL vs rival 1d6", 1, DiceMod::NORMAL, 1},
+        {"N=2 NORMAL vs rival 1d6", 2, DiceMod::NORMAL, 1},
+        {"N=3 NORMAL vs rival 2d6", 3, DiceMod::NORMAL, 2},
+        {"N=4 NORMAL vs rival 4d6", 4, DiceMod::NORMAL, 4},
+        {"N=4 ADVANTAGE vs rival 4d6", 4, DiceMod::ADVANTAGE, 4},
+        {"N=4 DISADV vs rival 4d6", 4, DiceMod::DISADVANTAGE, 4},
+        {"N=0 (pool vacio) vs rival 1d6", 0, DiceMod::NORMAL, 1}
     };
     const int NCASES = sizeof(CASES) / sizeof(CASES[0]);
 
@@ -35,8 +35,8 @@ int main() {
 
         for (int t = 0; t < TRIALS; ++t) {
             PoolResult r = DicePoolEngine::roll_pool(CASES[c].N, CASES[c].mod, rng);
-            CheckOutcome out = DicePoolEngine::resolve_against_cd(r, CASES[c].cd);
-            counts[static_cast<int>(out.degree)]++;
+            PoolResult rival = DicePoolEngine::roll_pool(CASES[c].rivalDice, DiceMod::NORMAL, rng);
+            counts[static_cast<int>(DicePoolEngine::opposed_degree(r, rival))]++;
             if (r.critical) crits_all_sixes++;
             avg_successes += r.successes;
         }
@@ -54,21 +54,16 @@ int main() {
     // — Test ExecutionContext PASSIVOS (Fase 1) —
     printf("=== ExecutionContext Enhancements test (Fase 1) ===\n");
     const int TR2 = 15000;
-    const Stat stat_of_test = Stat::DES;
-    ClassDefinition cls;
-    cls.baseHealth = 14; cls.id = "guerrer";
 
     CharacterSheet caster{};
     caster.classId = "guerrer";
     caster.raceId = "huma";
     caster.tier = 1;
     caster.equipBonuses[static_cast<int>(Stat::DES)] = 3; // DES = 3 (0 base + 3 equip)
-    caster.equipArmorBonus = 3; // CA física 10+3+3 = 16
 
     CharacterSheet target{};
     target.classId = "llop";
     target.equipBonuses[static_cast<int>(Stat::DES)] = 2; // DES=2
-    target.equipArmorBonus = 0;
 
     SkillDefinition basic_attack;
     basic_attack.id = "atac_basic";
@@ -98,12 +93,12 @@ int main() {
                100.0*counts[2]/TR2, 100.0*counts[3]/TR2, (double)mag_avg/TR2);
     };
 
-    run_ctx("Atac bàsic DES 3 vs CA 12 (target) [estàndard]", ContextBonusFlag::NONE);
+    run_ctx("Atac bàsic DES 3 vs DES 2 (target) [estàndard]", ContextBonusFlag::NONE);
     run_ctx("...+ FLANKED (+1)", ContextBonusFlag::FLANKED_ENEMY);
     run_ctx("...+ FLANKED + HIGH_GROUND (+2)", ContextBonusFlag::FLANKED_ENEMY | ContextBonusFlag::HIGH_GROUND);
     run_ctx("...+ FATIGUED (DISADV)", ContextBonusFlag::FATIGUED);
     run_ctx("...+ INSPIRED (+1 + PARTIAL→SUCCESS)", ContextBonusFlag::INSPIRED);
 
-    printf("\nNd6 + Enhance Layer: COHÉRENT ✔\n");
+    printf("\nNd6 + Enhance Layer: simulació acabada\n");
     return 0;
 }
