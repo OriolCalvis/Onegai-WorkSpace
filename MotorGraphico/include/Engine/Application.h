@@ -13,6 +13,8 @@
 #include "Core/Resources/TextureManager.h"
 #include "Render/BitmapFont.h"
 #include "Game/GameSession.h"
+#include "Game/TitleScreen.h"
+#include "Project/ProjectIndex.h"
 #include "Render/HudManager.h"
 #include "Render/HudMinimap.h"
 #include "Render/HudTextWidgets.h"
@@ -61,7 +63,8 @@ public:
                       const std::string& levelPath = "assets/levels/test_level.json",
                       const std::string& catalogPath = "assets/objects/test_objects.json",
                       const std::string& initialAdventurePath = "",
-                      const std::vector<std::string>& extraCatalogPaths = {});
+                      const std::vector<std::string>& extraCatalogPaths = {},
+                      bool startAtTitle = false);
 
     // Bucle principal hasta que se cierre la ventana o se pulse ESC.
     // maxFrames >= 0 corre exactamente ese numero de frames y sale (modo
@@ -123,6 +126,14 @@ private:
     // Un turno del cartel de negocio: comprar, o subir/bajar el
     // alquiler segun la linea elegida.
     void confirmBusinessCommand();
+
+    // --- G-08 (rodaja inicial): pantalla de titulo ---
+    //
+    // Confirma la entrada seleccionada del titulo: jugar la campana
+    // (dejar el titulo y entrar en lo que init() ya dejó montado), abrir un
+    // proyecto del indice (sus catalogos, su narrativa si la entrada es
+    // aventura, y loadLevel sobre su entrada) o salir del proceso.
+    void confirmTitleSelection();
 
     // Un turno completo de combate: resuelve la accion elegida en el
     // menu, deja actuar a los enemigos y sincroniza el desenlace con el
@@ -314,6 +325,19 @@ private:
     // Secretos no se dibujan por definición — 2.18). Una sola: si hubiera
     // varios timers visibles a la vez, muestra el primero activo.
     std::unique_ptr<HudBar> m_timerBar;
+
+    // --- G-08 (rodaja inicial): pantalla de titulo ---
+    // m_atTitle congela el mundo (update no avanza) y cambia lo que
+    // processInput/refreshHud atienden. El estado de la pantalla vive en
+    // TitleScreen (GL-free); aqui solo los widgets que la pintan y el
+    // indice de proyectos con las entradas ya resueltas.
+    bool m_atTitle = false;
+    std::unique_ptr<Game::TitleScreen> m_title;
+    Editor::ProjectIndex m_projectIndex;
+    std::unique_ptr<HudPanel> m_titlePanel;
+    std::unique_ptr<HudText> m_titleText;
+    std::unique_ptr<HudCommandMenu> m_titleMenu;
+    std::unique_ptr<HudText> m_titleHint;
 
     HudManager m_hud;
 

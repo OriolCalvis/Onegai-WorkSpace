@@ -494,6 +494,7 @@ if (EXISTS ${GLAD_DIR}/src/glad.c AND EXISTS ${STB_DIR}/stb_image.h)
         src/Render/Player.cpp
         src/Render/Enemy.cpp
         src/Game/EnemyBrain.cpp
+        src/Game/TitleScreen.cpp
         src/Render/IsometricRenderer.cpp
         src/Render/Framebuffer.cpp
         src/Render/FogOfWar.cpp
@@ -862,3 +863,6 @@ if(BUILD_TESTING)
         message(STATUS "Suite GL-free: ${_motor_gl_free_count} objetivos")
     endif()
 endif()
+
+# G-08 (rodaja inicial) — Pantalla de título: lista de proyectos, navegación y acciones.
+include(cmake/TitleScreenTests.cmake)

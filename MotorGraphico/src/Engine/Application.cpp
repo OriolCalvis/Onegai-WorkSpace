@@ -213,7 +213,8 @@ Application::~Application() { shutdown(); }
 Result<bool> Application::init(int width, int height, const std::string& title,
                                const std::string& levelPath, const std::string& catalogPath,
                                const std::string& initialAdventurePath,
-                               const std::vector<std::string>& extraCatalogPaths) {
+                               const std::vector<std::string>& extraCatalogPaths,
+                               bool startAtTitle) {
     m_width = width;
     m_height = height;
 
@@ -692,6 +693,82 @@ Result<bool> Application::init(int width, int height, const std::string& title,
     m_hud.addElement(m_moralBar.get());
 
     trace("init: HUD compuesto OK");
+
+    // --- G-08 (rodaja inicial): pantalla de titulo ---
+    // Con startAtTitle el juego abre en la lista de proyectos y la
+    // campaña, en vez de caer directo en el nivel. El estado vive en
+    // Game::TitleScreen (GL-free, convención ProjectHub); aquí solo se
+    // construyen los widgets. Si el índice de proyectos no está
+    // disponible (assets a medias), se arranca directo como antes: el
+    // menú es una comodidad, no una dependencia. El nivel inicial queda
+    // cargado detrás del título (se ve el interior del prólogo).
+    if (startAtTitle) {
+        auto indexResult = Editor::ProjectIndex::scan("assets");
+        if (indexResult.isOk()) {
+            m_projectIndex = indexResult.value();
+            m_title = std::make_unique<Game::TitleScreen>(
+                Game::TitleScreen::fromProjects(m_projectIndex.projects()));
+
+            const int glyphW = m_font->glyphWidth();
+            const int glyphH = m_font->glyphHeight();
+
+            const std::string titleText = "MOTOR GRÁFICO · ONEGAI";
+            HudTransform titleTextTransform;
+            titleTextTransform.anchor = HudAnchor::TopCenter;
+            titleTextTransform.offset = {0.0f, 96.0f};
+            titleTextTransform.size = BitmapFont::measureText(titleText, glyphW, glyphH);
+            m_titleText = std::make_unique<HudText>(titleTextTransform, m_font.get());
+            m_titleText->setText(titleText);
+            m_titleText->setColor(Vector4{1.0f, 0.9f, 0.5f, 1.0f});
+
+            const std::vector<std::string> titleOptions = m_title->labels();
+            const Vector2 titleMenuSize = HudCommandMenu::contentSize(*m_font, titleOptions);
+            HudTransform titleMenuTransform;
+            titleMenuTransform.anchor = HudAnchor::Center;
+            titleMenuTransform.offset = {0.0f, 40.0f};
+            titleMenuTransform.size = titleMenuSize;
+            m_titleMenu =
+                std::make_unique<HudCommandMenu>(titleMenuTransform, m_font.get(), titleOptions);
+
+            HudTransform titlePanelTransform;
+            titlePanelTransform.anchor = HudAnchor::Center;
+            titlePanelTransform.offset = {0.0f, 40.0f};
+            titlePanelTransform.size = {titleMenuSize.x + 2.0f * kMenuPadding,
+                                        titleMenuSize.y + 2.0f * kMenuPadding};
+            m_titlePanel = std::make_unique<HudPanel>(titlePanelTransform, m_whiteTexture.get(),
+                                                      kPanelColor);
+            m_titlePanel->setBorder(kBorderColor, 2.0f);
+
+            std::string hintText = "W/S ELEGIR · ENTER ABRIR · ESC SALIR";
+            if (!m_title->skipped().empty()) {
+                hintText += "\nSIN ENTRADA JUGABLE: ";
+                for (std::size_t i = 0; i < m_title->skipped().size(); ++i) {
+                    if (i > 0) {
+                        hintText += ", ";
+                    }
+                    hintText += m_title->skipped()[i];
+                }
+            }
+            HudTransform titleHintTransform;
+            titleHintTransform.anchor = HudAnchor::BottomCenter;
+            titleHintTransform.offset = {0.0f, 56.0f};
+            titleHintTransform.size = BitmapFont::measureText(hintText, glyphW, glyphH);
+            m_titleHint = std::make_unique<HudText>(titleHintTransform, m_font.get());
+            m_titleHint->setText(hintText);
+            m_titleHint->setColor(Vector4{0.75f, 0.75f, 0.8f, 1.0f});
+
+            // Orden de inserción = orden de dibujado: el panel primero.
+            m_hud.addElement(m_titlePanel.get());
+            m_hud.addElement(m_titleText.get());
+            m_hud.addElement(m_titleMenu.get());
+            m_hud.addElement(m_titleHint.get());
+            m_atTitle = true;
+            trace("init: pantalla de título activa");
+        } else {
+            trace("init: índice de proyectos no disponible; arranco sin título");
+        }
+    }
+
     m_running = true;
     refreshHud();
     trace("init: COMPLETADO");
@@ -923,6 +1000,47 @@ void Application::applyPendingTransition() {
 }
 
 void Application::refreshHud() {
+    // --- G-08 (rodaja inicial): pantalla de titulo ---
+    // En el título el HUD de juego se oculta entero y solo se muestran
+    // los widgets del menú. Al salir, las piezas condicionales
+    // (enemigo/combat/tienda/negocio/inventario) las reactiva cada frame
+    // el camino normal de abajo; las siempre visibles se restauran aquí.
+    if (m_atTitle) {
+        IHudElement* juego[] = {m_playerPanel.get(), m_statusText.get(),
+                                m_healthBar.get(), m_manaBar.get(),
+                                m_enemyPanel.get(), m_enemyText.get(), m_enemyBar.get(),
+                                m_fpsText.get(), m_minimap.get(),
+                                m_inventoryPanel.get(), m_inventoryText.get(),
+                                m_hintText.get(), m_dialoguePanel.get(), m_dialogue.get(),
+                                m_commandPanel.get(), m_commandMenu.get(),
+                                m_shopPanel.get(), m_shopTitle.get(), m_shopMenu.get(),
+                                m_businessPanel.get(), m_businessText.get(),
+                                m_businessMenu.get(), m_moralText.get(), m_moralBar.get(),
+                                m_timerBar.get()};
+        for (IHudElement* widget : juego) {
+            widget->setVisible(false);
+        }
+        m_titlePanel->setVisible(true);
+        m_titleText->setVisible(true);
+        m_titleMenu->setVisible(true);
+        m_titleHint->setVisible(true);
+        return;
+    }
+    if (m_title != nullptr) {
+        IHudElement* siempre[] = {m_playerPanel.get(), m_statusText.get(),
+                                  m_healthBar.get(), m_manaBar.get(),
+                                  m_fpsText.get(), m_minimap.get(), m_hintText.get(),
+                                  m_dialoguePanel.get(), m_dialogue.get(),
+                                  m_moralText.get(), m_moralBar.get()};
+        for (IHudElement* widget : siempre) {
+            widget->setVisible(true);
+        }
+        m_titlePanel->setVisible(false);
+        m_titleText->setVisible(false);
+        m_titleMenu->setVisible(false);
+        m_titleHint->setVisible(false);
+    }
+
     const bool inBattle = m_session->mode() == GameMode::Battle;
     BattleState* battle = m_session->battle();
 
@@ -1355,6 +1473,24 @@ void Application::processInput() {
         return;
     }
 
+    // --- G-08 (rodaja inicial): pantalla de titulo ---
+    // El mismo lenguaje de menú que en combate/tienda (W/S + ENTER); el
+    // ESC ya salió del proceso arriba, igual que la entrada "Salir".
+    if (m_atTitle) {
+        if (input.pressed(InputAction::MenuUp)) {
+            m_title->moveUp();
+            m_titleMenu->setSelectedIndex(m_title->selected());
+        }
+        if (input.pressed(InputAction::MenuDown)) {
+            m_title->moveDown();
+            m_titleMenu->setSelectedIndex(m_title->selected());
+        }
+        if (input.pressed(InputAction::Confirm)) {
+            confirmTitleSelection();
+        }
+        return;
+    }
+
     if (m_session->mode() == GameMode::Exploration) {
         // TAB abre/cierra el panel de inventario (solo exploracion, ver
         // refreshHud sobre el porque).
@@ -1445,6 +1581,11 @@ void Application::processInput() {
 }
 
 void Application::update(float deltaTime) {
+    // El título congela el mundo: no pasa tiempo ni narrativa hasta que
+    // se elige (mismo espíritu que la pausa de G-10).
+    if (m_atTitle) {
+        return;
+    }
     trace("update: player");
     m_player->update(deltaTime);
     // Los actores del mundo (NPCs/enemigos) son ahora AnimatedEntity: hay
@@ -1662,6 +1803,84 @@ void Application::run(int maxFrames) {
               << ").\n";
 }
 
+void Application::confirmTitleSelection() {
+    using Game::TitleAction;
+    const TitleAction action = m_title->confirm();
+
+    if (action == TitleAction::Quit) {
+        m_running = false;
+        return;
+    }
+    if (action == TitleAction::PlayCampaign) {
+        // La campaña YA está montada por init() (nivel del prólogo +
+        // aventuras dirigidas + cronología): basta con dejar el título.
+        m_atTitle = false;
+        refreshHud();
+        return;
+    }
+    if (action != TitleAction::OpenProject) {
+        return;
+    }
+
+    const Editor::Project* project = m_projectIndex.find(m_title->selectedEntry().projectId);
+    if (project == nullptr) {
+        m_titleHint->setText("Proyecto no encontrado en el índice");
+        return;
+    }
+
+    // Los catálogos del proyecto se cargan encima de los actuales: los
+    // ids llevan el prefijo del proyecto (CONTRATO_IDS), así que no
+    // chocan con los de Boundington. Uno que falla no bloquea la
+    // entrada: el escenario se abre con lo que haya.
+    for (const std::string& catalog : project->catalogs) {
+        const std::string path =
+            "assets/" + project->settings.catalogsDirectory + "/" + catalog;
+        if (!m_objectCatalog.loadFromFile(path).isOk()) {
+            std::fprintf(stderr, "titulo: el catalogo %s no cargo\n", path.c_str());
+        }
+    }
+
+    std::string levelPath;
+    if (project->entryKind == Editor::Project::EntryKind::Level) {
+        // Entrada de nivel: exploración sin la narrativa de Boundington
+        // (sus beats pertenecen a otros mapas y aquí dispararían falso).
+        m_narrativaLista = false;
+        levelPath = project->entryPath;
+    } else if (project->entryKind == Editor::Project::EntryKind::Adventure) {
+        auto adventure = RPG::AdventureScript::loadFromFile(project->entryPath);
+        if (!adventure.isOk()) {
+            m_titleHint->setText("La aventura de entrada no cargo");
+            return;
+        }
+        m_prologo = adventure.value();
+        m_narrative.setAdventure(&m_prologo);
+        m_narrativeState = RPG::NarrativeState{};
+        m_narrativaLista = true;
+        // La cronología prólogo→Día1→Día2→Ocaso es de Boundington: con
+        // otra aventura, las transiciones dirigidas se apagan (igual que
+        // hace init() con --precuela).
+        m_narrativeCampaignTransitions = false;
+        if (project->levels.empty()) {
+            m_titleHint->setText("El proyecto no declara niveles");
+            return;
+        }
+        levelPath =
+            "assets/" + project->settings.levelsDirectory + "/" + project->levels[0];
+    } else {
+        m_titleHint->setText("El proyecto no tiene entrada jugable");
+        return;
+    }
+
+    auto loaded = loadLevel(levelPath, /*useEntry=*/false, GridCoord{0, 0});
+    if (!loaded.isOk()) {
+        m_titleHint->setText("No se pudo abrir el escenario");
+        std::fprintf(stderr, "titulo: %s\n", loaded.errorMessage().c_str());
+        return;  // se queda en el título: un fallo no rompe la pantalla
+    }
+    m_atTitle = false;
+    refreshHud();
+}
+
 void Application::shutdown() {
     trace("shutdown: inicio");
     // Orden inverso al de creacion: lo que depende de la ventana/contexto
@@ -1676,6 +1895,11 @@ void Application::shutdown() {
     }
     m_session.reset();
     m_hud = HudManager{};  // suelta los punteros a widgets antes de destruirlos
+    m_titleHint.reset();
+    m_titleMenu.reset();
+    m_titleText.reset();
+    m_titlePanel.reset();
+    m_title.reset();
     m_commandMenu.reset();
     m_commandPanel.reset();
     m_moralBar.reset();

@@ -38,7 +38,9 @@ int main(int argc, char** argv) {
     // poder decir "prueba ESTE nivel" sin recompilar nada, asi que el
     // nivel y el catalogo se pueden pasar por argumento:
     //
-    //   ./juego                                       la campana
+//   ./juego                                       pantalla de titulo:
+//                                                 campana + escenarios en
+//                                                 trabajo (G-08, rodaja)
     //   ./juego --nivel assets/levels/ciudad_sur.json prueba ese nivel
     //   ./juego --nivel X --catalogo Y                y con ese catalogo
     //   ./juego 3                                     modo humo, 3 frames
@@ -53,10 +55,16 @@ int main(int argc, char** argv) {
     std::string catalogo = "assets/objects/boundington_npcs.json";
     std::string aventuraInicial;
     std::vector<std::string> catalogosExtra;
+    // G-08 (rodaja inicial): sin --nivel/--precuela el juego arranca en la
+    // pantalla de titulo (campana + escenarios del indice de proyectos).
+    // Con nivel explicito (editor F7, pruebas, un nivel concreto) se entra
+    // directo, como siempre.
+    bool nivelExplicito = false;
     for (int i = 1; i < argc; ++i) {
         const std::string a = argv[i];
         if (a == "--nivel" && i + 1 < argc) {
             nivel = argv[++i];
+            nivelExplicito = true;
         } else if (a == "--catalogo" && i + 1 < argc) {
             catalogo = argv[++i];
         } else if (a == "--catalogo-extra" && i + 1 < argc) {
@@ -64,6 +72,7 @@ int main(int argc, char** argv) {
         } else if (a == "--precuela") {
             nivel = "assets/levels/interior_taberna.json";
             aventuraInicial = "assets/adventures/boundington_precuela_taberna.json";
+            nivelExplicito = true;
         } else if (!a.empty() && a[0] != '-') {
             maxFrames = std::atoi(a.c_str());
         } else {
@@ -82,7 +91,8 @@ int main(int argc, char** argv) {
     // prologo, ver Application::update). Si la narrativa no carga, init()
     // no falla: el motor grafico sigue siendo usable sin ella.
     auto init = app.init(1280, 720, "Motor Gráfico - Boundington", nivel, catalogo,
-                         aventuraInicial, catalogosExtra);
+                         aventuraInicial, catalogosExtra,
+                         /*startAtTitle=*/!nivelExplicito);
     if (!init.isOk()) {
         // init() nunca lanza: los fallos de arranque (ventana, shaders,
         // assets que faltan) llegan como Result::Error con el motivo.
