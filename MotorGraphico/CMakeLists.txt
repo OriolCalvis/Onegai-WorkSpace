@@ -519,7 +519,7 @@ if (EXISTS ${GLAD_DIR}/src/glad.c AND EXISTS ${STB_DIR}/stb_image.h)
     # expone en su propia interfaz publica, y no trae GLAD/GLFW consigo
     # (ver comentario mas arriba), asi que no reintroduce ninguna
     # dependencia nueva sobre motor_core.
-    target_link_libraries(motor_core PUBLIC glfw glm::glm motor_map motor_engine_loop motor_input)
+    target_link_libraries(motor_core PUBLIC glfw glm::glm motor_map motor_engine_loop motor_input motor_scene)
 
     add_executable(sandbox_window examples/sandbox_window.cpp)
     target_link_libraries(sandbox_window PRIVATE motor_core)
@@ -869,3 +869,6 @@ include(cmake/TitleScreenTests.cmake)
 
 # D-01 — Contrato de campos de los cargadores de catalogo (Fase D).
 include(cmake/CatalogContractTests.cmake)
+
+# C-16 — Transiciones de escenas sobre Application real.
+include(cmake/ApplicationSceneTests.cmake)

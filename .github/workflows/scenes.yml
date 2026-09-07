@@ -1,0 +1,29 @@
+name: Application scenes
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+  workflow_dispatch: {}
+
+jobs:
+  application-scenes:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build_type: [Debug, Release]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install GL build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xorg-dev libgl1-mesa-dev xvfb
+      - name: Configure
+        run: cmake -S MotorGraphico -B MotorGraphico/build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+      - name: Build scene integration
+        run: cmake --build MotorGraphico/build --target test_application_scenes test_scene_manager -j2
+      - name: Run real Application transitions
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: xvfb-run -a ctest --test-dir MotorGraphico/build --output-on-failure --no-tests=error -R '^test_(application_scenes|scene_manager)$'

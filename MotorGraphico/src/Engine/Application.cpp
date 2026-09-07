@@ -20,6 +20,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
+#include <filesystem>
 #include <iostream>
 #include <map>
 #include <unordered_map>
@@ -31,6 +32,29 @@
 #include <GLFW/glfw3.h>
 
 namespace {
+
+// Adaptador de las pantallas existentes al ciclo de SceneManager. La escena
+// tiene la autoridad sobre qué update se ejecuta; Application conserva los
+// servicios y recursos compartidos, cuya vida depende del contexto GL.
+class ApplicationScene final : public Engine::Scene {
+public:
+    ApplicationScene(bool title, std::function<Result<bool>()> load,
+                     std::function<void(float)> tick, std::function<void()> draw,
+                     std::function<ids::MapId()> map)
+        : m_title(title), m_load(std::move(load)), m_tick(std::move(tick)),
+          m_draw(std::move(draw)), m_map(std::move(map)) {}
+    std::string_view name() const override { return m_title ? "Title" : "Game"; }
+    ids::MapId mapId() const override { return m_title ? ids::MapId{} : m_map(); }
+    Result<bool> load() override { return m_load ? m_load() : Result<bool>::Ok(true); }
+    void fixedUpdate(float dt) override { if (!m_title) m_tick(dt); }
+    void render(float) override { m_draw(); }
+private:
+    bool m_title;
+    std::function<Result<bool>()> m_load;
+    std::function<void(float)> m_tick;
+    std::function<void()> m_draw;
+    std::function<ids::MapId()> m_map;
+};
 
 constexpr int kTileW = 64;
 constexpr int kTileH = 32;
@@ -762,13 +786,14 @@ Result<bool> Application::init(int width, int height, const std::string& title,
             m_hud.addElement(m_titleText.get());
             m_hud.addElement(m_titleMenu.get());
             m_hud.addElement(m_titleHint.get());
-            m_atTitle = true;
             trace("init: pantalla de título activa");
         } else {
             trace("init: índice de proyectos no disponible; arranco sin título");
         }
     }
 
+    auto sceneStarted = m_scenes.start(makeScene(startAtTitle && m_title != nullptr));
+    if (!sceneStarted.isOk()) return sceneStarted;
     m_running = true;
     refreshHud();
     trace("init: COMPLETADO");
@@ -776,14 +801,16 @@ Result<bool> Application::init(int width, int height, const std::string& title,
 }
 
 Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
-                                   GridCoord entry) {
+                                   GridCoord entry, const std::function<void()>& beforeCommit,
+                                   const SaveGameData* savedGame) {
     auto levelResult = LevelLoader::loadFromFile(levelPath);
     if (!levelResult.isOk()) {
         return Result<bool>::Error("Nivel: " + levelResult.errorMessage());
     }
     LevelDefinition level = levelResult.value();
 
-    auto mapResult = m_map.loadFromFile(level.mapPath);
+    TileMap preparedMap;
+    auto mapResult = preparedMap.loadFromFile(level.mapPath);
     if (!mapResult.isOk()) {
         return Result<bool>::Error("Mapa " + level.mapPath + ": " + mapResult.errorMessage());
     }
@@ -793,18 +820,18 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
     // test_checker.png" fijo con seis defineRegion escritos a mano, asi
     // que TODOS los mapas estaban atados a ese puñado de tiles y un
     // nivel con arte propio era imposible sin recompilar. ---
-    const std::string tilesetPath = m_map.tilesetImagePath().empty()
+    const std::string tilesetPath = preparedMap.tilesetImagePath().empty()
                                         ? std::string("assets/textures/test_checker.png")
-                                        : m_map.tilesetImagePath();
-    auto textureResult = m_textureManager.load("tileset", tilesetPath);
+                                        : preparedMap.tilesetImagePath();
+    auto textureResult = m_textureManager.load("tileset:" + tilesetPath, tilesetPath);
     if (!textureResult.isOk()) {
         return Result<bool>::Error("Tileset " + tilesetPath + ": " + textureResult.errorMessage());
     }
     trace("loadLevel: tileset cargado");
 
-    const int cellW = m_map.getTilesetTileWidth() > 0 ? m_map.getTilesetTileWidth() : 8;
-    const int cellH = m_map.getTilesetTileHeight() > 0 ? m_map.getTilesetTileHeight() : 8;
-    m_atlas = std::make_unique<TextureAtlas>(textureResult.value(), cellW, cellH);
+    const int cellW = preparedMap.getTilesetTileWidth() > 0 ? preparedMap.getTilesetTileWidth() : 8;
+    const int cellH = preparedMap.getTilesetTileHeight() > 0 ? preparedMap.getTilesetTileHeight() : 8;
+    auto preparedAtlas = std::make_unique<TextureAtlas>(textureResult.value(), cellW, cellH);
 
     // Regiones declaradas en BLOQUE con la convencion de Tiled: el GID
     // firstGid+i es la celda i del atlas en orden de lectura. Antes eran
@@ -812,17 +839,36 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
     // contenido usaba un sprite nuevo -- justo el origen del defecto 02
     // (objetos con spriteId 3-6 dibujados con UVs vacias). Ahora
     // cualquier tileset queda cubierto entero sin tocar codigo.
-    const int columns = m_map.getTilesetColumns() > 0
-                            ? m_map.getTilesetColumns()
+    const int columns = preparedMap.getTilesetColumns() > 0
+                            ? preparedMap.getTilesetColumns()
                             : std::max(1, textureResult.value()->getWidth() / cellW);
     const int rows = std::max(1, textureResult.value()->getHeight() / cellH);
-    const int firstGid = m_map.getTilesetFirstGid();
+    const int firstGid = preparedMap.getTilesetFirstGid();
     for (int row = 0; row < rows; ++row) {
         for (int col = 0; col < columns; ++col) {
-            m_atlas->defineRegion(firstGid + row * columns + col, col, row);
+            preparedAtlas->defineRegion(firstGid + row * columns + col, col, row);
         }
     }
 
+
+    if (savedGame) {
+        // Validar compatibilidad contra una sesión aislada; restoreSaveGame
+        // no puede tocar al Player ni al inventario de la partida viva.
+        GameSession validation(&preparedMap, &m_objectCatalog, &m_skillCatalog,
+                               level, nullptr, nullptr, nullptr);
+        std::string error;
+        if (!validation.restoreSaveGame(*savedGame, &error)) {
+            return Result<bool>::Error("Guardado incompatible: " + error);
+        }
+    }
+
+    // Nada del mundo vivo se sustituye hasta validar nivel, TMX y textura.
+    // Las direcciones de m_map/m_objectCatalog se mantienen para sus consumidores.
+    if (beforeCommit) beforeCommit();
+    m_map = std::move(preparedMap);
+    m_atlas = std::move(preparedAtlas);
+    const auto mapId = ids::MapId::parse(std::filesystem::path(level.mapPath).stem().string());
+    m_currentMapId = mapId.isOk() ? mapId.value() : ids::MapId{};
 
     // El atlas es NUEVO, y Player/marcadores guardan un puntero al
     // anterior: hay que re-apuntarlos o dibujarian contra memoria
@@ -862,6 +908,11 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
                                               std::move(level), m_player.get(), &m_playerSkills,
                                               &m_inventory);
     m_session->applyCarryOver(carried);
+    if (savedGame) {
+        std::string error;
+        m_session->restoreSaveGame(*savedGame, &error);  // validado antes del commit
+        m_player->setGridPosition(m_session->playerPosition());
+    }
 
     // C-02 — El minimapa se construye una sola vez y el GameSession se
     // reconstruye en cada carga: hay que volver a enchufarselo, igual
@@ -889,7 +940,7 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
         // m_session ya tiene su propio Xoroshiro128p por defecto; solo
         // inyectariamos otro si quisieramos reproducibilidad (tests).
         // Dispara el beat "enter" del nivel que acaba de cargar.
-        m_session->enterLevelNarrative(levelPath);
+        if (!savedGame) m_session->enterLevelNarrative(levelPath);
     }
 
     trace("loadLevel: GameSession OK");
@@ -983,20 +1034,43 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
     return Result<bool>::Ok(true);
 }
 
-void Application::applyPendingTransition() {
-    const LevelTransition transition = m_session->pendingTransition();
-    if (!transition.pending) {
-        return;
-    }
-    // Se consume ANTES de cargar: si la carga falla, la puerta no se
-    // reintenta en bucle cada frame contra un archivo que no existe.
-    m_session->clearTransition();
+bool Application::isAtTitle() const {
+    const auto* scene = m_scenes.activeScene();
+    return scene != nullptr && scene->name() == "Title";
+}
 
-    auto result = loadLevel(transition.levelPath, transition.hasEntryPosition,
-                            transition.entryPosition);
+std::unique_ptr<Engine::Scene> Application::makeScene(
+    bool title, std::function<Result<bool>()> load) {
+    return std::make_unique<ApplicationScene>(title, std::move(load),
+        [this](float dt) { update(dt); },
+        [this] { render(m_captureFrame); },
+        [this] { return m_currentMapId; });
+}
+
+void Application::finishSceneFrame() {
+    const auto result = m_scenes.applyPendingTransition();
     if (!result.isOk()) {
-        std::cerr << "No se pudo cambiar de nivel: " << result.errorMessage() << "\n";
+        std::cerr << result.errorMessage() << "\n";
+        if (isAtTitle() && m_titleHint) {
+            m_titleHint->setText("No se pudo abrir el escenario");
+        } else if (m_session) {
+            m_session->logNote("No se pudo cambiar de nivel.");
+        }
     }
+    if (!result.isOk() || result.value()) refreshHud();
+}
+
+void Application::applyPendingTransition() {
+    if (!m_session || m_scenes.hasPendingTransition()) return;
+    const LevelTransition transition = m_session->pendingTransition();
+    if (!transition.pending) return;
+    const auto requested = m_scenes.requestReplace(makeScene(false, [this, transition] {
+        return loadLevel(transition.levelPath, transition.hasEntryPosition,
+                         transition.entryPosition);
+    }));
+    // Consumir solo una solicitud aceptada: no se reintenta una puerta rota
+    // cada frame y una petición anterior nunca se sobrescribe.
+    if (requested.isOk()) m_session->clearTransition();
 }
 
 void Application::refreshHud() {
@@ -1005,7 +1079,7 @@ void Application::refreshHud() {
     // los widgets del menú. Al salir, las piezas condicionales
     // (enemigo/combat/tienda/negocio/inventario) las reactiva cada frame
     // el camino normal de abajo; las siempre visibles se restauran aquí.
-    if (m_atTitle) {
+    if (isAtTitle()) {
         IHudElement* juego[] = {m_playerPanel.get(), m_statusText.get(),
                                 m_healthBar.get(), m_manaBar.get(),
                                 m_enemyPanel.get(), m_enemyText.get(), m_enemyBar.get(),
@@ -1422,38 +1496,15 @@ bool Application::loadGame(const std::string& path) {
         return false;
     }
 
-    // ORDEN IMPORTANTE. La narrativa se restaura ANTES de cargar el nivel:
-    // loadLevel dispara el beat de "entrar al nivel", y si lo hiciera con
-    // las flags de la partida en curso (o sin las del guardado) repetiria
-    // el prologo y volveria a pagar recompensas ya cobradas.
-    m_narrativeState.reset();
-    applyNarrativeState(data, m_narrativeState);
-
-    auto levelResult = loadLevel(data.levelPath, /*useEntry=*/false, GridCoord{});
-    if (!levelResult.isOk()) {
-        trace(("loadGame: " + levelResult.errorMessage()).c_str());
-        if (m_session != nullptr) {
-            m_session->logNote("No se pudo cargar el nivel del guardado.");
-        }
-        return false;
-    }
-
-    if (!m_session->restoreSaveGame(data, &error)) {
-        // El nivel ya esta cargado (partida nueva en ese mapa) pero el
-        // estado guardado no encaja: se dice por que en vez de dejar al
-        // jugador con una partida a medias que parece la suya.
-        m_session->logNote("Guardado incompatible: " + error);
-        trace(("loadGame: " + error).c_str());
-        return false;
-    }
-
-    // La vista se pone al dia con el modelo: sprite del jugador, oro del
-    // guardado (loadLevel habia arrastrado el de la partida anterior) y
-    // marcadores de los objetos/enemigos que ya no estan.
-    m_player->setGridPosition(m_session->playerPosition());
-    syncWorldMarkers();
-    m_session->logNote("Partida cargada.");
-    return true;
+    const auto requested = m_scenes.requestReplace(makeScene(false, [this, data] {
+        auto loaded = loadLevel(data.levelPath, false, GridCoord{}, [this, &data] {
+            m_narrativeState.reset();
+            applyNarrativeState(data, m_narrativeState);
+        }, &data);
+        if (loaded.isOk()) m_session->logNote("Partida cargada.");
+        return loaded;
+    }));
+    return requested.isOk();
 }
 
 void Application::processInput() {
@@ -1476,7 +1527,7 @@ void Application::processInput() {
     // --- G-08 (rodaja inicial): pantalla de titulo ---
     // El mismo lenguaje de menú que en combate/tienda (W/S + ENTER); el
     // ESC ya salió del proceso arriba, igual que la entrada "Salir".
-    if (m_atTitle) {
+    if (isAtTitle()) {
         if (input.pressed(InputAction::MenuUp)) {
             m_title->moveUp();
             m_titleMenu->setSelectedIndex(m_title->selected());
@@ -1505,7 +1556,7 @@ void Application::processInput() {
         }
         if (input.pressed(InputAction::QuickLoad)) {
             loadGame(m_savePath);
-            // loadGame ha reconstruido la sesion: no se sigue leyendo
+            // loadGame ha solicitado el cambio: no se sigue leyendo
             // input contra el estado viejo en este mismo frame.
             return;
         }
@@ -1581,11 +1632,6 @@ void Application::processInput() {
 }
 
 void Application::update(float deltaTime) {
-    // El título congela el mundo: no pasa tiempo ni narrativa hasta que
-    // se elige (mismo espíritu que la pausa de G-10).
-    if (m_atTitle) {
-        return;
-    }
     trace("update: player");
     m_player->update(deltaTime);
     // Los actores del mundo (NPCs/enemigos) son ahora AnimatedEntity: hay
@@ -1616,9 +1662,6 @@ void Application::update(float deltaTime) {
     }
     trace("update: camara");
     m_camera->update(deltaTime);
-    // Transicion pendiente (puerta cruzada) antes de sincronizar nada:
-    // reconstruye sesion y marcadores, asi que todo lo que venga
-    // despues debe mirar ya el nivel nuevo.
     // El mundo avanza: patrullas de los enemigos (solo en exploracion,
     // ver GameSession::update). Va ANTES de syncWorldMarkers para que los
     // sprites se coloquen ya en la posicion nueva este mismo frame.
@@ -1642,16 +1685,19 @@ void Application::update(float deltaTime) {
     // bandera se comprobaba en loadLevel (matando la narrativa entera) y
     // no se comprobaba aqui (encadenando la cronologia igualmente):
     // justo al reves de lo que significa.
-    if (m_narrativaLista && m_narrativeCampaignTransitions) {
+    if (m_narrativaLista && m_narrativeCampaignTransitions &&
+        !m_scenes.hasPendingTransition()) {
         // prologo -> Dia 1: el Dia 1 abre con un beat "enter" en
         // ciudad_centro.json, asi que recargamos nivel. loadLevel dispara
         // ese beat.
         if (m_narrativeState.hasFlag("bnd_prologo_terminado") &&
             !m_narrativeState.hasFlag("bnd_dia1_empezado")) {
-            m_narrativeState.setFlag("bnd_dia1_empezado");
-            m_narrative.setAdventure(&m_dia1);
-            trace("update: prologo -> Dia 1");
-            loadLevel("assets/levels/ciudad_centro.json", /*useEntry=*/false, GridCoord{0, 0});
+            m_scenes.requestReplace(makeScene(false, [this] {
+                return loadLevel("assets/levels/ciudad_centro.json", false, GridCoord{}, [this] {
+                    m_narrativeState.setFlag("bnd_dia1_empezado");
+                    m_narrative.setAdventure(&m_dia1);
+                });
+            }));
         }
         // Dia 1 -> Dia 2: el Dia 2 abre con un beat "auto" (b2_amanece),
         // NO con un "enter". Asi que NO recargamos nivel (solo resetearia
@@ -1660,19 +1706,23 @@ void Application::update(float deltaTime) {
         // b2_amanece, que ya pide bnd_dia_cerrado en su requires.
         else if (m_narrativeState.hasFlag("bnd_dia_cerrado") &&
                  !m_narrativeState.hasFlag("bnd_dia2_empezado")) {
-            m_narrativeState.setFlag("bnd_dia2_empezado");
-            m_narrative.setAdventure(&m_dia2);
-            trace("update: Dia 1 -> Dia 2 (sin recarga de nivel, beat auto)");
+            m_scenes.requestReplace(makeScene(false, [this] {
+                m_narrativeState.setFlag("bnd_dia2_empezado");
+                m_narrative.setAdventure(&m_dia2);
+                return Result<bool>::Ok(true);
+            }));
         }
         // Dia 2 -> Ocaso: el Ocaso abre con un beat "enter" (b3_plaza) en
         // ciudad_centro.json. Recargamos para que ese beat dispare. El
         // Ocaso reconfigura la ciudad (la Matanza ha empezado).
         else if (m_narrativeState.hasFlag("bnd2_dia_cerrado") &&
                  !m_narrativeState.hasFlag("bnd_ocaso_empezado")) {
-            m_narrativeState.setFlag("bnd_ocaso_empezado");
-            m_narrative.setAdventure(&m_ocaso);
-            trace("update: Dia 2 -> Ocaso");
-            loadLevel("assets/levels/ciudad_centro.json", /*useEntry=*/false, GridCoord{0, 0});
+            m_scenes.requestReplace(makeScene(false, [this] {
+                return loadLevel("assets/levels/ciudad_centro.json", false, GridCoord{}, [this] {
+                    m_narrativeState.setFlag("bnd_ocaso_empezado");
+                    m_narrative.setAdventure(&m_ocaso);
+                });
+            }));
         }
     }
 
@@ -1781,12 +1831,16 @@ void Application::run(int maxFrames) {
                     trace("run: processInput");
                     processInput();
                 },
-                [this](float fixedDeltaTime) { update(fixedDeltaTime); },
-                [this, capture](float /*interpolationAlpha*/) { render(capture); }});
+                [this](float fixedDeltaTime) { m_scenes.fixedUpdate(fixedDeltaTime); },
+                [this, capture](float alpha) {
+                    m_captureFrame = capture;
+                    m_scenes.render(alpha);
+                }});
 
         if (!loopFrame.rendered) {
             break;
         }
+        finishSceneFrame();
         // Modo humo (maxFrames >= 0): en el ULTIMO frame se vuelca el
         // framebuffer, igual que los demos GL. Asi "juego 3" deja un
         // juego_output.ppm inspeccionable con el HUD real dibujado --
@@ -1804,81 +1858,58 @@ void Application::run(int maxFrames) {
 }
 
 void Application::confirmTitleSelection() {
-    using Game::TitleAction;
-    const TitleAction action = m_title->confirm();
-
-    if (action == TitleAction::Quit) {
+    if (!isAtTitle() || !m_title || m_scenes.hasPendingTransition()) return;
+    const auto action = m_title->confirm();
+    if (action == Game::TitleAction::Quit) {
         m_running = false;
-        return;
-    }
-    if (action == TitleAction::PlayCampaign) {
-        // La campaña YA está montada por init() (nivel del prólogo +
-        // aventuras dirigidas + cronología): basta con dejar el título.
-        m_atTitle = false;
-        refreshHud();
-        return;
-    }
-    if (action != TitleAction::OpenProject) {
-        return;
-    }
-
-    const Editor::Project* project = m_projectIndex.find(m_title->selectedEntry().projectId);
-    if (project == nullptr) {
-        m_titleHint->setText("Proyecto no encontrado en el índice");
-        return;
-    }
-
-    // Los catálogos del proyecto se cargan encima de los actuales: los
-    // ids llevan el prefijo del proyecto (CONTRATO_IDS), así que no
-    // chocan con los de Boundington. Uno que falla no bloquea la
-    // entrada: el escenario se abre con lo que haya.
-    for (const std::string& catalog : project->catalogs) {
-        const std::string path =
-            "assets/" + project->settings.catalogsDirectory + "/" + catalog;
-        if (!m_objectCatalog.loadFromFile(path).isOk()) {
-            std::fprintf(stderr, "titulo: el catalogo %s no cargo\n", path.c_str());
+    } else if (action == Game::TitleAction::PlayCampaign) {
+        m_scenes.requestReplace(makeScene(false));
+    } else if (action == Game::TitleAction::OpenProject) {
+        const auto* project = m_projectIndex.find(m_title->selectedEntry().projectId);
+        if (!project) {
+            m_titleHint->setText("Proyecto no encontrado en el índice");
+            return;
         }
+        m_scenes.requestReplace(makeScene(false, [this, project = *project] {
+            return openProject(project);
+        }));
     }
+}
 
+Result<bool> Application::openProject(const Editor::Project& project) {
+    // Preparar catálogos y guion sin tocar los que sigue usando la campaña.
+    ObjectCatalog catalog = m_objectCatalog;
+    for (const auto& file : project.catalogs) {
+        const auto path = "assets/" + project.settings.catalogsDirectory + "/" + file;
+        const auto loaded = catalog.loadFromFile(path);
+        if (!loaded.isOk()) return Result<bool>::Error("Catálogo " + path + ": " + loaded.errorMessage());
+    }
     std::string levelPath;
-    if (project->entryKind == Editor::Project::EntryKind::Level) {
-        // Entrada de nivel: exploración sin la narrativa de Boundington
-        // (sus beats pertenecen a otros mapas y aquí dispararían falso).
-        m_narrativaLista = false;
-        levelPath = project->entryPath;
-    } else if (project->entryKind == Editor::Project::EntryKind::Adventure) {
-        auto adventure = RPG::AdventureScript::loadFromFile(project->entryPath);
-        if (!adventure.isOk()) {
-            m_titleHint->setText("La aventura de entrada no cargo");
-            return;
-        }
-        m_prologo = adventure.value();
-        m_narrative.setAdventure(&m_prologo);
-        m_narrativeState = RPG::NarrativeState{};
-        m_narrativaLista = true;
-        // La cronología prólogo→Día1→Día2→Ocaso es de Boundington: con
-        // otra aventura, las transiciones dirigidas se apagan (igual que
-        // hace init() con --precuela).
-        m_narrativeCampaignTransitions = false;
-        if (project->levels.empty()) {
-            m_titleHint->setText("El proyecto no declara niveles");
-            return;
-        }
-        levelPath =
-            "assets/" + project->settings.levelsDirectory + "/" + project->levels[0];
+    RPG::AdventureScript script;
+    const bool hasAdventure = project.entryKind == Editor::Project::EntryKind::Adventure;
+    if (project.entryKind == Editor::Project::EntryKind::Level) {
+        levelPath = project.entryPath;
+    } else if (hasAdventure) {
+        const auto loaded = RPG::AdventureScript::loadFromFile(project.entryPath);
+        if (!loaded.isOk()) return Result<bool>::Error(loaded.errorMessage());
+        if (project.levels.empty()) return Result<bool>::Error("El proyecto no declara niveles");
+        script = loaded.value();
+        levelPath = "assets/" + project.settings.levelsDirectory + "/" + project.levels[0];
     } else {
-        m_titleHint->setText("El proyecto no tiene entrada jugable");
-        return;
+        return Result<bool>::Error("El proyecto no tiene entrada jugable");
     }
-
-    auto loaded = loadLevel(levelPath, /*useEntry=*/false, GridCoord{0, 0});
-    if (!loaded.isOk()) {
-        m_titleHint->setText("No se pudo abrir el escenario");
-        std::fprintf(stderr, "titulo: %s\n", loaded.errorMessage().c_str());
-        return;  // se queda en el título: un fallo no rompe la pantalla
-    }
-    m_atTitle = false;
-    refreshHud();
+    return loadLevel(levelPath, false, GridCoord{}, [&] {
+        m_objectCatalog = std::move(catalog);
+        m_narrativaLista = hasAdventure;
+        m_narrativeCampaignTransitions = false;
+        m_narrativeState = RPG::NarrativeState{};
+        if (hasAdventure) {
+            m_prologo = std::move(script);
+            m_narrative.setAdventure(&m_prologo);
+        } else {
+            m_narrative.setAdventure(nullptr);
+        }
+    });
 }
 
 void Application::shutdown() {
@@ -1887,6 +1918,7 @@ void Application::shutdown() {
     // GL (texturas, fuente, renderer) muere ANTES que el Window, o sus
     // destructores llamarian a glDeleteTextures sin contexto valido.
     m_running = false;
+    m_scenes.shutdown();
     // C-02 — El widget suelta la sesion ANTES de que se destruya: el
     // orden de shutdown ya lo garantizaba, pero dejarlo explicito evita
     // que reordenar esta lista vuelva a dejar un puntero colgando.

@@ -1,12 +1,14 @@
 #pragma once
 
 #include <chrono>
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "Core/Errors/Result.h"
 #include "Engine/Input/InputSystem.h"
+#include "Engine/Scene/SceneManager.h"
 #include "Core/Resources/ShaderManager.h"
 #include "Render/Entity.h"
 #include "Core/Resources/TextureAtlas.h"
@@ -28,6 +30,7 @@
 
 class Window;
 class Player;
+struct SaveGameData;
 
 // El bucle de juego completo (motor_grafico_clases.puml lleva listando
 // esta clase desde el principio: init/run/shutdown/processInput/update/
@@ -74,6 +77,16 @@ public:
     void shutdown();
 
 private:
+    friend struct ApplicationSceneTestAccess;
+    bool isAtTitle() const;
+    std::unique_ptr<Engine::Scene> makeScene(bool title,
+        std::function<Result<bool>()> load = {});
+    void finishSceneFrame();
+    Result<bool> openProject(const Editor::Project& project);
+    Engine::SceneManager m_scenes;
+    ids::MapId m_currentMapId;
+    bool m_captureFrame = false;
+
     void processInput();
     void update(float deltaTime);
     // capture: vuelca el framebuffer a juego_output.ppm justo antes del
@@ -99,7 +112,9 @@ private:
     // JUGADOR, no al mapa: vida, mana, inventario y oro. Por eso el oro
     // se rescata de la sesion vieja antes de sustituirla (vive en
     // GameSession, que se destruye en cada transicion).
-    Result<bool> loadLevel(const std::string& levelPath, bool useEntry, GridCoord entry);
+    Result<bool> loadLevel(const std::string& levelPath, bool useEntry, GridCoord entry,
+                           const std::function<void()>& beforeCommit = {},
+                           const SaveGameData* savedGame = nullptr);
 
     // Si la sesion dejo una transicion pendiente (puerta cruzada), la
     // ejecuta. GameSession la DETECTA pero no la ejecuta: no hace I/O
@@ -113,8 +128,9 @@ private:
     // serializar el BattleState y el menu, y no aporta nada -- el jugador
     // guarda ANTES de meterse en la cueva, no durante el bicho.
     //
-    // Ambas devuelven false y dejan el motivo en el log del HUD si algo
-    // falla (disco lleno, guardado de otra version, nivel que cambio):
+    // saveGame devuelve el resultado de escritura. loadGame devuelve si
+    // se acepto la solicitud; su carga se resuelve al final del frame.
+    // Los fallos se muestran en el log del HUD (disco lleno, version o nivel):
     // un guardado que falla en silencio es peor que no tenerlo.
     bool saveGame(const std::string& path);
     bool loadGame(const std::string& path);
@@ -327,11 +343,10 @@ private:
     std::unique_ptr<HudBar> m_timerBar;
 
     // --- G-08 (rodaja inicial): pantalla de titulo ---
-    // m_atTitle congela el mundo (update no avanza) y cambia lo que
+    // La escena Title congela el mundo y cambia lo que
     // processInput/refreshHud atienden. El estado de la pantalla vive en
     // TitleScreen (GL-free); aqui solo los widgets que la pintan y el
     // indice de proyectos con las entradas ya resueltas.
-    bool m_atTitle = false;
     std::unique_ptr<Game::TitleScreen> m_title;
     Editor::ProjectIndex m_projectIndex;
     std::unique_ptr<HudPanel> m_titlePanel;
