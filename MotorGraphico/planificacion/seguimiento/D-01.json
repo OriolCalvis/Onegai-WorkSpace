@@ -1,0 +1,28 @@
+{
+  "id": "D-01",
+  "date": "2026-09-07",
+  "author": "qwen",
+  "status": "Mecanisme implementat i verificat localment; paquet OBERT (els 20 catàlegs encara carreguen en mode estructural)",
+  "actions": [
+    "Contracte de camps a RpgCatalogs.h: CatalogField (noms acceptats + required), CatalogStrictness (Structural / AllDeclared) i els auxiliars catalog_field_present, catalog_missing_fields, catalog_entry_label, catalog_field_hint i catalog_join.",
+    "Els 20 CatalogLoader<T> declaren expected_fields(): 308 conceptes amb els seus àlies. Les llistes s'han DERIVAT del propi from_json (claus e[\"...\"] i les cadenes de defaults encadenats) amb un generador d'un sol ús; no són una llista escrita a mà, que és la trampa de la Part 3 sobre els validadors manuals.",
+    "Catalog<T>::loadFromString reescrit: fora el catch(...) mut (l'excepció ara es converteix en un Error amb l'entrada i el motiu); fora el `continue` que descartava en silenci una entrada sense id; un camp obligatori absent dona Error amb l'entrada (índex + id), el camp i els àlies acceptats; i la càrrega és tot-o-res amb un buffer local abans de tocar m_store, el mateix criteri que ObjectCatalog::loadFromString.",
+    "Camps obligatoris avui: id i name als 20 carregadors (40 camps). Són els únics que els 21 assets publicats porten al 100% de les 2650 entrades; exigir-ne més hauria trencat la càrrega de tot el joc, que és justament la feina de D-02..D-09.",
+    "test_catalog_contract (7 casos) a tests/RPG/CatalogContractTests.cpp amb TestHarness.h, registrat amb cmake/CatalogContractTests.cmake i una línia d'include al CMakeLists; WORKING_DIRECTORY el directori de build perquè llegeix assets/catalogs/."
+  ],
+  "verification": [
+    "Porta verda abans de tocar res: build completa i suite gl-free 62/62.",
+    "Build completa de tots els targets amb el preset macos-debug, codi de sortida 0, amb el treball concurrent de C-16 i C-05 present a l'arbre.",
+    "Suite gl-free 63/63 (test_catalog_contract és la prova nova). demo_catalogos_rpg continua carregant les 2510 entrades amb els mateixos recomptes per catàleg i rpg_declaration_check (la xarxa estàtica de C-22) passa.",
+    "La prova que demana el pla: el JSON de condicions amb els noms de la versió anterior (stackable/duration/effects) falla en mode AllDeclared amb un missatge que anomena stacking, defaultRounds i damagePerRound i l'entrada cond_sangrado.",
+    "Falsabilitat comprovada per mutació: posar name a required=false a ConditionDefinition trenca 3 dels 7 casos; revertit i reverificat a 7/7.",
+    "Els 21 assets publicats carreguen en mode estructural i a tots el comptador retornat coincideix amb size(): cap entrada es descarta en silenci pel camí."
+  ],
+  "pending": [
+    "El paquet no es tanca: els 20 catàlegs carreguen en mode estructural, que per als camps no obligatoris és el comportament antic. D-02..D-09 han d'arreglar cada asset i pujar el conjunt de required del seu catàleg. Buit mesurat: 150 dels 308 camps declarats no els porta cap entrada de cap asset, i en mode AllDeclared fallarien les 2650 entrades.",
+    "AllDeclared NO és l'estat objectiu: la majoria de camps declarats són legítimament opcionals (channelRounds és 0 a gairebé totes les habilitats, minGold no aplica a una taula de botí sense or). És l'instrument d'auditoria; el que cada D-0x fa és pujar els required del seu catàleg.",
+    "Les declaracions s'han derivat amb un generador d'un sol ús que no s'ha versionat. Si un from_json canvia, el seu expected_fields() pot quedar desincronitzat: falta una comprovació estàtica a CTest que els derivi i els compari, que encaixa a D-10 (CI valida els assets reals).",
+    "Passar la prova a CI abans de tancar formalment (regla 6 del pla). La línia d'include al CMakeLists.txt queda sense commitear perquè el fitxer porta hunks en curs de C-16 i C-05 d'una altra sessió (regla 2 del protocol).",
+    "decisiones/D0003 (proposed): qui decideix quins camps són obligatoris i en quin ordre es migra cada catàleg. Espera l'Oriol."
+  ]
+}
