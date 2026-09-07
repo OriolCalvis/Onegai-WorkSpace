@@ -866,3 +866,6 @@ endif()
 
 # G-08 (rodaja inicial) — Pantalla de título: lista de proyectos, navegación y acciones.
 include(cmake/TitleScreenTests.cmake)
+
+# D-01 — Contrato de campos de los cargadores de catalogo (Fase D).
+include(cmake/CatalogContractTests.cmake)

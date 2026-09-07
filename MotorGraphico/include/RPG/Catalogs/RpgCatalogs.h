@@ -10,6 +10,8 @@
 #include <algorithm>
 #include <cctype>
 
+#include <exception>
+
 #include "Core/Errors/Result.h"
 #include "Core/Json/JsonValue.h"
 #include "Core/Resources/ICatalog.h"
@@ -71,15 +73,106 @@ static inline Degree degree_from_string(const std::string& s, Degree def = Degre
 }
 
 // ============================================================
+// D-01 — Contrato de campos de un cargador.
+//
+// Un cargador leía hasta 40 claves JSON y, cuando no encontraba ninguna,
+// devolvía el default en silencio: un cargador roto era indistinguible de
+// uno que funciona. Medido el 07/09/2026 sobre los 20 cargadores y los 21
+// assets publicados de assets/catalogs/: declaran 308 campos y 150 de ellos
+// no los lleva NINGUNA entrada de ningún asset (ConditionDefinition lee
+// stacking/defaultRounds/damagePerRound y conditions.json lleva
+// stackable/duration/effects; NpcDefinition lee 26 campos y el asset 4).
+//
+// Cada cargador declara ahora los campos que lee, con los alias que acepta
+// y si su ausencia es un error. Las declaraciones salen de leer el propio
+// from_json, no son una lista escrita a mano (Parte 3: "los validadores con
+// listas escritas a mano dejan de validar").
+// ============================================================
+
+// Un campo del contrato: los nombres JSON que from_json acepta para ese
+// concepto (names.front() es el canónico, el que sale en los errores) y si
+// su ausencia es un error de carga.
+struct CatalogField {
+    std::vector<const char*> names;
+    bool required;
+};
+
+// Cuánto se exige al cargar.
+//
+// Structural es el modo de producción: solo fallan los campos marcados
+// required. AllDeclared falla cualquier campo declarado que falte y NO es un
+// estado al que se aspire: la mayoría de campos declarados son legítimamente
+// opcionales (channelRounds es 0 en casi todas las habilidades, minGold no
+// aplica a una tabla de botín sin oro). AllDeclared es el instrumento de
+// auditoría que mide el hueco entero de una vez — el 07/09/2026, las 2650
+// entradas de los 21 assets publicados lo incumplían todas.
+//
+// Lo que D-02..D-09 hacen con cada catálogo es otra cosa: arreglar su asset y
+// subir el conjunto de campos required a los que de verdad llevan sus datos.
+enum class CatalogStrictness {
+    Structural,
+    AllDeclared,
+};
+
+// ¿La entrada lleva alguno de los nombres del campo?
+inline bool catalog_field_present(const JsonValue& entry, const CatalogField& field) {
+    for (const char* name : field.names) {
+        if (entry.has(name)) return true;
+    }
+    return false;
+}
+
+// Nombres declarados que la entrada no lleva (vacío si los lleva todos).
+inline std::vector<std::string> catalog_missing_fields(
+        const JsonValue& entry, const std::vector<CatalogField>& fields) {
+    std::vector<std::string> missing;
+    for (const CatalogField& field : fields) {
+        if (!catalog_field_present(entry, field)) missing.push_back(field.names.front());
+    }
+    return missing;
+}
+
+// "entries[3] (\"cond_sangrado\")" — el sitio exacto, para el mensaje de error.
+inline std::string catalog_entry_label(const JsonValue& entry, std::size_t index) {
+    std::string label = "entries[" + std::to_string(index) + "]";
+    const std::string id = entry["id"].asString("");
+    if (!id.empty()) label += " (\"" + id + "\")";
+    return label;
+}
+
+// Los alias aceptados, para que el error diga también qué nombres valían.
+inline std::string catalog_field_hint(const CatalogField& field) {
+    if (field.names.size() < 2) return "";
+    std::string hint = " (alias aceptados: ";
+    for (std::size_t i = 0; i < field.names.size(); ++i) {
+        if (i) hint += ", ";
+        hint += field.names[i];
+    }
+    return hint + ")";
+}
+
+inline std::string catalog_join(const std::vector<std::string>& values) {
+    std::string joined;
+    for (std::size_t i = 0; i < values.size(); ++i) {
+        if (i) joined += ", ";
+        joined += values[i];
+    }
+    return joined;
+}
+
+// ============================================================
 // CatalogLoader<T> — especializamos UNA VEZ por cada T definido.
 // Implementa `static T from_json(const JsonValue& entry)`.
 //
 // La base default da linker error (imposible especializar sin código) para
-// obligarnos a cubrir todos los tipos; no hay fallback silencioso.
+// obligarnos a cubrir todos los tipos; no hay fallback silencioso. Con
+// expected_fields() (D-01) igual: una especialización que no declare sus
+// campos no enlaza.
 // ============================================================
 template <typename T>
 struct CatalogLoader {
     static T from_json(const JsonValue& entry);
+    static const std::vector<CatalogField>& expected_fields();
 };
 
 // -----------------------------------------------------------------
@@ -141,6 +234,40 @@ inline SkillDefinition CatalogLoader<SkillDefinition>::from_json(const JsonValue
     s.incompatible_tags  = copy_json_string_vec(e["incompatibleTags"]);
     s.granted_summon_id  = e["grantedSummonId"].asString(e["granted_summon_id"].asString(""));
     return s;
+}
+
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<SkillDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"description"}, false},
+        {{"flavorText", "flavor_text"}, false},
+        {{"tier", "tierMin", "tier_min"}, false},
+        {{"rarity"}, false},
+        {{"actionType", "action_type"}, false},
+        {{"channelRounds", "channel_rounds"}, false},
+        {{"recovery", "recoveryPile", "recovery_pile"}, false},
+        {{"target"}, false},
+        {{"castingStat", "casting_stat"}, false},
+        {{"saveAttribute", "save_attribute"}, false},
+        {{"overrideCdIfSave", "override_cd_if_save"}, false},
+        {{"magnitudeByDegree"}, false},
+        {{"magnitudeBase", "damage", "heal"}, false},
+        {{"magnitudeType", "magnitude_type"}, false},
+        {{"applyConditionId", "apply_condition_id"}, false},
+        {{"applyConditionMinDegree", "apply_condition_min_degree"}, false},
+        {{"conditionDurationRounds", "condition_duration_rounds"}, false},
+        {{"tags"}, false},
+        {{"requiredTags"}, false},
+        {{"incompatibleTags"}, false},
+        {{"grantedSummonId", "granted_summon_id"}, false},
+    };
+    return campos;
 }
 
 // Helper: stat array 4-elem
@@ -213,6 +340,41 @@ inline ClassDefinition CatalogLoader<ClassDefinition>::from_json(const JsonValue
     return c;
 }
 
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<ClassDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"description"}, false},
+        {{"lore", "flavorText", "flavor_text"}, false},
+        {{"tier"}, false},
+        {{"rarity"}, false},
+        {{"role"}, false},
+        {{"baseHealth", "base_health"}, false},
+        {{"primaryStat", "primary_stat"}, false},
+        {{"secondaryStat", "secondary_stat"}, false},
+        {{"maxSkillCards", "max_skill_cards"}, false},
+        {{"compatibilityWeapons"}, false},
+        {{"compatibilityArmor"}, false},
+        {{"allowedEquipmentTags"}, false},
+        {{"maxArmorWeight", "max_armor_weight"}, false},
+        {{"maxWeaponWeight", "max_weapon_weight"}, false},
+        {{"passiveId", "passive_id"}, false},
+        {{"startingCards"}, false},
+        {{"startingSkillIds"}, false},
+        {{"startingEquipment"}, false},
+        {{"startingEquipmentIds"}, false},
+        {{"specializationIds"}, false},
+        {{"canMulticlassInto", "can_multiclass_into"}, false},
+        {{"restrictedTags"}, false},
+    };
+    return campos;
+}
+
 // -----------------------------------------------------------------
 // RaceDefinition
 // -----------------------------------------------------------------
@@ -239,6 +401,34 @@ inline RaceDefinition CatalogLoader<RaceDefinition>::from_json(const JsonValue& 
     return r;
 }
 
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<RaceDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"description"}, false},
+        {{"flavorText", "flavor_text"}, false},
+        {{"tier"}, false},
+        {{"rarity"}, false},
+        {{"baseSpeed", "movementSpeed", "movement_speed"}, false},
+        {{"languages"}, false},
+        {{"compatibleDeityIds"}, false},
+        {{"narrativeTags"}, false},
+        {{"statBonuses", "stat_bonuses"}, false},
+        {{"passiveTraitId", "passive_trait_id"}, false},
+        {{"activeTraitId", "active_trait_id"}, false},
+        {{"racialTraitId", "racial_trait_id"}, false},
+        {{"affinities"}, false},
+        {{"limitations"}, false},
+        {{"unlocks"}, false},
+    };
+    return campos;
+}
+
 // -----------------------------------------------------------------
 // BackgroundDefinition
 // -----------------------------------------------------------------
@@ -260,6 +450,31 @@ inline BackgroundDefinition CatalogLoader<BackgroundDefinition>::from_json(const
     b.factionId = e["factionId"].asString(e["faction_id"].asString(""));
     b.startingFactionRep = e["startingFactionRep"].asInt(e["starting_faction_rep"].asInt(0));
     return b;
+}
+
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<BackgroundDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"description"}, false},
+        {{"tier"}, false},
+        {{"rarity"}, false},
+        {{"startingWealthGold", "starting_wealth_gold"}, false},
+        {{"virtue"}, false},
+        {{"defect"}, false},
+        {{"goal"}, false},
+        {{"startingEquipmentIds"}, false},
+        {{"skillProficiencyIds"}, false},
+        {{"featureIds"}, false},
+        {{"factionId", "faction_id"}, false},
+        {{"startingFactionRep", "starting_faction_rep"}, false},
+    };
+    return campos;
 }
 
 // -----------------------------------------------------------------
@@ -297,6 +512,34 @@ inline PassiveDefinition CatalogLoader<PassiveDefinition>::from_json(const JsonV
     return p;
 }
 
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<PassiveDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"description"}, false},
+        {{"flavorText"}, false},
+        {{"tier"}, false},
+        {{"rarity"}, false},
+        {{"trigger"}, false},
+        {{"extraDiceOnTrigger", "extra_dice_on_trigger"}, false},
+        {{"successBonusOnTrigger", "success_bonus_on_trigger"}, false},
+        {{"requiredTag", "required_tag"}, false},
+        {{"statBonuses", "stat_bonuses"}, false},
+        {{"armorBonus", "armor_bonus"}, false},
+        {{"physicalSaveBonus", "physical_save_bonus"}, false},
+        {{"mentalSaveBonus", "mental_save_bonus"}, false},
+        {{"spellSaveBonus", "spell_save_bonus"}, false},
+        {{"maxHealthBonus", "max_health_bonus"}, false},
+        {{"handSizeBonus", "hand_size_bonus"}, false},
+    };
+    return campos;
+}
+
 // -----------------------------------------------------------------
 // FeatDefinition
 // -----------------------------------------------------------------
@@ -317,6 +560,28 @@ inline FeatDefinition CatalogLoader<FeatDefinition>::from_json(const JsonValue& 
     return f;
 }
 
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<FeatDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"description"}, false},
+        {{"tierMin", "tier_min"}, false},
+        {{"rarity"}, false},
+        {{"requiredClassId", "required_class_id"}, false},
+        {{"requiredBackgroundId", "required_background_id"}, false},
+        {{"requiredTier", "required_tier"}, false},
+        {{"statBonuses", "stat_bonuses"}, false},
+        {{"grantedPassiveIds"}, false},
+        {{"grantedSkillIds"}, false},
+    };
+    return campos;
+}
+
 // -----------------------------------------------------------------
 // TraitDefinition
 // -----------------------------------------------------------------
@@ -333,6 +598,26 @@ inline TraitDefinition CatalogLoader<TraitDefinition>::from_json(const JsonValue
     t.recovery = e["recovery"].asString("descanso_largo");
     t.linkedSkillId = e["linkedSkillId"].asString(e["linked_skill_id"].asString(""));
     return t;
+}
+
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<TraitDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"description"}, false},
+        {{"tierMin", "tier_min"}, false},
+        {{"rarity"}, false},
+        {{"isActive", "is_active"}, false},
+        {{"timesPerRest", "times_per_rest"}, false},
+        {{"recovery"}, false},
+        {{"linkedSkillId", "linked_skill_id"}, false},
+    };
+    return campos;
 }
 
 // -----------------------------------------------------------------
@@ -353,6 +638,28 @@ inline DeityDefinition CatalogLoader<DeityDefinition>::from_json(const JsonValue
     d.grantedPassiveIds = copy_json_string_vec(e["grantedPassiveIds"]);
     d.dogmaStatBonus = statarr_json(e, "dogmaStatBonus", "dogma_stat_bonus");
     return d;
+}
+
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<DeityDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"title"}, false},
+        {{"alignment"}, false},
+        {{"description"}, false},
+        {{"domains"}, false},
+        {{"symbolTags"}, false},
+        {{"tierMin", "tier_min"}, false},
+        {{"prayerSkillIds"}, false},
+        {{"grantedPassiveIds"}, false},
+        {{"dogmaStatBonus", "dogma_stat_bonus"}, false},
+    };
+    return campos;
 }
 
 // -----------------------------------------------------------------
@@ -384,6 +691,34 @@ inline ConditionDefinition CatalogLoader<ConditionDefinition>::from_json(const J
     return c;
 }
 
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<ConditionDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"description"}, false},
+        {{"stacking"}, false},
+        {{"defaultRounds", "default_rounds"}, false},
+        {{"maxStacks", "max_stacks"}, false},
+        {{"damagePerRound", "damage_per_round"}, false},
+        {{"isNegative", "is_negative"}, false},
+        {{"statMod", "stat_mod"}, false},
+        {{"caMod", "ca_mod"}, false},
+        {{"physicalSaveMod", "physical_save_mod"}, false},
+        {{"willSaveMod", "will_save_mod"}, false},
+        {{"preventAction", "prevent_action"}, false},
+        {{"halfSpeed", "half_speed"}, false},
+        {{"grantAdvantageToEnemies", "grant_advantage_to_enemies"}, false},
+        {{"grantDisadvantageToCaster", "grant_disadvantage_to_caster"}, false},
+        {{"breaksOnDamage", "breaks_on_damage"}, false},
+    };
+    return campos;
+}
+
 // -----------------------------------------------------------------
 // EquipmentDefinition
 // -----------------------------------------------------------------
@@ -413,6 +748,37 @@ inline EquipmentDefinition CatalogLoader<EquipmentDefinition>::from_json(const J
     return eq;
 }
 
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<EquipmentDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"description"}, false},
+        {{"flavorText", "flavor_text"}, false},
+        {{"tier"}, false},
+        {{"rarity"}, false},
+        {{"price"}, false},
+        {{"slot"}, false},
+        {{"weightCategory", "weight_category", "weight"}, false},
+        {{"compatibleSymbols"}, false},
+        {{"grantedTags"}, false},
+        {{"statBonuses", "stat_bonuses"}, false},
+        {{"caBonus", "ca_bonus"}, false},
+        {{"maxHealthBonus", "max_health_bonus"}, false},
+        {{"physicalSaveBonus", "physical_save_bonus"}, false},
+        {{"willSaveBonus", "will_save_bonus"}, false},
+        {{"spellSaveBonus", "spell_save_bonus"}, false},
+        {{"damageBonus", "damage_bonus"}, false},
+        {{"linkedSkillId", "linked_skill_id"}, false},
+        {{"twoHanded", "two_handed"}, false},
+    };
+    return campos;
+}
+
 // -----------------------------------------------------------------
 // ConsumableDefinition
 // -----------------------------------------------------------------
@@ -434,6 +800,31 @@ inline ConsumableDefinition CatalogLoader<ConsumableDefinition>::from_json(const
     c.grantPassiveId = e["grantPassiveId"].asString(e["grant_passive_id"].asString(""));
     c.grantPassiveRounds = e["grantPassiveRounds"].asInt(e["grant_passive_rounds"].asInt(0));
     return c;
+}
+
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<ConsumableDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"description"}, false},
+        {{"tier"}, false},
+        {{"rarity"}, false},
+        {{"price"}, false},
+        {{"healHp", "heal_hp"}, false},
+        {{"restorePileCards", "restore_pile_cards"}, false},
+        {{"clearOneCondition", "clear_one_condition"}, false},
+        {{"grantConditionId", "grant_condition_id"}, false},
+        {{"grantConditionRounds", "grant_condition_rounds"}, false},
+        {{"bonusGold", "bonus_gold"}, false},
+        {{"grantPassiveId", "grant_passive_id"}, false},
+        {{"grantPassiveRounds", "grant_passive_rounds"}, false},
+    };
+    return campos;
 }
 
 // -----------------------------------------------------------------
@@ -491,6 +882,40 @@ inline MonsterDefinition CatalogLoader<MonsterDefinition>::from_json(const JsonV
     return m;
 }
 
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<MonsterDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"flavorText", "flavor_text"}, false},
+        {{"description"}, false},
+        {{"rank"}, false},
+        {{"tier"}, false},
+        {{"rarity"}, false},
+        {{"role"}, false},
+        {{"faction", "factionId"}, false},
+        {{"factionName"}, false},
+        {{"stats", "statBonuses"}, false},
+        {{"maxHealth", "max_health", "health"}, false},
+        {{"ca", "ac"}, false},
+        {{"defMental", "def_mental"}, false},
+        {{"resFis", "res_fis"}, false},
+        {{"precMag", "prec_mag"}, false},
+        {{"movement", "movementSpeed"}, false},
+        {{"attacks"}, false},
+        {{"passiveId", "passive_id"}, false},
+        {{"conditionsInflicted"}, false},
+        {{"skillIds"}, false},
+        {{"lootIds"}, false},
+        {{"phases"}, false},
+    };
+    return campos;
+}
+
 // -----------------------------------------------------------------
 // SummonDefinition
 // -----------------------------------------------------------------
@@ -513,6 +938,32 @@ inline SummonDefinition CatalogLoader<SummonDefinition>::from_json(const JsonVal
     s.disappearAtZeroHp = e["disappearAtZeroHp"].asBool(e["disappear_at_zero_hp"].asBool(true));
     s.concentrationRequired = e["concentrationRequired"].asBool(e["concentration_required"].asBool(false));
     return s;
+}
+
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<SummonDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"description"}, false},
+        {{"tier"}, false},
+        {{"rarity"}, false},
+        {{"durationRounds", "duration_rounds"}, false},
+        {{"maxHealth", "max_health"}, false},
+        {{"ca"}, false},
+        {{"movement"}, false},
+        {{"stats", "statBonuses"}, false},
+        {{"attackSkillIds"}, false},
+        {{"passiveIds"}, false},
+        {{"summonRole", "summon_role"}, false},
+        {{"disappearAtZeroHp", "disappear_at_zero_hp"}, false},
+        {{"concentrationRequired", "concentration_required"}, false},
+    };
+    return campos;
 }
 
 // -----------------------------------------------------------------
@@ -540,6 +991,33 @@ inline MountDefinition CatalogLoader<MountDefinition>::from_json(const JsonValue
     return m;
 }
 
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<MountDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"description"}, false},
+        {{"tier"}, false},
+        {{"rarity"}, false},
+        {{"price"}, false},
+        {{"movement", "movementSpeed"}, false},
+        {{"maxHealth", "max_health"}, false},
+        {{"ca"}, false},
+        {{"carryWeightKg", "carry_weight_kg"}, false},
+        {{"mountedStatBonus", "mounted_stat_bonus"}, false},
+        {{"mountedCaBonus", "mounted_ca_bonus"}, false},
+        {{"disengageBonus", "disengage_bonus"}, false},
+        {{"canFly", "can_fly"}, false},
+        {{"canSwim", "can_swim"}, false},
+        {{"grantedPassiveIdsWhileMounted"}, false},
+    };
+    return campos;
+}
+
 // -----------------------------------------------------------------
 // TrapDefinition
 // -----------------------------------------------------------------
@@ -561,6 +1039,31 @@ inline TrapDefinition CatalogLoader<TrapDefinition>::from_json(const JsonValue& 
     t.oneShot = e["oneShot"].asBool(e["one_shot"].asBool(true));
     t.cooldownRounds = e["cooldownRounds"].asInt(e["cooldown_rounds"].asInt(0));
     return t;
+}
+
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<TrapDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"description"}, false},
+        {{"tier"}, false},
+        {{"rarity"}, false},
+        {{"damage"}, false},
+        {{"saveAttribute", "save_attribute"}, false},
+        {{"cd"}, false},
+        {{"detectBySearch", "detect_by_search"}, false},
+        {{"detectDifficulty", "detect_difficulty"}, false},
+        {{"applyConditionId", "apply_condition_id"}, false},
+        {{"applyConditionRounds", "apply_condition_rounds"}, false},
+        {{"oneShot", "one_shot"}, false},
+        {{"cooldownRounds", "cooldown_rounds"}, false},
+    };
+    return campos;
 }
 
 // -----------------------------------------------------------------
@@ -592,6 +1095,25 @@ inline LootTableDefinition CatalogLoader<LootTableDefinition>::from_json(const J
     return l;
 }
 
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<LootTableDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"description"}, false},
+        {{"tier"}, false},
+        {{"rarity"}, false},
+        {{"entries"}, false},
+        {{"minGold", "min_gold"}, false},
+        {{"maxGold", "max_gold"}, false},
+    };
+    return campos;
+}
+
 // -----------------------------------------------------------------
 // NpcDefinition
 // -----------------------------------------------------------------
@@ -617,6 +1139,33 @@ inline NpcDefinition CatalogLoader<NpcDefinition>::from_json(const JsonValue& e)
     return n;
 }
 
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<NpcDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"description"}, false},
+        {{"tier"}, false},
+        {{"raceId", "race_id"}, false},
+        {{"classId", "class_id"}, false},
+        {{"factionId", "faction_id"}, false},
+        {{"factionRepDefault", "faction_rep_default"}, false},
+        {{"occupation"}, false},
+        {{"isMerchant", "is_merchant"}, false},
+        {{"shopLootId", "shop_loot_id"}, false},
+        {{"hasDialogue", "has_dialogue"}, false},
+        {{"dialogueId", "dialogue_id"}, false},
+        {{"isHostile", "is_hostile"}, false},
+        {{"monsterId", "monster_id"}, false},
+        {{"gold"}, false},
+    };
+    return campos;
+}
+
 // -----------------------------------------------------------------
 // AdventureDefinition
 // -----------------------------------------------------------------
@@ -636,6 +1185,29 @@ inline AdventureDefinition CatalogLoader<AdventureDefinition>::from_json(const J
     a.grantOnEndStoryCardIds   = copy_json_string_vec(e["grantOnEndStoryCardIds"]);
     a.grantMilestoneOnEnd = e["grantMilestoneOnEnd"].asString(e["grant_milestone_on_end"].asString(""));
     return a;
+}
+
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<AdventureDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"summary", "description"}, false},
+        {{"tier"}, false},
+        {{"recommendedTierMin", "recommended_tier_min"}, false},
+        {{"recommendedTierMax", "recommended_tier_max"}, false},
+        {{"questIds"}, false},
+        {{"requiredNpcIds"}, false},
+        {{"mainFactionId", "main_faction_id"}, false},
+        {{"grantOnStartStoryCardIds"}, false},
+        {{"grantOnEndStoryCardIds"}, false},
+        {{"grantMilestoneOnEnd", "grant_milestone_on_end"}, false},
+    };
+    return campos;
 }
 
 // -----------------------------------------------------------------
@@ -669,6 +1241,25 @@ inline EventDefinition CatalogLoader<EventDefinition>::from_json(const JsonValue
         }
     }
     return ev;
+}
+
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<EventDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"description"}, false},
+        {{"tier"}, false},
+        {{"triggerKind", "trigger_kind", "trigger"}, false},
+        {{"validZoneIds"}, false},
+        {{"weight"}, false},
+        {{"options"}, false},
+    };
+    return campos;
 }
 
 // -----------------------------------------------------------------
@@ -718,6 +1309,36 @@ inline LocationDefinition CatalogLoader<LocationDefinition>::from_json(const Jso
     return l;
 }
 
+// D-01 — Campos que from_json lee, derivados del propio cuerpo (claves
+// e["..."] y cadenas de defaults). id/name son los unicos obligatorios:
+// estan en las 2650 entradas de los 21 assets publicados (07/09/2026). El resto
+// pasa a obligatorio cuando D-02..D-09 migren su asset.
+template<>
+inline const std::vector<CatalogField>& CatalogLoader<LocationDefinition>::expected_fields() {
+    static const std::vector<CatalogField> campos = {
+        {{"id"}, true},
+        {{"name"}, true},
+        {{"tier"}, false},
+        {{"locationType", "kind"}, false},
+        {{"controlledBy", "controlled_by"}, false},
+        {{"description"}, false},
+        {{"polygon"}, false},
+        {{"position"}, false},
+        {{"settlementSize", "settlement_size"}, false},
+        {{"population"}, false},
+        {{"ruler"}, false},
+        {{"trait"}, false},
+        {{"pendingCanonName"}, false},
+        {{"terrain"}, false},
+        {{"danger"}, false},
+        {{"storyIds"}, false},
+        {{"npcIds"}, false},
+        {{"deityIds"}, false},
+        {{"raceIds"}, false},
+    };
+    return campos;
+}
+
 // ============================================================
 // Catalog<T> — implementación de ICatalog<T> con carga JSON.
 //
@@ -739,33 +1360,74 @@ public:
 
     // Carga desde texto JSON raw (wrapper {"entries": [...]}).
     // Result<int> = OK con número de entradas cargadas, o error.
-    Result<int> loadFromString(const std::string& jsonText) {
+    //
+    // D-01 — Validación contra el contrato del cargador. Antes una entrada
+    // sin id se descartaba con `continue` y cualquier excepción del cargador
+    // caía en un catch(...) mudo: el catálogo se quedaba a medias y el
+    // resultado seguía siendo Ok. Ahora:
+    //   - falta un campo obligatorio (o cualquiera declarado, con
+    //     AllDeclared) → Error con el campo, sus alias y la entrada;
+    //   - el cargador lanza → Error con la entrada y el motivo;
+    //   - todo-o-nada: se parsea a un buffer local antes de tocar m_store,
+    //     mismo criterio que ObjectCatalog::loadFromString.
+    Result<int> loadFromString(const std::string& jsonText,
+                               CatalogStrictness strictness = CatalogStrictness::Structural) {
         auto parsed = JsonValue::parse(jsonText);
         if (!parsed.isOk()) return Result<int>::Error(parsed.errorMessage());
         const JsonValue& root = parsed.value();
         if (!root.isObject()) return Result<int>::Error("Catalog JSON root no es objeto");
         const JsonValue& arr = root["entries"];
         if (!arr.isArray()) return Result<int>::Error("Catalog JSON no tiene clave 'entries' (array)");
-        std::size_t ok = 0;
-        m_store.clear();
+
+        const std::vector<CatalogField>& fields = CatalogLoader<T>::expected_fields();
+        std::vector<std::unique_ptr<T>> pending;
+        pending.reserve(arr.size());
         for (std::size_t i = 0; i < arr.size(); ++i) {
             const JsonValue& entry = arr[i];
-            try {
-                T t = CatalogLoader<T>::from_json(entry);
-                if (t.id.empty()) continue;
-                auto owned = std::make_unique<T>(std::move(t));
-                const std::string key = owned->id;
-                m_store[key] = std::move(owned);
-                ++ok;
-            } catch (...) {
-                // Loader no debería lanzar; si lo hace, continuamos con el resto
+            if (!entry.isObject()) {
+                return Result<int>::Error("entries[" + std::to_string(i) + "] no es un objeto");
             }
+            const std::string label = catalog_entry_label(entry, i);
+
+            for (const CatalogField& field : fields) {
+                if (!field.required || catalog_field_present(entry, field)) continue;
+                return Result<int>::Error(label + ": falta el campo obligatorio \"" +
+                                          field.names.front() + "\"" +
+                                          catalog_field_hint(field));
+            }
+            if (strictness == CatalogStrictness::AllDeclared) {
+                const std::vector<std::string> missing = catalog_missing_fields(entry, fields);
+                if (!missing.empty()) {
+                    return Result<int>::Error(label + ": faltan campos declarados: " +
+                                              catalog_join(missing));
+                }
+            }
+
+            std::unique_ptr<T> owned;
+            try {
+                owned = std::make_unique<T>(CatalogLoader<T>::from_json(entry));
+            } catch (const std::exception& ex) {
+                return Result<int>::Error(label + ": el cargador ha lanzado: " + ex.what());
+            } catch (...) {
+                return Result<int>::Error(label +
+                                          ": el cargador ha lanzado una excepción no estándar");
+            }
+            if (owned->id.empty()) {
+                return Result<int>::Error(label + ": la entrada no tiene id");
+            }
+            pending.push_back(std::move(owned));
         }
-        return Result<int>::Ok(static_cast<int>(ok));
+
+        m_store.clear();
+        for (auto& owned : pending) {
+            m_store[owned->id] = std::move(owned);
+        }
+        return Result<int>::Ok(static_cast<int>(pending.size()));
     }
 
     // Carga desde fichero; wrapper que llama a loadFromString.
-    Result<int> loadFromFile(const std::string& path) {
+    Result<int> loadFromFile(const std::string& path,
+                             CatalogStrictness strictness = CatalogStrictness::Structural) {
         FILE* f = std::fopen(path.c_str(), "rb");
         if (!f) {
             return Result<int>::Error("Catalog: no se puede abrir fichero: " + path);
@@ -779,7 +1441,7 @@ public:
             (void)std::fread(buf.data(), 1, static_cast<std::size_t>(sz), f);
         }
         std::fclose(f);
-        return loadFromString(buf);
+        return loadFromString(buf, strictness);
     }
 
     // Programa (no JSON) — añade una entrada copiada o movida.
