@@ -28,13 +28,14 @@ import sys
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(AQUI)
-FUENTE = os.path.join(RAIZ, "examples", "level_editor.cpp")
+FUENTE = os.path.join(RAIZ, "editor", "src", "level_editor.cpp")
+ENUM = os.path.join(RAIZ, "include", "Editor", "EditorState.h")
 
 # Como se escribe cada tecla en el texto que ve el usuario. GLFW la llama
 # de una forma y la cabecera de otra ("," frente a GLFW_KEY_COMMA).
 NOMBRES = {
     "COMMA": [","], "PERIOD": ["."], "ESCAPE": ["ESC"], "ENTER": ["ENTER"],
-    "BACKSPACE": ["BACKSPACE"], "HOME": ["HOME"], "UP": ["W/S", "W", "ARRIBA"],
+    "SPACE": ["SPACE", "ESPACIO"], "BACKSPACE": ["BACKSPACE"], "HOME": ["HOME"], "UP": ["W/S", "W", "ARRIBA"],
     "DOWN": ["W/S", "S", "ABAJO"], "MINUS": ["-", "+/-"], "EQUAL": ["+", "+/-"],
     "KP_ADD": ["+", "+/-"], "KP_SUBTRACT": ["-", "+/-"],
     "LEFT_CONTROL": ["CTRL"], "RIGHT_CONTROL": ["CTRL"],
@@ -80,16 +81,23 @@ def aparece(etiqueta, texto):
     'G' se da por anunciada por cualquier cadena que lleve una G dentro y
     el comprobador no comprueba nada."""
     e = etiqueta.upper()
-    if len(e) == 1 and e.isalnum():
+    if e.isalnum():
         return re.search(r"(?<![A-Z0-9])" + re.escape(e) + r"(?![A-Z0-9])", texto) is not None
     return e in texto
 
 
-def main():
-    with open(FUENTE, encoding="utf-8") as f:
-        src = f.read()
+def sin_comentarios(src):
+    """Quita comentarios sin confundir // dentro de un literal con codigo."""
+    return re.sub(r'"(?:[^"\\]|\\.)*"|//[^\n]*|/\*.*?\*/',
+                  lambda m: " " if m.group().startswith(("//", "/*")) else m.group(),
+                  src, flags=re.S)
 
-    enlazadas = set(re.findall(r"GLFW_KEY_([A-Z0-9_]+)", src))
+
+def comprobar(src, enum_src):
+    codigo = sin_comentarios(src)
+    # Los nombres en comentarios y mensajes no son enlaces de teclado.
+    sin_literales = re.sub(r'"(?:[^"\\]|\\.)*"', '""', codigo)
+    enlazadas = set(re.findall(r"GLFW_KEY_([A-Z0-9_]+)", sin_literales))
     anunciado = texto_anunciado(src).upper()
 
     fantasmas, silenciosas = [], []
@@ -106,29 +114,48 @@ def main():
         if "F" + f_tecla not in enlazadas:
             fantasmas.append("F" + f_tecla)
 
-    # --- Herramientas: enum, teclas, menu y barra tienen que coincidir ---
-    # El enum crecio a 7 (LinkLevel) y la cabecera siguio diciendo 1/2/3/4/
-    # 5/6 durante un rato. Cuatro sitios que hay que tocar a la vez es un
-    # sitio de mas para olvidarse.
-    ruta_enum = os.path.join(RAIZ, "include", "Editor", "EditorState.h")
-    with open(ruta_enum, encoding="utf-8") as f:
-        cuerpo = f.read().split("enum class EditorTool {", 1)[-1].split("}", 1)[0]
-    n_enum = len([l for l in cuerpo.split("\n") if l.strip().rstrip(",").isalnum()])
-    n_menu = len(re.findall(r'"\d " \+ std::string\(toolName', src))
-    # Herramientas CON TECLA DE NUMERO: esa es la correspondencia real.
-    # setTool() sale en mas sitios (p. ej. ESC sobre el menu de objetos
-    # vuelve a PaintTile), y contar toda aparicion descuadraria la cuenta
-    # contra el enum y el menu.
-    n_teclas = len(set(re.findall(r"GLFW_KEY_(\d)\)\)\s+editor\.setTool", src)))
-    rango = re.search(r"1-(\d) HERRAM", src)
-    n_barra = int(rango.group(1)) if rango else 0
+    # Tambien comprueba teclas con nombre (TAB era un fantasma que no
+    # detectaba la comprobacion limitada a F1-F12).
+    for nombre, tecla in {"TAB": "TAB", "ENTER": "ENTER", "ESC": "ESCAPE",
+                          "BACKSPACE": "BACKSPACE", "HOME": "HOME",
+                          "SPACE": "SPACE", "ESPACIO": "SPACE"}.items():
+        if aparece(nombre, anunciado) and tecla not in enlazadas:
+            fantasmas.append(tecla)
+    # Las declaraciones de controles de la cabecera tienen etiqueta = accion.
+    # No tomamos letras sueltas de la prosa, que no necesariamente son teclas.
+    for etiqueta in re.findall(r"^//\s+([A-Z0-9+/ .,-]+?)\s+=", src, re.M | re.I):
+        for tecla in re.findall(r"(?<![A-Z0-9])[A-Z](?![A-Z0-9])", etiqueta.upper()):
+            if tecla not in enlazadas:
+                fantasmas.append(tecla)
+    fantasmas = sorted(set(fantasmas))
 
+    # Herramientas: compara IDENTIDADES y numeros, no solo cantidades.
+    # Siete teclas que seleccionan todas PaintTile no son siete herramientas.
+    enum = re.search(r"enum\s+class\s+EditorTool\s*\{([^}]+)\}",
+                     sin_comentarios(enum_src), re.S)
+    nombres = [e.strip() for e in enum.group(1).split(",") if e.strip()] if enum else []
+    enum_valido = bool(nombres) and all(re.fullmatch(r"[A-Za-z_]\w*", n) for n in nombres)
+    esperadas = [(str(i), n) for i, n in enumerate(nombres, 1)]
+    menu = re.findall(r'"(\d+) "\s*\+\s*std::string\(toolName\(EditorTool::(\w+)\)\)', codigo)
+    teclas = re.findall(r"GLFW_KEY_(\d)\s*\)\s*\)\s*(?:\{\s*)?"
+                        r"editor\.setTool\(EditorTool::(\w+)\)", sin_literales)
+    rangos = re.findall(r"1-(\d+) HERRAM", texto_anunciado(src))
+    n_enum, n_menu, n_teclas = len(nombres), len(menu), len(teclas)
+    n_barra = int(rangos[0]) if rangos else 0
     herramientas = []
-    if not (n_enum == n_menu == n_teclas == n_barra):
-        herramientas = [f"enum {n_enum}", f"teclas {n_teclas}",
-                        f"menu {n_menu}", f"barra 1-{n_barra}"]
+    if not enum_valido:
+        herramientas.append("no se pudo leer un enum EditorTool valido")
+    if menu != esperadas:
+        herramientas.append(f"menu {menu}, esperado {esperadas}")
+    if sorted(teclas) != sorted(esperadas):
+        herramientas.append(f"teclas {teclas}, esperado {esperadas}")
+    if not rangos or any(int(n) != n_enum for n in rangos):
+        herramientas.append(f"barra {rangos}, esperado 1-{n_enum}")
+    cabecera = re.search(r"^//\s+1\.\.(\d+)\s+=\s+herramienta", src, re.M)
+    if not cabecera or int(cabecera.group(1)) != n_enum:
+        herramientas.append(f"cabecera: esperado 1..{n_enum}")
 
-    print("Controles de examples/level_editor.cpp\n")
+    print("Controles de editor/src/level_editor.cpp\n")
     print(f"  teclas enlazadas en el codigo: {len(enlazadas)}")
     print(f"  herramientas: {n_enum} en el enum, {n_teclas} con tecla, "
           f"{n_menu} en el menu, 1-{n_barra} en la barra")
@@ -151,6 +178,18 @@ def main():
     print(f"\n  {len(fantasmas)} fantasma(s), {len(silenciosas)} sin anunciar"
           + (", herramientas descuadradas" if herramientas else ""))
     return 1
+
+
+def main():
+    try:
+        with open(FUENTE, encoding="utf-8") as f:
+            src = f.read()
+        with open(ENUM, encoding="utf-8") as f:
+            enum_src = f.read()
+    except OSError as exc:
+        print(f"No se pueden verificar los controles: {exc}", file=sys.stderr)
+        return 1
+    return comprobar(src, enum_src)
 
 
 if __name__ == "__main__":

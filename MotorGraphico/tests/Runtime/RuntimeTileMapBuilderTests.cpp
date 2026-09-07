@@ -47,23 +47,49 @@ MOTOR_TEST_CASE(builder_compiles_only_tile_layers_from_valid_document) {
     MOTOR_CHECK(runtime.getTile(0, 1, 0).hasCollision());
 }
 
-MOTOR_TEST_CASE(runtime_tile_overrides_are_session_state_not_document_mutations) {
+MOTOR_TEST_CASE(compiled_runtime_is_independent_from_later_document_edits) {
     MapDocument document = makeDocument();
     RuntimeTileMapBuilder builder;
-    Result<RuntimeTileMap> result = builder.build(document);
+    const Result<RuntimeTileMap> first = builder.build(document);
+    MOTOR_CHECK(first.isOk());
+
+    MOTOR_CHECK(document.setTile(id<ids::LayerId>("suelo"), {1, 0}, 99).isOk());
+    MOTOR_CHECK(document.setCollisionGids({99}).isOk());
+    const Result<RuntimeTileMap> rebuilt = builder.build(document);
+    MOTOR_CHECK(rebuilt.isOk());
+
+    MOTOR_CHECK(first.value().getTile(0, 1, 0).getTilesetID() == 2);
+    MOTOR_CHECK(first.value().getTile(0, 1, 0).hasCollision());
+    MOTOR_CHECK(rebuilt.value().getTile(0, 1, 0).getTilesetID() == 99);
+    MOTOR_CHECK(rebuilt.value().getTile(0, 1, 0).hasCollision());
+}
+
+MOTOR_TEST_CASE(runtime_preserves_isometric_coordinates_and_checked_access) {
+    const Result<RuntimeTileMap> result = RuntimeTileMapBuilder{}.build(makeDocument());
     MOTOR_CHECK(result.isOk());
-    RuntimeTileMap& runtime = result.value();
+    const RuntimeTileMap& runtime = result.value();
+    MOTOR_CHECK(runtime.getTileWidth() == 64);
+    MOTOR_CHECK(runtime.getTileHeight() == 32);
+    const Vector2 screen = runtime.gridToScreen({2, 1});
+    MOTOR_CHECK(screen.x == 32.0f);
+    MOTOR_CHECK(screen.y == 48.0f);
+    const GridCoord grid = runtime.screenToGrid(screen);
+    MOTOR_CHECK(grid.x == 2 && grid.y == 1);
 
-    MOTOR_CHECK(runtime.setTileOverride(id<ids::LayerId>("suelo"), {1, 0}, RuntimeTile(99, true))
-                    .isOk());
-    MOTOR_CHECK(runtime.getTile(0, 1, 0).getTilesetID() == 99);
-    MOTOR_CHECK(runtime.getTile(0, 1, 0).hasCollision());
-    MOTOR_CHECK(runtime.tileOverrides().size() == 1);
-    MOTOR_CHECK(std::get<TileLayerDocument>(document.layers()[0].data()).gids()[1] == 2);
-
-    runtime.clearTileOverrides();
-    MOTOR_CHECK(runtime.getTile(0, 1, 0).getTilesetID() == 2);
-    MOTOR_CHECK(runtime.tileOverrides().empty());
+    const auto rejects = [](auto query) {
+        try {
+            query();
+        } catch (const std::out_of_range&) {
+            return true;
+        }
+        return false;
+    };
+    MOTOR_CHECK(rejects([&] { runtime.layerAt(-1); }));
+    MOTOR_CHECK(rejects([&] { runtime.layerAt(1); }));
+    MOTOR_CHECK(rejects([&] { runtime.getTile(0, -1, 0); }));
+    MOTOR_CHECK(rejects([&] { runtime.getTile(0, 0, -1); }));
+    MOTOR_CHECK(rejects([&] { runtime.getTile(0, 3, 0); }));
+    MOTOR_CHECK(rejects([&] { runtime.getTile(0, 0, 2); }));
 }
 
 MOTOR_TEST_CASE(builder_rejects_an_invalid_document) {

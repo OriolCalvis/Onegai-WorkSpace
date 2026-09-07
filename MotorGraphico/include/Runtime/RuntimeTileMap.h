@@ -1,9 +1,7 @@
 #pragma once
 
-#include <string>
 #include <vector>
 
-#include "Core/Errors/Result.h"
 #include "Core/Ids/ProjectIds.h"
 #include "Core/Math/GridCoord.h"
 #include "Core/Math/Vector2.h"
@@ -12,8 +10,7 @@
 class RuntimeTileMapBuilder;
 
 // Capa de runtime compilada desde un MapDocument. tiles mantiene una sola
-// dimensión fila-major y el ID de origen permite aplicar overrides de partida
-// sin volver a mirar ni mutar el documento de autoría.
+// dimensión fila-major y conserva la identidad de la capa de autoría.
 struct RuntimeTileLayer {
     ids::LayerId sourceLayerId;
     bool visible = true;
@@ -21,15 +18,8 @@ struct RuntimeTileLayer {
     std::vector<RuntimeTile> tiles;
 };
 
-struct RuntimeTileOverride {
-    ids::LayerId layerId;
-    GridCoord position;
-    RuntimeTile tile;
-};
-
-// Representación compacta y mutable solo a nivel de partida. El mapa base
-// compilado permanece intacto: setTileOverride() registra cambios de sesión y
-// clearTileOverrides() recupera exactamente el resultado del builder.
+// Representación compilada de consulta: cada capa tiene una única copia de
+// sus tiles, independiente del documento de autoría.
 class RuntimeTileMap {
 public:
     RuntimeTileMap() = default;
@@ -50,29 +40,22 @@ public:
 
     GridCoord screenToGrid(const Vector2& screenPos) const;
     Vector2 gridToScreen(const GridCoord& grid) const;
-    Result<bool> setTileOverride(const ids::LayerId& layerId, GridCoord position,
-                                 RuntimeTile tile);
-    void clearTileOverrides();
-    const std::vector<RuntimeTileOverride>& tileOverrides() const { return m_overrides; }
 
 protected:
     // Protegido para que TileMap pueda seguir importando TMX como adaptador
     // temporal. Solo RuntimeTileMapBuilder y ese adaptador construyen datos
-    // de base; los consumidores solo los consultan u ofrecen overrides.
+    // de base; los consumidores solo los consultan.
     void replaceCompiledData(int width, int height, int tileWidth, int tileHeight,
                              std::vector<RuntimeTileLayer> layers);
 
 private:
     friend class RuntimeTileMapBuilder;
 
-    int findLayerIndex(const ids::LayerId& layerId) const;
     std::size_t tileIndex(int x, int y) const;
 
     int m_width = 0;
     int m_height = 0;
     int m_tileWidth = 0;
     int m_tileHeight = 0;
-    std::vector<RuntimeTileLayer> m_baseLayers;
     std::vector<RuntimeTileLayer> m_layers;
-    std::vector<RuntimeTileOverride> m_overrides;
 };

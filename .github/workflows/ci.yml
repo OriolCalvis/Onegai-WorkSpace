@@ -139,6 +139,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Verify editor controls
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          python3 tools/test_verificar_controles.py
+          python3 tools/verificar_controles.py
+
       - name: Install tools
         run: |
           sudo apt-get update

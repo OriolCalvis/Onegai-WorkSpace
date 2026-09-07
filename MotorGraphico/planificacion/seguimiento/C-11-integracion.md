@@ -1,4 +1,6 @@
-# C-11 — integración aplicada en el workspace, pendiente de versionar la base
+# C-11 — registro histórico de la integración
+
+> **Revisado 07/09/2026 (Codex):** la integración ya está en Git mediante el rescate `9e40405`/`52d696f`. Las doce huellas de contenido de esta tabla coinciden con HEAD y el parche completo pasa la comprobación inversa contra el índice. **No volver a aplicarlo.** Se conserva como evidencia histórica de autoría; la validación remota de CI sigue pendiente. El texto siguiente describe el estado del 03/09 anterior al rescate.
 
 Este parche conserva **solo los cambios de esta sesión** sobre los trece archivos indicados. Ya están aplicados en el workspace del 03/09/2026; no volver a aplicarlos allí.
 

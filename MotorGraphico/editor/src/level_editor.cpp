@@ -12,7 +12,8 @@
 //           click der  = sobre un OBJETO: abre el panel de PROPIEDADES
 //                        de esa instancia (modal: W/S navegar, ENTER
 //                        editar/elegir, X quitar botin/propiedad, ESC
-//                        cerrar; el boton derecho tambien lo cierra).
+//                        cerrar; SPACE inserta un espacio al editar texto.
+//                        El boton derecho tambien lo cierra).
 //                        Sobre una celda sin objeto: la herramienta
 //                        "contraria" rapida (borrar tile / quitar objeto)
 //   1..7    = herramienta, en el orden del enum EditorTool:
@@ -21,7 +22,7 @@
 //             7 enlazar nivel (la puerta que lleva a otro escenario)
 //   Q/E     = navegar la paleta activa; en objetos recorre el arbol y luego
 //             los recursos concretos (tiles u objetos, segun herramienta)
-//   TAB     = abrir el panel de familias de objetos
+//   3       = abrir el panel de familias de objetos
 //   ENTER   = entrar en una familia; ESC/BACKSPACE = cerrar y volver
 //   [ / ]   = pagina anterior / siguiente dentro del menu de objetos
 //             (sube/baja familias enteras cuando la lista es larga)
@@ -1393,7 +1394,7 @@ int main(int argc, char** argv) {
         paletteTitleT.anchor = HudAnchor::TopLeft;
         paletteTitleT.offset = {8.0f + kPad, toolsBottom + kPad};
         HudText paletteTitle(paletteTitleT, &font);
-        paletteTitle.setText("PALETA  Q/E   TAB FAMILIAS");
+        paletteTitle.setText("PALETA  Q/E   3 FAMILIAS");
         paletteTitle.setColor(kDimText);
 
         HudTransform paletteMenuT;
@@ -1525,7 +1526,7 @@ int main(int argc, char** argv) {
         statusPanel.setBorder(kBorderColor, 2.0f);
 
         const std::string kControlsLine =
-            "1-7 HERRAM  Q/E PALETA  TAB CATEG  ENTER ABRIR  ESC ATRAS  B BUSCAR  C CAPA  R SEL  Z/Y HIST  G GUARDAR  V VALIDAR  P JUGAR  M PROYECTOS";
+            "1-7 HERRAM  Q/E PALETA  3 CATEG  ENTER ABRIR  ESC ATRAS  B BUSCAR  C CAPA  R SEL  Z/Y HIST  G GUARDAR  V VALIDAR  P JUGAR  M PROYECTOS";
         HudTransform statusTextT;
         statusTextT.anchor = HudAnchor::BottomCenter;
         statusTextT.offset = {0.0f, 8.0f + kPad};
