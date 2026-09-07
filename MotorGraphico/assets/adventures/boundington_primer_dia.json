@@ -11,6 +11,16 @@
   },
   "objectives": [
     {
+      "id": "obj_tut_comerciantes",
+      "text": "Presentarte a los tres comerciantes de la plaza",
+      "doneFlag": "bnd_tut_emboscada_lanzada"
+    },
+    {
+      "id": "obj_tut_emboscada",
+      "text": "Sobrevivir al atraco en la plaza",
+      "doneFlag": "bnd_tut_emboscada_resuelta"
+    },
+    {
       "id": "obj_posada",
       "text": "Buscar cama en la Taberna Humilde",
       "doneFlag": "bnd_skilla"
@@ -606,6 +616,229 @@
         {
           "type": "log",
           "arg": "FIN DEL PRIMER DIA — Venides estara solo."
+        }
+      ]
+    },
+    {
+      "id": "tut_encargo",
+      "trigger": {
+        "type": "auto",
+        "target": ""
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_llegada"
+        ],
+        "notFlags": [
+          "bnd_tut_encargo_dado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "La posadera te ha dicho que no se sale a la calle sin equipo, y en esta plaza hay tres tiendas que abren temprano.",
+        "El mercado, la joyeria y la sastreria. Presentate: en Boundington nadie le vende nada a un desconocido."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_tut_encargo_dado"
+        },
+        {
+          "type": "log",
+          "arg": "Tutorial: habla con el tendero del mercado, el joyero y el sastre."
+        }
+      ]
+    },
+    {
+      "id": "tut_tendero",
+      "trigger": {
+        "type": "talk",
+        "target": "tendero_mercado"
+      },
+      "requires": {
+        "notFlags": [
+          "bnd_tut_tendero"
+        ]
+      },
+      "speaker": "Tendero del mercado",
+      "lines": [
+        "Asi que eres el nuevo. Skilla ya ha pasado el aviso.",
+        "Mira lo que quieras. Lo que te llevas se paga, y lo que te sobra me lo recompras a mitad de precio. No hago preguntas.",
+        "Consejo gratis: una pocion en la bolsa vale mas que dos en el bolsillo de un muerto."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_tut_tendero"
+        },
+        {
+          "type": "log",
+          "arg": "Has conocido al tendero del mercado: abre su tienda para comprar y vender."
+        }
+      ]
+    },
+    {
+      "id": "tut_joyero",
+      "trigger": {
+        "type": "talk",
+        "target": "joyero"
+      },
+      "requires": {
+        "notFlags": [
+          "bnd_tut_joyero"
+        ]
+      },
+      "speaker": "Joyero",
+      "lines": [
+        "Cuidado con lo que tocas: aqui todo lo que brilla es autentico, y eso tiene un precio.",
+        "No vendo fiado, y no compro nada que no pueda mirar a la luz. Vuelve cuando lleves algo que valga la pena."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_tut_joyero"
+        },
+        {
+          "type": "log",
+          "arg": "Has conocido al joyero: compra caro y revende mas caro aun."
+        }
+      ]
+    },
+    {
+      "id": "tut_sastre",
+      "trigger": {
+        "type": "talk",
+        "target": "sastre"
+      },
+      "requires": {
+        "notFlags": [
+          "bnd_tut_sastre"
+        ]
+      },
+      "speaker": "Sastre",
+      "lines": [
+        "Ropa a medida, sin prisas. En esta ciudad la capa dice quien eres antes de que abras la boca.",
+        "Y si vas a caminar por el barrio sur, botas. Los callejones estan llenos de cosas que no se ven."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_tut_sastre"
+        },
+        {
+          "type": "log",
+          "arg": "Has conocido al sastre: ya sabes quien equipa a quien en la plaza."
+        }
+      ]
+    },
+    {
+      "id": "tut_emboscada",
+      "trigger": {
+        "type": "enter",
+        "target": "assets/levels/ciudad_centro.json"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_tut_tendero",
+          "bnd_tut_joyero",
+          "bnd_tut_sastre"
+        ],
+        "notFlags": [
+          "bnd_tut_emboscada_lanzada"
+        ]
+      },
+      "speaker": "Saqueador de los Perdidos",
+      "lines": [
+        "Tres pasos detras de ti la calle deja de ser la calle. Dos hombres salen del callejon, y un tercero se queda en la boca de la plaza, mirando.",
+        "La bolsa. Y el anillo, si lo tienes. Nadie tiene que enterarse y tu sigues caminando.",
+        "Esto no va contigo. Los Perdidos solo cobran el peaje."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_tut_emboscada_lanzada"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "perdido_saqueador",
+            "flagVictory": "bnd_tut_saqueador_vencido",
+            "flagDefeat": "bnd_tut_saqueador_gana"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tut_victoria",
+      "trigger": {
+        "type": "auto",
+        "target": ""
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_tut_saqueador_vencido"
+        ],
+        "notFlags": [
+          "bnd_tut_cerrado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "El saqueador retrocede escupiendo sangre y desaparece por el callejon. Los otros dos ya no estan.",
+        "Nadie en la plaza ha mirado. En Boundington la gente sabe cuando conviene no haber visto nada.",
+        "Los Perdidos solo cobran el peaje, ha dicho. En una ciudad tranquila, esa es una frase muy rara."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_tut_cerrado"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd_tut_emboscada_resuelta"
+        },
+        {
+          "type": "log",
+          "arg": "Tutorial completado: ya sabes hablar, comprar y pelear en Boundington."
+        }
+      ]
+    },
+    {
+      "id": "tut_derrota",
+      "trigger": {
+        "type": "auto",
+        "target": ""
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_tut_saqueador_gana"
+        ],
+        "notFlags": [
+          "bnd_tut_cerrado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Te levantas del polvo con la bolsa vacia y la boca con sabor a cobre. Ellos ya no estan.",
+        "Nadie en la plaza ha mirado. En Boundington la gente sabe cuando conviene no haber visto nada.",
+        "Los Perdidos solo cobran el peaje. Te lo han cobrado a ti, y ni siquiera sabes quienes son."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_tut_cerrado"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd_tut_emboscada_resuelta"
+        },
+        {
+          "type": "grantGold",
+          "value": -15
+        },
+        {
+          "type": "log",
+          "arg": "Tutorial completado por las malas: el atraco te ha costado quince monedas."
         }
       ]
     }

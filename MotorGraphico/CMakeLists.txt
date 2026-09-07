@@ -872,3 +872,6 @@ include(cmake/CatalogContractTests.cmake)
 
 # C-16 — Transiciones de escenas sobre Application real.
 include(cmake/ApplicationSceneTests.cmake)
+
+# Tutorial de Boundington en la zona principal — comerciantes, emboscada y combate.
+include(cmake/BoundingtonTutorialTests.cmake)
