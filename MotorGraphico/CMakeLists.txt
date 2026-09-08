@@ -141,6 +141,10 @@ target_link_libraries(motor_runtime_map PUBLIC motor_map_document motor_math)
 
 add_library(motor_level
     src/Level/LevelLoader.cpp
+    # C-14 (1a rebanada) — Puente ObjectSpawn <-> MapEntityDocument. Vive
+    # en Level/ y no en Map/ para no invertir la flecha: motor_level ya
+    # depende de motor_map_document, no al reves.
+    src/Level/LevelDocumentBridge.cpp
     src/Game/Skill.cpp
     src/Game/BattleState.cpp
     src/Level/ObjectCatalog.cpp
@@ -711,6 +715,23 @@ if(BUILD_TESTING)
     add_motor_gl_free_demo_test(demo_este_norte)
     add_motor_gl_free_demo_test(demo_este_sur)
 
+    # Auditoria de cobertura (2026-09-03): de las 47 fuentes de produccion
+    # que enlaza `juego`, 23 no las tocaba ni un test ni una demo de CTest
+    # -- entre ellas TODOS los widgets del HUD y toda la cadena
+    # Entity/AnimatedEntity/Enemy. Estas tres demos ya existian, ya son
+    # GL-free (enlazan glad pero no llaman a ninguna funcion GL, ver el
+    # comentario de demo_bitmap_font mas arriba) y estaban construyendose
+    # sin que nadie las ejecutase.
+    #
+    # Promovidas con el mismo criterio que RUN-11.3: comprobado una a una
+    # que salen con codigo 0 SIN contexto GL y que dos ejecuciones seguidas
+    # dan exactamente la misma salida. Cubren HudElement/HudManager/
+    # HudWidgets, Entity/AnimatedEntity/Enemy y TextureAtlas, que hasta
+    # ahora solo se probaban a mano.
+    add_motor_gl_free_demo_test(demo_bitmap_font)
+    add_motor_gl_free_demo_test(demo_hud_update)
+    add_motor_gl_free_demo_test(demo_enemy_sprite)
+
     # demo_proyectos NO entra: ademas de assets/ necesita tools/
     # build_proyecto.py en el cwd (compila un proyecto de verdad desde la
     # pantalla del hub), y CMake solo copia assets/ al directorio de build.
@@ -843,6 +864,11 @@ if(BUILD_TESTING)
     # (motor_math) y RuntimeTileMap (motor_runtime_map) son GL-free.
     add_motor_unit_test(test_occlusion tests/Render/OcclusionTests.cpp)
     target_link_libraries(test_occlusion PRIVATE motor_runtime_map motor_math)
+
+    # C-14 (1a rebanada) — Paridad real entre la ficha del documento y la
+    # del nivel: los once campos de autoria van y vuelven. Sin assets ni GL.
+    add_motor_unit_test(test_level_document_bridge tests/Level/LevelDocumentBridgeTests.cpp)
+    target_link_libraries(test_level_document_bridge PRIVATE motor_level motor_map_document)
 endif()
 
 # RUN-11.3 — Target agregado con TODO lo que CTest ejecuta bajo la etiqueta
@@ -866,6 +892,9 @@ endif()
 
 # G-08 (rodaja inicial) — Pantalla de título: lista de proyectos, navegación y acciones.
 include(cmake/TitleScreenTests.cmake)
+
+# C-05 — Regresion del cierre de recursos con contexto GL real.
+include(cmake/ApplicationShutdownTests.cmake)
 
 # D-01 — Contrato de campos de los cargadores de catalogo (Fase D).
 include(cmake/CatalogContractTests.cmake)

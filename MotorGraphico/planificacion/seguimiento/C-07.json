@@ -1,0 +1,18 @@
+{
+  "id": "C-07",
+  "date": "2026-09-03",
+  "author": "Claude (Cowork)",
+  "status": "Implementat; sense prova de regressió",
+  "actions": [
+    "La condició de `loadLevel` era `m_narrativaLista && m_narrativeCampaignTransitions`. Amb `--precuela` (o qualsevol aventura autònoma) la bandera de campanya és false, no es cridava mai `setNarrative()` i l'aventura es carregava per no fer absolutament res.",
+    "I al revés: el bloc de transicions de la cronologia d'`update()` NO comprovava la bandera, o sigui que una aventura autònoma encadenava igualment els dies de Boundington.",
+    "Invertit: tota aventura carregada s'enganxa a la sessió; la bandera decideix només les transicions de la cronologia, que és el que significa. Documentat al header."
+  ],
+  "verification": [
+    "`Application.cpp` compila net."
+  ],
+  "pending": [
+    "`demo_precuela_boundington` prova el `NarrativeEngine` directament, no el cablejat d'`Application`: mai va cobrir aquest bug i segueix sense cobrir-lo. La guarda viu dins d'`Application`, que és GL i no entra a la suite gl-free. Per la regla 2 del punt 6, el paquet NO està tancat fins que hi hagi arnès a nivell d'Application (C-16/C-24)."
+  ],
+  "source_markdown": "**Seguiment · 2026-09-03 · Claude (Cowork): Implementat; sense prova de regressió.**\n\n- La condició de `loadLevel` era `m_narrativaLista && m_narrativeCampaignTransitions`. Amb `--precuela` (o qualsevol aventura autònoma) la bandera de campanya és false, no es cridava mai `setNarrative()` i l'aventura es carregava per no fer absolutament res.\n- I al revés: el bloc de transicions de la cronologia d'`update()` NO comprovava la bandera, o sigui que una aventura autònoma encadenava igualment els dies de Boundington.\n- Invertit: tota aventura carregada s'enganxa a la sessió; la bandera decideix només les transicions de la cronologia, que és el que significa. Documentat al header.\n\n**Verificat.** `Application.cpp` compila net.\n\n**Pendent.** `demo_precuela_boundington` prova el `NarrativeEngine` directament, no el cablejat d'`Application`: mai va cobrir aquest bug i segueix sense cobrir-lo. La guarda viu dins d'`Application`, que és GL i no entra a la suite gl-free. Per la regla 2 del punt 6, el paquet NO està tancat fins que hi hagi arnès a nivell d'Application (C-16/C-24)."
+}

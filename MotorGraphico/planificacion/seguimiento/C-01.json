@@ -1,0 +1,19 @@
+{
+  "id": "C-01",
+  "date": "2026-09-03",
+  "author": "Claude (Cowork)",
+  "status": "Tancat",
+  "actions": [
+    "`resolveAllyAction` resol la habilitat ABANS de l'objectiu, perquè és `Skill::target` qui diu contra quin bàndol es valida. `Self` ignora `targetIndex`; `Self/SingleAlly/AllAllies` van al bàndol propi, la resta al contrari.",
+    "L'ordre nou arregla de passada el PM: es comprova que la habilitat existeix i es pot pagar, es valida l'objectiu, i només llavors es gasta — una sola vegada i només si l'efecte s'aplica.",
+    "Les variants `All*` es resolen sobre UN participant del bàndol correcte: l'àrea d'efecte és funció nova i la fase C no n'admet (punt 6 del pla). El que s'arregla és el bàndol, que era el bug.",
+    "Prova nova `tests/Game/BattleStateTests.cpp` (`test_battle_state`), amb `ScriptedRng` perquè el resultat sigui exacte i no «el que sortís de la llavor»."
+  ],
+  "verification": [
+    "4 casos verds: curar amb 30/60 deixa el jugador a 50 i l'enemic intacte i el mana a 6; una habilitat de dany segueix anant a l'enemic; `Self` s'aplica sobre qui actua encara que el HUD enviï un índex fora de rang; un objectiu invàlid no gasta mana. Amb el codi anterior, 2 dels 4 fallen. `demo_battle` i `demo_battle_nd6` segueixen passant."
+  ],
+  "pending": [
+    "Res del paquet. Confirmar-ho a CI amb la resta del bloc."
+  ],
+  "source_markdown": "**Seguiment · 2026-09-03 · Claude (Cowork): Tancat.**\n\n- `resolveAllyAction` resol la habilitat ABANS de l'objectiu, perquè és `Skill::target` qui diu contra quin bàndol es valida. `Self` ignora `targetIndex`; `Self/SingleAlly/AllAllies` van al bàndol propi, la resta al contrari.\n- L'ordre nou arregla de passada el PM: es comprova que la habilitat existeix i es pot pagar, es valida l'objectiu, i només llavors es gasta — una sola vegada i només si l'efecte s'aplica.\n- Les variants `All*` es resolen sobre UN participant del bàndol correcte: l'àrea d'efecte és funció nova i la fase C no n'admet (punt 6 del pla). El que s'arregla és el bàndol, que era el bug.\n- Prova nova `tests/Game/BattleStateTests.cpp` (`test_battle_state`), amb `ScriptedRng` perquè el resultat sigui exacte i no «el que sortís de la llavor».\n\n**Verificat.** 4 casos verds: curar amb 30/60 deixa el jugador a 50 i l'enemic intacte i el mana a 6; una habilitat de dany segueix anant a l'enemic; `Self` s'aplica sobre qui actua encara que el HUD enviï un índex fora de rang; un objectiu invàlid no gasta mana. Amb el codi anterior, 2 dels 4 fallen. `demo_battle` i `demo_battle_nd6` segueixen passant.\n\n**Pendent.** Res del paquet. Confirmar-ho a CI amb la resta del bloc."
+}

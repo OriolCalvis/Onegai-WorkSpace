@@ -1,0 +1,17 @@
+{
+  "id": "C-19",
+  "date": "2026-09-03",
+  "author": "Claude (Cowork)",
+  "status": "Tancat",
+  "actions": [
+    "Les dues còpies del culling eren idèntiques línia a línia: el `visibleRangeFor()` anònim d'`IsometricRenderer.cpp` i `TileMap::visibleRange()`. Ara hi ha `include/Render/Culling.h` amb `VisibleGridRange(map, camera)`, header-only i GL-free — no obliga a moure ningú de llibreria ni a enllaçar res nou.",
+    "Viu a `Render/` i no a `Runtime/` perquè el culling és del renderer: `RuntimeTileMap` segueix sense dependre de `Camera`. `TileMap::visibleRange` hi delega i es queda com a API de compatibilitat de l'importador TMX.",
+    "Segona meitat del paquet: `IHudElement` HERETA d'`IUpdatable`. Eren dos `update(float)` amb la mateixa signatura i el mateix significat i cap relació de tipus. El cos buit es declara a `IHudElement` i no a `IUpdatable`: per a una `Entity` avançar en el temps segueix sent obligatori.",
+    "Prova nova `tests/Render/OcclusionTests.cpp` (`test_occlusion`)."
+  ],
+  "verification": [
+    "La prova porta dins la versió històrica com a oracle i compara les dues sobre 10 càmeres × 4 mides de mapa = 40 combinacions, totes idèntiques; més el mapa buit i la invariant que el rang mai se surt del mapa (de la qual depèn `getTile` dins el bucle de dibuix). `demo_tilemap` (que prova `visibleRange` amb assets reals) segueix passant."
+  ],
+  "pending": [],
+  "source_markdown": "**Seguiment · 2026-09-03 · Claude (Cowork): Tancat.**\n\n- Les dues còpies del culling eren idèntiques línia a línia: el `visibleRangeFor()` anònim d'`IsometricRenderer.cpp` i `TileMap::visibleRange()`. Ara hi ha `include/Render/Culling.h` amb `VisibleGridRange(map, camera)`, header-only i GL-free — no obliga a moure ningú de llibreria ni a enllaçar res nou.\n- Viu a `Render/` i no a `Runtime/` perquè el culling és del renderer: `RuntimeTileMap` segueix sense dependre de `Camera`. `TileMap::visibleRange` hi delega i es queda com a API de compatibilitat de l'importador TMX.\n- Segona meitat del paquet: `IHudElement` HERETA d'`IUpdatable`. Eren dos `update(float)` amb la mateixa signatura i el mateix significat i cap relació de tipus. El cos buit es declara a `IHudElement` i no a `IUpdatable`: per a una `Entity` avançar en el temps segueix sent obligatori.\n- Prova nova `tests/Render/OcclusionTests.cpp` (`test_occlusion`).\n\n**Verificat.** La prova porta dins la versió històrica com a oracle i compara les dues sobre 10 càmeres × 4 mides de mapa = 40 combinacions, totes idèntiques; més el mapa buit i la invariant que el rang mai se surt del mapa (de la qual depèn `getTile` dins el bucle de dibuix). `demo_tilemap` (que prova `visibleRange` amb assets reals) segueix passant."
+}

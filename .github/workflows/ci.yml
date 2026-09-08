@@ -95,6 +95,7 @@ jobs:
         run: |
           xvfb-run -a ./build/demo_textured_quad 5
           xvfb-run -a ./build/demo_isometric_renderer 5
+          xvfb-run -a ctest --test-dir build --output-on-failure --no-tests=error -R "^test_application_shutdown$"
 
       # Batería GL-free explícita de macOS: la campaña y el mundo, que no
       # están aún registrados en ctest por la sesión de INF-01. Sin ventana.
@@ -124,6 +125,10 @@ jobs:
           ./build-asan/demo_resource_manager
           ./build-asan/demo_camera
           ./build-asan/demo_tilemap
+          # C-05: el probe comprueba llamadas GL tardias; ASan/UBSan cubre CPU.
+          # Se excluye solo LeakSanitizer por la cache Mesa documentada abajo.
+          ASAN_OPTIONS=detect_leaks=0 xvfb-run -a ctest --test-dir build-asan --output-on-failure --no-tests=error -R "^test_application_shutdown$"
+          ASAN_OPTIONS=detect_leaks=0 xvfb-run -a ./build-asan/juego 3
           # detect_leaks=0 solo aqui: el propio driver Mesa/llvmpipe (no
           # nuestro codigo) reserva cache de shaders/JIT que vive hasta el
           # final del proceso y LeakSanitizer la marca como fuga (todos

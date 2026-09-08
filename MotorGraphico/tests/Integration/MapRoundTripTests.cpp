@@ -1,9 +1,11 @@
 #include <cstdio>
 #include <fstream>
 #include <iterator>
+#include <map>
 #include <stdexcept>
 #include <string>
 #include <variant>
+#include <vector>
 
 #include "Import/TmxMapImporter.h"
 #include "Project/ProjectSerializer.h"
@@ -85,6 +87,212 @@ MOTOR_TEST_CASE(pipeline_detects_an_intentional_tile_difference) {
     const Result<MapDocument> changed = ProjectSerializer::deserializeMap(altered);
     MOTOR_CHECK(changed.isOk());
     MOTOR_CHECK(onlyTileLayer(imported.document).gids() != onlyTileLayer(changed.value()).gids());
+}
+
+// =====================================================================
+// C-13 — Las entidades del documento no pierden nada.
+//
+// MapEntityDocument guardaba id, objectId y posición. ObjectSpawn -- lo
+// que el juego carga hoy de los niveles reales -- guarda además once
+// campos de autoría. Migrar un nivel habría perdido casi todo el trabajo
+// del autor EN SILENCIO: el nivel seguiría cargando, solo que las
+// puertas no llevarían a ningún sitio y los cofres estarían vacíos.
+//
+// Esta prueba puebla los once campos y los sigue por todo el camino real
+// -- TMX -> MapDocument -> JSON en disco -> MapDocument -- comparándolos
+// uno a uno. Si mañana alguien añade un campo a MapEntityDocument y se
+// olvida del serializador, el que falla es este test.
+// =====================================================================
+
+
+
+ids::EntityId entityId(const char* value) {
+    const Result<ids::EntityId> parsed = ids::EntityId::parse(value);
+    if (!parsed.isOk()) {
+        throw std::runtime_error(parsed.errorMessage());
+    }
+    return parsed.value();
+}
+
+ids::AssetId assetId(const char* value) {
+    const Result<ids::AssetId> parsed = ids::AssetId::parse(value);
+    if (!parsed.isOk()) {
+        throw std::runtime_error(parsed.errorMessage());
+    }
+    return parsed.value();
+}
+
+ids::LayerId layerId(const char* value) {
+    const Result<ids::LayerId> parsed = ids::LayerId::parse(value);
+    if (!parsed.isOk()) {
+        throw std::runtime_error(parsed.errorMessage());
+    }
+    return parsed.value();
+}
+
+bool sameCoord(GridCoord a, GridCoord b) { return a.x == b.x && a.y == b.y; }
+
+// La entidad con TODO puesto: los once campos de ObjectSpawn, ninguno en
+// su valor por defecto.
+MapEntityDocument makeFullEntity() {
+    MapEntityDocument entity;
+    entity.id = entityId("puerta_posada");
+    entity.objectId = assetId("puerta");
+    entity.position = GridCoord{1, 1};
+    entity.patrolMin = GridCoord{0, 0};
+    entity.patrolMax = GridCoord{3, 2};
+    entity.targetLevel = "assets/levels/interior_posada.json";
+    entity.targetPosition = GridCoord{7, 9};
+    entity.hasTargetPosition = true;
+    entity.loot = {"llave_oxidada", "pocion"};
+    entity.lootTable = "cofres_comunes";
+    entity.eventId = "bnd_puerta_posada";
+    entity.displayName = "Posada del Cuervo";
+    entity.variant = "madera_vieja";
+    entity.scale = 1.75f;
+    entity.effectOverride = "abrir_con_llave";
+    entity.properties = {{"cerrada", "true"}, {"llave", "llave_oxidada"}};
+    return entity;
+}
+
+// Y la de al lado sin nada: comprueba que los defectos también van y
+// vuelven, que es la otra mitad de "sin pérdida".
+MapEntityDocument makeBareEntity() {
+    MapEntityDocument entity;
+    entity.id = entityId("arbusto");
+    entity.objectId = assetId("arbusto");
+    entity.position = GridCoord{2, 2};
+    entity.patrolMin = entity.position;  // "sin patrulla", igual que ObjectSpawn
+    entity.patrolMax = entity.position;
+    return entity;
+}
+
+void checkSameEntity(const MapEntityDocument& actual, const MapEntityDocument& expected) {
+    MOTOR_CHECK(actual.id == expected.id);
+    MOTOR_CHECK(actual.objectId == expected.objectId);
+    MOTOR_CHECK(sameCoord(actual.position, expected.position));
+    MOTOR_CHECK(sameCoord(actual.patrolMin, expected.patrolMin));
+    MOTOR_CHECK(sameCoord(actual.patrolMax, expected.patrolMax));
+    MOTOR_CHECK(actual.targetLevel == expected.targetLevel);
+    MOTOR_CHECK(actual.hasTargetPosition == expected.hasTargetPosition);
+    if (expected.hasTargetPosition) {
+        MOTOR_CHECK(sameCoord(actual.targetPosition, expected.targetPosition));
+    }
+    MOTOR_CHECK(actual.loot == expected.loot);
+    MOTOR_CHECK(actual.lootTable == expected.lootTable);
+    MOTOR_CHECK(actual.eventId == expected.eventId);
+    MOTOR_CHECK(actual.displayName == expected.displayName);
+    MOTOR_CHECK(actual.variant == expected.variant);
+    MOTOR_CHECK(actual.scale == expected.scale);
+    MOTOR_CHECK(actual.effectOverride == expected.effectOverride);
+    MOTOR_CHECK(actual.properties == expected.properties);
+}
+
+const EntityLayerDocument& onlyEntityLayer(const MapDocument& document) {
+    for (const MapLayer& layer : document.layers()) {
+        if (layer.type() == MapLayerType::Entity) {
+            return std::get<EntityLayerDocument>(layer.data());
+        }
+    }
+    throw std::runtime_error("el documento no tiene capa de entidades");
+}
+
+MOTOR_TEST_CASE(entity_authoring_fields_survive_the_json_round_trip) {
+    TmxMapImporter importer;
+    const TmxMapImportReport imported =
+        importer.importFile("assets/maps/test_map.tmx", mapId("test_map"));
+    MOTOR_CHECK(!imported.hasErrors());
+
+    MapDocument authored = imported.document;
+    MOTOR_CHECK(authored.addLayer(MapLayer::entities(
+                                      {layerId("entidades"), "Entidades", true, false, 1.0f, 20},
+                                      EntityLayerDocument({makeFullEntity(), makeBareEntity()})))
+                    .isOk());
+    MOTOR_CHECK(authored.validate().isOk());
+
+    const std::string savedPath = "map_entity_fields_round_trip.json";
+    std::remove(savedPath.c_str());
+    std::remove((savedPath + ".tmp").c_str());
+    MOTOR_CHECK(ProjectSerializer::saveMapAtomic(savedPath, authored).isOk());
+
+    const Result<MapDocument> loaded = ProjectSerializer::loadMapFile(savedPath);
+    MOTOR_CHECK(loaded.isOk());
+    MOTOR_CHECK(loaded.value().validate().isOk());
+
+    const EntityLayerDocument& back = onlyEntityLayer(loaded.value());
+    MOTOR_CHECK(back.entities().size() == 2);
+    checkSameEntity(back.entities()[0], makeFullEntity());
+    checkSameEntity(back.entities()[1], makeBareEntity());
+
+    // Y el fichero es estable: guardar lo que se acaba de leer da los
+    // mismos bytes. Sin esto, "va y vuelve" podria estar perdiendo algo
+    // que la comparacion campo a campo no mirase.
+    const std::string secondPath = "map_entity_fields_round_trip_2.json";
+    std::remove(secondPath.c_str());
+    MOTOR_CHECK(ProjectSerializer::saveMapAtomic(secondPath, loaded.value()).isOk());
+    MOTOR_CHECK(readText(savedPath) == readText(secondPath));
+
+    std::remove(savedPath.c_str());
+    std::remove(secondPath.c_str());
+}
+
+// Compatibilidad: un mapa escrito ANTES de C-13 no trae ninguno de los
+// campos nuevos. Tiene que cargar igual, con los defectos -- y con la
+// patrulla rellenada a la posicion, que es como LevelLoader expresa "este
+// objeto no patrulla" desde la Fase 6.
+MOTOR_TEST_CASE(a_map_written_before_the_new_fields_still_loads) {
+    const std::string legacy = R"({
+      "schemaVersion": 1,
+      "id": "test_map",
+      "name": "test_map",
+      "width": 4,
+      "height": 3,
+      "tileWidth": 64,
+      "tileHeight": 32,
+      "collisionGids": [],
+      "layers": [
+        {
+          "id": "entidades", "name": "Entidades", "visible": true, "locked": false,
+          "opacity": 1.0, "order": 20, "type": "entity",
+          "entities": [
+            {"id": "alcaldesa", "objectId": "npc_alcaldesa", "position": {"x": 3, "y": 1}}
+          ]
+        }
+      ]
+    })";
+
+    const Result<MapDocument> loaded = ProjectSerializer::deserializeMap(legacy);
+    MOTOR_CHECK(loaded.isOk());
+    MOTOR_CHECK(loaded.value().validate().isOk());
+
+    const MapEntityDocument& entity = onlyEntityLayer(loaded.value()).entities()[0];
+    MOTOR_CHECK(sameCoord(entity.position, GridCoord{3, 1}));
+    MOTOR_CHECK(sameCoord(entity.patrolMin, GridCoord{3, 1}));
+    MOTOR_CHECK(sameCoord(entity.patrolMax, GridCoord{3, 1}));
+    MOTOR_CHECK(entity.targetLevel.empty());
+    MOTOR_CHECK(!entity.hasTargetPosition);
+    MOTOR_CHECK(entity.loot.empty());
+    MOTOR_CHECK(entity.scale == 1.0f);
+    MOTOR_CHECK(entity.properties.empty());
+}
+
+// Un documento sin campos de autoria produce EXACTAMENTE el mismo JSON
+// que antes de C-13: los campos nuevos solo se escriben si difieren del
+// defecto, asi que ningun fichero del repositorio cambia por recompilar.
+MOTOR_TEST_CASE(entities_without_authoring_fields_write_the_same_json_as_before) {
+    MapDocument map(mapId("test_map"), "test_map", 4, 3, 64, 32);
+    MapEntityDocument bare = makeBareEntity();
+    MOTOR_CHECK(map.addLayer(MapLayer::entities(
+                                 {layerId("entidades"), "Entidades", true, false, 1.0f, 20},
+                                 EntityLayerDocument({bare})))
+                    .isOk());
+
+    const Result<std::string> text = ProjectSerializer::serializeMap(map);
+    MOTOR_CHECK(text.isOk());
+    MOTOR_CHECK(text.value().find("patrolMin") == std::string::npos);
+    MOTOR_CHECK(text.value().find("targetLevel") == std::string::npos);
+    MOTOR_CHECK(text.value().find("scale") == std::string::npos);
+    MOTOR_CHECK(text.value().find("properties") == std::string::npos);
 }
 
 }  // namespace

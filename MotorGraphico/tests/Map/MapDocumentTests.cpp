@@ -362,6 +362,65 @@ MOTOR_TEST_CASE(find_layer_returns_the_layer_or_null) {
     MOTOR_CHECK(map.findLayer(id<ids::LayerId>("no_existe")) == nullptr);
 }
 
+// C-13 — Los campos de autoría nuevos también tienen invariantes. Se
+// valida lo que es INCOHERENTE, no lo que está vacío: casi todos son
+// opcionales por diseño (una entidad sin botín ni evento es lo normal).
+MOTOR_TEST_CASE(the_document_rejects_incoherent_authoring_fields) {
+    const auto mapWith = [](MapEntityDocument entity) {
+        MapDocument map = makeValidMap();
+        return map.addLayer(MapLayer::entities(
+            {id<ids::LayerId>("entidades"), "Entidades", true, false, 1.0f, 20},
+            EntityLayerDocument({std::move(entity)})));
+    };
+
+    const auto base = []() {
+        MapEntityDocument entity;
+        entity.id = id<ids::EntityId>("cofre");
+        entity.objectId = id<ids::AssetId>("cofre");
+        entity.position = GridCoord{1, 1};
+        entity.patrolMin = entity.position;
+        entity.patrolMax = entity.position;
+        return entity;
+    };
+
+    // Una entidad bien puesta entra.
+    MOTOR_CHECK(mapWith(base()).isOk());
+
+    // Caja de patrulla del revés.
+    MapEntityDocument invertida = base();
+    invertida.patrolMin = GridCoord{3, 2};
+    invertida.patrolMax = GridCoord{0, 0};
+    MOTOR_CHECK(!mapWith(invertida).isOk());
+
+    // Patrulla fuera del mapa (4x3): la posición está dentro, la patrulla no.
+    MapEntityDocument fuera = base();
+    fuera.patrolMin = GridCoord{0, 0};
+    fuera.patrolMax = GridCoord{9, 9};
+    MOTOR_CHECK(!mapWith(fuera).isOk());
+
+    // Escala que hace desaparecer el sprite.
+    MapEntityDocument sinEscala = base();
+    sinEscala.scale = 0.0f;
+    MOTOR_CHECK(!mapWith(sinEscala).isOk());
+
+    // Entrada de botín vacía y propiedad sin nombre.
+    MapEntityDocument botinRoto = base();
+    botinRoto.loot = {"pocion", ""};
+    MOTOR_CHECK(!mapWith(botinRoto).isOk());
+
+    MapEntityDocument propiedadRota = base();
+    propiedadRota.properties = {{"", "true"}};
+    MOTOR_CHECK(!mapWith(propiedadRota).isOk());
+
+    // Lo que SÍ debe entrar: un destino a otro nivel con su celda, que
+    // pertenece al mapa de destino y no a este.
+    MapEntityDocument puerta = base();
+    puerta.targetLevel = "assets/levels/interior.json";
+    puerta.targetPosition = GridCoord{40, 40};
+    puerta.hasTargetPosition = true;
+    MOTOR_CHECK(mapWith(puerta).isOk());
+}
+
 }  // namespace
 
 int main() { return motor_test::runAllTests(); }

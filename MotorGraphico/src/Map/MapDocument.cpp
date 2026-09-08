@@ -88,6 +88,35 @@ Result<bool> EntityLayerDocument::validate() const {
         if (!entityIds.insert(entity.id).second) {
             return Result<bool>::Error("id de entidad duplicado: '" + entity.id.value() + "'");
         }
+
+        // --- C-13: los campos nuevos ---
+        //
+        // Se valida lo que es INCOHERENTE, no lo que está vacío: casi
+        // todos estos campos son opcionales por diseño (una entidad sin
+        // botín ni evento ni variante es lo normal). Lo que no puede
+        // pasar es una caja de patrulla del revés, una escala que haga
+        // desaparecer el sprite o una propiedad sin nombre.
+        if (entity.patrolMin.x > entity.patrolMax.x ||
+            entity.patrolMin.y > entity.patrolMax.y) {
+            return Result<bool>::Error("la entidad '" + entity.id.value() +
+                                       "' tiene una caja de patrulla invertida");
+        }
+        if (!std::isfinite(entity.scale) || entity.scale <= 0.0f) {
+            return Result<bool>::Error("la entidad '" + entity.id.value() +
+                                       "' tiene una escala no positiva");
+        }
+        for (const std::string& lootId : entity.loot) {
+            if (lootId.empty()) {
+                return Result<bool>::Error("la entidad '" + entity.id.value() +
+                                           "' tiene una entrada de botín vacía");
+            }
+        }
+        for (const auto& property : entity.properties) {
+            if (property.first.empty()) {
+                return Result<bool>::Error("la entidad '" + entity.id.value() +
+                                           "' tiene una propiedad sin nombre");
+            }
+        }
     }
     return Result<bool>::Ok(true);
 }
@@ -281,10 +310,20 @@ Result<bool> MapDocument::validateLayerForMap(const MapLayer& layer) const {
                         "las dimensiones de una capa de tiles deben coincidir con el mapa");
                 }
             } else if constexpr (std::is_same_v<LayerData, EntityLayerDocument>) {
+                const auto insideMap = [this](GridCoord cell) {
+                    return cell.x >= 0 && cell.y >= 0 && cell.x < m_width && cell.y < m_height;
+                };
                 for (const MapEntityDocument& entity : layerData.entities()) {
-                    if (entity.position.x < 0 || entity.position.y < 0 ||
-                        entity.position.x >= m_width || entity.position.y >= m_height) {
+                    if (!insideMap(entity.position)) {
                         return Result<bool>::Error("la entidad '" + entity.id.value() +
+                                                   "' está fuera de los límites del mapa");
+                    }
+                    // C-13 — La patrulla son celdas de ESTE mapa y se
+                    // comprueban igual. targetPosition NO: es una celda
+                    // del mapa de destino, que este documento no conoce.
+                    if (!insideMap(entity.patrolMin) || !insideMap(entity.patrolMax)) {
+                        return Result<bool>::Error("la patrulla de la entidad '" +
+                                                   entity.id.value() +
                                                    "' está fuera de los límites del mapa");
                     }
                 }

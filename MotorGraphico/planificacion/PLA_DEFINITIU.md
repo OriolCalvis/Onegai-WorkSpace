@@ -77,6 +77,17 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Ho prova.** `test_battle_state`: curar amb vida a 30/60 deixa el jugador a 50 i l'enemic intacte; el mateix cas amb el codi antic falla.
 
+**Seguiment · 2026-09-03 · Claude (Cowork): Tancat.**
+
+- `resolveAllyAction` resol la habilitat ABANS de l'objectiu, perquè és `Skill::target` qui diu contra quin bàndol es valida. `Self` ignora `targetIndex`; `Self/SingleAlly/AllAllies` van al bàndol propi, la resta al contrari.
+- L'ordre nou arregla de passada el PM: es comprova que la habilitat existeix i es pot pagar, es valida l'objectiu, i només llavors es gasta — una sola vegada i només si l'efecte s'aplica.
+- Les variants `All*` es resolen sobre UN participant del bàndol correcte: l'àrea d'efecte és funció nova i la fase C no n'admet (punt 6 del pla). El que s'arregla és el bàndol, que era el bug.
+- Prova nova `tests/Game/BattleStateTests.cpp` (`test_battle_state`), amb `ScriptedRng` perquè el resultat sigui exacte i no «el que sortís de la llavor».
+
+**Verificat.** 4 casos verds: curar amb 30/60 deixa el jugador a 50 i l'enemic intacte i el mana a 6; una habilitat de dany segueix anant a l'enemic; `Self` s'aplica sobre qui actua encara que el HUD enviï un índex fora de rang; un objectiu invàlid no gasta mana. Amb el codi anterior, 2 dels 4 fallen. `demo_battle` i `demo_battle_nd6` segueixen passant.
+
+**Pendent.** Res del paquet. Confirmar-ho a CI amb la resta del bloc.
+
 #### C-02 — El minimapa deixa de llegir memòria alliberada
 
 `1 j` · depèn de: cap
@@ -88,6 +99,17 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 **Fet quan.** El minimapa rep la sessió per `setSession()` i `loadLevel` l'hi torna a passar. Amb sessió nul·la es dibuixa buit en comptes de llegir.
 
 **Ho prova.** `test_hud_minimap`: construir, canviar de sessió i destruir la primera; el widget segueix responent i no toca la vella. Verificat també amb `-fsanitize=address` sobre `demo_game_session`.
+
+**Seguiment · 2026-09-03 · Claude (Cowork): Tancat.**
+
+- `HudMinimap` guanya `setSession()`, `session()` i `isDrawable()`. `loadLevel` li torna a passar la sessió acabada de construir; `shutdown()` l'hi treu abans de destruir-la.
+- Sense sessió o sense mapa el widget no llegeix RES (ni `getWidth()` ni `playerPosition()`): `isDrawable()` és l'única porta per la qual es toquen aquests dos punters, i `render()` hi surt abans de tocar el `SpriteBatch`.
+- També hi ha `setMap()`, per no deixar cap punter fixat al constructor.
+- Prova nova `tests/Render/HudMinimapTests.cpp` (`test_hud_minimap`). Prova la guarda i el reenganxament, no `render()`: `SpriteBatch` és recurs GL i demana finestra. S'enllacen `SpriteBatch`/glad només per resoldre símbols que no es criden, el mateix patró que `demo_bitmap_font`.
+
+**Verificat.** 3 casos verds, inclòs el del bug: construir amb la sessió del nivell 1, canviar a la del 2, destruir la primera i comprovar que el widget respon i apunta a la nova. Repetit sota `-fsanitize=address` sense cap accés a memòria alliberada.
+
+**Pendent.** Res del paquet.
 
 #### C-03 — L'estat del jugador sobreviu el canvi de nivell
 
@@ -101,6 +123,16 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Ho prova.** `test_game_session`: sessió amb moral −30, dos negocis i 90 d'or; reconstruir-la sobre un altre nivell i comprovar els quatre valors.
 
+**Seguiment · 2026-09-03 · Claude (Cowork): Tancat.**
+
+- Tipus nou `PlayerCarryOver` (or, moral, passos des de l'últim cobrament, negocis) i el parell `GameSession::captureCarryOver()` / `applyCarryOver()`: l'ÚNIC camí pel qual l'estat del jugador travessa la frontera entre sessions.
+- `Application::loadLevel` ja no rescata només l'or. Un sol tipus en comptes d'una llista de camps escampada.
+- `SaveGame.cpp` fa servir el mateix traspàs a `captureSaveGame` i `restoreSaveGame`: afegir demà un camp del jugador surt als dos llocs o a cap.
+- `applyCarryOver` ASSIGNA, no acumula: aplicar-lo dues vegades dona el mateix (una recàrrega del mateix nivell no duplica l'or).
+- Prova nova `tests/Game/GameSessionTests.cpp` (`test_game_session`).
+
+**Verificat.** 4 casos verds: el cas del pla (moral −30, dos negocis, 90 d'or, reconstruït sobre un altre nivell), que una sessió nova neix buida, la idempotència i que el traspàs no toca vida ni inventari (viuen fora de la sessió). `test_save_game` sencer segueix verd després de reescriure els seus quatre camps.
+
 #### C-05 — Tancament ordenat dels recursos GL
 
 `1 j` · depèn de: cap
@@ -112,6 +144,17 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 **Fet quan.** Textures i shaders s'alliberen mentre el context és viu. Sortir del joc no deixa cap crida GL després de `glfwTerminate()`.
 
 **Ho prova.** Execució de `juego` amb `--frames 3` sota `ASAN_OPTIONS=detect_leaks=1`, sense fuites de textura.
+
+**Seguiment · 2026-09-08 · Claude (Cowork): Implementat i verificat amb GL real i ASan/UBSan; CI pendent.**
+
+- `shutdown()` buida `m_shaderManager` i `m_textureManager` amb el context GL encara viu, després dels atles (que només referencien les textures) i just abans de `m_window.reset()`.
+- Abans no es tocaven: sobrevivien fins al destructor d'`Application`, que corre DESPRÉS que `~Window` hagi cridat `glfwTerminate()` — i llavors `~Texture`/`~Shader` emetien `glDeleteTextures`/`glDeleteProgram` sense cap context on anar.
+- Els dos gestors ja estaven declarats després de `m_window` (ordre invers de destrucció correcte), però això no bastava perquè `shutdown()` solta la finestra molt abans. Documentat al header.
+- És idempotent: `shutdown()` es crida a mà i un altre cop des del destructor.
+
+**Verificat.** Compila net amb `-Wall -Wextra`. · 08/09: test_application_shutdown passa amb context GL real, Debug i ASan/UBSan (detect_leaks=0 per cachés del driver). Suite completa 66/66.
+
+**Pendent.** CI remota pendent; LeakSanitizer no verificat en aquest entorn.
 
 #### C-06 — L'ajust de text no es penja
 
@@ -125,6 +168,15 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Ho prova.** `test_bitmap_font`: amplades 0, 1 i 2 sobre una frase llarga; la funció retorna en temps finit i el resultat cap a la caixa.
 
+**Seguiment · 2026-09-03 · Claude (Cowork): Tancat.**
+
+- Amb la caixa d'UN sol glif no hi cap «glif + guió»: `maxGlyphs - 1` era 0, no es consumia cap lletra de la paraula i el bucle empenyia «-» per sempre. No era un penjat teòric: el vector creixia fins a quedar-se sense memòria, i hi arribava qualsevol `HudText` prou estret.
+- Amb `maxGlyphs == 1` es talla a pèl, un glif per línia i sense inventar guions: el guió és una ajuda de lectura, no una obligació. Amb espai, el comportament d'abans no canvia.
+- Guarda addicional: si una volta no consumeix res, se surt en comptes de girar. La mateixa classe de fallada que arregla el paquet.
+- Prova nova `tests/Render/BitmapFontTests.cpp` (`test_bitmap_font`).
+
+**Verificat.** 5 casos verds: caixa d'un glif sense penjar-se ni inventar guions; amplades 0, 1 i 2 en temps finit i cap línia més ampla que la caixa; cap lletra perduda; amb espai, el guió es manté; les accentuades segueixen comptant com un glif. Amb el codi antic, 4 dels 5 moren de `bad_alloc` (amb el límit de memòria posat; sense límit, no tornen).
+
 #### C-07 — Les aventures autònomes disparen els seus beats
 
 `2 j` · depèn de: cap
@@ -137,6 +189,16 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Ho prova.** `demo_precuela_boundington` promogut a CTest comprova que el primer beat es dispara; abans no ho feia.
 
+**Seguiment · 2026-09-03 · Claude (Cowork): Implementat; sense prova de regressió.**
+
+- La condició de `loadLevel` era `m_narrativaLista && m_narrativeCampaignTransitions`. Amb `--precuela` (o qualsevol aventura autònoma) la bandera de campanya és false, no es cridava mai `setNarrative()` i l'aventura es carregava per no fer absolutament res.
+- I al revés: el bloc de transicions de la cronologia d'`update()` NO comprovava la bandera, o sigui que una aventura autònoma encadenava igualment els dies de Boundington.
+- Invertit: tota aventura carregada s'enganxa a la sessió; la bandera decideix només les transicions de la cronologia, que és el que significa. Documentat al header.
+
+**Verificat.** `Application.cpp` compila net.
+
+**Pendent.** `demo_precuela_boundington` prova el `NarrativeEngine` directament, no el cablejat d'`Application`: mai va cobrir aquest bug i segueix sense cobrir-lo. La guarda viu dins d'`Application`, que és GL i no entra a la suite gl-free. Per la regla 2 del punt 6, el paquet NO està tancat fins que hi hagi arnès a nivell d'Application (C-16/C-24).
+
 #### C-08 — Un guardat antic no escriu fora de rang
 
 `1 j` · depèn de: cap
@@ -148,6 +210,16 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 **Fet quan.** En restaurar, el vector d'avisos es redimensiona a la mida de la definició actual, conservant els que ja s'havien donat.
 
 **Ho prova.** `test_save_game`: guardat amb dos avisos restaurat sobre una definició de quatre; cap escriptura fora de rang sota ASan.
+
+**Seguiment · 2026-09-03 · Claude (Cowork): Tancat.**
+
+- `tickTimers` redimensiona `avisosDados` a la mida de la definició ACTUAL abans que ningú l'indexi. `resize()` i no `assign()`: conserva el prefix — els avisos que el jugador ja va rebre — i omple amb false només els nous. Treure un avís també queda cobert.
+- `applyNarrativeState` copia el vector tal com ve: allà no hi ha `AdventureScript` amb què comparar-lo. Qui coneix la definició viva és `NarrativeEngine`, i és allà on s'ajusta. Documentat als dos llocs.
+- 2 casos nous a `test_save_game`.
+
+**Verificat.** Verds: guardat amb dos avisos restaurat sobre una definició de quatre (el cas del pla) i el simètric, quatre sobre un. Amb el codi antic tots dos fallen.
+
+**Nota per a qui hi torni.** ASan NO veu aquesta escriptura fora de rang: `avisosDados` és `std::vector<bool>`, un camp de bits, i l'índex de més cau dins la mateixa paraula ja reservada. És a dir que el bug era encara més silenciós del que sembla, i el que el fixa és la comprovació de MIDA, no el sanititzador.
 
 #### C-09 — Propietat de recursos i destrucció polimòrfica
 
@@ -205,17 +277,18 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Ho prova.** `test_project_serialization`: carregar els cinc manifests reals migrats, desar-los i comparar bytes.
 
-**Seguiment · 2026-09-03 · Codex: Implementat i verificat al workspace; integració Git i CI pendents.**
+**Seguiment · 2026-09-07 · Codex: Integrat en Git i verificat localment; CI pendent.**
 
 - ProjectIndex llegeix i crea manifests mitjançant ProjectSerializer; un únic format v1 amb settings niat. El format antic o mixt es rebutja amb el comandament de migració.
 - Migrats els cinc manifests reals amb metadades i referències conservades; migrador amb previsualització, còpia prèvia, validació del lot i substitució atòmica de cada fitxer. Una segona execució no canvia res.
 - Actualitzats build_proyecto.py, validar_todo.py, FORMATO_PROYECTOS.md i el schema v1; les rutes es resolen respecte de la carpeta assets indicada.
 - Crear o eliminar un projecte conserva referències a altres manifests invàlids o absents; l’índex buit permet crear el primer projecte.
 - Afegits test_project_manifests i test_project_migration; els canvis coordinats sobre la base aliena sense versionar queden aplicats al workspace i preservats a C-11-integracion.patch.
+- Revisió 07/09: el rescat 9e40405/52d696f ja incorpora la base i els hunks de C-11. No es reaplica el parche ni es versionen els canvis posteriors aliens de Map/Project.
 
-**Verificat.** Suite GL-free local: 56/56 proves, 0 errors. Després dels ajustos finals, les tres proves test_project_* tornen a passar. · Round-trip byte a byte dels cinc manifests reals, equivalència ProjectIndex/ProjectSerializer, rebuig de camps desconeguts i resolució d’entrades sobre assets copiat. · Migrador: 6/6 casos Python; previsualització sense escriptura, idempotència, índex buit i cap migració parcial per dades invàlides. · Comparació amb el builder de HEAD sobre els manifests antics: build.json idèntic en els cinc packs. demo_proyectos passa; validar_proyectos dona 0 errors i 2 avisos previs.
+**Verificat.** Suite GL-free local: 56/56 proves, 0 errors. Després dels ajustos finals, les tres proves test_project_* tornen a passar. · Round-trip byte a byte dels cinc manifests reals, equivalència ProjectIndex/ProjectSerializer, rebuig de camps desconeguts i resolució d’entrades sobre assets copiat. · Migrador: 6/6 casos Python; previsualització sense escriptura, idempotència, índex buit i cap migració parcial per dades invàlides. · Comparació amb el builder de HEAD sobre els manifests antics: build.json idèntic en els cinc packs. demo_proyectos passa; validar_proyectos dona 0 errors i 2 avisos previs. · 07/09: les 12 empremtes SHA-256 del registre coincideixen amb HEAD; git apply --reverse --check --cached del parche complet passa (inclòs CMake). Build completa macos-debug i CTest GL-free: 62/62.
 
-**Pendent.** Incorporar en Git la base Project/Map/CTest prèvia amb el seu autor i després els canvis coordinats de C-11. No s’ha commitejat treball aliè ni una migració de dades sense el lector corresponent. · Validar a CI per tancar formalment el paquet. Els tres packs no jugables mantenen les mateixes mancances de contingut que abans de la migració.
+**Pendent.** Validar a CI per tancar formalment el paquet. La verificació 07/09 és local; no s’ha publicat ni executat un workflow remot.
 
 #### C-12 — MapDocument es pot editar
 
@@ -229,6 +302,18 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Ho prova.** `test_map_document`: seqüència de 20 mutacions; el document valida després de cadascuna i el resultat és el mateix que construir-lo d'una peça.
 
+**Seguiment · 2026-09-03 · Claude (Cowork): Tancat.**
+
+- API de mutació completa a `MapDocument`: `removeLayer`, `setLayerMeta`, `moveLayer`, `setTile`, `fillTiles`, `addEntity`/`removeEntity`/`moveEntity`, `addRegion`/`removeRegion`/`setRegionBounds`, més `findLayer` per no recórrer `layers()` a mà a cada clic de l'editor.
+- Tot passa per un únic `mutateLayer`: COPIA la capa, hi aplica la mutació, la revalida contra el mapa (dimensions, límits, ids únics) i només llavors la instal·la. Una mutació invàlida deixa el document EXACTAMENT com estava. En un sol lloc perquè cap mutació se'l pugui saltar per descuit.
+- `MapLayer::mutableMeta()`/`mutableData()` són privats amb `friend class MapDocument`: es pot editar una capa, però no a esquena del document. Públics, permetrien deixar una entitat fora del mapa sense que ningú se n'assabentés. El TIPUS de la capa segueix sent immutable.
+- Les tres classes de dades (`TileLayerDocument`, `EntityLayerDocument`, `RegionLayerDocument`) guanyen els seus mutadors, tots amb `Result` i tot-o-res: pintar és una acció d'usuari, «aquí no» ha de ser un missatge i no un crash. `fill` comprova les cantonades abans de pintar cap cel·la.
+- Proves noves a `test_map_document`.
+
+**Verificat.** 7 casos verds (els 3 previs inclosos). El central: 21 mutacions encadenades, `validate()` comprovat DESPRÉS DE CADA UNA, i el document resultant idèntic camp a camp al mateix document construït d'una peça — si l'API d'edició i la de càrrega produïssin coses distintes, es veuria aquí. Més el tot-o-res amb 9 mutacions rebutjades (cel·la fora, GID negatiu, farciment que se surt a mitges, entitat fora dels límits del mapa, id duplicat, tipus de capa equivocat, capa inexistent) i el document intacte després. `test_map_round_trip`, `test_runtime_tilemap`, `test_project_serialization` i `test_tmx_importer` segueixen verds.
+
+**Nota.** Això desbloqueja C-13 i C-14.
+
 #### C-16 — L'Application delega en SceneManager
 
 `4 j` · depèn de: cap
@@ -240,6 +325,18 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 **Fet quan.** El bucle principal empeny i treu escenes en comptes de mirar banderes. El canvi de nivell i el pas menú↔joc són transicions d'escena.
 
 **Ho prova.** `test_scene_manager` ampliat amb les transicions reals del joc; `demo_game_session` segueix passant.
+
+**Seguiment · 2026-09-07 · Codex + agentes de implementación y pruebas: Implementat i verificat localment; CI remot pendent.**
+
+- Application utilitza SceneManager com a autoritat de títol/joc i per despatxar simulació i render; retirada m_atTitle.
+- Títol, portes, cronologia i càrrega de guardats sol·liciten transicions que es resolen al final del frame.
+- La càrrega prepara mapa, textura i atlas abans de substituir la sessió. Els projectes preparen també catàlegs i narrativa; un error conserva el context anterior. La memòria cau de tilesets s’identifica per ruta.
+- La compatibilitat del guardat es comprova en una sessió aïllada abans de modificar jugador/inventari/narrativa. El tancament descarta escenes i peticions abans dels recursos GL.
+- Deu regressions sobre Application real amb context GL, fixtures temporals i escenes de producció; workflow propi Linux Debug/Release. GameSession no requereix modificacions.
+
+**Verificat.** Build completa Debug en directori aïllat codex-c16: juego, editor, demos i proves. · 63/63 CTest GL-free; test_application_scenes (10 casos) i test_application_shutdown passen amb GL real. · Els 10 casos de transicions passen amb AddressSanitizer/UndefinedBehaviorSanitizer; LeakSanitizer desactivat en aquesta execució macOS. · juego 3: sortida normal, framebuffer 1280x720 generat. · Diff propi revisat; canvis previs i simultanis de Map/Project/CMake, C-05 i assets preservats.
+
+**Pendent.** Execució remota del workflow Application scenes; no s’ha fet push ni s’ha tancat formalment el paquet a CI.
 
 #### C-19 — Un sol culling i un sol contracte d'actualització
 
@@ -253,6 +350,15 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Ho prova.** `test_occlusion`: la funció única dóna el mateix rang que les dues anteriors sobre deu càmeres i mides de mapa.
 
+**Seguiment · 2026-09-03 · Claude (Cowork): Tancat.**
+
+- Les dues còpies del culling eren idèntiques línia a línia: el `visibleRangeFor()` anònim d'`IsometricRenderer.cpp` i `TileMap::visibleRange()`. Ara hi ha `include/Render/Culling.h` amb `VisibleGridRange(map, camera)`, header-only i GL-free — no obliga a moure ningú de llibreria ni a enllaçar res nou.
+- Viu a `Render/` i no a `Runtime/` perquè el culling és del renderer: `RuntimeTileMap` segueix sense dependre de `Camera`. `TileMap::visibleRange` hi delega i es queda com a API de compatibilitat de l'importador TMX.
+- Segona meitat del paquet: `IHudElement` HERETA d'`IUpdatable`. Eren dos `update(float)` amb la mateixa signatura i el mateix significat i cap relació de tipus. El cos buit es declara a `IHudElement` i no a `IUpdatable`: per a una `Entity` avançar en el temps segueix sent obligatori.
+- Prova nova `tests/Render/OcclusionTests.cpp` (`test_occlusion`).
+
+**Verificat.** La prova porta dins la versió històrica com a oracle i compara les dues sobre 10 càmeres × 4 mides de mapa = 40 combinacions, totes idèntiques; més el mapa buit i la invariant que el rang mai se surt del mapa (de la qual depèn `getTile` dins el bucle de dibuix). `demo_tilemap` (que prova `visibleRange` amb assets reals) segueix passant.
+
 #### C-20 — Un sol escriptor de condicions
 
 `2 j` · depèn de: cap
@@ -265,17 +371,20 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Ho prova.** `test_condition_engine`: apilar fins al màxim, expirar per rondes, trencar per dany rebut; cap camí passa per la fitxa.
 
-**Seguiment · 2026-09-03 · Codex: Nucli implementat i verificat localment; paquet encara obert.**
+**Seguiment · 2026-09-08 · Codex: Nucli i integració de combat implementats i verificats localment; CI pendent.**
 
 - Retirats applyCondition, removeCondition i tickEndOfRound de CharacterSheet: ConditionEngine concentra les regles d'aplicació, apilat, retirada i caducitat.
 - purge_expired elimina entrades amb rondes o càrregues esgotades i recalcula modificadors; les consultes ignoren entrades caducades.
 - El tick conserva l'efecte de l'última ronda i evita tornar a aplicar efectes ja caducats.
 - on_damage_received elimina totes les condicions breaksOnDamage del receptor i recalcula els modificadors; zero, curació i dany bloquejat no les trenquen.
 - Afegit test_condition_engine amb 11 casos i registre CTest GL-free independent del scaffolding pendent d'altres sessions.
+- BattleState notifica ConditionEngine després dels atacs bàsics i habilitats dels dos bàndols amb els PV realment perduts pel receptor.
+- ICombatant exposa la fitxa opcional; Player i EnemyBrain implementen el contracte sense crear fitxes als combatents legacy.
+- Application carrega i conserva el catàleg de condicions; GameSession el propaga a les batalles noves i actives. Restaurar PV fora del combat no activa la ruptura.
 
-**Verificat.** Abans del canvi: 2 regressions reproduïdes (purga i ruptura pel dany calculat del tick). · 11/11 casos amb AddressSanitizer i UndefinedBehaviorSanitizer, sense errors. · Build de suite_gl_free i CTest: 54/54 proves GL-free en verd (macOS Debug).
+**Verificat.** Abans del canvi: 2 regressions reproduïdes (purga i ruptura pel dany calculat del tick). · 11/11 casos amb AddressSanitizer i UndefinedBehaviorSanitizer, sense errors. · Build de suite_gl_free i CTest: 54/54 proves GL-free en verd (macOS Debug). · 08/09: build completa Debug correcta; 63/63 proves GL-free i 2/2 executables de regressió GL (escenes i tancament). · test_battle_state: 8 casos, amb variants dels dos bàndols, atac/habilitat, curació, dany bloquejat, fallada, compatibilitat legacy i propagació de GameSession abans/durant la batalla. · test_battle_state i test_condition_engine passen amb AddressSanitizer i UndefinedBehaviorSanitizer.
 
-**Pendent.** Connectar la notificació de PV realment perduts al combat de producció quan disposi del catàleg de condicions; actualment ConditionEngine només tenia consumidors de demo. No s'han modificat GameSession/Application, reservats per una altra sessió. · Passar la prova a CI abans de tancar formalment C-20 (regla 6 del pla).
+**Pendent.** Executar CI remota abans de tancar formalment C-20 (regla 6 del pla). · Fase D: interpretar les dades canòniques de condicions (D-04) i aplicar-les des de cartes (D-09); la integració actual actua sobre combatents amb CharacterSheet vinculada.
 
 #### C-21 — Un sol generador d'atzar
 
@@ -310,6 +419,16 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Ho prova.** `test_save_game`: disparar un beat amb `startBattle`, fugir, guardar, carregar; l'enemic hi és amb la vida que li quedava.
 
+**Seguiment · 2026-09-03 · Claude (Cowork): Tancat.**
+
+- `WorldEnemy` i `SavedEnemy` guanyen `summoned`. Per als invocats, `spawnIndex` deixa de ser un índex a `LevelDefinition::objects` (no n'hi ha cap) i passa a ser un ordinal propi de la sessió, únic, que no es reutilitza.
+- Helper nou `GameSession::spawnEnemyFromCatalog`, compartit per `resolveBattles` (l'emboscada) i `restoreSaveGame` (tornar a posar dret un invocat que era viu en desar). Abans només existia dins de `resolveBattles`, i per això restaurar-ne un no era ni possible.
+- `restoreSaveGame`: els del nivell es BUSQUEN entre els que la sessió ja ha construït; els invocats no hi són i es materialitzen del catàleg amb la seva posició i la vida que els quedava. La fase de validació els cobreix (si algú ha esborrat el monstre del catàleg, es rebutja amb missatge propi) i segueix sense escriure res fins que tot valida.
+- Clau JSON nova amb valor per defecte i SENSE pujar `kSchemaVersion`: un guardat anterior no la porta, es llegeix com a false — «del nivell», que és l'únic que hi havia. És el cas que ja contemplava el comentari de `parseSaveGame`.
+- 3 casos nous a `test_save_game`.
+
+**Verificat.** Verds: el cas del pla (disparar un beat amb `startBattle`, fugir, desar, carregar; l'enemic hi és amb 18 PV al seu lloc), que un invocat vençut no torna, i que un guardat sense la clau segueix carregant. Amb el codi antic `restoreSaveGame` retorna false — exactament el símptoma: la partida no es tornava a obrir mai.
+
 #### C-13 — Les entitats del document no perden res
 
 `3 j` · depèn de: C-12
@@ -321,6 +440,18 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 **Fet quan.** `MapEntityDocument` arriba a la paritat completa amb `ObjectSpawn`, i la serialització hi va i en torna sense pèrdua.
 
 **Ho prova.** `test_map_round_trip` ampliat: nivell amb els onze camps poblats, TMX+JSON → MapDocument → JSON → MapDocument, comparació camp a camp.
+
+**Seguiment · 2026-09-03 · Claude (Cowork): Tancat.**
+
+- `MapEntityDocument` arriba a paritat: patrulla, nivell i cel·la de destí (amb el seu `hasTargetPosition`), botí, taula de botí, esdeveniment, nom visible, variant, escala, override d'efecte i mapa de propietats. El header porta la taula de correspondència camp a camp amb `ObjectSpawn`, perquè qui n'afegeixi un demà sàpiga que ha d'ampliar les dues llistes alhora.
+- L'única cosa que `ObjectSpawn` no té és l'id d'instància: en un nivell la identitat és la posició dins l'array, i és exactament per això que un enemic invocat per narrativa es quedava sense identitat (C-04). El document en dona un d'estable des del principi.
+- Validació dels camps nous: caixa de patrulla invertida, escala no positiva, entrada de botí buida i propietat sense nom es rebutgen. La patrulla es comprova contra els límits del mapa; `targetPosition` NO, perquè és una cel·la del mapa de destí, que aquest document no coneix.
+- `ProjectSerializer` els escriu i els llegeix tots. S'escriuen NOMÉS si difereixen del valor per defecte: cap fitxer de mapa del repositori canvia per recompilar, els diffs segueixen sent llegibles, i segueix sent sense pèrdua perquè el lector restaura aquests mateixos defectes. Les propietats van en `std::map`, o sigui ordre determinista i el mateix fitxer byte a byte en desar dues vegades.
+- Al llegir, tot és opcional: un mapa escrit abans d'aquest paquet carrega igual, i la patrulla absent s'omple amb la posició — que és com `LevelLoader` expressa «aquest objecte no patrulla» des de la Fase 6. Cap canvi de `kMapSchemaVersion`: claus additives amb valor per defecte.
+
+**Verificat.** `test_map_round_trip` ampliat a 5 casos: els onze camps poblats seguits per tot el camí real (TMX → MapDocument → JSON a disc → MapDocument) amb comparació camp a camp, més una entitat buida al costat per cobrir també els defectes; desar el que s'acaba de llegir dona els mateixos bytes; un mapa anterior a C-13 carrega amb els defectes correctes; i un document sense camps d'autoria produeix exactament el JSON d'abans. `test_map_document` puja a 8 amb la validació dels camps nous. Amb el serialitzador antic, el round-trip falla al primer camp. Sense regressions: `test_project_serialization`, `test_project`, `test_tmx_importer` i `test_runtime_tilemap` verds.
+
+**Pendent.** Res del paquet. El conversor `ObjectSpawn` ⇄ `MapEntityDocument` que fa comprovable aquesta paritat s'ha escrit tot seguit com a primera llesca de C-14 (`Level/LevelDocumentBridge`), que és on toca: `motor_level` ja depèn de `motor_map_document`, no al revés.
 
 #### C-17 — World és el propietari de les entitats
 
@@ -346,7 +477,7 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 
 **Ho prova.** Un script de CI comprova que cada mètode declarat als headers de `include/RPG/` té definició; el build actual el passaria amb set errors.
 
-**Seguiment · 2026-09-03 · qwen + Codex: Nucli i API de dificultat retirats; RuntimeTileMap i CI pendents.**
+**Seguiment · 2026-09-07 · qwen + Codex: Retirada completa implementada i verificada localment; CI pendent.**
 
 - TierRules: retirats els 7 accessors declarats i mai definits (healthCap, healthBonus, allowsMulticlass, canEquipRarity, maxSummons, maxFeats, maxDivineCards); ningú els cridava, per això l'enllaçador no s'havia queixat mai.
 - EnhanceHooks: retirats IQteProvider i QteResult (cap implementació; el pas de timing de SkillExecutor era inabastable), el camp ExecutionContext::qte i l'override_target_defense que Ed. 3 ja ignorava.
@@ -357,10 +488,13 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 - Conservades la ruta SUCCESS del pròleg i les quatre rutes de La Senyal de la Cendra, amb guions explícits del jugador i del rival i comprovació del nombre de daus consumits.
 - Coberts els quatre graus narratius, la importació de cd legacy com a pool rival, la prioritat de rivalDice explícit, els pools buits i els casos límit de pifia i tot-sisos. Els camps antics de les aventures continuen sent llegibles pel codi de partida.
 - Actualitzats només els tres enllaços necessaris a CMake. No s’han modificat GameSession/Application ni el bloc RuntimeTileMap pendent d’integració.
+- 07/09 (Codex multiagent): retirats RuntimeTileOverride, setTileOverride, clearTileOverrides, tileOverrides i findLayerIndex; eliminats m_baseLayers i m_overrides. El runtime conserva una sola col·lecció de capes compilades.
+- Substituïda la prova de la API retirada per independència entre document i snapshots compilats; cobertes coordenades isomètriques i consultes fora de límits.
+- Discrepància documental explícita: ADR-003 (28/08) acceptava overrides; C-22 del pla posterior en demana la retirada. Aquesta entrega executa C-22 encarregat per Oriol el 07/09; no modifica l’ADR acceptat.
 
-**Verificat.** Abans de la retirada, el script reportava exactament els 7 errors que prediu el pla; després, 0 sobre 93 declaracions en 15 capçaleres. · Build completa de tots els targets en macos-debug sense errors (juego i level_editor inclosos). · Suite gl-free 57/57 en verd, inclòs rpg_declaration_check i els tests de la sessió concurrent. · Continuació Codex: en executar el camí real amb els guions antics, prologo i senal_ceniza fallen; després de guionitzar també els daus rivals, les cinc demos passen. · Build completa local de tots els targets, inclosos juego i level_editor: correcta. Suite GL-free: 57/57 proves en verd (macOS Debug). · Comprovador de declaracions RPG: 0 errors sobre 93 declaracions; cerca a include/src/examples/tests: cap referència a la API de dificultat retirada. · Huella SHA-256 dels quatre fitxers reservats GameSession/Application idèntica abans i després.
+**Verificat.** Abans de la retirada, el script reportava exactament els 7 errors que prediu el pla; després, 0 sobre 93 declaracions en 15 capçaleres. · Build completa de tots els targets en macos-debug sense errors (juego i level_editor inclosos). · Suite gl-free 57/57 en verd, inclòs rpg_declaration_check i els tests de la sessió concurrent. · Continuació Codex: en executar el camí real amb els guions antics, prologo i senal_ceniza fallen; després de guionitzar també els daus rivals, les cinc demos passen. · Build completa local de tots els targets, inclosos juego i level_editor: correcta. Suite GL-free: 57/57 proves en verd (macOS Debug). · Comprovador de declaracions RPG: 0 errors sobre 93 declaracions; cerca a include/src/examples/tests: cap referència a la API de dificultat retirada. · Huella SHA-256 dels quatre fitxers reservats GameSession/Application idèntica abans i després. · 07/09: build completa macos-debug (juego i level_editor inclosos), CTest GL-free 62/62, zero errors. · Runtime: compilació aïllada amb -DNDEBUG -O2, 4/4 casos; cap referència als símbols retirats a include/src/tests/examples.
 
-**Pendent.** Els overrides de RuntimeTileMap (setTileOverride/clearTileOverrides) no els crida cap codi de producció, però viuen al bloc orfe sense commitear del 28/08 amb el seu test; la retirada correspon a qui consolidi aquest bloc (regla 2 del protocol). · Comprovació registrada al CI: rpg_declaration_check porta l'etiqueta gl-free al CMakeLists commitejat i ci.yml (INF-05) executa ctest -L gl-free — correrà amb el proper push; el paquet es tanca formalment quan això passi (regla 6 del pla).
+**Pendent.** Validació remota de CI pendent; no s’ha fet push ni executat un workflow remot.
 
 #### C-23 — El post-processat arriba al joc
 
@@ -385,6 +519,20 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 **Fet quan.** `EditorState` és una vista d'edició sobre un `MapDocument`. L'exportació TMX passa a ser un exportador d'interoperabilitat, no el format de treball. El pont per cadena de text desapareix.
 
 **Ho prova.** `test_editor_state` passa sense canvis de comportament observable, i un test nou comprova que desar i reobrir conserva noms de capa, visibilitat i ordre — cosa que avui es perd.
+
+**Seguiment · 2026-09-03 · Claude (Cowork): Primera llesca feta; paquet OBERT.**
+
+Fet només el pont de dades, no la migració de l'editor. Es registra aquí perquè és la peça de C-14 que no depèn de GL i que es podia tancar amb prova en aquesta sessió.
+
+- `Level/LevelDocumentBridge` (header + `.cpp` + test): `MakeEntityId`, `ToEntityDocument`, `ToObjectSpawn`, `ToEntityLayer` i `ToObjectSpawns`.
+- Els ids d'entitat es deriven de la cel·la (`<objectId>_<x>_<y>`), que és la identitat que el motor ja fa servir per als objectes del món (`worldObjectIndexAt`, el guardat de partida). Són ESTABLES: migrar dues vegades el mateix nivell dona els mateixos ids i un diff llegible. Dos spawns a la mateixa cel·la — el format ho permet — reben sufix `_2`, `_3` en comptes de trepitjar-se: perdre una entitat en migrar és justament el que aquest pont evita.
+- Un `objectId` que no és `[a-z0-9_]+` NO s'arregla per les braves: es retorna error. Un id mutilat en silenci és un objecte que deixa de resoldre contra el catàleg i un nivell que es trenca més tard i en un altre lloc. `ToEntityLayer` és tot-o-res.
+- Viu a `Level/` i no a `Map/`: el document de mapa no ha de saber que existeix `LevelDefinition`. `motor_level` ja depèn de `motor_map_document`, o sigui que la fletxa va en la direcció que ja hi havia.
+- Fora d'abast, i no per descuit: `LevelDefinition::enemies` (el format de la Fase 6 que `ObjectSpawn` ja generalitza) i `name`/`mapPath`/`playerStart`, que encara no tenen lloc dins un `MapDocument`. On viuen és una decisió d'aquest mateix paquet i avançar-la aquí seria inventar format.
+
+**Verificat.** `test_level_document_bridge`, 6 casos verds: els onze camps d'autoria van i tornen idèntics; els ids són estables i derivats de la cel·la; un nivell sencer es converteix en capa sense perdre ningú (inclosa la cel·la compartida) i torna; un `objectId` invàlid falla fort i no deixa res a mitges; una cel·la negativa es rebutja amb el seu missatge; un document sense capes d'entitats dona llista buida i no error. Registrat a `motor_level` i a CTest.
+
+**Pendent (el gruix del paquet).** `EditorState` segueix amb el seu model propi de capes planes i el seu `std::vector<ObjectSpawn>`: convertir-lo en una vista sobre un `MapDocument` i degradar `exportTmx` a exportador d'interoperabilitat és la feina de veritat, i toca `editor/src/level_editor.cpp` (2.708 línies de UI GL). No s'ha començat: la sessió on s'escriu això no pot compilar ni executar res que porti GL, i deixar l'editor a mitges era pitjor que no tocar-lo.
 
 #### C-18 — HandlePool sosté World
 
@@ -435,6 +583,18 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 **Fet quan.** Cada `CatalogLoader` declara els camps que espera. Si una entrada no en porta cap, la càrrega és un error amb el nom del camp i el de l'entrada. El `catch(...)` mut desapareix.
 
 **Ho prova.** `test_catalog_contract`: un JSON amb els noms de camp de la versió anterior falla amb un missatge que diu quin camp falta.
+
+**Seguiment · 2026-09-07 · qwen: Mecanisme implementat i verificat localment; paquet OBERT (els 20 catàlegs encara carreguen en mode estructural).**
+
+- Contracte de camps a RpgCatalogs.h: CatalogField (noms acceptats + required), CatalogStrictness (Structural / AllDeclared) i els auxiliars catalog_field_present, catalog_missing_fields, catalog_entry_label, catalog_field_hint i catalog_join.
+- Els 20 CatalogLoader<T> declaren expected_fields(): 308 conceptes amb els seus àlies. Les llistes s'han DERIVAT del propi from_json (claus e["..."] i les cadenes de defaults encadenats) amb un generador d'un sol ús; no són una llista escrita a mà, que és la trampa de la Part 3 sobre els validadors manuals.
+- Catalog<T>::loadFromString reescrit: fora el catch(...) mut (l'excepció ara es converteix en un Error amb l'entrada i el motiu); fora el `continue` que descartava en silenci una entrada sense id; un camp obligatori absent dona Error amb l'entrada (índex + id), el camp i els àlies acceptats; i la càrrega és tot-o-res amb un buffer local abans de tocar m_store, el mateix criteri que ObjectCatalog::loadFromString.
+- Camps obligatoris avui: id i name als 20 carregadors (40 camps). Són els únics que els 21 assets publicats porten al 100% de les 2650 entrades; exigir-ne més hauria trencat la càrrega de tot el joc, que és justament la feina de D-02..D-09.
+- test_catalog_contract (7 casos) a tests/RPG/CatalogContractTests.cpp amb TestHarness.h, registrat amb cmake/CatalogContractTests.cmake i una línia d'include al CMakeLists; WORKING_DIRECTORY el directori de build perquè llegeix assets/catalogs/.
+
+**Verificat.** Porta verda abans de tocar res: build completa i suite gl-free 62/62. · Build completa de tots els targets amb el preset macos-debug, codi de sortida 0, amb el treball concurrent de C-16 i C-05 present a l'arbre. · Suite gl-free 63/63 (test_catalog_contract és la prova nova). demo_catalogos_rpg continua carregant les 2510 entrades amb els mateixos recomptes per catàleg i rpg_declaration_check (la xarxa estàtica de C-22) passa. · La prova que demana el pla: el JSON de condicions amb els noms de la versió anterior (stackable/duration/effects) falla en mode AllDeclared amb un missatge que anomena stacking, defaultRounds i damagePerRound i l'entrada cond_sangrado. · Falsabilitat comprovada per mutació: posar name a required=false a ConditionDefinition trenca 3 dels 7 casos; revertit i reverificat a 7/7. · Els 21 assets publicats carreguen en mode estructural i a tots el comptador retornat coincideix amb size(): cap entrada es descarta en silenci pel camí.
+
+**Pendent.** El paquet no es tanca: els 20 catàlegs carreguen en mode estructural, que per als camps no obligatoris és el comportament antic. D-02..D-09 han d'arreglar cada asset i pujar el conjunt de required del seu catàleg. Buit mesurat: 150 dels 308 camps declarats no els porta cap entrada de cap asset, i en mode AllDeclared fallarien les 2650 entrades. · AllDeclared NO és l'estat objectiu: la majoria de camps declarats són legítimament opcionals (channelRounds és 0 a gairebé totes les habilitats, minGold no aplica a una taula de botí sense or). És l'instrument d'auditoria; el que cada D-0x fa és pujar els required del seu catàleg. · Les declaracions s'han derivat amb un generador d'un sol ús que no s'ha versionat. Si un from_json canvia, el seu expected_fields() pot quedar desincronitzat: falta una comprovació estàtica a CTest que els derivi i els compari, que encaixa a D-10 (CI valida els assets reals). · Passar la prova a CI abans de tancar formalment (regla 6 del pla). La línia d'include al CMakeLists.txt queda sense commitear perquè el fitxer porta hunks en curs de C-16 i C-05 d'una altra sessió (regla 2 del protocol). · decisiones/D0003 (proposed): qui decideix quins camps són obligatoris i en quin ordre es migra cada catàleg. Espera l'Oriol.
 
 #### D-02 — Habilitats i encanteris
 
@@ -813,6 +973,17 @@ Cada paquet porta el seu criteri d'acceptació i la prova que el tanca. Si una d
 **Fet quan.** Arrencar des del manifest del projecte; mostrar nom/imatge disponibles i Nova partida, Continuar, Opcions i Sortir. Continuar desactivat amb motiu si no hi ha guardat vàlid; G-11 connecta el selector. Dades absents mostren un error comprensible. Playtest contextual continua saltant el títol.
 
 **Ho prova.** `test_title_flow`: dos projectes amb noms i entrades diferents; manifest invàlid no cau en Boundington. Smoke del runtime amb manifest mostra el títol i les accions reals; G-15/16 repeteixen el recorregut sobre el binari exportat.
+
+**Seguiment · 2026-09-06 · qwen: Rodaja inicial feta i verificada (encargo directo de Oriol); paquet obert.**
+
+- Pantalla de títol a ./juego sense arguments: campanya de Boundington + escenaris en treball (projectes jugables de l'índex) + Sortir; amb --nivel/--precuela s'entra directe com abans (editor F7, proves).
+- Game::TitleScreen amb tot l'estat GL-free (convenció ProjectHub): navegació amb wraparound, skipped() amb els projectes sense entrada jugable i etiquetes des del nom del manifest.
+- Application: m_atTitle congela update(), reenvia processInput() (W/S+ENTER com a combat/botiga) i canvia el HUD a refreshHud(); OpenProject carrega catàlegs del projecte, narrativa si l'entrada és aventura (cronologia Boundington apagada, com --precuela) i loadLevel sobre l'entrada resolta; un fallada deixa missatge al títol.
+- test_title_screen (5 casos) registrat com a CTest gl-free (cmake/TitleScreenTests.cmake); TitleScreen.cpp a motor_core. Hunk de CMakeLists exclusiu, sense tocar el treball C-14/auditoria en curs d'una altra sessió.
+
+**Verificat.** Build completa de tots els targets en macos-debug sense errors. · Suite gl-free 62/62 en verd (inclou test_title_screen i el treball concurrent). · Fum ./juego 3 amb bolcat de frame: títol i menú dibuixats (1156 px daurats del títol, 2040 px del cursor).
+
+**Pendent.** Resta del paquet segons el pla: arrencada des del manifest del projecte actiu (no només l'índex global), Nova partida/Continuar/Opcions amb els seus motius, imatge del projecte quan n'hi hagi; depèn de C-16 i E-11. · G-09 (creació de personatge dins de Nova partida) i G-11 (selector de guardats) connectaran amb aquesta pantalla. · Passar la prova a CI abans de tancar formalment (regla 6 del pla).
 
 #### G-02 — Les eines d'edició que falten
 

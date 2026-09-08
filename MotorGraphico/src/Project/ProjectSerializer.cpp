@@ -372,6 +372,63 @@ Result<std::string> ProjectSerializer::serializeMap(const MapDocument& map) {
                 writer.member("id", entity.id.value());
                 writer.member("objectId", entity.objectId.value());
                 writeGridCoord(writer, "position", entity.position);
+
+                // C-13 — Los campos de autoría. Se escriben SOLO si
+                // difieren del valor por defecto: un mapa sin puertas ni
+                // botín sigue produciendo el mismo JSON que antes, los
+                // diffs siguen siendo legibles y ningún fichero existente
+                // cambia por recompilar. Sigue siendo sin pérdida porque
+                // el lector restaura exactamente esos mismos defectos.
+                if (entity.patrolMin.x != entity.position.x ||
+                    entity.patrolMin.y != entity.position.y ||
+                    entity.patrolMax.x != entity.position.x ||
+                    entity.patrolMax.y != entity.position.y) {
+                    writeGridCoord(writer, "patrolMin", entity.patrolMin);
+                    writeGridCoord(writer, "patrolMax", entity.patrolMax);
+                }
+                if (!entity.targetLevel.empty()) {
+                    writer.member("targetLevel", entity.targetLevel);
+                }
+                if (entity.hasTargetPosition) {
+                    writeGridCoord(writer, "targetPosition", entity.targetPosition);
+                }
+                if (!entity.loot.empty()) {
+                    writer.key("loot");
+                    writer.beginArray();
+                    for (const std::string& lootId : entity.loot) {
+                        writer.value(lootId);
+                    }
+                    writer.endArray();
+                }
+                if (!entity.lootTable.empty()) {
+                    writer.member("lootTable", entity.lootTable);
+                }
+                if (!entity.eventId.empty()) {
+                    writer.member("eventId", entity.eventId);
+                }
+                if (!entity.displayName.empty()) {
+                    writer.member("displayName", entity.displayName);
+                }
+                if (!entity.variant.empty()) {
+                    writer.member("variant", entity.variant);
+                }
+                if (entity.scale != 1.0f) {
+                    writer.member("scale", entity.scale);
+                }
+                if (!entity.effectOverride.empty()) {
+                    writer.member("effectOverride", entity.effectOverride);
+                }
+                if (!entity.properties.empty()) {
+                    // std::map: el orden de las claves es determinista, y
+                    // por eso guardar dos veces el mismo documento da el
+                    // mismo fichero byte a byte.
+                    writer.key("properties");
+                    writer.beginObject();
+                    for (const auto& property : entity.properties) {
+                        writer.member(property.first, property.second);
+                    }
+                    writer.endObject();
+                }
                 writer.endObject();
             }
             writer.endArray();
@@ -511,7 +568,73 @@ Result<MapDocument> ProjectSerializer::deserializeMap(const std::string& text) {
                                                       : !assetId.isOk() ? assetId.errorMessage()
                                                                         : position.errorMessage());
                 }
-                entities.push_back({entityId.value(), assetId.value(), position.value()});
+                MapEntityDocument document;
+                document.id = entityId.value();
+                document.objectId = assetId.value();
+                document.position = position.value();
+
+                // C-13 — Todos los campos son OPCIONALES al leer: un
+                // mapa escrito antes de este paquete no los trae, y
+                // tiene que seguir cargando exactamente igual. Ausente
+                // no es un error, es el valor por defecto.
+                //
+                // La patrulla ausente se rellena con la posición, que es
+                // como LevelLoader expresa "este objeto no patrulla"
+                // desde la Fase 6. Así el documento y el nivel dicen lo
+                // mismo con los mismos datos.
+                document.patrolMin = position.value();
+                document.patrolMax = position.value();
+                if (entity["patrolMin"].isObject() && entity["patrolMax"].isObject()) {
+                    const Result<GridCoord> patrolMin =
+                        readGridCoord(entity["patrolMin"], "entidad.patrolMin");
+                    const Result<GridCoord> patrolMax =
+                        readGridCoord(entity["patrolMax"], "entidad.patrolMax");
+                    if (!patrolMin.isOk() || !patrolMax.isOk()) {
+                        return Result<MapDocument>::Error(!patrolMin.isOk()
+                                                              ? patrolMin.errorMessage()
+                                                              : patrolMax.errorMessage());
+                    }
+                    document.patrolMin = patrolMin.value();
+                    document.patrolMax = patrolMax.value();
+                }
+
+                document.targetLevel = entity["targetLevel"].asString();
+                if (entity["targetPosition"].isObject()) {
+                    const Result<GridCoord> target =
+                        readGridCoord(entity["targetPosition"], "entidad.targetPosition");
+                    if (!target.isOk()) {
+                        return Result<MapDocument>::Error(target.errorMessage());
+                    }
+                    document.targetPosition = target.value();
+                    document.hasTargetPosition = true;
+                }
+
+                if (entity["loot"].isArray()) {
+                    document.loot.reserve(entity["loot"].size());
+                    for (std::size_t lootIndex = 0; lootIndex < entity["loot"].size();
+                         ++lootIndex) {
+                        if (!entity["loot"][lootIndex].isString()) {
+                            return Result<MapDocument>::Error(
+                                "entidad: 'loot' contiene un valor no textual");
+                        }
+                        document.loot.push_back(entity["loot"][lootIndex].asString());
+                    }
+                }
+                document.lootTable = entity["lootTable"].asString();
+                document.eventId = entity["eventId"].asString();
+                document.displayName = entity["displayName"].asString();
+                document.variant = entity["variant"].asString();
+                if (entity["scale"].isNumber()) {
+                    document.scale = static_cast<float>(entity["scale"].asNumber());
+                }
+                document.effectOverride = entity["effectOverride"].asString();
+                if (entity["properties"].isObject()) {
+                    for (const auto& property : entity["properties"].objectValues()) {
+                        document.properties[property.first] = property.second.asString();
+                    }
+                }
+
+                entities.push_back(std::move(document));
             }
             added = map.addLayer(MapLayer::entities(std::move(meta), EntityLayerDocument(std::move(entities))));
         } else if (type.value() == "region") {
