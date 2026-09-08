@@ -1,5 +1,7 @@
 #include "Game/BattleState.h"
 
+#include "RPG/ConditionEngine.h"
+
 #include "Render/ICombatant.h"
 #include "Level/ObjectCatalog.h"
 #include "Game/Skill.h"
@@ -66,6 +68,13 @@ BattleState::BattleState(std::vector<BattleParticipant> allies,
     , m_catalog(catalog)
     , m_objectCatalog(objectCatalog) {
     checkOutcome();
+}
+
+void BattleState::notifyDamageReceived(ICombatant& target, int previousHealth) {
+    const int lost = previousHealth - target.health();
+    if (lost > 0 && m_conditions != nullptr && target.character_sheet() != nullptr) {
+        RPG::ConditionEngine::on_damage_received(*target.character_sheet(), *m_conditions, lost);
+    }
 }
 
 void BattleState::logLine(const std::string& line) { m_log.push_back(line); }
@@ -137,6 +146,7 @@ void BattleState::resolveAllyAction(std::size_t allyIndex, const BattleAction& a
         chosenIndex = static_cast<std::size_t>(action.targetIndex);
     }
     BattleParticipant& target = side[chosenIndex];
+    const int previousHealth = target.combatant->health();
 
     if (action.type == BattleActionType::Attack) {
         // === Ataque básico vía Nd6 ONEgAI (antes: kBasicAttackPower) ===
@@ -151,6 +161,7 @@ void BattleState::resolveAllyAction(std::size_t allyIndex, const BattleAction& a
                 degreeLabel(r.degree) + ": " + std::to_string(r.hpChange) + ").");
     }
 
+    notifyDamageReceived(*target.combatant, previousHealth);
     checkOutcome();
 }
 
@@ -239,6 +250,7 @@ void BattleState::resolveEnemyTurn() {
             }
         }
 
+        const int previousHealth = target.combatant->health();
         if (chosen != nullptr) {
             enemy.skills->spend(*chosen);
             SkillApplyResult r =
@@ -253,6 +265,7 @@ void BattleState::resolveEnemyTurn() {
                     std::to_string(r.hpChange) + " de daño).");
         }
 
+        notifyDamageReceived(*target.combatant, previousHealth);
         checkOutcome();
     }
 }

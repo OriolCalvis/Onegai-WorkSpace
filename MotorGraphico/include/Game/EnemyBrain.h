@@ -135,8 +135,8 @@ public:
             m_health = m_maxHealth;
         }
     }
-    RPG::CharacterSheet* character_sheet() { return m_sheet; }
-    const RPG::CharacterSheet* character_sheet() const { return m_sheet; }
+    RPG::CharacterSheet* character_sheet() override { return m_sheet; }
+    const RPG::CharacterSheet* character_sheet() const override { return m_sheet; }
 
     // Rellena el brain desde MonsterDefinition. Si sheet no es nullptr,
     // también lo inicializa y llama a recompute_derived(). Después:

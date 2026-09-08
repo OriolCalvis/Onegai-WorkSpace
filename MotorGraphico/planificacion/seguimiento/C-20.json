@@ -1,22 +1,28 @@
 {
   "id": "C-20",
-  "date": "2026-09-03",
+  "date": "2026-09-08",
   "author": "Codex",
-  "status": "Nucli implementat i verificat localment; paquet encara obert",
+  "status": "Nucli i integració de combat implementats i verificats localment; CI pendent",
   "actions": [
     "Retirats applyCondition, removeCondition i tickEndOfRound de CharacterSheet: ConditionEngine concentra les regles d'aplicació, apilat, retirada i caducitat.",
     "purge_expired elimina entrades amb rondes o càrregues esgotades i recalcula modificadors; les consultes ignoren entrades caducades.",
     "El tick conserva l'efecte de l'última ronda i evita tornar a aplicar efectes ja caducats.",
     "on_damage_received elimina totes les condicions breaksOnDamage del receptor i recalcula els modificadors; zero, curació i dany bloquejat no les trenquen.",
-    "Afegit test_condition_engine amb 11 casos i registre CTest GL-free independent del scaffolding pendent d'altres sessions."
+    "Afegit test_condition_engine amb 11 casos i registre CTest GL-free independent del scaffolding pendent d'altres sessions.",
+    "BattleState notifica ConditionEngine després dels atacs bàsics i habilitats dels dos bàndols amb els PV realment perduts pel receptor.",
+    "ICombatant exposa la fitxa opcional; Player i EnemyBrain implementen el contracte sense crear fitxes als combatents legacy.",
+    "Application carrega i conserva el catàleg de condicions; GameSession el propaga a les batalles noves i actives. Restaurar PV fora del combat no activa la ruptura."
   ],
   "verification": [
     "Abans del canvi: 2 regressions reproduïdes (purga i ruptura pel dany calculat del tick).",
     "11/11 casos amb AddressSanitizer i UndefinedBehaviorSanitizer, sense errors.",
-    "Build de suite_gl_free i CTest: 54/54 proves GL-free en verd (macOS Debug)."
+    "Build de suite_gl_free i CTest: 54/54 proves GL-free en verd (macOS Debug).",
+    "08/09: build completa Debug correcta; 63/63 proves GL-free i 2/2 executables de regressió GL (escenes i tancament).",
+    "test_battle_state: 8 casos, amb variants dels dos bàndols, atac/habilitat, curació, dany bloquejat, fallada, compatibilitat legacy i propagació de GameSession abans/durant la batalla.",
+    "test_battle_state i test_condition_engine passen amb AddressSanitizer i UndefinedBehaviorSanitizer."
   ],
   "pending": [
-    "Connectar la notificació de PV realment perduts al combat de producció quan disposi del catàleg de condicions; actualment ConditionEngine només tenia consumidors de demo. No s'han modificat GameSession/Application, reservats per una altra sessió.",
-    "Passar la prova a CI abans de tancar formalment C-20 (regla 6 del pla)."
+    "Executar CI remota abans de tancar formalment C-20 (regla 6 del pla).",
+    "Fase D: interpretar les dades canòniques de condicions (D-04) i aplicar-les des de cartes (D-09); la integració actual actua sobre combatents amb CharacterSheet vinculada."
   ]
 }

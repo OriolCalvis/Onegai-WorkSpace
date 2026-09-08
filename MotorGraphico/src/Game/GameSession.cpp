@@ -737,6 +737,7 @@ void GameSession::startBattle(int enemyIndex) {
 
     m_battle = std::make_unique<BattleState>(std::move(allies), std::move(enemies), m_skillCatalog,
                                              m_catalog);
+    m_battle->setConditionCatalog(m_conditions);
     m_battleEnemyIndex = enemyIndex;
     m_mode = GameMode::Battle;
     logLine("Un " + enemyName + " te corta el paso!");

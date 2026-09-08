@@ -84,6 +84,7 @@ private:
     void finishSceneFrame();
     Result<bool> openProject(const Editor::Project& project);
     Engine::SceneManager m_scenes;
+    RPG::Catalogs::ConditionCatalog m_conditions;
     ids::MapId m_currentMapId;
     bool m_captureFrame = false;
 

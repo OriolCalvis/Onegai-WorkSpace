@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "RPG/RandomEngine.h"
+#include "RPG/Catalogs/RpgCatalogs.h"
 
 class ICombatant;
 class SkillSet;
@@ -148,7 +149,12 @@ public:
     // cambiado la cara del dado que tocaba. Ver examples/ScriptedRng.h.
     void setRandomEngine(RPG::RandomEngine& rng) { m_rngInUse = &rng; }
 
+    // Referencia no propietaria; el catalogo debe sobrevivir a la batalla.
+    void setConditionCatalog(const RPG::Catalogs::ConditionCatalog* catalog) { m_conditions = catalog; }
+
 private:
+    void notifyDamageReceived(ICombatant& target, int previousHealth);
+    const RPG::Catalogs::ConditionCatalog* m_conditions = nullptr;
     void checkOutcome();
     void logLine(const std::string& line);
 

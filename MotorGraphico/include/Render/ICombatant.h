@@ -6,6 +6,8 @@
 #include "RPG/Defense.h"
 #include "RPG/Stat.h"
 
+namespace RPG { struct CharacterSheet; }
+
 // Interfaz de "participante en combate Onegai Nd6".
 //
 // FASE 0 → extendida (P0-1). Antes solo tenia takeDamage/heal/health
@@ -19,6 +21,10 @@
 class ICombatant {
 public:
     virtual ~ICombatant() = default;
+
+    // Participantes legacy pueden no tener ficha; el combate nunca la crea.
+    virtual RPG::CharacterSheet* character_sheet() { return nullptr; }
+    virtual const RPG::CharacterSheet* character_sheet() const { return nullptr; }
 
     // ==== (existentes, no se tocan) ====
     virtual void takeDamage(int amount) = 0;

@@ -208,6 +208,12 @@ public:
     // bloquea", ver tileBlocks/worldObjectIndexAt).
     void update(float deltaTime);
 
+    // Catalogo externo estable, compartido por las batallas de esta sesion.
+    void setConditionCatalog(const RPG::Catalogs::ConditionCatalog* catalog) {
+        m_conditions = catalog;
+        if (m_battle) m_battle->setConditionCatalog(catalog);
+    }
+
     // --- Interaccion (hablar, comerciar, cruzar puertas) ---
 
     // Actua sobre la celda en la que esta el jugador y sus cuatro
@@ -458,6 +464,7 @@ private:
     std::vector<WorldEnemy> m_enemies;
 
     GameMode m_mode = GameMode::Exploration;
+    const RPG::Catalogs::ConditionCatalog* m_conditions = nullptr;
     std::unique_ptr<BattleState> m_battle;
     int m_battleEnemyIndex = -1;  // enemigo con el que se combate (indice en m_enemies)
     std::string m_lastPickupId;

@@ -438,6 +438,10 @@ Result<bool> Application::init(int width, int height, const std::string& title,
 
     trace("init: sombras blob OK");
     // Nivel inicial: mapa, tileset, sesion y marcadores (ver loadLevel).
+    const auto conditionsLoaded = m_conditions.loadFromFile("assets/catalogs/conditions.json");
+    if (!conditionsLoaded.isOk()) {
+        return Result<bool>::Error("Condiciones: " + conditionsLoaded.errorMessage());
+    }
     auto levelLoaded = loadLevel(levelPath, /*useEntry=*/false, GridCoord{0, 0});
     if (!levelLoaded.isOk()) {
         return levelLoaded;
@@ -908,6 +912,7 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
                                               std::move(level), m_player.get(), &m_playerSkills,
                                               &m_inventory);
     m_session->applyCarryOver(carried);
+    m_session->setConditionCatalog(&m_conditions);
     if (savedGame) {
         std::string error;
         m_session->restoreSaveGame(*savedGame, &error);  // validado antes del commit
