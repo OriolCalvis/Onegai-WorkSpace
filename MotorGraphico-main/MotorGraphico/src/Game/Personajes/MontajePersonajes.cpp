@@ -2,7 +2,9 @@
 #include "Game/Personajes/MontajePersonajes.h"
 
 #include <algorithm>
+#include <cstdlib>
 #include <iterator>
+#include <set>
 #include <utility>
 
 namespace Game {
@@ -223,35 +225,6 @@ Capas MontajePersonajes::capas(const Apariencia& a,
     return Capas::Ok(std::move(out));
 }
 
-Result<const imagen::ImagenRGBA*> MontajePersonajes::atlas(const std::string& ruta) {
-    for (auto it = m_cache.begin(); it != m_cache.end(); ++it) {
-        if (it->first == ruta) {
-            m_cache.splice(m_cache.begin(), m_cache, it);
-            return Result<const imagen::ImagenRGBA*>::Ok(&m_cache.front().second);
-        }
-    }
-    auto leida = imagen::cargarPNG(m_carpeta + "/" + ruta);
-    if (!leida.isOk())
-        return Result<const imagen::ImagenRGBA*>::Error(leida.errorMessage());
-    m_bytes += leida.value().bytes();
-    m_cache.emplace_front(ruta, std::move(leida.value()));
-    return Result<const imagen::ImagenRGBA*>::Ok(&m_cache.front().second);
-}
-
-void MontajePersonajes::recortarCache() {
-    // Nunca durante un montaje (los punteros a los atlas siguen en uso):
-    // solo al acabarlo. Siempre queda al menos el ultimo atlas usado.
-    while (m_bytes > m_presupuesto && m_cache.size() > 1) {
-        m_bytes -= m_cache.back().second.bytes();
-        m_cache.pop_back();
-    }
-}
-
-void MontajePersonajes::vaciarCache() {
-    m_cache.clear();
-    m_bytes = 0;
-}
-
 std::string MontajePersonajes::tallaDe(const Apariencia& a) const {
     const RazaVisual* r = m_manifiesto.raza(a.raza);
     if (r == nullptr)
@@ -262,25 +235,51 @@ std::string MontajePersonajes::tallaDe(const Apariencia& a) const {
 Result<imagen::ImagenRGBA> MontajePersonajes::montar(
     const Apariencia& apariencia, const std::map<std::string, std::string>& equipo, MapaDeCapas* mapa) {
     using Hoja = Result<imagen::ImagenRGBA>;
+    struct FinDeMontaje {  // suelta los atlas del montaje, salga como salga
+        MontajePersonajes& m;
+        ~FinDeMontaje() { m.m_montaje = 0; m.recortarCache(); }
+    };
+    m_montaje = ++m_siguiente;
+    FinDeMontaje fin{*this};
     auto lista = capas(apariencia, equipo);
     if (!lista.isOk())
         return Hoja::Error(lista.errorMessage());
     const std::vector<CapaDeMontaje>& capasDelPersonaje = lista.value();
-
-    std::vector<const imagen::ImagenRGBA*> atlas;
     for (const CapaDeMontaje& capa : capasDelPersonaje) {
-        auto a = this->atlas(capa.atlas);
-        if (!a.isOk())
-            return Hoja::Error(a.errorMessage());
-        const imagen::ImagenRGBA* img = a.value();
-        if (img->ancho < kLado * frames() || img->alto < capa.fila * kLado || capa.fila < 1) {
+        if (capa.fila < 1)
             return Hoja::Error(capa.atlas + " no tiene la fila " + std::to_string(capa.fila) + " de " +
                                std::to_string(frames()) + " frames de 64x64");
-        }
-        if (m_manifiesto.orden.find(capa.ranura) == m_manifiesto.orden.end()) {
+        if (m_manifiesto.orden.find(capa.ranura) == m_manifiesto.orden.end())
             return Hoja::Error("la ranura '" + capa.ranura + "' no tiene orden de dibujo");
+    }
+    reservarParaElMontaje(capasDelPersonaje);  // las que ya estan, que no se suelten al leer otro
+    // PERF-1b: por cada atlas con filas que faltan, una sola lectura con todas las que este montaje
+    // necesita de el.
+    {
+        std::vector<std::string> orden;
+        std::map<std::string, std::set<int>> faltan;
+        for (const CapaDeMontaje& capa : capasDelPersonaje)
+            if (m_indice.find(claveDe(capa.atlas, capa.fila)) == m_indice.end()) {
+                if (faltan.find(capa.atlas) == faltan.end())
+                    orden.push_back(capa.atlas);
+                faltan[capa.atlas].insert(capa.fila);
+            }
+        for (const std::string& ruta : orden) {
+            auto ok = leerAtlas(ruta, faltan[ruta]);
+            if (!ok.isOk())
+                return Hoja::Error(ok.errorMessage());
         }
-        atlas.push_back(img);
+    }
+    // La fila de cada capa (apuntada hasta el final del montaje: no se suelta) y su ancho.
+    std::vector<const std::uint8_t*> filas;
+    std::vector<std::size_t> anchos;
+    for (const CapaDeMontaje& capa : capasDelPersonaje) {
+        const auto ix = m_indice.find(claveDe(capa.atlas, capa.fila));
+        if (ix == m_indice.end() || ix->second->ancho < kLado * frames())
+            return Hoja::Error(capa.atlas + " no tiene la fila " + std::to_string(capa.fila) + " de " +
+                               std::to_string(frames()) + " frames de 64x64");
+        filas.push_back(ix->second->pixeles.data());
+        anchos.push_back(static_cast<std::size_t>(ix->second->ancho));
     }
 
     imagen::ImagenRGBA hoja;
@@ -321,8 +320,8 @@ Result<imagen::ImagenRGBA> MontajePersonajes::montar(
         std::sort(pila.begin(), pila.end());
         const int x0 = (frame - 1) * kLado;
         for (const auto& [z, i] : pila) {
-            const imagen::ImagenRGBA& origen = *atlas[i];
-            const int y0 = (capasDelPersonaje[i].fila - 1) * kLado;
+            const std::uint8_t* origen = filas[i];  // la fila de la capa: y va de 0 a 63
+            const std::size_t anchoOrigen = anchos[i];
             const auto& cambios = capasDelPersonaje[i].cambios;
             for (int y = 0; y < kLado; ++y) {
                 for (int x = 0; x < kLado; ++x) {
@@ -330,7 +329,7 @@ Result<imagen::ImagenRGBA> MontajePersonajes::montar(
                         hoja.pixeles.data() + (static_cast<std::size_t>(y) * hoja.ancho +
                                                static_cast<std::size_t>(x0 + x)) *
                                                   4;
-                    const std::uint8_t* px = origen.pixel(x0 + x, y0 + y);
+                    const std::uint8_t* px = origen + (static_cast<std::size_t>(y) * anchoOrigen + static_cast<std::size_t>(x0 + x)) * 4;
                     if (mapa != nullptr && px[3] != 0)
                         mapa->arriba[static_cast<std::size_t>(y) * hoja.ancho + static_cast<std::size_t>(x0 + x)] =
                             static_cast<std::uint8_t>(i + 1);
@@ -353,7 +352,6 @@ Result<imagen::ImagenRGBA> MontajePersonajes::montar(
             }
         }
     }
-    recortarCache();
     return Hoja::Ok(std::move(hoja));
 }
 

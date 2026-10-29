@@ -38,8 +38,11 @@ class Retratista {
 public:
     Retratista(AtlasRetratos& atlas, Game::MontajePersonajes* montaje) : m_atlas(atlas), m_montaje(montaje) {}
     // La region del atlas con el frame `frame` (0..11) de esa vista; Rect
-    // vacio si no se puede.
-    Rect frame(const Game::CuadernoCreacion::Vista& v, int frame);
+    // vacio si no se puede. PERF-2: con `prioritario` false (las rejillas) no
+    // monta si ya se han montado AtlasRetratos::kMontajesPorFotograma en este
+    // fotograma: devuelve Rect vacio y se rellena en los siguientes. El
+    // personaje central (prioritario) monta siempre y no cuenta en el limite.
+    Rect frame(const Game::CuadernoCreacion::Vista& v, int frame, bool prioritario = true);
     // Oriol (24/10): el reparto de las hojas que monta (20 frames o 40 en diagonal).
     Game::Reparto reparto() const;
     std::string aviso(const Game::CuadernoCreacion::Vista& v, int frame) const;

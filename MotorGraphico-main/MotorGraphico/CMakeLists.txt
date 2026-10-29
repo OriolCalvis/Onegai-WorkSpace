@@ -361,6 +361,8 @@ add_library(motor_level
     # puesto). GL-free; la textura la sube Render/HojaPersonaje.
     src/Game/Personajes/ManifiestoPersonajes.cpp
     src/Game/Personajes/MontajePersonajes.cpp
+    src/Game/Personajes/MontajeCache.cpp
+    src/Game/Personajes/MontajeFilas.cpp
     src/Game/Personajes/BrilloEquipo.cpp
     src/Game/Personajes/FamiliasDeParticulas.cpp  # PART-01: las familias de particulas (equipo y cartas)
     src/Game/Personajes/VisibilidadRasgos.cpp
@@ -1596,6 +1598,7 @@ include(cmake/RutinasPnj.cmake)
 # AV15-05a — confirmar lo caro e irreversible (EH-22, 23, 29, 30).
 include(cmake/Confirmar.cmake)
 include(cmake/AparienciaTests.cmake)
+include(cmake/MontajeCacheTests.cmake)  # PERF-1: la cache de atlas del montaje
 include(cmake/CreacionBg3Tests.cmake)  # UI-BG3-01: kit del cofre, cuaderno de creacion y barra de cartas
 # SPRITES-01 — el indice de hojas de sprites y sus reglas de busqueda.
 include(cmake/RegistroSpritesTests.cmake)

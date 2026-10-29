@@ -322,7 +322,7 @@ void pintaRejilla(const Contexto& k, float x, float y, bool retratos, const char
             }
             bool conRetrato = false;
             if (retratos) {
-                const Rect uv = k.r.frame(k.c.retrato(h, id), Game::frameQuieto(Game::Rumbo::Abajo, k.r.reparto()) - 1);
+                const Rect uv = k.r.frame(k.c.retrato(h, id), Game::frameQuieto(Game::Rumbo::Abajo, k.r.reparto()) - 1, false);
                 if (uv.w > 0.0f) {
                     k.l.rect(Fuente::Retratos, Rect{std::round(r.x + (r.w - 64.0f) * 0.5f), r.y + 2.0f, 64.0f, 64.0f},
                              uv, Color::kBlanco);
@@ -396,13 +396,17 @@ std::string Retratista::aviso(const Game::CuadernoCreacion::Vista& v, int frame)
     return m_atlas.aviso(base + "#" + std::to_string(frame));
 }
 
-Rect Retratista::frame(const Game::CuadernoCreacion::Vista& v, int frame) {
+Rect Retratista::frame(const Game::CuadernoCreacion::Vista& v, int frame, bool prioritario) {
     if (m_montaje == nullptr || v.vacia() || frame < 0 || frame >= m_montaje->frames()) return Rect{};
     std::string base = v.apariencia.clave();
     for (const auto& [ranura, pieza] : v.equipo) base += "|" + ranura + "=" + pieza;
     const std::string clave = base + "#" + std::to_string(frame);
     if (m_atlas.tiene(clave)) return m_atlas.celda(clave, nullptr);
     if (m_atlas.tira(base) == nullptr) {
+        if (!prioritario) {
+            if (!m_atlas.hayCupo()) return Rect{};  // PERF-2: ya se montaron las de este fotograma
+            m_atlas.cuentaMontaje();
+        }
         Game::MapaDeCapas mapa;
         auto hoja = m_montaje->montar(v.apariencia, v.equipo, &mapa);
         if (!hoja.isOk()) return Rect{};

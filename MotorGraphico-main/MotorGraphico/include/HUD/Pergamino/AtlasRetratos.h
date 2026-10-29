@@ -58,8 +58,18 @@ public:
         m_tira = std::move(tira);
     }
 
+    // PERF-2: cuantos personajes se han montado en este fotograma para las
+    // rejillas de retratos. InterfazPergamino lo pone a cero UNA vez por
+    // fotograma; el Retratista no monta mas de kMontajesPorFotograma.
+    static constexpr int kMontajesPorFotograma = 2;
+    void nuevoFotograma() { m_montajes = 0; }
+    int montajes() const { return m_montajes; }
+    bool hayCupo() const { return m_montajes < kMontajesPorFotograma; }
+    void cuentaMontaje() { ++m_montajes; }
+
 private:
     Rect uvDe(int celda) const;
+    int m_montajes = 0;
 
     Imagen m_imagen;
     std::unordered_map<std::string, int> m_celdas;

@@ -41,4 +41,7 @@ struct ImagenRGBA {
 // incluidas). Error legible con la ruta y el motivo si no se puede.
 Result<ImagenRGBA> cargarPNG(const std::string& ruta);
 
+// PERF-3: lo mismo con un PNG ya en memoria (las filas de un .filas).
+Result<ImagenRGBA> decodificarPNG(const std::uint8_t* datos, std::size_t bytes);
+
 }  // namespace imagen

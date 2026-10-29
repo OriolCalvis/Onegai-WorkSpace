@@ -179,9 +179,9 @@ void InterfazPergamino::avanza(float segundos) {
 void InterfazPergamino::actualiza(const EstadoJuego& e) {
     m_salidas.clear();  // AV16-06: las vuelve a poner pintaExploracion
     m_capas.baja.limpia();
-    m_capas.alta.limpia();
-    m_capas.hoja.limpia();
+    m_capas.alta.limpia(); m_capas.hoja.limpia();
     m_capas.hojaVisible = false;
+    m_retratos.nuevoFotograma();  // PERF-2: el cupo de montajes de retratos, por cada actualiza
     if ((e.titulo != nullptr || e.creacion != nullptr) && cargada()) {
         m_cuadernoAbierto = false;
         m_dialogo.cierra();
