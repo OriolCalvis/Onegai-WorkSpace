@@ -31,8 +31,8 @@ std::unique_ptr<Game::MontajePersonajes> montaje(std::size_t presupuesto, const 
     if (!m.isOk())
         throw std::runtime_error(m.errorMessage());
     auto out = std::make_unique<Game::MontajePersonajes>(std::move(m.value()), kTexturas, presupuesto);
-    if (!filas.empty())
-        out->usarFilasEn(filas);
+    // Sin carpeta: el camino del atlas entero, aunque el repo ya tenga .filas junto a los PNG (PERF-4).
+    out->usarFilasEn(filas.empty() ? std::string("filas_test/no_hay") : filas);
     return out;
 }
 
@@ -218,3 +218,16 @@ MOTOR_TEST_CASE(montaje_filas_crc32_es_el_de_zlib) {
 }
 
 int main() { return motor_test::runAllTests(); }
+
+MOTOR_TEST_CASE(montaje_filas_del_repo_se_usan_por_defecto) {
+    // PERF-4: con los .filas del repo junto a cada PNG, el montaje por defecto (el del juego, sin
+    // usarFilasEn) no lee ningun atlas entero.
+    auto m = Game::ManifiestoPersonajes::cargar(kTexturas);
+    MOTOR_CHECK(m.isOk());
+    Game::MontajePersonajes mp(std::move(m.value()), kTexturas, Game::MontajePersonajes::kPresupuestoPorDefecto);
+    const auto& man = mp.manifiesto();
+    for (std::size_t i = 0; i < man.razas.size() && i < 6; ++i)
+        MOTOR_CHECK(mp.montar(Game::Apariencia::deRaza(man.razas[i])).isOk());
+    MOTOR_CHECK(mp.lecturasDeDisco() == 0);
+    MOTOR_CHECK(mp.lecturasDeFilas() > 0);
+}

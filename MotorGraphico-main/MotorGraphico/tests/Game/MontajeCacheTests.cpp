@@ -30,7 +30,11 @@ std::unique_ptr<Game::MontajePersonajes> montaje(std::size_t presupuesto) {
     auto m = Game::ManifiestoPersonajes::cargar(kTexturas);
     if (!m.isOk())
         throw std::runtime_error(m.errorMessage());
-    return std::make_unique<Game::MontajePersonajes>(std::move(m.value()), kTexturas, presupuesto);
+    auto out = std::make_unique<Game::MontajePersonajes>(std::move(m.value()), kTexturas, presupuesto);
+    // Estos tests miden la cache del camino del atlas entero: sin .filas (PERF-4 los pone junto a los
+    // PNG del repo), apuntando a una carpeta que no existe.
+    out->usarFilasEn("filas_test/no_hay");
+    return out;
 }
 
 std::set<std::string> atlasDe(Game::MontajePersonajes& m, const Game::Apariencia& a,
