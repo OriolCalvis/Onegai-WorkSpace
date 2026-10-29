@@ -228,6 +228,18 @@ struct Jugador {
         if (ruido) std::printf("\n  [entras en %s]\n", nivel.c_str());
         procesa(e.enterLevel(ruta, s));
         drena();
+        empiezaElDesayuno(nivel);
+    }
+
+    // H-DIA1-1: bajar a la taberna ya no empieza el desayuno. Empieza al pasar
+    // junto a Venides (cinematica venides_llama, que lo pide) y la cinematica
+    // venides_te_sienta te lleva a su mesa; de ahi salta b1_desayuno. Aqui el
+    // jugador hace ese camino: llega a la celda de su derecha (5, 7).
+    void empiezaElDesayuno(const std::string& nivel) {
+        if (nivel != "interior_taberna" || !s.hasFlag("bnd0_dormido")) return;
+        if (s.hasFlag("bnd1_desayuno_visto") || s.hasFlag("bnd1_desayuno_hecho")) return;
+        for (int vez = 0; vez < 2 && !s.hasFlag("bnd1_desayuno_llamado"); ++vez)
+            if (!cinematica(GridCoord{5, 7})) break;
     }
 
     NarrativeResult habla(const std::string& npc) {

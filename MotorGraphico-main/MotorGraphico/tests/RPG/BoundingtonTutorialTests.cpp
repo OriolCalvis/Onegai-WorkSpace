@@ -299,7 +299,7 @@ MOTOR_TEST_CASE(la_noche_cero_con_el_oido_por_devoto_usa_b0_subir_oido) {
     MOTOR_CHECK(s.variable("dia") == 1);
 }
 
-MOTOR_TEST_CASE(el_desayuno_empieza_al_bajar_a_la_taberna_y_no_se_repite) {
+MOTOR_TEST_CASE(el_desayuno_no_empieza_al_bajar_a_la_taberna_sino_al_llamarte_y_no_se_repite) {
     const AdventureScript guion = carga();
     const NarrativeEngine e = motor(guion);
     NarrativeState s = nocheCero(false);
@@ -310,10 +310,16 @@ MOTOR_TEST_CASE(el_desayuno_empieza_al_bajar_a_la_taberna_y_no_se_repite) {
     MOTOR_CHECK(!s.hasFlag("bnd1_desayuno_visto"));
     MOTOR_CHECK(e.enterLevel(kTabernaP1, s).beatId != "b1_desayuno");
     MOTOR_CHECK(!s.hasFlag("bnd1_desayuno_visto"));
-    // Al bajar (tambien una partida guardada en p1 con bnd0_dormido): esmorzar.
+    // H-DIA1-1: al bajar a la taberna tampoco (Venides te llama cuando pasas a su lado).
     const NarrativeResult baja = e.enterLevel(kTaberna, s);
-    MOTOR_CHECK(baja.fired);
-    MOTOR_CHECK(baja.beatId == "b1_desayuno" || baja.beatId == "b1_desayuno_v0");
+    MOTOR_CHECK(baja.beatId != "b1_desayuno" && baja.beatId != "b1_desayuno_v0");
+    MOTOR_CHECK(!e.tick(s).fired);
+    MOTOR_CHECK(!s.hasFlag("bnd1_desayuno_visto"));
+    // La cinematica venides_te_sienta enciende bnd1_desayuno_llamado: ahora si.
+    s.setFlag("bnd1_desayuno_llamado");
+    const NarrativeResult come = e.tick(s);
+    MOTOR_CHECK(come.fired);
+    MOTOR_CHECK(come.beatId == "b1_desayuno" || come.beatId == "b1_desayuno_v0");
     MOTOR_CHECK(s.hasFlag("bnd1_desayuno_visto"));
     // Volver a entrar no lo repite.
     const NarrativeResult otra = e.enterLevel(kTaberna, s);
@@ -344,8 +350,8 @@ void desayunaYSalePorLaCalle(const NarrativeEngine& e, NarrativeState& s) {
     s.setFlag("bnd0_rosita_te_sube");
     drena(e, s);  // b0_subir: dia 1, mañana, bnd0_dormido
     MOTOR_CHECK(s.hasFlag("bnd0_dormido"));
-    const NarrativeResult baja = e.enterLevel(kTaberna, s);
-    MOTOR_CHECK(baja.fired);
+    s.setFlag("bnd1_desayuno_llamado");  // venides_llama + venides_te_sienta (H-DIA1-1)
+    MOTOR_CHECK(e.tick(s).fired);
     eligeTexto(e, s, "Ponerse en marcha");
     MOTOR_CHECK(s.hasFlag("bnd1_desayuno_hecho"));
 }

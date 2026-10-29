@@ -345,7 +345,12 @@
    "lines": [
     "¿Adónde vas sin haber probado bocado? Siéntate, que aún no hemos hablado."
    ],
-   "effects": []
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "bnd1_desayuno_pide"
+    }
+   ]
   },
   {
    "id": "b0_calle_sin_cama",
@@ -3942,12 +3947,12 @@
   {
    "id": "b1_desayuno_v0",
    "trigger": {
-    "type": "enter",
-    "target": "assets/levels/interior_taberna.json"
+    "type": "auto"
    },
    "requires": {
     "allFlags": [
-     "bnd0_dormido"
+     "bnd0_dormido",
+     "bnd1_desayuno_llamado"
     ],
     "notFlags": [
      "bnd1_desayuno_hecho",
@@ -4098,12 +4103,12 @@
   {
    "id": "b1_desayuno",
    "trigger": {
-    "type": "enter",
-    "target": "assets/levels/interior_taberna.json"
+    "type": "auto"
    },
    "requires": {
     "allFlags": [
-     "bnd0_dormido"
+     "bnd0_dormido",
+     "bnd1_desayuno_llamado"
     ],
     "notFlags": [
      "bnd1_desayuno_hecho",
@@ -11616,6 +11621,57 @@
     "¡Hola! Mi padre dice que vuelvas cuando quieras."
    ],
    "effects": []
+  },
+  {
+   "id": "b1_venides_llama",
+   "trigger": {
+    "type": "auto"
+   },
+   "requires": {
+    "allFlags": [
+     "bnd1_venides_llama"
+    ],
+    "notFlags": [
+     "bnd1_venides_llamo"
+    ]
+   },
+   "speaker": "Venides",
+   "lines": [
+    "¡Eh, tú! Ven aquí, que el desayuno se enfría."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "bnd1_venides_llamo"
+    }
+   ]
+  },
+  {
+   "id": "b1_desayuno_habla",
+   "trigger": {
+    "type": "talk",
+    "target": "venides"
+   },
+   "requires": {
+    "allFlags": [
+     "bnd0_dormido"
+    ],
+    "notFlags": [
+     "bnd1_desayuno_hecho",
+     "bnd1_desayuno_visto",
+     "bnd1_desayuno_pide"
+    ]
+   },
+   "speaker": "Venides",
+   "lines": [
+    "Justo a tiempo. Siéntate, que el desayuno se enfría."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "bnd1_desayuno_pide"
+    }
+   ]
   },
   {
    "id": "b1_venides_dia",

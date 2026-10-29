@@ -6167,6 +6167,65 @@
           "espera": 1.0
         }
       ]
+    },
+    {
+      "id": "venides_llama",
+      "_nota": "Oriol (29/10): al bajar, Venides no te habla desde lejos. Salta cuando pasas a <= 2 celdas de el por delante (zona x 4-6, y 5-9; por detras de la mesa no se llega) y el desayuno aun no ha empezado: te llama (b1_venides_llama) y enciende bnd1_desayuno_pide, que lleva a venides_te_sienta. Por la puerta (b0_puerta_cerrada_venides) o hablandole (b1_desayuno_habla) se enciende la misma flag.",
+      "nivel": "assets/levels/interior_taberna.json",
+      "zona": [4, 5, 6, 9],
+      "requiere": [
+        "bnd0_dormido"
+      ],
+      "sin": [
+        "bnd1_desayuno_hecho",
+        "bnd1_desayuno_visto",
+        "bnd1_desayuno_pide"
+      ],
+      "pasos": [
+        {
+          "mira": "venides",
+          "hacia": "derecha"
+        },
+        {
+          "beat": "bnd1_venides_llama"
+        }
+      ],
+      "alTerminar": [
+        "bnd1_desayuno_pide"
+      ]
+    },
+    {
+      "id": "venides_te_sienta",
+      "_nota": "Oriol (29/10): el jugador anda hasta la silla de Venides (la celda de su derecha: las sillas de la mesa estan al otro lado) y se mira con el; al acabar enciende bnd1_desayuno_llamado y empieza el desayuno (b1_desayuno, auto). Sin texto nuevo.",
+      "nivel": "assets/levels/interior_taberna.json",
+      "requiere": [
+        "bnd1_desayuno_pide"
+      ],
+      "sin": [
+        "bnd1_desayuno_visto",
+        "bnd1_desayuno_hecho"
+      ],
+      "pasos": [
+        {
+          "anda": "jugador",
+          "a": [5, 7],
+          "velocidad": 2.5
+        },
+        {
+          "mira": "jugador",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "venides",
+          "hacia": "derecha"
+        },
+        {
+          "espera": 0.3
+        }
+      ],
+      "alTerminar": [
+        "bnd1_desayuno_llamado"
+      ]
     }
   ]
 }
