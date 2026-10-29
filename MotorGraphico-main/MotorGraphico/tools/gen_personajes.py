@@ -306,15 +306,14 @@ def generar_capas(tallas, salida, filas_medio=None):
     # largo). El atlas de pelo no puede pasar de 256 filas (16384 px, lo mas alto que admite una textura).
     if PL:
         import pixellab_cabeza
-        estilos, estilos_raza, barbas_ids = pixellab_cabeza.ESTILOS, pixellab_cabeza.ESTILOS_RAZA, pixellab_cabeza.BARBAS
+        estilos, barbas_ids = pixellab_cabeza.ESTILOS, pixellab_cabeza.BARBAS
     else:
-        estilos, estilos_raza, barbas_ids = list(pelo.ESTILOS), ("corto", "largo"), BARBAS
-    combos = [(e, c) for e in estilos for c in COLORES_PELO]
-    combos += [(e, c) for e in estilos_raza for c in COLORES_PELO_RAZA]
-    combos += [("largo", "pelo_llama"), ("cresta", "pelo_llama")]  # Oriol (23/10): los del fuego (2000 b.f.)
-    barbas = [(b, c) for b in barbas_ids for c in COLORES_PELO]
-    if PL:
-        barbas += [(b, c) for b in ("BARBA", "BARBA_CORTA", "BARBA_LARGA", "BARBA_TRENZADA") for c in COLORES_PELO_RAZA]
+        estilos, barbas_ids = list(pelo.ESTILOS), BARBAS
+    # NET-E1b (Oriol, 29/10, «neteja de sprites desfasats»): una sola fila por estilo, la castana; el motor y el
+    # creador tinen los demas colores (pelo_rubio, pelo_llama, los de raza...) y dan los mismos pixeles
+    # (tools/recortar_colores_capa.py lo comprueba). Solo las filas propias de raza llevan su color dibujado.
+    combos = [(e, "pelo_castano") for e in estilos]
+    barbas = [(b, "pelo_castano") for b in barbas_ids]
     propios = {"pelo": [], "barba": []}
     if PL:
         # PL-ROPA-01: el pelo y la barba que PixelLab dibujo en la cabeza de cada raza, como filas propias

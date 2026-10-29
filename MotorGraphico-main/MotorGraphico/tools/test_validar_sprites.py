@@ -296,7 +296,15 @@ class ProbadorTests(unittest.TestCase):
             filas = g["filas"]
             castanos = {f["estilo"]: f for f in filas if f["color"] == "pelo_castano"}
             muestra = [f for f in filas if f["estilo"] in castanos and f["color"] != "pelo_castano"]
-            self.assertGreater(len(muestra), 0)
+            if not muestra:
+                # NET-E1b: los atlas ya van recortados (solo castana y propias): no queda fila cuita con la que
+                # comparar; el probador tine siempre y test_el_probador_monta_lo_mismo_que_los_atlas_horneados
+                # lo compara con los pnj_* y razas_andando ya cuitos. Aqui: la paleta de cada color da cambios.
+                for c in ("pelo_rubio", "pelo_negro", "pelo_llama", "pelo_plata_lila"):
+                    if grupo == "barba" and c == "pelo_llama":
+                        continue
+                    self.assertTrue(pr._fila_color(g, f"{next(iter(castanos))}/{c}", grupo)[1], f"{grupo} {c}")
+                continue
             for talla in ("medio", "pequeno"):
                 if talla not in g["atlas"]:
                     continue
