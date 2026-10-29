@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "Game/Bloques.h"
 #include "Game/Monumentos.h"
 #include "Render/TileMap.h"
 #include "Runtime/RuntimeTileMap.h"
@@ -108,7 +109,7 @@ MOTOR_TEST_CASE(solo_las_huellas_que_miden_lo_que_dice_el_monumento) {
 
 MOTOR_TEST_CASE(una_fila_de_mas_por_detras_sigue_siendo_el_monumento) {
     // Oriol (22/10): la manzana del Excel mide una fila mas que el sprite (el castillo 13x11 con un sprite
-    // de 13x10). El monumento se pone alineado por delante y la fila de detras no levanta bloques.
+    // de 13x10). El monumento se pone alineado por delante; la fila de detras (J-2: en las casas) levanta bloques.
     CarpetaTemporal c;
     const Monumentos m = planDePrueba(c);
     MapaDePrueba mapa;
@@ -121,7 +122,9 @@ MOTOR_TEST_CASE(una_fila_de_mas_por_detras_sigue_siendo_el_monumento) {
     MOTOR_CHECK(plan[0].x0 == 1 && plan[0].y0 == 2 && plan[0].ancho == 4 && plan[0].alto == 3);
     for (const auto& t : plan[0].tiras) MOTOR_CHECK(t.y >= 2 && t.y <= 4);
     const auto cubiertas = Monumentos::celdasCubiertas(plan);
-    MOTOR_CHECK(cubiertas.size() == 16 && cubiertas.count({1, 1}) == 1);
+    // J-2: una casa o un local (menos de 30 casillas) no tiene patio: la fila de detras conserva su colision
+    // y se dibuja con bloques, no es una pared invisible. Solo el sprite (4x3) queda cubierto.
+    MOTOR_CHECK(cubiertas.size() == 12 && cubiertas.count({1, 1}) == 0 && cubiertas.count({1, 2}) == 1);
     // Dos de mas ya no (un monumento pequeño: una casa o un local): se queda en bloques.
     for (int x = 1; x <= 4; ++x) g[static_cast<std::size_t>(5 * 12 + x)] = 100;
     mapa.rellena(12, 12, g);
@@ -415,6 +418,41 @@ MOTOR_TEST_CASE(ciudad_centro_ocaso_las_casas_de_tres_por_tres_salen_enteras) {
         if (p.id.rfind("iso_edifici_3x3", 0) == 0 && ((p.cubreX0 == 72 && p.cubreY0 == 52) || (p.cubreX0 >= 76 && p.cubreY0 == 43)))
             ++casas3x3;
     MOTOR_CHECK(casas3x3 == 2);
+}
+
+MOTOR_TEST_CASE(ciudad_centro_ocaso_las_dos_casillas_sueltas_de_la_casa_levantan_bloques_y_no_hay_paredes_invisibles) {
+    // J-2: la casa 3x3 (77..79, 43..45) esta en una mancha de 4x3 (76..79); (76,43) y (76,45) son edificio con
+    // colision que el sprite no pisa. No hay sprite de 4x3: se dibujan con bloques del material de la casa.
+    TileMap tm;
+    Monumentos m;
+    Game::Bloques b;
+    MOTOR_CHECK(cargaCiudad("ciudad_centro_ocaso.tmx", tm, m));
+    MOTOR_CHECK(b.carga("assets").isOk() && b.cargado());
+    const auto plan = m.planifica(tm, tm.getTilesetName());
+    const Game::MonumentoColocado* casa = nullptr;  // el id se repite en el nivel: se busca por posicion
+    for (const auto& p : plan)
+        if (p.id.rfind("iso_edifici_3x3", 0) == 0 && p.x0 == 77 && p.y0 == 43) casa = &p;
+    MOTOR_CHECK(casa != nullptr);
+    if (casa == nullptr) return;
+    MOTOR_CHECK(casa->x0 == 77 && casa->y0 == 43 && casa->cubreX0 == 76 && casa->cubreAncho == 4 && casa->libres.empty());
+    Monumentos::liberaCeldas(tm, plan);
+    const auto cubiertas = Monumentos::celdasCubiertas(plan);
+    MOTOR_CHECK(cubiertas.count({76, 43}) == 0 && cubiertas.count({76, 45}) == 0 && cubiertas.count({77, 43}) == 1);
+    MOTOR_CHECK(tm.getTile(0, 76, 43).hasCollision() && tm.getTile(0, 76, 45).hasCollision());
+    std::set<std::pair<int, int>> conBloque;
+    for (const auto& bl : b.planifica(tm, tm.getTilesetName(), {}, &cubiertas)) conBloque.insert({bl.x, bl.y});
+    MOTOR_CHECK(conBloque.count({76, 43}) == 1 && conBloque.count({76, 45}) == 1);
+    // Ninguna casilla de edificio con colision se queda sin dibujo: o la pisa un sprite o lleva bloque.
+    std::set<std::pair<int, int>> pisadas;
+    for (const auto& p : plan)
+        for (int j = 0; j < p.alto; ++j)
+            for (int i = 0; i < p.ancho; ++i) pisadas.insert({p.x0 + i, p.y0 + j});
+    int invisibles = 0;
+    for (const auto& bl : b.planifica(tm, tm.getTilesetName(), {}, nullptr)) {
+        const bool dibujada = pisadas.count({bl.x, bl.y}) == 1 || conBloque.count({bl.x, bl.y}) == 1;
+        if (tm.getTile(0, bl.x, bl.y).hasCollision() && !dibujada) ++invisibles;
+    }
+    MOTOR_CHECK(invisibles == 0);
 }
 
 MOTOR_TEST_CASE(ciudad_centro_la_iglesia_lleva_sprite_y_sus_39_casillas_sobrantes_se_pisan) {

@@ -55,7 +55,7 @@ public:
     // se levanten ahi. Sin hoja en el banco, el monumento se salta (y los
     // bloques lo pintan como siempre).
     std::set<std::pair<int, int>> monta(const RuntimeTileMap& mapa, const std::string& tileset, BancoAtlas& banco,
-                                        IsometricRenderer& renderer);
+                                        IsometricRenderer& renderer, const std::vector<GridCoord>& puertas = {});
     void desmonta(IsometricRenderer& renderer);
     void atenua(const GridCoord& foco);
     std::size_t cuantos() const { return m_montados.size(); }

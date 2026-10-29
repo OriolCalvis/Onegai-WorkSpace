@@ -386,6 +386,12 @@ float fichaBloque(const Contexto& k, const std::string& rotulo, const std::strin
 
 }  // namespace creacion
 
+int columnaDeCaraQuieta(int columnas) {
+    if (columnas >= Game::MontajePersonajes::kFramesDiagonal)
+        return Game::frameQuieto(Game::Rumbo::Abajo, Game::repartoDeColumnas(columnas)) - 1;
+    return 7;  // las hojas de 12: el frame 8, de cara y quieto
+}
+
 Game::Reparto Retratista::reparto() const {
     return m_montaje == nullptr ? Game::Reparto::Clasico : Game::repartoDeColumnas(m_montaje->frames());
 }

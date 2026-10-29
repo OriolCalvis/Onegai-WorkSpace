@@ -367,3 +367,12 @@ MOTOR_TEST_CASE(combate_los_acompanantes_van_en_el_orden_de_turno) {
     MOTOR_CHECK(marcas >= 2);
     MOTOR_CHECK(dentro(l, 1280.0f, 720.0f));
 }
+
+// J-3 — El retrato «de cara y quieto» sale del frame correcto segun las columnas de la hoja.
+MOTOR_TEST_CASE(combate_retrato_de_cara_segun_columnas_de_la_hoja) {
+    MOTOR_CHECK(columnaDeCaraQuieta(12) == 7);   // 12 columnas: el frame 8
+    MOTOR_CHECK(columnaDeCaraQuieta(20) == 7);
+    MOTOR_CHECK(columnaDeCaraQuieta(40) == 32);  // 40 (PixelLab): el frame 33, respirar de cara (suroeste)
+    MOTOR_CHECK(columnaDeCaraQuieta(40) + 1 == Game::frameQuieto(Game::Rumbo::Abajo, Game::Reparto::Diagonal));
+    MOTOR_CHECK(columnaDeCaraQuieta(12) + 1 == Game::frameQuieto(Game::Rumbo::Abajo, Game::Reparto::Clasico));
+}

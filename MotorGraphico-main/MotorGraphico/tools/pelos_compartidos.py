@@ -139,10 +139,15 @@ def desplazar(fr, dx, dy):
 # cuello en los gnomos; en las sagas, el mechon que cubre la oreja y que de frente queda colgando junto al hombro
 # (de perfil y de espalda es pelo largo de verdad y se queda).
 FRENTE_F = set(range(12, 18)) | set(range(32, 36))
-ZONA = {"gnomos_de_la_isla": (14, None), "sagas_de_ashye": (10, FRENTE_F)}
+# J-1: en los perfiles de las sagas (fotogramas 6-11 y 28-31) el pelo es un arco ralo con un mechon colgando suelto
+# a la altura del hombro; se corta igual que de frente (a 10 px de la coronilla).
+PERFIL_F = set(range(6, 12)) | set(range(28, 32))
+ZONA = {"gnomos_de_la_isla": (14, None), "sagas_de_ashye": (10, FRENTE_F | PERFIL_F)}
+# J-1: componentes sueltas junto a la cabeza que no son pelo: por debajo de este tamano se van (solo estos origenes;
+# los demas cabellos no cambian). Las sagas y los enanos las llevan de frente (4-7 px a un lado de la cabeza).
+SUELTO = {"sagas_de_ashye": 10, "enanos_forjadores": 10}
 
-
-def limpiar(fr, regla, ytop=None, zona=None, k=0):
+def limpiar(fr, regla, ytop=None, zona=None, k=0, minimo=MIN_COMPONENTE):
     """Quita lo que marca `regla`, lo que cae `zona` px o mas bajo la coronilla del cuerpo de origen (`ytop`) y
     las componentes (8-conexas) de menos de MIN_COMPONENTE px."""
     out = fr.copy()
@@ -154,7 +159,7 @@ def limpiar(fr, regla, ytop=None, zona=None, k=0):
     lab, n = ndimage.label(m, structure=np.ones((3, 3)))
     if n:
         tam = ndimage.sum(m, lab, index=np.arange(1, n + 1))
-        for i in np.nonzero(tam < MIN_COMPONENTE)[0]:
+        for i in np.nonzero(tam < minimo)[0]:
             out[lab == i + 1] = 0
     return out
 
@@ -202,15 +207,15 @@ def origen_limpio(tex, man, ests):
     del cuerpo
     for estilo in list(piezas):
         crudo, origen = piezas[estilo]
-        piezas[estilo] = (crudo, limpiar_todo(crudo, LIMPIEZA[origen], anclas[estilo], ZONA.get(origen)))
+        piezas[estilo] = (crudo, limpiar_todo(crudo, LIMPIEZA[origen], anclas[estilo], ZONA.get(origen), SUELTO.get(origen, MIN_COMPONENTE)))
     for estilo in list(piezas):
         crudo, limpio = piezas[estilo]
         piezas[estilo] = (crudo, cuantizar(limpio, paleta))
     return piezas, anclas
 
 
-def limpiar_todo(crudo, regla, anclas, zona):
-    return np.stack([limpiar(f, regla, a[1] if a else None, zona, k) for k, (f, a) in enumerate(zip(crudo, anclas))])
+def limpiar_todo(crudo, regla, anclas, zona, minimo=MIN_COMPONENTE):
+    return np.stack([limpiar(f, regla, a[1] if a else None, zona, k, minimo) for k, (f, a) in enumerate(zip(crudo, anclas))])
 
 
 def anclas_destino(tex, man, talla):

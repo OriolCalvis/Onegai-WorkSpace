@@ -31,6 +31,11 @@ namespace Pergamino {
 
 class Pincel;
 
+// J-3 — La columna (0-based) del frame «de cara y quieto» de una hoja de `columnas` columnas:
+// 12 -> la 7 (el frame 8); 40 (PixelLab) -> la 32 (el frame 33, respirar de cara).
+// Es Game::frameQuieto(Abajo, repartoDeColumnas(columnas)) - 1.
+int columnaDeCaraQuieta(int columnas);
+
 // Pone los retratos de personajes en el atlas: monta la hoja de 12 frames
 // por capas (Game::MontajePersonajes) y guarda el frame pedido. Sin montaje
 // no hay retratos (las teselas quedan con su nombre).

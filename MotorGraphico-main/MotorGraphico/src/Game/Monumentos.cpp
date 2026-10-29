@@ -2,8 +2,10 @@
 #include "Game/Monumentos.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <fstream>
+#include <functional>
 #include <sstream>
 
 #include "Core/Json/JsonValue.h"
@@ -56,6 +58,7 @@ Result<bool> Monumentos::carga(const std::string& carpetaAssets) {
         d.tiraAncho = m["tiraAncho"].asInt(32);
         d.altoHoja = m["altoHoja"].asInt(0);
         d.columnas = m["columnas"].asInt(0);
+        d.orientacion = m["orientacion"].asInt(-1);  // J-4
         d.anclajeX = m["anclaje"]["x"].asInt(0);
         d.anclajeY = m["anclaje"]["y"].asInt(0);
         const JsonValue& ps = m["posaderos"];  // MASC-01: [[x, y, altura], ...]
@@ -181,6 +184,70 @@ std::vector<const Monumentos::Def*> candidatasDe(const std::vector<Monumentos::D
     return candidatas;
 }
 
+// J-4: lo que mira la cara de la puerta del sprite d (orientacion o0 +y, o1 -x, o2 -y, o3 +x) puesto en la huella h
+// (alineado por delante, como colocaEn): si una puerta_* cae en las celdas de delante y si TODAS son transitables
+// (dentro del mapa, sin colision y sin otro sprite encima: «ocupada»).
+struct CaraPuerta {
+    bool puerta = false;
+    bool despejada = true;
+};
+
+CaraPuerta caraDePuerta(const RuntimeTileMap& mapa, const Huella& h, const Monumentos::Def& d,
+                        const std::vector<std::pair<int, int>>& puertas, const std::function<bool(int, int)>& ocupada) {
+    const int x0 = h.x0 + (h.ancho - d.ancho), y0 = h.y0 + (h.alto - d.alto);
+    CaraPuerta c;
+    const bool vertical = d.orientacion == 1 || d.orientacion == 3;  // la cara es una columna de celdas
+    const int n = vertical ? d.alto : d.ancho;
+    for (int k = 0; k < n; ++k) {
+        int x = 0, y = 0;
+        switch (d.orientacion) {
+            case 0: x = x0 + k, y = y0 + d.alto; break;
+            case 1: x = x0 - 1, y = y0 + k; break;
+            case 2: x = x0 + k, y = y0 - 1; break;
+            default: x = x0 + d.ancho, y = y0 + k; break;
+        }
+        if (std::find(puertas.begin(), puertas.end(), std::pair<int, int>{x, y}) != puertas.end()) c.puerta = true;
+        if (x < 0 || y < 0 || x >= mapa.getWidth() || y >= mapa.getHeight() || mapa.getTile(0, x, y).hasCollision() || ocupada(x, y))
+            c.despejada = false;
+    }
+    return c;
+}
+
+// J-4b: la base del sprite (su rectangulo, alineado por delante) tiene que ser toda del tile de la casa
+// (gid): un hueco de suelo dentro de la mancha dejaria casillas caminables bajo el dibujo.
+bool baseEsDeCasa(const RuntimeTileMap& mapa, const Huella& h, const Monumentos::Def& d, int gid) {
+    const int x0 = h.x0 + (h.ancho - d.ancho), y0 = h.y0 + (h.alto - d.alto);
+    for (int y = y0; y < y0 + d.alto; ++y)
+        for (int x = x0; x < x0 + d.ancho; ++x)
+            if (mapa.getTile(0, x, y).getTilesetID() != gid) return false;
+    return true;
+}
+
+// J-4: de las candidatas de un tile antiguo (todas las orientaciones y variantes) se quedan las de la mejor
+// orientacion. Solo vale una orientacion con TODAS las celdas de delante de su puerta transitables (J-4b).
+// Entre ellas: 1) la puerta_* del nivel esta delante; 2) cara visible (o0, o3: las otras dos miran hacia atras).
+// Sin ninguna valida (casa emparedada) no queda ninguna: la casa sigue con bloques.
+std::vector<const Monumentos::Def*> conPuertaOrientada(const RuntimeTileMap& mapa, const Huella& h,
+                                                       const std::vector<const Monumentos::Def*>& candidatas,
+                                                       const std::vector<std::pair<int, int>>& puertas,
+                                                       const std::function<bool(int, int)>& ocupada) {
+    using Clave = std::array<int, 2>;
+    std::vector<std::pair<Clave, const Monumentos::Def*>> puntuadas;
+    for (const Monumentos::Def* d : candidatas) {
+        const CaraPuerta c = caraDePuerta(mapa, h, *d, puertas, ocupada);
+        if (!c.despejada) continue;
+        const bool visible = d->orientacion == 0 || d->orientacion == 3;
+        puntuadas.push_back({{c.puerta ? 1 : 0, visible ? 1 : 0}, d});
+    }
+    std::vector<const Monumentos::Def*> salida;
+    if (puntuadas.empty()) return salida;
+    Clave mejor = puntuadas.front().first;
+    for (const auto& [k, d] : puntuadas) mejor = std::max(mejor, k);
+    for (const auto& [k, d] : puntuadas)
+        if (k == mejor) salida.push_back(d);
+    return salida;
+}
+
 MonumentoColocado colocaEn(const Huella& h, const Monumentos::Def& d) {
     using Def = Monumentos::Def;
     MonumentoColocado m;
@@ -219,7 +286,8 @@ MonumentoColocado colocaEn(const Huella& h, const Monumentos::Def& d) {
 
 }  // namespace
 
-std::vector<MonumentoColocado> Monumentos::planifica(const RuntimeTileMap& mapa, const std::string& tileset) const {
+std::vector<MonumentoColocado> Monumentos::planifica(const RuntimeTileMap& mapa, const std::string& tileset,
+                                                     const std::vector<std::pair<int, int>>& puertas) const {
     std::vector<MonumentoColocado> salida;
     if (!m_cargado || tileset != m_tileset || mapa.getLayerCount() == 0) return salida;
     // ARTE-03: varias definiciones pueden compartir tiles (las casas de
@@ -266,8 +334,22 @@ std::vector<MonumentoColocado> Monumentos::planifica(const RuntimeTileMap& mapa,
         }
         return false;
     };
+    auto ocupada = [&](int x, int y) {  // J-4b: la celda cae en la huella de un sprite ya colocado
+        for (const auto& [o, d] : colocadas) {
+            (void)d;
+            if (x >= o.x0 && x < o.x0 + o.ancho && y >= o.y0 && y < o.y0 + o.alto) return true;
+        }
+        return false;
+    };
     auto elige = [&](const Huella& h, const std::vector<std::string>& tiles) -> const Def* {
-        const auto candidatas = candidatasDe(m_defs, h, tiles);
+        auto candidatas = candidatasDe(m_defs, h, tiles);
+        if (!candidatas.empty() && candidatas.front()->orientacion >= 0) {
+            const int gid = m_gidPorNombre.at(tiles[0]);
+            candidatas.erase(std::remove_if(candidatas.begin(), candidatas.end(),
+                                            [&](const Def* d) { return !baseEsDeCasa(mapa, h, *d, gid); }),
+                             candidatas.end());
+            candidatas = conPuertaOrientada(mapa, h, candidatas, puertas, ocupada);
+        }
         return candidatas.empty() ? nullptr : candidatas[hash(h) % candidatas.size()];
     };
     // 1) familias enteras
@@ -309,8 +391,15 @@ std::set<std::pair<int, int>> Monumentos::celdasCubiertas(const std::vector<Monu
     for (const MonumentoColocado& m : plan) {
         for (int j = 0; j < m.alto; ++j)
             for (int i = 0; i < m.ancho; ++i) celdas.insert({m.x0 + i, m.y0 + j});
+        // J-2: en un monumento grande (30 casillas o mas) la sobra es su patio y no levanta bloques. En una casa
+        // o un local solo se cubren las casillas «libres»: las demas casillas de edificio que el sprite no
+        // ocupa (la columna de mas de una casa 3x3 en una planta de 4x3) conservan la colision y se dibujan
+        // con bloques del material del tile; antes quedaban como paredes invisibles.
+        const bool patio = m.ancho * m.alto >= 30;
+        const std::set<std::pair<int, int>> libres(m.libres.begin(), m.libres.end());
         for (int j = 0; j < m.cubreAlto; ++j)
-            for (int i = 0; i < m.cubreAncho; ++i) celdas.insert({m.cubreX0 + i, m.cubreY0 + j});
+            for (int i = 0; i < m.cubreAncho; ++i)
+                if (patio || libres.count({m.cubreX0 + i, m.cubreY0 + j}) != 0) celdas.insert({m.cubreX0 + i, m.cubreY0 + j});
     }
     return celdas;
 }

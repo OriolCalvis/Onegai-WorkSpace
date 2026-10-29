@@ -31,7 +31,7 @@ Rect Retratista::enemigo(const Game::RegistroSprites& registro, const std::strin
         const imagen::ImagenRGBA& im = png.value();
         int x0 = 0, y0 = 0;
         if (actor != nullptr) {
-            x0 = 7 * hoja->celdaAncho;  // el frame 8: de frente y quieto
+            x0 = columnaDeCaraQuieta(hoja->columnas) * hoja->celdaAncho;  // de frente y quieto (J-3: segun las columnas)
             y0 = (actor->fila - 1) * hoja->celdaAlto;
         } else {
             const int f = std::max(0, fijo->frame - 1);

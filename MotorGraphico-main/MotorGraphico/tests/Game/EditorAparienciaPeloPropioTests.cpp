@@ -270,4 +270,32 @@ MOTOR_TEST_CASE(pelos_compartidos_se_tienen_con_el_motor_y_llevan_nombre) {
     MOTOR_CHECK(e.valor(Fila::Peinado) == "Moño con mechones");
 }
 
+// J-1 — Cambiar de talla en el editor: un pentinado compartido que la talla nueva no dibuja pasa a «corto».
+// Tambien se documenta que volver a la talla de antes NO lo recupera (el editor no recuerda el anterior), y que la
+// fila Talla no ofrece «naga» (solo medio, bajo, pequeno y grande), asi que el cambio a naga no se puede hacer aqui.
+MOTOR_TEST_CASE(pelos_compartidos_cambiar_a_talla_grande_deja_corto_y_volver_a_medio_no_lo_recupera) {
+    Game::EditorApariencia e(manifiesto());
+    e.empezar("race_human_marches");
+    irA(e, "mono_mechones", "");
+    MOTOR_CHECK(e.apariencia().peloEstilo == "mono_mechones");
+    marcar(e, Fila::Talla);
+    for (int i = 0; i < 8 && e.apariencia().talla != "grande"; ++i)
+        e.derecha();
+    MOTOR_CHECK(e.apariencia().talla == "grande");
+    MOTOR_CHECK(e.apariencia().peloEstilo == "corto");
+    MOTOR_CHECK(e.valor(Fila::Peinado) == "Corto");
+    // de vuelta a una talla «medio»: sigue «corto»
+    for (int i = 0; i < 8 && e.apariencia().talla != "medio"; ++i)
+        e.izquierda();
+    MOTOR_CHECK(e.apariencia().talla == "medio");
+    MOTOR_CHECK(e.apariencia().peloEstilo == "corto");
+    MOTOR_CHECK(e.valor(Fila::Peinado) == "Corto");
+    // la fila Talla nunca ofrece «naga»
+    marcar(e, Fila::Talla);
+    for (int i = 0; i < 8; ++i) {
+        e.derecha();
+        MOTOR_CHECK(e.apariencia().talla != "naga");
+    }
+}
+
 int main() { return motor_test::runAllTests(); }

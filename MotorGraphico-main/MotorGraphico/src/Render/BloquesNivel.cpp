@@ -131,10 +131,13 @@ void MonumentosNivel::desmonta(IsometricRenderer& renderer) {
 }
 
 std::set<std::pair<int, int>> MonumentosNivel::monta(const RuntimeTileMap& mapa, const std::string& tileset,
-                                                     BancoAtlas& banco, IsometricRenderer& renderer) {
+                                                     BancoAtlas& banco, IsometricRenderer& renderer,
+                                                     const std::vector<GridCoord>& puertas) {
     desmonta(renderer);
     m_renderer = &renderer;
-    std::vector<Game::MonumentoColocado> plan = m_plan.planifica(mapa, tileset);
+    std::vector<std::pair<int, int>> celdas;  // J-4: la casa de tile antiguo orienta su puerta a la puerta_*
+    for (const GridCoord& p : puertas) celdas.push_back({p.x, p.y});
+    std::vector<Game::MonumentoColocado> plan = m_plan.planifica(mapa, tileset, celdas);
     std::vector<Game::MonumentoColocado> montados;
     const int tileW = mapa.getTileWidth(), tileH = mapa.getTileHeight();
     for (const Game::MonumentoColocado& m : plan) {

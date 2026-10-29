@@ -344,7 +344,7 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
         });
         // BLOQUES-03 — primero los monumentos con sprite propio; sus celdas no levantan bloque.
         if (m_monumentos != nullptr) {
-            cubiertas = m_monumentos->monta(m_map, m_map.getTilesetName(), *m_bancoAtlas, *m_renderer);
+            cubiertas = m_monumentos->monta(m_map, m_map.getTilesetName(), *m_bancoAtlas, *m_renderer, puertas);
             // H-CIU-2 — las casillas de la planta que el sprite no ocupa (la iglesia pinta 10x9 y el dibujo
             // tiene base en 51) se pisan: el tile sigue dibujando el suelo, solo se quita la colision.
             Game::Monumentos::liberaCeldas(m_map, m_monumentos->montados());
