@@ -252,7 +252,7 @@ RAZAS_2000BF = [
      "linaje": "elf", "talla": "medio", "piel": "piel_elfo", "ojos": "verde", "pelo": ("largo", "pelo_plata_lila"),
      "rasgos": [("rasgos", "OREJAS_PUNTIAGUDAS", "piel_elfo", None),
                 _m("MANCHAS_EGAROTH_MOTAS", "egaroth_jade", "egaroth_turquesa")]},
-    {"id": "sagas_de_ashye", "nombre": "Sagas de Ashye", "nacion": "Ashye",
+    {"id": "sagas_de_ashye", "nombre": "Brujos de Gliaddokx", "nacion": "Gliaddokx",
      "linaje": "saga", "talla": "medio", "piel": "piel_saga", "ojos": "amarillo", "pelo": ("greñas", "pelo_gris"),
      "rasgos": [("rasgos", "OREJAS_PUNTIAGUDAS", "piel_saga", None), GEMA_NEGRA,
                 _m("MANCHAS_EGAROTH_MOTAS", "egaroth_tinta", "egaroth_ceniza")]},
