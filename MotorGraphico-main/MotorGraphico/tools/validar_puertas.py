@@ -250,6 +250,50 @@ def revisa_puerta(ctx: Contexto, nombre: str, o: dict, problemas: list) -> None:
         P("targetLevel", f"{destino} no tiene puerta de vuelta a {origen}")
 
 
+def _beats_de(raiz: Path) -> dict:
+    """id de beat -> beat, de todas las aventuras (assets/adventures/*.json)."""
+    out: dict = {}
+    for ruta in sorted((raiz / "assets" / "adventures").glob("*.json")):
+        try:
+            for b in _json(ruta).get("beats") or []:
+                if isinstance(b, dict) and isinstance(b.get("id"), str):
+                    out[b["id"]] = b
+        except (OSError, ValueError, AttributeError):
+            continue
+    return out
+
+
+def revisa_cerrada(ctx: Contexto, nombre: str, o: dict, problemas: list) -> None:
+    """G4-01: "cerradaSi" {"todas": [...], "ninguna": [...]} y "beatCerrada" (un beat que existe)."""
+    def P(campo, texto):
+        problemas.append((f"{DIR_NIVELES}/{nombre}", str(o.get("objectId", "?")), campo, texto))
+
+    cs = o.get("cerradaSi")
+    if cs is not None:
+        if not isinstance(cs, dict) or any(k not in ("todas", "ninguna") for k in cs):
+            P("cerradaSi", 'debe ser {"todas": [...], "ninguna": [...]}')
+        else:
+            for k in ("todas", "ninguna"):
+                v = cs.get(k, [])
+                if not isinstance(v, list) or not all(isinstance(f, str) and f for f in v):
+                    P("cerradaSi", f'"{k}" debe ser una lista de flags')
+    bc = o.get("beatCerrada")
+    if bc is None:
+        return
+    if cs is None:
+        P("beatCerrada", "hay beatCerrada pero no cerradaSi")
+    if not isinstance(bc, str) or not bc:
+        P("beatCerrada", "debe ser el id de un beat")
+        return
+    beats = getattr(ctx, "_beats", None)
+    if beats is None:
+        beats = ctx._beats = _beats_de(ctx.raiz)
+    if bc not in beats:
+        P("beatCerrada", f"el beat '{bc}' no existe en assets/adventures")
+    elif (beats[bc].get("trigger") or {}).get("target") != bc:
+        P("beatCerrada", f"el beat '{bc}' debe ser un talk con target '{bc}' (así lo dispara la puerta)")
+
+
 def _salidas(ctx: Contexto, rel: str) -> set:
     """Los niveles a los que lleva alguna puerta de 'rel' (vacío si no se lee)."""
     try:
@@ -296,6 +340,7 @@ def comprueba(raiz: Path = MOTOR):
             if not isinstance(o, dict) or not o.get("targetLevel"):
                 continue
             puertas += 1
+            revisa_cerrada(ctx, ruta.name, o, problemas)  # G4-01
             try:
                 revisa_puerta(ctx, ruta.name, o, problemas)
             except Exception as e:  # una puerta rara no tumba el resto

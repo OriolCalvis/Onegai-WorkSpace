@@ -540,6 +540,7 @@ private:
     int basePriceOf(const std::string& objectId) const;
     void startInteraction(const ObjectDefinition& def);
     bool applyNarrative(const RPG::NarrativeResult& result);
+    bool cierraPuerta(const ObjectSpawn& puerta);  // G4-01 (GameSessionNarrativa.cpp)
     void resolveSkillChecks(const std::vector<RPG::SkillCheckRequest>& checks);
     void resolveBattles(const std::vector<RPG::BattleRequest>& battles);
     Engine::EntityHandle spawnEnemyFromCatalog(const std::string& objectId,

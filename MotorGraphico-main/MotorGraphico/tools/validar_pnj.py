@@ -54,9 +54,31 @@ def actor(oid, raza, actores, alias, patrones):
     return None, None
 
 
+# Actores de la trama (los mismos que RegistroSpritesTests.los_actores_de_la_trama_van_en_pixellab_en_diagonal):
+# un PNJ de relleno no puede ser un alias de uno de ellos.
+TRAMA = {"caballero", "verdugo", "saga_del_bosque", "duende_porcelana", "luisarda", "ben_kafka", "griffin",
+         "mercader", "nina_del_gato", "skilla", "venides", "aigren", "xila",
+         "bandido_de_gorran", "gorran_bandido", "mercenario_killville", "morvan_tallapedra", "hermano_fumat",
+         "guardia_muelle", "guardia_comprado", "edul_furioso", "sandes", "diacono_orfeu", "perdido_saqueador",
+         "perdido_fanatico", "cultista_carcelero"}
+
+
+def comprobar_alias(oid, destino, actores, alias, trama=TRAMA):
+    """None si el alias explicito oid -> destino es valido; si no, el motivo (es un error)."""
+    if destino not in actores:
+        return f"{oid} es alias de «{destino}», que no tiene fila"
+    if not actores[destino][0].startswith("pnj_"):
+        return f"{oid} es alias de «{destino}», cuya fila no es de una hoja pnj_*"
+    if destino in trama or destino in alias:
+        return f"{oid} es alias de «{destino}», un actor de la trama" if destino in trama else \
+            f"{oid} es alias de «{destino}», que a su vez es un alias"
+    return None
+
+
 def main():
     import actores_pnj as pnj
     errores = []
+    avisos = []
     man = json.loads((TEX / "personajes.json").read_text(encoding="utf-8"))
     solo = {p["id"] for g in man["equipo"].values() for p in g["piezas"] if p.get("soloPnj")}
     if not solo:
@@ -75,6 +97,13 @@ def main():
             errores.append(f"{cat}: {oid} no tiene hoja (se veria el cuerpo base)")
             continue
         hoja, _fila, variantes, datos = a
+        if oid in alias and cual == alias[oid] and cual != oid:
+            motivo = comprobar_alias(oid, cual, actores, alias)
+            if motivo:
+                errores.append(f"{cat}: {motivo}")
+            else:
+                avisos.append(f"{cat}: {oid} se ve como «{cual}» (alias explicito en sprites.json)")
+            continue
         if not hoja.startswith("pnj_") or cual != oid:
             errores.append(f"{cat}: {oid} se ve como «{cual}» de {hoja}, no con su propia fila de pnj_*")
             continue
@@ -96,6 +125,8 @@ def main():
             usadas = sorted(p for p in spec.get("equipo", {}).values() if p in solo)
             if usadas != sorted(fila.get("soloPnj", [])):
                 errores.append(f"{fila['id']}: soloPnj {fila.get('soloPnj')} no casa con {usadas}")
+    for a in avisos:
+        print("  AVISO " + a)
     if errores:
         print(f"validar_pnj: {len(errores)} problemas")
         for e in errores[:60]:

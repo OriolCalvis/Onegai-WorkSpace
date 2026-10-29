@@ -186,6 +186,30 @@
    ]
   },
   {
+   "id": "b0_rosita_sube",
+   "trigger": {
+    "type": "auto"
+   },
+   "requires": {
+    "allFlags": [
+     "bnd0_rosita_te_dice"
+    ],
+    "notFlags": [
+     "bnd0_rosita_te_dijo"
+    ]
+   },
+   "speaker": "Rosita",
+   "lines": [
+    "Esta es la tuya. Sábanas limpias, que para eso cobro. Buenas noches."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "bnd0_rosita_te_dijo"
+    }
+   ]
+  },
+  {
    "id": "b0_subir_oido",
    "trigger": {
     "type": "auto"
@@ -193,6 +217,7 @@
    "requires": {
     "allFlags": [
      "bnd0_a_dormir",
+     "bnd0_rosita_te_sube",
      "bnd0_oido_por_devoto"
     ],
     "notFlags": [
@@ -242,7 +267,8 @@
    },
    "requires": {
     "allFlags": [
-     "bnd0_a_dormir"
+     "bnd0_a_dormir",
+     "bnd0_rosita_te_sube"
     ],
     "notFlags": [
      "bnd0_dormido"
@@ -282,6 +308,44 @@
      "arg": "Amanece el día 1."
     }
    ]
+  },
+  {
+   "id": "b0_puerta_cerrada",
+   "trigger": {
+    "type": "talk",
+    "target": "b0_puerta_cerrada"
+   },
+   "requires": {
+    "notFlags": [
+     "bnd0_dormido"
+    ]
+   },
+   "speaker": "Rosita",
+   "lines": [
+    "De noche no se sale. Hay quien duerme y hay quien merodea, y yo no abro a los segundos.",
+    "Siéntate, bebe algo, y si no, sube a dormir."
+   ],
+   "effects": []
+  },
+  {
+   "id": "b0_puerta_cerrada_venides",
+   "trigger": {
+    "type": "talk",
+    "target": "b0_puerta_cerrada"
+   },
+   "requires": {
+    "allFlags": [
+     "bnd0_dormido"
+    ],
+    "notFlags": [
+     "bnd1_desayuno_hecho"
+    ]
+   },
+   "speaker": "Venides",
+   "lines": [
+    "¿Adónde vas sin haber probado bocado? Siéntate, que aún no hemos hablado."
+   ],
+   "effects": []
   },
   {
    "id": "b0_calle_sin_cama",
@@ -3878,7 +3942,8 @@
   {
    "id": "b1_desayuno_v0",
    "trigger": {
-    "type": "auto"
+    "type": "enter",
+    "target": "assets/levels/interior_taberna.json"
    },
    "requires": {
     "allFlags": [
@@ -3917,7 +3982,9 @@
      },
      "lines": [
       "La Corona quiere saber quiénes son los Perdidos, cuántos son y qué traman.",
-      "Yo voy a la parte rica y a la base militar: allí me abren la puerta por la capa. Tú, a la zona comercial: tiendas, herrería, mercado. A ti no te miran como a mí."
+      "Yo voy a la parte rica y a la base militar: allí me abren la puerta por la capa. Tú, a la zona comercial: tiendas, herrería, mercado. A ti no te miran como a mí.",
+      "Antes de nada, preséntate a los tres de la plaza: el tendero, el joyero y el sastre. En Boundington nadie le vende nada a un desconocido.",
+      "Y cuando los conozcas, da una vuelta por la plaza principal. Allí se entera uno de todo."
      ],
      "effects": [
       {
@@ -3990,6 +4057,7 @@
     {
      "texto": "Ponerse en marcha",
      "lines": [
+      "Venides: «Y no lo olvides: primero el tendero, el joyero y el sastre; luego, una vuelta por la plaza principal. Allí se entera uno de todo.»",
       "Venides: «Nos vemos aquí esta noche. Si encuentras algo antes, guárdatelo hasta entonces: en esta ciudad las paredes...»",
       "Rosita, desde la barra: «...tienen cuñados. Ya se lo he dicho.»",
       "Venides: «Pues eso.»",
@@ -4030,7 +4098,8 @@
   {
    "id": "b1_desayuno",
    "trigger": {
-    "type": "auto"
+    "type": "enter",
+    "target": "assets/levels/interior_taberna.json"
    },
    "requires": {
     "allFlags": [
@@ -4068,7 +4137,9 @@
      },
      "lines": [
       "La Corona quiere saber quiénes son los Perdidos, cuántos son y qué traman.",
-      "Yo voy a la parte rica y a la base militar: allí me abren la puerta por la capa. Tú, a la zona comercial: tiendas, herrería, mercado. A ti no te miran como a mí."
+      "Yo voy a la parte rica y a la base militar: allí me abren la puerta por la capa. Tú, a la zona comercial: tiendas, herrería, mercado. A ti no te miran como a mí.",
+      "Antes de nada, preséntate a los tres de la plaza: el tendero, el joyero y el sastre. En Boundington nadie le vende nada a un desconocido.",
+      "Y cuando los conozcas, da una vuelta por la plaza principal. Allí se entera uno de todo."
      ],
      "effects": [
       {
@@ -4141,6 +4212,7 @@
     {
      "texto": "Ponerse en marcha",
      "lines": [
+      "Venides: «Y no lo olvides: primero el tendero, el joyero y el sastre; luego, una vuelta por la plaza principal. Allí se entera uno de todo.»",
       "Venides: «Nos vemos aquí esta noche. Si encuentras algo antes, guárdatelo hasta entonces: en esta ciudad las paredes...»",
       "Rosita, desde la barra: «...tienen cuñados. Ya se lo he dicho.»",
       "Venides: «Pues eso.»",
@@ -4208,7 +4280,9 @@
      },
      "lines": [
       "La Corona quiere saber quiénes son los Perdidos, cuántos son y qué traman.",
-      "Yo voy a la parte rica y a la base militar: allí me abren la puerta por la capa. Tú, a la zona comercial: tiendas, herrería, mercado. A ti no te miran como a mí."
+      "Yo voy a la parte rica y a la base militar: allí me abren la puerta por la capa. Tú, a la zona comercial: tiendas, herrería, mercado. A ti no te miran como a mí.",
+      "Antes de nada, preséntate a los tres de la plaza: el tendero, el joyero y el sastre. En Boundington nadie le vende nada a un desconocido.",
+      "Y cuando los conozcas, da una vuelta por la plaza principal. Allí se entera uno de todo."
      ],
      "effects": [
       {
@@ -4281,6 +4355,7 @@
     {
      "texto": "Ponerse en marcha",
      "lines": [
+      "Venides: «Y no lo olvides: primero el tendero, el joyero y el sastre; luego, una vuelta por la plaza principal. Allí se entera uno de todo.»",
       "Venides: «Nos vemos aquí esta noche. Si encuentras algo antes, guárdatelo hasta entonces: en esta ciudad las paredes...»",
       "Rosita, desde la barra: «...tienen cuñados. Ya se lo he dicho.»",
       "Venides: «Pues eso.»",
@@ -4422,6 +4497,7 @@
     {
      "texto": "Ponerse en marcha",
      "lines": [
+      "Venides: «Y no lo olvides: primero el tendero, el joyero y el sastre; luego, una vuelta por la plaza principal. Allí se entera uno de todo.»",
       "Venides: «Nos vemos aquí esta noche. Si encuentras algo antes, guárdatelo hasta entonces: en esta ciudad las paredes...»",
       "Rosita, desde la barra: «...tienen cuñados. Ya se lo he dicho.»",
       "Venides: «Pues eso.»",
@@ -4553,6 +4629,7 @@
     {
      "texto": "Ponerse en marcha",
      "lines": [
+      "Venides: «Y no lo olvides: primero el tendero, el joyero y el sastre; luego, una vuelta por la plaza principal. Allí se entera uno de todo.»",
       "Venides: «Nos vemos aquí esta noche. Si encuentras algo antes, guárdatelo hasta entonces: en esta ciudad las paredes...»",
       "Rosita, desde la barra: «...tienen cuñados. Ya se lo he dicho.»",
       "Venides: «Pues eso.»",
@@ -4718,6 +4795,10 @@
       {
        "type": "pasarFranja",
        "arg": "noche"
+      },
+      {
+       "type": "setFlag",
+       "arg": "bnd1_venides_nit"
       }
      ]
     },
@@ -4731,6 +4812,10 @@
       {
        "type": "pasarFranja",
        "arg": "noche"
+      },
+      {
+       "type": "setFlag",
+       "arg": "bnd1_venides_nit"
       },
       {
        "type": "setFlag",
@@ -4808,6 +4893,10 @@
       {
        "type": "pasarFranja",
        "arg": "noche"
+      },
+      {
+       "type": "setFlag",
+       "arg": "bnd1_venides_nit"
       }
      ]
     },
@@ -4827,6 +4916,10 @@
       {
        "type": "pasarFranja",
        "arg": "noche"
+      },
+      {
+       "type": "setFlag",
+       "arg": "bnd1_venides_nit"
       },
       {
        "type": "setFlag",
@@ -13572,6 +13665,131 @@
      "arg": "bnd1_carterista_visto"
     }
    ]
+  },
+  {
+   "id": "tut_plaza",
+   "trigger": {
+    "type": "enter",
+    "target": "assets/levels/ciudad_centro.json"
+   },
+   "requires": {
+    "allFlags": [
+     "bnd_tut_cerrado"
+    ],
+    "notFlags": [
+     "bnd1_plaza_explorada"
+    ]
+   },
+   "speaker": "",
+   "lines": [
+    "Das una vuelta despacio por la plaza: los puestos, los corrillos, quién mira y quién aparta la vista. Venides tenía razón: aquí se entera uno de todo."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "bnd1_plaza_explorada"
+    },
+    {
+     "type": "log",
+     "arg": "Has dado una vuelta por la plaza principal."
+    }
+   ]
+  },
+  {
+   "id": "tut_plaza_ya",
+   "trigger": {
+    "type": "auto",
+    "target": ""
+   },
+   "requires": {
+    "allFlags": [
+     "bnd_tut_cerrado"
+    ],
+    "notFlags": [
+     "bnd1_plaza_explorada"
+    ],
+    "lugar": "assets/levels/ciudad_centro.json"
+   },
+   "speaker": "",
+   "lines": [
+    "Das una vuelta despacio por la plaza: los puestos, los corrillos, quién mira y quién aparta la vista. Venides tenía razón: aquí se entera uno de todo."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "bnd1_plaza_explorada"
+    },
+    {
+     "type": "log",
+     "arg": "Has dado una vuelta por la plaza principal."
+    }
+   ]
+  },
+  {
+   "id": "b1_vecina_plaza",
+   "trigger": {
+    "type": "talk",
+    "target": "vecino_de_plaza"
+   },
+   "requires": {
+    "notFlags": [
+     "bnd1_plaza_explorada"
+    ]
+   },
+   "speaker": "Vecina de la plaza",
+   "lines": [
+    "Cada mañana más gente en la plaza y menos pan en los puestos. Cosas de ciudad."
+   ],
+   "effects": []
+  },
+  {
+   "id": "b1_vecina_plaza_pista",
+   "trigger": {
+    "type": "talk",
+    "target": "vecino_de_plaza"
+   },
+   "requires": {
+    "allFlags": [
+     "bnd1_plaza_explorada"
+    ],
+    "notFlags": [
+     "bnd1_xila_pista_plaza"
+    ]
+   },
+   "speaker": "Vecina de la plaza",
+   "lines": [
+    "¿Buscas a alguien que sepa de todo y de todos? Aquí no: los de la plaza solo sabemos lo que nos conviene.",
+    "Baja a Pico Dragón, a la Taberna del Gremio de Ladrones. En el rincón del fondo hay un borracho.",
+    "Llora con el vaso vacío, pero no hay secreto de Boundington que no conozca: quién debe a quién, quién entra de noche, quién ya no vuelve.",
+    "Habla, si le tratas bien. Y no digas que te mando yo."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "bnd1_xila_pista_plaza"
+    },
+    {
+     "type": "log",
+     "arg": "Una vecina de la plaza dice que un borracho de Pico Dragón, en la Taberna del Gremio de Ladrones, lo sabe todo de todos."
+    }
+   ]
+  },
+  {
+   "id": "b1_vecina_plaza_ya",
+   "trigger": {
+    "type": "talk",
+    "target": "vecino_de_plaza"
+   },
+   "requires": {
+    "allFlags": [
+     "bnd1_xila_pista_plaza"
+    ]
+   },
+   "speaker": "Vecina de la plaza",
+   "lines": [
+    "Pico Dragón, la Taberna del Gremio de Ladrones, el rincón del fondo. Y si no te hace caso, convídale."
+   ],
+   "effects": []
   },
   {
    "id": "b1_cuartel_noche",

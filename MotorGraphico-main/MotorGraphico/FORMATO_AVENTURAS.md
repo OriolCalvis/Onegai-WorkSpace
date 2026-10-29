@@ -1028,3 +1028,12 @@ Reglas que comprueba `tools/auditar_recompensas_escenas.py` (lo llama `validar_t
 5. El día se mide con el canal `misiones` de `ECONOMIA.md` (±15 %). Los combates con premio narrativo van con `canal: "combates"` y se informan aparte.
 
 Cuadro, totales y avisos: `planificacion_alcance_y_vision/RECOMPENSAS_ESCENAS.md`.
+
+## Puertas cerradas por flags (G4-01)
+
+Una puerta de un nivel (`objects`) puede llevar `"cerradaSi": {"todas": [...], "ninguna": [...]}`
+y `"beatCerrada": "<id>"`. Cerrada (todas encendidas y ninguna de `ninguna`) no cambia de nivel:
+el motor dispara un `talk` con `target` = `beatCerrada`. El beat con ese id lleva
+`"trigger": {"type": "talk", "target": "<ese id>"}`; para variar por condición se ponen
+varios beats con el mismo target y distintos `requires` (gana el primero que encaja).
+`tools/validar_puertas.py` comprueba que el beat existe y que su target es su id.

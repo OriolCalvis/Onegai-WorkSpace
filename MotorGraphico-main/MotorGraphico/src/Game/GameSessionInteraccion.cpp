@@ -104,6 +104,7 @@ bool GameSession::interact() {
     if (here.valid()) {
         const ObjectSpawn& spawn = sessionData()->m_world->get(here)->object;
         if (!spawn.targetLevel.empty()) {
+            if (cierraPuerta(spawn)) return true;  // G4-01
             LevelTransition& t = sessionData()->m_transition;
             t.pending = true;
             t.levelPath = spawn.targetLevel;

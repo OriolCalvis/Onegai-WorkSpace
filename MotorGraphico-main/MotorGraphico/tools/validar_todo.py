@@ -607,6 +607,7 @@ def validar_aventuras() -> None:
     # estaba en ninguno y la primera mision no se podia acabar)
     colocados: set[str] = set()
     en_nivel: dict[str, set[str]] = {}  # DIALOGOS-01: "assets/levels/x.json" -> objectIds
+    beats_de_puerta: set[str] = set()  # G4-01: ids de "beatCerrada" de las puertas
     for ruta in sorted((ASSETS / "levels").glob("*.json")):
         nivel = leer_json(ruta)
         clave = "assets/levels/" + ruta.name
@@ -615,6 +616,8 @@ def validar_aventuras() -> None:
             if isinstance(o, dict) and isinstance(o.get("objectId"), str):
                 colocados.add(o["objectId"])
                 en_nivel[clave].add(o["objectId"])
+            if isinstance(o, dict) and isinstance(o.get("beatCerrada"), str) and o["beatCerrada"]:
+                beats_de_puerta.add(o["beatCerrada"])  # G4-01: lo dispara una puerta cerrada, no un PNJ
 
     for ruta in sorted((ASSETS / "adventures").glob("*.json")):
         d = leer_json(ruta)
@@ -628,7 +631,9 @@ def validar_aventuras() -> None:
             trig = beat.get("trigger") or {}
             if trig.get("type") == "talk":
                 tgt = trig.get("target")
-                if isinstance(tgt, str) and tgt and tgt not in objetos:
+                if tgt in beats_de_puerta:
+                    pass  # G4-01: target = id del beat de una puerta cerrada
+                elif isinstance(tgt, str) and tgt and tgt not in objetos:
                     err(f"assets/adventures/{nombre}", bid, "trigger.target",
                         f"'{tgt}' no existe en ningún catálogo de objetos")
                 elif isinstance(tgt, str) and tgt and tgt not in colocados:

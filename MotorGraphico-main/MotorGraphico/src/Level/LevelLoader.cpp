@@ -105,6 +105,14 @@ Result<LevelDefinition> parseDefinition(const JsonValue& root) {
         spawn.hasTargetPosition = targetPos.isObject();
         spawn.targetPosition = parseGridCoord(targetPos, spawn.position);
 
+        // G4-01 — Puerta cerrada por flags (ver ObjectSpawn::estaCerrada).
+        const JsonValue& cerrada = objectValue["cerradaSi"];
+        for (std::size_t c = 0; c < cerrada["todas"].size(); ++c)
+            spawn.cerradaTodas.push_back(cerrada["todas"][c].asString());
+        for (std::size_t c = 0; c < cerrada["ninguna"].size(); ++c)
+            spawn.cerradaNinguna.push_back(cerrada["ninguna"][c].asString());
+        spawn.beatCerrada = objectValue["beatCerrada"].asString();
+
         // Botin y evento de la instancia: opcionales como el resto de
         // campos locales (ver ObjectSpawn en LevelDefinition.h). Los ids
         // de loot NO se validan contra el catalogo aqui, igual que

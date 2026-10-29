@@ -235,7 +235,18 @@ struct Jugador {
         NarrativeResult r = e.talkTo(npc, s);
         procesa(r);
         drena();
+        subeConRosita();
         return r;
+    }
+
+    // G4-02: «Subir a dormir» (bnd0_a_dormir) ya no duerme al instante: salta
+    // la cinematica taberna_rosita_puja (enciende bnd0_rosita_te_sube y deja al
+    // jugador arriba) y, al amanecer, se baja a la taberna, donde empieza el
+    // desayuno (b1_desayuno: enter interior_taberna).
+    void subeConRosita() {
+        if (!s.hasFlag("bnd0_a_dormir") || s.hasFlag("bnd0_dormido") || s.hasFlag("bnd0_rosita_te_sube")) return;
+        if (!cinematica(GridCoord{-1, -1})) return;
+        if (s.hasFlag("bnd0_dormido")) entra("interior_taberna");
     }
 
     // Rosita lleva la hora: «Esperar a que anochezca».

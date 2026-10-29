@@ -115,6 +115,12 @@ panel escribe.
 - **`targetLevel` + `targetPosition`:** convierten el objeto en una
   salida a otro nivel. Sin `targetPosition`, el jugador aparece en el
   `playerStart` del nivel destino.
+- **`cerradaSi` + `beatCerrada` (G4-01):** puerta cerrada por flags.
+  `"cerradaSi": {"todas": ["a"], "ninguna": ["b"]}` = cerrada mientras
+  estén encendidas todas las de `todas` y ninguna de `ninguna` (las dos
+  listas vacías = abierta). Cerrada no hay transición: se dispara el beat
+  `beatCerrada` (un `talk` cuyo `target` es ese mismo id; si no hay beat, la
+  línea «La puerta está cerrada.»). Ver FORMATO_AVENTURAS.md.
 - **`loot`:** ids del catálogo de objetos que suelta esta instancia
   (el cofre del atrio puede llevar una llave aunque los demás cofres
   no). **`lootTable`:** referencia opcional a una tabla del catálogo

@@ -415,6 +415,16 @@ bool GameSession::applyNarrative(const RPG::NarrativeResult& result) {
     return true;
 }
 
+// G4-01 — Una puerta cerrada por flags no cambia de nivel: habla su beat (como
+// un talk) o, sin beat, avisa. false = abierta, se cruza como siempre.
+bool GameSession::cierraPuerta(const ObjectSpawn& puerta) {
+    const RPG::NarrativeState* estado = sessionData()->m_narrativeState;
+    if (!puerta.estaCerrada([estado](const std::string& f) { return estado != nullptr && estado->hasFlag(f); }))
+        return false;
+    if (puerta.beatCerrada.empty() || !talkNarrative(puerta.beatCerrada)) logLine("La puerta está cerrada.");
+    return true;
+}
+
 bool GameSession::enterLevelNarrative(const std::string& levelId) {
     if (sessionData()->m_narrative == nullptr || sessionData()->m_narrativeState == nullptr) {
         return false;

@@ -16,6 +16,13 @@
   },
   "apariciones": [
     {
+      "objeto": "skilla",
+      "_nota": "Rosita arriba (p1) solo en la noche del día 0, cuando te sube a la cama (taberna_rosita_puja). En la planta baja no hay regla.",
+      "nivel": "assets/levels/interior_taberna_p1.json",
+      "si": "bnd0_rosita_arriba",
+      "sin": "bnd0_dormido"
+    },
+    {
       "objeto": "sho_noco",
       "_nota": "Prólogo (de que la barca viene a que se va) y epílogo (bnd3_epi_empezado).",
       "visibleSi": {
@@ -1281,6 +1288,20 @@
         ]
       },
       "_nota": "GORRAN-DIA2: el día de Gorran, Venides está en el castillo."
+    },
+    {
+      "objeto": "venides",
+      "nivel": "assets/levels/interior_taberna.json",
+      "ocultoSi": {
+        "todas": [
+          "bnd1_desayuno_hecho",
+          "bnd1_venides_se_fue"
+        ],
+        "ninguna": [
+          "bnd1_venides_nit"
+        ]
+      },
+      "_nota": "Oriol (29/10): tras el desayuno Venides se va de la taberna (cinematica venides_se_va, que enciende bnd1_venides_se_fue al llegar a la puerta) y no vuelve hasta la noche del dia 1. Las apariciones no leen la franja: bnd1_venides_nit la encienden a la vez que pasarFranja noche los beats b1_skilla_hora y b1_posadero_hora."
     },
     {
       "objeto": "mercenario_tajo",
@@ -6049,6 +6070,101 @@
         {
           "funde": 0,
           "segundos": 1.6
+        }
+      ]
+    },
+    {
+      "id": "taberna_rosita_puja",
+      "_nota": "Oriol (29/10): la noche del día 0 no se sale; Rosita te sube y te da cama. Salta con bnd0_a_dormir (menú de Rosita, tras pagar); al acabar enciende bnd0_rosita_te_sube y entonces b0_subir / b0_subir_oido (auto) cuentan la noche. Rosita acompaña a la escalera, funde, y arriba (p1) está al lado de la cama y dice una línea (b0_rosita_sube).",
+      "nivel": "assets/levels/interior_taberna.json",
+      "requiere": [
+        "bnd0_a_dormir"
+      ],
+      "sin": [
+        "bnd0_dormido"
+      ],
+      "pasos": [
+        {
+          "anda": "skilla",
+          "a": [11, 2],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "jugador",
+          "a": [11, 3],
+          "velocidad": 2.2
+        },
+        {
+          "espera": 0.4
+        },
+        {
+          "funde": 1,
+          "segundos": 1.0
+        },
+        {
+          "coloca": "skilla",
+          "en": [6, 3]
+        },
+        {
+          "nivel": "assets/levels/interior_taberna_p1.json",
+          "en": [3, 2]
+        },
+        {
+          "flag": "bnd0_rosita_arriba"
+        },
+        {
+          "mira": "jugador",
+          "hacia": "abajo"
+        },
+        {
+          "mira": "skilla",
+          "hacia": "izquierda"
+        },
+        {
+          "espera": 0.4
+        },
+        {
+          "funde": 0,
+          "segundos": 1.0
+        },
+        {
+          "beat": "bnd0_rosita_te_dice"
+        }
+      ],
+      "alTerminar": [
+        "bnd0_rosita_te_sube"
+      ]
+    },
+    {
+      "id": "venides_se_va",
+      "_nota": "Oriol (29/10): despues del desayuno Venides se levanta, cruza la taberna y sale por la puerta. Salta al elegir «Ponerse en marcha» (bnd1_desayuno_hecho); al llegar a la puerta enciende bnd1_venides_se_fue y la aparicion lo funde. Vuelve la noche del dia 1 (bnd1_venides_nit). Sin texto nuevo.",
+      "nivel": "assets/levels/interior_taberna.json",
+      "requiere": [
+        "bnd1_desayuno_hecho"
+      ],
+      "sin": [
+        "bnd1_venides_se_fue",
+        "bnd1_venides_nit"
+      ],
+      "pasos": [
+        {
+          "espera": 0.5
+        },
+        {
+          "mira": "venides",
+          "hacia": "abajo"
+        },
+        {
+          "anda": "venides",
+          "por": [[4, 10], [1, 10]],
+          "velocidad": 1.8
+        },
+        {
+          "flag": "bnd1_venides_se_fue"
+        },
+        {
+          "espera": 1.0
         }
       ]
     }

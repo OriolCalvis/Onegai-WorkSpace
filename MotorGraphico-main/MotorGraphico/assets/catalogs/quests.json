@@ -178,6 +178,20 @@
       "adventureId": "adv_boundington_primer_dia",
       "objectives": [
         {
+          "id": "obj_plaza",
+          "description": "Explorar la plaza principal: Venides dice que allí se entera uno de todo.",
+          "doneFlag": "bnd1_plaza_explorada",
+          "visibleFlag": "bnd_tut_cerrado",
+          "donde": ["assets/levels/ciudad_centro.json"]
+        },
+        {
+          "id": "obj_xila",
+          "description": "Buscar al borracho de Pico Dragón: la Taberna del Gremio de Ladrones, al oeste.",
+          "doneFlag": "bnd1_xila_conocido",
+          "visibleFlag": "bnd1_xila_pista_plaza",
+          "donde": ["assets/levels/ciudad_oeste.json", "xila"]
+        },
+        {
           "id": "bnd1_op_luisarda",
           "description": "Convence a Luisarda, en La Boutique de Madame, de cenar con Rosita.",
           "optional": true,
@@ -234,7 +248,9 @@
             "obj_tut_tendero",
             "obj_tut_joyero",
             "obj_tut_sastre",
-            "obj_tut_emboscada"
+            "obj_tut_emboscada",
+            "obj_plaza",
+            "obj_xila"
           ]
         },
         {

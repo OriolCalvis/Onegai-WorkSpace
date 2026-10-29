@@ -10,9 +10,12 @@
 // que se prueba es que la cadena ramifica y se cierra, no el combate.
 
 #include "RPG/NarrativeEngine.h"
+#include "Game/Cinematica.h"
 
 #include "TestHarness.h"
 
+#include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -181,6 +184,296 @@ MOTOR_TEST_CASE(el_tutorial_no_se_repite_una_vez_cerrado) {
     MOTOR_CHECK(otraVez.beatId != "tut_emboscada");
     MOTOR_CHECK(otraVez.battles.empty());
     MOTOR_CHECK(e.tick(s).beatId != "tut_victoria");
+}
+
+// G4-02: la noche del dia 0. «Subir a dormir» (bnd0_a_dormir) ya no duerme al
+// instante: salta la cinematica taberna_rosita_puja, que deja al jugador en
+// interior_taberna_p1 y enciende bnd0_rosita_te_sube; solo entonces b0_subir
+// (o b0_subir_oido) cuenta la noche. Aqui se ejecuta la cinematica de verdad
+// (catalogo real, sus pasos como hace el juego: beats y flags a la historia).
+const char* const kTaberna = "assets/levels/interior_taberna.json";
+const char* const kTabernaP1 = "assets/levels/interior_taberna_p1.json";
+
+// Deja correr los beats automaticos; devuelve los ids que han saltado.
+std::vector<std::string> drena(const NarrativeEngine& e, NarrativeState& s) {
+    std::vector<std::string> ids;
+    for (int i = 0; i < 100; ++i) {
+        const NarrativeResult r = e.tick(s);
+        if (!r.fired) break;
+        ids.push_back(r.beatId);
+    }
+    return ids;
+}
+
+bool contiene(const std::vector<std::string>& v, const std::string& id) {
+    for (const std::string& x : v) if (x == id) return true;
+    return false;
+}
+
+// Estado exacto de la nit 0 justo despues de pagar y elegir «Subir a dormir».
+NarrativeState nocheCero(bool oido) {
+    NarrativeState s;
+    s.setFlag("bnd0_noche");
+    s.setFlag("bnd0_cama");
+    s.setFlag("bnd0_a_dormir");
+    if (oido) s.setFlag("bnd0_oido_por_devoto");
+    return s;
+}
+
+Game::CatalogoCinematicas catalogo() {
+    auto r = Game::CatalogoCinematicas::carga("assets/cinematicas/cinematicas.json");
+    MOTOR_CHECK(r.isOk());
+    return r.value();
+}
+
+// Ejecuta la cinematica que empieza en la taberna; devuelve el nivel en que
+// acaba el jugador ("" si no empieza ninguna).
+std::string cinematicaDeRosita(const Game::CatalogoCinematicas& cat, const NarrativeEngine& e, NarrativeState& s,
+                               std::vector<std::string>* beats) {
+    const auto tiene = [&s](const std::string& f) { return s.hasFlag(f); };
+    const Game::Cinematica* c = cat.laQueEmpieza(kTaberna, GridCoord{-1, -1}, tiene);
+    if (c == nullptr) return "";
+    MOTOR_CHECK(c->id == "taberna_rosita_puja");
+    std::string nivel = kTaberna;
+    for (const Game::PasoCinematica& p : c->pasos) {
+        if (p.tipo == Game::PasoCinematica::Tipo::Nivel) nivel = p.texto;
+        if (p.tipo == Game::PasoCinematica::Tipo::Beat || p.tipo == Game::PasoCinematica::Tipo::Flag) {
+            s.setFlag(p.texto);
+            const auto ids = drena(e, s);
+            if (beats) beats->insert(beats->end(), ids.begin(), ids.end());
+        }
+    }
+    s.setFlag(c->vista());
+    for (const std::string& f : c->alTerminar) s.setFlag(f);
+    return nivel;
+}
+
+MOTOR_TEST_CASE(sin_te_sube_la_noche_cero_no_se_duerme_y_con_la_cinematica_si) {
+    const AdventureScript guion = carga();
+    const NarrativeEngine e = motor(guion);
+    const Game::CatalogoCinematicas cat = catalogo();
+    NarrativeState s = nocheCero(false);
+
+    // Antes de la cinematica: nada duerme, ni b0_subir ni b0_subir_oido.
+    const auto antes = drena(e, s);
+    MOTOR_CHECK(!contiene(antes, "b0_subir"));
+    MOTOR_CHECK(!contiene(antes, "b0_subir_oido"));
+    MOTOR_CHECK(!s.hasFlag("bnd0_dormido"));
+
+    // La cinematica empieza, se ve a Rosita arriba y acaba en p1.
+    const auto tiene = [&s](const std::string& f) { return s.hasFlag(f); };
+    MOTOR_CHECK(!cat.visible("skilla", kTabernaP1, tiene));
+    std::vector<std::string> durante;
+    MOTOR_CHECK(cinematicaDeRosita(cat, e, s, &durante) == kTabernaP1);
+    MOTOR_CHECK(contiene(durante, "b0_rosita_sube"));     // su linea, ya arriba
+    MOTOR_CHECK(!contiene(durante, "b0_subir"));          // aun no duerme
+    MOTOR_CHECK(cat.visible("skilla", kTabernaP1, tiene)); // Rosita esta arriba
+    MOTOR_CHECK(s.hasFlag("bnd0_rosita_te_sube"));
+    MOTOR_CHECK(!s.hasFlag("bnd0_dormido"));
+
+    // Al acabar: la noche y el amanecer; Rosita ya no esta arriba.
+    const auto despues = drena(e, s);
+    MOTOR_CHECK(contiene(despues, "b0_subir"));
+    MOTOR_CHECK(!contiene(despues, "b0_subir_oido"));
+    MOTOR_CHECK(s.hasFlag("bnd0_dormido"));
+    MOTOR_CHECK(s.variable("dia") == 1);
+    MOTOR_CHECK(s.variable("franja") == 0);
+    MOTOR_CHECK(!cat.visible("skilla", kTabernaP1, tiene));
+
+    // No se repite la cinematica.
+    MOTOR_CHECK(cinematicaDeRosita(cat, e, s, nullptr).empty());
+}
+
+MOTOR_TEST_CASE(la_noche_cero_con_el_oido_por_devoto_usa_b0_subir_oido) {
+    const AdventureScript guion = carga();
+    const NarrativeEngine e = motor(guion);
+    const Game::CatalogoCinematicas cat = catalogo();
+    NarrativeState s = nocheCero(true);
+
+    MOTOR_CHECK(!contiene(drena(e, s), "b0_subir_oido"));
+    MOTOR_CHECK(!s.hasFlag("bnd0_dormido"));
+    MOTOR_CHECK(cinematicaDeRosita(cat, e, s, nullptr) == kTabernaP1);
+    const auto despues = drena(e, s);
+    MOTOR_CHECK(contiene(despues, "b0_subir_oido"));
+    MOTOR_CHECK(s.hasFlag("bnd0_dormido"));
+    MOTOR_CHECK(s.variable("dia") == 1);
+}
+
+MOTOR_TEST_CASE(el_desayuno_empieza_al_bajar_a_la_taberna_y_no_se_repite) {
+    const AdventureScript guion = carga();
+    const NarrativeEngine e = motor(guion);
+    NarrativeState s = nocheCero(false);
+    s.setFlag("bnd0_rosita_te_sube");
+    drena(e, s);
+    MOTOR_CHECK(s.hasFlag("bnd0_dormido"));
+    // Arriba (p1) no salta, y tampoco con un tick suelto.
+    MOTOR_CHECK(!s.hasFlag("bnd1_desayuno_visto"));
+    MOTOR_CHECK(e.enterLevel(kTabernaP1, s).beatId != "b1_desayuno");
+    MOTOR_CHECK(!s.hasFlag("bnd1_desayuno_visto"));
+    // Al bajar (tambien una partida guardada en p1 con bnd0_dormido): esmorzar.
+    const NarrativeResult baja = e.enterLevel(kTaberna, s);
+    MOTOR_CHECK(baja.fired);
+    MOTOR_CHECK(baja.beatId == "b1_desayuno" || baja.beatId == "b1_desayuno_v0");
+    MOTOR_CHECK(s.hasFlag("bnd1_desayuno_visto"));
+    // Volver a entrar no lo repite.
+    const NarrativeResult otra = e.enterLevel(kTaberna, s);
+    MOTOR_CHECK(otra.beatId != "b1_desayuno" && otra.beatId != "b1_desayuno_v0");
+}
+
+// G4-03: Venides se va despues de desayunar y no se le ve en la taberna hasta
+// la noche del dia 1. Las apariciones solo miran flags, asi que la noche la
+// avisa bnd1_venides_nit, que encienden a la vez que pasarFranja noche los
+// beats b1_skilla_hora y b1_posadero_hora. Catalogo y guion reales.
+bool venidesSeVe(const Game::CatalogoCinematicas& cat, const NarrativeState& s) {
+    return cat.visible("venides", kTaberna, [&s](const std::string& f) { return s.hasFlag(f); });
+}
+
+void eligeTexto(const NarrativeEngine& e, NarrativeState& s, const std::string& texto) {
+    const std::vector<std::string> t = s.eleccion().textos;
+    for (std::size_t i = 0; i < t.size(); ++i) {
+        if (t[i] != texto) continue;
+        e.elige(static_cast<int>(i), s);
+        return;
+    }
+    MOTOR_CHECK(false && "no esta esa opcion");
+}
+
+// De la cama al «Ponerse en marcha» del desayuno (la mañana del dia 1).
+void desayunaYSalePorLaCalle(const NarrativeEngine& e, NarrativeState& s) {
+    s = nocheCero(false);
+    s.setFlag("bnd0_rosita_te_sube");
+    drena(e, s);  // b0_subir: dia 1, mañana, bnd0_dormido
+    MOTOR_CHECK(s.hasFlag("bnd0_dormido"));
+    const NarrativeResult baja = e.enterLevel(kTaberna, s);
+    MOTOR_CHECK(baja.fired);
+    eligeTexto(e, s, "Ponerse en marcha");
+    MOTOR_CHECK(s.hasFlag("bnd1_desayuno_hecho"));
+}
+
+// Ejecuta venides_se_va; "antes" recoge lo que se ve de Venides en cada paso.
+// Devuelve cuantos pasos se vieron con Venides visible y cuantos no.
+struct Marcha { bool empezo = false; int conVenides = 0; int sinVenides = 0; bool visibleAntesDeIrse = false; };
+Marcha marcha(const Game::CatalogoCinematicas& cat, NarrativeState& s) {
+    Marcha m;
+    const auto tiene = [&s](const std::string& f) { return s.hasFlag(f); };
+    const Game::Cinematica* c = cat.laQueEmpieza(kTaberna, GridCoord{-1, -1}, tiene);
+    if (c == nullptr) return m;
+    MOTOR_CHECK(c->id == "venides_se_va");
+    m.empezo = true;
+    m.visibleAntesDeIrse = venidesSeVe(cat, s);
+    for (const Game::PasoCinematica& p : c->pasos) {
+        if (p.tipo == Game::PasoCinematica::Tipo::Flag) s.setFlag(p.texto);
+        (venidesSeVe(cat, s) ? m.conVenides : m.sinVenides)++;
+    }
+    s.setFlag(c->vista());
+    for (const std::string& f : c->alTerminar) s.setFlag(f);
+    return m;
+}
+
+MOTOR_TEST_CASE(tras_el_desayuno_venides_cruza_la_taberna_y_ya_no_esta) {
+    const AdventureScript guion = carga();
+    const NarrativeEngine e = motor(guion);
+    const Game::CatalogoCinematicas cat = catalogo();
+    NarrativeState s;
+    desayunaYSalePorLaCalle(e, s);
+    drena(e, s);
+
+    // Hasta que se va, sigue en su mesa; la cinematica lo ve salir y despues no esta.
+    const Marcha m = marcha(cat, s);
+    MOTOR_CHECK(m.empezo);
+    MOTOR_CHECK(m.visibleAntesDeIrse);
+    MOTOR_CHECK(m.conVenides > 0);
+    MOTOR_CHECK(m.sinVenides > 0);
+    MOTOR_CHECK(!venidesSeVe(cat, s));
+    // No se repite, y de dia el resto del dia no vuelve.
+    MOTOR_CHECK(marcha(cat, s).empezo == false);
+    MOTOR_CHECK(!venidesSeVe(cat, s));
+    // Solo se esconde en la taberna: los demas niveles no cambian.
+    MOTOR_CHECK(cat.visible("venides", kTabernaP1, [&s](const std::string& f) { return s.hasFlag(f); }));
+}
+
+// Las cuatro opciones del guion que pasan a la noche el dia 1.
+void pasaALaNoche(const NarrativeEngine& e, NarrativeState& s, int via) {
+    const bool skilla = via < 2;
+    if (skilla) {
+        s.setFlag("bnd_skilla");
+        s.setFlag("bnd_skilla_confianza");
+    } else {
+        s.setFlag("bnd_llegada");
+    }
+    MOTOR_CHECK(e.talkTo(skilla ? "skilla" : "posadero", s).fired);
+    if (via % 2 == 0) {
+        eligeTexto(e, s, "Esperar a que anochezca");
+    } else {
+        s.setVariable("franja", 1);  // «Subir a dormir» pide al menos la tarde
+        MOTOR_CHECK(e.talkTo(skilla ? "skilla" : "posadero", s).fired);
+        eligeTexto(e, s, "Subir a dormir");
+    }
+}
+
+MOTOR_TEST_CASE(venides_vuelve_a_la_taberna_cuando_pasa_a_la_noche_por_cualquier_via) {
+    const AdventureScript guion = carga();
+    const NarrativeEngine e = motor(guion);
+    const Game::CatalogoCinematicas cat = catalogo();
+    for (int via = 0; via < 4; ++via) {
+        NarrativeState s;
+        desayunaYSalePorLaCalle(e, s);
+        drena(e, s);
+        MOTOR_CHECK(marcha(cat, s).empezo);
+        MOTOR_CHECK(!venidesSeVe(cat, s));
+        pasaALaNoche(e, s, via);
+        MOTOR_CHECK(s.variable("franja") == 2);
+        MOTOR_CHECK(s.hasFlag("bnd1_venides_nit"));
+        MOTOR_CHECK(venidesSeVe(cat, s));
+        // Y se le puede hablar: la charla de la noche sigue siendo abastable.
+        const NarrativeResult r = e.talkTo("venides", s);
+        MOTOR_CHECK(r.fired);
+        MOTOR_CHECK(r.beatId == "b1_borracho");
+    }
+    // De dia no basta con esperar la tarde: sigue fuera.
+    NarrativeState t;
+    desayunaYSalePorLaCalle(e, t);
+    drena(e, t);
+    MOTOR_CHECK(marcha(cat, t).empezo);
+    t.setFlag("bnd_llegada");
+    MOTOR_CHECK(e.talkTo("posadero", t).fired);
+    eligeTexto(e, t, "Esperar a la tarde");
+    MOTOR_CHECK(t.variable("franja") == 1);
+    MOTOR_CHECK(!venidesSeVe(cat, t));
+    // Si es de noche, la cinematica de marcha no salta.
+    NarrativeState n;
+    desayunaYSalePorLaCalle(e, n);
+    n.setFlag("bnd1_venides_nit");
+    MOTOR_CHECK(!marcha(cat, n).empezo);
+    MOTOR_CHECK(venidesSeVe(cat, n));
+}
+
+MOTOR_TEST_CASE(durante_la_marcha_solo_hay_un_venides) {
+    const Game::CatalogoCinematicas cat = catalogo();
+    const Game::Cinematica* c = cat.busca("venides_se_va");
+    MOTOR_CHECK(c != nullptr);
+    if (c == nullptr) return;
+    // La cinematica mueve al propio venides: nada de un doble que salga mientras el otro se funde.
+    int pasosDeVenides = 0;
+    for (const Game::PasoCinematica& p : c->pasos) {
+        MOTOR_CHECK(p.tipo != Game::PasoCinematica::Tipo::Coloca);
+        MOTOR_CHECK(p.tipo != Game::PasoCinematica::Tipo::Nivel);
+        if (!p.actor.empty()) {
+            MOTOR_CHECK(p.actor == "venides");
+            ++pasosDeVenides;
+        }
+    }
+    MOTOR_CHECK(pasosDeVenides > 0);
+    // En la taberna hay un unico objeto «venides» (y ninguna otra variante).
+    std::ifstream f("assets/levels/interior_taberna.json");
+    std::stringstream ss;
+    ss << f.rdbuf();
+    const std::string nivel = ss.str();
+    int cuantos = 0;
+    for (std::size_t i = nivel.find("\"objectId\": \"venides"); i != std::string::npos;
+         i = nivel.find("\"objectId\": \"venides", i + 1))
+        ++cuantos;
+    MOTOR_CHECK(cuantos == 1);
 }
 
 }  // namespace

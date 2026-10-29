@@ -976,6 +976,7 @@ if(BUILD_TESTING)
     include(cmake/ProjectLevelsTests.cmake)
     # E-02 — variables narrativas e interruptores locales A-D.
     include(cmake/NarrativeVariablesTests.cmake)
+    include(cmake/PuertaCerradaTests.cmake)  # G4-01: puertas cerradas por flags
     # C8-03b — catálogo de eventos del mundo (lectura y validación).
     include(cmake/EventosDelMundoTests.cmake)
     include(cmake/EscenaVivaTests.cmake)  # C2-04a: posturas, fuego y emociones
@@ -1509,6 +1510,7 @@ include(cmake/ApplicationNarrativeWiringTests.cmake)
 
 # Tutorial de Boundington en la zona principal — comerciantes, emboscada y combate.
 include(cmake/BoundingtonTutorialTests.cmake)
+include(cmake/BoundingtonDia1Tests.cmake)
 
 # D-06 — Creació de personatge: bonificacions de classe/raça/trasfond
 # i set eleccions narratives arriben a la CharacterSheet.
