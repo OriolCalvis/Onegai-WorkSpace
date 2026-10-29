@@ -103,6 +103,8 @@ def importar(*indices):
                    "pixellab_id": m.get("pixellab_id", "")}
         if m.get("posaderos"):                          # MASC-01: on es posen els coloms (peces del kit)
             entrada["posaderos"] = m["posaderos"]
+        if m.get("libres"):                             # H-CIU-2: cel·les de la planta que el sprite no ocupa (es trepitgen)
+            entrada["libres"] = m["libres"]
         salida.append(entrada)
         print(f"{m['id']}: hoja {hoja.width}x{hoja.height}, {columnas} tiras, anclaje ({ax}, {ay})")
     # ISO: las piezas del kit (ids iso_*) que ya no estan en su indice se quitan del

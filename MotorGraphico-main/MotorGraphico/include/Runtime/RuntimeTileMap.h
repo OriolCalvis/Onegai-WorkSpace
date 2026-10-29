@@ -55,6 +55,10 @@ public:
     const RuntimeTileLayer& layerAt(int layer) const;
     const RuntimeTile& getTile(int layer, int x, int y) const;
 
+    // H-CIU-2: quita la colision de una casilla (todas las capas) sin cambiar lo que se dibuja.
+    // Devuelve true si la casilla bloqueaba. Fuera del mapa no hace nada.
+    bool quitaColision(int x, int y);
+
     GridCoord screenToGrid(const Vector2& screenPos) const;
     Vector2 gridToScreen(const GridCoord& grid) const;
 

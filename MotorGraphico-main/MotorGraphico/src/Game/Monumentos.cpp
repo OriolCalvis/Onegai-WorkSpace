@@ -63,6 +63,9 @@ Result<bool> Monumentos::carga(const std::string& carpetaAssets) {
             if (ps[k].isArray() && ps[k].size() >= 3)
                 d.posaderos.push_back({static_cast<float>(ps[k][0].asNumber(0.0)), static_cast<float>(ps[k][1].asNumber(0.0)),
                                        static_cast<float>(ps[k][2].asNumber(0.0))});
+        const JsonValue& ls = m["libres"];  // H-CIU-2: [[i, j], ...] casillas de la huella sin base
+        for (std::size_t k = 0; ls.isArray() && k < ls.size(); ++k)
+            if (ls[k].isArray() && ls[k].size() >= 2) d.libres.push_back({ls[k][0].asInt(0), ls[k][1].asInt(0)});
         const JsonValue& ts = m["tiles"];
         for (std::size_t k = 0; ts.isArray() && k < ts.size(); ++k) {
             const std::string nombre = ts[k].asString();
@@ -101,9 +104,21 @@ int sobraMaxima(int ancho, int alto) { return ancho * alto >= 30 ? 3 : 1; }
 
 struct Huella {  // una componente conexa (4 vecinos) de tiles de edificio
     int x0 = 0, y0 = 0, ancho = 0, alto = 0, celdas = 0;
+    int porOri[4] = {0, 0, 0, 0};  // H-CIU-2: casillas de cada orientacion (solo familias edifici_o0..o3)
 };
 
-std::vector<Huella> huellasDe(const RuntimeTileMap& mapa, const std::set<int>& gids) {
+// «edifici_o2» -> base «edifici», orientacion 2. Cualquier otro nombre: base vacia.
+bool partesOrientacion(const std::string& nombre, std::string& base, int& ori) {
+    if (nombre.size() < 4 || nombre[nombre.size() - 3] != '_' || nombre[nombre.size() - 2] != 'o') return false;
+    const char c = nombre.back();
+    if (c < '0' || c > '3') return false;
+    base = nombre.substr(0, nombre.size() - 3);
+    ori = c - '0';
+    return true;
+}
+
+// oriDeGid: gid -> orientacion (0-3) cuando la huella es la de una familia entera; si no, null.
+std::vector<Huella> huellasDe(const RuntimeTileMap& mapa, const std::set<int>& gids, const std::map<int, int>* oriDeGid = nullptr) {
     std::vector<Huella> salida;
     const int ancho = mapa.getWidth(), alto = mapa.getHeight();
     std::vector<char> visto(static_cast<std::size_t>(ancho * alto), 0);
@@ -112,11 +127,13 @@ std::vector<Huella> huellasDe(const RuntimeTileMap& mapa, const std::set<int>& g
             if (visto[static_cast<std::size_t>(y0 * ancho + x0)] || gids.count(mapa.getTile(0, x0, y0).getTilesetID()) == 0) continue;
             std::vector<std::pair<int, int>> pila{{x0, y0}};
             visto[static_cast<std::size_t>(y0 * ancho + x0)] = 1;
-            int minX = x0, maxX = x0, minY = y0, maxY = y0, n = 0;
+            Huella h;
+            int minX = x0, maxX = x0, minY = y0, maxY = y0;
             while (!pila.empty()) {
                 const auto [x, y] = pila.back();
                 pila.pop_back();
-                ++n;
+                ++h.celdas;
+                if (oriDeGid != nullptr) ++h.porOri[oriDeGid->at(mapa.getTile(0, x, y).getTilesetID())];
                 minX = std::min(minX, x), maxX = std::max(maxX, x), minY = std::min(minY, y), maxY = std::max(maxY, y);
                 for (const auto [dx, dy] : {std::pair<int, int>{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
                     const int nx = x + dx, ny = y + dy;
@@ -127,10 +144,77 @@ std::vector<Huella> huellasDe(const RuntimeTileMap& mapa, const std::set<int>& g
                     pila.push_back({nx, ny});
                 }
             }
-            salida.push_back(Huella{minX, minY, maxX - minX + 1, maxY - minY + 1, n});
+            h.x0 = minX, h.y0 = minY, h.ancho = maxX - minX + 1, h.alto = maxY - minY + 1;
+            salida.push_back(h);
         }
     }
     return salida;
+}
+
+// Definiciones que dibujan la huella h con los tiles «tiles» (ver planifica).
+std::vector<const Monumentos::Def*> candidatasDe(const std::vector<Monumentos::Def>& defs, const Huella& h,
+                                                 const std::vector<std::string>& tiles) {
+    using Def = Monumentos::Def;
+    std::vector<const Def*> candidatas;
+    for (const Def& d : defs)
+        // La huella tiene que medir lo que dice el monumento (el umbral de
+        // la puerta, que no es tile de edificio, puede faltar; y mas: la
+        // esquina derruida de la iglesia son ruinas).
+        if (d.tiles == tiles && d.ancho == h.ancho && d.alto == h.alto && h.celdas * 10 >= d.ancho * d.alto * 7)
+            candidatas.push_back(&d);
+    // Oriol (22/10): «me has quitado los monumentos». Si no hay uno que mida justo, vale el que
+    // cabe con hasta tres filas o columnas de sobra (la manzana del Excel es mas grande: el coliseo
+    // que pinto mide 8x9 y el dibujo 8x6); la sobra queda detras, como patio del monumento.
+    if (candidatas.empty())
+        for (const Def& d : defs)
+            if (d.tiles == tiles && h.ancho - d.ancho >= 0 && h.ancho - d.ancho <= sobraMaxima(d.ancho, d.alto) &&
+                h.alto - d.alto >= 0 && h.alto - d.alto <= sobraMaxima(d.ancho, d.alto) && h.celdas * 10 >= h.ancho * h.alto * 7)
+                candidatas.push_back(&d);
+    // Si caben varios, el que deja menos sobra.
+    if (candidatas.size() > 1) {
+        auto sobra = [&](const Def* d) { return (h.ancho - d->ancho) + (h.alto - d->alto); };
+        int mejor = sobra(candidatas.front());
+        for (const Def* d : candidatas) mejor = std::min(mejor, sobra(d));
+        candidatas.erase(std::remove_if(candidatas.begin(), candidatas.end(), [&](const Def* d) { return sobra(d) != mejor; }),
+                         candidatas.end());
+    }
+    return candidatas;
+}
+
+MonumentoColocado colocaEn(const Huella& h, const Monumentos::Def& d) {
+    using Def = Monumentos::Def;
+    MonumentoColocado m;
+    m.id = d.id;
+    m.hoja = d.hoja;
+    // Alineado por delante: la sobra queda detras (arriba y a la izquierda en pantalla).
+    m.x0 = h.x0 + (h.ancho - d.ancho);
+    m.y0 = h.y0 + (h.alto - d.alto);
+    m.ancho = d.ancho;
+    m.alto = d.alto;
+    m.cubreX0 = h.x0;
+    m.cubreY0 = h.y0;
+    m.cubreAncho = h.ancho;
+    m.cubreAlto = h.alto;
+    for (int k = 0; k < d.columnas; ++k) {
+        const auto [i, j] = Monumentos::celdaDeTira(d.ancho, d.alto, k, d.columnas, d.anclajeX, d.tiraAncho);
+        TiraMonumento t;
+        t.x = m.x0 + i;
+        t.y = m.y0 + j;
+        t.frame = k + 1;
+        t.dx = static_cast<float>((d.ancho - d.alto) * 32 + 32 - d.anclajeX + k * d.tiraAncho - (i - j) * 32);
+        t.dy = static_cast<float>((d.ancho + d.alto) * 16 - d.anclajeY - (i + j) * 16);
+        m.tiras.push_back(t);
+    }
+    for (const PosaderoMonumento& p : d.posaderos)
+        m.posaderos.push_back({static_cast<float>(m.x0) + p.x, static_cast<float>(m.y0) + p.y, p.altura});
+    // H-CIU-2: solo si la definicion sabe donde esta su base (monumentos.json «libres»).
+    if (!d.libres.empty()) {
+        for (const auto& [i, j] : d.libres) m.libres.push_back({m.x0 + i, m.y0 + j});
+        for (int y = h.y0; y < h.y0 + h.alto; ++y)
+            for (int x = h.x0; x < h.x0 + h.ancho; ++x)
+                if (x < m.x0 || y < m.y0 || x >= m.x0 + d.ancho || y >= m.y0 + d.alto) m.libres.push_back({x, y});
+    }
+    return m;
 }
 
 }  // namespace
@@ -143,70 +227,81 @@ std::vector<MonumentoColocado> Monumentos::planifica(const RuntimeTileMap& mapa,
     // tiles se calculan una vez; cada huella se dibuja con la definicion de
     // su tamano y, si hay varias, con la variante que decide un hash de su
     // posicion (siempre la misma para la misma casa).
-    std::map<std::vector<std::string>, std::vector<Huella>> huellas;
-    for (const Def& d : m_defs) {
-        if (huellas.count(d.tiles)) continue;
+    //
+    // H-CIU-2 (E-CIU-3): un edificio es su familia entera. Las casas del Excel salen con casillas de
+    // varias orientaciones (edifici_o0 y edifici_o3 en la misma casa); si se miran por separado cada
+    // trozo es «otro edificio» y la casa cae a bloques. Para los tiles «<familia>_oN» la huella es la
+    // union de las cuatro orientaciones y el sprite es el de la orientacion con mas casillas (empate:
+    // la de menor numero, o0 si cabe). Lo que no se coloca asi se prueba tambien por orientaciones
+    // sueltas, como antes, para no perder las casas pegadas que ya salian con sprite.
+    struct Grupo {
+        std::vector<std::vector<std::string>> orientaciones;  // tiles de cada orientacion (indice = orientacion), vacio si no hay
         std::set<int> gids;
-        for (const std::string& n : d.tiles) gids.insert(m_gidPorNombre.at(n));
-        huellas[d.tiles] = huellasDe(mapa, gids);
+        std::map<int, int> oriDeGid;
+    };
+    std::map<std::string, Grupo> grupos;  // clave: base de la familia o juego de tiles
+    std::map<std::vector<std::string>, std::vector<Huella>> sueltas;  // huellas por juego de tiles exacto (la via de siempre)
+    for (const Def& d : m_defs) {
+        std::string base;
+        int ori = 0;
+        const bool fam = d.tiles.size() == 1 && partesOrientacion(d.tiles[0], base, ori);
+        if (!sueltas.count(d.tiles)) {
+            std::set<int> gids;
+            for (const std::string& n : d.tiles) gids.insert(m_gidPorNombre.at(n));
+            sueltas[d.tiles] = huellasDe(mapa, gids);
+        }
+        if (!fam) continue;
+        Grupo& g = grupos[base];
+        g.orientaciones.resize(4);
+        g.orientaciones[static_cast<std::size_t>(ori)] = d.tiles;
+        g.gids.insert(m_gidPorNombre.at(d.tiles[0]));
+        g.oriDeGid[m_gidPorNombre.at(d.tiles[0])] = ori;
     }
-    for (const auto& [tiles, lista] : huellas) {
-        for (const Huella& h : lista) {
-            std::vector<const Def*> candidatas;
-            for (const Def& d : m_defs)
-                // La huella tiene que medir lo que dice el monumento (el umbral de
-                // la puerta, que no es tile de edificio, puede faltar; y mas: la
-                // esquina derruida de la iglesia son ruinas).
-                if (d.tiles == tiles && d.ancho == h.ancho && d.alto == h.alto && h.celdas * 10 >= d.ancho * d.alto * 7)
-                    candidatas.push_back(&d);
-            // Oriol (22/10): «me has quitado los monumentos». Si no hay uno que mida justo, vale el que
-            // cabe con hasta tres filas o columnas de sobra (la manzana del Excel es mas grande: el coliseo
-            // que pinto mide 8x9 y el dibujo 8x6); la sobra queda detras, como patio del monumento.
-            if (candidatas.empty())
-                for (const Def& d : m_defs)
-                    if (d.tiles == tiles && h.ancho - d.ancho >= 0 && h.ancho - d.ancho <= sobraMaxima(d.ancho, d.alto) &&
-                        h.alto - d.alto >= 0 && h.alto - d.alto <= sobraMaxima(d.ancho, d.alto) && h.celdas * 10 >= h.ancho * h.alto * 7)
-                        candidatas.push_back(&d);
-            // Si caben varios, el que deja menos sobra.
-            if (candidatas.size() > 1) {
-                auto sobra = [&](const Def* d) { return (h.ancho - d->ancho) + (h.alto - d->alto); };
-                int mejor = sobra(candidatas.front());
-                for (const Def* d : candidatas) mejor = std::min(mejor, sobra(d));
-                candidatas.erase(std::remove_if(candidatas.begin(), candidatas.end(),
-                                                [&](const Def* d) { return sobra(d) != mejor; }),
-                                 candidatas.end());
+    std::vector<std::pair<Huella, const Def*>> colocadas;
+    auto hash = [](const Huella& h) { return (static_cast<unsigned>(h.x0) * 73856093u) ^ (static_cast<unsigned>(h.y0) * 19349663u); };
+    auto solapa = [&](const Huella& h) {
+        for (const auto& [o, d] : colocadas) {
+            (void)d;
+            if (h.x0 < o.x0 + o.ancho && o.x0 < h.x0 + h.ancho && h.y0 < o.y0 + o.alto && o.y0 < h.y0 + h.alto) return true;
+        }
+        return false;
+    };
+    auto elige = [&](const Huella& h, const std::vector<std::string>& tiles) -> const Def* {
+        const auto candidatas = candidatasDe(m_defs, h, tiles);
+        return candidatas.empty() ? nullptr : candidatas[hash(h) % candidatas.size()];
+    };
+    // 1) familias enteras
+    for (const auto& [base, g] : grupos) {
+        for (const Huella& h : huellasDe(mapa, g.gids, &g.oriDeGid)) {
+            int orden[4] = {0, 1, 2, 3};
+            std::stable_sort(orden, orden + 4, [&](int a, int b) { return h.porOri[a] > h.porOri[b]; });
+            for (int k = 0; k < 4; ++k) {
+                const auto& tiles = g.orientaciones[static_cast<std::size_t>(orden[k])];
+                if (tiles.empty() || h.porOri[orden[k]] == 0) continue;
+                if (const Def* d = elige(h, tiles)) {
+                    colocadas.push_back({h, d});
+                    break;
+                }
             }
-            if (candidatas.empty()) continue;
-            const unsigned semilla = (static_cast<unsigned>(h.x0) * 73856093u) ^ (static_cast<unsigned>(h.y0) * 19349663u);
-            const Def& d = *candidatas[semilla % candidatas.size()];
-            MonumentoColocado m;
-            m.id = d.id;
-            m.hoja = d.hoja;
-            // Alineado por delante: la sobra queda detras (arriba y a la izquierda en pantalla).
-            m.x0 = h.x0 + (h.ancho - d.ancho);
-            m.y0 = h.y0 + (h.alto - d.alto);
-            m.ancho = d.ancho;
-            m.alto = d.alto;
-            m.cubreX0 = h.x0;
-            m.cubreY0 = h.y0;
-            m.cubreAncho = h.ancho;
-            m.cubreAlto = h.alto;
-            for (int k = 0; k < d.columnas; ++k) {
-                const auto [i, j] = celdaDeTira(d.ancho, d.alto, k, d.columnas, d.anclajeX, d.tiraAncho);
-                TiraMonumento t;
-                t.x = m.x0 + i;
-                t.y = m.y0 + j;
-                t.frame = k + 1;
-                t.dx = static_cast<float>((d.ancho - d.alto) * 32 + 32 - d.anclajeX + k * d.tiraAncho - (i - j) * 32);
-                t.dy = static_cast<float>((d.ancho + d.alto) * 16 - d.anclajeY - (i + j) * 16);
-                m.tiras.push_back(t);
-            }
-            for (const PosaderoMonumento& p : d.posaderos)
-                m.posaderos.push_back({static_cast<float>(m.x0) + p.x, static_cast<float>(m.y0) + p.y, p.altura});
-            salida.push_back(m);
         }
     }
+    // 2) la via de siempre, por juego de tiles exacto, para lo que la familia no ha colocado
+    for (const auto& [tiles, lista] : sueltas) {
+        for (const Huella& h : lista) {
+            if (solapa(h)) continue;
+            if (const Def* d = elige(h, tiles)) colocadas.push_back({h, d});
+        }
+    }
+    for (const auto& [h, d] : colocadas) salida.push_back(colocaEn(h, *d));
     return salida;
+}
+
+int Monumentos::liberaCeldas(RuntimeTileMap& mapa, const std::vector<MonumentoColocado>& plan) {
+    int n = 0;
+    for (const MonumentoColocado& m : plan)
+        for (const auto& [x, y] : m.libres)
+            if (mapa.quitaColision(x, y)) ++n;
+    return n;
 }
 
 std::set<std::pair<int, int>> Monumentos::celdasCubiertas(const std::vector<MonumentoColocado>& plan) {

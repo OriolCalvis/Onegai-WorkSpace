@@ -9,7 +9,9 @@
 // por detras queda tapada, exactamente como con los bloques. La huella es el
 // rectangulo de celdas del tile del edificio (p. ej. viejo_coliseo, 8x6): si
 // en el mapa el edificio no mide lo que dice el monumento, sigue saliendo con
-// bloques. Sin OpenGL: quien pinta es Render/MonumentosNivel.
+// bloques. H-CIU-2: un edificio es su familia entera (edifici_o0..o3 son la
+// misma casa vista de cuatro lados) y las casillas de la planta que el sprite
+// no ocupa se pisan. Sin OpenGL: quien pinta es Render/MonumentosNivel.
 #pragma once
 
 #include <map>
@@ -46,6 +48,9 @@ struct MonumentoColocado {
     int cubreX0 = 0, cubreY0 = 0, cubreAncho = 0, cubreAlto = 0;
     std::vector<TiraMonumento> tiras;
     std::vector<PosaderoMonumento> posaderos;  // ya en celdas del mapa
+    // H-CIU-2 (E-CIU-5): casillas de la planta pintada que el sprite no ocupa (las libres de su
+    // definicion y las filas o columnas de mas por detras), ya en celdas del mapa. Se pisan.
+    std::vector<std::pair<int, int>> libres;
 };
 
 class Monumentos {
@@ -58,6 +63,7 @@ public:
         int anclajeX = 0, anclajeY = 0;  // pixel de la hoja que cae en la esquina delantera de la huella
         int columnas = 0;
         std::vector<PosaderoMonumento> posaderos;  // desde la esquina de la huella
+        std::vector<std::pair<int, int>> libres;   // H-CIU-2: casillas (i, j) de la huella sin base del sprite
     };
 
     // Lee <carpetaAssets>/textures/monumentos.json y el indice del tileset.
@@ -70,6 +76,9 @@ public:
     // las celdas que cubren (para que Bloques no levante bloque ahi).
     std::vector<MonumentoColocado> planifica(const RuntimeTileMap& mapa, const std::string& tileset) const;
     static std::set<std::pair<int, int>> celdasCubiertas(const std::vector<MonumentoColocado>& plan);
+    // H-CIU-2: quita la colision de las casillas «libres» de cada monumento (el tile sigue dibujando el
+    // suelo de debajo). Devuelve cuantas casillas han pasado de bloquear a no bloquear.
+    static int liberaCeldas(RuntimeTileMap& mapa, const std::vector<MonumentoColocado>& plan);
 
     // Que celda de una huella ancho x alto sostiene la tira k (0-based) de
     // una hoja de «columnas» tiras cuyo anclaje cae en la esquina delantera.

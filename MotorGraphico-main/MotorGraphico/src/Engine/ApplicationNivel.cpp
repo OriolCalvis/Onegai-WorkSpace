@@ -343,7 +343,12 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
                 puertas.push_back(entity.position());
         });
         // BLOQUES-03 — primero los monumentos con sprite propio; sus celdas no levantan bloque.
-        if (m_monumentos != nullptr) cubiertas = m_monumentos->monta(m_map, m_map.getTilesetName(), *m_bancoAtlas, *m_renderer);
+        if (m_monumentos != nullptr) {
+            cubiertas = m_monumentos->monta(m_map, m_map.getTilesetName(), *m_bancoAtlas, *m_renderer);
+            // H-CIU-2 — las casillas de la planta que el sprite no ocupa (la iglesia pinta 10x9 y el dibujo
+            // tiene base en 51) se pisan: el tile sigue dibujando el suelo, solo se quita la colision.
+            Game::Monumentos::liberaCeldas(m_map, m_monumentos->montados());
+        }
         m_bloques->monta(m_map, m_map.getTilesetName(), puertas, *m_bancoAtlas, *m_renderer, &cubiertas);
         // BLOQUES-02 / MASC-01 — la capa de vida: la bandada sobre azoteas y
         // tejados del kit, y las mascotas (objetos mascota_*) por las calles,

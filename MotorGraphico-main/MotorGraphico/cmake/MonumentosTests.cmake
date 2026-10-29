@@ -6,7 +6,11 @@ if(BUILD_TESTING AND TARGET motor_level)
     target_include_directories(test_monumentos PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/tests"
         "${CMAKE_CURRENT_SOURCE_DIR}/include")
-    target_link_libraries(test_monumentos PRIVATE motor_level motor_json)
+    target_link_libraries(test_monumentos PRIVATE motor_level motor_json motor_map)
+    # Las pruebas de ciudad_centro leen assets/ del build (cwd = build).
+    if(TARGET copiar_assets)
+        add_dependencies(test_monumentos copiar_assets)
+    endif()
     add_test(NAME test_monumentos COMMAND test_monumentos)
     set_tests_properties(test_monumentos PROPERTIES
         LABELS "unit;gl-free"
