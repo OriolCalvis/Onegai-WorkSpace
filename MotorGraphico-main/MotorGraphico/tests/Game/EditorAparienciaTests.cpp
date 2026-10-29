@@ -116,20 +116,20 @@ MOTOR_TEST_CASE(apariencia_filas_segun_el_pueblo) {
     MOTOR_CHECK(e.apariencia().raza == "nagas_arcanos");
 }
 
-// NET-E2: el creador ofrece 26 peinados (sin «raya», que era un «corto» con 6 px de diferencia) y no ofrece
-// la barba trenzada.
+// NET-E2: el creador ofrece 26 peinados de siempre (sin «raya», que era un «corto» con 6 px de diferencia) y no
+// ofrece la barba trenzada. H-PEL-2: una raza de talla medio ve ademas los 12 pelos compartidos (38 en total).
 MOTOR_TEST_CASE(apariencia_peinados_y_barbas_sin_los_retirados) {
     Game::EditorApariencia e(manifiesto());
     e.empezar("race_human_marches");
     marcar(e, Fila::Peinado);
     std::set<std::string> peinados;
-    for (int i = 0; i < 60; ++i) {
+    for (int i = 0; i < 90; ++i) {
         e.derecha();
         if (!e.apariencia().peloEstilo.empty())
             peinados.insert(e.apariencia().peloEstilo);
     }
     peinados.erase("propio");  // H-PEL-1: el pelo propio de la raza tambien se ofrece (EditorAparienciaPeloPropioTests)
-    MOTOR_CHECK(peinados.size() == 26);
+    MOTOR_CHECK(peinados.size() == 26 + 12);  // H-PEL-2
     MOTOR_CHECK(peinados.count("raya") == 0 && peinados.count("corto") == 1 && peinados.count("undercut") == 1 &&
                 peinados.count("flequillo") == 1);
     if (tiene(e, Fila::Barba)) {
@@ -164,6 +164,10 @@ MOTOR_TEST_CASE(apariencia_valores_con_la_vuelta) {
     e.derecha();
     MOTOR_CHECK(e.apariencia().peloEstilo == "propio");  // H-PEL-1: sin pelo, el propio de la raza y los genericos
     while (e.apariencia().peloEstilo == "propio")  // el propio y los de sus razas germanas
+        e.derecha();
+    MOTOR_CHECK(e.apariencia().peloEstilo == "mono_mechones");  // H-PEL-2: tras los propios, los 12 compartidos
+    MOTOR_CHECK(e.valor(Fila::Peinado) == "Moño con mechones");
+    for (int i = 0; i < 12; ++i)
         e.derecha();
     MOTOR_CHECK(e.apariencia().peloEstilo == "corto");
     MOTOR_CHECK(e.valor(Fila::Peinado) == "Corto");

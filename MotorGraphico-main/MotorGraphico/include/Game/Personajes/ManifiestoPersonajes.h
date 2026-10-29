@@ -45,6 +45,9 @@ struct FilaDeCapa {
     // H-PEL-1: solo en las filas «propio/<raza>» del pelo: las razas a las que el creador ofrece ese pelo (la
     // propia y sus razas germanas: misma cabeza, tools/pelo_germanos.py). Vacio = solo a la raza del id.
     std::vector<std::string> razas;
+    // H-PEL-2: solo en las filas de pelo «compartidas» (tools/pelos_compartidos.py): las tallas en cuyo atlas la fila
+    // tiene dibujo. Vacio = todas (los pentinados de siempre). El creador no ofrece la fila a otra talla.
+    std::vector<std::string> tallas;
     // SP-02: el orden de dibujo propio de la fila, por rumbo ("arriba" -> z),
     // cuando no es el de su ranura: los guanteletes del Artista Marcial van en
     // las dos manos y encima del cuerpo tambien de espaldas (un arma va detras).

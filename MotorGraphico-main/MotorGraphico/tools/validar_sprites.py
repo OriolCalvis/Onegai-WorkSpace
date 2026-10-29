@@ -134,8 +134,12 @@ def validar_personajes(ruta_json, man):
                 por_fila = imgs[ruta].reshape(filas, fh, -1).any(axis=(1, 2))
                 llenas[ruta] = por_fila
                 if sec != "razas":
+                    # H-PEL-2: una fila con `tallas` solo se dibuja en esas tallas; en las demas atlas es transparente
+                    ajenas = {f["fila"] for f in man[sec]["filas"] if f.get("tallas") and clave not in f["tallas"]} \
+                        if sec in man and isinstance(man[sec], dict) and "filas" in man[sec] else set()
                     for n in np.nonzero(~por_fila)[0]:
-                        errores.append(f"{nombre}: {ruta}: la fila {n + 1} esta vacia")
+                        if int(n) + 1 not in ajenas:
+                            errores.append(f"{nombre}: {ruta}: la fila {n + 1} esta vacia")
     for r in man["razas"]["lista"]:
         for capa, ruta in man["razas"]["atlas"].items():
             if ruta not in llenas:

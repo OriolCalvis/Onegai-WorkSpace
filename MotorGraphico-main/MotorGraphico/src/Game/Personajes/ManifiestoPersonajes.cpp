@@ -83,6 +83,7 @@ GrupoDeCapas leerGrupo(const JsonValue& v, const char* claveFilas) {
         fila.fila = f["fila"].asInt(0);
         fila.soloPnj = f["soloPnj"].asBool(false);
         fila.razas = textos(f["razas"]);
+        fila.tallas = textos(f["tallas"]);
         if (f["orden"].isObject()) {
             for (const auto& [rumbo, z] : f["orden"].objectValues())
                 fila.orden[rumbo] = z.asInt(0);

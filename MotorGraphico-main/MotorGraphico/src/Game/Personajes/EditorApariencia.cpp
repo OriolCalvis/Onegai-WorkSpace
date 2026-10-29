@@ -59,11 +59,23 @@ std::vector<std::string> idsDe(const GrupoDeCapas& grupo, const std::string& ran
     return out;
 }
 
-// Los estilos de pelo o barba, en el orden del atlas y sin repetir.
+// Los estilos de pelo o barba de siempre (los que se dibujan en todas las tallas), en el orden del atlas y sin
+// repetir. H-PEL-2: las filas con `tallas` no son de estas: salen en estilosCompartidos().
 std::vector<std::string> estilos(const GrupoDeCapas& grupo) {
     std::vector<std::string> out;
     for (const FilaDeCapa& f : grupo.filas) {
-        if (!f.estilo.empty() && !contiene(out, f.estilo))
+        if (!f.estilo.empty() && f.tallas.empty() && !contiene(out, f.estilo))
+            out.push_back(f.estilo);
+    }
+    return out;
+}
+
+// H-PEL-2: los pentinados que solo existen en algunas tallas (los mejores pelos de raza, para todos), solo si
+// la fila tiene dibujo en `talla`: que ninguna raza vea un pentinado invisible.
+std::vector<std::string> estilosCompartidos(const GrupoDeCapas& grupo, const std::string& talla) {
+    std::vector<std::string> out;
+    for (const FilaDeCapa& f : grupo.filas) {
+        if (!f.estilo.empty() && !f.tallas.empty() && contiene(f.tallas, talla) && !contiene(out, f.estilo))
             out.push_back(f.estilo);
     }
     return out;
@@ -368,6 +380,11 @@ std::vector<std::string> EditorApariencia::peinados() const {
     std::vector<std::string> out{""};
     for (const std::string& e : pelosPropios())
         out.push_back(e);
+    // H-PEL-2: despues de los propios, los pentinados compartidos de la talla de la raza; luego los de siempre
+    const RazaVisual* raza = m_manifiesto.raza(m_apariencia.raza);
+    const std::string talla = m_apariencia.talla.empty() && raza != nullptr ? raza->talla : m_apariencia.talla;
+    for (const std::string& e : estilosCompartidos(m_manifiesto.pelo, talla))
+        out.push_back(e);
     for (const std::string& e : estilos(m_manifiesto.pelo))
         out.push_back(e);
     return out;
@@ -443,6 +460,13 @@ void EditorApariencia::poner(Fila fila, const std::string& valor) {
         }
         case Fila::Talla:
             a.talla = valor;
+            // H-PEL-2: un pentinado compartido que no se dibuja en la talla nueva pasa a «corto»
+            for (const FilaDeCapa& f : m_manifiesto.pelo.filas) {
+                if (f.estilo == a.peloEstilo && !f.tallas.empty() && !contiene(f.tallas, valor)) {
+                    a.peloEstilo = "corto";
+                    break;
+                }
+            }
             break;
         case Fila::Ojos:
             a.ojos = valor;
@@ -618,7 +642,14 @@ std::string EditorApariencia::valor(Fila fila) const {
             if (v.empty())
                 return "Sin pelo";
             const RazaVisual* de = v.rfind("propio/", 0) == 0 ? m_manifiesto.raza(v.substr(7)) : nullptr;
-            return de != nullptr ? de->nombre : nombreDe(v);
+            if (de != nullptr)
+                return de->nombre;
+            // H-PEL-2: los pentinados compartidos traen su nombre en personajes.json
+            for (const FilaDeCapa& f : m_manifiesto.pelo.filas) {
+                if (f.estilo == v && !f.tallas.empty() && !f.nombre.empty())
+                    return f.nombre;
+            }
+            return nombreDe(v);
         }
         case Fila::Barba:
             return v.empty() ? "Sin barba" : nombreDe(v);
