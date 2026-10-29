@@ -81,11 +81,22 @@ std::vector<std::string> colores(const GrupoDeCapas& grupo, const std::string& e
 // EDITOR-PERSONALIZACION-01: los colores de pelo que admite un estilo. Si el atlas trae su fila castana, el
 // montaje la tine a cualquier material «pelo_*» con paleta (MontajePersonajes): todos, los del atlas primero
 // y el resto por orden. Si no (el pelo propio de una raza), solo los que traiga el atlas.
+// NET-E1a: el orden de los de siempre es fijo (con el atlas recortado a la fila castana tambien salen igual):
+// Castano, Rubio, Negro, Pelirrojo, Oscuro, Blanco, Gris, Plata lila, Verde musgo, Azul hielo y, despues,
+// el resto de materiales «pelo_*» (por nombre).
 std::vector<std::string> coloresDePelo(const ManifiestoPersonajes& m, const GrupoDeCapas& grupo,
                                        const std::string& estilo) {
     std::vector<std::string> out = colores(grupo, estilo);
     if (grupo.buscar(estilo + "/pelo_castano") == nullptr || m.paletas.count("pelo_castano") == 0)
         return out;
+    static const char* const kOrden[] = {"pelo_castano",  "pelo_rubio",       "pelo_negro",
+                                         "pelo_pelirrojo", "pelo_oscuro",      "pelo_blanco",
+                                         "pelo_gris",      "pelo_plata_lila",  "pelo_verde_musgo",
+                                         "pelo_azul_hielo"};
+    for (const char* material : kOrden) {
+        if (m.paletas.count(material) != 0 && !contiene(out, material))
+            out.push_back(material);
+    }
     for (const auto& [material, tonos] : m.paletas) {
         (void)tonos;
         if (material.rfind("pelo_", 0) == 0 && !contiene(out, material))
@@ -386,7 +397,7 @@ void EditorApariencia::poner(Fila fila, const std::string& valor) {
     // el de la raza, el del pelo (para la barba) o el primero que haya.
     const auto colorPara = [&](const GrupoDeCapas& grupo, const std::string& estilo,
                                std::initializer_list<std::string> preferidos) {
-        const std::vector<std::string> hay = colores(grupo, estilo);
+        const std::vector<std::string> hay = coloresDePelo(m_manifiesto, grupo, estilo);
         for (const std::string& c : preferidos) {
             if (!c.empty() && contiene(hay, c))
                 return c;
@@ -420,7 +431,7 @@ void EditorApariencia::poner(Fila fila, const std::string& valor) {
             // La barba sigue al pelo si iban a juego.
             const bool aJuego = !a.barbaEstilo.empty() && a.barbaColor == a.peloColor;
             a.peloColor = valor;
-            if (aJuego && contiene(colores(m_manifiesto.barba, a.barbaEstilo), valor))
+            if (aJuego && contiene(coloresDePelo(m_manifiesto, m_manifiesto.barba, a.barbaEstilo), valor))
                 a.barbaColor = valor;
             break;
         }

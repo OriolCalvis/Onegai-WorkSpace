@@ -116,6 +116,18 @@ class Probador:
                     out.append((de, a))
         return out
 
+    def _fila_color(self, grupo, ident, que):
+        """(fila, cambios) de un pelo o una barba 'estilo/color'. NET-E1a: si el atlas no trae ese color,
+        la fila castana tenida con su paleta (lo mismo que MontajePersonajes)."""
+        for f in grupo["filas"]:
+            if f["id"] == ident:
+                return f["fila"], None
+        estilo, _, color = ident.partition("/")
+        base = next((f for f in grupo["filas"] if f["id"] == f"{estilo}/pelo_castano"), None)
+        if base is None or color not in self.man.get("paletas", {}):
+            raise SystemExit(f"no hay {que} '{ident}' (--listar para ver los que hay)")
+        return base["fila"], self.cambios([("pelo_castano", color)])
+
     @staticmethod
     def _buscar(filas, clave, valor, que):
         for f in filas:
@@ -156,16 +168,16 @@ class Probador:
         barba = barba if barba is not None else (r["barba"] if barba_por_defecto else None)
         if barba:
             b = self.man["barba"]
-            n = self._buscar(b["filas"], "id", "/".join(barba), "barba")
-            out.append(("barba", self.fila(b["atlas"][talla], n)))
+            n, cam = self._fila_color(b, "/".join(barba), "barba")
+            out.append(("barba", self.fila(b["atlas"][talla], n, cam)))
         equipo = dict(equipo or {})
         oculta = separar_tinte(equipo.get("cabeza") or "")[0] in self.man["equipo"]["cabeza"].get("ocultaPelo", [])
         explicito = pelo is not None
         pelo = pelo if explicito else (r["pelo"] if pelo_por_defecto else None)
         if pelo and not oculta and ("pelo" not in sin or explicito):
             p = self.man["pelo"]
-            n = self._buscar(p["filas"], "id", "/".join(pelo), "peinado")
-            out.append(("pelo", self.fila(p["atlas"][talla], n)))
+            n, cam = self._fila_color(p, "/".join(pelo), "peinado")
+            out.append(("pelo", self.fila(p["atlas"][talla], n, cam)))
         for ranura in RANURAS_EQUIPO:
             ident = equipo.get(ranura)
             if not ident or ranura in sin:

@@ -621,13 +621,19 @@ MOTOR_TEST_CASE(personalizacion_piel_pelo_marcas_y_rasgos) {
         }
         MOTOR_CHECK(pelo && barba);
     }
-    // El color que el atlas trae se usa tal cual, sin tinte.
+    // El color que el atlas trae se usa tal cual, sin tinte; NET-E1a: si el atlas va recortado a la fila
+    // castana (sin «melena_larga/pelo_rubio»), la castana tenida: mismo resultado, otra via.
     pajaro.peloColor = "pelo_rubio";
     p = m->capas(pajaro);
     MOTOR_CHECK(p.isOk());
-    for (const auto& capa : p.value())
-        if (capa.ranura == "pelo")
-            MOTOR_CHECK(capa.cambios.empty() && capa.fila == man.pelo.buscar("melena_larga/pelo_rubio")->fila);
+    const auto* filaRubia = man.pelo.buscar("melena_larga/pelo_rubio");
+    const auto* filaCastana = man.pelo.buscar("melena_larga/pelo_castano");
+    MOTOR_CHECK(filaCastana != nullptr);
+    if (p.isOk() && filaCastana != nullptr)
+        for (const auto& capa : p.value())
+            if (capa.ranura == "pelo")
+                MOTOR_CHECK(filaRubia != nullptr ? (capa.cambios.empty() && capa.fila == filaRubia->fila)
+                                                  : (!capa.cambios.empty() && capa.fila == filaCastana->fila));
 
     // Marcas (dos, una con tinte), alas, cola y cuernos en un humano: cada una su capa y su orden.
     Game::Apariencia humano = Game::Apariencia::deRaza(*man.raza("race_human_marches"));

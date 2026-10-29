@@ -77,6 +77,22 @@ REJILLA = (48, 48, 58, 255)
 SUELO = (90, 70, 40, 255)  # la fila de los pies (FILA_PIES), para ver si el cuerpo apoya
 
 
+def _tonos(texto):
+    """'eef3f6 b4c0c8 ...' (una paleta de personajes.json) -> tuplas RGB."""
+    return [tuple(int(h[i:i + 2], 16) for i in (0, 2, 4)) for h in texto.split()]
+
+
+def _tenir(px, cambios):
+    """Copia de px con los colores cambiados; el alfa queda (como probador_personaje.tenir)."""
+    out = px.copy()
+    hecho = np.zeros(px.shape[:2], bool)
+    for de, a in cambios:
+        sel = (px[..., :3] == de).all(axis=-1) & ~hecho & (px[..., 3] > 0)
+        out[sel, :3] = a
+        hecho |= sel
+    return out
+
+
 class Atlas:
     def __init__(self, salida):
         self.salida = Path(salida)
@@ -109,10 +125,19 @@ class Atlas:
 
     def pelo(self, ident, talla):
         e = self.man["pelo"]
-        p = next((x for x in e["filas"] if x["id"] == ident), None)
-        if p is None or talla not in e["atlas"]:
+        if talla not in e["atlas"]:
             return None
-        return self.fila(e["atlas"][talla], p["fila"])
+        p = next((x for x in e["filas"] if x["id"] == ident), None)
+        if p is not None:
+            return self.fila(e["atlas"][talla], p["fila"])
+        # NET-E1a: sin la fila de ese color, la castana tenida con su paleta
+        estilo, _, color = ident.partition("/")
+        base = next((x for x in e["filas"] if x["id"] == f"{estilo}/pelo_castano"), None)
+        pal = self.man.get("paletas", {})
+        if base is None or color not in pal or "pelo_castano" not in pal:
+            return None
+        cambios = [(a, b) for a, b in zip(_tonos(pal["pelo_castano"]), _tonos(pal[color])) if a != b]
+        return [_tenir(f, cambios) for f in self.fila(e["atlas"][talla], base["fila"])]
 
     def razas_de(self, talla):
         return [r for r in self.man["razas"]["lista"] if r["talla"] == talla]

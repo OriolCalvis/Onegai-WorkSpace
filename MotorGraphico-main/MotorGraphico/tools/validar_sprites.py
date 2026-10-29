@@ -116,7 +116,9 @@ def validar_personajes(ruta_json, man):
                 errores.append(f"{nombre}: {ruta}: un dibujo toca el borde de su celda "
                                f"(fila {ys[0] // fh + 1}, frame {xs[0] // fw + 1})")
             imgs[ruta] = a
-            if sec == "razas" and clave == "cuerpo":  # CAR-3b: un cuerpo casi vacio no se ve en partida
+            # CAR-3b: un cuerpo casi vacio no se ve en partida (minimos medidos en celdas de 64x64;
+            # los manifiestos de prueba con celdas pequenas no se miran)
+            if sec == "razas" and clave == "cuerpo" and fw >= 64 and fh >= 64:
                 ids = {r["fila"]: r["id"] for r in man["razas"]["lista"]}
                 for k in range(filas):
                     for f in range(cols):
