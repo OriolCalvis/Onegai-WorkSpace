@@ -682,6 +682,9 @@ def generar(vista=False, salida=TEX, pl=True):
         "paletas": paletas(),
     }
     escribir_json(manifiesto, salida / "personajes.json")
+    if PL:  # CAR-4: las huellas de las laminas, al dia con las capas recien escritas (el modo clasico es de 12 columnas)
+        import laminas_desde_capas
+        laminas_desde_capas.registrar(salida)
 
     if RECORTADOS:
         import collections

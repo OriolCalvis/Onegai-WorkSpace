@@ -47,6 +47,7 @@ VALIDADORES_EXISTENTES = [
     "validar_catalogos_rpg.py",
     "validar_libreria_dnd.py",
     "validar_pnj.py",  # PNJ-01: todos los PNJ con las piezas del jugador
+    ("laminas_desde_capas.py", "--comprobar", "--rapido"),  # CAR-4: laminas al dia con las capas (rapido si no hay cambios)
     "validar_cinematicas.py",  # PROLOGO-02: niveles, actores, beats y flags de las cinematicas
     "validar_eventos.py",  # C8-03a: eventos del mundo, sin lugar ni escenas vistas como causa
 ]
@@ -107,14 +108,15 @@ def ids_de(ruta: Path) -> set[str]:
 def validar_existentes() -> bool:
     print("[1/5] Validadores existentes")
     todos_ok = True
-    for nombre in VALIDADORES_EXISTENTES:
+    for entrada in VALIDADORES_EXISTENTES:
+        nombre, *args = (entrada,) if isinstance(entrada, str) else entrada
         ruta = TOOLS / nombre
         if not ruta.exists():
             err(f"tools/{nombre}", "-", "-", "el validador no existe")
             todos_ok = False
             continue
         r = subprocess.run(
-            [sys.executable, str(ruta)],
+            [sys.executable, str(ruta), *args],
             cwd=MOTOR, capture_output=True, text=True, timeout=600,
         )
         salida = (r.stdout or "").strip().splitlines()
