@@ -5,6 +5,8 @@ namespace Game {
 class RasgosApariencia {
 public:
     static void migrarTallaAnterior(Apariencia& a);
+    // NET-E2: pentinado «raya» -> «corto» y barba BARBA_TRENZADA -> BARBA_LARGA (casi identicos, se quitaron del atlas).
+    static void migrarEstilosRetirados(Apariencia& a);
     static bool sustituido(const Apariencia& a, const std::string& ranura);
     static bool esRasgo(const std::string& ranura);
     static bool natural(const RazaVisual* raza, const std::string& ranura);

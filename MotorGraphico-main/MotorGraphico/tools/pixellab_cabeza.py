@@ -39,7 +39,6 @@ PEINADOS = {
     "flequillo":    dict(gorro=0, vol=0, melena=0, extras=("flequillo",)),
     "lado":         dict(gorro=0, vol=0, melena=0, extras=("lado",)),
     "tupe":         dict(gorro=0, vol=0, melena=0, extras=("tupe",)),
-    "raya":         dict(gorro=0, vol=0, melena=0, extras=("raya",)),
     "puntas":       dict(gorro=0, vol=0, melena=0, extras=("puntas",)),
     "entradas":     dict(gorro=0, vol=0, melena=0, extras=("entradas",)),
     "afro":         dict(gorro=0, vol=3, melena=0, extras=()),
@@ -64,7 +63,7 @@ ESTILOS = tuple(PEINADOS)
 ESTILOS_RAZA = ("corto", "largo", "afro", "melena_larga")
 BARBAS = ("BARBA", "BARBA_CORTA", "PERILLA", "BIGOTE", "PATILLAS",
           # 26/10, 08:54, «y barbas y bigotes»
-          "BARBA_LARGA", "BARBA_PARTIDA", "BARBA_TRENZADA", "CANDADO", "CHIVO", "BIGOTE_MANILLAR", "BIGOTE_GRANDE")
+          "BARBA_LARGA", "BARBA_PARTIDA", "CANDADO", "CHIVO", "BIGOTE_MANILLAR", "BIGOTE_GRANDE")
 
 
 def _kp(talla, f):
@@ -377,8 +376,8 @@ def barba_frame(talla, f, estilo, color):
         barba = cab & (yy == boca_y) & ((xx - nx) * delante >= -2) & ((xx - nx) * delante <= 1)
     elif estilo == "PATILLAS":  # de las orejas a la mandibula, por el lado de atras y el de delante
         barba = cab & (yy >= ojos_y - 1) & (yy <= bajo - 1) & (np.abs(xx - cx) >= semi - 2.5)
-    elif estilo in ("BARBA_LARGA", "BARBA_PARTIDA", "BARBA_TRENZADA"):
-        # como la larga, pero hasta el pecho (8 filas); partida en dos puntas; trenzada con marcas
+    elif estilo in ("BARBA_LARGA", "BARBA_PARTIDA"):
+        # como la larga, pero hasta el pecho (8 filas); partida en dos puntas
         barba = cab & (yy >= boca_y + 1)
         for y in range(bajo + 1, min(talla.alto, bajo + 9)):
             i = y - bajo
@@ -387,8 +386,6 @@ def barba_frame(talla, f, estilo, color):
                 if estilo == "BARBA_PARTIDA" and i >= 4 and abs(x - nx) <= (0 if i < 6 else 1):
                     continue
                 _poner(barba, y, x)
-        if estilo == "BARBA_TRENZADA":
-            marcas[bajo + 2:bajo + 9:2, max(0, nx - 1):nx + 2] = True
     elif estilo == "CANDADO":
         # bigote y perilla unidos alrededor de la boca
         barba = cab & (yy == boca_y) & ((xx - nx) * delante >= -2) & ((xx - nx) * delante <= 1)

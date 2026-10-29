@@ -26,7 +26,7 @@ def fila_castana(rng):
     return f
 
 
-def montar(tmp, mutar=False):
+def montar(tmp, mutar=False, raya=False):
     rng = np.random.default_rng(3)
     tex = Path(tmp)
     (tex / "personajes").mkdir()
@@ -37,13 +37,16 @@ def montar(tmp, mutar=False):
         if mutar:
             rubia[3, 3] = [1, 2, 3, 255]
         propia = fila_castana(rng)
-        atlas = np.concatenate([castana, rubia, propia])
+        extra = [fila_castana(rng), fila_castana(rng)] if raya else []  # NET-E2: «raya» castana y rubia
+        atlas = np.concatenate([castana, rubia, propia] + extra)
         for t in ("medio", "bajo"):
             Image.fromarray(atlas, "RGBA").save(tex / "personajes" / f"{g}_{t}.png")
         man[g] = {"atlas": {t: f"personajes/{g}_{t}.png" for t in ("medio", "bajo")},
                   "filas": [{"id": "corto/pelo_castano", "estilo": "corto", "color": "pelo_castano", "fila": 1},
                             {"id": "corto/pelo_rubio", "estilo": "corto", "color": "pelo_rubio", "fila": 2},
-                            {"id": "propio/x", "estilo": "", "color": "", "raza": "x", "fila": 3}]}
+                            {"id": "propio/x", "estilo": "", "color": "", "raza": "x", "fila": 3}]
+                  + ([{"id": "raya/pelo_castano", "estilo": "raya", "color": "pelo_castano", "fila": 4},
+                      {"id": "raya/pelo_rubio", "estilo": "raya", "color": "pelo_rubio", "fila": 5}] if raya else [])}
     (tex / "personajes.json").write_text(json.dumps(man, ensure_ascii=False, indent=1) + "\n")
     return tex
 
@@ -70,6 +73,31 @@ class PruebaRecorte(unittest.TestCase):
             quedo = sha(tex)
             self.assertEqual(R.main(["--tex", str(tex)]), 0)
             self.assertEqual(sha(tex), quedo)  # segunda pasada: no cambia nada
+
+    def test_quitar_un_estilo_entero(self):  # NET-E2: raya fuera, el resto igual y renumerado
+        with tempfile.TemporaryDirectory() as tmp:
+            tex = montar(tmp, raya=True)
+            antes = np.asarray(Image.open(tex / "personajes" / "pelo_medio.png").convert("RGBA")).copy()
+            self.assertEqual(R.main(["--tex", str(tex), "--quitar", "raya", "estilo_que_no_esta"]), 0)
+            man = json.load(open(tex / "personajes.json"))
+            for g in R.GRUPOS:
+                self.assertEqual([(f["id"], f["fila"]) for f in man[g]["filas"]],
+                                 [("corto/pelo_castano", 1), ("propio/x", 2)])
+                for t in man[g]["atlas"].values():
+                    self.assertEqual(Image.open(tex / t).size[1], 2 * R.L)
+            nuevo = np.asarray(Image.open(tex / "personajes" / "pelo_medio.png").convert("RGBA"))
+            np.testing.assert_array_equal(nuevo[:R.L], antes[:R.L])
+            np.testing.assert_array_equal(nuevo[R.L:], antes[2 * R.L:3 * R.L])
+            quedo = sha(tex)
+            self.assertEqual(R.main(["--tex", str(tex), "--quitar", "raya"]), 0)
+            self.assertEqual(sha(tex), quedo)
+
+    def test_quitar_con_comprobar_no_escribe(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tex = montar(tmp, raya=True)
+            antes = sha(tex)
+            self.assertEqual(R.main(["--tex", str(tex), "--quitar", "raya", "--comprobar"]), 0)
+            self.assertEqual(sha(tex), antes)
 
     def test_se_niega_si_una_fila_falla(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -10,6 +10,7 @@ Uso (desde MotorGraphico/):
   python3 tools/recortar_colores_capa.py                 # comprueba y recorta
   python3 tools/recortar_colores_capa.py --comprobar     # solo comprueba, no escribe
   python3 tools/recortar_colores_capa.py --tex DIR       # otra carpeta de texturas (copias de prueba)
+  python3 tools/recortar_colores_capa.py --quitar raya BARBA_TRENZADA   # NET-E2: ademas, quita esos estilos enteros
 """
 import argparse, json, sys
 from pathlib import Path
@@ -49,18 +50,21 @@ def tenir(fila, cambios):
     return r
 
 
-def plan(man, grupo):
-    """(filas que quedan [indices 0-based en el atlas], filas a quitar [(indice, indice de la castana, color)])."""
+def plan(man, grupo, estilos=()):
+    """(filas que quedan [indices 0-based en el atlas], filas de color a quitar [(indice, indice de la castana,
+    color, id)], numero de filas de `estilos` que se quitan enteras: no hace falta comprobarlas, desaparece el estilo)."""
     filas = man[grupo]["filas"]
     base = {f["estilo"]: f["fila"] - 1 for f in filas if f["color"] == BASE}
-    quedan, quitar = [], []
+    quedan, quitar, enteras = [], [], 0
     for f in filas:
         i = f["fila"] - 1
-        if f["color"] in ("", BASE) or f["estilo"] not in base:
+        if f["estilo"] in estilos:
+            enteras += 1
+        elif f["color"] in ("", BASE) or f["estilo"] not in base:
             quedan.append(i)
         else:
             quitar.append((i, base[f["estilo"]], f["color"], f["id"]))
-    return quedan, quitar
+    return quedan, quitar, enteras
 
 
 def comprobar_atlas(tex, man, grupo, talla, quitar):
@@ -87,18 +91,20 @@ def recortar_atlas(tex, man, grupo, talla, quedan):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--tex", default=str(TEX_DEFECTO))
+    ap.add_argument("--quitar", nargs="+", default=[], metavar="ESTILO",
+                    help="estilos de pelo/barba que se quitan enteros (todas sus filas), p. ej. raya BARBA_TRENZADA")
     ap.add_argument("--comprobar", action="store_true", help="solo comprueba; no escribe nada")
     a = ap.parse_args(argv)
     tex = Path(a.tex)
     man = json.load(open(tex / "personajes.json"))
-    trabajo = {g: plan(man, g) for g in GRUPOS}
-    if not any(q for _, q in trabajo.values()):
+    trabajo = {g: plan(man, g, set(a.quitar)) for g in GRUPOS}
+    if not any(q or e for _, q, e in trabajo.values()):
         print("nada que recortar: los atlas ya solo llevan castanas y propias")
         return 0
     total = comprobadas = 0
     fallos = []
     for g in GRUPOS:  # pasada 1: solo lectura, un atlas cada vez
-        _, quitar = trabajo[g]
+        _, quitar, _ = trabajo[g]
         if not quitar:
             continue
         for t in man[g]["atlas"]:
@@ -115,8 +121,8 @@ def main(argv=None):
     if a.comprobar:
         return 0
     for g in GRUPOS:  # pasada 2: escribir, un atlas cada vez
-        quedan, quitar = trabajo[g]
-        if not quitar:
+        quedan, quitar, enteras = trabajo[g]
+        if not quitar and not enteras:
             continue
         for t in man[g]["atlas"]:
             recortar_atlas(tex, man, g, t, quedan)

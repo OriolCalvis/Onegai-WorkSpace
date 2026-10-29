@@ -466,6 +466,7 @@ Result<Apariencia> ManifiestoPersonajes::desdeComposicion(const JsonValue& spec)
     a.quitarCapas = textos(spec["quitar_capas"]);
     a.marcas = textos(spec["marcas"]);
     RasgosApariencia::migrarTallaAnterior(a);
+    RasgosApariencia::migrarEstilosRetirados(a);
     return Result<Apariencia>::Ok(std::move(a));
 }
 

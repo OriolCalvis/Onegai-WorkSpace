@@ -186,12 +186,12 @@ const std::map<std::string, std::string>& nombres() {
         {"pelo_azul_hielo", "Azul hielo"}, {"pelo_llama", "Llama"}, {"BARBA", "Larga"}, {"BARBA_CORTA", "Corta"},
         // EDITOR-PERSONALIZACION-01: los peinados y barbas de PL-ROPA-01
         {"rapado", "Rapado"}, {"flequillo", "Flequillo"}, {"lado", "Mechón ladeado"}, {"tupe", "Tupé"},
-        {"raya", "Raya en medio"}, {"puntas", "De punta"}, {"entradas", "Con entradas"}, {"afro", "Afro"},
+        {"puntas", "De punta"}, {"entradas", "Con entradas"}, {"afro", "Afro"},
         {"mohicano", "Mohicano"}, {"mono_alto", "Moño alto"}, {"coletas", "Coletas"}, {"trenza", "Trenza"},
         {"melena_larga", "Melena larga"}, {"media_melena", "Media melena"}, {"ondulado", "Ondulado"},
         {"trenzas", "Trenzas"}, {"coleta_alta", "Coleta alta"}, {"rastas", "Rastas"}, {"tazon", "A tazón"},
         {"undercut", "Rapado a los lados"}, {"PERILLA", "Perilla"}, {"BIGOTE", "Bigote"}, {"PATILLAS", "Patillas"},
-        {"BARBA_LARGA", "Hasta el pecho"}, {"BARBA_PARTIDA", "Partida"}, {"BARBA_TRENZADA", "Trenzada"},
+        {"BARBA_LARGA", "Hasta el pecho"}, {"BARBA_PARTIDA", "Partida"},
         {"CANDADO", "Candado"}, {"CHIVO", "De chivo"}, {"BIGOTE_MANILLAR", "Bigote de manillar"},
         {"BIGOTE_GRANDE", "Bigote de morsa"}};
     // clang-format on

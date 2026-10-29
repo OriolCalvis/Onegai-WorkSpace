@@ -11,6 +11,10 @@ bool contiene(const std::vector<std::string>& v, const std::string& s) {
 void RasgosApariencia::migrarTallaAnterior(Apariencia& a) {
     if (a.talla == "grande" && (a.raza == "minotauros_de_la_llanura" || a.raza == "minotauros_del_laberinto" || a.raza == "aeronautas_de_esmua")) a.talla = "minotauro";
 }
+void RasgosApariencia::migrarEstilosRetirados(Apariencia& a) {
+    if (a.peloEstilo == "raya") a.peloEstilo = "corto";
+    if (a.barbaEstilo == "BARBA_TRENZADA") a.barbaEstilo = "BARBA_LARGA";
+}
 bool RasgosApariencia::sustituido(const Apariencia& a, const std::string& ranura) {
     const auto it = a.ropa.find(ranura);
     return esRasgo(ranura) && it != a.ropa.end() && !it->second.empty();

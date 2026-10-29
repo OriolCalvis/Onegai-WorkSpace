@@ -605,7 +605,7 @@ MOTOR_TEST_CASE(personalizacion_piel_pelo_marcas_y_rasgos) {
     Game::Apariencia pajaro = Game::Apariencia::deRaza(*man.raza("aarakocra_de_las_montanas"));
     pajaro.peloEstilo = "melena_larga";
     pajaro.peloColor = "pelo_llama";
-    pajaro.barbaEstilo = "BARBA_TRENZADA";
+    pajaro.barbaEstilo = "BARBA_LARGA";
     pajaro.barbaColor = "pelo_azul_hielo";
     auto p = m->capas(pajaro);
     MOTOR_CHECK(p.isOk());

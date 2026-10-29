@@ -59,6 +59,22 @@ MOTOR_TEST_CASE(las_partidas_anteriores_del_minotauro_migran_sin_cambiar_otra_ra
     MOTOR_CHECK(a.talla=="grande");
 }
 
+MOTOR_TEST_CASE(las_partidas_con_raya_o_barba_trenzada_cargan_como_corto_y_barba_larga) {  // NET-E2
+    Game::Apariencia a; a.raza="race_human_marches"; a.peloEstilo="raya"; a.barbaEstilo="BARBA_TRENZADA";
+    Game::RasgosApariencia::migrarEstilosRetirados(a);
+    MOTOR_CHECK(a.peloEstilo=="corto"); MOTOR_CHECK(a.barbaEstilo=="BARBA_LARGA");
+    a.peloEstilo="largo"; a.barbaEstilo="BARBA_CORTA"; Game::RasgosApariencia::migrarEstilosRetirados(a);
+    MOTOR_CHECK(a.peloEstilo=="largo"); MOTOR_CHECK(a.barbaEstilo=="BARBA_CORTA");
+    auto m=Game::ManifiestoPersonajes::cargar("assets/textures"); MOTOR_CHECK(m.isOk()); if(!m.isOk()) return;
+    MOTOR_CHECK(m.value().pelo.buscar("raya/pelo_castano")==nullptr);
+    MOTOR_CHECK(m.value().barba.buscar("BARBA_TRENZADA/pelo_castano")==nullptr);
+    a.peloEstilo="raya"; a.peloColor="pelo_rubio"; a.barbaEstilo="BARBA_TRENZADA"; a.barbaColor="pelo_rubio";
+    Game::MontajePersonajes montaje(m.value(),"assets/textures");
+    MOTOR_CHECK(!montaje.capas(a).isOk());  // sin migrar, ya no hay fila: por eso la migracion al cargar
+    Game::RasgosApariencia::migrarEstilosRetirados(a);
+    MOTOR_CHECK(montaje.capas(a).isOk());
+}
+
 MOTOR_TEST_CASE(la_piel_tine_las_orejas_pero_no_los_cuernos) {
     auto cargado=Game::ManifiestoPersonajes::cargar("assets/textures"); MOTOR_CHECK(cargado.isOk());
     if(!cargado.isOk()) return;

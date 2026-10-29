@@ -219,6 +219,7 @@ Apariencia NewGameFlow::aparienciaGuardada(const SavedHero& heroe) {
     a.quitarCapas = heroe.quitarCapas;
     a.marcas = heroe.marcas;
     RasgosApariencia::migrarTallaAnterior(a);
+    RasgosApariencia::migrarEstilosRetirados(a);
     return a;
 }
 

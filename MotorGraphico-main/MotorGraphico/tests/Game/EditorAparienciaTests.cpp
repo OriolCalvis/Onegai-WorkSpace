@@ -20,6 +20,7 @@
 #include "TestHarness.h"
 
 #include <algorithm>
+#include <set>
 #include <string>
 #include <utility>
 
@@ -115,6 +116,32 @@ MOTOR_TEST_CASE(apariencia_filas_segun_el_pueblo) {
     MOTOR_CHECK(e.apariencia().raza == "nagas_arcanos");
 }
 
+// NET-E2: el creador ofrece 26 peinados (sin «raya», que era un «corto» con 6 px de diferencia) y no ofrece
+// la barba trenzada.
+MOTOR_TEST_CASE(apariencia_peinados_y_barbas_sin_los_retirados) {
+    Game::EditorApariencia e(manifiesto());
+    e.empezar("race_human_marches");
+    marcar(e, Fila::Peinado);
+    std::set<std::string> peinados;
+    for (int i = 0; i < 60; ++i) {
+        e.derecha();
+        if (!e.apariencia().peloEstilo.empty())
+            peinados.insert(e.apariencia().peloEstilo);
+    }
+    MOTOR_CHECK(peinados.size() == 26);
+    MOTOR_CHECK(peinados.count("raya") == 0 && peinados.count("corto") == 1 && peinados.count("undercut") == 1 &&
+                peinados.count("flequillo") == 1);
+    if (tiene(e, Fila::Barba)) {
+        marcar(e, Fila::Barba);
+        std::set<std::string> barbas;
+        for (int i = 0; i < 40; ++i) {
+            e.derecha();
+            barbas.insert(e.apariencia().barbaEstilo);
+        }
+        MOTOR_CHECK(barbas.count("BARBA_TRENZADA") == 0 && barbas.count("BARBA_LARGA") == 1);
+    }
+}
+
 MOTOR_TEST_CASE(apariencia_valores_con_la_vuelta) {
     Game::EditorApariencia e(manifiesto());
     e.empezar("race_human_marches");
@@ -122,7 +149,7 @@ MOTOR_TEST_CASE(apariencia_valores_con_la_vuelta) {
     const std::string antes = e.apariencia().peloEstilo;
     MOTOR_CHECK(!antes.empty());
     // Hasta «sin pelo»: la fila de color desaparece y el cursor sigue en PEINADO.
-    for (int i = 0; i < 40 && !e.apariencia().peloEstilo.empty(); ++i)  // PL-ROPA-01: 27 peinados
+    for (int i = 0; i < 40 && !e.apariencia().peloEstilo.empty(); ++i)  // PL-ROPA-01: 27 peinados (NET-E2: 26)
         e.izquierda();
     MOTOR_CHECK(e.apariencia().peloEstilo.empty());
     MOTOR_CHECK(!tiene(e, Fila::ColorPelo));
