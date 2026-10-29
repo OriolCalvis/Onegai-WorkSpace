@@ -763,6 +763,18 @@ def main() -> int:
               f"{len(_probs) - _n_acc} error(es), {_n_acc} sin poder leer")
     except Exception as _exc:
         acceso("tools/validar_puertas.py", "-", "-", f"no se pudo comprobar: {_exc}")
+    # H-CIU-1: ninguna casa ni tienda de ciudades y pueblos con bloques de piedra gris / fortaleza (regla de Oriol).
+    try:
+        from validar_edificis import comprueba as _comprueba_edificis
+        _errs_e, _avs_e, _niv_e, _nb_e = _comprueba_edificis(MOTOR)
+        for _f, _e, _c, _t in _errs_e:
+            err(_f, _e, _c, _t)
+        for _f, _e, _c, _t in _avs_e:
+            aviso(_f, _e, _c, _t)
+        print(f"[extra] Edificios de ciudades y pueblos: {_niv_e} niveles, {_nb_e} casas/tiendas a bloques, "
+              f"{len(_errs_e)} error(es), {len(_avs_e)} aviso(s)")
+    except Exception as _exc:
+        acceso("tools/validar_edificis.py", "-", "-", f"no se pudo comprobar: {_exc}")
     # AV18-08: recompensas de las escenas de Boundington contra ECONOMIA.md.
     try:
         from auditar_recompensas_escenas import comprueba as _comprueba_recompensas
