@@ -131,8 +131,12 @@ PNJ = {
                         "arma": "martillo_acero"}),
     "luisarda": P("Luisarda, hija de Boundington", AEG, "f", ojos="verde", pelo=("coleta", "pelo_pelirrojo"),
                   barba=None, equipo={"torso": "vestido_rojo_delantal", "pies": "zapatos"}),
-    "xila": P("Xila", AEG, "f", piel="piel_palida", ojos="violeta", pelo=("largo", "pelo_blanco"), barba=None,
-              equipo={"torso": "vestido_purpura", "pies": "zapatos"}),
+    # I-XILA-1: Xila es un hombre (antiguo mercader caido en desgracia): ropa buena y gastada, la capa buena
+    # («un hombre en el rincon del fondo, con una capa demasiado buena para ese suelo»), botas cosidas a mano.
+    "xila": P("Xila", AEG, "m", piel="piel_palida", ojos="violeta", pelo=("corto", "pelo_gris"),
+              barba=("BARBA_CORTA", "pelo_gris"),
+              equipo={"torso": "camisa_chaleco_oscuro", "piernas": "pantalon_negro", "pies": "botas_altas",
+                      "capa": "capa_granate"}),
     "ben_kafka": P("Ben Kafka", AEG, "m", ojos="marron", pelo=("corto", "pelo_oscuro"),
                    barba=("BARBA_CORTA", "pelo_oscuro"),
                    equipo={"cabeza": "sombrero_cuero", "torso": "cuero", "piernas": "pantalon_oliva",

@@ -210,6 +210,58 @@
    ]
   },
   {
+   "id": "b0_subiendo_oido",
+   "trigger": {
+    "type": "auto"
+   },
+   "requires": {
+    "allFlags": [
+     "bnd0_subiendo",
+     "bnd0_oido_por_devoto"
+    ],
+    "notFlags": [
+     "bnd0_subiendo_dicho"
+    ]
+   },
+   "speaker": "",
+   "lines": [
+    "Al subir, la mesa de la puerta está vacía. El de la capucha ya no está. Su vaso sí, lleno.",
+    "La escalera cruje en el tercer peldaño. Apréndetelo."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "bnd0_subiendo_dicho"
+    }
+   ]
+  },
+  {
+   "id": "b0_subiendo",
+   "trigger": {
+    "type": "auto"
+   },
+   "requires": {
+    "allFlags": [
+     "bnd0_subiendo"
+    ],
+    "notFlags": [
+     "bnd0_subiendo_dicho",
+     "bnd0_oido_por_devoto"
+    ]
+   },
+   "speaker": "",
+   "lines": [
+    "Al subir, la mesa de la puerta está vacía. El de la capucha ya no está. Su vaso sí, lleno.",
+    "La escalera cruje en el tercer peldaño. Apréndetelo, por si alguna noche te conviene bajar sin que se entere nadie."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "bnd0_subiendo_dicho"
+    }
+   ]
+  },
+  {
    "id": "b0_subir_oido",
    "trigger": {
     "type": "auto"
@@ -226,8 +278,6 @@
    },
    "speaker": "",
    "lines": [
-    "Al subir, la mesa de la puerta está vacía. El de la capucha ya no está. Su vaso sí, lleno.",
-    "La escalera cruje en el tercer peldaño. Apréndetelo.",
     "En el polvo de tu puerta, alguien ha dibujado con el dedo un círculo. Hace un rato no estaba.",
     "Duermes mal. Pero duermes."
    ],
@@ -276,8 +326,6 @@
    },
    "speaker": "",
    "lines": [
-    "Al subir, la mesa de la puerta está vacía. El de la capucha ya no está. Su vaso sí, lleno.",
-    "La escalera cruje en el tercer peldaño. Apréndetelo, por si alguna noche te conviene bajar sin que se entere nadie.",
     "La cama huele a lavanda y a la lluvia de otros. Te duermes antes de decidir si te gusta."
    ],
    "effects": [
@@ -322,8 +370,8 @@
    },
    "speaker": "Rosita",
    "lines": [
-    "De noche no se sale. Hay quien duerme y hay quien merodea, y yo no abro a los segundos.",
-    "Siéntate, bebe algo, y si no, sube a dormir."
+    "De noche esta puerta se queda cerrada. Hay quien duerme y hay quien merodea, y yo prefiero que los segundos se queden fuera.",
+    "Siéntate, bebe algo. O sube a dormir."
    ],
    "effects": []
   },
@@ -343,7 +391,7 @@
    },
    "speaker": "Venides",
    "lines": [
-    "¿Adónde vas sin haber probado bocado? Siéntate, que aún no hemos hablado."
+    "¿Adónde vas sin haber probado bocado? Siéntate, que tengo un trabajo para ti."
    ],
    "effects": [
     {
@@ -3989,7 +4037,7 @@
       "La Corona quiere saber quiénes son los Perdidos, cuántos son y qué traman.",
       "Yo voy a la parte rica y a la base militar: allí me abren la puerta por la capa. Tú, a la zona comercial: tiendas, herrería, mercado. A ti no te miran como a mí.",
       "Antes de nada, pásate por sus tiendas y preséntate al tendero, al joyero y al sastre. En Boundington nadie le vende nada a un desconocido.",
-      "Y cuando los conozcas, da una vuelta por la plaza principal. Allí se entera uno de todo."
+      "Después, da una vuelta por la plaza principal. Escucha de qué habla la gente y de qué prefiere no hablar."
      ],
      "effects": [
       {
@@ -4062,7 +4110,7 @@
     {
      "texto": "Ponerse en marcha",
      "lines": [
-      "Venides: «Y no lo olvides: primero el tendero, el joyero y el sastre; luego, una vuelta por la plaza principal. Allí se entera uno de todo.»",
+      "Venides: «Empieza por las tiendas del tendero, el joyero y el sastre. Después, la plaza principal. Habla con la gente y escucha.»",
       "Venides: «Nos vemos aquí esta noche. Si encuentras algo antes, guárdatelo hasta entonces: en esta ciudad las paredes...»",
       "Rosita, desde la barra: «...tienen cuñados. Ya se lo he dicho.»",
       "Venides: «Pues eso.»",
@@ -4144,7 +4192,7 @@
       "La Corona quiere saber quiénes son los Perdidos, cuántos son y qué traman.",
       "Yo voy a la parte rica y a la base militar: allí me abren la puerta por la capa. Tú, a la zona comercial: tiendas, herrería, mercado. A ti no te miran como a mí.",
       "Antes de nada, pásate por sus tiendas y preséntate al tendero, al joyero y al sastre. En Boundington nadie le vende nada a un desconocido.",
-      "Y cuando los conozcas, da una vuelta por la plaza principal. Allí se entera uno de todo."
+      "Después, da una vuelta por la plaza principal. Escucha de qué habla la gente y de qué prefiere no hablar."
      ],
      "effects": [
       {
@@ -4217,7 +4265,7 @@
     {
      "texto": "Ponerse en marcha",
      "lines": [
-      "Venides: «Y no lo olvides: primero el tendero, el joyero y el sastre; luego, una vuelta por la plaza principal. Allí se entera uno de todo.»",
+      "Venides: «Empieza por las tiendas del tendero, el joyero y el sastre. Después, la plaza principal. Habla con la gente y escucha.»",
       "Venides: «Nos vemos aquí esta noche. Si encuentras algo antes, guárdatelo hasta entonces: en esta ciudad las paredes...»",
       "Rosita, desde la barra: «...tienen cuñados. Ya se lo he dicho.»",
       "Venides: «Pues eso.»",
@@ -4287,7 +4335,7 @@
       "La Corona quiere saber quiénes son los Perdidos, cuántos son y qué traman.",
       "Yo voy a la parte rica y a la base militar: allí me abren la puerta por la capa. Tú, a la zona comercial: tiendas, herrería, mercado. A ti no te miran como a mí.",
       "Antes de nada, pásate por sus tiendas y preséntate al tendero, al joyero y al sastre. En Boundington nadie le vende nada a un desconocido.",
-      "Y cuando los conozcas, da una vuelta por la plaza principal. Allí se entera uno de todo."
+      "Después, da una vuelta por la plaza principal. Escucha de qué habla la gente y de qué prefiere no hablar."
      ],
      "effects": [
       {
@@ -4360,7 +4408,7 @@
     {
      "texto": "Ponerse en marcha",
      "lines": [
-      "Venides: «Y no lo olvides: primero el tendero, el joyero y el sastre; luego, una vuelta por la plaza principal. Allí se entera uno de todo.»",
+      "Venides: «Empieza por las tiendas del tendero, el joyero y el sastre. Después, la plaza principal. Habla con la gente y escucha.»",
       "Venides: «Nos vemos aquí esta noche. Si encuentras algo antes, guárdatelo hasta entonces: en esta ciudad las paredes...»",
       "Rosita, desde la barra: «...tienen cuñados. Ya se lo he dicho.»",
       "Venides: «Pues eso.»",
@@ -4502,7 +4550,7 @@
     {
      "texto": "Ponerse en marcha",
      "lines": [
-      "Venides: «Y no lo olvides: primero el tendero, el joyero y el sastre; luego, una vuelta por la plaza principal. Allí se entera uno de todo.»",
+      "Venides: «Empieza por las tiendas del tendero, el joyero y el sastre. Después, la plaza principal. Habla con la gente y escucha.»",
       "Venides: «Nos vemos aquí esta noche. Si encuentras algo antes, guárdatelo hasta entonces: en esta ciudad las paredes...»",
       "Rosita, desde la barra: «...tienen cuñados. Ya se lo he dicho.»",
       "Venides: «Pues eso.»",
@@ -4634,7 +4682,7 @@
     {
      "texto": "Ponerse en marcha",
      "lines": [
-      "Venides: «Y no lo olvides: primero el tendero, el joyero y el sastre; luego, una vuelta por la plaza principal. Allí se entera uno de todo.»",
+      "Venides: «Empieza por las tiendas del tendero, el joyero y el sastre. Después, la plaza principal. Habla con la gente y escucha.»",
       "Venides: «Nos vemos aquí esta noche. Si encuentras algo antes, guárdatelo hasta entonces: en esta ciudad las paredes...»",
       "Rosita, desde la barra: «...tienen cuñados. Ya se lo he dicho.»",
       "Venides: «Pues eso.»",
@@ -13738,7 +13786,7 @@
    },
    "speaker": "",
    "lines": [
-    "Das una vuelta despacio por la plaza: los puestos, los corrillos, quién mira y quién aparta la vista. Venides tenía razón: aquí se entera uno de todo."
+    "Recorres la plaza entre puestos y corrillos. Unos pregonan lo que venden; otros bajan la voz cuando te acercas. Te detienes a escuchar."
    ],
    "effects": [
     {
@@ -13747,7 +13795,7 @@
     },
     {
      "type": "log",
-     "arg": "Has dado una vuelta por la plaza principal."
+     "arg": "Has recorrido la plaza principal y escuchado las conversaciones."
     }
    ]
   },
@@ -13768,7 +13816,7 @@
    },
    "speaker": "",
    "lines": [
-    "Das una vuelta despacio por la plaza: los puestos, los corrillos, quién mira y quién aparta la vista. Venides tenía razón: aquí se entera uno de todo."
+    "Recorres la plaza entre puestos y corrillos. Unos pregonan lo que venden; otros bajan la voz cuando te acercas. Te detienes a escuchar."
    ],
    "effects": [
     {
@@ -13777,7 +13825,7 @@
     },
     {
      "type": "log",
-     "arg": "Has dado una vuelta por la plaza principal."
+     "arg": "Has recorrido la plaza principal y escuchado las conversaciones."
     }
    ]
   },
@@ -13794,7 +13842,7 @@
    },
    "speaker": "Vecina de la plaza",
    "lines": [
-    "Cada mañana más gente en la plaza y menos pan en los puestos. Cosas de ciudad."
+    "Cada mañana hay más gente haciendo cola. El pan se acaba antes de que me toque."
    ],
    "effects": []
   },
@@ -13814,10 +13862,10 @@
    },
    "speaker": "Vecina de la plaza",
    "lines": [
-    "¿Buscas a alguien que sepa de todo y de todos? Aquí no: los de la plaza solo sabemos lo que nos conviene.",
-    "Baja a Pico Dragón, a la Taberna del Gremio de Ladrones. En el rincón del fondo hay un borracho.",
-    "Llora con el vaso vacío, pero no hay secreto de Boundington que no conozca: quién debe a quién, quién entra de noche, quién ya no vuelve.",
-    "Habla, si le tratas bien. Y no digas que te mando yo."
+    "¿Buscas noticias? Aquí se habla mucho, pero cuando preguntas nadie ha dicho nada.",
+    "Prueba en Pico Dragón, en la Taberna del Gremio de Ladrones. Hay un hombre en el rincón del fondo, con una capa demasiado buena para ese suelo.",
+    "Dicen que era mercader. No sé qué habrá visto por los caminos, pero cuando oye hablar de los Perdidos deja de mirar el vaso.",
+    "Si consigues que hable, escucha. Y no digas que te mando yo."
    ],
    "effects": [
     {
@@ -13826,7 +13874,7 @@
     },
     {
      "type": "log",
-     "arg": "Una vecina de la plaza dice que un borracho de Pico Dragón, en la Taberna del Gremio de Ladrones, lo sabe todo de todos."
+     "arg": "Una vecina te ha recomendado hablar con un antiguo mercader en la Taberna del Gremio de Ladrones, en Pico Dragón. Según ella, reacciona al oír hablar de los Perdidos."
     }
    ]
   },
@@ -13843,7 +13891,7 @@
    },
    "speaker": "Vecina de la plaza",
    "lines": [
-    "Pico Dragón, la Taberna del Gremio de Ladrones, el rincón del fondo. Y si no te hace caso, convídale."
+    "La Taberna del Gremio de Ladrones, en Pico Dragón. El del rincón, con la capa buena. Acércate con buenas maneras."
    ],
    "effects": []
   },

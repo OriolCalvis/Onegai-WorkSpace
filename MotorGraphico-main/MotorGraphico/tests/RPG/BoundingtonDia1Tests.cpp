@@ -141,7 +141,7 @@ MOTOR_TEST_CASE(venides_envia_a_explorar_la_plaza_en_el_desayuno_se_pregunte_o_n
         const std::size_t a = todo.find("plaza principal");
         MOTOR_CHECK(a != std::string::npos);
         MOTOR_CHECK(!pregunta || todo.find("plaza principal", a + 1) != std::string::npos);  // respuesta + despedida
-        MOTOR_CHECK(todo.find("el tendero, el joyero y el sastre") != std::string::npos);
+        MOTOR_CHECK(todo.find("Venides: «Empieza por las tiendas del tendero, el joyero y el sastre. Después, la plaza principal. Habla con la gente y escucha.»") != std::string::npos);  // recordatorio de Oriol
     }
 }
 
@@ -318,7 +318,7 @@ MOTOR_TEST_CASE(intentar_salir_por_la_puerta_no_sale_y_empieza_el_desayuno) {
     MOTOR_CHECK(puerta->estaCerrada(tiene));  // el jugador no sale: GameSession habla el beat en vez de cruzar
     const NarrativeResult r = e.talkTo(puerta->beatCerrada, s);
     MOTOR_CHECK(r.beatId == "b0_puerta_cerrada_venides");
-    MOTOR_CHECK(r.lines.size() == 1 && r.lines[0].find("Siéntate, que aún no hemos hablado.") != std::string::npos);
+    MOTOR_CHECK(r.lines.size() == 1 && r.lines[0].find("Siéntate, que tengo un trabajo para ti.") != std::string::npos);
     MOTOR_CHECK(s.hasFlag("bnd1_desayuno_pide"));
     MOTOR_CHECK(puerta->estaCerrada(tiene));
     MOTOR_CHECK(cine(cat, e, s, GridCoord{2, 10}) == "venides_te_sienta");  // sin pasar por venides_llama

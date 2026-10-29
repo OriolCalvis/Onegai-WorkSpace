@@ -284,6 +284,70 @@ MOTOR_TEST_CASE(sin_te_sube_la_noche_cero_no_se_duerme_y_con_la_cinematica_si) {
     MOTOR_CHECK(cinematicaDeRosita(cat, e, s, nullptr).empty());
 }
 
+// I-TXT-1: la mesa vacia y la escalera se dicen DURANTE la subida (antes de
+// la fosa que cambia de nivel); la cama / el circulo y el «Duermes» arriba.
+MOTOR_TEST_CASE(al_subir_la_mesa_vacia_sale_antes_del_cambio_de_nivel_y_la_cama_despues) {
+    const AdventureScript guion = carga();
+    const NarrativeEngine e = motor(guion);
+    const Game::CatalogoCinematicas cat = catalogo();
+    for (bool oido : {false, true}) {
+        NarrativeState s = nocheCero(oido);
+        drena(e, s);  // lo que ya habia saltado antes de subir
+        const auto tiene = [&s](const std::string& f) { return s.hasFlag(f); };
+        const Game::Cinematica* c = cat.laQueEmpieza(kTaberna, GridCoord{-1, -1}, tiene);
+        MOTOR_CHECK(c != nullptr);
+        std::string nivel = kTaberna;
+        std::string antes, despues;
+        bool mesaAbajo = false, escaleraAbajo = false, camaAbajo = false;
+        for (const Game::PasoCinematica& p : c->pasos) {
+            if (p.tipo == Game::PasoCinematica::Tipo::Nivel) nivel = p.texto;
+            if (p.tipo != Game::PasoCinematica::Tipo::Beat && p.tipo != Game::PasoCinematica::Tipo::Flag) continue;
+            s.setFlag(p.texto);
+            for (int i = 0; i < 20; ++i) {
+                const NarrativeResult r = e.tick(s);
+                if (!r.fired) break;
+                std::string todo;
+                for (const std::string& l : r.lines) todo += l + "\n";
+                if (nivel == kTaberna) {
+                    antes += todo;
+                    MOTOR_CHECK(r.beatId == (oido ? "b0_subiendo_oido" : "b0_subiendo"));
+                } else {
+                    despues += todo;
+                }
+            }
+        }
+        mesaAbajo = antes.find("la mesa de la puerta está vacía") != std::string::npos;
+        escaleraAbajo = antes.find("La escalera cruje en el tercer peldaño") != std::string::npos;
+        camaAbajo = antes.find("La cama huele") != std::string::npos || antes.find("Duermes") != std::string::npos ||
+                    antes.find("círculo") != std::string::npos;
+        MOTOR_CHECK(mesaAbajo);
+        MOTOR_CHECK(escaleraAbajo);
+        MOTOR_CHECK(!camaAbajo);
+        MOTOR_CHECK(antes.find("por si alguna noche te conviene bajar") != std::string::npos || oido);
+        s.setFlag(c->vista());
+        for (const std::string& f : c->alTerminar) s.setFlag(f);
+        // arriba (tras la linea de Rosita): la cama / el circulo, sin repetir la mesa.
+        for (const std::string& id : drena(e, s)) { (void)id; }
+        MOTOR_CHECK(s.hasFlag("bnd0_dormido"));
+    }
+    // texto de arriba, con la cinematica ya hecha
+    for (bool oido : {false, true}) {
+        NarrativeState s = nocheCero(oido);
+        s.setFlag("bnd0_subiendo");
+        s.setFlag("bnd0_rosita_te_sube");
+        std::string todo;
+        for (int i = 0; i < 20; ++i) {
+            const NarrativeResult r = e.tick(s);
+            if (!r.fired) break;
+            for (const std::string& l : r.lines) todo += l + "\n";
+        }
+        MOTOR_CHECK(todo.find("la mesa de la puerta está vacía") != std::string::npos);  // la dice b0_subiendo*
+        MOTOR_CHECK(oido ? todo.find("En el polvo de tu puerta") != std::string::npos
+                         : todo.find("La cama huele a lavanda") != std::string::npos);
+        MOTOR_CHECK(oido ? todo.find("Duermes mal. Pero duermes.") != std::string::npos : true);
+    }
+}
+
 MOTOR_TEST_CASE(la_noche_cero_con_el_oido_por_devoto_usa_b0_subir_oido) {
     const AdventureScript guion = carga();
     const NarrativeEngine e = motor(guion);
