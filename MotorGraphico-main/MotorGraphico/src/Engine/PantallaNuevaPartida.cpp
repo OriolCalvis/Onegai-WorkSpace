@@ -163,7 +163,10 @@ RPG::CharacterSheet* PantallaNuevaPartida::restaurarHeroe(const SaveGameData& da
     // Su aspecto, con lo que lleva puesto y su brillo.
     if (m_datos.montaje && !data.hero.raza.empty()) {
         const auto& manifiesto = m_datos.montaje->manifiesto();
-        const auto vestido = m_jugador->vestir(*m_datos.montaje, Game::NewGameFlow::aparienciaGuardada(data.hero),
+        Game::Apariencia guardada = Game::NewGameFlow::aparienciaGuardada(data.hero);
+        if (const Game::RazaVisual* raza = manifiesto.raza(guardada.raza))
+            guardada.limpiarSegunRaza(*raza);  // CAR-1: pelo, barba y ojos que su pueblo no admite
+        const auto vestido = m_jugador->vestir(*m_datos.montaje, guardada,
                                                Game::Vestuario::piezasVisibles(m_ficha.equippedIds, manifiesto),
                                                Game::Vestuario::brillosVisibles(m_ficha.equippedIds, manifiesto));
         if (!vestido.isOk()) std::cerr << vestido.errorMessage() << "\n";

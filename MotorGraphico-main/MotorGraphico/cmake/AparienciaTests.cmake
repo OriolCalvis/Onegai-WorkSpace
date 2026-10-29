@@ -67,4 +67,22 @@ if(BUILD_TESTING AND TARGET motor_level)
     if(TARGET suite_gl_free)
         add_dependencies(suite_gl_free test_editor_apariencia)
     endif()
+
+    # CAR-1: pelo, barba y ojos solo donde la raza los admite (editor, «Al azar» y partida vieja).
+    add_executable(test_editor_apariencia_razas tests/Game/EditorAparienciaRazasTests.cpp)
+    target_include_directories(test_editor_apariencia_razas PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    target_link_libraries(test_editor_apariencia_razas PRIVATE motor_level motor_map motor_rpg motor_json)
+    if(TARGET copiar_assets)
+        add_dependencies(test_editor_apariencia_razas copiar_assets)
+    endif()
+    add_test(NAME test_editor_apariencia_razas COMMAND test_editor_apariencia_razas)
+    set_tests_properties(test_editor_apariencia_razas PROPERTIES
+        LABELS "unit;gl-free"
+        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_editor_apariencia_razas)
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_editor_apariencia_razas)
+    endif()
 endif()

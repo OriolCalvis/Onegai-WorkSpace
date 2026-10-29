@@ -100,10 +100,11 @@ MOTOR_TEST_CASE(apariencia_filas_segun_el_pueblo) {
     MOTOR_CHECK(tiene(e, Fila::Barba) && tiene(e, Fila::ColorBarba));  // barba corta de serie
     MOTOR_CHECK(tiene(e, Fila::Pies) && tiene(e, Fila::AlAzar) && tiene(e, Fila::ComoSuRaza));
 
-    // EDITOR-PERSONALIZACION-01: el aarakocra tambien elige piel (las de su talla), peinado y barba.
+    // EDITOR-PERSONALIZACION-01: el aarakocra tambien elige piel (las de su talla). CAR-1: pero ni peinado,
+    // ni barba, ni ojos genericos (cabeza de ave).
     e.empezar("aarakocra_de_las_montanas");
-    MOTOR_CHECK(tiene(e, Fila::Piel) && tiene(e, Fila::Peinado) && tiene(e, Fila::Barba) && !tiene(e, Fila::Talla));
-    MOTOR_CHECK(!tiene(e, Fila::Pies) && tiene(e, Fila::Torso) && tiene(e, Fila::Ojos));
+    MOTOR_CHECK(tiene(e, Fila::Piel) && !tiene(e, Fila::Peinado) && !tiene(e, Fila::Barba) && !tiene(e, Fila::Talla));
+    MOTOR_CHECK(!tiene(e, Fila::Pies) && tiene(e, Fila::Torso) && !tiene(e, Fila::Ojos));
     // Las alas propias ahora tambien se pueden conservar, quitar o sustituir.
     MOTOR_CHECK(tiene(e, Fila::Alas) && tiene(e, Fila::Cola) && tiene(e, Fila::Cuernos) && tiene(e, Fila::Marca1));
 

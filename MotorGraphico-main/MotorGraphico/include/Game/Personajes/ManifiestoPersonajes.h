@@ -97,6 +97,9 @@ struct Apariencia {
     // La raza tal cual la viste personajes.json. conArmas=false deja fuera
     // arma y mano_izq: el jugador las lleva cuando equipa un objeto.
     static Apariencia deRaza(const RazaVisual& raza, bool conArmas = false);
+    // CAR-1: quita el pelo, la barba y los ojos que la raza no admite (partida desada del jugador). Los PNJ no
+    // pasan por aqui: montar() sigue dibujando lo que diga su composicion.
+    void limpiarSegunRaza(const RazaVisual& raza);
     // Texto estable: dos apariencias con la misma clave montan la misma hoja.
     std::string clave() const;
 };

@@ -265,7 +265,10 @@ def generar_capas(tallas, salida, filas_medio=None):
             # PL-ROPA-01 (Oriol, 26/10, «dejar calvo o con pelazo a cualquier raza»): en PixelLab el pelo se
             # dibuja desde la silueta de la cabeza, asi que vale para todas: «pelo» sale de «sin»
             "sin": sorted(set([x for x in r.get("sin", []) if not (PL and x == "pelo")] +
-                               (["piernas", "pies"] if PL and t.clave == "minotauro" else []))),
+                               (["piernas", "pies"] if PL and t.clave == "minotauro" else []) +
+                               # CAR-1: pelo, barba y ojos genericos solo donde tienen sentido (cabeza no humana)
+                               (["pelo", "barba", "ojos"]
+                                if PL and t.clave in ("minotauro", "aarakocra", "naga", "espectro") else []))),
             "piel": r["piel"] if isinstance(r["piel"], str) else None,
             "ojos": r["ojos"],
             # PL-ROPA-01: el pelo y la barba por defecto; en PixelLab, los propios de la raza si los trae

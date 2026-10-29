@@ -232,14 +232,29 @@ Apariencia Apariencia::deRaza(const RazaVisual& raza, bool conArmas) {
         a.peloEstilo = raza.peloEstilo;
         a.peloColor = raza.peloColor;
     }
-    a.barbaEstilo = raza.barbaEstilo;
-    a.barbaColor = raza.barbaColor;
+    if (raza.admite("barba")) {
+        a.barbaEstilo = raza.barbaEstilo;
+        a.barbaColor = raza.barbaColor;
+    }
     for (const auto& [ranura, pieza] : raza.equipo) {
         if (!conArmas && (ranura == "arma" || ranura == "mano_izq"))
             continue;
         a.ropa[ranura] = pieza;
     }
     return a;
+}
+
+void Apariencia::limpiarSegunRaza(const RazaVisual& raza) {
+    if (!raza.admite("pelo")) {
+        peloEstilo.clear();
+        peloColor.clear();
+    }
+    if (!raza.admite("barba")) {
+        barbaEstilo.clear();
+        barbaColor.clear();
+    }
+    if (!raza.admite("ojos"))
+        ojos = raza.ojos;
 }
 
 std::string Apariencia::clave() const {

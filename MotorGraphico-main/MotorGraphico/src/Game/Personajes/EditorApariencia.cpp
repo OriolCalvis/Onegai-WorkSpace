@@ -217,12 +217,15 @@ void EditorApariencia::rehacerFilas() {
         m_filas.push_back(Fila::Piel);
     if (raza != nullptr && raza->cuerpoLiso)
         m_filas.push_back(Fila::Talla);
-    m_filas.push_back(Fila::Ojos);
-    // Pelo y barba, si el pueblo admite pelo (en PixelLab, todos: se dibuja desde la silueta de la cabeza).
+    // CAR-1: ojos, pelo y barba genericos solo en las razas que los admiten (no en cabezas de toro, ave, cobra...)
+    if (admite("ojos"))
+        m_filas.push_back(Fila::Ojos);
     if (admite("pelo")) {
         m_filas.push_back(Fila::Peinado);
         if (!m_apariencia.peloEstilo.empty())
             m_filas.push_back(Fila::ColorPelo);
+    }
+    if (admite("barba")) {
         m_filas.push_back(Fila::Barba);
         if (!m_apariencia.barbaEstilo.empty())
             m_filas.push_back(Fila::ColorBarba);
@@ -504,11 +507,13 @@ void EditorApariencia::alAzar() {
     } else if (raza->cuerpoLiso) {
         a.piel = uno(ids(m.cuerpos));
     }
-    a.ojos = uno(ids(m.ojos));
+    // CAR-1: «Al azar» no toca los ojos (la capa de ojos aun no es fiable: CAR-2): se quedan los de la raza
     if (raza->admite("pelo")) {
         a.peloEstilo = tirada(100) < 85 ? uno(estilos(m.pelo)) : "";
         if (!a.peloEstilo.empty())
             a.peloColor = uno(coloresDePelo(m, m.pelo, a.peloEstilo));
+    }
+    if (raza->admite("barba")) {
         a.barbaEstilo = tirada(100) < 30 ? uno(estilos(m.barba)) : "";
         if (!a.barbaEstilo.empty()) {
             const std::vector<std::string> hay = coloresDePelo(m, m.barba, a.barbaEstilo);
