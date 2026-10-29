@@ -1,0 +1,19 @@
+# Acciones de monstruo — AV18-06 (entrega de datos)
+
+Los 432 monstruos conservan vida, atributos, defensas, botín y texto. Sus 900 ataques declaran `magnitude`, entero que el cargador nativo lee como `MonsterAttack::magnitudeHint`. Hay 466 ataques con referencia positiva y 434 controles puros con 0. Cero es una cifra intencionada, no un dato ausente.
+
+La ficha remitía a DEUDA_DE_CONTENIDO §7 como si diera fórmula de daño. Esa sección dice expresamente que no existe; la fórmula que sí da es de vida. Esta rama añade **una referencia editorial nueva**: `2 × tier + rango`, con criatura +0, élite +2, jefe +4. Los controles puros dan 0. Por defecto el segundo ataque es control, con excepciones revisadas: Sentencia de marea es control (primer ataque), Coral rompehuesos sí pega (segundo); Puerta en la Cara y Cláusula de Ahogo controlan sin daño (primeros ataques). Los bonos condicionales y críticos que declara el texto no se borran ni se sustituyen por una cifra plana.
+
+**No es el daño aplicado por el juego.** DANO-02 calcula los d6 con la diferencia de éxitos; `magnitudeHint` actualmente no tiene consumidor de combate. No se añade daño gratuito a esa regla. Esta separación se deja para que Claude integre y equilibre sin confundir el dato de editor con una regla ya jugable.
+
+`monstruos_boundington_cartas.json` lista 31 cartas nativas, dos por actor y tres para Sandes, Gorran y Edul. Hay nueve actores realmente referenciados por niveles/aventuras del proyecto: perdido_saqueador, perdido_fanatico, perdido_devoto, cultista_carcelero, gorran_bandido, saqueador_local, sandes, guardia_comprado y edul_furioso. Ninguno resuelve a monsters.json: los crea el fallback de ObjectCatalog. Sus combat.skills quedan conectados a esos repertorios sin variar fuerza ni maná.
+
+Las cinco plantillas previstas (lobo_famelico, lobo_de_cripta, rata_de_reliquia, naga_de_contrato y acolito_de_penumbra) enlazan dos cartas cada una desde skillIds en monsters.json. **No se afirma que estén ya en Boundington**: falta su colocación; la naga conserva su tier 3 original. Los cuatro estados nuevos siguen pendientes, se usan solo condiciones existentes. Las cartas llevan efectos nativos de ataque de arma, condición o ventaja, sin texto que prometa empujar/quemar/rematar sin soporte.
+
+## Montaje (Claude, 15/10)
+
+Hecho en `src/Game/CartasEnemigas.cpp` (`CartasEnCombate::jugarRepertorio`), llamado desde `resolverEnemigo` cuando el enemigo no conoce ninguna habilidad del catálogo legado (si conoce alguna, sigue la IA de siempre). El repertorio son los ids de su SkillSet que están en CatalogoCartas, sin bloqueo y pagables. **Se turnan**: cada turno, la siguiente; se salta un golpe si está desarmado y un impulso propio que aún le dura. `ataque_arma` es golpe de arma (DANO-02, con reacción, provocación, protector y bloqueo); `condicion:<id>:<r>` tira enfrentada y, con éxito o crítico, deja el estado en la mesa; `propio:<r>:<rasgo>` se lo pone el enemigo sin tirada. Lo que pone un enemigo dura **una ronda más** de lo que dice la carta: su turno va después del héroe y, sin ella, caducaría antes de que el héroe lo notara. `magnitudeHint` sigue sin consumidor de combate.
+
+Prueba: `tests/Game/CartasEnemigasTests.cpp` (en `test_cartas_combate`). El saqueador juega Corte sin limpiar (Sangrado en el héroe, 1 de daño al cerrar la ronda) y luego Cuchillada del saqueador (golpe con daño); Gorran se turna Finta, Tajo y Tomar la iniciativa (ventaja propia, que no repite mientras le dura).
+
+Comprobar datos: `python3 tools/validar_monstruos_acciones.py` (integrado en validar_todo). Pruebas: `test_monstruos_acciones` verifica cargador, magnitudes, 31 ganchos entendidos y nueve enemigos creados con fuerza conservada; `test_validar_monstruos_acciones` rechaza datos/cobertura rotos. `tools/generar_acciones_monstruos.py` reproduce las cifras y añade solo cartas nuevas; su segunda ejecución es idéntica. No actualiza cartas que un autor haya editado después.

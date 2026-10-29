@@ -1,0 +1,26 @@
+{
+  "id": "H3-05",
+  "descripcion": "Negocios y rentas expuestos al jugador: el ciclo completo de compra, cobro y efecto en oro",
+  "fase": "H",
+  "gantt": "gantt_jugabilidad_H.puml",
+  "gantt_color": "#5CB85C",
+  "dependencias": ["H3-04"],
+  "autor": "claude",
+  "estado": "closed",
+  "verificado": true,
+  "commit_motor_graphico": "ec73653, d8f376e",
+  "commit_software": null,
+  "archivos": {
+    "modificados": ["tests/Game/GameSessionTests.cpp (+248/-3)", "planificacion/MAPA_DEL_CODIGO.md (+H3-05)"]
+  },
+  "tests": {
+    "test_game_session": {
+      "casos_nuevos": 2,
+      "casos_pass": 2,
+      "caso_fail_preexistente": "al_ganar_el_botin_del_monstruo_entra_en_la_mochila (H2-05, otro agente)"
+    }
+  },
+  "sin_toocar": ["Application.cpp/.h", "GameSession.cpp/.h", "GameSessionComercio.cpp", "SessionData.h (WIP otro agente)"],
+  "cierre": "Comprar un negocio → cobrar la renta → ver el efecto en el oro",
+  "observaciones": "GameSession::collectRent() y modo Business ya estaban implementados (H1-02/64033dd, H2-08/0e2b2b4). El gap: ningun test ejercia el circuito completo desde buyCurrentBusiness() hasta collectRent() con efecto en oro. Build break preexistente: SessionData.h (WIP otro agente) rompe motor_level; solucion temporal con backup→checkout→restore."
+}

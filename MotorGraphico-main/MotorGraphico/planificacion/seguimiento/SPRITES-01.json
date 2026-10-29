@@ -1,0 +1,39 @@
+{
+ "id": "SPRITES-01",
+ "date": "2026-10-01",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol, sin commit",
+ "encargo": "Primer paso del plan PixelLab (Claude outputs/pixellab/PLA_PIXELLAB.md): que una hoja de sprites nueva sea una linea de datos y no una tabla en C++. Las hojas que ya existian (personajes_historia, actores_capas, razas_andando, props_p0, pickups_p0) pasan a dibujarse en el juego; los props y pickups dejan de ser un tile tenido y los PNJ colocados sin hoja propia salen con ropa prestada.",
+ "archivos": {
+  "nuevos": [
+   "assets/textures/sprites.json (indice: hojas, alias, patrones por prefijo/sufijo)",
+   "include/Game/RegistroSprites.h + src/Game/RegistroSprites.cpp (motor_level, sin GL)",
+   "include/Render/BancoAtlas.h + src/Render/BancoAtlas.cpp (motor_core: texturas y atlas bajo demanda)",
+   "cmake/RegistroSpritesTests.cmake + tests/Game/RegistroSpritesTests.cpp (test_registro_sprites, gl-free)"
+  ],
+  "modificados": [
+   "CMakeLists.txt (RegistroSprites.cpp en motor_level, BancoAtlas.cpp en motor_core, include del test)",
+   "include/Engine/Application.h (fuera m_raceNpcAtlas y m_boundingtonStoryAtlas; dentro m_bancoAtlas: 90 miembros)",
+   "src/Engine/Application.cpp (fuera las cargas de race_npc_idle y boundington; carga del banco con avisos a cerr)",
+   "src/Engine/ApplicationCierre.cpp (reset del banco)",
+   "src/Engine/ApplicationNivel.cpp (fuera las dos tablas a mano; makeMarker pregunta al registro: actores -> fila de 12 frames con HojaPersonaje::animar; props/pickups -> StaticEntity con setCharacterSprite)"
+  ]
+ },
+ "reglas": [
+  "Sin OpenGL en Game/RegistroSprites (motor_level); Render/BancoAtlas es el unico que sube texturas.",
+  "Un id sin hoja no se inventa: actores -> cuerpo base; props -> tile tenido de siempre. Un manifiesto que falta avisa y no tumba.",
+  "Los alias de ropa prestada (sacerdote, posadero, estudiante, nino...) se quitan uno a uno cuando PixelLab de a cada PNJ su hoja (PLA_PIXELLAB lote 4).",
+  "Hojas de actores: filas de 12 frames con el reparto de personaje.png; hojas de frames: un dibujo por id. Las nuevas de PixelLab entran añadiendo su manifiesto a sprites.json."
+ ],
+ "verification": [
+  "test_registro_sprites 5/5 (indice real sin avisos; cada PNG mide lo que su manifiesto; alias, sufijo, raza y prefijos; indice roto avisa y no tumba).",
+  "juego, test_pergamino y los tests gl-free compilan sobre la foto del Mac del 01/10 (10:08); ctest -L gl-free: los mismos fallos que sin este cambio (test_gdb12_screens, test_catalog_content, test_g14 no enlaza en Linux, test_marcar_paquetes sin planificacion/pla/dades.py en la foto).",
+  "linea_base_core: 0 instantaneos; las 35 de deuda nueva (editor/, BattleMenuState, WorldTravelState...) ya estaban en la foto del Mac antes de este cambio (comprobado sobre el arbol sin tocar).",
+  "Juego real (Mesa llvmpipe + GLFW null guionizada): Claude outputs/sprites_2026-10-01/ (ciudad: puertas, carteles, Anciana vestida, estudiante y nino con ropa prestada; interior de la sastreria con su puerta)."
+ ],
+ "pendiente": [
+  "Monstruos (slime y los 431 del catalogo) siguen con el cuerpo base hasta el lote 2 de PixelLab.",
+  "Commit: cmake/RegistroSpritesTests.cmake y los ficheros nuevos van en el mismo commit que sus lineas de CMake (linea_base_core lo pide).",
+  "planificacion/alcance_real.json esta 1.7 dias por detras de ApplicationNivel.cpp: python3 tools/medir_alcance.py --json planificacion/alcance_real.json"
+ ]
+}

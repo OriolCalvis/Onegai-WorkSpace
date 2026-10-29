@@ -1,0 +1,28 @@
+{
+ "id": "PIXELLAB-L2",
+ "date": "2026-10-01",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol, sin commit",
+ "encargo": "Lote 2 del plan PixelLab: iconos del HUD y la ficha. 60 generaciones (create_image_pixen 16x16); entran 22 en iconos.png, los 34 restantes salieron como manchas naranjas a 16 px y se quedan con el dibujo a mano de gen_iconos.py.",
+ "archivos": {
+  "nuevos": [
+   "tools/pixellab/importar_iconos.py",
+   "assets/textures/pixellab/iconos.json (los que entran y los descartados)",
+   "assets/textures/pixellab/lote2/ (los 56 PNG + generaciones.json)"
+  ],
+  "modificados": [
+   "assets/textures/iconos.png (22 celdas)",
+   "tools/gen_iconos.py (al acabar repone los de PixelLab)"
+  ]
+ },
+ "reglas": [
+  "El contrato iconos.json (frames y tablas) no cambia: solo se pintan celdas.",
+  "A 16 px PixelLab solo gana en pictogramas simples (corazon, gota, moneda, flechas, bandera, llave, pocion, bolsas, casa, pergamino, interrogante); lo abstracto (ranuras, condiciones de cara, stats) sigue a mano."
+ ],
+ "verification": [
+  "Comparativa antes/despues en Claude outputs/pixellab/lote2/; HUD en juego."
+ ],
+ "pendiente": [
+  "Si se quieren los 34 restantes: pedirlos a 32 px con fondo claro y reducirlos a mano, o dibujarlos."
+ ]
+}

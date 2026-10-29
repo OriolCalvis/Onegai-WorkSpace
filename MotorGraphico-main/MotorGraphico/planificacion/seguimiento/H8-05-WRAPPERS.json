@@ -1,0 +1,32 @@
+{
+  "id": "H8-05",
+  "date": "2026-09-24",
+  "author": "Codex",
+  "status": "HECHO — retiradas las tres cabeceras envoltorio sin conservar rutas históricas.",
+  "scope": [
+    "examples/Check.h se elimina y sus 46 consumidores incluyen directamente Core/Check.h.",
+    "include/Editor/ProjectIndex.h se elimina; level_editor y demo_proyectos consumen Project/ProjectIndex.h.",
+    "include/Render/Tile.h se elimina; TileMap y demo_tilemap usan RuntimeTile de Runtime/RuntimeTile.h."
+  ],
+  "mapa_del_codigo": {
+    "consulted": [
+      "C-19 enumera include/Render/TileMap.h: se limitó el cambio a su include de dato de runtime.",
+      "E-11 enumera include/Project/ProjectIndex.h y src/Project/ProjectIndex.cpp: se conservaron la API y el ejecutable level_editor, cambiando solo la ruta de include.",
+      "La lista completa del mapa incluía los tres wrappers y RuntimeTile; RuntimeTile y ProjectIndex canónicos ya alcanzan ejecutables reales."
+    ],
+    "note": "No se regeneró MAPA_DEL_CODIGO.md: en un árbol compartido recogería WIP ajeno."
+  },
+  "non_goals": [
+    "No se modifican Application.*, CMake, APIs públicas ni comportamiento de mapas/proyectos.",
+    "No se arregla el target opcional demo_mision_llave: su fragmento exige motor_slots, que no existe en esta configuración y es anterior a este cambio.",
+    "No se toca ningún fichero de cruce o WIP de otros agentes."
+  ],
+  "verification": [
+    "La búsqueda de las tres rutas históricas no devuelve consumidores; los 46 demos ya incluyen Core/Check.h.",
+    "Build aislado compila demo_tilemap, demo_proyectos, level_editor, juego y motor_editor; además compila los 45 demos alcanzables migrados.",
+    "demo_tilemap y demo_proyectos se ejecutan correctamente; los tests test_project_levels, test_project_naming, test_project, test_project_catalog, test_runtime_tilemap y test_map_round_trip pasan (6/6).",
+    "demo_mision_llave pasa compilación sintáctica con el include canónico; no se registra como target por la ausencia ajena de motor_slots.",
+    "tools/linea_base_core.py --rapido y git diff --check pasan."
+  ],
+  "handoff": "Los consumidores nuevos deben incluir Core/Check.h, Project/ProjectIndex.h o Runtime/RuntimeTile.h directamente. No reintroducir aliases o wrappers de compatibilidad: la ruta canónica es ahora la única ruta."
+}

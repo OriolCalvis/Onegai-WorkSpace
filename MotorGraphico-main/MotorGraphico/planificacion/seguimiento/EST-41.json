@@ -1,0 +1,33 @@
+{
+ "id": "EST-41 (parcial)",
+ "paquete": "EST-41",
+ "fase": "estabilizacion",
+ "nombre": "Compilaciones sueltas redundantes: fuentes_directas 72 -> 58",
+ "date": "2026-09-24",
+ "author": "Claude (sesion 24/09, maquina de Oriol)",
+ "status": "HECHO en su parte demostrable — 14 compilaciones sueltas fuera, sin un solo cambio de comportamiento.",
+ "que_se_ha_hecho": {
+  "el hallazgo": "Catorce objetivos compilaban una fuente suelta ADEMAS de enlazar la libreria que ya la contiene. El .o suelto tapa al de la libreria, asi que el binario es identico: lo unico que anadia era un objeto de mas por objetivo y catorce puntos en la cuenta de fuentes_directas, que es el numero que mide si la frontera de librerias esta puesta. Una metrica que cuenta trabajo inutil deja de medir la deuda real.",
+  "src/RPG/EventCommands.cpp": "8 objetivos, todos enlazando ya motor_rpg.",
+  "src/RPG/EventInterpreter.cpp": "3 objetivos (test_adventure_validation, test_event_commands, test_session_command_host).",
+  "editor/src/AssetBrowserPanel.cpp, editor/src/MapPropertiesPanel.cpp": "2 objetivos, via motor_level (que compila esas fuentes del editor).",
+  "src/RPG/CharacterCreationScreen.cpp": "1 objetivo, via motor_rpg."
+ },
+ "decisiones": [
+  "Solo las DEMOSTRABLES. El analisis recorre cada add_executable, mira que fuentes sueltas compila y calcula el cierre transitivo de sus target_link_libraries: solo se quita la fuente cuya libreria ya esta en ese cierre. Quedan 58 sueltas que NO son redundantes y no se tocan: la mayoria evita arrastrar motor_core (y con el, GL) a un objetivo que no lo necesita, que es exactamente la deuda de fondo de EST-40/41.",
+  "Se edita EN SITIO, linea a linea, y no sobrescribiendo el fragmento: dos de los once (AdventureValidationTests.cmake y MotorEditor.cmake) los tiene abiertos otra sesion ahora mismo."
+ ],
+ "actions": [
+  "11 fragmentos de cmake/, una o dos lineas cada uno.",
+  "tools/ no cambia: la cuenta la hace la guardia que ya existe."
+ ],
+ "verification": [
+  "Construccion completa de suite_gl_free antes y despues: los MISMOS 6 fallos (todos de trabajo ajeno en vuelo), ni uno mas.",
+  "ctest -L gl-free antes y despues: 91% en los dos casos.",
+  "fuentes_directas medido sobre los ficheros de cmake: 72 -> 58."
+ ],
+ "pending": [
+  "Las 58 que quedan. La mas gorda es demo_mision_llave, que compila src/RPG/AdventureValidation.cpp y src/RPG/SessionCommandHost.cpp sueltas porque NO EXISTE ninguna libreria que las contenga. Ahi la deuda no es la linea de cmake: es que falta la libreria.",
+  "El resto son demos que compilan trozos de motor_core sueltos para no arrastrar GL. Esas se van solas el dia que motor_core se parta por la frontera (EST-40)."
+ ]
+}

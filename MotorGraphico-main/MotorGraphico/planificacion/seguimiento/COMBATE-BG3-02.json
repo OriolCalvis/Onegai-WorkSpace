@@ -1,0 +1,25 @@
+{
+ "id": "COMBATE-BG3-02",
+ "date": "2026-10-14",
+ "author": "claude (Cowork)",
+ "status": "HECHO — moverse por casillas en combate: ruta, alcance visible, el heroe anda la ruta, los rivales se acercan y Atacar pide estar al lado.",
+ "origen": "Oriol (14/10): «moverse por casillas en combate, como en un tactics, con las areas visibles»; «continua».",
+ "actions": [
+  "AV13-07: Game::RutaCasillas (Dijkstra, 4 vecinos) + test_ruta_casillas.",
+  "TableroCombate: pasos/reponPasos/alcanzables/rutaHasta/anda/aTiro/acerca.",
+  "AV13-12: SueloCombate::alcance/ruta, PergaminoGL dibuja rombos y ruta; ApplicationPantallas::sueloCombate (raton, clic) y PasosEnRuta; GameSession::mueveEnCombate.",
+  "BattleState::resolveEnemyTurn: el enemigo se acerca antes de pegar; ApplicationPantallas::rivalesAndan los anima.",
+  "AV13-13 (parte): Atacar solo contra un enemigo al lado; si no, «esta lejos».",
+  "test_g13_combat_commands enlaza motor_level (0 de deuda nueva)."
+ ],
+ "verification": [
+  "Sonda tactico: tablero, alcance, picking exacto, ruta, el heroe anda, «esta lejos», roce en el registro.",
+  "test_ruta_casillas 4/4, test_tablero_combate 6/6, test_suelo_combate 2/2, test_g13_combat_commands 8/8; ctest gl-free 216/219 (los tres de siempre), GL 11/11; linea_base_core 0 de deuda nueva."
+ ],
+ "sesion": "sesiones/2026-10-14-claude-combate-casillas.md",
+ "pending": [
+  "Los rivales pegan antes de llegar (AV14-01).",
+  "El alcance de las cartas (resto de AV13-13).",
+  "COMBATE_BG3.md §4: ¿la accion principal deja de cerrar el turno?"
+ ]
+}

@@ -1,0 +1,33 @@
+{
+ "id": "BLOQUES-04",
+ "date": "2026-10-01",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol, sin commit",
+ "encargo": "El rio que cruza Boundington segun el mapa original (comercio fluvial con barcos de magia de viento), anadido sobre la ciudad existente sin redistribuirla: muelles, puentes, muelle de carga, barcos, y mas vegetacion. Lote 11 de PixelLab (18 generaciones, 370 de 2.000).",
+ "archivos": {
+  "nuevos": [
+   "tools/gen_ciudad_rio.py (rio, muelles, puentes, orillas con muro, vegetar, flotantes), tools/pixellab/componer_rio.py (baldosas de agua con muro de muelle y tableros con pretil), tools/pixellab/limpiar_fondo.py, tools/actualizar_tileset_tmx.py",
+   "assets/textures/pixellab/lote11/ (4 baldosas + 14 props + 5 compuestas + generaciones.json), assets/textures/pixellab/props_grandes.json, assets/textures/pixellab_props_grandes.png/.json (hoja 128x128)"
+  ],
+  "modificados": [
+   "tools/gen_ciudad.py (rio en los cuatro mapas, muelles, puentes, amarres, vegetacion, VOLATILES, recolocar), tools/conectividad.py (flotantes), tools/pixellab/importar_tiles.py (nuevas: gids 77-84, terreno_mundo.png 1024x704), tools/pixellab/importar_props.py (celda configurable)",
+   "src/Engine/ApplicationNivel.cpp (hojas fijas al tamano de su celda), src/Game/Monumentos.cpp + tests/Game/MonumentosTests.cpp (varias definiciones por tile: tamano y variantes por hash)",
+   "assets/textures/terreno_iso.json, terreno_mundo.png, tiles.json, props.json, pixellab_props.png/.json, sprites.json, assets/objects/pixellab_objetos.json (12 props nuevos, flotante), assets/maps/ciudad_*.tmx + assets/levels/ciudad_*.json regenerados, mundi_landmass_1.json y plaza_de_las_razas.json (destinos), 88 TMX con tilecount/alto del indice"
+  ]
+ },
+ "reglas": [
+  "Rio de tres celdas (filas 29-31) entre muelles (28 y 32) en centro, oeste y este; las puertas este/oeste siguen en la fila 32.",
+  "El muro del muelle se pinta en la baldosa de agua de delante (vecino -x: borde superior izquierdo; -y: derecho); junto a hierba o tierra no hay muro.",
+  "Objetos con \"flotante\": true van sobre el agua; el resto nunca sobre colision.",
+  "Lo que coloca el generador al azar (vegetacion) es VOLATIL: se vuelve a repartir en cada pasada; puertas, carteles y PNJ canonicos se conservan."
+ ],
+ "verification": [
+  "conectividad 100% en los cuatro mapas, validar_enlaces 0 problemas, validar_todo OK, test_monumentos 4/4, test_registro_sprites 5/5, ctest -L gl-free solo con los fallos previos.",
+  "Capturas: los cuatro mapas enteros, muelle comercial, puente de la avenida, lote 11."
+ ],
+ "pendiente": [
+  "Agua animada; barcos que naveguen.",
+  "ARTE-03: casas y locales con sprite propio (lote 12, generandose).",
+  "Hay que recompilar en el Mac."
+ ]
+}

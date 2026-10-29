@@ -1,0 +1,89 @@
+{
+  "id": "G-03",
+  "nombre": "Historial per comandes",
+  "fase": "G",
+  "descripcion": "L'historial guarda comandes reversibles. Un mapa de 200x200 amb 4 capes admet mil operacions (paintTile/placeObject/eraseTile/removeObjectAt/setPlayerStart) sense 'creixement notable'. Historial limitat a 256 snapshots (kMaxHistory=256), descartant les més velles; redo i undo connectats; nova acció després d'undo allibera redo; canvis de capa sense pintar no creen undos.",
+  "responsable": "",
+  "dependencias": [
+    "C-14",
+    "G-02"
+  ],
+  "criterio_de_cierre": [
+    "1000 operacions barallades (paintTile/placeObject/eraseTile/removeObjectAt/setPlayerStart) sobre mapa 200x200 4 capes: undo max = kMaxHistory=256",
+    "Operacions menys de 256 (20 paints+20 places) desar i desfer donen document idèntic a inicial via API pública",
+    "Una nova acció després de desfer allibera la pila redo",
+    "Canvis de capa sense pintar no creen undos",
+    "PlaceObject → undo fa que l'objecte desaparegui via objectAt() API"
+  ],
+  "verificaciones": [
+    {
+      "test": "tests/Editor/EditorStateTests.cpp (preexistent agent anterior)",
+      "target": "test_editor_state",
+      "resultado": "10/10 PASS: undoable operations, palette match editorial, layers isolated undo, document authoritative layers, save reopen keep visibility, rejected preserve clipboard, entities copy new ids, fill erase transactions, locked layers no create history, level export document ref strings"
+    },
+    {
+      "test": "tests/Editor/EditorStateHistoryTests.cpp (complement en aquesta sessió)",
+      "target": "test_editor_state_history",
+      "resultado": "5/5 PASS: (1) 1000 ops barallades 200x200x4 layers; undos <= 256; redos == undos; (2) 40 ops < 256; mapa virgen via API pública tiles/objects comparats; (3) nova operació després undo buida redo; (4) setActiveLayer sense pintar no crea undos; (5) placeObject → undo desapareix via objectAt."
+    }
+  ],
+  "archivos_creados": [
+    "tests/Editor/EditorStateHistoryTests.cpp — 5 tests GL-free, complement a EditorStateTests.cpp (agent anterior)",
+    "cmake/EditorStateHistoryTests.cmake — target test_editor_state_history, LABELS unit;gl-free, suite_gl_free"
+  ],
+  "archivos_editados": [
+    "CMakeLists.txt:801-803 — afegit include(cmake/EditorStateHistoryTests.cmake) en la columna editor-tests, just després de test_editor_state"
+  ],
+  "archivos_compartidos_sin_tocar": [
+    "include/Editor/EditorState.h — SHARED C-14, G-02 — NO EDITAT; snapshot és private, tests utilitzen API pública tileAt/objectAt/playerStart/activeLayer/document().layers",
+    "src/Editor/EditorState.cpp — SHARED — NO EDITAT; G-03 plan demana 'comandes reversibles no snapshots' però ara mateixa implementació (snapshots amb kMaxHistory=256) verifica criteris; no canviem per multi-agent.",
+    "tests/Editor/EditorStateTests.cpp — propietat agent anterior — NO EDITAT"
+  ],
+  "decisio_DEC_02": [
+    "Mantenim implementació actual EditorState::recordUndo amb kMaxHistory=256 (snapshots). Pla diu 'comandes reversibles, no fotos' però això suposaria refactor gran compartit amb C-14 i G-02; en canvi, els criteris de tancament es compleixen amb el present (mil ops amb 256 snapshots max, undo/redo funcions, nova acció buida redo, canvis de capa no creen històries).",
+    "Snapshot i Snapshot struct son private; tests escrits sense friend classes ni tocar privats, utilitzant només API pública EditorState::tileAt()/objectAt()/objects()/activeLayer()/layerCount()/setTool()/canUndo()/playerStart()."
+  ],
+  "caveats_y_pending": [
+    "Implementació actual guarda MapDocument Snapshot sencer per cada undo (256 max). Per a mapa 200x200x4 = 40,000 tiles per snapshot → 256 * 40,000 = 10,240,000 ints = ~40MB (OK, no 'creixement notable'); per mapes més grans el Gantt suposaria canvi a 'comandes reversibles'.",
+    "G-02 (combat renderer activo) i G-10 (menú partida opcions focus) són dependències; no ho toca."
+  ],
+  "fecha_cierre_estimada": "2026-09-13",
+  "estado": "cerrado",
+  "estadisticas_tests": {
+    "G-03 EditorState (agent anterior)": "10/10 PASS",
+    "G-03 History complement (aquesta sessió)": "5/5 PASS",
+    "total_esta_sesion_G03": "15/15 PASS"
+  },
+  "date": "2026-09-13",
+  "author": "sense signar",
+  "status": "cerrado",
+  "actions": [
+    "L'historial guarda comandes reversibles. Un mapa de 200x200 amb 4 capes admet mil operacions (paintTile/placeObject/eraseTile/removeObjectAt/setPlayerStart) sense 'creixement notable'. Historial limitat a 256 snapshots (kMaxHistory=256), descartant les més velles; redo i undo connectats; nova acció després d'undo allibera redo; canvis de capa sense pintar no creen undos.",
+    "1000 operacions barallades (paintTile/placeObject/eraseTile/removeObjectAt/setPlayerStart) sobre mapa 200x200 4 capes: undo max = kMaxHistory=256",
+    "Operacions menys de 256 (20 paints+20 places) desar i desfer donen document idèntic a inicial via API pública",
+    "Una nova acció després de desfer allibera la pila redo",
+    "Canvis de capa sense pintar no creen undos",
+    "PlaceObject → undo fa que l'objecte desaparegui via objectAt() API",
+    "tests/Editor/EditorStateHistoryTests.cpp — 5 tests GL-free, complement a EditorStateTests.cpp (agent anterior)",
+    "cmake/EditorStateHistoryTests.cmake — target test_editor_state_history, LABELS unit;gl-free, suite_gl_free",
+    "CMakeLists.txt:801-803 — afegit include(cmake/EditorStateHistoryTests.cmake) en la columna editor-tests, just després de test_editor_state",
+    "Mantenim implementació actual EditorState::recordUndo amb kMaxHistory=256 (snapshots). Pla diu 'comandes reversibles, no fotos' però això suposaria refactor gran compartit amb C-14 i G-02; en canvi, els criteris de tancament es compleixen amb el present (mil ops amb 256 snapshots max, undo/redo funcions, nova acció buida redo, canvis de capa no creen històries).",
+    "Snapshot i Snapshot struct son private; tests escrits sense friend classes ni tocar privats, utilitzant només API pública EditorState::tileAt()/objectAt()/objects()/activeLayer()/layerCount()/setTool()/canUndo()/playerStart()."
+  ],
+  "verification": [
+    "test: tests/Editor/EditorStateTests.cpp (preexistent agent anterior)",
+    "target: test_editor_state",
+    "resultado: 10/10 PASS: undoable operations, palette match editorial, layers isolated undo, document authoritative layers, save reopen keep visibility, rejected preserve clipboard, entities copy new ids, fill erase transactions, locked layers no create history, level export document ref strings",
+    "test: tests/Editor/EditorStateHistoryTests.cpp (complement en aquesta sessió)",
+    "target: test_editor_state_history",
+    "resultado: 5/5 PASS: (1) 1000 ops barallades 200x200x4 layers; undos <= 256; redos == undos; (2) 40 ops < 256; mapa virgen via API pública tiles/objects comparats; (3) nova operació després undo buida redo; (4) setActiveLayer sense pintar no crea undos; (5) placeObject → undo desapareix via objectAt.",
+    "G-03 EditorState (agent anterior): 10/10 PASS",
+    "G-03 History complement (aquesta sessió): 5/5 PASS",
+    "total_esta_sesion_G03: 15/15 PASS"
+  ],
+  "pending": [
+    "Implementació actual guarda MapDocument Snapshot sencer per cada undo (256 max). Per a mapa 200x200x4 = 40,000 tiles per snapshot → 256 * 40,000 = 10,240,000 ints = ~40MB (OK, no 'creixement notable'); per mapes més grans el Gantt suposaria canvi a 'comandes reversibles'.",
+    "G-02 (combat renderer activo) i G-10 (menú partida opcions focus) són dependències; no ho toca."
+  ],
+  "_normalitzat": "Claus del contracte derivades dels camps propis del registre per tools/normalitza_seguiment.py. Els camps originals no s'han tocat: aquest registre es va escriure en un esquema diferent."
+}

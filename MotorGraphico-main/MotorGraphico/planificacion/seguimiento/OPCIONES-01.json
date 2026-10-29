@@ -1,0 +1,35 @@
+{
+ "id": "OPCIONES-01",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — opciones en el diálogo y variables en las aventuras (VARIABLES-01): las dos primeras piezas de la fase 1 («El motor») de «Los Perdidos de Boundington — revisión para jugarla entera». Un beat puede ofrecer hasta cuatro respuestas, cada una con sus requisitos, sus líneas y sus efectos; y las aventuras pueden poner, sumar (con topes) y pedir variables con nombre (los puntos, el afecto de Venides, la reputación, la franja del día).",
+ "origen": "Oriol (08/10): «Sino continuamos integrando la historia de boundington». La revisión de la campaña pone primero el motor: «Opciones en el diálogo» (unirse al culto o no, Sandes, entregar o salvar a Verina, ayudar a Venides o acabar con él) y «Variables: puntos y reputación» (los puntos de Creadores, Sho-Noco y Gurkazaal, el Afecto de Venides y la reputación con los gremios).",
+ "fuente": "Documento «Los Perdidos de Boundington — revisión para jugarla entera» (Claude Docs, 05/10): tabla «Lo que le falta al motor» y «Plan por fases».",
+ "scope": [
+  "include/RPG/Narrative/NarrativeBeat.h: NarrativeCondition::variables (rangos), los efectos setVariable y addVariable (con min/max), OpcionDeDialogo y NarrativeBeat::opciones (como mucho 4).",
+  "include/RPG/Narrative/NarrativeState.h (+ .cpp): la elección pendiente (EleccionPendiente; no se guarda) y las condiciones por variable.",
+  "include/RPG/NarrativeEngine.h y src/RPG/NarrativeEngine.cpp: al disparar un beat se ofrecen las opciones que cumplen sus requisitos; elige(n) aplica la elegida como un beat. Los efectos se aplican en un solo sitio (aplica).",
+  "src/RPG/Narrative/BeatsAventura.h/.cpp (nuevos): leer y escribir condiciones, efectos y opciones; salen de AdventureScriptLoader.cpp y AdventureSerializer.cpp, que quedan más cortos.",
+  "src/RPG/AdventureBeatValidation.cpp: las banderas y variables que escriben y leen las opciones; aviso si se pide una variable que nadie escribe.",
+  "GameSession::chooseOption (GameSession.h baja de 546 a 538 líneas); closeInteraction no cierra con una elección pendiente.",
+  "HUD: DialogoHoja pinta la lista de opciones sobre la hoja del diálogo (tecla 1-4, la elegida subrayada, zonas para el ratón) y el pie «W S Elegir · ENTER Decidir»; include/Engine/TeclasDialogo.h (nuevo): W/S, 1-4, ENTER y ratón. Application.cpp solo llama (1169 → 1166 líneas); InterfazPergamino.cpp sigue en 500.",
+  "tools/validar_todo.py: mira también los efectos de las opciones.",
+  "FORMATO_AVENTURAS.md: «Opciones», la condición variables y los efectos setVariable y addVariable.",
+  "Pruebas: tests/RPG/OpcionesDialogoTests.cpp (7) con cmake/OpcionesDialogoTests.cmake."
+ ],
+ "non_goals": [
+  "Contenido: las escenas del docx que piden elegir (Sandes, el culto, Verina, Venides retenido) son de las fases 2 y 3; necesitan el documento de la campaña.",
+  "Las otras dos piezas de la fase 1: las franjas del día (se apoyarán en las variables) y huir a 0 PV / pelear sin matar.",
+  "Que las variables salgan en el HUD (la reputación, la franja)."
+ ],
+ "verification": [
+  "test_opciones_dialogo 7/7; ctest con EGL_PLATFORM=surfaceless: solo linea_base_core (44) y, antes del commit, linea_base_core_configura (ficheros nuevos sin versionar).",
+  "validar_todo: 0 errores (10 avisos de antes).",
+  "Jugado en el juego (precuela con un beat de prueba, sin tocar el contenido): la lista sale sobre el diálogo; S y el ratón señalan; ENTER y el clic deciden; con líneas se leen con quien las dice; sin líneas el diálogo se cierra."
+ ],
+ "para_oriol": [
+  "¿Te vale la lista de opciones encima del diálogo (con 1-4, W/S, ENTER y el ratón)?",
+  "Para escribir las escenas de elegir (Sandes, el culto, Verina, Venides) hace falta el documento de la campaña (Campaña 01, la Aventura de Venides): ¿me das acceso a la carpeta del vault?"
+ ],
+ "sesion": "sesiones/2026-10-08-claude-instrumentos.md"
+}

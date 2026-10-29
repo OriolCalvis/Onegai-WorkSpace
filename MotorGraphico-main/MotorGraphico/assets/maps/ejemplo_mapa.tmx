@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mapa de ejemplo (8x6) para assets/levels/ejemplo_nivel.json.
+     Ver FORMATO_NIVELES.md para el subconjunto de TMX que soporta
+     TileMap::loadFromFile: tileset EMBEBIDO (sin "source" externo),
+     <data encoding="csv"> y colision por propiedad de tile.
+
+     GID 1 = suelo transitable, GID 2 = muro (collision=true).
+     El GID sale de firstgid + el id local del <tile>: el <tile id="1">
+     de abajo es por tanto el GID 2. -->
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="8" height="6" tilewidth="64" tileheight="32" infinite="0" nextlayerid="2" nextobjectid="1">
+ <tileset firstgid="1" name="test_checker" tilewidth="8" tileheight="8" tilecount="2" columns="2">
+  <image source="../textures/test_checker.png" width="16" height="8"/>
+  <tile id="1">
+   <properties>
+    <property name="collision" type="bool" value="true"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer id="1" name="suelo" width="8" height="6">
+  <data encoding="csv">
+2,2,2,2,2,2,2,2,
+2,1,1,1,1,1,1,2,
+2,1,1,2,2,1,1,2,
+2,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,2,
+2,2,2,2,2,2,2,2
+</data>
+ </layer>
+</map>

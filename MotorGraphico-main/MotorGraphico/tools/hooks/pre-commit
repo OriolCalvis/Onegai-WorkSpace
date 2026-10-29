@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Puerta local de la ley del repositorio — etapa pre-commit.
+#
+# Es la version nativa del hook `repo-configura` de .pre-commit-config.yaml,
+# para maquinas donde el binario `pre-commit` no esta instalado. Hace SOLO las
+# comprobaciones instantaneas: que cada include(cmake/X.cmake) de
+# CMakeLists.txt tenga su fichero versionado, y que un `.cpp` no mezcle
+# `XData`/`XState` local con flujo de `XController`. El primer caso fue el
+# fallo que dejo HEAD seis commits sin poder configurar.
+#
+# La guardia entera (~15 s) va en pre-push, no aqui: un pre-commit lento se
+# acaba esquivando con --no-verify y entonces no protege de nada.
+#
+# Activar (una vez por clon):
+#   git config core.hooksPath MotorGraphico/tools/hooks
+set -uo pipefail
+
+RAIZ="$(git rev-parse --show-toplevel)"
+# Git exporta rutas relativas al lanzar hooks en worktrees; cd no debe cambiar su significado.
+export GIT_DIR="$(git rev-parse --absolute-git-dir)"
+export GIT_WORK_TREE="$RAIZ"
+PY="$(command -v python3 || echo /usr/bin/python3)"
+GUARDIA="$RAIZ/MotorGraphico/tools/linea_base_core.py"
+
+[ -f "$GUARDIA" ] || exit 0   # sin guardia no hay ley que aplicar: no bloquear
+
+cd "$RAIZ/MotorGraphico" || exit 1
+# --indice: el gancho mira lo que se COMMITEA, no lo que hay en el disco. Es lo
+# que la propia guardia prescribe —la ayuda de --indice dice «lo que usa el
+# gancho de pre-commit», y los docstrings de comprueba_configuracion y
+# comprueba_fuentes dicen «el gancho de pre-commit mira el indice»— y lo que
+# faltaba desde que se escribio ese modo el 24/09. Sin el flag el gancho miraba
+# el disco, y entonces un include() que OTRA sesion acaba de anadir en su arbol
+# de trabajo, con su .cmake aun sin versionar, bloqueaba el commit de quien no
+# lo incumple y no lo toca. Una regla que castiga al inocente deja de
+# cumplirse: aqui bloqueo a todos los agentes del repo a la vez.
+#
+# La ley no se relaja, se aplica a lo que importa: en modo indice las fuentes
+# sin versionar de lo que TU commiteas pasan de AVISO a FALLO.
+"$PY" tools/linea_base_core.py --rapido --indice
+rc=$?
+if [ "$rc" -ne 0 ]; then
+  echo "" >&2
+  echo "pre-commit: la ley del repositorio no pasa (codigo $rc)." >&2
+  echo "  Arreglalo, o si es deuda ajena ya existente documentalo en la sesion." >&2
+  echo "  NO uses --no-verify para saltartelo: el fallo vuelve en CI." >&2
+fi
+exit "$rc"

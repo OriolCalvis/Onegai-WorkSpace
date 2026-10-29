@@ -1,0 +1,35 @@
+{
+ "id": "FASE1-BND-01",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — lo que faltaba de la fase 1 («El motor») de «Los Perdidos de Boundington — revisión para jugarla entera»: las franjas del día, la tabla aleatoria, los descansos, huir a 0 PV y pelear sin matar; y dar objetos desde un beat (las 2 pociones de Luisarda). El HUD pone «Día 1 · Mañana» debajo del nombre de la zona.",
+ "origen": "Oriol (08/10): «Té, continua la programació dins el motor gràfic del següent:», con la lista «Boundington: lo que hay que sacar del gestor documental». §8 de la lista: lo que el motor aún no sabía hacer.",
+ "fuente": "planificacion/CANON_BOUNDINGTON_CAMPANA01.md §7 (qué escena pide cada pieza).",
+ "scope": [
+  "include/RPG/Narrative/FranjasDelDia.h + src/RPG/Narrative/FranjasDelDia.cpp (nuevos): el día y la franja son las variables «dia» y «franja» (0 mañana, 1 tarde, 2 noche); cuentas (pasa, hasta), el rótulo del HUD y la línea del registro.",
+  "include/RPG/Narrative/NarrativeBeat.h: efectos pasarFranja, tablaAleatoria, descanso y darObjeto; BattleRequest::huyen y sinMatar; TablaAleatoriaRequest.",
+  "src/RPG/Narrative/BeatsAventura.cpp: leer (con sus errores) y escribir los efectos nuevos y huyen/sinMatar; la tabla de nombres de efectos es un switch sin default.",
+  "include/RPG/NarrativeEngine.h + src/RPG/NarrativeEngine.cpp: pasarFranja pone las variables y deja «Amanece el día 2.»/«Llega la tarde.»/«Anochece.»; tablas, descansos y objetos van al resultado (diferidos).",
+  "src/Game/GameSessionNarrativa.cpp: la sesión tira la tabla (1dN con el RNG de las tiradas), aplica el descanso (corto: 1d8 por tier; largo: toda la vida; Sistema_Cartas_Tiers §7.5) y mete los objetos en la mochila con su nombre («Recibes: Poción x2.»; un id que no está en el catálogo no entra).",
+  "src/Game/GameSessionInteraccion.cpp: al ganar, «X huye malherido.» por cada uno de huyen, y «Quedan fuera de combate, pero nadie ha muerto.» con sinMatar.",
+  "src/RPG/AdventureBeatValidation.cpp: pasarFranja escribe dia y franja; las flags de la tabla cuentan como escritas.",
+  "HUD: DatosExploracion::momento; MinimapaTinta lo rellena; HudRetales lo pinta en su línea, debajo del nombre de la zona.",
+  "CMakeLists.txt: FranjasDelDia.cpp en motor_rpg; cmake/FaseUnoBoundingtonTests.cmake (nuevo).",
+  "tools/validar_todo.py: darObjeto contra los catálogos de objetos; los «enemigos» de un combate, no solo el primero.",
+  "FORMATO_AVENTURAS.md: el día y la franja en requires, los efectos nuevos, huyen y sinMatar.",
+  "Pruebas: tests/RPG/FaseUnoBoundingtonTests.cpp (9)."
+ ],
+ "non_goals": [
+  "Refuerzos, dejar las armas de verdad, pruebas de grupo, monedas de plata y bronce, el daño del fuego y los mapas del Ocaso (CANON §7 y §8).",
+  "Que el tiempo pase solo: la historia lo pasa con pasarFranja (en Boundington, Skilla)."
+ ],
+ "verification": [
+  "test_fase_uno_boundington 9/9.",
+  "ctest en la VM del Mac (Xvfb): todo en verde salvo linea_base_core, que sigue en 44 de deuda nueva (la de antes).",
+  "Jugado en el juego (Xvfb con el arnés de GLFW X11): el retal del minimapa pone «Día 1 · Mañana», «Día 1 · Noche» y «Día 2 · Noche» debajo del nombre de la zona."
+ ],
+ "para_oriol": [
+  "¿Te vale el rótulo del día y la franja debajo del nombre de la zona, en el retal del minimapa?"
+ ],
+ "sesion": "sesiones/2026-10-08-claude-bnd-escenas.md"
+}

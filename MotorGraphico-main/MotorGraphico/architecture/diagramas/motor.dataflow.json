@@ -1,0 +1,267 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "MotorGraphico — flujo de datos: del JSON en disco al frame y a la partida guardada",
+    "quality_profile": "standard"
+  },
+  "stages": [
+    {
+      "label": "Fuentes en disco"
+    },
+    {
+      "label": "Carga y validación"
+    },
+    {
+      "label": "Modelo GL-free"
+    },
+    {
+      "label": "Consumo y salida"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "catalogs",
+      "type": "database",
+      "label": "Catálogos JSON",
+      "sublabel": "assets/catalogs + MANIFIESTO",
+      "stage": 0,
+      "row": 0,
+      "tag": "contenido"
+    },
+    {
+      "id": "levels",
+      "type": "database",
+      "label": "Niveles y TMX",
+      "sublabel": "Tiled → TmxMapImporter",
+      "stage": 0,
+      "row": 1,
+      "tag": "mapa"
+    },
+    {
+      "id": "assetsui",
+      "type": "external",
+      "label": "i18n y PNG",
+      "sublabel": "ca·es·en + atlas de sprites",
+      "stage": 0,
+      "row": 2,
+      "tag": "recursos"
+    },
+    {
+      "id": "catloader",
+      "type": "backend",
+      "label": "CatalogLoader",
+      "sublabel": "catálogos RPG tipados",
+      "stage": 1,
+      "row": 0
+    },
+    {
+      "id": "objcat",
+      "type": "backend",
+      "label": "LevelLoader",
+      "sublabel": "ObjectCatalog · ICatalog<T>",
+      "stage": 1,
+      "row": 1
+    },
+    {
+      "id": "loadui",
+      "type": "frontend",
+      "label": "Locale y Atlas",
+      "sublabel": "i18n y stb_image",
+      "stage": 1,
+      "row": 2
+    },
+    {
+      "id": "session",
+      "type": "backend",
+      "label": "GameSession",
+      "sublabel": "7 GameMode · BattleState",
+      "stage": 2,
+      "row": 0,
+      "tag": "GL-free"
+    },
+    {
+      "id": "rtmap",
+      "type": "backend",
+      "label": "RuntimeTileMap",
+      "sublabel": "capas + colisión",
+      "stage": 2,
+      "row": 1
+    },
+    {
+      "id": "world",
+      "type": "backend",
+      "label": "World",
+      "sublabel": "EnemyBrain · EntityHandle",
+      "stage": 2,
+      "row": 2
+    },
+    {
+      "id": "saves",
+      "type": "database",
+      "label": "saves/*.json",
+      "sublabel": "SaveGame atómico + ranuras",
+      "stage": 3,
+      "row": 0,
+      "tag": "persistencia"
+    },
+    {
+      "id": "renderer",
+      "type": "frontend",
+      "label": "Renderer y HUD",
+      "sublabel": "SpriteBatch + post-FX",
+      "stage": 3,
+      "row": 1
+    },
+    {
+      "id": "ppm",
+      "type": "external",
+      "label": "juego_output.ppm",
+      "sublabel": "modo humo --frames N",
+      "stage": 3,
+      "row": 2,
+      "tag": "evidencia"
+    }
+  ],
+  "flows": [
+    {
+      "id": "f1",
+      "from": "catalogs",
+      "to": "catloader",
+      "label": "catálogos",
+      "classification": "JSON propio",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f2",
+      "from": "catalogs",
+      "to": "objcat",
+      "label": "objetos",
+      "classification": "manifiesto"
+    },
+    {
+      "id": "f3",
+      "from": "levels",
+      "to": "objcat",
+      "label": "LevelDefinition",
+      "classification": "tinyxml2",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f4",
+      "from": "assetsui",
+      "to": "loadui",
+      "label": "i18n y PNG",
+      "classification": "assets"
+    },
+    {
+      "id": "f5",
+      "from": "catloader",
+      "to": "session",
+      "label": "SkillCatalog",
+      "classification": "en init",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f6",
+      "from": "objcat",
+      "to": "session",
+      "label": "ObjectCatalog",
+      "classification": "antes del nivel"
+    },
+    {
+      "id": "f7",
+      "from": "objcat",
+      "to": "rtmap",
+      "label": "builder",
+      "classification": "builder"
+    },
+    {
+      "id": "f8",
+      "from": "loadui",
+      "to": "world",
+      "label": "etiquetas",
+      "classification": "HUD",
+      "variant": "dashed"
+    },
+    {
+      "id": "f9",
+      "from": "session",
+      "to": "saves",
+      "label": "quickSave",
+      "classification": "atómica"
+    },
+    {
+      "id": "f10",
+      "from": "session",
+      "to": "renderer",
+      "label": "estado partida",
+      "classification": "oclusión",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f11",
+      "from": "rtmap",
+      "to": "renderer",
+      "label": "tiles visibles",
+      "classification": "culling"
+    },
+    {
+      "id": "f12",
+      "from": "world",
+      "to": "renderer",
+      "label": "AnimatedEntity",
+      "classification": "painter"
+    },
+    {
+      "id": "f13",
+      "from": "renderer",
+      "to": "ppm",
+      "label": "vuelca PPM",
+      "classification": "pre-swap",
+      "variant": "dashed",
+      "labelAt": [
+        823,
+        314
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "violet",
+      "title": "Camino principal del dato",
+      "items": [
+        "assets/catalogs/*.json → CatalogLoader → GameSession: el contenido lo dirigen los datos, no el código",
+        "init() carga los catálogos ANTES que el nivel, para que las referencias del mapa resuelvan",
+        "Un catálogo declarado en el manifiesto que no carga aborta el arranque: no se juega a medias"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Frontera GL-free",
+      "items": [
+        "Todo el stage «Modelo GL-free» funciona sin ventana: suite_gl_free juega una partida entera",
+        "EnemyBrain guarda lo que el enemigo ES (vida, patrulla, IA) y el sprite lee de ahí",
+        "BattleState recibe RandomEngine por setRandomEngine: los tests usan ScriptedRng"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Del modelo al píxel",
+      "items": [
+        "RuntimeTileMap aporta los tiles visibles tras el culling; World aporta las AnimatedEntity",
+        "El orden de dibujo es painter's algorithm sobre Y_iso + X",
+        "El HUD se dibuja después de la escena, con su propia SpriteBatch y GL_BLEND"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Evidencia de salida",
+      "items": [
+        "El modo humo vuelca juego_output.ppm en el último frame, con el HUD real dibujado",
+        "El volcado ocurre antes de swapBuffers: después, el buffer leído ya no es el recién dibujado",
+        "SaveGame escribe de forma atómica y Application expone quickSave/quickLoad y ranuras 1..N"
+      ]
+    }
+  ]
+}

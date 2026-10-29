@@ -1,0 +1,41 @@
+{
+ "id": "PIXELLAB-L0",
+ "date": "2026-10-01",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol, sin commit",
+ "encargo": "Lote 0 del plan PixelLab (Claude outputs/pixellab/PLA_PIXELLAB.md): primeras generaciones reales y los importadores que las meten en el juego por datos. 17 generaciones de 2000.",
+ "como": "PixelLab se alcanza desde el NAVEGADOR INTEGRADO de la app de Claude (la red del Mac): pagina https://api.pixellab.ai/mcp/docs y fetch same-origin a /mcp con el token Bearer (JSON-RPC: initialize, tools/list, tools/call). La extension .mcpb no hace falta. Las descargas (backblaze / /mcp/images/<id>/download) se traen como base64 por el mismo camino.",
+ "archivos": {
+  "nuevos": [
+   "tools/pixellab/importar_tiles.py (cara superior del bloque de PixelLab -> celda 128x64 de terreno_mundo.png por gid)",
+   "tools/pixellab/importar_props.py (PNG sueltos -> hoja de props 64x64 con base en la fila 61 + manifiesto + alta en sprites.json)",
+   "tools/pixellab/importar_actores.py (quieto en 4 direcciones + ciclo de andar -> fila de 12 frames; espejo, bote y zancadas)",
+   "assets/textures/pixellab/{tiles,props,actores}.json (que se importa) y lote0/ (lo generado, con generaciones.json: ids, costes, medidas)",
+   "assets/textures/pixellab_personajes.png/.json (slime con bote, Luisarda con andar de PixelLab)",
+   "assets/textures/pixellab_props.png/.json (parada_mercado, pozo)",
+   "assets/objects/pixellab_objetos.json (los props nuevos, en catalogo aparte para no mover los recuentos de ciudad_objetos)"
+  ],
+  "modificados": [
+   "assets/textures/terreno_mundo.png (celdas 17 adoquin_limpio y 1 pradera con las baldosas de PixelLab; gen_terreno_mundo.py las vuelve a pisar: reimportar)",
+   "assets/textures/sprites.json (+ hojas pixellab_props y pixellab_personajes; la ultima hoja manda sobre el mismo id)",
+   "assets/levels/ciudad_centro.json (pozo en 35,34 y parada_mercado en 24,30)",
+   "assets/proyectos/boundington.json y este_norte.json (+ pixellab_objetos.json)",
+   "tests/Game/RegistroSpritesTests.cpp (hojas >= 5; luisarda y slime desde pixellab_personajes)"
+  ]
+ },
+ "reglas": [
+  "Nada de PixelLab se edita a mano: lo generado vive en assets/textures/pixellab/<lote>/ y los importadores montan las hojas.",
+  "Un actor de PixelLab con el mismo id que uno por capas lo sustituye solo por estar en una hoja posterior del indice.",
+  "Cada generacion queda apuntada en lote<N>/generaciones.json con su id, herramienta y coste."
+ ],
+ "verification": [
+  "test_registro_sprites 5/5; test_object_catalog, test_validar_todo (conectividad: 48 puertas de ciudad_centro alcanzables), test_aventuras_monsterid OK tras mover el pozo fuera de la posada y sacar los props a su catalogo.",
+  "ctest -L gl-free: los mismos fallos de siempre (gdb12, g14 en Linux, catalog_content, marcar_paquetes sin dades.py, linea_base_core con las 35 de deuda previas).",
+  "Juego real: Claude outputs/pixellab/lote0/ (slimes en la sala de ejemplo, parada y pozo y baldosas nuevas en la ciudad, Luisarda de PixelLab en la sastreria)."
+ ],
+ "pendiente": [
+  "Panel de pergamino (lote0/panel.png) e iconos: entran con Pergamino::BancoMateriales (9-slice) y gen_iconos.py.",
+  "Prenda (lote0/prenda.png): el metodo de edicion sobre el cuerpo base queda validado; falta importar_prenda.py (capa de 12 frames por plantilla).",
+  "Lotes 1-7 segun PLA_PIXELLAB.md."
+ ]
+}

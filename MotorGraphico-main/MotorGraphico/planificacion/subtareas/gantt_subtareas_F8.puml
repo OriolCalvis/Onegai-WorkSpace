@@ -1,0 +1,216 @@
+@startgantt
+
+title Fase 8 — Beta, documentación y versión 1.0 — subtareas atómicas revisables
+
+' 1 'día' = 1 jornada de esfuerzo (~6 h). Las medias jornadas del
+' roadmap (0,5 j y 1,5 j) se redondean al alza porque PlantUML solo
+' admite días enteros; el esfuerzo exacto va entre corchetes en el
+' nombre de cada subtarea.
+' Las subtareas de paquetes ya avanzados se marcan con su porcentaje
+' heredado del paquete: revísalas antes de darlas por hechas.
+
+Project starts 2026-09-01
+saturday are closed
+sunday are closed
+
+
+-- REL-01 — Crear juego de ejemplo completo  [PARCIAL 45%] --
+
+[REL-01.1 (2 j) guion y asset list] lasts 2 days
+[REL-01.1 (2 j) guion y asset list] is colored in #E3A82B
+[REL-01.1 (2 j) guion y asset list] is 45% completed
+[REL-01.2 (2 j) crear mundo/eventos] lasts 2 days
+[REL-01.2 (2 j) crear mundo/eventos] is colored in #E3A82B
+[REL-01.2 (2 j) crear mundo/eventos] is 45% completed
+[REL-01.1 (2 j) guion y asset list] -> [REL-01.2 (2 j) crear mundo/eventos]
+[REL-01.3 (2 j) integrar combate/misiones] lasts 2 days
+[REL-01.3 (2 j) integrar combate/misiones] is colored in #E3A82B
+[REL-01.3 (2 j) integrar combate/misiones] is 45% completed
+[REL-01.2 (2 j) crear mundo/eventos] -> [REL-01.3 (2 j) integrar combate/misiones]
+[REL-01.4 (2 j) exportar] lasts 2 days
+[REL-01.4 (2 j) exportar] is colored in #E3A82B
+[REL-01.4 (2 j) exportar] is 45% completed
+[REL-01.3 (2 j) integrar combate/misiones] -> [REL-01.4 (2 j) exportar]
+[REL-01.5 (2 j) playthrough] lasts 2 days
+[REL-01.5 (2 j) playthrough] is colored in #E3A82B
+[REL-01.5 (2 j) playthrough] is 45% completed
+[REL-01.4 (2 j) exportar] -> [REL-01.5 (2 j) playthrough]
+[REL-01 listo] happens at [REL-01.5 (2 j) playthrough]'s end
+
+-- REL-02 — Crear tutorial interactivo del editor  [PENDIENTE 0%] --
+
+[REL-02.1 (1,5 j) definir schema] lasts 2 days
+[REL-02.1 (1,5 j) definir schema] is colored in #B8BEC7
+[REL-01.5 (2 j) playthrough] -> [REL-02.1 (1,5 j) definir schema]
+[REL-02.2 (1,5 j) overlay/highlight] lasts 2 days
+[REL-02.2 (1,5 j) overlay/highlight] is colored in #B8BEC7
+[REL-02.1 (1,5 j) definir schema] -> [REL-02.2 (1,5 j) overlay/highlight]
+[REL-02.3 (1,5 j) detectores de acción] lasts 2 days
+[REL-02.3 (1,5 j) detectores de acción] is colored in #B8BEC7
+[REL-02.2 (1,5 j) overlay/highlight] -> [REL-02.3 (1,5 j) detectores de acción]
+[REL-02.4 (1,5 j) contenido inicial] lasts 2 days
+[REL-02.4 (1,5 j) contenido inicial] is colored in #B8BEC7
+[REL-02.3 (1,5 j) detectores de acción] -> [REL-02.4 (1,5 j) contenido inicial]
+[REL-02.5 (1 j) test recorrido] lasts 1 days
+[REL-02.5 (1 j) test recorrido] is colored in #B8BEC7
+[REL-02.4 (1,5 j) contenido inicial] -> [REL-02.5 (1 j) test recorrido]
+[REL-02 listo] happens at [REL-02.5 (1 j) test recorrido]'s end
+
+-- REL-03 — Documentar formatos, runtime y plugins  [PARCIAL 60%] --
+
+[REL-03.1 (1,5 j) mapear contratos] lasts 2 days
+[REL-03.1 (1,5 j) mapear contratos] is colored in #E3A82B
+[REL-03.1 (1,5 j) mapear contratos] is 60% completed
+[REL-02.5 (1 j) test recorrido] -> [REL-03.1 (1,5 j) mapear contratos]
+[REL-03.2 (1,5 j) documentar schemas] lasts 2 days
+[REL-03.2 (1,5 j) documentar schemas] is colored in #E3A82B
+[REL-03.2 (1,5 j) documentar schemas] is 60% completed
+[REL-03.1 (1,5 j) mapear contratos] -> [REL-03.2 (1,5 j) documentar schemas]
+[REL-03.3 (1,5 j) runtime embedding] lasts 2 days
+[REL-03.3 (1,5 j) runtime embedding] is colored in #E3A82B
+[REL-03.3 (1,5 j) runtime embedding] is 60% completed
+[REL-03.2 (1,5 j) documentar schemas] -> [REL-03.3 (1,5 j) runtime embedding]
+[REL-03.4 (1,5 j) plugin tutorials] lasts 2 days
+[REL-03.4 (1,5 j) plugin tutorials] is colored in #E3A82B
+[REL-03.4 (1,5 j) plugin tutorials] is 60% completed
+[REL-03.3 (1,5 j) runtime embedding] -> [REL-03.4 (1,5 j) plugin tutorials]
+[REL-03.5 (1 j) enlazar API] lasts 1 days
+[REL-03.5 (1 j) enlazar API] is colored in #E3A82B
+[REL-03.5 (1 j) enlazar API] is 60% completed
+[REL-03.4 (1,5 j) plugin tutorials] -> [REL-03.5 (1 j) enlazar API]
+[REL-03 listo] happens at [REL-03.5 (1 j) enlazar API]'s end
+
+-- REL-04 — Realizar pruebas con proyectos grandes  [PENDIENTE 0%] --
+
+[REL-04.1 (1,5 j) cerrar budgets] lasts 2 days
+[REL-04.1 (1,5 j) cerrar budgets] is colored in #B8BEC7
+[REL-03.5 (1 j) enlazar API] -> [REL-04.1 (1,5 j) cerrar budgets]
+[REL-04.2 (1,5 j) generar small/medium/large] lasts 2 days
+[REL-04.2 (1,5 j) generar small/medium/large] is colored in #B8BEC7
+[REL-04.1 (1,5 j) cerrar budgets] -> [REL-04.2 (1,5 j) generar small/medium/large]
+[REL-04.3 (1,5 j) medir apertura/paint/save/play] lasts 2 days
+[REL-04.3 (1,5 j) medir apertura/paint/save/play] is colored in #B8BEC7
+[REL-04.2 (1,5 j) generar small/medium/large] -> [REL-04.3 (1,5 j) medir apertura/paint/save/play]
+[REL-04.4 (1,5 j) registrar baseline] lasts 2 days
+[REL-04.4 (1,5 j) registrar baseline] is colored in #B8BEC7
+[REL-04.3 (1,5 j) medir apertura/paint/save/play] -> [REL-04.4 (1,5 j) registrar baseline]
+[REL-04.5 (1 j) crear alertas] lasts 1 days
+[REL-04.5 (1 j) crear alertas] is colored in #B8BEC7
+[REL-04.4 (1,5 j) registrar baseline] -> [REL-04.5 (1 j) crear alertas]
+[REL-04 listo] happens at [REL-04.5 (1 j) crear alertas]'s end
+
+-- REL-05 — Realizar pruebas de usabilidad con creadores  [PENDIENTE 0%] --
+
+[REL-05.1 (2 j) reclutar perfiles] lasts 2 days
+[REL-05.1 (2 j) reclutar perfiles] is colored in #B8BEC7
+[REL-04.5 (1 j) crear alertas] -> [REL-05.1 (2 j) reclutar perfiles]
+[REL-05.2 (1,5 j) ejecutar tareas] lasts 2 days
+[REL-05.2 (1,5 j) ejecutar tareas] is colored in #B8BEC7
+[REL-05.1 (2 j) reclutar perfiles] -> [REL-05.2 (1,5 j) ejecutar tareas]
+[REL-05.3 (1,5 j) medir tiempo/errores] lasts 2 days
+[REL-05.3 (1,5 j) medir tiempo/errores] is colored in #B8BEC7
+[REL-05.2 (1,5 j) ejecutar tareas] -> [REL-05.3 (1,5 j) medir tiempo/errores]
+[REL-05.4 (1,5 j) sintetizar hallazgos] lasts 2 days
+[REL-05.4 (1,5 j) sintetizar hallazgos] is colored in #B8BEC7
+[REL-05.3 (1,5 j) medir tiempo/errores] -> [REL-05.4 (1,5 j) sintetizar hallazgos]
+[REL-05.5 (1,5 j) crear tareas priorizadas] lasts 2 days
+[REL-05.5 (1,5 j) crear tareas priorizadas] is colored in #B8BEC7
+[REL-05.4 (1,5 j) sintetizar hallazgos] -> [REL-05.5 (1,5 j) crear tareas priorizadas]
+[REL-05 listo] happens at [REL-05.5 (1,5 j) crear tareas priorizadas]'s end
+
+-- REL-06 — Corregir bloqueos y pérdida de datos  [PENDIENTE 0%] --
+
+[REL-06.1 (2 j) triage P0/P1] lasts 2 days
+[REL-06.1 (2 j) triage P0/P1] is colored in #B8BEC7
+[REL-05.5 (1,5 j) crear tareas priorizadas] -> [REL-06.1 (2 j) triage P0/P1]
+[REL-06.2 (2 j) fixture reproductora] lasts 2 days
+[REL-06.2 (2 j) fixture reproductora] is colored in #B8BEC7
+[REL-06.1 (2 j) triage P0/P1] -> [REL-06.2 (2 j) fixture reproductora]
+[REL-06.3 (2 j) fix mínimo] lasts 2 days
+[REL-06.3 (2 j) fix mínimo] is colored in #B8BEC7
+[REL-06.2 (2 j) fixture reproductora] -> [REL-06.3 (2 j) fix mínimo]
+[REL-06.4 (2 j) regresión] lasts 2 days
+[REL-06.4 (2 j) regresión] is colored in #B8BEC7
+[REL-06.3 (2 j) fix mínimo] -> [REL-06.4 (2 j) regresión]
+[REL-06.5 (2 j) backport/migration] lasts 2 days
+[REL-06.5 (2 j) backport/migration] is colored in #B8BEC7
+[REL-06.4 (2 j) regresión] -> [REL-06.5 (2 j) backport/migration]
+[REL-06 listo] happens at [REL-06.5 (2 j) backport/migration]'s end
+
+-- REL-07 — Optimizar mapas, entidades y editor  [PENDIENTE 0%] --
+
+[REL-07.1 (2 j) perf profile] lasts 2 days
+[REL-07.1 (2 j) perf profile] is colored in #B8BEC7
+[REL-06.5 (2 j) backport/migration] -> [REL-07.1 (2 j) perf profile]
+[REL-07.2 (2 j) seleccionar cuellos] lasts 2 days
+[REL-07.2 (2 j) seleccionar cuellos] is colored in #B8BEC7
+[REL-07.1 (2 j) perf profile] -> [REL-07.2 (2 j) seleccionar cuellos]
+[REL-07.3 (2 j) optimizar uno por commit] lasts 2 days
+[REL-07.3 (2 j) optimizar uno por commit] is colored in #B8BEC7
+[REL-07.2 (2 j) seleccionar cuellos] -> [REL-07.3 (2 j) optimizar uno por commit]
+[REL-07.4 (2 j) comparar calidad/correctitud] lasts 2 days
+[REL-07.4 (2 j) comparar calidad/correctitud] is colored in #B8BEC7
+[REL-07.3 (2 j) optimizar uno por commit] -> [REL-07.4 (2 j) comparar calidad/correctitud]
+[REL-07.5 (2 j) documentar] lasts 2 days
+[REL-07.5 (2 j) documentar] is colored in #B8BEC7
+[REL-07.4 (2 j) comparar calidad/correctitud] -> [REL-07.5 (2 j) documentar]
+[REL-07 listo] happens at [REL-07.5 (2 j) documentar]'s end
+
+-- REL-08 — Preparar instalador y actualización  [PENDIENTE 0%] --
+
+[REL-08.1 (1,5 j) crear paquetes] lasts 2 days
+[REL-08.1 (1,5 j) crear paquetes] is colored in #B8BEC7
+[REL-07.5 (2 j) documentar] -> [REL-08.1 (1,5 j) crear paquetes]
+[REL-08.2 (1,5 j) instalar limpio] lasts 2 days
+[REL-08.2 (1,5 j) instalar limpio] is colored in #B8BEC7
+[REL-08.1 (1,5 j) crear paquetes] -> [REL-08.2 (1,5 j) instalar limpio]
+[REL-08.3 (1,5 j) updater check/download] lasts 2 days
+[REL-08.3 (1,5 j) updater check/download] is colored in #B8BEC7
+[REL-08.2 (1,5 j) instalar limpio] -> [REL-08.3 (1,5 j) updater check/download]
+[REL-08.4 (1,5 j) verificar/finalizar] lasts 2 days
+[REL-08.4 (1,5 j) verificar/finalizar] is colored in #B8BEC7
+[REL-08.3 (1,5 j) updater check/download] -> [REL-08.4 (1,5 j) verificar/finalizar]
+[REL-08.5 (1 j) rollback/uninstall] lasts 1 days
+[REL-08.5 (1 j) rollback/uninstall] is colored in #B8BEC7
+[REL-08.4 (1,5 j) verificar/finalizar] -> [REL-08.5 (1 j) rollback/uninstall]
+[REL-08 listo] happens at [REL-08.5 (1 j) rollback/uninstall]'s end
+
+-- REL-09 — Congelar esquema 1.0 y compatibilidad  [PENDIENTE 0%] --
+
+[REL-09.1 (1 j) auditar schemas] lasts 1 days
+[REL-09.1 (1 j) auditar schemas] is colored in #B8BEC7
+[REL-08.5 (1 j) rollback/uninstall] -> [REL-09.1 (1 j) auditar schemas]
+[REL-09.2 (1 j) cerrar IDs/campos] lasts 1 days
+[REL-09.2 (1 j) cerrar IDs/campos] is colored in #B8BEC7
+[REL-09.1 (1 j) auditar schemas] -> [REL-09.2 (1 j) cerrar IDs/campos]
+[REL-09.3 (1 j) crear fixtures golden] lasts 1 days
+[REL-09.3 (1 j) crear fixtures golden] is colored in #B8BEC7
+[REL-09.2 (1 j) cerrar IDs/campos] -> [REL-09.3 (1 j) crear fixtures golden]
+[REL-09.4 (1 j) probar migración] lasts 1 days
+[REL-09.4 (1 j) probar migración] is colored in #B8BEC7
+[REL-09.3 (1 j) crear fixtures golden] -> [REL-09.4 (1 j) probar migración]
+[REL-09.5 (1 j) publicar política] lasts 1 days
+[REL-09.5 (1 j) publicar política] is colored in #B8BEC7
+[REL-09.4 (1 j) probar migración] -> [REL-09.5 (1 j) publicar política]
+[REL-09 listo] happens at [REL-09.5 (1 j) publicar política]'s end
+
+-- REL-10 — Publicar MotorGraphico Creator 1.0  [PENDIENTE 0%] --
+
+[REL-10.1 (1 j) release candidate final] lasts 1 days
+[REL-10.1 (1 j) release candidate final] is colored in #B8BEC7
+[REL-09.5 (1 j) publicar política] -> [REL-10.1 (1 j) release candidate final]
+[REL-10.2 (0,5 j) full matrix] lasts 1 days
+[REL-10.2 (0,5 j) full matrix] is colored in #B8BEC7
+[REL-10.1 (1 j) release candidate final] -> [REL-10.2 (0,5 j) full matrix]
+[REL-10.3 (0,5 j) tag firmado] lasts 1 days
+[REL-10.3 (0,5 j) tag firmado] is colored in #B8BEC7
+[REL-10.2 (0,5 j) full matrix] -> [REL-10.3 (0,5 j) tag firmado]
+[REL-10.4 (0,5 j) publicar artefactos/docs] lasts 1 days
+[REL-10.4 (0,5 j) publicar artefactos/docs] is colored in #B8BEC7
+[REL-10.3 (0,5 j) tag firmado] -> [REL-10.4 (0,5 j) publicar artefactos/docs]
+[REL-10.5 (0,5 j) monitorizar incidencias] lasts 1 days
+[REL-10.5 (0,5 j) monitorizar incidencias] is colored in #B8BEC7
+[REL-10.4 (0,5 j) publicar artefactos/docs] -> [REL-10.5 (0,5 j) monitorizar incidencias]
+[REL-10 listo] happens at [REL-10.5 (0,5 j) monitorizar incidencias]'s end
+
+@endgantt

@@ -1,0 +1,4409 @@
+{
+  "id": "PLAU",
+  "mida": "S",
+  "minuts_compromesos": null,
+  "fills": [
+    {
+      "id": "U0",
+      "nom": "Preparació addicional",
+      "mida": "S",
+      "minuts_compromesos": null,
+      "fills": [
+        {
+          "id": "A-U0-01",
+          "nom": "Preparar evidència i cooperació",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "PREP",
+              "nom": "Preparar contractes, evidència i primer pilot",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "PREP.R1.C1",
+                  "nom": "Eina i rutes verificades",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "PREP.R1.C1.D1",
+                      "nom": "Reconciliar arrel Git i arrel del motor + Verificar la porta pre-commit real + Revisar els tres fitxers de fabrica abans d’instal·lar + Adaptar cwd i presets al monorepo",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "PREP.E01",
+                          "mida": "E",
+                          "nom": "Reconciliar arrel Git i arrel del motor",
+                          "minuts_identificats": 45
+                        },
+                        {
+                          "id": "PREP.E02",
+                          "mida": "E",
+                          "nom": "Verificar la porta pre-commit real",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "PREP.E03",
+                          "mida": "E",
+                          "nom": "Revisar els tres fitxers de fabrica abans d’instal·lar",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "PREP.E04",
+                          "mida": "E",
+                          "nom": "Adaptar cwd i presets al monorepo",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 225
+                    }
+                  ],
+                  "minuts_identificats": 225
+                },
+                {
+                  "id": "PREP.R2.C1",
+                  "nom": "Identitat de fallades i base",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "PREP.R2.C1.D1",
+                      "nom": "Ajustar extracció de fallades amb sortida real + Definir comparació de fallades heretades + Provar depuració prioritzant errors nous",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "PREP.E05",
+                          "mida": "E",
+                          "nom": "Ajustar extracció de fallades amb sortida real",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "PREP.E06",
+                          "mida": "E",
+                          "nom": "Definir comparació de fallades heretades",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "PREP.E07",
+                          "mida": "E",
+                          "nom": "Provar depuració prioritzant errors nous",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "PREP.R2.C1.D2",
+                      "nom": "Capturar base immutable abans del primer C++",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "PREP.E08",
+                          "mida": "E",
+                          "nom": "Capturar base immutable abans del primer C++",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 300
+                },
+                {
+                  "id": "PREP.R3.C1",
+                  "nom": "Execució cooperativa i calibratge",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "PREP.R3.C1.D1",
+                      "nom": "Verificar vigilància bounded i exclusió de logs + Verificar lliurament des del commit",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "PREP.E09",
+                          "mida": "E",
+                          "nom": "Verificar vigilància bounded i exclusió de logs",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "PREP.E10",
+                          "mida": "E",
+                          "nom": "Verificar lliurament des del commit",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "PREP.R3.C1.D2",
+                      "nom": "Congelar interfícies del primer lot de perseguidors + Calibrar l’escala amb cinc E acabades",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "PREP.E11",
+                          "mida": "E",
+                          "nom": "Congelar interfícies del primer lot de perseguidors",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "PREP.E12",
+                          "mida": "E",
+                          "nom": "Calibrar l’escala amb cinc E acabades",
+                          "minuts_identificats": 45
+                        }
+                      ],
+                      "minuts_identificats": 135
+                    }
+                  ],
+                  "minuts_identificats": 285
+                }
+              ],
+              "minuts_identificats": 810
+            }
+          ],
+          "minuts_identificats": 810
+        }
+      ],
+      "minuts_identificats": 810
+    },
+    {
+      "id": "U1",
+      "nom": "Encendre el que ja hi ha",
+      "mida": "S",
+      "minuts_compromesos": null,
+      "fills": [
+        {
+          "id": "A-U1-01",
+          "nom": "Entitats estables i enemics que persegueixen",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "U1-02",
+              "nom": "World guarda les entitats en HandlePool",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U1-02.R1.C1",
+                  "nom": "Identitat i vida útil abans de canviar el magatzem",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U1-02.R1.C1.D1",
+                      "nom": "Fixar la invalidació per creixement + Caracteritzar la creació diferida + Caracteritzar la baixa immediata",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-02.E01",
+                          "mida": "E",
+                          "nom": "Fixar la invalidació per creixement",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U1-02.E02",
+                          "mida": "E",
+                          "nom": "Caracteritzar la creació diferida",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U1-02.E03",
+                          "mida": "E",
+                          "nom": "Caracteritzar la baixa immediata",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U1-02.R1.C1.D2",
+                      "nom": "Provar la identitat després de reutilitzar slot + Fixar l’estratègia d’adaptació",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-02.E04",
+                          "mida": "E",
+                          "nom": "Provar la identitat després de reutilitzar slot",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U1-02.E05",
+                          "mida": "E",
+                          "nom": "Fixar l’estratègia d’adaptació",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    }
+                  ],
+                  "minuts_identificats": 330
+                },
+                {
+                  "id": "U1-02.R2.C1",
+                  "nom": "Adaptació del magatzem mantenint l’API pública · tall 1",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U1-02.R2.C1.D1",
+                      "nom": "Convertir identitat a la frontera + Reservar sense publicar entitats + Resoldre només entitats visibles",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-02.E06",
+                          "mida": "E",
+                          "nom": "Convertir identitat a la frontera",
+                          "minuts_identificats": 45
+                        },
+                        {
+                          "id": "U1-02.E07",
+                          "mida": "E",
+                          "nom": "Reservar sense publicar entitats",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U1-02.E08",
+                          "mida": "E",
+                          "nom": "Resoldre només entitats visibles",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 225
+                    },
+                    {
+                      "id": "U1-02.R2.C1.D2",
+                      "nom": "Aplicar altes i baixes al límit del tick + Recórrer amb mutacions diferides",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-02.E09",
+                          "mida": "E",
+                          "nom": "Aplicar altes i baixes al límit del tick",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U1-02.E10",
+                          "mida": "E",
+                          "nom": "Recórrer amb mutacions diferides",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 405
+                },
+                {
+                  "id": "U1-02.R2.C2",
+                  "nom": "Adaptació del magatzem mantenint l’API pública · tall 2",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U1-02.R2.C2.D1",
+                      "nom": "Consultar l’espai a través del magatzem",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-02.E11",
+                          "mida": "E",
+                          "nom": "Consultar l’espai a través del magatzem",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 60
+                },
+                {
+                  "id": "U1-02.R3.C1",
+                  "nom": "Consumidors i compatibilitat",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U1-02.R3.C1.D1",
+                      "nom": "Auditar el mirall de posició + Connectar el magatzem a World + Regressió de sessió i desat",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-02.E12",
+                          "mida": "E",
+                          "nom": "Auditar el mirall de posició",
+                          "minuts_identificats": 45
+                        },
+                        {
+                          "id": "U1-02.E13",
+                          "mida": "E",
+                          "nom": "Connectar el magatzem a World",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U1-02.E14",
+                          "mida": "E",
+                          "nom": "Regressió de sessió i desat",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 225
+                    }
+                  ],
+                  "minuts_identificats": 225
+                }
+              ],
+              "minuts_identificats": 1020
+            },
+            {
+              "id": "U1-03",
+              "nom": "Els enemics persegueixen (estat kChase)",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U1-03.R1.C1",
+                  "nom": "Percepció pura i criteri d’abandonament",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U1-03.R1.C1.D1",
+                      "nom": "Fixar distància, visió i abandonament + Calcular distància de caselles + Classificar el camp de visió + Adquirir objectiu",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-03.E01",
+                          "mida": "E",
+                          "nom": "Fixar distància, visió i abandonament",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U1-03.E02",
+                          "mida": "E",
+                          "nom": "Calcular distància de caselles",
+                          "minuts_identificats": 30
+                        },
+                        {
+                          "id": "U1-03.E03",
+                          "mida": "E",
+                          "nom": "Classificar el camp de visió",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U1-03.E04",
+                          "mida": "E",
+                          "nom": "Adquirir objectiu",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "U1-03.R1.C1.D2",
+                      "nom": "Determinar pèrdua d’objectiu",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-03.E05",
+                          "mida": "E",
+                          "nom": "Determinar pèrdua d’objectiu",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 270
+                },
+                {
+                  "id": "U1-03.R2.C1",
+                  "nom": "Ruta i temps de moviment",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U1-03.R2.C1.D1",
+                      "nom": "Escollir el següent pas transitable + No travessar actors ni desnivells",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-03.E06",
+                          "mida": "E",
+                          "nom": "Escollir el següent pas transitable",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U1-03.E07",
+                          "mida": "E",
+                          "nom": "No travessar actors ni desnivells",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U1-03.R2.C1.D2",
+                      "nom": "Consumir temps sense dependre dels FPS + Canviar patrulla a persecució",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-03.E08",
+                          "mida": "E",
+                          "nom": "Consumir temps sense dependre dels FPS",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U1-03.E09",
+                          "mida": "E",
+                          "nom": "Canviar patrulla a persecució",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "U1-03.R2.C1.D3",
+                      "nom": "Retornar a una patrulla vàlida",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-03.E10",
+                          "mida": "E",
+                          "nom": "Retornar a una patrulla vàlida",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 420
+                },
+                {
+                  "id": "U1-03.R3.C1",
+                  "nom": "Connexió al joc i prova visible",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U1-03.R3.C1.D1",
+                      "nom": "Demanar combat en el contacte + Connectar percepció i col·lisió en la sessió + Reiniciar IA després de carregar",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-03.E11",
+                          "mida": "E",
+                          "nom": "Demanar combat en el contacte",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U1-03.E12",
+                          "mida": "E",
+                          "nom": "Connectar percepció i col·lisió en la sessió",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U1-03.E13",
+                          "mida": "E",
+                          "nom": "Reiniciar IA després de carregar",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "U1-03.R3.C1.D2",
+                      "nom": "Decidir el senyal de detecció + Recórrer el bucle jugable de persecució",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-03.E14",
+                          "mida": "E",
+                          "nom": "Decidir el senyal de detecció",
+                          "minuts_identificats": 45
+                        },
+                        {
+                          "id": "U1-03.E15",
+                          "mida": "E",
+                          "nom": "Recórrer el bucle jugable de persecució",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 135
+                    }
+                  ],
+                  "minuts_identificats": 345
+                }
+              ],
+              "minuts_identificats": 1035
+            }
+          ],
+          "minuts_identificats": 2055
+        },
+        {
+          "id": "A-U1-02",
+          "nom": "Guardar, recuperar i continuar",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "G-11",
+              "nom": "Pantalles de guardar i carregar (resta)",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "G-11.R1.C1",
+                  "nom": "Model de pantalla sense canviar el servei",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "G-11.R1.C1.D1",
+                      "nom": "Resoldre sis ranures existents vs tres proposades + Projectar una fila de ranura + Seleccionar una ranura amb teclat + Decidir si guardar requereix consentiment",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "G-11.E01",
+                          "mida": "E",
+                          "nom": "Resoldre sis ranures existents vs tres proposades",
+                          "minuts_identificats": 45
+                        },
+                        {
+                          "id": "G-11.E02",
+                          "mida": "E",
+                          "nom": "Projectar una fila de ranura",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "G-11.E03",
+                          "mida": "E",
+                          "nom": "Seleccionar una ranura amb teclat",
+                          "minuts_identificats": 45
+                        },
+                        {
+                          "id": "G-11.E04",
+                          "mida": "E",
+                          "nom": "Decidir si guardar requereix consentiment",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "G-11.R1.C1.D2",
+                      "nom": "Descriure la pèrdua en carregar",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "G-11.E05",
+                          "mida": "E",
+                          "nom": "Descriure la pèrdua en carregar",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 270
+                },
+                {
+                  "id": "G-11.R2.C1",
+                  "nom": "Servei i representació",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "G-11.R2.C1.D1",
+                      "nom": "Verificar round-trip entre ranures de projecte + Carregar sense destruir la sessió bona + Registrar el servei en una biblioteca",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "G-11.E06",
+                          "mida": "E",
+                          "nom": "Verificar round-trip entre ranures de projecte",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "G-11.E07",
+                          "mida": "E",
+                          "nom": "Carregar sense destruir la sessió bona",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "G-11.E08",
+                          "mida": "E",
+                          "nom": "Registrar el servei en una biblioteca",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "G-11.R2.C1.D2",
+                      "nom": "Dibuixar les files amb el sistema de menú actual + Connectar pausa i selector",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "G-11.E09",
+                          "mida": "E",
+                          "nom": "Dibuixar les files amb el sistema de menú actual",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "G-11.E10",
+                          "mida": "E",
+                          "nom": "Connectar pausa i selector",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 390
+                },
+                {
+                  "id": "G-11.R3.C1",
+                  "nom": "Confirmacions i acceptació",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "G-11.R3.C1.D1",
+                      "nom": "Executar una sola càrrega confirmada + Provar les tres sortides de la pantalla",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "G-11.E11",
+                          "mida": "E",
+                          "nom": "Executar una sola càrrega confirmada",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "G-11.E12",
+                          "mida": "E",
+                          "nom": "Provar les tres sortides de la pantalla",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 180
+                }
+              ],
+              "minuts_identificats": 840
+            },
+            {
+              "id": "G-01",
+              "nom": "Autosave i recuperació",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "G-01.R1.C1",
+                  "nom": "Política d’autoguardat i compatibilitat",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "G-01.R1.C1.D1",
+                      "nom": "Identificar els punts de publicació segura + Classificar la petició d’autosave + Seleccionar una ruta automàtica estable + Validar escriptura atòmica existent",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "G-01.E01",
+                          "mida": "E",
+                          "nom": "Identificar els punts de publicació segura",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "G-01.E02",
+                          "mida": "E",
+                          "nom": "Classificar la petició d’autosave",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "G-01.E03",
+                          "mida": "E",
+                          "nom": "Seleccionar una ruta automàtica estable",
+                          "minuts_identificats": 45
+                        },
+                        {
+                          "id": "G-01.E04",
+                          "mida": "E",
+                          "nom": "Validar escriptura atòmica existent",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 225
+                    }
+                  ],
+                  "minuts_identificats": 225
+                },
+                {
+                  "id": "G-01.R2.C1",
+                  "nom": "Recuperació i títol",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "G-01.R2.C1.D1",
+                      "nom": "Provar interrupció abans de publicar + Triar el guardat més recent que es pot carregar + Importar la ranura ràpida antiga sense pèrdua",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "G-01.E05",
+                          "mida": "E",
+                          "nom": "Provar interrupció abans de publicar",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "G-01.E06",
+                          "mida": "E",
+                          "nom": "Triar el guardat més recent que es pot carregar",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "G-01.E07",
+                          "mida": "E",
+                          "nom": "Importar la ranura ràpida antiga sense pèrdua",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "G-01.R2.C1.D2",
+                      "nom": "Connectar Continuar amb el mateix servei + Connectar els dos punts d’autoguardat",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "G-01.E08",
+                          "mida": "E",
+                          "nom": "Connectar Continuar amb el mateix servei",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "G-01.E09",
+                          "mida": "E",
+                          "nom": "Connectar els dos punts d’autoguardat",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "G-01.R2.C1.D3",
+                      "nom": "Verificar recuperació completa",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "G-01.E10",
+                          "mida": "E",
+                          "nom": "Verificar recuperació completa",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 450
+                }
+              ],
+              "minuts_identificats": 675
+            }
+          ],
+          "minuts_identificats": 1515
+        },
+        {
+          "id": "A-U1-03",
+          "nom": "So de joc i opcions connectats",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "U1-01",
+              "nom": "L'àudio sona al joc (AudioDirector + assets/audio)",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U1-01.R1.C1",
+                  "nom": "Dades i dependències de so",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U1-01.R1.C1.D1",
+                      "nom": "Inventariar backend i recursos de so + Llegir correspondències de cues en dades + Seleccionar música del lloc",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-01.E01",
+                          "mida": "E",
+                          "nom": "Inventariar backend i recursos de so",
+                          "minuts_identificats": 45
+                        },
+                        {
+                          "id": "U1-01.E02",
+                          "mida": "E",
+                          "nom": "Llegir correspondències de cues en dades",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U1-01.E03",
+                          "mida": "E",
+                          "nom": "Seleccionar música del lloc",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 195
+                    },
+                    {
+                      "id": "U1-01.R1.C1.D2",
+                      "nom": "Seleccionar l’efecte d’un resultat",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-01.E04",
+                          "mida": "E",
+                          "nom": "Seleccionar l’efecte d’un resultat",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 255
+                },
+                {
+                  "id": "U1-01.R2.C1",
+                  "nom": "Director, volums i fallades",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U1-01.R2.C1.D1",
+                      "nom": "Mantenir la música idempotent + Definir el contracte del fundido",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-01.E05",
+                          "mida": "E",
+                          "nom": "Mantenir la música idempotent",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U1-01.E06",
+                          "mida": "E",
+                          "nom": "Definir el contracte del fundido",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "U1-01.R2.C1.D2",
+                      "nom": "Avançar un fundido amb el temps + Aplicar els volums ja guardats + Tolerar falta de dispositiu o fitxer",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-01.E07",
+                          "mida": "E",
+                          "nom": "Avançar un fundido amb el temps",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U1-01.E08",
+                          "mida": "E",
+                          "nom": "Aplicar els volums ja guardats",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U1-01.E09",
+                          "mida": "E",
+                          "nom": "Tolerar falta de dispositiu o fitxer",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    }
+                  ],
+                  "minuts_identificats": 360
+                },
+                {
+                  "id": "U1-01.R3.C1",
+                  "nom": "Connexió i prova audible",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U1-01.R3.C1.D1",
+                      "nom": "Crear i destruir el servei al límit correcte + Connectar canvi de lloc i resultats de combat",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-01.E10",
+                          "mida": "E",
+                          "nom": "Crear i destruir el servei al límit correcte",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U1-01.E11",
+                          "mida": "E",
+                          "nom": "Connectar canvi de lloc i resultats de combat",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U1-01.R3.C1.D2",
+                      "nom": "Connectar Opcions al servei viu + Registrar acceptació funcional i dependència de recursos",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-01.E12",
+                          "mida": "E",
+                          "nom": "Connectar Opcions al servei viu",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U1-01.E13",
+                          "mida": "E",
+                          "nom": "Registrar acceptació funcional i dependència de recursos",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 120
+                    }
+                  ],
+                  "minuts_identificats": 300
+                }
+              ],
+              "minuts_identificats": 915
+            }
+          ],
+          "minuts_identificats": 915
+        },
+        {
+          "id": "A-U1-04",
+          "nom": "PNJ i llum segueixen el moment narratiu",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "U1-04",
+              "nom": "Rutines de PNJ segons la franja del dia",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U1-04.R1.C1",
+                  "nom": "Contracte narratiu i dades horàries",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U1-04.R1.C1.D1",
+                      "nom": "Resoldre tres franges reals vs quatre descrites + Llegir un horari sense moure el PNJ + Triar el destí d’una franja",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-04.E01",
+                          "mida": "E",
+                          "nom": "Resoldre tres franges reals vs quatre descrites",
+                          "minuts_identificats": 45
+                        },
+                        {
+                          "id": "U1-04.E02",
+                          "mida": "E",
+                          "nom": "Llegir un horari sense moure el PNJ",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U1-04.E03",
+                          "mida": "E",
+                          "nom": "Triar el destí d’una franja",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 195
+                    },
+                    {
+                      "id": "U1-04.R1.C1.D2",
+                      "nom": "Validar ubicacions nocturnes com a proposta",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-04.E04",
+                          "mida": "E",
+                          "nom": "Validar ubicacions nocturnes com a proposta",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 255
+                },
+                {
+                  "id": "U1-04.R2.C1",
+                  "nom": "Moviment coherent amb el món",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U1-04.R2.C1.D1",
+                      "nom": "Ajornar un canvi si el PNJ està ocupat + Escollir caminar o trasllat fora de vista + Demanar un pas al navegador existent",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-04.E05",
+                          "mida": "E",
+                          "nom": "Ajornar un canvi si el PNJ està ocupat",
+                          "minuts_identificats": 45
+                        },
+                        {
+                          "id": "U1-04.E06",
+                          "mida": "E",
+                          "nom": "Escollir caminar o trasllat fora de vista",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U1-04.E07",
+                          "mida": "E",
+                          "nom": "Demanar un pas al navegador existent",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 225
+                    },
+                    {
+                      "id": "U1-04.R2.C1.D2",
+                      "nom": "Aplicar el canvi només un cop per franja + Preservar identitat en carregar i canviar mapa",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-04.E08",
+                          "mida": "E",
+                          "nom": "Aplicar el canvi només un cop per franja",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U1-04.E09",
+                          "mida": "E",
+                          "nom": "Preservar identitat en carregar i canviar mapa",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 405
+                },
+                {
+                  "id": "U1-04.R3.C1",
+                  "nom": "Integració de franja i demostració",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U1-04.R3.C1.D1",
+                      "nom": "Connectar el moment narratiu a la sessió + Comprovar dia, conversa i nit al joc",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-04.E10",
+                          "mida": "E",
+                          "nom": "Connectar el moment narratiu a la sessió",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U1-04.E11",
+                          "mida": "E",
+                          "nom": "Comprovar dia, conversa i nit al joc",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    }
+                  ],
+                  "minuts_identificats": 150
+                }
+              ],
+              "minuts_identificats": 810
+            },
+            {
+              "id": "U1-05",
+              "nom": "Llum global segons la franja del dia",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U1-05.R1.C1",
+                  "nom": "Dades i interpolació de llum",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U1-05.R1.C1.D1",
+                      "nom": "Localitzar el tint global de món i les capes UI + Llegir colors de franja + Triar el color objectiu + Interpolar un tint amb límits",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-05.E01",
+                          "mida": "E",
+                          "nom": "Localitzar el tint global de món i les capes UI",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U1-05.E02",
+                          "mida": "E",
+                          "nom": "Llegir colors de franja",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U1-05.E03",
+                          "mida": "E",
+                          "nom": "Triar el color objectiu",
+                          "minuts_identificats": 45
+                        },
+                        {
+                          "id": "U1-05.E04",
+                          "mida": "E",
+                          "nom": "Interpolar un tint amb límits",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 225
+                    },
+                    {
+                      "id": "U1-05.R1.C1.D2",
+                      "nom": "Reorientar una transició en curs",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-05.E05",
+                          "mida": "E",
+                          "nom": "Reorientar una transició en curs",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 285
+                },
+                {
+                  "id": "U1-05.R2.C1",
+                  "nom": "Aplicació i llegibilitat",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U1-05.R2.C1.D1",
+                      "nom": "Avançar tint amb dt sense alterar franja + Passar el tint al render de món + Mostrar paleta a Oriol amb el mateix enquadrament",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U1-05.E06",
+                          "mida": "E",
+                          "nom": "Avançar tint amb dt sense alterar franja",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U1-05.E07",
+                          "mida": "E",
+                          "nom": "Passar el tint al render de món",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U1-05.E08",
+                          "mida": "E",
+                          "nom": "Mostrar paleta a Oriol amb el mateix enquadrament",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    }
+                  ],
+                  "minuts_identificats": 210
+                }
+              ],
+              "minuts_identificats": 495
+            }
+          ],
+          "minuts_identificats": 1305
+        }
+      ],
+      "minuts_identificats": 5790
+    },
+    {
+      "id": "U2",
+      "nom": "Separar motor i joc",
+      "mida": "S",
+      "minuts_compromesos": null,
+      "fills": [
+        {
+          "id": "A-U2-01",
+          "nom": "Límits i configuració de projecte",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "U2-01",
+              "nom": "Inventari motor / mòdul RPG / dades Onegai + tests de base",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U2-01.R1.C1",
+                  "nom": "Inventari verificable de dependències",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U2-01.R1.C1.D1",
+                      "nom": "Localitzar propietaris dels serveis + Mesurar dependències prohibides",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-01.E01",
+                          "mida": "E",
+                          "nom": "Localitzar propietaris dels serveis",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U2-01.E02",
+                          "mida": "E",
+                          "nom": "Mesurar dependències prohibides",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U2-01.R1.C1.D2",
+                      "nom": "Fixar el contracte entre capes",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-01.E03",
+                          "mida": "E",
+                          "nom": "Fixar el contracte entre capes",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 270
+                },
+                {
+                  "id": "U2-01.R2.C1",
+                  "nom": "Caracterització i prova de separació",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U2-01.R2.C1.D1",
+                      "nom": "Caracteritzar l’inici actual de Boundington + Construir una prova sense contingut Onegai + Publicar el mapa dels punts de tall",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-01.E04",
+                          "mida": "E",
+                          "nom": "Caracteritzar l’inici actual de Boundington",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U2-01.E05",
+                          "mida": "E",
+                          "nom": "Construir una prova sense contingut Onegai",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U2-01.E06",
+                          "mida": "E",
+                          "nom": "Publicar el mapa dels punts de tall",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    }
+                  ],
+                  "minuts_identificats": 210
+                }
+              ],
+              "minuts_identificats": 480
+            },
+            {
+              "id": "U2-02",
+              "nom": "ProjectSettings: escena inicial, catàlegs, idioma",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U2-02.R1.C1",
+                  "nom": "Contracte de configuració compatible",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U2-02.R1.C1.D1",
+                      "nom": "Auditar ajustos existents i llegat + Llegir escena inicial i idioma",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-02.E01",
+                          "mida": "E",
+                          "nom": "Auditar ajustos existents i llegat",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U2-02.E02",
+                          "mida": "E",
+                          "nom": "Llegir escena inicial i idioma",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "U2-02.R1.C1.D2",
+                      "nom": "Normalitzar rutes del projecte + Validar escena inicial resolta",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-02.E03",
+                          "mida": "E",
+                          "nom": "Normalitzar rutes del projecte",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U2-02.E04",
+                          "mida": "E",
+                          "nom": "Validar escena inicial resolta",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U2-02.R1.C1.D3",
+                      "nom": "Resoldre catàlegs declarats",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-02.E05",
+                          "mida": "E",
+                          "nom": "Resoldre catàlegs declarats",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 420
+                },
+                {
+                  "id": "U2-02.R2.C1",
+                  "nom": "Escriptura i ús real",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U2-02.R2.C1.D1",
+                      "nom": "Serialitzar ajustos additius + Propagar idioma i títol",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-02.E06",
+                          "mida": "E",
+                          "nom": "Serialitzar ajustos additius",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U2-02.E07",
+                          "mida": "E",
+                          "nom": "Propagar idioma i títol",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "U2-02.R2.C1.D2",
+                      "nom": "Connectar lector i escriptor del projecte + Verificar dues configuracions diferents",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-02.E08",
+                          "mida": "E",
+                          "nom": "Connectar lector i escriptor del projecte",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U2-02.E09",
+                          "mida": "E",
+                          "nom": "Verificar dues configuracions diferents",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    }
+                  ],
+                  "minuts_identificats": 300
+                }
+              ],
+              "minuts_identificats": 720
+            }
+          ],
+          "minuts_identificats": 1200
+        },
+        {
+          "id": "A-U2-02",
+          "nom": "Arrencada i mòdul de joc",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "G-08",
+              "nom": "El joc arrenca des del manifest (juego --proyecto)",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "G-08.R1.C1",
+                  "nom": "Arguments i entrada del projecte",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "G-08.R1.C1.D1",
+                      "nom": "Auditar CLI i títol ja existents + Interpretar --proyecto + Preparar l’arrencada des del manifest",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "G-08.E01",
+                          "mida": "E",
+                          "nom": "Auditar CLI i títol ja existents",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "G-08.E02",
+                          "mida": "E",
+                          "nom": "Interpretar --proyecto",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "G-08.E03",
+                          "mida": "E",
+                          "nom": "Preparar l’arrencada des del manifest",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "G-08.R1.C1.D2",
+                      "nom": "Escollir l’opció de títol",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "G-08.E04",
+                          "mida": "E",
+                          "nom": "Escollir l’opció de títol",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 270
+                },
+                {
+                  "id": "G-08.R2.C1",
+                  "nom": "Execució i errors llegibles",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "G-08.R2.C1.D1",
+                      "nom": "Publicar el pla d’arrencada + Connectar el CLI a la ruta única",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "G-08.E05",
+                          "mida": "E",
+                          "nom": "Publicar el pla d’arrencada",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "G-08.E06",
+                          "mida": "E",
+                          "nom": "Connectar el CLI a la ruta única",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "G-08.R2.C1.D2",
+                      "nom": "Verificar arrencada fora del checkout",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "G-08.E07",
+                          "mida": "E",
+                          "nom": "Verificar arrencada fora del checkout",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 240
+                }
+              ],
+              "minuts_identificats": 510
+            },
+            {
+              "id": "U2-03",
+              "nom": "IGameModule i mòdul RPG separat a CMake",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U2-03.R1.C1",
+                  "nom": "Port mínim i relleus",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U2-03.R1.C1.D1",
+                      "nom": "Auditar el límit de mòdul sobre el graf real + Congelar serveis disponibles per al joc",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-03.E01",
+                          "mida": "E",
+                          "nom": "Auditar el límit de mòdul sobre el graf real",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U2-03.E02",
+                          "mida": "E",
+                          "nom": "Congelar serveis disponibles per al joc",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U2-03.R1.C1.D2",
+                      "nom": "Definir inicialització del mòdul + Definir tick del mòdul",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-03.E03",
+                          "mida": "E",
+                          "nom": "Definir inicialització del mòdul",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U2-03.E04",
+                          "mida": "E",
+                          "nom": "Definir tick del mòdul",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U2-03.R1.C1.D3",
+                      "nom": "Definir tancament idempotent",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-03.E05",
+                          "mida": "E",
+                          "nom": "Definir tancament idempotent",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 420
+                },
+                {
+                  "id": "U2-03.R2.C1",
+                  "nom": "Mòdul RPG i dependències de compilació",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U2-03.R2.C1.D1",
+                      "nom": "Adaptar regles RPG al port + Construir el mòdul RPG separat",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-03.E06",
+                          "mida": "E",
+                          "nom": "Adaptar regles RPG al port",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U2-03.E07",
+                          "mida": "E",
+                          "nom": "Construir el mòdul RPG separat",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U2-03.R2.C1.D2",
+                      "nom": "Instanciar un mòdul des de configuració + Desplaçar el primer relleu de composició",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-03.E08",
+                          "mida": "E",
+                          "nom": "Instanciar un mòdul des de configuració",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U2-03.E09",
+                          "mida": "E",
+                          "nom": "Desplaçar el primer relleu de composició",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 360
+                },
+                {
+                  "id": "U2-03.R3.C1",
+                  "nom": "Prova dels dos camins de producte",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U2-03.R3.C1.D1",
+                      "nom": "Connectar el mòdul a juego + Verificar límit motor/RPG al build",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-03.E10",
+                          "mida": "E",
+                          "nom": "Connectar el mòdul a juego",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U2-03.E11",
+                          "mida": "E",
+                          "nom": "Verificar límit motor/RPG al build",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 180
+                }
+              ],
+              "minuts_identificats": 960
+            }
+          ],
+          "minuts_identificats": 1470
+        },
+        {
+          "id": "A-U2-03",
+          "nom": "Crear i navegar projectes",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "U2-04",
+              "nom": "Plantilles de projecte (buit, RPG isomètric, demo)",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U2-04.R1.C1",
+                  "nom": "Plantilles i generació segura",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U2-04.R1.C1.D1",
+                      "nom": "Localitzar la creació real de projectes + Validar els paràmetres de plantilla + Expandir una plantilla en memòria",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-04.E01",
+                          "mida": "E",
+                          "nom": "Localitzar la creació real de projectes",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U2-04.E02",
+                          "mida": "E",
+                          "nom": "Validar els paràmetres de plantilla",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U2-04.E03",
+                          "mida": "E",
+                          "nom": "Expandir una plantilla en memòria",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "U2-04.R1.C1.D2",
+                      "nom": "Publicar un projecte complet",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-04.E04",
+                          "mida": "E",
+                          "nom": "Publicar un projecte complet",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 300
+                },
+                {
+                  "id": "U2-04.R2.C1",
+                  "nom": "Selecció i ús",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U2-04.R2.C1.D1",
+                      "nom": "Llistar les tres plantilles amb descripció + Connectar elecció al Hub + Verificar crear, reobrir i jugar",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-04.E05",
+                          "mida": "E",
+                          "nom": "Llistar les tres plantilles amb descripció",
+                          "minuts_identificats": 45
+                        },
+                        {
+                          "id": "U2-04.E06",
+                          "mida": "E",
+                          "nom": "Connectar elecció al Hub",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U2-04.E07",
+                          "mida": "E",
+                          "nom": "Verificar crear, reobrir i jugar",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 225
+                    }
+                  ],
+                  "minuts_identificats": 225
+                }
+              ],
+              "minuts_identificats": 525
+            },
+            {
+              "id": "E-11",
+              "nom": "Arbre de mapes i panell de projecte (resta)",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "E-11.R1.C1",
+                  "nom": "Arbre i accions del projecte",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "E-11.R1.C1.D1",
+                      "nom": "Auditar panell i estat existents + Construir nodes de l’arbre + Filtrar sense perdre selecció",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-11.E01",
+                          "mida": "E",
+                          "nom": "Auditar panell i estat existents",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "E-11.E02",
+                          "mida": "E",
+                          "nom": "Construir nodes de l’arbre",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "E-11.E03",
+                          "mida": "E",
+                          "nom": "Filtrar sense perdre selecció",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "E-11.R1.C1.D2",
+                      "nom": "Resoldre acció d’obrir node + Aplicar renombrat amb referències",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-11.E04",
+                          "mida": "E",
+                          "nom": "Resoldre acció d’obrir node",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "E-11.E05",
+                          "mida": "E",
+                          "nom": "Aplicar renombrat amb referències",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    }
+                  ],
+                  "minuts_identificats": 360
+                },
+                {
+                  "id": "E-11.R2.C1",
+                  "nom": "Interfície i persistència",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "E-11.R2.C1.D1",
+                      "nom": "Dibuixar arbre amb focus accessible + Connectar el node a document real",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-11.E06",
+                          "mida": "E",
+                          "nom": "Dibuixar arbre amb focus accessible",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "E-11.E07",
+                          "mida": "E",
+                          "nom": "Connectar el node a document real",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "E-11.R2.C1.D2",
+                      "nom": "Verificar recorregut d’autor",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-11.E08",
+                          "mida": "E",
+                          "nom": "Verificar recorregut d’autor",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 240
+                }
+              ],
+              "minuts_identificats": 600
+            }
+          ],
+          "minuts_identificats": 1125
+        },
+        {
+          "id": "A-U2-04",
+          "nom": "Editor únic amb paritat",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "U2-05",
+              "nom": "Un sol editor: el de level_editor passa a motor_editor",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U2-05.R1.C1",
+                  "nom": "Paritat abans de retirar una entrada",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U2-05.R1.C1.D1",
+                      "nom": "Inventariar funcionalitats dels dos editors + Decidir host únic i compatibilitat de CLI",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-05.E01",
+                          "mida": "E",
+                          "nom": "Inventariar funcionalitats dels dos editors",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U2-05.E02",
+                          "mida": "E",
+                          "nom": "Decidir host únic i compatibilitat de CLI",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "U2-05.R1.C1.D2",
+                      "nom": "Extreure el primer servei de document + Compartir encaminament de comandes",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-05.E03",
+                          "mida": "E",
+                          "nom": "Extreure el primer servei de document",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U2-05.E04",
+                          "mida": "E",
+                          "nom": "Compartir encaminament de comandes",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 330
+                },
+                {
+                  "id": "U2-05.R2.C1",
+                  "nom": "Migració incremental",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U2-05.R2.C1.D1",
+                      "nom": "Connectar vista de mapa al host únic + Connectar objectes i propietats",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-05.E05",
+                          "mida": "E",
+                          "nom": "Connectar vista de mapa al host únic",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U2-05.E06",
+                          "mida": "E",
+                          "nom": "Connectar objectes i propietats",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U2-05.R2.C1.D2",
+                      "nom": "Connectar events i validació + Unificar ajuda i controls anunciats",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-05.E07",
+                          "mida": "E",
+                          "nom": "Connectar events i validació",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U2-05.E08",
+                          "mida": "E",
+                          "nom": "Unificar ajuda i controls anunciats",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    }
+                  ],
+                  "minuts_identificats": 330
+                },
+                {
+                  "id": "U2-05.R3.C1",
+                  "nom": "Retirada condicionada a paritat",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U2-05.R3.C1.D1",
+                      "nom": "Eliminar el camí duplicat verificat + Fer una sessió d’autor completa",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U2-05.E09",
+                          "mida": "E",
+                          "nom": "Eliminar el camí duplicat verificat",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U2-05.E10",
+                          "mida": "E",
+                          "nom": "Fer una sessió d’autor completa",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 180
+                }
+              ],
+              "minuts_identificats": 840
+            }
+          ],
+          "minuts_identificats": 840
+        }
+      ],
+      "minuts_identificats": 4635
+    },
+    {
+      "id": "U3",
+      "nom": "Autoria sense JSON",
+      "mida": "S",
+      "minuts_compromesos": null,
+      "fills": [
+        {
+          "id": "A-U3-01",
+          "nom": "Semàntica comuna d’events i regions",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "DEC-10",
+              "nom": "Decisió: quina pàgina d'event guanya",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "DEC-10.R1.C1",
+                  "nom": "Decisió de pàgines i rearmament",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "DEC-10.R1.C1.D1",
+                      "nom": "Comparar política real i opcions + Fixar exemples entrada-sortida + Registrar el vist de la política",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "DEC-10.E01",
+                          "mida": "E",
+                          "nom": "Comparar política real i opcions",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "DEC-10.E02",
+                          "mida": "E",
+                          "nom": "Fixar exemples entrada-sortida",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "DEC-10.E03",
+                          "mida": "E",
+                          "nom": "Registrar el vist de la política",
+                          "minuts_identificats": 30
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 180
+                }
+              ],
+              "minuts_identificats": 180
+            },
+            {
+              "id": "U3-01",
+              "nom": "Beats i events de mapa en un sol sistema",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U3-01.R1.C1",
+                  "nom": "Semàntica comuna sense duplicar intèrpret",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U3-01.R1.C1.D1",
+                      "nom": "Inventariar els dos camins narratius + Normalitzar una condició de beat",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-01.E01",
+                          "mida": "E",
+                          "nom": "Inventariar els dos camins narratius",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U3-01.E02",
+                          "mida": "E",
+                          "nom": "Normalitzar una condició de beat",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U3-01.R1.C1.D2",
+                      "nom": "Adaptar una llista d’efectes + Seleccionar pàgina segons contracte",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-01.E03",
+                          "mida": "E",
+                          "nom": "Adaptar una llista d’efectes",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U3-01.E04",
+                          "mida": "E",
+                          "nom": "Seleccionar pàgina segons contracte",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U3-01.R1.C1.D3",
+                      "nom": "Traduir un beat al model comú",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-01.E05",
+                          "mida": "E",
+                          "nom": "Traduir un beat al model comú",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 450
+                },
+                {
+                  "id": "U3-01.R2.C1",
+                  "nom": "Compatibilitat en execució real",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U3-01.R2.C1.D1",
+                      "nom": "Executar a través del host existent + Preservar progrés dels guardats",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-01.E06",
+                          "mida": "E",
+                          "nom": "Executar a través del host existent",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U3-01.E07",
+                          "mida": "E",
+                          "nom": "Preservar progrés dels guardats",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U3-01.R2.C1.D2",
+                      "nom": "Connectar un recorregut vertical de campanya + Desactivar el camí antic només en paritat",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-01.E08",
+                          "mida": "E",
+                          "nom": "Connectar un recorregut vertical de campanya",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U3-01.E09",
+                          "mida": "E",
+                          "nom": "Desactivar el camí antic només en paritat",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 360
+                }
+              ],
+              "minuts_identificats": 810
+            },
+            {
+              "id": "U3-02",
+              "nom": "Triggers de regió: entrada, permanència, sortida",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U3-02.R1.C1",
+                  "nom": "Regions i fronteres",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U3-02.R1.C1.D1",
+                      "nom": "Auditar capa de regions existent + Consultar pertinença d’una casella + Calcular entrada i sortida",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-02.E01",
+                          "mida": "E",
+                          "nom": "Auditar capa de regions existent",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U3-02.E02",
+                          "mida": "E",
+                          "nom": "Consultar pertinença d’una casella",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U3-02.E03",
+                          "mida": "E",
+                          "nom": "Calcular entrada i sortida",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "U3-02.R1.C1.D2",
+                      "nom": "Produir permanència sense inundar events",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-02.E04",
+                          "mida": "E",
+                          "nom": "Produir permanència sense inundar events",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 300
+                },
+                {
+                  "id": "U3-02.R2.C1",
+                  "nom": "Connexió, pausa i persistència",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U3-02.R2.C1.D1",
+                      "nom": "Ordenar fets simultanis + Trametre al runner existent + Reiniciar presència en transició de mapa",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-02.E05",
+                          "mida": "E",
+                          "nom": "Ordenar fets simultanis",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U3-02.E06",
+                          "mida": "E",
+                          "nom": "Trametre al runner existent",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U3-02.E07",
+                          "mida": "E",
+                          "nom": "Reiniciar presència en transició de mapa",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "U3-02.R2.C1.D2",
+                      "nom": "Connectar i provar tres disparadors",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-02.E08",
+                          "mida": "E",
+                          "nom": "Connectar i provar tres disparadors",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 300
+                }
+              ],
+              "minuts_identificats": 600
+            }
+          ],
+          "minuts_identificats": 1590
+        },
+        {
+          "id": "A-U3-02",
+          "nom": "Control de flux i utilitat temporal",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "U3-03",
+              "nom": "Events comuns, bucles i etiquetes",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U3-03.R1.C1",
+                  "nom": "Crides comunes i retorn",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U3-03.R1.C1.D1",
+                      "nom": "Auditar crides, etiquetes i bucles existents + Validar referència a event comú + Apilar una crida i el seu retorn",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-03.E01",
+                          "mida": "E",
+                          "nom": "Auditar crides, etiquetes i bucles existents",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U3-03.E02",
+                          "mida": "E",
+                          "nom": "Validar referència a event comú",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U3-03.E03",
+                          "mida": "E",
+                          "nom": "Apilar una crida i el seu retorn",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "U3-03.R1.C1.D2",
+                      "nom": "Retornar d’una crida comuna",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-03.E04",
+                          "mida": "E",
+                          "nom": "Retornar d’una crida comuna",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 270
+                },
+                {
+                  "id": "U3-03.R2.C1",
+                  "nom": "Bucles limitats i diagnòstic",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U3-03.R2.C1.D1",
+                      "nom": "Indexar etiquetes sense duplicats + Resoldre salt i trencament de bucle",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-03.E05",
+                          "mida": "E",
+                          "nom": "Indexar etiquetes sense duplicats",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U3-03.E06",
+                          "mida": "E",
+                          "nom": "Resoldre salt i trencament de bucle",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "U3-03.R2.C1.D2",
+                      "nom": "Limitar treball per tick + Connectar al catàleg i host del joc",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-03.E07",
+                          "mida": "E",
+                          "nom": "Limitar treball per tick",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U3-03.E08",
+                          "mida": "E",
+                          "nom": "Connectar al catàleg i host del joc",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 330
+                }
+              ],
+              "minuts_identificats": 600
+            },
+            {
+              "id": "U3-07",
+              "nom": "Utilitat de tweens compartida",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U3-07.R1.C1",
+                  "nom": "Interpolació i curs temporal",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U3-07.R1.C1.D1",
+                      "nom": "Inventariar interpolacions i rellotges reals + Normalitzar el progrés temporal + Calcular easing definit en dades + Interpolar escalar",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-07.E01",
+                          "mida": "E",
+                          "nom": "Inventariar interpolacions i rellotges reals",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U3-07.E02",
+                          "mida": "E",
+                          "nom": "Normalitzar el progrés temporal",
+                          "minuts_identificats": 45
+                        },
+                        {
+                          "id": "U3-07.E03",
+                          "mida": "E",
+                          "nom": "Calcular easing definit en dades",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U3-07.E04",
+                          "mida": "E",
+                          "nom": "Interpolar escalar",
+                          "minuts_identificats": 45
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "U3-07.R1.C1.D2",
+                      "nom": "Interpolar vector amb la mateixa política",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-07.E05",
+                          "mida": "E",
+                          "nom": "Interpolar vector amb la mateixa política",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 270
+                },
+                {
+                  "id": "U3-07.R2.C1",
+                  "nom": "Control i consumidor",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U3-07.R2.C1.D1",
+                      "nom": "Avançar i completar una sola vegada + Cancel·lar amb política explícita",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-07.E06",
+                          "mida": "E",
+                          "nom": "Avançar i completar una sola vegada",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U3-07.E07",
+                          "mida": "E",
+                          "nom": "Cancel·lar amb política explícita",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "U3-07.R2.C1.D2",
+                      "nom": "Connectar un consumidor de producte",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-07.E08",
+                          "mida": "E",
+                          "nom": "Connectar un consumidor de producte",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 240
+                }
+              ],
+              "minuts_identificats": 510
+            }
+          ],
+          "minuts_identificats": 1110
+        },
+        {
+          "id": "A-U3-03",
+          "nom": "Ordres de joc i autoría de pàgines",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "U3-04",
+              "nom": "Ordres de moure actor, càmera, so i triar opció",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U3-04.R1.C1",
+                  "nom": "Ordres petites amb final explícit",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U3-04.R1.C1.D1",
+                      "nom": "Congelar DTOs i comandes suportades + Validar una ordre de moure actor",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-04.E01",
+                          "mida": "E",
+                          "nom": "Congelar DTOs i comandes suportades",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U3-04.E02",
+                          "mida": "E",
+                          "nom": "Validar una ordre de moure actor",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U3-04.R1.C1.D2",
+                      "nom": "Avançar moviment d’actor + Validar i llançar una ordre de càmera",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-04.E03",
+                          "mida": "E",
+                          "nom": "Avançar moviment d’actor",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U3-04.E04",
+                          "mida": "E",
+                          "nom": "Validar i llançar una ordre de càmera",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U3-04.R1.C1.D3",
+                      "nom": "Validar i llançar una ordre de so",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-04.E05",
+                          "mida": "E",
+                          "nom": "Validar i llançar una ordre de so",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 420
+                },
+                {
+                  "id": "U3-04.R2.C1",
+                  "nom": "Elecció, espera i integració",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U3-04.R2.C1.D1",
+                      "nom": "Preparar opcions d’un diàleg + Recollir resultat d’una acció asíncrona",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-04.E06",
+                          "mida": "E",
+                          "nom": "Preparar opcions d’un diàleg",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U3-04.E07",
+                          "mida": "E",
+                          "nom": "Recollir resultat d’una acció asíncrona",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U3-04.R2.C1.D2",
+                      "nom": "Connectar accions al EventHost existent + Fer una escena amb les quatre ordres",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-04.E08",
+                          "mida": "E",
+                          "nom": "Connectar accions al EventHost existent",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U3-04.E09",
+                          "mida": "E",
+                          "nom": "Fer una escena amb les quatre ordres",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 360
+                }
+              ],
+              "minuts_identificats": 780
+            },
+            {
+              "id": "E-05",
+              "nom": "Editor de pàgines d'esdeveniment",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "E-05.R1.C1",
+                  "nom": "Pàgines com a document editable",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "E-05.R1.C1.D1",
+                      "nom": "Auditar operacions de pàgines ja existents + Crear una pàgina vàlida + Modificar una condició",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-05.E01",
+                          "mida": "E",
+                          "nom": "Auditar operacions de pàgines ja existents",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "E-05.E02",
+                          "mida": "E",
+                          "nom": "Crear una pàgina vàlida",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "E-05.E03",
+                          "mida": "E",
+                          "nom": "Modificar una condició",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "E-05.R1.C1.D2",
+                      "nom": "Reordenar amb prioritat visible + Eliminar pàgina amb desfer",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-05.E04",
+                          "mida": "E",
+                          "nom": "Reordenar amb prioritat visible",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "E-05.E05",
+                          "mida": "E",
+                          "nom": "Eliminar pàgina amb desfer",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 390
+                },
+                {
+                  "id": "E-05.R2.C1",
+                  "nom": "Vista i diagnòstic d’autor",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "E-05.R2.C1.D1",
+                      "nom": "Construir l’explicació de pàgina activa + Dibuixar pestanyes i camps de condició",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-05.E06",
+                          "mida": "E",
+                          "nom": "Construir l’explicació de pàgina activa",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "E-05.E07",
+                          "mida": "E",
+                          "nom": "Dibuixar pestanyes i camps de condició",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "E-05.R2.C1.D2",
+                      "nom": "Aplicar una edició al document + Connectar trigger de regió al formulari",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-05.E08",
+                          "mida": "E",
+                          "nom": "Aplicar una edició al document",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "E-05.E09",
+                          "mida": "E",
+                          "nom": "Connectar trigger de regió al formulari",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "E-05.R2.C1.D3",
+                      "nom": "Verificar dues pàgines jugables",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-05.E10",
+                          "mida": "E",
+                          "nom": "Verificar dues pàgines jugables",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 450
+                }
+              ],
+              "minuts_identificats": 840
+            }
+          ],
+          "minuts_identificats": 1620
+        },
+        {
+          "id": "A-U3-04",
+          "nom": "Comandes visuals i depuració",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "E-06",
+              "nom": "Editor vertical de comandes",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "E-06.R1.C1",
+                  "nom": "Llista tipada i estructura · tall 1",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "E-06.R1.C1.D1",
+                      "nom": "Auditar catàleg de comandes i llista existents + Projectar comandes en files + Crear una comanda amb defaults vàlids",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-06.E01",
+                          "mida": "E",
+                          "nom": "Auditar catàleg de comandes i llista existents",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "E-06.E02",
+                          "mida": "E",
+                          "nom": "Projectar comandes en files",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "E-06.E03",
+                          "mida": "E",
+                          "nom": "Crear una comanda amb defaults vàlids",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "E-06.R1.C1.D2",
+                      "nom": "Editar un paràmetre amb validació + Inserir comanda en camí vàlid",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-06.E04",
+                          "mida": "E",
+                          "nom": "Editar un paràmetre amb validació",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "E-06.E05",
+                          "mida": "E",
+                          "nom": "Inserir comanda en camí vàlid",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 390
+                },
+                {
+                  "id": "E-06.R1.C2",
+                  "nom": "Llista tipada i estructura · tall 2",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "E-06.R1.C2.D1",
+                      "nom": "Moure bloc sense trencar l’arbre",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-06.E06",
+                          "mida": "E",
+                          "nom": "Moure bloc sense trencar l’arbre",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 90
+                },
+                {
+                  "id": "E-06.R2.C1",
+                  "nom": "Autoría, ajuda i integració",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "E-06.R2.C1.D1",
+                      "nom": "Copiar i enganxar amb nous IDs quan calgui + Dibuixar resum i formulari d’una ordre",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-06.E07",
+                          "mida": "E",
+                          "nom": "Copiar i enganxar amb nous IDs quan calgui",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "E-06.E08",
+                          "mida": "E",
+                          "nom": "Dibuixar resum i formulari d’una ordre",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "E-06.R2.C1.D2",
+                      "nom": "Mostrar errors al comandament exacte + Aplicar edició amb una sola operació d’undo",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-06.E09",
+                          "mida": "E",
+                          "nom": "Mostrar errors al comandament exacte",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "E-06.E10",
+                          "mida": "E",
+                          "nom": "Aplicar edició amb una sola operació d’undo",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "E-06.R2.C1.D3",
+                      "nom": "Fer event sense editar JSON",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-06.E11",
+                          "mida": "E",
+                          "nom": "Fer event sense editar JSON",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 450
+                }
+              ],
+              "minuts_identificats": 930
+            },
+            {
+              "id": "E-08",
+              "nom": "Panell del depurador pas a pas (resta)",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "E-08.R1.C1",
+                  "nom": "Depurador sobre estat ja existent",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "E-08.R1.C1.D1",
+                      "nom": "Auditar depurador i trace runtime + Projectar el punt d’execució + Resoldre el comandament clicat a breakpoint",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-08.E01",
+                          "mida": "E",
+                          "nom": "Auditar depurador i trace runtime",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "E-08.E02",
+                          "mida": "E",
+                          "nom": "Projectar el punt d’execució",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "E-08.E03",
+                          "mida": "E",
+                          "nom": "Resoldre el comandament clicat a breakpoint",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "E-08.R1.C1.D2",
+                      "nom": "Aplicar pas únic des del panell + Dibuixar trace i valors inspeccionables",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-08.E04",
+                          "mida": "E",
+                          "nom": "Aplicar pas únic des del panell",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "E-08.E05",
+                          "mida": "E",
+                          "nom": "Dibuixar trace i valors inspeccionables",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "E-08.R1.C1.D3",
+                      "nom": "Connectar i comprovar un breakpoint real",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "E-08.E06",
+                          "mida": "E",
+                          "nom": "Connectar i comprovar un breakpoint real",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 420
+                }
+              ],
+              "minuts_identificats": 420
+            }
+          ],
+          "minuts_identificats": 1350
+        },
+        {
+          "id": "A-U3-05",
+          "nom": "Clips i estats d’animació",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "U3-05",
+              "nom": "Clips d'animació en JSON amb events de fotograma",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U3-05.R1.C1",
+                  "nom": "Clips declarats i events",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U3-05.R1.C1.D1",
+                      "nom": "Auditar reproductors i formats existents + Llegir un clip en JSON + Indexar events de fotograma",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-05.E01",
+                          "mida": "E",
+                          "nom": "Auditar reproductors i formats existents",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U3-05.E02",
+                          "mida": "E",
+                          "nom": "Llegir un clip en JSON",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U3-05.E03",
+                          "mida": "E",
+                          "nom": "Indexar events de fotograma",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "U3-05.R1.C1.D2",
+                      "nom": "Avançar cursor d’un clip + Canviar clip amb política de reinici",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-05.E04",
+                          "mida": "E",
+                          "nom": "Avançar cursor d’un clip",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U3-05.E05",
+                          "mida": "E",
+                          "nom": "Canviar clip amb política de reinici",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    }
+                  ],
+                  "minuts_identificats": 360
+                },
+                {
+                  "id": "U3-05.R2.C1",
+                  "nom": "Integració de temps i consumidor",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U3-05.R2.C1.D1",
+                      "nom": "Separar event lògic d’event visual + Connectar actor al reproductor de clip",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-05.E06",
+                          "mida": "E",
+                          "nom": "Separar event lògic d’event visual",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U3-05.E07",
+                          "mida": "E",
+                          "nom": "Connectar actor al reproductor de clip",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U3-05.R2.C1.D2",
+                      "nom": "Verificar loop i clip no cíclic",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-05.E08",
+                          "mida": "E",
+                          "nom": "Verificar loop i clip no cíclic",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 240
+                }
+              ],
+              "minuts_identificats": 600
+            },
+            {
+              "id": "U3-06",
+              "nom": "Màquina d'estats d'animació en dades",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U3-06.R1.C1",
+                  "nom": "Estats declaratius",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U3-06.R1.C1.D1",
+                      "nom": "Auditar qui tria animacions avui + Llegir estats i transicions",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-06.E01",
+                          "mida": "E",
+                          "nom": "Auditar qui tria animacions avui",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U3-06.E02",
+                          "mida": "E",
+                          "nom": "Llegir estats i transicions",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "U3-06.R1.C1.D2",
+                      "nom": "Seleccionar transició + Aplicar canvi d’estat sense reinici indegut",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-06.E03",
+                          "mida": "E",
+                          "nom": "Seleccionar transició",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U3-06.E04",
+                          "mida": "E",
+                          "nom": "Aplicar canvi d’estat sense reinici indegut",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 330
+                },
+                {
+                  "id": "U3-06.R2.C1",
+                  "nom": "Connexió amb actor",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U3-06.R2.C1.D1",
+                      "nom": "Construir inputs d’un actor de producte + Connectar la màquina al cursor de clip + Verificar idle/caminar/acció",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U3-06.E05",
+                          "mida": "E",
+                          "nom": "Construir inputs d’un actor de producte",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U3-06.E06",
+                          "mida": "E",
+                          "nom": "Connectar la màquina al cursor de clip",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U3-06.E07",
+                          "mida": "E",
+                          "nom": "Verificar idle/caminar/acció",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    }
+                  ],
+                  "minuts_identificats": 210
+                }
+              ],
+              "minuts_identificats": 540
+            }
+          ],
+          "minuts_identificats": 1140
+        }
+      ],
+      "minuts_identificats": 6810
+    },
+    {
+      "id": "U4",
+      "nom": "Eines tipus Unity",
+      "mida": "S",
+      "minuts_compromesos": null,
+      "fills": [
+        {
+          "id": "A-U4-01",
+          "nom": "Host de playtest i origen seleccionat",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "DEC-06",
+              "nom": "Decisió: joc dins l'editor o en finestra a part",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "DEC-06.R1.C1",
+                  "nom": "Decisió de procés o vista incrustada",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "DEC-06.R1.C1.D1",
+                      "nom": "Auditar el playtest actual + Comparar dues opcions de host + Registrar resolució i límit d’implementació",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "DEC-06.E01",
+                          "mida": "E",
+                          "nom": "Auditar el playtest actual",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "DEC-06.E02",
+                          "mida": "E",
+                          "nom": "Comparar dues opcions de host",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "DEC-06.E03",
+                          "mida": "E",
+                          "nom": "Registrar resolució i límit d’implementació",
+                          "minuts_identificats": 30
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 180
+                }
+              ],
+              "minuts_identificats": 180
+            },
+            {
+              "id": "F-01",
+              "nom": "Playtest des de l'editor",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "F-01.R1.C1",
+                  "nom": "Sessió de prova aïllada",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "F-01.R1.C1.D1",
+                      "nom": "Congelar contracte host i documents bruts + Preparar una petició de prova",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "F-01.E01",
+                          "mida": "E",
+                          "nom": "Congelar contracte host i documents bruts",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "F-01.E02",
+                          "mida": "E",
+                          "nom": "Preparar una petició de prova",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "F-01.R1.C1.D2",
+                      "nom": "Crear el paquet temporal de prova + Llançar amb arguments sense shell",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "F-01.E03",
+                          "mida": "E",
+                          "nom": "Crear el paquet temporal de prova",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "F-01.E04",
+                          "mida": "E",
+                          "nom": "Llançar amb arguments sense shell",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "F-01.R1.C1.D3",
+                      "nom": "Llegir estat i final del playtest",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "F-01.E05",
+                          "mida": "E",
+                          "nom": "Llegir estat i final del playtest",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 390
+                },
+                {
+                  "id": "F-01.R2.C1",
+                  "nom": "Controls, retorn i prova d’autor",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "F-01.R2.C1.D1",
+                      "nom": "Aturar només la prova activa + Restaurar la vista d’autor",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "F-01.E06",
+                          "mida": "E",
+                          "nom": "Aturar només la prova activa",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "F-01.E07",
+                          "mida": "E",
+                          "nom": "Restaurar la vista d’autor",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "F-01.R2.C1.D2",
+                      "nom": "Connectar Play/Stop a motor_editor + Verificar crear → provar → tornar",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "F-01.E08",
+                          "mida": "E",
+                          "nom": "Connectar Play/Stop a motor_editor",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "F-01.E09",
+                          "mida": "E",
+                          "nom": "Verificar crear → provar → tornar",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 330
+                }
+              ],
+              "minuts_identificats": 720
+            },
+            {
+              "id": "F-02",
+              "nom": "Provar des de la casella seleccionada",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "F-02.R1.C1",
+                  "nom": "Origen de prova concret",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "F-02.R1.C1.D1",
+                      "nom": "Auditar entrada i selecció existents + Validar casella seleccionada + Afegir origen temporal al playtest",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "F-02.E01",
+                          "mida": "E",
+                          "nom": "Auditar entrada i selecció existents",
+                          "minuts_identificats": 45
+                        },
+                        {
+                          "id": "F-02.E02",
+                          "mida": "E",
+                          "nom": "Validar casella seleccionada",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "F-02.E03",
+                          "mida": "E",
+                          "nom": "Afegir origen temporal al playtest",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 165
+                    },
+                    {
+                      "id": "F-02.R1.C1.D2",
+                      "nom": "Interpretar origen al runtime + Connectar acció Provar des d’aquí + Verificar casella bona i bloquejada",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "F-02.E04",
+                          "mida": "E",
+                          "nom": "Interpretar origen al runtime",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "F-02.E05",
+                          "mida": "E",
+                          "nom": "Connectar acció Provar des d’aquí",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "F-02.E06",
+                          "mida": "E",
+                          "nom": "Verificar casella bona i bloquejada",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    }
+                  ],
+                  "minuts_identificats": 375
+                }
+              ],
+              "minuts_identificats": 375
+            }
+          ],
+          "minuts_identificats": 1275
+        },
+        {
+          "id": "A-U4-02",
+          "nom": "Recàrrega observable del joc",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "F-03",
+              "nom": "Recàrrega en calent",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "F-03.R1.C1",
+                  "nom": "Recàrrega transaccional",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "F-03.R1.C1.D1",
+                      "nom": "Classificar què es pot recarregar + Detectar canvis estables",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "F-03.E01",
+                          "mida": "E",
+                          "nom": "Classificar què es pot recarregar",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "F-03.E02",
+                          "mida": "E",
+                          "nom": "Detectar canvis estables",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "F-03.R1.C1.D2",
+                      "nom": "Preparar versió nova fora de l’estat viu + Comprovar dependències afectades",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "F-03.E03",
+                          "mida": "E",
+                          "nom": "Preparar versió nova fora de l’estat viu",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "F-03.E04",
+                          "mida": "E",
+                          "nom": "Comprovar dependències afectades",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "F-03.R1.C1.D3",
+                      "nom": "Publicar al límit de frame",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "F-03.E05",
+                          "mida": "E",
+                          "nom": "Publicar al límit de frame",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 450
+                },
+                {
+                  "id": "F-03.R2.C1",
+                  "nom": "Política d’estat i observabilitat",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "F-03.R2.C1.D1",
+                      "nom": "Migrar o reiniciar estat dependent + Mostrar resultat al creador",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "F-03.E06",
+                          "mida": "E",
+                          "nom": "Migrar o reiniciar estat dependent",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "F-03.E07",
+                          "mida": "E",
+                          "nom": "Mostrar resultat al creador",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "F-03.R2.C1.D2",
+                      "nom": "Connectar watcher al playtest + Provar canvi vàlid i canvi trencat",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "F-03.E08",
+                          "mida": "E",
+                          "nom": "Connectar watcher al playtest",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "F-03.E09",
+                          "mida": "E",
+                          "nom": "Provar canvi vàlid i canvi trencat",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 330
+                }
+              ],
+              "minuts_identificats": 780
+            },
+            {
+              "id": "F-04",
+              "nom": "Consola i inspector d'estat",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "F-04.R1.C1",
+                  "nom": "Snapshots i filtratge",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "F-04.R1.C1.D1",
+                      "nom": "Inventariar logs i inspector existents + Capturar un estat de joc llegible + Filtrar registres acotats",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "F-04.E01",
+                          "mida": "E",
+                          "nom": "Inventariar logs i inspector existents",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "F-04.E02",
+                          "mida": "E",
+                          "nom": "Capturar un estat de joc llegible",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "F-04.E03",
+                          "mida": "E",
+                          "nom": "Filtrar registres acotats",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "F-04.R1.C1.D2",
+                      "nom": "Resoldre selecció d’entitat per handle",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "F-04.E04",
+                          "mida": "E",
+                          "nom": "Resoldre selecció d’entitat per handle",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 270
+                },
+                {
+                  "id": "F-04.R2.C1",
+                  "nom": "Panells i diagnòstic útil",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "F-04.R2.C1.D1",
+                      "nom": "Projectar error a enllaç d’autor + Dibuixar consola i inspector",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "F-04.E05",
+                          "mida": "E",
+                          "nom": "Projectar error a enllaç d’autor",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "F-04.E06",
+                          "mida": "E",
+                          "nom": "Dibuixar consola i inspector",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "F-04.R2.C1.D2",
+                      "nom": "Connectar runtime de playtest al panell + Verificar error rastrejable al creador",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "F-04.E07",
+                          "mida": "E",
+                          "nom": "Connectar runtime de playtest al panell",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "F-04.E08",
+                          "mida": "E",
+                          "nom": "Verificar error rastrejable al creador",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    }
+                  ],
+                  "minuts_identificats": 300
+                }
+              ],
+              "minuts_identificats": 570
+            }
+          ],
+          "minuts_identificats": 1350
+        },
+        {
+          "id": "A-U4-03",
+          "nom": "Càmera i pistes executables",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "U4-01",
+              "nom": "Càmera: seguiment, sacsejada, límits i dead zone",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U4-01.R1.C1",
+                  "nom": "Càmera per dades i geometria",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U4-01.R1.C1.D1",
+                      "nom": "Auditar càmera i escala isomètrica + Calcular seguiment amb zona morta",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-01.E01",
+                          "mida": "E",
+                          "nom": "Auditar càmera i escala isomètrica",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U4-01.E02",
+                          "mida": "E",
+                          "nom": "Calcular seguiment amb zona morta",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "U4-01.R1.C1.D2",
+                      "nom": "Limitar càmera a mapa real + Calcular sacsejada determinista",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-01.E03",
+                          "mida": "E",
+                          "nom": "Limitar càmera a mapa real",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U4-01.E04",
+                          "mida": "E",
+                          "nom": "Calcular sacsejada determinista",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 330
+                },
+                {
+                  "id": "U4-01.R2.C1",
+                  "nom": "Composició i aplicació",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U4-01.R2.C1.D1",
+                      "nom": "Composar base i efectes de càmera + Connectar tween i càmera existent + Verificar cantonada i zona morta",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-01.E05",
+                          "mida": "E",
+                          "nom": "Composar base i efectes de càmera",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U4-01.E06",
+                          "mida": "E",
+                          "nom": "Connectar tween i càmera existent",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U4-01.E07",
+                          "mida": "E",
+                          "nom": "Verificar cantonada i zona morta",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    }
+                  ],
+                  "minuts_identificats": 210
+                }
+              ],
+              "minuts_identificats": 540
+            },
+            {
+              "id": "U4-02",
+              "nom": "Cinemàtiques amb pistes en paral·lel",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U4-02.R1.C1",
+                  "nom": "Pistes tipades i rellotge comú",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U4-02.R1.C1.D1",
+                      "nom": "Auditar cinemàtiques actuals abans d’estendre + Llegir una línia de temps",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-02.E01",
+                          "mida": "E",
+                          "nom": "Auditar cinemàtiques actuals abans d’estendre",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U4-02.E02",
+                          "mida": "E",
+                          "nom": "Llegir una línia de temps",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U4-02.R1.C1.D2",
+                      "nom": "Determinar clips actius al temps t + Avançar pistes en un sol rellotge",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-02.E03",
+                          "mida": "E",
+                          "nom": "Determinar clips actius al temps t",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U4-02.E04",
+                          "mida": "E",
+                          "nom": "Avançar pistes en un sol rellotge",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U4-02.R1.C1.D3",
+                      "nom": "Arbitrar pistes sobre el mateix canal",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-02.E05",
+                          "mida": "E",
+                          "nom": "Arbitrar pistes sobre el mateix canal",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 450
+                },
+                {
+                  "id": "U4-02.R2.C1",
+                  "nom": "Efectes, cancel·lació i ús",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U4-02.R2.C1.D1",
+                      "nom": "Executar accions pels ports existents + Finalitzar i tornar control al jugador",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-02.E06",
+                          "mida": "E",
+                          "nom": "Executar accions pels ports existents",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U4-02.E07",
+                          "mida": "E",
+                          "nom": "Finalitzar i tornar control al jugador",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U4-02.R2.C1.D2",
+                      "nom": "Connectar una escena paral·lela de producte + Verificar independència dels FPS",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-02.E08",
+                          "mida": "E",
+                          "nom": "Connectar una escena paral·lela de producte",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U4-02.E09",
+                          "mida": "E",
+                          "nom": "Verificar independència dels FPS",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 360
+                }
+              ],
+              "minuts_identificats": 810
+            }
+          ],
+          "minuts_identificats": 1350
+        },
+        {
+          "id": "A-U4-04",
+          "nom": "Autoría de timelines i salt segur",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "U4-03",
+              "nom": "Editor de línia de temps",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U4-03.R1.C1",
+                  "nom": "Edició reversible de pistes",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U4-03.R1.C1.D1",
+                      "nom": "Auditar document i lloc del panell + Projectar temps i píxels + Inserir un clip validat",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-03.E01",
+                          "mida": "E",
+                          "nom": "Auditar document i lloc del panell",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U4-03.E02",
+                          "mida": "E",
+                          "nom": "Projectar temps i píxels",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U4-03.E03",
+                          "mida": "E",
+                          "nom": "Inserir un clip validat",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "U4-03.R1.C1.D2",
+                      "nom": "Moure un clip amb snap + Redimensionar durada",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-03.E04",
+                          "mida": "E",
+                          "nom": "Moure un clip amb snap",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U4-03.E05",
+                          "mida": "E",
+                          "nom": "Redimensionar durada",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U4-03.R1.C1.D3",
+                      "nom": "Reordenar pistes sense canviar IDs",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-03.E06",
+                          "mida": "E",
+                          "nom": "Reordenar pistes sense canviar IDs",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 450
+                },
+                {
+                  "id": "U4-03.R2.C1",
+                  "nom": "Previsualització i persistència",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U4-03.R2.C1.D1",
+                      "nom": "Previsualitzar un temps sense efectes irreversibles + Dibuixar pistes amb focus i escala",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-03.E07",
+                          "mida": "E",
+                          "nom": "Previsualitzar un temps sense efectes irreversibles",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U4-03.E08",
+                          "mida": "E",
+                          "nom": "Dibuixar pistes amb focus i escala",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U4-03.R2.C1.D2",
+                      "nom": "Aplicar canvi i guardar/reobrir + Connectar amb l’editor de comandes",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-03.E09",
+                          "mida": "E",
+                          "nom": "Aplicar canvi i guardar/reobrir",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U4-03.E10",
+                          "mida": "E",
+                          "nom": "Connectar amb l’editor de comandes",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U4-03.R2.C1.D3",
+                      "nom": "Verificar escena autorada sencera",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-03.E11",
+                          "mida": "E",
+                          "nom": "Verificar escena autorada sencera",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 450
+                }
+              ],
+              "minuts_identificats": 900
+            },
+            {
+              "id": "U4-04",
+              "nom": "Saltar cinemàtiques i EscenaNoqueo com a cinemàtica",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U4-04.R1.C1",
+                  "nom": "Salt amb efectes finals controlats",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U4-04.R1.C1.D1",
+                      "nom": "Auditar efectes de Noqueo i escenes saltables + Construir pla de salt",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-04.E01",
+                          "mida": "E",
+                          "nom": "Auditar efectes de Noqueo i escenes saltables",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U4-04.E02",
+                          "mida": "E",
+                          "nom": "Construir pla de salt",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "U4-04.R1.C1.D2",
+                      "nom": "Aplicar final segur + Convertir EscenaNoqueo a dades",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-04.E03",
+                          "mida": "E",
+                          "nom": "Aplicar final segur",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U4-04.E04",
+                          "mida": "E",
+                          "nom": "Convertir EscenaNoqueo a dades",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U4-04.R1.C1.D3",
+                      "nom": "Connectar acció de salt i provar-la",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-04.E05",
+                          "mida": "E",
+                          "nom": "Connectar acció de salt i provar-la",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 90
+                    }
+                  ],
+                  "minuts_identificats": 420
+                }
+              ],
+              "minuts_identificats": 420
+            }
+          ],
+          "minuts_identificats": 1320
+        },
+        {
+          "id": "A-U4-05",
+          "nom": "Grups reutilitzables i overlay de depuració",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "U4-05",
+              "nom": "Prefabs de grups d'objectes (MAP-08)",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U4-05.R1.C1",
+                  "nom": "Definició i instanciació",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U4-05.R1.C1.D1",
+                      "nom": "Auditar objectes agrupats i MAP-08 + Capturar un grup com a prefab",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-05.E01",
+                          "mida": "E",
+                          "nom": "Auditar objectes agrupats i MAP-08",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U4-05.E02",
+                          "mida": "E",
+                          "nom": "Capturar un grup com a prefab",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "U4-05.R1.C1.D2",
+                      "nom": "Validar recursos i espai del prefab + Instanciar amb identitats noves",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-05.E03",
+                          "mida": "E",
+                          "nom": "Validar recursos i espai del prefab",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U4-05.E04",
+                          "mida": "E",
+                          "nom": "Instanciar amb identitats noves",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U4-05.R1.C1.D3",
+                      "nom": "Serialitzar definició i referències",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-05.E05",
+                          "mida": "E",
+                          "nom": "Serialitzar definició i referències",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 60
+                    }
+                  ],
+                  "minuts_identificats": 390
+                },
+                {
+                  "id": "U4-05.R2.C1",
+                  "nom": "Edició i ús d’autor",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U4-05.R2.C1.D1",
+                      "nom": "Aplicar grup amb una operació d’undo + Definir vincle i overrides",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-05.E06",
+                          "mida": "E",
+                          "nom": "Aplicar grup amb una operació d’undo",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U4-05.E07",
+                          "mida": "E",
+                          "nom": "Definir vincle i overrides",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    },
+                    {
+                      "id": "U4-05.R2.C1.D2",
+                      "nom": "Connectar biblioteca de grups al panell + Verificar dues còpies i desfer",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-05.E08",
+                          "mida": "E",
+                          "nom": "Connectar biblioteca de grups al panell",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U4-05.E09",
+                          "mida": "E",
+                          "nom": "Verificar dues còpies i desfer",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    }
+                  ],
+                  "minuts_identificats": 330
+                }
+              ],
+              "minuts_identificats": 720
+            },
+            {
+              "id": "U4-06",
+              "nom": "Overlay de depuració: col·lisions, regions, rutes",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U4-06.R1.C1",
+                  "nom": "Geometria de depuració",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U4-06.R1.C1.D1",
+                      "nom": "Auditar formes i overlays existents + Projectar col·lisions sense recomputar regles + Projectar regions i IDs",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-06.E01",
+                          "mida": "E",
+                          "nom": "Auditar formes i overlays existents",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U4-06.E02",
+                          "mida": "E",
+                          "nom": "Projectar col·lisions sense recomputar regles",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U4-06.E03",
+                          "mida": "E",
+                          "nom": "Projectar regions i IDs",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 180
+                    },
+                    {
+                      "id": "U4-06.R1.C1.D2",
+                      "nom": "Projectar rutes i casella bloquejada + Connectar controls i render debug + Cotejar dibuix i comportament",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-06.E04",
+                          "mida": "E",
+                          "nom": "Projectar rutes i casella bloquejada",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U4-06.E05",
+                          "mida": "E",
+                          "nom": "Connectar controls i render debug",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U4-06.E06",
+                          "mida": "E",
+                          "nom": "Cotejar dibuix i comportament",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    }
+                  ],
+                  "minuts_identificats": 390
+                }
+              ],
+              "minuts_identificats": 390
+            }
+          ],
+          "minuts_identificats": 1110
+        },
+        {
+          "id": "A-U4-06",
+          "nom": "Emissor genèric amb límit de recursos",
+          "mida": "A",
+          "fills": [
+            {
+              "id": "U4-07",
+              "nom": "Emissor de partícules genèric",
+              "mida": "B",
+              "fills": [
+                {
+                  "id": "U4-07.R1.C1",
+                  "nom": "Partícules amb pressupost finit",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U4-07.R1.C1.D1",
+                      "nom": "Auditar partícules i helpers ja existents + Llegir paràmetres de l’emissor + Calcular emissions amb residu",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-07.E01",
+                          "mida": "E",
+                          "nom": "Auditar partícules i helpers ja existents",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U4-07.E02",
+                          "mida": "E",
+                          "nom": "Llegir paràmetres de l’emissor",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U4-07.E03",
+                          "mida": "E",
+                          "nom": "Calcular emissions amb residu",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    },
+                    {
+                      "id": "U4-07.R1.C1.D2",
+                      "nom": "Crear partícula amb llavor explícita + Avançar estat i caducar partícules",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-07.E04",
+                          "mida": "E",
+                          "nom": "Crear partícula amb llavor explícita",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U4-07.E05",
+                          "mida": "E",
+                          "nom": "Avançar estat i caducar partícules",
+                          "minuts_identificats": 90
+                        }
+                      ],
+                      "minuts_identificats": 150
+                    }
+                  ],
+                  "minuts_identificats": 360
+                },
+                {
+                  "id": "U4-07.R2.C1",
+                  "nom": "Presentació i ús real",
+                  "mida": "C",
+                  "fills": [
+                    {
+                      "id": "U4-07.R2.C1.D1",
+                      "nom": "Projectar estat a instàncies visuals + Connectar emissor a una escena real + Mesurar límit i repetibilitat",
+                      "mida": "D",
+                      "fills": [
+                        {
+                          "id": "U4-07.E06",
+                          "mida": "E",
+                          "nom": "Projectar estat a instàncies visuals",
+                          "minuts_identificats": 60
+                        },
+                        {
+                          "id": "U4-07.E07",
+                          "mida": "E",
+                          "nom": "Connectar emissor a una escena real",
+                          "minuts_identificats": 90
+                        },
+                        {
+                          "id": "U4-07.E08",
+                          "mida": "E",
+                          "nom": "Mesurar límit i repetibilitat",
+                          "minuts_identificats": 60
+                        }
+                      ],
+                      "minuts_identificats": 210
+                    }
+                  ],
+                  "minuts_identificats": 210
+                }
+              ],
+              "minuts_identificats": 570
+            }
+          ],
+          "minuts_identificats": 570
+        }
+      ],
+      "minuts_identificats": 6975
+    }
+  ],
+  "minuts_identificats": 25020
+}

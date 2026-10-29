@@ -1,0 +1,340 @@
+{
+  "schemaVersion": 1,
+  "id": "mision_llave",
+  "name": "La llave del santuario",
+  "width": 16,
+  "height": 12,
+  "tileWidth": 64,
+  "tileHeight": 32,
+  "collisionGids": [],
+  "fogEnabled": false,
+  "fogRevealRadius": 1,
+  "lightingEnabled": false,
+  "ambientR": 0.350000,
+  "ambientG": 0.350000,
+  "ambientB": 0.400000,
+  "layers": [
+    {
+      "id": "eventos",
+      "name": "Eventos",
+      "visible": true,
+      "locked": false,
+      "opacity": 1.000000,
+      "order": 0,
+      "type": "event",
+      "events": [
+        {
+          "id": "cofre",
+          "name": "Cofre del rincón",
+          "position": {
+            "x": 3,
+            "y": 4
+          },
+          "pages": [
+            {
+              "id": "cofre_cerrado",
+              "name": "cofre_cerrado",
+              "trigger": "interact",
+              "requiresAllConditions": true,
+              "appearanceObjectId": "",
+              "conditions": [],
+              "commands": [
+                {
+                  "type": "texto.mostrar",
+                  "version": 1,
+                  "params": {
+                    "hablante": "",
+                    "texto": "El cofre cede. Dentro hay una llave oxidada."
+                  },
+                  "children": []
+                },
+                {
+                  "type": "inventario.dar",
+                  "version": 1,
+                  "params": {
+                    "cantidad": "1",
+                    "objeto": "llave_oxidada"
+                  },
+                  "children": []
+                },
+                {
+                  "type": "bandera.encender",
+                  "version": 1,
+                  "params": {
+                    "bandera": "cofre_abierto"
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "cofre_vacio",
+              "name": "cofre_vacio",
+              "trigger": "interact",
+              "requiresAllConditions": true,
+              "appearanceObjectId": "",
+              "conditions": [
+                {
+                  "kind": "flag",
+                  "reference": "cofre_abierto",
+                  "comparison": "==",
+                  "value": "",
+                  "negated": false
+                }
+              ],
+              "commands": [
+                {
+                  "type": "texto.mostrar",
+                  "version": 1,
+                  "params": {
+                    "texto": "El cofre está vacío."
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "puerta",
+          "name": "Puerta del santuario",
+          "position": {
+            "x": 9,
+            "y": 4
+          },
+          "pages": [
+            {
+              "id": "puerta_cerrada",
+              "name": "puerta_cerrada",
+              "trigger": "interact",
+              "requiresAllConditions": true,
+              "appearanceObjectId": "",
+              "conditions": [],
+              "commands": [
+                {
+                  "type": "control.si",
+                  "version": 1,
+                  "params": {
+                    "clase": "item",
+                    "referencia": "llave_oxidada"
+                  },
+                  "children": [
+                    {
+                      "type": "rama.si",
+                      "version": 1,
+                      "params": {},
+                      "children": [
+                        {
+                          "type": "texto.mostrar",
+                          "version": 1,
+                          "params": {
+                            "texto": "La llave gira con un chirrido."
+                          },
+                          "children": []
+                        },
+                        {
+                          "type": "bandera.encender",
+                          "version": 1,
+                          "params": {
+                            "bandera": "puerta_abierta"
+                          },
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "type": "rama.no",
+                      "version": 1,
+                      "params": {},
+                      "children": [
+                        {
+                          "type": "texto.mostrar",
+                          "version": 1,
+                          "params": {
+                            "texto": "Está cerrada. Hace falta una llave."
+                          },
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "puerta_ya_abierta",
+              "name": "puerta_ya_abierta",
+              "trigger": "interact",
+              "requiresAllConditions": true,
+              "appearanceObjectId": "",
+              "conditions": [
+                {
+                  "kind": "flag",
+                  "reference": "puerta_abierta",
+                  "comparison": "==",
+                  "value": "",
+                  "negated": false
+                }
+              ],
+              "commands": [
+                {
+                  "type": "texto.mostrar",
+                  "version": 1,
+                  "params": {
+                    "texto": "La puerta ya está abierta."
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "anciano",
+          "name": "Anciano del portal",
+          "position": {
+            "x": 2,
+            "y": 2
+          },
+          "pages": [
+            {
+              "id": "anciano_inicio",
+              "name": "anciano_inicio",
+              "trigger": "interact",
+              "requiresAllConditions": true,
+              "appearanceObjectId": "",
+              "conditions": [],
+              "commands": [
+                {
+                  "type": "texto.mostrar",
+                  "version": 1,
+                  "params": {
+                    "hablante": "Anciano",
+                    "texto": "Dicen que el cofre del rincón guarda la llave."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "anciano_con_llave",
+              "name": "anciano_con_llave",
+              "trigger": "interact",
+              "requiresAllConditions": true,
+              "appearanceObjectId": "",
+              "conditions": [
+                {
+                  "kind": "flag",
+                  "reference": "cofre_abierto",
+                  "comparison": "==",
+                  "value": "",
+                  "negated": false
+                }
+              ],
+              "commands": [
+                {
+                  "type": "texto.mostrar",
+                  "version": 1,
+                  "params": {
+                    "hablante": "Anciano",
+                    "texto": "¿Ya la tienes? La puerta del fondo te espera."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "anciano_final",
+              "name": "anciano_final",
+              "trigger": "interact",
+              "requiresAllConditions": true,
+              "appearanceObjectId": "",
+              "conditions": [
+                {
+                  "kind": "flag",
+                  "reference": "puerta_abierta",
+                  "comparison": "==",
+                  "value": "",
+                  "negated": false
+                }
+              ],
+              "commands": [
+                {
+                  "type": "texto.mostrar",
+                  "version": 1,
+                  "params": {
+                    "hablante": "Anciano",
+                    "texto": "Has abierto el santuario. Nadie lo había logrado."
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "altar",
+          "name": "Altar del santuario",
+          "position": {
+            "x": 13,
+            "y": 4
+          },
+          "pages": [
+            {
+              "id": "altar_lejos",
+              "name": "altar_lejos",
+              "trigger": "interact",
+              "requiresAllConditions": true,
+              "appearanceObjectId": "",
+              "conditions": [],
+              "commands": [
+                {
+                  "type": "texto.mostrar",
+                  "version": 1,
+                  "params": {
+                    "texto": "La puerta cerrada te separa del altar."
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "altar_abierto",
+              "name": "altar_abierto",
+              "trigger": "interact",
+              "requiresAllConditions": true,
+              "appearanceObjectId": "",
+              "conditions": [
+                {
+                  "kind": "flag",
+                  "reference": "puerta_abierta",
+                  "comparison": "==",
+                  "value": "",
+                  "negated": false
+                }
+              ],
+              "commands": [
+                {
+                  "type": "texto.mostrar",
+                  "version": 1,
+                  "params": {
+                    "texto": "Dejas la llave en el altar. La misión termina."
+                  },
+                  "children": []
+                },
+                {
+                  "type": "bandera.encender",
+                  "version": 1,
+                  "params": {
+                    "bandera": "mision_completada"
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "EST-35-ISOMETRIC-RENDERER",
+  "date": "2026-09-23",
+  "author": "Codex",
+  "status": "HECHO — relevo exclusivo de IsometricRenderer.",
+  "route": "Application.cpp → IsometricRenderer → juego; EditorApplication.cpp → IsometricRenderer → motor_editor.",
+  "scope": [
+    "Extraer cola, foco y configuración de oclusión a IsometricSceneData (C-19).",
+    "Extraer configuración no propietaria de luz, niebla, LUT y sombras a IsometricPostProcessData (C-23).",
+    "Mantener SpriteBatch, Framebuffer y su ciclo de vida GL en IsometricRenderer.",
+    "No tocar Application, EditorApplication, CMake, tests, demos ni el comportamiento de culling, FBO o los pases."
+  ],
+  "verification": [
+    "test_occlusion pasa 1/1 y conserva el contrato GL-free de C-19.",
+    "test_post_processing pasa 1/1 en el contexto gráfico local (0,86 s) y conserva los pases reales de C-23.",
+    "juego y motor_editor compilan; medir_alcance confirma ambas rutas y ningún fichero nuevo queda sin ejecutable.",
+    "La cabecera baja de 27 a 9 miembros directos y la línea base se actualiza sólo a la baja.",
+    "El primer intento de la prueba GL dentro del sandbox agotó sus 60 s por el servicio gráfico de macOS; la ejecución local autorizada la valida."
+  ],
+  "handoff": "Player se mantiene fuera: tests/Render/PlayerTests.cpp es WIP de otro agente. No se reabre Application aunque C-23 la comparta."
+}

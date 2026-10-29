@@ -1,0 +1,20 @@
+{
+  "id": "EST-36",
+  "date": "2026-09-22",
+  "author": "Codex",
+  "status": "HECHO — relevo de EnemyBrain; solo esta parte de EST-36.",
+  "actions": [
+    "Antes de tocar código: EnemyBrain conserva el rol de controlador GL-free que consume GameSession y el ejecutable juego; EnemyBrainData será la única representación de su estado mutable.",
+    "Método de relevo: mover las catorce piezas de estado de EnemyBrain a include/Game/EnemyBrainData.h, sin cambiar el contrato público ni tocar GameSession, Application, CMake o los otros tres headers de EST-36.",
+    "La comprobación se amplía en el test GL-free ya registrado test_enemy_brain; no se añade una fuente de src directamente a un target. La guardia debe bajar el contador de EnemyBrain de 19 a como máximo 15."
+  ],
+  "verification": [
+    "cmake --build out/build/macos-debug --target test_enemy_brain -j2: correcto.",
+    "ctest --test-dir out/build/macos-debug -R ^test_enemy_brain$ --output-on-failure: 1/1 correcto (etiqueta gl-free).",
+    "python3 tools/medir_alcance.py . --json <temporal> --comprobar: EnemyBrainData llega a juego desde EnemyBrain; EnemyBrain llega desde World.",
+    "python3 tools/linea_base_core.py --rapido: correcto. La línea base baja de forma acotada de 9 a 8 cabeceras con estado excesivo."
+  ],
+  "pending": [
+    "La guardia completa sigue informando deuda de ProjectSerializer.cpp y fotos antiguas de alcance de otros trabajos; no se ha reescrito esa línea base global desde esta tarea."
+  ]
+}

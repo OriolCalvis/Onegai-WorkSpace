@@ -1,0 +1,42 @@
+{
+  "id": "H8-07",
+  "date": "2026-09-24",
+  "author": "Codex",
+  "status": "HECHO — el culling histórico queda como oráculo explícito de prueba, no como duplicación de producto.",
+  "archivos_editados": [
+    "tests/Render/OcclusionTests.cpp",
+    "planificacion/seguimiento/C-19.json",
+    "tools/analizar_duplicados.py",
+    "tools/test_analizar_duplicados.py"
+  ],
+  "archivos_compartidos_sin_tocar": [
+    "include/Render/Culling.h"
+  ],
+  "scope": [
+    "C-19 registra el par exacto include/Render/Culling.h ↔ tests/Render/OcclusionTests.cpp con motivo, oráculo, prueba y regla de cambio.",
+    "analizar_duplicados solo reclasifica un ENVOLTORIO ya detectado cuando coincide exactamente con una excepción válida producción/prueba; no baja DUPLICADO ni CLON_PARCIAL.",
+    "Los registros malformados o duplicados no silencian el hallazgo; una excepción válida que deja de aplicarse hace fallar --comprobar sobre el árbol real.",
+    "El comentario de OcclusionTests deja de afirmar una copia byte a byte y describe el oráculo de equivalencia de comportamiento real."
+  ],
+  "mapa_del_codigo": {
+    "consulted": [
+      "C-19 en MAPA_DEL_CODIGO.md sitúa la consolidación de culling y su alcance de renderer.",
+      "include/Render/Culling.h y tests/Render/OcclusionTests.cpp están inventariados por el mapa; Culling llega a juego, motor_editor y level_editor según alcance_real.json.",
+      "La prueba test_occlusion pertenece al paquete C-19 y cubre 10 cámaras × 4 tamaños de mapa."
+    ],
+    "note": "No se regeneró MAPA_DEL_CODIGO.md: el árbol compartido contiene WIP ajeno y el mapa debe reflejar un corte coordinado."
+  },
+  "non_goals": [
+    "No se toca include/Render/Culling.h, IsometricRenderer.cpp, TileMap.cpp, Application.* ni CMake.",
+    "No se ocultan envoltorios sin registro ni se crea una excepción genérica por directorio, nombre o prefijo.",
+    "No se modifica ningún fichero de cruce o WIP de otros agentes."
+  ],
+  "verification": [
+    "python3 -m py_compile tools/analizar_duplicados.py tools/test_analizar_duplicados.py pasa.",
+    "python3 tools/test_analizar_duplicados.py y python3 tools/analizar_duplicados.py --comprobar pasan con 32 casos plantados y ancla real.",
+    "El enfoque de include/Render/Culling.h devuelve ORACULO_HISTORICO_INTENCIONAL, severidad info, registro C-19 y ninguna excepción sin aplicar.",
+    "Build aislado: test_occlusion y demo_tilemap compilan; ctest -R ^test_occlusion$ y demo_tilemap pasan.",
+    "git diff --check y tools/linea_base_core.py --rapido pasan."
+  ],
+  "handoff": "Si cambia el comportamiento de VisibleGridRange, no se edita legacyVisibleRange para hacer verde la prueba. Se revisan explícitamente la semántica, C-19, la excepción y test_occlusion; si deja de ser un oráculo necesario, se retira el registro y la copia en la misma tarea."
+}

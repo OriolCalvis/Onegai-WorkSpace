@@ -1,0 +1,31 @@
+{
+ "id": "PIXELLAB-L3",
+ "date": "2026-10-01",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol, sin commit",
+ "encargo": "Lote 3 del plan PixelLab: baldosas isometricas de PixelLab en terreno_mundo.png (suelos, aguas, tejados de los edificios viejos, interiores). Y el arreglo del tileset espejo.",
+ "arreglo": "ApplicationNivel::loadLevel definia la region de cada GID con la fila de LECTURA del PNG, pero TextureManager invierte los PNG al cargarlos (como compensan HudIconos, BancoAtlas y HojaPersonaje con rows-1-row). Con terreno_mundo.png de 10 filas (REMAPEO) cada GID dibujaba la celda de la fila espejo: la pradera (GID 1) salia como la chabola (GID 73), el adoquin como el banco... Los mapas se generaron por NOMBRE (tools/remapear_suelos.py: cesped -> pradera), asi que lo que se veia no era lo que decian los datos. Arreglado en el juego y en editor/src/level_editor.cpp (misma convencion). TODOS los mapas cambian de aspecto al que decian sus datos.",
+ "archivos": {
+  "nuevos": [
+   "assets/textures/pixellab/lote3/ (baldosas generadas + generaciones.json)"
+  ],
+  "modificados": [
+   "src/Engine/ApplicationNivel.cpp (fila del tileset contada desde abajo)",
+   "editor/src/level_editor.cpp (idem)",
+   "assets/textures/pixellab/tiles.json (+ baldosas por gid)",
+   "assets/textures/terreno_mundo.png (celdas sustituidas por tools/pixellab/importar_tiles.py)"
+  ]
+ },
+ "reglas": [
+  "gen_terreno_mundo.py vuelve a pisar las celdas: tras regenerar, python3 tools/pixellab/importar_tiles.py.",
+  "Cada baldosa cuesta 1 generacion; la cara superior (y=23..55 del bloque de 64) es lo unico que entra."
+ ],
+ "verification": [
+  "Capturas de ciudad_centro, mundi_landmass_1 y on_umedan en Claude outputs/pixellab/lote3/.",
+  "ctest -L gl-free sin fallos nuevos."
+ ],
+ "pendiente": [
+  "Transiciones entre suelos (create_topdown_tileset / create_tiles_pro) si Oriol las quiere.",
+  "Las 36 baldosas planas que queden sin dibujo (ver tiles.json)."
+ ]
+}

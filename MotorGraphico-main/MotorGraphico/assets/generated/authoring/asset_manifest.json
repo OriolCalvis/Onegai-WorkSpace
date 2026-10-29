@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "status": "authoring",
+  "generated": [
+    {
+      "id": "authoring_draconid_equipment_v1",
+      "path": "actors/authoring_draconid_equipment_v1.png",
+      "kind": "actor_reference",
+      "runtime": false,
+      "layers": ["body", "head", "chest", "legs", "weapon_main", "back"]
+    },
+    {
+      "id": "forest_creatures_elemental_v1",
+      "path": "creatures/forest_creatures_elemental_v1.png",
+      "kind": "enemy_reference",
+      "runtime": false,
+      "variants": ["normal", "moss", "fire", "electric", "ice", "corruption"],
+      "aura_separate": true
+    },
+    {
+      "id": "forest_walls_bridges_portals_v1",
+      "path": "tiles/forest_walls_bridges_portals_v1.png",
+      "kind": "construction_reference",
+      "runtime": false,
+      "tileable": true,
+      "families": ["floor", "wall", "bridge", "portal", "door"]
+    },
+    {
+      "id": "rpg_ui_icons_v1",
+      "path": "ui/rpg_ui_icons_v1.png",
+      "kind": "ui_reference",
+      "runtime": false,
+      "sizes": [24, 32, 48]
+    },
+    {
+      "id": "races_foundation_v1",
+      "path": "actors/races_foundation_v1.png",
+      "kind": "race_reference",
+      "runtime": false,
+      "races": ["drow", "elf", "fire_elemental", "ice_elemental", "dwarf", "catfolk", "birdfolk", "orc", "tiefling", "human_black", "lizardfolk", "ghost"]
+    },
+    {
+      "id": "equipment_layers_v1",
+      "path": "actors/equipment_layers_v1.png",
+      "kind": "equipment_reference",
+      "runtime": false,
+      "layers": ["head", "chest", "legs", "socks", "gloves", "boots", "weapon_main", "weapon_off", "back"]
+    },
+    {
+      "id": "races_extension_gnomes_goblins_minotaurs_v1",
+      "path": "actors/races_extension_gnomes_goblins_minotaurs_v1.png",
+      "kind": "race_reference",
+      "runtime": false,
+      "races": ["gnome", "goblin", "minotaur", "ghost", "lizardfolk", "catfolk", "birdfolk", "drow", "human_black"]
+    },
+    {
+      "id": "bridge_directional_construction_v1",
+      "path": "tiles/bridge_directional_construction_v1.png",
+      "kind": "tile_reference",
+      "runtime": false,
+      "tileable": true,
+      "directions": ["horizontal", "vertical", "diagonal", "turn_left", "turn_right", "junction", "end_cap", "rail", "pillar"]
+    },
+    {
+      "id": "interiors_furniture_windows_v1",
+      "path": "world/interiors_furniture_windows_v1.png",
+      "kind": "prop_reference",
+      "runtime": false,
+      "families": ["table", "chair", "bench", "bed", "bookshelf", "counter", "forge", "workbench", "barrel", "crate", "chest", "torch", "lamp", "window"]
+    },
+    {
+      "id": "interiors_materials_furniture_v2",
+      "path": "world/interiors_materials_furniture_v2.png",
+      "kind": "prop_material_reference",
+      "runtime": false,
+      "materials": ["oak", "dark_wood", "pale_stone", "red_brick", "blue_ceramic", "iron"],
+      "families": ["table", "chair", "stool", "bench", "bar", "mug", "jug", "bed", "shelf", "chest", "torch", "window"]
+    },
+    {
+      "id": "terrain_agriculture_desert_mines_v1",
+      "path": "tiles/terrain_agriculture_desert_mines_v1.png",
+      "kind": "tile_terrain_reference",
+      "runtime": false,
+      "tileable": true,
+      "families": ["cobblestone", "clay_tile", "wood_floor", "sand", "mud", "puddle", "water", "lava", "mine_rock", "ore", "cactus", "wheat", "vegetable_garden"],
+      "tile_spec": {
+        "projection": "isometric_2_1",
+        "tileWidth": 128,
+        "tileHeight": 64,
+        "seamPolicy": "must_repeat_on_north_east_south_west_edges",
+        "requiredVariants": ["center", "edge_north", "edge_east", "edge_south", "edge_west", "corner_ne", "corner_se", "corner_sw", "corner_nw", "transition"],
+        "overlaysSeparated": true,
+        "collisionSeparated": true,
+        "seamTest": "2x2_repeat_without_visible_seam"
+      }
+    },
+    {
+      "id": "fauna_domestic_fairies_v1",
+      "path": "creatures/fauna_domestic_fairies_v1.png",
+      "kind": "creature_reference",
+      "runtime": false,
+      "families": ["bird", "snake", "bat", "rabbit", "fox", "cat", "dog", "goat", "sheep", "cow", "chicken", "horse", "fairy"]
+    },
+    {
+      "id": "sky_vfx_mining_lights_v1",
+      "path": "world/sky_vfx_mining_lights_v1.png",
+      "kind": "vfx_reference",
+      "runtime": false,
+      "families": ["sun", "moon", "stars", "cloud", "wind", "rain", "snow", "fire", "ice", "water", "lava", "smoke", "minecart", "pickaxe", "coal", "ore", "gem"]
+    },
+    {
+      "id": "tileable_elemental_floors_props_v1",
+      "path": "tiles/tileable_elemental_floors_props_v1.png",
+      "kind": "tile_terrain_and_prop_reference",
+      "runtime": false,
+      "tileable": true,
+      "floorFamilies": ["ice", "water", "lava", "mine_rock", "natural_rock", "precious_ore", "gravel"],
+      "propFamilies": ["chair", "stool", "beer_jug"],
+      "floorVariants": ["center", "edge_north", "edge_east", "edge_south", "edge_west", "corner_ne", "corner_se", "corner_sw", "corner_nw", "transition"],
+      "propsSeparateFromTiles": true,
+      "tileSpec": {
+        "projection": "isometric_2_1",
+        "tileWidth": 128,
+        "tileHeight": 64,
+        "repeatTest": "2x2",
+        "seamPolicy": "no_visible_seams"
+      }
+    }
+  ],
+  "next_batches": [
+    {"id": "actor_layers_runtime_v1", "kind": "runtime_actor_layers", "priority": "P0"},
+    {"id": "forest_creature_runtime_v1", "kind": "runtime_enemies", "priority": "P0"},
+    {"id": "construction_runtime_v1", "kind": "runtime_tiles", "priority": "P0"},
+    {"id": "world_props_runtime_v1", "kind": "runtime_props", "priority": "P1"},
+    {"id": "menus_icons_runtime_v1", "kind": "runtime_ui", "priority": "P1"}
+  ]
+}

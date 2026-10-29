@@ -1,0 +1,56 @@
+{
+  "id": "H2-03",
+  "date": "2026-10-01",
+  "author": "opencode",
+  "status": "HECHO en el árbol del Mac, sin commit (05/10, Claude): los estados se ven con icono y rondas en el combate en pergamino. La mitad GL-free de opencode (ConditionWidget, 01/10) sigue igual; el montaje se hizo sobre el pergamino (ver «montaje»).",
+  "dependencias": [
+    "H0-06 (versionado en 8b338a4; HEAD roto curado junto a 0476bb6)"
+  ],
+  "criterio_de_cierre": "JUGABILIDAD_FASE_H.md H2-03: 'Un enemigo envenenado muestra el icono y el contador, y ambos bajan por ronda'.",
+  "scope": [
+    "include/HUD/ConditionWidget.h: NUEVO, clase GL-free (namespace Game, patron DiceRollWidget). show(etiqueta, active, catalog) guarda foto; displayLines() devuelve etiqueta + una linea por condicion en el orden de la ficha.",
+    "src/HUD/ConditionWidget.cpp: NUEVO, 1 linea en motor_level. Formato: '- Nombre: N rondas[s] [xN] [(-dmg/ronda)]'; UNTIL_CURED pinta 'hasta curarse' (no miente rondas); id desconocido usa el id (nunca revienta); documenta el montaje pendiente.",
+    "tests/Game/ConditionWidgetTests.cpp: NUEVO, 11 casos (10 a mano + integracion: apply + tick_conditions de verdad, 3->2 rondas).",
+    "cmake/ConditionWidgetTests.cmake: NUEVO, patron DiceRollWidgetTests sin copiar_assets (sin assets).",
+    "CMakeLists.txt: +2 lineas por hunk-staging (fuente en motor_level + include del test, mismo commit que su .cmake, ley 3)."
+  ],
+  "non_goals": [
+    "No se toca Application.* (M, H1-03/H1-05 + MenuJugador), GameSession*, CharacterSheet.*, ConditionEngine.*, HudWidgets.*, HUD/Iconos.* (WIP ARTE/FICHA) ni zonas H2-02/AV1-03/AV0-01/E-12/CAPTURAS.",
+    "Sin iconos: son de la zona ARTE/FICHA (HudTextLayoutTests/Atlas en vuelo); el widget es solo texto, complementario.",
+    "El widget no avanza rondas: lee la ficha. El tick lo hace BattleState::tickRound (H0-06).",
+    "No se regenera MAPA_DEL_CODIGO.md (pla/dades.py reservado por ALPHA-00) ni alcance_real.json (H8-01/D0007)."
+  ],
+  "verification": [
+    "test_condition_widget 11/11 PASS; ctest -R Passed con etiquetas unit;gl-free.",
+    "Falsabilidad por mutacion (3/3 cazadas, restaurado y reverificado 11/11): hasta-curarse miente rondas (1 rojo), marca de dano incondicional (1 rojo), show sin clear acumula (2 rojos).",
+    "Suite GL-free 187 tests: 176 pass; 6 rojos reales atribuidos (demo_creacion_personaje + demo_nova_partida por classes.json M ajeno; test_gdb12_screens por InventoryScreen M de Codex; test_catalog_content por catalogos M ajenos; 2 linea_base_core por .cmake sin versionar ajenos) + 5 Not Run ajenos (pergamino/quest_log/options_file/personajes_capas/editor_apariencia: sus binarios compilan al pedirlos, no cuelgan de suite_gl_free en este arbol).",
+    "analizar_duplicados --comprobar OK: 0 SOLAPAMIENTO_FUNCIONAL. comprobar_fragmentos_cmake: solo rojo ajeno G15ExportPanel. diff --check limpio.",
+    "juego, level_editor y motor_editor compilan con la fuente nueva.",
+    "H0-06 verificado en worktree limpio del HEAD curado (0476bb6): motor_core + test_battle_state 14/14 + test_g10_pause_and_hud 5/5 + juego compilan."
+  ],
+  "handoff_montaje": [
+    "Application.h (limpio cuando H1-03/H1-05 aterricen): Game::ConditionWidget por bando visible.",
+    "Tras battle->tickRound() (Application.cpp:847): widget.show(nombre, combatant.sheet().conditions, conditionCatalog) con el catalogo ya inyectado (H0-04).",
+    "ApplicationHud.cpp: pintar displayLines() junto al marco del combatiente; hide() para portadores sin condiciones (politica del montaje)."
+  ],
+  "montaje": {
+    "date": "2026-10-05",
+    "author": "Claude (Cowork)",
+    "por_que_asi": "Desde H2-06 los estados de un combate viven en dos sitios: la mesa de cartas (lo que deja una carta, y las condiciones sobre quien no tiene ficha) y la ficha (D-09). ConditionWidget solo leía la ficha y era texto; el combate en pergamino necesita los dos, con icono.",
+    "scope": [
+      "include/Game/EstadosCombate.h + src/Game/EstadosCombate.cpp: NUEVOS (motor_level, sin GL). estadosDe(batalla, aliado, i): los de la mesa y los de la ficha, con su icono (el de la condición; si es de una carta, el de lo que hace: sangrado, paralizado, marcado, guardia_rota, enfurecido, mejora o perjuicio), las rondas que le quedan, si va a favor o en contra y su texto. duracionDe().",
+      "Game::VistaBarra: estadosHeroe y estadosEnemigos (los rellena vistaDeBatalla). Game::BarraCombate: Zona::Estado, estadoSenalado(), senalaNada().",
+      "src/HUD/Pergamino/MesaCombateEstados.cpp: NUEVO. La ficha del estado (icono, borde rojo/verde, rondas en la esquina); en la placa del enemigo con su nombre (uno o dos) o en fila (tres o más, «+N»); los del héroe bajo su retrato del orden de turno; el emergente con nombre, lo que queda y lo que hace al pasar el ratón o con un clic.",
+      "BattleState::conditionCatalog() y CartasEnCombate::catalogo() (lectura). Application::teclasCombate: el ratón fuera de los estados apaga su emergente."
+    ],
+    "verification": [
+      "test_barra_combate 14/14 con EstadosCombateTests: un enemigo envenenado (en su ficha, 3 rondas) enseña el icono «envenenado» y el contador 3, 2, 1 y desaparece; Canción del Otoño deja «perjuicio» 2 → 1 → nada; Ataque del Rayo deja «paralizado» y el daño por turno «sangrado»; Moral Inconmensurable da al héroe «mejora» todo el combate; la vista y el ratón.",
+      "test_pergamino 58/58: las fichas en la placa (y en fila con muchas), bajo el retrato del héroe (3, o 2 y «+N») y el emergente.",
+      "Juego real: Canción del Otoño en el saqueador (2 → 1 → se acaba) e Invocación Elemental en Nerea (2 → 1 → se acaba), con los dos emergentes. Capturas en Claude outputs/h2_dado_estados_2026-10-05/."
+    ],
+    "pending": [
+      "Fuera del combate aún no se ven las condiciones de la ficha que duran más (D-09).",
+      "Con el teclado no se puede señalar un estado: los del enemigo llevan el nombre en su placa; los del héroe, solo el emergente con el ratón."
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+ "id": "TIERS-01",
+ "date": "2026-10-07",
+ "author": "claude (Cowork)",
+ "status": "PRUEBA GUARDADA — el Cazademonios en Tier 3, 4 y 5 para ver como subiria una armadura por tier. Oriol: «guarda lo del cazademonios, ya seguiremos otro dia con las armaduras de tiers superiores». Las piezas no estan en los atlas ni en el catalogo: tools/actores_trajes_caza.py no lo importa nadie.",
+ "origen": "Oriol (07/10): «¿podemos hacer un try de como se veria una armadura para el Cazademonios en tier 3 tier 4 y tier 5? para hacernos una idea de como quedaria». Al verla pidio las particulas por tier (hecho para todas en PART-01c).",
+ "diseno": [
+  "Tier 2 (el de ahora): abrigo largo abierto con el forro rojo, sombrero de ala ancha, botas con hebillas, revolver runico (raro).",
+  "Tier 3, de Plata (brillo +6): plata en lo metalico, bandolera de balas de plata, una hombrera de hierro negro, brazales, pluma carmesi en el sombrero, rodilleras y punteras de plata; el revolver raro en plata.",
+  "Tier 4, del Ocaso (+8): forro y cuello carmesi, peto de hierro negro bajo el abrigo, dos hombreras (la grande con pinchos de hueso), calavera en el cinturon, cuernos en el sombrero, botas de hierro; revolver epico nuevo (cañon largo con la hoja debajo).",
+  "Tier 5, del Abismo (+10): abrigo negro violeta con el forro de runas encendidas y el bajo raido, alas de demonio a la espalda, hombreras con pinchos, calavera, cuernos grandes y calavera en el sombrero; revolver mitico nuevo (dos cañones, runas encendidas).",
+  "Particulas: el abrigo, sombra violeta (7a4ab4); el revolver, animas."
+ ],
+ "ver": [
+  "El dibujo (sin tocar los atlas): python3 tools/ver_cazademonios_tiers.py salida.png 4",
+  "En el motor: en un arbol aparte (git worktree add --detach <dir> HEAD), añadir al final de tools/actores_trajes.py «import actores_trajes_caza», correr python3 tools/gen_personajes.py ahi y, desde esa carpeta, demo_brillo_equipo con las piezas sueltas y el nivel de cada tier, por ejemplo: EGL_PLATFORM=surfaceless DEMO_BRILLO_ZOOM=4 DEMO_BRILLO_SIN_CAPA=1 DEMO_BRILLO_FONDO=0.40,0.45,0.34 <build>/demo_brillo_equipo 150 \"cabeza=caza_sombrero_t5@sombra:7a4ab4#10+torso=caza_abrigo_t5@sombra:7a4ab4#10+piernas=caza_pantalon_t5@sombra:7a4ab4#9+pies=caza_botas_t5@sombra:7a4ab4#9+arma=caza_revolver_t5@animas#10\" (DEMO_BRILLO_PASEO=1 para que ande y gire)."
+ ],
+ "siguiente": [
+  "Si se queda: importar actores_trajes_caza al final de actores_trajes.py, crear los objetos de Tier 3-5 del set en el catalogo (epico, legendario y mitico: el brillo de su tier) con su tema en actores_estetica, y hacer lo mismo con otras clases."
+ ],
+ "sesion": "sesiones/2026-10-07-claude-particulas.md"
+}

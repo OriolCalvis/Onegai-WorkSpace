@@ -1,0 +1,66 @@
+{
+  "id": "H2-06",
+  "paquete_corte_b": "D-11 (vocabulario de efectos) para las cartas de 4 clases; puente de H1-04 (la ficha creada lleva sus cartas al combate)",
+  "date": "2026-10-05",
+  "author": "Claude (Cowork)",
+  "status": "HECHO en el arbol, sin commit",
+  "pedido": "Oriol: «continua amb l'integracio del flux de partida nova i creacio d'una de les 6 classes mes parametritzades com el bardo de les 4 estacions, apostata, senyor de les armes o furia dels creadors». Despues: las cuatro, solo combate (lo de fuera, al final); todas las cartas estandar desde el inicio, las de creador (max. 3) son las que cambiaran. A mitad: al crear no se reparten stats (base 0, la raza suma, despues solo el equipo activo).",
+  "descripcion": "Las cartas de Bardo de las Cuatro Estaciones, El Apostata, Senor de las Armas y Furia de los Creadores se juegan en el combate real: filas de carta en el menu de combate con su motivo cuando no se pueden jugar, detalle de la carta marcada en el cuadro de abajo, accion principal/movimiento/canalizacion/libres, reacciones preparadas que saltan solas, estaciones del bardo, escudo de sombras, invocaciones, estados con tirada enfrentada, Desgarro. Cada carta hace lo que dice (DEC-02): el efecto es un gancho en skills.json/passives.json y no hay codigo por carta. Y la creacion de personaje pierde el paso de reparto: base 0 + raza.",
+  "actions": [
+    "GanchosCarta (sin GL): lee el DSL de effects[].mechanicHook (el de conditions.json): estado, escudo, invoca, bloquea, dano, cura, ataque_arma, devuelve_carta, recupera_carta, pendiente, requiere_posiciones...",
+    "CatalogoCartas: skills + passives + conditions + summons; cada carta con sus ganchos y su motivo de bloqueo ([pendiente], posiciones, efecto no reconocido).",
+    "CartasEnCombate (IMesaCombate, sin GL; CartasJugar.cpp y CartasTiradas.cpp): la mano, el turno, estados, escudos, invocaciones, reacciones y la pasiva; tiradas enfrentadas Nd6 por SkillExecutor; dano = dados x grado (0, 1/2 min 1, 1, x1,5).",
+    "BattleState delega en la mesa si la hay (resolveAllyAction, resolveEnemyTurn, tickRound); sin ficha o sin cartas, el combate de siempre. Skill.cpp: definicionAtaqueBasico/definicionDeHabilidad compartidas.",
+    "GameSession::startBattle monta la mesa desde la ficha; el heroe se llama como su ficha en el registro.",
+    "CharacterCreation: la ficha conoce todas las cartas de su clase (learnableSkills ademas de las de arranque).",
+    "Application: menuDeCartas (filas; el menu sube por encima del cuadro de combate si lo taparia) y lineasDeCombate (detalle de la fila marcada); confirmBattleCommand juega la fila y no cierra el turno con libres, reacciones o canalizacion. HudPanel/HudCommandMenu: transform()/setTransform().",
+    "tools/importar_clases_companeros.py: GANCHOS y GANCHOS_PASIVA de las 4 clases (skills.json/passives.json solo ganan effects y la etiqueta Cancion).",
+    "Creacion sin reparto: fuera Paso::Reparto (CharacterCreationScreen, NewGameFlow, PantallaNuevaPartida) y la bolsa de 12; kStatMin = 0; el tope de 6 en tier 0-1 se sigue comprobando. Pruebas y demos al dia (demo_creacion_personaje esperaba 61 clases; hay 63)."
+  ],
+  "archivos": {
+    "nuevos": [
+      "include/Game/GanchosCarta.h (95) + src/Game/GanchosCarta.cpp (255)",
+      "include/Game/CatalogoCartas.h (60) + src/Game/CatalogoCartas.cpp (89)",
+      "include/Game/MesaCombate.h (67)",
+      "include/Game/CartasEnCombate.h (187) + src/Game/CartasEnCombate.cpp (379), src/Game/CartasJugar.cpp (304), src/Game/CartasTiradas.cpp (431), src/Game/CartasEnCombateInterno.h (77)",
+      "tests/Game/CartasPrueba.h (140), tests/Game/CartasEnCombateTests.cpp (208), tests/Game/CartasClasesTests.cpp (188): 30 casos",
+      "cmake/CartasCombateTests.cmake (va en el MISMO commit que su include() en CMakeLists.txt)",
+      "sesiones/2026-10-05-claude-cartas.md"
+    ],
+    "modificados": [
+      "CMakeLists.txt (5 fuentes en motor_level + include de CartasCombateTests.cmake)",
+      "include/Game/BattleState.h, src/Game/BattleState.cpp",
+      "include/Game/GameSession.h (setCatalogoCartas), src/Game/GameSessionInteraccion.cpp",
+      "include/Game/Skill.h, src/Game/Skill.cpp",
+      "include/RPG/Definitions/SkillDefinition.h, include/RPG/Definitions/DefinicionesRasgos.h, include/RPG/Catalogs/CatalogLoadersHabilidades.h, include/RPG/Catalogs/CatalogLoadersRasgos.h (mechanicHooks)",
+      "assets/catalogs/skills.json, assets/catalogs/passives.json, tools/importar_clases_companeros.py",
+      "include/Engine/Application.h, include/Engine/ApplicationInternal.h, src/Engine/Application.cpp, src/Engine/ApplicationHud.cpp, src/Engine/ApplicationNivel.cpp",
+      "include/Render/HudWidgets.h, include/Render/HudTextWidgets.h",
+      "include/RPG/CharacterCreation.h, src/RPG/CharacterCreation.cpp, include/RPG/CharacterCreationScreen.h, src/RPG/CharacterCreationScreen.cpp, include/Game/NewGameFlow.h, src/Game/NewGameFlow.cpp, include/Engine/PantallaNuevaPartida.h, src/Engine/PantallaNuevaPartida.cpp",
+      "tests/CharacterCreationFlowTests.cpp, tests/RPG/CharacterCreationFlowTests.cpp, tests/Game/NewGameFlowTests.cpp, tests/Game/EditorAparienciaTests.cpp",
+      "examples/demo_creacion_personaje.cpp, examples/demo_nova_partida.cpp, examples/creacion_personaje.cpp"
+    ]
+  },
+  "ley_del_repo": {
+    "techo_500": "ninguno pasa de 500 (CartasTiradas.cpp 431, CartasEnCombate.cpp 379)",
+    "cuellos": "Application.h 515 (techo 519), Application.cpp 1272 (techo 1347), GameSession.h 546 (techo 546)",
+    "miembros": "CartasEnCombate.h 6, CatalogoCartas.h 7; Application.h 96 segun la guardia (techo 109)",
+    "frontera_GL": "todo lo nuevo en motor_level, sin GL; en motor_core ninguna fuente nueva (rehenes sin cambios)",
+    "guardia": "linea_base_core --rapido en el Mac: antes 9 problemas, despues 10: solo se suma cmake/CartasCombateTests.cmake sin versionar (+7 AVISOS de fuentes nuevas sin versionar). Se arregla con el commit. Guardia entera en el contenedor: las mismas 44 deudas con y sin el cambio."
+  },
+  "verification": [
+    "test_cartas_combate 30/30 (las cuatro clases, reacciones, estaciones, escudo, invocaciones, Desgarro, tier 2, pendientes bloqueadas, curas reales); 17/17 mutaciones la ponen en rojo.",
+    "Creacion: test_h104_new_game_flow, test_new_game_flow, test_character_creation_flow, test_character_creation, test_editor_apariencia y demo_creacion_personaje en verde.",
+    "ctest GL-free en el contenedor 192/197: las 5 que fallan fallan igual sin el cambio (test_g14_hud_timers_commerce no enlaza en Linux, demo_nova_partida por el orden de un unordered_map en Linux, test_gdb12_screens, test_catalog_content, linea_base_core entera).",
+    "Juego real en el contenedor (OpenGL por software): partida nueva de 14 pasos con base 0 + raza y un combate con cada clase. Capturas y GIF: Claude outputs/cartas_2026-10-05/.",
+    "Aplicado al arbol del Mac el 05/10 ~10:45 (hora del Mac) con preimagen md5 36/36, los 14 nuevos ausentes, patch --dry-run limpio y postimagen 50/50 (copia del parche: Claude outputs/cartas_2026-10-05/H2-06.patch)."
+  ],
+  "pending": [
+    "Commit: los ficheros nuevos y cmake/CartasCombateTests.cmake con su include() en el mismo commit.",
+    "Preguntas para Oriol (LEEME): cartas de creador a tier 1; «+2 CA» como +2 dados de defensa fisica; stat de lanzamiento por defecto DES; los «2 PA» de Invocacion Elemental; que hace el contador de Desgarro; como se entra En Furia y que cartas son de magia; pasiva y dos cartas del Senor de las Armas; con base 0, vida de tier 1 (10-24 en las pruebas) frente a golpes de 10/15, y 28 de 182 piezas de equipo inicial con requisito de stat; FUE de las invocaciones.",
+    "Fuera del combate (descansos, el dia, la estacion): al final, como pidio Oriol.",
+    "Encontrado de paso: «Volver al titulo» desde Has caido o desde la pausa revienta (m_session.reset() y Application::update() la usa; la escena de titulo no carga nivel). ARREGLADO el 05/10 (Claude): la partida se rehace de cero en el cambio de escena (Application::partidaDeCero); ver sesiones/2026-10-05-claude-dado-estados.md.",
+    "PLA_DEFINITIU.md (G-09) aun describe el paso Reparto: se quita regenerando desde planificacion/pla/dades.py.",
+    "Libre para otros: ya no hace falta hablar antes de tocar BattleState ni el menu de combate."
+  ]
+}

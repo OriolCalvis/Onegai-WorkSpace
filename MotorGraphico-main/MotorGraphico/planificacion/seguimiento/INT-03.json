@@ -1,0 +1,28 @@
+{
+ "id": "INT-03",
+ "date": "2026-10-05",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol (commit local); entrega al Mac como paquete (base 8176eb7) con una ancla en ApplicationNivel.cpp. Hay C++: recompilar.",
+ "encargo": "«Por cierto, tengo que decir que en los muebles las sombras hacen que parezca que el objeto esté volando... habría que ajustarlas un poco.»",
+ "resultado": {
+  "causa": "Entity::renderShadow pone a cada objeto una mancha blob de 32x13 px en la punta de delante del rombo (donde se apoyan los pies de un personaje). Un mueble del kit ocupa todo el rombo: la mancha quedaba delante y debajo de su base, separada.",
+  "sombra": "La sombra va dibujada en la hoja, debajo de la pieza (tools/iso/peces_iso.py, Escena.ombra): la planta (la proyeccion vertical de las caras sobre el suelo), un pixel mas ancha y desplazada 2 px a la derecha (la luz del kit viene de la izquierda), recortada a su rombo; para los dibujos sin caras (copas, matas), una elipse del ancho del dibujo; las piezas planas no tienen. Alfa 100/255, color de contorno. Muebles, decorados y vegetacion.",
+  "motor": "HojaSprites::sombraBlob («sombraBlob»: false en los manifiestos del kit: paredes, muebles, decorados, vegetacion) -> Entity::setSombraBlob: sin mancha. Los personajes y los props de PixelLab siguen con ella.",
+  "pixellab": "0 generaciones"
+ },
+ "archivos": {
+  "modificados": [
+   "tools/iso/peces_iso.py, tools/iso/exportar_mobles.py, tools/iso/exportar_decorats.py (las hojas se quedan en su sitio en sprites.json), tools/iso/vegetacio.py (el arbol seco, poca sombra)",
+   "assets/textures/kit_mobles.*, kit_mobles_alts.*, kit_decorats.*, kit_vegetacio.*, kit_parets.json",
+   "include/Game/RegistroSprites.h, src/Game/RegistroSprites.cpp, include/Render/Entity.h, src/Render/Entity.cpp",
+   "src/Engine/ApplicationNivel.cpp (con ancla en el Mac)",
+   "tests/Game/RegistroSpritesTests.cpp, tests/Render/StaticEntityTests.cpp",
+   "Claude outputs/int2/LEEME.md (seccion 3) e int3_sombras_antes_ahora.png"
+  ]
+ },
+ "verificacion": [
+  "test_registro_sprites 8/8 (caso nuevo las_hojas_del_kit_no_llevan_la_sombra_blob), test_render_static_entity 15/15 (static_entity_sombra_blob_se_puede_apagar)",
+  "capturas del juego: tabernas de Guskedor, Klimnebra y Venordemn, la Taberna Humilde y la plaza del Casco Antiguo",
+  "validar_todo 0 errores; ctest: las 18 fallas de siempre; linea_base_core con las 35 deudas previas"
+ ]
+}

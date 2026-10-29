@@ -1,0 +1,33 @@
+{
+ "id": "MON-01",
+ "date": "2026-10-05",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol (commit local); entrega al Mac como paquete (base c018fe0)",
+ "encargo": "«Con la estetica de habbo, crea tambien los edificios grandes» y «los edificios tienen tambien que tener estetica habbo como lo demas». Decisiones: el tamano actual de las huellas; identidad de cada uno + geometria de Aegroum; tras ver el primer castillo, Oriol pide mantener mas la esencia de los anteriores (formas y colores) con los anillos flotantes y los elementos fantasiosos.",
+ "resultado": {
+  "monumentos": "castillo 13x10, opera 10x9, universidad 10x9, biblioteca 12x9, iglesia sin techo 10x9, coliseo 8x6, cuartel 11x8, hechos con el kit (tools/iso/monuments_ciutat.py) con las formas y colores de los de PixelLab y la fantasia: anillos de oro que flotan, puntas y orbes de cristal, libros que flotan alrededor de la cupula de la biblioteca, el anillo de piedra roto de los Perdidos sobre la iglesia",
+  "motor": "tools/iso/exportar_monuments.py -> assets/textures/iso/monuments/ (indice monuments.json) -> importar_monumentos.py (hojas de tiras iso_mon_*); los siete de PixelLab quedan retirado en su indice; bajo cada monumento, el suelo de la calle (tiles.json)",
+  "pixellab": "0 generaciones"
+ },
+ "archivos": {
+  "nuevos": [
+   "tools/iso/monuments_ciutat.py, tools/iso/exportar_monuments.py",
+   "assets/textures/iso/monuments/ (siete imagenes y monuments.json)",
+   "assets/textures/monumentos/iso_mon_*.png/.json (hojas de tiras)",
+   "Claude outputs/monuments_vegetacio/ (comparacion, capturas, LEEME)",
+   "planificacion/seguimiento/MON-01.json"
+  ],
+  "modificados": [
+   "tools/pixellab/importar_monumentos.py (lee tambien iso/monuments/monuments.json)",
+   "assets/textures/pixellab/monumentos.json (los siete de PixelLab, retirado)",
+   "assets/textures/monumentos.json, assets/textures/sprites.json",
+   "assets/textures/pixellab/tiles.json y terreno_mundo.png (los tiles viejo_* con el suelo de la calle)"
+  ]
+ },
+ "verificacion": [
+  "ctest: demo_ciudad, test_object_catalog, test_registro_sprites, test_bloques, test_monumentos, test_mascotes, test_bandada OK (el resto de fallos son los de siempre: GL, test_catalog_content, test_gdb12_screens, test_marcar_paquetes)",
+  "conectividad (tools/conectividad.py) 100% en los cuatro mapas; con los objetos que bloquean, todas las puertas alcanzables",
+  "linea_base_core: las mismas 35 deudas previas (sin C++)",
+  "capturas del juego de los siete monumentos y de la vegetacion en los cuatro mapas"
+ ]
+}

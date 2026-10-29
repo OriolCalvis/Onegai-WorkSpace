@@ -1,0 +1,23 @@
+{
+  "id": "E-14",
+  "date": "2026-09-17",
+  "author": "Claude (Cowork)",
+  "status": "Aportación no integrada: implementación alternativa con 8 casos verdes, pendiente de que la sesión que commiteó 6a3be66 la integre",
+  "actions": [
+    "Fila reclamada en TABLERO a las 09:38; implementación en copia aislada para no tocar el árbol compartido.",
+    "Colisión: 6a3be66 (09:44, sin fila) ocupa las mismas rutas y sigue en edición. Por decisión de Oriol no se escribe en ellas.",
+    "Se deja E-14-alternativa-claude.patch (contra 6a3be66) y su explicación en E-14-alternativa-claude.md: PickerIndex, adaptadores de catálogo, CheckReference, FindLostReferences con ProblemLocation de E-15 y CatalogPickerState con selección por identidad."
+  ],
+  "verification": [
+    "8/8 casos contra 6a3be66 aislado y contra el árbol vivo; 8/8 con ASan+UBSan sin diagnósticos.",
+    "6/6 mutaciones detectadas (etiquetas, plegado, select, abrir, referencias perdidas, duplicados).",
+    "Sonda con assets reales: 4583 entradas, 2574 choques de id al mezclar todos los assets/objects; 12 pulsaciones sobre 3433 objetos en 2 ms.",
+    "No verificado: CMake real ni CI (la VM local no tiene cmake ni red)."
+  ],
+  "pending": [
+    "La sesión dueña de 6a3be66 decide si integra el parche o toma sus casos como prueba de aceptación: los tests commiteados en 6a3be66 no comprueban el criterio (loadCatalogs no carga nada y las aserciones pasan con el selector vacío).",
+    "Panel ImGui e integración en ObjectInspector y E-05/E-06.",
+    "SkillRef/MonsterRef/ConditionRef en CommandParamType (E-04).",
+    "E-16/E-11: construir el índice con los catálogos declarados por el proyecto, no con la carpeta entera."
+  ]
+}

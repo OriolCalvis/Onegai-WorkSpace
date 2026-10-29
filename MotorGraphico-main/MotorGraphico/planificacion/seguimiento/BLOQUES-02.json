@@ -1,0 +1,38 @@
+{
+ "id": "BLOQUES-02",
+ "date": "2026-10-01",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol, sin commit",
+ "encargo": "Boundington v2: edificios humildes pequenos y muchos, monumentos grandes, 1-3 plantas por edificio, variantes de fachada (casa del sur de Aegroum con cortinas, balcones, muralla a medio caer), carteles por negocio, banderas, desperdicios, tendederos, palomas y gente por barrio. Lote 9 de PixelLab: 32 generaciones (336 de 2.000).",
+ "archivos": {
+  "nuevos": [
+   "include/Game/Bandada.h, src/Game/Bandada.cpp (motor_level): la bandada sin GL; tests/Game/BandadaTests.cpp + cmake/BandadaTests.cmake",
+   "include/Render/BandadaNivel.h, src/Render/BandadaNivel.cpp (motor_core): PajaroEntity (orden de dibujo propio, sombra en el suelo)",
+   "assets/textures/pixellab/lote9/ (32 PNG + generaciones.json), pixellab/pajaros.json, pixellab_pajaros.png/.json, tools/pixellab/importar_pajaros.py"
+  ],
+  "modificados": [
+   "tools/gen_ciudad.py (v2: reglas nuevas, gids de terreno_mundo, fusiona objetos previos, reapunta interiores, puebla barrios, decora)",
+   "assets/maps/ciudad_{centro,este,oeste,surysal}.tmx y assets/levels/ciudad_*.json; 16 interiores + plaza_de_las_razas + mundi_landmass_1 (targetPosition de sus salidas)",
+   "include/Game/Bloques.h, src/Game/Bloques.cpp (bandas y materiales con pesos por edificio, variante por celda, puerta decorativa, azoteas), include/Render/BloquesNivel.h/.cpp (plan guardado)",
+   "tools/pixellab/importar_bloques.py (1-3 plantas, variantes con plantaBaja), assets/textures/bloques.json, pixellab/bloques.json, pixellab_bloques.png/.json (207 frames)",
+   "assets/textures/pixellab/props.json, pixellab_props.png/.json (44 props), pixellab/tiles.json + terreno_mundo.png (adoquin_limpio v2), sprites.json (carteles propios, hoja de pajaros), assets/objects/pixellab_objetos.json (6 props nuevos)",
+   "include/Engine/Application.h, src/Engine/Application.cpp, ApplicationNivel.cpp, ApplicationBucle.cpp, ApplicationCierre.cpp (m_bandada), CMakeLists.txt (3 lineas), tests/Game/BloquesTests.cpp"
+  ]
+ },
+ "reglas": [
+  "Plantas y variante de material se reparten por edificio (componente conexa del mismo gid) con un hash fijo de su esquina; la muralla elige variante por tramos de 3 celdas.",
+  "Un edificio sin objeto puerta_* lleva una puerta decorativa en una cara que da a una celda transitable; la puerta real sigue mandando.",
+  "Una variante con plantaBaja (balcones) usa los bloques del material base en la planta baja; a una planta es el material base tal cual.",
+  "La bandada vive solo en mapas con 12 azoteas o mas; en vuelo se dibuja por encima de todo (INT_MAX) y posada justo tras el bloque de su azotea.",
+  "gen_ciudad conserva los objetos del nivel anterior: puertas (posicion nueva, enlace viejo), carteles al lado de su puerta, el resto a la celda libre mas cercana."
+ ],
+ "verification": [
+  "test_bloques 5/5, test_bandada 4/4, demo_ciudad OK, conectividad 100% en los 4 mapas, validar_enlaces 0 problemas, validar_todo OK, ctest -L gl-free solo con los fallos previos, linea_base_core sin deuda nueva.",
+  "Capturas cosidas de los 4 mapas (sin HUD, parche local de captura no entregado), juego en el cruce de avenidas, palomas en vuelo."
+ ],
+ "pendiente": [
+  "Monumentos con sprite propio (coliseo, cuartel, iglesia...): motor Monumentos (sprite grande en tiras por celda) + PixelLab hasta 400x400.",
+  "Gaviota y mas aves, perros y gatos en la Barriada, mas PNJ con cara por barrio, variante de chabola gris.",
+  "Hay que recompilar en el Mac; partidas guardadas en la ciudad desfasadas."
+ ]
+}

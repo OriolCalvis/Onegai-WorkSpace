@@ -1,0 +1,34 @@
+{
+ "id": "VEG-01",
+ "date": "2026-10-05",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol (commit local); entrega al Mac como paquete (base c018fe0)",
+ "encargo": "«cambia la vegetacion» con la estetica de Habbo: arboles, matas, flores y juncos, setos, cesped y flores del suelo (toda).",
+ "resultado": {
+  "props": "tools/iso/vegetacio.py: roble (2), frutal (2), abeto (2), sauce, arbol seco, mata (2), flores (2), juncos; hoja kit_vegetacio (96x112), ultima en sprites.json: ganan a los de PixelLab por id; el generador alterna las variantes por celda (gen_ciudad_deco.variar)",
+  "setos": "tools/iso/bardissa.py: bloque de boj periodico (sin linea entre bloques) para el material seto de pixellab_bloques; la empalizada del Barrio Militar pasa a ser de troncos (decorado empalizada, con portillo)",
+  "suelo": "tools/iso/sols.py: cesped y hierba con flores periodicos (sin cuadricula) para pradera, viejo_cesped e hierba_flores; tambien las baldosas del kit que usan la pradera",
+  "pixellab": "0 generaciones"
+ },
+ "archivos": {
+  "nuevos": [
+   "tools/iso/vegetacio.py, tools/iso/bardissa.py, tools/iso/sols.py",
+   "assets/textures/kit_vegetacio.png/.json, assets/textures/iso/blocs/seto_pp.png, assets/textures/iso/sols/*.png",
+   "planificacion/seguimiento/VEG-01.json"
+  ],
+  "modificados": [
+   "tools/iso/decorats.py (empalizada), tools/iso/exportar_decorats.py (dos hojas, variantes)",
+   "tools/gen_ciudad_deco.py (variar), tools/gen_ciudad.py (empalizada de troncos)",
+   "assets/objects/decorados_kit.json, assets/textures/kit_decorats.*, sprites.json",
+   "assets/textures/pixellab/bloques.json + pixellab_bloques.png (solo los frames seto1_*)",
+   "assets/textures/pixellab/tiles.json + terreno_mundo.png (pradera, hierba_flores, viejo_cesped, noble_o0..o3)",
+   "assets/levels/ciudad_*.json (variantes, empalizada), assets/maps/ciudad_oeste.tmx (las cinco celdas de seto de la empalizada pasan a grava)"
+  ]
+ },
+ "verificacion": [
+  "ctest: demo_ciudad, test_object_catalog, test_registro_sprites, test_bloques, test_monumentos, test_mascotes, test_bandada OK (el resto de fallos son los de siempre: GL, test_catalog_content, test_gdb12_screens, test_marcar_paquetes)",
+  "conectividad (tools/conectividad.py) 100% en los cuatro mapas; con los objetos que bloquean, todas las puertas alcanzables",
+  "linea_base_core: las mismas 35 deudas previas (sin C++)",
+  "capturas del juego de los siete monumentos y de la vegetacion en los cuatro mapas"
+ ]
+}

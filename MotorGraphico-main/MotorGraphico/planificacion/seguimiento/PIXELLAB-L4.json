@@ -1,0 +1,31 @@
+{
+ "id": "PIXELLAB-L4",
+ "date": "2026-10-01",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol, sin commit",
+ "encargo": "Lote 4 del plan PixelLab: props y mobiliario de PixelLab (24 generaciones): puertas por tipo de edificio, cartel colgante, arboles, farola, banco, fuente, carro, barriles, cajas y el mobiliario de interior (mesa, silla, cama, estanteria, cofre, hoguera) que sustituye al de props_p0 por id.",
+ "archivos": {
+  "nuevos": [
+   "assets/textures/pixellab/lote4/ (los PNG + generaciones.json)"
+  ],
+  "modificados": [
+   "assets/textures/pixellab/props.json y pixellab_props.png/.json (26 props)",
+   "assets/textures/sprites.json (alias: puertas de tienda/biblioteca/cuartel/posada/banos, carteles de edificio -> cartel colgante, arbolito -> roble)",
+   "assets/objects/pixellab_objetos.json (+10 props colocables)",
+   "assets/levels/ciudad_centro.json (fuente, 2 farolas, banco, 2 robles, carro en la plaza)",
+   "tests/Game/RegistroSpritesTests.cpp (carteles y sustitucion por id)"
+  ]
+ },
+ "reglas": [
+  "Un prop de PixelLab con el id de uno de props_p0 lo sustituye solo por estar en una hoja posterior del indice (mesa, silla, cama, estanteria, cofre, hoguera).",
+  "Las puertas que no tienen dibujo propio caen en puerta_taberna por prefijo, como antes."
+ ],
+ "verification": [
+  "test_registro_sprites 5/5; test_object_catalog y test_validar_todo (55 puertas de ciudad_centro alcanzables).",
+  "Capturas en Claude outputs/pixellab/lote4/."
+ ],
+ "pendiente": [
+  "Colocar el mobiliario en los interiores (hoy la taberna no tiene objetos).",
+  "Pickups (pociones, llaves, armas) con PixelLab: 20 gens, lote aparte."
+ ]
+}

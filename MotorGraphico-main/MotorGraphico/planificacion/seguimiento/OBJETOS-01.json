@@ -1,0 +1,20 @@
+{
+ "id": "OBJETOS-01",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — los objetos de Este Norte ya no pisan los de la ciudad; el cofre de El Vacío tiene su id; validar_todo lo vigila.",
+ "origen": "Relevo de la sesión anterior: «algunos objetos de Este Norte que pisan a los de la ciudad» (TILDES-01 pendiente: letra_cambio y libro_hechizos con otro nombre también en Boundington).",
+ "actions": [
+  "assets/objects/este_norte_objetos.json: 160 → 115 entradas (fuera las copias de objetos de la ciudad; los propios, con id propio).",
+  "assets/proyectos/este_norte.json sin test_objects.json; vacio_objetos.json y levels/interior_vacio.json: «cofre_del_vacio» (Game/CofreKit.h), que también arregla que desaparecieran cofres decorativos.",
+  "tools/validar_todo.py: validar_fichas_del_proyecto (un id repetido entre catálogos de un mismo proyecto es error).",
+  "tools/actores_pnj.py: una plantilla de oficio puede dejar una ranura a None (el id nuevo de un tendero lo destapó y gen_personajes se caía)."
+ ],
+ "pending": [
+  "Hecho en OBJETOS-02: un guardado hecho en El Vacío antes de abrir el cofre vuelve a cargar."
+ ],
+ "verification": [
+  "validar_todo: 0 errores; test_cofre_kit; gen_personajes vuelve a correr."
+ ],
+ "sesion": "sesiones/2026-10-08-claude-tienda-caer-dioses.md"
+}

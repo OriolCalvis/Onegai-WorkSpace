@@ -1,0 +1,44 @@
+{
+ "id": "MASC-01",
+ "date": "2026-10-05",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol (commit local); entrega al Mac como paquete (base 1c6f019)",
+ "encargo": "«Continua, haz animales de compania con rasgos magicos para darle mas vida a la ciudad tambien». Decisiones (AskUserQuestion): PixelLab + magia por codigo; las ocho mascotas, una pareja por barrio.",
+ "resultado": {
+  "mascotas": "gat_alquimia (Casco), gos_fanal (Comercial), lleonet_llauto (Barrios Altos), llebrer_llum (Militar), dragonet (Pico Dragon), guineu_vent (Barriada, esquiva), poni_boira (Surysal, esquivo), osset_molsa (Surysal); 18 en los cuatro mapas",
+  "conducta": "pasean por celdas transitables cerca de su casa, descansan, duermen en casa; las afectuosas se acercan al jugador y se sientan o ladran a su lado, las esquivas se apartan; nunca pisan al jugador ni a otra mascota; deterministas",
+  "magia": "luz en el suelo que respira, particulas (hexagonos, runas octogonales, motas, brasas y humo, esporas, niebla que se queda), anillo de viento delante y detras",
+  "palomas": "con ISO-02 las casas son monumentos y las palomas se habian quedado sin azoteas: ahora se posan en el caballete de las piezas del kit (posaderos de peces.json -> monumentos.json -> Game::Monumentos)",
+  "pixellab": "112 generaciones (8 create_character cuadrupedos 8 direcciones + 104 de animaciones de plantilla en las 4 diagonales); saldo 1395 de 2000"
+ },
+ "archivos": {
+  "nuevos": [
+   "include/Game/Mascotes.h, src/Game/Mascotes.cpp (logica GL-free)",
+   "include/Game/FullaMascotes.h, src/Game/FullaMascotes.cpp (la hoja como datos, frame por estado)",
+   "include/Render/MascotesNivel.h, include/Render/VidaNivel.h, src/Render/VidaNivel.cpp (la capa de vida: bandada + mascotas + VidaNivel en una sola unidad; sustituye a src/Render/BandadaNivel.cpp)",
+   "tests/Game/MascotesTests.cpp, cmake/MascotesTests.cmake (test_mascotes, 10 casos)",
+   "tools/pixellab/importar_mascotas.py, tools/pixellab/fx_mascotas.py",
+   "assets/textures/pixellab/mascotas.json, assets/textures/pixellab/lote15/ (frames y generaciones.json)",
+   "assets/textures/pixellab_mascotas.png/.json, assets/objects/mascotas.json",
+   "Claude outputs/mascotes/ (vitrina, GIFs, LEEME)",
+   "planificacion/seguimiento/MASC-01.json"
+  ],
+  "modificados": [
+   "include/Game/Bandada.h, src/Game/Bandada.cpp (azotea con punto, altura y celda de orden)",
+   "include/Game/Monumentos.h, src/Game/Monumentos.cpp (posaderos)",
+   "include/Render/BandadaNivel.h (tejados, orden de dibujo en tejados del kit)",
+   "include/Render/MonumentosNivel.h, src/Render/BloquesNivel.cpp (montados())",
+   "include/Engine/Application.h, src/Engine/Application.cpp, ApplicationBucle.cpp, ApplicationCierre.cpp, ApplicationNivel.cpp (m_bandada -> m_vida, sin miembros nuevos; makeMarker no dibuja mascota_*)",
+   "CMakeLists.txt (en el Mac: edicion con anclas)",
+   "tests/Game/BandadaTests.cpp, tests/Game/MonumentosTests.cpp",
+   "tools/iso/peces_iso.py, exportar_kit.py, oficis.py (careners y posaderos), tools/pixellab/importar_monumentos.py",
+   "tools/gen_ciudad.py (mascotas por barrio), assets/levels/ciudad_*.json, assets/proyectos/boundington.json, assets/textures/sprites.json, monumentos.json, iso/*"
+  ]
+ },
+ "verificacion": [
+  "ctest: test_mascotes (10), test_bandada (+posaderos), test_monumentos (+posaderos), demo_ciudad, test_object_catalog, test_registro_sprites, test_bloques: OK; el resto de fallos son los de siempre",
+  "conectividad 100% en los cuatro mapas",
+  "linea_base_core: las mismas 35 deudas previas (las fuentes de la capa de vida en una sola unidad: los rehenes GL-free de motor_core no suben)",
+  "capturas y GIFs de las mascotas en sus barrios"
+ ]
+}

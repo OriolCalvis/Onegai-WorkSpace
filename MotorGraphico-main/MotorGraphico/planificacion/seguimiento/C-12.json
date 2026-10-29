@@ -1,0 +1,19 @@
+{
+  "id": "C-12",
+  "date": "2026-09-03",
+  "author": "Claude (Cowork)",
+  "status": "Tancat",
+  "actions": [
+    "API de mutació completa a `MapDocument`: `removeLayer`, `setLayerMeta`, `moveLayer`, `setTile`, `fillTiles`, `addEntity`/`removeEntity`/`moveEntity`, `addRegion`/`removeRegion`/`setRegionBounds`, més `findLayer` per no recórrer `layers()` a mà a cada clic de l'editor.",
+    "Tot passa per un únic `mutateLayer`: COPIA la capa, hi aplica la mutació, la revalida contra el mapa (dimensions, límits, ids únics) i només llavors la instal·la. Una mutació invàlida deixa el document EXACTAMENT com estava. En un sol lloc perquè cap mutació se'l pugui saltar per descuit.",
+    "`MapLayer::mutableMeta()`/`mutableData()` són privats amb `friend class MapDocument`: es pot editar una capa, però no a esquena del document. Públics, permetrien deixar una entitat fora del mapa sense que ningú se n'assabentés. El TIPUS de la capa segueix sent immutable.",
+    "Les tres classes de dades (`TileLayerDocument`, `EntityLayerDocument`, `RegionLayerDocument`) guanyen els seus mutadors, tots amb `Result` i tot-o-res: pintar és una acció d'usuari, «aquí no» ha de ser un missatge i no un crash. `fill` comprova les cantonades abans de pintar cap cel·la.",
+    "Proves noves a `test_map_document`.",
+    "**Nota.** Això desbloqueja C-13 i C-14."
+  ],
+  "verification": [
+    "7 casos verds (els 3 previs inclosos). El central: 21 mutacions encadenades, `validate()` comprovat DESPRÉS DE CADA UNA, i el document resultant idèntic camp a camp al mateix document construït d'una peça — si l'API d'edició i la de càrrega produïssin coses distintes, es veuria aquí. Més el tot-o-res amb 9 mutacions rebutjades (cel·la fora, GID negatiu, farciment que se surt a mitges, entitat fora dels límits del mapa, id duplicat, tipus de capa equivocat, capa inexistent) i el document intacte després. `test_map_round_trip`, `test_runtime_tilemap`, `test_project_serialization` i `test_tmx_importer` segueixen verds."
+  ],
+  "pending": [],
+  "source_markdown": "**Seguiment · 2026-09-03 · Claude (Cowork): Tancat.**\n\n- API de mutació completa a `MapDocument`: `removeLayer`, `setLayerMeta`, `moveLayer`, `setTile`, `fillTiles`, `addEntity`/`removeEntity`/`moveEntity`, `addRegion`/`removeRegion`/`setRegionBounds`, més `findLayer` per no recórrer `layers()` a mà a cada clic de l'editor.\n- Tot passa per un únic `mutateLayer`: COPIA la capa, hi aplica la mutació, la revalida contra el mapa (dimensions, límits, ids únics) i només llavors la instal·la. Una mutació invàlida deixa el document EXACTAMENT com estava. En un sol lloc perquè cap mutació se'l pugui saltar per descuit.\n- `MapLayer::mutableMeta()`/`mutableData()` són privats amb `friend class MapDocument`: es pot editar una capa, però no a esquena del document. Públics, permetrien deixar una entitat fora del mapa sense que ningú se n'assabentés. El TIPUS de la capa segueix sent immutable.\n- Les tres classes de dades (`TileLayerDocument`, `EntityLayerDocument`, `RegionLayerDocument`) guanyen els seus mutadors, tots amb `Result` i tot-o-res: pintar és una acció d'usuari, «aquí no» ha de ser un missatge i no un crash. `fill` comprova les cantonades abans de pintar cap cel·la.\n- Proves noves a `test_map_document`.\n\n**Verificat.** 7 casos verds (els 3 previs inclosos). El central: 21 mutacions encadenades, `validate()` comprovat DESPRÉS DE CADA UNA, i el document resultant idèntic camp a camp al mateix document construït d'una peça — si l'API d'edició i la de càrrega produïssin coses distintes, es veuria aquí. Més el tot-o-res amb 9 mutacions rebutjades (cel·la fora, GID negatiu, farciment que se surt a mitges, entitat fora dels límits del mapa, id duplicat, tipus de capa equivocat, capa inexistent) i el document intacte després. `test_map_round_trip`, `test_runtime_tilemap`, `test_project_serialization` i `test_tmx_importer` segueixen verds.\n\n**Nota.** Això desbloqueja C-13 i C-14."
+}

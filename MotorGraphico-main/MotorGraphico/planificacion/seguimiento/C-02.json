@@ -1,0 +1,19 @@
+{
+  "id": "C-02",
+  "date": "2026-09-03",
+  "author": "Claude (Cowork)",
+  "status": "Tancat",
+  "actions": [
+    "`HudMinimap` guanya `setSession()`, `session()` i `isDrawable()`. `loadLevel` li torna a passar la sessió acabada de construir; `shutdown()` l'hi treu abans de destruir-la.",
+    "Sense sessió o sense mapa el widget no llegeix RES (ni `getWidth()` ni `playerPosition()`): `isDrawable()` és l'única porta per la qual es toquen aquests dos punters, i `render()` hi surt abans de tocar el `SpriteBatch`.",
+    "També hi ha `setMap()`, per no deixar cap punter fixat al constructor.",
+    "Prova nova `tests/Render/HudMinimapTests.cpp` (`test_hud_minimap`). Prova la guarda i el reenganxament, no `render()`: `SpriteBatch` és recurs GL i demana finestra. S'enllacen `SpriteBatch`/glad només per resoldre símbols que no es criden, el mateix patró que `demo_bitmap_font`."
+  ],
+  "verification": [
+    "3 casos verds, inclòs el del bug: construir amb la sessió del nivell 1, canviar a la del 2, destruir la primera i comprovar que el widget respon i apunta a la nova. Repetit sota `-fsanitize=address` sense cap accés a memòria alliberada."
+  ],
+  "pending": [
+    "Res del paquet."
+  ],
+  "source_markdown": "**Seguiment · 2026-09-03 · Claude (Cowork): Tancat.**\n\n- `HudMinimap` guanya `setSession()`, `session()` i `isDrawable()`. `loadLevel` li torna a passar la sessió acabada de construir; `shutdown()` l'hi treu abans de destruir-la.\n- Sense sessió o sense mapa el widget no llegeix RES (ni `getWidth()` ni `playerPosition()`): `isDrawable()` és l'única porta per la qual es toquen aquests dos punters, i `render()` hi surt abans de tocar el `SpriteBatch`.\n- També hi ha `setMap()`, per no deixar cap punter fixat al constructor.\n- Prova nova `tests/Render/HudMinimapTests.cpp` (`test_hud_minimap`). Prova la guarda i el reenganxament, no `render()`: `SpriteBatch` és recurs GL i demana finestra. S'enllacen `SpriteBatch`/glad només per resoldre símbols que no es criden, el mateix patró que `demo_bitmap_font`.\n\n**Verificat.** 3 casos verds, inclòs el del bug: construir amb la sessió del nivell 1, canviar a la del 2, destruir la primera i comprovar que el widget respon i apunta a la nova. Repetit sota `-fsanitize=address` sense cap accés a memòria alliberada.\n\n**Pendent.** Res del paquet."
+}

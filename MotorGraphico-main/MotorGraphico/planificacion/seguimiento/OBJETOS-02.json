@@ -1,0 +1,17 @@
+{
+ "id": "OBJETOS-02",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — un guardado hecho en El Vacío antes de OBJETOS-01 vuelve a cargar.",
+ "origen": "Pendiente de OBJETOS-01: el cofre de El Vacío pasó de «cofre» a «cofre_del_vacio», y restoreSaveGame rechazaba los guardados de antes («el nivel ha cambiado desde que se guardó»).",
+ "actions": [
+  "src/Game/SaveGame.cpp: mismoObjeto() con una tabla de ids renombrados ({«cofre», «cofre_del_vacio»}); la comprobación objeto a objeto de restoreSaveGame la usa. Otro id en esa casilla sigue sin valer.",
+  "tests/Game/SaveGameTests.cpp: un_guardado_de_antes_trae_el_cofre_de_el_vacio_con_su_nombre_viejo (y que un id cualquiera sigue rechazándose)."
+ ],
+ "pending": [],
+ "verification": [
+  "test_save_game 37/37; ctest completo (PRUEBAS-01).",
+  "Aplicado en el Mac (out/claude_objetos02) y comprobado: los 2 ficheros iguales."
+ ],
+ "sesion": "sesiones/2026-10-08-claude-tienda-caer-dioses.md"
+}

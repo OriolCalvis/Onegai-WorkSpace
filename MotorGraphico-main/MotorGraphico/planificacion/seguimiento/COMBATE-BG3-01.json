@@ -1,0 +1,28 @@
+{
+ "id": "COMBATE-BG3-01",
+ "date": "2026-10-14",
+ "author": "claude (Cowork)",
+ "status": "HECHO (la primera parte) — referencias, D0014, el plan AV13/AV14 con dos carriles, el roce, los esbirros, el tablero del combate y andar fluido.",
+ "origen": "Oriol (14/10): «el objetivo final es prácticamente ser Baldur's Gate 3 en cuanto a combate»; «esmenuzar cada tarea [...] actualizar el gantt para que otras IAs puedan trabajar»; «no puede ser que el movimiento no se vea fluido».",
+ "actions": [
+  "decisiones/D0014 y el reglamento (Sistema_Cartas_Tiers.md §7.4): el roce, la ayuda de dados, los esbirros.",
+  "planificacion_alcance_y_vision/COMBATE_BG3.md, fases AV13 y AV14 en dades.py con carril/quien/zona; build.py las enseña y comprueba.",
+  "orquestador/: SIGUIENTE para 6 agentes y pixel.md; TABLERO: filas paralelas, la mia y la pregunta nueva.",
+  "AV13-02: RPG::dano::roza / kRoce; CartasTiradas y danoDeCarta lo aplican; «Roce» en pantalla.",
+  "AV13-03: simulador_dificultad esbirros; perdido_saqueador 5 PV y DES 2.",
+  "AV13-06: Game::TableroCombate (GL-free) + test_tablero_combate.",
+  "AV13-10: GameSession::montaTablero (GameSessionTablero.cpp), BattleState::ponTablero/tablero, Pergamino::SueloCombate + PergaminoGL::dibujaSuelo + test_suelo_combate.",
+  "AV14-09: PlayerControls sin la espera de 0,24 s; Player: paso de 0,16 s y el quieto solo parado; camara lineal a la par."
+ ],
+ "verification": [
+  "Sondas combate (tablero y borde) y andar (0 tirones de camara; antes 83 de 117).",
+  "test_tablero_combate 4/4, test_suelo_combate 2/2, test_render_player 66/66, test_cartas_combate 45/45; ctest gl-free 215/218 (los tres de siempre), GL 11/11; linea_base_core 0 de deuda nueva."
+ ],
+ "para_oriol": [
+  "COMBATE_BG3.md §4: ¿la accion principal deja de cerrar el turno?"
+ ],
+ "sesion": "sesiones/2026-10-14-claude-combate-bg3.md",
+ "pending": [
+  "COMBATE_BG3.md §4: ¿la accion principal deja de cerrar el turno?"
+ ]
+}

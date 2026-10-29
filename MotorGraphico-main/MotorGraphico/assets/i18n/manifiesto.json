@@ -1,0 +1,29 @@
+{
+  "_por_que": [
+    "G-17 / DEC-14 — la interfaz tiene que poder estar en ingles, catalan o castellano.",
+    "Las claves son [a-z0-9_.] sin acentos (DEC-15): son el contrato entre el codigo y",
+    "las tres tablas. El texto visible SI lleva acentos y ñ.",
+    "Los huecos se escriben {asi} y tienen que ser LOS MISMOS en los tres idiomas;",
+    "Locale::checkPlaceholders() lo comprueba y la prueba test_locale falla si no."
+  ],
+  "idioma_de_referencia": "es",
+  "_pendiente_dec14_referencia": [
+    "PROVISIONAL. Falta que Oriol diga cual es el idioma de referencia. Se ha puesto 'es'",
+    "porque es el idioma en el que ya estaba escrita la mayoria del texto del motor, no",
+    "porque se haya decidido nada. Cambiarlo es cambiar esta linea: el codigo no lo sabe."
+  ],
+  "idiomas": ["en", "ca", "es"],
+  "nombres": {
+    "en": "English",
+    "ca": "Català",
+    "es": "Castellano"
+  },
+  "_pendiente_dec14_grados": [
+    "Las cuatro claves grado.* llevan HOY el mismo texto en los tres idiomas: el nombre",
+    "propio ONEGAI tal como esta escrito en src/Game/BattleState.cpp (Fracàs, Parcial,",
+    "Èxit, Crític). No es una traduccion a medias: es que DEC-14 deja sin contestar si",
+    "los grados de combate conservan el nombre propio en los tres idiomas o se traducen.",
+    "Mientras no se conteste, la tabla reproduce lo que el motor dice hoy, para que",
+    "pasar BattleState a la tabla no cambie ni un caracter de lo que ve el jugador."
+  ]
+}

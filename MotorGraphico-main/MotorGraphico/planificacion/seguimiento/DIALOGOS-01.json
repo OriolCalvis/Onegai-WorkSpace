@@ -1,0 +1,30 @@
+{
+ "id": "DIALOGOS-01",
+ "date": "2026-10-13",
+ "author": "claude (Cowork)",
+ "status": "HECHO — los diálogos de «Boundington: los diálogos» en las cuatro aventuras, con el estándar de las charlas, y el héroe creado en la historia (HEROE-01).",
+ "origen": "Oriol (13/10): «ya he corregido las ideas básicas de los diálogos, ¿implementamos y estandarizamos todo en nuestro videojuego? como los nuevos menús de creación, verificamos las misiones y su conectividad con el juego, cómo evoluciona todo y si lo hace bien». Fuente: el documento corregido en el vault (Campanya 1 Boundinghton/Boundington los diálogos.md).",
+ "actions": [
+  "assets/adventures/boundington_*.json: prólogo 17→18 beats, primer día 94→235 (la noche 0 en la Taberna Humilde), segundo día 76→133, Ocaso 27→95 (entero). Generados con out/claude_dialogos02/guiones/ (lib.py y un módulo por escena) desde la versión de HEAD.",
+  "Motor: requires.lugar; la opción con \"sigue\" (la charla sigue: NarrativeEngine::sigue, y la sesión lo dispara al cerrar el diálogo, después de lo automático y antes de abrir una tienda); las páginas de charla que se saltan solas si no les quedan temas (\"pagina\", \"pasaPagina\", \"despedida\"); un combate corta la charla; «Eliges:» sin punto doble. Lectura y escritura en src/RPG/Narrative/CharlaAventura.{h,cpp} (nuevo).",
+  "HEROE-01: include/RPG/Narrative/HeroeEnLaHistoria.h, src/RPG/Narrative/HeroeEnLaHistoria.cpp y assets/rules/heroe_en_la_historia.json: flags heroe_*, variables heroe_con/des/int/car y textos {nombre}, {raza}, {pueblo}, {clase}, {origen}, {deidad} y las siete respuestas; GameSessionNarrativa los pone antes de cada disparo.",
+  "El juego: el primer día carga interior_taberna (ApplicationBucle) y el lugar se apunta al entrar en cada nivel (ApplicationNivel).",
+  "assets/objects/boundington_enemigos.json: Sandes, el guardia comprado y Edul furioso. assets/rules/actos.json: reirse_de_tomas, venides_abandonado, guardia_preparada.",
+  "Pruebas: examples/demo_boundington_partida.h (el jugador de las demos), demo_campana_boundington.cpp (la campaña, dos jugadores), demo_boundington.cpp + demo_boundington_alternativas.cpp (50 escenas), examples/explorar_boundington.cpp (partidas al azar con héroes de la creación), tests/RPG/CharlasTests.cpp, tests/RPG/HeroeEnLaHistoriaTests.cpp; tools/validar_todo.py mira lugar, sigue, pasaPagina, despedida y pagina.",
+  "FORMATO_AVENTURAS.md: requires.lugar, las charlas y el héroe. planificacion/CANON_BOUNDINGTON_CAMPANA01.md §12."
+ ],
+ "verification": [
+  "demo_campana_boundington y demo_boundington (50 escenas) en verde; demo_prologo en verde.",
+  "explorar_boundington, 600 partidas (semillas 1 y 3) y 150-300 con otras: 0 atascos, los tres finales (caído, solos, oeste), 0 textos sin sustituir.",
+  "validar_todo: 0 errores (los 10 avisos de antes).",
+  "ctest en la VM: gl-free 210 de 213 (fallan linea_base_core_configura y linea_base_core por ficheros sin versionar, y test_marcar_paquetes por el módulo dades, los dos de antes); los 11 de GL con Xvfb, en verde."
+ ],
+ "pending": [
+  "La compañía de Rosita a mitad del combate (Sandes a 1/4, habilidades gastadas): hoy salta al perder el combate final.",
+  "Sprites propios para Edul y los PNJ nuevos de las mesas."
+ ],
+ "para_oriol": [
+  "Lo que decidió Claude: CANON §12.2 (ocho puntos, uno con texto propio: el epílogo de Verina sin Edul)."
+ ],
+ "sesion": "sesiones/2026-10-13-claude-dialogos.md"
+}

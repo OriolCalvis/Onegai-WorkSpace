@@ -1,0 +1,51 @@
+{
+ "id": "INT-01",
+ "date": "2026-10-05",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol (commit local); entrega al Mac como paquete (base 4cadd79)",
+ "encargo": "«Finalment els furnitures de la ciutat i interiors dels edificis». Decisiones: los 17 interiores que ya habia, cada uno mas o menos grande segun su importancia; los importantes, bastante grandes y con dos plantas como minimo. Tras ver el prototipo (taberna y salon del trono), «sigue asi». Por defecto: salas a la manera de Habbo, muebles solo decorativos (sin C++), los props de PixelLab de la calle no se convierten.",
+ "resultado": {
+  "salas": "Habbo: las dos paredes del fondo (fila y=0, columna x=0) finas y altas, el frente abierto. Cada celda de pared es un objeto paret_<estilo>[_alta]_<decoracion> (y _o3): 11 estilos (entramado, estuco blanco y azul, papel pintado rojo/azul/verde, piedra, piedra calida y oscura, azulejo, ladrillo) y 21 decoraciones ademas de la pared lisa (ventanas, cuadros, tapices, escudos, chimenea, libreria, armas, vitral, la puerta...). La salida es la esterilla de delante de la puerta, por alias.",
+  "suelos": "47 baldosas nuevas en terreno_mundo (int_*): 13 suelos (tablones, espiga, losas, marmol, azulejo, tierra batida, arena, tatami), alfombras roja/azul/verde de cualquier tamano en nueve piezas y 7 baldosas int_peca_* bajo las piezas grandes. El motor dibuja las baldosas giradas en vertical: las imagenes ya van giradas.",
+  "muebles": "145 piezas del kit (127 muebles y 18 largos en tramos) en tools/iso/mobles_comuns.py, mobles_oficis.py y mobles_monuments.py: 932 objetos en assets/objects/mobles_kit.json con las paredes, en 4 orientaciones los que giran; hojas kit_mobles, kit_mobles_alts y kit_parets",
+  "piezas_grandes": "tarima del trono, escenario de la opera, altar, piscina, forja, mesa de guerra y cama con dosel: como los monumentos (tiras iso_int_*), sobre baldosas int_peca_* que bloquean",
+  "edificios": "17 edificios, 30 plantas (17 bajas y 13 nuevas): taberna, posada, mercado, banco, banos, iglesia, opera, universidad, biblioteca, coliseo y cuartel con 2; castillo con 3 (salon del trono 22x16, sala de guerra, aposentos reales); herreria, armeria, joyeria, sastreria y casa de te con 1. Cada PNJ que habia, en su sitio del plano (los tenderos en el hueco del mostrador).",
+  "escaleras": "26 escaleras (assets/objects/interiores_kit.json), una id por escalera: escalera_<planta>_<sube|baja>; se pasan con E como las puertas",
+  "vacio": "El Vacio (prologo) usaba el mapa de la iglesia: ahora tiene el suyo, interior_vacio.tmx, igual que antes",
+  "pixellab": "0 generaciones"
+ },
+ "archivos": {
+  "nuevos": [
+   "tools/iso/sales.py, sols_interiors.py, mobles_base.py, mobles_comuns.py, mobles_oficis.py, mobles_monuments.py, mobles.py, peces_grans.py, exportar_mobles.py, fer_interiors.py",
+   "tools/gen_interiores_kit.py, tools/interiors_kit/ (un modulo por edificio o grupo)",
+   "assets/textures/kit_mobles(.png/.json), kit_mobles_alts, kit_parets",
+   "assets/textures/iso/sols_int/, assets/textures/iso/interiors/ (piezas grandes y peces_grans.json)",
+   "assets/textures/monumentos/iso_int_*.png/.json",
+   "assets/objects/mobles_kit.json, assets/objects/interiores_kit.json",
+   "assets/levels/ y assets/maps/: las 13 plantas nuevas (interior_*_p1, _p2, _s1) e interior_vacio.tmx",
+   "Claude outputs/interiors/ (muebles, piezas grandes, capturas de las 30 plantas, LEEME)",
+   "planificacion/seguimiento/INT-01.json"
+  ],
+  "modificados": [
+   "assets/levels/ y assets/maps/ de las 17 plantas bajas; interior_vacio.json (su mapa)",
+   "assets/levels/ciudad_centro, ciudad_este, ciudad_oeste (las puertas apuntan a la esterilla nueva)",
+   "assets/proyectos/boundington.json (plantas y catalogos), assets/textures/sprites.json (hojas y alias)",
+   "assets/textures/pixellab/tiles.json, terreno_iso.json, terreno_mundo.png, assets/textures/monumentos.json",
+   "tools/iso/peces_iso.py (texturas nuevas, juntura y vecinos de los tramos), tools/iso/motor_iso.py (contorno sin juntura)",
+   "tools/pixellab/importar_monumentos.py (lee tambien iso/interiors/peces_grans.json)",
+   "tests/Game/RegistroSpritesTests.cpp (la salida de la iglesia es la esterilla del kit; mesa y barril, de kit_mobles)"
+  ]
+ },
+ "verificacion": [
+  "el generador comprueba cada planta: desde la entrada se llega a todo, ningun rincon cerrado, se puede hablar con cada PNJ y llegar a cada escalera, todos los objetos estan en un catalogo; es idempotente",
+  "validar_enlaces: 91 niveles, 164 puertas, 0 problemas; validar_mundo_unido: se llega a 106 niveles y de todos se vuelve",
+  "ctest: test_registro_sprites, test_project_catalog, test_monumentos, test_bloques, test_object_catalog, test_mascotes, test_bandada y demo_ciudad OK (el resto de fallos son los de siempre: GL, test_catalog_content, test_gdb12_screens, test_marcar_paquetes, demo_creacion_personaje, demo_nova_partida y los tres que no compilan)",
+  "linea_base_core: las mismas 35 deudas previas (sin C++ de motor)",
+  "capturas del juego de las 30 plantas; escaleras probadas en el juego (taberna y las tres plantas del castillo, ida y vuelta)"
+ ],
+ "pendiente": [
+  "PNJ-01: todos los PNJ montados por capas con las piezas del jugador (y equipos solo de PNJ)",
+  "los props de PixelLab de la calle siguen como estaban",
+  "los muebles son decorativos: sentarse, abrir cofres o dormir quedarian para otro encargo"
+ ]
+}

@@ -1,0 +1,37 @@
+{
+  "id": "H8-01",
+  "date": "2026-09-24",
+  "author": "Codex",
+  "status": "HECHO — retirado DocumentRef: contrato especulativo sin ruta de ejecución.",
+  "archivos_eliminados": [
+    "include/Project/DocumentRef.h"
+  ],
+  "archivos_editados": [
+    "tests/Core/StrongIdTests.cpp"
+  ],
+  "scope": [
+    "Se elimina DocumentRef, DocumentKind y su validación de ruta lógica porque ningún modelo de Project, serializador, editor o ejecutable los consume.",
+    "Se retira document_reference_survives_a_logical_path_move, la única prueba que construía ese contrato aislado.",
+    "test_strong_id conserva las comprobaciones reales de StrongId e IdGenerator."
+  ],
+  "mapa_del_codigo": {
+    "consulted": [
+      "gantt_jugabilidad_H.puml declara H8-01 como decisión sobre cabeceras muertas.",
+      "MAPA_DEL_CODIGO.md listaba DocumentRef sin paquete; alcance_real.json lo marcaba con implementación vacía, una prueba y ningún ejecutable.",
+      "duplicados.json registraba MUERTO-99f92e6f: cero consumidores de producción y radio de explosión uno."
+    ],
+    "note": "No se regeneran MAPA_DEL_CODIGO.md, alcance_real.json ni duplicados.json durante WIP concurrente; el próximo corte coordinado debe retirar las referencias históricas a DocumentRef."
+  },
+  "non_goals": [
+    "No se crean aliases, migraciones ni APIs de compatibilidad para un tipo que no fue integrado.",
+    "No se toca CMake, Project, ProjectSerializer, editor, Application.* ni rutas de guardado.",
+    "No se modifica WIP ajeno ni se actualiza globalmente la foto de alcance compartida."
+  ],
+  "verification": [
+    "rg en include/, src/, editor/, examples/, tests/, CMakeLists.txt y cmake no encuentra DocumentRef, DocumentKind ni Project/DocumentRef.h tras la retirada.",
+    "cmake --build out/build/codex-h805 --target test_strong_id --parallel 2 pasa.",
+    "ctest --test-dir out/build/codex-h805 -R ^test_strong_id$ --output-on-failure pasa (1/1).",
+    "tools/linea_base_core.py --rapido y git diff --check pasan."
+  ],
+  "handoff": "Si una futura función necesita identidad documental, debe introducirla junto con Project/serialización y una ruta alcanzable por juego o editor. No se reintroduce DocumentRef como cabecera preventiva ni con un test como único consumidor."
+}

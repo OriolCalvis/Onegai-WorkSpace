@@ -1,0 +1,418 @@
+{
+ "_nota": "Atlas runtime de props P0 (SPRITE_BACKLOG.md). Generado por tools/gen_props_p0.py desde las laminas de autoria: no editar a mano. Frames 1-based por filas. TextureManager invierte los PNG al cargarlos: la region del frame f es defineRegion(f, (f-1) % columns, rows - 1 - (f-1) / columns), como race_npc_idle.",
+ "estado": "runtime",
+ "generador": "tools/gen_props_p0.py",
+ "image": "props_p0.png",
+ "frameSize": [
+  64,
+  64
+ ],
+ "columns": 8,
+ "rows": 5,
+ "anclaje": {
+  "x": "centro de la celda",
+  "filaBase": 61,
+  "dibujo": "64x64 con characterAnchor(), igual que los actores"
+ },
+ "escala": "mundo: una persona = 40 px",
+ "frames": {
+  "mesa": 1,
+  "mesa_larga": 2,
+  "mesa_redonda": 3,
+  "silla": 4,
+  "taburete": 5,
+  "banco": 6,
+  "barra_taberna": 7,
+  "barra_esquina": 8,
+  "cama": 9,
+  "estanteria": 10,
+  "estanteria_botellas": 11,
+  "banco_trabajo": 12,
+  "barril": 13,
+  "caja": 14,
+  "cofre": 15,
+  "cofre_tesoro": 16,
+  "antorcha_pared": 17,
+  "brasero": 18,
+  "farol": 19,
+  "puerta_taberna": 20,
+  "portal_runico": 21,
+  "poste_indicador": 22,
+  "tablon_anuncios": 23,
+  "hoguera": 24,
+  "arbusto": 25,
+  "helecho": 26,
+  "arbusto_seco": 27,
+  "tocon": 28,
+  "arbolito": 29,
+  "poste_valla": 30,
+  "valla": 31,
+  "piedra_runica": 32,
+  "menhir_runico": 33
+ },
+ "objetos": [
+  {
+   "id": "mesa",
+   "frame": 1,
+   "nombre": "Mesa",
+   "familia": "Mesa",
+   "fuente": "assets/generated/authoring/world/interiors_furniture_windows_v1.png",
+   "tamano": [
+    25,
+    24
+   ]
+  },
+  {
+   "id": "mesa_larga",
+   "frame": 2,
+   "nombre": "Mesa larga",
+   "familia": "Mesa",
+   "fuente": "assets/generated/authoring/world/interiors_materials_furniture_v2.png",
+   "tamano": [
+    30,
+    24
+   ]
+  },
+  {
+   "id": "mesa_redonda",
+   "frame": 3,
+   "nombre": "Mesa redonda",
+   "familia": "Mesa",
+   "fuente": "assets/generated/authoring/world/interiors_materials_furniture_v2.png",
+   "tamano": [
+    26,
+    22
+   ]
+  },
+  {
+   "id": "silla",
+   "frame": 4,
+   "nombre": "Silla",
+   "familia": "Silla / taburete",
+   "fuente": "assets/generated/authoring/world/interiors_furniture_windows_v1.png",
+   "tamano": [
+    20,
+    28
+   ]
+  },
+  {
+   "id": "taburete",
+   "frame": 5,
+   "nombre": "Taburete",
+   "familia": "Silla / taburete",
+   "fuente": "assets/generated/authoring/world/interiors_materials_furniture_v2.png",
+   "tamano": [
+    14,
+    15
+   ]
+  },
+  {
+   "id": "banco",
+   "frame": 6,
+   "nombre": "Banco",
+   "familia": "Silla / taburete",
+   "fuente": "assets/generated/authoring/world/interiors_materials_furniture_v2.png",
+   "tamano": [
+    23,
+    22
+   ]
+  },
+  {
+   "id": "barra_taberna",
+   "frame": 7,
+   "nombre": "Barra de taberna",
+   "familia": "Barra de taberna",
+   "fuente": "assets/generated/authoring/world/interiors_materials_furniture_v2.png",
+   "tamano": [
+    37,
+    30
+   ]
+  },
+  {
+   "id": "barra_esquina",
+   "frame": 8,
+   "nombre": "Barra de taberna en esquina",
+   "familia": "Barra de taberna",
+   "fuente": "assets/generated/authoring/world/interiors_furniture_windows_v1.png",
+   "tamano": [
+    39,
+    28
+   ]
+  },
+  {
+   "id": "cama",
+   "frame": 9,
+   "nombre": "Cama",
+   "familia": "Cama",
+   "fuente": "assets/generated/authoring/world/interiors_materials_furniture_v2.png",
+   "tamano": [
+    34,
+    30
+   ]
+  },
+  {
+   "id": "estanteria",
+   "frame": 10,
+   "nombre": "Estanteria de libros",
+   "familia": "Estanteria",
+   "fuente": "assets/generated/authoring/world/interiors_materials_furniture_v2.png",
+   "tamano": [
+    29,
+    46
+   ]
+  },
+  {
+   "id": "estanteria_botellas",
+   "frame": 11,
+   "nombre": "Estanteria de botellas",
+   "familia": "Estanteria",
+   "fuente": "assets/generated/authoring/world/interiors_furniture_windows_v1.png",
+   "tamano": [
+    33,
+    46
+   ]
+  },
+  {
+   "id": "banco_trabajo",
+   "frame": 12,
+   "nombre": "Banco de trabajo",
+   "familia": "Mesa",
+   "fuente": "assets/generated/authoring/world/interiors_furniture_windows_v1.png",
+   "tamano": [
+    25,
+    24
+   ]
+  },
+  {
+   "id": "barril",
+   "frame": 13,
+   "nombre": "Barril",
+   "familia": "Barril / caja / saco",
+   "fuente": "assets/generated/authoring/world/interiors_materials_furniture_v2.png",
+   "tamano": [
+    18,
+    24
+   ]
+  },
+  {
+   "id": "caja",
+   "frame": 14,
+   "nombre": "Caja",
+   "familia": "Barril / caja / saco",
+   "fuente": "assets/generated/authoring/world/interiors_materials_furniture_v2.png",
+   "tamano": [
+    20,
+    21
+   ]
+  },
+  {
+   "id": "cofre",
+   "frame": 15,
+   "nombre": "Cofre",
+   "familia": "Cofre",
+   "fuente": "assets/generated/authoring/world/interiors_materials_furniture_v2.png",
+   "tamano": [
+    20,
+    22
+   ]
+  },
+  {
+   "id": "cofre_tesoro",
+   "frame": 16,
+   "nombre": "Cofre del tesoro",
+   "familia": "Cofre",
+   "fuente": "assets/textures/editor_object_icons.png",
+   "tamano": [
+    29,
+    26
+   ]
+  },
+  {
+   "id": "antorcha_pared",
+   "frame": 17,
+   "nombre": "Antorcha de pared",
+   "familia": "Antorcha / farol",
+   "fuente": "assets/generated/authoring/world/interiors_materials_furniture_v2.png",
+   "tamano": [
+    14,
+    25
+   ]
+  },
+  {
+   "id": "brasero",
+   "frame": 18,
+   "nombre": "Brasero colgante",
+   "familia": "Antorcha / farol",
+   "fuente": "assets/generated/authoring/world/interiors_materials_furniture_v2.png",
+   "tamano": [
+    22,
+    29
+   ]
+  },
+  {
+   "id": "farol",
+   "frame": 19,
+   "nombre": "Farol",
+   "familia": "Antorcha / farol",
+   "fuente": "assets/generated/authoring/world/interiors_furniture_windows_v1.png",
+   "tamano": [
+    22,
+    34
+   ]
+  },
+  {
+   "id": "puerta_taberna",
+   "frame": 20,
+   "nombre": "Puerta de taberna",
+   "familia": "Puerta y salida",
+   "fuente": "assets/textures/editor_object_icons.png",
+   "tamano": [
+    49,
+    50
+   ]
+  },
+  {
+   "id": "portal_runico",
+   "frame": 21,
+   "nombre": "Portal runico",
+   "familia": "Puerta y salida",
+   "fuente": "assets/textures/editor_object_icons.png",
+   "tamano": [
+    49,
+    54
+   ]
+  },
+  {
+   "id": "poste_indicador",
+   "frame": 22,
+   "nombre": "Poste indicador",
+   "familia": "Cartel",
+   "fuente": "assets/generated/authoring/world/forest_world_props_v1.png",
+   "tamano": [
+    33,
+    38
+   ]
+  },
+  {
+   "id": "tablon_anuncios",
+   "frame": 23,
+   "nombre": "Tablon de anuncios",
+   "familia": "Cartel",
+   "fuente": "assets/generated/authoring/world/forest_world_props_v1.png",
+   "tamano": [
+    44,
+    40
+   ]
+  },
+  {
+   "id": "hoguera",
+   "frame": 24,
+   "nombre": "Hoguera",
+   "familia": "Antorcha / farol",
+   "fuente": "assets/generated/authoring/world/forest_world_props_v1.png",
+   "tamano": [
+    23,
+    20
+   ]
+  },
+  {
+   "id": "arbusto",
+   "frame": 25,
+   "nombre": "Arbusto",
+   "familia": "Vegetacion",
+   "fuente": "assets/generated/authoring/world/forest_world_props_v1.png",
+   "tamano": [
+    30,
+    24
+   ]
+  },
+  {
+   "id": "helecho",
+   "frame": 26,
+   "nombre": "Helecho",
+   "familia": "Vegetacion",
+   "fuente": "assets/generated/authoring/world/forest_world_props_v1.png",
+   "tamano": [
+    25,
+    19
+   ]
+  },
+  {
+   "id": "arbusto_seco",
+   "frame": 27,
+   "nombre": "Arbusto seco",
+   "familia": "Hongo / raiz corrupta",
+   "fuente": "assets/generated/authoring/world/forest_world_props_v1.png",
+   "tamano": [
+    27,
+    24
+   ]
+  },
+  {
+   "id": "tocon",
+   "frame": 28,
+   "nombre": "Tocon",
+   "familia": "Hongo / raiz corrupta",
+   "fuente": "assets/generated/authoring/world/forest_world_props_v1.png",
+   "tamano": [
+    27,
+    18
+   ]
+  },
+  {
+   "id": "arbolito",
+   "frame": 29,
+   "nombre": "Arbolito",
+   "familia": "Estructuras altas (P1)",
+   "fuente": "assets/generated/authoring/world/forest_world_props_v1.png",
+   "tamano": [
+    30,
+    46
+   ]
+  },
+  {
+   "id": "poste_valla",
+   "frame": 30,
+   "nombre": "Poste de valla",
+   "familia": "Estructuras altas (P1)",
+   "fuente": "assets/generated/authoring/world/forest_world_props_v1.png",
+   "tamano": [
+    15,
+    24
+   ]
+  },
+  {
+   "id": "valla",
+   "frame": 31,
+   "nombre": "Valla",
+   "familia": "Estructuras altas (P1)",
+   "fuente": "assets/generated/authoring/world/forest_world_props_v1.png",
+   "tamano": [
+    31,
+    24
+   ]
+  },
+  {
+   "id": "piedra_runica",
+   "frame": 32,
+   "nombre": "Piedra runica",
+   "familia": "Altar oscuro",
+   "fuente": "assets/generated/authoring/world/forest_world_props_v1.png",
+   "tamano": [
+    29,
+    32
+   ]
+  },
+  {
+   "id": "menhir_runico",
+   "frame": 33,
+   "nombre": "Menhir runico",
+   "familia": "Altar oscuro",
+   "fuente": "assets/generated/authoring/world/forest_world_props_v1.png",
+   "tamano": [
+    33,
+    40
+   ]
+  }
+ ]
+}

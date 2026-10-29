@@ -1,0 +1,60 @@
+{
+  "id": "APARIENCIA-01",
+  "date": "2026-09-29",
+  "author": "Claude",
+  "status": "HECHO en el arbol, sin commit",
+  "pedido": "Oriol: «me gusta mucho el motor de crear apariencias de personajes, integralo en el juego, asi podremos modificar nuestra apariencia y stats antes de empezar a jugar». Decisiones que tomo: paso Apariencia tras la raza con vista previa en todos los pasos; el equipo inicial de la clase empieza PUESTO.",
+  "descripcion": "El probador de personajes de ARTE-02, dentro del motor. (1) Game::MontajePersonajes monta la hoja de 12 frames por capas a partir de personajes.json, byte a byte igual que tools/probador_personaje.py (misma aritmetica que Image.alpha_composite de Pillow). (2) Nueva partida pasa a 15 pasos: tras la raza, «Que aspecto tienes» (piel y talla en los pueblos de cuerpo liso, ojos, peinado y color, barba y color, ropa de diario de cabeza/torso/piernas/pies/capa, AL AZAR y COMO TU PUEBLO). (3) A la derecha de todos los pasos, una vista previa del personaje andando y girando, con sus cuatro lados debajo: al pasar razas se ve cada pueblo, al pasar clases su equipo inicial puesto, y en el reparto de stats el equipo que se gana (la armadura de placas aparece al subir CON a 3). (4) El equipo inicial sale puesto (lo primero de cada ranura que la clase pueda llevar). (5) En partida el jugador lleva su hoja; al equipar o desequipar desde TAB el sprite se rehace. (6) Arreglos de paso: la pantalla de Nueva partida ya no se queda congelada en 1/14 (refreshHud tras procesar), el titulo y las pistas ya no se parten palabra a palabra, A/D funcionan ademas de las flechas, el jugador ya no se para de espaldas (reparto real de personaje.png) y el cierre suelta las texturas nuevas antes que la ventana.",
+  "archivos": {
+    "nuevos": [
+      "include/Core/Imagen/ImagenRGBA.h + src/Core/Imagen/ImagenRGBA.cpp (libreria GL-free motor_imagen: PNG a RGBA con stb_image estatico)",
+      "include/Game/Personajes/ManifiestoPersonajes.h + .cpp (el contrato: personajes.json + equipo_catalogo.json)",
+      "include/Game/Personajes/MontajePersonajes.h + .cpp (capas, mezcla, cache LRU de atlas, reparto de la hoja)",
+      "include/Game/Personajes/EditorApariencia.h + .cpp (el paso Apariencia, GL-free)",
+      "include/Game/Personajes/Vestuario.h + .cpp (equipo inicial puesto y piezas visibles de lo equipado)",
+      "include/Render/HojaPersonaje.h + src/Render/HojaPersonaje.cpp (textura GL de la hoja, ciclos de andar y vista previa en el HUD)",
+      "tests/Game/PersonajesCapasTests.cpp (7 casos) y tests/Game/EditorAparienciaTests.cpp (8 casos)",
+      "cmake/AparienciaTests.cmake (va en el MISMO commit que su include() en CMakeLists.txt)"
+    ],
+    "modificados": [
+      "include/Game/NewGameFlow.h + src/Game/NewGameFlow.cpp (paso Apariencia opcional; vistaPrevia(); finalizar(tiers, equipo) equipa)",
+      "include/RPG/CharacterCreation.h + src/RPG/CharacterCreation.cpp (equipoInicial(): una sola regla para construir() y la vista previa)",
+      "include/Engine/PantallaNuevaPartida.h + src/Engine/PantallaNuevaPartida.cpp (panel 1040x600, lista + escenario, 13 miembros: reglas en la clase de datos Datos)",
+      "src/Engine/Application.cpp (baja 12 lineas, hoy 1257 -> 1245: HojaPersonaje::animar sustituye al reparto viejo; refreshHud() tras procesar la creacion, que PERGAMINO-01 tambien hizo)",
+      "src/Engine/ApplicationHud.cpp (vestir al jugador al tomar la ficha; actualizarAspecto cada fotograma)",
+      "src/Engine/ApplicationPantallas.cpp (la pantalla recibe el catalogo de equipo)",
+      "src/Engine/ApplicationCierre.cpp (m_nuevaPartida.reset() antes de la Window: sus hojas son texturas GL)",
+      "CMakeLists.txt (motor_imagen; 4 fuentes en motor_level; HojaPersonaje.cpp en motor_core; include de AparienciaTests)",
+      "tests/Engine/ApplicationCableadoTests.cpp (cableado_titulo_sale_del_manifiesto: Nueva partida abre la creacion, no cambia de escena)",
+      "tools/gen_personajes.py + los 5 JSON que genera (solo la nota del reparto: ya no dice que Application.cpp lo lee mal)",
+      "assets/textures/personajes.md y actores_capas.md (estado y fallo de personaje.png arreglado)"
+    ]
+  },
+  "ley_del_repo": {
+    "Application.cpp": "baja 12 lineas (sobre el arbol del Mac de las 18:00, 1257 -> 1245)",
+    "Application.h": "sin tocar (519 lineas, 109 miembros)",
+    "techo_500": "ningun fichero nuevo pasa de 500 (EditorApariencia.cpp 420, PantallaNuevaPartida.cpp 403)",
+    "miembros": "ninguna cabecera nueva pasa de 15; PantallaNuevaPartida.h 13",
+    "frontera_GL": "motor_core no gana rehenes: HojaPersonaje.cpp habla GL; lo GL-free va en motor_level y motor_imagen",
+    "alcance": "las 6 cabeceras nuevas las alcanza juego (medir_alcance.py)",
+    "guardia": "linea_base_core.py: 0 de deuda nueva; falla solo por cmake/AparienciaTests.cmake sin versionar, que se arregla con el commit"
+  },
+  "verification": [
+    "test_personajes_capas 7/7: los 62 personajes horneados salen byte a byte montados en C++; la mezcla coincide con Pillow en 40 pares; mutaciones de la mezcla y del orden ponen la prueba en rojo.",
+    "test_editor_apariencia 8/8: filas por pueblo, vuelta de valores, barba a juego, AL AZAR determinista y montable en las 43 razas, equipo inicial puesto, flujo de 15 pasos con finalizar() equipando.",
+    "test_h104_new_game_flow 7/7, test_new_game_flow 3/3, test_character_creation 4/4, test_character_creation_flow 5/5: el flujo de 14 pasos sin manifiesto sigue igual.",
+    "test_application_cableado con EGL: cableado_titulo_sale_del_manifiesto pasa (antes fallaba); test_application_shutdown 4/4.",
+    "tools/test_validar_sprites.py (reproducibilidad de personajes y probador) y validar_sprites.py en verde tras cambiar la nota.",
+    "Juego real en el contenedor (Mesa llvmpipe + GLFW null con guion): 33 capturas de la creacion y de la partida, y un video de 34 s.",
+    "Rehecho sobre el arbol del Mac de las 18:00, con PERGAMINO-01 dentro (unos 120 ficheros cambiados por otras sesiones desde la foto de la 01:33). Coincidian CMakeLists.txt y cuatro Application*.cpp: dos choques de lineas vecinas resueltos a mano, y PERGAMINO-01 ya traia el mismo refreshHud() tras procesar. Compila; en ctest fallan las mismas que sin este cambio (GL sin pantalla y las que ya fallaban); test_application_shutdown 4/4 y test_pergamino 33/33 con EGL. Juego real: llega a Boundington con el HUD de pergamino, el jugador lleva su pelo y la armadura de placas, el cuaderno (TAB -> Equipo) ensena el equipo inicial puesto, y desequipar/equipar desde el cuaderno rehace el sprite. Guardia entera: igual con y sin este cambio (la deuda nueva de hoy es de otras sesiones en vuelo), salvo Application.cpp, que baja de 1257 a 1245. medir_alcance.py nuevo: las 6 cabeceras nuevas las alcanza juego.",
+    "PENDIENTE en el Mac: ./juego -> Nueva partida -> los 15 pasos -> TAB/Equipo: desequipar la armadura y ver la ropa de diario."
+  ],
+  "pendiente": [
+    "SaveGame no serializa la ficha (ya pasaba): la apariencia tampoco se guarda. Cuando se guarde la ficha, guardar Game::Apariencia a su lado.",
+    "equipment.json pone escudos, orbes y focos en MainHand: no conviven con el arma y el caballero templario empieza con el escudo en la mochila. Es decision de canon/cartas (¿OffHand?).",
+    "Visto al probar: al desequipar la armadura los PV no se recortan al nuevo maximo (35/29 hasta volver a ponerla). Es del desequipar (inventario/ficha), no del aspecto; con el equipo inicial puesto se ve enseguida.",
+    "Los PNJ siguen con los atlas horneados o el cuerpo base: montarlos por capas con MontajePersonajes es el paso natural (los 19 de personajes.json ya se leen).",
+    "La pestana Estado del TAB podria ensenar el retrato (HojaPersonaje ya sabe pintarse en el HUD).",
+    "Ya existian y siguen: test_application_cableado revienta en el contenedor al destruir la segunda Application (~BitmapFont); demo_nova_partida elige mago_chasqueador, sin equipo inicial (mochila vacia con o sin este cambio). Pasa igual sin estos cambios."
+  ]
+}

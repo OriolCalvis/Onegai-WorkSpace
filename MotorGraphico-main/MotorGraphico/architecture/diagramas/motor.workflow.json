@@ -1,0 +1,345 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "MotorGraphico — flujo de arranque, bucle de frame y cierre",
+    "quality_profile": "standard"
+  },
+  "lanes": [
+    {
+      "id": "arranque",
+      "label": "Arranque · Application::init(w, h, title, ...)"
+    },
+    {
+      "id": "bucle",
+      "label": "Bucle · Application::run(maxFrames) — paso fijo ADR-007"
+    },
+    {
+      "id": "frame",
+      "label": "Fin de frame · SceneManager — transición diferida ADR-009"
+    },
+    {
+      "id": "cierre",
+      "label": "Cierre · Application::shutdown()"
+    },
+    {
+      "id": "fallos",
+      "label": "Fallos · Result<T> y excepciones de arranque",
+      "variant": "exception"
+    }
+  ],
+  "mainPath": [
+    "init",
+    "window",
+    "shaders",
+    "catalogs",
+    "atlas",
+    "level"
+  ],
+  "nodes": [
+    {
+      "id": "init",
+      "lane": "arranque",
+      "col": 0,
+      "type": "backend",
+      "label": "init()",
+      "sublabel": "guarda width/height",
+      "width": 185
+    },
+    {
+      "id": "window",
+      "lane": "arranque",
+      "col": 1,
+      "type": "external",
+      "label": "Window + GL 3.3",
+      "sublabel": "GLFW, GLAD cargado",
+      "width": 185
+    },
+    {
+      "id": "shaders",
+      "lane": "arranque",
+      "col": 2,
+      "type": "backend",
+      "label": "SpriteBatch + shaders",
+      "sublabel": "sprite, fog, lightmap",
+      "tag": "batch tras la ventana",
+      "width": 185
+    },
+    {
+      "id": "catalogs",
+      "lane": "arranque",
+      "col": 3,
+      "type": "database",
+      "label": "Catálogos JSON",
+      "sublabel": "ProjectIndex::scan + loadFromFile",
+      "tag": "manifiesto de campaña",
+      "width": 185
+    },
+    {
+      "id": "atlas",
+      "lane": "arranque",
+      "col": 4,
+      "type": "frontend",
+      "label": "Atlas + player + cámara",
+      "sublabel": "stb_image, renderer",
+      "width": 185
+    },
+    {
+      "id": "level",
+      "lane": "arranque",
+      "col": 5,
+      "type": "database",
+      "label": "Nivel + i18n + HUD",
+      "sublabel": "nivel inicial, tablas de idioma, widgets",
+      "width": 185
+    },
+    {
+      "id": "start",
+      "lane": "bucle",
+      "col": 0,
+      "type": "backend",
+      "label": "m_scenes.start()",
+      "sublabel": "makeScene(startAtTitle)",
+      "tag": "m_running = true",
+      "width": 185
+    },
+    {
+      "id": "delta",
+      "lane": "bucle",
+      "col": 1,
+      "type": "backend",
+      "label": "deltaTime",
+      "sublabel": "glfwGetTime() - lastTime",
+      "width": 185
+    },
+    {
+      "id": "tick",
+      "lane": "bucle",
+      "col": 2,
+      "type": "backend",
+      "label": "loop.tick(deltaTime)",
+      "sublabel": "acumulador, tope 0,10 s",
+      "tag": "máx. 6 pasos",
+      "width": 185
+    },
+    {
+      "id": "fixed",
+      "lane": "bucle",
+      "col": 3,
+      "type": "backend",
+      "label": "input + fixedUpdate",
+      "sublabel": "player, cámara, fog, GameSession",
+      "width": 185
+    },
+    {
+      "id": "render",
+      "lane": "bucle",
+      "col": 4,
+      "type": "frontend",
+      "label": "render(alpha)",
+      "sublabel": "renderFrame + HUD + swapBuffers",
+      "tag": "PPM en el último frame",
+      "width": 185
+    },
+    {
+      "id": "finish",
+      "lane": "frame",
+      "col": 5,
+      "type": "backend",
+      "label": "finishSceneFrame()",
+      "sublabel": "applyPendingTransition + refreshHud",
+      "width": 185
+    },
+    {
+      "id": "shutdown",
+      "lane": "cierre",
+      "col": 5,
+      "type": "backend",
+      "label": "shutdown()",
+      "sublabel": "orden inverso: recursos GL antes que Window",
+      "width": 185
+    },
+    {
+      "id": "err-window",
+      "lane": "fallos",
+      "col": 1,
+      "type": "security",
+      "label": "EngineException",
+      "sublabel": "Result::Error «No se pudo crear la ventana»",
+      "width": 185
+    },
+    {
+      "id": "err-shader",
+      "lane": "fallos",
+      "col": 2,
+      "type": "security",
+      "label": "Shader roto",
+      "sublabel": "Result::Error «Shader sprite: ...»",
+      "width": 185
+    },
+    {
+      "id": "err-catalog",
+      "lane": "fallos",
+      "col": 3,
+      "type": "security",
+      "label": "Manifiesto roto",
+      "sublabel": "un catálogo declarado que no carga aborta init",
+      "width": 185
+    },
+    {
+      "id": "err-render",
+      "lane": "fallos",
+      "col": 4,
+      "type": "security",
+      "label": "renderFrame Error",
+      "sublabel": "m_running = false y sale del bucle",
+      "width": 185
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-init-window",
+      "from": "init",
+      "to": "window",
+      "role": "main"
+    },
+    {
+      "id": "e-window-shaders",
+      "from": "window",
+      "to": "shaders",
+      "label": "contexto válido",
+      "role": "main"
+    },
+    {
+      "id": "e-shaders-catalogs",
+      "from": "shaders",
+      "to": "catalogs",
+      "role": "main"
+    },
+    {
+      "id": "e-catalogs-atlas",
+      "from": "catalogs",
+      "to": "atlas",
+      "label": "ids resueltos",
+      "role": "main"
+    },
+    {
+      "id": "e-atlas-level",
+      "from": "atlas",
+      "to": "level",
+      "role": "main"
+    },
+    {
+      "id": "e-level-start",
+      "from": "level",
+      "to": "start",
+      "label": "init: COMPLETADO",
+      "role": "main"
+    },
+    {
+      "id": "e-start-delta",
+      "from": "start",
+      "to": "delta",
+      "role": "main"
+    },
+    {
+      "id": "e-delta-tick",
+      "from": "delta",
+      "to": "tick",
+      "role": "main"
+    },
+    {
+      "id": "e-tick-fixed",
+      "from": "tick",
+      "to": "fixed",
+      "label": "1/60 s por paso",
+      "role": "main"
+    },
+    {
+      "id": "e-fixed-render",
+      "from": "fixed",
+      "to": "render",
+      "label": "alpha de interpolación",
+      "role": "main"
+    },
+    {
+      "id": "e-render-finish",
+      "from": "render",
+      "to": "finish",
+      "role": "main"
+    },
+    {
+      "id": "e-finish-delta",
+      "from": "finish",
+      "to": "delta",
+      "label": "siguiente frame",
+      "role": "return",
+      "variant": "dashed"
+    },
+    {
+      "id": "e-tick-shutdown",
+      "from": "tick",
+      "to": "shutdown",
+      "label": "!loopFrame.rendered → break",
+      "role": "branch"
+    },
+    {
+      "id": "e-window-err",
+      "from": "window",
+      "to": "err-window",
+      "label": "throw → Result",
+      "role": "error",
+      "variant": "security"
+    },
+    {
+      "id": "e-shaders-err",
+      "from": "shaders",
+      "to": "err-shader",
+      "role": "error",
+      "variant": "security"
+    },
+    {
+      "id": "e-catalogs-err",
+      "from": "catalogs",
+      "to": "err-catalog",
+      "role": "error",
+      "variant": "security"
+    },
+    {
+      "id": "e-render-err",
+      "from": "render",
+      "to": "err-render",
+      "role": "error",
+      "variant": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Ritmo de la simulación",
+      "items": [
+        "ApplicationLoop acumula el delta real de GLFW y lo consume en pasos fijos de 1/60 s",
+        "maxFrameSeconds = 0,10 s: una pausa del depurador no inyecta un salto de tiempo",
+        "maxFixedUpdatesPerFrame = 6: el tiempo que no cabe se descarta en droppedSimulationSeconds"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Orden verificado en el árbol",
+      "items": [
+        "init() crea Window antes que SpriteBatch: su constructor llama a glGenVertexArrays",
+        "Los catálogos se cargan ANTES que el nivel para que las referencias del mapa resuelvan",
+        "shutdown() libera recursos GL antes que Window, o los destructores llamarían a glDeleteTextures sin contexto"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Política de fallos",
+      "items": [
+        "init() no propaga excepciones: convierte cada fallo en Result<bool>::Error y decide main()",
+        "Un catálogo del manifiesto que no carga aborta el arranque: no se juega a medias",
+        "renderFrame() en error pone m_running = false y el bucle termina sin romper la ventana"
+      ]
+    }
+  ]
+}

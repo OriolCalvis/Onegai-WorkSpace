@@ -1,0 +1,32 @@
+{
+  "id": "C-07",
+  "date": "2026-09-14",
+  "author": "Claude (Cowork)",
+  "status": "Tancat — la prova de regressió que faltava existeix, és gl-free i passa",
+  "actions": [
+    "El paquet estava implementat des del 03/09 i obert per una sola cosa: la prova. El seguiment d'aleshores deia que no es podia tancar «fins que hi hagi arnès a nivell d'Application (C-16/C-24)». Aquell arnès ja hi és, així que això és només acabar el que aquell registre va deixar apuntat.",
+    "Primer he comprovat que la correcció hi segueix i és correcta a tots dos punts: la guarda de setNarrative() a loadLevel només mira m_narrativaLista, i el bloc de transicions de cronologia d'update() sí que mira m_narrativeCampaignTransitions. També que les dues portes d'entrada d'aventura autònoma (--precuela/--aventura per init(), i un projecte amb entrada d'aventura per openProject()) passen per la guarda bona. No hi ha cap forat ni res desfet.",
+    "La decisió de cablejat s'ha extret a Application::narrativeWiring(narrativeReady, campaignTransitions), static constexpr al header, que torna {attachToSession, chainCampaignTimeline}. Les dues condicions escrites a mà d'Application.cpp ara la criden. Són dues línies canviades i cap comportament nou: el que es guanya és que la decisió viu en UN lloc i es pot provar sense finestra.",
+    "Per què així i no com els ApplicationTests que ja hi havia: aquells enllacen motor_core i per tant no es poden executar sense GL. Tancar C-07 amb una prova que no s'executa hauria estat repetir exactament el motiu pel qual el paquet portava onze dies obert.",
+    "Prova nova tests/Engine/ApplicationNarrativeWiringTests.cpp, 6 casos, registrada a cmake/ApplicationNarrativeWiringTests.cmake amb etiquetes unit;gl-free i dins de suite_gl_free. Cobreix les DUES cares del bug: que una aventura autònoma s'enganxa a la sessió i dispara el primer beat (amb GameSession i NarrativeEngine de veritat, no una taula de veritat), i que no encadena les transicions de la cronologia de Boundington. Més dos casos de contrapunt perquè «no fer mai res» no passi la prova."
+  ],
+  "verification": [
+    "ctest sencer sobre l'arbre del 14/09: 102/111 verds. Els 9 restants són «Not Run» perquè enllacen motor_core, que al contenidor de verificació no es construeix (sense X11/GLFW); són els mateixos abans i després del paquet.",
+    "test_application_narrative_wiring: 6/6 casos verds, i dues execucions seguides donen sortida idèntica.",
+    "La prova s'ha demostrat que prova alguna cosa, que és el que faltava: revertint la guarda a la condició antiga falla. Només loadLevel revertit → 3 fallades de 6. Només update() revertit → 2 de 6. Les dues creuades, que és l'estat real d'abans del 03/09 → 3 de 6. Amb la guarda bona, 6/6.",
+    "Els canvis a Application.cpp, que aquí no compila per falta de GL, s'han validat amb g++ -fsyntax-only contra els capçals de GLFW 3.4: mateix conjunt d'errors amb i sense el canvi, o sigui que no n'afegeix cap."
+  ],
+  "pending": [
+    "Res del paquet. Per al tancament formal, que CI construeixi motor_core amb GL i confirmi que els ApplicationTests que arriben a Application::init segueixen verds amb la crida nova (regla 2 del punt 6 del pla)."
+  ],
+  "fitxers_creats": [
+    "tests/Engine/ApplicationNarrativeWiringTests.cpp",
+    "cmake/ApplicationNarrativeWiringTests.cmake"
+  ],
+  "fitxers_editats": [
+    "include/Engine/Application.h — NarrativeWiring + narrativeWiring(), amb el comentari que explica el bug",
+    "src/Engine/Application.cpp — les dues condicions passen per narrativeWiring(); comentaris C-07 conservats",
+    "CMakeLists.txt — una línia include(cmake/ApplicationNarrativeWiringTests.cmake)"
+  ],
+  "nota": "Annex al registre del 03/09, que es conserva íntegre a C-07.json. Aquest fitxer no el substitueix: hi afegeix el tancament."
+}

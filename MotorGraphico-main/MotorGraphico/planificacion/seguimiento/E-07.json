@@ -1,0 +1,29 @@
+{
+  "id": "E-07",
+  "date": "2026-09-12",
+  "author": "Claude (Cowork)",
+  "status": "Validacion de eventos y de beats hecha; paquete ABIERTO (falta la llamada desde el editor y las referencias a catalogos)",
+  "actions": [
+    "Nuevos include/RPG/AdventureValidation.h y src/RPG/AdventureValidation.cpp. Detectan los fallos que HOY no dan error en ninguna parte y que el autor solo descubriria jugando — si es que llega a la escena.",
+    "Banderas que se consultan y que nadie enciende: la puerta no se abriria nunca. Es AVISO y no error a proposito, porque puede encenderla un beat antiguo, que este validador todavia no mira; convertirlo en error bloquearia proyectos sanos.",
+    "DEC-30 — lo que va detras de un comando terminal recibe diagnostico de inalcanzable, que es lo que el plan pide con esas palabras. Se avisa UNA vez por secuencia y no una por comando: cincuenta avisos identicos no ayudan a nadie. Y un terminal DENTRO de una rama no hace inalcanzable lo que viene despues de la rama, solo lo de dentro: confundirlo llenaria de avisos falsos cualquier mision con una salida opcional.",
+    "Interruptores locales que apuntan a un evento que no existe: nadie los leeria nunca. Error.",
+    "Comandos declarados y no cableados (E-04): error que impide PROBAR pero no guardar. Sin esto, el autor monta la mision entera y descubre al jugarla que media no hace nada.",
+    "La forma de cada comando —tipo conocido, parametros obligatorios, tipos correctos, ramas dentro de lo admitido— la comprueba ValidateCommand de E-04, que es quien sabe que es cada comando. Aqui no se duplica esa lista.",
+    "CADA HALLAZGO SABE DONDE ESTA: evento, pagina y ruta de indices hasta el comando exacto ({2,0,1} es el segundo comando de la primera rama del tercer comando). No es un detalle: E-15 pide una lista de problemas con accion «Ir ahi», y un diagnostico que solo diga «falta un parametro» obliga al autor a buscarlo a mano entre cincuenta comandos.",
+    "Dos severidades con puertas distintas: guardar mira solo los errores, probar y exportar tambien. Es la regla de la especificacion §12.8 y lo que permite guardar borradores incompletos (diseno de bloques §9).",
+    "Segunda mitad — ValidateAdventure() para las aventuras de BEATS, que es el otro formato vivo. Banderas que un beat pide y que nadie enciende (no se dispara nunca), beats con id repetido (`once` marcaria uno y callaria el otro), beats que no dicen ni hacen nada, combates sin enemigo, tiradas sin habilidad, objetivos cuya bandera de completado no enciende nadie (se quedan pendientes para siempre) y TEMPORIZADORES QUE NADIE ARRANCA, que el plan pide con esas palabras.",
+    "Las dos validaciones son funciones SEPARADAS y comparten el tipo de diagnostico. Separadas porque son dos formatos vivos a la vez y una sola funcion acabaria reportando de uno cosas que solo valen para el otro; con el mismo tipo para que E-15 pueda enseñarlos en la misma lista sin traducir nada.",
+    "Las banderas que enciende un skillCheck (las cuatro del grado) y las de un combate (victoria/derrota) cuentan como ENCENDIDAS. Sin eso, cualquier aventura que ramifique por tirada se llenaria de avisos falsos: esas banderas no las pone un setFlag, las pone el propio efecto. Lo mismo con la de expiracion de un temporizador y las de sus avisos."
+  ],
+  "verification": [
+    "test_adventure_validation, 16 casos verdes. Los 9 de eventos mas 7 de beats: una aventura SANA no produce ni un diagnostico; bandera que nadie enciende como aviso, con el id del beat y sin pagina; dos beats con el mismo id como error; temporizador que nadie arranca (aviso) y temporizador arrancado sin declarar (error); temporizador que expira por tiempo y dura cero; objetivo que nadie completa, y objetivo sin bandera de completado; y las banderas de skillCheck y de combate contadas como encendidas, mas un combate sin enemigo.",
+    "Compilado y ejecutado con g++ directo sobre la maquina del usuario. CI remota pendiente."
+  ],
+  "pending": [
+    "CI remota.",
+    "Que una referencia APUNTE a algo que existe —un objeto del catalogo, un enemigo, una habilidad— necesita los catalogos del proyecto, que son E-16 (la dependencia de E-07 que sigue sin cerrar). Aqui se comprueba la forma y la coherencia interna, no la existencia externa.",
+    "«L'editor la crida abans de desar i abans del playtest» necesita el editor (E-05/E-15) y toca editor/src/level_editor.cpp, que comparten nueve paquetes. No se ha tocado: mientras se escribia esto otra sesion estaba vendorizando ImGui en third_party/ y creando src/Editor/EditorDocumentSession.cpp.",
+    "Beats inalcanzables por ORDEN (uno que solo se dispara despues de otro que ya no puede dispararse) no se detectan: hace falta un grafo de dependencias entre beats y conviene hacerlo con aventuras reales delante, no inventando el caso."
+  ]
+}

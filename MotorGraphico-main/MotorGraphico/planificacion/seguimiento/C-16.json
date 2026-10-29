@@ -1,0 +1,23 @@
+{
+  "id": "C-16",
+  "date": "2026-09-07",
+  "author": "Codex + agentes de implementación y pruebas",
+  "status": "Implementat i verificat localment; CI remot pendent",
+  "actions": [
+    "Application utilitza SceneManager com a autoritat de títol/joc i per despatxar simulació i render; retirada m_atTitle.",
+    "Títol, portes, cronologia i càrrega de guardats sol·liciten transicions que es resolen al final del frame.",
+    "La càrrega prepara mapa, textura i atlas abans de substituir la sessió. Els projectes preparen també catàlegs i narrativa; un error conserva el context anterior. La memòria cau de tilesets s’identifica per ruta.",
+    "La compatibilitat del guardat es comprova en una sessió aïllada abans de modificar jugador/inventari/narrativa. El tancament descarta escenes i peticions abans dels recursos GL.",
+    "Deu regressions sobre Application real amb context GL, fixtures temporals i escenes de producció; workflow propi Linux Debug/Release. GameSession no requereix modificacions."
+  ],
+  "verification": [
+    "Build completa Debug en directori aïllat codex-c16: juego, editor, demos i proves.",
+    "63/63 CTest GL-free; test_application_scenes (10 casos) i test_application_shutdown passen amb GL real.",
+    "Els 10 casos de transicions passen amb AddressSanitizer/UndefinedBehaviorSanitizer; LeakSanitizer desactivat en aquesta execució macOS.",
+    "juego 3: sortida normal, framebuffer 1280x720 generat.",
+    "Diff propi revisat; canvis previs i simultanis de Map/Project/CMake, C-05 i assets preservats."
+  ],
+  "pending": [
+    "Execució remota del workflow Application scenes; no s’ha fet push ni s’ha tancat formalment el paquet a CI."
+  ]
+}

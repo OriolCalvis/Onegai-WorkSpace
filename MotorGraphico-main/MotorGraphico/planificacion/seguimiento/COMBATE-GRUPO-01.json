@@ -1,0 +1,34 @@
+{
+  "id": "COMBATE-GRUPO-01",
+  "date": "2026-10-05",
+  "author": "claude (Cowork)",
+  "status": "HECHO — aplicado en el arbol del Mac, sin commit",
+  "origen": "Oriol (05/10): «Los combates del juego siguen siendo de uno contra uno [...] Mirate la historia de Boundington». Y: «cuando una accion tira varias veces, solo se ve la ultima tirada: dale mas pausa al juego y que se vean todas».",
+  "criterio_de_cierre": "Un beat pide un grupo y salen todos (numerados si se repiten); al ganar caen todos; al huir se quedan los vivos. Las tiradas de una accion salen todas, una detras de otra, y el rival y el desenlace esperan a que se vean.",
+  "scope": [
+    "include/RPG/Narrative/NarrativeBeat.h: BattleRequest::enemigos, grupo(), kMaxEnemigos 8.",
+    "src/RPG/Narrative/AdventureScriptLoader.cpp, src/RPG/AdventureSerializer.cpp, src/RPG/AdventureBeatValidation.cpp: \"enemigos\" [{id, cantidad}] o \"cantidad\"; escritura compacta; validacion de todos los ids.",
+    "include/Game/SessionData.h (m_battleEnemyHandles), include/Game/GameSession.h, src/Game/GameSession*.cpp, src/Game/SaveGame.cpp: startBattle con lista, botin de cada uno, huida.",
+    "include/RPG/TiradaVisible.h (HistorialTiradas, accion), include/Game/CartasEnCombate.h, src/Game/CartasEnCombate.cpp, src/Game/CartasTiradas.cpp: las ultimas 32 tiradas con su accion.",
+    "include/Game/BarraCombate.h, src/Game/BarraCombate.cpp: cola de tiradas, kPausaTirada 1,6 s, tiradaDe/En, tiradasVistas/PorVer; rivalListo espera.",
+    "include/Engine/Application.h, src/Engine/Application.cpp, src/Engine/ApplicationPantallas.cpp: desenlaceTrasTiradas (ganar o perder espera a las tiradas; huir no).",
+    "src/HUD/Pergamino/DadosPergamino.cpp, MesaCombateHud.cpp, MesaCombateRetales.cpp, MesaCombateEstados.cpp, MesaCombateInterno.h: el «2/3», la tirada de la cola y las placas compactas.",
+    "assets/adventures/boundington_ocaso.json: combates segun los hombres de Venides (20/10/solo); assets/objects/boundington_enemigos.json: perdido_devoto (ficha Cultist, 9 PV); assets/textures/sprites.json: alias perdido_devoto -> cultista.",
+    "tests: BarraCombateTests, CartasEnCombateTests, GameSessionTests, DadosPergaminoTests, MesaCombateTests."
+  ],
+  "non_goals": [
+    "Sin compañeros en el combate (Venides, Verina, Xila): es la pregunta 1 de la revision de la campaña.",
+    "La vida y los estados cambian al resolverse la accion, no al ver su tirada.",
+    "No se cambian las reglas Ed. 3: el critico de «todos 6» con un dado (22 de daño) se deja como esta y se pregunta."
+  ],
+  "verification": [
+    "test_game_session 29/29; test_barra_combate 19/19; test_cartas_combate 33/33; test_pergamino 61/61; test_schema_fixtures 9/9; demo_campana_boundington 77/83 beats (todos los del Ocaso nuevos).",
+    "Simulacion con la mesa real (2000 combates, bardo T1 con kit, 24 PV, solo Atacar): 1 saqueador 82-89 %, 2 saqueadores 17-35 %, 3 saqueadores 0-3 %, 2 devotos 78-89 %, 3 devotos 36-62 %, 2 fanaticos 31-54 %.",
+    "Juego real: dos devotos con «1/2» y «2/2» y las tiradas del rival una detras de otra; cinco devotos con las placas compactas; tres saqueadores (cae en la primera ronda)."
+  ],
+  "para_oriol": [
+    "Si el critico de «todos 6» pide al menos dos dados.",
+    "Si el heroe tendra compañeros en el combate."
+  ],
+  "sesion": "sesiones/2026-10-05-claude-kit-tiradas-grupos.md"
+}

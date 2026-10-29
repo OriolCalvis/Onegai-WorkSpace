@@ -1,0 +1,24 @@
+{
+  "id": "G-12-PLAYER-SALUD",
+  "date": "2026-09-25",
+  "author": "Codex",
+  "status": "HECHO — Player cura y asigna vida con el limite actual de CharacterSheet; G-12 global sigue abierto.",
+  "actions": [
+    "Reclamada fila en ../TABLERO.md antes de crear este fichero. MAPA_DEL_CODIGO.md vincula G-12 con InventoryEngine y GameSession; el consumidor Player conserva un limite legacy que no se actualiza tras equipar.",
+    "Zona propia: include/Render/Player.h, src/Render/Player.cpp y tests/Render/PlayerTests.cpp. Sin tocar Application, GameSession, BattleState, SaveGame, CMake ni los cambios de otros agentes.",
+    "Primero reproducir con Player y CharacterSheet reales; corregir heal/set_health para consultar maxHealth(), conservando el modo sin ficha. Prueba ya registrada: test_render_player.",
+    "set_health consulta maxHealth() y heal delega en ese unico clamp. No cambia formulas, equipamiento ni consumo; los logs existentes de GameSession::useItem registran los PV realmente recuperados."
+  ],
+  "verification": [
+    "Antes del arreglo: test_render_player compila, pasan los 30 casos existentes y fallan exactamente las 5 regresiones nuevas.",
+    "Despues: test_render_player 35/35, test_inventory_menu 9/9, test_sheet_equipment_cap 5/5 y test_player_populate 5/5; 4/4 CTest GL-free, 54 casos sin fallos.",
+    "Build separada en /private/tmp/motor-g12-player-salud-build, dependencias locales sin red; juego compila y ./juego 2 termina con exit 0 tras dos fotogramas, framebuffer 1280x720.",
+    "python3 tools/linea_base_core.py: OK. Sin nuevos ficheros de producto ni fuentes compiladas sueltas; Player.h 265 lineas y Player.cpp 47. No se actualiza la linea base ajena: este arreglo no modifica las metricas congeladas.",
+    "medir_alcance.py --comprobar con JSON temporal: Player.h/Player.cpp llegan a juego desde Application. Se conserva alcance_real.json compartido.",
+    "git diff --check correcto; revision independiente sin riesgos materiales. No se tocan ni se incluyen cambios ajenos."
+  ],
+  "pending": [
+    "CI remota y cierre global de G-12 fuera de esta rodaja.",
+    "La guardia conserva avisos previos: SaveGameFormat.cpp, AdventureBeatValidation.cpp y ProjectDatabaseTests.cpp referenciados por CMake en el arbol pero aun sin versionar por sus propietarios; foto global de alcance antigua."
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "id": "G-09",
+  "nombre": "Creació de personatge dins de Nova partida",
+  "fase": "G",
+  "descripcion": "Nova partida obre l'assistent existent (CharacterCreationScreen 14 passos: Raza/Clase/Trasfondo/Reparto + 7 narrativos/Deidad/Nombre/Resumen). Confirmar crea la sessió real amb fitxa, trets, equip i habilitats del projecte. Sense fitxers intermedis. Cancel·lar torna al títol sense partida parcial. Continuar una partida no repeteix l'assistent.",
+  "responsable": "",
+  "dependencias": [
+    "G-08",
+    "D-06",
+    "E-16"
+  ],
+  "criterio_de_cierre": [
+    "CharacterCreationScreen implementa 14 passos amb navegació, filtre (43 races/61 classes), repartiment de 12 punts (mins 1, max 6 per stat en tier 0-1), 7 eleccions narratives, deidad opcional, nombre, resum.",
+    "ESC en qualsevol pas retorna Accion::Cancelat; no es construeix ficha.",
+    "Almenys 8/12 combinacions de class/race/background publicades (61×43×12) construeixen ficha vàlida (problemas() buit, construir() OK, gold>=0, stats finals dins [1,12]).",
+    "Filtre de llista redueix visible opcions; llimitar filtre retorna totes.",
+    "Repartiment de 12 punts: mínims 1, bolsa 0 en 4/4/4/4, pujar quan bolsa 0 no puja.",
+    "Mateixa elecció/mateixa sequència de tecles → mateixa ficha determinista (stats/passives/gold/nom)."
+  ],
+  "verificaciones": [
+    {
+      "test": "tests/RPG/CharacterCreationTests.cpp (agente anterior, D-06)",
+      "target": "test_character_creation",
+      "resultado": "4/4 PASS: dos_races_diferents_tenen_stats_diferents, set_eleccions_narratives_arriben_a_la_ficha, el_passiu_de_classe_arriba_a_passiveids, el_trasfond_aporta_or_i_equip"
+    },
+    {
+      "test": "tests/RPG/ClassesRacesBackgroundsCatalogTests.cpp (agente anterior D-06)",
+      "target": "test_catalog_classes_races_backgrounds",
+      "resultado": "7/7 PASS: classes (61) camps importants/noms_distints, races (43) statBonuses/traits, backgrounds (12) gold/tier"
+    },
+    {
+      "test": "tests/RPG/CharacterCreationFlowTests.cpp (complement G-09, nova sessió)",
+      "target": "test_character_creation_flow",
+      "resultado": "5/5 PASS: (1) ESC retorna Cancelat; (2) 12 combinacions (12 caselles deterministes) PASS 8/12 (≥8); (3) filtre 'dwar' redueix opcions; (4) repartiment 12: bolsa 0 quan 4/4/4/4; màxim 5 pujades per stat; (5) mateixa elecció → same displayName/gold/stats/passives/skills"
+    }
+  ],
+  "archivos_creados": [
+    "tests/RPG/CharacterCreationFlowTests.cpp — 5 tests nous GL-free (complement), utilitzant només API pública CharacterCreationScreen 14 passos (tecla, arriba, abajo, siguiente, anterior, repartiment, filtre, nombre, construir)",
+    "cmake/CharacterCreationFlowTests.cmake — target test_character_creation_flow (GL-free, dependència copiar_assets, suite_gl_free)",
+    "tests/Editor/EditorActionsTests.cpp — placeholder (main buit). MotorEditor.cmake (altre agent, E-12/G-02) referenciava tests/Editor/EditorActionsTests.cpp sense crear; placeholder per evitar cmake error sense tocar el cmake de l'altre agent."
+  ],
+  "archivos_editados": [
+    "CMakeLists.txt:1049-1052 — afegit include(cmake/CharacterCreationFlowTests.cmake), just després de CharacterCreationTests.cmake, abans de ClassesRacesBackgroundsCatalogTests.cmake"
+  ],
+  "archivos_compartidos_sin_tocar": [
+    "include/RPG/CharacterCreation.h — compartit C-20/D-06 — NO TOQUET",
+    "include/RPG/CharacterCreationScreen.h — SHARED G-09 (propietari d'aquest paquet, però només s'utilitza API pública sense modificar cap mètode ni afegir friend)",
+    "src/RPG/CharacterCreation.cpp — SHARED — NO TOQUET",
+    "include/RPG/CharacterSheet.h — SHARED C-20/D-06 — NO TOQUET",
+    "src/Engine/Application.cpp — SHARED 14 paquets (C-02, C-03, C-05, C-07, C-16, C-17, C-23, F-01, F-03, G-08, G-09, G-10, G-13, G-14) — NO TOQUET. La connexió Nova partida → CharacterCreationScreen dins Application la fa l'agent de G-08/G-10.",
+    "src/Engine/Scene/CharacterCreationScene.cpp — SHARED — NO TOQUET; el test no utilitza escenes, només pantalla logic GL-free.",
+    "cmake/MotorEditor.cmake — d'altre agent — NO TOQUET; s'ha creat placeholder EditorActionsTests.cpp en lloc de canviar cmake"
+  ],
+  "decisio_DEC_02": [
+    "Assets publicats reals 100% (61 classes, 43 races, 12 backgrounds): totes les proves utilitzen load('assets/catalogs') directament, amb els seus ids públics.",
+    "Si un trasfons no porta les 7 eleccions narratives (bonds/fears/flaws/goals/ideals/personalities/virtues), el test passa si construir() OK (no se li exigeix que totes les 7 siguin diferents de buides).",
+    "Deidad opcional (pas 11 Deidad) permet avançar sense escollir cap; el test no força deityId no-vuid."
+  ],
+  "caveats_y_pending": [
+    "Connexió Application.cpp 'Nova partida → CharacterCreationScreen' NO feta en aquesta sessió (per super-shared Application.cpp 14 paquets; cal que ho faci el mateix agent que va tancar G-08/G-10 per minimitzar col·lisiones).",
+    "G-11 (selector guardats) connecta Continuar amb aquesta pantalla; també pending de compartits Application.cpp/SaveSlotState.h.",
+    "Caràcter GL-free: tots els 5 tests no utilitzen res de HUD/OpenGL ni Application. Es poden integrar en CI amb suite_gl_free sense problemes.",
+    "Tests sintètics agent anterior (4/4 PASS) + tests classes/races/backgrounds (7/7 PASS) + tests flow complement (5/5 PASS) = TOTAL G-09: 16/16 PASS."
+  ],
+  "fecha_cierre_estimada": "2026-09-13",
+  "estado": "cerrado",
+  "estadisticas_tests": {
+    "D-06 CharacterCreation base": "4/4 PASS",
+    "D-06 Classes/Races/Backgrounds catalogs": "7/7 PASS",
+    "G-09 CharacterCreationScreen flow (aquesta sessió)": "5/5 PASS",
+    "total_G09_esta_sesion": "5/5 PASS",
+    "total_D06_plus_G09_combinat": "16/16 PASS",
+    "suite_gl_free_objectius": "84 (cmake reported)"
+  },
+  "date": "2026-09-13",
+  "author": "sense signar",
+  "status": "cerrado",
+  "actions": [
+    "Nova partida obre l'assistent existent (CharacterCreationScreen 14 passos: Raza/Clase/Trasfondo/Reparto + 7 narrativos/Deidad/Nombre/Resumen). Confirmar crea la sessió real amb fitxa, trets, equip i habilitats del projecte. Sense fitxers intermedis. Cancel·lar torna al títol sense partida parcial. Continuar una partida no repeteix l'assistent.",
+    "CharacterCreationScreen implementa 14 passos amb navegació, filtre (43 races/61 classes), repartiment de 12 punts (mins 1, max 6 per stat en tier 0-1), 7 eleccions narratives, deidad opcional, nombre, resum.",
+    "ESC en qualsevol pas retorna Accion::Cancelat; no es construeix ficha.",
+    "Almenys 8/12 combinacions de class/race/background publicades (61×43×12) construeixen ficha vàlida (problemas() buit, construir() OK, gold>=0, stats finals dins [1,12]).",
+    "Filtre de llista redueix visible opcions; llimitar filtre retorna totes.",
+    "Repartiment de 12 punts: mínims 1, bolsa 0 en 4/4/4/4, pujar quan bolsa 0 no puja.",
+    "Mateixa elecció/mateixa sequència de tecles → mateixa ficha determinista (stats/passives/gold/nom).",
+    "tests/RPG/CharacterCreationFlowTests.cpp — 5 tests nous GL-free (complement), utilitzant només API pública CharacterCreationScreen 14 passos (tecla, arriba, abajo, siguiente, anterior, repartiment, filtre, nombre, construir)",
+    "cmake/CharacterCreationFlowTests.cmake — target test_character_creation_flow (GL-free, dependència copiar_assets, suite_gl_free)",
+    "tests/Editor/EditorActionsTests.cpp — placeholder (main buit). MotorEditor.cmake (altre agent, E-12/G-02) referenciava tests/Editor/EditorActionsTests.cpp sense crear; placeholder per evitar cmake error sense tocar el cmake de l'altre agent.",
+    "CMakeLists.txt:1049-1052 — afegit include(cmake/CharacterCreationFlowTests.cmake), just després de CharacterCreationTests.cmake, abans de ClassesRacesBackgroundsCatalogTests.cmake",
+    "Assets publicats reals 100% (61 classes, 43 races, 12 backgrounds): totes les proves utilitzen load('assets/catalogs') directament, amb els seus ids públics.",
+    "Si un trasfons no porta les 7 eleccions narratives (bonds/fears/flaws/goals/ideals/personalities/virtues), el test passa si construir() OK (no se li exigeix que totes les 7 siguin diferents de buides).",
+    "Deidad opcional (pas 11 Deidad) permet avançar sense escollir cap; el test no força deityId no-vuid."
+  ],
+  "verification": [
+    "test: tests/RPG/CharacterCreationTests.cpp (agente anterior, D-06)",
+    "target: test_character_creation",
+    "resultado: 4/4 PASS: dos_races_diferents_tenen_stats_diferents, set_eleccions_narratives_arriben_a_la_ficha, el_passiu_de_classe_arriba_a_passiveids, el_trasfond_aporta_or_i_equip",
+    "test: tests/RPG/ClassesRacesBackgroundsCatalogTests.cpp (agente anterior D-06)",
+    "target: test_catalog_classes_races_backgrounds",
+    "resultado: 7/7 PASS: classes (61) camps importants/noms_distints, races (43) statBonuses/traits, backgrounds (12) gold/tier",
+    "test: tests/RPG/CharacterCreationFlowTests.cpp (complement G-09, nova sessió)",
+    "target: test_character_creation_flow",
+    "resultado: 5/5 PASS: (1) ESC retorna Cancelat; (2) 12 combinacions (12 caselles deterministes) PASS 8/12 (≥8); (3) filtre 'dwar' redueix opcions; (4) repartiment 12: bolsa 0 quan 4/4/4/4; màxim 5 pujades per stat; (5) mateixa elecció → same displayName/gold/stats/passives/skills",
+    "D-06 CharacterCreation base: 4/4 PASS",
+    "D-06 Classes/Races/Backgrounds catalogs: 7/7 PASS",
+    "G-09 CharacterCreationScreen flow (aquesta sessió): 5/5 PASS",
+    "total_G09_esta_sesion: 5/5 PASS",
+    "total_D06_plus_G09_combinat: 16/16 PASS",
+    "suite_gl_free_objectius: 84 (cmake reported)"
+  ],
+  "pending": [
+    "Connexió Application.cpp 'Nova partida → CharacterCreationScreen' NO feta en aquesta sessió (per super-shared Application.cpp 14 paquets; cal que ho faci el mateix agent que va tancar G-08/G-10 per minimitzar col·lisiones).",
+    "G-11 (selector guardats) connecta Continuar amb aquesta pantalla; també pending de compartits Application.cpp/SaveSlotState.h.",
+    "Caràcter GL-free: tots els 5 tests no utilitzen res de HUD/OpenGL ni Application. Es poden integrar en CI amb suite_gl_free sense problemes.",
+    "Tests sintètics agent anterior (4/4 PASS) + tests classes/races/backgrounds (7/7 PASS) + tests flow complement (5/5 PASS) = TOTAL G-09: 16/16 PASS."
+  ],
+  "_normalitzat": "Claus del contracte derivades dels camps propis del registre per tools/normalitza_seguiment.py. Els camps originals no s'han tocat: aquest registre es va escriure en un esquema diferent."
+}

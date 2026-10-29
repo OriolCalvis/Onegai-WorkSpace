@@ -1,0 +1,30 @@
+{
+  "id": "G-02",
+  "date": "2026-09-17",
+  "author": "Claude (Cowork)",
+  "status": "Mitad sin interfaz hecha y verificada localmente (cuentagotas, rectángulo y línea en EditorState, un paso de historial por trazo). Paquete ABIERTO: faltan la herramienta en el shell (E-10) y CI",
+  "actions": [
+    "Fila reclamada en TABLERO antes de tocar nada; desarrollo en copia aislada de d5ec681 y aplicación al árbol con un script de inserciones ancladas, tras comprobar que EditorState y CMakeLists no tenían cambios ajenos.",
+    "EditorState::paintRect(a, b, gid, filled) y paintLine(a, b, gid): capa activa, gid 0 borra, capa bloqueada o gid negativo = no-op. Todo el trazo se prepara sobre una copia de la capa y entra con UN commitDocument: un rectángulo de 1600 celdas se deshace con un solo Ctrl+Z.",
+    "Un trazo que no cambia ninguna celda no crea paso ni marca el documento como modificado (devuelve false).",
+    "Recorte: el rectángulo lleno se recorta al mapa; en el de borde, un lado que cae fuera no se pinta (recortarlo lo metería dentro). Las coordenadas se acercan a una celda fuera del borde, así que el coste no depende de lo lejos que esté el ratón.",
+    "Línea Bresenham en orden canónico: arrastrar de A a B o de B a A pinta las mismas celdas. RectCells/LineCells son estáticas y públicas para la vista previa del arrastre.",
+    "EditorState::pickTileAt(x, y): el GID de la capa activa pasa a ser el seleccionado de la paleta. No es un paso de historial ni marca cambios. Si el filtro lo oculta, quita el filtro y conserva POR IDENTIDAD las selecciones de objetos y niveles. Celda vacía, fuera o GID sin entrada en la paleta: false y sin cambios.",
+    "No se añaden valores a EditorTool ni se tocan applyAt, atajos ni level_editor: la herramienta activa y el arrastre son de la capa de interfaz (E-10, codex). verificar_controles (legacy y --shell) sigue en verde.",
+    "Prueba nueva test_editor_tools (tests/Editor/EditorToolsTests.cpp, cmake/EditorToolsTests.cmake) en fragmento propio; una línea include al final de CMakeLists. dades.py: G-02 lista sus dos ficheros nuevos. MAPA_DEL_CODIGO no se regenera porque tiene cambios ajenos sin commitear."
+  ],
+  "verification": [
+    "8/8 casos en test_editor_tools contra d5ec681 aislado y contra el árbol vivo con el WIP ajeno.",
+    "8/8 con ASan+UBSan (detect_leaks=1), sin diagnósticos.",
+    "8/8 mutaciones detectadas: un paso por celda, paso sin cambios, ignorar el bloqueo, recortar el borde al mapa, línea sin orden canónico, cuentagotas que no quita el filtro, selecciones restauradas por índice y cuentagotas como edición.",
+    "test_editor_state 10/10 y test_editor_state_history 5/5 siguen verdes con el EditorState nuevo.",
+    "tools/comprobar_declaraciones_rpg.py: OK en lo nuevo (los avisos que da son de CatalogPickerState, ajenos). verificar_controles.py legacy y --shell: OK.",
+    "No verificado: configuración CMake real y CI. La VM local no tiene cmake ni red; se compiló con g++ 11, las fuentes de las librerías y el glm de out/build/ci-sim/_deps."
+  ],
+  "pending": [
+    "Integración en el shell (E-10): herramientas Cuentagotas/Rectángulo/Línea en EditorActions, arrastre con vista previa usando RectCells/LineCells y sus atajos. Zona codex.",
+    "Botón derecho = cuentagotas u otra convención: decisión de interfaz, no tomada aquí.",
+    "Línea con un extremo muy lejos del mapa: se enumera entera (no hay recorte de segmento). El ratón no llega tan lejos, pero conviene recortarla si otra entrada la usa.",
+    "CI remota para el cierre formal."
+  ]
+}

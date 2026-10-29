@@ -1,0 +1,182 @@
+{
+  "entries": [
+    {
+      "id": "encounter_bosque_t1",
+      "name": "Encuentro en el bosque (Tier 1)",
+      "description": "Encuentros típicos en zonas boscosas de nivel bajo.",
+      "tier": 1,
+      "rarity": "common",
+      "entries": [
+        {
+          "refId": "monster_lobo",
+          "weight": 50,
+          "min": 1,
+          "max": 3
+        },
+        {
+          "refId": "monster_jabali",
+          "weight": 30,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "refId": "monster_araña_gigante",
+          "weight": 20,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "conditions": [
+        {
+          "type": "zone",
+          "value": "bosque",
+          "comparison": "=="
+        },
+        {
+          "type": "time",
+          "value": "night",
+          "comparison": "=="
+        }
+      ],
+      "lootTableId": "loot_alijo_bosque_t1",
+      "minPartyLevel": 1,
+      "maxPartyLevel": 2
+    },
+    {
+      "id": "encounter_bosque_t2",
+      "name": "Encuentro en el bosque (Tier 2)",
+      "description": "Encuentros más peligrosos en zonas boscosas.",
+      "tier": 2,
+      "rarity": "common",
+      "entries": [
+        {
+          "refId": "monster_lobo_dire",
+          "weight": 40,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "refId": "monster_oso",
+          "weight": 30,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "refId": "monster_araña_gigante",
+          "weight": 30,
+          "min": 1,
+          "max": 2
+        }
+      ],
+      "conditions": [
+        {
+          "type": "zone",
+          "value": "bosque_profundo",
+          "comparison": "=="
+        }
+      ],
+      "lootTableId": "loot_alijo_bosque_t2",
+      "minPartyLevel": 2,
+      "maxPartyLevel": 3
+    },
+    {
+      "id": "encounter_ciudad_t1",
+      "name": "Encuentro urbano (Tier 1)",
+      "description": "Encuentros en zonas urbanas de nivel bajo.",
+      "tier": 1,
+      "rarity": "common",
+      "entries": [
+        {
+          "refId": "monster_rata_gigante",
+          "weight": 50,
+          "min": 1,
+          "max": 3
+        },
+        {
+          "refId": "monster_ladrón",
+          "weight": 30,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "refId": "monster_guardián_ciudad",
+          "weight": 20,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "conditions": [
+        {
+          "type": "zone",
+          "value": "ciudad",
+          "comparison": "=="
+        }
+      ],
+      "lootTableId": "loot_alijo_ciudad_t1",
+      "minPartyLevel": 1,
+      "maxPartyLevel": 2
+    },
+    {
+      "id": "encounter_mazmorra_t1",
+      "name": "Encuentro en mazmorra (Tier 1)",
+      "description": "Encuentros en mazmorras de nivel bajo.",
+      "tier": 1,
+      "rarity": "common",
+      "entries": [
+        {
+          "refId": "monster_esqueleto",
+          "weight": 40,
+          "min": 1,
+          "max": 3
+        },
+        {
+          "refId": "monster_zombi",
+          "weight": 30,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "refId": "monster_murciélago_gigante",
+          "weight": 30,
+          "min": 1,
+          "max": 3
+        }
+      ],
+      "conditions": [
+        {
+          "type": "zone",
+          "value": "mazmorra",
+          "comparison": "=="
+        }
+      ],
+      "lootTableId": "loot_alijo_cripta_t1",
+      "minPartyLevel": 1,
+      "maxPartyLevel": 2
+    },
+    {
+      "id": "encounter_jefe_lobo",
+      "name": "Jefe: Alfa del Bosque",
+      "description": "Encuentro único con el alfa de la manada de lobos.",
+      "tier": 2,
+      "rarity": "rare",
+      "entries": [
+        {
+          "refId": "monster_alfa_lobo",
+          "weight": 100,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "conditions": [
+        {
+          "type": "flag",
+          "value": "boss_lobo_disponible",
+          "comparison": "=="
+        }
+      ],
+      "lootTableId": "loot_jefe_lobo",
+      "minPartyLevel": 2,
+      "maxPartyLevel": 3
+    }
+  ]
+}

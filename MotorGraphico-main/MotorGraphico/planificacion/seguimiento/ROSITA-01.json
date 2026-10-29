@@ -1,0 +1,24 @@
+{
+ "id": "ROSITA-01",
+ "date": "2026-10-14",
+ "author": "claude (Cowork)",
+ "status": "HECHO — la antigua compañía de Rosita llega a mitad del combate final, no al perderlo.",
+ "origen": "Pendiente de DIALOGOS-01 (CANON §12.2.2). Oriol: «cuando Sandes esté a 1/4 de vida, con las habilidades de Venides y Xila gastadas y a punto de morir».",
+ "actions": [
+  "Formato: \"refuerzos\" en startBattle (RPG::BattleRequest::Refuerzo: requires, cuando {vidaEnemigo, vidaHeroe}, flags, lineas, acompanantes); lectura y escritura en src/RPG/Narrative/AcompanantesAventura.cpp.",
+  "Motor: include/Game/Refuerzos.h + src/Game/Refuerzos.cpp (Game::llegaRefuerzos), BattleState::sumaAliado/anota; GameSession::syncBattleOutcome lo llama mientras el combate sigue.",
+  "boundington_ocaso.json: el combate final con la compañía como refuerzo (y el guerrero demoníaco); b3_compania queda para el golpe que te tumba de una vez.",
+  "Las demos y los exploradores (C++ y Python) simulan los refuerzos; escena nueva «OCASO: la compania llega a mitad del combate»."
+ ],
+ "verification": [
+  "test_cartas_combate: 2 casos nuevos (llega una vez, con requires y siFlag; por la vida del héroe; ida y vuelta del JSON; errores con nombre). 45/45.",
+  "demo_boundington 58 escenas OK; explorar_boundington 300 partidas: 0 atascos; validar_todo 0 errores; ctest gl-free 211/214 y GL 11/11."
+ ],
+ "para_oriol": [
+  "CANON §13.4: cuándo llegan (un cuarto de Sandes o un cuarto tuyo, lo primero) y que las habilidades gastadas no se miran."
+ ],
+ "sesion": "sesiones/2026-10-13-claude-prologo.md",
+ "pending": [
+  "CANON §13.4: cuándo llegan (un cuarto de Sandes o un cuarto tuyo, lo primero) y que las habilidades gastadas no se miran."
+ ]
+}

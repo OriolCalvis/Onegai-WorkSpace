@@ -1,0 +1,80 @@
+{
+ "_nota": "Linea base del core: la deuda medida el dia que se congelo. La comprueba tools/linea_base_core.py y la mide tools/analizar_duplicados.py. Esta lista puede BAJAR (y entonces se actualiza con --actualizar, diciendo en el commit que se retiro o se cablea); no puede subir. Si tu paquete anade un fichero aqui, es que has escrito codigo que no llega a nadie: cablealo o no lo escribas.",
+ "cierres_sin_alcance": [
+  "include/Engine/Locale.h",
+  "include/RPG/CharacterCreationScreen.h",
+  "src/Engine/Locale.cpp"
+ ],
+ "cuellos": {
+  "editor/src/level_editor.cpp": 2105,
+  "include/Engine/Application.h": 519,
+  "include/Game/GameSession.h": 546,
+  "src/Engine/Application.cpp": 1347,
+  "src/Game/SaveGame.cpp": 665
+ },
+ "estado": {
+  "include/Editor/EditorState.h": 23,
+  "include/Engine/Application.h": 109,
+  "include/Game/SessionData.h": 40
+ },
+ "fecha": "2026-09-28",
+ "fuentes_directas": 62,
+ "logica_en_pruebas": [],
+ "mezcladas": [
+  "motor_core (18 con GL, 17 sin)"
+ ],
+ "muertos": [
+  "editor/include/ProblemsPanel.h",
+  "editor/src/ProblemsPanel.cpp",
+  "editor/src/event_editor.cpp",
+  "include/Core/Memory/HandlePool.h",
+  "include/Editor/AssetBrowserState.h",
+  "include/Editor/CatalogPickerState.h",
+  "include/Editor/CommandListState.h",
+  "include/Editor/EventEditorState.h",
+  "include/Editor/ProblemsState.h",
+  "include/Editor/ProjectDatabaseState.h",
+  "include/Editor/ProjectIndex.h",
+  "include/Engine/Locale.h",
+  "include/Game/InventoryMenuState.h",
+  "include/Game/SaveSlotState.h",
+  "include/Game/TitleMenuState.h",
+  "include/Level/WorldTopology.h",
+  "include/Project/DocumentRef.h",
+  "include/RPG/AdventureValidation.h",
+  "include/RPG/Audio.h",
+  "include/RPG/CharacterCreation.h",
+  "include/RPG/CharacterCreationScreen.h",
+  "include/RPG/EventCommand.h",
+  "include/RPG/EventInterpreter.h",
+  "include/RPG/LootResolver.h",
+  "include/RPG/SessionCommandHost.h",
+  "include/Render/Enemy.h",
+  "src/Editor/CatalogPickerState.cpp",
+  "src/Editor/ProblemsState.cpp",
+  "src/Engine/Locale.cpp",
+  "src/Game/InventoryMenuState.cpp",
+  "src/Game/SaveSlotState.cpp",
+  "src/Game/TitleMenuState.cpp",
+  "src/Project/ProjectDatabaseState.cpp",
+  "src/RPG/AdventureValidation.cpp",
+  "src/RPG/Audio.cpp",
+  "src/RPG/CharacterCreation.cpp",
+  "src/RPG/CharacterCreationScreen.cpp",
+  "src/RPG/EventCommands.cpp",
+  "src/RPG/EventInterpreter.cpp",
+  "src/RPG/LootResolver.cpp",
+  "src/RPG/SessionCommandHost.cpp",
+  "src/Render/Enemy.cpp"
+ ],
+ "techo": 500,
+ "totales": {
+  "cierres_sin_alcance": 3,
+  "cuellos": 5,
+  "estado": 3,
+  "fuentes_directas": 62,
+  "logica_en_pruebas": 0,
+  "mezcladas": 1,
+  "muertos": 42
+ }
+}

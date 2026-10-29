@@ -1,0 +1,33 @@
+{
+ "id": "EST-32",
+ "paquete": "EST-32",
+ "fase": "estabilizacion",
+ "nombre": "EventCommands.cpp — un trabajo por fichero",
+ "date": "2026-09-24",
+ "author": "Claude (sesion 24/09, maquina de Oriol)",
+ "status": "HECHO — 566 -> 178 lineas. Sale de la lista de cuellos.",
+ "que_se_ha_hecho": {
+  "src/RPG/EventCommands.cpp": "178 lineas. El catalogo de comandas (E-04). Se queda con el nombre del fichero porque es lo que el fichero anuncia, y porque es lo que compilan sueltos SIETE objetivos: dejarlo aqui evita tocar siete fragmentos de CMake.",
+  "src/RPG/Eventos/ValidacionDeComandas.cpp": "122 lineas. Validar una comanda contra su ficha. Los mensajes son la mitad del trabajo: cada error nombra el parametro, dice que se esperaba y ensena lo que hay.",
+  "src/RPG/Eventos/CondicionesYPaginas.cpp": "185 lineas. Cuando se activa una pagina, y la traduccion de un `if` a su condicion. ActivePage devuelve la PRIMERA que se cumple: el orden de las paginas es la prioridad que escribio el autor.",
+  "src/RPG/Eventos/AnfitrionNarrativo.cpp": "134 lineas. Ejecutar. Lo que aun no esta cableado falla DICIENDO que no lo esta, en vez de callarse.",
+  "include/RPG/EventosInterno.h": "Las dos unicas comprobaciones de texto que quedaron con tres duenos (EsEnteroValido, EsComparacionValida), inline porque viven en una cabecera."
+ },
+ "decisiones": [
+  "El catalogo se queda con el nombre del fichero. Siete objetivos compilan src/RPG/EventCommands.cpp suelto ademas de enlazar motor_rpg; mover el catalogo a otro fichero habria obligado a editar siete fragmentos de CMake que varios agentes tocan. Con el catalogo donde estaba, el .o suelto sigue resolviendo lo que resolvia y el resto lo pone la libreria.",
+  "La primera version olvido el `inline` en la cabecera interna y el enlazador canto 'multiple definition'. Mejor eso que un fichero que enlaza por casualidad: es exactamente para lo que esta la guardia de simbolos duplicados."
+ ],
+ "actions": [
+  "src/RPG/EventCommands.cpp — 400 lineas menos.",
+  "src/RPG/Eventos/{ValidacionDeComandas,CondicionesYPaginas,AnfitrionNarrativo}.cpp — nuevos.",
+  "include/RPG/EventosInterno.h — nueva cabecera interna.",
+  "CMakeLists.txt — tres fuentes en motor_rpg, commiteadas sobre el blob de HEAD para no arrastrar el WIP ajeno del mismo fichero."
+ ],
+ "verification": [
+  "Las cuatro unidades compilan; motor_rpg enlaza.",
+  "test_event_commands, test_session_command_host, test_adventure_validation y test_problems_state: 4/4 verdes."
+ ],
+ "pending": [
+  "Las siete compilaciones sueltas de src/RPG/EventCommands.cpp son REDUNDANTES: los siete objetivos ya enlazan motor_rpg, que lo contiene. Quitarlas baja `fuentes_directas` en siete de golpe. No lo hago aqui porque dos de esos fragmentos los tiene otra sesion abiertos ahora mismo."
+ ]
+}

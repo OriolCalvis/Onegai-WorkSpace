@@ -1,0 +1,267 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "MotorGraphico — un frame real: ApplicationLoop, escenas y presentación",
+    "quality_profile": "standard",
+    "viewBox": [
+      1620,
+      1240
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "glfw",
+      "type": "external",
+      "label": "GLFW · Window",
+      "sublabel": "reloj y eventos"
+    },
+    {
+      "id": "app",
+      "type": "backend",
+      "label": "Application",
+      "sublabel": "Engine::Application::run"
+    },
+    {
+      "id": "loop",
+      "type": "backend",
+      "label": "ApplicationLoop",
+      "sublabel": "paso fijo 1/60 s"
+    },
+    {
+      "id": "scenes",
+      "type": "backend",
+      "label": "SceneManager",
+      "sublabel": "pila de Scene"
+    },
+    {
+      "id": "scene",
+      "type": "backend",
+      "label": "ApplicationScene",
+      "sublabel": "adaptador Title / Game"
+    },
+    {
+      "id": "session",
+      "type": "backend",
+      "label": "GameSession",
+      "sublabel": "modelo GL-free"
+    },
+    {
+      "id": "renderer",
+      "type": "frontend",
+      "label": "IsometricRenderer",
+      "sublabel": "SpriteBatch + post-FX"
+    },
+    {
+      "id": "hud",
+      "type": "frontend",
+      "label": "HudManager",
+      "sublabel": "widgets IHudElement"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "app",
+      "from": 170,
+      "to": 1150,
+      "type": "backend"
+    },
+    {
+      "participant": "loop",
+      "from": 222,
+      "to": 1010,
+      "type": "backend"
+    },
+    {
+      "participant": "scenes",
+      "from": 430,
+      "to": 1150,
+      "type": "backend"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "from": "app",
+      "to": "glfw",
+      "y": 170,
+      "label": "glfwGetTime() → deltaTime",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m2",
+      "from": "app",
+      "to": "loop",
+      "y": 222,
+      "label": "tick(deltaTime, services)",
+      "variant": "emphasis",
+      "note": "5 callbacks inyectados: shouldKeepRunning, pollEvents, processInput, fixedUpdate, render"
+    },
+    {
+      "id": "m3",
+      "from": "loop",
+      "to": "app",
+      "y": 274,
+      "label": "shouldKeepRunning()",
+      "variant": "dashed",
+      "note": "m_running && !m_window->shouldClose()"
+    },
+    {
+      "id": "m4",
+      "from": "loop",
+      "to": "glfw",
+      "y": 326,
+      "label": "pollEvents()"
+    },
+    {
+      "id": "m5",
+      "from": "loop",
+      "to": "app",
+      "y": 378,
+      "label": "processInput()"
+    },
+    {
+      "id": "m6",
+      "from": "loop",
+      "to": "scenes",
+      "y": 430,
+      "label": "fixedUpdate(1/60 s) — hasta 6 veces",
+      "variant": "emphasis",
+      "note": "el delta se acumula; lo que no cabe se descarta en droppedSimulationSeconds"
+    },
+    {
+      "id": "m7",
+      "from": "scenes",
+      "to": "scene",
+      "y": 482,
+      "label": "fixedUpdate(dt)"
+    },
+    {
+      "id": "m8",
+      "from": "scene",
+      "to": "app",
+      "y": 534,
+      "label": "update(dt)",
+      "note": "en la escena Title no se ejecuta: if (!m_title) m_tick(dt)"
+    },
+    {
+      "id": "m9",
+      "from": "app",
+      "to": "session",
+      "y": 586,
+      "label": "player, marcadores, cámara, fog y GameSession::update(dt)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m10",
+      "from": "loop",
+      "to": "scenes",
+      "y": 638,
+      "label": "render(interpolationAlpha)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m11",
+      "from": "scenes",
+      "to": "scene",
+      "y": 690,
+      "label": "render(alpha)"
+    },
+    {
+      "id": "m12",
+      "from": "scene",
+      "to": "app",
+      "y": 742,
+      "label": "render(capture)"
+    },
+    {
+      "id": "m13",
+      "from": "app",
+      "to": "renderer",
+      "y": 794,
+      "label": "setOcclusionFocus(playerPosition) + renderFrame()",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m14",
+      "from": "renderer",
+      "to": "app",
+      "y": 846,
+      "label": "Result<bool>",
+      "variant": "return",
+      "note": "si es Error: m_running = false y no se dibuja el HUD"
+    },
+    {
+      "id": "m15",
+      "from": "app",
+      "to": "hud",
+      "y": 898,
+      "label": "m_hud.render(batch, shader, w, h)",
+      "note": "con su propia SpriteBatch y GL_BLEND activado"
+    },
+    {
+      "id": "m16",
+      "from": "app",
+      "to": "glfw",
+      "y": 950,
+      "label": "swapBuffers()",
+      "note": "justo antes: VuelcaFramebufferPPM si capture"
+    },
+    {
+      "id": "m17",
+      "from": "loop",
+      "to": "app",
+      "y": 1002,
+      "label": "ApplicationLoopFrame",
+      "variant": "return",
+      "note": "fixedUpdates, acceptedFrameSeconds, interpolationAlpha"
+    },
+    {
+      "id": "m18",
+      "from": "app",
+      "to": "scenes",
+      "y": 1054,
+      "label": "finishSceneFrame() → applyPendingTransition()",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m19",
+      "from": "scenes",
+      "to": "app",
+      "y": 1106,
+      "label": "Result<bool> + refreshHud()",
+      "variant": "return",
+      "note": "si falla: «No se pudo cambiar de nivel» y la escena anterior sigue viva"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Por qué este orden",
+      "items": [
+        "El reloj lo pone GLFW pero el ritmo lo pone ApplicationLoop: la simulación avanza a 1/60 s aunque el render vaya a otra tasa",
+        "fixedUpdate se ejecuta N veces por frame; render solo una, con interpolationAlpha disponible para interpolar la vista",
+        "El HUD se dibuja después de la escena y con otra SpriteBatch, para no mezclar proyección de mundo con proyección de pantalla"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "La costura GL-free",
+      "items": [
+        "ApplicationScene es un adaptador: Scene no sabe nada de GLFW ni de OpenGL",
+        "GameSession recibe update(dt) sin ventana, así que suite_gl_free puede jugar una partida entera en un test",
+        "SceneManager aplica la transición al final del frame, nunca dentro de un callback: evita destruir la escena que se está ejecutando"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Modo humo",
+      "items": [
+        "run(maxFrames) con maxFrames >= 0 marca capture en el último frame",
+        "El volcado PPM ocurre ANTES de swapBuffers: después, el buffer leído ya no es el recién dibujado",
+        "Por eso «juego 3» deja un juego_output.ppm inspeccionable sin captura manual"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "NUEVA-PARTIDA-01",
+  "date": "2026-09-27",
+  "author": "Claude",
+  "status": "HECHO en el arbol, sin commit",
+  "fase": "H1-04 (cierre del tramo GL)",
+  "descripcion": "Nueva partida -> creacion de personaje (Engine::PantallaNuevaPartida sobre Game::NewGameFlow): 14 pasos (raza, clase, trasfondo, reparto de 12 puntos, siete elecciones narrativas, deidad opcional, nombre, resumen) con lista de iconos, detalle de la opcion marcada (descripcion del catalogo), aviso y pista de teclas. Al terminar, la ficha (construida y recalculada con TierRules) se vincula al Player (set_character_sheet), PV y PM al maximo, y arranca la partida como antes; Esc en el primer paso vuelve al titulo. Antes el jugador NO tenia CharacterSheet: hasCharacterSheet() era falso siempre y la pestana Estado decia SIN FICHA.",
+  "archivos": {
+    "nuevos": [
+      "include/Engine/PantallaNuevaPartida.h",
+      "src/Engine/PantallaNuevaPartida.cpp"
+    ],
+    "modificados": [
+      "include/Engine/Application.h (+1 miembro justificado: m_nuevaPartida, colaborador con la ficha viva)",
+      "src/Engine/Application.cpp (2 lineas: abrir() en NewGame; procesar() al principio de processInput; 1393 lineas, misma cuenta)",
+      "src/Engine/ApplicationPantallas.cpp (se crea con los iconos)",
+      "src/Engine/ApplicationHud.cpp (rama de titulo: refrescar, tomar la ficha, vincular al Player, arrancar la escena)",
+      "CMakeLists.txt (motor_core)"
+    ]
+  },
+  "verification": [
+    "Compila en el oraculo (Application.cpp del arbol salvo publishSheetSkills/tickRound ajenos).",
+    "PENDIENTE en el Mac: ./juego -> Nueva partida -> recorrer los 14 pasos -> TAB/Estado muestra la ficha creada."
+  ],
+  "pendiente": [
+    "No hay entrada de texto en InputSystem: el nombre se elige de una lista de 16 con A/D. Cuando exista un callback de caracteres, textChar/backspace del flujo ya lo admiten.",
+    "SaveGame no serializa la ficha: al cargar una partida guardada el jugador vuelve a no tener ficha (H2/G-11).",
+    "InventoryRules.playerClass no se rellena con la clase elegida: el limite de peso/simbolos del equipo sigue sin aplicarse."
+  ]
+}

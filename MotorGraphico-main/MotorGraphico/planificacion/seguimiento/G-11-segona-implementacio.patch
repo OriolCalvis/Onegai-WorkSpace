@@ -1,0 +1,2172 @@
+diff -ruN '--exclude=build' '--exclude=_glad_off' '--exclude=third_party' mg/CMakeLists.txt mg-g11/CMakeLists.txt
+--- mg/CMakeLists.txt	2026-09-14 00:05:24.000000000 +0000
++++ mg-g11/CMakeLists.txt	2026-09-14 07:18:57.716118703 +0000
+@@ -164,6 +164,10 @@
+     src/Editor/ProjectHub.cpp
+     src/Game/GameSession.cpp
+     src/Game/SaveGame.cpp
++    # G-11 — Servicio de ranuras de guardado y estado del selector.
++    # GL-free (misma familia que PauseMenu/GameOverScreen): vive aqui y no
++    # en motor_core para que se pueda probar sin ventana.
++    src/Game/SaveSlotState.cpp
+     src/Game/Morality.cpp
+     src/Game/EnemyBrain.cpp
+     src/Game/PauseMenu.cpp
+@@ -1040,6 +1044,9 @@
+ # G-08 (rodaja inicial) — Pantalla de título: lista de proyectos, navegación y acciones.
+ include(cmake/TitleScreenTests.cmake)
+ 
++# G-11 — Ranuras de guardado por proyecto, selector, corrupcion/version y DEC-09.
++include(cmake/SaveSlotTests.cmake)
++
+ # C-05 — Regresion del cierre de recursos con contexto GL real.
+ include(cmake/ApplicationShutdownTests.cmake)
+ 
+diff -ruN '--exclude=build' '--exclude=_glad_off' '--exclude=third_party' mg/cmake/SaveSlotTests.cmake mg-g11/cmake/SaveSlotTests.cmake
+--- mg/cmake/SaveSlotTests.cmake	1970-01-01 00:00:00.000000000 +0000
++++ mg-g11/cmake/SaveSlotTests.cmake	2026-09-14 07:18:52.548118912 +0000
+@@ -0,0 +1,28 @@
++# G-11 — Selector de guardados y recuperacion de derrota.
++#
++# GL-FREE A PROPOSITO: no enlaza motor_core (el target OpenGL), asi que se
++# ejecuta en cualquier contenedor sin X11/GLFW, igual que test_save_game.
++# Todo lo que prueba -- el servicio de ranuras, la clasificacion de los
++# guardados rotos, DEC-09 y el estado del selector -- vive en motor_level.
++#
++#   motor_map          entra por GameSession (TileMap), no porque el test
++#                      abra ningun TMX (el nivel de prueba va sin mapa).
++#   motor_map_document se necesita por MapEventDocument, que es lo que
++#                      recibe el planificador de eventos de E-03 en el
++#                      caso de la espera.
++include(CTest)
++if (BUILD_TESTING)
++    add_executable(test_save_slots tests/Game/SaveSlotTests.cpp)
++    target_include_directories(test_save_slots PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
++    target_link_libraries(test_save_slots
++        PRIVATE motor_level motor_map motor_map_document motor_rpg motor_json)
++    add_test(NAME test_save_slots COMMAND test_save_slots)
++    set_tests_properties(test_save_slots PROPERTIES
++        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
++        LABELS "unit;gl-free"
++    )
++    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_save_slots)
++    if (TARGET suite_gl_free)
++        add_dependencies(suite_gl_free test_save_slots)
++    endif ()
++endif ()
+diff -ruN '--exclude=build' '--exclude=_glad_off' '--exclude=third_party' mg/include/Engine/Application.h mg-g11/include/Engine/Application.h
+--- mg/include/Engine/Application.h	2026-09-13 23:23:34.000000000 +0000
++++ mg-g11/include/Engine/Application.h	2026-09-14 07:20:57.280113865 +0000
+@@ -31,6 +31,7 @@
+ #include "Game/PauseMenu.h"
+ #include "Game/GameOverScreen.h"
+ #include "Game/InventoryScreen.h"
++#include "Game/SaveSlotState.h"  // G-11
+ #include "Project/ProjectIndex.h"
+ #include "Render/HudManager.h"
+ #include "Render/HudMinimap.h"
+@@ -155,6 +156,33 @@
+     bool saveGame(const std::string& path);
+     bool loadGame(const std::string& path);
+ 
++    // --- G-11: ranuras de guardado ---
++    //
++    // Las tres funciones de arriba siguen siendo el motor de I/O; estas
++    // deciden EN QUE ranura y CUANDO se puede. La regla de "solo en
++    // exploracion" que documenta el bloque anterior se ha mudado a
++    // SaveSlotService::checkSafePoint (DEC-09), que ademas cubre el
++    // dialogo, la tienda, el cambio de nivel y las esperas del
++    // planificador de eventos -- y lo hace derivando del estado que ya
++    // existe, sin una bandera nueva que mantener.
++    //
++    // El servicio se rehace en cada cambio de proyecto: las ranuras van
++    // por proyecto (ver SaveSlotState.h), asi que jugar a otro escenario
++    // no puede pisar la partida de la campaña.
++    Game::SaveSlotService& saveSlots();
++    bool saveToSlot(const std::string& slotId, bool overwrite);
++    bool loadFromSlot(const std::string& slotId);
++
++    // El selector. Abierto = m_slotScreen != nullptr; mientras lo este,
++    // se traga la navegacion y ENTER (es un overlay modal, como el
++    // inventario).
++    void openSlotSelector(Game::SaveSlotMode mode);
++    void closeSlotSelector();
++    bool slotSelectorOpen() const { return m_slotScreen != nullptr; }
++    void confirmSlotSelection();
++    void refreshSlotWidgets();
++    void createSaveSlotWidgets(int glyphW, int glyphH);
++
+     // Un turno de tienda/dialogo: traduce la tecla pulsada a
+     // buy/sell/closeInteraction sobre la sesion.
+     void confirmShopCommand();
+@@ -286,7 +314,22 @@
+     // Fichero del guardado rapido. Relativo al cwd, igual que las rutas
+     // de assets (se ejecuta desde build/). Una unica ranura por ahora:
+     // varias partidas guardadas son interfaz, y eso es TOOL-04.
++    //
++    // G-11 — Ya no es "una unica ranura": F5/F9 pasan por
++    // SaveSlotService (ranura "rapida" del proyecto en curso). Este campo
++    // se conserva porque los tests GL-free de C-24 lo usan como ruta
++    // suelta para ejercitar saveGame/loadGame sin proyecto.
+     std::string m_savePath = "savegame.json";
++
++    // --- G-11: ranuras de guardado del proyecto en curso ---
++    //
++    // El id del proyecto es lo que separa unas ranuras de otras. Por
++    // defecto la campaña, que es lo que arranca "Jugar" sin pasar por el
++    // selector de proyectos.
++    std::string m_currentProjectId = "boundington";
++    std::unique_ptr<Game::SaveSlotService> m_saveSlots;
++    // nullptr = selector cerrado.
++    std::unique_ptr<Game::SaveSlotScreen> m_slotScreen;
+     std::chrono::steady_clock::time_point m_lastInput =
+         std::chrono::steady_clock::now();
+ 
+@@ -401,6 +444,13 @@
+     std::unique_ptr<HudText> m_gameOverScreenTitle;
+     std::unique_ptr<HudText> m_gameOverScreenHint;
+ 
++    // G-11 — Widgets HUD del selector de guardados. El estado vive en
++    // Game::SaveSlotScreen (GL-free); aqui solo lo que lo pinta.
++    std::unique_ptr<HudPanel> m_slotPanel;
++    std::unique_ptr<HudText> m_slotTitle;
++    std::unique_ptr<HudCommandMenu> m_slotMenu;
++    std::unique_ptr<HudText> m_slotHint;
++
+     // GDB-12.3 — Widgets HUD para pantalla de inventario
+     std::unique_ptr<HudCommandMenu> m_inventoryTabsWidget;
+     std::unique_ptr<HudPanel> m_inventoryPanelWidget;
+diff -ruN '--exclude=build' '--exclude=_glad_off' '--exclude=third_party' mg/include/Game/SaveGame.h mg-g11/include/Game/SaveGame.h
+--- mg/include/Game/SaveGame.h	2026-09-11 22:29:56.000000000 +0000
++++ mg-g11/include/Game/SaveGame.h	2026-09-14 07:12:38.024134067 +0000
+@@ -114,6 +114,46 @@
+     // claves que no conoce. Congelar los esquemas es G-07.
+     std::map<std::string, int> narrativeVariables;
+     std::vector<RPG::NarrativeState::LocalSwitches> narrativeLocalSwitches;
++
++    // G-11 — LA FICHA DEL SLOT. Lo que el selector de guardados enseña
++    // ANTES de cargar: de quien es la partida, donde estaba y de cuando
++    // es. Sin esto un slot es una fila que pone "ranura 2" y nada mas, y
++    // el jugador tiene que cargar para saber cual es cual.
++    //
++    // Van AQUI y no en un fichero indice aparte por lo mismo que el
++    // guardado se escribe atomicamente (ver writeSaveGameFile): un indice
++    // separado es un segundo fichero que se puede desincronizar del
++    // primero, y entonces el selector miente. La ficha viaja DENTRO del
++    // guardado, asi que o esta las dos cosas o no esta ninguna.
++    //
++    // schemaVersion NO sube, por el mismo motivo que E-02 documenta unas
++    // lineas mas arriba: el lector rechaza cualquier version que no sea la
++    // suya, y subirla dejaria ilegibles de golpe todas las partidas ya
++    // guardadas. Las tres claves son OPCIONALES al leer (un guardado
++    // anterior no las trae y entra con las tres vacias) y el escritor solo
++    // las pone cuando estan puestas de verdad, de modo que un guardado
++    // antiguo reescrito da EXACTAMENTE el mismo texto que antes.
++    //
++    // Un slot sin ficha no es corrupto: se enseña con lo que se sepa
++    // (levelPath siempre esta, que es obligatorio) y se carga igual.
++
++    // Proyecto al que pertenece la partida ("boundington"). Los slots ya
++    // van separados por nombre de fichero, asi que esto es la
++    // COMPROBACION, no el reparto: si un fichero acaba en la ranura de
++    // otro proyecto (una copia a mano, un pack movido), el selector lo
++    // marca y no lo carga en vez de mezclar dos campañas.
++    std::string projectId;
++
++    // Nombre visible del personaje (CharacterSheet::displayName). Vacio
++    // si la partida no tiene ficha todavia.
++    std::string characterName;
++
++    // Momento del guardado, "AAAA-MM-DD HH:MM:SS" en hora local. Texto y
++    // no un numero de epoch a proposito: es lo que se pinta tal cual, se
++    // lee a ojo al abrir el fichero, y ORDENA por comparacion de cadenas
++    // (el formato es lexicograficamente creciente), que es lo unico que
++    // "Continuar" necesita para dar con la partida mas reciente.
++    std::string savedAt;
+ };
+ 
+ // --- Serializacion (texto JSON) ---
+diff -ruN '--exclude=build' '--exclude=_glad_off' '--exclude=third_party' mg/include/Game/SaveSlotState.h mg-g11/include/Game/SaveSlotState.h
+--- mg/include/Game/SaveSlotState.h	1970-01-01 00:00:00.000000000 +0000
++++ mg-g11/include/Game/SaveSlotState.h	2026-09-14 07:14:35.880129298 +0000
+@@ -0,0 +1,320 @@
++#pragma once
++
++#include <functional>
++#include <string>
++#include <vector>
++
++#include "Game/SaveGame.h"
++
++namespace RPG {
++class EventInterpreter;
++}
++
++class GameSession;
++
++namespace Game {
++
++// ---------------------------------------------------------------------
++// G-11 — Selector de guardados y recuperacion de derrota.
++//
++// Hasta aqui el juego solo tenia F5/F9 sobre UN fichero fijo
++// ("savegame.json", ver Application.h): ni ranuras visibles, ni
++// "Continuar", ni forma de volver de un Game Over que no fuera cerrar y
++// abrir. Este fichero es el SERVICIO que falta debajo de todo eso.
++//
++// GL-FREE A PROPOSITO, igual que TitleScreen/PauseMenu/GameOverScreen: el
++// servicio (SaveSlotService) hace disco y reglas, la pantalla
++// (SaveSlotScreen) lleva el estado de la seleccion, y la Application se
++// limita a pintarlas y a pasarles teclas. Asi el gruesso del paquete se
++// prueba entero sin abrir una ventana (tests/Game/SaveSlotTests.cpp).
++//
++//
++// DONDE VIVEN LOS SLOTS, Y POR QUE ASI
++//
++// Criterio de cierre: "dos projectes no comparteixen slots". La
++// separacion se hace por el NOMBRE DEL FICHERO y no por una carpeta por
++// proyecto:
++//
++//     <root>/partida_<projectId>_<slotId>.json
++//
++// Es la misma forma de resolver la identidad que ya usa el resto del
++// motor para los proyectos: ProjectIndex guarda cada manifiesto como
++// "assets/proyectos/<id>.json", con el id en el nombre; quien es dueño de
++// que se DECLARA en el nombre, no se deduce de donde este.
++//
++// Y sobre todo: este motor NO TIENE UN SOLO mkdir en src/ (lo dice
++// ProjectHub.h con esas palabras, y es coherente con que evite
++// <filesystem> por no arrastrar stdc++fs en algunos toolchains). Una
++// carpeta por proyecto obligaria a crearla, es decir a traer justo esa
++// dependencia para guardar cuatro ficheros. Con el id en el nombre no
++// hace falta crear nada: el root por defecto es "" = el directorio de
++// trabajo, que es exactamente donde vive hoy savegame.json.
++//
++// El root es un parametro, no una constante, para que el dia que el motor
++// tenga donde poner los datos del usuario baste con pasarselo.
++//
++//
++// POR QUE UNA LISTA FIJA DE RANURAS Y NO LEER LA CARPETA
++//
++// Por lo mismo que ProjectIndex lee un index.json en vez de escanear
++// assets/: sin <filesystem> no hay forma portable de listar un
++// directorio. Las ranuras son un numero fijo conocido (kNumberedSlots) +
++// la rapida de F5/F9, y "descubrirlas" es preguntar por cada una si su
++// fichero esta. Es ademas lo que el jugador espera de un menu de
++// guardado: las ranuras estan siempre, vacias o llenas.
++// ---------------------------------------------------------------------
++
++// En que estado esta una ranura de cara al selector.
++enum class SaveSlotStatus {
++    Empty,   // no hay fichero: se puede guardar, no se puede cargar
++    Ready,   // hay partida y se ha podido leer la ficha
++    Broken,  // hay fichero pero no sirve; el motivo va en SaveSlotInfo::problem
++};
++
++// Por que no sirve. El texto de problem() ya lo explica al jugador; esto
++// existe para que la pantalla pueda distinguirlos (iconos, color) y para
++// que la prueba pueda afirmar CUAL de los dos casos es.
++enum class SaveSlotProblem {
++    None,
++    Unreadable,      // no es JSON, o no es un guardado (sin schemaVersion, sin levelPath)
++    Incompatible,    // es un guardado, pero de otra version del esquema
++    ForeignProject,  // es un guardado valido de OTRO proyecto
++};
++
++// La fila que pinta el selector. Es un resumen: leerla NO carga la
++// partida ni toca la sesion en curso.
++struct SaveSlotInfo {
++    std::string id;     // "ranura_1".."ranura_3", "rapida"
++    std::string label;  // "Ranura 1", "Guardado rapido"
++    std::string path;   // fichero que le corresponde (exista o no)
++    bool quick = false;  // la que usan F5/F9
++
++    SaveSlotStatus status = SaveSlotStatus::Empty;
++    SaveSlotProblem problem = SaveSlotProblem::None;
++    std::string problemText;  // motivo exacto, vacio si status != Broken
++
++    // Ficha (solo con status == Ready).
++    std::string characterName;
++    std::string levelPath;
++    std::string savedAt;
++    int gold = 0;
++    int playerHealth = 0;
++    int playerMaxHealth = 0;
++
++    bool usable() const { return status == SaveSlotStatus::Ready; }
++};
++
++// DEC-09 — Resultado de preguntar "¿se puede guardar ahora?".
++struct SafePoint {
++    bool safe = false;
++    std::string reason;  // vacio si safe; si no, que lo impide, en claro
++};
++
++// Que hacer cuando el destino ya tiene partida.
++enum class SaveSlotWrite {
++    FailIfOccupied,  // por defecto: no se pisa nada sin confirmar
++    Overwrite,
++};
++
++struct SaveSlotWriteOutcome {
++    bool ok = false;
++    std::string problem;
++    // true cuando lo unico que falta es que el jugador confirme el
++    // sobrescrito. La pantalla lo usa para abrir la pregunta; quien llame
++    // al servicio a pelo lo usa para saber que no ha sido un error.
++    bool needsOverwriteConfirm = false;
++};
++
++struct SaveSlotLoadOutcome {
++    bool ok = false;
++    std::string problem;
++    SaveSlotProblem kind = SaveSlotProblem::None;
++    // Valido solo con ok == true. Se rellena ENTERO antes de devolverse:
++    // quien lo recibe ya no puede quedarse a medias.
++    SaveGameData data;
++};
++
++// ---------------------------------------------------------------------
++// El servicio. Un objeto por partida en curso (sabe de que proyecto es).
++// No dibuja nada y no depende de la Application.
++// ---------------------------------------------------------------------
++class SaveSlotService {
++public:
++    static constexpr int kNumberedSlots = 3;
++
++    // Identificadores = contrato (regla 6 del plan): minusculas y guiones
++    // bajos, y son los que acaban en el nombre del fichero.
++    static const char* quickSlotId();              // "rapida"
++    static std::string numberedSlotId(int index);  // 1 -> "ranura_1"
++
++    // root vacio = directorio de trabajo, que es donde guarda hoy F5.
++    explicit SaveSlotService(std::string projectId, std::string root = std::string());
++
++    const std::string& projectId() const { return m_projectId; }
++    const std::string& root() const { return m_root; }
++
++    // Ranuras en el orden en que se enseñan: las numeradas y la rapida al
++    // final (es la del automatismo, no la que el jugador elige primero).
++    std::vector<std::string> slotIds() const;
++    std::string slotPath(const std::string& slotId) const;
++
++    // Lee la ficha de una ranura. NUNCA falla: una ranura ilegible es un
++    // SaveSlotInfo con status Broken y su motivo, no un error que corte
++    // el menu. Esa es la mitad de "corruptes/incompatibles mostren motiu i
++    // no destrueixen la sessio": ni siquiera MIRAR los slots puede romper
++    // nada.
++    SaveSlotInfo describe(const std::string& slotId) const;
++    std::vector<SaveSlotInfo> listSlots() const;
++
++    // La ranura utilizable mas reciente, o "" si no hay ninguna. Es lo que
++    // necesita "Continuar" del titulo. Ordena por savedAt, que es texto
++    // "AAAA-MM-DD HH:MM:SS" y por tanto se ordena comparando cadenas; las
++    // que no traen fecha (guardados anteriores a G-11) pierden frente a
++    // las que si, pero siguen siendo candidatas si no hay otra cosa.
++    std::string mostRecentSlotId() const;
++
++    // --- DEC-09: puntos seguros ---
++    //
++    // NO HAY UNA BANDERA NUEVA. El estado que dice si se puede guardar ya
++    // existe repartido por el motor, y anadir un "bool m_puedeGuardar" que
++    // alguien tenga que acordarse de actualizar es exactamente la clase de
++    // bug que la fase C ha estado cerrando. Se DERIVA de:
++    //   - GameSession::mode(): solo Exploration es seguro. Combate,
++    //     dialogo, tienda, negocio, pausa y derrota no lo son.
++    //   - GameSession::pendingTransition(): a mitad de un cambio de nivel
++    //     la sesion que se fotografiaria ya no es la que se va a jugar.
++    //   - EventInterpreter::canSave(): el planificador de eventos ya
++    //     responde a esta pregunta desde E-03 (no hay ejecucion viva).
++    //     Puede ser nullptr: un juego sin eventos de mapa es seguro por
++    //     esa parte.
++    static SafePoint checkSafePoint(const GameSession& session,
++                                    const RPG::EventInterpreter* events = nullptr);
++
++    // --- Guardar ---
++
++    // Escribe un SaveGameData ya capturado. Estampa projectId y savedAt
++    // (la ficha del slot) antes de escribir: la fecha la pone quien
++    // guarda, no quien captura.
++    SaveSlotWriteOutcome write(const std::string& slotId, SaveGameData data,
++                               SaveSlotWrite mode = SaveSlotWrite::FailIfOccupied) const;
++
++    // Captura la sesion y la escribe, comprobando DEC-09 antes de tocar
++    // el disco. Si no es punto seguro no se escribe NADA y el motivo sale
++    // en problem.
++    SaveSlotWriteOutcome saveFrom(const std::string& slotId, const GameSession& session,
++                                  const std::string& levelPath,
++                                  const RPG::EventInterpreter* events = nullptr,
++                                  SaveSlotWrite mode = SaveSlotWrite::FailIfOccupied) const;
++
++    // --- Cargar ---
++
++    // Lee y valida SIN tocar nada vivo. Es la mitad "no destrueixen la
++    // sessio" del criterio: el fichero se lee entero y se valida entero
++    // antes de que exista un SaveGameData que alguien pueda aplicar.
++    SaveSlotLoadOutcome load(const std::string& slotId) const;
++
++    // Carga sobre una sesion VIVA. Orden de operaciones deliberado, el
++    // mismo todo-o-nada que usa ProjectIndex::duplicate y que
++    // GameSession::restoreSaveGame aplica por dentro (valida en fase 1,
++    // escribe en fase 2): primero se lee el fichero completo, y solo si
++    // eso sale bien se le entrega a la sesion. Un slot corrupto se queda
++    // en el primer paso y la partida en curso no se entera.
++    //
++    // OJO: restaurar sobre una sesion cuyo nivel no es data.levelPath
++    // falla (lo comprueba restoreSaveGame) y tampoco toca nada. Cambiar de
++    // nivel es cosa de quien orquesta (la Application), no del servicio:
++    // GameSession no hace I/O y este servicio no carga niveles.
++    bool restoreInto(const std::string& slotId, GameSession& session,
++                     std::string* problem = nullptr) const;
++
++    // Reloj inyectable. Por defecto la hora local del sistema; los tests
++    // lo fijan para que la ficha del slot sea comparable sin depender del
++    // reloj de la maquina.
++    void setClock(std::function<std::string()> clock);
++    std::string nowStamp() const;
++
++    // "AAAA-MM-DD HH:MM:SS" de la hora local, formato de SaveGameData::savedAt.
++    static std::string localTimeStamp();
++
++private:
++    std::string m_projectId;
++    std::string m_root;
++    std::function<std::string()> m_clock;
++};
++
++// ---------------------------------------------------------------------
++// La pantalla. SOLO ESTADO: que ranura esta marcada, si hay una pregunta
++// de sobrescritura abierta y que hay que decirle al jugador. No dibuja y
++// no escribe en disco -- quien confirma ejecuta la accion que devuelve
++// confirm() usando el servicio.
++//
++// Mismo patron y mismo lenguaje de teclas que TitleScreen / PauseMenu /
++// GameOverScreen (W/S + ENTER, navegacion con wraparound).
++// ---------------------------------------------------------------------
++
++// Para que se ha abierto el selector.
++enum class SaveSlotMode { Load, Save };
++
++// Que hay que hacer despues de confirmar.
++enum class SaveSlotAction {
++    None,     // no ha pasado nada util (ranura vacia al cargar, rota, etc.)
++    Ask,      // se acaba de abrir la pregunta de sobrescritura: no hagas nada aun
++    Save,     // guarda en selectedSlot(), con sobrescritura ya consentida
++    Load,     // carga selectedSlot()
++    Cancel,   // cerrar el selector sin tocar nada
++};
++
++class SaveSlotScreen {
++public:
++    // La lista se toma UNA vez al abrir (es una foto, como el resto de
++    // pantallas del juego) y se refresca con refresh() despues de guardar.
++    static SaveSlotScreen open(const SaveSlotService& service, SaveSlotMode mode);
++
++    SaveSlotMode mode() const { return m_mode; }
++    const std::vector<SaveSlotInfo>& slots() const { return m_slots; }
++
++    void moveUp();
++    void moveDown();
++    std::size_t selected() const { return m_selected; }
++
++    // Coloca el cursor en una ranura concreta (p.ej. la mas reciente, que
++    // es donde "Continuar" quiere empezar). No-op si el id no existe.
++    void select(const std::string& slotId);
++
++    const SaveSlotInfo& selectedSlot() const;
++    std::string selectedSlotId() const { return selectedSlot().id; }
++
++    // ¿Hay una pregunta de sobrescritura abierta?
++    bool awaitingOverwrite() const { return m_awaitingOverwrite; }
++    // Texto de la pregunta, o "" si no hay ninguna abierta.
++    const std::string& prompt() const { return m_prompt; }
++    // Ultimo motivo a enseñar (ranura vacia, corrupta, version...).
++    const std::string& message() const { return m_message; }
++
++    // ENTER. Cambia el estado interno y dice que hay que hacer.
++    SaveSlotAction confirm();
++
++    // ESC / "Cancelar". Con la pregunta abierta la CIERRA y no devuelve
++    // Cancel: cancelar un sobrescrito no cierra el menu ni toca el
++    // fichero. Sin pregunta abierta, cierra el selector.
++    SaveSlotAction cancel();
++
++    // Vuelve a leer las fichas (tras guardar). Conserva la seleccion.
++    void refresh(const SaveSlotService& service);
++
++    // Etiquetas de una linea para el menu de la Application, en el mismo
++    // formato que TitleScreen::labels().
++    std::vector<std::string> labels() const;
++    // Texto de una fila: "Ranura 1  Maria - ciudad.json - 2026-09-14 12:00"
++    static std::string describeLine(const SaveSlotInfo& info);
++
++private:
++    SaveSlotMode m_mode = SaveSlotMode::Load;
++    std::vector<SaveSlotInfo> m_slots;
++    std::size_t m_selected = 0;
++    bool m_awaitingOverwrite = false;
++    std::string m_prompt;
++    std::string m_message;
++};
++
++}  // namespace Game
+diff -ruN '--exclude=build' '--exclude=_glad_off' '--exclude=third_party' mg/src/Engine/Application.cpp mg-g11/src/Engine/Application.cpp
+--- mg/src/Engine/Application.cpp	2026-09-13 23:36:15.000000000 +0000
++++ mg-g11/src/Engine/Application.cpp	2026-09-14 07:24:34.515361972 +0000
+@@ -767,6 +767,12 @@
+     m_hud.addElement(m_moralText.get());
+     m_hud.addElement(m_moralBar.get());
+ 
++    // G-11 — Selector de guardados. Se construye SIEMPRE (y no dentro del
++    // bloque del titulo, como los widgets de GDB-12) porque tambien se
++    // abre desde la pausa y desde el Game Over, es decir con el juego ya
++    // en marcha y sin haber pasado por el titulo. Nace oculto.
++    createSaveSlotWidgets(m_font->glyphWidth(), m_font->glyphHeight());
++
+     trace("init: HUD compuesto OK");
+ 
+     // --- G-08 (rodaja inicial): pantalla de titulo ---
+@@ -1577,6 +1583,217 @@
+     return requested.isOk();
+ }
+ 
++// --- G-11: ranuras de guardado ---
++//
++// La Application sigue siendo quien conoce las rutas y quien sobrevive al
++// cambio de nivel; lo que cambia es que ya no hay UN fichero fijo, sino
++// las ranuras del proyecto en curso. Toda la logica (donde vive cada
++// ranura, que ficha tiene, si se puede guardar ahora, que pasa con una
++// corrupta) esta en Game::SaveSlotService, que es GL-free y se prueba en
++// test_save_slots. Aqui solo queda la orquestacion.
++
++Game::SaveSlotService& Application::saveSlots() {
++    // Se rehace al cambiar de proyecto: las ranuras van por proyecto, y
++    // un servicio quedado del escenario anterior escribiria en las suyas.
++    if (m_saveSlots == nullptr || m_saveSlots->projectId() != m_currentProjectId) {
++        m_saveSlots = std::make_unique<Game::SaveSlotService>(m_currentProjectId);
++    }
++    return *m_saveSlots;
++}
++
++bool Application::saveToSlot(const std::string& slotId, bool overwrite) {
++    if (m_session == nullptr) {
++        return false;
++    }
++    // DEC-09 lo comprueba saveFrom ANTES de abrir el fichero: si no es
++    // punto seguro no se escribe nada y el motivo llega al log del HUD.
++    // El planificador de eventos de E-03 todavia no cuelga de la
++    // Application, asi que por esa via se pasa nullptr; el dia que
++    // cuelgue, este es el unico sitio que hay que tocar.
++    const Game::SaveSlotWriteOutcome outcome = saveSlots().saveFrom(
++        slotId, *m_session, m_currentLevelPath, /*events=*/nullptr,
++        overwrite ? Game::SaveSlotWrite::Overwrite : Game::SaveSlotWrite::FailIfOccupied);
++    if (!outcome.ok) {
++        m_session->logNote(outcome.problem);
++        trace(("saveToSlot: " + outcome.problem).c_str());
++        return false;
++    }
++    m_session->logNote("Partida guardada.");
++    return true;
++}
++
++bool Application::loadFromSlot(const std::string& slotId) {
++    // Se lee y se valida el fichero ENTERO antes de pedir el cambio de
++    // escena: una ranura corrupta o de otra version se queda aqui y la
++    // partida en curso sigue exactamente como estaba.
++    const Game::SaveSlotLoadOutcome outcome = saveSlots().load(slotId);
++    if (!outcome.ok) {
++        if (m_session != nullptr) {
++            m_session->logNote("No se pudo cargar: " + outcome.problem);
++        }
++        trace(("loadFromSlot: " + outcome.problem).c_str());
++        return false;
++    }
++
++    const SaveGameData data = outcome.data;
++    const auto requested = m_scenes.requestReplace(makeScene(false, [this, data] {
++        auto loaded = loadLevel(data.levelPath, false, GridCoord{}, [this, &data] {
++            m_narrativeState.reset();
++            applyNarrativeState(data, m_narrativeState);
++        }, &data);
++        if (loaded.isOk() && m_session != nullptr) {
++            m_session->logNote("Partida cargada.");
++        }
++        return loaded;
++    }));
++    return requested.isOk();
++}
++
++void Application::openSlotSelector(Game::SaveSlotMode mode) {
++    m_slotScreen = std::make_unique<Game::SaveSlotScreen>(
++        Game::SaveSlotScreen::open(saveSlots(), mode));
++    // Al cargar, el cursor empieza en la partida mas reciente: es la que
++    // el jugador quiere nueve de cada diez veces, y es lo que permite que
++    // "Continuar" y "Cargar partida" sean el MISMO selector.
++    const std::string recent = saveSlots().mostRecentSlotId();
++    if (mode == Game::SaveSlotMode::Load && !recent.empty()) {
++        m_slotScreen->select(recent);
++    }
++    refreshSlotWidgets();
++}
++
++void Application::closeSlotSelector() {
++    m_slotScreen.reset();
++    refreshSlotWidgets();
++}
++
++void Application::confirmSlotSelection() {
++    if (!m_slotScreen || m_scenes.hasPendingTransition()) {
++        return;
++    }
++    // El id se lee ANTES de confirmar, para que quede claro sobre que
++    // ranura se actua aunque confirm() cambie el estado interno.
++    const std::string slotId = m_slotScreen->selectedSlotId();
++    switch (m_slotScreen->confirm()) {
++        case Game::SaveSlotAction::Save:
++            // Llegar aqui YA es el consentimiento: o la ranura estaba
++            // vacia, o el jugador acaba de contestar que si.
++            if (saveToSlot(slotId, /*overwrite=*/true)) {
++                closeSlotSelector();
++            } else {
++                m_slotScreen->refresh(saveSlots());
++                refreshSlotWidgets();
++            }
++            break;
++        case Game::SaveSlotAction::Load:
++            if (loadFromSlot(slotId)) {
++                closeSlotSelector();
++            } else {
++                m_slotScreen->refresh(saveSlots());
++                refreshSlotWidgets();
++            }
++            break;
++        case Game::SaveSlotAction::Cancel:
++            closeSlotSelector();
++            break;
++        case Game::SaveSlotAction::Ask:
++        case Game::SaveSlotAction::None:
++            // Pregunta abierta, o motivo que enseñar (ranura vacia,
++            // corrupta, de otra version): no se toca nada, solo se repinta.
++            refreshSlotWidgets();
++            break;
++    }
++}
++
++void Application::refreshSlotWidgets() {
++    if (m_slotMenu == nullptr) {
++        return;  // init() todavia no ha compuesto el HUD
++    }
++    const bool open = slotSelectorOpen();
++    if (open) {
++        m_slotMenu->setOptions(m_slotScreen->labels());
++        m_slotMenu->setSelectedIndex(m_slotScreen->selected());
++        if (m_slotTitle != nullptr) {
++            m_slotTitle->setText(m_slotScreen->mode() == Game::SaveSlotMode::Save
++                                     ? "GUARDAR PARTIDA"
++                                     : "CARGAR PARTIDA");
++        }
++        if (m_slotHint != nullptr) {
++            // La pregunta de sobrescritura manda sobre el ultimo motivo, y
++            // los dos sobre la ayuda de teclas: lo urgente arriba.
++            std::string hint = m_slotScreen->awaitingOverwrite() ? m_slotScreen->prompt()
++                                                                 : m_slotScreen->message();
++            if (hint.empty()) {
++                hint = "W/S ELEGIR - ENTER CONFIRMAR - ESC CERRAR";
++            }
++            m_slotHint->setText(hint);
++        }
++    }
++    IHudElement* widgets[] = {m_slotPanel.get(), m_slotTitle.get(), m_slotMenu.get(),
++                              m_slotHint.get()};
++    for (IHudElement* widget : widgets) {
++        if (widget != nullptr) {
++            widget->setVisible(open);
++        }
++    }
++}
++
++void Application::createSaveSlotWidgets(int glyphW, int glyphH) {
++    // El tamano del panel se fija con una fila de ancho REPRESENTATIVO y
++    // no con el contenido real: las filas cambian cada vez que se guarda,
++    // y un panel que se encoge y crece debajo del cursor se lee fatal.
++    const std::vector<std::string> plantilla = {
++        "Ranura 1  Personaje - assets/levels/nivel.json - 2026-01-01 00:00:00",
++        "Ranura 2  - vacia -",
++        "Ranura 3  - vacia -",
++        "Guardado rapido  - vacia -"};
++    const Vector2 menuSize = HudCommandMenu::contentSize(*m_font, plantilla);
++
++    // Los colores y el margen del panel se repiten aqui en vez de leerse
++    // de init(): alli son variables LOCALES (kPanelColor/kBorderColor,
++    // dentro de Application::init), no constantes de fichero, y esta
++    // funcion vive fuera. Mismos valores, para que el selector no
++    // desentone con el resto de paneles del HUD.
++    const Vector4 panelColor{0.05f, 0.05f, 0.08f, 0.82f};
++    const Vector4 borderColor{0.55f, 0.55f, 0.65f, 0.9f};
++    const float padding = 16.0f;
++
++    HudTransform menuTransform;
++    menuTransform.anchor = HudAnchor::Center;
++    menuTransform.size = menuSize;
++    m_slotMenu = std::make_unique<HudCommandMenu>(menuTransform, m_font.get(), plantilla);
++
++    HudTransform panelTransform;
++    panelTransform.anchor = HudAnchor::Center;
++    panelTransform.size = Vector2{menuSize.x + 2.0f * padding, menuSize.y + 2.0f * padding};
++    m_slotPanel = std::make_unique<HudPanel>(panelTransform, m_whiteTexture.get(), panelColor);
++    m_slotPanel->setBorder(borderColor, 2.0f);
++
++    HudTransform titleTransform;
++    titleTransform.anchor = HudAnchor::TopCenter;
++    titleTransform.offset = {0.0f, 96.0f};
++    titleTransform.size = BitmapFont::measureText("GUARDAR PARTIDA", glyphW, glyphH);
++    m_slotTitle = std::make_unique<HudText>(titleTransform, m_font.get());
++    m_slotTitle->setText("CARGAR PARTIDA");
++    m_slotTitle->setColor(Vector4{1.0f, 0.9f, 0.5f, 1.0f});
++
++    const std::string hintText = "W/S ELEGIR - ENTER CONFIRMAR - ESC CERRAR";
++    HudTransform hintTransform;
++    hintTransform.anchor = HudAnchor::BottomCenter;
++    hintTransform.offset = {0.0f, 56.0f};
++    hintTransform.size = BitmapFont::measureText(hintText, glyphW, glyphH);
++    m_slotHint = std::make_unique<HudText>(hintTransform, m_font.get());
++    m_slotHint->setText(hintText);
++    m_slotHint->setColor(Vector4{0.75f, 0.75f, 0.8f, 1.0f});
++
++    // Orden de insercion = orden de dibujado: el panel primero.
++    m_hud.addElement(m_slotPanel.get());
++    m_hud.addElement(m_slotTitle.get());
++    m_hud.addElement(m_slotMenu.get());
++    m_hud.addElement(m_slotHint.get());
++    refreshSlotWidgets();  // nace oculto: slotSelectorOpen() es false
++}
++
+ void Application::processInput() {
+     using Engine::Input::InputAction;
+     GLFWwindow* win = m_window->handle();
+@@ -1589,6 +1806,33 @@
+         m_lastInput = std::chrono::steady_clock::now();
+     }
+ 
++    // G-11 — El selector de guardados es MODAL y va antes que todo lo
++    // demas: se abre tanto desde el titulo (Continuar / Cargar) como con
++    // la partida en marcha (pausa, Game Over), asi que no puede colgar de
++    // ninguna de las ramas de modo de abajo.
++    if (slotSelectorOpen()) {
++        if (input.pressed(InputAction::MenuUp)) {
++            m_slotScreen->moveUp();
++            refreshSlotWidgets();
++        }
++        if (input.pressed(InputAction::MenuDown)) {
++            m_slotScreen->moveDown();
++            refreshSlotWidgets();
++        }
++        if (input.pressed(InputAction::Confirm)) {
++            confirmSlotSelection();
++        } else if (input.pressed(InputAction::Cancel)) {
++            // Con la pregunta de sobrescritura abierta, cancel() la cierra
++            // y NO cierra el selector (ver SaveSlotScreen::cancel).
++            if (m_slotScreen->cancel() == Game::SaveSlotAction::Cancel) {
++                closeSlotSelector();
++            } else {
++                refreshSlotWidgets();
++            }
++        }
++        return;
++    }
++
+     if (input.pressed(InputAction::Quit)) {
+         m_running = false;
+         return;
+@@ -1621,11 +1865,15 @@
+ 
+         // RUN-10 — Guardado rapido. Solo aqui: en combate, dialogo o
+         // tienda las teclas no hacen nada (ver saveGame/loadGame en el .h).
++        // G-11 — F5/F9 REUTILIZAN el servicio de ranuras: escriben en la
++        // ranura "rapida" del proyecto en curso, no en un fichero suelto.
++        // El guardado rapido SI se pisa sin preguntar (es su razon de
++        // ser), pero sigue sujeto a DEC-09 como cualquier otro.
+         if (input.pressed(InputAction::QuickSave)) {
+-            saveGame(m_savePath);
++            saveToSlot(Game::SaveSlotService::quickSlotId(), /*overwrite=*/true);
+         }
+         if (input.pressed(InputAction::QuickLoad)) {
+-            loadGame(m_savePath);
++            loadFromSlot(Game::SaveSlotService::quickSlotId());
+             // loadGame ha solicitado el cambio: no se sigue leyendo
+             // input contra el estado viejo en este mismo frame.
+             return;
+@@ -2012,10 +2260,16 @@
+     } else if (action == Game::TitleAction::PlayCampaign) {
+         m_scenes.requestReplace(makeScene(false));
+     } else if (action == Game::TitleAction::Continue) {
+-        loadGame(m_savePath);
++        // G-11 — "Continuar" usa el MISMO selector que "Cargar partida",
++        // abierto sobre la ranura mas reciente. Sin partidas guardadas no
++        // hay nada que continuar y se dice, en vez de abrir un menu vacio.
++        if (saveSlots().mostRecentSlotId().empty()) {
++            m_titleHint->setText("No hay ninguna partida guardada");
++        } else {
++            openSlotSelector(Game::SaveSlotMode::Load);
++        }
+     } else if (action == Game::TitleAction::LoadGame) {
+-        // TODO: mostrar selector de guardados (G-11)
+-        loadGame(m_savePath);
++        openSlotSelector(Game::SaveSlotMode::Load);
+     } else if (action == Game::TitleAction::OpenProject) {
+         const auto* project = m_projectIndex.find(m_title->selectedEntry().projectId);
+         if (!project) {
+@@ -2045,9 +2299,12 @@
+         m_inventoryScreen = std::make_unique<Game::InventoryScreen>(*m_session);
+         m_session->closeInteraction(); // Cerrar pausa
+     } else if (action == Game::PauseAction::Save) {
+-        saveGame(m_savePath);
++        // G-11 — Guardar y cargar desde la pausa pasan por el selector.
++        // Si la sesion no esta en un punto seguro, el propio servicio lo
++        // dira al confirmar (DEC-09), con el motivo en la pantalla.
++        openSlotSelector(Game::SaveSlotMode::Save);
+     } else if (action == Game::PauseAction::Load) {
+-        loadGame(m_savePath);
++        openSlotSelector(Game::SaveSlotMode::Load);
+     } else if (action == Game::PauseAction::Options) {
+         // TODO: pantalla de opciones (G-10)
+     } else if (action == Game::PauseAction::Title) {
+@@ -2062,7 +2319,9 @@
+     if (!m_gameOverScreen || m_scenes.hasPendingTransition()) return;
+     const auto action = m_gameOverScreen->confirm();
+     if (action == Game::GameOverAction::Load) {
+-        loadGame(m_savePath);
++        // G-11 — La derrota tiene camino de vuelta: el mismo selector que
++        // el titulo y la pausa, no un unico guardado rapido a ciegas.
++        openSlotSelector(Game::SaveSlotMode::Load);
+     } else if (action == Game::GameOverAction::Title) {
+         m_session.reset();
+         m_scenes.requestReplace(makeScene(true));
+@@ -2093,6 +2352,10 @@
+ }
+ 
+ Result<bool> Application::openProject(const Editor::Project& project) {
++    // G-11 — Cambiar de proyecto cambia de juego de ranuras: saveSlots()
++    // rehace el servicio en cuanto ve otro id. Sin esto, jugar a un
++    // escenario de pruebas pisaria la partida de la campaña.
++    m_currentProjectId = project.id;
+     // Preparar catálogos y guion sin tocar los que sigue usando la campaña.
+     ObjectCatalog catalog = m_objectCatalog;
+     for (const auto& file : project.catalogs) {
+@@ -2236,6 +2499,14 @@
+     }
+     m_session.reset();
+     m_hud = HudManager{};  // suelta los punteros a widgets antes de destruirlos
++    // G-11 — Antes que nada de lo demas: el selector referencia la fuente
++    // y la textura blanca, igual que el resto de widgets (C-05).
++    m_slotHint.reset();
++    m_slotMenu.reset();
++    m_slotTitle.reset();
++    m_slotPanel.reset();
++    m_slotScreen.reset();
++    m_saveSlots.reset();
+     m_titleHint.reset();
+     m_titleMenu.reset();
+     m_titleText.reset();
+diff -ruN '--exclude=build' '--exclude=_glad_off' '--exclude=third_party' mg/src/Game/SaveGame.cpp mg-g11/src/Game/SaveGame.cpp
+--- mg/src/Game/SaveGame.cpp	2026-09-11 22:30:08.000000000 +0000
++++ mg-g11/src/Game/SaveGame.cpp	2026-09-14 07:13:18.556132427 +0000
+@@ -32,6 +32,8 @@
+ #include "Core/Json/JsonValue.h"
+ #include "Core/Json/JsonWriter.h"
+ #include "Game/EnemyBrain.h"
++// G-11: captureSaveGame lee displayName de la ficha para la fila del slot.
++#include "RPG/CharacterSheet.h"
+ 
+ namespace {
+ 
+@@ -89,6 +91,18 @@
+     out.member("schemaVersion", data.schemaVersion);
+     out.member("levelPath", data.levelPath);
+ 
++    // G-11 — Ficha del slot. Solo se escriben las que estan puestas: un
++    // guardado anterior a G-11 reescrito da el mismo texto que antes.
++    if (!data.projectId.empty()) {
++        out.member("projectId", data.projectId);
++    }
++    if (!data.characterName.empty()) {
++        out.member("characterName", data.characterName);
++    }
++    if (!data.savedAt.empty()) {
++        out.member("savedAt", data.savedAt);
++    }
++
+     writeGridCoord(out, "playerPosition", data.playerPosition);
+     out.member("playerHealth", data.playerHealth);
+     out.member("playerMaxHealth", data.playerMaxHealth);
+@@ -226,6 +240,12 @@
+     data.schemaVersion = version;
+     data.levelPath = root["levelPath"].asString();
+ 
++    // G-11 — Opcionales a proposito, igual que las de E-02: un guardado
++    // anterior no las trae y tiene que entrar igual, con las tres vacias.
++    data.projectId = root["projectId"].asString();
++    data.characterName = root["characterName"].asString();
++    data.savedAt = root["savedAt"].asString();
++
+     data.playerPosition = readGridCoord(root["playerPosition"]);
+     data.playerHealth = root["playerHealth"].asInt(0);
+     data.playerMaxHealth = root["playerMaxHealth"].asInt(0);
+@@ -419,6 +439,15 @@
+     if (m_playerBody != nullptr) {
+         data.playerHealth = m_playerBody->health();
+         data.playerMaxHealth = m_playerBody->maxHealth();
++        // G-11 — Nombre visible para la ficha del slot. Es lo UNICO de la
++        // CharacterSheet que entra en el guardado: la ficha completa la
++        // construye quien crea al personaje y no se serializa aqui (ver
++        // SaveGame.h, "que se guarda y que no"). Aqui solo hace falta para
++        // que el selector pueda decir de quien es cada ranura.
++        const RPG::CharacterSheet* sheet = m_playerBody->character_sheet();
++        if (sheet != nullptr) {
++            data.characterName = sheet->displayName;
++        }
+     }
+     if (m_inventory != nullptr) {
+         data.inventory = *m_inventory;
+diff -ruN '--exclude=build' '--exclude=_glad_off' '--exclude=third_party' mg/src/Game/SaveSlotState.cpp mg-g11/src/Game/SaveSlotState.cpp
+--- mg/src/Game/SaveSlotState.cpp	1970-01-01 00:00:00.000000000 +0000
++++ mg-g11/src/Game/SaveSlotState.cpp	2026-09-14 07:15:49.836126305 +0000
+@@ -0,0 +1,519 @@
++// G-11 — Selector de guardados y recuperacion de derrota.
++//
++// El "por que" de cada decision esta en include/Game/SaveSlotState.h (donde
++// viven los ficheros, por que una lista fija de ranuras, por que DEC-09 se
++// deriva en vez de llevar bandera). Aqui va el como.
++
++#include "Game/SaveSlotState.h"
++
++#include <algorithm>
++#include <ctime>
++#include <fstream>
++#include <sstream>
++#include <utility>
++
++#include "Core/Json/JsonValue.h"
++#include "Game/GameSession.h"
++#include "RPG/EventInterpreter.h"
++
++namespace Game {
++
++namespace {
++
++// selectedSlot() devuelve referencia: con la lista vacia (defensivo, no
++// pasa desde open()) devuelve esta fila neutra en vez de una referencia
++// colgando. Mismo recurso que TitleScreen::kNoEntry.
++const SaveSlotInfo kNoSlot{};
++
++std::string readWholeFile(const std::string& path, bool* exists) {
++    std::ifstream file(path, std::ios::binary);
++    if (!file) {
++        if (exists != nullptr) {
++            *exists = false;
++        }
++        return std::string();
++    }
++    if (exists != nullptr) {
++        *exists = true;
++    }
++    std::ostringstream buffer;
++    buffer << file.rdbuf();
++    return buffer.str();
++}
++
++// Etiqueta visible de una ranura a partir de su id.
++std::string labelFor(const std::string& slotId) {
++    if (slotId == SaveSlotService::quickSlotId()) {
++        return "Guardado rapido";
++    }
++    for (int i = 1; i <= SaveSlotService::kNumberedSlots; ++i) {
++        if (slotId == SaveSlotService::numberedSlotId(i)) {
++            return "Ranura " + std::to_string(i);
++        }
++    }
++    return slotId;
++}
++
++// Motivo en claro de por que la sesion no esta en un punto seguro. Se
++// deriva del GameMode que ya existe: no hay ningun estado nuevo que
++// mantener sincronizado.
++const char* reasonForMode(GameMode mode) {
++    switch (mode) {
++        case GameMode::Battle:
++            return "No se puede guardar en mitad de un combate.";
++        case GameMode::Dialogue:
++            return "No se puede guardar en mitad de una conversacion.";
++        case GameMode::Shop:
++            return "No se puede guardar con la tienda abierta.";
++        case GameMode::Business:
++            return "No se puede guardar con el negocio abierto.";
++        case GameMode::Pause:
++            return "No se puede guardar desde este menu.";
++        case GameMode::GameOver:
++            return "No se puede guardar una partida perdida.";
++        case GameMode::Exploration:
++            break;
++    }
++    return "";
++}
++
++}  // namespace
++
++// ---------------------------------------------------------------------
++// SaveSlotService — identidad y rutas
++// ---------------------------------------------------------------------
++
++const char* SaveSlotService::quickSlotId() { return "rapida"; }
++
++std::string SaveSlotService::numberedSlotId(int index) {
++    return "ranura_" + std::to_string(index);
++}
++
++SaveSlotService::SaveSlotService(std::string projectId, std::string root)
++    : m_projectId(std::move(projectId)), m_root(std::move(root)) {}
++
++std::vector<std::string> SaveSlotService::slotIds() const {
++    std::vector<std::string> ids;
++    ids.reserve(static_cast<std::size_t>(kNumberedSlots) + 1);
++    for (int i = 1; i <= kNumberedSlots; ++i) {
++        ids.push_back(numberedSlotId(i));
++    }
++    // La rapida al final: es la del automatismo (F5/F9), no la primera
++    // que el jugador elige a mano.
++    ids.push_back(quickSlotId());
++    return ids;
++}
++
++std::string SaveSlotService::slotPath(const std::string& slotId) const {
++    // El id del proyecto va en el NOMBRE: es lo que hace que dos
++    // proyectos no compartan ranuras sin necesitar una carpeta por
++    // proyecto (y por tanto sin necesitar un mkdir que el motor no tiene).
++    const std::string name = "partida_" + m_projectId + "_" + slotId + ".json";
++    return m_root.empty() ? name : m_root + "/" + name;
++}
++
++// ---------------------------------------------------------------------
++// Fichas de las ranuras
++// ---------------------------------------------------------------------
++
++SaveSlotInfo SaveSlotService::describe(const std::string& slotId) const {
++    SaveSlotInfo info;
++    info.id = slotId;
++    info.label = labelFor(slotId);
++    info.path = slotPath(slotId);
++    info.quick = (slotId == quickSlotId());
++
++    bool exists = false;
++    const std::string text = readWholeFile(info.path, &exists);
++    if (!exists) {
++        info.status = SaveSlotStatus::Empty;
++        return info;
++    }
++
++    // Se clasifica el problema ANTES de dar por perdida la ranura: el
++    // criterio pide distinguir "corrupto" de "version incompatible", y son
++    // dos mensajes distintos para el jugador (uno se arregla borrando, el
++    // otro actualizando el juego).
++    const Result<JsonValue> parsed = JsonValue::parse(text);
++    if (parsed.isOk() && parsed.value().isObject() && parsed.value().has("schemaVersion") &&
++        parsed.value()["schemaVersion"].isNumber()) {
++        const int version = parsed.value()["schemaVersion"].asInt(0);
++        if (version != SaveGameData::kSchemaVersion) {
++            info.status = SaveSlotStatus::Broken;
++            info.problem = SaveSlotProblem::Incompatible;
++            info.problemText = "Partida de otra version (v" + std::to_string(version) +
++                               "; este juego lee v" +
++                               std::to_string(SaveGameData::kSchemaVersion) + ").";
++            return info;
++        }
++    }
++
++    SaveGameData data;
++    std::string error;
++    if (!parseSaveGame(text, &data, &error)) {
++        info.status = SaveSlotStatus::Broken;
++        info.problem = SaveSlotProblem::Unreadable;
++        info.problemText = error.empty() ? "Partida ilegible." : error;
++        return info;
++    }
++
++    // El fichero ya va separado por proyecto en el nombre, asi que esto
++    // solo salta si alguien lo ha movido a mano. Mejor negarse que mezclar
++    // dos campañas: es el mismo criterio que restoreSaveGame aplica cuando
++    // el nivel ha cambiado bajo la partida.
++    if (!data.projectId.empty() && data.projectId != m_projectId) {
++        info.status = SaveSlotStatus::Broken;
++        info.problem = SaveSlotProblem::ForeignProject;
++        info.problemText = "Esta partida es del proyecto '" + data.projectId + "'.";
++        return info;
++    }
++
++    info.status = SaveSlotStatus::Ready;
++    info.characterName = data.characterName;
++    info.levelPath = data.levelPath;
++    info.savedAt = data.savedAt;
++    info.gold = data.gold;
++    info.playerHealth = data.playerHealth;
++    info.playerMaxHealth = data.playerMaxHealth;
++    return info;
++}
++
++std::vector<SaveSlotInfo> SaveSlotService::listSlots() const {
++    std::vector<SaveSlotInfo> out;
++    const std::vector<std::string> ids = slotIds();
++    out.reserve(ids.size());
++    for (const std::string& id : ids) {
++        out.push_back(describe(id));
++    }
++    return out;
++}
++
++std::string SaveSlotService::mostRecentSlotId() const {
++    std::string bestId;
++    std::string bestStamp;
++    for (const SaveSlotInfo& info : listSlots()) {
++        if (!info.usable()) {
++            continue;
++        }
++        if (bestId.empty() || info.savedAt > bestStamp) {
++            bestId = info.id;
++            bestStamp = info.savedAt;
++        }
++    }
++    return bestId;
++}
++
++// ---------------------------------------------------------------------
++// DEC-09 — puntos seguros
++// ---------------------------------------------------------------------
++
++SafePoint SaveSlotService::checkSafePoint(const GameSession& session,
++                                          const RPG::EventInterpreter* events) {
++    SafePoint point;
++
++    const char* modeReason = reasonForMode(session.mode());
++    if (modeReason[0] != '\0') {
++        point.reason = modeReason;
++        return point;
++    }
++
++    // A mitad de un cambio de nivel la sesion que se fotografiaria ya no
++    // es la que se va a jugar: el guardado apuntaria al nivel viejo con la
++    // posicion del nuevo.
++    if (session.pendingTransition().pending) {
++        point.reason = "No se puede guardar mientras se cambia de nivel.";
++        return point;
++    }
++
++    // El planificador de eventos ya responde a esta pregunta desde E-03
++    // (EventInterpreter::canSave(): ninguna ejecucion viva). Guardar con
++    // un evento a medias exigiria serializar el programa, el punto de
++    // continuacion y el estado de espera, y decir que si aqui seria
++    // prometerlo. Sin planificador no hay nada que esperar.
++    if (events != nullptr && !events->canSave()) {
++        point.reason = "No se puede guardar mientras una escena esta en marcha.";
++        return point;
++    }
++
++    point.safe = true;
++    return point;
++}
++
++// ---------------------------------------------------------------------
++// Guardar
++// ---------------------------------------------------------------------
++
++SaveSlotWriteOutcome SaveSlotService::write(const std::string& slotId, SaveGameData data,
++                                            SaveSlotWrite mode) const {
++    SaveSlotWriteOutcome outcome;
++
++    const SaveSlotInfo current = describe(slotId);
++    if (current.status != SaveSlotStatus::Empty && mode != SaveSlotWrite::Overwrite) {
++        // No es un error: es que falta el si del jugador. Se distingue con
++        // needsOverwriteConfirm para que la pantalla abra la pregunta en
++        // vez de enseñar un fallo.
++        outcome.needsOverwriteConfirm = true;
++        outcome.problem = "La ranura ya tiene una partida.";
++        return outcome;
++    }
++
++    // La ficha del slot se estampa AQUI: la fecha la pone quien guarda (es
++    // el momento del guardado, no el de la captura) y el proyecto lo sabe
++    // el servicio, no la sesion.
++    data.projectId = m_projectId;
++    data.savedAt = nowStamp();
++
++    std::string error;
++    if (!writeSaveGameFile(slotPath(slotId), data, &error)) {
++        outcome.problem = error;
++        return outcome;
++    }
++    outcome.ok = true;
++    return outcome;
++}
++
++SaveSlotWriteOutcome SaveSlotService::saveFrom(const std::string& slotId,
++                                               const GameSession& session,
++                                               const std::string& levelPath,
++                                               const RPG::EventInterpreter* events,
++                                               SaveSlotWrite mode) const {
++    // DEC-09 PRIMERO. Si no es punto seguro no se captura ni se abre el
++    // fichero: el disco se queda exactamente como estaba y el jugador
++    // recibe el motivo.
++    const SafePoint point = checkSafePoint(session, events);
++    if (!point.safe) {
++        SaveSlotWriteOutcome outcome;
++        outcome.problem = point.reason;
++        return outcome;
++    }
++    return write(slotId, session.captureSaveGame(levelPath), mode);
++}
++
++// ---------------------------------------------------------------------
++// Cargar
++// ---------------------------------------------------------------------
++
++SaveSlotLoadOutcome SaveSlotService::load(const std::string& slotId) const {
++    SaveSlotLoadOutcome outcome;
++
++    // describe() ya lee y clasifica el fichero entero sin tocar nada vivo.
++    // Se reutiliza para no tener dos sitios donde decidir si una ranura
++    // sirve (y que se separarian con el tiempo).
++    const SaveSlotInfo info = describe(slotId);
++    if (info.status == SaveSlotStatus::Empty) {
++        outcome.problem = "La ranura esta vacia.";
++        return outcome;
++    }
++    if (info.status == SaveSlotStatus::Broken) {
++        outcome.problem = info.problemText;
++        outcome.kind = info.problem;
++        return outcome;
++    }
++
++    std::string error;
++    if (!readSaveGameFile(info.path, &outcome.data, &error)) {
++        // Solo se llega aqui si el fichero ha cambiado entre las dos
++        // lecturas. Sigue sin haberse tocado nada vivo.
++        outcome.data = SaveGameData{};
++        outcome.problem = error;
++        outcome.kind = SaveSlotProblem::Unreadable;
++        return outcome;
++    }
++    outcome.ok = true;
++    return outcome;
++}
++
++bool SaveSlotService::restoreInto(const std::string& slotId, GameSession& session,
++                                  std::string* problem) const {
++    // Paso 1: leer y validar el fichero ENTERO. Mientras esto no salga
++    // bien, la sesion viva no se ha tocado.
++    const SaveSlotLoadOutcome loaded = load(slotId);
++    if (!loaded.ok) {
++        if (problem != nullptr) {
++            *problem = loaded.problem;
++        }
++        return false;
++    }
++
++    // Paso 2: aplicarlo. restoreSaveGame valida contra el nivel en su
++    // fase 1 y no escribe nada hasta la fase 2, asi que un guardado que no
++    // encaje tampoco deja la sesion a medias.
++    std::string error;
++    if (!session.restoreSaveGame(loaded.data, &error)) {
++        if (problem != nullptr) {
++            *problem = error;
++        }
++        return false;
++    }
++    if (problem != nullptr) {
++        problem->clear();
++    }
++    return true;
++}
++
++// ---------------------------------------------------------------------
++// Reloj
++// ---------------------------------------------------------------------
++
++void SaveSlotService::setClock(std::function<std::string()> clock) {
++    m_clock = std::move(clock);
++}
++
++std::string SaveSlotService::nowStamp() const {
++    return m_clock ? m_clock() : localTimeStamp();
++}
++
++std::string SaveSlotService::localTimeStamp() {
++    const std::time_t now = std::time(nullptr);
++    std::tm local{};
++#if defined(_WIN32)
++    localtime_s(&local, &now);
++#else
++    localtime_r(&now, &local);
++#endif
++    char buffer[32] = {0};
++    // Formato lexicograficamente ordenable a proposito (ver SaveGame.h).
++    if (std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &local) == 0) {
++        return std::string();
++    }
++    return std::string(buffer);
++}
++
++// ---------------------------------------------------------------------
++// SaveSlotScreen — solo estado
++// ---------------------------------------------------------------------
++
++SaveSlotScreen SaveSlotScreen::open(const SaveSlotService& service, SaveSlotMode mode) {
++    SaveSlotScreen screen;
++    screen.m_mode = mode;
++    screen.m_slots = service.listSlots();
++    screen.m_selected = 0;
++    return screen;
++}
++
++void SaveSlotScreen::moveUp() {
++    if (m_slots.empty() || m_awaitingOverwrite) {
++        return;  // con la pregunta abierta el cursor no se mueve
++    }
++    m_selected = (m_selected == 0) ? m_slots.size() - 1 : m_selected - 1;
++    m_message.clear();
++}
++
++void SaveSlotScreen::moveDown() {
++    if (m_slots.empty() || m_awaitingOverwrite) {
++        return;
++    }
++    m_selected = (m_selected + 1) % m_slots.size();
++    m_message.clear();
++}
++
++void SaveSlotScreen::select(const std::string& slotId) {
++    for (std::size_t i = 0; i < m_slots.size(); ++i) {
++        if (m_slots[i].id == slotId) {
++            m_selected = i;
++            return;
++        }
++    }
++}
++
++const SaveSlotInfo& SaveSlotScreen::selectedSlot() const {
++    if (m_selected >= m_slots.size()) {
++        return kNoSlot;
++    }
++    return m_slots[m_selected];
++}
++
++SaveSlotAction SaveSlotScreen::confirm() {
++    const SaveSlotInfo& slot = selectedSlot();
++    m_message.clear();
++
++    // Segundo ENTER sobre la pregunta abierta: el jugador ya ha dicho que
++    // si. La pregunta se cierra y se devuelve Save con el consentimiento
++    // dado.
++    if (m_awaitingOverwrite) {
++        m_awaitingOverwrite = false;
++        m_prompt.clear();
++        return SaveSlotAction::Save;
++    }
++
++    if (slot.id.empty()) {
++        return SaveSlotAction::None;
++    }
++
++    if (m_mode == SaveSlotMode::Load) {
++        if (slot.status == SaveSlotStatus::Empty) {
++            m_message = "La ranura esta vacia.";
++            return SaveSlotAction::None;
++        }
++        if (slot.status == SaveSlotStatus::Broken) {
++            // Se enseña el motivo y NO se carga. La partida en curso ni se
++            // entera: aqui no se ha tocado nada.
++            m_message = slot.problemText;
++            return SaveSlotAction::None;
++        }
++        return SaveSlotAction::Load;
++    }
++
++    // Guardar. Una ranura ocupada -- aunque lo que tenga sea ilegible --
++    // pide confirmacion: pisar un fichero que el jugador cree que es su
++    // partida buena no puede pasar por accidente.
++    if (slot.status != SaveSlotStatus::Empty) {
++        m_awaitingOverwrite = true;
++        m_prompt = "¿Sobrescribir " + slot.label + "? (ENTER si, ESC no)";
++        return SaveSlotAction::Ask;
++    }
++    return SaveSlotAction::Save;
++}
++
++SaveSlotAction SaveSlotScreen::cancel() {
++    if (m_awaitingOverwrite) {
++        // Cancelar un sobrescrito NO cierra el selector y, sobre todo, no
++        // ha tocado el fichero: la escritura solo la hace quien recibe
++        // SaveSlotAction::Save.
++        m_awaitingOverwrite = false;
++        m_prompt.clear();
++        m_message = "Guardado cancelado.";
++        return SaveSlotAction::None;
++    }
++    return SaveSlotAction::Cancel;
++}
++
++void SaveSlotScreen::refresh(const SaveSlotService& service) {
++    const std::size_t previous = m_selected;
++    m_slots = service.listSlots();
++    m_selected = m_slots.empty() ? 0 : std::min(previous, m_slots.size() - 1);
++    m_awaitingOverwrite = false;
++    m_prompt.clear();
++}
++
++std::string SaveSlotScreen::describeLine(const SaveSlotInfo& info) {
++    std::string line = info.label;
++    switch (info.status) {
++        case SaveSlotStatus::Empty:
++            return line + "  - vacia -";
++        case SaveSlotStatus::Broken:
++            return line + "  [!] " + info.problemText;
++        case SaveSlotStatus::Ready:
++            break;
++    }
++    line += "  ";
++    line += info.characterName.empty() ? std::string("(sin nombre)") : info.characterName;
++    if (!info.levelPath.empty()) {
++        line += " - " + info.levelPath;
++    }
++    if (!info.savedAt.empty()) {
++        line += " - " + info.savedAt;
++    }
++    return line;
++}
++
++std::vector<std::string> SaveSlotScreen::labels() const {
++    std::vector<std::string> out;
++    out.reserve(m_slots.size());
++    for (const SaveSlotInfo& info : m_slots) {
++        out.push_back(describeLine(info));
++    }
++    return out;
++}
++
++}  // namespace Game
+diff -ruN '--exclude=build' '--exclude=_glad_off' '--exclude=third_party' mg/tests/Game/SaveSlotTests.cpp mg-g11/tests/Game/SaveSlotTests.cpp
+--- mg/tests/Game/SaveSlotTests.cpp	1970-01-01 00:00:00.000000000 +0000
++++ mg-g11/tests/Game/SaveSlotTests.cpp	2026-09-14 07:18:42.852119304 +0000
+@@ -0,0 +1,715 @@
++// G-11 — Selector de guardados y recuperacion de derrota.
++//
++// GL-free: sin ventana, sin contexto OpenGL y sin assets en disco mas que
++// los ficheros temporales que el propio test escribe y borra (mismo
++// criterio que tests/Game/SaveGameTests.cpp, de donde salen el ICombatant
++// de prueba, el catalogo y el nivel sin mapa).
++//
++// Cubre, en este orden, los seis casos que pide el criterio de cierre:
++//   1. dos proyectos no comparten ranuras
++//   2. sobrescribir exige confirmacion
++//   3. cancelar el sobrescrito no toca nada
++//   4. ranura corrupta: motivo, y la partida EN CURSO intacta
++//   5. version incompatible: motivo distinto del anterior
++//   6. DEC-09: guardar en punto inseguro se bloquea diciendo por que
++// y ademas: "Continuar" elige la mas reciente, F5/F9 usan el mismo
++// servicio, la ficha del slot no rompe los guardados antiguos, y lo
++// recuperado conserva inventario, oro, moral, variables y flags sin
++// repetir lo ya cobrado.
++
++#include "TestHarness.h"
++
++#include "Core/Json/JsonValue.h"
++#include "Game/GameOverScreen.h"
++#include "Game/GameSession.h"
++#include "Game/SaveGame.h"
++#include "Game/SaveSlotState.h"
++#include "Game/Skill.h"
++#include "Level/ObjectCatalog.h"
++#include "Map/EventLayerDocument.h"
++#include "RPG/EventInterpreter.h"
++#include "RPG/NarrativeEngine.h"
++
++#include <algorithm>
++#include <cstdio>
++#include <fstream>
++#include <string>
++#include <vector>
++
++namespace {
++
++using Game::SaveSlotAction;
++using Game::SaveSlotInfo;
++using Game::SaveSlotMode;
++using Game::SaveSlotProblem;
++using Game::SaveSlotScreen;
++using Game::SaveSlotService;
++using Game::SaveSlotStatus;
++using Game::SaveSlotWrite;
++
++// --- Dobles de prueba (copiados de SaveGameTests.cpp: misma familia) ---
++
++class TestCombatant : public ICombatant {
++public:
++    explicit TestCombatant(int maxHealth) : m_health(maxHealth), m_maxHealth(maxHealth) {}
++
++    void takeDamage(int amount) override { m_health = std::max(0, m_health - amount); }
++    void heal(int amount) override { m_health = std::min(m_maxHealth, m_health + amount); }
++    int health() const override { return m_health; }
++    int maxHealth() const override { return m_maxHealth; }
++    bool isAlive() const override { return m_health > 0; }
++
++    int stat(RPG::Stat /*s*/) const override { return 0; }
++    RPG::DefenseBlock defenses() const override { return {}; }
++    int tier() const override { return 1; }
++    std::string combatant_id() const override { return "test"; }
++
++private:
++    int m_health;
++    int m_maxHealth;
++};
++
++ObjectCatalog makeCatalog() {
++    ObjectCatalog catalog;
++    auto result = catalog.loadFromString(R"({
++        "objects": [
++            {"id": "pocion", "name": "Pocion", "category": "pickup",
++             "pickup": {"effect": "heal", "power": 15}},
++            {"id": "antorcha", "name": "Antorcha", "category": "pickup",
++             "pickup": {"effect": "heal", "power": 1}},
++            {"id": "aldeano", "name": "Aldeano", "category": "npc",
++             "dialogue": ["Buenos dias."]},
++            {"id": "slime", "name": "Slime", "category": "enemy",
++             "combat": {"maxHealth": 10, "maxMana": 0, "skills": []}}
++        ]
++    })");
++    MOTOR_CHECK(result.isOk());
++    return catalog;
++}
++
++// Nivel sin mapa: dos pickups, un NPC y un enemigo, en fila.
++//   (0,0) jugador   (1,0) pocion   (2,0) antorcha
++//   (3,1) aldeano   (5,0) slime
++LevelDefinition makeLevel() {
++    LevelDefinition level;
++    level.name = "Ranuras";
++    level.playerStart = GridCoord{0, 0};
++    level.objects.push_back(
++        ObjectSpawn{"pocion", GridCoord{1, 0}, GridCoord{1, 0}, GridCoord{1, 0}});
++    level.objects.push_back(
++        ObjectSpawn{"antorcha", GridCoord{2, 0}, GridCoord{2, 0}, GridCoord{2, 0}});
++    level.objects.push_back(
++        ObjectSpawn{"aldeano", GridCoord{3, 1}, GridCoord{3, 1}, GridCoord{3, 1}});
++    level.objects.push_back(
++        ObjectSpawn{"slime", GridCoord{5, 0}, GridCoord{5, 0}, GridCoord{5, 0}});
++    return level;
++}
++
++// Una sesion jugable montada de una pieza, para no repetir seis variables
++// sueltas en cada caso. Los cuerpos viven aqui porque la sesion los
++// referencia sin poseerlos.
++struct Partida {
++    ObjectCatalog catalog = makeCatalog();
++    SkillCatalog skills;
++    TestCombatant body{60};
++    SkillSet playerSkills{10};
++    std::vector<std::string> inventory;
++    RPG::NarrativeState narrative;
++    GameSession session{nullptr,      &catalog,      &skills, makeLevel(),
++                        &body,        &playerSkills, &inventory};
++
++    Partida() { session.setNarrative(nullptr, &narrative); }
++};
++
++// Servicio con reloj fijo: la ficha del slot deja de depender del reloj de
++// la maquina y el test puede afirmar la fecha exacta.
++SaveSlotService serviceFor(const std::string& projectId, const std::string& stamp) {
++    SaveSlotService service(projectId);
++    service.setClock([stamp] { return stamp; });
++    return service;
++}
++
++// Borra todas las ranuras de un proyecto (antes y despues de cada caso):
++// los tests corren en el directorio de build y no deben dejar residuos ni
++// heredar los de una ejecucion anterior.
++void wipe(const SaveSlotService& service) {
++    for (const std::string& id : service.slotIds()) {
++        std::remove(service.slotPath(id).c_str());
++    }
++}
++
++void writeRawFile(const std::string& path, const std::string& text) {
++    std::ofstream file(path, std::ios::binary | std::ios::trunc);
++    file.write(text.data(), static_cast<std::streamsize>(text.size()));
++}
++
++// Host minimo para el planificador de eventos (E-03): solo hace falta que
++// un comando pueda quedarse esperando.
++struct HostQueEspera : public RPG::EventHost {
++    RPG::CommandResult execute(const MapEventCommand& /*command*/) override {
++        RPG::CommandResult r;
++        r.outcome = RPG::CommandOutcome::Wait;
++        r.waitMs = 5000;  // espera larga: la ejecucion sigue viva
++        return r;
++    }
++};
++
++MapEventDocument eventoConEspera() {
++    MapEventCommand cmd;
++    cmd.type = "texto.mostrar";
++    MapEventPage pagina;
++    pagina.id = ids::EventId::parse("pg_espera").value();
++    pagina.trigger = EventTrigger::Autorun;
++    pagina.commands.push_back(std::move(cmd));
++    MapEventDocument evento;
++    evento.id = ids::EventId::parse("espera").value();
++    evento.pages.push_back(std::move(pagina));
++    return evento;
++}
++
++}  // namespace
++
++// ---------------------------------------------------------------------
++// 1. Dos proyectos no comparten ranuras
++// ---------------------------------------------------------------------
++
++MOTOR_TEST_CASE(dos_proyectos_no_comparten_ranuras) {
++    SaveSlotService uno = serviceFor("g11_proyecto_uno", "2026-01-01 10:00:00");
++    SaveSlotService dos = serviceFor("g11_proyecto_dos", "2026-01-01 10:00:00");
++    wipe(uno);
++    wipe(dos);
++
++    const std::string ranura = SaveSlotService::numberedSlotId(1);
++    MOTOR_CHECK(uno.slotPath(ranura) != dos.slotPath(ranura));
++
++    Partida a;
++    a.session.addGold(111);
++    MOTOR_CHECK(uno.saveFrom(ranura, a.session, "assets/levels/uno.json").ok);
++
++    // La ranura 1 del OTRO proyecto sigue vacia, y la lista entera tambien.
++    MOTOR_CHECK(uno.describe(ranura).status == SaveSlotStatus::Ready);
++    MOTOR_CHECK(dos.describe(ranura).status == SaveSlotStatus::Empty);
++    for (const SaveSlotInfo& info : dos.listSlots()) {
++        MOTOR_CHECK(info.status == SaveSlotStatus::Empty);
++    }
++
++    // Y guardar en el segundo no pisa el primero.
++    Partida b;
++    b.session.addGold(222);
++    MOTOR_CHECK(dos.saveFrom(ranura, b.session, "assets/levels/dos.json").ok);
++    MOTOR_CHECK(uno.describe(ranura).gold == 111);
++    MOTOR_CHECK(dos.describe(ranura).gold == 222);
++    MOTOR_CHECK(uno.describe(ranura).levelPath == "assets/levels/uno.json");
++    MOTOR_CHECK(dos.describe(ranura).levelPath == "assets/levels/dos.json");
++
++    // Un guardado del proyecto dos colocado a mano en la ranura del uno se
++    // reconoce como ajeno y NO se carga (la comprobacion de projectId).
++    SaveGameData ajena;
++    MOTOR_CHECK(readSaveGameFile(dos.slotPath(ranura), &ajena, nullptr));
++    MOTOR_CHECK(ajena.projectId == "g11_proyecto_dos");
++    writeRawFile(uno.slotPath(SaveSlotService::numberedSlotId(2)), serializeSaveGame(ajena));
++    const SaveSlotInfo intrusa = uno.describe(SaveSlotService::numberedSlotId(2));
++    MOTOR_CHECK(intrusa.status == SaveSlotStatus::Broken);
++    MOTOR_CHECK(intrusa.problem == SaveSlotProblem::ForeignProject);
++    MOTOR_CHECK(intrusa.problemText.find("g11_proyecto_dos") != std::string::npos);
++    MOTOR_CHECK(!uno.load(SaveSlotService::numberedSlotId(2)).ok);
++
++    wipe(uno);
++    wipe(dos);
++}
++
++// ---------------------------------------------------------------------
++// 2. Sobrescribir exige confirmacion (en el servicio, no solo en el menu)
++// ---------------------------------------------------------------------
++
++MOTOR_TEST_CASE(sobrescribir_exige_confirmacion_explicita) {
++    SaveSlotService service = serviceFor("g11_sobrescritura", "2026-02-02 09:00:00");
++    wipe(service);
++    const std::string ranura = SaveSlotService::numberedSlotId(1);
++
++    Partida vieja;
++    vieja.session.addGold(50);
++    MOTOR_CHECK(service.saveFrom(ranura, vieja.session, "assets/levels/vieja.json").ok);
++
++    Partida nueva;
++    nueva.session.addGold(900);
++
++    // Sin permiso: no se escribe, y se distingue de un error de verdad.
++    const auto bloqueado = service.saveFrom(ranura, nueva.session, "assets/levels/nueva.json");
++    MOTOR_CHECK(!bloqueado.ok);
++    MOTOR_CHECK(bloqueado.needsOverwriteConfirm);
++    MOTOR_CHECK(!bloqueado.problem.empty());
++    MOTOR_CHECK(service.describe(ranura).gold == 50);
++    MOTOR_CHECK(service.describe(ranura).levelPath == "assets/levels/vieja.json");
++
++    // Con permiso: se pisa.
++    const auto hecho = service.saveFrom(ranura, nueva.session, "assets/levels/nueva.json",
++                                        nullptr, SaveSlotWrite::Overwrite);
++    MOTOR_CHECK(hecho.ok);
++    MOTOR_CHECK(!hecho.needsOverwriteConfirm);
++    MOTOR_CHECK(service.describe(ranura).gold == 900);
++    MOTOR_CHECK(service.describe(ranura).levelPath == "assets/levels/nueva.json");
++
++    // Una ranura vacia no pregunta nada.
++    const std::string libre = SaveSlotService::numberedSlotId(3);
++    MOTOR_CHECK(service.describe(libre).status == SaveSlotStatus::Empty);
++    MOTOR_CHECK(service.saveFrom(libre, nueva.session, "assets/levels/nueva.json").ok);
++
++    wipe(service);
++}
++
++// ---------------------------------------------------------------------
++// 3. Cancelar el sobrescrito no toca nada
++// ---------------------------------------------------------------------
++
++MOTOR_TEST_CASE(cancelar_el_sobrescrito_no_toca_el_fichero) {
++    SaveSlotService service = serviceFor("g11_cancelar", "2026-03-03 08:00:00");
++    wipe(service);
++    const std::string ranura = SaveSlotService::numberedSlotId(1);
++
++    Partida original;
++    original.session.addGold(77);
++    MOTOR_CHECK(service.saveFrom(ranura, original.session, "assets/levels/original.json").ok);
++
++    SaveSlotScreen screen = SaveSlotScreen::open(service, SaveSlotMode::Save);
++    screen.select(ranura);
++    MOTOR_CHECK(screen.selectedSlotId() == ranura);
++    MOTOR_CHECK(!screen.awaitingOverwrite());
++
++    // ENTER sobre una ranura ocupada abre la pregunta y NO guarda.
++    MOTOR_CHECK(screen.confirm() == SaveSlotAction::Ask);
++    MOTOR_CHECK(screen.awaitingOverwrite());
++    MOTOR_CHECK(!screen.prompt().empty());
++
++    // ESC la cierra: ni se guarda ni se cierra el selector.
++    MOTOR_CHECK(screen.cancel() == SaveSlotAction::None);
++    MOTOR_CHECK(!screen.awaitingOverwrite());
++    MOTOR_CHECK(!screen.message().empty());
++    MOTOR_CHECK(service.describe(ranura).gold == 77);
++    MOTOR_CHECK(service.describe(ranura).levelPath == "assets/levels/original.json");
++
++    // ESC otra vez, ya sin pregunta abierta, cierra el selector.
++    MOTOR_CHECK(screen.cancel() == SaveSlotAction::Cancel);
++    MOTOR_CHECK(service.describe(ranura).gold == 77);
++
++    // Dos ENTER seguidos si guardan: el segundo es el consentimiento.
++    Partida otra;
++    otra.session.addGold(300);
++    MOTOR_CHECK(screen.confirm() == SaveSlotAction::Ask);
++    MOTOR_CHECK(screen.confirm() == SaveSlotAction::Save);
++    MOTOR_CHECK(!screen.awaitingOverwrite());
++    MOTOR_CHECK(service.saveFrom(screen.selectedSlotId(), otra.session,
++                                 "assets/levels/otra.json", nullptr,
++                                 SaveSlotWrite::Overwrite).ok);
++    screen.refresh(service);
++    MOTOR_CHECK(screen.slots()[0].gold == 300);
++
++    // Al cargar, una ranura vacia tampoco hace nada: dice por que.
++    SaveSlotScreen cargar = SaveSlotScreen::open(service, SaveSlotMode::Load);
++    cargar.select(SaveSlotService::numberedSlotId(3));
++    MOTOR_CHECK(cargar.confirm() == SaveSlotAction::None);
++    MOTOR_CHECK(!cargar.message().empty());
++
++    wipe(service);
++}
++
++// ---------------------------------------------------------------------
++// 4. Ranura corrupta: motivo, y la partida EN CURSO intacta
++// ---------------------------------------------------------------------
++
++MOTOR_TEST_CASE(ranura_corrupta_da_motivo_y_no_destruye_la_sesion) {
++    SaveSlotService service = serviceFor("g11_corrupta", "2026-04-04 07:00:00");
++    wipe(service);
++    const std::string ranura = SaveSlotService::numberedSlotId(1);
++
++    writeRawFile(service.slotPath(ranura), "{ esto no es JSON ");
++
++    const SaveSlotInfo info = service.describe(ranura);
++    MOTOR_CHECK(info.status == SaveSlotStatus::Broken);
++    MOTOR_CHECK(info.problem == SaveSlotProblem::Unreadable);
++    MOTOR_CHECK(!info.problemText.empty());
++
++    // Una partida EN CURSO con estado propio.
++    Partida viva;
++    MOTOR_CHECK(viva.session.tryMovePlayer(1, 0));  // recoge la pocion
++    MOTOR_CHECK(viva.inventory.size() == 1);
++    viva.session.addGold(420);
++    viva.session.morality().record(-15, "Subiste el alquiler");
++    viva.narrative.setFlag("recompensa_cobrada");
++    viva.body.takeDamage(20);
++
++    const GridCoord antes = viva.session.playerPosition();
++    const int oroAntes = viva.session.gold();
++    const int moralAntes = viva.session.morality().value();
++    const int vidaAntes = viva.body.health();
++    const std::size_t objetosAntes = viva.session.worldObjects().size();
++
++    std::string motivo;
++    MOTOR_CHECK(!service.restoreInto(ranura, viva.session, &motivo));
++    MOTOR_CHECK(!motivo.empty());
++
++    // NADA se ha movido: es el criterio "no destrueixen la sessio".
++    MOTOR_CHECK(viva.session.playerPosition().x == antes.x);
++    MOTOR_CHECK(viva.session.playerPosition().y == antes.y);
++    MOTOR_CHECK(viva.session.gold() == oroAntes);
++    MOTOR_CHECK(viva.session.morality().value() == moralAntes);
++    MOTOR_CHECK(viva.body.health() == vidaAntes);
++    MOTOR_CHECK(viva.inventory.size() == 1);
++    MOTOR_CHECK(viva.session.worldObjects().size() == objetosAntes);
++    MOTOR_CHECK(viva.narrative.hasFlag("recompensa_cobrada"));
++    MOTOR_CHECK(viva.session.mode() == GameMode::Exploration);
++
++    // Y el selector tampoco: enseña el motivo y devuelve None.
++    SaveSlotScreen screen = SaveSlotScreen::open(service, SaveSlotMode::Load);
++    screen.select(ranura);
++    MOTOR_CHECK(screen.confirm() == SaveSlotAction::None);
++    MOTOR_CHECK(screen.message() == info.problemText);
++
++    // Un fichero que es JSON valido pero no es un guardado: mismo trato.
++    writeRawFile(service.slotPath(SaveSlotService::numberedSlotId(2)), R"({"hola": 1})");
++    const SaveSlotInfo falsa = service.describe(SaveSlotService::numberedSlotId(2));
++    MOTOR_CHECK(falsa.status == SaveSlotStatus::Broken);
++    MOTOR_CHECK(falsa.problem == SaveSlotProblem::Unreadable);
++
++    // Una ranura rota no arrastra a las demas: la lista sigue completa.
++    const auto slots = service.listSlots();
++    MOTOR_CHECK(slots.size() == static_cast<std::size_t>(SaveSlotService::kNumberedSlots) + 1);
++
++    wipe(service);
++}
++
++// ---------------------------------------------------------------------
++// 5. Version incompatible: motivo distinto del de corrupto
++// ---------------------------------------------------------------------
++
++MOTOR_TEST_CASE(version_incompatible_se_reconoce_y_se_explica) {
++    SaveSlotService service = serviceFor("g11_version", "2026-05-05 06:00:00");
++    wipe(service);
++    const std::string ranura = SaveSlotService::numberedSlotId(1);
++
++    // Guardado del futuro: bien formado, esquema que este motor no lee.
++    SaveGameData futura;
++    futura.schemaVersion = SaveGameData::kSchemaVersion + 98;
++    futura.levelPath = "assets/levels/futuro.json";
++    writeRawFile(service.slotPath(ranura), serializeSaveGame(futura));
++
++    const SaveSlotInfo info = service.describe(ranura);
++    MOTOR_CHECK(info.status == SaveSlotStatus::Broken);
++    MOTOR_CHECK(info.problem == SaveSlotProblem::Incompatible);
++    MOTOR_CHECK(info.problemText.find(std::to_string(futura.schemaVersion)) != std::string::npos);
++
++    const auto outcome = service.load(ranura);
++    MOTOR_CHECK(!outcome.ok);
++    MOTOR_CHECK(outcome.kind == SaveSlotProblem::Incompatible);
++
++    // Y la sesion en curso tampoco se entera.
++    Partida viva;
++    viva.session.addGold(31);
++    std::string motivo;
++    MOTOR_CHECK(!service.restoreInto(ranura, viva.session, &motivo));
++    MOTOR_CHECK(motivo == info.problemText);
++    MOTOR_CHECK(viva.session.gold() == 31);
++    MOTOR_CHECK(viva.session.mode() == GameMode::Exploration);
++
++    wipe(service);
++}
++
++// ---------------------------------------------------------------------
++// 6. DEC-09 — guardar solo en puntos seguros, y decir por que si no
++// ---------------------------------------------------------------------
++
++MOTOR_TEST_CASE(dec09_guardar_en_punto_inseguro_se_bloquea_con_motivo) {
++    SaveSlotService service = serviceFor("g11_dec09", "2026-06-06 05:00:00");
++    wipe(service);
++    const std::string ranura = SaveSlotService::numberedSlotId(1);
++
++    // (a) Exploracion limpia: es punto seguro.
++    Partida p;
++    MOTOR_CHECK(SaveSlotService::checkSafePoint(p.session).safe);
++    MOTOR_CHECK(SaveSlotService::checkSafePoint(p.session).reason.empty());
++
++    // (b) En combate: no. Entrar en la celda del slime abre el combate.
++    Partida combate;
++    for (int i = 0; i < 5; ++i) {
++        combate.session.tryMovePlayer(1, 0);
++    }
++    MOTOR_CHECK(combate.session.mode() == GameMode::Battle);
++    const auto enCombate = SaveSlotService::checkSafePoint(combate.session);
++    MOTOR_CHECK(!enCombate.safe);
++    MOTOR_CHECK(enCombate.reason.find("combate") != std::string::npos);
++
++    const auto bloqueado = service.saveFrom(ranura, combate.session, "assets/levels/x.json");
++    MOTOR_CHECK(!bloqueado.ok);
++    MOTOR_CHECK(!bloqueado.needsOverwriteConfirm);  // no es falta de permiso: es DEC-09
++    MOTOR_CHECK(bloqueado.problem == enCombate.reason);
++    // Y no se ha creado ningun fichero.
++    MOTOR_CHECK(service.describe(ranura).status == SaveSlotStatus::Empty);
++
++    // (c) En dialogo: tampoco. El aldeano esta en (3,1); el jugador llega
++    // a (3,0) y habla.
++    Partida dialogo;
++    dialogo.session.tryMovePlayer(1, 0);
++    dialogo.session.tryMovePlayer(1, 0);
++    dialogo.session.tryMovePlayer(1, 0);
++    MOTOR_CHECK(dialogo.session.interact());
++    MOTOR_CHECK(dialogo.session.mode() == GameMode::Dialogue);
++    const auto enDialogo = SaveSlotService::checkSafePoint(dialogo.session);
++    MOTOR_CHECK(!enDialogo.safe);
++    MOTOR_CHECK(enDialogo.reason.find("conversacion") != std::string::npos);
++    MOTOR_CHECK(!service.saveFrom(ranura, dialogo.session, "assets/levels/x.json").ok);
++    MOTOR_CHECK(service.describe(ranura).status == SaveSlotStatus::Empty);
++
++    // Al cerrar el dialogo vuelve a ser punto seguro, sin que nadie haya
++    // tenido que acordarse de bajar una bandera.
++    dialogo.session.closeInteraction();
++    MOTOR_CHECK(SaveSlotService::checkSafePoint(dialogo.session).safe);
++
++    // (d) Con una espera del planificador de eventos viva (E-03): tampoco.
++    HostQueEspera host;
++    RPG::EventInterpreter interprete(host);
++    MOTOR_CHECK(interprete.canSave());
++    MOTOR_CHECK(SaveSlotService::checkSafePoint(p.session, &interprete).safe);
++
++    MOTOR_CHECK(interprete.start(eventoConEspera(), 0).isOk());
++    interprete.tick(16);  // el comando devuelve Wait: la ejecucion sigue viva
++    MOTOR_CHECK(!interprete.canSave());
++    const auto enEspera = SaveSlotService::checkSafePoint(p.session, &interprete);
++    MOTOR_CHECK(!enEspera.safe);
++    MOTOR_CHECK(enEspera.reason.find("escena") != std::string::npos);
++    MOTOR_CHECK(!service.saveFrom(ranura, p.session, "assets/levels/x.json", &interprete).ok);
++    MOTOR_CHECK(service.describe(ranura).status == SaveSlotStatus::Empty);
++
++    // Cancelada la escena, la misma sesion vuelve a poder guardar.
++    interprete.cancelAll();
++    interprete.collectFinished();
++    MOTOR_CHECK(SaveSlotService::checkSafePoint(p.session, &interprete).safe);
++    MOTOR_CHECK(service.saveFrom(ranura, p.session, "assets/levels/x.json", &interprete).ok);
++    MOTOR_CHECK(service.describe(ranura).status == SaveSlotStatus::Ready);
++
++    wipe(service);
++}
++
++// ---------------------------------------------------------------------
++// "Continuar" usa el mismo selector y arranca en la partida mas reciente
++// ---------------------------------------------------------------------
++
++MOTOR_TEST_CASE(continuar_apunta_a_la_ranura_mas_reciente) {
++    SaveSlotService service("g11_continuar");
++    wipe(service);
++    MOTOR_CHECK(service.mostRecentSlotId().empty());  // sin partidas, no hay Continuar
++
++    Partida p;
++
++    service.setClock([] { return std::string("2026-01-01 10:00:00"); });
++    MOTOR_CHECK(service.write(SaveSlotService::numberedSlotId(1),
++                              p.session.captureSaveGame("assets/levels/a.json")).ok);
++
++    service.setClock([] { return std::string("2026-07-09 23:59:59"); });
++    MOTOR_CHECK(service.write(SaveSlotService::numberedSlotId(2),
++                              p.session.captureSaveGame("assets/levels/b.json")).ok);
++
++    service.setClock([] { return std::string("2026-03-15 12:00:00"); });
++    MOTOR_CHECK(service.write(SaveSlotService::quickSlotId(),
++                              p.session.captureSaveGame("assets/levels/c.json")).ok);
++
++    MOTOR_CHECK(service.mostRecentSlotId() == SaveSlotService::numberedSlotId(2));
++
++    // Y el selector se abre con el cursor puesto ahi.
++    SaveSlotScreen screen = SaveSlotScreen::open(service, SaveSlotMode::Load);
++    screen.select(service.mostRecentSlotId());
++    MOTOR_CHECK(screen.selectedSlotId() == SaveSlotService::numberedSlotId(2));
++    MOTOR_CHECK(screen.confirm() == SaveSlotAction::Load);
++
++    wipe(service);
++}
++
++// ---------------------------------------------------------------------
++// F5/F9 reutilizan el servicio: la ranura rapida es una ranura mas
++// ---------------------------------------------------------------------
++
++MOTOR_TEST_CASE(f5_y_f9_usan_la_ranura_rapida_del_mismo_servicio) {
++    SaveSlotService service = serviceFor("g11_rapida", "2026-08-08 04:00:00");
++    wipe(service);
++
++    // La rapida sale en la lista, marcada como tal y en el ultimo sitio.
++    const auto slots = service.listSlots();
++    MOTOR_CHECK(slots.size() == static_cast<std::size_t>(SaveSlotService::kNumberedSlots) + 1);
++    MOTOR_CHECK(slots.back().quick);
++    MOTOR_CHECK(slots.back().id == SaveSlotService::quickSlotId());
++    for (std::size_t i = 0; i + 1 < slots.size(); ++i) {
++        MOTOR_CHECK(!slots[i].quick);
++    }
++
++    // F5: la rapida SI se pisa sin preguntar -- es su razon de ser. Lo
++    // decide quien llama (SaveSlotWrite::Overwrite), no una excepcion
++    // escondida dentro del servicio.
++    Partida p;
++    p.session.addGold(64);
++    MOTOR_CHECK(service.saveFrom(SaveSlotService::quickSlotId(), p.session,
++                                 "assets/levels/rapida.json", nullptr,
++                                 SaveSlotWrite::Overwrite).ok);
++    p.session.addGold(10);
++    MOTOR_CHECK(service.saveFrom(SaveSlotService::quickSlotId(), p.session,
++                                 "assets/levels/rapida.json", nullptr,
++                                 SaveSlotWrite::Overwrite).ok);
++    MOTOR_CHECK(service.describe(SaveSlotService::quickSlotId()).gold == 74);
++
++    // F9: el mismo camino de lectura que el selector.
++    const auto outcome = service.load(SaveSlotService::quickSlotId());
++    MOTOR_CHECK(outcome.ok);
++    MOTOR_CHECK(outcome.data.gold == 74);
++    MOTOR_CHECK(outcome.data.projectId == "g11_rapida");
++
++    // Y sigue respetando DEC-09: F5 en combate no guarda.
++    Partida combate;
++    for (int i = 0; i < 5; ++i) {
++        combate.session.tryMovePlayer(1, 0);
++    }
++    MOTOR_CHECK(combate.session.mode() == GameMode::Battle);
++    MOTOR_CHECK(!service.saveFrom(SaveSlotService::quickSlotId(), combate.session,
++                                  "assets/levels/rapida.json", nullptr,
++                                  SaveSlotWrite::Overwrite).ok);
++    MOTOR_CHECK(service.describe(SaveSlotService::quickSlotId()).gold == 74);
++
++    wipe(service);
++}
++
++// ---------------------------------------------------------------------
++// La ficha del slot: se enseña sin cargar, y no rompe guardados antiguos
++// ---------------------------------------------------------------------
++
++MOTOR_TEST_CASE(la_ficha_del_slot_es_aditiva_y_no_rompe_guardados_antiguos) {
++    // Round-trip de las tres claves nuevas.
++    SaveGameData data;
++    data.levelPath = "assets/levels/ciudad.json";
++    data.projectId = "boundington";
++    data.characterName = "Maria";
++    data.savedAt = "2026-09-14 12:34:56";
++
++    SaveGameData vuelta;
++    std::string error;
++    MOTOR_CHECK(parseSaveGame(serializeSaveGame(data), &vuelta, &error));
++    MOTOR_CHECK(vuelta.projectId == "boundington");
++    MOTOR_CHECK(vuelta.characterName == "Maria");
++    MOTOR_CHECK(vuelta.savedAt == "2026-09-14 12:34:56");
++
++    // Un guardado ANTERIOR a G-11 (sin las tres claves) entra igual, con
++    // las tres vacias, y no es corrupto.
++    SaveGameData antigua;
++    antigua.levelPath = "assets/levels/viejo.json";
++    antigua.gold = 12;
++    const std::string textoAntiguo = serializeSaveGame(antigua);
++    MOTOR_CHECK(textoAntiguo.find("projectId") == std::string::npos);
++    MOTOR_CHECK(textoAntiguo.find("savedAt") == std::string::npos);
++
++    SaveGameData leida;
++    MOTOR_CHECK(parseSaveGame(textoAntiguo, &leida, &error));
++    MOTOR_CHECK(leida.projectId.empty());
++    MOTOR_CHECK(leida.characterName.empty());
++    MOTOR_CHECK(leida.savedAt.empty());
++    MOTOR_CHECK(leida.gold == 12);
++    // Reescribirlo da EXACTAMENTE el mismo texto: las claves nuevas solo
++    // se escriben cuando estan puestas.
++    MOTOR_CHECK(serializeSaveGame(leida) == textoAntiguo);
++
++    // Y en el selector, un guardado antiguo sin projectId se acepta en
++    // cualquier proyecto (no habia con que marcarlo).
++    SaveSlotService service("g11_antiguos");
++    wipe(service);
++    writeRawFile(service.slotPath(SaveSlotService::numberedSlotId(1)), textoAntiguo);
++    const SaveSlotInfo info = service.describe(SaveSlotService::numberedSlotId(1));
++    MOTOR_CHECK(info.status == SaveSlotStatus::Ready);
++    MOTOR_CHECK(info.gold == 12);
++    MOTOR_CHECK(info.characterName.empty());
++    // La fila se pinta igual, sin fecha ni nombre.
++    MOTOR_CHECK(SaveSlotScreen::describeLine(info).find("Ranura 1") == 0);
++
++    // Una fila vacia y una rota se distinguen a simple vista.
++    SaveSlotInfo vacia;
++    vacia.label = "Ranura 2";
++    MOTOR_CHECK(SaveSlotScreen::describeLine(vacia).find("vacia") != std::string::npos);
++    SaveSlotInfo rota;
++    rota.label = "Ranura 3";
++    rota.status = SaveSlotStatus::Broken;
++    rota.problemText = "Partida ilegible.";
++    MOTOR_CHECK(SaveSlotScreen::describeLine(rota).find("ilegible") != std::string::npos);
++
++    wipe(service);
++}
++
++// ---------------------------------------------------------------------
++// Recuperar la derrota: lo guardado vuelve entero y no repite lo cobrado
++// ---------------------------------------------------------------------
++
++MOTOR_TEST_CASE(recuperar_una_partida_conserva_inventario_moral_y_flags) {
++    SaveSlotService service = serviceFor("g11_recuperar", "2026-09-14 12:00:00");
++    wipe(service);
++    const std::string ranura = SaveSlotService::numberedSlotId(1);
++
++    // Se juega: se recoge la pocion (recompensa YA entregada), se cobra
++    // oro, se mueve la moral y se encienden banderas, variables e
++    // interruptores locales.
++    Partida jugada;
++    MOTOR_CHECK(jugada.session.tryMovePlayer(1, 0));
++    MOTOR_CHECK(jugada.session.lastPickupId() == "pocion");
++    jugada.session.addGold(250);
++    jugada.session.morality().record(-22, "Subiste el alquiler");
++    jugada.body.takeDamage(18);
++    jugada.narrative.setFlag("cofre_abierto");
++    jugada.narrative.markBeatFired("beat_prologo");
++    jugada.narrative.setVariable("hierbas", 3);
++    MOTOR_CHECK(jugada.narrative.setLocalSwitch("cofre_plaza", 'A', true).isOk());
++
++    MOTOR_CHECK(service.saveFrom(ranura, jugada.session, "assets/levels/ranuras.json").ok);
++
++    const SaveSlotInfo info = service.describe(ranura);
++    MOTOR_CHECK(info.status == SaveSlotStatus::Ready);
++    MOTOR_CHECK(info.levelPath == "assets/levels/ranuras.json");
++    MOTOR_CHECK(info.savedAt == "2026-09-14 12:00:00");
++    MOTOR_CHECK(info.gold == 250);
++    MOTOR_CHECK(info.playerHealth == 42);
++
++    // Derrota: la partida se pierde. El Game Over ofrece Carregar o
++    // Tornar al titol (GDB-12.4), y "Carregar" abre ESTE selector.
++    const auto gameOver = Game::GameOverScreen::create();
++    MOTOR_CHECK(gameOver.entries().size() == 2);
++    MOTOR_CHECK(gameOver.entries()[0].action == Game::GameOverAction::Load);
++    MOTOR_CHECK(gameOver.entries()[1].action == Game::GameOverAction::Title);
++
++    SaveSlotScreen screen = SaveSlotScreen::open(service, SaveSlotMode::Load);
++    screen.select(ranura);
++    MOTOR_CHECK(screen.confirm() == SaveSlotAction::Load);
++
++    // Se recupera sobre una sesion RECIEN construida del mismo nivel, que
++    // es lo que hace la Application tras recargarlo.
++    Partida recuperada;
++    MOTOR_CHECK(recuperada.session.worldObjects().size() == 3);  // pocion, antorcha, aldeano
++
++    std::string motivo;
++    MOTOR_CHECK(service.restoreInto(screen.selectedSlotId(), recuperada.session, &motivo));
++    MOTOR_CHECK(motivo.empty());
++
++    MOTOR_CHECK(recuperada.session.playerPosition().x == 1);
++    MOTOR_CHECK(recuperada.session.gold() == 250);
++    MOTOR_CHECK(recuperada.session.morality().value() == -22);
++    MOTOR_CHECK(recuperada.body.health() == 42);
++    MOTOR_CHECK(recuperada.inventory.size() == 1);
++    MOTOR_CHECK(recuperada.inventory[0] == "pocion");
++    MOTOR_CHECK(recuperada.session.mode() == GameMode::Exploration);
++
++    // Nada de lo ya entregado se vuelve a entregar: la pocion recogida NO
++    // reaparece en el mundo y las banderas/beats siguen encendidos, que es
++    // lo que impide repetir el prologo o volver a cobrar la recompensa.
++    MOTOR_CHECK(recuperada.session.worldObjects().size() == 2);
++    for (const auto& obj : recuperada.session.worldObjects()) {
++        MOTOR_CHECK(obj.objectId != "pocion");
++    }
++    MOTOR_CHECK(recuperada.narrative.hasFlag("cofre_abierto"));
++    MOTOR_CHECK(recuperada.narrative.beatFired("beat_prologo"));
++    MOTOR_CHECK(recuperada.narrative.variable("hierbas") == 3);
++    MOTOR_CHECK(recuperada.narrative.localSwitch("cofre_plaza", 'A'));
++
++    wipe(service);
++}
++
++int main() { return motor_test::runAllTests(); }

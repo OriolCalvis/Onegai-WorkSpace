@@ -1,0 +1,13 @@
+# AV18-06: contrato de datos y conexión existente a EnemyCatalogBridge, sin GL.
+if(BUILD_TESTING)
+    add_executable(test_monstruos_acciones tests/Game/MonstruosAccionesTests.cpp)
+    target_include_directories(test_monstruos_acciones PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+    target_link_libraries(test_monstruos_acciones PRIVATE motor_level)
+    add_test(NAME test_monstruos_acciones COMMAND test_monstruos_acciones)
+    set_tests_properties(test_monstruos_acciones PROPERTIES WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" LABELS "unit;gl-free")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_monstruos_acciones)
+    if(MOTOR_PYTHON3)
+        add_test(NAME test_validar_monstruos_acciones COMMAND "${MOTOR_PYTHON3}" "${CMAKE_CURRENT_SOURCE_DIR}/tools/test_validar_monstruos_acciones.py")
+        set_tests_properties(test_validar_monstruos_acciones PROPERTIES LABELS "unit;gl-free")
+    endif()
+endif()

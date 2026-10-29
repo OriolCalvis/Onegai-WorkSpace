@@ -1,0 +1,27 @@
+{
+  "id": "D-02",
+  "date": "2026-09-11",
+  "author": "zcode",
+  "status": "Implementat i verificat localment (loader + test); paquet OBERT (CI pendent, i el pont de combat Game::Skill segueix sense consumir el catàleg — això és G-13/D-08, no D-02)",
+  "actions": [
+    "CatalogLoader<SkillDefinition> (RpgCatalogs.h) llig ara el que la carta diu (DEC-02: mana l'asset): defenseStat (465/492), cost{resource,amount} (460/492), range (483/492) i effect.scaling (483/492), que el carregador ignorava enteros. Nous camps a SkillDefinition: defense_stat (cru, per HUD/selectors E-14), cost_resource, cost_amount, effect_scaling (cru; tipar-lo és D-11) i range (enum SkillRange amb alias corto/medio/largo del lot antic).",
+    "defenseStat es mapeja a save_attribute segons GDD §5 + Ed. 3 (bitácora 2.17 regla 4): defensa_mental->CAR, resistencia_fisica->CON, precision_magica->INT; 'CA' i buit -> NONE perquè la física sense prefix es defensa en enfrentada amb el MAJOR de DES/CON (ja ho feia així SkillExecutor). saveAttribute (àlies llegat, avui només buit a les 9 utilitàries) guanya si porta contingut.",
+    "magnitudeByDegree admiteix les DUES formes de l'asset: array [B,P,S,C] i objecte {botch,partial,success,critical}. Les 9 utilitàries narratives (percepcion, sigilo…: les que usen TOTS els skillCheck de les aventures publicades, verificat) el porten com a objecte a zero — un check no fa dany — i queien en silenci al fallback {0,2,4,8} de dany.",
+    "Fallback de magnitud quan la carta no en declara (null a 483/492, també a les 210 de spells.json i a les cartes mare de dndWeebCC: el camp el afegeix l'exportador): base = 2+2·tier, que reprodueix l'escala de MAGNITUDE_PRESETS ('Petit (1d6)' base 4 … 'Llegendari (1d12)' base 12), el mapeig legacy-daus del GDD §7.6 regla 4. Tier 1 queda EXACTAMENT com abans ({0,2,4,8}): els números plantats de la campanya no canvien. El valor explícit de la carta SEMPRE guanya a la derivació.",
+    "castingStat buit (424/492, cartes marcials) passa d'INT a DES (stat de l'atac básic, GDD §7.1). Les utilitàries declaren el seu stat, així que cap contingut publicat canvia (verificat: els skillCheck de les 9 aventures només usen utilitàries).",
+    "expected_fields() del carregador ampliat amb defenseStat, cost, range i effect (tots opcionals), perquè D-01 exigeix declarar tot el que from_json llegeix.",
+    "test_catalog_content (5 casos) a tests/RPG/CatalogContentTests.cpp: tres cartes concretes amb els valors escrits al test (abrazo_de_brasas t1 amb tots els camps; itx_tejedora_de_mareas_ofensiva_t5 amb {0,6,12,24}; percepcion amb magnituds a zero), un encanteri (alba_anunciar_el_dia) i la propietat del paquet sobre el catàleg sencer (6 magnituds SUCCESS distingides: 0+4+6+8+10+12). Registrat amb cmake/CatalogContentTests.cmake i include propi al CMakeLists."
+  ],
+  "verification": [
+    "test_catalog_content 5/5 en Release. Falsabilitat per mutació: (1) fallback uniforme base 4 → 2 FAILS (t5 + diversitat); (2) forma objecte ignorada → 2 FAILS (utilitàries + diversitat); (3) defenseStat sense mapejar → 1 FAIL (save_attribute d'abrazo). Les tres mutacions revertides i reverificades a 5/5.",
+    "Suite gl-free 61/66: els 5 Not Run (test_world, test_battle_state, test_game_session, test_hud_minimap, test_level_document_bridge) no compilen per EditorState.h en edició concurrent D'UN ALTRA SESSIÓ (markClean() duplicat) — cap d'ells toca el carregador D-02; documentat, no tocat (regla 2).",
+    "Crítics en verd: test_catalog_content, test_catalog_contract (el contracte D-01 accepta els 4 camps nous), demo_catalogos_rpg (mateixos recomptes), demo_skills, demo_campana_boundington i test_boundington_tutorial — la campanya amb els seus números plantats intacta.",
+    "Les cartes mare de dndWeebCC (data/cartas/habilidades/) tampoc porten magnituds: el null ve d'aigua amunt, no de l'exportador. Per DEC-02 NO és deute de contingut per omplir a mà; si l'Oriol vol magnituds reals per carta, les ha de declarar les cartes i el loader ja les prefers."
+  ],
+  "pending": [
+    "CI remota (regla 6 del pla): els commits d'avui no han passat pel workflow.",
+    "El pont de combat (Game::Skill / ApplySkillEffect a src/Game/Skill.cpp) continua construint definicions esquelet amb stats hardcodeados DES/INT i power del HUD: G-13 el fa data-driven i D-08 construeix enemics des del catàleg. D-02 només garanteix que el que el catàleg diu arriba a SkillDefinition.",
+    "La 'condició aplicada' del criteri: l'asset NO declara cap condició machine-readable (mechanicTags ∩ ids de conditions.json = buit, verificat; la informació viu a la prosa de description). El loader ja llegeix applyConditionId si algun dia les cartes el porten; D-09 cableja l'executor.",
+    "Combinar amb la sessió concurrent: el seu CMakeLists.txt en curs porta EditorDocumentIO, C-17 (test_world enllaça motor_level) i test_city_regeneration; el meu hunk (include de CatalogContentTests) s'ha commitejat quirúrgicament per índex per no arrossegar els seus canvis (regla 2)."
+  ]
+}

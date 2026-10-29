@@ -1,0 +1,49 @@
+{
+ "id": "EST-20",
+ "paquete": "EST-20",
+ "fase": "estabilizacion",
+ "nombre": "Application.cpp — partir el fichero de cruce del motor",
+ "date": "2026-09-24",
+ "author": "Claude (sesion 24/09, maquina de Oriol)",
+ "status": "RELEVOS A Y B HECHOS — 2305 -> 1122 lineas en HEAD (2493 -> 1283 en el arbol de trabajo, que lleva ademas el WIP ajeno). Queda init (657 lineas, el mas pisado), processInput (197) y EST-20b (los 103 miembros a clases de datos).",
+ "que_se_ha_hecho": {
+  "src/Engine/ApplicationBucle.cpp": "388 lineas. El fotograma entero: makeScene, isAtTitle, finishSceneFrame, applyPendingTransition, update, render y run. ApplicationScene y writeFramebufferPPM viajan con el, en su propio anonymous namespace, porque solo los usa este fichero.",
+  "src/Engine/ApplicationPantallas.cpp": "190 lineas. Lo que se pinta ENCIMA de la partida sin ser la partida: pausa, game over, inventario y las marcas del mundo. Comparten forma y comparten los tres colores del HUD.",
+  "src/Engine/ApplicationCierre.cpp": "154 lineas. Los dos extremos de la vida del proceso: openProject y shutdown. shutdown es el unico sitio donde el orden importa de verdad (C-05: los recursos GL mueren antes que su contexto), y un cierre que se equivoca de orden no falla ahi, falla en el driver y sin traza.",
+  "include/Engine/ApplicationInternal.h": "58 lineas. Solo lo que comparten DOS unidades: kTileW/kTileH, los tres colores del HUD y la traza. La traza va inline: dos funciones de tres lineas no pagan una unidad de traduccion, y una unidad SIN GL dentro de motor_core habria empeorado la mezcla de orillas de la libreria (EST-40/41).",
+  "CMakeLists.txt": "Tres fuentes nuevas en motor_core, en el mismo bloque que Application.cpp. Commiteadas con git update-index --cacheinfo sobre el blob de HEAD, para no arrastrar el WIP ajeno del mismo fichero.",
+  "tools/linea_base_core.py": "Corregida la comparacion de la frontera GL (commit aparte, b62e17c). Comparaba las librerias mezcladas por su TEXTO entero: anadir una fuente CON GL a una libreria ya mezclada contaba a la vez como deuda nueva y como mejora, y la segunda mentira decia 'ya no cruza la frontera GL' de una libreria que la sigue cruzando."
+ },
+ "decisiones": [
+  "NO se toca la zona con trabajo en vuelo. El arbol tiene la migracion H0-05/H0-07 a medias (ranuras de guardado y titulo por manifiesto) y esta enganchada a otras tres tareas: InputKey::LeftArrow/RightArrow, publishSheetSkills/battleMenuRows y BattleState::tickRound. Se comprobo compilando el Application.cpp del arbol contra las cabeceras de HEAD: ocho errores, ninguno mio. Ese trabajo no es mio para commitearlo, asi que el relevo se limito a los flujos que nadie esta editando: update, render, run, shutdown, openProject, las pantallas y el par makeScene/finishSceneFrame.",
+  "El corte lo hace un script que busca por NOMBRE de metodo, no por numero de linea, y se ejecuto igual sobre HEAD y sobre el arbol de trabajo. Los dos cortes dan ficheros identicos (las zonas movidas no las toca nadie), asi que el indice y el disco no divergen. Los cuerpos viajan byte a byte: aqui no hay un cambio de comportamiento escondido dentro de una mudanza.",
+  "Reparto por FLUJO, no por tamano. Tres ficheros de 388/190/154 salen de tres preguntas distintas ('que pasa en un fotograma', 'que se pinta encima', 'como se abre y se cierra'), no de cortar 600 lineas en tres.",
+  "Los 103 miembros de Application siguen donde estaban. Repartir los DATOS pide clases de datos con su propio contrato y es otro relevo (EST-20b), igual que EST-23b para GameSession."
+ ],
+ "actions": [
+  "src/Engine/ApplicationBucle.cpp, ApplicationPantallas.cpp, ApplicationCierre.cpp — nuevos.",
+  "include/Engine/ApplicationInternal.h — nueva cabecera interna del motor; ningun consumidor de Engine/Application.h la incluye.",
+  "src/Engine/Application.cpp — 601 lineas menos (594 borradas, 7 anadidas: el include y el using).",
+  "CMakeLists.txt — tres fuentes en motor_core.",
+  "tools/linea_base_core.py + test_linea_base_core.py — la frontera GL se compara por nombre de libreria y por numero de rehenes GL-free. 45 casos (antes 40)."
+ ],
+ "verification": [
+  "Oraculo de compilacion montado en el contenedor (la maquina de Oriol no tiene cmake): fuente + glm/glfw vendorizados, glfw como target INTERFACE para poder configurar sin las cabeceras de X11. 103 objetivos GL-free configurados.",
+  "Las cinco unidades compilan, en las DOS versiones: la derivada de HEAD (la que va al indice) y la del arbol de trabajo (la que queda en disco con el WIP ajeno dentro).",
+  "motor_core compila y enlaza como libreria estatica con las tres fuentes nuevas dentro.",
+  "linea_base_core.py --rapido --indice: OK. linea_base_core.py --estricto: 0 problemas instantaneos, 0 de deuda nueva, 2 mejoras pendientes de anotar en la linea base.",
+  "Cuellos: src/Engine/Application.cpp baja de 2444 a 1906 en la medida de la guardia."
+ ],
+ "pending": [
+  "Relevo B: refreshHud (273 lineas) y loadLevel (285). Los dos tienen lineas del WIP ajeno dentro, asi que hay que cortar dos veces (HEAD -> indice, arbol -> disco) o esperar a que ese trabajo se commitee.",
+  "EST-20b: los 103 miembros de include/Engine/Application.h a clases de datos. Es el relevo gemelo de EST-23b.",
+  "El WIP de H0-05/H0-07 sigue sin commitear y enganchado a tres tareas mas. Sus dos baterias (test_application, test_application_scenes) ya NO son el problema: quedan actualizadas a la API de ranuras en el arbol de trabajo (ver EST-20-RESCATE-PRUEBAS.json).",
+  "Anotar las dos mejoras en planificacion/linea_base_core.json (--actualizar). NO lo hago yo: la medida de hoy incluye trabajo en vuelo ajeno (fuentes_directas 67 -> 72), y bendecir ese numero seria ratificar una regresion que no es mia."
+ ],
+ "relevo_b": {
+  "src/Engine/ApplicationHud.cpp": "310 lineas. refreshHud: una sola funcion de 273 lineas que decide, cada fotograma, QUE se ve. Presentacion pura; no decide nada del juego. Lo siguiente para ella no es partirla en trozos de 90 lineas -- eso esconderia el problema -- sino que deje de preguntar por diez miembros de Application y reciba un estado de presentacion ya resuelto (EST-20b).",
+  "src/Engine/ApplicationNivel.cpp": "379 lineas. loadLevel: leer el nivel, construir el mundo, repartir sprites y rehacer la sesion. Corre al arrancar, al cruzar una puerta y al cargar una partida. Las dos tablas de sprites (raceNpcFrame, boundingtonStoryFrame) viajan con el porque solo las usa esta funcion.",
+  "include/Engine/ApplicationInternal.h": "Suben kCharacterDrawW/H y characterAnchor: desde hoy los comparten init (monta el jugador) y loadLevel (reparte sprites a enemigos, PNJ y objetos).",
+  "corte doble": "Primer relevo que corta CON trabajo ajeno dentro: 19 lineas de H1-01 en refreshHud y 8 de H0-04 en loadLevel. El corte de HEAD fue al indice y el del arbol se quedo en disco, asi que ese trabajo sigue vivo, ya dentro del fichero nuevo. Los seis ficheros se compararon por md5 entre la maquina de Oriol y el oraculo, y las DOS variantes compilan."
+ }
+}

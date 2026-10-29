@@ -1,0 +1,17 @@
+{
+  "id": "C-08",
+  "date": "2026-09-03",
+  "author": "Claude (Cowork)",
+  "status": "Tancat",
+  "actions": [
+    "`tickTimers` redimensiona `avisosDados` a la mida de la definició ACTUAL abans que ningú l'indexi. `resize()` i no `assign()`: conserva el prefix — els avisos que el jugador ja va rebre — i omple amb false només els nous. Treure un avís també queda cobert.",
+    "`applyNarrativeState` copia el vector tal com ve: allà no hi ha `AdventureScript` amb què comparar-lo. Qui coneix la definició viva és `NarrativeEngine`, i és allà on s'ajusta. Documentat als dos llocs.",
+    "2 casos nous a `test_save_game`.",
+    "**Nota per a qui hi torni.** ASan NO veu aquesta escriptura fora de rang: `avisosDados` és `std::vector<bool>`, un camp de bits, i l'índex de més cau dins la mateixa paraula ja reservada. És a dir que el bug era encara més silenciós del que sembla, i el que el fixa és la comprovació de MIDA, no el sanititzador."
+  ],
+  "verification": [
+    "Verds: guardat amb dos avisos restaurat sobre una definició de quatre (el cas del pla) i el simètric, quatre sobre un. Amb el codi antic tots dos fallen."
+  ],
+  "pending": [],
+  "source_markdown": "**Seguiment · 2026-09-03 · Claude (Cowork): Tancat.**\n\n- `tickTimers` redimensiona `avisosDados` a la mida de la definició ACTUAL abans que ningú l'indexi. `resize()` i no `assign()`: conserva el prefix — els avisos que el jugador ja va rebre — i omple amb false només els nous. Treure un avís també queda cobert.\n- `applyNarrativeState` copia el vector tal com ve: allà no hi ha `AdventureScript` amb què comparar-lo. Qui coneix la definició viva és `NarrativeEngine`, i és allà on s'ajusta. Documentat als dos llocs.\n- 2 casos nous a `test_save_game`.\n\n**Verificat.** Verds: guardat amb dos avisos restaurat sobre una definició de quatre (el cas del pla) i el simètric, quatre sobre un. Amb el codi antic tots dos fallen.\n\n**Nota per a qui hi torni.** ASan NO veu aquesta escriptura fora de rang: `avisosDados` és `std::vector<bool>`, un camp de bits, i l'índex de més cau dins la mateixa paraula ja reservada. És a dir que el bug era encara més silenciós del que sembla, i el que el fixa és la comprovació de MIDA, no el sanititzador."
+}

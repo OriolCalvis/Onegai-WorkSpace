@@ -1,0 +1,26 @@
+{
+  "id": "EST-36-PLAYER",
+  "date": "2026-09-26",
+  "author": "Codex",
+  "status": "IMPLEMENTADO Y VERIFICADO GL-FREE — datos de Player separados; humo del juego bloqueado por cableado ajeno.",
+  "actions": [
+    "Fila reclamada en ../TABLERO.md y TABLERO_ESTABILIZACION.md. Commit de reserva bloqueado por duplicados preexistentes de ProjectIndex; no se salta el hook.",
+    "Mover los 8 campos privados de Player a PlayerData header-only, con identicos valores iniciales y acceso mediante m_data. La guardia cuenta 17 por incluir asignaciones inline.",
+    "Preservar el contrato dual: CharacterSheet externo no propietario, salud actual propia y setters legacy. No cambiar formulas ni flujo.",
+    "Zona: include/Render/Player.h, nuevo include/Render/PlayerData.h, src/Render/Player.cpp y tests/Render/PlayerTests.cpp. Registro del mapa mediante pla/dades.py y regeneracion dirigida. Sin Application, GameSession, CMake ni WIP ajeno.",
+    "8 campos privados reales -> 1 colaborador PlayerData; la guardia deja de contar los 17 miembros/asignaciones del header. API y cuerpos equivalentes tras sustituir acceso a datos, sin nuevas reglas ni transiciones.",
+    "Player y sus datos/pruebas vinculados a G-12 en pla/dades.py; MAPA_DEL_CODIGO regenerado desde esa fuente, incluidos inventario actual de ficheros y referencias antes desfasadas."
+  ],
+  "verification": [
+    "Player.h 261 lineas y PlayerData.h 32, sin GL ni nuevos objetivos CMake. La ficha sigue siendo externa y no propietaria.",
+    "Compilacion aislada con dependencias locales en /private/tmp/motor-est36-player-build, sin usar el build de otros agentes.",
+    "test_render_player 40/40 (35 existentes + 5 nuevos), test_player_populate 5/5, test_inventory_menu 9/9 y test_sheet_equipment_cap 5/5: CTest 4/4.",
+    "Comparacion del codigo con HEAD, ignorando comentarios y sustituyendo solo los nombres de acceso: metodos identicos, sin cambios de comportamiento.",
+    "medir_alcance.py --comprobar con JSON temporal: PlayerData.h/Player.h/Player.cpp alcanzados por juego. No se reescribe alcance_real.json compartido.",
+    "linea_base_core.py --rapido y git diff --check correctos. Linea base propia baja al retirar Player.h de estado (4 entradas reales -> 3; total anterior 6 estaba desfasado)."
+  ],
+  "pending": [
+    "El enlace de juego falla por vtable de RPG::SessionCommandHost desde ApplicationNivel.cpp, zona WIP ajena de eventos; no atribuible a este relevo.",
+    "Guardia completa bloqueada por Application.h (104 -> 107 miembros) de otra sesion; no se aumenta la linea base. CI remota no ejecutada."
+  ]
+}

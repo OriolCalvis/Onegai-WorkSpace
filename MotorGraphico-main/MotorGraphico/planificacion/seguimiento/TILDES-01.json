@@ -1,0 +1,23 @@
+{
+ "id": "TILDES-01",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — las tildes, las eñes y los ¿¡ de la campaña de Boundington (prólogo, primer día, segundo día y Ocaso) y de los objetos y PNJ de la ciudad. Queda lo de 'pendiente'.",
+ "origen": "TUTORIAL-01: los textos de la primera misión iban sin tildes ni eñes («Asi que eres el nuevo», «pocion», «un ano. Un ano.», «Que te sirvo?»).",
+ "scope": [
+  "assets/adventures: boundington_prologo (36 textos), boundington_primer_dia (75), boundington_segundo_dia (49) y boundington_ocaso (34): lo que se lee (líneas, objetivos, nombres de aventura, registro y motivos de nivel); las notas de quien escribe (_canon, _notas...), los ids y las flags, sin tocar.",
+  "assets/objects: ciudad_objetos (53: nombres como Herrería, Sastrería, Poción, Éter, y lo que dicen los PNJ: «¡Bienvenido al mercado!», «¿Qué te sirvo?», «El lino de este año»), boundington_npcs (17) y este_norte_objetos (29: la campaña de Boundington lo carga después que la ciudad, y sus pocion, eter y mapa_region son los que salen en la tienda).",
+  "Regla y comprobación: solo tildes, ñ y los ¿ ¡ de apertura (RAE 2010: solo y los demostrativos, sin tilde). Quitando tildes y eñes y sin ¿ ¡, cada texto queda idéntico al original: ni una palabra cambiada. Hecho con un guion de un solo uso (extraer, corregir, comprobar, aplicar cadena a cadena sin reformatear el fichero): el diff es el registro.",
+  "tests/Level/ObjectCatalogTests.cpp: la poción del mercado se llama «Poción» y el tendero dice «¡Bienvenido al mercado!»."
+ ],
+ "pendiente": [
+  "Las otras aventuras (el Norte, Este Norte, la plaza de las razas, el silbido de medianoche) y el resto de catálogos de objetos siguen sin tildes.",
+  "este_norte_objetos.json redefine diez objetos de la ciudad con los mismos ids (letra_cambio se llama «Letra de flete» y libro_hechizos «Libro de la bruma» también en Boundington, porque el manifiesto de la campaña lo carga después).",
+  "Erratas que no son de tildes, sin tocar: «Pico Drago» por «Pico Dragón» (Xila), «de puro cabezonería», «traeslo»."
+ ],
+ "verification": [
+  "Cada texto corregido pasa la comprobación (sin tildes es el mismo); el JSON de cada fichero queda igual salvo esas cadenas. ctest en la línea base, validar_todo sin errores, linea_base_core en 44.",
+  "En el juego: el tendero, el joyero, la emboscada y la victoria con sus tildes en el pergamino."
+ ],
+ "sesion": "sesiones/2026-10-07-claude-tutorial.md"
+}

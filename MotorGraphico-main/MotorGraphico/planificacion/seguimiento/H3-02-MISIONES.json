@@ -1,0 +1,48 @@
+{
+  "id": "H3-02",
+  "date": "2026-10-01",
+  "author": "zcode",
+  "status": "MITAD GL-FREE — contrato, cargador, diario y contenido semilla decididos y probados; montaje en Application y familia mision.* pendientes (mismo bloqueo que H0-08/H3-01/H6-03)",
+  "criterio_de_cierre": "JUGABILIDAD_FASE_H.md H3-02: 'Abrir el diario -> misiones activas, objetivos y estado. Los questIds de los niveles resuelven.'",
+  "problema": "AUDITORIA_CONTRATOS.md registraba QuestDefinition como contrato inexistente: AdventureDefinition.questIds y EventDefinition::Option::grantQuestId apuntaban al vacio, y las misiones reales del contenido publicado (mision_llave) eran beats+banderas sin ficha. Nada podia decir el ESTADO de una mision para el jugador: si esta empezada, por que objetivo va, si se puede cerrar.",
+  "scope": [
+    "include/RPG/Definitions/DefinicionesMisiones.h: NUEVO, QuestDefinition + QuestObjective (structs puros). Fichero propio, no una entrada mas de DefinicionesContenido.h, para no mover la cabecera compartida con sesiones en vuelo.",
+    "include/RPG/Catalogs/CatalogLoadersMisiones.h: NUEVO, CatalogLoader<QuestDefinition> (from_json + expected_fields D-01) y DanglingQuestReferences(): el repaso que dice si las misiones que aventuras y eventos piden estan en el catalogo.",
+    "include/Game/QuestLogState.h + src/Game/QuestLogState.cpp: NUEVOS, el diario GL-free (patron OptionsState/WorldTravelState). start/advance/complete/fail + displayLines() con el contrato de HUD de la casa. 1 fuente nueva en motor_level.",
+    "assets/catalogs/quests.json: NUEVO, semilla con 2 misiones DERIVADAS del contenido publicado (ids reales: llave_oxidada, mision_completada, charlas, carta_sellada). Sin lore inventado y sin recompensas declaradas que el contenido no tenga.",
+    "tests/Game/QuestLogTests.cpp + cmake/QuestLogTests.cmake: NUEVOS, 10 casos GL-free, 2 sobre los assets publicados (quests.json + adventures.json).",
+    "CMakeLists.txt: +2 hunks (fuente en motor_level + include del test) por blob construido sobre HEAD; el WIP ajeno del fichero queda intacto en el arbol.",
+    "planificacion/seguimiento/H3-02-MISIONES.json: NUEVO, esta ficha."
+  ],
+  "decisiones": [
+    "El diario COPIA la ficha al iniciar (QuestLogEntry::definition): se lee y se serializa sin el catalogo al lado, y una mision aceptada no cambia de reglas a mitad de partida.",
+    "Una mision no se re-encarga: start() sobre un id ya presente es Error estuviera activa, completada o fallida. Re-encargarla reescribiria el diario del jugador detras de la pantalla.",
+    "advance() NO completa la mision solo: cerrarla es decision del autor (un comando, un beat), igual que en el contenido publicado (el altar de mision_llave enciende su hito el). El contador se corta en lo requerido: '6/2' en el diario es una pregunta que el jugador no se hace; re-disparar un objetivo cumplido es idempotente, no error.",
+    "complete() EXIGE los objetivos obligatorios y el error dice cuales faltan con su progreso ('escuchar_el_rumor (0/2)'); los opcionales no bloquean. No toca banderas ni inventario: las recompensas y la completionFlag las aplica quien orquesta (montaje), misma division que LevelTransition/WorldTravelState.",
+    "fallar no esconde la entrada: se ve '(fallida): motivo'. Lo que el jugador perdio no se esconde (misma ley que WorldTravelState con los viajes sin retorno).",
+    "El orden del diario es activas, completadas, fallidas: el orden en que un jugador las mira (que hago ahora / que hice / que perdi), estable dentro de cada grupo.",
+    "DanglingQuestReferences devuelve Error-con-nombres, no cuenta callada: 'adventure X referencia la mision Y y no esta en el catalogo'. Es la mitad measurable del hueco de la auditoria: hasta hoy un questIds roto no podia reportarse NADIE.",
+    "Etiquetas en castellano sin tildes, como WorldTravelState ('(sin retorno)') y OptionsState ('VOLVER'). La pregunta catalan/castellano sigue en la bandeja de Oriol; no se abre una segunda tabla de textos.",
+    "Semilla de contenido DERIVADA, no inventada: la completionFlag de mision_llave es exactamente 'mision_completada' (la que el altar enciende y a la que reacciona el veterano de conversacion_ramificada, H3-03); los objetivos de carta_del_santuario usan los ids reales del asset (charlas, carta_sellada). El lore nuevo aguas arriba (canon -> cartas -> motor)."
+  ],
+  "non_goals": [
+    "No se toca Application.cpp/.h (filas vivas H1-03/H1-05/H2-03/AV1-03/FICHA-01/CAPTURAS-UI), ni GameSession.*, ni EventCommands.*/SessionCommandHost.* (la familia mision.iniciar/mision.avanzar/mision.completar es el tramo siguiente, y tocar el catalogo de comandos sin host que la ejecute seria declarar implemented=false o mentir).",
+    "No se registra la familia en el paraguas RpgCatalogs.h (8 paquetes del corte B lo cruzan): el test incluye CatalogLoadersMisiones.h directamente; el registro entra con el montaje, cuando esa cabecera este tranquila.",
+    "No se declara quests.json en los manifiestos de proyecto (montaje) ni se toca validar_todo.py (C-05/INF-06 tienen su propiedad).",
+    "No se regenera MAPA_DEL_CODIGO.md (reservado ALPHA-00) ni alcance_real.json/linea_base_core.json (D0007/EST-42).",
+    "No se inventan recompensas ni lore: la semilla declara rewardGold 0 y rewardItemIds vacios porque el contenido publicado no tiene ninguno."
+  ],
+  "verification": [
+    "test_quest_log 10/10 PASS en clon limpio de HEAD + estos ficheros; ctest -R test_quest_log Passed (LABELS unit;gl-free).",
+    "Falsabilidad por mutacion 4/4 cazadas (restaurado y reverificado 10/10): complete() sin exigir obligatorios (cae completar_exige...), advance() sin corte en lo requerido (cae avanzar_cuenta...), DanglingQuestReferences callando (cae las_referencias...), displayLines escondiendo fallidas (cae fallar_no_esconde... y el_diario_ensena...).",
+    "Los 10 casos defienden reglas escritas en el header de QuestLogState, una por decision.",
+    "El caso del catalogo publicado comprueba la COHERENCIA con el contenido: la bandera de mision_llave debe ser 'mision_completada' — si alguien la cambia, el veterano de conversacion_ramificada se queda mudo y este test se pone rojo.",
+    "Vecinos y suite GL-free completa en clon limpio: ver sesion 2026-10-01-zcode-h302-diario-misiones.md.",
+    "diff --check limpio; el WIP ajeno del arbol queda intacto (commit por pathspec + blob construido para CMakeLists.txt)."
+  ],
+  "deuda_que_deja": [
+    "LEY 4 (nada se cierra si no lo alcanza un ejecutable): QuestLogState.cpp entra en motor_level pero NADIE lo llama todavia — mismo estado en que entraron DiceRollWidget/TargetSelection/OptionsFile. Se cierra con el montaje, no tocando la linea base (D0007/EST-42).",
+    "Montaje pendiente (con ficheros y dueños): (1) cargar quests.json en Application::init (o via manifiesto) y exponer el diario; (2) abrir el diario con una tecla y pintar displayLines() en ApplicationHud; (3) aplicar recompensas + encender completionFlag al complete() — cruzaria con NarrativeState/inventario; (4) la familia de comandos mision.* (EventCommands + SessionCommandHost) para que el CONTENIDO pueda iniciar/avanzar/cerrar misiones sin código; (5) serializar el diario en SaveGame. Todo eso toca Application.* con filas vivas: mismo bloqueo declarado por H0-08, H3-01 y H6-03.",
+    "H3-02 NO esta cerrada por su criterio de usuario (abrir el diario en el juego); esta entrega es la mitad GL-free decidida y probada, como las demas rodajas de la fase H."
+  ]
+}

@@ -1,0 +1,6947 @@
+{
+  "id": "adv_boundington_ocaso",
+  "name": "El Ocaso de Boundington",
+  "description": "Capítulo 5 del canon: EV-1981-BOUNDINGTON. Las campanas suenan a deshora y la ciudad arde. No hay forma de impedirlo. Solo hay forma de salir, y de decidir con quién.",
+  "_canon": {
+    "capitulo": "Cap. 5 — El Ocaso de Boundington: La Gran Escapada",
+    "evento": "EV-1981-BOUNDINGTON — La Matanza de Boundington",
+    "fuente": "THE ONEGAI PROJECT/Campanas/Canon/Campana 01: La Matanza de Boundington (Aventura de Venides).docx",
+    "rutas": "Las tres del documento: oeste (recomendada, mejor con aliados), norte (alta peligrosidad), quedarse y luchar (alta peligrosidad).",
+    "combates": "Primer combate: 3 Perdidos Saqueadores. Segundo: 2 Fanaticos del Culto. Opcional: el rescate de Verina.",
+    "grupos": "Oriol (05/10): combates en grupo con los numeros de la historia (PARTIDAS.docx). Los hombres de Venides retienen a los Perdidos, como dice el canon: con 20, el primer combate es contra un devoto; con 10, contra dos; solo, contra los tres; los fanaticos son dos solo si Venides esta solo, y lo mismo los captores de Verina (ver sesiones/2026-10-05-claude-kit-tiradas-grupos.md).",
+    "acompanantes": "Oriol (05/10): compañeros en combate «solo en Boundington, y solo en algunos momentos de la historia». En el Ocaso, Venides pelea a tu lado en todos los combates ('Aventurero: conmigo'; 'Tu y yo, entonces'); su ficha es la del Soldier de PARTIDAS.docx (16 PV, dos golpes por turno; 8 desde que las vidas bajan a la mitad, DANO-02) y, como dice el canon, 'siempre huye en cuanto su vida llega a 0'. Xila va con vosotros si le conociste el primer dia (bnd_pista_xila): no pelea ni se le ataca, y cura 1d4+1 dos veces en la noche a quien este en apuros ('Healing Touch 2/day'). Verina se une tras el rescate, cuando ya no quedan combates. Con el estudio de dificultad (Oriol, 06/10: '2 contra 3, mueres pocas veces'), solo, con los enemigos nuevos, el heroe cae un 7 % de las veces en toda la noche; con 10 o 20 hombres, casi nunca (sesiones/2026-10-06-claude-acompanantes-dificultad.md).",
+    "niveles": "NIVELES-01 (Oriol, 06/10): veinte niveles por tier y, para pasar, los hitos del tier (2 en T1, 4 en T2, 8 en T3, 11 en T4; de cero en cada tier). Boundington da un hito al salir vivo y el capitulo 2 que elijas, el otro (Tier 2). grantLevel admite fracciones (0.6 = 60 % de un nivel). Canon: tutorial, prologo, prueba de la iglesia, fin del dia 1 y fin del dia 2, 0,6 cada uno (nivel 4); salir vivo del Ocaso, +2 (6). La espada de Rosita, los gitanos de Surysal, todos los ninos del bosque, los desagues, los Barrios Altos, Venides con 20 hombres y Verina reparten +2 (8). Por escribir: las misiones de la ciudad y la reputacion con los PNJ de los dias 1 y 2, +2 (10); al menos 10 misiones secundarias de 4 pasos (encontrar, investigar, infiltrarse, robar o salvar un banco...), +5, un octavo de nivel por paso (15); misiones secretas, mazmorra secreta y puzzles secretos, +2 (17). Caer no da niveles.",
+    "nota": "Del canon: 'Al final, solo unos pocos sobreviviran. Venides, Xila y los aventureros que logren sobrevivir seran los unicos que logren escapar con vida de la ciudad.' La ciudad cae SIEMPRE. Lo que cambia es la cuenta."
+  },
+  "acompanantes": [
+    {
+      "id": "venides",
+      "nombre": "Venides",
+      "vida": 8,
+      "stats": {
+        "CON": 3,
+        "DES": 2,
+        "INT": 0,
+        "CAR": 1
+      },
+      "ataques": 2,
+      "atacable": true,
+      "alCaer": "se_retira"
+    },
+    {
+      "id": "xila",
+      "nombre": "Xila",
+      "vida": 3,
+      "stats": {
+        "CON": 1,
+        "DES": 2,
+        "INT": 0,
+        "CAR": 2
+      },
+      "ataques": 0,
+      "atacable": false,
+      "alCaer": "cae",
+      "cura": {
+        "dado": 4,
+        "mas": 1,
+        "veces": 2,
+        "umbral": 0.34
+      }
+    },
+    {
+      "id": "mago_de_las_tinieblas",
+      "nombre": "El mago de las tinieblas",
+      "vida": 14,
+      "stats": {
+        "CON": 1,
+        "DES": 2,
+        "INT": 4,
+        "CAR": 1
+      },
+      "ataques": 2,
+      "atacable": true,
+      "alCaer": "se_retira"
+    },
+    {
+      "id": "guardabosques",
+      "nombre": "El guardabosques",
+      "vida": 14,
+      "stats": {
+        "CON": 2,
+        "DES": 4,
+        "INT": 1,
+        "CAR": 1
+      },
+      "ataques": 2,
+      "atacable": false,
+      "alCaer": "se_retira"
+    },
+    {
+      "id": "guerrero_demoniaco",
+      "nombre": "El guerrero demoníaco",
+      "vida": 20,
+      "stats": {
+        "CON": 4,
+        "DES": 3,
+        "INT": 0,
+        "CAR": 1
+      },
+      "ataques": 2,
+      "atacable": true,
+      "alCaer": "se_retira"
+    }
+  ],
+  "objectives": [
+    {
+      "id": "obj3_plaza",
+      "text": "Ve a la plaza del Casco Antiguo y mira qué pasa.",
+      "doneFlag": "bnd3_plaza_vista",
+      "donde": "assets/levels/ciudad_centro.json"
+    },
+    {
+      "id": "obj3_avisar",
+      "text": "Avisa a Venides de lo que has visto, en la Taberna Humilde.",
+      "doneFlag": "bnd3_avisado",
+      "donde": [
+        "assets/levels/interior_taberna.json",
+        "venides"
+      ]
+    },
+    {
+      "id": "obj3_salir",
+      "text": "Sal de Boundington con vida: el oeste arde menos.",
+      "doneFlag": "bnd3_fuera",
+      "donde": "assets/levels/ciudad_oeste.json"
+    }
+  ],
+  "beats": [
+    {
+      "id": "b3_noble_copas",
+      "trigger": {
+        "type": "talk",
+        "target": "noble_recuerda"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd2_noble_borracho"
+        ],
+        "notFlags": [
+          "bnd2_noble_senalado",
+          "bnd3_noble_recuerda"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Noble: «Tu pagaste las copas. No me hables aqui.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_noble_recuerda"
+        }
+      ]
+    },
+    {
+      "id": "b3_po54_barriada",
+      "trigger": {
+        "type": "enter",
+        "target": "assets/levels/ciudad_surysal.json"
+      },
+      "requires": {
+        "anyFlags": [
+          "bnd1_unido_al_culto",
+          "bnd1_verdaderos_unido"
+        ],
+        "notFlags": [
+          "bnd3_barriada_rechaza_culto"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Guardian: «Ni hoy. Aqui hay familias, no seguidores de Sandes.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_barriada_rechaza_culto"
+        }
+      ],
+      "_propuesta": "PO-54 pendiente de Oriol."
+    },
+    {
+      "id": "b3_plaza_vacia",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd2_dia_cerrado",
+          "bnd3_esc04_sermon"
+        ],
+        "notFlags": [
+          "bnd3_plaza_vista",
+          "bnd2_documentos",
+          "bnd2_documentos_fiesta",
+          "bnd2_fiesta_rumores",
+          "bnd2_fiesta_nobles",
+          "bnd1_pista_pelea",
+          "bnd1_sabe_barricadas",
+          "bnd2_gorran_papeles",
+          "bnd2_conspiradores",
+          "bnd2_pista_cortinas"
+        ],
+        "lugar": "assets/levels/ciudad_centro.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes: «Hermanos. Acercaos. Hay pan para todos.»",
+        "Verina, al captor: «No quiero leer esto.»",
+        "Captor: «Lee.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_plaza_vista"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_sin_plan"
+        },
+        {
+          "type": "pasarFranja",
+          "arg": "manana"
+        },
+        {
+          "type": "log",
+          "arg": "Día 3. La plaza, vacía."
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_sermon_abierta"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_verina_vista"
+        }
+      ]
+    },
+    {
+      "id": "b3_plaza",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd2_dia_cerrado",
+          "bnd3_esc04_sermon"
+        ],
+        "notFlags": [
+          "bnd3_plaza_vista"
+        ],
+        "lugar": "assets/levels/ciudad_centro.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes: «La luz se perdio porque os la quitaron. Lo que se quita, se recupera.»",
+        "Sandes: «Esta noche, cuando suenen las campanas, abrid las cortinas.»",
+        "Verina, con voz forzada: «La luz perdida volvera a quien la busque.»",
+        "Edul, al captor: «No quiero estar aqui.»",
+        "Captor: «Mira al suelo.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_plaza_vista"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_verina_vista"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_sermon_abierta"
+        },
+        {
+          "type": "pasarFranja",
+          "arg": "manana"
+        },
+        {
+          "type": "log",
+          "arg": "Día 3: Sandes predica en la plaza del Casco Antiguo."
+        }
+      ]
+    },
+    {
+      "id": "b3_dia_pasa",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_campanas"
+        ],
+        "notFlags": [
+          "bnd3_espera",
+          "bnd3_avisado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Recorres la ciudad sin saber qué buscas. La gente cierra las cortinas o las abre, según.",
+        "El día pasa. Al ponerse el sol, las campanas suenan solas, todas a la vez, rápido y sin ritmo.",
+        "Corres a la Base Militar. Dentro, soldados a medio vestir; el portón se sacude con un golpe y entran tres exploradores heridos.",
+        "Explorador: «¡Están aquí! ¡Los Perdidos están en la ciudad! ¡Vienen por nosotros!»"
+      ],
+      "effects": [
+        {
+          "type": "log",
+          "arg": "EV-1981-BOUNDINGTON. La Matanza ha empezado."
+        }
+      ]
+    },
+    {
+      "id": "b3_tarde_aviso",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_plaza_vista"
+        ],
+        "variables": {
+          "dia": 4,
+          "franja": 1
+        },
+        "notFlags": [
+          "bnd3_campanas",
+          "bnd3_aviso_tarde"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "La tarde del cuarto día. La luz se vuelve amarilla y se tumba sobre los tejados.",
+        "En la plaza siguen clavando el estrado. Nadie lo dice en voz alta, pero todo el mundo camina mirando el cielo: al caer el sol, lo que vaya a pasar, pasará."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_aviso_tarde"
+        },
+        {
+          "type": "log",
+          "arg": "El Ocaso se acerca: al caer el sol empezará. Termina lo que tengas pendiente."
+        }
+      ]
+    },
+    {
+      "id": "b3_reloj",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_plaza_vista"
+        ],
+        "variables": {
+          "dia": {
+            "max": 3
+          }
+        }
+      },
+      "speaker": "",
+      "lines": [
+        "Es el cuarto día."
+      ],
+      "effects": [
+        {
+          "type": "setVariable",
+          "arg": "dia",
+          "value": 4
+        },
+        {
+          "type": "setVariable",
+          "arg": "franja",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "b3_sermon_cripta",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "lugar": "assets/levels/ciudad_centro.json",
+        "allFlags": [
+          "bnd3_plaza_vista",
+          "bnd1_cripta_sospecha"
+        ],
+        "notFlags": [
+          "bnd3_sandes_reconoce_cripta"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes: «El novicio que no era novicio. Te recuerdo.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_sandes_reconoce_cripta"
+        }
+      ]
+    },
+    {
+      "id": "b3_sermon_po54",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_plaza_vista",
+          "bnd3_sermon_abierta"
+        ],
+        "notFlags": [
+          "bnd3_avisado",
+          "bnd3_sermon_visto"
+        ],
+        "anyFlags": [
+          "bnd1_unido_al_culto",
+          "bnd1_verdaderos_unido"
+        ],
+        "lugar": "assets/levels/ciudad_centro.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes: «Acercate. Los nuestros no tienen por que quedarse atras.»",
+        "La voz de Sandes no grita y llega a todas partes. Cuando calla, el murmullo crece."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_sermon_visto"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Escuchar entre la gente",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_gente"
+            ]
+          },
+          "lines": [
+            "Una mujer, a otra: «Yo abro las cortinas, ¿eh? Por si acaso.»",
+            "La otra: «Yo me voy a casa de mi hermana, a Surysal.»",
+            "Un viejo: «En Surysal tambien estan con las cortinas.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_gente"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_pista_campanas"
+            },
+            {
+              "type": "log",
+              "arg": "Pista: esta noche, al tocar las campanas; las cortinas abiertas marcan a los suyos."
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Mirar a Verina",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_verina",
+              "bnd1_dudas_verina"
+            ]
+          },
+          "lines": [
+            "Lee sin mirar el libro. Cuando Sandes habla de «los demas», cierra el libro con el dedo dentro, como quien marca una pagina para no volver."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_verina"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Correr a avisar a Venides",
+          "lines": [
+            "Corres hacia la Base Militar."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_a_la_base"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_en_charla"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_abierta"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "_propuesta": "PO-54: lector provisional, por decidir Oriol."
+    },
+    {
+      "id": "b3_sermon",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_plaza_vista",
+          "bnd3_sermon_abierta"
+        ],
+        "notFlags": [
+          "bnd3_avisado",
+          "bnd3_sermon_visto"
+        ],
+        "lugar": "assets/levels/ciudad_centro.json"
+      },
+      "speaker": "",
+      "lines": [
+        "La voz de Sandes no grita y llega a todas partes. Cuando calla, el murmullo crece."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_sermon_visto"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Escuchar entre la gente",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_gente"
+            ]
+          },
+          "lines": [
+            "Una mujer, a otra: «Yo abro las cortinas, ¿eh? Por si acaso.»",
+            "La otra: «Yo me voy a casa de mi hermana, a Surysal.»",
+            "Un viejo: «En Surysal también están con las cortinas.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_gente"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_pista_campanas"
+            },
+            {
+              "type": "log",
+              "arg": "Pista: esta noche, al tocar las campanas; las cortinas abiertas marcan a los suyos."
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Mirar a Verina",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_verina",
+              "bnd1_dudas_verina"
+            ]
+          },
+          "lines": [
+            "Lee sin mirar el libro. Cuando Sandes habla de «los demás», cierra el libro con el dedo dentro, como quien marca una página para no volver."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_verina"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Correr a avisar a Venides",
+          "lines": [
+            "Corres hacia la Base Militar."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_a_la_base"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_en_charla"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_abierta"
+            }
+          ],
+          "despedida": true
+        }
+      ]
+    },
+    {
+      "id": "b3_sermon_s0_a",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sermon_abierta",
+          "bnd3_sermon_visto",
+          "bnd3_sermon_en_charla"
+        ],
+        "variables": {
+          "bnd3_sermon_pag": 0
+        },
+        "lugar": "assets/levels/ciudad_centro.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes reparte pan. La gente lo coge sin mirarle a los ojos."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Escuchar entre la gente",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_gente"
+            ]
+          },
+          "lines": [
+            "Una mujer, a otra: «Yo abro las cortinas, ¿eh? Por si acaso.»",
+            "La otra: «Yo me voy a casa de mi hermana, a Surysal.»",
+            "Un viejo: «En Surysal también están con las cortinas.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_gente"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_pista_campanas"
+            },
+            {
+              "type": "log",
+              "arg": "Pista: esta noche, al tocar las campanas; las cortinas abiertas marcan a los suyos."
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Mirar a Verina",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_verina",
+              "bnd1_dudas_verina"
+            ]
+          },
+          "lines": [
+            "Lee sin mirar el libro. Cuando Sandes habla de «los demás», cierra el libro con el dedo dentro, como quien marca una página para no volver."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_verina"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Correr a avisar a Venides",
+          "lines": [
+            "Corres hacia la Base Militar."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_a_la_base"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_en_charla"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_abierta"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "b3_sermon_s1_a",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sermon_abierta",
+          "bnd3_sermon_visto",
+          "bnd3_sermon_en_charla"
+        ],
+        "variables": {
+          "bnd3_sermon_pag": 1
+        },
+        "lugar": "assets/levels/ciudad_centro.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes reparte pan. La gente lo coge sin mirarle a los ojos."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Mirar a Verina",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_verina_dudas"
+            ],
+            "allFlags": [
+              "bnd1_dudas_verina"
+            ]
+          },
+          "lines": [
+            "Lee sin mirar el libro. Cuando Sandes habla de «los demás», cierra el libro con el dedo dentro, como quien marca una página para no volver.",
+            "Te ve entre la gente. Niega con la cabeza, muy poco: vete."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_verina_dudas"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Mirar a Edul",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_edul"
+            ]
+          },
+          "lines": [
+            "Tiene las manos negras de hollín y un frasco atado al cinturón. No levanta la vista ni una vez."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_edul"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 2
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Correr a avisar a Venides",
+          "lines": [
+            "Corres hacia la Base Militar."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_a_la_base"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_en_charla"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_abierta"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "b3_sermon_s2_a",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sermon_abierta",
+          "bnd3_sermon_visto",
+          "bnd3_sermon_en_charla"
+        ],
+        "variables": {
+          "bnd3_sermon_pag": 2
+        },
+        "lugar": "assets/levels/ciudad_centro.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes reparte pan. La gente lo coge sin mirarle a los ojos."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Acercarte al estrado",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_estrado",
+              "bnd1_aigren_delata",
+              "bnd1_sandes_te_conoce"
+            ]
+          },
+          "lines": [
+            "Sandes: «Una cara nueva. Qué alegría. Coge pan. Hoy es gratis. Mañana, ya veremos.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_estrado"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Acercarte al estrado",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_estrado_delata"
+            ],
+            "allFlags": [
+              "bnd1_aigren_delata"
+            ]
+          },
+          "lines": [
+            "Sandes, sin dejar de sonreír, en voz baja: «El amigo del caballero. Dile a Venides que esta noche le guardo un sitio. En primera fila.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_estrado_delata"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 3
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Correr a avisar a Venides",
+          "lines": [
+            "Corres hacia la Base Militar."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_a_la_base"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_en_charla"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_abierta"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "b3_sermon_s3_a",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sermon_abierta",
+          "bnd3_sermon_visto",
+          "bnd3_sermon_en_charla"
+        ],
+        "variables": {
+          "bnd3_sermon_pag": 3
+        },
+        "lugar": "assets/levels/ciudad_centro.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes reparte pan. La gente lo coge sin mirarle a los ojos."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Acercarte al estrado",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_estrado_nombre",
+              "bnd1_aigren_delata"
+            ],
+            "allFlags": [
+              "bnd1_sandes_te_conoce"
+            ]
+          },
+          "lines": [
+            "Sandes: «{nombre}. Te recuerdo. Recuerdo todas las caras, ¿sabes? Coge pan. Hoy es gratis.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_estrado_nombre"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Buscar al noble del brindis",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_noble"
+            ],
+            "allFlags": [
+              "bnd2_noble_senalado"
+            ]
+          },
+          "lines": [
+            "Su sitio en el estrado está vacío.",
+            "Un sectario: «El señor no ha podido venir. Unos guardias. Una lástima.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_noble"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 0
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Correr a avisar a Venides",
+          "lines": [
+            "Corres hacia la Base Militar."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_a_la_base"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_en_charla"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_abierta"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "b3_sermon_p0_a",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sermon_abierta",
+          "bnd3_sermon_visto"
+        ],
+        "notFlags": [
+          "bnd3_sermon_en_charla"
+        ],
+        "variables": {
+          "bnd3_sermon_pag": 0
+        },
+        "lugar": "assets/levels/ciudad_centro.json"
+      },
+      "speaker": "",
+      "lines": [
+        "La voz de Sandes no grita y llega a todas partes. Cuando calla, el murmullo crece."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Escuchar entre la gente",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_gente"
+            ]
+          },
+          "lines": [
+            "Una mujer, a otra: «Yo abro las cortinas, ¿eh? Por si acaso.»",
+            "La otra: «Yo me voy a casa de mi hermana, a Surysal.»",
+            "Un viejo: «En Surysal también están con las cortinas.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_gente"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_pista_campanas"
+            },
+            {
+              "type": "log",
+              "arg": "Pista: esta noche, al tocar las campanas; las cortinas abiertas marcan a los suyos."
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Mirar a Verina",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_verina",
+              "bnd1_dudas_verina"
+            ]
+          },
+          "lines": [
+            "Lee sin mirar el libro. Cuando Sandes habla de «los demás», cierra el libro con el dedo dentro, como quien marca una página para no volver."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_verina"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Correr a avisar a Venides",
+          "lines": [
+            "Corres hacia la Base Militar."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_a_la_base"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_en_charla"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_abierta"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "b3_avisar_venides",
+      "trigger": {
+        "type": "talk",
+        "target": "venides_base"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_plaza_vista"
+        ],
+        "notFlags": [
+          "bnd3_avisado",
+          "bnd3_sin_plan"
+        ],
+        "lugar": "assets/levels/interior_cuartel.json"
+      },
+      "speaker": "",
+      "lines": [
+        "«Están en la plaza. Sandes, Edul y Verina. Es esta noche.»",
+        "Venides: «¿Sandes?»",
+        "Se le va el color.",
+        "Venides: «Claro. Claro que era Sandes. Siempre salía antes de la señal.»",
+        "Se pone el yelmo.",
+        "Venides: «A las campanas. Que suenen ya.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_avisado"
+        },
+        {
+          "type": "log",
+          "arg": "Venides sabe que son sus amigos. Empieza el Ocaso."
+        }
+      ]
+    },
+    {
+      "id": "b3_rosita_ocaso",
+      "trigger": {
+        "type": "talk",
+        "target": "skilla"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_plaza_vista"
+        ],
+        "notFlags": [
+          "bnd3_campanas",
+          "bnd3_espera"
+        ]
+      },
+      "speaker": "Rosita",
+      "lines": [
+        "(sin dejar de mirar la puerta) ¿Qué haces aquí? Hoy no se sirve. Hoy se espera."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Esperar a la tarde",
+          "requires": {
+            "variables": {
+              "franja": {
+                "max": 0
+              }
+            }
+          },
+          "lines": [
+            "Rosita mira la ventana como si fuera una carta mala.",
+            "Rosita: «La tarde. Ya somos pocas las tardes.»"
+          ],
+          "effects": [
+            {
+              "type": "pasarFranja",
+              "arg": "tarde"
+            }
+          ]
+        },
+        {
+          "texto": "Esperar a que anochezca",
+          "speaker": "",
+          "lines": [
+            "El día pasa. Al ponerse el sol, las campanas suenan solas."
+          ],
+          "effects": [
+            {
+              "type": "pasarFranja",
+              "arg": "noche"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_espera"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sin_aviso_hoy"
+            }
+          ],
+          "requires": {
+            "variables": {
+              "franja": {
+                "max": 1
+              }
+            }
+          }
+        },
+        {
+          "texto": "Irte",
+          "lines": [],
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "b3_campanas_solas",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_espera",
+          "bnd3_esc04_campanas",
+          "bnd3_campanas"
+        ],
+        "variables": {
+          "franja": 2
+        },
+        "lugar": "assets/levels/interior_cuartel.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Explorador: «¡Los Perdidos estan en la ciudad! ¡Vienen por nosotros!»"
+      ],
+      "effects": [
+        {
+          "type": "log",
+          "arg": "EV-1981-BOUNDINGTON. La Matanza ha empezado."
+        }
+      ]
+    },
+    {
+      "id": "b3_campanas",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "lugar": "assets/levels/interior_cuartel.json",
+        "allFlags": [
+          "bnd3_esc04_campanas",
+          "bnd3_campanas"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Explorador: «¡Los Perdidos estan en la ciudad! ¡Vienen por nosotros!»"
+      ],
+      "effects": [
+        {
+          "type": "log",
+          "arg": "EV-1981-BOUNDINGTON. La Matanza ha empezado."
+        }
+      ]
+    },
+    {
+      "id": "b3_aviso_en_base",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_campanas",
+          "bnd3_a_la_base",
+          "bnd3_esc04_arenga"
+        ],
+        "notFlags": [
+          "bnd3_avisado",
+          "bnd2_venides_sin_aviso"
+        ],
+        "lugar": "assets/levels/interior_cuartel.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Venides está en el patio. Le encuentras antes que él a ti.",
+        "«Están en la plaza. Sandes, Edul y Verina. Es esta noche.»",
+        "Venides: «¿Sandes?»",
+        "Se le va el color.",
+        "Venides: «Claro. Claro que era Sandes. Siempre salía antes de la señal.»",
+        "Se pone el yelmo."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_avisado"
+        }
+      ]
+    },
+    {
+      "id": "b3_venides_retenido",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_campanas",
+          "bnd2_venides_sin_aviso",
+          "bnd3_esc04_arenga"
+        ],
+        "notFlags": [
+          "bnd3_arenga"
+        ],
+        "lugar": "assets/levels/interior_cuartel.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Venides no está en el patio. Un soldado te lo dice sin parar de correr.",
+        "Un soldado: «El caballero salió solo esta mañana, hacia Las Afueras. Unos guardias con cintas grises fueron detrás.»",
+        "Nadie te espera. Tendrás que salir sin él."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_arenga"
+        },
+        {
+          "type": "log",
+          "arg": "Venides no está. Le retienen en Las Afueras."
+        }
+      ]
+    },
+    {
+      "id": "b3_venides_arenga_20",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_campanas",
+          "bnd_venides_20",
+          "bnd3_esc04_arenga"
+        ],
+        "notFlags": [
+          "bnd3_arenga"
+        ],
+        "lugar": "assets/levels/interior_cuartel.json"
+      },
+      "speaker": "Venides",
+      "lines": [
+        "(con la mirada dura y la espada ya fuera, delante de veinte hombres formados, con las corazas puestas desde ayer)",
+        "¡Aventurero! Tenemos que salir de aquí. Si caemos, todo el reino cae con nosotros.",
+        "Preparaos para lo peor. Esto es solo el principio."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_arenga"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_escolta"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_con_venides"
+        },
+        {
+          "type": "log",
+          "arg": "Veinte hombres cubriendo la salida."
+        }
+      ]
+    },
+    {
+      "id": "b3_venides_arenga_10",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_campanas",
+          "bnd_venides_10",
+          "bnd3_esc04_arenga"
+        ],
+        "notFlags": [
+          "bnd3_arenga"
+        ],
+        "lugar": "assets/levels/interior_cuartel.json"
+      },
+      "speaker": "Venides",
+      "lines": [
+        "(diez hombres detrás, la mitad todavía atándose las correas)",
+        "¡Aventurero! Tenemos que salir de aquí. Si caemos, todo el reino cae con nosotros.",
+        "Preparaos para lo peor. Esto es solo el principio."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_arenga"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_escolta"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_con_venides"
+        },
+        {
+          "type": "log",
+          "arg": "Diez hombres. No bastan."
+        }
+      ]
+    },
+    {
+      "id": "b3_venides_arenga_solo",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_campanas",
+          "bnd3_esc04_arenga"
+        ],
+        "notFlags": [
+          "bnd3_arenga"
+        ],
+        "lugar": "assets/levels/interior_cuartel.json"
+      },
+      "speaker": "Venides",
+      "lines": [
+        "(solo, en mitad del patio, atándose la espada mientras los soldados corren en direcciones distintas)",
+        "¡Aventurero! Tenemos que salir de aquí. Si caemos, todo el reino cae con nosotros.",
+        "Preparaos para lo peor. Esto es solo el principio.",
+        "Tú y yo, entonces."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_arenga"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_con_venides"
+        },
+        {
+          "type": "log",
+          "arg": "Venides está solo. Como estaba escrito."
+        }
+      ]
+    },
+    {
+      "id": "b3_capitan_ronda",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_arenga",
+          "bnd2_guardia_preparada",
+          "bnd3_esc04_arenga"
+        ],
+        "notFlags": [
+          "bnd3_capitan_visto"
+        ],
+        "lugar": "assets/levels/interior_cuartel.json"
+      },
+      "speaker": "Capitán",
+      "lines": [
+        "(desde la torre) ¡Rondas dobles al este! ¡Que no pasen! ¡Os damos tiempo, caballero, no mucho!"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_capitan_visto"
+        }
+      ]
+    },
+    {
+      "id": "b3_aigren_carro",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_arenga",
+          "bnd1_aigren_redimido",
+          "bnd3_esc04_arenga"
+        ],
+        "notFlags": [
+          "bnd3_aigren_visto"
+        ],
+        "lugar": "assets/levels/interior_cuartel.json"
+      },
+      "speaker": "Aigren",
+      "lines": [
+        "(entrando con un carro lleno de espadas) ¡Espadas! Las mejores que tengo. Esta vez, para quien defiende.",
+        "Los soldados se arman.",
+        "Aigren te pone en las manos un escudo de madera con la marca de su fragua.",
+        "Aigren: «Pagado hace tiempo. Mi hijo respira; esto es lo mínimo.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_aigren_visto"
+        },
+        {
+          "type": "darObjeto",
+          "arg": "escudo_madera",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "b3_xila_avisa",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "evt_xila_avisa_a_venides"
+        ],
+        "notFlags": [
+          "bnd3_arenga"
+        ],
+        "lugar": [
+          "assets/levels/base_militar.json",
+          "assets/levels/interior_cuartel.json"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Xila salía de Pico Dragón cuando tuvo que apartarse para dejar pasar a dos hombres con capas grises. Uno llevaba un saco al hombro. El otro lo sujetó del brazo antes de que doblaran la esquina.",
+        "—Hasta las campanas, nada. Y acuérdate: las ventanas abiertas se dejan.",
+        "—¿Y las cerradas?",
+        "—Tú haz lo que te han dicho.",
+        "Xila siguió andando. Despacio, sin volverse. Esperó a doblar la esquina para apoyarse en la pared.",
+        "Las ventanas. Las cortinas que llevaban días vendiendo. Las antorchas.",
+        "Se miró las manos. Le temblaban.",
+        "—Otra vez no.",
+        "Echó a correr.",
+        "En la entrada de la Base Militar, un guardia le cruzó la lanza.",
+        "—¿Adónde vas?",
+        "—Venides. Busco a Venides.",
+        "—El caballero está ocupado.",
+        "Xila intentó tomar aire, pero solo consiguió toser. Se aferró a la capa que llevaba puesta.",
+        "—Dile que ha venido el hombre de la cuneta.",
+        "El guardia vaciló. Desde el patio llegó una voz.",
+        "—Dejadle pasar.",
+        "Venides se acercó mientras Xila trataba de recuperar el aliento.",
+        "—¿Qué ocurre?",
+        "—Van a atacar. Cuando suenen las campanas. He oído a dos de ellos: las ventanas abiertas se dejan. Las otras…",
+        "Venides miró hacia la calle.",
+        "—¿Estás seguro de lo que has oído?",
+        "—De cada palabra.",
+        "—¿Cuántos eran?",
+        "—He visto a dos. No sé cuántos más hay.",
+        "Venides llamó a un soldado y le ordenó buscar al capitán. Xila lo agarró por la manga antes de que pudiera alejarse.",
+        "—En Killville también llevaba cosas de un lado a otro sin preguntar. Cuando quise saber para qué eran, ya habían…",
+        "Soltó la manga. Se quedó mirando el suelo.",
+        "—Esta vez he venido.",
+        "Venides le puso una mano en el hombro.",
+        "—Has hecho bien.",
+        "Xila asintió, con la mandíbula apretada.",
+        "—Dime dónde guardáis las vendas.",
+        "—Puedes quedarte aquí, a cubierto.",
+        "—Ya lo sé. —Se secó la boca con el dorso de la mano—. Pero dime dónde guardáis las vendas."
+      ]
+    },
+    {
+      "id": "b3_xila_vendas",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_arenga",
+          "bnd1_xila_honor",
+          "bnd3_esc04_arenga"
+        ],
+        "notFlags": [
+          "bnd3_xila_visto"
+        ],
+        "lugar": "assets/levels/interior_cuartel.json"
+      },
+      "speaker": "Xila",
+      "lines": [
+        "Quedan vendas, quedan hierbas, y me queda pulso. Si alguien cae, que caiga cerca de mí.",
+        "Te reparte dos vendajes enrollados con una pulcritud que no le tenías vista.",
+        "Xila: «Para el camino. Y para el siguiente, si hay siguiente.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_xila_visto"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_con_xila"
+        },
+        {
+          "type": "darObjeto",
+          "arg": "vendas",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "id": "b3_xila_fiesta",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_arenga",
+          "bnd1_xila_borracho",
+          "bnd3_esc04_arenga"
+        ],
+        "notFlags": [
+          "bnd3_xila_visto"
+        ],
+        "lugar": "assets/levels/interior_cuartel.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Xila está sentado contra el pozo, cantando.",
+        "Xila: «¿Ya? ¿Ya es la fiesta?»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_xila_visto"
+        }
+      ]
+    },
+    {
+      "id": "b3_por_donde_solo",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_arenga",
+          "bnd3_sin_venides"
+        ],
+        "notFlags": [
+          "bnd3_ruta",
+          "bnd3_salidas_explicadas"
+        ],
+        "lugar": "assets/levels/interior_cuartel.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Venides: «La salida oeste, el paso norte o mantener la puerta. Decide donde ir.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_salidas_explicadas"
+        }
+      ]
+    },
+    {
+      "id": "b3_por_donde",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_arenga"
+        ],
+        "notFlags": [
+          "bnd3_ruta",
+          "bnd3_salidas_explicadas"
+        ],
+        "lugar": "assets/levels/interior_cuartel.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Venides: «La salida oeste, el paso norte o mantener la puerta. Decide donde ir.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_salidas_explicadas"
+        }
+      ]
+    },
+    {
+      "id": "b3_esc04_camino_oeste",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "lugar": "assets/levels/ciudad_oeste.json",
+        "allFlags": [
+          "bnd3_esc04_ruta_oeste",
+          "bnd3_arenga"
+        ],
+        "notFlags": [
+          "bnd3_ruta"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Venides: «Vamos.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_ruta"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_ruta_oeste"
+        }
+      ]
+    },
+    {
+      "id": "b3_esc04_camino_norte",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "lugar": "assets/levels/ciudad_oeste.json",
+        "allFlags": [
+          "bnd3_esc04_ruta_norte",
+          "bnd3_arenga"
+        ],
+        "notFlags": [
+          "bnd3_ruta"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Venides: «Vamos.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_ruta"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_ruta_norte"
+        }
+      ]
+    },
+    {
+      "id": "b3_esc04_camino_quedarse",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "lugar": "assets/levels/ciudad_oeste.json",
+        "allFlags": [
+          "bnd3_esc04_ruta_quedarse",
+          "bnd3_arenga"
+        ],
+        "notFlags": [
+          "bnd3_ruta"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Venides: «Vamos.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_ruta"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_ruta_quedarse"
+        }
+      ]
+    },
+    {
+      "id": "b3_saqueadores_20",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_ruta",
+          "bnd_venides_20",
+          "bnd3_esc04_saqueadores"
+        ],
+        "notFlags": [
+          "bnd3_saqueadores_lanzado"
+        ],
+        "lugar": "assets/levels/ciudad_oeste.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Saqueadores de los Perdidos saltan la muralla por la parte de atrás, con espadas cortas iguales: las de Aigren. Los hombres de Venides se echan encima de dos antes de que lleguen.",
+        "Saqueador: «¡Por la luz! ¡Abrid las cortinas!»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_saqueadores_lanzado"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "perdido_saqueador",
+            "flagVictory": "bnd3_saqueadores_vencidos",
+            "flagDefeat": "bnd3_saqueadores_ganan",
+            "acompanantes": [
+              {
+                "id": "venides",
+                "siFlag": "bnd3_con_venides"
+              },
+              {
+                "id": "xila",
+                "siFlag": "bnd3_con_xila"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_saqueadores_10",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_ruta",
+          "bnd_venides_10",
+          "bnd3_esc04_saqueadores"
+        ],
+        "notFlags": [
+          "bnd3_saqueadores_lanzado"
+        ],
+        "lugar": "assets/levels/ciudad_oeste.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Saqueadores de los Perdidos saltan la muralla por la parte de atrás, con espadas cortas iguales: las de Aigren. Los soldados de Venides cierran sobre uno.",
+        "Saqueador: «¡Por la luz! ¡Abrid las cortinas!»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_saqueadores_lanzado"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "perdido_saqueador",
+            "flagVictory": "bnd3_saqueadores_vencidos",
+            "flagDefeat": "bnd3_saqueadores_ganan",
+            "enemigos": [
+              {
+                "id": "perdido_saqueador",
+                "cantidad": 2
+              }
+            ],
+            "acompanantes": [
+              {
+                "id": "venides",
+                "siFlag": "bnd3_con_venides"
+              },
+              {
+                "id": "xila",
+                "siFlag": "bnd3_con_xila"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_saqueadores_guardia",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_ruta",
+          "bnd2_guardia_preparada",
+          "bnd3_esc04_saqueadores"
+        ],
+        "notFlags": [
+          "bnd3_saqueadores_lanzado"
+        ],
+        "lugar": "assets/levels/ciudad_oeste.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Saqueadores de los Perdidos saltan la muralla por la parte de atrás, con espadas cortas iguales: las de Aigren. Las rondas dobles del capitán se llevan a uno por delante.",
+        "Saqueador: «¡Por la luz! ¡Abrid las cortinas!»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_saqueadores_lanzado"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "perdido_saqueador",
+            "flagVictory": "bnd3_saqueadores_vencidos",
+            "flagDefeat": "bnd3_saqueadores_ganan",
+            "enemigos": [
+              {
+                "id": "perdido_saqueador",
+                "cantidad": 2
+              }
+            ],
+            "acompanantes": [
+              {
+                "id": "venides",
+                "siFlag": "bnd3_con_venides"
+              },
+              {
+                "id": "xila",
+                "siFlag": "bnd3_con_xila"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_saqueadores",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_ruta",
+          "bnd3_esc04_saqueadores"
+        ],
+        "notFlags": [
+          "bnd3_saqueadores_lanzado"
+        ],
+        "lugar": "assets/levels/ciudad_oeste.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Saqueadores de los Perdidos saltan la muralla por la parte de atrás, con espadas cortas iguales: las de Aigren.",
+        "Saqueador: «¡Por la luz! ¡Abrid las cortinas!»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_saqueadores_lanzado"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "perdido_saqueador",
+            "flagVictory": "bnd3_saqueadores_vencidos",
+            "flagDefeat": "bnd3_saqueadores_ganan",
+            "enemigos": [
+              {
+                "id": "perdido_saqueador",
+                "cantidad": 3
+              }
+            ],
+            "acompanantes": [
+              {
+                "id": "venides",
+                "siFlag": "bnd3_con_venides"
+              },
+              {
+                "id": "xila",
+                "siFlag": "bnd3_con_xila"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_fanaticos_escolta",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_saqueadores_vencidos",
+          "bnd3_escolta",
+          "bnd3_esc04_fanaticos"
+        ],
+        "notFlags": [
+          "bnd3_fanaticos_lanzado"
+        ],
+        "lugar": "assets/levels/ciudad_oeste.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Sin respiro: dos Fanáticos del Culto desde el tejado de los barracones, con fuego en las manos. Uno cae bajo las lanzas de la guardia antes de levantar las manos.",
+        "Fanático: «¡El fuego empieza por los que tienen!»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_fanaticos_lanzado"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "perdido_fanatico",
+            "flagVictory": "bnd3_fanaticos_vencidos",
+            "flagDefeat": "bnd3_fanaticos_ganan",
+            "acompanantes": [
+              {
+                "id": "venides",
+                "siFlag": "bnd3_con_venides"
+              },
+              {
+                "id": "xila",
+                "siFlag": "bnd3_con_xila"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_fanaticos",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_saqueadores_vencidos",
+          "bnd3_esc04_fanaticos"
+        ],
+        "notFlags": [
+          "bnd3_fanaticos_lanzado",
+          "bnd3_escolta"
+        ],
+        "lugar": "assets/levels/ciudad_oeste.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Sin respiro: dos Fanáticos del Culto desde el tejado de los barracones, con fuego en las manos.",
+        "Fanático: «¡El fuego empieza por los que tienen!»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_fanaticos_lanzado"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "perdido_fanatico",
+            "flagVictory": "bnd3_fanaticos_vencidos",
+            "flagDefeat": "bnd3_fanaticos_ganan",
+            "enemigos": [
+              {
+                "id": "perdido_fanatico",
+                "cantidad": 2
+              }
+            ],
+            "acompanantes": [
+              {
+                "id": "venides",
+                "siFlag": "bnd3_con_venides"
+              },
+              {
+                "id": "xila",
+                "siFlag": "bnd3_con_xila"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_oleada",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fanaticos_vencidos",
+          "bnd3_ruta_quedarse",
+          "bnd3_esc04_oleada"
+        ],
+        "notFlags": [
+          "bnd3_oleada_lanzada"
+        ],
+        "lugar": "assets/levels/ciudad_oeste.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Aguantáis en el patio. Por la muralla siguen saltando: una oleada, y detrás otra."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_oleada_lanzada"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "perdido_devoto",
+            "flagVictory": "bnd3_oleada_vencida",
+            "flagDefeat": "bnd3_oleada_gana",
+            "enemigos": [
+              {
+                "id": "perdido_devoto",
+                "cantidad": 2
+              },
+              {
+                "id": "perdido_saqueador",
+                "cantidad": 1
+              }
+            ],
+            "acompanantes": [
+              {
+                "id": "venides",
+                "siFlag": "bnd3_con_venides"
+              },
+              {
+                "id": "xila",
+                "siFlag": "bnd3_con_xila"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_base_cae",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_oleada_vencida",
+          "bnd3_esc04_base_arde"
+        ],
+        "notFlags": [
+          "bnd3_base_caida"
+        ],
+        "lugar": "assets/levels/ciudad_oeste.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Venides: «El fuego ya esta dentro. Al oeste. No mireis atras.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_base_caida"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_ruta_oeste"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_tarde"
+        }
+      ]
+    },
+    {
+      "id": "b3_norte",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fanaticos_vencidos",
+          "bnd3_ruta_norte",
+          "bnd3_esc04_norte"
+        ],
+        "notFlags": [
+          "bnd3_norte_lanzado"
+        ],
+        "lugar": "assets/levels/ciudad_oeste.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Al norte, las calles arden de lado a lado. Las cuerdas de tender caen como mechas encendidas.",
+        "En cada esquina, Perdidos con antorchas. No vuelve nadie, había dicho Venides."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_norte_lanzado"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "perdido_fanatico",
+            "flagVictory": "bnd3_norte_vencido",
+            "flagDefeat": "bnd3_norte_gana",
+            "enemigos": [
+              {
+                "id": "perdido_fanatico",
+                "cantidad": 2
+              },
+              {
+                "id": "perdido_saqueador",
+                "cantidad": 2
+              }
+            ],
+            "acompanantes": [
+              {
+                "id": "venides",
+                "siFlag": "bnd3_con_venides"
+              },
+              {
+                "id": "xila",
+                "siFlag": "bnd3_con_xila"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_norte_pasado",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_norte_vencido"
+        ],
+        "notFlags": [
+          "bnd3_en_afueras"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Venides: «El porton sur es la unica salida. Aun hay que cruzar el Oeste.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_sandes_no_visto"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_paso_base_listo"
+        }
+      ]
+    },
+    {
+      "id": "b3_verina_tarde",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fanaticos_vencidos",
+          "bnd3_ruta_oeste",
+          "bnd3_tarde",
+          "bnd3_esc05_verina"
+        ],
+        "notFlags": [
+          "bnd3_verina_resuelto"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "En la barricada de carros volcados, camino del oeste, solo quedan cuerdas cortadas y una mancha en el suelo.",
+        "Llegais tarde. Sho-Noco te dira despues que fue de ella."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_verina_resuelto"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_verina_cerrada"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_verina_perdida_tarde"
+        }
+      ]
+    },
+    {
+      "id": "b3_verina_cautiva_escolta",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fanaticos_vencidos",
+          "bnd3_ruta_oeste",
+          "bnd3_con_venides",
+          "bnd3_esc05_verina"
+        ],
+        "notFlags": [
+          "bnd3_verina_resuelto"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Captor: «La luz no perdona a los que hablan con la guardia.»",
+        "Verina: «No quiero vuestra guerra. Soltadme.»",
+        "Venides: «¡Verina!»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_verina_resuelto"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "cultista_carcelero",
+            "flagVictory": "bnd3_verina_libre",
+            "flagDefeat": "bnd3_verina_muerta",
+            "enemigos": [
+              {
+                "id": "cultista_carcelero",
+                "cantidad": 1
+              },
+              {
+                "id": "perdido_devoto",
+                "cantidad": 1
+              }
+            ],
+            "acompanantes": [
+              {
+                "id": "venides",
+                "siFlag": "bnd3_con_venides"
+              },
+              {
+                "id": "xila",
+                "siFlag": "bnd3_con_xila"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_verina_cautiva",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fanaticos_vencidos",
+          "bnd3_ruta_oeste",
+          "bnd3_esc05_verina"
+        ],
+        "notFlags": [
+          "bnd3_verina_resuelto"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Captor: «La luz no perdona a los que hablan con la guardia.»",
+        "Verina: «No quiero vuestra guerra. Soltadme.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_verina_resuelto"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Mirarla [Percepcion]",
+          "lines": [
+            "(Tirada de Percepcion.)"
+          ],
+          "effects": [
+            {
+              "type": "skillCheck",
+              "skillCheck": {
+                "skillId": "percepcion",
+                "rivalDice": 1,
+                "flagBotch": "bnd3_verina_mira_pifia",
+                "flagPartial": "bnd3_verina_mira_parcial",
+                "flagSuccess": "bnd3_verina_mira_exito",
+                "flagCritical": "bnd3_verina_mira_critico"
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Liberarla",
+          "lines": [
+            "Te echas sobre los dos cultistas."
+          ],
+          "effects": [
+            {
+              "type": "startBattle",
+              "startBattle": {
+                "monsterId": "cultista_carcelero",
+                "flagVictory": "bnd3_verina_libre",
+                "flagDefeat": "bnd3_verina_muerta",
+                "enemigos": [
+                  {
+                    "id": "cultista_carcelero",
+                    "cantidad": 1
+                  },
+                  {
+                    "id": "perdido_devoto",
+                    "cantidad": 1
+                  }
+                ],
+                "acompanantes": [
+                  {
+                    "id": "venides",
+                    "siFlag": "bnd3_con_venides"
+                  },
+                  {
+                    "id": "xila",
+                    "siFlag": "bnd3_con_xila"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Seguir tu camino",
+          "lines": [
+            "Al volver la cabeza, ya no esta. Sho-Noco te dira despues que fue de ella."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_verina_cerrada"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_verina_abandonada"
+            },
+            {
+              "type": "acto",
+              "arg": "verina_abandonada"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3_verina_reconocida",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "anyFlags": [
+          "bnd3_verina_mira_exito",
+          "bnd3_verina_mira_critico"
+        ],
+        "notFlags": [
+          "bnd3_verina_cerrada",
+          "bnd3_verina_libre",
+          "bnd3_verina_decidida"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json",
+        "allFlags": [
+          "bnd3_esc05_verina"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "La chica de la vision. La que arreglaba la capa de Venides en Ceaseton."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_verina_decidida"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Liberarla",
+          "lines": [
+            "Te echas sobre los dos cultistas."
+          ],
+          "effects": [
+            {
+              "type": "startBattle",
+              "startBattle": {
+                "monsterId": "cultista_carcelero",
+                "flagVictory": "bnd3_verina_libre",
+                "flagDefeat": "bnd3_verina_muerta",
+                "enemigos": [
+                  {
+                    "id": "cultista_carcelero",
+                    "cantidad": 1
+                  },
+                  {
+                    "id": "perdido_devoto",
+                    "cantidad": 1
+                  }
+                ],
+                "acompanantes": [
+                  {
+                    "id": "venides",
+                    "siFlag": "bnd3_con_venides"
+                  },
+                  {
+                    "id": "xila",
+                    "siFlag": "bnd3_con_xila"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Seguir tu camino",
+          "lines": [
+            "Al volver la cabeza, ya no esta. Sho-Noco te dira despues que fue de ella."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_verina_cerrada"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_verina_abandonada"
+            },
+            {
+              "type": "acto",
+              "arg": "verina_abandonada"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3_verina_no_reconocida",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "anyFlags": [
+          "bnd3_verina_mira_pifia",
+          "bnd3_verina_mira_parcial"
+        ],
+        "notFlags": [
+          "bnd3_verina_cerrada",
+          "bnd3_verina_libre",
+          "bnd3_verina_decidida"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json",
+        "allFlags": [
+          "bnd3_esc05_verina"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Una chica cualquiera, con la boca sangrando. No sabes quien es. Sabes lo que le van a hacer."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_verina_decidida"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Liberarla",
+          "lines": [
+            "Te echas sobre los dos cultistas."
+          ],
+          "effects": [
+            {
+              "type": "startBattle",
+              "startBattle": {
+                "monsterId": "cultista_carcelero",
+                "flagVictory": "bnd3_verina_libre",
+                "flagDefeat": "bnd3_verina_muerta",
+                "enemigos": [
+                  {
+                    "id": "cultista_carcelero",
+                    "cantidad": 1
+                  },
+                  {
+                    "id": "perdido_devoto",
+                    "cantidad": 1
+                  }
+                ],
+                "acompanantes": [
+                  {
+                    "id": "venides",
+                    "siFlag": "bnd3_con_venides"
+                  },
+                  {
+                    "id": "xila",
+                    "siFlag": "bnd3_con_xila"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Seguir tu camino",
+          "lines": [
+            "Al volver la cabeza, ya no esta. Sho-Noco te dira despues que fue de ella."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_verina_cerrada"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_verina_abandonada"
+            },
+            {
+              "type": "acto",
+              "arg": "verina_abandonada"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3_esc05_verina_libre",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "lugar": "assets/levels/ciudad_centro_ocaso.json",
+        "allFlags": [
+          "bnd3_esc05_verina_suelta"
+        ],
+        "notFlags": [
+          "bnd3_esc05_munecas_visto"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Verina: «Las manos... Ya esta. Gracias.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_esc05_munecas_visto"
+        }
+      ]
+    },
+    {
+      "id": "b3_verina_salvada_dudas",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_verina_libre",
+          "bnd1_dudas_verina",
+          "bnd3_con_venides",
+          "bnd3_esc05_verina",
+          "bnd3_esc05_verina_suelta"
+        ],
+        "notFlags": [
+          "bnd3_verina_cerrada"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Verina: «Hola, caballero. Te queda bien la capa. Ya te la atas tu solo.»",
+        "Venides: «...Hola.»",
+        "Es todo lo que le sale.",
+        "Verina, a ti: «Tu me hiciste la pregunta. Me la hice cada noche hasta que me la conteste. Lo hice por ti.»",
+        "Verina: «Edul tambien estaba retenido. Si sigue preso, ayudame a sacarle.»",
+        "Verina: «Ayudame a sacarle y voy con vosotros.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_verina_cerrada"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_verina_salvada"
+        },
+        {
+          "type": "addVariable",
+          "arg": "afecto_venides",
+          "value": 1
+        },
+        {
+          "type": "grantLevel",
+          "value": 0.28,
+          "arg": "salvar a Verina"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Vamos a por el.",
+          "speaker": "Verina",
+          "lines": [
+            "Entonces vamos."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_verina_con_grupo"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_promesa_edul"
+            },
+            {
+              "type": "acto",
+              "arg": "verina_liberada"
+            },
+            {
+              "type": "log",
+              "arg": "Verina se une al grupo."
+            }
+          ]
+        },
+        {
+          "texto": "No podemos. No hay tiempo.",
+          "speaker": "",
+          "lines": [
+            "Verina: «Entonces voy sola.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_verina_sola"
+            },
+            {
+              "type": "acto",
+              "arg": "verina_liberada"
+            },
+            {
+              "type": "log",
+              "arg": "Verina se va sola a buscar a su hermano."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3_verina_salvada",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_verina_libre",
+          "bnd3_con_venides",
+          "bnd3_esc05_verina",
+          "bnd3_esc05_verina_suelta"
+        ],
+        "notFlags": [
+          "bnd3_verina_cerrada"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Verina: «Hola, caballero. Te queda bien la capa. Ya te la atas tu solo.»",
+        "Venides: «...Hola.»",
+        "Es todo lo que le sale.",
+        "Verina: «Edul tambien estaba retenido. Si sigue preso, ayudame a sacarle.»",
+        "Verina: «Ayudame a sacarle y voy con vosotros.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_verina_cerrada"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_verina_salvada"
+        },
+        {
+          "type": "addVariable",
+          "arg": "afecto_venides",
+          "value": 1
+        },
+        {
+          "type": "grantLevel",
+          "value": 0.28,
+          "arg": "salvar a Verina"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Vamos a por el.",
+          "speaker": "Verina",
+          "lines": [
+            "Entonces vamos."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_verina_con_grupo"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_promesa_edul"
+            },
+            {
+              "type": "acto",
+              "arg": "verina_liberada"
+            },
+            {
+              "type": "log",
+              "arg": "Verina se une al grupo."
+            }
+          ]
+        },
+        {
+          "texto": "No podemos. No hay tiempo.",
+          "speaker": "",
+          "lines": [
+            "Verina: «Entonces voy sola.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_verina_sola"
+            },
+            {
+              "type": "acto",
+              "arg": "verina_liberada"
+            },
+            {
+              "type": "log",
+              "arg": "Verina se va sola a buscar a su hermano."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3_verina_salvada_sola",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_verina_libre",
+          "bnd3_esc05_verina",
+          "bnd3_esc05_verina_suelta"
+        ],
+        "notFlags": [
+          "bnd3_verina_cerrada"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Verina: «Gracias. No se quien eres, pero gracias.»",
+        "Verina: «Edul tambien estaba retenido. Si sigue preso, ayudame a sacarle.»",
+        "Verina: «Ayudame a sacarle y voy con vosotros.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_verina_cerrada"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_verina_salvada"
+        },
+        {
+          "type": "addVariable",
+          "arg": "afecto_venides",
+          "value": 1
+        },
+        {
+          "type": "grantLevel",
+          "value": 0.28,
+          "arg": "salvar a Verina"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Vamos a por el.",
+          "speaker": "Verina",
+          "lines": [
+            "Entonces vamos."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_verina_con_grupo"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_promesa_edul"
+            },
+            {
+              "type": "acto",
+              "arg": "verina_liberada"
+            },
+            {
+              "type": "log",
+              "arg": "Verina se une al grupo."
+            }
+          ]
+        },
+        {
+          "texto": "No podemos. No hay tiempo.",
+          "speaker": "",
+          "lines": [
+            "Verina: «Entonces voy sola.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_verina_sola"
+            },
+            {
+              "type": "acto",
+              "arg": "verina_liberada"
+            },
+            {
+              "type": "log",
+              "arg": "Verina se va sola a buscar a su hermano."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3_verina_perdida",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_verina_muerta",
+          "bnd3_esc05_verina"
+        ],
+        "notFlags": [
+          "bnd3_verina_cerrada"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "No llegas. O llegas y no basta, que para el caso es lo mismo.",
+        "Venides no dice nada durante el resto de la noche."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_verina_cerrada"
+        }
+      ]
+    },
+    {
+      "id": "b3_esc05_rosita_pasada",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "lugar": "assets/levels/ciudad_centro_ocaso.json",
+        "allFlags": [
+          "bnd3_esc05_rosita"
+        ],
+        "notFlags": [
+          "bnd3_esc05_rosita_pasada"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Rosita: «No mireis atras.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_esc05_rosita_pasada"
+        }
+      ]
+    },
+    {
+      "id": "b3_rosita_calle",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_verina_cerrada",
+          "bnd3_ruta_oeste",
+          "bnd2_aliado_skilla",
+          "bnd3_esc05_rosita"
+        ],
+        "notFlags": [
+          "bnd3_rosita_vista",
+          "bnd3_tarde",
+          "bnd2_rosita_desconfia"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Rosita: «Seguid. Esto es mi calle.»",
+        "Rosita: «La caja. A vosotros os hace mas falta.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_rosita_vista"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_rosita_calle"
+        },
+        {
+          "type": "grantGold",
+          "value": 40
+        },
+        {
+          "type": "log",
+          "arg": "Recibes 40 de oro (la caja de la taberna)."
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Ven con nosotros.",
+          "speaker": "Rosita",
+          "lines": [
+            "Yo ya me fui una vez de un sitio. No me gusto."
+          ],
+          "effects": []
+        },
+        {
+          "texto": "Gracias, Furia.",
+          "requires": {
+            "anyFlags": [
+              "bnd2_rosita_revelada",
+              "bnd2_furia_sospecha",
+              "bnd1_furia_sospecha"
+            ]
+          },
+          "speaker": "",
+          "lines": [
+            "Rosita: «Siete trolls, chaval. Siete.»",
+            "Se rie, por primera vez en toda la campana."
+          ],
+          "effects": []
+        },
+        {
+          "texto": "Seguir sin decir nada",
+          "speaker": "",
+          "lines": [
+            "Rosita: «No os pareis.»"
+          ],
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "b3_taberna_cerrada",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_verina_cerrada",
+          "bnd3_ruta_oeste",
+          "bnd2_rosita_desconfia",
+          "bnd3_esc05_rosita"
+        ],
+        "notFlags": [
+          "bnd3_rosita_vista",
+          "bnd3_tarde"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Al pasar por la Taberna Humilde: cerrada y a oscuras. La tranca, puesta."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_rosita_vista"
+        }
+      ]
+    },
+    {
+      "id": "b3_pulga",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_verina_cerrada",
+          "bnd3_ruta_oeste",
+          "bnd1_carterista_amigo",
+          "bnd3_esc05_pulga"
+        ],
+        "notFlags": [
+          "bnd3_casco_resuelto",
+          "bnd3_pulga_visto"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Pulga: «¡Eh! ¡Por aqui! Por el patio de los toneles evitas la plaza.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_pulga_visto"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Seguir a Pulga",
+          "lines": [
+            "Pulga: «Por los patios. Luego al sur del Oeste. Es la unica salida.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_casco_resuelto"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sandes_no_visto"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_esc05_pulga_guia"
+            }
+          ]
+        },
+        {
+          "texto": "Ir a la plaza",
+          "lines": [
+            "Pulga: «¡Estas loco! Bueno. Silba si te cansas de vivir.»"
+          ],
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "b3_casco",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_verina_cerrada",
+          "bnd3_ruta_oeste",
+          "bnd3_esc05_sandes"
+        ],
+        "notFlags": [
+          "bnd3_casco_resuelto",
+          "bnd3_sandes_hablado"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes: «Ah, por fin. Llevaba toda la noche esperando a alguien con tu mirada.»",
+        "Sandes: «¿Ves que luz?»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_sandes_hablado"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_sandes_abierta"
+        }
+      ]
+    },
+    {
+      "id": "b3_rev_viga",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "lugar": "assets/levels/ciudad_centro_ocaso.json",
+        "allFlags": [
+          "bnd3_ruta_oeste",
+          "bnd3_verina_cerrada"
+        ],
+        "anyFlags": [
+          "bgb_rescate_todos",
+          "bgb_rescate_parte"
+        ],
+        "notFlags": [
+          "bnd3_rev_viga_vista",
+          "bnd3_esc06_final"
+        ]
+      },
+      "speaker": "Ramon Sisdits",
+      "lines": [
+        "En el laberinto del Oeste, una viga en llamas cruje sobre el camino.",
+        "Debajo, hombres con gorro de minero la sujetan con los picos: los de la Veta Honda.",
+        "Ramon Sisdits: «¡Pasad, que aguanta! Hoy apuntalamos nosotros.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_rev_viga_vista"
+        },
+        {
+          "type": "log",
+          "arg": "Los mineros de la Veta Honda te apuntalan el paso en el Oeste."
+        }
+      ]
+    },
+    {
+      "id": "b3_rev_casa",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "lugar": "assets/levels/ciudad_centro_ocaso.json",
+        "allFlags": [
+          "bnd3_ruta_oeste",
+          "bnd3_verina_cerrada",
+          "bga_iris_salvada"
+        ],
+        "notFlags": [
+          "bnd3_rev_casa_vista",
+          "bnd3_esc06_final"
+        ]
+      },
+      "speaker": "Iris",
+      "lines": [
+        "Una puerta se abre en una calle que arde por los dos lados. Una mano pelirroja te hace señas.",
+        "Iris: «Adentro. Hay agua, vendas y diez minutos. No más.»",
+        "Es una casa de Killville, del primo de nadie. Cierras los ojos un momento. Cuando sales, la calle sigue ardiendo, pero tú ya no tanto."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_rev_casa_vista"
+        },
+        {
+          "type": "descanso",
+          "arg": "corto"
+        },
+        {
+          "type": "log",
+          "arg": "Iris te da refugio un momento en el Oeste."
+        }
+      ]
+    },
+    {
+      "id": "b3_rev_teobaldo",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "lugar": "assets/levels/ciudad_centro_ocaso.json",
+        "allFlags": [
+          "bnd3_ruta_oeste",
+          "bnd3_verina_cerrada",
+          "bnd2_preso_libre"
+        ],
+        "notFlags": [
+          "bnd3_rev_teobaldo_visto",
+          "bnd3_esc06_final",
+          "bnd3_rev_casa_vista"
+        ]
+      },
+      "speaker": "Teobaldo",
+      "lines": [
+        "Un mercader con ropa buena tirando de una mula cargada te reconoce entre el humo.",
+        "Teobaldo: «¡El del calabozo de Gorran! Toma: vendas de Killville, de las buenas. Yo me voy por donde he venido.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_rev_teobaldo_visto"
+        },
+        {
+          "type": "descanso",
+          "arg": "corto"
+        }
+      ]
+    },
+    {
+      "id": "b3_sandes_venides",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sandes_abierta",
+          "bnd3_con_venides",
+          "bnd3_esc05_sandes"
+        ],
+        "notFlags": [
+          "bnd3_sandes_venides_dicho"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Venides: «Sandes.»",
+        "Sandes: «Nuestro caballero. Qué capa más bonita. ¿Te la ata alguien todavía?»",
+        "Venides: «Eran nuestros amigos. Edul. Verina. Los arrastraste a esto.»",
+        "Sandes: «Yo no arrastro a nadie. Yo ofrezco. Tú cerraste la puerta, Venides. Yo la abrí. ¿Quién de los dos fue mejor amigo?»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_sandes_venides_dicho"
+        }
+      ]
+    },
+    {
+      "id": "b3_sandes_xila",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sandes_abierta",
+          "bnd3_con_xila",
+          "bnd3_esc05_sandes"
+        ],
+        "notFlags": [
+          "bnd3_sandes_xila_dicho"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Xila se queda quieto. Muy blanco.",
+        "Xila: «El hijo del Mercado Central.»",
+        "Sandes, mirándolo por primera vez, y sonriendo: «Xila. El de la sal. Mi padre te tenía mucho aprecio. Pagabas tarde, pero pagabas.»",
+        "Xila: «Mi mujer se llamaba Elena.»",
+        "Sandes: «Lo sé.»",
+        "Xila no se mueve. No le hace falta: ahora lo sabe."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_sandes_xila_dicho"
+        }
+      ]
+    },
+    {
+      "id": "b3_sandes_verina",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sandes_abierta",
+          "bnd3_verina_con_grupo",
+          "bnd3_esc05_sandes"
+        ],
+        "notFlags": [
+          "bnd3_sandes_decidido"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "Sandes",
+      "lines": [
+        "Y la traemos de vuelta. Verina, qué susto nos has dado.",
+        "(a ti) Dámela. Es nuestra. Y tú tendrás un sitio a mi derecha cuando esta ciudad sea luz."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_sandes_decidido"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Entregársela",
+          "speaker": "",
+          "lines": [
+            "Verina, sin gritar, mirándote: «Me lo esperaba de él. De ti, no.»",
+            "Ganas la lealtad de los Perdidos. Venides, si está, huye, y no le vuelves a ver.",
+            "Sandes cuenta ochenta monedas de la caja común sobre tu palma, una a una, para que oigas cada una.",
+            "Sandes: «El primer sueldo. La lealtad se paga; la otra cosa, también.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_verina_entregada"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_aliado_sandes"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_verina_con_grupo"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_con_venides"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_venides_huye"
+            },
+            {
+              "type": "acto",
+              "arg": "verina_entregada"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_casco_resuelto"
+            },
+            {
+              "type": "grantGold",
+              "value": 80
+            },
+            {
+              "type": "log",
+              "arg": "Recibes 80 de oro (el sueldo de Sandes)."
+            }
+          ]
+        },
+        {
+          "texto": "No.",
+          "lines": [
+            "Qué pena. Me caías bien."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sandes_pelea"
+            },
+            {
+              "type": "acto",
+              "arg": "sandes_enfrentado"
+            },
+            {
+              "type": "startBattle",
+              "startBattle": {
+                "monsterId": "sandes",
+                "flagVictory": "bnd3_sandes_huye_casco",
+                "flagDefeat": "bnd3_sandes_gana_casco",
+                "enemigos": [
+                  {
+                    "id": "sandes",
+                    "cantidad": 1
+                  },
+                  {
+                    "id": "perdido_devoto",
+                    "cantidad": 2
+                  }
+                ],
+                "acompanantes": [
+                  {
+                    "id": "venides",
+                    "siFlag": "bnd3_con_venides"
+                  },
+                  {
+                    "id": "xila",
+                    "siFlag": "bnd3_con_xila"
+                  }
+                ],
+                "huyen": [
+                  "sandes"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3_sandes_oferta",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sandes_abierta",
+          "bnd3_esc05_sandes"
+        ],
+        "notFlags": [
+          "bnd3_sandes_decidido"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "Sandes",
+      "lines": [
+        "Te he visto trabajar estos días. Eres bueno. Te ofrezco lo que nadie te va a ofrecer: un sitio arriba.",
+        "Solo tienes que demostrarme que eres de los nuestros.",
+        "(pausa) Edul y Verina. Se han vuelto tímidos con la luz. Hazlo tú y es tuyo."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Acepto.",
+          "speaker": "",
+          "lines": [
+            "Te alías con Sandes. Venides, si está, huye: Sho-Noco contará su huida.",
+            "Sandes cuenta ochenta monedas de la caja común sobre tu palma.",
+            "Sandes: «El primer sueldo. Habrá más mientras haya luz.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sandes_decidido"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_aliado_sandes"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_con_venides"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_venides_huye"
+            },
+            {
+              "type": "acto",
+              "arg": "aliarse_con_sandes"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_casco_resuelto"
+            },
+            {
+              "type": "grantGold",
+              "value": 80
+            },
+            {
+              "type": "log",
+              "arg": "Recibes 80 de oro (el sueldo de Sandes)."
+            }
+          ]
+        },
+        {
+          "texto": "¿Y tú qué ganas?",
+          "requires": {
+            "notFlags": [
+              "bnd3_sandes_gana_pregunta"
+            ]
+          },
+          "lines": [
+            "Todo. Como siempre. Por eso salgo antes de la señal."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sandes_gana_pregunta"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "No.",
+          "speaker": "",
+          "lines": [
+            "La sonrisa no se mueve. Los dos sectarios salen de los portales."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sandes_decidido"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sandes_pelea"
+            },
+            {
+              "type": "acto",
+              "arg": "sandes_enfrentado"
+            },
+            {
+              "type": "startBattle",
+              "startBattle": {
+                "monsterId": "sandes",
+                "flagVictory": "bnd3_sandes_huye_casco",
+                "flagDefeat": "bnd3_sandes_gana_casco",
+                "enemigos": [
+                  {
+                    "id": "sandes",
+                    "cantidad": 1
+                  },
+                  {
+                    "id": "perdido_devoto",
+                    "cantidad": 2
+                  }
+                ],
+                "acompanantes": [
+                  {
+                    "id": "venides",
+                    "siFlag": "bnd3_con_venides"
+                  },
+                  {
+                    "id": "xila",
+                    "siFlag": "bnd3_con_xila"
+                  }
+                ],
+                "huyen": [
+                  "sandes"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3_verina_segunda",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_verina_abandonada",
+          "bnd3_sandes_abierta",
+          "bnd3_esc05_sandes"
+        ],
+        "notFlags": [
+          "bnd3_verina_libre",
+          "bnd3_verina_muerta",
+          "bnd3_verina_segunda_vista"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Detrás de Sandes, entre sus hombres, la mujer de la barricada: Verina, con las manos atadas y la mirada fija en él.",
+        "Sandes, sin volverse: «Ella se queda conmigo. Es la única que entendió lo que hacíamos.»",
+        "Verina no dice nada. Te mira a ti."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_verina_segunda_vista"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Liberarla ahora, cueste lo que cueste",
+          "lines": [
+            "Te echas sobre los que la sujetan. Son más que en la barricada, y esta vez te esperaban."
+          ],
+          "effects": [
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_verina_cerrada"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_verina_abandonada"
+            },
+            {
+              "type": "startBattle",
+              "startBattle": {
+                "monsterId": "cultista_carcelero",
+                "enemigos": [
+                  {
+                    "id": "cultista_carcelero",
+                    "cantidad": 2
+                  },
+                  {
+                    "id": "perdido_devoto",
+                    "cantidad": 1
+                  }
+                ],
+                "flagVictory": "bnd3_verina_libre",
+                "flagDefeat": "bnd3_verina_muerta",
+                "acompanantes": [
+                  {
+                    "id": "venides",
+                    "siFlag": "bnd3_con_venides"
+                  },
+                  {
+                    "id": "xila",
+                    "siFlag": "bnd3_con_xila"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Dejarla donde está",
+          "lines": [
+            "Ya la dejaste una vez. La segunda pesa menos. O eso te dices."
+          ],
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "b3_esc05_iglesia",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "lugar": "assets/levels/ciudad_centro_ocaso.json",
+        "allFlags": [
+          "bnd3_esc05_sandes_fuera"
+        ],
+        "notFlags": [
+          "bnd3_esc05_iglesia_vista"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Venides: «Se ha metido por la iglesia.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_esc05_iglesia_vista"
+        }
+      ]
+    },
+    {
+      "id": "b3_sandes_huye_casco",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sandes_huye_casco",
+          "bnd3_esc05_sandes",
+          "bnd3_esc05_sandes_fuera"
+        ],
+        "notFlags": [
+          "bnd3_casco_resuelto"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes: «Hoy no. Manana tampoco.»",
+        "Venides: «Siempre salia antes de la senal.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_casco_resuelto"
+        },
+        {
+          "type": "clearFlag",
+          "arg": "bnd3_sandes_abierta"
+        }
+      ]
+    },
+    {
+      "id": "b3_sandes_gana_casco",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sandes_gana_casco",
+          "bnd3_esc05_sandes"
+        ],
+        "notFlags": [
+          "bnd3_casco_resuelto"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Las cadenas de Sandes te dejan en el suelo de la plaza. Cuando consigues levantarte, el estrado arde vacío.",
+        "Sandes se ha ido hacia Las Afueras, sin prisa. Como quien va a una cita."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_casco_resuelto"
+        },
+        {
+          "type": "clearFlag",
+          "arg": "bnd3_sandes_abierta"
+        }
+      ]
+    },
+    {
+      "id": "b3_esc05_afuera_entrada",
+      "trigger": {
+        "type": "enter",
+        "target": "assets/levels/afueras_boundington_ocaso.json"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_campanas",
+          "bnd3_sandes_cerrado"
+        ],
+        "notFlags": [
+          "bnd3_en_afueras"
+        ]
+      },
+      "speaker": "",
+      "lines": [],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_en_afueras"
+        }
+      ]
+    },
+    {
+      "id": "b3_afueras",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_en_afueras",
+          "bnd3_esc06_afueras"
+        ],
+        "notFlags": [
+          "bnd3_afueras_vistas"
+        ],
+        "lugar": "assets/levels/afueras_boundington_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Tu: «Ya estamos fuera. Aun queda camino.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_afueras_vistas"
+        }
+      ]
+    },
+    {
+      "id": "b3_candela",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_afueras_vistas",
+          "bgd_candela_vuelta"
+        ],
+        "notFlags": [
+          "bnd3_candela_vista"
+        ]
+      },
+      "speaker": "La hermana Candela",
+      "lines": [
+        "Entre los que huyen hacia el oeste, una mujer sin capucha con un libro bajo el brazo.",
+        "La hermana Candela: «Detrás del molino hay gente atrapada tras una barricada de los nuestros. De los suyos. Por el huerto se llega sin dar la vuelta.»",
+        "La hermana Candela: «Otra lectora a la que salvar, ¿eh? Esta vez me salvo yo sola. Corre.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_candela_vista"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_barricada_encontrada"
+        }
+      ]
+    },
+    {
+      "id": "b3_orfeu",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_en_afueras",
+          "bgd_orfeu_huido"
+        ],
+        "notFlags": [
+          "bnd3_orfeu_visto",
+          "bgd_unido"
+        ]
+      },
+      "speaker": "El diácono Orfeu",
+      "lines": [
+        "Junto a una barricada, un diácono flaco con un bastón de cristal enciende velas sin prisa.",
+        "El diácono Orfeu: «El que me tapó la puerta. La luz se acuerda de las caras.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_orfeu_visto"
+        }
+      ]
+    },
+    {
+      "id": "b3_cojo_cajas",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_en_afueras",
+          "bnd2_cojo_huido"
+        ],
+        "anyFlags": [
+          "bgc_cajas_robadas",
+          "bgc_cajas_hundidas",
+          "bgc_cajas_cambiadas"
+        ],
+        "notFlags": [
+          "bnd3_cojo_visto"
+        ]
+      },
+      "speaker": "El Cojo",
+      "lines": [
+        "Entre los Perdidos de las barricadas, un hombre con una pierna de madera cuenta a los vivos.",
+        "El Cojo: «¡Mis cajas, forastero! Me debes cajas. Y yo siempre cobro.»",
+        "Y se pierde entre el humo antes de que llegues a él."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_cojo_visto"
+        }
+      ]
+    },
+    {
+      "id": "b3_barricada_floja",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_afueras_vistas"
+        ],
+        "anyFlags": [
+          "bgc_cajas_robadas",
+          "bgc_cajas_hundidas",
+          "bgc_cajas_cambiadas"
+        ],
+        "notFlags": [
+          "bnd3_barricada_floja_vista"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Las barricadas del Oeste arden con fuego amarillo, de aceite de lámpara: humo negro y poco calor. La mezcla buena no llegó."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_barricada_floja_vista"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd1_almacen_saboteado"
+        }
+      ]
+    },
+    {
+      "id": "b3_barricada_gris",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_afueras_vistas",
+          "bgc_cajas_llegan"
+        ],
+        "notFlags": [
+          "bgc_media_carga",
+          "bnd3_barricada_gris_vista"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "En cada esquina de las Afueras, un barril con el sello de cera gris del Cojo. El fuego blanco sale de todos a la vez.",
+        "Un fanático vigila el último barril sin encender."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_barricada_gris_vista"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "perdido_fanatico",
+            "flagVictory": "bnd3_barril_vencido",
+            "flagDefeat": "bnd3_barril_gana",
+            "flagHuida": "bnd3_barril_huido"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_morvan",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_en_afueras",
+          "bga_morvan_huido"
+        ],
+        "notFlags": [
+          "bnd3_morvan_visto"
+        ]
+      },
+      "speaker": "Morvan Tallapedra",
+      "lines": [
+        "Entre los que saquean un carro, un hombre grande con escamas de bronce y una capa parda.",
+        "Morvan Tallapedra: «Tú. El de la casa de Serra. Hoy cobra el que llega primero.»",
+        "Pero hoy tiene un carro que vaciar, y lo vacía."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_morvan_visto"
+        }
+      ]
+    },
+    {
+      "id": "b3_garsa",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_afueras_vistas",
+          "bga_garsa_vuelta"
+        ],
+        "notFlags": [
+          "bnd3_garsa_vista"
+        ]
+      },
+      "speaker": "La Garsa",
+      "lines": [
+        "Entre los guerreros de la Barriada, una mujer flaca con una daga y sin capa de mercenario.",
+        "La Garsa: «Te dije que me buscaras. Te he buscado yo.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_garsa_vista"
+        }
+      ]
+    },
+    {
+      "id": "b3_cojo_afueras",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_en_afueras",
+          "bnd2_cojo_huido"
+        ],
+        "notFlags": [
+          "bnd3_cojo_visto"
+        ]
+      },
+      "speaker": "El Cojo",
+      "lines": [
+        "Entre los Perdidos de las barricadas, un hombre con una pierna de madera cuenta a los vivos.",
+        "El Cojo: «¡El forastero! Te dije que siempre gano al final.»",
+        "Y se pierde entre el humo antes de que llegues a él."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_cojo_visto"
+        }
+      ]
+    },
+    {
+      "id": "b3_amigos_afueras",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_en_afueras",
+          "bnd2_joel_rescatado"
+        ],
+        "notFlags": [
+          "bnd3_amigos_vistos"
+        ]
+      },
+      "speaker": "Victor Yungblood",
+      "lines": [
+        "Por un costado de las Afueras aparecen tres figuras que no deberían estar aquí: dos viejos y un orco con capa granate.",
+        "Victor Yungblood: «Venimos a cobrarnos lo de Joel. Con los de las capas grises.»",
+        "Joel Joran: «¡Ay, señores míos! ...Perdón. Es la costumbre.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_amigos_vistos"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_con_amigos_gorran"
+        },
+        {
+          "type": "log",
+          "arg": "Victor, Asdrugal y Joel pelean a tu lado."
+        }
+      ]
+    },
+    {
+      "id": "b3_zarela",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_afueras_vistas",
+          "bnd2_guerreros_gitanos",
+          "bnd3_esc06_afueras"
+        ],
+        "notFlags": [
+          "bnd3_zarela_vista",
+          "bnd2_barriada_delatada"
+        ],
+        "lugar": "assets/levels/afueras_boundington_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Desde los huertos, guerreros de la Barriada con antorchas y hondas abren un pasillo.",
+        "Zarela, a caballo, sin prisa: «Por aquí, forastero. Lejos del fuego, cerca del río.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_zarela_vista"
+        }
+      ]
+    },
+    {
+      "id": "b3_gorran",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_afueras_vistas",
+          "bnd2_gorran_perdonado"
+        ],
+        "notFlags": [
+          "bnd3_gorran_visto"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Un grupo de hombres sin capa gris carga contra los Perdidos por un costado.",
+        "Gorran: «¡Te dije que pagaba lo que debía! ¡Estamos en paz!»",
+        "Uno de sus hombres te lanza al paso una bolsa, sin dejar de pegar.",
+        "Bandido: «¡Lo que sobra de la semana! ¡Gorran no le debe nada a nadie!»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_gorran_visto"
+        },
+        {
+          "type": "grantGold",
+          "value": 30
+        },
+        {
+          "type": "log",
+          "arg": "Recibes 30 de oro (los bandidos de Gorran)."
+        }
+      ]
+    },
+    {
+      "id": "b3_gorran_sin_jefe",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_afueras_vistas",
+          "bnd2_gorran_muerto"
+        ],
+        "notFlags": [
+          "bnd3_gorran_sin_jefe_visto"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "En el camino de las afueras, tres de los bandidos de Gorran saquean un carro volcado. Sin jefe, sin orden y con mucha prisa.",
+        "Uno te reconoce. Deja caer el saco."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_gorran_sin_jefe_visto"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "gorran_bandido",
+            "enemigos": [
+              {
+                "id": "gorran_bandido",
+                "cantidad": 3
+              }
+            ],
+            "flagVictory": "bnd3_bandidos_vencidos",
+            "flagDefeat": "bnd3_bandidos_ganan",
+            "flagHuida": "bnd3_bandidos_huido"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_bandidos_vencidos",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_bandidos_vencidos"
+        ],
+        "notFlags": [
+          "bnd3_bandidos_cerrado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Los que quedan en pie huyen monte arriba. En el carro volcado, lo que no se llevaron: veinte monedas sueltas y un odre de agua."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_bandidos_cerrado"
+        },
+        {
+          "type": "grantGold",
+          "value": 20
+        },
+        {
+          "type": "log",
+          "arg": "Recibes 20 de oro (el carro de los bandidos sin jefe)."
+        }
+      ]
+    },
+    {
+      "id": "b3_bandidos_otros",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "anyFlags": [
+          "bnd3_bandidos_ganan",
+          "bnd3_bandidos_huido"
+        ],
+        "notFlags": [
+          "bnd3_bandidos_cerrado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Te apartas del camino con lo puesto. Los bandidos no te siguen: tienen un carro que vaciar."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_bandidos_cerrado"
+        }
+      ]
+    },
+    {
+      "id": "b3_barricada_vista",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_afueras_vistas",
+          "bnd3_esc06_barricada"
+        ],
+        "notFlags": [
+          "bnd3_barricada_vista"
+        ],
+        "lugar": "assets/levels/afueras_boundington_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Gritos. Hay gente atrapada en algún sitio.",
+        "(Tirada de Percepción.)"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_barricada_vista"
+        },
+        {
+          "type": "skillCheck",
+          "skillCheck": {
+            "skillId": "percepcion",
+            "rivalDice": 1,
+            "flagBotch": "bnd3_barricada_pifia",
+            "flagPartial": "bnd3_barricada_parcial",
+            "flagSuccess": "bnd3_barricada_exito",
+            "flagCritical": "bnd3_barricada_critico"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_barricada_zarela",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_zarela_vista",
+          "bnd3_esc06_barricada"
+        ],
+        "anyFlags": [
+          "bnd3_barricada_pifia",
+          "bnd3_barricada_parcial"
+        ],
+        "notFlags": [
+          "bnd3_rodeo_lanzado",
+          "bnd3_barricada_encontrada"
+        ],
+        "lugar": "assets/levels/afueras_boundington_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Te pierdes entre los huertos, pero los guerreros de Zarela te llevan derechos a la barricada en llamas: «¡Socorro! ¡Aquí!»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_barricada_encontrada"
+        }
+      ]
+    },
+    {
+      "id": "b3_rodeo",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "anyFlags": [
+          "bnd3_barricada_pifia",
+          "bnd3_barricada_parcial"
+        ],
+        "notFlags": [
+          "bnd3_rodeo_lanzado",
+          "bnd3_barricada_encontrada"
+        ],
+        "lugar": "assets/levels/afueras_boundington_ocaso.json",
+        "allFlags": [
+          "bnd3_esc06_barricada"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Los gritos se hacen obvios más adelante, pero has dado la vuelta por la izquierda.",
+        "Dos Perdidos os salen al paso."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_rodeo_lanzado"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "perdido_devoto",
+            "flagVictory": "bnd3_rodeo_vencidos",
+            "flagDefeat": "bnd3_rodeo_ganan",
+            "enemigos": [
+              {
+                "id": "perdido_devoto",
+                "cantidad": 2
+              }
+            ],
+            "acompanantes": [
+              {
+                "id": "venides",
+                "siFlag": "bnd3_con_venides"
+              },
+              {
+                "id": "xila",
+                "siFlag": "bnd3_con_xila"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_rodeo_hecho",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_rodeo_vencidos",
+          "bnd3_esc06_barricada"
+        ],
+        "notFlags": [
+          "bnd3_barricada_encontrada"
+        ],
+        "lugar": "assets/levels/afueras_boundington_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Los dos quedan atrás. Ahora sí: gritos detrás de una barricada en llamas. «¡Socorro! ¡Aquí!»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_barricada_encontrada"
+        }
+      ]
+    },
+    {
+      "id": "b3_barricada_rota",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "anyFlags": [
+          "bnd3_barricada_exito",
+          "bnd3_barricada_critico",
+          "bnd3_barricada_encontrada"
+        ],
+        "notFlags": [
+          "bnd3_barricada_resuelta"
+        ],
+        "lugar": "assets/levels/afueras_boundington_ocaso.json",
+        "allFlags": [
+          "bnd3_esc06_barricada"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Gritos detrás de una barricada en llamas.",
+        "Alguien, detrás de la barricada: «¡Socorro! ¡Aquí!»",
+        "El fuego blanco no se apaga. Hay que pasar."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Derribarla a golpes",
+          "lines": [
+            "A golpes y entre chispas, la barricada cae. El fuego te muerde los brazos.",
+            "Los atrapados reúnen lo que llevan encima y te lo ponen en las manos sin decir cuánto: cuarenta monedas y un nudo en la garganta."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barricada_resuelta"
+            },
+            {
+              "type": "herida",
+              "arg": "el fuego blanco",
+              "value": 4
+            },
+            {
+              "type": "acto",
+              "arg": "atrapados_rescatados"
+            },
+            {
+              "type": "grantGold",
+              "value": 40
+            },
+            {
+              "type": "log",
+              "arg": "Recibes 40 de oro (los vecinos rescatados)."
+            }
+          ]
+        },
+        {
+          "texto": "Romperla a distancia",
+          "lines": [
+            "Desde lejos tardáis más, pero cae. Los atrapados salen tosiendo.",
+            "Los atrapados reúnen lo que llevan encima y te lo ponen en las manos sin decir cuánto: cuarenta monedas y un nudo en la garganta."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barricada_resuelta"
+            },
+            {
+              "type": "acto",
+              "arg": "atrapados_rescatados"
+            },
+            {
+              "type": "grantGold",
+              "value": 40
+            },
+            {
+              "type": "log",
+              "arg": "Recibes 40 de oro (los vecinos rescatados)."
+            }
+          ]
+        },
+        {
+          "texto": "Buscar dónde no hay frascos",
+          "requires": {
+            "anyFlags": [
+              "bnd1_edul_mezcla",
+              "bnd2_edul_frascos",
+              "bnd1_almacen_saboteado"
+            ]
+          },
+          "lines": [
+            "Sabes lo que hay en esos frascos. El fuego blanco tiene un hueco por donde no se puso la mezcla. Pasáis sin un rasguño.",
+            "Los atrapados reúnen lo que llevan encima y te lo ponen en las manos sin decir cuánto: cuarenta monedas y un nudo en la garganta."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barricada_resuelta"
+            },
+            {
+              "type": "acto",
+              "arg": "atrapados_rescatados"
+            },
+            {
+              "type": "grantGold",
+              "value": 40
+            },
+            {
+              "type": "log",
+              "arg": "Recibes 40 de oro (los vecinos rescatados)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3_bastian",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_barricada_resuelta",
+          "bnd1_sereno_llevado"
+        ],
+        "notFlags": [
+          "bnd3_bastian_visto"
+        ]
+      },
+      "speaker": "Bastián",
+      "lines": [
+        "Entre los que salen tosiendo de detrás de la barricada, uno lleva la casaca azul de los serenos, chamuscada por la espalda.",
+        "Bastián: «¿Tú? ¿El de la cripta?»",
+        "Bastián: «Me tuvieron atado a los barriles para que ardiera con ellos. Siete años en mi puente sin que pasara nada.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_bastian_visto"
+        },
+        {
+          "type": "grantLevel",
+          "value": 0.2,
+          "arg": "sacar a Bastián de la barricada"
+        },
+        {
+          "type": "log",
+          "arg": "Bastián, el sereno de la cripta, sale vivo de la barricada."
+        }
+      ]
+    },
+    {
+      "id": "b3_rodeo_caido",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_rodeo_ganan",
+          "bnd3_esc06_barricada"
+        ],
+        "notFlags": [
+          "bnd3_fuera"
+        ],
+        "lugar": "assets/levels/afueras_boundington_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "La calle se te acaba antes que las fuerzas."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_final_caido"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_fuera"
+        },
+        {
+          "type": "log",
+          "arg": "FINAL: caído en Boundington."
+        }
+      ]
+    },
+    {
+      "id": "b3_edul_furia_casco",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "lugar": "assets/levels/ciudad_centro_ocaso.json",
+        "allFlags": [
+          "bnd3_esc06_edul_casco",
+          "bnd3_aliado_sandes"
+        ],
+        "notFlags": [
+          "bnd3_edul_resuelto",
+          "bnd3_edul_trasladado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Edul: «¡Tu! Te has puesto de su lado.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_edul_resuelto"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_edul_pelea"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "edul_furioso",
+            "flagVictory": "bnd3_edul_cae",
+            "flagDefeat": "bnd3_edul_gana",
+            "acompanantes": [
+              {
+                "id": "xila",
+                "siFlag": "bnd3_con_xila"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_edul_casco",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "lugar": "assets/levels/ciudad_centro_ocaso.json",
+        "allFlags": [
+          "bnd3_esc06_edul_casco"
+        ],
+        "notFlags": [
+          "bnd3_edul_resuelto",
+          "bnd3_aliado_sandes",
+          "bnd3_edul_trasladado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Captor: «Queria apagar nuestro fuego. Sandes dice que arda con el.»",
+        "Edul: «No quiero esta guerra. Soltadme.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_edul_resuelto"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Liberarle",
+          "lines": [
+            "Los dos sueltan a Edul y sacan las espadas."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_edul_pelea"
+            },
+            {
+              "type": "startBattle",
+              "startBattle": {
+                "monsterId": "cultista_carcelero",
+                "flagVictory": "bnd3_edul_libre",
+                "flagDefeat": "bnd3_edul_perdido",
+                "enemigos": [
+                  {
+                    "id": "cultista_carcelero",
+                    "cantidad": 1
+                  },
+                  {
+                    "id": "perdido_devoto",
+                    "cantidad": 1
+                  }
+                ],
+                "acompanantes": [
+                  {
+                    "id": "venides",
+                    "siFlag": "bnd3_con_venides"
+                  },
+                  {
+                    "id": "xila",
+                    "siFlag": "bnd3_con_xila"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Dejarle",
+          "lines": [
+            "Captor: «Nos lo llevamos fuera. No te metas.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_edul_trasladado"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_edul_resuelto"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_edul_cerrado"
+            },
+            {
+              "type": "acto",
+              "arg": "edul_abandonado"
+            }
+          ]
+        }
+      ],
+      "_decision_oriol_21_10": "Conciliar las dos ubicaciones del encargo: una captura; traslado fuera solo si no se rescata en el Casco."
+    },
+    {
+      "id": "b3_esc06_edul_traslado",
+      "trigger": {
+        "type": "enter",
+        "target": "assets/levels/afueras_boundington_ocaso.json"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sandes_cerrado"
+        ],
+        "notFlags": [
+          "bnd3_edul_resuelto",
+          "bnd3_edul_trasladado"
+        ]
+      },
+      "speaker": "",
+      "lines": [],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_edul_trasladado"
+        }
+      ]
+    },
+    {
+      "id": "b3_edul_furia",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_barricada_resuelta",
+          "bnd3_aliado_sandes",
+          "bnd3_esc06_edul_afueras"
+        ],
+        "notFlags": [
+          "bnd3_edul_resuelto"
+        ],
+        "lugar": "assets/levels/afueras_boundington_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Tras la barricada, una plaza con un abrevadero y un árbol grande. Edul, libre, con un martillo en la mano.",
+        "Edul: «¡Tú!»",
+        "Toda la ira de años, de golpe."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_edul_resuelto"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_edul_pelea"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "edul_furioso",
+            "flagVictory": "bnd3_edul_cae",
+            "flagDefeat": "bnd3_edul_gana",
+            "acompanantes": [
+              {
+                "id": "xila",
+                "siFlag": "bnd3_con_xila"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_edul",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_barricada_resuelta",
+          "bnd3_esc06_edul_afueras"
+        ],
+        "notFlags": [
+          "bnd3_edul_resuelto"
+        ],
+        "lugar": "assets/levels/afueras_boundington_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Tras la barricada, una plaza interior con un abrevadero y un árbol grande. Tres guardias de la ciudad, con cintas grises en el brazo, sujetan a Edul contra el abrevadero.",
+        "Guardia: «Este quería apagar lo que él mismo encendió. Sandes dice que arda con ello.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_edul_resuelto"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Liberarle",
+          "lines": [
+            "Los tres sueltan a Edul y sacan las espadas."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_edul_pelea"
+            },
+            {
+              "type": "startBattle",
+              "startBattle": {
+                "monsterId": "guardia_comprado",
+                "flagVictory": "bnd3_edul_libre",
+                "flagDefeat": "bnd3_edul_perdido",
+                "enemigos": [
+                  {
+                    "id": "guardia_comprado",
+                    "cantidad": 3
+                  }
+                ],
+                "acompanantes": [
+                  {
+                    "id": "venides",
+                    "siFlag": "bnd3_con_venides"
+                  },
+                  {
+                    "id": "xila",
+                    "siFlag": "bnd3_con_xila"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Dejarle",
+          "lines": [
+            "Pasas de largo. Detrás, Edul deja de gritar."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_edul_abandonado"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_edul_cerrado"
+            },
+            {
+              "type": "acto",
+              "arg": "edul_abandonado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3_edul_ofrece_compania",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_edul_libre"
+        ],
+        "notFlags": [
+          "bnd3_edul_oferta_hecha"
+        ],
+        "lugar": [
+          "assets/levels/ciudad_centro_ocaso.json",
+          "assets/levels/afueras_boundington_ocaso.json"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Edul: «Voy contigo, si me dejas. No quiero volver a quedarme mirando.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_edul_oferta_hecha"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Ven con nosotros",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_con_edul"
+            },
+            {
+              "type": "acto",
+              "arg": "edul_compania_aceptada"
+            }
+          ]
+        },
+        {
+          "texto": "Busca un lugar seguro",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_edul_a_salvo"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3_edul_con_verina",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_edul_libre",
+          "bnd3_verina_con_grupo",
+          "bnd3_esc06_abrazo"
+        ],
+        "notFlags": [
+          "bnd3_edul_cerrado"
+        ],
+        "lugar": [
+          "assets/levels/ciudad_centro_ocaso.json",
+          "assets/levels/afueras_boundington_ocaso.json"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Verina: «Ya esta. Ya esta, patoso.»",
+        "Edul: «No me llames asi.»",
+        "Verina: «Siempre te he llamado asi.»",
+        "Edul: «Por eso.»",
+        "Edul te busca la mano con un frasco azul, todavia caliente de tanto apretarlo.",
+        "Edul: «Eter. Del bueno. No se decir gracias sin que suene a poco, asi que toma esto.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_edul_cerrado"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_edul_salvado"
+        },
+        {
+          "type": "addVariable",
+          "arg": "afecto_venides",
+          "value": 1
+        },
+        {
+          "type": "acto",
+          "arg": "edul_liberado"
+        },
+        {
+          "type": "acto",
+          "arg": "promesa_cumplida"
+        },
+        {
+          "type": "log",
+          "arg": "Edul y Verina, juntos. +1 Afecto de Venides."
+        },
+        {
+          "type": "darObjeto",
+          "arg": "eter",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "b3_edul_fiesta",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_edul_libre",
+          "bnd2_edul_sabe_venides"
+        ],
+        "notFlags": [
+          "bnd3_edul_cerrado",
+          "bnd3_verina_con_grupo"
+        ],
+        "lugar": [
+          "assets/levels/ciudad_centro_ocaso.json",
+          "assets/levels/afueras_boundington_ocaso.json"
+        ]
+      },
+      "speaker": "Edul",
+      "lines": [
+        "(a ti) Tú. El de la fiesta. Dijiste que Venides quería sacarme. ¿Era verdad?"
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Es verdad.",
+          "lines": [
+            "Entonces vamos con él."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_edul_cerrado"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_edul_salvado"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_edul_con_grupo"
+            },
+            {
+              "type": "acto",
+              "arg": "edul_liberado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3_edul_sin_verina",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_edul_libre"
+        ],
+        "notFlags": [
+          "bnd3_edul_cerrado",
+          "bnd3_verina_con_grupo"
+        ],
+        "lugar": [
+          "assets/levels/ciudad_centro_ocaso.json",
+          "assets/levels/afueras_boundington_ocaso.json"
+        ]
+      },
+      "speaker": "Edul",
+      "lines": [
+        "Verina. La tienen en la barricada de la Base. Por favor. Ella no hizo nada. Ella solo leía."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_edul_cerrado"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_edul_salvado"
+        },
+        {
+          "type": "acto",
+          "arg": "edul_liberado"
+        }
+      ]
+    },
+    {
+      "id": "b3_edul_perdido",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "anyFlags": [
+          "bnd3_edul_perdido",
+          "bnd3_edul_gana"
+        ],
+        "notFlags": [
+          "bnd3_edul_cerrado"
+        ],
+        "lugar": [
+          "assets/levels/ciudad_centro_ocaso.json",
+          "assets/levels/afueras_boundington_ocaso.json"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "No llegas. Los guardias se lo llevan hacia el fuego, y el fuego es suyo."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_edul_cerrado"
+        }
+      ]
+    },
+    {
+      "id": "b3_edul_vencido",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_edul_cae"
+        ],
+        "notFlags": [
+          "bnd3_edul_cerrado"
+        ],
+        "lugar": [
+          "assets/levels/ciudad_centro_ocaso.json",
+          "assets/levels/afueras_boundington_ocaso.json"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Edul cae de rodillas, con el martillo todavía en la mano. No te mira."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_edul_cerrado"
+        },
+        {
+          "type": "acto",
+          "arg": "edul_asesinado"
+        }
+      ]
+    },
+    {
+      "id": "b3_venides_rodillas",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_edul_cerrado",
+          "bnd3_sin_venides",
+          "bnd3_esc06_venides"
+        ],
+        "notFlags": [
+          "bnd3_venides_resuelto"
+        ],
+        "lugar": "assets/levels/afueras_boundington_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Junto al molino, tres guardias tienen a Venides de rodillas, sin yelmo, con las manos atadas.",
+        "Guardia: «Dinos cómo entra la Corona en Perishton, caballero, y te dejamos ir.»",
+        "Venides: «Por la puerta. Como la gente educada.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_venides_resuelto"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Ayudarle a escapar",
+          "lines": [
+            "Te echas sobre los tres."
+          ],
+          "effects": [
+            {
+              "type": "startBattle",
+              "startBattle": {
+                "monsterId": "guardia_comprado",
+                "flagVictory": "bnd3_venides_libre",
+                "flagDefeat": "bnd3_venides_perdido",
+                "enemigos": [
+                  {
+                    "id": "guardia_comprado",
+                    "cantidad": 3
+                  }
+                ],
+                "acompanantes": [
+                  {
+                    "id": "xila",
+                    "siFlag": "bnd3_con_xila"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Intentar acabar con él",
+          "lines": [
+            "Venides lucha atado a medias. Al llegar al suelo, se zafa y huye."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_venides_huye"
+            },
+            {
+              "type": "acto",
+              "arg": "venides_atacado"
+            }
+          ]
+        },
+        {
+          "texto": "Dejarle",
+          "lines": [
+            "Sho-Noco te lo contará después. Tú no lo verás."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_venides_dejado"
+            },
+            {
+              "type": "acto",
+              "arg": "venides_abandonado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3_venides_libre",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_venides_libre",
+          "bnd3_esc06_venides"
+        ],
+        "notFlags": [
+          "bnd3_con_venides",
+          "bnd3_venides_huye"
+        ],
+        "lugar": "assets/levels/afueras_boundington_ocaso.json"
+      },
+      "speaker": "Venides",
+      "lines": [
+        "(libre, frotándose las muñecas) No me avisaste.",
+        "(te mira) Pero has venido. Ya hablaremos."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_con_venides"
+        },
+        {
+          "type": "acto",
+          "arg": "venides_liberado"
+        }
+      ]
+    },
+    {
+      "id": "b3_esc06_pacto_salida",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "lugar": "assets/levels/ciudad_centro_ocaso.json",
+        "allFlags": [
+          "bnd3_esc06_final",
+          "bnd3_aliado_sandes"
+        ],
+        "notFlags": [
+          "bnd3_sandes_cerrado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes: «Pasa. Ya has elegido tu lado.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_sandes_cerrado"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_esc06_pacto"
+        }
+      ]
+    },
+    {
+      "id": "b3_final_venides",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "lugar": "assets/levels/ciudad_centro_ocaso.json",
+        "allFlags": [
+          "bnd3_esc06_final",
+          "bnd3_con_venides"
+        ],
+        "notFlags": [
+          "bnd3_combate_final",
+          "bnd3_fuera",
+          "bnd3_aliado_sandes"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes: «Hasta aqui has llegado.»",
+        "Venides: «Sal de mi ciudad.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_combate_final"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "sandes",
+            "flagVictory": "bnd3_sandes_vencido",
+            "flagDefeat": "bnd3_sandes_gana",
+            "acompanantes": [
+              {
+                "id": "venides",
+                "siFlag": "bnd3_con_venides"
+              },
+              {
+                "id": "xila",
+                "siFlag": "bnd3_con_xila"
+              }
+            ],
+            "huyen": [
+              "sandes"
+            ],
+            "refuerzos": [
+              {
+                "requires": {
+                  "allFlags": [
+                    "bnd3_verina_con_grupo",
+                    "bnd3_edul_salvado",
+                    "bnd3_con_xila",
+                    "bnd3_con_venides",
+                    "bnd2_rosita_semilla"
+                  ],
+                  "notFlags": [
+                    "bnd3_compania_vista"
+                  ],
+                  "variables": {
+                    "confianza_rosita": {
+                      "min": 2
+                    }
+                  }
+                },
+                "cuando": {
+                  "vidaEnemigo": 0.25,
+                  "golpeMortal": true
+                },
+                "flags": [
+                  "bnd3_compania_vista",
+                  "bnd3_compania"
+                ],
+                "lineas": [
+                  "Un trueno sin nube. Un fuego negro cae sobre las cadenas de Sandes y las parte. Una flecha de luz se clava a sus pies; detrás, el aullido de un lobo.",
+                  "Un hombre con los puños envueltos en algo oscuro se planta entre Sandes y tú.",
+                  "El guerrero demoníaco: «La Furia dijo que a lo mejor había uno que merecía la pena. No dijo que fuera tan pequeño.»",
+                  "El mago de las tinieblas: «Levanta. Morirte hoy sería de mala educación: nos han sacado de casa.»",
+                  "El guardabosques, desde un tejado, sin bajar: «Tú pega. Nosotros te cubrimos.»",
+                  "La antigua compañía de Rosita pelea a tu lado."
+                ],
+                "acompanantes": [
+                  {
+                    "id": "mago_de_las_tinieblas"
+                  },
+                  {
+                    "id": "guardabosques"
+                  },
+                  {
+                    "id": "guerrero_demoniaco"
+                  }
+                ]
+              },
+              {
+                "requires": {
+                  "allFlags": [
+                    "bnd3_compania_vista",
+                    "heroe_clase_guerrero_demoniaco"
+                  ],
+                  "notFlags": [
+                    "bnd3_compania_tuyo"
+                  ]
+                },
+                "cuando": {
+                  "vidaEnemigo": 0.25,
+                  "golpeMortal": true
+                },
+                "flags": [
+                  "bnd3_compania_tuyo"
+                ],
+                "lineas": [
+                  "El guerrero demoníaco, sin dejar de pegar: «Tú llevas lo mismo dentro que yo. Se nota. No dejes que te coma.»"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_final",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "lugar": "assets/levels/ciudad_centro_ocaso.json",
+        "allFlags": [
+          "bnd3_esc06_final"
+        ],
+        "notFlags": [
+          "bnd3_combate_final",
+          "bnd3_fuera",
+          "bnd3_aliado_sandes"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes: «Hasta aqui has llegado.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_combate_final"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "sandes",
+            "flagVictory": "bnd3_sandes_vencido",
+            "flagDefeat": "bnd3_sandes_gana",
+            "acompanantes": [
+              {
+                "id": "venides",
+                "siFlag": "bnd3_con_venides"
+              },
+              {
+                "id": "xila",
+                "siFlag": "bnd3_con_xila"
+              }
+            ],
+            "huyen": [
+              "sandes"
+            ],
+            "refuerzos": [
+              {
+                "requires": {
+                  "allFlags": [
+                    "bnd3_verina_con_grupo",
+                    "bnd3_edul_salvado",
+                    "bnd3_con_xila",
+                    "bnd3_con_venides",
+                    "bnd2_rosita_semilla"
+                  ],
+                  "notFlags": [
+                    "bnd3_compania_vista"
+                  ],
+                  "variables": {
+                    "confianza_rosita": {
+                      "min": 2
+                    }
+                  }
+                },
+                "cuando": {
+                  "vidaEnemigo": 0.25,
+                  "golpeMortal": true
+                },
+                "flags": [
+                  "bnd3_compania_vista",
+                  "bnd3_compania"
+                ],
+                "lineas": [
+                  "Un trueno sin nube. Un fuego negro cae sobre las cadenas de Sandes y las parte. Una flecha de luz se clava a sus pies; detrás, el aullido de un lobo.",
+                  "Un hombre con los puños envueltos en algo oscuro se planta entre Sandes y tú.",
+                  "El guerrero demoníaco: «La Furia dijo que a lo mejor había uno que merecía la pena. No dijo que fuera tan pequeño.»",
+                  "El mago de las tinieblas: «Levanta. Morirte hoy sería de mala educación: nos han sacado de casa.»",
+                  "El guardabosques, desde un tejado, sin bajar: «Tú pega. Nosotros te cubrimos.»",
+                  "La antigua compañía de Rosita pelea a tu lado."
+                ],
+                "acompanantes": [
+                  {
+                    "id": "mago_de_las_tinieblas"
+                  },
+                  {
+                    "id": "guardabosques"
+                  },
+                  {
+                    "id": "guerrero_demoniaco"
+                  }
+                ]
+              },
+              {
+                "requires": {
+                  "allFlags": [
+                    "bnd3_compania_vista",
+                    "heroe_clase_guerrero_demoniaco"
+                  ],
+                  "notFlags": [
+                    "bnd3_compania_tuyo"
+                  ]
+                },
+                "cuando": {
+                  "vidaEnemigo": 0.25,
+                  "golpeMortal": true
+                },
+                "flags": [
+                  "bnd3_compania_tuyo"
+                ],
+                "lineas": [
+                  "El guerrero demoníaco, sin dejar de pegar: «Tú llevas lo mismo dentro que yo. Se nota. No dejes que te coma.»"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_compania",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_verina_con_grupo",
+          "bnd3_edul_salvado",
+          "bnd3_con_xila",
+          "bnd3_con_venides",
+          "bnd2_rosita_semilla",
+          "bnd3_sandes_gana",
+          "bnd3_esc06_final"
+        ],
+        "notFlags": [
+          "bnd3_compania_vista"
+        ],
+        "variables": {
+          "confianza_rosita": {
+            "min": 2
+          }
+        },
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Vas a morir. Lo sabes como se saben las cosas al final: sin pensarlo.",
+        "Un trueno sin nube. Un fuego negro cae sobre las cadenas de Sandes y las parte. Una flecha de luz se clava a sus pies; detrás, el aullido de un lobo.",
+        "Un hombre con los puños envueltos en algo oscuro se planta entre Sandes y tú.",
+        "El guerrero demoníaco: «La Furia dijo que a lo mejor había uno que merecía la pena. No dijo que fuera tan pequeño.»",
+        "El mago de las tinieblas: «Levanta. Morirte hoy sería de mala educación: nos han sacado de casa.»",
+        "El guardabosques, desde un tejado, sin bajar: «Tú pega. Nosotros te cubrimos.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_compania_vista"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_compania"
+        },
+        {
+          "type": "log",
+          "arg": "La antigua compañía de Rosita pelea a tu lado."
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "sandes",
+            "flagVictory": "bnd3_sandes_vencido",
+            "flagDefeat": "bnd3_sandes_gana_del_todo",
+            "acompanantes": [
+              {
+                "id": "mago_de_las_tinieblas"
+              },
+              {
+                "id": "guardabosques"
+              },
+              {
+                "id": "guerrero_demoniaco"
+              }
+            ],
+            "huyen": [
+              "sandes"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3_compania_de_los_tuyos",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_compania_vista",
+          "heroe_clase_guerrero_demoniaco",
+          "bnd3_esc06_final"
+        ],
+        "notFlags": [
+          "bnd3_compania_tuyo"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "El guerrero demoníaco",
+      "lines": [
+        "(sin dejar de pegar) Tú llevas lo mismo dentro que yo. Se nota. No dejes que te coma."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_compania_tuyo"
+        }
+      ]
+    },
+    {
+      "id": "b3_rev_compania_cubre",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_compania",
+          "bnd3_sandes_vencido"
+        ],
+        "notFlags": [
+          "bnd3_rev_compania_cubre_visto"
+        ]
+      },
+      "speaker": "El guerrero demoníaco",
+      "lines": [
+        "El guerrero demoníaco: «Corred. Esto lo terminamos nosotros.»",
+        "El mago de las tinieblas: «Y decidle a Rosita que nos debe una cena. De las de antes.»",
+        "Los tres se quedan entre vosotros y el fuego."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_rev_compania_cubre_visto"
+        }
+      ]
+    },
+    {
+      "id": "b3_sandes_vencido",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sandes_vencido",
+          "bnd3_esc06_final"
+        ],
+        "notFlags": [
+          "bnd3_sandes_cerrado"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes: «Esto no lo habia pensado.»",
+        "Venides: «La bolsa. Cogela y sigue.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_sandes_cerrado"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_culto_debilitado"
+        },
+        {
+          "type": "grantGold",
+          "value": 70
+        },
+        {
+          "type": "log",
+          "arg": "Recibes 70 de oro (la bolsa de Sandes)."
+        }
+      ]
+    },
+    {
+      "id": "b3_sandes_sigue",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "anyFlags": [
+          "bnd3_sandes_gana",
+          "bnd3_sandes_gana_del_todo"
+        ],
+        "notFlags": [
+          "bnd3_sandes_cerrado"
+        ],
+        "lugar": "assets/levels/ciudad_centro_ocaso.json",
+        "allFlags": [
+          "bnd3_esc06_final"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Te levantas como puedes. Sandes ya no está: tiene una ciudad que quemar y un plan que seguir."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_sandes_cerrado"
+        }
+      ]
+    },
+    {
+      "id": "b3_esc06_afueras_listas",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "lugar": "assets/levels/afueras_boundington_ocaso.json",
+        "allFlags": [
+          "bnd3_afueras_vistas",
+          "bnd3_edul_cerrado"
+        ],
+        "anyFlags": [
+          "bnd3_con_venides",
+          "bnd3_venides_resuelto",
+          "bnd3_venides_huye",
+          "bnd3_aliado_sandes"
+        ],
+        "notFlags": [
+          "bnd3_esc06_afueras_listas"
+        ]
+      },
+      "speaker": "",
+      "lines": [],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_esc06_afueras_listas"
+        }
+      ]
+    },
+    {
+      "id": "b3_esc06_huida_llegada",
+      "trigger": {
+        "type": "enter",
+        "target": "assets/levels/huida_boundington.json"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sandes_cerrado",
+          "bnd3_esc06_afueras_listas"
+        ],
+        "notFlags": [
+          "bnd3_esc06_en_huida"
+        ]
+      },
+      "speaker": "",
+      "lines": [],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_esc06_en_huida"
+        }
+      ]
+    },
+    {
+      "id": "b3_huida_gitanos",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sandes_cerrado",
+          "bnd2_aliado_gitanos",
+          "bnd3_esc06_ciudad_atras"
+        ],
+        "notFlags": [
+          "bnd3_fuera",
+          "bnd2_barriada_delatada"
+        ],
+        "lugar": "assets/levels/huida_boundington.json"
+      },
+      "speaker": "",
+      "lines": [
+        "En la linde, los carros de la Barriada. Han enganchado los caballos sin esperar a nadie y aun así han esperado.",
+        "Zarela no dice «te lo dije». Solo aparta un fardo para hacer sitio.",
+        "Venides: «Al norte. Por los Campos del Otoño. Ahora, mientras arde.»",
+        "Detrás, Boundington entera es una línea naranja contra el cielo. Delante, el camino está oscuro y vacío, que es lo mejor que puede estar un camino esta noche.",
+        "Zarela te entrega un mapa dibujado a carboncillo sobre un trapo.",
+        "Zarela: «Los caminos que usamos nosotros. Los reyes no los tienen.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_final_oeste"
+        },
+        {
+          "type": "log",
+          "arg": "FINAL: salida con los gitanos de Surysal."
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_fuera"
+        },
+        {
+          "type": "grantLevel",
+          "value": 2,
+          "arg": "salir vivo de Boundington"
+        },
+        {
+          "type": "grantMilestone",
+          "value": 1,
+          "arg": "sobrevivir a la caída de Boundington"
+        },
+        {
+          "type": "grantGold",
+          "value": 50
+        },
+        {
+          "type": "log",
+          "arg": "Recibes 50 de oro (la caja común del culto)."
+        }
+      ]
+    },
+    {
+      "id": "b3_huida_sola",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sandes_cerrado",
+          "bnd3_esc06_ciudad_atras"
+        ],
+        "notFlags": [
+          "bnd3_fuera"
+        ],
+        "lugar": "assets/levels/huida_boundington.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Venides: «Al norte. Por los Campos del Otoño. Ahora, mientras arde.»",
+        "Salís porque es la única dirección en la que no se ve fuego, no porque nadie os espere allí.",
+        "A la altura del último muro, Venides se para a mirar atrás. Le cuesta tres pasos volver a andar.",
+        "Solo salen vivos de Boundington unos pocos. Tú eres uno de ellos.",
+        "Venides saca de la capa su mapa de la región, doblado mil veces, y te lo pone en el pecho.",
+        "Venides: «Quédatelo. Yo me lo sé de memoria.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_final_solos"
+        },
+        {
+          "type": "log",
+          "arg": "FINAL: salida sin ayuda."
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_fuera"
+        },
+        {
+          "type": "grantLevel",
+          "value": 2,
+          "arg": "salir vivo de Boundington"
+        },
+        {
+          "type": "grantMilestone",
+          "value": 1,
+          "arg": "sobrevivir a la caída de Boundington"
+        },
+        {
+          "type": "darObjeto",
+          "arg": "mapa_region",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "b3_aliado_fuera",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_aliado_sandes",
+          "bnd3_edul_cerrado",
+          "bnd3_esc06_ciudad_atras"
+        ],
+        "notFlags": [
+          "bnd3_fuera"
+        ],
+        "lugar": "assets/levels/huida_boundington.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Sales de Boundington por la puerta grande, con los Perdidos. Nadie te detiene: llevas la capa gris al hombro.",
+        "Detrás, la ciudad arde. Delante, nadie te espera. Eso, de momento, es lo único que se parece a la libertad.",
+        "Una capa gris reparte lo que queda de la caja común antes de cruzar el puente: cincuenta monedas caen en tu mano."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_final_solos"
+        },
+        {
+          "type": "log",
+          "arg": "FINAL: con los Perdidos."
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_fuera"
+        },
+        {
+          "type": "grantLevel",
+          "value": 2,
+          "arg": "salir vivo de Boundington"
+        },
+        {
+          "type": "grantMilestone",
+          "value": 1,
+          "arg": "sobrevivir a la caída de Boundington"
+        },
+        {
+          "type": "darObjeto",
+          "arg": "mapa_region",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "b3_caida",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "anyFlags": [
+          "bnd3_saqueadores_ganan",
+          "bnd3_fanaticos_ganan",
+          "bnd3_oleada_gana",
+          "bnd3_norte_gana"
+        ],
+        "notFlags": [
+          "bnd3_fuera"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "La calle se te acaba antes que las fuerzas.",
+        "Boundington arderá igual esta noche, con o sin ti. Esa era la parte que no dependía de nadie.",
+        "La otra parte, la de cuánta gente sale, esa sí dependía. Y hoy sale menos."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_fuera"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_final_caido"
+        },
+        {
+          "type": "log",
+          "arg": "FINAL: caído en Boundington."
+        }
+      ]
+    },
+    {
+      "id": "b3_rev_hito",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fuera"
+        ],
+        "notFlags": [
+          "bnd3_rev_hito_visto",
+          "bnd3_epi_empezado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Boundington queda atrás, encendida como una brasa en el horizonte.",
+        "Has visto la ciudad entera: la taberna, la cripta, la montaña, la fiesta y el fuego. Y sigues vivo.",
+        "La segunda gran prueba ha pasado."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_rev_hito_visto"
+        }
+      ]
+    },
+    {
+      "id": "b3_epilogo_caido",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fuera",
+          "bnd3_final_caido"
+        ],
+        "notFlags": [
+          "bnd3_epilogo",
+          "bnd3_epi_empezado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Te arrastra de vuelta a donde empezó todo: la barca de Sho-Noco, en unas aguas que no se ven.",
+        "El Vacío otra vez, pero no del todo blanco: en el horizonte queda un resplandor naranja que se apaga despacio, como una brasa. Ahora sabes que estabas bajo un embrujo.",
+        "Sho-Noco: «Ya está.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_epi_empezado"
+        }
+      ]
+    },
+    {
+      "id": "b3_epilogo",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fuera"
+        ],
+        "notFlags": [
+          "bnd3_epilogo",
+          "bnd3_epi_empezado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "El Vacío otra vez, pero no del todo blanco: en el horizonte queda un resplandor naranja que se apaga despacio, como una brasa.",
+        "La barca de Sho-Noco, quieta. Estás sentado en ella con la ropa quemada y el arma en la mano. Ahora sabes que estabas bajo un embrujo.",
+        "Sho-Noco rema muy despacio. Sus brazos son jóvenes todo el rato.",
+        "Sho-Noco: «Ya está.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_epi_empezado"
+        }
+      ]
+    },
+    {
+      "id": "b3_epi_venides_lejos",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fuera",
+          "bnd3_epi_empezado"
+        ],
+        "notFlags": [
+          "bnd3_epilogo",
+          "b3_epi_venides_lejos_dicho",
+          "bnd3_con_venides"
+        ]
+      },
+      "speaker": "Sho-Noco",
+      "lines": [
+        "El caballero corrió por las calles de las afueras hasta dejar atrás la ciudad. Al norte, por los Campos del Otoño, hasta Nefaria.",
+        "No miró atrás. Esa noche no escribió nada."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "b3_epi_venides_lejos_dicho"
+        }
+      ]
+    },
+    {
+      "id": "b3_epi_venides_contigo",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fuera",
+          "bnd3_epi_empezado",
+          "bnd3_con_venides"
+        ],
+        "notFlags": [
+          "bnd3_epilogo",
+          "b3_epi_venides_contigo_dicho"
+        ]
+      },
+      "speaker": "Sho-Noco",
+      "lines": [
+        "El caballero llegó a Nefaria. Esa noche escribió mucho.",
+        "(pausa) Tu nombre, también."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "b3_epi_venides_contigo_dicho"
+        }
+      ]
+    },
+    {
+      "id": "b3_epi_rosita",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fuera",
+          "bnd3_epi_empezado",
+          "bnd3_rosita_calle"
+        ],
+        "notFlags": [
+          "bnd3_epilogo",
+          "b3_epi_rosita_dicho"
+        ]
+      },
+      "speaker": "Sho-Noco",
+      "lines": [
+        "La tabernera aguantó su calle hasta el amanecer. Las historias que cuentan los borrachos se quedaron cortas."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "b3_epi_rosita_dicho"
+        }
+      ]
+    },
+    {
+      "id": "b3_epi_verina_viva",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fuera",
+          "bnd3_epi_empezado",
+          "bnd3_verina_salvada",
+          "bnd3_edul_salvado"
+        ],
+        "notFlags": [
+          "bnd3_epilogo",
+          "b3_epi_verina_viva_dicho",
+          "bnd3_verina_entregada"
+        ]
+      },
+      "speaker": "Sho-Noco",
+      "lines": [
+        "La lectora salió de la ciudad con su hermano. Tiene muchos libros por delante.",
+        "(como si no fuera nada) Y un caballero que no sabe atarse la capa."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "b3_epi_verina_viva_dicho"
+        }
+      ]
+    },
+    {
+      "id": "b3_epi_verina_sola",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fuera",
+          "bnd3_epi_empezado",
+          "bnd3_verina_salvada"
+        ],
+        "notFlags": [
+          "bnd3_epilogo",
+          "b3_epi_verina_sola_dicho",
+          "bnd3_verina_entregada",
+          "bnd3_edul_salvado"
+        ]
+      },
+      "speaker": "Sho-Noco",
+      "lines": [
+        "La lectora salió de la ciudad. Sola. Buscó a su hermano entre los que salían, hasta que ya no salió nadie más.",
+        "Tiene muchos libros por delante. Los leerá por los dos."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "b3_epi_verina_sola_dicho"
+        }
+      ]
+    },
+    {
+      "id": "b3_epi_verina_muerta",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fuera",
+          "bnd3_epi_empezado"
+        ],
+        "notFlags": [
+          "bnd3_epilogo",
+          "b3_epi_verina_muerta_dicho"
+        ],
+        "anyFlags": [
+          "bnd3_verina_muerta",
+          "bnd3_verina_abandonada",
+          "bnd3_verina_entregada",
+          "bnd3_verina_perdida_tarde"
+        ]
+      },
+      "speaker": "Sho-Noco",
+      "lines": [
+        "La lectora no salió. Otra ocupará su sitio en lo que viene. Su hermano no volverá a reír."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "b3_epi_verina_muerta_dicho"
+        }
+      ]
+    },
+    {
+      "id": "b3_epi_xila",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fuera",
+          "bnd3_epi_empezado",
+          "bnd1_xila_honor"
+        ],
+        "notFlags": [
+          "bnd3_epilogo",
+          "b3_epi_xila_dicho"
+        ]
+      },
+      "speaker": "Sho-Noco",
+      "lines": [
+        "El mercader dejó de beber hasta dormirse. No del todo. Pero casi."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "b3_epi_xila_dicho"
+        }
+      ]
+    },
+    {
+      "id": "b3_epi_sandes",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fuera",
+          "bnd3_epi_empezado",
+          "bnd3_aliado_sandes"
+        ],
+        "notFlags": [
+          "bnd3_epilogo",
+          "b3_epi_sandes_dicho"
+        ]
+      },
+      "speaker": "Sho-Noco",
+      "lines": [
+        "El hijo de Killville te recuerda. Eso, en tu lugar, no me alegraría."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "b3_epi_sandes_dicho"
+        }
+      ]
+    },
+    {
+      "id": "b3_epi_compania",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fuera",
+          "bnd3_epi_empezado",
+          "bnd3_compania"
+        ],
+        "notFlags": [
+          "bnd3_epilogo",
+          "b3_epi_compania_dicho"
+        ]
+      },
+      "speaker": "Sho-Noco",
+      "lines": [
+        "No saliste solo. Eso, en una ciudad que ardía, ya es una historia."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "b3_epi_compania_dicho"
+        }
+      ]
+    },
+    {
+      "id": "b3_epi_solo",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fuera",
+          "bnd3_epi_empezado",
+          "bnd3_final_solos"
+        ],
+        "notFlags": [
+          "bnd3_epilogo",
+          "b3_epi_solo_dicho",
+          "bnd3_compania"
+        ]
+      },
+      "speaker": "Sho-Noco",
+      "lines": [
+        "Saliste solo. Hay quien dice que así se sale siempre. Yo no estoy tan seguro."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "b3_epi_solo_dicho"
+        }
+      ]
+    },
+    {
+      "id": "b3_epi_iris",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_fuera",
+          "bnd3_epi_empezado",
+          "bga_iris_salvada"
+        ],
+        "notFlags": [
+          "bnd3_epilogo",
+          "b3_epi_iris_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "La chica pelirroja de Cal Serra bajó de la montaña cuando ardía la ciudad, y siguió bajando. Dicen que cose en Ceaseton, junto a una ventana que da al mar."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "b3_epi_iris_dicho"
+        }
+      ]
+    },
+    {
+      "id": "b3_barca",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_epi_empezado",
+          "cine_epilogo_barca_vista"
+        ],
+        "notFlags": [
+          "bnd3_epilogo",
+          "bnd3_barca_visto"
+        ]
+      },
+      "speaker": "Sho-Noco",
+      "lines": [
+        "La barca sigue por una corriente que no existe."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_barca_visto"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_barca_abierta"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "¿Quién eres?",
+          "requires": {
+            "notFlags": [
+              "bnd3_barca_t_quien"
+            ]
+          },
+          "lines": [
+            "El que rema."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barca_t_quien"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barca_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "¿Por qué me enseñaste esto?",
+          "requires": {
+            "notFlags": [
+              "bnd3_barca_t_por_que"
+            ]
+          },
+          "lines": [
+            "Porque pasó. Y porque vas a ver lo que vino después."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barca_t_por_que"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barca_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd3_barca_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barca_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Cerrar los ojos (fin de la aventura)",
+          "lines": [
+            "No te cuenta más. Te pesan los ojos. La barca sigue por una corriente que no existe, y el resplandor naranja del horizonte se apaga del todo.",
+            "Te duermes."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_epilogo"
+            },
+            {
+              "type": "descanso",
+              "arg": "largo"
+            },
+            {
+              "type": "log",
+              "arg": "FIN DE LA PRIMERA AVENTURA — Los Perdidos de Boundington."
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd3_barca_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_barca_en_charla"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_barca_abierta"
+            },
+            {
+              "type": "descanso",
+              "arg": "largo"
+            }
+          ],
+          "despedida": true,
+          "speaker": ""
+        }
+      ]
+    },
+    {
+      "id": "b3_barca_s0_a",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_barca_abierta",
+          "bnd3_barca_visto",
+          "bnd3_barca_en_charla"
+        ],
+        "variables": {
+          "bnd3_barca_pag": 0
+        }
+      },
+      "speaker": "",
+      "lines": [
+        "Sho-Noco rema. El resplandor del horizonte es más pequeño."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "¿Quién eres?",
+          "requires": {
+            "notFlags": [
+              "bnd3_barca_t_quien"
+            ]
+          },
+          "lines": [
+            "El que rema."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barca_t_quien"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barca_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "¿Por qué me enseñaste esto?",
+          "requires": {
+            "notFlags": [
+              "bnd3_barca_t_por_que"
+            ]
+          },
+          "lines": [
+            "Porque pasó. Y porque vas a ver lo que vino después."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barca_t_por_que"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barca_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd3_barca_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barca_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Cerrar los ojos (fin de la aventura)",
+          "lines": [
+            "No te cuenta más. Te pesan los ojos. La barca sigue por una corriente que no existe, y el resplandor naranja del horizonte se apaga del todo.",
+            "Te duermes."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_epilogo"
+            },
+            {
+              "type": "descanso",
+              "arg": "largo"
+            },
+            {
+              "type": "log",
+              "arg": "FIN DE LA PRIMERA AVENTURA — Los Perdidos de Boundington."
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd3_barca_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_barca_en_charla"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_barca_abierta"
+            },
+            {
+              "type": "descanso",
+              "arg": "largo"
+            }
+          ],
+          "despedida": true,
+          "speaker": ""
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "b3_barca_s1_a",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_barca_abierta",
+          "bnd3_barca_visto",
+          "bnd3_barca_en_charla"
+        ],
+        "variables": {
+          "bnd3_barca_pag": 1
+        }
+      },
+      "speaker": "",
+      "lines": [
+        "Sho-Noco rema. El resplandor del horizonte es más pequeño."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "¿Lo que hice ha cambiado algo?",
+          "requires": {
+            "notFlags": [
+              "bnd3_barca_t_cambiado"
+            ]
+          },
+          "lines": [
+            "A ellos, sí. A ti, ya lo verás."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barca_t_cambiado"
+            },
+            {
+              "type": "descanso",
+              "arg": "largo"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_asentado"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barca_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Quiero volver a casa.",
+          "requires": {
+            "notFlags": [
+              "bnd3_barca_t_casa"
+            ]
+          },
+          "lines": [
+            "Duerme primero."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barca_t_casa"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barca_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd3_barca_pag",
+              "value": 0
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_barca_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Cerrar los ojos (fin de la aventura)",
+          "lines": [
+            "No te cuenta más. Te pesan los ojos. La barca sigue por una corriente que no existe, y el resplandor naranja del horizonte se apaga del todo.",
+            "Te duermes."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_epilogo"
+            },
+            {
+              "type": "descanso",
+              "arg": "largo"
+            },
+            {
+              "type": "log",
+              "arg": "FIN DE LA PRIMERA AVENTURA — Los Perdidos de Boundington."
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd3_barca_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_barca_en_charla"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_barca_abierta"
+            },
+            {
+              "type": "descanso",
+              "arg": "largo"
+            }
+          ],
+          "despedida": true,
+          "speaker": ""
+        }
+      ],
+      "pagina": true
+    }
+  ]
+}

@@ -1,0 +1,312 @@
+@startgantt
+
+title Fase H — Jugabilidad y autoria — lo que falta para jugar y para crear
+
+' Generado desde planificacion/JUGABILIDAD_FASE_H.md (qwen, 17/09/2026).
+' Complementario a la fila ALPHA-00 de Codex (ALPHA_CIERRE.md /
+' gantt_alpha_cierre.puml): este cubre jugabilidad y autoria; el de Codex,
+' el cierre de integracion y aceptacion.
+'
+' 1 'dia' = 1 jornada de esfuerzo (~6 h). Las medias jornadas se redondean al
+' alza porque PlantUML solo admite dias enteros; el esfuerzo exacto va entre
+' parentesis en el nombre de cada tarea.
+'
+' Colores:
+'   #D9534F rojo  = fichero de cruce o bloqueante (una sola sesion, con fila)
+'   #E3A82B ambar = rescate: el codigo ya existe, hay que moverlo y cablearlo
+'   #5CB85C verde = jugabilidad nueva
+'   #5BC0DE azul  = autoria (motor_editor)
+'   #B8BEC7 gris  = deuda medida o decision pendiente
+'
+' Total: 60 tareas, 128,5 jornadas (sin contar el contenido aguas arriba:
+' hechizos huerfanos, assets de audio, nombres de asentamientos).
+'
+' Criterio de cierre: decisiones/D0006 + planificacion/CHECKLIST_CIERRE_TAREA.md.
+' Ninguna tarea se cierra con «su prueba pasa»: se cierra con la ruta de usuario
+' escrita en JUGABILIDAD_FASE_H.md y medida con tools/medir_alcance.py.
+
+Project starts 2026-09-18
+saturday are closed
+sunday are closed
+
+-- H8 — Decisiones y deuda medida (antes de tocar Application) --
+
+[H8-06 (3 j) decidir que hacer con Application.cpp (14 paquetes lo tocan)] lasts 3 days
+[H8-06 (3 j) decidir que hacer con Application.cpp (14 paquetes lo tocan)] is colored in #D9534F
+
+[H8-01 (2 j) decidir sobre las 24 cabeceras muertas (3152 lineas)] lasts 2 days
+[H8-01 (2 j) decidir sobre las 24 cabeceras muertas (3152 lineas)] is colored in #B8BEC7
+
+[H8-02 (1 j) SkillTarget existe dos veces: uno gana] lasts 1 days
+[H8-02 (1 j) SkillTarget existe dos veces: uno gana] is colored in #B8BEC7
+
+[H8-03 (0,5 j) duplicados exactos de contenido (5 JSON + el ' 2')] lasts 1 days
+[H8-03 (0,5 j) duplicados exactos de contenido (5 JSON + el ' 2')] is colored in #B8BEC7
+
+[H8-04 (2 j) 25 docs desactualizados: actualizar o fechar como historicos] lasts 2 days
+[H8-04 (2 j) 25 docs desactualizados: actualizar o fechar como historicos] is colored in #B8BEC7
+
+[H8-05 (0,5 j) 3 cabeceras envoltorio: justificar o retirar] lasts 1 days
+[H8-05 (0,5 j) 3 cabeceras envoltorio: justificar o retirar] is colored in #B8BEC7
+
+[H8-07 (0,5 j) Culling.h dentro de OcclusionTests: constancia de que es intencional] lasts 1 days
+[H8-07 (0,5 j) Culling.h dentro de OcclusionTests: constancia de que es intencional] is colored in #B8BEC7
+
+-- H0 — Cableado critico: lo ya escrito no llega al jugador --
+
+[H0-01 (1,5 j) campana con los catalogos del manifiesto (tutorial Dia 1)] lasts 2 days
+[H0-01 (1,5 j) campana con los catalogos del manifiesto (tutorial Dia 1)] is colored in #D9534F
+
+[H0-02 (0,5 j) teclas MenuLeft/MenuRight de las pestanas de inventario] lasts 1 days
+[H0-02 (0,5 j) teclas MenuLeft/MenuRight de las pestanas de inventario] is colored in #D9534F
+
+[H0-03 (1 j) Esc abre la pausa y Reanudar sale de ella] lasts 1 days
+[H0-03 (1 j) Esc abre la pausa y Reanudar sale de ella] is colored in #D9534F
+
+[H0-04 (1,5 j) setInventoryRules + accion Desequipar] lasts 2 days
+[H0-04 (1,5 j) setInventoryRules + accion Desequipar] is colored in #D9534F
+
+[H0-05 (2 j) ranuras de guardado en F5/F9 y en Cargar partida] lasts 2 days
+[H0-05 (2 j) ranuras de guardado en F5/F9 y en Cargar partida] is colored in #D9534F
+
+[H0-06 (0,5 j) tick_conditions por ronda: los estados caducan] lasts 1 days
+[H0-06 (0,5 j) tick_conditions por ronda: los estados caducan] is colored in #D9534F
+
+[H0-07 (1 j) el titulo sale del manifiesto (TitleMenuState)] lasts 1 days
+[H0-07 (1 j) el titulo sale del manifiesto (TitleMenuState)] is colored in #D9534F
+
+[H0-08 (4 j) el juego ejecuta eventos de mapa (EventInterpreter)] lasts 4 days
+[H0-08 (4 j) el juego ejecuta eventos de mapa (EventInterpreter)] is colored in #D9534F
+
+-- H1 — Rescate de los 5 paquetes cerrados que no llegan --
+
+[H1-01 (2,5 j) G-13: menu de combate desde datos (mover de tests/ a src/)] lasts 3 days
+[H1-01 (2,5 j) G-13: menu de combate desde datos (mover de tests/ a src/)] is colored in #E3A82B
+
+[H1-02 (2,5 j) G-14: HudTimer y ShopEngine a produccion] lasts 3 days
+[H1-02 (2,5 j) G-14: HudTimer y ShopEngine a produccion] is colored in #E3A82B
+
+[H1-03 (1,5 j) G-10: MenuLogic a produccion y Opciones real] lasts 2 days
+[H1-03 (1,5 j) G-10: MenuLogic a produccion y Opciones real] is colored in #E3A82B
+
+[H1-04 (2,5 j) G-09: creacion de personaje integrada + populate_from_class_race_background] lasts 3 days
+[H1-04 (2,5 j) G-09: creacion de personaje integrada + populate_from_class_race_background] is colored in #E3A82B
+
+[H1-05 (2 j) G-17: Locale cableado a los textos del motor] lasts 2 days
+[H1-05 (2 j) G-17: Locale cableado a los textos del motor] is colored in #E3A82B
+
+-- H2 — Jugabilidad: combate, progresion y dados --
+
+[H2-01 (2 j) el dado se ve: widget de tirada y grados en el HUD] lasts 2 days
+[H2-01 (2 j) el dado se ve: widget de tirada y grados en el HUD] is colored in #5CB85C
+
+[H2-02 (2,5 j) seleccion de objetivos visible (alcance, bandol, cancelar)] lasts 3 days
+[H2-02 (2,5 j) seleccion de objetivos visible (alcance, bandol, cancelar)] is colored in #5CB85C
+note bottom
+  H2-02-TACTICO — pendiente, implementación aplazada.
+  Oriol, 07/10/2026: combate tipo tactics con la
+  cámara, vista y HUD actuales; áreas y posición importan.
+  Previsualizar alcance, área y afectados antes de actuar.
+  Seguimiento: H2-02-TACTICO.json.
+end note
+
+[H2-03 (2 j) condiciones en el HUD con rondas restantes] lasts 2 days
+[H2-03 (2 j) condiciones en el HUD con rondas restantes] is colored in #5CB85C
+
+[H2-04 (2 j) hitos y tierUp: la progresion que ya existe y nadie llama] lasts 2 days
+[H2-04 (2 j) hitos y tierUp: la progresion que ya existe y nadie llama] is colored in #5CB85C
+
+[H2-05 (1,5 j) botin al ganar (LootResolver + loot_tables.json)] lasts 2 days
+[H2-05 (1,5 j) botin al ganar (LootResolver + loot_tables.json)] is colored in #5CB85C
+
+[H2-06 (2 j) hechizos en juego (210) y clases con contenido] lasts 2 days
+[H2-06 (2 j) hechizos en juego (210) y clases con contenido] is colored in #5CB85C
+
+[H2-07 (1,5 j) 432 monstruos con maxHealth=0: decidir el canonico y rellenar] lasts 2 days
+[H2-07 (1,5 j) 432 monstruos con maxHealth=0: decidir el canonico y rellenar] is colored in #5CB85C
+
+[H2-08 (2 j) consumibles y equipo leidos desde datos (3 de 24 hoy)] lasts 2 days
+[H2-08 (2 j) consumibles y equipo leidos desde datos (3 de 24 hoy)] is colored in #5CB85C
+
+-- H3 — Jugabilidad: mundo, historia e interaccion --
+
+[H3-01 (3 j) viajar entre naciones: atlas conectado a LevelTransition] lasts 3 days
+[H3-01 (3 j) viajar entre naciones: atlas conectado a LevelTransition] is colored in #5CB85C
+
+[H3-02 (3 j) diario de misiones (QuestDefinition no existe)] lasts 3 days
+[H3-02 (3 j) diario de misiones (QuestDefinition no existe)] is colored in #5CB85C
+
+[H3-03 (2,5 j) dialogo ramificado por interruptores] lasts 3 days
+[H3-03 (2,5 j) dialogo ramificado por interruptores] is colored in #5CB85C
+
+[H3-04 (2 j) comercio con stock y precios reales] lasts 2 days
+[H3-04 (2 j) comercio con stock y precios reales] is colored in #5CB85C
+
+[H3-05 (1,5 j) negocios y rentas expuestos al jugador] lasts 2 days
+[H3-05 (1,5 j) negocios y rentas expuestos al jugador] is colored in #5CB85C
+
+[H3-06 (1,5 j) temporizadores de mision visibles en el HUD] lasts 2 days
+[H3-06 (1,5 j) temporizadores de mision visibles en el HUD] is colored in #5CB85C
+
+[H3-07 (3 j) objetos del mundo que hacen algo (puertas, patrullas, botin)] lasts 3 days
+[H3-07 (3 j) objetos del mundo que hacen algo (puertas, patrullas, botin)] is colored in #5CB85C
+
+[H3-08 (2 j) recuperarse de una derrota sin perder la partida] lasts 2 days
+[H3-08 (2 j) recuperarse de una derrota sin perder la partida] is colored in #5CB85C
+
+-- H4 — Autoria: crear y gestionar desde motor_editor --
+
+[H4-01 (2,5 j) crear, duplicar y borrar proyectos (ProjectIndex ya existe)] lasts 3 days
+[H4-01 (2,5 j) crear, duplicar y borrar proyectos (ProjectIndex ya existe)] is colored in #5BC0DE
+
+[H4-02 (2,5 j) crear y gestionar mapas de un proyecto] lasts 3 days
+[H4-02 (2,5 j) crear y gestionar mapas de un proyecto] is colored in #5BC0DE
+
+[H4-03 (3 j) propiedades de instancia (solo las lee el editor antiguo)] lasts 3 days
+[H4-03 (3 j) propiedades de instancia (solo las lee el editor antiguo)] is colored in #5BC0DE
+
+[H4-04 (2 j) cuentagotas, rectangulo y linea: el arrastre en ImGui] lasts 2 days
+[H4-04 (2 j) cuentagotas, rectangulo y linea: el arrastre en ImGui] is colored in #5BC0DE
+
+[H4-05 (2 j) panel de problemas integrado en EditorApplication] lasts 2 days
+[H4-05 (2 j) panel de problemas integrado en EditorApplication] is colored in #5BC0DE
+
+[H4-06 (3 j) navegador de recursos: elegir por nombre, no por ID] lasts 3 days
+[H4-06 (3 j) navegador de recursos: elegir por nombre, no por ID] is colored in #5BC0DE
+
+[H4-07 (2 j) selectores por nombre + rehacer la prueba de E-14] lasts 2 days
+[H4-07 (2 j) selectores por nombre + rehacer la prueba de E-14] is colored in #5BC0DE
+
+[H4-08 (2 j) probar la partida desde el editor (F-01 portado)] lasts 2 days
+[H4-08 (2 j) probar la partida desde el editor (F-01 portado)] is colored in #5BC0DE
+
+[H4-09 (2 j) capas: orden, visibilidad y bloqueo] lasts 2 days
+[H4-09 (2 j) capas: orden, visibilidad y bloqueo] is colored in #5BC0DE
+
+[H4-10 (3 j) autotiles y terrenos] lasts 3 days
+[H4-10 (3 j) autotiles y terrenos] is colored in #5BC0DE
+
+-- H5 — Autoria: datos, eventos y validacion --
+
+[H5-04 (3,5 j) base de datos RPG del proyecto (E-16; hoy rompe el build)] lasts 4 days
+[H5-04 (3,5 j) base de datos RPG del proyecto (E-16; hoy rompe el build)] is colored in #5BC0DE
+
+[H5-01 (3 j) editor de paginas de evento] lasts 3 days
+[H5-01 (3 j) editor de paginas de evento] is colored in #5BC0DE
+
+[H5-02 (3 j) lista de comandos editable] lasts 3 days
+[H5-02 (3 j) lista de comandos editable] is colored in #5BC0DE
+
+[H5-03 (2,5 j) depurador paso a paso con interruptores y variables] lasts 3 days
+[H5-03 (2,5 j) depurador paso a paso con interruptores y variables] is colored in #5BC0DE
+
+[H5-05 (2 j) validar_todo.py como servicio del panel de problemas] lasts 2 days
+[H5-05 (2 j) validar_todo.py como servicio del panel de problemas] is colored in #5BC0DE
+
+[H5-06 (4 j) editor de guion: aventuras y dialogos sin tocar JSON] lasts 4 days
+[H5-06 (4 j) editor de guion: aventuras y dialogos sin tocar JSON] is colored in #5BC0DE
+
+-- H6 — Presentacion: audio, idioma y accesibilidad --
+
+[H6-01 (2,5 j) cablear AudioEngine (miniaudio real, ya compilado)] lasts 3 days
+[H6-01 (2,5 j) cablear AudioEngine (miniaudio real, ya compilado)] is colored in #5CB85C
+
+[H6-02 (3 j) assets de audio: hoy hay 0 ficheros en assets/] lasts 3 days
+[H6-02 (3 j) assets de audio: hoy hay 0 ficheros en assets/] is colored in #5CB85C
+
+[H6-03 (1 j) opciones de audio por bus, guardadas] lasts 1 days
+[H6-03 (1 j) opciones de audio por bus, guardadas] is colored in #5CB85C
+
+[H6-04 (2 j) textos del motor extraidos a i18n] lasts 2 days
+[H6-04 (2 j) textos del motor extraidos a i18n] is colored in #5CB85C
+
+[H6-05 (2,5 j) accesibilidad: tamano de texto, remapeo, grados sin color] lasts 3 days
+[H6-05 (2,5 j) accesibilidad: tamano de texto, remapeo, grados sin color] is colored in #5CB85C
+
+-- H7 — Exportar y aceptar --
+
+[H7-01 (4 j) nucleo del exportador de juego autonomo (no existe)] lasts 4 days
+[H7-01 (4 j) nucleo del exportador de juego autonomo (no existe)] is colored in #5CB85C
+
+[H7-02 (2,5 j) asistente de exportacion en el editor] lasts 3 days
+[H7-02 (2,5 j) asistente de exportacion en el editor] is colored in #5CB85C
+
+[H7-03 (2 j) aceptacion con un autor y un jugador nuevos] lasts 2 days
+[H7-03 (2 j) aceptacion con un autor y un jugador nuevos] is colored in #5CB85C
+
+' --- dependencias (al final: algunas apuntan hacia delante, como H3-07 -> H4-03) ---
+
+[H8-06 (3 j) decidir que hacer con Application.cpp (14 paquetes lo tocan)] -> [H0-01 (1,5 j) campana con los catalogos del manifiesto (tutorial Dia 1)]
+[H8-06 (3 j) decidir que hacer con Application.cpp (14 paquetes lo tocan)] -> [H0-02 (0,5 j) teclas MenuLeft/MenuRight de las pestanas de inventario]
+[H8-06 (3 j) decidir que hacer con Application.cpp (14 paquetes lo tocan)] -> [H0-03 (1 j) Esc abre la pausa y Reanudar sale de ella]
+[H0-01 (1,5 j) campana con los catalogos del manifiesto (tutorial Dia 1)] -> [H0-04 (1,5 j) setInventoryRules + accion Desequipar]
+[H0-02 (0,5 j) teclas MenuLeft/MenuRight de las pestanas de inventario] -> [H0-04 (1,5 j) setInventoryRules + accion Desequipar]
+[H0-03 (1 j) Esc abre la pausa y Reanudar sale de ella] -> [H0-05 (2 j) ranuras de guardado en F5/F9 y en Cargar partida]
+[H8-06 (3 j) decidir que hacer con Application.cpp (14 paquetes lo tocan)] -> [H0-06 (0,5 j) tick_conditions por ronda: los estados caducan]
+[H8-06 (3 j) decidir que hacer con Application.cpp (14 paquetes lo tocan)] -> [H0-07 (1 j) el titulo sale del manifiesto (TitleMenuState)]
+[H0-01 (1,5 j) campana con los catalogos del manifiesto (tutorial Dia 1)] -> [H0-08 (4 j) el juego ejecuta eventos de mapa (EventInterpreter)]
+[H0-04 (1,5 j) setInventoryRules + accion Desequipar] -> [H1-01 (2,5 j) G-13: menu de combate desde datos (mover de tests/ a src/)]
+[H0-01 (1,5 j) campana con los catalogos del manifiesto (tutorial Dia 1)] -> [H1-02 (2,5 j) G-14: HudTimer y ShopEngine a produccion]
+[H0-03 (1 j) Esc abre la pausa y Reanudar sale de ella] -> [H1-03 (1,5 j) G-10: MenuLogic a produccion y Opciones real]
+[H0-07 (1 j) el titulo sale del manifiesto (TitleMenuState)] -> [H1-04 (2,5 j) G-09: creacion de personaje integrada + populate_from_class_race_background]
+[H1-03 (1,5 j) G-10: MenuLogic a produccion y Opciones real] -> [H1-05 (2 j) G-17: Locale cableado a los textos del motor]
+[H0-08 (4 j) el juego ejecuta eventos de mapa (EventInterpreter)] -> [H2-01 (2 j) el dado se ve: widget de tirada y grados en el HUD]
+[H1-01 (2,5 j) G-13: menu de combate desde datos (mover de tests/ a src/)] -> [H2-02 (2,5 j) seleccion de objetivos visible (alcance, bandol, cancelar)]
+[H0-06 (0,5 j) tick_conditions por ronda: los estados caducan] -> [H2-03 (2 j) condiciones en el HUD con rondas restantes]
+[H1-04 (2,5 j) G-09: creacion de personaje integrada + populate_from_class_race_background] -> [H2-04 (2 j) hitos y tierUp: la progresion que ya existe y nadie llama]
+[H0-01 (1,5 j) campana con los catalogos del manifiesto (tutorial Dia 1)] -> [H2-05 (1,5 j) botin al ganar (LootResolver + loot_tables.json)]
+[H1-01 (2,5 j) G-13: menu de combate desde datos (mover de tests/ a src/)] -> [H2-06 (2 j) hechizos en juego (210) y clases con contenido]
+[H0-01 (1,5 j) campana con los catalogos del manifiesto (tutorial Dia 1)] -> [H2-07 (1,5 j) 432 monstruos con maxHealth=0: decidir el canonico y rellenar]
+[H0-04 (1,5 j) setInventoryRules + accion Desequipar] -> [H2-08 (2 j) consumibles y equipo leidos desde datos (3 de 24 hoy)]
+[H0-08 (4 j) el juego ejecuta eventos de mapa (EventInterpreter)] -> [H3-01 (3 j) viajar entre naciones: atlas conectado a LevelTransition]
+[H0-08 (4 j) el juego ejecuta eventos de mapa (EventInterpreter)] -> [H3-02 (3 j) diario de misiones (QuestDefinition no existe)]
+[H0-08 (4 j) el juego ejecuta eventos de mapa (EventInterpreter)] -> [H3-03 (2,5 j) dialogo ramificado por interruptores]
+[H1-02 (2,5 j) G-14: HudTimer y ShopEngine a produccion] -> [H3-04 (2 j) comercio con stock y precios reales]
+[H3-04 (2 j) comercio con stock y precios reales] -> [H3-05 (1,5 j) negocios y rentas expuestos al jugador]
+[H1-02 (2,5 j) G-14: HudTimer y ShopEngine a produccion] -> [H3-06 (1,5 j) temporizadores de mision visibles en el HUD]
+[H0-08 (4 j) el juego ejecuta eventos de mapa (EventInterpreter)] -> [H3-07 (3 j) objetos del mundo que hacen algo (puertas, patrullas, botin)]
+[H4-03 (3 j) propiedades de instancia (solo las lee el editor antiguo)] -> [H3-07 (3 j) objetos del mundo que hacen algo (puertas, patrullas, botin)]
+[H0-05 (2 j) ranuras de guardado en F5/F9 y en Cargar partida] -> [H3-08 (2 j) recuperarse de una derrota sin perder la partida]
+[H4-01 (2,5 j) crear, duplicar y borrar proyectos (ProjectIndex ya existe)] -> [H4-02 (2,5 j) crear y gestionar mapas de un proyecto]
+[H4-02 (2,5 j) crear y gestionar mapas de un proyecto] -> [H4-03 (3 j) propiedades de instancia (solo las lee el editor antiguo)]
+[H4-02 (2,5 j) crear y gestionar mapas de un proyecto] -> [H4-04 (2 j) cuentagotas, rectangulo y linea: el arrastre en ImGui]
+[H4-02 (2,5 j) crear y gestionar mapas de un proyecto] -> [H4-05 (2 j) panel de problemas integrado en EditorApplication]
+[H4-02 (2,5 j) crear y gestionar mapas de un proyecto] -> [H4-06 (3 j) navegador de recursos: elegir por nombre, no por ID]
+[H4-03 (3 j) propiedades de instancia (solo las lee el editor antiguo)] -> [H4-07 (2 j) selectores por nombre + rehacer la prueba de E-14]
+[H5-04 (3,5 j) base de datos RPG del proyecto (E-16; hoy rompe el build)] -> [H4-07 (2 j) selectores por nombre + rehacer la prueba de E-14]
+[H4-02 (2,5 j) crear y gestionar mapas de un proyecto] -> [H4-08 (2 j) probar la partida desde el editor (F-01 portado)]
+[H0-08 (4 j) el juego ejecuta eventos de mapa (EventInterpreter)] -> [H4-08 (2 j) probar la partida desde el editor (F-01 portado)]
+[H4-02 (2,5 j) crear y gestionar mapas de un proyecto] -> [H4-09 (2 j) capas: orden, visibilidad y bloqueo]
+[H4-04 (2 j) cuentagotas, rectangulo y linea: el arrastre en ImGui] -> [H4-10 (3 j) autotiles y terrenos]
+[H4-01 (2,5 j) crear, duplicar y borrar proyectos (ProjectIndex ya existe)] -> [H5-04 (3,5 j) base de datos RPG del proyecto (E-16; hoy rompe el build)]
+[H4-02 (2,5 j) crear y gestionar mapas de un proyecto] -> [H5-01 (3 j) editor de paginas de evento]
+[H0-08 (4 j) el juego ejecuta eventos de mapa (EventInterpreter)] -> [H5-01 (3 j) editor de paginas de evento]
+[H5-01 (3 j) editor de paginas de evento] -> [H5-02 (3 j) lista de comandos editable]
+[H5-02 (3 j) lista de comandos editable] -> [H5-03 (2,5 j) depurador paso a paso con interruptores y variables]
+[H0-08 (4 j) el juego ejecuta eventos de mapa (EventInterpreter)] -> [H5-03 (2,5 j) depurador paso a paso con interruptores y variables]
+[H4-05 (2 j) panel de problemas integrado en EditorApplication] -> [H5-05 (2 j) validar_todo.py como servicio del panel de problemas]
+[H5-01 (3 j) editor de paginas de evento] -> [H5-06 (4 j) editor de guion: aventuras y dialogos sin tocar JSON]
+[H0-03 (1 j) Esc abre la pausa y Reanudar sale de ella] -> [H6-01 (2,5 j) cablear AudioEngine (miniaudio real, ya compilado)]
+[H6-01 (2,5 j) cablear AudioEngine (miniaudio real, ya compilado)] -> [H6-02 (3 j) assets de audio: hoy hay 0 ficheros en assets/]
+[H1-03 (1,5 j) G-10: MenuLogic a produccion y Opciones real] -> [H6-03 (1 j) opciones de audio por bus, guardadas]
+[H6-01 (2,5 j) cablear AudioEngine (miniaudio real, ya compilado)] -> [H6-03 (1 j) opciones de audio por bus, guardadas]
+[H1-05 (2 j) G-17: Locale cableado a los textos del motor] -> [H6-04 (2 j) textos del motor extraidos a i18n]
+[H1-03 (1,5 j) G-10: MenuLogic a produccion y Opciones real] -> [H6-05 (2,5 j) accesibilidad: tamano de texto, remapeo, grados sin color]
+[H0-01 (1,5 j) campana con los catalogos del manifiesto (tutorial Dia 1)] -> [H7-01 (4 j) nucleo del exportador de juego autonomo (no existe)]
+[H0-07 (1 j) el titulo sale del manifiesto (TitleMenuState)] -> [H7-01 (4 j) nucleo del exportador de juego autonomo (no existe)]
+[H7-01 (4 j) nucleo del exportador de juego autonomo (no existe)] -> [H7-02 (2,5 j) asistente de exportacion en el editor]
+[H4-01 (2,5 j) crear, duplicar y borrar proyectos (ProjectIndex ya existe)] -> [H7-02 (2,5 j) asistente de exportacion en el editor]
+[H4-08 (2 j) probar la partida desde el editor (F-01 portado)] -> [H7-03 (2 j) aceptacion con un autor y un jugador nuevos]
+[H7-02 (2,5 j) asistente de exportacion en el editor] -> [H7-03 (2 j) aceptacion con un autor y un jugador nuevos]
+
+[H0 listo] happens at [H0-08 (4 j) el juego ejecuta eventos de mapa (EventInterpreter)]'s end
+[H1 listo] happens at [H1-05 (2 j) G-17: Locale cableado a los textos del motor]'s end
+[H2 listo] happens at [H2-08 (2 j) consumibles y equipo leidos desde datos (3 de 24 hoy)]'s end
+[H3 listo] happens at [H3-08 (2 j) recuperarse de una derrota sin perder la partida]'s end
+[H4 listo] happens at [H4-10 (3 j) autotiles y terrenos]'s end
+[H5 listo] happens at [H5-06 (4 j) editor de guion: aventuras y dialogos sin tocar JSON]'s end
+[H6 listo] happens at [H6-05 (2,5 j) accesibilidad: tamano de texto, remapeo, grados sin color]'s end
+[H7 listo] happens at [H7-03 (2 j) aceptacion con un autor y un jugador nuevos]'s end
+[H8 listo] happens at [H8-04 (2 j) 25 docs desactualizados: actualizar o fechar como historicos]'s end
+
+@endgantt

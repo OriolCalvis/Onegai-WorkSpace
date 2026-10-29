@@ -1,0 +1,21 @@
+{
+ "id": "TILDES-03",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — los 973 muebles y paredes de los interiores (mobles_kit.json) con tildes, y sus generadores.",
+ "origen": "Pendiente de TILDES-02: «catálogos que solo ve el editor siguen sin tildes». mobles_kit.json lo cargan además los proyectos boundington y este_norte.",
+ "actions": [
+  "tools/iso/mobles_comuns.py, mobles_monuments.py, mobles_nacions.py, mobles_oficis.py: los nombres con tilde (Estantería, Armería, Sofá, Maniquí, Jergón, Ataúd, Baúl, Muñeco, Sarcófago, Lámpara, Cojín, Tótem, Bonsái, Carbón, Círculo, Globo terráqueo, Mesa de té, Viga caída, Cajas de almacén, Puesto de cerámica, Atril de música).",
+  "tools/iso/exportar_mobles.py: librería, telón, telaraña, máscaras de teatro; los tramos en castellano (cap → cabecera, peus → pies, sol → de una pieza).",
+  "assets/objects/mobles_kit.json rehecho con nom_de() sin volver a pintar las hojas: 200 nombres; ids, orden y lo demás, igual."
+ ],
+ "pending": [
+  "«de una pieza» para el tramo suelto de barras y mostradores es mío."
+ ],
+ "verification": [
+  "Quitando tildes y eñes, cada nombre es igual al de antes salvo los 80 de los tramos traducidos.",
+  "ctest 216/217 (linea_base_core); validar_todo 0 errores.",
+  "Aplicado en el Mac (out/claude_tildes03): los 6 ficheros iguales."
+ ],
+ "sesion": "sesiones/2026-10-08-claude-tienda-caer-dioses.md"
+}

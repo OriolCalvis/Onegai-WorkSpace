@@ -1,0 +1,31 @@
+{
+ "id": "ALMA-01",
+ "date": "2026-10-01",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol (commit local), entregado al Mac como tgz + aplicar_alma1.sh",
+ "encargo": "La calle con alma: Oriol replantea la direccion artistica (la captura del centro con los monumentos pixen es de las mejores que tenemos; lo que falla son las casas-bunker y la falta de alma). Prueba pequena antes de extenderlo: casas enteras con balcones, ropa y macetas, herreria con patio, taberna con mesa y barriles, tienda con toldo, props tecnomagicos y decorado por zona (sin ropa en la plaza). Lote 14 de PixelLab (23 generaciones, 485 de 2.000).",
+ "archivos": {
+  "nuevos": [
+   "tools/pixellab/quitar_peana.py (quita el fondo y la losa que pixen pinta bajo cada edificio: base de las paredes = rombo 2:1 paralelo al borde de la losa), tools/pixellab/perspectiva.py (mide si la base sigue la isometrica 2:1 y dibuja el rombo de la huella)",
+   "assets/textures/pixellab/lote14/ (10 edificios limpios + 5 props + 4 baldosas de suelo bajo edificio + generaciones.json), assets/textures/monumentos/casa_alma_*.png/json, herreria, taberna, tienda (hojas en tiras)",
+   "assets/textures/pixellab/estil/ (paleta mestra, ancora de personatges, casa aprovada) y tools/pixellab/{paleta_mestra,aplicar_paleta,graduar_paleta,limpiar_fondo,contacto}.py del ESTIL-01 (no entregados antes), lotes 12 y 13 (referencia; no entran al juego)",
+   "Claude outputs/pixellab/alma/LEEME.md + capturas"
+  ],
+  "modificados": [
+   "tools/gen_ciudad.py (tiles casa_alma/local_*, rellenar_masa con zona alma y paso a la derecha, sin_ropa en plaza y avenida, locales con sprite entero, decorado por zona: fanal_guardianes, banco_brasero, parada_mercado en la plaza; farola_alambique en la avenida; fuente_viento; mesa_taberna y barriles en la taberna; VOLATILES farola/fuente/banco_plaza)",
+   "src/Engine/ApplicationNivel.cpp (la puerta junto a una celda cubierta por un monumento se dibuja como umbral, no como puerta suelta)",
+   "tools/pixellab/contacto.py (peca.png:AxB dibuja el rombo de la huella)",
+   "assets/textures/pixellab/{tiles,props,props_grandes,monumentos}.json, terreno_iso.json (gids 85-88), terreno_mundo.png, pixellab_props.png/json (57), pixellab_props_grandes.png/json (6), sprites.json, monumentos.json, assets/objects/pixellab_objetos.json (+5), 92 TMX (tilecount 88), assets/maps/ciudad_centro.tmx + assets/levels/ciudad_centro.json"
+  ]
+ },
+ "verificacion": [
+  "tools/conectividad.py: 100% en todos los niveles (centro 2367/2367, 264 objetos)",
+  "ctest: test_registro_sprites, test_monumentos, demo_ciudad, test_object_catalog OK; fallos previos sin cambios (test_catalog_content, test_marcar_paquetes, test_g14/test_application no compilan)",
+  "linea_base_core: las mismas 35 deudas que HEAD (ninguna nueva)",
+  "capturas: Claude outputs/pixellab/alma/"
+ ],
+ "pendiente": [
+  "Decision de Oriol: puertas vs personaje (2x2 de una planta o escalar 15%)",
+  "Extender casas enteras a toda la ciudad y retirar bloques; locales con oficio que faltan; props/vegetacion en pixen; monumentos con geometria; gramatica por raza; paleta derivada de las piezas ancla; capa de vida en el motor (CIUDAD-01)"
+ ]
+}

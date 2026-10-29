@@ -1,0 +1,17 @@
+{
+  "id": "C-10",
+  "date": "2026-09-03",
+  "author": "qwen",
+  "status": "Tancat localment; el tanca formalment el pas per CI",
+  "actions": [
+    "JsonValue::parse decodifica \\uXXXX a UTF-8, inclosos els parells de substitució; rebutja substituts orfes, dígits no hexadecimals i escapes incomplets amb missatge propi.",
+    "El round-trip JsonWriter → JsonValue::parse deixa d'estar trencat: els caràcters de control que l'escriptor escapa com \\u00xx tornen a entrar sense pèrdues.",
+    "test_json nou: round-trip amb control/accents/cometes/barres, escapes directes, parells de substitució i casos de rebuig."
+  ],
+  "verification": [
+    "test_json verd; build completa i suite gl-free sencera en verd (commit 50098f8)."
+  ],
+  "pending": [
+    "La trampa de la BITACORA Part 3 sobre \\uXXXX queda obsoleta des d'aquest paquet; actualitzar-la quan es toqui la BITACORA (ara té capes alienes sense commitear)."
+  ]
+}

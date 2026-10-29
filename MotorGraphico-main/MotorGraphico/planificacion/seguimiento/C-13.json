@@ -1,0 +1,22 @@
+{
+  "id": "C-13",
+  "date": "2026-09-11",
+  "author": "Claude (paritat inicial) + Codex (validació estricta)",
+  "status": "Paritat i validació de camps opcionals implementades; CI pendent",
+  "actions": [
+    "`MapEntityDocument` arriba a paritat: patrulla, nivell i cel·la de destí (amb el seu `hasTargetPosition`), botí, taula de botí, esdeveniment, nom visible, variant, escala, override d'efecte i mapa de propietats. El header porta la taula de correspondència camp a camp amb `ObjectSpawn`, perquè qui n'afegeixi un demà sàpiga que ha d'ampliar les dues llistes alhora.",
+    "L'única cosa que `ObjectSpawn` no té és l'id d'instància: en un nivell la identitat és la posició dins l'array, i és exactament per això que un enemic invocat per narrativa es quedava sense identitat (C-04). El document en dona un d'estable des del principi.",
+    "Validació dels camps nous: caixa de patrulla invertida, escala no positiva, entrada de botí buida i propietat sense nom es rebutgen. La patrulla es comprova contra els límits del mapa; `targetPosition` NO, perquè és una cel·la del mapa de destí, que aquest document no coneix.",
+    "`ProjectSerializer` els escriu i els llegeix tots. S'escriuen NOMÉS si difereixen del valor per defecte: cap fitxer de mapa del repositori canvia per recompilar, els diffs segueixen sent llegibles, i segueix sent sense pèrdua perquè el lector restaura aquests mateixos defectes. Les propietats van en `std::map`, o sigui ordre determinista i el mateix fitxer byte a byte en desar dues vegades.",
+    "Al llegir, tot és opcional: un mapa escrit abans d'aquest paquet carrega igual, i la patrulla absent s'omple amb la posició — que és com `LevelLoader` expressa «aquest objecte no patrulla» des de la Fase 6. Cap canvi de `kMapSchemaVersion`: claus additives amb valor per defecte.",
+    "ProjectSerializer rebutja camps opcionals presents mal tipats, patrulles incompletes, propietats no textuals, escales no representables i coordenades no enteres; no substitueix aquests errors per defaults."
+  ],
+  "verification": [
+    "`test_map_round_trip` ampliat a 5 casos: els onze camps poblats seguits per tot el camí real (TMX → MapDocument → JSON a disc → MapDocument) amb comparació camp a camp, més una entitat buida al costat per cobrir també els defectes; desar el que s'acaba de llegir dona els mateixos bytes; un mapa anterior a C-13 carrega amb els defectes correctes; i un document sense camps d'autoria produeix exactament el JSON d'abans. `test_map_document` puja a 8 amb la validació dels camps nous. Amb el serialitzador antic, el round-trip falla al primer camp. Sense regressions: `test_project_serialization`, `test_project`, `test_tmx_importer` i `test_runtime_tilemap` verds.",
+    "19 variants de JSON invàlid i compatibilitat de valors buits vàlids a test_map_round_trip; suite local aïllada verda.",
+    "11/09: test_map_round_trip verd amb AddressSanitizer i UndefinedBehaviorSanitizer."
+  ],
+  "pending": [
+    "CI remota per al tancament formal."
+  ]
+}

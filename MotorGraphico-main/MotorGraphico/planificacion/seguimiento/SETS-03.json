@@ -1,0 +1,38 @@
+{
+ "id": "SETS-03",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — el set de tier 2 de las seis clases de la 3.ª iteracion (Apostata, Senor de las Armas, Furia de los Creadores, Bardo de las Cuatro Estaciones, Mago Chasqueador y Monje del Despertar) con los mismos criterios que las SP y las clases propias, dibujado y probado en las cuatro tallas y en el motor; el del Bardo, desde su origen en la cultura de los hombres gato (las Praderas de Oro y la Marcha de las Cuatro Estaciones). Y las diez cartas del Monje del Despertar y del Mago Chasqueador, con descripcion jugable y su gancho.",
+ "origen": "Oriol (08/10): «con los conceptos que hicimos los sets del Nostale me hagas los sets del apostata, senor de las armas, furia de los creadores, bardo de las 4 estaciones de tier 2, siguiendo los mismos criterios, y el mago de los chasquidos y el monje que hice, por cierto, me podrias dar descripciones a las habilidades de estos dos ultimos, solo les puse la pasiva y el titulo». A mitad: «el origen del bardo de las 4 estaciones salio en la cultura de los hombres gato, lo digo para que adaptes mejor la estetica».",
+ "fuente": "CANON_SP_CLASES.md §8 y CANON_CLASES_PROPIAS.md §3 y §7 (criterios y presupuesto); la identidad y las particulas de cada clase (tools/particulas.py); el vault de Oriol para el Bardo: Gran Compendio de los Creadores («Hombres Gato (Bosmurg)», «La Marcha de las Cuatro Estaciones - 8790 b.f.») y la ficha «Hombres Gato (Felinos)».",
+ "canon": "planificacion/CANON_SETS_ITERACION3.md (criterios, los seis sets, el Bardo de los hombres gato con lo que es canon y lo que es dibujo, los guantes y las cartas del Monje y del Mago Chasqueador).",
+ "scope": [
+  "tools/sets_iteracion3.py (nuevo): los seis sets (30 piezas raras de tier 2) con sp_reglas.pieza.",
+  "tools/actores_trajes_iteracion3.py (nuevo): las piezas propias (6 cabezas, 6 torsos, 3 piernas, 1 pies) y 31 paletas sin tipo; lo importa actores_trajes_propias al final (ninguna fila de antes se mueve).",
+  "tools/actores_formas_iteracion3.py (nuevo): los guantes del Chasqueador (PAREJA, con su escalon raro), al final del atlas de armas.",
+  "tools/actores_estetica.py: el tema de los seis sets (y la forma de los guantes) y la pieza de cada prenda; el tema del Mazo del Desahucio (TILDES-02 lo renombro y perdia el tinte).",
+  "tools/importar_clases_companeros.py: las diez cartas del Monje y del Mago Chasqueador (descripcion, ganchos, salvacion, quien tira), el arranque del Monje, las etiquetas Cancion por slug (el reimportar las perdia tras las tildes) y los sets en equipment.json y las librerias.",
+  "tools/sp_reglas.py: «Set de la Furia» y «Set de las Cuatro Estaciones» (nombres femeninos); tools/particulas.py: las familias del Monje y del Mago Chasqueador; assets/textures/particulas_cartas.json.",
+  "Catalogos: skills (las 20 cartas), classes (el arranque del Monje), equipment (+30: 828), libreria_armas y libreria_completa (+30 item_<id>).",
+  "assets/textures/personajes*: 508 piezas de equipo (773 objetos con pieza). Las filas de PixelLab de cabeza y torso bajan 6 (las importa importar_prendas detras de las generadas); su contenido es el mismo.",
+  "Pruebas: tests/Game/ClasesCompanerosTests.cpp (13), tools/test_validar_sprites.py (los sets de la 3.ª iteracion; las parejas con los guantes)."
+ ],
+ "non_goals": [
+  "Las pasivas Ki y Cascada Letal siguen con sus [pendiente] (las cartas no dependen de ellas).",
+  "Las armaduras de tiers superiores (TIERS-01): otro dia.",
+  "Arma inicial del Monje y del Mago Chasqueador."
+ ],
+ "verification": [
+  "test_clases_companeros 13/13; ctest 216/217 con EGL_PLATFORM=surfaceless (solo linea_base_core, que sigue en 44).",
+  "test_validar_sprites: 53/53 sin GeneradoresTests (test_personajes_son_reproducibles falla igual en la base: las filas de PixelLab no salen de generar(); el de props revienta con SIGFPE en el contenedor).",
+  "validar_todo: 0 errores (10 avisos de antes); validar_catalogos_rpg: sin fallos.",
+  "Los guantes tapan mas del 70 % de la mano en todas las tallas y frames (minimo 0,72).",
+  "Laminas de los seis sets en las cuatro tallas y el Bardo en los dos pueblos de hombres gato."
+ ],
+ "para_oriol": [
+  "¿Te gustan los seis sets, y el Bardo como bardo de camino de las Praderas de Oro (poncho con la Marcha tejida)?",
+  "La companera bardo reclutable (Ilse de las Estaciones) sigue siendo una elfa del bosque provisional: ¿la hacemos Cara Loca?",
+  "Las descripciones del Monje y del Mago Chasqueador: ¿te valen o las cambias?"
+ ],
+ "sesion": "sesiones/2026-10-08-claude-sets-iteracion3.md"
+}

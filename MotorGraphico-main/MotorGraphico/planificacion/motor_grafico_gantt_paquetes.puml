@@ -1,0 +1,455 @@
+@startgantt
+
+title MotorGraphico Creator — Plan reconciliado con el código real (esfuerzo restante)
+
+' -------------------------------------------------------------------
+' ESCALA: 1 'día' del Gantt = 1 JORNADA DE ESFUERZO (~6 h de trabajo
+' enfocado), NO un día natural. Con dedicación de ratos libres y fines
+' de semana (~8-10 h/semana) el ritmo real es ~1,5 jornadas por semana:
+'   10 jornadas de Gantt  ~=  6-7 semanas naturales.
+'
+' DURACIÓN = esfuerzo RESTANTE (estimación original menos lo ya hecho).
+' El porcentaje de cada barra es el avance real auditado en el repo el
+' 2026-08-28. La estimación original completa está en la columna
+' 'Estimación' de ESTADO_REAL_vs_ROADMAP.md.
+'
+' COLORES:  verde = hecho en su mayor parte   ámbar = a medias
+'           gris = sin empezar                rojo = REPLANTEAR
+'           (rojo = la ficha contradice una decisión ya tomada en el
+'            código y no se puede ejecutar tal como está escrita)
+' -------------------------------------------------------------------
+
+Project starts 2026-09-01
+saturday are closed
+sunday are closed
+
+
+-- Fase 0 — Línea base --
+
+[BASE-01 Inventariar y congelar la base gráfica actual] lasts 1 days
+[BASE-01 Inventariar y congelar la base gráfica actual] is 70% completed
+[BASE-01 Inventariar y congelar la base gráfica actual] is colored in #E3A82B
+[BASE-02 Verificar CI, demos y compatibilidad multiplataforma] lasts 1 days
+[BASE-02 Verificar CI, demos y compatibilidad multiplataforma] is 75% completed
+[BASE-02 Verificar CI, demos y compatibilidad multiplataforma] is colored in #E3A82B
+[INF-01 Crear tests/ y ctest, y convertir los demos-aserción en pruebas] lasts 5 days
+[INF-01 Crear tests/ y ctest, y convertir los demos-aserción en pruebas] is colored in #B8BEC7
+[INF-06 Limpiar duplicados y ruido del repositorio] lasts 1 days
+[INF-06 Limpiar duplicados y ruido del repositorio] is colored in #B8BEC7
+[INF-02 Decidir la tecnología de UI del editor (HUD propio vs Dear ImGui)] lasts 3 days
+[INF-02 Decidir la tecnología de UI del editor (HUD propio vs Dear ImGui)] is colored in #B8BEC7
+[INF-04 Decidir dependencias externas y política de vendorizado] lasts 2 days
+[INF-04 Decidir dependencias externas y política de vendorizado] is colored in #B8BEC7
+[INF-05 Ampliar CI a Windows y macOS] lasts 4 days
+[INF-05 Ampliar CI a Windows y macOS] is colored in #B8BEC7
+[INF-03 Reorganizar el árbol hacia la arquitectura objetivo] lasts 6 days
+[INF-03 Reorganizar el árbol hacia la arquitectura objetivo] is colored in #B8BEC7
+
+-- Fase 1 — Arquitectura documental --
+
+[DOC-01 Definir Project y ProjectSettings] lasts 2 days
+[DOC-01 Definir Project y ProjectSettings] is 60% completed
+[DOC-01 Definir Project y ProjectSettings] is colored in #E3A82B
+[DOC-02 Definir MapDocument y capas tipadas] lasts 4 days
+[DOC-02 Definir MapDocument y capas tipadas] is 45% completed
+[DOC-02 Definir MapDocument y capas tipadas] is colored in #E3A82B
+[DOC-03 Separar MapDocument de RuntimeTileMap] lasts 5 days
+[DOC-03 Separar MapDocument de RuntimeTileMap] is 40% completed
+[DOC-03 Separar MapDocument de RuntimeTileMap] is colored in #D9614C
+[DOC-04 Implementar IDs estables y referencias] lasts 2 days
+[DOC-04 Implementar IDs estables y referencias] is 50% completed
+[DOC-04 Implementar IDs estables y referencias] is colored in #E3A82B
+[DOC-05 Serialización JSON y versionado de esquema] lasts 3 days
+[DOC-05 Serialización JSON y versionado de esquema] is 55% completed
+[DOC-05 Serialización JSON y versionado de esquema] is colored in #E3A82B
+[DOC-06 Convertir el parser TMX en importador] lasts 3 days
+[DOC-06 Convertir el parser TMX en importador] is 40% completed
+[DOC-06 Convertir el parser TMX en importador] is colored in #E3A82B
+[DOC-07 Pruebas de ida y vuelta TMX-JSON-Runtime] lasts 2 days
+[DOC-07 Pruebas de ida y vuelta TMX-JSON-Runtime] is 60% completed
+[DOC-07 Pruebas de ida y vuelta TMX-JSON-Runtime] is colored in #E3A82B
+
+-- Fase 2 — Runtime jugable mínimo --
+
+[RUN-01 Implementar Application y bucle principal] lasts 1 days
+[RUN-01 Implementar Application y bucle principal] is 80% completed
+[RUN-01 Implementar Application y bucle principal] is colored in #E3A82B
+[RUN-02 Implementar InputSystem] lasts 2 days
+[RUN-02 Implementar InputSystem] is 60% completed
+[RUN-02 Implementar InputSystem] is colored in #E3A82B
+[RUN-03 Implementar SceneManager y carga de mapas] lasts 4 days
+[RUN-03 Implementar SceneManager y carga de mapas] is 45% completed
+[RUN-03 Implementar SceneManager y carga de mapas] is colored in #E3A82B
+[RUN-04 Implementar World y ciclo de vida de entidades] lasts 4 days
+[RUN-04 Implementar World y ciclo de vida de entidades] is 35% completed
+[RUN-04 Implementar World y ciclo de vida de entidades] is colored in #E3A82B
+[RUN-05 Migrar Entity a composición por componentes] lasts 7 days
+[RUN-05 Migrar Entity a composición por componentes] is 10% completed
+[RUN-05 Migrar Entity a composición por componentes] is colored in #B8BEC7
+[RUN-06 Implementar animación por frames] lasts 1 days
+[RUN-06 Implementar animación por frames] is 90% completed
+[RUN-06 Implementar animación por frames] is colored in #7FB069
+[RUN-07 Implementar movimiento y colisión dinámica] lasts 3 days
+[RUN-07 Implementar movimiento y colisión dinámica] is 65% completed
+[RUN-07 Implementar movimiento y colisión dinámica] is colored in #E3A82B
+[RUN-08 Implementar cámara de seguimiento] lasts 1 days
+[RUN-08 Implementar cámara de seguimiento] is 90% completed
+[RUN-08 Implementar cámara de seguimiento] is colored in #7FB069
+[RUN-09 Implementar portales y cambio de mapa] lasts 1 days
+[RUN-09 Implementar portales y cambio de mapa] is 80% completed
+[RUN-09 Implementar portales y cambio de mapa] is colored in #7FB069
+[RUN-10 Implementar estado y guardado básico] lasts 1 days
+[RUN-10 Implementar estado y guardado básico] is 100% completed
+[RUN-10 Implementar estado y guardado básico] is colored in #5BA85B
+[RUN-11 Crear vertical slice jugable del runtime] lasts 1 days
+[RUN-11 Crear vertical slice jugable del runtime] is 100% completed
+[RUN-11 Crear vertical slice jugable del runtime] is colored in #5BA85B
+
+-- Fase 3 — Editor visual de mapas MVP --
+
+[EDT-01 Crear ejecutable MotorEditor] lasts 2 days
+[EDT-01 Crear ejecutable MotorEditor] is 60% completed
+[EDT-01 Crear ejecutable MotorEditor] is colored in #E3A82B
+[EDT-02 Integrar Dear ImGui y docking] lasts 5 days
+[EDT-02 Integrar Dear ImGui y docking] is colored in #D9614C
+[EDT-03 Integrar viewport OpenGL del mapa] lasts 2 days
+[EDT-03 Integrar viewport OpenGL del mapa] is 80% completed
+[EDT-03 Integrar viewport OpenGL del mapa] is colored in #7FB069
+[EDT-04 Crear panel de proyecto y árbol de mapas] lasts 3 days
+[EDT-04 Crear panel de proyecto y árbol de mapas] is 50% completed
+[EDT-04 Crear panel de proyecto y árbol de mapas] is colored in #E3A82B
+[EDT-05 Crear navegador de assets] lasts 4 days
+[EDT-05 Crear navegador de assets] is 45% completed
+[EDT-05 Crear navegador de assets] is colored in #E3A82B
+[EDT-06 Crear paleta de tiles] lasts 1 days
+[EDT-06 Crear paleta de tiles] is 85% completed
+[EDT-06 Crear paleta de tiles] is colored in #7FB069
+[EDT-07 Implementar selección y picking isométrico] lasts 1 days
+[EDT-07 Implementar selección y picking isométrico] is 85% completed
+[EDT-07 Implementar selección y picking isométrico] is colored in #7FB069
+[EDT-08 Implementar lápiz, borrador y cuentagotas] lasts 2 days
+[EDT-08 Implementar lápiz, borrador y cuentagotas] is 75% completed
+[EDT-08 Implementar lápiz, borrador y cuentagotas] is colored in #E3A82B
+[EDT-09 Implementar rectángulo, relleno y selección] lasts 2 days
+[EDT-09 Implementar rectángulo, relleno y selección] is 80% completed
+[EDT-09 Implementar rectángulo, relleno y selección] is colored in #E3A82B
+[EDT-10 Crear panel de capas] lasts 2 days
+[EDT-10 Crear panel de capas] is 65% completed
+[EDT-10 Crear panel de capas] is colored in #E3A82B
+[EDT-11 Crear inspector contextual] lasts 2 days
+[EDT-11 Crear inspector contextual] is 80% completed
+[EDT-11 Crear inspector contextual] is colored in #7FB069
+[EDT-12 Implementar CommandHistory y deshacer-rehacer] lasts 3 days
+[EDT-12 Implementar CommandHistory y deshacer-rehacer] is 70% completed
+[EDT-12 Implementar CommandHistory y deshacer-rehacer] is colored in #D9614C
+[EDT-13 Implementar copiar, pegar y duplicar] lasts 1 days
+[EDT-13 Implementar copiar, pegar y duplicar] is 85% completed
+[EDT-13 Implementar copiar, pegar y duplicar] is colored in #7FB069
+[EDT-14 Implementar guardado, autosave y recuperación] lasts 3 days
+[EDT-14 Implementar guardado, autosave y recuperación] is 40% completed
+[EDT-14 Implementar guardado, autosave y recuperación] is colored in #E3A82B
+[EDT-15 Validar creación de un mapa sin usar Tiled] lasts 2 days
+[EDT-15 Validar creación de un mapa sin usar Tiled] is 70% completed
+[EDT-15 Validar creación de un mapa sin usar Tiled] is colored in #E3A82B
+
+-- Fase 4 — Herramientas avanzadas de mapas --
+
+[MAP-01 Crear importador y editor visual de tilesets] lasts 6 days
+[MAP-01 Crear importador y editor visual de tilesets] is 35% completed
+[MAP-01 Crear importador y editor visual de tilesets] is colored in #E3A82B
+[MAP-02 Implementar TileDefinition y metadatos] lasts 4 days
+[MAP-02 Implementar TileDefinition y metadatos] is 40% completed
+[MAP-02 Implementar TileDefinition y metadatos] is colored in #E3A82B
+[MAP-03 Implementar autotiles isométricos] lasts 9 days
+[MAP-03 Implementar autotiles isométricos] is colored in #B8BEC7
+[MAP-04 Crear editor de colisiones direccionales] lasts 6 days
+[MAP-04 Crear editor de colisiones direccionales] is 25% completed
+[MAP-04 Crear editor de colisiones direccionales] is colored in #E3A82B
+[MAP-05 Crear capas y canales de regiones] lasts 7 days
+[MAP-05 Crear capas y canales de regiones] is 10% completed
+[MAP-05 Crear capas y canales de regiones] is colored in #B8BEC7
+[MAP-06 Implementar editor de propiedades del mapa] lasts 4 days
+[MAP-06 Implementar editor de propiedades del mapa] is 30% completed
+[MAP-06 Implementar editor de propiedades del mapa] is colored in #E3A82B
+[MAP-07 Implementar colocación de entidades] lasts 2 days
+[MAP-07 Implementar colocación de entidades] is 85% completed
+[MAP-07 Implementar colocación de entidades] is colored in #7FB069
+[MAP-08 Implementar prefabs y plantillas] lasts 5 days
+[MAP-08 Implementar prefabs y plantillas] is 30% completed
+[MAP-08 Implementar prefabs y plantillas] is colored in #E3A82B
+[MAP-09 Implementar navegación y pathfinding] lasts 6 days
+[MAP-09 Implementar navegación y pathfinding] is 20% completed
+[MAP-09 Implementar navegación y pathfinding] is colored in #E3A82B
+[MAP-10 Implementar conexiones y puntos de aparición] lasts 1 days
+[MAP-10 Implementar conexiones y puntos de aparición] is 80% completed
+[MAP-10 Implementar conexiones y puntos de aparición] is colored in #7FB069
+[MAP-11 Mejorar profundidad, elevación y capas altas] lasts 5 days
+[MAP-11 Mejorar profundidad, elevación y capas altas] is 45% completed
+[MAP-11 Mejorar profundidad, elevación y capas altas] is colored in #E3A82B
+[MAP-12 Validar aldea, interior y mazmorra conectados] lasts 3 days
+[MAP-12 Validar aldea, interior y mazmorra conectados] is 55% completed
+[MAP-12 Validar aldea, interior y mazmorra conectados] is colored in #E3A82B
+
+-- Fase 5 — Sistema de eventos tipo RPG Maker --
+
+[EVT-01 Definir EventDefinition y EventPage] lasts 4 days
+[EVT-01 Definir EventDefinition y EventPage] is 45% completed
+[EVT-01 Definir EventDefinition y EventPage] is colored in #E3A82B
+[EVT-02 Definir Condition, Trigger y EventCommand] lasts 3 days
+[EVT-02 Definir Condition, Trigger y EventCommand] is 55% completed
+[EVT-02 Definir Condition, Trigger y EventCommand] is colored in #E3A82B
+[EVT-03 Implementar EventContext e EventInterpreter] lasts 4 days
+[EVT-03 Implementar EventContext e EventInterpreter] is 50% completed
+[EVT-03 Implementar EventContext e EventInterpreter] is colored in #E3A82B
+[EVT-04 Implementar variables e interruptores] lasts 2 days
+[EVT-04 Implementar variables e interruptores] is 60% completed
+[EVT-04 Implementar variables e interruptores] is colored in #E3A82B
+[EVT-05 Implementar interruptores locales por evento] lasts 3 days
+[EVT-05 Implementar interruptores locales por evento] is 10% completed
+[EVT-05 Implementar interruptores locales por evento] is colored in #B8BEC7
+[EVT-06 Implementar scheduler, esperas y procesos paralelos] lasts 5 days
+[EVT-06 Implementar scheduler, esperas y procesos paralelos] is 30% completed
+[EVT-06 Implementar scheduler, esperas y procesos paralelos] is colored in #E3A82B
+[EVT-07 Implementar comandos de diálogo y elecciones] lasts 3 days
+[EVT-07 Implementar comandos de diálogo y elecciones] is 55% completed
+[EVT-07 Implementar comandos de diálogo y elecciones] is colored in #E3A82B
+[EVT-08 Implementar comandos de estado e inventario] lasts 3 days
+[EVT-08 Implementar comandos de estado e inventario] is 55% completed
+[EVT-08 Implementar comandos de estado e inventario] is colored in #E3A82B
+[EVT-09 Implementar movimiento, audio, cámara y teletransporte] lasts 5 days
+[EVT-09 Implementar movimiento, audio, cámara y teletransporte] is 30% completed
+[EVT-09 Implementar movimiento, audio, cámara y teletransporte] is colored in #E3A82B
+[EVT-10 Implementar ramas, bucles y eventos comunes] lasts 6 days
+[EVT-10 Implementar ramas, bucles y eventos comunes] is 25% completed
+[EVT-10 Implementar ramas, bucles y eventos comunes] is colored in #E3A82B
+[EVT-11 Crear editor visual de páginas de evento] lasts 9 days
+[EVT-11 Crear editor visual de páginas de evento] is 5% completed
+[EVT-11 Crear editor visual de páginas de evento] is colored in #B8BEC7
+[EVT-12 Crear editor vertical de comandos] lasts 10 days
+[EVT-12 Crear editor vertical de comandos] is colored in #B8BEC7
+[EVT-13 Crear editor visual de rutas de movimiento] lasts 6 days
+[EVT-13 Crear editor visual de rutas de movimiento] is 15% completed
+[EVT-13 Crear editor visual de rutas de movimiento] is colored in #E3A82B
+[EVT-14 Implementar validación estática de eventos] lasts 4 days
+[EVT-14 Implementar validación estática de eventos] is 35% completed
+[EVT-14 Implementar validación estática de eventos] is colored in #E3A82B
+[EVT-15 Implementar depuración paso a paso de eventos] lasts 7 days
+[EVT-15 Implementar depuración paso a paso de eventos] is colored in #B8BEC7
+[EVT-16 Validar misión de llave, puerta y cofre] lasts 3 days
+[EVT-16 Validar misión de llave, puerta y cofre] is 40% completed
+[EVT-16 Validar misión de llave, puerta y cofre] is colored in #E3A82B
+
+-- Fase 6 — Base de datos y sistemas de juego --
+
+[GDB-01 Crear GameDatabase extensible] lasts 3 days
+[GDB-01 Crear GameDatabase extensible] is 65% completed
+[GDB-01 Crear GameDatabase extensible] is colored in #E3A82B
+[GDB-02 Crear editor maestro-detalle de registros] lasts 8 days
+[GDB-02 Crear editor maestro-detalle de registros] is 10% completed
+[GDB-02 Crear editor maestro-detalle de registros] is colored in #B8BEC7
+[GDB-03 Implementar actores, NPC y enemigos] lasts 2 days
+[GDB-03 Implementar actores, NPC y enemigos] is 80% completed
+[GDB-03 Implementar actores, NPC y enemigos] is colored in #7FB069
+[GDB-04 Implementar atributos, estados y progresión] lasts 2 days
+[GDB-04 Implementar atributos, estados y progresión] is 80% completed
+[GDB-04 Implementar atributos, estados y progresión] is colored in #7FB069
+[GDB-05 Implementar objetos, equipo e inventario] lasts 2 days
+[GDB-05 Implementar objetos, equipo e inventario] is 80% completed
+[GDB-05 Implementar objetos, equipo e inventario] is colored in #7FB069
+[GDB-06 Implementar habilidades y efectos] lasts 2 days
+[GDB-06 Implementar habilidades y efectos] is 85% completed
+[GDB-06 Implementar habilidades y efectos] is colored in #7FB069
+[GDB-07 Implementar combate básico configurable] lasts 4 days
+[GDB-07 Implementar combate básico configurable] is 70% completed
+[GDB-07 Implementar combate básico configurable] is colored in #E3A82B
+[GDB-08 Implementar misiones y objetivos] lasts 3 days
+[GDB-08 Implementar misiones y objetivos] is 65% completed
+[GDB-08 Implementar misiones y objetivos] is colored in #E3A82B
+[GDB-09 Implementar diálogos reutilizables] lasts 3 days
+[GDB-09 Implementar diálogos reutilizables] is 50% completed
+[GDB-09 Implementar diálogos reutilizables] is colored in #E3A82B
+[GDB-10 Implementar tablas de loot y encuentros] lasts 3 days
+[GDB-10 Implementar tablas de loot y encuentros] is 55% completed
+[GDB-10 Implementar tablas de loot y encuentros] is colored in #E3A82B
+[GDB-11 Implementar audio, música y ambiente] lasts 6 days
+[GDB-11 Implementar audio, música y ambiente] is colored in #B8BEC7
+[GDB-12 Implementar título, menús y carga de partida] lasts 5 days
+[GDB-12 Implementar título, menús y carga de partida] is 40% completed
+[GDB-12 Implementar título, menús y carga de partida] is colored in #E3A82B
+[GDB-13 Validar aventura completa de treinta minutos] lasts 4 days
+[GDB-13 Validar aventura completa de treinta minutos] is 50% completed
+[GDB-13 Validar aventura completa de treinta minutos] is colored in #E3A82B
+
+-- Fase 7 — Playtest, extensiones y exportación --
+
+[TOOL-01 Implementar playtest desde el editor] lasts 6 days
+[TOOL-01 Implementar playtest desde el editor] is 10% completed
+[TOOL-01 Implementar playtest desde el editor] is colored in #B8BEC7
+[TOOL-02 Implementar probar desde la celda seleccionada] lasts 4 days
+[TOOL-02 Implementar probar desde la celda seleccionada] is colored in #B8BEC7
+[TOOL-03 Implementar recarga en caliente segura] lasts 6 days
+[TOOL-03 Implementar recarga en caliente segura] is colored in #B8BEC7
+[TOOL-04 Crear consola e inspector de estado] lasts 5 days
+[TOOL-04 Crear consola e inspector de estado] is 20% completed
+[TOOL-04 Crear consola e inspector de estado] is colored in #E3A82B
+[TOOL-05 Crear gestor completo de recursos y referencias] lasts 6 days
+[TOOL-05 Crear gestor completo de recursos y referencias] is 30% completed
+[TOOL-05 Crear gestor completo de recursos y referencias] is colored in #E3A82B
+[TOOL-06 Diseñar API de plugins de runtime] lasts 7 days
+[TOOL-06 Diseñar API de plugins de runtime] is colored in #B8BEC7
+[TOOL-07 Diseñar API de extensiones de editor] lasts 7 days
+[TOOL-07 Diseñar API de extensiones de editor] is colored in #B8BEC7
+[TOOL-08 Implementar permisos, versiones y migraciones de plugins] lasts 6 days
+[TOOL-08 Implementar permisos, versiones y migraciones de plugins] is colored in #B8BEC7
+[TOOL-09 Implementar empaquetado de recursos usados] lasts 6 days
+[TOOL-09 Implementar empaquetado de recursos usados] is colored in #B8BEC7
+[TOOL-10 Implementar exportación Windows y Linux] lasts 7 days
+[TOOL-10 Implementar exportación Windows y Linux] is 20% completed
+[TOOL-10 Implementar exportación Windows y Linux] is colored in #E3A82B
+[TOOL-11 Implementar diagnósticos de exportación] lasts 5 days
+[TOOL-11 Implementar diagnósticos de exportación] is colored in #B8BEC7
+[TOOL-12 Publicar alpha del creador de juegos] lasts 3 days
+[TOOL-12 Publicar alpha del creador de juegos] is colored in #B8BEC7
+
+-- Fase 8 — Beta, documentación y versión 1.0 --
+
+[REL-01 Crear juego de ejemplo completo] lasts 6 days
+[REL-01 Crear juego de ejemplo completo] is 45% completed
+[REL-01 Crear juego de ejemplo completo] is colored in #E3A82B
+[REL-02 Crear tutorial interactivo del editor] lasts 7 days
+[REL-02 Crear tutorial interactivo del editor] is colored in #B8BEC7
+[REL-03 Documentar formatos, runtime y plugins] lasts 3 days
+[REL-03 Documentar formatos, runtime y plugins] is 60% completed
+[REL-03 Documentar formatos, runtime y plugins] is colored in #E3A82B
+[REL-04 Realizar pruebas con proyectos grandes] lasts 7 days
+[REL-04 Realizar pruebas con proyectos grandes] is colored in #B8BEC7
+[REL-05 Realizar pruebas de usabilidad con creadores] lasts 8 days
+[REL-05 Realizar pruebas de usabilidad con creadores] is colored in #B8BEC7
+[REL-06 Corregir bloqueos y pérdida de datos] lasts 10 days
+[REL-06 Corregir bloqueos y pérdida de datos] is colored in #B8BEC7
+[REL-07 Optimizar mapas, entidades y editor] lasts 10 days
+[REL-07 Optimizar mapas, entidades y editor] is colored in #B8BEC7
+[REL-08 Preparar instalador y actualización] lasts 7 days
+[REL-08 Preparar instalador y actualización] is colored in #B8BEC7
+[REL-09 Congelar esquema 1.0 y compatibilidad] lasts 5 days
+[REL-09 Congelar esquema 1.0 y compatibilidad] is colored in #B8BEC7
+[REL-10 Publicar MotorGraphico Creator 1.0] lasts 3 days
+[REL-10 Publicar MotorGraphico Creator 1.0] is colored in #B8BEC7
+
+' --- dependencias (cadena de un solo desarrollador) ---
+[BASE-01 Inventariar y congelar la base gráfica actual] -> [BASE-02 Verificar CI, demos y compatibilidad multiplataforma]
+[BASE-02 Verificar CI, demos y compatibilidad multiplataforma] -> [INF-01 Crear tests/ y ctest, y convertir los demos-aserción en pruebas]
+[INF-01 Crear tests/ y ctest, y convertir los demos-aserción en pruebas] -> [INF-06 Limpiar duplicados y ruido del repositorio]
+[INF-06 Limpiar duplicados y ruido del repositorio] -> [INF-02 Decidir la tecnología de UI del editor (HUD propio vs Dear ImGui)]
+[INF-02 Decidir la tecnología de UI del editor (HUD propio vs Dear ImGui)] -> [INF-04 Decidir dependencias externas y política de vendorizado]
+[INF-04 Decidir dependencias externas y política de vendorizado] -> [INF-05 Ampliar CI a Windows y macOS]
+[INF-05 Ampliar CI a Windows y macOS] -> [INF-03 Reorganizar el árbol hacia la arquitectura objetivo]
+[INF-03 Reorganizar el árbol hacia la arquitectura objetivo] -> [DOC-01 Definir Project y ProjectSettings]
+[DOC-01 Definir Project y ProjectSettings] -> [DOC-02 Definir MapDocument y capas tipadas]
+[DOC-02 Definir MapDocument y capas tipadas] -> [DOC-03 Separar MapDocument de RuntimeTileMap]
+[DOC-03 Separar MapDocument de RuntimeTileMap] -> [DOC-04 Implementar IDs estables y referencias]
+[DOC-04 Implementar IDs estables y referencias] -> [DOC-05 Serialización JSON y versionado de esquema]
+[DOC-05 Serialización JSON y versionado de esquema] -> [DOC-06 Convertir el parser TMX en importador]
+[DOC-06 Convertir el parser TMX en importador] -> [DOC-07 Pruebas de ida y vuelta TMX-JSON-Runtime]
+[DOC-07 Pruebas de ida y vuelta TMX-JSON-Runtime] -> [RUN-01 Implementar Application y bucle principal]
+[RUN-01 Implementar Application y bucle principal] -> [RUN-02 Implementar InputSystem]
+[RUN-02 Implementar InputSystem] -> [RUN-03 Implementar SceneManager y carga de mapas]
+[RUN-03 Implementar SceneManager y carga de mapas] -> [RUN-04 Implementar World y ciclo de vida de entidades]
+[RUN-04 Implementar World y ciclo de vida de entidades] -> [RUN-05 Migrar Entity a composición por componentes]
+[RUN-05 Migrar Entity a composición por componentes] -> [RUN-06 Implementar animación por frames]
+[RUN-06 Implementar animación por frames] -> [RUN-07 Implementar movimiento y colisión dinámica]
+[RUN-07 Implementar movimiento y colisión dinámica] -> [RUN-08 Implementar cámara de seguimiento]
+[RUN-08 Implementar cámara de seguimiento] -> [RUN-09 Implementar portales y cambio de mapa]
+[RUN-09 Implementar portales y cambio de mapa] -> [RUN-10 Implementar estado y guardado básico]
+[RUN-10 Implementar estado y guardado básico] -> [RUN-11 Crear vertical slice jugable del runtime]
+[RUN-11 Crear vertical slice jugable del runtime] -> [EDT-01 Crear ejecutable MotorEditor]
+[EDT-01 Crear ejecutable MotorEditor] -> [EDT-02 Integrar Dear ImGui y docking]
+[EDT-02 Integrar Dear ImGui y docking] -> [EDT-03 Integrar viewport OpenGL del mapa]
+[EDT-03 Integrar viewport OpenGL del mapa] -> [EDT-04 Crear panel de proyecto y árbol de mapas]
+[EDT-04 Crear panel de proyecto y árbol de mapas] -> [EDT-05 Crear navegador de assets]
+[EDT-05 Crear navegador de assets] -> [EDT-06 Crear paleta de tiles]
+[EDT-06 Crear paleta de tiles] -> [EDT-07 Implementar selección y picking isométrico]
+[EDT-07 Implementar selección y picking isométrico] -> [EDT-08 Implementar lápiz, borrador y cuentagotas]
+[EDT-08 Implementar lápiz, borrador y cuentagotas] -> [EDT-09 Implementar rectángulo, relleno y selección]
+[EDT-09 Implementar rectángulo, relleno y selección] -> [EDT-10 Crear panel de capas]
+[EDT-10 Crear panel de capas] -> [EDT-11 Crear inspector contextual]
+[EDT-11 Crear inspector contextual] -> [EDT-12 Implementar CommandHistory y deshacer-rehacer]
+[EDT-12 Implementar CommandHistory y deshacer-rehacer] -> [EDT-13 Implementar copiar, pegar y duplicar]
+[EDT-13 Implementar copiar, pegar y duplicar] -> [EDT-14 Implementar guardado, autosave y recuperación]
+[EDT-14 Implementar guardado, autosave y recuperación] -> [EDT-15 Validar creación de un mapa sin usar Tiled]
+[EDT-15 Validar creación de un mapa sin usar Tiled] -> [MAP-01 Crear importador y editor visual de tilesets]
+[MAP-01 Crear importador y editor visual de tilesets] -> [MAP-02 Implementar TileDefinition y metadatos]
+[MAP-02 Implementar TileDefinition y metadatos] -> [MAP-03 Implementar autotiles isométricos]
+[MAP-03 Implementar autotiles isométricos] -> [MAP-04 Crear editor de colisiones direccionales]
+[MAP-04 Crear editor de colisiones direccionales] -> [MAP-05 Crear capas y canales de regiones]
+[MAP-05 Crear capas y canales de regiones] -> [MAP-06 Implementar editor de propiedades del mapa]
+[MAP-06 Implementar editor de propiedades del mapa] -> [MAP-07 Implementar colocación de entidades]
+[MAP-07 Implementar colocación de entidades] -> [MAP-08 Implementar prefabs y plantillas]
+[MAP-08 Implementar prefabs y plantillas] -> [MAP-09 Implementar navegación y pathfinding]
+[MAP-09 Implementar navegación y pathfinding] -> [MAP-10 Implementar conexiones y puntos de aparición]
+[MAP-10 Implementar conexiones y puntos de aparición] -> [MAP-11 Mejorar profundidad, elevación y capas altas]
+[MAP-11 Mejorar profundidad, elevación y capas altas] -> [MAP-12 Validar aldea, interior y mazmorra conectados]
+[MAP-12 Validar aldea, interior y mazmorra conectados] -> [EVT-01 Definir EventDefinition y EventPage]
+[EVT-01 Definir EventDefinition y EventPage] -> [EVT-02 Definir Condition, Trigger y EventCommand]
+[EVT-02 Definir Condition, Trigger y EventCommand] -> [EVT-03 Implementar EventContext e EventInterpreter]
+[EVT-03 Implementar EventContext e EventInterpreter] -> [EVT-04 Implementar variables e interruptores]
+[EVT-04 Implementar variables e interruptores] -> [EVT-05 Implementar interruptores locales por evento]
+[EVT-05 Implementar interruptores locales por evento] -> [EVT-06 Implementar scheduler, esperas y procesos paralelos]
+[EVT-06 Implementar scheduler, esperas y procesos paralelos] -> [EVT-07 Implementar comandos de diálogo y elecciones]
+[EVT-07 Implementar comandos de diálogo y elecciones] -> [EVT-08 Implementar comandos de estado e inventario]
+[EVT-08 Implementar comandos de estado e inventario] -> [EVT-09 Implementar movimiento, audio, cámara y teletransporte]
+[EVT-09 Implementar movimiento, audio, cámara y teletransporte] -> [EVT-10 Implementar ramas, bucles y eventos comunes]
+[EVT-10 Implementar ramas, bucles y eventos comunes] -> [EVT-11 Crear editor visual de páginas de evento]
+[EVT-11 Crear editor visual de páginas de evento] -> [EVT-12 Crear editor vertical de comandos]
+[EVT-12 Crear editor vertical de comandos] -> [EVT-13 Crear editor visual de rutas de movimiento]
+[EVT-13 Crear editor visual de rutas de movimiento] -> [EVT-14 Implementar validación estática de eventos]
+[EVT-14 Implementar validación estática de eventos] -> [EVT-15 Implementar depuración paso a paso de eventos]
+[EVT-15 Implementar depuración paso a paso de eventos] -> [EVT-16 Validar misión de llave, puerta y cofre]
+[EVT-16 Validar misión de llave, puerta y cofre] -> [GDB-01 Crear GameDatabase extensible]
+[GDB-01 Crear GameDatabase extensible] -> [GDB-02 Crear editor maestro-detalle de registros]
+[GDB-02 Crear editor maestro-detalle de registros] -> [GDB-03 Implementar actores, NPC y enemigos]
+[GDB-03 Implementar actores, NPC y enemigos] -> [GDB-04 Implementar atributos, estados y progresión]
+[GDB-04 Implementar atributos, estados y progresión] -> [GDB-05 Implementar objetos, equipo e inventario]
+[GDB-05 Implementar objetos, equipo e inventario] -> [GDB-06 Implementar habilidades y efectos]
+[GDB-06 Implementar habilidades y efectos] -> [GDB-07 Implementar combate básico configurable]
+[GDB-07 Implementar combate básico configurable] -> [GDB-08 Implementar misiones y objetivos]
+[GDB-08 Implementar misiones y objetivos] -> [GDB-09 Implementar diálogos reutilizables]
+[GDB-09 Implementar diálogos reutilizables] -> [GDB-10 Implementar tablas de loot y encuentros]
+[GDB-10 Implementar tablas de loot y encuentros] -> [GDB-11 Implementar audio, música y ambiente]
+[GDB-11 Implementar audio, música y ambiente] -> [GDB-12 Implementar título, menús y carga de partida]
+[GDB-12 Implementar título, menús y carga de partida] -> [GDB-13 Validar aventura completa de treinta minutos]
+[GDB-13 Validar aventura completa de treinta minutos] -> [TOOL-01 Implementar playtest desde el editor]
+[TOOL-01 Implementar playtest desde el editor] -> [TOOL-02 Implementar probar desde la celda seleccionada]
+[TOOL-02 Implementar probar desde la celda seleccionada] -> [TOOL-03 Implementar recarga en caliente segura]
+[TOOL-03 Implementar recarga en caliente segura] -> [TOOL-04 Crear consola e inspector de estado]
+[TOOL-04 Crear consola e inspector de estado] -> [TOOL-05 Crear gestor completo de recursos y referencias]
+[TOOL-05 Crear gestor completo de recursos y referencias] -> [TOOL-06 Diseñar API de plugins de runtime]
+[TOOL-06 Diseñar API de plugins de runtime] -> [TOOL-07 Diseñar API de extensiones de editor]
+[TOOL-07 Diseñar API de extensiones de editor] -> [TOOL-08 Implementar permisos, versiones y migraciones de plugins]
+[TOOL-08 Implementar permisos, versiones y migraciones de plugins] -> [TOOL-09 Implementar empaquetado de recursos usados]
+[TOOL-09 Implementar empaquetado de recursos usados] -> [TOOL-10 Implementar exportación Windows y Linux]
+[TOOL-10 Implementar exportación Windows y Linux] -> [TOOL-11 Implementar diagnósticos de exportación]
+[TOOL-11 Implementar diagnósticos de exportación] -> [TOOL-12 Publicar alpha del creador de juegos]
+[TOOL-12 Publicar alpha del creador de juegos] -> [REL-01 Crear juego de ejemplo completo]
+[REL-01 Crear juego de ejemplo completo] -> [REL-02 Crear tutorial interactivo del editor]
+[REL-02 Crear tutorial interactivo del editor] -> [REL-03 Documentar formatos, runtime y plugins]
+[REL-03 Documentar formatos, runtime y plugins] -> [REL-04 Realizar pruebas con proyectos grandes]
+[REL-04 Realizar pruebas con proyectos grandes] -> [REL-05 Realizar pruebas de usabilidad con creadores]
+[REL-05 Realizar pruebas de usabilidad con creadores] -> [REL-06 Corregir bloqueos y pérdida de datos]
+[REL-06 Corregir bloqueos y pérdida de datos] -> [REL-07 Optimizar mapas, entidades y editor]
+[REL-07 Optimizar mapas, entidades y editor] -> [REL-08 Preparar instalador y actualización]
+[REL-08 Preparar instalador y actualización] -> [REL-09 Congelar esquema 1.0 y compatibilidad]
+[REL-09 Congelar esquema 1.0 y compatibilidad] -> [REL-10 Publicar MotorGraphico Creator 1.0]
+
+' --- hitos de fase ---
+[F0 cerrada] happens at [INF-03 Reorganizar el árbol hacia la arquitectura objetivo]'s end
+[F1 cerrada] happens at [DOC-07 Pruebas de ida y vuelta TMX-JSON-Runtime]'s end
+[F2 cerrada] happens at [RUN-11 Crear vertical slice jugable del runtime]'s end
+[F3 cerrada] happens at [EDT-15 Validar creación de un mapa sin usar Tiled]'s end
+[F4 cerrada] happens at [MAP-12 Validar aldea, interior y mazmorra conectados]'s end
+[F5 cerrada] happens at [EVT-16 Validar misión de llave, puerta y cofre]'s end
+[F6 cerrada] happens at [GDB-13 Validar aventura completa de treinta minutos]'s end
+[F7 cerrada] happens at [TOOL-12 Publicar alpha del creador de juegos]'s end
+[F8 cerrada] happens at [REL-10 Publicar MotorGraphico Creator 1.0]'s end
+
+@endgantt

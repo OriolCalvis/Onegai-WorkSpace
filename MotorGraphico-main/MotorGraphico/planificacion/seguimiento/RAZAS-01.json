@@ -1,0 +1,26 @@
+{
+ "id": "RAZAS-01",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — los textos de los pueblos, en castellano, y la CULTURA de la hoja Raza sin la ficha de la plantilla vieja. Queda lo de 'pendiente'.",
+ "origen": "TUTORIAL-01 («limpiar la creación de personaje»): 30 de los 41 pueblos jugables enseñaban en la hoja Raza textos a medias en catalán («Resistents al fred extrem i amb gran orientación en terrenys difícils») y la CULTURA se cortaba en la ficha vieja («Edad: Alcanzan la madurez... Tama...»).",
+ "scope": [
+  "assets/catalogs/races.json: 35 pueblos: la descripción (y flavorText, que es la misma) de 31 y el rasgo de 32, traducidos del catalán al castellano (solo lo que estaba en catalán; el sentido y la mecánica, igual), «Dracònic» -> «Dracónico» en dos etiquetas y fuera la Sabiduría entre paréntesis (no es un atributo del juego) en cuatro rasgos. Mismo formato del fichero (indent 2, claves ordenadas): el diff son solo esas líneas. Se hizo con un guion de un solo uso, trozo viejo -> trozo nuevo: el diff es el registro.",
+  "Game::CuadernoCreacion::culturaDe: la CULTURA de la hoja Raza es la descripción sin «Edad: ... Tamaño: ... Religión/cultura: <dioses>.» (lo de antes y lo que va detrás de la frase de la religión); el códice la sigue enseñando entera.",
+  "Prueba: test_cuaderno_creacion (cuaderno_la_cultura_de_un_pueblo_sin_la_ficha_vieja)."
+ ],
+ "pendiente": [
+  "Los rasgos de 38 pueblos siguen siendo los de la plantilla vieja: el nombre genérico («Rasgo de X») y la mecánica de D&D (trucos, competencias, 2d6 en cono de 4,5 m, ventaja en tiradas de Carisma) que el juego no aplica. Rehacerlos a cartas, como los cinco nuevos (Adaptable, Eco del Velo...), es de Oriol.",
+  "Los 43 pueblos son «poco común»: la insignia de rareza no distingue a ninguno.",
+  "Las copias de la librería del editor (assets/objects/libreria_razas.json y libreria_completa.json, «_flavorText») salen de dndWeebCC con tools/convertir_libreria_dnd.py y siguen en catalán: la fuente está en ese repositorio."
+ ],
+ "verification": [
+  "Ningún texto de races.json con palabras en catalán (repaso con dos detectores y a ojo, pueblo a pueblo); validar_todo y validar_catalogos_rpg sin fallos; los tests de catálogos, de creación y del códice pasan; ctest en la línea base.",
+  "En el juego: la hoja Raza del Aarakocra del Viento con su rasgo y su cultura en castellano y sin la ficha vieja."
+ ],
+ "para_oriol": [
+  "¿Rehacemos los rasgos de los 38 pueblos de la plantilla vieja a cartas (como Adaptable: «1/descanso largo: trata una carta como si exigiera 1 tier menos»)?",
+  "Las religiones de las razas (Chronos, Eros, Sofía, Vida, Muerte, Envidia, Egos) no son las deidades de deities.json (El Caminante Gris, La Dama del Farol Rojo...): ¿cuál es el canon?"
+ ],
+ "sesion": "sesiones/2026-10-07-claude-tutorial.md"
+}

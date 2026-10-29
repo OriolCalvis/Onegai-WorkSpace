@@ -1,0 +1,35 @@
+{
+  "id": "E-09",
+  "date": "2026-09-13",
+  "author": "Claude (Cowork)",
+  "status": "La mision existe, se guarda, se reabre y se recorre entera de forma determinista. Paquete ABIERTO: el criterio pide que se ESCRIBA desde el editor, y el editor de paginas (E-05) y de comandas (E-06) no estan",
+  "actions": [
+    "Nuevos examples/demo_mision_llave.cpp y assets/misiones/mision_llave.json. Cofre con llave, puerta cerrada que la pide, PNJ que habla de ello en tres tramos y altar que cierra la mision. Cuatro eventos, nueve paginas.",
+    "POR QUE IMPORTA ESTE PAQUETE Y NO ES UN EJEMPLO MAS. Cada eslabon de la cadena tenia ya su prueba y todas pasaban: E-01 guarda el evento dentro del mapa, E-02 el estado, E-03 lo ejecuta, E-04 dice que significa cada comando, E-07 lo valida, E-15 lo enseña. Ninguna demostraba que con eso se pudiera hacer UNA MISION. Esta si.",
+    "Y al primer intento NO se pudo: la puerta que pide la llave fallaba en silencio. Motivo real: NarrativeCommandHost resuelve `control.si` el mismo y no sabe mirar el inventario, asi que una condicion de objeto daba error aunque hubiera sesion detras. Arreglado delegando el comando ENTERO al anfitrion de partida cuando la condicion no se puede evaluar — la misma costura que ya usaban inventario, oro y combate. Sin fallback sigue fallando con su diagnostico, que es lo correcto.",
+    "Segundo defecto encontrado por el camino: `control.si` rellenaba la comparacion con «==» por defecto. Con las condiciones de objeto ya funcionando, eso convertia «lleva la llave» en «lleva EXACTAMENTE una llave», y la puerta no se abriria con dos. Ahora la comparacion se deja vacia y cada clase aplica la suya: «==» para una bandera, «>=» para un objeto.",
+    "Los dos defectos llevaban ahi desde E-04 y ninguna prueba de unidad los veia, porque cada una probaba su pieza. Es exactamente para lo que sirve una prueba de aceptacion.",
+    "NUEVO: ActivePage() / ActivePageWith() en E-04 y ActivePageWithInventory() en SessionCommandHost. Faltaba la pieza que dice QUE PAGINA de un evento esta activa; hasta ahora cada prueba la elegia a mano. Gana la ULTIMA pagina cuyas condiciones se cumplen.",
+    "Esa regla es PROVISIONAL y esta marcada como tal: es el borrador que propone la propia ficha de DEC-10, no una decision tomada. Vive en un solo bucle para que cambiarla sea cambiar ese bucle.",
+    "Una condicion que no se puede evaluar NO cuenta como falsa: el resultado lleva la lista de paginas que no se pudieron mirar y quien llama puede negarse a seguir. Tratarlo como falso convierte una pieza que falta en una puerta que nunca se abre y que nadie sabe por que.",
+    "ConditionFromIf() compartida por los dos anfitriones, para que no haya dos lecturas distintas de los mismos parametros: si uno entendiera «negada» y el otro no, el mismo comando ramificaria distinto segun quien lo ejecute."
+  ],
+  "verification": [
+    "demo_mision_llave: cinco comprobaciones, todas verdes.",
+    "1) Validacion estatica de E-07 sobre la mision: 0 errores y 0 AVISOS. Lo segundo es mas exigente que el criterio a proposito — una mision de ejemplo con avisos enseña a ignorarlos.",
+    "2) Se guarda y se reabre ANTES de jugarla, que es lo que pide el criterio con esas palabras, y lo que se recorre es el documento reabierto. Ida y vuelta sin perdidas comprobada comparando las dos serializaciones: si el serializador olvidara una condicion o una rama, la mision se romperia aqui y no en las manos de alguien tres meses despues.",
+    "3) El asset publicado en assets/misiones/ dice lo mismo que el codigo que lo genero. Si alguien cambia el formato y no regenera el fichero, esto lo dice en vez de dejarlo pudrirse.",
+    "4) El recorrido entero, diez interacciones: el anciano antes de nada; la puerta ANTES de la llave no se abre y lo dice; el cofre da UNA llave; insistir en el cofre no da una segunda (pagina 2); el anciano ya dice otra cosa; el altar todavia no termina la mision; la puerta con la llave se abre por la rama del SI; la puerta pasa a su pagina 2; el anciano, tercer tramo; el altar cierra. La llave no se gasta al abrir, porque nadie ha escrito que se gaste.",
+    "5) Determinismo: dos recorridos identicos dan exactamente el mismo texto. Un demo de aceptacion que a veces pase no sirve de puerta para nada.",
+    "Ademas, cuatro casos nuevos en test_event_commands (la regla de la pagina activa, el evento sin pagina valida, la pagina inevaluable y la comparacion por defecto) y tres en test_session_command_host (el `si` de inventario delegado, el diagnostico sin sesion, y la pagina activa de una puerta mirando el inventario).",
+    "Compilado y ejecutado con g++ directo sobre la maquina del usuario. CI remota pendiente."
+  ],
+  "pending": [
+    "LO QUE FALTA PARA CERRAR, y no es poco: el criterio dice «des d'un projecte nou, la missio s'escriu sencera des de l'editor... cap pas exigeix editar JSON o escriure un ID». Hoy la mision se construye con la API de MapDocument desde C++, que es la MISMA que llamara el editor, pero el editor de paginas (E-05) y el vertical de comandas (E-06) no existen. Hasta que existan, este paquete demuestra que la mision es POSIBLE, no que se pueda AUTORAR.",
+    "DEC-10 sigue abierta. La regla implementada (gana la ultima pagina valida) es el borrador de la propia ficha. LA OTRA MITAD DEL BORRADOR YA ES CIERTA SIN HACER NADA: «lo que ya esta en pantalla termina; el cambio se nota la siguiente vez que se hable» es como se comporta el interprete de E-03, que no vuelve a mirar las condiciones de una pagina que ya arranco. Si Oriol acepta el borrador, DEC-10 cierra con cero trabajo.",
+    "CI remota. Ningun paquete de esta rama se ha construido nunca en CI.",
+    "La ficha del plan citaba assets/adventures/mision_llave.json. Se ha corregido en dades.py a assets/misiones/: adventures/ es el formato ANTIGUO de beats y la mision de E-09 es un mapa con eventos, que es el formato que E-01..E-08 construyen. Meterla en adventures/ la habria hecho pasar por los validadores del otro formato.",
+    "El texto de la mision esta en castellano y a pelo dentro de los comandos. Cuando G-17 tenga tabla para el contenido (hoy solo cubre el log de combate), estas veinte frases son candidatas naturales.",
+    "La mision no usa combate ni comercio: es el recorrido de autoria, no el de juego. Un segundo recorrido con combate seria G-13."
+  ]
+}

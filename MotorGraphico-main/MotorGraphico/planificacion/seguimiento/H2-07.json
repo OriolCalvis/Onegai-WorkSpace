@@ -1,0 +1,45 @@
+{
+  "id": "H2-07",
+  "date": "2026-10-01",
+  "author": "opencode",
+  "status": "HECHO — el enunciado del Gantt era falso; el defecto real era de resolucion de ids y esta corregido",
+  "criterio_de_cierre": "JUGABILIDAD_FASE_H.md H2-07: 'Cualquier enemigo del catalogo aparece con su vida correcta sin depender del calculo de emergencia'.",
+  "medicion_previa": {
+    "enunciado_del_gantt_falso": "El Gantt dice '432 MonsterDefinition tienen maxHealth == 0 en el JSON fuente. Decidir si el canonico es el JSON o el calculado y rellenar'. FALSO: las 432 fichas tienen vida. Medido sobre assets/catalogs/monsters.json: min 12, max 80, y agrupada por tier (58 fichas de tier 1 a 12; 107 de tier 2 a 16, con una a 18; 144 de tier 3 a 20/34/60; 89 de tier 4 a 24/40/70; 34 de tier 5 a 46/80). No hay nada que rellenar ni decision que tomar sobre el canonico.",
+    "defecto_real": "assets/objects/ nombra a los enemigos `enemy_<id>` (enemy_dragon_negro_anciano) y monsters.json los llama `<id>` (dragon_negro_anciano). De 460 ids de enemigo en el ObjectCatalog, NINGUNO coincide tal cual con un id del MonsterCatalog; 430 resuelven tras quitar el prefijo `enemy_`. Como EnemyCatalogBridge hacia `monsterCatalog->find(objectId)` a pelo, esos 430 no hallaban ficha y caian al fallback `ObjectCatalog.combat.maxHealth`, que es 10 en la mayoria. El enemigo de tier 5 salia con 10 de vida.",
+    "no_solo_la_vida": "skillIds sale del MonsterDefinition, no del ObjectCatalog, asi que el fallback tambien hacia que el enemigo atacara con la habilidad del placeholder.",
+    "no_hay_normalizacion_en_otro_sitio": "grep de `enemy_` en src/ e include/: cero prefijo, cero substr, cero find alternativo. El unico punto de entrada a la ficha es EnemyCatalogBridge, que es donde se arreglo. No era una convencion asumida en otro sitio que hubiera que respetar."
+  },
+  "scope": [
+    "include/Game/EnemyCatalogBridge.h: NUEVO `EnemyCatalog::findMonster(catalog, objectId)`. Primero prueba la id EXACTA; solo si falla, quita el prefijo `enemy_` (6 caracteres) y vuelve a mirar. Sustituye al `find()` directo de createEnemy().",
+    "tests/Game/EnemyCatalogBridgeTests.cpp: +7 casos (13 en total). El prefijo resuelve vida y habilidad; el exacto gana; el fallback real sigue igual cuando no hay ficha; catalogo nulo e id vacia no revientan; y el caso que fija el orden.",
+    "Sin .cpp nuevo: la funcion es pura y de 8 lineas effective, y el fichero se queda en 133 muy por debajo del techo de 500."
+  ],
+  "decisiones": [
+    "El arreglo va en el puente y NO en los datos. Dos razones, ambas medidas: assets/objects/*.json y assets/levels/*.json los tiene otra sesion sin commitear ahora mismo (400 ficheros sucios), y renombrar 460 ids en los datos habria roto el ObjectCatalog que usa el editor y los saves ya escritos. Ademas, el enunciado del flujo es de una sola direccion (canon -> cartas -> motor): si un dia se unifican las grafias, ese cambio es de las cartas, y el puente seguira funcionando porque prueba el exacto primero.",
+    "El orden EXACTO-ANTES-QUE-PREFIJO es lo que hace esto seguro: lo que ya resolvia no cambia, el unico comportamiento nuevo es el de los ids que antes no resolvian. La prueba `amb_grafies_al_cataleg_gana_la_literal` (catalogo con las dos grafias a la vez: 99/tier 4 contra 15/tier 1) es la que fija esa precedencia, y existe porque al invertir el orden los 12 tests de entonces pasaban igual: nadie miraba que ficha se elegia cuando habia dos candidatas.",
+    "La guarda de longitud es `>` y no `>=`: `enemy_` a pelo son 6 caracteres y no es un id. Con `>=` se buscaria el id vacio, que no esta en ningun catalogo, asi que es equivalente en la practica (mutacion NO cazada, documentada en vez de disimulada).",
+    "Los 30 enemigos que siguen sin ficha no se tocan: no hay datos para ellos, y aqui no se inventa contenido. Recien ahora resuelven (antes caian al placeholder por definicion)."
+  ],
+  "alcance_del_arreglo": {
+    "enemigos_en_assets_objects": 460,
+    "con_ficha_antes": 0,
+    "con_ficha_despues": 430,
+    "sin_ficha_por_faltan_datos": 30,
+    "lectura_honesta": "Es una mejora del 94% de los enemigos del catalogo, no del 100%. Los 30 restantes no tienen ficha en monsters.json y eso es un agujero de contenido de las cartas, no del motor: ahora se comportan como el fallback que son, en vez de fingir que su vida era la del placeholder."
+  },
+  "verification": [
+    "test_enemy_catalog_bridge: 12/12 -> 13/13.",
+    "Mutaciones: quitar el fallback del prefijo -> 2 rojos; invertir el orden del find -> 1 rojo; quitar la guarda de nullptr -> crash (139). NO cazada y documentada: `>` por `>=` en la longitud del prefijo.",
+    "git archive HEAD con estos 2 ficheros: 209/210 objetivos, 3/3 ejecutables (juego, motor_editor, level_editor).",
+    "Los 3 targets que no construyen son los mismos de antes y ajenos: ApplicationTests y ApplicationSceneTests piden saveGame/loadGame/TitleScreen, y test_application_cableado enlaza confirmOptionsCommand de H1-03. Ninguno lo ha tocado esta sesion.",
+    "ctest sobre el clon limpio: sin rojos nuevos. Siguen los 3 Not Run de siempre, mas catalog_loader_contract de f2f91a1 (EST-22, otro commit, zona ajena) y linea_base_core con sus 37 de deuda nueva, 4 de ellas mias (TargetSelection y DiceRollWidget, nucleo sin montar)."
+  ],
+  "non_goals": [
+    "No se tocan assets/objects/*.json ni assets/levels/*.json: los tiene una sesion ahora mismo, y el arreglo de ids no hace falta para que la ficha llegue al enemigo.",
+    "No se unifican las grafias de los datos. Cuando se decida, es un cambio aguas arriba (cartas), no aqui.",
+    "No se inventa ficha para los 30 enemigos sin datos, ni se rellena DerivedsDerived con nada que no salga de las cartas.",
+    "No se regenera MAPA_DEL_CODIGO.md ni alcance_real.json (reservados por ALPHA-00 / D0007).",
+    "No se actualiza linea_base_core.json: es la foto congelada y su re-congelado es D0007/EST-42."
+  ]
+}

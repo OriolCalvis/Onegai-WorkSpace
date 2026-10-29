@@ -1,0 +1,29 @@
+{
+  "id": "EST-21d",
+  "paquete": "EST-21d",
+  "fase": "estabilizacion",
+  "nombre": "level_editor.cpp — extraer el comando de guardado",
+  "date": "2026-09-24",
+  "author": "Codex (continuacion de Claude / EST-21b)",
+  "status": "EN CURSO — se disena el contexto de guardado antes de mover guardarNivel().",
+  "origen": {
+    "relevo_anterior": "EST-21b separo el estado temporal de la vista sin tocar las lambdas de guardado.",
+    "problema": "guardarNivel captura documento, rutas, tileset cargado, modo de construccion, enemigos, manifiesto y feedback HUD; por ello no puede probarse ni reutilizarse fuera del main()."
+  },
+  "frontera": {
+    "entra": "EditorState, datos de nivel/tileset y rutas de guardado, sin GLFW, Window, HUD ni OpenGL.",
+    "sale": "un resultado que dice si se guardo, que documento/rutas se escribieron y si el manifiesto pudo registrar el nivel.",
+    "escritor_unico": "EditorDocumentIO::save sigue siendo la unica operacion que escribe TMX, JSON y MapDocument; la extraccion no lo reimplementa."
+  },
+  "reglas": [
+    "No se mueve resolverProyecto ni se altera la propiedad de opts/saveTmx/saveJson/saveName.",
+    "No se toca input GLFW, HUD, render ni motor_editor.",
+    "La configuracion del tileset cargado y el modo construction deben conservar exactamente sus valores actuales.",
+    "La clase nueva entra en motor_editor_niveles y tiene prueba GL-free que falla si se deshace el contrato."
+  ],
+  "verificacion_prevista": [
+    "Casos GL-free: guardado correcto, fallo del escritor, conservacion de tileset cargado, modo construction y registro de manifiesto.",
+    "test_editor_nucleo, enlace real de level_editor y linea_base_core --rapido --indice.",
+    "El origen queda materialmente mas corto y sin una lambda de guardado que capture la fase entera."
+  ]
+}

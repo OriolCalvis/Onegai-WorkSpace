@@ -1,0 +1,120 @@
+{
+  "paquete": "G-17",
+  "fase": "G",
+  "nombre": "Idioma seleccionable de la interfaz (nucleo, sin pantalla)",
+  "fecha_cierre": "2026-09-14",
+  "autor": "AgentTrae-G17",
+  "estado": "closed",
+  "criterios_cierre": {
+    "DEC-14": "3 idiomas cargados (en/ca/es), referencia provisional 'es' en assets/i18n/manifiesto.json, hot reload sin recargar archivos.",
+    "DEC-15": "Claves internas [a-z0-9_.] sin acentos/mayusculas; texto visible SI acentos y enye. isValidKey() valida.",
+    "Placeholders coincidentes": "19 claves ×3 idiomas, mismos huecos {xxx} en las 3 tablas. checkPlaceholders() retorna [].",
+    "Fallback / Orphan / Missing": "fromFallback / missing / orphanKeys / missingKeys detectan discrepancias sin corromper."
+  },
+  "assets_publicados": {
+    "assets/i18n/en.json": "19 claves",
+    "assets/i18n/ca.json": "19 claves",
+    "assets/i18n/es.json": "19 claves",
+    "assets/i18n/manifiesto.json": {
+      "idioma_de_referencia": "es",
+      "idiomas": [
+        "en",
+        "ca",
+        "es"
+      ],
+      "nombres": {
+        "en": "English",
+        "ca": "Català",
+        "es": "Castellano"
+      }
+    }
+  },
+  "tests": {
+    "test_locale (agent anterior, cmake/LocaleTests.cmake)": {
+      "count": 18,
+      "pass": 18,
+      "fail": 0,
+      "casos_notables": [
+        "DEC-15 clave con acentos -> no carga + error DEC-15",
+        "texto visible lleva Èxit / daño / ñ",
+        "setLanguage inmediato sin recarga",
+        "idioma desconocido -> no se activa",
+        "manifiesto sin referencia -> no carga",
+        "referencia fuera lista -> no carga",
+        "clave faltante cae a referencia + fromFallback",
+        "clave inexistente -> [clave] missing=true",
+        "clave huerfana orphanKeys() la devuelve",
+        "frase entera con huecos {actor} {objetivo} distinto orden en es vs en",
+        "hueco sin valor visible en text + missingArgs",
+        "parametro no usado -> unusedArgs",
+        "{{ }} literal no es hueco",
+        "placeholdersOf enumera huecos sin ejecutar",
+        "hueco renombrado en un idioma -> PlaceholderMismatch",
+        "tablas publicadas 3x19 completas encajan",
+        "log combate castellano identico a BattleState.cpp actual",
+        "ingles abreviaturas cambian y frase tambien"
+      ]
+    },
+    "test_locale_extension (complement, cmake/G17LocaleExtensionTests.cmake)": {
+      "count": 6,
+      "pass": 6,
+      "fail": 0,
+      "casos_notables": [
+        "g17_3idiomas_publicados_cargan_todos: loadFromDirectory(assets/i18n) OK; ref=es; 3 langs;",
+        "g17_tres_tablas_19claves_placeholders_coincidentes: missingKeys()/orphanKeys() == []; checkPlaceholders()==[]; 19 claves esperadas grado.* + combate.* todas non-empty desde referencia.",
+        "g17_hot_reload_3_veces_no_deja_texto_muerto: 6 cambios ca/en/es/ca/en/es setLanguage OK; text(grado.exito) long 4..20; format combate.cura(MERLIN/POTION/12) contiene MERLIN+POTION+12 en 3 idiomas.",
+        "g17_ids_internos_sin_traducir: isValidKey() clase/habilidad/menu vs tilde/mayus/barra -> 6 casos; placeholdersOf 4 huecos orden actor/objetivo/grado/dano; {{a}} literal NO es hueco.",
+        "g17_nombres_de_idioma_segun_manifiesto: en->English, ca->Català, es->Castellano via tabla sintetica cargada con loadFromStrings.",
+        "g17_missing_fallback_y_orphan_tablas_reales: EN falta {b,c} (size 2), CA falta {b} + sobra {d}; fromFallback en CA clave b -> 'B-ES'; miss z -> '[z]' missing=true; PlaceholderMismatch {n} vs {num}."
+      ]
+    },
+    "total": {
+      "count": 24,
+      "pass": 24,
+      "fail": 0
+    }
+  },
+  "archivos_creados": [
+    "tests/Engine/LocaleExtensionTests.cpp",
+    "cmake/G17LocaleExtensionTests.cmake"
+  ],
+  "archivos_modificados_1linea_include": [
+    "CMakeLists.txt:676-678 include(cmake/G17LocaleExtensionTests.cmake)"
+  ],
+  "archivos_shared_NO_TOCATS_multiagent": [
+    "src/Engine/Application.cpp (14 paquets shared; Application.cpp broken desde build exterior agent G-11/G-12, pero NO NOS AFECTA porque test_locale* compila Locale.cpp DIRECTAMENTE en el ejecutable segun cmake/LocaleTests.cmake — sin linkear motor_core)",
+    "include/Engine/OptionsScene.h / src/Engine/OptionsScene.cpp (G-10 selector idioma GUI — otro agent)",
+    "include/Render/BitmapFont.h (C-06/C-24 glyph tests)"
+  ],
+  "cmake_informe": {
+    "targets_gl_free_totales": 93,
+    "target_nuevo": "test_locale_extension",
+    "estrategia_sin_Application": "igual que cmake/LocaleTests.cmake: add_executable(test_locale_extension tests/... src/Engine/Locale.cpp) + target_link_libraries(motor_json). Locale.cpp NUNCA en libmotor_core para no depender de Application.cpp shared."
+  },
+  "proximos_paquetes": [
+    "G-14 (HUD timers / comercio / REV-02 DEC-05) — depende G-10 tancado.",
+    "G-11 (Save slots / GameOver) — si agent C-24 ha terminado SaveGame.cpp, pero ahora Application.cpp lo tiene roto (equipItem/unequipItem/panelColor sin declarar en Application.h). Mover cuando Application compile.",
+    "G-13 (comandos combat) — depende G-09/D-02/D-09, NO shared Application salvo BattleMenuState.cpp que ya existe sin editar."
+  ],
+  "id": "G-17",
+  "date": "2026-09-14",
+  "author": "AgentTrae-G17",
+  "status": "closed",
+  "actions": [
+    "Idioma seleccionable de la interfaz (nucleo, sin pantalla)",
+    "DEC-14: 3 idiomas cargados (en/ca/es), referencia provisional 'es' en assets/i18n/manifiesto.json, hot reload sin recargar archivos.",
+    "DEC-15: Claves internas [a-z0-9_.] sin acentos/mayusculas; texto visible SI acentos y enye. isValidKey() valida.",
+    "Placeholders coincidentes: 19 claves ×3 idiomas, mismos huecos {xxx} en las 3 tablas. checkPlaceholders() retorna [].",
+    "Fallback / Orphan / Missing: fromFallback / missing / orphanKeys / missingKeys detectan discrepancias sin corromper.",
+    "tests/Engine/LocaleExtensionTests.cpp",
+    "cmake/G17LocaleExtensionTests.cmake",
+    "CMakeLists.txt:676-678 include(cmake/G17LocaleExtensionTests.cmake)"
+  ],
+  "verification": [
+    "test_locale (agent anterior, cmake/LocaleTests.cmake): count: 18 · pass: 18 · fail: 0 · casos_notables: DEC-15 clave con acentos -> no carga + error DEC-15 · texto visible lleva Èxit / daño / ñ · setLanguage inmediato sin recarga · idioma desconocido -> no se activa · manifiesto sin referencia -> no carga · referencia fuera lista -> no carga · clave faltante cae a referencia + fromFallback · clave inexistente -> [clave] missing=true · clave huerfana orphanKeys() la devuelve · frase entera con huecos {actor} {objetivo} distinto orden en es vs en · hueco sin valor visible en text + missingArgs · parametro no usado -> unusedArgs · {{ }} literal no es hueco · placeholdersOf enumera huecos sin ejecutar · hueco renombrado en un idioma -> PlaceholderMismatch · tablas publicadas 3x19 completas encajan · log combate castellano identico a BattleState.cpp actual · ingles abreviaturas cambian y frase tambien",
+    "test_locale_extension (complement, cmake/G17LocaleExtensionTests.cmake): count: 6 · pass: 6 · fail: 0 · casos_notables: g17_3idiomas_publicados_cargan_todos: loadFromDirectory(assets/i18n) OK; ref=es; 3 langs; · g17_tres_tablas_19claves_placeholders_coincidentes: missingKeys()/orphanKeys() == []; checkPlaceholders()==[]; 19 claves esperadas grado.* + combate.* todas non-empty desde referencia. · g17_hot_reload_3_veces_no_deja_texto_muerto: 6 cambios ca/en/es/ca/en/es setLanguage OK; text(grado.exito) long 4..20; format combate.cura(MERLIN/POTION/12) contiene MERLIN+POTION+12 en 3 idiomas. · g17_ids_internos_sin_traducir: isValidKey() clase/habilidad/menu vs tilde/mayus/barra -> 6 casos; placeholdersOf 4 huecos orden actor/objetivo/grado/dano; {{a}} literal NO es hueco. · g17_nombres_de_idioma_segun_manifiesto: en->English, ca->Català, es->Castellano via tabla sintetica cargada con loadFromStrings. · g17_missing_fallback_y_orphan_tablas_reales: EN falta {b,c} (size 2), CA falta {b} + sobra {d}; fromFallback en CA clave b -> 'B-ES'; miss z -> '[z]' missing=true; PlaceholderMismatch {n} vs {num}.",
+    "total: count: 24 · pass: 24 · fail: 0"
+  ],
+  "pending": [],
+  "_normalitzat": "Claus del contracte derivades dels camps propis del registre per tools/normalitza_seguiment.py. Els camps originals no s'han tocat: aquest registre es va escriure en un esquema diferent."
+}

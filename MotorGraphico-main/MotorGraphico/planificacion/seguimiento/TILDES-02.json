@@ -1,0 +1,24 @@
+{
+ "id": "TILDES-02",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — tildes, eñes y ¿¡ del resto de aventuras, misiones, objetos de juego y nombres de nivel; erratas corregidas.",
+ "origen": "TILDES-01 dejó pendiente «las otras aventuras (el Norte, Este Norte, la plaza de las razas, el silbido de medianoche) y el resto de catálogos de objetos».",
+ "actions": [
+  "assets/adventures: aventura_silbido_medianoche, este_norte_senal_ceniza, on_camino_del_norte, plaza_de_las_razas, boundington_precuela_taberna; assets/misiones/conversacion_ramificada.",
+  "assets/objects: boundington_enemigos, decorados_kit, ejemplos_interacciones, mapamundi_objetos, marcadores_pendientes, on_npcs, on_puertas, pixellab_objetos, plaza_razas_objetos, accesos_cuadrantes.",
+  "23 nombres de nivel (assets/levels) y los generadores que los escriben (gen_carteles, gen_interiores, gen_ciudad, gen_este_norte, gen_este_sur_prototipos, interiors_kit/*, enganchar_cuadrantes), para que regenerar no los devuelva sin tildes.",
+  "Erratas que no son de tildes, una a una (tools: erratas.py del contenedor): «no sé porque» → «por qué», «quizo» → «quiso», «los gaviotas» → «las gaviotas», «el arena» → «la arena», «Pico Drago» → «Pico Dragón», «de puro cabezonería» → «de pura cabezonería», «Naka tol» → «Naka Tol», «Camino hacia ostad» → «Ostad»...",
+  "Mismo método que TILDES-01: quitando tildes, eñes y ¿¡, cada texto queda idéntico al de antes; solo cambian esas cadenas. «Ventobelico» se queda sin tilde como en el catálogo.",
+  "FORMATO_AVENTURAS.md §6: lo que se lee va con tildes; los ids, flags y rutas, sin.",
+  "tests/RPG/MapEventRunnerTests.cpp: los textos con tilde («No te había visto», «Otra vez tú»...)."
+ ],
+ "pending": [
+  "Catálogos que solo ve el editor (librerías de objetos, previews) siguen sin tildes.",
+  "assets/objects/mascotas.json está en catalán."
+ ],
+ "verification": [
+  "Cada cadena pasa la comprobación (sin tildes es la misma); test_map_event_runner en verde; validar_todo sin errores."
+ ],
+ "sesion": "sesiones/2026-10-08-claude-tienda-caer-dioses.md"
+}

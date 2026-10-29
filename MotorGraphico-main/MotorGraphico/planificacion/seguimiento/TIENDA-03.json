@@ -1,0 +1,23 @@
+{
+ "id": "TIENDA-03",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — todo lo que vende un tendero existe en los catálogos de su proyecto; validar_todo lo comprueba proyecto a proyecto.",
+ "origen": "Relevo anterior: «los objetos de tienda de on_runista_rhenor sin resolver en el proyecto del oeste norte». Al vigilarlo en todos los proyectos salieron 33 casos.",
+ "actions": [
+  "tools/validar_todo.py: validar_tiendas_del_proyecto (un artículo de tienda que no está en ningún catálogo del proyecto es error). Antes el juego lo descartaba al abrir la tienda («artículo desconocido en la tienda») y, si no quedaba nada, la tienda no se abría.",
+  "assets/objects/ciudad_objetos.json: la Daga (pickup, 60 de oro, sprite 16 del atlas de pickups), que vendía Aigren y no existía en ningún catálogo.",
+  "assets/proyectos/oeste_norte.json: carga ciudad_objetos.json (el Runista de Rhenor vende el mapa y el libro de hechizos de la ciudad).",
+  "assets/proyectos/mundo.json: carga ciudad_objetos.json (los tenderos de Este Norte venden objetos de la ciudad; antes de OBJETOS-01 el catálogo de Este Norte traía copias).",
+  "tests/Level/ObjectCatalogTests.cpp: la ciudad tiene 98 objetos y 20 pickups; la daga con su nombre y su precio."
+ ],
+ "pending": [
+  "El precio de la daga (60, la mitad que la espada corta) es mío: que lo mire Oriol."
+ ],
+ "verification": [
+  "validar_todo: 0 errores, 10 avisos (antes de arreglar los datos: 33 errores de tienda).",
+  "test_object_catalog 7/7; demo_ciudad; ctest completo (PRUEBAS-01).",
+  "Aplicado en el Mac (out/claude_tienda03) y comprobado: los 5 ficheros iguales."
+ ],
+ "sesion": "sesiones/2026-10-08-claude-tienda-caer-dioses.md"
+}

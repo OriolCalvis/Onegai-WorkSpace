@@ -1,0 +1,29 @@
+{
+  "id": "E10-ENCUADRAR-MAPA",
+  "paquete": "E-10",
+  "date": "2026-10-08",
+  "author": "Codex",
+  "status": "HECHO — encuadre del visor; E-10 global continúa abierto.",
+  "scope": [
+    "Abrir un mapa o invocar Ver > Centrar mapa / Home encuadra los rectángulos completos de las baldosas con margen del 5% por lado.",
+    "El cálculo usa dimensiones físicas del visor y se actualiza durante el ajuste inicial del docking hasta repetir tamaño. No cambia el zoom al editar, ni vuelve a encuadrar tras cada redimensionado.",
+    "Zoom 0.15..1 compatible con la rueda existente: mapas pequeños no se amplían; los extremos pueden exceder el visor al alcanzar el mínimo.",
+    "MapFraming es GL-free y se comparte entre motor_editor y su batería mediante motor_editor_framing. El estado diferido del encuadre permanece junto al ciclo de render.",
+    "EditorVistaDeMapa.h/.cpp, cálculo, prueba y fragmento CMake quedan vinculados a E-10 en dades.py/MAPA_DEL_CODIGO."
+  ],
+  "verification": [
+    "test_editor_map_framing: 8/8 casos, tanto en build compartido como en worktree aislado; oráculo independiente recorre rectángulos vía IsoMath, incluyendo 18 variantes de dimensiones no positivas.",
+    "motor_editor compila en el árbol compartido con CMake normal. Humo existente a escalas 1 y 2 verde: editar, cancelar, guardar/reabrir, herramientas, objetos, capas y nuevo mapa; GL 0 y assets originales intactos.",
+    "Captura con ciudad_centro.json y 8 frames revisada: rombo completo con margen. La revisión visual detectó el viewport provisional del primer frame; corregido y verificado nuevamente con captura y ambos humos.",
+    "Revisión paralela de geometría e integración sin hallazgos accionables.",
+    "Guardia completa aislada: 0 fallos instantáneos, mismos 37 hallazgos de deuda antes/después. Fragmento .cmake e include preparados juntos; línea base sin modificar.",
+    "Cambios propios bajo 500 líneas: EditorVistaDeMapa.h 106, .cpp 49, MapFraming.h 20, .cpp 27. MapView mantiene 12 datos propios; nuevo bool justificado por ciclo de vida. JSON y diff-check correctos."
+  ],
+  "reach": "motor_editor → MapView::sync/center/render → fitMap; EditorApplication ya invoca center mediante EditorActions::Center, sin cambios en ese archivo.",
+  "limitations": [
+    "HEAD limpio tiene el bloqueo previo de Render/HojaPersonaje.h ausente; no se atribuye a esta entrega ni se incorpora WIP ajeno. La nueva biblioteca y sus pruebas sí compilan y pasan aisladas.",
+    "El encuadre cubre baldosas, no contenido fuera de los límites del mapa. Zoom mínimo 0.15; los mapas extremos requieren paneo.",
+    "Se ha probado en macOS; no se afirma ejecución en otras plataformas ni suite global verde."
+  ],
+  "coordination": "Reserva E10-ENCUADRAR-MAPA; subagente limitado a prueba y revisión. Diez rutas propias en worktree aislado; solo un include de CMake y el bloque E-10 del mapa, excluyendo hunks ajenos. Sin cambios en EditorApplication, paneles, Camera ni assets."
+}
