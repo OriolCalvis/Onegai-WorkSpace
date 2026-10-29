@@ -722,7 +722,7 @@ def capas_raza_pl(raza, talla, propia=None, piel_extra=None, separar=False):
         manchas = pers.capa_manchas(talla, getattr(rg, nombre), MAT[m1], MAT[m2] if m2 else MAT[m1])
         for fr, lab in zip(manchas, [talla.labs[f] for f in range(1, talla.n_frames + 1)]):
             fr[lab == "h"] = 0  # en la cabeza ya van las de la base de PixelLab
-        out.append(("marcas" if separar else "cuerpo", manchas))
+        out.append(("marcas", manchas))
     for c in ("cola", "alas", "rasgos") + (PIEZAS if separar else ()):
         if any(fr[..., 3].any() for fr in capas[c]):
             out.append((c, capas[c]))

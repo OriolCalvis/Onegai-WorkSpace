@@ -39,6 +39,10 @@ TEX = ROOT / "assets/textures"
 POR_DEFECTO = ["personaje.json", "actores_capas.json", "razas_andando.json",
                "personajes_historia.json", "props_p0.json", "pickups_p0.json",
                "boundington_story_actors_idle.json", "personajes.json"]
+MIN_PX_CUERPO = 300  # px opacos por frame en cada fila de razas/cuerpo.png
+# razas de talla baja: su cuerpo sano llega a 266 px en algunos frames (medido en CAR-3b), no es un cuerpo vacio
+MIN_PX_CUERPO_BAJO = {"medianos_del_bosque": 250, "medianos_urbanos": 250,
+                      "trasgos_de_gliaddokx": 250, "gnomos_de_la_isla": 250}
 DIRECCIONES = ("abajo", "arriba", "derecha", "izquierda")
 
 
@@ -112,6 +116,15 @@ def validar_personajes(ruta_json, man):
                 errores.append(f"{nombre}: {ruta}: un dibujo toca el borde de su celda "
                                f"(fila {ys[0] // fh + 1}, frame {xs[0] // fw + 1})")
             imgs[ruta] = a
+            if sec == "razas" and clave == "cuerpo":  # CAR-3b: un cuerpo casi vacio no se ve en partida
+                ids = {r["fila"]: r["id"] for r in man["razas"]["lista"]}
+                for k in range(filas):
+                    for f in range(cols):
+                        n = int(a[k * fh:(k + 1) * fh, f * fw:(f + 1) * fw].sum())
+                        minimo = MIN_PX_CUERPO_BAJO.get(ids.get(k + 1), MIN_PX_CUERPO)
+                        if n < minimo:
+                            errores.append(f"{nombre}: {ruta}: raza {ids.get(k + 1, k + 1)} (fila {k + 1}) "
+                                           f"frame {f + 1}: cuerpo con {n} px opacos (minimo {minimo})")
     llenas = {}
     for sec, atlas, filas in _atlas_capas(man):
         for clave, ruta in atlas.items():
