@@ -97,7 +97,7 @@ MOTOR_TEST_CASE(apariencia_filas_segun_el_pueblo) {
     Game::EditorApariencia e(manifiesto());
     e.empezar("race_human_marches");
     MOTOR_CHECK(tiene(e, Fila::Piel) && tiene(e, Fila::Talla));
-    MOTOR_CHECK(tiene(e, Fila::Peinado) && tiene(e, Fila::ColorPelo));
+    MOTOR_CHECK(tiene(e, Fila::Peinado) && !tiene(e, Fila::ColorPelo));  // H-PEL-1: pelo propio de serie, con sus colores
     MOTOR_CHECK(tiene(e, Fila::Barba) && tiene(e, Fila::ColorBarba));  // barba corta de serie
     MOTOR_CHECK(tiene(e, Fila::Pies) && tiene(e, Fila::AlAzar) && tiene(e, Fila::ComoSuRaza));
 
@@ -128,6 +128,7 @@ MOTOR_TEST_CASE(apariencia_peinados_y_barbas_sin_los_retirados) {
         if (!e.apariencia().peloEstilo.empty())
             peinados.insert(e.apariencia().peloEstilo);
     }
+    peinados.erase("propio");  // H-PEL-1: el pelo propio de la raza tambien se ofrece (EditorAparienciaPeloPropioTests)
     MOTOR_CHECK(peinados.size() == 26);
     MOTOR_CHECK(peinados.count("raya") == 0 && peinados.count("corto") == 1 && peinados.count("undercut") == 1 &&
                 peinados.count("flequillo") == 1);
@@ -161,6 +162,9 @@ MOTOR_TEST_CASE(apariencia_valores_con_la_vuelta) {
     MOTOR_CHECK(tiene(e, Fila::ColorPelo));
     e.derecha();
     e.derecha();
+    MOTOR_CHECK(e.apariencia().peloEstilo == "propio");  // H-PEL-1: sin pelo, el propio de la raza y los genericos
+    while (e.apariencia().peloEstilo == "propio")  // el propio y los de sus razas germanas
+        e.derecha();
     MOTOR_CHECK(e.apariencia().peloEstilo == "corto");
     MOTOR_CHECK(e.valor(Fila::Peinado) == "Corto");
 
@@ -177,7 +181,14 @@ MOTOR_TEST_CASE(apariencia_valores_con_la_vuelta) {
 
 MOTOR_TEST_CASE(apariencia_la_barba_sigue_al_pelo) {
     Game::EditorApariencia e(manifiesto());
-    e.empezar("race_human_marches");  // pelo y barba oscuros
+    e.empezar("race_human_marches");
+    // H-PEL-1: de serie lleva el pelo propio (sin fila de color): un peinado generico y una barba a juego
+    marcar(e, Fila::Peinado);
+    while (e.apariencia().peloEstilo != "corto")
+        e.derecha();
+    marcar(e, Fila::Barba);
+    while (e.apariencia().barbaEstilo != "BARBA_CORTA")
+        e.derecha();
     MOTOR_CHECK(e.apariencia().barbaColor == e.apariencia().peloColor);
     marcar(e, Fila::ColorPelo);
     e.derecha();

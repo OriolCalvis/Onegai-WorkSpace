@@ -42,6 +42,9 @@ struct FilaDeCapa {
     // AV16-03: la ropa que no encaja en el cuerpo (sobresale o deja al aire lo que no toca) segun
     // tools/auditar_ropa.py. Se monta igual (los PNJ la llevan), pero el creador no la ofrece.
     bool noEncaja = false;
+    // H-PEL-1: solo en las filas «propio/<raza>» del pelo: las razas a las que el creador ofrece ese pelo (la
+    // propia y sus razas germanas: misma cabeza, tools/pelo_germanos.py). Vacio = solo a la raza del id.
+    std::vector<std::string> razas;
     // SP-02: el orden de dibujo propio de la fila, por rumbo ("arriba" -> z),
     // cuando no es el de su ranura: los guanteletes del Artista Marcial van en
     // las dos manos y encima del cuerpo tambien de espaldas (un arma va detras).

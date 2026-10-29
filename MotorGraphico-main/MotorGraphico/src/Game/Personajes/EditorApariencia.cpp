@@ -210,12 +210,15 @@ void EditorApariencia::empezar(const std::string& razaId) {
         m_apariencia.raza = razaId;
         m_filas.clear();
         m_marcada = 0;
+        m_colorGenerico.clear();
     }
     rehacerFilas();
 }
 
 void EditorApariencia::rehacerFilas() {
     const Fila antes = filaMarcada();
+    if (!m_apariencia.peloEstilo.empty() && m_apariencia.peloEstilo != "propio" && !m_apariencia.peloColor.empty())
+        m_colorGenerico = m_apariencia.peloColor;
     const bool habiaFilas = !m_filas.empty();
     const RazaVisual* raza = m_manifiesto.raza(m_apariencia.raza);
     const auto admite = [&](const char* ranura) { return raza == nullptr || raza->admite(ranura); };
@@ -233,7 +236,8 @@ void EditorApariencia::rehacerFilas() {
         m_filas.push_back(Fila::Ojos);
     if (admite("pelo")) {
         m_filas.push_back(Fila::Peinado);
-        if (!m_apariencia.peloEstilo.empty())
+        // H-PEL-1: el pelo propio lleva sus colores: no hay fila de color
+        if (!m_apariencia.peloEstilo.empty() && m_apariencia.peloEstilo != "propio")
             m_filas.push_back(Fila::ColorPelo);
     }
     if (admite("barba")) {
@@ -306,12 +310,8 @@ std::vector<std::string> EditorApariencia::opciones(Fila fila) const {
         }
         case Fila::Ojos:
             return ids(m.ojos);
-        case Fila::Peinado: {
-            std::vector<std::string> out{""};
-            for (const std::string& e : estilos(m.pelo))
-                out.push_back(e);
-            return out;
-        }
+        case Fila::Peinado:
+            return peinados();
         case Fila::ColorPelo:
             return coloresDePelo(m, m.pelo, m_apariencia.peloEstilo);
         case Fila::Barba: {
@@ -346,6 +346,33 @@ std::vector<std::string> EditorApariencia::opciones(Fila fila) const {
     return out;
 }
 
+std::vector<std::string> EditorApariencia::pelosPropios() const {
+    std::vector<std::string> out;
+    const RazaVisual* raza = m_manifiesto.raza(m_apariencia.raza);
+    if (raza == nullptr)
+        return out;
+    // con otra talla (piel/talla de cuerpo liso) las filas propias no estan en su atlas
+    if (!m_apariencia.talla.empty() && m_apariencia.talla != raza->talla)
+        return out;
+    const std::string propio = "propio/" + raza->id;
+    if (m_manifiesto.pelo.buscar(propio) != nullptr)
+        out.push_back(propio);
+    for (const FilaDeCapa& f : m_manifiesto.pelo.filas) {
+        if (f.id.rfind("propio/", 0) == 0 && f.id != propio && contiene(f.razas, raza->id))
+            out.push_back(f.id);
+    }
+    return out;
+}
+
+std::vector<std::string> EditorApariencia::peinados() const {
+    std::vector<std::string> out{""};
+    for (const std::string& e : pelosPropios())
+        out.push_back(e);
+    for (const std::string& e : estilos(m_manifiesto.pelo))
+        out.push_back(e);
+    return out;
+}
+
 std::string EditorApariencia::actual(Fila fila) const {
     const Apariencia& a = m_apariencia;
     switch (fila) {
@@ -364,7 +391,7 @@ std::string EditorApariencia::actual(Fila fila) const {
             return a.ojos.empty() && raza != nullptr ? raza->ojos : a.ojos;
         }
         case Fila::Peinado:
-            return a.peloEstilo;
+            return a.peloEstilo == "propio" ? "propio/" + a.peloColor : a.peloEstilo;
         case Fila::ColorPelo:
             return a.peloColor;
         case Fila::Barba:
@@ -421,10 +448,16 @@ void EditorApariencia::poner(Fila fila, const std::string& valor) {
             a.ojos = valor;
             break;
         case Fila::Peinado:
+            if (valor.rfind("propio/", 0) == 0) {
+                // H-PEL-1: un pelo propio (de tu raza o de una germana) lleva sus colores: no se tine
+                a.peloEstilo = "propio";
+                a.peloColor = valor.substr(7);
+                break;
+            }
             a.peloEstilo = valor;
             if (!valor.empty()) {
                 a.peloColor = colorPara(m_manifiesto.pelo, valor,
-                                        {a.peloColor, raza != nullptr ? raza->peloColor : ""});
+                                        {a.peloColor, m_colorGenerico, raza != nullptr ? raza->peloColor : ""});
             }
             break;
         case Fila::ColorPelo: {
@@ -520,9 +553,17 @@ void EditorApariencia::alAzar() {
     }
     // CAR-1: «Al azar» no toca los ojos (la capa de ojos aun no es fiable: CAR-2): se quedan los de la raza
     if (raza->admite("pelo")) {
-        a.peloEstilo = tirada(100) < 85 ? uno(estilos(m.pelo)) : "";
-        if (!a.peloEstilo.empty())
-            a.peloColor = uno(coloresDePelo(m, m.pelo, a.peloEstilo));
+        std::vector<std::string> hay = peinados();  // H-PEL-1: con los propios de la raza y sus germanas
+        hay.erase(hay.begin());
+        const std::string elegido = tirada(100) < 85 ? uno(hay) : "";
+        if (elegido.rfind("propio/", 0) == 0) {
+            a.peloEstilo = "propio";
+            a.peloColor = elegido.substr(7);
+        } else {
+            a.peloEstilo = elegido;
+            if (!a.peloEstilo.empty())
+                a.peloColor = uno(coloresDePelo(m, m.pelo, a.peloEstilo));
+        }
     }
     if (raza->admite("barba")) {
         a.barbaEstilo = tirada(100) < 30 ? uno(estilos(m.barba)) : "";
@@ -573,8 +614,12 @@ std::string EditorApariencia::valor(Fila fila) const {
             return "Otra combinacion";
         case Fila::ComoSuRaza:
             return "Como viste tu pueblo";
-        case Fila::Peinado:
-            return v.empty() ? "Sin pelo" : nombreDe(v);
+        case Fila::Peinado: {
+            if (v.empty())
+                return "Sin pelo";
+            const RazaVisual* de = v.rfind("propio/", 0) == 0 ? m_manifiesto.raza(v.substr(7)) : nullptr;
+            return de != nullptr ? de->nombre : nombreDe(v);
+        }
         case Fila::Barba:
             return v.empty() ? "Sin barba" : nombreDe(v);
         case Fila::Piel: {
