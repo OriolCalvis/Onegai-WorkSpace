@@ -48,6 +48,7 @@ VALIDADORES_EXISTENTES = [
     "validar_libreria_dnd.py",
     "validar_pnj.py",  # PNJ-01: todos los PNJ con las piezas del jugador
     ("laminas_desde_capas.py", "--comprobar", "--rapido"),  # CAR-4: laminas al dia con las capas (rapido si no hay cambios)
+    ("trocejar_atlas_personajes.py", "--comprobar"),  # PERF-4: los .filas de los atlas de personajes al dia con su PNG
     "validar_cinematicas.py",  # PROLOGO-02: niveles, actores, beats y flags de las cinematicas
     "validar_eventos.py",  # C8-03a: eventos del mundo, sin lugar ni escenas vistas como causa
 ]
