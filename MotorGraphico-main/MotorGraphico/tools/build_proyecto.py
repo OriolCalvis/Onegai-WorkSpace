@@ -119,7 +119,7 @@ def construye(pid, con_binario=False):
     # Texturas: las comparten todos los proyectos, no hay que declararlas.
     # Texturas: las comparten todos los proyectos, no hay que declararlas.
     # copytree y no un bucle de copy2: dentro de textures/ hay CARPETAS
-    # (race_npc_sprites, 43 ficheros), y copy2 sobre un directorio revienta
+    # (personajes, monumentos, pixellab...), y copy2 sobre un directorio revienta
     # con IsADirectoryError a mitad de la build.
     tex = os.path.join(ASSETS, "textures")
     if os.path.isdir(tex):

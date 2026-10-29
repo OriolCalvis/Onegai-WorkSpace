@@ -19,7 +19,8 @@ Sin argumentos lee pixellab/monumentos.json y, si existen, iso/peces.json (las
 piezas del kit isometrico: "escala": false y "anclaje" exacto, sin reescalar)
 e iso/monuments/monuments.json (MON-01: los siete monumentos del kit) e
 iso/interiors/peces_grans.json (INT-01: las piezas grandes de los interiores).
-Una entrada con "retirado": true se conserva en el indice pero no se importa.
+Una entrada con "retirado": true se conserva en el indice pero no se importa, y se
+borran su hoja, su .png/.json y su alta en sprites.json (las fuentes siguen en lote*/).
 """
 import json
 import math
@@ -74,10 +75,13 @@ def importar(*indices):
     registro = json.loads((TEX / "sprites.json").read_text())
     salida = []
     entradas = []
+    retirados = set()
     for indice in indices:
         indice = Path(indice)
         if indice.exists():
-            entradas += [(indice, m) for m in json.loads(indice.read_text())["monumentos"] if not m.get("retirado")]
+            todos = json.loads(indice.read_text())["monumentos"]
+            entradas += [(indice, m) for m in todos if not m.get("retirado")]
+            retirados |= {m["id"] for m in todos if m.get("retirado")}
     for indice, m in entradas:
         img = Image.open(indice.parent / m["imagen"])
         if m.get("escala") is False:                    # ISO: pieza exacta con su anclaje
@@ -103,8 +107,10 @@ def importar(*indices):
         print(f"{m['id']}: hoja {hoja.width}x{hoja.height}, {columnas} tiras, anclaje ({ax}, {ay})")
     # ISO: las piezas del kit (ids iso_*) que ya no estan en su indice se quitan del
     # registro y de assets/textures/monumentos (el kit las regenera todas).
+    # Los "retirado": true (cualquier id) tambien se quitan: no los elige ningun mapa.
     vivas = {f"monumento_{m['id']}" for m in salida}
-    for h in [h for h in registro["hojas"] if h["id"].startswith("monumento_iso_") and h["id"] not in vivas]:
+    for h in [h for h in registro["hojas"] if h["id"] not in vivas and h["id"].startswith("monumento_")
+              and (h["id"].startswith("monumento_iso_") or h["id"][len("monumento_"):] in retirados)]:
         registro["hojas"].remove(h)
         nombre = h["id"][len("monumento_"):]
         for ext in (".png", ".json"):
