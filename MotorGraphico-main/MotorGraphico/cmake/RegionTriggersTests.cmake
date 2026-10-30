@@ -1,0 +1,12 @@
+# U3-02.E02 — Pertenencia de casilla a regiones (Regiones::regionsAt). GL-free.
+if(BUILD_TESTING AND TARGET motor_map_document)
+    add_executable(test_region_triggers tests/Map/RegionTriggersTests.cpp)
+    target_include_directories(test_region_triggers PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+    target_link_libraries(test_region_triggers PRIVATE motor_map_document motor_json)
+    add_test(NAME test_region_triggers COMMAND test_region_triggers)
+    set_tests_properties(test_region_triggers PROPERTIES WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" LABELS "unit;gl-free")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_region_triggers)
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_region_triggers)
+    endif()
+endif()

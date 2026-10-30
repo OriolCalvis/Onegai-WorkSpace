@@ -70,6 +70,7 @@ FetchContent_MakeAvailable(glm)
 
 add_library(motor_math src/Render/Camera.cpp)
 target_link_libraries(motor_math PUBLIC glm::glm)
+include(cmake/Interpolacion.cmake)  # U3-07: progreso temporal e interpolacion (GL-free)
 
 add_executable(demo_camera examples/demo_camera.cpp)
 target_link_libraries(demo_camera PRIVATE motor_math)
@@ -182,7 +183,8 @@ add_library(motor_map_document
     src/Map/TileLayerDocument.cpp
     src/Map/EntityLayerDocument.cpp
     src/Map/RegionLayerDocument.cpp
-    src/Map/MapDocumentEdits.cpp src/Map/EventLayerDocument.cpp)
+    src/Map/MapDocumentEdits.cpp src/Map/EventLayerDocument.cpp
+    src/Map/RegionPresence.cpp)
 target_link_libraries(motor_map_document PUBLIC motor_json motor_project)
 
 # RUN-03 — Máquina de escenas sin ventana. Una Scene concreta decide cómo
@@ -999,6 +1001,7 @@ if(BUILD_TESTING)
     include(cmake/RumboNiveles.cmake)  # MAPA-01: el objetivo en el minimapa
     include(cmake/TableroCombate.cmake)  # AV13-06: el tablero del combate a lo BG3
     include(cmake/RutaCasillas.cmake)  # AV13-07: la ruta por casillas
+    include(cmake/RegionTriggersTests.cmake)  # U3-02.E02: pertenencia de casilla a regiones
     include(cmake/PlantillaArea.cmake)  # AV13-08 (ChatGPT): las plantillas de area
     include(cmake/Contenedores.cmake)
 include(cmake/Botin.cmake)
@@ -1595,6 +1598,7 @@ include(cmake/DiarioCompleto.cmake)
 include(cmake/ComercioReputacion.cmake)
 # PNJ-02 (ronda 15/10, pnj_motor) — los PNJ andan y hacen su oficio (rutinas_pnj.json).
 include(cmake/RutinasPnj.cmake)
+include(cmake/ClipsAnimacion.cmake)
 # AV15-05a — confirmar lo caro e irreversible (EH-22, 23, 29, 30).
 include(cmake/Confirmar.cmake)
 include(cmake/AparienciaTests.cmake)
