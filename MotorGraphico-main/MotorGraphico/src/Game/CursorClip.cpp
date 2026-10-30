@@ -1,40 +1,73 @@
 // U3-05.E04 -- Avanzar el cursor de un clip (ver CursorClip.h).
 #include "Game/CursorClip.h"
 
+#include <climits>
 #include <cmath>
 
 namespace Game {
 namespace {
+
+// Tolerancia de frontera (ms): falta menos que esto = se cruza. Absorbe la deriva de sumar dt.
+constexpr double kTolFronteraMs = 1e-6;
+
+// Entrada valida: ver dominio en CursorClip.h.
+bool enDominio(const CursorClip& k, double dt, const ClipAnimacion& clip, std::size_t max) {
+    if (max == 0 || clip.fotogramas.empty() || !std::isfinite(dt) || dt < 0.0) return false;
+    if (!std::isfinite(dt * 1000.0)) return false;
+    const int n = static_cast<int>(clip.fotogramas.size());
+    for (const FotogramaClip& f : clip.fotogramas)
+        if (f.duracionMs <= 0) return false;
+    for (const EventoFotograma& e : clip.eventos)
+        if (e.fotograma < 0 || e.fotograma >= n) return false;
+    if (k.fotograma < 0 || k.fotograma >= n || k.vueltas < 0) return false;
+    const double dur = clip.fotogramas[static_cast<std::size_t>(k.fotograma)].duracionMs;
+    if (!std::isfinite(k.enFotogramaMs) || k.enFotogramaMs < 0.0 || k.enFotogramaMs > dur) return false;
+    if (k.eventoPendiente < 0) return false;
+    if (k.eventoPendiente > 0) {
+        const std::size_t cuantos = eventosDeFotograma(clip, k.fotograma).size();
+        if (!k.iniciado || static_cast<std::size_t>(k.eventoPendiente) >= cuantos) return false;
+    }
+    return true;
+}
 
 // Clip sin eventos: solo aritmetica (modulo sobre la duracion total), sin recorrer vueltas.
 void avanzaSinEventos(CursorClip& k, double restoMs, const ClipAnimacion& clip) {
     double pos = k.enFotogramaMs + restoMs;
     for (int i = 0; i < k.fotograma; ++i) pos += clip.fotogramas[static_cast<std::size_t>(i)].duracionMs;
     const double total = clip.duracionTotal();
-    if (!clip.bucle && pos >= total) {
-        k.fotograma = static_cast<int>(clip.fotogramas.size()) - 1;
+    const int n = static_cast<int>(clip.fotogramas.size());
+    if (!clip.bucle && pos + kTolFronteraMs >= total) {
+        k.fotograma = n - 1;
         k.enFotogramaMs = clip.fotogramas.back().duracionMs;
         k.terminado = true;
         return;
     }
-    const double vueltas = std::floor(pos / total);
+    const double desplazada = pos + kTolFronteraMs;
+    const double vueltas = std::floor(desplazada / total);
     k.vueltas += static_cast<int>(std::fmin(vueltas, 2147483647.0 - k.vueltas));
-    pos = std::fmod(pos, total);
+    pos = std::fmax(0.0, std::fmod(desplazada, total) - kTolFronteraMs);
     k.fotograma = 0;
-    while (pos >= clip.fotogramas[static_cast<std::size_t>(k.fotograma)].duracionMs) {
+    while (k.fotograma + 1 < n &&
+           pos + kTolFronteraMs >= clip.fotogramas[static_cast<std::size_t>(k.fotograma)].duracionMs) {
         pos -= clip.fotogramas[static_cast<std::size_t>(k.fotograma)].duracionMs;
         ++k.fotograma;
     }
-    k.enFotogramaMs = pos;
+    k.enFotogramaMs = std::fmax(0.0, pos);
 }
 
-// Entrada en un fotograma: sus eventos van enteros o no van. false = no caben en el presupuesto.
-bool emite(PasoClip& p, const ClipAnimacion& clip, int fotograma, std::size_t max) {
-    const auto evs = eventosDeFotograma(clip, fotograma);
-    if (evs.empty()) return true;
-    if (max == 0 || (!p.eventos.empty() && p.eventos.size() + evs.size() > max)) return false;
-    for (const EventoFotograma* e : evs) p.eventos.push_back(*e);
-    return true;
+// Emite los eventos del fotograma actual desde eventoPendiente, hasta max. true = quedan por emitir.
+bool volcar(PasoClip& p, const std::vector<const EventoFotograma*>& evs, std::size_t max) {
+    std::size_t i = static_cast<std::size_t>(p.cursor.eventoPendiente);
+    while (i < evs.size() && p.eventos.size() < max) p.eventos.push_back(*evs[i++]);
+    const bool quedan = i < evs.size();
+    p.cursor.eventoPendiente = quedan ? static_cast<int>(i) : 0;
+    return quedan;
+}
+
+PasoClip corta(PasoClip& p, double restoMs) {
+    p.pendiente = true;
+    p.tiempoPendiente = restoMs / 1000.0;
+    return p;
 }
 
 }  // namespace
@@ -43,19 +76,12 @@ PasoClip avanzaClip(const CursorClip& cursor, double dt, const ClipAnimacion& cl
     PasoClip p;
     p.cursor = cursor;
     CursorClip& k = p.cursor;
-    if (!std::isfinite(dt) || dt < 0.0 || clip.fotogramas.empty() || k.terminado) return p;
+    if (!enDominio(cursor, dt, clip, max) || k.terminado) return p;
     double resto = dt * 1000.0;
-    if (!std::isfinite(resto)) return p;  // dt finito pero enorme: dt*1000 desborda; se rechaza como dt invalido
-    if (!k.iniciado) {
-        if (!emite(p, clip, 0, max)) {
-            p.tiempoPendiente = dt;
-            return p;
-        }
+    if (!k.iniciado || k.eventoPendiente > 0) {
         k.iniciado = true;
-        if (max > 0 && p.eventos.size() >= max) {
-            p.tiempoPendiente = resto / 1000.0;
-            return p;
-        }
+        if (volcar(p, eventosDeFotograma(clip, k.fotograma), max)) return corta(p, resto);
+        if (p.eventos.size() >= max && resto > 0.0) return corta(p, resto);
     }
     if (clip.eventos.empty()) {
         avanzaSinEventos(k, resto, clip);
@@ -65,7 +91,7 @@ PasoClip avanzaClip(const CursorClip& cursor, double dt, const ClipAnimacion& cl
     for (;;) {
         const double dur = clip.fotogramas[static_cast<std::size_t>(k.fotograma)].duracionMs;
         const double libre = dur - k.enFotogramaMs;
-        if (resto < libre) {
+        if (resto < libre - kTolFronteraMs) {
             k.enFotogramaMs += resto;
             break;
         }
@@ -75,20 +101,17 @@ PasoClip avanzaClip(const CursorClip& cursor, double dt, const ClipAnimacion& cl
             k.terminado = true;
             break;
         }
-        resto -= libre;
+        resto = std::fmax(0.0, resto - libre);
         k.enFotogramaMs = dur;
         const int siguiente = ultimo ? 0 : k.fotograma + 1;
-        if (!emite(p, clip, siguiente, max)) {
-            p.tiempoPendiente = resto / 1000.0;
-            return p;
-        }
+        const auto evs = eventosDeFotograma(clip, siguiente);
+        if (!evs.empty() && p.eventos.size() >= max) return corta(p, resto);
         k.fotograma = siguiente;
         k.enFotogramaMs = 0.0;
-        if (ultimo) ++k.vueltas;
-        if (p.eventos.size() >= max && resto > 0.0) {
-            p.tiempoPendiente = resto / 1000.0;
-            return p;
-        }
+        k.eventoPendiente = 0;
+        if (ultimo && k.vueltas < INT_MAX) ++k.vueltas;
+        if (volcar(p, evs, max)) return corta(p, resto);
+        if (p.eventos.size() >= max && resto > 0.0) return corta(p, resto);
     }
     return p;
 }
