@@ -3,6 +3,7 @@
 
 #include "RPG/RegionTriggerDispatch.h"
 
+#include <utility>
 #include <variant>
 
 namespace RPG {
@@ -26,9 +27,24 @@ void omitir(RegionDispatchResult& out, const MapEventDocument& event,
     out.skipped.push_back(RegionSkipped{event.id.value(), trigger, reason, std::move(detail)});
 }
 
+// ¿Alguna pagina del evento escucha este trigger? Filtro previo: solo esos
+// eventos se evaluan, y por tanto solo ellos pueden reportar NotEvaluable.
+bool escuchaTrigger(const MapEventDocument& event, const Regiones::RegionTrigger& trigger) {
+    for (const MapEventPage& p : event.pages) {
+        if (p.trigger == triggerDe(trigger.kind) && p.regionLayerId == trigger.ref.capa &&
+            p.regionId == trigger.ref.region) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void despacharAEvento(RegionDispatchResult& out, const MapEventDocument& event,
                       const Regiones::RegionTrigger& trigger, const NarrativeState& narrative,
                       const std::vector<std::string>& inventory, EventInterpreter& interpreter) {
+    if (!escuchaTrigger(event, trigger)) {
+        return;
+    }
     const ActivePageResult activa = ActivePageWithInventory(event, narrative, inventory);
     if (!activa.trustworthy()) {
         omitir(out, event, trigger, RegionSkipReason::NotEvaluable, activa.diagnostic);
@@ -77,6 +93,31 @@ Result<RegionDispatchResult> dispatchRegionTriggers(
         }
     }
     return Result<RegionDispatchResult>::Ok(std::move(out));
+}
+
+Result<RegionDispatchResult> updateEventsAndRegions(
+    MapEventRunner& runner, EventInterpreter& interpreter, const NarrativeState& narrative,
+    const std::vector<std::string>& inventory, const MapEventFrame& frame,
+    const std::vector<Regiones::RegionTrigger>& triggers) {
+    const MapDocument* mapa = runner.map();
+    // Con una escena bloqueante viva el runner no debe ver el mapa: sin mapa
+    // `update()` solo limpia, registra la casilla y avanza el interprete, y
+    // `dispararAutomaticos()` (que no mira blocksPlayer) no puede arrancar
+    // un Autorun encima. No se pierde nada: ni Touch ni Interact arrancan con
+    // algo bloqueando, y los automaticos no se registran, asi que arrancan
+    // cuando la escena termina.
+    const bool bloqueado = interpreter.blocksPlayer();
+    if (bloqueado) {
+        runner.setMap(nullptr);
+    }
+    runner.update(frame);
+    if (bloqueado) {
+        runner.setMap(mapa);
+    }
+    if (mapa == nullptr) {
+        return Result<RegionDispatchResult>::Ok(RegionDispatchResult{});
+    }
+    return dispatchRegionTriggers(triggers, *mapa, narrative, inventory, interpreter);
 }
 
 }  // namespace RPG

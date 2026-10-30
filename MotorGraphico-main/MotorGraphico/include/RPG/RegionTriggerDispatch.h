@@ -8,6 +8,7 @@
 #include "Map/MapDocument.h"
 #include "Map/RegionPresence.h"
 #include "RPG/EventInterpreter.h"
+#include "RPG/MapEventRunner.h"
 #include "RPG/SessionCommandHost.h"
 
 // U3-02.E06b — Despacho de los triggers de REGION (RegionEnter/Stay/Exit) al
@@ -34,6 +35,15 @@
 // trigger NO arranca y queda en `skipped` con motivo `BlockedByScene`. El
 // trigger omitido NO se reencola: la presencia ya avanzo, asi que un Enter
 // omitido se pierde (decision de quien llama si lo reintenta o lo descarta).
+//
+// PERDIDA DE TRIGGERS (contractual): un trigger omitido por escena viva NO
+// se reencola ni se entrega despues. Los triggers de region son por
+// prioridad (D3), no de entrega garantizada; la presencia ya avanzo.
+//
+// NOTA StartFailed: es defensivo. Con el id no vacio (validado), el indice
+// de pagina tomado de ActivePageWithInventory y `isRunning` mirado antes,
+// `EventInterpreter::start` (src/RPG/EventInterpreter.cpp:33-45) no tiene
+// otra via de fallo, asi que no hay prueba que lo alcance.
 //
 // ORDEN RESPECTO A MapEventRunner::update (documentado, no forzado): llamar
 // DESPUES de `update()` en el mismo frame. Asi, un Autorun que arranca en
@@ -75,5 +85,16 @@ Result<RegionDispatchResult> dispatchRegionTriggers(
     const std::vector<Regiones::RegionTrigger>& triggers, const MapDocument& map,
     const NarrativeState& narrative, const std::vector<std::string>& inventory,
     EventInterpreter& interpreter);
+
+// Un frame completo: `runner.update(frame)` y despues el despacho. Si al
+// empezar hay una escena bloqueante viva, el runner se alimenta SIN mapa
+// (setMap(nullptr) y se restaura): avanza el interprete y registra la casilla
+// pero no dispara automaticos. Efecto: Autorun/Parallel nuevos esperan a que
+// la escena termine (no se registran como arrancados). Sin mapa en el runner
+// no hay despacho.
+Result<RegionDispatchResult> updateEventsAndRegions(
+    MapEventRunner& runner, EventInterpreter& interpreter, const NarrativeState& narrative,
+    const std::vector<std::string>& inventory, const MapEventFrame& frame,
+    const std::vector<Regiones::RegionTrigger>& triggers);
 
 }  // namespace RPG

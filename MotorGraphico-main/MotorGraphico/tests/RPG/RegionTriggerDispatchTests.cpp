@@ -303,6 +303,86 @@ MOTOR_TEST_CASE(sin_triggers_no_hace_nada) {
     MOTOR_CHECK(r.started.empty() && r.skipped.empty());
 }
 
+MOTOR_TEST_CASE(solo_reporta_no_evaluable_de_eventos_que_escuchan_ese_trigger) {
+    MapEventCondition rota;
+    rota.kind = EventConditionKind::Item;
+    rota.reference = "llave";
+    rota.comparison = "~=";
+    MapEventDocument ajeno = evento("ajeno", GridCoord{2, 0}, pagina("ajeno_p0", EventTrigger::Interact));
+    ajeno.pages[0].conditions = {rota};
+    MapEventDocument otra = eventoRegion("otra_reg", 3, EventTrigger::RegionEnter, "otra");
+    otra.pages[0].conditions = {rota};
+    const MapDocument mapa = mapaCon({ajeno, otra});
+    Escena e;
+    const RegionDispatchResult r = e.despachar(mapa, {disp(Kind::Enter)});
+    MOTOR_CHECK(r.started.empty());
+    MOTOR_CHECK(r.skipped.empty());
+}
+
+MOTOR_TEST_CASE(already_running_con_un_parallel_vivo_cuya_pagina_pasa_a_ser_de_region) {
+    MapEventDocument ev = evento("amb", GridCoord{1, 0}, pagina("amb_p0", EventTrigger::Parallel));
+    MapEventCondition c;
+    c.kind = EventConditionKind::Flag;
+    c.reference = "cambia";
+    MapEventPage reg = pagina("amb_p1", EventTrigger::RegionEnter, "reg", "zona");
+    reg.conditions = {c};
+    ev.pages.push_back(std::move(reg));
+    const MapDocument mapa = mapaCon({ev});
+    Escena e;
+    MOTOR_CHECK(e.interprete.start(ev, 0).isOk());
+    MOTOR_CHECK(!e.interprete.blocksPlayer());
+    e.estado.setFlag("cambia");
+    const RegionDispatchResult r = e.despachar(mapa, {disp(Kind::Enter)});
+    MOTOR_CHECK(r.started.empty());
+    MOTOR_CHECK(r.skipped.size() == 1);
+    MOTOR_CHECK(r.skipped[0].reason == RegionSkipReason::AlreadyRunning);
+    MOTOR_CHECK(e.interprete.active().size() == 1);
+}
+
+// Escena de region viva en F1; en F2 se activa la bandera de un Autorun. Con
+// update() a secas arrancaria encima (dos bloqueantes); con la orquestacion
+// espera a que la region termine.
+MOTOR_TEST_CASE(autorun_activado_con_una_region_viva_espera_a_que_termine) {
+    MapEventCondition c;
+    c.kind = EventConditionKind::Flag;
+    c.reference = "listo";
+    MapEventDocument aut = evento("aut", GridCoord{9, 9}, pagina("aut_p0", EventTrigger::Autorun));
+    aut.pages[0].conditions = {c};
+    const MapDocument mapa = mapaCon({aut, eventoRegion("trampa", 1, EventTrigger::RegionEnter)});
+    Escena e;
+    e.runner.setMap(&mapa);
+    MapEventFrame f;
+    f.playerCell = GridCoord{1, 0};
+    f.deltaMs = 16;
+    const auto bloqueantes = [&]() {
+        int n = 0;
+        for (const EventRun& run : e.interprete.active()) {
+            n += run.parallel ? 0 : 1;
+        }
+        return n;
+    };
+    // F1: arranca la region.
+    Result<RegionDispatchResult> r = updateEventsAndRegions(
+        e.runner, e.interprete, e.estado, e.inventario, f, {disp(Kind::Enter)});
+    MOTOR_CHECK(r.isOk() && r.value().started.size() == 1);
+    // F2..: la bandera se activa con la region viva.
+    e.estado.setFlag("listo");
+    for (int i = 0; i < 10 && e.interprete.isRunning("trampa"); ++i) {
+        r = updateEventsAndRegions(e.runner, e.interprete, e.estado, e.inventario, f, {});
+        MOTOR_CHECK(bloqueantes() <= 1);
+        if (e.interprete.isRunning("trampa")) {
+            MOTOR_CHECK(!e.interprete.isRunning("aut"));
+        }
+        f.deltaMs = 400;
+    }
+    MOTOR_CHECK(!e.interprete.isRunning("trampa"));
+    // Termino la region: el siguiente frame si arranca el Autorun.
+    r = updateEventsAndRegions(e.runner, e.interprete, e.estado, e.inventario, f, {});
+    MOTOR_CHECK(e.interprete.isRunning("aut"));
+    MOTOR_CHECK(bloqueantes() == 1);
+    MOTOR_CHECK(e.runner.map() == &mapa);
+}
+
 }  // namespace
 
 int main() { return motor_test::runAllTests(); }
