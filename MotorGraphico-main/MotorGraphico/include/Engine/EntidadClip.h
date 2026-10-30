@@ -9,6 +9,10 @@
 // play() (tambien via AnimatedEntity*: animaciones direccionales de la cinematica o del bucle),
 // la entidad recupera el control, el clip se descarta en el siguiente update() y se usa
 // AnimatedEntity::update. Para volver al clip hay que llamar de nuevo a ponIdle()/idleCuerpoBase().
+// Comportamiento conocido e intencional por ahora: ningun llamador del juego vuelve a llamarlo. Tras una
+// cue «idle» de cinematica (ApplicationCinematica.cpp:150-171) o la animacion de un PNJ sin hoja
+// (ApplicationBucle.cpp:301-318) el cuerpo base se queda en la pose que puso play(), igual que antes
+// de E07b (no es regresion). Reenganchar el clip seria una E de integracion futura.
 // Fase: el clip cuenta en ms (double) y AnimatedEntity en float; en multiplos exactos de 0,22 s
 // el cambio de fotograma puede llegar un paso de update() antes o despues que con la animacion
 // anterior. El ritmo (220 ms) y la secuencia 1..12 son los mismos.

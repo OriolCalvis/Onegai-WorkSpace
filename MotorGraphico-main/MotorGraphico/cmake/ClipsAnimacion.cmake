@@ -92,3 +92,20 @@ if(BUILD_TESTING AND TARGET motor_core AND TARGET motor_level)
         add_dependencies(suite_gl_free test_idle_cuerpo_base)
     endif()
 endif()
+
+# U3-05.E08 -- Verificacion de bucle y clip no ciclico a varios dt (gl-free, lee el asset del idle).
+if(BUILD_TESTING AND TARGET motor_level)
+    add_executable(test_clip_actor_fps tests/Game/ClipActorFpsTests.cpp)
+    target_include_directories(test_clip_actor_fps PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    target_link_libraries(test_clip_actor_fps PRIVATE motor_level)
+    add_test(NAME test_clip_actor_fps COMMAND test_clip_actor_fps)
+    set_tests_properties(test_clip_actor_fps PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "unit;gl-free")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_clip_actor_fps)
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_clip_actor_fps)
+    endif()
+endif()
