@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
 
 #include "Game/Emisor/MovimientoParticula.h"
 
@@ -96,17 +98,18 @@ ResumenProyeccion proyectarParticulas(const Emisor& e, const EstiloEmisor& estil
         } else {
             lote[n++] = {x, y, alfa, formaDe(tipo, p), suma, color};
         }
-        for (std::size_t i = 0; i < n; ++i) {
-            const std::size_t q = lote[i].alfa > 0.0f ? quadsDeForma(lote[i].forma) : 0;
-            if (lleno || r.quads + q > quadsMax) {
-                lleno = true;   // corta en orden de nacimiento: lo siguiente tampoco entra
-                ++r.descartados;
-                continue;
-            }
-            out.push_back(lote[i]);
-            ++r.destellos;
-            r.quads += q;
+        // El lote (1 destello, o el aro de 10 de Expande) es ATOMICO frente al tope: o entra entero o no entra.
+        std::size_t qLote = 0;
+        for (std::size_t i = 0; i < n; ++i) qLote += lote[i].alfa > 0.0f ? quadsDeForma(lote[i].forma) : 0;
+        if (lleno && qLote == 0) continue;   // sin coste y tope ya lleno: ni se anade ni cuenta como descartado
+        if (lleno || r.quads + qLote > quadsMax) {
+            lleno = true;   // al primer destello que no cabe, este y los siguientes DEL EMISOR se descartan
+            r.descartados += n;
+            continue;
         }
+        out.insert(out.end(), lote.begin(), lote.begin() + static_cast<std::ptrdiff_t>(n));
+        r.destellos += n;
+        r.quads += qLote;
     }
     return r;
 }
