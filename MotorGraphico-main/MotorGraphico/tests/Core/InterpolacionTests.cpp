@@ -159,6 +159,14 @@ MOTOR_TEST_CASE(tween_iguales_devuelve_a) {
         MOTOR_CHECK(tweenEscalar(-2.5, -2.5, p) == -2.5);
         MOTOR_CHECK(tweenEscalar(1e300, 1e300, p) == 1e300);
     }
+    // Sin la guarda a==b la formula convexa no da exacto en estos casos (matan al mutante).
+    MOTOR_CHECK(tweenEscalar(0.1, 0.1, 0.18) == 0.1);
+    MOTOR_CHECK(tweenEscalar(0.3, 0.3, 0.08) == 0.3);
+    for (int i = 0; i <= 100; ++i) {
+        const double p = i / 100.0;
+        MOTOR_CHECK(tweenEscalar(0.1, 0.1, p) == 0.1);
+        MOTOR_CHECK(tweenEscalar(0.3, 0.3, p) == 0.3);
+    }
 }
 
 MOTOR_TEST_CASE(tween_ascendente_y_descendente) {
@@ -175,7 +183,7 @@ MOTOR_TEST_CASE(tween_extremos_exactos) {
         MOTOR_CHECK(tweenEscalar(q[0], q[1], 0.0) == q[0]);
         MOTOR_CHECK(tweenEscalar(q[0], q[1], 1.0) == q[1]);
     }
-    // La formula ingenua a+(b-a)*1 no devuelve b en estos casos; el guard si.
+    // La formula ingenua a+(b-a)*1 no devuelve b en estos casos; la rama p>=1 si.
     const double a = 1.0, b = 1e-20;
     MOTOR_CHECK(a + (b - a) * 1.0 != b);
     MOTOR_CHECK(tweenEscalar(a, b, 1.0) == b);
@@ -231,6 +239,42 @@ MOTOR_TEST_CASE(tween_extremos_opuestos_enormes_son_finitos_y_acotados) {
         MOTOR_CHECK(std::isfinite(v) && v >= -1.7e308 && v <= 1.7e308);
     }
     MOTOR_CHECK(tweenEscalar(-1.7e308, 1.7e308, 0.25) < tweenEscalar(-1.7e308, 1.7e308, 0.75));
+}
+
+using Interpolacion::tweenVec2;
+
+bool igualVec(const Vector2& v, float x, float y) { return v.x == x && v.y == y; }
+
+MOTOR_TEST_CASE(tweenVec2_extremos_exactos) {
+    const Vector2 a{0.1f, -3.3f}, b{7.7f, 1e-20f};
+    MOTOR_CHECK(igualVec(tweenVec2(a, b, 0.0), a.x, a.y));
+    MOTOR_CHECK(igualVec(tweenVec2(a, b, 1.0), b.x, b.y));
+}
+
+MOTOR_TEST_CASE(tweenVec2_punto_medio_y_descenso) {
+    MOTOR_CHECK(igualVec(tweenVec2({0.0f, 0.0f}, {10.0f, 20.0f}, 0.5), 5.0f, 10.0f));
+    MOTOR_CHECK(igualVec(tweenVec2({10.0f, 20.0f}, {0.0f, 0.0f}, 0.25), 7.5f, 15.0f));
+}
+
+MOTOR_TEST_CASE(tweenVec2_componentes_mixtas) {
+    // x sube, y baja: cada componente es independiente (detecta x/y intercambiados).
+    MOTOR_CHECK(igualVec(tweenVec2({0.0f, 100.0f}, {10.0f, 0.0f}, 0.25), 2.5f, 75.0f));
+    MOTOR_CHECK(igualVec(tweenVec2({5.0f, 1.0f}, {5.0f, 9.0f}, 0.5), 5.0f, 5.0f));
+}
+
+MOTOR_TEST_CASE(tweenVec2_acota_p_fuera_de_rango) {
+    const Vector2 a{2.0f, 8.0f}, b{8.0f, 2.0f};
+    MOTOR_CHECK(igualVec(tweenVec2(a, b, -0.5), a.x, a.y));
+    MOTOR_CHECK(igualVec(tweenVec2(a, b, -1e9), a.x, a.y));
+    MOTOR_CHECK(igualVec(tweenVec2(a, b, 1.5), b.x, b.y));
+    MOTOR_CHECK(igualVec(tweenVec2(a, b, 1e9), b.x, b.y));
+}
+
+MOTOR_TEST_CASE(tweenVec2_iguales_devuelve_a) {
+    const Vector2 a{0.1f, 0.3f};
+    for (int i = 0; i <= 100; ++i) {
+        MOTOR_CHECK(igualVec(tweenVec2(a, a, i / 100.0), a.x, a.y));
+    }
 }
 
 }  // namespace

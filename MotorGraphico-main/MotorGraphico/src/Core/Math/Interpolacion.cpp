@@ -57,6 +57,11 @@ double tweenEscalar(double a, double b, double p) {
     return x < lo ? lo : (x > hi ? hi : x);
 }
 
+Vector2 tweenVec2(const Vector2& a, const Vector2& b, double p) {
+    return {static_cast<float>(tweenEscalar(a.x, b.x, p)),
+            static_cast<float>(tweenEscalar(a.y, b.y, p))};
+}
+
 Result<TipoCurva> curvaDesdeTexto(const std::string& texto) {
     struct Par { const char* nombre; TipoCurva tipo; };
     static const Par kTabla[] = {
