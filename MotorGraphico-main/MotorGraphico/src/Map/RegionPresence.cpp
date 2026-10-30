@@ -104,4 +104,26 @@ Result<StayBatch> stayEvents(RegionPresence& presence, const std::vector<RegionR
     return R::Ok(batch);
 }
 
+std::vector<RegionTrigger> orderRegionEvents(const RegionDelta& delta, const StayBatch& stays,
+                                             const RegionPolicy& policy) {
+    using K = RegionTrigger::Kind;
+    std::vector<RegionTrigger> out;
+    auto add = [&out](K kind, const std::vector<RegionRef>& group) {
+        for (const RegionRef& r : group) out.push_back(RegionTrigger{kind, r});
+    };
+    if (policy.exitsFirst) {
+        add(K::Exit, delta.exited);
+        add(K::Enter, delta.entered);
+    } else {
+        add(K::Enter, delta.entered);
+        add(K::Exit, delta.exited);
+    }
+    for (const RegionRef& r : stays.fired) {
+        // fired fuera de stayed: incoherente, se ignora.
+        if (std::find(delta.stayed.begin(), delta.stayed.end(), r) != delta.stayed.end())
+            out.push_back(RegionTrigger{K::Stay, r});
+    }
+    return out;
+}
+
 }  // namespace Regiones

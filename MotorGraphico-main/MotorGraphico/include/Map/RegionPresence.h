@@ -65,6 +65,18 @@ struct StayBatch {
     std::vector<RegionRef> fired;
 };
 
+// U3-02.E05 — Orden de los hechos simultaneos de una casilla. PROVISIONAL: la
+// politica (D3) sigue abierta para Oriol (DEC-10, MapEventRunner.h:60-68).
+// No se trata aqui el bloqueo de evento (Autorun/escena bloqueante): es de E06.
+struct RegionTrigger {
+    enum class Kind { Enter, Stay, Exit };
+    Kind kind = Kind::Enter;
+    RegionRef ref;
+};
+struct RegionPolicy {
+    bool exitsFirst = true;  // PROVISIONAL (DEC-10): true => Exit, Enter, Stay; false => Enter, Exit, Stay
+};
+
 // GridBounds es inclusivo en AMBOS extremos ([minX..maxX] x [minY..maxY]), asi
 // que maxX/maxY son casillas validas. Unos bounds vacios no contienen nada.
 bool contains(const GridBounds& bounds, GridCoord cell);
@@ -91,5 +103,15 @@ RegionDelta regionDelta(const std::vector<RegionRef>& before, const std::vector<
 // stayMs.size() != current.size() o algun stayMs < 0.
 Result<StayBatch> stayEvents(RegionPresence& presence, const std::vector<RegionRef>& now, int dtMs,
                              const StayPolicy& policy);
+
+// Triggers de un paso, en orden determinista. PROVISIONAL (DEC-10). Grupos:
+// exitsFirst=true => Exit, Enter, Stay; exitsFirst=false => Enter, Exit, Stay
+// (Stay siempre al final). Dentro de cada grupo se CONSERVA el orden de entrada:
+// exited en el de `before`, entered en el de `now`, y los Stay en el de
+// `stays.fired`. No reordena por RegionId ni conoce el mapa; el orden de capa y
+// declaracion ya viene de regionsAt. Los Stay salen solo de `stays.fired`; un
+// fired que no este en delta.stayed es incoherente y se IGNORA.
+std::vector<RegionTrigger> orderRegionEvents(const RegionDelta& delta, const StayBatch& stays,
+                                             const RegionPolicy& policy);
 
 }  // namespace Regiones

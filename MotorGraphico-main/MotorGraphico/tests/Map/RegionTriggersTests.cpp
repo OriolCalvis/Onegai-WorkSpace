@@ -3,10 +3,11 @@
 #include "TestHarness.h"
 
 #include <algorithm>
+#include <climits>
 #include <string>
 #include <vector>
 
-// U3-02.E02 — Que region(es) contienen una casilla.
+// U3-02.E02..E05 — Regiones: pertenencia, delta, permanencia y orden de triggers.
 // Defiende: borde inclusivo en las 4 caras, orden estable, identidad compuesta
 // (capa, region) y que fuera del mapa no haya nada.
 
@@ -18,6 +19,10 @@ using Regiones::regionDelta;
 using Regiones::RegionPresence;
 using Regiones::StayPolicy;
 using Regiones::stayEvents;
+using Regiones::RegionTrigger;
+using Regiones::RegionPolicy;
+using Regiones::StayBatch;
+using Regiones::orderRegionEvents;
 
 namespace {
 
@@ -279,6 +284,95 @@ MOTOR_TEST_CASE(stay_entrar_no_cuenta_con_regionDelta_real) {
     MOTOR_CHECK(p.current == ab && p.stayMs == std::vector<int>({0, 0}));
     auto big = stayEvents(p, ab, 5000, StayPolicy{});
     MOTOR_CHECK(big.isOk() && big.value().fired == ab);  // ya como stayed si cuenta
+    // Entrar con dt >= N tampoco dispara (dt=5000 > 1000).
+    RegionPresence q = pres(a, {0});
+    auto e = stayEvents(q, ab, 5000, StayPolicy{});
+    MOTOR_CHECK(e.isOk() && e.value().fired == a);
+    MOTOR_CHECK(q.stayMs == std::vector<int>({0, 0}));
+}
+
+MOTOR_TEST_CASE(stay_override_repetido_primera_coincidencia_gana) {
+    const V a{ref("c", "a")};
+    StayPolicy pol;
+    pol.overrides.push_back({ref("c", "a"), 200});
+    pol.overrides.push_back({ref("c", "a"), 5000});
+    RegionPresence p = pres(a, {0});
+    auto r = stayEvents(p, a, 300, pol);
+    MOTOR_CHECK(r.isOk() && r.value().fired == a);
+}
+
+MOTOR_TEST_CASE(stay_desbordamiento_con_acumulado_positivo) {
+    const V a{ref("c", "a")};
+    RegionPresence p = pres(a, {500});
+    auto r = stayEvents(p, a, INT_MAX, StayPolicy{});
+    MOTOR_CHECK(r.isOk() && r.value().fired == a);
+    MOTOR_CHECK(p.stayMs == std::vector<int>({0}));
+}
+
+MOTOR_TEST_CASE(stay_dt_cero_actualiza_pertenencia) {
+    const V a{ref("c", "a")}, ab{ref("c", "a"), ref("c", "b")};
+    RegionPresence p = pres(a, {400});
+    auto r = stayEvents(p, ab, 0, StayPolicy{});
+    MOTOR_CHECK(r.isOk() && r.value().fired.empty());
+    MOTOR_CHECK(p.current == ab && p.stayMs == std::vector<int>({400, 0}));
+}
+
+// U3-02.E05 — Orden de simultaneos (PROVISIONAL, DEC-10).
+using K = RegionTrigger::Kind;
+std::vector<RegionTrigger> trig(std::vector<std::pair<K, RegionRef>> xs) {
+    std::vector<RegionTrigger> o;
+    for (auto& x : xs) o.push_back(RegionTrigger{x.first, x.second});
+    return o;
+}
+bool same(const std::vector<RegionTrigger>& a, const std::vector<RegionTrigger>& b) {
+    if (a.size() != b.size()) return false;
+    for (size_t i = 0; i < a.size(); ++i)
+        if (a[i].kind != b[i].kind || a[i].ref != b[i].ref) return false;
+    return true;
+}
+
+MOTOR_TEST_CASE(orden_exit_enter_stay_por_defecto_y_variante) {
+    RegionDelta d;
+    d.exited = {ref("c", "x2"), ref("c", "x1")};
+    d.entered = {ref("c", "e2"), ref("c", "e1")};
+    d.stayed = {ref("c", "s")};
+    StayBatch sb;
+    sb.fired = {ref("c", "s")};
+    const auto def = orderRegionEvents(d, sb, RegionPolicy{});
+    MOTOR_CHECK(same(def, trig({{K::Exit, ref("c", "x2")}, {K::Exit, ref("c", "x1")},
+                                {K::Enter, ref("c", "e2")}, {K::Enter, ref("c", "e1")},
+                                {K::Stay, ref("c", "s")}})));
+    RegionPolicy p;
+    p.exitsFirst = false;
+    const auto alt = orderRegionEvents(d, sb, p);
+    MOTOR_CHECK(same(alt, trig({{K::Enter, ref("c", "e2")}, {K::Enter, ref("c", "e1")},
+                                {K::Exit, ref("c", "x2")}, {K::Exit, ref("c", "x1")},
+                                {K::Stay, ref("c", "s")}})));
+    MOTOR_CHECK(same(def, orderRegionEvents(d, sb, RegionPolicy{})));  // determinista
+}
+
+MOTOR_TEST_CASE(orden_frontera_salida_y_entrada_solapadas_con_regionDelta_real) {
+    // Capas distintas, misma id; no se reordena por RegionId ni por capa.
+    const V antes{ref("z", "a"), ref("m", "k")}, ahora{ref("z", "k"), ref("m", "k"), ref("z", "a")};
+    const RegionDelta d = regionDelta(antes, ahora);
+    MOTOR_CHECK(d.entered == V({ref("z", "k")}) && d.exited.empty());
+    const V antes2{ref("z", "a"), ref("m", "k")}, ahora2{ref("q", "b"), ref("m", "k")};
+    const RegionDelta d2 = regionDelta(antes2, ahora2);
+    StayBatch sb;
+    sb.fired = {ref("m", "k")};
+    const auto o = orderRegionEvents(d2, sb, RegionPolicy{});
+    MOTOR_CHECK(same(o, trig({{K::Exit, ref("z", "a")}, {K::Enter, ref("q", "b")},
+                              {K::Stay, ref("m", "k")}})));
+}
+
+MOTOR_TEST_CASE(orden_stay_solo_de_fired_y_fired_incoherente_se_ignora) {
+    RegionDelta d;
+    d.stayed = {ref("c", "a"), ref("c", "b")};
+    StayBatch sb;
+    sb.fired = {ref("c", "b"), ref("c", "fantasma")};  // fantasma no esta en stayed
+    const auto o = orderRegionEvents(d, sb, RegionPolicy{});
+    MOTOR_CHECK(same(o, trig({{K::Stay, ref("c", "b")}})));
+    MOTOR_CHECK(orderRegionEvents(RegionDelta{}, StayBatch{}, RegionPolicy{}).empty());
 }
 
 MOTOR_TEST_CASE(stay_region_que_sale_no_dispara) {
