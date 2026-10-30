@@ -4,10 +4,12 @@
 
 #include <algorithm>
 #include <climits>
+#include <cstddef>
 #include <string>
+#include <utility>
 #include <vector>
 
-// U3-02.E02..E05 — Regiones: pertenencia, delta, permanencia y orden de triggers.
+// U3-02.E02..E05, E07 — Regiones: pertenencia, delta, permanencia y orden de triggers.
 // Defiende: borde inclusivo en las 4 caras, orden estable, identidad compuesta
 // (capa, region) y que fuera del mapa no haya nada.
 
@@ -279,11 +281,11 @@ MOTOR_TEST_CASE(stay_entrar_no_cuenta_con_regionDelta_real) {
     const V a{ref("c", "a")}, ab{ref("c", "a"), ref("c", "b")};
     RegionPresence p = pres(a, {900});
     MOTOR_CHECK(regionDelta(p.current, ab).entered == V({ref("c", "b")}));
-    auto r = stayEvents(p, ab, 100, StayPolicy{});
-    MOTOR_CHECK(r.isOk() && r.value().fired == a);  // b entra: no dispara aunque dt >= N
+    auto r = stayEvents(p, ab, 1500, StayPolicy{});  // a: 900+1500 >= N; b entra con dt >= N
+    MOTOR_CHECK(r.isOk() && r.value().fired == a);   // solo a dispara: entrar no cuenta
     MOTOR_CHECK(p.current == ab && p.stayMs == std::vector<int>({0, 0}));
     auto big = stayEvents(p, ab, 5000, StayPolicy{});
-    MOTOR_CHECK(big.isOk() && big.value().fired == ab);  // ya como stayed si cuenta
+    MOTOR_CHECK(big.isOk() && big.value().fired == ab);  // en la llamada siguiente b ya es stayed y si cuenta
     // Entrar con dt >= N tampoco dispara (dt=5000 > 1000).
     RegionPresence q = pres(a, {0});
     auto e = stayEvents(q, ab, 5000, StayPolicy{});
@@ -373,6 +375,56 @@ MOTOR_TEST_CASE(orden_stay_solo_de_fired_y_fired_incoherente_se_ignora) {
     const auto o = orderRegionEvents(d, sb, RegionPolicy{});
     MOTOR_CHECK(same(o, trig({{K::Stay, ref("c", "b")}})));
     MOTOR_CHECK(orderRegionEvents(RegionDelta{}, StayBatch{}, RegionPolicy{}).empty());
+}
+
+MOTOR_TEST_CASE(orden_varios_stay_siguen_el_orden_de_fired) {
+    RegionDelta d;
+    d.stayed = {ref("c", "a"), ref("c", "b"), ref("c", "c")};
+    StayBatch sb;
+    sb.fired = {ref("c", "c"), ref("c", "a")};
+    const auto o = orderRegionEvents(d, sb, RegionPolicy{});
+    MOTOR_CHECK(same(o, trig({{K::Stay, ref("c", "c")}, {K::Stay, ref("c", "a")}})));
+}
+
+// U3-02.E07 — Reinicio de presencia (D5): aparecer dentro dispara Enter.
+MOTOR_TEST_CASE(reset_presencia_vacia_y_idempotente) {
+    const RegionPresence r = Regiones::resetRegionPresence();
+    MOTOR_CHECK(!r.known && r.current.empty() && r.stayMs.empty());
+    RegionPresence sucia = pres(V{ref("c", "a")}, {700});
+    sucia = Regiones::resetRegionPresence();
+    const RegionPresence otra = Regiones::resetRegionPresence();
+    MOTOR_CHECK(!sucia.known && sucia.current == otra.current && sucia.stayMs == otra.stayMs);
+    RegionPresence vacia;
+    vacia = Regiones::resetRegionPresence();
+    MOTOR_CHECK(!vacia.known && vacia.current.empty() && vacia.stayMs.empty());
+}
+
+MOTOR_TEST_CASE(reset_cambio_de_mapa_solo_enter_sin_exit_ni_stay) {
+    // Mapa A: a y b con acumulados; mapa B: la MISMA RegionRef a mas una nueva.
+    const V mapaA{ref("c", "a"), ref("c", "b")}, mapaB{ref("c", "a"), ref("d", "n")};
+    RegionPresence p = pres(mapaA, {900, 400});
+    p = Regiones::resetRegionPresence();
+    const RegionDelta d = regionDelta(p.current, mapaB);
+    MOTOR_CHECK(d.entered == mapaB && d.stayed.empty() && d.exited.empty());
+    auto r = stayEvents(p, mapaB, 5000, StayPolicy{});
+    MOTOR_CHECK(r.isOk() && r.value().fired.empty());  // entrar no cuenta, aunque dt >= N
+    MOTOR_CHECK(p.known && p.current == mapaB && p.stayMs == std::vector<int>({0, 0}));
+    const auto o = orderRegionEvents(d, r.value(), RegionPolicy{});
+    MOTOR_CHECK(same(o, trig({{K::Enter, ref("c", "a")}, {K::Enter, ref("d", "n")}})));
+}
+
+MOTOR_TEST_CASE(reset_seguido_de_dt_cero_no_dispara_stay) {
+    const V a{ref("c", "a")};
+    RegionPresence p = pres(a, {999});
+    p = Regiones::resetRegionPresence();
+    auto r = stayEvents(p, a, 0, StayPolicy{});
+    MOTOR_CHECK(r.isOk() && r.value().fired.empty());
+    MOTOR_CHECK(p.current == a && p.stayMs == std::vector<int>({0}));
+    MOTOR_CHECK(regionDelta(Regiones::resetRegionPresence().current, a).entered == a);
+    // Mapa nuevo sin regiones en la casilla: nada, y tampoco Exit del viejo.
+    RegionPresence q = pres(a, {10});
+    q = Regiones::resetRegionPresence();
+    MOTOR_CHECK(regionDelta(q.current, V{}).exited.empty());
 }
 
 MOTOR_TEST_CASE(stay_region_que_sale_no_dispara) {

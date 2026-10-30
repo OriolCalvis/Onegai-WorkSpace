@@ -135,7 +135,7 @@ Result<StayBatch> stayEvents(RegionPresence&, const std::vector<RegionRef>& now,
 // E05  (el enunciado omitia el StayBatch; sin el no hay Stay que ordenar)
 std::vector<RegionTrigger> orderRegionEvents(const RegionDelta&, const StayBatch&, const RegionPolicy&);
 // E07
-RegionPresence resetRegionPresence(const std::vector<RegionRef>& atEntryCell);           // vease politica
+RegionPresence resetRegionPresence();                                                    // sin parametros (D5): known=false, current={}, stayMs vacio
 ```
 
 Criterios de aceptacion anadidos:
@@ -150,7 +150,10 @@ Criterios de aceptacion anadidos:
 Politica del primer frame (D5, decidido): aparecer dentro de una region (carga, cambio de mapa, teletransporte)
 **dispara Enter**. Por tanto `RegionPresence{known=false}` + primera casilla genera `entered`; el cambio de mapa
 descarta la presencia anterior (sin Exit sobre el mapa nuevo). `resetRegionPresence` deja `known=false`, `current={}`,
-`stayMs` vacio. Si E07 prefiere recibir la lista (`atEntryCell`) para suprimir Enter, eso contradice D5: no se hace.
+`stayMs` vacio; la primera llamada posterior con las regiones de la casilla de entrada da `entered` de todas y ningun
+`exited` del mapa viejo, ni siquiera de una `RegionRef` igual (carga y teletransporte no generan salidas del mapa
+antiguo sobre el nuevo). Firma sin parametros: recibir la lista de la casilla de entrada (`atEntryCell`) para
+suprimir Enter contradice D5, asi que no existe. Idempotente.
 `EntryContext` no existe en el repo; no se crea.
 
 ### 2.4 Parte de integracion (E06, E08): solo si se resuelven D1 y D2
@@ -177,7 +180,7 @@ descarta la presencia anterior (sin Exit sobre el mapa nuevo). `resetRegionPrese
 - **D2 · Camino al juego.** El runner existente no corre en `juego` (1.5): ni `setMap` ni `MapDocument`.
   Hay que decidir si el juego pasa a cargar `MapDocument` o si las regiones se puentean desde `LevelDefinition`.
   **Bloquea E08** y deja E06 como "producido pendiente de integracion" (porta de cierre del paquete).
-- **D3 · Orden de simultaneos (E05) — ABIERTA.** Se propone el defecto determinista Exit -> Enter -> Stay; dentro de cada grupo, orden de capa y luego `RegionId`. **PROVISIONAL pendiente de DEC-10** (`MapEventRunner.h:60-68`).
+- **D3 · Orden de simultaneos (E05) — ABIERTA (DEC-10 sigue abierta).** E05 implementa el defecto determinista PROVISIONAL Exit -> Enter -> Stay (`RegionPolicy::exitsFirst=false`: Enter, Exit, Stay); dentro de cada grupo se conserva el orden de entrada (exited = `before`, entered/Stay = `now` / `fired`, ya en orden de capa y declaracion por `regionsAt`), sin reordenar por `RegionId`; `fired` debe venir sin duplicados. No cierra la decision: espera a Oriol (`MapEventRunner.h:60-68`).
 - **D4 · Estado mutable en E04 — ACEPTADA por Brain (30/10):** `stayEvents(RegionPresence&, ...)`.
 - **D5 · Primer frame / mapa nuevo — DECIDIDA por Oriol (30/10): SI.** Aparecer dentro de una region (carga o cambio de mapa) dispara Enter.
 - **D6 · Nombre de namespace** `Regiones` (propuesto) y si `visible=false`/`locked` de la capa excluye sus regiones (propuesto: no excluye, es autoria).

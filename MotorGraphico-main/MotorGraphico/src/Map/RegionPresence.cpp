@@ -104,6 +104,8 @@ Result<StayBatch> stayEvents(RegionPresence& presence, const std::vector<RegionR
     return R::Ok(batch);
 }
 
+RegionPresence resetRegionPresence() { return RegionPresence{}; }
+
 std::vector<RegionTrigger> orderRegionEvents(const RegionDelta& delta, const StayBatch& stays,
                                              const RegionPolicy& policy) {
     using K = RegionTrigger::Kind;

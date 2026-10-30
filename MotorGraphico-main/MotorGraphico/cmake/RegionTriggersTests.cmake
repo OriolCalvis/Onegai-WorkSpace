@@ -1,4 +1,4 @@
-# U3-02.E02..E05 — Regiones: pertenencia, delta, permanencia y orden de triggers. GL-free.
+# U3-02.E02..E05, E07 — Regiones: pertenencia, delta, permanencia y orden de triggers. GL-free.
 if(BUILD_TESTING AND TARGET motor_map_document)
     add_executable(test_region_triggers tests/Map/RegionTriggersTests.cpp)
     target_include_directories(test_region_triggers PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
