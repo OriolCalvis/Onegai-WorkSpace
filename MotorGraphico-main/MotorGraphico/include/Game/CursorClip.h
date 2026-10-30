@@ -10,6 +10,10 @@
 // borde del fotograma anterior (enFotogramaMs == duracion).
 // Tolerancia: una frontera se cruza si falta menos de 1e-6 ms, para que repartir dt en pasos
 // pequenos no cambie en que tick se cruza (deriva de redondeo de la suma de dt).
+// Cambiar de clip (cambiaClip): el cursor no guarda que clip reproduce; lo dice quien llama
+// (idActual). Al cambiar o reiniciar, los eventos pendientes del clip anterior se descartan
+// (eventoPendiente = 0) y, si se reinicia, iniciado=false para que el primer avanzaClip emita
+// los eventos del fotograma 0. Pedir el mismo clip cada frame (ReiniciarSiDistinto) no toca nada.
 // Continuar: mientras PasoClip::pendiente, llamar de nuevo con dt = tiempoPendiente.
 // Fuera de dominio (maxEventos 0, dt no finito o negativo o con dt*1000 no finito, duracion
 // <= 0, cursor o eventos incoherentes con el clip): cursor igual, sin eventos, pendiente=false.
@@ -37,8 +41,19 @@ struct PasoClip {
     bool pendiente = false;        // true siempre que el presupuesto corte el paso
 };
 
-// dt == 0 solo continua un paso pendiente.
+// dt == 0 no avanza tiempo, pero continua un paso pendiente y, si el cursor esta a
+// <= 1e-6 ms del final de su fotograma (o enFotogramaMs == duracion), cruza la frontera y emite.
 PasoClip avanzaClip(const CursorClip& cursor, double dt, const ClipAnimacion& clip,
                     std::size_t maxEventos = 64);
+
+// ReiniciarSiempre: vuelve a lanzar el clip aunque sea el mismo (p. ej. repetir un ataque).
+// ReiniciarSiDistinto: reinicia solo si idNuevo != idActual (como AnimatedEntity::play).
+// ConservarFase: mantiene fotograma, vueltas e iniciado; clamp si el nuevo clip es mas corto.
+enum class PoliticaCambio { ReiniciarSiempre, ReiniciarSiDistinto, ConservarFase };
+
+// Pura. Nuevo clip sin fotogramas: devuelve `actual` sin cambios. Reiniciar = cursor por
+// defecto (fotograma 0, iniciado=false, vueltas=0, terminado=false, eventoPendiente=0).
+CursorClip cambiaClip(const CursorClip& actual, const IdClip& idActual, const IdClip& idNuevo,
+                      const ClipAnimacion& nuevo, PoliticaCambio politica);
 
 }  // namespace Game

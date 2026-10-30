@@ -2,12 +2,16 @@
 #include "Game/CursorClip.h"
 
 #include <climits>
+#include <algorithm>
 #include <cmath>
+#include <utility>
 
 namespace Game {
 namespace {
 
-// Tolerancia de frontera (ms): falta menos que esto = se cruza. Absorbe la deriva de sumar dt.
+// Tolerancia de frontera (ms): falta menos que esto = se cruza. Absorbe la deriva de sumar dt,
+// pero introduce un sesgo de hasta 1e-6 ms por frontera cruzada (puede adelantar el cursor en
+// casos alineados de forma adversarial). No se corrige: se documenta.
 constexpr double kTolFronteraMs = 1e-6;
 
 // Entrada valida: ver dominio en CursorClip.h.
@@ -67,7 +71,7 @@ bool volcar(PasoClip& p, const std::vector<const EventoFotograma*>& evs, std::si
 PasoClip corta(PasoClip& p, double restoMs) {
     p.pendiente = true;
     p.tiempoPendiente = restoMs / 1000.0;
-    return p;
+    return std::move(p);
 }
 
 }  // namespace
@@ -114,6 +118,25 @@ PasoClip avanzaClip(const CursorClip& cursor, double dt, const ClipAnimacion& cl
         if (p.eventos.size() >= max && resto > 0.0) return corta(p, resto);
     }
     return p;
+}
+
+CursorClip cambiaClip(const CursorClip& actual, const IdClip& idActual, const IdClip& idNuevo,
+                      const ClipAnimacion& nuevo, PoliticaCambio politica) {
+    if (nuevo.fotogramas.empty()) return actual;
+    const bool reinicia = politica == PoliticaCambio::ReiniciarSiempre ||
+                          (politica == PoliticaCambio::ReiniciarSiDistinto && idNuevo != idActual);
+    if (reinicia) return CursorClip{};
+    if (politica == PoliticaCambio::ReiniciarSiDistinto) return actual;
+    // ConservarFase: el pendiente del clip anterior se descarta; la posicion se acota al nuevo.
+    CursorClip k = actual;
+    const int ultimo = static_cast<int>(nuevo.fotogramas.size()) - 1;
+    k.fotograma = std::clamp(actual.fotograma, 0, ultimo);
+    const double dur = nuevo.fotogramas[static_cast<std::size_t>(k.fotograma)].duracionMs;
+    k.enFotogramaMs = std::clamp(actual.enFotogramaMs, 0.0, dur);
+    k.eventoPendiente = 0;
+    k.terminado = actual.terminado && !nuevo.bucle && k.fotograma == ultimo;
+    if (k.terminado) k.enFotogramaMs = dur;
+    return k;
 }
 
 }  // namespace Game

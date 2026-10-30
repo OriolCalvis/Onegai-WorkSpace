@@ -285,4 +285,91 @@ MOTOR_TEST_CASE(eventos_en_el_ultimo_fotograma_con_bucle) {
     MOTOR_CHECK(n == 2 && cercanos(q.cursor, p.cursor));
 }
 
+MOTOR_TEST_CASE(dt_cero_en_el_final_del_fotograma_cruza_y_emite) {
+    const ClipAnimacion c = clipTres(true);
+    CursorClip k = Game::avanzaClip({}, 0.0, c).cursor;
+    k.enFotogramaMs = 70.0;  // justo en el borde del fotograma 0
+    const PasoClip p = Game::avanzaClip(k, 0.0, c);
+    MOTOR_CHECK(listaIds(p) == "e1," && p.cursor.fotograma == 1 && p.cursor.enFotogramaMs == 0.0);
+    k.enFotogramaMs = 70.0 - 5e-7;  // dentro de la tolerancia
+    MOTOR_CHECK(listaIds(Game::avanzaClip(k, 0.0, c)) == "e1,");
+    k.enFotogramaMs = 69.0;  // fuera de tolerancia: dt=0 no hace nada
+    MOTOR_CHECK(Game::avanzaClip(k, 0.0, c).eventos.empty());
+}
+
+namespace {
+Game::IdClip idDe(const char* s) { return Game::IdClip::parse(s).value(); }
+}  // namespace
+
+MOTOR_TEST_CASE(mismo_clip_no_se_reinicia_cada_frame) {
+    const ClipAnimacion c = clipTres(true);
+    CursorClip k = Game::avanzaClip({}, 0.095, c).cursor;
+    const Game::IdClip idle = idDe("idle");
+    for (int i = 0; i < 5; ++i) {
+        const CursorClip n = Game::cambiaClip(k, idle, idle, c, Game::PoliticaCambio::ReiniciarSiDistinto);
+        MOTOR_CHECK(n.fotograma == k.fotograma && n.iniciado && n.enFotogramaMs == k.enFotogramaMs);
+        MOTOR_CHECK(n.vueltas == k.vueltas);
+        k = Game::avanzaClip(n, 1.0 / 60.0, c).cursor;
+    }
+    const PasoClip q = Game::avanzaClip(
+        Game::cambiaClip(k, idle, idle, c, Game::PoliticaCambio::ReiniciarSiDistinto), 0.0, c);
+    MOTOR_CHECK(q.eventos.empty());  // sin re-emitir e0
+}
+
+MOTOR_TEST_CASE(clip_distinto_reinicia_y_emite_el_fotograma_cero) {
+    const ClipAnimacion c = clipTres(true);
+    CursorClip k = Game::avanzaClip({}, 0.250, c).cursor;
+    k.eventoPendiente = 0;
+    const CursorClip n = Game::cambiaClip(k, idDe("idle"), idDe("run"), c, Game::PoliticaCambio::ReiniciarSiDistinto);
+    MOTOR_CHECK(!n.iniciado && n.fotograma == 0 && n.enFotogramaMs == 0.0 && n.vueltas == 0);
+    MOTOR_CHECK(!n.terminado && n.eventoPendiente == 0);
+    MOTOR_CHECK(listaIds(Game::avanzaClip(n, 0.0, c)) == "e0,");
+}
+
+MOTOR_TEST_CASE(reiniciar_siempre_reinicia_aunque_sea_el_mismo) {
+    const ClipAnimacion c = clipTres(false);
+    const CursorClip k = Game::avanzaClip({}, 5.0, c).cursor;  // terminado
+    const Game::IdClip ataque = idDe("ataque");
+    const CursorClip n = Game::cambiaClip(k, ataque, ataque, c, Game::PoliticaCambio::ReiniciarSiempre);
+    MOTOR_CHECK(!n.iniciado && !n.terminado && n.fotograma == 0 && n.vueltas == 0);
+    MOTOR_CHECK(listaIds(Game::avanzaClip(n, 0.0, c)) == "e0,");
+}
+
+MOTOR_TEST_CASE(cambiar_de_clip_descarta_eventos_pendientes) {
+    const ClipAnimacion a = clipCon({100, 100}, {{"a", 0}, {"b", 0}, {"c", 0}}, false);
+    const PasoClip p = Game::avanzaClip({}, 0.0, a, 2);
+    MOTOR_CHECK(p.pendiente && p.cursor.eventoPendiente == 2);
+    const ClipAnimacion b = clipTres(true);
+    const CursorClip n = Game::cambiaClip(p.cursor, idDe("a"), idDe("b"), b, Game::PoliticaCambio::ReiniciarSiDistinto);
+    MOTOR_CHECK(n.eventoPendiente == 0);
+    MOTOR_CHECK(listaIds(Game::avanzaClip(n, 0.0, b)) == "e0,");  // sin "c"
+    const CursorClip m = Game::cambiaClip(p.cursor, idDe("a"), idDe("b"), b, Game::PoliticaCambio::ConservarFase);
+    MOTOR_CHECK(m.eventoPendiente == 0);
+}
+
+MOTOR_TEST_CASE(conservar_fase_mantiene_o_acota_el_fotograma) {
+    const ClipAnimacion tres = clipTres(true);
+    const CursorClip k = Game::avanzaClip({}, 0.130, tres).cursor;  // fotograma 2, 10 ms
+    const CursorClip n = Game::cambiaClip(k, idDe("a"), idDe("b"), tres, Game::PoliticaCambio::ConservarFase);
+    MOTOR_CHECK(n.fotograma == 2 && n.enFotogramaMs == k.enFotogramaMs && n.iniciado);
+    const ClipAnimacion corto = clipCon({30, 40}, {{"z", 1}}, false);
+    const CursorClip m = Game::cambiaClip(k, idDe("a"), idDe("b"), corto, Game::PoliticaCambio::ConservarFase);
+    MOTOR_CHECK(m.fotograma == 1 && m.enFotogramaMs == 10.0 && !m.terminado);
+    const CursorClip fin = Game::avanzaClip({}, 5.0, clipTres(false)).cursor;  // terminado
+    const CursorClip f = Game::cambiaClip(fin, idDe("a"), idDe("b"), corto, Game::PoliticaCambio::ConservarFase);
+    MOTOR_CHECK(f.terminado && f.fotograma == 1 && f.enFotogramaMs == 40.0);
+    MOTOR_CHECK(!Game::cambiaClip(fin, idDe("a"), idDe("b"), clipTres(true), Game::PoliticaCambio::ConservarFase).terminado);
+}
+
+MOTOR_TEST_CASE(cambiar_a_clip_sin_fotogramas_deja_el_cursor_igual) {
+    const ClipAnimacion c = clipTres(true);
+    const CursorClip k = Game::avanzaClip({}, 0.095, c).cursor;
+    const ClipAnimacion vacio;
+    for (const auto pol : {Game::PoliticaCambio::ReiniciarSiempre, Game::PoliticaCambio::ReiniciarSiDistinto,
+                           Game::PoliticaCambio::ConservarFase}) {
+        const CursorClip n = Game::cambiaClip(k, idDe("a"), idDe("b"), vacio, pol);
+        MOTOR_CHECK(n.fotograma == k.fotograma && n.enFotogramaMs == k.enFotogramaMs && n.iniciado);
+    }
+}
+
 int main() { return motor_test::runAllTests(); }
