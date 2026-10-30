@@ -1,137 +1,139 @@
-include/Render/Camera.h:21-21 | class Camera : public IUpdatable {
-include/Render/Camera.h:23-23 | Camera(int viewportWidth, int viewportHeight);
-src/Render/Camera.cpp:29-30 | Camera::Camera(int viewportWidth, int viewportHeight)
-src/Render/Camera.cpp:32-67 | void Camera::update(float deltaTime) {
-include/Render/Camera.h:88-88 | float m_lerpSpeed = 8.0f;
-src/Render/Camera.cpp:69-69 | void Camera::move(const Vector2& delta) { m_targetPosition = m_targetPosition + delta; }
-src/Render/Camera.cpp:71-71 | void Camera::setZoom(float zoom) { m_zoom = std::max(zoom, 0.01f); }
-src/Render/Camera.cpp:73-89 | void Camera::transitionTo(const Vector2& targetPosition, float targetZoom, float duration,
-include/Render/Camera.h:55-56 | void transitionTo(const Vector2& targetPosition, float targetZoom, float duration,
-src/Render/Camera.cpp:34-41 | m_transitionElapsed += deltaTime;
-include/Core/Math/EstadoTween.h:10-12 | // Camera (E08): Camera::update acumula en float (m_transitionElapsed); con 60 x (1.0f/60) llega a
-src/Render/Camera.cpp:44-52 | auto progreso = Interpolacion::progreso(static_cast<double>(m_transitionElapsed),
-src/Render/Camera.cpp:91-94 | void Camera::setViewportSize(int width, int height) {
-src/Render/Camera.cpp:96-104 | glm::mat4 Camera::getViewProjectionMatrix() const {
-include/Render/Camera.h:65-68 | // Y invertida a proposito: en este motor "abajo en pantalla" = +y en
-src/Render/Camera.cpp:106-112 | Vector2 Camera::screenToWorld(const Vector2& screenPos) const {
-src/Render/Camera.cpp:114-116 | GridCoord Camera::worldToGrid(const Vector2& worldPos, float tileWidth, float tileHeight) const {
-include/Core/Math/IsoMath.h:30-39 | inline GridCoord screenToGrid(const Vector2& screenPos, float tileWidth, float tileHeight) {
-src/Render/FogOfWar.cpp:125-132 | // Conversion mundo->pantalla, inversa de Camera::screenToWorld:
-src/Render/DynamicLightMap.cpp:90-91 | float screenX = (light.worldPos.x - camera.position().x) * zoom + halfVpX;
-include/Render/Camera.h:27-27 | void update(float deltaTime) override;
-include/Render/Camera.h:31-31 | void move(const Vector2& delta);
-include/Render/Camera.h:33-33 | void setZoom(float zoom);
-include/Render/Camera.h:34-34 | void setViewportSize(int width, int height);
-include/Render/Camera.h:55-55 | void transitionTo(const Vector2& targetPosition, float targetZoom, float duration,
-include/Render/Camera.h:57-57 | bool isTransitioning() const { return m_transitionActive; }
-include/Render/Camera.h:59-59 | const Vector2& position() const { return m_position; }
-include/Render/Camera.h:60-60 | float zoom() const { return m_zoom; }
-include/Render/Camera.h:61-61 | int viewportWidth() const { return m_viewportWidth; }
-include/Render/Camera.h:62-62 | int viewportHeight() const { return m_viewportHeight; }
-include/Render/Camera.h:69-69 | glm::mat4 getViewProjectionMatrix() const;
-include/Render/Camera.h:74-74 | Vector2 screenToWorld(const Vector2& screenPos) const;
-include/Render/Camera.h:81-81 | GridCoord worldToGrid(const Vector2& worldPos, float tileWidth = 64.0f,
-include/Core/Math/GridCoord.h:6-9 | struct GridCoord {
-include/Core/Math/Vector2.h:5-12 | struct Vector2 {
-include/Core/Math/IsoMath.h:23-28 | inline Vector2 gridToScreen(const GridCoord& grid, float tileWidth, float tileHeight) {
-src/Editor/MapFraming.cpp:13-13 | // El renderer coloca un rectangulo tw x th en cada origen isometrico.
-src/Editor/MapFraming.cpp:17-19 | const double left = -(rows - 1.0) * halfWidth;
-src/Render/Camera.cpp:73-88 | void Camera::transitionTo(const Vector2& targetPosition, float targetZoom, float duration,
-src/Engine/ApplicationBucle.cpp:167-167 | target.y += m_map.alturas().desfasePx(playerCell);  // AV19-02: la camara sube con el terreno
-include/Runtime/Alturas.h:93-94 | static float desfasePx(int nivel) { return -static_cast<float>(nivel) * kPasoPx; }
-src/Render/Camera.cpp:107-111 | Vector2 centered{
-src/Render/Camera.cpp:97-98 | float halfW = static_cast<float>(m_viewportWidth) / (2.0f * m_zoom);
-include/Engine/ApplicationInternal.h:28-29 | inline constexpr int kTileW = 64;
-include/Runtime/RuntimeTileMap.h:51-52 | int getTileWidth() const { return m_tileWidth; }
-include/Runtime/RuntimeTileMap.h:46-47 | int getWidth() const { return m_width; }
-src/Engine/ApplicationNivel.cpp:141-141 | m_map = std::move(preparedMap);
-src/Engine/ApplicationNivel.cpp:171-174 | m_fog = std::make_unique<FogOfWar>(
-src/Engine/ApplicationBucle.cpp:152-171 | // Camara centrada en el jugador. Se usa transitionTo() (Fase 4) y
-src/Engine/ApplicationBucle.cpp:164-171 | if ((playerCell.x != m_lastCameraCell.x || playerCell.y != m_lastCameraCell.y) && m_session->mode() 
-src/Engine/ApplicationNivel.cpp:470-471 | // (m_lastCameraCell fuera de rango fuerza el recentrado en update).
-src/Engine/Application.cpp:450-450 | m_camera = std::make_unique<Camera>(width, height);
-editor/src/EditorVistaDeMapa.cpp:25-25 | camera.setViewportSize(width, height);
-src/Engine/ApplicationCinematica.cpp:309-310 | app.m_camera->transitionTo(destino, fondo.zoom, primera ? 0.001f : 0.25f, Camera::Easing::EaseOutCub
-src/Engine/ApplicationCinematica.cpp:396-396 | app.m_camera->transitionTo(aqui, e.zoomAntes, 0.6f, Camera::Easing::EaseInOutQuad);
-src/Engine/ApplicationCinematica.cpp:437-437 | app.m_camera->transitionTo(e.centroCombate, e.zoomCombate, 0.5f, Camera::Easing::EaseInOutQuad);
-src/Engine/ApplicationCinematica.cpp:479-479 | app.m_camera->transitionTo(e.centroCombate, e.zoomCombate, 0.5f, Camera::Easing::EaseInOutQuad);
-src/Engine/ApplicationCinematica.cpp:492-500 | // Te han dado: la camara tiembla un momento y vuelve a su sitio.
-src/Engine/ApplicationPantallas.cpp:429-429 | e.sacudida = std::max(e.sacudida, 0.14f);
-src/Engine/ApplicationPantallas.cpp:431-431 | if (g.grado == Grado::Critico) e.sacudida = std::max(e.sacudida, 0.24f);
-include/Engine/ApplicationCinematica.h:51-51 | float sacudida = 0.0f;                // segundos que le quedan a la camara temblando
-src/Engine/Application.cpp:1013-1017 | if (raton.leftPressed && raton.inside && m_camera) {
-src/Engine/ApplicationPantallas.cpp:341-341 | const Vector2 mundo = app.m_camera->screenToWorld(Vector2{raton.x, raton.y});
-src/Engine/ApplicationHud.cpp:378-381 | if (m_camera) {
-include/HUD/Pergamino/InterfazPergamino.h:75-78 | const RuntimeTileMap* mapa = nullptr;
-src/HUD/Pergamino/CartelesPuertas.cpp:103-104 | const float x = (celda.x + tw * 0.5f - e.camaraX) * e.zoom + static_cast<float>(e.anchoVista) * 0.5f
-src/HUD/Pergamino/CartelesPuertas.cpp:116-117 | const float x = (celda.x + tw * 0.5f - e.camaraX) * e.zoom + static_cast<float>(e.anchoVista) * 0.5f
-src/HUD/Pergamino/BocadillosPnj.cpp:41-42 | const float x = (celda.x + tw * 0.5f + (dx - dy) * tw * 0.5f - e.camaraX) * e.zoom + static_cast<flo
-src/HUD/Pergamino/GuiaMapa.cpp:191-192 | const Vector2 pantalla{(mundo.x + tw * 0.5f - v.camaraX) * v.zoom + static_cast<float>(v.ancho) * 0.
-src/HUD/Pergamino/InterfazPergamino.cpp:288-289 | const Vector2 pies{(celda.x + tw * 0.5f - e.camaraX) * e.zoom + static_cast<float>(e.anchoVista) * 0
-src/HUD/Pergamino/InterfazPergamino.cpp:304-304 | const GuiaMapa::Vista vista{e.anchoVista, e.altoVista, e.camaraX, e.camaraY, e.zoom, e.mapa ? e.mapa
-include/HUD/Pergamino/GolpesEnPantalla.h:32-32 | void ponVista(const Vector2& camara, float zoom) {
-src/HUD/Pergamino/GolpesEnPantalla.cpp:46-47 | const Vector2 pantalla{(g.mundo.x - m_camara.x) * m_zoom + static_cast<float>(anchoVista) * 0.5f,
-src/Engine/ApplicationCinematica.cpp:441-441 | if (golpes) golpes->ponVista(app.m_camera->position(), app.m_camera->zoom());
-include/Render/Culling.h:34-34 | inline GridBounds VisibleGridRange(const RuntimeTileMap& map, const Camera& camera) {
-src/Render/TileMap.cpp:161-161 | GridBounds TileMap::visibleRange(const Camera& camera) const {
-src/Render/IsometricRenderer.cpp:134-134 | GridBounds visible = VisibleGridRange(*m_map, *m_camera);
-src/Render/IsometricRenderer.cpp:319-319 | m_shader->setUniformMat4("uViewProjection", m_camera->getViewProjectionMatrix());
-editor/src/level_editor.cpp:583-591 | Camera camera(width, height);
-editor/src/level_editor.cpp:1199-1199 | const Vector2 world = camera.screenToWorld(
-editor/src/level_editor.cpp:1345-1352 | camera.setZoom(std::min(camera.zoom() * 1.25f, 3.0f));
-editor/src/level_editor.cpp:1371-1377 | camera.move({0.0f, -panSpeed});
-editor/src/level_editor.cpp:1386-1386 | camera.zoom(), 0.25f, Camera::Easing::EaseOutCubic);
-editor/src/level_editor.cpp:1642-1642 | camera.update(1.0f / 60.0f);
-editor/src/level_editor.cpp:1652-1652 | shader->setUniformMat4("uViewProjection", camera.getViewProjectionMatrix());
-src/Engine/ApplicationCierre.cpp:145-145 | m_camera.reset();
-editor/src/EditorApplication.cpp:318-318 | map.camera.update(io.DeltaTime);
-editor/src/EditorApplication.cpp:332-332 | const auto world = map.camera.screenToWorld(*point);
-editor/src/EditorApplication.cpp:340-341 | map.camera.move({-io.MouseDelta.x * scale.x / map.camera.zoom(), -io.MouseDelta.y * scale.y / map.ca
-editor/include/EditorVistaDeMapa.h:42-42 | Camera camera{640, 480};
-editor/src/EditorVistaDeMapa.cpp:25-31 | camera.setViewportSize(width, height);
-examples/demo_camera.cpp:49-49 | Camera camera(800, 600);
-examples/demo_camera.cpp:91-147 | Camera cam2(800, 600);
-cmake/C24RenderRpgTests.cmake:26-27 | add_motor_unit_test(test_render_camera tests/Render/CameraTests.cpp)
-CMakeLists.txt:1374-1375 | add_motor_unit_test(test_camera_transition tests/Engine/CameraTransitionTests.cpp)
-CMakeLists.txt:74-74 | add_executable(demo_camera examples/demo_camera.cpp)
-CMakeLists.txt:1091-1091 | add_motor_gl_free_demo_test(demo_camera)
-CMakeLists.txt:71-72 | add_library(motor_math src/Render/Camera.cpp)
-include/Render/Camera.h:86-86 | Vector2 m_targetPosition;
-src/Engine/ApplicationBucle.cpp:152-163 | // Camara centrada en el jugador. Se usa transitionTo() (Fase 4) y
-src/Engine/ApplicationCinematica.cpp:495-495 | static std::minstd_rand temblor(7);
-include/RPG/RandomEngine.h:46-46 | class Xoroshiro128p : public RandomEngine {
-tests/Editor/MapFramingTests.cpp:29-29 | const auto result = Editor::fitMap(columns, rows, tileWidth, tileHeight,
-tests/Editor/MapFramingTests.cpp:69-69 | const auto result = Editor::fitMap(1, 1, 64, 32, 800, 600);
-tests/Editor/MapFramingTests.cpp:110-110 | const auto result = Editor::fitMap(3, 2, 64, 32, 1920, 1080);
-tests/Editor/MapFramingTests.cpp:117-117 | const auto result = Editor::fitMap(100000, 80000, 64, 32, 800, 600);
-CMakeLists.txt:75-75 | target_link_libraries(demo_camera PRIVATE motor_math)
-include/Core/Errors/Result.h:22-61 | template <typename T>
-include/Render/Culling.h:26-29 | // renderer. RuntimeTileMap NO depende de Camera (ver el comentario de
-src/Engine/ApplicationCinematica.cpp:497-497 | if (e.sacudida > 0.0f) app.m_camera->transitionTo(e.centroCombate + Vector2{d(temblor), d(temblor) *
-src/Engine/ApplicationBucle.cpp:298-298 | static const bool reducidas = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;  // como el HUD
-src/Engine/ApplicationHud.cpp:76-76 | static const bool reducido = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;
-include/Engine/Application.h:143-143 | friend struct ApplicationCinematica;  // PROLOGO-02: las cinematicas del prologo
-include/Engine/ApplicationCinematica.h:38-38 | struct EstadoCinematicas {
-include/Engine/Application.h:348-348 | std::unique_ptr<EstadoCinematicas> m_cine;  // PROLOGO-02: catalogo, la que esta en curso y el velo
-src/Engine/ApplicationBucle.cpp:164-175 | if ((playerCell.x != m_lastCameraCell.x || playerCell.y != m_lastCameraCell.y) && m_session->mode() 
-src/Render/Camera.cpp:49-59 | m_position = Interpolacion::tweenVec2(m_transitionStartPosition,
-src/Engine/ApplicationBucle.cpp:183-188 | m_fog->beginFrame();
-src/Render/Camera.cpp:102-102 | glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-m_position.x, -m_position.y, 0.0f));
-src/Engine/ApplicationHud.cpp:379-380 | estado.camaraX = m_camera->position().x;
-src/Render/FogOfWar.cpp:129-132 | const float halfVpX = static_cast<float>(m_viewportWidth) * 0.5f;
-src/Engine/ApplicationCinematica.cpp:415-415 | e.dados = std::make_unique<RPG::Xoroshiro128p>(semillaNueva());
-include/HUD/Pergamino/InterfazPergamino.h:78-78 | float camaraX = 0.0f, camaraY = 0.0f, zoom = 1.0f;
-include/Runtime/Alturas.h:93-93 | static float desfasePx(int nivel) { return -static_cast<float>(nivel) * kPasoPx; }
-src/HUD/Pergamino/DialogoHoja.cpp:219-219 | static const bool reducidas = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;
-src/Engine/ApplicationBucle.cpp:170-170 | m_camera->transitionTo(target, m_camera->zoom(), 0.16f, Camera::Easing::Linear);
-editor/src/EditorApplication.cpp:340-340 | map.camera.move({-io.MouseDelta.x * scale.x / map.camera.zoom(), -io.MouseDelta.y * scale.y / map.ca
-include/Render/Camera.h:85-102 | Vector2 m_position;
-tests/Engine/CameraTransitionTests.cpp:228-273 | MOTOR_TEST_CASE(camera_regresion_muestras_de_t_por_curva) {
-src/Engine/ApplicationBucle.cpp:159-163 | // jugador CAMBIA de celda (movimiento discreto, ver processInput):
-src/Render/Player.cpp:27-27 | constexpr float kStepDuration = 0.16f;
-src/Engine/ApplicationNivel.cpp:471-471 | m_lastCameraCell = GridCoord{-9999, -9999};
-src/Engine/ApplicationCinematica.cpp:436-436 | e.zoomCombate = std::max(e.zoomAntes, 1.0f) * 1.7f;
-tests/Render/CameraTests.cpp:36-36 | MOTOR_CHECK(true); // No crash
-tests/Render/CameraTests.cpp:43-43 | MOTOR_CHECK(true);
-tests/Render/CameraTests.cpp:242-242 | MOTOR_CHECK(true);
-TOTAL 136 bad 0
+include/Render/Camera.h:21-21 | PRIMERA: class Camera : public IUpdatable { || ULTIMA: class Camera : public IUpdatable {
+include/Render/Camera.h:23-23 | PRIMERA: Camera(int viewportWidth, int viewportHeight); || ULTIMA: Camera(int viewportWidth, int viewportHeight);
+src/Render/Camera.cpp:29-30 | PRIMERA: Camera::Camera(int viewportWidth, int viewportHeight) || ULTIMA: : m_viewportWidth(viewportWidth), m_viewportHeight(viewportHeight) {}
+src/Render/Camera.cpp:32-67 | PRIMERA: void Camera::update(float deltaTime) { || ULTIMA: }
+include/Render/Camera.h:88-88 | PRIMERA: float m_lerpSpeed = 8.0f; || ULTIMA: float m_lerpSpeed = 8.0f;
+src/Render/Camera.cpp:69-69 | PRIMERA: void Camera::move(const Vector2& delta) { m_targetPosition = m_targetPosition +  || ULTIMA: void Camera::move(const Vector2& delta) { m_targetPosition = m_targetPosition + 
+src/Render/Camera.cpp:71-71 | PRIMERA: void Camera::setZoom(float zoom) { m_zoom = std::max(zoom, 0.01f); } || ULTIMA: void Camera::setZoom(float zoom) { m_zoom = std::max(zoom, 0.01f); }
+src/Render/Camera.cpp:73-89 | PRIMERA: void Camera::transitionTo(const Vector2& targetPosition, float targetZoom, float || ULTIMA: }
+include/Render/Camera.h:55-56 | PRIMERA: void transitionTo(const Vector2& targetPosition, float targetZoom, float duratio || ULTIMA: Easing easing = Easing::EaseInOutQuad);
+src/Render/Camera.cpp:34-41 | PRIMERA: m_transitionElapsed += deltaTime; || ULTIMA: // primera update (antes no terminaba nunca).
+include/Core/Math/EstadoTween.h:10-12 | PRIMERA: // Camera (E08): Camera::update acumula en float (m_transitionElapsed); con 60 x || ULTIMA: // fotograma antes. Decision: en E08 Camera CONSERVA su reloj float y solo reuti
+src/Render/Camera.cpp:44-52 | PRIMERA: auto progreso = Interpolacion::progreso(static_cast<double>(m_transitionElapsed) || ULTIMA: Interpolacion::tweenEscalar(m_transitionStartZoom, m_transitionTargetZoom, eased
+src/Render/Camera.cpp:91-94 | PRIMERA: void Camera::setViewportSize(int width, int height) { || ULTIMA: }
+src/Render/Camera.cpp:96-104 | PRIMERA: glm::mat4 Camera::getViewProjectionMatrix() const { || ULTIMA: }
+include/Render/Camera.h:65-68 | PRIMERA: // Y invertida a proposito: en este motor "abajo en pantalla" = +y en || ULTIMA: // OpenGL (NDC +y = arriba) pinte en el sentido correcto.
+src/Render/Camera.cpp:106-112 | PRIMERA: Vector2 Camera::screenToWorld(const Vector2& screenPos) const { || ULTIMA: }
+src/Render/Camera.cpp:114-116 | PRIMERA: GridCoord Camera::worldToGrid(const Vector2& worldPos, float tileWidth, float ti || ULTIMA: }
+include/Core/Math/IsoMath.h:30-39 | PRIMERA: inline GridCoord screenToGrid(const Vector2& screenPos, float tileWidth, float t || ULTIMA: }
+src/Render/FogOfWar.cpp:125-132 | PRIMERA: // Conversion mundo->pantalla, inversa de Camera::screenToWorld: || ULTIMA: auto worldToScreen = [&](const Vector2& world) -> Vector2 {
+src/Render/DynamicLightMap.cpp:90-91 | PRIMERA: float screenX = (light.worldPos.x - camera.position().x) * zoom + halfVpX; || ULTIMA: float screenY = (light.worldPos.y - camera.position().y) * zoom + halfVpY;
+include/Render/Camera.h:27-27 | PRIMERA: void update(float deltaTime) override; || ULTIMA: void update(float deltaTime) override;
+include/Render/Camera.h:31-31 | PRIMERA: void move(const Vector2& delta); || ULTIMA: void move(const Vector2& delta);
+include/Render/Camera.h:33-33 | PRIMERA: void setZoom(float zoom); || ULTIMA: void setZoom(float zoom);
+include/Render/Camera.h:34-34 | PRIMERA: void setViewportSize(int width, int height); || ULTIMA: void setViewportSize(int width, int height);
+include/Render/Camera.h:55-55 | PRIMERA: void transitionTo(const Vector2& targetPosition, float targetZoom, float duratio || ULTIMA: void transitionTo(const Vector2& targetPosition, float targetZoom, float duratio
+include/Render/Camera.h:57-57 | PRIMERA: bool isTransitioning() const { return m_transitionActive; } || ULTIMA: bool isTransitioning() const { return m_transitionActive; }
+include/Render/Camera.h:59-59 | PRIMERA: const Vector2& position() const { return m_position; } || ULTIMA: const Vector2& position() const { return m_position; }
+include/Render/Camera.h:60-60 | PRIMERA: float zoom() const { return m_zoom; } || ULTIMA: float zoom() const { return m_zoom; }
+include/Render/Camera.h:61-61 | PRIMERA: int viewportWidth() const { return m_viewportWidth; } || ULTIMA: int viewportWidth() const { return m_viewportWidth; }
+include/Render/Camera.h:62-62 | PRIMERA: int viewportHeight() const { return m_viewportHeight; } || ULTIMA: int viewportHeight() const { return m_viewportHeight; }
+include/Render/Camera.h:69-69 | PRIMERA: glm::mat4 getViewProjectionMatrix() const; || ULTIMA: glm::mat4 getViewProjectionMatrix() const;
+include/Render/Camera.h:74-74 | PRIMERA: Vector2 screenToWorld(const Vector2& screenPos) const; || ULTIMA: Vector2 screenToWorld(const Vector2& screenPos) const;
+include/Render/Camera.h:81-81 | PRIMERA: GridCoord worldToGrid(const Vector2& worldPos, float tileWidth = 64.0f, || ULTIMA: GridCoord worldToGrid(const Vector2& worldPos, float tileWidth = 64.0f,
+include/Core/Math/GridCoord.h:6-9 | PRIMERA: struct GridCoord { || ULTIMA: };
+include/Core/Math/Vector2.h:5-12 | PRIMERA: struct Vector2 { || ULTIMA: };
+include/Core/Math/IsoMath.h:23-28 | PRIMERA: inline Vector2 gridToScreen(const GridCoord& grid, float tileWidth, float tileHe || ULTIMA: }
+src/Editor/MapFraming.cpp:13-13 | PRIMERA: // El renderer coloca un rectangulo tw x th en cada origen isometrico. || ULTIMA: // El renderer coloca un rectangulo tw x th en cada origen isometrico.
+src/Editor/MapFraming.cpp:17-19 | PRIMERA: const double left = -(rows - 1.0) * halfWidth; || ULTIMA: const double bottom = (columns + static_cast<double>(rows)) * halfHeight;
+src/Render/Camera.cpp:73-88 | PRIMERA: void Camera::transitionTo(const Vector2& targetPosition, float targetZoom, float || ULTIMA: m_targetPosition = targetPosition;
+src/Engine/ApplicationBucle.cpp:167-167 | PRIMERA: target.y += m_map.alturas().desfasePx(playerCell);  // AV19-02: la camara sube c || ULTIMA: target.y += m_map.alturas().desfasePx(playerCell);  // AV19-02: la camara sube c
+include/Runtime/Alturas.h:93-94 | PRIMERA: static float desfasePx(int nivel) { return -static_cast<float>(nivel) * kPasoPx; || ULTIMA: float desfasePx(const GridCoord& c) const { return desfasePx(en(c)); }
+src/Render/Camera.cpp:107-111 | PRIMERA: Vector2 centered{ || ULTIMA: return m_position + centered * (1.0f / m_zoom);
+src/Render/Camera.cpp:97-98 | PRIMERA: float halfW = static_cast<float>(m_viewportWidth) / (2.0f * m_zoom); || ULTIMA: float halfH = static_cast<float>(m_viewportHeight) / (2.0f * m_zoom);
+include/Engine/ApplicationInternal.h:28-29 | PRIMERA: inline constexpr int kTileW = 64; || ULTIMA: inline constexpr int kTileH = 32;
+include/Runtime/RuntimeTileMap.h:51-52 | PRIMERA: int getTileWidth() const { return m_tileWidth; } || ULTIMA: int getTileHeight() const { return m_tileHeight; }
+include/Runtime/RuntimeTileMap.h:46-47 | PRIMERA: int getWidth() const { return m_width; } || ULTIMA: int getHeight() const { return m_height; }
+src/Engine/ApplicationNivel.cpp:141-141 | PRIMERA: m_map = std::move(preparedMap); || ULTIMA: m_map = std::move(preparedMap);
+src/Engine/ApplicationNivel.cpp:171-174 | PRIMERA: m_fog = std::make_unique<FogOfWar>( || ULTIMA: m_map.getTileWidth(), m_map.getTileHeight());
+src/Engine/ApplicationBucle.cpp:152-172 | PRIMERA: // Camara centrada en el jugador. Se usa transitionTo() (Fase 4) y || ULTIMA: }
+src/Engine/ApplicationBucle.cpp:164-171 | PRIMERA: if ((playerCell.x != m_lastCameraCell.x || playerCell.y != m_lastCameraCell.y) & || ULTIMA: m_lastCameraCell = playerCell;
+src/Engine/ApplicationNivel.cpp:470-471 | PRIMERA: // (m_lastCameraCell fuera de rango fuerza el recentrado en update). || ULTIMA: m_lastCameraCell = GridCoord{-9999, -9999};
+src/Engine/Application.cpp:450-450 | PRIMERA: m_camera = std::make_unique<Camera>(width, height); || ULTIMA: m_camera = std::make_unique<Camera>(width, height);
+editor/src/EditorVistaDeMapa.cpp:25-25 | PRIMERA: camera.setViewportSize(width, height); || ULTIMA: camera.setViewportSize(width, height);
+src/Engine/ApplicationCinematica.cpp:309-310 | PRIMERA: app.m_camera->transitionTo(destino, fondo.zoom, primera ? 0.001f : 0.25f, Camera || ULTIMA: app.m_camera->update(dt);
+src/Engine/ApplicationCinematica.cpp:396-396 | PRIMERA: app.m_camera->transitionTo(aqui, e.zoomAntes, 0.6f, Camera::Easing::EaseInOutQua || ULTIMA: app.m_camera->transitionTo(aqui, e.zoomAntes, 0.6f, Camera::Easing::EaseInOutQua
+src/Engine/ApplicationCinematica.cpp:437-437 | PRIMERA: app.m_camera->transitionTo(e.centroCombate, e.zoomCombate, 0.5f, Camera::Easing: || ULTIMA: app.m_camera->transitionTo(e.centroCombate, e.zoomCombate, 0.5f, Camera::Easing:
+src/Engine/ApplicationCinematica.cpp:479-479 | PRIMERA: app.m_camera->transitionTo(e.centroCombate, e.zoomCombate, 0.5f, Camera::Easing: || ULTIMA: app.m_camera->transitionTo(e.centroCombate, e.zoomCombate, 0.5f, Camera::Easing:
+src/Engine/ApplicationCinematica.cpp:492-500 | PRIMERA: // Te han dado: la camara tiembla un momento y vuelve a su sitio. || ULTIMA: }
+src/Engine/ApplicationPantallas.cpp:429-429 | PRIMERA: e.sacudida = std::max(e.sacudida, 0.14f); || ULTIMA: e.sacudida = std::max(e.sacudida, 0.14f);
+src/Engine/ApplicationPantallas.cpp:431-431 | PRIMERA: if (g.grado == Grado::Critico) e.sacudida = std::max(e.sacudida, 0.24f); || ULTIMA: if (g.grado == Grado::Critico) e.sacudida = std::max(e.sacudida, 0.24f);
+include/Engine/ApplicationCinematica.h:51-51 | PRIMERA: float sacudida = 0.0f;                // segundos que le quedan a la camara temb || ULTIMA: float sacudida = 0.0f;                // segundos que le quedan a la camara temb
+src/Engine/Application.cpp:1013-1017 | PRIMERA: if (raton.leftPressed && raton.inside && m_camera) { || ULTIMA: const Vector2 mundo = m_camera->screenToWorld(Vector2{raton.x, raton.y});
+src/Engine/ApplicationPantallas.cpp:341-341 | PRIMERA: const Vector2 mundo = app.m_camera->screenToWorld(Vector2{raton.x, raton.y}); || ULTIMA: const Vector2 mundo = app.m_camera->screenToWorld(Vector2{raton.x, raton.y});
+src/Engine/ApplicationHud.cpp:378-381 | PRIMERA: if (m_camera) { || ULTIMA: estado.zoom = m_camera->zoom();
+include/HUD/Pergamino/InterfazPergamino.h:75-78 | PRIMERA: const RuntimeTileMap* mapa = nullptr; || ULTIMA: float camaraX = 0.0f, camaraY = 0.0f, zoom = 1.0f;
+src/HUD/Pergamino/CartelesPuertas.cpp:103-104 | PRIMERA: const float x = (celda.x + tw * 0.5f - e.camaraX) * e.zoom + static_cast<float>( || ULTIMA: const float pies = (celda.y + th * 0.9f - e.camaraY) * e.zoom + static_cast<floa
+src/HUD/Pergamino/CartelesPuertas.cpp:116-117 | PRIMERA: const float x = (celda.x + tw * 0.5f - e.camaraX) * e.zoom + static_cast<float>( || ULTIMA: const float pies = (celda.y + th * 0.9f - e.camaraY) * e.zoom + static_cast<floa
+src/HUD/Pergamino/BocadillosPnj.cpp:41-42 | PRIMERA: const float x = (celda.x + tw * 0.5f + (dx - dy) * tw * 0.5f - e.camaraX) * e.zo || ULTIMA: const float pies = (celda.y + th * 0.9f + (dx + dy) * th * 0.5f - e.camaraY) * e
+src/HUD/Pergamino/GuiaMapa.cpp:191-192 | PRIMERA: const Vector2 pantalla{(mundo.x + tw * 0.5f - v.camaraX) * v.zoom + static_cast< || ULTIMA: (mundo.y + th * 0.5f - v.camaraY) * v.zoom + static_cast<float>(v.alto) * 0.5f};
+src/HUD/Pergamino/InterfazPergamino.cpp:288-289 | PRIMERA: const Vector2 pies{(celda.x + tw * 0.5f - e.camaraX) * e.zoom + static_cast<floa || ULTIMA: (celda.y + th * kPies - e.camaraY) * e.zoom + static_cast<float>(e.altoVista) * 
+src/HUD/Pergamino/InterfazPergamino.cpp:304-304 | PRIMERA: const GuiaMapa::Vista vista{e.anchoVista, e.altoVista, e.camaraX, e.camaraY, e.z || ULTIMA: const GuiaMapa::Vista vista{e.anchoVista, e.altoVista, e.camaraX, e.camaraY, e.z
+include/HUD/Pergamino/GolpesEnPantalla.h:32-32 | PRIMERA: void ponVista(const Vector2& camara, float zoom) { || ULTIMA: void ponVista(const Vector2& camara, float zoom) {
+src/HUD/Pergamino/GolpesEnPantalla.cpp:46-47 | PRIMERA: const Vector2 pantalla{(g.mundo.x - m_camara.x) * m_zoom + static_cast<float>(an || ULTIMA: (g.mundo.y - m_camara.y) * m_zoom + static_cast<float>(altoVista) * 0.5f};
+src/Engine/ApplicationCinematica.cpp:441-441 | PRIMERA: if (golpes) golpes->ponVista(app.m_camera->position(), app.m_camera->zoom()); || ULTIMA: if (golpes) golpes->ponVista(app.m_camera->position(), app.m_camera->zoom());
+include/Render/Culling.h:34-34 | PRIMERA: inline GridBounds VisibleGridRange(const RuntimeTileMap& map, const Camera& came || ULTIMA: inline GridBounds VisibleGridRange(const RuntimeTileMap& map, const Camera& came
+src/Render/TileMap.cpp:161-161 | PRIMERA: GridBounds TileMap::visibleRange(const Camera& camera) const { || ULTIMA: GridBounds TileMap::visibleRange(const Camera& camera) const {
+src/Render/IsometricRenderer.cpp:134-134 | PRIMERA: GridBounds visible = VisibleGridRange(*m_map, *m_camera); || ULTIMA: GridBounds visible = VisibleGridRange(*m_map, *m_camera);
+src/Render/IsometricRenderer.cpp:319-319 | PRIMERA: m_shader->setUniformMat4("uViewProjection", m_camera->getViewProjectionMatrix()) || ULTIMA: m_shader->setUniformMat4("uViewProjection", m_camera->getViewProjectionMatrix())
+editor/src/level_editor.cpp:583-591 | PRIMERA: Camera camera(width, height); || ULTIMA: camera.update(0.0f);
+editor/src/level_editor.cpp:1199-1199 | PRIMERA: const Vector2 world = camera.screenToWorld( || ULTIMA: const Vector2 world = camera.screenToWorld(
+editor/src/level_editor.cpp:1345-1352 | PRIMERA: camera.setZoom(std::min(camera.zoom() * 1.25f, 3.0f)); || ULTIMA: camera.setZoom(1.0f);
+editor/src/level_editor.cpp:1371-1377 | PRIMERA: camera.move({0.0f, -panSpeed}); || ULTIMA: camera.move({panSpeed, 0.0f});
+editor/src/level_editor.cpp:1386-1386 | PRIMERA: camera.zoom(), 0.25f, Camera::Easing::EaseOutCubic); || ULTIMA: camera.zoom(), 0.25f, Camera::Easing::EaseOutCubic);
+editor/src/level_editor.cpp:1642-1642 | PRIMERA: camera.update(1.0f / 60.0f); || ULTIMA: camera.update(1.0f / 60.0f);
+editor/src/level_editor.cpp:1652-1652 | PRIMERA: shader->setUniformMat4("uViewProjection", camera.getViewProjectionMatrix()); || ULTIMA: shader->setUniformMat4("uViewProjection", camera.getViewProjectionMatrix());
+src/Engine/ApplicationCierre.cpp:145-145 | PRIMERA: m_camera.reset(); || ULTIMA: m_camera.reset();
+editor/src/EditorApplication.cpp:318-318 | PRIMERA: map.camera.update(io.DeltaTime); || ULTIMA: map.camera.update(io.DeltaTime);
+editor/src/EditorApplication.cpp:332-332 | PRIMERA: const auto world = map.camera.screenToWorld(*point); || ULTIMA: const auto world = map.camera.screenToWorld(*point);
+editor/src/EditorApplication.cpp:340-341 | PRIMERA: map.camera.move({-io.MouseDelta.x * scale.x / map.camera.zoom(), -io.MouseDelta. || ULTIMA: if (io.MouseWheel != 0) map.camera.setZoom(std::clamp(map.camera.zoom() * std::p
+editor/include/EditorVistaDeMapa.h:42-42 | PRIMERA: Camera camera{640, 480}; || ULTIMA: Camera camera{640, 480};
+editor/src/EditorVistaDeMapa.cpp:25-31 | PRIMERA: camera.setViewportSize(width, height); || ULTIMA: camera.update(0);
+examples/demo_camera.cpp:49-49 | PRIMERA: Camera camera(800, 600); || ULTIMA: Camera camera(800, 600);
+examples/demo_camera.cpp:91-147 | PRIMERA: Camera cam2(800, 600); || ULTIMA: cam6.transitionTo(Vector2{0.0f, 0.0f}, 1.0f, 1.0f, Camera::Easing::Linear);
+cmake/C24RenderRpgTests.cmake:26-27 | PRIMERA: add_motor_unit_test(test_render_camera tests/Render/CameraTests.cpp) || ULTIMA: target_link_libraries(test_render_camera PRIVATE motor_math)
+CMakeLists.txt:1374-1375 | PRIMERA: add_motor_unit_test(test_camera_transition tests/Engine/CameraTransitionTests.cp || ULTIMA: target_link_libraries(test_camera_transition PRIVATE motor_math)
+CMakeLists.txt:74-74 | PRIMERA: add_executable(demo_camera examples/demo_camera.cpp) || ULTIMA: add_executable(demo_camera examples/demo_camera.cpp)
+CMakeLists.txt:1091-1091 | PRIMERA: add_motor_gl_free_demo_test(demo_camera) || ULTIMA: add_motor_gl_free_demo_test(demo_camera)
+CMakeLists.txt:71-72 | PRIMERA: add_library(motor_math src/Render/Camera.cpp) || ULTIMA: target_link_libraries(motor_math PUBLIC glm::glm)
+include/Render/Camera.h:86-86 | PRIMERA: Vector2 m_targetPosition; || ULTIMA: Vector2 m_targetPosition;
+src/Engine/ApplicationBucle.cpp:152-163 | PRIMERA: // Camara centrada en el jugador. Se usa transitionTo() (Fase 4) y || ULTIMA: // AV13-12: en combate no; alli la camara la lleva ApplicationCinematica::combat
+src/Engine/ApplicationCinematica.cpp:495-495 | PRIMERA: static std::minstd_rand temblor(7); || ULTIMA: static std::minstd_rand temblor(7);
+include/RPG/RandomEngine.h:46-46 | PRIMERA: class Xoroshiro128p : public RandomEngine { || ULTIMA: class Xoroshiro128p : public RandomEngine {
+tests/Editor/MapFramingTests.cpp:29-29 | PRIMERA: const auto result = Editor::fitMap(columns, rows, tileWidth, tileHeight, || ULTIMA: const auto result = Editor::fitMap(columns, rows, tileWidth, tileHeight,
+tests/Editor/MapFramingTests.cpp:69-69 | PRIMERA: const auto result = Editor::fitMap(1, 1, 64, 32, 800, 600); || ULTIMA: const auto result = Editor::fitMap(1, 1, 64, 32, 800, 600);
+tests/Editor/MapFramingTests.cpp:110-110 | PRIMERA: const auto result = Editor::fitMap(3, 2, 64, 32, 1920, 1080); || ULTIMA: const auto result = Editor::fitMap(3, 2, 64, 32, 1920, 1080);
+tests/Editor/MapFramingTests.cpp:117-117 | PRIMERA: const auto result = Editor::fitMap(100000, 80000, 64, 32, 800, 600); || ULTIMA: const auto result = Editor::fitMap(100000, 80000, 64, 32, 800, 600);
+CMakeLists.txt:75-75 | PRIMERA: target_link_libraries(demo_camera PRIVATE motor_math) || ULTIMA: target_link_libraries(demo_camera PRIVATE motor_math)
+include/Core/Errors/Result.h:22-61 | PRIMERA: template <typename T> || ULTIMA: const std::string& errorMessage() const { return m_errorMsg; }
+include/Render/Culling.h:26-29 | PRIMERA: // renderer. RuntimeTileMap NO depende de Camera (ver el comentario de || ULTIMA: //
+src/Engine/ApplicationCinematica.cpp:497-497 | PRIMERA: if (e.sacudida > 0.0f) app.m_camera->transitionTo(e.centroCombate + Vector2{d(te || ULTIMA: if (e.sacudida > 0.0f) app.m_camera->transitionTo(e.centroCombate + Vector2{d(te
+src/Engine/ApplicationBucle.cpp:298-298 | PRIMERA: static const bool reducidas = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullpt || ULTIMA: static const bool reducidas = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullpt
+src/Engine/ApplicationHud.cpp:76-76 | PRIMERA: static const bool reducido = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr || ULTIMA: static const bool reducido = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr
+include/Engine/Application.h:141-143 | PRIMERA: friend struct ApplicationSceneTestAccess; || ULTIMA: friend struct ApplicationCinematica;  // PROLOGO-02: las cinematicas del prologo
+include/Engine/ApplicationCinematica.h:38-38 | PRIMERA: struct EstadoCinematicas { || ULTIMA: struct EstadoCinematicas {
+include/Engine/Application.h:348-348 | PRIMERA: std::unique_ptr<EstadoCinematicas> m_cine;  // PROLOGO-02: catalogo, la que esta || ULTIMA: std::unique_ptr<EstadoCinematicas> m_cine;  // PROLOGO-02: catalogo, la que esta
+src/Engine/ApplicationNivel.cpp:471-471 | PRIMERA: m_lastCameraCell = GridCoord{-9999, -9999}; || ULTIMA: m_lastCameraCell = GridCoord{-9999, -9999};
+src/Engine/ApplicationBucle.cpp:162-162 | PRIMERA: const GridCoord& playerCell = m_session->playerPosition(); || ULTIMA: const GridCoord& playerCell = m_session->playerPosition();
+src/Engine/ApplicationBucle.cpp:152-175 | PRIMERA: // Camara centrada en el jugador. Se usa transitionTo() (Fase 4) y || ULTIMA: m_camera->update(deltaTime);
+src/Render/Camera.cpp:49-59 | PRIMERA: m_position = Interpolacion::tweenVec2(m_transitionStartPosition, || ULTIMA: m_zoom = m_transitionTargetZoom;
+src/Engine/ApplicationBucle.cpp:183-188 | PRIMERA: m_fog->beginFrame(); || ULTIMA: m_lightMap->updateTexture(*m_camera);
+include/HUD/Pergamino/GolpesEnPantalla.h:32-34 | PRIMERA: void ponVista(const Vector2& camara, float zoom) { || ULTIMA: m_zoom = zoom;
+src/Engine/ApplicationHud.cpp:379-380 | PRIMERA: estado.camaraX = m_camera->position().x; || ULTIMA: estado.camaraY = m_camera->position().y;
+src/Render/Camera.cpp:102-102 | PRIMERA: glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-m_position.x, -m_pos || ULTIMA: glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-m_position.x, -m_pos
+src/Render/FogOfWar.cpp:129-132 | PRIMERA: const float halfVpX = static_cast<float>(m_viewportWidth) * 0.5f; || ULTIMA: auto worldToScreen = [&](const Vector2& world) -> Vector2 {
+src/Engine/ApplicationCinematica.cpp:415-415 | PRIMERA: e.dados = std::make_unique<RPG::Xoroshiro128p>(semillaNueva()); || ULTIMA: e.dados = std::make_unique<RPG::Xoroshiro128p>(semillaNueva());
+include/HUD/Pergamino/InterfazPergamino.h:78-78 | PRIMERA: float camaraX = 0.0f, camaraY = 0.0f, zoom = 1.0f; || ULTIMA: float camaraX = 0.0f, camaraY = 0.0f, zoom = 1.0f;
+include/Runtime/Alturas.h:93-93 | PRIMERA: static float desfasePx(int nivel) { return -static_cast<float>(nivel) * kPasoPx; || ULTIMA: static float desfasePx(int nivel) { return -static_cast<float>(nivel) * kPasoPx;
+src/HUD/Pergamino/DialogoHoja.cpp:219-219 | PRIMERA: static const bool reducidas = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullpt || ULTIMA: static const bool reducidas = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullpt
+src/Engine/ApplicationBucle.cpp:170-170 | PRIMERA: m_camera->transitionTo(target, m_camera->zoom(), 0.16f, Camera::Easing::Linear); || ULTIMA: m_camera->transitionTo(target, m_camera->zoom(), 0.16f, Camera::Easing::Linear);
+editor/src/EditorApplication.cpp:340-340 | PRIMERA: map.camera.move({-io.MouseDelta.x * scale.x / map.camera.zoom(), -io.MouseDelta. || ULTIMA: map.camera.move({-io.MouseDelta.x * scale.x / map.camera.zoom(), -io.MouseDelta.
+include/Render/Camera.h:85-102 | PRIMERA: Vector2 m_position; || ULTIMA: float m_transitionTargetZoom = 1.0f;
+tests/Engine/CameraTransitionTests.cpp:228-273 | PRIMERA: MOTOR_TEST_CASE(camera_regresion_muestras_de_t_por_curva) { || ULTIMA: MOTOR_TEST_CASE(camera_regresion_origen_no_nulo_y_destino_grande) {
+src/Engine/ApplicationBucle.cpp:159-163 | PRIMERA: // jugador CAMBIA de celda (movimiento discreto, ver processInput): || ULTIMA: // AV13-12: en combate no; alli la camara la lleva ApplicationCinematica::combat
+src/Render/Player.cpp:27-27 | PRIMERA: constexpr float kStepDuration = 0.16f; || ULTIMA: constexpr float kStepDuration = 0.16f;
+src/Engine/ApplicationCinematica.cpp:436-436 | PRIMERA: e.zoomCombate = std::max(e.zoomAntes, 1.0f) * 1.7f; || ULTIMA: e.zoomCombate = std::max(e.zoomAntes, 1.0f) * 1.7f;
+tests/Render/CameraTests.cpp:36-36 | PRIMERA: MOTOR_CHECK(true); // No crash || ULTIMA: MOTOR_CHECK(true); // No crash
+tests/Render/CameraTests.cpp:43-43 | PRIMERA: MOTOR_CHECK(true); || ULTIMA: MOTOR_CHECK(true);
+tests/Render/CameraTests.cpp:242-242 | PRIMERA: MOTOR_CHECK(true); || ULTIMA: MOTOR_CHECK(true);
+TOTAL 138 bad 0
