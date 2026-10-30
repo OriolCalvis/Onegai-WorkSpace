@@ -185,7 +185,8 @@ Particula crearParticula(const DefinicionEmisor& d, const TipoDeParticula& tipo,
 - Orden de sorteos **fijo y documentado**: 1 `vida`, 2 `velocidad`, 3 `angulo`, 4 `variante`, 5 `otraForma`, 6 `ang0`, 7 `radio0`, 8 `oscura` (`uniforme01 < contraste`, como `BrilloEquipo.cpp:282-286`), 9 `lado` (`uniforme01*2-1`, equivale a `azar01(...)*2-1` de `BrilloEquipo.cpp:273`). Siempre se consumen los 9.
 - Rangos: `vida in [vidaMin,vidaMax]`, `|v| in [velocidadMin,velocidadMax]`, direccion dentro de `anguloCentro +- abanico/2`.
 - **Composicion de la velocidad inicial** (px/s del espacio del grupo): `rapidez = lerp(velocidadMin, velocidadMax, u2)`; `theta = radianes(anguloCentro + (u3 - 0.5) * abanico)` (0 = +x, y de pantalla hacia abajo: -90 = arriba); `vx0 = rapidez*cos(theta)`, `vy0 = rapidez*sin(theta)`. Es la velocidad **del emisor**; `tipo.vx/vy` (la de la familia) se suman **en la formula cerrada de E05** como movimiento propio (balanceo, deriva, gravedad), no aqui. Posicion inicial `(0,0)`.
-- Archivos E04: `include/Game/Emisor/Particula.h`, `src/Game/Emisor/CrearParticula.cpp`, `tests/Game/EmisorTests.cpp`.
+- Archivos E04: `include/Game/Emisor/Particula.h`, `src/Game/Emisor/CrearParticula.cpp`, `tests/Game/EmisorParticulaTests.cpp` (target `test_emisor_particula`, gl-free; `EmisorTests.cpp` pasaba de 500 lineas).
+- **Implementado en E04** (anade al contrato): `std::unique_ptr<RPG::Xoroshiro128p> crearAzarEmisor(std::uint64_t semilla)` (mezclarSemilla + `kSorteosDescartados`=4 sorteos; E05 solo la llama); `kSorteosPorParticula`=9. `Particula` reordenada y con `reservado` para medir 44 bytes sin relleno (hash de bits de E08 fiable). Rangos fijados: `ang0 = u6*2pi`, `radio0 = 6+4*u7` px (como Converge de BrilloEquipo; E05 puede reescalar), `otraForma = u5 < tipo.conOtraForma`, `variante = floor(u4*colores.size())`.
 
 ### E05 · Avanzar estado, caducar y presupuesto global (90 min)
 
