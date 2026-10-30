@@ -1,0 +1,98 @@
+{
+ "id": "capitana_de_las_cuatro_lluvias",
+ "name": "Capitana de las Cuatro Lluvias",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "apoyo",
+ "faction": "horrores_del_cielo_fragmentado",
+ "factionName": "Los Horrores del Cielo Fragmentado",
+ "stats": {
+  "CON": 9,
+  "DES": 8,
+  "INT": 9,
+  "CAR": 11
+ },
+ "derived": {
+  "vida": 70,
+  "ca": 20,
+  "defensaMental": 21,
+  "resistenciaFisica": 19,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de hielo: daño que suma su CAR (pool de CAR, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: efecto táctico según su pasiva."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en fase de Desesperación: daño de hielo como éxito crítico (todos sus dados cuentan éxito completo)."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Cambia de estación al inicio de cada ronda y altera el tipo de daño de sus cartas."
+ },
+ "conditionsInflicted": [],
+ "loot": [
+  "orbe_de_mano_de_milicia",
+  "vara_de_aprendiz_de_viaje",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Hielo"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal: alterna golpe y técnica."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Su técnica de facción no gasta acción: la encadena tras el golpe. Cambia de estación al inicio de cada ronda y altera el tipo de daño de sus cartas."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final y actúa con agresividad total (ignora amenaza, va al más herido)."
+  }
+ ],
+ "flavorText": "Bardo estacional que dirige el clima como una orquesta.",
+ "villainProfile": {
+  "objetivo": "Dirigir la tormenta perfecta sobre la ciudad que la exilió",
+  "metodo": "Cambia el clima del campo de batalla como quien cambia de partitura",
+  "debilidad_narrativa": "El silencio: si nadie la ataca durante una ronda completa, pierde el compás y su próxima estación no llega",
+  "vinculo": "bardo_de_las_cuatro_estaciones"
+ },
+ "arena": {
+  "name": "El Anfiteatro a Cielo Roto",
+  "hazard": "El clima cambia por fase: lluvia (proyectiles con desventaja), granizo (1 de daño por ronda a la intemperie), niebla (visión corta)"
+ },
+ "legendaryActions": [
+  "Cambio de Tempo (1/ronda): adelanta o retrasa la iniciativa de un personaje 1 puesto"
+ ],
+ "storyCard": {
+  "title": "Capitana de las Cuatro Lluvias",
+  "text": "Cuatro lluvias aprendió. La quinta la está componiendo.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae si el grupo alcanzó la fase de Desesperación",
+  "drops": [
+   "orbe_de_mano_de_milicia",
+   "vara_de_aprendiz_de_viaje",
+   "pocion_de_vigor"
+  ]
+ }
+}

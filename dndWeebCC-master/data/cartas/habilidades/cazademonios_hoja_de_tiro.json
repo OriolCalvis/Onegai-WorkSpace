@@ -1,0 +1,58 @@
+{
+ "id": "cazademonios_hoja_de_tiro",
+ "name": "Hoja de tiro",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Disparas y la sombra lunar atraviesa al enemigo: 3d6 de daño de tinieblas, -2 a su CA durante 3 turnos y te curas el daño que haces.",
+ "flavorText": "",
+ "classTags": [
+  "cazademonios"
+ ],
+ "roleTags": [],
+ "tags": [
+  "cazademonios",
+  "estandar",
+  "Tinieblas"
+ ],
+ "mechanicTags": [
+  "Tinieblas"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Disparas y la sombra lunar atraviesa al enemigo: 3d6 de daño de tinieblas, -2 a su CA durante 3 turnos y te curas el daño que haces.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "3d6 de daño de tinieblas.",
+   "mechanicHook": "dano:3d6"
+  },
+  {
+   "description": "Cortar: -2 a la CA durante 3 turnos.",
+   "mechanicHook": "estado:3:penal_ca:2"
+  },
+  {
+   "description": "Te curas el daño que haces.",
+   "mechanicHook": "cura:dano_causado"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Cazademonios (Demon Hunter) · H1156+H1167 Hoja de tiro"
+}

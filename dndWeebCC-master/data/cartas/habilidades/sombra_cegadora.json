@@ -1,0 +1,50 @@
+{
+ "id": "sombra_cegadora",
+ "name": "Sombra Cegadora",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Chasqueas delante de su cara y una sombra se le pega a los ojos. Si no se resiste (resistencia física), queda cegado 2 turnos: ataca con desventaja y todo contra él va con ventaja.",
+ "flavorText": "",
+ "classTags": [
+  "mago_chasqueador"
+ ],
+ "roleTags": [],
+ "tags": [
+  "mago_chasqueador",
+  "Tinieblas",
+  "estandar"
+ ],
+ "mechanicTags": [
+  "Tinieblas"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "2 turnos",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "INT",
+ "defenseStat": "resistencia_fisica",
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Chasqueas delante de su cara y una sombra se le pega a los ojos. Si no se resiste (resistencia física), queda cegado 2 turnos: ataca con desventaja y todo contra él va con ventaja.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "Cegado 2 turnos.",
+   "mechanicHook": "condicion:cegado:2"
+  }
+ ]
+}

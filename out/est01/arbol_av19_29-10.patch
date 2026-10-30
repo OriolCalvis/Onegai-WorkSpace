@@ -1,0 +1,1840 @@
+diff --git a/.gitignore b/.gitignore
+index 1190c21..ca6f6e8 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -14,3 +14,6 @@ Pasted image *.png
+ 
+ **/.git-nested-backup
+ /MotorGraphico-main/MotorGraphico/assets/textures/pixellab/lote2/con.png
++
++# Registros de la fabrica (se entregan en zip, no por git)
++/out/fabrica/
+diff --git a/.obsidian/app.json b/.obsidian/app.json
+index 9e26dfe..e609a07 100644
+--- a/.obsidian/app.json
++++ b/.obsidian/app.json
+@@ -1 +1,3 @@
+-{}
+\ No newline at end of file
++{
++  "promptDelete": false
++}
+\ No newline at end of file
+diff --git a/.obsidian/workspace.json b/.obsidian/workspace.json
+index 61b8921..fc28ec0 100644
+--- a/.obsidian/workspace.json
++++ b/.obsidian/workspace.json
+@@ -4,47 +4,43 @@
+     "type": "split",
+     "children": [
+       {
+-        "id": "fca2e8be1875dc02",
++        "id": "00c528238af95814",
+         "type": "tabs",
++        "dimension": 79.7979797979798,
+         "children": [
+           {
+-            "id": "e8f74786a219edf2",
+-            "type": "leaf",
+-            "pinned": true,
+-            "state": {
+-              "type": "markdown",
+-              "state": {
+-                "file": "PENDIENTE_DE_REVISAR.md",
+-                "mode": "source",
+-                "source": false
+-              },
+-              "pinned": true,
+-              "icon": "lucide-file",
+-              "title": "PENDIENTE_DE_REVISAR"
+-            }
+-          },
+-          {
+-            "id": "0eee4512bbe9a11f",
++            "id": "a1312057f903b8de",
+             "type": "leaf",
+             "state": {
+               "type": "image",
+               "state": {
+-                "file": "Onegai 2/Onegai/Referència/Mapes/mapa_egaroth_geometrico.svg"
++                "file": "MotorGraphico-main/MotorGraphico/planificacion/render/gantt_corte_b.png"
+               },
+               "icon": "lucide-image",
+-              "title": "mapa_egaroth_geometrico"
++              "title": "gantt_corte_b"
+             }
+-          },
++          }
++        ]
++      },
++      {
++        "id": "c3235223d5346bf8",
++        "type": "tabs",
++        "dimension": 20.2020202020202,
++        "children": [
+           {
+-            "id": "efd8fad7f43a4456",
++            "id": "006844ffb339a74c",
+             "type": "leaf",
++            "pinned": true,
+             "state": {
+-              "type": "image",
++              "type": "markdown",
+               "state": {
+-                "file": "Onegai 2/Onegai/Referència/Mapes/Mapa_Egaroth.svg"
++                "file": "BANDEJA_PRODUCT_OWNER.md",
++                "mode": "source",
++                "source": false
+               },
+-              "icon": "lucide-image",
+-              "title": "Mapa_Egaroth"
++              "pinned": true,
++              "icon": "lucide-file",
++              "title": "BANDEJA_PRODUCT_OWNER"
+             }
+           }
+         ]
+@@ -81,7 +77,7 @@
+             "state": {
+               "type": "search",
+               "state": {
+-                "query": "o-15",
++                "query": "PO-48",
+                 "matchingCase": false,
+                 "explainSearch": false,
+                 "collapseAll": false,
+@@ -214,54 +210,54 @@
+       "bases:Crea una base nova": false
+     }
+   },
+-  "active": "e8f74786a219edf2",
++  "active": "56a2ea11f06377bd",
+   "lastOpenFiles": [
+-    "TABLERO.md.tmp.44068.8bcdd0901623",
+-    "sesiones/2026-10-15-zcode-av17-01-segundas-oportunidades.md",
+-    "MotorGraphico-main/build-release/_deps/glm-build/glm/CMakeFiles/glm.dir/detail/glm.cpp.o.d",
+-    "MotorGraphico-main/build-release/_deps/glm-build/glm/CMakeFiles/glm.dir/detail/glm.cpp.o",
+-    "MotorGraphico-main/build-release/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-update-info.txt",
+-    "MotorGraphico-main/build-release/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-test",
+-    "MotorGraphico-main/build-release/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-patch-info.txt",
+-    "MotorGraphico-main/build-release/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-patch",
+-    "MotorGraphico-main/build-release/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-mkdir",
+-    "MotorGraphico-main/build-release/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-install",
+-    "MotorGraphico-main/build-release/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-gitinfo.txt",
+-    "MotorGraphico-main/build-release/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-gitclone-lastrun.txt",
+-    "MotorGraphico-main/build-release/_deps/glm-src/doc/api/search/search_r.png",
+-    "MotorGraphico-main/build-release/_deps/glm-src/doc/api/search/search_m.png",
+-    "MotorGraphico-main/build-release/_deps/glm-src/doc/api/search/search_l.png",
+-    "MotorGraphico-main/build-release/_deps/glm-src/doc/api/search/mag_sel.png",
+-    "MotorGraphico-main/build-release/_deps/glm-src/doc/api/search/close.png",
+-    "MotorGraphico-main/build-release/assets/textures/pixellab/lote6/verdugo/west.png",
+-    "MotorGraphico-main/build-release/assets/textures/pixellab/lote6/verdugo/walk_west_5.png",
+-    "MotorGraphico-main/build-release/assets/textures/pixellab/lote6/verdugo/walk_west_4.png",
+-    "MotorGraphico-main/build-release/assets/textures/pixellab/lote6/verdugo/walk_west_3.png",
+-    "MotorGraphico-main/build-release/assets/textures/pixellab/lote6/verdugo/walk_west_2.png",
+-    "MotorGraphico-main/build-release/assets/world_experiment/zcode/este_norte/README.md",
+-    "MotorGraphico-main/build-release/assets/world_experiment/trae/oeste_sur/README.md",
+-    "MotorGraphico-main/build-release/assets/world_experiment/claude/oeste_norte/README.md",
+-    "MotorGraphico-main/build-release/assets/world_experiment/chatgpt/este_sur/world_design.md",
+-    "MotorGraphico-main/build-release/assets/world_experiment/chatgpt/este_sur/README.md",
+-    "MotorGraphico-main/build-release/_deps/glfw-src/docs/window.md",
+-    "MotorGraphico-main/build-release/_deps/glfw-src/docs/vulkan.md",
+-    "MotorGraphico-main/build-release/_deps/glfw-src/docs/quick.md",
+-    "MotorGraphico-main/build-release/_deps/glfw-src/docs/news.md",
+-    "MotorGraphico-main/build-release/_deps/glfw-src/docs/moving.md",
+-    "MotorGraphico-main/build-release/_deps/glfw-src/docs/monitor.md",
+-    "MotorGraphico-main/build-release/_deps/glfw-src/docs/main.md",
+-    "MotorGraphico-main/build-release/_deps/glfw-src/docs/intro.md",
+-    "MotorGraphico-main/build-release/_deps/glfw-src/docs/internal.md",
+-    "MotorGraphico-main/build-release/_deps/glfw-src/docs/input.md",
+-    "MotorGraphico-main/build-release/_deps/glfw-src/docs/compile.md",
+-    "MotorGraphico-main/build-release/_deps/glfw-src/docs/context.md",
+-    "MotorGraphico-main/build-release/_deps/glfw-src/docs/compat.md",
+-    "MotorGraphico-main/build-release/_deps/glfw-src/docs/build.md",
+-    "MotorGraphico-main/build-release/_deps/glfw-src/docs/SUPPORT.md",
+-    "MotorGraphico-main/build-release/_deps/glfw-src/docs/CONTRIBUTING.md",
+-    "MotorGraphico-main/build-release/assets/generated/authoring/ASSET_PRODUCTION_LOOP.md",
+-    "MotorGraphico-main/build-release/_deps/glm-src/readme.md",
+-    "MotorGraphico-main/build-release/_deps/glm-src/manual.md",
++    "out/fabrica/REPLICA-R1/PROGRESO.md",
++    "out/fabrica/REPLICA-R1",
++    "sesiones/2026-10-29-codex-comparativa-boundington.md",
++    "Onegai 2/Planificacion_Boundington/07_REVISION_COMPARATIVA.md",
++    "out/_claude_exp/in/provaJ1.diff",
++    "decisiones/Comparativa lotes de 25 puntos vs base de siete documentos.md",
++    "out/_claude_exp/in/j4.diff",
++    "out/fable_inventario_29-10/inventario.py",
++    "out/fable_inventario_29-10/locales_boundington.csv",
++    "out/fable_inventario_29-10/pnj_boundington.csv",
++    "out/fable_inventario_29-10",
++    "out/_claude_exp/in/j2/p.diff",
++    "out/_claude_exp/in/j2",
++    "sesiones/2026-10-29-codex-boundington-contenido.md",
++    "Onegai 2/Planificacion_Boundington/06_ESTANDAR_Y_PROMPT.md",
++    "Onegai 2/Planificacion_Boundington/05_CARTERA.md",
++    "Onegai 2/Planificacion_Boundington/04_FAMILIA_Y_CADENAS.md",
++    "out/_claude_exp/in/j1/p.diff",
++    "Onegai 2/Planificacion_Boundington/01_PLAN_Y_HALLAZGOS.md",
++    "Onegai 2/Planificacion_Boundington/00_LEEME.md",
++    "Onegai 2/Planificacion_Boundington/03_VOCES_Y_CONDICIONES.md",
++    "Onegai 2/Planificacion_Boundington/02_INVENTARIO_OBSERVADO.md",
++    "out/fabrica/PLAU01-R1/INFORME.md",
++    "out/fabrica/PLAU01-R1/REGISTRO.md",
++    "orquestador/plau01/LOTE_U1-02_R1.md",
++    "out/fabrica/PILOTO-29-10/INFORME.md",
++    "out/fabrica/agy/cola/E-00-SIMULACRO.md",
++    "out/fabrica/agy/hechas/E-00-SIMULACRO.md",
++    "out/fabrica/agy/resultados/20261029-175236_E-00-SIMULACRO/prompt.md",
++    "out/fabrica/agy/en_curso/E-00-SIMULACRO.md",
++    "out/fabrica/PILOTO-29-10/REGISTRO.md",
++    "out/fabrica/skills_instalar/replica-motor-verificar/SKILL.md",
++    "out/fabrica/skills_instalar/replica-motor-recon/SKILL.md",
++    "out/fabrica/skills_instalar/replica-motor-construir/SKILL.md",
++    "out/fabrica/skills_instalar/fabrica-de-nit/SKILL.md",
++    "out/fabrica/skills_instalar/fabrica-onegai/SKILL.md",
++    "out/fabrica/RECURSOS-02/visual/ruta_modal2.png",
++    "out/fabrica/RECURSOS-02/visual/ruta_modal1.png",
++    "out/fabrica/RECURSOS-01/visual/recursos_modal2_final.png",
++    "out/fabrica/RECURSOS-01/visual/recursos_modal2.png",
++    "out/fabrica/RECURSOS-01/visual/recursos_modal.png",
++    "MotorGraphico-main/MotorGraphico/planificacion/render/gantt_corte_b.svg",
++    "MotorGraphico-main/MotorGraphico/planificacion/render/gantt_subtareas_F1.svg",
++    "MotorGraphico-main/MotorGraphico/planificacion/render/gantt_subtareas_F1.png",
++    "MotorGraphico-main/MotorGraphico/planificacion/render/gantt_subtareas_F0.svg",
++    "MotorGraphico-main/MotorGraphico/planificacion/render/gantt_subtareas_F0.png",
+     "Onegai 2/Onegai/OnegaiTimeLine/TML/00 - LÍNIA TEMPORAL MESTRA.canvas",
+     "Onegai 2/Onegai/OnegaiTimeLine/TML/9100b.f. -9071b.f. - EDAD DE LOS DIOSES/TML - Canvas.canvas",
+     "Onegai 2/Onegai/OnegaiTimeLine/TML/8578-8487b.f. - ERA IV - LAS GUERRAS DEL OCASO Y EL ALBA DE LA ERA OSCURA/8578-8487b.f. - ERA IV - LAS GUERRAS DEL OCASO Y EL ALBA DE LA ERA OSCURA.canvas",
+diff --git a/.qwen/settings.json b/.qwen/settings.json
+index 3477068..0e8ea37 100644
+--- a/.qwen/settings.json
++++ b/.qwen/settings.json
+@@ -10,7 +10,8 @@
+       "Bash(json.dump)",
+       "Bash(py)",
+       "Bash(mkdir *)",
+-      "Read(//Users/admin/onegai-ramas/qwen-AV19-05/MotorGraphico-main/MotorGraphico/tools/**)"
++      "Read(//Users/admin/onegai-ramas/qwen-AV19-05/MotorGraphico-main/MotorGraphico/tools/**)",
++      "Read(//Users/admin/onegai-ramas/qwen-AV19-09/MotorGraphico-main/MotorGraphico/**)"
+     ]
+   }
+ }
+\ No newline at end of file
+diff --git a/GUIA_VISUAL_STUDIO.md b/GUIA_VISUAL_STUDIO.md
+index c14c171..0e007e8 100644
+--- a/GUIA_VISUAL_STUDIO.md
++++ b/GUIA_VISUAL_STUDIO.md
+@@ -68,3 +68,175 @@ con las extensiones recomendadas.
+ Si CMake no enseña los presets, ejecuta Developer: Reload Window y vuelve a
+ elegir macos-debug. Si Maven detecta el JDK incorrecto, usa Java: Configure
+ Java Runtime y marca el JDK 25 como predeterminado.
++
++
++# GUIA_VISUAL_STUDIO.md — Comandos de Compilación y Pruebas
++
++Basado en la estructura del proyecto MotorGraphico-main, aquí tienes los comandos necesarios para compilar y probar el motor gráfico. El proyecto usa **CMake** con generador Makefile (Linux) y compiladores clang++/g++.
++
++## 1. Preparar el entorno de compilación
++
++```bash
++# Desde la raíz del repositorio MotorGraphico-main
++cd /ruta/a/MotorGraphico-main/MotorGraphico
++
++# Crear directorio de build y configurar CMake
++mkdir -p build && cd build
++cmake -S .. -B build -DCMAKE_BUILD_TYPE=Debug \
++  -DCMAKE_CXX_COMPILER=clang++ \
++  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
++
++# Alternativa Release:
++# cmake -S .. -B build -DCMAKE_BUILD_TYPE=Release
++```
++
++## 2. Compilar el motor
++
++```bash
++# Compilar todo el proyecto (modo Debug)
++cmake --build build -j --config Debug
++
++# Solo compilar el motor principal (librerías)
++cmake --build build -j --target libmotor_core -c Debug
++
++# Compilar solo los ejecutables de demo
++cmake --build build -j --config Debug -- target demo_textured_quad demo_isometric_renderer
++```
++
++## 3. Compilar y correr tests unitarios
++
++```bash
++# Compilar todos los tests
++cmake --build build -j --config Debug
++
++# Correr tests gl-free (la mayoría, ~80%)
++ctest --output-on-failure --test-dir build -L "gl-free"
++
++# Correr tests específicos por nombre
++./build/test_bitmap_font
++./build/test_hud_minimap
++./build/test_save_game
++./build/test_game_session
++./build/test_battle_state
++./build/test_catalog_content
++./build/test_condition_engine
++./build/test_inventory_engine
++
++# Corner todos los tests y ver resumen
++ctest --output-on-failure --test-dir build 2>&1 | tail -20
++```
++
++## 4. Compilar con AddressSanitizer (para detectar memory leaks)
++
++```bash
++# Compilar con ASan
++cmake -S .. -B build-asan -DCMAKE_BUILD_TYPE=Debug \
++  -DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
++  -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
++  -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
++
++cmake --build build-asan -j
++
++# Correr tests con ASan
++ASAN_OPTIONS=detect_leaks=0 xvfb-run -a ctest --test-dir build-asan --output-on-failure --no-tests=error -R "^test_(application_shutdown|post_processing.*)$"
++ASAN_OPTIONS=detect_leaks=0 xvfb-run -a ./build-asan/demo_resource_manager
++ASAN_OPTIONS=detect_leaks=0 xvfb-run -a ./build-asan/demo_camera
++ASAN_OPTIONS=detect_leaks=0 xvfb-run -a ./build-asan/demo_tilemap
++ASAN_OPTIONS=detect_leaks=0 xvfb-run -a ./build-asan/juego 3
++ASAN_OPTIONS=detect_leaks=0 xvfb-run -a ./build-asan/demo_textured_quad 5
++ASAN_OPTIONS=detect_leaks=0 xvfb-run -a ./build-asan/demo_isometric_renderer 5
++```
++
++## 5. Ejecutar demos sin OpenGL (GL-free, sin ventana)
++
++```bash
++# Demos GL-free que no necesitan ventana gráfica
++./build/demo_resource_manager
++./build/demo_camera
++./build/demo_tilemap
++./build/demo_campana_boundington
++./build/demo_mundo
++```
++
++## 5. Ejecutar demos con OpenGL (requiere Xvfb)
++
++```bash
++# Para demos que abren ventana real (necesitan Xvfb)
++xvfb-run -a ./build/demo_textured_quad 5
++xvfb-run -a ./build/demo_isometric_renderer 5
++xvfb-run -a ctest --test-dir build --output-on-failure --no-tests=error -R "^test_(application_shutdown|post_processing.*)$"
++```
++
++## 5. Flujo de trabajo típico
++
++```bash
++# 1. Configurar
++mkdir -p build && cd build
++cmake -S .. -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++
++
++# 2. Compilar
++cmake --build build -j
++
++# 3. Probar (gl-free)
++ctest --output-on-failure --test-dir build -L "gl-free" 2>&1 | grep -E "Passed|FAILED"
++
++# 4. Probar todos
++ctest --output-on-failure --test-dir build 2>&1 | tail -5
++
++# 5. Limpiar y recompilar desde cero
++cd /MotorGraphico-main/MotorGraphico
++rm -rf build build-asan
++```
++
++## 6. Comandos útiles adicionales
++
++```bash
++# Generar compile_commands.json para clang-tidy
++cmake -S .. -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
++
++# Ver qué targets están disponibles
++cmake --build build -- target_help
++
++# Compilar solo un archivo fuente (usando compile_commands.json)
++clang-tidy -p build include/RPG/RpgCatalogs.h
++
++# Ver cambios pending en el repositorio
++git status
++git diff
++
++# Correr el validador de contenido (ahora en CI)
++python3 tools/validar_todo.py
++
++# Verificar controles (test_verificar_controles.py + verificar_controles.py)
++python3 tools/test_verificar_controles.py
++python3 tools/verificar_controles.py
++```
++
++## 7. Estructura de carpetas importantes
++
++```
++/MotorGraphico-main/MotorGraphico/
++├── build/              # Directorio de compilación (generado por CMake)
++├── build-asan/         # Build con AddressSanitizer
++├── src/                # Código fuente C++
++├── include/            # Headers del motor
++├── tests/              # Tests unitarios
++├── tools/              # Herramientas de validación (validar_todo.py, etc.)
++├── planificacion/      # Gantt charts, MAPA_DEL_CODIGO.md, seguimiento/
++├── assets/             # Recursos y catálogos del juego
++├── examples/           # Demos y ejemplos jugables
++├── editor/             # Editor visual del motor
++├── cmake/              # Scripts de CMake personalizados
++└── .github/workflows/ci.yml  # CI configuration
++```
++
++## Notas importantes
++
++- **Compiladores**: El proyecto funciona mejor con `clang++` en Linux. En macOS usa el compilador del sistema (clang). Windows requiere MSVC (experimental en CI).
++- **Dependencias**: Se necesitan `libgl1-mesa-dev xorg-dev xvfb` para demos con GL en Linux (se instalan con `sudo apt-get install -y xorg-dev libgl1-mesa-dev xvfb`).
++- **Tests gl-free**: ~81/88 tests pasan sin necesidad de ventana gráfica. Los ~7 failures restantes son effects de post-procesado que requieren GL.
++- **Builds concurrentes**: Puedes tener `build/` y `build-asan/` simultáneos para comparar.
++- **Archivo compile_commands.json**: Generado por CMake, usado por clang-format, clang-tidy, cppcheck.
++
++---
++*Estos comandos están diseñados para el entorno Linux (el principal de desarrollo). En macOS sustituye `clang++` por el compilador del sistema y omite la instalación de packages de X11. En Windows requiere MSVC y la configuración experimental del CI.*
+\ No newline at end of file
+diff --git a/MotorGraphico-main/MotorGraphico/examples/demo_brillo_equipo.cpp b/MotorGraphico-main/MotorGraphico/examples/demo_brillo_equipo.cpp
+index 0866889..d74224a 100644
+--- a/MotorGraphico-main/MotorGraphico/examples/demo_brillo_equipo.cpp
++++ b/MotorGraphico-main/MotorGraphico/examples/demo_brillo_equipo.cpp
+@@ -47,6 +47,9 @@
+ // caben cuatro figuras) y DEMO_BRILLO_VOLCADO=2,96 (uno de cada 2 de los
+ // ultimos 96 fotogramas; por defecto 3,48).
+ //
++// MORAL-02: DEMO_BRILLO_MORAL=78,84,92,100 pone a cada figura su moral (el aura: halo, rayos, alas y
++// sus chispas), de izquierda a derecha; con ella, las sombras blob (el halo y las chispas las usan).
++//
+ // Quietas, las figuras estan en reposo (el arma como se lleva parado, y
+ // respirando). Con DEMO_BRILLO_PASEO=1 cada una anda sin moverse del sitio y
+ // descansa, girando: abajo, derecha, arriba e izquierda (el ciclo de andar y
+@@ -62,6 +65,7 @@
+ #include "Game/Personajes/MontajePersonajes.h"
+ #include "Game/Personajes/Vestuario.h"
+ #include "Render/AuraJugador.h"
++#include "Render/BlobShadow.h"
+ #include "Render/Camera.h"
+ #include "Render/CapturaGL.h"
+ #include "Render/EfectosDeCartas.h"
+@@ -70,6 +74,7 @@
+ #include "Render/Player.h"
+ #include "Render/TileMap.h"
+ 
++#include <algorithm>
+ #include <cstdio>
+ #include <cstdlib>
+ #include <iostream>
+@@ -145,7 +150,9 @@ bool esSitio(const std::string& s) { return s == "mano" || s == "otraMano" || s
+ }  // namespace
+ 
+ int main(int argc, char** argv) {
+-    const int ancho = 1152, alto = 360;
++    int ancho = 1152, alto = 360;
++    // MORAL-02: DEMO_BRILLO_TAM=1600x640 agranda la ventana (las alas abiertas no caben en la fila de siempre)
++    if (const char* t = std::getenv("DEMO_BRILLO_TAM")) std::sscanf(t, "%dx%d", &ancho, &alto);
+     const int fotogramas = argc > 1 ? std::atoi(argv[1]) : 96;
+     try {
+         Window ventana(ancho, alto, "Motor Grafico - brillo del equipo (ESTETICA-01)");
+@@ -201,9 +208,31 @@ int main(int argc, char** argv) {
+             }
+         }
+         std::vector<Figura> figuras;
++        // MORAL-02: la moral de cada figura
++        std::vector<int> morales;
++        if (const char* m = std::getenv("DEMO_BRILLO_MORAL")) {
++            std::string tok;
++            for (const char c : std::string(m) + ",") {
++                if (c == ',') {
++                    if (!tok.empty()) morales.push_back(std::atoi(tok.c_str()));
++                    tok.clear();
++                } else {
++                    tok += c;
++                }
++            }
++        }
++        std::unique_ptr<Texture> sombras;
++        if (!morales.empty()) {
++            sombras.reset(CreateBlobShadowTexture(64));
++            renderer.setBlobShadows(sombras.get());
++            renderer.setBlobShadowsEnabled(true);
++        }
+         // En fila en la pantalla (x - y crece, x + y fijo), lejos de las baldosas del mapa.
+         const int n = static_cast<int>(filas.size());
+-        const int k = 2 * (n - 1) + 8;
++        // MORAL-02: DEMO_BRILLO_HUECO=2 separa las figuras el doble (con alas grandes se tocan)
++        const char* huecoEnv = std::getenv("DEMO_BRILLO_HUECO");
++        const int hueco = huecoEnv != nullptr ? std::max(1, std::atoi(huecoEnv)) : 1;
++        const int k = 2 * (n - 1) * hueco + 8;
+         const char* nivelEnv = std::getenv("DEMO_BRILLO_NIVEL");
+         const int nivel = nivelEnv != nullptr ? std::atoi(nivelEnv) : 9;
+         for (int i = 0; i < n; ++i) {
+@@ -264,7 +293,7 @@ int main(int argc, char** argv) {
+                 }
+             }
+             Figura f;
+-            f.jugador = std::make_unique<Player>(GridCoord{4 + i, k - 4 - i}, &atlasMapa);
++            f.jugador = std::make_unique<Player>(GridCoord{4 + i * hueco, k - 4 - i * hueco}, &atlasMapa);
+             f.hoja = std::make_unique<HojaPersonaje>();
+             auto vestido = f.hoja->vestir(*montaje.value(), humano, equipo, brillos);
+             if (!vestido.isOk()) {
+@@ -274,8 +303,12 @@ int main(int argc, char** argv) {
+             f.hoja->ponerA(*f.jugador, 64, 64, Vector2{0.0f, 32.0f - 64.0f});
+             f.aura = std::make_unique<AuraJugador>(f.jugador.get(), 64, 32);
+             f.aura->ponBrillo(f.hoja.get(), &blanco);
++            if (static_cast<std::size_t>(i) < morales.size()) {
++                f.aura->ponMoral(morales[static_cast<std::size_t>(i)]);
++                f.jugador->setTint(f.aura->aspecto().tinteSprite);
++            }
+             renderer.addToQueue(f.jugador.get());
+-            renderer.addToQueue(f.aura.get());
++            f.aura->encolar(renderer);  // MORAL-02: con su pieza de detras (las alas)
+             std::cout << "[brillo] " << filas[static_cast<std::size_t>(i)].front() << ": "
+                       << f.hoja->brillo().fuentes.size() << " piezas que brillan\n";
+             figuras.push_back(std::move(f));
+@@ -283,7 +316,7 @@ int main(int argc, char** argv) {
+         // La camara en el centro de la fila.
+         const char* zoomEnv = std::getenv("DEMO_BRILLO_ZOOM");
+         const float zoom = zoomEnv != nullptr ? static_cast<float>(std::atof(zoomEnv)) : 2.2f;
+-        const float centroX = static_cast<float>((4 + (n - 1) / 2.0f) * 2 - k) * 32.0f + 32.0f;
++        const float centroX = static_cast<float>((4 + (n - 1) * hueco / 2.0f) * 2 - k) * 32.0f + 32.0f;
+         camara.transitionTo(Vector2{centroX, static_cast<float>(k) * 16.0f + 4.0f}, zoom > 0.0f ? zoom : 2.2f,
+                             0.0f);
+         int cada = 3, ultimos = 48;
+diff --git a/MotorGraphico-main/MotorGraphico/include/Game/AuraMoral.h b/MotorGraphico-main/MotorGraphico/include/Game/AuraMoral.h
+index e5d7262..6710317 100644
+--- a/MotorGraphico-main/MotorGraphico/include/Game/AuraMoral.h
++++ b/MotorGraphico-main/MotorGraphico/include/Game/AuraMoral.h
+@@ -12,17 +12,40 @@
+ //   Desgraciado (−60)  humo espeso y el sprite en sombra
+ //   Villano (−75)      halo grande y alas demoníacas con motas de sombra
+ //
+-// La intensidad crece dentro de cada tramo, para que la moral se lea aunque
+-// no cambie de nombre. Los tramos son los de Morality (moral::tramoDe).
++// MORAL-02 (Oriol, 08/10/2026): «que el feedback visual vagi canviant mes
++// progresivament [...] que apareixes primer nomes 1 ala, despres 2 per cada
++// banda, despres ja 4 despres 6 fins a 8 [...] arribar a ser un heroi de
++// regio no es el mateix que ser l'heroi del mon sencer». Dentro de los
++// tramos hay grados: quince a cada lado (los del lado malo, con signo −):
++//
++//   Respetado   1-4  (+20, +30, +40, +50)   el halo crece; desde el 3, motas
++//   Salvador    5-7  (+60, +65, +70)        halo grande; rayos de luz (4, 6)
++//   Héroe       8-15 (+75 ... +100)          las alas, niveles 1 a 8
++//
++// Las alas son sprites de energía (tools/gen_alas_moral.py, assets/textures/
++// alas_moral.png): marfil, oro y azul cielo las de luz; negro, morado y rojo
++// las de sombra, con el relleno de mármol. Cada ala lleva 1, 1, 2, 2, 4, 6, 8
++// y 8 hojas en los niveles 1 a 8, por pisos separados en horizontal (Oriol:
++// «l'element principal que vull integrar, es el de la separacio hortizontal»):
++// un piso en los niveles 1 y 2, dos en el 3 y el 4 y tres desde el 5, que
++// nacen juntos en el centro de la espalda. En el lado malo, lo mismo: humo que crece
++// (Canalla), humo espeso con rayos de sombra (Desgraciado) y las alas
++// demoníacas (Villano).
+ //
+ // Esto es la regla, sin OpenGL y sin reloj propio: dado el valor de la moral
+ // y un instante, dice que color, cuanto brilla y donde esta cada particula y
+-// cada pluma. Lo dibuja Render/AuraJugador.
++// cada rayo, y que fila del atlas de alas toca. Lo dibuja Render/AuraJugador.
+ #pragma once
+ 
++#include <vector>
++
+ #include "Core/Math/Vector4.h"
+ #include "Game/Morality.h"
+ 
++namespace imagen {
++struct ImagenRGBA;
++}
++
+ namespace Game {
+ 
+ using TramoMoral = moral::Tramo;
+@@ -30,17 +53,51 @@ TramoMoral tramoMoral(int valor);
+ 
+ enum class Alas { Ninguna, Celestiales, Demoniacas };
+ 
++// MORAL-02 — Los grados del aura: −15..15 (0 = nada). El valor mínimo de cada
++// grado del lado bueno está en kCorteGrado (el del malo, con signo −).
++constexpr int kGradosPorLado = 15;
++constexpr int kCorteGrado[kGradosPorLado] = {20, 30, 40, 50, 60, 65, 70, 75, 78, 81, 84, 88, 92, 96, 100};
++int gradoAura(int valorMoral);
++
++// MORAL-02 — Las alas: ocho niveles (los grados 8 a 15) y las hojas de cada ala.
++constexpr int kNivelesAla = 8;
++int hojasPorAla(int nivel);  // 1, 1, 2, 2, 4, 6, 8, 8 (0 fuera de 1..8)
++
++// El atlas de las alas (tools/gen_alas_moral.py; tools/test_validar_sprites.py
++// comprueba que estos números casan con alas_moral.json). Cada celda es el
++// ala derecha; la izquierda es su espejo. Fila = (lado, nivel): la luz en las
++// filas 0..7 y la sombra en 8..15; columna = frame.
++constexpr const char* kAtlasAlas = "assets/textures/alas_moral.png";
++constexpr int kCeldaAla = 96;
++constexpr int kPivoteAlaX = 10;  // el hombro dentro de la celda
++constexpr int kPivoteAlaY = 48;
++constexpr int kFramesAla = 4;
++constexpr int kFilasAla = 2 * kNivelesAla;
++int filaAla(Alas lado, int nivel);  // -1 si no hay ala
++int frameAla(float segundos);       // 0..kFramesAla-1: la energía corre (6 por segundo)
++float bateAla(float segundos);      // grados que se levanta el ala (batido lento, ±5)
++
++// Donde nacen: los hombros en la celda del personaje (64 x 64), cada ala a
++// kSepAla px del centro.
++constexpr int kCeldaSprite = 64;
++constexpr float kHombroX = 32.0f;
++constexpr float kHombroY = 38.0f;
++constexpr float kSepAla = 3.0f;
++
+ struct AspectoAura {
+     TramoMoral tramo = TramoMoral::Neutral;
++    int grado = 0;                // MORAL-02: −15..15
+     bool visible = false;
+     bool luz = false;             // true: brillo que se suma (halo); false: humo o sombra que tapa
+     Vector4 color{0, 0, 0, 0};    // color del halo o del humo
+-    float intensidad = 0.0f;      // 0..1 dentro del tramo
++    float intensidad = 0.0f;      // 0..1
+     float radio = 0.0f;           // ancho del halo en baldosas (1 = 64 px)
+     int particulas = 0;           // motas (heroe, villano) o volutas (canalla, desgraciado)
+     bool motas = false;           // MORAL-01: las particulas suben (de luz o de sombra), por delante
++    int rayos = 0;                // MORAL-02: rayos de luz (Salvador) o de sombra (Desgraciado)
+     Alas alas = Alas::Ninguna;    // MORAL-01
+-    Vector4 colorAlas{0, 0, 0, 0};
++    int nivelAlas = 0;            // MORAL-02: 1..8 con alas
++    float alfaAlas = 0.0f;        // MORAL-02: opacidad de las alas
+     Vector4 tinteSprite{1, 1, 1, 1};  // multiplica el sprite del jugador
+ };
+ 
+@@ -53,18 +110,60 @@ struct ParticulaAura {
+ };
+ ParticulaAura particulaAura(const AspectoAura& aspecto, int indice, float segundos);
+ 
+-// MORAL-01 — Una pluma de un ala: un cuadrilatero (arriba-izquierda,
+-// arriba-derecha, abajo-derecha, abajo-izquierda, como SpriteBatch::submitQuad)
+-// en fracciones del ancho del sprite, con el origen en los hombros (x a la
+-// derecha, y hacia abajo). lado: -1 el ala izquierda, +1 la derecha. Baten
+-// despacio (periodo de 2,6 s).
+-struct PlumaAla {
++// MORAL-02 — Un rayo: un cuadrilatero (arriba-izquierda, arriba-derecha,
++// abajo-derecha, abajo-izquierda, como SpriteBatch::submitQuad) en
++// fracciones del ancho del sprite, con el origen en el pecho (x a la
++// derecha, y hacia abajo). Los rayos giran despacio y laten.
++struct RayoAura {
+     float x[4] = {0, 0, 0, 0};
+     float y[4] = {0, 0, 0, 0};
+     float alfa = 0.0f;
+ };
+-constexpr int kPlumasPorAla = 5;
+-PlumaAla plumaAla(const AspectoAura& aspecto, int lado, int indice, float segundos);
++RayoAura rayoAura(const AspectoAura& aspecto, int indice, float segundos);
++// El pecho, de donde salen los rayos, en la celda del personaje.
++constexpr float kPechoX = 32.0f;
++constexpr float kPechoY = 42.0f;
++
++// MORAL-02 — Las alas sobre el sprite, segun hacia donde mira (el frame de la
++// hoja del personaje, 1..20): de frente, las dos detras del cuerpo; de
++// espaldas, delante; de perfil, las dos hacia atras, encogidas (la lejana mas
++// estrecha y mas alta) y detras. Cada una, un cuadrilatero como
++// SpriteBatch::submitQuad en pixeles de la celda del personaje (origen arriba
++// a la izquierda), ya con el batido, y la celda del atlas que toca.
++struct AlaEnSprite {
++    float x[4] = {0, 0, 0, 0};  // arriba-izquierda, arriba-derecha, abajo-derecha, abajo-izquierda
++    float y[4] = {0, 0, 0, 0};
++    bool espejo = false;        // la celda volteada (el ala que va hacia la izquierda)
++    bool delante = false;       // encima del sprite (de espaldas)
++    float alfa = 0.0f;
++    int fila = -1;              // filaAla
++    int columna = 0;            // frameAla
++    // Como se pasa de la celda del ala al sprite: el hombro, lo que se encoge de ancho y el batido (radianes).
++    float hombroX = 0.0f, hombroY = 0.0f, ancho = 1.0f, giro = 0.0f;
++};
++// Cuantas alas (0 o 2) deja en `out`, la lejana primero.
++int alasEnSprite(const AspectoAura& aspecto, int frameSprite, float segundos, AlaEnSprite (&out)[2]);
++// Un punto de la celda del ala (pixeles del atlas, origen arriba a la izquierda) en el sprite: las esquinas
++// de la celda caen en las del cuadrilatero.
++void celdaASprite(const AlaEnSprite& ala, float cx, float cy, float& sx, float& sy);
++
++// MORAL-02 — Las chispas de las alas (Oriol, 08/10: «y no solo las alas tambien añadele particulas»): nacen
++// en una pluma, salen hacia fuera y hacia arriba y se apagan; cada vez que se apagan, renacen en otra pluma.
++// Los puntos donde pueden nacer salen del propio atlas (puntosDeAla: los pixeles de la mitad de fuera de
++// cada ala), asi siguen a las plumas aunque se redibujen.
++struct PuntoAla {
++    float x = 0.0f, y = 0.0f;  // en la celda del ala
++};
++// Los de la fila `fila` del atlas (tal como se lee el PNG, la fila 0 arriba), en su primer frame.
++std::vector<PuntoAla> puntosDeAla(const imagen::ImagenRGBA& atlas, int fila);
++int chispasPorAla(int nivel);  // 0 sin alas; mas en cada nivel
++struct ChispaAla {
++    float x = 0.0f, y = 0.0f;  // en la celda del ala (celdaASprite la lleva al sprite)
++    float alfa = 0.0f;
++    float tam = 0.0f;          // pixeles del sprite
++    int tono = 0;              // 0..2: blanco, azul cielo, oro (luz); rojo, morado, negro (sombra)
++};
++ChispaAla chispaAla(const AspectoAura& aspecto, int indice, float segundos, const PuntoAla* puntos, int nPuntos);
+ 
+ // Pulso lento del halo (0,85..1,0), periodo de 2,4 s.
+ float pulsoAura(float segundos);
+diff --git a/MotorGraphico-main/MotorGraphico/include/Render/AuraJugador.h b/MotorGraphico-main/MotorGraphico/include/Render/AuraJugador.h
+index b8c3154..5d4e516 100644
+--- a/MotorGraphico-main/MotorGraphico/include/Render/AuraJugador.h
++++ b/MotorGraphico-main/MotorGraphico/include/Render/AuraJugador.h
+@@ -8,6 +8,14 @@
+ // villano. Las motas de luz del heroe suben por delante del sprite.
+ // MORAL-01 (Oriol, 08/10): siete tramos; el heroe y el villano llevan alas
+ // (celestiales o demoniacas) detras del sprite, y el villano, motas de sombra.
++// MORAL-02 (Oriol, 08/10): quince grados a cada lado; las alas son sprites de
++// energia del atlas assets/textures/alas_moral.png (ocho niveles, de 1 a 8
++// hojas por ala), que se cargan la primera vez que hacen falta: detras del
++// sprite de frente y de perfil, delante de espaldas; baten despacio y la
++// energia corre (cuatro frames). Salvador y Desgraciado, rayos de luz o de
++// sombra detras del cuerpo. Lo de detras del cuerpo lo dibuja una segunda
++// pieza de la cola (Detras), justo antes que el jugador: asi lo que queda
++// delante del jugador tambien tapa las alas, y lo que queda detras, no.
+ //
+ // Reutiliza la textura radial de la sombra blob (BlobShadow.h): el color lo
+ // pone el tinte. Sigue al jugador por su posicion visible (casilla + paso
+@@ -19,14 +27,17 @@
+ #pragma once
+ 
+ #include <chrono>
++#include <memory>
+ #include <vector>
+ 
++#include "Core/Math/Vector2.h"
+ #include "Game/AuraMoral.h"
+ #include "Game/Personajes/BrilloEquipo.h"
+ #include "Render/IRenderable.h"
+ 
+ class Entity;
+ class HojaPersonaje;
++class IsometricRenderer;
+ class Texture;
+ 
+ class AuraJugador final : public IRenderable {
+@@ -49,7 +60,23 @@ public:
+     // Justo despues del jugador: las motas quedan por delante de su sprite.
+     int getSortKey() const override;
+ 
++    // MORAL-02: entra (y sale) de la cola con su pieza de detras.
++    void encolar(IsometricRenderer& renderer);
++    void desencolar(IsometricRenderer& renderer);
++
+ private:
++    // Lo que va detras del jugador (los rayos y las alas de frente y de
++    // perfil): se dibuja justo antes que el.
++    class Detras final : public IRenderable {
++    public:
++        explicit Detras(AuraJugador& aura) : m_aura(aura) {}
++        void render(SpriteBatch& batch) override;
++        int getSortKey() const override;
++
++    private:
++        AuraJugador& m_aura;
++    };
++
+     const Entity* m_jugador;  // no propietario: el Player de Application
+     int m_anchoBaldosa;
+     int m_altoBaldosa;
+@@ -59,8 +86,21 @@ private:
+     const HojaPersonaje* m_hoja = nullptr;  // ESTETICA-01
+     Texture* m_blanco = nullptr;
+     std::vector<Game::Destello> m_destellos;  // se reusa cada fotograma
++    std::unique_ptr<Texture> m_texturaAlas;   // MORAL-02: el atlas de las alas (se carga al usarlo)
++    bool m_alasCargadas = false;              // ya se intento (si falta el PNG, no se reintenta)
++    std::vector<Game::PuntoAla> m_puntosAla[Game::kFilasAla];  // donde nacen las chispas de cada fila del atlas
++    Detras m_detras{*this};
+ 
+     void renderMotas(SpriteBatch& batch, float segundos);
+     void renderBrillo(SpriteBatch& batch, float segundos);
+-    void renderAlas(SpriteBatch& batch, float segundos);  // MORAL-01
++    // MORAL-02: delante = true, las de espaldas (encima del sprite); false, las de frente y de perfil.
++    void renderAlas(SpriteBatch& batch, float segundos, bool delante);
++    void renderRayos(SpriteBatch& batch, float segundos);  // MORAL-02
++    void renderChispas(SpriteBatch& batch, float segundos, const Game::AlaEnSprite* alas, int n, float sx, float sy,
++                       const Vector2& esquina);  // MORAL-02
++    void renderDetras(SpriteBatch& batch);
++    float segundos() const;
++    Texture* texturaAlas();
++    // El dibujo del sprite (Entity::dibujoDePersonaje) o, sin hoja de personaje, uno de 64 px sobre la baldosa.
++    void dibujo(Vector2& esquina, Vector2& tam, int& region) const;
+ };
+diff --git a/MotorGraphico-main/MotorGraphico/src/Core/Resources/ShaderManager.cpp b/MotorGraphico-main/MotorGraphico/src/Core/Resources/ShaderManager.cpp
+index 1e15b37..b13e629 100644
+--- a/MotorGraphico-main/MotorGraphico/src/Core/Resources/ShaderManager.cpp
++++ b/MotorGraphico-main/MotorGraphico/src/Core/Resources/ShaderManager.cpp
+@@ -9,7 +9,7 @@ namespace {
+ std::string readFileOrThrow(const std::string& path) {
+     std::ifstream file(path);
+     if (!file.is_open()) {
+-        throw ResourceLoadException(path);
++         throw ResourceLoadException(path);
+     }
+     std::ostringstream ss;
+     ss << file.rdbuf();
+diff --git a/MotorGraphico-main/MotorGraphico/src/Engine/Application.cpp b/MotorGraphico-main/MotorGraphico/src/Engine/Application.cpp
+index e1c19aa..e30835d 100644
+--- a/MotorGraphico-main/MotorGraphico/src/Engine/Application.cpp
++++ b/MotorGraphico-main/MotorGraphico/src/Engine/Application.cpp
+@@ -468,7 +468,7 @@ Result<bool> Application::init(int width, int height, const std::string& title,
+     }
+     // PERGAMINO-01 — la moral en el avatar: el aura va en la misma cola.
+     m_aura = std::make_unique<AuraJugador>(m_player.get(), 64, 32);
+-    m_renderer->addToQueue(m_aura.get());
++    m_aura->encolar(*m_renderer);  // MORAL-02: con su pieza de detras
+ 
+     trace("init: camara + renderer OK");
+     // Sombras blob (Fase 11).
+diff --git a/MotorGraphico-main/MotorGraphico/src/Engine/ApplicationCierre.cpp b/MotorGraphico-main/MotorGraphico/src/Engine/ApplicationCierre.cpp
+index a4a2bbd..f10e303 100644
+--- a/MotorGraphico-main/MotorGraphico/src/Engine/ApplicationCierre.cpp
++++ b/MotorGraphico-main/MotorGraphico/src/Engine/ApplicationCierre.cpp
+@@ -127,7 +127,7 @@ void Application::shutdown() {
+     m_lightMap.reset();
+     // PERGAMINO-01 — el aura sale de la cola antes que el renderer y muere
+     // antes que el Player al que sigue.
+-    if (m_renderer && m_aura) m_renderer->removeFromQueue(m_aura.get());
++    if (m_renderer && m_aura) m_aura->desencolar(*m_renderer);
+     m_aura.reset();
+     // BLOQUES-01 — sus entidades salen de la cola antes que el renderer.
+     if (m_renderer && m_vida) m_vida->desmonta(*m_renderer);
+diff --git a/MotorGraphico-main/MotorGraphico/src/Game/AuraMoral.cpp b/MotorGraphico-main/MotorGraphico/src/Game/AuraMoral.cpp
+index 5e7c3f9..add12c8 100644
+--- a/MotorGraphico-main/MotorGraphico/src/Game/AuraMoral.cpp
++++ b/MotorGraphico-main/MotorGraphico/src/Game/AuraMoral.cpp
+@@ -4,84 +4,238 @@
+ #include <algorithm>
+ #include <cmath>
+ 
++#include "Core/Imagen/ImagenRGBA.h"
++#include "Game/Personajes/MontajePersonajes.h"
++
+ namespace Game {
+ 
+ namespace {
+ constexpr float kPi = 3.14159265358979f;
+ 
+-float fraccion(float v, float desde, float hasta) {
+-    return std::clamp((v - desde) / (hasta - desde), 0.0f, 1.0f);
+-}
+-
+ // Numero pseudoaleatorio estable por particula (sin estado).
+ float semilla(int i, int canal) {
+     const float s = std::sin(static_cast<float>(i * 127 + canal * 311) * 12.9898f) * 43758.5453f;
+     return s - std::floor(s);
+ }
++
++// 0..1 a lo largo de los grados [desde, hasta] (los dos incluidos).
++float paso(int g, int desde, int hasta) {
++    return hasta == desde ? 1.0f : static_cast<float>(g - desde) / static_cast<float>(hasta - desde);
++}
++
++float mezcla(float a, float b, float t) { return a + (b - a) * t; }
+ }  // namespace
+ 
+ TramoMoral tramoMoral(int valor) { return moral::tramoDe(valor); }
+ 
++int gradoAura(int valorMoral) {
++    const int v = std::clamp(valorMoral, -100, 100);
++    const int a = v < 0 ? -v : v;
++    int g = 0;
++    for (int i = 0; i < kGradosPorLado; ++i)
++        if (a >= kCorteGrado[i]) g = i + 1;
++    return v < 0 ? -g : g;
++}
++
++int hojasPorAla(int nivel) {
++    static const int kHojas[kNivelesAla] = {1, 1, 2, 2, 4, 6, 8, 8};
++    return nivel >= 1 && nivel <= kNivelesAla ? kHojas[nivel - 1] : 0;
++}
++
++int filaAla(Alas lado, int nivel) {
++    if (lado == Alas::Ninguna || nivel < 1 || nivel > kNivelesAla) return -1;
++    return (lado == Alas::Celestiales ? 0 : kNivelesAla) + nivel - 1;
++}
++
++int frameAla(float segundos) {
++    const int f = static_cast<int>(std::floor(segundos * 6.0f));
++    return ((f % kFramesAla) + kFramesAla) % kFramesAla;
++}
++
++float bateAla(float segundos) { return 5.0f * std::sin(segundos * 2.0f * kPi / 2.6f); }
++
++int alasEnSprite(const AspectoAura& aspecto, int frameSprite, float segundos, AlaEnSprite (&out)[2]) {
++    const int fila = filaAla(aspecto.alas, aspecto.nivelAlas);
++    if (!aspecto.visible || fila < 0) return 0;
++    // Cada ala: el pivote (el hombro), cuanto se encoge de ancho, si va hacia
++    // la izquierda (espejo) y su opacidad relativa.
++    struct Pieza {
++        float x, y, ancho;
++        bool espejo;
++        float alfa;
++    };
++    Pieza p[2];
++    const Rumbo rumbo = rumboDeFrame(frameSprite);
++    switch (rumbo) {
++        case Rumbo::Derecha:  // mira a la derecha: las alas van hacia atras (la izquierda)
++            p[0] = {kHombroX - 2.0f, kHombroY - 3.0f, 0.55f, true, 0.8f};
++            p[1] = {kHombroX - 4.0f, kHombroY, 0.70f, true, 1.0f};
++            break;
++        case Rumbo::Izquierda:
++            p[0] = {kHombroX + 2.0f, kHombroY - 3.0f, 0.55f, false, 0.8f};
++            p[1] = {kHombroX + 4.0f, kHombroY, 0.70f, false, 1.0f};
++            break;
++        default:  // de frente o de espaldas: una a cada lado
++            p[0] = {kHombroX - kSepAla, kHombroY, 1.0f, true, 1.0f};
++            p[1] = {kHombroX + kSepAla, kHombroY, 1.0f, false, 1.0f};
++            break;
++    }
++    const float celda = static_cast<float>(kCeldaAla);
++    const float px = static_cast<float>(kPivoteAlaX), py = static_cast<float>(kPivoteAlaY);
++    const float bate = bateAla(segundos) * kPi / 180.0f;
++    for (int i = 0; i < 2; ++i) {
++        AlaEnSprite& a = out[i];
++        // Las esquinas respecto al hombro: la celda del ala derecha, o su espejo.
++        float x0 = p[i].espejo ? -(celda - px) : -px;
++        float x1 = p[i].espejo ? px : celda - px;
++        x0 *= p[i].ancho;
++        x1 *= p[i].ancho;
++        const float y0 = -py, y1 = celda - py;
++        const float ex[4] = {x0, x1, x1, x0}, ey[4] = {y0, y0, y1, y1};
++        // Levantar el ala es subir la punta: hacia arriba (y negativa) por fuera.
++        const float giro = p[i].espejo ? bate : -bate;
++        const float c = std::cos(giro), s = std::sin(giro);
++        for (int k = 0; k < 4; ++k) {
++            a.x[k] = p[i].x + ex[k] * c - ey[k] * s;
++            a.y[k] = p[i].y + ex[k] * s + ey[k] * c;
++        }
++        a.espejo = p[i].espejo;
++        a.delante = rumbo == Rumbo::Arriba;
++        a.alfa = std::clamp(aspecto.alfaAlas * p[i].alfa, 0.0f, 1.0f);
++        a.fila = fila;
++        a.columna = frameAla(segundos);
++        a.hombroX = p[i].x;
++        a.hombroY = p[i].y;
++        a.ancho = p[i].ancho;
++        a.giro = giro;
++    }
++    return 2;
++}
++
++void celdaASprite(const AlaEnSprite& ala, float cx, float cy, float& sx, float& sy) {
++    // Las mismas cuentas que las esquinas en alasEnSprite: respecto al hombro, espejo, encoger y batir.
++    float ex = cx - static_cast<float>(kPivoteAlaX);
++    if (ala.espejo) ex = -ex;
++    ex *= ala.ancho;
++    const float ey = cy - static_cast<float>(kPivoteAlaY);
++    const float c = std::cos(ala.giro), s = std::sin(ala.giro);
++    sx = ala.hombroX + ex * c - ey * s;
++    sy = ala.hombroY + ex * s + ey * c;
++}
++
++std::vector<PuntoAla> puntosDeAla(const imagen::ImagenRGBA& atlas, int fila) {
++    std::vector<PuntoAla> out;
++    const int c = kCeldaAla;
++    if (fila < 0 || atlas.ancho < c || atlas.alto < (fila + 1) * c ||
++        atlas.pixeles.size() < static_cast<std::size_t>(atlas.ancho) * static_cast<std::size_t>(atlas.alto) * 4)
++        return out;
++    // La mitad de fuera del ala: lo que queda mas lejos del hombro que el 45 % del pixel mas lejano.
++    const float px = static_cast<float>(kPivoteAlaX), py = static_cast<float>(kPivoteAlaY);
++    float lejos = 0.0f;
++    for (int y = 0; y < c; ++y)
++        for (int x = 0; x < c; ++x)
++            if (atlas.pixel(x, fila * c + y)[3] > 0)
++                lejos = std::max(lejos, std::hypot(static_cast<float>(x) - px, static_cast<float>(y) - py));
++    for (int y = 0; y < c; ++y)
++        for (int x = 0; x < c; ++x)
++            if (atlas.pixel(x, fila * c + y)[3] > 0 &&
++                std::hypot(static_cast<float>(x) - px, static_cast<float>(y) - py) > 0.45f * lejos)
++                out.push_back(PuntoAla{static_cast<float>(x) + 0.5f, static_cast<float>(y) + 0.5f});
++    return out;
++}
++
++int chispasPorAla(int nivel) { return nivel >= 1 && nivel <= kNivelesAla ? 4 + 3 * nivel : 0; }
++
++ChispaAla chispaAla(const AspectoAura& aspecto, int indice, float segundos, const PuntoAla* puntos, int nPuntos) {
++    ChispaAla c;
++    if (!aspecto.visible || puntos == nullptr || nPuntos <= 0 || indice < 0 ||
++        indice >= chispasPorAla(aspecto.nivelAlas))
++        return c;
++    // Cada chispa vive entre 1,2 y 2,1 s, con su fase; en cada vida, otra pluma.
++    const float periodo = 1.2f + 0.9f * semilla(indice, 11);
++    const float u = segundos / periodo + semilla(indice, 12);
++    const float vuelta = std::floor(u);
++    const float t = u - vuelta;
++    const int vida = static_cast<int>(std::fmod(vuelta, 997.0f) + (vuelta < 0.0f ? 997.0f : 0.0f));
++    const int k = std::min(nPuntos - 1, static_cast<int>(semilla(indice * 37 + vida, 13) * static_cast<float>(nPuntos)));
++    const PuntoAla& p = puntos[k];
++    // Sale del hombro hacia fuera por la pluma y sube un poco (la energia se va).
++    const float dx = p.x - static_cast<float>(kPivoteAlaX), dy = p.y - static_cast<float>(kPivoteAlaY);
++    const float d = std::max(1.0f, std::sqrt(dx * dx + dy * dy));
++    const float sale = 5.0f + 9.0f * semilla(indice * 37 + vida, 14);
++    c.x = p.x + dx / d * sale * t;
++    c.y = p.y + dy / d * sale * t - 8.0f * t;
++    c.alfa = std::clamp(std::sin(t * kPi), 0.0f, 1.0f);  // por la del ala (AlaEnSprite::alfa) al pintarla
++    const float r = semilla(indice, 15);  // la mitad, de 2 px; algunas, de 3; el resto, de 1
++    c.tam = r < 0.5f ? 2.0f : (r < 0.7f ? 3.0f : 1.0f);
++    c.tono = indice % 3;
++    return c;
++}
++
+ AspectoAura aspectoAura(int valorMoral) {
+-    const float v = static_cast<float>(std::clamp(valorMoral, -100, 100));
+     AspectoAura a;
+     a.tramo = tramoMoral(valorMoral);
+-    switch (a.tramo) {
+-        case TramoMoral::Neutral:
+-            return a;
+-        case TramoMoral::Respetado:  // halo tenue
+-            a.visible = true;
+-            a.luz = true;
+-            a.intensidad = 0.35f + 0.25f * fraccion(v, 20.0f, 59.0f);
++    a.grado = gradoAura(valorMoral);
++    const int g = a.grado < 0 ? -a.grado : a.grado;
++    if (g == 0) return a;
++    a.visible = true;
++    if (a.grado > 0) {
++        a.luz = true;
++        if (g <= 4) {  // Respetado: el halo tenue crece; desde el grado 3, motas de luz
++            const float t = paso(g, 1, 4);
++            a.intensidad = mezcla(0.30f, 0.54f, t);
++            a.radio = mezcla(0.95f, 1.15f, t);
+             a.color = Vector4{1.0f, 0.80f, 0.38f, 1.0f};
+-            a.radio = 1.05f;
+-            break;
+-        case TramoMoral::Salvador:  // halo grande
+-            a.visible = true;
+-            a.luz = true;
+-            a.intensidad = 0.60f + 0.15f * fraccion(v, 60.0f, 74.0f);
++            a.particulas = g >= 3 ? g - 1 : 0;
++        } else if (g <= 7) {  // Salvador: halo grande y, desde el grado 6, rayos de luz
++            const float t = paso(g, 5, 7);
++            a.intensidad = mezcla(0.60f, 0.72f, t);
++            a.radio = mezcla(1.30f, 1.50f, t);
+             a.color = Vector4{1.0f, 0.83f, 0.40f, 1.0f};
+-            a.radio = 1.45f;
+-            break;
+-        case TramoMoral::Heroe:  // halo grande, alas celestiales, motas de luz
+-            a.visible = true;
+-            a.luz = true;
+-            a.intensidad = 0.70f + 0.30f * fraccion(v, 75.0f, 100.0f);
++            a.particulas = g - 1;
++            a.rayos = g == 5 ? 0 : (g == 6 ? 4 : 6);
++        } else {  // Héroe: las alas celestiales, de 1 a 8 niveles, y motas de luz
++            a.nivelAlas = g - 7;
++            const float t = paso(a.nivelAlas, 1, kNivelesAla);
++            a.intensidad = mezcla(0.74f, 1.0f, t);
++            a.radio = mezcla(1.55f, 1.90f, t);
+             a.color = Vector4{1.0f, 0.86f, 0.46f, 1.0f};
+-            a.radio = 1.55f;
+-            a.particulas = 6;
++            a.particulas = 6 + a.nivelAlas;
+             a.motas = true;
+             a.alas = Alas::Celestiales;
+-            a.colorAlas = Vector4{1.0f, 0.95f, 0.80f, 0.40f + 0.30f * a.intensidad};
+-            break;
+-        case TramoMoral::Canalla:  // humo rojo oscuro a los pies
+-            a.visible = true;
+-            a.intensidad = 0.40f + 0.25f * fraccion(-v, 20.0f, 59.0f);
+-            a.color = Vector4{0.33f, 0.05f, 0.04f, 1.0f};
+-            a.radio = 1.0f;
+-            a.particulas = 4;
+-            a.tinteSprite = Vector4{0.93f, 0.86f, 0.86f, 1.0f};
+-            break;
+-        case TramoMoral::Desgraciado:  // humo espeso y el sprite en sombra
+-            a.visible = true;
+-            a.intensidad = 0.70f + 0.20f * fraccion(-v, 60.0f, 74.0f);
+-            a.color = Vector4{0.24f, 0.02f, 0.02f, 1.0f};
+-            a.radio = 1.25f;
+-            a.particulas = 7;
+-            // En sombra y con el rojo del humo: se ve de lejos.
+-            a.tinteSprite = Vector4{0.80f, 0.66f, 0.66f, 1.0f};
+-            break;
+-        case TramoMoral::Villano:  // halo grande, alas demoníacas, motas de sombra
+-            a.visible = true;
+-            a.intensidad = 0.80f + 0.20f * fraccion(-v, 75.0f, 100.0f);
+-            a.color = Vector4{0.14f, 0.01f, 0.02f, 1.0f};
+-            a.radio = 1.55f;
+-            a.particulas = 7;
+-            a.motas = true;
+-            a.alas = Alas::Demoniacas;
+-            a.colorAlas = Vector4{0.13f, 0.01f, 0.03f, 0.85f};
+-            a.tinteSprite = Vector4{0.76f, 0.62f, 0.62f, 1.0f};
+-            break;
++            a.alfaAlas = mezcla(0.70f, 0.92f, t);
++        }
++        return a;
++    }
++    if (g <= 4) {  // Canalla: humo rojo oscuro a los pies, cada vez mas
++        const float t = paso(g, 1, 4);
++        a.intensidad = mezcla(0.36f, 0.60f, t);
++        a.radio = mezcla(0.95f, 1.15f, t);
++        a.color = Vector4{0.33f, 0.05f, 0.04f, 1.0f};
++        a.particulas = 2 + g;
++        const float s = mezcla(0.95f, 0.88f, t);
++        a.tinteSprite = Vector4{mezcla(0.97f, 0.94f, t), s, s, 1.0f};
++    } else if (g <= 7) {  // Desgraciado: humo espeso, el sprite en sombra y rayos de sombra
++        const float t = paso(g, 5, 7);
++        a.intensidad = mezcla(0.70f, 0.84f, t);
++        a.radio = mezcla(1.25f, 1.40f, t);
++        a.color = Vector4{0.24f, 0.02f, 0.02f, 1.0f};
++        a.particulas = g + 2;
++        a.rayos = g == 5 ? 0 : (g == 6 ? 4 : 6);
++        const float s = mezcla(0.66f, 0.58f, t);
++        a.tinteSprite = Vector4{mezcla(0.80f, 0.74f, t), s, s, 1.0f};
++    } else {  // Villano: halo oscuro, las alas demoníacas de 1 a 8 niveles y motas de sombra
++        a.nivelAlas = g - 7;
++        const float t = paso(a.nivelAlas, 1, kNivelesAla);
++        a.intensidad = mezcla(0.82f, 1.0f, t);
++        a.radio = mezcla(1.50f, 1.85f, t);
++        a.color = Vector4{0.14f, 0.01f, 0.04f, 1.0f};
++        a.particulas = 6 + a.nivelAlas;
++        a.motas = true;
++        a.alas = Alas::Demoniacas;
++        a.alfaAlas = mezcla(0.80f, 0.96f, t);
++        const float s = mezcla(0.62f, 0.54f, t);
++        a.tinteSprite = Vector4{mezcla(0.76f, 0.70f, t), s, mezcla(0.64f, 0.58f, t), 1.0f};
+     }
+     return a;
+ }
+@@ -93,11 +247,13 @@ ParticulaAura particulaAura(const AspectoAura& aspecto, int indice, float segund
+     if (!aspecto.visible || indice < 0 || indice >= aspecto.particulas) return p;
+     if (aspecto.luz || aspecto.motas) {
+         // Motas (de luz o de sombra): nacen en el halo, suben y se apagan;
+-        // cada una con su periodo y su fase para que no suban en fila.
++        // cada una con su periodo y su fase para que no suban en fila. Con
++        // alas, mas altas y mas abiertas (salen tambien de las alas).
+         const float periodo = 1.6f + 0.9f * semilla(indice, 1);
+         const float t = std::fmod(segundos / periodo + semilla(indice, 2), 1.0f);
+-        p.dx = (semilla(indice, 3) - 0.5f) * 0.7f * std::min(aspecto.radio, 1.3f);
+-        p.dy = -0.05f - t * 1.1f;
++        const float abre = aspecto.nivelAlas > 0 ? 0.7f + 0.12f * static_cast<float>(aspecto.nivelAlas) : 0.7f;
++        p.dx = (semilla(indice, 3) - 0.5f) * abre * std::min(aspecto.radio, 1.3f);
++        p.dy = -0.05f - t * (aspecto.nivelAlas > 0 ? 1.4f : 1.1f);
+         p.radio = 0.05f + 0.03f * semilla(indice, 4);
+         p.alfa = aspecto.intensidad * std::sin(t * kPi);
+         return p;
+@@ -114,33 +270,28 @@ ParticulaAura particulaAura(const AspectoAura& aspecto, int indice, float segund
+     return p;
+ }
+ 
+-PlumaAla plumaAla(const AspectoAura& aspecto, int lado, int indice, float segundos) {
+-    PlumaAla p;
+-    if (aspecto.alas == Alas::Ninguna || indice < 0 || indice >= kPlumasPorAla || lado == 0) return p;
+-    const float s = lado < 0 ? -1.0f : 1.0f;
+-    const bool demonio = aspecto.alas == Alas::Demoniacas;
+-    // En abanico desde el hombro: la primera, hacia arriba y afuera; la
+-    // ultima, hacia abajo. Las del demonio, mas afiladas y mas abiertas.
+-    const float abre = demonio ? 34.0f : 30.0f;
+-    const float bate = 6.0f * std::sin(segundos * 2.0f * kPi / 2.6f);
+-    const float grados = -72.0f + abre * static_cast<float>(indice) + bate;
+-    const float a = grados * kPi / 180.0f;
+-    static const float kLargo[kPlumasPorAla] = {0.62f, 0.70f, 0.64f, 0.52f, 0.40f};
+-    const float largo = kLargo[indice] * (demonio ? 1.05f : 1.0f);
+-    const float anchoBase = demonio ? 0.050f : 0.075f, anchoPunta = demonio ? 0.012f : 0.045f;
+-    // El ala derecha; la izquierda es su espejo (sin culling, el giro da igual).
++RayoAura rayoAura(const AspectoAura& aspecto, int indice, float segundos) {
++    RayoAura r;
++    if (!aspecto.visible || indice < 0 || indice >= aspecto.rayos) return r;
++    // Repartidos en circulo desde el pecho, girando despacio (una vuelta cada
++    // 40 s); cada uno late con su fase. Los de sombra, mas finos y mas largos.
++    const bool sombra = !aspecto.luz;
++    const float giro = segundos * 2.0f * kPi / 40.0f;
++    const float a = giro + (static_cast<float>(indice) + 0.5f * semilla(indice, 5)) * 2.0f * kPi /
++                               static_cast<float>(aspecto.rayos);
++    const float late = 0.85f + 0.15f * std::sin(segundos * 2.0f * kPi / 1.9f + semilla(indice, 6) * 6.0f);
++    const float largo = (sombra ? 0.78f : 0.66f) * late * (aspecto.rayos >= 6 ? 1.1f : 1.0f);
++    const float anchoBase = sombra ? 0.045f : 0.07f, anchoPunta = sombra ? 0.004f : 0.012f;
+     const float dx = std::cos(a), dy = std::sin(a);
+-    const float nx = -dy, ny = dx;  // perpendicular
+-    const float bx = 0.10f, by = 0.02f;
+-    const float tx = bx + dx * largo, ty = by + dy * largo;
++    const float nx = -dy, ny = dx;
++    const float tx = dx * largo, ty = dy * largo;
+     // arriba-izquierda, arriba-derecha, abajo-derecha, abajo-izquierda
+-    p.x[0] = bx + nx * anchoBase;  p.y[0] = by + ny * anchoBase;
+-    p.x[1] = tx + nx * anchoPunta; p.y[1] = ty + ny * anchoPunta;
+-    p.x[2] = tx - nx * anchoPunta; p.y[2] = ty - ny * anchoPunta;
+-    p.x[3] = bx - nx * anchoBase;  p.y[3] = by - ny * anchoBase;
+-    for (float& x : p.x) x *= s;
+-    p.alfa = aspecto.colorAlas.w * (0.85f + 0.15f * std::cos(static_cast<float>(indice)));
+-    return p;
++    r.x[0] = nx * anchoBase;  r.y[0] = ny * anchoBase;
++    r.x[1] = tx + nx * anchoPunta; r.y[1] = ty + ny * anchoPunta;
++    r.x[2] = tx - nx * anchoPunta; r.y[2] = ty - ny * anchoPunta;
++    r.x[3] = -nx * anchoBase; r.y[3] = -ny * anchoBase;
++    r.alfa = std::clamp(aspecto.intensidad * (sombra ? 0.75f : 0.55f) * late, 0.0f, 1.0f);
++    return r;
+ }
+ 
+ }  // namespace Game
+diff --git a/MotorGraphico-main/MotorGraphico/src/Render/AuraJugador.cpp b/MotorGraphico-main/MotorGraphico/src/Render/AuraJugador.cpp
+index 916e23e..9435d9d 100644
+--- a/MotorGraphico-main/MotorGraphico/src/Render/AuraJugador.cpp
++++ b/MotorGraphico-main/MotorGraphico/src/Render/AuraJugador.cpp
+@@ -3,12 +3,18 @@
+ 
+ #include <algorithm>
+ #include <cmath>
++#include <cstring>
++#include <optional>
+ #include <utility>
+ 
++#include "Core/Imagen/ImagenRGBA.h"
+ #include "Core/Math/IsoMath.h"
++#include "Core/Resources/Texture.h"
+ #include "Core/Resources/TextureAtlas.h"
++#include "Game/Personajes/MontajePersonajes.h"
+ #include "Render/Entity.h"
+ #include "Render/HojaPersonaje.h"
++#include "Render/IsometricRenderer.h"
+ #include "Render/PintaDestellos.h"
+ #include "Render/SpriteBatch.h"
+ 
+@@ -22,6 +28,38 @@ AuraJugador::AuraJugador(const Entity* jugador, int anchoBaldosa, int altoBaldos
+ 
+ int AuraJugador::getSortKey() const { return m_jugador != nullptr ? m_jugador->getSortKey() + 1 : 0; }
+ 
++int AuraJugador::Detras::getSortKey() const {
++    return m_aura.m_jugador != nullptr ? m_aura.m_jugador->getSortKey() - 1 : 0;
++}
++
++void AuraJugador::Detras::render(SpriteBatch& batch) { m_aura.renderDetras(batch); }
++
++void AuraJugador::encolar(IsometricRenderer& renderer) {
++    renderer.addToQueue(&m_detras);
++    renderer.addToQueue(this);
++}
++
++void AuraJugador::desencolar(IsometricRenderer& renderer) {
++    renderer.removeFromQueue(this);
++    renderer.removeFromQueue(&m_detras);
++}
++
++float AuraJugador::segundos() const {
++    return std::chrono::duration<float>(std::chrono::steady_clock::now() - m_inicio).count();
++}
++
++void AuraJugador::dibujo(Vector2& esquina, Vector2& tam, int& region) const {
++    if (m_jugador->dibujoDePersonaje(esquina, tam, region)) return;
++    // Sin hoja de personaje (personaje.png): una celda de 64 px con los pies
++    // donde los apoya la sombra blob, mirando hacia abajo.
++    const float tw = static_cast<float>(m_anchoBaldosa), th = static_cast<float>(m_altoBaldosa);
++    const Vector2 base = IsoMath::gridToScreen(m_jugador->gridPosition(), tw, th) + m_jugador->offset();
++    const float lado = static_cast<float>(Game::kCeldaSprite);
++    esquina = Vector2{base.x + tw * 0.5f - lado * 0.5f, base.y + th * 0.9f - lado * 0.94f};
++    tam = Vector2{lado, lado};
++    region = Game::framesDeReposo(Game::Rumbo::Abajo)[0];
++}
++
+ void AuraJugador::renderShadow(SpriteBatch& batch, Texture* texturaSombra) {
+     m_textura = texturaSombra;
+     if (m_jugador == nullptr || texturaSombra == nullptr || !m_aspecto.visible) return;
+@@ -29,7 +67,7 @@ void AuraJugador::renderShadow(SpriteBatch& batch, Texture* texturaSombra) {
+     const Vector2 base = IsoMath::gridToScreen(m_jugador->gridPosition(), tw, th) + m_jugador->offset();
+     // Los pies: donde Entity::renderShadow apoya la sombra blob.
+     const Vector2 pies{base.x + tw * 0.5f, base.y + th * 0.9f};
+-    const float t = std::chrono::duration<float>(std::chrono::steady_clock::now() - m_inicio).count();
++    const float t = segundos();
+     const UVRect entera{0.0f, 0.0f, 1.0f, 1.0f};
+     if (m_aspecto.luz) {
+         const MezclaAditiva aditiva(batch);
+@@ -42,7 +80,6 @@ void AuraJugador::renderShadow(SpriteBatch& batch, Texture* texturaSombra) {
+         c.w = 0.45f * m_aspecto.intensidad;
+         batch.submit(Vector2{pies.x - w * 0.28f, pies.y - h * 0.28f}, Vector2{w * 0.56f, h * 0.56f}, entera,
+                      texturaSombra, c);
+-        renderAlas(batch, t);  // MORAL-01: las del heroe, detras del sprite
+         return;
+     }
+     // Humo (o el halo oscuro del villano): una mancha base y volutas que
+@@ -51,7 +88,6 @@ void AuraJugador::renderShadow(SpriteBatch& batch, Texture* texturaSombra) {
+     c.w = 0.5f * m_aspecto.intensidad;
+     const float w = tw * 0.9f * m_aspecto.radio, h = th * 0.8f * m_aspecto.radio;
+     batch.submit(Vector2{pies.x - w * 0.5f, pies.y - h * 0.5f}, Vector2{w, h}, entera, texturaSombra, c);
+-    renderAlas(batch, t);
+     for (int i = 0; i < (m_aspecto.motas ? 0 : m_aspecto.particulas); ++i) {
+         const Game::ParticulaAura p = Game::particulaAura(m_aspecto, i, t);
+         if (p.alfa <= 0.0f) continue;
+@@ -63,9 +99,17 @@ void AuraJugador::renderShadow(SpriteBatch& batch, Texture* texturaSombra) {
+     }
+ }
+ 
++void AuraJugador::renderDetras(SpriteBatch& batch) {
++    if (m_jugador == nullptr || !m_aspecto.visible) return;
++    const float t = segundos();
++    renderRayos(batch, t);
++    renderAlas(batch, t, /*delante=*/false);
++}
++
+ void AuraJugador::render(SpriteBatch& batch) {
+-    const float t = std::chrono::duration<float>(std::chrono::steady_clock::now() - m_inicio).count();
++    const float t = segundos();
+     renderBrillo(batch, t);
++    renderAlas(batch, t, /*delante=*/true);  // de espaldas, las alas tapan la espalda
+     renderMotas(batch, t);
+ }
+ 
+@@ -119,38 +163,150 @@ void AuraJugador::renderMotas(SpriteBatch& batch, float t) {
+     }
+ }
+ 
+-void AuraJugador::renderAlas(SpriteBatch& batch, float t) {
+-    // MORAL-01 — Las alas, en el pase de sombras: detras del sprite. Cada pluma
+-    // es la mancha radial de la sombra estirada en un cuadrilatero.
+-    if (m_jugador == nullptr || m_textura == nullptr || m_aspecto.alas == Game::Alas::Ninguna) return;
+-    const float tw = static_cast<float>(m_anchoBaldosa), th = static_cast<float>(m_altoBaldosa);
++void AuraJugador::renderRayos(SpriteBatch& batch, float t) {
++    // MORAL-02 — Salvador y Desgraciado: rayos desde el pecho, detras del
++    // cuerpo. Cada rayo es media mancha radial de la sombra blob estirada: el
++    // centro de la mancha en el pecho y el borde en la punta, asi se apaga
++    // hacia fuera y hacia los lados.
++    if (m_textura == nullptr || m_aspecto.rayos == 0) return;
+     Vector2 esquina, tam;
+     int region = 0;
+-    Vector2 hombros;
+-    float escala = tw;
+-    if (m_jugador->dibujoDePersonaje(esquina, tam, region)) {
+-        hombros = Vector2{esquina.x + tam.x * 0.5f, esquina.y + tam.y * 0.45f};
+-        escala = tam.x;
++    dibujo(esquina, tam, region);
++    const float s = tam.x / static_cast<float>(Game::kCeldaSprite);
++    const Vector2 pecho{esquina.x + Game::kPechoX * s, esquina.y + Game::kPechoY * tam.y / Game::kCeldaSprite};
++    const Vector2 uv[4] = {Vector2{0.5f, 0.0f}, Vector2{1.0f, 0.0f}, Vector2{1.0f, 1.0f}, Vector2{0.5f, 1.0f}};
++    const auto pinta = [&](const Vector4& color) {
++        for (int i = 0; i < m_aspecto.rayos; ++i) {
++            const Game::RayoAura r = Game::rayoAura(m_aspecto, i, t);
++            if (r.alfa <= 0.0f) continue;
++            Vector2 e[4];
++            for (int k = 0; k < 4; ++k) e[k] = Vector2{pecho.x + r.x[k] * tam.x, pecho.y + r.y[k] * tam.x};
++            Vector4 c = color;
++            c.w = r.alfa;
++            batch.submitQuad(e, uv, m_textura, c);
++        }
++    };
++    if (m_aspecto.luz) {
++        const MezclaAditiva aditiva(batch);
++        pinta(Vector4{1.0f, 0.90f, 0.58f, 1.0f});
+     } else {
+-        const Vector2 base = IsoMath::gridToScreen(m_jugador->gridPosition(), tw, th) + m_jugador->offset();
+-        hombros = Vector2{base.x + tw * 0.5f, base.y + th * 0.9f - th * 1.7f};
++        pinta(Vector4{0.20f, 0.0f, 0.06f, 1.0f});
+     }
+-    const Vector2 uv[4] = {Vector2{0.0f, 0.0f}, Vector2{1.0f, 0.0f}, Vector2{1.0f, 1.0f}, Vector2{0.0f, 1.0f}};
+-    const auto pinta = [&]() {
+-        for (const int lado : {-1, 1})
+-            for (int i = 0; i < Game::kPlumasPorAla; ++i) {
+-                const Game::PlumaAla p = Game::plumaAla(m_aspecto, lado, i, t);
+-                Vector2 e[4];
+-                for (int k = 0; k < 4; ++k) e[k] = Vector2{hombros.x + p.x[k] * escala, hombros.y + p.y[k] * escala};
+-                Vector4 c = m_aspecto.colorAlas;
+-                c.w = p.alfa;
+-                batch.submitQuad(e, uv, m_textura, c);
+-            }
++}
++
++Texture* AuraJugador::texturaAlas() {
++    if (m_alasCargadas) return m_texturaAlas.get();
++    m_alasCargadas = true;  // si falta el PNG, el aura sigue sin alas (y no se reintenta cada fotograma)
++    auto png = imagen::cargarPNG(Game::kAtlasAlas);
++    if (!png.isOk()) return nullptr;
++    const imagen::ImagenRGBA& img = png.value();
++    for (int f = 0; f < Game::kFilasAla; ++f) m_puntosAla[f] = Game::puntosDeAla(img, f);
++    // Filas de abajo arriba, como HojaPersonaje::subir.
++    const std::size_t fila = static_cast<std::size_t>(img.ancho) * 4;
++    std::vector<unsigned char> volteada(img.pixeles.size());
++    for (int y = 0; y < img.alto; ++y)
++        std::memcpy(volteada.data() + static_cast<std::size_t>(img.alto - 1 - y) * fila,
++                    img.pixeles.data() + static_cast<std::size_t>(y) * fila, fila);
++    unsigned int id = 0;
++    glGenTextures(1, &id);
++    glBindTexture(GL_TEXTURE_2D, id);
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
++    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, img.ancho, img.alto, 0, GL_RGBA, GL_UNSIGNED_BYTE, volteada.data());
++    glBindTexture(GL_TEXTURE_2D, 0);
++    m_texturaAlas = std::make_unique<Texture>(id, img.ancho, img.alto);
++    return m_texturaAlas.get();
++}
++
++void AuraJugador::renderAlas(SpriteBatch& batch, float t, bool delante) {
++    // MORAL-02 — Las alas de energia (Game::alasEnSprite dice donde y cuales).
++    if (m_jugador == nullptr || m_aspecto.alas == Game::Alas::Ninguna) return;
++    Vector2 esquina, tam;
++    int region = 0;
++    dibujo(esquina, tam, region);
++    Game::AlaEnSprite alas[2];
++    const int n = Game::alasEnSprite(m_aspecto, region, t, alas);
++    if (n == 0 || alas[0].delante != delante) return;
++    Texture* tex = texturaAlas();
++    if (tex == nullptr) return;
++    const float sx = tam.x / static_cast<float>(Game::kCeldaSprite);
++    const float sy = tam.y / static_cast<float>(Game::kCeldaSprite);
++    // La celda en la textura (subida de abajo arriba: la fila 0 del PNG es la v mas alta), con medio texel
++    // de margen para no coger la celda vecina.
++    const float du = 0.5f / static_cast<float>(tex->getWidth()), dv = 0.5f / static_cast<float>(tex->getHeight());
++    const auto pinta = [&](const Game::AlaEnSprite& a, const Vector4& tinte) {
++        float u0 = static_cast<float>(a.columna) / Game::kFramesAla + du;
++        float u1 = static_cast<float>(a.columna + 1) / Game::kFramesAla - du;
++        if (a.espejo) std::swap(u0, u1);
++        const float vArriba = 1.0f - static_cast<float>(a.fila) / Game::kFilasAla - dv;
++        const float vAbajo = 1.0f - static_cast<float>(a.fila + 1) / Game::kFilasAla + dv;
++        const Vector2 uv[4] = {Vector2{u0, vArriba}, Vector2{u1, vArriba}, Vector2{u1, vAbajo}, Vector2{u0, vAbajo}};
++        Vector2 e[4];
++        for (int k = 0; k < 4; ++k) e[k] = Vector2{esquina.x + a.x[k] * sx, esquina.y + a.y[k] * sy};
++        batch.submitQuad(e, uv, tex, tinte);
+     };
+-    if (m_aspecto.alas == Game::Alas::Celestiales) {
++    for (int i = 0; i < n; ++i) pinta(alas[i], Vector4{1.0f, 1.0f, 1.0f, alas[i].alfa});
++    const bool luz = m_aspecto.alas == Game::Alas::Celestiales;
++    {
++        // Encima, la misma ala sumando un poco de luz: la de luz late; la de
++        // sombra enciende apenas sus cantos rojos. Poco: con mas, el marmol se
++        // quema a blanco y se pierden el oro y el azul.
+         const MezclaAditiva aditiva(batch);
+-        pinta();
+-    } else {
+-        pinta();
++        const float pulso = Game::pulsoAura(t);
++        for (int i = 0; i < n; ++i) {
++            const float a = alas[i].alfa * (luz ? 0.12f * pulso : 0.10f);
++            pinta(alas[i], luz ? Vector4{1.0f, 0.95f, 0.82f, a} : Vector4{1.0f, 0.22f, 0.30f, a});
++        }
++    }
++    renderChispas(batch, t, alas, n, sx, sy, esquina);
++}
++
++void AuraJugador::renderChispas(SpriteBatch& batch, float t, const Game::AlaEnSprite* alas, int n, float sx,
++                                float sy, const Vector2& esquina) {
++    // MORAL-02 — Las chispas: pixeles que salen de las plumas, con un halo
++    // suave (la mancha de la sombra blob) para que se lean a la escala del
++    // juego. Las de luz suman (blanco, azul cielo y oro); las de sombra son
++    // brasas rojas que suman y humo morado y negro que tapa.
++    const int fila = alas[0].fila;
++    if (m_blanco == nullptr || m_textura == nullptr || fila < 0 || fila >= Game::kFilasAla ||
++        m_puntosAla[fila].empty())
++        return;
++    const bool luz = m_aspecto.alas == Game::Alas::Celestiales;
++    static const Vector4 kLuz[3] = {{1.0f, 1.0f, 0.96f, 1.0f}, {0.62f, 0.86f, 1.0f, 1.0f}, {1.0f, 0.80f, 0.32f, 1.0f}};
++    static const Vector4 kSombra[3] = {{1.0f, 0.18f, 0.26f, 1.0f}, {0.56f, 0.20f, 0.86f, 1.0f}, {0.06f, 0.0f, 0.06f, 1.0f}};
++    const Game::PuntoAla* puntos = m_puntosAla[fila].data();
++    const int nPuntos = static_cast<int>(m_puntosAla[fila].size());
++    const int porAla = Game::chispasPorAla(m_aspecto.nivelAlas);
++    const UVRect entera{0.0f, 0.0f, 1.0f, 1.0f};
++    // pase 0: lo que suma (los halos y los nucleos de luz, las brasas); pase 1: lo que tapa (el humo de sombra)
++    for (int pase = 0; pase < 2; ++pase) {
++        if (luz && pase == 1) break;
++        std::optional<MezclaAditiva> aditiva;
++        if (pase == 0) aditiva.emplace(batch);
++        for (int w = 0; w < n; ++w)
++            for (int i = 0; i < porAla; ++i) {
++                // Cada ala, sus chispas: las mismas, con el reloj corrido, para que no vayan en espejo.
++                const Game::ChispaAla c = Game::chispaAla(m_aspecto, i, t + 17.3f * static_cast<float>(w), puntos,
++                                                          nPuntos);
++                if (c.alfa <= 0.0f) continue;
++                const bool brasa = !luz && c.tono == 0;
++                if (!luz && (pase == 0) != brasa) continue;
++                float x = 0.0f, y = 0.0f;
++                Game::celdaASprite(alas[w], c.x, c.y, x, y);
++                const Vector2 centro{esquina.x + x * sx, esquina.y + y * sy};
++                Vector4 color = (luz ? kLuz : kSombra)[c.tono];
++                const float a = c.alfa * alas[w].alfa;
++                // El halo: una mancha 4 veces mayor y tenue.
++                const Vector2 halo{c.tam * 4.0f * sx, c.tam * 4.0f * sy};
++                color.w = a * (luz || brasa ? 0.45f : 0.55f);
++                batch.submit(Vector2{centro.x - halo.x * 0.5f, centro.y - halo.y * 0.5f}, halo, entera, m_textura,
++                             color);
++                // El nucleo: pixeles nitidos.
++                const Vector2 tam{c.tam * sx, c.tam * sy};
++                color.w = a;
++                batch.submit(Vector2{centro.x - tam.x * 0.5f, centro.y - tam.y * 0.5f}, tam, entera, m_blanco, color);
++            }
+     }
+ }
+diff --git a/MotorGraphico-main/MotorGraphico/tests/HUD/PergaminoTests.cpp b/MotorGraphico-main/MotorGraphico/tests/HUD/PergaminoTests.cpp
+index 83a6668..9067308 100644
+--- a/MotorGraphico-main/MotorGraphico/tests/HUD/PergaminoTests.cpp
++++ b/MotorGraphico-main/MotorGraphico/tests/HUD/PergaminoTests.cpp
+@@ -10,6 +10,7 @@
+ #include <cmath>
+ #include <string>
+ 
++#include "Core/Imagen/ImagenRGBA.h"
+ #include "Game/AuraMoral.h"
+ #include "Game/Morality.h"
+ #include "Game/PasarHoja.h"
+@@ -296,7 +297,7 @@ MOTOR_TEST_CASE(aura_heroe_brilla_villano_humea_neutral_nada) {
+     MOTOR_CHECK(Game::aspectoAura(-500).tramo == Game::TramoMoral::Villano);
+ }
+ 
+-MOTOR_TEST_CASE(aura_particulas_alas_y_pulso_acotados) {
++MOTOR_TEST_CASE(aura_particulas_y_pulso_acotados) {
+     for (const int valor : {-90, -65, -30, 90}) {
+         const Game::AspectoAura a = Game::aspectoAura(valor);
+         for (int i = 0; i < a.particulas; ++i)
+@@ -306,23 +307,176 @@ MOTOR_TEST_CASE(aura_particulas_alas_y_pulso_acotados) {
+                 MOTOR_CHECK(std::fabs(p.dx) < 2.0f && std::fabs(p.dy) < 3.0f);
+             }
+     }
+-    // Las alas: dentro de un sprite y medio a cada lado, simétricas, y nada
+-    // en quien no las lleva.
+-    for (const int valor : {-90, 90}) {
++    for (float s = 0.0f; s < 10.0f; s += 0.5f) MOTOR_CHECK(Game::pulsoAura(s) > 0.8f && Game::pulsoAura(s) < 1.2f);
++}
++
++// --- MORAL-02: los grados, las alas y los rayos ------------------------------
++
++MOTOR_TEST_CASE(aura_quince_grados_por_lado_dentro_de_los_tramos) {
++    // Los cortes: el primero de cada tramo abre un grado; simétricos.
++    MOTOR_CHECK(Game::gradoAura(0) == 0 && Game::gradoAura(19) == 0 && Game::gradoAura(-19) == 0);
++    MOTOR_CHECK(Game::gradoAura(20) == 1 && Game::gradoAura(59) == 4 && Game::gradoAura(60) == 5);
++    MOTOR_CHECK(Game::gradoAura(74) == 7 && Game::gradoAura(75) == 8 && Game::gradoAura(100) == 15);
++    MOTOR_CHECK(Game::gradoAura(500) == 15 && Game::gradoAura(-500) == -15);
++    for (int v = -100; v <= 100; ++v) {
++        MOTOR_CHECK(Game::gradoAura(-v) == -Game::gradoAura(v));
++        if (v > -100) MOTOR_CHECK(Game::gradoAura(v) >= Game::gradoAura(v - 1));  // nunca baja al subir
++        // Cada tramo, sus grados: Respetado 1-4, Salvador 5-7, Héroe 8-15.
++        const int g = Game::gradoAura(v) < 0 ? -Game::gradoAura(v) : Game::gradoAura(v);
++        using T = Game::TramoMoral;
++        const T t = Game::tramoMoral(v);
++        if (t == T::Neutral) MOTOR_CHECK(g == 0);
++        if (t == T::Respetado || t == T::Canalla) MOTOR_CHECK(g >= 1 && g <= 4);
++        if (t == T::Salvador || t == T::Desgraciado) MOTOR_CHECK(g >= 5 && g <= 7);
++        if (t == T::Heroe || t == T::Villano) MOTOR_CHECK(g >= 8 && g <= 15);
++    }
++    // Héroe de +75 no es héroe de +100: cada grado brilla más que el anterior
++    // y las alas crecen de nivel en nivel.
++    float antes = 0.0f;
++    for (int i = 0; i < Game::kGradosPorLado; ++i) {
++        const Game::AspectoAura a = Game::aspectoAura(Game::kCorteGrado[i]);
++        MOTOR_CHECK(a.grado == i + 1 && a.intensidad > antes);
++        antes = a.intensidad;
++        MOTOR_CHECK((a.alas == Game::Alas::Celestiales) == (a.grado >= 8));
++        MOTOR_CHECK(a.nivelAlas == (a.grado >= 8 ? a.grado - 7 : 0));
++        const Game::AspectoAura m = Game::aspectoAura(-Game::kCorteGrado[i]);
++        MOTOR_CHECK(m.grado == -(i + 1) && (m.alas == Game::Alas::Demoniacas) == (i + 1 >= 8));
++        MOTOR_CHECK(m.nivelAlas == a.nivelAlas && m.rayos == a.rayos);
++    }
++    // Los rayos: Salvador y Desgraciado desde su segundo grado.
++    MOTOR_CHECK(Game::aspectoAura(60).rayos == 0 && Game::aspectoAura(65).rayos == 4);
++    MOTOR_CHECK(Game::aspectoAura(70).rayos == 6);
++    MOTOR_CHECK(Game::aspectoAura(50).rayos == 0 && Game::aspectoAura(80).rayos == 0);
++}
++
++MOTOR_TEST_CASE(aura_alas_hojas_y_celdas_del_atlas) {
++    // «primer nomes 1 ala, despres 2 per cada banda, despres ja 4 despres 6 fins a 8».
++    const int hojas[Game::kNivelesAla] = {1, 1, 2, 2, 4, 6, 8, 8};
++    for (int n = 1; n <= Game::kNivelesAla; ++n) MOTOR_CHECK(Game::hojasPorAla(n) == hojas[n - 1]);
++    MOTOR_CHECK(Game::hojasPorAla(0) == 0 && Game::hojasPorAla(9) == 0);
++    MOTOR_CHECK(Game::filaAla(Game::Alas::Celestiales, 1) == 0 && Game::filaAla(Game::Alas::Celestiales, 8) == 7);
++    MOTOR_CHECK(Game::filaAla(Game::Alas::Demoniacas, 1) == 8 && Game::filaAla(Game::Alas::Demoniacas, 8) == 15);
++    MOTOR_CHECK(Game::filaAla(Game::Alas::Ninguna, 3) == -1 && Game::filaAla(Game::Alas::Celestiales, 0) == -1);
++    for (float s = -3.0f; s < 6.0f; s += 0.11f) {
++        MOTOR_CHECK(Game::frameAla(s) >= 0 && Game::frameAla(s) < Game::kFramesAla);
++        MOTOR_CHECK(std::fabs(Game::bateAla(s)) <= 5.0f + 1e-4f);
++    }
++}
++
++MOTOR_TEST_CASE(aura_alas_en_el_sprite_segun_hacia_donde_mira) {
++    Game::AlaEnSprite alas[2];
++    MOTOR_CHECK(Game::alasEnSprite(Game::aspectoAura(0), 17, 0.0f, alas) == 0);
++    MOTOR_CHECK(Game::alasEnSprite(Game::aspectoAura(70), 17, 0.0f, alas) == 0);  // Salvador: sin alas
++    for (const int valor : {75, 90, 100, -75, -100}) {
+         const Game::AspectoAura a = Game::aspectoAura(valor);
+-        for (int i = 0; i < Game::kPlumasPorAla; ++i)
+-            for (float s = 0.0f; s < 6.0f; s += 0.53f) {
+-                const Game::PlumaAla izq = Game::plumaAla(a, -1, i, s), der = Game::plumaAla(a, 1, i, s);
+-                MOTOR_CHECK(izq.alfa > 0.0f && izq.alfa <= 1.0f);
++        for (float s = 0.0f; s < 4.0f; s += 0.7f) {
++            // De frente (17) y de espaldas (13): una a cada lado, simétricas
++            // respecto a los hombros; detras del cuerpo de frente, delante de espaldas.
++            for (const int frame : {17, 8, 13, 2}) {
++                MOTOR_CHECK(Game::alasEnSprite(a, frame, s, alas) == 2);
++                const bool espaldas = frame == 13 || frame == 2;
++                MOTOR_CHECK(alas[0].delante == espaldas && alas[1].delante == espaldas);
++                MOTOR_CHECK(alas[0].espejo && !alas[1].espejo);
++                MOTOR_CHECK(alas[0].fila == Game::filaAla(a.alas, a.nivelAlas) && alas[0].alfa > 0.0f);
+                 for (int k = 0; k < 4; ++k) {
+-                    MOTOR_CHECK(std::fabs(der.x[k]) < 1.5f && std::fabs(der.y[k]) < 1.5f);
+-                    MOTOR_CHECK(std::fabs(izq.x[k] + der.x[k]) < 1e-4f && std::fabs(izq.y[k] - der.y[k]) < 1e-4f);
++                    const int kk = k ^ 1;  // la esquina espejo: izquierda <-> derecha
++                    MOTOR_CHECK(std::fabs((alas[0].x[kk] - Game::kHombroX) + (alas[1].x[k] - Game::kHombroX)) < 1e-3f);
++                    MOTOR_CHECK(std::fabs(alas[0].y[kk] - alas[1].y[k]) < 1e-3f);
++                    MOTOR_CHECK(std::fabs(alas[1].x[k] - Game::kHombroX) < 1.2f * Game::kCeldaAla);
++                    MOTOR_CHECK(std::fabs(alas[1].y[k]) < 2.0f * Game::kCeldaAla);
+                 }
+             }
++            // De perfil: las dos hacia atras (espejo mirando a la derecha) y detras.
++            for (const int frame : {15, 5}) {
++                MOTOR_CHECK(Game::alasEnSprite(a, frame, s, alas) == 2);
++                MOTOR_CHECK(alas[0].espejo && alas[1].espejo && !alas[0].delante && !alas[1].delante);
++                const float ancho0 = std::fabs(alas[0].x[1] - alas[0].x[0]);
++                const float ancho1 = std::fabs(alas[1].x[1] - alas[1].x[0]);
++                // la lejana, mas estrecha
++                MOTOR_CHECK(ancho0 < ancho1 && ancho1 < static_cast<float>(Game::kCeldaAla));
++            }
++            for (const int frame : {19, 11}) {
++                MOTOR_CHECK(Game::alasEnSprite(a, frame, s, alas) == 2);
++                MOTOR_CHECK(!alas[0].espejo && !alas[1].espejo && !alas[0].delante);
++            }
++        }
+     }
+-    MOTOR_CHECK(Game::plumaAla(Game::aspectoAura(0), 1, 0, 0.0f).alfa == 0.0f);
+-    MOTOR_CHECK(Game::plumaAla(Game::aspectoAura(65), 1, 0, 0.0f).alfa == 0.0f);
+-    for (float s = 0.0f; s < 10.0f; s += 0.5f) MOTOR_CHECK(Game::pulsoAura(s) > 0.8f && Game::pulsoAura(s) < 1.2f);
++}
++
++MOTOR_TEST_CASE(aura_rayos_acotados) {
++    for (const int valor : {65, 70, -65, -70}) {
++        const Game::AspectoAura a = Game::aspectoAura(valor);
++        MOTOR_CHECK(a.rayos > 0);
++        for (int i = 0; i < a.rayos; ++i)
++            for (float s = 0.0f; s < 8.0f; s += 0.61f) {
++                const Game::RayoAura r = Game::rayoAura(a, i, s);
++                MOTOR_CHECK(r.alfa > 0.0f && r.alfa <= 1.0f);
++                for (int k = 0; k < 4; ++k) MOTOR_CHECK(std::fabs(r.x[k]) < 1.0f && std::fabs(r.y[k]) < 1.0f);
++            }
++        MOTOR_CHECK(Game::rayoAura(a, a.rayos, 0.0f).alfa == 0.0f);
++    }
++    MOTOR_CHECK(Game::rayoAura(Game::aspectoAura(90), 0, 0.0f).alfa == 0.0f);
++}
++
++MOTOR_TEST_CASE(aura_chispas_salen_de_las_plumas) {
++    // Un atlas de juguete: en la fila 3, una pluma horizontal desde el hombro hacia fuera.
++    imagen::ImagenRGBA atlas;
++    atlas.ancho = Game::kCeldaAla * Game::kFramesAla;
++    atlas.alto = Game::kCeldaAla * Game::kFilasAla;
++    atlas.pixeles.assign(static_cast<std::size_t>(atlas.ancho) * static_cast<std::size_t>(atlas.alto) * 4, 0);
++    const int fila = 3, largo = 40;
++    for (int x = Game::kPivoteAlaX; x < Game::kPivoteAlaX + largo; ++x) {
++        const std::size_t i = (static_cast<std::size_t>(fila * Game::kCeldaAla + Game::kPivoteAlaY) *
++                                   static_cast<std::size_t>(atlas.ancho) + static_cast<std::size_t>(x)) * 4;
++        atlas.pixeles[i + 3] = 255;
++    }
++    MOTOR_CHECK(Game::puntosDeAla(atlas, 2).empty());
++    const std::vector<Game::PuntoAla> puntos = Game::puntosDeAla(atlas, fila);
++    MOTOR_CHECK(!puntos.empty());
++    for (const Game::PuntoAla& p : puntos)  // solo la mitad de fuera
++        MOTOR_CHECK(p.x > Game::kPivoteAlaX + 0.4f * largo && std::fabs(p.y - Game::kPivoteAlaY - 0.5f) < 0.01f);
++    MOTOR_CHECK(Game::puntosDeAla(imagen::ImagenRGBA{}, 0).empty());
++
++    // Sin alas no hay chispas; con alas, mas en cada nivel, y se quedan cerca de la pluma.
++    const int n = static_cast<int>(puntos.size());
++    MOTOR_CHECK(Game::chispasPorAla(0) == 0 && Game::chispasPorAla(1) > 0);
++    for (int nivel = 2; nivel <= Game::kNivelesAla; ++nivel)
++        MOTOR_CHECK(Game::chispasPorAla(nivel) > Game::chispasPorAla(nivel - 1));
++    MOTOR_CHECK(Game::chispaAla(Game::aspectoAura(70), 0, 1.0f, puntos.data(), n).alfa == 0.0f);
++    MOTOR_CHECK(Game::chispaAla(Game::aspectoAura(100), 0, 1.0f, nullptr, 0).alfa == 0.0f);
++    for (const int valor : {75, 100, -88}) {
++        const Game::AspectoAura a = Game::aspectoAura(valor);
++        const int total = Game::chispasPorAla(a.nivelAlas);
++        MOTOR_CHECK(Game::chispaAla(a, total, 1.0f, puntos.data(), n).alfa == 0.0f);
++        int vivas = 0;
++        for (int i = 0; i < total; ++i)
++            for (float s = 0.0f; s < 9.0f; s += 0.29f) {
++                const Game::ChispaAla c = Game::chispaAla(a, i, s, puntos.data(), n);
++                MOTOR_CHECK(c.alfa >= 0.0f && c.alfa <= 1.0f && c.tono >= 0 && c.tono < 3);
++                MOTOR_CHECK(c.x > Game::kPivoteAlaX && c.x < Game::kPivoteAlaX + largo + 15.0f);
++                MOTOR_CHECK(c.y <= Game::kPivoteAlaY + 0.5f && c.y > Game::kPivoteAlaY - 9.0f);  // suben
++                if (c.alfa > 0.05f) ++vivas;
++            }
++        MOTOR_CHECK(vivas > 0);
++    }
++
++    // celdaASprite lleva las esquinas de la celda a las del cuadrilatero.
++    Game::AlaEnSprite alas[2];
++    for (const int frame : {17, 13, 15, 19})
++        for (const float s : {0.0f, 0.7f, 1.9f}) {
++            MOTOR_CHECK(Game::alasEnSprite(Game::aspectoAura(90), frame, s, alas) == 2);
++            const float c = static_cast<float>(Game::kCeldaAla);
++            for (const Game::AlaEnSprite& ala : alas) {
++                const float cx[4] = {ala.espejo ? c : 0.0f, ala.espejo ? 0.0f : c, ala.espejo ? 0.0f : c,
++                                     ala.espejo ? c : 0.0f};
++                const float cy[4] = {0.0f, 0.0f, c, c};
++                for (int k = 0; k < 4; ++k) {
++                    float x = 0.0f, y = 0.0f;
++                    Game::celdaASprite(ala, cx[k], cy[k], x, y);
++                    MOTOR_CHECK(std::fabs(x - ala.x[k]) < 1e-3f && std::fabs(y - ala.y[k]) < 1e-3f);
++                }
++            }
++        }
+ }
+ 
+ int main() { return motor_test::runAllTests(); }
+diff --git a/MotorGraphico-main/MotorGraphico/tools/test_validar_sprites.py b/MotorGraphico-main/MotorGraphico/tools/test_validar_sprites.py
+index 36a973f..b82e794 100644
+--- a/MotorGraphico-main/MotorGraphico/tools/test_validar_sprites.py
++++ b/MotorGraphico-main/MotorGraphico/tools/test_validar_sprites.py
+@@ -1020,5 +1020,67 @@ class ComposicionTests(unittest.TestCase):
+             self.assertEqual(cat.pieza_de(nombre, slot), esperado, nombre)
+ 
+ 
++@unittest.skipUnless((TEX / "alas_moral.json").is_file(), "sin el atlas de alas de MORAL-02")
++class AlasMoralTests(unittest.TestCase):
++    """MORAL-02: el atlas de las alas de la moral casa con lo que lee el motor (Game/AuraMoral.h), sale tal cual
++    del generador y crece de nivel en nivel por pisos."""
++
++    @classmethod
++    def setUpClass(cls):
++        import gen_alas_moral
++        cls.gen = gen_alas_moral
++        cls.contrato = json.loads((TEX / "alas_moral.json").read_text(encoding="utf-8"))
++        cls.img = np.array(Image.open(TEX / "alas_moral.png").convert("RGBA"))
++        cabecera = (HERE.parent / "include/Game/AuraMoral.h").read_text(encoding="utf-8")
++        import re
++        cls.cpp = {m.group(1): int(m.group(2))
++                   for m in re.finditer(r"constexpr int (k\w+) = (\d+);", cabecera)}
++        cpp_hojas = (HERE.parent / "src/Game/AuraMoral.cpp").read_text(encoding="utf-8")
++        cls.cpp_hojas = [int(x) for x in re.search(r"kHojas\[kNivelesAla\] = \{([^}]*)\}", cpp_hojas)
++                         .group(1).split(",")]
++
++    def test_el_contrato_casa_con_el_motor(self):
++        c, k = self.contrato, self.cpp
++        self.assertEqual(c["celda"], k["kCeldaAla"])
++        self.assertEqual(c["pivote"], [k["kPivoteAlaX"], k["kPivoteAlaY"]])
++        self.assertEqual(c["niveles"], k["kNivelesAla"])
++        self.assertEqual(c["frames"], k["kFramesAla"])
++        self.assertEqual(c["lados"], ["luz", "sombra"])
++        self.assertEqual([c["hojasPorNivel"][str(n)] for n in range(1, c["niveles"] + 1)], self.cpp_hojas)
++
++    def test_el_atlas_mide_lo_que_dice(self):
++        c = self.contrato
++        self.assertEqual(self.img.shape, (2 * c["niveles"] * c["celda"], c["frames"] * c["celda"], 4))
++
++    def test_sale_tal_cual_del_generador(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            self.gen.generar(tmp)
++            for nombre in ("alas_moral.png", "alas_moral.json"):
++                self.assertEqual(_huella(Path(tmp) / nombre), _huella(TEX / nombre), nombre)
++
++    def test_cada_celda_lleva_su_ala_sin_cortar(self):
++        c = self.contrato["celda"]
++        px, py = self.contrato["pivote"]
++        for fila in range(2 * self.contrato["niveles"]):
++            for col in range(self.contrato["frames"]):
++                a = self.img[fila * c:(fila + 1) * c, col * c:(col + 1) * c, 3]
++                self.assertGreater(int((a > 0).sum()), 20, (fila, col))
++                # nada pegado al borde (el ala no se sale de la celda) y el hombro, dentro del ala
++                borde = np.concatenate([a[0], a[-1], a[:, 0], a[:, -1]])
++                self.assertEqual(int((borde > 0).sum()), 0, (fila, col))
++                self.assertGreater(int(a[py - 2:py + 3, px:px + 4].max()), 0, (fila, col))
++
++    def test_crece_de_nivel_en_nivel_por_pisos(self):
++        g = self.gen
++        pisos = [g.pisos(n) for n in range(1, g.NIVELES + 1)]
++        self.assertEqual(pisos, [1, 1, 2, 2, 3, 3, 3, 3])
++        largos = [g.NIVEL[n][0] for n in range(1, g.NIVELES + 1)]
++        self.assertEqual(largos, sorted(set(largos)))  # cada nivel, más largas
++        c = self.contrato["celda"]
++        for lado in range(2):  # y ocupan más
++            area = [int((self.img[(lado * 8 + n) * c:(lado * 8 + n + 1) * c, 0:c, 3] > 0).sum()) for n in range(8)]
++            self.assertEqual(area, sorted(area), lado)
++
++
+ if __name__ == "__main__":
+     unittest.main(verbosity=2)
+diff --git a/TABLERO.md b/TABLERO.md
+index 827f469..158e046 100644
+--- a/TABLERO.md
++++ b/TABLERO.md
+@@ -122,6 +122,7 @@
+ - [ ] Commitear las capas pendientes de BITACORA cuando no haya sesión concurrente (Partes 7–8, 2.17/2.18 y entradas)
+ 
+ ## Esperando a Oriol  ← bandeja de decisiones
++| C8-02 — diseño de eventos del mundo preparado; revisión pendiente | Codex | 28/10 | Rama `agente/codex/F-C8`, commits `4ad6b3d`/`f60787f`. [D0021](/private/tmp/onegai-lote-F-c8/decisiones/D0021-eventos-del-mundo-y-escenas.md): calendario tercero/cuarto, acción de Xila y rastro. Grupo pendiente de fábrica completa por descarga GLM/DNS. Sin integrar. |
+ 
+ > **Desde el 14/10 todo lo que espera a Oriol está ordenado en [BANDEJA_PRODUCT_OWNER.md](BANDEJA_PRODUCT_OWNER.md)**, con un número por punto (PO-xx), la recomendación y una línea para contestar. Las filas de abajo se quedan como historial; lo nuevo va a la bandeja.
+ 
+@@ -163,7 +164,13 @@
+ | Edificios con paredes verticales: ¿volumen por celda (A), edificio como instancia con huella y altura (B, recomendada) o solo arte (C)? ¿Paquete nuevo del corte B con estimación de Codex, o se queda en 1.1 con los autotiles? | qwen | 07/09 | [decisiones/D0004](decisiones/D0004-volums-isometrics-3d.md) (`proposed`) |
+ 
+ ## Hecho — últimas
++| 29/10 | codex | BND-COMP-01: comparativa A/B/C corregida; decisiones vigentes, tercera familia, alcance de talk y límites de evidencia. | [sesión](sesiones/2026-10-29-codex-comparativa-boundington.md) |
++| 29/10 | codex | BND-CONTENIDO-01: inventario congelado de H, nueva cronología de Oriol, familia de ocho, cuatro locales y estándar de 30 apartados; planificación v0.1, sin assets. | [sesión](sesiones/2026-10-29-codex-boundington-contenido.md) |
++| 29/10 | codex | RECURSOS-02: simulación de fichero/referencias en editor; 15 casos nuevos, sin escritura, sin regresiones nuevas. | [sesión](sesiones/2026-10-29-codex-ruta-simulacion.md) |
++| 29/10 | codex | RECURSOS-01 producido en `codex/perfilador-motor`, commit `c9b6b81`: referencias y rutas ausentes desde Proyecto; 16 casos nuevos y modal real 1/2. Editor y siete objetivos pasan en clon limpio; sin regresiones generales nuevas. | [sesión](sesiones/2026-10-29-codex-recursos-referencias.md) |
++| 29/10 | codex | PERF-01 producido en `codex/perfilador-motor`: CSV CPU y sprites; commit `7fa2117`, evidencia `58ffa2b`; juego y pruebas del lote pasan en clon limpio, sin regresiones generales nuevas. Visto jugable pendiente. | [sesión](sesiones/2026-10-29-codex-perfilador-motor.md) |
+ | 29/10 | codex | SKILLS-REPLICA-01: tres skills locales adaptadas al motor, paridad robusta y 10 regresiones verdes; cinco checks generales heredados, ninguno nuevo. | [sesión](sesiones/2026-10-29-codex-skills-replica.md) |
++| 28/10 | Codex | C8-01/02: 29 grupos inventariados, 1.207 beats trazados y diseño propuesto. Documentos commiteados en `agente/codex/F-C8`; checks rápidos sin regresión; compilación completa pendiente (GLM/DNS). | [sesión](/private/tmp/onegai-lote-F-c8/sesiones/2026-10-28-codex-c8-eventos-diseno.md) |
+ 
+ | 28/10 | Codex | **PLAU-PLAN-SE: pla S–E per revisar.** 37 paquets originals preservats; 20 lots A, 318 E de producte + 12 de preparació; contractes, dependències, temps i portes de cooperació. Sense C++. [pla](MotorGraphico-main/MotorGraphico/planificacion/pla_unity/descomposicio/README.md) · [sessió](sesiones/2026-10-28-codex-plau-plan-se.md). |
+ 
+diff --git a/orquestador/codex.md b/orquestador/codex.md
+index 702d51a..dcf729f 100644
+--- a/orquestador/codex.md
++++ b/orquestador/codex.md
+@@ -83,3 +83,54 @@ Guion 1212–1318.
+ 1 → 2 → 7 → 3 → 4 → 5 (3, 4 y 5 cuando Qwen entregue AV19-11, AV19-09 y AV19-10; mientras, 1, 2 y 7 no dependen de nadie). Cada paquete entra por `aplicar.py` sobre la rama anterior; Claude integra en `claude/escenas0N`. Si una escena pide una orden de cinemática que el motor no tiene (nadar, montar a caballo, disparar), **no la inventes**: `emocion` o `anda`, y la petición a Claude en el INFORME.
+ 
+ ## INFORMES (uno por tarea, aquí debajo)
++
++### ESCENAS-02 — Codex, 19/10
++
++Implementado en `agente/codex/ESCENAS-02` desde bfc5a22. Paquete `out/codex_escenas02/`, README con banderas, posiciones y evidencia. 300 partidas semilla 7: 0 atascos, cuatro fases 300. Cinemáticas y PNJ correctos; siete contratos e idempotencia. validar_todo: solo el error previo de la daga de Aigren. **Abierto:** AV19-08 no localizado: el lector bnd1_sereno_libre se prueba con estado de entrada, pero no hay productor en esta base. Analizador lo señala y no se considera superada esa puerta. No push ni merge.
++
++### ESCENAS-03 — Codex, 19/10
++
++Rama sucesiva agente/codex/ESCENAS-03 sobre aa35ae8. Fiesta con 40 asistentes, conversaciones, Edul, escalada, despacho real, copas, fuga y cocina; paquete out/codex_escenas03. 300 partidas semilla 7, 0 atascos y todos los beats nuevos vistos. 24 cinemáticas y 298 PNJ correctos; contratos/idempotencia OK; analisis_trama 0 referencias nuevas. validar_todo conserva la incidencia previa de la daga. Máscara media y adaptación AV19-12 pendientes; el recuerdo del noble usa redacción propuesta. Sin C++, Gorran, push ni merge.
++
++### ESCENAS-07 — Codex, 19/10
++
++Rama sucesiva agente/codex/ESCENAS-07 sobre fa1dd54. Paquete out/codex_escenas07: estados de Aigren y carro, Luisarda cerrada, Xila y vestuario, instructor de tarde, lectores PO-54 propuestos y oferta de Edul al liberarlo. 300 partidas semilla 7: 0 atascos; cartel infrecuente cubierto con prueba dirigida, demás nuevos vistos. 27 cinemáticas, 306 PNJ, conectividad, contratos e idempotencia correctos; sin referencias nuevas sin productor. validar_todo conserva solo el fallo previo de la daga y 22 avisos. PO-54 pendiente de Oriol; compañía física de Edul para 06. AV19-08 no localizado en Software. 04–06 siguen esperando contratos Qwen (AV19-09 en curso, sin informe). No push ni merge.
++
++**Commits locales del lote:** ESCENAS-02 `aa35ae8`; ESCENAS-03 `fa1dd54`; ESCENAS-07 `7373471`. Las tres ramas son sucesivas y los worktrees están limpios. Sin push ni merge.
++
++### ESCENAS-04 — Codex, 21/10
++
++Base actualizada a 2bdbdfe; paquete out/codex_escenas04. Sermón y ocho variantes de combate localizadas; campanas, arenga y rutas por cinemáticas. 300 partidas, 0 atascos; contenido 0 errores, 48 cinemáticas y 323 PNJ correctos. **Base provisional en interior_cuartel:** base_militar está ausente; consultado con Oriol. Patio/torre/puertas reales pendientes, sin declarar esa parte visual cerrada. No se modifican TMX ni Gorran. Sigue el anclaje de Casco/salida/Afueras con las decisiones del 21/10.
++
++
++### ESCENAS-05 — Codex, 21/10
++
++Rama sucesiva agente/codex/ESCENAS-05: paquete out/codex_escenas05. Verina (90,19) y captores, carrera previa de Venides, Rosita/12 Perdidos, Pulga, Sandes/huida en iglesia. Referencia de colores y Excel inspeccionada; geometría intacta. 300 partidas sin atascos, todos los nuevos vistos, contenido 0 errores, 56 cinemáticas y 335 PNJ correctos. Ligaduras/espada/estrado con acabado provisional. Sigue ESCENAS-06 para imponer final → Afueras → huida.
++
++
++### ESCENAS-06 — Codex, 21/10
++
++Rama sucesiva agente/codex/ESCENAS-06 sobre e2f5a69; integración inicial 2bdbdfe. Final al sur del Oeste antes de Afueras, puerta condicionada sin cambiar su salida, Edul cautivo exacto (79,33), excepción furiosa, abrazo/oferta y presencia exterior; huida física. 14 encuentros lógicos/25 variantes localizados; Gorran intacto. 300 partidas sin atascos, contenido 0 errores/22 avisos previos, 74 cinemáticas y 356 PNJ correctos. Oriol confirma captura única de Edul con traslado y escenario dentro/fuera del cuartel: cuartel.py mueve rutas/combates al exterior de ciudad_oeste. Arte y cinemática de compañía durante combate siguen limitados por los recursos/contrato existentes. Detalle y evidencia en out/codex_escenas06/README.md. Sin C++, TMX, push ni merge.
++
++**Resolución de Oriol durante el cierre de 06:** «Escenari de dins i fora cuartel» y «Sí, una sola captura amb trasllat». Aplicado en cuartel.py y edul.py de 06. Las reservas de Base Militar/traslado de los informes anteriores quedan resueltas; solo persisten los límites artísticos indicados.
++
++
++**Lote 21/10, commits locales sucesivos:** ESCENAS-04 `27d03f9`; ESCENAS-05 `e2f5a69`; ESCENAS-06 `cc3c954`. Base `claude/integracion-21-10` `2bdbdfe`, no la antigua escenas01. Sin push ni merge. Propuestas/arte pendientes en los README.
++
++### GORRAN-V2-PLAN — Codex, 22/10
++
++Encargo directo de Oriol: planteamiento de campaña ampliado (25apartados y consecuencias), objetivo de dos hitos entre Gorran y Boundington y acceso aTier2. Rama agente/codex/GORRAN-V2-PLAN, base claude/cripta-25 8c2843b; paquete planificacion/gorran_v2. El hito de Gorran no existe aún en la ejecución y el Tier2 exige además nivel20: calibración pendiente. No se aplican aquí21niveles ni cambios de aventura.
++
++Auditoría de dosv7, hojaOtros idéntica:158celdasrío+48puente han perdido su semántica;4carteles convertidos en antorcha y4anclas de mapas futuros sin objeto. Evidencia por celda y hashes. Contratos de17plantas+4mapas y9escaleras, coordenadas/tamaños aún sin decidir como null; reparto de ocho barracas siguepropuesta. La plantilla original de títulos no está en la copia/historia: se entrega adaptación de trabajo identificada como tal, basada en el patrón funcional de CRIPTA-25.
++
++25apartados desarrollan escolta, reloj3/6, sospecha/captura, tres amigos, farsa, Cojo fugitivo, prueba conlectores, rutas/fallos y Ocaso. Revisión independiente corrigió reloj tras resolver/matar aGorran, cronología deJoel y enlaces de recuperación. PO-55 agrupa lo pendiente. verificar_plan.py pasa; ningún asset/C++/canonmodificado; sinpush/merge. Las300partidas corresponden al futuro contenido jugable, no se atribuyen a este documento.
++
++Commit local: `25fac97` en `agente/codex/GORRAN-V2-PLAN`.
++
++### GORRAN-MAPAS-02 — Codex,22/10
++
++Rama agente/codex/GORRAN-MAPAS-02 desde claude/gorran-v2 6b6368b. Petición directa: fortaleza72×72 de una planta, mina42×42 terminada y galerías42×42 con más contenido. Recinto continuo con patio y17dependencias; mina10zonas; galerías12zonas y dos circuitos. Nueva ruta física mina→mina2→galería minera→grieta→casa nueva del Oeste (confirmada por Oriol); fachada anónima y puerta(25,35),sin cambiar calles. No se edita trama ni C++.
++
++Entrega out/codex_gorran_mapas02: Excel ciudad11 y7vistas en colores; notas,planos y validaciones. Todo el suelo útil conectado con objetos; ida/vuelta, llegadas libres, una planta, idempotencia y regeneración general comprobadas. Reimportación simulada de7mapas:0objetos quitados y0casillas cambiadas. Contenido0errores/24avisos; puertas14avisos iguales a base,0nuevos;319PNJ y46cinemáticas correctos.300partidas sin atascos. Los usos de nuevas salas y la huida delCojo son notas preparadas para la futura trama, no acciones implementadas. Sinpush/merge.
++
++Commit local: `e50331e`.
+diff --git a/sesiones/INDICE.md b/sesiones/INDICE.md
+index 426dec0..93bb707 100644
+--- a/sesiones/INDICE.md
++++ b/sesiones/INDICE.md
+@@ -1,9 +1,10 @@
+ # Índice de sesiones — regenerado, no editar a mano
+ 
+-_Regenerado: 2026-10-29 · 246 sesiones_
++_Regenerado: 2026-10-29 · 247 sesiones_
+ 
+ | Fecha | Autor | Sesión | Commits | Esperando a Oriol |
+ |---|---|---|---|---|
++| 2026-10-29 | codex | [ruta simulacion](2026-10-29-codex-ruta-simulacion.md) | `8f6ab76` (implementación probada); cierre documental posterior en codex/perfilador-motor. | aceptación jugable y Windows; aplicación de migraciones queda fuera de este lote. |
+ | 2026-10-29 | codex | [skills replica](2026-10-29-codex-skills-replica.md) | commit de esta sesión, localizable con `git log --grep="Integrar skills de reconocimiento"`; comprobación limpia registrada después. | nada para instalar las skills; los paquetes de producto siguen su autorización y aceptación propias. |
+ | 2026-10-28 | codex | [plau plan se](2026-10-28-codex-plau-plan-se.md) | `d296ccf45fb1cd1ad8cb5fab69f518ed5810c17f` + commit de tancament a `codex/plau-plan-se`; només planificació i fragments propis. La branca compartida no canvia. | Revisar escala, sostre E proposat de 90 min i decisions del primer lot. Aquest pla no autoritza implementar el contingut dels adjunts. |
+ | 2026-10-26 | codex | [compilar juego](2026-10-26-codex-compilar-juego.md) | — | — |

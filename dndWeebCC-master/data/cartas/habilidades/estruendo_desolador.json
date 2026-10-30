@@ -1,0 +1,50 @@
+{
+ "id": "estruendo_desolador",
+ "name": "Estruendo Desolador",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Con un grito dejas a un enemigo fuera de combate durante 1 turno, y sus tiradas de defensa tienen desventaja.",
+ "flavorText": "",
+ "classTags": [
+  "el_apostata"
+ ],
+ "roleTags": [],
+ "tags": [
+  "el_apostata"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "1 turno",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": "defensa_mental",
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Con un grito dejas a un enemigo fuera de combate durante 1 turno, y sus tiradas de defensa tienen desventaja.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "Lo dejas fuera de combate durante 1 turno.",
+   "mechanicHook": "estado:1:incapacitado"
+  },
+  {
+   "description": "Sus tiradas de defensa tienen desventaja.",
+   "mechanicHook": "estado:1:desventaja:defensa"
+  }
+ ]
+}

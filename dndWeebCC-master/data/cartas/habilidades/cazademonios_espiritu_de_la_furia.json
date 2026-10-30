@@ -1,0 +1,51 @@
+{
+ "id": "cazademonios_espiritu_de_la_furia",
+ "name": "Espíritu de la furia",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "El espíritu de la furia te envuelve: tus golpes con arma hacen +1 hasta el final del combate.",
+ "flavorText": "",
+ "classTags": [
+  "cazademonios"
+ ],
+ "roleTags": [],
+ "tags": [
+  "cazademonios",
+  "estandar"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "self",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "El espíritu de la furia te envuelve: tus golpes con arma hacen +1 hasta el final del combate.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Espíritu de la furia débil: +1 a tus golpes con arma todo el combate.",
+   "mechanicHook": "estado:combate:bono_dano_arma:1"
+  },
+  {
+   "description": "[pendiente] que se refuerce al recibir daño (la ficha solo da el espíritu débil).",
+   "mechanicHook": "pendiente_parcial:que se refuerce al recibir daño (la ficha solo da el espíritu débil)"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Cazademonios (Demon Hunter) · H1160 Espíritu de la furia"
+}

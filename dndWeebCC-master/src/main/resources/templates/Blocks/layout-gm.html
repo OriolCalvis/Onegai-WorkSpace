@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!--
+    Layout base del sistema ONEGAI (gm-app). Heredado por todas las páginas v2 vía
+    layout:decorate="~{Blocks/layout-gm :: layout}". Cada página define sus propios
+    fragments: title, extra-css (opcional), content, extra-js (opcional).
+
+    Variables de modelo que se propagan solas (no hace que la página haga nada):
+      - currentPage: marca activa la nav en Blocks/header-v2 y Blocks/sidebar-v2.
+
+    No usar este layout para:
+      - error.html (no carga panels.js).
+      - mapa/index.html (CSS y JS modulares propios, paneles fuera del .gm-app).
+      - configuracio.html / exportacions/index.html (legacy Bootstrap, otro look).
+-->
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title layout:fragment="title">ONEGAI</title>
+    <link th:href="@{/css/tokens.css}" rel="stylesheet">
+    <link th:href="@{/css/base.css}" rel="stylesheet">
+    <link th:href="@{/css/components.css}" rel="stylesheet">
+    <link th:href="@{/css/utilities.css}" rel="stylesheet">
+    <th:block layout:fragment="extra-css"></th:block>
+</head>
+<body>
+<div class="gm-app">
+    <div th:replace="~{Blocks/header-v2 :: header}"></div>
+    <div class="gm-body">
+        <div th:replace="~{Blocks/sidebar-v2 :: sidebar}"></div>
+        <main class="gm-main" layout:fragment="content">
+            <!-- Cada página inyecta aquí su contenido. -->
+        </main>
+    </div>
+    <div th:replace="~{Blocks/footer-v2 :: footer}"></div>
+</div>
+<script th:src="@{/js/theme.js}"></script>
+<script th:src="@{/js/panels.js}"></script>
+<script th:src="@{/js/image-slot.js}"></script>
+<th:block layout:fragment="extra-js"></th:block>
+<!-- Toast "✓ guardado": aparece 2,5s tras POST exitoso (URL ?guardado=1).
+     El controller lo añade a la URL de redirección tras crear/editar. -->
+<div id="gm-toast" class="gm-toast" hidden>✓ Guardado</div>
+<script>
+(function(){var p=new URLSearchParams(location.search);if(p.get('guardado')==='1'){
+var t=document.getElementById('gm-toast');if(t){t.hidden=false;
+requestAnimationFrame(function(){t.classList.add('is-visible')});
+setTimeout(function(){t.classList.remove('is-visible');
+setTimeout(function(){t.hidden=true},300)},2500)}
+try{history.replaceState(null,'',location.pathname)}catch(e){}}})();
+</script>
+</body>
+</html>

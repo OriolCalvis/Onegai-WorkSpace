@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Configuración de logs de Onegai (dndWeebCC).
+
+  Dos destinos:
+    · Consola  — lo esencial, legible mientras desarrollas.
+    · Fichero  — logs/onegai.log con TODO (nivel DEBUG del paquete cat.dnd.cc),
+                 rotado por día y por tamaño, 14 días de retención.
+
+  Convención de niveles en el proyecto:
+    ERROR  algo falló y una operación no se completó (con causa).
+    WARN   error NO crítico: la app sigue, pero algo huele mal (referencia rota,
+           petición lenta, fichero ilegible, validación que ha bloqueado un guardado).
+    INFO   hechos relevantes: arranque, guardados, borrados, chequeos de integridad.
+    DEBUG  el detalle de la run: cada petición, cada método de servicio con su
+           duración, cada cálculo de ficha con su desglose.
+-->
+<configuration>
+    <property name="PATRON" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{28} - %msg%n"/>
+
+    <appender name="CONSOLA" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${PATRON}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="FICHERO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/onegai.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/onegai.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>14</maxHistory>
+            <totalSizeCap>200MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${PATRON}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- Nuestro código: todo el detalle al fichero; la consola hereda del root. -->
+    <logger name="cat.dnd.cc" level="DEBUG"/>
+
+    <!-- Ruido de frameworks fuera del fichero salvo avisos reales. -->
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.apache" level="WARN"/>
+    <logger name="org.thymeleaf" level="WARN"/>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLA"/>
+        <appender-ref ref="FICHERO"/>
+    </root>
+</configuration>

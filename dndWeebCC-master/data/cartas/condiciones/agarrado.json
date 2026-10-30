@@ -1,0 +1,24 @@
+{
+ "id": "agarrado",
+ "name": "Agarrado",
+ "type": "condition",
+ "category": "negativa",
+ "source": "estado",
+ "stackable": false,
+ "duration": "hasta_curarse",
+ "effects": [
+  {
+   "description": "Tu velocidad baja a 0 y no puedes esquivar.",
+   "mechanicHook": "velocidad_0"
+  },
+  {
+   "description": "Para soltarte, supera una tirada de CON contra la CD de quien te agarra.",
+   "mechanicHook": "liberarse:CON"
+  }
+ ],
+ "cureConditions": [
+  "Superar la tirada de liberación",
+  "Que el agarre termine o su fuente sea incapacitada"
+ ],
+ "flavorText": "Hay abrazos que son sentencias."
+}

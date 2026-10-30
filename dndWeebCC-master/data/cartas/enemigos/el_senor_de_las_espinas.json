@@ -1,0 +1,96 @@
+{
+ "id": "el_senor_de_las_espinas",
+ "name": "El Señor de las Espinas",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "control",
+ "faction": "corte_de_espinas",
+ "stats": {
+  "CON": 9,
+  "DES": 8,
+  "INT": 10,
+  "CAR": 9
+ },
+ "derived": {
+  "vida": 70,
+  "ca": 20,
+  "defensaMental": 19,
+  "resistenciaFisica": 19,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Sentencia de Espinas",
+   "defense": "resistencia_fisica",
+   "effect": "Zarzas coronadas: Agarrado y 1 de daño por turno hasta liberarse (CON contra su CD)."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "resistencia_fisica",
+   "effect": "Si el objetivo falla, queda Agarrado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en Desesperación: su ataque firma se calcula como éxito crítico (GDD 7.6)."
+  }
+ ],
+ "passive": {
+  "name": "Corte en Sesión",
+  "description": "Corte en Sesión: mientras haya al menos dos personajes Agarrados por sus zarzas, sus tiradas ganan +1."
+ },
+ "conditionsInflicted": [
+  "agarrado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Naturaleza"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Sigue su método con calma: aún cree que sobra tiempo."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Activa la arena a pleno: El estrado crece: cada ronda las zarzas anexan una casilla del borde"
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final; su debilidad narrativa queda a la vista (el DJ da la pista si no la tienen)."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Juzgar a la civilización por talas, vallas y promesas de primavera incumplidas",
+  "metodo": "Celebra un juicio en mitad del combate: acusa, presenta pruebas vegetales y ejecuta",
+  "debilidad_narrativa": "Aceptar el juicio y defenderse con la verdad (prueba social CD 1,5) obliga a la Corte a escuchar: una ronda de tregua",
+  "vinculo": "deity_wild_court"
+ },
+ "arena": {
+  "name": "El Tribunal de Zarzas",
+  "hazard": "El estrado crece: cada ronda las zarzas anexan una casilla del borde"
+ },
+ "legendaryActions": [
+  "Objeción Verde (1/ronda): anula el movimiento de un personaje que se aleje de las zarzas"
+ ],
+ "storyCard": {
+  "title": "El Señor de las Espinas",
+  "text": "Su corona no se quita. Se poda.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "El trono verde también tiene lista de agravios."
+}

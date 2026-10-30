@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Cartas de Raza</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('razas')}"></div>
+
+            <div class="u-page-header">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-eyebrow">Sistema de Cartas y Tiers</p>
+                    <h1>Álbum de Razas</h1>
+                </div>
+                <div class="u-flex-gap2">
+                    <button type="button" class="gm-btn gm-btn--outline" data-panel-anchor-toggle="gm-filtros">🔍 Filtros</button>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/razas/nueva}">+ Nueva raza</a>
+                </div>
+            </div>
+
+            <div class="u-detail-layout-260">
+                <!-- Panel flotante anclado: filtros -->
+                <aside id="gm-filtros" class="gm-panel gm-panel--anchored">
+                    <div class="gm-panel__header">
+                        <h3 class="gm-panel__title">Filtrar</h3>
+                    </div>
+                    <div class="gm-panel__body">
+                        <div class="gm-field">
+                            <label for="filtro-texto">Buscar por nombre</label>
+                            <input id="filtro-texto" class="gm-input" type="text" placeholder="Ej. Elfo...">
+                        </div>
+                        <p class="gm-hint" id="filtro-resultado"></p>
+                    </div>
+                </aside>
+
+                <div>
+                    <p class="u-text-muted" th:if="${#lists.isEmpty(cartas)}">
+                        Todavía no has creado ninguna carta de raza. Empieza con la primera.
+                    </p>
+
+                    <div class="gm-album" id="gm-album-razas">
+                        <article class="gm-card" th:each="carta : ${cartas}"
+                                  th:attr="data-panel-source='panel-tpl-' + ${carta.id}, data-panel-title=${carta.name}, data-nombre=${carta.name}">
+                            <!-- ① Cabecera -->
+                            <span class="gm-card__tier">TIER <span th:text="${carta.tier}">1</span></span>
+                            <h2 class="gm-card__title" th:text="${carta.name}">Nombre</h2>
+                            <span class="gm-card__role" th:text="${carta.passiveTrait.name}">Rasgo pasivo</span>
+
+                            <!-- ② Ilustración -->
+                            <div class="gm-card__illustration">🧬</div>
+
+                            <!-- ③ Reglas -->
+                            <div class="gm-card__rules">
+                                <p class="gm-card__meta">
+                                    <span class="gm-badge" th:if="${carta.statBonusCon != 0}" th:text="'CON ' + (${carta.statBonusCon} > 0 ? '+' : '') + ${carta.statBonusCon}">CON</span>
+                                    <span class="gm-badge" th:if="${carta.statBonusDes != 0}" th:text="'DES ' + (${carta.statBonusDes} > 0 ? '+' : '') + ${carta.statBonusDes}">DES</span>
+                                    <span class="gm-badge" th:if="${carta.statBonusCar != 0}" th:text="'CAR ' + (${carta.statBonusCar} > 0 ? '+' : '') + ${carta.statBonusCar}">CAR</span>
+                                    <span class="gm-badge" th:if="${carta.statBonusInt != 0}" th:text="'INT ' + (${carta.statBonusInt} > 0 ? '+' : '') + ${carta.statBonusInt}">INT</span>
+                                </p>
+                                <p class="gm-card__desc" th:text="${carta.flavorText}">Descripción</p>
+                            </div>
+
+                            <!-- ④ Pie -->
+                            <div class="gm-card__footer">
+                                <span class="gm-badge" th:each="item,it : ${carta.affinities}" th:if="${it.index < 3}" th:text="${item}">afinidad</span>
+                            </div>
+                            <div class="gm-card__actions">
+                                <a class="gm-btn gm-btn--outline gm-btn--sm" th:href="@{/cartas/razas/{id}(id=${carta.id})}">Ver ficha</a>
+                                <a class="gm-btn gm-btn--outline gm-btn--sm" th:href="@{/cartas/razas/{id}/editar(id=${carta.id})}">Editar</a>
+                            </div>
+
+                            <!-- ⑤ Identificador -->
+                            <p class="gm-card__id" th:text="'razas · ' + ${carta.id}">razas · id</p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plantillas ocultas: contenido de la vista previa flotante de cada carta -->
+            <template th:each="carta : ${cartas}" th:id="'panel-tpl-' + ${carta.id}">
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Identidad de raza ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p th:text="${carta.flavorText}">Descripción</p>
+                        <p>
+                            <span class="gm-badge" th:if="${carta.statBonusCon != 0}" th:text="'CON ' + (${carta.statBonusCon} > 0 ? '+' : '') + ${carta.statBonusCon}">CON</span>
+                            <span class="gm-badge" th:if="${carta.statBonusDes != 0}" th:text="'DES ' + (${carta.statBonusDes} > 0 ? '+' : '') + ${carta.statBonusDes}">DES</span>
+                            <span class="gm-badge" th:if="${carta.statBonusCar != 0}" th:text="'CAR ' + (${carta.statBonusCar} > 0 ? '+' : '') + ${carta.statBonusCar}">CAR</span>
+                            <span class="gm-badge" th:if="${carta.statBonusInt != 0}" th:text="'INT ' + (${carta.statBonusInt} > 0 ? '+' : '') + ${carta.statBonusInt}">INT</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Rasgo pasivo ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p><strong th:text="${carta.passiveTrait.name}">Nombre</strong></p>
+                        <p th:text="${carta.passiveTrait.description}">Descripción</p>
+                    </div>
+                </div>
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Rasgo activo ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div th:if="${carta.activeTrait.name}">
+                            <p><strong th:text="${carta.activeTrait.name}">Nombre</strong></p>
+                            <p th:text="${carta.activeTrait.description}">Descripción</p>
+                        </div>
+                        <p th:unless="${carta.activeTrait.name}">Sin rasgo activo.</p>
+                    </div>
+                </div>
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Afinidades, limitaciones y tags ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p><strong>Afinidades:</strong>
+                            <span th:each="item,it : ${carta.affinities}" class="gm-badge u-mr-4" th:text="${item}">tag</span>
+                            <span th:if="${#lists.isEmpty(carta.affinities)}">—</span>
+                        </p>
+                        <p><strong>Limitaciones:</strong>
+                            <span th:each="item,it : ${carta.limitations}"><span th:text="${item}"></span><span th:if="${!it.last}">, </span></span>
+                            <span th:if="${#lists.isEmpty(carta.limitations)}">—</span>
+                        </p>
+                        <p><strong>Tags narrativos:</strong>
+                            <span th:each="item,it : ${carta.narrativeTags}" class="gm-badge u-mr-4" th:text="${item}">tag</span>
+                            <span th:if="${#lists.isEmpty(carta.narrativeTags)}">—</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="u-actions">
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/razas/{id}(id=${carta.id})}">Abrir ficha completa</a>
+                </div>
+            </template><!-- Panel flotante central: vista previa de carta -->
+<div id="gm-panel-backdrop" class="gm-panel-backdrop" data-panel-close></div>
+<div id="gm-panel-preview" class="gm-panel" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="gm-panel__header">
+        <h3 class="gm-panel__title" id="gm-panel-preview-title">Carta</h3>
+        <button type="button" class="gm-panel__close" data-panel-close aria-label="Cerrar">✕</button>
+    </div>
+    <div class="gm-panel__body" id="gm-panel-preview-body"></div>
+</div>
+</main>
+<th:block layout:fragment="extra-js">
+<script th:inline="javascript">
+    (function () {
+        var texto = document.getElementById('filtro-texto');
+        var resultado = document.getElementById('filtro-resultado');
+        var tarjetas = document.querySelectorAll('#gm-album-razas .gm-card');
+
+        function aplicarFiltro() {
+            var t = (texto.value || '').toLowerCase();
+            var visibles = 0;
+            tarjetas.forEach(function (carta) {
+                var nombre = (carta.getAttribute('data-nombre') || '').toLowerCase();
+                var coincide = nombre.indexOf(t) !== -1;
+                carta.style.display = coincide ? '' : 'none';
+                if (coincide) visibles++;
+            });
+            resultado.textContent = visibles + ' de ' + tarjetas.length + ' razas';
+        }
+
+        if (texto) {
+            texto.addEventListener('input', aplicarFiltro);
+            aplicarFiltro();
+        }
+    })();
+</script>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+ "id": "foso_de_estacas_corteses_mejorada",
+ "name": "Foso de Estacas Corteses Mejorada",
+ "type": "trap",
+ "tier": 2,
+ "rarity": "uncommon",
+ "category": "mecánica",
+ "trigger": "pisar la losa floja",
+ "detection": {
+  "stat": "INT",
+  "cd": 1
+ },
+ "disarm": {
+  "stat": "DES",
+  "cd": 1,
+  "herramienta": "herramientas de ladrón"
+ },
+ "effect": {
+  "description": "Caída con estacas: 2 de daño y Caído. (escala: +1 de daño en este tier)",
+  "defensa": "resistencia_fisica",
+  "condicionInfligida": "caido"
+ },
+ "onFail": "La losa cede del todo: 3 de daño y Agarrado entre estacas.",
+ "reset": "única",
+ "flavorText": "Quien la montó pensaba volver. No volvió."
+}

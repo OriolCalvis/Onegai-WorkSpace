@@ -1,0 +1,52 @@
+{
+ "id": "arquero_de_ramas",
+ "name": "Arquero de Ramas",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 1,
+ "role": "tirador",
+ "faction": "corte_de_espinas",
+ "factionName": "La Corte de Espinas",
+ "stats": {
+  "CON": 1,
+  "DES": 3,
+  "INT": 3,
+  "CAR": 1
+ },
+ "derived": {
+  "vida": 12,
+  "ca": 13,
+  "defensaMental": 11,
+  "resistenciaFisica": 11,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Flecha de Aliso",
+   "defense": "CA",
+   "effect": "Ataque de naturaleza: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Disparo Enredado",
+   "defense": "resistencia_fisica",
+   "effect": "Técnica de facción: si el objetivo falla, queda Agarrado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "El terreno a 5 pies de cada miembro cuenta como difícil para sus enemigos."
+ },
+ "conditionsInflicted": [
+  "agarrado"
+ ],
+ "loot": [
+  "arco_cazador_de_milicia",
+  "grebas_de_cuero"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Naturaleza"
+ ],
+ "phases": [],
+ "flavorText": "El bosque no perdona. La Corte toma nota de quién debía saberlo."
+}

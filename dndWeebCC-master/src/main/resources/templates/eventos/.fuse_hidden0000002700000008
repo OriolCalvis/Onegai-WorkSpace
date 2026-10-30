@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Formulario de evento</title>
+    <link th:href="@{/css/tokens.css}" rel="stylesheet">
+    <link th:href="@{/css/base.css}" rel="stylesheet">
+    <link th:href="@{/css/components.css}" rel="stylesheet">
+</head>
+<body>
+<div class="gm-app">
+    <div th:replace="~{Blocks/header-v2 :: header}"></div>
+    <div class="gm-body">
+        <div th:replace="~{Blocks/sidebar-v2 :: sidebar}"></div>
+        <main class="gm-main">
+            <p class="gm-sidebar__eyebrow" style="padding:0;">Sistema de Cartas y Tiers</p>
+            <h1 th:text="${evento.id == null} ? 'Nuevo evento' : 'Editar evento'" style="margin-bottom: var(--sp-2);">Nuevo evento</h1>
+            <p style="color: var(--text-muted); max-width: 760px; margin-bottom: var(--sp-4);">
+                Un evento es algo que pasa en el mundo aunque el grupo no haga nada — no es un gancho de
+                aventura. Dale un disparador, sus efectos automáticos y, si el grupo puede reaccionar,
+                las opciones que tiene.
+            </p>
+
+            <form th:action="${evento.id == null} ? @{/eventos/crear} : @{/eventos/{id}/editar(id=${evento.id})}"
+                  th:object="${evento}" method="post">
+
+                <div class="gm-form-grid" style="margin-bottom: var(--sp-3);">
+                    <div class="gm-field">
+                        <label>Nombre del evento</label>
+                        <input class="gm-input" th:field="*{name}" placeholder="El asedio a Bastrea" required>
+                    </div>
+                    <div class="gm-field">
+                        <label>Tier</label>
+                        <input class="gm-input" type="number" min="1" max="5" th:field="*{tier}">
+                    </div>
+                    <div class="gm-field">
+                        <label>Facción (opcional — lo hace aparecer en su región del mapa)</label>
+                        <select class="gm-select" th:field="*{faction}">
+                            <option value="">Sin facción</option>
+                            <option th:each="f : ${facciones}" th:value="${f}" th:text="${#strings.replace(f, '_', ' ')}">facción</option>
+                        </select>
+                    </div>
+                    <div class="gm-field">
+                        <label>Continúa en (id de otro evento o historia, opcional)</label>
+                        <input class="gm-input" th:field="*{continuesTo}" placeholder="evento_el_asedio_final o hist_...">
+                    </div>
+                </div>
+
+                <div class="gm-field" style="margin-bottom: var(--sp-3);">
+                    <label>Descripción</label>
+                    <textarea class="gm-textarea" rows="3" th:field="*{description}"
+                              placeholder="Qué pasa, quién lo provoca, qué se ve/oye/huele..."></textarea>
+                </div>
+
+                <div class="gm-field" style="margin-bottom: var(--sp-4);">
+                    <label><input type="checkbox" th:field="*{oneTime}"> Ocurre solo una vez (se consume al disparar)</label>
+                </div>
+
+                <!-- ==================== DISPARADOR ==================== -->
+                <h2 style="margin: var(--sp-4) 0 var(--sp-2);">🎯 Disparador</h2>
+                <div class="gm-form-grid" style="margin-bottom: var(--sp-4);">
+                    <div class="gm-field">
+                        <label>Tipo (manual, temporal, condición...)</label>
+                        <input class="gm-input" th:field="*{trigger.type}" placeholder="condición">
+                    </div>
+                    <div class="gm-field">
+                        <label>Condición</label>
+                        <input class="gm-input" th:field="*{trigger.condition}" placeholder="El grupo tarda más de 3 días en llegar">
+                    </div>
+                </div>
+
+                <!-- ==================== EFECTOS ==================== -->
+                <h2 style="margin: var(--sp-4) 0 var(--sp-2);">💥 Efectos</h2>
+                <p class="gm-hint" style="margin-bottom: var(--sp-2);">Una línea = un efecto automático (no depende de que el grupo elija nada).</p>
+                <div class="gm-field" style="margin-bottom: var(--sp-4);">
+                    <textarea class="gm-textarea" rows="4" name="effectsTexto" th:text="${evento.effectsTexto}"
+                              placeholder="La milicia toma el control del mercado&#10;Sube el precio de la comida un 30%"></textarea>
+                </div>
+
+                <!-- ==================== OPCIONES DEL GRUPO ==================== -->
+                <h2 style="margin: var(--sp-4) 0 var(--sp-2);">🎲 Opciones del grupo</h2>
+                <p class="gm-hint" style="margin-bottom: var(--sp-3);">Solo si el grupo puede reaccionar al evento — déjalo vacío si es puramente ambiental.</p>
+                <div id="lista-opciones">
+                    <div class="gm-picker gm-picker--lleno opcion-fila" th:each="o,it : *{playerOptions}" open>
+                        <div class="gm-picker__body" style="padding-top: var(--sp-3);">
+                            <div class="gm-field">
+                                <label>Opción</label>
+                                <input class="gm-input" th:field="*{playerOptions[__${it.index}__].text}" placeholder="Defender la puerta norte">
+                            </div>
+                            <div class="gm-form-grid">
+                                <div class="gm-field">
+                                    <label>Requisito (texto libre)</label>
+                                    <input class="gm-input" th:field="*{playerOptions[__${it.index}__].requirementText}" placeholder="CON 14+ o tener la llave del arsenal">
+                                </div>
+                                <div class="gm-field">
+                                    <label>Consecuencia (texto libre)</label>
+                                    <input class="gm-input" th:field="*{playerOptions[__${it.index}__].consequenceText}" placeholder="La milicia se retira, empieza la historia hist_...">
+                                </div>
+                            </div>
+                            <input type="hidden" th:field="*{playerOptions[__${it.index}__].id}">
+                            <button type="button" class="gm-btn gm-btn--danger gm-btn--sm boton-quitar-opcion" style="margin-top: var(--sp-2);">Quitar opción</button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="gm-btn gm-btn--outline" id="boton-anadir-opcion" style="margin-top: var(--sp-2);">
+                    + Añadir opción
+                </button>
+
+                <div class="gm-buildbar" role="status" aria-live="polite" style="margin-top: var(--sp-5);">
+                    <span style="flex:1;"></span>
+                    <button class="gm-btn gm-btn--primary" type="submit">Guardar evento</button>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/eventos}">Cancelar</a>
+                </div>
+            </form>
+        </main>
+    </div>
+    <div th:replace="~{Blocks/footer-v2 :: footer}"></div>
+</div>
+<script th:src="@{/js/theme.js}"></script>
+<script th:src="@{/js/panels.js}"></script>
+<script>
+    (function () {
+        var lista = document.getElementById('lista-opciones');
+        var botonAnadir = document.getElementById('boton-anadir-opcion');
+
+        function reindexar() {
+            lista.querySelectorAll('.opcion-fila').forEach(function (fila, i) {
+                fila.querySelectorAll('input').forEach(function (input) {
+                    if (input.name) input.name = input.name.replace(/playerOptions\[\d+\]/, 'playerOptions[' + i + ']');
+                });
+            });
+        }
+
+        lista.addEventListener('click', function (e) {
+            if (e.target.classList.contains('boton-quitar-opcion')) {
+                e.target.closest('.opcion-fila').remove();
+                reindexar();
+            }
+        });
+
+        botonAnadir.addEventListener('click', function () {
+            var i = lista.querySelectorAll('.opcion-fila').length;
+            var fila = document.createElement('div');
+            fila.className = 'gm-picker gm-picker--lleno opcion-fila';
+            fila.setAttribute('open', '');
+            fila.innerHTML =
+                '<div class="gm-picker__body" style="padding-top: var(--sp-3);">' +
+                '  <div class="gm-field"><label>Opción</label>' +
+                '  <input class="gm-input" name="playerOptions[' + i + '].text" placeholder="Defender la puerta norte"></div>' +
+                '  <div class="gm-form-grid">' +
+                '    <div class="gm-field"><label>Requisito (texto libre)</label>' +
+                '    <input class="gm-input" name="playerOptions[' + i + '].requirementText" placeholder="CON 14+ o tener la llave del arsenal"></div>' +
+                '    <div class="gm-field"><label>Consecuencia (texto libre)</label>' +
+                '    <input class="gm-input" name="playerOptions[' + i + '].consequenceText" placeholder="La milicia se retira, empieza la historia hist_..."></div>' +
+                '  </div>' +
+                '  <input type="hidden" name="playerOptions[' + i + '].id" value="">' +
+                '  <button type="button" class="gm-btn gm-btn--danger gm-btn--sm boton-quitar-opcion" style="margin-top: var(--sp-2);">Quitar opción</button>' +
+                '</div>';
+            lista.appendChild(fila);
+        });
+    })();
+</script>
+</body>
+</html>

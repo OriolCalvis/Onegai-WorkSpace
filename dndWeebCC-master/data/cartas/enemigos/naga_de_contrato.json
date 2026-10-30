@@ -1,0 +1,64 @@
+{
+ "id": "naga_de_contrato",
+ "name": "Naga de Contrato",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "control",
+ "faction": "nagas_del_pozo_azul",
+ "factionName": "Las Nagas del Pozo Azul",
+ "stats": {
+  "CON": 6,
+  "DES": 5,
+  "INT": 7,
+  "CAR": 6
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 16,
+  "defensaMental": 16,
+  "resistenciaFisica": 16,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de oscuro: daño que suma su INT (pool de INT, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "resistencia_fisica",
+   "effect": "Técnica de facción: si el objetivo falla, queda Endeudado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Cada acción principal de un objetivo Endeudado aumenta en 1 el daño de su próxima cláusula."
+ },
+ "conditionsInflicted": [
+  "endeudado"
+ ],
+ "loot": [
+  "latigo_de_cuero_de_viaje",
+  "orbe_de_mano_de_viaje",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Oscuro"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Gana una segunda técnica por ronda y +1 al daño."
+  }
+ ],
+ "flavorText": "Prestamista serpentino que negocia durante el combate."
+}

@@ -1,0 +1,52 @@
+{
+ "id": "cazador_de_recompensados",
+ "name": "Cazador de Recompensados",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 1,
+ "role": "control",
+ "faction": "bandidos_del_camino_de_ceniza",
+ "factionName": "Los Bandidos del Camino de Ceniza",
+ "stats": {
+  "CON": 2,
+  "DES": 1,
+  "INT": 3,
+  "CAR": 2
+ },
+ "derived": {
+  "vida": 12,
+  "ca": 11,
+  "defensaMental": 12,
+  "resistenciaFisica": 12,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Red Lastrada",
+   "defense": "CA",
+   "effect": "Ataque de fisico: daño que suma su INT (pool de INT, regla 7.6)."
+  },
+  {
+   "name": "Grilletes de Feria",
+   "defense": "CA",
+   "effect": "Técnica de facción: si el objetivo falla, queda Sangrado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Ganan +1 al daño contra viajeros con carga (mochilas, carros, heridos a cuestas)."
+ },
+ "conditionsInflicted": [
+  "sangrado"
+ ],
+ "loot": [
+  "item_short_sword",
+  "armadura_de_cuero"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico"
+ ],
+ "phases": [],
+ "flavorText": "No cobran peaje. Cobran todo."
+}

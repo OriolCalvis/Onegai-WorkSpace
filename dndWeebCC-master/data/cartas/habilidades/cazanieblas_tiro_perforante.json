@@ -1,0 +1,55 @@
+{
+ "id": "cazanieblas_tiro_perforante",
+ "name": "Tiro perforante",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Un proyectil perforador atraviesa a los que tienes delante: 4d6 de daño de tinieblas, y los daños orgánicos hacen que tus golpes le hagan +1 durante 3 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "cazanieblas"
+ ],
+ "roleTags": [],
+ "tags": [
+  "cazanieblas",
+  "creador",
+  "Tinieblas"
+ ],
+ "mechanicTags": [
+  "Tinieblas",
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "zone_radius",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Un proyectil perforador atraviesa a los que tienes delante: 4d6 de daño de tinieblas, y los daños orgánicos hacen que tus golpes le hagan +1 durante 3 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "4d6 de daño de tinieblas.",
+   "mechanicHook": "dano:4d6"
+  },
+  {
+   "description": "Daños orgánicos: tus golpes le hacen +1 durante 3 turnos.",
+   "mechanicHook": "estado:3:bono_dano_contra:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Cazanieblas (Fog Hunter) · H1857 Tiro perforante"
+}

@@ -1,0 +1,308 @@
+{
+  "nombre": "El Apóstata",
+  "descripcion": "Un exguerrero sagrado que ha renunciado a la luz para abrazar el poder oscuro, sacrificando su vitalidad para canalizar hechizos devastadores.",
+  "rolTematico": "Traidor a la luz que obtiene magia oscura a cambio de puntos de vida.",
+  "dadoGolpe": "1d6",
+  "puntosGolpeNivel1": "1d6 + modificador de Constitución",
+  "puntosGolpePorNivel": "1d6 (o 4) + modificador de Constitución",
+  "atributoConjuro": "Carisma",
+  "atributosRelevantes": ["Carisma", "Sabiduría", "Constitución"],
+  "competencias": {
+    "armaduras": ["Ligeras"],
+    "armas": ["Armas simples"],
+    "habilidadesElegir": ["Engaño", "Intimidación", "Persuasión", "Religión", "Arcana", "Percepción"],
+    "salvaciones": ["Carisma", "Sabiduría"]
+  },
+  "mecanicas": {
+    "magiaBasadaEnVida": true,
+    "hechizosPorVida": {
+      "descripcion" : "Gasta puntos de vida para lanzar hechizos",
+      "escalado": [ {"nivel 1 - 5": "1d6+1", "nivel 6 - 10": "2d6+2", "nivel 11 - 15": "3d6+4", "nivel4 16 - 19 ": "4d8+4", "nivel 20 ": "6d8+2"} ]
+    },
+    "potenciarDanioPorVida": "Por cada 5 puntos de vida extra, +1d6 de daño"
+  },
+  "accionesEspeciales": {
+    "movimientoSombra": {
+      "descripcion": "Teletransportarse a una zona en sombra dentro de 30 pies.",
+      "costeVida": 0
+    },
+    "escudoOscuro": {
+      "escalado": {
+        "nivel 1 - 5": "Absorbe 10 puntos de daño radiante o necrótico",
+        "nivel 6 - 10": "Absorbe 20 de cualquier tipo",
+        "nivel 11 - 15 ": "Absorbe 40 y transfiere daño",
+        "nivel 16 - 20": "Absorbe 60 y regenera vida"
+      },
+      "absorcion": {
+        "nivel 1 - 5": "1d4+1",
+        "nivel 6 - 10": "2d4+1",
+        "nivel 11 - 15": "2d6+2",
+        "nivel 16 - 20": "2d8+3"
+      }
+    }
+  },
+  "niveles": {
+    "1": {
+      "habilidades": [
+        {
+          "nombre": "Marca de la Oscuridad",
+          "tipo": "Magia",
+          "efecto": "Ventaja en ataques y +1d6 de daño necrótico durante 1 minuto",
+          "usos": "1 por Carisma",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "2": {
+      "habilidades": [
+        {
+          "nombre": "Maldición Menor",
+          "tipo": "Maldición",
+          "efecto": "Desventaja en tiradas de ataque durante 1 minuto",
+          "usos": "Modificador de Inteligencia",
+          "accion": "Adicional"
+        },
+        {
+          "nombre": "Escudo de Sombras",
+          "tipo": "Especial",
+          "efecto": "+1 CA durante 1 minuto",
+          "usos": "Modificador de Inteligencia",
+          "accion": "Especial"
+        }
+      ]
+    },
+    "3": {
+      "habilidades": [
+        {
+          "nombre": "Invocación de Sombras",
+          "tipo": "Invocación",
+          "efecto": "Invoca aliado oscuro durante 1 minuto",
+          "usos": "1 por descanso largo",
+          "accion": "Normal"
+        }
+      ],
+      "invocaciones": [
+        {
+          "nivel": 3,
+          "nombre": "Sombra Sombría",
+          "CA": 12,
+          "HP": 16,
+          "ataque": "+4",
+          "danio": "1d8+2 necrótico",
+          "descripcion": "Un espíritu oscuro básico que ataca con garras sombrías. Ideal para asistir en combate cuerpo a cuerpo, pero frágil."
+        },
+        {
+          "nivel": 5,
+          "nombre": "Espectro Menor",
+          "CA": 14,
+          "HP": 20,
+          "ataque": "+5",
+          "danio": "1d10+3 necrótico + desventaja en ataques",
+          "descripcion": "Una forma espectral que puede atravesar paredes. Su ataque puede causar desventaja en tiradas de ataque enemigas."
+        },
+        {
+          "nivel": 7,
+          "nombre": "Cazador de Sombras",
+          "CA": 15,
+          "HP": 30,
+          "ataque": "+6",
+          "danio": "2x 2d6+3 necrótico",
+          "descripcion": "Una sombra más ágil y fuerte, capaz de hacer dos ataques por turno. Su velocidad lo convierte en un excelente escaramuzador."
+        },
+        {
+          "nivel": 9,
+          "nombre": "Revenant Oscuro",
+          "CA": 16,
+          "HP": 45,
+          "ataque": "+7",
+          "danio": "2d8+4 necrótico + miedo",
+          "descripcion": "Un ser oscuro con capacidad para infligir miedo a sus oponentes y causar daño adicional a enemigos asustados."
+        },
+        {
+          "nivel": 11,
+          "nombre": "Sombramante",
+          "CA": 17,
+          "HP": 55,
+          "ataque": "+8",
+          "danio": "3d6+5 necrótico + Maldición Menor",
+          "descripcion": "Este aliado oscuro puede lanzar hechizos menores de oscuridad y maldiciones, además de atacar con energía sombría."
+        },
+        {
+          "nivel": 13,
+          "nombre": "Espectro Mayor",
+          "CA": 18,
+          "HP": 70,
+          "ataque": "+9",
+          "danio": "3d8+6 necrótico + área drenaje",
+          "descripcion": "Un ser etéreo que puede teletransportarse en sombras y lanzar un ataque de área que drena vida de los enemigos cercanos."
+        },
+        {
+          "nivel": 15,
+          "nombre": "Devorador de Almas",
+          "CA": 19,
+          "HP": 85,
+          "ataque": "+10",
+          "danio": "4d8+7 necrótico + curación",
+          "descripcion": "Una entidad sombría que drena puntos de golpe con cada golpe y otorga puntos de vida al Apóstata. Tiene resistencia a daño no mágico."
+        },
+        {
+          "nivel": 17,
+          "nombre": "Caballero de las Sombras",
+          "CA": 20,
+          "HP": 100,
+          "ataque": "+11",
+          "danio": "5d8+8 necrótico + aura ralentización",
+          "descripcion": "Un guerrero de las sombras con una armadura necrótica. Puede lanzar un aura oscura que ralentiza a los enemigos cercanos."
+        },
+        {
+          "nivel": 19,
+          "nombre": "Príncipe de las Sombras",
+          "CA": 22,
+          "HP": 120,
+          "ataque": "+12",
+          "danio": "6d8+9 necrótico + invocación de 2 sombras",
+          "descripcion": "Una entidad de élite, con habilidades de ataque múltiple y la capacidad de invocar sombras menores como aliados temporales."
+        },
+        {
+          "nivel": 20,
+          "nombre": "Señor de las Sombras",
+          "CA": 24,
+          "HP": 150,
+          "ataque": "+13",
+          "danio": "8d8+10 necrótico + drenaje en área",
+          "descripcion": "La forma definitiva, una poderosa entidad que controla el campo de batalla con daño masivo, drenaje de vida, y miedo en área."
+        }
+      ]
+    },
+    "4": {
+      "habilidades": [
+        {
+          "nombre": "Bendición Corrupta",
+          "efecto": "+6 a todas las tiradas, pero pierde 1d12 de vida por turno",
+          "duracion": "1 minuto",
+          "usos": "1 por descanso corto",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "5": {
+      "habilidades": [
+        {
+          "nombre": "Maldición Mortal",
+          "efecto": "2d6 daño necrótico por turno durante 1 minuto",
+          "usos": "1 por descanso largo",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "6": {
+      "habilidades": ["Mejora de Características"]
+    },
+    "7": {
+      "habilidades": [
+        {
+          "nombre": "Maldición del Dolor",
+          "efecto": "Daño adicional por Carisma; explota cadáver si muere",
+          "usos": "Mod. Carisma",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "8": {
+      "habilidades": [
+        {
+          "nombre": "Ritual de Oscuridad",
+          "efecto": "Sacrifica 10 HP para lanzar hechizo nivel 3+",
+          "usos": "1 por descanso largo",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "9": {
+      "habilidades": [
+        {
+          "nombre": "Maldición de la Desesperación",
+          "efecto": "3 esferas 2d6+4 daño necrótico cada una",
+          "usos": "Mod. Carisma",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "10": {
+      "habilidades": [
+        {
+          "nombre": "Bendición Profana Mayor",
+          "efecto": "+4 a tiradas, pero pierde 1d6 vida por turno",
+          "duracion": "1 minuto",
+          "usos": "1 por descanso corto"
+        }
+      ]
+    },
+    "11": {
+      "habilidades": [
+        {
+          "nombre": "Escudo Oscuro Definitivo",
+          "efecto": "+2 CA, absorbe 20 daño y refleja 1d6 necrótico",
+          "usos": "Modificador Carisma",
+          "accion": "Especial"
+        }
+      ]
+    },
+    "12": {
+      "habilidades": ["Mejora de Características"]
+    },
+    "13": {
+      "habilidades": [
+        {
+          "nombre": "Rayo de Oscuridad",
+          "efecto": "4d6 daño necrótico a 60 pies",
+          "usos": "1 por descanso largo",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "14": {
+      "habilidades": ["Mejora de Características"]
+    },
+    "15": {
+      "habilidades": [
+        {
+          "nombre": "Maldición de la Agonía",
+          "efecto": "2d12 daño + desventaja en ataques por 3 turnos",
+          "usos": "Mod. Carisma",
+          "accion": "Normal"
+        },
+        {
+          "nombre": "Sangre Agónica",
+          "efecto": "Inmunidad daño físico + 3d6 daño adicional",
+          "duracion": "10 turnos",
+          "usos": "1 por descanso largo",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "16": {
+      "habilidades": ["Mejora de Características"]
+    },
+    "18": {
+      "habilidades": [
+        {
+          "nombre": "Maestro de Maldiciones",
+          "efecto": " Puedes lanzar una maldición rápida como acción gratuita una vez por turno. No puedes usar la misma maldición dos veces en el mismo turno.",
+          "usos": "1 por turno",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "20": {
+      "habilidades": [
+        {
+          "nombre": "Forma de la Sombra",
+          "efecto": "Ganas inmunidad al daño necrótico. Puedes volar a una velocidad de 60 pies. Puedes lanzar una maldición o invocar una entidad oscura sin costo de vida durante este tiempo.",
+          "usos": "1 por descanso largo",
+          "accion": "Acción Completa"
+        }
+      ]
+    }
+  }
+}

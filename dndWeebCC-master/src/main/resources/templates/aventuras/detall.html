@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title th:text="${aventura.nom}" layout:fragment="title">Aventura</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <p class="gm-sidebar__eyebrow u-p-0">Aventuras</p>
+            <div class="u-page-header--tight">
+                <div>
+                    <h1 class="u-mb-sp1" th:text="${aventura.nom}">Aventura</h1>
+                    <p class="u-lead" th:text="${aventura.descripcion}">Descripción</p>
+                </div>
+                <div class="u-flex-gap2">
+                    <span class="gm-hud gm-hud--ok" th:text="${#lists.size(historias)} + ' historias'">n historias</span>
+                    <span class="gm-hud" th:if="${aventura.esPorActos()}" th:text="${#lists.size(aventura.cartasHistoria)} + ' cartas · actos'">cartas</span>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/aventuras/{id}/constructor(id=${aventura.id})}">🛠 Constructor (actos)</a>
+                    <a class="gm-btn gm-btn--outline" th:if="${aventura.esPorActos()}"
+                       th:href="@{/aventuras/{id}/dependencias(id=${aventura.id})}">🧪 Dependencias</a>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/aventuras/{id}/imprimir(id=${aventura.id})}">🖨 Imprimir cartas</a>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/aventuras/{id}/editar(id=${aventura.id})}">Editar</a>
+                </div>
+            </div>
+
+            <!-- Vínculos con el Mapa Mundi: ida y vuelta entre la aventura y sus
+                 localizaciones (facciones que tocan sus historias, o puntos personalizados
+                 que el director haya vinculado a mano desde el editor del mapa). -->
+            <div class="u-filter-row" th:if="${!#sets.isEmpty(faccionesTocadas) or !#lists.isEmpty(puntosVinculados)}">
+                <span class="gm-hint u-m-0">🧭 Ver en el mapa:</span>
+                <a th:each="f : ${faccionesTocadas}" class="gm-chip u-no-underline" th:href="@{/mapa(faccion=${f})}" th:text="${#strings.replace(f, '_', ' ')}">facción</a>
+                <a th:each="p : ${puntosVinculados}" class="gm-chip u-no-underline" th:href="@{/mapa(punto=${p.id})}" th:text="${p.icono} + ' ' + ${p.nombre}">punto</a>
+            </div>
+
+            <!-- Guion de la aventura: las historias en orden narrativo (facción → trama → escalón).
+                 Cada trama madre se lee como un acto de 5 pasos. -->
+            <div th:each="h,it : ${historias}">
+                <p class="gm-grupo-titulo"
+                   th:if="${it.first or historias[it.index - 1].chain.trama != h.chain.trama}"
+                   th:text="'🧵 ' + ${#strings.replace(h.chain.trama, '_', ' ')} + ' — ' + ${h.factionNombre}">Trama</p>
+                <a class="gm-chip u-link-row" th:href="@{/historias/{id}(id=${h.id})}">
+                    <span class="gm-chip__title">
+                        <span class="gm-chip__tier" th:text="${h.chain.step} + '/' + ${h.chain.of}">1/5</span>
+                        <span th:text="' ' + ${h.title}">Título</span>
+                    </span>
+                    <span class="gm-chip__meta" th:text="${h.location} + ' · contra ' + ${historiaService.nombreAntagonista(h.antagonist)}">lugar · antagonista</span>
+                    <span class="gm-chip__meta" th:text="${#strings.abbreviate(h.hook, 140)}">Gancho</span>
+                </a>
+            </div>
+
+            <p th:if="${#lists.isEmpty(historias)}" class="gm-chip-empty">
+                Esta aventura aún no tiene historias. <a th:href="@{/aventuras/{id}/editar(id=${aventura.id})}">Añádelas</a>.
+            </p>
+
+            <!-- ==================== La mesa del director ==================== -->
+            <div class="gm-panel-section is-expanded u-mt-sp4" th:if="${!#lists.isEmpty(aventura.npcIds) or !#lists.isEmpty(aventura.deidadIds) or !#lists.isEmpty(aventura.villanoIds) or !#lists.isEmpty(aventura.enemigoIds)}">
+                <button type="button" class="gm-panel-section__toggle">🎭 Reparto ▾</button>
+                <div class="gm-panel-section__content">
+                    <p th:if="${!#lists.isEmpty(aventura.npcIds)}"><strong>🧑 PNJs:</strong>
+                        <span th:each="id,it : ${aventura.npcIds}">
+                            <span th:text="${aventuraService.nombreDe(id)}">npc</span><span th:if="${!it.last}"> · </span>
+                        </span>
+                    </p>
+                    <p th:if="${!#lists.isEmpty(aventura.deidadIds)}"><strong>✝ Dioses presentes:</strong>
+                        <a class="u-mr-sp2" th:each="id,it : ${aventura.deidadIds}" th:href="@{/cartas/deidades/{id}(id=${id})}"
+th:text="${aventuraService.nombreDe(id)}">deidad</a>
+                    </p>
+                    <p th:if="${!#lists.isEmpty(aventura.villanoIds)}"><strong>👑 Villanos:</strong>
+                        <span th:each="id,it : ${aventura.villanoIds}">
+                            <span th:text="${aventuraService.nombreDe(id)}">villano</span><span th:if="${!it.last}"> · </span>
+                        </span>
+                    </p>
+                    <p th:if="${!#lists.isEmpty(aventura.enemigoIds)}"><strong>💀 Enemigos sueltos:</strong>
+                        <span th:each="id,it : ${aventura.enemigoIds}">
+                            <span th:text="${aventuraService.nombreDe(id)}">enemigo</span><span th:if="${!it.last}"> · </span>
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="gm-panel-section is-expanded u-mt-sp3" th:if="${!#lists.isEmpty(aventura.lootIds) or !#lists.isEmpty(aventura.trampaIds)}">
+                <button type="button" class="gm-panel-section__toggle">💰 Botín y peligros ▾</button>
+                <div class="gm-panel-section__content">
+                    <p th:if="${!#lists.isEmpty(aventura.lootIds)}"><strong>💰 Tablas de botín:</strong>
+                        <span th:each="id,it : ${aventura.lootIds}">
+                            <span th:text="${aventuraService.nombreDe(id)}">loot</span><span th:if="${!it.last}"> · </span>
+                        </span>
+                    </p>
+                    <p th:if="${!#lists.isEmpty(aventura.trampaIds)}"><strong>🪤 Trampas:</strong>
+                        <span th:each="id,it : ${aventura.trampaIds}">
+                            <span th:text="${aventuraService.nombreDe(id)}">trampa</span><span th:if="${!it.last}"> · </span>
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="gm-panel-section is-expanded u-mt-sp3" th:if="${!#lists.isEmpty(aventura.combates)}">
+                <button type="button" class="gm-panel-section__toggle">⚔ Combates preparados ▾</button>
+                <div class="gm-panel-section__content">
+                    <div class="u-mb-sp3" th:each="c : ${aventura.combates}">
+                        <p><strong th:text="${c.nom != null and !c.nom.isBlank()} ? ${c.nom} : 'Combate sin nombre'">Combate</strong>
+                            <span class="gm-badge" th:text="'Tier ' + ${c.tier}">Tier 1</span></p>
+                        <p class="gm-hint">
+                            <span th:each="id,it : ${c.enemigoIds}">
+                                <span th:text="${aventuraService.nombreDe(id)}">enemigo</span><span th:if="${!it.last}"> · </span>
+                            </span>
+                            <span th:if="${#lists.isEmpty(c.enemigoIds)}">Sin enemigos asignados.</span>
+                        </p>
+                        <p class="gm-hint" th:if="${c.notas}" th:text="'Notas: ' + ${c.notas}">notas</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gm-panel-section is-expanded u-mt-sp4" th:if="${aventura.notas}">
+                <button type="button" class="gm-panel-section__toggle">Notas del director ▾</button>
+                <div class="gm-panel-section__content">
+                    <p th:text="${aventura.notas}">Notas</p>
+                </div>
+            </div>
+
+            <div class="u-actions--wrap">
+                <a class="gm-btn gm-btn--outline" th:href="@{/aventuras}">Volver a aventuras</a>
+                <form th:action="@{/aventuras/{id}/eliminar(id=${aventura.id})}" method="post" th:data-nombre="${aventura.nom}" onsubmit="return confirm('¿Borrar la aventura &quot;' + this.dataset.nombre + '&quot;? No se puede deshacer.');">
+                    <button class="gm-btn gm-btn--danger" type="submit">Eliminar aventura</button>
+                </form>
+            </div></main>
+</body>
+</html>

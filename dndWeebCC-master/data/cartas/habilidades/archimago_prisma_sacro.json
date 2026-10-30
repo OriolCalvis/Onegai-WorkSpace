@@ -1,0 +1,54 @@
+{
+ "id": "archimago_prisma_sacro",
+ "name": "Prisma sacro",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Una luz nívea atraviesa al enemigo: 3d6 de daño de luz, y el terror lo deja asustado 1 turno.",
+ "flavorText": "",
+ "classTags": [
+  "archimago"
+ ],
+ "roleTags": [],
+ "tags": [
+  "archimago",
+  "estandar",
+  "Luz"
+ ],
+ "mechanicTags": [
+  "Luz"
+ ],
+ "actionType": "accion_principal",
+ "target": "zone_radius",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "INT",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Una luz nívea atraviesa al enemigo: 3d6 de daño de luz, y el terror lo deja asustado 1 turno.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "3d6 de daño de luz.",
+   "mechanicHook": "dano:3d6"
+  },
+  {
+   "description": "Terror leve: asustado 1 turno.",
+   "mechanicHook": "condicion:asustado:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Archimago (Archmage) · H1325 Prisma sacro"
+}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Editor de carta de pasiva</title>
+    <link th:href="@{/css/tokens.css}" rel="stylesheet">
+    <link th:href="@{/css/base.css}" rel="stylesheet">
+    <link th:href="@{/css/components.css}" rel="stylesheet">
+</head>
+<body>
+<div class="gm-app">
+    <div th:replace="~{Blocks/header-v2 :: header}"></div>
+    <div class="gm-body">
+        <div th:replace="~{Blocks/sidebar-v2 :: sidebar}"></div>
+        <main class="gm-main">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('pasivas')}"></div>
+            <p class="gm-sidebar__eyebrow" style="padding:0;">Sistema de Cartas y Tiers</p>
+            <h1 th:text="${esNueva} ? 'Nueva carta de pasiva' : 'Editar carta de pasiva'" style="margin-bottom: var(--sp-5);">Nueva carta de pasiva</h1>
+
+            <form th:action="${esNueva} ? @{/cartas/pasivas} : @{/cartas/pasivas/{id}/editar(id=${form.id})}"
+                  th:object="${form}" method="post">
+
+                <div class="gm-form-grid" style="margin-bottom: var(--sp-4);">
+                    <div class="gm-field" th:if="${esNueva}">
+                        <label>ID (opcional)</label>
+                        <input class="gm-input" th:field="*{id}" placeholder="Se genera automático a partir del nombre">
+                    </div>
+                    <div class="gm-field" th:unless="${esNueva}">
+                        <label>ID</label>
+                        <input class="gm-input" th:field="*{id}" readonly>
+                    </div>
+                    <div class="gm-field">
+                        <label>Nombre</label>
+                        <input class="gm-input" th:field="*{name}" placeholder="Muro Viviente" required>
+                    </div>
+                    <div class="gm-field">
+                        <label>Tier</label>
+                        <input class="gm-input" type="number" min="0" max="5" th:field="*{tier}">
+                    </div>
+                    <div class="gm-field" style="align-self:end;">
+                        <label style="display:flex; align-items:center; gap: var(--sp-2);">
+                            <input type="checkbox" th:field="*{unique}"> Pasiva única de clase
+                        </label>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Clasificación y activación ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Clases (tags)</label>
+                                <input class="gm-input" th:field="*{classTags}" placeholder="guardian_de_hierro">
+                            </div>
+                            <div class="gm-field">
+                                <label>Condición de activación</label>
+                                <input class="gm-input" th:field="*{trigger}" placeholder="Mientras lleves escudo equipado">
+                            </div>
+                            <div class="gm-field">
+                                <label>Tags de sinergia</label>
+                                <input class="gm-input" th:field="*{synergyTags}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Efecto ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field" style="grid-column: 1 / -1;">
+                                <label>Beneficio constante</label>
+                                <textarea class="gm-textarea" rows="3" th:field="*{effectDescription}"></textarea>
+                            </div>
+                            <div class="gm-field">
+                                <label>Escalado</label>
+                                <input class="gm-input" th:field="*{effectScaling}" placeholder="CON, DES, INT, CAR, none">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Limitaciones y texto narrativo ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Limitaciones</label>
+                                <input class="gm-input" th:field="*{limitations}">
+                            </div>
+                            <div class="gm-field">
+                                <label>Texto narrativo</label>
+                                <input class="gm-input" th:field="*{flavorText}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap: var(--sp-2); margin-top: var(--sp-4);">
+                    <button class="gm-btn gm-btn--primary" type="submit">Guardar</button>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/cartas/pasivas}">Cancelar</a>
+                </div>
+            </form>
+        </main>
+    </div>
+    <div th:replace="~{Blocks/footer-v2 :: footer}"></div>
+</div>
+<script th:src="@{/js/theme.js}"></script>
+<script th:src="@{/js/panels.js}"></script>
+</body>
+</html>

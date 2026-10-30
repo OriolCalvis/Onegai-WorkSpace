@@ -1,0 +1,52 @@
+{
+ "id": "perro_lazarino",
+ "name": "Perro Lazarino",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 1,
+ "role": "escaramuzador",
+ "faction": "plaga_de_san_lazaro",
+ "factionName": "La Plaga de San Lázaro",
+ "stats": {
+  "CON": 1,
+  "DES": 4,
+  "INT": 2,
+  "CAR": 1
+ },
+ "derived": {
+  "vida": 12,
+  "ca": 14,
+  "defensaMental": 11,
+  "resistenciaFisica": 11,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Mordisco Febril",
+   "defense": "CA",
+   "effect": "Ataque de veneno: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Persecucion Incansable",
+   "defense": "resistencia_fisica",
+   "effect": "Técnica de facción: si el objetivo falla, queda Envenenado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Cuando un miembro muere, libera esporas: 1 de veneno a los enemigos adyacentes."
+ },
+ "conditionsInflicted": [
+  "envenenado"
+ ],
+ "loot": [
+  "daga_de_milicia",
+  "capucha_de_explorador"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Veneno"
+ ],
+ "phases": [],
+ "flavorText": "El santo prometió que nadie volvería a enfermar solo. Cumplió."
+}

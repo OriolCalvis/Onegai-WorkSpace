@@ -1,0 +1,134 @@
+/* Estilos extraídos de templates/mapa/index.html */
+
+.gm-mapa-lienzo {
+    background: var(--card-bg);
+    border: 3px solid var(--card-frame);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 6px 16px var(--card-shadow), inset 0 0 0 1px var(--card-frame-bright);
+    padding: var(--sp-3);
+}
+.gm-mapa-lienzo svg { width: 100%; height: auto; display: block; }
+.gm-mapa-marcador { cursor: pointer; }
+.gm-mapa-marcador circle { transition: r 120ms ease, filter 120ms ease; }
+.gm-mapa-marcador:hover circle, .gm-mapa-marcador:focus circle {
+    filter: drop-shadow(0 0 6px var(--card-gem));
+}
+.gm-mapa-marcador:focus { outline: none; }
+.gm-mapa-marcador text.gm-mapa-emoji { font-size: 22px; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.gm-mapa-marcador text.gm-mapa-etiqueta {
+    font-size: 12px; font-weight: 700; text-anchor: middle; fill: var(--card-ink);
+    paint-order: stroke; stroke: var(--card-bg); stroke-width: 4px; pointer-events: none;
+}
+.gm-mapa-leyenda { display:flex; gap: var(--sp-3); flex-wrap:wrap; margin-top: var(--sp-2); color: var(--text-muted); font-size: var(--fs-small); }
+.gm-mapa-leyenda__item { display:inline-flex; align-items:center; gap: 6px; cursor: pointer; user-select: none; }
+.gm-mapa-leyenda__item:hover { color: var(--card-ink); }
+.gm-mapa-leyenda__item.is-hidden { opacity: 0.4; text-decoration: line-through; }
+.gm-mapa-leyenda__swatch { display:inline-block; width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--card-frame); }
+.gm-mapa-oculto { display: none !important; }
+.gm-tier-btn.is-off { opacity: 0.4; text-decoration: line-through; }
+.gm-mapa-nacion { opacity: 0.85; }
+.gm-mapa-nacion__etiqueta { font-size: 20px; font-weight: 800; text-anchor: middle; fill: var(--card-ink); paint-order: stroke; stroke: rgba(244,233,205,0.8); stroke-width: 5px; pointer-events: none; }
+
+.gm-mapa-toolbar { display:flex; align-items:center; gap: var(--sp-2); flex-wrap:wrap; margin-bottom: var(--sp-3); }
+.gm-mapa-toolbar__coords { margin-left:auto; font-variant-numeric: tabular-nums; color: var(--text-muted); font-size: var(--fs-small); }
+.gm-mapa-lienzo.is-editing .gm-mapa-nacion__borde polygon { fill-opacity: 0.32; cursor: move; }
+.gm-mapa-lienzo.is-editing .gm-mapa-marcador { cursor: grab; }
+.gm-mapa-lienzo.is-editing .gm-mapa-marcador:active { cursor: grabbing; }
+.gm-editor-handle { fill: #fff; stroke: var(--card-gem); stroke-width: 2; cursor: grab; opacity: 0.9; }
+.gm-editor-handle:hover { fill: var(--card-gem); r: 9; }
+.gm-editor-handle:active { cursor: grabbing; }
+#gm-editor-handles { display: none; }
+.gm-mapa-lienzo.is-editing #gm-editor-handles { display: inline; }
+.gm-editor-export { margin-top: var(--sp-3); }
+.gm-editor-export textarea {
+    width: 100%; min-height: 220px; font-family: var(--font-mono, monospace); font-size: 12px;
+    background: var(--card-bg); border: 1px solid var(--card-frame); border-radius: var(--radius-md);
+    padding: var(--sp-2); color: var(--card-ink); resize: vertical;
+}
+.gm-editor-banner {
+    background: var(--card-bg-alt); border: 1px dashed var(--card-frame); border-radius: var(--radius-md);
+    padding: var(--sp-2) var(--sp-3); margin-bottom: var(--sp-3); font-size: var(--fs-small); color: var(--card-ink);
+    display:flex; align-items:center; gap: var(--sp-2); flex-wrap:wrap;
+}
+.gm-mapa-marcador--punto circle { fill: var(--card-gem); stroke: var(--card-frame-bright); stroke-dasharray: 3 2; }
+.gm-mapa-ciudad__circulo { fill: #f4e4c1; stroke: #7a5a2a; stroke-width: 3; }
+.gm-mapa-marcador--ciudad:hover .gm-mapa-ciudad__circulo,
+.gm-mapa-marcador--ciudad:focus .gm-mapa-ciudad__circulo { fill: #ffe9b8; }
+.gm-mapa-zona__rombo { fill: #dcefe0; stroke: #3f7350; stroke-width: 3; }
+.gm-mapa-marcador--zona:hover .gm-mapa-zona__rombo,
+.gm-mapa-marcador--zona:focus .gm-mapa-zona__rombo { fill: #c4e8cd; }
+.gm-cronologia__item { border-left: 4px solid var(--accent-primary); padding: var(--sp-2) var(--sp-3);
+    background: var(--bg-elevated); border-radius: var(--radius-md); margin-bottom: var(--sp-2); }
+.gm-cronologia__ano { display:inline-block; min-width: 64px; font-weight: 800; color: var(--accent-primary); }
+.gm-mapa-lienzo.is-placing #gm-mapa-svg { cursor: crosshair; }
+.gm-punto-editor__input { width: 100%; margin-bottom: var(--sp-2); }
+.gm-punto-editor__add-row { display:flex; gap: var(--sp-2); align-items:flex-start; margin-bottom: var(--sp-3); }
+.gm-punto-editor__add-row .gm-punto-editor__input { margin-bottom: 0; flex: 1; }
+.gm-punto-editor__historias, .gm-punto-editor__aventuras { display:flex; flex-wrap:wrap; gap: 4px; margin-bottom: var(--sp-2); }
+.gm-punto-chip { display:inline-flex; align-items:center; gap: 4px; }
+.gm-punto-chip__quitar {
+    border: none; background: transparent; color: inherit; cursor: pointer; font-weight: 800;
+    padding: 0 2px; line-height: 1; opacity: 0.7;
+}
+.gm-punto-chip__quitar:hover { opacity: 1; }
+.gm-punto-editor__acciones { display:flex; gap: var(--sp-2); flex-wrap:wrap; margin-top: var(--sp-3); }
+
+/* ── Naciones clicables: feedback visual + ficha ─────────────────── */
+.gm-mapa-nacion__borde polygon { cursor: pointer; transition: fill-opacity 120ms ease, stroke-width 120ms ease; }
+.gm-mapa-nacion__borde polygon:hover,
+.gm-mapa-nacion__borde polygon:focus { fill-opacity: 0.34; stroke-width: 4; outline: none; }
+.gm-mapa-nacion__borde polygon.is-selected { fill-opacity: 0.42; stroke-width: 5; stroke-dasharray: none; }
+.gm-nacion-color-row { display:flex; align-items:center; gap: var(--sp-2); margin-bottom: var(--sp-2); }
+.gm-nacion-color-row input[type="color"] { width: 44px; height: 30px; border: 1px solid var(--card-frame); border-radius: 6px; padding: 2px; background: none; cursor: pointer; }
+
+/* ── Diálogo modal del editor (sustituye a los prompt() encadenados) ── */
+.gm-dialogo-fondo { position: fixed; inset: 0; background: rgba(10,8,20,0.55); z-index: 9998; }
+.gm-dialogo {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: min(460px, calc(100vw - 32px)); max-height: min(80vh, 640px); overflow-y: auto;
+    background: var(--bg-elevated); border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg); box-shadow: 0 18px 50px rgba(0,0,0,0.4);
+    padding: var(--sp-4); z-index: 9999;
+}
+.gm-dialogo__titulo { margin: 0 0 var(--sp-3); }
+.gm-dialogo .gm-field { margin-bottom: var(--sp-3); }
+.gm-dialogo .gm-field label { display: block; font-size: var(--fs-small); font-weight: 700; margin-bottom: 4px; }
+.gm-dialogo__fila { display: flex; gap: var(--sp-2); align-items: center; }
+.gm-dialogo__fila .gm-input, .gm-dialogo__fila .gm-select { flex: 1; }
+.gm-dialogo__dado { flex: 0 0 auto; }
+.gm-dialogo__acciones { display: flex; gap: var(--sp-2); justify-content: flex-end; margin-top: var(--sp-4); }
+.gm-dialogo__otro { margin-top: var(--sp-2); }
+
+/* ============ Leyenda 4a: buscador + capas + foco (doc 5.2) ============ */
+.gm-leyenda-buscar { margin-top: var(--sp-3); max-width: 340px; }
+
+.gm-capas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: var(--sp-2); }
+.gm-capa-chip {
+    border: 1px solid var(--border-strong); background: var(--bg-elevated);
+    color: var(--card-ink); border-radius: 6px; padding: 4px 10px;
+    font-size: var(--fs-small); cursor: pointer;
+}
+.gm-capa-chip.is-off { opacity: 0.4; text-decoration: line-through; }
+
+.gm-leyenda-naciones { display: flex; flex-direction: column; gap: 2px; margin-top: var(--sp-2); max-width: 340px; }
+.gm-leyenda-fila {
+    display: flex; align-items: center; gap: 8px; padding: 3px 8px;
+    border-radius: 6px; cursor: pointer; font-size: var(--fs-small); color: var(--text-muted);
+}
+.gm-leyenda-fila:hover { background: var(--bg-elevated); color: var(--card-ink); }
+.gm-leyenda-fila.is-foco { background: var(--bg-elevated); color: var(--card-ink); font-weight: 700; }
+.gm-leyenda-fila.is-foco .gm-leyenda-fila__foco { color: #c0392b; }
+.gm-leyenda-fila__nombre { flex: 1; }
+.gm-leyenda-ojo { margin-left: auto; }
+.gm-leyenda-ojo.is-hidden { opacity: 0.4; text-decoration: line-through; }
+.u-oculto-extra { display: none; }
+
+.gm-foco-panel {
+    margin-top: var(--sp-2); padding: var(--sp-2) var(--sp-3); max-width: 340px;
+    border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
+    background: var(--bg-elevated);
+}
+.gm-foco-panel__titulo { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+
+/* Modo foco / búsqueda: lo que no coincide queda atenuado, no oculto */
+.gm-mapa-atenuado { opacity: 0.15; }

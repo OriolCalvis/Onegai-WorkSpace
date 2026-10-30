@@ -1,0 +1,31 @@
+{
+ "id": "hachero_de_la_cascada_golpe_de_hacha",
+ "name": "Golpe de hacha",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Los dos golpes de hacha del Hachero: tus golpes con arma hacen +1 de daño (agua).",
+ "flavorText": "",
+ "classTags": [
+  "hachero_de_la_cascada"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "Los dos golpes de hacha del Hachero: tus golpes con arma hacen +1 de daño (agua).",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Tus golpes con arma hacen +1 de daño.",
+   "mechanicHook": "siempre:bono_dano_arma:1"
+  },
+  {
+   "description": "[pendiente] la barra de ira (la llenan los golpes y la gasta la Rabia de la cascada).",
+   "mechanicHook": "pendiente_parcial:la barra de ira (la llenan los golpes y la gasta la Rabia de la cascada)"
+  }
+ ],
+ "fuente": "NosTale · Hachero de la cascada (Waterfall Berserker)"
+}

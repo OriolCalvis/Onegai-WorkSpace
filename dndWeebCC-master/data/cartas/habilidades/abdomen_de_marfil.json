@@ -1,0 +1,50 @@
+{
+ "id": "abdomen_de_marfil",
+ "name": "Abdomen de Marfil",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Endureces el vientre con el Ki hasta que es duro como el marfil: el próximo golpe que te llegue rebota sin hacerte daño, y te quedas con el cuerpo templado, +1 a la CA 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "monje_del_despertar"
+ ],
+ "roleTags": [],
+ "tags": [
+  "monje_del_despertar"
+ ],
+ "mechanicTags": [],
+ "actionType": "reaccion",
+ "target": "self",
+ "range": "short",
+ "duration": "2 turnos",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Endureces el vientre con el Ki hasta que es duro como el marfil: el próximo golpe que te llegue rebota sin hacerte daño, y te quedas con el cuerpo templado, +1 a la CA 2 turnos.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "Bloqueas el próximo ataque.",
+   "mechanicHook": "bloquea:ataque"
+  },
+  {
+   "description": "Cuerpo templado: +1 a la CA 2 turnos.",
+   "mechanicHook": "propio:2:bono_ca:1"
+  }
+ ]
+}

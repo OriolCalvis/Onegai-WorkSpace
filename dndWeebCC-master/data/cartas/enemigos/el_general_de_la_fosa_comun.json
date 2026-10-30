@@ -1,0 +1,96 @@
+{
+ "id": "el_general_de_la_fosa_comun",
+ "name": "El General de la Fosa Común",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "defensa",
+ "faction": "renacidos_de_la_fosa",
+ "stats": {
+  "CON": 10,
+  "DES": 9,
+  "INT": 8,
+  "CAR": 9
+ },
+ "derived": {
+  "vida": 70,
+  "ca": 21,
+  "defensaMental": 19,
+  "resistenciaFisica": 20,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Orden de Avance",
+   "defense": "resistencia_fisica",
+   "effect": "Golpe de sable oxidado + los Renacidos a 10 pies se desplazan 5 pies gratis hacia el enemigo."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "resistencia_fisica",
+   "effect": "Si el objetivo falla, queda Fatiga hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en Desesperación: su ataque firma se calcula como éxito crítico (GDD 7.6)."
+  }
+ ],
+ "passive": {
+  "name": "Guerra de Desgaste",
+  "description": "Guerra de Desgaste: los personajes que terminen su turno adyacentes a él ganan 1 nivel de Fatiga si fallan Resistencia física."
+ },
+ "conditionsInflicted": [
+  "fatiga"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Oscuro"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Sigue su método con calma: aún cree que sobra tiempo."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Activa la arena a pleno: Barro de fosa: correr (mover 15+) exige Resistencia física o Caído"
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final; su debilidad narrativa queda a la vista (el DJ da la pista si no la tienen)."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Terminar su última batalla con la única táctica que le queda: durar más que todos",
+  "metodo": "No persigue: avanza en formación y convierte cada ronda en una menos para ti",
+  "debilidad_narrativa": "Su vieja derrota: mostrarle el estandarte enemigo de aquella guerra (objeto de campaña) lo detiene una ronda entera",
+  "vinculo": "renacidos_de_la_fosa"
+ },
+ "arena": {
+  "name": "El Campo de la Última Carga",
+  "hazard": "Barro de fosa: correr (mover 15+) exige Resistencia física o Caído"
+ },
+ "legendaryActions": [
+  "Relevo (1/ronda): un Renacido criatura caído esta escena se reincorpora con 1 de vida"
+ ],
+ "storyCard": {
+  "title": "El General de la Fosa Común",
+  "text": "Sus soldados desertaron a la vida. Él no aceptó el armisticio.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Sigue ganando la guerra que perdió."
+}

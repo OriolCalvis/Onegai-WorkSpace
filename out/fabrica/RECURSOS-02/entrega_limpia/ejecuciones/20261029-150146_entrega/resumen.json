@@ -1,0 +1,30 @@
+{
+  "t": "2026-10-29T15:01:46+01:00",
+  "fase": "completa",
+  "etiqueta": "entrega",
+  "raiz": "/private/tmp/ruta-limpio-r02",
+  "commit": "8f6ab76620a30d1de7023f7bfea4448595fe7c30",
+  "checks": {
+    "ruta_compilar": {
+      "codigo": 0,
+      "items": [],
+      "segundos": 45.7,
+      "cmd": "cmake --preset macos-debug && cmake --build --preset macos-debug --target motor_editor test_plan_ruta test_referencias_proyecto test_project_panel test_editor_document_session test_editor_actions test_editor_ayuda --parallel 4",
+      "log": "RECURSOS-02/ejecuciones/20261029-150146_entrega/ruta_compilar.log"
+    },
+    "ruta_pruebas": {
+      "codigo": 0,
+      "items": [],
+      "segundos": 4.8,
+      "cmd": "ctest --test-dir out/build/macos-debug -C Debug -R \"^(test_plan_ruta|test_referencias_proyecto|test_project_panel|test_editor_document_session|test_editor_actions|test_editor_ayuda|test_motor_editor_smoke_[12])$\" --no-tests=error --output-on-failure",
+      "log": "RECURSOS-02/ejecuciones/20261029-150146_entrega/ruta_pruebas.log"
+    },
+    "ruta_paridad": {
+      "codigo": 0,
+      "items": [],
+      "segundos": 0.1,
+      "cmd": "/opt/homebrew/opt/python@3.14/bin/python3.14 -m unittest discover -s planificacion/replica -p \"test_*.py\" -v",
+      "log": "RECURSOS-02/ejecuciones/20261029-150146_entrega/ruta_paridad.log"
+    }
+  }
+}

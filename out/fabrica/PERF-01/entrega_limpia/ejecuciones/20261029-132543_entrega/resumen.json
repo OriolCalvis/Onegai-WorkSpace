@@ -1,0 +1,30 @@
+{
+  "t": "2026-10-29T13:25:43+01:00",
+  "fase": "completa",
+  "etiqueta": "entrega",
+  "raiz": "/private/tmp/perfilador-limpio-7fa2117",
+  "commit": "7fa211724ea681be3be8ac9a789bd60afaa24411",
+  "checks": {
+    "perfil_compilar": {
+      "codigo": 0,
+      "items": [],
+      "segundos": 34.9,
+      "cmd": "cmake --preset macos-debug && cmake --build --preset macos-debug --target juego test_perfilador test_application_loop test_input_system test_scene_manager --parallel 4",
+      "log": "PERF-01/ejecuciones/20261029-132543_entrega/perfil_compilar.log"
+    },
+    "perfil_ctest": {
+      "codigo": 0,
+      "items": [],
+      "segundos": 1.0,
+      "cmd": "ctest --test-dir out/build/macos-debug -C Debug -R \"^(test_perfilador|test_application_loop|test_input_system|test_scene_manager)$\" --no-tests=error --output-on-failure",
+      "log": "PERF-01/ejecuciones/20261029-132543_entrega/perfil_ctest.log"
+    },
+    "perfil_paridad": {
+      "codigo": 0,
+      "items": [],
+      "segundos": 0.1,
+      "cmd": "/opt/homebrew/opt/python@3.14/bin/python3.14 -m unittest discover -s planificacion/replica -p \"test_*.py\" -v",
+      "log": "PERF-01/ejecuciones/20261029-132543_entrega/perfil_paridad.log"
+    }
+  }
+}

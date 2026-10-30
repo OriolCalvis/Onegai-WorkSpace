@@ -1,0 +1,55 @@
+{
+ "id": "repliegue_magico",
+ "name": "Repliegue Mágico",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Te preparas para replegarte: cuando te ataquen, te escondes en un pliegue de la magia y contrarrestas todos los ataques durante 1 turno; al volver, te defiendes con ventaja hasta el final del combate.",
+ "flavorText": "",
+ "classTags": [
+  "mago_chasqueador"
+ ],
+ "roleTags": [],
+ "tags": [
+  "mago_chasqueador",
+  "creador",
+  "Arcano"
+ ],
+ "mechanicTags": [
+  "Arcano",
+  "Creador"
+ ],
+ "actionType": "reaccion",
+ "target": "self",
+ "range": "short",
+ "duration": "1 turno",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": "INT",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Te preparas para replegarte: cuando te ataquen, te escondes en un pliegue de la magia y contrarrestas todos los ataques durante 1 turno; al volver, te defiendes con ventaja hasta el final del combate.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "Contrarrestas todos los ataques durante 1 turno.",
+   "mechanicHook": "bloquea:ataques:1"
+  },
+  {
+   "description": "Te defiendes con ventaja hasta el final del combate.",
+   "mechanicHook": "propio:combate:ventaja:defensa"
+  }
+ ]
+}

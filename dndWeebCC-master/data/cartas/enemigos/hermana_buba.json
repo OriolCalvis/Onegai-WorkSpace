@@ -1,0 +1,84 @@
+{
+ "id": "hermana_buba",
+ "name": "Hermana Buba",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "apoyo",
+ "faction": "plaga_de_san_lazaro",
+ "stats": {
+  "CON": 6,
+  "DES": 5,
+  "INT": 6,
+  "CAR": 8
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 16,
+  "defensaMental": 18,
+  "resistenciaFisica": 16,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Inyección de Fe",
+   "defense": "resistencia_fisica",
+   "effect": "Daño de veneno que suma su INT; si el objetivo estaba Envenenado, también queda con desventaja (fiebre)."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "resistencia_fisica",
+   "effect": "Si el objetivo falla, queda Envenenado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Ronda de Visitas",
+  "description": "Ronda de Visitas: al final de su turno, cura 2 a un aliado infecto o le da +1 a su próxima tirada (siempre atiende a alguien)."
+ },
+ "conditionsInflicted": [
+  "envenenado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Veneno"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Encadena su técnica tras el ataque firma y +1 al daño."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Que todos reciban su tratamiento, con o sin consentimiento",
+  "metodo": "Atiende a los suyos en primera línea con eficacia inquietante",
+  "debilidad_narrativa": "Su juramento: recordarle el juramento médico original (prueba de CAR) la hace dudar — una ronda sin atacar",
+  "vinculo": "plaga_de_san_lazaro"
+ },
+ "arena": {
+  "name": "El Pabellón de Cuarentena",
+  "hazard": "Cortinas: bloquean visión — moverlas revela camas ocupadas (civiles que proteger)"
+ },
+ "legendaryActions": [],
+ "storyCard": {
+  "title": "Hermana Buba",
+  "text": "Su vocación es real. Su criterio, contagioso.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "La enfermera que nadie pidió y todos reciben."
+}

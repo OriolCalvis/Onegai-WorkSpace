@@ -1,0 +1,52 @@
+{
+ "id": "acolito_de_penumbra",
+ "name": "Acolito de Penumbra",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 1,
+ "role": "conjurador",
+ "faction": "cofradia_de_mascaras_de_plata",
+ "factionName": "La Cofradía de las Máscaras de Plata",
+ "stats": {
+  "CON": 1,
+  "DES": 1,
+  "INT": 4,
+  "CAR": 2
+ },
+ "derived": {
+  "vida": 12,
+  "ca": 11,
+  "defensaMental": 12,
+  "resistenciaFisica": 11,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de oscuro: daño que suma su INT (pool de INT, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: si el objetivo falla, queda Asustado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Cada criatura que falle una salvación contra él recibe una Marca Profana: la siguiente carta oscura que sufra le hará +1."
+ },
+ "conditionsInflicted": [
+  "asustado"
+ ],
+ "loot": [
+  "estilete_de_milicia",
+  "amuleto_de_foco"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Oscuro"
+ ],
+ "phases": [],
+ "flavorText": "El primer susurro de una fe prohibida."
+}

@@ -1,0 +1,53 @@
+{
+  "nombre": "Renacido",
+  "descripcion": "El Renacido es un guerrero que ha hecho un oscuro pacto para obtener un poder inimaginable a cambio de su propia vida. Este bárbaro-brujo ha sido corrompido, utilizando su propia energía vital como combustible para alimentar su furia y habilidades mágicas.",
+  "rolTematico": "Bárbaro-brujo autodestructivo que canaliza furia y magia oscura mediante el sacrificio de su propia vida.",
+  "dadoGolpe": "1d8",
+  "puntosGolpeNivel1": "8 + modificador de Constitución",
+  "puntosGolpePorNivel": "1d8 (o 5) + modificador de Constitución",
+  "atributoConjuro": "Carisma",
+  "atributosRelevantes": [
+    "Carisma",
+    "Sabiduría",
+    "Constitución"
+  ],
+  "competencias": {
+    "armaduras": ["Ligeras","Medias","Escudos"],
+    "armas": ["Simples","Marciales"],
+    "habilidadesElegir": ["Arcano","Engaño","Historia","Intimidación","Investigación","Naturaleza","Religión"],
+    "salvaciones": ["Carisma","Sabiduría"]
+  },
+  "mecanicas": {
+    "consumoDeVida": "Cada punto de vida sacrificado alimenta furia, añade daño y genera un escudo de sangre igual a 1.5×daño extra."
+  },
+  "accionesEspeciales": {},
+  "niveles": {
+    "1": { "habilidades": [ { 
+      "nombre": "Furia Corrupta", 
+      "descripcion": "Al entrar en furia, pierdes vida a cambio de escudo.", 
+      "efecto": "Pierdes 1d6 PV/turno y ganas un escudo de sangre de 1.5×PV sacrificados.", 
+      "usos": "Mod. Carisma por descanso corto", 
+      "accion": "Pasiva", 
+      "duracion": "1 minuto" } ] 
+    },
+    "2": { "habilidades": [ { "nombre": "Escudo de Oscuridad", "descripcion": "Duplica el escudo obtenido durante la furia.", "efecto": "Como acción adicional, duplicas el escudo ganado este turno.", "usos": "Mod. Sabiduría por descanso corto", "accion": "Adicional" } ] },
+    "3": { "habilidades": [ { "nombre": "Furia de la Muerte", "descripcion": "Sacrificas vida para aumentar daño.", "efecto": "Gasta hasta 3 PV/turno para infligir +1d6 daño por PV sacrificado.", "usos": "2 veces por descanso largo", "accion": "Pasiva", "duracion": "1 minuto" } ] },
+    "4": { "habilidades": [ { "nombre": "Mejora de Características" } ] },
+    "5": { "habilidades": [ { "nombre": "Toque de la Muerte", "descripcion": "Canalizas energía oscura para drenar vida.", "efecto": "Ataque que inflige 3d6 necrótico y te cura la mitad del daño.", "usos": "Mod. Sabiduría por descanso largo", "accion": "Normal" } ] },
+    "6": { "habilidades": [ { "nombre": "Furia Desgarradora", "descripcion": "Tus ataques maldicen al enemigo.", "efecto": "Tras acertar en furia, enemigo con desventaja en ataques 1 minuto.", "usos": "2 veces por descanso largo", "accion": "Pasiva" } ] },
+    "7": { "habilidades": [ { "nombre": "Escudo Vampírico", "descripcion": "El escudo se refuerza al dañar.", "efecto": "En furia, tu escudo aumenta en (daño/2).", "usos": "1 vez por descanso largo", "accion": "Pasiva", "duracion": "1 minuto" } ] },
+    "8": { "habilidades": [ { "nombre": "Mejora de Características" } ] },
+    "9": { "habilidades": [ { "nombre": "Marcha de los Renacidos", "descripcion": "Inmune a ralentizaciones e inconsciencia en furia.", "efecto": "Ventaja en TS de movimiento; con escudo, inmune a inconsciencia.", "accion": "Pasiva", "duracion": "1 minuto" } ] },
+    "10": { "habilidades": [ { "nombre": "Furia Imparable", "descripcion": "Ataque adicional con escudo activo.", "efecto": "Ganas un ataque extra por turno si tu escudo >0.", "accion": "Pasiva", "usos": "Automático" } ] },
+    "11": { "habilidades": [ { "nombre": "Destrucción del Alma", "descripcion": "Ataque devastador que drena vida y alma.", "efecto": "5d6 necrótico; TS Sab o aturdido; escudo += daño infligido.", "usos": "1 vez por descanso largo", "accion": "Normal" } ] },
+    "12": { "habilidades": [ { "nombre": "Mejora de Características" } ] },
+    "13": { "habilidades": [ { "nombre": "Furia Mortal", "descripcion": "Drena más vida del enemigo.", "efecto": "+2d6 necrótico; escudo += necrótico/2.", "accion": "Pasiva" } ] },
+    "14": { "habilidades": [ { "nombre": "Mejora de Características" } ] },
+    "15": { "habilidades": [ { "nombre": "Furia de la Oscuridad", "descripcion": "Puedes invocar la oscuridad misma para rodearte y protegerte mientras estás en furia.", "efecto": "Aura de oscuridad de 10 pies; enemigos en el aura tienen desventaja en ataques contra ti y aliados.", "usos": "1 vez por descanso largo", "accion": "Normal", "duracion": "1 minuto" } ] },
+    "16": { "habilidades": [ { "nombre": "Mejora de Características" } ] },
+    "17": { "habilidades": [ { "nombre": "Mejora de Características" } ] },
+    "18": { "habilidades": [ { "nombre": "Furia Imparable Mejorada", "descripcion": "Tu furia te convierte en un guerrero imparable, resistiendo cualquier tipo de daño mientras estás en furia.", "efecto": "Inmunidad al daño necrótico, radiante y contundente.", "usos": "Automático mientras estés en furia", "accion": "Pasiva" } ] },
+    "19": { "habilidades": [ { "nombre": "Mejora de Características" } ] },
+    "20": { "habilidades": [ { "nombre": "Maestro de la Furia Oscura", "descripcion": "Alcanza el pináculo de tu poder corrupto, desatando una furia que destruye a tus enemigos y te otorga un escudo casi impenetrable.", "efecto": "Durante 1 minuto, todos tus ataques infligen crítico automático y ganas resistencia a todos los daños. Cada vez que infliges daño, tu escudo aumenta en 1d12.", "usos": "1 vez por descanso largo", "accion": "Normal" } ] }
+  }
+}

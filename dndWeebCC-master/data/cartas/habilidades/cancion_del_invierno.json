@@ -1,0 +1,53 @@
+{
+ "id": "cancion_del_invierno",
+ "name": "Canción del Invierno",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Congelas a los enemigos cercanos. Quedan fuera de combate 2 turnos y sus tiradas de defensa tienen desventaja.",
+ "flavorText": "",
+ "classTags": [
+  "bardo_de_las_cuatro_estaciones"
+ ],
+ "roleTags": [],
+ "tags": [
+  "bardo_de_las_cuatro_estaciones",
+  "Cancion"
+ ],
+ "mechanicTags": [
+  "Cancion"
+ ],
+ "actionType": "accion_principal",
+ "target": "all_enemies",
+ "range": "short",
+ "duration": "2 turnos",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": "resistencia_fisica",
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Congelas a los enemigos cercanos. Quedan fuera de combate 2 turnos y sus tiradas de defensa tienen desventaja.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "Quedan fuera de combate 2 turnos.",
+   "mechanicHook": "estado:2:incapacitado"
+  },
+  {
+   "description": "Sus tiradas de defensa tienen desventaja.",
+   "mechanicHook": "estado:2:desventaja:defensa"
+  }
+ ]
+}

@@ -1,0 +1,53 @@
+{
+ "id": "estampida",
+ "name": "Estampida",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Cargas contra los enemigos como una manada en estampida: 3d6 de daño a cada uno, y caen al suelo 1 turno.",
+ "flavorText": "",
+ "classTags": [
+  "monje_del_despertar"
+ ],
+ "roleTags": [],
+ "tags": [
+  "monje_del_despertar",
+  "creador"
+ ],
+ "mechanicTags": [
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "all_enemies",
+ "range": "short",
+ "duration": "1 turno",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Cargas contra los enemigos como una manada en estampida: 3d6 de daño a cada uno, y caen al suelo 1 turno.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "3d6 de daño a cada enemigo.",
+   "mechanicHook": "dano:3d6"
+  },
+  {
+   "description": "Derribo: caen al suelo 1 turno.",
+   "mechanicHook": "condicion:caido:1"
+  }
+ ]
+}

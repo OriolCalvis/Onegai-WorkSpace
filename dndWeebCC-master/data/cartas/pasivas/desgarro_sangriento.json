@@ -1,0 +1,31 @@
+{
+ "id": "desgarro_sangriento",
+ "name": "Desgarro Sangriento",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Puedes recuperar una habilidad a cambio de sumar 1 al contador de Desgarro. El contador se reinicia en cada descanso. [pendiente: aclarar 'pierdes 1 punto cada vez que lanzas un hechizo o habilidad desde tu zona de reposo']",
+ "flavorText": "",
+ "classTags": [
+  "el_apostata"
+ ],
+ "trigger": "Al recuperar una habilidad",
+ "effect": {
+  "description": "Puedes recuperar una habilidad a cambio de sumar 1 al contador de Desgarro. El contador se reinicia en cada descanso. [pendiente: aclarar 'pierdes 1 punto cada vez que lanzas un hechizo o habilidad desde tu zona de reposo']",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "Recuperas una habilidad a cambio de sumar 1 al contador de Desgarro.",
+   "mechanicHook": "recupera_carta:1"
+  },
+  {
+   "description": "[pendiente] que hace el contador de Desgarro.",
+   "mechanicHook": "pendiente_parcial:que hace el contador de Desgarro"
+  }
+ ]
+}

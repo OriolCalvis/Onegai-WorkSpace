@@ -1,0 +1,93 @@
+{
+ "id": "hist_itx_la_marea_que_recuerda",
+ "title": "Itx La Marea que Recuerda",
+ "type": "story",
+ "hook": "Tres barcos han salido del puerto de Mijorn y ninguno ha llegado a puerto alguno. El mercader Itx Adiel jura que el mar está cobrando una deuda vieja, y que él sabe de quién.",
+ "location": "el muelle viejo de Mijorn",
+ "antagonist": "itx_matriarca_de_la_sal",
+ "tierRange": [
+  3,
+  4
+ ],
+ "reward": "loot_itx_alijo_de_sal",
+ "decision": "¿Devolver al mar lo que el puerto le robó, o romper el pacto y quedarse el alijo?",
+ "complication": "La guardia del puerto cobra del gremio de la sal y no quiere testigos.",
+ "consequence": "Si nadie actúa antes de la luna nueva, la marea negra llega a la ciudad y el puerto queda cerrado toda la estación.",
+ "months": [
+  "mes_de_laigua",
+  "mes_de_les_ombres"
+ ],
+ "faction": "espectros_de_la_tomba",
+ "chain": {
+  "trama": "itx_sal",
+  "step": 1,
+  "of": 2
+ },
+ "flavorText": "El mar no olvida: solo espera a que baje la marea.",
+ "escenas": [
+  {
+   "lugar": "El muelle viejo de Mijorn",
+   "momento": "de noche, con marea baja",
+   "enemigos": [
+    "itx_centinela_de_salmuera"
+   ],
+   "aliados": [
+    "npc_itx_adiel_de_mijorn"
+   ],
+   "eventos": [
+    "itx_marea_negra"
+   ],
+   "trampas": [
+    "itx_red_de_salmuera"
+   ],
+   "loot": [],
+   "acciones": [
+    {
+     "accion": "Negociar con Itx Adiel",
+     "consecuencia": "Cuenta dónde está el alijo, pero avisa a la guardia para cubrirse",
+     "lleva_a": "2"
+    },
+    {
+     "accion": "Registrar el muelle sin preguntar",
+     "consecuencia": "Encuentran la red de salmuera por las malas: trampa activada",
+     "lleva_a": "2"
+    },
+    {
+     "accion": "Esperar a que suba la marea",
+     "consecuencia": "El centinela se retira solo, pero la Matriarca ya los espera",
+     "lleva_a": "2"
+    }
+   ]
+  },
+  {
+   "lugar": "El Muelle Hundido",
+   "momento": "al alba",
+   "enemigos": [
+    "itx_matriarca_de_la_sal"
+   ],
+   "aliados": [],
+   "eventos": [],
+   "trampas": [],
+   "loot": [
+    "loot_itx_alijo_de_sal"
+   ],
+   "acciones": [
+    {
+     "accion": "Aceptar el trato de la Matriarca",
+     "consecuencia": "Evitan el combate, pero uno queda Anclado de forma permanente",
+     "lleva_a": null
+    },
+    {
+     "accion": "Devolver al mar el objeto robado",
+     "consecuencia": "Su concentración se rompe: el combate empieza directamente en fase de Cobro",
+     "lleva_a": null
+    },
+    {
+     "accion": "Atacar de frente",
+     "consecuencia": "Combate completo con las tres fases y la arena inundándose",
+     "lleva_a": null
+    }
+   ]
+  }
+ ]
+}

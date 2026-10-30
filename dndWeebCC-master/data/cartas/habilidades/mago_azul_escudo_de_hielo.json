@@ -1,0 +1,62 @@
+{
+ "id": "mago_azul_escudo_de_hielo",
+ "name": "Escudo de hielo",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Te cubres con un escudo de hielo: el escudo congelado te da +2 a la CA 1 turno, y el escudo helado de maná, hasta el final del combate, +1 a la CA y +1 a tus golpes con arma.",
+ "flavorText": "",
+ "classTags": [
+  "mago_azul"
+ ],
+ "roleTags": [],
+ "tags": [
+  "mago_azul",
+  "estandar",
+  "Hielo"
+ ],
+ "mechanicTags": [
+  "Hielo"
+ ],
+ "actionType": "accion_principal",
+ "target": "self",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "INT",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Te cubres con un escudo de hielo: el escudo congelado te da +2 a la CA 1 turno, y el escudo helado de maná, hasta el final del combate, +1 a la CA y +1 a tus golpes con arma.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Escudo Congelado: +2 a tu CA 1 turno.",
+   "mechanicHook": "propio:1:bono_ca:2"
+  },
+  {
+   "description": "Escudo helado de maná: +1 a tu CA todo el combate.",
+   "mechanicHook": "propio:combate:bono_ca:1"
+  },
+  {
+   "description": "Escudo helado de maná: +1 a tus golpes con arma todo el combate.",
+   "mechanicHook": "propio:combate:bono_dano_arma:1"
+  },
+  {
+   "description": "[pendiente] cuánto dura el Escudo Congelado (la ficha no lo da) y que congele 1 turno a quien te ataque.",
+   "mechanicHook": "pendiente_parcial:cuánto dura el Escudo Congelado (la ficha no lo da) y que congele 1 turno a quien te ataque"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Mago azul (Blue Mage) · H938 Escudo de hielo"
+}

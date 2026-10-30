@@ -1,0 +1,54 @@
+{
+ "id": "corsario_vampirico_sable_sangriento",
+ "name": "Sable sangriento",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Tu sable maldito abre una herida que no se cierra: 2d6 de daño de sangre, y sangra 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "corsario_vampirico"
+ ],
+ "roleTags": [],
+ "tags": [
+  "corsario_vampirico",
+  "estandar",
+  "Sangre"
+ ],
+ "mechanicTags": [
+  "Sangre"
+ ],
+ "actionType": "accion_principal",
+ "target": "zone_radius",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "DES",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Tu sable maldito abre una herida que no se cierra: 2d6 de daño de sangre, y sangra 2 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "2d6 de daño de sangre.",
+   "mechanicHook": "dano:2d6"
+  },
+  {
+   "description": "Sangra 2 turnos.",
+   "mechanicHook": "condicion:sangrado:2"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "Propia · Corsario Vampírico"
+}

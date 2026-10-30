@@ -1,0 +1,57 @@
+{
+ "id": "servidor_del_canon_de_fuego_maestro_de_las_armas",
+ "name": "Maestro de las armas",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Llevas el cañón al límite hasta el final del combate: atacas con ventaja, tus golpes con arma hacen +1 y tienes +1 a la CA.",
+ "flavorText": "",
+ "classTags": [
+  "servidor_del_canon_de_fuego"
+ ],
+ "roleTags": [],
+ "tags": [
+  "servidor_del_canon_de_fuego",
+  "creador"
+ ],
+ "mechanicTags": [
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "self",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Llevas el cañón al límite hasta el final del combate: atacas con ventaja, tus golpes con arma hacen +1 y tienes +1 a la CA.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Cargador turbo: ventaja en ataque todo el combate.",
+   "mechanicHook": "estado:combate:ventaja:ataque"
+  },
+  {
+   "description": "Cargador turbo: +1 a tus golpes con arma todo el combate.",
+   "mechanicHook": "estado:combate:bono_dano_arma:1"
+  },
+  {
+   "description": "Defensa con el arma: +1 a la CA todo el combate.",
+   "mechanicHook": "estado:combate:bono_ca:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Servidor del cañón de fuego (Fire Cannoneer) · H1076 Maestro de las armas"
+}

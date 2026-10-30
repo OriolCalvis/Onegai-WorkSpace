@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title" th:text="${personatge.nom} + ' · Jugar cartas'">Jugar cartas</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="u-page-header">
+        <div>
+            <p class="gm-sidebar__eyebrow u-eyebrow">Vista de jugador — en combate (D11)</p>
+            <h1 th:text="${personatge.nom}">Nombre</h1>
+            <p class="u-lead--760">
+                Toca «Jugar» para mover una habilidad de Activa a su pila de descanso (regla 6
+                del GDD). El recurso de este personaje es literalmente dónde están sus cartas.
+            </p>
+        </div>
+        <div class="u-flex-gap2">
+            <a class="gm-btn gm-btn--outline" th:href="@{/personatges/{id}(id=${personatge.id})}">Ver ficha completa</a>
+        </div>
+    </div>
+
+    <div class="u-actions--wrap u-mb-sp5">
+        <form th:action="@{/combat/jugador/{id}/descansar-curt(id=${personatge.id})}" method="post" class="u-inline">
+            <button class="gm-btn gm-btn--outline" type="submit">💤 Descanso corto</button>
+        </form>
+        <form th:action="@{/combat/jugador/{id}/descansar-llarg(id=${personatge.id})}" method="post" class="u-inline">
+            <button class="gm-btn gm-btn--outline" type="submit">🌙 Descanso largo</button>
+        </form>
+    </div>
+
+    <p class="u-text-muted" th:if="${#lists.isEmpty(habilidades)}">
+        Este personaje no tiene habilidades elegidas todavía.
+    </p>
+
+    <div class="gm-chip-grid" th:if="${!#lists.isEmpty(habilidades)}">
+        <div class="gm-chip" th:each="h : ${habilidades}"
+             th:with="pila=${piles.pilaDe(h.id)}">
+            <span class="gm-chip__title" th:text="${h.name}">Habilidad</span>
+            <span class="gm-chip__meta">
+                <span class="gm-chip__tier" th:text="'T' + ${h.tier}">T1</span>
+                <span th:switch="${pila.name()}">
+                    <span th:case="'ACTIVA'">Activa</span>
+                    <span th:case="'DESCANSO_CORTO'">Descanso Corto</span>
+                    <span th:case="'DESCANSO_LARGO'">Descanso Largo</span>
+                </span>
+            </span>
+            <form th:if="${pila.name() == 'ACTIVA'}"
+                  th:action="@{/combat/jugador/{id}/jugar/{cardId}(id=${personatge.id},cardId=${h.id})}"
+                  method="post" class="u-inline u-mt-sp1">
+                <button class="gm-btn gm-btn--primary gm-btn--sm" type="submit">▶ Jugar</button>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

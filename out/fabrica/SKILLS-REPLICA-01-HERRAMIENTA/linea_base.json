@@ -1,0 +1,24 @@
+{
+  "t": "2026-10-29T12:44:52+01:00",
+  "fase": "completa",
+  "etiqueta": "base_completa",
+  "raiz": "/Users/admin/Documents/Documentos - Oriol Os (2)/Software",
+  "commit": "0d853ad3dac8401f2dbc33650e0dbb3f3d05c12c",
+  "checks": {
+    "replica_regresiones": {
+      "codigo": 0,
+      "items": [],
+      "segundos": 0.1,
+      "cmd": "/opt/homebrew/opt/python@3.14/bin/python3.14 -m unittest discover -s planificacion/replica -p 'test_*.py' -v",
+      "log": "SKILLS-REPLICA-01-HERRAMIENTA/ejecuciones/20261029-124452_base_completa/replica_regresiones.log"
+    },
+    "replica_matriz": {
+      "codigo": 0,
+      "items": [],
+      "segundos": 0.0,
+      "cmd": "/opt/homebrew/opt/python@3.14/bin/python3.14 planificacion/replica/parity.py planificacion/replica/features.csv --json",
+      "log": "SKILLS-REPLICA-01-HERRAMIENTA/ejecuciones/20261029-124452_base_completa/replica_matriz.log"
+    }
+  },
+  "dir": "/Users/admin/Documents/Documentos - Oriol Os (2)/Software/out/fabrica/SKILLS-REPLICA-01-HERRAMIENTA/ejecuciones/20261029-124452_base_completa"
+}

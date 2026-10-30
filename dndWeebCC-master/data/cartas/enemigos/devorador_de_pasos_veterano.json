@@ -1,0 +1,52 @@
+{
+ "id": "devorador_de_pasos_veterano",
+ "name": "Devorador de Pasos Veterano",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 4,
+ "role": "escaramuzador",
+ "faction": "hechiceros_del_vacio",
+ "factionName": "Los Hechiceros del Vacío",
+ "stats": {
+  "CON": 4,
+  "DES": 7,
+  "INT": 5,
+  "CAR": 4
+ },
+ "derived": {
+  "vida": 24,
+  "ca": 17,
+  "defensaMental": 14,
+  "resistenciaFisica": 14,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Zancada Robada",
+   "defense": "CA",
+   "effect": "Ataque de magico: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Distancia Negada",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: si el objetivo falla, queda Anclado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "El espacio a 5 pies de ellos cuesta el doble de movimiento a sus enemigos (el vacío pesa)."
+ },
+ "conditionsInflicted": [
+  "anclado"
+ ],
+ "loot": [
+  "vara_de_aprendiz_de_milicia",
+  "tunica_del_conjurador"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Magico"
+ ],
+ "phases": [],
+ "flavorText": "Estudiaron el hueco entre las cosas. El hueco les devolvió la mirada."
+}

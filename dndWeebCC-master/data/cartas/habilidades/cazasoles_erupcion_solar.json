@@ -1,0 +1,59 @@
+{
+ "id": "cazasoles_erupcion_solar",
+ "name": "Erupción solar",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "El Lobo solar aparece junto al enemigo y lo ciega con su luz, y tu lanza de energía solar estalla: 4d6 de daño de luz y aturdimiento 1 turno (no ataca y se defiende con desventaja).",
+ "flavorText": "",
+ "classTags": [
+  "cazasoles"
+ ],
+ "roleTags": [],
+ "tags": [
+  "cazasoles",
+  "creador",
+  "Luz"
+ ],
+ "mechanicTags": [
+  "Luz",
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "El Lobo solar aparece junto al enemigo y lo ciega con su luz, y tu lanza de energía solar estalla: 4d6 de daño de luz y aturdimiento 1 turno (no ataca y se defiende con desventaja).",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "4d6 de daño de luz.",
+   "mechanicHook": "dano:4d6"
+  },
+  {
+   "description": "Aturdido: no ataca.",
+   "mechanicHook": "estado:1:incapacitado"
+  },
+  {
+   "description": "Aturdido: se defiende con desventaja.",
+   "mechanicHook": "estado:1:desventaja:defensa"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Cazasoles (Sunchaser) · H1584+H1654+H1636 Erupción solar"
+}

@@ -1,0 +1,183 @@
+{
+    "nombre": "Señor de las Armas",
+    "descripcion": "Hechicero-guerrero que invoca armas místicas y reliquias antiguas como medio de combate. Domina el campo de batalla convirtiéndolo en su arsenal.",
+    "rolTematico": "Invocador de armas mágicas legendarias con versatilidad ofensiva.",
+    "dadoGolpe": "1d10",
+    "puntosGolpeNivel1": "10 + modificador de Constitución",
+    "puntosGolpePorNivel": "1d10 (o 6) + modificador de Constitución",
+    "atributoConjuro": "Carisma",
+    "atributosRelevantes": ["Constitución", "Carisma", "Fuerza"],
+    "competencias": {
+      "armaduras": ["Ligeras", "Medias"],
+      "armas": [
+        "Armas simples", "Espadas largas", "Espadas cortas",
+        "Espadas bastardas", "Lanzas", "Ballestas ligeras"
+      ],
+      "habilidadesElegir": [
+        "Acrobacias", "Trato con animales", "Atletismo", "Historia",
+        "Perspicacia", "Intimidación", "Percepción", "Supervivencia"
+      ],
+      "salvaciones": ["Constitución", "Carisma"]
+    },
+    "mecanicas": {    },
+    "accionesEspeciales": {    },
+    "niveles": {
+      "1": {
+        "habilidades": [
+          {
+            "nombre": "Arsenal del Rey",
+            "descripcion": "Invoca un arma flotante para combate cuerpo a cuerpo o a distancia.",
+            "efecto": "1d6 daño (fuerza o cortante), flota durante 1 minuto.",
+            "vidaArma": 5,
+            "escalado": "1d6 adicional cada 4 niveles",
+            "accion": "Normal"
+          }
+        ]
+      },
+      "2": {
+        "habilidades": [
+          {
+            "nombre": "Técnicas del Arsenal",
+            "descripcion": "Ataque combinado con 3 armas mágicas que explotan.",
+            "efecto": "Cada arma inflige 1d6 daño. Explota, afecta aliados.",
+            "usos": "2 por descanso corto (+1 cada 4 niveles)",
+            "accion": "Normal"
+          }
+        ]
+      },
+      "3": {
+        "habilidades": [
+          {
+            "nombre": "Tesoro del Rey",
+            "descripcion": "Invoca un arma antigua con 2d8 daño de trueno o viento.",
+            "vidaArma": 7,
+            "efecto": "Ignora resistencias",
+            "usos": "1 por descanso corto (+1 cada 4 niveles)",
+            "accion": "Normal"
+          }
+        ]
+      },
+      "4": {
+        "habilidades": [{"nombre": "Mejora de Características"}]
+      },
+      "5": {
+        "mejoras": [
+          {
+            "nombre": "Invocación de Armas Múltiples",
+            "descripcion": "Invoca hasta 2 armas simultáneamente.",
+            "vidaArma": 7,
+            "usos": "Modificador de Carisma por descanso largo",
+            "accion": "Normal"
+          }
+        ]
+      },
+      "6": {
+        "mejoras": [
+          {
+            "nombre": "Maestría en Tesoros",
+            "efecto": "+2 daño adicional y efecto especial de 2d6 (explosión, fuego, desintegración)",
+            "accion": "Automático"
+          }
+        ]
+      },
+      "7": {
+        "habilidades": [
+          {
+            "nombre": "Dominio de Armas Legendarias",
+            "descripcion": "Invoca una espada legendaria con daño masivo en área.",
+            "efecto": "2d10 daño en radio de 30 pies, dura 5 turnos.",
+            "vidaArma": 20,
+            "escalado": "1d10 adicional cada 6 niveles",
+            "usos": "1 por descanso largo",
+            "accion": "Adicional"
+          }
+        ]
+      },
+      "8": {
+        "habilidades": [{"nombre": "Mejora de Características"}]
+      },
+      "9": {
+        "habilidades": [
+          {
+            "nombre": "Invocación Masiva",
+            "descripcion": "Invoca hasta 5 armas que atacan un área de 60 pies.",
+            "efecto": "6d6 daño de fuerza/cortante + 2d6 explosión (salvación 10 + competencia + Carisma)",
+            "accion": "Adicional",
+            "usos": "1 por descanso largo"
+          }
+        ]
+      },
+      "10": {
+        "habilidades": [
+          {
+            "nombre": "Tesoro Definitivo",
+            "descripcion": "Invoca una lanza divina que atraviesa enemigos en línea.",
+            "efecto": "8d6 daño radiante o necrótico, línea de 60 pies.",
+            "vidaArma": 45,
+            "duracion": "10 turnos",
+            "usos": "1 por descanso largo",
+            "accion": "Normal"
+          }
+        ]
+      },
+      "11": {
+        "mejoras": [
+          {
+            "nombre": "Destrucción Imparable",
+            "efecto": "+3 daño extra (total +5), atraviesan enemigos (3 pies)",
+            "accion": "-"
+          }
+        ]
+      },
+      "12": {
+        "habilidades": [{"nombre": "Mejora de Características"}]
+      },
+      "13": {
+        "habilidades": [
+          {
+            "nombre": "Armamento Cósmico",
+            "descripcion": "Invoca armas cósmicas con efectos elementales y de estado.",
+            "efecto": "Daño de fuego, hielo o trueno + efecto especial (4d6): explosión, congelación, aturdimiento.",
+            "usos": "1 por descanso largo",
+            "accion": "Adicional"
+          }
+        ]
+      },
+      "15": {
+        "habilidades": [
+          {
+            "nombre": "Invocación Total",
+            "descripcion": "Invoca hasta 10 armas que atacan automáticamente a todos los enemigos.",
+            "efecto": "5d6 daño a todos en 15 pies por 1 minuto.",
+            "duracion": "1 minuto",
+            "usos": "1 por descanso largo",
+            "accion": "Normal"
+          }
+        ]
+      },
+      "16": {
+        "habilidades": [{"nombre": "Mejora de Características"}]
+      },
+      "18": {
+        "habilidades": [
+          {
+            "nombre": "Lluvia de Tesoros",
+            "efecto": "Invocas una lluvia de armas que afecta a todos los enemigos en un área de 50 pies, infligiendo 8d6 de daño radiante o necrótico.",
+            "usos": "1 por descanso largo",
+            "accion": "Adicional"
+          }
+        ]
+      },
+      "20": {
+        "habilidades": [
+          {
+            "nombre": "Rey de las Armas",
+            "efecto": "Durante 1 minuto, puedes invocar un número ilimitado de armas, infligiendo 10d6 de daño por cada arma. Además, tus armas pueden causar efectos adicionales (explosión, aturdimiento, empuje).",
+            "usos": "1 por descanso largo",
+            "accion": "Acción Completa"
+          }
+        ]
+      }
+    }
+  }
+  

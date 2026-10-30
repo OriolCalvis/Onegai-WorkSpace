@@ -1,0 +1,55 @@
+{
+ "id": "caballero_draconiano_destruccion_de_armadura",
+ "name": "Destrucción de armadura",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Cuatro lanzas de luz en los puntos débiles: 3d6 de daño de luz y la armadura perforada del todo: -2 a la CA durante 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "caballero_draconiano"
+ ],
+ "roleTags": [],
+ "tags": [
+  "caballero_draconiano",
+  "creador",
+  "Luz"
+ ],
+ "mechanicTags": [
+  "Luz",
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Cuatro lanzas de luz en los puntos débiles: 3d6 de daño de luz y la armadura perforada del todo: -2 a la CA durante 2 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "3d6 de daño de luz.",
+   "mechanicHook": "dano:3d6"
+  },
+  {
+   "description": "Armadura completamente perforada: -2 a la CA durante 2 turnos.",
+   "mechanicHook": "estado:2:penal_ca:2"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Caballero Draconiano (Dragon Knight) · H1729 Destrucción de armadura"
+}

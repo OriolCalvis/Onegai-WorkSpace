@@ -1,0 +1,55 @@
+{
+ "id": "granadero_escudo_energetico_de_dragonio",
+ "name": "Escudo energético de Dragonio",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "El escudo de energía de dragonio contrarresta los ataques de ese turno y te protege: +1 a tu CA durante 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "granadero"
+ ],
+ "roleTags": [],
+ "tags": [
+  "granadero",
+  "estandar"
+ ],
+ "mechanicTags": [],
+ "actionType": "reaccion",
+ "target": "self",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "El escudo de energía de dragonio contrarresta los ataques de ese turno y te protege: +1 a tu CA durante 2 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Contrarresta los ataques de ese turno.",
+   "mechanicHook": "bloquea:ataques:1"
+  },
+  {
+   "description": "Escudo energético: +1 a tu CA 2 turnos.",
+   "mechanicHook": "propio:2:bono_ca:1"
+  },
+  {
+   "description": "[pendiente] con Sobrecalentamiento, devolver al atacante el 20 % del daño.",
+   "mechanicHook": "pendiente_parcial:con Sobrecalentamiento, devolver al atacante el 20 % del daño"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Granadero (Blaster) · H1737 Escudo energético de Dragonio"
+}

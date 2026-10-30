@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Error</title>
+    <link th:href="@{/css/tokens.css}" rel="stylesheet">
+    <link th:href="@{/css/base.css}" rel="stylesheet">
+    <link th:href="@{/css/components.css}" rel="stylesheet">
+    <link th:href="@{/css/utilities.css}" rel="stylesheet">
+</head>
+<body>
+<div class="gm-app">
+    <div th:replace="~{Blocks/header-v2 :: header}"></div>
+    <div class="gm-body">
+        <div th:replace="~{Blocks/sidebar-v2 :: sidebar}"></div>
+        <main class="gm-main u-center-viewport">
+            <article class="gm-card gm-card--detalle u-card-static-420">
+                <span class="gm-card__tier" th:text="'ERROR ' + ${codigo != null ? codigo : '???'}">ERROR</span>
+                <h2 class="gm-card__title" th:text="${titulo != null ? titulo : 'Tirada fallida'}">Tirada fallida</h2>
+                <div class="gm-card__illustration">💥</div>
+                <div class="gm-card__rules">
+                    <p class="gm-card__desc u-clamp-unset" th:text="${mensaje != null ? mensaje : 'Algo no ha salido como esperábamos.'}">mensaje</p>
+                </div>
+                <div class="gm-card__footer">
+                    <a class="gm-btn gm-btn--primary" th:href="@{/}">Volver al inicio</a>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/diagnostico}">Ver diagnóstico</a>
+                </div>
+                <p class="gm-card__id">error · el detalle completo está en logs/onegai.log</p>
+            </article>
+        </main>
+    </div>
+    <div th:replace="~{Blocks/footer-v2 :: footer}"></div>
+</div>
+<script th:src="@{/js/theme.js}"></script>
+</body>
+</html>

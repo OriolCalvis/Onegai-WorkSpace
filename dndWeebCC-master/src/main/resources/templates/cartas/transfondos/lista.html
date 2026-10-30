@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Cartas de Trasfondo</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('transfondos')}"></div>
+
+            <div class="u-page-header">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-eyebrow">Sistema de Cartas y Tiers</p>
+                    <h1>Álbum de Trasfondos</h1>
+                </div>
+                <div class="u-flex-gap2">
+                    <button type="button" class="gm-btn gm-btn--outline" data-panel-anchor-toggle="gm-filtros">🔍 Filtros</button>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/transfondos/nueva}">+ Nuevo trasfondo</a>
+                </div>
+            </div>
+
+            <div class="u-detail-layout-260">
+                <!-- Panel flotante anclado: filtros -->
+                <aside id="gm-filtros" class="gm-panel gm-panel--anchored">
+                    <div class="gm-panel__header">
+                        <h3 class="gm-panel__title">Filtrar</h3>
+                    </div>
+                    <div class="gm-panel__body">
+                        <div class="gm-field">
+                            <label for="filtro-texto">Buscar por nombre</label>
+                            <input id="filtro-texto" class="gm-input" type="text" placeholder="Ej. Escarcha...">
+                        </div>
+                        <p class="gm-hint" id="filtro-resultado"></p>
+                    </div>
+                </aside>
+
+                <div>
+                    <p class="u-text-muted" th:if="${#lists.isEmpty(cartas)}">
+                        Todavía no has creado ninguna carta de trasfondo. Empieza con la primera.
+                    </p>
+
+                    <div class="gm-album" id="gm-album-transfondos">
+                        <article class="gm-card" th:each="carta : ${cartas}"
+                                  th:attr="data-panel-source='panel-tpl-' + ${carta.id}, data-panel-title=${carta.name}, data-nombre=${carta.name}">
+                            <!-- ① Cabecera -->
+                            <span class="gm-card__tier">TIER <span th:text="${carta.tier}">1</span></span>
+                            <h2 class="gm-card__title" th:text="${carta.name}">Nombre</h2>
+                            <span class="gm-card__role"
+                                  th:text="${carta.alignment != null and carta.alignment.title != null}
+                                           ? ${carta.alignment.title} : ${carta.narrativePassive.name}">Arquetipo</span>
+
+                            <!-- ② Ilustración -->
+                            <div class="gm-card__illustration">📖</div>
+
+                            <!-- ③ Reglas — solo narrativa: el trasfondo no da stats (Prompt Maestro §4b) -->
+                            <div class="gm-card__rules">
+                                <p class="gm-card__desc"
+                                   th:text="${carta.description != null} ? ${carta.description} : ${carta.flavorText}">Descripción</p>
+                                <p class="gm-card__meta" th:if="${carta.characterCreation != null}">
+                                    <span class="gm-badge" th:text="${#lists.size(carta.characterCreation.personalities)} + ' personalidades'">5 personalidades</span>
+                                    <span class="gm-badge" th:text="${#lists.size(carta.characterCreation.virtues)} + ' virtudes'">5 virtudes</span>
+                                    <span class="gm-badge" th:text="${#lists.size(carta.characterCreation.bonds)} + ' vínculos'">5 vínculos</span>
+                                </p>
+                            </div>
+
+                            <!-- ④ Pie: energía y arquetipo -->
+                            <div class="gm-card__footer">
+                                <span class="gm-badge" th:each="tag,it : ${carta.tags}" th:if="${it.index < 2}"
+                                      th:text="${#strings.replace(#strings.toLowerCase(tag), '_', ' ')}">tag</span>
+                            </div>
+                            <div class="gm-card__actions">
+                                <a class="gm-btn gm-btn--outline gm-btn--sm" th:href="@{/cartas/transfondos/{id}(id=${carta.id})}">Ver ficha</a>
+                                <a class="gm-btn gm-btn--outline gm-btn--sm" th:href="@{/cartas/transfondos/{id}/editar(id=${carta.id})}">Editar</a>
+                            </div>
+
+                            <!-- ⑤ Identificador -->
+                            <p class="gm-card__id" th:text="'transfondos · ' + ${carta.id}">transfondos · id</p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plantillas ocultas: contenido de la vista previa flotante de cada carta -->
+            <template th:each="carta : ${cartas}" th:id="'panel-tpl-' + ${carta.id}">
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Identidad de trasfondo ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p th:text="${carta.flavorText}">Descripción</p>
+                        <p>
+                            <span class="gm-badge" th:if="${carta.statBonusCon != 0}" th:text="'CON ' + (${carta.statBonusCon} > 0 ? '+' : '') + ${carta.statBonusCon}">CON</span>
+                            <span class="gm-badge" th:if="${carta.statBonusDes != 0}" th:text="'DES ' + (${carta.statBonusDes} > 0 ? '+' : '') + ${carta.statBonusDes}">DES</span>
+                            <span class="gm-badge" th:if="${carta.statBonusCar != 0}" th:text="'CAR ' + (${carta.statBonusCar} > 0 ? '+' : '') + ${carta.statBonusCar}">CAR</span>
+                            <span class="gm-badge" th:if="${carta.statBonusInt != 0}" th:text="'INT ' + (${carta.statBonusInt} > 0 ? '+' : '') + ${carta.statBonusInt}">INT</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Pasiva narrativa y complicación ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p><strong th:text="${carta.narrativePassive.name}">Nombre</strong></p>
+                        <p th:text="${carta.narrativePassive.description}">Descripción</p>
+                        <p th:if="${carta.complication}"><strong>Complicación:</strong> <span th:text="${carta.complication}">Complicación</span></p>
+                    </div>
+                </div>
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Competencias, contactos y equipo ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p><strong>Competencias narrativas:</strong>
+                            <span th:each="item,it : ${carta.narrativeSkills}" class="gm-badge u-mr-4" th:text="${item}">tag</span>
+                            <span th:if="${#lists.isEmpty(carta.narrativeSkills)}">—</span>
+                        </p>
+                        <p><strong>Contactos:</strong>
+                            <span th:each="item,it : ${carta.contacts}"><span th:text="${item}"></span><span th:if="${!it.last}">, </span></span>
+                            <span th:if="${#lists.isEmpty(carta.contacts)}">—</span>
+                        </p>
+                        <p><strong>Equipo adicional:</strong>
+                            <span th:each="item,it : ${carta.bonusEquipment}"><span th:text="${item}"></span><span th:if="${!it.last}">, </span></span>
+                            <span th:if="${#lists.isEmpty(carta.bonusEquipment)}">—</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="u-actions">
+                    <a class="gm-btn gm-btn--primary" th:href="@{/cartas/transfondos/{id}(id=${carta.id})}">Abrir ficha completa</a>
+                </div>
+            </template><!-- Panel flotante central: vista previa de carta -->
+<div id="gm-panel-backdrop" class="gm-panel-backdrop" data-panel-close></div>
+<div id="gm-panel-preview" class="gm-panel" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="gm-panel__header">
+        <h3 class="gm-panel__title" id="gm-panel-preview-title">Carta</h3>
+        <button type="button" class="gm-panel__close" data-panel-close aria-label="Cerrar">✕</button>
+    </div>
+    <div class="gm-panel__body" id="gm-panel-preview-body"></div>
+</div>
+</main>
+<th:block layout:fragment="extra-js">
+<script th:inline="javascript">
+    (function () {
+        var texto = document.getElementById('filtro-texto');
+        var resultado = document.getElementById('filtro-resultado');
+        var tarjetas = document.querySelectorAll('#gm-album-transfondos .gm-card');
+
+        function aplicarFiltro() {
+            var t = (texto.value || '').toLowerCase();
+            var visibles = 0;
+            tarjetas.forEach(function (carta) {
+                var nombre = (carta.getAttribute('data-nombre') || '').toLowerCase();
+                var coincide = nombre.indexOf(t) !== -1;
+                carta.style.display = coincide ? '' : 'none';
+                if (coincide) visibles++;
+            });
+            resultado.textContent = visibles + ' de ' + tarjetas.length + ' trasfondos';
+        }
+
+        if (texto) {
+            texto.addEventListener('input', aplicarFiltro);
+            aplicarFiltro();
+        }
+    })();
+</script>
+</th:block>
+</body>
+</html>

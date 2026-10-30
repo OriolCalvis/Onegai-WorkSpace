@@ -1,0 +1,31 @@
+{
+ "id": "mago_sagrado_ataque_santo",
+ "name": "Ataque santo",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "La bola de luz santa del Mago sagrado: tus golpes con arma hacen +1 de daño (luz).",
+ "flavorText": "",
+ "classTags": [
+  "mago_sagrado"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "La bola de luz santa del Mago sagrado: tus golpes con arma hacen +1 de daño (luz).",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Tus golpes con arma hacen +1 de daño.",
+   "mechanicHook": "siempre:bono_dano_arma:1"
+  },
+  {
+   "description": "[pendiente] la barra de energía sagrada (la llenan Ataque santo, Cura, Luz santa y Cura de grupo, y el Tótem sagrado la pide llena).",
+   "mechanicHook": "pendiente_parcial:la barra de energía sagrada (la llenan Ataque santo, Cura, Luz santa y Cura de grupo, y el Tótem sagrado la pide llena)"
+  }
+ ],
+ "fuente": "NosTale · Mago sagrado (Holy Mage)"
+}

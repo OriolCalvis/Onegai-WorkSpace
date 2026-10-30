@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gantt — Proyecto ONEGAI</title>
+<style>
+  :root{
+    --ink:#2b2b2b; --soft:#6f6a5d; --line:rgba(74,70,60,.18); --grid:rgba(74,70,60,.10);
+    --paper:#fffdf8; --bg:#e7e2d6; --band:#f4efe4; --month:#efe8d6;
+    --lbl:250px; --wk:52px; --rh:26px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,sans-serif;padding:26px 30px}
+  h1{font-size:22px;font-weight:600;margin-bottom:2px}
+  .sub{color:var(--soft);font-size:13px;margin-bottom:16px;max-width:900px}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-bottom:14px;font-size:11.5px;color:var(--soft)}
+  .legend b{font-weight:600;color:var(--ink)}
+  .li{display:flex;align-items:center;gap:5px}
+  .sw{width:13px;height:13px;border-radius:3px;flex:none}
+  .kpis{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .kpi{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 14px}
+  .kpi .n{font-size:20px;font-weight:600;line-height:1.1}
+  .kpi .l{font-size:10.5px;color:var(--soft);text-transform:uppercase;letter-spacing:.05em}
+  .chart{background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;overflow:auto;box-shadow:4px 5px 0 rgba(43,43,43,.12)}
+  .inner{min-width:calc(var(--lbl) + 20*var(--wk))}
+  .months,.weeks{display:grid;grid-template-columns:var(--lbl) repeat(20,var(--wk));position:sticky;top:0;z-index:3;background:var(--paper)}
+  .months>div,.weeks>div{border-left:1px solid var(--grid);text-align:center}
+  .corner{border-left:none!important;display:flex;align-items:center;padding:0 10px;font-weight:600;font-size:12px;color:var(--soft)}
+  .mo{background:var(--month);font-size:10.5px;font-weight:600;color:var(--soft);padding:4px 0;border-bottom:1px solid var(--line)}
+  .wkn{font-size:10px;color:var(--soft);padding:3px 0;border-bottom:1.5px solid var(--ink)}
+  .row{display:grid;grid-template-columns:var(--lbl) repeat(20,var(--wk));min-height:var(--rh);position:relative}
+  .row:nth-child(even){background:var(--band)}
+  .lbl{padding:3px 8px 3px 14px;font-size:11.5px;display:flex;align-items:center;gap:6px;border-right:1.5px solid var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .id{font:600 9.5px ui-monospace,Menlo,monospace;background:rgba(43,43,43,.08);border-radius:4px;padding:1px 5px;flex:none}
+  .cell{border-left:1px solid var(--grid)}
+  .grp{display:grid;grid-template-columns:var(--lbl) repeat(20,var(--wk));background:#e6ddc6;border-top:1px solid var(--ink);border-bottom:1px solid var(--line)}
+  .grp .gl{grid-column:1 / -1;padding:5px 14px;font-weight:600;font-size:12px;display:flex;align-items:center;gap:8px}
+  .grp .gl .dot{width:12px;height:12px;border-radius:3px}
+  .bar{position:absolute;height:16px;top:50%;transform:translateY(-50%);border-radius:4px;display:flex;align-items:center;padding:0 6px;font:600 9.5px ui-monospace,Menlo,monospace;color:#fff;overflow:hidden;white-space:nowrap;cursor:default}
+  .bar.lo{opacity:.55}
+  .bar .est{margin-left:auto;opacity:.85;font-weight:400;padding-left:6px}
+  .mrow{position:relative}
+  .ms{position:absolute;top:50%;transform:translate(-50%,-50%);width:15px;height:15px;background:#d9a441;border:1.5px solid #2b2b2b;transform-origin:center;rotate:45deg;z-index:2}
+  .mslbl{position:absolute;top:50%;transform:translateY(-50%);font:600 10px system-ui;color:#8a5a00;white-space:nowrap;padding-left:12px}
+  .foot{margin-top:12px;font-size:11.5px;color:var(--soft);max-width:900px}
+  .foot b{color:var(--ink)}
+  @media print{body{background:#fff;padding:0}.chart{box-shadow:none;border-color:#000}}
+</style>
+</head>
+<body>
+<h1>Gantt del proyecto ONEGAI</h1>
+<p class="sub">Programación de las tareas pendientes (backlog en <code>docs/Backlog_Tareas_y_Gantt.md</code>) sobre un horizonte de 20 semanas para un desarrollador en solitario. Las líneas son workstreams; las barras, tareas; los rombos dorados, hitos. Prioridad: barra sólida = alta/media · translúcida = baja/diferible.</p>
+
+<div class="kpis">
+  <div class="kpi"><div class="n">~118</div><div class="l">tareas pendientes</div></div>
+  <div class="kpi"><div class="n">~180 d</div><div class="l">esfuerzo estimado</div></div>
+  <div class="kpi"><div class="n">12</div><div class="l">workstreams</div></div>
+  <div class="kpi"><div class="n">6</div><div class="l">hitos</div></div>
+  <div class="kpi"><div class="n">20 sem</div><div class="l">horizonte</div></div>
+</div>
+
+<div class="legend" id="legend"></div>
+
+<div class="chart"><div class="inner" id="inner"></div></div>
+
+<p class="foot"><b>Ruta crítica:</b> WS-D (motor de combate) es el cuello: de él cuelgan las pilas en vivo (D8→D9) y la UI de partida (D10/D11), y comparte el patrón de "estado de sesión transitorio" con la Fase 3 de Aventuras por Actos (E14–E19) — conviene una base común. WS-A (contenido ed. 2) desbloquea M2 y corre en paralelo al Constructor (E1→E8, M3). WS-I ya tiene parte de la base implantada (drawer móvil y utilidades de cabecera), así que lo pendiente es endurecer accesibilidad real: teclado, foco, `aria-*`, contraste y validación manual. WS-F/G/H/J son diferibles sin bloquear la jugabilidad. <b>Cómo usarlo:</b> ábrelo en el navegador; pasa el ratón por una barra para ver nombre, fechas, estimación y dependencias; imprime con Cmd/Ctrl+P.</p>
+
+<script>
+const WS = {
+  Z:{n:"Blindaje e higiene",c:"#8a8474"},
+  A:{n:"Contenido edición 2",c:"#2a5db0"},
+  B:{n:"Contenido vivo / catálogos",c:"#3f9b57"},
+  C:{n:"Conexiones de personaje",c:"#1d9e75"},
+  D:{n:"Motor de combate y sesión",c:"#c0392b"},
+  E:{n:"Aventuras por Actos / Constructor",c:"#7d3ac1"},
+  F:{n:"Bestiario y estancias (diferible)",c:"#9c6b30"},
+  G:{n:"Exportación e impresión",c:"#d97a26"},
+  H:{n:"Ilustración (zona ②)",c:"#c85a94"},
+  I:{n:"Interfaz y accesibilidad",c:"#2b8aa0"},
+  J:{n:"Mapa del mundo",c:"#7a8a2b"},
+  K:{n:"Robustez técnica y tests",c:"#5a6472"},
+  L:{n:"Documentación y cierre",c:"#4a3aa7"}
+};
+// [id, ws, nombre, semanaInicio, semanas, prio(1 alta/media · 0 baja), est(d), dep]
+const T = [
+  ["Z1","Z","gitignore + commit base",1,1,1,.5,"—"],
+  ["Z2","Z","backup automático de data/",1,1,1,.5,"—"],
+  ["Z3","Z","retirar ficheros flotantes.* huérfanos",1,1,1,.5,"—"],
+  ["Z4","Z","páginas de error 404/500",1,2,1,1,"—"],
+  ["Z5","Z","manejo de excepciones en controladores",2,1,1,1,"Z4"],
+
+  ["A1","A","decidir mecánica de los 12 meses",1,1,1,.5,"—"],
+  ["A2","A","regenerar 5 clases iniciales ed.2",1,2,1,2,"—"],
+  ["A3","A","regenerar 5 razas iniciales",2,1,1,1,"—"],
+  ["A4","A","escribir 12 trasfondos-mes",2,2,1,2,"A1"],
+  ["A5","A","regenerar 10 habilidades ejemplo",3,1,1,1,"—"],
+  ["A6","A","regenerar 10 hechizos ejemplo",3,1,1,1,"—"],
+  ["A7","A","regenerar 10 pasivas ejemplo",4,1,1,1,"—"],
+  ["A8","A","regenerar 10 equipos ejemplo",4,1,1,1,"—"],
+  ["A9","A","regenerar 5 personajes ejemplo",4,2,1,1.5,"A2,A3"],
+  ["A10","A","actualizar tabla comparativa §18",5,1,1,.5,"A9"],
+  ["A11","A","retirar avisos 'edición 1' del GDD",5,1,1,.5,"A2-A10"],
+
+  ["B1","B","ampliar dotes 6→30",2,1,1,1,"—"],
+  ["B2","B","ampliar rasgos 2→20",3,1,1,1,"—"],
+  ["B3","B","completar condiciones del manual",3,1,1,1,"—"],
+  ["B4","B","15–20 eventos históricos del mundo",2,2,1,2,"—"],
+  ["B5","B","ajuste fino de recovery carta a carta",4,1,1,1,"A5,A6"],
+
+  ["C1","C","invocaciones activas → Personaje",3,2,1,1.5,"—"],
+  ["C2","C","condiciones/estados → Personaje",4,1,1,1,"C1"],
+  ["C3","C","sustitución evolvesInto al subir tier",5,1,1,1.5,"—"],
+  ["C4","C","símbolos de afinidad ✦☠✝♞⚙",5,2,1,1.5,"—"],
+  ["C5","C","validación real required/incompatibleTags",6,1,1,1.5,"C4"],
+  ["C6","C","límite 3 consumibles simultáneos",6,1,1,.5,"—"],
+  ["C7","C","límite invocaciones por INT",7,1,1,.5,"C1"],
+  ["C8","C","multiclase: claseSecundariaId + mano",7,1,1,1.5,"—"],
+  ["C9","C","multiclase: formulario + ficha",8,1,1,1.5,"C8"],
+
+  ["D1","D","tirada pool Nd6 (éxitos/CD/crítico)",5,2,1,2,"—"],
+  ["D2","D","tests del motor de tiradas",6,1,1,1,"D1"],
+  ["D3","D","ventaja/desventaja + anulación",7,1,1,1,"D1"],
+  ["D4","D","estado de turno transitorio",7,2,1,2,"—"],
+  ["D5","D","iniciativa determinista",8,1,1,.5,"D4"],
+  ["D6","D","10 condiciones aplicables en juego",9,1,1,1.5,"D4"],
+  ["D7","D","muerte y agonía + Carga del Destino",9,2,1,1.5,"D1,D4"],
+  ["D8","D","sesión en vivo → pilas reales",10,2,1,2,"D4"],
+  ["D9","D","Zona 4 leyendo pilas reales",11,1,1,1,"D8"],
+  ["D10","D","UI DJ en combate (6a/6b)",11,3,1,3,"D4,D5,D6"],
+  ["D11","D","UI jugador móvil en combate (7a/7b)",12,2,1,2,"D8"],
+
+  ["E1","E","Fase0 · modelo CartaAventura + enums",3,1,1,1.5,"—"],
+  ["E2","E","campos aditivos en Aventura",4,1,1,1,"E1"],
+  ["E3","E","test compatibilidad 52 legacy",4,1,1,.5,"E2"],
+  ["E4","E","actualizar Arquitectura §5.15",4,1,1,.5,"E1"],
+  ["E5","E","Fase1 · CartaAventuraForm",5,1,1,1,"E2"],
+  ["E6","E","ConstructorAventuraService",5,2,1,2,"E5"],
+  ["E7","E","endpoints de constructor",6,1,1,1,"E6"],
+  ["E8","E","plantilla constructor.html (12a/12b)",6,2,1,2.5,"E7"],
+  ["E9","E","enriquecer llista.html (11a/11b)",7,1,1,1,"E2"],
+  ["E10","E","Fase2 · ValidadorAventuraService",7,2,1,2,"E2"],
+  ["E11","E","plantilla dependencias.html (13a/13b)",8,2,1,2,"E10"],
+  ["E12","E","export JSON de aventura",7,1,1,.5,"E2"],
+  ["E13","E","export PDF doble cara",8,1,1,1.5,"E2"],
+  ["E14","E","Fase3 · modelo SesionAventura",9,1,1,1,"E2"],
+  ["E15","E","FiltroActoService (motor)",9,2,1,2,"E14"],
+  ["E16","E","tests de FiltroActoService",10,1,1,1,"E15"],
+  ["E17","E","PartidaAventuraController",10,2,1,1.5,"E15"],
+  ["E18","E","plantilla mesa-director.html (10a)",11,2,1,2,"E17"],
+  ["E19","E","plantilla mesa-compartida.html (10b)",11,2,0,2,"E17"],
+  ["E20","E","snapshot de sesión a disco",12,1,0,1,"E14"],
+
+  ["I1","I","drawer móvil: ESC, foco y cierre robusto",2,1,1,.5,"—"],
+  ["I2","I","normalizar aria-* en toggles y paneles",2,1,1,1,"I1"],
+  ["I3","I","quitar acordeón por defecto en fichas de detalle",6,1,1,1,"—"],
+  ["I4","I","targets táctiles + spacing móvil",6,1,1,1,"I1"],
+  ["I5","I","auditoría accesibilidad + checklist WCAG AA",7,1,1,1.5,"I1,I2,I4"],
+  ["I6","I","contraste tema Noche vs carta",8,1,0,.5,"I5"],
+  ["I7","I","indicador '✓ guardado' personaje",8,1,0,.5,"—"],
+  ["I8","I","revisión de microtipografía restante",9,1,1,.5,"I5"],
+  ["I9","I","matriz manual móvil/tablet/escritorio",9,1,1,1,"I3,I4,I5"],
+
+  ["J1","J","5 modals de mapa en ficheros propios",7,2,1,1.5,"—"],
+  ["J2","J","línea temporal del mundo en el mapa",9,2,1,2,"B4"],
+  ["J3","J","zoom por nación",10,2,0,1.5,"—"],
+
+  ["K1","K","tests de controladores y repositorios",2,3,1,3,"—"],
+  ["K2","K","evaluar/prototipar BD embebida",15,3,0,3,"—"],
+
+  ["G1","G","verificar PdfService en máquina real",13,1,1,.5,"—"],
+  ["G2","G","export PDF de cartas de catálogo",13,2,1,1.5,"G1"],
+  ["G3","G","export de subconjunto elegido",15,1,0,1,"G2"],
+
+  ["H1","H","subida/gestión de imagen por carta",12,2,1,2.5,"—"],
+  ["H2","H","arte genérico por rol (cartas base)",14,2,1,2,"H1"],
+
+  ["F1","F","árbol Enemigo→Criatura/Elite/Jefe",13,2,0,2,"—"],
+  ["F2","F","CRUD web /cartas/enemigos",14,2,0,2.5,"F1"],
+  ["F3","F","poblar bestiario de ejemplo",15,1,0,1,"F2"],
+  ["F4","F","Estancia + Aventura contenedor",16,1,0,2,"E2"],
+  ["F5","F","migrar aventura ejemplo 100/20",16,2,0,1.5,"F4"],
+
+  ["L1","L","guía de 'primera partida' e2e",16,2,1,2,"D1-D9"],
+  ["L2","L","sincronización docs ↔ código",18,1,1,1,"—"]
+];
+const MILES = [
+  [1,"M1 · Blindaje + quick wins"],
+  [5,"M2 · GDD §14–18 válido"],
+  [8,"M3 · Constructor usable"],
+  [13,"M4 · Partida jugable"],
+  [16,"M5 · Mundo completo"],
+  [18,"M6 · v1.0"]
+];
+const MONTHS=[["Mes 1",4],["Mes 2",4],["Mes 3",4],["Mes 4",4],["Mes 5",4]];
+
+const leg=document.getElementById("legend");
+leg.innerHTML='<span class="li"><b>Workstreams:</b></span>'+Object.entries(WS).map(([k,v])=>
+  `<span class="li"><span class="sw" style="background:${v.c}"></span>${k} · ${v.n}</span>`).join("");
+
+const inner=document.getElementById("inner");
+const colW=t=>`calc(var(--lbl) + ${(t[3]-1)}*var(--wk))`;
+function barStyle(t){
+  const left=`calc(${(t[3]-1)}*var(--wk))`, w=`calc(${t[4]}*var(--wk) - 4px)`;
+  return `left:${left};width:${w};background:${WS[t[1]].c}`;
+}
+// header
+let html=`<div class="months"><div class="corner">Tarea</div>`+
+  MONTHS.map(m=>`<div class="mo" style="grid-column:span ${m[1]}">${m[0]}</div>`).join("")+`</div>`;
+html+=`<div class="weeks"><div class="corner" style="border-bottom:1.5px solid var(--ink)">semana →</div>`+
+  Array.from({length:20},(_,i)=>`<div class="wkn">${i+1}</div>`).join("")+`</div>`;
+
+// milestone row
+html+=`<div class="grp"><div class="gl"><span class="dot" style="background:#d9a441"></span>Hitos</div></div>`;
+html+=`<div class="row mrow"><div class="lbl"><span class="id">◆</span>Entregas clave</div>`+
+  Array.from({length:20},()=>`<div class="cell"></div>`).join("");
+html+=MILES.map(m=>{
+  const l=`calc(var(--lbl) + ${(m[0]-0.5)}*var(--wk))`;
+  return `<div class="ms" style="left:${l}"></div><div class="mslbl" style="left:calc(var(--lbl) + ${m[0]}*var(--wk))">${m[1]}</div>`;
+}).join("");
+html+=`</div>`;
+
+// group by workstream in defined order
+Object.keys(WS).forEach(ws=>{
+  const rows=T.filter(t=>t[1]===ws);
+  if(!rows.length)return;
+  html+=`<div class="grp"><div class="gl"><span class="dot" style="background:${WS[ws].c}"></span>${ws} · ${WS[ws].n}</div></div>`;
+  rows.forEach(t=>{
+    const end=t[3]+t[4]-1;
+    const tip=`${t[0]} · ${t[2]}\nSemanas ${t[3]}–${end} · ${t[6]} d · prioridad ${t[5]?'alta/media':'baja'}\nDepende: ${t[7]}`;
+    html+=`<div class="row"><div class="lbl" title="${tip}"><span class="id">${t[0]}</span>${t[2]}</div>`+
+      Array.from({length:20},()=>`<div class="cell"></div>`).join("")+
+      `<div class="bar ${t[5]?'':'lo'}" style="${barStyle(t)}" title="${tip}">${t[0]}<span class="est">${t[6]}d</span></div></div>`;
+  });
+});
+inner.innerHTML=html;
+</script>
+</body>
+</html>

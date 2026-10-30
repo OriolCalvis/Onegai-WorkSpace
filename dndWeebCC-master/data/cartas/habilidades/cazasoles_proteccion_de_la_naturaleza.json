@@ -1,0 +1,57 @@
+{
+ "id": "cazasoles_proteccion_de_la_naturaleza",
+ "name": "Protección de la naturaleza",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Una runa de la lanza invoca la fuerza de la naturaleza: hasta el final del combate atacas con ventaja, tienes +1 a la CA y tus golpes con arma hacen +1.",
+ "flavorText": "",
+ "classTags": [
+  "cazasoles"
+ ],
+ "roleTags": [],
+ "tags": [
+  "cazasoles",
+  "creador"
+ ],
+ "mechanicTags": [
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "self",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Una runa de la lanza invoca la fuerza de la naturaleza: hasta el final del combate atacas con ventaja, tienes +1 a la CA y tus golpes con arma hacen +1.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Protección de la naturaleza: ventaja en ataque todo el combate.",
+   "mechanicHook": "estado:combate:ventaja:ataque"
+  },
+  {
+   "description": "Protección de la naturaleza: +1 a la CA todo el combate.",
+   "mechanicHook": "estado:combate:bono_ca:1"
+  },
+  {
+   "description": "Fuerza vital recuperada: +1 a tus golpes con arma todo el combate.",
+   "mechanicHook": "estado:combate:bono_dano_arma:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Cazasoles (Sunchaser) · H1615 Protección de la naturaleza"
+}

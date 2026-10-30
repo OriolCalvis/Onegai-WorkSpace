@@ -1,0 +1,55 @@
+{
+ "id": "druida_del_roble_despertar_del_roble",
+ "name": "Despertar del roble",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Despiertas a un roble viejo, que se arranca del suelo y cae sobre el enemigo: 3d6 de daño. Después lucha a tu lado 3 turnos y golpea al cerrar cada turno tuyo.",
+ "flavorText": "",
+ "classTags": [
+  "druida_del_roble"
+ ],
+ "roleTags": [],
+ "tags": [
+  "druida_del_roble",
+  "creador",
+  "Naturaleza"
+ ],
+ "mechanicTags": [
+  "Naturaleza",
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": "INT",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Despiertas a un roble viejo, que se arranca del suelo y cae sobre el enemigo: 3d6 de daño. Después lucha a tu lado 3 turnos y golpea al cerrar cada turno tuyo.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "3d6 de daño.",
+   "mechanicHook": "dano:3d6"
+  },
+  {
+   "description": "El roble despierto lucha a tu lado 3 turnos.",
+   "mechanicHook": "invoca:3:roble_despierto"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "Propia · Druida del Roble · folclore: los árboles que caminan"
+}

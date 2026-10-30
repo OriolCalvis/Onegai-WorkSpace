@@ -1,0 +1,84 @@
+{
+ "id": "el_tasador",
+ "name": "El Tasador",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "control",
+ "faction": "cofradia_de_mascaras_de_plata",
+ "stats": {
+  "CON": 6,
+  "DES": 5,
+  "INT": 7,
+  "CAR": 6
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 16,
+  "defensaMental": 16,
+  "resistenciaFisica": 16,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Martillo de Subasta",
+   "defense": "defensa_mental",
+   "effect": "Daño que suma su INT; contra Endeudados, el objetivo pierde además su acción menor (embargada)."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "defensa_mental",
+   "effect": "Si el objetivo falla, queda Endeudado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Tasación",
+  "description": "Tasación: al ver a cada personaje por primera vez, anuncia su 'precio' — quien caiga bajo la mitad de su vida queda Endeudado automáticamente (vale menos)."
+ },
+ "conditionsInflicted": [
+  "endeudado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Oscuro"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Encadena su técnica tras el ataque firma y +1 al daño."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Ponerle precio a todo el reino, persona a persona",
+  "metodo": "Subasta en voz alta lo que el grupo lleva mientras pelea",
+  "debilidad_narrativa": "Lo que no tiene precio: mostrar un objeto de puro valor sentimental (cero valor real) lo confunde una ronda",
+  "vinculo": "la_serpiente_de_contratos"
+ },
+ "arena": {
+  "name": "La Casa de Empeños Silenciosa",
+  "hazard": "Estanterías: derribarlas (acción) crea cobertura y le duele en el inventario (+1 al daño de esa fuente)"
+ },
+ "legendaryActions": [],
+ "storyCard": {
+  "title": "El Tasador",
+  "text": "Nunca roba. Compra a precio de mercado. Su mercado.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Sabe cuánto vales. Con decimales."
+}

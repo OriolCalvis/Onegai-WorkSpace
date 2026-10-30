@@ -1,0 +1,179 @@
+{
+  "_meta": {
+    "generator": "TRAE",
+    "region": "OCCIDENTE MERIDIONAL",
+    "year_bf": 2000,
+    "count_zones": 5,
+    "count_dungeons": 7
+  },
+  "entries": [
+    {
+      "id": "zone_ecla_frontera_hoz",
+      "locationType": "zone",
+      "name": "Zona Fronteriza — Fortaleza de la Hoz (Ecla ↑ Norte CLOUDE)",
+      "origin": "TRAE",
+      "nationId": "nation_ecla",
+      "position": { "x": 410, "y": 900 },
+      "coord":    { "x": 105, "y": 140 },
+      "color": "#8a4f4f",
+      "tier": 0,
+      "rarity": "rare",
+      "deityIds": ["deity_iron_oath"],
+      "raceIds": ["race_human_vietic", "race_tiefling_bloodline_of_mephistopheles"],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "kind": "frontera militar",
+        "tierRange": { "min": 3, "max": 5 },
+        "description": "Primera plaza fuerte cruzada en la Franja Norte Ecla. 3.000 hombres. Fortín central + 3 torres exteriores. Paso solo 3 meses/año. Ataque nubes EV-1995 cerca.",
+        "dungeons": [
+          {
+            "id": "dungeon_hoz_ocavernes_inferiores",
+            "name": "Cavernas Inferiores Fortaleza de la Hoz",
+            "tier": 4,
+            "theme": "Fortaleza excavada + vetas de plata + celdas prisioneros + sepulcro 12 capitanes Cruzados",
+            "coord": { "x": 420, "y": 910 },
+            "bossMonsterId": "monster_capitan_cruzado_tirano_04",
+            "relicIds": ["equip_unique_ecla_lanza_de_la_plata"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone_ecla_ithon_elf",
+      "locationType": "zone",
+      "name": "Isla Ithon — Zona Élfica Marítima",
+      "origin": "ATLAS_CANON",
+      "nationId": "nation_ecla",
+      "position": { "x": 205, "y": 400 },
+      "coord":    { "x": 51, "y": 80 },
+      "color": "#74c7c1",
+      "tier": 0,
+      "rarity": "rare",
+      "deityIds": ["deity_moon_mother", "deity_wild_court"],
+      "raceIds": ["race_elf_silvan", "race_elf_sea"],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "kind": "isla",
+        "tierRange": { "min": 1, "max": 3 },
+        "dungeons": [
+          {
+            "id": "dungeon_ecla_ithon_tumba_primera_elfa",
+            "name": "Tumba de la Primera Reina Elfa de Ithon",
+            "tier": 3,
+            "theme": "Cripta pre-ERA-XI. Guardianes constructos élficos. 3 pasadizos ilusorios.",
+            "coord": { "x": 206, "y": 398 },
+            "bossMonsterId": "monster_constructo_guardia_elfa_03",
+            "relicIds": ["equip_unique_ecla_capa_de_la_luna_creciente", "equip_unique_ecla_diadema_ithon"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone_udrax_pozos_susurrantes",
+      "locationType": "zone",
+      "name": "Pozos Susurrantes del Sur Udrax (Eabotara, Jggotti, Bomengrid)",
+      "origin": "TRAE",
+      "nationId": "nation_udrax",
+      "position": { "x": 580, "y": 590 },
+      "coord":    { "x": 145, "y": 118 },
+      "color": "#6f5f4a",
+      "tier": 0,
+      "rarity": "rare",
+      "deityIds": ["deity_nocturne"],
+      "raceIds": ["race_naga_blooded", "race_yuan_ti_pureblood", "race_human_mariner"],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "kind": "mazmorras",
+        "tierRange": { "min": 2, "max": 4 },
+        "description": "Red de 4 pozos interconectados ERA XII: Eabotara, Jggotti, y dos pozos secundarios (Nexo Inferior). Conecta al sótano Bomengrid por galería 'Negra'. Secta Nox quiere abrir 4 niveles más.",
+        "dungeons": [
+          {
+            "id": "dungeon_udrax_pozos_susurrantes_nexo",
+            "name": "Nexo Inferior — Pozos Susurrantes",
+            "tier": 3,
+            "theme": "Túneles Naga ERA XII. 3 niveles. Yuan-ti malisons, constructos serpiente, Medusa menor.",
+            "coord": { "x": 560, "y": 528 },
+            "bossMonsterId": "monster_medusa_menor_pozos_03",
+            "relicIds": ["equip_unique_udrax_daga_sangre_serpiente"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone_udrax_bomengrid_muralha",
+      "locationType": "zone",
+      "name": "Muralla Fantasma y Cripta Primer Cónsul (Bomengrid)",
+      "origin": "TRAE",
+      "nationId": "nation_udrax",
+      "position": { "x": 720, "y": 700 },
+      "coord":    { "x": 180, "y": 140 },
+      "color": "#4a4a6f",
+      "tier": 0,
+      "rarity": "epic",
+      "deityIds": ["deity_nocturne", "deity_iron_oath"],
+      "raceIds": ["race_naga_blooded"],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "kind": "mazmorras",
+        "tierRange": { "min": 3, "max": 5 },
+        "description": "Sección hundida del muro Bomengrid. Cripta Primer Cónsul: Halfbrother Halfdran. Secta Nox tiene aquí su centro de ritos ERA XII.",
+        "dungeons": [
+          {
+            "id": "dungeon_udrax_muralla_fantasma",
+            "name": "Tramo Hundido de la Muralla Fantasma",
+            "tier": 4,
+            "theme": "No-muertos confederados antiguos; espectros; Barrow Wight 'Primer Cónsul'; rituales reanimación.",
+            "coord": { "x": 718, "y": 704 },
+            "bossMonsterId": "monster_wight_lord_halfbrother_04",
+            "relicIds": ["equip_unique_udrax_martillo_primer_consul", "equip_unique_udrax_casco_fantasma"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone_udrax_wait_harbor_pacto",
+      "locationType": "zone",
+      "name": "Wait Harbor — Pacto de Sangre (Frontera CHATGPT Tabaxi-sur)",
+      "origin": "TRAE",
+      "nationId": "nation_udrax",
+      "position": { "x": 830, "y": 715 },
+      "coord":    { "x": 196, "y": 144 },
+      "color": "#7a2a5a",
+      "tier": 0,
+      "rarity": "epic",
+      "deityIds": ["deity_nocturne", "deity_ocean_serenity"],
+      "raceIds": ["race_naga_blooded", "race_triton", "race_human_mariner", "race_tabaxi"],
+      "npcIds": [],
+      "storyIds": [],
+      "metadata": {
+        "kind": "frontera militar",
+        "tierRange": { "min": 3, "max": 5 },
+        "description": "Puerto pacto sangre. 4 muelles arcano-protegidos. 3 emisarios Naga permanentes. Tensión por renovación (expira en 1997+3=1994bf).",
+        "dungeons": [
+          {
+            "id": "dungeon_udrax_wait_harbor_pacto",
+            "name": "Almacén Secreto Bodega-13 (Pacto Sangre)",
+            "tier": 3,
+            "theme": "Mercancías ilegales, prisioneros vivos, ritual de intercambio mensual. Emisaria Naga Sycorax.",
+            "coord": { "x": 830, "y": 720 },
+            "bossMonsterId": "monster_naga_emisaria_pacto_03",
+            "relicIds": ["equip_unique_udrax_amuleto_pacto_sangre"]
+          },
+          {
+            "id": "dungeon_udrax_tabulones_marinos",
+            "name": "Tablerones Marinos Hundidos",
+            "tier": 2,
+            "theme": "Barcos naufragios Pacto Sangre. Tesoros 5 años. Entran por arrecife.",
+            "coord": { "x": 850, "y": 740 },
+            "bossMonsterId": "monster_merrow_bruto_02",
+            "relicIds": ["equip_unique_udrax_amuleto_pacto_sangre"]
+          }
+        ]
+      }
+    }
+  ]
+}

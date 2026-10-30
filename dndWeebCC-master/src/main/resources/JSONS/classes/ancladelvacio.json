@@ -1,0 +1,120 @@
+{
+  "nombre": "Ancla del Vacío",
+  "descripcion": "Canalizador que clava su existencia al mundo: inmóvil, se convierte en bastión y foco de energía abisal.",
+  "rolTematico": "Zagita la realidad desde un punto fijo. Potencia brutal al anclarse; vulnerable si lo desalojan.",
+  "dadoGolpe": "1d6",
+  "puntosGolpeNivel1": "1d6 + CON",
+  "puntosGolpePorNivel": "1d6 (o 4) + CON",
+  "atributoConjuro": "Inteligencia",
+  "atributosRelevantes": ["Inteligencia", "Constitución", "Sabiduría"],
+  "competencias": {
+    "armaduras": ["Ligeras"],
+    "armas": ["Simples"],
+    "habilidadesElegir": ["Arcana", "Historia", "Investigación", "Percepción", "Religión", "Perspicacia"],
+    "salvaciones": ["Inteligencia", "Sabiduría"]
+  },
+  "mecanicas": {
+    "anclaje": {
+      "descripcion": "Acción: entras en Modo Bastión (Estado 'Anclado'): velocidad 0, no puedes moverte voluntariamente; ventaja en concentración; +2 CA; alcance de conjuros +10 pies.",
+      "salir": "Acción adicional: sales del anclaje.",
+      "riesgo": "Si te mueven por empujón/arrastre/teletransporte involuntario, pierdes el efecto y quedas Desorientado (desventaja a ataques hasta final de tu próximo turno)."
+    },
+    "canalizaciones": [
+      {"nombre":"Rayo Bastión","requisito":"Anclado","efecto":"Acción: 2d8 necrótico/forzado a 60 pies; en 6/11/17: 3d8/4d8/5d8."},
+      {"nombre":"Cúpula de Estasis","requisito":"Anclado","efecto":"Acción: semiesfera 10 pies que otorga +2 CA aliados y desacelera (salvación CON) a enemigos (mitad efecto si salvan). 1/descanso corto."}
+    ]
+  },
+  "accionesEspeciales": {
+    "anclar": {
+      "descripcion": "Clavas tu ancla (acción). Mientras sigas Anclado, obtienes ventajas y habilitas canalizaciones.",
+      "coste": {"tipo":"ANCLAJE","modo":"MANTENIMIENTO_POR_TURNO","monto":0}
+    },
+    "derivaControlada": {
+      "descripcion": "Mientras estás Anclado, puedes, como acción adicional, teletransportarte 5 pies a un punto en sombra o runa propia sin perder el estado (máx. 1/turno).",
+      "coste": {"tipo":"ANCLAJE","modo":"PAGO_INSTANTANEO","monto":0}
+    }
+  },
+  "niveles": {
+    "1": {
+      "habilidades": [
+        {
+          "nombre": "Modo Bastión",
+          "tipo": "Postura",
+          "efecto": "Ganas Anclaje, Rayo Bastión básico.",
+          "usos": "Ilimitado (requiere acción para entrar/salir)",
+          "accion": "Acción (entrar), Adicional (salir)"
+        }
+      ]
+    },
+    "2": {
+      "habilidades": [
+        {
+          "nombre": "Eco del Monolito",
+          "efecto": "Mientras estés Anclado, las tiradas de daño de tus conjuros ganan +Int (mín. +1) 1/turno.",
+          "usos": "Pasiva"
+        }
+      ]
+    },
+    "3": {
+      "habilidades": [
+        {
+          "nombre": "Cúpula de Estasis",
+          "efecto": "Semiesfera defensiva de 10 pies; ralenta enemigos (CON).",
+          "usos": "1/descanso corto",
+          "accion": "Acción"
+        }
+      ],
+      "subclases": [
+        {"nombre":"Ancla de Entropía","descripcion":"Más daño y corrupción en área."},
+        {"nombre":"Pilar Aegis","descripcion":"Más soporte y absorciones mientras Anclado."}
+      ]
+    },
+    "4": {"habilidades": ["Mejora de Características"]},
+    "5": {
+      "habilidades": [
+        {"nombre":"Rayo Bastión Potenciado","efecto":"2d8→3d8.", "usos":"Pasiva"}
+      ]
+    },
+    "6": {"habilidades": ["Mejora de Características"]},
+    "7": {
+      "habilidades": [
+        {"nombre":"Anillo de Runas","efecto":"Colocas 3 runas (acción adicional, 30 pies). Mientras estés Anclado, puedes Deriva Controlada entre runas.", "usos":"3/día"}
+      ]
+    },
+    "8": {"habilidades": ["Mejora de Características"]},
+    "9": {
+      "habilidades": [
+        {"nombre":"Colapso Local","efecto":"Mientras Anclado, acción: cono 15 pies 3d8 forzado (STR). En éxito, la mitad.", "usos":"1/descanso corto"}
+      ]
+    },
+    "10": {
+      "habilidades": [
+        {"nombre":"Anclaje Irrompible","efecto":"Ventaja contra empujones/derribos/teleportes involuntarios; si te mueven, puedes elegir caer prono para reducir el desplazamiento a 0.", "usos":"Pasiva"}
+      ]
+    },
+    "11": {"habilidades": [{"nombre":"Rayo Bastión Mayor","efecto":"3d8→4d8","usos":"Pasiva"}]},
+    "12": {"habilidades": ["Mejora de Características"]},
+    "13": {
+      "habilidades": [
+        {"nombre":"Sello de Quietud","efecto":"Aura 10 pies: enemigos comienzan su turno con -10 ft de movimiento (CON niega cada turno). Solo mientras Anclado.", "usos":"Pasiva"}
+      ]
+    },
+    "14": {"habilidades": ["Mejora de Características"]},
+    "15": {
+      "habilidades": [
+        {"nombre":"Bastión Perfecto","efecto":"+1 CA adicional y ventaja en CON saves de concentración permanentemente (no solo Anclado).", "usos":"Pasiva"}
+      ]
+    },
+    "16": {"habilidades": ["Mejora de Características"]},
+    "18": {
+      "habilidades": [
+        {"nombre":"Nexo Inamovible","efecto":"Entrar en Anclaje pasa a ser acción adicional; puedes mantener Anclaje incluso inconsciente 1 turno (concentración no se pierde automáticamente).", "usos":"Pasiva"}
+      ]
+    },
+    "20": {
+      "habilidades": [
+        {"nombre":"Monolito del Vacío","efecto":"1/descanso largo: mientras Anclado, durante 1 minuto: +2 CA extra, Rayo Bastión a 5d8 con rebote a un segundo objetivo (mitad), Cúpula de Estasis pasa a 15 pies y otorga resistencias a aliados.", "usos":"1/descanso largo"}
+      ]
+    }
+  }
+}

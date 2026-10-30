@@ -1,0 +1,31 @@
+{
+ "id": "tormenta_de_fuego_infierno_llameante",
+ "name": "Infierno llameante",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Las llamas del lanzallamas de la Tormenta de fuego: tus golpes con arma hacen +1 de daño (fuego).",
+ "flavorText": "",
+ "classTags": [
+  "tormenta_de_fuego"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "Las llamas del lanzallamas de la Tormenta de fuego: tus golpes con arma hacen +1 de daño (fuego).",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Tus golpes con arma hacen +1 de daño.",
+   "mechanicHook": "siempre:bono_dano_arma:1"
+  },
+  {
+   "description": "[pendiente] la barra de marcas (la llenan sus técnicas y las marcas las gastan el Haz de llamas, la Explosión infernal y las versiones potentes de aceite, erupción, barrera y reignición).",
+   "mechanicHook": "pendiente_parcial:la barra de marcas (la llenan sus técnicas y las marcas las gastan el Haz de llamas, la Explosión infernal y las versiones potentes de aceite, erupción, barrera y reignición)"
+  }
+ ],
+ "fuente": "NosTale · Tormenta de fuego (Fire Storm)"
+}

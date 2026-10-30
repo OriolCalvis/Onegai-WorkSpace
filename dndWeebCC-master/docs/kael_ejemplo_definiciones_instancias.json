@@ -1,0 +1,407 @@
+{
+  "_meta": {
+    "description": "Ejemplo de referencia del esquema propuesto por el usuario: separacion de 'definitions' (plantillas, cada una existe una unica vez) e 'instances' (personajes/monstruos concretos, que solo guardan referencias por id). Este fichero es solo documentacion/diseno: el backend Java actual (cat.dnd.cc.model.*) todavia usa nombres de campo en espanol/catalan y no esta migrado a este formato.",
+    "schemaVersion": "propuesta-v1",
+    "relatedDocs": ["docs/Sistema_Cartas_Tiers.md", "docs/UML_Sistema_Cartas_Tiers.mermaid"]
+  },
+
+  "definitions": {
+
+    "races": [
+      {
+        "id": "race_tiefling_shadow",
+        "name": "Tiefling de las Sombras",
+        "movement": 30,
+        "languages": ["Comun", "Infernal"],
+        "deities": ["god_noctis"],
+        "traits": ["trait_darkvision"]
+      }
+    ],
+
+    "classes": [
+      {
+        "id": "class_apostata",
+        "name": "Apostata",
+        "description": "Hechicero que consume su propia vitalidad para potenciar magia oscura.",
+        "tier": 1,
+        "compatibleWeapons": ["LIGHT"],
+        "compatibleArmor": ["LIGHT"],
+        "passive": "passive_blood_sacrifice",
+        "startingSkills": ["skill_shadow_blast", "skill_minor_illusion"],
+        "learnableSkills": [
+          "skill_shadow_blast",
+          "skill_minor_illusion",
+          "skill_absorb_soul",
+          "skill_blood_explosion",
+          "skill_dark_binding",
+          "skill_shadow_step",
+          "skill_shadow_form"
+        ],
+        "summons": ["summon_minor_specter", "summon_dark_raven"]
+      }
+    ],
+
+    "backgrounds": [
+      {
+        "id": "bg_oracle",
+        "name": "Oraculo",
+        "description": "Antes de aprender magia oscura, Kael leia el destino de otros en las entranas de animales muertos. Nunca dejo de ver cosas que preferiria no haber visto.",
+        "tier": 0,
+        "statBonus": {
+          "charisma": 1
+        },
+        "tags": ["PROFETA", "MARGINADO"]
+      }
+    ],
+
+    "passives": [
+      {
+        "id": "passive_blood_sacrifice",
+        "name": "Desgarro Sangriento",
+        "description": "Cada vez que lanzas un hechizo pierdes 1 punto de vida por acumulacion.",
+        "effects": [
+          { "type": "SELF_DAMAGE", "value": 1 }
+        ]
+      },
+      {
+        "id": "passive_ethereal",
+        "name": "Etereo",
+        "description": "El invocador reduce a la mitad el dano fisico recibido mientras este invocado.",
+        "effects": [
+          { "type": "DAMAGE_REDUCTION", "damageType": "PHYSICAL", "value": "HALF" }
+        ]
+      }
+    ],
+
+    "skills": [
+      {
+        "id": "skill_shadow_blast",
+        "name": "Explosion Umbral",
+        "tier": 1,
+        "school": "SHADOW",
+        "type": "ACTION",
+        "cost": { "life": 2 },
+        "cooldown": "SHORT_REST",
+        "range": 6,
+        "target": "AREA",
+        "savingThrow": "INT",
+        "damage": { "dice": "2d6", "type": "SHADOW" },
+        "effects": [ { "type": "BLEED", "duration": 2 } ],
+        "description": "Provoca una explosion de energia umbral que inflige dano y aplica Sangrado.",
+        "tags": ["MAGIC", "SHADOW", "AOE"]
+      },
+      {
+        "id": "skill_minor_illusion",
+        "name": "Ilusion Menor",
+        "tier": 1,
+        "school": "SHADOW",
+        "type": "ACTION",
+        "cost": { "life": 0 },
+        "cooldown": "NONE",
+        "range": 9,
+        "target": "POINT",
+        "savingThrow": null,
+        "damage": null,
+        "effects": [ { "type": "CREATE_ILLUSION", "duration": 1 } ],
+        "description": "Crea una imagen o sonido ilusorio inofensivo dentro del alcance.",
+        "tags": ["MAGIC", "SHADOW", "UTILITY"]
+      },
+      {
+        "id": "skill_shadow_spear",
+        "name": "Lanza de Sombra",
+        "tier": 1,
+        "school": "SHADOW",
+        "type": "ACTION",
+        "cost": { "life": 2 },
+        "cooldown": "SHORT_REST",
+        "range": 12,
+        "target": "SINGLE",
+        "savingThrow": "DEXTERITY",
+        "damage": { "dice": "1d10", "type": "SHADOW" },
+        "effects": [],
+        "description": "Lanza un dardo de energia oscura contra un unico objetivo.",
+        "tags": ["MAGIC", "SHADOW", "SINGLE_TARGET"]
+      },
+      {
+        "id": "skill_absorb_soul",
+        "name": "Absorcion de Alma",
+        "tier": 2,
+        "school": "SHADOW",
+        "type": "ACTION",
+        "cost": { "life": 3 },
+        "cooldown": "LONG_REST",
+        "range": 3,
+        "target": "SINGLE",
+        "savingThrow": "CHARISMA",
+        "damage": { "dice": "2d8", "type": "SHADOW" },
+        "effects": [ { "type": "SELF_HEAL", "value": "HALF_DAMAGE_DEALT" } ],
+        "description": "Drena la esencia vital de un objetivo cercano y se cura con parte del dano infligido.",
+        "tags": ["MAGIC", "SHADOW", "DRAIN"]
+      },
+      {
+        "id": "skill_dark_binding",
+        "name": "Ligadura Oscura",
+        "tier": 2,
+        "school": "SHADOW",
+        "type": "ACTION",
+        "cost": { "life": 2 },
+        "cooldown": "SHORT_REST",
+        "range": 9,
+        "target": "SINGLE",
+        "savingThrow": "CONSTITUTION",
+        "damage": null,
+        "effects": [ { "type": "RESTRAINED", "duration": 2 } ],
+        "description": "Cadenas de sombra inmovilizan a un enemigo durante dos turnos.",
+        "tags": ["MAGIC", "SHADOW", "CONTROL"]
+      },
+      {
+        "id": "skill_blood_explosion",
+        "name": "Explosion de Sangre",
+        "tier": 2,
+        "school": "SHADOW",
+        "type": "ACTION",
+        "cost": { "life": 4 },
+        "cooldown": "LONG_REST",
+        "range": 6,
+        "target": "AREA",
+        "savingThrow": "CONSTITUTION",
+        "damage": { "dice": "3d6", "type": "SHADOW" },
+        "effects": [],
+        "description": "Sacrifica una porcion mayor de su propia vida para detonar un area de dano oscuro.",
+        "tags": ["MAGIC", "SHADOW", "AOE", "SACRIFICE"]
+      },
+      {
+        "id": "skill_shadow_step",
+        "name": "Paso Umbrio",
+        "tier": 2,
+        "school": "SHADOW",
+        "type": "MOVEMENT",
+        "cost": { "life": 1 },
+        "cooldown": "SHORT_REST",
+        "range": 9,
+        "target": "SELF",
+        "savingThrow": null,
+        "damage": null,
+        "effects": [ { "type": "TELEPORT", "distance": 9 } ],
+        "description": "Se funde con las sombras y reaparece en un punto visible dentro del alcance.",
+        "tags": ["MAGIC", "SHADOW", "MOBILITY"]
+      },
+      {
+        "id": "skill_shadow_form",
+        "name": "Forma de Sombra",
+        "tier": 3,
+        "school": "SHADOW",
+        "type": "CHANNELING",
+        "cost": { "life": 3 },
+        "cooldown": "LONG_REST",
+        "range": 0,
+        "target": "SELF",
+        "savingThrow": null,
+        "damage": null,
+        "effects": [ { "type": "DAMAGE_REDUCTION", "damageType": "PHYSICAL", "value": "HALF", "duration": 3 } ],
+        "description": "Se transforma parcialmente en sombra, reduciendo el dano fisico recibido.",
+        "tags": ["MAGIC", "SHADOW", "DEFENSE"]
+      },
+      {
+        "id": "skill_spectral_touch",
+        "name": "Toque Espectral",
+        "tier": 1,
+        "school": "SHADOW",
+        "type": "ACTION",
+        "cost": { "life": 0 },
+        "cooldown": "NONE",
+        "range": 1,
+        "target": "SINGLE",
+        "savingThrow": "CONSTITUTION",
+        "damage": { "dice": "1d6", "type": "SHADOW" },
+        "effects": [],
+        "description": "Ataque basico del Espectro Menor invocado.",
+        "tags": ["MAGIC", "SHADOW", "SUMMON_ATTACK"]
+      }
+    ],
+
+    "items": [
+      {
+        "id": "weapon_shadow_staff",
+        "name": "Baston de Sombras",
+        "type": "WEAPON",
+        "subtype": "STAFF",
+        "rarity": "COMMON",
+        "tier": 1,
+        "weaponCategory": "LIGHT",
+        "statBonus": { "intelligence": 2 },
+        "effects": [],
+        "tags": ["WOOD", "MAGIC"]
+      },
+      {
+        "id": "helmet_leather",
+        "name": "Capucha de Cuero",
+        "type": "ARMOR",
+        "subtype": "HELMET",
+        "rarity": "COMMON",
+        "tier": 1,
+        "armorCategory": "LIGHT",
+        "statBonus": { "constitution": 1 },
+        "effects": [],
+        "tags": ["LEATHER"]
+      },
+      {
+        "id": "armor_cloth",
+        "name": "Tunica de Tela",
+        "type": "ARMOR",
+        "subtype": "CHEST",
+        "rarity": "COMMON",
+        "tier": 1,
+        "armorCategory": "LIGHT",
+        "statBonus": { "constitution": 3 },
+        "effects": [],
+        "tags": ["CLOTH"]
+      },
+      {
+        "id": "gloves_shadow",
+        "name": "Guantes de Sombra",
+        "type": "ARMOR",
+        "subtype": "GLOVES",
+        "rarity": "UNCOMMON",
+        "tier": 1,
+        "armorCategory": "LIGHT",
+        "statBonus": { "intelligence": 2 },
+        "effects": [],
+        "tags": ["SHADOW", "MAGIC"]
+      },
+      {
+        "id": "pants_cloth",
+        "name": "Pantalones de Tela",
+        "type": "ARMOR",
+        "subtype": "LEGS",
+        "rarity": "COMMON",
+        "tier": 1,
+        "armorCategory": "LIGHT",
+        "statBonus": {},
+        "effects": [],
+        "tags": ["CLOTH"]
+      },
+      {
+        "id": "boots_leather",
+        "name": "Botas de Cuero",
+        "type": "ARMOR",
+        "subtype": "BOOTS",
+        "rarity": "COMMON",
+        "tier": 1,
+        "armorCategory": "LIGHT",
+        "statBonus": { "dexterity": 1 },
+        "effects": [],
+        "tags": ["LEATHER"]
+      }
+    ],
+
+    "summons": [
+      {
+        "id": "summon_minor_specter",
+        "name": "Espectro Menor",
+        "tier": 1,
+        "health": 12,
+        "armor": 12,
+        "movement": 30,
+        "stats": {
+          "constitution": 2,
+          "dexterity": 2,
+          "intelligence": 1,
+          "charisma": 0
+        },
+        "abilities": ["skill_spectral_touch"],
+        "passives": ["passive_ethereal"]
+      },
+      {
+        "id": "summon_dark_raven",
+        "name": "Cuervo Oscuro",
+        "tier": 1,
+        "health": 8,
+        "armor": 13,
+        "movement": 40,
+        "stats": {
+          "constitution": 1,
+          "dexterity": 3,
+          "intelligence": 1,
+          "charisma": 0
+        },
+        "abilities": [],
+        "passives": ["passive_ethereal"]
+      }
+    ],
+
+    "traits": [
+      {
+        "id": "trait_darkvision",
+        "name": "Vision en la Oscuridad",
+        "description": "Puede ver con claridad en la oscuridad total hasta 18 metros."
+      }
+    ],
+
+    "deities": [
+      {
+        "id": "god_noctis",
+        "name": "Noctis",
+        "domain": "Sombra, secretos, transformacion"
+      }
+    ]
+  },
+
+  "instances": {
+    "characters": [
+      {
+        "id": "pj_0001",
+        "name": "Kael",
+        "tier": 1,
+
+        "race": "race_tiefling_shadow",
+        "class": "class_apostata",
+        "background": "bg_oracle",
+
+        "stats": {
+          "constitution": 6,
+          "dexterity": 2,
+          "intelligence": 3,
+          "charisma": 2
+        },
+
+        "derived": {
+          "health": 24,
+          "armor": 14,
+          "movement": 30
+        },
+
+        "equipment": {
+          "weapon": "weapon_shadow_staff",
+          "helmet": "helmet_leather",
+          "armor": "armor_cloth",
+          "gloves": "gloves_shadow",
+          "legs": "pants_cloth",
+          "boots": "boots_leather"
+        },
+
+        "passive": "passive_blood_sacrifice",
+
+        "abilities": [
+          "skill_shadow_blast",
+          "skill_shadow_spear",
+          "skill_absorb_soul",
+          "skill_dark_binding",
+          "skill_minor_illusion"
+        ],
+
+        "summons": [
+          "summon_minor_specter"
+        ],
+
+        "statuses": [],
+        "blessings": [],
+        "curses": [],
+
+        "inventory": [],
+
+        "gold": 120
+      }
+    ]
+  }
+}

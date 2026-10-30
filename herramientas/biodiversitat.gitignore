@@ -1,0 +1,111 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Filtre «només codi» per al repo GitHub Onegai-Biodiversitat.
+# L'aplica herramientas/pujar_a_biodiversitat.sh (es copia com a .gitignore del
+# repo publicat). NO es fa servir com a .gitignore de Software/ perquè no
+# amagui fitxers al repo «admin».
+# Estratègia: s'ignora TOT i es tornen a admetre només les extensions de codi.
+# Preparat per Claude (Cowork) el 17/09/2026.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# 1) Ignorar-ho tot…
+*
+# …però seguir entrant a les carpetes
+!*/
+
+# 2) Codi font
+!*.c
+!*.cc
+!*.cpp
+!*.cxx
+!*.h
+!*.hh
+!*.hpp
+!*.inl
+!*.ipp
+!*.m
+!*.mm
+!*.py
+!*.java
+!*.kt
+!*.js
+!*.mjs
+!*.cjs
+!*.ts
+!*.tsx
+!*.jsx
+!*.vue
+!*.html
+!*.css
+!*.scss
+!*.glsl
+!*.vert
+!*.frag
+!*.geom
+!*.comp
+!*.hlsl
+!*.shader
+!*.cs
+!*.lua
+!*.rs
+!*.go
+!*.sql
+!*.swift
+!*.sh
+!*.bat
+!*.ps1
+
+# 3) Construcció i configuració del projecte
+!CMakeLists.txt
+!*.cmake
+!CMakePresets.json
+!vcpkg.json
+!Makefile
+!Dockerfile
+!docker-compose*.yml
+!pom.xml
+!mvnw
+!mvnw.cmd
+!*.gradle
+!package.json
+!tsconfig*.json
+!requirements*.txt
+!pyproject.toml
+!.github/workflows/*.yml
+!.github/workflows/*.yaml
+!.clang-format
+!.clang-tidy
+!.editorconfig
+# només el .gitignore de l'arrel (els dels subprojectes amagarien codi)
+!/.gitignore
+!README.md
+!LICENSE*
+
+# 4) Excepcions: coses que tenen extensió de codi però NO són codi nostre
+#    (compilacions, dependències descarregades, entorns, informes generats)
+out/
+build/
+build-*/
+cmake-build-*/
+_deps/
+target/
+dist/
+node_modules/
+.venv/
+venv/
+.tools_venv/
+__pycache__/
+_to_delete/
+*.min.js
+*.min.css
+.github/modernize/
+**/planificacion/**/*.html
+# Gestió documental: mai
+*[Gg]esti*[Dd]ocumental*/
+
+# 5) Per si de cas: secrets
+.env
+.env.*
+*.pem
+*.key
+*secret*
+*credential*

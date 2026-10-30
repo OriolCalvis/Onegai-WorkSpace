@@ -1,0 +1,54 @@
+{
+ "id": "caballero_draconiano_tiro_con_lanza",
+ "name": "Tiro con lanza",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Arrojas la lanza a través de la fila: 3d6 de daño de luz y la armadura perforada: -1 a la CA durante 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "caballero_draconiano"
+ ],
+ "roleTags": [],
+ "tags": [
+  "caballero_draconiano",
+  "estandar",
+  "Luz"
+ ],
+ "mechanicTags": [
+  "Luz"
+ ],
+ "actionType": "accion_principal",
+ "target": "zone_radius",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Arrojas la lanza a través de la fila: 3d6 de daño de luz y la armadura perforada: -1 a la CA durante 2 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "3d6 de daño de luz.",
+   "mechanicHook": "dano:3d6"
+  },
+  {
+   "description": "Armadura perforada: -1 a la CA durante 2 turnos.",
+   "mechanicHook": "estado:2:penal_ca:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Caballero Draconiano (Dragon Knight) · H1726 Tiro con lanza"
+}

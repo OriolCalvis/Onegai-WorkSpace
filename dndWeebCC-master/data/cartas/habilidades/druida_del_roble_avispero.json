@@ -1,0 +1,54 @@
+{
+ "id": "druida_del_roble_avispero",
+ "name": "Avispero",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Revientas un avispero sobre el enemigo: 2d6 de daño, y las picaduras lo dejan envenenado 2 turnos (ataca con desventaja).",
+ "flavorText": "",
+ "classTags": [
+  "druida_del_roble"
+ ],
+ "roleTags": [],
+ "tags": [
+  "druida_del_roble",
+  "estandar",
+  "Naturaleza"
+ ],
+ "mechanicTags": [
+  "Naturaleza"
+ ],
+ "actionType": "accion_principal",
+ "target": "zone_radius",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "INT",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Revientas un avispero sobre el enemigo: 2d6 de daño, y las picaduras lo dejan envenenado 2 turnos (ataca con desventaja).",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "2d6 de daño.",
+   "mechanicHook": "dano:2d6"
+  },
+  {
+   "description": "Picaduras: envenenado 2 turnos.",
+   "mechanicHook": "condicion:envenenado:2"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "Propia · Druida del Roble · NosTale: Sacerdote vudú, Enjambre de langostas voraces"
+}

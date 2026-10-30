@@ -1,0 +1,51 @@
+{
+ "id": "bardo_de_las_dos_mascaras_cambio_de_vestuario",
+ "name": "Cambio de vestuario",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Entre bastidores, le cambias el traje a un aliado, o a ti, en un abrir y cerrar de ojos: se libra de los estados en contra y, con el disfraz nuevo, se defiende con ventaja 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "bardo_de_las_dos_mascaras"
+ ],
+ "roleTags": [],
+ "tags": [
+  "bardo_de_las_dos_mascaras",
+  "estandar"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "single_ally",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "CAR",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Entre bastidores, le cambias el traje a un aliado, o a ti, en un abrir y cerrar de ojos: se libra de los estados en contra y, con el disfraz nuevo, se defiende con ventaja 2 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Se libra de los estados en contra.",
+   "mechanicHook": "limpia"
+  },
+  {
+   "description": "Disfraz nuevo: se defiende con ventaja 2 turnos.",
+   "mechanicHook": "estado:2:ventaja:defensa"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "Propia · Bardo de las Dos Máscaras · teatro: el cambio rápido"
+}

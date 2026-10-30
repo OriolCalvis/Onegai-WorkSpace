@@ -1,0 +1,49 @@
+{
+ "id": "cazador_recuperacion_rapida",
+ "name": "Recuperación rápida",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Recuperas el ritmo y el daño te hace menos mella: +1 a la CA hasta el final del combate.",
+ "flavorText": "",
+ "classTags": [
+  "cazador"
+ ],
+ "roleTags": [],
+ "tags": [
+  "cazador",
+  "creador"
+ ],
+ "mechanicTags": [
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "self",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Recuperas el ritmo y el daño te hace menos mella: +1 a la CA hasta el final del combate.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Rápido: +1 a la CA todo el combate.",
+   "mechanicHook": "estado:combate:bono_ca:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Cazador (Ranger) · H842 Recuperación rápida"
+}

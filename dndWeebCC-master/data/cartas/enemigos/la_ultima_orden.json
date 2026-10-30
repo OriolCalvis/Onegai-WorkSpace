@@ -1,0 +1,96 @@
+{
+ "id": "la_ultima_orden",
+ "name": "La Última Orden",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "tanque",
+ "faction": "forjados_sin_amo",
+ "stats": {
+  "CON": 11,
+  "DES": 8,
+  "INT": 8,
+  "CAR": 9
+ },
+ "derived": {
+  "vida": 70,
+  "ca": 20,
+  "defensaMental": 19,
+  "resistenciaFisica": 21,
+  "movimiento": 4
+ },
+ "attacks": [
+  {
+   "name": "Brazo de Asedio",
+   "defense": "CA",
+   "effect": "Golpe que suma su CON; la Guardia Rota que aplica dura 2 turnos en vez de 1."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "CA",
+   "effect": "Si el objetivo falla, queda Guardia Rota hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en Desesperación: su ataque firma se calcula como éxito crítico (GDD 7.6)."
+  }
+ ],
+ "passive": {
+  "name": "Directiva Maestra",
+  "description": "Directiva Maestra: mientras siga en pie, todos los Forjados a la vista repiten su última acción exacta cada ronda (previsibles pero incansables)."
+ },
+ "conditionsInflicted": [
+  "guardia_rota"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico",
+  "Importante"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Sigue su método con calma: aún cree que sobra tiempo."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Activa la arena a pleno: Engranajes expuestos: los éxitos críticos contra los Forjados los aturden (pierden su próxima acción)"
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final; su debilidad narrativa queda a la vista (el DJ da la pista si no la tienen)."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Cumplir la última orden recibida: 'resistid hasta que volvamos'. No volvieron",
+  "metodo": "Defiende un punto sin sentido con perfección absoluta",
+  "debilidad_narrativa": "Una orden nueva con el sello del taller original (objeto de campaña) lo reprograma: cambia de bando una ronda",
+  "vinculo": "deity_forge_father"
+ },
+ "arena": {
+  "name": "La Puerta que Nadie Cruza",
+  "hazard": "Engranajes expuestos: los éxitos críticos contra los Forjados los aturden (pierden su próxima acción)"
+ },
+ "legendaryActions": [
+  "Mantenimiento (1/ronda): repara 2 de vida a un Forjado o a sí mismo"
+ ],
+ "storyCard": {
+  "title": "La Última Orden",
+  "text": "La orden era razonable en su momento. El momento fue hace doscientos años.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Un ejército entero resumido en una sola instrucción."
+}

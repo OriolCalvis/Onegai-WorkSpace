@@ -1,0 +1,43 @@
+{
+ "id": "chaman_de_los_elementos_llamada_de_los_elementos",
+ "name": "Llamada de los elementos",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Al empezar el combate llamas a un elemento. Tierra: te sostiene: +1 a la CA. Fuego: arde en tu arma: tus golpes con arma hacen +1 de daño. Agua: te corre por las manos: tus curas curan +1. Aire: te aparta de los golpes: te defiendes con ventaja.",
+ "flavorText": "",
+ "classTags": [
+  "chaman_de_los_elementos"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "Al empezar el combate llamas a un elemento. Tierra: te sostiene: +1 a la CA. Fuego: arde en tu arma: tus golpes con arma hacen +1 de daño. Agua: te corre por las manos: tus curas curan +1. Aire: te aparta de los golpes: te defiendes con ventaja.",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Llamas a un elemento al empezar el combate.",
+   "mechanicHook": "elige_una:tierra,fuego,agua,aire"
+  },
+  {
+   "description": "Tierra: +1 a la CA.",
+   "mechanicHook": "si:tierra:bono_ca:1"
+  },
+  {
+   "description": "Fuego: tus golpes con arma hacen +1 de daño.",
+   "mechanicHook": "si:fuego:bono_dano_arma:1"
+  },
+  {
+   "description": "Agua: tus curas curan +1.",
+   "mechanicHook": "si:agua:bono_cura:1"
+  },
+  {
+   "description": "Aire: te defiendes con ventaja.",
+   "mechanicHook": "si:aire:ventaja:defensa"
+  }
+ ],
+ "fuente": "Propia · Chamán de los Elementos"
+}

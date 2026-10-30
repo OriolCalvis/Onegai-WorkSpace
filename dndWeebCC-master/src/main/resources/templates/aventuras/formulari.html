@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Formulario de aventura</title>
+    <th:block layout:fragment="extra-css">
+    <link th:href="@{/css/wizard.css}" rel="stylesheet">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+            <p class="gm-sidebar__eyebrow u-p-0">Sistema de Cartas y Tiers</p>
+            <h1 class="u-mb-sp2" th:text="${aventura.id == null} ? 'Nueva aventura' : 'Editar aventura'">Nueva aventura</h1>
+            <p class="u-lead--760">
+                Recopila cartas de historia: los pasos de una misma trama se ordenan solos (1→5), así que
+                puedes coger una trama entera como columna vertebral y salpicar ganchos sueltos de otras
+                facciones como misiones secundarias.
+            </p>
+
+            <form th:action="${aventura.id == null} ? @{/aventuras/crear} : @{/aventuras/{id}/editar(id=${aventura.id})}"
+                  th:object="${aventura}" method="post">
+
+                <!-- Wizard de 4 pasos (wireframe 11a): cada paso valida antes de
+                     avanzar; el HUD final se convierte en resumen del paso 4. -->
+                <div class="wiz-pasos" role="tablist">
+                    <button type="button" class="wiz-paso-btn is-activo" data-ir-paso="1">① Identidad</button>
+                    <button type="button" class="wiz-paso-btn" data-ir-paso="2">② Historias</button>
+                    <button type="button" class="wiz-paso-btn" data-ir-paso="3">③ Reparto/Botín</button>
+                    <button type="button" class="wiz-paso-btn" data-ir-paso="4">④ Combates</button>
+                </div>
+
+                <!-- ==================== PASO 1: IDENTIDAD ==================== -->
+                <section class="wiz-seccion is-activa" data-paso="1">
+                <div class="gm-form-grid u-mb-sp4">
+                    <div class="gm-field">
+                        <label>Nombre de la aventura</label>
+                        <input class="gm-input" th:field="*{nom}" placeholder="La Tomba del Rei Llop — Acto I" required>
+                    </div>
+                    <div class="gm-field">
+                        <label>Descripción breve</label>
+                        <input class="gm-input" th:field="*{descripcion}" placeholder="De los faroles de Bastrea a la puerta de la Tomba">
+                    </div>
+                </div>
+                <p class="wiz-error" data-error-paso="1">Ponle un nombre a la aventura antes de seguir.</p>
+                <div class="wiz-nav">
+                    <span></span>
+                    <button type="button" class="gm-btn gm-btn--primary" data-siguiente>Siguiente →</button>
+                </div>
+                </section>
+
+                <!-- ==================== PASO 2: HISTORIAS ==================== -->
+                <section class="wiz-seccion" data-paso="2">
+                <div class="u-filter-row--tight">
+                    <input type="text" class="gm-input u-flex-item-240" id="buscador" placeholder="🔍 Buscar facción, historia, lugar o gancho...">
+                    <select class="gm-select u-w-auto" id="filtro-tier" aria-label="Filtrar por tier">
+                        <option value="">Todos los tiers</option>
+                        <option value="1">Tier 1</option><option value="2">Tier 2</option>
+                        <option value="3">Tier 3</option><option value="4">Tier 4</option>
+                        <option value="5">Tier 5</option>
+                    </select>
+                    <label class="gm-hint u-inline-icon">
+                        <input type="checkbox" id="solo-elegidas"> solo las elegidas
+                    </label>
+                </div>
+
+                <!-- Un picker por facción; dentro, las historias agrupadas ya vienen ordenadas
+                     por trama y escalón desde el servidor. -->
+                <details class="gm-picker" th:each="f : ${facciones}" th:attr="data-faccion-picker=${f}">
+                    <summary>
+                        <span th:text="'📜 ' + ${#strings.replace(f, '_', ' ')}">facción</span>
+                        <span class="gm-picker__eleccion" th:attr="data-faccion-contador=${f}">0 elegidas</span>
+                    </summary>
+                    <div class="gm-picker__body">
+                        <div class="gm-chip-grid u-grid-fill-280">
+                            <label class="gm-chip" th:each="h : ${historiasDisponibles}" th:if="${h.faction == f}"
+                                   th:attr="data-chip-name=${h.title + ' ' + h.location + ' ' + h.hook},
+                                            data-tier=${h.tierMin},
+                                            data-faccion=${f}">
+                                <input type="checkbox" class="campo-historia" th:field="*{historiaIds}" th:value="${h.id}">
+                                <span class="gm-chip__title" th:text="${h.title}">Título</span>
+                                <span class="gm-chip__meta">
+                                    <span class="gm-chip__tier" th:text="'T' + ${h.tierMin}">T1</span>
+                                    <span th:text="' paso ' + ${h.chain.step} + '/' + ${h.chain.of} + ' · ' + ${h.location}">paso · lugar</span>
+                                </span>
+                                <span class="gm-chip__meta" th:text="${#strings.abbreviate(h.hook, 90)}">Gancho</span>
+                            </label>
+                        </div>
+                    </div>
+                </details>
+                <p th:if="${#lists.isEmpty(historiasDisponibles)}" class="gm-chip-empty">
+                    No hay historias en el catálogo — genera data/historias con scripts/generar_historias_npcs.py
+                    o crea una suelta en <a th:href="@{/historias/crear}">/historias/crear</a>.
+                </p>
+                <div class="wiz-nav">
+                    <button type="button" class="gm-btn gm-btn--outline" data-anterior>← Anterior</button>
+                    <button type="button" class="gm-btn gm-btn--primary" data-siguiente>Siguiente →</button>
+                </div>
+                </section>
+
+                <!-- ==================== PASO 3: REPARTO / BOTÍN ==================== -->
+                <section class="wiz-seccion" data-paso="3">
+                <h2 class="u-heading-gap-lg">🎭 Reparto</h2>
+                <p class="gm-hint u-mb-sp3">
+                    PNJ, dioses presentes, villanos y enemigos sueltos de la aventura.
+                    El botón 🎲 añade uno al azar entre los visibles.
+                </p>
+
+                <details class="gm-picker" data-picker-resumen>
+                    <summary>
+                        <span>🧑 PNJs</span>
+                        <button type="button" class="gm-btn gm-btn--outline gm-btn--sm" data-random-de="grid-npcs">🎲 al azar</button>
+                        <span class="gm-picker__eleccion" data-picker-contador>0 elegidos</span>
+                    </summary>
+                    <div class="gm-picker__body">
+                        <div class="gm-chip-grid" id="grid-npcs">
+                            <label class="gm-chip" th:each="n : ${npcsDisponibles}" th:attr="data-chip-name=${n.name}">
+                                <input type="checkbox" th:field="*{npcIds}" th:value="${n.id}">
+                                <span class="gm-chip__title" th:text="${n.name}">PNJ</span>
+                                <span class="gm-chip__meta" th:text="${n.rank} + ' · ' + ${n.extra}">rol · lugar</span>
+                            </label>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="gm-picker" data-picker-resumen>
+                    <summary>
+                        <span>✝ Dioses presentes</span>
+                        <button type="button" class="gm-btn gm-btn--outline gm-btn--sm" data-random-de="grid-deidades">🎲 al azar</button>
+                        <span class="gm-picker__eleccion" data-picker-contador>0 elegidos</span>
+                    </summary>
+                    <div class="gm-picker__body">
+                        <div class="gm-chip-grid" id="grid-deidades">
+                            <label class="gm-chip" th:each="d : ${deidadesDisponibles}" th:attr="data-chip-name=${d.name}">
+                                <input type="checkbox" th:field="*{deidadIds}" th:value="${d.id}">
+                                <span class="gm-chip__title" th:text="${d.name}">Deidad</span>
+                                <span class="gm-chip__meta" th:text="${d.domain}">dominio</span>
+                            </label>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="gm-picker" data-picker-resumen>
+                    <summary>
+                        <span>👑 Villanos</span>
+                        <button type="button" class="gm-btn gm-btn--outline gm-btn--sm" data-random-de="grid-villanos">🎲 al azar</button>
+                        <span class="gm-picker__eleccion" data-picker-contador>0 elegidos</span>
+                    </summary>
+                    <div class="gm-picker__body">
+                        <div class="gm-chip-grid" id="grid-villanos">
+                            <label class="gm-chip" th:each="v : ${villanosDisponibles}"
+                                   th:attr="data-chip-name=${v.name},data-tier=${v.tier}">
+                                <input type="checkbox" th:field="*{villanoIds}" th:value="${v.id}">
+                                <span class="gm-chip__title" th:text="${v.name}">Villano</span>
+                                <span class="gm-chip__meta">
+                                    <span class="gm-chip__tier" th:text="'T' + ${v.tier}">T4</span>
+                                    <span th:text="' ' + ${v.rank} + ' · ' + ${v.factionNombre}">rango · facción</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="gm-picker" data-picker-resumen>
+                    <summary>
+                        <span>💀 Enemigos sueltos</span>
+                        <button type="button" class="gm-btn gm-btn--outline gm-btn--sm" data-random-de="grid-enemigos">🎲 al azar</button>
+                        <span class="gm-picker__eleccion" data-picker-contador>0 elegidos</span>
+                    </summary>
+                    <div class="gm-picker__body">
+                        <input type="text" class="gm-input gm-chip-search u-mb-sp2" data-chip-filter="grid-enemigos"
+placeholder="Buscar enemigo por nombre...">
+                        <div class="gm-chip-grid" id="grid-enemigos">
+                            <label class="gm-chip" th:each="e : ${enemigosDisponibles}"
+                                   th:attr="data-chip-name=${e.name},data-tier=${e.tier}">
+                                <input type="checkbox" th:field="*{enemigoIds}" th:value="${e.id}">
+                                <span class="gm-chip__title" th:text="${e.name}">Enemigo</span>
+                                <span class="gm-chip__meta">
+                                    <span class="gm-chip__tier" th:text="'T' + ${e.tier}">T1</span>
+                                    <span th:text="' ' + ${e.rank} + ' · ' + ${e.factionNombre}">rango · facción</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- ==================== BOTÍN Y PELIGROS ==================== -->
+                <h2 class="u-heading-gap-lg">💰 Botín y peligros</h2>
+
+                <details class="gm-picker" data-picker-resumen>
+                    <summary>
+                        <span>💰 Tablas de botín</span>
+                        <button type="button" class="gm-btn gm-btn--outline gm-btn--sm" data-random-de="grid-loot">🎲 al azar</button>
+                        <span class="gm-picker__eleccion" data-picker-contador>0 elegidas</span>
+                    </summary>
+                    <div class="gm-picker__body">
+                        <input type="text" class="gm-input gm-chip-search u-mb-sp2" data-chip-filter="grid-loot"
+placeholder="Buscar tabla de botín...">
+                        <div class="gm-chip-grid" id="grid-loot">
+                            <label class="gm-chip" th:each="l : ${lootDisponible}"
+                                   th:attr="data-chip-name=${l.name},data-tier=${l.tier}">
+                                <input type="checkbox" th:field="*{lootIds}" th:value="${l.id}">
+                                <span class="gm-chip__title" th:text="${l.name}">Loot</span>
+                                <span class="gm-chip__meta"><span class="gm-chip__tier" th:text="'T' + ${l.tier}">T1</span></span>
+                            </label>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="gm-picker" data-picker-resumen>
+                    <summary>
+                        <span>🪤 Trampas</span>
+                        <button type="button" class="gm-btn gm-btn--outline gm-btn--sm" data-random-de="grid-trampas">🎲 al azar</button>
+                        <span class="gm-picker__eleccion" data-picker-contador>0 elegidas</span>
+                    </summary>
+                    <div class="gm-picker__body">
+                        <div class="gm-chip-grid" id="grid-trampas">
+                            <label class="gm-chip" th:each="t : ${trampasDisponibles}"
+                                   th:attr="data-chip-name=${t.name},data-tier=${t.tier}">
+                                <input type="checkbox" th:field="*{trampaIds}" th:value="${t.id}">
+                                <span class="gm-chip__title" th:text="${t.name}">Trampa</span>
+                                <span class="gm-chip__meta">
+                                    <span class="gm-chip__tier" th:text="'T' + ${t.tier}">T1</span>
+                                    <span th:text="' ' + ${t.extra}">categoría</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </details>
+                <div class="wiz-nav">
+                    <button type="button" class="gm-btn gm-btn--outline" data-anterior>← Anterior</button>
+                    <button type="button" class="gm-btn gm-btn--primary" data-siguiente>Siguiente →</button>
+                </div>
+                </section>
+
+                <!-- ==================== PASO 4: COMBATES + RESUMEN ==================== -->
+                <section class="wiz-seccion" data-paso="4">
+                <h2 class="u-heading-gap-lg">⚔ Combates preparados</h2>
+                <p class="gm-hint u-mb-sp3">
+                    Cada combate genera un encuentro al azar para su tier: 1 élite + 2-4 criaturas,
+                    priorizando una misma facción. Vuelve a tirar 🎲 hasta que te guste.
+                </p>
+                <div id="lista-combates">
+                    <div class="gm-picker gm-picker--lleno combate-fila" th:each="c,it : *{combates}" open>
+                        <div class="gm-picker__body u-pt-sp3">
+                            <div class="gm-form-grid">
+                                <div class="gm-field">
+                                    <label>Nombre del combate</label>
+                                    <input class="gm-input" th:field="*{combates[__${it.index}__].nom}" placeholder="Emboscada en el desfiladero">
+                                </div>
+                                <div class="gm-field">
+                                    <label>Tier del encuentro</label>
+                                    <input class="gm-input campo-combate-tier" type="number" min="1" max="5"
+                                           th:field="*{combates[__${it.index}__].tier}">
+                                </div>
+                            </div>
+                            <input type="hidden" class="campo-combate-enemigos" th:field="*{combates[__${it.index}__].enemigoIdsCsv}">
+                            <p class="gm-hint combate-resumen u-my-sp2">Sin enemigos todavía — tira el dado.</p>
+                            <div class="gm-field">
+                                <label>Notas del combate</label>
+                                <input class="gm-input" th:field="*{combates[__${it.index}__].notas}" placeholder="Terreno, condición de huida, refuerzos...">
+                            </div>
+                            <div class="u-actions--tight">
+                                <button type="button" class="gm-btn gm-btn--outline gm-btn--sm boton-generar-combate">🎲 Generar enemigos</button>
+                                <button type="button" class="gm-btn gm-btn--danger gm-btn--sm boton-quitar-combate">Quitar combate</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="gm-btn gm-btn--outline u-mt-sp2" id="boton-anadir-combate">
+                    + Añadir combate
+                </button>
+
+                <div class="gm-field u-mt-sp4">
+                    <label>Notas del director</label>
+                    <textarea class="gm-textarea" rows="3" th:field="*{notas}"
+                              placeholder="Ritmo previsto, PNJ recurrentes, qué pasa si ignoran la trama..."></textarea>
+                </div>
+
+                <!-- El HUD final se convierte en resumen del paso 4 (wireframe 11a) -->
+                <div class="wiz-resumen" id="wiz-resumen" role="status" aria-live="polite"></div>
+
+                <div class="wiz-nav">
+                    <button type="button" class="gm-btn gm-btn--outline" data-anterior>← Anterior</button>
+                    <span></span>
+                </div>
+                </section>
+
+                <div class="gm-buildbar" role="status" aria-live="polite">
+                    <span class="gm-hud" id="hud-historias" title="Historias recopiladas en esta aventura">📜 Historias 0</span>
+                    <span class="gm-hud" id="hud-tramas" title="Tramas madre tocadas por la selección">🧵 Tramas 0</span>
+                    <span class="u-flex-1"></span>
+                    <button class="gm-btn gm-btn--primary" type="submit">Guardar aventura</button>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/aventuras}">Cancelar</a>
+                </div>
+            </form></main>
+<th:block layout:fragment="extra-js">
+    <script th:inline="javascript">
+    // Catálogo ligero del bestiario (id, nombre, tier, rango, facción) para generar
+    // combates aleatorios sin ir al servidor.
+    var BESTIARIO = /*[[${enemigosLigeros}]]*/ [];
+</script>
+    <script>
+    // ==================== Wizard de 4 pasos (wireframe 11a) ====================
+    (function () {
+        var pasos = document.querySelectorAll('.wiz-seccion');
+        var botones = document.querySelectorAll('.wiz-paso-btn');
+        var actual = 1;
+
+        function validar(paso) {
+            if (paso === 1) {
+                var nombre = document.querySelector('[name="nom"]');
+                var ok = nombre && nombre.value.trim().length > 0;
+                var error = document.querySelector('[data-error-paso="1"]');
+                if (error) error.classList.toggle('is-visible', !ok);
+                return ok;
+            }
+            return true;
+        }
+
+        function ir(paso) {
+            if (paso === actual) return;
+            // para avanzar hay que validar todos los pasos intermedios
+            if (paso > actual) {
+                for (var p = actual; p < paso; p++) {
+                    if (!validar(p)) return;
+                }
+            }
+            actual = paso;
+            pasos.forEach(function (s) {
+                s.classList.toggle('is-activa', s.getAttribute('data-paso') === String(paso));
+            });
+            botones.forEach(function (b) {
+                var n = parseInt(b.getAttribute('data-ir-paso'), 10);
+                b.classList.toggle('is-activo', n === paso);
+                b.classList.toggle('is-hecho', n < paso);
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        botones.forEach(function (b) {
+            b.addEventListener('click', function () { ir(parseInt(b.getAttribute('data-ir-paso'), 10)); });
+        });
+        document.querySelectorAll('[data-siguiente]').forEach(function (b) {
+            b.addEventListener('click', function () { ir(actual + 1); });
+        });
+        document.querySelectorAll('[data-anterior]').forEach(function (b) {
+            b.addEventListener('click', function () { ir(actual - 1); });
+        });
+
+        // Resumen del paso 4: cuenta lo elegido en los pasos anteriores.
+        function resumen() {
+            var caja = document.getElementById('wiz-resumen');
+            if (!caja) return;
+            function n(sel) { return document.querySelectorAll(sel).length; }
+            var partes = [
+                '📜 Historias ' + n('.campo-historia:checked'),
+                '🧑 PNJs ' + n('#grid-npcs input:checked'),
+                '✝ Dioses ' + n('#grid-deidades input:checked'),
+                '👑 Villanos ' + n('#grid-villanos input:checked'),
+                '💀 Enemigos ' + n('#grid-enemigos input:checked'),
+                '💰 Botín ' + n('#grid-loot input:checked'),
+                '🪤 Trampas ' + n('#grid-trampas input:checked'),
+                '⚔ Combates ' + n('.combate-fila')
+            ];
+            caja.innerHTML = partes.map(function (p) { return '<span class="gm-hud">' + p + '</span>'; }).join('');
+        }
+        document.addEventListener('change', resumen);
+        document.addEventListener('click', function () { setTimeout(resumen, 0); });
+        resumen();
+    })();
+
+    (function () {
+        var buscador = document.getElementById('buscador');
+        var filtroTier = document.getElementById('filtro-tier');
+        var soloElegidas = document.getElementById('solo-elegidas');
+        var hudHistorias = document.getElementById('hud-historias');
+        var hudTramas = document.getElementById('hud-tramas');
+
+        function filtrar() {
+            var texto = (buscador.value || '').trim().toLowerCase();
+            var t = filtroTier.value;
+            var solo = soloElegidas.checked;
+            document.querySelectorAll('.gm-chip[data-faccion]').forEach(function (chip) {
+                var caja = chip.querySelector('input');
+                var faccion = (chip.getAttribute('data-faccion') || '').replace(/_/g, ' ').toLowerCase();
+                var visible = true;
+                // el buscador también encuentra por nombre de facción (wireframe 11b)
+                if (texto && (chip.getAttribute('data-chip-name') || '').toLowerCase().indexOf(texto) === -1
+                        && faccion.indexOf(texto) === -1) visible = false;
+                if (t && chip.getAttribute('data-tier') !== t) visible = false;
+                if (solo && !(caja && caja.checked)) visible = false;
+                chip.style.display = visible ? '' : 'none';
+            });
+            // filas de facción colapsables: se ocultan si no queda nada visible,
+            // y se abren solas cuando hay búsqueda activa con resultados
+            document.querySelectorAll('[data-faccion-picker]').forEach(function (picker) {
+                var visibles = Array.prototype.filter.call(
+                    picker.querySelectorAll('.gm-chip'),
+                    function (c) { return c.style.display !== 'none'; }).length;
+                picker.style.display = visibles ? '' : 'none';
+                if (texto && visibles) picker.open = true;
+            });
+        }
+
+        function actualizarHud() {
+            var marcadas = document.querySelectorAll('.campo-historia:checked');
+            if (hudHistorias) {
+                hudHistorias.textContent = '📜 Historias ' + marcadas.length;
+                hudHistorias.classList.toggle('gm-hud--ok', marcadas.length > 0);
+            }
+            // tramas distintas: el "paso x/y" comparte trama si comparte prefijo de título ("Trama — Escalón")
+            var tramas = {};
+            marcadas.forEach(function (caja) {
+                var chip = caja.closest('.gm-chip');
+                var titulo = chip ? chip.querySelector('.gm-chip__title').textContent : '';
+                tramas[titulo.split('—')[0].trim()] = true;
+            });
+            if (hudTramas) {
+                var n = Object.keys(tramas).length;
+                hudTramas.textContent = '🧵 Tramas ' + n;
+                hudTramas.classList.toggle('gm-hud--ok', n > 0);
+            }
+            // contador por facción en el titular de cada picker
+            document.querySelectorAll('[data-faccion-picker]').forEach(function (picker) {
+                var f = picker.getAttribute('data-faccion-picker');
+                var elegidas = picker.querySelectorAll('.campo-historia:checked').length;
+                var contador = picker.querySelector('[data-faccion-contador]');
+                if (contador) contador.textContent = elegidas ? ('✓ ' + elegidas + ' elegidas') : '0 elegidas';
+                picker.classList.toggle('gm-picker--lleno', elegidas > 0);
+            });
+        }
+
+        [buscador, filtroTier, soloElegidas].forEach(function (el) {
+            el.addEventListener('input', filtrar);
+            el.addEventListener('change', filtrar);
+        });
+        document.addEventListener('change', actualizarHud);
+        actualizarHud();
+    })();
+
+    // ==================== 🎲 aleatorio en cualquier picker ====================
+    // Marca una ficha al azar entre las visibles y no marcadas de la rejilla indicada.
+    (function () {
+        document.querySelectorAll('[data-random-de]').forEach(function (boton) {
+            boton.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();   // no plegar/abrir el <details>
+                var grid = document.getElementById(boton.getAttribute('data-random-de'));
+                if (!grid) return;
+                var candidatas = Array.prototype.filter.call(grid.querySelectorAll('.gm-chip'), function (chip) {
+                    var caja = chip.querySelector('input');
+                    return chip.style.display !== 'none' && caja && !caja.checked && !caja.disabled;
+                });
+                if (!candidatas.length) return;
+                var elegida = candidatas[Math.floor(Math.random() * candidatas.length)];
+                var caja = elegida.querySelector('input');
+                caja.checked = true;
+                caja.dispatchEvent(new Event('change', { bubbles: true }));
+                boton.closest('details').open = true;
+                elegida.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            });
+        });
+
+        // contador genérico de los pickers de reparto/peligros
+        function actualizarContadores() {
+            document.querySelectorAll('[data-picker-resumen]').forEach(function (picker) {
+                var n = picker.querySelectorAll('input[type="checkbox"]:checked').length;
+                var contador = picker.querySelector('[data-picker-contador]');
+                if (contador) contador.textContent = n ? ('✓ ' + n) : '0 elegidos';
+                picker.classList.toggle('gm-picker--lleno', n > 0);
+            });
+        }
+        document.addEventListener('change', actualizarContadores);
+        actualizarContadores();
+
+        // ============ Vista previa editable de cada picker (wireframe 11c) ============
+        // Lo elegido (a mano o con 🎲) se ve como lista con re-tirar (⟳) y quitar (×)
+        // por elemento — la tirada nunca es una caja negra.
+        document.querySelectorAll('[data-picker-resumen]').forEach(function (picker) {
+            var body = picker.querySelector('.gm-picker__body');
+            if (!body) return;
+            var prev = document.createElement('div');
+            prev.className = 'prev-lista';
+            body.insertBefore(prev, body.firstChild);
+
+            function pintar() {
+                prev.innerHTML = '';
+                picker.querySelectorAll('.gm-chip input:checked').forEach(function (caja) {
+                    var chip = caja.closest('.gm-chip');
+                    var nombre = chip ? chip.querySelector('.gm-chip__title').textContent : caja.value;
+                    var item = document.createElement('div');
+                    item.className = 'prev-item';
+                    item.innerHTML = '<span class="prev-item__nombre"></span>' +
+                        '<button type="button" class="gm-btn gm-btn--outline gm-btn--sm" data-retirar title="Volver a tirar este">🎲 ⟳</button>' +
+                        '<button type="button" class="gm-btn gm-btn--danger gm-btn--sm" data-quitar title="Quitar">×</button>';
+                    item.querySelector('.prev-item__nombre').textContent = nombre;
+                    item.querySelector('[data-quitar]').addEventListener('click', function () {
+                        caja.checked = false;
+                        caja.dispatchEvent(new Event('change', { bubbles: true }));
+                    });
+                    item.querySelector('[data-retirar]').addEventListener('click', function () {
+                        var grid = caja.closest('.gm-chip-grid');
+                        var candidatas = Array.prototype.filter.call(grid.querySelectorAll('.gm-chip'), function (c) {
+                            var otra = c.querySelector('input');
+                            return c.style.display !== 'none' && otra && !otra.checked;
+                        });
+                        caja.checked = false;
+                        if (candidatas.length) {
+                            var nueva = candidatas[Math.floor(Math.random() * candidatas.length)].querySelector('input');
+                            nueva.checked = true;
+                        }
+                        caja.dispatchEvent(new Event('change', { bubbles: true }));
+                    });
+                    prev.appendChild(item);
+                });
+            }
+            picker.addEventListener('change', pintar);
+            pintar();
+        });
+    })();
+
+    // ==================== Constructor de combates ====================
+    // Filas dinámicas con índices reindexados al guardar; el 🎲 compone el encuentro:
+    // 1 élite + 2-4 criaturas del tier (±1), priorizando una misma facción.
+    (function () {
+        var lista = document.getElementById('lista-combates');
+        var botonAnadir = document.getElementById('boton-anadir-combate');
+        if (!lista || !botonAnadir) return;
+
+        var nombresPorId = {};
+        var porId = {};
+        BESTIARIO.forEach(function (e) { nombresPorId[e.id] = e.n; porId[e.id] = e; });
+
+        function reindexar() {
+            lista.querySelectorAll('.combate-fila').forEach(function (fila, i) {
+                fila.querySelectorAll('input').forEach(function (input) {
+                    if (input.name) {
+                        input.name = input.name.replace(/combates\[\d+\]/, 'combates[' + i + ']');
+                    }
+                });
+            });
+        }
+
+        // Vista previa del combate generado (wireframe 11c): lista editable con
+        // re-tirar (⟳) por enemigo, no una caja negra.
+        function pintarResumen(fila) {
+            var oculto = fila.querySelector('.campo-combate-enemigos');
+            var resumen = fila.querySelector('.combate-resumen');
+            if (!oculto || !resumen) return;
+            var ids = (oculto.value || '').split(',').map(function (x) { return x.trim(); })
+                .filter(function (x) { return x; });
+            if (!ids.length) {
+                resumen.textContent = 'Sin enemigos todavía — tira el dado.';
+                return;
+            }
+            resumen.innerHTML = '';
+            var listaPrev = document.createElement('div');
+            listaPrev.className = 'prev-lista';
+            ids.forEach(function (id, idx) {
+                var e = porId[id];
+                var esElite = e && e.r === 'elite';
+                var item = document.createElement('div');
+                item.className = 'prev-item';
+                item.innerHTML = '<span class="prev-item__nombre"></span>' +
+                    '<button type="button" class="gm-btn gm-btn--outline gm-btn--sm boton-reroll-enemigo" data-idx="' + idx + '" title="Volver a tirar este">🎲 ⟳</button>' +
+                    '<button type="button" class="gm-btn gm-btn--danger gm-btn--sm boton-quitar-enemigo" data-idx="' + idx + '" title="Quitar">×</button>';
+                item.querySelector('.prev-item__nombre').textContent =
+                    (esElite ? '👑 Élite: ' : '💀 ') + (nombresPorId[id] || id);
+                listaPrev.appendChild(item);
+            });
+            resumen.appendChild(listaPrev);
+        }
+
+        // Re-tira un solo hueco del encuentro manteniendo el resto (élite→élite,
+        // criatura→criatura, mismo entorno de tier).
+        function rerollEnemigo(fila, idx) {
+            var oculto = fila.querySelector('.campo-combate-enemigos');
+            var ids = (oculto.value || '').split(',').map(function (x) { return x.trim(); })
+                .filter(function (x) { return x; });
+            if (idx >= ids.length) return;
+            var tier = parseInt(fila.querySelector('.campo-combate-tier').value, 10) || 1;
+            var actual = porId[ids[idx]];
+            var rango = actual ? actual.r : 'criatura';
+            var pool = BESTIARIO.filter(function (e) {
+                return e.r === rango && Math.abs(e.t - tier) <= 1 && ids.indexOf(e.id) === -1;
+            });
+            if (!pool.length) return;
+            ids[idx] = pool[Math.floor(Math.random() * pool.length)].id;
+            oculto.value = ids.join(',');
+            pintarResumen(fila);
+        }
+
+        function quitarEnemigo(fila, idx) {
+            var oculto = fila.querySelector('.campo-combate-enemigos');
+            var ids = (oculto.value || '').split(',').map(function (x) { return x.trim(); })
+                .filter(function (x) { return x; });
+            ids.splice(idx, 1);
+            oculto.value = ids.join(',');
+            pintarResumen(fila);
+        }
+
+        function generarEncuentro(fila) {
+            var tier = parseInt(fila.querySelector('.campo-combate-tier').value, 10) || 1;
+            var cerca = function (e) { return Math.abs(e.t - tier) <= 1; };
+            var elites = BESTIARIO.filter(function (e) { return e.r === 'elite' && cerca(e); });
+            var criaturas = BESTIARIO.filter(function (e) { return e.r === 'criatura' && cerca(e); });
+            if (!criaturas.length && !elites.length) return;
+
+            var azar = function (l) { return l[Math.floor(Math.random() * l.length)]; };
+            var elegidos = [];
+            var elite = elites.length ? azar(elites) : null;
+            if (elite) elegidos.push(elite);
+            // prioriza la facción de la élite si tiene suficientes criaturas
+            var faccion = elite ? elite.f : (criaturas.length ? azar(criaturas).f : '');
+            var mismaFaccion = criaturas.filter(function (e) { return e.f === faccion; });
+            var pool = mismaFaccion.length >= 2 ? mismaFaccion : criaturas;
+            var cuantas = 2 + Math.floor(Math.random() * 3);   // 2-4
+            for (var i = 0; i < cuantas && pool.length; i++) {
+                elegidos.push(azar(pool));
+            }
+            fila.querySelector('.campo-combate-enemigos').value =
+                elegidos.map(function (e) { return e.id; }).join(',');
+            pintarResumen(fila);
+        }
+
+        lista.addEventListener('click', function (e) {
+            var fila = e.target.closest('.combate-fila');
+            if (!fila) return;
+            if (e.target.classList.contains('boton-generar-combate')) {
+                e.preventDefault();
+                generarEncuentro(fila);
+            }
+            if (e.target.classList.contains('boton-quitar-combate')) {
+                e.preventDefault();
+                fila.remove();
+                reindexar();
+            }
+            if (e.target.classList.contains('boton-reroll-enemigo')) {
+                e.preventDefault();
+                rerollEnemigo(fila, parseInt(e.target.getAttribute('data-idx'), 10));
+            }
+            if (e.target.classList.contains('boton-quitar-enemigo')) {
+                e.preventDefault();
+                quitarEnemigo(fila, parseInt(e.target.getAttribute('data-idx'), 10));
+            }
+        });
+
+        botonAnadir.addEventListener('click', function () {
+            var i = lista.querySelectorAll('.combate-fila').length;
+            var fila = document.createElement('details');
+            fila.className = 'gm-picker gm-picker--lleno combate-fila';
+            fila.open = true;
+            fila.innerHTML =
+                '<div class="gm-picker__body u-pt-sp3">' +
+                '<div class="gm-form-grid">' +
+                '<div class="gm-field"><label>Nombre del combate</label>' +
+                '<input class="gm-input" name="combates[' + i + '].nom" placeholder="Emboscada en el desfiladero"></div>' +
+                '<div class="gm-field"><label>Tier del encuentro</label>' +
+                '<input class="gm-input campo-combate-tier" type="number" min="1" max="5" value="1" name="combates[' + i + '].tier"></div>' +
+                '</div>' +
+                '<input type="hidden" class="campo-combate-enemigos" name="combates[' + i + '].enemigoIdsCsv" value="">' +
+                '<p class="gm-hint combate-resumen u-my-sp2">Sin enemigos todavía — tira el dado.</p>' +
+                '<div class="gm-field"><label>Notas del combate</label>' +
+                '<input class="gm-input" name="combates[' + i + '].notas" placeholder="Terreno, condición de huida, refuerzos..."></div>' +
+                '<div class="u-actions--tight">' +
+                '<button type="button" class="gm-btn gm-btn--outline gm-btn--sm boton-generar-combate">🎲 Generar enemigos</button>' +
+                '<button type="button" class="gm-btn gm-btn--danger gm-btn--sm boton-quitar-combate">Quitar combate</button>' +
+                '</div></div>';
+            lista.appendChild(fila);
+        });
+
+        // al cargar (edición), pintar los resúmenes de los combates guardados
+        lista.querySelectorAll('.combate-fila').forEach(pintarResumen);
+    })();
+</script>
+</th:block>
+</body>
+</html>

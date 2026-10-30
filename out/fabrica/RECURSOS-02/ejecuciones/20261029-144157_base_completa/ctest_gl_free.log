@@ -1,0 +1,1912 @@
+$ ctest --test-dir out/build/macos-debug -L gl-free --output-on-failure
+(cwd /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico)
+
+Test project /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/out/build/macos-debug
+        Start   1: test_pergamino
+  1/241 Test   #1: test_pergamino ...........................***Failed    0.82 sec
+[PASS] material_misma_semilla_misma_imagen
+[PASS] material_hoja_rasgada_por_el_borde_y_entera_por_dentro
+[PASS] material_piezas_con_su_medida
+[PASS] material_papiro_de_cualquier_ancho
+[PASS] lienzo_un_material_repetido_se_fabrica_una_vez
+[PASS] lienzo_sombra_debajo_y_atenuado
+[PASS] utf8_se_decodifica_y_lo_roto_sale_como_interrogacion
+[PASS] voz_pixel_avanza_seis_columnas_y_va_en_mayusculas
+[PASS] lora_mide_crece_y_aplica_kerning
+[PASS] lora_envuelve_sin_pasarse_y_sin_perder_palabras
+[PASS] lora_recorta_con_puntos_suspensivos
+[PASS] pasar_hoja_angulos_de_la_maqueta
+[PASS] pasar_hoja_dura_360_ms_y_las_pulsaciones_encadenan
+[PASS] pasar_hoja_animaciones_reducidas_es_un_fundido_corto
+[PASS] pasar_hoja_tiras_cubren_la_hoja_y_no_pasan_del_recorte
+[PASS] aura_mismos_tramos_que_la_moral_del_juego
+[PASS] aura_heroe_brilla_villano_humea_neutral_nada
+[PASS] aura_particulas_alas_y_pulso_acotados
+[PASS] papiro_mide_lo_de_p05a
+[PASS] papiro_un_solo_foco_en_su_fila
+[PASS] papiro_de_pausa_del_juego_cabe_en_720
+[PASS] papiro_de_opciones_mas_ancho_para_su_pie
+[PASS] cuaderno_centrado_y_hoja_dentro_de_las_tapas
+[PASS] cuaderno_cada_cambio_de_hoja_es_una_vuelta
+[PASS] cuaderno_la_hoja_que_cae_no_pasa_de_las_tapas
+[PASS] pagina_lista_larga_sigue_al_foco
+[PASS] pagina_vacia_sin_cinta
+[PASS] dialogo_una_linea_por_pagina_y_la_ultima_cierra
+[PASS] dialogo_cada_linea_bajo_quien_la_dice
+[PASS] dialogo_una_linea_larga_se_parte_por_frases
+[PASS] dialogo_la_hoja_va_abajo_y_centrada
+[PASS] retales_el_aviso_de_objetivo_se_va_solo
+[PASS] retales_compacto_solo_el_personaje
+[PASS] retales_el_temporizador_va_con_el_objetivo
+[PASS] interfaz_oculta_no_pinta_nada
+[PASS] interfaz_sin_letras_no_carga
+[PASS] sin_pieles_es_el_procedimental
+[PASS] recorta_nueve_trozos_sin_estirar
+[PASS] pieles_por_material_parametros_y_semilla
+[PASS] piel_rota_avisa_y_no_tumba
+[PASS] creacion_cada_hoja_deja_sus_pestanas_y_cabe_en_la_vista
+[PASS] creacion_raza_veinte_teselas_que_no_se_pisan
+[PASS] creacion_el_clic_de_la_zona_elige_lo_que_se_ve
+[PASS] creacion_historia_treinta_y_cinco_tarjetas_con_origen
+[PASS] creacion_clase_filtros_y_sin_montaje_no_hay_retratos
+[PASS] creacion_nombre_sugerencias_y_editar_cada_eleccion
+[PASS] atlas_de_retratos_guarda_cada_clave_una_vez_y_se_vacia_lleno
+[PASS] papiro_apagada_lleva_su_motivo_y_cada_entrada_su_zona
+[PASS] combate_cada_carta_de_la_barra_tiene_su_zona
+[PASS] combate_el_emergente_de_la_estacion_tapa_la_barra
+[FAIL] combate_registro_oculto_y_turno_del_rival: /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/tests/HUD/MesaCombateTests.cpp:136 -- comprobación fallida: pinta(v, b).cuantos() > oculto.cuantos()
+[PASS] combate_en_una_vista_mayor_baja_y_se_centra
+[PASS] combate_los_estados_del_enemigo_van_en_su_placa
+[FAIL] combate_los_estados_del_heroe_van_bajo_su_retrato: /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/tests/HUD/MesaCombateTests.cpp:214 -- comprobación fallida: fichas[0]->rect.y > 98.0f && fichas[0]->rect.abajo() < 138.0f
+[PASS] combate_al_senalar_un_estado_sale_lo_que_hace
+[PASS] combate_la_carta_senalada_marca_a_quien_alcanza
+[FAIL] combate_un_grupo_de_cinco_lleva_las_placas_compactas: /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/tests/HUD/MesaCombateTests.cpp:299 -- comprobación fallida: p5.size() == 5
+[FAIL] combate_los_acompanantes_van_en_el_orden_de_turno: /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/tests/HUD/MesaCombateTests.cpp:359 -- comprobación fallida: arriba[1]->rect.x - arriba[0]->rect.x == 74.0f && arriba[2]->rect.x - arriba[1]->rect.x == 74.0f
+[PASS] dados_cuentan_como_el_reglamento
+[PASS] dados_una_cara_tiene_tantos_puntos_como_su_valor
+[PASS] dados_el_panel_del_combate_cabe_en_su_sitio
+[PASS] dados_la_pifia_se_ve_y_perder_no_es_pifiar
+[PASS] dados_la_tira_del_dialogo_se_apoya_en_su_esquina
+[PASS] dados_el_dialogo_lleva_la_tirada_de_su_beat_en_la_ultima_pagina
+[PASS] la_hoja_de_la_tienda_cabe_en_la_vista_y_se_centra
+[PASS] comprar_pinta_precio_boton_y_una_sola_cinta_en_la_fila_elegida
+[PASS] sin_oro_la_fila_se_apaga_y_el_boton_dice_por_que
+[PASS] vender_dice_cuanto_recibes_antes_de_vender
+[PASS] vender_sin_nada_que_vender_es_un_estado_vacio_honesto
+[PASS] el_resultado_sale_en_la_hoja
+[PASS] cicatrices_sin_ninguna_no_hay_fila
+[PASS] cicatrices_con_alguna_la_fila_dice_cuantas
+Ejecutados 72 test(s); 4 fallo(s).
+
+        Start   2: test_golpes_en_pantalla
+  2/241 Test   #2: test_golpes_en_pantalla ..................   Passed    0.00 sec
+        Start   3: test_suelo_combate
+  3/241 Test   #3: test_suelo_combate .......................   Passed    0.00 sec
+        Start   4: test_condition_engine
+  4/241 Test   #4: test_condition_engine ....................   Passed    0.00 sec
+        Start   5: rpg_declaration_check
+  5/241 Test   #5: rpg_declaration_check ....................   Passed    1.28 sec
+        Start   6: test_static_validators
+  6/241 Test   #6: test_static_validators ...................   Passed    0.13 sec
+        Start   7: test_project_levels
+  7/241 Test   #7: test_project_levels ......................   Passed    0.01 sec
+        Start   8: test_narrative_variables
+  8/241 Test   #8: test_narrative_variables .................   Passed    0.00 sec
+        Start   9: test_event_interpreter
+  9/241 Test   #9: test_event_interpreter ...................   Passed    0.00 sec
+        Start  10: test_event_commands
+ 10/241 Test  #10: test_event_commands ......................   Passed    0.00 sec
+        Start  11: test_adventure_validation
+ 11/241 Test  #11: test_adventure_validation ................   Passed    0.00 sec
+        Start  12: test_opciones_dialogo
+ 12/241 Test  #12: test_opciones_dialogo ....................   Passed    0.02 sec
+        Start  13: test_fase_uno_boundington
+ 13/241 Test  #13: test_fase_uno_boundington ................   Passed    0.02 sec
+        Start  14: test_moral
+ 14/241 Test  #14: test_moral ...............................   Passed    0.01 sec
+        Start  15: test_heroe_en_la_historia
+ 15/241 Test  #15: test_heroe_en_la_historia ................   Passed    0.05 sec
+        Start  16: test_charlas
+ 16/241 Test  #16: test_charlas .............................   Passed    0.01 sec
+        Start  17: test_cinematicas
+ 17/241 Test  #17: test_cinematicas .........................   Passed    0.00 sec
+        Start  18: test_rumbo_niveles
+ 18/241 Test  #18: test_rumbo_niveles .......................   Passed    0.01 sec
+        Start  19: test_tablero_combate
+ 19/241 Test  #19: test_tablero_combate .....................   Passed    0.00 sec
+        Start  20: test_ruta_casillas
+ 20/241 Test  #20: test_ruta_casillas .......................***Failed    0.01 sec
+[PASS] la_ruta_rodea_el_muro_y_no_entra_en_lo_ocupado
+[PASS] con_un_presupuesto_se_llega_hasta_donde_se_llega
+[PASS] el_terreno_dificil_cuesta_el_doble
+[FAIL] cien_por_cien_casillas_en_menos_de_cinco_ms: /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/tests/Game/RutaCasillasTests.cpp:90 -- comprobación fallida: ms < 5.0
+Ejecutados 4 test(s); 1 fallo(s).
+
+        Start  21: test_plantilla_area
+ 21/241 Test  #21: test_plantilla_area ......................   Passed    0.00 sec
+        Start  22: test_contenedores
+ 22/241 Test  #22: test_contenedores ........................   Passed    0.03 sec
+        Start  23: test_botin_equipo
+ 23/241 Test  #23: test_botin_equipo ........................***Failed    2.12 sec
+[PASS] el_equipo_presta_la_carta_sin_aprenderla
+[PASS] dos_ranuras_no_duplican_la_carta
+[PASS] sin_ficha_o_catalogo_se_conserva_la_mesa_basica
+[PASS] las_doce_unicas_ejecutan_su_efecto_en_batalla
+[FAIL] las_tablas_publicadas_generan_con_el_catalogo_real: /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/tests/Game/BotinEquipoTests.cpp:92 -- comprobación fallida: comprobados==26
+Ejecutados 5 test(s); 1 fallo(s).
+
+        Start  24: test_validar_botin
+ 24/241 Test  #24: test_validar_botin .......................   Passed    0.46 sec
+        Start  25: test_simular_economia
+ 25/241 Test  #25: test_simular_economia ....................   Passed    0.27 sec
+        Start  26: test_recompensas_economia
+ 26/241 Test  #26: test_recompensas_economia ................***Failed    0.16 sec
+.........F...
+======================================================================
+FAIL: test_las_tres_rutas_publicadas_llegan_al_final_sin_sumar_fiesta_doble (__main__.RecorridoTests.test_las_tres_rutas_publicadas_llegan_al_final_sin_sumar_fiesta_doble)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/tools/test_recompensas_economia.py", line 137, in test_las_tres_rutas_publicadas_llegan_al_final_sin_sumar_fiesta_doble
+    self.assertEqual([-25], [e['oro'] for e in datos['eventos'] if e['oro'] < 0])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [-25] != [-25, -5]
+
+Second list contains 1 additional elements.
+First extra element 1:
+-5
+
+- [-25]
++ [-25, -5]
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.115s
+
+FAILED (failures=1)
+
+        Start  27: test_lugares
+ 27/241 Test  #27: test_lugares .............................***Failed    0.06 sec
+[PASS] lugares_formato_y_campos_del_contrato
+[FAIL] lugares_cada_puerta_interior_tiene_una_ficha_sin_sobrantes: /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/tests/Game/LugaresTests.cpp:90 -- comprobación fallida: destinos.size() == lista.size()
+[PASS] lugares_nombres_sin_repetir
+[PASS] lugares_emblemas_vacios_o_existentes_en_el_atlas
+[PASS] lugares_nombres_canon_corregidos_por_oriol_po_40_y_41
+[FAIL] av15_02_los_lugares_se_encuentran_por_su_nivel: /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/tests/Game/LugaresTests.cpp:141 -- comprobación fallida: l.todos().size() == 17
+[PASS] av16_06_una_salida_dice_salir_a_nunca_entrar_en_salida
+[PASS] av16_06_toda_salida_de_todo_nivel_sabe_adonde_lleva
+Ejecutados 8 test(s); 2 fallo(s).
+
+        Start  28: test_validar_lugares
+ 28/241 Test  #28: test_validar_lugares .....................   Passed    0.05 sec
+        Start  29: test_orden_de_turno
+ 29/241 Test  #29: test_orden_de_turno ......................   Passed    0.00 sec
+        Start  30: test_efectos_de_golpe
+ 30/241 Test  #30: test_efectos_de_golpe ....................   Passed    0.00 sec
+        Start  31: test_cicatrices
+ 31/241 Test  #31: test_cicatrices ..........................   Passed    0.00 sec
+        Start  32: test_escena_noqueo
+ 32/241 Test  #32: test_escena_noqueo .......................   Passed    0.00 sec
+        Start  33: test_frases_combate
+ 33/241 Test  #33: test_frases_combate ......................   Passed    0.00 sec
+        Start  34: test_marcas_mapa
+ 34/241 Test  #34: test_marcas_mapa .........................   Passed    0.00 sec
+        Start  35: test_guia_mapa
+ 35/241 Test  #35: test_guia_mapa ...........................   Passed    0.00 sec
+        Start  36: test_event_debug
+ 36/241 Test  #36: test_event_debug .........................   Passed    0.00 sec
+        Start  37: test_session_command_host
+ 37/241 Test  #37: test_session_command_host ................   Passed    0.01 sec
+        Start  38: test_map_event_runner
+ 38/241 Test  #38: test_map_event_runner ....................   Passed    0.02 sec
+        Start  39: test_audio_director
+ 39/241 Test  #39: test_audio_director ......................   Passed    0.00 sec
+        Start  40: test_world_travel_state
+ 40/241 Test  #40: test_world_travel_state ..................   Passed    0.18 sec
+        Start  41: test_quest_log
+ 41/241 Test  #41: test_quest_log ...........................   Passed    0.01 sec
+        Start  42: test_options_file
+ 42/241 Test  #42: test_options_file ........................   Passed    0.00 sec
+        Start  43: test_defeat_recovery
+ 43/241 Test  #43: test_defeat_recovery .....................   Passed    0.01 sec
+        Start  44: test_dice_roll_widget
+ 44/241 Test  #44: test_dice_roll_widget ....................   Passed    0.00 sec
+        Start  45: test_condition_widget
+ 45/241 Test  #45: test_condition_widget ....................   Passed    0.00 sec
+        Start  46: test_mission_timer_widget
+ 46/241 Test  #46: test_mission_timer_widget ................   Passed    0.00 sec
+        Start  47: test_problems_state
+ 47/241 Test  #47: test_problems_state ......................   Passed    0.00 sec
+        Start  48: test_locale
+ 48/241 Test  #48: test_locale ..............................   Passed    0.00 sec
+        Start  49: test_locale_extension
+ 49/241 Test  #49: test_locale_extension ....................   Passed    0.00 sec
+        Start  50: demo_mision_llave
+ 50/241 Test  #50: demo_mision_llave ........................   Passed    0.01 sec
+        Start  51: test_schema_fixtures
+ 51/241 Test  #51: test_schema_fixtures .....................   Passed    0.01 sec
+        Start  52: test_project_naming
+ 52/241 Test  #52: test_project_naming ......................   Passed    0.02 sec
+        Start  53: test_project_hub
+ 53/241 Test  #53: test_project_hub .........................   Passed    0.03 sec
+        Start  54: test_save_slots
+ 54/241 Test  #54: test_save_slots ..........................   Passed    0.03 sec
+        Start  55: test_editor_state_history
+ 55/241 Test  #55: test_editor_state_history ................   Passed    1.12 sec
+        Start  56: test_character_creation_flow
+ 56/241 Test  #56: test_character_creation_flow .............   Passed    0.08 sec
+        Start  57: test_h104_new_game_flow
+ 57/241 Test  #57: test_h104_new_game_flow ..................   Passed    0.17 sec
+        Start  58: test_project_manifests
+ 58/241 Test  #58: test_project_manifests ...................   Passed    0.01 sec
+        Start  59: test_project_migration
+ 59/241 Test  #59: test_project_migration ...................   Passed    0.04 sec
+        Start  60: demo_resource_manager
+ 60/241 Test  #60: demo_resource_manager ....................   Passed    0.00 sec
+        Start  61: demo_handle_pool
+ 61/241 Test  #61: demo_handle_pool .........................   Passed    0.00 sec
+        Start  62: demo_occlusion_rules
+ 62/241 Test  #62: demo_occlusion_rules .....................   Passed    0.00 sec
+        Start  63: demo_camera
+ 63/241 Test  #63: demo_camera ..............................   Passed    0.00 sec
+        Start  64: demo_tilemap
+ 64/241 Test  #64: demo_tilemap .............................   Passed    0.00 sec
+        Start  65: demo_editor_state
+ 65/241 Test  #65: demo_editor_state ........................   Passed    0.01 sec
+        Start  66: demo_level_loader
+ 66/241 Test  #66: demo_level_loader ........................   Passed    0.00 sec
+        Start  67: demo_object_catalog
+ 67/241 Test  #67: demo_object_catalog ......................   Passed    0.00 sec
+        Start  68: demo_catalogos_rpg
+ 68/241 Test  #68: demo_catalogos_rpg .......................   Passed    0.28 sec
+        Start  69: demo_skills
+ 69/241 Test  #69: demo_skills ..............................   Passed    0.00 sec
+        Start  70: demo_battle_nd6
+ 70/241 Test  #70: demo_battle_nd6 ..........................   Passed    0.00 sec
+        Start  71: demo_dice_engine
+ 71/241 Test  #71: demo_dice_engine .........................   Passed    0.00 sec
+        Start  72: demo_nd6_distribution
+ 72/241 Test  #72: demo_nd6_distribution ....................   Passed    0.15 sec
+        Start  73: demo_enemy_brain
+ 73/241 Test  #73: demo_enemy_brain .........................   Passed    0.00 sec
+        Start  74: demo_game_session
+ 74/241 Test  #74: demo_game_session ........................   Passed    0.01 sec
+        Start  75: demo_object_inspector
+ 75/241 Test  #75: demo_object_inspector ....................   Passed    0.00 sec
+        Start  76: demo_creacion_personaje
+ 76/241 Test  #76: demo_creacion_personaje ..................Subprocess aborted***Exception:   0.03 sec
+=== creacion de personaje ===
+
+  catalogos: 45 razas, 127 clases, 12 trasfondos, 23 deidades
+  'mes_de_la_cosecha': 5 vinculos, 5 miedos, 5 virtudes
+
+  creada: Bruna la Forjadora (enanos_forjadores / alquimista)
+  stats base 0/0/0/0  +raza -> 1/0/1/0
+  arranca con 10 habilidades y 1 objetos
+  vida 7 (techo de tier 1: 35)   CA 10   ResFis 11
+
+[lo que no cuela]
+    sin nombre                         -> "el personaje necesita un nombre"
+    raza que no existe                 -> "no existe la raza 'elfo_inventado'"
+    clase que no existe                -> "no existe la clase 'clase_inventada'"
+    deidad que no existe               -> "no existe la deidad 'dios_inventado'"
+    stat por debajo de 0               -> "CON no puede bajar de 0"
+    pasa de 6 en tier 1                -> "CON pasa de 6, el maximo en tier 0-1"
+    tier fuera de rango                -> "tier fuera de rango (0-5)"
+    sin elegir vinculo                 -> "falta elegir vinculo"
+    vinculo que es un miedo            -> "'fear_de_la_cosecha_1' no es un(a) vinculo de este trasfondo"
+    vinculo de otro trasfondo          -> "'bond_de_la_siembra_1' no es un(a) vinculo de este trasfondo"
+
+  una eleccion vacia da 4 problemas de golpe, no uno
+
+[la pantalla, paso a paso]
+CHECK FALLO en /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/examples/demo_creacion_personaje.cpp:153 -- p.opciones().size() == 43
+
+        Start  77: demo_mundo
+ 77/241 Test  #77: demo_mundo ...............................   Passed    0.06 sec
+        Start  78: demo_ciudad
+ 78/241 Test  #78: demo_ciudad ..............................   Passed    2.75 sec
+        Start  79: demo_aventura
+ 79/241 Test  #79: demo_aventura ............................   Passed    2.90 sec
+        Start  80: demo_title_menu
+ 80/241 Test  #80: demo_title_menu ..........................   Passed    0.01 sec
+        Start  81: demo_congelacio
+ 81/241 Test  #81: demo_congelacio ..........................   Passed    0.01 sec
+        Start  82: demo_nova_partida
+ 82/241 Test  #82: demo_nova_partida ........................   Passed    0.03 sec
+        Start  83: demo_temporizadores
+ 83/241 Test  #83: demo_temporizadores ......................   Passed    0.00 sec
+        Start  84: demo_narrativa_nd6
+ 84/241 Test  #84: demo_narrativa_nd6 .......................   Passed    0.08 sec
+        Start  85: demo_narrativa_combate
+ 85/241 Test  #85: demo_narrativa_combate ...................   Passed    0.01 sec
+        Start  86: demo_prologo
+ 86/241 Test  #86: demo_prologo .............................   Passed    0.09 sec
+        Start  87: demo_boundington
+ 87/241 Test  #87: demo_boundington .........................Subprocess aborted***Exception:   0.07 sec
+=== Boundington, escena a escena ===
+
+-- El prologo --
+  OK  PROLOGO: el que no quiere subir, pregunta todo y vuelve
+  OK  PROLOGO: grita, retrocede, sube sin preguntar y se queda mirando
+  OK  PROLOGO: las dos tiradas, pifia
+  OK  PROLOGO: las dos tiradas, critico
+  OK  PROLOGO: lejos del rio no baja nadie
+  OK  PROLOGO y primera noche: Venides reconoce al que vio la barca
+
+-- La primera noche y el primer dia --
+  OK  DIA 1: el forastero que pregunta
+  OK  DIA 1: el forastero que oye rumores
+  MAL DIA 1: el forastero que se acuesta temprano
+        no se vio cierre_silencio
+        falta bnd_dia_cerrado
+CHECK FALLO en /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/examples/demo_boundington_partida.h:352 -- fallos.empty()
+
+        Start  88: demo_precuela_boundington
+ 88/241 Test  #88: demo_precuela_boundington ................   Passed    0.01 sec
+        Start  89: demo_campana_boundington
+ 89/241 Test  #89: demo_campana_boundington .................Subprocess aborted***Exception:   0.07 sec
+=== Los Perdidos de Boundington — campana completa ===
+    59 + 260 + 180 + 96 beats en cuatro aventuras
+
+########## PARTIDA A: el heroe que lo hace todo ##########
+
+  ---- prologo ----
+
+  [entras en prado_del_rio]
+        Oscuridad. Caes desde el vacío hacia el vacío.
+        Caes sobre hierba. Blanda, fría, sin una gota de rocío. No te haces daño.
+        Alrededor, un prado que no acaba, envuelto en una niebla blanca que no se mueve. En medio, un río. Es lo único que suena.
+        A tu lado, un cofre de madera, varado en la hierba como si el río lo hubiera dejado ahí para ti.
+      · Capítulo 1: El Vacío.
+        Un prado sin horizonte. Tus manos. Tu respiración. Y el río.
+    > Mirar alrededor [Percepción]
+        (Tirada de Percepción.)
+      · Eliges: Mirar alrededor [Percepción].
+        La niebla no es niebla: es magia, densa como el agua. No sabes de quién.
+        Y el río sale de dentro de ella.
+        Lo único que se mueve en este sitio es el río. Si hay una salida, está en él.
+      · El prado tiene un río. Acércate a la orilla.
+
+  [cinematica barquero]
+        Río arriba, de entre la niebla, baja una barca. Nadie la empuja y no hace ruido.
+        La rema un ser cubierto por un manto blanco. Sus brazos son huesos secos y, de pronto, brazos jóvenes y fuertes, y otra vez huesos. La pala entra en el agua sin mojarse.
+    > Observarle [Conocimiento arcano]
+        (Tirada de Conocimiento arcano.)
+      · Eliges: Observarle [Conocimiento arcano].
+        No tiene carne ni sangre. Todo él es una magia que no conoces.
+
+  [hablas con sho_noco]
+        El barquero salta a la orilla sin hacer ruido. El borde del manto no se moja.
+        Sho-Noco: «Sube.»
+    > No pienso subir ahí.
+        Sho-Noco: «Nadie quiere, la primera vez.»
+        Sho-Noco: «Pregunta lo que necesites. El río tiene tiempo, y yo tengo todo el que hay.»
+      · Eliges: No pienso subir ahí.
+        El río sigue sonando. Sho-Noco no tiene prisa.
+    > Subir a la barca
+        Le das la mano. Está fría y tibia a la vez, como el agua de un río en verano.
+      · Eliges: Subir a la barca.
+
+  [cinematica subida]
+        Subes. La barca no se mueve bajo tu peso: de pronto, tú tampoco pesas mucho.
+        Sho-Noco empuja con la pala y el prado se queda atrás, deshaciéndose en la niebla. Te miras las manos: se ve la hierba a través de ellas.
+        Sho-Noco: «Toda buena historia empieza en una taberna.»
+      · Capítulo 2: El Relato del Pasado.
+
+  [cinematica recuerdo_ceaseton]
+
+  [entras en recuerdo_ceaseton]
+        El blanco se llena de ruido, de humo y de olor a cerveza. Ceaseton, año 756 del Despertar Elemental.
+        Una taberna de costa, vigas bajas, redes colgadas del techo, olor a sal y a pescado frito. Una mesa apartada junto a una ventana redonda que da al puerto. Cuatro jóvenes brindan.
+        Nadie te ve. Andas entre las mesas como anda el humo.
+        Venides, con la cara roja y la risa más fuerte de la sala: «¡Caballero! ¡Caballero de Aegroum! Repetidlo, que todavía no me lo creo.»
+        Verina: «Caballero Venides, hijo de Nefaria, que no sabe ni ponerse la capa sin ayuda.»
+        Edul, bajito, sonriendo a su vaso: «Yo se la ato. Para algo tengo manos de herrero.»
+        Venides: «Con mi primer permiso nos vamos los cuatro a las Santas Montañas. Lo juro por la capa.»
+        Verina: «¡Sí! Dicen que allí arriba hay ruinas más viejas que los reinos. Y libros, Edul. Libros que nadie ha leído.»
+        Edul: «Y una semana sin forja. Me vale.»
+        Sandes, levantando la copa el último: «Las Santas Montañas. Lo había pensado yo, ¿sabéis? Hace semanas. Pero brindo, brindo.»
+        Nadie te ve. Puedes andar entre las mesas y mirar lo que quieras.
+        Cuando quieras seguir, habla con Sho-Noco.
+
+  [hablas con sho_noco]
+        Sho-Noco: «Mira cuanto quieras. A nosotros no nos ven.»
+    > Callar y escuchar
+        Hablan de caballos, de un profesor de Edul que roncaba y de la madre de Venides llorando en la ceremonia. Nada importante.
+        Parecen felices.
+      · Eliges: Callar y escuchar.
+        El humo se espesa. Cuando se aclara, la mesa está vacía.
+        Sho-Noco: «Volvió de las montañas y cerró la puerta a sus amigos. Ellos ya rezaban a otra cosa.»
+        Sho-Noco: «Ven. Te lo enseño.»
+    > ¿Qué pasó en las montañas?
+      Sho-Noco:
+        Pregúntaselo a él. No te lo dirá.
+      · Eliges: ¿Qué pasó en las montañas?
+
+  [cinematica recuerdo_puerta]
+
+  [entras en recuerdo_puerta]
+        El blanco se oscurece hasta ser la penumbra de una casa pequeña. Ceaseton, un año después: 757.
+        Venides ha vuelto de las Santas Montañas. Deshace el equipaje despacio, como si cada cosa pesara más que cuando la metió.
+        Sho-Noco: «Algo de él se quedó allí arriba.»
+        Llaman a la puerta. Tres golpes, y luego dos.
+        Venides se queda quieto. Conoce esa forma de llamar.
+        Son ellos. Los tres llevan una capucha morada que en la taberna no llevaban.
+        Verina: «Venides. Has vuelto.»
+        Venides: «Anoche.»
+        Edul: «No nos dijiste nada.»
+        Sandes: «Da igual. Ya estamos aquí. Esta noche hay una reunión en el almacén del puerto. Ven con nosotros: te va a gustar lo que dicen.»
+        Venides: «¿Quién lo dice?»
+        Verina contesta con una luz en los ojos que no tenía en la taberna.
+        Verina: «Los que escuchan. En Perishton ya son cientos. Dicen que el mundo no es como nos lo contaron, que hay algo esperando a que le abramos.»
+        Edul: «Venides. Por favor.»
+        Venides mira el equipaje. Luego, a ellos.
+        Venides: «Estoy cansado del viaje. Otro día.»
+        Sandes sonríe, como quien ya sabía la respuesta.
+        Sandes: «Otro día, entonces.»
+        Venides cierra la puerta y echa la tranca. Se queda de pie, con la mano en la madera, mucho rato.
+        El recuerdo se queda quieto, como si esperara. Cuando quieras seguir, habla con Sho-Noco.
+
+  [hablas con sho_noco]
+        Sho-Noco: «Fue la última vez que llamaron a esa puerta.»
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        Venides sigue con la mano en la tranca.
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        Venides sigue con la mano en la tranca.
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        Venides sigue con la mano en la tranca.
+    > Seguir a Sho-Noco
+        Sho-Noco: «Un poco más adelante. Ven.»
+      · Eliges: Seguir a Sho-Noco.
+
+  [cinematica recuerdo_aegroum]
+
+  [entras en recuerdo_aegroum]
+        El blanco se ordena en columnas de piedra, estandartes y una mesa llena de mapas. Aegroum, año 757: la sala de mando de la guardia real.
+        Huele a cera y a hierro. Detrás de la mesa espera un capitán con cara de no haber dormido.
+        Capitán: «Caballero Venides, hijo de Nefaria. El reino os destina a Boundington.»
+        Capitán: «Una ciudad de mercaderes, junto al río. Tranquila. Demasiado. Allí ha crecido un culto: se hacen llamar los Perdidos. Queremos saber qué buscan.»
+        Venides no contesta enseguida.
+        Sho-Noco, a tu lado: «Ha oído antes esas palabras. En la puerta de su casa.»
+        Capitán: «¿Algún inconveniente, caballero?»
+        Venides: «Ninguno, mi capitán. Partiré mañana.»
+        Al darse la vuelta, aprieta contra el pecho un cuaderno de tapas nuevas. Todavía no ha escrito nada en él.
+        La sala se queda quieta. Cuando quieras seguir, habla con Sho-Noco.
+
+  [hablas con sho_noco]
+        Sho-Noco: «Un año después de cerrar aquella puerta, el reino le mandó a una ciudad donde se rezaba a lo mismo.»
+        Sho-Noco: «No le dijo a nadie que conocía a tres de ellos. Ni siquiera a ese cuaderno.»
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        La sala se vacía despacio, como se vacía un recuerdo.
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        La sala se vacía despacio, como se vacía un recuerdo.
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        La sala se vacía despacio, como se vacía un recuerdo.
+    > Ir a Boundington
+        Sho-Noco: «Llueve. Tápate.»
+      · Eliges: Ir a Boundington.
+
+  [cinematica recuerdo_taberna]
+
+  [entras en recuerdo_taberna]
+        Boundington, año 757. De noche. Llueve fino sobre las cuerdas de tender.
+        Venides entra en la Taberna Humilde con el pelo mojado y el cuaderno nuevo bajo el brazo. Nadie levanta la vista. Aún nadie sabe quién es.
+        La tabernera, desde la barra: «¡Mojado como un gato! Siéntate, que te pongo algo caliente.»
+        Venides: «Lo que sea. Gracias.»
+        Se sienta al fondo, bajo el farol. Abre el cuaderno y escribe la fecha. Luego, nada más.
+        Sho-Noco: «Boundington. Año 757. Tres días.»
+        Sho-Noco: «Aquí te dejo. Lo que pase a partir de ahora ya no es un recuerdo: es lo que vas a hacer tú.»
+        Antes de que puedas preguntar nada, el barquero ya no está. Y tus manos ya no dejan ver nada a través.
+        Y el blanco se convierte en una mesa de madera, una pinta de cerveza y el ruido de una taberna llena.
+      · Prólogo completado. Sho-Noco te ha mostrado el pasado de Venides.
+      · Por acabar el prólogo.
+
+  ---- dia1 ----
+
+  [entras en interior_taberna]
+        Estás sentado a una mesa con una pinta de «exquisita agua de lúpulo de la casa» delante, como si una gran fuerza te hubiera puesto allí.
+        La Taberna Humilde, de noche. Piedra por fuera, madera por dentro. Huele a guiso y a leña mojada, y fuera llueve fino sobre las cuerdas de tender.
+        En la barra, una mujer ancha de hombros seca vasos sin mirar a nadie. Al fondo, bajo un farol, un caballero joven escribe en un cuaderno.
+        Dos mesas de tres. Y junto a la puerta, un hombre con capucha bebe solo.
+        En una tabla, los precios: la noche, 25 de plata; la cerveza, 2 de bronce; la comida, 5 de plata.
+      · Boundington, 757 del Despertar Elemental. La primera noche.
+        Desde la mesa de la ventana, tres vecinos mayores: un carretero jubilado, una bordadora y su marido.
+        Bordadora: «Los Ferrand ya han quitado las cortinas de luto.»
+        Carretero: «Les ha durado menos el luto que el dinero del muerto.»
+        Marido: «Dejad a los muertos. Bastante tienen.»
+        En la mesa del rincón, tres jornaleros.
+        Tomás: «Los Perdidos dan pan. ¿Quién más da pan en esta ciudad?»
+        Berto: «Dan pan y se llevan a los hijos de otros.»
+        Tomás: «¡A los que quieren ir!»
+        El tercero, sin levantar la vista: «A mí no me metáis.»
+        Un borracho, en la barra: «...y entonces la Furia, con el mago de las tinieblas, el guardabosques y el guerrero demoníaco, se planta delante de doce trolls. ¡Doce!»
+        La tabernera, sin levantar la vista: «Siete.»
+        Borracho: «¿Qué?»
+        Tabernera: «Que te sirvo otra.»
+        El de la capucha deja el vaso en la mesa, sin ruido, cada vez que alguien dice «Perdidos».
+
+  [hablas con skilla]
+      Rosita:
+        Veinticinco de plata la noche. Y no, no hay descuento por cara de cansado.
+    > Pagar la cama
+      Rosita:
+        Arriba, la segunda puerta.
+        Y ya que vas a estar por aquí: Luisarda, la de la Boutique, lleva días sin pasar a cenar. Si vas por allí, dile que aquí tiene un plato caliente.
+      · Eliges: Pagar la cama.
+      · Cama pagada en la Taberna Humilde.
+      · Rosita te pide un favor: que vayas a ver cómo está Luisarda, la de la Boutique.
+      Rosita:
+        ¿Algo más, o subes ya?
+    > Dejarlo ahí
+      Rosita:
+      · Eliges: Dejarlo ahí.
+        Rosita sigue secando el mismo vaso.
+    > Subir a dormir
+        Que descanses. Y no bajes descalzo, que el suelo de arriba muerde.
+      · Eliges: Subir a dormir.
+        Al subir, la mesa de la puerta está vacía. El de la capucha ya no está. Su vaso sí, lleno.
+        La escalera cruje en el tercer peldaño. Apréndetelo, por si alguna noche te conviene bajar sin que se entere nadie.
+        La cama huele a lavanda y a la lluvia de otros. Te duermes antes de decidir si te gusta.
+      · Primera noche en la Taberna Humilde.
+      · Amanece el día 1.
+        Por la mañana. Las cortinas descorridas: entra una luz gris y se ve la calle, con la ropa tendida de lado a lado y un carro de leña que pasa por el carril central.
+        La taberna huele a pan quemado. El caballero de anoche tiene ojeras y un plato de huevos que no toca. Te hace una seña.
+        Rosita, dejando un tazón delante de ti: «Caldo. Que hoy hace frío.»
+        El caballero: «Venides, hijo de Nefaria. Siéntate, que tengo un trabajo y tú tienes cara de no tener ninguno.»
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        Venides corta el pan y no se lo come.
+    > Anoche soñé con una barca.
+        Por la cara que haces, tú también has visto la barca.
+        No me preguntes cómo: nadie comparte ese sueño y sigue creyendo que es solo un sueño. Yo llevo un año intentándolo.
+        Si has visto lo que yo vi en Ceaseton, sabes de sobra que esto no termina bien. Así que no me vengas con medias tintas.
+      · Eliges: Anoche soñé con una barca.
+      · Venides sabe que has compartido su sueño. No hay que convencerlo de que los Perdidos son reales.
+        Venides corta el pan y no se lo come.
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        Venides corta el pan y no se lo come.
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        Venides corta el pan y no se lo come.
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        Venides corta el pan y no se lo come.
+    > Ponerse en marcha
+        Venides: «Nos vemos aquí esta noche. Si encuentras algo antes, guárdatelo hasta entonces: en esta ciudad las paredes...»
+        Rosita, desde la barra: «...tienen cuñados. Ya se lo he dicho.»
+        Venides: «Pues eso.»
+        Se coloca la capa y se va. Se abren los sitios del primer día: la herrería, la Boutique, el Casco Antiguo y Pico Dragón. El castillo sigue cerrado.
+      · Eliges: Ponerse en marcha.
+      · Venides te encarga la zona comercial. Se abren los sitios del primer día.
+
+  [entras en ciudad_centro]
+        Boundington, por la mañana. Huele a piedra mojada y a humo de cocina.
+        Las casas se atan unas a otras con cuerdas de ropa tendida, y las cortinas bordadas llegan del techo al suelo, como en todo el sur de Aegroum. Por el carril del centro pasan carros; por los de los lados, la gente.
+        Es una ciudad tranquila. Mañana no lo será.
+      · Boundington, 757 del Despertar Elemental.
+        Rosita te lo ha dicho al salir: aquí no se sale a la calle sin equipo, y en esta plaza hay tres tiendas que abren temprano.
+        El mercado, la joyería y la sastrería. Preséntate: en Boundington nadie le vende nada a un desconocido.
+      · Tutorial: habla con el tendero del mercado, el joyero y el sastre.
+
+  [hablas con sectario_perdido]
+        Tres capas grises en la plaza de la fuente seca. El más joven sonríe mucho; el mayor no sonríe nada.
+        Sectario joven: «Buenos días. ¿Has sentido alguna vez que te falta algo y no sabes qué?»
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        El sectario joven sonríe. El mayor no.
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        El sectario joven sonríe. El mayor no.
+    > Mostrar interés [Persuasión]
+        (Tirada de Persuasión.)
+      · Eliges: Mostrar interés [Persuasión].
+        El sectario mayor se acerca.
+        Sectario mayor: «Buscamos hombres fuertes. Hay herejes que no quieren ver la luz, y alguien tendrá que enseñársela.»
+      · Pista: los Perdidos buscan hombres fuertes para masacrar a los herejes.
+    > Cuenta conmigo.
+        Sectario mayor: «Eso se dice rápido. Ven esta noche a la iglesia. Sin armas: allí dentro no hacen falta.»
+      · Eliges: Cuenta conmigo.
+      · Te han invitado a la cripta de la iglesia vieja del Casco Antiguo.
+
+  [entras en interior_herreria]
+
+  [hablas con aigren]
+        La herrería Lingote de Oro. Un portón abierto a la calle, un letrero de hierro con un lingote pintado de amarillo, desconchado.
+        Dentro, la fragua al fondo y herramientas colgadas en orden perfecto. En un armero, espadas cortas iguales, atadas en haces de cinco.
+        Clang. Clang. El herrero no se gira.
+        Aigren: «Lingote de Oro. Si vienes a mirar, mira con las manos quietas.»
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        Clang.
+    > Preguntarle por los Perdidos
+      · Eliges: Preguntarle por los Perdidos.
+        Aigren: «¿Los Perdidos?»
+        Mira al portón abierto.
+        Aigren: «Aquí se forja hierro. Lo que haga cada uno con el hierro no es cosa mía.»
+    > Convencerle de que son el mal [Persuasión]
+        «Tú les das las espadas. ¿A quién crees que van a apuntar?»
+        (Tirada de Persuasión.)
+      · Eliges: Convencerle de que son el mal [Persuasión].
+        Aigren: «A los de abajo. A los míos.»
+        Larga pausa.
+        Aigren: «No les entregaré las últimas. Si alguien las necesita para defenderse, que venga.»
+      · Pista: Aigren forja las armas de los Perdidos, y ya sabe para qué son.
+
+  [entras en interior_sastreria]
+
+  [hablas con luisarda]
+        La Boutique de Madame. Estanterías hasta el techo, una escalerilla con ruedas, frascos con etiquetas escritas a mano y un estante vacío con un cartelito: Antorchas.
+        Huele a lavanda y a cera. Detrás del mostrador, una mujer cose deprisa.
+        Luisarda: «¡Pasa, cielo! Mira, toca, pregunta, que para eso está todo. Bueno, tocar no tanto.»
+    > Busco antorchas.
+        Luisarda: «Antorchas no me quedan. Ni una.»
+        Se le cae el dedal.
+        Luisarda: «Pero tengo velas de sebo, mira qué bonitas. ¿No? ¿Hilo? Este es de los Barrios Altos, brilla solo.»
+      · Eliges: Busco antorchas.
+      Luisarda:
+        Recoge el dedal y se lo pone en el dedo equivocado.
+    > Dejarlo ahí
+      Luisarda:
+      · Eliges: Dejarlo ahí.
+        Luisarda da tres puntadas sin mirar la tela.
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        Luisarda da tres puntadas sin mirar la tela.
+    > Volver a sacar las antorchas
+      · Eliges: Volver a sacar las antorchas.
+      Luisarda:
+        Que no tengo. Que no hay. ¿Quieres flechas? Tengo flechas.
+    > Insistir, de malos modos [Intimidación]
+        «Las antorchas, Luisarda. Ahora.»
+        (Tirada de Intimidación.)
+      · Eliges: Insistir, de malos modos [Intimidación].
+        Luisarda aparta un tapiz de flores. Detrás, una mesa redonda, seis sillas, una baraja olvidada y una tetera fría. Cierra la puerta y se sienta sin quitarse el dedal.
+        Luisarda: «Aquí nos juntábamos las tenderas los domingos. Cuentas, té y criticar a medio Boundington. Ahora no viene nadie.»
+        Luisarda: «Vino un tal Sandes. Muy educado, muy guapo, muy de sonreír. Se llevó todas las antorchas, y pagó con oro nuevo, brillante, de ese que no ha pasado por ninguna mano.»
+        Luisarda: «Dijo que eran para la luz. Que había un plan para que la palabra de los Perdidos llegara a todas partes.»
+      · Pista: Sandes se llevó todas las antorchas; hay un plan para extender la palabra de los Perdidos.
+      Luisarda:
+        ¿Qué más quieres saber? Pregunta, que luego me arrepiento.
+    > Escuchar lo que te pide
+      Luisarda:
+      · Eliges: Escuchar lo que te pide.
+      Luisarda:
+        Y ahora te pido yo una cosa, cielo.
+    > No diré nada. Tranquila.
+      Luisarda:
+        Vuelve cuando todo esto pase. Te guardo algo.
+      · Eliges: No diré nada. Tranquila.
+
+  [entras en ciudad_oeste]
+
+  [hablas con xila]
+        La Taberna del Gremio de Ladrones: suelo de tierra, toneles como mesas, un mostrador hecho con una puerta vieja. Las ventanas no tienen cortinas: tienen tablas.
+        En el rincón del fondo, un hombre llora sentado en el suelo, con un vaso vacío entre las manos y una capa demasiado buena para este sitio.
+        Nadie le mira. Nadie se sienta con él.
+    > Sentarte con él, sin decir nada
+        Un rato. Él no te mira.
+        Xila: «...Hombros de cargar más de lo que te pagan. Esa coraza te la cobraron el doble.»
+        Se limpia la cara con la manga.
+        Xila: «Perdona. Es la costumbre. Era mercader.»
+      · Eliges: Sentarte con él, sin decir nada.
+      Xila:
+        Me llamo Xila. Hijo de Killville. Tenía un carro, dos mulas y la mejor sal de Aegroum.
+    > Hablar de otra cosa
+      Xila:
+      · Eliges: Hablar de otra cosa.
+        Xila gira el vaso vacío entre las manos.
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        Xila gira el vaso vacío entre las manos.
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        Xila gira el vaso vacío entre las manos.
+    > Invitarle a desayunar [Persuasión]
+        «No te voy a invitar a beber. Te voy a invitar a desayunar.»
+        (Tirada de Persuasión.)
+      · Eliges: Invitarle a desayunar [Persuasión].
+      Xila:
+        (con un pan en la mano y los ojos claros) Los rituales los hacen en la iglesia medio caída del Casco Antiguo.
+        Y si necesitas ropa buena para algo, en el borde de Pico Dragón hay una tienda abandonada llena de trajes.
+        Te espero delante de tu taberna. Algo más sabré.
+        Del fondo del zurrón saca dos rollos de venda limpia y te los planta en el pecho.
+        Xila: «Fui mercader. Algo de lo que vendía sigue pegado a mí. Tómalas, que donde vamos van a hacer falta.»
+      · Pista: los Perdidos hacen sus rituales en la iglesia medio derruida del Casco Antiguo. Xila está de tu lado.
+
+  [entras en interior_iglesia]
+        La iglesia sigue en pie de milagro y de pura cabezonería.
+        En el suelo, cera. Mucha cera, y fresca, formando un círculo que no es de esta liturgia.
+        En el centro del círculo, marcado con hollín, un nombre que no debería estar escrito en una iglesia: Gurkazaal.
+      · PRUEBA: el círculo de cera y el nombre de Gurkazaal.
+      · Por encontrar la prueba de la iglesia.
+
+  [entras en interior_taberna]
+
+  [hablas con skilla]
+      Rosita:
+        ¿Qué va a ser?
+    > Esperar a que anochezca
+      Rosita:
+      · Eliges: Esperar a que anochezca.
+      · Anochece.
+
+  [hablas con venides]
+        La Taberna Humilde, la noche del primer día. Más llena que ayer. Fuera llueve; las cortinas están echadas y la chimenea, alta.
+        Venides, en su mesa del fondo, con tres jarras vacías, la capa en el suelo y el cuaderno abierto con la tinta corrida.
+        Venides, a nadie: «Hoy juraría que he visto a Edul por la calle. Edul, que era herrero, y era amigo mío.»
+        Bebe.
+        Venides: «No puede ser. Serán imaginaciones mías.»
+        Te ve.
+        Venides: «¡Mi forastero! Siéntate. Hoy he aprendido una cosa: los altos cargos de esta ciudad se reúnen de noche, en la zona rica. En secreto.»
+        Venides: «Brindo por eso. Por los secretos de los ricos.»
+      · Pista: los altos cargos de la ciudad se reúnen de noche, en secreto, en la zona rica.
+    > Hablar de lo que has averiguado
+      · Eliges: Hablar de lo que has averiguado.
+      Venides:
+        Mañana voy al castillo. Si me traes pruebas, pruebas de verdad, me dan hombres. ¿Qué tienes?
+    > Contárselo todo
+        Se lo cuentas todo. Venides escucha con la jarra a medio camino de la boca, y no bebe.
+        Venides: «Esto no son rumores. Esto es una guerra.»
+        Cierra el cuaderno.
+        Venides: «Veinte hombres. Mañana los tengo.»
+        Rosita, al final, recogiendo jarras: «A la cama, caballero. Y tú, súbele la capa, que se la deja siempre.»
+        Venides desliza una bolsa por la mesa sin dejar de mirar el cuaderno.
+        Venides: «Viáticos de la Corona. Cuarenta, que es lo que el intendente se dejó sin robar.»
+      · Eliges: Contárselo todo.
+      · Venides reunirá 20 hombres. Punto de los Creadores.
+      · Por convencer a Venides del todo.
+      · Recibes 40 de oro (los viáticos de Venides).
+
+  [hablas con skilla]
+      Rosita:
+        ¿Qué va a ser?
+    > Subir a dormir
+      Rosita:
+        Sube. La escalera cruje en el cuarto escalón.
+        Apréndetelo, por si alguna noche te conviene bajar sin que se entere nadie.
+      · Eliges: Subir a dormir.
+        Ya muy de noche. Venides arriba, roncando. Quedan los dos mozos de los dados, el borracho de las historias de la Furia dormido sobre la barra, y un hombre nuevo en la mesa de la entrada: barba de días y capa gris.
+        El de la capa gris se levanta, tira la jarra contra la pared y grita.
+        Camorrista: «¡Herejes! ¡Todos herejes! Bebéis y reís mientras la luz se pudre ahí fuera. ¡Cuando llegue el fuego os quemaréis los primeros!»
+        Los mozos de los dados se meten. Una mesa vuela.
+        Rosita, sin dejar de contar monedas: «Fuera de mi taberna. Ahora.»
+    > Separarlos [pelea sin matar]
+        Te metes en medio. Puños, sillas y un mozo que muerde.
+      · Eliges: Separarlos [pelea sin matar].
+      [combate: victoria]
+        El camorrista acaba en el suelo. Apaleado, pero vivo: escupe sangre y se ríe.
+        La taberna entera espera a ver qué haces con él.
+    > Hacerle hablar
+        Camorrista: «No sé nada.»
+        Le aprietas.
+        Camorrista: «...Tres días. Desde la noche de la reunión. El fuego empieza en el Casco Antiguo y luego se come todo lo demás.»
+        Camorrista: «Yo solo tengo que estar donde me digan.»
+      · Eliges: Hacerle hablar.
+      · Pista: el plan de los Perdidos. Tres días, y el fuego empieza en el Casco Antiguo.
+      Camorrista:
+        Escupe otra vez, y sonríe con los dientes rojos.
+    > ¿Quién te manda?
+      Camorrista:
+        Uno que habla muy bonito. Nunca grita. Esos son los peores.
+      · Eliges: ¿Quién te manda?
+      Rosita:
+        (barriendo cristales) Y ahora todos a dormir, que mañana se paga igual.
+    > Subir sin decir nada
+      Rosita:
+      · Eliges: Subir sin decir nada.
+        Anochece. Desde la ventana de la Taberna Humilde se ve al caballero cruzar la plaza sin hacer eses.
+        Mañana Boundington arderá. Eso ya estaba escrito antes de que tú llegaras.
+        Pero mañana, cuando suenen las campanas, habrá veinte hombres armados esperando en el sitio correcto.
+        Y por veinte hombres, algunas familias del Casco Antiguo llegarán a viejas.
+      · FIN DEL PRIMER DÍA — Punto de los Creadores.
+      · Por acabar el primer día.
+
+  ---- dia2 ----
+        Amanece el segundo día. La mesa de Venides está vacía; la capa no está en la silla.
+        Rosita deja un tazón de caldo delante de ti y, al lado, un papel doblado.
+        La letra de Venides, torcida de resaca: «Al castillo. Ven si quieres. Y tráeme algo que se pueda tocar.»
+      · Amanece el día 2.
+      · Día 2: la investigación. Se abren los dos frentes.
+
+  [entras en interior_castillo]
+        El castillo de Boundington, por encima de los Barrios Altos. Muralla gris, la puerta de doble hoja con el escudo de la ciudad (un puente sobre un río, en azul y blanco) y el rastrillo levantado.
+        Hoy está abierto. Dos guardias en la puerta. Hace frío: se ve el aliento.
+        Guardia de la puerta: «Nombre y asunto.»
+    > Vengo con el caballero Venides.
+        Guardia: «El de la capa. Está dentro, discutiendo con todo el mundo. Pasa.»
+        Dentro, un patio de armas embarrado: un abrevadero, caballos, soldados haciendo instrucción con lanzas de madera. Venides baja de la torre con cara de pocos amigos y la resaca bien puesta.
+      · Eliges: Vengo con el caballero Venides.
+      Venides:
+        Veinte hombres. Los tengo. Esta noche duermen con la espada al lado.
+    > Subir a ver al capitán
+      Venides:
+      · Eliges: Subir a ver al capitán.
+        La torre del capitán: una mesa llena de papeles, un brasero y un tintero volcado que nadie ha limpiado.
+        Un veterano con la barba gris cortada a cuchillo y la armadura con abolladuras de hace años.
+        Capitán: «¿Y tú quién eres? Aquí no se pasea nadie que no lleve el escudo de la ciudad.»
+    > Pedirle que prepare a la guardia [Persuasión]
+        «Van a atacar la ciudad. Pronto. Empieza por el Casco Antiguo.»
+        (Tirada de Persuasión.)
+      · Eliges: Pedirle que prepare a la guardia [Persuasión].
+      Capitán de la guardia:
+        Sin una orden de arriba no muevo a nadie.
+        (mira por la ventana) ...Pero puedo doblar las rondas en el distrito militar. Eso no necesita orden.
+        Si es verdad lo que dices, por allí no pasarán. O no tan deprisa.
+        Sobre la mesa, sin mirarte, empuja una bolsita de gastos.
+        Capitán: «Del fondo de la guardia. Para quien trae información, no para quien trae problemas. Procura ser lo primero.»
+      · ALIADO: la guardia del distrito militar estará preparada.
+      · Recibes 20 de oro (el fondo de la guardia).
+      Venides:
+        Nos vemos esta noche en la taberna. Y trae algo que se pueda tocar.
+
+  [entras en interior_taberna]
+
+  [hablas con skilla]
+        La Taberna Humilde a media mañana, vacía. Rosita, sentada por primera vez, con dos tazas, en la mesa del fondo.
+        Detrás de la barra, el hueco en la pared: dos clavos y la marca más clara donde colgaba algo largo.
+        Rosita: «Tú. Ven. Tengo un trabajo y tú tienes pinta de necesitar dinero.»
+        Rosita: «Me robaron una espada. De mi familia. Unos bandidos que acampan en la ladera de Pico Dragón; el jefe se llama Gorran. Tráemela.»
+    > Aceptar el encargo
+        Rosita: «Bien. Y si ves a Gorran, salúdale de mi parte. Con la espada.»
+      · Eliges: Aceptar el encargo.
+      · Encargo: recuperar la Furia de Alaro en la cueva de Pico Dragón.
+
+  [entras en mazmorra_64x64]
+
+  [entras en ciudad_oeste]
+
+  [entras en ciudad_surysal]
+        Surysal, al otro lado del río, por el Puente Principal: piedra vieja, andamios de una reparación eterna y agujeros tapados con tablones.
+        Antes fue zona de comercio. Hoy, forjadores trabajando en plena calle, vecinos entrenándose con horcas y palos, carros cargados de leña y toneles. Todo el mundo tiene prisa y nadie dice para qué.
+        Una mujer le enseña a un chico a sujetar una horca «como una lanza». Los dos llevan una cinta gris en el brazo.
+      · PRUEBA: Surysal se prepara en masa para atacar Boundington.
+      · Por ver lo que se prepara en Surysal.
+
+  [hablas con viejo_surysal]
+        La Barriada, al final de Surysal, junto a la orilla: carromatos pintados con ruedas que hace años que no ruedan, tendederos de colores, cabras, y un gran círculo de piedras ennegrecidas.
+        Una empalizada nueva y mal hecha. Los niños dejan de jugar cuando llegas; una guitarra se para.
+        Un hombre mayor te corta el paso, educado y firme.
+        Guardián: «Aquí no hay nada que comprar, forastero.»
+    > Vengo a preguntar si necesitáis algo
+      · Eliges: Vengo a preguntar si necesitáis algo.
+        «No vengo a comprar. Vengo a preguntar si necesitáis algo.»
+        (Tirada de Persuasión.)
+        Zarela: «Todos los que vienen preguntan qué sabemos. Tú preguntas qué nos falta.»
+        Zarela, desde el banco del círculo, levanta una mano. El Guardián se aparta.
+        Zarela: «Siéntate.»
+      · ALIADO: los gitanos de Surysal saldrán por el oeste.
+      · Por la alianza con los gitanos de Surysal.
+
+  [entras en interior_taberna]
+
+  [hablas con skilla]
+      Rosita:
+        ¿Qué va a ser?
+    > Nada, gracias
+      Rosita:
+      · Eliges: Nada, gracias.
+
+  [hablas con skilla]
+      Rosita:
+        ¿Qué va a ser?
+    > Esperar a que anochezca
+      Rosita:
+      · Eliges: Esperar a que anochezca.
+      · Anochece.
+
+  [entras en ciudad_este]
+        El Barrio Alto, de noche: casas grandes y firmes, calles limpias y farolas de aceite cada pocas casas. Las cortinas son de un hilo que brilla solo, como si tuviera luz dentro.
+        Al fondo, la mansión: tres pisos, verja de hierro con hojas doradas, setos recortados en forma de animales y faroles de papel colgados de los árboles. Luces doradas en todas las ventanas.
+        En el cruce de entrada al barrio, un hombrecillo con un libro de cuentas bajo una farola. En la esquina, un vigilante viejo con un farol que le tiembla.
+    > Esquivar al vigilante [Sigilo]
+        (Tirada de Sigilo.)
+      · Eliges: Esquivar al vigilante [Sigilo].
+        Nadie te para.
+        La mansión: tres pisos, la casa de uno de los comerciantes más ricos de la ciudad. Por las ventanas abiertas del piso de arriba sale la música de un cuarteto.
+        En la puerta, el matrimonio dueño de la finca recibe con máscaras de plumas. Cuarenta invitados con máscaras de medio rostro.
+    > Irte
+      · Eliges: Irte.
+
+  [entras en interior_taberna]
+
+  [hablas con venides]
+      Venides:
+        Siéntate. Hoy no bebo. Hoy cuentas tú.
+    > Contárselo todo
+        Se lo cuentas todo: el ataque, el fuego, los papeles de Gorran, la fiesta, Edul y Verina.
+        Venides escucha sin interrumpir. Cuando nombras a Verina, cierra los ojos.
+        Venides: «Gracias. Por todo. También por lo que duele.»
+        Abre el cuaderno y escribe tu nombre.
+        Venides: «Cuando esto acabe, vienes conmigo. Comida, techo y la Corona detrás. Te lo has ganado.»
+        Venides vuelca sobre la mesa la paga del mes sin contarla.
+        Venides: «Del intendente al contable y de ahí a ti. Que sirva para algo.»
+      · Eliges: Contárselo todo.
+      · Venides tiene con qué presionar al capitán. Y te debe lealtad: fondos, reconocimiento y el ejército Real.
+      · Recibes 50 de oro (la paga de Venides).
+
+  [hablas con skilla]
+      Rosita:
+        ¿Qué va a ser?
+    > Subir a dormir
+      Rosita:
+      · Eliges: Subir a dormir.
+        Xila, entrando sobrio, con la capa de Venides puesta: «Caballero. Mañana voy con vosotros. No me digas que no, que te debo una capa.»
+        Segunda noche en la Taberna Humilde. Rosita no pregunta dónde has estado.
+        Desde la ventana, el Casco Antiguo está más oscuro que ayer: faltan faroles en media calle.
+        Mañana.
+        Rosita, apagando las velas una a una: «Dormid. Mañana va a ser un día largo, y los días largos se empiezan descansados.»
+      · FIN DEL SEGUNDO DÍA.
+      · Por acabar el segundo día.
+
+  ---- ocaso ----
+
+  [entras en ciudad_centro]
+        El tercer día. La plaza del Casco Antiguo, la de la fuente seca y la estatua sin cara, está llena: sillas en los portales, niños subidos a la fuente, curiosos en las ventanas con las cortinas abiertas.
+        Muchas cortinas son nuevas, con bordados grises. Sobre las escaleras de la iglesia, un estrado de tablas con telas grises y las antorchas de Luisarda encendidas a plena luz del día.
+        Arriba, Sandes, de blanco y gris, con las manos abiertas. Verina a su derecha, con un libro. Edul a su izquierda, con las manos a la espalda y la mirada en el suelo.
+        Sandes: «Hermanos. Hermanas. Os han dicho que la luz es de quien la puede pagar. Que las cortinas que brillan son para unos pocos. Que vosotros tenéis que conformaros con las goteras.»
+        Reparte pan con sus propias manos.
+        Sandes: «Yo os digo que la luz se perdió porque os la quitaron. Y que lo que se quita, se recupera.»
+        Un vecino: «¡¿Cómo?!»
+        Sandes, sonriendo: «Esta noche. Cuando suenen las campanas, abrid las cortinas. Los que tengan las cortinas abiertas verán la luz. Los demás...»
+        No termina la frase. La gente ríe, nerviosa.
+        Verina, leyendo, con la voz que se le quiebra un instante: «La luz perdida volverá a quien la busque.»
+      · Amanece el día 3.
+      · Día 3: Sandes predica en la plaza del Casco Antiguo.
+        La voz de Sandes no grita y llega a todas partes. Cuando calla, el murmullo crece.
+    > Correr a avisar a Venides
+        Corres hacia la Base Militar.
+      · Eliges: Correr a avisar a Venides.
+
+  [entras en interior_cuartel]
+        La Base Militar, junto al castillo. Al entrar, todas las campanas de la ciudad empiezan a tocar a la vez, rápido y sin ritmo.
+        Cielo rojo y morado, viento que hace restallar las banderas. Desde la torre se ve el humo subir del Casco Antiguo y, en las calles, ventanas con las cortinas abiertas y luz dentro.
+        Soldados corriendo a medio vestir, un sargento gritando, caballos encabritados. El portón se sacude con un golpe. Los guardias abren lo justo y entran tres exploradores heridos, tropezando.
+        Explorador: «¡Están aquí! ¡Los Perdidos están en la ciudad! ¡Vienen por nosotros!»
+      · Anochece.
+      · EV-1981-BOUNDINGTON. La Matanza ha empezado.
+        Venides está en el patio. Le encuentras antes que él a ti.
+        «Están en la plaza. Sandes, Edul y Verina. Es esta noche.»
+        Venides: «¿Sandes?»
+        Se le va el color.
+        Venides: «Claro. Claro que era Sandes. Siempre salía antes de la señal.»
+        Se pone el yelmo.
+      Venides:
+        (con la mirada dura y la espada ya fuera, delante de veinte hombres formados, con las corazas puestas desde ayer)
+        ¡Aventurero! Tenemos que salir de aquí. Si caemos, todo el reino cae con nosotros.
+        Preparaos para lo peor. Esto es solo el principio.
+      · Veinte hombres cubriendo la salida.
+      Capitán:
+        (desde la torre) ¡Rondas dobles al este! ¡Que no pasen! ¡Os damos tiempo, caballero, no mucho!
+      Aigren:
+        (entrando con un carro lleno de espadas) ¡Espadas! Las mejores que tengo. Esta vez, para quien defiende.
+        Los soldados se arman.
+        Aigren te pone en las manos un escudo de madera con la marca de su fragua.
+        Aigren: «Pagado hace tiempo. Mi hijo respira; esto es lo mínimo.»
+      Xila:
+        Quedan vendas, quedan hierbas, y me queda pulso. Si alguien cae, que caiga cerca de mí.
+        Te reparte dos vendajes enrollados con una pulcritud que no le tenías vista.
+        Xila: «Para el camino. Y para el siguiente, si hay siguiente.»
+      Venides:
+        Tres caminos. Decide rápido.
+    > Al oeste
+      Venides:
+        El más largo, pero el que menos arde. Si los gitanos están con nosotros, nos abrirán paso.
+      · Eliges: Al oeste.
+        Saqueadores de los Perdidos saltan la muralla por la parte de atrás, con espadas cortas iguales: las de Aigren. Los hombres de Venides se echan encima de dos antes de que lleguen.
+        Saqueador: «¡Por la luz! ¡Abrid las cortinas!»
+      [combate: victoria]
+        Sin respiro: dos Fanáticos del Culto desde el tejado de los barracones, con fuego en las manos. Uno cae bajo las lanzas de la guardia antes de levantar las manos.
+        Fanático: «¡El fuego empieza por los que tienen!»
+      [combate: victoria]
+        Saliendo hacia el oeste. En una barricada de carros, dos cultistas sujetan a una mujer joven con las manos atadas y la boca sangrando.
+        Cultista: «¡Traidora! ¡Le contabas a la guardia lo que decíamos en la cripta! ¡La luz no perdona a los que la venden!»
+        Verina: «La luz no existe. Solo existe Sandes.»
+        Venides: «¡Verina!»
+        Ya está corriendo. No hay nada que decidir.
+      [combate: victoria]
+        Liberada, Verina se frota las muñecas y mira a Venides como si no hubieran pasado los años.
+        Verina: «Hola, caballero. Te queda bien la capa. Ya te la atas tú solo.»
+        Venides: «...Hola.»
+        Es todo lo que le sale.
+        Verina: «Edul está en Las Afueras, en las barricadas que él mismo preparó. Sandes le ha puesto allí para que arda con ellas.»
+        Verina: «Ayúdame a sacarle y voy con vosotros.»
+      · Por salvar a Verina.
+    > Vamos a por él.
+      Verina:
+        Entonces vamos.
+      · Eliges: Vamos a por él.
+      · Verina se une al grupo.
+        El Casco Antiguo arde. Las cuerdas de tender se queman y caen como mechas encendidas; las cortinas abiertas tienen una vela en la ventana, y las cerradas, una cruz de hollín en la puerta.
+        En la plaza de esta mañana, vacía, el estrado con las telas grises ardiendo. Y de pie sobre él, sin una mancha en la ropa, Sandes.
+        Sandes: «Ah, por fin. Llevaba toda la noche esperando a alguien con tu mirada.»
+        Abre los brazos hacia el fuego.
+        Sandes: «¿Ves qué luz? Ya lo había pensado yo, ¿sabes? Hace años.»
+        Venides: «Sandes.»
+        Sandes: «Nuestro caballero. Qué capa más bonita. ¿Te la ata alguien todavía?»
+        Venides: «Eran nuestros amigos. Edul. Verina. Los arrastraste a esto.»
+        Sandes: «Yo no arrastro a nadie. Yo ofrezco. Tú cerraste la puerta, Venides. Yo la abrí. ¿Quién de los dos fue mejor amigo?»
+        Xila se queda quieto. Muy blanco.
+        Xila: «El hijo del Mercado Central.»
+        Sandes, mirándolo por primera vez, y sonriendo: «Xila. El de la sal. Mi padre te tenía mucho aprecio. Pagabas tarde, pero pagabas.»
+        Xila: «Mi mujer se llamaba Elena.»
+        Sandes: «Lo sé.»
+        Xila no se mueve. No le hace falta: ahora lo sabe.
+      Sandes:
+        Y la traemos de vuelta. Verina, qué susto nos has dado.
+        (a ti) Dámela. Es nuestra. Y tú tendrás un sitio a mi derecha cuando esta ciudad sea luz.
+    > No.
+      Sandes:
+        Qué pena. Me caías bien.
+      · Eliges: No.
+      [combate: victoria]
+        Sandes, al llegar al suelo, sin perder la sonrisa: «Hoy no. Mañana tampoco. Pero algún día.»
+        Se va por la iglesia. Los fanáticos bajan las escaleras para cubrirle.
+        Venides, jadeando: «Siempre salía antes de la señal. Siempre.»
+        Las Afueras, en el borde oeste: huertos, corrales y casas sueltas antes de los Campos del Otoño. Calles de tierra, vallas de madera, un molino parado.
+        Barricadas de carros, muebles y sacos cruzan las calles. Algunas arden con un fuego blanco que no se apaga con agua: el de Edul.
+        Una manzana cerrada por una barricada en llamas, medio destrozada pero en pie. De dentro salen gritos.
+        Gritos. Hay gente atrapada en algún sitio.
+        (Tirada de Percepción.)
+        Gritos detrás de una barricada en llamas.
+        Alguien, detrás de la barricada: «¡Socorro! ¡Aquí!»
+        El fuego blanco no se apaga. Hay que pasar.
+    > Romperla a distancia
+        Desde lejos tardáis más, pero cae. Los atrapados salen tosiendo.
+        Los atrapados reúnen lo que llevan encima y te lo ponen en las manos sin decir cuánto: cuarenta monedas y un nudo en la garganta.
+      · Eliges: Romperla a distancia.
+      · Recibes 40 de oro (los vecinos rescatados).
+        Tras la barricada, una plaza interior con un abrevadero y un árbol grande. Tres guardias de la ciudad, con cintas grises en el brazo, sujetan a Edul contra el abrevadero.
+        Guardia: «Este quería apagar lo que él mismo encendió. Sandes dice que arda con ello.»
+    > Liberarle
+        Los tres sueltan a Edul y sacan las espadas.
+      · Eliges: Liberarle.
+      [combate: victoria]
+        Edul y Verina se abrazan sin decir nada. Edul llora; Verina no, todavía no.
+        Verina: «Ya está. Ya está, patoso.»
+        Edul: «No me llames así.»
+        Verina: «Siempre te he llamado así.»
+        Edul: «Por eso.»
+        Edul te busca la mano con un frasco azul, todavía caliente de tanto apretarlo.
+        Edul: «Éter. Del bueno. No sé decir gracias sin que suene a poco, así que toma esto.»
+      · Edul y Verina, juntos. +1 Afecto de Venides.
+        En la plaza interior, junto al árbol grande, Venides pelea con Sandes. Las cadenas de Sandes, cubiertas de runas oscuras, ondean como serpientes, golpean y envuelven a Venides, que está al límite.
+        Los ojos de Sandes brillan rojos.
+        Sandes: «Siempre fuiste el primero en todo, Venides. Menos en esto.»
+        Venides, viendo que llegas: «Llegas tarde. Como siempre los héroes buenos.»
+      [combate: derrota]
+        Te levantas como puedes. Sandes ya no está: tiene una ciudad que quemar y un plan que seguir.
+        En la linde, los carros de la Barriada. Han enganchado los caballos sin esperar a nadie y aun así han esperado.
+        Zarela no dice «te lo dije». Solo aparta un fardo para hacer sitio.
+        Venides: «Al norte. Por los Campos del Otoño. Ahora, mientras arde.»
+        Detrás, Boundington entera es una línea naranja contra el cielo. Delante, el camino está oscuro y vacío, que es lo mejor que puede estar un camino esta noche.
+        Zarela te entrega un mapa dibujado a carboncillo sobre un trapo.
+        Zarela: «Los caminos que usamos nosotros. Los reyes no los tienen.»
+      · FINAL: salida con los gitanos de Surysal.
+      · Por salir vivo de Boundington.
+      · Hito: sobrevivir a la caída de Boundington.
+      · Recibes 50 de oro (la caja común del culto).
+        El Vacío otra vez, pero no del todo blanco: en el horizonte queda un resplandor naranja que se apaga despacio, como una brasa.
+        La barca de Sho-Noco, quieta. Estás sentado en ella con la ropa quemada y el arma en la mano. Ahora sabes que estabas bajo un embrujo.
+        Sho-Noco rema muy despacio. Sus brazos son jóvenes todo el rato.
+        Sho-Noco: «Ya está.»
+      Sho-Noco:
+        El caballero llegó a Nefaria. Esa noche escribió mucho.
+        (pausa) Tu nombre, también.
+      Sho-Noco:
+        La lectora salió de la ciudad con su hermano. Tiene muchos libros por delante.
+        (como si no fuera nada) Y un caballero que no sabe atarse la capa.
+      Sho-Noco:
+        El mercader dejó de beber hasta dormirse. No del todo. Pero casi.
+      Sho-Noco:
+        La barca sigue por una corriente que no existe.
+    > Hablar de otra cosa
+      Sho-Noco:
+      · Eliges: Hablar de otra cosa.
+        Sho-Noco rema. El resplandor del horizonte es más pequeño.
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        Sho-Noco rema. El resplandor del horizonte es más pequeño.
+    > Hablar de otra cosa
+      · Eliges: Hablar de otra cosa.
+        Sho-Noco rema. El resplandor del horizonte es más pequeño.
+    > Cerrar los ojos
+        No te cuenta más. Te pesan los ojos. La barca sigue por una corriente que no existe, y el resplandor naranja del horizonte se apaga del todo.
+        Te duermes.
+      · Eliges: Cerrar los ojos.
+      · FIN DE LA PRIMERA AVENTURA — Los Perdidos de Boundington.
+    bnd_venides_reconocido   si
+    bnd_venides_20           si
+    bnd2_furia_alaro         no
+CHECK FALLO en /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/examples/demo_campana_boundington.cpp:190 -- s.hasFlag(f)
+
+        Start  90: demo_senal_ceniza
+ 90/241 Test  #90: demo_senal_ceniza ........................   Passed    0.08 sec
+        Start  91: demo_este_norte
+ 91/241 Test  #91: demo_este_norte ..........................   Passed    0.03 sec
+        Start  92: demo_este_sur
+ 92/241 Test  #92: demo_este_sur ............................   Passed    0.01 sec
+        Start  93: demo_bitmap_font
+ 93/241 Test  #93: demo_bitmap_font .........................   Passed    0.00 sec
+        Start  94: demo_hud_update
+ 94/241 Test  #94: demo_hud_update ..........................   Passed    0.00 sec
+        Start  95: demo_enemy_sprite
+ 95/241 Test  #95: demo_enemy_sprite ........................   Passed    0.00 sec
+        Start  96: test_handle_pool
+ 96/241 Test  #96: test_handle_pool .........................   Passed    0.00 sec
+        Start  97: test_strong_id
+ 97/241 Test  #97: test_strong_id ...........................   Passed    0.00 sec
+        Start  98: test_application_loop
+ 98/241 Test  #98: test_application_loop ....................   Passed    0.00 sec
+        Start  99: test_input_system
+ 99/241 Test  #99: test_input_system ........................   Passed    0.00 sec
+        Start 100: test_scene_manager
+100/241 Test #100: test_scene_manager .......................   Passed    0.00 sec
+        Start 101: test_world
+101/241 Test #101: test_world ...............................   Passed    0.00 sec
+        Start 102: test_editor_document_io
+102/241 Test #102: test_editor_document_io ..................   Passed    0.01 sec
+        Start 103: test_editor_state
+103/241 Test #103: test_editor_state ........................   Passed    0.01 sec
+        Start 104: test_project
+104/241 Test #104: test_project .............................   Passed    0.00 sec
+        Start 105: test_project_serialization
+105/241 Test #105: test_project_serialization ...............   Passed    0.01 sec
+        Start 106: test_map_document
+106/241 Test #106: test_map_document ........................   Passed    0.00 sec
+        Start 107: test_event_layer_document
+107/241 Test #107: test_event_layer_document ................   Passed    0.00 sec
+        Start 108: test_runtime_tilemap
+108/241 Test #108: test_runtime_tilemap .....................   Passed    0.00 sec
+        Start 109: test_alturas
+109/241 Test #109: test_alturas .............................   Passed    0.00 sec
+        Start 110: test_tmx_importer
+110/241 Test #110: test_tmx_importer ........................   Passed    0.00 sec
+        Start 111: test_map_round_trip
+111/241 Test #111: test_map_round_trip ......................   Passed    0.01 sec
+        Start 112: test_world_topology
+112/241 Test #112: test_world_topology ......................   Passed    0.02 sec
+        Start 113: test_save_game
+113/241 Test #113: test_save_game ...........................   Passed    0.03 sec
+        Start 114: test_battle_state
+114/241 Test #114: test_battle_state ........................   Passed    0.01 sec
+        Start 115: test_game_session
+115/241 Test #115: test_game_session ........................   Passed    0.19 sec
+        Start 116: test_actuacion
+116/241 Test #116: test_actuacion ...........................   Passed    0.01 sec
+        Start 117: test_transiciones
+117/241 Test #117: test_transiciones ........................   Passed    0.00 sec
+        Start 118: test_business_economy
+118/241 Test #118: test_business_economy ....................   Passed    0.01 sec
+        Start 119: test_morality
+119/241 Test #119: test_morality ............................   Passed    0.00 sec
+        Start 120: test_business_mode
+120/241 Test #120: test_business_mode .......................   Passed    0.01 sec
+        Start 121: test_game_mode
+121/241 Test #121: test_game_mode ...........................   Passed    0.01 sec
+        Start 122: test_carry_over
+122/241 Test #122: test_carry_over ..........................   Passed    0.01 sec
+        Start 123: test_enemy_brain
+123/241 Test #123: test_enemy_brain .........................   Passed    0.00 sec
+        Start 124: test_shop_flow
+124/241 Test #124: test_shop_flow ...........................   Passed    0.01 sec
+        Start 125: test_tienda_estado
+125/241 Test #125: test_tienda_estado .......................   Passed    0.01 sec
+        Start 126: test_caer_en_mision
+126/241 Test #126: test_caer_en_mision ......................   Passed    0.01 sec
+        Start 127: test_skill
+127/241 Test #127: test_skill ...............................   Passed    0.00 sec
+        Start 128: test_monster_plan_proof
+128/241 Test #128: test_monster_plan_proof ..................   Passed    0.17 sec
+        Start 129: test_object_catalog
+129/241 Test #129: test_object_catalog ......................   Passed    0.01 sec
+        Start 130: test_player_populate
+130/241 Test #130: test_player_populate .....................   Passed    0.00 sec
+        Start 131: test_bitmap_font
+131/241 Test #131: test_bitmap_font .........................   Passed    0.00 sec
+        Start 132: test_texture
+132/241 Test #132: test_texture .............................   Passed    0.00 sec
+        Start 133: test_json
+133/241 Test #133: test_json ................................   Passed    0.00 sec
+        Start 134: test_occlusion
+134/241 Test #134: test_occlusion ...........................   Passed    0.00 sec
+        Start 135: test_camera_transition
+135/241 Test #135: test_camera_transition ...................   Passed    0.00 sec
+        Start 136: test_animated_entity
+136/241 Test #136: test_animated_entity .....................   Passed    0.28 sec
+        Start 137: test_level_document_bridge
+137/241 Test #137: test_level_document_bridge ...............   Passed    0.00 sec
+        Start 138: test_inventory_engine
+138/241 Test #138: test_inventory_engine ....................   Passed    0.06 sec
+        Start 139: test_sheet_life_cap
+139/241 Test #139: test_sheet_life_cap ......................   Passed    0.00 sec
+        Start 140: test_sheet_equipment_cap
+140/241 Test #140: test_sheet_equipment_cap .................   Passed    0.00 sec
+        Start 141: test_sheet_milestones
+141/241 Test #141: test_sheet_milestones ....................   Passed    0.01 sec
+        Start 142: test_loot_resolver
+142/241 Test #142: test_loot_resolver .......................   Passed    0.09 sec
+        Start 143: test_encounter_tables
+143/241 Test #143: test_encounter_tables ....................   Passed    0.00 sec
+        Start 144: test_audio
+144/241 Test #144: test_audio ...............................   Passed    0.13 sec
+        Start 145: test_gdb12_screens
+145/241 Test #145: test_gdb12_screens .......................   Passed    0.01 sec
+        Start 146: test_g10_pause_and_hud
+146/241 Test #146: test_g10_pause_and_hud ...................   Passed    0.27 sec
+        Start 147: test_options_state
+147/241 Test #147: test_options_state .......................   Passed    0.00 sec
+        Start 148: test_g13_combat_commands
+148/241 Test #148: test_g13_combat_commands .................   Passed    0.01 sec
+        Start 149: test_g14_hud_timers_commerce
+149/241 Test #149: test_g14_hud_timers_commerce .............   Passed    0.05 sec
+        Start 150: test_options_locale_bridge
+150/241 Test #150: test_options_locale_bridge ...............   Passed    0.27 sec
+        Start 151: test_title_screen
+151/241 Test #151: test_title_screen ........................   Passed    0.00 sec
+        Start 155: test_catalog_contract
+152/241 Test #155: test_catalog_contract ....................   Passed    0.23 sec
+        Start 156: test_catalog_content
+153/241 Test #156: test_catalog_content .....................***Failed    0.65 sec
+[PASS] abrazo_de_brasas_dice_lo_que_dice_su_carta
+[PASS] un_carta_de_tier_5_pesa_como_una_de_tier_5
+[PASS] las_utilitarias_de_check_no_hacen_dano
+[PASS] alba_anunciar_el_dia_dice_lo_que_dice_su_carta
+[PASS] dos_cartas_diferentes_dan_numeros_diferentes
+[FAIL] sangrado_dice_lo_que_dice_su_carta: /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/tests/RPG/CatalogContentTests.cpp:223 -- comprobación fallida: cat.size() == 16
+[PASS] guardia_rota_es_la_unica_que_expira_por_rondas
+[PASS] fatiga_es_la_unica_apilable_y_anclado_no_es_negativa
+[PASS] los_flags_traducen_los_hooks_univocos
+[PASS] las_condiciones_no_cargan_todas_iguales
+[PASS] acolito_de_penumbra_dice_lo_que_dice_su_carta
+[PASS] cap_monstre_del_cataleg_te_vida_i_stats
+[PASS] arco_corto_dice_lo_que_dice_su_carta
+[PASS] els_simbols_amb_majuscula_no_es_perden
+[PASS] l_equipment_mecanic_es_llegeix
+[PASS] aceite_de_filo_dice_lo_que_dice_su_carta
+[PASS] el_padre_de_la_forja_dice_lo_que_dice_su_carta
+[PASS] los_creadores_son_los_del_vault_de_oriol
+[PASS] les_deitats_porten_dominis_i_plegaries_reals
+[PASS] arma_flotante_dice_lo_que_dice_su_carta
+[PASS] els_summons_porten_vida_durada_i_control
+[PASS] ave_de_silla_dice_lo_que_dice_su_carta
+[PASS] les_muntures_porten_vida_terreny_i_places
+[PASS] un_npc_concret_dice_lo_que_dice_la_seva_carta
+[PASS] tots_els_npc_tenen_tier_i_nom
+[PASS] una_location_concreta_dice_lo_que_dice_la_seva_carta
+[PASS] totes_les_locations_tenen_tier
+[PASS] una_aventura_concreta_dice_lo_que_dice_la_seva_carta
+[PASS] totes_les_aventures_tenen_tier_i_nom
+[PASS] adalid_del_rey_de_armas_dice_lo_que_dice_su_carta
+[PASS] totes_les_taules_porten_or_i_drops_coherents
+[PASS] aguja_del_cerrojo_dice_lo_que_dice_su_carta
+[PASS] totes_les_trampes_detecten_i_pocs_son_d_un_sol_us
+Ejecutados 33 test(s); 1 fallo(s).
+
+        Start 157: test_aventuras_monsterid
+154/241 Test #157: test_aventuras_monsterid .................***Failed    1.28 sec
+=== validar_todo.py (todo el contenido) ===
+[1/5] Validadores existentes
+    OK  validar_botin.py: Botín: 50 reutilizables, 12 únicos, 30 tablas, 58 instancias de campaña
+    OK  validar_recetas.py: 27 recetas; 0 errores, 0 avisos
+    OK  validar_enlaces.py: 93 niveles, 268 puertas comprobadas, 0 problemas
+    OK  conectividad.py:    todas las 35 puertas alcanzables
+    OK  validar_mundo_unido.py:   todo se alcanza y de todo se vuelve
+    OK  validar_catalogos_rpg.py: [OK] Sin fallos.
+    OK  validar_libreria_dnd.py: === TODOS LOS ARCHIVOS PASAN LA VALIDACION ESTRUCTURAL ===
+    FALLO validar_pnj.py (exit 1)
+          boundington_npcs.json: guerrero_gitano_2 se ve como «parroquiano_humilde» de pnj_boundington, no con su propia fila de
+          nina_del_gato: 1 aspectos para 2 colocaciones
+          boundington_npcs.json: padre_de_mira se ve como «parroquiano_humilde» de pnj_boundington, no con su propia fila de pnj
+          boundington_npcs.json: saqueador_antorcha se ve como «carterista» de pnj_boundington, no con su propia fila de pnj_*
+          boundington_npcs.json: vecina_surysal se ve como «bordadora» de pnj_boundington, no con su propia fila de pnj_*
+          boundington_npcs.json: zarela se ve como «anciana» de pnj_boundington, no con su propia fila de pnj_*
+    OK  validar_cinematicas.py: validar_cinematicas: 12 cinematicas, 0 errores, 0 avisos
+[2/5] Referencias internas de assets/catalogs/
+    referencias comprobadas; 1 error(es) hasta ahora
+[3/5] Proyectos: objectIds de niveles contra sus catálogos
+    OK  boundington: 52 niveles contra 2680 objetos de sus catálogos
+    OK  este_norte: 55 niveles contra 1548 objetos de sus catálogos
+    OK  este_sur: 3 niveles contra 28 objetos de sus catálogos
+    OK  mundo: 9 niveles contra 353 objetos de sus catálogos
+    OK  oeste_norte: 4 niveles contra 166 objetos de sus catálogos
+    OK  ejemplos: 2 niveles contra 9 objetos de sus catálogos
+[4/5] Proyectos: entrada
+    OK  ejemplos -> assets/levels/ejemplos_objetos.json
+    OK  este_sur -> assets/levels/es_taurengrad.json
+    OK  mundo -> assets/levels/mapamundi.json
+    OK  boundington -> assets/adventures/boundington_prologo.json
+    OK  este_norte -> assets/levels/ciudad_en_guskedor.json
+    OK  oeste_norte -> assets/adventures/on_camino_del_norte.json
+[5/5] Aventuras: beats contra catálogos
+[extra] Puertas de los niveles: 376 en 127 niveles, 1 aviso(s)
+[extra] Recompensas de escenas: d1 259/280, d2 498/480, d3 421/400, 1 error(es)
+
+AVISOs (11):
+  assets/catalogs/adventures.json :: 12 :: deidadIds :: 'el_toro_de_gongorguma' no existe en deities.json
+  assets/catalogs/adventures.json :: 15 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 35 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 39 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 40 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 45 :: deidadIds :: 'el_sepulturero_amable' no existe en deities.json
+  assets/catalogs/adventures.json :: 47 :: deidadIds :: 'la_luna_hueca' no existe en deities.json
+  assets/catalogs/adventures.json :: 7 :: enemigoIds :: 'paje_traslucido' no existe en monsters.json
+  assets/catalogs/adventures.json :: 7 :: deidadIds :: 'el_toro_de_gongorguma' no existe en deities.json
+  assets/catalogs/adventures.json :: 7 :: deidadIds :: 'la_luna_hueca' no existe en deities.json
+  assets/levels/recuerdo_taberna.json :: escalera_taberna_p0_sube :: targetLevel :: assets/levels/interior_taberna_p1.json no tiene puerta de vuelta a assets/levels/recuerdo_taberna.json
+ERRORES (2):
+  tools/validar_pnj.py :: - :: - :: ver salida arriba
+  tools/recompensas_escenas.json :: - :: - :: boundington_segundo_dia/b2_aigren_orden_entrega opcion None: paga [('obj', 'daga_de_aigren', 1)] y no esta en el libro
+
+RESULTADO: FAIL — 2 error(es), 11 aviso(s)
+
+        Start 158: test_monster_catalog
+155/241 Test #158: test_monster_catalog .....................   Passed    0.20 sec
+        Start 159: test_object_and_loot_catalog
+156/241 Test #159: test_object_and_loot_catalog .............   Passed    0.52 sec
+        Start 161: test_application_narrative_wiring
+157/241 Test #161: test_application_narrative_wiring ........   Passed    0.01 sec
+        Start 162: test_boundington_tutorial
+158/241 Test #162: test_boundington_tutorial ................   Passed    0.14 sec
+        Start 163: test_character_creation
+159/241 Test #163: test_character_creation ..................   Passed    0.08 sec
+        Start 164: test_catalog_classes_races_backgrounds
+160/241 Test #164: test_catalog_classes_races_backgrounds ...   Passed    0.33 sec
+        Start 165: test_skill_effect
+161/241 Test #165: test_skill_effect ........................   Passed    0.00 sec
+        Start 166: test_skill_executor
+162/241 Test #166: test_skill_executor ......................   Passed    0.00 sec
+        Start 167: test_skill_effect_real_assets
+163/241 Test #167: test_skill_effect_real_assets ............   Passed    0.35 sec
+        Start 168: test_enemy_catalog_bridge
+164/241 Test #168: test_enemy_catalog_bridge ................   Passed    0.01 sec
+        Start 169: test_enemy_catalog_real_assets
+165/241 Test #169: test_enemy_catalog_real_assets ...........   Passed    0.40 sec
+        Start 170: test_conditions_real_assets
+166/241 Test #170: test_conditions_real_assets ..............   Passed    0.27 sec
+        Start 171: test_speed_zero_flag
+167/241 Test #171: test_speed_zero_flag .....................   Passed    0.01 sec
+        Start 172: catalog_content_validation
+168/241 Test #172: catalog_content_validation ...............***Failed    0.53 sec
+=== validar_todo.py (todo el contenido) ===
+[1/5] Omesa (--skip-phase1)
+[2/5] Referencias internas de assets/catalogs/
+    referencias comprobadas; 0 error(es) hasta ahora
+[3/5] Proyectos: objectIds de niveles contra sus catálogos
+    OK  boundington: 52 niveles contra 2680 objetos de sus catálogos
+    OK  este_norte: 55 niveles contra 1548 objetos de sus catálogos
+    OK  este_sur: 3 niveles contra 28 objetos de sus catálogos
+    OK  mundo: 9 niveles contra 353 objetos de sus catálogos
+    OK  oeste_norte: 4 niveles contra 166 objetos de sus catálogos
+    OK  ejemplos: 2 niveles contra 9 objetos de sus catálogos
+[4/5] Proyectos: entrada
+    OK  este_sur -> assets/levels/es_taurengrad.json
+    OK  mundo -> assets/levels/mapamundi.json
+    OK  este_norte -> assets/levels/ciudad_en_guskedor.json
+    OK  ejemplos -> assets/levels/ejemplos_objetos.json
+    OK  oeste_norte -> assets/adventures/on_camino_del_norte.json
+    OK  boundington -> assets/adventures/boundington_prologo.json
+[5/5] Aventuras: beats contra catálogos
+[extra] Puertas de los niveles: 376 en 127 niveles, 1 aviso(s)
+[extra] Recompensas de escenas: d1 259/280, d2 498/480, d3 421/400, 1 error(es)
+
+AVISOs (11):
+  assets/catalogs/adventures.json :: 12 :: deidadIds :: 'el_toro_de_gongorguma' no existe en deities.json
+  assets/catalogs/adventures.json :: 15 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 35 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 39 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 40 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 45 :: deidadIds :: 'el_sepulturero_amable' no existe en deities.json
+  assets/catalogs/adventures.json :: 47 :: deidadIds :: 'la_luna_hueca' no existe en deities.json
+  assets/catalogs/adventures.json :: 7 :: enemigoIds :: 'paje_traslucido' no existe en monsters.json
+  assets/catalogs/adventures.json :: 7 :: deidadIds :: 'el_toro_de_gongorguma' no existe en deities.json
+  assets/catalogs/adventures.json :: 7 :: deidadIds :: 'la_luna_hueca' no existe en deities.json
+  assets/levels/recuerdo_taberna.json :: escalera_taberna_p0_sube :: targetLevel :: assets/levels/interior_taberna_p1.json no tiene puerta de vuelta a assets/levels/recuerdo_taberna.json
+ERRORES (1):
+  tools/recompensas_escenas.json :: - :: - :: boundington_segundo_dia/b2_aigren_orden_entrega opcion None: paga [('obj', 'daga_de_aigren', 1)] y no esta en el libro
+
+RESULTADO: FAIL — 1 error(es), 11 aviso(s)
+
+        Start 173: test_catalog_restants
+169/241 Test #173: test_catalog_restants ....................   Passed    0.33 sec
+        Start 174: test_city_regeneration
+170/241 Test #174: test_city_regeneration ...................   Passed    0.35 sec
+        Start 175: test_nivel_excel
+171/241 Test #175: test_nivel_excel .........................   Passed    3.00 sec
+        Start 181: test_project_catalog
+172/241 Test #181: test_project_catalog .....................   Passed    0.07 sec
+        Start 182: test_editor_document_session
+173/241 Test #182: test_editor_document_session .............   Passed    0.02 sec
+        Start 183: test_editor_actions
+174/241 Test #183: test_editor_actions ......................   Passed    0.01 sec
+        Start 184: test_editor_ayuda
+175/241 Test #184: test_editor_ayuda ........................   Passed    0.01 sec
+        Start 185: test_editor_layers
+176/241 Test #185: test_editor_layers .......................   Passed    0.01 sec
+        Start 188: test_project_panel
+177/241 Test #188: test_project_panel .......................   Passed    0.04 sec
+        Start 189: test_event_editor
+178/241 Test #189: test_event_editor ........................   Passed    0.00 sec
+        Start 190: test_command_list
+179/241 Test #190: test_command_list ........................   Passed    0.00 sec
+        Start 191: test_e09_bridge
+180/241 Test #191: test_e09_bridge ..........................   Passed    0.00 sec
+        Start 192: test_catalog_picker
+181/241 Test #192: test_catalog_picker ......................   Passed    0.50 sec
+        Start 193: test_asset_browser_state
+182/241 Test #193: test_asset_browser_state .................   Passed    0.03 sec
+        Start 194: test_asset_browser
+183/241 Test #194: test_asset_browser .......................   Passed    0.00 sec
+        Start 195: test_project_database
+184/241 Test #195: test_project_database ....................   Passed    0.00 sec
+        Start 196: test_new_game_flow
+185/241 Test #196: test_new_game_flow .......................   Passed    0.00 sec
+        Start 197: test_map_properties
+186/241 Test #197: test_map_properties ......................   Passed    0.00 sec
+        Start 198: test_editor_tools
+187/241 Test #198: test_editor_tools ........................   Passed    0.00 sec
+        Start 199: catalog_loader_contract
+188/241 Test #199: catalog_loader_contract ..................   Passed    0.03 sec
+        Start 200: catalog_loader_contract_selftest
+189/241 Test #200: catalog_loader_contract_selftest .........   Passed    0.06 sec
+        Start 201: test_catalog_loader_regressions
+190/241 Test #201: test_catalog_loader_regressions ..........   Passed    0.00 sec
+        Start 202: test_inventory_menu
+191/241 Test #202: test_inventory_menu ......................   Passed    0.40 sec
+        Start 203: test_ficha_vista
+192/241 Test #203: test_ficha_vista .........................   Passed    0.07 sec
+        Start 204: test_codice
+193/241 Test #204: test_codice ..............................   Passed    0.02 sec
+        Start 205: test_clases_companeros
+194/241 Test #205: test_clases_companeros ...................   Passed    0.24 sec
+        Start 206: test_diario_misiones
+195/241 Test #206: test_diario_misiones .....................   Passed    0.01 sec
+        Start 207: test_diario_completo
+196/241 Test #207: test_diario_completo .....................   Passed    0.16 sec
+        Start 208: test_comercio_reputacion
+197/241 Test #208: test_comercio_reputacion .................   Passed    0.01 sec
+        Start 209: test_rutinas_pnj
+198/241 Test #209: test_rutinas_pnj .........................   Passed    0.03 sec
+        Start 210: test_confirmar
+199/241 Test #210: test_confirmar ...........................   Passed    0.08 sec
+        Start 211: test_personajes_capas
+200/241 Test #211: test_personajes_capas ....................   Passed  120.01 sec
+        Start 212: test_brillo_equipo
+201/241 Test #212: test_brillo_equipo .......................   Passed    3.15 sec
+        Start 213: test_editor_apariencia
+202/241 Test #213: test_editor_apariencia ...................   Passed    0.83 sec
+        Start 214: test_kit_basico
+203/241 Test #214: test_kit_basico ..........................***Failed    2.25 sec
+[PASS] las_reglas_del_json_son_las_de_oriol
+[PASS] reglas_mal_escritas_se_explican
+[PASS] todas_las_clases_reciben_dos_dos_uno_uno_exactos
+[PASS] el_bardo_de_las_cuatro_estaciones_lleva_su_sable_y_su_armadura
+[PASS] el_mejor_reparto_de_cada_tope
+[PASS] nunca_tres_atributos_arriba
+[PASS] los_topes_del_json_son_los_de_la_regla
+[PASS] la_ficha_recorta_el_equipo_y_la_raza_suma_encima
+[PASS] la_furia_no_recibe_la_cota_con_requisito
+[PASS] sin_arma_en_la_clase_no_hay_arma_en_el_kit
+[PASS] si_no_cabe_el_kit_dice_lo_que_falta
+[PASS] cofre_al_alcance_de_la_e_y_no_en_diagonal
+[FAIL] abrir_deja_el_kit_en_la_mochila_y_quita_el_cofre: /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/tests/Game/CofreKitTests.cpp:66 -- comprobación fallida: p->piezas[1].ranura == "Cabeza" && p->piezas[1].bono == "+1 CAR"
+[PASS] puesto_cuando_no_queda_pieza_del_kit_en_la_mochila
+[PASS] sin_cofre_en_el_nivel_las_flags_se_dan_solas_y_abierto_no_vuelve
+[PASS] un_cofre_de_mueble_no_es_el_del_kit
+Ejecutados 16 test(s); 1 fallo(s).
+
+        Start 215: test_barra_combate
+204/241 Test #215: test_barra_combate .......................   Passed    0.10 sec
+        Start 216: test_cuaderno_creacion
+205/241 Test #216: test_cuaderno_creacion ...................   Passed    0.11 sec
+        Start 217: test_registro_sprites
+206/241 Test #217: test_registro_sprites ....................   Passed    0.15 sec
+        Start 218: test_bloques
+207/241 Test #218: test_bloques .............................   Passed    0.01 sec
+        Start 219: test_bandada
+208/241 Test #219: test_bandada .............................   Passed    0.00 sec
+        Start 220: test_mascotes
+209/241 Test #220: test_mascotes ............................   Passed    0.01 sec
+        Start 221: test_monumentos
+210/241 Test #221: test_monumentos ..........................   Passed    0.00 sec
+        Start 222: test_title_flow
+211/241 Test #222: test_title_flow ..........................   Passed    0.02 sec
+        Start 223: test_render_camera
+212/241 Test #223: test_render_camera .......................   Passed    0.00 sec
+        Start 224: test_render_culling
+213/241 Test #224: test_render_culling ......................   Passed    0.00 sec
+        Start 225: test_render_occlusion_rules
+214/241 Test #225: test_render_occlusion_rules ..............   Passed    0.00 sec
+        Start 226: test_render_enemy
+215/241 Test #226: test_render_enemy ........................   Passed    0.35 sec
+        Start 227: test_render_entity
+216/241 Test #227: test_render_entity .......................   Passed    0.24 sec
+        Start 228: test_render_hud_transform
+217/241 Test #228: test_render_hud_transform ................   Passed    0.24 sec
+        Start 229: test_render_player
+218/241 Test #229: test_render_player .......................   Passed    0.31 sec
+        Start 230: test_render_static_entity
+219/241 Test #230: test_render_static_entity ................   Passed    0.25 sec
+        Start 231: test_log
+220/241 Test #231: test_log .................................   Passed    0.01 sec
+        Start 232: test_scope_guard
+221/241 Test #232: test_scope_guard .........................   Passed    0.00 sec
+        Start 233: test_editor_nucleo
+222/241 Test #233: test_editor_nucleo .......................   Passed    0.00 sec
+        Start 234: test_editor_opciones
+223/241 Test #234: test_editor_opciones .....................   Passed    0.00 sec
+        Start 235: test_editor_map_framing
+224/241 Test #235: test_editor_map_framing ..................   Passed    0.00 sec
+        Start 236: test_formato_ppm
+225/241 Test #236: test_formato_ppm .........................   Passed    0.00 sec
+        Start 237: test_exportar
+226/241 Test #237: test_exportar ............................   Passed    0.07 sec
+        Start 238: linea_base_core_configura
+227/241 Test #238: linea_base_core_configura ................***Failed    0.26 sec
+  SIMBOLO DUPLICADO: Application::abreCofre esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::confirmInventoryCommand esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::createIconWidgets esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::desenlaceTrasTiradas esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::partidaDeCero esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::refreshWorldMarkers esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::teclasCofre esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::teclasCombate esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::teclasTienda esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::turnoRival esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::alcance esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::apuntaJugada esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::estadoDeCondicion esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::invocar esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::jugar esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::limpiar esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::objetivos esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::ponerEstado esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::ponerPropios esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::aMayus esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::cargarSemanticaTiles esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::contieneCualquiera esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::filtroAfinidadObjeto esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::iconoBibliotecaEnemigos esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::iconoEditor esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::nombreCategoria esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::nombreDePaleta esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::nombreEscenario esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::previewNpcRacial esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::semanticasTile esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::textoDeArchivo esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::toolName esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::uvPreviewPng esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::actualiza esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::avanza esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::avisaPausa esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::carga esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaCofre esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaCombate esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaCreacion esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaCuaderno esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaDerrota esta definido en 2 fuentes (src/HUD/Pergamino/InterfazDerrota.cpp, src/HUD/Pergamino/InterfazPergamino 2.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaExploracion esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaPausa esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaTiendaAbierta esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaTitulo esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::ponZona esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::zonaEn esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Pergamino::avisoInteraccion esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+linea_base_core: FALLO — 49 problema(s) instantaneo(s)
+
+        Start 239: linea_base_core
+228/241 Test #239: linea_base_core ..........................***Failed   13.13 sec
+  SIMBOLO DUPLICADO: Application::abreCofre esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::confirmInventoryCommand esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::createIconWidgets esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::desenlaceTrasTiradas esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::partidaDeCero esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::refreshWorldMarkers esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::teclasCofre esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::teclasCombate esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::teclasTienda esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Application::turnoRival esta definido en 2 fuentes (src/Engine/ApplicationPantallas 2.cpp, src/Engine/ApplicationPantallas.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::alcance esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::apuntaJugada esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::estadoDeCondicion esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::invocar esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::jugar esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::limpiar esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::objetivos esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::ponerEstado esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: CartasEnCombate::ponerPropios esta definido en 2 fuentes (src/Game/CartasJugar 2.cpp, src/Game/CartasJugar.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::aMayus esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::cargarSemanticaTiles esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::contieneCualquiera esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::filtroAfinidadObjeto esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::iconoBibliotecaEnemigos esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::iconoEditor esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::nombreCategoria esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::nombreDePaleta esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::nombreEscenario esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::previewNpcRacial esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::semanticasTile esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::textoDeArchivo esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::toolName esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: EditorNiveles::uvPreviewPng esta definido en 2 fuentes (editor/src/LevelEditorPaleta 2.cpp, editor/src/LevelEditorPaleta.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::actualiza esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::avanza esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::avisaPausa esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::carga esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaCofre esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaCombate esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaCreacion esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaCuaderno esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaDerrota esta definido en 2 fuentes (src/HUD/Pergamino/InterfazDerrota.cpp, src/HUD/Pergamino/InterfazPergamino 2.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaExploracion esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaPausa esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaTiendaAbierta esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::pintaTitulo esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::ponZona esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: InterfazPergamino::zonaEn esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  SIMBOLO DUPLICADO: Pergamino::avisoInteraccion esta definido en 2 fuentes (src/HUD/Pergamino/InterfazPergamino 2.cpp, src/HUD/Pergamino/InterfazPergamino.cpp): eso no enlaza. Si acabas de partir un fichero, al original le sobra ese cuerpo; si acabas de guardar encima de un corte ajeno, mira el CMakeLists antes de seguir
+  AVISO: planificacion/alcance_real.json es 0.1 dias mas viejo que editor/src/ReferenciasProyectoSmoke.cpp: los muertos de abajo salen de esa foto y pueden estar desfasados. Regenerala: python3 tools/medir_alcance.py --json planificacion/alcance_real.json
+  DEUDA NUEVA: editor/src/AssetBrowserPanel.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: editor/src/ExportPanel.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/Core/Log/MemorySink.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/Editor/AssetBrowserPanel.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/Editor/ExportState.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/Editor/MapPropertiesPanel.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/Editor/ProblemsInternal.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/Editor/ProjectHub.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/Game/AudioDirector.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/Game/BattleMenuState.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/Game/Companeros.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/Game/OptionsFile.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/Game/QuestLogState.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/Game/ShopEngine.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/Game/TargetSelection.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/Game/TitleScreen.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/Game/WorldTravelState.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/HUD/ConditionWidget.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/HUD/DiceRollWidget.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/HUD/HudTimer.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/HUD/MissionTimerWidget.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/Level/LevelSerializer.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/RPG/AdventureSerializer.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/RPG/Catalogs/CatalogLoadersMisiones.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/RPG/Definitions/DefinicionesMisiones.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/RPG/EventosInterno.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/Editor/AssetBrowserState.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/Editor/ProblemsNavigation.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/Editor/ProjectHub.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/Game/BattleMenuState.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/Game/Companeros.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/Game/OptionsFile.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/Game/QuestLogState.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/Game/ShopEngine.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/Game/TargetSelection.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/Game/TitleScreen.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/Game/WorldTravelState.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/HUD/ConditionWidget.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/HUD/DiceRollWidget.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/HUD/HudTimer.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/HUD/MissionTimerWidget.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/Level/LevelSerializer.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/RPG/AdventureSerializer.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: include/Game/BattleMenuState.h: paquete cerrado que no llega a nadie. No estaba en la linea base del 2026-09-28
+  DEUDA NUEVA: src/Engine/ApplicationCinematica.cpp: 501 lineas, ha pasado el techo de 500. Un fichero nuevo no nace grande: parte lo que estes anadiendo en su propia clase, con su prueba
+  DEUDA NUEVA: src/Engine/ApplicationNivel.cpp: 508 lineas, ha pasado el techo de 500. Un fichero nuevo no nace grande: parte lo que estes anadiendo en su propia clase, con su prueba
+  DEUDA NUEVA: src/Game/Cinematica.cpp: 591 lineas, ha pasado el techo de 500. Un fichero nuevo no nace grande: parte lo que estes anadiendo en su propia clase, con su prueba
+  DEUDA NUEVA: include/HUD/Pergamino/InterfazPergamino.h: su clase declara 16 miembros (umbral 15). Lo que ibas a guardar va en una clase de datos que se pasa como parametro, no en el estado del controlador
+  DEUDA NUEVA: include/Render/Entity.h: su clase declara 16 miembros (umbral 15). Lo que ibas a guardar va en una clase de datos que se pasa como parametro, no en el estado del controlador
+  baja: include/Editor/ProjectIndex.h: ya no aparece como «MUERTO»
+  baja: include/Engine/Locale.h: ya no aparece como «MUERTO»
+  baja: include/Game/InventoryMenuState.h: ya no aparece como «MUERTO»
+  baja: include/Game/SaveSlotState.h: ya no aparece como «MUERTO»
+  baja: include/Game/TitleMenuState.h: ya no aparece como «MUERTO»
+  baja: include/RPG/CharacterCreation.h: ya no aparece como «MUERTO»
+  baja: include/RPG/CharacterCreationScreen.h: ya no aparece como «MUERTO»
+  baja: include/RPG/EventCommand.h: ya no aparece como «MUERTO»
+  baja: include/RPG/EventInterpreter.h: ya no aparece como «MUERTO»
+  baja: include/RPG/SessionCommandHost.h: ya no aparece como «MUERTO»
+  baja: src/Engine/Locale.cpp: ya no aparece como «MUERTO»
+  baja: src/Game/InventoryMenuState.cpp: ya no aparece como «MUERTO»
+  baja: src/Game/SaveSlotState.cpp: ya no aparece como «MUERTO»
+  baja: src/Game/TitleMenuState.cpp: ya no aparece como «MUERTO»
+  baja: src/RPG/CharacterCreation.cpp: ya no aparece como «MUERTO»
+  baja: src/RPG/CharacterCreationScreen.cpp: ya no aparece como «MUERTO»
+  baja: src/RPG/EventCommands.cpp: ya no aparece como «MUERTO»
+  baja: src/RPG/EventInterpreter.cpp: ya no aparece como «MUERTO»
+  baja: src/RPG/SessionCommandHost.cpp: ya no aparece como «MUERTO»
+  baja: include/Engine/Locale.h: ya no aparece como «REGISTRO_CERRADO_SIN_ALCANCE»
+  baja: include/RPG/CharacterCreationScreen.h: ya no aparece como «REGISTRO_CERRADO_SIN_ALCANCE»
+  baja: src/Engine/Locale.cpp: ya no aparece como «REGISTRO_CERRADO_SIN_ALCANCE»
+  baja: include/Engine/Application.h: baja de 519 a 518 lineas
+  baja: include/Game/GameSession.h: baja de 546 a 545 lineas
+  baja: src/Engine/Application.cpp: baja de 1347 a 1251 lineas
+  baja: src/Game/SaveGame.cpp: ya esta por debajo del techo de 500
+  baja: include/Engine/Application.h: baja de 109 a 92 miembros
+  baja: include/Game/SessionData.h: baja de 40 a 39 miembros
+  baja: fuentes compiladas sueltas: baja de 62 a 57
+linea_base_core: FALLO — 49 instantaneos, 49 de deuda nueva
+
+        Start 240: test_linea_base_core
+229/241 Test #240: test_linea_base_core .....................   Passed    0.54 sec
+        Start 241: test_marcar_paquetes
+230/241 Test #241: test_marcar_paquetes .....................   Passed    0.08 sec
+        Start 242: test_validar_todo
+231/241 Test #242: test_validar_todo ........................***Failed    1.32 sec
+=== validar_todo.py (todo el contenido) ===
+[1/5] Validadores existentes
+    OK  validar_botin.py: Botín: 50 reutilizables, 12 únicos, 30 tablas, 58 instancias de campaña
+    OK  validar_recetas.py: 27 recetas; 0 errores, 0 avisos
+    OK  validar_enlaces.py: 93 niveles, 268 puertas comprobadas, 0 problemas
+    OK  conectividad.py:    todas las 35 puertas alcanzables
+    OK  validar_mundo_unido.py:   todo se alcanza y de todo se vuelve
+    OK  validar_catalogos_rpg.py: [OK] Sin fallos.
+    OK  validar_libreria_dnd.py: === TODOS LOS ARCHIVOS PASAN LA VALIDACION ESTRUCTURAL ===
+    FALLO validar_pnj.py (exit 1)
+          boundington_npcs.json: guerrero_gitano_2 se ve como «parroquiano_humilde» de pnj_boundington, no con su propia fila de
+          nina_del_gato: 1 aspectos para 2 colocaciones
+          boundington_npcs.json: padre_de_mira se ve como «parroquiano_humilde» de pnj_boundington, no con su propia fila de pnj
+          boundington_npcs.json: saqueador_antorcha se ve como «carterista» de pnj_boundington, no con su propia fila de pnj_*
+          boundington_npcs.json: vecina_surysal se ve como «bordadora» de pnj_boundington, no con su propia fila de pnj_*
+          boundington_npcs.json: zarela se ve como «anciana» de pnj_boundington, no con su propia fila de pnj_*
+    OK  validar_cinematicas.py: validar_cinematicas: 12 cinematicas, 0 errores, 0 avisos
+[2/5] Referencias internas de assets/catalogs/
+    referencias comprobadas; 1 error(es) hasta ahora
+[3/5] Proyectos: objectIds de niveles contra sus catálogos
+    OK  boundington: 52 niveles contra 2680 objetos de sus catálogos
+    OK  este_norte: 55 niveles contra 1548 objetos de sus catálogos
+    OK  este_sur: 3 niveles contra 28 objetos de sus catálogos
+    OK  mundo: 9 niveles contra 353 objetos de sus catálogos
+    OK  oeste_norte: 4 niveles contra 166 objetos de sus catálogos
+    OK  ejemplos: 2 niveles contra 9 objetos de sus catálogos
+[4/5] Proyectos: entrada
+    OK  ejemplos -> assets/levels/ejemplos_objetos.json
+    OK  boundington -> assets/adventures/boundington_prologo.json
+    OK  mundo -> assets/levels/mapamundi.json
+    OK  este_sur -> assets/levels/es_taurengrad.json
+    OK  este_norte -> assets/levels/ciudad_en_guskedor.json
+    OK  oeste_norte -> assets/adventures/on_camino_del_norte.json
+[5/5] Aventuras: beats contra catálogos
+[extra] Puertas de los niveles: 376 en 127 niveles, 1 aviso(s)
+[extra] Recompensas de escenas: d1 259/280, d2 498/480, d3 421/400, 1 error(es)
+
+AVISOs (11):
+  assets/catalogs/adventures.json :: 12 :: deidadIds :: 'el_toro_de_gongorguma' no existe en deities.json
+  assets/catalogs/adventures.json :: 15 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 35 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 39 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 40 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 45 :: deidadIds :: 'el_sepulturero_amable' no existe en deities.json
+  assets/catalogs/adventures.json :: 47 :: deidadIds :: 'la_luna_hueca' no existe en deities.json
+  assets/catalogs/adventures.json :: 7 :: enemigoIds :: 'paje_traslucido' no existe en monsters.json
+  assets/catalogs/adventures.json :: 7 :: deidadIds :: 'el_toro_de_gongorguma' no existe en deities.json
+  assets/catalogs/adventures.json :: 7 :: deidadIds :: 'la_luna_hueca' no existe en deities.json
+  assets/levels/recuerdo_taberna.json :: escalera_taberna_p0_sube :: targetLevel :: assets/levels/interior_taberna_p1.json no tiene puerta de vuelta a assets/levels/recuerdo_taberna.json
+ERRORES (2):
+  tools/validar_pnj.py :: - :: - :: ver salida arriba
+  tools/recompensas_escenas.json :: - :: - :: boundington_segundo_dia/b2_aigren_orden_entrega opcion None: paga [('obj', 'daga_de_aigren', 1)] y no esta en el libro
+
+RESULTADO: FAIL — 2 error(es), 11 aviso(s)
+
+        Start 243: test_buscar_sobrante
+232/241 Test #243: test_buscar_sobrante .....................   Passed    0.03 sec
+        Start 244: test_player_path_log
+233/241 Test #244: test_player_path_log .....................   Passed    0.00 sec
+        Start 245: test_boundary_exceptions
+234/241 Test #245: test_boundary_exceptions .................   Passed    0.01 sec
+        Start 246: test_cartas_combate
+235/241 Test #246: test_cartas_combate ......................   Passed    0.19 sec
+        Start 247: test_clases_sp
+236/241 Test #247: test_clases_sp ...........................***Failed    0.29 sec
+[PASS] cada_sp_es_una_clase_con_siete_cartas_tres_de_creador_y_su_pasiva
+[PASS] cada_sp_tiene_un_set_entero_que_no_es_equipo_inicial
+[FAIL] los_ganchos_nuevos_se_leen: /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/tests/Game/ClasesSpTests.cpp:202 -- comprobación fallida: Game::leerGancho("siempre:velocidad_0").tipo == T::Desconocido
+[PASS] guerrero_espadon_a_dos_manos_suma_uno_a_cada_golpe
+[PASS] guerrero_provocacion_basica_reta_a_uno_y_se_puede_esquivar
+[PASS] guerrero_provocacion_basica_falla_si_el_enemigo_se_resiste
+[PASS] guerrero_intimidacion_es_magia_y_deja_shock_y_menos_ca
+[PASS] guerrero_piel_de_acero_da_ca_y_mas_dano_al_arma
+[PASS] guerrero_las_de_creador_esperan_al_tier_2
+[PASS] guerrero_estimulacion_da_ventaja_todo_el_combate
+[PASS] un_penal_ca_se_ve_como_perjuicio
+[PASS] todas_menos_las_de_forma_y_el_angel_suman_uno_al_golpe_con_arma
+[PASS] ninguna_carta_de_arranque_sale_bloqueada
+[PASS] ninja_recuperacion_espiritual_quita_el_miedo_y_cura
+[PASS] ninja_protector_de_cuchillas_para_el_golpe_y_afila_la_espada
+[PASS] cruzado_escudo_creciente_y_efecto_deslumbrador
+[PASS] berserker_se_enfurece_pega_mas_y_se_cubre_menos
+[PASS] berserker_ruptura_de_la_armadura_es_magia_contra_el_cuerpo
+[PASS] gladiador_gangrena_cura_y_da_ventaja_todo_el_combate
+[PASS] monje_elige_su_espiritu_y_palabras_de_buda_limpian
+[PASS] cosechador_aspirasangre_cura_lo_que_quita
+[PASS] cosechador_convertidor_temporal_devuelve_una_estandar
+[PASS] renegado_ignicion_suma_un_dado_al_arma
+[PASS] hachero_energia_runica_cura_y_da_ca_y_la_cascada_para_y_limpia
+[PASS] caballero_escudo_de_dragonio_para_un_ataque
+[PASS] romperrocas_salto_con_cohete_da_ca_a_quien_salta
+[PASS] romperrocas_respiracion_llameante_quema_cada_ronda
+[PASS] aquiles_niebla_impenetrable_le_cubre_y_marca_a_los_enemigos
+[PASS] cazador_ataque_de_falcon_da_ventaja_y_mas_dano_todo_el_combate
+[PASS] asesino_tambalearse_para_el_golpe_y_afila_el_punal
+[PASS] destructor_cura_milagrosa_limpia_y_refuerza_todo_el_combate
+[PASS] guardabosques_espiritu_de_lobo_da_un_dado_al_grupo_todo_el_combate
+[PASS] espia_emboscada_te_esconde_y_te_deja_atacar_con_ventaja
+[PASS] cazademonios_hoja_de_tiro_cura_lo_que_quita_y_rompe_la_guardia
+[PASS] angel_vengador_elige_hielo_y_su_espada_pega_un_dado_mas
+[PASS] angel_vengador_llama_devuelve_los_golpes_fisicos
+[PASS] cazasoles_curacion_natural_trae_al_lobo_solar_todo_el_combate
+[PASS] granadero_escudo_energetico_para_el_golpe_y_da_ca
+[PASS] cazanieblas_bloqueo_de_vision_ciega_y_te_refuerza_todo_el_combate
+[PASS] almirante_yi_doble_marea_atrae_y_deja_grogui
+[PASS] las_cartas_del_mago_tiran_int_salvo_las_del_arma_magica
+[PASS] mago_de_fuego_tira_int_y_su_aliento_quema_cada_ronda
+[PASS] mago_sagrado_efecto_cura_limpia_y_la_cura_de_grupo_cura_dos_dados
+[PASS] mago_azul_cadena_helada_deja_al_lobo_dos_turnos_sin_atacar
+[PASS] mago_de_las_tinieblas_dispara_con_des_y_la_posesion_es_magia
+[PASS] volcano_tanque_de_magma_cubre_todo_el_combate_y_mas_dos_turnos
+[PASS] senor_de_las_mareas_el_canto_de_las_sirenas_duerme_tres_turnos
+[PASS] vidente_superabracadabra_trae_cuatro_clones_que_atacan_y_se_van
+[PASS] archimago_catalizador_marca_y_ciega_y_dos_de_creador_esperan_cifras
+[PASS] sacerdote_vudu_tres_aranas_atacan_una_vez_y_estallan
+[PASS] gravitas_atrae_y_su_reflexion_para_el_golpe_y_lo_devuelve
+[PASS] tormenta_de_fuego_el_circulo_es_magia_y_el_lanzallamas_dispara_con_des
+[PASS] merlin_adivinacion_para_el_golpe_y_te_deja_atacar_con_ventaja
+[PASS] el_artista_marcial_empieza_con_los_guanteletes_de_viaje
+[PASS] puno_del_dragon_elige_su_estilo_y_el_agarre_deja_sin_atacar
+[PASS] artes_misticas_aguante_para_el_golpe_y_la_luz_lunar_da_ventaja
+[PASS] maestro_lobo_el_estilo_definitivo_da_ventaja_dos_turnos_y_la_patada_noquea
+[PASS] guerrero_demoniaco_contraalas_para_el_golpe_y_lo_devuelve
+[PASS] druida_flamigero_elige_figura_y_la_llama_sanadora_limpia_y_cura
+[PASS] puno_hidraulico_tanquear_espera_al_combustible_y_el_protocolo_cura
+[PASS] tronador_la_onda_electrica_deja_sin_atacar_y_le_cubre_dos_turnos
+[PASS] thor_escudo_helado_para_el_golpe_y_el_trueno_refuerza_al_grupo
+Ejecutados 62 test(s); 1 fallo(s).
+
+        Start 248: test_clases_propias
+237/241 Test #248: test_clases_propias ......................   Passed    0.24 sec
+        Start 249: test_probabilidad_pool
+238/241 Test #249: test_probabilidad_pool ...................   Passed    4.20 sec
+        Start 250: simulador_dificultad_humo
+239/241 Test #250: simulador_dificultad_humo ................   Passed    1.05 sec
+        Start 251: test_perfilador
+240/241 Test #251: test_perfilador ..........................   Passed    0.00 sec
+        Start 252: test_referencias_proyecto
+241/241 Test #252: test_referencias_proyecto ................   Passed    0.02 sec
+
+93% tests passed, 16 tests failed out of 241
+
+Label Time Summary:
+aceptacion    =   0.01 sec*proc (1 test)
+content       =   1.28 sec*proc (1 test)
+gl-free       = 175.78 sec*proc (241 tests)
+smoke         =   7.77 sec*proc (38 tests)
+static        =  16.93 sec*proc (11 tests)
+unit          = 149.80 sec*proc (191 tests)
+
+Total Test time (real) = 175.84 sec
+
+The following tests FAILED:
+	  1 - test_pergamino (Failed)                           gl-free unit
+	 20 - test_ruta_casillas (Failed)                       gl-free unit
+	 23 - test_botin_equipo (Failed)                        gl-free unit
+	 26 - test_recompensas_economia (Failed)                gl-free unit
+	 27 - test_lugares (Failed)                             gl-free unit
+	 76 - demo_creacion_personaje (Subprocess aborted)      gl-free smoke
+	 87 - demo_boundington (Subprocess aborted)             gl-free smoke
+	 89 - demo_campana_boundington (Subprocess aborted)     gl-free smoke
+	156 - test_catalog_content (Failed)                     gl-free unit
+	157 - test_aventuras_monsterid (Failed)                 content gl-free
+	172 - catalog_content_validation (Failed)               gl-free unit
+	214 - test_kit_basico (Failed)                          gl-free unit
+	238 - linea_base_core_configura (Failed)                gl-free static
+	239 - linea_base_core (Failed)                          gl-free static
+	242 - test_validar_todo (Failed)                        gl-free static
+	247 - test_clases_sp (Failed)                           gl-free unit
+Errors while running CTest
+
+[código 8 · 175.9 s]

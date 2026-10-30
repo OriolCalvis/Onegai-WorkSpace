@@ -1,0 +1,52 @@
+{
+ "id": "itx_centinela_de_salmuera",
+ "name": "Itx Centinela de Salmuera",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 2,
+ "role": "control",
+ "faction": "espectros_de_la_tomba",
+ "factionName": "Espectros de la Tomba",
+ "stats": {
+  "CON": 5,
+  "DES": 4,
+  "INT": 3,
+  "CAR": 2
+ },
+ "derived": {
+  "vida": 18,
+  "ca": 13,
+  "defensaMental": 11,
+  "resistenciaFisica": 14,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Latigazo de salmuera",
+   "defense": "CA",
+   "effect": "Daño físico que suma su CON; si impacta, el objetivo queda Ralentizado hasta su próximo turno."
+  },
+  {
+   "name": "Vaho salado",
+   "defense": "resistencia_fisica",
+   "effect": "Área adyacente: quien falle queda Cegado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Costra de sal",
+  "description": "El primer daño físico de cada ronda se reduce en 2: la sal cristaliza sobre sus heridas."
+ },
+ "conditionsInflicted": [
+  "ralentizado",
+  "cegado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Control",
+  "Agua"
+ ],
+ "flavorText": "Guardó el muelle tanto tiempo que el mar acabó guardándolo a él."
+}

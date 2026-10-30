@@ -1,0 +1,54 @@
+{
+ "id": "espiral_de_espinas",
+ "name": "Espiral de Espinas",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Chasqueas y del suelo brota una espiral de espinas alrededor del enemigo: 2d6 de daño de naturaleza, y las espinas le dejan sangrando 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "mago_chasqueador"
+ ],
+ "roleTags": [],
+ "tags": [
+  "mago_chasqueador",
+  "Naturaleza",
+  "estandar"
+ ],
+ "mechanicTags": [
+  "Naturaleza"
+ ],
+ "actionType": "accion_principal",
+ "target": "zone_radius",
+ "range": "short",
+ "duration": "2 turnos",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "INT",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Chasqueas y del suelo brota una espiral de espinas alrededor del enemigo: 2d6 de daño de naturaleza, y las espinas le dejan sangrando 2 turnos.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "2d6 de daño de naturaleza.",
+   "mechanicHook": "dano:2d6"
+  },
+  {
+   "description": "Sangra 2 turnos.",
+   "mechanicHook": "condicion:sangrado:2"
+  }
+ ]
+}
