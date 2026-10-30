@@ -1,5 +1,5 @@
 # U4-07.E01 registro de citas (generado con sed-equivalente por contenido)
-# base: 28133d81
+# base: 2cb66437
 OK              src/Game/Personajes/BrilloEquipo.cpp:205-358 [361l]
     L205: void destellosDeBrillo(const HojaDeBrillo& brillo, int frame, double segundos, std::vector<Destello>& out) {
     L358: }
@@ -42,9 +42,9 @@ OK              src/Engine/ApplicationCinematica.cpp:495-495 [517l]
 OK              src/Engine/ApplicationCinematica.cpp:363-363 [517l]
     L363: std::random_device azar;
     L363: std::random_device azar;
-OK              src/Engine/ApplicationPantallas.cpp:433-442 [498l]
-    L433: // AV14-03 — Lo que entra salpica: el roce, polvo; el acierto, chispas; el critico, chispas y
-    L442: }
+OK              planificacion/CANON_PARTICULAS.md:110-110 [463l]
+    L110: | **polvo** | Tierra | voluta | deriva de lado (tapa) | `#c8aa82` `#a08664` | polvo y arena que levantan los p
+    L110: | **polvo** | Tierra | voluta | deriva de lado (tapa) | `#c8aa82` `#a08664` | polvo y arena que levantan los p
 OK              include/Game/Personajes/FamiliasDeParticulas.h:30-41 [61l]
     L30: struct TipoDeParticula {
     L41: };
@@ -321,6 +321,9 @@ OK              src/Engine/ApplicationHud.cpp:182-182 [466l]
 OK              src/Engine/ApplicationHud.cpp:209-209 [466l]
     L209: if (dibujo(a, esquina, tam)) efectos.lanza(j.carta, j.etiquetas, esquina, tam);
     L209: if (dibujo(a, esquina, tam)) efectos.lanza(j.carta, j.etiquetas, esquina, tam);
+OK              src/Engine/ApplicationPantallas.cpp:433-442 [498l]
+    L433: // AV14-03 — Lo que entra salpica: el roce, polvo; el acierto, chispas; el critico, chispas y
+    L442: }
 OK              src/Engine/ApplicationPantallas.cpp:408-408 [498l]
     L408: for (const Game::GolpeCombate& g : b.golpes()) {
     L408: for (const Game::GolpeCombate& g : b.golpes()) {
@@ -408,6 +411,9 @@ OK              src/HUD/Pergamino/DialogoHoja.cpp:219-219 [232l]
 OK              include/Game/Personajes/FamiliasDeParticulas.h:47-47 [61l]
     L47: std::vector<std::string> familiasDeParticulas();
     L47: std::vector<std::string> familiasDeParticulas();
+OK              src/Render/PintaDestellos.cpp:42-44 [110l]
+    L42: const float x = std::round(d.x) + static_cast<float>(p.dx);
+    L44: batch.submit(Vector2{esquina.x + x * px, esquina.y + y * py}, Vector2{px, py}, entera, blanco, c);
 OK              include/Core/Math/Interpolacion.h:33-33 [57l]
     L33: double curva(TipoCurva tipo, double t);
     L33: double curva(TipoCurva tipo, double t);
@@ -438,8 +444,8 @@ OK              include/Core/Json/JsonValue.h:105-105 [122l]
 OK              include/Game/Personajes/FamiliasDeParticulas.h:13-13 [61l]
     L13: namespace Game {
     L13: namespace Game {
-OK              cmake/EfectosDeGolpe.cmake:1-14 [16l]
-    L1: # AV14-02 — Lo que hace cada golpe en el cuerpo y en tu hoja (Game::EfectosDeGolpe). GL-free.
+OK              cmake/Interpolacion.cmake:3-14 [25l]
+    L3: target_sources(motor_math PRIVATE src/Core/Math/Interpolacion.cpp src/Core/Math/EstadoTween.cpp)
     L14: endif()
 OK              src/Game/ParticulasDeCartas.cpp:14-21 [106l]
     L14: ParticulasDeCartas::Color leerColor(const std::string& hex, ParticulasDeCartas::Color porDefecto) {
@@ -453,33 +459,27 @@ OK              include/Core/Math/EstadoTween.h:24-24 [71l]
 OK              src/Game/Personajes/BrilloEquipo.cpp:282-286 [361l]
     L282: bool suma = tipo.suma;
     L286: suma = false;
+OK              src/Game/Personajes/BrilloEquipo.cpp:348-352 [361l]
+    L348: default:  // sube, cae o salta: lo de siempre
+    L352: break;
+OK              src/Game/Personajes/BrilloEquipo.cpp:314-319 [361l]
+    L314: case MovimientoDeParticula::Deriva: {
+    L319: break;
 OK              src/Game/Personajes/BrilloEquipo.cpp:301-313 [361l]
     L301: case MovimientoDeParticula::Salpica: {
     L313: }
+OK              src/Game/Personajes/BrilloEquipo.cpp:321-347 [361l]
+    L321: case MovimientoDeParticula::Converge: {
+    L347: }
 OK              src/Game/Personajes/BrilloEquipo.cpp:269-271 [361l]
     L269: if ((tipo.forma == FormaDeParticula::Rayo || tipo.movimiento == MovimientoDeParticula::Chispazo) &&
     L271: continue;
-OK              src/Game/ParticulasDeCartas.cpp:78-78 [106l]
-    L78: if (familia.empty() || edad < 0.0 || edad >= kDuracionDeCarta)
-    L78: if (familia.empty() || edad < 0.0 || edad >= kDuracionDeCarta)
-OK              src/Render/PintaDestellos.cpp:42-44 [110l]
-    L42: const float x = std::round(d.x) + static_cast<float>(p.dx);
-    L44: batch.submit(Vector2{esquina.x + x * px, esquina.y + y * py}, Vector2{px, py}, entera, blanco, c);
 OK              src/Render/PintaDestellos.cpp:55-58 [110l]
     L55: for (const Game::PixelDeForma& p : Game::contornoDeForma(d.forma)) {
     L58: batch.submit(Vector2{esquina.x + x * px, esquina.y + y * py}, Vector2{px, py}, entera, blanco, c);
-OK              src/Render/PintaDestellos.cpp:101-105 [110l]
-    L101: for (const Activa& a : m_activas) {
-    L105: pintaDestellos(batch, m_destellos, a.esquina, a.tam, m_blanco);
 OK              src/Game/Personajes/BrilloEquipo.cpp:274-277 [361l]
     L274: const float t = static_cast<float>(edad);
     L277: const float alfa = std::min(1.0f, vivo * e.opacidad);
-OK              src/Game/Personajes/BrilloEquipo.cpp:38-38 [361l]
-    L38: static const float kOpacidad[11] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.08f, 1.15f, 1.35f, 1.45f, 1.7f, 1.85f};
-    L38: static const float kOpacidad[11] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.08f, 1.15f, 1.35f, 1.45f, 1.7f, 1.85f};
-OK              src/Game/ParticulasDeCartas.cpp:86-86 [106l]
-    L86: f.brillo.nivel = 8;
-    L86: f.brillo.nivel = 8;
 OK              src/Game/Personajes/BrilloEquipo.cpp:278-280 [361l]
     L278: std::array<std::uint8_t, 3> color = fuente.brillo.color;
     L280: color = tipo.colores[mezcla(kk, ii, ciclo + 3000u) % tipo.colores.size()];
@@ -489,90 +489,81 @@ OK              src/Render/PintaDestellos.cpp:37-44 [110l]
 OK              src/Render/PintaDestellos.cpp:48-58 [110l]
     L48: // PART-01: el contorno oscuro de las de tema (dragones, notas, naipes...), debajo, para que se lean
     L58: batch.submit(Vector2{esquina.x + x * px, esquina.y + y * py}, Vector2{px, py}, entera, blanco, c);
-OK              include/Render/EfectosDeCartas.h:60-60 [67l]
-    L60: std::vector<Game::Destello> m_destellos;  // se reusa cada fotograma
-    L60: std::vector<Game::Destello> m_destellos;  // se reusa cada fotograma
 OK              src/Game/Personajes/BrilloEquipo.cpp:337-347 [361l]
     L337: case MovimientoDeParticula::Expande: {
     L347: }
-OK              src/Engine/ApplicationPantallas.cpp:440-441 [498l]
-    L440: chispas.salpica(g.grado == Grado::Roce ? "polvo" : g.grado == Grado::Periodico ? "" : "chispas", esquina, tam)
-    L441: if (g.grado == Grado::Critico) chispas.salpica("sangre", esquina, tam);
+OK              src/Game/Personajes/FamiliasDeParticulas.cpp:70-70 [225l]
+    L70: {"polvo", {-2.0f, 9.0f, 1.2f, F::Voluta, false, M::Deriva, {{0xc8, 0xaa, 0x82}, {0xa0, 0x86, 0x64}}}},
+    L70: {"polvo", {-2.0f, 9.0f, 1.2f, F::Voluta, false, M::Deriva, {{0xc8, 0xaa, 0x82}, {0xa0, 0x86, 0x64}}}},
+OK              src/Render/Player.cpp:149-149 [175l]
+    L149: Entity::setGridPosition(destination);
+    L149: Entity::setGridPosition(destination);
+OK              src/Render/Player.cpp:27-27 [175l]
+    L27: constexpr float kStepDuration = 0.16f;
+    L27: constexpr float kStepDuration = 0.16f;
+OK              src/Render/Player.cpp:75-91 [175l]
+    L75: void Player::bump(const GridCoord& step) {
+    L91: }
+OK              src/Engine/ApplicationBucle.cpp:164-164 [474l]
+    L164: if ((playerCell.x != m_lastCameraCell.x || playerCell.y != m_lastCameraCell.y) && m_session->mode() != GameMod
+    L164: if ((playerCell.x != m_lastCameraCell.x || playerCell.y != m_lastCameraCell.y) && m_session->mode() != GameMod
+OK              src/Render/VidaNivel.cpp:366-369 [372l]
+    L366: void VidaNivel::avanza(float dt, const GridCoord& jugador) {
+    L369: }
+OK              src/Render/AuraJugador.cpp:76-76 [321l]
+    L76: const Vector2 pies{base.x + tw * 0.5f, base.y + th * 0.9f};
+    L76: const Vector2 pies{base.x + tw * 0.5f, base.y + th * 0.9f};
+OK              src/Engine/ApplicationBucle.cpp:167-167 [474l]
+    L167: target.y += m_map.alturas().desfasePx(playerCell);  // AV19-02: la camara sube con el terreno
+    L167: target.y += m_map.alturas().desfasePx(playerCell);  // AV19-02: la camara sube con el terreno
+OK              src/Engine/ApplicationCinematica.cpp:300-300 [517l]
+    L300: if (app.m_vida != nullptr) app.m_vida->avanza(dt, GridCoord{-1000, -1000});
+    L300: if (app.m_vida != nullptr) app.m_vida->avanza(dt, GridCoord{-1000, -1000});
+OK              src/Render/PintaDestellos.cpp:101-105 [110l]
+    L101: for (const Activa& a : m_activas) {
+    L105: pintaDestellos(batch, m_destellos, a.esquina, a.tam, m_blanco);
+OK              src/Render/Entity.cpp:77-80 [129l]
+    L77: int Entity::getSortKey() const {
+    L80: }
+OK              include/Render/CapaDeDibujo.h:41-41 [82l]
+    L41: constexpr int clave(int claveDePie, CapaDeDibujo capa, int sesgo = 0) {
+    L41: constexpr int clave(int claveDePie, CapaDeDibujo capa, int sesgo = 0) {
+OK              include/Render/VidaNivel.h:32-48 [62l]
+    L32: class VidaNivel {
+    L48: void avanza(float dt, const GridCoord& jugador);
+OK              include/Render/IsometricRenderer.h:76-81 [201l]
+    L76: // Saca "obj" de la cola de render (no-op si no estaba): necesario
+    L81: void removeFromQueue(IRenderable* obj);
+OK              src/Render/IsometricRenderer.cpp:61-65 [367l]
+    L61: void IsometricRenderer::removeFromQueue(IRenderable* obj) {
+    L65: }
+OK              src/Engine/ApplicationHud.cpp:316-316 [466l]
+    L316: m_aura->ponBrillo(m_nuevaPartida ? m_nuevaPartida->hojaDelJugador() : nullptr, m_whiteTexture.get());
+    L316: m_aura->ponBrillo(m_nuevaPartida ? m_nuevaPartida->hojaDelJugador() : nullptr, m_whiteTexture.get());
+OK              src/Engine/Application.cpp:551-551 [1283l]
+    L551: m_whiteTexture.reset(makeWhiteTexture());
+    L551: m_whiteTexture.reset(makeWhiteTexture());
+OK              src/Engine/Application.cpp:368-368 [1283l]
+    L368: m_vida = std::make_unique<Render::VidaNivel>();
+    L368: m_vida = std::make_unique<Render::VidaNivel>();
+OK              src/Engine/ApplicationNivel.cpp:359-359 [507l]
+    L359: m_vida->monta(vida, m_map, semilla, *m_bancoAtlas, *m_renderer, kTileW, kTileH);
+    L359: m_vida->monta(vida, m_map, semilla, *m_bancoAtlas, *m_renderer, kTileW, kTileH);
+OK              src/Engine/ApplicationNivel.cpp:327-327 [507l]
+    L327: if (m_bloques != nullptr && m_bancoAtlas != nullptr && m_renderer != nullptr && m_world != nullptr) {
+    L327: if (m_bloques != nullptr && m_bancoAtlas != nullptr && m_renderer != nullptr && m_world != nullptr) {
+OK              src/Engine/ApplicationCierre.cpp:133-134 [163l]
+    L133: if (m_renderer && m_vida) m_vida->desmonta(*m_renderer);
+    L134: m_vida.reset();
 OK              src/Engine/ApplicationBucle.cpp:85-85 [474l]
     L85: void fixedUpdate(float dt) override { if (!m_title) m_tick(dt); else if (m_titleTick) m_titleTick(dt); }
     L85: void fixedUpdate(float dt) override { if (!m_title) m_tick(dt); else if (m_titleTick) m_titleTick(dt); }
-OK              src/Engine/ApplicationBucle.cpp:101-101 [474l]
-    L101: [this](float dt) { update(dt); },
-    L101: [this](float dt) { update(dt); },
 OK              include/Engine/ApplicationLoop.h:14-14 [65l]
     L14: float fixedStepSeconds = 1.0f / 60.0f;
     L14: float fixedStepSeconds = 1.0f / 60.0f;
 OK              include/Engine/ApplicationLoop.h:22-22 [65l]
     L22: std::size_t maxFixedUpdatesPerFrame = 6;
     L22: std::size_t maxFixedUpdatesPerFrame = 6;
-OK              src/Engine/ApplicationLoop.cpp:66-75 [100l]
-    L66: while (m_accumulatorSeconds + kClockEpsilon >= fixedStep &&
-    L75: }
-OK              src/Engine/ApplicationLoop.cpp:94-94 [100l]
-    L94: services.render(frame.interpolationAlpha);
-    L94: services.render(frame.interpolationAlpha);
-OK              src/Engine/ApplicationBucle.cpp:141-141 [474l]
-    L141: const float mundo = ApplicationCinematica::pausaDeGolpe(*this, deltaTime) ? 0.0f : deltaTime;
-    L141: const float mundo = ApplicationCinematica::pausaDeGolpe(*this, deltaTime) ? 0.0f : deltaTime;
-OK              src/Engine/ApplicationBucle.cpp:142-142 [474l]
-    L142: m_player->update(mundo);
-    L142: m_player->update(mundo);
-OK              src/Engine/ApplicationBucle.cpp:325-325 [474l]
-    L325: refreshHud();
-    L325: refreshHud();
-OK              src/Engine/ApplicationBucle.cpp:173-173 [474l]
-    L173: ApplicationCinematica::combate(*this, deltaTime);  // COMBATE-01: la camara cerca y los golpes a la vista
-    L173: ApplicationCinematica::combate(*this, deltaTime);  // COMBATE-01: la camara cerca y los golpes a la vista
-OK              src/Engine/ApplicationBucle.cpp:122-122 [474l]
-    L122: if (!result.isOk() || result.value()) refreshHud();
-    L122: if (!result.isOk() || result.value()) refreshHud();
-OK              src/Engine/ApplicationCinematica.cpp:514-514 [517l]
-    L514: app.refreshHud();
-    L514: app.refreshHud();
-OK              src/Engine/Application.cpp:726-726 [1283l]
-    L726: refreshHud();
-    L726: refreshHud();
-OK              src/Engine/Application.cpp:923-923 [1283l]
-    L923: refreshHud();
-    L923: refreshHud();
-OK              src/Engine/Application.cpp:976-976 [1283l]
-    L976: if (m_title->selected() != anterior) refreshHud();
-    L976: if (m_title->selected() != anterior) refreshHud();
-OK              src/Engine/ApplicationPantallas.cpp:440-440 [498l]
-    L440: chispas.salpica(g.grado == Grado::Roce ? "polvo" : g.grado == Grado::Periodico ? "" : "chispas", esquina, tam)
-    L440: chispas.salpica(g.grado == Grado::Roce ? "polvo" : g.grado == Grado::Periodico ? "" : "chispas", esquina, tam)
-OK              src/Engine/ApplicationCinematica.cpp:442-442 [517l]
-    L442: golpesALaVista(app, *b, dt);  // AV14-01/02: los golpes de la batalla, cada uno una vez
-    L442: golpesALaVista(app, *b, dt);  // AV14-01/02: los golpes de la batalla, cada uno una vez
-OK              src/Game/Personajes/BrilloEquipo.cpp:41-41 [361l]
-    L41: e.contraste = n >= 9 ? 0.35f : 0.0f;  // el Tier 5: otras mas oscuras, de contraste
-    L41: e.contraste = n >= 9 ? 0.35f : 0.0f;  // el Tier 5: otras mas oscuras, de contraste
-OK              src/Game/ParticulasDeCartas.cpp:54-57 [106l]
-    L54: ParticulasDeCartas::Color ParticulasDeCartas::colorDe(const std::string& familia) const {
-    L57: }
-OK              src/Render/PintaDestellos.cpp:85-85 [110l]
-    L85: a.semilla = ++m_lanzadas;
-    L85: a.semilla = ++m_lanzadas;
-OK              src/Render/Entity.cpp:89-92 [129l]
-    L89: const Vector2 original{static_cast<float>(m_characterDrawW), static_cast<float>(m_characterDrawH)};
-    L92: Vector2{(original.x - tamano.x) * 0.5f, original.y - tamano.y};
-OK              src/Engine/ApplicationHud.cpp:193-209 [466l]
-    L193: if (m.entity->dibujoDePersonaje(esquina, tam, region)) return true;
-    L209: if (dibujo(a, esquina, tam)) efectos.lanza(j.carta, j.etiquetas, esquina, tam);
-OK              examples/demo_brillo_equipo.cpp:347-347 [407l]
-    L347: Render::EfectosDeCartas efectos;
-    L347: Render::EfectosDeCartas efectos;
-OK              examples/demo_brillo_equipo.cpp:379-379 [407l]
-    L379: efectos.lanza("demo_" + cartas[(i + static_cast<std::size_t>(frame / 96)) % cartas.size()],
-    L379: efectos.lanza("demo_" + cartas[(i + static_cast<std::size_t>(frame / 96)) % cartas.size()],
-OK              examples/demo_brillo_equipo.cpp:383-386 [407l]
-    L383: renderer.sortQueue();
-    L386: require(renderer.renderFrame().isOk());
 OK              include/Render/SpriteBatch.h:94-94 [100l]
     L94: std::vector<Vertex> m_vertices;
     L94: std::vector<Vertex> m_vertices;
@@ -585,18 +576,12 @@ OK              src/Game/ParticulasDeCartas.cpp:86-90 [106l]
 OK              src/Game/Personajes/BrilloEquipo.cpp:58-58 [361l]
     L58: {4, 1.00f, 0.35f, 5.0f, 18.0f, false},  // +10
     L58: {4, 1.00f, 0.35f, 5.0f, 18.0f, false},  // +10
-OK              include/Render/EfectosDeCartas.h:40-40 [67l]
-    L40: bool lanza(const std::string& carta, const std::vector<std::string>& etiquetas, const Vector2& esquina,
-    L40: bool lanza(const std::string& carta, const std::vector<std::string>& etiquetas, const Vector2& esquina,
 OK              include/RPG/RandomEngine.h:26-30 [88l]
     L26: // ===== Una sola interfaz de azar (C-21) =====
     L30: // interfaz de azar del motor. El codigo nuevo no anade ninguna otra.
 OK              CMakeLists.txt:364-364 [1640l]
     L364: src/Game/Personajes/FamiliasDeParticulas.cpp  # PART-01: las familias de particulas (equipo y cartas)
     L364: src/Game/Personajes/FamiliasDeParticulas.cpp  # PART-01: las familias de particulas (equipo y cartas)
-OK              planificacion/CANON_PARTICULAS.md:110-110 [463l]
-    L110: | **polvo** | Tierra | voluta | deriva de lado (tapa) | `#c8aa82` `#a08664` | polvo y arena que levantan los p
-    L110: | **polvo** | Tierra | voluta | deriva de lado (tapa) | `#c8aa82` `#a08664` | polvo y arena que levantan los p
 OK              planificacion/CANON_PARTICULAS.md:460-461 [463l]
     L460: 4. **El tamaño**: las partículas son de un píxel del sprite, como el dibujo. ¿Quieres las de tema
     L461: (dragones, notas, naipes, monedas) más grandes?
@@ -612,10 +597,37 @@ OK              include/RPG/RandomEngine.h:66-68 [88l]
 OK              include/RPG/RandomEngine.h:60-60 [88l]
     L60: uint64_t range = static_cast<uint64_t>(b - a + 1);
     L60: uint64_t range = static_cast<uint64_t>(b - a + 1);
+OK              src/Engine/ApplicationBucle.cpp:141-141 [474l]
+    L141: const float mundo = ApplicationCinematica::pausaDeGolpe(*this, deltaTime) ? 0.0f : deltaTime;
+    L141: const float mundo = ApplicationCinematica::pausaDeGolpe(*this, deltaTime) ? 0.0f : deltaTime;
 OK              src/Game/Personajes/FamiliasDeParticulas.cpp:14-14 [225l]
     L14: static const std::map<std::string, TipoDeParticula> kTipos = {
     L14: static const std::map<std::string, TipoDeParticula> kTipos = {
 OK              src/Game/ParticulasDeCartas.cpp:61-61 [106l]
     L61: static const std::map<std::string, std::string> kElementos = {
     L61: static const std::map<std::string, std::string> kElementos = {
-# citas unicas: 206  incidencias: 0
+OK              src/Render/Entity.cpp:89-92 [129l]
+    L89: const Vector2 original{static_cast<float>(m_characterDrawW), static_cast<float>(m_characterDrawH)};
+    L92: Vector2{(original.x - tamano.x) * 0.5f, original.y - tamano.y};
+OK              src/Engine/ApplicationHud.cpp:193-209 [466l]
+    L193: if (m.entity->dibujoDePersonaje(esquina, tam, region)) return true;
+    L209: if (dibujo(a, esquina, tam)) efectos.lanza(j.carta, j.etiquetas, esquina, tam);
+OK              src/Game/Personajes/BrilloEquipo.cpp:265-267 [361l]
+    L265: const double desfase = azar01(kk, ii, 11u) * tipo.vida;
+    L267: const double edad = std::fmod(vivida, static_cast<double>(tipo.vida));
+OK              src/Game/ParticulasDeCartas.cpp:92-94 [106l]
+    L92: for (int y = 34; y <= 50; ++y)
+    L94: f.pixeles[0].push_back({static_cast<std::uint8_t>(x), static_cast<std::uint8_t>(y)});
+OK              src/Game/Personajes/BrilloEquipo.cpp:272-272 [361l]
+    L272: const auto& p = pix[mezcla(kk, ii, ciclo + 1000u) % n];
+    L272: const auto& p = pix[mezcla(kk, ii, ciclo + 1000u) % n];
+OK              src/Game/Personajes/BrilloEquipo.cpp:349-349 [361l]
+    L349: x += tipo.vx * static_cast<float>(std::sin(edad * 3.0 + i)) * 0.4f +
+    L349: x += tipo.vx * static_cast<float>(std::sin(edad * 3.0 + i)) * 0.4f +
+OK              src/Game/Personajes/BrilloEquipo.cpp:317-317 [361l]
+    L317: x += sentido * tipo.vx * t + static_cast<float>(std::sin(edad * 5.0 + i)) * 0.6f;
+    L317: x += sentido * tipo.vx * t + static_cast<float>(std::sin(edad * 5.0 + i)) * 0.6f;
+OK              src/Game/ParticulasDeCartas.cpp:78-78 [106l]
+    L78: if (familia.empty() || edad < 0.0 || edad >= kDuracionDeCarta)
+    L78: if (familia.empty() || edad < 0.0 || edad >= kDuracionDeCarta)
+# citas unicas: 210  incidencias: 0
