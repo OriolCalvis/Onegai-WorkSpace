@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "maquinas": [
+    {
+      "id": "pnj_basico",
+      "inicial": "reposo",
+      "parametros": [
+        {"id": "andando", "tipo": "booleano"}
+      ],
+      "estados": [
+        {"id": "reposo",
+         "clipsPorRumbo": {"arriba": "idle_up", "derecha": "idle_right", "abajo": "idle_down", "izquierda": "idle_left"},
+         "politicaRumbo": "reiniciarSiDistinto"},
+        {"id": "andar",
+         "clipsPorRumbo": {"arriba": "walk_up", "derecha": "walk_right", "abajo": "walk_down", "izquierda": "walk_left"},
+         "politicaRumbo": "reiniciarSiDistinto"}
+      ],
+      "transiciones": [
+        {"desde": "reposo", "hacia": "andar", "cuando": [{"param": "andando", "op": "cierto"}],
+         "politica": "reiniciarSiempre", "prioridad": 0},
+        {"desde": "andar", "hacia": "reposo", "cuando": [{"param": "andando", "op": "falso"}],
+         "politica": "reiniciarSiempre", "prioridad": 0}
+      ]
+    }
+  ]
+}

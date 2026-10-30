@@ -170,3 +170,24 @@ if(BUILD_TESTING AND TARGET motor_level)
         add_dependencies(suite_gl_free test_paso_animacion)
     endif()
 endif()
+
+# U3-06.E05 -- Entradas de un PNJ y maquina pnj_basico equivalente al oraculo (gl-free,
+# Game::entradasDePnj). Usa assets/animaciones/pnj_basico.estados.json (WORKING_DIRECTORY = fuentes).
+if(TARGET motor_level)
+    target_sources(motor_level PRIVATE src/Game/RutinasPnjAnimacion.cpp)
+endif()
+if(BUILD_TESTING AND TARGET motor_level)
+    add_executable(test_rutinas_pnj_animacion tests/Game/RutinasPnjAnimacionTests.cpp)
+    target_include_directories(test_rutinas_pnj_animacion PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    target_link_libraries(test_rutinas_pnj_animacion PRIVATE motor_level)
+    add_test(NAME test_rutinas_pnj_animacion COMMAND test_rutinas_pnj_animacion)
+    set_tests_properties(test_rutinas_pnj_animacion PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "unit;gl-free")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_rutinas_pnj_animacion)
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_rutinas_pnj_animacion)
+    endif()
+endif()
