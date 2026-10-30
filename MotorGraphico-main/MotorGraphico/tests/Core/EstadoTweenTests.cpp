@@ -233,6 +233,87 @@ MOTOR_TEST_CASE(dt_enorme_no_rompe) {
     MOTOR_CHECK(r.isOk() && r.value().acabaDeTerminar && r.value().estado.transcurrido == 1.0);
 }
 
+MOTOR_TEST_CASE(tolerancia_relativa_1e12_margen_absoluto) {
+    // duracion 1e12 -> margen absoluto 1: 0.5 antes termina, 10 antes no.
+    const auto cerca = avanzaTween(nuevo(1e12), 1e12 - 0.5);
+    MOTOR_CHECK(cerca.isOk() && cerca.value().acabaDeTerminar);
+    const auto lejos = avanzaTween(nuevo(1e12), 1e12 - 10.0);
+    MOTOR_CHECK(lejos.isOk() && !lejos.value().acabaDeTerminar && !lejos.value().estado.terminado);
+}
+
+MOTOR_TEST_CASE(frontera_de_tolerancia_es_inclusiva) {
+    const double umbral = 1.0 - 1e-12 * 1.0;  // duracion 1: producto exacto
+    const auto en = avanzaTween(nuevo(1.0), umbral);  // 0 + umbral == umbral exacto
+    MOTOR_CHECK(en.isOk() && en.value().acabaDeTerminar && en.value().estado.terminado);
+    const auto debajo = avanzaTween(nuevo(1.0), std::nextafter(umbral, 0.0));
+    MOTOR_CHECK(debajo.isOk() && !debajo.value().acabaDeTerminar && !debajo.value().estado.terminado);
+}
+
+MOTOR_TEST_CASE(cancela_mantener_actual_congela_valor) {
+    const EstadoTween e = nuevo(2.0, 0.5, TipoCurva::EntradaCuadratica);
+    const auto r = cancelaTween(e, PoliticaCancelacion::MantenerActual);
+    MOTOR_CHECK(r.isOk() && r.value().acabaDeTerminar && r.value().estado.terminado);
+    MOTOR_CHECK(r.value().estado.transcurrido == 0.5);
+    MOTOR_CHECK(r.value().progreso == 0.25 && r.value().valorCurvado == curva(TipoCurva::EntradaCuadratica, 0.25));
+}
+
+MOTOR_TEST_CASE(cancela_terminar_salta_al_final) {
+    const auto r = cancelaTween(nuevo(2.0, 0.5, TipoCurva::EntradaCuadratica), PoliticaCancelacion::Terminar);
+    MOTOR_CHECK(r.isOk() && r.value().acabaDeTerminar && r.value().estado.terminado);
+    MOTOR_CHECK(r.value().estado.transcurrido == 2.0);
+    MOTOR_CHECK(r.value().progreso == 1.0 && r.value().valorCurvado == 1.0);
+}
+
+MOTOR_TEST_CASE(cancela_es_idempotente_y_emite_una_vez) {
+    for (PoliticaCancelacion p : {PoliticaCancelacion::MantenerActual, PoliticaCancelacion::Terminar}) {
+        const auto a = cancelaTween(nuevo(2.0, 0.5), p);
+        MOTOR_CHECK(a.isOk() && a.value().acabaDeTerminar);
+        const auto b = cancelaTween(a.value().estado, p);
+        MOTOR_CHECK(b.isOk() && !b.value().acabaDeTerminar && igualEstado(b.value().estado, a.value().estado));
+        // otra politica sobre un cancelado tampoco cambia nada
+        const auto c = cancelaTween(a.value().estado, p == PoliticaCancelacion::Terminar ? PoliticaCancelacion::MantenerActual : PoliticaCancelacion::Terminar);
+        MOTOR_CHECK(c.isOk() && !c.value().acabaDeTerminar && igualEstado(c.value().estado, a.value().estado));
+        // y avanzar un cancelado no emite
+        const auto d = avanzaTween(a.value().estado, 1.0);
+        MOTOR_CHECK(d.isOk() && !d.value().acabaDeTerminar && igualEstado(d.value().estado, a.value().estado));
+    }
+}
+
+MOTOR_TEST_CASE(cancela_terminado_por_avance_sin_efecto) {
+    const auto fin = avanzaTween(nuevo(1.0), 2.0);
+    for (PoliticaCancelacion p : {PoliticaCancelacion::MantenerActual, PoliticaCancelacion::Terminar}) {
+        const auto r = cancelaTween(fin.value().estado, p);
+        MOTOR_CHECK(r.isOk() && !r.value().acabaDeTerminar && igualEstado(r.value().estado, fin.value().estado));
+        MOTOR_CHECK(r.value().progreso == 1.0);
+    }
+}
+
+MOTOR_TEST_CASE(cancela_pausado_se_puede_y_conserva_pausa) {
+    EstadoTween e = nuevo(2.0, 0.5);
+    e.pausado = true;
+    const auto r = cancelaTween(e, PoliticaCancelacion::Terminar);
+    MOTOR_CHECK(r.isOk() && r.value().acabaDeTerminar && r.value().estado.terminado);
+    MOTOR_CHECK(r.value().estado.pausado && r.value().estado.transcurrido == 2.0);
+}
+
+MOTOR_TEST_CASE(cancela_duracion_cero) {
+    const auto r = cancelaTween(nuevo(0.0), PoliticaCancelacion::MantenerActual);
+    MOTOR_CHECK(r.isOk() && r.value().acabaDeTerminar && r.value().progreso == 1.0);
+}
+
+MOTOR_TEST_CASE(cancela_estado_invalido_es_error) {
+    for (PoliticaCancelacion p : {PoliticaCancelacion::MantenerActual, PoliticaCancelacion::Terminar}) {
+        MOTOR_CHECK(!cancelaTween(nuevo(kNaN), p).isOk());
+        MOTOR_CHECK(!cancelaTween(nuevo(kInf), p).isOk());
+        MOTOR_CHECK(!cancelaTween(nuevo(-1.0), p).isOk());
+        MOTOR_CHECK(!cancelaTween(nuevo(1.0, kNaN), p).isOk());
+        MOTOR_CHECK(!cancelaTween(nuevo(1.0, -0.5), p).isOk());
+        EstadoTween t = nuevo(kNaN);
+        t.terminado = true;  // se valida tambien terminado, como avanzaTween
+        MOTOR_CHECK(!cancelaTween(t, p).isOk());
+    }
+}
+
 }  // namespace
 
 int main() { return motor_test::runAllTests(); }

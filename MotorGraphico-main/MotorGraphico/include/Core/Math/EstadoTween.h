@@ -16,7 +16,9 @@ namespace Interpolacion {
 
 // Tolerancia relativa de final: la suma de trozos puede quedar por debajo de duracion por
 // redondeo (10 x 0.1 = 0.9999999999999999). Se termina si
-// transcurrido + dt >= duracion - 1e-9 * duracion (y transcurrido se fija a duracion).
+// transcurrido + dt >= duracion - 1e-12 * duracion (y transcurrido se fija a duracion).
+// Margen absoluto = 1e-12 * duracion (duracion 1 -> 1e-12 s; duracion 1e12 -> 1 s). La
+// frontera es inclusiva (>=): justo en el umbral termina.
 struct EstadoTween {
     double duracion = 0;
     double transcurrido = 0;
@@ -38,9 +40,27 @@ struct PasoTween {
 //  - pausado (manda sobre todo) o terminado -> mismo estado, acabaDeTerminar = false.
 //  - duracion == 0 (no pausado, no terminado) -> termina ya, incluso con dt == 0.
 //  - duracion > 0: dt == 0 no avanza (aunque transcurrido ya sea >= duracion: termina en el
-//    siguiente avance con dt > 0); si transcurrido + dt >= duracion*(1-1e-9) termina y
+//    siguiente avance con dt > 0); si transcurrido + dt >= duracion*(1-1e-12) termina y
 //    transcurrido se fija a duracion (la sobra de dt se descarta; asi avanzar en n trozos
 //    equivale a avanzar de una vez).
 Result<PasoTween> avanzaTween(const EstadoTween& estado, double dt);
+
+// Politica de cancelacion (sin callbacks: el llamador reacciona a acabaDeTerminar).
+enum class PoliticaCancelacion {
+    MantenerActual,  // congela transcurrido; progreso/valorCurvado son los del momento
+    Terminar         // transcurrido = duracion, progreso = 1
+};
+
+// Cancela el tween. Devuelve Result<PasoTween> (no PasoTween a secas) para ser coherente con
+// avanzaTween ante estado invalido.
+//  - Estado invalido (duracion/transcurrido no finitos o negativos) -> Error, igual que
+//    avanzaTween (se valida siempre, tambien si esta terminado).
+//  - Ya terminado (por avance o por una cancelacion previa) -> mismo estado,
+//    acabaDeTerminar = false: cancelar es idempotente y no cambia nada.
+//  - Pausado: SI se puede cancelar; el flag pausado se conserva tal cual (terminado manda).
+//  - En otro caso termina (terminado = true) y acabaDeTerminar = true: es el flanco de final
+//    (una sola vez), de modo que el llamador reacciona igual que con avanzaTween.
+//  - MantenerActual no toca transcurrido; Terminar lo fija a duracion.
+Result<PasoTween> cancelaTween(const EstadoTween& estado, PoliticaCancelacion politica);
 
 }  // namespace Interpolacion

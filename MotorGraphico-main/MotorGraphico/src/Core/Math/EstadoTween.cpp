@@ -6,7 +6,7 @@ namespace Interpolacion {
 
 namespace {
 
-constexpr double kTolFin = 1e-9;  // tolerancia relativa de final (ver cabecera)
+constexpr double kTolFin = 1e-12;  // tolerancia relativa de final (ver cabecera)
 
 Result<PasoTween> componPaso(const EstadoTween& estado, bool acabaDeTerminar) {
     const Result<double> p = progreso(estado.transcurrido, estado.duracion);
@@ -47,6 +47,21 @@ Result<PasoTween> avanzaTween(const EstadoTween& estado, double dt) {
         return componPaso(nuevo, true);
     }
     return componPaso(nuevo, false);
+}
+
+Result<PasoTween> cancelaTween(const EstadoTween& estado, PoliticaCancelacion politica) {
+    if (!std::isfinite(estado.duracion) || estado.duracion < 0.0) {
+        return Result<PasoTween>::Error("Interpolacion::cancelaTween: duracion invalida");
+    }
+    if (!std::isfinite(estado.transcurrido) || estado.transcurrido < 0.0) {
+        return Result<PasoTween>::Error("Interpolacion::cancelaTween: transcurrido invalido");
+    }
+    if (estado.terminado) return componPaso(estado, false);
+
+    EstadoTween nuevo = estado;
+    if (politica == PoliticaCancelacion::Terminar) nuevo.transcurrido = estado.duracion;
+    nuevo.terminado = true;
+    return componPaso(nuevo, true);
 }
 
 }  // namespace Interpolacion

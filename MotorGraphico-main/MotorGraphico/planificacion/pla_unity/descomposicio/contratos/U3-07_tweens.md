@@ -143,8 +143,9 @@ Result<PasoTween> avanzaTween(const EstadoTween& estado, double dt);
 
 ```cpp
 enum class PoliticaCancelacion { MantenerActual, Terminar };
-PasoTween cancelaTween(const EstadoTween& estado, PoliticaCancelacion politica);
+Result<PasoTween> cancelaTween(const EstadoTween& estado, PoliticaCancelacion politica);
 ```
+- Decision E07: `Result<PasoTween>` (estado invalido -> Error, como `avanzaTween`). `acabaDeTerminar=true` en la cancelacion efectiva (flanco unico); `false` si ya estaba terminado. Pausado se puede cancelar (conserva `pausado`).
 - `MantenerActual`: congela `transcurrido`, `terminado=true`, valor = el actual. `Terminar`: `transcurrido=duracion`, `progreso=1`.
 - Idempotente (cancelar dos veces no cambia nada y `acabaDeTerminar=false` la segunda); sin callbacks (ni `std::function`) en esta capa: el llamador reacciona a `acabaDeTerminar`.
 - Cancelar un tween ya terminado por avance: sin efecto.
