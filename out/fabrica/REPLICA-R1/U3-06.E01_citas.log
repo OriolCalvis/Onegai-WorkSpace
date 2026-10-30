@@ -1,4 +1,4 @@
-# U3-06.E01 r2 registro de citas (verificadas por contenido; base 08ef8db). Rutas relativas a MotorGraphico-main/MotorGraphico/
+# U3-06.E01 r3 registro de citas (verificadas por contenido; base 08ef8db). Rutas relativas a MotorGraphico-main/MotorGraphico/
 # primera linea contiene la aguja A y la ultima la aguja B (extremos de cada rango)
 
 OK  src/Render/AnimatedEntity.cpp:37-52
@@ -453,11 +453,23 @@ OK  CMakeLists.txt:827-827
    primera[827]: src/Engine/ApplicationBucle.cpp
    ultima [827]: src/Engine/ApplicationBucle.cpp
    esperado: 'ApplicationBucle.cpp' / None
+OK  include/Engine/Application.h:140-140
+   primera[140]: private:
+   ultima [140]: private:
+   esperado: 'private:' / None
+OK  src/Engine/ApplicationCinematica.cpp:156-156
+   primera[156]: if (actorAnimado != nullptr && !animacion.empty() && actorAnimado->currentAnimation() != animacion) {
+   ultima [156]: if (actorAnimado != nullptr && !animacion.empty() && actorAnimado->currentAnimation() != animacion) {
+   esperado: 'currentAnimation() != animacion' / None
+OK  src/Engine/ApplicationCinematica.cpp:159-170
+   primera[159]: if (animacion.rfind("idle", 0) == 0) {
+   ultima [170]: }
+   esperado: 'animacion.rfind("idle", 0) == 0' / '}'
 OK  cmake/ClipsAnimacion.cmake:82-82
    primera[82]: target_sources(motor_core PRIVATE src/Engine/EntidadClip.cpp)
    ultima [82]: target_sources(motor_core PRIVATE src/Engine/EntidadClip.cpp)
    esperado: 'EntidadClip.cpp' / None
-TOTAL 114 BAD 0
+TOTAL 117 BAD 0
 
 # wc -l
     1282 src/Engine/Application.cpp
