@@ -21,6 +21,7 @@
 #include "Engine/Application.h"
 #include "Engine/ApplicationCamara.h"  // U4-01
 #include "Engine/ApplicationCinematica.h"  // PROLOGO-02
+#include "Engine/AnimacionMundo.h"  // U3-06.E06b: la maquina de animacion
 #include "Render/BloquesNivel.h"
 #include "Render/VidaNivel.h"
 #include "Render/MonumentosNivel.h"
@@ -318,10 +319,19 @@ void Application::update(float deltaTime) {
                 }
                 pnj->dibujoListo = true;
             }
-            actor->play(Game::RutinasPnj::animacion(*pnj, reducidas));
+            auto* clip = dynamic_cast<EntidadClip*>(actor);  // U3-06.E06b: pnj_basico (LEGACY) o politica de siempre
+            if (clip == nullptr || !Engine::animaConMaquina(*clip, "pnj_basico", Game::entradasDePnj(*pnj, reducidas),
+                                                            Engine::tieneRutaDeCombate(m_cine.get(), marcador.handle)))
+                actor->play(Game::RutinasPnj::animacion(*pnj, reducidas));
             const float dx = pnj->desfaseX(), dy = pnj->desfaseY();
             actor->setOffset(Vector2{(dx - dy) * static_cast<float>(kTileW) * 0.5f,
                                      (dx + dy) * static_cast<float>(kTileH) * 0.5f + Game::RutinasPnj::saltoPx(*pnj, reducidas)});
+        }
+        // U3-06.E06b (D-O3): enemigos de cuerpo base (sin EstadoPnj) reenganchan su clip. DENTRO de !enCurso.
+        for (WorldMarker& marcador : m_worldMarkers) {
+            auto* clip = rutinas.de(marcador.handle) == nullptr ? dynamic_cast<EntidadClip*>(marcador.entity.get()) : nullptr;
+            if (clip != nullptr && clip->esCuerpoBase())
+                Engine::animaConMaquina(*clip, "enemigo_base", {}, Engine::tieneRutaDeCombate(m_cine.get(), marcador.handle));
         }
     }
     trace("update: refreshHud");

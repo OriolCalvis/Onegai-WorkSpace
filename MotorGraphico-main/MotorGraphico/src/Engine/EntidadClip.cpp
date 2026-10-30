@@ -1,6 +1,7 @@
-// U3-05.E07b -- ver EntidadClip.h
+// U3-05.E07b / U3-06.E06b -- ver EntidadClip.h
 #include "Engine/EntidadClip.h"
 
+#include "Engine/MaquinaEntidad.h"
 #include "Game/IdleCuerpoBase.h"
 
 namespace {
@@ -10,6 +11,8 @@ struct PuertosSinEfecto : Game::PuertosEventoClip {
     void suena(const Game::EventoFotograma&) override {}
 };
 }  // namespace
+
+EntidadClip::~EntidadClip() = default;
 
 void EntidadClip::update(float deltaTime) {
     if (m_actor != nullptr && !controlExterno()) {  // play() devolvio el control a la entidad
@@ -26,8 +29,12 @@ void EntidadClip::update(float deltaTime) {
 
 void EntidadClip::idleCuerpoBase(TextureAtlas* atlas, int drawW, int drawH, const Vector2& anchor) {
     setCharacterSprite(atlas, drawW, drawH, anchor);
+    if (m_maquina == nullptr) m_maquina = std::make_unique<Engine::MaquinaEntidad>();
+    m_maquina->cuerpoBase = true;
     ponIdle(Game::idleCuerpoBase());
 }
+
+bool EntidadClip::esCuerpoBase() const { return m_maquina != nullptr && m_maquina->cuerpoBase; }
 
 void EntidadClip::ponIdle(const Game::ClipAnimacion* clip) {
     m_actor.reset();
@@ -37,8 +44,47 @@ void EntidadClip::ponIdle(const Game::ClipAnimacion* clip) {
         play("idle");
         return;
     }
-    m_actor = std::make_unique<Game::ClipActor>(clip->id, *clip);
+    ponClip(*clip);
+}
+
+void EntidadClip::ponClip(const Game::ClipAnimacion& clip) {
+    m_actor = std::make_unique<Game::ClipActor>(clip.id, clip);
     m_destino = std::make_unique<Game::DestinoFuncion>([this](int s) { ponerFotograma(s); });
     PuertosSinEfecto puertos;
-    m_actor->avanza(0.0, puertos, *m_destino);
+    m_actor->avanza(0.0, puertos, *m_destino);  // entrega inicial (D-T8): control y sprite ya puestos
+}
+
+void EntidadClip::ponMaquina(const Game::CatalogoAnimacion* catalogo,
+                             const Game::MaquinaAnimacion* maquina) {
+    if (m_maquina == nullptr) m_maquina = std::make_unique<Engine::MaquinaEntidad>();
+    m_maquina->catalogo = catalogo;
+    m_maquina->controlador.reset();
+    if (catalogo != nullptr && maquina != nullptr) m_maquina->controlador.emplace(maquina);
+}
+
+bool EntidadClip::aplicaEntradas(const Game::EntradasAnimacion& entradas, bool enRuta) {
+    if (m_maquina == nullptr || !m_maquina->controlador.has_value()) return false;
+    // Clase local: tiene el acceso de la funcion miembro a m_actor/m_destino.
+    struct Destino final : Game::DestinoAnimacion {
+        EntidadClip& e;
+        const Game::CatalogoAnimacion& cat;
+        Destino(EntidadClip& entidad, const Game::CatalogoAnimacion& catalogo) : e(entidad), cat(catalogo) {}
+        bool esClip(const Game::IdClip& id) const override { return cat.clip(id) != nullptr; }
+        void ponNombre(const Game::IdClip& id) override { e.play(id.value()); }
+        void cambiaClip(const Game::IdClip& id, Game::PoliticaCambio politica) override {
+            const Game::ClipAnimacion* c = cat.clip(id);
+            if (c == nullptr || e.m_actor == nullptr) return;
+            e.m_actor->cambia(id, *c, politica);
+            PuertosSinEfecto puertos;
+            e.m_actor->avanza(0.0, puertos, *e.m_destino);  // entrega inicial (D-T8)
+        }
+        void reengancha(const Game::IdClip& id) override {
+            if (const Game::ClipAnimacion* c = cat.clip(id)) e.ponClip(*c);
+        }
+        bool tieneControl() const override { return e.tieneClip() && e.controlExterno(); }
+        bool finClip() const override { return e.m_actor != nullptr && e.m_actor->cursor().terminado; }
+    };
+    Destino destino(*this, *m_maquina->catalogo);
+    Engine::aplicaConRuta(*m_maquina->controlador, entradas, destino, enRuta);
+    return true;
 }

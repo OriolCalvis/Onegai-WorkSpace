@@ -214,3 +214,21 @@ if(BUILD_TESTING AND TARGET motor_level)
         add_dependencies(suite_gl_free test_controlador_animacion)
     endif()
 endif()
+
+# U3-06.E06b -- Integracion de la maquina de animacion: MaquinaEntidad (motor_core, con EntidadClip),
+# catalogo del juego (motor_level, gl-free) y su prueba con EntidadClip real (sin ventana ni GL).
+if(TARGET motor_level)
+    target_sources(motor_level PRIVATE src/Game/CatalogoAnimacionJuego.cpp)
+endif()
+if(TARGET motor_core)
+    target_sources(motor_core PRIVATE src/Engine/MaquinaEntidad.cpp)
+endif()
+if(BUILD_TESTING AND TARGET motor_core AND TARGET motor_level)
+    add_motor_unit_test(test_entidad_clip_maquina tests/Engine/EntidadClipMaquinaTests.cpp)
+    target_link_libraries(test_entidad_clip_maquina PRIVATE motor_core motor_level motor_math)
+    set_tests_properties(test_entidad_clip_maquina PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_entidad_clip_maquina)
+    endif()
+endif()
