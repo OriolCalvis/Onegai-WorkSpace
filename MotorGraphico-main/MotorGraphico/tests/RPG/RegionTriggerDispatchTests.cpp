@@ -461,6 +461,68 @@ MOTOR_TEST_CASE(el_mapa_del_runner_se_restaura_aunque_update_lance) {
     MOTOR_CHECK(runner.lastStartedEvent() == "aut");
 }
 
+// Stay cada frame (16 ms) sobre una escena de 1000 ms: sin la regla de
+// diferir, el frame en que la escena termina arrancaria otro Stay y el
+// automatico pendiente no arrancaria nunca.
+void sinInanicion(EventTrigger tipo, bool pendiente) {
+    MapEventCondition c;
+    c.kind = EventConditionKind::Flag;
+    c.reference = "listo";
+    MapEventDocument aut = evento("aut", GridCoord{9, 9}, pagina("aut_p0", tipo));
+    aut.pages[0].conditions = {c};
+    const MapDocument mapa = mapaCon({aut, eventoRegion("stay", 1, EventTrigger::RegionStay)});
+    Escena e;
+    e.runner.setMap(&mapa);
+    MapEventFrame f;
+    f.playerCell = GridCoord{1, 0};
+    f.deltaMs = 16;
+    const std::vector<Regiones::RegionTrigger> cada = {disp(Kind::Stay)};
+    const auto frame = [&]() {
+        const Result<RegionDispatchResult> r =
+            updateEventsAndRegions(e.runner, e.interprete, e.estado, e.inventario, f, cada);
+        MOTOR_CHECK(r.isOk());
+        return r.value();
+    };
+    MOTOR_CHECK(frame().started.size() == 1);
+    if (pendiente) {
+        e.estado.setFlag("listo");
+    }
+    int n = 0;
+    bool diferido = false;
+    while (e.interprete.isRunning("stay") && n++ < 200) {
+        const RegionDispatchResult r = frame();
+        for (const RegionSkipped& s : r.skipped) {
+            diferido = diferido || s.reason == RegionSkipReason::DeferredToAutomatics;
+        }
+        MOTOR_CHECK(r.started.empty());
+    }
+    MOTOR_CHECK(n < 200);
+    MOTOR_CHECK(diferido);
+    // Frame siguiente al fin de la escena.
+    const RegionDispatchResult r = frame();
+    if (pendiente) {
+        MOTOR_CHECK(e.interprete.isRunning("aut"));
+        if (tipo == EventTrigger::Autorun) {
+            MOTOR_CHECK(!e.interprete.isRunning("stay"));
+            MOTOR_CHECK(r.started.empty());
+        }
+    } else {
+        MOTOR_CHECK(r.started.size() == 1 && r.started[0].eventId == "stay");
+    }
+}
+
+MOTOR_TEST_CASE(un_autorun_pendiente_gana_al_stay_en_el_frame_en_que_termina_la_escena) {
+    sinInanicion(EventTrigger::Autorun, true);
+}
+
+MOTOR_TEST_CASE(un_parallel_pendiente_arranca_al_terminar_la_escena_de_stay) {
+    sinInanicion(EventTrigger::Parallel, true);
+}
+
+MOTOR_TEST_CASE(sin_automaticos_pendientes_el_siguiente_stay_si_arranca) {
+    sinInanicion(EventTrigger::Autorun, false);
+}
+
 }  // namespace
 
 int main() { return motor_test::runAllTests(); }

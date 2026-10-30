@@ -57,7 +57,8 @@ enum class RegionSkipReason {
     BlockedByScene,   // otra escena bloqueante viva: no se arranca una segunda
     AlreadyRunning,   // ese evento ya se esta ejecutando
     NotEvaluable,     // la condicion de la pagina no se pudo evaluar
-    StartFailed       // el interprete rechazo el arranque
+    StartFailed,      // el interprete rechazo el arranque
+    DeferredToAutomatics  // el frame EMPEZO bloqueado: ver updateEventsAndRegions
 };
 
 struct RegionStarted {
@@ -92,7 +93,16 @@ Result<RegionDispatchResult> dispatchRegionTriggers(
 // pero no dispara automaticos. Efecto CONTRACTUAL: Autorun y tambien Parallel
 // nuevos esperan a que la escena termine y no se pierden (coherente con
 // MapEventRunner.h:69-71: mientras algo bloquee no arranca NADA nuevo). El
-// mapa se restaura con una guarda RAII, tambien si `update()` lanza. Sin mapa en el runner
+// mapa se restaura con una guarda RAII, tambien si `update()` lanza.
+// SIN INANICION: si el frame empezo bloqueado NO se despachan sus triggers de
+// region; van a `skipped` (un registro por trigger, eventId vacio) con motivo
+// `DeferredToAutomatics`. Sin esto, un Stay con intervalo menor que su escena
+// arrancaria otro justo en el frame en que la escena termina y los automaticos
+// pendientes no arrancarian nunca. El frame siguiente empieza sin bloqueo,
+// evalua primero los automaticos (`runner.update` con mapa) y despues
+// despacha: un Autorun pendiente SIEMPRE gana a un trigger de region en el
+// frame en que termina una escena. Sin automaticos pendientes, el siguiente
+// trigger si arranca (la region no se pierde). Sin mapa en el runner
 // no hay despacho.
 Result<RegionDispatchResult> updateEventsAndRegions(
     MapEventRunner& runner, EventInterpreter& interpreter, const NarrativeState& narrative,

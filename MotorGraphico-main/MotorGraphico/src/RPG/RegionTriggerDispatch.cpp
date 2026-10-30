@@ -130,12 +130,24 @@ Result<RegionDispatchResult> updateEventsAndRegions(
     // un Autorun encima. No se pierde nada: ni Touch ni Interact arrancan con
     // algo bloqueando, y los automaticos (Autorun Y Parallel) no se registran,
     // asi que arrancan cuando la escena termina.
+    const bool bloqueado = interpreter.blocksPlayer();
     {
-        const MapaSuspendido guarda(runner, interpreter.blocksPlayer());
+        const MapaSuspendido guarda(runner, bloqueado);
         runner.update(frame);
     }
     if (mapa == nullptr) {
         return Result<RegionDispatchResult>::Ok(RegionDispatchResult{});
+    }
+    if (bloqueado) {
+        // Ver la cabecera (SIN INANICION): los automaticos pendientes van
+        // primero, en el frame siguiente.
+        RegionDispatchResult diferido;
+        for (const Regiones::RegionTrigger& trigger : triggers) {
+            diferido.skipped.push_back(RegionSkipped{
+                std::string(), trigger, RegionSkipReason::DeferredToAutomatics,
+                "el frame empezo con una escena bloqueante"});
+        }
+        return Result<RegionDispatchResult>::Ok(std::move(diferido));
     }
     return dispatchRegionTriggers(triggers, *mapa, narrative, inventory, interpreter);
 }
