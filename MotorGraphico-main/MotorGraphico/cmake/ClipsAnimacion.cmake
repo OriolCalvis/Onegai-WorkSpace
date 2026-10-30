@@ -109,3 +109,23 @@ if(BUILD_TESTING AND TARGET motor_level)
         add_dependencies(suite_gl_free test_clip_actor_fps)
     endif()
 endif()
+
+# U3-06.E02 -- Lector de maquinas de estados de animacion (gl-free, Game::MaquinaAnimacion).
+if(TARGET motor_level)
+    target_sources(motor_level PRIVATE src/Game/MaquinaAnimacion.cpp)
+endif()
+if(BUILD_TESTING AND TARGET motor_level)
+    add_executable(test_maquina_animacion tests/Game/MaquinaAnimacionTests.cpp)
+    target_include_directories(test_maquina_animacion PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    target_link_libraries(test_maquina_animacion PRIVATE motor_level)
+    add_test(NAME test_maquina_animacion COMMAND test_maquina_animacion)
+    set_tests_properties(test_maquina_animacion PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "unit;gl-free")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_maquina_animacion)
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_maquina_animacion)
+    endif()
+endif()
