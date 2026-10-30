@@ -1,0 +1,50 @@
+=== MUTACION a reengancha en cada aplica
+1/5 Test #219: test_seleccion_animacion    Passed    0.15 sec
+2/5 Test #220: test_paso_animacion    Passed    0.11 sec
+3/5 Test #222: test_controlador_animacion ***Failed    0.25 sec
+4/5 Test #223: test_entidad_clip_maquina ***Failed    0.40 sec
+5/5 Test #224: test_verificacion_animacion ***Failed    0.29 sec
+[FAIL] idle_de_enemigo_base_mismo_fotograma_final_y_sin_saltos_a_los_cuatro_dt
+[FAIL] enemigo_base_cue_600_fotogramas_vuelve_al_clip_una_sola_vez
+[FAIL] h2_al_acabar_la_ruta_el_idle_salta_de_fase_una_vez
+[FAIL] maquina_de_tres_clips_misma_secuencia_idle_caminar_idle_accion_idle_a_los_cuatro_dt
+[FAIL] accion_se_entrega_ya_y_termina_con_el_clip_no_ciclico
+=== MUTACION b aplica actua suspendido
+1/5 Test #219: test_seleccion_animacion    Passed    0.13 sec
+2/5 Test #220: test_paso_animacion    Passed    0.12 sec
+3/5 Test #222: test_controlador_animacion ***Failed    0.25 sec
+4/5 Test #223: test_entidad_clip_maquina ***Failed    0.37 sec
+5/5 Test #224: test_verificacion_animacion ***Failed    0.26 sec
+[FAIL] ruta_de_combate_suspende_la_maquina_de_tres_clips_y_el_disparo_no_se_pierde_ni_se_gasta
+=== MUTACION c1 disparo no consumido
+1/5 Test #219: test_seleccion_animacion    Passed    0.16 sec
+2/5 Test #220: test_paso_animacion ***Failed    0.24 sec
+3/5 Test #222: test_controlador_animacion ***Failed    0.28 sec
+4/5 Test #223: test_entidad_clip_maquina    Passed    0.39 sec
+5/5 Test #224: test_verificacion_animacion ***Failed    0.31 sec
+[FAIL] el_disparo_golpear_se_consume_una_sola_vez
+=== MUTACION c2 disparo consumido dos veces
+1/5 Test #219: test_seleccion_animacion    Passed    0.13 sec
+2/5 Test #220: test_paso_animacion ***Failed    0.24 sec
+3/5 Test #222: test_controlador_animacion ***Failed    0.24 sec
+4/5 Test #223: test_entidad_clip_maquina    Passed    0.39 sec
+5/5 Test #224: test_verificacion_animacion ***Failed    0.44 sec
+[FAIL] el_disparo_golpear_se_consume_una_sola_vez
+=== MUTACION d esperaFinClip ignorado
+1/5 Test #219: test_seleccion_animacion ***Failed    0.27 sec
+2/5 Test #220: test_paso_animacion ***Failed    0.46 sec
+3/5 Test #222: test_controlador_animacion    Passed    0.23 sec
+4/5 Test #223: test_entidad_clip_maquina    Passed    0.61 sec
+5/5 Test #224: test_verificacion_animacion ***Failed    0.29 sec
+[FAIL] maquina_de_tres_clips_misma_secuencia_idle_caminar_idle_accion_idle_a_los_cuatro_dt
+[FAIL] accion_se_entrega_ya_y_termina_con_el_clip_no_ciclico
+[FAIL] el_disparo_golpear_se_consume_una_sola_vez
+=== MUTACION e LEGACY solo al cambiar de estado
+1/5 Test #219: test_seleccion_animacion    Passed    0.24 sec
+2/5 Test #220: test_paso_animacion    Passed    0.24 sec
+3/5 Test #222: test_controlador_animacion ***Failed    0.26 sec
+4/5 Test #223: test_entidad_clip_maquina ***Failed    0.38 sec
+5/5 Test #224: test_verificacion_animacion ***Failed    0.28 sec
+[FAIL] pnj_basico_misma_secuencia_de_clips_a_los_cuatro_dt
+=== RESTAURADO (sin mutacion)
+100% tests passed out of 5

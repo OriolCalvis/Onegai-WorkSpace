@@ -232,3 +232,14 @@ if(BUILD_TESTING AND TARGET motor_core AND TARGET motor_level)
         add_dependencies(suite_gl_free test_entidad_clip_maquina)
     endif()
 endif()
+
+# U3-06.E07 -- Verificacion de idle/caminar/accion con EntidadClip real a varios dt (gl-free, sin codigo de producto).
+if(BUILD_TESTING AND TARGET motor_core AND TARGET motor_level)
+    add_motor_unit_test(test_verificacion_animacion tests/Engine/VerificacionAnimacionTests.cpp)
+    target_link_libraries(test_verificacion_animacion PRIVATE motor_core motor_level motor_math)
+    set_tests_properties(test_verificacion_animacion PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_verificacion_animacion)
+    endif()
+endif()
