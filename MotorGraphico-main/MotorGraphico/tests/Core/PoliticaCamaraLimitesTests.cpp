@@ -71,21 +71,22 @@ MOTOR_TEST_CASE(caso_zoom_1_centro_origen_solo_recorta_y) {
     MOTOR_CHECK(r.x == 0.0f && cerca(r.y, 300.0f));
 }
 
-// Decision de Oriol (r1): tras la caja, el centro se lleva al punto mas cercano del rombo.
-// Caja da (-1616,300), que esta fuera del rombo (|dx|/2048+|dy|/1024 = 1,51); arista izquierda-
-// superior dx+2dy=-2048 desde (32,1024): proyeccion (-1406,4; 719,2).
+// r4: el resultado es el punto de caja ∩ rombo mas cercano al centro (proyeccion convexa). Rango
+// x>=-1616, y>=300; la arista T-L del rombo (x+2y=32) corta x=-1616 en y=824; el punto de esa
+// arista mas cercano a (-2000,-50) es (-1573,6; 802,8).
 MOTOR_TEST_CASE(caso_esquina_superior_izquierda_sube_al_rombo) {
     const LimitesMapa l = limites(64, 64);
     const Vector2 r = limita({-2000.0f, -50.0f}, 1.0f, kVista, l);
-    MOTOR_CHECK(cerca(r.x, -1406.4f) && cerca(r.y, 719.2f));
+    MOTOR_CHECK(cerca(r.x, -1573.6f) && cerca(r.y, 802.8f));
     MOTOR_CHECK(centroSobreRombo(r, l));
 }
 
 MOTOR_TEST_CASE(caso_zoom_3_esquina_inferior_derecha) {
     const LimitesMapa l = limites(64, 64);
-    // Caja: (1946,667; 1948) (fuera del rombo); arista derecha-inferior dx+2dy=2048: proyeccion.
+    // Rango x<=1946,667, y<=1948: punto mas cercano a (2080,2048) de caja ∩ rombo, sobre la arista
+    // derecha-inferior (proyeccion convexa): (1670,4; 1228,8).
     const Vector2 r = limita({2080.0f, 2048.0f}, 3.0f, kVista, l);
-    MOTOR_CHECK(cerca(r.x, 1603.733333f) && cerca(r.y, 1262.133333f));
+    MOTOR_CHECK(cerca(r.x, 1670.4f) && cerca(r.y, 1228.8f));
     MOTOR_CHECK(centroSobreRombo(r, l));
 }
 
@@ -129,11 +130,11 @@ MOTOR_TEST_CASE(zoom_que_cambia_vuelve_a_caber_o_no) {
     Vector2 r = limita({0.0f, 0.0f}, 0.15f, kVista, l);
     MOTOR_CHECK(cerca(r.x, 48.0f) && cerca(r.y, 40.0f));
     r = limita({-100.0f, -100.0f}, 20.0f, kVista, l);
-    // Caja: (-12,15) fuera del paralelogramo; arista T-L: proyeccion (-9,2; 20,6).
-    MOTOR_CHECK(cerca(r.x, -9.2f) && cerca(r.y, 20.6f));
+    // Rango x [-12,108], y [15,65]; la esquina (-12,22) esta en la arista T-L: (-12; 22).
+    MOTOR_CHECK(cerca(r.x, -12.0f) && cerca(r.y, 22.0f));
     r = limita({500.0f, 500.0f}, 20.0f, kVista, l);
-    // Caja: (108,65); arista R-B: (105,2; 59,4).
-    MOTOR_CHECK(cerca(r.x, 105.2f) && cerca(r.y, 59.4f));
+    // Esquina (108,58) del poligono caja ∩ rombo (arista R-B corta x=108 en y=58).
+    MOTOR_CHECK(cerca(r.x, 108.0f) && cerca(r.y, 58.0f));
 }
 
 MOTOR_TEST_CASE(mapa_que_justo_cabe_se_centra) {
@@ -207,33 +208,32 @@ MOTOR_TEST_CASE(sin_rombo_solo_se_aplica_la_caja) {
 }
 
 // r2: con margen superior el centro de la CAJA (48,-8) esta fuera del rombo y el rango colapsa a
-// ese punto: rango-rombo vacio, gana el rombo. Cerca de (0,0): arista T-L desde (32,0), dir (-2,1):
-// t=64/5=12,8 => (6,4; 12,8).
+// ese punto: rango-rombo vacio, gana el rombo: el punto del rombo mas cercano al RANGO (48,-8), no
+// al centro (continuo en la frontera en que se vacia): arista T-R, t=24/5 => (41,6; 4,8).
 MOTOR_TEST_CASE(r2_margen_96_mapa_3x2_gana_el_rombo) {
     const LimitesMapa l = limites(3, 2, 64, 32, 96.0f);
     const Vector2 r = limita({0.0f, 0.0f}, 1.0f, kVista, l);
-    MOTOR_CHECK(cerca(r.x, 6.4f) && cerca(r.y, 12.8f));
+    MOTOR_CHECK(cerca(r.x, 41.6f) && cerca(r.y, 4.8f));
     MOTOR_CHECK(centroSobreRombo(r, l));
     const Vector2 s = limita(r, 1.0f, kVista, l);
     MOTOR_CHECK(cerca(s.x, r.x) && cerca(s.y, r.y));
 }
 
-// Mapa 1x1, margen 96, zoom 0,15: rango colapsado en (32,-32) fuera del rombo. Arista T-L desde
-// (32,0): t=(60,85-33,55)/5=5,46 => (21,08; 5,46).
+// Mapa 1x1, margen 96, zoom 0,15: rango colapsado en (32,-32) fuera del rombo: el punto del rombo
+// mas cercano es el vertice superior (32,0).
 MOTOR_TEST_CASE(r2_margen_96_mapa_1x1_zoom_015) {
     const LimitesMapa l = limites(1, 1, 64, 32, 96.0f);
     const Vector2 r = limita({1.575f, -33.55f}, 0.15f, kVista, l);
-    MOTOR_CHECK(cerca(r.x, 21.08f) && cerca(r.y, 5.46f));
+    MOTOR_CHECK(cerca(r.x, 32.0f) && cerca(r.y, 0.0f));
     MOTOR_CHECK(centroSobreRombo(r, l));
 }
 
-// 30x1, margen 96, zoom 1,5: rango x [266,667; 725,333], y [104; 296]; ancla = centroide del rombo
-// (496,248) (en el rango). Caja: (643,296); rombo: arista T-R, t=303,6 => (639,2; 303,6), fuera del
-// rango en Y; vuelta por el segmento: t=48/55,6 => (619,6259; 296).
-MOTOR_TEST_CASE(r2_margen_96_mapa_30x1_vuelve_por_el_segmento_desde_el_ancla) {
+// 30x1, margen 96, zoom 1,5: rango x [266,667; 725,333], y [104; 296]. Poligono caja ∩ rombo: el
+// borde y=296 corta la arista T-R (x=32+2y) en x=624; el cercano a (643,296) es (624; 296).
+MOTOR_TEST_CASE(r2_margen_96_mapa_30x1_proyeccion_convexa) {
     const LimitesMapa l = limites(30, 1, 64, 32, 96.0f);
     const Vector2 r = limita({643.0f, 296.0f}, 1.5f, kVista, l);
-    MOTOR_CHECK(cerca(r.x, 619.6259f, 2e-3f) && cerca(r.y, 296.0f));
+    MOTOR_CHECK(cerca(r.x, 624.0f) && cerca(r.y, 296.0f));
     MOTOR_CHECK(centroSobreRombo(r, l));
     const Vector2 s = limita(r, 1.5f, kVista, l);
     MOTOR_CHECK(cerca(s.x, r.x) && cerca(s.y, r.y));
@@ -313,6 +313,53 @@ MOTOR_TEST_CASE(entradas_invalidas_dan_error) {
     MOTOR_CHECK(!limitarAlMapa(c, 1.0f, kVista, {10.0f, 0.0f, 0.0f, 10.0f}).isOk());
     MOTOR_CHECK(!limitarAlMapa(c, 1.0f, kVista, {0.0f, 10.0f, 10.0f, 0.0f}).isOk());
     MOTOR_CHECK(!limitarAlMapa(c, 1.0f, kVista, {kNaN, 10.0f, 0.0f, 10.0f}).isOk());
+}
+
+// r4: la proyeccion convexa sobre caja ∩ rombo es continua en zoom (tween de combate) y 1-Lipschitz
+// en el centro, tambien con el rango casi colapsado y al vaciarse la interseccion.
+double distancia(const Vector2& a, const Vector2& b) { return std::hypot(a.x - b.x, a.y - b.y); }
+
+void tweenFino(int c, int f, float margen, Vector2 actor) {
+    const LimitesMapa l = limites(c, f, 64, 32, margen);
+    Vector2 prev = limita(actor, 1.0f, kVista, l);
+    for (int i = 1; i <= 7000; ++i) {
+        const Vector2 r = limita(actor, 1.0f + 1e-4f * static_cast<float>(i), kVista, l);
+        MOTOR_CHECK(distancia(prev, r) <= 0.5);  // un salto de decenas de px se detecta
+        prev = r;
+    }
+}
+
+MOTOR_TEST_CASE(r4_tween_de_zoom_1_a_1_7_es_continuo) {
+    tweenFino(30, 1, 0.0f, {32.0f, 16.0f});    // casilla (0,0) de 30x1
+    tweenFino(20, 4, 96.0f, {384.0f, 192.0f});  // casilla (11,0) de 20x4 con margen 96
+    tweenFino(30, 1, 0.0f, {464.0f, 248.0f});
+}
+
+MOTOR_TEST_CASE(r4_continuidad_en_zoom_al_vaciarse_la_interseccion) {
+    struct Caso { int c, f; float m; Vector2 centro; float z0, z1; };
+    const Caso casos[] = {
+        {40, 2, 96.0f, {1387.0f, 672.3f}, 0.62499f, 0.62501f},  // antes 787 px
+        {30, 1, 96.0f, {1074.0f, 396.0f}, 0.92591f, 0.92595f},  // antes 626 px
+        {3, 2, 96.0f, {177.7f, -9.0f}, 4.1665f, 4.1667f},       // antes 89 px
+        {1, 1, 96.0f, {155.5f, 55.2f}, 9.3743f, 9.3748f},       // antes 36 px
+        {40, 2, 0.0f, {1108.3f, 305.0f}, 0.89285f, 0.8929f},
+    };
+    for (const Caso& k : casos) {
+        const LimitesMapa l = limites(k.c, k.f, 64, 32, k.m);
+        MOTOR_CHECK(distancia(limita(k.centro, k.z0, kVista, l), limita(k.centro, k.z1, kVista, l)) <= 0.5);
+    }
+}
+
+MOTOR_TEST_CASE(r4_proyeccion_es_1_lipschitz_con_rango_ancho) {
+    const LimitesMapa l = limites(40, 2, 64, 32, 96.0f);
+    const Vector2 a{716.02f, 326.13f}, b{715.77f, 326.07f};
+    MOTOR_CHECK(distancia(limita(a, 0.9f, kVista, l), limita(b, 0.9f, kVista, l)) <=
+                distancia(a, b) + 1e-3);  // antes: entrada 0,26 -> salida 2,5
+    for (int i = 0; i < 200; ++i) {
+        const Vector2 p{600.0f + 0.7f * static_cast<float>(i), 326.0f}, q{p.x + 0.05f, p.y + 0.01f};
+        MOTOR_CHECK(distancia(limita(p, 0.9f, kVista, l), limita(q, 0.9f, kVista, l)) <=
+                    distancia(p, q) + 1e-3);
+    }
 }
 
 }  // namespace

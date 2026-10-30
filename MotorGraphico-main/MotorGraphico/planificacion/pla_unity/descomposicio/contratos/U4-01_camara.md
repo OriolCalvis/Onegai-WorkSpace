@@ -180,28 +180,27 @@ Result<Vector2> limitarAlMapa(const Vector2& centro, float zoom, const TamanoVis
   `(columnas-1,0)`; inferior = esquina inferior de `(columnas-1,filas-1)`; izquierdo = esquina izquierda
   de `(0,filas-1)` (paralelogramo; rombo si columnas==filas). Cuenta como «sobre terreno» cualquier punto
   del rombo de alguna casilla (se usa el rombo entero de la casilla).
-- `limitarAlMapa` (orden): (1) caja: por eje, `mitad = vista/(2*zoom)`; si `(max-min) <= 2*mitad` →
-  **centrado** `(min+max)/2`; si no, `clamp(centro, min+mitad, max-mitad)`. (2) rombo: el centro pasa
-  al punto **más cercano** (euclídeo) del contorno (identidad con tolerancia 1e-3 px si ya está dentro).
-  Si ese punto saca el centro del rango de la caja (eje estrecho), se vuelve por el segmento desde un
-  **ancla que pertenece al rombo y al rango** (centroide de los 4 vértices; si no cae en el rango,
-  centroide de rango∩rombo) hasta el límite del rango. **r2:** el centro de la *caja* NO sirve de ancla:
-  con `margenSuperiorPx>0` se desplaza y puede caer fuera del rombo. Si rango∩rombo es vacío gana el
-  rombo (resultado = punto del contorno más cercano al centro dado; la caja no se respeta). Resultado
-  siempre sobre el rombo, en rango de caja cuando rango∩rombo no es vacío, e idempotente; en bordes y
-  esquinas puede verse algo de vacío, nunca una pantalla sin terreno en el centro.
-- **r3 (continuidad)**: con un eje colapsado (o ambos) no se usa el ancla: se proyecta sobre la
-  intersección exacta del segmento de rango con el rombo (recorte contra los 4 semiplanos, punto más
-  cercano; si es vacía gana el rombo). Con rango 2D el ancla es interior y el recorte es continuo.
-  Prueba E05: barrido de sacudida −1..+1 px en pasos de 0,001 en 30x1, 1x30 y 64x64:
-  |Δvista| ≤ |Δsacudida|/zoom + 1e-3.
-- Casos (valores calculados a mano, comprobados por `PoliticaCamaraLimitesTests.cpp`): ver §E05 (64x64,
-  3x2); mapa 30x1 (vista 800x600, zoom 1, centro (-5000,900)) ⇒ `(464,248)` (**r3**: rango colapsado en Y =
-  segmento y=248; se proyecta sobre la intersección exacta segmento∩rombo, x∈[464,528], punto más
-  cercano; antes `(496,248)` por volver al ancla, que producía saltos de 32 px por 0,001 px de entrada
-  — hallazgo de la ronda 1 de E05); 3x2 zoom 20 centro (-100,-100) ⇒ `(-9,2; 20,6)`; centro (500,500) ⇒ `(105,2; 59,4)`;
-  `columnas<=0` → Error. **r2 (margen 96):** 3x2 zoom 1 centro (0,0) ⇒ `(6,4; 12,8)`; 1x1 zoom 0,15
-  centro (1,575; -33,55) ⇒ `(21,08; 5,46)`; 30x1 zoom 1,5 centro (643,296) ⇒ `(619,626; 296)`.
+- `limitarAlMapa` (**r4**, sustituye r1-r3 de ancla/segmento): rango de la caja para el centro: por eje,
+  `mitad = vista/(2*zoom)`; si `(max-min) <= 2*mitad` el rango es el punto **centrado** `(min+max)/2`; si
+  no, `[min+mitad, max-mitad]`. Con `usaRombo` el resultado es la **proyección euclídea del centro sobre
+  el polígono convexo rango∩rombo** (rombo recortado contra el rectángulo con Sutherland-Hodgman): el
+  propio centro si ya está dentro (tolerancia 1e-3 px) y, si no, el punto más cercano de sus aristas.
+  Es 1-Lipschitz y vale igual con rango 2D, casi colapsado o colapsado: sin umbrales ni ancla, sin
+  saltos al barrer la sacudida (E05) ni el zoom (tween de combate). Si rango∩rombo es vacío gana el
+  rombo: el resultado es el punto del rombo más cercano al **rectángulo del rango** (no al centro dado:
+  así es continuo en la frontera en que la intersección se vacía al cambiar el zoom; la caja no se
+  respeta). Resultado siempre sobre el rombo, en el rango cuando rango∩rombo no es vacío, e
+  idempotente; en bordes y esquinas puede verse algo de vacío, nunca una pantalla sin terreno en el
+  centro. (Defectos de r1-r3 corregidos: saltos de 32 px en 30x1 con rango casi colapsado, de 36-787 px
+  al vaciarse la intersección y derivada ≈10 en la rama del ancla; hallazgos de la revisión de E05.)
+- Casos (calculados a mano y con una referencia independiente en Python; comprobados por
+  `PoliticaCamaraLimitesTests.cpp`): ver §E05 (64x64, 3x2); mapa 30x1 (vista 800x600, zoom 1, centro
+  (-5000,900)) ⇒ `(464,248)` (rango = segmento y=248, x∈[400,592]; ∩ rombo x∈[464,528]); 3x2 zoom 20
+  centro (-100,-100) ⇒ `(-12; 22)`; centro (500,500) ⇒ `(108; 58)` (antes `(-9,2; 20,6)` y
+  `(105,2; 59,4)`, que eran «caja y luego rombo», no el cercano de la intersección); `columnas<=0` →
+  Error. **margen 96:** 3x2 zoom 1 centro (0,0) ⇒ `(41,6; 4,8)` (vacío: cercano del rombo al rango
+  `(48,-8)`; antes `(6,4; 12,8)`); 1x1 zoom 0,15 centro (1,575; -33,55) ⇒ `(32; 0)` (antes
+  `(21,08; 5,46)`); 30x1 zoom 1,5 centro (643,296) ⇒ `(624; 296)` (antes `(619,626; 296)`).
 
 ### E04 · Sacudida determinista (90 min)
 ```cpp
@@ -242,12 +241,12 @@ Result<PoseCamara> componerPose(const Vector2& posicionLogica, float zoom, const
   posicionLogica` es el **desplazamiento de vista** que el adaptador entrega a `Camera`
   (incluye el recorte de límites y la sacudida, ver E06 y D-T5/D-T12).
 - Casos numéricos obligatorios (mapa 64x64, tiles 64x32 ⇒ caja `izquierda=-2016`, `derecha=2080`,
-  `arriba=0`, `abajo=2048`; rombo `(32,0) (2080,1024) (32,2048) (-2016,1024)`; vista 800x600; **r1**: tras la
-  caja se proyecta el centro al rombo): zoom 1,7, centro x=-2000 y=1000 ⇒ `(-1780,706; 1000)` (la caja
+  `arriba=0`, `abajo=2048`; rombo `(32,0) (2080,1024) (32,2048) (-2016,1024)`; vista 800x600; **r4**: el centro se proyecta
+  sobre caja∩rombo): zoom 1,7, centro x=-2000 y=1000 ⇒ `(-1780,706; 1000)` (la caja
   recorta X, el punto ya está en el rombo); zoom 1, centro (0,0) ⇒ `(0,300)` (solo Y; ya en el rombo);
-  zoom 1, centro (-2000,-50) ⇒ caja `(-1616,300)` fuera del rombo ⇒ **`(-1406,4; 719,2)`** (antes
-  `(-1616,300)`); zoom 3, centro (2080,2048) ⇒ caja `(1946,667; 1948)` fuera ⇒ **`(1603,733; 1262,133)`**
-  (antes `(1946,667; 1948)`); zoom 1, centro **exactamente** en `min+mitad` y sobre el eje del rombo
+  zoom 1, centro (-2000,-50) ⇒ proyección convexa sobre caja∩rombo ⇒ **`(-1573,6; 802,8)`** (r4; antes
+  `(-1406,4; 719,2)` con «caja y luego rombo»); zoom 3, centro (2080,2048) ⇒ **`(1670,4; 1228,8)`** (r4; antes
+  `(1603,733; 1262,133)`); zoom 1, centro **exactamente** en `min+mitad` y sobre el eje del rombo
   (-1616,1024) ⇒ identidad, y (-1616,001; 1024) ⇒ `(-1616,1024)` con tolerancia 1e-3; mapa 3x2 (`izq=-32,
   der=128, arr=0, aba=80`) con vista 800x600 ⇒ `base=(48,40)` (centro del paralelogramo); cambio de
   mapa: destino viejo (1500,1000) sobre mapa 3x2 ⇒ `(48,40)`.

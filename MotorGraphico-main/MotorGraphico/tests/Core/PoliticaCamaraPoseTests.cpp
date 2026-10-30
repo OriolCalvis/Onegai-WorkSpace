@@ -42,7 +42,7 @@ MOTOR_TEST_CASE(casos_numericos_del_contrato_sin_sacudida) {
     struct Caso { float cx, cy, z, ex, ey; };
     const Caso casos[] = {
         {-2000.0f, 1000.0f, 1.7f, -1780.706f, 1000.0f}, {0.0f, 0.0f, 1.0f, 0.0f, 300.0f},
-        {-2000.0f, -50.0f, 1.0f, -1406.4f, 719.2f},     {2080.0f, 2048.0f, 3.0f, 1603.733f, 1262.133f},
+        {-2000.0f, -50.0f, 1.0f, -1573.6f, 802.8f},     {2080.0f, 2048.0f, 3.0f, 1670.4f, 1228.8f},
         {-1616.0f, 1024.0f, 1.0f, -1616.0f, 1024.0f},   {-1616.001f, 1024.0f, 1.0f, -1616.0f, 1024.0f},
     };
     for (const Caso& c : casos) {
@@ -176,6 +176,11 @@ MOTOR_TEST_CASE(recorte_continuo_en_rangos_colapsados) {
     barrido(1, 30, {0.0f, 248.0f}, 1.0f, true);
     barrido(1, 30, {0.0f, 248.0f}, 1.0f, false);
     barrido(30, 1, {528.0f, 248.0f}, 1.0f, true);   // el otro borde del segmento
+    // Rango casi colapsado (r2): zooms justo por encima del colapso en Y de 30x1.
+    barrido(30, 1, {464.0f, 248.0f}, 1.2097f, true);
+    barrido(30, 1, {464.0f, 248.0f}, 1.21f, true);
+    barrido(30, 1, {464.0f, 248.0f}, 1.2097f, false);
+    barrido(30, 1, {464.0f, 248.0f}, 1.21f, false);
     barrido(64, 64, {-1616.0f, 1024.0f}, 1.0f, true);
     barrido(64, 64, {-1616.0f, 1024.0f}, 1.7f, false);
     barrido(64, 64, {-1406.4f, 719.2f}, 1.0f, true);  // esquina caja-rombo
@@ -190,7 +195,7 @@ MOTOR_TEST_CASE(recorte_continuo_en_rangos_colapsados) {
 MOTOR_TEST_CASE(posicion_fuera_de_la_caja_con_sacudida) {
     const LimitesMapa m = limites(64, 64);
     const PoseCamara p = pose({-5000.0f, 300.0f}, 1.0f, {8.0f, 0.0f}, &m);
-    MOTOR_CHECK(cerca(p.vista.x, -1398.4f) && cerca(p.vista.y, 719.2f));
+    MOTOR_CHECK(cerca(p.vista.x, -1608.0f) && cerca(p.vista.y, 824.0f));
 }
 
 }  // namespace

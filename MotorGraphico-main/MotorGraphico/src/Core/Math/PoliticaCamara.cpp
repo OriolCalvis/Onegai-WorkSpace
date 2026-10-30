@@ -86,6 +86,10 @@ double distanciaDentro(const P2& a, const P2& b, const P2& q) {
 
 P2 masCercanoEnSegmento(const P2& a, const P2& b, const P2& q) {
     const double ex = b.x - a.x, ey = b.y - a.y;
+    // Aristas alineadas con los ejes (cortes de la caja): resultado exacto, sin ruido de redondeo.
+    if (ex == 0.0 && ey == 0.0) return a;
+    if (ex == 0.0) return {a.x, std::fmin(std::fmax(a.y, b.y), std::fmax(std::fmin(a.y, b.y), q.y))};
+    if (ey == 0.0) return {std::fmin(std::fmax(a.x, b.x), std::fmax(std::fmin(a.x, b.x), q.x)), a.y};
     double t = ((q.x - a.x) * ex + (q.y - a.y) * ey) / (ex * ex + ey * ey);
     t = std::fmin(1.0, std::fmax(0.0, t));
     return {a.x + t * ex, a.y + t * ey};
@@ -123,29 +127,12 @@ bool rangoFinito(const LimitesMapa& l) {
     return true;
 }
 
-// Fraccion maxima t en [0,1] de c -> r que no sale del rectangulo [lo, hi] (c dentro).
-double fraccionEnRango(double c, double r, double lo, double hi) {
-    if (r > hi) return (hi - c) / (r - c);
-    if (r < lo) return (lo - c) / (r - c);
-    return 1.0;
-}
-
-// Recorta el rombo (poligono convexo) con el rectangulo [lox,hix] x [loy,hiy] (Sutherland-
-// Hodgman, bordes inclusivos con tolerancia) y devuelve un punto de la interseccion: el
-// centroide del rombo si cae en el rectangulo; si no, el promedio de los vertices recortados.
-// false si la interseccion es vacia. Solo depende de limites/zoom/vista, no del centro: asi la
-// rama elegida no cambia al reaplicar (idempotencia).
-bool anclaEnInterseccion(const RomboMapa& rombo, double lox, double hix, double loy, double hiy,
-                         P2* ancla) {
+// Poligono convexo rombo ∩ [lox,hix] x [loy,hiy] (Sutherland-Hodgman, bordes inclusivos con eps).
+// Vacio => lista vacia. Degenerado (segmento o punto) => vertices repetidos/colineales.
+std::vector<P2> recortarRombo(const RomboMapa& rombo, double lox, double hix, double loy, double hiy) {
     constexpr double eps = 1e-9;
     std::vector<P2> poli = {aP2(rombo.superior), aP2(rombo.derecho), aP2(rombo.inferior),
                             aP2(rombo.izquierdo)};
-    P2 cen{0.0, 0.0};
-    for (const P2& p : poli) { cen.x += p.x * 0.25; cen.y += p.y * 0.25; }
-    if (cen.x >= lox - eps && cen.x <= hix + eps && cen.y >= loy - eps && cen.y <= hiy + eps) {
-        *ancla = cen;
-        return true;
-    }
     // Cuatro semiplanos: eje (0=x,1=y), cota y signo (+1: valor >= cota; -1: valor <= cota).
     const double cotas[4] = {lox, hix, loy, hiy};
     for (int h = 0; h < 4 && !poli.empty(); ++h) {
@@ -153,50 +140,72 @@ bool anclaEnInterseccion(const RomboMapa& rombo, double lox, double hix, double 
         const double signo = (h % 2 == 0) ? 1.0 : -1.0;
         auto dist = [&](const P2& p) { return signo * ((eje == 0 ? p.x : p.y) - cotas[h]) + eps; };
         std::vector<P2> salida;
-        for (size_t i = 0; i < poli.size(); ++i) {
-            const P2& a = poli[i];
-            const P2& b = poli[(i + 1) % poli.size()];
+        for (size_t k = 0; k < poli.size(); ++k) {
+            const P2& a = poli[k];
+            const P2& b = poli[(k + 1) % poli.size()];
             const double da = dist(a), db = dist(b);
             if (da >= 0.0) salida.push_back(a);
             if ((da >= 0.0) != (db >= 0.0)) {
                 const double t = da / (da - db);
-                salida.push_back({a.x + t * (b.x - a.x), a.y + t * (b.y - a.y)});
+                P2 c{a.x + t * (b.x - a.x), a.y + t * (b.y - a.y)};
+                (eje == 0 ? c.x : c.y) = cotas[h];  // exacto sobre la cota recortada
+                salida.push_back(c);
             }
         }
         poli.swap(salida);
     }
-    if (poli.empty()) return false;
-    P2 m{0.0, 0.0};
-    for (const P2& p : poli) { m.x += p.x / poli.size(); m.y += p.y / poli.size(); }
-    *ancla = m;
-    return true;
+    return poli;
 }
 
-// Rango colapsado (segmento o punto): proyecta q (ya sobre el segmento A-B) sobre la INTERSECCION
-// exacta del segmento con el rombo: recorta A + s(B-A), s en [0,1], contra los 4 semiplanos y toma
-// el punto del tramo recortado mas cercano a q. Continuo en q. false si la interseccion es vacia.
-bool proyectarASegmento(const RomboMapa& rombo, const P2& a, const P2& b, const P2& q, P2* fuera) {
-    const P2 v[4] = {aP2(rombo.superior), aP2(rombo.derecho), aP2(rombo.inferior), aP2(rombo.izquierdo)};
-    double s0 = 0.0, s1 = 1.0;
-    for (int i = 0; i < 4; ++i) {
-        const double da = distanciaDentro(v[i], v[(i + 1) % 4], a);
-        const double db = distanciaDentro(v[i], v[(i + 1) % 4], b);
-        const double pend = db - da;
-        if (std::fabs(pend) < 1e-12) {
-            if (da < -kToleranciaRomboPx) return false;
-        } else if (pend > 0.0) {
-            s0 = std::fmax(s0, -da / pend);
-        } else {
-            s1 = std::fmin(s1, -da / pend);
-        }
+// Punto del poligono convexo (posiblemente degenerado) mas cercano a q: q mismo si esta dentro o a
+// <= kToleranciaRomboPx; si no, el mas cercano sobre las aristas. Proyeccion euclidea: 1-Lipschitz.
+P2 proyectarAPoligono(const std::vector<P2>& poli, const P2& q) {
+    const size_t n = poli.size();
+    P2 mejor = poli[0];
+    double mejorD = std::numeric_limits<double>::infinity();
+    double area2 = 0.0;
+    for (size_t k = 0; k < n; ++k) {
+        const P2& a = poli[k];
+        const P2& b = poli[(k + 1) % n];
+        area2 += a.x * b.y - b.x * a.y;
+        const double l2 = (b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y);
+        const P2 p = l2 > 0.0 ? masCercanoEnSegmento(a, b, q) : a;
+        const double d = std::hypot(p.x - q.x, p.y - q.y);
+        if (d < mejorD) { mejorD = d; mejor = p; }
     }
-    if (s0 > s1) return false;
-    const double ex = b.x - a.x, ey = b.y - a.y;
-    const double l2 = ex * ex + ey * ey;
-    double sq = l2 > 0.0 ? ((q.x - a.x) * ex + (q.y - a.y) * ey) / l2 : 0.0;
-    sq = std::fmin(s1, std::fmax(s0, sq));
-    *fuera = {a.x + sq * ex, a.y + sq * ey};
-    return true;
+    if (mejorD <= kToleranciaRomboPx) return q;
+    if (std::fabs(area2) > 1e-6) {
+        bool dentro = true;
+        for (size_t k = 0; k < n; ++k) {
+            const P2& a = poli[k];
+            const P2& b = poli[(k + 1) % n];
+            const double cr = (b.x - a.x) * (q.y - a.y) - (b.y - a.y) * (q.x - a.x);
+            if (area2 > 0.0 ? cr < 0.0 : cr > 0.0) dentro = false;
+        }
+        if (dentro) return q;
+    }
+    return mejor;
+}
+
+// Caja y rombo disjuntos: punto del ROMBO mas cercano al rectangulo (el par mas cercano de dos
+// convexos disjuntos incluye un vertice). No depende del centro: es continuo en la frontera en que
+// la interseccion se vacia (alli el contacto es el unico punto de la interseccion).
+P2 contactoConRombo(const RomboMapa& r, double lox, double hix, double loy, double hiy) {
+    const P2 vr[4] = {aP2(r.superior), aP2(r.derecho), aP2(r.inferior), aP2(r.izquierdo)};
+    const P2 esq[4] = {{lox, loy}, {hix, loy}, {hix, hiy}, {lox, hiy}};
+    P2 mejor = vr[0];
+    double mejorD = std::numeric_limits<double>::infinity();
+    for (const P2& v : vr) {  // vertice del rombo -> rectangulo
+        const double d = std::hypot(v.x - std::fmin(hix, std::fmax(lox, v.x)),
+                                    v.y - std::fmin(hiy, std::fmax(loy, v.y)));
+        if (d < mejorD) { mejorD = d; mejor = v; }
+    }
+    for (const P2& c : esq) {  // esquina del rectangulo -> rombo
+        const P2 b = proyectarARombo(r, c);
+        const double d = std::hypot(b.x - c.x, b.y - c.y);
+        if (d < mejorD) { mejorD = d; mejor = b; }
+    }
+    return mejor;
 }
 
 }  // namespace
@@ -262,28 +271,11 @@ Result<Vector2> limitarAlMapa(const Vector2& centro, float zoom, const TamanoVis
         // Rango de la caja para el centro (colapsado al centro de la caja si el mapa cabe).
         const double lox = xmin <= xmax ? xmin : cx, hix = xmin <= xmax ? xmax : cx;
         const double loy = ymin <= ymax ? ymin : cy, hiy = ymin <= ymax ? ymax : cy;
-        P2 ancla{0.0, 0.0};
-        const bool colapsado = (hix - lox) < 1e-9 || (hiy - loy) < 1e-9;
-        P2 enSegmento{0.0, 0.0};
-        if (colapsado) {
-            // Un eje (o ambos) colapsado: interseccion exacta segmento-rombo, sin ancla.
-            const P2 r = proyectarARombo(limites.rombo, q);
-            if (r.x == q.x && r.y == q.y) {
-                // q ya esta sobre terreno (tolerancia incluida): se conserva.
-            } else if (proyectarASegmento(limites.rombo, P2{lox, loy}, P2{hix, hiy}, q, &enSegmento)) {
-                q = enSegmento;
-            } else {
-                q = proyectarARombo(limites.rombo, P2{centro.x, centro.y});  // gana el rombo
-            }
-        } else if (!anclaEnInterseccion(limites.rombo, lox, hix, loy, hiy, &ancla)) {
-            // Caja y rombo incompatibles: gana el rombo (el centro siempre sobre terreno).
-            q = proyectarARombo(limites.rombo, P2{centro.x, centro.y});
-        } else {
-            P2 r = proyectarARombo(limites.rombo, q);
-            const double t = std::fmin(fraccionEnRango(ancla.x, r.x, lox, hix),
-                                       fraccionEnRango(ancla.y, r.y, loy, hiy));
-            q = t < 1.0 ? P2{ancla.x + t * (r.x - ancla.x), ancla.y + t * (r.y - ancla.y)} : r;
-        }
+        // Resultado = proyeccion euclidea de centro sobre el poligono convexo caja ∩ rombo (continua,
+        // 1-Lipschitz, idempotente; rango colapsado o casi colapsado incluidos). Vacio: contacto.
+        const std::vector<P2> poli = recortarRombo(limites.rombo, lox, hix, loy, hiy);
+        q = poli.empty() ? contactoConRombo(limites.rombo, lox, hix, loy, hiy)
+                         : proyectarAPoligono(poli, P2{centro.x, centro.y});
     }
     // Eje ya valido: se devuelve el float original, sin redondeo.
     const float rx = (q.x == static_cast<double>(centro.x)) ? centro.x : static_cast<float>(q.x);

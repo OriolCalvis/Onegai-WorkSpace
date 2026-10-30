@@ -73,24 +73,19 @@ Result<LimitesMapa> limitesDeMapa(int columnas, int filas, int anchoTile, int al
 
 // Limita el CENTRO de la vista (D-O3 precisada por Oriol para isometrico: «el centro de la
 // pantalla siempre sobre terreno»). Orden:
-//  1. Caja: por eje, mitad = vista/(2*zoom) en mundo; si (max-min) <= 2*mitad el eje se CENTRA
-//     en (min+max)/2; si no, clamp(centro, min+mitad, max-mitad). Garantiza vista dentro de la
-//     caja cuando cabe.
-//  2. Rombo (si usaRombo): el centro se lleva al punto MAS CERCANO (euclideo) del contorno. Si ese
-//     punto saca la vista de la caja (eje estrecho), se vuelve por el segmento desde un ANCLA que
-//     pertenece al rombo y al rango de la caja (centroide de los 4 vertices si cae en el rango; si
-//     no, promedio de los vertices del poligono interseccion caja-rombo recortado con
-//     Sutherland-Hodgman; es interior por convexidad) hasta el limite del rango. Con margen superior el centro de
-//     la CAJA se desplaza y puede quedar fuera del rombo: por eso no se usa como ancla.
-//     Rango colapsado (un eje con mapa menor que la vista, o ambos): el rango de la caja es un
-//     segmento o un punto; NO se vuelve al ancla (eso saltaba al barrer entradas) sino que se
-//     proyecta sobre la INTERSECCION EXACTA segmento-rombo (recorte contra los 4 semiplanos) tomando
-//     el punto mas cercano: continuo (1-Lipschitz salvo la banda de tolerancia 1e-3 del rombo).
-//     Con rango 2D el ancla interior da continuidad y se mantiene.
-//     Si caja y rombo no se cortan (rango-rombo vacio) gana el rombo: el resultado es el punto
-//     del contorno mas cercano al centro dado y la caja no se respeta.
-//  Resultado: SIEMPRE sobre el rombo; en rango de caja siempre que rango-rombo no sea vacio;
-//  idempotente (la rama solo depende de limites/zoom/vista).
+//  Rango de la caja para el centro: por eje, mitad = vista/(2*zoom) en mundo; si (max-min) <=
+//  2*mitad el eje se CENTRA en (min+max)/2 (rango de un punto); si no, [min+mitad, max-mitad].
+//  Con usaRombo el resultado es la PROYECCION EUCLIDEA del centro sobre el poligono convexo
+//  caja-rombo (rombo recortado contra el rectangulo del rango, Sutherland-Hodgman): el propio centro
+//  si ya esta dentro (tolerancia 1e-3 px), si no el punto mas cercano de sus aristas. Es 1-Lipschitz
+//  y valida igual con rango 2D, casi colapsado (poligono degenerado a un segmento fino) o colapsado
+//  (segmento/punto): sin umbrales, sin ancla y sin saltos al barrer la sacudida o el zoom.
+//  Si caja y rombo no se cortan (interseccion vacia) gana el rombo: el resultado es el punto del
+//  rombo mas cercano al RECTANGULO del rango (no al centro dado, para ser continuo en la frontera
+//  en que la interseccion se vacia al cambiar el zoom); en ese caso la caja no se respeta.
+//  Sin usaRombo solo se aplica la caja (clamp por eje).
+//  Resultado: SIEMPRE sobre el rombo; en el rango de la caja siempre que la interseccion no sea
+//  vacia; idempotente (el resultado ya esta dentro con tolerancia).
 //  Un centro que ya cumple ambas cosas (rombo con tolerancia 1e-3 px) se devuelve IDENTICO. En
 //  bordes y esquinas puede verse algo de vacio; nunca una pantalla sin terreno en el centro.
 //  Precision: todo en double; el resultado limitado se redondea a float una vez, asi que el
