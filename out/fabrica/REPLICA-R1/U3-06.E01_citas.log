@@ -1,5 +1,5 @@
-# U3-06.E01 registro de citas (verificadas por contenido; base 08ef8db). Rutas relativas a MotorGraphico-main/MotorGraphico/
-# script: comprueba que la primera linea contiene la aguja A y la ultima la aguja B (extremos de cada rango)
+# U3-06.E01 r1 registro de citas (verificadas por contenido; base 08ef8db). Rutas relativas a MotorGraphico-main/MotorGraphico/
+# primera linea contiene la aguja A y la ultima la aguja B (extremos de cada rango)
 
 OK  src/Render/AnimatedEntity.cpp:37-52
    primera[37]: void AnimatedEntity::play(const std::string& name) {
@@ -341,13 +341,85 @@ OK  tests/Engine/IdleCuerpoBaseTests.cpp:77-97
    primera[77]: MOTOR_TEST_CASE(play_devuelve_el_control_y_ponIdle_vuelve_al_clip) {
    ultima [97]: MOTOR_CHECK(e.currentAnimation() == "idle");
    esperado: 'play_devuelve_el_control' / 'currentAnimation() == "idle"'
+OK  src/Game/ClipActor.cpp:58-67
+   primera[58]: void ClipActor::cambia(const IdClip& idNuevo, const ClipAnimacion& nuevo, PoliticaCambio politica) {
+   ultima [67]: }
+   esperado: 'void ClipActor::cambia' / '}'
+OK  src/Game/ClipActor.cpp:65-65
+   primera[65]: m_ultimoSprite = 0;   // la entidad puede mostrar otro sprite: el proximo avanza lo reentrega
+   ultima [65]: m_ultimoSprite = 0;   // la entidad puede mostrar otro sprite: el proximo avanza lo reentrega
+   esperado: 'm_ultimoSprite = 0' / None
+OK  include/Game/ClipActor.h:72-74
+   primera[72]: // Delegado en cambiaClip. Un cambio aceptado descarta el tiempo pendiente y obliga a reentregar
+   ultima [74]: // el mismo id no reinicia (ni cambia el clip poseido).
+   esperado: 'Delegado en cambiaClip' / 'cambia el clip poseido'
+OK  src/Render/AnimatedEntity.cpp:45-45
+   primera[45]: m_controlExterno = false;
+   ultima [45]: m_controlExterno = false;
+   esperado: 'm_controlExterno = false' / None
+OK  src/Render/AnimatedEntity.cpp:47-50
+   primera[47]: m_currentFrame = 0;
+   ultima [50]: m_spriteID = it->second[0];
+   esperado: 'm_currentFrame = 0' / 'm_spriteID = it->second[0]'
+OK  src/Engine/EntidadClip.cpp:15-18
+   primera[15]: if (m_actor != nullptr && !controlExterno()) {  // play() devolvio el control a la entidad
+   ultima [18]: }
+   esperado: 'm_actor != nullptr && !controlExterno()' / '}'
+OK  src/Engine/EntidadClip.cpp:35-37
+   primera[35]: if (clip == nullptr || clip->fotogramas.empty()) {
+   ultima [37]: play("idle");
+   esperado: 'clip == nullptr' / 'play("idle")'
+OK  src/Engine/EntidadClip.cpp:40-43
+   primera[40]: m_actor = std::make_unique<Game::ClipActor>(clip->id, *clip);
+   ultima [43]: m_actor->avanza(0.0, puertos, *m_destino);
+   esperado: 'm_actor = std::make_unique<Game::ClipActor>' / 'm_actor->avanza(0.0'
+OK  src/Render/HojaPersonaje.cpp:121-130
+   primera[121]: void HojaPersonaje::ponerA(AnimatedEntity& actor, int anchoDibujo, int altoDibujo,
+   ultima [130]: }
+   esperado: 'void HojaPersonaje::ponerA' / '}'
+OK  src/Engine/PantallaNuevaPartida.cpp:125-125
+   primera[125]: m_jugador->ponerA(jugador, Interno::kCharacterDrawW, Interno::kCharacterDrawH, Interno::characterAnchor());
+   ultima [125]: m_jugador->ponerA(jugador, Interno::kCharacterDrawW, Interno::kCharacterDrawH, Interno::characterAnchor());
+   esperado: 'm_jugador->ponerA' / None
+OK  src/Engine/ApplicationBucle.cpp:173-173
+   primera[173]: ApplicationCinematica::combate(*this, deltaTime);  // COMBATE-01: la camara cerca y los golpes a la vista
+   ultima [173]: ApplicationCinematica::combate(*this, deltaTime);  // COMBATE-01: la camara cerca y los golpes a la vista
+   esperado: 'ApplicationCinematica::combate' / None
+OK  src/Engine/ApplicationCinematica.cpp:446-446
+   primera[446]: const bool andaban = !e.rutaHeroe.empty() || !e.rutasEnemigos.empty();
+   ultima [446]: const bool andaban = !e.rutaHeroe.empty() || !e.rutasEnemigos.empty();
+   esperado: 'rutaHeroe.empty()' / 'rutasEnemigos.empty()'
+OK  include/Engine/ApplicationCinematica.h:57-57
+   primera[57]: std::vector<std::pair<Engine::EntityHandle, Game::PasosEnRuta>> rutasEnemigos;
+   ultima [57]: std::vector<std::pair<Engine::EntityHandle, Game::PasosEnRuta>> rutasEnemigos;
+   esperado: 'rutasEnemigos' / None
+OK  include/Engine/Application.h:348-348
+   primera[348]: std::unique_ptr<EstadoCinematicas> m_cine;  // PROLOGO-02: catalogo, la que esta en curso y el velo
+   ultima [348]: std::unique_ptr<EstadoCinematicas> m_cine;  // PROLOGO-02: catalogo, la que esta en curso y el velo
+   esperado: 'm_cine' / None
+OK  tests/Engine/IdleCuerpoBaseTests.cpp:15-18
+   primera[15]: // Lee el sprite que se dibujaria (m_spriteID es protegido).
+   ultima [18]: int sprite() const { return m_spriteID; }
+   esperado: 'Lee el sprite' / 'int sprite() const'
+OK  src/Game/IdleCuerpoBase.cpp:36-36
+   primera[36]: const ClipAnimacion* idleCuerpoBase() {
+   ultima [36]: const ClipAnimacion* idleCuerpoBase() {
+   esperado: 'idleCuerpoBase()' / None
+OK  include/Engine/EntidadClip.h:43-43
+   primera[43]: std::unique_ptr<Game::ClipActor> m_actor;
+   ultima [43]: std::unique_ptr<Game::ClipActor> m_actor;
+   esperado: 'm_actor' / None
+OK  include/Engine/EntidadClip.h:44-44
+   primera[44]: std::unique_ptr<Game::DestinoFuncion> m_destino;
+   ultima [44]: std::unique_ptr<Game::DestinoFuncion> m_destino;
+   esperado: 'm_destino' / None
 OK  cmake/ClipsAnimacion.cmake:82-82
    primera[82]: target_sources(motor_core PRIVATE src/Engine/EntidadClip.cpp)
    ultima [82]: target_sources(motor_core PRIVATE src/Engine/EntidadClip.cpp)
    esperado: 'EntidadClip.cpp' / None
-TOTAL 86 BAD 0
+TOTAL 104 BAD 0
 
-# wc -l (ficheros >500 y cercanos)
+# wc -l
     1282 src/Engine/Application.cpp
      593 src/Game/Cinematica.cpp
      516 src/Engine/ApplicationCinematica.cpp
@@ -356,9 +428,10 @@ TOTAL 86 BAD 0
      473 src/Engine/ApplicationBucle.cpp
      465 src/Engine/ApplicationHud.cpp
       44 src/Engine/EntidadClip.cpp
-    4372 total
+      45 include/Engine/EntidadClip.h
+    4417 total
 
-# ausencia de tipos (grep -rn en include src)
+# ausencia de tipos
 ClipIndex:        0 coincidencias
 ActorSnapshot:        0 coincidencias
 AnimationInputs:        0 coincidencias
