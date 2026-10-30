@@ -1,9 +1,9 @@
 # U4-07 — Emisor de particulas generico (Game/Emisor). GL-free.
 # La fuente entra SIEMPRE en motor_level (las familias de particulas viven alli); solo los tests dependen
-# de BUILD_TESTING. E02: lector de la definicion. E03: emisiones con residuo. E04: crearParticula. E05: buffer, movimiento en forma cerrada, avanzarEmisor y presupuesto.
+# de BUILD_TESTING. E02: lector de la definicion. E03: emisiones con residuo. E04: crearParticula. E05: buffer, movimiento en forma cerrada, avanzarEmisor y presupuesto. E06: proyeccion a Destello.
 target_sources(motor_level PRIVATE src/Game/Emisor/DefinicionEmisor.cpp src/Game/Emisor/EmisionConResiduo.cpp
     src/Game/Emisor/CrearParticula.cpp src/Game/Emisor/BufferParticulas.cpp src/Game/Emisor/MovimientoParticula.cpp
-    src/Game/Emisor/AvanzarEmisor.cpp)
+    src/Game/Emisor/AvanzarEmisor.cpp src/Game/Emisor/ProyeccionParticulas.cpp)
 
 if(BUILD_TESTING)
     add_executable(test_emisor tests/Game/EmisorTests.cpp)
@@ -44,5 +44,15 @@ if(BUILD_TESTING)
     set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_emisor_presupuesto)
     if(TARGET suite_gl_free)
         add_dependencies(suite_gl_free test_emisor_presupuesto)
+    endif()
+
+    add_executable(test_emisor_proyeccion tests/Game/EmisorProyeccionTests.cpp)
+    target_include_directories(test_emisor_proyeccion PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+    target_link_libraries(test_emisor_proyeccion PRIVATE motor_level motor_json)
+    add_test(NAME test_emisor_proyeccion COMMAND test_emisor_proyeccion)
+    set_tests_properties(test_emisor_proyeccion PROPERTIES WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" LABELS "unit;gl-free")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_emisor_proyeccion)
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_emisor_proyeccion)
     endif()
 endif()
