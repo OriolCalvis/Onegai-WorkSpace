@@ -45,6 +45,7 @@
 #include "Render/AuraJugador.h"
 #include "Render/BancoAtlas.h"
 #include "Render/PergaminoGL.h"
+#include "Render/VidaNivel.h"
 #include "Render/Player.h"
 #include "Render/StaticEntity.h"
 
@@ -309,6 +310,7 @@ void Application::refreshHud() {
 
     // --- PERGAMINO-01: la moral se ve en el avatar (aura a los pies y
     // tinte del sprite), no en el HUD (Oriol, 29/09). ---
+    if (m_vida != nullptr) m_vida->ponBlanco(m_whiteTexture.get());  // U4-07.E07: fuera de `if (m_aura)`
     if (m_aura) {
         m_aura->ponMoral(m_session->morality().value());
         m_player->setTint(m_aura->aspecto().tinteSprite);

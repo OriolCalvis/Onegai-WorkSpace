@@ -823,6 +823,7 @@ if (EXISTS ${GLAD_DIR}/src/glad.c AND EXISTS ${STB_DIR}/stb_image.h)
         src/Render/BancoAtlas.cpp
         src/Render/BloquesNivel.cpp  # BLOQUES-01: los bloques del nivel en la cola del renderer
         src/Render/VidaNivel.cpp  # BLOQUES-02 + MASC-01: la capa de vida (palomas y mascotas)
+        src/Render/PolvoDePasos.cpp  # U4-07.E07: el polvo de pasos del jugador (GL)
         src/Render/HojaPersonaje.cpp  # APARIENCIA-01: hoja montada en la GPU + vista previa
         src/Render/DynamicLightMap.cpp
         src/Render/BlobShadow.cpp

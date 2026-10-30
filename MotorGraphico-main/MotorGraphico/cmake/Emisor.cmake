@@ -1,9 +1,10 @@
 # U4-07 — Emisor de particulas generico (Game/Emisor). GL-free.
 # La fuente entra SIEMPRE en motor_level (las familias de particulas viven alli); solo los tests dependen
-# de BUILD_TESTING. E02: lector de la definicion. E03: emisiones con residuo. E04: crearParticula. E05: buffer, movimiento en forma cerrada, avanzarEmisor y presupuesto. E06: proyeccion a Destello.
+# de BUILD_TESTING. E02: lector de la definicion. E03: emisiones con residuo. E04: crearParticula. E05: buffer, movimiento en forma cerrada, avanzarEmisor y presupuesto. E06: proyeccion a Destello. E07: PasosDePolvo (gl-free; la pintura GL es src/Render/PolvoDePasos.cpp).
 target_sources(motor_level PRIVATE src/Game/Emisor/DefinicionEmisor.cpp src/Game/Emisor/EmisionConResiduo.cpp
     src/Game/Emisor/CrearParticula.cpp src/Game/Emisor/BufferParticulas.cpp src/Game/Emisor/MovimientoParticula.cpp
-    src/Game/Emisor/AvanzarEmisor.cpp src/Game/Emisor/ProyeccionParticulas.cpp)
+    src/Game/Emisor/AvanzarEmisor.cpp src/Game/Emisor/ProyeccionParticulas.cpp
+    src/Game/Emisor/PasosDePolvo.cpp)
 
 if(BUILD_TESTING)
     add_executable(test_emisor tests/Game/EmisorTests.cpp)
@@ -54,5 +55,16 @@ if(BUILD_TESTING)
     set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_emisor_proyeccion)
     if(TARGET suite_gl_free)
         add_dependencies(suite_gl_free test_emisor_proyeccion)
+    endif()
+
+    add_executable(test_polvo_pasos tests/Game/PolvoDePasosTests.cpp)
+    target_include_directories(test_polvo_pasos PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+    target_link_libraries(test_polvo_pasos PRIVATE motor_level motor_json)
+    target_compile_definitions(test_polvo_pasos PRIVATE MOTOR_FUENTES_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+    add_test(NAME test_polvo_pasos COMMAND test_polvo_pasos)
+    set_tests_properties(test_polvo_pasos PROPERTIES WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" LABELS "unit;gl-free")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_polvo_pasos)
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_polvo_pasos)
     endif()
 endif()

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <climits>
 #include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <memory>
 
@@ -356,16 +357,28 @@ void VidaNivel::monta(const Entrada& entrada, const RuntimeTileMap& mapa, std::u
         return x >= 0 && y >= 0 && x < ample && y < alt && (*lliures)[static_cast<std::size_t>(y * ample + x)] != 0;
     };
     m_mascotes.monta(entrada.mascotes, transitable, llavor ^ 0x5bd1e995u, banco, renderer, tileW, tileH);
+    // U4-07.E07: el polvo del nivel anterior se olvida (monta) y se re-encola (removeFromQueue es no-op si no estaba).
+    m_polvo.monta(llavor, tileW, tileH, &mapa.alturas());
+    renderer.removeFromQueue(&m_polvo);
+    renderer.addToQueue(&m_polvo);
 }
 
 void VidaNivel::desmonta(IsometricRenderer& renderer) {
     m_bandada.desmonta(renderer);
     m_mascotes.desmonta(renderer);
+    renderer.removeFromQueue(&m_polvo);
+    m_polvo.desmonta();
 }
 
 void VidaNivel::avanza(float dt, const GridCoord& jugador) {
     m_bandada.avanza(dt, jugador);
     m_mascotes.avanza(dt, jugador);
+}
+
+void VidaNivel::avanzaPolvo(float dtPolvo, const GridCoord& celda) {
+    // Animaciones reducidas (D-O3): el patron de ApplicationHud.cpp, tasa al 25 %.
+    static const bool reducido = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;
+    m_polvo.avanza(dtPolvo, celda, reducido);
 }
 
 }  // namespace Render
