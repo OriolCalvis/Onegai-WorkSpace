@@ -264,6 +264,10 @@ Result<Vector2> desplazamientoSacudida(const EstadoSacudida& s, double transcurr
         transcurrido < 0.0 || transcurrido >= static_cast<double>(s.duracion)) {
         return Result<Vector2>::Ok(Vector2{0.0f, 0.0f});
     }
+    // El indice de fotograma debe caber en uint64 (conversion fuera de rango = UB).
+    if (!(transcurrido * kFotogramasPorSegundo < 9223372036854775808.0)) {
+        return Result<Vector2>::Error("PoliticaCamara::desplazamientoSacudida: transcurrido fuera de rango");
+    }
     const double restante = 1.0 - transcurrido / static_cast<double>(s.duracion);
     const double amp = static_cast<double>(s.amplitudPx) * static_cast<double>(factorMovimiento) *
                        restante * restante;
@@ -273,6 +277,33 @@ Result<Vector2> desplazamientoSacudida(const EstadoSacudida& s, double transcurr
     const double uy = aUnitario(h >> 32);
     return Result<Vector2>::Ok(Vector2{static_cast<float>(amp * ux),
                                        static_cast<float>(amp * kFactorEjeY * uy)});
+}
+
+Result<PoseCamara> componerPose(const Vector2& posicionLogica, float zoom,
+                                const Vector2& sacudidaPantalla, const TamanoVista& vista,
+                                const LimitesMapa* limites, const PoliticaPose& politica) {
+    if (!std::isfinite(zoom) || zoom <= 0.0f || !std::isfinite(posicionLogica.x) ||
+        !std::isfinite(posicionLogica.y) || !std::isfinite(sacudidaPantalla.x) ||
+        !std::isfinite(sacudidaPantalla.y)) {
+        return Result<PoseCamara>::Error("PoliticaCamara::componerPose: zoom, posicion o sacudida invalidos");
+    }
+    Vector2 base = posicionLogica;
+    if (limites != nullptr) {
+        const auto b = limitarAlMapa(posicionLogica, zoom, vista, *limites);
+        if (!b.isOk()) return Result<PoseCamara>::Error(b.errorMessage());
+        base = b.value();
+    }
+    // Unica division por zoom: pixeles de pantalla -> pixeles de mundo. Un cero exacto no desplaza.
+    const double z = static_cast<double>(zoom);
+    Vector2 v = base;
+    if (sacudidaPantalla.x != 0.0f) v.x = static_cast<float>(static_cast<double>(base.x) + sacudidaPantalla.x / z);
+    if (sacudidaPantalla.y != 0.0f) v.y = static_cast<float>(static_cast<double>(base.y) + sacudidaPantalla.y / z);
+    if (limites != nullptr && politica.sacudidaDentroDeLimites) {
+        const auto r = limitarAlMapa(v, zoom, vista, *limites);
+        if (!r.isOk()) return Result<PoseCamara>::Error(r.errorMessage());
+        v = r.value();
+    }
+    return Result<PoseCamara>::Ok(PoseCamara{base, v, zoom});
 }
 
 }  // namespace PoliticaCamara

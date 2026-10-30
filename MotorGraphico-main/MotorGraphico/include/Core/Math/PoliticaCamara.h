@@ -112,8 +112,36 @@ struct EstadoSacudida {
 //  - factorMovimiento en [0,1] escala linealmente (D-O4: 0 = apagada => (0,0) exacto).
 //  - Devuelve (0,0) exacto si transcurrido < 0 o >= duracion, o amplitud <= 0, o duracion <= 0,
 //    o factorMovimiento == 0.
-//  - Error: amplitud, duracion o transcurrido no finitos; factorMovimiento no finito o fuera de [0,1].
+//  - Error: amplitud, duracion o transcurrido no finitos; transcurrido*60 >= 2^63 (indice de fotograma
+//    no representable); factorMovimiento no finito o fuera de [0,1].
 Result<Vector2> desplazamientoSacudida(const EstadoSacudida& s, double transcurrido,
                                        std::uint32_t semilla, float factorMovimiento = 1.0f);
+
+// Pose compuesta por fotograma (E05). base = posicion logica recortada a los limites (sin sacudida);
+// vista = lo que se lee para proyectar mundo->pantalla (base + sacudida/zoom, recortada otra vez).
+struct PoseCamara {
+    Vector2 base;
+    Vector2 vista;
+    float zoom = 1.0f;
+};
+
+// Regla D-T6: true = la vista final (con sacudida) se recorta a los limites (nunca vacio por
+// sacudida; en un borde el temblor es unilateral); false = sacudida libre.
+struct PoliticaPose {
+    bool sacudidaDentroDeLimites = true;
+};
+
+// Compone la pose de un fotograma. posicionLogica y zoom son los ACTUALES de Camera (zoom
+// interpolado, D-T12). sacudidaPantalla llega en pixeles de PANTALLA (salida de E04); aqui es el
+// UNICO sitio donde se divide por zoom para pasar a mundo (D-T5). La posicion logica no se modifica.
+//  1. base = limitarAlMapa(posicionLogica, zoom, vista, *limites)  (sin limites: base = posicionLogica).
+//  2. vista = base + sacudidaPantalla/zoom (double, float una sola vez).
+//  3. Con limites y sacudidaDentroDeLimites: vista = limitarAlMapa(vista, ...) sobre la pose FINAL.
+//  Con sacudida (0,0) vista == base bit a bit. limites == nullptr (titulo, D-O6): base + sacudida.
+//  - Error: zoom no finito o <= 0; posicionLogica o sacudidaPantalla no finitas; con limites,
+//    los errores de limitarAlMapa (vista <= 0, limites no finitos...).
+Result<PoseCamara> componerPose(const Vector2& posicionLogica, float zoom,
+                                const Vector2& sacudidaPantalla, const TamanoVista& vista,
+                                const LimitesMapa* limites, const PoliticaPose& politica = {});
 
 }  // namespace PoliticaCamara
