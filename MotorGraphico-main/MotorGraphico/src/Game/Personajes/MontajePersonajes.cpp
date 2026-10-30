@@ -90,9 +90,8 @@ Capas MontajePersonajes::capas(const Apariencia& a,
     const std::string ojos = a.ojos.empty() ? r->ojos : a.ojos;
     const bool otraTalla = !a.talla.empty() && a.talla != r->talla;
     const bool otraPiel = !a.piel.empty() && a.piel != r->piel && a.piel != r->id;
-    // Otra talla, u otra piel del atlas de cuerpos lisos (lo de siempre): el cuerpo sale de ese atlas,
-    // que trae los ojos azules. EDITOR-PERSONALIZACION-01: otra piel de «pieles» (la de otra raza o un
-    // material), en cualquier raza: las capas de la raza con el cuerpo tenido color a color.
+    // Otra talla u otra piel del atlas de cuerpos lisos: el cuerpo sale de ese atlas (ojos azules). Otra piel de
+    // «pieles» (de otra raza o un material), en cualquier raza: las capas de la raza con el cuerpo tenido.
     const bool porAtlas = otraTalla || (otraPiel && r->cuerpoLiso && m.cuerpos.buscar(a.piel) != nullptr);
     const auto pieles = m.pieles.find(talla);
     const bool porTinte = !porAtlas && otraPiel && pieles != m.pieles.end() &&
@@ -137,12 +136,14 @@ Capas MontajePersonajes::capas(const Apariencia& a,
         ojosDelCuerpo = r->ojos;
     }
     if (ojos != ojosDelCuerpo) {
+        // CAR-2: capa de ojos de la raza (o de la talla, con cuerpo liso); sin capa (hocico, pico, grande liso): ninguna
         const FilaDeCapa* fila = m.ojos.buscar(ojos);
-        const std::string ruta = atlasDe(m.ojos, talla);
-        if (fila == nullptr || ruta.empty())
-            return Capas::Error("no hay ojos '" + ojos + "' en talla " + talla);
-        out.insert(out.begin() + static_cast<std::ptrdiff_t>(std::min<std::size_t>(1, out.size())),
-                   CapaDeMontaje{"ojos", ruta, fila->fila});
+        if (fila == nullptr)
+            return Capas::Error("no hay ojos '" + ojos + "'");
+        const std::string ruta = atlasDe(m.ojos, porAtlas ? talla : r->id);
+        if (!ruta.empty())
+            out.insert(out.begin() + static_cast<std::ptrdiff_t>(std::min<std::size_t>(1, out.size())),
+                       CapaDeMontaje{"ojos", ruta, fila->fila});
     }
     // EDITOR-PERSONALIZACION-01: las marcas de la piel, entre el cuerpo y la ropa (orden «marcas»)
     for (const std::string& marca : a.marcas) {

@@ -114,8 +114,10 @@ class Montaje:
                 out.append(d)
             ojos_cuerpo = r["ojos"]
         if ojos != ojos_cuerpo:
+            # CAR-2: la capa de ojos de la raza (su cabeza va aparte); con cuerpo liso, la de la talla; sin capa, nada
             f = s.buscar(s.grupo["ojos"], ojos)
-            out.insert(min(1,len(out)), dict(ranura="ojos", atlas=s.grupo["ojos"]["atlas"][talla], fila=f["fila"], cam=[], orden={}))
+            ruta = s.grupo["ojos"]["atlas"].get(talla if por_atlas else r["id"])
+            if ruta: out.insert(min(1,len(out)), dict(ranura="ojos", atlas=ruta, fila=f["fila"], cam=[], orden={}))
         for mk in c.get("marcas") or []:
             if not mk: continue
             p, t = s.sep(mk); f = s.buscar(s.grupo["marcas"], p)

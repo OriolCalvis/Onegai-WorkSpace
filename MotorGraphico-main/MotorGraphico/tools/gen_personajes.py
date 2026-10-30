@@ -262,8 +262,7 @@ def generar_capas(tallas, salida, filas_medio=None):
             "talla": talla_de_raza(r, tallas),
             "tallaRopa": talla_de_raza(r, tallas) if PL else ("medio_sin_piernas" if r.get("cuerpo") else r["talla"]),
             "fila": len(lista) + 1, "capas": [c for c in CAPAS_RAZA if c in por_ranura],
-            # PL-ROPA-01 (Oriol, 26/10, «dejar calvo o con pelazo a cualquier raza»): en PixelLab el pelo se
-            # dibuja desde la silueta de la cabeza, asi que vale para todas: «pelo» sale de «sin»
+            # PL-ROPA-01 (Oriol, 26/10, «dejar calvo o con pelazo»): en PixelLab el pelo vale para todas: sale de «sin»
             "sin": sorted(set([x for x in r.get("sin", []) if not (PL and x == "pelo")] +
                                (["piernas", "pies"] if PL and t.clave == "minotauro" else []) +
                                # CAR-1: pelo, barba y ojos genericos solo donde tienen sentido (cabeza no humana)
@@ -299,11 +298,12 @@ def generar_capas(tallas, salida, filas_medio=None):
             guardar_atlas(filas_t, dir_capas / "cuerpos" / f"{clave}_{tk}.png", COLUMNAS_CAPAS)
             atlas[tk] = f"personajes/cuerpos/{clave}_{tk}.png"
         man[clave] = {"atlas": atlas, "filas": [{"id": i, "fila": n + 1} for n, i in enumerate(lista_ids)]}
+    if PL:  # CAR-2: el atlas de ojos (iris) de cada raza y talla humanoide, y las razas sin ojos
+        from capa_ojos_iris import generar as generar_ojos; generar_ojos(salida, man=man)
 
     # pelo y barba: una hoja por talla
-    # PL-ROPA-01 (Oriol, 26/10, «em falten molts mes cabells i poder personalitzar-ho millor»): en PixelLab los
-    # 21 peinados y las 5 barbas de pixellab_cabeza, y los colores de raza en ocho peinados (no solo corto y
-    # largo). El atlas de pelo no puede pasar de 256 filas (16384 px, lo mas alto que admite una textura).
+    # PL-ROPA-01 (Oriol, 26/10, «em falten molts mes cabells»): en PixelLab los 21 peinados y las 5 barbas de
+    # pixellab_cabeza, y los colores de raza en ocho peinados. El atlas de pelo no pasa de 256 filas (16384 px).
     if PL:
         import pixellab_cabeza
         estilos, barbas_ids = pixellab_cabeza.ESTILOS, pixellab_cabeza.BARBAS

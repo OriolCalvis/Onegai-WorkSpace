@@ -243,8 +243,8 @@ void EditorApariencia::rehacerFilas() {
         m_filas.push_back(Fila::Piel);
     if (raza != nullptr && raza->cuerpoLiso)
         m_filas.push_back(Fila::Talla);
-    // CAR-1: ojos, pelo y barba genericos solo en las razas que los admiten (no en cabezas de toro, ave, cobra...)
-    if (admite("ojos"))
+    // CAR-1: ojos, pelo y barba solo en las razas que los admiten; CAR-2b: ojos tampoco en cuerpo liso sin capa (grande)
+    if (admite("ojos") && (raza == nullptr || !raza->cuerpoLiso || m_manifiesto.ojos.atlas.count(talla) != 0))
         m_filas.push_back(Fila::Ojos);
     if (admite("pelo")) {
         m_filas.push_back(Fila::Peinado);
@@ -460,6 +460,7 @@ void EditorApariencia::poner(Fila fila, const std::string& valor) {
         }
         case Fila::Talla:
             a.talla = valor;
+            if (!valor.empty() && raza && raza->cuerpoLiso && !m_manifiesto.ojos.atlas.count(valor)) a.ojos.clear();  // CAR-2b
             // H-PEL-2: un pentinado compartido que no se dibuja en la talla nueva pasa a «corto»
             for (const FilaDeCapa& f : m_manifiesto.pelo.filas) {
                 if (f.estilo == a.peloEstilo && !f.tallas.empty() && !contiene(f.tallas, valor)) {
@@ -575,7 +576,9 @@ void EditorApariencia::alAzar() {
     } else if (raza->cuerpoLiso) {
         a.piel = uno(ids(m.cuerpos));
     }
-    // CAR-1: «Al azar» no toca los ojos (la capa de ojos aun no es fiable: CAR-2): se quedan los de la raza
+    // CAR-2: «Al azar» cambia los ojos solo en las razas que los admiten; en las demas, los de su cuerpo
+    if (raza->admite("ojos"))
+        a.ojos = uno(ids(m.ojos));
     if (raza->admite("pelo")) {
         std::vector<std::string> hay = peinados();  // H-PEL-1: con los propios de la raza y sus germanas
         hay.erase(hay.begin());
@@ -596,8 +599,7 @@ void EditorApariencia::alAzar() {
             a.barbaColor = contiene(hay, a.peloColor) ? a.peloColor : uno(hay);
         }
     }
-    // EDITOR-PERSONALIZACION-01: marcas (una de cada tres veces, una; una de cada diez, dos), alas, cola y
-    // cuernos (uno de cada diez)
+    // EDITOR-PERSONALIZACION-01: marcas (1 de cada 3 veces una; 1 de cada 10, dos), alas, cola y cuernos (1 de 10)
     a.marcas.clear();
     if (!m.marcas.filas.empty() && m.marcas.atlas.count(raza->talla) != 0) {
         const int cuantas = tirada(100) < 10 ? 2 : tirada(100) < 33 ? 1 : 0;
@@ -609,18 +611,16 @@ void EditorApariencia::alAzar() {
     }
     for (const char* ranura : kRanurasDeRasgos) {
         const auto grupo = m.equipo.find(ranura);
-        if (grupo == m.equipo.end() || contiene(raza->capas, ranura) || grupo->second.atlas.count(raza->talla) == 0 ||
-            tirada(100) >= 10)
-            continue;
-        a.ropa[ranura] = uno(idsDe(grupo->second, ranura));
+        if (grupo != m.equipo.end() && !contiene(raza->capas, ranura) && grupo->second.atlas.count(raza->talla) != 0 &&
+            tirada(100) < 10)
+            a.ropa[ranura] = uno(idsDe(grupo->second, ranura));
     }
     const std::pair<const char*, int> ropa[] = {
         {"cabeza", 35}, {"torso", 100}, {"piernas", 80}, {"pies", 85}, {"capa", 35}};
     for (const auto& [ranura, probabilidad] : ropa) {
         const auto grupo = m.equipo.find(ranura);
-        if (grupo == m.equipo.end() || !raza->admite(ranura) || tirada(100) >= probabilidad)
-            continue;
-        a.ropa[ranura] = uno(idsDe(grupo->second, ranura));
+        if (grupo != m.equipo.end() && raza->admite(ranura) && tirada(100) < probabilidad)
+            a.ropa[ranura] = uno(idsDe(grupo->second, ranura));
     }
     m_apariencia = a;
     rehacerFilas();
