@@ -41,6 +41,8 @@ void ClipActor::cambia(const IdClip& idNuevo, const ClipAnimacion& nuevo, Politi
     if (politica == PoliticaCambio::ReiniciarSiDistinto && mismo) return;
     m_id = idNuevo;
     m_clip = nuevo;
+    m_resto = 0.0;        // el tiempo pendiente era del clip anterior
+    m_ultimoSprite = 0;   // la entidad puede mostrar otro sprite: el proximo avanza lo reentrega
 }
 
 void ClipActor::repinta(PuertosEventoClip& eventos) const {
@@ -50,3 +52,4 @@ void ClipActor::repinta(PuertosEventoClip& eventos) const {
 }
 
 }  // namespace Game
+

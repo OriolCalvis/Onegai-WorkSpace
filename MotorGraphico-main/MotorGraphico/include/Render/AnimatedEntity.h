@@ -40,13 +40,15 @@ public:
 
     // Activa la animacion "name". Si ya es la animacion activa, no hace
     // nada (evita reiniciar el ciclo de frames cada vez que se llama
-    // play() con la misma tecla mantenida, ver Player::handleInput). Si
+    // play() con la misma tecla mantenida, ver Player::handleInput), salvo si un clip
+    // la controla (ponerFotograma): entonces reinicia y devuelve el control. Si
     // "name" no esta registrada, se ignora en silencio -- igual que
     // TextureAtlas::getUV() con un id sin definir (ver su comentario):
     // es una llamada de hot path, no un error irrecuperable.
     void play(const std::string& name);
 
-    // Muestra el primer frame del rumbo actual sin reiniciar su fase.
+    // Muestra el primer frame del rumbo actual sin reiniciar su fase. No hace nada mientras un clip
+    // controla el sprite (ponerFotograma).
     // El consumidor deja de llamar update() mientras descansa.
     void showRestFrame();
 

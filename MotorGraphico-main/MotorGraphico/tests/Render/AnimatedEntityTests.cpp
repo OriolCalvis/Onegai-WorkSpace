@@ -195,4 +195,21 @@ MOTOR_TEST_CASE(animated_entity_poner_fotograma_fija_sprite_y_update_no_lo_pisa)
     MOTOR_CHECK(e.sprite() == 11);
 }
 
+MOTOR_TEST_CASE(animated_entity_show_rest_frame_respeta_el_control_externo) {
+    // Player::update en reposo llama a showRestFrame(); AnimatedEntity es la base, asi que se
+    // prueba aqui sin construir Player (necesita atlas/GL). El offset es de Entity y no se toca.
+    EntidadVisible e(GridCoord{0, 0}, kSinAtlas);
+    e.addAnimation("walk_down", {30, 31, 32});
+    e.play("walk_down");
+    e.ponerFotograma(42);
+    e.showRestFrame();
+    e.update(1.0f);
+    MOTOR_CHECK(e.sprite() == 42);
+    e.play("walk_down");  // devuelve el control
+    e.update(0.15f);
+    MOTOR_CHECK(e.sprite() == 31);
+    e.showRestFrame();
+    MOTOR_CHECK(e.sprite() == 30);
+}
+
 int main() { return motor_test::runAllTests(); }

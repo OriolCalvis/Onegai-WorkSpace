@@ -50,7 +50,8 @@ public:
     // Devuelve el numero de eventos rechazados por tipo desconocido (normalmente 0).
     int avanza(double dt, PuertosEventoClip& eventos, DestinoFotograma& destino);
 
-    // Delegado en cambiaClip. Clip nuevo sin fotogramas: no cambia nada. Con ReiniciarSiDistinto y
+    // Delegado en cambiaClip. Un cambio aceptado descarta el tiempo pendiente y obliga a reentregar
+    // el sprite en el siguiente avanza. Clip nuevo sin fotogramas: no cambia nada. Con ReiniciarSiDistinto y
     // el mismo id no reinicia (ni cambia el clip poseido).
     void cambia(const IdClip& idNuevo, const ClipAnimacion& nuevo, PoliticaCambio politica);
 

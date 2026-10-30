@@ -52,6 +52,7 @@ void AnimatedEntity::play(const std::string& name) {
 }
 
 void AnimatedEntity::showRestFrame() {
+    if (m_controlExterno) return;  // el clip manda hasta que play() devuelva el control
     const auto it = m_animations.find(m_currentAnimation);
     if (it != m_animations.end() && !it->second.empty()) m_spriteID = it->second.front();
 }

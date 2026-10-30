@@ -167,4 +167,44 @@ MOTOR_TEST_CASE(destino_funcion_reenvia_el_sprite) {
     MOTOR_CHECK(ultimo == 5);
 }
 
+namespace {
+// Rafaga de n fotogramas de 1 ms, un evento logico por fotograma; agota el tope de drenado.
+ClipAnimacion rafaga(int n) {
+    ClipAnimacion c;
+    c.bucle = false;
+    for (int i = 0; i < n; ++i) {
+        c.fotogramas.push_back({i + 1, 1});
+        c.eventos.push_back({"ev" + std::to_string(i), i, "logico", "", i});
+    }
+    return c;
+}
+}  // namespace
+
+MOTOR_TEST_CASE(cambiar_tras_agotar_el_tope_descarta_el_resto_con_cada_politica) {
+    const PoliticaCambio pols[3] = {PoliticaCambio::ReiniciarSiempre, PoliticaCambio::ReiniciarSiDistinto,
+                                    PoliticaCambio::ConservarFase};
+    for (const PoliticaCambio pol : pols) {
+        ClipActor a(idDe("a"), rafaga(64 * (ClipActor::kMaxPasosPorAvance + 3)));
+        PuertosFalsos p;
+        DestinoFalso d;
+        a.avanza(10.0, p, d);  // agota el tope: queda resto del clip A
+        PuertosFalsos q;
+        a.cambia(idDe("b"), clipTres(false), pol);
+        a.avanza(0.0, q, d);  // sin tiempo real: el clip B no debe consumir el resto de A
+        MOTOR_CHECK(!a.cursor().terminado);
+        MOTOR_CHECK(q.logicos.size() + q.visuales.size() + q.sonidos.size() <= 1);
+    }
+}
+
+MOTOR_TEST_CASE(cambiar_reentrega_el_sprite_aunque_coincida_con_el_ultimo) {
+    ClipActor a(idDe("a"), clipTres(true));  // sprite 5 en el fotograma 0
+    PuertosFalsos p;
+    DestinoFalso d;
+    a.avanza(0.0, p, d);
+    MOTOR_CHECK(d.recibidos == std::vector<int>({5}));
+    a.cambia(idDe("b"), clipTres(true), PoliticaCambio::ReiniciarSiDistinto);  // tambien empieza en 5
+    a.avanza(0.0, p, d);
+    MOTOR_CHECK(d.recibidos == std::vector<int>({5, 5}));
+}
+
 int main() { return motor_test::runAllTests(); }
