@@ -3,7 +3,7 @@
 #include "Core/Errors/Result.h"
 #include "Core/Math/Interpolacion.h"
 
-// U3-07.E06 — Estado de un tween y avance puro (sin GL, sin heap, sin callbacks).
+// U3-07.E06-E07 — Estado de un tween y avance puro (sin GL, sin heap, sin callbacks).
 // Sala limpia. Compatible con Camera::update (Camera.cpp:34-41): duracion 0 termina en el
 // primer avance, incluso con dt == 0. El llamador reacciona a PasoTween::acabaDeTerminar.
 //
@@ -16,9 +16,12 @@ namespace Interpolacion {
 
 // Tolerancia relativa de final: la suma de trozos puede quedar por debajo de duracion por
 // redondeo (10 x 0.1 = 0.9999999999999999). Se termina si
-// transcurrido + dt >= duracion - 1e-12 * duracion (y transcurrido se fija a duracion).
-// Margen absoluto = 1e-12 * duracion (duracion 1 -> 1e-12 s; duracion 1e12 -> 1 s). La
-// frontera es inclusiva (>=): justo en el umbral termina.
+// transcurrido + dt >= duracion - kToleranciaFinTween * duracion (y transcurrido se fija a
+// duracion). Margen absoluto = kToleranciaFinTween * duracion: 1 ns por segundo de duracion
+// (con duracion 1e12 serian 1000 s; aceptado, el juego no usa duraciones asi). 1e-12 NO sirve:
+// las particiones largas (100000 x 1e-5, 1e6 x 1e-3) acumulan error mayor y nunca terminan.
+// La frontera es inclusiva (>=): justo en el umbral termina.
+constexpr double kToleranciaFinTween = 1e-9;
 struct EstadoTween {
     double duracion = 0;
     double transcurrido = 0;
@@ -40,8 +43,8 @@ struct PasoTween {
 //  - pausado (manda sobre todo) o terminado -> mismo estado, acabaDeTerminar = false.
 //  - duracion == 0 (no pausado, no terminado) -> termina ya, incluso con dt == 0.
 //  - duracion > 0: dt == 0 no avanza (aunque transcurrido ya sea >= duracion: termina en el
-//    siguiente avance con dt > 0); si transcurrido + dt >= duracion*(1-1e-12) termina y
-//    transcurrido se fija a duracion (la sobra de dt se descarta; asi avanzar en n trozos
+//    siguiente avance con dt > 0); si transcurrido + dt >= duracion*(1-kToleranciaFinTween)
+//    termina y transcurrido se fija a duracion (la sobra de dt se descarta; asi avanzar en n trozos
 //    equivale a avanzar de una vez).
 Result<PasoTween> avanzaTween(const EstadoTween& estado, double dt);
 
@@ -60,7 +63,8 @@ enum class PoliticaCancelacion {
 //  - Pausado: SI se puede cancelar; el flag pausado se conserva tal cual (terminado manda).
 //  - En otro caso termina (terminado = true) y acabaDeTerminar = true: es el flanco de final
 //    (una sola vez), de modo que el llamador reacciona igual que con avanzaTween.
-//  - MantenerActual no toca transcurrido; Terminar lo fija a duracion.
+//  - MantenerActual deja transcurrido acotado a <= duracion (un estado hecho a mano con
+//    transcurrido > duracion se congela en duracion); Terminar lo fija a duracion.
 Result<PasoTween> cancelaTween(const EstadoTween& estado, PoliticaCancelacion politica);
 
 }  // namespace Interpolacion

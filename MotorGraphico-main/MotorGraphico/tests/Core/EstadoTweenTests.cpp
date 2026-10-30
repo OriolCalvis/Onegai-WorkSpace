@@ -233,58 +233,106 @@ MOTOR_TEST_CASE(dt_enorme_no_rompe) {
     MOTOR_CHECK(r.isOk() && r.value().acabaDeTerminar && r.value().estado.transcurrido == 1.0);
 }
 
-MOTOR_TEST_CASE(tolerancia_relativa_1e12_margen_absoluto) {
-    // duracion 1e12 -> margen absoluto 1: 0.5 antes termina, 10 antes no.
-    const auto cerca = avanzaTween(nuevo(1e12), 1e12 - 0.5);
+// n avances de dt; devuelve emisiones y deja el estado final en e.
+int avanzaPasos(EstadoTween& e, double dt, int n) {
+    int emisiones = 0;
+    for (int i = 0; i < n; ++i) {
+        const auto r = avanzaTween(e, dt);
+        MOTOR_CHECK(r.isOk());
+        if (r.value().acabaDeTerminar) ++emisiones;
+        e = r.value().estado;
+    }
+    return emisiones;
+}
+
+void compruebaParticion(double duracion, double dt, int n) {
+    EstadoTween e = nuevo(duracion);
+    MOTOR_CHECK(avanzaPasos(e, dt, n) == 1);
+    MOTOR_CHECK(e.terminado && e.transcurrido == duracion);
+}
+
+MOTOR_TEST_CASE(particion_larga_100000_pasos_de_1e_5) {
+    compruebaParticion(1.0, 1.0 / 100000, 100000);
+}
+
+MOTOR_TEST_CASE(particion_larga_1e6_pasos_de_1e_3) {
+    compruebaParticion(1000.0, 1e-3, 1000000);
+}
+
+MOTOR_TEST_CASE(particion_larga_1e6_pasos_a_60hz) {
+    compruebaParticion(1000000 / 60.0, 1 / 60.0, 1000000);
+}
+
+MOTOR_TEST_CASE(tolerancia_relativa_margen_absoluto_proporcional) {
+    // duracion 1e12 -> margen absoluto 1000: 500 antes termina, 2000 antes no.
+    const auto cerca = avanzaTween(nuevo(1e12), 1e12 - 500.0);
     MOTOR_CHECK(cerca.isOk() && cerca.value().acabaDeTerminar);
-    const auto lejos = avanzaTween(nuevo(1e12), 1e12 - 10.0);
-    MOTOR_CHECK(lejos.isOk() && !lejos.value().acabaDeTerminar && !lejos.value().estado.terminado);
+    const auto lejos = avanzaTween(nuevo(1e12), 1e12 - 2000.0);
+    MOTOR_CHECK(lejos.isOk() && !lejos.value().acabaDeTerminar);
+    MOTOR_CHECK(!lejos.value().estado.terminado);
 }
 
 MOTOR_TEST_CASE(frontera_de_tolerancia_es_inclusiva) {
-    const double umbral = 1.0 - 1e-12 * 1.0;  // duracion 1: producto exacto
+    // duracion 1: kToleranciaFinTween * 1.0 es exacto, igual que en el codigo.
+    const double umbral = 1.0 - kToleranciaFinTween * 1.0;
     const auto en = avanzaTween(nuevo(1.0), umbral);  // 0 + umbral == umbral exacto
     MOTOR_CHECK(en.isOk() && en.value().acabaDeTerminar && en.value().estado.terminado);
     const auto debajo = avanzaTween(nuevo(1.0), std::nextafter(umbral, 0.0));
-    MOTOR_CHECK(debajo.isOk() && !debajo.value().acabaDeTerminar && !debajo.value().estado.terminado);
+    MOTOR_CHECK(debajo.isOk() && !debajo.value().acabaDeTerminar);
+    MOTOR_CHECK(!debajo.value().estado.terminado);
 }
 
 MOTOR_TEST_CASE(cancela_mantener_actual_congela_valor) {
     const EstadoTween e = nuevo(2.0, 0.5, TipoCurva::EntradaCuadratica);
     const auto r = cancelaTween(e, PoliticaCancelacion::MantenerActual);
     MOTOR_CHECK(r.isOk() && r.value().acabaDeTerminar && r.value().estado.terminado);
-    MOTOR_CHECK(r.value().estado.transcurrido == 0.5);
-    MOTOR_CHECK(r.value().progreso == 0.25 && r.value().valorCurvado == curva(TipoCurva::EntradaCuadratica, 0.25));
+    MOTOR_CHECK(r.value().estado.transcurrido == 0.5 && r.value().progreso == 0.25);
+    MOTOR_CHECK(r.value().valorCurvado == curva(TipoCurva::EntradaCuadratica, 0.25));
+}
+
+MOTOR_TEST_CASE(cancela_mantener_actual_acota_transcurrido_a_duracion) {
+    const auto r = cancelaTween(nuevo(1.0, 1.5), PoliticaCancelacion::MantenerActual);
+    MOTOR_CHECK(r.isOk() && r.value().acabaDeTerminar && r.value().estado.terminado);
+    MOTOR_CHECK(r.value().estado.transcurrido == 1.0 && r.value().progreso == 1.0);
 }
 
 MOTOR_TEST_CASE(cancela_terminar_salta_al_final) {
-    const auto r = cancelaTween(nuevo(2.0, 0.5, TipoCurva::EntradaCuadratica), PoliticaCancelacion::Terminar);
+    const auto r = cancelaTween(nuevo(2.0, 0.5, TipoCurva::EntradaCuadratica),
+                                PoliticaCancelacion::Terminar);
     MOTOR_CHECK(r.isOk() && r.value().acabaDeTerminar && r.value().estado.terminado);
     MOTOR_CHECK(r.value().estado.transcurrido == 2.0);
     MOTOR_CHECK(r.value().progreso == 1.0 && r.value().valorCurvado == 1.0);
 }
 
 MOTOR_TEST_CASE(cancela_es_idempotente_y_emite_una_vez) {
-    for (PoliticaCancelacion p : {PoliticaCancelacion::MantenerActual, PoliticaCancelacion::Terminar}) {
+    const PoliticaCancelacion ambas[] = {PoliticaCancelacion::MantenerActual,
+                                         PoliticaCancelacion::Terminar};
+    for (PoliticaCancelacion p : ambas) {
+        const PoliticaCancelacion otra = p == PoliticaCancelacion::Terminar
+                                             ? PoliticaCancelacion::MantenerActual
+                                             : PoliticaCancelacion::Terminar;
         const auto a = cancelaTween(nuevo(2.0, 0.5), p);
         MOTOR_CHECK(a.isOk() && a.value().acabaDeTerminar);
-        const auto b = cancelaTween(a.value().estado, p);
-        MOTOR_CHECK(b.isOk() && !b.value().acabaDeTerminar && igualEstado(b.value().estado, a.value().estado));
+        const EstadoTween& ea = a.value().estado;
+        const auto b = cancelaTween(ea, p);
+        MOTOR_CHECK(b.isOk() && !b.value().acabaDeTerminar && igualEstado(b.value().estado, ea));
         // otra politica sobre un cancelado tampoco cambia nada
-        const auto c = cancelaTween(a.value().estado, p == PoliticaCancelacion::Terminar ? PoliticaCancelacion::MantenerActual : PoliticaCancelacion::Terminar);
-        MOTOR_CHECK(c.isOk() && !c.value().acabaDeTerminar && igualEstado(c.value().estado, a.value().estado));
+        const auto c = cancelaTween(ea, otra);
+        MOTOR_CHECK(c.isOk() && !c.value().acabaDeTerminar && igualEstado(c.value().estado, ea));
         // y avanzar un cancelado no emite
-        const auto d = avanzaTween(a.value().estado, 1.0);
-        MOTOR_CHECK(d.isOk() && !d.value().acabaDeTerminar && igualEstado(d.value().estado, a.value().estado));
+        const auto d = avanzaTween(ea, 1.0);
+        MOTOR_CHECK(d.isOk() && !d.value().acabaDeTerminar && igualEstado(d.value().estado, ea));
     }
 }
 
 MOTOR_TEST_CASE(cancela_terminado_por_avance_sin_efecto) {
     const auto fin = avanzaTween(nuevo(1.0), 2.0);
-    for (PoliticaCancelacion p : {PoliticaCancelacion::MantenerActual, PoliticaCancelacion::Terminar}) {
+    const PoliticaCancelacion ambas[] = {PoliticaCancelacion::MantenerActual,
+                                         PoliticaCancelacion::Terminar};
+    for (PoliticaCancelacion p : ambas) {
         const auto r = cancelaTween(fin.value().estado, p);
-        MOTOR_CHECK(r.isOk() && !r.value().acabaDeTerminar && igualEstado(r.value().estado, fin.value().estado));
-        MOTOR_CHECK(r.value().progreso == 1.0);
+        MOTOR_CHECK(r.isOk() && !r.value().acabaDeTerminar);
+        MOTOR_CHECK(igualEstado(r.value().estado, fin.value().estado) && r.value().progreso == 1.0);
     }
 }
 
@@ -302,7 +350,9 @@ MOTOR_TEST_CASE(cancela_duracion_cero) {
 }
 
 MOTOR_TEST_CASE(cancela_estado_invalido_es_error) {
-    for (PoliticaCancelacion p : {PoliticaCancelacion::MantenerActual, PoliticaCancelacion::Terminar}) {
+    const PoliticaCancelacion ambas[] = {PoliticaCancelacion::MantenerActual,
+                                         PoliticaCancelacion::Terminar};
+    for (PoliticaCancelacion p : ambas) {
         MOTOR_CHECK(!cancelaTween(nuevo(kNaN), p).isOk());
         MOTOR_CHECK(!cancelaTween(nuevo(kInf), p).isOk());
         MOTOR_CHECK(!cancelaTween(nuevo(-1.0), p).isOk());
