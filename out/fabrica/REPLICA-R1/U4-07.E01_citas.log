@@ -1,0 +1,477 @@
+# U4-07.E01 registro de citas (generado con sed-equivalente por contenido)
+# base: 628f417c
+OK              src/Game/Personajes/BrilloEquipo.cpp:205-358 [361l]
+    L205: void destellosDeBrillo(const HojaDeBrillo& brillo, int frame, double segundos, std::vector<Destello>& out) {
+    L358: }
+OK              src/Game/Personajes/FamiliasDeParticulas.cpp:14-73 [225l]
+    L14: static const std::map<std::string, TipoDeParticula> kTipos = {
+    L73: };
+OK              include/Game/Personajes/BrilloEquipo.h:91-97 [102l]
+    L91: struct Destello {
+    L97: };
+OK              src/Render/PintaDestellos.cpp:18-64 [110l]
+    L18: MezclaAditiva::MezclaAditiva(SpriteBatch& b) : batch(b) {
+    L64: }
+OK              include/Render/EfectosDeCartas.h:59-59 [67l]
+    L59: std::vector<Activa> m_activas;
+    L59: std::vector<Activa> m_activas;
+OK              src/Render/PintaDestellos.cpp:89-89 [110l]
+    L89: m_activas.push_back(std::move(a));
+    L89: m_activas.push_back(std::move(a));
+OK              src/Render/SpriteBatch.cpp:69-75 [119l]
+    L69: m_vertices.push_back({topLeft, {uv.u0, uv.v0}, tint});
+    L75: m_vertices.push_back({bottomLeft, {uv.u0, uv.v1}, tint});
+OK              src/Render/PintaDestellos.cpp:88-88 [110l]
+    L88: a.inicio = std::chrono::steady_clock::now();
+    L88: a.inicio = std::chrono::steady_clock::now();
+OK              src/Render/PintaDestellos.cpp:94-100 [110l]
+    L94: const auto ahora = std::chrono::steady_clock::now();
+    L100: m_activas.end());
+OK              src/Render/PintaDestellos.cpp:103-103 [110l]
+    L103: const double edad = std::chrono::duration<double>(ahora - a.inicio).count();
+    L103: const double edad = std::chrono::duration<double>(ahora - a.inicio).count();
+OK              include/RPG/RandomEngine.h:46-85 [88l]
+    L46: class Xoroshiro128p : public RandomEngine {
+    L85: };
+OK              src/Engine/ApplicationCinematica.cpp:495-495 [517l]
+    L495: static std::minstd_rand temblor(7);
+    L495: static std::minstd_rand temblor(7);
+OK              src/Engine/ApplicationCinematica.cpp:363-363 [517l]
+    L363: std::random_device azar;
+    L363: std::random_device azar;
+OK              src/Engine/ApplicationPantallas.cpp:433-442 [498l]
+    L433: // AV14-03 — Lo que entra salpica: el roce, polvo; el acierto, chispas; el critico, chispas y
+    L442: }
+OK              include/Game/Personajes/FamiliasDeParticulas.h:30-41 [61l]
+    L30: struct TipoDeParticula {
+    L41: };
+OK              planificacion/CANON_PARTICULAS.md:17-17 [463l]
+    L17: - **40 familias de partículas** (§2): las 13 de los elementos y 27 de los temas de las clases
+    L17: - **40 familias de partículas** (§2): las 13 de los elementos y 27 de los temas de las clases
+OK              src/Game/Personajes/FamiliasDeParticulas.cpp:78-82 [225l]
+    L78: TipoDeParticula tipoDeParticula(const std::string& nombre) {
+    L82: }
+OK              tests/Game/BrilloEquipoTests.cpp:93-93 [717l]
+    L93: MOTOR_CHECK(Game::tipoDeParticula("no_existe").forma == Game::tipoDeParticula("chispas").forma);
+    L93: MOTOR_CHECK(Game::tipoDeParticula("no_existe").forma == Game::tipoDeParticula("chispas").forma);
+OK              include/Game/Personajes/FamiliasDeParticulas.h:17-25 [61l]
+    L17: enum class FormaDeParticula {
+    L25: };
+OK              include/Game/Personajes/FamiliasDeParticulas.h:29-29 [61l]
+    L29: enum class MovimientoDeParticula { Sube, Cae, Deriva, Converge, Orbita, Expande, Chispazo, Salpica };
+    L29: enum class MovimientoDeParticula { Sube, Cae, Deriva, Converge, Orbita, Expande, Chispazo, Salpica };
+OK              include/Game/Personajes/FamiliasDeParticulas.h:54-54 [61l]
+    L54: const std::vector<PixelDeForma>& pixelesDeForma(FormaDeParticula forma);
+    L54: const std::vector<PixelDeForma>& pixelesDeForma(FormaDeParticula forma);
+OK              include/Game/Personajes/FamiliasDeParticulas.h:58-58 [61l]
+    L58: const std::vector<PixelDeForma>& contornoDeForma(FormaDeParticula forma);
+    L58: const std::vector<PixelDeForma>& contornoDeForma(FormaDeParticula forma);
+OK              src/Game/Personajes/FamiliasDeParticulas.cpp:93-93 [225l]
+    L93: const std::vector<PixelDeForma>& pixelesDeForma(FormaDeParticula forma) {
+    L93: const std::vector<PixelDeForma>& pixelesDeForma(FormaDeParticula forma) {
+OK              src/Game/Personajes/FamiliasDeParticulas.cpp:192-222 [225l]
+    L192: const std::vector<PixelDeForma>& contornoDeForma(FormaDeParticula forma) {
+    L222: }
+OK              include/Game/Personajes/MontajePersonajes.h:63-63 [164l]
+    L63: static constexpr int kLado = 64;  // un frame
+    L63: static constexpr int kLado = 64;  // un frame
+OK              tests/Game/BrilloEquipoTests.cpp:466-499 [717l]
+    L466: const std::vector<std::string> familias = Game::familiasDeParticulas();
+    L499: MOTOR_CHECK(Game::contornoDeForma(FormaDeParticula::TrazoNE).empty());
+OK              include/Game/Personajes/BrilloEquipo.h:99-99 [102l]
+    L99: void destellosDeBrillo(const HojaDeBrillo& brillo, int frame, double segundos, std::vector<Destello>& out);
+    L99: void destellosDeBrillo(const HojaDeBrillo& brillo, int frame, double segundos, std::vector<Destello>& out);
+OK              src/Game/Personajes/BrilloEquipo.cpp:252-356 [361l]
+    L252: if (e.particulas > 0.0f) {
+    L356: }
+OK              src/Game/Personajes/BrilloEquipo.cpp:254-254 [361l]
+    L254: const int cuantas = static_cast<int>(e.particulas * tipo.vida * tipo.densidad) + 1;
+    L254: const int cuantas = static_cast<int>(e.particulas * tipo.vida * tipo.densidad) + 1;
+OK              src/Game/Personajes/BrilloEquipo.cpp:300-353 [361l]
+    L300: switch (tipo.movimiento) {
+    L353: }
+OK              tests/Game/BrilloEquipoTests.cpp:210-217 [717l]
+    L210: Game::destellosDeBrillo(v.brillo, 8, t, a);
+    L217: Game::destellosDeBrillo(v.brillo, 8, 0.137 * (i - 1), antes);
+OK              tests/Game/BrilloEquipoTests.cpp:239-239 [717l]
+    L239: Game::destellosDeBrillo(vacio, 8, 1.0, nada);
+    L239: Game::destellosDeBrillo(vacio, 8, 1.0, nada);
+OK              tests/Game/BrilloEquipoTests.cpp:332-332 [717l]
+    L332: Game::destellosDeBrillo(anillo, quieto, 0.2 * i, d);
+    L332: Game::destellosDeBrillo(anillo, quieto, 0.2 * i, d);
+OK              tests/Game/BrilloEquipoTests.cpp:395-395 [717l]
+    L395: Game::destellosDeBrillo(doble, 8, 0.1 * i, d);
+    L395: Game::destellosDeBrillo(doble, 8, 0.1 * i, d);
+OK              tests/Game/BrilloEquipoTests.cpp:549-549 [717l]
+    L549: Game::destellosDeBrillo(b, 8, 0.05 * i, out);
+    L549: Game::destellosDeBrillo(b, 8, 0.05 * i, out);
+OK              tests/Game/BrilloEquipoTests.cpp:639-639 [717l]
+    L639: Game::destellosDeBrillo(b, 8, 0.05 * i, out);
+    L639: Game::destellosDeBrillo(b, 8, 0.05 * i, out);
+OK              src/Game/Personajes/BrilloEquipo.cpp:17-30 [361l]
+    L17: // Azar determinista: el mismo destello en el mismo instante, siempre.
+    L30: double fraccion(double x) { return x - std::floor(x); }
+OK              src/Game/Personajes/BrilloEquipo.cpp:47-59 [361l]
+    L47: static const EscalonDeBrillo kEscalera[11] = {
+    L59: };
+OK              src/Game/Personajes/BrilloEquipo.cpp:62-68 [361l]
+    L62: if (ropa) {
+    L68: }
+OK              src/Game/Personajes/BrilloEquipo.cpp:72-80 [361l]
+    L72: EscalonDeBrillo escalonDeAbalorio(int nivel) {
+    L80: }
+OK              src/Game/Personajes/BrilloEquipo.cpp:78-78 [361l]
+    L78: e.particulas = 0.8f + 0.5f * static_cast<float>(nivel);
+    L78: e.particulas = 0.8f + 0.5f * static_cast<float>(nivel);
+OK              include/Game/Personajes/BrilloEquipo.h:57-69 [102l]
+    L57: struct FuenteDeBrillo {
+    L69: };
+OK              include/Game/Personajes/BrilloEquipo.h:74-78 [102l]
+    L74: struct HojaDeBrillo {
+    L78: };
+OK              include/Game/ParticulasDeCartas.h:54-54 [63l]
+    L54: constexpr double kDuracionDeCarta = 1.4;
+    L54: constexpr double kDuracionDeCarta = 1.4;
+OK              include/Game/ParticulasDeCartas.h:59-60 [63l]
+    L59: void destellosDeCarta(const std::string& familia, const ParticulasDeCartas::Color& color, std::uint32_t semill
+    L60: double edad, std::vector<Destello>& out);
+OK              src/Game/ParticulasDeCartas.cpp:76-103 [106l]
+    L76: void destellosDeCarta(const std::string& familia, const ParticulasDeCartas::Color& color, std::uint32_t semill
+    L103: }
+OK              src/Game/ParticulasDeCartas.cpp:82-95 [106l]
+    L82: HojaDeBrillo hoja;
+    L95: hoja.fuentes.push_back(std::move(f));
+OK              src/Game/ParticulasDeCartas.cpp:97-97 [106l]
+    L97: destellosDeBrillo(hoja, 1, edad + 0.61 * static_cast<double>(semilla % 97u), out);
+    L97: destellosDeBrillo(hoja, 1, edad + 0.61 * static_cast<double>(semilla % 97u), out);
+OK              src/Game/ParticulasDeCartas.cpp:98-102 [106l]
+    L98: // Entran deprisa (0,08 s) y se apagan en los ultimos 0,4 s.
+    L102: out[i].alfa *= entrada * salida;
+OK              tests/Game/BrilloEquipoTests.cpp:667-716 [717l]
+    L667: // PART-02d — Las cartas al jugarse en el combate: cada una echa las suyas (tools/particulas_cartas.py, la reg
+    L716: }
+OK              include/Game/ParticulasDeCartas.h:26-45 [63l]
+    L26: class ParticulasDeCartas {
+    L45: };
+OK              src/Game/ParticulasDeCartas.cpp:25-40 [106l]
+    L25: Result<ParticulasDeCartas> ParticulasDeCartas::cargar(const std::string& ruta) {
+    L40: }
+OK              src/Game/ParticulasDeCartas.cpp:59-74 [106l]
+    L59: const std::map<std::string, std::string>& elementosYSusFamilias() {
+    L74: }
+OK              include/Render/PintaDestellos.h:19-25 [32l]
+    L19: struct MezclaAditiva {
+    L25: };
+OK              include/Render/PintaDestellos.h:28-29 [32l]
+    L28: void pintaDestellos(SpriteBatch& batch, const std::vector<Game::Destello>& destellos, const Vector2& esquina,
+    L29: const Vector2& tam, Texture* blanco);
+OK              src/Render/PintaDestellos.cpp:18-26 [110l]
+    L18: MezclaAditiva::MezclaAditiva(SpriteBatch& b) : batch(b) {
+    L26: }
+OK              src/Render/PintaDestellos.cpp:28-64 [110l]
+    L28: void pintaDestellos(SpriteBatch& batch, const std::vector<Game::Destello>& destellos, const Vector2& esquina,
+    L64: }
+OK              src/Render/PintaDestellos.cpp:44-44 [110l]
+    L44: batch.submit(Vector2{esquina.x + x * px, esquina.y + y * py}, Vector2{px, py}, entera, blanco, c);
+    L44: batch.submit(Vector2{esquina.x + x * px, esquina.y + y * py}, Vector2{px, py}, entera, blanco, c);
+OK              src/Render/PintaDestellos.cpp:58-58 [110l]
+    L58: batch.submit(Vector2{esquina.x + x * px, esquina.y + y * py}, Vector2{px, py}, entera, blanco, c);
+    L58: batch.submit(Vector2{esquina.x + x * px, esquina.y + y * py}, Vector2{px, py}, entera, blanco, c);
+OK              src/Render/PintaDestellos.cpp:32-33 [110l]
+    L32: const float px = tam.x / static_cast<float>(Game::MontajePersonajes::kLado);
+    L33: const float py = tam.y / static_cast<float>(Game::MontajePersonajes::kLado);
+OK              src/Render/PintaDestellos.cpp:42-43 [110l]
+    L42: const float x = std::round(d.x) + static_cast<float>(p.dx);
+    L43: const float y = std::round(d.y) + static_cast<float>(p.dy);
+OK              include/Render/EfectosDeCartas.h:24-64 [67l]
+    L24: class EfectosDeCartas final : public IRenderable {
+    L64: };
+OK              include/Render/EfectosDeCartas.h:51-57 [67l]
+    L51: struct Activa {
+    L57: };
+OK              include/Render/EfectosDeCartas.h:48-48 [67l]
+    L48: int getSortKey() const override { return std::numeric_limits<int>::max() - 1; }
+    L48: int getSortKey() const override { return std::numeric_limits<int>::max() - 1; }
+OK              src/Render/PintaDestellos.cpp:67-107 [110l]
+    L67: EfectosDeCartas::EfectosDeCartas(Game::ParticulasDeCartas mapa) : m_mapa(std::move(mapa)) {}
+    L107: }
+OK              src/Render/PintaDestellos.cpp:79-91 [110l]
+    L79: bool EfectosDeCartas::salpica(const std::string& familia, const Vector2& esquina, const Vector2& tam) {
+    L91: }
+OK              src/Game/AuraMoral.cpp:15-19 [314l]
+    L15: // Numero pseudoaleatorio estable por particula (sin estado).
+    L19: }
+OK              src/Game/AuraMoral.cpp:261-287 [314l]
+    L261: ParticulaAura particulaAura(const AspectoAura& aspecto, int indice, float segundos) {
+    L287: }
+OK              include/Game/AuraMoral.h:88-88 [188l]
+    L88: struct AspectoAura {
+    L88: struct AspectoAura {
+OK              include/Game/AuraMoral.h:109-109 [188l]
+    L109: struct ParticulaAura {
+    L109: struct ParticulaAura {
+OK              include/Game/AuraMoral.h:176-176 [188l]
+    L176: struct ChispaAla {
+    L176: struct ChispaAla {
+OK              src/Render/AuraJugador.cpp:145-156 [321l]
+    L145: void AuraJugador::renderMotas(SpriteBatch& batch, float t) {
+    L156: const Game::ParticulaAura p = Game::particulaAura(m_aspecto, i, t);
+OK              src/Render/AuraJugador.cpp:54-56 [321l]
+    L54: float AuraJugador::segundos() const {
+    L56: }
+OK              src/Render/AuraJugador.cpp:138-142 [321l]
+    L138: // Destellos, barrido y particulas: pixeles del frame, a la escala del sprite (PART-02d: la misma
+    L142: Render::pintaDestellos(batch, m_destellos, esquina, tam, m_blanco);
+OK              include/Game/EfectosDeGolpe.h:28-66 [69l]
+    L28: class EfectosDeGolpe {
+    L66: };
+OK              include/HUD/Pergamino/GolpesEnPantalla.h:23-36 [59l]
+    L23: class GolpesEnPantalla {
+    L36: void avanza(float segundos);
+OK              src/HUD/Pergamino/GolpesEnPantalla.cpp:21-24 [57l]
+    L21: void GolpesEnPantalla::avanza(float segundos) {
+    L24: m_golpes.end());
+OK              src/Render/FogOfWar.cpp:56-57 [199l]
+    L56: // Textura de niebla al tamano del viewport: RGBA8, GL_LINEAR (suaviza los
+    L57: // bordes entre celdas, mas agradable que GL_NEAREST para niebla). Empezada
+OK              include/Render/SpriteBatch.h:82-86 [100l]
+    L82: struct Vertex {
+    L86: };
+OK              include/Render/SpriteBatch.h:92-92 [100l]
+    L92: static constexpr int kRingCount = 3;
+    L92: static constexpr int kRingCount = 3;
+OK              src/Render/SpriteBatch.cpp:53-76 [119l]
+    L53: void SpriteBatch::submit(const Vector2& pos, const Vector2& size, const UVRect& uv, Texture* tex,
+    L76: }
+OK              include/RPG/RandomEngine.h:31-38 [88l]
+    L31: class RandomEngine {
+    L38: };
+OK              include/RPG/RandomEngine.h:48-52 [88l]
+    L48: explicit Xoroshiro128p(uint64_t s = 0x9E3779B97F4A7C15ULL) : m_seed(s != 0 ? s : 0x9E3779B97F4A7C15ULL) {
+    L52: }
+OK              include/RPG/RandomEngine.h:58-62 [88l]
+    L58: int roll_in_range(int a, int b) override {
+    L62: }
+OK              include/RPG/RandomEngine.h:74-80 [88l]
+    L74: uint64_t next_uint64() {
+    L80: }
+OK              include/RPG/RandomEngine.h:82-84 [88l]
+    L82: double next_double() {
+    L84: }
+OK              include/RPG/RandomEngine.h:68-68 [88l]
+    L68: const uint64_t m_seed;
+    L68: const uint64_t m_seed;
+OK              include/Render/IRenderable.h:16-29 [35l]
+    L16: // Sombra blob a los pies del objeto (Fase 11, ver BlobShadow.h).
+    L29: }
+OK              include/Render/IRenderable.h:33-33 [35l]
+    L33: virtual int getSortKey() const = 0;
+    L33: virtual int getSortKey() const = 0;
+OK              src/Engine/ApplicationHud.cpp:175-212 [466l]
+    L175: // PART-02d — Las cartas jugadas se ven sobre quien las recibe: sus particulas brotan de su cuerpo un
+    L212: }
+OK              src/Engine/ApplicationHud.cpp:82-82 [466l]
+    L82: void Application::refreshHud() {
+    L82: void Application::refreshHud() {
+OK              src/Engine/ApplicationHud.cpp:182-182 [466l]
+    L182: if (battle == nullptr) efectos.olvida();
+    L182: if (battle == nullptr) efectos.olvida();
+OK              src/Engine/ApplicationHud.cpp:209-209 [466l]
+    L209: if (dibujo(a, esquina, tam)) efectos.lanza(j.carta, j.etiquetas, esquina, tam);
+    L209: if (dibujo(a, esquina, tam)) efectos.lanza(j.carta, j.etiquetas, esquina, tam);
+OK              src/Engine/ApplicationPantallas.cpp:408-408 [498l]
+    L408: for (const Game::GolpeCombate& g : b.golpes()) {
+    L408: for (const Game::GolpeCombate& g : b.golpes()) {
+OK              src/Engine/ApplicationPantallas.cpp:444-444 [498l]
+    L444: e.efectos.avanza(dt);
+    L444: e.efectos.avanza(dt);
+OK              src/Engine/Application.cpp:508-508 [1283l]
+    L508: for (IRenderable* r : m_pergamino->delMundo()) m_renderer->addToQueue(r);  // + PART-02d: las cartas
+    L508: for (IRenderable* r : m_pergamino->delMundo()) m_renderer->addToQueue(r);  // + PART-02d: las cartas
+OK              src/Engine/ApplicationCierre.cpp:119-119 [163l]
+    L119: for (IRenderable* r : m_pergamino->delMundo()) m_renderer->removeFromQueue(r);
+    L119: for (IRenderable* r : m_pergamino->delMundo()) m_renderer->removeFromQueue(r);
+OK              include/Render/PergaminoGL.h:70-70 [98l]
+    L70: EfectosDeCartas& efectosDeCartas() { return *m_efectos; }
+    L70: EfectosDeCartas& efectosDeCartas() { return *m_efectos; }
+OK              include/Render/PergaminoGL.h:76-76 [98l]
+    L76: std::vector<IRenderable*> delMundo() { return {m_marca.get(), m_efectos.get()}; }
+    L76: std::vector<IRenderable*> delMundo() { return {m_marca.get(), m_efectos.get()}; }
+OK              include/Render/PergaminoGL.h:92-92 [98l]
+    L92: std::unique_ptr<EfectosDeCartas> m_efectos;  // PART-02d
+    L92: std::unique_ptr<EfectosDeCartas> m_efectos;  // PART-02d
+OK              src/Render/PergaminoGL.cpp:171-171 [398l]
+    L171: m_efectos(std::make_unique<EfectosDeCartas>()) {}
+    L171: m_efectos(std::make_unique<EfectosDeCartas>()) {}
+OK              src/Render/PergaminoGL.cpp:177-180 [398l]
+    L177: // PART-02d: que particulas echa cada carta (sin el fichero, solo las que tienen elemento).
+    L180: m_efectos->ponMapa(std::move(mapa.value()));
+OK              src/Render/AuraJugador.cpp:24-24 [321l]
+    L24: using Render::MezclaAditiva;
+    L24: using Render::MezclaAditiva;
+OK              src/Render/AuraJugador.cpp:80-80 [321l]
+    L80: const MezclaAditiva aditiva(batch);
+    L80: const MezclaAditiva aditiva(batch);
+OK              src/Render/AuraJugador.cpp:132-132 [321l]
+    L132: const MezclaAditiva aditiva(batch);
+    L132: const MezclaAditiva aditiva(batch);
+OK              examples/demo_brillo_equipo.cpp:120-120 [407l]
+    L120: const Game::TipoDeParticula tipo = Game::tipoDeParticula(texto.substr(0, dos));
+    L120: const Game::TipoDeParticula tipo = Game::tipoDeParticula(texto.substr(0, dos));
+OK              examples/demo_brillo_equipo.cpp:347-379 [407l]
+    L347: Render::EfectosDeCartas efectos;
+    L379: efectos.lanza("demo_" + cartas[(i + static_cast<std::size_t>(frame / 96)) % cartas.size()],
+OK              tests/Game/BrilloEquipoTests.cpp:90-93 [717l]
+    L90: MOTOR_CHECK(!Game::tipoDeParticula("sombra").suma && !Game::tipoDeParticula("hojas").suma);
+    L93: MOTOR_CHECK(Game::tipoDeParticula("no_existe").forma == Game::tipoDeParticula("chispas").forma);
+OK              tests/Game/BrilloEquipoTests.cpp:466-549 [717l]
+    L466: const std::vector<std::string> familias = Game::familiasDeParticulas();
+    L549: Game::destellosDeBrillo(b, 8, 0.05 * i, out);
+OK              cmake/AparienciaTests.cmake:37-52 [71l]
+    L37: add_executable(test_brillo_equipo tests/Game/BrilloEquipoTests.cpp)
+    L52: endif()
+OK              CMakeLists.txt:363-364 [1640l]
+    L363: src/Game/Personajes/BrilloEquipo.cpp
+    L364: src/Game/Personajes/FamiliasDeParticulas.cpp  # PART-01: las familias de particulas (equipo y cartas)
+OK              CMakeLists.txt:375-375 [1640l]
+    L375: src/Game/ParticulasDeCartas.cpp  # PART-02d: las particulas de las cartas al jugarse (GL-free)
+    L375: src/Game/ParticulasDeCartas.cpp  # PART-02d: las particulas de las cartas al jugarse (GL-free)
+OK              CMakeLists.txt:809-809 [1640l]
+    L809: src/Render/PintaDestellos.cpp  # PART-02d: las particulas sobre un sprite y las cartas jugadas
+    L809: src/Render/PintaDestellos.cpp  # PART-02d: las particulas sobre un sprite y las cartas jugadas
+OK              tools/test_validar_sprites.py:399-399 [1090l]
+    L399: fuente = (HERE.parent / "src/Game/ParticulasDeCartas.cpp").read_text(encoding="utf-8")
+    L399: fuente = (HERE.parent / "src/Game/ParticulasDeCartas.cpp").read_text(encoding="utf-8")
+OK              src/Engine/ApplicationPantallas.cpp:408-444 [498l]
+    L408: for (const Game::GolpeCombate& g : b.golpes()) {
+    L444: e.efectos.avanza(dt);
+OK              include/Render/IRenderable.h:14-14 [35l]
+    L14: virtual void render(SpriteBatch& batch) = 0;
+    L14: virtual void render(SpriteBatch& batch) = 0;
+OK              src/Render/PintaDestellos.cpp:94-103 [110l]
+    L94: const auto ahora = std::chrono::steady_clock::now();
+    L103: const double edad = std::chrono::duration<double>(ahora - a.inicio).count();
+OK              src/Engine/ApplicationHud.cpp:76-76 [466l]
+    L76: static const bool reducido = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;
+    L76: static const bool reducido = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;
+OK              src/Engine/ApplicationBucle.cpp:298-298 [474l]
+    L298: static const bool reducidas = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;  // como el HUD
+    L298: static const bool reducidas = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;  // como el HUD
+OK              src/HUD/Pergamino/MesaCombateHud.cpp:421-421 [440l]
+    L421: static const bool reducidas = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;
+    L421: static const bool reducidas = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;
+OK              src/HUD/Pergamino/DialogoHoja.cpp:219-219 [232l]
+    L219: static const bool reducidas = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;
+    L219: static const bool reducidas = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;
+OK              include/Game/Personajes/FamiliasDeParticulas.h:47-47 [61l]
+    L47: std::vector<std::string> familiasDeParticulas();
+    L47: std::vector<std::string> familiasDeParticulas();
+OK              include/Core/Math/Interpolacion.h:33-33 [57l]
+    L33: double curva(TipoCurva tipo, double t);
+    L33: double curva(TipoCurva tipo, double t);
+OK              include/Core/Math/Interpolacion.h:47-47 [57l]
+    L47: double tweenEscalar(double a, double b, double p);
+    L47: double tweenEscalar(double a, double b, double p);
+OK              include/Core/Math/Interpolacion.h:54-54 [57l]
+    L54: Vector2 tweenVec2(const Vector2& a, const Vector2& b, double p);
+    L54: Vector2 tweenVec2(const Vector2& a, const Vector2& b, double p);
+OK              include/Core/Math/EstadoTween.h:25-25 [71l]
+    L25: struct EstadoTween {
+    L25: struct EstadoTween {
+OK              include/Core/Json/JsonValue.h:40-40 [122l]
+    L40: static Result<JsonValue> parse(const std::string& text);
+    L40: static Result<JsonValue> parse(const std::string& text);
+OK              include/Core/Json/JsonValue.h:58-58 [122l]
+    L58: double asNumber(double defaultValue = 0.0) const;
+    L58: double asNumber(double defaultValue = 0.0) const;
+OK              include/Core/Json/JsonValue.h:65-65 [122l]
+    L65: std::string asString(const std::string& defaultValue = "") const;
+    L65: std::string asString(const std::string& defaultValue = "") const;
+OK              include/Core/Json/JsonValue.h:72-73 [122l]
+    L72: const JsonValue& operator[](const std::string& key) const;
+    L73: bool has(const std::string& key) const;
+OK              include/Core/Json/JsonValue.h:105-105 [122l]
+    L105: const std::map<std::string, JsonValue>& objectValues() const;
+    L105: const std::map<std::string, JsonValue>& objectValues() const;
+OK              include/Game/Personajes/FamiliasDeParticulas.h:13-13 [61l]
+    L13: namespace Game {
+    L13: namespace Game {
+OK              cmake/EfectosDeGolpe.cmake:1-14 [16l]
+    L1: # AV14-02 — Lo que hace cada golpe en el cuerpo y en tu hoja (Game::EfectosDeGolpe). GL-free.
+    L14: endif()
+OK              CMakeLists.txt:388-388 [1640l]
+    L388: )
+    L388: )
+OK              include/Core/Math/EstadoTween.h:24-24 [71l]
+    L24: constexpr double kToleranciaFinTween = 1e-9;
+    L24: constexpr double kToleranciaFinTween = 1e-9;
+OK              src/Game/Personajes/BrilloEquipo.cpp:301-313 [361l]
+    L301: case MovimientoDeParticula::Salpica: {
+    L313: }
+OK              src/Game/Personajes/BrilloEquipo.cpp:269-271 [361l]
+    L269: if ((tipo.forma == FormaDeParticula::Rayo || tipo.movimiento == MovimientoDeParticula::Chispazo) &&
+    L271: continue;
+OK              include/Render/EfectosDeCartas.h:60-60 [67l]
+    L60: std::vector<Game::Destello> m_destellos;  // se reusa cada fotograma
+    L60: std::vector<Game::Destello> m_destellos;  // se reusa cada fotograma
+OK              src/Game/Personajes/BrilloEquipo.cpp:275-277 [361l]
+    L275: const float vivo = 1.0f - static_cast<float>(edad / tipo.vida);
+    L277: const float alfa = std::min(1.0f, vivo * e.opacidad);
+OK              src/Game/Personajes/BrilloEquipo.cpp:337-347 [361l]
+    L337: case MovimientoDeParticula::Expande: {
+    L347: }
+OK              src/Engine/ApplicationPantallas.cpp:440-441 [498l]
+    L440: chispas.salpica(g.grado == Grado::Roce ? "polvo" : g.grado == Grado::Periodico ? "" : "chispas", esquina, tam)
+    L441: if (g.grado == Grado::Critico) chispas.salpica("sangre", esquina, tam);
+OK              src/Render/PintaDestellos.cpp:62-62 [110l]
+    L62: const MezclaAditiva aditiva(batch);
+    L62: const MezclaAditiva aditiva(batch);
+OK              src/Game/ParticulasDeCartas.cpp:86-90 [106l]
+    L86: f.brillo.nivel = 8;
+    L90: f.parte = 3.0f;
+OK              src/Game/Personajes/BrilloEquipo.cpp:58-58 [361l]
+    L58: {4, 1.00f, 0.35f, 5.0f, 18.0f, false},  // +10
+    L58: {4, 1.00f, 0.35f, 5.0f, 18.0f, false},  // +10
+OK              include/Render/EfectosDeCartas.h:40-40 [67l]
+    L40: bool lanza(const std::string& carta, const std::vector<std::string>& etiquetas, const Vector2& esquina,
+    L40: bool lanza(const std::string& carta, const std::vector<std::string>& etiquetas, const Vector2& esquina,
+OK              tests/Game/BrilloEquipoTests.cpp:90-90 [717l]
+    L90: MOTOR_CHECK(!Game::tipoDeParticula("sombra").suma && !Game::tipoDeParticula("hojas").suma);
+    L90: MOTOR_CHECK(!Game::tipoDeParticula("sombra").suma && !Game::tipoDeParticula("hojas").suma);
+OK              include/RPG/RandomEngine.h:26-30 [88l]
+    L26: // ===== Una sola interfaz de azar (C-21) =====
+    L30: // interfaz de azar del motor. El codigo nuevo no anade ninguna otra.
+OK              CMakeLists.txt:364-364 [1640l]
+    L364: src/Game/Personajes/FamiliasDeParticulas.cpp  # PART-01: las familias de particulas (equipo y cartas)
+    L364: src/Game/Personajes/FamiliasDeParticulas.cpp  # PART-01: las familias de particulas (equipo y cartas)
+OK              include/Game/EfectosDeGolpe.h:30-30 [69l]
+    L30: static constexpr float kPausaCritico = 0.07f;  // el mundo, parado
+    L30: static constexpr float kPausaCritico = 0.07f;  // el mundo, parado
+OK              planificacion/CANON_PARTICULAS.md:110-110 [463l]
+    L110: | **polvo** | Tierra | voluta | deriva de lado (tapa) | `#c8aa82` `#a08664` | polvo y arena que levantan los p
+    L110: | **polvo** | Tierra | voluta | deriva de lado (tapa) | `#c8aa82` `#a08664` | polvo y arena que levantan los p
+OK              planificacion/CANON_PARTICULAS.md:460-461 [463l]
+    L460: 4. **El tamaño**: las partículas son de un píxel del sprite, como el dibujo. ¿Quieres las de tema
+    L461: (dragones, notas, naipes, monedas) más grandes?
+OK              include/RPG/RandomEngine.h:48-51 [88l]
+    L48: explicit Xoroshiro128p(uint64_t s = 0x9E3779B97F4A7C15ULL) : m_seed(s != 0 ? s : 0x9E3779B97F4A7C15ULL) {
+    L51: if (s0 == 0 && s1 == 0) s0 = 1ULL;
+OK              include/RPG/RandomEngine.h:75-75 [88l]
+    L75: const uint64_t r = s0 + s1;
+    L75: const uint64_t r = s0 + s1;
+OK              include/RPG/RandomEngine.h:54-56 [88l]
+    L54: int roll_d6() override {
+    L56: }
+OK              include/RPG/RandomEngine.h:66-68 [88l]
+    L66: private:
+    L68: const uint64_t m_seed;
+OK              include/RPG/RandomEngine.h:60-60 [88l]
+    L60: uint64_t range = static_cast<uint64_t>(b - a + 1);
+    L60: uint64_t range = static_cast<uint64_t>(b - a + 1);
+OK              src/Game/Personajes/FamiliasDeParticulas.cpp:14-14 [225l]
+    L14: static const std::map<std::string, TipoDeParticula> kTipos = {
+    L14: static const std::map<std::string, TipoDeParticula> kTipos = {
+OK              src/Game/ParticulasDeCartas.cpp:61-61 [106l]
+    L61: static const std::map<std::string, std::string> kElementos = {
+    L61: static const std::map<std::string, std::string> kElementos = {
+# citas unicas: 158  incidencias: 0
