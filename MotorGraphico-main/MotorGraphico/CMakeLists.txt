@@ -75,6 +75,7 @@ include(cmake/Interpolacion.cmake)  # U3-07: progreso temporal e interpolacion (
 add_executable(demo_camera examples/demo_camera.cpp)
 target_link_libraries(demo_camera PRIVATE motor_math)
 include(cmake/PoliticaCamara.cmake)  # U4-01: politica pura de camara (GL-free)
+include(cmake/ApplicationCamara.cmake)  # U4-01.E06: adaptador de camara en juego (GL-free)
 
 # RUN-01 — El reloj y el contrato del bucle no dependen de GLFW ni de GL.
 # Mantenerlos en su propio target permite probar la salida y el timestep sin
@@ -845,6 +846,7 @@ if (EXISTS ${GLAD_DIR}/src/glad.c AND EXISTS ${STB_DIR}/stb_image.h)
         src/Engine/ApplicationCinematica.cpp  # PROLOGO-02: las cinematicas en el juego
         src/Engine/ApplicationCinematicaEscena.cpp  # C2-04b: la escena viva en el juego
         src/Engine/ApplicationCinematicaTitulo.cpp
+        src/Engine/ApplicationCamara.cpp  # U4-01.E06
         ${GLAD_DIR}/src/glad.c
         ${CMAKE_BINARY_DIR}/stb_image_impl.cpp
     )

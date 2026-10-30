@@ -99,7 +99,7 @@ glm::mat4 Camera::getViewProjectionMatrix() const {
 
     // bottom=halfH, top=-halfH: ver comentario de Y invertida en el .h.
     glm::mat4 projection = glm::ortho(-halfW, halfW, halfH, -halfH, -1.0f, 1.0f);
-    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-m_position.x, -m_position.y, 0.0f));
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-posicionVista().x, -posicionVista().y, 0.0f));
     return projection * view;
 }
 
@@ -108,7 +108,7 @@ Vector2 Camera::screenToWorld(const Vector2& screenPos) const {
         screenPos.x - static_cast<float>(m_viewportWidth) * 0.5f,
         screenPos.y - static_cast<float>(m_viewportHeight) * 0.5f,
     };
-    return m_position + centered * (1.0f / m_zoom);
+    return posicionVista() + centered * (1.0f / m_zoom);
 }
 
 GridCoord Camera::worldToGrid(const Vector2& worldPos, float tileWidth, float tileHeight) const {

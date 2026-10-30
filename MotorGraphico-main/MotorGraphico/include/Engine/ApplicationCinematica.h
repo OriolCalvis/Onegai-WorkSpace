@@ -21,6 +21,7 @@
 #include "Core/Errors/Result.h"
 
 #include "Core/Math/Vector2.h"
+#include "Engine/ApplicationCamara.h"
 #include "Core/Math/Vector4.h"
 #include "Game/Cinematica.h"
 #include "Game/EfectosDeGolpe.h"
@@ -52,7 +53,7 @@ struct EstadoCinematicas {
     const void* combateVisto = nullptr;   // el BattleState que ya tiene camara y semilla
     float zoomAntes = 1.0f;               // el de explorar, para volver
     Vector2 centroCombate;                // entre el heroe y sus rivales
-    float sacudida = 0.0f;                // segundos que le quedan a la camara temblando
+    EstadoCamaraJuego camara;             // U4-01: seguimiento, destino y sacudida de la camara virtual
     std::unique_ptr<RPG::Xoroshiro128p> dados;  // los del combate en curso, con semilla nueva
     // AV13-12 — Andar en el combate: la ruta del heroe (un paso cada 0,16 s, con
     // Player::moveTo) y la de cada enemigo que se ha acercado (su dibujo la anda).
@@ -123,6 +124,8 @@ struct ApplicationCinematica {
     // lo recibe, lo que no entra dice «Fallo» o «Empate», y si te pegan a ti la
     // pantalla tiembla y se enrojece un instante. Al acabar, la cámara vuelve.
     static void combate(Application& app, float dt);
+    // U4-01: tras Camera::update y ApplicationCamara::compone, los numeros de golpe leen la vista ya sacudida.
+    static void vistaGolpes(Application& app);
     // AV13-12 (Oriol, 14/10: «moverse por casillas en combate, como en un tactics»): en tu turno,
     // con el raton sobre el suelo, la ruta hasta esa casilla; con clic, el heroe la anda.
     static void sueloCombate(Application& app, const Engine::Input::InputSnapshot& input);

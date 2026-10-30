@@ -87,8 +87,8 @@ void DynamicLightMap::updateTexture(const Camera& camera) {
     const float halfVpY = static_cast<float>(m_viewportHeight) * 0.5f;
 
     for (const PointLight& light : m_lights) {
-        float screenX = (light.worldPos.x - camera.position().x) * zoom + halfVpX;
-        float screenY = (light.worldPos.y - camera.position().y) * zoom + halfVpY;
+        float screenX = (light.worldPos.x - camera.posicionVista().x) * zoom + halfVpX;
+        float screenY = (light.worldPos.y - camera.posicionVista().y) * zoom + halfVpY;
         float screenRadius = light.radius * zoom;
         if (screenRadius <= 0.0f) {
             continue;

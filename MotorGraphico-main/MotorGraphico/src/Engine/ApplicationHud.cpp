@@ -376,8 +376,8 @@ void Application::refreshHud() {
     estado.timers = m_narrativaLista && m_narrative.adventure() != nullptr ? &m_narrative.adventure()->timers : nullptr;
     estado.mapa = &m_map;  // TileMap es un RuntimeTileMap
     if (m_camera) {
-        estado.camaraX = m_camera->position().x;
-        estado.camaraY = m_camera->position().y;
+        estado.camaraX = m_camera->posicionVista().x;
+        estado.camaraY = m_camera->posicionVista().y;
         estado.zoom = m_camera->zoom();
     }
     estado.animacionesReducidas = movimientoReducido();

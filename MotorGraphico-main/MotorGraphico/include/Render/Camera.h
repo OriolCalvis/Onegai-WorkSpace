@@ -57,6 +57,10 @@ public:
     bool isTransitioning() const { return m_transitionActive; }
 
     const Vector2& position() const { return m_position; }
+    // U4-01: desplazamiento de VISTA (limites + sacudida) separado de la posicion logica. Lo fija
+    // ApplicationCamara tras update(); position() sigue siendo la logica (sin tocar la transicion).
+    void setDesplazamientoVista(const Vector2& desplazamiento) { m_desplazamientoVista = desplazamiento; }
+    Vector2 posicionVista() const { return m_position + m_desplazamientoVista; }
     float zoom() const { return m_zoom; }
     int viewportWidth() const { return m_viewportWidth; }
     int viewportHeight() const { return m_viewportHeight; }
@@ -84,6 +88,7 @@ public:
 private:
     Vector2 m_position;
     Vector2 m_targetPosition;
+    Vector2 m_desplazamientoVista;  // U4-01: se suma a m_position solo al proyectar
     float m_zoom = 1.0f;
     float m_lerpSpeed = 8.0f;
     int m_viewportWidth;

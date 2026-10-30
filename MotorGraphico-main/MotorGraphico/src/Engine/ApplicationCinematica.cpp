@@ -344,7 +344,7 @@ void ApplicationCinematica::combate(Application& app, float dt) {
                                                        static_cast<float>(kTileH));
             app.m_camera->transitionTo(aqui, e.zoomAntes, 0.6f, Camera::Easing::EaseInOutQuad);
             e.combateVisto = nullptr;
-            e.sacudida = 0.0f;
+            ApplicationCamara::reinicia(e.camara, *app.m_camera);  // U4-01: el primer seguimiento vuelve a centrar
             e.efectos.olvida();
             e.basesGolpe.clear();
             e.pvFantasma = -1.0f;
@@ -361,6 +361,7 @@ void ApplicationCinematica::combate(Application& app, float dt) {
         // Un combate nuevo: sus dados (antes todos tiraban con la misma semilla y
         // cada combate empezaba con los mismos dados) y la camara, cerca.
         e.combateVisto = b;
+        ApplicationCamara::reinicia(e.camara, *app.m_camera);  // U4-01: el combate lleva la camara, sin destino viejo
         e.dados = std::make_unique<RPG::Xoroshiro128p>(semillaNueva());
         b->setRandomEngine(*e.dados);
         b->tiraIniciativa();  // AV13-11: 1d6 + DES; si empieza un enemigo, su rotulo (la barra, ya
@@ -387,7 +388,6 @@ void ApplicationCinematica::combate(Application& app, float dt) {
         e.actorVisto = actorDe(app, *b);
         if (golpes) golpes->olvida();
     }
-    if (golpes) golpes->ponVista(app.m_camera->position(), app.m_camera->zoom());
     golpesALaVista(app, *b, dt);  // AV14-01/02: los golpes de la batalla, cada uno una vez
     // AV13-12 — Andar: el heroe, un paso cada 0,16 s; los enemigos, su dibujo por la ruta. Al
     // acabar todos, la camara se recoloca entre los que pelean. En tu turno, lo que alcanzas.
@@ -438,15 +438,10 @@ void ApplicationCinematica::combate(Application& app, float dt) {
             for (const auto& a : b->tablero()->alcanzables(b->allies()[activo].name)) s.alcance.push_back(a.casilla);
         if (!tuTurno) s.ruta.clear();
     }
-    // Te han dado: la camara tiembla un momento y vuelve a su sitio.
-    if (e.sacudida > 0.0f) {
-        e.sacudida -= dt;
-        static std::minstd_rand temblor(7);
-        std::uniform_real_distribution<float> d(-4.0f, 4.0f);
-        if (e.sacudida > 0.0f) app.m_camera->transitionTo(e.centroCombate + Vector2{d(temblor), d(temblor) * 0.6f},
-                                                         app.m_camera->zoom(), 0.0f);
-        else app.m_camera->transitionTo(e.centroCombate, app.m_camera->zoom(), 0.08f);
-    }
+}
+
+void ApplicationCinematica::vistaGolpes(Application& app) {
+    if (app.m_pergamino && app.m_camera) app.m_pergamino->golpes().ponVista(app.m_camera->posicionVista(), app.m_camera->zoom());
 }
 
 bool ApplicationCinematica::pausaDeGolpe(Application& app, float segundos) {

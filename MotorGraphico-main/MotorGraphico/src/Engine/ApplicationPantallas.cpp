@@ -426,9 +426,9 @@ void ApplicationCinematica::golpesALaVista(Application& app, const BattleState& 
             fuerza = 0.45f + std::min(0.55f, static_cast<float>(-g.cambio) / maximo * 2.5f);
             if (e.pvFantasma < 0.0f) e.pvFantasma = static_cast<float>(p->combatant->health() - g.cambio);
             e.esperaFantasma = 0.4f;
-            e.sacudida = std::max(e.sacudida, 0.14f);
+            ApplicationCamara::sacude(e.camara, ApplicationCamara::kSacudidaMundoPx * (app.m_camera ? app.m_camera->zoom() : 1.0f), ApplicationCamara::kSacudidaDanio, static_cast<std::uint32_t>(g.numero));
         }
-        if (g.grado == Grado::Critico) e.sacudida = std::max(e.sacudida, 0.24f);
+        if (g.grado == Grado::Critico) ApplicationCamara::sacude(e.camara, ApplicationCamara::kSacudidaMundoPx * (app.m_camera ? app.m_camera->zoom() : 1.0f), ApplicationCamara::kSacudidaCritico, static_cast<std::uint32_t>(g.numero));
         e.efectos.golpe(g, direccion, fuerza);
         // AV14-03 — Lo que entra salpica: el roce, polvo; el acierto, chispas; el critico, chispas y
         // sangre (el doble). El fallo, nada. (La carta ya echa las de su elemento al jugarse.)

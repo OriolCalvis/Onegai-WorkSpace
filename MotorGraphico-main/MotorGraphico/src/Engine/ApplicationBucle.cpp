@@ -19,6 +19,7 @@
 // relevo que anota el tablero como EST-20b).
 
 #include "Engine/Application.h"
+#include "Engine/ApplicationCamara.h"  // U4-01
 #include "Engine/ApplicationCinematica.h"  // PROLOGO-02
 #include "Render/BloquesNivel.h"
 #include "Render/VidaNivel.h"
@@ -149,30 +150,33 @@ void Application::update(float deltaTime) {
         marker.entity->update(mundo);
     }
 
-    // Camara centrada en el jugador. Se usa transitionTo() (Fase 4) y
-    // NO move(): move() desplaza el destino por un DELTA relativo, asi
-    // que "seguir a una posicion absoluta" con el habria que calcularlo
-    // contra el destino interno de la camara (privado) -- llamarlo con
-    // (target - position()) cada frame sobre-acumula, porque position()
-    // va por detras del destino mientras el lerp converge. transitionTo()
-    // toma la posicion absoluta directamente. Solo se dispara cuando el
-    // jugador CAMBIA de celda (movimiento discreto, ver processInput):
-    // relanzarla cada frame reiniciaria la animacion continuamente y la
-    // camara nunca llegaria.
+    // Camara que sigue al jugador (U4-01.E06: zona muerta +-96x48 px, limites de mapa, sacudida con caida;
+    // la politica vive en ApplicationCamara). Sigue usando transitionTo() y NO move(): move() desplaza el
+    // destino por un DELTA relativo y el destino interno es privado. Solo se dispara cuando el jugador
+    // CAMBIA de celda (movimiento discreto, ver processInput): relanzarla cada frame reiniciaria la
+    // animacion continuamente y la camara nunca llegaria.
     const GridCoord& playerCell = m_session->playerPosition();
+    PoliticaCamara::LimitesMapa limitesMapa;
+    const bool hayMapa = ApplicationCamara::limitesDelMapa(m_map.getWidth(), m_map.getHeight(), kTileW, kTileH, limitesMapa);
+    const PoliticaCamara::LimitesMapa* limites = ApplicationCamara::limitesAplicables(isAtTitle(), hayMapa, limitesMapa);
+    if (m_cine) ApplicationCamara::reiniciaSiCentinela(m_lastCameraCell, m_cine->camara, *m_camera);  // mapa nuevo
     // AV13-12: en combate no; alli la camara la lleva ApplicationCinematica::combate.
-    if ((playerCell.x != m_lastCameraCell.x || playerCell.y != m_lastCameraCell.y) && m_session->mode() != GameMode::Battle) {
+    if (m_cine && (playerCell.x != m_lastCameraCell.x || playerCell.y != m_lastCameraCell.y) && m_session->mode() != GameMode::Battle) {
         Vector2 target = IsoMath::gridToScreen(playerCell, static_cast<float>(kTileW),
                                                static_cast<float>(kTileH));
         target.y += m_map.alturas().desfasePx(playerCell);  // AV19-02: la camara sube con el terreno
-        // AV14-09: lineal y con lo que dura el paso del jugador (0,16 s): camara y
-        // dibujo van a la par. Con EaseOutCubic la camara daba un tiron en cada casilla.
-        m_camera->transitionTo(target, m_camera->zoom(), 0.16f, Camera::Easing::Linear);
+        // AV14-09: lineal y con lo que dura el paso del jugador (0,16 s): camara y dibujo van a la par.
+        ApplicationCamara::sigueJugador(*m_camera, m_cine->camara, target, limites, ApplicationCamara::kZonaMuerta);
         m_lastCameraCell = playerCell;
     }
     ApplicationCinematica::combate(*this, deltaTime);  // COMBATE-01: la camara cerca y los golpes a la vista
     trace("update: camara");
     m_camera->update(deltaTime);
+    if (m_cine) {  // la pausa no avanza la sacudida (update sigue corriendo en GameMode::Pause)
+        ApplicationCamara::compone(*m_camera, m_cine->camara, m_session->mode() == GameMode::Pause ? 0.0f : deltaTime, limites,
+                                   ApplicationCamara::factorMovimiento(ApplicationCamara::movimientoReducidoEnEntorno()));
+        ApplicationCinematica::vistaGolpes(*this);
+    }
     if (m_vida != nullptr && m_session != nullptr) m_vida->avanza(deltaTime, m_session->playerPosition());  // BLOQUES-02, MASC-01
 
     // C-23 — Actualitzacio del post-processat per frame. El cicle es:
