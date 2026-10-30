@@ -3,7 +3,6 @@
 
 #include "TestHarness.h"
 
-#include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <type_traits>
@@ -39,7 +38,10 @@ class AzarGuion : public RPG::RandomEngine {
 public:
     explicit AzarGuion(std::vector<int> v) : valores(std::move(v)) {}
     int roll_d6() override { return 1; }
-    int roll_in_range(int, int) override { return pos < valores.size() ? valores[pos++] : (++pos, 0); }
+    int roll_in_range(int, int) override {
+        const std::size_t i = pos++;
+        return i < valores.size() ? valores[i] : 0;   // agotado el guion: 0
+    }
     std::uint64_t seed() const override { return 0; }
     std::vector<int> valores;
     std::size_t pos = 0;
@@ -114,6 +116,33 @@ MOTOR_TEST_CASE(azar_del_emisor_es_mezcla_mas_cuatro_descartes) {
     for (int i = 0; i < 20; ++i) iguales += uniforme01(cruda) == uniforme01(*azar3) ? 1 : 0;
     MOTOR_CHECK(iguales < 5);
     static_assert(!std::is_copy_assignable_v<RPG::Xoroshiro128p>, "R17: el generador no es asignable");
+}
+
+static_assert(kSorteosDescartados == 4, "el calentamiento del generador del emisor son 4 sorteos (R3)");
+
+MOTOR_TEST_CASE(descarte_de_cuatro_con_valores_dorados_independientes) {
+    // Flujo crudo de Xoroshiro128p(mezclarSemilla(1)), calculado aparte en Python: 130075 682628 154118 434909
+    // | 427400 136782 42549 533108 251624 490427 860056 410217 535634 ... El 5.o es el primero tras el descarte.
+    MOTOR_CHECK(crearAzarEmisor(1)->roll_in_range(0, 999999) == 427400);
+    // Particula dorada de semilla 1 con defBase/tipoBase (sorteos 427400 136782 42549 533108 251624 ...).
+    const auto p = tanda(1, 1, defBase(), tipoBase())[0];
+    MOTOR_CHECK(std::fabs(p.vida - 0.4991800f) < 1e-5f);
+    MOTOR_CHECK(std::fabs(p.vx0 - (-9.022562f)) < 1e-3f && std::fabs(p.vy0 - (-17.371350f)) < 1e-3f);
+    MOTOR_CHECK(p.variante == 2 && p.otraForma == 1 && p.oscura == 1);
+    MOTOR_CHECK(std::fabs(p.ang0 - 3.081444f) < 1e-4f && std::fabs(p.radio0 - 9.440224f) < 1e-4f);
+    MOTOR_CHECK(std::fabs(p.lado - 0.071268f) < 1e-5f);
+    MOTOR_CHECK(p.x == 0.0f && p.y == 0.0f && p.edad == 0.0f && p.k == 0 && p.reservado == 0);
+}
+
+MOTOR_TEST_CASE(sin_contraste_ni_otraforma_los_ceros_no_marcan_nada) {
+    // Borde u == 0: `<` da 0, `<=` daria 1.
+    auto d = defBase();
+    auto t = tipoBase();
+    d.contraste = 0.0f;
+    t.conOtraForma = 0.0f;
+    AzarGuion g(std::vector<int>(9, 0));
+    const Particula p = crearParticula(d, t, g);
+    MOTOR_CHECK(p.oscura == 0 && p.otraForma == 0);
 }
 
 MOTOR_TEST_CASE(orden_de_sorteos_cada_uno_mueve_solo_su_campo) {

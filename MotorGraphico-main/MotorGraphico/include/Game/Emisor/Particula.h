@@ -11,7 +11,6 @@
 
 #include <cstdint>
 #include <memory>
-#include <type_traits>
 
 #include "Game/Emisor/DefinicionEmisor.h"
 #include "Game/Personajes/FamiliasDeParticulas.h"
@@ -35,7 +34,7 @@ struct Particula {
     std::uint16_t reservado = 0;      // rellena la estructura a 44 bytes sin huecos; siempre 0
 };
 // Sin relleno: el hash de bits de E08 (FNV-1a sobre la estructura) y la comparacion bit a bit son fiables.
-static_assert(sizeof(Particula) == 44, "Particula no debe tener relleno (9 float + 4 u16 + 2 u8)");
+static_assert(sizeof(Particula) == 44, "Particula no debe tener relleno (9 float + 3 u16 + 2 u8)");
 
 // splitmix64 (una vuelta, con el incremento 0x9E3779B97F4A7C15): semillas consecutivas dan salidas muy distintas.
 std::uint64_t mezclarSemilla(std::uint64_t semilla);
