@@ -1,0 +1,366 @@
+# U3-06.E01 registro de citas (verificadas por contenido; base 08ef8db). Rutas relativas a MotorGraphico-main/MotorGraphico/
+# script: comprueba que la primera linea contiene la aguja A y la ultima la aguja B (extremos de cada rango)
+
+OK  src/Render/AnimatedEntity.cpp:37-52
+   primera[37]: void AnimatedEntity::play(const std::string& name) {
+   ultima [52]: }
+   esperado: 'void AnimatedEntity::play' / '}'
+OK  src/Render/AnimatedEntity.cpp:54-58
+   primera[54]: void AnimatedEntity::showRestFrame() {
+   ultima [58]: }
+   esperado: 'void AnimatedEntity::showRestFrame' / '}'
+OK  src/Render/AnimatedEntity.cpp:60-63
+   primera[60]: void AnimatedEntity::ponerFotograma(int sprite) {
+   ultima [63]: }
+   esperado: 'void AnimatedEntity::ponerFotograma' / '}'
+OK  src/Render/AnimatedEntity.cpp:12-15
+   primera[12]: void AnimatedEntity::update(float deltaTime) {
+   ultima [15]: }
+   esperado: 'void AnimatedEntity::update' / '}'
+OK  src/Render/AnimatedEntity.cpp:46-46
+   primera[46]: m_currentAnimation = name;
+   ultima [46]: m_currentAnimation = name;
+   esperado: 'm_currentAnimation = name' / None
+OK  src/Render/AnimatedEntity.cpp:37-41
+   primera[37]: void AnimatedEntity::play(const std::string& name) {
+   ultima [41]: }
+   esperado: 'void AnimatedEntity::play' / '}'
+OK  src/Render/AnimatedEntity.cpp:42-44
+   primera[42]: if (name == m_currentAnimation && !m_controlExterno) {
+   ultima [44]: }
+   esperado: 'name == m_currentAnimation && !m_controlExterno' / '}'
+OK  include/Render/AnimatedEntity.h:66-66
+   primera[66]: const std::string& currentAnimation() const { return m_currentAnimation; }
+   ultima [66]: const std::string& currentAnimation() const { return m_currentAnimation; }
+   esperado: 'currentAnimation()' / None
+OK  src/Engine/EntidadClip.cpp:14-18
+   primera[14]: void EntidadClip::update(float deltaTime) {
+   ultima [18]: }
+   esperado: 'void EntidadClip::update' / '}'
+OK  src/Engine/EntidadClip.cpp:32-44
+   primera[32]: void EntidadClip::ponIdle(const Game::ClipAnimacion* clip) {
+   ultima [44]: }
+   esperado: 'void EntidadClip::ponIdle' / '}'
+OK  include/Engine/EntidadClip.h:8-11
+   primera[8]: // Control: mientras el clip manda, AnimatedEntity::controlExterno() es true. Si alguien llama a
+   ultima [11]: // AnimatedEntity::update. Para volver al clip hay que llamar de nuevo a ponIdle()/idleCuerpoBase().
+   esperado: 'Control: mientras' / 'ponIdle()/idleCuerpoBase()'
+OK  include/Engine/EntidadClip.h:3-6
+   primera[3]: // U3-05.E07b -- AnimatedEntity que puede llevar su idle como clip (Game::ClipActor).
+   ultima [6]: // muere con la entidad y no puede haber punteros colgantes al cambiar de nivel. Sin clip se
+   esperado: 'U3-05.E07b' / 'punteros colgantes'
+OK  include/Engine/EntidadClip.h:43-44
+   primera[43]: std::unique_ptr<Game::ClipActor> m_actor;
+   ultima [44]: std::unique_ptr<Game::DestinoFuncion> m_destino;
+   esperado: 'm_actor' / 'm_destino'
+OK  editor/src/level_editor.cpp:655-655
+   primera[655]: "5 " + std::string(toolName(EditorTool::SetPlayerStart)),
+   ultima [655]: "5 " + std::string(toolName(EditorTool::SetPlayerStart)),
+   esperado: 'SetPlayerStart' / None
+OK  src/Render/Player.cpp:45-59
+   primera[45]: void Player::update(float deltaTime) {
+   ultima [59]: }
+   esperado: 'void Player::update' / '}'
+OK  src/Render/Player.cpp:30-30
+   primera[30]: constexpr float kAntesDelQuieto = 0.06f;
+   ultima [30]: constexpr float kAntesDelQuieto = 0.06f;
+   esperado: 'kAntesDelQuieto' / None
+OK  src/Render/Player.cpp:36-36
+   primera[36]: constexpr float kAntesDelReposo = 0.2f;
+   ultima [36]: constexpr float kAntesDelReposo = 0.2f;
+   esperado: 'kAntesDelReposo' / None
+OK  src/Render/Player.cpp:127-152
+   primera[127]: void Player::moveTo(const GridCoord& destination, float duracion) {
+   ultima [152]: }
+   esperado: 'void Player::moveTo' / '}'
+OK  src/Render/Player.cpp:151-151
+   primera[151]: play(dy < 0 ? "walk_up" : dy > 0 ? "walk_down" : dx < 0 ? "walk_left" : "walk_right");
+   ultima [151]: play(dy < 0 ? "walk_up" : dy > 0 ? "walk_down" : dx < 0 ? "walk_left" : "walk_right");
+   esperado: 'play(dy < 0' / None
+OK  src/Render/Player.cpp:75-91
+   primera[75]: void Player::bump(const GridCoord& step) {
+   ultima [91]: }
+   esperado: 'void Player::bump' / '}'
+OK  src/Render/Player.cpp:89-90
+   primera[89]: play(step.y < 0 ? "walk_up" : step.y > 0 ? "walk_down" : step.x < 0 ? "walk_left" : "walk_right");
+   ultima [90]: showRestFrame();
+   esperado: 'play(step.y < 0' / 'showRestFrame'
+OK  src/Render/Player.cpp:116-125
+   primera[116]: void Player::setGridPosition(const GridCoord& destination) {
+   ultima [125]: }
+   esperado: 'void Player::setGridPosition' / '}'
+OK  src/Render/Player.cpp:124-124
+   primera[124]: play("idle");
+   ultima [124]: play("idle");
+   esperado: 'play("idle")' / None
+OK  src/Render/Player.cpp:154-163
+   primera[154]: void Player::handleInput(const InputState& input) {
+   ultima [163]: }
+   esperado: 'void Player::handleInput' / '}'
+OK  src/Engine/Application.cpp:940-940
+   primera[940]: const GridCoord step = m_player->movementCommand(input, glfwGetTime(), canWalk);
+   ultima [940]: const GridCoord step = m_player->movementCommand(input, glfwGetTime(), canWalk);
+   esperado: 'movementCommand' / None
+OK  src/Engine/Application.cpp:1027-1029
+   primera[1027]: if (step.x != 0 || step.y != 0) {
+   ultima [1029]: m_player->moveTo(m_session->playerPosition());
+   esperado: 'if (step.x != 0' / 'm_player->moveTo'
+OK  src/Engine/Application.cpp:1030-1038
+   primera[1030]: } else if (!m_rutaRaton.empty() && glfwGetTime() >= m_rutaRatonSiguiente) {
+   ultima [1038]: m_rutaRatonSiguiente = glfwGetTime() + 0.17;  // el paso del teclado dura 160 ms
+   esperado: 'else if (!m_rutaRaton.empty()' / 'm_rutaRatonSiguiente'
+OK  src/Engine/Application.cpp:383-384
+   primera[383]: HojaPersonaje::animar(*m_player);
+   ultima [384]: m_player->play("idle");  // frame valido desde el primer render()
+   esperado: 'HojaPersonaje::animar(*m_player)' / 'play("idle")'
+OK  src/Game/RutinasPnjCatalogo.cpp:187-205
+   primera[187]: std::string RutinasPnj::animacion(const EstadoPnj& e, bool reducidas) {
+   ultima [205]: }
+   esperado: 'std::string RutinasPnj::animacion' / '}'
+OK  src/Game/RutinasPnjCatalogo.cpp:175-178
+   primera[175]: const char* RutinasPnj::nombreRumbo(int rumbo) {
+   ultima [178]: }
+   esperado: 'const char* RutinasPnj::nombreRumbo' / '}'
+OK  src/Game/RutinasPnjCatalogo.cpp:192-192
+   primera[192]: if (!reducidas) return std::string("idle_") + (std::fmod(e.reloj, 1.2f) < 0.6f ? "left" : "right");
+   ultima [192]: if (!reducidas) return std::string("idle_") + (std::fmod(e.reloj, 1.2f) < 0.6f ? "left" : "right");
+   esperado: 'fmod(e.reloj, 1.2f)' / None
+OK  src/Game/RutinasPnjCatalogo.cpp:198-198
+   primera[198]: return std::string("idle_") + nombreRumbo(e.rumbo + static_cast<int>(e.reloj / 0.8f));
+   ultima [198]: return std::string("idle_") + nombreRumbo(e.rumbo + static_cast<int>(e.reloj / 0.8f));
+   esperado: 'e.reloj / 0.8f' / None
+OK  src/Engine/ApplicationBucle.cpp:297-318
+   primera[297]: if (!ApplicationCinematica::enCurso(*this)) {
+   ultima [318]: actor->play(Game::RutinasPnj::animacion(*pnj, reducidas));
+   esperado: 'if (!ApplicationCinematica::enCurso' / 'actor->play(Game::RutinasPnj::animacion'
+OK  src/Engine/ApplicationBucle.cpp:318-318
+   primera[318]: actor->play(Game::RutinasPnj::animacion(*pnj, reducidas));
+   ultima [318]: actor->play(Game::RutinasPnj::animacion(*pnj, reducidas));
+   esperado: 'actor->play(Game::RutinasPnj::animacion' / None
+OK  src/Engine/ApplicationBucle.cpp:305-317
+   primera[305]: if (!pnj->dibujoListo) {  // las hojas de PNJ no traen el reposo: el quieto de cada rumbo
+   ultima [317]: }
+   esperado: 'if (!pnj->dibujoListo)' / '}'
+OK  src/Engine/ApplicationBucle.cpp:301-322
+   primera[301]: for (WorldMarker& marcador : m_worldMarkers) {
+   ultima [322]: }
+   esperado: 'for (WorldMarker& marcador' / '}'
+OK  src/Engine/ApplicationBucle.cpp:302-304
+   primera[302]: Game::EstadoPnj* pnj = rutinas.de(marcador.handle);
+   ultima [304]: if (actor == nullptr) continue;
+   esperado: 'rutinas.de(marcador.handle)' / 'continue'
+OK  src/Engine/ApplicationBucle.cpp:297-297
+   primera[297]: if (!ApplicationCinematica::enCurso(*this)) {
+   ultima [297]: if (!ApplicationCinematica::enCurso(*this)) {
+   esperado: 'enCurso' / None
+OK  src/Engine/ApplicationBucle.cpp:298-298
+   primera[298]: static const bool reducidas = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;  // como el HUD
+   ultima [298]: static const bool reducidas = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;  // como el HUD
+   esperado: 'MOTOR_MOVIMIENTO_REDUCIDO' / None
+OK  src/Engine/ApplicationBucle.cpp:141-150
+   primera[141]: const float mundo = ApplicationCinematica::pausaDeGolpe(*this, deltaTime) ? 0.0f : deltaTime;
+   ultima [150]: }
+   esperado: 'pausaDeGolpe' / '}'
+OK  src/Engine/ApplicationBucle.cpp:293-293
+   primera[293]: refreshWorldMarkers();
+   ultima [293]: refreshWorldMarkers();
+   esperado: 'refreshWorldMarkers' / None
+OK  src/Engine/ApplicationBucle.cpp:304-304
+   primera[304]: if (actor == nullptr) continue;
+   ultima [304]: if (actor == nullptr) continue;
+   esperado: 'continue' / None
+OK  include/Game/RutinasPnj.h:105-105
+   primera[105]: bool dibujoListo = false;     // lo pone quien dibuja: ya tiene sus idle_* (Application)
+   ultima [105]: bool dibujoListo = false;     // lo pone quien dibuja: ya tiene sus idle_* (Application)
+   esperado: 'dibujoListo' / None
+OK  include/Game/RutinasPnj.h:85-113
+   primera[85]: struct EstadoPnj {
+   ultima [113]: };
+   esperado: 'struct EstadoPnj' / '};'
+OK  include/Game/RutinasPnj.h:94-94
+   primera[94]: int rumbo = 2;                // 0 arriba, 1 derecha, 2 abajo, 3 izquierda (Game::Rumbo)
+   ultima [94]: int rumbo = 2;                // 0 arriba, 1 derecha, 2 abajo, 3 izquierda (Game::Rumbo)
+   esperado: 'int rumbo = 2' / None
+OK  src/Render/HojaPersonaje.cpp:145-164
+   primera[145]: void HojaPersonaje::animar(AnimatedEntity& actor) { animar(actor, repartoDe(actor)); }
+   ultima [164]: actor.addAnimation("idle_left", Game::cicloDeReposo(Rumbo::Izquierda, reparto));
+   esperado: 'void HojaPersonaje::animar(AnimatedEntity& actor)' / 'cicloDeReposo(Rumbo::Izquierda'
+OK  src/Engine/ApplicationCinematica.cpp:128-142
+   primera[128]: void pon(const std::string& actor, const GridCoord& celda, float dx, float dy,
+   ultima [142]: return;
+   esperado: 'void pon(const std::string& actor' / 'return;'
+OK  src/Engine/ApplicationCinematica.cpp:141-141
+   primera[141]: if (!animacion.empty()) app.m_player->play(animacion);
+   ultima [141]: if (!animacion.empty()) app.m_player->play(animacion);
+   esperado: 'app.m_player->play(animacion)' / None
+OK  src/Engine/ApplicationCinematica.cpp:155-172
+   primera[155]: auto* actorAnimado = dynamic_cast<AnimatedEntity*>(m.entity.get());
+   ultima [172]: }
+   esperado: 'auto* actorAnimado' / '}'
+OK  src/Engine/ApplicationCinematica.cpp:159-170
+   primera[159]: if (animacion.rfind("idle", 0) == 0) {
+   ultima [170]: }
+   esperado: 'animacion.rfind("idle", 0) == 0' / '}'
+OK  src/Engine/ApplicationCinematica.cpp:171-171
+   primera[171]: actorAnimado->play(animacion);
+   ultima [171]: actorAnimado->play(animacion);
+   esperado: 'actorAnimado->play(animacion)' / None
+OK  src/Engine/ApplicationCinematica.cpp:176-181
+   primera[176]: if (!app.m_session->tryMovePlayer(dx, dy)) {
+   ultima [181]: return true;
+   esperado: 'tryMovePlayer(dx, dy)' / 'return true'
+OK  src/Engine/ApplicationCinematica.cpp:452-463
+   primera[452]: for (auto it = e.rutasEnemigos.begin(); it != e.rutasEnemigos.end();) {
+   ultima [463]: }
+   esperado: 'for (auto it = e.rutasEnemigos.begin()' / '}'
+OK  src/Engine/ApplicationCinematica.cpp:461-461
+   primera[461]: if (anima != nullptr) anima->play(sigue ? r.andar() : r.antes);
+   ultima [461]: if (anima != nullptr) anima->play(sigue ? r.andar() : r.antes);
+   esperado: 'anima->play(sigue' / None
+OK  src/Engine/ApplicationCinematica.cpp:445-449
+   primera[445]: const float tw = static_cast<float>(kTileW), th = static_cast<float>(kTileH);
+   ultima [449]: app.m_player->moveTo(e.rutaHeroe.front());
+   esperado: 'const float tw' / 'app.m_player->moveTo(e.rutaHeroe.front())'
+OK  src/Engine/ApplicationCinematica.cpp:442-442
+   primera[442]: golpesALaVista(app, *b, dt);  // AV14-01/02: los golpes de la batalla, cada uno una vez
+   ultima [442]: golpesALaVista(app, *b, dt);  // AV14-01/02: los golpes de la batalla, cada uno una vez
+   esperado: 'golpesALaVista' / None
+OK  src/Engine/ApplicationCinematica.cpp:78-80
+   primera[78]: bool ApplicationCinematica::enCurso(const Application& app) {
+   ultima [80]: }
+   esperado: 'bool ApplicationCinematica::enCurso' / '}'
+OK  include/Game/Cinematica.h:160-162
+   primera[160]: // y la animación ("walk_down", "idle_left"; vacía: la que lleve).
+   ultima [162]: const std::string& animacion) = 0;
+   esperado: 'animación' / 'const std::string& animacion) = 0'
+OK  src/Game/Cinematica.cpp:405-405
+   primera[405]: pon(e, p.actor, p.celda, 0.0f, 0.0f, "idle");
+   ultima [405]: pon(e, p.actor, p.celda, 0.0f, 0.0f, "idle");
+   esperado: '"idle"' / None
+OK  src/Game/Cinematica.cpp:409-409
+   primera[409]: if (e.posicion(p.actor, c)) pon(e, p.actor, c, 0.0f, 0.0f, "idle_" + rumboIngles(p.texto));
+   ultima [409]: if (e.posicion(p.actor, c)) pon(e, p.actor, c, 0.0f, 0.0f, "idle_" + rumboIngles(p.texto));
+   esperado: '"idle_" + rumboIngles' / None
+OK  src/Game/Cinematica.cpp:435-435
+   primera[435]: pon(e, p.actor, c, 0.0f, 0.0f, p.tipo == Tipo::Trepa ? "climb" : "climb_down");
+   ultima [435]: pon(e, p.actor, c, 0.0f, 0.0f, p.tipo == Tipo::Trepa ? "climb" : "climb_down");
+   esperado: '"climb"' / None
+OK  src/Game/Cinematica.cpp:474-474
+   primera[474]: pon(e, p.actor, c, 0.0f, 0.0f, k >= 1.0f ? (sube ? "idle_up" : "idle_down") : (sube ? "climb" : "climb_down"));
+   ultima [474]: pon(e, p.actor, c, 0.0f, 0.0f, k >= 1.0f ? (sube ? "idle_up" : "idle_down") : (sube ? "climb" : "climb_down"));
+   esperado: '"climb_down"' / None
+OK  src/Game/Cinematica.cpp:553-556
+   primera[553]: if (q.celdas.empty()) {
+   ultima [556]: pon(e, q.actor, hacia, 0.0f, 0.0f, quieto);
+   esperado: 'if (q.celdas.empty())' / 'pon(e, q.actor, hacia'
+OK  src/Game/Cinematica.cpp:165-167
+   primera[165]: std::string animacionDePaso(int dx, int dy) {
+   ultima [167]: }
+   esperado: 'std::string animacionDePaso' / '}'
+OK  include/Game/PasosEnRuta.h:52-58
+   primera[52]: std::string andar() const {
+   ultima [58]: }
+   esperado: 'std::string andar() const' / '}'
+OK  src/Engine/ApplicationPantallas.cpp:493-493
+   primera[493]: if (const auto* a = dynamic_cast<const AnimatedEntity*>(m.entity.get())) r.antes = a->currentAnimation();
+   ultima [493]: if (const auto* a = dynamic_cast<const AnimatedEntity*>(m.entity.get())) r.antes = a->currentAnimation();
+   esperado: 'r.antes = a->currentAnimation()' / None
+OK  src/Engine/ApplicationNivel.cpp:403-412
+   primera[403]: auto anim = std::make_unique<EntidadClip>(position, m_atlas.get(), kTileW, kTileH,
+   ultima [412]: }
+   esperado: 'auto anim = std::make_unique<EntidadClip>' / '}'
+OK  src/Engine/ApplicationNivel.cpp:490-498
+   primera[490]: auto anim = std::make_unique<EntidadClip>(e.position(), app.m_atlas.get(), kTileW, kTileH, 0.22f);
+   ultima [498]: }
+   esperado: 'auto anim = std::make_unique<EntidadClip>' / '}'
+OK  src/Render/Enemy.cpp:11-26
+   primera[11]: void Enemy::update(float deltaTime) {
+   ultima [26]: }
+   esperado: 'void Enemy::update' / '}'
+OK  src/Render/Enemy.cpp:24-24
+   primera[24]: play(m_brain.direction() > 0 ? "walk_right" : "walk_left");
+   ultima [24]: play(m_brain.direction() > 0 ? "walk_right" : "walk_left");
+   esperado: 'play(m_brain.direction()' / None
+OK  include/Game/EnemyBrain.h:252-256
+   primera[252]: int aiState() const { return m_data.aiState; }
+   ultima [256]: int direction() const { return m_data.direction; }
+   esperado: 'int aiState()' / 'int direction()'
+OK  include/Game/EnemyBrainData.h:18-20
+   primera[18]: static constexpr int kIdle = 0;
+   ultima [20]: static constexpr int kChase = 2;
+   esperado: 'kIdle' / 'kChase'
+OK  include/Game/EnemyBrainData.h:44-44
+   primera[44]: int aiState = kPatrol;
+   ultima [44]: int aiState = kPatrol;
+   esperado: 'aiState' / None
+OK  include/Game/Personajes/MontajePersonajes.h:131-131
+   primera[131]: enum class Rumbo { Arriba = 0, Derecha = 1, Abajo = 2, Izquierda = 3 };
+   ultima [131]: enum class Rumbo { Arriba = 0, Derecha = 1, Abajo = 2, Izquierda = 3 };
+   esperado: 'enum class Rumbo { Arriba = 0' / None
+OK  include/Game/ClipAnimacion.h:27-27
+   primera[27]: int duracionMs = 0;  // > 0
+   ultima [27]: int duracionMs = 0;  // > 0
+   esperado: 'duracionMs' / None
+OK  include/Game/ClipAnimacion.h:23-23
+   primera[23]: using IdClip = ids::StrongId<IdClipTag>;  // [a-z0-9_]+
+   ultima [23]: using IdClip = ids::StrongId<IdClipTag>;  // [a-z0-9_]+
+   esperado: 'using IdClip' / None
+OK  include/Game/ClipAnimacion.h:62-62
+   primera[62]: Result<std::vector<ClipAnimacion>> leerCatalogoClips(const JsonValue& raiz);
+   ultima [62]: Result<std::vector<ClipAnimacion>> leerCatalogoClips(const JsonValue& raiz);
+   esperado: 'leerCatalogoClips' / None
+OK  include/Game/CursorClip.h:32-32
+   primera[32]: bool terminado = false;
+   ultima [32]: bool terminado = false;
+   esperado: 'bool terminado' / None
+OK  include/Game/CursorClip.h:54-54
+   primera[54]: enum class PoliticaCambio { ReiniciarSiempre, ReiniciarSiDistinto, ConservarFase };
+   ultima [54]: enum class PoliticaCambio { ReiniciarSiempre, ReiniciarSiDistinto, ConservarFase };
+   esperado: 'enum class PoliticaCambio' / None
+OK  include/Game/CursorClip.h:28-28
+   primera[28]: struct CursorClip {
+   ultima [28]: struct CursorClip {
+   esperado: 'struct CursorClip' / None
+OK  include/Game/ClipActor.h:63-63
+   primera[63]: class ClipActor {
+   ultima [63]: class ClipActor {
+   esperado: 'class ClipActor' / None
+OK  include/Game/ClipActor.h:72-75
+   primera[72]: // Delegado en cambiaClip. Un cambio aceptado descarta el tiempo pendiente y obliga a reentregar
+   ultima [75]: void cambia(const IdClip& idNuevo, const ClipAnimacion& nuevo, PoliticaCambio politica);
+   esperado: 'Delegado en cambiaClip' / 'void cambia('
+OK  include/Core/Ids/StrongId.h:52-52
+   primera[52]: friend bool operator<(const StrongId& left, const StrongId& right) {
+   ultima [52]: friend bool operator<(const StrongId& left, const StrongId& right) {
+   esperado: 'operator<' / None
+OK  tests/Render/PlayerTests.cpp:388-415
+   primera[388]: player.addAnimation("walk_down", {8, 7, 8, 9});
+   ultima [415]: player.addAnimation("walk_left", {11, 10, 11, 12});
+   esperado: 'addAnimation' / 'addAnimation'
+OK  tests/Engine/IdleCuerpoBaseTests.cpp:77-97
+   primera[77]: MOTOR_TEST_CASE(play_devuelve_el_control_y_ponIdle_vuelve_al_clip) {
+   ultima [97]: MOTOR_CHECK(e.currentAnimation() == "idle");
+   esperado: 'play_devuelve_el_control' / 'currentAnimation() == "idle"'
+OK  cmake/ClipsAnimacion.cmake:82-82
+   primera[82]: target_sources(motor_core PRIVATE src/Engine/EntidadClip.cpp)
+   ultima [82]: target_sources(motor_core PRIVATE src/Engine/EntidadClip.cpp)
+   esperado: 'EntidadClip.cpp' / None
+TOTAL 86 BAD 0
+
+# wc -l (ficheros >500 y cercanos)
+    1282 src/Engine/Application.cpp
+     593 src/Game/Cinematica.cpp
+     516 src/Engine/ApplicationCinematica.cpp
+     502 src/Engine/ApplicationNivel.cpp
+     497 src/Engine/ApplicationPantallas.cpp
+     473 src/Engine/ApplicationBucle.cpp
+     465 src/Engine/ApplicationHud.cpp
+      44 src/Engine/EntidadClip.cpp
+    4372 total
+
+# ausencia de tipos (grep -rn en include src)
+ClipIndex:        0 coincidencias
+ActorSnapshot:        0 coincidencias
+AnimationInputs:        0 coincidencias
+AnimationMachine:        0 coincidencias
+MaquinaAnimacion:        0 coincidencias
