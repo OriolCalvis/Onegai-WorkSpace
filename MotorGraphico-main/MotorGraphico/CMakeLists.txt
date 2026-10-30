@@ -403,6 +403,7 @@ add_library(motor_level
 # demo_editor_state. Ninguna de las dos trae GLAD/GLFW: siguen siendo
 # GL-free.
 target_link_libraries(motor_level PUBLIC motor_json motor_project motor_rpg motor_runtime_map motor_world motor_imagen)
+include(cmake/Emisor.cmake)  # U4-07: emisor de particulas generico (GL-free)
 
 # H0-05 — Selector de guardados (G-08/G-11) como libreria GL-free propia:
 # TitleMenuState y SaveSlotState viven aqui y ya no se compilan sueltos en
