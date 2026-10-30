@@ -1,0 +1,72 @@
+#pragma once
+
+// U3-05.E07a -- Adaptador de un actor al reproductor de clips (gl-free).
+// ClipActor posee el ClipAnimacion y su CursorClip. En cada avanza(dt): avanzaClip, enrutaEvento
+// (UNA vez por ocurrencia, en orden) y entrega el sprite del fotograma actual (1-based, como
+// FotogramaClip::sprite) al DestinoFotograma SOLO cuando cambia respecto al ultimo entregado
+// (el primer avanza siempre entrega). No depende de Render ni de GL: el destino es una interfaz
+// pura. Direccion de dependencias: Render NO conoce Game; quien conecta (E07b) adapta con
+// DestinoFuncion (p. ej. [&](int s) { entidad.ponerFotograma(s); }).
+// Drenado: mientras PasoClip::pendiente se vuelve a llamar con tiempoPendiente, con un tope de
+// kMaxPasosPorAvance llamadas; si el tope se agota, el resto queda en el cursor (pendiente) y se
+// retoma en el siguiente avanza (el tiempo no consumido se guarda y se suma a su dt), sin perder
+// ni duplicar eventos.
+// Eventos con tipo no reconocido (clip armado a mano; el lector ya los rechaza): no se enrutan y
+// avanza() devuelve cuantos fueron rechazados, para que quien llama lo registre.
+
+#include <functional>
+#include <utility>
+
+#include "Game/ClipAnimacion.h"
+#include "Game/CursorClip.h"
+#include "Game/EventosClip.h"
+
+namespace Game {
+
+class DestinoFotograma {
+public:
+    virtual ~DestinoFotograma() = default;
+    virtual void ponerFotograma(int sprite) = 0;
+};
+
+// Adaptador de una funcion a DestinoFotograma (para conectar sin que Render conozca Game).
+class DestinoFuncion : public DestinoFotograma {
+public:
+    explicit DestinoFuncion(std::function<void(int)> f) : m_f(std::move(f)) {}
+    void ponerFotograma(int sprite) override {
+        if (m_f) m_f(sprite);
+    }
+
+private:
+    std::function<void(int)> m_f;
+};
+
+class ClipActor {
+public:
+    static constexpr int kMaxPasosPorAvance = 16;
+
+    ClipActor(IdClip id, ClipAnimacion clip);
+
+    // Devuelve el numero de eventos rechazados por tipo desconocido (normalmente 0).
+    int avanza(double dt, PuertosEventoClip& eventos, DestinoFotograma& destino);
+
+    // Delegado en cambiaClip. Clip nuevo sin fotogramas: no cambia nada. Con ReiniciarSiDistinto y
+    // el mismo id no reinicia (ni cambia el clip poseido).
+    void cambia(const IdClip& idNuevo, const ClipAnimacion& nuevo, PoliticaCambio politica);
+
+    // Repinta (muestraVisual, repetible) los eventos visuales del fotograma actual; nunca aplica
+    // logica ni suena. Para reconstruir el render sin avanzar el clip.
+    void repinta(PuertosEventoClip& eventos) const;
+
+    const CursorClip& cursor() const { return m_cursor; }
+    const IdClip& id() const { return m_id; }
+
+private:
+    IdClip m_id;
+    ClipAnimacion m_clip;
+    CursorClip m_cursor;
+    double m_resto = 0.0;    // segundos no consumidos si se agoto el tope de drenado
+    int m_ultimoSprite = 0;  // 0 = nada entregado aun (los sprites son >= 1)
+};
+
+}  // namespace Game

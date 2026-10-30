@@ -50,6 +50,11 @@ public:
     // El consumidor deja de llamar update() mientras descansa.
     void showRestFrame();
 
+    // U3-05.E07a: fija el sprite mostrado desde fuera (un reproductor de clips, Game::ClipActor,
+    // que no conoce Render). A partir de aqui update() NO toca el sprite ni el reloj interno:
+    // el control es del clip. play() devuelve el control a la animacion propia.
+    void ponerFotograma(int sprite);
+
     // No estan en el diagrama de clases: necesarios para poder verificar
     // el ciclo de animacion (que frame esta activo, cuantos frames tiene
     // la animacion actual) sin tener que inspeccionar pixeles de un
@@ -63,4 +68,5 @@ private:
     float m_frameTime;
     float m_elapsedTime = 0.0f;
     int m_currentFrame = 0;
+    bool m_controlExterno = false;  // true tras ponerFotograma(); play() lo apaga
 };

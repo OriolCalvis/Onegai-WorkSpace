@@ -172,4 +172,27 @@ MOTOR_TEST_CASE(animated_entity_custom_frame_time) {
     MOTOR_CHECK(entity.currentFrame() == 1);
 }
 
+namespace {
+// Expone el sprite que Entity::render() dibujaria (m_spriteID es protected).
+struct EntidadVisible : AnimatedEntity {
+    using AnimatedEntity::AnimatedEntity;
+    int sprite() const { return m_spriteID; }
+};
+}  // namespace
+
+MOTOR_TEST_CASE(animated_entity_poner_fotograma_fija_sprite_y_update_no_lo_pisa) {
+    EntidadVisible e(GridCoord{0, 0}, kSinAtlas);
+    e.addAnimation("idle", {10, 11, 12});
+    e.play("idle");
+    e.ponerFotograma(42);
+    MOTOR_CHECK(e.sprite() == 42);
+    e.update(1.0f);
+    MOTOR_CHECK(e.sprite() == 42);
+    MOTOR_CHECK(e.currentFrame() == 0);
+    e.play("idle");  // devuelve el control a la animacion propia
+    MOTOR_CHECK(e.sprite() == 10);
+    e.update(0.15f);
+    MOTOR_CHECK(e.sprite() == 11);
+}
+
 int main() { return motor_test::runAllTests(); }

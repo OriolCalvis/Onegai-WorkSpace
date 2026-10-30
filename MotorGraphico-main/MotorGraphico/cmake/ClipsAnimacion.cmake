@@ -51,3 +51,24 @@ if(BUILD_TESTING AND TARGET motor_level)
         add_dependencies(suite_gl_free test_eventos_clip)
     endif()
 endif()
+
+# U3-05.E07a -- Adaptador ClipActor (gl-free). La fuente y la prueba se anaden aparte
+# de las anteriores para no tocar sus bloques.
+if(TARGET motor_level)
+    target_sources(motor_level PRIVATE src/Game/ClipActor.cpp)
+endif()
+if(BUILD_TESTING AND TARGET motor_level)
+    add_executable(test_clip_actor tests/Game/ClipActorTests.cpp)
+    target_include_directories(test_clip_actor PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    target_link_libraries(test_clip_actor PRIVATE motor_level)
+    add_test(NAME test_clip_actor COMMAND test_clip_actor)
+    set_tests_properties(test_clip_actor PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "unit;gl-free")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_clip_actor)
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_clip_actor)
+    endif()
+endif()
