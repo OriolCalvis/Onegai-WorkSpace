@@ -1,0 +1,16 @@
+=== MUTACION a zona muerta a 0
+[FAIL] zona_muerta_del_producto_es_96_por_48_px_de_pantalla: /Users/admin/onegai-ramas/REPLICA-R1-U3-07/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionCamaraTests.cpp:107 -- comprobación fallida: ApplicationCamara::kZonaMuerta.semiAnchoPx == 96.0f && ApplicationCamara::kZonaMuerta.semiAltoPx == 48.0f
+[FAIL] actor_en_el_centro_o_en_la_zona_no_mueve_la_camara_en_120_fotogramas: /Users/admin/onegai-ramas/REPLICA-R1-U3-07/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionCamaraTests.cpp:123 -- comprobación fallida: iguales(s.cam.posicionVista(), vista0) && iguales(s.e.destino, destino0) && !s.cam.isTransitioning()
+[FAIL] actor_en_cada_borde_de_la_zona_no_vibra_en_120_fotogramas_y_pasado_el_borde_se_mueve_una_sola_vez: /Users/admin/onegai-ramas/REPLICA-R1-U3-07/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionCamaraTests.cpp:152 -- comprobación fallida: cambios == 0
+Ejecutados 12 test(s); 3 fallo(s).
+=== MUTACION b sin proyeccion sobre rombo
+[FAIL] critico_en_el_borde_diagonal_de_un_mapa_grande_no_saca_el_centro_del_rombo: /Users/admin/onegai-ramas/REPLICA-R1-U3-07/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionCamaraTests.cpp:292 -- comprobación fallida: m.dentroSiempre
+Ejecutados 12 test(s); 1 fallo(s).
+=== MUTACION c sacudida ignora movimiento reducido
+[FAIL] critico_en_esquina_con_movimiento_reducido_no_mueve_la_vista_ni_un_pixel: /Users/admin/onegai-ramas/REPLICA-R1-U3-07/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionCamaraTests.cpp:309 -- comprobación fallida: m.desplazamientoMax == 0.0f && m.fotogramasConDesplazamiento == 0 && m.dentroSiempre
+Ejecutados 12 test(s); 1 fallo(s).
+=== MUTACION d no reinicia con centinela
+[FAIL] cambio_de_mapa_durante_una_sacudida_reinicia_y_aplica_los_limites_nuevos_en_el_mismo_fotograma: /Users/admin/onegai-ramas/REPLICA-R1-U3-07/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionCamaraTests.cpp:330 -- comprobación fallida: s.e.amplitudPx == 0.0f && s.e.duracion == 0.0f && s.e.reloj == 0.0
+Ejecutados 12 test(s); 1 fallo(s).
+=== restaurado
+Ejecutados 12 test(s); 0 fallo(s).
