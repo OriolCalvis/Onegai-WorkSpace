@@ -116,10 +116,10 @@ MOTOR_TEST_CASE(mapa_menor_que_la_vista_solo_en_un_eje) {
     const LimitesMapa l = limites(30, 1);
     MOTOR_CHECK(l.derecha == 992.0f && l.abajo == 496.0f);
     const Vector2 r = limita({-5000.0f, 900.0f}, 1.0f, kVista, l);
-    // Caja: (400, 248) (clamp en X, Y centrado), fuera del paralelogramo fino; la arista b=1
-    // (desde (32,32), direccion (2,1)) da (412,8; 222,4), con Y fuera del rango colapsado
-    // (248): se acerca al centro de la caja (496,248) hasta el limite de Y: el centro.
-    MOTOR_CHECK(cerca(r.x, 496.0f) && cerca(r.y, 248.0f));
+    // Caja: (400, 248) (clamp en X, Y centrado), fuera del paralelogramo fino. Rango colapsado en Y
+    // (segmento y=248, x en [400,592]) y rombo = x en [464,528]: el punto mas cercano a (400,248)
+    // es (464,248) (proyeccion exacta sobre la interseccion; antes se volvia al ancla (496,248)).
+    MOTOR_CHECK(cerca(r.x, 464.0f) && cerca(r.y, 248.0f));
     MOTOR_CHECK(centroSobreRombo(r, l));
 }
 

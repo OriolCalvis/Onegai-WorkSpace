@@ -152,6 +152,47 @@ MOTOR_TEST_CASE(sacudida_con_tiempo_astronomico_da_error_sin_ub) {
     MOTOR_CHECK(z.isOk() && z.value().x == 0.0f && z.value().y == 0.0f);
 }
 
+// Continuidad (hallazgo Codex): |dvista| <= |dsacudida|/zoom + 1e-3 al barrer la sacudida de -1 a +1 px,
+// y base identica, tambien en rangos colapsados (mapas estrechos 30x1 y 1x30).
+void barrido(int c, int f, Vector2 pos, float zoom, bool ejeX) {
+    const LimitesMapa m = limites(c, f);
+    const PoseCamara p0 = pose(pos, zoom, kSin, &m);
+    Vector2 prev{0.0f, 0.0f};
+    for (int i = -1000; i <= 1000; ++i) {
+        const float d = static_cast<float>(i) * 0.001f;
+        const PoseCamara p = pose(pos, zoom, ejeX ? Vector2{d, 0.0f} : Vector2{0.0f, d}, &m);
+        MOTOR_CHECK(mismosBits(p.base, p0.base));
+        if (i > -1000) {
+            const double paso = 0.001 / static_cast<double>(zoom) + 1e-3 + 1e-4;
+            MOTOR_CHECK(std::fabs(p.vista.x - prev.x) <= paso && std::fabs(p.vista.y - prev.y) <= paso);
+        }
+        prev = p.vista;
+    }
+}
+
+MOTOR_TEST_CASE(recorte_continuo_en_rangos_colapsados) {
+    barrido(30, 1, {464.0f, 248.0f}, 1.0f, true);   // reproduccion exacta de Codex
+    barrido(30, 1, {464.0f, 248.0f}, 1.0f, false);
+    barrido(1, 30, {0.0f, 248.0f}, 1.0f, true);
+    barrido(1, 30, {0.0f, 248.0f}, 1.0f, false);
+    barrido(30, 1, {528.0f, 248.0f}, 1.0f, true);   // el otro borde del segmento
+    barrido(64, 64, {-1616.0f, 1024.0f}, 1.0f, true);
+    barrido(64, 64, {-1616.0f, 1024.0f}, 1.7f, false);
+    barrido(64, 64, {-1406.4f, 719.2f}, 1.0f, true);  // esquina caja-rombo
+    // Valores exactos: ya no se vuelve al ancla.
+    const LimitesMapa m = limites(30, 1);
+    const PoseCamara a = pose({464.0f, 248.0f}, 1.0f, {-0.003f, 0.0f}, &m);
+    MOTOR_CHECK(cerca(a.vista.x, 464.0f) && cerca(a.vista.y, 248.0f));
+}
+
+// Posicion logica FUERA de la caja con sacudida: se suma al punto ya limitado (la sacudida no se
+// "come" por el recorte de la posicion logica ni se suma antes de limitar).
+MOTOR_TEST_CASE(posicion_fuera_de_la_caja_con_sacudida) {
+    const LimitesMapa m = limites(64, 64);
+    const PoseCamara p = pose({-5000.0f, 300.0f}, 1.0f, {8.0f, 0.0f}, &m);
+    MOTOR_CHECK(cerca(p.vista.x, -1398.4f) && cerca(p.vista.y, 719.2f));
+}
+
 }  // namespace
 
 int main() { return motor_test::runAllTests(); }

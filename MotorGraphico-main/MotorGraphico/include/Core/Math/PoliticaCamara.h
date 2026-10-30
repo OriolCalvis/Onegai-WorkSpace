@@ -82,6 +82,11 @@ Result<LimitesMapa> limitesDeMapa(int columnas, int filas, int anchoTile, int al
 //     no, promedio de los vertices del poligono interseccion caja-rombo recortado con
 //     Sutherland-Hodgman; es interior por convexidad) hasta el limite del rango. Con margen superior el centro de
 //     la CAJA se desplaza y puede quedar fuera del rombo: por eso no se usa como ancla.
+//     Rango colapsado (un eje con mapa menor que la vista, o ambos): el rango de la caja es un
+//     segmento o un punto; NO se vuelve al ancla (eso saltaba al barrer entradas) sino que se
+//     proyecta sobre la INTERSECCION EXACTA segmento-rombo (recorte contra los 4 semiplanos) tomando
+//     el punto mas cercano: continuo (1-Lipschitz salvo la banda de tolerancia 1e-3 del rombo).
+//     Con rango 2D el ancla interior da continuidad y se mantiene.
 //     Si caja y rombo no se cortan (rango-rombo vacio) gana el rombo: el resultado es el punto
 //     del contorno mas cercano al centro dado y la caja no se respeta.
 //  Resultado: SIEMPRE sobre el rombo; en rango de caja siempre que rango-rombo no sea vacio;

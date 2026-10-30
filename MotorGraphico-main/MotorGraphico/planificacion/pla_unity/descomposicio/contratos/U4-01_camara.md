@@ -190,9 +190,16 @@ Result<Vector2> limitarAlMapa(const Vector2& centro, float zoom, const TamanoVis
   rombo (resultado = punto del contorno más cercano al centro dado; la caja no se respeta). Resultado
   siempre sobre el rombo, en rango de caja cuando rango∩rombo no es vacío, e idempotente; en bordes y
   esquinas puede verse algo de vacío, nunca una pantalla sin terreno en el centro.
+- **r3 (continuidad)**: con un eje colapsado (o ambos) no se usa el ancla: se proyecta sobre la
+  intersección exacta del segmento de rango con el rombo (recorte contra los 4 semiplanos, punto más
+  cercano; si es vacía gana el rombo). Con rango 2D el ancla es interior y el recorte es continuo.
+  Prueba E05: barrido de sacudida −1..+1 px en pasos de 0,001 en 30x1, 1x30 y 64x64:
+  |Δvista| ≤ |Δsacudida|/zoom + 1e-3.
 - Casos (valores calculados a mano, comprobados por `PoliticaCamaraLimitesTests.cpp`): ver §E05 (64x64,
-  3x2); mapa 30x1 (vista 800x600, zoom 1, centro (-5000,900)) ⇒ `(496,248)` por el segmento al centro de
-  la caja; 3x2 zoom 20 centro (-100,-100) ⇒ `(-9,2; 20,6)`; centro (500,500) ⇒ `(105,2; 59,4)`;
+  3x2); mapa 30x1 (vista 800x600, zoom 1, centro (-5000,900)) ⇒ `(464,248)` (**r3**: rango colapsado en Y =
+  segmento y=248; se proyecta sobre la intersección exacta segmento∩rombo, x∈[464,528], punto más
+  cercano; antes `(496,248)` por volver al ancla, que producía saltos de 32 px por 0,001 px de entrada
+  — hallazgo de la ronda 1 de E05); 3x2 zoom 20 centro (-100,-100) ⇒ `(-9,2; 20,6)`; centro (500,500) ⇒ `(105,2; 59,4)`;
   `columnas<=0` → Error. **r2 (margen 96):** 3x2 zoom 1 centro (0,0) ⇒ `(6,4; 12,8)`; 1x1 zoom 0,15
   centro (1,575; -33,55) ⇒ `(21,08; 5,46)`; 30x1 zoom 1,5 centro (643,296) ⇒ `(619,626; 296)`.
 

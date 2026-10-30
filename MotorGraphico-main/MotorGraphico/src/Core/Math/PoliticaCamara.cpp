@@ -172,6 +172,33 @@ bool anclaEnInterseccion(const RomboMapa& rombo, double lox, double hix, double 
     return true;
 }
 
+// Rango colapsado (segmento o punto): proyecta q (ya sobre el segmento A-B) sobre la INTERSECCION
+// exacta del segmento con el rombo: recorta A + s(B-A), s en [0,1], contra los 4 semiplanos y toma
+// el punto del tramo recortado mas cercano a q. Continuo en q. false si la interseccion es vacia.
+bool proyectarASegmento(const RomboMapa& rombo, const P2& a, const P2& b, const P2& q, P2* fuera) {
+    const P2 v[4] = {aP2(rombo.superior), aP2(rombo.derecho), aP2(rombo.inferior), aP2(rombo.izquierdo)};
+    double s0 = 0.0, s1 = 1.0;
+    for (int i = 0; i < 4; ++i) {
+        const double da = distanciaDentro(v[i], v[(i + 1) % 4], a);
+        const double db = distanciaDentro(v[i], v[(i + 1) % 4], b);
+        const double pend = db - da;
+        if (std::fabs(pend) < 1e-12) {
+            if (da < -kToleranciaRomboPx) return false;
+        } else if (pend > 0.0) {
+            s0 = std::fmax(s0, -da / pend);
+        } else {
+            s1 = std::fmin(s1, -da / pend);
+        }
+    }
+    if (s0 > s1) return false;
+    const double ex = b.x - a.x, ey = b.y - a.y;
+    const double l2 = ex * ex + ey * ey;
+    double sq = l2 > 0.0 ? ((q.x - a.x) * ex + (q.y - a.y) * ey) / l2 : 0.0;
+    sq = std::fmin(s1, std::fmax(s0, sq));
+    *fuera = {a.x + sq * ex, a.y + sq * ey};
+    return true;
+}
+
 }  // namespace
 
 Result<RomboMapa> romboDeMapa(int columnas, int filas, int anchoTile, int altoTile) {
@@ -236,7 +263,19 @@ Result<Vector2> limitarAlMapa(const Vector2& centro, float zoom, const TamanoVis
         const double lox = xmin <= xmax ? xmin : cx, hix = xmin <= xmax ? xmax : cx;
         const double loy = ymin <= ymax ? ymin : cy, hiy = ymin <= ymax ? ymax : cy;
         P2 ancla{0.0, 0.0};
-        if (!anclaEnInterseccion(limites.rombo, lox, hix, loy, hiy, &ancla)) {
+        const bool colapsado = (hix - lox) < 1e-9 || (hiy - loy) < 1e-9;
+        P2 enSegmento{0.0, 0.0};
+        if (colapsado) {
+            // Un eje (o ambos) colapsado: interseccion exacta segmento-rombo, sin ancla.
+            const P2 r = proyectarARombo(limites.rombo, q);
+            if (r.x == q.x && r.y == q.y) {
+                // q ya esta sobre terreno (tolerancia incluida): se conserva.
+            } else if (proyectarASegmento(limites.rombo, P2{lox, loy}, P2{hix, hiy}, q, &enSegmento)) {
+                q = enSegmento;
+            } else {
+                q = proyectarARombo(limites.rombo, P2{centro.x, centro.y});  // gana el rombo
+            }
+        } else if (!anclaEnInterseccion(limites.rombo, lox, hix, loy, hiy, &ancla)) {
             // Caja y rombo incompatibles: gana el rombo (el centro siempre sobre terreno).
             q = proyectarARombo(limites.rombo, P2{centro.x, centro.y});
         } else {
