@@ -1,9 +1,13 @@
-// U4-07.E02 — tests de leerEmisor (definicion del emisor de particulas). GL-free.
+// U4-07.E02/E03 — tests de leerEmisor y de emisiones (residuo). GL-free.
 #include "Game/Emisor/DefinicionEmisor.h"
+#include "Game/Emisor/EmisionConResiduo.h"
 #include "Game/Personajes/FamiliasDeParticulas.h"
 
 #include "TestHarness.h"
 
+#include <algorithm>
+#include <cmath>
+#include <limits>
 #include <string>
 
 using namespace Game::Emisor;
@@ -166,6 +170,190 @@ MOTOR_TEST_CASE(cada_caso_negativo_es_error) {
         else MOTOR_CHECK(contiene(r.errorMessage(), "emisor"));
     }
 }
+
+// ---- E03: emisiones con residuo ----
+
+struct Total { int cuantas = 0; double residuo = 0.0; bool ok = true; int recortes = 0; };
+
+// Trocea `n` pasos de `dt` con la tasa dada (Error -> ok=false).
+Total corre(int n, double dt, double tasa, double residuo0 = 0.0) {
+    Total t;
+    t.residuo = residuo0;
+    for (int i = 0; i < n; ++i) {
+        const auto r = emisiones(EstadoEmision{t.residuo}, dt, tasa);
+        if (!r.isOk()) { t.ok = false; return t; }
+        t.cuantas += r.value().cuantas;
+        t.residuo = r.value().estado.residuo;
+        t.recortes += r.value().recortado ? 1 : 0;
+        if (t.residuo < 0.0 || t.residuo >= 1.0) t.ok = false;
+    }
+    return t;
+}
+
+// Replica del orden del tick que cruza `duracion` (contrato E05, paso 1): se emite solo hasta `duracion`.
+Total nube(double tasa, double duracion, double dt) {
+    Total t;
+    double tiempo = 0.0;
+    while (tiempo < duracion - 1e-9) {
+        const double dtE = std::min(dt, duracion - tiempo);
+        const auto r = emisiones(EstadoEmision{t.residuo}, dtE, tasa);
+        if (!r.isOk()) { t.ok = false; return t; }
+        t.cuantas += r.value().cuantas;
+        t.residuo = r.value().estado.residuo;
+        tiempo += dt;
+    }
+    return t;
+}
+
+MOTOR_TEST_CASE(emisiones_residuo_exacto_entre_pasos) {
+    const auto a = emisiones(EstadoEmision{}, 0.05, 10.0);
+    MOTOR_CHECK(a.isOk() && a.value().cuantas == 0 && a.value().estado.residuo == 0.5 && !a.value().recortado);
+    const auto b = emisiones(a.value().estado, 0.05, 10.0);
+    MOTOR_CHECK(b.isOk() && b.value().cuantas == 1 && b.value().estado.residuo == 0.0);
+    // residuo de entrada 0.75 + 0.5 = 1.25 -> 1 y 0.25
+    const auto c = emisiones(EstadoEmision{0.75}, 0.05, 10.0);
+    MOTOR_CHECK(c.isOk() && c.value().cuantas == 1 && c.value().estado.residuo == 0.25);
+}
+
+MOTOR_TEST_CASE(emisiones_tasa_cero_y_dt_cero_dejan_el_estado_intacto) {
+    for (const double r0 : {0.0, 0.3, 0.999}) {
+        const auto t = emisiones(EstadoEmision{r0}, 0.1, 0.0);
+        MOTOR_CHECK(t.isOk() && t.value().cuantas == 0 && t.value().estado.residuo == r0 && !t.value().recortado);
+        const auto d = emisiones(EstadoEmision{r0}, 0.0, 500.0);  // pausa (D-O6)
+        MOTOR_CHECK(d.isOk() && d.value().cuantas == 0 && d.value().estado.residuo == r0 && !d.value().recortado);
+    }
+    const auto cien = corre(100, 0.0, 40.0, 0.5);
+    MOTOR_CHECK(cien.ok && cien.cuantas == 0 && cien.residuo == 0.5);
+    const auto tasa0 = corre(100, 1.0 / 60.0, 0.0);
+    MOTOR_CHECK(tasa0.ok && tasa0.cuantas == 0 && tasa0.residuo == 0.0);
+}
+
+MOTOR_TEST_CASE(emisiones_entradas_invalidas_son_error) {
+    const double nan = std::numeric_limits<double>::quiet_NaN(), inf = std::numeric_limits<double>::infinity();
+    MOTOR_CHECK(!emisiones(EstadoEmision{}, nan, 10.0).isOk());
+    MOTOR_CHECK(!emisiones(EstadoEmision{}, inf, 10.0).isOk());
+    MOTOR_CHECK(!emisiones(EstadoEmision{}, -inf, 10.0).isOk());
+    MOTOR_CHECK(!emisiones(EstadoEmision{}, -0.001, 10.0).isOk());
+    MOTOR_CHECK(!emisiones(EstadoEmision{}, 0.1, nan).isOk());
+    MOTOR_CHECK(!emisiones(EstadoEmision{}, 0.1, inf).isOk());
+    MOTOR_CHECK(!emisiones(EstadoEmision{}, 0.1, -1.0).isOk());
+    MOTOR_CHECK(!emisiones(EstadoEmision{}, 0.1, kMaxTasa + 0.001).isOk());
+    MOTOR_CHECK(emisiones(EstadoEmision{}, 0.1, kMaxTasa).isOk());
+    MOTOR_CHECK(!emisiones(EstadoEmision{-0.001}, 0.1, 10.0).isOk());
+    MOTOR_CHECK(!emisiones(EstadoEmision{1.0}, 0.1, 10.0).isOk());
+    MOTOR_CHECK(!emisiones(EstadoEmision{nan}, 0.1, 10.0).isOk());
+    // El error gana aunque el paso sea una pausa
+    MOTOR_CHECK(!emisiones(EstadoEmision{}, 0.0, -1.0).isOk());
+    MOTOR_CHECK(!emisiones(EstadoEmision{2.0}, 0.0, 0.0).isOk());
+    MOTOR_CHECK(emisiones(EstadoEmision{0.9999999999999999}, 0.0, 5.0).isOk());
+}
+
+MOTOR_TEST_CASE(emisiones_recorte_de_catch_up) {
+    static_assert(kMaxPasoEmision == 0.25 && kTolEmision == 1e-9);
+    const auto r = emisiones(EstadoEmision{}, 5.0, 10.0);
+    MOTOR_CHECK(r.isOk() && r.value().recortado && r.value().cuantas == 2 && r.value().estado.residuo == 0.5);
+    // Justo en el tope: sin recorte; un pelo por encima: recorte con el mismo resultado.
+    const auto e = emisiones(EstadoEmision{}, 0.25, 10.0);
+    MOTOR_CHECK(e.isOk() && !e.value().recortado && e.value().cuantas == 2 && e.value().estado.residuo == 0.5);
+    const auto p = emisiones(EstadoEmision{}, 0.2500001, 10.0);
+    MOTOR_CHECK(p.isOk() && p.value().recortado && p.value().cuantas == 2 && p.value().estado.residuo == 0.5);
+    // Tasa maxima con dt enorme: 500*0.25 = 125 y nada mas
+    const auto g = emisiones(EstadoEmision{}, 1e9, kMaxTasa);
+    MOTOR_CHECK(g.isOk() && g.value().recortado && g.value().cuantas == 125 && g.value().estado.residuo == 0.0);
+    // Una pausa larga no acumula: 3 x 5 s dan 3 recortes (7,5 part.), no 15 s
+    const auto t = corre(3, 5.0, 10.0);
+    MOTOR_CHECK(t.ok && t.cuantas == 7 && t.recortes == 3);
+    // Con tasa 0 el recorte se informa igualmente
+    const auto z = emisiones(EstadoEmision{}, 5.0, 0.0);
+    MOTOR_CHECK(z.isOk() && z.value().recortado && z.value().cuantas == 0);
+}
+
+MOTOR_TEST_CASE(emisiones_tolerancia_numerica) {
+    // 60 x (1/60) a tasa 10: la suma da 9,9999999999999982 y el algoritmo debe dar 10.
+    double s = 0.0;
+    for (int i = 0; i < 60; ++i) s += 10.0 * (1.0 / 60.0);
+    MOTOR_CHECK(s < 10.0 && s > 9.999999999);
+    const auto t = corre(60, 1.0 / 60.0, 10.0);
+    MOTOR_CHECK(t.ok && t.cuantas == 10 && t.residuo == 0.0);
+    // 1000 x 0.001 a tasa 7 == 7
+    const auto m = corre(1000, 0.001, 7.0);
+    MOTOR_CHECK(m.ok && m.cuantas == 7);
+    // Acumulado a 1e-9 del siguiente entero: nace (borde incluido); 2e-9 por debajo con tasa*dt: no
+    const auto borde = emisiones(EstadoEmision{0.9999999995}, 0.0001, 1.0);  // 0.9999999995 + 1e-4 = 1.0000999995
+    MOTOR_CHECK(borde.isOk() && borde.value().cuantas == 1);
+    const auto justo = emisiones(EstadoEmision{0.9999999995}, 1e-12, 1.0);  // 0.9999999995 + 1e-12 + 1e-9 >= 1
+    MOTOR_CHECK(justo.isOk() && justo.value().cuantas == 1 && justo.value().estado.residuo == 0.0);
+    const auto antes = emisiones(EstadoEmision{0.99999999}, 1e-12, 1.0);      // 1e-8 por debajo: no nace
+    MOTOR_CHECK(antes.isOk() && antes.value().cuantas == 0 && antes.value().estado.residuo > 0.99999999);
+}
+
+MOTOR_TEST_CASE(emisiones_particion_equivalente) {
+    // 3 s de tasa 12 troceados distinto (todos <= kMaxPasoEmision): mismo total, residuo 0.
+    const struct { int n; double dt; } trozos[] = {
+        {180, 1.0 / 60.0}, {432, 1.0 / 144.0}, {225, 0.016}, {12, 0.25}, {3, 1.0},
+    };
+    const double tasa = 12.0;
+    for (const auto& c : trozos) {
+        const auto t = corre(c.n, c.dt, tasa);
+        const double total = c.n * c.dt;
+        MOTOR_CHECK(t.ok);
+        if (c.dt <= kMaxPasoEmision) {
+            const int esperado = static_cast<int>(std::floor(tasa * total + 1e-6));
+            MOTOR_CHECK(t.cuantas == esperado);
+            MOTOR_CHECK(std::fabs(t.residuo - (tasa * total - esperado)) < 1e-6);
+        }
+    }
+    MOTOR_CHECK(corre(180, 1.0 / 60.0, tasa).cuantas == 36);
+    MOTOR_CHECK(corre(432, 1.0 / 144.0, tasa).cuantas == 36);
+    MOTOR_CHECK(corre(12, 0.25, tasa).cuantas == 36);
+    MOTOR_CHECK(corre(1, 0.25, tasa).cuantas == 3 && corre(1, 0.25, tasa).residuo == 0.0);
+    // 0.016 x 225 = 3.6 s a tasa 12 = 43,2 -> 43 y residuo ~0.2
+    const auto c016 = corre(225, 0.016, tasa);
+    MOTOR_CHECK(c016.cuantas == 43 && std::fabs(c016.residuo - 0.2) < 1e-6);
+    // 0.3 recortado a 0.25: el total NO es el del tiempo real, y se prueba aparte
+    const auto rec = corre(10, 0.3, tasa);
+    MOTOR_CHECK(rec.ok && rec.cuantas == 30 && rec.recortes == 10);   // 10 x 0.25 x 12, no 36
+    // Un solo paso de 0.25 == 15 de 1/60 (a tasa 12: 3)
+    MOTOR_CHECK(corre(15, 0.25 / 15.0, tasa).cuantas == corre(1, 0.25, tasa).cuantas);
+}
+
+MOTOR_TEST_CASE(emisiones_determinista_y_residuo_acotado) {
+    const auto a = corre(500, 0.0137, 33.3), b = corre(500, 0.0137, 33.3);
+    MOTOR_CHECK(a.ok && b.ok && a.cuantas == b.cuantas && a.residuo == b.residuo);
+    // barrido: el residuo nunca sale de [0,1) (corre marca ok=false si ocurre)
+    for (const double tasa : {0.1, 1.0, 7.0, 40.0, 333.3, 500.0})
+        for (const double dt : {1e-6, 0.001, 1.0 / 144.0, 1.0 / 60.0, 0.05, 0.1, 0.25, 0.3, 7.0}) {
+            const auto t = corre(200, dt, tasa);
+            MOTOR_CHECK(t.ok && t.residuo >= 0.0 && t.residuo < 1.0);
+        }
+    // un dt minusculo no inventa nacimientos
+    MOTOR_CHECK(corre(1000, 1e-12, 40.0).cuantas == 0);
+}
+
+MOTOR_TEST_CASE(emisiones_polvo_recuento_exacto_y_corte_en_duracion) {
+    // Nube de polvo: tasa 40, duracion 0.15, ticks de 1/60, emision recortada al ultimo tick (9 ticks).
+    const auto normal = nube(40.0, 0.15, 1.0 / 60.0);
+    MOTOR_CHECK(normal.ok && normal.cuantas == 6);
+    const auto reducido = nube(40.0 * 0.25, 0.15, 1.0 / 60.0);   // escalaTasa 0,25 (D-O3)
+    MOTOR_CHECK(reducido.ok && reducido.cuantas == 1 && std::fabs(reducido.residuo - 0.5) < 1e-9);
+    // Mitad de tick: duracion 0.15 con ticks de 0.1 -> 2o tick emite solo 0.05, no 0.1
+    const auto medio = nube(100.0, 0.15, 0.1);
+    MOTOR_CHECK(medio.ok && medio.cuantas == 15);
+    // Sin recorte al llegar a duracion saldrian 20
+    MOTOR_CHECK(corre(2, 0.1, 100.0).cuantas == 20);
+    // La escala es multiplicativa sobre la tasa: x0.25 da 1/4 del recuento largo
+    MOTOR_CHECK(nube(40.0, 1.0, 1.0 / 60.0).cuantas == 40 && nube(10.0, 1.0, 1.0 / 60.0).cuantas == 10);
+    // Polvo reducido: tasa efectiva 10 a 1/60 -> el primer nacimiento llega en el 6.o tick, no antes
+    int primero = 0;
+    double res = 0.0;
+    for (int i = 1; i <= 9; ++i) {
+        const auto r = emisiones(EstadoEmision{res}, 1.0 / 60.0, 10.0);
+        res = r.value().estado.residuo;
+        if (r.value().cuantas == 1 && primero == 0) primero = i;
+    }
+    MOTOR_CHECK(primero == 6);
+}
+
 
 }  // namespace
 

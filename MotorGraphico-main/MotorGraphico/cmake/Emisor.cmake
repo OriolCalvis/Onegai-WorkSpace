@@ -1,7 +1,7 @@
 # U4-07 — Emisor de particulas generico (Game/Emisor). GL-free.
 # La fuente entra SIEMPRE en motor_level (las familias de particulas viven alli); solo los tests dependen
-# de BUILD_TESTING. E02: lector de la definicion.
-target_sources(motor_level PRIVATE src/Game/Emisor/DefinicionEmisor.cpp)
+# de BUILD_TESTING. E02: lector de la definicion. E03: emisiones con residuo.
+target_sources(motor_level PRIVATE src/Game/Emisor/DefinicionEmisor.cpp src/Game/Emisor/EmisionConResiduo.cpp)
 
 if(BUILD_TESTING)
     add_executable(test_emisor tests/Game/EmisorTests.cpp)
