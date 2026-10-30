@@ -2,14 +2,16 @@
 // esquina y cambio de mapa durante una sacudida. EJECUTA fotogramaCamara + Camera reales (viewport 800x600, tiles
 // 64x32, zoom 1 y 1,7 de combate). GL-free. Los casos marcados CONOCIDO: describen el comportamiento ACTUAL
 // (preexistente) y no son un arreglo: si cambian, la prueba debe revisarse a proposito. La aprobacion visual de
-// Oriol (D-O5) NO se prueba aqui: ver out/fabrica/REPLICA-R1/U4-01.E07_verificacion.md.
+// Oriol (D-O5) NO se prueba aqui: ver out/fabrica/REPLICA-R1/U4-01.E07_verificacion.md (raiz del worktree).
 #include "Engine/ApplicationCamara.h"
 
 #include "TestHarness.h"
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
+#include <string>
 #include <iostream>
 #include <vector>
 
@@ -26,13 +28,23 @@ constexpr float kTol = 1e-2f;  // px de mundo; las cotas del rombo/caja son de 1
 bool iguales(const Vector2& a, const Vector2& b) { return a.x == b.x && a.y == b.y; }
 bool cerca(float a, float b, float tol = kTol) { return std::fabs(a - b) <= tol; }
 
-void ponReducido(bool reducido) {
+void ponEntorno(const char* valor) {  // valor == nullptr: la variable queda sin definir
 #ifdef _WIN32
-    _putenv_s("MOTOR_MOVIMIENTO_REDUCIDO", reducido ? "1" : "");
+    _putenv_s("MOTOR_MOVIMIENTO_REDUCIDO", valor ? valor : "");
 #else
-    if (reducido) setenv("MOTOR_MOVIMIENTO_REDUCIDO", "1", 1); else unsetenv("MOTOR_MOVIMIENTO_REDUCIDO");
+    if (valor) setenv("MOTOR_MOVIMIENTO_REDUCIDO", valor, 1); else unsetenv("MOTOR_MOVIMIENTO_REDUCIDO");
 #endif
 }
+// Guarda el valor que tenia MOTOR_MOVIMIENTO_REDUCIDO al arrancar el proceso y lo restaura al salir.
+struct GuardaEntorno {
+    bool habia = false;
+    std::string previo;
+    GuardaEntorno() {
+        if (const char* v = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO")) { habia = true; previo = v; }
+    }
+    ~GuardaEntorno() { ponEntorno(habia ? previo.c_str() : nullptr); }
+} guardaEntorno;
+void ponReducido(bool reducido) { ponEntorno(reducido ? "1" : nullptr); }
 
 LimitesMapa limitesDe(int c, int f) {
     LimitesMapa l;
@@ -66,7 +78,7 @@ struct Escena {
     int columnas = 0, filas = 0;
     GridCoord ultima{-9999, -9999};  // centinela: mapa recien cargado
     float excesoCaja = 0.0f;         // mayor salida de la vista respecto a LimitesMapa (ejes que caben)
-    float fueraRombo = 0.0f;         // mayor distancia del centro de la vista fuera del rombo
+    float fueraRombo = 0.0f;         // indicador: 1 si en algun fotograma el centro de la vista cayo fuera del rombo, 0 si nunca
     int fotogramas = 0;
 
     Escena(int c, int f, float zoom) : lim(limitesDe(c, f)), columnas(c), filas(f) {
@@ -102,6 +114,34 @@ struct Escena {
 };
 
 // ---- Zona muerta -------------------------------------------------------------------------------------------------
+
+MOTOR_TEST_CASE(sacudida_del_producto_es_4_px_de_mundo_con_0_14_y_0_24_s) {  // D-O2 (valores fijados en E06, aqui se vigilan)
+    MOTOR_CHECK(ApplicationCamara::kSacudidaMundoPx == 4.0f);
+    MOTOR_CHECK(ApplicationCamara::kSacudidaDanio == 0.14f && ApplicationCamara::kSacudidaCritico == 0.24f);
+}
+
+MOTOR_TEST_CASE(sacudida_critica_decrece_con_la_envolvente_y_acaba_a_los_0_24_s) {
+    ponReducido(false);
+    float temprano = 0.0f, tardio = 0.0f;
+    for (std::uint32_t semilla = 1; semilla <= 8; ++semilla) {
+        Escena s(40, 40, 1.0f);
+        s.llega(GridCoord{20, 20}, 30);
+        const Vector2 base = s.cam.posicionVista();
+        ApplicationCamara::sacude(s.e, 4.0f, 0.24f, semilla);
+        for (int k = 1; k <= 18; ++k) {  // fotograma k: reloj = k/60 s
+            s.paso(GridCoord{20, 20}, centroCelda(GridCoord{20, 20}));
+            const float dx = s.cam.posicionVista().x - base.x, dy = s.cam.posicionVista().y - base.y;
+            const double t = k / 60.0;
+            const double env = t >= 0.24 ? 0.0 : (1.0 - t / 0.24) * (1.0 - t / 0.24);
+            MOTOR_CHECK(std::fabs(dx) <= 4.0 * env + 1e-4 && std::fabs(dy) <= 4.0 * 0.6 * env + 1e-4);  // cota (1-t/d)^2 * 4 px
+            if (k <= 4) temprano += std::fabs(dx) + std::fabs(dy);
+            if (k >= 11 && k <= 14) tardio += std::fabs(dx) + std::fabs(dy);
+            if (k >= 15) MOTOR_CHECK(dx == 0.0f && dy == 0.0f);  // 0,25 s > 0,24 s: cero exacto
+        }
+    }
+    std::cout << "  [medida] caida: suma |d| fotogramas 1-4 = " << temprano << ", fotogramas 11-14 = " << tardio << " px\n";
+    MOTOR_CHECK(temprano > 4.0f * tardio);  // decrece de verdad (no solo termina en 0)
+}
 
 MOTOR_TEST_CASE(zona_muerta_del_producto_es_96_por_48_px_de_pantalla) {  // D-O1 (valor fijado en E06, aqui se vigila)
     MOTOR_CHECK(ApplicationCamara::kZonaMuerta.semiAnchoPx == 96.0f && ApplicationCamara::kZonaMuerta.semiAltoPx == 48.0f);
@@ -154,11 +194,30 @@ MOTOR_TEST_CASE(actor_en_cada_borde_de_la_zona_no_vibra_en_120_fotogramas_y_pasa
                 } else {
                     MOTOR_CHECK(cambios == 1);  // fuera: empuja una vez, deja al actor sobre el borde y se queda quieta
                     MOTOR_CHECK(!s.cam.isTransitioning());
-                    MOTOR_CHECK(cerca(s.cam.posicionVista().x, c.x + (b.dx == 0.0f ? 0.0f : ex - (b.dx < 0 ? -1.0f : 1.0f) * 96.0f / zoom), 1e-3f));
+                    // La vista queda con el actor SOBRE el borde de la zona, en cada eje (el eje que no sale no se mueve).
+                    const float esperadoX = c.x + (b.dx == 0.0f ? 0.0f : ex - (b.dx < 0 ? -1.0f : 1.0f) * 96.0f / zoom);
+                    const float esperadoY = c.y + (b.dy == 0.0f ? 0.0f : ey - (b.dy < 0 ? -1.0f : 1.0f) * 48.0f / zoom);
+                    MOTOR_CHECK(cerca(s.cam.posicionVista().x, esperadoX, 1e-3f));
+                    MOTOR_CHECK(cerca(s.cam.posicionVista().y, esperadoY, 1e-3f));
                 }
             }
         }
     }
+}
+
+MOTOR_TEST_CASE(actor_a_5e_5_px_fuera_del_borde_cuenta_como_borde_tolerancia_de_frontera) {
+    // |dif| <= semi/zoom + 1e-4 se devuelve identico. 5e-5 px de mundo (zoom 1; en X, donde el float aun lo representa).
+    Escena s(40, 40, 1.0f);
+    const Vector2 c = centroCelda(GridCoord{20, 20});
+    s.cam.transitionTo(c, 1.0f, 0.0f, Camera::Easing::Linear);
+    s.cam.update(kDt);
+    s.e.destino = c;
+    s.e.conDestino = true;
+    s.ultima = GridCoord{20, 20};
+    const Vector2 objetivo{c.x + 96.0f + 5e-5f, c.y};
+    MOTOR_CHECK(objetivo.x > c.x + 96.0f);  // de verdad fuera del borde
+    for (int i = 0; i < 120; ++i) s.paso((i % 2 == 0) ? GridCoord{21, 20} : GridCoord{20, 21}, objetivo);
+    MOTOR_CHECK(iguales(s.e.destino, c) && iguales(s.cam.posicionVista(), c) && !s.cam.isTransitioning());
 }
 
 // ---- Esquinas y bordes del mapa ----------------------------------------------------------------------------------
@@ -237,7 +296,7 @@ Medida criticoEnEsquina(const GridCoord& esquina, int c, int f, float zoom, std:
     const Vector2 base = s.cam.posicionVista();
     s.excesoCaja = 0.0f;
     s.fueraRombo = 0.0f;
-    ApplicationCamara::sacude(s.e, ApplicationCamara::kSacudidaMundoPx * zoom, ApplicationCamara::kSacudidaCritico, semilla);
+    ApplicationCamara::sacude(s.e, 4.0f * zoom, 0.24f, semilla);  // literales: 4 px de mundo y 0,24 s (D-O2); las constantes se vigilan aparte
     Medida m{0.0f, 0, true};
     for (int i = 0; i < 20; ++i) {
         s.paso(esquina, objetivo);  // sin cambio de casilla: el seguimiento no corre
@@ -265,7 +324,7 @@ MOTOR_TEST_CASE(critico_en_las_cuatro_esquinas_no_saca_la_vista_del_mapa) {
     Escena s(40, 40, 1.0f);
     s.llega(GridCoord{20, 20}, 30);
     const Vector2 base = s.cam.posicionVista();
-    ApplicationCamara::sacude(s.e, 4.0f, ApplicationCamara::kSacudidaCritico, 7);
+    ApplicationCamara::sacude(s.e, 4.0f, 0.24f, 7);
     float maxCentro = 0.0f;
     for (int i = 0; i < 20; ++i) {
         s.paso(GridCoord{20, 20}, centroCelda(GridCoord{20, 20}));
@@ -318,7 +377,7 @@ MOTOR_TEST_CASE(cambio_de_mapa_durante_una_sacudida_reinicia_y_aplica_los_limite
     ponReducido(false);
     Escena s(40, 40, 1.0f);
     s.llega(GridCoord{35, 35}, 30);  // lejos, en el mapa grande
-    ApplicationCamara::sacude(s.e, 4.0f, ApplicationCamara::kSacudidaCritico, 3);
+    ApplicationCamara::sacude(s.e, 4.0f, 0.24f, 3);
     for (int i = 0; i < 4; ++i) s.paso(GridCoord{35, 35}, centroCelda(GridCoord{35, 35}));
     MOTOR_CHECK(s.e.amplitudPx > 0.0f && s.e.reloj > 0.0);  // sacudida viva
     // loadLevel: mapa 3x2 nuevo, centinela, celda de aparicion (1,1). Un solo fotograma.
@@ -373,6 +432,9 @@ MOTOR_TEST_CASE(conocido_salida_de_combate_y_cambio_de_casilla_deja_el_zoom_inte
     MOTOR_CHECK(!s.cam.isTransitioning() && cerca(s.cam.zoom(), zoomAlCambiar, 1e-3f) && s.cam.zoom() > 1.05f);
 }
 
+// Caracteriza el MECANISMO (misma identidad de combate => fotogramaCamara no reinicia), no el defecto: este esta en quien llama
+// (ApplicationBucle.cpp:180 pasa battle(); GameSessionInteraccion.cpp:300/440 hace reset + make_unique y puede repetir la direccion).
+// Por eso la prueba NO se pondra roja cuando se arregle a quien llama (p. ej. contador de generacion): se puede conservar tal cual.
 MOTOR_TEST_CASE(conocido_oleadas_con_el_mismo_puntero_de_combate_no_reinician_la_camara) {
     ponReducido(false);
     Escena s(40, 40, 1.0f);
