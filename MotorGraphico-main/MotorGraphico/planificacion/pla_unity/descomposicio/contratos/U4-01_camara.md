@@ -32,7 +32,9 @@ obligatorio: `Política pura de cámara → Render::Camera → juego`. Puerta: T
 Miembros de datos de `Camera`: **14** (`m_position :85`, `m_targetPosition :86`, `m_zoom :87`,
 `m_lerpSpeed :88`, `m_viewportWidth :89`, `m_viewportHeight :90` y los 8 de la transición
 `:95-102`). Métodos públicos: 14 (`Camera.h:23,27,31,33,34,55,57,59,60,61,62,69,74,81`).
-Con la regla «≤15 miembros» contada sobre datos, `Camera` **tiene 1 hueco**; contada sobre
+La regla «≤500 líneas / ≤15 miembros» viene del encargo del coordinador y del §3 de
+`contratos/U3-07_tweens.md` («Ningún fichero >500 líneas ni cabecera >15 miembros previsto»); no
+hay herramienta que la compruebe (**inferido** que «miembros» = datos). Con la regla contada sobre datos, `Camera` **tiene 1 hueco**; contada sobre
 métodos ya está pasada. Ver riesgo R1.
 
 ### 1.2 Sistemas de coordenadas (qué unidad usa cada cosa)
@@ -41,10 +43,11 @@ métodos ya está pasada. Ver riesgo R1.
    interpola nunca (U3-07 R8).
 2. **Píxel de mundo isométrico** (`Vector2`, `float`, `include/Core/Math/Vector2.h:5-12`; solo
    `+ - * float`): `IsoMath::gridToScreen` da `x=(gx-gy)*tw/2`, `y=(gx+gy)*th/2`
-   (`IsoMath.h:23-28`), el origen `(0,0)` es la esquina superior del rombo de la casilla `(0,0)`.
+   (`IsoMath.h:23-28`); que el origen `(0,0)` sea la esquina superior del rombo de la casilla `(0,0)`
+   es **inferido** de `MapFraming.cpp:13,17-19` (`top=0`), a contrastar con `IsometricRenderer` en E03.
    **La posición y el destino de `Camera` están en este espacio** (`Camera.cpp:73-88`). A la
    posición del jugador se le suma además el desfase de altura del terreno
-   `m_map.alturas().desfasePx(playerCell)` (`ApplicationBucle.cpp:167`; `Alturas.h:93-94`).
+   `m_map.alturas().desfasePx(playerCell)` (`ApplicationBucle.cpp:167`; `include/Runtime/Alturas.h:93-94`).
 3. **Vista / pantalla**: píxeles de ventana, origen arriba-izquierda (`Camera.cpp:107-111`). El
    **frustum visible** en píxeles de mundo es `vw/zoom × vh/zoom` centrado en `position`
    (`Camera.cpp:97-98`). *No es el tamaño del mapa*: el mapa no existe para `Camera`.
@@ -60,8 +63,8 @@ métodos ya está pasada. Ver riesgo R1.
 (`src/Engine/ApplicationNivel.cpp:141`). Precedente de uso con la misma fuente: la niebla se
 construye con `m_map.getWidth(), m_map.getHeight(), m_width, m_height, m_map.getTileWidth(),
 m_map.getTileHeight()` (`ApplicationNivel.cpp:171-174`). **`Camera` y el seguimiento no consultan
-el mapa en ningún sitio** (`ApplicationBucle.cpp:158-171`): hoy la cámara puede salirse del
-mapa y mostrar vacío. En el editor existe el cálculo de límites en píxeles de mundo:
+el mapa en ningún sitio** (`Camera.cpp` y `ApplicationBucle.cpp:152-171` no leen `getWidth`). Que
+por eso la cámara pueda salirse del mapa y mostrar vacío es **inferido** de ese código (no observado). En el editor existe el cálculo de límites en píxeles de mundo:
 `Editor::fitMap` usa `left=-(rows-1)*tw/2`, `right=(cols-1)*tw/2+tw`, `bottom=(cols+rows)*th/2`
 (`src/Editor/MapFraming.cpp:17-19`), con `top=0` implícito, y comenta que «el renderer coloca un
 rectángulo tw x th en cada origen isométrico» (`:13`). Eso define la caja del mapa en espacio
@@ -72,24 +75,28 @@ Los tiles altos y la altura del terreno sobresalen por arriba de `top=0` (**infe
 
 | Consumidor | Dónde | Uso real |
 |---|---|---|
-| **Seguimiento del jugador** | `src/Engine/ApplicationBucle.cpp:164-171` | `transitionTo(target, zoom, 0.16f, Linear)` **solo al cambiar de casilla** (no `move`; razones en comentario `:150-163`); target = `gridToScreen(celda)` + `desfasePx`. Centra siempre: **no hay zona muerta**. `update(dt)` en `:175` |
+| **Seguimiento del jugador** | `src/Engine/ApplicationBucle.cpp:164-171` | `transitionTo(target, zoom, 0.16f, Linear)` **solo al cambiar de casilla** (no `move`; razones en comentario `:152-163`); target = `gridToScreen(celda)` + `desfasePx`. Centra siempre: **no hay zona muerta**. `update(dt)` en `:175` |
 | Reset al cargar nivel | `ApplicationNivel.cpp:470-471` | `m_lastCameraCell={-9999,-9999}` fuerza recentrado |
 | Creación | `src/Engine/Application.cpp:450` | `Camera(width,height)`; `setViewportSize` **no se llama nunca en `juego`** (grep: solo `editor/src/EditorVistaDeMapa.cpp:25`) → viewport fijo al crear (inferido: si la ventana cambia de tamaño, se descuadra) |
 | Cinemática del título | `ApplicationCinematica.cpp:309-310` | paseo por un camino con `transitionTo(destino, zoom, 0.001f/0.25f, EaseOutCubic)` (el `0.001f` es el «corte» de U3-07 R4) |
 | Combate | `ApplicationCinematica.cpp:396,437,479` | encuadra el centro del combate con zoom `*1.7`, 0.5 s `EaseInOutQuad`; vuelve con 0.6 s (`:396`); pasa vista a `golpes->ponVista(position, zoom)` (`:441`) |
-| **Sacudida existente** | `ApplicationCinematica.cpp:493-499` | `static std::minstd_rand temblor(7)` + `uniform_real_distribution(-4,4)`; offset `(d, d*0.6)` aplicado con **`transitionTo(..., 0.0f)` = machaca la posición lógica**; al acabar `transitionTo(centro, zoom, 0.08f)`. Disparo: 0.14 s (daño al aliado) y 0.24 s (crítico) en `src/Engine/ApplicationPantallas.cpp:429,431`; campo `float sacudida` en `include/Engine/ApplicationCinematica.h:51` |
+| **Sacudida existente** | `ApplicationCinematica.cpp:492-500` | `static std::minstd_rand temblor(7)` + `uniform_real_distribution(-4,4)`; offset `(d, d*0.6)` aplicado con **`transitionTo(..., 0.0f)` = machaca la posición lógica**; al acabar `transitionTo(centro, zoom, 0.08f)`. Disparo: 0.14 s (daño al aliado) y 0.24 s (crítico) en `src/Engine/ApplicationPantallas.cpp:429,431`; campo `float sacudida` en `include/Engine/ApplicationCinematica.h:51` |
 | Picking | `Application.cpp:1013-1017`, `ApplicationPantallas.cpp:341` | `screenToWorld` + `IsoMath::screenToGrid` |
-| HUD (depuración) | `src/Engine/ApplicationHud.cpp:378-381` | lee `position()`/`zoom()` |
+| **HUD del mundo (carteles, bocadillos, guía de mapa, avisos)** | `src/Engine/ApplicationHud.cpp:378-381` rellena `camaraX/camaraY/zoom` de `EstadoJuego` (`include/HUD/Pergamino/InterfazPergamino.h:75-78`); lo leen `src/HUD/Pergamino/CartelesPuertas.cpp:103-104,116-117`, `BocadillosPnj.cpp:41-42`, `GuiaMapa.cpp:191-192`, `InterfazPergamino.cpp:288-289,304`; test `tests/HUD/CartelesPuertasTests.cpp` | proyectan puntos del mundo a pantalla con `(mundo - cámara)*zoom + vista/2`. **Si la sacudida solo mueve la matriz, estos elementos no tiemblan con el mundo** (R2, D-T11) |
+| Números de golpe | `include/HUD/Pergamino/GolpesEnPantalla.h:32` (`ponVista`), `src/HUD/Pergamino/GolpesEnPantalla.cpp:46-47`; llamada en `ApplicationCinematica.cpp:441` | misma proyección |
 | Culling | `include/Render/Culling.h:34-` (4 esquinas con `screenToWorld`), `src/Render/TileMap.cpp:161` | rango de celdas visible |
 | Render | `src/Render/IsometricRenderer.cpp:134,319` | `VisibleGridRange` y `getViewProjectionMatrix` |
 | Niebla / luces | `FogOfWar.cpp:125-132`, `DynamicLightMap.cpp:90-91` | leen `position()`/`zoom()` para alinear texturas con pantalla |
-| `level_editor` | `editor/src/level_editor.cpp:583-591,1386` | centra con `transitionTo(...,0,Linear)`+`update(0)`; HOME con 0.25 s |
-| `motor_editor` | `editor/src/EditorApplication.cpp:318,332,340-341`; `editor/include/EditorVistaDeMapa.h:42`; `editor/src/EditorVistaDeMapa.cpp:25-31` | **único uso de `move()`** (pan con ratón, lerp exponencial), zoom con rueda, `setViewportSize` y encuadre con `fitMap` |
-| Demos | `examples/demo_camera.cpp:49,91-147` (+ `demo_tilemap`, `demo_lighting`, `demo_isometric_renderer`, `demo_animated_entity`, `demo_brillo_equipo`) | pruebas GL-free de lerp/transición |
+| `level_editor` | `editor/src/level_editor.cpp:583-591,1199,1345-1352,1371-1377,1386,1642,1652` | centra con `transitionTo(...,0,Linear)`+`update(0)` (`:587-591`); `screenToWorld` (`:1199`); `setZoom` (`:1345-1352`); pan WASD con `camera.move` (`:1371-1377`, lerp exponencial); HOME 0.25 s (`:1383-1386`); `update(1/60)` (`:1642`); matriz al shader (`:1652`) |
+| Cierre | `src/Engine/ApplicationCierre.cpp:145` | `m_camera.reset()` |
+| Tests que construyen `Camera` | `tests/Render/CameraTests.cpp`, `tests/Engine/CameraTransitionTests.cpp`, `tests/Render/CullingTests.cpp`, `OcclusionTests.cpp`, `PostProcessingTests.cpp`, `tests/Core/InterpolacionTests.cpp`, `EstadoTweenTests.cpp` (grep `\bCamera\b`) | regresión de Camera y culling |
+| `motor_editor` | `editor/src/EditorApplication.cpp:318,332,340-341`; `editor/include/EditorVistaDeMapa.h:42`; `editor/src/EditorVistaDeMapa.cpp:25-31` | pan con ratón vía `move()` (lerp exponencial), zoom con rueda, `setViewportSize` y encuadre con `fitMap` |
+| Demos | `examples/demo_camera.cpp:49,91-147`; también `demo_animated_entity`, `demo_brillo_equipo`, `demo_dynamic_lights`, `demo_fog`, `demo_hud`, `demo_isometric_renderer`, `demo_lighting`, `demo_lut`, `demo_textured_quad`, `demo_tilemap` (grep) | lerp/transición y montaje de escenas |
 
 Consecuencia (contradice la ficha, ver §6-C1): **el «seguimiento con lerp exponencial»
-(`move`/`update`) no lo usa el juego**; el juego sigue con `transitionTo` de 0.16 s por casilla.
-El lerp exponencial solo lo ejercita el editor y las demos.
+(`move`/`update`) no lo usa `juego`** (grep: ningún `m_camera->move` en `src/`); sigue con
+`transitionTo` de 0.16 s por casilla. El lerp exponencial lo ejercitan `motor_editor`,
+`level_editor` y las demos. Que la cámara salga del mapa en `juego` es **inferido** (§1.3).
 
 ### 1.5 Tests existentes
 
@@ -105,17 +112,17 @@ El lerp exponencial solo lo ejercita el editor y las demos.
   `motor_math = Camera.cpp` + GLM (`CMakeLists.txt:71-72`); `cmake/Interpolacion.cmake` añade
   fuentes con `target_sources(motor_math ...)` (línea 3) — patrón a repetir.
 - **No existe ningún test** de seguimiento con jugador, límites de mapa, zona muerta ni de la
-  sacudida de `ApplicationCinematica.cpp:493-499`.
+  sacudida de `ApplicationCinematica.cpp:492-500`.
 
 ## 2. Qué existe y qué falta para E02–E07
 
 | E | Ya existe | Falta |
 |---|---|---|
-| E02 zona muerta | Seguimiento por `transitionTo` (`ApplicationBucle.cpp:164-171`); `IsoMath` | Función pura que decida **cuándo** moverse: hoy centra siempre. No existe «destino lógico» legible: `m_targetPosition` es privado (`Camera.h:86`) y el comentario `ApplicationBucle.cpp:150-157` explica que no se puede usar `move` por eso → el adaptador debe guardar su propio destino |
+| E02 zona muerta | Seguimiento por `transitionTo` (`ApplicationBucle.cpp:164-171`); `IsoMath` | Función pura que decida **cuándo** moverse: hoy centra siempre. No existe «destino lógico» legible: `m_targetPosition` es privado (`Camera.h:86`) y el comentario `ApplicationBucle.cpp:152-163` explica que no se puede usar `move` por eso → el adaptador debe guardar su propio destino |
 | E03 límites | Fórmula de cajas de mapa en `fitMap` (`MapFraming.cpp:17-19`); tamaño en `RuntimeTileMap` | Cálculo de `LimitesMapa` en píxeles de mundo + `limitarAlMapa(centro, zoom, vista)` (centrar si el mapa cabe). `fitMap` está en `Editor::` y en otra librería (`src/Editor/`), no reutilizable desde `motor_math` sin arrastrar el editor |
 | E04 sacudida | Una sacudida con `minstd_rand` **estática** (`ApplicationCinematica.cpp:495`): la semilla 7 solo la fija una vez por proceso, el estado persiste entre combates → **no es determinista por combate**, ni testeable, y altera la posición lógica | Función pura sin estado: `f(estado, t, semilla)`; envolvente que acaba en 0 exacto; versión sin `rand()` global (el repo ya tiene `RPG::Xoroshiro128p` inyectable, `include/RPG/RandomEngine.h:46`, pero su API es enteros y con estado; una función hash sin estado encaja mejor, ver D-T4) |
 | E05 composición | Nada | `PoseCamara` = base (seguimiento + límites) + sacudida, con orden y regla fijados; `Camera` necesita un **desplazamiento de vista** separado de `m_position` (ver R2) |
-| E06 conexión | Tween compartido ya en `Camera` (`Camera.cpp:44-52`); hook de reinicio por mapa (`ApplicationNivel.cpp:470-471`); hooks de disparo de sacudida (`ApplicationPantallas.cpp:429,431`) | Adaptador entre política pura y `Camera` en `juego`; sustituir `ApplicationCinematica.cpp:493-499`; alinear niebla/luces con la posición de vista; pausa y cambio de mapa |
+| E06 conexión | Tween compartido ya en `Camera` (`Camera.cpp:44-52`); hook de reinicio por mapa (`ApplicationNivel.cpp:470-471`); hooks de disparo de sacudida (`ApplicationPantallas.cpp:429,431`) | Adaptador entre política pura y `Camera` en `juego`; sustituir `ApplicationCinematica.cpp:492-500`; alinear niebla/luces con la posición de vista; pausa y cambio de mapa |
 | E07 verificación | `MapFramingTests.cpp` como modelo de casos rectangulares (`tests/Editor/MapFramingTests.cpp:29,69,110,117`) | Casos de esquina/mapa pequeño en la política pura + evidencia de juego con captura (pendiente de Oriol) |
 
 No se crea ninguna segunda `Camera`: toda la política vive en funciones puras nuevas y el único
@@ -176,58 +183,141 @@ Result<Vector2> limitarAlMapa(const Vector2& centro, float zoom, const TamanoVis
 ```cpp
 struct EstadoSacudida { float amplitudPx = 0.0f; float duracion = 0.0f; };  // amplitud en píxeles de PANTALLA
 Result<Vector2> desplazamientoSacudida(const EstadoSacudida& s, double transcurrido,
-                                       std::uint32_t semilla, bool movimientoReducido = false);
+                                       std::uint32_t semilla, float factorMovimiento = 1.0f);  // devuelve PÍXELES DE PANTALLA
 ```
 - Sin estado y sin `rand()` global: hash entero (p. ej. mezcla tipo splitmix32 de
   `(semilla, floor(transcurrido*60))`) → dos valores en `[-1,1]`; envolvente
   `(1 - t/duracion)^2`; eje Y por `0.6` (conserva la anisotropía actual,
   `ApplicationCinematica.cpp:497`).
-- `transcurrido >= duracion`, `duracion<=0`, `amplitud<=0` o `movimientoReducido` ⇒ `{0,0}`
+- `factorMovimiento` en `[0,1]` escala la amplitud (1 = normal, 0 = apagada; fuera de rango o no
+  finito ⇒ Error). Deja abiertas D-O4 (a) off = 0 y (b) 25 % = 0,25.
+- `transcurrido >= duracion`, `duracion<=0`, `amplitud<=0` o `factorMovimiento==0` ⇒ `{0,0}`
   **exacto** (acaba a cero). Misma entrada ⇒ misma salida (test de repetición); semillas
   distintas ⇒ distinto (test).
-- `movimientoReducido` se **inyecta**; la política nunca lee `MOTOR_MOVIMIENTO_REDUCIDO` (la
+- `factorMovimiento` se **inyecta**; la política nunca lee `MOTOR_MOVIMIENTO_REDUCIDO` (la
   lectura de entorno sigue en el adaptador como en `ApplicationBucle.cpp:298`,
   `ApplicationHud.cpp:76`).
 - La sacudida **nunca** toca la posición lógica: devuelve un offset de vista.
 
 ### E05 · Composición base + efectos (60 min)
 ```cpp
-struct PoseCamara { Vector2 base; Vector2 vista; float zoom = 1.0f; };   // base = lógica; vista = base+sacudida
+struct PoseCamara { Vector2 base; Vector2 vista; float zoom = 1.0f; };   // base = posición recortada; vista = base+sacudida/zoom
 struct PoliticaPose { bool sacudidaDentroDeLimites = true; };            // regla D-T6
-Result<PoseCamara> componerPose(const Vector2& baseLimitada, float zoom, const Vector2& sacudidaMundo,
+Result<PoseCamara> componerPose(const Vector2& posicionLogica, float zoom, const Vector2& sacudidaPantalla,
                                 const TamanoVista& vista, const LimitesMapa* limites,
                                 const PoliticaPose& politica);
 ```
-- Orden fijo: seguimiento (E02) → límites (E03) → **base**; luego `vista = base + sacudida`; con
+- **Unidades**: la sacudida llega en píxeles de **pantalla** (salida de E04) y `componerPose` la
+  divide por `zoom` para pasarla a mundo; es el único sitio donde se divide. `posicionLogica` y
+  `zoom` son los **actuales** de `Camera` tras `update` (zoom interpolado, no el destino).
+- Pose por fotograma: `base = limitarAlMapa(posicionLogica, zoom, vista, limites)` (E03, con el
+  zoom actual); luego `vista = base + sacudida/zoom`; con
   `sacudidaDentroDeLimites` se limita `vista` otra vez con E03 (en un borde la sacudida solo se
   mueve hacia dentro; no se ve vacío por sacudida). `base` **nunca** recibe la sacudida
-  (cero deriva acumulada; test: 10 000 llamadas, `base` bit-idéntica).
-- `limites == nullptr` ⇒ sin límites (title/cinemáticas, D-T8). Puntero opcional en lugar de
+  (cero deriva acumulada; test: 10 000 llamadas, `base` bit-idéntica). `PoseCamara.vista -
+  posicionLogica` es el **desplazamiento de vista** que el adaptador entrega a `Camera`
+  (incluye el recorte de límites y la sacudida, ver E06 y D-T5/D-T12).
+- Casos numéricos obligatorios (mapa 64x64, tiles 64x32 ⇒ `izquierda=-2016`, `derecha=2080`,
+  `arriba=0`, `abajo=2048`; vista 800x600): zoom 1,7, centro x=-2000 ⇒ borde izq. de vista
+  -2235,3 (fuera) → `base.x = -2016 + 800/(2*1,7) = -1780,7`; zoom 1, centro (0,0) ⇒ `base =
+  (0,300)` (solo el eje Y se recorta) y centro (-2000,-50) ⇒ `(-1616,300)`;
+  zoom 3 en esquina inferior derecha; centro **exactamente** en
+  `min+mitad` (identidad) y a 1e-3 por fuera; mapa 3x2 (`izq=-32, der=128, arr=0, aba=80`) con
+  vista 800x600 ⇒ `base=(48,40)`; cambio de mapa: destino viejo (1500,1000) sobre mapa 3x2 ⇒
+  `(48,40)`.
+- `limites == nullptr` ⇒ sin límites (dónde se aplican: D-O6). Puntero opcional en lugar de
   `std::optional` (elección de estilo; E05 puede cambiarlo).
 
 ### E06 · Conectar con `Camera` y `juego` (90 min, DOCUMENTO + adaptador)
-Adaptador (patrón `struct ApplicationCinematica`, `ApplicationCinematica.h:79-137`, funciones
-estáticas que reciben `Application&`; el `friend` aparece en `ApplicationCinematica.h:143`):
+
+**Cambio de diseño respecto a la v0**: el adaptador **no recibe `Application&`**, así que no
+necesita `friend`. `Application.h:143` autoriza solo a `ApplicationCinematica`
+(`friend struct ApplicationCinematica`); añadir otro `friend` o miembros haría crecer
+`Application.h` (523 líneas), que se quiere dejar sin crecimiento neto. Las funciones del
+adaptador son libres de `Application`: reciben `Camera&`, el estado y los datos ya extraídos por
+el llamador (que sí es miembro de `Application` o `ApplicationCinematica`).
+
 ```cpp
-struct EstadoCamaraJuego { Vector2 destino; bool conDestino = false;
-    float amplitud = 0, duracion = 0; double reloj = 0; std::uint32_t semilla = 0; };
-struct ApplicationCamara {                         // include/Engine/ApplicationCamara.h
-    static void sigueJugador(Application& app, float dt);   // sustituye ApplicationBucle.cpp:158-175
-    static void sacude(Application& app, float amplitudPx, float duracion);  // sustituye ApplicationCinematica.cpp:493-499
-    static void reinicia(Application& app);                 // cambio de mapa / pausa
+// include/Engine/ApplicationCamara.h   (sin Application.h; solo Render/Camera.h y Core/Math)
+struct EstadoCamaraJuego {                       // propietario: EstadoCinematicas::camara (ver abajo)
+    Vector2 destino;  bool conDestino = false;   // destino vigente del seguimiento
+    float amplitudPx = 0, duracion = 0;  double reloj = 0;  std::uint32_t semilla = 0;
+    bool vistaLimitada = false;                  // false en título (D-O6)
 };
+namespace ApplicationCamara {
+    // 1) Antes de combate/update: decide el destino del seguimiento (sustituye ApplicationBucle.cpp:152-171 (comentario + código)).
+    void sigueJugador(Camera& cam, EstadoCamaraJuego& e, const GridCoord& celda, const Vector2& objetivoMundo,
+                      bool cambioDeCelda, bool enCombate, const LimitesMapa* limites, const ZonaMuerta& zona);
+    // Disparo (sustituye `e.sacudida = max(...)` de ApplicationPantallas.cpp:429,431).
+    void sacude(EstadoCamaraJuego& e, float amplitudPx, float duracion, std::uint32_t semilla);
+    // 2) Tras Camera::update(dt): compone y entrega el desplazamiento de vista.
+    void compone(Camera& cam, EstadoCamaraJuego& e, float dt, const LimitesMapa* limites, float factorMovimiento);
+    void reinicia(EstadoCamaraJuego& e, Camera& cam);   // cambio de mapa / entrar-salir de combate / pausa
+}
 ```
-Cambio mínimo en `Camera` (única edición del consumidor): `void setDesplazamientoVista(const
-Vector2& mundo)` y `Vector2 posicionVista() const` (= `m_position + m_sacudida`); matriz
-(`Camera.cpp:102`) y `screenToWorld` (`:111`) usan `posicionVista()`. `position()` sigue siendo la
-lógica. `FogOfWar.cpp:129-132` y `DynamicLightMap.cpp:90-91` pasan a `posicionVista()` (si no, la
-niebla/luces se desalinean durante la sacudida). El seguimiento sigue moviéndose con
-`transitionTo(destino, zoom, 0.16f, Linear)` (`ApplicationBucle.cpp:170`): no se introduce otro
-mecanismo de movimiento; el tween compartido **es** el movimiento (cierra la puerta TEMPS_TWEEN).
-- Reinicio de efectos: cambio de mapa ya tiene hook (`ApplicationNivel.cpp:470-471`: el adaptador
-  detecta el centinela `-9999` de `m_lastCameraCell`, sin editar `ApplicationNivel.cpp`);
-  pausa: el adaptador deja de avanzar `reloj` y el offset vuelve a 0 (cómo se detecta la pausa
-  en `juego` **no está verificado** en esta E: tarea de E06).
+
+**Propietario y ciclo de vida de `EstadoCamaraJuego`**: miembro `EstadoCamaraJuego camara;` de
+`EstadoCinematicas` (`include/Engine/ApplicationCinematica.h:38`, que ya posee `sacudida` en
+`:51` y cuelga de `Application` por `std::unique_ptr<EstadoCinematicas> m_cine`,
+`Application.h:348`). Así **`Application.h` no cambia**. Nace con `m_cine` y se reinicia en
+`loadLevel` (centinela de `m_lastCameraCell`, `ApplicationNivel.cpp:470-471`) sin editar
+`ApplicationNivel.cpp`: `sigueJugador` detecta `celda == {-9999,-9999}` ⇒ llama a `reinicia`.
+`EstadoCinematicas::sacudida` (`:51`) se **elimina** y los dos disparos de
+`ApplicationPantallas.cpp:429,431` (`e` es `*app.m_cine`, ya accesible; no hace falta `friend`)
+pasan a `ApplicationCamara::sacude(e.camara, amp, dur, semilla)`.
+
+**Secuencia exacta por fotograma** (`Application::update`, `ApplicationBucle.cpp:164-175`):
+1. `sigueJugador` (hoy `:164-171`, con su comentario `:152-163`): si el jugador cambia de casilla y no es `Battle`, calcula
+   `destino = seguirConZonaMuerta(...)`, lo limita con `limitarAlMapa(destino, zoomActual, ...)` y,
+   solo si difiere del destino vigente, llama `transitionTo(destino, zoom, 0.16f, Linear)`.
+2. `ApplicationCinematica::combate` (`:173`): puede llamar `transitionTo` con **destinos sin
+   limitar** (`ApplicationCinematica.cpp:396,437,479`); eso se acepta, porque el límite no se
+   aplica al destino sino a la pose (paso 4).
+3. `m_camera->update(deltaTime)` (`:175`): `Camera.cpp:49-59` interpola posición **y zoom** y
+   fija el destino exacto al acabar.
+4. `ApplicationCamara::compone` **inmediatamente después** (antes de `m_fog->updateTexture` y de
+   `m_lightMap->updateTexture`, `ApplicationBucle.cpp:183-188`): lee `cam.position()` y
+   `cam.zoom()` (interpolados de este fotograma), llama `componerPose` y entrega
+   `cam.setDesplazamientoVista(pose.vista - posicionLogica)`. Con esto el límite se cumple
+   también durante `transitionTo` de combate, zoom ×1,7 incluido (caso del §E05 con x=-2000).
+5. Niebla, luces, HUD del mundo, golpes y render leen `cam.posicionVista()` (D-T11).
+`ApplicationCinematica::titulo` (`:269-311`) llama a su propio `update(dt)` (`:310`): tras él
+llama `compone(..., limites=nullptr, ...)` (D-O6) para limpiar cualquier desplazamiento.
+`golpes->ponVista(...)` (`ApplicationCinematica.cpp:441`) se ejecuta en el paso 2, antes de
+`update`: pasa `posicionVista()` del fotograma anterior (1 fotograma de retraso, aceptado,
+**inferido** sin consecuencia visual a 0,5 s de transición).
+
+**Cambio en `Camera`** (única edición del consumidor): miembro `Vector2 m_desplazamientoVista`
+(15º de datos); `void setDesplazamientoVista(const Vector2&)`; `Vector2 posicionVista() const`
+(= `m_position + m_desplazamientoVista`). `getViewProjectionMatrix` (`Camera.cpp:102`) y
+`screenToWorld` (`:111`) usan `posicionVista()`. `position()` sigue siendo la lógica.
+`transitionTo` y el reloj float no se tocan (`Camera.cpp:73-89`). Un solo desplazamiento
+representa límites **y** sacudida: así no hace falta un segundo miembro.
+
+**Consumidores que pasan de `position()` a `posicionVista()`** (todos dentro del ámbito de E06):
+`src/Engine/ApplicationHud.cpp:379-380` (alimenta `EstadoJuego`, de donde leen
+`CartelesPuertas`, `BocadillosPnj`, `GuiaMapa`, `InterfazPergamino`; con ello **no se editan**
+esos cuatro ficheros), `src/Render/FogOfWar.cpp:129-132`, `src/Render/DynamicLightMap.cpp:90-91`,
+`ApplicationCinematica.cpp:441`. `Culling.h`/`IsometricRenderer` van por `screenToWorld` y la
+matriz (ya cubiertos). `ApplicationHud.cpp:378-381` pasa a leer también el zoom (sin cambios).
+El picking (`Application.cpp:1013-1017`, `ApplicationPantallas.cpp:341`) usa `screenToWorld`,
+es decir la vista: coincide con lo dibujado.
+
+**Extracción previa obligatoria (E06a, mecánica, sin cambio de comportamiento)**:
+`ApplicationCinematica.cpp` tiene 516 líneas (`wc -l`) y quitar `:492-500` (9) solo da 507.
+Se mueven a un fichero nuevo `src/Engine/ApplicationCinematicaTitulo.cpp` el bloque
+`namespace { acabaEn }` (`:264-268`), `ApplicationCinematica::titulo` (`:270-311`) y
+`alSalirDelTitulo` (`:313-317`; usa `acabaEn`, que no se usa en ningún otro punto: grep). Son
+54 líneas ⇒ 516 → 462 → ~452 tras E06 (`:492-500` y `:398`). Registro: una línea en `CMakeLists.txt` junto a `:835`.
+Los includes que `titulo` necesita se copian; cabecera sin cambios (son miembros ya declarados en
+`ApplicationCinematica.h`). Va en su propio commit **antes** del resto de E06.
+La llave: el bloque a quitar es `:492-500` (comentario en `:492`; el `if` abre en `:493`, el `else` está en
+`:499` y la llave cierra en `:500`; `:501` cierra la función). Quitar solo `:493-499` dejaría una
+llave huérfana.
+
+- Reinicio por **pausa**: cómo se detecta una pausa en `juego` **no está verificado** en esta E
+  (tarea de E06: localizar quién deja de llamar a `Application::update`); el requisito es que el
+  `reloj` no avance y el desplazamiento vuelva a 0 al reanudar.
 
 ### E07 · Verificar esquina y zona muerta (60 min, DOCUMENTO)
 Casos mínimos (todos con captura a escala real, `kTileW/H=64/32`, zoom 1): actor en el centro
@@ -245,11 +335,12 @@ Oriol: se declara **pendiente** hasta observación real (porta de la ficha).
 | E03 | — | `PoliticaCamara.h/.cpp`, `PoliticaCamaraTests.cpp` | Si el `.cpp` pasa de 400 líneas, partir `PoliticaCamaraLimites.cpp` (no en v1) |
 | E04 | — | ídem | Test de repetición bit a bit y de «acaba en 0» |
 | E05 | — | ídem | Cabecera final prevista: ~9 símbolos (<15), <200 líneas |
-| E06 | `include/Engine/ApplicationCamara.h`, `src/Engine/ApplicationCamara.cpp`, `tests/Engine/ApplicationCamaraTests.cpp` (si es GL-free; si no, test de política) | `include/Render/Camera.h` (+1 miembro, +2 métodos), `src/Render/Camera.cpp`, `src/Engine/ApplicationBucle.cpp` (bloque `:158-175` **sustituido**, neto negativo), `src/Engine/ApplicationCinematica.cpp` (quitar `:493-499`, **debe quedar <500**), `include/Engine/ApplicationCinematica.h` (`sacudida` `:51` pasa a disparar `ApplicationCamara::sacude`), `src/Render/FogOfWar.cpp`, `src/Render/DynamicLightMap.cpp`, `CMakeLists.txt` (una línea junto a `:835` para la fuente nueva) | **Cruce con otras sesiones**: ver R3. `ApplicationNivel.cpp` NO se edita |
+| E06a | `src/Engine/ApplicationCinematicaTitulo.cpp` | `src/Engine/ApplicationCinematica.cpp` (quitar `:264-317`), `CMakeLists.txt` (+1 línea junto a `:835`) | Solo movimiento; `ApplicationCinematica.cpp` 516 → 462 |
+| E06 | `include/Engine/ApplicationCamara.h`, `src/Engine/ApplicationCamara.cpp`, `tests/Engine/ApplicationCamaraTests.cpp` (GL-free, sin `Application`), `cmake/ApplicationCamara.cmake` | `include/Render/Camera.h` (+1 miembro, +2 métodos), `src/Render/Camera.cpp` (`:102`, `:111` + 2 métodos), `src/Engine/ApplicationBucle.cpp` (sustituir `:152-171` y añadir 1 llamada tras `:175`; neto ≈ −5), `src/Engine/ApplicationCinematica.cpp` (quitar `:492-500` y `:398`), `include/Engine/ApplicationCinematica.h` (`sacudida` `:51` → `EstadoCamaraJuego camara;`), `src/Engine/ApplicationPantallas.cpp` (`:429,431`), `src/Engine/ApplicationHud.cpp` (`:379-380`), `src/Render/FogOfWar.cpp` (`:129-132`), `src/Render/DynamicLightMap.cpp` (`:90-91`), `CMakeLists.txt` (fuentes `ApplicationCamara.cpp`) | **`Application.h` NO cambia**. `ApplicationNivel.cpp` NO se edita. Cruce: ver R3 |
 | E07 | `out/fabrica/REPLICA-R1/` solo evidencia | tests de política (esquinas) | Sin código de producto |
 
 Límites: `Camera.h` 103 → ~108 líneas; `Camera.cpp` 116 → ~125. `Camera` pasaría a **15**
-miembros de datos (`m_sacudida`): exactamente el límite; cualquier miembro más obliga a extraer
+miembros de datos (`m_desplazamientoVista`): exactamente el límite; cualquier miembro más obliga a extraer
 la transición a un `struct EstadoTransicion` (propuesta en R1) — no se hace en v1.
 
 ## 5. Decisiones
@@ -268,20 +359,28 @@ la transición a un `struct EstadoTransicion` (propuesta en R1) — no se hace e
   pausable) y no hay `rand()` global. La semilla de producción la pone el adaptador
   (p. ej. derivada de `e.dados->seed()` del combate, `ApplicationCinematica.cpp:415`; la semilla
   de dados es aleatoria por combate, `:362-366`). *E04, E06.*
-- **D-T5** La sacudida es un **desplazamiento de vista** separado de `m_position`
-  (`setDesplazamientoVista`), no un `transitionTo`. Razón: cumple «no altera posición lógica» de
+- **D-T5** La sacudida **y** el recorte de límites son un único **desplazamiento de vista**
+  (`setDesplazamientoVista`) separado de `m_position`, no un `transitionTo`. Razón: cumple «no altera posición lógica» de
   la ficha y evita que la sacudida corrompa `m_transitionStart*` (hoy lo hace,
   `ApplicationCinematica.cpp:497`). *E05, E06.*
+- **D-T11** La vista (con desplazamiento) es lo que se lee para proyectar mundo→pantalla:
+  `ApplicationHud.cpp:379-380` lee `posicionVista()` y de ahí heredan carteles, bocadillos, guía
+  de mapa y avisos (`EstadoJuego`, `InterfazPergamino.h:78`); también niebla, luces y golpes. Así
+  todo tiembla con el mundo. `position()` queda solo para lógica. *E06.*
+- **D-T12** El límite se aplica a la **pose por fotograma** (tras `update`, zoom interpolado), no
+  solo al destino del seguimiento; los `transitionTo` de combate/título quedan sin tocar
+  (`ApplicationCinematica.cpp:396,437,479`). *E05, E06.*
+- **D-T13** Adaptador sin `Application&` ni `friend` nuevo; estado en `EstadoCinematicas`;
+  extracción previa E06a. *E06.*
 - **D-T6** Regla sacudida vs límites: **recortar la vista final** (`sacudidaDentroDeLimites=true`):
   nunca se ve vacío por sacudida; en un borde el temblor es unilateral. Alternativa B: sacudida
   libre (puede mostrar ≤ amplitud px de vacío). Depende de D-O3 si Oriol admite ver fuera.
   *E05.*
 - **D-T7** Margen superior de `limitesDeMapa`: parámetro `margenSuperiorPx` (defecto 0) para
   sprites altos y alturas de terreno (`Alturas::desfasePx` es negativo hacia arriba,
-  `Alturas.h:93`); el valor concreto lo fija E03 con el nivel de mayor altura. *E03.*
-- **D-T8** Dónde se aplican los límites: exploración y combate **sí**; cinemática del título
-  (`ApplicationCinematica.cpp:309`, camino libre) **no** (`limites=nullptr`). Revisar en E07 si el
-  combate cerca del borde queda descentrado. *E06.*
+  `include/Runtime/Alturas.h:93`); el valor concreto lo fija E03 con el nivel de mayor altura. *E03.*
+- **D-T8** (pasa a producto: ver **D-O6**). Mientras Oriol no decida, defecto = exploración y
+  combate con límites, título sin ellos. *E06.*
 - **D-T9** `Camera` conserva su reloj `float` (U3-07 R2, `Camera.cpp:34-41`); el reloj de la
   sacudida es `double` en el adaptador. No se migra `Camera` a `avanzaTween`. *E06.*
 - **D-T10** `fitMap` y `limitesDeMapa` duplican la misma geometría (`MapFraming.cpp:17-19`);
@@ -295,7 +394,8 @@ la transición a un `struct EstadoTransicion` (propuesta en R1) — no se hace e
 | **D-O1** | Tamaño de la zona muerta por defecto | (a) 0 = centrar siempre (hoy); (b) ±1 tile `64x32` px; (c) ±1,5 tiles `96x48` px; (d) 25 % de la ventana | **(c) ±96x±48 px**, constante en un solo sitio y ajustable en E07 tras verlo | Valor en **E06**; E02 se implementa y se prueba sin él (recibe `ZonaMuerta`). Defecto de código = (a) hasta decidir |
 | **D-O2** | Intensidad y duración de la sacudida | (a) como hoy: ±4/±2,4 px, 0,14 s (daño) y 0,24 s (crítico) pero con caída a 0; (b) más suave (±3); (c) más fuerte (±6, crítico 0,35 s) | **(a)** conservar valores, añadir caída. Nota: hoy son 4 px de **mundo**, con zoom de combate 1,7 se ven ≈6,8 px de pantalla; la amplitud de v1 es de pantalla, así que (a) equivale a pasar `4*1,7≈7` px | Valores en **E06**; E04 no | 
 | **D-O3** | ¿La cámara puede mostrar fuera del mapa? | (a) nunca (salvo mapa menor que la vista: centrado); (b) margen de 1 tile; (c) libre | **(a)**; mapas menores que la ventana se centran con el vacío alrededor | Parámetro por defecto en **E06** y criterio de aceptación de **E07**; E03 lo implementa parametrizado (0 = estricto) |
-| **D-O4** | Reduced motion: ¿sacudida apagada o atenuada? | (a) off; (b) 25 % de amplitud | **(a) off**, coherente con cómo el HUD omite animaciones (`DialogoHoja.cpp:219`) | Defecto en **E06**; E04 ya admite ambos |
+| **D-O4** | Reduced motion: ¿sacudida apagada o atenuada? | (a) off (`factorMovimiento=0`); (b) 25 % (`0,25`) | **(a) off**, coherente con cómo el HUD omite animaciones (`DialogoHoja.cpp:219`) | Defecto en **E06**; E04 ya admite ambos |
+| **D-O6** | ¿Dónde se aplican los límites? | (a) exploración y combate, no título/cinemáticas; (b) también combate sin límites (el encuadre del combate manda); (c) solo exploración | **(a)**; revisar en E07 si el combate junto al borde queda descentrado | Defecto en **E06**; E07 lo verifica |
 | **D-O5** | Aprobación visual/jugable (dead zone, esquinas, sacudida a escala real) | — | Observación real por Oriol | **E07**, y el cierre del paquete (porta de la ficha) |
 
 ## 6. Discrepancias con la ficha (registradas, no resueltas)
@@ -306,7 +406,7 @@ la transición a un `struct EstadoTransicion` (propuesta en R1) — no se hace e
   E02/E06 deben partir de `transitionTo`, no del lerp.
 - **C2.** La ficha pide una sacudida «determinista» y que «no altere la posición lógica»; ya
   existe una sacudida integrada que no cumple ninguna de las dos
-  (`ApplicationCinematica.cpp:493-499`: estado `static`, `transitionTo`). E06 la sustituye, no la
+  (`ApplicationCinematica.cpp:492-500`: estado `static`, `transitionTo`). E06 la sustituye, no la
   añade.
 - **C3.** Las firmas de la ficha usan `Vec2`, `CameraState`, `DeadZone`, `MapBounds`, `ViewSize`,
   `ShakeState`, `CameraPose`, `uint32_t`: en el repo solo existen `Vector2` (global) y
@@ -317,13 +417,18 @@ la transición a un `struct EstadoTransicion` (propuesta en R1) — no se hace e
   cámara (`Application.cpp:450`; `setViewportSize` solo en el editor): los límites (E03)
   dependen de `anchoVista/altoVista`; si la ventana es redimensionable el cálculo se desalinea
   (inferido; hay que comprobar si la ventana de `juego` es redimensionable antes de E06).
+- **C3b.** Renombres de operaciones de la ficha: `followTarget→seguirConZonaMuerta`,
+  `clampCamera→limitarAlMapa` (+`limitesDeMapa`), `shakeOffset→desplazamientoSacudida`,
+  `cameraPose→componerPose`; E01, E06 y E07 son documentos y no tienen operación nueva (E06 añade el
+  adaptador `ApplicationCamara`). Además `shakeOffset(..., double t, uint32_t seed)` gana
+  `factorMovimiento` y devuelve `Result`.
 - **C5.** U3-07 documentó `Camera.cpp` con 109 líneas; ahora son 116 (post-E08, `628f417`).
 - **C6.** Dependencia de E `PREP.E10` y de paquete U3-07: U3-07 está integrado en la base;
   `PREP.E10` no verificada aquí.
 
 ## 7. Riesgos y trampas
 
-- **R1. Límite de miembros de `Camera`**: 14 de datos hoy (`Camera.h:85-102`); +`m_sacudida` = 15.
+- **R1. Límite de miembros de `Camera`**: 14 de datos hoy (`Camera.h:85-102`); +`m_desplazamientoVista` = 15.
   Contando métodos (14 + 2) ya se pasa. Si se quiere holgura, extraer los 8 de la transición a
   `struct EstadoTransicion` dentro de `Camera.h` (neutral en comportamiento, cubierto por
   `CameraTransitionTests.cpp:228-273`); queda como decisión del Brain en E06, no en v1.
@@ -347,7 +452,7 @@ la transición a un `struct EstadoTransicion` (propuesta en R1) — no se hace e
   último destino lo puso ella: `reinicia()` al entrar/salir de combate y de título.
 - **R6. Dead zone con movimiento discreto**: el actor salta de casilla (`GridCoord`); el
   seguimiento debe usar la casilla **lógica destino**, no la posición visual interpolada del
-  `Player` (que va con paso de 0,16 s, `Player.cpp:61-66`), o aparecerá jitter por doble tween
+  `Player` (que va con paso de 0,16 s, `src/Render/Player.cpp:27`; update en `:61-66`), o aparecerá jitter por doble tween
   (inferido). `desfasePx` de altura cambia el `y` del actor entre casillas: entra en la zona.
 - **R7. Persistencia del `m_lastCameraCell`**: el centinela `-9999` (`ApplicationNivel.cpp:471`)
   es el único aviso de «nivel nuevo»; si E06 no lo respeta, la cámara conserva destino del mapa
@@ -370,11 +475,13 @@ la transición a un `struct EstadoTransicion` (propuesta en R1) — no se hace e
 ## 8. Qué puede empezar ya
 
 - **Sin decisión de Oriol**: E02, E03, E04 y E05 (se implementan parametrizadas; los valores por
-  defecto concretos no entran en la política). Pueden arrancar en cuanto el Brain dé por
-  buenas D-T1…D-T10.
-- **Parcial**: E06 (integración con valores) necesita D-O1, D-O2, D-O3, D-O4; puede prepararse con
-  defecto = comportamiento actual (zona 0, amplitud 4 px/0,14-0,24 s, límites estrictos, reducido
-  off).
+  defecto concretos no entran en la política). E05 fija la regla D-T6 con el valor «recortar» como
+  defecto del parámetro; si Oriol responde D-O3 (b) o (c) basta cambiar `PoliticaPose`. Pueden
+  arrancar en cuanto el Brain dé por buenas D-T1…D-T13.
+- **E06a** (extracción mecánica de `titulo`) puede hacerse ya, independiente de todo lo demás.
+- **Parcial**: E06 (integración con valores) necesita D-O1, D-O2, D-O3, D-O4, D-O6; puede prepararse
+  con defecto = comportamiento actual (zona 0, amplitud actual, límites estrictos, reducido off,
+  límites en exploración y combate).
 - **Bloqueada por Oriol**: E07 (D-O5, observación real).
 
 ## 9. Cierre de E01
@@ -384,5 +491,5 @@ la transición a un `struct EstadoTransicion` (propuesta en R1) — no se hace e
   `wc -l` (Camera.h 103, Camera.cpp 116, CameraTests 272, CameraTransitionTests 301,
   ApplicationNivel 506, ApplicationCinematica 516, ApplicationBucle 473). Sin build ni tests
   (E documental).
-- Citas comprobadas: `out/fabrica/REPLICA-R1/U4-01.E01_citas.log`.
+- Citas comprobadas por contenido (ronda 1): `out/fabrica/REPLICA-R1/U4-01.E01_citas.log` (versionado con este commit; 136 rangos, línea citada impresa).
 - Hash de contexto: base `628f417`.
