@@ -1,0 +1,84 @@
+{
+ "id": "la_grieta_que_camina",
+ "name": "La Grieta que Camina",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "escaramuzador",
+ "faction": "horrores_del_cielo_fragmentado",
+ "stats": {
+  "CON": 5,
+  "DES": 8,
+  "INT": 6,
+  "CAR": 5
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 19,
+  "defensaMental": 15,
+  "resistenciaFisica": 15,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Corte de Horizonte",
+   "defense": "defensa_mental",
+   "effect": "Daño mágico que suma su DES; el que falle queda Cegado por el destello del otro lado."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "defensa_mental",
+   "effect": "Si el objetivo falla, queda Cegado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Refracción",
+  "description": "Refracción: la primera vez que cada personaje la ataca a distancia, el proyectil o rayo se dobla — falla y golpea la casilla adyacente."
+ },
+ "conditionsInflicted": [
+  "cegado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Magico"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Encadena su técnica tras el ataque firma y +1 al daño."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Encontrar el fragmento del que se separó: se reconocerán por el borde",
+  "metodo": "Se acerca amable; la realidad alrededor no coopera",
+  "debilidad_narrativa": "El vidrio ahumado: mirarla a través de cristal oscuro permite atacarla sin refracción",
+  "vinculo": "el_oraculo_fragmentado"
+ },
+ "arena": {
+  "name": "El Campo Astillado",
+  "hazard": "Astillas de cielo: pisar una (casillas marcadas) corta — 1 de daño y Sangrado si se corre"
+ },
+ "legendaryActions": [],
+ "storyCard": {
+  "title": "La Grieta que Camina",
+  "text": "No quiere hacer daño. Es que el mundo le queda estrecho.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Un trozo de cielo roto con querencia por la gente."
+}

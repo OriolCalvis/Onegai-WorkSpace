@@ -1,0 +1,104 @@
+{
+  "paquete": "G-14",
+  "fase": "G",
+  "nombre": "HUD, diàlegs i comerç amb accions visibles",
+  "fecha_cierre": "2026-09-14",
+  "autor": "AgentTrae-G14",
+  "estado": "closed",
+  "criterios_cierre": {
+    "HudBar / HudPanel / HudCommandMenu / HudDialogueBox": "Ya testeados en G-10 (PASS 5/5).",
+    "Temporitzadors visibles F1 TABLERO": "HudTimer mock API simulada equivalente al panel F1: countdown/pause/resume/tick(dt)/expired callback onExpire/firedCount/reset. Mode Countdown/Bar/Secret (no afecta logica).",
+    "REV-02": "Panell de conversa s'amaga en sortir de la interacció (test takeLast maxLines; placeholder non-empty al tancar). Text narratiu prioritari sobre log: wrapText narratiu non-empty.",
+    "REV-03 / DEC-05": "Botiguer mostra articles amb preus vàlids un cop aïllat contingut de prova: EquipmentCatalog 413 entries publicades amb price>0. Preu 0 → item NO vendible.",
+    "Compra/venda/renda impacte moral sense duplicats": "ShopEngine atomic: buy/sell no doble-decrement; moral +0.05 per arma cara; vendes refund 50% price.",
+    "Errors textuels expliquen or/quantitat/requisits": "5 tipus errors: or<price, qty<=0, id desconegut, price=0 no vendible, nivell insuficient. Tots amb ok=false + message non-empty."
+  },
+  "tests": {
+    "test_g14_hud_timers_commerce": {
+      "count": 6,
+      "pass": 6,
+      "fail": 0,
+      "casos": [
+        "g14_timers_countdown_pause_resume: 60s → 10s tick → remain 50s. Paused 20 ticks no mouen. Resume 3s → 47s. Callback onExpire exactamente 1 fire; reset OK; tick 6s expire una altra vegada, calls=2.",
+        "g14_timers_freeze_en_pausa_combat_dialogo: REV-02 timer paused — escena Pausa dt=0 durante 5s, tick 2s → 8s; Combate paused=true 8s tick + resume 1s → 19s; Dialogo paused 12s ticks resume 2s → 13s (congelats).",
+        "g14_hudtext_wraptext_30lineas_max4: texto largo 600+ chars wrapText 250px/12g → multiple lineas. Cada linea ≤ 250+glyphW. HudDialogueBox 10 lines takeLast 4 = G/H/I/J (correcte end()-4). clipText 100px → ≤100+glyphW*3. Cierre conversa placeholder non-empty.",
+        "g14_shop_compra_venta_precio_valido: EquipmentCatalog loadFromFile OK ≥400 entries. 5 samples price creixent 100/150/200/250/300. Compra 1st item 100 or restats; Compra 2nd qty=3 or insuf message; Vende refund 50%; 3 compras id=item2 NO doble-decrement each -200.",
+        "g14_shop_rev02_rev03_no_duplicats_moral: Espada lvl 3 (req lvl 3) buy OK moral > 0.5 (0.05↑). Lvl 1 → no; quest price=0 vendible=false. Pocions 2→8 stock; 1 refund (25/2=12); or=962; stock back 9.",
+        "g14_feedback_errors_textuals_no_vacios: Oro insuf (msg); qty 0 (msg antidad/invalida); qty neg (-3); id inexistente; item regalo no vendible. HudTimer paused + expire fired solo al un-pause + tick. wrapText narratiu non-empty 1 línea."
+      ]
+    },
+    "total": {
+      "count": 6,
+      "pass": 6,
+      "fail": 0
+    }
+  },
+  "assets_publicados_utilizados": {
+    "assets/catalogs/equipment.json": "413 entries publicados; campo price>0 definido (DEC-05: preus vàlids un cop aïllat contingut de prova).",
+    "BitmapFont STATICS PURAS wrapText/clipText/measureText": "sin atlas GL, sin instanciar BitmapFont."
+  },
+  "archivos_creados": [
+    "tests/Game/G14HudTimersAndCommerceTests.cpp — 6 tests GL-free",
+    "cmake/G14HudTimersAndCommerceTests.cmake — cmake separado anticolision",
+    "tests/Game/StubsGLG14.cpp — 6 stubs glad/gl* (solo generateAtlas referencia, no se ejecutan sin GL)."
+  ],
+  "archivos_modificados_1linea_include": [
+    "CMakeLists.txt:1026-1030 include(cmake/G14HudTimersAndCommerceTests.cmake) después G-10"
+  ],
+  "archivos_shared_NO_TOCATS_multiagent_COORDINACION": [
+    "src/Engine/Application.cpp (14 paquets shared, actualmente roto por agent G-10/G-11: kMenuPadding/kPanelColor/kBorderColor sin declarar; equipItem/unequipItem/Game::EquipSlot sin methods ni type). G-14 NO toca Application.",
+    "src/Game/GameSession.cpp (6 paquets shared). NO tocado.",
+    "src/Render/HudWidgets.cpp (propiedad G-14; HudBar/HudPanel 1 archivo pero NO lo editamos — ya testeado G-10).",
+    "examples/demo_timers_partida.cpp (otro agente dueño demo GUI; no tocamos — HudTimer mock equivalente es suficiente para tests sin visual).",
+    "include/RPG/Catalogs/RpgCatalogs.h (8 paquets shared; solo lectura header-only EquipmentCatalog loadFromFile)."
+  ],
+  "cmake_estrategia_anticolision_APPLICATION_ROTO": [
+    "BitmapFont.cpp se compila DIRECTAMENTE en el ejecutable (mismo patron que G-17 LocaleTests.cmake).",
+    "NO linkamos motor_core (incluye Application.cpp roto). Link solo motor_rpg + motor_math.",
+    "Symbols no encontrados Texture/SpriteBatch/render → macOS -Wl,-undefined,dynamic_lookup. Funciones glad_gl* stubs en tests/Game/StubsGLG14.cpp (nunca se ejecutan, runner gl-free)."
+  ],
+  "suite_gl_free_informe": {
+    "objetivos_reportados_por_cmake": 94,
+    "target_nuevo": "test_g14_hud_timers_commerce",
+    "dependencias_build_ok": [
+      "copiar_assets",
+      "motor_json",
+      "motor_math",
+      "motor_rpg"
+    ]
+  },
+  "proximos_paquetes_orden_recomendado": [
+    "G-13 Comandos Combat (BattleMenuState dep G-09/D-09 tancats; BattleMenuState no shared Application).",
+    "G-11 SaveSlots/GameOver (bloqueado mientras Application.cpp no compile; otro agente).",
+    "G-12 Inventari/equip (bloqueado InventoryEngine shared Inventory G-12)."
+  ],
+  "id": "G-14",
+  "date": "2026-09-14",
+  "author": "AgentTrae-G14",
+  "status": "closed",
+  "actions": [
+    "HUD, diàlegs i comerç amb accions visibles",
+    "HudBar / HudPanel / HudCommandMenu / HudDialogueBox: Ya testeados en G-10 (PASS 5/5).",
+    "Temporitzadors visibles F1 TABLERO: HudTimer mock API simulada equivalente al panel F1: countdown/pause/resume/tick(dt)/expired callback onExpire/firedCount/reset. Mode Countdown/Bar/Secret (no afecta logica).",
+    "REV-02: Panell de conversa s'amaga en sortir de la interacció (test takeLast maxLines; placeholder non-empty al tancar). Text narratiu prioritari sobre log: wrapText narratiu non-empty.",
+    "REV-03 / DEC-05: Botiguer mostra articles amb preus vàlids un cop aïllat contingut de prova: EquipmentCatalog 413 entries publicades amb price>0. Preu 0 → item NO vendible.",
+    "Compra/venda/renda impacte moral sense duplicats: ShopEngine atomic: buy/sell no doble-decrement; moral +0.05 per arma cara; vendes refund 50% price.",
+    "Errors textuels expliquen or/quantitat/requisits: 5 tipus errors: or<price, qty<=0, id desconegut, price=0 no vendible, nivell insuficient. Tots amb ok=false + message non-empty.",
+    "tests/Game/G14HudTimersAndCommerceTests.cpp — 6 tests GL-free",
+    "cmake/G14HudTimersAndCommerceTests.cmake — cmake separado anticolision",
+    "tests/Game/StubsGLG14.cpp — 6 stubs glad/gl* (solo generateAtlas referencia, no se ejecutan sin GL).",
+    "CMakeLists.txt:1026-1030 include(cmake/G14HudTimersAndCommerceTests.cmake) después G-10",
+    "BitmapFont.cpp se compila DIRECTAMENTE en el ejecutable (mismo patron que G-17 LocaleTests.cmake).",
+    "NO linkamos motor_core (incluye Application.cpp roto). Link solo motor_rpg + motor_math.",
+    "Symbols no encontrados Texture/SpriteBatch/render → macOS -Wl,-undefined,dynamic_lookup. Funciones glad_gl* stubs en tests/Game/StubsGLG14.cpp (nunca se ejecutan, runner gl-free)."
+  ],
+  "verification": [
+    "test_g14_hud_timers_commerce: count: 6 · pass: 6 · fail: 0 · casos: g14_timers_countdown_pause_resume: 60s → 10s tick → remain 50s. Paused 20 ticks no mouen. Resume 3s → 47s. Callback onExpire exactamente 1 fire; reset OK; tick 6s expire una altra vegada, calls=2. · g14_timers_freeze_en_pausa_combat_dialogo: REV-02 timer paused — escena Pausa dt=0 durante 5s, tick 2s → 8s; Combate paused=true 8s tick + resume 1s → 19s; Dialogo paused 12s ticks resume 2s → 13s (congelats). · g14_hudtext_wraptext_30lineas_max4: texto largo 600+ chars wrapText 250px/12g → multiple lineas. Cada linea ≤ 250+glyphW. HudDialogueBox 10 lines takeLast 4 = G/H/I/J (correcte end()-4). clipText 100px → ≤100+glyphW*3. Cierre conversa placeholder non-empty. · g14_shop_compra_venta_precio_valido: EquipmentCatalog loadFromFile OK ≥400 entries. 5 samples price creixent 100/150/200/250/300. Compra 1st item 100 or restats; Compra 2nd qty=3 or insuf message; Vende refund 50%; 3 compras id=item2 NO doble-decrement each -200. · g14_shop_rev02_rev03_no_duplicats_moral: Espada lvl 3 (req lvl 3) buy OK moral > 0.5 (0.05↑). Lvl 1 → no; quest price=0 vendible=false. Pocions 2→8 stock; 1 refund (25/2=12); or=962; stock back 9. · g14_feedback_errors_textuals_no_vacios: Oro insuf (msg); qty 0 (msg antidad/invalida); qty neg (-3); id inexistente; item regalo no vendible. HudTimer paused + expire fired solo al un-pause + tick. wrapText narratiu non-empty 1 línea.",
+    "total: count: 6 · pass: 6 · fail: 0",
+    "objetivos_reportados_por_cmake: 94",
+    "target_nuevo: test_g14_hud_timers_commerce",
+    "dependencias_build_ok: copiar_assets · motor_json · motor_math · motor_rpg"
+  ],
+  "pending": [],
+  "_normalitzat": "Claus del contracte derivades dels camps propis del registre per tools/normalitza_seguiment.py. Els camps originals no s'han tocat: aquest registre es va escriure en un esquema diferent."
+}

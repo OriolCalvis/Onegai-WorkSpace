@@ -1,0 +1,26 @@
+{
+ "id": "suelo_de_escarcha_cantora",
+ "name": "Suelo de Escarcha Cantora",
+ "type": "trap",
+ "tier": 1,
+ "rarity": "common",
+ "category": "mágica",
+ "trigger": "correr sobre el hielo grabado",
+ "detection": {
+  "stat": "INT",
+  "cd": 0.5
+ },
+ "disarm": {
+  "stat": "DES",
+  "cd": 0.5,
+  "herramienta": null
+ },
+ "effect": {
+  "description": "Resbalón musical: Caído y la melodía delata la posición.",
+  "defensa": "defensa_mental",
+  "condicionInfligida": "caido"
+ },
+ "onFail": "El hielo se abre: Agarrado en agua helada, 1 de frío por ronda.",
+ "reset": "persistente",
+ "flavorText": "Quien la montó pensaba volver. No volvió."
+}

@@ -1,0 +1,19 @@
+{
+  "id": "C12-C13-EVENTLAYER-CONTRACT",
+  "date": "2026-09-23",
+  "author": "Codex",
+  "status": "HECHO — cobertura exclusiva del contrato EventLayer en MapDocument.",
+  "route": "MapDocument → juego, level_editor y motor_editor; prueba existente test_map_document (1/1, GL-free).",
+  "scope": [
+    "Añadir cobertura GL-free para addEvent/removeEvent a través de la frontera transaccional de MapDocument.",
+    "Comprobar alta, ID y posición duplicados, fuera de límites, capa equivocada, baja y rollback.",
+    "No tocar MapDocument, EventLayerDocument, serializadores, CMake, Application ni archivos ajenos."
+  ],
+  "verification": [
+    "test_map_document pasa 1/1 desde el target ya registrado (23/09/2026, GL-free).",
+    "medir_alcance confirma C-12 y C-13 sin archivos huérfanos: MapDocument llega a juego, level_editor y motor_editor.",
+    "tests/Map/MapDocumentTests.cpp queda en 482 líneas, por debajo de 500, y no contiene lógica de producto.",
+    "linea_base_core.py --rapido pasa; el mapa existente ya asocia la prueba a C-12/C-13, por lo que no se regenera globalmente en un árbol con WIP concurrente."
+  ],
+  "handoff": "EventLayerDocumentTests ya cubre la capa en aislamiento; este relevo cubre el borde distinto MapDocument::mutateLayer sin duplicar su validación interna. sameDocument rechaza explícitamente MapLayerType::Event hasta que E-01 tenga un comparador profundo de páginas, condiciones y comandos: así no afirma una igualdad incompleta."
+}

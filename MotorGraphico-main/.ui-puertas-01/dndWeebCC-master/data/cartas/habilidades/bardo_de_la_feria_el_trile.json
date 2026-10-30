@@ -1,0 +1,47 @@
+{
+ "id": "bardo_de_la_feria_el_trile",
+ "name": "El trile",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Tres cubiletes, una bolita y unas manos más rápidas que la vista. Si el enemigo no se resiste (defensa mental), anda tan liado buscando la bolita que se defiende con desventaja 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "bardo_de_la_feria"
+ ],
+ "roleTags": [],
+ "tags": [
+  "bardo_de_la_feria",
+  "estandar"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "CAR",
+ "defenseStat": "defensa_mental",
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Tres cubiletes, una bolita y unas manos más rápidas que la vista. Si el enemigo no se resiste (defensa mental), anda tan liado buscando la bolita que se defiende con desventaja 2 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Liado con la bolita: se defiende con desventaja 2 turnos.",
+   "mechanicHook": "estado:2:desventaja:defensa"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "Propia · Bardo de la Feria · feria: el trile"
+}

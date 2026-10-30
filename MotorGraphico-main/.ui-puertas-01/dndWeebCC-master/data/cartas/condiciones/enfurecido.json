@@ -1,0 +1,28 @@
+{
+ "id": "enfurecido",
+ "name": "Enfurecido",
+ "type": "condition",
+ "category": "neutro",
+ "source": "estado",
+ "stackable": false,
+ "duration": "hasta_curarse",
+ "effects": [
+  {
+   "description": "Tus ataques cuerpo a cuerpo suman +2 al daño.",
+   "mechanicHook": "bono_dano_melee:2"
+  },
+  {
+   "description": "No puedes jugar cartas con tag [Concentracion].",
+   "mechanicHook": "bloquea_tag:Concentracion"
+  },
+  {
+   "description": "Al final de tu turno, si no atacaste ni recibiste daño, la Furia termina.",
+   "mechanicHook": "fin_si_inactivo"
+  }
+ ],
+ "cureConditions": [
+  "Terminar la Furia voluntariamente (acción libre)",
+  "Fin del combate"
+ ],
+ "flavorText": "La tormenta no pregunta si puede entrar."
+}

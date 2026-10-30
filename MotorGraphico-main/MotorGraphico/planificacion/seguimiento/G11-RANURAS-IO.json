@@ -1,0 +1,28 @@
+{
+  "id": "G11-RANURAS-IO",
+  "date": "2026-10-05",
+  "author": "Codex + agente de pruebas",
+  "status": "RODAJA HECHA — G-11 global sigue abierto",
+  "map": "MAPA_DEL_CODIGO.md, G-11: SaveSlotState.h/.cpp y SaveSlotsTests.cpp ya estan asignados; no se regenera el mapa compartido.",
+  "scope": [
+    "SaveSlots distingue archivo ausente de errores de filesystem; solo el primero es Empty. Destinos no regulares, enlaces rotos o ciclicos quedan Corrupt, ocupados, con motivo y sin cargar.",
+    "Listar, guardar, cargar y borrar usan la misma comprobacion de tipo. No se abre una FIFO sin escritor ni se elimina una carpeta vacia como si fuese una partida.",
+    "Los enlaces a ficheros regulares siguen admitidos: cargar lee, borrar retira el enlace, guardar lo reemplaza sin modificar el fichero apuntado. Juego sin proyecto y rutas UTF-8 compatibles.",
+    "TIMEOUT 30 en test_save_slots evita que una regresion de FIFO bloquee CTest.",
+    "SaveSlotState.cpp: 323 lineas, sin nuevas clases/miembros/fuentes directas. Sin Application, GameSession, CMakeLists.txt ni assets."
+  ],
+  "verification": [
+    "Falsabilidad en worktree aislado sobre 67581de: cuatro pruebas nuevas fallan (padre archivo, carpeta vacia borrada, enlace roto y bucle); la version anterior se bloquea en FIFO y se termina tras 5 s.",
+    "Con correccion: CTest 3/3; test_save_slots 23/23, test_save_game 32/32 y test_title_flow 7/7, total 62 casos.",
+    "juego compila en checkout aislado; humo --nivel assets/levels/ciudad_oeste.json 3 termina con codigo 0 en macOS. nm confirma SaveSlots::save/load/remove/readSlot en juego.",
+    "Guardia completa antes/despues sobre 67581de: los mismos 37 hallazgos previos, ninguno introducido. Diff-check pasa; linea base sin cambios.",
+    "Revision paralela sin hallazgos bloqueantes; recomienda y se aplica timeout a la prueba FIFO."
+  ],
+  "limits": [
+    "Verificado en macOS; casos de enlaces/FIFO protegidos con !WIN32. No se ejecuta Windows ni suite global ni recorrido manual del selector.",
+    "El tipo se comprueba en la entrada de la ranura; no se inspeccionan individualmente todos los antecesores ni se ofrece una transaccion sobre cambios externos simultaneos de filesystem."
+  ],
+  "pending": [
+    "Selector visual, confirmacion de sobrescritura y recuperacion de derrota del G-11 global."
+  ]
+}

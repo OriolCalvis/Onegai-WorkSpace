@@ -1,0 +1,39 @@
+{
+ "id": "monje_de_lucha_meditacion",
+ "name": "Meditación",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Al empezar el combate eliges tu espíritu. Fuerza: atacas con ventaja. Iluminado: +1 a la CA. Mesura: te defiendes con ventaja.",
+ "flavorText": "",
+ "classTags": [
+  "monje_de_lucha"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "Al empezar el combate eliges tu espíritu. Fuerza: atacas con ventaja. Iluminado: +1 a la CA. Mesura: te defiendes con ventaja.",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Eliges un espíritu al empezar el combate.",
+   "mechanicHook": "elige_una:fuerza,iluminado,mesura"
+  },
+  {
+   "description": "Fuerza mental: atacas con ventaja.",
+   "mechanicHook": "si:fuerza:ventaja:ataque"
+  },
+  {
+   "description": "Espíritu iluminado: +1 a la CA.",
+   "mechanicHook": "si:iluminado:bono_ca:1"
+  },
+  {
+   "description": "Espíritu de la mesura: te defiendes con ventaja.",
+   "mechanicHook": "si:mesura:ventaja:defensa"
+  }
+ ],
+ "fuente": "NosTale · Monje de lucha (Battle Monk)"
+}

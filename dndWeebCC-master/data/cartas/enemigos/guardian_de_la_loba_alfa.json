@@ -1,0 +1,64 @@
+{
+ "id": "guardian_de_la_loba_alfa",
+ "name": "Guardian de la Loba Alfa",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "defensa",
+ "faction": "manada_del_rei_llop",
+ "factionName": "La Manada del Rei Llop",
+ "stats": {
+  "CON": 7,
+  "DES": 6,
+  "INT": 5,
+  "CAR": 6
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 17,
+  "defensaMental": 16,
+  "resistenciaFisica": 17,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Embestida",
+   "defense": "CA",
+   "effect": "Ataque de hielo: daño que suma su CON (pool de CON, regla 7.6)."
+  },
+  {
+   "name": "Cierre de Colmillos",
+   "defense": "resistencia_fisica",
+   "effect": "Técnica de facción: si el objetivo falla, queda Sangrado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Ventaja en ataques contra objetivos que sangran o huyen."
+ },
+ "conditionsInflicted": [
+  "sangrado"
+ ],
+ "loot": [
+  "cuchillo_de_cazador_de_milicia",
+  "botas_de_cazador",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Hielo"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Gana una segunda técnica por ronda y +1 al daño."
+  }
+ ],
+ "flavorText": "El Rei Llop está muerto. Su hambre, no."
+}

@@ -1,0 +1,30 @@
+{
+  "id": "C-24",
+  "date": "2026-09-11",
+  "author": "opencode (Cowork)",
+  "status": "CLOSED 13/09 (Ho prova): cobertura >=70% de línees a src/Game GL-free - Cobertura C-24 OK, 0 fitxers sota 70% (SceneManager 72.2, BattleState 81.6, ApplicationLoop 85.7, GameSession 86.5, SaveGame 87.5, EnemyBrain 87.5, Skill 90.1, InputSystem 94.9, Morality 100). 7 suites propies a CTest (101 testes) + 7 nous de sessió: test_game_session 18/18, test_battle_state 14/14.",
+  "actions": [
+    "Afegits 7 casos a tests/Game/GameSessionTests.cpp cobrint la meitat del 'Fet quan' de C-24: curva occupancyPercent i l'&ograve;ptim interior de incomeFor (passar-se de renta retorna), cicle de rentes per passos (kStepsPerRentCycle=40) amb moral SOSTINGUDA per cobrament, compra de negoci + adjustCurrentRent amb clamp [50,200] i moral per canvi (-applied/5), tienda (buybackPercent 60%, objecte amb price 0 no es ven), i Morality com a peça sola (record/clamp/historial acotat a 12/setValue/fraction/label per trams).",
+    "Sense tocar src/: sols tests GL-free, tal com marca la fila del TABLERO.",
+    "Discrep&agrave;ncia registrada: Morality::label() torna 'HÉROE' (amb accent) mentre Morality.h promet 'sin acentos' (BitmapFont nom&eacute;s t&eacute; maj&uacute;scules); el test fija el llindar, no el glifo.",
+    "12/09 (opencode): test_skill 13/13 puja a CTest (#71); suite C-24 7/7 verda (incl. test_carry_over #69, test_enemy_brain #70).",
+    "13/09 (opencode): TANCAMENT Ho prova: test_business_mode a TARGETS del runner; 6 tests nous a test_game_session (18/18; narrativa/entrada/transicions/interacció/patrulla/grados Nd6 via AdventureScript inline) i 1 a test_battle_state (14/14; acció Item Fase 10, BattleState.cpp:249-299). Mesura llvm-cov: 0 ficheros <70%. Pifia del defensor -> CRITICAL (algorisme DicePoolEngine, no bug); spawnEnemyFromCatalog private (guard 380-382 fora dels tests, acceptat)."
+  ],
+  "verification": [
+    "Build net en directori temporal (el build/ del repo est&agrave; trencat per una ruta: 'Cannot find source file at CMakeLists.txt:666').",
+    "test_game_session 11/11 en verd (4 C-03 + 7 C-24).",
+    "Regressi&oacute; propera: test_save_game, test_bitmap_font, test_battle_state verds al mateix build."
+  ],
+  "pending": [
+    "Decisi&oacute; d'Oriol sobre l'accent de la label 'HEROE' de Morality.",
+    "Xarxa sobre la part GL-free d'Application (refreshHud, loadLevel, guardat, campaign director) i la m&agrave;quina d'estats GameMode a nivell d'Application: fora de C-24 (zona reservada C-16/C-23)."
+  ],
+  "files_changed": [
+    "MotorGraphico/tests/Game/GameSessionTests.cpp (7 casos nous; 296 l&iacute;nies afegides sense tocar els 4 de C-03)",
+    "MotorGraphico/tests/Game/GameSessionTests.cpp (13/09: +6 casos, helpers RngFixo/StatCombatant/makeAdventureProva)",
+    "MotorGraphico/tests/Game/BattleStateTests.cpp (13/09: +1 cas acci&oacute; Item Fase 10)",
+    "MotorGraphico/tools/medir_cobertura_c24.py (13/09: test_business_mode a TARGETS)",
+    "sesiones/2026-09-13-opencode-c24-cobertura.md"
+  ],
+  "source_markdown": "**Seguiment · 2026-09-11 · opencode (Cowork): Parcial — econ&#242;mia de negocis i moral sota test.**\n\n- 7 tests nous a test_game_session (11/11): ocupacio, ingrés amb òptim interior, cicle de rentes per passos amb moral sostinguda, compra/adjust de renta amb clamp, tienda amb buyback, i Morality pura.\n- Sense tocar src/; només tests GL-free. build net en directori temporal.\n- Falta la part d'Application GL-free (reservada per codex) i la mesura gcov del 70%."
+}

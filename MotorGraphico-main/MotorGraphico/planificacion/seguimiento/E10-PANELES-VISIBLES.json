@@ -1,0 +1,32 @@
+{
+  "id": "E10-PANELES-VISIBLES",
+  "paquete": "E-10",
+  "date": "2026-10-07",
+  "completed": "2026-10-08",
+  "author": "Codex",
+  "status": "HECHO — distribución inicial del editor; E-10 global sigue abierto.",
+  "scope": [
+    "Inspector y Capas se acoplan en dos paneles verticales cuando hay altura suficiente; Capas recibe un 55% ajustado al mínimo de ambos paneles.",
+    "El mínimo depende de la altura de línea y del padding de ImGui. Si no cabe la división, ambos conservan las pestañas.",
+    "La salida temprana cuando ya existe el nodo de docking conserva las disposiciones guardadas y los cambios manuales. No se redistribuye automáticamente al redimensionar.",
+    "EditorGui.h y EditorGui.cpp quedan asignados a E-10 en dades.py y MAPA_DEL_CODIGO, regenerando solo el bloque propio y reasignando su entrada huérfana.",
+    "La petición de combate tipo tactics y áreas queda como ampliación pendiente en la nota H2-02 del Gantt y H2-02-TACTICO.json."
+  ],
+  "reach": "EditorApplication llama defaultLayout en motor_editor; EditorGui.cpp ya pertenece al ejecutable mediante cmake/EditorOpcionesTests.cmake.",
+  "verification": [
+    "Build normal del árbol compartido: cmake --build /private/tmp/motor-e10-editor-build --target motor_editor -j4, correcto.",
+    "Prueba existente tests/Editor/test_motor_editor_smoke.py: escala 1 y escala 2 correctas; editar/cancelar/guardar/reabrir, herramientas, objetos, capas y creación de mapa; GL 0 y assets originales intactos.",
+    "Capturas revisadas: escala 1 muestra los dos paneles y Borrar capa; escala 2 en esta pantalla conserva pestañas por falta de altura útil.",
+    "Ejecución con assets reales, ciudad_centro.json y 8 frames: salida normal, GL 0; captura revisada con iconos presentes.",
+    "Revisión independiente de defaultLayout: sin hallazgos en IDs, proporciones, escalado o conservación del docking.",
+    "Guardia completa en worktree aislado: 0 fallos instantáneos y los mismos 37 hallazgos de deuda, idénticos antes y después; no se modifica la línea base.",
+    "JSON válido y git diff --check correcto; no se añaden clases, cabeceras, fuentes ni objetivos de prueba."
+  ],
+  "limitations": [
+    "La compilación de HEAD limpio ya falla en Application.cpp por Render/HojaPersonaje.h ausente. Ese trabajo ajeno existe en el árbol compartido, donde motor_editor sí compila; no se incluye en esta entrega.",
+    "No todo el contenido del Inspector cabe a la vez: los documentos largos mantienen scroll.",
+    "La fixture de humo no copia iconos_editor: EditorIconos::imagen no deja hueco si falta la imagen, y los SameLine del Inspector acumulan texto. Problema previo observado y pendiente del propietario de EDITOR-UX-01; con los recursos reales no se reproduce.",
+    "La nota PlantUML se valida por sintaxis documentada; no se ha renderizado el Gantt localmente."
+  ],
+  "coordination": "Reserva propia en TABLERO; cambios aislados en codex/controles-inventario. Paneles, Application, EditorApplication, CMake y resto del WIP ajeno conservados; el cambio ajeno de SheetMilestonesTests en MAPA_DEL_CODIGO no pertenece a este commit."
+}

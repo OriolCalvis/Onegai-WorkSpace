@@ -1,0 +1,126 @@
+@startgantt
+
+title Fase 0 — Línea base — subtareas atómicas revisables
+
+' 1 'día' = 1 jornada de esfuerzo (~6 h). Las medias jornadas del
+' roadmap (0,5 j y 1,5 j) se redondean al alza porque PlantUML solo
+' admite días enteros; el esfuerzo exacto va entre corchetes en el
+' nombre de cada subtarea.
+' Las subtareas de paquetes ya avanzados se marcan con su porcentaje
+' heredado del paquete: revísalas antes de darlas por hechas.
+
+Project starts 2026-09-01
+saturday are closed
+sunday are closed
+
+
+-- BASE-01 — Inventariar y congelar la base gráfica actual  [PARCIAL 70%] --
+
+[BASE-01.1 (1 j) registrar árbol y targets CMake] lasts 1 days
+[BASE-01.1 (1 j) registrar árbol y targets CMake] is colored in #E3A82B
+[BASE-01.1 (1 j) registrar árbol y targets CMake] is 70% completed
+[BASE-01.2 (0,5 j) documentar contratos de Camera, TileMap, Entity y renderer] lasts 1 days
+[BASE-01.2 (0,5 j) documentar contratos de Camera, TileMap, Entity y renderer] is colored in #E3A82B
+[BASE-01.2 (0,5 j) documentar contratos de Camera, TileMap, Entity y renderer] is 70% completed
+[BASE-01.1 (1 j) registrar árbol y targets CMake] -> [BASE-01.2 (0,5 j) documentar contratos de Camera, TileMap, Entity y renderer]
+[BASE-01.3 (0,5 j) marcar stubs y deuda sin corregirla] lasts 1 days
+[BASE-01.3 (0,5 j) marcar stubs y deuda sin corregirla] is colored in #E3A82B
+[BASE-01.3 (0,5 j) marcar stubs y deuda sin corregirla] is 70% completed
+[BASE-01.2 (0,5 j) documentar contratos de Camera, TileMap, Entity y renderer] -> [BASE-01.3 (0,5 j) marcar stubs y deuda sin corregirla]
+[BASE-01 listo] happens at [BASE-01.3 (0,5 j) marcar stubs y deuda sin corregirla]'s end
+
+-- BASE-02 — Verificar CI, demos y compatibilidad multiplataforma  [PARCIAL 75%] --
+
+[BASE-02.1 (1 j) ejecutar build y demos actuales] lasts 1 days
+[BASE-02.1 (1 j) ejecutar build y demos actuales] is colored in #E3A82B
+[BASE-02.1 (1 j) ejecutar build y demos actuales] is 75% completed
+[BASE-01.3 (0,5 j) marcar stubs y deuda sin corregirla] -> [BASE-02.1 (1 j) ejecutar build y demos actuales]
+[BASE-02.2 (1 j) registrar fallos reales sin ocultarlos] lasts 1 days
+[BASE-02.2 (1 j) registrar fallos reales sin ocultarlos] is colored in #E3A82B
+[BASE-02.2 (1 j) registrar fallos reales sin ocultarlos] is 75% completed
+[BASE-02.1 (1 j) ejecutar build y demos actuales] -> [BASE-02.2 (1 j) registrar fallos reales sin ocultarlos]
+[BASE-02.3 (1 j) añadir checks ausentes solo si no cambian producto] lasts 1 days
+[BASE-02.3 (1 j) añadir checks ausentes solo si no cambian producto] is colored in #E3A82B
+[BASE-02.3 (1 j) añadir checks ausentes solo si no cambian producto] is 75% completed
+[BASE-02.2 (1 j) registrar fallos reales sin ocultarlos] -> [BASE-02.3 (1 j) añadir checks ausentes solo si no cambian producto]
+[BASE-02 listo] happens at [BASE-02.3 (1 j) añadir checks ausentes solo si no cambian producto]'s end
+
+-- INF-01 — Crear tests/ y ctest, y convertir los demos-aserción en pruebas  [PENDIENTE 0%] --
+
+[INF-01.1 (1 j) añadir enable_testing() y add_test a los demos que ya abortan al fallar] lasts 1 days
+[INF-01.1 (1 j) añadir enable_testing() y add_test a los demos que ya abortan al fallar] is colored in #B8BEC7
+[BASE-02.3 (1 j) añadir checks ausentes solo si no cambian producto] -> [INF-01.1 (1 j) añadir enable_testing() y add_test a los demos que ya abortan al fallar]
+[INF-01.2 (1,5 j) crear tests/ con un runner mínimo sin dependencias externas] lasts 2 days
+[INF-01.2 (1,5 j) crear tests/ con un runner mínimo sin dependencias externas] is colored in #B8BEC7
+[INF-01.1 (1 j) añadir enable_testing() y add_test a los demos que ya abortan al fallar] -> [INF-01.2 (1,5 j) crear tests/ con un runner mínimo sin dependencias externas]
+[INF-01.3 (1,5 j) mover las aserciones de demo_editor_state a tests/Editor] lasts 2 days
+[INF-01.3 (1,5 j) mover las aserciones de demo_editor_state a tests/Editor] is colored in #B8BEC7
+[INF-01.2 (1,5 j) crear tests/ con un runner mínimo sin dependencias externas] -> [INF-01.3 (1,5 j) mover las aserciones de demo_editor_state a tests/Editor]
+[INF-01.4 (1 j) ejecutar ctest en CI y hacer fallar el build si cae una prueba] lasts 1 days
+[INF-01.4 (1 j) ejecutar ctest en CI y hacer fallar el build si cae una prueba] is colored in #B8BEC7
+[INF-01.3 (1,5 j) mover las aserciones de demo_editor_state a tests/Editor] -> [INF-01.4 (1 j) ejecutar ctest en CI y hacer fallar el build si cae una prueba]
+[INF-01 listo] happens at [INF-01.4 (1 j) ejecutar ctest en CI y hacer fallar el build si cae una prueba]'s end
+
+-- INF-06 — Limpiar duplicados y ruido del repositorio  [PENDIENTE 0%] --
+
+[INF-06.1 (0,5 j) resolver los duplicados ' 2' y borrar los .DS_Store] lasts 1 days
+[INF-06.1 (0,5 j) resolver los duplicados ' 2' y borrar los .DS_Store] is colored in #B8BEC7
+[INF-01.4 (1 j) ejecutar ctest en CI y hacer fallar el build si cae una prueba] -> [INF-06.1 (0,5 j) resolver los duplicados ' 2' y borrar los .DS_Store]
+[INF-06.2 (0,5 j) mover salidas de demo a build/ y ampliar .gitignore] lasts 1 days
+[INF-06.2 (0,5 j) mover salidas de demo a build/ y ampliar .gitignore] is colored in #B8BEC7
+[INF-06.1 (0,5 j) resolver los duplicados ' 2' y borrar los .DS_Store] -> [INF-06.2 (0,5 j) mover salidas de demo a build/ y ampliar .gitignore]
+[INF-06 listo] happens at [INF-06.2 (0,5 j) mover salidas de demo a build/ y ampliar .gitignore]'s end
+
+-- INF-02 — Decidir la tecnología de UI del editor (HUD propio vs Dear ImGui)  [PENDIENTE 0%] --
+
+[INF-02.1 (1 j) medir qué cuesta hoy un panel nuevo con el HUD propio] lasts 1 days
+[INF-02.1 (1 j) medir qué cuesta hoy un panel nuevo con el HUD propio] is colored in #B8BEC7
+[INF-06.2 (0,5 j) mover salidas de demo a build/ y ampliar .gitignore] -> [INF-02.1 (1 j) medir qué cuesta hoy un panel nuevo con el HUD propio]
+[INF-02.2 (1 j) comprobar si se puede vendorizar ImGui en third_party/ como glad y stb] lasts 1 days
+[INF-02.2 (1 j) comprobar si se puede vendorizar ImGui en third_party/ como glad y stb] is colored in #B8BEC7
+[INF-02.1 (1 j) medir qué cuesta hoy un panel nuevo con el HUD propio] -> [INF-02.2 (1 j) comprobar si se puede vendorizar ImGui en third_party/ como glad y stb]
+[INF-02.3 (1 j) escribir el ADR y reescribir EDT-01..EDT-06 según la decisión] lasts 1 days
+[INF-02.3 (1 j) escribir el ADR y reescribir EDT-01..EDT-06 según la decisión] is colored in #B8BEC7
+[INF-02.2 (1 j) comprobar si se puede vendorizar ImGui en third_party/ como glad y stb] -> [INF-02.3 (1 j) escribir el ADR y reescribir EDT-01..EDT-06 según la decisión]
+[INF-02 listo] happens at [INF-02.3 (1 j) escribir el ADR y reescribir EDT-01..EDT-06 según la decisión]'s end
+
+-- INF-04 — Decidir dependencias externas y política de vendorizado  [PENDIENTE 0%] --
+
+[INF-04.1 (1 j) listar las dependencias que exigen las fases 3, 6 y 7] lasts 1 days
+[INF-04.1 (1 j) listar las dependencias que exigen las fases 3, 6 y 7] is colored in #B8BEC7
+[INF-02.3 (1 j) escribir el ADR y reescribir EDT-01..EDT-06 según la decisión] -> [INF-04.1 (1 j) listar las dependencias que exigen las fases 3, 6 y 7]
+[INF-04.2 (1 j) fijar la política: vendorizar en third_party/ o implementar en casa] lasts 1 days
+[INF-04.2 (1 j) fijar la política: vendorizar en third_party/ o implementar en casa] is colored in #B8BEC7
+[INF-04.1 (1 j) listar las dependencias que exigen las fases 3, 6 y 7] -> [INF-04.2 (1 j) fijar la política: vendorizar en third_party/ o implementar en casa]
+[INF-04 listo] happens at [INF-04.2 (1 j) fijar la política: vendorizar en third_party/ o implementar en casa]'s end
+
+-- INF-05 — Ampliar CI a Windows y macOS  [PENDIENTE 0%] --
+
+[INF-05.1 (1,5 j) añadir windows-latest a la matriz y arreglar lo que rompa] lasts 2 days
+[INF-05.1 (1,5 j) añadir windows-latest a la matriz y arreglar lo que rompa] is colored in #B8BEC7
+[INF-04.2 (1 j) fijar la política: vendorizar en third_party/ o implementar en casa] -> [INF-05.1 (1,5 j) añadir windows-latest a la matriz y arreglar lo que rompa]
+[INF-05.2 (1,5 j) añadir macos-latest y aislar lo específico de GL] lasts 2 days
+[INF-05.2 (1,5 j) añadir macos-latest y aislar lo específico de GL] is colored in #B8BEC7
+[INF-05.1 (1,5 j) añadir windows-latest a la matriz y arreglar lo que rompa] -> [INF-05.2 (1,5 j) añadir macos-latest y aislar lo específico de GL]
+[INF-05.3 (1 j) documentar qué demos son GL-free y cuáles necesitan pantalla] lasts 1 days
+[INF-05.3 (1 j) documentar qué demos son GL-free y cuáles necesitan pantalla] is colored in #B8BEC7
+[INF-05.2 (1,5 j) añadir macos-latest y aislar lo específico de GL] -> [INF-05.3 (1 j) documentar qué demos son GL-free y cuáles necesitan pantalla]
+[INF-05 listo] happens at [INF-05.3 (1 j) documentar qué demos son GL-free y cuáles necesitan pantalla]'s end
+
+-- INF-03 — Reorganizar el árbol hacia la arquitectura objetivo  [PENDIENTE 0%] --
+
+[INF-03.1 (1 j) mapear cada carpeta actual a su destino y publicar la tabla] lasts 1 days
+[INF-03.1 (1 j) mapear cada carpeta actual a su destino y publicar la tabla] is colored in #B8BEC7
+[INF-05.3 (1 j) documentar qué demos son GL-free y cuáles necesitan pantalla] -> [INF-03.1 (1 j) mapear cada carpeta actual a su destino y publicar la tabla]
+[INF-03.2 (2 j) sacar Project e índice de Editor/ a su propio módulo sin lógica de UI] lasts 2 days
+[INF-03.2 (2 j) sacar Project e índice de Editor/ a su propio módulo sin lógica de UI] is colored in #B8BEC7
+[INF-03.1 (1 j) mapear cada carpeta actual a su destino y publicar la tabla] -> [INF-03.2 (2 j) sacar Project e índice de Editor/ a su propio módulo sin lógica de UI]
+[INF-03.3 (1,5 j) separar el núcleo del editor de examples/ hacia editor/] lasts 2 days
+[INF-03.3 (1,5 j) separar el núcleo del editor de examples/ hacia editor/] is colored in #B8BEC7
+[INF-03.2 (2 j) sacar Project e índice de Editor/ a su propio módulo sin lógica de UI] -> [INF-03.3 (1,5 j) separar el núcleo del editor de examples/ hacia editor/]
+[INF-03.4 (1,5 j) actualizar CMake, includes y CI en un solo commit verificable] lasts 2 days
+[INF-03.4 (1,5 j) actualizar CMake, includes y CI en un solo commit verificable] is colored in #B8BEC7
+[INF-03.3 (1,5 j) separar el núcleo del editor de examples/ hacia editor/] -> [INF-03.4 (1,5 j) actualizar CMake, includes y CI en un solo commit verificable]
+[INF-03 listo] happens at [INF-03.4 (1,5 j) actualizar CMake, includes y CI en un solo commit verificable]'s end
+
+@endgantt

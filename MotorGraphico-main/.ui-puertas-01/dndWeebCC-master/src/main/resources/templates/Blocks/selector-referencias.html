@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--
+  Fragmentos para campos que REFERENCIAN cosas ya creadas (ids de otros catálogos).
+  Nada de texto libre: seleccionar de una lista evita faltas de ortografía que rompen
+  la referencia en silencio.
+
+    csv(campo, opciones, vacio) → selección múltiple: chips + desplegable "añadir".
+                                   El valor viaja como CSV en un input oculto (mismo
+                                   formato que espera ListaTexto.splitCsv en el servidor).
+                                   Necesita /js/selector-csv.js en la página.
+    uno(campo, opciones, vacio) → selección única contra un catálogo.
+
+  'campo' es el nombre del campo del th:object del formulario (p. ej. 'classTags');
+  'opciones' es una lista de Opcion(id, etiqueta) del OpcionesReferenciaAdvice.
+-->
+
+<div th:fragment="csv(campo, opciones, vacio)" class="gm-csvsel">
+    <input type="hidden" class="gm-csvsel__valor" th:field="*{__${campo}__}">
+    <div class="gm-csvsel__chips"></div>
+    <select class="gm-select gm-csvsel__select">
+        <option value="" th:text="'— ' + ${vacio} + ' —'">— añadir —</option>
+        <option th:each="o : ${opciones}" th:value="${o.id}" th:text="${o.etiqueta}"></option>
+    </select>
+</div>
+
+<select th:fragment="uno(campo, opciones, vacio)" class="gm-select" th:field="*{__${campo}__}">
+    <option value="" th:text="'— ' + ${vacio} + ' —'">—</option>
+    <option th:each="o : ${opciones}" th:value="${o.id}" th:text="${o.etiqueta}"></option>
+</select>
+
+</body>
+</html>

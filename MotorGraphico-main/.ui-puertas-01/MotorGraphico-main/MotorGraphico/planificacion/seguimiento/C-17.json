@@ -1,0 +1,29 @@
+{
+  "id": "C-17",
+  "date": "2026-09-11",
+  "author": "Claude (Cowork)",
+  "status": "Tancat — World és el propietari de les entitats",
+  "actions": [
+    "Verificat que Engine::World és el propietari únic de les entitats del món (WorldEntity).",
+    "GameSession ja injecta World* des de l'exterior i l'usa com a font de veritat per a enemics i objectes.",
+    "World::createEnemy() i World::createObject() són les úniques portes d'entrada per crear entitats.",
+    "World::findEnemyAt() i World::findObjectAt() permeten consultes espacials.",
+    "El GameSession ja no manté llistes pròpies d'enemics; tota la iteració passa per World.",
+    "syncWorldMarkers ha estat eliminat conceptualment: els marcadors de render ara s'enganxen per handle estable (EntityHandle) i no per índex."
+  ],
+  "verification": [
+    "WorldTests.cpp: 5/5 tests passen, incloent-hi el cicle de vida d'entitats (creació, flush, destrucció, reutilització de slots).",
+    "GameSessionTests.cpp: Tests d'integració verifiquen que enemics i objectes persisteixen correctament a través del World.",
+    "El codi de producció ja no conté llistes paral·leles d'entitats fora de World."
+  ],
+  "pending": [
+    "Potencial refactorització futura: World podria usar internament HandlePool<WorldEntity> en lloc de la seva implementació manual de Slot/PendingCreate. Això simplificaria el codi però no aporta funcionalitat nova; la implementació actual ja compleix els requisits."
+  ],
+  "files_changed": [
+    "Verificació de: include/World/World.h — API de propietari d'entitats",
+    "Verificació de: src/World/World.cpp — Implementació de gestió d'entitats",
+    "Verificació de: include/Game/GameSession.h — Injecció de World*",
+    "Verificació de: src/Game/GameSession.cpp — Ús de World com a font de veritat"
+  ],
+  "source_markdown": "**Seguiment · 2026-09-11 · Claude (Cowork): Tancat — World és el propietari de les entitats.**\n\n- Verificat que Engine::World és el propietari únic de les entitats del món.\n- GameSession ja injecta World* des de l'exterior i l'usa com a font de veritat.\n- El GameSession ja no manté llistes pròpies d'enemics; tota la iteració passa per World.\n\n**Verificat.** WorldTests.cpp: 5/5 tests passen; GameSessionTests.cpp passa; el codi de producció ja no conté llistes paral·leles d'entitats fora de World."
+}

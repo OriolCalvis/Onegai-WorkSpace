@@ -1,0 +1,100 @@
+{
+ "id": "avatar_del_bosque_hambriento",
+ "name": "Avatar del Bosque Hambriento",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "control",
+ "faction": "corte_de_espinas",
+ "factionName": "La Corte de Espinas",
+ "stats": {
+  "CON": 9,
+  "DES": 8,
+  "INT": 10,
+  "CAR": 9
+ },
+ "derived": {
+  "vida": 70,
+  "ca": 20,
+  "defensaMental": 19,
+  "resistenciaFisica": 19,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de naturaleza: daño que suma su INT (pool de INT, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "resistencia_fisica",
+   "effect": "Técnica de facción: si el objetivo falla, queda Agarrado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en fase de Desesperación: daño de naturaleza como éxito crítico (todos sus dados cuentan éxito completo)."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Si no se mueve en su turno, crea terreno difícil a 5 pies alrededor."
+ },
+ "conditionsInflicted": [
+  "agarrado"
+ ],
+ "loot": [
+  "arco_cazador_de_milicia",
+  "grebas_de_cuero",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Naturaleza"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal: alterna golpe y técnica."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Su técnica de facción no gasta acción: la encadena tras el golpe. Si no se mueve en su turno, crea terreno difícil a 5 pies alrededor."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final y actúa con agresividad total (ignora amenaza, va al más herido)."
+  }
+ ],
+ "flavorText": "Viejo guardian natural que ya no distingue culpa de carne.",
+ "villainProfile": {
+  "objetivo": "Recuperar cada palmo de tierra que la civilización le debe al bosque",
+  "metodo": "Devora estructuras y caminos; las personas son solo abono con opiniones",
+  "debilidad_narrativa": "Los juramentos verdes: quien porte un voto de la Corte o del Devoto del Bosque puede hablarle una ronda entera",
+  "vinculo": "deity_wild_court"
+ },
+ "arena": {
+  "name": "El Claro que Mastica",
+  "hazard": "Raíces vivas: casilla aleatoria con Agarrado cada ronda (Resistencia física)"
+ },
+ "legendaryActions": [
+  "Arraigo (1/ronda): una raíz emerge bajo un personaje a la vista — Agarrado si falla"
+ ],
+ "storyCard": {
+  "title": "Avatar del Bosque Hambriento",
+  "text": "No odia a nadie. El hambre no personaliza.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae si el grupo alcanzó la fase de Desesperación",
+  "drops": [
+   "arco_cazador_de_milicia",
+   "grebas_de_cuero",
+   "pocion_de_vigor"
+  ]
+ }
+}

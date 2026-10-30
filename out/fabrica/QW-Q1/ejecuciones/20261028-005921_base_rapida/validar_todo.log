@@ -1,0 +1,72 @@
+$ /usr/bin/python3 tools/validar_todo.py
+(cwd /sessions/rcw-01kjydlwdn7u7drgxchvuov3/mnt/Software/MotorGraphico-main/MotorGraphico)
+
+=== validar_todo.py (todo el contenido) ===
+[1/5] Validadores existentes
+    FALLO validar_botin.py (exit 1)
+        ERROR [Errno 35] Resource deadlock avoided
+    FALLO validar_recetas.py (exit 1)
+            doc = _json(os.path.join(raiz, "assets/catalogs/recetas.json"))
+          File "/sessions/rcw-01kjydlwdn7u7drgxchvuov3/mnt/Software/MotorGraphico-main/MotorGraphico/tools/validar_recetas.py", 
+            return json.load(f)
+          File "/usr/lib/python3.10/json/__init__.py", line 293, in load
+            return loads(fp.read(),
+        OSError: [Errno 35] Resource deadlock avoided
+    FALLO validar_enlaces.py (exit 1)
+        Traceback (most recent call last):
+          File "/sessions/rcw-01kjydlwdn7u7drgxchvuov3/mnt/Software/MotorGraphico-main/MotorGraphico/tools/validar_enlaces.py", 
+            dl,dW,dH,dg,dcol=carga(o["targetLevel"])
+          File "/sessions/rcw-01kjydlwdn7u7drgxchvuov3/mnt/Software/MotorGraphico-main/MotorGraphico/tools/validar_enlaces.py", 
+            tmx=re.sub(r"<!--.*?-->","",open(BASE+lvl["map"]).read(),flags=re.S)
+        OSError: [Errno 35] Resource deadlock avoided
+    FALLO conectividad.py (exit 1)
+        Traceback (most recent call last):
+          File "/sessions/rcw-01kjydlwdn7u7drgxchvuov3/mnt/Software/MotorGraphico-main/MotorGraphico/tools/conectividad.py", lin
+            for o in json.load(open(ruta)).get("objects",[]):
+          File "/usr/lib/python3.10/json/__init__.py", line 293, in load
+            return loads(fp.read(),
+        OSError: [Errno 35] Resource deadlock avoided
+    FALLO validar_mundo_unido.py (exit 1)
+            sys.exit(main())
+          File "/sessions/rcw-01kjydlwdn7u7drgxchvuov3/mnt/Software/MotorGraphico-main/MotorGraphico/tools/validar_mundo_unido.p
+            rej = rejilla_de(nivel)
+          File "/sessions/rcw-01kjydlwdn7u7drgxchvuov3/mnt/Software/MotorGraphico-main/MotorGraphico/tools/validar_mundo_unido.p
+            t = re.sub(r"<!--.*?-->", "", open(p, encoding="utf-8").read(), flags=re.S)
+        OSError: [Errno 35] Resource deadlock avoided
+    OK  validar_catalogos_rpg.py: [OK] Sin fallos.
+    OK  validar_libreria_dnd.py: === TODOS LOS ARCHIVOS PASAN LA VALIDACION ESTRUCTURAL ===
+    FALLO validar_pnj.py (exit 1)
+            defs = pnj.definiciones(ROOT)
+          File "/sessions/rcw-01kjydlwdn7u7drgxchvuov3/mnt/Software/MotorGraphico-main/MotorGraphico/tools/actores_pnj.py", line
+            datos = json.loads(ruta.read_text(encoding="utf-8"))
+          File "/usr/lib/python3.10/pathlib.py", line 1135, in read_text
+            return f.read()
+        OSError: [Errno 35] Resource deadlock avoided
+    FALLO validar_cinematicas.py (exit 1)
+            sys.exit(main())
+          File "/sessions/rcw-01kjydlwdn7u7drgxchvuov3/mnt/Software/MotorGraphico-main/MotorGraphico/tools/validar_cinematicas.p
+            ids.update(o["id"] for o in json.load(open(p, encoding="utf-8")).get("objects", []))
+          File "/usr/lib/python3.10/json/__init__.py", line 293, in load
+            return loads(fp.read(),
+        OSError: [Errno 35] Resource deadlock avoided
+[2/5] Referencias internas de assets/catalogs/
+    referencias comprobadas; 7 error(es) hasta ahora
+[3/5] Proyectos: objectIds de niveles contra sus catálogos
+Traceback (most recent call last):
+  File "/sessions/rcw-01kjydlwdn7u7drgxchvuov3/mnt/Software/MotorGraphico-main/MotorGraphico/tools/validar_todo.py", line 775, in <module>
+    sys.exit(main())
+  File "/sessions/rcw-01kjydlwdn7u7drgxchvuov3/mnt/Software/MotorGraphico-main/MotorGraphico/tools/validar_todo.py", line 732, in main
+    validar_proyectos(solo)
+  File "/sessions/rcw-01kjydlwdn7u7drgxchvuov3/mnt/Software/MotorGraphico-main/MotorGraphico/tools/validar_todo.py", line 395, in validar_proyectos
+    cat_ids.update(cargar_objetos(ruta))
+  File "/sessions/rcw-01kjydlwdn7u7drgxchvuov3/mnt/Software/MotorGraphico-main/MotorGraphico/tools/validar_todo.py", line 311, in cargar_objetos
+    for e in entradas(ruta):
+  File "/sessions/rcw-01kjydlwdn7u7drgxchvuov3/mnt/Software/MotorGraphico-main/MotorGraphico/tools/validar_todo.py", line 77, in entradas
+    d = leer_json(ruta)
+  File "/sessions/rcw-01kjydlwdn7u7drgxchvuov3/mnt/Software/MotorGraphico-main/MotorGraphico/tools/validar_todo.py", line 67, in leer_json
+    return json.load(f)
+  File "/usr/lib/python3.10/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+OSError: [Errno 35] Resource deadlock avoided
+
+[código 1 · 0.7 s]

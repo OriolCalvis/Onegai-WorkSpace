@@ -1,0 +1,35 @@
+{
+ "id": "SETS-04",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — el Senor de las Armas tiene tres sets nuevos (el Duque, el Soberano sin Rostro y el Rey de la Forja), de los esbozos que eligio Oriol, en lugar del de SETS-03 (el manto carmesi con armino y la corona de espadas), dibujados y probados en las cuatro tallas y montados como en el motor.",
+ "origen": "Oriol (08/10): «vull modificar esteticament la classe del Senyor de les armes», a partir del oro, el mana rojo que brilla, las armas que flotan y el aura dorada de una imagen de referencia, en un diseno propio («vull un disseny basat en l'armadura i efectes visuals [...] per fer una cosa completament nova»). De tres esbozos («fesme algun esbos rapid de diferents ideas o propostes, com a molt 3»): «estan perfectes els 3». Y: «vull que mel facis i integris com si t'ho digues des d'alla» (estaba fuera de casa).",
+ "fuente": "La referencia era de un personaje conocido: no se copia su conjunto (ni su pelo, ni el pecho al aire con la marca, ni las cadenas, ni los portales); se toman el oro, el negro y el rojo, las armaduras de adorno, el mana rojo y las armas que flotan. Criterios de los sets: CANON_SETS_ITERACION3.md §1.",
+ "canon": "planificacion/CANON_SETS_ITERACION3.md §2 (la fila del Senor de las Armas) y §7 (los tres sets).",
+ "scope": [
+  "tools/sets_iteracion3.py: SENOR_DUQUE, SENOR_SOBERANO y SENOR_FORJA (15 piezas raras de tier 2, los mismos bonos y peso que el set de antes) y RETIRADOS (las 5 piezas de SETS-03).",
+  "tools/actores_trajes_iteracion3.py: 12 piezas propias (3 cabezas, 3 torsos, 3 piernas y 3 pies; la casaca y la diadema del Duque en las filas del manto y la corona de antes; lo demas, al final) y 16 paletas sin tipo; fuera el manto, la corona, el arsenal y sus 4 paletas (oro_arsenal se queda: es de la Furia).",
+  "tools/actores_estetica.py: el tema de cada set (el orbe, tenido de su color) y la pieza de cada prenda.",
+  "tools/importar_clases_companeros.py: quita de los catalogos las piezas de RETIRADOS.",
+  "Catalogos: equipment (-5 +15: 860), libreria_armas y libreria_completa (-5 +15 item_<id>).",
+  "assets/textures/personajes*: 527 piezas de equipo (805 objetos con pieza). Las filas de PixelLab de cabeza y torso bajan 2; su contenido es el mismo.",
+  "Pruebas: tests/Game/ClasesCompanerosTests.cpp (las tres etiquetas y que la de antes ya no esta), tools/test_validar_sprites.py (los orbes y test_los_tres_sets_del_senor_de_las_armas)."
+ ],
+ "non_goals": [
+  "Particulas propias de cada set: brillan con las de la clase (oro); el mana rojo, la rendija y el oro fundido van dibujados.",
+  "El pelo, la barba y los ojos de los esbozos son del personaje, no del set.",
+  "Las armaduras de tiers superiores (TIERS-01): otro dia."
+ ],
+ "verification": [
+  "Los sprites del motor salen pixel a pixel como los esbozos (el Duque y el Rey de la Forja iguales; el Soberano, 2-4 pixeles del bajo de oro de la capa que ya no pisan el tabardo de frente).",
+  "test_validar_sprites: 55/55 sin GeneradoresTests (con la prueba nueva); GeneradoresTests como en la base (test_personajes_son_reproducibles falla por las filas de PixelLab, que no salen de generar()).",
+  "validar_todo: 0 errores (10 avisos de antes); validar_catalogos_rpg: sin fallos; validar_pnj: 249 PNJ.",
+  "ClasesCompanerosTests.cpp: compila (g++ -fsyntax-only) y sus condiciones se cumplen en los catalogos (comprobado en Python con la misma regla de peso). El ctest entero no se ha pasado en esta sesion: el Mac no sube los ficheros grandes al contenedor.",
+  "Los tres sets montados con el probador (atlas + equipo_catalogo, como el motor) en humano, enano, mediano y orco."
+ ],
+ "para_oriol": [
+  "El set de antes (manto carmesi y corona de espadas) ha salido del juego; si lo quieres como cuarto set, esta en SETS-03.",
+  "Los tres sets son iguales en bonos: ¿quieres que alguno sea de otro tier o tenga otra cosa?"
+ ],
+ "sesion": "sesiones/2026-10-08-claude-sets04.md"
+}

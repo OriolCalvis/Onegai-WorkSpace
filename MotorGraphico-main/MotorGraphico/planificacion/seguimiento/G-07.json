@@ -1,0 +1,31 @@
+{
+  "id": "G-07",
+  "date": "2026-09-13",
+  "author": "Claude (Cowork)",
+  "status": "MECANISMO puesto y verde; la CONGELACION no se ha declarado y no debe declararse todavia. Paquete ABIERTO",
+  "actions": [
+    "Nuevos tests/Integration/SchemaFixtureTests.cpp y tests/fixtures/esquemas/ (mapa-v1, proyecto-v1, guardado-v1 y guardado-v1-antes-de-e02). Es la prueba de cierre que el plan llama test_schema_freeze, puesta antes que la congelacion en si.",
+    "POR QUE AHORA Y NO AL FINAL. Cuatro formatos se escriben a disco y se leen mas tarde. Hoy NADA impide que un cambio en un serializador deje ilegible lo que ya hay escrito, y eso no da error de compilacion ni rompe ningun test: el proyecto de alguien deja de abrirse y ya esta. No es hipotetico — en esta misma rama E-01 metio una capa de eventos dentro del mapa y E-02 dos claves dentro del guardado, y lo unico que garantizaba que un fichero anterior siguiera abriendose era el cuidado de quien lo escribio. Con varios agentes tocando serializadores a la vez y la CI sin ejecutarse nunca, el agujero esta abierto HOY.",
+    "Las fixtures se construyen con la API publica, no escribiendo JSON a mano: asi la fixture es lo que el motor produce de verdad y no lo que alguien creyo que producia. Ya dio fruto — al generarlas salieron dos reglas que no estaban a la vista: el prefijo de proyecto tiene que acabar en '_' y las listas de documentos llevan NOMBRES, no rutas.",
+    "El mapa congelado lleva LAS CUATRO clases de capa (tile, entidad, region y evento) y un evento con dos paginas, disparadores distintos, condiciones con comparacion y negacion, y un condicional con sus dos ramas. Una fixture con una sola capa de tiles no habria notado que se rompiera la serializacion de los eventos.",
+    "Se comprueba el CONTENIDO, no que parsee: valores concretos de cada campo, la opacidad y el orden de las capas (que se pierden en silencio con facilidad notable) y el texto que hay dentro de la rama del condicional. Un test que solo mira «hay entradas» es como sobrevivio meses el desapareamiento de saveAttribute/defenseStat (D-01).",
+    "IDEMPOTENCIA: leer una fixture y volver a escribirla tiene que dar EXACTAMENTE el mismo texto. Es lo que convierte la fixture en un contrato: si el lector y el escritor dejaran de estar de acuerdo, la diferencia acabaria siendo un campo perdido.",
+    "COMPATIBILIDAD HACIA ATRAS, con dos ficheros historicos: un guardado anterior a E-02 (sin las claves de variables ni de interruptores locales) y el mapa de agosto anterior a E-01 (sin capa de eventos). Los dos se siguen abriendo, y lo que no traen queda vacio y no a medias.",
+    "El guardado anterior a E-02 NO lo regenera el escritor de hoy, y no es un olvido: el escritor actual pone «variables» y «localSwitches» siempre, aunque esten vacias. Esa fixture representa un fichero HISTORICO, se recorto una vez y se queda congelada. Eso es justo lo que la hace util.",
+    "EL TRINQUETE: si alguien sube kCurrentSchemaVersion de proyecto o kSchemaVersion de guardado, el test falla con un mensaje que dice exactamente que hacer — añadir la fixture de la version nueva, dejar que la vieja siga abriendose y documentar la migracion. Sin eso, subir una version es una linea que nadie nota.",
+    "Documentado en FORMATO_PROYECTOS.md, FORMATO_NIVELES.md y FORMATO_AVENTURAS.md: las tres reglas de cambio (aditivo sin subir version; incompatible con fixture nueva, la vieja conservada y migracion escrita; y nunca se arregla la fixture para que pase)."
+  ],
+  "verification": [
+    "test_schema_fixtures, 7 casos verdes, sin ventana ni contexto GL.",
+    "PRUEBA NEGATIVA: se saboteo a proposito la fixture del mapa quitandole la capa de eventos y el test se puso ROJO en dos casos (las cuatro capas y la idempotencia); restaurada, verde otra vez. Sin esa comprobacion no habria forma de saber que el test lee de verdad los ficheros y no pasa en vacio.",
+    "Las fixtures se escriben con `./test_schema_fixtures --escribir tests/fixtures/esquemas` y el test NUNCA las regenera por su cuenta: un test que regenerara su propia referencia pasaria siempre.",
+    "Compilado y ejecutado con g++ directo sobre la maquina del usuario. CI remota pendiente."
+  ],
+  "pending": [
+    "LA CONGELACION EN SI NO ESTA HECHA Y NO DEBE HACERSE TODAVIA. Congelar los esquemas a la 1.0-B pide que los formatos esten terminados, y E-16 (datos RPG del proyecto) aun va a tocar el de proyecto. Declarar la congelacion ahora obligaria a escribir una migracion para un cambio que ya sabemos que viene.",
+    "Las dependencias formales del paquete (G-04, juego de ejemplo; G-06, empaquetado) siguen sin hacerse. Lo entregado es el mecanismo, que no las necesita.",
+    "Falta fixture del formato de AVENTURA (beats). Es el cuarto formato y tiene su propio serializador; no se ha incluido porque las aventuras se cargan por otra ruta y conviene mirarlo con una aventura real delante, no inventando una.",
+    "Falta fixture de NIVEL (LevelDefinition). Mismo motivo.",
+    "CI remota. Ningun paquete de esta rama se ha construido nunca en CI, asi que este trinquete todavia no protege donde tiene que proteger."
+  ]
+}

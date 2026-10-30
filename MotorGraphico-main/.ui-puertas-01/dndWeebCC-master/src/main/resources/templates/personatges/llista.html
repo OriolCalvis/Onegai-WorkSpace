@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Personajes</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div class="u-page-header">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-eyebrow">Personajes</p>
+                    <h1>Lista de personajes</h1>
+                </div>
+                <div class="u-flex-gap2">
+                    <button type="button" class="gm-btn gm-btn--outline" data-panel-anchor-toggle="gm-filtros" th:if="${!#lists.isEmpty(personatges)}">🔍 Filtros</button>
+                    <a class="gm-btn gm-btn--primary" th:href="@{/personatges/crear}">+ Nuevo personaje</a>
+                </div>
+            </div>
+
+            <p class="u-text-muted" th:if="${#lists.isEmpty(personatges)}">
+                Todavía no has creado ningún personaje.
+            </p>
+
+            <div class="u-detail-layout-260" th:if="${!#lists.isEmpty(personatges)}">
+                <!-- Panel anclado: filtro por nombre -->
+                <aside id="gm-filtros" class="gm-panel gm-panel--anchored">
+                    <div class="gm-panel__header">
+                        <h3 class="gm-panel__title">Filtrar</h3>
+                    </div>
+                    <div class="gm-panel__body">
+                        <div class="gm-field">
+                            <label for="filtro-texto">Buscar por nombre</label>
+                            <input id="filtro-texto" class="gm-input" type="text" placeholder="Ej. Aina...">
+                        </div>
+                        <p class="gm-hint" id="filtro-resultado"></p>
+                    </div>
+                </aside>
+
+                <div class="gm-album" id="gm-album-personatges">
+                    <article class="gm-card" th:each="personatge : ${personatges}"
+                              th:attr="data-nombre=${personatge.nom}">
+                        <span class="gm-card__tier">TIER <span th:text="${personatge.tier}">1</span></span>
+                        <h2 class="gm-card__title" th:text="${personatge.nom}">Nombre</h2>
+                        <span class="gm-card__role"
+                              th:text="${fitxes.get(personatge.id).clase() != null ? fitxes.get(personatge.id).clase().name : '—'}">Clase</span>
+                        <p class="gm-card__meta">
+                            <span th:text="${fitxes.get(personatge.id).raza() != null ? fitxes.get(personatge.id).raza().name : '—'}">Raza</span>
+                            · Vida <span th:text="${#numbers.formatDecimal(fitxes.get(personatge.id).vida(), 1, 0)}">10</span>
+                        </p>
+                        <div class="gm-card__actions">
+                            <a class="gm-btn gm-btn--outline gm-btn--sm" th:href="@{/personatges/{id}(id=${personatge.id})}">Ver ficha</a>
+                        </div>
+                    </article>
+                </div>
+            </div></main>
+<th:block layout:fragment="extra-js">
+    <script th:inline="javascript">
+    (function () {
+        var texto = document.getElementById('filtro-texto');
+        var resultado = document.getElementById('filtro-resultado');
+        var tarjetas = document.querySelectorAll('#gm-album-personatges .gm-card');
+        if (!texto || !resultado) return;
+
+        function aplicarFiltro() {
+            var t = (texto.value || '').toLowerCase();
+            var visibles = 0;
+            tarjetas.forEach(function (carta) {
+                var nombre = (carta.getAttribute('data-nombre') || '').toLowerCase();
+                var coincide = nombre.indexOf(t) !== -1;
+                carta.style.display = coincide ? '' : 'none';
+                if (coincide) visibles++;
+            });
+            resultado.textContent = visibles + ' de ' + tarjetas.length + ' personajes';
+        }
+
+        texto.addEventListener('input', aplicarFiltro);
+        aplicarFiltro();
+    })();
+</script>
+</th:block>
+</body>
+</html>

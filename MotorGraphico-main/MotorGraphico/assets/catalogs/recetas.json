@@ -1,0 +1,464 @@
+{
+  "version": 1,
+  "_nota": "Recetas de los oficios (claude/oficios/, PO-50). Materiales → resultado a tarifa fija; 'rara' = encuentra la receta (Moneda de Deithrok al mendigo del paso, o un escondite). Tipos: objeto (da el id), mejora (herrería, sobre un objeto equipado), habilidad (sastrería, en el calzado), engarce (joya sobre un objeto), hueco (estudio). Lo valida tools/validar_recetas.py.",
+  "bonosMaestro": {
+    "herbolario": [
+      "mano_de_labradora: una vez al día, un sitio ya cosechado vuelve a dar",
+      "ojo_de_vigilia: la velalma también se abre de día"
+    ],
+    "mineria": [
+      "oido_de_enano: antes de picar sabes qué hay; la bolsa de cristal baja a rival 2",
+      "veta_cantada: la dormienta da una unidad más en todos los grados"
+    ],
+    "pesca": [
+      "paciencia_de_rio: con roce, 2 comunes",
+      "luz_de_varn: el nacarvarn también de día; con crítico, 2"
+    ],
+    "alquimia": [
+      "mano_doble: con éxito, 2 pociones (tónico y poción)",
+      "destilado_limpio: la pifia cuenta como roce"
+    ],
+    "herreria": [
+      "mano_del_tuerto: cada tercera mejora de un objeto no gasta material",
+      "bautizo: nombrar un objeto mejorado; +1 iniciativa a quien lo lleva; uno a la vez"
+    ],
+    "sastreria": [
+      "hilo_que_no_destine: las habilidades se traspasan al calzado nuevo sin materiales",
+      "corte_de_viajera: Paso ligero también en una capa"
+    ],
+    "refineria": [
+      "ojo_de_lupa: la calidad pobre no existe (roce = éxito)",
+      "talla_doble: con crítico, una chronita da dos pequeñas"
+    ],
+    "cocina": [
+      "olla_grande: con éxito, 3 raciones",
+      "mesa_de_rosita: cocinar en la posada paga como servir en la barra"
+    ],
+    "estudio": [
+      "lectura_rapida: estudiar no gasta la franja una vez al día",
+      "memoria_de_pliego: volver a un hechizo anterior no cuesta pliego ni tinta"
+    ]
+  },
+  "recetas": {
+    "tonico": {
+      "oficio": "alquimia",
+      "rango": "aprendiz",
+      "materiales": {
+        "velalma": 1,
+        "botin_frasco_vacio": 1
+      },
+      "resultado": {
+        "tipo": "objeto",
+        "id": "tonico",
+        "cantidad": 1
+      },
+      "rival": 1,
+      "rara": false
+    },
+    "pocion": {
+      "oficio": "alquimia",
+      "rango": "oficial",
+      "materiales": {
+        "velalma": 2,
+        "sangraiz": 1,
+        "botin_frasco_vacio": 1
+      },
+      "resultado": {
+        "tipo": "objeto",
+        "id": "pocion",
+        "cantidad": 1
+      },
+      "rival": 2,
+      "rara": false
+    },
+    "eter": {
+      "oficio": "alquimia",
+      "rango": "oficial",
+      "materiales": {
+        "velalma": 1,
+        "sangraiz": 2,
+        "botin_frasco_vacio": 1
+      },
+      "resultado": {
+        "tipo": "objeto",
+        "id": "eter",
+        "cantidad": 1
+      },
+      "rival": 3,
+      "rara": false
+    },
+    "balsamo_de_vado": {
+      "oficio": "alquimia",
+      "rango": "maestro",
+      "materiales": {
+        "sangraiz": 2,
+        "botin_cuero_crudo": 1
+      },
+      "resultado": {
+        "tipo": "objeto",
+        "id": "balsamo_de_vado",
+        "cantidad": 1
+      },
+      "rival": 3,
+      "rara": false
+    },
+    "pocion_mayor": {
+      "oficio": "alquimia",
+      "rango": "gran_maestro",
+      "materiales": {
+        "pocion": 1,
+        "semilla_sin_dueno": 1
+      },
+      "resultado": {
+        "tipo": "objeto",
+        "id": "pocion_mayor",
+        "cantidad": 1
+      },
+      "rival": 4,
+      "rara": true,
+      "_nota": "única por día"
+    },
+    "lingote_dormienta": {
+      "oficio": "herreria",
+      "rango": "aprendiz",
+      "materiales": {
+        "dormienta": 2
+      },
+      "resultado": {
+        "tipo": "objeto",
+        "id": "lingote_dormienta",
+        "cantidad": 1
+      },
+      "rival": 1,
+      "rara": false
+    },
+    "mejora_filo": {
+      "oficio": "herreria",
+      "rango": "aprendiz",
+      "materiales": {
+        "lingote_dormienta": 1,
+        "botin_carbon": 1
+      },
+      "resultado": {
+        "tipo": "mejora",
+        "id": "filo",
+        "cantidad": 1
+      },
+      "rival": 2,
+      "rara": false,
+      "_nota": "+1 daño a un arma; la n-ésima mejora de un objeto cuesta n lingotes y n carbones; topes por tier 1/2/4/8/16 y por efecto 1/1/2/4/8; nivel por tier: 1 Aprendiz, 2 Oficial, 3 Maestro, 4-5 Gran maestro (PO-50)"
+    },
+    "mejora_temple": {
+      "oficio": "herreria",
+      "rango": "aprendiz",
+      "materiales": {
+        "lingote_dormienta": 1,
+        "botin_carbon": 1
+      },
+      "resultado": {
+        "tipo": "mejora",
+        "id": "temple",
+        "cantidad": 1
+      },
+      "rival": 2,
+      "rara": false,
+      "_nota": "+1 CA a una armadura o escudo"
+    },
+    "mejora_equilibrio": {
+      "oficio": "herreria",
+      "rango": "oficial",
+      "materiales": {
+        "lingote_dormienta": 1,
+        "botin_carbon": 1
+      },
+      "resultado": {
+        "tipo": "mejora",
+        "id": "equilibrio",
+        "cantidad": 1
+      },
+      "rival": 2,
+      "rara": false,
+      "_nota": "+1 iniciativa"
+    },
+    "mejora_revisada": {
+      "oficio": "herreria",
+      "rango": "gran_maestro",
+      "materiales": {
+        "dormienta_revisada": 1,
+        "lingote_dormienta": 1
+      },
+      "resultado": {
+        "tipo": "mejora",
+        "id": "revisada",
+        "cantidad": 1
+      },
+      "rival": 4,
+      "rara": true,
+      "_nota": "el objeto no pierde nunca sus mejoras; no sube números"
+    },
+    "paso_ligero": {
+      "oficio": "sastreria",
+      "rango": "aprendiz",
+      "materiales": {
+        "botin_ovillo_lana": 1,
+        "botin_cuero_crudo": 1
+      },
+      "resultado": {
+        "tipo": "habilidad",
+        "id": "paso_ligero",
+        "cantidad": 1
+      },
+      "rival": 2,
+      "rara": false,
+      "_nota": "+1 casilla de movimiento en combate"
+    },
+    "pisar_brasas": {
+      "oficio": "sastreria",
+      "rango": "aprendiz",
+      "materiales": {
+        "botin_cuero_crudo": 2
+      },
+      "resultado": {
+        "tipo": "habilidad",
+        "id": "pisar_brasas",
+        "cantidad": 1
+      },
+      "rival": 2,
+      "rara": false,
+      "_nota": "no te quemas al pisar fuego (FireData.dano)"
+    },
+    "suela_de_gato": {
+      "oficio": "sastreria",
+      "rango": "oficial",
+      "materiales": {
+        "botin_ovillo_lana": 1,
+        "botin_cuero_crudo": 2
+      },
+      "resultado": {
+        "tipo": "habilidad",
+        "id": "suela_de_gato",
+        "cantidad": 1
+      },
+      "rival": 3,
+      "rara": false,
+      "_nota": "subir un nivel de altura cuesta lo normal (AV19-02)"
+    },
+    "sin_huella": {
+      "oficio": "sastreria",
+      "rango": "oficial",
+      "materiales": {
+        "botin_ovillo_lana": 2,
+        "botin_cuero_crudo": 1
+      },
+      "resultado": {
+        "tipo": "habilidad",
+        "id": "sin_huella",
+        "cantidad": 1
+      },
+      "rival": 3,
+      "rara": false,
+      "_nota": "los enemigos que patrullan te ven una casilla más tarde"
+    },
+    "bolsillo_del_mendigo": {
+      "oficio": "sastreria",
+      "rango": "maestro",
+      "materiales": {
+        "botin_ovillo_lana": 1,
+        "botin_cuero_crudo": 1,
+        "moneda_deithrok": 1
+      },
+      "resultado": {
+        "tipo": "habilidad",
+        "id": "bolsillo_del_mendigo",
+        "cantidad": 1
+      },
+      "rival": 4,
+      "rara": true,
+      "_nota": "una vez al día, al pagar, recuperas 1 de cada 10 monedas"
+    },
+    "nacarvarn_pulido": {
+      "oficio": "refineria",
+      "rango": "aprendiz",
+      "materiales": {
+        "nacarvarn": 1
+      },
+      "resultado": {
+        "tipo": "objeto",
+        "id": "nacarvarn_pulido",
+        "cantidad": 1
+      },
+      "rival": 2,
+      "rara": false
+    },
+    "chronita_tallada": {
+      "oficio": "refineria",
+      "rango": "oficial",
+      "materiales": {
+        "chronita": 1
+      },
+      "resultado": {
+        "tipo": "objeto",
+        "id": "chronita_tallada",
+        "cantidad": 1
+      },
+      "rival": 3,
+      "rara": false
+    },
+    "engarce_luz_de_varn": {
+      "oficio": "refineria",
+      "rango": "maestro",
+      "materiales": {
+        "nacarvarn_pulido": 1
+      },
+      "resultado": {
+        "tipo": "engarce",
+        "id": "luz_de_varn",
+        "cantidad": 1
+      },
+      "rival": 3,
+      "rara": false,
+      "_nota": "sobre anillo_plata, botas o capa: +1 a Percepción de noche"
+    },
+    "engarce_un_ano_mas": {
+      "oficio": "refineria",
+      "rango": "maestro",
+      "materiales": {
+        "chronita_tallada": 1
+      },
+      "resultado": {
+        "tipo": "engarce",
+        "id": "un_ano_mas",
+        "cantidad": 1
+      },
+      "rival": 3,
+      "rara": false,
+      "_nota": "+1 a la tirada de iniciativa"
+    },
+    "moneda_de_paso": {
+      "oficio": "refineria",
+      "rango": "gran_maestro",
+      "materiales": {
+        "moneda_deithrok": 1,
+        "chronita_tallada": 1
+      },
+      "resultado": {
+        "tipo": "objeto",
+        "id": "moneda_de_paso",
+        "cantidad": 1
+      },
+      "rival": 4,
+      "rara": true,
+      "_nota": "única"
+    },
+    "pescado_a_la_sal": {
+      "oficio": "cocina",
+      "rango": "aprendiz",
+      "materiales": {
+        "gobio_del_rio": 1,
+        "botin_sal": 1
+      },
+      "resultado": {
+        "tipo": "objeto",
+        "id": "pescado_a_la_sal",
+        "cantidad": 2
+      },
+      "rival": 1,
+      "rara": false,
+      "_nota": "vale cualquier pez común de la tabla pesca"
+    },
+    "caldo_de_espinas": {
+      "oficio": "cocina",
+      "rango": "aprendiz",
+      "materiales": {
+        "gobio_del_rio": 1
+      },
+      "resultado": {
+        "tipo": "objeto",
+        "id": "caldo_de_espinas",
+        "cantidad": 2
+      },
+      "rival": 1,
+      "rara": false
+    },
+    "guiso_de_rio": {
+      "oficio": "cocina",
+      "rango": "oficial",
+      "materiales": {
+        "boga_plateada": 1,
+        "botin_sal": 1,
+        "sangraiz": 1
+      },
+      "resultado": {
+        "tipo": "objeto",
+        "id": "guiso_de_rio",
+        "cantidad": 2
+      },
+      "rival": 2,
+      "rara": false,
+      "_nota": "vale cualquier pez raro"
+    },
+    "pan_de_viaje": {
+      "oficio": "cocina",
+      "rango": "maestro",
+      "materiales": {
+        "pan": 2,
+        "botin_sal": 1
+      },
+      "resultado": {
+        "tipo": "objeto",
+        "id": "pan_de_viaje",
+        "cantidad": 2
+      },
+      "rival": 2,
+      "rara": false
+    },
+    "plato_de_fiesta": {
+      "oficio": "cocina",
+      "rango": "gran_maestro",
+      "materiales": {
+        "guiso_de_rio": 1,
+        "semilla_sin_dueno": 1
+      },
+      "resultado": {
+        "tipo": "objeto",
+        "id": "plato_de_fiesta",
+        "cantidad": 1
+      },
+      "rival": 3,
+      "rara": true,
+      "_nota": "única por día"
+    },
+    "copiar_hechizo_t1": {
+      "oficio": "estudio",
+      "rango": "oficial",
+      "materiales": {
+        "pliego_oraculo": 1,
+        "tinta_sombras": 1
+      },
+      "resultado": {
+        "tipo": "hueco",
+        "id": "hueco_estudio",
+        "cantidad": 1
+      },
+      "rival": 2,
+      "rara": false,
+      "_nota": "copia un hechizo de tier 1 de la lista de la biblioteca al hueco de estudio (uno solo)"
+    },
+    "copiar_hechizo_raro": {
+      "oficio": "estudio",
+      "rango": "gran_maestro",
+      "materiales": {
+        "pliego_oraculo": 1,
+        "ceniza_sombras": 1
+      },
+      "resultado": {
+        "tipo": "hueco",
+        "id": "hueco_estudio",
+        "cantidad": 1
+      },
+      "rival": 4,
+      "rara": true,
+      "_nota": "el hechizo del hueco pasa a su versión de tier 2"
+    }
+  }
+}

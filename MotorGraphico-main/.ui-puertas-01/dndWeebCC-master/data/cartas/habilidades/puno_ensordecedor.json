@@ -1,0 +1,54 @@
+{
+ "id": "puno_ensordecedor",
+ "name": "Puño Ensordecedor",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Un puñetazo junto a la oreja que retumba como una campana y le deja el eco dentro de la cabeza: 1d6 de daño, y aturdido pasa 1 turno sin atacar y se defiende con desventaja.",
+ "flavorText": "",
+ "classTags": [
+  "monje_del_despertar"
+ ],
+ "roleTags": [],
+ "tags": [
+  "monje_del_despertar"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "1 turno",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Un puñetazo junto a la oreja que retumba como una campana y le deja el eco dentro de la cabeza: 1d6 de daño, y aturdido pasa 1 turno sin atacar y se defiende con desventaja.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "1d6 de daño.",
+   "mechanicHook": "dano:1d6"
+  },
+  {
+   "description": "Aturdido: no ataca 1 turno.",
+   "mechanicHook": "estado:1:incapacitado"
+  },
+  {
+   "description": "Aturdido: se defiende con desventaja 1 turno.",
+   "mechanicHook": "estado:1:desventaja:defensa"
+  }
+ ]
+}

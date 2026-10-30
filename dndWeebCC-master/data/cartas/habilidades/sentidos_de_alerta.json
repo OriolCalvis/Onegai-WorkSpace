@@ -1,0 +1,53 @@
+{
+ "id": "sentidos_de_alerta",
+ "name": "Sentidos de Alerta",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Despiertas todos tus sentidos a la vez y ves venir cada golpe antes de que salga: atacas y te defiendes con ventaja hasta el final del combate.",
+ "flavorText": "",
+ "classTags": [
+  "monje_del_despertar"
+ ],
+ "roleTags": [],
+ "tags": [
+  "monje_del_despertar",
+  "creador"
+ ],
+ "mechanicTags": [
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "self",
+ "range": "short",
+ "duration": "combate",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Despiertas todos tus sentidos a la vez y ves venir cada golpe antes de que salga: atacas y te defiendes con ventaja hasta el final del combate.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "Atacas con ventaja hasta el final del combate.",
+   "mechanicHook": "estado:combate:ventaja:ataque"
+  },
+  {
+   "description": "Te defiendes con ventaja hasta el final del combate.",
+   "mechanicHook": "estado:combate:ventaja:defensa"
+  }
+ ]
+}

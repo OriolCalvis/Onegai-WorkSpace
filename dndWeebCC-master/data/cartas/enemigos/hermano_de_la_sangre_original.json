@@ -1,0 +1,100 @@
+{
+ "id": "hermano_de_la_sangre_original",
+ "name": "Hermano de la Sangre Original",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 5,
+ "role": "defensa",
+ "faction": "clan_de_gongorguma_renegado",
+ "factionName": "El Clan Renegado de Gongorguma",
+ "stats": {
+  "CON": 11,
+  "DES": 10,
+  "INT": 9,
+  "CAR": 10
+ },
+ "derived": {
+  "vida": 80,
+  "ca": 22,
+  "defensaMental": 20,
+  "resistenciaFisica": 21,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de fisico: daño que suma su CON (pool de CON, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "CA",
+   "effect": "Técnica de facción: si el objetivo falla, queda Sangrado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en fase de Desesperación: daño de fisico como éxito crítico (todos sus dados cuentan éxito completo)."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Sus ataques contra objetivos heridos suman +1 al daño."
+ },
+ "conditionsInflicted": [
+  "sangrado"
+ ],
+ "loot": [
+  "gran_hacha_de_milicia",
+  "cota_de_malla",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal: alterna golpe y técnica."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Su técnica de facción no gasta acción: la encadena tras el golpe. Sus ataques contra objetivos heridos suman +1 al daño."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final y actúa con agresividad total (ignora amenaza, va al más herido)."
+  }
+ ],
+ "flavorText": "Reliquia viviente del primer pacto carmesi.",
+ "villainProfile": {
+  "objetivo": "Custodiar el primer pacto: que nadie olvide lo que costó la primera alianza",
+  "metodo": "Se hiere a sí mismo para blindar a los suyos; su sangre es muralla",
+  "debilidad_narrativa": "Aislarlo: si ningún aliado suyo sigue en pie, su pasiva se apaga y su CA baja 2",
+  "vinculo": "hermano_de_sangre"
+ },
+ "arena": {
+  "name": "El Puente de los Votos",
+  "hazard": "Sangre consagrada: el suelo herido (donde alguien sangró) da +1 a sus tiradas cuando lo pisa"
+ },
+ "legendaryActions": [
+  "Transfusión (1/ronda): transfiere 2 de daño recibido por un aliado hacia sí mismo y gana +1 al próximo golpe"
+ ],
+ "storyCard": {
+  "title": "Hermano de la Sangre Original",
+  "text": "El primer pacto se firmó sin tinta. Él es el recibo.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae si el grupo alcanzó la fase de Desesperación",
+  "drops": [
+   "gran_hacha_de_milicia",
+   "cota_de_malla",
+   "pocion_de_vigor"
+  ]
+ }
+}

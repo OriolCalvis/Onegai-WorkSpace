@@ -1,0 +1,108 @@
+{
+  "nombre": "Hoja Venenosa",
+  "descripcion": "El Hoja Venenosa es un druida oscuro convertido en asesino sigiloso, maestro de venenos mortales y trampas naturales para eliminar a sus presas desde las sombras.
+",
+  "rolTematico": "Druida asesino que emplea magia natural corrupta para crear venenos, trampas de la naturaleza y emboscadas silenciosas, manteniéndose oculto mientras debilita continuamente a sus enemigos.",
+  "dadoGolpe": "1d8",
+  "puntosGolpeNivel1": "8 + modificador de Constitución",
+  "puntosGolpePorNivel": "1d8 (o 5) + modificador de Constitución",
+  "atributoConjuro": "Sabiduría",
+  "atributosRelevantes": ["Destreza", "Inteligencia", "Sabiduría"],
+  "competencias": {
+    "armaduras": ["Ligeras", "Intermedias"],
+    "armas": ["Arcos cortos", "Dagas", "Espadas cortas", "Bastones"],
+    "habilidadesElegir": ["Trato con animales", "Arcano", "Perspicacia", "Medicina", "Naturaleza", "Percepción", "Religión", "Supervivencia"],
+    "salvaciones": ["Destreza", "Inteligencia"]
+  },
+  "mecanicas": {
+    "venenoLetal": "Aplicas venenos naturales mortales que infligen daño continuo y penalizan salvas",
+    "trampasNaturales": "Diseñas trampas vegetales que inmovilizan o dañan a los enemigos al activarse",
+    "sigiloSilencioso": "Te mueves sin ser detectado y evitas ataques de oportunidad mientras estés oculto"
+  },
+  "accionesEspeciales": {
+    "TrampaEnredaderas": {
+      "descripcion": "Te sirve para inmovilizar grupos de enemigos",
+      "niveles": {
+        "2": "Coloca una zona de 10 pies; TS Destreza o quedan inmovilizados 1 turno",
+        "7": "Inflige además 2d6 de daño perforante y ralentiza 1 turno"
+      }
+    },
+    "NubeEsporas": {
+      "descripcion": "Libera una nube venenosa que debilita y envenena",
+      "niveles": {
+        "5": "TS Constitución; 3d6 veneno + envenenados 1 minuto",
+        "11": "Daño aumenta a 4d6 y ceguera 1 minuto"
+      }
+    }
+  },
+  "niveles": {
+    "1": {
+      "habilidades": [
+        { "nombre": "Veneno Letal", "descripcion": "Aplicas veneno a tu arma.", "efecto": "+1d6 veneno al daño", "usos": "Mod. Inteligencia por descanso corto", "accion": "Acción" }
+      ]
+    },
+    "2": {
+      "habilidades": [
+        { "nombre": "Trampa de Enredaderas", "descripcion": "Creas una trampa vegetal.", "efecto": "TS Destreza o inmovilizado 1 turno", "usos": "Mod. Inteligencia por descanso largo", "accion": "Acción" }
+      ]
+    },
+    "3": {
+      "habilidades": [
+        { "nombre": "Asesino Silencioso", "descripcion": "Maestro del sigilo.", "efecto": "Ventaja en Sigilo y no provocas ataques de oportunidad", "usos": "Automático", "accion": "Pasiva" }
+      ]
+    },
+    "4": { "habilidades": [{ "nombre": "Mejora de Características" }] },
+    "5": {
+      "habilidades": [
+        { "nombre": "Nube de Esporas", "descripcion": "Libera esporas tóxicas.", "efecto": "TS Constitución; 3d6 veneno + envenenado 1 minuto", "usos": "1 vez por descanso largo", "accion": "Acción" }
+      ]
+    },
+    "6": {
+      "habilidades": [
+        { "nombre": "Golpe Mortal", "descripcion": "Ataque furtivo letal.", "efecto": "+3d6 daño si enemigo desprevenido o incapacitado", "usos": "Automático", "accion": "Pasiva" }
+      ]
+    },
+    "7": {
+      "habilidades": [
+        { "nombre": "Trampa de Espinas", "descripcion": "Trampa afilada y lenta.", "efecto": "2d6 perforante + velocidad halved 1 minuto", "usos": "Mod. Inteligencia por descanso largo", "accion": "Acción" }
+      ]
+    },
+    "8": { "habilidades": [{ "nombre": "Mejora de Características" }] },
+    "9": {
+      "habilidades": [
+        { "nombre": "Envenenador Experto", "descripcion": "Toxinas mejoradas.", "efecto": "+1d6 veneno y desventaja en TS contra veneno", "usos": "Automático", "accion": "Pasiva" }
+      ]
+    },
+    "10": {
+      "habilidades": [
+        { "nombre": "Emboscada Perfecta", "descripcion": "Golpe sorpresa devastador.", "efecto": "+2d6 daño + ventaja en ataque si sorprendes", "usos": "Automático", "accion": "Pasiva" }
+      ]
+    },
+    "11": {
+      "habilidades": [
+        { "nombre": "Trampa de Esporas Mejorada", "descripcion": "Trampa venenosa avanzada.", "efecto": "TS Constitución; 4d6 veneno + ceguera 1 minuto", "usos": "1 vez por descanso largo", "accion": "Acción" }
+      ]
+    },
+    "12": { "habilidades": [{ "nombre": "Mejora de Características" }] },
+    "13": {
+      "habilidades": [
+        { "nombre": "Maldición de la Naturaleza", "descripcion": "Debilita con furia natural.", "efecto": "Desventaja en ATA y TS 1 minuto", "usos": "1 vez por descanso largo", "accion": "Acción" }
+      ]
+    },
+    "14": { "habilidades": [{ "nombre": "Maestro en Venenos", "descripcion": "Toxinas supremas.", "efecto": "+2d6 veneno y desventaja en ATA de enemigos envenenados", "usos": "Automático", "accion": "Pasiva" }] },
+    "15": {
+      "habilidades": [
+        { "nombre": "Maestro en Venenos Letales", "descripcion": "Venenos insuperables.", "efecto": "Al envenenar: TS Constitución o incapacitado 1 turno + 8d6 veneno", "usos": "1 vez por descanso largo", "accion": "Acción" }
+      ]
+    },
+    "16": { "habilidades": [{ "nombre": "Mejora de Características" }] },
+    "17": { "habilidades": [{ "nombre": "Maestro del Sigilo y Venenos", "descripcion": "Invisible y venenoso.", "efecto": "Ventaja en Sigilo y +4d6 veneno adicional", "usos": "Automático", "accion": "Pasiva" }] },
+    "18": { "habilidades": [{ "nombre": "Veneno Mortal Avanzado", "descripcion": "Toxina suprema.", "efecto": "TS o incapacitado + 10d6 veneno si fallan", "usos": "1 vez por descanso largo", "accion": "Acción" }] },
+    "19": { "habilidades": [{ "nombre": "Mejora de Características" }] },
+    "20": {
+      "habilidades": [
+        { "nombre": "Señor de los Venenos", "descripcion": "Maestro absoluto del sigilo y el veneno.", "efecto": "Invisible en sombras; +4d6 veneno; teletransporte sombra 60 pies", "usos": "1 vez por descanso largo", "accion": "Acción Completa", "duracion": "1 minuto" }
+      ]
+    }
+  }
+}

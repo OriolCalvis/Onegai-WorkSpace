@@ -1,0 +1,82 @@
+{
+ "_nota": "Contrato del cuerpo base: 12 frames de 64x64 en una fila. Frames 1-based. Cada fila: arriba 1-3, derecha 4-6, abajo 7-9, izquierda 10-12 (paso, quieto, paso). El motor lo reparte asi desde APARIENCIA-01 (HojaPersonaje::animar, tambien para personaje.png): 'animaciones' es el ciclo de los PNJ; el jugador descansa en el frame quieto y su ciclo de andar empieza en el ({8, 7, 8, 9} hacia abajo). TextureManager invierte los PNG al cargarlos: en un atlas de varias filas la region del frame f es defineRegion(f, (f-1) % columns, rows - 1 - (f-1) / columns), como race_npc_idle.",
+ "estado": "runtime temporal (fallback de actores sin hoja propia)",
+ "image": "personaje.png",
+ "frameSize": [
+  64,
+  64
+ ],
+ "columns": 12,
+ "rows": 1,
+ "direcciones": {
+  "arriba": [
+   1,
+   2,
+   3
+  ],
+  "derecha": [
+   4,
+   5,
+   6
+  ],
+  "abajo": [
+   7,
+   8,
+   9
+  ],
+  "izquierda": [
+   10,
+   11,
+   12
+  ]
+ },
+ "animaciones": {
+  "idle": [
+   8
+  ],
+  "idle_down": [
+   8
+  ],
+  "idle_up": [
+   2
+  ],
+  "idle_right": [
+   5
+  ],
+  "idle_left": [
+   11
+  ],
+  "walk_down": [
+   7,
+   8,
+   9,
+   8
+  ],
+  "walk_up": [
+   1,
+   2,
+   3,
+   2
+  ],
+  "walk_right": [
+   4,
+   5,
+   6,
+   5
+  ],
+  "walk_left": [
+   10,
+   11,
+   12,
+   11
+  ]
+ },
+ "espejos": {
+  "3": "espejo de 1",
+  "9": "espejo de 7",
+  "10": "espejo de 4",
+  "11": "espejo de 5",
+  "12": "espejo de 6"
+ },
+ "vestidoEn": "actores_capas.png, razas_andando.png y personajes_historia.png (tools/gen_personajes.py); capas en personajes.json"
+}

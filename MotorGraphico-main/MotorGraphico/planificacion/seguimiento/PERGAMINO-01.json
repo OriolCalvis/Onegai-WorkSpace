@@ -1,0 +1,58 @@
+{
+  "id": "PERGAMINO-01",
+  "date": "2026-09-29",
+  "author": "Claude (Cowork, encargo de Oriol)",
+  "status": "HECHO en el arbol, sin commit",
+  "encargo": "Implementar en el motor el prototipo pergamino aprobado (Claude outputs/estudio_uiux_2026-09-28/maquetas/pergamino): HUD en retales, dialogo en hoja, cuaderno TAB con pasar hoja y pausa en papiro. Cambios pedidos por Oriol: el mana sale de la interfaz (no del juego) y la moral deja la barra del HUD y pasa al aspecto del avatar (aura y tinte).",
+  "archivos": {
+    "nuevos": [
+      "cmake/Pergamino.cmake (libreria motor_pergamino, sin GL, y test_pergamino)",
+      "include/HUD/Pergamino/*.h y src/HUD/Pergamino/*.cpp (Tema, Materiales, Lienzo, FuenteAtlas, Pincel, PaginaCuaderno, Cuaderno, Papiro, HudRetales, DialogoHoja, MinimapaTinta, PaginasJugador, InterfazPergamino)",
+      "include/Game/PasarHoja.h + src/Game/PasarHoja.cpp",
+      "include/Game/AuraMoral.h + src/Game/AuraMoral.cpp",
+      "include/Render/PergaminoGL.h + src/Render/PergaminoGL.cpp (el unico que dibuja el tema)",
+      "include/Render/AuraJugador.h + src/Render/AuraJugador.cpp",
+      "tests/HUD/PergaminoTests.cpp + tests/HUD/PergaminoPantallasTests.cpp",
+      "tools/gen_letras_pergamino.py + tools/fuentes/ (Lora OFL, glifos_5x7.json)",
+      "assets/textures/letras_pergamino.png/.json/_OFL.txt"
+    ],
+    "modificados": [
+      "CMakeLists.txt (include de cmake/Pergamino.cmake; motor_core: fuera HudMinimap/HudFicha/ApplicationMenuJugador, dentro PergaminoGL/AuraJugador y el enlace a motor_pergamino; fuera test_hud_minimap)",
+      "include/Engine/Application.h (519 -> 498 lineas, 109 -> 91 miembros: fuera los widgets de jugador, minimapa, inventario, pausa y derrota; dentro m_pergamino y m_aura)",
+      "src/Engine/Application.cpp (1347 -> 1257; pausa, opciones y derrota sin widgets; dialogo paginado; newestLoadableSlot con la ranura rapida)",
+      "src/Engine/ApplicationHud.cpp (refreshHud rellena Pergamino::EstadoJuego; tienda sin PM; moral -> aura)",
+      "src/Engine/ApplicationPantallas.cpp (createIconWidgets sustituye a las tres create*Widgets)",
+      "src/Engine/ApplicationBucle.cpp, ApplicationCierre.cpp, ApplicationNivel.cpp",
+      "include/Render/SpriteBatch.h + src/Render/SpriteBatch.cpp (submitQuad de cuatro esquinas)",
+      "src/Game/Codice.cpp (una linea: el destino de un beat enter es el id del nivel, no su ruta)",
+      "include/Render/HudIconos.h (comentario)",
+      "tests/Engine/ApplicationSceneTests.cpp (fuera las comprobaciones de HudMinimap; el fichero ya no compilaba antes)"
+    ],
+    "retirados": [
+      "include/Render/HudMinimap.h, src/Render/HudMinimap.cpp, tests/Render/HudMinimapTests.cpp",
+      "include/Render/HudFicha.h, src/Render/HudFicha.cpp",
+      "include/Engine/MenuJugadorHud.h, src/Engine/ApplicationMenuJugador.cpp",
+      "(movidos a _to_delete/claude_pergamino_2026-09-29/ con su ruta)"
+    ]
+  },
+  "reglas": [
+    "GL-free: toda la maquetacion vive en motor_pergamino (enlaza motor_level y motor_map); Render/PergaminoGL y Render/AuraJugador son las dos unicas piezas con GL.",
+    "No se tocan GameSession, InventoryScreen/InventoryMenuState, BattleState, InputMap ni Player (como decia la reserva).",
+    "El mana no se dibuja en ninguna pantalla fuera del combate; la moral solo en el avatar y escrita en la Ficha.",
+    "Sin letras (assets/textures/letras_pergamino.json) el juego sigue: el dialogo vuelve al cuadro de siempre."
+  ],
+  "verification": [
+    "test_pergamino 33/33; tres mutaciones (separador del papiro, corte de tramo del aura, encadenado de la vuelta) lo ponen rojo.",
+    "juego, motor_editor y level_editor compilan y enlazan sobre el arbol del Mac del 29/09 (17:40), con H0-08/H3-01/H2-01/H4-01.",
+    "ctest -L gl-free: los fallos son los mismos que sin este cambio (demo_nova_partida, demo_creacion_personaje, test_gdb12_screens, test_catalog_content, test_g14 no enlaza en Linux).",
+    "linea_base_core: OK, la deuda baja en 7 (pide --actualizar; no hecho).",
+    "Juego real (Mesa llvmpipe + GLFW null guionizada): galeria en Claude outputs/pergamino_2026-09-29/."
+  ],
+  "pendiente": [
+    "Mana en combate, titulo, creacion, tienda, negocio y combate en el tema oscuro.",
+    "Opcion de animaciones reducidas en el menu (hoy MOTOR_MOVIMIENTO_REDUCIDO=1).",
+    "APARIENCIA-01 (parche de otra sesion del 29/09) se hizo contra el arbol anterior: fusionar a mano Application.cpp, ApplicationCierre.cpp y lo que toque de ApplicationPantallas/Hud.",
+    "Commit: cmake/Pergamino.cmake y los ficheros nuevos van en el mismo commit que sus lineas de CMake."
+  ],
+  "sesion": "sesiones/2026-09-29-claude-pergamino.md"
+}

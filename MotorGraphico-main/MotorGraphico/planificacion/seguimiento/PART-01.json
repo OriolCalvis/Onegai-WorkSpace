@@ -1,0 +1,39 @@
+{
+ "id": "PART-01",
+ "date": "2026-10-07",
+ "author": "claude (Cowork)",
+ "status": "HECHO — los 13 elementos del juego (el Rayo, el Hielo, la Tierra, el Viento... ya no solo los cuatro de NosTale) y la lista de particulas: 40 familias (las de los elementos y las de los temas de las clases: dragones, petalos, llamas puras, notas, naipes, monedas, animas...) con su forma, su movimiento y sus colores en el motor, y las de cada una de las 127 clases sacadas de lo que hacen sus cartas. Las piezas de los sets llevan la de su clase. Sigue PART-02: las ranuras por tier (brazos; collar, cinturon y anillos), los abalorios que echan sus particulas desde su sitio y las particulas de las cartas en el combate.",
+ "origen": "Oriol (07/10): «trabajar particulas que reflejen todos los elementos creados, por ejemplo apostata particulas de sangre de color rojo sangre, barbaro furia y aura, el señor de las armas yo la haria dorada [...] no deberia tener las mismas particulas en los puños un artes misticas que un puño de dragon [...] separar druida flamigero mas puro fuego, puño dragon sprites de dragon, hay que analizar que habilidades aporta cada clase y hacer una lista de las particulas requeridas para todas». Y del rayo, que era Luz como en NosTale: «pues hay que cambiarlo porque no estamos limitados a los 4 elementos del nostale aqui».",
+ "canon": "planificacion/CANON_PARTICULAS.md (los elementos, las familias, las de cada clase y que familia echa cada carta, donde se ven y cuanto, las ranuras por tier y los abalorios, y lo que queda por revisar).",
+ "scope": [
+  "tools/elementos.py (nuevo): los 13 elementos (palabra de la carta, color y familia de particulas) y sus alias (Sagrado = Luz, Oscuro = Tinieblas); cp_reglas.py los usa.",
+  "Retag de 8 clases y 100 cartas de las SP y de las propias (tools/sp_*.py, tools/cp_*.py) e importadas: el Tempestario, el Tronador y Thor de Rayo; el Mago azul y el Caballero del Rey Lobo de Hielo; la Cartomante Arcana; el Druida del Roble de Naturaleza; el Corsario Vampirico de Sangre; y cartas sueltas de Tierra, Viento, Agua, Fuego, Veneno, Sangre y Arcano.",
+  "tools/particulas.py (nuevo): las 40 familias (FAMILIAS), las de cada clase (CLASES), lo que nombra el texto de cada familia (TEMAS) y que familia echa cada carta (de_la_carta, de_cada_carta, elemento_de_la_clase).",
+  "Motor: Game::tipoDeParticula con las 40 familias, 29 formas (llama, copo, piedra, estela, runa, nota, naipe, moneda, engranaje, pluma, murcielago, dragon, petalo, calavera, estrella, trazo...), 8 movimientos (sube, cae, deriva, converge, orbita, expande, chispazo, salpica), densidad, otra forma para algunas y giro y colores propios; Game::contornoDeForma y el contorno oscuro de las de tema en Render/AuraJugador.",
+  "tools/actores_estetica.py: las piezas de los sets llevan la familia de su clase y su color; el vacio, su familia (equipo_catalogo.json).",
+  "examples/demo_brillo_equipo.cpp: pieza@familia[:rrggbb] y @familia (un abalorio), DEMO_BRILLO_NIVEL y DEMO_BRILLO_FONDO.",
+  "Pruebas: test_brillo_equipo (las familias, sus formas y contornos, y como se mueve cada una), test_validar_sprites.ParticulasTests (el motor y tools/particulas.py tienen las mismas familias; cada clase y cada elemento, las suyas; cada carta echa una de las de su clase; las cartas llevan los elementos del juego).",
+  "Revision de Oriol (07/10) sobre la pagina: el veneno, calaveras verdes (las burbujas parecian curar); las chispas, trazos que salpican; las estrellas y el oro, la estrella de cuatro puntas, el oro el doble y mas vivo; las monedas, con cruces doradas y girando; los engranajes, girando.",
+  "Particulas por tier (Oriol, con la prueba del Cazademonios): un pelo mas opacas en el Tier 3, mas intensas en el 4, mas aun en el 5 y, en el 5, un tercio de un tono mas oscuro de contraste (EscalonDeBrillo::opacidad y contraste); demo_brillo_equipo con ranura=pieza y #nivel."
+ ],
+ "non_goals": [
+  "Las ranuras de brazos, collar, cinturon y anillos, los abalorios que echan desde su sitio y las particulas de las cartas en el combate (PART-02).",
+  "Retag de las cartas de las 63 clases de antes (propuesta en CANON_PARTICULAS §7, sin tocar).",
+  "Resistencias y debilidades por elemento (el combate aun no las tiene)."
+ ],
+ "verification": [
+  "test_brillo_equipo 7/7.",
+  "test_validar_sprites: todo menos test_personajes_son_reproducibles, que falla igual en 4d0cbf0.",
+  "ctest: solo los fallos de la linea base (demo_creacion_personaje, test_gdb12_screens, test_g14 sin enlazar, test_application y test_application_cableado, test_catalog_content con skills 492 y NPC 134, test_application_scenes, test_personajes_capas por pnj_boundington/aigren, linea_base_core).",
+  "gen_personajes dos veces: equipo_catalogo.json igual.",
+  "GIF de las 40 familias con el codigo del motor y GIF del motor con los sets del Puño del dragon, las Artes Misticas, el Druida flamigero y el Mago de fuego."
+ ],
+ "para_oriol": [
+  "¿Te valen los 13 elementos? ¿Falta alguno (el Sonido de los bardos, el Metal)?",
+  "¿Las particulas de cada clase? Sobre todo la primera, la de su set y sus abalorios.",
+  "Las 63 de antes tienen cartas de rayo, tierra, viento o sangre con otro elemento o ninguno: ¿las cambio al suyo?",
+  "El tamaño: un pixel del sprite, con contorno en las de tema. ¿Mas grandes, o sin contorno?",
+  "¿Dos anillos (uno en cada mano), un collar y un cinturon en el Tier 2?"
+ ],
+ "sesion": "sesiones/2026-10-07-claude-particulas.md"
+}

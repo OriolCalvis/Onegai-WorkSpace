@@ -1,0 +1,26 @@
+{
+  "id": "E-04",
+  "date": "2026-09-17",
+  "author": "Claude (Cowork)",
+  "status": "comercio.abrir cableado: el juego de comandas queda completo. Paquete ABIERTO solo por CI remota",
+  "actions": [
+    "GameSession::openShop(id) (pública, Result<bool>): abre la tienda de un PNJ del catálogo sin estar a su lado y sin disparar su narrativa. Todo o nada: partida no explorando, id desconocido, objeto que no es PNJ o tienda sin ningún artículo con precio → motivo y el modo no cambia.",
+    "La regla de precios de la tienda pasa a un solo helper privado, resolveShopOffers(def), que usan interact() y openShop(). Así no hay dos copias.",
+    "sell() usa la recompra del tendero abierto (m_shopBuybackPercent, fijada al abrir) en vez de buscarla en el mundo por NOMBRE. La búsqueda antigua no encontraba al tendero de una tienda abierta por evento, confundía a dos PNJ con el mismo nombre y desreferenciaba m_world sin comprobarlo (una sesión sin mundo reventaba al vender).",
+    "SessionCommandHost: comercio.abrir llama a openShop y devuelve Wait; waitResolved lo da por cerrado cuando la sesión sale de Shop. Si no se puede abrir, falla con el motivo de la sesión en vez de esperar para siempre.",
+    "EventCommands: comercio.abrir pasa a implemented=true y su parámetro 'tienda' a ObjectRef, así que el selector de E-14 lo ofrece y la búsqueda de E-15 lo encuentra. Ningún comando del catálogo queda declarado sin cablear; el mecanismo se conserva para el próximo.",
+    "Cuatro tests usaban comercio.abrir como «el comando sin cablear» y se han adaptado sin perder lo que defendían: EventCommands (comando de partida sin sesión), AdventureValidation (comando que esta versión no conoce + comercio.abrir ya se puede probar) y ProblemsState (el fixture de error pasa a un interruptor de un evento inexistente; un tipo desconocido repetía el error en el «si» que lo contiene). FORMATO_AVENTURAS.md, al día."
+  ],
+  "verification": [
+    "test_session_command_host 15/15 (3 casos nuevos de comercio: abrir-esperar-cerrar con compra y venta reales, cuatro motivos de fallo y sesión ocupada, recorrido por NarrativeCommandHost). Con ASan+UBSan, 15/15 sin diagnósticos.",
+    "5/5 mutaciones detectadas: tienda vacía que abre, no esperar, no comprobar el modo, recompra fija y abrir cualquier objeto.",
+    "Sin regresiones: test_event_commands 25/25, test_adventure_validation 19/19, test_problems_state 17/17 y demo_mision_llave OK; test_game_session 20, test_business_mode 16, test_game_mode 14, test_carry_over 7, test_save_game 19 y test_business_economy 18, todo verde.",
+    "Compilado en la VM con g++ 11 a partir de las listas de fuentes de CMakeLists (sin cmake), excluyendo src/Project/ProjectDatabaseState.cpp, que en HEAD NO COMPILA (ver pendientes). CMake real y CI sin verificar."
+  ],
+  "pending": [
+    "CI remota para el cierre formal.",
+    "HEAD NO CONSTRUYE: motor_project incluye src/Project/ProjectDatabaseState.cpp (E-16, versionado por los commits automáticos de «Eigent User»), que define save/load como Result<void> mientras la cabecera los declara bool. Cae toda librería que dependa de motor_project. Es de la sesión de E-16.",
+    "Quien monte el bucle en Application (una línea, fichero de cruce) tiene que pasar el SessionCommandHost como fallback del intérprete: sigue igual que en la rebanada anterior.",
+    "Las ramas de ELECCIONES (G-14) y la política de derrota (G-11) siguen fuera de este paquete."
+  ]
+}

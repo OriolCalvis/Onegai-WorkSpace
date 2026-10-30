@@ -1,0 +1,13 @@
+# Codex — AV16-08: aplicar la respuesta PO-48 (15/10/2026)
+
+Continuación en agente/codex/AV16-08 sobre c83c2d9. Se revisó la bandeja compartida: PO-48 ya contestada a las 20:46, aunque el informe viejo decía pendiente. La fila se actualizó antes de crear el interior. Se descartan La Moneda Chica/La Tina Caliente/La Cesta del Vado/El Candil del Sur/El Dobladillo. Oriol mantiene cuatro locales compartidos y pide un local nuevo de pesca, caza y agricultura solo en puerta_ropa_sur.
+
+El Zurrón del Vado, nombre provisional autorizado: interior y TMX propios copiados del suelo y las paredes de sastrería, sin cambiar el original ni su Luisarda. Dependiente distinto con hoja pnj_pesca_caza (una composición válida y distinta), generada con el horneador existente mediante una herramienta nueva que no mueve las filas de otros PNJ. Siete ofertas; cebo 4, trampa 10 y semillas 6 son suministros de oficio nuevos; caña/cuerda/pala/pico conservan precio. Su uso queda en el oficio de D0017; no se inventa una regla de combate.
+
+El atlas todavía no tiene cana_pescar. El lugar deja emblema vacío y emblemaPendiente=cana_pescar; el juego usa su genérico hasta arte de Pixel. No se modifica un generador de Claude ni el render.
+
+Contrato para Qwen: ciudad_centro/puerta_ropa_sur → assets/levels/interior_pesca_caza.json, targetPosition {x:1,y:7}. Salida del interior → ciudad_centro {x:56,y:58}, después del nuevo umbral (56,57). Las otras cuatro puertas _sur mantienen destino. No se toca ciudad_centro en esta rama.
+
+Validación: 19 casos Python y prueba C++ de los 18 lugares; PNJ 270, 346 composiciones, sin problemas. Sin integrar Qwen quedan un duplicado de sastrería, un enlace sin vuelta y el interior fuera del mundo. Se informa, no se da verde a la rama aislada. Juego real abierto por CUA: se ven interior, dependiente propio, diálogo y tienda con los tres suministros nuevos. Primera prueba directa omitía catálogos de muebles; al cargar TODOS los del proyecto sí se ven paredes, mostradores, cestas y armario. Esto explica el síntoma de interior vacío al arrancar con solo boundington_npcs. Capturas en el chat; el .app de prueba vive ignorado en out/.
+
+Copia limpia preparada en /private/tmp/codex-av1608-limpio: test_lugares compila. Se hizo SOLO en esa copia el único cambio de destino solicitado a Qwen; con él pasan los seis casos C++ y los 19 Python (2/2 objetivos), validar_lugares 22 puertas/0 errores y validar_todo 0 errores/22 avisos. No es un merge ni una edición de ciudad_centro en ninguna rama; es una prueba explícita de la integración requerida. La rama aislada sigue roja por ese enlace. Se corrigió la función del rótulo a tres palabras (pesca, caza, agricultura) para respetar el contrato del HUD.

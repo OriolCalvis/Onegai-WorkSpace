@@ -1,0 +1,31 @@
+{
+  "id": "DANO-02",
+  "date": "2026-10-06",
+  "author": "claude (Cowork)",
+  "status": "HECHO — aplicado en el arbol del Mac, sin commit",
+  "origen": "Oriol (06/10): «lanzas tus dados y comparas exitos y tiras dados de 6 segun los exitos [...] te hago 1d6 de daño mas habilidades y daño de bonificadores de daño este turno». «Depende de si es magia o no, porque la magia es tirada de salvacion [...] hay que bajar vidas 100 %». «Al superarla reciben la mitad del daño y jamas sus debufos a no ser que se indique lo contrario en una carta».",
+  "criterio_de_cierre": "En la mesa de cartas un golpe hace tantos d6 como la diferencia de exitos (medio exito redondea arriba, empate 0, pifia del defensor: todos los exitos, todos 6 +1d6); las cartas fisicas suman sus dados solo si ganan; las de magia piden salvacion (falla: entera, pifia: un dado mas, la supera: la mitad y sin estados). Las vidas de heroes, enemigos, invocaciones y acompañantes van a la mitad y el estudio de dificultad, rehecho, vuelve a dar ~40 % en 1 contra 3 con el escalon de cada nivel de equipo.",
+  "scope": [
+    "include/RPG/DanoEnfrentado.h (nuevo): la formula.",
+    "src/Game/CartasEnCombateInterno.h, src/Game/CartasEnCombate.cpp, src/Game/CartasTiradas.cpp, src/Game/CartasJugar.cpp, include/Game/CartasEnCombate.h (bonoDanoContra).",
+    "assets/catalogs/skills.json (defenseStat de 11 cartas de magia) y tools/importar_clases_companeros.py (SALVACION, vidas).",
+    "Vidas a la mitad: assets/catalogs/classes.json, assets/rules/tier_rules.json, assets/catalogs/monsters.json, assets/catalogs/summons.json, assets/objects/{boundington_enemigos,libreria_enemigos,libreria_completa,editor_biblioteca_enemigos,editor_biomas_fauna_equipo,on_enemigos}.json, assets/adventures/boundington_ocaso.json.",
+    "examples/simulador_dificultad.cpp (escalera nueva, MG_VIDA_HEROE, MG_VIDA_ENEMIGO, MG_ESCALERA), examples/demo_narrativa_combate.cpp, FORMATO_NIVELES.md.",
+    "tests/Game/CartasPrueba.h, CartasEnCombateTests.cpp, CartasClasesTests.cpp, AcompanantesTests.cpp, ObjetivosBarraTests.cpp, tests/RPG/CatalogContentTests.cpp."
+  ],
+  "non_goals": [
+    "El combate legado sin mesa (BattleState sin ficha, ApplySkillEffect): sigue con magnitudes.",
+    "Cambiar el peso de la CON en la vida, el atributo con que tiran las cartas o Gorran: preguntas abiertas.",
+    "test_objects.json (fixture de pruebas)."
+  ],
+  "verification": [
+    "test_cartas_combate (4 pruebas nuevas), test_barra_combate 19/19, test_game_session 31/31, test_enemy_catalog_bridge 14/14, test_pergamino 62/62, demo_battle, demo_campana_boundington, simulador_dificultad_humo en verde; ctest con las mismas 9 que fallaban; la guardia con las mismas 44 deudas.",
+    "Estudio (41 razas x 25 combates por clase): H1 kit contra F3 estandar (8 PV, CON 1, DES 1) 1v3 38 %, 2v3 8 %, 3v3 2 %; H2/F4 36/5/0,5 %; H3/F6 36/6/1 %; H4/F8 32/6/1 %; un escalon mas fuertes 48-51/9-13/1-5 %. Ocaso con Venides 0,1/0,5/7 %. Gorran 4 % en 1v1."
+  ],
+  "para_oriol": [
+    "La pifia de la salvacion: un dado mas (como esta) o x1,5.",
+    "Las once cartas de magia y su salvacion; Arsenal del Rey queda como golpe.",
+    "Siguen abiertas: atributo de las cartas (DES), peso de la CON (x3), Gorran, topes de dados, si el kit cura."
+  ],
+  "sesion": "sesiones/2026-10-06-claude-dano-diferencia.md"
+}

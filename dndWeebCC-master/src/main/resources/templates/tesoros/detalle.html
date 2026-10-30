@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title th:text="${carta.path('name').asText()}" layout:fragment="title">Tesoro</title>
+    <th:block layout:fragment="extra-css">
+    <link th:href="@{/css/carta-fisica.css}" rel="stylesheet">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+            <div class="u-page-header--start">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-p-0">Ficha completa</p>
+                    <h1 th:text="${carta.path('name').asText()}">Nombre</h1>
+                    <p>
+                        <span class="gm-badge">Tier <span th:text="${carta.path('tierRange').path(0).asInt()}">1</span>-<span th:text="${carta.path('tierRange').path(1).asInt()}">1</span></span>
+                        <span class="gm-badge" th:if="${carta.has('gold')}" th:text="'Oro ' + ${carta.path('gold').path('min').asInt()} + '-' + ${carta.path('gold').path('max').asInt()}">oro</span>
+                    </p>
+                </div>
+                <a class="gm-btn gm-btn--outline" th:href="@{/tesoros}">Volver al álbum</a>
+            </div>
+
+            <div class="u-detail-layout-300">
+                <!-- Carta física de tabla de botín (wireframe 7c): tierRange/
+                     drops/gold/clue del esquema §16. -->
+                <article class="cf-card u-cursor-default">
+                    <div class="cf-head">
+                        <span class="cf-name" th:text="${carta.path('name').asText()}">Nombre</span>
+                        <span class="cf-gem cf-gem--rango" th:text="'T' + ${carta.path('tierRange').path(0).asInt()} + '–T' + ${carta.path('tierRange').path(1).asInt()}">T1–T2</span>
+                    </div>
+
+                    <div class="cf-illustration">💰</div>
+
+                    <div class="cf-typeline">
+                        <span>Tabla de botín — contenedor</span>
+                    </div>
+
+                    <div class="cf-rules">
+                        <p th:if="${!carta.path('drops').isEmpty()}">🎲
+                            <th:block th:each="drop,it : ${carta.path('drops')}"><span th:text="${drop.path('chance').asInt()} + '% ' + ${drop.path('item').asText()}">60% objeto</span><th:block th:if="${!it.last}"> · </th:block></th:block>
+                        </p>
+                        <p th:if="${carta.path('drops').isEmpty()}" class="cf-meta">Sin objetos definidos, solo oro.</p>
+                        <p class="cf-meta">
+                            <th:block th:if="${carta.has('gold')}">Oro: <span th:text="${carta.path('gold').path('min').asInt()}">0</span>–<span th:text="${carta.path('gold').path('max').asInt()}">0</span></th:block>
+                            <th:block th:if="${!#strings.isEmpty(carta.path('clue').asText(''))}"> · Pista: <span th:text="${carta.path('clue').asText()}">pista</span></th:block>
+                        </p>
+                        <p class="cf-flavor" th:if="${!#strings.isEmpty(carta.path('flavorText').asText(''))}" th:text="${carta.path('flavorText').asText()}">Texto narrativo</p>
+                    </div>
+
+                    <p class="cf-id" th:text="'loot · ' + ${carta.path('id').asText()}">loot · id</p>
+                </article>
+
+                <div>
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Objetos ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p th:each="drop : ${carta.path('drops')}">
+                                <strong th:text="${catalogo.nombreDe(drop.path('item').asText())}">objeto</strong>
+                                <span class="gm-badge" th:text="${drop.path('chance').asInt()} + '%'">chance</span>
+                                <span class="gm-hint" th:if="${!drop.path('condition').isNull() and !drop.path('condition').isMissingNode()}"
+                                      th:text="'— ' + ${drop.path('condition').asText()}">condición</span>
+                            </p>
+                            <p th:if="${carta.path('drops').isEmpty()}">Sin objetos definidos, solo oro.</p>
+                        </div>
+                    </div>
+
+                    <div class="u-actions--wrap">
+                        <a class="gm-btn gm-btn--outline" th:href="@{/tesoros}">Volver al listado</a>
+                    </div>
+                </div>
+            </div></main>
+</body>
+</html>

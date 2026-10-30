@@ -1,0 +1,19 @@
+{
+ "id": "MAPA-01",
+ "date": "2026-10-14",
+ "author": "claude (Cowork)",
+ "status": "HECHO — el minimapa marca dónde se cumple el objetivo seguido y dice en qué zona estás.",
+ "origen": "Oriol (14/10): «sigo sin saber cómo completar la misión de conocer los tres comerciantes de la plaza», «no encuentro la herrería», «el nombre de la ubicación del minimapa si ponemos boundington al principio siempre, no sabemos en qué zona estamos».",
+ "actions": [
+  "Formato: \"donde\" en un objetivo (nivel, lista de niveles u objectId); AdventureScript lo lee y lo escribe; DiarioMisiones lo pasa al diario.",
+  "Game::RumboNiveles (nuevo, sin GL): camino más corto entre niveles por sus puertas (targetLevel); el ◆ va en la primera puerta del camino.",
+  "MinimapaTinta: ◆ rojo «Objetivo» en la entrada, la puerta o el objeto; si cae fuera de la ventana, en su borde.",
+  "La misión de los tres comerciantes son ahora tres objetivos, cada uno con su sitio (guiones/objetivos.py).",
+  "El nombre de la zona: sin «Boundington - » delante (ApplicationNivel::nombreZona), en dos líneas si no cabe."
+ ],
+ "verification": [
+  "test_rumbo_niveles 2/2; test_boundington_tutorial con los tres objetivos; visto en el juego real (sonda): el ◆ y el nombre de la zona."
+ ],
+ "sesion": "sesiones/2026-10-14-claude-feedback.md",
+ "pending": []
+}

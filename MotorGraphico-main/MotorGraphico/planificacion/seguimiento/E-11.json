@@ -1,0 +1,34 @@
+{
+  "id": "E-11",
+  "date": "2026-09-13",
+  "author": "Claude (Cowork)",
+  "status": "Mitad sin interfaz hecha: nombres visibles con id generado, duplicar con todo-o-nada, y mapa/casilla/titulo iniciales. Paquete ABIERTO — el arbol de mapas y el panel son editor/src/ProjectPanel.cpp",
+  "actions": [
+    "E-11 era el paquete que mas desbloqueaba: E-12 y E-13 dependen de el, y de ahi salen E-14 -> E-16 -> G-13. Era el unico de esa cadena con todas sus dependencias hechas.",
+    "NOMBRE VISIBLE ARRIBA, ID GENERADO ABAJO. Es lo que la ficha señala como el problema: «el recorregut continua depenent de noms tecnics». Crear un proyecto obligaba a teclear un id [a-z0-9_], sin acentos ni espacios. Ahora el autor escribe «La llave del santuario» y sale «la_llave_del_santuario»; los dos se guardan. El nombre se puede cambiar cuando quiera porque no es la identidad; el id no cambia nunca porque si lo es.",
+    "ProjectIndex::suggestId() pliega acentos y ñ (DEC-15: el texto visible los lleva, el identificador no), convierte cualquier otra cosa en un solo '_' y no deja guiones sueltos en los bordes. Si del nombre no sale ni un caracter util —«¿?»— devuelve ERROR y no un id raro: un proyecto sin identidad falla mucho mas tarde, al no encontrar su manifiesto.",
+    "uniqueId() nunca falla por colision: «cofre» ocupado da «cofre_2». Fallar obligaria al autor a inventarse otro nombre para un proyecto que legitimamente se puede llamar igual que otro.",
+    "createNamed() mira los ids ocupados Y los manifiestos sueltos que no estan en el indice. Sin lo segundo elegiria un id cuyo fichero ya existe y create() fallaria DESPUES de haberlo elegido, con un mensaje que no dice que hacer.",
+    "DUPLICAR. Lo que lleva el prefijo del proyecto es suyo: se copia con el prefijo nuevo. Lo que no lo lleva es contenido compartido —un catalogo del mundo, un mapa comun— y se sigue referenciando sin tocarlo. Copiarlo seria quedarse con una version congelada del trabajo de otro sin que nadie lo pidiera. El informe que devuelve dice cuantos se copiaron y cuales quedan compartidos, porque el autor necesita saberlo ANTES de ponerse a editar la copia.",
+    "TODO O NADA, que es el criterio con sus palabras («cancel·lar o fallar una operacio no deixa un projecte mig registrat»). Primero se planea la operacion entera y se comprueba que ningun destino exista; no se escribe un byte hasta saber que cabe. Si algo falla al copiar, se borra lo escrito. Y el INDICE se toca lo ultimo: mientras no se toque, el proyecto no existe para nadie y cualquier fallo anterior se limpia sin dejar rastro.",
+    "Y NO SOBREESCRIBE NADA: si el id nuevo estuviera ocupado o algun fichero de destino ya existiera, falla antes de escribir.",
+    "MAPA, CASILLA Y TITULO INICIALES. ProjectSettings gana `title` (lo que ve el JUGADOR, distinto del `name` que ve el AUTOR: separarlos permite renombrar la carpeta de trabajo sin cambiar el titulo del juego) y `initialCell` con su `hasInitialCell` — sin el, «0,0» y «no se ha elegido» serian lo mismo y el jugador aparecería en la esquina sin que nadie lo pidiera.",
+    "Las dos claves son ADITIVAS y NO suben schemaVersion: es la regla 1 que quedo escrita ayer en FORMATO_PROYECTOS.md. Y solo se escriben cuando estan puestas de verdad, para que un manifiesto antiguo siga dando el MISMO texto al reescribirlo. Eso lo comprueba solo test_schema_fixtures, que sigue verde sin tocar su fixture.",
+    "La lista blanca de campos de settings es estricta —un campo desconocido es error, y asi se cazan las erratas—, lo que obliga a apuntar ahi cada clave nueva o el manifiesto que la lleve no abre. Apuntadas."
+  ],
+  "verification": [
+    "test_project_naming, 13 casos verdes, sin ventana ni contexto GL.",
+    "El sandbox monta su assetsRoot en una carpeta CON ESPACIOS a proposito: el criterio pide «dos projectes en carpetes amb espais», y una ruta con espacio es como se rompen las que se montan concatenando.",
+    "Los de duplicar: copia lo suyo y comparte lo que no lo es (3 copiados, 1 compartido), la copia queda registrada y se reabre, el ORIGINAL no se toca; no sobreescribe un fichero que ya este y no deja NADA a medias (ni manifiesto, ni indice, ni los otros ficheros que si habrian cabido), y el fichero ajeno sigue intacto; un proyecto que declara un nivel que no esta en disco no se duplica a medias.",
+    "Los del nombre: acentos y ñ plegados, separadores colapsados, un nombre del que no sale nada es error, dos proyectos con el mismo nombre visible conviven, y crear esquiva un manifiesto suelto sin indexar.",
+    "Los de las claves nuevas: sobreviven a guardar y reabrir; un proyecto sin ellas se escribe SIN esas claves (byte a byte como antes); y una casilla a medias («x» sin «y») es error y no un cero inventado.",
+    "Compilado y ejecutado con g++ directo sobre la maquina del usuario. CI remota pendiente."
+  ],
+  "pending": [
+    "CI remota. Ningun paquete de esta rama se ha construido nunca en CI.",
+    "EL ARBOL DE MAPAS Y EL PANEL: editor/src/ProjectPanel.cpp, con crear/abrir/duplicar/renombrar mapa y el asistente de nombre, carpeta y plantilla. Es la mitad ImGui y no esta. Esto es el modelo que consumira; mismo reparto que E-07/E-15/G-17.",
+    "«Canviar nom visible de mapa» necesita que un MapDocument tenga nombre visible separado del id igual que lo tiene ahora el proyecto. MapDocument ya tiene name(), pero nadie genera el id a partir de el ni impide que renombrar cambie la identidad: es el mismo patron, aplicado un nivel mas abajo, y va con el arbol.",
+    "«Plantilla» del asistente (crear un proyecto a partir de otro como base) no esta: duplicate() es la pieza que lo hara, pero elegir plantillas pide decidir cuales se ofrecen.",
+    "duplicate() copia ficheros pero NO reescribe las referencias de DENTRO de esos ficheros. Si un nivel copiado nombra por id a otro nivel del proyecto, seguira apuntando al original. Hacerlo bien pide saber que referencias lleva cada formato, y eso es E-12/E-14 (selectores de datos y referencias). Queda dicho aqui para que no se descubra al usarlo."
+  ]
+}

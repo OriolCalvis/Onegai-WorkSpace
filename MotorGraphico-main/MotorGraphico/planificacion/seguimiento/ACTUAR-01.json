@@ -1,0 +1,35 @@
+{
+ "id": "ACTUAR-01",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — se puede actuar en la calle: en cuatro rincones del músico de Boundington (la fuente, la ópera, el mercado y la taberna), una tirada enfrentada de Interpretación (CAR) contra la indiferencia de los que pasan, a la que suma el instrumento (o las bolas de malabares) que se lleva en la mano; el grado dice cuánta gente se para y cuánto oro echa, y luego el sitio descansa 120 pasos.",
+ "origen": "Oriol (08/10): «podamos hacer una performance en la calle y depende de nuestra competencia musical y tiradas, atraer a la gente a nuestro espectáculo».",
+ "fuente": "La idea es de Oriol; los sitios, sus dados, la tabla de público y oro, el descanso y lo que suma cada instrumento son propuesta de Claude.",
+ "canon": "planificacion/CANON_ACTUAR_EN_LA_CALLE.md (cómo se juega, los sitios, cuánto da, lo que es de Oriol y lo que falta).",
+ "scope": [
+  "include/Game/Actuacion.h y src/Game/Actuacion.cpp (nuevos): con qué se actúa (la mano principal), la tirada y lo que pasa (público, oro y las tres líneas del diálogo), el reloj de pasos y el descanso de cada sitio, y actuaEn (la sesión: la ficha, la foto de la tirada para la hoja del diálogo y el diálogo).",
+  "include/Level/ObjectCatalog.h y src/Level/ObjectCatalog.cpp: el bloque \"actuacion\" (PerformanceData: rivalDice, afluencia y lugar), que se lee y se vuelve a escribir.",
+  "src/Game/GameSessionInteraccion.cpp (interact: un sitio para actuar), src/Game/GameSession.cpp (tryMovePlayer: un paso más en el reloj) y src/HUD/Pergamino/InterfazPergamino.cpp (el aviso «[E] Actuar junto a la fuente»; el fichero queda en 500 líneas).",
+  "tools/actuaciones.py (nuevo): los cuatro sitios; escribe assets/objects/actuaciones.json, los pone en ciudad_centro e interior_taberna (en celdas libres), añade el catálogo al proyecto de Boundington y el dibujo (el patrón actuacion_ -> caja) a sprites.json.",
+  "La etiqueta «Instrumento» al laúd y al tambor de los bardos (tools/cp_bardos.py; sp_reglas.arma_comun admite etiquetas) y «Malabares» a las bolas de malabares (tools/objetos_rol.py); equipment.json y las librerías.",
+  "FORMATO_NIVELES.md: el bloque actuacion.",
+  "Pruebas: tests/Game/ActuacionTests.cpp (5: lo que suma la mano, los cuatro grados, el reloj, la sesión entera y los sitios de Boundington)."
+ ],
+ "non_goals": [
+  "Que los PNJ de alrededor se acerquen a mirar (hoy están quietos): el público se cuenta en el diálogo.",
+  "Cerrar los sitios durante el Ocaso: se pregunta a Oriol.",
+  "Las monturas (MONTURAS-01): van después."
+ ],
+ "verification": [
+  "test_actuacion 5/5; ctest con EGL_PLATFORM=surfaceless: solo linea_base_core (sigue en 44).",
+  "test_validar_sprites: 54/54 sin GeneradoresTests; gen_personajes no cambia ningún dibujo.",
+  "validar_todo: 0 errores (10 avisos de antes); validar_catalogos_rpg: sin fallos.",
+  "Captura del juego (./juego --nivel ciudad_centro 90): las cajas de la fuente y del mercado se ven en la plaza.",
+  "Simulación de 200.000 actuaciones por sitio y número de dados (el canon §3)."
+ ],
+ "para_oriol": [
+  "¿Te vale cómo funciona y lo que da? ¿Más sitios (el este, el oeste, Surysal)?",
+  "Durante el Ocaso (la Matanza), ¿se puede seguir actuando?"
+ ],
+ "sesion": "sesiones/2026-10-08-claude-instrumentos.md"
+}

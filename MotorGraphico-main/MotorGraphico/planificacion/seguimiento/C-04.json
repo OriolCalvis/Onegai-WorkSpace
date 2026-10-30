@@ -1,0 +1,18 @@
+{
+  "id": "C-04",
+  "date": "2026-09-03",
+  "author": "Claude (Cowork)",
+  "status": "Tancat",
+  "actions": [
+    "`WorldEnemy` i `SavedEnemy` guanyen `summoned`. Per als invocats, `spawnIndex` deixa de ser un índex a `LevelDefinition::objects` (no n'hi ha cap) i passa a ser un ordinal propi de la sessió, únic, que no es reutilitza.",
+    "Helper nou `GameSession::spawnEnemyFromCatalog`, compartit per `resolveBattles` (l'emboscada) i `restoreSaveGame` (tornar a posar dret un invocat que era viu en desar). Abans només existia dins de `resolveBattles`, i per això restaurar-ne un no era ni possible.",
+    "`restoreSaveGame`: els del nivell es BUSQUEN entre els que la sessió ja ha construït; els invocats no hi són i es materialitzen del catàleg amb la seva posició i la vida que els quedava. La fase de validació els cobreix (si algú ha esborrat el monstre del catàleg, es rebutja amb missatge propi) i segueix sense escriure res fins que tot valida.",
+    "Clau JSON nova amb valor per defecte i SENSE pujar `kSchemaVersion`: un guardat anterior no la porta, es llegeix com a false — «del nivell», que és l'únic que hi havia. És el cas que ja contemplava el comentari de `parseSaveGame`.",
+    "3 casos nous a `test_save_game`."
+  ],
+  "verification": [
+    "Verds: el cas del pla (disparar un beat amb `startBattle`, fugir, desar, carregar; l'enemic hi és amb 18 PV al seu lloc), que un invocat vençut no torna, i que un guardat sense la clau segueix carregant. Amb el codi antic `restoreSaveGame` retorna false — exactament el símptoma: la partida no es tornava a obrir mai."
+  ],
+  "pending": [],
+  "source_markdown": "**Seguiment · 2026-09-03 · Claude (Cowork): Tancat.**\n\n- `WorldEnemy` i `SavedEnemy` guanyen `summoned`. Per als invocats, `spawnIndex` deixa de ser un índex a `LevelDefinition::objects` (no n'hi ha cap) i passa a ser un ordinal propi de la sessió, únic, que no es reutilitza.\n- Helper nou `GameSession::spawnEnemyFromCatalog`, compartit per `resolveBattles` (l'emboscada) i `restoreSaveGame` (tornar a posar dret un invocat que era viu en desar). Abans només existia dins de `resolveBattles`, i per això restaurar-ne un no era ni possible.\n- `restoreSaveGame`: els del nivell es BUSQUEN entre els que la sessió ja ha construït; els invocats no hi són i es materialitzen del catàleg amb la seva posició i la vida que els quedava. La fase de validació els cobreix (si algú ha esborrat el monstre del catàleg, es rebutja amb missatge propi) i segueix sense escriure res fins que tot valida.\n- Clau JSON nova amb valor per defecte i SENSE pujar `kSchemaVersion`: un guardat anterior no la porta, es llegeix com a false — «del nivell», que és l'únic que hi havia. És el cas que ja contemplava el comentari de `parseSaveGame`.\n- 3 casos nous a `test_save_game`.\n\n**Verificat.** Verds: el cas del pla (disparar un beat amb `startBattle`, fugir, desar, carregar; l'enemic hi és amb 18 PV al seu lloc), que un invocat vençut no torna, i que un guardat sense la clau segueix carregant. Amb el codi antic `restoreSaveGame` retorna false — exactament el símptoma: la partida no es tornava a obrir mai."
+}

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm-print :: layout}">
+<head>
+    <title layout:fragment="title" th:text="${personatge.nom} + ' · Ficha'">Ficha de personaje</title>
+    <th:block layout:fragment="extra-css">
+        <link th:href="@{/css/ficha-print.css}" rel="stylesheet">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+    <p class="gm-sidebar__eyebrow u-p-0">Mesa de personaje</p>
+    <div class="u-page-header--start">
+        <!-- Avatar del personaje vía image-slot (custom element).
+             Sin runtime omelette: el src se renderiza si existe; el drag&drop
+             funciona en sesión pero no persiste. Persistencia real = WS futuro. -->
+        <image-slot th:id="'avatar-' + ${personatge.id}" shape="circle" fit="cover"
+                    class="gm-avatar--88"
+                    placeholder="Arrastra un retrato"></image-slot>
+        <div>
+            <h1 th:text="${personatge.nom}">Nombre</h1>
+            <p>
+                <span th:text="${fitxa.clase() != null ? fitxa.clase().name : 'Sin clase'}">Clase</span>
+                · <span th:text="${fitxa.raza() != null ? fitxa.raza().name : 'Sin raza'}">Raza</span>
+                <span th:if="${fitxa.transfons() != null}"> · <span th:text="${fitxa.transfons().name}">Trasfondo</span></span>
+                · Tier <span th:text="${personatge.tier}">1</span>
+            </p>
+        </div>
+        <div class="no-print u-flex-gap2">
+            <a class="gm-btn gm-btn--outline" th:href="@{/personatges/{id}/editar(id=${personatge.id})}">Editar</a>
+            <button class="gm-btn gm-btn--primary" onclick="window.print()" type="button">Imprimir ficha</button>
+        </div>
+    </div>
+
+            <!-- ZONA 1: IDENTIDAD — pasiva, clase, raza, trasfondo, estadísticas.
+                 Cada tarjeta usa la plantilla universal de 5 zonas (①Cabecera ②Ilustración
+                 ③Reglas ④Pie ⑤Identificador) también aplicada al catálogo, en tamaño mini. -->
+            <div class="gm-mesa-zona">
+                <p class="gm-mesa-zona__titulo">Identidad</p>
+                <div class="gm-album u-grid-fit-150">
+                    <!-- Carta: Pasiva -->
+                    <article class="gm-card gm-card--mini">
+                        <span class="gm-card__role">Pasiva</span>
+                        <h3 class="gm-card__title"
+                            th:text="${fitxa.clase() != null and !#lists.isEmpty(fitxa.clase().startingCards.passives)} ? ${fitxa.clase().startingCards.passives[0]} : 'Sin pasiva'">Pasiva</h3>
+                        <div class="gm-card__illustration">✦</div>
+                        <div class="gm-card__rules">
+                            <p class="gm-card__desc">Pasiva inicial de clase, activa desde Tier 0.</p>
+                        </div>
+                    </article>
+
+                    <!-- Carta: Clase -->
+                    <article class="gm-card gm-card--mini" th:if="${fitxa.clase() != null}">
+                        <span class="gm-card__tier">TIER <span th:text="${fitxa.clase().tier}">1</span></span>
+                        <h3 class="gm-card__title" th:text="${fitxa.clase().name}">Clase</h3>
+                        <span class="gm-card__role" th:text="${fitxa.clase().role}">Rol</span>
+                        <div class="gm-card__illustration" th:switch="${fitxa.clase().role}">
+                            <span th:case="'tank'">🛡</span>
+                            <span th:case="'agile'">🗡</span>
+                            <span th:case="'caster'">🔮</span>
+                            <span th:case="'support'">❤</span>
+                            <span th:case="*">⚔</span>
+                        </div>
+                        <div class="gm-card__rules">
+                            <p class="gm-card__desc" th:text="${fitxa.clase().description}">Descripción</p>
+                        </div>
+                        <p class="gm-card__id" th:text="'clases · ' + ${fitxa.clase().id}">id</p>
+                    </article>
+                    <p th:if="${fitxa.clase() == null}" class="gm-chip-empty">Sin clase asignada.</p>
+
+                    <!-- Carta: Raza -->
+                    <article class="gm-card gm-card--mini" th:if="${fitxa.raza() != null}">
+                        <span class="gm-card__tier">TIER <span th:text="${fitxa.raza().tier}">1</span></span>
+                        <h3 class="gm-card__title" th:text="${fitxa.raza().name}">Raza</h3>
+                        <span class="gm-card__role" th:if="${fitxa.raza().passiveTrait != null}" th:text="${fitxa.raza().passiveTrait.name}">Rasgo</span>
+                        <div class="gm-card__illustration">🧬</div>
+                        <div class="gm-card__rules">
+                            <p class="gm-card__desc" th:text="${fitxa.raza().flavorText}">Descripción</p>
+                        </div>
+                        <p class="gm-card__id" th:text="'razas · ' + ${fitxa.raza().id}">id</p>
+                    </article>
+                    <p th:if="${fitxa.raza() == null}" class="gm-chip-empty">Sin raza asignada.</p>
+
+                    <!-- Carta: Trasfondo (esquema characterCreation: arquetipo + identidad elegida) -->
+                    <article class="gm-card gm-card--mini" th:if="${fitxa.transfons() != null}"
+                             th:with="cc=${fitxa.transfons().characterCreation}">
+                        <span class="gm-card__tier">MES</span>
+                        <h3 class="gm-card__title" th:text="${fitxa.transfons().name}">Trasfondo</h3>
+                        <span class="gm-card__role"
+                              th:text="${fitxa.transfons().alignment != null and fitxa.transfons().alignment.title != null}
+                                       ? ${fitxa.transfons().alignment.title}
+                                       : (${fitxa.transfons().narrativePassive != null} ? ${fitxa.transfons().narrativePassive.name} : '')">Arquetipo</span>
+                        <div class="gm-card__illustration">📖</div>
+                        <div class="gm-card__rules" th:if="${cc != null}">
+                            <p class="gm-card__meta" th:each="o : ${cc.personalities}"
+                               th:if="${o.id == personatge.eleccionPersonalidad}">
+                                🎭 <strong th:text="${o.etiqueta}">Personalidad</strong></p>
+                            <p class="gm-card__meta" th:each="o : ${cc.virtues}"
+                               th:if="${o.id == personatge.eleccionVirtud}">
+                                🌱 <strong th:text="${o.etiqueta}">Virtud</strong></p>
+                            <p class="gm-card__meta" th:each="o : ${cc.flaws}"
+                               th:if="${o.id == personatge.eleccionDefecto}">
+                                🕳 <strong th:text="${o.etiqueta}">Defecto</strong></p>
+                            <p class="gm-card__meta" th:each="o : ${cc.goals}"
+                               th:if="${o.id == personatge.eleccionObjetivo}">
+                                🎯 <strong th:text="${o.etiqueta}">Objetivo</strong></p>
+                            <p class="gm-card__meta" th:each="o : ${cc.fears}"
+                               th:if="${o.id == personatge.eleccionMiedo}">
+                                😨 <strong th:text="${o.etiqueta}">Miedo</strong></p>
+                            <p class="gm-card__meta" th:each="o : ${cc.ideals}"
+                               th:if="${o.id == personatge.eleccionIdeal}">
+                                ⚖ <strong th:text="${o.etiqueta}">Ideal</strong></p>
+                            <p class="gm-card__meta" th:each="o : ${cc.bonds}"
+                               th:if="${o.id == personatge.eleccionVinculo}">
+                                🔗 <strong th:text="${o.etiqueta}">Vínculo</strong></p>
+                            <p class="gm-card__desc"
+                               th:if="${personatge.eleccionPersonalidad == null}"
+                               th:text="${fitxa.transfons().description}">Sin identidad elegida todavía.</p>
+                        </div>
+                        <div class="gm-card__rules" th:if="${cc == null}">
+                            <p class="gm-card__desc" th:text="${fitxa.transfons().flavorText}">Descripción</p>
+                        </div>
+                        <p class="gm-card__id" th:text="'transfondos · ' + ${fitxa.transfons().id}">id</p>
+                    </article>
+                    <p th:if="${fitxa.transfons() == null}" class="gm-chip-empty">Sin trasfondo asignado.</p>
+
+                    <!-- Carta: Estadísticas -->
+                    <article class="gm-card gm-card--mini">
+                        <span class="gm-card__role">Estadísticas</span>
+                        <h3 class="gm-card__title">Hoja de stats</h3>
+                        <div class="gm-card__illustration">📊</div>
+                        <div class="gm-card__rules">
+                            <p class="gm-card__desc u-clamp-unset">
+                                CON <strong th:text="${fitxa.finalCon()}">1</strong> ·
+                                DES <strong th:text="${fitxa.finalDes()}">1</strong> ·
+                                INT <strong th:text="${fitxa.finalInt()}">1</strong> ·
+                                CAR <strong th:text="${fitxa.finalCar()}">1</strong><br>
+                                Vida <strong th:text="${#numbers.formatDecimal(fitxa.vida(), 1, 0)}">10</strong> ·
+                                CA <strong th:text="${fitxa.claseArmadura()}">10</strong>
+                            </p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <!-- Defensas derivadas: fila de apoyo bajo Identidad, no forma parte de las 5 zonas físicas -->
+            <div class="u-two-col-grid">
+                <div class="u-stat-box--sm">
+                    <p class="gm-hint u-m-0">Iniciativa</p>
+                    <p class="u-h3-title" th:text="${fitxa.iniciativa()>= 0 ? '+' + fitxa.iniciativa() : fitxa.iniciativa()}">+1</p>
+                </div>
+                <div class="u-stat-box--sm">
+                    <p class="gm-hint u-m-0">Dotes</p>
+                    <p class="u-h3-title" th:text="${#lists.size(fitxa.dotes())}">0</p>
+                </div>
+            </div>
+
+            <!-- ZONA 2: EQUIPAMIENTO — silueta con los 6 slots fijos, cada objeto ocupado
+                 mostrado como carta mini de 5 zonas (mismo icono de slot que en el catálogo). -->
+            <div class="gm-mesa-zona">
+                <p class="gm-mesa-zona__titulo">Equipamiento</p>
+                <div class="gm-silueta">
+                    <article class="gm-card gm-card--mini" th:classappend="${#lists.isEmpty(fitxa.equipo().?[slot == 'cabeza'])} ? ' gm-mini-card--empty'" data-slot="cabeza">
+                        <span class="gm-card__role">⛑ Cabeza</span>
+                        <h3 class="gm-card__title" th:each="item : ${fitxa.equipo().?[slot == 'cabeza']}" th:text="${item.name}">Casco</h3>
+                        <p class="u-m-0" th:if="${#lists.isEmpty(fitxa.equipo().?[slot == 'cabeza'])}">— vacío —</p>
+                        <div class="gm-card__illustration" th:if="${!#lists.isEmpty(fitxa.equipo().?[slot == 'cabeza'])}">⛑</div>
+                    </article>
+                    <article class="gm-card gm-card--mini" th:classappend="${#lists.isEmpty(fitxa.equipo().?[slot == 'arma_principal'])} ? ' gm-mini-card--empty'" data-slot="arma_principal">
+                        <span class="gm-card__role">⚔ Arma</span>
+                        <h3 class="gm-card__title" th:each="item : ${fitxa.equipo().?[slot == 'arma_principal']}" th:text="${item.name}">Arma</h3>
+                        <p class="u-m-0" th:if="${#lists.isEmpty(fitxa.equipo().?[slot == 'arma_principal'])}">— vacío —</p>
+                        <div class="gm-card__illustration" th:if="${!#lists.isEmpty(fitxa.equipo().?[slot == 'arma_principal'])}">⚔</div>
+                    </article>
+                    <article class="gm-card gm-card--mini" th:classappend="${#lists.isEmpty(fitxa.equipo().?[slot == 'torso'])} ? ' gm-mini-card--empty'" data-slot="torso">
+                        <span class="gm-card__role">👕 Torso</span>
+                        <h3 class="gm-card__title" th:each="item : ${fitxa.equipo().?[slot == 'torso']}" th:text="${item.name}">Armadura</h3>
+                        <p class="u-m-0" th:if="${#lists.isEmpty(fitxa.equipo().?[slot == 'torso'])}">— vacío —</p>
+                        <div class="gm-card__illustration" th:if="${!#lists.isEmpty(fitxa.equipo().?[slot == 'torso'])}">👕</div>
+                    </article>
+                    <article class="gm-card gm-card--mini" th:classappend="${#lists.isEmpty(fitxa.equipo().?[slot == 'arma_secundaria'])} ? ' gm-mini-card--empty'" data-slot="arma_secundaria">
+                        <span class="gm-card__role">🛡 Secundaria</span>
+                        <h3 class="gm-card__title" th:each="item : ${fitxa.equipo().?[slot == 'arma_secundaria']}" th:text="${item.name}">Escudo</h3>
+                        <p class="u-m-0" th:if="${#lists.isEmpty(fitxa.equipo().?[slot == 'arma_secundaria'])}">— vacío —</p>
+                        <div class="gm-card__illustration" th:if="${!#lists.isEmpty(fitxa.equipo().?[slot == 'arma_secundaria'])}">🛡</div>
+                    </article>
+                    <article class="gm-card gm-card--mini" th:classappend="${#lists.isEmpty(fitxa.equipo().?[slot == 'piernas'])} ? ' gm-mini-card--empty'" data-slot="piernas">
+                        <span class="gm-card__role">👖 Piernas</span>
+                        <h3 class="gm-card__title" th:each="item : ${fitxa.equipo().?[slot == 'piernas']}" th:text="${item.name}">Piernas</h3>
+                        <p class="u-m-0" th:if="${#lists.isEmpty(fitxa.equipo().?[slot == 'piernas'])}">— vacío —</p>
+                        <div class="gm-card__illustration" th:if="${!#lists.isEmpty(fitxa.equipo().?[slot == 'piernas'])}">👖</div>
+                    </article>
+                    <article class="gm-card gm-card--mini" th:classappend="${#lists.isEmpty(fitxa.equipo().?[slot == 'pies'])} ? ' gm-mini-card--empty'" data-slot="pies">
+                        <span class="gm-card__role">👢 Pies</span>
+                        <h3 class="gm-card__title" th:each="item : ${fitxa.equipo().?[slot == 'pies']}" th:text="${item.name}">Botas</h3>
+                        <p class="u-m-0" th:if="${#lists.isEmpty(fitxa.equipo().?[slot == 'pies'])}">— vacío —</p>
+                        <div class="gm-card__illustration" th:if="${!#lists.isEmpty(fitxa.equipo().?[slot == 'pies'])}">👢</div>
+                    </article>
+                </div>
+                <p th:if="${#lists.isEmpty(fitxa.equipo())}" class="gm-chip-empty u-mt-sp3-center">Sin equipo asignado.</p>
+            </div>
+
+            <!-- ZONA 3: COMBATE — habilidades preparadas y dotes, como cartas mini de 5 zonas.
+                 gm-mesa-zona--paginada: esta zona puede crecer hasta 20 cartas (tier 3) y no
+                 siempre cabe en una hoja al imprimir, así que llega ya troceada en páginas de
+                 16 desde el controlador (PersonatgeController) — igual que el mazo de aventura,
+                 nunca hace falta fragmentar un álbum largo entre hojas. */ -->
+            <div class="gm-mesa-zona gm-mesa-zona--paginada">
+                <p class="gm-mesa-zona__titulo">Habilidades preparadas</p>
+                <div class="gm-mesa-pagina" th:each="pagina : ${habilidadesPaginas}">
+                    <div class="gm-album u-grid-fill-150">
+                        <article class="gm-card gm-card--mini" th:each="h : ${pagina}">
+                            <span class="gm-card__tier">TIER <span th:text="${h.tier}">1</span></span>
+                            <h3 class="gm-card__title" th:text="${h.name}">Habilidad</h3>
+                            <span class="gm-card__role" th:text="${h.rarity}">common</span>
+                            <div class="gm-card__illustration" th:switch="${h.actionType}">
+                                <span th:case="'accion'">⚔</span>
+                                <span th:case="'bonus'">⚡</span>
+                                <span th:case="'reaccion'">🛡</span>
+                                <span th:case="*">✨</span>
+                            </div>
+                            <div class="gm-card__rules">
+                                <p class="gm-card__desc" th:text="${h.effect != null ? h.effect.description : ''}">Efecto</p>
+                            </div>
+                            <p class="gm-card__id" th:text="'habilidades · ' + ${h.id}">id</p>
+                        </article>
+                    </div>
+                </div>
+                <p th:if="${#lists.isEmpty(fitxa.habilidades())}" class="gm-chip-empty">Sin habilidades asignadas.</p>
+
+                <div class="u-mt-sp4" th:if="${!#lists.isEmpty(fitxa.dotes())}">
+                    <p class="gm-hint u-mb-sp2">Dotes (mejoras permanentes)</p>
+                    <div class="gm-album u-grid-fill-150">
+                        <article class="gm-card gm-card--mini" th:each="d : ${fitxa.dotes()}">
+                            <h3 class="gm-card__title" th:text="${d.name}">Dote</h3>
+                            <span class="gm-card__role" th:text="${d.rarity}">common</span>
+                            <div class="gm-card__illustration">🎖</div>
+                            <div class="gm-card__rules">
+                                <p class="gm-card__desc" th:text="${d.effect != null ? d.effect.description : ''}">Efecto</p>
+                            </div>
+                            <p class="gm-card__id" th:text="'dotes · ' + ${d.id}">id</p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ZONA 4: RECUPERACIÓN — estado en vivo de pilas (D8/D9): Activa / Descanso Corto / Descanso Largo.
+                 Nota: se ha retirado la caja "Exiliadas" que había aquí antes — no tiene ninguna base
+                 mecánica en el GDD §6 (solo define estas tres pilas); si se quiere recuperar como concepto
+                 narrativo distinto, hay que definir primero su regla. -->
+            <div class="gm-mesa-zona">
+                <p class="gm-mesa-zona__titulo">Recuperación</p>
+                <div class="u-grid-fit-160">
+                    <div class="gm-pila">
+                        <p class="gm-pila__titulo">Activa</p>
+                        <p class="gm-pila__cuenta" th:text="${pilaActiva}">0</p>
+                    </div>
+                    <div class="gm-pila">
+                        <p class="gm-pila__titulo">Descanso Corto</p>
+                        <p class="gm-pila__cuenta" th:text="${pilaDescansoCorto}">0</p>
+                    </div>
+                    <div class="gm-pila">
+                        <p class="gm-pila__titulo">Descanso Largo</p>
+                        <p class="gm-pila__cuenta" th:text="${pilaDescansoLargo}">0</p>
+                    </div>
+                </div>
+                <p class="gm-hint u-mt-sp3">
+                    Estado real de esta sesión: las habilidades y hechizos empiezan en Activa y se
+                    moverían a su pila de descanso al jugarse. Jugar una carta desde aquí (botón que
+                    mueva de pila) todavía no existe en la interfaz — mientras eso no se construya,
+                    verás todo en Activa.
+                </p>
+            </div>
+
+            <!-- ZONA 5: RECURSOS TEMPORALES — invocaciones, estados, bendiciones, maldiciones -->
+            <div class="gm-mesa-zona">
+                <p class="gm-mesa-zona__titulo">Recursos temporales</p>
+                <div class="u-grid-fit-160">
+                    <div class="gm-mini-card gm-mini-card--empty">Invocaciones<br>— ninguna activa —</div>
+                    <div class="gm-mini-card gm-mini-card--empty">Estados<br>— ninguno —</div>
+                    <div class="gm-mini-card gm-mini-card--empty">Bendiciones<br>— ninguna —</div>
+                    <div class="gm-mini-card gm-mini-card--empty">Maldiciones<br>— ninguna —</div>
+                </div>
+                <p class="gm-hint u-mt-sp3">
+                    Las cartas de Invocación, Estado, Bendición y Maldición todavía no existen como tipo de carta
+                    en el catálogo (ver docs/UML_Sistema_Cartas_Tiers.mermaid, bloque "propuesto") — esta zona
+                    queda preparada en el layout para cuando se implementen.
+                </p>
+            </div>
+
+            <div class="gm-panel-section" th:if="${personatge.historia}">
+                <button type="button" class="gm-panel-section__toggle">Historia ▾</button>
+                <div class="gm-panel-section__content">
+                    <p th:text="${personatge.historia}">Historia</p>
+                </div>
+            </div>
+
+            <div class="no-print u-actions--wrap">
+                <a class="gm-btn gm-btn--primary" th:href="@{/personatges/{id}/export/pdf(id=${personatge.id})}">Exportar PDF</a>
+                <a class="gm-btn gm-btn--outline" th:href="@{/personatges/{id}/export/json(id=${personatge.id})}">Exportar JSON</a>
+                <a class="gm-btn gm-btn--outline" th:href="@{/personatges}">Volver al listado</a>
+                <form th:action="@{/personatges/{id}/eliminar(id=${personatge.id})}" method="post" th:data-nombre="${personatge.nom}" onsubmit="return confirm('¿Borrar el personaje &quot;' + this.dataset.nombre + '&quot;? No se puede deshacer.');">
+                    <button class="gm-btn gm-btn--danger" type="submit">Eliminar</button>
+                </form>
+            </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Carta de raza</title>
+    <th:block layout:fragment="extra-css">
+    <link th:href="@{/css/carta-fisica.css}" rel="stylesheet">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('razas')}"></div>
+
+            <div class="u-page-header--start">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-p-0">Ficha completa</p>
+                    <h1 th:text="${carta.name}">Nombre</h1>
+                    <p>
+                        <span class="gm-badge">Tier mínimo <span th:text="${carta.tier}">1</span></span>
+                        <span class="gm-badge" th:text="'ID ' + ${carta.id}">id</span>
+                    </p>
+                </div>
+                <a class="gm-btn gm-btn--outline" th:href="@{/cartas/razas/{id}/editar(id=${carta.id})}">Editar</a>
+            </div>
+
+            <!-- La propia carta, en el mismo marco visual que el álbum -->
+            <div class="u-detail-layout-300">
+                <!-- Carta física de raza (wireframe 7a): statBonuses≤2/
+                     passiveTrait/activeTrait del esquema §4. -->
+                <article class="cf-card u-cursor-default">
+                    <div class="cf-head">
+                        <span class="cf-name" th:text="${carta.name}">Nombre</span>
+                        <span class="cf-gem" th:classappend="'cf-gem--t' + ${carta.tier}">TIER <span th:text="${carta.tier}">1</span></span>
+                    </div>
+
+                    <div class="cf-illustration">🧬</div>
+
+                    <div class="cf-typeline">
+                        <span>Raza<th:block th:if="${!#lists.isEmpty(carta.affinities)}"> — afinidad <span th:text="${#strings.listJoin(carta.affinities, ', ')}">afinidad</span></th:block></span>
+                    </div>
+
+                    <div class="cf-statrow">
+                        <span class="cf-stat" th:if="${carta.statBonusCon != 0}" th:text="'CON ' + (${carta.statBonusCon} > 0 ? '+' : '') + ${carta.statBonusCon}">CON</span>
+                        <span class="cf-stat" th:if="${carta.statBonusDes != 0}" th:text="'DES ' + (${carta.statBonusDes} > 0 ? '+' : '') + ${carta.statBonusDes}">DES</span>
+                        <span class="cf-stat" th:if="${carta.statBonusInt != 0}" th:text="'INT ' + (${carta.statBonusInt} > 0 ? '+' : '') + ${carta.statBonusInt}">INT</span>
+                        <span class="cf-stat" th:if="${carta.statBonusCar != 0}" th:text="'CAR ' + (${carta.statBonusCar} > 0 ? '+' : '') + ${carta.statBonusCar}">CAR</span>
+                    </div>
+
+                    <div class="cf-rules">
+                        <p th:if="${carta.passiveTrait.name}"><strong>Pasiva — <span th:text="${carta.passiveTrait.name}">rasgo</span>:</strong> <span th:text="${carta.passiveTrait.description}">descripción</span></p>
+                        <p th:if="${carta.activeTrait.name}"><strong>Activa — <span th:text="${carta.activeTrait.name}">rasgo</span>:</strong> <span th:text="${carta.activeTrait.description}">descripción</span></p>
+                        <p class="cf-flavor" th:if="${carta.flavorText}" th:text="${carta.flavorText}">Texto narrativo</p>
+                    </div>
+
+                    <p class="cf-id" th:text="'razas · ' + ${carta.id}">razas · id</p>
+                </article>
+
+                <div>
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Bonos de stats ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p>
+                                <span class="gm-badge u-mr-4">CON <span th:text="${carta.statBonusCon}">0</span></span>
+                                <span class="gm-badge u-mr-4">DES <span th:text="${carta.statBonusDes}">0</span></span>
+                                <span class="gm-badge u-mr-4">CAR <span th:text="${carta.statBonusCar}">0</span></span>
+                                <span class="gm-badge u-mr-4">INT <span th:text="${carta.statBonusInt}">0</span></span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Rasgo pasivo ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong th:text="${carta.passiveTrait.name}">Nombre</strong></p>
+                            <p th:text="${carta.passiveTrait.description}">Descripción</p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section" th:classappend="${carta.activeTrait.name} ? 'is-expanded'">
+                        <button type="button" class="gm-panel-section__toggle">Rasgo activo ▾</button>
+                        <div class="gm-panel-section__content">
+                            <div th:if="${carta.activeTrait.name}">
+                                <p><strong th:text="${carta.activeTrait.name}">Nombre</strong></p>
+                                <p th:text="${carta.activeTrait.description}">Descripción</p>
+                            </div>
+                            <p class="u-text-muted" th:unless="${carta.activeTrait.name}">Sin rasgo activo definido</p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section">
+                        <button type="button" class="gm-panel-section__toggle">Afinidades, limitaciones y tags narrativos ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong>Afinidades:</strong></p>
+                            <p>
+                                <span th:each="item : ${carta.affinities}" class="gm-badge u-mr-4" th:text="${item}">tag</span>
+                                <span class="u-text-muted" th:if="${#lists.isEmpty(carta.affinities)}">Sin afinidades</span>
+                            </p>
+                            <p><strong>Limitaciones:</strong></p>
+                            <ul>
+                                <li th:each="item : ${carta.limitations}" th:text="${item}">limitación</li>
+                                <li class="u-text-muted" th:if="${#lists.isEmpty(carta.limitations)}">Sin limitaciones</li>
+                            </ul>
+                            <p><strong>Tags narrativos:</strong></p>
+                            <p>
+                                <span th:each="item : ${carta.narrativeTags}" class="gm-badge u-mr-4" th:text="${item}">tag</span>
+                                <span class="u-text-muted" th:if="${#lists.isEmpty(carta.narrativeTags)}">Sin tags</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="u-actions--wrap">
+                        <a class="gm-btn gm-btn--outline" th:href="@{/cartas/razas}">Volver al álbum</a>
+                        <form th:action="@{/cartas/razas/{id}/eliminar(id=${carta.id})}" method="post" th:data-nombre="${carta.name}" onsubmit="return confirm(\'¿Borrar el raza &quot;' + this.dataset.nombre + '&quot;? No se puede deshacer.');">
+                            <button class="gm-btn gm-btn--danger" type="submit">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div></main>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<nav th:fragment="subnav(activo)" class="gm-header__nav u-wrap-mb5">
+    <a th:href="@{/cartas}" class="gm-navlink" th:classappend="${activo == 'resumen'} ? 'is-active'">Resumen</a>
+    <a th:href="@{/cartas/clases}" class="gm-navlink" th:classappend="${activo == 'clases'} ? 'is-active'">Clases</a>
+    <a th:href="@{/cartas/razas}" class="gm-navlink" th:classappend="${activo == 'razas'} ? 'is-active'">Razas</a>
+    <a th:href="@{/cartas/transfondos}" class="gm-navlink" th:classappend="${activo == 'transfondos'} ? 'is-active'">Trasfondos</a>
+    <a th:href="@{/cartas/habilidades}" class="gm-navlink" th:classappend="${activo == 'habilidades'} ? 'is-active'">Habilidades</a>
+    <a th:href="@{/cartas/armas}" class="gm-navlink" th:classappend="${activo == 'armas'} ? 'is-active'">Armas y objetos</a>
+    <a th:href="@{/cartas/dotes}" class="gm-navlink" th:classappend="${activo == 'dotes'} ? 'is-active'">Dotes</a>
+    <a th:href="@{/cartas/pasivas}" class="gm-navlink" th:classappend="${activo == 'pasivas'} ? 'is-active'">Pasivas</a>
+    <a th:href="@{/cartas/hechizos}" class="gm-navlink" th:classappend="${activo == 'hechizos'} ? 'is-active'">Hechizos</a>
+    <a th:href="@{/cartas/consumibles}" class="gm-navlink" th:classappend="${activo == 'consumibles'} ? 'is-active'">Consumibles</a>
+    <a th:href="@{/cartas/rasgos}" class="gm-navlink" th:classappend="${activo == 'rasgos'} ? 'is-active'">Rasgos</a>
+    <a th:href="@{/cartas/invocaciones}" class="gm-navlink" th:classappend="${activo == 'invocaciones'} ? 'is-active'">Invocaciones</a>
+    <a th:href="@{/cartas/enemigos}" class="gm-navlink" th:classappend="${activo == 'enemigos'} ? 'is-active'">Monstruos</a>
+    <a th:href="@{/cartas/deidades}" class="gm-navlink" th:classappend="${activo == 'deidades'} ? 'is-active'">Deidades</a>
+    <a th:href="@{/cartas/condiciones}" class="gm-navlink" th:classappend="${activo == 'condiciones'} ? 'is-active'">Condiciones</a>
+</nav>

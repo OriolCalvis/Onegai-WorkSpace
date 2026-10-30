@@ -1,0 +1,58 @@
+{
+ "id": "cazasoles_patada_animal",
+ "name": "Patada animal",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "El Lobo solar salta sobre el enemigo y lo aparta de una patada: 3d6 de daño de luz y aturdimiento 1 turno (no ataca y se defiende con desventaja).",
+ "flavorText": "",
+ "classTags": [
+  "cazasoles"
+ ],
+ "roleTags": [],
+ "tags": [
+  "cazasoles",
+  "estandar",
+  "Luz"
+ ],
+ "mechanicTags": [
+  "Luz"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "El Lobo solar salta sobre el enemigo y lo aparta de una patada: 3d6 de daño de luz y aturdimiento 1 turno (no ataca y se defiende con desventaja).",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "3d6 de daño de luz.",
+   "mechanicHook": "dano:3d6"
+  },
+  {
+   "description": "Aturdido: no ataca.",
+   "mechanicHook": "estado:1:incapacitado"
+  },
+  {
+   "description": "Aturdido: se defiende con desventaja.",
+   "mechanicHook": "estado:1:desventaja:defensa"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Cazasoles (Sunchaser) · H1398+H1652 Patada animal"
+}

@@ -1,0 +1,39 @@
+{
+ "id": "bardo_del_tambor_de_guerra_toques_de_tambor",
+ "name": "Toques de tambor",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Al empezar el combate eliges el toque. Marcha: llevas el paso y atacas con ventaja. Carga: tus golpes con arma hacen +1 de daño. Retirada: te defiendes con ventaja.",
+ "flavorText": "",
+ "classTags": [
+  "bardo_del_tambor_de_guerra"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "Al empezar el combate eliges el toque. Marcha: llevas el paso y atacas con ventaja. Carga: tus golpes con arma hacen +1 de daño. Retirada: te defiendes con ventaja.",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Eliges un toque al empezar el combate.",
+   "mechanicHook": "elige_una:marcha,carga,retirada"
+  },
+  {
+   "description": "Toque de marcha: atacas con ventaja.",
+   "mechanicHook": "si:marcha:ventaja:ataque"
+  },
+  {
+   "description": "Toque de carga: tus golpes con arma hacen +1 de daño.",
+   "mechanicHook": "si:carga:bono_dano_arma:1"
+  },
+  {
+   "description": "Toque de retirada: te defiendes con ventaja.",
+   "mechanicHook": "si:retirada:ventaja:defensa"
+  }
+ ],
+ "fuente": "Propia · Bardo del Tambor de Guerra"
+}

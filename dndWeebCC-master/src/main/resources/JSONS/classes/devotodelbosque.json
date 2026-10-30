@@ -1,0 +1,191 @@
+{
+  "nombre": "Devoto del Bosque",
+  "descripcion": "Paladín de Gaia que combina magia elemental y votos sagrados para proteger la naturaleza y sus criaturas.",
+  "rolTematico": "Guardián santo de los bosques, mezcla de druidas y paladines, defensor del equilibrio natural con poder destructivo y curativo.",
+  "dadoGolpe": "1d8",
+  "puntosGolpeNivel1": "8 + modificador de Sabiduría",
+  "puntosGolpePorNivel": "1d8 (o 5) + modificador de Sabiduría",
+  "atributoConjuro": "Inteligencia",
+  "atributosRelevantes": ["Sabiduría","Carisma","Constitución"],
+  "competencias": {
+    "armaduras": ["Ligeras","Medianas","Escudos (no metálicos)"],
+    "armas": ["Club","Daga","Dardo","Jabalina","Maza","Bastón","Cimitarra","Hoz","Honda","Lanza"],
+    "habilidadesElegir": ["Trato con animales","Arcano","Perspicacia","Medicina","Naturaleza","Percepción","Religión","Supervivencia"],
+    "salvaciones": ["Sabiduría","Carisma"]
+  },
+  "mecanicas": {
+    "magiaElementalSagrada": "Conjura hechizos que combinan energía sagrada y elemental.",
+    "auraProteccionNatural": "Proyecta un aura que otorga resistencias a aliados cercanos."
+  },
+  "accionesEspeciales":{
+      "Juramentos Disponibles": {
+      "descripcion": "A nivel 3 eliges tu Juramento: Juramento de la Vida Salvaje o Juramento de la Tormenta.",
+      "efecto": "Juramento de la Vida Salvaje: Te enfocas en el apoyo a tus aliados, potenciando tus habilidades curativas y protectoras. Habilidad Especial: Aura de la Tierra Viva: Todos los aliados a 10 pies ganan puntos de golpe temporales iguales a tu modificador de Sabiduría al inicio de cada uno de tus turnos. Juramento de la Tormenta: Potencias tu capacidad de infligir daño elemental, especialmente de los elementos viento y fuego. Habilidad Especial: Tormenta de Furia: Puedes crear un área de 15 pies que inflige daño elemental a todos los enemigos dentro de ella cada turno."
+      }
+    },
+  "niveles": {
+    "1": {
+      "habilidades": [
+        {
+          "nombre": "Sentido de la Naturaleza",
+          "descripcion": "Detecta presencia de magia profana en un radio de 60 pies.",
+          "efecto": "Usa Sentido Divino para detectar aberraciones o corrupciones.",
+          "usos": "3 veces por descanso largo",
+          "accion": "Acción",
+          "duracion": "Instantáneo"
+        },
+        {
+          "nombre": "Magia de la Naturaleza",
+          "descripcion": "Acceso a hechizos de nivel 1 que combinan lo sagrado y lo elemental.",
+          "efecto": "Hechizos: Curar Heridas, Ataque Rayo, Causar Miedo, Llamar Relámpago.",
+          "usos": "Mod. Sabiduría por descanso corto",
+          "accion": "Acción Adicional"
+        }
+      ]
+    },
+    "2": {
+      "habilidades": [
+        {
+          "nombre": "Magia Elemental",
+          "descripcion": "Lanzas hechizos de nivel 1 de control elemental.",
+          "efecto": "Llamarada, Palabras Sanadoras, Ráfaga de Viento, Tierra Suelta.",
+          "usos": "2 ranuras",
+          "accion": "Acción"
+        }
+      ]
+    },
+    "3": {
+      "habilidades": [
+        {
+          "nombre": "Juramento de Gaia",
+          "descripcion": "Elige Juramento de la Vida Salvaje o de la Tormenta.",
+          "efecto": "Juramento de la Vida Salvaje: Te enfocas en el apoyo a tus aliados, potenciando tus habilidades curativas y protectoras. Habilidad Especial: Aura de la Tierra Viva: Todos los aliados a 10 pies ganan puntos de golpe temporales iguales a tu modificador de Sabiduría al inicio de cada uno de tus turnos. Juramento de la Tormenta: Potencias tu capacidad de infligir daño elemental, especialmente de los elementos viento y fuego. Habilidad Especial: Tormenta de Furia: Puedes crear un área de 15 pies que inflige daño elemental a todos los enemigos dentro de ella cada turno.",
+          "usos": "Automático",
+          "accion": "Pasiva"
+        }
+      ]
+    },
+    "4": {"habilidades":[{"nombre":"Mejora de Características"}]},
+    "5": {
+      "habilidades": [
+        {
+          "nombre": "Hechizos de Área",
+          "descripcion": "Conjuras magias elementales en zonas de hasta 30 pies.",
+          "efecto": "Llamarada, Muro de Viento, Niebla Nociva.",
+          "usos": "Según ranuras",
+          "accion": "Acción"
+        }
+      ]
+    },
+    "6": {
+      "habilidades": [
+        {
+          "nombre": "Aura de Protección Natural",
+          "descripcion": "Otorga resistencia a fuego y frío a aliados en 10 pies.",
+          "efecto": "Resistencia mientras te concentras.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción",
+          "duracion": "Concentración, 1 min"
+        }
+      ]
+    },
+    "7": {
+      "habilidades": [
+        {
+          "nombre": "Daño Elemental Mejorado",
+          "descripcion": "Todos tus hechizos elementales ganan +1d6.",
+          "efecto": "Automático",
+          "accion": "Pasiva"
+        }
+      ]
+    },
+    "8": {"habilidades":[{"nombre":"Mejora de Características"}]},
+    "9": {
+      "habilidades": [
+        {
+          "nombre": "Raíces del Bosque Ancestral",
+          "descripcion": "Enraíza enemigos y cura aliados en 20 pies.",
+          "efecto": "Enemigos enraizados; aliados +2d6 HP.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción",
+          "duracion": "Instantáneo"
+        }
+      ]
+    },
+    "10": {
+      "habilidades": [
+        {
+          "nombre": "Llamas Sagradas de Gaia",
+          "descripcion": "Explosión de fuego sagrado en 20 pies.",
+          "efecto": "TS Destreza CD 8+bono+Sabiduría o 4d6 fuego.",
+          "usos": "Mod. Sabiduría por descanso largo",
+          "accion": "Acción"
+        }
+      ]
+    },
+    "11": {
+      "habilidades": [
+        {
+          "nombre": "Invocación de la Bestia del Bosque",
+          "descripcion": "Invoca criatura del bosque por 1 minuto.",
+          "efecto": "Bestia combate como aliado.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción"
+        }
+      ]
+    },
+    "12": {"habilidades":[{"nombre":"Mejora de Características"}]},
+    "13": {
+      "habilidades": [
+        {
+          "nombre": "Vínculo con la Tierra",
+          "descripcion": "Cura 5d8 o resistencia a todo daño.",
+          "efecto": "5d8 HP o resistencia 1 min.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción"
+        }
+      ]
+    },
+    "15": {
+      "habilidades": [
+        {
+          "nombre": "Aura de Protección de Gaia",
+          "descripcion": "Resistencia a armas (cortante, perforante, contundente) a aliados en 10 pies.",
+          "efecto": "Resistencia mientras estés presente.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción",
+          "duracion": "Concentración, 1 min"
+        }
+      ]
+    },
+    "18": {
+      "habilidades": [
+        {
+          "nombre": "Maestro de los Elementos",
+          "descripcion": "Cambia tipo de daño elemental libremente.",
+          "efecto": "Sin límite de usos.",
+          "accion": "Pasiva"
+        }
+      ]
+    },
+    "20": {
+      "habilidades": [
+        {
+          "nombre": "Escuadrón de Gólems Elementales",
+          "descripcion": "Invoca 4 gólems (fuego, agua, tierra, aire) por 1 minuto.",
+          "efecto": "Ver descripción de cada gólem en mecánicas.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción Completa",
+          "duracion": "1 minuto"
+        }
+      ]
+    }
+  },
+  "hechizos": {
+    "nivel1": ["Curar Heridas","Ataque Rayo","Causar Miedo","Enredar","Detectar Magia","Bendición del Bosque"],
+    "nivel2": ["Llamar Relámpago","Barrera de Viento","Luz del Alba","Invocar Bestia","Cura Moderada","Piel de Corteza"],
+    "nivel3": ["Crecimiento de Espinas","Muro de Viento","Llamarada","Círculo de Protección","Espíritu Guardián del Bosque"],
+    "nivel4": ["Invocar Elemental","Tormenta de Fuego","Muro de Agua","Rayo de Sol","Guardianes de la Naturaleza"],
+    "nivel5": ["Muro de Espinas","Comulgar con la Naturaleza","Invocar Elemental Mayor","Tormenta de Truenos","Revivir"]
+  }
+}

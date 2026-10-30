@@ -1,0 +1,96 @@
+{
+ "id": "la_reina_consorte_olvidada",
+ "name": "La Reina Consorte Olvidada",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "conjurador",
+ "faction": "espectros_de_la_tomba",
+ "stats": {
+  "CON": 8,
+  "DES": 8,
+  "INT": 11,
+  "CAR": 9
+ },
+ "derived": {
+  "vida": 70,
+  "ca": 20,
+  "defensaMental": 19,
+  "resistenciaFisica": 18,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Mirada de Viuda",
+   "defense": "defensa_mental",
+   "effect": "Daño de frío que suma su CAR; el objetivo queda Paralizado hasta el final de su próximo turno si falla."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "defensa_mental",
+   "effect": "Si el objetivo falla, queda Paralizado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en Desesperación: su ataque firma se calcula como éxito crítico (GDD 7.6)."
+  }
+ ],
+ "passive": {
+  "name": "Etiqueta Fúnebre",
+  "description": "Etiqueta Fúnebre: quien la ataque sin haberle sido presentado (ver debilidad) sufre desventaja (la descortesía pesa)."
+ },
+ "conditionsInflicted": [
+  "paralizado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Hielo",
+  "Importante"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Sigue su método con calma: aún cree que sobra tiempo."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Activa la arena a pleno: Frío de archivo: las cartas de la pila Descanso Corto tardan un descanso extra en volver dentro de la arena"
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final; su debilidad narrativa queda a la vista (el DJ da la pista si no la tienen)."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Que la historia la escriba de nuevo, palabra por palabra, con su nombre",
+  "metodo": "Congela la memoria: quien la olvida (falla Defensa mental) repite errores",
+  "debilidad_narrativa": "Recordarla: pronunciar su nombre completo (se investiga en la campaña) anula su pasiva para siempre",
+  "vinculo": "medium_de_la_tomba"
+ },
+ "arena": {
+  "name": "La Antecámara Borrada",
+  "hazard": "Frío de archivo: las cartas de la pila Descanso Corto tardan un descanso extra en volver dentro de la arena"
+ },
+ "legendaryActions": [
+  "Damas de Compañía (1/ronda): un espectro menor se interpone ante el próximo ataque que reciba"
+ ],
+ "storyCard": {
+  "title": "La Reina Consorte Olvidada",
+  "text": "No busca venganza. Busca fe de erratas.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "El Rei Llop tuvo reina. Los cronistas la borraron. Error."
+}

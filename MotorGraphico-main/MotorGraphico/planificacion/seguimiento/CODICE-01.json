@@ -1,0 +1,28 @@
+{
+  "id": "CODICE-01",
+  "date": "2026-09-27",
+  "author": "Claude",
+  "status": "HECHO en el arbol, sin commit",
+  "descripcion": "Pestana Codice: lore, personajes, lugares, deidades y datos curiosos que el jugador CONOCE. Personajes = hablantes y objetivos talk de beats disparados; lugares = objetivos enter disparados + nivel actual; deidades = todas (religion publica), la propia primero; lore = clase propia + aventuras empezadas; curiosidades = razas propia y de los personajes conocidos. Un beat desbloquea a mano con setFlag codice_<id>. Nombres y textos de npcs/locations/deities/races/classes.json; lo que no esta en catalogo sale con id legible.",
+  "archivos": {
+    "nuevos": [
+      "include/Game/Codice.h",
+      "src/Game/Codice.cpp",
+      "tests/Game/CodiceTests.cpp"
+    ],
+    "modificados": [
+      "cmake/FichaVistaTests.cmake (test_codice)",
+      "CMakeLists.txt",
+      "include/Game/InventoryScreen.h/.cpp (codice())",
+      "src/Engine/ApplicationHud.cpp"
+    ]
+  },
+  "verification": [
+    "test_codice 3/3 en el oraculo (catalogos reales).",
+    "PENDIENTE humo visual."
+  ],
+  "pendiente": [
+    "Lugares visitados solo se recuerdan si un beat enter los marco o si es el nivel actual: falta un registro de niveles visitados en SessionData (y en el guardado) para que el codice los conserve.",
+    "Los textos de npcs.json son cortos (description de una linea): el codice se llenara cuando el canon los amplie."
+  ]
+}

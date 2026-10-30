@@ -1,0 +1,74 @@
+@startuml MotorGraficoIsometrico_FlujoRenderizado
+
+title Flujo principal del motor - inicialización, bucle y manejo de errores
+
+start
+
+:Application::init(width, height, title);
+
+if (¿Ventana GLFW y contexto OpenGL 3.3+ OK?) then (no)
+  :Lanzar EngineException / RenderException;
+  :Registrar error en log de consola;
+  stop
+else (sí)
+endif
+
+:Cargar shaders (ShaderManager::load);
+if (¿Compilación y link del shader OK?) then (no)
+  :Lanzar ShaderCompileException;
+  :Volcar compileLog() al log;
+  stop
+else (sí)
+endif
+
+:Cargar texturas y atlas (TextureManager::load);
+if (¿Archivo de textura encontrado y decodificado?) then (no)
+  :Lanzar ResourceLoadException;
+  stop
+else (sí)
+endif
+
+:Cargar mapa (TileMap::loadFromFile);
+if (¿Formato de mapa válido?) then (no)
+  :Lanzar MapParseException(reason, line);
+  stop
+else (sí)
+endif
+
+:Application::run() - entrar al bucle principal;
+
+repeat
+  :Procesar entrada (teclado / ratón);
+  :Actualizar cámara (lerp hacia targetPosition);
+  :Actualizar entidades (update(deltaTime));
+
+  partition "renderFrame() [Result<bool>]" {
+    :Vaciar cola de renderizado (m_renderQueue);
+    :Culling: insertar solo tiles visibles en pantalla;
+    :Insertar entidades visibles en la cola;
+    :sortQueue() - Painter's Algorithm (Y_iso + X);
+    :spriteBatch.begin();
+    :Dibujar capa Suelo;
+    :Dibujar capa Decoración / Objetos;
+    :Dibujar capa Entidades;
+    :applyPostProcessing() (niebla de guerra, LUT de paleta);
+    :spriteBatch.end() / flush();
+
+    if (¿flush() devolvió Result::Error?) then (sí)
+      :Registrar RenderException sin detener el bucle;
+    else (no)
+    endif
+  }
+
+  :Swap de buffers / poll events;
+
+repeat while (¿Ventana sigue abierta y m_running == true?) is (sí)
+->no;
+
+:Application::shutdown();
+:Liberar texturas, shaders, VAOs/VBOs;
+:ResourceManager<T>::clear() para cada gestor;
+
+stop
+
+@enduml

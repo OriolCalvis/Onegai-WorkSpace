@@ -1,0 +1,84 @@
+{
+ "id": "el_paje_del_feretro",
+ "name": "El Paje del Féretro",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "apoyo",
+ "faction": "espectros_de_la_tomba",
+ "stats": {
+  "CON": 6,
+  "DES": 5,
+  "INT": 6,
+  "CAR": 8
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 16,
+  "defensaMental": 18,
+  "resistenciaFisica": 16,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Anuncio Solemne",
+   "defense": "defensa_mental",
+   "effect": "Daño de frío que suma su CAR; el impactado que falle queda Paralizado un instante de reverencia."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "defensa_mental",
+   "effect": "Si el objetivo falla, queda Paralizado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Protocolo Fúnebre",
+  "description": "Protocolo Fúnebre: los personajes que corran o griten en la arena quedan señalados — los espectros los priorizan y ganan +0,5 contra ellos."
+ },
+ "conditionsInflicted": [
+  "paralizado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Hielo",
+  "Importante"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Encadena su técnica tras el ataque firma y +1 al daño."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Celebrar por fin el funeral del Rei Llop — con todos los invitados originales, vivos o no",
+  "metodo": "Organiza el combate como una ceremonia: turnos, silencio, respeto",
+  "debilidad_narrativa": "La invitación: aceptar formalmente asistir al funeral (declaración) lo convierte en aliado ceremonial una escena",
+  "vinculo": "medium_de_la_tomba"
+ },
+ "arena": {
+  "name": "La Nave del Velatorio Eterno",
+  "hazard": "Cirios fríos: apagar uno (acción) debilita a los espectros 1 ronda; quedan 6"
+ },
+ "legendaryActions": [],
+ "storyCard": {
+  "title": "El Paje del Féretro",
+  "text": "El féretro está vacío. Esa es la parte que lo desvela.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Lleva quinientos años anunciando un funeral pospuesto."
+}

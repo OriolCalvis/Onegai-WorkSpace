@@ -1,0 +1,21 @@
+{
+  "id": "E-08",
+  "date": "2026-09-20",
+  "author": "zcode",
+  "status": "Rojo de HEAD curado y cobertura del nucleo versionada: test_event_interpreter 38/38; el nucleo GL-free del depurador queda entero en HEAD",
+  "actions": [
+    "Pendiente 33.1 del TABLERO: tests/RPG/EventInterpreterTests.cpp estaba roto en HEAD desde 4720b62 (EVT-05 uso NarrativeState/EvaluateCondition/ConditionFromIf sin declarar los using; 9 errores «unknown type name 'NarrativeState'» en clon limpio). El arreglo estaba en el arbol sin commitear; como dueno del fichero (fila E-08) lo he verificado, completado y versionado (MG 0ba7155).",
+    "El bloque de cobertura hallado en el arbol tenia tres defectos que he corregido antes de versionarlo: (1) dos nombres de test con espacios rompian la macro MOTOR_TEST_CASE; (2) cancel_all asumia que un resultado preparado sirve a varias ejecuciones, pero HostDePrueba lo consume al primer uso — dos esperas vivas necesitan dos tipos de comando; (3) start_sin_id llamaba .value() sobre un Result en Error, que el guardia de Result aborta por diseno — ahora usa EventId{} vacio, que es lo que start() rechaza («no se puede ejecutar un evento sin id»).",
+    "evt05_condicion_local_switch_negado: la asercion vieja contradecia el contrato comprometido — EvaluateCondition aplica negated al final (EventCommands.cpp:353, «condition.negated ? !resultado : resultado»), asi que «!=» + negated es doble negacion y da true. Corregida al comportamiento real con comentario que explica la logica.",
+    "Nueva cobertura versionada: cancelAll termina todas las vivas y las deja como Cancelled en runs(); clearBreakpoints vacia la lista; cancel de evento inexistente devuelve false; start sin id es Error; nextCommand/nextCommandPath de fantasma devuelven vacio; setMode a Continuous sin nada vivo no cambia nada y stepOnce fuera de pausa no avanza; EvaluateCondition: bandera con valor «false» explicito, referencia vacia («no nombra nada»), comparacion desconocida, interruptor local con operador no admitido («solo admite»), formato «.A» con punto en posicion 0 («invalida»); ConditionFromIf con clase local_switch."
+  ],
+  "verification": [
+    "Clon limpio de be317d4 + solo este fichero (y el cmake AventurasCatalogNetTests sin versionar de otra sesion copiado LOCALMENTE para que configure pase, sin commitearlo): test_event_interpreter 38/38, test_event_debug 9/9.",
+    "La entrega de la fila del TABLERO («el estado tras N pasos es igual que ejecutar N de golpe») es el test pas_a_pas_y_todos_de_una_golpe_llegan_al_mismo_estado, verde en HEAD desde este commit."
+  ],
+  "pending": [
+    "El otro rojo del Pendiente 33 (tests/Editor/EditorStateTests.cpp:311, operator[] ambiguo desde f23dba9) sigue siendo de su dueno; su arreglo tambien esta en el arbol sin commitear.",
+    "CI remota: pendiente del push que solo Oriol puede autorizar.",
+    "El panel del editor (mitad GL de E-08, editor/src/event_editor.cpp) sigue fuera: ese fichero tiene WIP vivo de la fila E-09 (qwen)."
+  ]
+}

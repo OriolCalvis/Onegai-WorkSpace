@@ -1,0 +1,30 @@
+{
+  "id": "E-12",
+  "date": "2026-09-14",
+  "author": "Codex",
+  "status": "Primer panel de capas de baldosas integrado localmente; paquete abierto",
+  "actions": [
+    "Reserva en TABLERO tras consultar Gantt, MAPA_DEL_CODIGO y la actividad concurrente. No se modifica EditorState, ProjectIndex/ProjectSerializer ni validadores de aventuras.",
+    "LayerPanel añade una pestaña Capas al dock del inspector, accesible desde Ver/Capas o F2 mediante EditorActions. La tabla común tiene ahora 14 acciones y 15 atajos.",
+    "Crear, seleccionar, renombrar, mostrar/ocultar, bloquear y borrar capas de baldosas mediante EditorDocumentSession. Los IDs son estables, se admiten nombres visibles iguales y los nombres con ## se dibujan literalmente. El campo de nombre amplía su buffer al escribir.",
+    "Seleccionar capa es estado de vista: no añade dirty ni historial. Los cambios del documento pasan por las operaciones existentes de EditorState/MapDocument. No se editan capas de entidades, eventos o regiones; se conservan al guardar.",
+    "Borrar pide confirmación, permite cancelar y no elimina capas bloqueadas ni la última capa de baldosas. La confirmación captura teclado, botones y cierre de ventana. Un cambio de documento o revisión invalida el borrado pendiente.",
+    "El formulario usa copias de metadatos y resuelve los IDs contra el documento actual. Una generación documental separada reinicia el borrador de nombre al abrir/reabrir un mapa.",
+    "El modal tiene ancho y posición estables: el autoajuste sobre texto envuelto provocaba una columna estrecha y botones que cambiaban de posición. El harness espera a que el popup termine su aparición antes de pulsar.",
+    "MotorEditor.cmake incorpora el panel y test_editor_layers. Se amplía solo la lista E-12 de dades.py; MAPA_DEL_CODIGO se regenera sin escribir banners en código concurrente. README con controles y límites de esta entrega."
+  ],
+  "verification": [
+    "Copia aislada de e70c196 más el parche propio. CMake Debug y fuentes locales de GLM/GLFW, sin descargas. Compilan motor_editor, test_editor_document_session, test_editor_actions y test_editor_layers.",
+    "26 casos C++ verdes: 9 documentales, 11 de acciones y 6 de capas. Nuevos casos: selección sin dirty/historial, persistencia de nombre/visibilidad/bloqueo/ID, metadatos en un paso de undo, borrado/restauración exacta, IDs obsoletos, nombres vacíos, última capa, bloqueos, modales documentales y nombres duplicados.",
+    "19 regresiones Python verdes; verificar_controles.py --shell valida 14 acciones/15 atajos.",
+    "Humo real de ImGui a UI 1× y 2×: F2, crear, escribir/renombrar, ocultar/bloquear, guardar/reabrir, seleccionar, intento de pintar bloqueado, desbloquear y pintar solo la capa elegida, Ctrl/Cmd+Z bloqueado por el modal, cancelar, confirmar, deshacer y guardar/reabrir de nuevo. Assets y catálogos originales intactos; GL 0.",
+    "Capturas de ambas escalas revisadas. El fixture verifica además el documento nativo escrito en disco y conserva el nombre literal Detalle ## alto.",
+    "ASan+UBSan: 26 casos C++ y humo gráfico a escala 2, sin diagnóstico. detect_leaks=0; no se afirma prueba de fugas."
+  ],
+  "pending": [
+    "Ordenar capas desde la interfaz. El panel actual solo administra capas de baldosas.",
+    "Formularios de mapa (nombre, tamaño con aviso de recorte, tileset, iluminación/niebla) y propiedades de instancias; no se declara E-12 cerrado.",
+    "La paleta de objetos sigue utilizando la capa de entidades elegida por EditorState; no hay selector nuevo de capa de objetos.",
+    "CI remota y push pendientes. La revisión automática exige autorización explícita del destino remoto; no se reintenta ni se modifica la configuración de Git."
+  ]
+}

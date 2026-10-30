@@ -1,0 +1,31 @@
+{
+ "id": "puno_hidraulico_golpe_fuerte",
+ "name": "Golpe fuerte",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Los brazos robóticos pesados del Puño Hidráulico: tus golpes con arma hacen +1 de daño (tinieblas).",
+ "flavorText": "",
+ "classTags": [
+  "puno_hidraulico"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "Los brazos robóticos pesados del Puño Hidráulico: tus golpes con arma hacen +1 de daño (tinieblas).",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Tus golpes con arma hacen +1 de daño.",
+   "mechanicHook": "siempre:bono_dano_arma:1"
+  },
+  {
+   "description": "[pendiente] el combustible (lo da Tanquear; gastarlo da más daño a Puñetazo al suelo, Ataque en salto potente, Ataque de escombros y Golpe de dragón, la rigidez de Machacar, ignorar defensa con el Ataque con el martillo, la Barrera mágica del Bloqueo frontal, el Excedente de combustible mejorado y reiniciar el Golpe de asalto).",
+   "mechanicHook": "pendiente_parcial:el combustible (lo da Tanquear; gastarlo da más daño a Puñetazo al suelo, Ataque en salto potente, Ataque de escombros y Golpe de dragón, la rigidez de Machacar, ignorar defensa con el Ataque con el martillo, la Barrera mágica del Bloqueo frontal, el Excedente de combustible mejorado y reiniciar el Golpe de asalto)"
+  }
+ ],
+ "fuente": "NosTale · Puño Hidráulico (Hydraulic Fist)"
+}

@@ -1,0 +1,36 @@
+{
+ "id": "EST-53",
+ "paquete": "EST-53 (commiteado con el rotulo EST-33, que ya era de opencode)",
+ "fase": "estabilizacion",
+ "nombre": "42 pruebas registradas en CTest que nunca se construyeron",
+ "date": "2026-09-24",
+ "author": "Claude (sesion 24/09, maquina de Oriol)",
+ "status": "HECHO — la lista de CTest deja de mentir. Suite GL-free: 71% (56 fallos de 191) -> 91% (14 de 157).",
+ "que_se_ha_hecho": {
+  "el hallazgo": "cmake/C24RenderRpgTests.cmake registraba 42 baterias con add_motor_unit_test(), que NO enlaza ninguna libreria (sirve para pruebas de solo cabeceras). Los 42 ejecutables quedaban con simbolos sin resolver. CTest los listaba como 'Not Run': parecian cobertura y no vigilaban nada. Y como add_motor_unit_test solo apunta el objetivo en la propiedad MOTOR_GL_FREE_TARGETS, y el fragmento se incluye DESPUES de crearse suite_gl_free, CI ni siquiera intentaba construirlos.",
+  "34 duplicados fuera": "El mismo fichero de prueba ya estaba registrado, y bien cableado, en CMakeLists.txt o en otro fragmento. tests/RPG/EventCommandsTests.cpp ya corre como test_event_commands, y asi 33 mas. Comprobado construyendo y EJECUTANDO los 34 equivalentes: 32 pasan; los dos que no (test_animated_entity, test_post_processing) no dependen de esto. Quitarlos no pierde ni una comprobacion.",
+  "8 cableadas de verdad": "camera, culling y occlusion_rules con motor_math/motor_map. enemy, entity, hud_transform, player y static_entity tienen que enlazar motor_core SIN necesitarlo: no abren ventana (se ejecutan enteras en un contenedor sin pantalla), pero Entity, Player, BitmapFont y HudTransform viven dentro de la libreria con GL. Son cinco de los rehenes que mide EST-40/41. Todas colgadas de suite_gl_free para que CI las construya.",
+  "7 sin versionar": "126 casos que existian SOLO en el disco de quien los escribio (CameraTests 23, PlayerTests 30, EnemyTests 17, EntityTests 17, OcclusionRulesTests 16, StaticEntityTests 14, CullingTests 9). En un clon limpio CMake no los encontraba. Commiteados.",
+  "tests/Render/HudTransformTests.cpp": "La octava fallaba 5 casos, los cinco por el signo del offset en un eje CENTRADO. Corregidas las expectativas, no la implementacion."
+ },
+ "decisiones": [
+  "Manda la implementacion, no la prueba. HudElement.cpp documenta la regla: el offset empuja HACIA DENTRO en los bordes, y en un eje centrado se suma tal cual porque ahi no hay una 'direccion de fuera'. La prueba asumia que tambien se restaba -- con esa regla, un offset de +10 en un elemento centrado lo movia a la IZQUIERDA. Estaba escrita desde una formula supuesta y nunca se habia ejecutado. Ademas la implementacion la usa todo el HUD del juego y del editor: si estuviera mal, se veria en pantalla.",
+  "Quitar los 34 duplicados en vez de arreglarlos. Arreglarlos habria dado 34 ejecutables mas que corren exactamente las mismas comprobaciones: mas tiempo de CI a cambio de nada. Lo que hacia falta era que la lista dijera la verdad.",
+  "Las cinco que enlazan motor_core se quedan etiquetadas gl-free porque LO SON en ejecucion: se ejecutaron enteras en un contenedor sin pantalla. Lo que arrastran es un enlace, no una ventana, y eso es exactamente la deuda EST-40/41. El dia que motor_core se parta por la frontera GL, esas cinco lineas pierden el motor_core y no cambia nada mas."
+ ],
+ "actions": [
+  "cmake/C24RenderRpgTests.cmake — reescrito: 42 registros -> 8, enlazados y colgados de suite_gl_free.",
+  "tests/Render/{Camera,Culling,OcclusionRules,Enemy,Entity,Player,StaticEntity}Tests.cpp — versionados (1614 lineas, 126 casos).",
+  "tests/Render/HudTransformTests.cpp — versionado y con las cinco expectativas corregidas, con la nota de por que fallaban."
+ ],
+ "verification": [
+  "Los 34 equivalentes: construidos y ejecutados, 32/34 pasan (los 2 que no, por causas ajenas).",
+  "Las 8 propias: construidas y ejecutadas, 8/8 pasan tras corregir HudTransform.",
+  "Suite GL-free completa en el oraculo: 91% (14 fallos de 157), contra 71% (56 de 191) antes. De los 14, 6 son fallos de construccion que ya existian (trabajo ajeno en vuelo) y 8 son validadores que necesitan planificacion/ y tools/, que el oraculo no lleva."
+ ],
+ "pending": [
+  "test_animated_entity no compila: AnimatedEntityTests.cpp llama a un constructor que ya no existe. Es una prueba vieja contra una API que cambio, y no es de este paquete.",
+  "add_motor_unit_test() sigue sin enlazar nada. Las 45 llamadas que quedan en CMakeLists.txt funcionan porque sus pruebas son de solo cabeceras, pero el siguiente que la use para una bateria con implementacion tropezara igual. Merece un nombre que lo diga, o un parametro de librerias obligatorio.",
+  "El rotulo: esto se commiteo como 'EST-33' y EST-33 ya era el split de AdventureValidation de opencode. El trabajo es este; el numero del tablero es EST-53."
+ ]
+}

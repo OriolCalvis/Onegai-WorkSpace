@@ -1,0 +1,35 @@
+{
+ "id": "bardo_de_las_dos_mascaras_las_dos_mascaras",
+ "name": "Las dos máscaras",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Al empezar el combate eliges máscara. Tragedia: arrastras al enemigo hacia su final y atacas con ventaja. Comedia: te mueves como un bufón y te defiendes con ventaja.",
+ "flavorText": "",
+ "classTags": [
+  "bardo_de_las_dos_mascaras"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "Al empezar el combate eliges máscara. Tragedia: arrastras al enemigo hacia su final y atacas con ventaja. Comedia: te mueves como un bufón y te defiendes con ventaja.",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Eliges una máscara al empezar el combate.",
+   "mechanicHook": "elige_una:tragedia,comedia"
+  },
+  {
+   "description": "Máscara de la tragedia: atacas con ventaja.",
+   "mechanicHook": "si:tragedia:ventaja:ataque"
+  },
+  {
+   "description": "Máscara de la comedia: te defiendes con ventaja.",
+   "mechanicHook": "si:comedia:ventaja:defensa"
+  }
+ ],
+ "fuente": "Propia · Bardo de las Dos Máscaras"
+}

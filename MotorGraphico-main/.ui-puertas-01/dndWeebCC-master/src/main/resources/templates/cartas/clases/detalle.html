@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Carta de clase</title>
+    <th:block layout:fragment="extra-css">
+        <link th:href="@{/css/mazo-fisico.css}" rel="stylesheet">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+    <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('clases')}"></div>
+
+    <div class="u-page-header--start">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-p-0">Ficha completa</p>
+                    <h1 th:text="${carta.name}">Nombre</h1>
+                    <p>
+                        <span class="gm-badge" th:text="${carta.role}">Rol</span>
+                        <span class="gm-badge" th:text="${familiaClase}">Familia</span>
+                        <span class="gm-badge">Tier mínimo <span th:text="${carta.tier}">1</span></span>
+                        <span class="gm-badge" th:text="'ID ' + ${carta.id}">id</span>
+                    </p>
+                </div>
+                <a class="gm-btn gm-btn--outline" th:href="@{/cartas/clases/{id}/editar(id=${carta.id})}">Editar</a>
+            </div>
+
+            <!-- La propia carta, en el mismo marco visual que el álbum -->
+            <div class="u-detail-layout-300">
+                <article class="gm-card gm-card--detalle u-cursor-default">
+                    <!-- ① Cabecera -->
+                    <span class="gm-card__tier">TIER <span th:text="${carta.tier}">1</span></span>
+                    <h2 class="gm-card__title" th:text="${carta.name}">Nombre</h2>
+                    <span class="gm-card__role" th:text="${carta.role}">Rol</span>
+
+                    <!-- ② Ilustración -->
+                    <div class="gm-card__illustration" th:switch="${carta.role}">
+                        <span th:case="'tank'">🛡</span>
+                        <span th:case="'agile'">🗡</span>
+                        <span th:case="'caster'">🔮</span>
+                        <span th:case="'support'">❤</span>
+                        <span th:case="*">⚔</span>
+                    </div>
+
+                    <!-- ③ Reglas -->
+                    <div class="gm-card__rules">
+                        <p class="gm-card__meta">
+                            Vida <span th:text="${carta.baseHealth}">5</span> + CON×3 + CAR
+                        </p>
+                        <p class="gm-card__desc u-clamp-unset" th:text="${carta.description}">Descripción</p>
+                    </div>
+
+                    <!-- ④ Pie -->
+                    <div class="gm-card__footer">
+                        <span class="gm-badge" th:text="${carta.primaryStat}">CON</span>
+                        <span class="gm-badge" th:if="${carta.secondaryStat}" th:text="${carta.secondaryStat}">CAR</span>
+                        <span class="gm-badge" th:text="${carta.primaryResource}">energia</span>
+                        <span class="gm-badge" th:if="${carta.secondaryResource}" th:text="${carta.secondaryResource}">foco</span>
+                    </div>
+
+                    <!-- ⑤ Identificador -->
+                    <p class="gm-card__id" th:text="'clases · ' + ${carta.id}">clases · id</p>
+                </article>
+
+                <div>
+                    <!-- CARTAS-CLASES-01: el mazo físico de la clase, para descargar e imprimir -->
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Mazo físico para jugar en la mesa ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p>Las cartas de la clase listas para imprimir: hojas A4 con 9 cartas de 63,5 × 88,9 mm
+                                (tamaño póker) y marcas de corte. Imprime a tamaño real (100 %), sin «ajustar a la página».</p>
+                            <p class="gm-hint" th:unless="${claseEd4}">Clase de la 2.ª iteración: sus cartas todavía no
+                                están adaptadas a la Ed. 4 (no traen ganchos y algunas usan números antiguos).</p>
+                            <div class="u-actions--wrap">
+                                <a class="gm-btn gm-btn--primary"
+                                   th:href="@{/cartas/clases/{id}/mazo.pdf(id=${carta.id})}">⬇ Descargar el mazo (PDF)</a>
+                                <a class="gm-btn gm-btn--outline" target="_blank" rel="noopener"
+                                   th:href="@{/cartas/clases/{id}/mazo.pdf(id=${carta.id},descargar=false)}">Ver el PDF</a>
+                            </div>
+                            <form class="mf-opciones" method="get" th:action="@{/cartas/clases/{id}/mazo.pdf(id=${carta.id})}">
+                                <fieldset class="mf-opciones__grupo">
+                                    <legend>Qué lleva el mazo</legend>
+                                    <label><input type="checkbox" name="set" value="true"> Añadir su set de Tier 2</label>
+                                    <label><input type="checkbox" name="sinEquipo" value="true"> Sin el equipo inicial</label>
+                                    <label><input type="checkbox" name="sinCreador" value="true"> Sin las cartas de Creador</label>
+                                    <label><input type="checkbox" name="sinReglas" value="true"> Sin las cartas de reglas de mesa</label>
+                                </fieldset>
+                                <button class="gm-btn gm-btn--outline" type="submit">⬇ Descargar con estas opciones</button>
+                            </form>
+                            <table class="u-table mf-tabla">
+                                <thead>
+                                <tr class="u-th-left">
+                                    <th class="u-py-sp1">#</th><th>Carta</th><th>Tipo</th><th>Tier</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="u-border-bottom" th:each="c, it : ${mazo}">
+                                    <td class="u-py-sp1" th:text="${it.count}">1</td>
+                                    <td>
+                                        <strong th:text="${c.titulo}">Carta</strong>
+                                        <span class="mf-mecanica" th:if="${c.mecanica != null}" th:text="${c.mecanica}">Tira 1 + DES</span>
+                                        <span class="mf-aviso" th:if="${c.aviso != null}" th:text="${c.aviso}">Por definir</span>
+                                    </td>
+                                    <td><span class="mf-tipo" th:classappend="${'mf-tipo--' + #strings.toLowerCase(c.tipo.name())}"
+                                              th:text="${c.linea}">Habilidad</span></td>
+                                    <td th:text="${c.tier > 0 ? 'T' + c.tier : '—'}">T1</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Vida y stats ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong>Fórmula (Ed. 4):</strong> <span th:text="${carta.baseHealth}">5</span>
+                                + CON×3 + CAR + bono de tier + equipo, sin pasar del techo del tier
+                                (<span th:text="${techoVida}">18</span> en Tier <span th:text="${carta.tier > 0 ? carta.tier : 1}">1</span>).</p>
+                            <p><strong>Stat principal:</strong> <span th:text="${carta.primaryStat}">CON</span>
+                                <span th:if="${carta.secondaryStat}"> · Secundaria: <span th:text="${carta.secondaryStat}">CAR</span></span></p>
+                            <p><strong>Recurso:</strong> <span th:text="${carta.primaryResource}">energia</span>
+                                <span th:if="${carta.secondaryResource}"> + <span th:text="${carta.secondaryResource}">foco</span></span></p>
+                            <table class="u-table">
+                                <thead>
+                                <tr class="u-th-left">
+                                    <th class="u-py-sp1">CON</th><th>Vida con CAR 0 y sin equipo (tier <span th:text="${carta.tier}">1</span>)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="u-border-bottom" th:each="punto : ${previsionVida}">
+                                    <td class="u-py-sp1" th:text="${punto.con()}">1</td>
+                                    <td th:text="${punto.vida()}">10</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Equipo y pasiva inicial ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong>Equipo inicial:</strong></p>
+                            <ul>
+                                <li th:each="item : ${carta.startingEquipment}" th:text="${item}">Objeto</li>
+                                <li class="u-text-muted" th:if="${#lists.isEmpty(carta.startingEquipment)}">Sin equipo definido</li>
+                            </ul>
+                            <p><strong>Pasiva inicial:</strong></p>
+                            <ul>
+                                <li th:each="item : ${carta.startingCards.passives}" th:text="${item}">Pasiva</li>
+                                <li class="u-text-muted" th:if="${#lists.isEmpty(carta.startingCards.passives)}">Sin pasiva definida</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section">
+                        <button type="button" class="gm-panel-section__toggle">Habilidades y hechizos iniciales ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong>Habilidades:</strong></p>
+                            <ul>
+                                <li th:each="item : ${carta.startingCards.skills}" th:text="${item}">Habilidad</li>
+                                <li class="u-text-muted" th:if="${#lists.isEmpty(carta.startingCards.skills)}">Sin habilidades definidas</li>
+                            </ul>
+                            <p><strong>Hechizos:</strong></p>
+                            <ul>
+                                <li th:each="item : ${carta.startingCards.spells}" th:text="${item}">Hechizo</li>
+                                <li class="u-text-muted" th:if="${#lists.isEmpty(carta.startingCards.spells)}">Sin hechizos</li>
+                            </ul>
+                            <p><strong>Aprendibles (Tier 2+):</strong></p>
+                            <div class="u-tag-row">
+                                <span th:each="item : ${carta.startingCards.learnableSkills}" class="gm-badge" th:text="${item}">Habilidad</span>
+                                <span class="u-text-muted" th:if="${#lists.isEmpty(carta.startingCards.learnableSkills)}">Sin aprendibles definidas</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section">
+                        <button type="button" class="gm-panel-section__toggle">Equipo permitido / restringido / especializaciones ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong>Peso máximo:</strong>
+                                Armadura <span th:text="${carta.maxArmorWeight}">media</span> ·
+                                Arma <span th:text="${carta.maxWeaponWeight}">media</span>
+                            </p>
+                            <p><strong>Permitido:</strong>
+                                <span th:each="tag : ${carta.allowedEquipmentTags}" class="gm-badge u-mr-4" th:text="${tag}">tag</span>
+                            </p>
+                            <p><strong>Restringido:</strong>
+                                <span th:each="tag : ${carta.restrictedTags}" class="gm-badge u-mr-4" th:text="${tag}">tag</span>
+                            </p>
+                            <p><strong>Especializaciones:</strong>
+                                <span th:each="spec : ${carta.specializations}" class="gm-badge u-mr-4" th:text="${spec}">spec</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="u-actions--wrap">
+                        <a class="gm-btn gm-btn--outline" th:href="@{/cartas/clases}">Volver al álbum</a>
+                        <form th:action="@{/cartas/clases/{id}/eliminar(id=${carta.id})}" method="post" th:data-nombre="${carta.name}" onsubmit="return confirm('¿Borrar la clase &quot;' + this.dataset.nombre + '&quot;? No se puede deshacer.');">
+                            <button class="gm-btn gm-btn--danger" type="submit">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+</main>
+</body>
+</html>

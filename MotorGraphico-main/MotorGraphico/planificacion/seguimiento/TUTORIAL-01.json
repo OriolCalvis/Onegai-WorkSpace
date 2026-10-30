@@ -1,0 +1,41 @@
+{
+ "id": "TUTORIAL-01",
+ "date": "2026-10-07",
+ "author": "claude (Cowork)",
+ "status": "HECHO — la partida se juega de punta a punta hasta acabar la primera mision de Boundington (el tutorial: el tendero, el joyero y el sastre, la emboscada y su desenlace), ganando y huyendo, con el juego de verdad y un guion de teclas. Queda lo de 'pendiente'.",
+ "origen": "Oriol (07/10): «limpiar la creacion de personaje y depurar desde el inicio hasta completar la primera mision al llegar a Boundington».",
+ "scope": [
+  "Creacion: el kit del cofre de cinco piezas (el arma y cuatro) pisaba «CON EL KIT PUESTO» en la hoja Clase; con cinco empieza mas arriba y mas junto (PaginasCreacionHojas.cpp).",
+  "El Vacio: ponerse el kit dejaba al heroe herido (5/9 al empezar): lo que el equipo sube o baja del tope de vida se nota en la de ahora (GameSession::equipItem/unequipItem); quitarse algo no mata.",
+  "El sastre no estaba en ningun nivel y el tutorial no se podia acabar: en la sastreria, en (8,5) junto a la mesa de corte (assets/levels/interior_sastreria.json). validar_todo.py ya lo ve: con quien se habla (talk) tiene que estar en algun nivel y el nivel de un enter tiene que existir.",
+  "Hablar con un tendero con un beat abria la tienda en el acto (las lineas del beat solo iban al registro y ENTER compraba): ahora la hoja del dialogo y, al cerrarla, la tienda; las lineas del beat salen una vez en el registro (salian dos). Sin beat, la tienda como siempre.",
+  "El titulo de la tienda y la ficha del negocio se partian palabra a palabra (la caja de 100 por defecto de HudText) y pisaban la lista: con caja de 520, en una linea (Application.cpp, misma cuenta de lineas: baja 2).",
+  "Un beat que habla y pelea (la emboscada del tutorial, los saqueadores del Ocaso, Gorran) se saltaba sus lineas: applyNarrative monta el combate (los enemigos ya en su sitio) y deja el dialogo delante; cerrarlo empieza el combate (closeInteraction). Sin lineas, el combate en el acto.",
+  "Acabado el combate la aventura no decia nada hasta la siguiente charla («tut_victoria» y «tut_derrota» esperaban): syncBattleOutcome da un tick, como al cerrar un dialogo.",
+  "La emboscada salia encima del heroe: cada enemigo sale a una casilla libre de alrededor (la del jugador, si no queda ninguna).",
+  "Se sale por donde se entra: cinco interiores (banco, banos, mercado, posada, sastreria) tienen dos puertas a la calle y una sola salida, y se entraba a la sastreria por la plaza y se salia a la otra punta de la ciudad, escondido entre las casas, donde saltaba la emboscada. La puerta en la que se aparece lleva a la puerta del nivel de antes (LevelTransition::vueltaNivel/vueltaPuerta, GameSession::ponVuelta, que pone Application al cruzar); otra salida, o llegar de otro nivel, siguen con su destino. No se guarda con la partida.",
+  "El dialogo partia una linea larga por renglones, a mitad de frase («...de un cadaver. Se acerca» / «sobre una barca...» en el prologo): ahora por frases; una frase que sola no cabe, como antes (DialogoHoja).",
+  "Pruebas: test_game_session (un_beat_del_tendero_se_lee_antes_de_abrir_la_tienda, la_salida_de_un_interior_lleva_a_la_puerta_por_la_que_se_entro, una_emboscada_sale_alrededor_del_jugador_y_no_encima, un_beat_que_habla_y_pelea_se_lee_antes_y_la_victoria_se_cuenta_al_acabar), test_inventory_menu (la_vida_sigue_al_tope_al_equipar_y_desequipar), test_pergamino (dialogo_una_linea_larga_se_parte_por_frases); demo_narrativa_combate y test_save_game, al dialogo antes del combate y a la casilla de al lado."
+ ],
+ "pendiente": [
+  "~~La partida no guarda la ficha~~: hecho en GUARDAR-FICHA (con la aventura del capitulo al cargar).",
+  "La tienda sigue siendo el panel oscuro de antes del pergamino (con el registro debajo).",
+  "Los textos de las aventuras de Boundington van sin tildes (Asi, pocion, cadaver, Manana...).",
+  "38 de los 43 pueblos tienen el rasgo de la plantilla vieja («Rasgo de X»: Sabiduria, trucos, 2d6 en cono de 4,5 m) y 30 de los 41 jugables tienen texto en catalan; se ven en la hoja Raza de la creacion.",
+  "Huir de la emboscada cuenta la derrota del tutorial («Te levantas del polvo...»), que habla de haber caido."
+ ],
+ "non_goals": [
+  "Equilibrar el combate del tutorial (con «Atacar» y nada mas son unas diez rondas)."
+ ],
+ "verification": [
+  "El juego de verdad (GLFW sin pantalla y un guion de teclas): crear a Ilse (humana, Acechador de Tejados), el cofre de El Vacio (9/9 con el kit), el prologo, la ciudad, el mercado (el beat del tendero en tres paginas y luego la tienda), la joyeria, la sastreria (el sastre), la vuelta a la plaza por la puerta de la sastreria, la emboscada (tres paginas y el combate, el saqueador en la casilla de al lado), ganar (la narracion de la victoria y «Nuevo objetivo: Buscar cama en la Taberna Humilde», objetivo 2/6) y, en otra pasada, huir (la narracion de la derrota y -15 de oro).",
+  "ctest con los fallos de la linea base y ninguno mas (demo_creacion_personaje, test_gdb12_screens, test_g14 sin enlazar, test_application, test_application_cableado, test_catalog_content, test_application_scenes, linea_base_core con 44); las pruebas de tools solo con test_personajes_son_reproducibles; validar_todo sin errores.",
+  "Application.cpp baja de 1195 a 1193 lineas; GameSession.h y Application.h, las mismas."
+ ],
+ "para_oriol": [
+  "¿Se sale por donde se entra en todas las puertas? Hoy si la salida del interior es en la que se aparecio; si alguna puerta tiene que llevar siempre al mismo sitio, se le pone un destino a mano.",
+  "¿Primero se habla y luego se compra, tambien con los tenderos sin beat (su saludo del catalogo antes de la tienda)? Hoy solo con beat.",
+  "¿La derrota de una mision (caer, no huir) tendria que seguir la historia como la huida en vez de acabar la partida? En el tutorial, «tut_derrota» solo llega huyendo."
+ ],
+ "sesion": "sesiones/2026-10-07-claude-tutorial.md"
+}

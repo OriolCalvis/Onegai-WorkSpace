@@ -1,0 +1,42 @@
+{
+ "id": "PNJ-01",
+ "date": "2026-10-05",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol (commit local); entrega al Mac como paquete (base 1af49fe). Hay C++: recompilar.",
+ "encargo": "«Todos los npcs se tienen que generar con las mismas esteticas que podria tener un [jugador], o sea, cualquier jugador podria copiar la estetica de un npc estandar. Los equipos y armas modifican la apariencia, asi que al final tambien es dificil que un npc y un aventurero se parezcan en extremo, pudiendo crear solo equipamientos para npc.»",
+ "resultado": {
+  "pnj": "250 PNJ (todos los objetos npc de assets/objects salvo el ciervo, que es fauna) en 326 aspectos: 76 variantes para los colocados varias veces (hasta 6 por PNJ). Hojas pnj_boundington (106 filas), pnj_mundo_1 y pnj_mundo_2, las ultimas de sprites.json; fuera los 47 alias de ropa prestada y los dibujos de PixelLab para PNJ (la hoja pixellab_personajes sigue para el slime).",
+  "base": "raza, piel y talla (solo cuerpos lisos), ojos, peinado, barba y ropa de diario: lo que ofrece la creacion de personaje; ningun PNJ quita capas de raza ni usa pieles fuera del atlas",
+  "piezas": "38 nuevas: 30 de ropa de diario para todos (vestidos, faldas, chalecos, casacas, cofia, toca, gorros, capas) y 8 solo de PNJ (librea de la guardia de Boundington, mandil de herrero, casulla, toga, birrete, librea de palacio, cesta, libro de cuentas), marcadas soloPnj en personajes.json",
+  "composiciones": "tools/actores_pnj.py: a mano los de Boundington y las naciones del oeste (con su ficha o su retrato de PixelLab); por reglas el resto (oficio por la id, el nombre o la carta de npcs.json; pueblo por raceId, la nacion o el lugar de la carta; sexo por el nombre; semilla de la id). Choubar, Mistarium y Nocturnsea no tienen pueblo en races.json: humanos con su paleta de piel.",
+  "motor": "Game::ManifiestoPersonajes lee soloPnj y Game::EditorApariencia no las ofrece (ni AL AZAR); Game::RegistroSprites lee las variantes (SpriteActor::filaPara) y ApplicationNivel.cpp da la variante n a la colocacion n del nivel",
+  "pixellab": "0 generaciones"
+ },
+ "archivos": {
+  "nuevos": [
+   "tools/actores_oficios.py, tools/actores_pnj.py, tools/gen_pnj.py, tools/validar_pnj.py",
+   "assets/textures/pnj_boundington.png/.json, pnj_mundo_1.png/.json, pnj_mundo_2.png/.json",
+   "Claude outputs/pnj/ (antes y ahora, prendas, hojas, capturas del juego, LEEME)",
+   "planificacion/seguimiento/PNJ-01.json"
+  ],
+  "modificados": [
+   "include/Game/Personajes/ManifiestoPersonajes.h, src/Game/Personajes/ManifiestoPersonajes.cpp, src/Game/Personajes/EditorApariencia.cpp (soloPnj)",
+   "include/Game/RegistroSprites.h, src/Game/RegistroSprites.cpp, src/Engine/ApplicationNivel.cpp (variantes)",
+   "tests/Game/RegistroSpritesTests.cpp, tests/Game/PersonajesCapasTests.cpp, tests/Game/EditorAparienciaTests.cpp",
+   "assets/textures/personajes.json, personajes/equipo/*.png (piezas nuevas), sprites.json, personajes.md",
+   "tools/actores_personajes.py, tools/gen_personajes.py, tools/probador_personaje.py, tools/validar_todo.py"
+  ]
+ },
+ "verificacion": [
+  "test_personajes_capas: el motor monta cada uno de los 326 aspectos byte a byte con el codigo del jugador (y los 62 de siempre)",
+  "test_registro_sprites (fila propia, variantes, alias y raza para ids nuevos) y test_editor_apariencia (la creacion no ofrece las prendas de oficio) OK",
+  "validar_pnj y validar_todo: 0 errores; test_project_catalog y test_object_catalog OK",
+  "ctest: las 18 fallas de siempre (GL, las tres que no compilan, test_catalog_content, test_gdb12_screens, test_marcar_paquetes, demo_creacion_personaje, demo_nova_partida); linea_base_core con las 35 deudas previas",
+  "capturas del juego: taberna, plaza del centro (variantes), castillo, iglesia, universidad, barrio este",
+  "ya fallaba antes: tools/test_validar_sprites.py (reproducibilidad de personajes.json por las prendas de PixelLab del lote 7)"
+ ],
+ "pendiente": [
+  "los retratos de historia de PixelLab ya no se usan para PNJ; si se quieren para dialogos, seria otro encargo",
+  "una variante depende del orden de colocacion: si una partida guardada quita un PNJ repetido, el siguiente puede cambiar de cara"
+ ]
+}

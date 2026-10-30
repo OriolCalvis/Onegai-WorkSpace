@@ -1,0 +1,25 @@
+{
+  "id": "G11-GUARDADOS-VALIDOS",
+  "date": "2026-09-29",
+  "author": "Codex",
+  "status": "RODAJA HECHA — G-11 global sigue abierto",
+  "reservation": "../TABLERO.md; SaveGame.cpp exclusivo en esta sesion: retirar formato duplicado existente, sin reescribirlo.",
+  "scope": [
+    "Rechaza campos presentes con tipos o rangos numericos invalidos, incluidos datos de mundo y narrativa. Motivo con ruta exacta y destino intacto.",
+    "Compatibilidad v1: campos ausentes conservan defaults, extensiones desconocidas se ignoran, letras locales invalidas siguen la recuperacion historica. Sin reglas de balance nuevas.",
+    "SaveSlots distingue version incompatible de numero malformado usando la misma validacion de enteros; ranuras corruptas no cargables, archivo conservado.",
+    "SaveGame.cpp baja de 665 a 343 lineas: retiradas copias identicas de formato y narrativa, cuyo unico propietario es SaveGameFormat.cpp (ya enlazado en HEAD).",
+    "Mapa y fuente del plan G-11 actualizados; no se modifican Application, GameSession, CMake, reglas RPG ni WIP ajeno."
+  ],
+  "verification": [
+    "Falsabilidad observada: antes de la validacion, dos casos nuevos de SaveSlots fallan (inventory objeto y schemaVersion1.5 aceptados); despues pasan.",
+    "Arbol compartido: CTest 4/4; test_save_game 26/26, test_save_slots 16/16, test_schema_fixtures 9/9, test_title_flow 7/7.",
+    "juego compila; humo ciudad_oeste.json 3 frames termina con codigo 0 en macOS.",
+    "nm confirma una unica definicion de parseSaveGame, serializeSaveGame y applyNarrativeState, procedente de SaveGameFormat.cpp.o, presente en juego.",
+    "medir_alcance.py reconoce SaveGameValidation.h desde SaveSlotState.cpp en juego. El analizador no sigue el origen de funciones libres a SaveGameFormat.cpp; se contrasta con nm.",
+    "Guardia rapida y git diff --check pasan; no se ejecuta suite global ni se afirma clon limpio con WIP ajeno."
+  ],
+  "pending": [
+    "Selector visual, confirmacion de sobrescritura y resto del criterio global G-11."
+  ]
+}

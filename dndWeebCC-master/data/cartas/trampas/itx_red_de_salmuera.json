@@ -1,0 +1,26 @@
+{
+ "id": "itx_red_de_salmuera",
+ "name": "Itx Red de Salmuera",
+ "type": "trap",
+ "tier": 2,
+ "rarity": "uncommon",
+ "category": "mecánica",
+ "trigger": "pisar los tablones flojos del extremo del muelle",
+ "detection": {
+  "stat": "INT",
+  "cd": 1.0
+ },
+ "disarm": {
+  "stat": "DES",
+  "cd": 1.5,
+  "herramienta": "herramientas de ladrón"
+ },
+ "effect": {
+  "description": "Una red lastrada sube del agua: 2 de daño y Agarrado si falla Resistencia física.",
+  "defensa": "resistencia_fisica",
+  "condicionInfligida": "agarrado"
+ },
+ "onFail": "La red se cierra del todo: Agarrado sin tirada y arrastrado 2 casillas hacia el agua.",
+ "reset": "recargable",
+ "flavorText": "La tendieron para peces. Hace años que no pescan peces."
+}

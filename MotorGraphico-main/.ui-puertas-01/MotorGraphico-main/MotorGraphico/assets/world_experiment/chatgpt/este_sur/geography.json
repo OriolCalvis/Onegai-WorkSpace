@@ -1,0 +1,87 @@
+{
+  "region": "este_sur",
+  "status": "experimental",
+  "source_snapshot": {
+    "id": "egaroth_grid_2000bf",
+    "source": "Onegai-Core/atlas/world_grid.json",
+    "year": 2000,
+    "suffix": "b.f.",
+    "note": "El mapa es una instantanea de la Primera Cruzada; no describe automaticamente eras anteriores."
+  },
+  "scope_cells_2000bf": {
+    "tabaxi_continental": "arco meridional oriental, principalmente x=17..23, y=14..21",
+    "esmua": "meseta oriental meridional, principalmente x=21..22, y=16..19",
+    "wulcain": "franja volcanica oriental, principalmente x=19..20, y=17..19"
+  },
+  "border_questions": [
+    {
+      "id": "east_south_border_bosmurg",
+      "status": "pendiente",
+      "question": "Bosmurg ocupa celdas a ambos lados del corte norte-sur. La frontera narrativa debe acordarse con Este Norte antes de asignar rutas o ciudades."
+    },
+    {
+      "id": "east_south_border_ashye",
+      "status": "pendiente",
+      "question": "Ashye/Sharium toca la transicion norte-sur. Su nombre antiguo es canon previo; su evolucion politica se definira mas adelante."
+    }
+  ],
+  "natural_features": [
+    {
+      "id": "east_south_great_steppe",
+      "name": "Gran Estepa",
+      "kind": "steppe_and_winter_caves",
+      "status": "canon_previo",
+      "supports": ["east_south_esmua", "east_south_long_cave"],
+      "gameplay_role": "Espacio de movilidad estacional: rutas de verano, cuevas-refugio y conflictos rituales por pastos.",
+      "source": "Onegai_Perfiles_Protocivilizaciones.md: Minotauros — la Gran Estepa"
+    },
+    {
+      "id": "east_south_wulcain_caldera",
+      "name": "Caldera de Wulcain",
+      "kind": "volcanic_caldera",
+      "status": "canon_previo",
+      "supports": ["east_south_high_terrace", "east_south_wulcain"],
+      "gameplay_role": "Asentamiento vertical orientado hacia dentro; el exterior es una frontera, no una fachada urbana.",
+      "source": "Onegai_Perfiles_Protocivilizaciones.md: Dracónidos — antes de Wulcain"
+    },
+    {
+      "id": "east_south_submerged_grottoes",
+      "name": "Cadena de grutas sumergidas",
+      "kind": "submerged_coastal_caves",
+      "status": "canon_previo",
+      "supports": ["east_south_first_grotto", "east_south_tabaxi_continental"],
+      "gameplay_role": "Entradas ocultas, varaderos aparentamente abandonados y rutas navegables entre emporios autónomos.",
+      "source": "Onegai_Perfiles_Protocivilizaciones.md: Nagas — antes de Tabaxi"
+    },
+    {
+      "id": "east_south_rock_maze_plains",
+      "name": "Llanuras del Laberinto",
+      "kind": "wind_eroded_rock_plain",
+      "status": "canon_previo",
+      "supports": ["east_south_taurengrad_complex", "east_south_labyrinth_routes"],
+      "gameplay_role": "Laberintos naturales de roca que convierten la orientación, la memoria y los guías locales en recursos estratégicos.",
+      "resources": ["piedra resistente a la erosión", "rutas ocultas", "cuevas de invierno"],
+      "source": "TL_OCR_completo.md: slides 193-204"
+    },
+    {
+      "id": "east_south_smoking_plains",
+      "name": "Llanuras Humeantes",
+      "kind": "volcanic_foothills",
+      "status": "canon_previo",
+      "supports": ["east_south_wulcain_caldera"],
+      "gameplay_role": "Cinturón de ceniza, fumarolas y pasos observados desde la caldera; sirve de frontera material entre clausura y exterior.",
+      "resources": ["azufre", "obsidiana", "metales volcánicos"],
+      "source": "TL_OCR_completo.md: slides 218, 221-223"
+    },
+    {
+      "id": "east_south_coral_dome",
+      "name": "Cúpula submarina de Naka't-ol",
+      "kind": "submerged_coral_dome",
+      "status": "canon_previo",
+      "supports": ["east_south_tabaxi_depths", "east_south_tabaxi_coral_workshops"],
+      "gameplay_role": "Ciudad vertical sumergida: la profundidad funciona como clase social, defensa y recorrido de exploración.",
+      "resources": ["coral bioluminiscente", "perlas", "gemas abisales", "restos de naufragio"],
+      "source": "TL_OCR_completo.md: slides 138-144; indice_lugares.md"
+    }
+  ]
+}

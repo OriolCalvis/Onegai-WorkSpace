@@ -1,0 +1,30 @@
+{
+  "id": "KIT-TOPES-01",
+  "date": "2026-10-05",
+  "author": "claude (Cowork)",
+  "status": "HECHO — aplicado en el arbol del Mac, sin commit",
+  "origen": "Oriol (05/10): «la primera equipacion la balanceamos a 2 dados, lo mas alto, 1 lo mas bajo [...] hay que respetar los caps de dados maximos que cada tier puede ofrecer a la espec mas alta; nunca tres a lo mas alto». Kit: «principal y secundaria +2».",
+  "criterio_de_cierre": "El kit del cofre de cada una de las 63 clases suma exactamente +2 al principal, +2 al secundario y +1 a los otros dos, sin requisitos; la ficha cuenta el equipo con el tope de su tier (el mejor de Tier 1: 4, 4, 2, 2) y la raza encima.",
+  "scope": [
+    "assets/rules/kit_basico.json: bonos {principal 2, secundario 2, resto 1}, exacto, piezasMaximas 5 (lee el formato viejo).",
+    "include/Game/Personajes/KitBasico.h, src/Game/Personajes/KitBasico.cpp: busqueda exacta (arma de la clase o la mas parecida que encaje + una pieza por ranura de armadura), Kit::objetivo/sobran, objetivoDe().",
+    "include/RPG/TopesDados.h (NUEVO, solo cabecera): maximo(), aplica(), respeta().",
+    "include/RPG/TierRules.h, src/RPG/TierRules.cpp, assets/rules/tier_rules.json: topeDadosEquipo 2/4/6/8/8/8 (PROPUESTA).",
+    "include/RPG/CharacterSheet.h, src/RPG/CharacterSheet.cpp: cachedTopeEquipo desde recompute_derived(); stat() recorta el equipo; tierUp() lo sube.",
+    "src/HUD/Pergamino/InterfazPergamino.cpp: el papiro del cofre compacto con mas de tres piezas.",
+    "tests/Game/KitBasicoTests.cpp (15 casos), tests/Game/CuadernoCreacionTests.cpp."
+  ],
+  "non_goals": [
+    "No se rehace el equipo de Tier 1: hoy deja juntar INT 8 o CAR 8 (en partida se recorta a 4) y el 4, 4, 2, 2 no se alcanza con las piezas que hay. Es contenido.",
+    "No se toca la vida: el kit sube la maxima y no la actual (Nerea empieza con 19/24)."
+  ],
+  "verification": [
+    "test_kit_basico 15/15; test_cuaderno_creacion 12/12; ctest 202/211 (las 9 rojas son las de antes + demo_creacion_personaje por las 41 razas jugables de PNJ-02).",
+    "Juego real: el cofre con 5 piezas y la ficha con CON 4 (3 raza + 1 equipo), DES 2, INT 2 (1 + 1), CAR 2."
+  ],
+  "para_oriol": [
+    "Los topes 2, 4, 6, 8, 8, 8.",
+    "Si ponerse el kit cura hasta la vida nueva."
+  ],
+  "sesion": "sesiones/2026-10-05-claude-kit-tiradas-grupos.md"
+}

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mapa Mundi</title>
+    <link th:href="@{/css/tokens.css}" rel="stylesheet">
+    <link th:href="@{/css/base.css}" rel="stylesheet">
+    <link th:href="@{/css/components.css}" rel="stylesheet">
+    <link th:href="@{/css/mapa.css}" rel="stylesheet">
+    <link th:href="@{/css/utilities.css}" rel="stylesheet">
+    <link th:href="@{/css/paneles-overlay.css}" rel="stylesheet">
+</head>
+<body>
+<div class="gm-app">
+    <div th:replace="~{Blocks/header-v2 :: header}"></div>
+    <div class="gm-body">
+        <div th:replace="~{Blocks/sidebar-v2 :: sidebar}"></div>
+        <main class="gm-main">
+            <div class="u-page-header--tight">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-eyebrow">Sistema de Cartas y Tiers</p>
+                    <h1>🧭 Mapa Mundi</h1>
+                    <p class="gm-hint">
+                        Tu mapa (mapamundi.png) con las 16 naciones dibujadas como polígonos según tus
+                        coordenadas exactas, y las 15 facciones del catálogo como marcadores clicables.
+                        Tabaxi aparece dos veces (continental e isla occidental) porque es una única nación
+                        repartida en dos masas de tierra. Udrax sigue sin polígono propio — de momento es
+                        solo la etiqueta en el hueco entre Ecla, Giladdokx y Bastrea.
+                        Con "🖊️ Modo edición" puedes arrastrar los puntos, crear ciudades con
+                        "🏙 Nueva ciudad" (Alt+clic para generar una al azar coherente con su nación) y
+                        "💾 Guardar cambios" lo deja fijo para todo el mundo (se escribe en data/mapa/geografia.json).
+                    </p>
+                </div>
+                <span class="gm-hud" th:text="${#lists.size(regiones)} + ' localizaciones jugables'">15 regiones</span>
+            </div>
+
+            <div id="gm-editor-banner" class="gm-editor-banner" hidden>
+                <span>📝 Tienes cambios de una sesión de edición anterior sin exportar.</span>
+                <button type="button" id="gm-editor-banner-dismiss" class="gm-btn gm-btn--outline gm-btn--sm">Descartar</button>
+            </div>
+
+            <div class="gm-mapa-toolbar" id="gm-toolbar-edicion">
+                <button type="button" id="gm-editor-toggle" class="gm-btn gm-btn--outline gm-btn--sm">🖊️ Modo edición</button>
+                <button type="button" id="gm-editor-save" class="gm-btn gm-btn--primary gm-btn--sm" hidden
+                        th:attr="data-guardar-url=@{/mapa/guardar}">💾 Guardar cambios</button>
+                <button type="button" id="gm-editor-nuevo-punto" class="gm-btn gm-btn--outline gm-btn--sm" hidden>➕ Nuevo punto</button>
+                <button type="button" id="gm-editor-nueva-ciudad" class="gm-btn gm-btn--outline gm-btn--sm" hidden>🏙 Nueva ciudad</button>
+                <button type="button" id="gm-editor-nueva-zona" class="gm-btn gm-btn--outline gm-btn--sm" hidden>⛰ Nueva zona</button>
+                <button type="button" id="gm-editor-reset" class="gm-btn gm-btn--outline gm-btn--sm" hidden>↩️ Restablecer</button>
+                <button type="button" id="gm-editor-export" class="gm-btn gm-btn--outline gm-btn--sm" hidden>📋 Copiar coordenadas</button>
+                <span id="gm-editor-coords" class="gm-mapa-toolbar__coords"></span>
+            </div>
+
+            <div class="gm-mapa-toolbar" id="gm-toolbar-tiers" th:if="${!#sets.isEmpty(tiersDisponibles)}">
+                <span class="gm-hint u-m-0">Tier:</span>
+                <button type="button" class="gm-btn gm-btn--outline gm-btn--sm gm-tier-btn"
+                        th:each="t : ${tiersDisponibles}" th:attr="data-tier=${t}" th:text="${t}">1</button>
+                <button type="button" id="gm-tier-todos" class="gm-btn gm-btn--outline gm-btn--sm">Todos</button>
+                <span class="gm-hint u-m-0">Clica un tier para ocultarlo · clica un elemento de la leyenda para ocultarlo</span>
+            </div>
+
+            <div class="gm-mapa-lienzo">
+                <svg viewBox="0 0 1600 1200" xmlns="http://www.w3.org/2000/svg" id="gm-mapa-svg">
+                    <image th:href="@{/img/mapamundi.png}" x="0" y="0" width="1600" height="1200" preserveAspectRatio="xMidYMid slice"/>
+
+                    <!-- Marco doble, look de mapa antiguo -->
+                    <rect x="8" y="8" width="1584" height="1184" fill="none" stroke="var(--card-frame)" stroke-width="4"/>
+                    <rect x="18" y="18" width="1564" height="1164" fill="none" stroke="var(--card-frame-bright)" stroke-width="1.5"/>
+
+                    <!-- ============ NACIONES: coordenadas exactas que pasó Oriol (mismo
+                         sistema que el viewBox, origen arriba-izq., no hace falta reescalar) ============ -->
+                    <g class="gm-mapa-nacion__borde" fill-opacity="0.16" stroke-dasharray="6 5" stroke-width="2">
+                        <polygon th:each="n : ${naciones}" tabindex="0" role="button"
+                                 th:attr="data-nacion=${n.nombre}, data-panel-title=${n.nombre},
+                                          data-panel-source='gm-panel-nacion-dinamico',
+                                          data-nacion-cultura=${n.cultura}, data-nacion-alineacion=${n.alineacion},
+                                          data-nacion-curiosidades=${n.curiosidades},
+                                          data-nacion-deidades=${#strings.listJoin(n.deidadIds, ',')},
+                                          data-nacion-razas=${#strings.listJoin(n.razaIds, ',')}"
+                                 th:points="${n.points}" th:fill="${n.color}" th:stroke="${n.color}">
+                            <title th:text="${n.nombre} + ' — clic para abrir su ficha'">nación</title>
+                        </polygon>
+                    </g>
+                    <g class="gm-mapa-nacion__etiqueta">
+                        <text x="355" y="505" data-nacion="Ecla">Ecla</text>
+                        <text x="690" y="370" data-nacion="Ostad">Ostad</text>
+                        <text class="u-fs-15" x="765" y="500" data-nacion="Giladdokx">Giladdokx</text>
+                        <text class="u-fs-13" x="640" y="566" data-nacion="Udrax">Udrax</text>
+                        <text x="560" y="865" data-nacion="Bastrea">Bastrea</text>
+                        <text class="u-fs-15" x="235" y="900" data-nacion="Ascaria">Ascaria</text>
+                        <text x="1235" y="1035" data-nacion="Tabaxi Continental">Tabaxi</text>
+                        <text class="u-fs-13" x="45" y="500" data-nacion="Tabaxi Occidental">Tabaxi</text>
+                        <text class="u-fs-15" x="1195" y="830" data-nacion="Wulcain">Wulcain</text>
+                        <text x="560" y="125" data-nacion="Aeon">Aeon</text>
+                        <text class="u-fs-14" x="80" y="150" data-nacion="Ayashi">Ayashi</text>
+                        <text class="u-fs-14" x="1495" y="150" data-nacion="Mistarium">Mistarium</text>
+                        <text x="1290" y="370" data-nacion="Gongorguma">Gongorguma</text>
+                        <text class="u-fs-14" x="1195" y="625" data-nacion="Ashye">Ashye</text>
+                        <text x="1195" y="120" data-nacion="Nocturnsea">Nocturnsea</text>
+                        <text class="u-fs-15" x="1470" y="900" data-nacion="Esmua">Esmua</text>
+                        <text class="u-fs-14" x="1375" y="670" data-nacion="Bosmurg">Bosmurg</text>
+                        <text class="u-fs-14" x="1370" y="535" data-nacion="Choubar">Choubar</text>
+                    </g>
+
+                    <!-- ============ MARCADORES JUGABLES (las 15 facciones del catálogo) ============ -->
+                    <g th:each="r : ${regiones}" class="gm-mapa-marcador" tabindex="0" role="button"
+                       th:attr="transform='translate(' + ${r.x} + ',' + ${r.y} + ')',
+                                data-panel-source='panel-tpl-' + ${r.id}, data-panel-title=${r.faccionNombre},
+                                data-region-id=${r.id}, data-tiers=${r.tiersCsv}">
+                        <circle r="20" fill="var(--card-frame-bright)" stroke="var(--card-frame)" stroke-width="3"/>
+                        <text class="gm-mapa-emoji u-fs-20" y="1" th:text="${r.icono}">📍</text>
+                        <text class="gm-mapa-etiqueta" y="35" th:text="${r.faccionNombre}">Región</text>
+                    </g>
+
+                    <!-- ============ PUNTOS PERSONALIZADOS (creados a mano, vinculados a
+                         historias/aventuras que no encajan solas en una facción) ============ -->
+                    <g th:each="p : ${puntos}" class="gm-mapa-marcador gm-mapa-marcador--punto" tabindex="0" role="button"
+                       th:attr="transform='translate(' + ${p.x} + ',' + ${p.y} + ')',
+                                data-panel-source='panel-tpl-' + ${p.id}, data-panel-title=${p.nombre},
+                                data-punto-id=${p.id}, data-punto-nombre=${p.nombre}, data-punto-icono=${p.icono},
+                                data-historia-ids=${p.historiaIdsCsv}, data-aventura-ids=${p.aventuraIdsCsv},
+                                data-evento-ids=${p.eventoIdsCsv},
+                                data-tiers=${p.tiersCsv}">
+                        <circle r="18" stroke-width="3"/>
+                        <text class="gm-mapa-emoji u-fs-18" y="1" th:text="${p.icono}">📌</text>
+                        <text class="gm-mapa-etiqueta" y="33" th:text="${p.nombre}">Punto</text>
+                    </g>
+
+                    <!-- ============ CIUDADES (asentamientos con nación, tamaño y rasgos) ============ -->
+                    <g th:each="c : ${ciudades}" class="gm-mapa-marcador gm-mapa-marcador--ciudad" tabindex="0" role="button"
+                       th:attr="transform='translate(' + ${c.x} + ',' + ${c.y} + ')',
+                                data-panel-source='panel-ciudad-' + ${c.id}, data-panel-title=${c.nombre},
+                                data-ciudad-id=${c.id}, data-ciudad-nombre=${c.nombre}, data-ciudad-nacion=${c.nacion},
+                                data-ciudad-tamano=${c.tamano}, data-ciudad-poblacion=${c.poblacion},
+                                data-ciudad-gobernante=${c.gobernante}, data-ciudad-rasgo=${c.rasgo},
+                                data-ciudad-descripcion=${c.descripcion}, data-ciudad-icono=${c.icono},
+                                data-historia-ids=${#strings.listJoin(c.historiaIds, ',')},
+                                data-npc-ids=${#strings.listJoin(c.npcIds, ',')}">
+                        <circle r="16" class="gm-mapa-ciudad__circulo"/>
+                        <text class="gm-mapa-emoji u-fs-17" y="1" th:text="${c.icono}">🏙</text>
+                        <text class="gm-mapa-etiqueta" y="31" th:text="${c.nombre}">Ciudad</text>
+                    </g>
+
+                    <!-- ============ ZONAS DEL TERRENO (montañas, bosques, ruinas...) ============ -->
+                    <g th:each="z : ${zonas}" class="gm-mapa-marcador gm-mapa-marcador--zona" tabindex="0" role="button"
+                       th:attr="transform='translate(' + ${z.x} + ',' + ${z.y} + ')',
+                                data-panel-source='panel-zona-' + ${z.id}, data-panel-title=${z.nombre},
+                                data-zona-id=${z.id}, data-zona-nombre=${z.nombre}, data-zona-tipo=${z.tipo},
+                                data-zona-nacion=${z.nacion}, data-zona-peligro=${z.peligro},
+                                data-zona-descripcion=${z.descripcion},
+                                data-historia-ids=${#strings.listJoin(z.historiaIds, ',')}">
+                        <rect x="-14" y="-14" width="28" height="28" rx="6" transform="rotate(45)" class="gm-mapa-zona__rombo"/>
+                        <text class="gm-mapa-emoji u-fs-16" y="1">⛰</text>
+                        <text class="gm-mapa-etiqueta" y="33" th:text="${z.nombre}">Zona</text>
+                    </g>
+
+                    <!-- Rellenado por el editor de puntos (JS) solo en modo edición -->
+                    <g id="gm-editor-handles"></g>
+                </svg>
+            </div>
+
+            <!-- ============ LEYENDA 4a: panel de foco + capas (doc 5.2) ============
+                 Buscador global arriba, fila de capas estilo GIS, y lista de naciones
+                 con modo foco: clic en una nación = resto atenuado + panel agrupado.
+                 El bloque entero se convierte en panel acoplado (mapa-paneles.js). -->
+            <div id="gm-leyenda-bloque">
+            <input type="text" class="gm-input gm-leyenda-buscar" id="gm-leyenda-buscar"
+                   placeholder="🔍 Buscar nación, ciudad, facción…" autocomplete="off">
+
+            <p class="gm-sidebar__eyebrow u-eyebrow-spaced">Capas</p>
+            <div class="gm-capas" id="gm-capas">
+                <button type="button" class="gm-capa-chip" data-capa="naciones">🏰 Naciones</button>
+                <button type="button" class="gm-capa-chip" data-capa="facciones">📍 Facciones</button>
+                <button type="button" class="gm-capa-chip" data-capa="ciudades">🏙 Ciudades</button>
+                <button type="button" class="gm-capa-chip" data-capa="zonas">⛰ Zonas</button>
+                <button type="button" class="gm-capa-chip" data-capa="puntos">📌 Puntos</button>
+                <button type="button" class="gm-capa-chip" data-capa="eventos">📜 Eventos</button>
+            </div>
+
+            <p class="gm-sidebar__eyebrow u-eyebrow-spaced">Naciones (foco)</p>
+            <div class="gm-leyenda-naciones" id="gm-leyenda-naciones">
+                <div th:each="n,it : ${naciones}" class="gm-leyenda-fila"
+                     th:classappend="${it.index >= 6} ? 'gm-leyenda-extra u-oculto-extra'"
+                     th:attr="data-foco-nacion=${n.nombre}, data-buscable=${n.nombre}">
+                    <i class="gm-mapa-leyenda__swatch" th:style="'background:' + ${n.color}"></i>
+                    <span class="gm-leyenda-fila__nombre" th:text="${n.nombre}">Nación</span>
+                    <span class="gm-leyenda-fila__foco" hidden>· foco</span>
+                    <span class="gm-mapa-leyenda__item gm-leyenda-ojo" th:attr="data-nacion-toggle=${n.nombre}"
+                          title="Mostrar / ocultar en el mapa">👁</span>
+                </div>
+                <button type="button" class="gm-btn gm-btn--outline gm-btn--sm" id="gm-leyenda-mas"
+                        th:if="${#lists.size(naciones) > 6}"
+                        th:text="'…' + ${#lists.size(naciones) - 6} + ' más ▾'">…más ▾</button>
+            </div>
+
+            <!-- Panel de foco: resumen agrupado de lo que hay dentro de la nación -->
+            <div class="gm-foco-panel" id="gm-foco-panel" hidden>
+                <div class="gm-foco-panel__titulo">
+                    <strong id="gm-foco-titulo">📌 Nación en foco</strong>
+                    <button type="button" class="gm-btn gm-btn--outline gm-btn--sm" id="gm-foco-cerrar">× salir del foco</button>
+                </div>
+                <p class="gm-hint u-m-0" id="gm-foco-resumen">—</p>
+            </div>
+
+            <p class="gm-sidebar__eyebrow u-eyebrow-spaced">Facciones jugables</p>
+            <div class="gm-mapa-leyenda">
+                <span th:each="r : ${regiones}" class="gm-mapa-leyenda__item" th:attr="data-region-toggle=${r.faccion},
+                      data-buscable=${r.faccionNombre}"
+                      th:text="${r.icono} + ' ' + ${r.faccionNombre}">icono nombre</span>
+            </div>
+            </div><!-- /gm-leyenda-bloque -->
+
+            <!-- ============ CRONOLOGÍA DEL MUNDO (eventos históricos) ============
+                 El bloque entero se convierte en panel acoplado (mapa-paneles.js). -->
+            <div id="gm-cronologia-bloque">
+            <div class="u-section-heading-row">
+                <p class="gm-sidebar__eyebrow u-reset-space">📜 Cronología del mundo</p>
+                <button type="button" id="gm-editor-nuevo-evento-hist" class="gm-btn gm-btn--outline gm-btn--sm" hidden>➕ Evento histórico</button>
+            </div>
+            <p class="gm-hint" th:if="${#lists.isEmpty(cronologia)}" id="gm-cronologia-vacia">
+                Aún no hay eventos históricos. Activa el modo edición y usa "➕ Evento histórico"
+                para escribir la historia del mundo: guerras, fundaciones, cataclismos...
+            </p>
+            <div id="gm-cronologia">
+                <div th:each="e : ${cronologia}" class="gm-cronologia__item"
+                     th:attr="data-evento-historico-id=${e.id}, data-eh-titulo=${e.titulo}, data-eh-ano=${e.ano},
+                              data-eh-era=${e.era}, data-eh-lugar=${e.lugar}, data-eh-descripcion=${e.descripcion},
+                              data-eh-consecuencias=${e.consecuencias}">
+                    <p>
+                        <span class="gm-cronologia__ano" th:text="'Año ' + ${e.ano}">Año</span>
+                        <strong th:text="${e.titulo}">Título</strong>
+                        <span class="gm-hint" th:if="${!#strings.isEmpty(e.era)}" th:text="' · ' + ${e.era}">era</span>
+                        <span class="gm-hint" th:if="${!#strings.isEmpty(e.lugar)}" th:text="' · 📍 ' + ${e.lugar}">lugar</span>
+                    </p>
+                    <p class="gm-hint" th:if="${!#strings.isEmpty(e.descripcion)}" th:text="${e.descripcion}">descripción</p>
+                    <p class="gm-hint" th:if="${!#strings.isEmpty(e.consecuencias)}"
+                       th:text="'Hoy queda: ' + ${e.consecuencias}">consecuencias</p>
+                    <span class="gm-eh-acciones" hidden>
+                        <button type="button" class="gm-btn gm-btn--outline gm-btn--sm gm-eh-editar">✏️</button>
+                        <button type="button" class="gm-btn gm-btn--danger gm-btn--sm gm-eh-eliminar">🗑️</button>
+                    </span>
+                </div>
+            </div>
+            </div><!-- /gm-cronologia-bloque -->
+
+            <!-- Lugares del mundo para el campo "dónde" de los eventos históricos -->
+            <datalist id="gm-lugares-datalist">
+                <option th:each="n : ${naciones}" th:value="${n.nombre}"></option>
+                <option th:each="c : ${ciudades}" th:value="${c.nombre}"></option>
+                <option th:each="z : ${zonas}" th:value="${z.nombre}"></option>
+            </datalist>
+
+            <div id="gm-editor-export-panel" class="gm-editor-export" hidden>
+                <p class="gm-hint">
+                    Mismo JSON que espera <code>POST /mapa/guardar</code> — pégalo tal cual en
+                    <code>data/mapa/geografia.json</code> si el guardado automático fallara.
+                </p>
+                <textarea id="gm-editor-export-text" readonly></textarea>
+            </div>
+        </main>
+    </div>
+    <div th:replace="~{Blocks/footer-v2 :: footer}"></div>
+</div>
+
+<div id="gm-panel-backdrop" class="gm-panel-backdrop" data-panel-close></div>
+<div id="gm-panel-preview" class="gm-panel" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="gm-panel__header">
+        <h3 class="gm-panel__title" id="gm-panel-preview-title">Región</h3>
+        <button type="button" class="gm-panel__close" data-panel-close aria-label="Cerrar">✕</button>
+    </div>
+    <div class="gm-panel__body" id="gm-panel-preview-body"></div>
+</div>
+
+<template th:each="r : ${regiones}" th:id="'panel-tpl-' + ${r.id}">
+    <p class="gm-hint" th:text="${r.location} + ' · ' + ${r.totalHistorias} + ' historias'">lugar · n historias</p>
+
+    <div class="gm-panel-section is-expanded">
+        <button type="button" class="gm-panel-section__toggle">Tramas ▾</button>
+        <div class="gm-panel-section__content">
+            <div class="u-mb-sp3" th:each="entry : ${r.historiasPorTrama}">
+                <p><strong th:text="${#strings.replace(entry.key, '_', ' ')}">trama</strong></p>
+                <p th:each="h : ${entry.value}">
+                    <a th:href="@{/historias/{id}(id=${h.id})}" th:text="'Escalón ' + ${h.chain.step} + ' · ' + ${h.title}">historia</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="gm-panel-section" th:if="${!#lists.isEmpty(r.monstruos)}">
+        <button type="button" class="gm-panel-section__toggle">Monstruos ▾</button>
+        <div class="gm-panel-section__content">
+            <a th:each="m : ${r.monstruos}" th:href="@{/cartas/enemigos/{id}(id=${m.id})}"
+class="gm-badge u-chip-link" th:text="${m.name}">monstruo</a>
+        </div>
+    </div>
+
+    <div class="gm-panel-section" th:if="${!#lists.isEmpty(r.tesoros)}">
+        <button type="button" class="gm-panel-section__toggle">Tesoros ▾</button>
+        <div class="gm-panel-section__content">
+            <a th:each="t : ${r.tesoros}" th:href="@{/tesoros/{id}(id=${t.id})}"
+class="gm-badge u-chip-link" th:text="${t.name}">tesoro</a>
+        </div>
+    </div>
+
+    <div class="gm-panel-section" th:if="${!#lists.isEmpty(r.npcs)}">
+        <button type="button" class="gm-panel-section__toggle">PNJs ▾</button>
+        <div class="gm-panel-section__content">
+            <a th:each="n : ${r.npcs}" th:href="@{/npcs/{id}(id=${n.id})}"
+class="gm-badge u-chip-link" th:text="${n.name}">pnj</a>
+        </div>
+    </div>
+
+    <div class="gm-panel-section" th:if="${!#lists.isEmpty(r.aventuras)}">
+        <button type="button" class="gm-panel-section__toggle">Aventuras ▾</button>
+        <div class="gm-panel-section__content">
+            <a th:each="a : ${r.aventuras}" th:href="@{/aventuras/{id}(id=${a.id})}"
+class="gm-badge u-chip-link" th:text="${a.nom}">aventura</a>
+        </div>
+    </div>
+
+    <div class="gm-panel-section" th:if="${!#lists.isEmpty(r.eventos)}">
+        <button type="button" class="gm-panel-section__toggle">Eventos ▾</button>
+        <div class="gm-panel-section__content">
+            <a th:each="e : ${r.eventos}" th:href="@{/eventos/{id}(id=${e.id})}"
+class="gm-badge u-chip-link" th:text="${e.name}">evento</a>
+        </div>
+    </div>
+</template>
+
+<!-- ============ PANELES DE PUNTOS PERSONALIZADOS ============ -->
+<template th:each="p : ${puntos}" th:id="'panel-tpl-' + ${p.id}">
+    <p class="gm-hint" th:text="'Punto personalizado · ' + ${#lists.size(p.historias)} + ' historias · ' + ${#lists.size(p.aventuras)} + ' aventuras · ' + ${#lists.size(p.eventos)} + ' eventos'">punto</p>
+
+    <div class="gm-panel-section is-expanded" th:if="${!#lists.isEmpty(p.historias)}">
+        <button type="button" class="gm-panel-section__toggle">Historias ▾</button>
+        <div class="gm-panel-section__content">
+            <a th:each="h : ${p.historias}" th:href="@{/historias/{id}(id=${h.id})}"
+class="gm-badge u-chip-link" th:text="${h.title}">historia</a>
+        </div>
+    </div>
+
+    <div class="gm-panel-section is-expanded" th:if="${!#lists.isEmpty(p.aventuras)}">
+        <button type="button" class="gm-panel-section__toggle">Aventuras ▾</button>
+        <div class="gm-panel-section__content">
+            <a th:each="a : ${p.aventuras}" th:href="@{/aventuras/{id}(id=${a.id})}"
+class="gm-badge u-chip-link" th:text="${a.nom}">aventura</a>
+        </div>
+    </div>
+
+    <div class="gm-panel-section is-expanded" th:if="${!#lists.isEmpty(p.eventos)}">
+        <button type="button" class="gm-panel-section__toggle">Eventos ▾</button>
+        <div class="gm-panel-section__content">
+            <a th:each="e : ${p.eventos}" th:href="@{/eventos/{id}(id=${e.id})}"
+class="gm-badge u-chip-link" th:text="${e.name}">evento</a>
+        </div>
+    </div>
+
+    <div class="gm-panel-section is-expanded gm-punto-editor" th:attr="data-punto-id=${p.id}">
+        <button type="button" class="gm-panel-section__toggle">✏️ Editar vínculos ▾</button>
+        <div class="gm-panel-section__content">
+            <p class="gm-hint u-mt-0">Historias vinculadas</p>
+            <div class="gm-punto-editor__historias"></div>
+            <div class="gm-punto-editor__add-row">
+                <input type="text" list="gm-historia-datalist" class="gm-input gm-punto-editor__input" placeholder="Buscar historia por título…">
+                <button type="button" class="gm-btn gm-btn--outline gm-btn--sm gm-punto-editor__add-historia">+ Añadir</button>
+            </div>
+
+            <p class="gm-hint">Aventuras vinculadas</p>
+            <div class="gm-punto-editor__aventuras"></div>
+            <div class="gm-punto-editor__add-row">
+                <input type="text" list="gm-aventura-datalist" class="gm-input gm-punto-editor__input" placeholder="Buscar aventura por nombre…">
+                <button type="button" class="gm-btn gm-btn--outline gm-btn--sm gm-punto-editor__add-aventura">+ Añadir</button>
+            </div>
+
+            <p class="gm-hint">Eventos vinculados</p>
+            <div class="gm-punto-editor__eventos"></div>
+            <div class="gm-punto-editor__add-row">
+                <input type="text" list="gm-evento-datalist" class="gm-input gm-punto-editor__input" placeholder="Buscar evento por nombre…">
+                <button type="button" class="gm-btn gm-btn--outline gm-btn--sm gm-punto-editor__add-evento">+ Añadir</button>
+            </div>
+
+            <div class="gm-punto-editor__acciones">
+                <button type="button" class="gm-btn gm-btn--outline gm-btn--sm gm-punto-editor__renombrar">✏️ Renombrar</button>
+                <button type="button" class="gm-btn gm-btn--danger gm-btn--sm gm-punto-editor__eliminar">🗑️ Eliminar punto</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- ============ PANELES DE CIUDADES ============ -->
+<template th:each="c : ${ciudades}" th:id="'panel-ciudad-' + ${c.id}">
+    <p class="gm-hint" th:text="${c.icono} + ' ' + ${#strings.capitalize(c.tamano)} + ' · ' + ${c.nacion}
+                                 + (${!#strings.isEmpty(c.poblacion)} ? ' · ' + ${c.poblacion} + ' hab.' : '')">tamaño · nación</p>
+
+    <div class="gm-panel-section is-expanded" th:if="${!#strings.isEmpty(c.descripcion) or !#strings.isEmpty(c.rasgo) or !#strings.isEmpty(c.gobernante)}">
+        <button type="button" class="gm-panel-section__toggle">La ciudad ▾</button>
+        <div class="gm-panel-section__content">
+            <p th:if="${!#strings.isEmpty(c.gobernante)}"><strong>Gobierna:</strong> <span th:text="${c.gobernante}">gobernante</span></p>
+            <p th:if="${!#strings.isEmpty(c.rasgo)}"><strong>Rasgo:</strong> <span th:text="${c.rasgo}">rasgo</span></p>
+            <p th:if="${!#strings.isEmpty(c.descripcion)}" th:text="${c.descripcion}">descripción</p>
+        </div>
+    </div>
+
+    <div class="gm-panel-section is-expanded gm-ciudad-editor" th:attr="data-ciudad-id=${c.id}">
+        <button type="button" class="gm-panel-section__toggle">✏️ Editar ciudad ▾</button>
+        <div class="gm-panel-section__content">
+            <p class="gm-hint u-mt-0">Historias que ocurren aquí</p>
+            <div class="gm-ciudad-editor__historias"></div>
+            <div class="gm-punto-editor__add-row">
+                <input type="text" list="gm-historia-datalist" class="gm-input gm-punto-editor__input" placeholder="Buscar historia por título…">
+                <button type="button" class="gm-btn gm-btn--outline gm-btn--sm gm-ciudad-editor__add-historia">+ Añadir</button>
+            </div>
+
+            <p class="gm-hint">PNJs de la ciudad</p>
+            <div class="gm-ciudad-editor__npcs"></div>
+            <div class="gm-punto-editor__add-row">
+                <input type="text" list="gm-npc-datalist" class="gm-input gm-punto-editor__input" placeholder="Buscar PNJ por nombre…">
+                <button type="button" class="gm-btn gm-btn--outline gm-btn--sm gm-ciudad-editor__add-npc">+ Añadir</button>
+            </div>
+
+            <div class="gm-punto-editor__acciones">
+                <button type="button" class="gm-btn gm-btn--outline gm-btn--sm gm-ciudad-editor__editar-campos">✏️ Nombre y detalles</button>
+                <button type="button" class="gm-btn gm-btn--danger gm-btn--sm gm-ciudad-editor__eliminar">🗑️ Eliminar ciudad</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Paneles de las zonas del terreno (montañas, bosques, ruinas...) -->
+<template th:each="z : ${zonas}" th:id="'panel-zona-' + ${z.id}">
+    <p class="gm-hint" th:text="${#strings.capitalize(z.tipo)}
+                                 + (${!#strings.isEmpty(z.nacion)} ? ' · ' + ${z.nacion} : '')">tipo · nación</p>
+
+    <div class="gm-panel-section is-expanded" th:if="${!#strings.isEmpty(z.descripcion) or !#strings.isEmpty(z.peligro)}">
+        <button type="button" class="gm-panel-section__toggle">El lugar ▾</button>
+        <div class="gm-panel-section__content">
+            <p th:if="${!#strings.isEmpty(z.peligro)}"><strong>Peligro:</strong> <span th:text="${z.peligro}">peligro</span></p>
+            <p th:if="${!#strings.isEmpty(z.descripcion)}" th:text="${z.descripcion}">descripción</p>
+        </div>
+    </div>
+
+    <div class="gm-panel-section is-expanded gm-zona-editor" th:attr="data-zona-id=${z.id}">
+        <button type="button" class="gm-panel-section__toggle">✏️ Editar zona ▾</button>
+        <div class="gm-panel-section__content">
+            <p class="gm-hint u-mt-0">Historias que ocurren aquí</p>
+            <div class="gm-zona-editor__historias"></div>
+            <div class="gm-punto-editor__add-row">
+                <input type="text" list="gm-historia-datalist" class="gm-input gm-punto-editor__input" placeholder="Buscar historia por título…">
+                <button type="button" class="gm-btn gm-btn--outline gm-btn--sm gm-zona-editor__add-historia">+ Añadir</button>
+            </div>
+
+            <div class="gm-punto-editor__acciones">
+                <button type="button" class="gm-btn gm-btn--outline gm-btn--sm gm-zona-editor__editar-campos">✏️ Nombre y detalles</button>
+                <button type="button" class="gm-btn gm-btn--danger gm-btn--sm gm-zona-editor__eliminar">🗑️ Eliminar zona</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Panel de nación: el contenido se construye en JS al abrirlo (ciudades/zonas dentro
+     del territorio se calculan al vuelo con point-in-polygon; la identidad sale de los
+     data-* del propio polígono). El template vacío es el gancho para panels.js. -->
+<template id="gm-panel-nacion-dinamico"></template>
+
+<!-- Diálogo modal del editor del mapa: formularios con desplegables de verdad.
+     Sustituye a los prompt() encadenados, que invitaban a rellenar basura
+     ("nacion": "No", "poblacion": "sdff") porque todo era texto libre. -->
+<div id="gm-dialogo-fondo" class="gm-dialogo-fondo" hidden></div>
+<div id="gm-dialogo" class="gm-dialogo" role="dialog" aria-modal="true" hidden>
+    <h3 id="gm-dialogo-titulo" class="gm-dialogo__titulo">Editar</h3>
+    <div id="gm-dialogo-campos"></div>
+    <div class="gm-dialogo__acciones">
+        <button type="button" id="gm-dialogo-cancelar" class="gm-btn gm-btn--outline">Cancelar</button>
+        <button type="button" id="gm-dialogo-ok" class="gm-btn gm-btn--primary">Guardar</button>
+    </div>
+</div>
+
+<!-- Dioses y razas para el panel de nación: se eligen de lista, nunca a mano -->
+<datalist id="gm-deidad-datalist">
+    <option th:each="d : ${deidadesResumen}" th:value="${d.nombre} + ' [' + ${d.id} + ']'"></option>
+</datalist>
+<datalist id="gm-raza-datalist">
+    <option th:each="r : ${razasResumen}" th:value="${r.nombre} + ' [' + ${r.id} + ']'"></option>
+</datalist>
+
+<!-- Datalist de PNJs para vincular a ciudades (mismo patrón que historia/aventura/evento) -->
+<datalist id="gm-npc-datalist">
+    <option th:each="n : ${npcsResumen}" th:value="${n.nombre} + ' [' + ${n.id} + ']'"></option>
+</datalist>
+
+<!-- Buscadores compartidos por todos los editores de punto (una sola lista en el DOM,
+     no una copia por punto): el valor de cada opción lleva el id entre corchetes al
+     final, que es lo que el editor de puntos extrae al añadir un vínculo. -->
+<datalist id="gm-historia-datalist">
+    <option th:each="h : ${historiasResumen}" th:value="${h.titulo} + ' [' + ${h.id} + ']'" th:attr="data-tiers=${h.tiers}"></option>
+</datalist>
+<datalist id="gm-aventura-datalist">
+    <option th:each="a : ${aventurasResumen}" th:value="${a.nombre} + ' [' + ${a.id} + ']'"></option>
+</datalist>
+<datalist id="gm-evento-datalist">
+    <option th:each="e : ${eventosResumen}" th:value="${e.nombre} + ' [' + ${e.id} + ']'" th:attr="data-tiers=${e.tier}"></option>
+</datalist>
+
+<script th:src="@{/js/theme.js}"></script>
+<script th:src="@{/js/panels.js}"></script>
+
+<!-- ============ MÒDULS DEL MAPA MUNDI ============
+     La lògica viu a static/js/mapa/, un fitxer per responsabilitat, amb l'estat
+     compartit a l'espai de noms window.GMMapa (veure mapa-nucleo.js).
+     L'ordre importa: nucli primer, arrencada l'últim.
+     Doc: Mapa_Mundi_Requisitos.md §9 i §12. -->
+<script th:src="@{/js/mapa/mapa-nucleo.js}"></script>
+<script th:src="@{/js/mapa/mapa-filtros.js}"></script>
+<script th:src="@{/js/mapa/mapa-puntos.js}"></script>
+<script th:src="@{/js/mapa/mapa-vertices.js}"></script>
+<script th:src="@{/js/mapa/mapa-borrador.js}"></script>
+<script th:src="@{/js/mapa/mapa-dialogo.js}"></script>
+<script th:src="@{/js/mapa/mapa-ciudades.js}"></script>
+<script th:src="@{/js/mapa/mapa-zonas.js}"></script>
+<script th:src="@{/js/mapa/mapa-cronologia.js}"></script>
+<script th:src="@{/js/mapa/mapa-nacion.js}"></script>
+<script th:src="@{/js/mapa/mapa-teclado.js}"></script>
+<script th:src="@{/js/mapa/mapa-leyenda.js}"></script>
+<script th:src="@{/js/mapa/mapa-init.js}"></script>
+<!-- Paneles modulares superpuestos: se cargan al final para mover los bloques
+     ya inicializados (los listeners se conservan al recolocar nodos). -->
+<script th:src="@{/js/paneles-overlay.js}"></script>
+<script th:src="@{/js/mapa-paneles.js}"></script>
+</body>
+</html>

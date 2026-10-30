@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<!--
+    Layout derivat de layout-gm per a la ficha de personaje (personatges/detall.html).
+    Diferències respecte a layout-gm:
+      - header, sidebar i footer duen class="no-print" perquè no surtin a la impressió
+        (aquesta és l'única pàgina amb botó "Imprimir ficha").
+      - Conserva els mateixos 4 fragments: title, extra-css, content, extra-js.
+    Qualsevol canvi estructural del layout base s'ha de replicar aquí a mà.
+-->
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title layout:fragment="title">ONEGAI</title>
+    <link th:href="@{/css/tokens.css}" rel="stylesheet">
+    <link th:href="@{/css/base.css}" rel="stylesheet">
+    <link th:href="@{/css/components.css}" rel="stylesheet">
+    <link th:href="@{/css/utilities.css}" rel="stylesheet">
+    <th:block layout:fragment="extra-css"></th:block>
+</head>
+<body>
+<div class="gm-app">
+    <div class="no-print" th:insert="~{Blocks/header-v2 :: header}"></div>
+    <div class="gm-body">
+        <div class="no-print" th:insert="~{Blocks/sidebar-v2 :: sidebar}"></div>
+        <main class="gm-main" layout:fragment="content">
+            <!-- Cada página inyecta aquí su contenido. -->
+        </main>
+    </div>
+    <div class="no-print" th:insert="~{Blocks/footer-v2 :: footer}"></div>
+</div>
+<script th:src="@{/js/theme.js}"></script>
+<script th:src="@{/js/panels.js}"></script>
+<script th:src="@{/js/image-slot.js}"></script>
+<th:block layout:fragment="extra-js"></th:block>
+<!-- Toast "✓ guardado" (igual que layout-gm.html). -->
+<div id="gm-toast" class="gm-toast no-print" hidden>✓ Guardado</div>
+<script>
+(function(){var p=new URLSearchParams(location.search);if(p.get('guardado')==='1'){
+var t=document.getElementById('gm-toast');if(t){t.hidden=false;
+requestAnimationFrame(function(){t.classList.add('is-visible')});
+setTimeout(function(){t.classList.remove('is-visible');
+setTimeout(function(){t.hidden=true},300)},2500)}
+try{history.replaceState(null,'',location.pathname)}catch(e){}}})();
+</script>
+</body>
+</html>

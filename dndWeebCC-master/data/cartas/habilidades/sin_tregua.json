@@ -1,0 +1,55 @@
+{
+ "id": "sin_tregua",
+ "name": "Sin Tregua",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Chasquido tras chasquido, sin darle un respiro: 4d6 de daño arcano, y sin tregua se defiende con desventaja 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "mago_chasqueador"
+ ],
+ "roleTags": [],
+ "tags": [
+  "mago_chasqueador",
+  "creador",
+  "Arcano"
+ ],
+ "mechanicTags": [
+  "Arcano",
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "2 turnos",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": "INT",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Chasquido tras chasquido, sin darle un respiro: 4d6 de daño arcano, y sin tregua se defiende con desventaja 2 turnos.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "4d6 de daño arcano.",
+   "mechanicHook": "dano:4d6"
+  },
+  {
+   "description": "Sin tregua: se defiende con desventaja 2 turnos.",
+   "mechanicHook": "estado:2:desventaja:defensa"
+  }
+ ]
+}

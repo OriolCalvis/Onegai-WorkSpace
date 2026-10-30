@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "MotorGraphico — ciclo de vida de una escena y transición diferida (ADR-009)",
+    "quality_profile": "standard"
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "Scene — ciclo de vida"
+    },
+    {
+      "id": "gestor",
+      "label": "SceneManager — petición diferida y fallo"
+    }
+  ],
+  "states": [
+    {
+      "id": "vacia",
+      "type": "start",
+      "label": "Pila vacía",
+      "sublabel": "SceneManager() construido",
+      "lane": "main",
+      "col": 0,
+      "step": "0"
+    },
+    {
+      "id": "carga",
+      "type": "active",
+      "label": "load()",
+      "sublabel": "la entrante carga sola",
+      "lane": "main",
+      "col": 1,
+      "step": "1"
+    },
+    {
+      "id": "activa",
+      "type": "active",
+      "label": "Activa",
+      "sublabel": "onEnter · update · render",
+      "lane": "main",
+      "col": 2,
+      "step": "2"
+    },
+    {
+      "id": "pausada",
+      "type": "waiting",
+      "label": "Pausada",
+      "sublabel": "onPause() bajo un overlay",
+      "lane": "main",
+      "col": 3,
+      "step": "3"
+    },
+    {
+      "id": "salida",
+      "type": "success",
+      "label": "onExit()",
+      "sublabel": "unique_ptr liberado",
+      "lane": "main",
+      "col": 4,
+      "step": "4"
+    },
+    {
+      "id": "peticion",
+      "type": "decision",
+      "label": "Petición",
+      "sublabel": "Replace · Push · Pop",
+      "tag": "1 por frame",
+      "lane": "gestor",
+      "col": 1,
+      "width": 90
+    },
+    {
+      "id": "fallo",
+      "type": "failure",
+      "label": "load() falla",
+      "sublabel": "Result::Error",
+      "lane": "gestor",
+      "col": 2,
+      "width": 90
+    }
+  ],
+  "transitions": [
+    {
+      "id": "t1",
+      "from": "vacia",
+      "to": "carga",
+      "label": "start",
+      "variant": "emphasis",
+      "labelDy": 55
+    },
+    {
+      "id": "t2",
+      "from": "carga",
+      "to": "activa",
+      "label": "load OK",
+      "variant": "emphasis",
+      "labelDy": 55
+    },
+    {
+      "id": "t3",
+      "from": "activa",
+      "to": "peticion",
+      "label": "request…",
+      "labelDx": -46
+    },
+    {
+      "id": "t4",
+      "from": "peticion",
+      "to": "activa",
+      "label": "apply()",
+      "variant": "emphasis",
+      "labelDx": 46
+    },
+    {
+      "id": "t5",
+      "from": "peticion",
+      "to": "fallo",
+      "label": "Error",
+      "variant": "security"
+    },
+    {
+      "id": "t6",
+      "from": "fallo",
+      "to": "activa",
+      "label": "se descarta",
+      "note": "recuperable: la escena anterior queda intacta",
+      "variant": "dashed",
+      "route": "bottom-channel",
+      "fromSide": "bottom",
+      "toSide": "bottom"
+    },
+    {
+      "id": "t7",
+      "from": "activa",
+      "to": "pausada",
+      "label": "Push",
+      "labelDy": 55
+    },
+    {
+      "id": "t8",
+      "from": "pausada",
+      "to": "activa",
+      "label": "Pop",
+      "labelDy": -30
+    },
+    {
+      "id": "t9",
+      "from": "activa",
+      "to": "salida",
+      "label": "onExit",
+      "variant": "emphasis",
+      "route": "top-channel",
+      "fromSide": "top",
+      "toSide": "top",
+      "labelDy": -30
+    },
+    {
+      "id": "t10",
+      "from": "pausada",
+      "to": "salida",
+      "label": "Pop",
+      "variant": "dashed",
+      "labelDy": 55
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Por qué diferida",
+      "items": [
+        "Un cambio inmediato dentro de update() destruiría la escena mientras se ejecuta y dejaría referencias colgantes",
+        "Solo se admite una petición por frame: el orden observable queda fijado y un overlay no encadena dos ciclos",
+        "applyPendingTransition() se llama en finishSceneFrame(), al final del frame, nunca desde update()"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "El fallo es recuperable",
+      "items": [
+        "La escena entrante hace load() antes de pausar o retirar la actual",
+        "Si load() devuelve Error, la petición se descarta y la pila queda intacta",
+        "Application lo notifica: «No se pudo abrir el escenario» en el título o «No se pudo cambiar de nivel» en la partida"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Adaptador ApplicationScene",
+      "items": [
+        "name() devuelve «Title» o «Game»; mapId() queda vacío para overlays",
+        "En Title, fixedUpdate no ejecuta el tick de la partida: if (!m_title) m_tick(dt)",
+        "El cierre es SceneManager::shutdown() en Application::shutdown(), antes de soltar los recursos GL"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+ "id": "paladin_del_juramento_juicio_del_martillo",
+ "name": "Juicio del martillo",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "El Padre de la Forja juzga con tu martillo: 4d6 de daño de fuego y aturdimiento 1 turno (no ataca y se defiende con desventaja).",
+ "flavorText": "",
+ "classTags": [
+  "paladin_del_juramento"
+ ],
+ "roleTags": [],
+ "tags": [
+  "paladin_del_juramento",
+  "creador",
+  "Fuego"
+ ],
+ "mechanicTags": [
+  "Fuego",
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": "CAR",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "El Padre de la Forja juzga con tu martillo: 4d6 de daño de fuego y aturdimiento 1 turno (no ataca y se defiende con desventaja).",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "4d6 de daño de fuego.",
+   "mechanicHook": "dano:4d6"
+  },
+  {
+   "description": "Aturdido: no ataca.",
+   "mechanicHook": "estado:1:incapacitado"
+  },
+  {
+   "description": "Aturdido: se defiende con desventaja.",
+   "mechanicHook": "estado:1:desventaja:defensa"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "Propia · Paladín del Juramento"
+}

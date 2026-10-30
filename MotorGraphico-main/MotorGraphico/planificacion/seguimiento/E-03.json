@@ -1,0 +1,58 @@
+{
+  "id": "E-03",
+  "date": "2026-09-12",
+  "author": "TRAE (Cowork) — Implementacion existente + tests nuevos",
+  "status": "Implementat i verificat localment; CI remot pendent",
+  "actions": [
+    "Existencia PREVIA confirmada: EventInterpreter.h/cpp ya tienen el interprete completo con todos los requisitos E-03: start/tick/cancel/cancelAll/isRunning/active/runs/collectFinished/blocksPlayer/canSave",
+    "6 estados de EventRunState: Ready -> Running <-> Waiting -> Finished / Cancelled / Failed",
+    "CommandOutcome: Done, Wait (con waitMs o abierto host-resuelto), Branch, EndEvent (DEC-30), Failed con diagnostico",
+    "Interfaz EventHost abstracta: execute() + waitResolved() virtual (permite probar el interprete SIN un solo comando real)",
+    "Ejecuciones vivas guardan copia propia del MapEventDocument (unique_ptr<Execution>) para que el documento bajo los pies no invalide punteros a comandos — evita mover punteros al realloc",
+    "Presupuesto por tick: kCommandsPerTick = 64 — secuencia larga no congela un frame",
+    "Orden determinista de ejecuciones: en orden de arranque, reproducible para debugar",
+    "No reentrada: start() falla si isRunning(eventId) — una misma interaccion no entrega recompensa 5 veces",
+    "DEC-30: EndEvent termina evento LOCAL inmediatamente, lo que queda detras es inalcanzable",
+    "DEC-09: canSave() = active().empty() — no se guarda con evento a medias",
+    "Parallel vs blocking: solo los no-paralelos cuentan en blocksPlayer()",
+    "Ramas: Branch con indice fuera de rango NO es error (si sin sino)",
+    "Fix CMake: src/RPG/EventInterpreter.cpp NO estaba en libreria motor_rpg (solo en lista de headers). Anadida la linea al CMakeLists.txt. El target existia en el include de cmake subido por otro agente, pero sin el .cpp linkeaba sin simbolos.",
+    "Fix CMake CatalogValidationTests.cmake: add_dependencies(suite_gl_free catalog_content_validation) referenciaba un TEST (add_test) como si fuera un TARGET ejecutable. Eliminado el add_dependencies roto — catalog_content_validation sigue existiendo como test registrado en MOTOR_GL_FREE_TARGETS."
+  ],
+  "verification": [
+    "Compilado: make test_event_interpreter sin errores (solo ld: duplicate libmotor_json.a / libmotor_map_document.a, benigno y presente en todos los tests)",
+    "14/14 tests PASADOS en test_event_interpreter:",
+    "1. arrancar_un_evento_sencillo_se_ejecuta_entero_en_un_tick",
+    "2. no_se_puede_arrancar_el_mismo_evento_mientras_esta_activo",
+    "3. una_pagina_inexistente_no_arranca",
+    "4. una_espera_por_tiempo_no_avanza_hasta_pasarlo",
+    "5. una_espera_abierta_se_resuelve_por_el_anfitrion",
+    "6. un_comando_de_control_ramifica_por_el_branch_indicado",
+    "7. ramificacion_fuera_de_rango_no_es_error_solo_salta_la_rama",
+    "8. end_event_termina_el_evento_local_decisiva_mente_DEC_30",
+    "9. un_comando_fallido_detiene_la_ejecucion_con_diagnostico",
+    "10. cancelar_una_ejecucion_viva_no_deshace_lo_hecho",
+    "11. eventos_paralelos_no_bloquean_al_jugador_DEC_09",
+    "12. presupuesto_por_tick_no_deja_que_una_secuencia_larga_congele_el_frame",
+    "13. orden_de_ejecuciones_simultaneas_es_determinista",
+    "14. collectFinished_borra_las_terminadas_de_la_lista_publica"
+  ],
+  "pending": [
+    "CI remot (ctest workflow): aun no se ha hecho push ni ctest remoto",
+    "E-04 (El joc de comandes) es quien implementa EventHost de verdad: los comandos texto.mostrar, mapa.ir, recompensa.entregar etc usan la interfaz aqui definida. Este paquete solo expone el HUESO (planificador + contrato).",
+    "E-05 (Seleccionar la pagina correcta) usara start() con el pageIndex de la pagina elegida; E-03 no decide cual.",
+    "F-03 (Recarga en calent) tocara cancelAll() + volver a cargar eventos; E-03 no guarda/restituye programa serializado."
+  ],
+  "caveats": [
+    "Se modifico CMakeLists.txt en dos sitios (anadir src/RPG/EventInterpreter.cpp a motor_rpg; ya estaba include(cmake/EventInterpreterTests.cmake) linea 651). Eliminado add_dependencies roto en CatalogValidationTests.cmake. Si hay conflictos de merge al hacer pull hay que mirar esas 3 lineas.",
+    "los tests usan host doble sin logica real: E-04 tocara integrar con el mundo real, y aqui solo hay que mantener la interfaz EventHost."
+  ],
+  "files_changed": [
+    "MotorGraphico/include/RPG/EventInterpreter.h (declaracion API + notas de diseño DEC-09/DEC-30)",
+    "MotorGraphico/src/RPG/EventInterpreter.cpp (implementacion del planificador: stepOne, applyResult, finish, pila de marcos)",
+    "MotorGraphico/CMakeLists.txt — anadida linea src/RPG/EventInterpreter.cpp en add_library(motor_rpg) (antes faltaba el .cpp en la libreria!)",
+    "MotorGraphico/tests/RPG/EventInterpreterTests.cpp — 14 casos de prueba, host doble de prueba SIN comandos reales",
+    "MotorGraphico/cmake/EventInterpreterTests.cmake — target test_event_interpreter, suite_gl_free, labels gl-free",
+    "MotorGraphico/cmake/CatalogValidationTests.cmake — RETIRADO add_dependencies(suite_gl_free catalog_content_validation) que referenciaba TEST como TARGET, rompiendo cmake configure"
+  ]
+}

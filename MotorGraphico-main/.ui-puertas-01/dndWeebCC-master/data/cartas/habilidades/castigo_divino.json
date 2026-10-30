@@ -1,0 +1,48 @@
+{
+ "id": "castigo_divino",
+ "name": "Castigo Divino",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Aplicas 1d6 de daño de luz durante 3 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "furia_de_los_creadores"
+ ],
+ "roleTags": [],
+ "tags": [
+  "furia_de_los_creadores"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "3 turnos",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": "resistencia_fisica",
+ "magnitudeByDegree": {
+  "1": "1d6"
+ },
+ "effect": {
+  "description": "Aplicas 1d6 de daño de luz durante 3 turnos.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "Aplicas 1d6 de daño de luz durante 3 turnos.",
+   "mechanicHook": "estado:3:dano_por_turno:1d6"
+  }
+ ]
+}

@@ -1,0 +1,23 @@
+{
+ "id": "COMBATE-BG3-10",
+ "date": "2026-10-14",
+ "author": "claude (Cowork)",
+ "status": "HECHO — AV13-14: las áreas en el combate, con las plantillas de ChatGPT (AV13-08). Pillan a todos los de dentro, aliados incluidos, y se ven en el suelo antes de confirmar.",
+ "origen": "COMBATE_BG3.md §5, D0014 §7.1. Oriol (11:30): «Quan les entregui, faig les àrees al combat (AV13-14)».",
+ "actions": [
+  "Integradas las plantillas de ChatGPT (out/chatgpt_av13-08): PlantillaArea.{h,cpp}, su prueba (20 casos) y su cmake. No hay que aplicar su rama aparte: van en este paquete.",
+  "Game::AreaDeCarta (nuevo, AlcanceCartas.cpp): la forma de cada carta de área, deducida (zona: círculo radio 1 o el del texto, 5 pies por casilla; todos los enemigos: radio 2; «línea»/«cono» desde quien la lanza; «a tu alrededor», en ti).",
+  "La mesa (CartasEnCombate::enElArea): con tablero, la carta pilla a todos los que estén en pie dentro, de los dos bandos, menos quien la lanza; una tirada por blanco (también contra un aliado).",
+  "La barra: con tablero, «todos los enemigos» se apunta a un enemigo; los de dentro se marcan en la tira de retratos.",
+  "El suelo (SueloCombate::area, PergaminoGL): las casillas del área apuntada, en carmín.",
+  "Los muros cortan el area (12:31, Oriol): Game::esMuro (no se pisa y no hay nadie) se pasa a la plantilla en la mesa (ContextoBatalla::muro) y en el suelo; prueba en test_g13_combat_commands."
+ ],
+ "verification": [
+  "Sonda tactico: t_area.png (Escalofrío del espíritu señalada: el área alrededor del saqueador).",
+  "test_cartas_combate 57/57 (1 nueva: la bola de fuego quema a Venides, que está al lado del lobo, y no al lobo gris), test_g13_combat_commands 6/6 (1 nueva: la forma de cada carta), test_plantilla_area 20/20; ctest gl-free 219/222 (los tres de siempre), GL 11/11; linea_base_core 0 de deuda nueva."
+ ],
+ "sesion": "sesiones/2026-10-14-claude-combate-casillas.md",
+ "pending": [
+  "La forma real de cada carta la tienen que decir las cartas (AV13-09, aguas arriba); hoy se deduce del texto."
+ ]
+}

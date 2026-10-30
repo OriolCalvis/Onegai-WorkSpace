@@ -1,0 +1,26 @@
+{
+ "id": "suelo_de_escarcha_cantora_mejorada",
+ "name": "Suelo de Escarcha Cantora Mejorada",
+ "type": "trap",
+ "tier": 2,
+ "rarity": "uncommon",
+ "category": "mágica",
+ "trigger": "correr sobre el hielo grabado",
+ "detection": {
+  "stat": "INT",
+  "cd": 1
+ },
+ "disarm": {
+  "stat": "DES",
+  "cd": 1,
+  "herramienta": null
+ },
+ "effect": {
+  "description": "Resbalón musical: Caído y la melodía delata la posición. (escala: +1 de daño en este tier)",
+  "defensa": "defensa_mental",
+  "condicionInfligida": "caido"
+ },
+ "onFail": "El hielo se abre: Agarrado en agua helada, 1 de frío por ronda.",
+ "reset": "persistente",
+ "flavorText": "Quien la montó pensaba volver. No volvió."
+}

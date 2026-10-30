@@ -1,0 +1,34 @@
+{
+ "id": "INSTRUMENTOS-01",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — nueve instrumentos y trece objetos de rol (la antorcha, la cuerda, la pala, el pico, la caña de pescar, el catalejo, la escoba, la almohada, la sartén, la jarra de cerveza, las bolas de malabares, los shurikens y el estandarte de batalla) que se ven en la mano en las cuatro tallas, y las ganzúas para la mochila; todo a la venta en las tiendas de Boundington que no son las del tutorial.",
+ "origen": "Oriol (08/10): «Aprovechamos para crear una variedad de instrumentos musicales? Escobas y otros objetos que no sean armas pero podamos usar en un juego de rol? Para hacer el tonto, por ejemplo una almohada, cerveza, una antorcha, estandarte, shirukens [...] por ejemplo también una cuerda [...] alguna cosa más que veas que pueda ser necesaria en este aspecto?».",
+ "fuente": "La lista de Oriol; lo demás (qué instrumentos, los precios, las descripciones, las tiendas, la pala, el pico, la caña, el catalejo, la sartén, las bolas y las ganzúas) es propuesta de Claude.",
+ "canon": "planificacion/CANON_OBJETOS_DE_ROL.md (qué son, los instrumentos, los objetos, las tiendas, lo que es de Oriol y lo que es propuesta, y lo que viene).",
+ "scope": [
+  "tools/objetos_rol.py (nuevo): los datos (22 piezas comunes de tier 1 con sp_reglas.objeto, la tienda de cada una y las ganzúas de mochila); revisa() no deja venderlos en las tiendas del tutorial.",
+  "tools/actores_formas_objetos.py (nuevo): 21 formas en la mano (la antorcha usa la tea que ya había); el violín y su arco, en las dos manos (PAREJA); la pala, la escoba y la caña, como un bastón; el pico y la sartén, como un arma corta; el estandarte, con su propio grupo de poses. Lo importa actores_formas al final (ninguna fila de antes se mueve).",
+  "tools/actores_estetica.py: la palabra que elige la forma de cada uno (delante de todo: «flauta de pan» antes que «flauta»).",
+  "tools/importar_objetos_rol.py (nuevo): equipment.json (+22: 850), libreria_armas y libreria_completa (+22 item_<id>), ciudad_objetos.json (+23: 121) y las tiendas del herrero, el posadero, el tabernero, la bibliotecaria, la taquillera y el armero.",
+  "assets/textures/personajes*: 529 piezas de equipo (168 armas; 795 objetos con pieza).",
+  "Pruebas: tests/Level/ObjectCatalogTests.cpp (121 objetos, 43 de recoger); tools/test_validar_sprites.py (test_los_objetos_de_rol; el violín entre las parejas)."
+ ],
+ "non_goals": [
+  "La actuación en la calle: hecha en ACTUAR-01. Las monturas (MONTURAS-01): van después.",
+  "El laúd y el tambor de los bardos (cp_bardos) sin la etiqueta «Instrumento»: se la puso ACTUAR-01.",
+  "Usar las herramientas fuera del combate (cavar, pescar, mirar lejos, abrir cerraduras): de momento solo se llevan."
+ ],
+ "verification": [
+  "ctest con EGL_PLATFORM=surfaceless: solo linea_base_core (sigue en 44).",
+  "test_validar_sprites: 54/54 sin GeneradoresTests (test_personajes_son_reproducibles falla igual en la base; el de props revienta con SIGFPE en el contenedor).",
+  "validar_todo: 0 errores (10 avisos de antes); validar_catalogos_rpg: sin fallos.",
+  "equipo_catalogo.json: solo cambian las 22 piezas nuevas (brillo 1, el de tier 1).",
+  "Láminas de los 22 en la mano, de frente y de perfil, quieto y andando."
+ ],
+ "para_oriol": [
+  "¿Te valen los instrumentos y los objetos, y dónde se venden?",
+  "El Señor de las Armas: la imagen que mandaste es un personaje conocido; ¿te propongo dos o tres diseños propios?"
+ ],
+ "sesion": "sesiones/2026-10-08-claude-instrumentos.md"
+}

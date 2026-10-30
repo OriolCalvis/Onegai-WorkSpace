@@ -1,0 +1,18 @@
+{
+  "id": "E-15",
+  "date": "2026-09-17",
+  "author": "qwen",
+  "status": "Arreglo menor en la mitad sin interfaz: las condiciones de interruptor local ya no se clasifican como banderas",
+  "actions": [
+    "ClaseDeCondicion() en src/Editor/ProblemsState.cpp no tenia el caso EventConditionKind::LocalSwitch y caia en el «return ReferenceKind::Flag» del final. Consecuencia doble: FindReferences(LocalSwitch, «A») no encontraba las CONDICIONES de pagina que leen ese interruptor (si encontraba los comandos, que van por el catalogo de E-04), y FindReferences(Flag, «A») devolvia una cosa que no es una bandera.",
+    "Caso añadido (LocalSwitch -> ReferenceKind::LocalSwitch) y regresion en tests/Editor/ProblemsStateTests.cpp: una condicion de interruptor local se encuentra como interruptor, NO como bandera, y CollectReferenceNames la ofrece en el desplegable de interruptores.",
+    "Aparecio al compilar ProblemsState.cpp dentro del target nuevo de E-13 (test_asset_browser_state reutiliza NormalizeForSearch): era el unico warning de compilacion de los dos targets y el compilador lo señalaba como switch incompleto."
+  ],
+  "verification": [
+    "test_problems_state: 18/18 verde (17 previos + la regresion nueva), sin ventana ni GL.",
+    "Sin warning de compilacion en src/Editor/ProblemsState.cpp."
+  ],
+  "pending": [
+    "Sigue en pie todo lo que dice el registro principal de E-15 (panel integrado en EditorApplication, puerta canPlaytest() sin llamador, busqueda de aventuras de beats)."
+  ]
+}

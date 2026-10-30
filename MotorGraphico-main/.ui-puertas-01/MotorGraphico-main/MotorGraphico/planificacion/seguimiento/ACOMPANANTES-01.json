@@ -1,0 +1,38 @@
+{
+  "id": "ACOMPANANTES-01",
+  "date": "2026-10-06",
+  "author": "claude (Cowork)",
+  "status": "HECHO — aplicado en el arbol del Mac, sin commit",
+  "origen": "Oriol (05/10): «¿El critico de «todos 6» debe pedir al menos dos dados? Si». «¿El heroe tendra compañeros en combate (Venides, Verina, Xila)? Si. Pero no para siempre, solo en Boundington, y solo en algunos momentos de la historia. De normal el jugador sera acompañado de otro personaje, que podremos personalizar cuando creemos nuestro personaje [...] pero para eso aun nos queda mucho trabajo». Y (06/10): «un combate 1 contra 3 [...] mueres un 40 % de las veces [...] 2 contra 3 pocas veces [...] 3 contra 3 solo si son todos mas fuertes que tu [...] prueba con el Apostata, el Señor de las Armas y la Furia de los Creadores aparte del Bardo»; «piensa en el equipo, que puedes subir los stats maximos, y haz un ranking por niveles de fuerza».",
+  "criterio_de_cierre": "El critico de todos 6 pide dos dados o mas. Un combate de aventura lleva los acompañantes que pide (definidos en la aventura), que actuan solos tras el turno del heroe; los enemigos van a por quien les ha hecho daño. El Ocaso pelea con Venides al lado (y Xila si se le conocio). Los enemigos sin ficha llevan sus dados en el objeto. El estudio de dificultad, con las cuatro clases, da la escalera de fuerza y los niveles de equipo que cumplen la regla de Oriol, y el simulador queda en el repo para rehacerlo.",
+  "scope": [
+    "include/RPG/DicePoolEngine.h: kDadosParaCritico = 2; pruebas SkillExecutorTests, SkillEffectTests, SkillTests y examples/demo_battle.cpp, examples/ScriptedRng.h (comentario).",
+    "include/RPG/Narrative/AdventureScript.h (AcompananteDef, AdventureScript::acompanantes), include/RPG/Narrative/NarrativeBeat.h (BattleRequest::acompanantes, kMaxAcompanantes 3), src/RPG/Narrative/AcompanantesAventura.{h,cpp} (nuevos: leer, validar, escribir), src/RPG/Narrative/AdventureScriptLoader.cpp, src/RPG/AdventureSerializer.cpp, CMakeLists.txt.",
+    "include/Game/Acompanante.h (nuevo), src/Game/CartasAcompanantes.cpp (nuevo), include/Game/CartasEnCombate.h, src/Game/CartasEnCombate.cpp, src/Game/CartasTiradas.cpp: el turno de los acompañantes, a quien va cada enemigo (SituacionCombate::agresor), retirarse.",
+    "include/Game/GameSession.h (misma linea: startBattle con aLado), src/Game/GameSessionInteraccion.cpp, src/Game/GameSessionNarrativa.cpp: el combate con acompañantes y sus curas en las variables de la aventura.",
+    "include/HUD/Pergamino/MesaCombateHud.h, src/HUD/Pergamino/MesaCombateRetales.cpp, src/HUD/Pergamino/InterfazPergamino.cpp: los acompañantes en el orden de turno.",
+    "include/Level/ObjectCatalog.h, src/Level/ObjectCatalog.cpp, include/Game/EnemyCatalogBridge.h: combat.stats (los dados de un enemigo sin ficha).",
+    "assets/adventures/boundington_ocaso.json (Venides y Xila en los siete combates), assets/objects/boundington_enemigos.json (devoto F2, fanatico F5, carcelero F3).",
+    "examples/simulador_dificultad.cpp y cmake/SimuladorDificultad.cmake (nuevos): el simulador del estudio y su prueba de humo.",
+    "tests/Game/AcompanantesTests.cpp (nuevo, en test_cartas_combate), tests/Game/GameSessionTests.cpp, tests/Game/EnemyCatalogBridgeTests.cpp, tests/HUD/MesaCombateTests.cpp.",
+    "FORMATO_AVENTURAS.md (grupos y acompañantes), FORMATO_NIVELES.md (combat.stats)."
+  ],
+  "non_goals": [
+    "El compañero personalizable que se creara con el personaje (su historia, el postgame).",
+    "Verina en combate: se une tras el rescate, cuando ya no quedan combates.",
+    "Cambiar las reglas que el estudio señala (cartas que tiran con DES, el peso de la CON, Gorran): son preguntas para Oriol."
+  ],
+  "verification": [
+    "test_cartas_combate 38/38, test_game_session 31/31, test_enemy_catalog_bridge 14/14, test_pergamino 62/62, test_skill_executor, test_skill_effect, test_skill y demo_battle en verde; ctest con las mismas 9 que fallaban antes; la guardia con las mismas 44 deudas; demo_campana_boundington pasa.",
+    "Estudio (2.050 combates por clase y caso, 41 razas): H1 kit contra F2 estandar (12 PV, CON 1): 1v3 41 %, 2v3 5,5 %, 3v3 1,6 %. H2 tope 3 contra F3, H3 tope 4 contra F5, H4 tope 4 en CON y DES contra F6: 1v3 41-42 %, 2v3 3 %, 3v3 0,5 %. Un escalon mas fuertes: 1v3 60-69 %, 2v3 6-11 %, 3v3 1-4 %. El Ocaso con Venides: 0 % con 20 o 10 hombres, 6 % solo.",
+    "Juego real: tres devotos con Venides y Xila al lado, el marco en Venides durante su tirada, el devoto que golpeo Venides va a por el, Xila cura y gasta sus marcas."
+  ],
+  "para_oriol": [
+    "La escalera F1-F8 y la dificultad como escalon del enemigo respecto al nivel de equipo del heroe.",
+    "Si las cartas tiran con el atributo principal de la clase (hoy todas con DES).",
+    "Si bajamos el peso de la CON (la raza decide mas que la clase).",
+    "Si Gorran debe ser mas duro (hoy mata un 4 % de las veces).",
+    "Siguen abiertas: los topes 2, 4, 6, 8, 8 y 8, y si ponerse el kit cura."
+  ],
+  "sesion": "sesiones/2026-10-06-claude-acompanantes-dificultad.md"
+}

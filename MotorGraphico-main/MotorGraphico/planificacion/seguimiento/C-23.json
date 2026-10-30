@@ -1,0 +1,27 @@
+{
+  "id": "C-23",
+  "date": "2026-09-12",
+  "author": "Codex",
+  "status": "Composició i regressions del renderer implementades; paquet obert",
+  "actions": [
+    "IsometricRenderer encadena llum, boira i LUT en aquest ordre; abans només aplicava un dels efectes activats.",
+    "Els tres shaders mantenen la coordenada Y del framebuffer: una escena asimètrica i una llum mòbil es conserven al seu lloc.",
+    "Els setters no fan crides GL. El primer render actiu crea els FBO; es reutilitzen a la mateixa mida i clearPostProcessing desconnecta referències i allibera recursos.",
+    "El destí de dibuix, de lectura i el viewport es restauren també si falla una entitat durant el render.",
+    "Els quatre demos mostregen dins de la cel·la real del jugador. El centre del viewport era el límit del mapa i feia passar la imatge invertida.",
+    "Test GL amb 7 casos i 4 demos registrats a CTest; el job Linux de CI els executarà en mode normal i amb sanititzadors.",
+    "MAPA_DEL_CODIGO consultat abans de reservar; afegits renderer, shaders i proves al mapeig C-23 de dades.py i regenerat només el mapa de codi."
+  ],
+  "verification": [
+    "Build completa en còpia aïllada sobre 795f8f6; CTest -L ^gl$: 7/7 executables verds (postprocessat, 4 demos, escenes i tancament).",
+    "7/7 casos GL verds: 7 combinacions, contribució acumulada, llum mòbil, cap operació FBO desactivat, reutilització/redimensió/reset, destí/viewport i error.",
+    "3 proves fallen en restaurar temporalment el flip Y antic; totes verdes amb shaders corregits.",
+    "demo_fog, demo_dynamic_lights, demo_lighting i demo_lut: 3 frames, codi 0 i glGetError 0. Escenes i tancament GL: 2/2 verds.",
+    "7/7 casos també verds amb ASan+UBSan. LeakSanitizer desactivat per les caches del driver GL; no es declara prova de fuites."
+  ],
+  "pending": [
+    "CI remota: el push continua pendent de l’autorització explícita del destí requerida pel revisor automàtic.",
+    "El cablejat de C-23 a Application/LevelLoader ha aparegut simultàniament en una altra sessió. No s’ha modificat ni versionat en aquest lot.",
+    "Activació des del document natiu, primer nivell, transicions i restauració de partida encara s’han de validar conjuntament amb aquest cablejat. Aquest lot no tanca tot C-23."
+  ]
+}

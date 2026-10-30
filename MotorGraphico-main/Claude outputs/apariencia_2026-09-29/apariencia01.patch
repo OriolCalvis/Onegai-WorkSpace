@@ -1,0 +1,3863 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b2b621d..aed4f5c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -91,6 +91,14 @@ add_library(motor_input src/Engine/Input/InputSystem.cpp)
+ # sin ventana ni contexto OpenGL. ---
+ add_library(motor_json src/Core/Json/JsonValue.cpp)
+ 
++# APARIENCIA-01 — Una imagen PNG en memoria, sin OpenGL: la usa el montaje de
++# personajes por capas (motor_level) y se prueba sin ventana. stb_image va en
++# modo estatico (STB_IMAGE_STATIC): copia privada que no choca con la de
++# motor_core ni comparte su volteo vertical.
++add_library(motor_imagen src/Core/Imagen/ImagenRGBA.cpp)
++target_include_directories(motor_imagen PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
++target_include_directories(motor_imagen PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party/stb")
++
+ add_library(motor_rpg
+     src/RPG/SkillExecutor.cpp
+     src/RPG/SkillEffect.cpp
+@@ -288,6 +296,13 @@ src/Game/BattleMenuState.cpp
+     src/Game/DiarioMisiones.cpp  # MISIONES-01: diario = vista de las flags
+     src/Game/Codice.cpp  # CODICE-01: lo conocido, desde beats/ficha/flags
+     src/Game/Companeros.cpp  # CLASES-03: companeros reclutables por flag
++    # APARIENCIA-01: personajes por capas (manifiesto, montaje byte a byte
++    # como el probador, paso Apariencia de la creacion y equipo inicial
++    # puesto). GL-free; la textura la sube Render/HojaPersonaje.
++    src/Game/Personajes/ManifiestoPersonajes.cpp
++    src/Game/Personajes/MontajePersonajes.cpp
++    src/Game/Personajes/EditorApariencia.cpp
++    src/Game/Personajes/Vestuario.cpp
+ )
+ # GameSession.cpp usa TileMap (motor_map) para la colision, pero
+ # motor_map se declara mas abajo en este archivo: en vez de reordenar
+@@ -295,7 +310,7 @@ src/Game/BattleMenuState.cpp
+ # que use GameSession linka ambas librerias -- mismo patron que
+ # demo_editor_state. Ninguna de las dos trae GLAD/GLFW: siguen siendo
+ # GL-free.
+-target_link_libraries(motor_level PUBLIC motor_json motor_project motor_rpg motor_runtime_map motor_world)
++target_link_libraries(motor_level PUBLIC motor_json motor_project motor_rpg motor_runtime_map motor_world motor_imagen)
+ 
+ # H0-05 — Selector de guardados (G-08/G-11) como libreria GL-free propia:
+ # TitleMenuState y SaveSlotState viven aqui y ya no se compilan sueltos en
+@@ -703,6 +718,7 @@ if (EXISTS ${GLAD_DIR}/src/glad.c AND EXISTS ${STB_DIR}/stb_image.h)
+         # Sustituyen a HudMinimap, HudFicha y ApplicationMenuJugador.
+         src/Render/PergaminoGL.cpp
+         src/Render/AuraJugador.cpp
++        src/Render/HojaPersonaje.cpp  # APARIENCIA-01: hoja montada en la GPU + vista previa
+         src/Render/DynamicLightMap.cpp
+         src/Render/BlobShadow.cpp
+         src/Engine/Application.cpp
+@@ -1392,6 +1408,7 @@ include(cmake/EditorToolsTests.cmake)
+ include(cmake/CatalogLoaderContractCheck.cmake)
+ include(cmake/InventoryMenuTests.cmake)
+ include(cmake/FichaVistaTests.cmake)
++include(cmake/AparienciaTests.cmake)
+ include(cmake/TitleFlowTests.cmake)
+ include(cmake/C24RenderRpgTests.cmake)
+ 
+diff --git a/assets/textures/actores_capas.json b/assets/textures/actores_capas.json
+index e250dde..d224c7f 100644
+--- a/assets/textures/actores_capas.json
++++ b/assets/textures/actores_capas.json
+@@ -1,5 +1,5 @@
+ {
+- "_nota": "Atlas runtime de actores genericos con caminar en 4 direcciones. Generado por tools/gen_personajes.py: no editar a mano. Frames 1-based. Cada fila: arriba 1-3, derecha 4-6, abajo 7-9, izquierda 10-12 (paso, quieto, paso). OJO: Application.cpp registra hoy personaje.png como walk_down {1,2,3,4}, walk_up {5..8}, walk_right/left {9..12} e idle {1}, que no es el reparto real de la hoja: el jugador aparece de espaldas al quedarse quieto y 'camina hacia abajo' mostrando la espalda. El reparto correcto es el de 'animaciones'. TextureManager invierte los PNG al cargarlos: en un atlas de varias filas la region del frame f es defineRegion(f, (f-1) % columns, rows - 1 - (f-1) / columns), como race_npc_idle.",
++ "_nota": "Atlas runtime de actores genericos con caminar en 4 direcciones. Generado por tools/gen_personajes.py: no editar a mano. Frames 1-based. Cada fila: arriba 1-3, derecha 4-6, abajo 7-9, izquierda 10-12 (paso, quieto, paso). El motor lo reparte asi desde APARIENCIA-01 (HojaPersonaje::animar, tambien para personaje.png): 'animaciones' es el ciclo de los PNJ; el jugador descansa en el frame quieto y su ciclo de andar empieza en el ({8, 7, 8, 9} hacia abajo). TextureManager invierte los PNG al cargarlos: en un atlas de varias filas la region del frame f es defineRegion(f, (f-1) % columns, rows - 1 - (f-1) / columns), como race_npc_idle.",
+  "estado": "runtime",
+  "generador": "tools/gen_personajes.py",
+  "cuerpoBase": "personaje.png",
+diff --git a/assets/textures/actores_capas.md b/assets/textures/actores_capas.md
+index b14b2ff..5c42b66 100644
+--- a/assets/textures/actores_capas.md
++++ b/assets/textures/actores_capas.md
+@@ -85,14 +85,16 @@ for (int f = 1; f <= columns * rows; ++f)
+ // Animaciones: las de "animaciones" de cada actor en actores_capas.json.
+ ```
+ 
+-### El fallo que esto destapa en `personaje.png`
++### El fallo que destapó en `personaje.png` (arreglado)
+ 
+-`Application::init` registra hoy `walk_down {1,2,3,4}`, `walk_up {5..8}`,
++`Application::init` registraba `walk_down {1,2,3,4}`, `walk_up {5..8}`,
+ `walk_right` y `walk_left {9..12}` e `idle {1}`. La hoja real es arriba,
+-derecha, abajo, izquierda con tres frames cada una. Resultado: **el
+-jugador se queda de espaldas** cuando está quieto, «camina hacia abajo»
+-enseñando la espalda y mezcla vistas en cada ciclo. El reparto correcto
+-está en `personaje.json` y lo comprueba `tools/test_validar_sprites.py`.
++derecha, abajo, izquierda con tres frames cada una: **el jugador se quedaba
++de espaldas** cuando estaba quieto y «caminaba hacia abajo» enseñando la
++espalda. Desde APARIENCIA-01 los ciclos los reparte
++`HojaPersonaje::animar()` con el reparto de `personaje.json`, empezando cada
++ciclo en el frame quieto ({8, 7, 8, 9} hacia abajo), que es el que el
++jugador enseña al pararse.
+ 
+ ## Escala
+ 
+diff --git a/assets/textures/personaje.json b/assets/textures/personaje.json
+index 074af23..05496a8 100644
+--- a/assets/textures/personaje.json
++++ b/assets/textures/personaje.json
+@@ -1,5 +1,5 @@
+ {
+- "_nota": "Contrato del cuerpo base: 12 frames de 64x64 en una fila. Frames 1-based. Cada fila: arriba 1-3, derecha 4-6, abajo 7-9, izquierda 10-12 (paso, quieto, paso). OJO: Application.cpp registra hoy personaje.png como walk_down {1,2,3,4}, walk_up {5..8}, walk_right/left {9..12} e idle {1}, que no es el reparto real de la hoja: el jugador aparece de espaldas al quedarse quieto y 'camina hacia abajo' mostrando la espalda. El reparto correcto es el de 'animaciones'. TextureManager invierte los PNG al cargarlos: en un atlas de varias filas la region del frame f es defineRegion(f, (f-1) % columns, rows - 1 - (f-1) / columns), como race_npc_idle.",
++ "_nota": "Contrato del cuerpo base: 12 frames de 64x64 en una fila. Frames 1-based. Cada fila: arriba 1-3, derecha 4-6, abajo 7-9, izquierda 10-12 (paso, quieto, paso). El motor lo reparte asi desde APARIENCIA-01 (HojaPersonaje::animar, tambien para personaje.png): 'animaciones' es el ciclo de los PNJ; el jugador descansa en el frame quieto y su ciclo de andar empieza en el ({8, 7, 8, 9} hacia abajo). TextureManager invierte los PNG al cargarlos: en un atlas de varias filas la region del frame f es defineRegion(f, (f-1) % columns, rows - 1 - (f-1) / columns), como race_npc_idle.",
+  "estado": "runtime temporal (fallback de actores sin hoja propia)",
+  "image": "personaje.png",
+  "frameSize": [
+diff --git a/assets/textures/personajes.json b/assets/textures/personajes.json
+index c34abd7..f1f3494 100644
+--- a/assets/textures/personajes.json
++++ b/assets/textures/personajes.json
+@@ -1,5 +1,5 @@
+ {
+- "_nota": "Personajes por capas: cada atlas es una tira de 12 frames por fila con el mismo reparto que personaje.png, transparente fuera de su pieza. Un personaje se monta dibujando, en cada frame, la fila de cada capa en el mismo sitio y en el orden de 'orden' (menor = antes) para la direccion del frame. Generado por tools/gen_personajes.py: no editar a mano. Frames 1-based. Cada fila: arriba 1-3, derecha 4-6, abajo 7-9, izquierda 10-12 (paso, quieto, paso). OJO: Application.cpp registra hoy personaje.png como walk_down {1,2,3,4}, walk_up {5..8}, walk_right/left {9..12} e idle {1}, que no es el reparto real de la hoja: el jugador aparece de espaldas al quedarse quieto y 'camina hacia abajo' mostrando la espalda. El reparto correcto es el de 'animaciones'. TextureManager invierte los PNG al cargarlos: en un atlas de varias filas la region del frame f es defineRegion(f, (f-1) % columns, rows - 1 - (f-1) / columns), como race_npc_idle.",
++ "_nota": "Personajes por capas: cada atlas es una tira de 12 frames por fila con el mismo reparto que personaje.png, transparente fuera de su pieza. Un personaje se monta dibujando, en cada frame, la fila de cada capa en el mismo sitio y en el orden de 'orden' (menor = antes) para la direccion del frame. Generado por tools/gen_personajes.py: no editar a mano. Frames 1-based. Cada fila: arriba 1-3, derecha 4-6, abajo 7-9, izquierda 10-12 (paso, quieto, paso). El motor lo reparte asi desde APARIENCIA-01 (HojaPersonaje::animar, tambien para personaje.png): 'animaciones' es el ciclo de los PNJ; el jugador descansa en el frame quieto y su ciclo de andar empieza en el ({8, 7, 8, 9} hacia abajo). TextureManager invierte los PNG al cargarlos: en un atlas de varias filas la region del frame f es defineRegion(f, (f-1) % columns, rows - 1 - (f-1) / columns), como race_npc_idle.",
+  "generador": "tools/gen_personajes.py",
+  "cuerpoBase": "personaje.png",
+  "frameSize": [
+diff --git a/assets/textures/personajes.md b/assets/textures/personajes.md
+index 48e34e0..632f09e 100644
+--- a/assets/textures/personajes.md
++++ b/assets/textures/personajes.md
+@@ -10,9 +10,12 @@ pintado.
+ 
+ Lo genera `tools/gen_personajes.py`; el contrato está en
+ `personajes.json`. **No se edita a mano**: se cambia el dato y se regenera.
+-Estado: **arte + manifiestos + probador**. El motor todavía no monta capas
+-(no se ha tocado C++); mientras tanto tiene tres atlas horneados listos
+-para usar.
++Estado: **arte + manifiestos + probador + motor**. Desde APARIENCIA-01
++(29/09/2026) el motor monta las capas él mismo (`Game::MontajePersonajes`,
++byte a byte igual que el probador: lo comprueba `test_personajes_capas` con
++los 62 horneados) y el jugador lleva su propia hoja: la que elige en el paso
++«Apariencia» de Nueva partida, con el equipo puesto encima. Los tres atlas
++horneados siguen ahí para los PNJ.
+ 
+ ```sh
+ python3 tools/gen_personajes.py            # atlas de capas, horneados y manifiestos
+@@ -43,8 +46,9 @@ fila por personaje con sus animaciones ya calculadas, y cada uno guarda en
+ 
+ ## Cómo se monta un personaje
+ 
+-Es lo que hace `tools/probador_personaje.py` y lo que tendrá que hacer el
+-motor. Cada atlas de capas tiene 12 columnas de 64×64 y una fila por pieza;
++Es lo que hace `tools/probador_personaje.py` y lo que hace el motor en
++`src/Game/Personajes/MontajePersonajes.cpp` (la mezcla es la aritmética
++entera de `Image.alpha_composite` de Pillow, para que salga igual). Cada atlas de capas tiene 12 columnas de 64×64 y una fila por pieza;
+ la fila tiene el mismo reparto que `personaje.png` (arriba 1-3, derecha
+ 4-6, abajo 7-9, izquierda 10-12) y es transparente fuera de la pieza.
+ 
+@@ -241,11 +245,12 @@ persona) y `talla` cambia la talla de un humano (la niña y el duende son
+ 
+ ## Pendiente
+ 
+-- **Cablear en el motor:** una clase que lea `personajes.json` y apile las
+-  capas (no en `Application.cpp`). Con ella entran el equipo visible del
+-  jugador y el arreglo del reparto de `personaje.png` (ver
+-  `actores_capas.md`). Hasta entonces, los tres atlas horneados se pueden
+-  cargar como cualquier atlas de actores.
++- ~~Cablear en el motor~~ **Hecho en APARIENCIA-01** para el jugador:
++  `Game::ManifiestoPersonajes` lee este contrato, `Game::MontajePersonajes`
++  apila las capas, `Render/HojaPersonaje` sube la hoja a la GPU y reparte
++  los ciclos de andar (también los de `personaje.png`, que se leía mal), y el
++  equipo puesto se ve (`Game::Vestuario`, con `equipo_catalogo.json`).
++  Queda montar así a los PNJ en vez de usar los horneados.
+ - Las 43 razas y los 19 personajes usan el cuerpo de 40 px; los retratos
+   de `boundington_story_actors_idle.png` miden unos 58. La escala común
+   sigue siendo una decisión de producto.
+diff --git a/assets/textures/personajes_historia.json b/assets/textures/personajes_historia.json
+index 22c367a..2a6ad09 100644
+--- a/assets/textures/personajes_historia.json
++++ b/assets/textures/personajes_historia.json
+@@ -1,5 +1,5 @@
+ {
+- "_nota": "Personajes de historia de Boundington andando, en el estilo de los actores. Generado por tools/gen_personajes.py: no editar a mano. Frames 1-based. Cada fila: arriba 1-3, derecha 4-6, abajo 7-9, izquierda 10-12 (paso, quieto, paso). OJO: Application.cpp registra hoy personaje.png como walk_down {1,2,3,4}, walk_up {5..8}, walk_right/left {9..12} e idle {1}, que no es el reparto real de la hoja: el jugador aparece de espaldas al quedarse quieto y 'camina hacia abajo' mostrando la espalda. El reparto correcto es el de 'animaciones'. TextureManager invierte los PNG al cargarlos: en un atlas de varias filas la region del frame f es defineRegion(f, (f-1) % columns, rows - 1 - (f-1) / columns), como race_npc_idle.",
++ "_nota": "Personajes de historia de Boundington andando, en el estilo de los actores. Generado por tools/gen_personajes.py: no editar a mano. Frames 1-based. Cada fila: arriba 1-3, derecha 4-6, abajo 7-9, izquierda 10-12 (paso, quieto, paso). El motor lo reparte asi desde APARIENCIA-01 (HojaPersonaje::animar, tambien para personaje.png): 'animaciones' es el ciclo de los PNJ; el jugador descansa en el frame quieto y su ciclo de andar empieza en el ({8, 7, 8, 9} hacia abajo). TextureManager invierte los PNG al cargarlos: en un atlas de varias filas la region del frame f es defineRegion(f, (f-1) % columns, rows - 1 - (f-1) / columns), como race_npc_idle.",
+  "estado": "runtime",
+  "generador": "tools/gen_personajes.py",
+  "cuerpoBase": "personaje.png",
+diff --git a/assets/textures/razas_andando.json b/assets/textures/razas_andando.json
+index 5236669..60320f4 100644
+--- a/assets/textures/razas_andando.json
++++ b/assets/textures/razas_andando.json
+@@ -1,5 +1,5 @@
+ {
+- "_nota": "Las 43 razas del catalogo vestidas, andando en 4 direcciones (sustituye a los retratos quietos de race_npc_idle.png). Generado por tools/gen_personajes.py: no editar a mano. Frames 1-based. Cada fila: arriba 1-3, derecha 4-6, abajo 7-9, izquierda 10-12 (paso, quieto, paso). OJO: Application.cpp registra hoy personaje.png como walk_down {1,2,3,4}, walk_up {5..8}, walk_right/left {9..12} e idle {1}, que no es el reparto real de la hoja: el jugador aparece de espaldas al quedarse quieto y 'camina hacia abajo' mostrando la espalda. El reparto correcto es el de 'animaciones'. TextureManager invierte los PNG al cargarlos: en un atlas de varias filas la region del frame f es defineRegion(f, (f-1) % columns, rows - 1 - (f-1) / columns), como race_npc_idle.",
++ "_nota": "Las 43 razas del catalogo vestidas, andando en 4 direcciones (sustituye a los retratos quietos de race_npc_idle.png). Generado por tools/gen_personajes.py: no editar a mano. Frames 1-based. Cada fila: arriba 1-3, derecha 4-6, abajo 7-9, izquierda 10-12 (paso, quieto, paso). El motor lo reparte asi desde APARIENCIA-01 (HojaPersonaje::animar, tambien para personaje.png): 'animaciones' es el ciclo de los PNJ; el jugador descansa en el frame quieto y su ciclo de andar empieza en el ({8, 7, 8, 9} hacia abajo). TextureManager invierte los PNG al cargarlos: en un atlas de varias filas la region del frame f es defineRegion(f, (f-1) % columns, rows - 1 - (f-1) / columns), como race_npc_idle.",
+  "estado": "runtime",
+  "generador": "tools/gen_personajes.py",
+  "cuerpoBase": "personaje.png",
+diff --git a/cmake/AparienciaTests.cmake b/cmake/AparienciaTests.cmake
+new file mode 100644
+index 0000000..19001e4
+--- /dev/null
++++ b/cmake/AparienciaTests.cmake
+@@ -0,0 +1,51 @@
++# APARIENCIA-01 — Personajes por capas en el motor y el paso «Apariencia» de
++# Nueva partida, sin ventana (motor_level + motor_imagen, GL-free).
++#
++# test_personajes_capas: el manifiesto se lee entero; la mezcla es la de
++# Pillow; los 62 personajes horneados (actores_capas, razas_andando,
++# personajes_historia) salen byte a byte montados en C++ desde su
++# composicion; el orden de capas es el del probador; la cache respeta su
++# presupuesto; el reparto de la hoja (ciclos que empiezan quietos).
++#
++# test_editor_apariencia: filas segun el pueblo, valores con la vuelta, la
++# barba que sigue al pelo, AL AZAR determinista y siempre montable en las 43
++# razas, el equipo inicial puesto (Vestuario) y el flujo de 15 pasos con
++# finalizar() entregando la ficha equipada.
++#
++# Las dos leen assets/ desde build/ (copiar_assets).
++include(CTest)
++if(BUILD_TESTING AND TARGET motor_level)
++    add_executable(test_personajes_capas tests/Game/PersonajesCapasTests.cpp)
++    target_include_directories(test_personajes_capas PRIVATE
++        "${CMAKE_CURRENT_SOURCE_DIR}/tests"
++        "${CMAKE_CURRENT_SOURCE_DIR}/include")
++    target_link_libraries(test_personajes_capas PRIVATE motor_level motor_imagen motor_json)
++    if(TARGET copiar_assets)
++        add_dependencies(test_personajes_capas copiar_assets)
++    endif()
++    add_test(NAME test_personajes_capas COMMAND test_personajes_capas)
++    set_tests_properties(test_personajes_capas PROPERTIES
++        LABELS "unit;gl-free"
++        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
++    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_personajes_capas)
++    if(TARGET suite_gl_free)
++        add_dependencies(suite_gl_free test_personajes_capas)
++    endif()
++
++    add_executable(test_editor_apariencia tests/Game/EditorAparienciaTests.cpp)
++    target_include_directories(test_editor_apariencia PRIVATE
++        "${CMAKE_CURRENT_SOURCE_DIR}/tests"
++        "${CMAKE_CURRENT_SOURCE_DIR}/include")
++    target_link_libraries(test_editor_apariencia PRIVATE motor_level motor_map motor_rpg motor_json)
++    if(TARGET copiar_assets)
++        add_dependencies(test_editor_apariencia copiar_assets)
++    endif()
++    add_test(NAME test_editor_apariencia COMMAND test_editor_apariencia)
++    set_tests_properties(test_editor_apariencia PROPERTIES
++        LABELS "unit;gl-free"
++        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
++    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_editor_apariencia)
++    if(TARGET suite_gl_free)
++        add_dependencies(suite_gl_free test_editor_apariencia)
++    endif()
++endif()
+diff --git a/include/Core/Imagen/ImagenRGBA.h b/include/Core/Imagen/ImagenRGBA.h
+new file mode 100644
+index 0000000..3f1bd08
+--- /dev/null
++++ b/include/Core/Imagen/ImagenRGBA.h
+@@ -0,0 +1,44 @@
++// APARIENCIA-01 — Una imagen RGBA en memoria, leida de un PNG sin OpenGL.
++//
++// TextureManager ya lee PNG con stb_image, pero lo hace en la ruta GL: lee y
++// sube a la GPU en el mismo paso, e invierte las filas para OpenGL. Montar un
++// personaje por capas necesita los pixeles en la CPU, en el orden del fichero
++// y sin ventana (para poder probarlo). Esto es esa pieza: un struct que guarda
++// los pixeles y una funcion que los lee.
++//
++// stb_image se compila en ImagenRGBA.cpp en modo STB_IMAGE_STATIC: esa copia
++// es privada de su unidad, no choca con la de motor_core y no comparte el
++// estado global de stbi_set_flip_vertically_on_load(), que TextureManager
++// pone a true para OpenGL. Aqui las filas salen siempre de arriba abajo.
++#pragma once
++
++#include <cstddef>
++#include <cstdint>
++#include <string>
++#include <vector>
++
++#include "Core/Errors/Result.h"
++
++namespace imagen {
++
++struct ImagenRGBA {
++    int ancho = 0;
++    int alto = 0;
++    // ancho * alto * 4 bytes (R, G, B, A). La fila 0 es la de ARRIBA, como
++    // en el PNG; quien la suba a OpenGL decide si la invierte.
++    std::vector<std::uint8_t> pixeles;
++
++    bool vacia() const { return pixeles.empty(); }
++    std::size_t bytes() const { return pixeles.size(); }
++    const std::uint8_t* pixel(int x, int y) const {
++        return pixeles.data() + (static_cast<std::size_t>(y) * static_cast<std::size_t>(ancho) +
++                                 static_cast<std::size_t>(x)) *
++                                    4;
++    }
++};
++
++// Lee el PNG y lo expande a RGBA de 8 bits (paleta y transparencia
++// incluidas). Error legible con la ruta y el motivo si no se puede.
++Result<ImagenRGBA> cargarPNG(const std::string& ruta);
++
++}  // namespace imagen
+diff --git a/include/Engine/PantallaNuevaPartida.h b/include/Engine/PantallaNuevaPartida.h
+index 2528cbd..a997a39 100644
+--- a/include/Engine/PantallaNuevaPartida.h
++++ b/include/Engine/PantallaNuevaPartida.h
+@@ -8,6 +8,15 @@
+ // Teclas: W/S eligen, Enter siguiente, Esc atras (en el primer paso,
+ // cancelar). En el reparto de stats A/D ajustan; en el nombre, A/D pasan
+ // por una lista de nombres (todavia no hay entrada de texto en el juego).
++//
++// APARIENCIA-01 — El probador de personajes de ARTE-02, dentro del juego:
++// un paso «Apariencia» tras la raza (piel, talla, ojos, pelo, barba y ropa)
++// y, a la derecha de todos los pasos, una vista previa del personaje andando
++// (Render/HojaPersonaje): al pasar razas se ve cada pueblo; al pasar clases,
++// su equipo inicial puesto; en el reparto y el resumen, tu personaje. Al
++// terminar, el equipo inicial sale PUESTO (decision de Oriol, 29/09) y esta
++// clase guarda tambien el aspecto vivo del jugador: vestir() se lo pone y
++// actualizarAspecto() lo rehace cuando cambia lo que lleva equipado.
+ #pragma once
+ 
+ #include <memory>
+@@ -17,16 +26,20 @@
+ #include "Core/Errors/Result.h"
+ #include "Engine/Input/InputSystem.h"
+ #include "Game/NewGameFlow.h"
++#include "Game/Personajes/MontajePersonajes.h"
+ #include "HUD/Iconos.h"
++#include "RPG/Catalogs/RpgCatalogs.h"
+ #include "RPG/CharacterCreation.h"
+ #include "RPG/CharacterSheet.h"
+ #include "RPG/TierRules.h"
++#include "Render/HojaPersonaje.h"
+ #include "Render/HudIconList.h"
+ #include "Render/HudTextWidgets.h"
+ #include "Render/HudWidgets.h"
+ 
+ class BitmapFont;
+ class HudManager;
++class Player;
+ class Texture;
+ 
+ namespace Engine {
+@@ -35,9 +48,12 @@ class PantallaNuevaPartida {
+ public:
+     enum class Estado { Cerrada, Creando, Terminada, Cancelada };
+ 
+-    // Crea los widgets (ocultos) y los registra en el HUD.
++    // Crea los widgets (ocultos) y los registra en el HUD. `equipo` es el
++    // catalogo de Application (no propietario): sin el, el equipo inicial
++    // se queda en la mochila y la vista previa no lo ensena.
+     PantallaNuevaPartida(HudManager& hud, BitmapFont* font, Texture* whiteTexture, Texture* iconos,
+-                         Hud::Iconos manifiesto);
++                         Hud::Iconos manifiesto,
++                         const RPG::Catalogs::EquipmentCatalog* equipo = nullptr);
+ 
+     // Carga catalogos y reglas (una vez) y arranca un flujo nuevo.
+     Result<bool> abrir();
+@@ -58,20 +74,36 @@ public:
+     bool consumirCancelacion();
+     const std::string& error() const { return m_error; }
+ 
++    // APARIENCIA-01 — Pone al jugador el aspecto del personaje creado (su
++    // hoja y los ciclos de andar). Sin personaje creado no hace nada.
++    void vestir(Player& jugador) const;
++    // Cada fotograma de partida: si cambio lo que lleva puesto la ficha,
++    // vuelve a montar la hoja del jugador (y el equipo nuevo se ve).
++    void actualizarAspecto();
++
+     static const std::vector<std::string>& nombresSugeridos();
+ 
+ private:
++    // Lo que hace falta para crear un personaje, cargado una vez.
++    struct Datos {
++        std::unique_ptr<RPG::CharacterCreation> reglas;
++        RPG::TierRules tiers;
++        const RPG::Catalogs::EquipmentCatalog* equipo = nullptr;
++        std::unique_ptr<Game::MontajePersonajes> montaje;   // nullptr = sin personajes por capas
++    };
++
+     void mostrar(bool visible);
+     std::vector<HudIconRow> filas() const;
++    std::vector<HudIconRow> filasDeApariencia() const;
+     const char* iconoDelPaso() const;
+     std::string detalleDe(const std::string& id) const;
++    const char* pistaDelPaso() const;
++    void actualizarVista();
+ 
+-    std::unique_ptr<RPG::CharacterCreation> m_reglas;
+-    RPG::TierRules m_tiers;
++    Datos m_datos;
+     std::unique_ptr<Game::NewGameFlow> m_flujo;
+     Estado m_estado = Estado::Cerrada;
+     RPG::CharacterSheet m_ficha;
+-    bool m_fichaLista = false;
+     std::string m_error;
+     std::size_t m_nombreElegido = 0;
+ 
+@@ -80,6 +112,8 @@ private:
+     std::unique_ptr<HudIconList> m_lista;
+     std::unique_ptr<HudText> m_aviso;
+     std::unique_ptr<HudText> m_pista;
++    std::unique_ptr<HojaPersonaje> m_vista;     // la vista previa (en el HUD)
++    std::unique_ptr<HojaPersonaje> m_jugador;   // la hoja que lleva el jugador
+ };
+ 
+ }  // namespace Engine
+diff --git a/include/Game/NewGameFlow.h b/include/Game/NewGameFlow.h
+index 94732e0..f113020 100644
+--- a/include/Game/NewGameFlow.h
++++ b/include/Game/NewGameFlow.h
+@@ -1,6 +1,11 @@
+ #pragma once
+ 
++#include <memory>
++
+ #include "Core/Errors/Result.h"
++#include "Game/Personajes/EditorApariencia.h"
++#include "Game/Personajes/ManifiestoPersonajes.h"
++#include "RPG/Catalogs/RpgCatalogs.h"
+ #include "RPG/CharacterCreation.h"
+ #include "RPG/CharacterCreationScreen.h"
+ #include "RPG/CharacterSheet.h"
+@@ -34,18 +39,26 @@ public:
+     enum class Estado { Creando, Terminado, Cancelado };
+ 
+     explicit NewGameFlow(const RPG::CharacterCreation& reglas);
++    // APARIENCIA-01 — Con el manifiesto de personajes, la creacion gana un
++    // paso «Apariencia» justo despues de la raza (15 pasos): el cuerpo sale
++    // de la raza, asi que se viste al personaje en cuanto se sabe de que
++    // pueblo es. Sin manifiesto (nullptr) el flujo es el de siempre, de 14.
++    // El manifiesto tiene que vivir mas que el flow, como las reglas.
++    NewGameFlow(const RPG::CharacterCreation& reglas, const ManifiestoPersonajes* personajes);
+ 
+     // --- Navegación (InputAction se traduce fuera, como en OptionsState) ---
+     void moveUp();
+     void moveDown();
+-    // Solo hacen algo en el paso Reparto: izquierda resta al stat
+-    // marcado, derecha suma. En los pasos de lista no son navegación.
++    // Solo hacen algo en el paso Reparto (izquierda resta al stat marcado,
++    // derecha suma) y en Apariencia (cambian el valor de la fila). En los
++    // pasos de lista no son navegación.
+     void adjustLeft();
+     void adjustRight();
+     // Avanza de paso; desde Resumen termina la creación si no quedan
+     // problemas (si quedan, el aviso de la pantalla los explica).
+     void confirm();
+-    // ESC: en Raza cancela la creación; en los demás pasos retrocede uno.
++    // ESC: en Raza cancela la creación; en los demás pasos retrocede uno
++    // (desde Clase, a Apariencia si la hay).
+     void cancel();
+     // Texto crudo para el filtro y el nombre; retroceso para borrar.
+     void textChar(char c);
+@@ -57,18 +70,47 @@ public:
+     // desde ella, que ya expone todo lo que el HUD necesita.
+     const RPG::CharacterCreationScreen& pantalla() const { return m_pantalla; }
+ 
++    // --- APARIENCIA-01 ---
++    // El paso Apariencia vive aqui y no en CharacterCreationScreen: la
++    // pantalla es de REGLAS (lo que la ficha necesita) y la apariencia no
++    // cambia ni un numero. Mientras dura, pantalla() ya esta en Clase.
++    bool enApariencia() const { return m_enApariencia; }
++    const EditorApariencia* editorApariencia() const { return m_apariencia.get(); }
++    // Numeracion y titulo contando Apariencia ("2/15 QUÉ ASPECTO TIENES").
++    int numeroDePaso() const;
++    int totalDePasos() const;
++    const char* tituloPaso() const;
++
++    // Lo que la vista previa tiene que ensenar ahora mismo: al elegir raza,
++    // la raza MARCADA tal cual viste su pueblo; al elegir clase, la clase
++    // marcada con su equipo inicial puesto (igual con el trasfondo); y
++    // despues, lo elegido. conEquipo=false mientras no hay clase.
++    struct VistaPrevia {
++        Apariencia apariencia;
++        RPG::CreationChoice eleccion;
++        bool conEquipo = false;
++    };
++    VistaPrevia vistaPrevia() const;
++
+     // El tramo que faltaba: construir() + recalcular(). Error con TODOS
+     // los problemas si la elección no es válida, y Error también si el
+     // flujo no está Terminado (cancelado o aún creando: no hay ficha).
+     // La ficha devuelta lleva healthCap()/defenseValues() al día y su
+     // equipo inicial en inventoryEquipment; instalarla en juego es un
+     // Player::set_character_sheet(&ficha) en el consumidor.
+-    Result<RPG::CharacterSheet> finalizar(const RPG::TierRules& reglas) const;
++    //
++    // APARIENCIA-01: con el catalogo de equipo, el equipo inicial sale
++    // PUESTO (lo que la clase permita, ver Game::Vestuario) y la ficha ya
++    // cuenta sus bonos. Sin catalogo, todo se queda en la mochila.
++    Result<RPG::CharacterSheet> finalizar(const RPG::TierRules& reglas,
++                                          const RPG::Catalogs::EquipmentCatalog* equipo = nullptr) const;
+ 
+ private:
+     const RPG::CharacterCreation& m_reglas;
+     RPG::CharacterCreationScreen m_pantalla;
+     Estado m_estado = Estado::Creando;
++    std::unique_ptr<EditorApariencia> m_apariencia;  // nullptr = sin paso Apariencia
++    bool m_enApariencia = false;
+ };
+ 
+ }  // namespace Game
+diff --git a/include/Game/Personajes/EditorApariencia.h b/include/Game/Personajes/EditorApariencia.h
+new file mode 100644
+index 0000000..b8f6ea5
+--- /dev/null
++++ b/include/Game/Personajes/EditorApariencia.h
+@@ -0,0 +1,88 @@
++// APARIENCIA-01 — El paso «Apariencia» de Nueva partida, sin ventana.
++//
++// Lo que el probador web de ARTE-02 hacia con selectores, en filas que se
++// recorren con W/S y se cambian con izquierda/derecha: piel y talla (solo los
++// pueblos de cuerpo liso), ojos, peinado y su color, barba y su color, y la
++// ropa de diario (cabeza, torso, piernas, pies y capa). Mas dos acciones:
++// AL AZAR y COMO SU RAZA. Las armas no estan: se ven cuando se equipan.
++//
++// Las filas dependen de la raza (un aarakocra no tiene pelo ni pies; una
++// naga no tiene piernas) y de lo elegido (sin peinado no hay color de pelo).
++// Cambiar de raza devuelve la apariencia a la de la raza nueva; volver a la
++// misma raza conserva lo elegido.
++//
++// AL AZAR es determinista (una semilla que avanza) para poder probarlo.
++#pragma once
++
++#include <cstddef>
++#include <cstdint>
++#include <string>
++#include <vector>
++
++#include "Game/Personajes/ManifiestoPersonajes.h"
++
++namespace Game {
++
++class EditorApariencia {
++public:
++    enum class Fila {
++        Piel,
++        Talla,
++        Ojos,
++        Peinado,
++        ColorPelo,
++        Barba,
++        ColorBarba,
++        Cabeza,
++        Torso,
++        Piernas,
++        Pies,
++        Capa,
++        AlAzar,
++        ComoSuRaza
++    };
++
++    explicit EditorApariencia(const ManifiestoPersonajes& manifiesto);
++
++    // Apariencia de la raza, salvo que ya se estuviera editando esa raza.
++    void empezar(const std::string& razaId);
++    const Apariencia& apariencia() const { return m_apariencia; }
++    const ManifiestoPersonajes& manifiesto() const { return m_manifiesto; }
++
++    const std::vector<Fila>& filas() const { return m_filas; }
++    std::size_t marcada() const { return m_marcada; }
++    Fila filaMarcada() const { return m_filas.empty() ? Fila::AlAzar : m_filas[m_marcada]; }
++
++    void arriba();
++    void abajo();
++    // Cambian el valor de la fila marcada (con la vuelta al llegar al final);
++    // en AL AZAR y COMO SU RAZA hacen la accion.
++    void izquierda();
++    void derecha();
++
++    // Lo que se pinta: "PEINADO", "Corto", el detalle del pie y el icono.
++    static const char* etiqueta(Fila fila);
++    static const char* ayuda(Fila fila);
++    static const char* icono(Fila fila);
++    std::string valor(Fila fila) const;
++
++    // Nombres para el jugador de los ids del manifiesto que no traen nombre
++    // (pieles, tallas, ojos, peinados, colores, barbas).
++    static std::string nombreDe(const std::string& id);
++
++private:
++    void rehacerFilas();
++    void cambiar(Fila fila, int paso);
++    void alAzar();
++    std::vector<std::string> opciones(Fila fila) const;
++    std::string actual(Fila fila) const;
++    void poner(Fila fila, const std::string& valor);
++
++    const ManifiestoPersonajes& m_manifiesto;
++    Apariencia m_apariencia;
++    std::vector<Fila> m_filas;
++    std::size_t m_marcada = 0;
++    std::uint32_t m_tirada = 0;  // AL AZAR: cuantas veces se ha pulsado
++};
++
++}  // namespace Game
+diff --git a/include/Game/Personajes/ManifiestoPersonajes.h b/include/Game/Personajes/ManifiestoPersonajes.h
+new file mode 100644
+index 0000000..861f9be
+--- /dev/null
++++ b/include/Game/Personajes/ManifiestoPersonajes.h
+@@ -0,0 +1,112 @@
++// APARIENCIA-01 — El contrato de los personajes por capas, leido para el motor.
++//
++// ARTE-02 dejo el arte y su contrato (assets/textures/personajes.json, que
++// genera tools/gen_personajes.py) y un probador en Python que monta cualquier
++// personaje. Faltaba que el juego supiera leerlo. Esto son los DATOS: que
++// razas hay y con que capas, que peinados, barbas, pieles, ojos y piezas de
++// equipo, en que atlas y en que fila de cada talla, en que orden se dibuja
++// cada ranura segun hacia donde mira, y que pieza se ve de cada objeto de
++// equipment.json (personajes/equipo_catalogo.json).
++//
++// GL-free a proposito: el montaje (MontajePersonajes), el editor de la
++// creacion (EditorApariencia) y las pruebas lo usan sin abrir una ventana.
++// Quien pinta es Render/HojaPersonaje.
++#pragma once
++
++#include <map>
++#include <string>
++#include <vector>
++
++#include "Core/Errors/Result.h"
++
++class JsonValue;
++
++namespace Game {
++
++// Una fila de un atlas de capas: un peinado, una barba, una piel, un color de
++// ojos o una pieza de equipo. Filas 1-based, como en el JSON.
++struct FilaDeCapa {
++    std::string id;      // "corto/pelo_castano", "piel_clara", "azul", "capucha_gris"
++    std::string estilo;  // pelo y barba: "corto", "BARBA"
++    std::string color;   // pelo y barba: "pelo_castano"
++    std::string nombre;  // piezas de equipo: "Capucha gris"
++    int fila = 0;
++};
++
++// Un atlas por talla ("medio", "bajo", "pequeno", "grande" y, en torso y
++// capa, "medio_sin_piernas") y las filas que tiene.
++struct GrupoDeCapas {
++    std::map<std::string, std::string> atlas;  // talla -> ruta relativa a assets/textures
++    std::vector<FilaDeCapa> filas;
++    std::vector<std::string> ocultaPelo;  // solo cabeza: los yelmos cerrados
++    const FilaDeCapa* buscar(const std::string& id) const;
++};
++
++struct RazaVisual {
++    std::string id, nombre, talla, tallaRopa;
++    int fila = 0;
++    std::vector<std::string> capas;  // "cuerpo", "alas", "morro", "rasgos"...
++    std::vector<std::string> sin;    // ranuras que no admite: "pelo", "pies"...
++    std::string piel;                // vacio = cuerpo con rasgos propios
++    std::string ojos;
++    std::string peloEstilo, peloColor, barbaEstilo, barbaColor;  // vacio = no tiene
++    std::map<std::string, std::string> equipo;                   // como va vestida
++    // Solo una raza de cuerpo liso, en una piel del atlas de cuerpos, admite
++    // otra piel u otra talla: el cuerpo sale entonces de ese atlas (probador).
++    bool cuerpoLiso = false;
++    bool admite(const std::string& ranura) const;  // la ranura no esta en `sin`
++};
++
++// Como se ve un personaje, explicito: lo que el jugador elige al crearlo y lo
++// que describe una entrada de "personajes" en personajes.json.
++struct Apariencia {
++    std::string raza;
++    std::string piel;                         // vacio o la de la raza = el cuerpo de la raza
++    std::string talla;                        // vacio o la de la raza = su talla
++    std::string ojos;                         // vacio = los de la raza
++    std::string peloEstilo, peloColor;        // estilo vacio = sin pelo
++    std::string barbaEstilo, barbaColor;      // estilo vacio = sin barba
++    std::map<std::string, std::string> ropa;  // ranura -> pieza
++    std::vector<std::string> quitarCapas;     // capas de la raza que no se pintan
++
++    // La raza tal cual la viste personajes.json. conArmas=false deja fuera
++    // arma y mano_izq: el jugador las lleva cuando equipa un objeto.
++    static Apariencia deRaza(const RazaVisual& raza, bool conArmas = false);
++    // Texto estable: dos apariencias con la misma clave montan la misma hoja.
++    std::string clave() const;
++};
++
++// La pieza que se ve de un objeto de equipment.json.
++struct PiezaDeObjeto {
++    std::string ranura;  // cabeza, torso, piernas, pies, capa, arma o mano_izq
++    std::string pieza;
++};
++
++// Ranuras de equipo en el orden en que se apilan, y las que son ropa (usan
++// la talla de ropa de la raza: nagas y espectros visten sin piernas).
++extern const char* const kRanurasDeEquipo[7];
++bool esRanuraDeRopa(const std::string& ranura);
++
++struct ManifiestoPersonajes {
++    std::map<std::string, std::map<std::string, int>> orden;  // ranura -> direccion -> z
++    std::map<std::string, std::string> nombreDeTalla;         // "medio" -> "Normal"
++    std::map<std::string, std::string> atlasDeRaza;           // capa -> ruta
++    std::vector<RazaVisual> razas;                            // orden de races.json
++    GrupoDeCapas cuerpos, ojos, pelo, barba;
++    std::map<std::string, GrupoDeCapas> equipo;          // ranura -> piezas
++    std::map<std::string, Apariencia> personajes;        // actores + historia
++    std::map<std::string, PiezaDeObjeto> piezaDeObjeto;  // objeto -> pieza
++
++    // Lee personajes.json y personajes/equipo_catalogo.json de la carpeta.
++    static Result<ManifiestoPersonajes> cargar(
++        const std::string& carpetaTexturas = "assets/textures");
++
++    const RazaVisual* raza(const std::string& id) const;
++    // Una composicion como las de "personajes" o las "composicion" de los
++    // atlas horneados: {"raza", "piel", "talla", "ojos", "pelo": [estilo,
++    // color] | null, "barba": ..., "equipo": {...}, "quitar_capas": [...]}.
++    // Sin "pelo" o sin "barba" valen los de la raza.
++    Result<Apariencia> desdeComposicion(const JsonValue& spec) const;
++};
++
++}  // namespace Game
+diff --git a/include/Game/Personajes/MontajePersonajes.h b/include/Game/Personajes/MontajePersonajes.h
+new file mode 100644
+index 0000000..3edbde8
+--- /dev/null
++++ b/include/Game/Personajes/MontajePersonajes.h
+@@ -0,0 +1,98 @@
++// APARIENCIA-01 — Montar un personaje por capas: la hoja de 12 frames.
++//
++// Hace lo mismo que tools/probador_personaje.py, que es lo que ARTE-02 dejo
++// escrito que tendria que hacer el motor: de cada atlas coge la fila de cada
++// capa y, frame a frame, las dibuja una encima de otra en el orden de su
++// ranura para la direccion del frame. La mezcla es la aritmetica entera de
++// Pillow (Image.alpha_composite), asi que la hoja sale IGUAL, byte a byte,
++// que la del probador y que los atlas horneados (la prueba lo comprueba con
++// los 62 personajes de actores_capas, razas_andando y personajes_historia).
++//
++// Los atlas se leen de disco la primera vez y se quedan en una cache con
++// presupuesto (los de las razas pesan 8,5 MB cada uno ya descomprimidos):
++// si se pasa, se sueltan los que hace mas tiempo que no se usan.
++//
++// GL-free: devuelve pixeles. Quien los sube a una textura es
++// Render/HojaPersonaje.
++#pragma once
++
++#include <cstddef>
++#include <cstdint>
++#include <list>
++#include <map>
++#include <memory>
++#include <string>
++#include <utility>
++#include <vector>
++
++#include "Core/Errors/Result.h"
++#include "Core/Imagen/ImagenRGBA.h"
++#include "Game/Personajes/ManifiestoPersonajes.h"
++
++namespace Game {
++
++// Una capa de un personaje: la fila `fila` (1-based) del atlas `atlas`,
++// que se ordena al apilar como la ranura `ranura`.
++struct CapaDeMontaje {
++    std::string ranura;  // "cuerpo", "ojos", "pelo", "torso", "arma"...
++    std::string atlas;   // ruta relativa a la carpeta de texturas
++    int fila = 0;
++};
++
++class MontajePersonajes {
++public:
++    static constexpr int kLado = 64;    // un frame
++    static constexpr int kFrames = 12;  // arriba 1-3, derecha 4-6, abajo 7-9, izquierda 10-12
++    static constexpr std::size_t kPresupuestoPorDefecto = 96u * 1024u * 1024u;
++
++    MontajePersonajes(ManifiestoPersonajes manifiesto, std::string carpetaTexturas,
++                      std::size_t presupuestoBytes = kPresupuestoPorDefecto);
++    // Lee el manifiesto de la carpeta y deja el montaje listo.
++    static Result<std::unique_ptr<MontajePersonajes>> cargar(
++        const std::string& carpetaTexturas = "assets/textures");
++
++    const ManifiestoPersonajes& manifiesto() const { return m_manifiesto; }
++
++    // Las capas en el orden en que se apilan (el capas() del probador). El
++    // `equipo` (ranura visual -> pieza) va encima de la ropa de la
++    // apariencia: es lo que el personaje lleva puesto.
++    Result<std::vector<CapaDeMontaje>> capas(
++        const Apariencia& apariencia, const std::map<std::string, std::string>& equipo = {}) const;
++
++    // La hoja de 12 frames: 768x64, fila 0 arriba, lista para una textura.
++    Result<imagen::ImagenRGBA> montar(const Apariencia& apariencia,
++                                      const std::map<std::string, std::string>& equipo = {});
++
++    void vaciarCache();
++    std::size_t bytesEnCache() const { return m_bytes; }
++
++private:
++    Result<const imagen::ImagenRGBA*> atlas(const std::string& ruta);
++    void recortarCache();
++
++    ManifiestoPersonajes m_manifiesto;
++    std::string m_carpeta;
++    std::size_t m_presupuesto;
++    std::list<std::pair<std::string, imagen::ImagenRGBA>> m_cache;  // delante, la mas reciente
++    std::size_t m_bytes = 0;
++};
++
++// Mezcla el pixel RGBA `encima` sobre `debajo`, en su sitio, con la misma
++// aritmetica entera que Image.alpha_composite de Pillow.
++void mezclarEncima(std::uint8_t* debajo, const std::uint8_t* encima);
++
++// --- El reparto de la hoja ---------------------------------------------
++// Cada rumbo tiene tres frames: paso, quieto, paso.
++enum class Rumbo { Arriba = 0, Derecha = 1, Abajo = 2, Izquierda = 3 };
++Rumbo rumboDeFrame(int frame);           // frame 1..12
++const char* nombreDeRumbo(Rumbo rumbo);  // "arriba", "derecha", "abajo", "izquierda"
++int frameQuieto(Rumbo rumbo);            // 2, 5, 8, 11
++// El ciclo de andar EMPEZANDO por el frame quieto ({8, 7, 8, 9} hacia
++// abajo): Player descansa en el primer frame de su animacion, y con el
++// ciclo de los atlas horneados ({7, 8, 9, 8}) se quedaria a medio paso.
++std::vector<int> cicloDeAndar(Rumbo rumbo);
++// La vista previa de la creacion anda y va girando: abajo, derecha,
++// arriba, izquierda. Que frame toca a los `segundos` de abrirla.
++int frameDeVistaPrevia(double segundos);
++
++}  // namespace Game
+diff --git a/include/Game/Personajes/Vestuario.h b/include/Game/Personajes/Vestuario.h
+new file mode 100644
+index 0000000..f1474b9
+--- /dev/null
++++ b/include/Game/Personajes/Vestuario.h
+@@ -0,0 +1,56 @@
++// APARIENCIA-01 — Lo que el personaje lleva puesto y como se ve.
++//
++// Dos preguntas que antes no tenian dueno:
++//
++//   1. Con que empieza PUESTO. La clase trae su equipo de arranque, pero
++//      construir() lo deja en la mochila y el jugador empezaba en cueros.
++//      Decision de Oriol (29/09): empieza puesto lo que la clase permita.
++//      La regla es la mas simple que no se inventa nada: cada objeto, en el
++//      orden en que lo da la clase, se equipa con InventoryEngine::equip()
++//      si su ranura esta libre; si la clase no puede llevarlo (peso, simbolo,
++//      rareza, requisitos) o la ranura ya esta ocupada, se queda en la
++//      mochila. Nunca se desequipa nada para poner otra cosa.
++//
++//      OJO, dato del canon: equipment.json pone los escudos, orbes y focos en
++//      la ranura MainHand, asi que no conviven con el arma; el caballero
++//      templario empieza con la espada y el escudo en la mochila.
++//
++//   2. Que se VE de lo puesto: la pieza de cada objeto sale de
++//      personajes/equipo_catalogo.json (ManifiestoPersonajes::piezaDeObjeto).
++//      Los anillos, amuletos y talismanes no tienen pieza: no se ven.
++#pragma once
++
++#include <array>
++#include <map>
++#include <string>
++#include <vector>
++
++#include "Game/Personajes/ManifiestoPersonajes.h"
++#include "RPG/Catalogs/RpgCatalogs.h"
++#include "RPG/CharacterCreation.h"
++#include "RPG/CharacterSheet.h"
++#include "RPG/TierRules.h"
++
++namespace Game {
++namespace Vestuario {
++
++// Equipa lo que se pueda del equipo de la mochila (en su orden) sin
++// desequipar nada. Devuelve los ids que ha puesto.
++std::vector<std::string> equiparInicial(RPG::CharacterSheet& ficha,
++                                        const RPG::ClassDefinition& clase,
++                                        const RPG::TierRules& tiers,
++                                        const RPG::Catalogs::EquipmentCatalog& equipo);
++
++// Lo que se ve de lo puesto: ranura visual -> pieza.
++std::map<std::string, std::string> piezasVisibles(const std::array<std::string, 7>& puestos,
++                                                  const ManifiestoPersonajes& manifiesto);
++
++// Lo que llevaria puesto al empezar con esta eleccion: la vista previa lo
++// ensena mientras se elige clase, trasfondo y reparto (los requisitos de
++// stats cuentan: una armadura de placas aparece al subir CON).
++std::array<std::string, 7> probar(const RPG::CharacterCreation& reglas,
++                                  const RPG::CreationChoice& eleccion, const RPG::TierRules& tiers,
++                                  const RPG::Catalogs::EquipmentCatalog& equipo);
++
++}  // namespace Vestuario
++}  // namespace Game
+diff --git a/include/RPG/CharacterCreation.h b/include/RPG/CharacterCreation.h
+index 2274013..722227c 100644
+--- a/include/RPG/CharacterCreation.h
++++ b/include/RPG/CharacterCreation.h
+@@ -123,6 +123,12 @@ public:
+     // un bono racial SI puede pasar de 6, es el premio de la raza.
+     StatBlock statsFinales(const CreationChoice& e) const;
+ 
++    // El equipo de arranque: el de la clase y, sin repetir, el del trasfondo.
++    // construir() lo mete en la mochila; la creacion lo usa para ensenar
++    // con que empiezas puesto (APARIENCIA-01).
++    std::vector<std::string> equipoInicial(const std::string& classId,
++                                           const std::string& backgroundId) const;
++
+     // La ficha. Falla si problemas() no esta vacio: construir una ficha
+     // invalida "a medias" es peor que no construirla.
+     Result<CharacterSheet> construir(const CreationChoice& e) const;
+diff --git a/include/Render/HojaPersonaje.h b/include/Render/HojaPersonaje.h
+new file mode 100644
+index 0000000..fbb6f89
+--- /dev/null
++++ b/include/Render/HojaPersonaje.h
+@@ -0,0 +1,75 @@
++// APARIENCIA-01 — La hoja de un personaje montado, en la GPU.
++//
++// Game::MontajePersonajes monta la hoja de 12 frames en la CPU (sin ventana,
++// igual que el probador de tools/). Esto la sube a una textura con su atlas
++// de 12 regiones y sirve para dos cosas:
++//
++//   - Vestir a un actor: ponerA() le da la hoja como sprite de personaje y
++//     los ciclos de andar bien repartidos (arriba 1-3, derecha 4-6, abajo
++//     7-9, izquierda 10-12; cada ciclo empieza en el frame quieto, que es el
++//     que Player ensena al pararse). animar() hace lo mismo con cualquier
++//     hoja de ese reparto, personaje.png incluida: arregla que el jugador se
++//     quedara de espaldas al pararse (ARTE-01).
++//
++//   - Como elemento del HUD, la vista previa de la creacion: un escenario con
++//     el personaje grande andando y girando, y debajo sus cuatro lados.
++//
++// vestir() solo vuelve a montar y subir si la apariencia o lo puesto
++// cambiaron: se puede llamar cada fotograma. La textura se crea una vez y se
++// reescribe en su sitio, asi que el atlas que tiene un actor sigue valido.
++#pragma once
++
++#include <chrono>
++#include <map>
++#include <memory>
++#include <string>
++
++#include "Core/Errors/Result.h"
++#include "Core/Math/Vector2.h"
++#include "Game/Personajes/MontajePersonajes.h"
++#include "Render/HudElement.h"
++
++class AnimatedEntity;
++class Texture;
++class TextureAtlas;
++
++class HojaPersonaje : public IHudElement {
++public:
++    // blanco: textura 1x1 para pintar el escenario de la vista previa
++    // (nullptr = solo el personaje). No propietario.
++    explicit HojaPersonaje(Texture* blanco = nullptr);
++    ~HojaPersonaje() override;
++
++    // Monta con `montaje` y sube la hoja si algo cambio desde la ultima vez.
++    // Ok(true) si la ha rehecho, Ok(false) si ya estaba; Error si no se pudo
++    // montar (se queda la anterior y no se reintenta hasta que cambie algo).
++    Result<bool> vestir(Game::MontajePersonajes& montaje, const Game::Apariencia& apariencia,
++                        const std::map<std::string, std::string>& equipo = {});
++    bool lista() const { return m_atlas != nullptr; }
++    const Game::Apariencia& apariencia() const { return m_apariencia; }
++    TextureAtlas* atlas() const { return m_atlas.get(); }
++
++    // Le da la hoja a un actor (sprite de personaje + ciclos de andar) y lo
++    // deja quieto mirando hacia abajo. Sin hoja lista no hace nada.
++    void ponerA(AnimatedEntity& actor, int anchoDibujo, int altoDibujo,
++                const Vector2& anclaje) const;
++    // Los ciclos de andar de cualquier hoja de 12 frames con este reparto.
++    static void animar(AnimatedEntity& actor);
++
++    // --- Vista previa en el HUD ---
++    void setMarco(const HudTransform& marco) { m_marco = marco; }
++    // El paseo vuelve a empezar: abajo, derecha, arriba, izquierda.
++    void reiniciarPaseo() { m_inicio = std::chrono::steady_clock::now(); }
++    void render(SpriteBatch& batch, int viewportWidth, int viewportHeight) const override;
++
++private:
++    void subir(const imagen::ImagenRGBA& hoja);
++
++    Texture* m_blanco;
++    std::unique_ptr<Texture> m_textura;
++    std::unique_ptr<TextureAtlas> m_atlas;
++    Game::Apariencia m_apariencia;
++    std::string m_clave;
++    HudTransform m_marco;
++    std::chrono::steady_clock::time_point m_inicio;
++};
+diff --git a/planificacion/seguimiento/APARIENCIA-01.json b/planificacion/seguimiento/APARIENCIA-01.json
+new file mode 100644
+index 0000000..4dabda6
+--- /dev/null
++++ b/planificacion/seguimiento/APARIENCIA-01.json
+@@ -0,0 +1,60 @@
++{
++  "id": "APARIENCIA-01",
++  "date": "2026-09-29",
++  "author": "Claude",
++  "status": "HECHO en el arbol, sin commit",
++  "pedido": "Oriol: «me gusta mucho el motor de crear apariencias de personajes, integralo en el juego, asi podremos modificar nuestra apariencia y stats antes de empezar a jugar». Decisiones que tomo: paso Apariencia tras la raza con vista previa en todos los pasos; el equipo inicial de la clase empieza PUESTO.",
++  "descripcion": "El probador de personajes de ARTE-02, dentro del motor. (1) Game::MontajePersonajes monta la hoja de 12 frames por capas a partir de personajes.json, byte a byte igual que tools/probador_personaje.py (misma aritmetica que Image.alpha_composite de Pillow). (2) Nueva partida pasa a 15 pasos: tras la raza, «Que aspecto tienes» (piel y talla en los pueblos de cuerpo liso, ojos, peinado y color, barba y color, ropa de diario de cabeza/torso/piernas/pies/capa, AL AZAR y COMO TU PUEBLO). (3) A la derecha de todos los pasos, una vista previa del personaje andando y girando, con sus cuatro lados debajo: al pasar razas se ve cada pueblo, al pasar clases su equipo inicial puesto, y en el reparto de stats el equipo que se gana (la armadura de placas aparece al subir CON a 3). (4) El equipo inicial sale puesto (lo primero de cada ranura que la clase pueda llevar). (5) En partida el jugador lleva su hoja; al equipar o desequipar desde TAB el sprite se rehace. (6) Arreglos de paso: la pantalla de Nueva partida ya no se queda congelada en 1/14 (refreshHud tras procesar), el titulo y las pistas ya no se parten palabra a palabra, A/D funcionan ademas de las flechas, el jugador ya no se para de espaldas (reparto real de personaje.png) y el cierre suelta las texturas nuevas antes que la ventana.",
++  "archivos": {
++    "nuevos": [
++      "include/Core/Imagen/ImagenRGBA.h + src/Core/Imagen/ImagenRGBA.cpp (libreria GL-free motor_imagen: PNG a RGBA con stb_image estatico)",
++      "include/Game/Personajes/ManifiestoPersonajes.h + .cpp (el contrato: personajes.json + equipo_catalogo.json)",
++      "include/Game/Personajes/MontajePersonajes.h + .cpp (capas, mezcla, cache LRU de atlas, reparto de la hoja)",
++      "include/Game/Personajes/EditorApariencia.h + .cpp (el paso Apariencia, GL-free)",
++      "include/Game/Personajes/Vestuario.h + .cpp (equipo inicial puesto y piezas visibles de lo equipado)",
++      "include/Render/HojaPersonaje.h + src/Render/HojaPersonaje.cpp (textura GL de la hoja, ciclos de andar y vista previa en el HUD)",
++      "tests/Game/PersonajesCapasTests.cpp (7 casos) y tests/Game/EditorAparienciaTests.cpp (8 casos)",
++      "cmake/AparienciaTests.cmake (va en el MISMO commit que su include() en CMakeLists.txt)"
++    ],
++    "modificados": [
++      "include/Game/NewGameFlow.h + src/Game/NewGameFlow.cpp (paso Apariencia opcional; vistaPrevia(); finalizar(tiers, equipo) equipa)",
++      "include/RPG/CharacterCreation.h + src/RPG/CharacterCreation.cpp (equipoInicial(): una sola regla para construir() y la vista previa)",
++      "include/Engine/PantallaNuevaPartida.h + src/Engine/PantallaNuevaPartida.cpp (panel 1040x600, lista + escenario, 13 miembros: reglas en la clase de datos Datos)",
++      "src/Engine/Application.cpp (baja 12 lineas, hoy 1257 -> 1245: HojaPersonaje::animar sustituye al reparto viejo; refreshHud() tras procesar la creacion, que PERGAMINO-01 tambien hizo)",
++      "src/Engine/ApplicationHud.cpp (vestir al jugador al tomar la ficha; actualizarAspecto cada fotograma)",
++      "src/Engine/ApplicationPantallas.cpp (la pantalla recibe el catalogo de equipo)",
++      "src/Engine/ApplicationCierre.cpp (m_nuevaPartida.reset() antes de la Window: sus hojas son texturas GL)",
++      "CMakeLists.txt (motor_imagen; 4 fuentes en motor_level; HojaPersonaje.cpp en motor_core; include de AparienciaTests)",
++      "tests/Engine/ApplicationCableadoTests.cpp (cableado_titulo_sale_del_manifiesto: Nueva partida abre la creacion, no cambia de escena)",
++      "tools/gen_personajes.py + los 5 JSON que genera (solo la nota del reparto: ya no dice que Application.cpp lo lee mal)",
++      "assets/textures/personajes.md y actores_capas.md (estado y fallo de personaje.png arreglado)"
++    ]
++  },
++  "ley_del_repo": {
++    "Application.cpp": "baja 12 lineas (sobre el arbol del Mac de las 18:00, 1257 -> 1245)",
++    "Application.h": "sin tocar (519 lineas, 109 miembros)",
++    "techo_500": "ningun fichero nuevo pasa de 500 (EditorApariencia.cpp 420, PantallaNuevaPartida.cpp 403)",
++    "miembros": "ninguna cabecera nueva pasa de 15; PantallaNuevaPartida.h 13",
++    "frontera_GL": "motor_core no gana rehenes: HojaPersonaje.cpp habla GL; lo GL-free va en motor_level y motor_imagen",
++    "alcance": "las 6 cabeceras nuevas las alcanza juego (medir_alcance.py)",
++    "guardia": "linea_base_core.py: 0 de deuda nueva; falla solo por cmake/AparienciaTests.cmake sin versionar, que se arregla con el commit"
++  },
++  "verification": [
++    "test_personajes_capas 7/7: los 62 personajes horneados salen byte a byte montados en C++; la mezcla coincide con Pillow en 40 pares; mutaciones de la mezcla y del orden ponen la prueba en rojo.",
++    "test_editor_apariencia 8/8: filas por pueblo, vuelta de valores, barba a juego, AL AZAR determinista y montable en las 43 razas, equipo inicial puesto, flujo de 15 pasos con finalizar() equipando.",
++    "test_h104_new_game_flow 7/7, test_new_game_flow 3/3, test_character_creation 4/4, test_character_creation_flow 5/5: el flujo de 14 pasos sin manifiesto sigue igual.",
++    "test_application_cableado con EGL: cableado_titulo_sale_del_manifiesto pasa (antes fallaba); test_application_shutdown 4/4.",
++    "tools/test_validar_sprites.py (reproducibilidad de personajes y probador) y validar_sprites.py en verde tras cambiar la nota.",
++    "Juego real en el contenedor (Mesa llvmpipe + GLFW null con guion): 33 capturas de la creacion y de la partida, y un video de 34 s.",
++    "Rehecho sobre el arbol del Mac de las 18:00, con PERGAMINO-01 dentro (unos 120 ficheros cambiados por otras sesiones desde la foto de la 01:33). Coincidian CMakeLists.txt y cuatro Application*.cpp: dos choques de lineas vecinas resueltos a mano, y PERGAMINO-01 ya traia el mismo refreshHud() tras procesar. Compila; en ctest fallan las mismas que sin este cambio (GL sin pantalla y las que ya fallaban); test_application_shutdown 4/4 y test_pergamino 33/33 con EGL. Juego real: llega a Boundington con el HUD de pergamino, el jugador lleva su pelo y la armadura de placas, el cuaderno (TAB -> Equipo) ensena el equipo inicial puesto, y desequipar/equipar desde el cuaderno rehace el sprite. Guardia entera: igual con y sin este cambio (la deuda nueva de hoy es de otras sesiones en vuelo), salvo Application.cpp, que baja de 1257 a 1245. medir_alcance.py nuevo: las 6 cabeceras nuevas las alcanza juego.",
++    "PENDIENTE en el Mac: ./juego -> Nueva partida -> los 15 pasos -> TAB/Equipo: desequipar la armadura y ver la ropa de diario."
++  ],
++  "pendiente": [
++    "SaveGame no serializa la ficha (ya pasaba): la apariencia tampoco se guarda. Cuando se guarde la ficha, guardar Game::Apariencia a su lado.",
++    "equipment.json pone escudos, orbes y focos en MainHand: no conviven con el arma y el caballero templario empieza con el escudo en la mochila. Es decision de canon/cartas (¿OffHand?).",
++    "Visto al probar: al desequipar la armadura los PV no se recortan al nuevo maximo (35/29 hasta volver a ponerla). Es del desequipar (inventario/ficha), no del aspecto; con el equipo inicial puesto se ve enseguida.",
++    "Los PNJ siguen con los atlas horneados o el cuerpo base: montarlos por capas con MontajePersonajes es el paso natural (los 19 de personajes.json ya se leen).",
++    "La pestana Estado del TAB podria ensenar el retrato (HojaPersonaje ya sabe pintarse en el HUD).",
++    "Ya existian y siguen: test_application_cableado revienta en el contenedor al destruir la segunda Application (~BitmapFont); demo_nova_partida elige mago_chasqueador, sin equipo inicial (mochila vacia con o sin este cambio). Pasa igual sin estos cambios."
++  ]
++}
+diff --git a/sesiones/2026-09-29-claude-apariencia.md b/sesiones/2026-09-29-claude-apariencia.md
+new file mode 100644
+index 0000000..00c577f
+--- /dev/null
++++ b/sesiones/2026-09-29-claude-apariencia.md
+@@ -0,0 +1,110 @@
++# 29/09/2026 — Claude: el creador de apariencias, dentro del juego (APARIENCIA-01)
++
++Encargo de Oriol: «me gusta mucho el motor de crear apariencias de
++personajes, intégralo en el juego, así podremos modificar nuestra apariencia
++y stats antes de empezar a jugar». El «motor» es el probador de ARTE-02 (el
++artifact web y `tools/probador_personaje.py`). Decidió: un paso
++**Apariencia justo después de la raza**, con la vista previa acompañando a
++todos los pasos, y que el **equipo inicial empiece puesto**.
++
++Todo está **en el árbol, sin commit** (git-safe.sh vive fuera de la carpeta
++conectada). Seguimiento: `planificacion/seguimiento/APARIENCIA-01.json`.
++
++## Qué se ve ahora
++
++- **Nueva partida tiene 15 pasos.** Al pasar razas, a la derecha anda cada
++  pueblo tal cual viste; en «Qué aspecto tienes» se cambian piel y talla (los
++  14 pueblos de cuerpo liso), ojos, peinado y su color, barba y su color, y la
++  ropa de diario (cabeza, torso, piernas, pies, capa), más AL AZAR y COMO TU
++  PUEBLO. W/S fila, A/D o flechas cambian.
++- **La vista previa** es un escenario con el personaje a ×5 andando y girando
++  (abajo, derecha, arriba, izquierda) y sus cuatro lados quietos debajo. Al
++  pasar clases se ve el equipo inicial de cada una ya puesto; en el reparto,
++  lo que se gana: el coloso de ceniza se pone la armadura de placas al subir
++  CON a 3 (la pide la carta). El resumen dice con qué empiezas puesto.
++- **En partida** el jugador lleva su propia hoja. TAB → Equipo → desequipar la
++  armadura deja ver la ropa de diario; volver a equiparla la pone encima.
++
++## Cómo está partido (ley del repo)
++
++GL-free, con pruebas: `motor_imagen` (librería nueva: un PNG a RGBA con una
++copia privada de stb_image) y, en `motor_level`, `Game::ManifiestoPersonajes`
++(el contrato), `Game::MontajePersonajes` (las capas y la mezcla, con caché
++LRU de 96 MB que se vacía al salir de la creación), `Game::EditorApariencia`
++(el paso) y `Game::Vestuario` (equipo inicial puesto y piezas visibles). El
++paso vive en `Game::NewGameFlow` y no en `CharacterCreationScreen`: la
++pantalla es de reglas y la apariencia no cambia ningún número.
++
++Con GL, en `motor_core`: `HojaPersonaje` (sube la hoja a una textura, reparte
++los ciclos de andar y, como widget del HUD, pinta la vista previa). Habla con
++GL, así que no añade rehenes a la librería mezclada.
++
++`Application.h` no cambia. `Application.cpp` baja 12 líneas (hoy, de 1257 a 1245): el reparto
++viejo de `personaje.png` (1-4 abajo, 5-8 arriba, que dejaba al jugador de
++espaldas al pararse) se sustituye por `HojaPersonaje::animar()`. Los ciclos
++empiezan en el frame quieto ({8, 7, 8, 9} hacia abajo) porque `Player`
++descansa en el primero; el `{7, 8, 9, 8}` de los atlas horneados lo dejaría a
++medio paso.
++
++## Lo que había que arreglar para que se viera
++
++- **La creación estaba congelada en 1/14** (fallo 1 de las capturas del
++  28/09): la escena de título no llama a `update()`, así que nadie refrescaba
++  el HUD. Ahora `processInput` llama a `refreshHud()` tras `procesar()`.
++- **Título y pistas partidos palabra a palabra**: los `HudText` tenían el
++  ancho por defecto (100 px). Ahora llevan el de su caja.
++- **La pista decía A/D y solo funcionaban las flechas**: ahora valen las dos.
++- **Cierre**: las hojas nuevas son texturas GL; `shutdown()` suelta
++  `m_nuevaPartida` antes que la ventana (sin eso, violación de segmento al
++  salir).
++
++## Verificación
++
++- `test_personajes_capas` 7/7: los **62 personajes horneados** salen **byte a
++  byte** montados en C++; la mezcla coincide con Pillow en 40 pares con alfa
++  parcial. Probado por mutación: tocar la mezcla o el orden la pone en rojo.
++- `test_editor_apariencia` 8/8 (AL AZAR montable en las 43 razas; flujo de 15
++  pasos; `finalizar()` equipando). Las pruebas del flujo de 14 pasos siguen
++  verdes sin tocarlas.
++- Juego real en el contenedor (Mesa llvmpipe + GLFW null con guion, las
++  herramientas de las capturas del 28/09): 33 capturas y un vídeo de 34 s, en
++  `Claude outputs/apariencia_2026-09-29/`.
++- `linea_base_core.py`: 0 de deuda nueva. Solo falla porque
++  `cmake/AparienciaTests.cmake` no está versionado: **va en el mismo commit que
++  su `include()`**.
++- **Rehecho sobre el árbol del Mac de las 18:00**, con PERGAMINO-01 dentro.
++  Desde la foto de la 01:33 otras sesiones habían cambiado o añadido unos 120
++  ficheros (PERGAMINO-01, el juicio de clases, H0-07, H0-08, H2-01, H2-08,
++  H3-01, H4-01, G-11, AV1-03, la selección de objetivo). De los míos
++  coincidían `CMakeLists.txt` y cuatro `Application*.cpp`: dos choques de
++  líneas vecinas (en `CMakeLists.txt` y en `ApplicationHud.cpp`), y
++  PERGAMINO-01 ya había hecho el mismo arreglo de `refreshHud()` tras
++  `procesar()`. Con todo junto compila y en `ctest` fallan las mismas que sin
++  este cambio (las de GL sin pantalla y las de la lista de abajo);
++  `test_application_shutdown` 4/4 y `test_pergamino` 33/33 con EGL. El juego
++  real llega a Boundington con el HUD de pergamino y el jugador con su pelo
++  y la armadura de placas; en el cuaderno (TAB → Equipo) sale el equipo
++  inicial puesto, y desequipar la armadura o volver a equiparla desde
++  Inventario rehace el sprite (capturas 32-34 y `jugador_con_pergamino_zoom.png`).
++  La guardia entera da lo mismo con y sin este cambio (la deuda nueva que
++  marca hoy es de otras sesiones en vuelo), salvo `Application.cpp`, que baja
++  de 1257 a 1245. `medir_alcance.py` nuevo: las seis cabeceras nuevas las
++  alcanza `juego`.
++
++## Avisos
++
++- `equipment.json` pone escudos, orbes y focos en `MainHand`: no conviven con
++  el arma. El caballero templario empieza con espada y el escudo en la mochila.
++  No lo he cambiado: es canon/cartas.
++- La apariencia no se guarda: `SaveGame` sigue sin serializar la ficha.
++- Visto al probar con el cuaderno: al desequipar la armadura los PV no se
++  recortan al nuevo máximo (la cabecera dice 35/29 hasta volver a ponerla).
++  Es del desequipar, no del aspecto; con el equipo puesto de salida se ve
++  enseguida. No lo he tocado: es de inventario/ficha.
++- Ya fallaban antes y siguen igual (comprobado compilando el árbol sin estos
++  cambios): `test_application`, `test_application_scenes` y
++  `test_g14_hud_timers_commerce` no compilan; `test_catalog_content` y
++  `test_gdb12_screens` fallan; `demo_creacion_personaje` espera 61 clases (hay
++  63) y `demo_nova_partida` elige `mago_chasqueador`, que no trae equipo
++  inicial (ni su trasfondo), así que la mochila sale vacía con o sin este
++  cambio.
+diff --git a/src/Core/Imagen/ImagenRGBA.cpp b/src/Core/Imagen/ImagenRGBA.cpp
+new file mode 100644
+index 0000000..ceb2a1c
+--- /dev/null
++++ b/src/Core/Imagen/ImagenRGBA.cpp
+@@ -0,0 +1,39 @@
++// APARIENCIA-01 — ver include/Core/Imagen/ImagenRGBA.h.
++#include "Core/Imagen/ImagenRGBA.h"
++
++#include <utility>
++
++// Copia privada de stb_image (ver la cabecera): STB_IMAGE_STATIC deja todas
++// sus funciones con enlace interno. Solo PNG: es lo unico que leen los atlas.
++#if defined(__GNUC__) || defined(__clang__)
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wunused-function"
++#endif
++#define STB_IMAGE_STATIC
++#define STB_IMAGE_IMPLEMENTATION
++#define STBI_ONLY_PNG
++#include <stb_image.h>
++#if defined(__GNUC__) || defined(__clang__)
++#pragma GCC diagnostic pop
++#endif
++
++namespace imagen {
++
++Result<ImagenRGBA> cargarPNG(const std::string& ruta) {
++    int ancho = 0, alto = 0, canales = 0;
++    stbi_uc* datos = stbi_load(ruta.c_str(), &ancho, &alto, &canales, 4);
++    if (datos == nullptr) {
++        const char* motivo = stbi_failure_reason();
++        return Result<ImagenRGBA>::Error("no se puede leer " + ruta + ": " +
++                                         (motivo != nullptr ? motivo : "motivo desconocido"));
++    }
++    ImagenRGBA imagen;
++    imagen.ancho = ancho;
++    imagen.alto = alto;
++    imagen.pixeles.assign(
++        datos, datos + static_cast<std::size_t>(ancho) * static_cast<std::size_t>(alto) * 4);
++    stbi_image_free(datos);
++    return Result<ImagenRGBA>::Ok(std::move(imagen));
++}
++
++}  // namespace imagen
+diff --git a/src/Engine/Application.cpp b/src/Engine/Application.cpp
+index fe74bea..5e40b36 100644
+--- a/src/Engine/Application.cpp
++++ b/src/Engine/Application.cpp
+@@ -41,6 +41,7 @@
+ #include "Render/Camera.h"
+ #include "Render/DynamicLightMap.h"
+ #include "Render/FogOfWar.h"
++#include "Render/HojaPersonaje.h"
+ #include "Engine/InputState.h"
+ #include "Game/BattleMenuActions.h"
+ #include "Game/OptionsLocaleBridge.h"
+@@ -83,16 +84,11 @@ using namespace Engine::Interno;
+ namespace {
+ 
+ 
+-// --- Sprite de personaje (bebé, assets/textures/personaje.png) ---
+-// Hoja horizontal de 12 frames de 64x64 con alpha. Se reparte asi para las
+-// animaciones de Player/Enemy/NPC, que todos comparten el mismo sprite por
+-// ahora (sin tint: la distincion va por posicion y HUD):
+-//   frames 1..4  -> "walk_down"  (4 frames del ciclo de caminar)
+-//   frames 5..8  -> "walk_up"
+-//   frames 9..12 -> "walk_right"  (y "walk_left" con flip, que hoy no existe
+-//                                 como textura: reutilizamos estos)
+-// "idle" = frame unico del primer frame de cada ciclo, para que descansar
+-// se lea como "el mismo personaje, quieto".
++// --- Sprite de personaje (el cuerpo base, assets/textures/personaje.png) ---
++// Hoja de 12 frames de 64x64: arriba 1-3, derecha 4-6, abajo 7-9, izquierda
++// 10-12 (paso, quieto, paso). Los ciclos los reparte HojaPersonaje::animar(),
++// igual que en la hoja del personaje creado (APARIENCIA-01). Antes se leia
++// como 1-4 abajo y 5-8 arriba: el jugador se paraba de espaldas (ARTE-01).
+ constexpr int kCharacterFrameW = 64;               // ancho de UN frame en la hoja
+ constexpr int kCharacterFrameH = 64;               // alto de UN frame en la hoja
+ constexpr int kCharacterFrameCount = 12;            // 768 / 64
+@@ -326,17 +322,9 @@ Result<bool> Application::init(int width, int height, const std::string& title,
+     // Sprite de personaje: el bebé de personaje.png, no el tileset.
+     m_player->setCharacterSprite(m_characterAtlas.get(), kCharacterDrawW, kCharacterDrawH,
+                                  characterAnchor());
+-    // Reparto de los 12 frames del ciclo de caminar del bebé en las cuatro
+-    // direcciones que Player::handleInput sabe disparar. Como la hoja es un
+-    // unico ciclo (no viene separada por orientaciones), cada direccion usa
+-    // un tramo de 4 frames para que el movimiento se vea animado y, a la
+-    // vez, que cada direccion ANIME DISTINTO (asi player/NPC/enemigo, que
+-    // comparten hoja, no queden como copias identicas moviendose en bloque).
+-    m_player->addAnimation("idle", {1});
+-    m_player->addAnimation("walk_down", {1, 2, 3, 4});
+-    m_player->addAnimation("walk_up", {5, 6, 7, 8});
+-    m_player->addAnimation("walk_right", {9, 10, 11, 12});
+-    m_player->addAnimation("walk_left", {9, 10, 11, 12});
++    // Los ciclos de andar del reparto real de la hoja (ver arriba). Al crear
++    // personaje, PantallaNuevaPartida::vestir() le pone su propia hoja.
++    HojaPersonaje::animar(*m_player);
+     m_player->play("idle");  // frame valido desde el primer render()
+ 
+     trace("init: player OK");
+diff --git a/src/Engine/ApplicationCierre.cpp b/src/Engine/ApplicationCierre.cpp
+index 6e2162a..2b78c0c 100644
+--- a/src/Engine/ApplicationCierre.cpp
++++ b/src/Engine/ApplicationCierre.cpp
+@@ -133,6 +133,9 @@ void Application::shutdown() {
+     m_renderer.reset();
+     m_worldMarkers.clear();  // tras el renderer (que solo los referenciaba)
+     m_player.reset();
++    // APARIENCIA-01 — Sus hojas de personaje son texturas GL (y el Player,
++    // ya destruido, llevaba su ficha y su atlas): antes que la Window.
++    m_nuevaPartida.reset();
+     m_camera.reset();
+     m_atlas.reset();
+     m_characterAtlas.reset();  // mismo criterio que m_atlas (sin GL propio)
+diff --git a/src/Engine/ApplicationHud.cpp b/src/Engine/ApplicationHud.cpp
+index b07f15a..1603427 100644
+--- a/src/Engine/ApplicationHud.cpp
++++ b/src/Engine/ApplicationHud.cpp
+@@ -109,6 +109,7 @@ void Application::refreshHud() {
+         if (m_nuevaPartida) {
+             if (RPG::CharacterSheet* ficha = m_nuevaPartida->tomarFicha()) {
+                 m_player->set_character_sheet(ficha);
++                m_nuevaPartida->vestir(*m_player);  // APARIENCIA-01: su aspecto y su equipo
+                 m_player->set_health(m_player->maxHealth());
+                 m_playerSkills.restoreMana(m_playerSkills.maxMana());
+                 m_scenes.requestReplace(makeScene(false));
+@@ -132,6 +133,8 @@ void Application::refreshHud() {
+     static const bool conFps = std::getenv("MOTOR_FPS") != nullptr;
+     m_fpsText->setVisible(conFps);
+ 
++    // APARIENCIA-01 — Si cambia lo que lleva puesto, la hoja del jugador se rehace.
++    if (m_nuevaPartida) m_nuevaPartida->actualizarAspecto();
+     const GameMode modo = m_session->mode();
+     const bool inBattle = modo == GameMode::Battle;
+     const bool inShop = modo == GameMode::Shop;
+diff --git a/src/Engine/ApplicationPantallas.cpp b/src/Engine/ApplicationPantallas.cpp
+index c11d469..f4132d7 100644
+--- a/src/Engine/ApplicationPantallas.cpp
++++ b/src/Engine/ApplicationPantallas.cpp
+@@ -103,7 +103,7 @@ void Application::createIconWidgets() {
+ 
+     // NUEVA-PARTIDA-01: la creacion de personaje comparte iconos y HUD.
+     m_nuevaPartida = std::make_unique<Engine::PantallaNuevaPartida>(m_hud, m_font.get(), m_whiteTexture.get(),
+-                                                                    iconos, manifiesto);
++                                                                    iconos, manifiesto, &m_equipmentCatalog);
+     // La tienda se creo en init() antes que la textura: le llegan ahora.
+     if (m_shopMenu) m_shopMenu->setIconos(HudIconos(iconos, std::move(manifiesto)));
+ 
+diff --git a/src/Engine/PantallaNuevaPartida.cpp b/src/Engine/PantallaNuevaPartida.cpp
+index 584aadf..48a9307 100644
+--- a/src/Engine/PantallaNuevaPartida.cpp
++++ b/src/Engine/PantallaNuevaPartida.cpp
+@@ -1,20 +1,31 @@
+ // NUEVA-PARTIDA-01 — ver include/Engine/PantallaNuevaPartida.h.
+ #include "Engine/PantallaNuevaPartida.h"
+ 
++#include <algorithm>
++#include <iostream>
++#include <map>
+ #include <utility>
+ 
+ #include "Engine/ApplicationInternal.h"
++#include "Game/Personajes/EditorApariencia.h"
++#include "Game/Personajes/Vestuario.h"
+ #include "Render/BitmapFont.h"
+ #include "Render/HudManager.h"
++#include "Render/Player.h"
+ 
+ namespace Engine {
+ 
+ namespace {
+ using Paso = RPG::CharacterCreationScreen::Paso;
++using Fila = Game::EditorApariencia::Fila;
+ using Engine::Input::InputAction;
+ 
+-constexpr float kPanelW = 720.0f;
+-constexpr float kPanelH = 480.0f;
++// APARIENCIA-01: panel ancho, lista a la izquierda y escenario a la derecha.
++constexpr float kPanelW = 1040.0f;
++constexpr float kPanelH = 600.0f;
++constexpr float kMargen = 16.0f;
++constexpr float kAnchoEscenario = 380.0f;
++constexpr std::size_t kAnchoEtiqueta = 19;   // "COLOR DE LA BARBA" y aire
+ const Vector4 kTitulo{1.0f, 0.86f, 0.45f, 1.0f};
+ const Vector4 kTexto{0.92f, 0.92f, 0.95f, 1.0f};
+ const Vector4 kApagado{0.62f, 0.62f, 0.7f, 1.0f};
+@@ -22,6 +33,15 @@ const Vector4 kMalo{0.95f, 0.45f, 0.45f, 1.0f};
+ const Vector4 kBueno{0.55f, 0.9f, 0.55f, 1.0f};
+ const char* const kStats[] = {"CON", "DES", "INT", "CAR"};
+ const char* const kIconosStat[] = {"con", "des", "int", "car"};
++
++// Un rectangulo del panel (esquina superior izquierda del panel = 0,0).
++HudTransform enPanel(float x, float y, float w, float h) {
++    HudTransform t;
++    t.anchor = HudAnchor::Center;
++    t.size = {w, h};
++    t.offset = {-kPanelW * 0.5f + x + w * 0.5f, -kPanelH * 0.5f + y + h * 0.5f};
++    return t;
++}
+ }  // namespace
+ 
+ const std::vector<std::string>& PantallaNuevaPartida::nombresSugeridos() {
+@@ -32,70 +52,76 @@ const std::vector<std::string>& PantallaNuevaPartida::nombresSugeridos() {
+ }
+ 
+ PantallaNuevaPartida::PantallaNuevaPartida(HudManager& hud, BitmapFont* font, Texture* whiteTexture,
+-                                           Texture* iconos, Hud::Iconos manifiesto) {
+-    HudTransform panel;
+-    panel.anchor = HudAnchor::Center;
+-    panel.size = {kPanelW, kPanelH};
+-    m_panel = std::make_unique<HudPanel>(panel, whiteTexture, Interno::kPanelColor);
++                                           Texture* iconos, Hud::Iconos manifiesto,
++                                           const RPG::Catalogs::EquipmentCatalog* equipo) {
++    m_datos.equipo = equipo;
++    m_panel = std::make_unique<HudPanel>(enPanel(0.0f, 0.0f, kPanelW, kPanelH), whiteTexture,
++                                         Interno::kPanelColor);
+     m_panel->setBorder(Interno::kBorderColor, 2.0f);
+ 
+-    const float lineaAlto = static_cast<float>(font->lineHeight());
+-    HudTransform titulo;
+-    titulo.anchor = HudAnchor::Center;
+-    titulo.offset = {-kPanelW * 0.5f + 50.0f + Interno::kMenuPadding, -kPanelH * 0.5f + 10.0f + Interno::kMenuPadding};
+-    m_titulo = std::make_unique<HudText>(titulo, font);
++    // Con el ancho de su caja, los textos ya no se parten palabra a palabra.
++    const float linea = static_cast<float>(font->lineHeight());
++    const float ancho = kPanelW - 2.0f * kMargen;
++    m_titulo = std::make_unique<HudText>(enPanel(kMargen, kMargen, ancho, linea), font);
+     m_titulo->setColor(kTitulo);
+ 
+-    HudTransform lista;
+-    lista.anchor = HudAnchor::Center;
+-    lista.offset = {0.0f, lineaAlto + 8.0f};
+-    lista.size = {kPanelW - 2.0f * Interno::kMenuPadding, kPanelH - 2.0f * Interno::kMenuPadding - 3.0f * lineaAlto - 16.0f};
+-    m_lista = std::make_unique<HudIconList>(lista, font, iconos, std::move(manifiesto));
++    const float arriba = kMargen + linea + 14.0f;
++    const float abajo = kPanelH - kMargen - 2.0f * linea - 12.0f;
++    const float xEscenario = kPanelW - kMargen - kAnchoEscenario;
++    m_lista = std::make_unique<HudIconList>(enPanel(kMargen, arriba, xEscenario - 24.0f - kMargen, abajo - arriba),
++                                            font, iconos, std::move(manifiesto));
++    m_vista = std::make_unique<HojaPersonaje>(whiteTexture);
++    m_vista->setMarco(enPanel(xEscenario, arriba, kAnchoEscenario, abajo - arriba));
++    m_jugador = std::make_unique<HojaPersonaje>();   // no va al HUD: la lleva el Player
+ 
+-    HudTransform aviso;
+-    aviso.anchor = HudAnchor::Center;
+-    aviso.offset = {-kPanelW * 0.5f + 50.0f + Interno::kMenuPadding, kPanelH * 0.5f - 10.0f - Interno::kMenuPadding - 2.0f * lineaAlto};
+-    m_aviso = std::make_unique<HudText>(aviso, font);
++    m_aviso = std::make_unique<HudText>(enPanel(kMargen, kPanelH - kMargen - 2.0f * linea, ancho, linea), font);
+     m_aviso->setColor(kMalo);
+-
+-    HudTransform pista = aviso;
+-    pista.offset.y += lineaAlto;
+-    m_pista = std::make_unique<HudText>(pista, font);
++    m_pista = std::make_unique<HudText>(enPanel(kMargen, kPanelH - kMargen - linea, ancho, linea), font);
+     m_pista->setColor(kApagado);
+ 
+     for (IHudElement* w : {static_cast<IHudElement*>(m_panel.get()), static_cast<IHudElement*>(m_titulo.get()),
+-                           static_cast<IHudElement*>(m_lista.get()), static_cast<IHudElement*>(m_aviso.get()),
+-                           static_cast<IHudElement*>(m_pista.get())}) {
++                           static_cast<IHudElement*>(m_lista.get()), static_cast<IHudElement*>(m_vista.get()),
++                           static_cast<IHudElement*>(m_aviso.get()), static_cast<IHudElement*>(m_pista.get())}) {
+         w->setVisible(false);
+         hud.addElement(w);
+     }
+ }
+ 
+ Result<bool> PantallaNuevaPartida::abrir() {
+-    if (!m_reglas) {
++    if (!m_datos.reglas) {
+         auto reglas = RPG::CharacterCreation::load("assets/catalogs");
+         if (!reglas.isOk()) {
+             m_error = reglas.errorMessage();
+             return Result<bool>::Error("Creacion de personaje: " + m_error);
+         }
+-        m_reglas = std::make_unique<RPG::CharacterCreation>(std::move(reglas.value()));
++        m_datos.reglas = std::make_unique<RPG::CharacterCreation>(std::move(reglas.value()));
+         // Sin fichero de tiers valen los valores por defecto de TierRules.
+-        (void)m_tiers.loadFromFile("assets/rules/tier_rules.json");
++        (void)m_datos.tiers.loadFromFile("assets/rules/tier_rules.json");
++        // Sin personajes.json la creacion sigue, sin el paso Apariencia.
++        auto montaje = Game::MontajePersonajes::cargar("assets/textures");
++        if (montaje.isOk()) {
++            m_datos.montaje = std::move(montaje.value());
++        } else {
++            std::cerr << "APARIENCIA-01: " << montaje.errorMessage() << "\n";
++        }
+     }
+-    m_flujo = std::make_unique<Game::NewGameFlow>(*m_reglas);
++    m_flujo = std::make_unique<Game::NewGameFlow>(
++        *m_datos.reglas, m_datos.montaje ? &m_datos.montaje->manifiesto() : nullptr);
+     m_estado = Estado::Creando;
+-    m_fichaLista = false;
+     m_error.clear();
+     m_nombreElegido = 0;
++    m_vista->reiniciarPaseo();
+     mostrar(true);
+     refrescar();
+     return Result<bool>::Ok(true);
+ }
+ 
+ RPG::CharacterSheet* PantallaNuevaPartida::tomarFicha() {
+-    if (m_estado != Estado::Terminada || !m_fichaLista) return nullptr;
++    if (m_estado != Estado::Terminada) return nullptr;
+     m_estado = Estado::Cerrada;
+     m_flujo.reset();
++    // Los atlas de la creacion (decenas de MB) no hacen falta en partida.
++    if (m_datos.montaje) m_datos.montaje->vaciarCache();
+     return &m_ficha;
+ }
+ 
+@@ -103,6 +129,7 @@ bool PantallaNuevaPartida::consumirCancelacion() {
+     if (m_estado != Estado::Cancelada) return false;
+     m_estado = Estado::Cerrada;
+     m_flujo.reset();
++    if (m_datos.montaje) m_datos.montaje->vaciarCache();
+     return true;
+ }
+ 
+@@ -112,10 +139,26 @@ void PantallaNuevaPartida::cerrar() {
+     m_flujo.reset();
+ }
+ 
++void PantallaNuevaPartida::vestir(Player& jugador) const {
++    m_jugador->ponerA(jugador, Interno::kCharacterDrawW, Interno::kCharacterDrawH, Interno::characterAnchor());
++}
++
++void PantallaNuevaPartida::actualizarAspecto() {
++    if (!m_jugador->lista() || !m_datos.montaje || activa()) return;
++    const auto rehecha = m_jugador->vestir(*m_datos.montaje, m_jugador->apariencia(),
++                                           Game::Vestuario::piezasVisibles(m_ficha.equippedIds,
++                                                                           m_datos.montaje->manifiesto()));
++    if (!rehecha.isOk()) {
++        std::cerr << rehecha.errorMessage() << "\n";
++    } else if (rehecha.value()) {
++        m_datos.montaje->vaciarCache();   // equipar es raro: mejor releer que guardar
++    }
++}
++
+ void PantallaNuevaPartida::mostrar(bool visible) {
+     for (IHudElement* w : {static_cast<IHudElement*>(m_panel.get()), static_cast<IHudElement*>(m_titulo.get()),
+-                           static_cast<IHudElement*>(m_lista.get()), static_cast<IHudElement*>(m_aviso.get()),
+-                           static_cast<IHudElement*>(m_pista.get())}) {
++                           static_cast<IHudElement*>(m_lista.get()), static_cast<IHudElement*>(m_vista.get()),
++                           static_cast<IHudElement*>(m_aviso.get()), static_cast<IHudElement*>(m_pista.get())}) {
+         w->setVisible(visible);
+     }
+ }
+@@ -123,19 +166,22 @@ void PantallaNuevaPartida::mostrar(bool visible) {
+ void PantallaNuevaPartida::procesar(const Engine::Input::InputSnapshot& input) {
+     if (!activa() || !m_flujo) return;
+     const Paso paso = m_flujo->pantalla().paso();
++    // Izquierda/derecha: las flechas y tambien A/D, como dice la pista.
++    const bool izquierda = input.pressed(InputAction::MenuLeft) || input.pressed(InputAction::MoveWest);
++    const bool derecha = input.pressed(InputAction::MenuRight) || input.pressed(InputAction::MoveEast);
+     if (input.pressed(InputAction::MenuUp)) m_flujo->moveUp();
+     if (input.pressed(InputAction::MenuDown)) m_flujo->moveDown();
+-    if (paso == Paso::Reparto) {
+-        if (input.pressed(InputAction::MenuLeft)) m_flujo->adjustLeft();
+-        if (input.pressed(InputAction::MenuRight)) m_flujo->adjustRight();
++    if (m_flujo->enApariencia() || paso == Paso::Reparto) {
++        if (izquierda) m_flujo->adjustLeft();
++        if (derecha) m_flujo->adjustRight();
+     } else if (paso == Paso::Nombre) {
+         const auto& nombres = nombresSugeridos();
+         bool cambia = m_flujo->pantalla().eleccion().displayName.empty();
+-        if (input.pressed(InputAction::MenuLeft)) {
++        if (izquierda) {
+             m_nombreElegido = (m_nombreElegido + nombres.size() - 1) % nombres.size();
+             cambia = true;
+         }
+-        if (input.pressed(InputAction::MenuRight)) {
++        if (derecha) {
+             m_nombreElegido = (m_nombreElegido + 1) % nombres.size();
+             cambia = true;
+         }
+@@ -148,12 +194,19 @@ void PantallaNuevaPartida::procesar(const Engine::Input::InputSnapshot& input) {
+     if (input.pressed(InputAction::Cancel) || input.pressed(InputAction::Quit)) m_flujo->cancel();
+ 
+     if (m_flujo->estado() == Game::NewGameFlow::Estado::Terminado) {
+-        auto ficha = m_flujo->finalizar(m_tiers);
++        // Decision de Oriol (29/09): el equipo inicial sale puesto.
++        auto ficha = m_flujo->finalizar(m_datos.tiers, m_datos.equipo);
+         if (ficha.isOk()) {
+             m_ficha = std::move(ficha.value());
+-            m_fichaLista = true;
+             m_estado = Estado::Terminada;
+             mostrar(false);
++            // El aspecto vivo del jugador: lo elegido y lo que lleva puesto.
++            if (m_datos.montaje && m_flujo->editorApariencia() != nullptr) {
++                const auto vestido = m_jugador->vestir(
++                    *m_datos.montaje, m_flujo->editorApariencia()->apariencia(),
++                    Game::Vestuario::piezasVisibles(m_ficha.equippedIds, m_datos.montaje->manifiesto()));
++                if (!vestido.isOk()) std::cerr << vestido.errorMessage() << "\n";
++            }
+         } else {
+             m_error = ficha.errorMessage();
+         }
+@@ -175,35 +228,77 @@ const char* PantallaNuevaPartida::iconoDelPaso() const {
+     }
+ }
+ 
++const char* PantallaNuevaPartida::pistaDelPaso() const {
++    // Mismo formato que la pista del titulo: los espacios seguidos se funden.
++    if (m_flujo->enApariencia()) return "W/S FILA · A/D CAMBIAR · ENTER SIGUIENTE · ESC ATRAS";
++    switch (m_flujo->pantalla().paso()) {
++        case Paso::Raza: return "W/S ELEGIR · ENTER SIGUIENTE · ESC CANCELAR";
++        case Paso::Reparto: return "W/S STAT · A/D AJUSTAR · ENTER SIGUIENTE · ESC ATRAS";
++        case Paso::Nombre: return "A/D NOMBRE · ENTER SIGUIENTE · ESC ATRAS";
++        case Paso::Resumen: return "ENTER EMPEZAR · ESC ATRAS";
++        default: return "W/S ELEGIR · ENTER SIGUIENTE · ESC ATRAS";
++    }
++}
++
+ std::string PantallaNuevaPartida::detalleDe(const std::string& id) const {
+-    if (id.empty() || !m_reglas) return "";
++    if (id.empty() || !m_datos.reglas) return "";
+     switch (m_flujo->pantalla().paso()) {
+         case Paso::Raza:
+-            if (const auto* r = m_reglas->races().find(id)) return r->description;
++            if (const auto* r = m_datos.reglas->races().find(id)) return r->description;
+             break;
+         case Paso::Clase:
+-            if (const auto* c = m_reglas->classes().find(id)) return c->description;
++            if (const auto* c = m_datos.reglas->classes().find(id)) return c->description;
+             break;
+         case Paso::Trasfondo:
+-            if (const auto* b = m_reglas->backgrounds().find(id)) return b->description;
++            if (const auto* b = m_datos.reglas->backgrounds().find(id)) return b->description;
+             break;
+         case Paso::Deidad:
+-            if (const auto* d = m_reglas->deities().find(id)) return d->title + ". " + d->description;
++            if (const auto* d = m_datos.reglas->deities().find(id)) return d->title + ". " + d->description;
+             break;
+         default: break;
+     }
+     return "";
+ }
+ 
++std::vector<HudIconRow> PantallaNuevaPartida::filasDeApariencia() const {
++    std::vector<HudIconRow> out;
++    const Game::EditorApariencia* editor = m_flujo->editorApariencia();
++    const Hud::Iconos& ic = m_lista->iconos().manifiesto();
++    for (std::size_t i = 0; i < editor->filas().size(); ++i) {
++        const Fila fila = editor->filas()[i];
++        HudIconRow r;
++        r.frame = ic.frame(Game::EditorApariencia::icono(fila));
++        r.detail = Game::EditorApariencia::ayuda(fila);
++        if (fila == Fila::AlAzar || fila == Fila::ComoSuRaza) {
++            r.text = Game::EditorApariencia::etiqueta(fila);
++            r.color = kBueno;
++        } else {
++            std::string etiqueta = Game::EditorApariencia::etiqueta(fila);
++            etiqueta.resize(std::max(etiqueta.size(), kAnchoEtiqueta), ' ');
++            const std::string valor = editor->valor(fila);
++            r.text = etiqueta + (i == editor->marcada() ? "< " + valor + " >" : "  " + valor);
++        }
++        out.push_back(r);
++    }
++    return out;
++}
++
+ std::vector<HudIconRow> PantallaNuevaPartida::filas() const {
+     std::vector<HudIconRow> out;
+     const auto& p = m_flujo->pantalla();
+     const Hud::Iconos& ic = m_lista->iconos().manifiesto();
++    const RPG::RaceDefinition* raza = m_datos.reglas->races().find(p.eleccion().raceId);
+     if (p.paso() == Paso::Reparto) {
+-        for (int i = 0; i < 4; ++i) {
++        for (std::size_t i = 0; i < 4; ++i) {
+             HudIconRow f;
+             f.frame = ic.frame(kIconosStat[i]);
+-            f.text = std::string(kStats[i]) + "  " + std::to_string(p.eleccion().baseStats[static_cast<std::size_t>(i)]);
++            const int base = p.eleccion().baseStats[i];
++            const int bono = raza != nullptr ? raza->statBonuses[i] : 0;
++            f.text = std::string(kStats[i]) + "  " + std::to_string(base);
++            if (bono != 0) {
++                f.text += "   " + std::string(bono > 0 ? "+" : "") + std::to_string(bono) + " DE TU PUEBLO = " +
++                          std::to_string(base + bono);
++            }
+             f.detail = "A/D suben y bajan. Puntos por repartir: " + std::to_string(p.puntosLibres());
+             out.push_back(f);
+         }
+@@ -223,14 +318,30 @@ std::vector<HudIconRow> PantallaNuevaPartida::filas() const {
+             if (const auto* def = catalogo.find(id)) return def->name;
+             return id.empty() ? "(ninguna)" : id;
+         };
++        const auto& reglas = *m_datos.reglas;
+         out.push_back({ic.frame("rasgo"), e.displayName, kTitulo, 0, true, ""});
+-        out.push_back({ic.frame("personaje"), "Raza: " + nombre(m_reglas->races(), e.raceId), kTexto, 0, true, ""});
+-        out.push_back({ic.frame("pasiva"), "Clase: " + nombre(m_reglas->classes(), e.classId), kTexto, 0, true, ""});
+-        out.push_back({ic.frame("lore"), "Trasfondo: " + nombre(m_reglas->backgrounds(), e.backgroundId), kTexto, 0, true, ""});
+-        out.push_back({ic.frame("deidad"), "Deidad: " + nombre(m_reglas->deities(), e.deityId), kTexto, 0, true, ""});
+-        for (int i = 0; i < 4; ++i) {
+-            out.push_back({ic.frame(kIconosStat[i]), std::string(kStats[i]) + " " +
+-                           std::to_string(e.baseStats[static_cast<std::size_t>(i)]), kTexto, 1, true, ""});
++        out.push_back({ic.frame("personaje"), "Raza: " + nombre(reglas.races(), e.raceId), kTexto, 0, true, ""});
++        out.push_back({ic.frame("pasiva"), "Clase: " + nombre(reglas.classes(), e.classId), kTexto, 0, true, ""});
++        out.push_back({ic.frame("lore"), "Trasfondo: " + nombre(reglas.backgrounds(), e.backgroundId), kTexto, 0, true, ""});
++        out.push_back({ic.frame("deidad"), "Deidad: " + nombre(reglas.deities(), e.deityId), kTexto, 0, true, ""});
++        for (std::size_t i = 0; i < 4; ++i) {
++            const int bono = raza != nullptr ? raza->statBonuses[i] : 0;
++            out.push_back({ic.frame(kIconosStat[i]),
++                           std::string(kStats[i]) + " " + std::to_string(e.baseStats[i] + bono), kTexto, 1, true, ""});
++        }
++        // APARIENCIA-01: con que empiezas puesto (lo demas va a la mochila).
++        if (m_datos.equipo != nullptr) {
++            std::vector<std::string> vistos;
++            for (const std::string& id : Game::Vestuario::probar(reglas, e, m_datos.tiers, *m_datos.equipo)) {
++                if (id.empty() || std::find(vistos.begin(), vistos.end(), id) != vistos.end()) continue;
++                vistos.push_back(id);
++            }
++            out.push_back({ic.frame("equipo"), vistos.empty() ? "Empiezas sin nada puesto" : "Empiezas con puesto:",
++                           kTexto, 0, true, ""});
++            for (const std::string& id : vistos) {
++                const RPG::EquipmentDefinition* def = m_datos.equipo->find(id);
++                out.push_back({0, def != nullptr ? def->name : id, kTexto, 1, true, ""});
++            }
+         }
+         for (const std::string& problema : p.problemas()) {
+             out.push_back({ic.frame("perjuicio"), problema, kMalo, 0, true, ""});
+@@ -251,23 +362,42 @@ std::vector<HudIconRow> PantallaNuevaPartida::filas() const {
+     return out;
+ }
+ 
++void PantallaNuevaPartida::actualizarVista() {
++    if (!m_datos.montaje) return;
++    const Game::NewGameFlow::VistaPrevia vista = m_flujo->vistaPrevia();
++    if (vista.apariencia.raza.empty()) return;
++    // Con clase elegida (o marcada), su equipo inicial puesto, con la misma
++    // regla que al terminar: lo que cambia con el reparto tambien se ve.
++    std::map<std::string, std::string> equipo;
++    if (vista.conEquipo && m_datos.equipo != nullptr) {
++        equipo = Game::Vestuario::piezasVisibles(
++            Game::Vestuario::probar(*m_datos.reglas, vista.eleccion, m_datos.tiers, *m_datos.equipo),
++            m_datos.montaje->manifiesto());
++    }
++    const auto r = m_vista->vestir(*m_datos.montaje, vista.apariencia, equipo);
++    if (!r.isOk()) std::cerr << r.errorMessage() << "\n";
++}
++
+ void PantallaNuevaPartida::refrescar() {
+     if (!activa() || !m_flujo) return;
+     const auto& p = m_flujo->pantalla();
+-    m_titulo->setText("NUEVA PARTIDA  " + std::to_string(p.numeroDePaso()) + "/" +
+-                      std::to_string(RPG::CharacterCreationScreen::totalDePasos()) + "  " + p.tituloPaso());
++    m_titulo->setText("NUEVA PARTIDA  " + std::to_string(m_flujo->numeroDePaso()) + "/" +
++                      std::to_string(m_flujo->totalDePasos()) + "  " + m_flujo->tituloPaso());
+     m_lista->setTitle("");
+-    m_lista->setRows(filas());
+-    if (p.paso() == Paso::Reparto) m_lista->setSelectedIndex(static_cast<std::size_t>(p.statMarcado()));
+-    else if (p.paso() == Paso::Nombre || p.paso() == Paso::Resumen) m_lista->setSelectedIndex(0);
+-    else m_lista->setSelectedIndex(p.marcado());
+-    m_lista->setShowCursor(p.paso() != Paso::Resumen);
+-    m_aviso->setText(!m_error.empty() ? m_error : p.aviso());
+-    m_pista->setText(p.paso() == Paso::Reparto ? "W/S STAT  A/D AJUSTAR  ENTER SIGUIENTE  ESC ATRAS"
+-                     : p.paso() == Paso::Nombre ? "A/D NOMBRE  ENTER SIGUIENTE  ESC ATRAS"
+-                     : p.paso() == Paso::Resumen ? "ENTER EMPEZAR  ESC ATRAS"
+-                     : p.paso() == Paso::Raza ? "W/S ELEGIR  ENTER SIGUIENTE  ESC CANCELAR"
+-                                              : "W/S ELEGIR  ENTER SIGUIENTE  ESC ATRAS");
++    if (m_flujo->enApariencia()) {
++        m_lista->setRows(filasDeApariencia());
++        m_lista->setSelectedIndex(m_flujo->editorApariencia()->marcada());
++        m_lista->setShowCursor(true);
++    } else {
++        m_lista->setRows(filas());
++        if (p.paso() == Paso::Reparto) m_lista->setSelectedIndex(static_cast<std::size_t>(p.statMarcado()));
++        else if (p.paso() == Paso::Nombre || p.paso() == Paso::Resumen) m_lista->setSelectedIndex(0);
++        else m_lista->setSelectedIndex(p.marcado());
++        m_lista->setShowCursor(p.paso() != Paso::Resumen);
++    }
++    m_aviso->setText(!m_error.empty() ? m_error : m_flujo->enApariencia() ? std::string() : p.aviso());
++    m_pista->setText(pistaDelPaso());
++    actualizarVista();
+ }
+ 
+ }  // namespace Engine
+diff --git a/src/Game/NewGameFlow.cpp b/src/Game/NewGameFlow.cpp
+index 8f6215c..53fa616 100644
+--- a/src/Game/NewGameFlow.cpp
++++ b/src/Game/NewGameFlow.cpp
+@@ -1,40 +1,90 @@
+ #include "Game/NewGameFlow.h"
+ 
++#include "Game/Personajes/Vestuario.h"
++
+ namespace Game {
+ 
++namespace {
++using Paso = RPG::CharacterCreationScreen::Paso;
++}  // namespace
++
+ NewGameFlow::NewGameFlow(const RPG::CharacterCreation& reglas)
+     : m_reglas(reglas), m_pantalla(reglas) {}
+ 
++NewGameFlow::NewGameFlow(const RPG::CharacterCreation& reglas, const ManifiestoPersonajes* personajes)
++    : m_reglas(reglas), m_pantalla(reglas) {
++    if (personajes != nullptr) m_apariencia = std::make_unique<EditorApariencia>(*personajes);
++}
++
+ void NewGameFlow::moveUp() {
+-    if (m_estado == Estado::Creando) m_pantalla.arriba();
++    if (m_estado != Estado::Creando) return;
++    if (m_enApariencia) {
++        m_apariencia->arriba();
++    } else {
++        m_pantalla.arriba();
++    }
+ }
+ 
+ void NewGameFlow::moveDown() {
+-    if (m_estado == Estado::Creando) m_pantalla.abajo();
++    if (m_estado != Estado::Creando) return;
++    if (m_enApariencia) {
++        m_apariencia->abajo();
++    } else {
++        m_pantalla.abajo();
++    }
+ }
+ 
+ void NewGameFlow::adjustLeft() {
+-    if (m_estado == Estado::Creando) m_pantalla.bajarStat();
++    if (m_estado != Estado::Creando) return;
++    if (m_enApariencia) {
++        m_apariencia->izquierda();
++    } else {
++        m_pantalla.bajarStat();
++    }
+ }
+ 
+ void NewGameFlow::adjustRight() {
+-    if (m_estado == Estado::Creando) m_pantalla.subirStat();
++    if (m_estado != Estado::Creando) return;
++    if (m_enApariencia) {
++        m_apariencia->derecha();
++    } else {
++        m_pantalla.subirStat();
++    }
+ }
+ 
+ void NewGameFlow::confirm() {
+     if (m_estado != Estado::Creando) return;
+-    if (m_pantalla.paso() == RPG::CharacterCreationScreen::Paso::Resumen) {
++    if (m_enApariencia) {
++        // La pantalla ya esta en Clase: salir de Apariencia es avanzar.
++        m_enApariencia = false;
++        return;
++    }
++    if (m_pantalla.paso() == Paso::Resumen) {
+         // Del resumen solo se sale terminando (o con ESC, que retrocede).
+         if (m_pantalla.problemas().empty()) {
+             m_estado = Estado::Terminado;
+         }
+         return;
+     }
++    const Paso antes = m_pantalla.paso();
+     m_pantalla.siguiente();
++    if (m_apariencia && antes == Paso::Raza && m_pantalla.paso() == Paso::Clase) {
++        m_apariencia->empezar(m_pantalla.eleccion().raceId);
++        m_enApariencia = true;
++    }
+ }
+ 
+ void NewGameFlow::cancel() {
+     if (m_estado != Estado::Creando) return;
++    if (m_enApariencia) {
++        m_enApariencia = false;
++        m_pantalla.anterior();   // de Clase a Raza
++        return;
++    }
++    if (m_apariencia && m_pantalla.paso() == Paso::Clase) {
++        m_enApariencia = true;   // de Clase se vuelve a Apariencia
++        return;
++    }
+     // ESC en Raza cancela; en los demás pasos la propia pantalla lo
+     // traduce a retroceder un paso.
+     if (m_pantalla.tecla(27) == RPG::CharacterCreationScreen::Accion::Cancelado) {
+@@ -43,14 +93,57 @@ void NewGameFlow::cancel() {
+ }
+ 
+ void NewGameFlow::textChar(char c) {
+-    if (m_estado == Estado::Creando) m_pantalla.tecla(c);
++    if (m_estado == Estado::Creando && !m_enApariencia) m_pantalla.tecla(c);
+ }
+ 
+ void NewGameFlow::backspace() {
+-    if (m_estado == Estado::Creando) m_pantalla.tecla('\b');
++    if (m_estado == Estado::Creando && !m_enApariencia) m_pantalla.tecla('\b');
++}
++
++int NewGameFlow::numeroDePaso() const {
++    const int n = m_pantalla.numeroDePaso();
++    if (!m_apariencia) return n;
++    if (m_enApariencia) return 2;
++    return m_pantalla.paso() == Paso::Raza ? n : n + 1;
++}
++
++int NewGameFlow::totalDePasos() const {
++    return RPG::CharacterCreationScreen::totalDePasos() + (m_apariencia ? 1 : 0);
+ }
+ 
+-Result<RPG::CharacterSheet> NewGameFlow::finalizar(const RPG::TierRules& reglas) const {
++const char* NewGameFlow::tituloPaso() const {
++    return m_enApariencia ? "QUÉ ASPECTO TIENES" : m_pantalla.tituloPaso();
++}
++
++NewGameFlow::VistaPrevia NewGameFlow::vistaPrevia() const {
++    VistaPrevia vista;
++    if (!m_apariencia) return vista;
++    vista.eleccion = m_pantalla.eleccion();
++    vista.apariencia = m_apariencia->apariencia();
++    const auto marcada = [&]() -> std::string {
++        const auto& ops = m_pantalla.opciones();
++        return m_pantalla.marcado() < ops.size() ? ops[m_pantalla.marcado()] : std::string();
++    };
++    const Paso paso = m_pantalla.paso();
++    if (paso == Paso::Raza) {
++        // La raza marcada, como viste su pueblo; la ya editada, como quedo.
++        const std::string raza = marcada();
++        if (vista.apariencia.raza != raza) {
++            if (const RazaVisual* visual = m_apariencia->manifiesto().raza(raza)) {
++                vista.apariencia = Apariencia::deRaza(*visual);
++            }
++        }
++        return vista;
++    }
++    if (m_enApariencia) return vista;
++    if (paso == Paso::Clase) vista.eleccion.classId = marcada();
++    if (paso == Paso::Trasfondo) vista.eleccion.backgroundId = marcada();
++    vista.conEquipo = !vista.eleccion.classId.empty();
++    return vista;
++}
++
++Result<RPG::CharacterSheet> NewGameFlow::finalizar(const RPG::TierRules& reglas,
++                                                  const RPG::Catalogs::EquipmentCatalog* equipo) const {
+     if (m_estado == Estado::Cancelado) {
+         return Result<RPG::CharacterSheet>::Error("la creacion se cancelo: no hay ficha");
+     }
+@@ -66,6 +159,13 @@ Result<RPG::CharacterSheet> NewGameFlow::finalizar(const RPG::TierRules& reglas)
+     // CharacterSheet::recompute_derived(), que es el único dueño de las
+     // fórmulas del GDD.
+     m_reglas.recalcular(ficha.value(), reglas);
++    // Decision de Oriol (29/09): se empieza con el equipo inicial puesto.
++    // equip() recalcula la ficha con cada pieza.
++    if (equipo != nullptr) {
++        if (const RPG::ClassDefinition* clase = m_reglas.classes().find(ficha.value().classId)) {
++            Vestuario::equiparInicial(ficha.value(), *clase, reglas, *equipo);
++        }
++    }
+     return ficha;
+ }
+ 
+diff --git a/src/Game/Personajes/EditorApariencia.cpp b/src/Game/Personajes/EditorApariencia.cpp
+new file mode 100644
+index 0000000..9196ce9
+--- /dev/null
++++ b/src/Game/Personajes/EditorApariencia.cpp
+@@ -0,0 +1,420 @@
++// APARIENCIA-01 — ver include/Game/Personajes/EditorApariencia.h.
++#include "Game/Personajes/EditorApariencia.h"
++
++#include <algorithm>
++#include <initializer_list>
++#include <map>
++#include <random>
++
++namespace Game {
++
++namespace {
++
++using Fila = EditorApariencia::Fila;
++
++bool contiene(const std::vector<std::string>& v, const std::string& x) {
++    return std::find(v.begin(), v.end(), x) != v.end();
++}
++
++std::vector<std::string> ids(const GrupoDeCapas& grupo) {
++    std::vector<std::string> out;
++    for (const FilaDeCapa& f : grupo.filas)
++        out.push_back(f.id);
++    return out;
++}
++
++// Los estilos de pelo o barba, en el orden del atlas y sin repetir.
++std::vector<std::string> estilos(const GrupoDeCapas& grupo) {
++    std::vector<std::string> out;
++    for (const FilaDeCapa& f : grupo.filas) {
++        if (!f.estilo.empty() && !contiene(out, f.estilo))
++            out.push_back(f.estilo);
++    }
++    return out;
++}
++
++std::vector<std::string> colores(const GrupoDeCapas& grupo, const std::string& estilo) {
++    std::vector<std::string> out;
++    for (const FilaDeCapa& f : grupo.filas) {
++        if (f.estilo == estilo && !contiene(out, f.color))
++            out.push_back(f.color);
++    }
++    return out;
++}
++
++// Lo que se pinta de cada fila: etiqueta, icono de iconos.json, la ranura
++// si es ropa y el detalle del pie. Una tabla y no tres switch: una fila
++// nueva es una linea.
++struct DatosDeFila {
++    Fila fila;
++    const char* etiqueta;
++    const char* icono;
++    const char* ranura;  // nullptr si no es ropa
++    const char* ayuda;
++};
++const char* const kRopa = "Tu ropa de diario. Lo que te equipes en la partida se pone encima.";
++const DatosDeFila kFilas[] = {
++    {Fila::Piel, "PIEL", "personaje", nullptr,
++     "El tono de la piel. Solo los pueblos de cuerpo liso pueden cambiarlo."},
++    {Fila::Talla, "TALLA", "personaje", nullptr, "Tu talla. La ropa y el equipo se ajustan solos."},
++    {Fila::Ojos, "OJOS", "rasgo", nullptr, "El color de los ojos."},
++    {Fila::Peinado, "PEINADO", "rasgo", nullptr, "El corte de pelo. Un yelmo cerrado lo tapa."},
++    {Fila::ColorPelo, "COLOR DEL PELO", "rasgo", nullptr,
++     "El color del pelo. Si la barba iba a juego, lo sigue."},
++    {Fila::Barba, "BARBA", "rasgo", nullptr, "Larga, corta o sin barba."},
++    {Fila::ColorBarba, "COLOR DE LA BARBA", "rasgo", nullptr, "El color de la barba."},
++    {Fila::Cabeza, "CABEZA", "ranura_cabeza", "cabeza", kRopa},
++    {Fila::Torso, "TORSO", "ranura_torso", "torso", kRopa},
++    {Fila::Piernas, "PIERNAS", "ranura_piernas", "piernas", kRopa},
++    {Fila::Pies, "PIES", "ranura_pies", "pies", kRopa},
++    {Fila::Capa, "CAPA", "ranura_accesorio", "capa", kRopa},
++    {Fila::AlAzar, "AL AZAR", "inspiracion", nullptr,
++     "Izquierda o derecha: otra combinacion al azar, dentro de lo que admite tu pueblo."},
++    {Fila::ComoSuRaza, "COMO TU PUEBLO", "lore", nullptr,
++     "Izquierda o derecha: vuelve a como viste tu pueblo."},
++};
++
++const DatosDeFila& datosDe(Fila fila) {
++    for (const DatosDeFila& d : kFilas) {
++        if (d.fila == fila)
++            return d;
++    }
++    return kFilas[0];
++}
++
++// La ranura de ropa de una fila, o nullptr si no es de ropa.
++const char* ranuraDe(Fila fila) { return datosDe(fila).ranura; }
++
++// Los ids del manifiesto que no traen nombre (pieles, tallas, ojos,
++// peinados, colores y barbas), como los lee el jugador.
++const std::map<std::string, std::string>& nombres() {
++    // clang-format off
++    static const std::map<std::string, std::string> tabla = {
++        {"piel_clara", "Clara"}, {"piel_morena", "Morena"}, {"piel_palida", "Pálida"},
++        {"piel_oscura", "Oscura"}, {"piel_aceituna", "Aceituna"}, {"piel_rojiza", "Rojiza"},
++        {"piel_gris", "Gris"}, {"piel_elfo", "Élfica"}, {"porcelana", "Porcelana"},
++        {"medio", "Normal"}, {"bajo", "Baja y ancha"}, {"pequeno", "Pequeña"}, {"grande", "Grande"},
++        {"azul", "Azules"}, {"negro", "Negros"}, {"amarillo", "Amarillos"}, {"rojo", "Rojos"},
++        {"violeta", "Violetas"}, {"dorado", "Dorados"}, {"blanco", "Blancos"},
++        {"marron", "Marrones"}, {"verde", "Verdes"}, {"ambar", "Ámbar"},
++        {"corto", "Corto"}, {"largo", "Largo"}, {"rizado", "Rizado"}, {"cresta", "Cresta"},
++        {"greñas", "Greñas"}, {"recogido", "Recogido"}, {"coleta", "Coleta"},
++        {"pelo_castano", "Castaño"}, {"pelo_rubio", "Rubio"}, {"pelo_negro", "Negro"},
++        {"pelo_pelirrojo", "Pelirrojo"}, {"pelo_oscuro", "Oscuro"}, {"pelo_blanco", "Blanco"},
++        {"pelo_gris", "Gris"}, {"pelo_plata_lila", "Plata lila"}, {"pelo_verde_musgo", "Verde musgo"},
++        {"pelo_azul_hielo", "Azul hielo"}, {"BARBA", "Larga"}, {"BARBA_CORTA", "Corta"}};
++    // clang-format on
++    return tabla;
++}
++
++}  // namespace
++
++EditorApariencia::EditorApariencia(const ManifiestoPersonajes& manifiesto)
++    : m_manifiesto(manifiesto) {}
++
++void EditorApariencia::empezar(const std::string& razaId) {
++    if (m_apariencia.raza != razaId || m_filas.empty()) {
++        const RazaVisual* raza = m_manifiesto.raza(razaId);
++        m_apariencia = raza != nullptr ? Apariencia::deRaza(*raza) : Apariencia{};
++        m_apariencia.raza = razaId;
++        m_filas.clear();
++        m_marcada = 0;
++    }
++    rehacerFilas();
++}
++
++void EditorApariencia::rehacerFilas() {
++    const Fila antes = filaMarcada();
++    const bool habiaFilas = !m_filas.empty();
++    const RazaVisual* raza = m_manifiesto.raza(m_apariencia.raza);
++    const auto admite = [&](const char* ranura) { return raza == nullptr || raza->admite(ranura); };
++
++    m_filas.clear();
++    if (raza != nullptr && raza->cuerpoLiso) {
++        m_filas.push_back(Fila::Piel);
++        m_filas.push_back(Fila::Talla);
++    }
++    m_filas.push_back(Fila::Ojos);
++    // Pelo y barba, solo si el pueblo tiene pelo (ni plumas ni escamas).
++    if (admite("pelo")) {
++        m_filas.push_back(Fila::Peinado);
++        if (!m_apariencia.peloEstilo.empty())
++            m_filas.push_back(Fila::ColorPelo);
++        m_filas.push_back(Fila::Barba);
++        if (!m_apariencia.barbaEstilo.empty())
++            m_filas.push_back(Fila::ColorBarba);
++    }
++    for (Fila f : {Fila::Cabeza, Fila::Torso, Fila::Piernas, Fila::Pies, Fila::Capa}) {
++        if (admite(ranuraDe(f)))
++            m_filas.push_back(f);
++    }
++    m_filas.push_back(Fila::AlAzar);
++    m_filas.push_back(Fila::ComoSuRaza);
++
++    const auto it = std::find(m_filas.begin(), m_filas.end(), antes);
++    if (habiaFilas && it != m_filas.end()) {
++        m_marcada = static_cast<std::size_t>(it - m_filas.begin());
++    } else {
++        m_marcada = std::min(m_marcada, m_filas.size() - 1);
++    }
++}
++
++void EditorApariencia::arriba() {
++    if (!m_filas.empty())
++        m_marcada = m_marcada == 0 ? m_filas.size() - 1 : m_marcada - 1;
++}
++
++void EditorApariencia::abajo() {
++    if (!m_filas.empty())
++        m_marcada = (m_marcada + 1) % m_filas.size();
++}
++
++void EditorApariencia::izquierda() { cambiar(filaMarcada(), -1); }
++void EditorApariencia::derecha() { cambiar(filaMarcada(), +1); }
++
++std::vector<std::string> EditorApariencia::opciones(Fila fila) const {
++    const ManifiestoPersonajes& m = m_manifiesto;
++    switch (fila) {
++        case Fila::Piel:
++            return ids(m.cuerpos);
++        case Fila::Talla: {
++            std::vector<std::string> out;
++            for (const char* t : {"medio", "bajo", "pequeno", "grande"}) {
++                if (m.cuerpos.atlas.count(t) != 0)
++                    out.push_back(t);
++            }
++            return out;
++        }
++        case Fila::Ojos:
++            return ids(m.ojos);
++        case Fila::Peinado: {
++            std::vector<std::string> out{""};
++            for (const std::string& e : estilos(m.pelo))
++                out.push_back(e);
++            return out;
++        }
++        case Fila::ColorPelo:
++            return colores(m.pelo, m_apariencia.peloEstilo);
++        case Fila::Barba: {
++            std::vector<std::string> out{""};
++            for (const std::string& e : estilos(m.barba))
++                out.push_back(e);
++            return out;
++        }
++        case Fila::ColorBarba:
++            return colores(m.barba, m_apariencia.barbaEstilo);
++        case Fila::AlAzar:
++        case Fila::ComoSuRaza:
++            return {};
++        default:
++            break;
++    }
++    std::vector<std::string> out{""};
++    const auto grupo = m.equipo.find(ranuraDe(fila));
++    if (grupo != m.equipo.end()) {
++        for (const std::string& id : ids(grupo->second))
++            out.push_back(id);
++    }
++    return out;
++}
++
++std::string EditorApariencia::actual(Fila fila) const {
++    const Apariencia& a = m_apariencia;
++    switch (fila) {
++        case Fila::Piel:
++            return a.piel;
++        case Fila::Talla:
++            return a.talla;
++        case Fila::Ojos: {
++            const RazaVisual* raza = m_manifiesto.raza(a.raza);
++            return a.ojos.empty() && raza != nullptr ? raza->ojos : a.ojos;
++        }
++        case Fila::Peinado:
++            return a.peloEstilo;
++        case Fila::ColorPelo:
++            return a.peloColor;
++        case Fila::Barba:
++            return a.barbaEstilo;
++        case Fila::ColorBarba:
++            return a.barbaColor;
++        case Fila::AlAzar:
++        case Fila::ComoSuRaza:
++            return "";
++        default:
++            break;
++    }
++    const auto it = a.ropa.find(ranuraDe(fila));
++    return it == a.ropa.end() ? std::string() : it->second;
++}
++
++void EditorApariencia::poner(Fila fila, const std::string& valor) {
++    Apariencia& a = m_apariencia;
++    const RazaVisual* raza = m_manifiesto.raza(a.raza);
++    // Al elegir un estilo se conserva el color si ese estilo lo tiene; si no,
++    // el de la raza, el del pelo (para la barba) o el primero que haya.
++    const auto colorPara = [&](const GrupoDeCapas& grupo, const std::string& estilo,
++                               std::initializer_list<std::string> preferidos) {
++        const std::vector<std::string> hay = colores(grupo, estilo);
++        for (const std::string& c : preferidos) {
++            if (!c.empty() && contiene(hay, c))
++                return c;
++        }
++        return hay.empty() ? std::string() : hay.front();
++    };
++    switch (fila) {
++        case Fila::Piel:
++            a.piel = valor;
++            break;
++        case Fila::Talla:
++            a.talla = valor;
++            break;
++        case Fila::Ojos:
++            a.ojos = valor;
++            break;
++        case Fila::Peinado:
++            a.peloEstilo = valor;
++            if (!valor.empty()) {
++                a.peloColor = colorPara(m_manifiesto.pelo, valor,
++                                        {a.peloColor, raza != nullptr ? raza->peloColor : ""});
++            }
++            break;
++        case Fila::ColorPelo: {
++            // La barba sigue al pelo si iban a juego.
++            const bool aJuego = !a.barbaEstilo.empty() && a.barbaColor == a.peloColor;
++            a.peloColor = valor;
++            if (aJuego && contiene(colores(m_manifiesto.barba, a.barbaEstilo), valor))
++                a.barbaColor = valor;
++            break;
++        }
++        case Fila::Barba:
++            a.barbaEstilo = valor;
++            if (!valor.empty()) {
++                a.barbaColor = colorPara(m_manifiesto.barba, valor, {a.barbaColor, a.peloColor});
++            }
++            break;
++        case Fila::ColorBarba:
++            a.barbaColor = valor;
++            break;
++        case Fila::AlAzar:
++        case Fila::ComoSuRaza:
++            break;
++        default:
++            if (valor.empty()) {
++                a.ropa.erase(ranuraDe(fila));
++            } else {
++                a.ropa[ranuraDe(fila)] = valor;
++            }
++            break;
++    }
++    rehacerFilas();
++}
++
++void EditorApariencia::cambiar(Fila fila, int paso) {
++    if (fila == Fila::AlAzar) {
++        alAzar();
++        return;
++    }
++    if (fila == Fila::ComoSuRaza) {
++        const RazaVisual* raza = m_manifiesto.raza(m_apariencia.raza);
++        if (raza != nullptr)
++            m_apariencia = Apariencia::deRaza(*raza);
++        rehacerFilas();
++        return;
++    }
++    const std::vector<std::string> ops = opciones(fila);
++    if (ops.empty())
++        return;
++    const int n = static_cast<int>(ops.size());
++    const auto it = std::find(ops.begin(), ops.end(), actual(fila));
++    // Un valor que no esta en la lista (dato raro) cuenta como el anterior al primero.
++    const int i = it == ops.end() ? (paso > 0 ? -1 : 0) : static_cast<int>(it - ops.begin());
++    poner(fila, ops[static_cast<std::size_t>(((i + paso) % n + n) % n)]);
++}
++
++void EditorApariencia::alAzar() {
++    const RazaVisual* raza = m_manifiesto.raza(m_apariencia.raza);
++    if (raza == nullptr)
++        return;
++    std::mt19937 dado(0x9E3779B9u ^ (++m_tirada * 2654435761u));
++    const auto tirada = [&](int caras) {
++        return static_cast<int>(dado() % static_cast<std::uint32_t>(caras));
++    };
++    const auto uno = [&](const std::vector<std::string>& v) {
++        return v.empty() ? std::string()
++                         : v[static_cast<std::size_t>(tirada(static_cast<int>(v.size())))];
++    };
++    const ManifiestoPersonajes& m = m_manifiesto;
++    Apariencia a = Apariencia::deRaza(*raza);  // la talla de la raza se queda
++    a.ropa.clear();
++    if (raza->cuerpoLiso)
++        a.piel = uno(ids(m.cuerpos));
++    a.ojos = uno(ids(m.ojos));
++    if (raza->admite("pelo")) {
++        a.peloEstilo = tirada(100) < 85 ? uno(estilos(m.pelo)) : "";
++        if (!a.peloEstilo.empty())
++            a.peloColor = uno(colores(m.pelo, a.peloEstilo));
++        a.barbaEstilo = tirada(100) < 30 ? uno(estilos(m.barba)) : "";
++        if (!a.barbaEstilo.empty()) {
++            const std::vector<std::string> hay = colores(m.barba, a.barbaEstilo);
++            a.barbaColor = contiene(hay, a.peloColor) ? a.peloColor : uno(hay);
++        }
++    }
++    const std::pair<const char*, int> ropa[] = {
++        {"cabeza", 35}, {"torso", 100}, {"piernas", 80}, {"pies", 85}, {"capa", 35}};
++    for (const auto& [ranura, probabilidad] : ropa) {
++        const auto grupo = m.equipo.find(ranura);
++        if (grupo == m.equipo.end() || !raza->admite(ranura) || tirada(100) >= probabilidad)
++            continue;
++        a.ropa[ranura] = uno(ids(grupo->second));
++    }
++    m_apariencia = a;
++    rehacerFilas();
++}
++
++const char* EditorApariencia::etiqueta(Fila fila) { return datosDe(fila).etiqueta; }
++const char* EditorApariencia::ayuda(Fila fila) { return datosDe(fila).ayuda; }
++const char* EditorApariencia::icono(Fila fila) { return datosDe(fila).icono; }
++
++std::string EditorApariencia::valor(Fila fila) const {
++    const std::string v = actual(fila);
++    switch (fila) {
++        case Fila::AlAzar:
++            return "Otra combinacion";
++        case Fila::ComoSuRaza:
++            return "Como viste tu pueblo";
++        case Fila::Peinado:
++            return v.empty() ? "Sin pelo" : nombreDe(v);
++        case Fila::Barba:
++            return v.empty() ? "Sin barba" : nombreDe(v);
++        case Fila::Piel:
++        case Fila::Talla:
++        case Fila::Ojos:
++        case Fila::ColorPelo:
++        case Fila::ColorBarba:
++            return nombreDe(v);
++        default:
++            break;
++    }
++    if (v.empty())
++        return "Nada";
++    const auto grupo = m_manifiesto.equipo.find(ranuraDe(fila));
++    const FilaDeCapa* pieza =
++        grupo == m_manifiesto.equipo.end() ? nullptr : grupo->second.buscar(v);
++    return pieza != nullptr && !pieza->nombre.empty() ? pieza->nombre : nombreDe(v);
++}
++
++std::string EditorApariencia::nombreDe(const std::string& id) {
++    const auto it = nombres().find(id);
++    if (it != nombres().end())
++        return it->second;
++    std::string out = id;
++    for (char& c : out) {
++        if (c == '_')
++            c = ' ';
++    }
++    if (!out.empty() && out[0] >= 'a' && out[0] <= 'z')
++        out[0] = static_cast<char>(out[0] - 'a' + 'A');
++    return out;
++}
++
++}  // namespace Game
+diff --git a/src/Game/Personajes/ManifiestoPersonajes.cpp b/src/Game/Personajes/ManifiestoPersonajes.cpp
+new file mode 100644
+index 0000000..3944a20
+--- /dev/null
++++ b/src/Game/Personajes/ManifiestoPersonajes.cpp
+@@ -0,0 +1,238 @@
++// APARIENCIA-01 — ver include/Game/Personajes/ManifiestoPersonajes.h.
++#include "Game/Personajes/ManifiestoPersonajes.h"
++
++#include <algorithm>
++#include <fstream>
++#include <sstream>
++#include <utility>
++
++#include "Core/Json/JsonValue.h"
++
++namespace Game {
++
++const char* const kRanurasDeEquipo[7] = {"cabeza", "torso", "piernas", "pies",
++                                         "capa",   "arma",  "mano_izq"};
++
++bool esRanuraDeRopa(const std::string& ranura) {
++    return ranura == "torso" || ranura == "piernas" || ranura == "pies" || ranura == "capa";
++}
++
++namespace {
++
++bool contiene(const std::vector<std::string>& v, const std::string& x) {
++    return std::find(v.begin(), v.end(), x) != v.end();
++}
++
++Result<JsonValue> leerJson(const std::string& ruta) {
++    std::ifstream in(ruta, std::ios::binary);
++    if (!in)
++        return Result<JsonValue>::Error("no se puede abrir " + ruta);
++    std::stringstream ss;
++    ss << in.rdbuf();
++    auto parsed = JsonValue::parse(ss.str());
++    if (!parsed.isOk())
++        return Result<JsonValue>::Error(ruta + ": " + parsed.errorMessage());
++    return parsed;
++}
++
++std::vector<std::string> textos(const JsonValue& v) {
++    std::vector<std::string> out;
++    if (!v.isArray())
++        return out;
++    for (std::size_t i = 0; i < v.size(); ++i)
++        out.push_back(v[i].asString());
++    return out;
++}
++
++std::map<std::string, std::string> mapaDeTextos(const JsonValue& v) {
++    std::map<std::string, std::string> out;
++    if (!v.isObject())
++        return out;
++    for (const auto& [k, x] : v.objectValues()) {
++        if (x.isString())
++            out[k] = x.asString();
++    }
++    return out;
++}
++
++// [estilo, color] o null. Devuelve false si no es un par.
++bool leerPar(const JsonValue& v, std::string& estilo, std::string& color) {
++    estilo.clear();
++    color.clear();
++    if (!v.isArray() || v.size() < 2)
++        return false;
++    estilo = v[0].asString();
++    color = v[1].asString();
++    return !estilo.empty();
++}
++
++GrupoDeCapas leerGrupo(const JsonValue& v, const char* claveFilas) {
++    GrupoDeCapas g;
++    g.atlas = mapaDeTextos(v["atlas"]);
++    const JsonValue& filas = v[claveFilas];
++    for (std::size_t i = 0; i < filas.size(); ++i) {
++        const JsonValue& f = filas[i];
++        FilaDeCapa fila;
++        fila.id = f["id"].asString();
++        fila.estilo = f["estilo"].asString();
++        fila.color = f["color"].asString();
++        fila.nombre = f["nombre"].asString();
++        fila.fila = f["fila"].asInt(0);
++        if (!fila.id.empty() && fila.fila > 0)
++            g.filas.push_back(std::move(fila));
++    }
++    g.ocultaPelo = textos(v["ocultaPelo"]);
++    return g;
++}
++
++RazaVisual leerRaza(const JsonValue& r) {
++    RazaVisual raza;
++    raza.id = r["id"].asString();
++    raza.nombre = r["nombre"].asString(raza.id);
++    raza.talla = r["talla"].asString("medio");
++    raza.tallaRopa = r["tallaRopa"].asString(raza.talla);
++    raza.fila = r["fila"].asInt(0);
++    raza.capas = textos(r["capas"]);
++    raza.sin = textos(r["sin"]);
++    raza.piel = r["piel"].asString();
++    raza.ojos = r["ojos"].asString();
++    leerPar(r["pelo"], raza.peloEstilo, raza.peloColor);
++    leerPar(r["barba"], raza.barbaEstilo, raza.barbaColor);
++    raza.equipo = mapaDeTextos(r["equipo"]);
++    return raza;
++}
++
++}  // namespace
++
++const FilaDeCapa* GrupoDeCapas::buscar(const std::string& id) const {
++    for (const FilaDeCapa& f : filas) {
++        if (f.id == id)
++            return &f;
++    }
++    return nullptr;
++}
++
++bool RazaVisual::admite(const std::string& ranura) const { return !contiene(sin, ranura); }
++
++Apariencia Apariencia::deRaza(const RazaVisual& raza, bool conArmas) {
++    Apariencia a;
++    a.raza = raza.id;
++    a.piel = raza.piel;
++    a.talla = raza.talla;
++    a.ojos = raza.ojos;
++    if (raza.admite("pelo")) {
++        a.peloEstilo = raza.peloEstilo;
++        a.peloColor = raza.peloColor;
++    }
++    a.barbaEstilo = raza.barbaEstilo;
++    a.barbaColor = raza.barbaColor;
++    for (const auto& [ranura, pieza] : raza.equipo) {
++        if (!conArmas && (ranura == "arma" || ranura == "mano_izq"))
++            continue;
++        a.ropa[ranura] = pieza;
++    }
++    return a;
++}
++
++std::string Apariencia::clave() const {
++    std::string c = raza + "|" + piel + "|" + talla + "|" + ojos + "|" + peloEstilo + "/" +
++                    peloColor + "|" + barbaEstilo + "/" + barbaColor + "|";
++    for (const auto& [ranura, pieza] : ropa)
++        c += ranura + "=" + pieza + ";";
++    c += "|";
++    for (const std::string& q : quitarCapas)
++        c += q + ";";
++    return c;
++}
++
++const RazaVisual* ManifiestoPersonajes::raza(const std::string& id) const {
++    for (const RazaVisual& r : razas) {
++        if (r.id == id)
++            return &r;
++    }
++    return nullptr;
++}
++
++Result<ManifiestoPersonajes> ManifiestoPersonajes::cargar(const std::string& carpetaTexturas) {
++    auto leido = leerJson(carpetaTexturas + "/personajes.json");
++    if (!leido.isOk())
++        return Result<ManifiestoPersonajes>::Error("Personajes: " + leido.errorMessage());
++    const JsonValue& raiz = leido.value();
++    ManifiestoPersonajes m;
++
++    for (const auto& [ranura, dirs] : raiz["orden"].objectValues()) {
++        for (const auto& [dir, z] : dirs.objectValues())
++            m.orden[ranura][dir] = z.asInt(0);
++    }
++    for (const auto& [talla, def] : raiz["tallas"].objectValues()) {
++        m.nombreDeTalla[talla] = def["nombre"].asString(talla);
++    }
++    m.atlasDeRaza = mapaDeTextos(raiz["razas"]["atlas"]);
++    const JsonValue& lista = raiz["razas"]["lista"];
++    for (std::size_t i = 0; i < lista.size(); ++i)
++        m.razas.push_back(leerRaza(lista[i]));
++    m.cuerpos = leerGrupo(raiz["cuerpos"], "filas");
++    m.ojos = leerGrupo(raiz["ojos"], "filas");
++    m.pelo = leerGrupo(raiz["pelo"], "filas");
++    m.barba = leerGrupo(raiz["barba"], "filas");
++    for (const auto& [ranura, def] : raiz["equipo"].objectValues()) {
++        m.equipo[ranura] = leerGrupo(def, "piezas");
++    }
++    for (RazaVisual& r : m.razas) {
++        r.cuerpoLiso =
++            r.capas.size() == 1 && r.capas[0] == "cuerpo" && m.cuerpos.buscar(r.piel) != nullptr;
++    }
++
++    if (m.orden.empty() || m.razas.empty() || m.pelo.filas.empty() || m.equipo.empty()) {
++        return Result<ManifiestoPersonajes>::Error(
++            "Personajes: " + carpetaTexturas +
++            "/personajes.json no trae orden, razas, pelo o equipo");
++    }
++    for (const auto& [grupo, specs] : raiz["personajes"].objectValues()) {
++        for (const auto& [id, spec] : specs.objectValues()) {
++            auto a = m.desdeComposicion(spec);
++            if (!a.isOk()) {
++                return Result<ManifiestoPersonajes>::Error("Personajes: " + grupo + "/" + id +
++                                                           ": " + a.errorMessage());
++            }
++            m.personajes[id] = std::move(a.value());
++        }
++    }
++
++    // La pieza de cada objeto. Sin el catalogo el juego sigue: solo no se ve
++    // el equipo puesto (el aspecto elegido si).
++    auto catalogo = leerJson(carpetaTexturas + "/personajes/equipo_catalogo.json");
++    if (catalogo.isOk()) {
++        for (const auto& [objeto, def] : catalogo.value()["objetos"].objectValues()) {
++            PiezaDeObjeto p{def["ranura"].asString(), def["pieza"].asString()};
++            if (!p.ranura.empty() && !p.pieza.empty())
++                m.piezaDeObjeto[objeto] = std::move(p);
++        }
++    }
++    return Result<ManifiestoPersonajes>::Ok(std::move(m));
++}
++
++Result<Apariencia> ManifiestoPersonajes::desdeComposicion(const JsonValue& spec) const {
++    const RazaVisual* r = raza(spec["raza"].asString());
++    if (r == nullptr)
++        return Result<Apariencia>::Error("no hay raza '" + spec["raza"].asString() + "'");
++    Apariencia a = Apariencia::deRaza(*r, /*conArmas=*/true);
++    a.ropa.clear();
++    if (spec.has("piel") && spec["piel"].isString())
++        a.piel = spec["piel"].asString();
++    if (spec.has("talla") && spec["talla"].isString())
++        a.talla = spec["talla"].asString();
++    if (spec.has("ojos") && spec["ojos"].isString())
++        a.ojos = spec["ojos"].asString();
++    // Presente = explicito (null o [] deja sin pelo; un par se pinta aunque
++    // la raza no tenga pelo, como la naga del rio). Ausente = el de la raza.
++    if (spec.has("pelo"))
++        leerPar(spec["pelo"], a.peloEstilo, a.peloColor);
++    if (spec.has("barba"))
++        leerPar(spec["barba"], a.barbaEstilo, a.barbaColor);
++    a.ropa = mapaDeTextos(spec["equipo"]);
++    a.quitarCapas = textos(spec["quitar_capas"]);
++    return Result<Apariencia>::Ok(std::move(a));
++}
++
++}  // namespace Game
+diff --git a/src/Game/Personajes/MontajePersonajes.cpp b/src/Game/Personajes/MontajePersonajes.cpp
+new file mode 100644
+index 0000000..4faa519
+--- /dev/null
++++ b/src/Game/Personajes/MontajePersonajes.cpp
+@@ -0,0 +1,276 @@
++// APARIENCIA-01 — ver include/Game/Personajes/MontajePersonajes.h.
++#include "Game/Personajes/MontajePersonajes.h"
++
++#include <algorithm>
++#include <utility>
++
++namespace Game {
++
++namespace {
++
++using Capas = Result<std::vector<CapaDeMontaje>>;
++
++bool contiene(const std::vector<std::string>& v, const std::string& x) {
++    return std::find(v.begin(), v.end(), x) != v.end();
++}
++
++// La ruta del atlas de `grupo` para `talla`, o vacia si no lo tiene.
++std::string atlasDe(const GrupoDeCapas& grupo, const std::string& talla) {
++    const auto it = grupo.atlas.find(talla);
++    return it == grupo.atlas.end() ? std::string() : it->second;
++}
++
++}  // namespace
++
++MontajePersonajes::MontajePersonajes(ManifiestoPersonajes manifiesto, std::string carpetaTexturas,
++                                     std::size_t presupuestoBytes)
++    : m_manifiesto(std::move(manifiesto))
++    , m_carpeta(std::move(carpetaTexturas))
++    , m_presupuesto(presupuestoBytes) {}
++
++Result<std::unique_ptr<MontajePersonajes>> MontajePersonajes::cargar(
++    const std::string& carpetaTexturas) {
++    auto m = ManifiestoPersonajes::cargar(carpetaTexturas);
++    if (!m.isOk())
++        return Result<std::unique_ptr<MontajePersonajes>>::Error(m.errorMessage());
++    return Result<std::unique_ptr<MontajePersonajes>>::Ok(
++        std::make_unique<MontajePersonajes>(std::move(m.value()), carpetaTexturas));
++}
++
++Capas MontajePersonajes::capas(const Apariencia& a,
++                               const std::map<std::string, std::string>& equipo) const {
++    const ManifiestoPersonajes& m = m_manifiesto;
++    const RazaVisual* r = m.raza(a.raza);
++    if (r == nullptr)
++        return Capas::Error("no hay raza '" + a.raza + "'");
++
++    // Otra piel u otra talla: el cuerpo sale del atlas de cuerpos lisos,
++    // que trae los ojos azules; si no, de las capas de la raza.
++    const bool otra =
++        (!a.talla.empty() && a.talla != r->talla) || (!a.piel.empty() && a.piel != r->piel);
++    const std::string talla = a.talla.empty() ? r->talla : a.talla;
++    const std::string tallaRopa = talla == r->talla ? r->tallaRopa : talla;
++    const std::string ojos = a.ojos.empty() ? r->ojos : a.ojos;
++
++    std::vector<CapaDeMontaje> out;
++    std::string ojosDelCuerpo;
++    if (otra) {
++        if (!r->cuerpoLiso) {
++            return Capas::Error("la raza " + r->id +
++                                " tiene rasgos propios: no admite otra piel ni talla");
++        }
++        const std::string piel = a.piel.empty() ? r->piel : a.piel;
++        const FilaDeCapa* fila = m.cuerpos.buscar(piel);
++        const std::string ruta = atlasDe(m.cuerpos, talla);
++        if (fila == nullptr || ruta.empty())
++            return Capas::Error("no hay cuerpo '" + piel + "' en talla " + talla);
++        out.push_back({"cuerpo", ruta, fila->fila});
++        ojosDelCuerpo = "azul";
++    } else {
++        for (const std::string& capa : r->capas) {
++            if (contiene(a.quitarCapas, capa))
++                continue;
++            const auto it = m.atlasDeRaza.find(capa);
++            if (it == m.atlasDeRaza.end())
++                return Capas::Error("la capa de raza '" + capa + "' no tiene atlas");
++            out.push_back({capa, it->second, r->fila});
++        }
++        ojosDelCuerpo = r->ojos;
++    }
++    if (ojos != ojosDelCuerpo) {
++        const FilaDeCapa* fila = m.ojos.buscar(ojos);
++        const std::string ruta = atlasDe(m.ojos, talla);
++        if (fila == nullptr || ruta.empty())
++            return Capas::Error("no hay ojos '" + ojos + "' en talla " + talla);
++        out.insert(out.begin() + static_cast<std::ptrdiff_t>(std::min<std::size_t>(1, out.size())),
++                   CapaDeMontaje{"ojos", ruta, fila->fila});
++    }
++    if (!a.barbaEstilo.empty()) {
++        const std::string id = a.barbaEstilo + "/" + a.barbaColor;
++        const FilaDeCapa* fila = m.barba.buscar(id);
++        const std::string ruta = atlasDe(m.barba, talla);
++        if (fila == nullptr || ruta.empty())
++            return Capas::Error("no hay barba '" + id + "'");
++        out.push_back({"barba", ruta, fila->fila});
++    }
++
++    // Lo puesto manda sobre la ropa de la apariencia, ranura a ranura.
++    std::map<std::string, std::string> puesto = a.ropa;
++    for (const auto& [ranura, pieza] : equipo)
++        puesto[ranura] = pieza;
++    const auto cabeza = puesto.find("cabeza");
++    const auto grupoCabeza = m.equipo.find("cabeza");
++    const bool tapaElPelo = cabeza != puesto.end() && grupoCabeza != m.equipo.end() &&
++                            contiene(grupoCabeza->second.ocultaPelo, cabeza->second);
++    if (!a.peloEstilo.empty() && !tapaElPelo) {
++        const std::string id = a.peloEstilo + "/" + a.peloColor;
++        const FilaDeCapa* fila = m.pelo.buscar(id);
++        const std::string ruta = atlasDe(m.pelo, talla);
++        if (fila == nullptr || ruta.empty())
++            return Capas::Error("no hay peinado '" + id + "'");
++        out.push_back({"pelo", ruta, fila->fila});
++    }
++    for (const char* nombre : kRanurasDeEquipo) {
++        const std::string ranura = nombre;
++        const auto it = puesto.find(ranura);
++        if (it == puesto.end() || it->second.empty() || !r->admite(ranura))
++            continue;
++        const auto grupo = m.equipo.find(ranura);
++        const FilaDeCapa* fila =
++            grupo == m.equipo.end() ? nullptr : grupo->second.buscar(it->second);
++        if (fila == nullptr)
++            return Capas::Error("no hay pieza de " + ranura + " '" + it->second + "'");
++        const std::string ruta = atlasDe(grupo->second, esRanuraDeRopa(ranura) ? tallaRopa : talla);
++        if (ruta.empty())
++            return Capas::Error("la pieza '" + it->second + "' no tiene talla " + tallaRopa);
++        out.push_back({ranura, ruta, fila->fila});
++    }
++    return Capas::Ok(std::move(out));
++}
++
++Result<const imagen::ImagenRGBA*> MontajePersonajes::atlas(const std::string& ruta) {
++    for (auto it = m_cache.begin(); it != m_cache.end(); ++it) {
++        if (it->first == ruta) {
++            m_cache.splice(m_cache.begin(), m_cache, it);
++            return Result<const imagen::ImagenRGBA*>::Ok(&m_cache.front().second);
++        }
++    }
++    auto leida = imagen::cargarPNG(m_carpeta + "/" + ruta);
++    if (!leida.isOk())
++        return Result<const imagen::ImagenRGBA*>::Error(leida.errorMessage());
++    m_bytes += leida.value().bytes();
++    m_cache.emplace_front(ruta, std::move(leida.value()));
++    return Result<const imagen::ImagenRGBA*>::Ok(&m_cache.front().second);
++}
++
++void MontajePersonajes::recortarCache() {
++    // Nunca durante un montaje (los punteros a los atlas siguen en uso):
++    // solo al acabarlo. Siempre queda al menos el ultimo atlas usado.
++    while (m_bytes > m_presupuesto && m_cache.size() > 1) {
++        m_bytes -= m_cache.back().second.bytes();
++        m_cache.pop_back();
++    }
++}
++
++void MontajePersonajes::vaciarCache() {
++    m_cache.clear();
++    m_bytes = 0;
++}
++
++Result<imagen::ImagenRGBA> MontajePersonajes::montar(
++    const Apariencia& apariencia, const std::map<std::string, std::string>& equipo) {
++    using Hoja = Result<imagen::ImagenRGBA>;
++    auto lista = capas(apariencia, equipo);
++    if (!lista.isOk())
++        return Hoja::Error(lista.errorMessage());
++    const std::vector<CapaDeMontaje>& capasDelPersonaje = lista.value();
++
++    std::vector<const imagen::ImagenRGBA*> atlas;
++    for (const CapaDeMontaje& capa : capasDelPersonaje) {
++        auto a = this->atlas(capa.atlas);
++        if (!a.isOk())
++            return Hoja::Error(a.errorMessage());
++        const imagen::ImagenRGBA* img = a.value();
++        if (img->ancho < kLado * kFrames || img->alto < capa.fila * kLado || capa.fila < 1) {
++            return Hoja::Error(capa.atlas + " no tiene la fila " + std::to_string(capa.fila) +
++                               " de 12 frames de 64x64");
++        }
++        if (m_manifiesto.orden.find(capa.ranura) == m_manifiesto.orden.end()) {
++            return Hoja::Error("la ranura '" + capa.ranura + "' no tiene orden de dibujo");
++        }
++        atlas.push_back(img);
++    }
++
++    imagen::ImagenRGBA hoja;
++    hoja.ancho = kLado * kFrames;
++    hoja.alto = kLado;
++    hoja.pixeles.assign(static_cast<std::size_t>(hoja.ancho) * hoja.alto * 4, 0);
++    std::vector<std::pair<int, std::size_t>> pila;  // (z, indice): a igual z, el orden de capas()
++    for (int frame = 1; frame <= kFrames; ++frame) {
++        const char* direccion = nombreDeRumbo(rumboDeFrame(frame));
++        pila.clear();
++        for (std::size_t i = 0; i < capasDelPersonaje.size(); ++i) {
++            const auto& porDireccion = m_manifiesto.orden.at(capasDelPersonaje[i].ranura);
++            const auto z = porDireccion.find(direccion);
++            pila.emplace_back(z == porDireccion.end() ? 0 : z->second, i);
++        }
++        std::sort(pila.begin(), pila.end());
++        const int x0 = (frame - 1) * kLado;
++        for (const auto& [z, i] : pila) {
++            const imagen::ImagenRGBA& origen = *atlas[i];
++            const int y0 = (capasDelPersonaje[i].fila - 1) * kLado;
++            for (int y = 0; y < kLado; ++y) {
++                for (int x = 0; x < kLado; ++x) {
++                    std::uint8_t* destino =
++                        hoja.pixeles.data() + (static_cast<std::size_t>(y) * hoja.ancho +
++                                               static_cast<std::size_t>(x0 + x)) *
++                                                  4;
++                    mezclarEncima(destino, origen.pixel(x0 + x, y0 + y));
++                }
++            }
++        }
++    }
++    recortarCache();
++    return Hoja::Ok(std::move(hoja));
++}
++
++void mezclarEncima(std::uint8_t* debajo, const std::uint8_t* encima) {
++    // Pillow, libImaging/AlphaComposite.c: 7 bits de precision y divisiones
++    // entre 255 redondeadas con ((a >> 8) + a) >> 8. Copiada tal cual para
++    // que la hoja sea la misma que la del probador, no «casi» la misma.
++    if (encima[3] == 0)
++        return;
++    constexpr std::uint32_t kPrecision = 7;
++    const auto entre255 = [](std::uint32_t a) { return ((a >> 8) + a) >> 8; };
++    const std::uint32_t alfaEncima = encima[3];
++    const std::uint32_t mezcla = static_cast<std::uint32_t>(debajo[3]) * (255u - alfaEncima);
++    const std::uint32_t alfa255 = alfaEncima * 255u + mezcla;
++    const std::uint32_t coef1 = alfaEncima * 255u * 255u * (1u << kPrecision) / alfa255;
++    const std::uint32_t coef2 = 255u * (1u << kPrecision) - coef1;
++    for (int c = 0; c < 3; ++c) {
++        const std::uint32_t t = static_cast<std::uint32_t>(encima[c]) * coef1 +
++                                static_cast<std::uint32_t>(debajo[c]) * coef2;
++        debajo[c] = static_cast<std::uint8_t>(entre255(t + (0x80u << kPrecision)) >> kPrecision);
++    }
++    debajo[3] = static_cast<std::uint8_t>(entre255(alfa255 + 0x80u));
++}
++
++Rumbo rumboDeFrame(int frame) {
++    const int f = std::max(1, std::min(frame, MontajePersonajes::kFrames));
++    return static_cast<Rumbo>((f - 1) / 3);
++}
++
++const char* nombreDeRumbo(Rumbo rumbo) {
++    switch (rumbo) {
++        case Rumbo::Arriba:
++            return "arriba";
++        case Rumbo::Derecha:
++            return "derecha";
++        case Rumbo::Abajo:
++            return "abajo";
++        case Rumbo::Izquierda:
++            return "izquierda";
++    }
++    return "abajo";
++}
++
++int frameQuieto(Rumbo rumbo) { return static_cast<int>(rumbo) * 3 + 2; }
++
++std::vector<int> cicloDeAndar(Rumbo rumbo) {
++    const int q = frameQuieto(rumbo);
++    return {q, q - 1, q, q + 1};
++}
++
++int frameDeVistaPrevia(double segundos) {
++    // 0,17 s por frame (el GIF del probador) y dos ciclos de cuatro frames
++    // por rumbo antes de girar: abajo, derecha, arriba, izquierda.
++    constexpr double kPorFrame = 0.17;
++    constexpr int kFramesPorRumbo = 8;
++    static const Rumbo kGiro[4] = {Rumbo::Abajo, Rumbo::Derecha, Rumbo::Arriba, Rumbo::Izquierda};
++    static const int kPaso[4] = {-1, 0, 1, 0};  // paso, quieto, paso, quieto
++    const long n = segundos > 0.0 ? static_cast<long>(segundos / kPorFrame) : 0;
++    const Rumbo rumbo = kGiro[(n / kFramesPorRumbo) % 4];
++    return frameQuieto(rumbo) + kPaso[n % 4];
++}
++
++}  // namespace Game
+diff --git a/src/Game/Personajes/Vestuario.cpp b/src/Game/Personajes/Vestuario.cpp
+new file mode 100644
+index 0000000..c2f35de
+--- /dev/null
++++ b/src/Game/Personajes/Vestuario.cpp
+@@ -0,0 +1,75 @@
++// APARIENCIA-01 — ver include/Game/Personajes/Vestuario.h.
++#include "Game/Personajes/Vestuario.h"
++
++#include "RPG/InventoryEngine.h"
++
++namespace Game {
++namespace Vestuario {
++
++std::vector<std::string> equiparInicial(RPG::CharacterSheet& ficha,
++                                        const RPG::ClassDefinition& clase,
++                                        const RPG::TierRules& tiers,
++                                        const RPG::Catalogs::EquipmentCatalog& equipo) {
++    // equip() saca el objeto de la mochila: se recorre una copia de los ids.
++    std::vector<std::string> mochila;
++    for (const auto& [id, cantidad] : ficha.inventoryEquipment) {
++        if (cantidad > 0)
++            mochila.push_back(id);
++    }
++    const auto libre = [&](RPG::EquipSlot ranura) {
++        return ficha.equippedIds[static_cast<std::size_t>(ranura)].empty();
++    };
++    std::vector<std::string> puestos;
++    for (const std::string& id : mochila) {
++        const RPG::EquipmentDefinition* def = equipo.find(id);
++        if (def == nullptr)
++            continue;
++        bool porNombre = false;
++        const RPG::EquipSlot ranura = RPG::InventoryEngine::resolve_slot(def->slot, porNombre);
++        const bool dosManos = porNombre || def->twoHanded;
++        const bool cabe = dosManos
++                              ? libre(RPG::EquipSlot::MainHand) && libre(RPG::EquipSlot::OffHand)
++                              : libre(ranura);
++        if (!cabe)
++            continue;
++        if (RPG::InventoryEngine::equip(ficha, *def, clase, tiers, equipo).isOk())
++            puestos.push_back(id);
++    }
++    return puestos;
++}
++
++std::map<std::string, std::string> piezasVisibles(const std::array<std::string, 7>& puestos,
++                                                  const ManifiestoPersonajes& manifiesto) {
++    std::map<std::string, std::string> visibles;
++    for (const std::string& id : puestos) {
++        if (id.empty())
++            continue;
++        const auto it = manifiesto.piezaDeObjeto.find(id);
++        if (it != manifiesto.piezaDeObjeto.end())
++            visibles[it->second.ranura] = it->second.pieza;
++    }
++    return visibles;
++}
++
++std::array<std::string, 7> probar(const RPG::CharacterCreation& reglas,
++                                  const RPG::CreationChoice& eleccion, const RPG::TierRules& tiers,
++                                  const RPG::Catalogs::EquipmentCatalog& equipo) {
++    const RPG::ClassDefinition* clase = reglas.classes().find(eleccion.classId);
++    if (clase == nullptr)
++        return {};
++    RPG::CharacterSheet prueba;
++    prueba.tier = eleccion.tier;
++    prueba.classId = eleccion.classId;
++    prueba.baseStats = eleccion.baseStats;
++    if (const RPG::RaceDefinition* raza = reglas.races().find(eleccion.raceId)) {
++        prueba.racialBonuses = raza->statBonuses;
++    }
++    for (const std::string& id : reglas.equipoInicial(eleccion.classId, eleccion.backgroundId)) {
++        prueba.inventoryEquipment.emplace_back(id, 1);
++    }
++    equiparInicial(prueba, *clase, tiers, equipo);
++    return prueba.equippedIds;
++}
++
++}  // namespace Vestuario
++}  // namespace Game
+diff --git a/src/RPG/CharacterCreation.cpp b/src/RPG/CharacterCreation.cpp
+index 5e82221..fb4abc2 100644
+--- a/src/RPG/CharacterCreation.cpp
++++ b/src/RPG/CharacterCreation.cpp
+@@ -11,6 +11,7 @@
+ 
+ #include "RPG/CharacterCreation.h"
+ 
++#include <algorithm>
+ #include <cstdio>
+ #include <string>
+ #include <vector>
+@@ -233,6 +234,18 @@ std::vector<std::string> CharacterCreation::problemas(const CreationChoice& e) c
+     return p;
+ }
+ 
++std::vector<std::string> CharacterCreation::equipoInicial(const std::string& classId,
++                                                           const std::string& backgroundId) const {
++    std::vector<std::string> ids;
++    if (const ClassDefinition* clase = m_classes.find(classId)) ids = clase->startingEquipmentIds;
++    if (const BackgroundDefinition* fondo = m_backgrounds.find(backgroundId)) {
++        for (const std::string& eq : fondo->startingEquipmentIds) {
++            if (std::find(ids.begin(), ids.end(), eq) == ids.end()) ids.push_back(eq);
++        }
++    }
++    return ids;
++}
++
+ Result<CharacterSheet> CharacterCreation::construir(const CreationChoice& e) const {
+     const std::vector<std::string> p = problemas(e);
+     if (!p.empty()) {
+@@ -268,7 +281,9 @@ Result<CharacterSheet> CharacterCreation::construir(const CreationChoice& e) con
+     // Cartas y equipo de arranque de la clase. El GDD lo dice claro:
+     // "nadie empieza con una hoja en blanco".
+     ficha.knownSkillIds = clase->startingSkillIds;
+-    for (const std::string& eq : clase->startingEquipmentIds) {
++    // Y lo que aporte el trasfondo, sin duplicar: una sola regla en
++    // equipoInicial(), que tambien usa la vista previa de la creacion.
++    for (const std::string& eq : equipoInicial(e.classId, e.backgroundId)) {
+         ficha.inventoryEquipment.emplace_back(eq, 1);
+     }
+ 
+@@ -297,18 +312,6 @@ Result<CharacterSheet> CharacterCreation::construir(const CreationChoice& e) con
+         ficha.primaryFactionId = fondo->factionId;
+     }
+ 
+-    // Y lo que aporte el trasfondo, sin duplicar lo que ya trae la clase.
+-    for (const std::string& eq : fondo->startingEquipmentIds) {
+-        bool ya = false;
+-        for (const auto& par : ficha.inventoryEquipment) {
+-            if (par.first == eq) {
+-                ya = true;
+-            }
+-        }
+-        if (!ya) {
+-            ficha.inventoryEquipment.emplace_back(eq, 1);
+-        }
+-    }
+     ficha.gold = fondo->startingWealthGold;
+ 
+     // D-06 — Les set eleccions narratives del trasfondo. S'emmagatzemen
+diff --git a/src/Render/HojaPersonaje.cpp b/src/Render/HojaPersonaje.cpp
+new file mode 100644
+index 0000000..69d305e
+--- /dev/null
++++ b/src/Render/HojaPersonaje.cpp
+@@ -0,0 +1,151 @@
++// APARIENCIA-01 — ver include/Render/HojaPersonaje.h.
++#include "Render/HojaPersonaje.h"
++
++#include <algorithm>
++#include <cmath>
++#include <cstring>
++#include <utility>
++#include <vector>
++
++#include <glad/glad.h>
++
++#include "Core/Resources/Texture.h"
++#include "Core/Resources/TextureAtlas.h"
++#include "Render/AnimatedEntity.h"
++#include "Render/SpriteBatch.h"
++
++namespace {
++
++constexpr int kLado = Game::MontajePersonajes::kLado;
++constexpr int kFrames = Game::MontajePersonajes::kFrames;
++constexpr int kFilaPies = 60;         // los pies apoyan en la fila 60 de la celda
++constexpr float kAltoFranja = 84.0f;  // la franja de los cuatro lados
++constexpr float kHueco = 16.0f;
++// Los colores del escenario del probador web (ARTE-02).
++const Vector4 kEscenario{95.0f / 255.0f, 104.0f / 255.0f, 87.0f / 255.0f, 1.0f};
++const Vector4 kSuelo{83.0f / 255.0f, 92.0f / 255.0f, 76.0f / 255.0f, 1.0f};
++const Vector4 kFranja{0.16f, 0.17f, 0.15f, 0.95f};
++const Vector4 kBlanco{1.0f, 1.0f, 1.0f, 1.0f};
++
++void dibujarFrame(SpriteBatch& batch, const TextureAtlas& atlas, int frame, const Vector2& pos,
++                  float lado) {
++    UVRect uv = atlas.getUV(frame);
++    // La hoja se sube de abajo arriba, como las texturas de TextureManager
++    // (stbi_set_flip_vertically_on_load): mismo cambio que Entity::render.
++    std::swap(uv.v0, uv.v1);
++    batch.submit(pos, Vector2{lado, lado}, uv, atlas.texture(), kBlanco);
++}
++
++}  // namespace
++
++HojaPersonaje::HojaPersonaje(Texture* blanco)
++    : m_blanco(blanco), m_inicio(std::chrono::steady_clock::now()) {}
++
++HojaPersonaje::~HojaPersonaje() = default;
++
++Result<bool> HojaPersonaje::vestir(Game::MontajePersonajes& montaje,
++                                   const Game::Apariencia& apariencia,
++                                   const std::map<std::string, std::string>& equipo) {
++    std::string clave = apariencia.clave() + "#";
++    for (const auto& [ranura, pieza] : equipo)
++        clave += ranura + "=" + pieza + ";";
++    if (clave == m_clave)
++        return Result<bool>::Ok(false);
++    // La clave se guarda aunque falle: un atlas roto no se relee cada fotograma.
++    m_clave = clave;
++    auto hoja = montaje.montar(apariencia, equipo);
++    if (!hoja.isOk())
++        return Result<bool>::Error("Apariencia: " + hoja.errorMessage());
++    subir(hoja.value());
++    m_apariencia = apariencia;
++    return Result<bool>::Ok(true);
++}
++
++void HojaPersonaje::subir(const imagen::ImagenRGBA& hoja) {
++    // Filas de abajo arriba, como las deja TextureManager: asi el atlas y
++    // Entity::render tratan esta hoja igual que personaje.png.
++    const std::size_t fila = static_cast<std::size_t>(hoja.ancho) * 4;
++    std::vector<unsigned char> volteada(hoja.pixeles.size());
++    for (int y = 0; y < hoja.alto; ++y) {
++        std::memcpy(volteada.data() + static_cast<std::size_t>(hoja.alto - 1 - y) * fila,
++                    hoja.pixeles.data() + static_cast<std::size_t>(y) * fila, fila);
++    }
++    if (m_textura == nullptr) {
++        unsigned int id = 0;
++        glGenTextures(1, &id);
++        glBindTexture(GL_TEXTURE_2D, id);
++        // GL_NEAREST: pixel art nitido, igual que TextureManager.
++        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
++        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
++        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
++        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
++        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, hoja.ancho, hoja.alto, 0, GL_RGBA,
++                     GL_UNSIGNED_BYTE, volteada.data());
++        m_textura = std::make_unique<Texture>(id, hoja.ancho, hoja.alto);
++        m_atlas = std::make_unique<TextureAtlas>(m_textura.get(), kLado, kLado);
++        for (int f = 1; f <= kFrames; ++f)
++            m_atlas->defineRegion(f, f - 1, 0);
++    } else {
++        // Siempre 768x64: se reescribe en su sitio y el atlas no cambia.
++        m_textura->bind();
++        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, hoja.ancho, hoja.alto, GL_RGBA, GL_UNSIGNED_BYTE,
++                        volteada.data());
++    }
++    glBindTexture(GL_TEXTURE_2D, 0);
++}
++
++void HojaPersonaje::ponerA(AnimatedEntity& actor, int anchoDibujo, int altoDibujo,
++                           const Vector2& anclaje) const {
++    if (m_atlas == nullptr)
++        return;
++    actor.setCharacterSprite(m_atlas.get(), anchoDibujo, altoDibujo, anclaje);
++    animar(actor);
++    actor.play("idle");
++    actor.showRestFrame();
++}
++
++void HojaPersonaje::animar(AnimatedEntity& actor) {
++    using Game::Rumbo;
++    actor.addAnimation("idle", {Game::frameQuieto(Rumbo::Abajo)});
++    actor.addAnimation("walk_up", Game::cicloDeAndar(Rumbo::Arriba));
++    actor.addAnimation("walk_right", Game::cicloDeAndar(Rumbo::Derecha));
++    actor.addAnimation("walk_down", Game::cicloDeAndar(Rumbo::Abajo));
++    actor.addAnimation("walk_left", Game::cicloDeAndar(Rumbo::Izquierda));
++}
++
++void HojaPersonaje::render(SpriteBatch& batch, int viewportWidth, int viewportHeight) const {
++    if (!m_visible || m_atlas == nullptr)
++        return;
++    const Vector2 esquina = m_marco.resolveTopLeft(viewportWidth, viewportHeight);
++    const Vector2 tam = m_marco.size;
++    const float altoEscenario = std::max(static_cast<float>(kLado), tam.y - kAltoFranja);
++    // Escala entera, para que el pixel art no se deforme.
++    const int escala =
++        std::max(1, static_cast<int>(std::min(tam.x, altoEscenario * 0.86f) / kLado));
++    const float lado = static_cast<float>(kLado * escala);
++    const float suelo = std::floor(esquina.y + altoEscenario * 0.86f);
++    if (m_blanco != nullptr) {
++        batch.submit(esquina, Vector2{tam.x, altoEscenario}, UVRect{}, m_blanco, kEscenario);
++        batch.submit(Vector2{esquina.x, suelo}, Vector2{tam.x, esquina.y + altoEscenario - suelo},
++                     UVRect{}, m_blanco, kSuelo);
++        batch.submit(Vector2{esquina.x, esquina.y + altoEscenario},
++                     Vector2{tam.x, tam.y - altoEscenario}, UVRect{}, m_blanco, kFranja);
++    }
++    const double segundos =
++        std::chrono::duration<double>(std::chrono::steady_clock::now() - m_inicio).count();
++    const Vector2 grande{std::floor(esquina.x + (tam.x - lado) * 0.5f),
++                         suelo - static_cast<float>(kFilaPies * escala)};
++    dibujarFrame(batch, *m_atlas, Game::frameDeVistaPrevia(segundos), grande, lado);
++
++    // Debajo, los cuatro lados quietos: abajo, derecha, arriba e izquierda.
++    const float ancho = 4.0f * kLado + 3.0f * kHueco;
++    const float x0 = std::floor(esquina.x + (tam.x - ancho) * 0.5f);
++    const float y0 = std::floor(esquina.y + altoEscenario + (tam.y - altoEscenario - kLado) * 0.5f);
++    const Game::Rumbo lados[4] = {Game::Rumbo::Abajo, Game::Rumbo::Derecha, Game::Rumbo::Arriba,
++                                  Game::Rumbo::Izquierda};
++    for (int i = 0; i < 4; ++i) {
++        dibujarFrame(batch, *m_atlas, Game::frameQuieto(lados[i]),
++                     Vector2{x0 + static_cast<float>(i) * (kLado + kHueco), y0},
++                     static_cast<float>(kLado));
++    }
++}
+diff --git a/tests/Engine/ApplicationCableadoTests.cpp b/tests/Engine/ApplicationCableadoTests.cpp
+index b5ed412..2fbdf39 100644
+--- a/tests/Engine/ApplicationCableadoTests.cpp
++++ b/tests/Engine/ApplicationCableadoTests.cpp
+@@ -48,6 +48,9 @@ struct ApplicationTestAccess {
+     static const Game::TitleMenuState& title(Application& a) { return *a.m_title; }
+     static void chooseTitle(Application& a) { a.confirmTitleSelection(); }
+     static bool pendingSceneReplace(Application& a) { return a.m_scenes.hasPendingTransition(); }
++    static bool creandoPersonaje(Application& a) {
++        return a.m_nuevaPartida != nullptr && a.m_nuevaPartida->activa();
++    }
+     static const std::string& projectId(Application& a) { return a.m_projectId; }
+     // H0-01 — acceso al catalogo de objetos cableado en Application.
+     static const ObjectCatalog& objectCatalog(Application& a) {
+@@ -395,11 +398,13 @@ MOTOR_TEST_CASE(cableado_titulo_sale_del_manifiesto) {
+     // el mismo directorio que escanea el titulo para «Continuar».
+     MOTOR_CHECK(ApplicationTestAccess::projectId(app) == "boundington");
+ 
+-    // Cableado: confirmar Nueva partida deja el titulo (encola la
+-    // transicion de escena al nivel ya cargado detras).
++    // Cableado: confirmar Nueva partida abre la creacion de personaje
++    // (NUEVA-PARTIDA-01, con el paso Apariencia de APARIENCIA-01). La
++    // escena cambia al nivel ya cargado detras cuando la creacion termina.
+     MOTOR_CHECK(!ApplicationTestAccess::pendingSceneReplace(app));
+     ApplicationTestAccess::chooseTitle(app);
+-    MOTOR_CHECK(ApplicationTestAccess::pendingSceneReplace(app));
++    MOTOR_CHECK(ApplicationTestAccess::creandoPersonaje(app));
++    MOTOR_CHECK(!ApplicationTestAccess::pendingSceneReplace(app));
+ }
+ 
+ // ========================================================================
+diff --git a/tests/Game/EditorAparienciaTests.cpp b/tests/Game/EditorAparienciaTests.cpp
+new file mode 100644
+index 0000000..e184b42
+--- /dev/null
++++ b/tests/Game/EditorAparienciaTests.cpp
+@@ -0,0 +1,354 @@
++// APARIENCIA-01 — El paso «Apariencia» de Nueva partida y el equipo inicial
++// puesto, sin ventana (assets reales, copiados a build/ por copiar_assets).
++//
++//   1. Las filas dependen del pueblo: un humano elige piel y talla; un
++//      aarakocra no tiene pelo ni pies; una naga no tiene piernas.
++//   2. Izquierda/derecha recorren los valores con la vuelta; quitar el pelo
++//      quita la fila de su color y el cursor se queda en PEINADO.
++//   3. La barba sigue al pelo si iban a juego.
++//   4. AL AZAR es determinista y SIEMPRE se puede montar, en las 43 razas.
++//   5. COMO TU PUEBLO deshace; volver a la misma raza conserva lo elegido y
++//      otra raza empieza de cero.
++//   6. El equipo inicial sale puesto con la regla de Vestuario: lo primero
++//      de cada ranura, si la clase puede llevarlo; el resto, a la mochila. Y
++//      los requisitos cuentan: la armadura de placas pide CON 3.
++//   7. El flujo tiene 15 pasos: Raza -> Apariencia -> Clase, ESC vuelve por
++//      el mismo camino, la vista previa sigue a lo marcado y finalizar()
++//      entrega la ficha con el equipo puesto y la vida al dia.
++#include "TestHarness.h"
++
++#include <string>
++
++#include "Game/NewGameFlow.h"
++#include "Game/Personajes/EditorApariencia.h"
++#include "Game/Personajes/MontajePersonajes.h"
++#include "Game/Personajes/Vestuario.h"
++#include "RPG/Catalogs/RpgCatalogs.h"
++#include "RPG/CharacterCreation.h"
++#include "RPG/TierRules.h"
++
++namespace {
++
++using Fila = Game::EditorApariencia::Fila;
++
++const Game::ManifiestoPersonajes& manifiesto() {
++    static const Game::ManifiestoPersonajes m = [] {
++        auto r = Game::ManifiestoPersonajes::cargar("assets/textures");
++        if (!r.isOk())
++            throw std::runtime_error(r.errorMessage());
++        return r.value();
++    }();
++    return m;
++}
++
++const RPG::CharacterCreation& reglas() {
++    static const RPG::CharacterCreation c = [] {
++        auto r = RPG::CharacterCreation::load("assets/catalogs");
++        if (!r.isOk())
++            throw std::runtime_error(r.errorMessage());
++        return std::move(r.value());
++    }();
++    return c;
++}
++
++const RPG::Catalogs::EquipmentCatalog& equipo() {
++    static const RPG::Catalogs::EquipmentCatalog cat = [] {
++        RPG::Catalogs::EquipmentCatalog c;
++        auto r = c.loadFromFile("assets/catalogs/equipment.json");
++        if (!r.isOk())
++            throw std::runtime_error(r.errorMessage());
++        return c;
++    }();
++    return cat;
++}
++
++const RPG::TierRules& tiers() {
++    static const RPG::TierRules t = [] {
++        RPG::TierRules r;
++        (void)r.loadFromFile("assets/rules/tier_rules.json");
++        return r;
++    }();
++    return t;
++}
++
++bool tiene(const Game::EditorApariencia& e, Fila f) {
++    for (Fila x : e.filas()) {
++        if (x == f)
++            return true;
++    }
++    return false;
++}
++
++void marcar(Game::EditorApariencia& e, Fila f) {
++    for (std::size_t i = 0; i < e.filas().size() && e.filaMarcada() != f; ++i)
++        e.abajo();
++    if (e.filaMarcada() != f)
++        throw std::runtime_error("fila no disponible");
++}
++
++}  // namespace
++
++MOTOR_TEST_CASE(apariencia_filas_segun_el_pueblo) {
++    Game::EditorApariencia e(manifiesto());
++    e.empezar("race_human_marches");
++    MOTOR_CHECK(tiene(e, Fila::Piel) && tiene(e, Fila::Talla));
++    MOTOR_CHECK(tiene(e, Fila::Peinado) && tiene(e, Fila::ColorPelo));
++    MOTOR_CHECK(tiene(e, Fila::Barba) && tiene(e, Fila::ColorBarba));  // barba corta de serie
++    MOTOR_CHECK(tiene(e, Fila::Pies) && tiene(e, Fila::AlAzar) && tiene(e, Fila::ComoSuRaza));
++
++    e.empezar("aarakocra_de_las_montanas");
++    MOTOR_CHECK(!tiene(e, Fila::Piel) && !tiene(e, Fila::Peinado) && !tiene(e, Fila::Barba));
++    MOTOR_CHECK(!tiene(e, Fila::Pies) && tiene(e, Fila::Torso) && tiene(e, Fila::Ojos));
++
++    e.empezar("nagas_arcanos");
++    MOTOR_CHECK(!tiene(e, Fila::Piernas) && !tiene(e, Fila::Pies) && tiene(e, Fila::Capa));
++    // Una armadura no se le pone a una naga sin su talla sin piernas: la
++    // apariencia de la raza se monta (las piezas existen en esa talla).
++    MOTOR_CHECK(e.apariencia().raza == "nagas_arcanos");
++}
++
++MOTOR_TEST_CASE(apariencia_valores_con_la_vuelta) {
++    Game::EditorApariencia e(manifiesto());
++    e.empezar("race_human_marches");
++    marcar(e, Fila::Peinado);
++    const std::string antes = e.apariencia().peloEstilo;
++    MOTOR_CHECK(!antes.empty());
++    // Hasta «sin pelo»: la fila de color desaparece y el cursor sigue en PEINADO.
++    for (int i = 0; i < 20 && !e.apariencia().peloEstilo.empty(); ++i)
++        e.izquierda();
++    MOTOR_CHECK(e.apariencia().peloEstilo.empty());
++    MOTOR_CHECK(!tiene(e, Fila::ColorPelo));
++    MOTOR_CHECK(e.filaMarcada() == Fila::Peinado);
++    MOTOR_CHECK(e.valor(Fila::Peinado) == "Sin pelo");
++    // Desde «sin pelo», izquierda da la vuelta al ultimo estilo.
++    e.izquierda();
++    MOTOR_CHECK(e.apariencia().peloEstilo == "coleta");
++    MOTOR_CHECK(tiene(e, Fila::ColorPelo));
++    e.derecha();
++    e.derecha();
++    MOTOR_CHECK(e.apariencia().peloEstilo == "corto");
++    MOTOR_CHECK(e.valor(Fila::Peinado) == "Corto");
++
++    // La ropa: «Nada» y las piezas con su nombre.
++    marcar(e, Fila::Cabeza);
++    e.derecha();
++    MOTOR_CHECK(e.apariencia().ropa.at("cabeza") == "capucha_purpura");
++    MOTOR_CHECK(e.valor(Fila::Cabeza) == "Capucha purpura");
++    e.izquierda();
++    MOTOR_CHECK(e.apariencia().ropa.count("cabeza") == 0);
++    MOTOR_CHECK(e.valor(Fila::Cabeza) == "Nada");
++}
++
++MOTOR_TEST_CASE(apariencia_la_barba_sigue_al_pelo) {
++    Game::EditorApariencia e(manifiesto());
++    e.empezar("race_human_marches");  // pelo y barba oscuros
++    MOTOR_CHECK(e.apariencia().barbaColor == e.apariencia().peloColor);
++    marcar(e, Fila::ColorPelo);
++    e.derecha();
++    MOTOR_CHECK(e.apariencia().peloColor != "pelo_oscuro");
++    MOTOR_CHECK(e.apariencia().barbaColor == e.apariencia().peloColor);
++    // Con colores distintos, cada uno va por su lado.
++    marcar(e, Fila::ColorBarba);
++    e.derecha();
++    const std::string barba = e.apariencia().barbaColor;
++    marcar(e, Fila::ColorPelo);
++    e.derecha();
++    MOTOR_CHECK(e.apariencia().barbaColor == barba);
++}
++
++MOTOR_TEST_CASE(apariencia_al_azar_siempre_se_monta) {
++    Game::MontajePersonajes montaje(manifiesto(), "assets/textures");
++    int montadas = 0;
++    for (const Game::RazaVisual& raza : manifiesto().razas) {
++        Game::EditorApariencia a(manifiesto());
++        Game::EditorApariencia b(manifiesto());
++        a.empezar(raza.id);
++        b.empezar(raza.id);
++        marcar(a, Fila::AlAzar);
++        marcar(b, Fila::AlAzar);
++        for (int i = 0; i < 12; ++i) {
++            a.derecha();
++            b.izquierda();
++            MOTOR_CHECK(a.apariencia().clave() == b.apariencia().clave());  // determinista
++            MOTOR_CHECK(a.filaMarcada() == Fila::AlAzar);
++            auto capas = montaje.capas(a.apariencia());
++            if (!capas.isOk())
++                MOTOR_CHECK_FAIL(raza.id + ": " + capas.errorMessage());
++            ++montadas;
++        }
++    }
++    MOTOR_CHECK(montadas == 43 * 12);
++    // Y montar de verdad una tanda (lee los atlas).
++    Game::EditorApariencia e(manifiesto());
++    e.empezar("race_human_marches");
++    marcar(e, Fila::AlAzar);
++    for (int i = 0; i < 5; ++i) {
++        e.derecha();
++        MOTOR_CHECK(montaje.montar(e.apariencia()).isOk());
++    }
++}
++
++MOTOR_TEST_CASE(apariencia_como_tu_pueblo_y_cambio_de_raza) {
++    Game::EditorApariencia e(manifiesto());
++    e.empezar("enanos_forjadores");
++    const std::string original = e.apariencia().clave();
++    marcar(e, Fila::Piel);
++    e.derecha();
++    marcar(e, Fila::Torso);
++    e.derecha();
++    MOTOR_CHECK(e.apariencia().clave() != original);
++    const std::string editada = e.apariencia().clave();
++    e.empezar("enanos_forjadores");  // misma raza: se conserva
++    MOTOR_CHECK(e.apariencia().clave() == editada);
++    marcar(e, Fila::ComoSuRaza);
++    e.derecha();
++    MOTOR_CHECK(e.apariencia().clave() == original);
++    e.empezar("elfos_del_bosque");  // otra raza: de cero
++    MOTOR_CHECK(e.apariencia().raza == "elfos_del_bosque");
++    MOTOR_CHECK(e.apariencia().clave() ==
++                Game::Apariencia::deRaza(*manifiesto().raza("elfos_del_bosque")).clave());
++    // Las armas de la raza no estan: se ven cuando se equipan.
++    MOTOR_CHECK(e.apariencia().ropa.count("arma") == 0);
++}
++
++MOTOR_TEST_CASE(apariencia_equipo_inicial_puesto) {
++    const RPG::ClassDefinition* caballero = reglas().classes().find("caballero_templario");
++    MOTOR_CHECK(caballero != nullptr);
++    RPG::CharacterSheet ficha;
++    ficha.tier = 1;
++    ficha.classId = caballero->id;
++    ficha.baseStats = {2, 1, 1, 1};
++    for (const std::string& id : reglas().equipoInicial(caballero->id, "")) {
++        ficha.inventoryEquipment.emplace_back(id, 1);
++    }
++    const auto puestos = Game::Vestuario::equiparInicial(ficha, *caballero, tiers(), equipo());
++    // Espada y cota puestas; el escudo es MainHand en el canon y se queda.
++    MOTOR_CHECK(ficha.equippedIds[static_cast<std::size_t>(RPG::EquipSlot::MainHand)] ==
++                "item_short_sword");
++    MOTOR_CHECK(ficha.equippedIds[static_cast<std::size_t>(RPG::EquipSlot::Torso)] ==
++                "cota_de_malla");
++    MOTOR_CHECK(puestos.size() == 2);
++    MOTOR_CHECK(ficha.inventoryEquipment.size() == 1);
++    MOTOR_CHECK(ficha.inventoryEquipment[0].first == "item_reinforced_shield");
++    const auto visibles = Game::Vestuario::piezasVisibles(ficha.equippedIds, manifiesto());
++    MOTOR_CHECK(visibles.at("arma") == "espada_hierro");
++    MOTOR_CHECK(visibles.at("torso") == "cota_malla");
++
++    // La armadura de placas pide CON 3: con CON 1 se queda en la mochila.
++    RPG::CreationChoice eleccion;
++    eleccion.raceId = "race_human_marches";
++    eleccion.classId = "coloso_de_ceniza";
++    eleccion.tier = 1;
++    eleccion.baseStats = {1, 1, 1, 1};
++    auto sinFuerza = Game::Vestuario::probar(reglas(), eleccion, tiers(), equipo());
++    MOTOR_CHECK(sinFuerza[static_cast<std::size_t>(RPG::EquipSlot::Torso)].empty());
++    MOTOR_CHECK(!sinFuerza[static_cast<std::size_t>(RPG::EquipSlot::MainHand)].empty());
++    eleccion.baseStats = {3, 1, 1, 1};
++    auto conFuerza = Game::Vestuario::probar(reglas(), eleccion, tiers(), equipo());
++    MOTOR_CHECK(conFuerza[static_cast<std::size_t>(RPG::EquipSlot::Torso)] == "armadura_de_placas");
++    // Sin clase no hay nada que probar.
++    eleccion.classId.clear();
++    auto nada = Game::Vestuario::probar(reglas(), eleccion, tiers(), equipo());
++    for (const auto& id : nada)
++        MOTOR_CHECK(id.empty());
++}
++
++MOTOR_TEST_CASE(apariencia_flujo_de_15_pasos) {
++    using Paso = RPG::CharacterCreationScreen::Paso;
++    Game::NewGameFlow f(reglas(), &manifiesto());
++    MOTOR_CHECK(f.totalDePasos() == 15);
++    MOTOR_CHECK(f.numeroDePaso() == 1);
++
++    // En Raza la vista previa sigue a la raza marcada.
++    f.moveDown();
++    f.moveDown();
++    const auto marcada = f.pantalla().opciones()[f.pantalla().marcado()];
++    MOTOR_CHECK(f.vistaPrevia().apariencia.raza == marcada);
++    MOTOR_CHECK(!f.vistaPrevia().conEquipo);
++
++    f.confirm();  // Raza -> Apariencia
++    MOTOR_CHECK(f.enApariencia());
++    MOTOR_CHECK(f.numeroDePaso() == 2);
++    MOTOR_CHECK(std::string(f.tituloPaso()) == "QUÉ ASPECTO TIENES");
++    MOTOR_CHECK(f.editorApariencia()->apariencia().raza == marcada);
++    const std::string deSerie = f.editorApariencia()->apariencia().clave();
++    f.moveDown();
++    f.adjustRight();
++    MOTOR_CHECK(f.editorApariencia()->apariencia().clave() != deSerie);
++    const std::string editada = f.editorApariencia()->apariencia().clave();
++    f.textChar('x');  // en Apariencia no se escribe en ningun filtro
++    MOTOR_CHECK(f.pantalla().filtro().empty());
++
++    f.cancel();  // Apariencia -> Raza
++    MOTOR_CHECK(!f.enApariencia() && f.pantalla().paso() == Paso::Raza && f.numeroDePaso() == 1);
++    for (std::size_t i = 0; i < f.pantalla().opciones().size() &&
++                            f.pantalla().opciones()[f.pantalla().marcado()] != marcada;
++         ++i) {
++        f.moveDown();
++    }
++    f.confirm();  // la misma raza: lo editado sigue
++    MOTOR_CHECK(f.enApariencia() && f.editorApariencia()->apariencia().clave() == editada);
++    f.confirm();  // Apariencia -> Clase
++    MOTOR_CHECK(!f.enApariencia() && f.pantalla().paso() == Paso::Clase && f.numeroDePaso() == 3);
++    MOTOR_CHECK(f.vistaPrevia().conEquipo);
++    MOTOR_CHECK(f.vistaPrevia().eleccion.classId ==
++                f.pantalla().opciones()[f.pantalla().marcado()]);
++    MOTOR_CHECK(f.vistaPrevia().apariencia.clave() == editada);
++    f.cancel();  // Clase -> Apariencia
++    MOTOR_CHECK(f.enApariencia() && f.numeroDePaso() == 2);
++    f.confirm();
++
++    // Una clase con equipo y el resto de la creacion.
++    const auto& clases = f.pantalla().opciones();
++    std::size_t objetivo = 0;
++    for (std::size_t i = 0; i < clases.size(); ++i) {
++        if (clases[i] == "caballero_templario")
++            objetivo = i;
++    }
++    for (std::size_t i = 0; i < objetivo; ++i)
++        f.moveDown();
++    f.confirm();  // Clase
++    f.confirm();  // Trasfondo (el primero)
++    MOTOR_CHECK(f.pantalla().paso() == Paso::Reparto && f.numeroDePaso() == 5);
++    const int reparto[4] = {6, 4, 3, 3};
++    for (int s = 0; s < 4; ++s) {
++        for (int i = 1; i < reparto[s]; ++i)
++            f.adjustRight();
++        f.moveDown();
++    }
++    f.confirm();
++    for (int i = 0; i < 8; ++i)
++        f.confirm();  // narrativas + deidad
++    for (char c : std::string("Nerea"))
++        f.textChar(c);
++    f.confirm();
++    MOTOR_CHECK(f.pantalla().paso() == Paso::Resumen && f.numeroDePaso() == 15);
++    f.confirm();
++    MOTOR_CHECK(f.estado() == Game::NewGameFlow::Estado::Terminado);
++
++    auto ficha = f.finalizar(tiers(), &equipo());
++    MOTOR_CHECK(ficha.isOk());
++    MOTOR_CHECK(ficha.value().equippedIds[static_cast<std::size_t>(RPG::EquipSlot::MainHand)] ==
++                "item_short_sword");
++    MOTOR_CHECK(ficha.value().equippedIds[static_cast<std::size_t>(RPG::EquipSlot::Torso)] ==
++                "cota_de_malla");
++    MOTOR_CHECK(ficha.value().healthCap() > 0);
++    // Sin catalogo, todo en la mochila, como antes.
++    auto enLaMochila = f.finalizar(tiers());
++    MOTOR_CHECK(enLaMochila.isOk());
++    for (const auto& id : enLaMochila.value().equippedIds)
++        MOTOR_CHECK(id.empty());
++}
++
++MOTOR_TEST_CASE(apariencia_sin_manifiesto_el_flujo_de_siempre) {
++    Game::NewGameFlow f(reglas());
++    MOTOR_CHECK(f.totalDePasos() == 14);
++    MOTOR_CHECK(f.editorApariencia() == nullptr);
++    f.confirm();
++    MOTOR_CHECK(!f.enApariencia());
++    MOTOR_CHECK(f.pantalla().paso() == RPG::CharacterCreationScreen::Paso::Clase);
++    MOTOR_CHECK(f.numeroDePaso() == 2);
++    MOTOR_CHECK(f.vistaPrevia().apariencia.raza.empty());
++}
++
++int main() { return motor_test::runAllTests(); }
+diff --git a/tests/Game/PersonajesCapasTests.cpp b/tests/Game/PersonajesCapasTests.cpp
+new file mode 100644
+index 0000000..ae93747
+--- /dev/null
++++ b/tests/Game/PersonajesCapasTests.cpp
+@@ -0,0 +1,287 @@
++// APARIENCIA-01 — El motor monta los personajes por capas igual que el
++// probador de tools/ (ARTE-02), sin ventana.
++//
++// Casos (assets reales de assets/textures, copiados a build/ por
++// copiar_assets):
++//   1. El manifiesto se lee entero: 43 razas, 55 peinados, 14 barbas, 123
++//      piezas, 19 personajes montados y la pieza de cada objeto.
++//   2. La mezcla es la de Pillow (Image.alpha_composite) en 40 pares de
++//      pixeles con alfa parcial, sacados de Pillow 12.
++//   3. Los 62 personajes horneados (actores_capas, razas_andando y
++//      personajes_historia) salen IGUALES, byte a byte, montados en C++
++//      desde su "composicion": es la prueba de que el motor y el probador
++//      hacen lo mismo.
++//   4. El orden de las capas es el del probador en los casos raros: la naga
++//      del rio (quita capas y pinta pelo en una raza sin pelo), otra piel en
++//      un humano (cuerpo liso + ojos), un yelmo cerrado que tapa el pelo.
++//   5. Lo que no existe es un Error legible, no un personaje a medias.
++//   6. La cache respeta su presupuesto y sigue montando bien.
++//   7. El reparto de la hoja: ciclos de andar que empiezan quietos y la
++//      vista previa que anda y gira.
++#include "TestHarness.h"
++
++#include <cstdint>
++#include <fstream>
++#include <sstream>
++#include <string>
++
++#include "Core/Imagen/ImagenRGBA.h"
++#include "Core/Json/JsonValue.h"
++#include "Game/Personajes/MontajePersonajes.h"
++
++namespace {
++
++const char* const kTexturas = "assets/textures";
++
++std::unique_ptr<Game::MontajePersonajes> montaje(
++    std::size_t presupuesto = Game::MontajePersonajes::kPresupuestoPorDefecto) {
++    auto m = Game::ManifiestoPersonajes::cargar(kTexturas);
++    if (!m.isOk())
++        throw std::runtime_error(m.errorMessage());
++    return std::make_unique<Game::MontajePersonajes>(std::move(m.value()), kTexturas, presupuesto);
++}
++
++JsonValue leerJson(const std::string& ruta) {
++    std::ifstream in(ruta, std::ios::binary);
++    std::stringstream ss;
++    ss << in.rdbuf();
++    auto parsed = JsonValue::parse(ss.str());
++    if (!parsed.isOk())
++        throw std::runtime_error(ruta + ": " + parsed.errorMessage());
++    return parsed.value();
++}
++
++// Cuantos bytes difieren entre la hoja montada y la fila `fila` del atlas.
++int diferencias(const imagen::ImagenRGBA& hoja, const imagen::ImagenRGBA& atlas, int fila) {
++    int distintos = 0;
++    const int y0 = (fila - 1) * 64;
++    for (int y = 0; y < 64; ++y) {
++        for (int x = 0; x < 768; ++x) {
++            const std::uint8_t* a = hoja.pixel(x, y);
++            const std::uint8_t* b = atlas.pixel(x, y0 + y);
++            for (int c = 0; c < 4; ++c)
++                distintos += a[c] != b[c] ? 1 : 0;
++        }
++    }
++    return distintos;
++}
++
++std::vector<std::string> ranuras(const std::vector<Game::CapaDeMontaje>& capas) {
++    std::vector<std::string> out;
++    for (const auto& c : capas)
++        out.push_back(c.ranura);
++    return out;
++}
++
++}  // namespace
++
++MOTOR_TEST_CASE(apariencia_manifiesto_entero) {
++    auto r = Game::ManifiestoPersonajes::cargar(kTexturas);
++    MOTOR_CHECK(r.isOk());
++    const Game::ManifiestoPersonajes& m = r.value();
++    MOTOR_CHECK(m.razas.size() == 43);
++    MOTOR_CHECK(m.pelo.filas.size() == 55);
++    MOTOR_CHECK(m.barba.filas.size() == 14);
++    MOTOR_CHECK(m.cuerpos.filas.size() == 9);
++    MOTOR_CHECK(m.ojos.filas.size() == 10);
++    std::size_t piezas = 0;
++    for (const auto& [ranura, grupo] : m.equipo)
++        piezas += grupo.filas.size();
++    MOTOR_CHECK(piezas == 123);
++    MOTOR_CHECK(m.personajes.size() == 19);
++    MOTOR_CHECK(m.piezaDeObjeto.size() > 380);
++    MOTOR_CHECK(m.orden.at("capa").at("arriba") > m.orden.at("cuerpo").at("arriba"));
++    MOTOR_CHECK(m.orden.at("capa").at("abajo") < m.orden.at("cuerpo").at("abajo"));
++    // Humanos: otra piel y otra talla; espectros y revenants no (su piel no
++    // esta en el atlas de cuerpos); un minotauro tampoco (rasgos propios).
++    MOTOR_CHECK(m.raza("race_human_marches")->cuerpoLiso);
++    MOTOR_CHECK(!m.raza("espectros")->cuerpoLiso);
++    MOTOR_CHECK(!m.raza("revenants")->cuerpoLiso);
++    MOTOR_CHECK(!m.raza("minotauros_de_la_llanura")->cuerpoLiso);
++    int lisas = 0;
++    for (const auto& raza : m.razas)
++        lisas += raza.cuerpoLiso ? 1 : 0;
++    MOTOR_CHECK(lisas == 14);
++}
++
++MOTOR_TEST_CASE(apariencia_mezcla_como_pillow) {
++    // {debajo}, {encima}, {lo que da Image.alpha_composite(debajo, encima)}
++    const std::uint8_t casos[][3][4] = {
++        {{2, 0, 1, 0}, {0, 255, 1, 1}, {0, 255, 1, 1}},
++        {{0, 127, 255, 127}, {2, 255, 1, 2}, {0, 129, 251, 128}},
++        {{127, 1, 0, 105}, {254, 238, 128, 2}, {129, 5, 2, 106}},
++        {{1, 153, 175, 1}, {255, 254, 77, 0}, {1, 153, 175, 1}},
++        {{254, 254, 254, 1}, {138, 0, 158, 255}, {138, 0, 158, 255}},
++        {{0, 254, 1, 0}, {128, 127, 255, 1}, {128, 127, 255, 1}},
++        {{85, 128, 255, 255}, {255, 2, 2, 127}, {170, 65, 129, 255}},
++        {{0, 2, 128, 2}, {254, 2, 27, 255}, {254, 2, 27, 255}},
++        {{255, 53, 0, 1}, {106, 1, 0, 0}, {255, 53, 0, 1}},
++        {{1, 0, 127, 2}, {254, 186, 1, 249}, {254, 186, 1, 249}},
++        {{245, 1, 1, 128}, {2, 127, 2, 128}, {83, 85, 2, 192}},
++        {{128, 2, 127, 127}, {127, 127, 102, 0}, {128, 2, 127, 127}},
++        {{128, 128, 254, 254}, {1, 1, 116, 254}, {1, 1, 117, 255}},
++        {{104, 0, 1, 255}, {102, 255, 1, 202}, {102, 202, 1, 255}},
++        {{1, 2, 0, 77}, {74, 2, 0, 1}, {2, 2, 0, 78}},
++        {{255, 127, 128, 128}, {254, 255, 0, 181}, {254, 233, 22, 218}},
++        {{2, 0, 2, 2}, {2, 1, 254, 1}, {2, 0, 86, 3}},
++        {{127, 128, 1, 0}, {32, 127, 141, 127}, {32, 127, 141, 127}},
++        {{127, 2, 1, 200}, {1, 255, 127, 1}, {126, 3, 2, 200}},
++        {{254, 128, 70, 1}, {203, 127, 255, 254}, {203, 127, 255, 254}},
++        {{127, 254, 254, 254}, {234, 255, 128, 1}, {127, 254, 254, 254}},
++        {{1, 128, 0, 128}, {255, 255, 76, 1}, {3, 129, 1, 128}},
++        {{0, 255, 128, 1}, {1, 1, 1, 0}, {0, 255, 128, 1}},
++        {{255, 2, 127, 2}, {0, 127, 128, 128}, {2, 126, 128, 129}},
++        {{2, 254, 128, 0}, {127, 127, 1, 221}, {127, 127, 1, 221}},
++        {{128, 127, 127, 255}, {0, 0, 128, 2}, {127, 126, 127, 255}},
++        {{1, 128, 128, 23}, {2, 137, 128, 254}, {2, 137, 128, 254}},
++        {{127, 128, 254, 0}, {255, 42, 127, 0}, {127, 128, 254, 0}},
++        {{128, 2, 0, 0}, {128, 1, 255, 166}, {128, 1, 255, 166}},
++        {{128, 0, 2, 127}, {0, 2, 1, 192}, {18, 2, 1, 223}},
++        {{0, 125, 0, 1}, {1, 128, 128, 127}, {1, 128, 127, 128}},
++        {{118, 255, 39, 0}, {1, 254, 128, 0}, {118, 255, 39, 0}},
++        {{0, 128, 127, 128}, {146, 238, 127, 1}, {1, 129, 127, 128}},
++        {{0, 148, 39, 255}, {127, 1, 128, 2}, {1, 147, 40, 255}},
++        {{1, 127, 254, 0}, {0, 251, 128, 255}, {0, 251, 128, 255}},
++        {{255, 1, 0, 254}, {1, 0, 128, 1}, {254, 1, 1, 254}},
++        {{255, 254, 128, 128}, {0, 2, 128, 254}, {1, 3, 128, 255}},
++        {{254, 0, 127, 0}, {210, 128, 0, 2}, {210, 128, 0, 2}},
++        {{255, 128, 128, 255}, {128, 255, 2, 1}, {255, 128, 128, 255}},
++        {{106, 112, 170, 2}, {127, 2, 1, 127}, {127, 3, 2, 128}},
++    };
++    for (const auto& caso : casos) {
++        std::uint8_t pixel[4] = {caso[0][0], caso[0][1], caso[0][2], caso[0][3]};
++        Game::mezclarEncima(pixel, caso[1]);
++        for (int c = 0; c < 4; ++c)
++            MOTOR_CHECK(pixel[c] == caso[2][c]);
++    }
++}
++
++MOTOR_TEST_CASE(apariencia_62_horneados_byte_a_byte) {
++    auto m = montaje();
++    int comprobados = 0;
++    for (const char* nombre : {"actores_capas", "razas_andando", "personajes_historia"}) {
++        const JsonValue json = leerJson(std::string(kTexturas) + "/" + nombre + ".json");
++        auto atlas = imagen::cargarPNG(std::string(kTexturas) + "/" + json["image"].asString());
++        MOTOR_CHECK(atlas.isOk());
++        const JsonValue& actores = json["actores"];
++        for (std::size_t i = 0; i < actores.size(); ++i) {
++            const JsonValue& actor = actores[i];
++            auto apariencia = m->manifiesto().desdeComposicion(actor["composicion"]);
++            if (!apariencia.isOk())
++                MOTOR_CHECK_FAIL(actor["id"].asString() + ": " + apariencia.errorMessage());
++            auto hoja = m->montar(apariencia.value());
++            if (!hoja.isOk())
++                MOTOR_CHECK_FAIL(actor["id"].asString() + ": " + hoja.errorMessage());
++            MOTOR_CHECK(hoja.value().ancho == 768 && hoja.value().alto == 64);
++            const int distintos = diferencias(hoja.value(), atlas.value(), actor["fila"].asInt());
++            if (distintos != 0) {
++                MOTOR_CHECK_FAIL(std::string(nombre) + "/" + actor["id"].asString() + ": " +
++                                 std::to_string(distintos) + " bytes distintos del horneado");
++            }
++            ++comprobados;
++        }
++    }
++    MOTOR_CHECK(comprobados == 62);
++}
++
++MOTOR_TEST_CASE(apariencia_capas_como_el_probador) {
++    auto m = montaje();
++    const auto& man = m->manifiesto();
++
++    // La naga del rio: sin capucha ni morro de serpiente, con pelo de persona.
++    auto naga = m->capas(man.personajes.at("naga_del_rio"));
++    MOTOR_CHECK(naga.isOk());
++    MOTOR_CHECK(
++        (ranuras(naga.value()) == std::vector<std::string>{"cuerpo", "pelo", "torso", "arma"}));
++
++    // Otra piel en un humano: el cuerpo sale del atlas de cuerpos lisos, que
++    // trae ojos azules, asi que los ojos de la raza (marrones) van encima.
++    Game::Apariencia humano = Game::Apariencia::deRaza(*man.raza("race_human_marches"));
++    humano.piel = "piel_oscura";
++    humano.ojos = "marron";
++    auto h = m->capas(humano);
++    MOTOR_CHECK(h.isOk());
++    MOTOR_CHECK(h.value()[0].atlas == "personajes/cuerpos/cuerpos_medio.png");
++    MOTOR_CHECK(h.value()[1].ranura == "ojos");
++
++    // Un yelmo cerrado tapa el pelo; una capucha no.
++    humano.ropa["cabeza"] = "yelmo";
++    auto conYelmo = m->capas(humano);
++    MOTOR_CHECK(conYelmo.isOk());
++    for (const auto& capa : conYelmo.value())
++        MOTOR_CHECK(capa.ranura != "pelo");
++    // Lo puesto manda sobre la ropa elegida.
++    auto conEquipo = m->capas(humano, {{"cabeza", "capucha_gris"}, {"arma", "espada_hierro"}});
++    MOTOR_CHECK(conEquipo.isOk());
++    bool hayPelo = false, hayEspada = false;
++    for (const auto& capa : conEquipo.value()) {
++        hayPelo = hayPelo || capa.ranura == "pelo";
++        hayEspada = hayEspada || (capa.ranura == "arma" && capa.fila == 1);
++    }
++    MOTOR_CHECK(hayPelo && hayEspada);
++
++    // Un aarakocra no lleva botas aunque se las pongan: no tiene pies.
++    Game::Apariencia pajaro = Game::Apariencia::deRaza(*man.raza("aarakocra_de_las_montanas"));
++    auto p = m->capas(pajaro, {{"pies", "botas"}});
++    MOTOR_CHECK(p.isOk());
++    for (const auto& capa : p.value())
++        MOTOR_CHECK(capa.ranura != "pies");
++}
++
++MOTOR_TEST_CASE(apariencia_lo_que_no_existe_es_error) {
++    auto m = montaje();
++    const auto& man = m->manifiesto();
++    Game::Apariencia a = Game::Apariencia::deRaza(*man.raza("race_human_marches"));
++    a.raza = "no_existe";
++    MOTOR_CHECK(!m->montar(a).isOk());
++
++    a = Game::Apariencia::deRaza(*man.raza("race_human_marches"));
++    a.ropa["torso"] = "armadura_imaginaria";
++    auto r = m->montar(a);
++    MOTOR_CHECK(!r.isOk());
++    MOTOR_CHECK(r.errorMessage().find("armadura_imaginaria") != std::string::npos);
++
++    // Un minotauro no admite otra piel: su cuerpo lleva rasgos propios.
++    Game::Apariencia toro = Game::Apariencia::deRaza(*man.raza("minotauros_de_la_llanura"));
++    toro.piel = "piel_clara";
++    MOTOR_CHECK(!m->montar(toro).isOk());
++}
++
++MOTOR_TEST_CASE(apariencia_cache_con_presupuesto) {
++    // 20 MB no caben las seis capas de raza (8,5 MB cada una): obliga a
++    // soltar atlas entre montajes, y la hoja tiene que salir igual.
++    auto grande = montaje();
++    auto justo = montaje(20u * 1024u * 1024u);
++    const auto& man = grande->manifiesto();
++    for (const char* id : {"aarakocra_de_las_montanas", "yokai_de_las_sombras", "nagas_venenosos",
++                           "race_ascaria_fey_blood", "enanos_forjadores"}) {
++        const Game::Apariencia a = Game::Apariencia::deRaza(*man.raza(id), true);
++        auto uno = grande->montar(a);
++        auto otro = justo->montar(a);
++        MOTOR_CHECK(uno.isOk() && otro.isOk());
++        MOTOR_CHECK(uno.value().pixeles == otro.value().pixeles);
++        MOTOR_CHECK(justo->bytesEnCache() <= 20u * 1024u * 1024u + 9u * 1024u * 1024u);
++    }
++    justo->vaciarCache();
++    MOTOR_CHECK(justo->bytesEnCache() == 0);
++}
++
++MOTOR_TEST_CASE(apariencia_reparto_de_la_hoja) {
++    using Game::Rumbo;
++    MOTOR_CHECK(Game::rumboDeFrame(1) == Rumbo::Arriba);
++    MOTOR_CHECK(Game::rumboDeFrame(6) == Rumbo::Derecha);
++    MOTOR_CHECK(Game::rumboDeFrame(8) == Rumbo::Abajo);
++    MOTOR_CHECK(Game::rumboDeFrame(12) == Rumbo::Izquierda);
++    MOTOR_CHECK((Game::cicloDeAndar(Rumbo::Abajo) == std::vector<int>{8, 7, 8, 9}));
++    MOTOR_CHECK((Game::cicloDeAndar(Rumbo::Arriba) == std::vector<int>{2, 1, 2, 3}));
++    MOTOR_CHECK((Game::cicloDeAndar(Rumbo::Izquierda) == std::vector<int>{11, 10, 11, 12}));
++    // La vista previa empieza andando hacia abajo y gira a la derecha.
++    MOTOR_CHECK(Game::frameDeVistaPrevia(0.0) == 7);
++    MOTOR_CHECK(Game::frameDeVistaPrevia(0.18) == 8);
++    MOTOR_CHECK(Game::rumboDeFrame(Game::frameDeVistaPrevia(0.17 * 8 + 0.01)) == Rumbo::Derecha);
++    MOTOR_CHECK(Game::rumboDeFrame(Game::frameDeVistaPrevia(0.17 * 16 + 0.01)) == Rumbo::Arriba);
++    MOTOR_CHECK(Game::rumboDeFrame(Game::frameDeVistaPrevia(0.17 * 24 + 0.01)) == Rumbo::Izquierda);
++    MOTOR_CHECK(Game::frameDeVistaPrevia(-3.0) == 7);
++}
++
++int main() { return motor_test::runAllTests(); }
+diff --git a/tools/gen_personajes.py b/tools/gen_personajes.py
+index 59e55c0..b688d57 100644
+--- a/tools/gen_personajes.py
++++ b/tools/gen_personajes.py
+@@ -65,12 +65,11 @@ ANIMACIONES = {
+ }
+ NOTA_REPARTO = (
+     "Frames 1-based. Cada fila: arriba 1-3, derecha 4-6, abajo 7-9, izquierda 10-12 "
+-    "(paso, quieto, paso). OJO: Application.cpp registra hoy personaje.png como "
+-    "walk_down {1,2,3,4}, walk_up {5..8}, walk_right/left {9..12} e idle {1}, que no es "
+-    "el reparto real de la hoja: el jugador aparece de espaldas al quedarse quieto y "
+-    "'camina hacia abajo' mostrando la espalda. El reparto correcto es el de "
+-    "'animaciones'. TextureManager invierte los PNG al cargarlos: en un atlas de varias "
+-    "filas la region del frame f es defineRegion(f, (f-1) % columns, "
++    "(paso, quieto, paso). El motor lo reparte asi desde APARIENCIA-01 "
++    "(HojaPersonaje::animar, tambien para personaje.png): 'animaciones' es el ciclo de "
++    "los PNJ; el jugador descansa en el frame quieto y su ciclo de andar empieza en el "
++    "({8, 7, 8, 9} hacia abajo). TextureManager invierte los PNG al cargarlos: en un "
++    "atlas de varias filas la region del frame f es defineRegion(f, (f-1) % columns, "
+     "rows - 1 - (f-1) / columns), como race_npc_idle.")
+ 
+ 

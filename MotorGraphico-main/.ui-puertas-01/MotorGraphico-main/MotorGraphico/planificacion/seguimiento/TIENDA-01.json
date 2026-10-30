@@ -1,0 +1,24 @@
+{
+  "id": "TIENDA-01",
+  "date": "2026-09-27",
+  "author": "Claude",
+  "status": "HECHO en el arbol, sin commit",
+  "descripcion": "La tienda centrada en pantalla (560x340 sobre el cuadro de dialogo, que sigue mostrando el log 'Compras X por N oro'), con oro disponible en el titulo, icono comprar/vender por fila, fila en rojo si no llega el oro, pie de detalle con efecto del objeto y precio o cuanto falta, y 'No hay articulos disponibles' cuando no hay nada. El contrato de indices de confirmShopCommand (m_shopSellOffset / m_sellIndices) no cambia. El cartel de negocio comparte el panel centrado.",
+  "archivos": {
+    "modificados": [
+      "src/Engine/Application.cpp (transforms de tienda y negocio; m_shopMenu ahora HudIconList; misma cuenta de lineas: 1393)",
+      "include/Engine/Application.h (tipo de m_shopMenu)",
+      "src/Engine/ApplicationHud.cpp (bloque de tienda)",
+      "src/Engine/ApplicationPantallas.cpp (setIconos a la tienda)",
+      "include/Render/HudIconList.h/.cpp (moveUp/moveDown/setIconos)"
+    ]
+  },
+  "verification": [
+    "Application.cpp del arbol compila en el oraculo salvo dos errores ajenos ya en HEAD (publishSheetSkills, BattleState::tickRound).",
+    "PENDIENTE humo visual: abrir tienda, comprar, vender; comprobar que el cartel de negocio no se sale del panel."
+  ],
+  "pendiente": [
+    "El precio de recompra no se ensena: GameSession no expone m_shopBuybackPercent (SessionData). Cuando EST-23b termine el reparto de GameSession, anadir un getter y pintar 'VENDER X  +N ORO'.",
+    "Cantidad/total por operacion (ESPECIFICACION §18): la sesion compra de uno en uno; no se inventa aqui."
+  ]
+}

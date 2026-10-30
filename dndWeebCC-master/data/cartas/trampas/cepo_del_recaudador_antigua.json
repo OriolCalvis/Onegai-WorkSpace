@@ -1,0 +1,26 @@
+{
+ "id": "cepo_del_recaudador_antigua",
+ "name": "Cepo del Recaudador Antigua",
+ "type": "trap",
+ "tier": 4,
+ "rarity": "epic",
+ "category": "mecánica",
+ "trigger": "recoger la bolsa de monedas cebo",
+ "detection": {
+  "stat": "INT",
+  "cd": 2
+ },
+ "disarm": {
+  "stat": "DES",
+  "cd": 2,
+  "herramienta": "herramientas de ladrón"
+ },
+ "effect": {
+  "description": "Cepo al brazo: 1 de daño y Agarrado. (escala: +3 de daño en este tier)",
+  "defensa": "resistencia_fisica",
+  "condicionInfligida": "agarrado"
+ },
+ "onFail": "El cepo lleva cadena y la cadena campana: Agarrado + refuerzos avisados.",
+ "reset": "recargable",
+ "flavorText": "Quien la montó pensaba volver. No volvió."
+}

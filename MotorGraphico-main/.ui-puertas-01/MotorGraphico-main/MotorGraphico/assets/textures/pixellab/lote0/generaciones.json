@@ -1,0 +1,105 @@
+{
+ "_nota": "Generaciones de PixelLab del lote 0 (01/10/2026), pedidas desde el navegador integrado de la app de Claude (same-origin fetch a https://api.pixellab.ai/mcp con el token). 17 generaciones de 2000.",
+ "generaciones": [
+  {
+   "id": "a73de16c-653c-4cbb-bfbe-5cb5426efc4d",
+   "herramienta": "create_character",
+   "coste": 1,
+   "fichero": "slime_character/",
+   "nota": "create_character fuerza cuerpo humanoide: no vale para un slime"
+  },
+  {
+   "id": "9fe16589-fd1d-4019-8b0e-8e9a7ae07985",
+   "herramienta": "create_image_pixen 48x48",
+   "coste": 1,
+   "fichero": "slime_pixen_48.png",
+   "uso": "pixellab_personajes fila 1 (slime, bote)"
+  },
+  {
+   "id": "745b40c0-59e6-448f-b6fd-9789d3454064",
+   "herramienta": "create_character size=40 n_directions=4",
+   "coste": 1,
+   "fichero": "luisarda/{south,east,north,west}.png",
+   "uso": "pixellab_personajes fila 2"
+  },
+  {
+   "id": "745b40c0 walk (ec55c1b0-fcec-4e6c-bcae-3608d79119e0)",
+   "herramienta": "animate_character template walk, 4 direcciones x 6 frames",
+   "coste": 4,
+   "fichero": "luisarda/walk_*_N.png"
+  },
+  {
+   "id": "c4214ee1-21e0-48e1-bd35-e5ea571f9907",
+   "herramienta": "create_isometric_tile size=64 thin tile",
+   "coste": 1,
+   "fichero": "tile_empedrado.png",
+   "uso": "terreno_mundo gid 17"
+  },
+  {
+   "id": "01706411-f9d0-4ef7-9eed-fdc270d542d9",
+   "herramienta": "create_isometric_tile size=64 thin tile",
+   "coste": 1,
+   "fichero": "tile_hierba.png",
+   "uso": "terreno_mundo gid 1"
+  },
+  {
+   "id": "0ec4181e-9b18-402b-ab91-63e2167bc8df",
+   "herramienta": "create_map_object 64x64 high top-down",
+   "coste": 1,
+   "fichero": "prop_parada.png",
+   "uso": "pixellab_props frame 1 (parada_mercado)"
+  },
+  {
+   "id": "e91e736f-64f4-4ec9-ba4d-dfc392f3bffa",
+   "herramienta": "create_map_object 64x64 high top-down",
+   "coste": 1,
+   "fichero": "prop_pozo.png",
+   "uso": "pixellab_props frame 2 (pozo)"
+  },
+  {
+   "id": "e4012370-0a67-4453-8d38-710b53763f03",
+   "herramienta": "create_image_pixen 192x128",
+   "coste": 1,
+   "fichero": "panel.png",
+   "uso": "pendiente: BancoMateriales 9-slice (hoja)"
+  },
+  {
+   "id": "b2b7e617-61aa-485e-9ee5-1d626bbc1711",
+   "herramienta": "create_image_pixen 32x32",
+   "coste": 1,
+   "fichero": "icono_espada.png"
+  },
+  {
+   "id": "10c738ef-f73b-4136-b20a-9668e414b0e2",
+   "herramienta": "create_image_pixen 32x32",
+   "coste": 1,
+   "fichero": "icono_escudo.png"
+  },
+  {
+   "id": "5a809d85-aea5-4475-bcb1-b4a2fbbee47b",
+   "herramienta": "create_image_pixen 32x32",
+   "coste": 1,
+   "fichero": "icono_pocion.png"
+  },
+  {
+   "id": "20745e8a-153b-463b-ac79-10cb5780adc2",
+   "herramienta": "create_image_pixen 32x32",
+   "coste": 1,
+   "fichero": "icono_moneda.png"
+  },
+  {
+   "id": "c6a89c8c-68eb-4d63-828a-2457a89c017b",
+   "herramienta": "edit_image_pixen sobre personaje.png frame 8",
+   "coste": 1,
+   "fichero": "prenda.png",
+   "nota": "La silueta del cuerpo base se conserva pixel a pixel (0 perdidos, 8 nuevos); la prenda se extrae por diferencia > 12 de color: metodo 1 del lote 7 VALIDADO"
+  }
+ ],
+ "medidas": {
+  "create_character size=48": "canvas 68x68",
+  "create_character size=40": "canvas 56x56, cuerpo ~40 px",
+  "create_isometric_tile size=64 thin": "bloque 64x64, cara superior en y=23..55",
+  "create_map_object 64x64": "ocupa casi toda la celda",
+  "coste tiles y map_object": "1 generacion cada uno"
+ }
+}

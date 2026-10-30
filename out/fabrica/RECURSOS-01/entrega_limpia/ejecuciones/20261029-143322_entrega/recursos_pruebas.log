@@ -1,0 +1,31 @@
+$ ctest --test-dir out/build/macos-debug -C Debug -R "^(test_referencias_proyecto|test_project_panel|test_editor_document_session|test_editor_actions|test_editor_ayuda|test_motor_editor_smoke_[12])$" --no-tests=error --output-on-failure
+(cwd /private/tmp/recursos-limpio-c9b6b81/MotorGraphico-main/MotorGraphico)
+
+Test project /private/tmp/recursos-limpio-c9b6b81/MotorGraphico-main/MotorGraphico/out/build/macos-debug
+    Start 182: test_editor_document_session
+1/7 Test #182: test_editor_document_session .....   Passed    0.35 sec
+    Start 183: test_editor_actions
+2/7 Test #183: test_editor_actions ..............   Passed    0.27 sec
+    Start 184: test_editor_ayuda
+3/7 Test #184: test_editor_ayuda ................   Passed    0.27 sec
+    Start 186: test_motor_editor_smoke_1
+4/7 Test #186: test_motor_editor_smoke_1 ........   Passed    2.01 sec
+    Start 187: test_motor_editor_smoke_2
+5/7 Test #187: test_motor_editor_smoke_2 ........   Passed    1.70 sec
+    Start 188: test_project_panel
+6/7 Test #188: test_project_panel ...............   Passed    0.35 sec
+    Start 252: test_referencias_proyecto
+7/7 Test #252: test_referencias_proyecto ........   Passed    0.28 sec
+
+100% tests passed out of 7
+
+Label Time Summary:
+editor     =   3.70 sec*proc (2 tests)
+gl         =   3.70 sec*proc (2 tests)
+gl-free    =   1.52 sec*proc (5 tests)
+smoke      =   3.70 sec*proc (2 tests)
+unit       =   1.52 sec*proc (5 tests)
+
+Total Test time (real) =   5.23 sec
+
+[código 0 · 5.3 s]

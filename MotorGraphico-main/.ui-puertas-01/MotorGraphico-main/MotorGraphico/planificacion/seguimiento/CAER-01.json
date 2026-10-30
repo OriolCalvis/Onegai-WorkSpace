@@ -1,0 +1,25 @@
+{
+ "id": "CAER-01",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — huir y caer según la misión.",
+ "origen": "Oriol (08/10): «Depende, si la misión es una misión donde huir o fallar es una opción bien, pero de entrada, no tienes ninguna obligación de terminarla [...] a no ser que sean momentos de historia ineludibles».",
+ "actions": [
+  "startBattle y combate.iniciar: «flagHuida» y «ineludible» (opcionales; se escriben solo si están).",
+  "Caer en un combate de la historia que no es ineludible: el héroe se levanta con un cuarto de la vida, los que ganaron se van y se enciende flagDefeat; las oleadas que faltaban se dan por perdidas.",
+  "Ineludible: la carta Huir sale bloqueada («de este combate no se huye») y caer acaba la partida. Los combates del mapa, igual que antes.",
+  "El atraco del tutorial y Gorran tienen beat de huida (texto provisional).",
+  "SessionData: el combate pendiente es un std::optional<BattleRequest> (39 miembros).",
+  "test_caer_en_mision (7) y FORMATO_AVENTURAS.md."
+ ],
+ "pending": [
+  "Los textos de huida (tut_huida, b2_gorran_huida) son míos: para que Oriol los reescriba.",
+  "«Despiertas fuera de la cueva» (Gorran): el héroe se levanta donde cayó; haría falta un efecto que mueva al héroe, o retocar la línea.",
+  "Al huir de una emboscada, los vivos se quedan en el mapa (regla de COMBATE-GRUPO-01): si se vuelve a por ellos es un combate del mapa y caer ahí sí acaba la partida.",
+  "Las misiones con plazo en días («si la terminas en 30 días...») necesitan un calendario del juego: los relojes de hoy cuentan segundos de exploración."
+ ],
+ "verification": [
+  "El atraco del tutorial jugado huyendo (tut_huida) y cayendo (se levanta con 2/9, −15 de oro, tut_derrota); ctest sin fallos nuevos."
+ ],
+ "sesion": "sesiones/2026-10-08-claude-tienda-caer-dioses.md"
+}

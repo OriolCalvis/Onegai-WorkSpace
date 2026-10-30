@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MotorGraphico Project v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "id",
+    "name",
+    "settings",
+    "entry",
+    "levels",
+    "maps",
+    "adventures",
+    "catalogs",
+    "description",
+    "epoch",
+    "author",
+    "prefix"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "settings": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "mapsDirectory",
+        "levelsDirectory",
+        "adventuresDirectory",
+        "catalogsDirectory",
+        "initialMap"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "mapsDirectory": {
+          "type": "string",
+          "minLength": 1
+        },
+        "levelsDirectory": {
+          "type": "string",
+          "minLength": 1
+        },
+        "adventuresDirectory": {
+          "type": "string",
+          "minLength": 1
+        },
+        "catalogsDirectory": {
+          "type": "string",
+          "minLength": 1
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "initialMap": {
+          "type": "string"
+        }
+      }
+    },
+    "entry": {
+      "type": "string"
+    },
+    "levels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "maps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "adventures": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "catalogs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "description": {
+      "type": "string"
+    },
+    "epoch": {
+      "type": "string"
+    },
+    "author": {
+      "type": "string"
+    },
+    "prefix": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

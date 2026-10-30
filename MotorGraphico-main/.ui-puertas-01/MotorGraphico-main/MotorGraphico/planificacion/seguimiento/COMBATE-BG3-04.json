@@ -1,0 +1,21 @@
+{
+ "id": "COMBATE-BG3-04",
+ "date": "2026-10-14",
+ "author": "claude (Cowork)",
+ "status": "HECHO — el golpe integrado: un solo evento de golpe con su grado; parpadeo, retroceso, esquiva, pausa del critico; tu hoja tenida y temblando con la vida que se va; sin bandas rojas; chispas, polvo y sangre al entrar.",
+ "origen": "Oriol (14/10): «el recuadro rojo podria ser como el marco de la hoja y no un cuadrado alli forzado [...] un sonidito y unas particulas»; «continua».",
+ "actions": [
+  "AV14-01: Game::GolpeCombate y CampoDeBatalla (tablero, orden, golpes); BattleState::fotoVidas/anotaGolpes (BattleStateGolpes.cpp); IMesaCombate::tiradasVisibles.",
+  "AV14-02: Game::EfectosDeGolpe + test_efectos_de_golpe; ApplicationCinematica::golpesALaVista y pausaDeGolpe; HudRetales: la hoja tenida, temblando y la barra fantasma; GolpesEnPantalla sin bandas y con el critico.",
+  "AV14-03 (parte): EfectosDeCartas::salpica (polvo, chispas, sangre)."
+ ],
+ "verification": [
+  "Sonda tactico: t_golpe.png (hoja 0,94, temblor, fantasma 17 -> 13, parpadeo, -4).",
+  "test_efectos_de_golpe 4/4, test_g13_combat_commands 13/13, test_cartas_combate 45/45; ctest gl-free 218/221 (los tres de siempre), GL 11/11; linea_base_core 0 de deuda nueva."
+ ],
+ "sesion": "sesiones/2026-10-14-claude-combate-casillas.md",
+ "pending": [
+  "El sonido (AV14-05) espera al banco de qwen (AV14-04) y a cablear AudioDirector.",
+  "Particulas por material (astillas, brasas)."
+ ]
+}

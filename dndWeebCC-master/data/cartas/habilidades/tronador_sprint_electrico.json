@@ -1,0 +1,59 @@
+{
+ "id": "tronador_sprint_electrico",
+ "name": "Sprint eléctrico",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Concentras toda la electricidad en el guantelete y la descargas hacia delante: 4d6 de daño de rayo a cada enemigo, y el shock por sobretensión hace que tus golpes les hagan +1 durante 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "tronador"
+ ],
+ "roleTags": [],
+ "tags": [
+  "tronador",
+  "creador",
+  "Rayo"
+ ],
+ "mechanicTags": [
+  "Rayo",
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "all_enemies",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Concentras toda la electricidad en el guantelete y la descargas hacia delante: 4d6 de daño de rayo a cada enemigo, y el shock por sobretensión hace que tus golpes les hagan +1 durante 2 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "4d6 de daño de rayo a cada enemigo.",
+   "mechanicHook": "dano:4d6"
+  },
+  {
+   "description": "Shock por sobretensión: tus golpes les hacen +1 durante 2 turnos.",
+   "mechanicHook": "estado:2:bono_dano_contra:1"
+  },
+  {
+   "description": "[pendiente] que el shock por sobretensión les quite vida al atacar (un 20 % del daño que hacen).",
+   "mechanicHook": "pendiente_parcial:que el shock por sobretensión les quite vida al atacar (un 20 % del daño que hacen)"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Tronador (Thunderer) · H1878 Sprint eléctrico"
+}

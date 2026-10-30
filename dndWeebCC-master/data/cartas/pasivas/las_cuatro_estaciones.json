@@ -1,0 +1,47 @@
+{
+ "id": "las_cuatro_estaciones",
+ "name": "Las Cuatro Estaciones",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Eliges un beneficio al día. Primavera: tus curaciones curan +2. Verano: tienes ventaja en ataque. Otoño: tienes ventaja en defensa. Invierno: ganas +2 a la CA y reflejas los ataques físicos durante 1 turno.",
+ "flavorText": "",
+ "classTags": [
+  "bardo_de_las_cuatro_estaciones"
+ ],
+ "trigger": "Al empezar el día",
+ "effect": {
+  "description": "Eliges un beneficio al día. Primavera: tus curaciones curan +2. Verano: tienes ventaja en ataque. Otoño: tienes ventaja en defensa. Invierno: ganas +2 a la CA y reflejas los ataques físicos durante 1 turno.",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "Eliges un beneficio al día.",
+   "mechanicHook": "elige_una:primavera,verano,otono,invierno"
+  },
+  {
+   "description": "Primavera: tus curaciones curan +2.",
+   "mechanicHook": "si:primavera:bono_cura:2"
+  },
+  {
+   "description": "Verano: tienes ventaja en ataque.",
+   "mechanicHook": "si:verano:ventaja:ataque"
+  },
+  {
+   "description": "Otoño: tienes ventaja en defensa.",
+   "mechanicHook": "si:otono:ventaja:defensa"
+  },
+  {
+   "description": "Invierno: ganas +2 a la CA.",
+   "mechanicHook": "si:invierno:bono_ca:2"
+  },
+  {
+   "description": "Invierno: reflejas los ataques físicos durante 1 turno.",
+   "mechanicHook": "si:invierno@1:refleja:fisico"
+  }
+ ]
+}

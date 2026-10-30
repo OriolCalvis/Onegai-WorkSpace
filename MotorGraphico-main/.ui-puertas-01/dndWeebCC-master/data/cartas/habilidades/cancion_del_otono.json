@@ -1,0 +1,49 @@
+{
+ "id": "cancion_del_otono",
+ "name": "Canción del Otoño",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Lanzas una melodía que da desventaja a todos los enemigos que la oigan durante 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "bardo_de_las_cuatro_estaciones"
+ ],
+ "roleTags": [],
+ "tags": [
+  "bardo_de_las_cuatro_estaciones",
+  "Cancion"
+ ],
+ "mechanicTags": [
+  "Cancion"
+ ],
+ "actionType": "accion_principal",
+ "target": "all_enemies",
+ "range": "short",
+ "duration": "2 turnos",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": "defensa_mental",
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Lanzas una melodía que da desventaja a todos los enemigos que la oigan durante 2 turnos.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "Da desventaja a todos los enemigos que la oigan durante 2 turnos.",
+   "mechanicHook": "estado:2:desventaja:todo"
+  }
+ ]
+}

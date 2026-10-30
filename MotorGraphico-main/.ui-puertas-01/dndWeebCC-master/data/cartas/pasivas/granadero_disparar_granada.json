@@ -1,0 +1,31 @@
+{
+ "id": "granadero_disparar_granada",
+ "name": "Disparar granada",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Las granadas alquímicas del Granadero: tus golpes con arma hacen +1 de daño (fuego).",
+ "flavorText": "",
+ "classTags": [
+  "granadero"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "Las granadas alquímicas del Granadero: tus golpes con arma hacen +1 de daño (fuego).",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Tus golpes con arma hacen +1 de daño.",
+   "mechanicHook": "siempre:bono_dano_arma:1"
+  },
+  {
+   "description": "[pendiente] los puntos de calor y sus niveles (Caliente, Al rojo vivo, Sobrecalentamiento): los dan los disparos y los gastan Recarga, Potencia de fuego aumentada, Transformación energética y Aliento de dragón.",
+   "mechanicHook": "pendiente_parcial:los puntos de calor y sus niveles (Caliente, Al rojo vivo, Sobrecalentamiento): los dan los disparos y los gastan Recarga, Potencia de fuego aumentada, Transformación energética y Aliento de dragón"
+  }
+ ],
+ "fuente": "NosTale · Granadero (Blaster)"
+}

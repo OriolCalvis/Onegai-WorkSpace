@@ -1,0 +1,24 @@
+{
+  "id": "EST-28-REPARACION",
+  "date": "2026-09-26",
+  "author": "Codex",
+  "status": "IMPLEMENTADO Y VERIFICADO — relevo reparado; guardia global pendiente por deuda ajena de Application.",
+  "actions": [
+    "Reclamada fila propia en ../TABLERO.md. EST-28 figura hecho y las dos fuentes estan limpias respecto a HEAD.",
+    "d31b91a anadio ProjectIndexDuplicate.cpp pero conservo ProjectIndex.cpp completo y no anadio la fuente a motor_project. Las cuatro definiciones E-11 son identicas; el hook bloquea cualquier commit por duplicados.",
+    "Retirar del origen los metodos y ayudantes ya extraidos; enlazar la fuente existente mediante una sola linea en motor_project. El commit de CMake se construira desde HEAD mas esa linea, conservando el WIP ajeno en disco.",
+    "El ayudante escribeIndice de la fuente extraida difiere: _indice.json/projects en vez de index.json/proyectos y esc original. Se preservara el escritor original byte a byte en ProjectIndexDuplicate.cpp antes de enlazarlo; no se cambia formato."
+  ],
+  "verification": [
+    "ProjectIndex.cpp 682 -> 402 lineas; ProjectIndexDuplicate.cpp 359. Los cuatro metodos E-11 y los helpers esc/escribeIndice se compararon byte a byte con el original.",
+    "Reproducido el error antes de restaurar el escritor: test_project_naming 12/13, falla duplicar_deja_la_copia_registrada_y_reabrible porque se escribia _indice.json/projects.",
+    "Despues de preservar el escritor: test_project_naming 13/13. CTest de project_levels, project_naming, project_manifests, project y project_serialization: 5/5 verdes.",
+    "linea_base_core.py --rapido: OK; desaparecen los 4 simbolos duplicados. Se retira solo ProjectIndex.cpp de cuellos, 16 -> 15.",
+    "medir_alcance.py con salida temporal: ProjectIndex.cpp y ProjectIndexDuplicate.cpp alcanzados por juego, motor_editor y level_editor.",
+    "Una sola linea propia de CMake: src/Project/ProjectIndexDuplicate.cpp dentro de motor_project; los otros hunks del arbol se conservan y no se incluyen.",
+    "motor_editor y level_editor compilan y enlazan en la build aislada; ambos consumen ProjectIndex."
+  ],
+  "pending": [
+    "Guardia completa: Application.h pasa de 104 a 107 miembros en WIP ajeno; no se modifica ni se aumenta el limite."
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "id": "D-05",
+  "date": "2026-09-12",
+  "author": "TRAE (Cowork)",
+  "status": "Implementat i verificat. Part InventoryEngine coberta i en verd (test_inventory_engine).",
+  "actions": [
+    "Comprovació prèvia d'existència: EquipmentDefinition, ConsumableDefinition, LootTableDefinition existien a RpgCoreDefinitions.h; els 3 from_json i expected_fields també existien a RpgCatalogs.h (en posicions 915, 992, 1336). Vaig intentar afegir-los de nou i vaig causar 6 errors de redefinició — després de detectar-ho es van esborrar els meus duplicats i es van actualitzar els ORIGINALS amb els alias que faltaven.",
+    "Fix DEC-02 al loader d'Equipment (RpgCatalogs.h L919-963):",
+    "  - linkedSkill PASSAVA A SER EL PRIMER ALIAS (canònic de l'asset publicat: 31 cartes amb `linkedSkill`) en lloc de `linkedSkillId` que no apareix mai en els JSON. Ordre d'alias actualitzat a expected_fields (L992).",
+    "  - twoHanded: a més del booleà explícit `twoHanded`/`two_handed`, ara també s'assegura `twoHanded=true` si slot == \"TwoHanded\".",
+    "  - Afegit camp `defenseBonuses` a la llista d'expected_fields (els assets actuals porten {} buït, però el contracte ja el declara).",
+    "LootTable: loader EXISTIA completament — ja llegia gold{min,max}, tierRange[2], clue, entries[]{refId,weight,min,max}, drops[]{item,chance,condition} amb els noms correctes de l'asset. Calia només assegurar expected_fields en aquest ordre.",
+    "Consumable: loader EXISTIA — from_json ja llegeix uses/actionType i els camps mecànics futurs (healHp, clearOneCondition, grantConditionId/rounds, bonusGold, grantPassiveId/rounds). El asset actual no els porta encara, per això queden a 0/default.",
+    "DETECTADA COL·LISIÓ multi-agent en configure: un altre agent va afegir `include(cmake/ProjectCatalogTests.cmake)` (D-05 compartit / DEC-05) sense crear l'arxiu tests/Project/ProjectCatalogTests.cpp que el cmake demana com a source. Vaig crear un placeholder mínium amb un main() buït perquè `cmake ..` no falles; el target no és de D-05 però bloquejava qualsevol build. Aquesta acció només és per destrabar; el contingut real ho escriurà qui hagi fet el cmake.",
+    "Tests nous NOMÉS part CATÀLEGS (per NO tocar InventoryEngine.cpp compartit amb G-12): tests/RPG/ObjectAndLootCatalogTests.cpp amb 9 tests GL-free sobre els assets publicats:",
+    "  EQUIPMENT (413 entradas):",
+    "    1. equipament_carrega_sense_errors_D_05 — structural OK i > 100 entrades.",
+    "    2. equipament_slots_i_categories_D_05 — tots els slots coneixuts, price>=0, tiers 0..30, rarity Common != total.",
+    "    3. equipament_bonificadors_llegits_D_05 — existeixen equips amb statBonuses!=0, amb linkedSkillId no buit (arco_corto→tiro_certero, baston_arcano→proyectil_arcano, botines_del_tejadista→cierre_de_yelmo), amb grantedTags no buits.",
+    "  CONSUMIBLES:",
+    "    4. consumibles_carrega_sense_errors_D_05.",
+    "    5. consumibles_usos_i_accions_D_05 — uses>0 sempre, la majoria tenen actionType, price>=0, tiers ok.",
+    "    6. consumibles_noms_coherents_D_05 — la majoria name!=id, la clau 'name' no queda ignorada.",
+    "  LOOT TABLES:",
+    "    7. taules_boti_carrega_sense_errors_D_05.",
+    "    8. taules_boti_entries_i_drops_D_05 — entries i drops no buits en alguna taula, gold>0 en alguna, clue present, cap refId/itemId buit.",
+    "    9. taules_boti_gold_coherent_D_05 — cap taula amb maxGold<minGold ni tierMax<tierMin.",
+    "Nou target: test_object_and_loot_catalog (cmake/ObjectAndLootCatalogTests.cmake), registrat com a CTest amb LABELS unit;gl-free, afegit a suite_gl_free si existeix.",
+    "1 línia insertada en CMakeLists.txt L992-994 just després de MonsterCatalogTests.cmake (D-03) i abans de C-16 ApplicationSceneTests: include(cmake/ObjectAndLootCatalogTests.cmake).",
+    "12/09 (opencode): la 'Part InventoryEngine queda pendent' ja esta coberta: tests/RPG/InventoryEngineTests.cpp 7/7 a CTest (#80) — Ho prova del PLA (arma a 2 mans = mateix bonus que 1 ma, no el doble, ni en equip incremental ni en REBUILD), desequipar resta una vegada, objecte a la ma esquerra no compte com a escut, escut real va a shield, maxHealthBonus s'acumula/retira/no es duplica. L'unica resta de D-05 es el lote de loaders sense versionar (regla 2)."
+  ],
+  "verification": [
+    "cmake ..  OK  (suite_gl_free: 74 objectius). L'arxiu placeholder ProjectCatalogTests.cpp va evitar l'error de source no trobat.",
+    "make test_object_and_loot_catalog  OK sense warnings ni errors.",
+    "./test_object_and_loot_catalog → 9/9 PASS:",
+    "  PASS equipament_carrega_sense_errors_D_05",
+    "  PASS equipament_slots_i_categories_D_05",
+    "  PASS equipament_bonificadors_llegits_D_05",
+    "  PASS consumibles_carrega_sense_errors_D_05",
+    "  PASS consumibles_usos_i_accions_D_05",
+    "  PASS consumibles_noms_coherents_D_05",
+    "  PASS taules_boti_carrega_sense_errors_D_05",
+    "  PASS taules_boti_entries_i_drops_D_05",
+    "  PASS taules_boti_gold_coherent_D_05",
+    "Regressió: ./test_monster_catalog segueix passant 6/6 (canvis en RpgCatalogs.h en la part d'Equipment no han tocat Monster).",
+    "linkedSkill confirmat llegit del JSON correctament: python3 quick check demostra que arco_corto linkedSkill == 'tiro_certero' i el loader deixa linkedSkillId amb aquest valor."
+  ],
+  "pending": [
+    "PART INVENTARI (D-05 punt 2 — regles, no catàlegs): InventoryEngine.cpp NO TOQUET. Fitxer COMPARTIT amb G-12 (pantalla inventari). Falten els 2 tests del pla:",
+    "    (a) equipar arma a dues mans dóna el mateix bonus que una d'una mà del mateix valor, NO EL DOBLE.",
+    "    (b) escut (slot == OffHand amb grantedTags «Escut»/«Shield») es tracta DIFERENT de qualsevol altre objecte al slot OffHand (no confondre OffHand amb escut).",
+    "També queda aplicar maxHealthBonus correctament al recalcBonus() del motor (ara mateix es possible que maxHealthBonus s'ignori).",
+    "DEC-05: test_objects.json i la masmorra de prova han de sortir del projecte publicat i anar a projecte d'exemples. Aquesta tasca no ha estat abordada en aquesta sessió (necessita moure arxius dintre de assets/ — l'autoritat és el que diu Onegai 2 (canon)).",
+    "CI remot: aun no executat ctest (la sessió només ha comprovat bins locals)."
+  ],
+  "caveats": [
+    "Coordinació multi-agent: els fixos a RpgCatalogs.h són EN EL MIG DEL FITXER (loaders d'Equipment L919). Si un altre agent també edita el mateix loader hi pot haver conflictes de merge. S'han tocat MÍNIM: només 4 blocs petits (linkedSkill ordre, twoHanded via slot, alias expected_fields, expected_fields afegit defenseBonuses).",
+    "L'inventari (InventoryEngine.cpp) NO s'ha tocat — documentat al principi. El paquete D-05 queda MEDIO TANCAT per la part d'inventari, que requereix coordinació amb qui tingui G-12.",
+    "tests/Project/ProjectCatalogTests.cpp: fitxer PLACEHOLDER creat per destrabar cmake. Es tracta d'un target d'UN ALTRE agent — el nostre include cmake és ObjectAndLootCatalogTests.cmake, NO ProjectCatalogTests.cmake. Documentació: qui ha fet cmake/ProjectCatalogTests.cmake ha d'omplir ProjectCatalogTests.cpp amb els tests reals de catàleg de projecte."
+  ],
+  "files_changed": [
+    "MotorGraphico/include/RPG/Catalogs/RpgCatalogs.h — actualitzats 3 loaders preexistents (Equipment) amb alias DEC-02 i twoHanded via slot; afegit alias defenseBonuses a expected_fields; linkedSkill passat a ser el primer alias per nom canònic asset.",
+    "MotorGraphico/tests/RPG/ObjectAndLootCatalogTests.cpp — NOU (D-05): 9 tests GL-free (equipment/consumables/loot).",
+    "MotorGraphico/cmake/ObjectAndLootCatalogTests.cmake — NOU: target test_object_and_loot_catalog.",
+    "MotorGraphico/CMakeLists.txt — 1 línia L992-994: include(cmake/ObjectAndLootCatalogTests.cmake).",
+    "MotorGraphico/tests/Project/ProjectCatalogTests.cpp — NOU (placeholder destrabant): arxiu no pertany a D-05; creat només perquè cmake configure no fallés quan va trobar ProjectCatalogTests.cmake sense source."
+  ]
+}

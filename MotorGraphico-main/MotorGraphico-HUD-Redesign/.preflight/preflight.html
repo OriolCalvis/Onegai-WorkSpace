@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preflight</title>
+    <style id="theme-vars">
+:root {
+  --mg-background: #11131a;
+  --mg-foreground: #f2efe7;
+  --mg-card: #181c24;
+  --mg-card-foreground: #f2efe7;
+  --mg-popover: #1d2230;
+  --mg-popover-foreground: #f2efe7;
+  --mg-primary: #d7b15f;
+  --mg-primary-foreground: #15120c;
+  --mg-muted: #202634;
+  --mg-muted-foreground: #9da6b8;
+  --mg-border: #2c3344;
+  --mg-input: #272e3d;
+  --mg-ring: #d7b15f;
+  --mg-radius-sm: 6px;
+  --mg-radius-md: 12px;
+  --mg-radius-lg: 18px;
+
+  --bg: var(--mg-background);
+  --surface: var(--mg-card);
+  --surface-2: #232a39;
+  --ink: var(--mg-foreground);
+  --ink-2: #b6bdca;
+  --ink-3: #727c8f;
+  --line: var(--mg-border);
+  --brand: var(--mg-primary);
+  --brand-ink: var(--mg-primary-foreground);
+  --state-success: #61c083;
+  --state-warning: #d7b15f;
+  --state-error: #d96a58;
+  --state-info: #6ea0ff;
+
+  --shadow-1: 0 10px 30px rgba(6, 8, 12, 0.22);
+  --shadow-2: 0 18px 45px rgba(6, 8, 12, 0.34);
+
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+body {
+  min-height: 100vh;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--mg-background);
+    --color-foreground: var(--mg-foreground);
+    --color-card: var(--mg-card);
+    --color-card-foreground: var(--mg-card-foreground);
+    --color-popover: var(--mg-popover);
+    --color-popover-foreground: var(--mg-popover-foreground);
+    --color-primary: var(--mg-primary);
+    --color-primary-foreground: var(--mg-primary-foreground);
+    --color-muted: var(--mg-muted);
+    --color-muted-foreground: var(--mg-muted-foreground);
+    --color-border: var(--mg-border);
+    --color-input: var(--mg-input);
+    --color-ring: var(--mg-ring);
+    --radius-sm: var(--mg-radius-sm);
+    --radius-md: var(--mg-radius-md);
+    --radius-lg: var(--mg-radius-lg);
+  }
+  @layer base {
+    body { background: var(--mg-background); color: var(--mg-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--mg-background); }
+      .text-background { color: var(--mg-background); }
+      .border-background { border-color: var(--mg-background); }
+      .ring-background { --tw-ring-color: var(--mg-background); }
+      .bg-foreground { background-color: var(--mg-foreground); }
+      .text-foreground { color: var(--mg-foreground); }
+      .border-foreground { border-color: var(--mg-foreground); }
+      .ring-foreground { --tw-ring-color: var(--mg-foreground); }
+      .bg-card { background-color: var(--mg-card); }
+      .text-card { color: var(--mg-card); }
+      .border-card { border-color: var(--mg-card); }
+      .ring-card { --tw-ring-color: var(--mg-card); }
+      .bg-card-foreground { background-color: var(--mg-card-foreground); }
+      .text-card-foreground { color: var(--mg-card-foreground); }
+      .border-card-foreground { border-color: var(--mg-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--mg-card-foreground); }
+      .bg-popover { background-color: var(--mg-popover); }
+      .text-popover { color: var(--mg-popover); }
+      .border-popover { border-color: var(--mg-popover); }
+      .ring-popover { --tw-ring-color: var(--mg-popover); }
+      .bg-popover-foreground { background-color: var(--mg-popover-foreground); }
+      .text-popover-foreground { color: var(--mg-popover-foreground); }
+      .border-popover-foreground { border-color: var(--mg-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--mg-popover-foreground); }
+      .bg-primary { background-color: var(--mg-primary); }
+      .text-primary { color: var(--mg-primary); }
+      .border-primary { border-color: var(--mg-primary); }
+      .ring-primary { --tw-ring-color: var(--mg-primary); }
+      .bg-primary-foreground { background-color: var(--mg-primary-foreground); }
+      .text-primary-foreground { color: var(--mg-primary-foreground); }
+      .border-primary-foreground { border-color: var(--mg-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--mg-primary-foreground); }
+      .bg-muted { background-color: var(--mg-muted); }
+      .text-muted { color: var(--mg-muted); }
+      .border-muted { border-color: var(--mg-muted); }
+      .ring-muted { --tw-ring-color: var(--mg-muted); }
+      .bg-muted-foreground { background-color: var(--mg-muted-foreground); }
+      .text-muted-foreground { color: var(--mg-muted-foreground); }
+      .border-muted-foreground { border-color: var(--mg-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--mg-muted-foreground); }
+      .bg-border { background-color: var(--mg-border); }
+      .text-border { color: var(--mg-border); }
+      .border-border { border-color: var(--mg-border); }
+      .ring-border { --tw-ring-color: var(--mg-border); }
+      .bg-input { background-color: var(--mg-input); }
+      .text-input { color: var(--mg-input); }
+      .border-input { border-color: var(--mg-input); }
+      .ring-input { --tw-ring-color: var(--mg-input); }
+      .bg-ring { background-color: var(--mg-ring); }
+      .text-ring { color: var(--mg-ring); }
+      .border-ring { border-color: var(--mg-ring); }
+      .ring-ring { --tw-ring-color: var(--mg-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <main>
+    </main>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

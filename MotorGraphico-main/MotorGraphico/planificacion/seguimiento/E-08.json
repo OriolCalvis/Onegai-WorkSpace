@@ -1,0 +1,27 @@
+{
+  "id": "E-08",
+  "date": "2026-09-12",
+  "author": "Claude (Cowork)",
+  "status": "Nucleo del depurador hecho y verificado localmente; paquete ABIERTO (falta el panel del editor)",
+  "actions": [
+    "EventInterpreter (E-03) gana el depurador: modo Continuous/Paused, stepOnce(), puntos de parada por (evento, pagina, ruta de comando), nextCommand()/nextCommandPath() para saber que va a ejecutarse, y una traza en orden temporal de lo ya ejecutado.",
+    "El punto de parada para ANTES de ejecutar su comando. El autor quiere ver el estado con el que el comando VA a correr, no el que deja; si parase despues, lo que ve ya no es lo que buscaba.",
+    "Los puntos de parada usan la MISMA coordenada que los diagnosticos de E-07 (evento + pagina + ruta de indices). A proposito: asi «Ir ahi» desde la lista de problemas y «poner un punto de parada» hablan el mismo idioma, y E-15 no tiene que traducir nada.",
+    "UNA ESPERA NO SE SALTA EN SILENCIO (especificacion §15.3). Aqui hubo que elegir: el primer diseno se NEGABA a atravesarla, y eso dejaba el depurador trabado para siempre — en pausa el tiempo no corre, asi que una ejecucion esperando no podia avanzar jamas. La solucion es atravesarla Y anotarlo en lastStepNote(), que el panel enseña. Lo que no puede pasar es que se salte en silencio, porque entonces el autor veria un recorrido que el juego nunca hace. Hay dos tests que fijan las dos mitades: el paso la atraviesa anotandolo, y corriendo normal la espera cuenta su tiempo entero.",
+    "En pausa el TIEMPO tampoco corre. Si las esperas siguieran contando con el depurador parado, el autor volveria de mirar el estado y encontraria la escena en otro sitio.",
+    "Al reanudar se pasa por encima del punto de parada UNA vez, y la marca se consume: si el autor vuelve a llegar ahi (un bucle, otra interaccion) tiene que volver a parar. La marca es por ejecucion y no global, porque dos ejecuciones pueden estar paradas a la vez.",
+    "Un punto de parada corta el presupuesto del tick entero. Sin ese corte, el bucle de 64 comandos seguia gastandose y el depurador paraba 63 comandos mas tarde: el fallo lo encontro un test, no la lectura."
+  ],
+  "verification": [
+    "test_event_debug, 9 casos verdes (tests/RPG/EventDebugTests.cpp, registrado en cmake/EventDebugTests.cmake): en pausa no avanza nadie ni corre el tiempo; un paso ejecuta exactamente un comando; el paso atraviesa una espera pero lo anota; corriendo normal la espera se respeta entera; el punto de parada para antes de ejecutar y nextCommand() dice cual es; se puede seguir sin quedarse atascado; poner dos veces el mismo punto no lo duplica y se puede quitar; la traza dice por donde paso en orden y con la ruta exacta; y un paso sin nada vivo dice por que no puede.",
+    "Regresion: los 14 casos de test_event_interpreter siguen verdes (5 de ellos los anadio otra sesion a ese fichero mientras se escribia esto), mas test_event_commands 13/13 y test_adventure_validation 9/9.",
+    "Compilado y ejecutado con g++ directo sobre la maquina del usuario. CI remota pendiente."
+  ],
+  "pending": [
+    "CI remota.",
+    "El PANEL del editor (editor/src/event_editor.cpp) no existe: es GL y es la otra mitad del paquete. Lo que hay aqui es el nucleo GL-free contra el que ese panel se escribira — Pausar/Seguir/Paso/Detener son setMode() y stepOnce(), y la lista de comandos resalta lo que diga nextCommandPath().",
+    "«Ver el estado de flags y variables a cada paso» no lo hace el interprete: quien tiene el NarrativeState es el llamante (E-02 ya lo expone ordenado con flags(), variables() y localSwitches()). El panel los lee de ahi; duplicarlos aqui seria una segunda verdad.",
+    "Mutar flags/oro/inventario a mano desde el depurador es F-04, y ademas debe ir etiquetado como depuracion y solo sobre estado de prueba.",
+    "E-06 (el editor vertical de comandos) sigue sin hacer, y es la otra dependencia declarada de E-08."
+  ]
+}

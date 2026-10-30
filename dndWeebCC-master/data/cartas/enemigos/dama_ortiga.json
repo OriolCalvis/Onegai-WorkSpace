@@ -1,0 +1,84 @@
+{
+ "id": "dama_ortiga",
+ "name": "Dama Ortiga",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "corruptor",
+ "faction": "corte_de_espinas",
+ "stats": {
+  "CON": 5,
+  "DES": 6,
+  "INT": 7,
+  "CAR": 7
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 17,
+  "defensaMental": 17,
+  "resistenciaFisica": 15,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Beso de Ortiga",
+   "defense": "resistencia_fisica",
+   "effect": "Daño de veneno que suma su CAR; el objetivo queda Envenenado y con desventaja social una escena (la roncha se ve)."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "resistencia_fisica",
+   "effect": "Si el objetivo falla, queda Envenenado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Etiqueta Urticante",
+  "description": "Etiqueta Urticante: quien la toque (melé sin guantes o agarre) queda Envenenado sin tirada."
+ },
+ "conditionsInflicted": [
+  "envenenado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Naturaleza"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Encadena su técnica tras el ataque firma y +1 al daño."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Conseguir invitación al baile de la corona humana — con intenciones fotosintéticas",
+  "metodo": "Seduce, roza y deja que la química trabaje",
+  "debilidad_narrativa": "Los guantes de seda: quien pelee con las manos cubiertas es inmune a su pasiva y ella lo detesta (lo prioriza)",
+  "vinculo": "deity_wild_court"
+ },
+ "arena": {
+  "name": "El Invernadero de Gala",
+  "hazard": "Perfume espeso: cada 2 rondas, Resistencia física o desventaja una ronda (mareo dulce)"
+ },
+ "legendaryActions": [],
+ "storyCard": {
+  "title": "Dama Ortiga",
+  "text": "En la Corte dicen que es inofensiva. En la Corte mienten por educación.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "La cortesana favorita de la Corte de Espinas."
+}

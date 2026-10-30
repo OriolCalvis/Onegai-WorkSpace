@@ -1,0 +1,64 @@
+{
+ "id": "oraculo_de_limo_matriarca",
+ "name": "Oraculo de Limo Matriarca",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 4,
+ "role": "corruptor",
+ "faction": "nagas_del_pozo_azul",
+ "factionName": "Las Nagas del Pozo Azul",
+ "stats": {
+  "CON": 6,
+  "DES": 7,
+  "INT": 8,
+  "CAR": 8
+ },
+ "derived": {
+  "vida": 40,
+  "ca": 18,
+  "defensaMental": 18,
+  "resistenciaFisica": 16,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Salpicadura Cegadora",
+   "defense": "CA",
+   "effect": "Ataque de veneno: daño que suma su INT (pool de INT, regla 7.6)."
+  },
+  {
+   "name": "Profecia Turbia",
+   "defense": "resistencia_fisica",
+   "effect": "Técnica de facción: si el objetivo falla, queda Agarrado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "En agua o lluvia ganan +1 a todas sus tiradas; las monedas que tocan quedan marcadas."
+ },
+ "conditionsInflicted": [
+  "agarrado"
+ ],
+ "loot": [
+  "latigo_de_cuero_de_viaje",
+  "orbe_de_mano_de_viaje",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Veneno"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Gana una segunda técnica por ronda y +1 al daño."
+  }
+ ],
+ "flavorText": "El pozo no tiene fondo. Tiene acreedoras."
+}

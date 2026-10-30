@@ -1,0 +1,267 @@
+{
+ "_nota": "Atlas runtime de pickups P0 (SPRITE_BACKLOG.md). Generado por tools/gen_props_p0.py desde las laminas de autoria: no editar a mano. Frames 1-based por filas. TextureManager invierte los PNG al cargarlos: la region del frame f es defineRegion(f, (f-1) % columns, rows - 1 - (f-1) / columns), como race_npc_idle.",
+ "estado": "runtime",
+ "generador": "tools/gen_props_p0.py",
+ "image": "pickups_p0.png",
+ "frameSize": [
+  64,
+  64
+ ],
+ "columns": 8,
+ "rows": 3,
+ "anclaje": {
+  "x": "centro de la celda",
+  "filaBase": 61,
+  "dibujo": "64x64 con characterAnchor(), igual que los actores"
+ },
+ "escala": "lectura: 1,5-2 veces su tamano real para que se vea en el suelo",
+ "frames": {
+  "pocion": 1,
+  "llave": 2,
+  "espada": 3,
+  "hacha": 4,
+  "arco": 5,
+  "escudo": 6,
+  "daga": 7,
+  "baston": 8,
+  "grimorio": 9,
+  "cota_malla": 10,
+  "yelmo": 11,
+  "botas": 12,
+  "antorcha": 13,
+  "cerveza": 14,
+  "jarra": 15,
+  "pocion_mana": 16,
+  "pocion_veneno": 17,
+  "eter": 18,
+  "pocion_mision": 19,
+  "llave_hierro": 20
+ },
+ "objetos": [
+  {
+   "id": "pocion",
+   "frame": 1,
+   "nombre": "Pocion curativa",
+   "familia": "Pocion",
+   "fuente": "assets/textures/editor_object_icons.png",
+   "tamano": [
+    15,
+    22
+   ]
+  },
+  {
+   "id": "llave",
+   "frame": 2,
+   "nombre": "Llave",
+   "familia": "Llave",
+   "fuente": "assets/textures/editor_object_icons.png",
+   "tamano": [
+    17,
+    20
+   ]
+  },
+  {
+   "id": "espada",
+   "frame": 3,
+   "nombre": "Espada",
+   "familia": "Arma en suelo",
+   "fuente": "assets/textures/editor_biomes_creatures_equipment.png",
+   "tamano": [
+    29,
+    26
+   ]
+  },
+  {
+   "id": "hacha",
+   "frame": 4,
+   "nombre": "Hacha",
+   "familia": "Arma en suelo",
+   "fuente": "assets/textures/editor_biomes_creatures_equipment.png",
+   "tamano": [
+    29,
+    26
+   ]
+  },
+  {
+   "id": "arco",
+   "frame": 5,
+   "nombre": "Arco",
+   "familia": "Arma en suelo",
+   "fuente": "assets/textures/editor_biomes_creatures_equipment.png",
+   "tamano": [
+    26,
+    26
+   ]
+  },
+  {
+   "id": "escudo",
+   "frame": 6,
+   "nombre": "Escudo",
+   "familia": "Armadura / escudo",
+   "fuente": "assets/textures/editor_biomes_creatures_equipment.png",
+   "tamano": [
+    22,
+    22
+   ]
+  },
+  {
+   "id": "daga",
+   "frame": 7,
+   "nombre": "Daga",
+   "familia": "Arma en suelo",
+   "fuente": "assets/generated/authoring/actors/equipment_layers_v1.png",
+   "tamano": [
+    20,
+    16
+   ]
+  },
+  {
+   "id": "baston",
+   "frame": 8,
+   "nombre": "Baston",
+   "familia": "Arma en suelo",
+   "fuente": "assets/generated/authoring/actors/equipment_layers_v1.png",
+   "tamano": [
+    13,
+    30
+   ]
+  },
+  {
+   "id": "grimorio",
+   "frame": 9,
+   "nombre": "Grimorio",
+   "familia": "Libro / grimorio",
+   "fuente": "assets/generated/authoring/actors/equipment_layers_v1.png",
+   "tamano": [
+    18,
+    18
+   ]
+  },
+  {
+   "id": "cota_malla",
+   "frame": 10,
+   "nombre": "Cota de malla",
+   "familia": "Armadura / escudo",
+   "fuente": "assets/generated/authoring/actors/equipment_layers_v1.png",
+   "tamano": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "yelmo",
+   "frame": 11,
+   "nombre": "Yelmo",
+   "familia": "Armadura / escudo",
+   "fuente": "assets/generated/authoring/actors/equipment_layers_v1.png",
+   "tamano": [
+    16,
+    20
+   ]
+  },
+  {
+   "id": "botas",
+   "frame": 12,
+   "nombre": "Botas",
+   "familia": "Armadura / escudo",
+   "fuente": "assets/generated/authoring/actors/equipment_layers_v1.png",
+   "tamano": [
+    16,
+    20
+   ]
+  },
+  {
+   "id": "antorcha",
+   "frame": 13,
+   "nombre": "Antorcha",
+   "familia": "Antorcha / farol",
+   "fuente": "assets/textures/editor_object_icons.png",
+   "tamano": [
+    19,
+    30
+   ]
+  },
+  {
+   "id": "cerveza",
+   "frame": 14,
+   "nombre": "Jarra de cerveza",
+   "familia": "Comida",
+   "fuente": "assets/generated/authoring/world/interiors_materials_furniture_v2.png",
+   "tamano": [
+    14,
+    16
+   ]
+  },
+  {
+   "id": "jarra",
+   "frame": 15,
+   "nombre": "Jarra",
+   "familia": "Comida",
+   "fuente": "assets/generated/authoring/world/interiors_materials_furniture_v2.png",
+   "tamano": [
+    13,
+    17
+   ]
+  },
+  {
+   "id": "pocion_mana",
+   "frame": 16,
+   "nombre": "Pocion de mana",
+   "familia": "Pocion",
+   "fuente": "assets/textures/editor_object_icons.png",
+   "varianteDe": "pocion",
+   "tamano": [
+    15,
+    22
+   ]
+  },
+  {
+   "id": "pocion_veneno",
+   "frame": 17,
+   "nombre": "Pocion de veneno",
+   "familia": "Pocion",
+   "fuente": "assets/textures/editor_object_icons.png",
+   "varianteDe": "pocion",
+   "tamano": [
+    15,
+    22
+   ]
+  },
+  {
+   "id": "eter",
+   "frame": 18,
+   "nombre": "Eter",
+   "familia": "Pocion",
+   "fuente": "assets/textures/editor_object_icons.png",
+   "varianteDe": "pocion",
+   "tamano": [
+    15,
+    22
+   ]
+  },
+  {
+   "id": "pocion_mision",
+   "frame": 19,
+   "nombre": "Pocion de mision",
+   "familia": "Pocion",
+   "fuente": "assets/textures/editor_object_icons.png",
+   "varianteDe": "pocion",
+   "tamano": [
+    15,
+    22
+   ]
+  },
+  {
+   "id": "llave_hierro",
+   "frame": 20,
+   "nombre": "Llave de hierro",
+   "familia": "Llave",
+   "fuente": "assets/textures/editor_object_icons.png",
+   "varianteDe": "llave",
+   "tamano": [
+    17,
+    20
+   ]
+  }
+ ]
+}

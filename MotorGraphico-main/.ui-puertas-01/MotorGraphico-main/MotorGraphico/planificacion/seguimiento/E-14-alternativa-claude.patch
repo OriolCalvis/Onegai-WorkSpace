@@ -1,0 +1,1569 @@
+diff -ruN pa/MotorGraphico/cmake/CatalogPickerTests.cmake pb/MotorGraphico/cmake/CatalogPickerTests.cmake
+--- a/MotorGraphico/cmake/CatalogPickerTests.cmake	2026-09-17 08:09:35.475001065 +0000
++++ b/MotorGraphico/cmake/CatalogPickerTests.cmake	2026-09-17 08:09:35.477001065 +0000
+@@ -1,14 +1,27 @@
+-if (BUILD_TESTING)
+-    add_executable(test_catalog_picker tests/Editor/CatalogPickerTests.cpp src/Editor/CatalogPickerState.cpp)
+-    target_include_directories(test_catalog_picker PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+-    target_link_libraries(test_catalog_picker PRIVATE motor_map motor_rpg motor_json)
+-    add_dependencies(test_catalog_picker copiar_assets)
++# E-14 — Selectores de datos y referencias, mitad sin interfaz.
++#
++# Defiende la prueba del plan (test_catalog_picker): nombres iguales con
++# IDs distintos, filtro entre mil entradas, tipo incompatible rechazado y
++# referencia perdida localizable. FindLostReferences reutiliza la busqueda
++# de E-15, por eso se compilan aqui ProblemsState y sus dependencias,
++# mismo reparto que cmake/ProblemsStateTests.cmake. motor_level aporta
++# ObjectCatalog para el caso con catalogos reales.
++include(CTest)
++if(BUILD_TESTING AND TARGET motor_map_document AND TARGET motor_rpg AND TARGET motor_level)
++    add_executable(test_catalog_picker
++        tests/Editor/CatalogPickerTests.cpp
++        src/Editor/ProblemsState.cpp
++        src/RPG/AdventureValidation.cpp
++        src/RPG/EventCommands.cpp)
++    target_include_directories(test_catalog_picker PRIVATE
++        "${CMAKE_CURRENT_SOURCE_DIR}/tests"
++        "${CMAKE_CURRENT_SOURCE_DIR}/include")
++    # CatalogPickerState.cpp ya va dentro de motor_level desde 6a3be66.
++    target_link_libraries(test_catalog_picker PRIVATE motor_level motor_map_document motor_rpg motor_json)
+     add_test(NAME test_catalog_picker COMMAND test_catalog_picker)
+-    set_tests_properties(test_catalog_picker PROPERTIES
+-        LABELS "unit;gl-free"
+-        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
++    set_tests_properties(test_catalog_picker PROPERTIES LABELS "unit;gl-free")
+     set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_catalog_picker)
+-    if (TARGET suite_gl_free)
++    if(TARGET suite_gl_free)
+         add_dependencies(suite_gl_free test_catalog_picker)
+-    endif ()
+-endif ()
++    endif()
++endif()
+diff -ruN pa/MotorGraphico/include/Editor/CatalogPickerState.h pb/MotorGraphico/include/Editor/CatalogPickerState.h
+--- a/MotorGraphico/include/Editor/CatalogPickerState.h	2026-09-17 08:09:35.466001065 +0000
++++ b/MotorGraphico/include/Editor/CatalogPickerState.h	2026-09-17 08:09:35.476001065 +0000
+@@ -1,78 +1,342 @@
+-// >>> PAQUETES DEL PLAN - bloque generado, no editar a mano >>>
+-// Este fichero pertenece a 1 paquete del corte B:
+-//   E-14  (fase E, 3 j) - Selectors de dades i referències
+-//
+-// Si tocas este fichero estas trabajando dentro de ese paquete: su
+-// criterio de cierre y su prueba mandan sobre lo que es 'estar hecho'.
+-// Criterios y pruebas: planificacion/PLA_DEFINITIU.md
+-// Mapa completo fichero <-> paquete: planificacion/MAPA_DEL_CODIGO.md
+-// Regenerar este bloque: python3 tools/marcar_paquetes.py --marcar
+-// <<< fin del bloque generado >>>
+-
+ #pragma once
+ 
+ #include <cstddef>
++#include <optional>
+ #include <string>
+ #include <unordered_map>
+ #include <vector>
+ 
+ #include "Core/Errors/Result.h"
+-#include "Core/Ids/ProjectIds.h"
+-#include "Core/Math/GridCoord.h"
+-#include "Core/Json/JsonValue.h"
++#include "Editor/ProblemsState.h"
+ #include "Map/MapDocument.h"
++#include "RPG/EventCommand.h"
+ 
+-namespace RPG {
+-
+-// E-14 — Selectors de dades i referències.
++// E-14 — Selectores de datos y referencias. MITAD SIN INTERFAZ.
++//
++// QUÉ RESUELVE. Un campo `objectId` o `skillId` de texto libre traslada
++// al autor el problema de saberse los identificadores internos. El
++// selector enseña nombre, tipo, descripción e ID, busca por nombre y
++// sólo deja guardar referencias que existen y son del tipo correcto. El
++// panel ImGui (editor/src/CatalogPicker.cpp) y su integración en los
++// inspectores y en los formularios de E-05/E-06 no están aquí a
++// propósito: esto es el estado, sin GL, igual que E-07, E-13 y E-15.
++//
++// CUATRO COSAS QUE EL CRITERIO PIDE Y QUE CONDICIONAN EL DISEÑO:
++//
++// 1. NOMBRES IGUALES, IDS DISTINTOS. Dos «Poción» pueden convivir (una
++//    del proyecto y otra importada, o dos variantes). La lista no puede
++//    enseñar dos filas idénticas: cuando un nombre se repite dentro del
++//    mismo tipo, la etiqueta lleva el ID detrás. Y lo que se guarda en
++//    el campo es SIEMPRE el ID, nunca el nombre.
++//
++// 2. MIL ENTRADAS. El filtro corre en cada pulsación. El plegado de
++//    mayúsculas y acentos (NormalizeForSearch, el mismo de E-15, DEC-15)
++//    se calcula UNA vez al indexar, no en cada tecla.
++//
++// 3. TIPO INCOMPATIBLE RECHAZADO. Un selector de objetos no acepta un
++//    monstruo aunque el ID exista, venga de donde venga (clic, arrastrar
++//    desde otro panel o valor ya escrito en el documento). El rechazo
++//    dice qué es lo que se ha intentado meter.
++//
++// 4. REFERENCIA PERDIDA LOCALIZABLE. Si el campo ya guarda un ID que no
++//    existe, abrir el selector no lo sustituye en silencio por la primera
++//    fila: lo marca como perdido y lo conserva hasta que el autor elija.
++//    Y FindLostReferences recorre un mapa y devuelve dónde está cada
++//    referencia rota, con el mismo ProblemLocation que usa «Ir ahí».
+ //
+-// Un selector permet elegir un element del catàleg per nom
+-// enlloc d'ID intern. El selector manté el nom visible,
+-// l'ID intern, el tipus i la descripció.
+-
+-enum class CatalogType {
+-    Object,      // objecte del catàleg d'objectes
+-    Skill,       // habilitat del catàleg de habilitats
+-    Enemy,       // enemic del catàleg d'enemics
+-    Condition,   // condició del catàleg de condicions
+-    Map,         // mapa del projecte
+-    Event        // esdeveniment del mapa
+-};
+-
+-struct CatalogEntry {
+-    std::string id;           // ID intern tècnic
+-    std::string name;         // nom visible amb acents
+-    CatalogType type;         // tipus de catàleg
+-    std::string description;  // descripció curta
++// LA SELECCIÓN ES POR IDENTIDAD. Igual que el foco de E-15: se guarda el
++// ID elegido, no el número de fila. Filtrar o refrescar el catálogo
++// cambia las filas; la selección sigue siendo la misma entrada, y si el
++// filtro la oculta, sigue elegida aunque no se vea.
++
++namespace Editor {
++
++// ---------------------------------------------------------------------
++// Qué se elige
++// ---------------------------------------------------------------------
++
++enum class PickerKind {
++    Object,     // catálogo de objetos del proyecto (ObjectCatalog) y equipo/consumibles importados
++    Skill,      // habilidades y hechizos
++    Monster,    // enemigos del catálogo RPG
++    Condition,  // estados alterados
++    Map,        // mapas del proyecto
++    Event       // eventos de UN mapa (su id sólo es único dentro del mapa)
+ };
+ 
+-class CatalogPickerState {
++// Nombre para mensajes y cabeceras («objeto», «monstruo»...).
++const char* PickerKindLabel(PickerKind kind);
++
++// Qué selector abre un parámetro de comando. Los tipos sin selector
++// (Bool, Int, FlagRef...) devuelven nullopt: se editan con su propio
++// control. Así E-06 decide el control desde el catálogo de comandas de
++// E-04 y no desde una lista escrita a mano.
++std::optional<PickerKind> PickerKindForParam(RPG::CommandParamType type);
++
++// De dónde sale la entrada. Lo importado de Onegai se consulta pero no
++// se edita desde el proyecto (E-16 hace las copias locales).
++enum class PickerOrigin { Project, Imported };
++
++struct PickerEntry {
++    PickerKind kind = PickerKind::Object;
++    std::string id;           // lo que se guarda en el documento
++    std::string name;         // lo que ve el autor
++    std::string description;  // línea de ayuda bajo la fila
++    std::string category;     // subtipo visible: «arma», «npc», «hechizo»...
++    PickerOrigin origin = PickerOrigin::Project;
++    std::string source;       // fichero o catálogo de donde sale, para «Abrir definición»
++    std::string scope;        // sólo eventos: id del mapa. Vacío en el resto.
++};
++
++// ---------------------------------------------------------------------
++// El índice: todas las entradas elegibles del proyecto
++// ---------------------------------------------------------------------
++
++class PickerIndex {
+ public:
+-    explicit CatalogPickerState(MapDocument* doc = nullptr);
++    // Error si falta el ID, si un evento no dice de qué mapa es o si la
++    // clave (tipo, ámbito, ID) ya existe. Un ID duplicado no se pisa: la
++    // primera entrada se queda y la segunda se rechaza con motivo, porque
++    // cuál de las dos «gana» no lo puede decidir un selector.
++    Result<bool> add(PickerEntry entry);
++
++    const PickerEntry* find(PickerKind kind, const std::string& id,
++                            const std::string& scope = {}) const;
++
++    // Todas las entradas con ese ID, del tipo que sean. Sirve para decir
++    // «eso es un monstruo» cuando se esperaba un objeto.
++    std::vector<const PickerEntry*> findAnyKind(const std::string& id) const;
++
++    // Entradas de un tipo (y ámbito, para eventos), en orden de lista:
++    // nombre plegado y, a igualdad, ID.
++    std::vector<const PickerEntry*> entries(PickerKind kind,
++                                            const std::string& scope = {}) const;
++
++    std::size_t size() const { return m_entries.size(); }
++    std::size_t count(PickerKind kind) const;
++
++    // Lo mismo que entries(), con los plegados ya calculados al añadir
++    // (nombre; nombre + ID + categoría). Es lo que usa el selector para
++    // filtrar sin volver a plegar en cada tecla.
++    struct Folded {
++        const PickerEntry* entry = nullptr;
++        const std::string* name = nullptr;
++        const std::string* haystack = nullptr;
++    };
++    std::vector<Folded> folded(PickerKind kind, const std::string& scope = {}) const;
++
++    // Cambia cada vez que se añade algo. El selector lo usa para saber
++    // si su lista está vieja.
++    std::size_t revision() const { return m_revision; }
+ 
+-    // Obtenir totes les entrades d'un tipus.
+-    const std::vector<CatalogEntry>& entries(CatalogType type) const;
++private:
++    struct Stored {
++        PickerEntry entry;
++        std::string foldedName;
++        std::string haystack;  // nombre + ID + categoría, plegados
++    };
++    // Los punteros que devuelven find/entries/folded valen hasta el
++    // siguiente add(): el vector puede crecer. El selector copia lo que
++    // necesita en refresh() y no los guarda.
++    std::vector<Stored> m_entries;
++    // (tipo, ámbito, id) → posición. Los catálogos reales pasan de dos
++    // mil entradas: sin esto, indexarlos es cuadrático.
++    std::unordered_map<std::string, std::size_t> m_byKey;
++    std::size_t m_revision = 0;
++};
+ 
+-    // Buscar entrades per nom (cerca plegada d'accentos).
+-    std::vector<CatalogEntry> search(CatalogType type, const std::string& query) const;
++// Adaptadores. Plantillas para no atar el selector a motor_level ni a
++// motor_rpg: cualquier catálogo con `ids()`+`find()` (ObjectCatalog) o
++// con `forEach()` (RPG::Catalogs::Catalog<T>) sirve. Devuelven cuántas
++// entradas se rechazaron y dejan los motivos en `problems`.
++template <typename IdCatalog, typename CategoryFn>
++std::size_t AddFromIdCatalog(PickerIndex& index, PickerKind kind, const IdCatalog& catalog,
++                             PickerOrigin origin, const std::string& source,
++                             CategoryFn categoryOf, std::vector<std::string>& problems) {
++    std::size_t rechazadas = 0;
++    for (const std::string& id : catalog.ids()) {
++        const auto* def = catalog.find(id);
++        if (def == nullptr) continue;
++        PickerEntry e;
++        e.kind = kind;
++        e.id = def->id;
++        e.name = def->name;
++        e.category = categoryOf(*def);
++        e.origin = origin;
++        e.source = source;
++        Result<bool> r = index.add(std::move(e));
++        if (!r.isOk()) {
++            ++rechazadas;
++            problems.push_back(r.errorMessage());
++        }
++    }
++    return rechazadas;
++}
++
++template <typename RpgCatalog>
++std::size_t AddFromRpgCatalog(PickerIndex& index, PickerKind kind, const RpgCatalog& catalog,
++                              PickerOrigin origin, const std::string& source,
++                              const std::string& category, std::vector<std::string>& problems) {
++    std::size_t rechazadas = 0;
++    catalog.forEach([&](const auto& def) {
++        PickerEntry e;
++        e.kind = kind;
++        e.id = def.id;
++        e.name = def.name;
++        e.description = def.description;
++        e.category = category;
++        e.origin = origin;
++        e.source = source;
++        Result<bool> r = index.add(std::move(e));
++        if (!r.isOk()) {
++            ++rechazadas;
++            problems.push_back(r.errorMessage());
++        }
++    });
++    return rechazadas;
++}
++
++// Los eventos de un mapa, con el mapa como ámbito.
++std::size_t AddEventsFromMap(PickerIndex& index, const MapDocument& document,
++                             const std::string& source, std::vector<std::string>& problems);
++
++// ---------------------------------------------------------------------
++// Comprobar una referencia
++// ---------------------------------------------------------------------
++
++enum class ReferenceState {
++    Empty,      // campo vacío: ni válido ni roto; si es obligatorio lo dice E-07
++    Valid,
++    Missing,    // no existe con ningún tipo
++    WrongKind   // existe, pero es de otro tipo
++};
++
++struct ReferenceCheck {
++    ReferenceState state = ReferenceState::Empty;
++    const PickerEntry* entry = nullptr;  // sólo con Valid
++    std::string message;                 // vacío con Valid y Empty
++};
++
++ReferenceCheck CheckReference(const PickerIndex& index, PickerKind expected,
++                              const std::string& id, const std::string& scope = {});
++
++// Referencias rotas de un mapa: objetos, mapas y eventos que los
++// comandos y condiciones nombran y el índice no conoce. Cada una lleva el
++// sitio exacto para «Ir ahí» (ResolveNavigation de E-15).
++struct LostReference {
++    PickerKind kind = PickerKind::Object;
++    std::string id;
++    ProblemLocation where;
++    std::string message;
++};
++
++std::vector<LostReference> FindLostReferences(const MapDocument& document,
++                                              const PickerIndex& index);
+ 
+-    // Seleccionar una entrada per nom. Retorna l'entrada o error.
+-    Result<CatalogEntry> select(CatalogType type, const std::string& name) const;
++// ---------------------------------------------------------------------
++// El selector
++// ---------------------------------------------------------------------
++
++enum class OriginFilter { All, ProjectOnly, ImportedOnly };
++
++struct PickerRow {
++    std::string id;
++    std::string label;        // nombre, o «nombre (id)» si el nombre se repite
++    std::string description;
++    std::string category;
++    PickerOrigin origin = PickerOrigin::Project;
++};
+ 
+-    // Obtenir el nombre d'entrades d'un tipus.
+-    size_t count(CatalogType type) const;
++// «Abrir definición»: qué abrir y si se puede editar.
++struct DefinitionTarget {
++    PickerKind kind = PickerKind::Object;
++    std::string id;
++    std::string source;
++    std::string scope;
++    bool readOnly = false;
++};
+ 
+-    // Carregar catàlegs des del projecte.
+-    bool loadCatalogs(const std::string& projectPath);
++class CatalogPickerState {
++public:
++    // `scope` sólo cuenta para eventos: el mapa cuyos eventos se ofrecen.
++    explicit CatalogPickerState(PickerKind kind, std::string scope = {});
+ 
+-    // Verificar que una referència existeix.
+-    bool isValidReference(CatalogType type, const std::string& id) const;
++    PickerKind kind() const { return m_kind; }
++    const std::string& scope() const { return m_scope; }
++
++    // Abrir el selector sobre el valor actual del campo. Rehace la lista
++    // y comprueba el valor: si es válido queda seleccionado; si está roto
++    // o es de otro tipo, se conserva como perdido (lostId) y NO se
++    // selecciona nada en su lugar.
++    ReferenceCheck open(const PickerIndex& index, const std::string& currentId);
++
++    // Búsqueda: palabras separadas por espacios, todas tienen que
++    // aparecer (en nombre, ID o categoría), sin mayúsculas ni acentos.
++    void setQuery(std::string query);
++    const std::string& query() const { return m_query; }
++    void setOriginFilter(OriginFilter filter);
++    OriginFilter originFilter() const { return m_originFilter; }
++
++    // Vuelve a leer el índice (el catálogo ha cambiado). La selección se
++    // mantiene por ID; si la entrada ha desaparecido, pasa a perdida.
++    void refresh(const PickerIndex& index);
++
++    const std::vector<PickerRow>& rows() const { return m_rows; }
++    // Total del tipo antes de filtrar, para «12 de 1000».
++    std::size_t totalCount() const { return m_total; }
++
++    // Elegir por ID. Falla si no es una entrada de este tipo (y ámbito);
++    // la selección anterior no cambia.
++    Result<bool> select(const std::string& id);
++    // Elegir una entrada que viene de fuera (arrastrar desde otro panel).
++    Result<bool> offer(const PickerEntry& entry);
++    bool selectRow(std::size_t row);
++    // Flechas: se mueve dentro de las filas visibles. Si la selección
++    // está oculta por el filtro, la primera pulsación va a la primera
++    // (o última) fila visible.
++    void moveSelection(int delta);
++    void clearSelection();
++
++    const std::string& selectedId() const { return m_selected; }
++    std::optional<std::size_t> selectedRow() const;
++
++    bool hasLost() const { return !m_lostId.empty(); }
++    const std::string& lostId() const { return m_lostId; }
++    const std::string& lostMessage() const { return m_lostMessage; }
++
++    // Lo que se escribe en el campo al aceptar. Error si no hay
++    // selección o si la entrada ya no existe en el índice que se pasa.
++    Result<std::string> accept(const PickerIndex& index) const;
++
++    Result<DefinitionTarget> definitionOfSelection(const PickerIndex& index) const;
+ 
+ private:
+-    MapDocument* m_doc = nullptr;
+-    std::unordered_map<CatalogType, std::vector<CatalogEntry>> m_catalogs;
++    void rebuildRows();
+ 
+-    static std::string normalizeForSearch(const std::string& s);
++    PickerKind m_kind;
++    std::string m_scope;
++    std::string m_query;
++    OriginFilter m_originFilter = OriginFilter::All;
++
++    // Copia del tipo entero, ya ordenada, con su plegado. Se copia para
++    // que el selector no guarde punteros a un índice que puede crecer.
++    struct Candidate {
++        PickerRow row;
++        std::string haystack;
++    };
++    std::vector<Candidate> m_candidates;
++    std::vector<PickerRow> m_rows;
++    std::size_t m_total = 0;
++
++    std::string m_selected;
++    std::string m_lostId;
++    std::string m_lostMessage;
+ };
+ 
+-} // namespace RPG
++}  // namespace Editor
++
++// NOTA DE UBICACIÓN. Como ProblemsState: include/Editor + src/Editor, sin
++// GL, y el .cpp se compila dentro de cmake/CatalogPickerTests.cmake y no
++// dentro de una librería. Meterlo en motor_level obliga a editar el
++// bloque compartido del CMakeLists; lo moverá el paquete que dibuje el
++// panel cuando lo necesite enlazado.
+diff -ruN pa/MotorGraphico/src/Editor/CatalogPickerState.cpp pb/MotorGraphico/src/Editor/CatalogPickerState.cpp
+--- a/MotorGraphico/src/Editor/CatalogPickerState.cpp	2026-09-17 08:09:35.469001065 +0000
++++ b/MotorGraphico/src/Editor/CatalogPickerState.cpp	2026-09-17 08:09:35.476001065 +0000
+@@ -1,81 +1,418 @@
+-// >>> PAQUETES DEL PLAN - bloque generado, no editar a mano >>>
+-// Este fichero lo toca 1 paquete del corte B:
+-//   E-14  (fase E, 3 j) - Selectors de dades i referències
+-//
+-// Si tocas este fichero estas trabajando dentro de ese paquete: su
+-// criterio de cierre y su prueba mandan sobre lo que es 'estar hecho'.
+-// Criterios y pruebas: planificacion/PLA_DEFINITIU.md
+-// Mapa completo fichero <-> paquete: planificacion/MAPA_DEL_CODIGO.md
+-// Regenerar este bloque: python3 tools/marcar_paquetes.py --marcar
+-// <<< fin del bloque generado >>>
+-
+ #include "Editor/CatalogPickerState.h"
+ 
+ #include <algorithm>
+-#include <cctype>
+-#include <unordered_map>
+-#include <vector>
++#include <map>
++#include <utility>
++
++namespace Editor {
++
++namespace {
++
++// Palabras de la búsqueda ya plegadas. «Pocion  MAYOR» → {pocion, mayor}.
++std::vector<std::string> Palabras(const std::string& query) {
++    std::vector<std::string> palabras;
++    const std::string plegado = NormalizeForSearch(query);
++    std::string actual;
++    for (char c : plegado) {
++        if (c == ' ' || c == '\t') {
++            if (!actual.empty()) palabras.push_back(std::move(actual));
++            actual.clear();
++        } else {
++            actual += c;
++        }
++    }
++    if (!actual.empty()) palabras.push_back(std::move(actual));
++    return palabras;
++}
++
++bool Casa(const std::string& pajar, const std::vector<std::string>& palabras) {
++    for (const std::string& p : palabras) {
++        if (pajar.find(p) == std::string::npos) return false;
++    }
++    return true;
++}
++
++bool NecesitaAmbito(PickerKind kind) { return kind == PickerKind::Event; }
++
++// Para eventos el ámbito forma parte de la clave; para el resto se
++// ignora, así un selector de objetos abierto desde un mapa no deja de
++// ver los objetos del proyecto.
++bool MismoAmbito(PickerKind kind, const std::string& a, const std::string& b) {
++    return !NecesitaAmbito(kind) || a == b;
++}
++
++std::string Clave(PickerKind kind, const std::string& scope, const std::string& id) {
++    // El separador \x1f no puede salir de un id validado ni de un nombre
++    // de mapa: evita que («a», «b/c») y («a/b», «c») choquen.
++    return std::to_string(static_cast<int>(kind)) + '\x1f' +
++           (NecesitaAmbito(kind) ? scope : std::string()) + '\x1f' + id;
++}
++
++std::string Nombrado(const PickerEntry& e) {
++    std::string texto = std::string(PickerKindLabel(e.kind)) + " «" + e.id + "»";
++    if (!e.name.empty() && e.name != e.id) texto += " (" + e.name + ")";
++    return texto;
++}
++
++}  // namespace
++
++const char* PickerKindLabel(PickerKind kind) {
++    switch (kind) {
++        case PickerKind::Object:    return "objeto";
++        case PickerKind::Skill:     return "habilidad";
++        case PickerKind::Monster:   return "monstruo";
++        case PickerKind::Condition: return "estado";
++        case PickerKind::Map:       return "mapa";
++        case PickerKind::Event:     return "evento";
++    }
++    return "referencia";
++}
+ 
+-namespace RPG {
++std::optional<PickerKind> PickerKindForParam(RPG::CommandParamType type) {
++    switch (type) {
++        case RPG::CommandParamType::ObjectRef: return PickerKind::Object;
++        case RPG::CommandParamType::MapRef:    return PickerKind::Map;
++        case RPG::CommandParamType::EventRef:  return PickerKind::Event;
++        default:                               return std::nullopt;
++    }
++}
+ 
+-CatalogPickerState::CatalogPickerState(MapDocument* doc) : m_doc(doc) {}
++// ---------------------------------------------------------------------
++// PickerIndex
++// ---------------------------------------------------------------------
++
++Result<bool> PickerIndex::add(PickerEntry entry) {
++    if (entry.id.empty()) {
++        return Result<bool>::Error(std::string(PickerKindLabel(entry.kind)) +
++                                   " sin id" +
++                                   (entry.name.empty() ? "" : " («" + entry.name + "»)") +
++                                   (entry.source.empty() ? "" : " en " + entry.source));
++    }
++    if (NecesitaAmbito(entry.kind) && entry.scope.empty()) {
++        return Result<bool>::Error(Nombrado(entry) + ": un evento necesita el mapa al que pertenece");
++    }
++    if (!NecesitaAmbito(entry.kind)) entry.scope.clear();
+ 
+-const std::vector<CatalogEntry>& CatalogPickerState::entries(CatalogType type) const {
+-    static std::vector<CatalogEntry> empty;
+-    auto it = m_catalogs.find(type);
+-    if (it != m_catalogs.end()) return it->second;
+-    return empty;
++    if (const PickerEntry* previa = find(entry.kind, entry.id, entry.scope)) {
++        return Result<bool>::Error(
++            Nombrado(entry) + (entry.source.empty() ? "" : " en " + entry.source) +
++            ": id repetido, ya lo usa " + Nombrado(*previa) +
++            (previa->source.empty() ? "" : " en " + previa->source));
++    }
++
++    Stored s;
++    s.foldedName = NormalizeForSearch(entry.name.empty() ? entry.id : entry.name);
++    s.haystack = s.foldedName + ' ' + NormalizeForSearch(entry.id) + ' ' +
++                 NormalizeForSearch(entry.category);
++    const std::string clave = Clave(entry.kind, entry.scope, entry.id);
++    s.entry = std::move(entry);
++    m_byKey.emplace(clave, m_entries.size());
++    m_entries.push_back(std::move(s));
++    ++m_revision;
++    return Result<bool>::Ok(true);
++}
++
++const PickerEntry* PickerIndex::find(PickerKind kind, const std::string& id,
++                                     const std::string& scope) const {
++    const auto it = m_byKey.find(Clave(kind, scope, id));
++    return it == m_byKey.end() ? nullptr : &m_entries[it->second].entry;
+ }
+ 
+-std::vector<CatalogEntry> CatalogPickerState::search(CatalogType type, const std::string& query) const {
+-    std::vector<CatalogEntry> result;
+-    std::string norm = normalizeForSearch(query);
+-    for (const auto& entry : entries(type)) {
+-        if (normalizeForSearch(entry.name).find(norm) != std::string::npos) {
+-            result.push_back(entry);
++std::vector<const PickerEntry*> PickerIndex::findAnyKind(const std::string& id) const {
++    std::vector<const PickerEntry*> hallados;
++    for (const Stored& s : m_entries) {
++        if (s.entry.id == id) hallados.push_back(&s.entry);
++    }
++    return hallados;
++}
++
++std::vector<PickerIndex::Folded> PickerIndex::folded(PickerKind kind,
++                                                    const std::string& scope) const {
++    std::vector<Folded> elegidos;
++    for (const Stored& s : m_entries) {
++        if (s.entry.kind == kind && MismoAmbito(kind, s.entry.scope, scope)) {
++            elegidos.push_back(Folded{&s.entry, &s.foldedName, &s.haystack});
+         }
+     }
+-    return result;
++    std::stable_sort(elegidos.begin(), elegidos.end(), [](const Folded& a, const Folded& b) {
++        if (*a.name != *b.name) return *a.name < *b.name;
++        return a.entry->id < b.entry->id;
++    });
++    return elegidos;
++}
++
++std::vector<const PickerEntry*> PickerIndex::entries(PickerKind kind,
++                                                     const std::string& scope) const {
++    std::vector<const PickerEntry*> salida;
++    for (const Folded& f : folded(kind, scope)) salida.push_back(f.entry);
++    return salida;
++}
++
++std::size_t PickerIndex::count(PickerKind kind) const {
++    return static_cast<std::size_t>(std::count_if(
++        m_entries.begin(), m_entries.end(),
++        [kind](const Stored& s) { return s.entry.kind == kind; }));
+ }
+ 
+-Result<CatalogEntry> CatalogPickerState::select(CatalogType type, const std::string& name) const {
+-    for (const auto& entry : entries(type)) {
+-        if (entry.name == name) {
+-            return Result<CatalogEntry>::Ok(entry);
++std::size_t AddEventsFromMap(PickerIndex& index, const MapDocument& document,
++                             const std::string& source, std::vector<std::string>& problems) {
++    std::size_t rechazados = 0;
++    for (const MapLayer& capa : document.layers()) {
++        const EventLayerDocument* eventos = std::get_if<EventLayerDocument>(&capa.data());
++        if (eventos == nullptr) continue;
++        for (const MapEventDocument& ev : eventos->events()) {
++            PickerEntry e;
++            e.kind = PickerKind::Event;
++            e.id = ev.id.value();
++            e.name = ev.name;
++            e.category = "(" + std::to_string(ev.position.x) + ", " +
++                         std::to_string(ev.position.y) + ")";
++            e.source = source;
++            e.scope = document.id().value();
++            Result<bool> r = index.add(std::move(e));
++            if (!r.isOk()) {
++                ++rechazados;
++                problems.push_back(r.errorMessage());
++            }
+         }
+     }
+-    return Result<CatalogEntry>::Error("Referència no trobada: " + name);
++    return rechazados;
+ }
+ 
+-size_t CatalogPickerState::count(CatalogType type) const {
+-    return entries(type).size();
++// ---------------------------------------------------------------------
++// Referencias
++// ---------------------------------------------------------------------
++
++ReferenceCheck CheckReference(const PickerIndex& index, PickerKind expected,
++                              const std::string& id, const std::string& scope) {
++    ReferenceCheck check;
++    if (id.empty()) {
++        check.state = ReferenceState::Empty;
++        return check;
++    }
++    if (const PickerEntry* e = index.find(expected, id, scope)) {
++        check.state = ReferenceState::Valid;
++        check.entry = e;
++        return check;
++    }
++
++    // ¿Existe con otro tipo? Un evento de otro mapa también cuenta como
++    // «no es lo que se espera», y se dice de qué mapa es: es el error
++    // típico de copiar un comando entre mapas.
++    std::vector<const PickerEntry*> otros = index.findAnyKind(id);
++    for (const PickerEntry* o : otros) {
++        if (o->kind == expected && NecesitaAmbito(expected)) {
++            check.state = ReferenceState::WrongKind;
++            check.message = Nombrado(*o) + " es del mapa «" + o->scope + "», no de «" + scope + "»";
++            return check;
++        }
++    }
++    if (!otros.empty()) {
++        check.state = ReferenceState::WrongKind;
++        check.message = "«" + id + "» es " + Nombrado(*otros.front()) + "; aquí se espera un " +
++                        PickerKindLabel(expected);
++        return check;
++    }
++    check.state = ReferenceState::Missing;
++    check.message = std::string("no existe ningún ") + PickerKindLabel(expected) + " «" + id + "»";
++    return check;
+ }
+ 
+-bool CatalogPickerState::loadCatalogs(const std::string& projectPath) {
+-    (void)projectPath;
+-    return true;
++std::vector<LostReference> FindLostReferences(const MapDocument& document,
++                                              const PickerIndex& index) {
++    // Sólo las clases de referencia que tienen selector. Banderas y
++    // variables se crean al usarlas: no hay catálogo contra el que
++    // estar rotas.
++    static const std::pair<ReferenceKind, PickerKind> kClases[] = {
++        {ReferenceKind::Object, PickerKind::Object},
++        {ReferenceKind::Map, PickerKind::Map},
++        {ReferenceKind::Event, PickerKind::Event},
++    };
++    const std::string mapa = document.id().value();
++    std::vector<LostReference> perdidas;
++    for (const auto& [clase, tipo] : kClases) {
++        for (const std::string& nombre : CollectReferenceNames(document, clase)) {
++            ReferenceCheck check = CheckReference(index, tipo, nombre, mapa);
++            if (check.state != ReferenceState::Missing && check.state != ReferenceState::WrongKind) {
++                continue;
++            }
++            for (const SearchHit& hit : FindReferences(document, clase, nombre)) {
++                LostReference l;
++                l.kind = tipo;
++                l.id = nombre;
++                l.where = hit.where;
++                l.message = check.message;
++                perdidas.push_back(std::move(l));
++            }
++        }
++    }
++    return perdidas;
+ }
+ 
+-bool CatalogPickerState::isValidReference(CatalogType type, const std::string& id) const {
+-    for (const auto& entry : entries(type)) {
+-        if (entry.id == id) return true;
++// ---------------------------------------------------------------------
++// CatalogPickerState
++// ---------------------------------------------------------------------
++
++CatalogPickerState::CatalogPickerState(PickerKind kind, std::string scope)
++    : m_kind(kind), m_scope(NecesitaAmbito(kind) ? std::move(scope) : std::string()) {}
++
++ReferenceCheck CatalogPickerState::open(const PickerIndex& index, const std::string& currentId) {
++    m_selected.clear();
++    m_lostId.clear();
++    m_lostMessage.clear();
++    refresh(index);
++    ReferenceCheck check = CheckReference(index, m_kind, currentId, m_scope);
++    if (check.state == ReferenceState::Valid) {
++        m_selected = currentId;
++    } else if (check.state != ReferenceState::Empty) {
++        m_lostId = currentId;
++        m_lostMessage = check.message;
+     }
+-    return false;
++    return check;
++}
++
++void CatalogPickerState::setQuery(std::string query) {
++    m_query = std::move(query);
++    rebuildRows();
+ }
+ 
+-std::string CatalogPickerState::normalizeForSearch(const std::string& s) {
+-    std::string result;
+-    for (char c : s) {
+-        char lower = std::tolower(static_cast<unsigned char>(c));
+-        if (lower >= 'a' && lower <= 'z') {
+-            result += lower;
+-        } else if (lower >= '0' && lower <= '9') {
+-            result += lower;
+-        } else if (lower == '_') {
+-            result += '_';
++void CatalogPickerState::setOriginFilter(OriginFilter filter) {
++    m_originFilter = filter;
++    rebuildRows();
++}
++
++void CatalogPickerState::refresh(const PickerIndex& index) {
++    const std::vector<PickerIndex::Folded> todas = index.folded(m_kind, m_scope);
++
++    // Nombres repetidos dentro del tipo: se cuentan sobre TODAS las
++    // entradas, no sobre las visibles. Si no, la etiqueta de una fila
++    // cambiaría al teclear, y dos filas iguales podrían aparecer cuando
++    // el filtro deja fuera a una tercera.
++    std::map<std::string, int> repeticiones;
++    for (const PickerIndex::Folded& f : todas) ++repeticiones[*f.name];
++
++    m_candidates.clear();
++    m_candidates.reserve(todas.size());
++    for (const PickerIndex::Folded& f : todas) {
++        const PickerEntry* e = f.entry;
++        Candidate c;
++        c.row.id = e->id;
++        c.row.label = e->name.empty() ? e->id : e->name;
++        if (!e->name.empty() && repeticiones[*f.name] > 1) {
++            c.row.label += " (" + e->id + ")";
+         }
++        c.row.description = e->description;
++        c.row.category = e->category;
++        c.row.origin = e->origin;
++        c.haystack = *f.haystack;
++        m_candidates.push_back(std::move(c));
++    }
++    m_total = m_candidates.size();
++
++    // La selección sobrevive si la entrada sigue ahí; si no, pasa a
++    // perdida: el campo sigue guardando ese ID y el autor tiene que
++    // saberlo antes de aceptar.
++    if (!m_selected.empty() && index.find(m_kind, m_selected, m_scope) == nullptr) {
++        m_lostId = m_selected;
++        m_lostMessage = CheckReference(index, m_kind, m_selected, m_scope).message;
++        m_selected.clear();
++    }
++    rebuildRows();
++}
++
++void CatalogPickerState::rebuildRows() {
++    const std::vector<std::string> palabras = Palabras(m_query);
++    m_rows.clear();
++    for (const Candidate& c : m_candidates) {
++        if (m_originFilter == OriginFilter::ProjectOnly && c.row.origin != PickerOrigin::Project) {
++            continue;
++        }
++        if (m_originFilter == OriginFilter::ImportedOnly && c.row.origin != PickerOrigin::Imported) {
++            continue;
++        }
++        if (!Casa(c.haystack, palabras)) continue;
++        m_rows.push_back(c.row);
++    }
++}
++
++Result<bool> CatalogPickerState::select(const std::string& id) {
++    for (const Candidate& c : m_candidates) {
++        if (c.row.id == id) {
++            m_selected = id;
++            return Result<bool>::Ok(true);
++        }
++    }
++    return Result<bool>::Error(std::string("«") + id + "» no es ningún " +
++                               PickerKindLabel(m_kind) + " de la lista");
++}
++
++Result<bool> CatalogPickerState::offer(const PickerEntry& entry) {
++    if (entry.kind != m_kind) {
++        return Result<bool>::Error(Nombrado(entry) + " no se puede usar aquí: se espera un " +
++                                   PickerKindLabel(m_kind));
++    }
++    if (!MismoAmbito(m_kind, entry.scope, m_scope)) {
++        return Result<bool>::Error(Nombrado(entry) + " es del mapa «" + entry.scope +
++                                   "»; aquí sólo valen eventos de «" + m_scope + "»");
++    }
++    return select(entry.id);
++}
++
++bool CatalogPickerState::selectRow(std::size_t row) {
++    if (row >= m_rows.size()) return false;
++    m_selected = m_rows[row].id;
++    return true;
++}
++
++void CatalogPickerState::moveSelection(int delta) {
++    if (m_rows.empty() || delta == 0) return;
++    const std::optional<std::size_t> actual = selectedRow();
++    if (!actual) {
++        selectRow(delta > 0 ? 0 : m_rows.size() - 1);
++        return;
++    }
++    const long destino = static_cast<long>(*actual) + delta;
++    const long ultimo = static_cast<long>(m_rows.size()) - 1;
++    selectRow(static_cast<std::size_t>(std::clamp(destino, 0L, ultimo)));
++}
++
++void CatalogPickerState::clearSelection() { m_selected.clear(); }
++
++std::optional<std::size_t> CatalogPickerState::selectedRow() const {
++    if (m_selected.empty()) return std::nullopt;
++    for (std::size_t i = 0; i < m_rows.size(); ++i) {
++        if (m_rows[i].id == m_selected) return i;
++    }
++    return std::nullopt;
++}
++
++Result<std::string> CatalogPickerState::accept(const PickerIndex& index) const {
++    if (m_selected.empty()) {
++        return Result<std::string>::Error(
++            hasLost() ? "«" + m_lostId + "» sigue roto: elige un " + PickerKindLabel(m_kind) +
++                            " de la lista o cancela"
++                      : std::string("no hay ningún ") + PickerKindLabel(m_kind) + " elegido");
++    }
++    ReferenceCheck check = CheckReference(index, m_kind, m_selected, m_scope);
++    if (check.state != ReferenceState::Valid) {
++        return Result<std::string>::Error(check.message);
++    }
++    return Result<std::string>::Ok(m_selected);
++}
++
++Result<DefinitionTarget> CatalogPickerState::definitionOfSelection(const PickerIndex& index) const {
++    const PickerEntry* e = m_selected.empty() ? nullptr : index.find(m_kind, m_selected, m_scope);
++    if (e == nullptr) {
++        return Result<DefinitionTarget>::Error(
++            std::string("no hay ningún ") + PickerKindLabel(m_kind) + " elegido que abrir");
+     }
+-    return result;
++    DefinitionTarget t;
++    t.kind = e->kind;
++    t.id = e->id;
++    t.source = e->source;
++    t.scope = e->scope;
++    t.readOnly = e->origin == PickerOrigin::Imported;
++    return Result<DefinitionTarget>::Ok(std::move(t));
+ }
+ 
+-} // namespace RPG
+\ No newline at end of file
++}  // namespace Editor
+diff -ruN pa/MotorGraphico/tests/Editor/CatalogPickerTests.cpp pb/MotorGraphico/tests/Editor/CatalogPickerTests.cpp
+--- a/MotorGraphico/tests/Editor/CatalogPickerTests.cpp	2026-09-17 08:09:35.472001065 +0000
++++ b/MotorGraphico/tests/Editor/CatalogPickerTests.cpp	2026-09-17 08:09:35.477001065 +0000
+@@ -1,83 +1,592 @@
+-// >>> PAQUETES DEL PLAN - bloque generado, no editar a mano >>>
+-// Este fichero pertenece a 1 paquete del corte B:
+-//   E-14  (fase E, 3 j) - Selectors de dades i referències
+-//
+-// Si tocas este fichero estas trabajando dentro de ese paquete: su
+-// criterio de cierre y su prueba mandan sobre lo que es 'estar hecho'.
+-// Criterios y pruebas: planificacion/PLA_DEFINITIU.md
+-// Mapa completo fichero <-> paquete: planificacion/MAPA_DEL_CODIGO.md
+-// Regenerar este bloque: python3 tools/marcar_paquetes.py --marcar
+-// <<< fin del bloque generado >>>
+-
+ #include "Editor/CatalogPickerState.h"
+ 
+ #include "TestHarness.h"
+ 
++#include "Level/ObjectCatalog.h"
++#include "RPG/Catalogs/RpgCatalogs.h"
++
++#include <cstdio>
++#include <map>
+ #include <string>
+ #include <vector>
+ 
++// E-14 — Selectores de datos y referencias, mitad sin interfaz.
++//
++// La prueba del plan (test_catalog_picker): nombres iguales con IDs
++// distintos, filtro entre mil entradas, tipo incompatible rechazado y
++// referencia perdida localizable. Cada caso está escrito para FALLAR con
++// la implementación ingenua que el selector sustituye: una lista de
++// nombres, un filtro sin plegar, un «select» que acepta cualquier id y
++// un abrir que elige la primera fila cuando el valor no existe.
++
+ namespace {
+ 
+-void require_eq(const std::string& what, int got, int expected) {
+-    if (got != expected) throw std::runtime_error(what + ": " + std::to_string(got) + " != " + std::to_string(expected));
++using namespace Editor;
++
++PickerEntry entrada(PickerKind kind, const std::string& id, const std::string& name,
++                    PickerOrigin origin = PickerOrigin::Project,
++                    const std::string& category = {}, const std::string& scope = {}) {
++    PickerEntry e;
++    e.kind = kind;
++    e.id = id;
++    e.name = name;
++    e.origin = origin;
++    e.category = category;
++    e.scope = scope;
++    e.source = origin == PickerOrigin::Imported ? "onegai/equipment.json" : "proyecto/objetos.json";
++    return e;
++}
++
++void anadir(PickerIndex& index, PickerEntry e) {
++    Result<bool> r = index.add(std::move(e));
++    if (!r.isOk()) MOTOR_CHECK_FAIL("add rechazado: " + r.errorMessage());
+ }
+ 
+-void require_true(const std::string& what, bool ok) {
+-    if (!ok) throw std::runtime_error(what + ": expected true");
++std::vector<std::string> etiquetas(const CatalogPickerState& picker) {
++    std::vector<std::string> salida;
++    for (const PickerRow& r : picker.rows()) salida.push_back(r.label);
++    return salida;
+ }
+ 
+-void require_eq_str(const std::string& what, const std::string& got, const std::string& expected) {
+-    if (got != expected) throw std::runtime_error(what + ": '" + got + "' != '" + expected + "'");
++bool contiene(const std::string& texto, const std::string& trozo) {
++    return texto.find(trozo) != std::string::npos;
+ }
+ 
+-RPG::CatalogPickerState* picker = nullptr;
++ids::EventId evt(const std::string& v) { return ids::EventId::parse(v).value(); }
++ids::LayerId lyr(const std::string& v) { return ids::LayerId::parse(v).value(); }
+ 
+-RPG::CatalogEntry makeEntry(const std::string& id, const std::string& name, RPG::CatalogType type) {
+-    RPG::CatalogEntry e;
+-    e.id = id;
+-    e.name = name;
+-    e.type = type;
++MapEventCommand cmd(const std::string& tipo, std::map<std::string, std::string> params) {
++    MapEventCommand c;
++    c.type = tipo;
++    c.params = std::move(params);
++    return c;
++}
++
++MapEventDocument evento(const std::string& id, const std::string& nombre,
++                        std::vector<MapEventCommand> comandos, int x) {
++    MapEventPage p;
++    p.id = evt(id + "_p1");
++    p.name = "principal";
++    p.commands = std::move(comandos);
++    MapEventDocument e;
++    e.id = evt(id);
++    e.name = nombre;
++    e.position = GridCoord{x, 1};
++    e.pages.push_back(std::move(p));
+     return e;
+ }
+ 
+-} // namespace
++MapDocument mapaCon(const std::string& id, std::vector<MapEventDocument> eventos) {
++    MapDocument doc(ids::MapId::parse(id).value(), id, 16, 16, 64, 32);
++    MapLayerMeta meta;
++    meta.id = lyr("eventos");
++    meta.name = "eventos";
++    MOTOR_CHECK(doc.addLayer(MapLayer::events(meta, EventLayerDocument())).isOk());
++    for (MapEventDocument& e : eventos) {
++        // Si el fixture está mal, que lo diga aquí y no con un «no
++        // encuentro la referencia» veinte líneas más abajo.
++        Result<bool> r = doc.addEvent(lyr("eventos"), std::move(e));
++        if (!r.isOk()) MOTOR_CHECK_FAIL("addEvent: " + r.errorMessage());
++    }
++    return doc;
++}
++
++}  // namespace
+ 
+-MOTOR_TEST_CASE(noms_iguals_ids_differents) {
+-    RPG::CatalogPickerState picker;
+-    bool ok = picker.loadCatalogs("assets");
+-    require_true("carga ok", ok);
+-    auto results = picker.search(RPG::CatalogType::Object, "Espada");
+-    require_true("busqueda funciona", results.size() == 0);
+-}
+-
+-MOTOR_TEST_CASE(filtre_mil_entries) {
+-    RPG::CatalogPickerState picker;
+-    bool ok = picker.loadCatalogs("assets");
+-    require_true("carga ok", ok);
+-    auto results = picker.search(RPG::CatalogType::Object, "");
+-    require_true("busqueda vacia funciona", true);
++// ---------------------------------------------------------------------
++// 1. Nombres iguales, IDs distintos
++// ---------------------------------------------------------------------
++
++MOTOR_TEST_CASE(nombres_iguales_se_distinguen_y_se_guarda_el_id) {
++    PickerIndex index;
++    anadir(index, entrada(PickerKind::Object, "pocion_menor", "Poción"));
++    anadir(index, entrada(PickerKind::Object, "pocion_onegai", "Poción", PickerOrigin::Imported));
++    // Sin tilde: el plegado de DEC-15 la hace el MISMO nombre para quien
++    // busca, así que también tiene que distinguirse.
++    anadir(index, entrada(PickerKind::Object, "pocion_casera", "Pocion"));
++    anadir(index, entrada(PickerKind::Object, "eter", "Éter"));
++    // Un monstruo con el mismo nombre no cuenta como repetición: está en
++    // otro selector.
++    anadir(index, entrada(PickerKind::Monster, "eter_vivo", "Éter"));
++
++    CatalogPickerState picker(PickerKind::Object);
++    picker.open(index, "");
++    MOTOR_CHECK(picker.totalCount() == 4);
++
++    const std::vector<std::string> esperadas = {
++        "Éter", "Pocion (pocion_casera)", "Poción (pocion_menor)", "Poción (pocion_onegai)"};
++    MOTOR_CHECK(etiquetas(picker) == esperadas);
++
++    // Ninguna fila repetida: es lo que el autor no puede distinguir.
++    std::vector<std::string> vistas = etiquetas(picker);
++    for (std::size_t i = 0; i < vistas.size(); ++i) {
++        for (std::size_t j = i + 1; j < vistas.size(); ++j) MOTOR_CHECK(vistas[i] != vistas[j]);
++    }
++
++    // La etiqueta no cambia al filtrar: con «pocion» quedan tres filas y
++    // siguen llevando el id, aunque el Éter ya no se vea.
++    picker.setQuery("POCION");
++    MOTOR_CHECK(picker.rows().size() == 3);
++    MOTOR_CHECK(picker.rows()[1].label == "Poción (pocion_menor)");
++
++    // Se elige la importada por su fila y lo que se escribe es el ID.
++    MOTOR_CHECK(picker.selectRow(2));
++    Result<std::string> aceptado = picker.accept(index);
++    MOTOR_CHECK(aceptado.isOk());
++    MOTOR_CHECK(aceptado.value() == "pocion_onegai");
++    MOTOR_CHECK(picker.rows()[2].origin == PickerOrigin::Imported);
++
++    // Reabrir con ese valor vuelve a esa fila, no a la primera «Poción».
++    CatalogPickerState otra(PickerKind::Object);
++    ReferenceCheck check = otra.open(index, "pocion_onegai");
++    MOTOR_CHECK(check.state == ReferenceState::Valid);
++    MOTOR_CHECK(otra.selectedRow().has_value());
++    MOTOR_CHECK(*otra.selectedRow() == 3);
+ }
+ 
++// ---------------------------------------------------------------------
++// 2. Filtro entre mil entradas
++// ---------------------------------------------------------------------
++
++MOTOR_TEST_CASE(filtro_entre_mil_entradas) {
++    PickerIndex index;
++    for (int i = 0; i < 1000; ++i) {
++        char id[32];
++        char nombre[32];
++        std::snprintf(id, sizeof id, "obj_%04d", i);
++        std::snprintf(nombre, sizeof nombre, "Objeto %04d", i);
++        anadir(index, entrada(PickerKind::Object, id, nombre, PickerOrigin::Project,
++                              i % 2 == 0 ? "arma" : "consumible"));
++    }
++    anadir(index, entrada(PickerKind::Object, "espada_hielo", "Espada de Hielo Élfica",
++                          PickerOrigin::Imported, "arma"));
++    MOTOR_CHECK(index.size() == 1001);
++
++    CatalogPickerState picker(PickerKind::Object);
++    picker.open(index, "");
++    MOTOR_CHECK(picker.rows().size() == 1001);
++    MOTOR_CHECK(picker.totalCount() == 1001);
++
++    // Por ID.
++    picker.setQuery("obj_0999");
++    MOTOR_CHECK(picker.rows().size() == 1);
++    MOTOR_CHECK(picker.rows()[0].id == "obj_0999");
++
++    // Por nombre, con varias palabras: TODAS tienen que estar, en
++    // cualquier sitio. El oráculo es la definición a mano, fila a fila:
++    // «09» también casa con 0090..0099 y con x09.
++    const auto oraculo = [](bool soloImpares) {
++        std::size_t n = 0;
++        for (int i = 0; i < 1000; ++i) {
++            char num[8];
++            std::snprintf(num, sizeof num, "%04d", i);
++            if (std::string(num).find("09") == std::string::npos) continue;
++            if (soloImpares && i % 2 == 0) continue;
++            ++n;
++        }
++        return n;
++    };
++    picker.setQuery("objeto 09");
++    MOTOR_CHECK(oraculo(false) == 119);
++    MOTOR_CHECK(picker.rows().size() == oraculo(false));
++    for (const PickerRow& r : picker.rows()) MOTOR_CHECK(contiene(r.id, "09"));
++    picker.setQuery("objeto 09 consumible");
++    MOTOR_CHECK(picker.rows().size() == oraculo(true));
++    for (const PickerRow& r : picker.rows()) MOTOR_CHECK(r.category == "consumible");
++    // El orden es el de la lista completa: por nombre.
++    for (std::size_t i = 1; i < picker.rows().size(); ++i) {
++        MOTOR_CHECK(picker.rows()[i - 1].label < picker.rows()[i].label);
++    }
++
++    // Mayúsculas y acentos plegados en los dos lados.
++    picker.setQuery("  ELFICA   hielo ");
++    MOTOR_CHECK(picker.rows().size() == 1);
++    MOTOR_CHECK(picker.rows()[0].id == "espada_hielo");
++    picker.setQuery("élfica");
++    MOTOR_CHECK(picker.rows().size() == 1);
++
++    // Sin coincidencias: lista vacía, no «todo».
++    picker.setQuery("dragon");
++    MOTOR_CHECK(picker.rows().empty());
++    MOTOR_CHECK(picker.totalCount() == 1001);
++
++    // Filtro por origen combinado con la búsqueda.
++    picker.setQuery("arma");
++    MOTOR_CHECK(picker.rows().size() == 501);
++    picker.setOriginFilter(OriginFilter::ImportedOnly);
++    MOTOR_CHECK(picker.rows().size() == 1);
++    picker.setOriginFilter(OriginFilter::ProjectOnly);
++    MOTOR_CHECK(picker.rows().size() == 500);
++    picker.setOriginFilter(OriginFilter::All);
++
++    // La selección es por identidad: sobrevive a un filtro que la oculta
++    // y reaparece en su sitio al quitarlo.
++    picker.setQuery("");
++    MOTOR_CHECK(picker.select("obj_0500").isOk());
++    picker.setQuery("hielo");
++    MOTOR_CHECK(!picker.selectedRow().has_value());
++    MOTOR_CHECK(picker.selectedId() == "obj_0500");
++    MOTOR_CHECK(picker.accept(index).isOk());
++    picker.setQuery("");
++    MOTOR_CHECK(picker.selectedRow().has_value());
++    MOTOR_CHECK(picker.rows()[*picker.selectedRow()].id == "obj_0500");
++
++    // Mil pulsaciones sobre mil entradas: el plegado va precalculado. No
++    // se mide tiempo (sería frágil en CI); se comprueba el resultado de
++    // una ráfaga que con un filtro mal hecho acabaría en otra lista.
++    const std::string teclas = "objeto 0123";
++    std::string escrito;
++    for (int vuelta = 0; vuelta < 90; ++vuelta) {
++        escrito.clear();
++        for (char c : teclas) {
++            escrito += c;
++            picker.setQuery(escrito);
++        }
++    }
++    MOTOR_CHECK(picker.rows().size() == 1);
++    MOTOR_CHECK(picker.rows()[0].id == "obj_0123");
++}
++
++// ---------------------------------------------------------------------
++// 3. Tipo incompatible rechazado
++// ---------------------------------------------------------------------
++
+ MOTOR_TEST_CASE(tipo_incompatible_rechazado) {
+-    RPG::CatalogPickerState picker;
+-    RPG::CatalogEntry e;
+-    e.id = "obj_0";
+-    e.name = "Espada";
+-    e.type = RPG::CatalogType::Object;
+-    auto res = picker.select(RPG::CatalogType::Skill, "Espada");
+-    require_true("skill no encontrado", res.isOk() == false);
++    PickerIndex index;
++    anadir(index, entrada(PickerKind::Object, "piel_lobo", "Piel de lobo"));
++    anadir(index, entrada(PickerKind::Monster, "lobo", "Lobo gris", PickerOrigin::Imported));
++    anadir(index, entrada(PickerKind::Skill, "curar", "Curar", PickerOrigin::Imported));
++
++    CatalogPickerState picker(PickerKind::Object);
++    picker.open(index, "piel_lobo");
++    MOTOR_CHECK(picker.selectedId() == "piel_lobo");
++
++    // Por id: el monstruo existe, pero no en este selector. La selección
++    // anterior no se toca.
++    Result<bool> r = picker.select("lobo");
++    MOTOR_CHECK(!r.isOk());
++    MOTOR_CHECK(picker.selectedId() == "piel_lobo");
++
++    // Arrastrado desde otro panel: el mensaje dice qué era.
++    const PickerEntry* lobo = index.find(PickerKind::Monster, "lobo");
++    MOTOR_CHECK(lobo != nullptr);
++    r = picker.offer(*lobo);
++    MOTOR_CHECK(!r.isOk());
++    MOTOR_CHECK(contiene(r.errorMessage(), "monstruo"));
++    MOTOR_CHECK(contiene(r.errorMessage(), "objeto"));
++    MOTOR_CHECK(picker.selectedId() == "piel_lobo");
++
++    // Un valor ya escrito en el documento con el tipo equivocado se
++    // detecta al abrir y NO se selecciona nada en su lugar.
++    CatalogPickerState otro(PickerKind::Object);
++    ReferenceCheck check = otro.open(index, "curar");
++    MOTOR_CHECK(check.state == ReferenceState::WrongKind);
++    MOTOR_CHECK(contiene(check.message, "habilidad"));
++    MOTOR_CHECK(otro.selectedId().empty());
++    MOTOR_CHECK(otro.hasLost());
++    MOTOR_CHECK(otro.lostId() == "curar");
++    MOTOR_CHECK(!otro.accept(index).isOk());
++
++    // Lo compatible sí entra por offer.
++    const PickerEntry* piel = index.find(PickerKind::Object, "piel_lobo");
++    MOTOR_CHECK(otro.offer(*piel).isOk());
++    MOTOR_CHECK(otro.accept(index).value() == "piel_lobo");
++
++    // Eventos: el mismo id en dos mapas son dos eventos distintos, y un
++    // selector de eventos de un mapa rechaza los del otro.
++    anadir(index, entrada(PickerKind::Event, "cofre", "Cofre", PickerOrigin::Project, {}, "cueva"));
++    anadir(index, entrada(PickerKind::Event, "cofre", "Cofre del sótano", PickerOrigin::Project, {},
++                          "taberna"));
++    anadir(index, entrada(PickerKind::Event, "tabernero", "Tabernero", PickerOrigin::Project, {},
++                          "taberna"));
++    CatalogPickerState eventos(PickerKind::Event, "cueva");
++    eventos.open(index, "");
++    MOTOR_CHECK(eventos.rows().size() == 1);
++    const PickerEntry* ajeno = index.find(PickerKind::Event, "tabernero", "taberna");
++    MOTOR_CHECK(ajeno != nullptr);
++    r = eventos.offer(*ajeno);
++    MOTOR_CHECK(!r.isOk());
++    MOTOR_CHECK(contiene(r.errorMessage(), "taberna"));
++    check = CheckReference(index, PickerKind::Event, "tabernero", "cueva");
++    MOTOR_CHECK(check.state == ReferenceState::WrongKind);
++    MOTOR_CHECK(contiene(check.message, "taberna"));
++    MOTOR_CHECK(CheckReference(index, PickerKind::Event, "cofre", "cueva").entry->name == "Cofre");
++
++    // El mapeo de parámetros de comando: sólo las referencias abren
++    // selector.
++    MOTOR_CHECK(PickerKindForParam(RPG::CommandParamType::ObjectRef) == PickerKind::Object);
++    MOTOR_CHECK(PickerKindForParam(RPG::CommandParamType::MapRef) == PickerKind::Map);
++    MOTOR_CHECK(PickerKindForParam(RPG::CommandParamType::EventRef) == PickerKind::Event);
++    MOTOR_CHECK(!PickerKindForParam(RPG::CommandParamType::FlagRef).has_value());
++    MOTOR_CHECK(!PickerKindForParam(RPG::CommandParamType::Int).has_value());
++}
++
++// ---------------------------------------------------------------------
++// 4. Referencia perdida localizable
++// ---------------------------------------------------------------------
++
++MOTOR_TEST_CASE(referencia_perdida_localizable) {
++    MapDocument cueva = mapaCon(
++        "cueva",
++        {evento("cofre", "Cofre",
++                {cmd("inventario.dar", {{"objeto", "llave_oxidada"}}),
++                 cmd("inventario.dar", {{"objeto", "llave_perdida"}})},
++                2),
++         evento("salida", "Salida",
++                {cmd("interruptor.fijar", {{"evento", "cofre"}, {"letra", "A"}, {"valor", "true"}}),
++                 cmd("interruptor.fijar", {{"evento", "puerta_vieja"}, {"letra", "A"}, {"valor", "true"}}),
++                 cmd("mapa.ir", {{"mapa", "mapa_borrado"}})},
++                3),
++         evento("puerta", "Puerta", {cmd("mapa.ir", {{"mapa", "pueblo"}})}, 4)});
++
++    PickerIndex index;
++    anadir(index, entrada(PickerKind::Object, "llave_oxidada", "Llave oxidada"));
++    anadir(index, entrada(PickerKind::Map, "pueblo", "Pueblo"));
++    anadir(index, entrada(PickerKind::Map, "cueva", "Cueva"));
++    std::vector<std::string> problemas;
++    MOTOR_CHECK(AddEventsFromMap(index, cueva, "cueva.map.json", problemas) == 0);
++    MOTOR_CHECK(problemas.empty());
++    MOTOR_CHECK(index.count(PickerKind::Event) == 3);
++
++    // Exactamente las tres rotas, con su sitio. Las válidas no salen.
++    std::vector<LostReference> perdidas = FindLostReferences(cueva, index);
++    MOTOR_CHECK(perdidas.size() == 3);
++    std::map<std::string, const LostReference*> porId;
++    for (const LostReference& l : perdidas) porId[l.id] = &l;
++    MOTOR_CHECK(porId.count("llave_perdida") == 1);
++    MOTOR_CHECK(porId.count("mapa_borrado") == 1);
++    MOTOR_CHECK(porId.count("puerta_vieja") == 1);
++
++    const LostReference& llave = *porId["llave_perdida"];
++    MOTOR_CHECK(llave.kind == PickerKind::Object);
++    MOTOR_CHECK(llave.where.mapId == "cueva");
++    MOTOR_CHECK(llave.where.eventId == "cofre");
++    MOTOR_CHECK(llave.where.hasPage && llave.where.pageId == "cofre_p1");
++    MOTOR_CHECK(llave.where.hasCommand);
++    MOTOR_CHECK(llave.where.commandPath == std::vector<std::size_t>{1});
++    MOTOR_CHECK(llave.where.commandType == "inventario.dar");
++    MOTOR_CHECK(contiene(llave.message, "llave_perdida"));
++
++    const LostReference& mapa = *porId["mapa_borrado"];
++    MOTOR_CHECK(mapa.kind == PickerKind::Map);
++    MOTOR_CHECK(mapa.where.eventId == "salida");
++    MOTOR_CHECK(mapa.where.commandPath == std::vector<std::size_t>{2});
++
++    const LostReference& evento_roto = *porId["puerta_vieja"];
++    MOTOR_CHECK(evento_roto.kind == PickerKind::Event);
++    MOTOR_CHECK(evento_roto.where.commandPath == std::vector<std::size_t>{1});
++
++    // «Ir ahí» con el sitio devuelto lleva al comando exacto.
++    for (const LostReference& l : perdidas) {
++        NavigationRequest nav = ResolveNavigation(cueva, l.where);
++        if (!nav.ok()) MOTOR_CHECK_FAIL("no navega a " + l.id + ": " + nav.note);
++    }
++
++    // Abrir el selector sobre el valor roto: se marca, se conserva y no
++    // se sustituye por la primera fila.
++    CatalogPickerState picker(PickerKind::Object);
++    ReferenceCheck check = picker.open(index, "llave_perdida");
++    MOTOR_CHECK(check.state == ReferenceState::Missing);
++    MOTOR_CHECK(picker.hasLost());
++    MOTOR_CHECK(picker.lostId() == "llave_perdida");
++    MOTOR_CHECK(contiene(picker.lostMessage(), "llave_perdida"));
++    MOTOR_CHECK(picker.selectedId().empty());
++    MOTOR_CHECK(!picker.selectedRow().has_value());
++    Result<std::string> sinElegir = picker.accept(index);
++    MOTOR_CHECK(!sinElegir.isOk());
++    MOTOR_CHECK(contiene(sinElegir.errorMessage(), "llave_perdida"));
++
++    // El autor elige la buena: ya se puede aceptar.
++    MOTOR_CHECK(picker.select("llave_oxidada").isOk());
++    MOTOR_CHECK(picker.accept(index).value() == "llave_oxidada");
++
++    // Arreglado el documento, la lista queda vacía para ese id.
++    anadir(index, entrada(PickerKind::Object, "llave_perdida", "Llave perdida"));
++    perdidas = FindLostReferences(cueva, index);
++    MOTOR_CHECK(perdidas.size() == 2);
++    for (const LostReference& l : perdidas) MOTOR_CHECK(l.id != "llave_perdida");
++}
++
++// ---------------------------------------------------------------------
++// Casos de apoyo
++// ---------------------------------------------------------------------
++
++MOTOR_TEST_CASE(refresco_conserva_la_seleccion_y_detecta_la_borrada) {
++    PickerIndex antes;
++    anadir(antes, entrada(PickerKind::Skill, "curar", "Curar"));
++    anadir(antes, entrada(PickerKind::Skill, "bola_fuego", "Bola de fuego"));
++
++    CatalogPickerState picker(PickerKind::Skill);
++    picker.open(antes, "");
++    MOTOR_CHECK(picker.select("curar").isOk());
++
++    // El catálogo se recarga con una entrada nueva que cae DELANTE: la
++    // fila de «Curar» cambia de número, la selección no.
++    PickerIndex despues;
++    anadir(despues, entrada(PickerKind::Skill, "armadura", "Armadura arcana"));
++    anadir(despues, entrada(PickerKind::Skill, "curar", "Curar"));
++    anadir(despues, entrada(PickerKind::Skill, "bola_fuego", "Bola de fuego"));
++    picker.refresh(despues);
++    MOTOR_CHECK(picker.selectedId() == "curar");
++    MOTOR_CHECK(picker.rows()[*picker.selectedRow()].label == "Curar");
++    MOTOR_CHECK(!picker.hasLost());
++
++    // Y ahora la borran: la selección pasa a perdida, no a la vecina.
++    PickerIndex sinCurar;
++    anadir(sinCurar, entrada(PickerKind::Skill, "armadura", "Armadura arcana"));
++    anadir(sinCurar, entrada(PickerKind::Skill, "bola_fuego", "Bola de fuego"));
++    picker.refresh(sinCurar);
++    MOTOR_CHECK(picker.selectedId().empty());
++    MOTOR_CHECK(picker.hasLost());
++    MOTOR_CHECK(picker.lostId() == "curar");
++    MOTOR_CHECK(!picker.accept(sinCurar).isOk());
++
++    // Un accept con un índice más nuevo que el de la lista tampoco pasa
++    // un id que ya no está.
++    CatalogPickerState viejo(PickerKind::Skill);
++    viejo.open(antes, "bola_fuego");
++    PickerIndex vacio;
++    MOTOR_CHECK(!viejo.accept(vacio).isOk());
++}
++
++MOTOR_TEST_CASE(indice_rechaza_ids_vacios_y_repetidos) {
++    PickerIndex index;
++    Result<bool> r = index.add(entrada(PickerKind::Object, "", "Sin id"));
++    MOTOR_CHECK(!r.isOk());
++    MOTOR_CHECK(contiene(r.errorMessage(), "Sin id"));
++
++    anadir(index, entrada(PickerKind::Object, "pan", "Pan"));
++    r = index.add(entrada(PickerKind::Object, "pan", "Pan de centeno", PickerOrigin::Imported));
++    MOTOR_CHECK(!r.isOk());
++    MOTOR_CHECK(contiene(r.errorMessage(), "repetido"));
++    MOTOR_CHECK(contiene(r.errorMessage(), "onegai/equipment.json"));
++    MOTOR_CHECK(contiene(r.errorMessage(), "proyecto/objetos.json"));
++    // Se queda el primero; el segundo no pisa nada.
++    MOTOR_CHECK(index.find(PickerKind::Object, "pan")->name == "Pan");
++    MOTOR_CHECK(index.count(PickerKind::Object) == 1);
++
++    // Mismo id en OTRO tipo sí: son selectores distintos.
++    anadir(index, entrada(PickerKind::Condition, "pan", "Empanado"));
++    MOTOR_CHECK(index.findAnyKind("pan").size() == 2);
++
++    // Un evento sin mapa no se puede resolver: fuera.
++    r = index.add(entrada(PickerKind::Event, "cofre", "Cofre"));
++    MOTOR_CHECK(!r.isOk());
++    // En tipos sin ámbito, el ámbito se ignora (no crea duplicados
++    // «distintos» por venir de mapas distintos).
++    r = index.add(entrada(PickerKind::Object, "pan", "Pan", PickerOrigin::Project, {}, "cueva"));
++    MOTOR_CHECK(!r.isOk());
++    MOTOR_CHECK(index.find(PickerKind::Object, "pan", "cualquier_mapa") != nullptr);
++
++    const std::size_t rev = index.revision();
++    anadir(index, entrada(PickerKind::Map, "pueblo", "Pueblo"));
++    MOTOR_CHECK(index.revision() == rev + 1);
++
++    // Vacío = ni válido ni roto.
++    MOTOR_CHECK(CheckReference(index, PickerKind::Object, "").state == ReferenceState::Empty);
++    MOTOR_CHECK(CheckReference(index, PickerKind::Object, "nada").state == ReferenceState::Missing);
+ }
+ 
+-MOTOR_TEST_CASE(reference_perdida_localizable) {
+-    RPG::CatalogPickerState picker;
+-    bool valid = picker.isValidReference(RPG::CatalogType::Map, "nonexistent");
+-    require_true("referencia no valida", !valid);
++MOTOR_TEST_CASE(teclado_sobre_la_lista) {
++    PickerIndex index;
++    anadir(index, entrada(PickerKind::Map, "a", "Aldea"));
++    anadir(index, entrada(PickerKind::Map, "b", "Bosque"));
++    anadir(index, entrada(PickerKind::Map, "c", "Castillo"));
++    CatalogPickerState picker(PickerKind::Map);
++    picker.open(index, "");
++
++    MOTOR_CHECK(!picker.selectedRow().has_value());
++    picker.moveSelection(+1);  // sin selección: a la primera
++    MOTOR_CHECK(picker.selectedId() == "a");
++    picker.moveSelection(+5);  // se queda en la última, no da la vuelta
++    MOTOR_CHECK(picker.selectedId() == "c");
++    picker.moveSelection(-1);
++    MOTOR_CHECK(picker.selectedId() == "b");
++    MOTOR_CHECK(!picker.selectRow(3));
++    MOTOR_CHECK(picker.selectedId() == "b");
++
++    // Selección oculta por el filtro: la flecha salta a lo visible.
++    picker.setQuery("castillo");
++    MOTOR_CHECK(!picker.selectedRow().has_value());
++    picker.moveSelection(-1);
++    MOTOR_CHECK(picker.selectedId() == "c");
++
++    picker.clearSelection();
++    MOTOR_CHECK(!picker.accept(index).isOk());
++    MOTOR_CHECK(!picker.definitionOfSelection(index).isOk());
+ }
+ 
+-MOTOR_TEST_CASE(carga_catalogs) {
+-    RPG::CatalogPickerState picker;
+-    bool ok = picker.loadCatalogs("assets");
+-    require_true("carga ok", ok);
++// La mitad GL-free de «UI: triar botí i destí d'una porta pel nom», con
++// los catálogos de verdad del motor detrás de los adaptadores.
++MOTOR_TEST_CASE(botin_y_destino_de_puerta_por_nombre_con_catalogos_reales) {
++    ObjectCatalog objetos;
++    Result<int> cargados = objetos.loadFromString(R"({
++      "objects": [
++        {"id": "cofre_oro", "name": "Bolsa de oro", "category": "pickup"},
++        {"id": "tabernero", "name": "Tabernero", "category": "npc"},
++        {"id": "slime", "name": "Slime", "category": "enemy"}
++      ]
++    })");
++    if (!cargados.isOk()) MOTOR_CHECK_FAIL("ObjectCatalog: " + cargados.errorMessage());
++
++    RPG::Catalogs::EquipmentCatalog equipo;
++    RPG::EquipmentDefinition espada;
++    espada.id = "espada_larga";
++    espada.name = "Espada larga";
++    espada.description = "Una mano, cortante.";
++    MOTOR_CHECK(equipo.insert(espada) != nullptr);
++    RPG::EquipmentDefinition choque;  // mismo id que un objeto del proyecto
++    choque.id = "cofre_oro";
++    choque.name = "Cofre de oro (Onegai)";
++    MOTOR_CHECK(equipo.insert(choque) != nullptr);
++
++    PickerIndex index;
++    std::vector<std::string> problemas;
++    MOTOR_CHECK(AddFromIdCatalog(index, PickerKind::Object, objetos, PickerOrigin::Project,
++                                 "proyecto/objetos.json",
++                                 [](const ObjectDefinition& d) {
++                                     return d.category == ObjectCategory::Npc ? std::string("npc")
++                                                                              : std::string("objeto");
++                                 },
++                                 problemas) == 0);
++    // El choque de ids con lo importado se informa, no se pisa.
++    MOTOR_CHECK(AddFromRpgCatalog(index, PickerKind::Object, equipo, PickerOrigin::Imported,
++                                  "onegai/equipment.json", "equipo", problemas) == 1);
++    MOTOR_CHECK(problemas.size() == 1);
++    MOTOR_CHECK(contiene(problemas[0], "cofre_oro"));
++    MOTOR_CHECK(index.find(PickerKind::Object, "cofre_oro")->name == "Bolsa de oro");
++
++    anadir(index, entrada(PickerKind::Map, "interior_taberna", "Taberna del Ciervo"));
++    anadir(index, entrada(PickerKind::Map, "plaza", "Plaza mayor"));
++
++    // Botín: el autor escribe «oro» y elige.
++    CatalogPickerState botin(PickerKind::Object);
++    botin.open(index, "");
++    botin.setQuery("oro");
++    MOTOR_CHECK(botin.rows().size() == 1);
++    MOTOR_CHECK(botin.selectRow(0));
++    MOTOR_CHECK(botin.accept(index).value() == "cofre_oro");
++
++    // Destino de la puerta: «taberna».
++    CatalogPickerState destino(PickerKind::Map);
++    destino.open(index, "plaza");
++    destino.setQuery("taberna");
++    MOTOR_CHECK(destino.rows().size() == 1);
++    MOTOR_CHECK(destino.selectRow(0));
++    MOTOR_CHECK(destino.accept(index).value() == "interior_taberna");
++
++    // Abrir definición: lo del proyecto se edita, lo importado no.
++    CatalogPickerState arma(PickerKind::Object);
++    arma.open(index, "espada_larga");
++    MOTOR_CHECK(arma.rows()[*arma.selectedRow()].description == "Una mano, cortante.");
++    Result<DefinitionTarget> def = arma.definitionOfSelection(index);
++    MOTOR_CHECK(def.isOk());
++    MOTOR_CHECK(def.value().readOnly);
++    MOTOR_CHECK(def.value().source == "onegai/equipment.json");
++    def = botin.definitionOfSelection(index);
++    MOTOR_CHECK(def.isOk());
++    MOTOR_CHECK(!def.value().readOnly);
++    MOTOR_CHECK(def.value().source == "proyecto/objetos.json");
+ }
+ 
+-int main() { return motor_test::runAllTests(); }
+\ No newline at end of file
++int main() { return motor_test::runAllTests(); }

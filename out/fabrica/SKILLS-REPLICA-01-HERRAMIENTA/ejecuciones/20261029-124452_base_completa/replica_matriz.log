@@ -1,0 +1,328 @@
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 planificacion/replica/parity.py planificacion/replica/features.csv --json
+(cwd /Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico)
+
+{
+  "feature_score": 10.0,
+  "feature_score_raw": 10.0,
+  "counted": 25,
+  "must_have_done": 0,
+  "must_have_total": 15,
+  "by_area": [
+    {
+      "area": "iluminacion",
+      "score": 0.0,
+      "features": 1
+    },
+    {
+      "area": "proyecto",
+      "score": 0.0,
+      "features": 4
+    },
+    {
+      "area": "animacion",
+      "score": 0.0,
+      "features": 3
+    },
+    {
+      "area": "flujo",
+      "score": 0.0,
+      "features": 4
+    },
+    {
+      "area": "camara",
+      "score": 0.0,
+      "features": 1
+    },
+    {
+      "area": "cinematicas",
+      "score": 0.0,
+      "features": 2
+    },
+    {
+      "area": "efectos",
+      "score": 0.0,
+      "features": 1
+    },
+    {
+      "area": "eventos",
+      "score": 12.5,
+      "features": 3
+    },
+    {
+      "area": "editor",
+      "score": 16.7,
+      "features": 3
+    },
+    {
+      "area": "audio",
+      "score": 50.0,
+      "features": 1
+    },
+    {
+      "area": "entidades",
+      "score": 50.0,
+      "features": 1
+    },
+    {
+      "area": "ia",
+      "score": 50.0,
+      "features": 1
+    }
+  ],
+  "missing": [
+    {
+      "feature": "Clips de animación con eventos de fotograma (Animation Events)",
+      "area": "animacion",
+      "priority": "must",
+      "clone": "no",
+      "notes": "U3-05"
+    },
+    {
+      "feature": "Máquina de estados de animación en datos (Animator Controller)",
+      "area": "animacion",
+      "priority": "must",
+      "clone": "no",
+      "notes": "U3-06"
+    },
+    {
+      "feature": "Cinemáticas con pistas en paralelo (Timeline)",
+      "area": "cinematicas",
+      "priority": "must",
+      "clone": "no",
+      "notes": "U4-02"
+    },
+    {
+      "feature": "Prefabs de grupos de objetos",
+      "area": "editor",
+      "priority": "must",
+      "clone": "no",
+      "notes": "U4-05 (MAP-08)"
+    },
+    {
+      "feature": "Un solo editor para escenas y objetos",
+      "area": "editor",
+      "priority": "must",
+      "clone": "no",
+      "notes": "U2-05"
+    },
+    {
+      "feature": "Scripting visual sin código (grafos de órdenes)",
+      "area": "eventos",
+      "priority": "must",
+      "clone": "no",
+      "notes": "U3-04 + E-05 + E-06"
+    },
+    {
+      "feature": "Triggers con entrada / permanencia / salida (OnTriggerEnter/Stay/Exit)",
+      "area": "eventos",
+      "priority": "must",
+      "clone": "no",
+      "notes": "U3-02"
+    },
+    {
+      "feature": "Consola e inspector de estado en ejecución",
+      "area": "flujo",
+      "priority": "must",
+      "clone": "no",
+      "notes": "F-04"
+    },
+    {
+      "feature": "Play Mode dentro del editor",
+      "area": "flujo",
+      "priority": "must",
+      "clone": "no",
+      "notes": "F-01 (espera DEC-06)"
+    },
+    {
+      "feature": "El juego arranca desde el proyecto (Build Settings)",
+      "area": "proyecto",
+      "priority": "must",
+      "clone": "no",
+      "notes": "G-08"
+    },
+    {
+      "feature": "Módulos de juego separados del motor (packages y asmdef)",
+      "area": "proyecto",
+      "priority": "must",
+      "clone": "no",
+      "notes": "U2-03"
+    },
+    {
+      "feature": "Project Settings: escena inicial / catálogos / idioma",
+      "area": "proyecto",
+      "priority": "must",
+      "clone": "no",
+      "notes": "U2-02"
+    },
+    {
+      "feature": "Audio por escena y zona con volúmenes separados (AudioSource + AudioMixer)",
+      "area": "audio",
+      "priority": "must",
+      "clone": "partial",
+      "notes": "U1-01: AudioDirector escrito y probado; el juego no lo usa"
+    },
+    {
+      "feature": "Ventana de proyecto y jerarquía de escena",
+      "area": "editor",
+      "priority": "must",
+      "clone": "partial",
+      "notes": "E-11 (resta)"
+    },
+    {
+      "feature": "Identificadores estables de objetos de escena (instance ID)",
+      "area": "entidades",
+      "priority": "must",
+      "clone": "partial",
+      "notes": "U1-02: HandlePool escrito; World no lo usa"
+    },
+    {
+      "feature": "Curvas de interpolación compartidas (AnimationCurve)",
+      "area": "animacion",
+      "priority": "should",
+      "clone": "no",
+      "notes": "U3-07"
+    },
+    {
+      "feature": "Cámara virtual: seguimiento / sacudida / límites / dead zone (Cinemachine)",
+      "area": "camara",
+      "priority": "should",
+      "clone": "no",
+      "notes": "U4-01"
+    },
+    {
+      "feature": "Editor de línea de tiempo",
+      "area": "cinematicas",
+      "priority": "should",
+      "clone": "no",
+      "notes": "U4-03"
+    },
+    {
+      "feature": "Sistema de partículas genérico",
+      "area": "efectos",
+      "priority": "should",
+      "clone": "no",
+      "notes": "U4-07"
+    },
+    {
+      "feature": "Gizmos de depuración: colisiones / regiones / rutas",
+      "area": "flujo",
+      "priority": "should",
+      "clone": "no",
+      "notes": "U4-06"
+    },
+    {
+      "feature": "Recarga en caliente de datos y scripts",
+      "area": "flujo",
+      "priority": "should",
+      "clone": "no",
+      "notes": "F-03"
+    },
+    {
+      "feature": "Luz ambiental global configurable",
+      "area": "iluminacion",
+      "priority": "should",
+      "clone": "no",
+      "notes": "U1-05"
+    },
+    {
+      "feature": "Plantillas de proyecto al crear uno nuevo",
+      "area": "proyecto",
+      "priority": "should",
+      "clone": "no",
+      "notes": "U2-04"
+    },
+    {
+      "feature": "Depurar el scripting paso a paso",
+      "area": "eventos",
+      "priority": "should",
+      "clone": "partial",
+      "notes": "E-08 (resta)"
+    },
+    {
+      "feature": "Agentes que navegan hacia un objetivo (NavMeshAgent)",
+      "area": "ia",
+      "priority": "should",
+      "clone": "partial",
+      "notes": "U1-03: estado kChase existe sin transición"
+    }
+  ],
+  "skipped": [
+    {
+      "feature": "Asset Store y paquetes de terceros",
+      "area": "ecosistema",
+      "priority": "could",
+      "clone": "skip",
+      "notes": "la tienda y su red no son una función del motor"
+    },
+    {
+      "feature": "Render 3D / PBR / HDRP y URP",
+      "area": "render",
+      "priority": "could",
+      "clone": "skip",
+      "notes": "el motor es isométrico 2D"
+    },
+    {
+      "feature": "Exportar a consolas y móvil",
+      "area": "plataformas",
+      "priority": "could",
+      "clone": "skip",
+      "notes": "licencias y SDK de plataforma; fuera del alcance"
+    },
+    {
+      "feature": "Servicios en la nube (Unity Cloud / Analytics / Ads)",
+      "area": "servicios",
+      "priority": "could",
+      "clone": "skip",
+      "notes": "servicios de la empresa; no son el motor"
+    },
+    {
+      "feature": "Scripting en C# con recompilación de dominio",
+      "area": "scripting",
+      "priority": "could",
+      "clone": "skip",
+      "notes": "el motor es C++ con datos JSON; el sustituto es el scripting visual"
+    }
+  ],
+  "extras": [
+    {
+      "feature": "Guardar y cargar con ranuras y autosave",
+      "area": "guardado",
+      "priority": "should",
+      "clone": "partial",
+      "notes": "G-11 + G-01: Unity no lo trae hecho (PlayerPrefs); es nuestro"
+    },
+    {
+      "feature": "Rutinas de PNJ por franja del día",
+      "area": "mundo",
+      "priority": "should",
+      "clone": "no",
+      "notes": "U1-04: propio del RPG"
+    },
+    {
+      "feature": "Páginas de evento con condiciones",
+      "area": "eventos",
+      "priority": "must",
+      "clone": "no",
+      "notes": "U3-01 + U3-03 (DEC-10): viene de RPG Maker"
+    },
+    {
+      "feature": "Probar desde la casilla seleccionada",
+      "area": "flujo",
+      "priority": "could",
+      "clone": "no",
+      "notes": "F-02"
+    },
+    {
+      "feature": "Saltar cinemáticas",
+      "area": "cinematicas",
+      "priority": "could",
+      "clone": "no",
+      "notes": "U4-04"
+    }
+  ],
+  "problems": [],
+  "overall": 10.0,
+  "overall_raw": 10.0
+}
+
+[código 0 · 0.0 s]

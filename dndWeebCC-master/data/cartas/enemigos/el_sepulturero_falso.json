@@ -1,0 +1,84 @@
+{
+ "id": "el_sepulturero_falso",
+ "name": "El Sepulturero Falso",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "control",
+ "faction": "renacidos_de_la_fosa",
+ "stats": {
+  "CON": 6,
+  "DES": 5,
+  "INT": 7,
+  "CAR": 6
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 16,
+  "defensaMental": 16,
+  "resistenciaFisica": 16,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Pala Ceremoniosa",
+   "defense": "resistencia_fisica",
+   "effect": "Daño que suma su CON; el impactado que falle cae en una fosa (Agarrado hasta salir, CD 1)."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "resistencia_fisica",
+   "effect": "Si el objetivo falla, queda Agarrado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Trabajo Adelantado",
+  "description": "Trabajo Adelantado: al inicio del combate ya hay una fosa abierta bajo cada personaje lento (DES más baja) — primera técnica gratis contra él."
+ },
+ "conditionsInflicted": [
+  "agarrado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Oscuro"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Encadena su técnica tras el ataque firma y +1 al daño."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Cumplir su cuota: doce entierros por luna, respiren o no",
+  "metodo": "Entierra primero, discute después",
+  "debilidad_narrativa": "El papeleo: exigirle el certificado de defunción (interacción) lo indigna — pierde su técnica una ronda buscándolo",
+  "vinculo": "el_sepulturero_amable"
+ },
+ "arena": {
+  "name": "El Cementerio de los Impacientes",
+  "hazard": "Fosas abiertas: moverse corriendo exige DES o caer en una"
+ },
+ "legendaryActions": [],
+ "storyCard": {
+  "title": "El Sepulturero Falso",
+  "text": "El Sepulturero Amable lo niega tres veces antes de cada amanecer.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Entierra gente que aún opina."
+}

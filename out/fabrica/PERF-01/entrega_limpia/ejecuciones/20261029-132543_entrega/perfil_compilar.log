@@ -1,0 +1,375 @@
+$ cmake --preset macos-debug && cmake --build --preset macos-debug --target juego test_perfilador test_application_loop test_input_system test_scene_manager --parallel 4
+(cwd /private/tmp/perfilador-limpio-7fa2117/MotorGraphico-main/MotorGraphico)
+
+CMake Warning (deprecated) at /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/out/build/macos-debug/_deps/glm-src/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+This warning is for project developers.  Use -Wno-author or -Wno-deprecated
+to suppress it.
+
+CMake Warning (deprecated) at /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico/out/build/macos-debug/_deps/glm-src/CMakeLists.txt:2 (cmake_policy):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+This warning is for project developers.  Use -Wno-author or -Wno-deprecated
+to suppress it.
+
+-- GLM: Version 1.0.1
+-- GLM: Disable -Wc++98-compat warnings
+-- GLM: Build with C++ features auto detection
+-- Including Cocoa support
+-- Suite GL-free: 145 objetivos
+-- Configuring done (0.6s)
+-- Generating done (0.5s)
+-- Build files have been written to: /private/tmp/perfilador-limpio-7fa2117/MotorGraphico-main/MotorGraphico/out/build/macos-debug
+[  0%] Building CXX object _deps/glm-build/glm/CMakeFiles/glm.dir/detail/glm.cpp.o
+[  0%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/context.c.o
+[  0%] Building CXX object CMakeFiles/motor_input.dir/src/Engine/Input/InputSystem.cpp.o
+[  0%] Building CXX object CMakeFiles/motor_engine_loop.dir/src/Engine/ApplicationLoop.cpp.o
+[  3%] Linking CXX static library libmotor_engine_loop.a
+[  3%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/init.c.o
+[  3%] Linking CXX static library libmotor_input.a
+[  3%] Built target motor_engine_loop
+[  3%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/input.c.o
+[  3%] Built target motor_input
+[  3%] Building CXX object CMakeFiles/motor_json.dir/src/Core/Json/JsonValue.cpp.o
+[  3%] Building CXX object CMakeFiles/motor_imagen.dir/src/Core/Imagen/ImagenRGBA.cpp.o
+[  3%] Linking CXX static library libglm.a
+[  3%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/monitor.c.o
+[  3%] Built target glm
+[  3%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/platform.c.o
+[  3%] Linking CXX static library libmotor_json.a
+[  3%] Built target motor_json
+[  3%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/vulkan.c.o
+[  3%] Building CXX object CMakeFiles/motor_scene.dir/src/Engine/Scene/SceneManager.cpp.o
+[  3%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/window.c.o
+[  3%] Linking CXX static library libmotor_imagen.a
+[  3%] Built target motor_imagen
+[  6%] Building CXX object CMakeFiles/motor_world.dir/src/World/World.cpp.o
+[  6%] Building CXX object CMakeFiles/motor_i18n.dir/src/Engine/Locale.cpp.o
+[  6%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/egl_context.c.o
+[  6%] Linking CXX static library libmotor_scene.a
+[  6%] Built target motor_scene
+[  6%] Building CXX object CMakeFiles/motor_ppm.dir/src/Render/FormatoPPM.cpp.o
+[  9%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/osmesa_context.c.o
+[  9%] Linking CXX static library libmotor_world.a
+[  9%] Built target motor_world
+[  9%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/null_init.c.o
+[  9%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/null_monitor.c.o
+[  9%] Linking CXX static library libmotor_i18n.a
+[  9%] Linking CXX static library libmotor_ppm.a
+[  9%] Built target motor_i18n
+[  9%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/null_window.c.o
+[  9%] Built target motor_ppm
+[  9%] Building CXX object CMakeFiles/motor_perfil.dir/src/Core/Perfil/EscritorPerfilCsv.cpp.o
+[  9%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/null_joystick.c.o
+[  9%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/cocoa_time.c.o
+[  9%] Building CXX object CMakeFiles/motor_perfil.dir/src/Engine/PerfiladorBucle.cpp.o
+[  9%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_module.c.o
+[  9%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_thread.c.o
+[  9%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/cocoa_init.m.o
+[ 12%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/cocoa_joystick.m.o
+[ 12%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/cocoa_monitor.m.o
+[ 12%] Linking CXX static library libmotor_perfil.a
+[ 12%] Built target motor_perfil
+[ 12%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/cocoa_window.m.o
+[ 12%] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/nsgl_context.m.o
+[ 12%] Building CXX object CMakeFiles/motor_math.dir/src/Render/Camera.cpp.o
+[ 12%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/SkillExecutor.cpp.o
+[ 12%] Building CXX object CMakeFiles/motor_map_document.dir/src/Map/MapDocument.cpp.o
+[ 15%] Linking CXX static library libmotor_math.a
+[ 15%] Built target motor_math
+[ 15%] Building CXX object CMakeFiles/motor_captura_gl.dir/src/Render/CapturaGL.cpp.o
+[ 15%] Linking C static library libglfw3.a
+[ 15%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/SkillEffect.cpp.o
+[ 15%] Built target glfw
+[ 15%] Building CXX object CMakeFiles/motor_map_document.dir/src/Map/TileLayerDocument.cpp.o
+[ 15%] Linking CXX static library libmotor_captura_gl.a
+[ 15%] Built target motor_captura_gl
+[ 15%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/LootResolver.cpp.o
+[ 18%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/Audio.cpp.o
+[ 18%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/SkillDefinitionEnums.cpp.o
+[ 18%] Building CXX object CMakeFiles/motor_map_document.dir/src/Map/EntityLayerDocument.cpp.o
+[ 18%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/TierRules.cpp.o
+[ 18%] Building CXX object CMakeFiles/motor_map_document.dir/src/Map/RegionLayerDocument.cpp.o
+[ 18%] Building CXX object CMakeFiles/motor_map_document.dir/src/Map/MapDocumentEdits.cpp.o
+[ 18%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/CharacterSheet.cpp.o
+[ 18%] Building CXX object CMakeFiles/motor_map_document.dir/src/Map/EventLayerDocument.cpp.o
+[ 18%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/CharacterCreation.cpp.o
+[ 18%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/CharacterCreationScreen.cpp.o
+[ 18%] Linking CXX static library libmotor_map_document.a
+[ 18%] Built target motor_map_document
+[ 18%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/InventoryEngine.cpp.o
+[ 18%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/ConditionEngine.cpp.o
+[ 18%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/NarrativeEngine.cpp.o
+[ 18%] Building CXX object CMakeFiles/motor_project.dir/src/Project/Project.cpp.o
+[ 18%] Building CXX object CMakeFiles/motor_project.dir/src/Project/ProjectDatabaseState.cpp.o
+[ 21%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/EventInterpreter.cpp.o
+[ 21%] Building CXX object CMakeFiles/motor_project.dir/src/Project/ProjectIndex.cpp.o
+[ 21%] Building CXX object CMakeFiles/motor_project.dir/src/Project/ProjectIndexDuplicate.cpp.o
+[ 21%] Building CXX object CMakeFiles/motor_project.dir/src/Project/ProjectSerializer.cpp.o
+[ 24%] Building CXX object CMakeFiles/motor_project.dir/src/Project/SerializerHelpers.cpp.o
+[ 24%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/EventCommands.cpp.o
+[ 24%] Building CXX object CMakeFiles/motor_project.dir/src/Project/MapSerializer.cpp.o
+[ 24%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/Eventos/ValidacionDeComandas.cpp.o
+[ 24%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/Eventos/CondicionesYPaginas.cpp.o
+[ 24%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/Eventos/AnfitrionNarrativo.cpp.o
+[ 24%] Building CXX object CMakeFiles/motor_project.dir/src/Project/MapDeserializer.cpp.o
+[ 24%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/AdventureSerializer.cpp.o
+[ 24%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/Narrative/NarrativeState.cpp.o
+[ 24%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/Narrative/AdventureScriptLoader.cpp.o
+[ 24%] Linking CXX static library libmotor_project.a
+[ 24%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/Narrative/AcompanantesAventura.cpp.o
+[ 24%] Built target motor_project
+[ 27%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/Narrative/MoralAventura.cpp.o
+[ 27%] Building CXX object CMakeFiles/motor_runtime_map.dir/src/Runtime/RuntimeTileMap.cpp.o
+[ 27%] Building CXX object CMakeFiles/motor_tmx_import.dir/src/Import/TmxMapImporter.cpp.o
+/private/tmp/perfilador-limpio-7fa2117/MotorGraphico-main/MotorGraphico/src/RPG/Narrative/AcompanantesAventura.cpp:41:99: warning: captured structured bindings are a C++20 extension [-Wc++20-extensions]
+   41 |                 const auto* s = std::find_if(std::begin(kStats), fin, [&](const char* k) { return clave == k; });
+      |                                                                                                   ^
+/private/tmp/perfilador-limpio-7fa2117/MotorGraphico-main/MotorGraphico/src/RPG/Narrative/AcompanantesAventura.cpp:39:31: note: 'clave' declared here
+   39 |             for (const auto& [clave, valor] : stats.objectValues()) {
+      |                               ^
+[ 27%] Building CXX object CMakeFiles/motor_runtime_map.dir/src/Runtime/RuntimeTileMapBuilder.cpp.o
+1 warning generated.
+[ 27%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/Narrative/CharlaAventura.cpp.o
+[ 27%] Building CXX object CMakeFiles/motor_tmx_import.dir/third_party/tinyxml2/tinyxml2.cpp.o
+[ 27%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/Narrative/BeatsAventura.cpp.o
+[ 27%] Linking CXX static library libmotor_tmx_import.a
+[ 27%] Built target motor_tmx_import
+[ 27%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/Narrative/FranjasDelDia.cpp.o
+[ 30%] Linking CXX static library libmotor_runtime_map.a
+[ 30%] Built target motor_runtime_map
+[ 30%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/Narrative/HeroeEnLaHistoria.cpp.o
+[ 30%] Building CXX object CMakeFiles/motor_map.dir/src/Core/Resources/TextureAtlas.cpp.o
+[ 30%] Building CXX object CMakeFiles/motor_map.dir/src/Render/TileMap.cpp.o
+[ 30%] Building CXX object CMakeFiles/motor_rpg.dir/src/RPG/ProbabilidadPool.cpp.o
+[ 30%] Linking CXX static library libmotor_rpg.a
+[ 30%] Built target motor_rpg
+[ 30%] Building CXX object CMakeFiles/motor_level.dir/src/Level/LevelDocumentBridge.cpp.o
+[ 30%] Building CXX object CMakeFiles/motor_level.dir/src/Level/LevelSerializer.cpp.o
+[ 33%] Building CXX object CMakeFiles/motor_level.dir/src/Level/LevelLoader.cpp.o
+[ 36%] Linking CXX static library libmotor_map.a
+[ 36%] Built target motor_map
+[ 36%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Skill.cpp.o
+[ 36%] Building CXX object CMakeFiles/motor_level.dir/src/Game/BattleState.cpp.o
+[ 36%] Building CXX object CMakeFiles/motor_level.dir/src/Game/BattleStateTurno.cpp.o
+[ 36%] Building CXX object CMakeFiles/motor_level.dir/src/Game/BattleStateGolpes.cpp.o
+[ 36%] Building CXX object CMakeFiles/motor_level.dir/src/Level/ObjectCatalog.cpp.o
+[ 36%] Building CXX object CMakeFiles/motor_level.dir/src/Editor/CatalogPickerState.cpp.o
+[ 39%] Building CXX object CMakeFiles/motor_level.dir/src/Editor/EditorState.cpp.o
+[ 39%] Building CXX object CMakeFiles/motor_level.dir/src/Editor/EditorStateHelpers.cpp.o
+[ 39%] Building CXX object CMakeFiles/motor_level.dir/src/Editor/EditorStatePintar.cpp.o
+[ 39%] Building CXX object CMakeFiles/motor_level.dir/src/Editor/EditorStateObjetos.cpp.o
+[ 39%] Building CXX object CMakeFiles/motor_level.dir/src/Editor/EditorStateExportar.cpp.o
+[ 39%] Building CXX object CMakeFiles/motor_level.dir/editor/src/event_editor.cpp.o
+[ 39%] Building CXX object CMakeFiles/motor_level.dir/editor/src/MapPropertiesPanel.cpp.o
+[ 39%] Building CXX object CMakeFiles/motor_level.dir/editor/src/AssetBrowserPanel.cpp.o
+[ 39%] Building CXX object CMakeFiles/motor_level.dir/src/Editor/EditorDocumentIO.cpp.o
+[ 42%] Building CXX object CMakeFiles/motor_level.dir/src/Editor/ObjectInspector.cpp.o
+[ 42%] Building CXX object CMakeFiles/motor_level.dir/src/Editor/ProjectHub.cpp.o
+[ 42%] Building CXX object CMakeFiles/motor_level.dir/src/Game/GameSession.cpp.o
+[ 42%] Building CXX object CMakeFiles/motor_level.dir/src/Game/GameSessionComercio.cpp.o
+[ 42%] Building CXX object CMakeFiles/motor_level.dir/src/Game/GameSessionNarrativa.cpp.o
+[ 42%] Building CXX object CMakeFiles/motor_level.dir/src/Game/GameSessionInteraccion.cpp.o
+[ 42%] Building CXX object CMakeFiles/motor_level.dir/src/Game/GameSessionTablero.cpp.o
+[ 42%] Building CXX object CMakeFiles/motor_level.dir/src/Game/GameSessionInventario.cpp.o
+[ 42%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Actuacion.cpp.o
+[ 45%] Building CXX object CMakeFiles/motor_level.dir/src/RPG/SessionCommandHost.cpp.o
+[ 45%] Building CXX object CMakeFiles/motor_level.dir/src/RPG/MapEventRunner.cpp.o
+[ 45%] Building CXX object CMakeFiles/motor_level.dir/src/Game/WorldTravelState.cpp.o
+[ 45%] Building CXX object CMakeFiles/motor_level.dir/src/Game/SaveGame.cpp.o
+[ 45%] Building CXX object CMakeFiles/motor_level.dir/src/Game/SaveGameFormat.cpp.o
+[ 45%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Morality.cpp.o
+[ 45%] Building CXX object CMakeFiles/motor_level.dir/src/Game/ReglasMoral.cpp.o
+[ 45%] Building CXX object CMakeFiles/motor_level.dir/src/Game/MoralDeLaSesion.cpp.o
+[ 45%] Building CXX object CMakeFiles/motor_level.dir/src/Game/EnemyBrain.cpp.o
+[ 48%] Building CXX object CMakeFiles/motor_level.dir/src/Game/PauseMenu.cpp.o
+[ 48%] Building CXX object CMakeFiles/motor_level.dir/src/Game/OptionsState.cpp.o
+[ 48%] Building CXX object CMakeFiles/motor_level.dir/src/Game/OptionsFile.cpp.o
+[ 48%] Building CXX object CMakeFiles/motor_level.dir/src/Game/DefeatRecovery.cpp.o
+[ 48%] Building CXX object CMakeFiles/motor_level.dir/src/Game/NewGameFlow.cpp.o
+[ 48%] Building CXX object CMakeFiles/motor_level.dir/src/Game/GameOverScreen.cpp.o
+[ 48%] Building CXX object CMakeFiles/motor_level.dir/src/Game/AudioDirector.cpp.o
+[ 48%] Building CXX object CMakeFiles/motor_level.dir/src/Game/InventoryScreen.cpp.o
+[ 48%] Building CXX object CMakeFiles/motor_level.dir/src/Game/InventoryMenuState.cpp.o
+[ 51%] Building CXX object CMakeFiles/motor_level.dir/src/Game/TiendaEstado.cpp.o
+[ 51%] Building CXX object CMakeFiles/motor_level.dir/src/HUD/HudTimer.cpp.o
+[ 51%] Building CXX object CMakeFiles/motor_level.dir/src/HUD/DiceRollWidget.cpp.o
+[ 51%] Building CXX object CMakeFiles/motor_level.dir/src/HUD/ConditionWidget.cpp.o
+[ 51%] Building CXX object CMakeFiles/motor_level.dir/src/HUD/MissionTimerWidget.cpp.o
+[ 51%] Building CXX object CMakeFiles/motor_level.dir/src/Game/ShopEngine.cpp.o
+[ 51%] Building CXX object CMakeFiles/motor_level.dir/src/Game/FichaVista.cpp.o
+[ 51%] Building CXX object CMakeFiles/motor_level.dir/src/HUD/Iconos.cpp.o
+[ 51%] Building CXX object CMakeFiles/motor_level.dir/src/Game/DiarioMisiones.cpp.o
+[ 51%] Building CXX object CMakeFiles/motor_level.dir/src/Game/FichasDeMisiones.cpp.o
+[ 54%] Building CXX object CMakeFiles/motor_level.dir/src/Game/RumboNiveles.cpp.o
+[ 54%] Building CXX object CMakeFiles/motor_level.dir/src/Game/TableroCombate.cpp.o
+[ 54%] Building CXX object CMakeFiles/motor_level.dir/src/Game/RutaCasillas.cpp.o
+[ 54%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Transiciones.cpp.o
+[ 54%] Building CXX object CMakeFiles/motor_level.dir/src/Game/PlantillaArea.cpp.o
+[ 54%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Lugares.cpp.o
+[ 54%] Building CXX object CMakeFiles/motor_level.dir/src/Game/OrdenDeTurno.cpp.o
+[ 54%] Building CXX object CMakeFiles/motor_level.dir/src/Game/AlcanceCartas.cpp.o
+[ 54%] Building CXX object CMakeFiles/motor_level.dir/src/Game/EfectosDeGolpe.cpp.o
+[ 57%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Cicatrices.cpp.o
+[ 57%] Building CXX object CMakeFiles/motor_level.dir/src/Game/EscenaNoqueo.cpp.o
+[ 57%] Building CXX object CMakeFiles/motor_level.dir/src/Game/FrasesDeCombate.cpp.o
+[ 57%] Building CXX object CMakeFiles/motor_level.dir/src/Game/MarcasMapa.cpp.o
+[ 57%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Codice.cpp.o
+[ 57%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Companeros.cpp.o
+[ 57%] Building CXX object CMakeFiles/motor_level.dir/src/Game/GanchosCarta.cpp.o
+[ 57%] Building CXX object CMakeFiles/motor_level.dir/src/Game/CatalogoCartas.cpp.o
+[ 57%] Building CXX object CMakeFiles/motor_level.dir/src/Game/CartasEnCombate.cpp.o
+[ 60%] Building CXX object CMakeFiles/motor_level.dir/src/Game/CartasJugar.cpp.o
+[ 60%] Building CXX object CMakeFiles/motor_level.dir/src/Game/CartasTiradas.cpp.o
+[ 60%] Building CXX object CMakeFiles/motor_level.dir/src/Game/CartasBloqueo.cpp.o
+[ 60%] Building CXX object CMakeFiles/motor_level.dir/src/Game/CartasAcompanantes.cpp.o
+[ 60%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Refuerzos.cpp.o
+[ 60%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Personajes/ManifiestoPersonajes.cpp.o
+[ 60%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Personajes/MontajePersonajes.cpp.o
+[ 60%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Personajes/BrilloEquipo.cpp.o
+[ 60%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Personajes/FamiliasDeParticulas.cpp.o
+[ 63%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Personajes/EditorApariencia.cpp.o
+[ 63%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Personajes/Vestuario.cpp.o
+[ 63%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Personajes/KitBasico.cpp.o
+[ 63%] Building CXX object CMakeFiles/motor_level.dir/src/Game/CuadernoCreacion.cpp.o
+[ 63%] Building CXX object CMakeFiles/motor_level.dir/src/Game/CuadernoCreacionVistas.cpp.o
+[ 63%] Building CXX object CMakeFiles/motor_level.dir/src/Game/CofreKit.cpp.o
+[ 63%] Building CXX object CMakeFiles/motor_level.dir/src/Game/BarraCombate.cpp.o
+[ 63%] Building CXX object CMakeFiles/motor_level.dir/src/Game/BarraAcompanante.cpp.o
+[ 63%] Building CXX object CMakeFiles/motor_level.dir/src/Game/ParticulasDeCartas.cpp.o
+[ 66%] Building CXX object CMakeFiles/motor_level.dir/src/Game/EstadosCombate.cpp.o
+[ 66%] Building CXX object CMakeFiles/motor_level.dir/src/Game/BarraObjetivos.cpp.o
+[ 66%] Building CXX object CMakeFiles/motor_level.dir/src/Game/RegistroSprites.cpp.o
+[ 66%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Bloques.cpp.o
+[ 66%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Bandada.cpp.o
+[ 66%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Mascotes.cpp.o
+[ 66%] Building CXX object CMakeFiles/motor_level.dir/src/Game/FullaMascotes.cpp.o
+[ 66%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Monumentos.cpp.o
+[ 66%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Cinematica.cpp.o
+[ 69%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Contenedores.cpp.o
+[ 69%] Building CXX object CMakeFiles/motor_level.dir/src/Game/ContenedoresCatalogo.cpp.o
+[ 69%] Building CXX object CMakeFiles/motor_level.dir/src/Game/ContenedoresSesion.cpp.o
+[ 69%] Building CXX object CMakeFiles/motor_level.dir/src/Game/ContenedoresEquipo.cpp.o
+[ 69%] Building CXX object CMakeFiles/motor_level.dir/src/Game/ComercioReputacion.cpp.o
+[ 69%] Building CXX object CMakeFiles/motor_level.dir/src/Game/RutinasPnj.cpp.o
+[ 69%] Building CXX object CMakeFiles/motor_level.dir/src/Game/RutinasPnjCatalogo.cpp.o
+[ 69%] Building CXX object CMakeFiles/motor_level.dir/src/Game/Confirmacion.cpp.o
+[ 69%] Building CXX object CMakeFiles/motor_level.dir/src/Game/NegocioEstado.cpp.o
+[ 72%] Linking CXX static library libmotor_level.a
+[ 72%] Built target motor_level
+[ 72%] Building CXX object CMakeFiles/motor_saves.dir/src/Game/TitleMenuState.cpp.o
+[ 72%] Building CXX object CMakeFiles/motor_saves.dir/src/Game/SaveSlotState.cpp.o
+[ 72%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/MaterialesPapel.cpp.o
+[ 72%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/Lienzo.cpp.o
+[ 72%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/MaterialesPiezas.cpp.o
+[ 72%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/BancoMateriales.cpp.o
+[ 72%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/FuenteAtlas.cpp.o
+[ 75%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/Pincel.cpp.o
+[ 75%] Linking CXX static library libmotor_saves.a
+[ 75%] Built target motor_saves
+[ 75%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/PaginaCuaderno.cpp.o
+[ 75%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/Cuaderno.cpp.o
+[ 75%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/Papiro.cpp.o
+[ 75%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/HudRetales.cpp.o
+[ 75%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/DialogoHoja.cpp.o
+[ 75%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/MinimapaTinta.cpp.o
+[ 75%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/PaginasJugador.cpp.o
+[ 75%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/InterfazPergamino.cpp.o
+[ 78%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/InterfazDerrota.cpp.o
+[ 78%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/CartelesPuertas.cpp.o
+[ 78%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/AtlasRetratos.cpp.o
+[ 78%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/PaginasCreacion.cpp.o
+[ 78%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/PaginasCreacionHojas.cpp.o
+[ 78%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/PaginasCreacionHistoria.cpp.o
+[ 78%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/MesaCombateHud.cpp.o
+[ 78%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/MesaCombateRetales.cpp.o
+[ 78%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/DadosPergamino.cpp.o
+[ 78%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/MesaCombateEstados.cpp.o
+[ 81%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/TiendaHoja.cpp.o
+[ 81%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/GolpesEnPantalla.cpp.o
+[ 81%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/SueloCombate.cpp.o
+[ 81%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/GuiaMapa.cpp.o
+[ 81%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/MapaGrande.cpp.o
+[ 81%] Building CXX object CMakeFiles/motor_pergamino.dir/src/Game/PasarHoja.cpp.o
+[ 81%] Building CXX object CMakeFiles/motor_pergamino.dir/src/Game/AuraMoral.cpp.o
+[ 81%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/PaginaMisiones.cpp.o
+[ 81%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/BocadillosPnj.cpp.o
+[ 84%] Building CXX object CMakeFiles/motor_pergamino.dir/src/HUD/Pergamino/HojaNegocio.cpp.o
+[ 84%] Linking CXX static library libmotor_pergamino.a
+[ 84%] Built target motor_pergamino
+[ 84%] Building CXX object CMakeFiles/motor_core.dir/src/Core/Resources/ShaderManager.cpp.o
+[ 84%] Building CXX object CMakeFiles/motor_core.dir/src/Core/Resources/Texture.cpp.o
+[ 84%] Building CXX object CMakeFiles/motor_core.dir/src/Core/Resources/Shader.cpp.o
+[ 84%] Building CXX object CMakeFiles/motor_core.dir/src/Core/Resources/TextureManager.cpp.o
+[ 87%] Building CXX object CMakeFiles/motor_core.dir/src/Engine/Window.cpp.o
+[ 87%] Building CXX object CMakeFiles/motor_core.dir/src/Render/SpriteBatch.cpp.o
+[ 87%] Building CXX object CMakeFiles/motor_core.dir/src/Render/Entity.cpp.o
+[ 87%] Building CXX object CMakeFiles/motor_core.dir/src/Render/Player.cpp.o
+[ 87%] Building CXX object CMakeFiles/motor_core.dir/src/Render/AnimatedEntity.cpp.o
+[ 87%] Building CXX object CMakeFiles/motor_core.dir/src/Render/Enemy.cpp.o
+[ 87%] Building CXX object CMakeFiles/motor_core.dir/src/Game/EnemyBrain.cpp.o
+[ 87%] Building CXX object CMakeFiles/motor_core.dir/src/Game/TitleScreen.cpp.o
+[ 87%] Building CXX object CMakeFiles/motor_core.dir/src/Render/IsometricRenderer.cpp.o
+[ 90%] Building CXX object CMakeFiles/motor_core.dir/src/Render/Framebuffer.cpp.o
+[ 90%] Building CXX object CMakeFiles/motor_core.dir/src/Render/FogOfWar.cpp.o
+[ 90%] Building CXX object CMakeFiles/motor_core.dir/src/Render/ColorLUT.cpp.o
+[ 90%] Building CXX object CMakeFiles/motor_core.dir/src/Render/HudElement.cpp.o
+[ 90%] Building CXX object CMakeFiles/motor_core.dir/src/Render/HudManager.cpp.o
+[ 90%] Building CXX object CMakeFiles/motor_core.dir/src/Render/HudWidgets.cpp.o
+[ 90%] Building CXX object CMakeFiles/motor_core.dir/src/Render/BitmapFont.cpp.o
+[ 90%] Building CXX object CMakeFiles/motor_core.dir/src/Render/HudTextWidgets.cpp.o
+[ 90%] Building CXX object CMakeFiles/motor_core.dir/src/Render/HudIconos.cpp.o
+[ 93%] Building CXX object CMakeFiles/motor_core.dir/src/Render/HudIconList.cpp.o
+[ 93%] Building CXX object CMakeFiles/motor_core.dir/src/Engine/PantallaNuevaPartida.cpp.o
+[ 93%] Building CXX object CMakeFiles/motor_core.dir/src/Render/PergaminoGL.cpp.o
+[ 93%] Building CXX object CMakeFiles/motor_core.dir/src/Render/AuraJugador.cpp.o
+[ 93%] Building CXX object CMakeFiles/motor_core.dir/src/Render/PintaDestellos.cpp.o
+[ 93%] Building CXX object CMakeFiles/motor_core.dir/src/Render/BancoAtlas.cpp.o
+[ 93%] Building CXX object CMakeFiles/motor_core.dir/src/Render/BloquesNivel.cpp.o
+[ 93%] Building CXX object CMakeFiles/motor_core.dir/src/Render/VidaNivel.cpp.o
+[ 93%] Building CXX object CMakeFiles/motor_core.dir/src/Render/HojaPersonaje.cpp.o
+[ 96%] Building CXX object CMakeFiles/motor_core.dir/src/Render/DynamicLightMap.cpp.o
+[ 96%] Building CXX object CMakeFiles/motor_core.dir/src/Render/BlobShadow.cpp.o
+[ 96%] Building CXX object CMakeFiles/motor_core.dir/src/Engine/Application.cpp.o
+[ 96%] Building CXX object CMakeFiles/motor_core.dir/src/Engine/ApplicationBucle.cpp.o
+[ 96%] Building CXX object CMakeFiles/motor_core.dir/src/Engine/ApplicationPantallas.cpp.o
+[ 96%] Building CXX object CMakeFiles/motor_core.dir/src/Engine/ApplicationCierre.cpp.o
+[ 96%] Building CXX object CMakeFiles/motor_core.dir/src/Engine/ApplicationHud.cpp.o
+[ 96%] Building CXX object CMakeFiles/motor_core.dir/src/Engine/ApplicationNivel.cpp.o
+[ 96%] Building CXX object CMakeFiles/motor_core.dir/src/Engine/ApplicationCinematica.cpp.o
+[ 96%] Building C object CMakeFiles/motor_core.dir/third_party/glad/src/glad.c.o
+[100%] Building CXX object CMakeFiles/motor_core.dir/stb_image_impl.cpp.o
+[100%] Linking CXX static library libmotor_core.a
+[100%] Built target motor_core
+[100%] Building CXX object CMakeFiles/juego.dir/examples/juego.cpp.o
+[100%] Linking CXX executable juego
+ld: warning: ignoring duplicate libraries: 'libmotor_level.a', 'libmotor_map_document.a', 'libmotor_math.a', 'libmotor_project.a'
+[100%] Built target juego
+[100%] Built target motor_engine_loop
+[100%] Built target motor_perfil
+[100%] Building CXX object CMakeFiles/test_perfilador.dir/tests/Engine/PerfiladorTests.cpp.o
+[100%] Linking CXX executable test_perfilador
+[100%] Built target test_perfilador
+[100%] Built target motor_engine_loop
+[100%] Building CXX object CMakeFiles/test_application_loop.dir/tests/Engine/ApplicationLoopTests.cpp.o
+[100%] Linking CXX executable test_application_loop
+[100%] Built target test_application_loop
+Built target motor_input
+Building CXX object CMakeFiles/test_input_system.dir/tests/Engine/InputSystemTests.cpp.o
+Linking CXX executable test_input_system
+Built target test_input_system
+[  0%] Built target motor_scene
+[  0%] Building CXX object CMakeFiles/test_scene_manager.dir/tests/Engine/SceneManagerTests.cpp.o
+[100%] Linking CXX executable test_scene_manager
+[100%] Built target test_scene_manager
+
+[código 0 · 34.9 s]

@@ -1,0 +1,54 @@
+{
+ "id": "necromago_de_las_animas_cadenas_de_anima",
+ "name": "Cadenas de ánima",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Las cadenas que arrastran las ánimas se enroscan en el enemigo: 1d6 de daño de tinieblas, y queda 1 turno sin atacar.",
+ "flavorText": "",
+ "classTags": [
+  "necromago_de_las_animas"
+ ],
+ "roleTags": [],
+ "tags": [
+  "necromago_de_las_animas",
+  "estandar",
+  "Tinieblas"
+ ],
+ "mechanicTags": [
+  "Tinieblas"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "INT",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Las cadenas que arrastran las ánimas se enroscan en el enemigo: 1d6 de daño de tinieblas, y queda 1 turno sin atacar.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "1d6 de daño de tinieblas.",
+   "mechanicHook": "dano:1d6"
+  },
+  {
+   "description": "Encadenado: 1 turno sin atacar.",
+   "mechanicHook": "estado:1:incapacitado"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "Propia · Necromago de las Ánimas · folclore: las almas en pena"
+}

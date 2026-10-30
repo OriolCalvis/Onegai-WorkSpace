@@ -1,0 +1,23 @@
+{
+ "id": "COMBATE-BG3-05",
+ "date": "2026-10-14",
+ "author": "claude (Cowork)",
+ "status": "HECHO — las reglas de D0015 en el motor: el turno a lo BG3, el critico contra el bloqueo, la pifia que da ataque de oportunidad, la salvacion pifiada, las cicatrices y el golpe mortal de Sandes.",
+ "origen": "Oriol (14/10, 08:21 y 09:01): «Si» a la accion principal que no cierra el turno; sus respuestas a la bandeja (D0015).",
+ "actions": [
+  "AV13-28: CartasEnCombate::ponTurnoBG3/gastarPrincipal; la barra bloquea Atacar y la pocion; se cierra solo sin nada que gastar (ApplicationPantallas::teclasCombate); el boton «Terminar».",
+  "AV13-30: CartasBloqueo.cpp (bloqueoAtravesado, contraPorPifia).",
+  "AV13-31: RPG::dano::efectoDoble; CartasJugar duplica las rondas del estado.",
+  "AV13-33: Game::Cicatrices + test_cicatrices; ApplicationCinematica::ponCicatriz; GameOverScreen::nota.",
+  "AV13-34: Refuerzo::golpeMortal, BattleState::ponGolpeMortal/guionGolpeMortal, Refuerzos; ocaso.py y la aventura regenerada; FORMATO_AVENTURAS.md."
+ ],
+ "verification": [
+  "Sondas tactico (turno abierto tras atacar, 5 pasos, Atacar en gris) y caer (cicatriz apuntada).",
+  "test_cartas_combate 50/50 (6 nuevas), test_cicatrices 2/2; ctest gl-free 219/222 (los tres de siempre), GL 11/11; linea_base_core 0 de deuda nueva."
+ ],
+ "sesion": "sesiones/2026-10-14-claude-combate-casillas.md",
+ "pending": [
+  "AV13-29: los acompanantes con su turno y jugados por el jugador.",
+  "La escena de noqueo antes del Game Over; la moral de la cicatriz (sin cifra de Oriol)."
+ ]
+}

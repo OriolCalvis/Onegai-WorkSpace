@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="'Dependencias · ' + ${aventura.nom}">Dependencias</title>
+    <link th:href="@{/css/tokens.css}" rel="stylesheet">
+    <link th:href="@{/css/base.css}" rel="stylesheet">
+    <link th:href="@{/css/components.css}" rel="stylesheet">
+    <link th:href="@{/css/utilities.css}" rel="stylesheet">
+    <link th:href="@{/css/dependencias.css}" rel="stylesheet">
+</head>
+<body>
+<div class="gm-app">
+    <div th:replace="~{Blocks/header-v2 :: header}"></div>
+    <div class="gm-body">
+        <div th:replace="~{Blocks/sidebar-v2 :: sidebar}"></div>
+        <main class="gm-main">
+            <div class="u-page-header">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-p-0">
+                        <a th:href="@{/aventuras/{id}(id=${aventura.id})}">‹ Volver a la aventura</a>
+                    </p>
+                    <h1 class="u-mb-sp1" th:text="'🧪 Dependencias · ' + ${aventura.nom}">Dependencias</h1>
+                    <p class="u-lead">Sandbox del filtrado por actos (GDD §20.3): marca fichas
+                        <span class="dp-ficha dp-ficha--verde">Verde</span> /
+                        <span class="dp-ficha dp-ficha--roja">Roja</span> y mira qué cartas
+                        posteriores se encienden o se apagan.</p>
+                </div>
+                <div>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/aventuras/{id}/constructor(id=${aventura.id})}">🛠 Constructor</a>
+                </div>
+            </div>
+
+            <p th:if="${!aventura.esPorActos()}" class="dp-empty">
+                Esta aventura no tiene mazo por actos todavía: no hay dependencias que analizar.
+                Añade cartas de historia desde el <a th:href="@{/aventuras/{id}/constructor(id=${aventura.id})}">constructor</a>.
+            </p>
+
+            <div th:if="${aventura.esPorActos()}" class="dp-wrap">
+
+                <!-- 13a · Grafo de 3 columnas + sandbox -->
+                <div>
+                    <div class="dp-toolbar">
+                        <span class="dp-toolbar-label">Sandbox:</span>
+                        <button type="button" class="gm-chip" id="dp-todo-verde">Todo Verdes</button>
+                        <button type="button" class="gm-chip" id="dp-todo-roja">Todo Rojas (peor caso)</button>
+                        <button type="button" class="gm-chip" id="dp-reset">Reiniciar</button>
+                        <span class="dp-meta" id="dp-resumen"></span>
+                    </div>
+
+                    <div class="dp-actos">
+                        <div class="dp-acto" th:each="acto : ${ {1,2,3} }">
+                            <h3 class="dp-acto-title">
+                                <span th:text="'Acto ' + ${acto}">Acto</span>
+                                <span class="dp-meta"
+                                      th:classappend="${aventura.porcentajeBase(acto) >= 40} ? 'dp-ok' : 'dp-bad'"
+                                      th:text="${aventura.porcentajeBase(acto)} + '% Base'">% Base</span>
+                            </h3>
+                            <p th:if="${#lists.isEmpty(aventura.cartasDeActo(acto))}" class="dp-meta">Sin cartas.</p>
+                            <div class="dp-card" th:each="c : ${aventura.cartasDeActo(acto)}"
+                                 th:attr="data-code=${c.code}">
+                                <div class="dp-card-head">
+                                    <span class="dp-code" th:text="${c.code}">A1-01</span>
+                                    <span class="dp-kind" th:switch="${c.tipo.name()}">
+                                        <span th:case="'BASE'" title="Base">🔵</span>
+                                        <span th:case="'CONDICIONAL'" title="Condicional">⚡</span>
+                                        <span th:case="'CADENA'" title="Cadena">🔗</span>
+                                        <span th:case="'INYECTADA'" title="Inyectada">💥</span>
+                                        <span th:case="'BALANCE_FINAL'" title="Balance final">🏁</span>
+                                    </span>
+                                    <span class="dp-title" th:text="${c.titulo}">Título</span>
+                                    <button type="button" class="dp-ficha dp-ficha--none"
+                                            th:attr="data-ficha=${c.code}" title="Ficha de resultado (clic: — → Verde → Roja)">—</button>
+                                </div>
+                                <div class="dp-req"
+                                     th:if="${c.activacion != null and c.activacion.requiereCode != null and !c.activacion.requiereCode.isBlank()}"
+                                     th:text="'⚡ requiere ' + ${c.activacion.requiereCode} + ' = ' + ${c.activacion.estado != null ? c.activacion.estado.name() : '?'}">
+                                    ⚡ requiere A1-03 = ROJA
+                                </div>
+                                <div class="dp-req" th:if="${c.cadena != null}"
+                                     th:text="'🔗 posición ' + ${c.cadena.orden} + ' de ' + ${c.cadena.total}">🔗 1 de 3</div>
+                                <div class="dp-rama" th:each="r : ${c.ramas}"
+                                     th:if="${r.cuandoCode != null and !r.cuandoCode.isBlank()}"
+                                     th:attr="data-rama-code=${r.cuandoCode},data-rama-estado=${r.cuandoEstado != null ? r.cuandoEstado.name() : ''}"
+                                     th:text="'↳ si ' + ${r.cuandoCode} + ' = ' + ${r.cuandoEstado != null ? r.cuandoEstado.name() : '?'}">
+                                    ↳ si A1-02 = VERDE
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="dp-meta dp-legend">Una carta ⚡ Condicional entra en el mazo solo si su
+                        requisito coincide con la ficha marcada; 🔵 Base, 💥 Inyectada y 🔗 Cadena entran
+                        siempre; 🏁 Balance final se juega aparte. Las ramas ↳ se resaltan cuando su
+                        condición se cumple.</p>
+                </div>
+
+                <!-- 13b · Panel de validación -->
+                <aside class="dp-valid">
+                    <h3 class="dp-valid-title">Validación §20.4</h3>
+                    <p class="dp-valid-resumen">
+                        <span th:if="${numErrores == 0 and numAvisos == 0}" class="dp-ok">✔ Sin incidencias: la aventura pasa todas las reglas.</span>
+                        <span th:if="${numErrores > 0}" class="dp-bad" th:text="${numErrores} + ' error(es)'">errores</span>
+                        <span th:if="${numErrores > 0 and numAvisos > 0}"> · </span>
+                        <span th:if="${numAvisos > 0}" class="dp-warn" th:text="${numAvisos} + ' aviso(s)'">avisos</span>
+                    </p>
+                    <div class="dp-inc" th:each="i : ${incidencias}"
+                         th:classappend="${i.gravedad().name() == 'ERROR'} ? 'dp-inc--error' : 'dp-inc--aviso'">
+                        <span class="dp-inc-regla" th:text="${i.regla()}">regla</span>
+                        <a class="dp-inc-code" th:if="${i.code() != null}" href="#"
+                           th:attr="data-goto=${i.code()}" th:text="${i.code()}">A1-01</a>
+                        <div class="dp-inc-msg" th:text="${i.mensaje()}">mensaje</div>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </div>
+    <div th:replace="~{Blocks/footer-v2 :: footer}"></div>
+</div>
+<script th:inline="javascript">
+    /* Catálogo ligero de cartas para el sandbox (servido por AventuraController#dependencias). */
+    window.DEP_CARTAS = /*[[${cartasLigeras}]]*/ [];
+</script>
+<script th:src="@{/js/theme.js}"></script>
+<script th:src="@{/js/dependencias.js}"></script>
+</body>
+</html>

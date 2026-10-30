@@ -1,0 +1,1485 @@
+<title>Forja de Onegai</title>
+<style>
+/* Pestañas de la Forja: Armas (la de siempre), Ropa y Conjuntos. Los colores y letras son los de la pestaña de armas. */
+.pestanas { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 16px; max-width: 1280px; border-bottom: 1px solid var(--linea, #b9a47f); }
+.pestanas button { font-family: var(--f-titulo, monospace); font-size: 13px; letter-spacing: .06em; text-transform: uppercase;
+  border: 1px solid transparent; border-bottom: none; border-radius: 4px 4px 0 0; background: transparent; padding: 8px 14px; margin-bottom: -1px; }
+.pestanas button[aria-selected="true"] { background: var(--papel-2, #e4d8bd); border-color: var(--linea, #b9a47f); color: var(--carmin, #9e2b25); }
+.lista-piezas { width: 100%; min-height: 260px; font: inherit; font-size: 14px; background: var(--papel); border: 1px solid var(--linea); border-radius: 3px; }
+.huecos { display: flex; flex-direction: column; gap: 10px; }
+.hueco { display: grid; grid-template-columns: 1fr; gap: 4px; }
+.hueco .rampa { display: flex; gap: 2px; }
+.hueco .rampa i { width: 22px; height: 14px; border: 1px solid var(--linea); display: block; }
+.direcciones4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 520px; }
+.direcciones4 canvas { width: 100%; aspect-ratio: 1; image-rendering: pixelated; border: 1px solid var(--linea); border-radius: 3px; background: var(--cuadro-a); }
+.tonos { display: flex; flex-wrap: wrap; gap: 4px; }
+.tonos button { padding: 2px 4px; font-family: var(--f-dato); font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.tonos button i { width: 16px; height: 12px; border: 1px solid var(--linea); display: block; }
+.tonos button[aria-pressed="true"] { border: 2px solid var(--carmin); }
+.ranuras { display: grid; grid-template-columns: 6.5em 1fr; gap: 6px 8px; align-items: center; }
+.ranuras label { margin: 0; }
+.mini { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.mini button { padding: 0; aspect-ratio: 1; background: var(--cuadro-a); border: 1px solid var(--linea); position: relative; }
+.mini button canvas { width: 100%; height: 100%; image-rendering: pixelated; display: block; }
+.mini button[aria-pressed="true"] { border: 2px solid var(--carmin); }
+.mini button .marca { position: absolute; top: 1px; right: 2px; width: 6px; height: 6px; border-radius: 50%; background: var(--carmin); }
+.campos { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.campos textarea { min-height: 64px; font-family: inherit; font-size: 14px; }
+.campos .par { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.campos .par label { font-size: 12px; margin: 0; }
+input[type="number"] { font: inherit; width: 100%; padding: 4px 6px; background: var(--papel); border: 1px solid var(--linea); border-radius: 3px; color: var(--tinta); }
+.cambiado > label:first-child, label.cambiado, h2.cambiado { color: var(--carmin); }
+.cambiado > label:first-child::after, label.cambiado::after, h2.cambiado::after { content: " ·"; }
+.equipo-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.equipo-lista li { border: 1px solid var(--linea); border-radius: 3px; padding: 6px 8px; background: var(--papel); display: grid; gap: 4px; }
+.equipo-lista .cab { display: flex; justify-content: space-between; gap: 6px; align-items: baseline; flex-wrap: wrap; }
+.equipo-lista .cab span { font-size: 12px; opacity: .75; }
+.guardado { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; max-width: 1280px; margin: -6px 0 16px; }
+.guardado .estado { margin: 0; font-size: 14px; }
+.guardado .estado.sin { color: var(--carmin); }
+/* el lienzo y su paleta, juntos: la paleta al lado del frame grande */
+.taller { display: flex; gap: 10px; align-items: flex-start; flex: 1 1 520px; min-width: 0; max-width: 540px; }
+.taller .grande { flex: 1 1 auto; min-width: 0; }
+.paleta-lado { flex: 0 0 136px; display: flex; flex-direction: column; gap: 8px; max-height: 384px; overflow-y: auto; padding-right: 2px; }
+.paleta-lado .grupo { display: flex; flex-direction: column; gap: 3px; }
+.paleta-lado .grupo > span { font-size: 11px; line-height: 1.2; opacity: .8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.paleta-lado .cinco { display: flex; gap: 3px; }
+.paleta-lado .cinco button { width: 22px; height: 22px; padding: 0; border: 1px solid var(--linea); border-radius: 2px; }
+.paleta-lado .cinco button[aria-pressed="true"] { outline: 2px solid var(--carmin); outline-offset: 1px; }
+.paleta-lado .extra { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.paleta-lado .extra button { font-size: 12px; padding: 3px 6px; }
+.paleta-lado .extra button[aria-pressed="true"] { border: 2px solid var(--carmin); }
+.paleta-lado input[type="color"] { width: 34px; height: 26px; padding: 0; border: 1px solid var(--linea); background: none; }
+@media (max-width: 560px) { .taller { flex-direction: column; } .paleta-lado { flex-basis: auto; max-height: none; width: 100%; flex-direction: row; flex-wrap: wrap; } }
+.partes { display: flex; flex-direction: column; gap: 4px; }
+.partes .parte { display: grid; grid-template-columns: 1fr 52px 52px 58px; gap: 4px; align-items: center; }
+.partes .parte button { text-align: left; font-size: 13px; padding: 4px 6px; }
+.partes .parte button.movida { color: var(--carmin); }
+.partes .parte button[aria-pressed="true"] { border: 2px solid var(--carmin); }
+.partes .parte input { padding: 3px 4px; font-size: 13px; }
+#anim_dirBotones button[aria-pressed="true"] { border: 2px solid var(--carmin); color: var(--carmin); }
+#anim_grande:focus-visible { outline: 2px solid var(--carmin); outline-offset: 2px; }
+input[type="text"] { font: inherit; width: 100%; padding: 5px 8px; background: var(--papel); border: 1px solid var(--linea); border-radius: 3px; color: var(--tinta); }
+</style>
+
+<nav class="pestanas" role="tablist" aria-label="Partes de la Forja">
+  <button role="tab" id="tab_armas" aria-controls="panel_armas" aria-selected="true">Armas</button>
+  <button role="tab" id="tab_ropa" aria-controls="panel_ropa" aria-selected="false">Ropa</button>
+  <button role="tab" id="tab_conj" aria-controls="panel_conj" aria-selected="false">Conjuntos</button>
+  <button role="tab" id="tab_razas" aria-controls="panel_razas" aria-selected="false">Razas</button>
+  <button role="tab" id="tab_clases" aria-controls="panel_clases" aria-selected="false">Clases</button>
+  <button role="tab" id="tab_anim" aria-controls="panel_anim" aria-selected="false">Animaciones</button>
+</nav>
+<div class="guardado" role="region" aria-label="Guardar y exportar">
+  <button class="principal" id="forja_guardar">Guardar</button>
+  <button id="forja_cargarOtra" hidden>Cargar la suya</button>
+  <button id="forja_exportar">Exportar JSON</button>
+  <p class="estado" id="forja_estadoG" role="status"></p>
+</div>
+
+<div id="panel_armas" role="tabpanel" aria-labelledby="tab_armas">
+<!--ARMAS-->
+</div>
+
+<div id="panel_ropa" role="tabpanel" aria-labelledby="tab_ropa" hidden>
+  <div class="cabecera">
+    <h1>Forja de Onegai · Ropa</h1>
+    <p>Cada prenda es un patrón (túnica, vestido, gambesón, botas…) con sus materiales y opciones. Cambia los de una pieza o crea una nueva, y retoca píxeles encima en cada frame. Al acabar, pulsa Guardar (arriba) para que lo vean todos los que tienen el enlace.</p>
+  </div>
+  <div class="mesa">
+    <section class="panel" aria-label="Piezas">
+      <div><label for="ropa_ranura">Ranura</label><select id="ropa_ranura"></select></div>
+      <div><label for="ropa_lista">Pieza</label><select id="ropa_lista" class="lista-piezas" size="14"></select></div>
+      <div class="fila"><button id="ropa_nueva">Pieza nueva</button><button id="ropa_duplicar">Duplicar</button><button id="ropa_borrar">Quitar cambios</button></div>
+      <div><label for="ropa_raza">Probarla en</label><select id="ropa_raza"></select></div>
+    </section>
+
+    <section class="panel" aria-label="Vista">
+      <div class="yunque">
+        <div class="taller">
+          <canvas id="ropa_grande" class="grande" width="64" height="64" aria-label="Frame grande: clic pinta un píxel encima, clic derecho lo quita"></canvas>
+          <div class="paleta-lado" aria-label="Paleta para pintar">
+            <div id="ropa_tonos"></div>
+            <div class="extra"><input type="color" id="ropa_color" value="#7a4a2a" aria-label="Otro color" title="Otro color"><button id="ropa_usarColor">Este color</button></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;min-width:180px">
+          <div><h2>Andando</h2><canvas id="ropa_andando" class="andando" width="64" height="64" aria-label="Paso de andar"></canvas></div>
+          <div><h2>Frames</h2><div id="ropa_frames" class="mini"></div></div>
+        </div>
+      </div>
+      <div>
+        <h2>Retocar a mano</h2>
+        <p class="ayuda" style="margin-top:6px">Clic en el frame grande pinta con el color elegido en la paleta de al lado (el de un material: si cambias el material, el retoque cambia con él); clic derecho quita el retoque de ese píxel. Los retoques son de esta talla (<span id="ropa_talla" class="dato"></span>) y de este frame.</p>
+        <div class="fila" style="margin-top:6px"><button id="ropa_retDireccion">Copiar los retoques a toda la dirección</button><button id="ropa_retQuitar">Quitar los retoques de este frame</button></div>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Patrón y materiales">
+      <div><label for="ropa_nombre">Nombre</label><input id="ropa_nombre" type="text"></div>
+      <div><label for="ropa_patron">Patrón</label><select id="ropa_patron" disabled></select></div>
+      <div id="ropa_params" class="huecos"></div>
+      <p class="ayuda" id="ropa_info"></p>
+    </section>
+  </div>
+  <section class="panel" style="max-width:1280px;margin-top:18px" aria-label="Empezar de cero">
+    <div class="fila"><button id="ropa_cero">Empezar de cero</button></div>
+    <p class="ayuda">Quita toda la ropa nueva, los cambios, los retoques y los conjuntos (al pulsar Guardar, también para los demás).</p>
+    <p class="estado" id="ropa_estado" role="status"></p>
+  </section>
+</div>
+
+<div id="panel_conj" role="tabpanel" aria-labelledby="tab_conj" hidden>
+  <div class="cabecera">
+    <h1>Forja de Onegai · Conjuntos</h1>
+    <p>Un personaje entero: la raza, el pelo, la barba y cada pieza, con la ropa nueva y los cambios de la pestaña Ropa. Guarda los conjuntos que te gusten (van en los mismos ajustes de ropa, para los PNJ y las clases).</p>
+  </div>
+  <div class="mesa">
+    <section class="panel" aria-label="Lo que lleva">
+      <div class="ranuras" id="conj_ranuras"></div>
+      <div class="fila"><button id="conj_raza">Lo que lleva la raza</button><button id="conj_nada">Sin nada</button></div>
+    </section>
+    <section class="panel" aria-label="Vista del conjunto">
+      <div class="direcciones4" id="conj_dirs"></div>
+      <div class="yunque">
+        <canvas id="conj_grande" class="grande" width="64" height="64" aria-label="Frame grande del conjunto"></canvas>
+        <div style="min-width:180px"><h2>Frames</h2><div id="conj_frames" class="mini"></div></div>
+      </div>
+    </section>
+    <section class="panel" aria-label="Conjuntos guardados">
+      <div><label for="conj_nombreGuardar">Nombre del conjunto</label><input id="conj_nombreGuardar" type="text" placeholder="p. ej. Guardia de la Aldea Baja"></div>
+      <div class="fila"><button class="principal" id="conj_guardar">Guardar</button></div>
+      <div><label for="conj_guardados">Guardados</label><select id="conj_guardados" class="lista-piezas" size="8"></select></div>
+      <div class="fila"><button id="conj_abrir">Abrir</button><button id="conj_quitar">Quitar</button></div>
+    </section>
+  </div>
+</div>
+
+<div id="panel_razas" role="tabpanel" aria-labelledby="tab_razas" hidden>
+  <div class="cabecera">
+    <h1>Forja de Onegai · Razas</h1>
+    <p>La ficha de cada raza (nombre, descripción, rasgos, bonos) y su aspecto: los materiales de la piel y los rasgos, los ojos, la talla y el pelo y la barba que lleva de serie. Lo cambiado sale en carmín.</p>
+  </div>
+  <div class="mesa">
+    <section class="panel" aria-label="Razas">
+      <div><label for="raza_filtro">Buscar</label><input id="raza_filtro" type="text" placeholder="nombre o id"></div>
+      <div><label for="raza_lista">Raza</label><select id="raza_lista" class="lista-piezas" size="18"></select></div>
+      <div class="fila"><button id="raza_quitarFicha">Quitar cambios de la ficha</button><button id="raza_quitarAspecto">Quitar cambios del aspecto</button></div>
+    </section>
+    <section class="panel" aria-label="Aspecto de la raza">
+      <div class="direcciones4" id="raza_dirs"></div>
+      <label style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="raza_conRopa" checked> Con la ropa que lleva la raza</label>
+      <h2>Aspecto</h2>
+      <div class="ranuras" id="raza_aspecto"></div>
+      <div class="huecos" id="raza_mats"></div>
+    </section>
+    <section class="panel" aria-label="Ficha de la raza">
+      <div class="campos" id="raza_campos"></div>
+    </section>
+  </div>
+  <section class="panel" style="max-width:1280px;margin-top:18px" aria-label="Dibujar la raza">
+    <h2>Dibujar la raza</h2>
+    <div class="yunque">
+      <div class="taller">
+        <canvas id="raza_grande" class="grande" width="64" height="64" aria-label="Frame grande de la raza: clic pinta un píxel, clic derecho quita lo dibujado"></canvas>
+        <div class="paleta-lado" aria-label="Paleta para pintar">
+            <div id="raza_tonos"></div>
+            <div class="extra"><input type="color" id="raza_color" value="#7a4a2a" aria-label="Otro color" title="Otro color"><button id="raza_usarColor">Este color</button></div>
+          </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;min-width:220px;flex:1">
+        <div><h2>Frames</h2><div id="raza_frames" class="mini" style="max-width:360px"></div></div>
+        <label style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="raza_dibPelo" checked> Ver el pelo y la barba mientras dibujas</label>
+        <p class="ayuda">Se dibuja sobre el cuerpo de la raza (sin ropa: la ropa lo tapa igual que siempre). Con un tono de un material, si cambias el material el dibujo cambia con él; «borrar» quita píxeles del cuerpo, los rasgos, la cola o las alas. Clic derecho deshace lo dibujado en ese píxel. Lo dibujado es de esta talla (<span id="raza_tallaDib" class="dato"></span>) y de este frame.</p>
+        <div class="fila"><button id="raza_retDireccion">Copiar lo dibujado a toda la dirección</button><button id="raza_retQuitar">Quitar lo dibujado en este frame</button></div>
+        <p class="estado" id="raza_estadoDib" role="status"></p>
+      </div>
+    </div>
+  </section>
+  <section class="panel" style="max-width:1280px;margin-top:18px" aria-label="Empezar de cero">
+    <div class="fila"><button id="raza_cero">Empezar de cero</button></div>
+    <p class="ayuda">Quita todos los cambios de razas y clases: fichas, aspecto, dibujos y cómo se ven los objetos (al pulsar Guardar, también para los demás).</p>
+    <p class="estado" id="raza_estado" role="status"></p>
+  </section>
+</div>
+
+<div id="panel_clases" role="tabpanel" aria-labelledby="tab_clases" hidden>
+  <div class="cabecera">
+    <h1>Forja de Onegai · Clases</h1>
+    <p>La ficha de cada clase (rol, vida, estadísticas, pesos, etiquetas) y su equipo inicial: añade y quita objetos del catálogo y elige con qué pieza se ve puesto cada uno. Mírala puesta en cualquier raza.</p>
+  </div>
+  <div class="mesa">
+    <section class="panel" aria-label="Clases">
+      <div><label for="clase_filtro">Buscar</label><input id="clase_filtro" type="text" placeholder="nombre, id o rol"></div>
+      <div><label for="clase_lista">Clase</label><select id="clase_lista" class="lista-piezas" size="18"></select></div>
+      <div class="fila"><button id="clase_quitar">Quitar cambios de la clase</button></div>
+    </section>
+    <section class="panel" aria-label="Equipo de la clase">
+      <div><label for="clase_raza">Probarla en</label><select id="clase_raza"></select></div>
+      <div class="direcciones4" id="clase_dirs"></div>
+      <label style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="clase_conRopa"> Lo que no tape la clase, con la ropa de la raza</label>
+      <h2 id="clase_equipoTitulo">Equipo inicial</h2>
+      <ul class="equipo-lista" id="clase_equipo" aria-labelledby="clase_equipoTitulo"></ul>
+      <div><label for="clase_buscaObjeto">Añadir un objeto</label><input id="clase_buscaObjeto" type="text" placeholder="buscar en el catálogo"></div>
+      <div class="fila"><select id="clase_objeto" style="flex:1;min-width:0" aria-label="Objeto para añadir"></select><button id="clase_anadir">Añadir</button></div>
+      <p class="ayuda">«Cómo se ve» cambia la pieza de ese objeto en todo el juego (va en <code class="dato">objetos_visual</code>; luego rehaz <code class="dato">assets/catalogs/equipo_catalogo.json</code>). Con una pieza elegida a mano, aquí se ve sin el tinte del objeto.</p>
+    </section>
+    <section class="panel" aria-label="Ficha de la clase">
+      <div class="campos" id="clase_campos"></div>
+    </section>
+  </div>
+  <section class="panel" style="max-width:1280px;margin-top:18px" aria-label="Empezar de cero">
+    <div class="fila"><button id="clase_cero">Empezar de cero</button></div>
+    <p class="ayuda">Quita todos los cambios de clases y razas: fichas, aspecto, dibujos y cómo se ven los objetos (al pulsar Guardar, también para los demás).</p>
+    <p class="estado" id="clase_estado" role="status"></p>
+  </section>
+</div>
+
+<div id="panel_anim" role="tabpanel" aria-labelledby="tab_anim" hidden>
+  <div class="cabecera">
+    <h1>Forja de Onegai · Animaciones</h1>
+    <p>Elige una raza, su ropa y una animación, y corrígela frame a frame moviendo partes del cuerpo: la ropa, el pelo y el arma las siguen. Clic en una parte del frame grande para elegirla; las flechas la mueven un píxel y Q / E giran el arma. Al acabar, pulsa Guardar (arriba).</p>
+  </div>
+  <div class="mesa">
+    <section class="panel" aria-label="Personaje y animación">
+      <div><label for="anim_raza">Raza</label><select id="anim_raza"></select></div>
+      <div><label for="anim_ropa">Ropa</label><select id="anim_ropa"></select></div>
+      <div><label for="anim_arma">Arma</label><select id="anim_arma"></select></div>
+      <div><label for="anim_lista">Animación</label><select id="anim_lista" class="lista-piezas" size="10"></select></div>
+      <div><label for="anim_nombre">Nombre</label><input id="anim_nombre" type="text"></div>
+      <div class="fila"><button id="anim_nueva">Nueva (copia)</button><button id="anim_quitar">Quitar cambios</button></div>
+      <p class="ayuda" id="anim_info"></p>
+    </section>
+    <section class="panel" aria-label="Vista de la animación">
+      <div class="direcciones4" id="anim_dirs"></div>
+      <div class="fila" role="group" aria-label="Dirección que se edita" id="anim_dirBotones"></div>
+      <label style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="anim_espejo"> La izquierda, en espejo de la derecha</label>
+      <div class="yunque">
+        <canvas id="anim_grande" class="grande" width="64" height="64" tabindex="0" aria-label="Frame grande: clic elige la parte, las flechas la mueven, Q y E giran"></canvas>
+        <div style="display:flex;flex-direction:column;gap:10px;min-width:200px;flex:1">
+          <h2>Frames de esta dirección</h2>
+          <div id="anim_frames" class="mini"></div>
+          <div class="fila"><button id="anim_fAnadir">Añadir frame</button><button id="anim_fQuitar">Quitar</button><button id="anim_fAntes" aria-label="Mover el frame antes">←</button><button id="anim_fDespues" aria-label="Mover el frame después">→</button></div>
+          <div class="fila"><button id="anim_play">Pausa</button></div>
+        </div>
+      </div>
+    </section>
+    <section class="panel" aria-label="Frame">
+      <div><label for="anim_base">Sale del frame</label><select id="anim_base"></select></div>
+      <div><label for="anim_ms">Duración (milisegundos)</label><input id="anim_ms" type="number" min="20" max="5000" step="10"></div>
+      <h2>Partes que se mueven</h2>
+      <div id="anim_partes" class="partes"></div>
+      <div class="fila"><button id="anim_fCero">Este frame sin movimientos</button></div>
+      <p class="estado" id="anim_estado" role="status"></p>
+    </section>
+  </div>
+</div>
+
+<script id="datos_forja" type="application/json">/*DATOS*/</script>
+<script>
+(() => {
+  const D = JSON.parse(document.getElementById("datos_forja").textContent);
+  const $ = (id) => document.getElementById(id);
+  const N = D.frame, TON = "HsdoO";
+  const DIRS = ["abajo", "derecha", "arriba", "izquierda"];
+  const NOMBRE_DIR = { abajo: "De frente", derecha: "Derecha", arriba: "Espalda", izquierda: "Izquierda" };
+  const RANURAS_ROPA = ["torso", "piernas", "pies", "capa"];
+  const NOMBRE_RANURA = { cabeza: "Cabeza", torso: "Torso", piernas: "Piernas", pies: "Pies", capa: "Capa", arma: "Arma", mano_izq: "Otra mano" };
+
+  // --- pestañas ----------------------------------------------------------------
+  const tabs = ["armas", "ropa", "conj", "razas", "clases", "anim"];
+  function abre(t) {
+    tabs.forEach((x) => { $("tab_" + x).setAttribute("aria-selected", String(x === t)); $("panel_" + x).hidden = x !== t; });
+    try { localStorage.setItem("forja_pestana", t); } catch (e) {}
+    if (t === "ropa") refrescaRopa(); if (t === "conj") { montaConj(); refrescaConj(); }
+    if (t === "razas") montaRaza(); if (t === "clases") montaClase();
+    if (t === "anim") { cacheAnim.clear(); montaAnim(); }
+  }
+  tabs.forEach((t) => ($("tab_" + t).onclick = () => abre(t)));
+
+  // --- imágenes y recoloreo ----------------------------------------------------------
+  const crudas = [];  // índice -> ImageData decodificada
+  const listo = Promise.all(D.img.map((b64, i) => new Promise((ok) => {
+    const im = new Image();
+    im.onload = () => { const c = document.createElement("canvas"); c.width = im.width; c.height = im.height; const x = c.getContext("2d"); x.drawImage(im, 0, 0); crudas[i] = x.getImageData(0, 0, im.width, im.height); ok(); };
+    im.onerror = () => ok(); im.src = "data:image/png;base64," + b64;
+  })));
+  const hex = (s) => [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16)];
+  const rampa = (m) => (m && D.materiales[m]) || null;
+  // Pinta en buf (Uint8ClampedArray N*N*4) el recorte [x, y, i], con los huecos cambiados por esos materiales.
+  function pinta(buf, rec, mats) {
+    if (!rec) return; const im = crudas[rec[2]]; if (!im) return;
+    const [x0, y0] = rec, w = im.width, h = im.height, d = im.data;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const s = (y * w + x) * 4; if (!d[s + 3]) continue;
+      const X = x0 + x, Y = y0 + y; if (X < 0 || Y < 0 || X >= N || Y >= N) continue;
+      let r = d[s], g = d[s + 1], b = d[s + 2], a = d[s + 3];
+      if (b === D.huecoB && r >= 200 && r < 220 && (g - 20) % 30 === 0 && g <= 140) {
+        const ram = rampa(mats && mats[r - 200]);
+        if (!ram) continue;
+        [r, g, b] = hex(ram[(g - 20) / 30]); a = ram[5] || 255;
+      }
+      const o = (Y * N + X) * 4; buf[o] = r; buf[o + 1] = g; buf[o + 2] = b; buf[o + 3] = a;
+    }
+  }
+  const nuevoBuf = () => new Uint8ClampedArray(N * N * 4);
+  function encima(dst, src) {
+    for (let i = 0; i < N * N; i++) {
+      const a = src[i * 4 + 3] / 255; if (!a) continue;
+      for (let c = 0; c < 3; c++) dst[i * 4 + c] = Math.round(src[i * 4 + c] * a + dst[i * 4 + c] * (1 - a));
+      dst[i * 4 + 3] = Math.max(dst[i * 4 + 3], src[i * 4 + 3]);
+    }
+  }
+  function aCanvas(ctx, buf) {
+    const tmp = document.createElement("canvas"); tmp.width = tmp.height = N;
+    tmp.getContext("2d").putImageData(new ImageData(buf, N, N), 0, 0); ctx.clearRect(0, 0, N, N); ctx.drawImage(tmp, 0, 0);
+  }
+  const dirDe = (f) => D.direcciones[String(f)];
+  const zDe = (ranura, f, propio) => {
+    const d = dirDe(f);
+    if (propio) return propio["f" + f] !== undefined ? propio["f" + f] : propio[d];
+    return (D.orden[ranura] || {})[d] || 0;
+  };
+  const framesPor = (dir) => { const o = {}; Object.entries(D.pasos).forEach(([f, p]) => { if (dirDe(+f) === dir) o[p] = +f; }); return o; };
+
+  // --- ropa: ajustes ------------------------------------------------------------------
+  let ar = { nuevas: {}, cambios: {}, retoques: {}, conjuntos: {} };
+  try { const g = localStorage.getItem("forja_ropa"); if (g) ar = JSON.parse(g); } catch (e) {}
+  const vacioR = (o) => ["nuevas", "cambios", "retoques", "conjuntos"].every((k) => !Object.keys((o || {})[k] || {}).length);
+  if (vacioR(ar) && D.ajustesRopa && !vacioR(D.ajustesRopa)) ar = JSON.parse(JSON.stringify(D.ajustesRopa));
+  ["nuevas", "cambios", "retoques", "conjuntos"].forEach((k) => (ar[k] = ar[k] || {}));
+  function textoR() { return JSON.stringify({ _nota: "Lo escribe la Forja de Onegai (tools/forja.html, pestaña Ropa). Lo lee tools/forja_ropa.py.", nuevas: ar.nuevas, cambios: ar.cambios, retoques: ar.retoques, conjuntos: ar.conjuntos }, null, 1); }
+  function guardaR() { try { localStorage.setItem("forja_ropa", JSON.stringify(ar)); } catch (e) {} if (window.forjaCambio) window.forjaCambio(); }
+  const avisaR = (t) => ($("ropa_estado").textContent = t);
+
+  // Una pieza tal como queda: {ranura, nombre, patron, args} (catálogo + nuevas + cambios)
+  function pieza(ranura, id) {
+    let p = null;
+    if (ar.nuevas[id]) p = JSON.parse(JSON.stringify(ar.nuevas[id]));
+    else if (ranura === "capa" && D.capas[id]) p = { ranura: "capa", nombre: D.capas[id].nombre, patron: "capa:" + D.capas[id].largo, args: D.capas[id].mats.slice() };
+    else if (D.piezas[ranura] && D.piezas[ranura][id]) p = JSON.parse(JSON.stringify(D.piezas[ranura][id]));
+    if (!p) return null;
+    p.ranura = ranura;
+    const c = ar.cambios[id];
+    if (c) { if (c.nombre) p.nombre = c.nombre; if (c.args) p.args = c.args.slice(); }
+    return p;
+  }
+  function piezasDe(ranura) {
+    const ids = ranura === "capa" ? Object.keys(D.capas) : Object.keys(D.piezas[ranura] || {});
+    Object.entries(ar.nuevas).forEach(([id, p]) => { if (p.ranura === ranura && !ids.includes(id)) ids.push(id); });
+    return ids.map((id) => [id, pieza(ranura, id)]).filter((x) => x[1]).sort((a, b) => a[1].nombre.localeCompare(b[1].nombre, "es"));
+  }
+  const patron = (pid) => (pid.startsWith("capa:") ? { ranura: "capa", params: [{ n: "tela", tipo: "mat" }], capa: pid.slice(5) } : D.patrones[pid]);
+  function claveCombo(pat, args) {
+    const partes = [];
+    pat.params.forEach((p, k) => {
+      if (p.tipo === "opt") { let i = p.valores.findIndex((v) => JSON.stringify(v) === JSON.stringify(args[k])); partes.push(k + "=" + Math.max(0, i)); }
+      else if (p.tipo === "mat?") partes.push(k + "=" + (args[k] ? 1 : 0));
+    });
+    return partes.join("|");
+  }
+  // La capa de una pieza de ropa en (talla, frame), con sus retoques: un buf o null.
+  function capaRopa(p, id, talla, f) {
+    const pat = patron(p.patron); if (!pat) return null;
+    let rec;
+    if (pat.capa) rec = ((D.capaRender[pat.capa] || {})[talla] || [])[f - 1];
+    else rec = (((pat.combos[claveCombo(pat, p.args)] || {})[talla]) || [])[f - 1];
+    const buf = nuevoBuf(); pinta(buf, rec, p.args);
+    const ret = (((ar.retoques[id] || {})[talla]) || {})[String(f)];
+    if (ret) Object.entries(ret).forEach(([xy, cod]) => {
+      const [x, y] = xy.split(",").map(Number); const o = (y * N + x) * 4;
+      if (cod === ".") { buf[o + 3] = 0; return; }
+      let col = null, a = 255;
+      if (cod[0] === "#") col = hex(cod);
+      else { const ram = rampa(p.args[+cod.slice(0, -1)]); if (ram) { col = hex(ram[TON.indexOf(cod.slice(-1))]); a = ram[5] || 255; } }
+      if (col) { buf[o] = col[0]; buf[o + 1] = col[1]; buf[o + 2] = col[2]; buf[o + 3] = a; }
+    });
+    return buf;
+  }
+
+  // --- las armas de la pestaña Armas (sus ajustes, en el mismo navegador): nuevas y cambiadas --------------
+  function ajArmas() { try { return JSON.parse(localStorage.getItem("forja_onegai") || "{}"); } catch (e) { return {}; } }
+  function armaConj(id) {
+    const aa = ajArmas(); let a = null;
+    if ((aa.armas_nuevas || {})[id]) { const n = aa.armas_nuevas[id]; a = { nombre: n.nombre, familia: n.familia, mats: (n.materiales || []).slice() }; }
+    else if (D.armas[id]) a = JSON.parse(JSON.stringify(D.armas[id]));
+    else if (D.bases[id]) { const b = D.bases[id]; return { nombre: b[1], familia: b[0], mats: b.slice(2) }; }
+    if (!a) return null;
+    const c = (aa.armas_cambios || {})[id]; if (c) { if (c.nombre) a.nombre = c.nombre; if (c.materiales) a.mats = c.materiales.slice(); }
+    return a;
+  }
+  // la forma pintada: la suya o, si es una forma propia nueva, la de la que salió (el dibujo nuevo se ve en Armas)
+  function formaConj(fam) { if (D.armasFam[fam]) return D.armasFam[fam]; const n = (ajArmas().familias_nuevas || {})[fam]; return n ? D.armasFam[n.base] : null; }
+
+  // --- fichas (pestañas Razas y Clases): tools/ajustes_fichas.json --------------------------------
+  const CLAVES_F = ["razas", "clases", "razas_visual", "objetos_visual"];
+  let af = {}; try { af = JSON.parse(localStorage.getItem("forja_fichas") || "{}"); } catch (e) {}
+  if (CLAVES_F.every((k) => !Object.keys(af[k] || {}).length) && D.ajustesFichas) af = JSON.parse(JSON.stringify(D.ajustesFichas));
+  CLAVES_F.forEach((k) => (af[k] = af[k] || {}));
+  const textoF = () => JSON.stringify(Object.assign({ _nota: "Lo escribe la Forja de Onegai (pestañas Razas y Clases). razas y clases: tools/aplicar_forja_fichas.py; razas_visual y objetos_visual: los generadores." }, ...CLAVES_F.map((k) => ({ [k]: af[k] }))), null, 1);
+  // Oriol (23/10): «si canvio un nom a l'artifact, que es vegi reflectit en tot l'artifact»: todo nombre de raza sale de su ficha
+  function nomR(id) { const c = af.razas[id], f = (D.fichas.razas || {})[id] || {}, r = D.razas[id] || {}; return (c && c.name) || f.name || r.nombre || id; }
+  function renombraRazas() {
+    document.querySelectorAll("select").forEach((sel) => [...sel.options].forEach((o) => {
+      if (!D.razas[o.value]) return;
+      const t = nomR(o.value) + (sel.id === "ropa_raza" ? " (" + D.razas[o.value].talla + ")" : "");
+      if (o.text !== t && !o.text.startsWith("• ")) o.text = t;
+    }));
+  }
+  function guardaF() { try { localStorage.setItem("forja_fichas", JSON.stringify(af)); } catch (e) {} renombraRazas(); if (window.forjaCambio) window.forjaCambio(); }
+  // el aspecto de una raza con lo de la Forja encima
+  function razaVis(id) {
+    const r = D.razas[id], v = af.razas_visual[id] || {};
+    return { talla: v.talla || r.talla, mats: v.mats || r.mats, ojos: v.ojos || r.ojos,
+             pelo: "pelo" in v ? v.pelo : r.pelo, barba: "barba" in v ? v.barba : r.barba };
+  }
+  // el tinte de un objeto del catálogo: [[material de la pieza, material del objeto]]
+  const tine = (mats, tinte) => { if (!tinte || !tinte.length) return mats; const m = Object.fromEntries(tinte); return mats.map((x) => (x && m[x]) || x); };
+
+  // Lo dibujado a mano en la raza (igual que tools/forja_ropa.retocar_raza): «.» borra en todas sus capas; un
+  // color va a la capa que se ve en ese píxel (la de más arriba que lo tiene), o al cuerpo si no hay ninguna.
+  function capasRetocadas(deRaza, mats, ret) {
+    deRaza = deRaza.slice().sort((a, b) => a.z - b.z || a.i - b.i);
+    const z = deRaza.map((c) => c.z);
+    const bufs = deRaza.map((c) => { const b = nuevoBuf(); pinta(b, c.rec, c.mats); return b; });
+    const orig = bufs.map((b) => b.slice()), cuerpo = Math.max(0, deRaza.findIndex((c) => c.i === 0));
+    Object.entries(ret).forEach(([xy, cod]) => {
+      const [x, y] = xy.split(",").map(Number); if (x < 0 || y < 0 || x >= N || y >= N) return;
+      const o = (y * N + x) * 4;
+      if (cod === "." || !cod) { bufs.forEach((b) => { b[o] = b[o + 1] = b[o + 2] = b[o + 3] = 0; }); return; }
+      let col = null, a = 255;
+      if (cod[0] === "#" && cod.length === 7) col = hex(cod);
+      else { const ram = rampa(mats[+cod.slice(0, -1)]); const tn = TON.indexOf(cod.slice(-1)); if (ram && tn >= 0) { col = hex(ram[tn]); a = ram[5] || 255; } }
+      if (!col) return;
+      let cual = cuerpo;  // si no lo tiene ninguna, al cuerpo
+      orig.forEach((b, i) => { if (b[o + 3]) cual = i; });  // ya en orden de apilado: la última que lo tiene es la que se ve
+      const b = bufs[cual]; b[o] = col[0]; b[o + 1] = col[1]; b[o + 2] = col[2]; b[o + 3] = a;
+    });
+    return bufs.map((b, i) => ({ z: deRaza[i].z, i: deRaza[i].i, buf: b, nombre: deRaza[i].nombre }));
+  }
+
+  // --- una figura entera (Ropa y Conjuntos) -------------------------------------------------
+  // spec: {raza, pelo: [estilo, color] | null, barba, equipo: {ranura: id}, matsCabeza?, ...}
+  function figura(spec, f, sinRopa) { return componerCapas(capasDe(spec, f, sinRopa)); }
+  function componerCapas(capas) { const out = nuevoBuf(); capas.forEach((c) => encima(out, c.buf)); return out; }
+  // las capas de un frame, ya pintadas y en orden: [{z, i, buf, nombre}] (nombre: la ranura de la raza, «ojos»,
+  // «pelo», «barba» o la del equipo; las animaciones mueven cada capa según lo que es)
+  function capasDe(spec, f, sinRopa) {
+    const r = D.razas[spec.raza]; if (!r) return [];
+    const rv = razaVis(spec.raza), talla = rv.talla, capas = [];
+    const deRaza = (r.capas[talla] || r.capas[r.talla]).map((c, i) => ({ z: zDe(c.ranura, f), i, rec: c.frames[f - 1], mats: rv.mats, nombre: c.ranura }));
+    // otros ojos: en el juego van dentro del cuerpo de la raza (se dibujan y se borran con él)
+    if (rv.ojos !== r.ojos && D.ojos[rv.ojos]) deRaza.push({ z: zDe("ojos", f), i: 1.5, rec: D.ojos[rv.ojos][talla][f - 1], mats: null, nombre: "ojos" });
+    const ret = (((af.razas_visual[spec.raza] || {}).retoques || {})[talla] || {})[String(f)];
+    (ret && Object.keys(ret).length ? capasRetocadas(deRaza, rv.mats, ret) : deRaza).forEach((c) => capas.push(c));
+    const sin = new Set(r.sin || []);
+    const eq = spec.equipo || {};
+    const casco = eq.cabeza && !sin.has("cabeza") ? D.cabeza[eq.cabeza] : null;
+    if (spec.pelo && !sin.has("pelo") && !(casco && casco.ocultaPelo)) capas.push({ z: zDe("pelo", f), i: 50, rec: (D.pelos[spec.pelo[0]] || {})[talla]?.[f - 1], mats: [spec.pelo[1]], nombre: "pelo" });
+    if (spec.barba) capas.push({ z: zDe("barba", f), i: 51, rec: (D.barbas[spec.barba[0]] || {})[talla]?.[f - 1], mats: [spec.barba[1]], nombre: "barba" });
+    Object.entries(eq).forEach(([ranura, id], j) => {
+      if (!id || sin.has(ranura) || ranura === sinRopa) return;
+      const tinte = (spec.tintes || {})[ranura];
+      if (ranura === "cabeza") { if (casco) capas.push({ z: zDe("cabeza", f), i: 60, rec: casco.t[talla][f - 1], mats: tine(casco.mats, tinte), nombre: "cabeza" }); return; }
+      if (ranura === "arma" || ranura === "mano_izq") {
+        const a = armaConj(id); const fm = a && formaConj(a.familia);
+        if (fm) { const m = a.mats; capas.push({ z: zDe(fm.ranura, f, fm.orden), i: 70 + j, rec: fm.t[talla][f - 1], mats: tine([m[0], m[1], m[2] || m[1], m[3] || m[2] || m[1]], tinte), nombre: ranura }); }
+        return;
+      }
+      const p = pieza(ranura, id); if (!p) return;
+      if (tinte) p.args = tine(p.args, tinte);
+      capas.push({ z: zDe(ranura, f), i: 60 + j, buf: capaRopa(p, id, talla, f), nombre: ranura });
+    });
+    capas.sort((a, b) => a.z - b.z || a.i - b.i);
+    capas.forEach((c) => { if (!c.buf) { c.buf = nuevoBuf(); pinta(c.buf, c.rec, c.mats); } });
+    return capas;
+  }
+
+  // --- pestaña Ropa ------------------------------------------------------------------
+  let rRanura = "torso", rId = null, rFrame = 8, rTono = null;
+  let rRaza = D.razas.race_human_marches ? "race_human_marches" : Object.keys(D.razas)[0];
+  const selRan = $("ropa_ranura");
+  RANURAS_ROPA.forEach((r) => selRan.appendChild(new Option(NOMBRE_RANURA[r], r)));
+  selRan.onchange = () => { rRanura = selRan.value; rId = null; montaLista(); refrescaRopa(); };
+  const selRaza = $("ropa_raza");
+  Object.keys(D.razas).sort((a, b) => nomR(a).localeCompare(nomR(b), "es")).forEach((id) => selRaza.appendChild(new Option(nomR(id) + " (" + D.razas[id].talla + ")", id)));
+  selRaza.value = rRaza; selRaza.onchange = () => { rRaza = selRaza.value; refrescaRopa(); };
+  function montaLista() {
+    const l = $("ropa_lista"); l.innerHTML = "";
+    piezasDe(rRanura).forEach(([id, p]) => {
+      const marca = ar.nuevas[id] ? " · nueva" : (ar.cambios[id] || ar.retoques[id] ? " · cambiada" : "");
+      l.appendChild(new Option(p.nombre + marca, id));
+    });
+    if (!rId || !pieza(rRanura, rId)) rId = l.options.length ? l.options[0].value : null;
+    l.value = rId;
+  }
+  $("ropa_lista").onchange = () => { rId = $("ropa_lista").value; refrescaRopa(); };
+  function ponPieza(p) {
+    // guarda la pieza: si es nueva, en «nuevas»; si es del catálogo, sus diferencias en «cambios»
+    if (ar.nuevas[rId]) { ar.nuevas[rId] = { ranura: rRanura, nombre: p.nombre, patron: p.patron, args: p.args }; }
+    else {
+      const base = rRanura === "capa" ? { nombre: D.capas[rId].nombre, args: D.capas[rId].mats } : D.piezas[rRanura][rId];
+      const c = {};
+      if (p.nombre !== base.nombre) c.nombre = p.nombre;
+      if (JSON.stringify(p.args) !== JSON.stringify(base.args)) c.args = p.args;
+      if (Object.keys(c).length) ar.cambios[rId] = c; else delete ar.cambios[rId];
+    }
+    guardaR();
+  }
+  function slug(t) { return t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "") || "pieza"; }
+  function idLibre(base) { let id = base, n = 2; const usado = (x) => ar.nuevas[x] || (D.piezas[rRanura] || {})[x] || D.capas[x]; while (usado(id)) id = base + "_" + n++; return id; }
+  $("ropa_nueva").onclick = () => {
+    const pats = Object.entries(D.patrones).filter(([, p]) => p.ranura === rRanura);
+    if (!pats.length && rRanura !== "capa") return avisaR("No hay patrones para esta ranura.");
+    const pid = rRanura === "capa" ? "capa:larga" : pats[0][0];
+    const pat = patron(pid);
+    const args = pat.params.map((p) => (p.tipo === "opt" ? p.valores[0] : p.tipo === "mat?" ? null : (p.defecto || "lino")));
+    const id = idLibre("forja_" + slug(rRanura));
+    ar.nuevas[id] = { ranura: rRanura, nombre: "Pieza nueva", patron: pid, args };
+    rId = id; guardaR(); montaLista(); refrescaRopa(); avisaR("Pieza nueva: elige el patrón, los materiales y ponle nombre.");
+  };
+  $("ropa_duplicar").onclick = () => {
+    const p = pieza(rRanura, rId); if (!p) return;
+    const id = idLibre("forja_" + slug(p.nombre));
+    ar.nuevas[id] = { ranura: rRanura, nombre: p.nombre + " (copia)", patron: p.patron, args: p.args.slice() };
+    if (ar.retoques[rId]) ar.retoques[id] = JSON.parse(JSON.stringify(ar.retoques[rId]));
+    rId = id; guardaR(); montaLista(); refrescaRopa(); avisaR("Copia hecha: es una pieza nueva.");
+  };
+  $("ropa_borrar").onclick = () => {
+    if (ar.nuevas[rId]) { delete ar.nuevas[rId]; delete ar.retoques[rId]; rId = null; avisaR("Pieza nueva quitada."); }
+    else { delete ar.cambios[rId]; delete ar.retoques[rId]; avisaR("La pieza vuelve a como estaba."); }
+    guardaR(); montaLista(); refrescaRopa();
+  };
+  const optsMat = (() => { const f = document.createDocumentFragment(); Object.keys(D.materiales).forEach((m) => f.appendChild(new Option(m, m))); return f; })();
+  function selMaterial(valor, opcional, onchange) {
+    const s = document.createElement("select");
+    if (opcional) s.appendChild(new Option("— sin —", ""));
+    s.appendChild(optsMat.cloneNode(true)); s.value = valor || ""; s.onchange = () => onchange(s.value || null);
+    return s;
+  }
+  function rampaHTML(m) { const r = rampa(m); const d = document.createElement("div"); d.className = "rampa"; (r ? r.slice(0, 5) : []).forEach((c) => { const i = document.createElement("i"); i.style.background = c; d.appendChild(i); }); return d; }
+  function montaParams() {
+    const p = pieza(rRanura, rId), cont = $("ropa_params"); cont.innerHTML = "";
+    const selP = $("ropa_patron"); selP.innerHTML = "";
+    if (!p) { $("ropa_nombre").value = ""; return; }
+    $("ropa_nombre").value = p.nombre;
+    const esNueva = !!ar.nuevas[rId];
+    const pats = rRanura === "capa" ? Object.keys(D.capaRender).map((l) => "capa:" + l) : Object.keys(D.patrones).filter((k) => D.patrones[k].ranura === rRanura);
+    pats.forEach((k) => selP.appendChild(new Option(k.split(":")[1].replace(/_/g, " "), k)));
+    selP.value = p.patron; selP.disabled = !esNueva;
+    selP.onchange = () => {
+      const pat = patron(selP.value);
+      const args = pat.params.map((q, k) => (q.tipo === "opt" ? q.valores[0] : q.tipo === "mat?" ? null : (p.args[k] && D.materiales[p.args[k]] ? p.args[k] : (q.defecto || "lino"))));
+      ponPieza({ nombre: p.nombre, patron: selP.value, args }); refrescaRopa();
+    };
+    const pat = patron(p.patron);
+    pat.params.forEach((q, k) => {
+      const div = document.createElement("div"); div.className = "hueco";
+      const lab = document.createElement("label"); lab.textContent = (q.tipo === "opt" ? "" : k + " · ") + q.n.replace(/_/g, " ");
+      div.appendChild(lab);
+      if (q.tipo === "opt") {
+        const s = document.createElement("select");
+        q.valores.forEach((v, i) => s.appendChild(new Option(v === null ? "—" : String(v).replace(/^fn:/, ""), String(i))));
+        s.value = String(Math.max(0, q.valores.findIndex((v) => JSON.stringify(v) === JSON.stringify(p.args[k]))));
+        s.onchange = () => { const a = p.args.slice(); a[k] = q.valores[+s.value]; ponPieza({ nombre: p.nombre, patron: p.patron, args: a }); refrescaRopa(); };
+        div.appendChild(s);
+      } else {
+        div.appendChild(selMaterial(p.args[k], q.tipo === "mat?", (m) => { const a = p.args.slice(); a[k] = m; ponPieza({ nombre: p.nombre, patron: p.patron, args: a }); refrescaRopa(); }));
+        div.appendChild(rampaHTML(p.args[k]));
+      }
+      cont.appendChild(div);
+    });
+    $("ropa_info").textContent = esNueva ? "Pieza nueva (" + rId + ")." : (ar.cambios[rId] ? "Pieza del juego, cambiada (" + rId + ")." : "Pieza del juego (" + rId + ").");
+  }
+  $("ropa_nombre").oninput = () => { const p = pieza(rRanura, rId); if (!p) return; p.nombre = $("ropa_nombre").value || p.nombre; ponPieza(p); montaLista(); };
+  // La paleta de al lado del lienzo: un grupo por material (sus cinco tonos), «borrar» y el color libre.
+  function pintaPaleta(cont, grupos, actual, elige) {
+    cont.innerHTML = "";
+    // el mismo material en varios huecos: un solo grupo (pinta con el primero)
+    const vistos = new Map();
+    grupos = grupos.filter((g) => { const o = vistos.get(g.mat); if (o) { o.partes.push(g.parte); return false; } g.partes = [g.parte]; vistos.set(g.mat, g); return true; });
+    grupos.forEach((g) => (g.nombre = g.partes.join(", ") + " · " + g.mat.replace(/_/g, " ")));
+    grupos.forEach(({ nombre, k, ram }) => {
+      const g = document.createElement("div"); g.className = "grupo";
+      const s = document.createElement("span"); s.textContent = nombre; s.title = nombre; g.appendChild(s);
+      const fila = document.createElement("div"); fila.className = "cinco";
+      [...TON].forEach((tn, j) => {
+        const b = document.createElement("button"), cod = k + tn; b.style.background = ram[j];
+        b.setAttribute("aria-label", nombre + ", tono " + (j + 1)); b.title = nombre + " · tono " + (j + 1);
+        b.setAttribute("aria-pressed", String(actual === cod)); b.onclick = () => elige(cod); fila.appendChild(b);
+      });
+      g.appendChild(fila); cont.appendChild(g);
+    });
+    const ex = document.createElement("div"); ex.className = "extra";
+    const bo = document.createElement("button"); bo.textContent = "Borrar"; bo.setAttribute("aria-pressed", String(actual === ".")); bo.onclick = () => elige("."); ex.appendChild(bo);
+    if (actual && actual[0] === "#") { const bc = document.createElement("button"); bc.textContent = "Color"; bc.style.borderLeft = "10px solid " + actual; bc.setAttribute("aria-pressed", "true"); bc.setAttribute("aria-label", "El color elegido"); ex.appendChild(bc); }
+    cont.appendChild(ex);
+  }
+  function montaTonos() {
+    const p = pieza(rRanura, rId), cont = $("ropa_tonos"); cont.innerHTML = "";
+    if (!p) return;
+    const pat = patron(p.patron);
+    const grupos = [];
+    pat.params.forEach((q, k) => { if (q.tipo === "opt") return; const ram = rampa(p.args[k]); if (ram) grupos.push({ parte: q.n.replace(/_/g, " "), mat: p.args[k], k, ram }); });
+    if (rTono === null && grupos.length) rTono = grupos[0].k + "s";
+    pintaPaleta(cont, grupos, rTono, (cod) => { rTono = cod; montaTonos(); });
+  }
+  function specRopa() {
+    const r = razaVis(rRaza);
+    const eq = {}; if (rId) eq[rRanura] = rId;
+    return { raza: rRaza, pelo: r.pelo, barba: r.barba, equipo: eq };
+  }
+  const botonesR = {};
+  function montaFramesR() {
+    const cont = $("ropa_frames"); cont.innerHTML = "";
+    DIRS.forEach((dir) => {
+      const fp = framesPor(dir);
+      ["A", "quieto", "B", "reposo1", "reposo2"].forEach((dib) => {
+        const f = fp[dib]; const b = document.createElement("button");
+        if (!f) { b.disabled = true; cont.appendChild(b); return; }
+        b.setAttribute("aria-label", NOMBRE_DIR[dir] + ", " + dib + " (frame " + f + ")");
+        const c = document.createElement("canvas"); c.width = c.height = N; b.appendChild(c);
+        b.onclick = () => { rFrame = f; refrescaRopa(); }; botonesR[f] = b; cont.appendChild(b);
+      });
+    });
+  }
+  function refrescaRopa() {
+    if ($("panel_ropa").hidden) return;
+    montaParams(); montaTonos();
+    const r = razaVis(rRaza); $("ropa_talla").textContent = r.talla;
+    const spec = specRopa();
+    Object.entries(botonesR).forEach(([f, b]) => {
+      aCanvas(b.querySelector("canvas").getContext("2d"), figura(spec, +f));
+      b.setAttribute("aria-pressed", String(+f === rFrame));
+      const tiene = rId && ((ar.retoques[rId] || {})[r.talla] || {})[f]; let m = b.querySelector(".marca");
+      if (tiene && !m) { m = document.createElement("span"); m.className = "marca"; b.appendChild(m); } if (!tiene && m) m.remove();
+    });
+    aCanvas($("ropa_grande").getContext("2d"), figura(spec, rFrame));
+  }
+  function celdaR(e) { const c = $("ropa_grande"), r = c.getBoundingClientRect(); return [Math.floor(((e.clientX - r.left) / r.width) * N), Math.floor(((e.clientY - r.top) / r.height) * N)]; }
+  function retoca(x, y, cod) {
+    if (!rId || x < 0 || y < 0 || x >= N || y >= N) return;
+    const t = razaVis(rRaza).talla;
+    ar.retoques[rId] = ar.retoques[rId] || {}; ar.retoques[rId][t] = ar.retoques[rId][t] || {};
+    const fr = (ar.retoques[rId][t][String(rFrame)] = ar.retoques[rId][t][String(rFrame)] || {});
+    if (cod === null) delete fr[x + "," + y]; else fr[x + "," + y] = cod;
+    if (!Object.keys(fr).length) delete ar.retoques[rId][t][String(rFrame)];
+    if (!Object.keys(ar.retoques[rId][t]).length) delete ar.retoques[rId][t];
+    if (!Object.keys(ar.retoques[rId]).length) delete ar.retoques[rId];
+    guardaR(); refrescaRopa();
+  }
+  let pintandoR = false, borrandoR = false;
+  $("ropa_usarColor").onclick = () => { rTono = $("ropa_color").value.toLowerCase(); montaTonos(); };
+  $("ropa_color").oninput = () => { rTono = $("ropa_color").value.toLowerCase(); montaTonos(); };
+  $("ropa_grande").addEventListener("contextmenu", (e) => e.preventDefault());
+  $("ropa_grande").addEventListener("pointerdown", (e) => { pintandoR = true; borrandoR = e.button === 2; const [x, y] = celdaR(e); retoca(x, y, borrandoR ? null : rTono); });
+  $("ropa_grande").addEventListener("pointermove", (e) => {
+    if (!pintandoR) return; const [x, y] = celdaR(e); const t = razaVis(rRaza).talla;
+    const actual = (((ar.retoques[rId] || {})[t] || {})[String(rFrame)] || {})[x + "," + y];
+    if (borrandoR ? actual !== undefined : actual !== rTono) retoca(x, y, borrandoR ? null : rTono);
+  });
+  window.addEventListener("pointerup", () => (pintandoR = false));
+  $("ropa_retDireccion").onclick = () => {
+    if (!rId) return; const t = razaVis(rRaza).talla, dir = dirDe(rFrame);
+    const estos = (((ar.retoques[rId] || {})[t] || {})[String(rFrame)]) || {};
+    Object.keys(D.direcciones).filter((f) => dirDe(+f) === dir && +f !== rFrame).forEach((f) => {
+      ar.retoques[rId] = ar.retoques[rId] || {}; ar.retoques[rId][t] = ar.retoques[rId][t] || {};
+      if (Object.keys(estos).length) ar.retoques[rId][t][f] = JSON.parse(JSON.stringify(estos)); else delete ar.retoques[rId][t][f];
+    });
+    guardaR(); refrescaRopa(); avisaR("Retoques copiados a los frames de " + NOMBRE_DIR[dir].toLowerCase() + ". En el paso de andar el cuerpo se mueve: revísalos.");
+  };
+  $("ropa_retQuitar").onclick = () => { const t = razaVis(rRaza).talla; if (ar.retoques[rId] && ar.retoques[rId][t]) { delete ar.retoques[rId][t][String(rFrame)]; if (!Object.keys(ar.retoques[rId][t]).length) delete ar.retoques[rId][t]; if (!Object.keys(ar.retoques[rId]).length) delete ar.retoques[rId]; } guardaR(); refrescaRopa(); };
+  let pasoR = 0;
+  function andaR() {
+    if ($("panel_ropa").hidden) return; const fp = framesPor(dirDe(rFrame));
+    const orden = [fp.A, fp.quieto, fp.B, fp.quieto]; aCanvas($("ropa_andando").getContext("2d"), figura(specRopa(), orden[pasoR++ % 4]));
+  }
+  $("ropa_cero").onclick = () => {
+    const b = $("ropa_cero"); if (b.dataset.seguro !== "1") { b.dataset.seguro = "1"; b.textContent = "Pulsa otra vez para borrarlo todo"; return; }
+    b.dataset.seguro = ""; b.textContent = "Empezar de cero"; ar = { nuevas: {}, cambios: {}, retoques: {}, conjuntos: {} }; guardaR(); montaLista(); refrescaRopa(); montaGuardados(); avisaR("Sin ajustes de ropa.");
+  };
+
+  // --- pestaña Conjuntos --------------------------------------------------------------
+  let cSpec = null, cFrame = 8;
+  function specDeRaza(id) { const r = razaVis(id); return { raza: id, pelo: r.pelo, barba: r.barba, equipo: JSON.parse(JSON.stringify(D.razas[id].equipo || {})) }; }
+  try { const g = localStorage.getItem("forja_conjunto"); if (g) cSpec = JSON.parse(g); } catch (e) {}
+  if (!cSpec || !D.razas[cSpec.raza]) cSpec = specDeRaza(D.razas.race_human_marches ? "race_human_marches" : Object.keys(D.razas)[0]);
+  const guardaC = () => { try { localStorage.setItem("forja_conjunto", JSON.stringify(cSpec)); } catch (e) {} };
+  function opcionesRanura(ranura) {
+    if (ranura === "cabeza") return Object.entries(D.cabeza).map(([id, c]) => [id, c.nombre]);
+    if (ranura === "arma" || ranura === "mano_izq") {
+      const ids = [...new Set([...Object.keys(D.armas), ...Object.keys(ajArmas().armas_nuevas || {})])];
+      return ids.map((id) => [id, armaConj(id)]).filter(([, a]) => a && formaConj(a.familia) && formaConj(a.familia).ranura === ranura).map(([id, a]) => [id, a.nombre]);
+    }
+    return piezasDe(ranura).map(([id, p]) => [id, p.nombre]);
+  }
+  function montaConj() {
+    const cont = $("conj_ranuras"); cont.innerHTML = "";
+    const fila = (texto, el) => { const l = document.createElement("label"); l.textContent = texto; const id = "conj_c_" + Math.random().toString(36).slice(2, 8); l.htmlFor = id; el.id = id; cont.appendChild(l); cont.appendChild(el); };
+    const sR = document.createElement("select");
+    Object.keys(D.razas).sort((a, b) => nomR(a).localeCompare(nomR(b), "es")).forEach((id) => sR.appendChild(new Option(nomR(id), id)));
+    sR.value = cSpec.raza; sR.onchange = () => { cSpec.raza = sR.value; guardaC(); montaConj(); refrescaConj(); }; fila("Raza", sR);
+    const r = D.razas[cSpec.raza], sin = new Set(r.sin || []);
+    const sP = document.createElement("select"); sP.appendChild(new Option("— calvo —", ""));
+    Object.keys(D.pelos).forEach((e) => sP.appendChild(new Option(e, e))); sP.value = cSpec.pelo ? cSpec.pelo[0] : ""; sP.disabled = sin.has("pelo");
+    const sPC = document.createElement("select"); D.coloresPelo.forEach((c) => sPC.appendChild(new Option(c.replace(/^pelo_/, ""), c)));
+    sPC.value = cSpec.pelo ? cSpec.pelo[1] : D.coloresPelo[0];
+    const ponPelo = () => { cSpec.pelo = sP.value ? [sP.value, sPC.value] : null; guardaC(); refrescaConj(); };
+    sP.onchange = ponPelo; sPC.onchange = ponPelo; fila("Pelo", sP); fila("Color", sPC);
+    const sB = document.createElement("select"); sB.appendChild(new Option("— sin barba —", ""));
+    Object.keys(D.barbas).forEach((b) => sB.appendChild(new Option(b.toLowerCase().replace(/_/g, " "), b))); sB.value = cSpec.barba ? cSpec.barba[0] : "";
+    sB.onchange = () => { cSpec.barba = sB.value ? [sB.value, (cSpec.pelo || [0, D.coloresPelo[0]])[1]] : null; guardaC(); refrescaConj(); }; fila("Barba", sB);
+    ["cabeza", "torso", "piernas", "pies", "capa", "arma", "mano_izq"].forEach((ranura) => {
+      const s = document.createElement("select"); s.appendChild(new Option("— nada —", ""));
+      opcionesRanura(ranura).sort((a, b) => a[1].localeCompare(b[1], "es")).forEach(([id, n]) => s.appendChild(new Option(n, id)));
+      s.value = (cSpec.equipo || {})[ranura] || ""; s.disabled = sin.has(ranura);
+      s.onchange = () => { cSpec.equipo = cSpec.equipo || {}; if (s.value) cSpec.equipo[ranura] = s.value; else delete cSpec.equipo[ranura]; guardaC(); refrescaConj(); };
+      fila(NOMBRE_RANURA[ranura], s);
+    });
+  }
+  $("conj_raza").onclick = () => { cSpec = specDeRaza(cSpec.raza); guardaC(); montaConj(); refrescaConj(); };
+  $("conj_nada").onclick = () => { cSpec.equipo = {}; guardaC(); montaConj(); refrescaConj(); };
+  const dirCanvas = {};
+  DIRS.forEach((dir) => { const c = document.createElement("canvas"); c.width = c.height = N; c.setAttribute("aria-label", NOMBRE_DIR[dir] + ", andando"); $("conj_dirs").appendChild(c); dirCanvas[dir] = c; });
+  const botonesC = {};
+  (function () {
+    const cont = $("conj_frames");
+    DIRS.forEach((dir) => { const fp = framesPor(dir); ["A", "quieto", "B", "reposo1", "reposo2"].forEach((dib) => {
+      const f = fp[dib]; const b = document.createElement("button"); if (!f) { b.disabled = true; cont.appendChild(b); return; }
+      b.setAttribute("aria-label", NOMBRE_DIR[dir] + ", " + dib); const c = document.createElement("canvas"); c.width = c.height = N; b.appendChild(c);
+      b.onclick = () => { cFrame = f; refrescaConj(); }; botonesC[f] = b; cont.appendChild(b); }); });
+  })();
+  function refrescaConj() {
+    if ($("panel_conj").hidden) return;
+    Object.entries(botonesC).forEach(([f, b]) => { aCanvas(b.querySelector("canvas").getContext("2d"), figura(cSpec, +f)); b.setAttribute("aria-pressed", String(+f === cFrame)); });
+    aCanvas($("conj_grande").getContext("2d"), figura(cSpec, cFrame));
+  }
+  let pasoC = 0;
+  function andaC() {
+    if ($("panel_conj").hidden) return;
+    DIRS.forEach((dir) => { const fp = framesPor(dir); const o = [fp.A, fp.quieto, fp.B, fp.quieto]; aCanvas(dirCanvas[dir].getContext("2d"), figura(cSpec, o[pasoC % 4])); });
+    pasoC++;
+  }
+  function montaGuardados() {
+    const l = $("conj_guardados"); l.innerHTML = "";
+    Object.keys(ar.conjuntos).sort((a, b) => a.localeCompare(b, "es")).forEach((n) => l.appendChild(new Option(n + " · " + (D.razas[ar.conjuntos[n].raza] ? nomR(ar.conjuntos[n].raza) : ""), n)));
+  }
+  $("conj_guardar").onclick = () => { const n = $("conj_nombreGuardar").value.trim(); if (!n) { $("conj_nombreGuardar").focus(); return; } ar.conjuntos[n] = JSON.parse(JSON.stringify(cSpec)); guardaR(); montaGuardados(); $("conj_guardados").value = n; };
+  $("conj_abrir").onclick = () => { const n = $("conj_guardados").value; if (!n || !ar.conjuntos[n]) return; cSpec = JSON.parse(JSON.stringify(ar.conjuntos[n])); $("conj_nombreGuardar").value = n; guardaC(); montaConj(); refrescaConj(); };
+  $("conj_quitar").onclick = () => { const n = $("conj_guardados").value; if (!n) return; delete ar.conjuntos[n]; guardaR(); montaGuardados(); };
+
+  // --- fichas: campos de las pestañas Razas y Clases ----------------------------------------------
+  const STATS = ["CON", "DES", "INT", "CAR"];
+  const canon = (x) => (x && typeof x === "object" && !Array.isArray(x) ? Object.keys(x).sort().map((k) => [k, canon(x[k])]) : Array.isArray(x) ? x.map(canon) : x);
+  const igual = (a, b) => JSON.stringify(canon(a)) === JSON.stringify(canon(b));
+  const original = (tipo, id, k) => (D.fichas[tipo][id] || {})[k];
+  const valorF = (tipo, id, k) => { const c = af[tipo][id]; return c && k in c ? c[k] : original(tipo, id, k); };
+  function ponF(tipo, id, k, v) {
+    const o = original(tipo, id, k);
+    if (igual(v, o) || (v == null && o == null)) { if (af[tipo][id]) { delete af[tipo][id][k]; if (!Object.keys(af[tipo][id]).length) delete af[tipo][id]; } }
+    else { af[tipo][id] = af[tipo][id] || {}; af[tipo][id][k] = v; }
+    guardaF();
+  }
+  const nombreRaza = nomR;
+  const quitaAcentos = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  // Pinta los campos [{k, et, tipo, ops?}] de una ficha. tipo: texto | largo | num | sel | lista | lineas | stats | rasgo | bool
+  function montaCampos(cont, tipo, id, campos, alCambiar) {
+    cont.innerHTML = "";
+    campos.forEach((c) => {
+      const caja = document.createElement("div"), uid = tipo + "_" + c.k;
+      const lab = document.createElement("label"); lab.textContent = c.et; lab.htmlFor = uid; caja.appendChild(lab);
+      const v = valorF(tipo, id, c.k);
+      const marca = () => caja.classList.toggle("cambiado", !!(af[tipo][id] && c.k in af[tipo][id]));
+      const pon = (x) => { ponF(tipo, id, c.k, x); marca(); if (alCambiar) alCambiar(c.k); };
+      let el;
+      if (c.tipo === "largo" || c.tipo === "lineas") {
+        el = document.createElement("textarea"); el.value = c.tipo === "lineas" ? (v || []).join("\n") : v || "";
+        el.onchange = () => pon(c.tipo === "lineas" ? el.value.split("\n").map((x) => x.trim()).filter(Boolean) : el.value);
+      } else if (c.tipo === "sel") {
+        el = document.createElement("select"); if (c.nulo) el.appendChild(new Option("— ninguno —", ""));
+        [...new Set([...(c.ops || []), ...(v != null ? [v] : [])])].forEach((o) => el.appendChild(new Option(String(o), String(o))));
+        el.value = v == null ? "" : String(v); el.onchange = () => pon(el.value === "" ? null : el.value);
+      } else if (c.tipo === "num") {
+        el = document.createElement("input"); el.type = "number"; el.step = c.paso || "1"; el.value = v == null ? "" : v;
+        el.onchange = () => pon(el.value === "" ? null : Number(el.value));
+      } else if (c.tipo === "bool") {
+        el = document.createElement("select"); [["", "— sin decir (no) —"], ["true", "sí"], ["false", "no"]].forEach(([a, b]) => el.appendChild(new Option(b, a)));
+        el.value = v == null ? "" : String(v); el.onchange = () => pon(el.value === "" ? null : el.value === "true");
+      } else if (c.tipo === "stats") {
+        el = document.createElement("div"); el.className = "par"; lab.removeAttribute("for"); lab.id = uid + "_t"; el.setAttribute("role", "group"); el.setAttribute("aria-labelledby", lab.id);
+        STATS.forEach((s) => {
+          const d = document.createElement("div"), l = document.createElement("label"), i = document.createElement("input");
+          l.textContent = s; i.type = "number"; i.step = c.paso || "1"; i.id = uid + "_" + s; l.htmlFor = i.id; i.value = v && s in v ? v[s] : "";
+          i.onchange = () => { const o = {}; el.querySelectorAll("input").forEach((x, j) => { if (x.value !== "") o[STATS[j]] = Number(x.value); else if (c.todos) o[STATS[j]] = 0; }); pon(o); };
+          d.appendChild(l); d.appendChild(i); el.appendChild(d);
+        });
+        caja.appendChild(el); marca(); cont.appendChild(caja); return;
+      } else if (c.tipo === "rasgo") {
+        el = document.createElement("div"); el.className = "campos"; lab.htmlFor = uid + "_n";
+        const n = document.createElement("input"); n.type = "text"; n.id = uid + "_n"; n.placeholder = "nombre"; n.value = (v || {}).name || "";
+        const d = document.createElement("textarea"); d.placeholder = "qué hace"; d.setAttribute("aria-label", c.et + ": qué hace"); d.value = (v || {}).description || "";
+        const ch = () => pon(n.value || d.value ? Object.assign({}, v || {}, { name: n.value, description: d.value }) : null);
+        n.onchange = ch; d.onchange = ch; el.appendChild(n); el.appendChild(d);
+        caja.appendChild(el); marca(); cont.appendChild(caja); return;
+      } else {
+        el = document.createElement("input"); el.type = "text";
+        el.value = c.tipo === "lista" ? (v || []).join(", ") : v || "";
+        el.onchange = () => pon(c.tipo === "lista" ? el.value.split(",").map((x) => x.trim()).filter(Boolean) : el.value);
+      }
+      el.id = uid; caja.appendChild(el); marca(); cont.appendChild(caja);
+    });
+  }
+  function filtraLista(sel, filtro, entradas, actual) {
+    const q = quitaAcentos(filtro.trim());
+    sel.innerHTML = "";
+    entradas.filter(([id, txt]) => !q || quitaAcentos(id + " " + txt).includes(q))
+      .forEach(([id, txt, marca]) => sel.appendChild(new Option((marca ? "• " : "") + txt, id)));
+    if (actual && [...sel.options].some((o) => o.value === actual)) sel.value = actual;
+  }
+  function montaSalida(pre, alCargar) {
+    const avisa = (m) => { $(pre + "_estado").textContent = m; };
+    $(pre + "_cero").onclick = () => {
+      const b = $(pre + "_cero"); if (b.dataset.seguro !== "1") { b.dataset.seguro = "1"; b.textContent = "Pulsa otra vez para borrarlo todo"; return; }
+      b.dataset.seguro = ""; b.textContent = "Empezar de cero"; CLAVES_F.forEach((k) => (af[k] = {})); guardaF(); alCargar(); avisa("Sin ajustes de razas ni clases.");
+    };
+  }
+  function cuatroDirs(cont) { const out = {}; DIRS.forEach((dir) => { const c = document.createElement("canvas"); c.width = c.height = N; c.setAttribute("aria-label", NOMBRE_DIR[dir] + ", andando"); cont.appendChild(c); out[dir] = c; }); return out; }
+  function andaDirs(canvas, spec, paso) { DIRS.forEach((dir) => { const fp = framesPor(dir); const o = [fp.A, fp.quieto, fp.B, fp.quieto]; aCanvas(canvas[dir].getContext("2d"), figura(spec, o[paso % 4])); }); }
+
+  // --- pestaña Razas ---------------------------------------------------------------------
+  const RAREZAS = ["common", "uncommon", "rare", "epic", "legendary"];
+  const CAMPOS_RAZA = [
+    { k: "name", et: "Nombre", tipo: "texto" }, { k: "description", et: "Descripción", tipo: "largo" },
+    { k: "flavorText", et: "Texto de ambiente", tipo: "largo" },
+    { k: "rarity", et: "Rareza", tipo: "sel", ops: RAREZAS }, { k: "tier", et: "Tier", tipo: "num" },
+    { k: "statBonuses", et: "Bonos de estadística", tipo: "stats", todos: true },
+    { k: "passiveTrait", et: "Rasgo pasivo", tipo: "rasgo" }, { k: "activeTrait", et: "Rasgo activo", tipo: "rasgo" },
+    { k: "affinities", et: "Afinidades (separadas por comas)", tipo: "lista" },
+    { k: "compatibleDeities", et: "Deidades compatibles (comas)", tipo: "lista" },
+    { k: "limitations", et: "Limitaciones (una por línea)", tipo: "lineas" },
+    { k: "narrativeTags", et: "Etiquetas de historia (comas)", tipo: "lista" },
+    { k: "unlocks", et: "Desbloquea (ids, comas)", tipo: "lista" },
+  ];
+  let zRaza = D.razas.race_human_marches ? "race_human_marches" : Object.keys(D.razas)[0];
+  try { const g = localStorage.getItem("forja_raza"); if (g && D.razas[g]) zRaza = g; } catch (e) {}
+  const zDirs = cuatroDirs($("raza_dirs"));
+  const listaRazas = () => Object.keys(D.razas).map((id) => [id, nombreRaza(id), !!(af.razas[id] || af.razas_visual[id])]).sort((a, b) => a[1].localeCompare(b[1], "es"));
+  const pintaListaRazas = () => filtraLista($("raza_lista"), $("raza_filtro").value, listaRazas(), zRaza);
+  $("raza_filtro").oninput = pintaListaRazas;
+  $("raza_lista").onchange = () => { zRaza = $("raza_lista").value; try { localStorage.setItem("forja_raza", zRaza); } catch (e) {} montaRaza(); };
+  // el aspecto: solo lo que cambia respecto a la raza del juego
+  const baseVis = (id) => { const r = D.razas[id]; return { talla: r.talla, ojos: r.ojos, mats: r.mats, pelo: r.pelo || null, barba: r.barba || null }; };
+  function ponVis(cambios) {
+    const base = baseVis(zRaza), vis = Object.assign({}, af.razas_visual[zRaza] || {}, cambios);
+    Object.keys(vis).forEach((k) => { if (igual(vis[k], base[k])) delete vis[k]; });
+    if (Object.keys(vis).length) af.razas_visual[zRaza] = vis; else delete af.razas_visual[zRaza];
+    guardaF(); montaAspecto(); pintaListaRazas(); montaTonosZ(); refrescaDib();
+  }
+  function montaAspecto() {
+    const r = D.razas[zRaza], rv = razaVis(zRaza), vis = af.razas_visual[zRaza] || {}, cont = $("raza_aspecto"); cont.innerHTML = "";
+    const sin = new Set(r.sin || []);
+    const fila = (texto, el, k, marcado) => { const l = document.createElement("label"); l.textContent = texto; el.id = "raza_v_" + k; l.htmlFor = el.id; if (marcado) l.className = "cambiado"; cont.appendChild(l); cont.appendChild(el); };
+    const sel = (ops, v, alCambiar) => { const s = document.createElement("select"); ops.forEach(([a, b]) => s.appendChild(new Option(b, a))); s.value = v == null ? "" : v; s.onchange = () => alCambiar(s.value); return s; };
+    fila("Talla", sel(D.tallas.map((x) => [x, x]), rv.talla, (v) => ponVis({ talla: v })), "talla", "talla" in vis);
+    fila("Ojos", sel(Object.keys(D.ojos).map((x) => [x, x]), rv.ojos, (v) => ponVis({ ojos: v })), "ojos", "ojos" in vis);
+    const color = (rv.pelo || rv.barba || [0, D.coloresPelo[0]])[1];
+    const sP = sel([["", "— calvo —"], ...Object.keys(D.pelos).map((x) => [x, x])], rv.pelo ? rv.pelo[0] : "", (v) => ponVis({ pelo: v ? [v, color] : null }));
+    sP.disabled = sin.has("pelo"); fila("Pelo", sP, "pelo", "pelo" in vis);
+    fila("Color", sel(D.coloresPelo.map((c) => [c, c.replace(/^pelo_/, "")]), color,
+      (v) => ponVis({ pelo: rv.pelo ? [rv.pelo[0], v] : null, barba: rv.barba ? [rv.barba[0], v] : null })), "color", false);
+    fila("Barba", sel([["", "— sin barba —"], ...Object.keys(D.barbas).map((b) => [b, b.toLowerCase().replace(/_/g, " ")])], rv.barba ? rv.barba[0] : "",
+      (v) => ponVis({ barba: v ? [v, color] : null })), "barba", "barba" in vis);
+    const mats = $("raza_mats"); mats.innerHTML = "";
+    r.slots.forEach((etiqueta, i) => {
+      const h = document.createElement("div"); h.className = "hueco";
+      const l = document.createElement("label"); l.textContent = etiqueta; if (rv.mats[i] !== r.mats[i]) l.className = "cambiado";
+      const s = selMaterial(rv.mats[i], false, (m) => { const nm = rv.mats.slice(); nm[i] = m || r.mats[i]; ponVis({ mats: nm }); });
+      s.id = "raza_m_" + i; l.htmlFor = s.id; h.appendChild(l); h.appendChild(s); h.appendChild(rampaHTML(rv.mats[i])); mats.appendChild(h);
+    });
+  }
+  function specRaza() { const rv = razaVis(zRaza); return { raza: zRaza, pelo: rv.pelo, barba: rv.barba, equipo: $("raza_conRopa").checked ? JSON.parse(JSON.stringify(D.razas[zRaza].equipo || {})) : {} }; }
+  function montaRaza() {
+    pintaListaRazas(); montaAspecto(); montaTonosZ(); refrescaDib();
+    montaCampos($("raza_campos"), "razas", zRaza, CAMPOS_RAZA, () => pintaListaRazas());
+  }
+  // dibujar: razas_visual[id].retoques[talla][frame]["x,y"] = código (como los retoques de la ropa)
+  let zFrame = 8, zTono = "0s";
+  const botonesZ = {};
+  (function () {
+    const cont = $("raza_frames");
+    DIRS.forEach((dir) => { const fp = framesPor(dir); ["A", "quieto", "B", "reposo1", "reposo2"].forEach((dib) => {
+      const f = fp[dib]; const b = document.createElement("button"); if (!f) { b.disabled = true; cont.appendChild(b); return; }
+      b.setAttribute("aria-label", NOMBRE_DIR[dir] + ", " + dib + " (frame " + f + ")"); const c = document.createElement("canvas"); c.width = c.height = N; b.appendChild(c);
+      b.onclick = () => { zFrame = f; refrescaDib(); }; botonesZ[f] = b; cont.appendChild(b); }); });
+  })();
+  const retZ = () => (af.razas_visual[zRaza] || {}).retoques || {};
+  function specDib() { const rv = razaVis(zRaza), con = $("raza_dibPelo").checked; return { raza: zRaza, pelo: con ? rv.pelo : null, barba: con ? rv.barba : null, equipo: {} }; }
+  function montaTonosZ() {
+    const r = D.razas[zRaza], rv = razaVis(zRaza), grupos = [];
+    r.slots.forEach((et, k) => { const ram = rampa(rv.mats[k]); if (ram) grupos.push({ parte: et, mat: rv.mats[k], k, ram }); });
+    pintaPaleta($("raza_tonos"), grupos, zTono, (cod) => { zTono = cod; montaTonosZ(); });
+  }
+  function refrescaDib() {
+    if ($("panel_razas").hidden) return;
+    const t = razaVis(zRaza).talla, spec = specDib(), ret = retZ()[t] || {};
+    $("raza_tallaDib").textContent = t;
+    Object.entries(botonesZ).forEach(([f, b]) => {
+      aCanvas(b.querySelector("canvas").getContext("2d"), figura(spec, +f)); b.setAttribute("aria-pressed", String(+f === zFrame));
+      const tiene = ret[f] && Object.keys(ret[f]).length; let m = b.querySelector(".marca");
+      if (tiene && !m) { m = document.createElement("span"); m.className = "marca"; b.appendChild(m); } if (!tiene && m) m.remove();
+    });
+    aCanvas($("raza_grande").getContext("2d"), figura(spec, zFrame));
+  }
+  function ponRet(t, f, fr) {  // fr: {"x,y": código} de ese frame (o null)
+    const vis = Object.assign({}, af.razas_visual[zRaza] || {}), rt = JSON.parse(JSON.stringify(vis.retoques || {}));
+    rt[t] = rt[t] || {}; if (fr && Object.keys(fr).length) rt[t][String(f)] = fr; else delete rt[t][String(f)];
+    if (!Object.keys(rt[t]).length) delete rt[t];
+    if (Object.keys(rt).length) vis.retoques = rt; else delete vis.retoques;
+    if (Object.keys(vis).length) af.razas_visual[zRaza] = vis; else delete af.razas_visual[zRaza];
+  }
+  function dibuja(x, y, cod) {
+    if (x < 0 || y < 0 || x >= N || y >= N) return;
+    const t = razaVis(zRaza).talla, fr = Object.assign({}, (retZ()[t] || {})[String(zFrame)] || {});
+    if (cod === null) delete fr[x + "," + y]; else fr[x + "," + y] = cod;
+    ponRet(t, zFrame, fr); guardaF(); refrescaDib(); pintaListaRazas();
+  }
+  const celdaZ = (e) => { const c = $("raza_grande"), r = c.getBoundingClientRect(); return [Math.floor(((e.clientX - r.left) / r.width) * N), Math.floor(((e.clientY - r.top) / r.height) * N)]; };
+  let pintandoZ = false, quitandoZ = false;
+  $("raza_grande").addEventListener("contextmenu", (e) => e.preventDefault());
+  $("raza_grande").addEventListener("pointerdown", (e) => { pintandoZ = true; quitandoZ = e.button === 2; const [x, y] = celdaZ(e); dibuja(x, y, quitandoZ ? null : zTono); });
+  $("raza_grande").addEventListener("pointermove", (e) => {
+    if (!pintandoZ) return; const [x, y] = celdaZ(e), t = razaVis(zRaza).talla;
+    const actual = ((retZ()[t] || {})[String(zFrame)] || {})[x + "," + y];
+    if (quitandoZ ? actual !== undefined : actual !== zTono) dibuja(x, y, quitandoZ ? null : zTono);
+  });
+  window.addEventListener("pointerup", () => (pintandoZ = false));
+  $("raza_usarColor").onclick = () => { zTono = $("raza_color").value.toLowerCase(); montaTonosZ(); };
+  $("raza_color").oninput = () => { zTono = $("raza_color").value.toLowerCase(); montaTonosZ(); };
+  $("raza_dibPelo").onchange = refrescaDib;
+  $("raza_retDireccion").onclick = () => {
+    const t = razaVis(zRaza).talla, dir = dirDe(zFrame), estos = (retZ()[t] || {})[String(zFrame)] || {};
+    Object.keys(D.direcciones).filter((f) => dirDe(+f) === dir && +f !== zFrame).forEach((f) => ponRet(t, f, JSON.parse(JSON.stringify(estos))));
+    guardaF(); refrescaDib(); $("raza_estadoDib").textContent = "Copiado a los frames de " + NOMBRE_DIR[dir].toLowerCase() + ". Al andar el cuerpo se mueve: revísalos.";
+  };
+  $("raza_retQuitar").onclick = () => { ponRet(razaVis(zRaza).talla, zFrame, null); guardaF(); refrescaDib(); pintaListaRazas(); };
+
+  $("raza_quitarFicha").onclick = () => { delete af.razas[zRaza]; guardaF(); montaRaza(); };
+  $("raza_quitarAspecto").onclick = () => { delete af.razas_visual[zRaza]; guardaF(); montaRaza(); };
+  montaSalida("raza", () => montaRaza());
+
+  // --- pestaña Clases ----------------------------------------------------------------------
+  const ROLES = [...new Set(Object.values(D.fichas.clases).map((c) => c.role).filter(Boolean))];
+  const CAMPOS_CLASE = [
+    { k: "name", et: "Nombre", tipo: "texto" }, { k: "description", et: "Descripción", tipo: "largo" },
+    { k: "flavorText", et: "Texto de ambiente", tipo: "largo" },
+    { k: "role", et: "Rol", tipo: "sel", ops: ROLES },
+    { k: "rarity", et: "Rareza", tipo: "sel", ops: RAREZAS }, { k: "tier", et: "Tier", tipo: "num" },
+    { k: "playable", et: "Se puede elegir al crear personaje", tipo: "bool" },
+    { k: "baseHealth", et: "Vida de base", tipo: "num" },
+    { k: "healthScaling", et: "Vida por punto de estadística", tipo: "stats", paso: "0.5" },
+    { k: "primaryStat", et: "Estadística principal", tipo: "sel", ops: STATS, nulo: true },
+    { k: "secondaryStat", et: "Estadística secundaria", tipo: "sel", ops: STATS, nulo: true },
+    { k: "primaryResource", et: "Recurso principal", tipo: "texto" }, { k: "secondaryResource", et: "Recurso secundario", tipo: "texto" },
+    { k: "maxArmorWeight", et: "Armadura más pesada", tipo: "sel", ops: ["ligera", "media", "pesada"] },
+    { k: "maxWeaponWeight", et: "Arma más pesada", tipo: "sel", ops: ["ligera", "media", "pesada"] },
+    { k: "allowedEquipmentTags", et: "Etiquetas permitidas (comas)", tipo: "lista" },
+    { k: "restrictedTags", et: "Etiquetas prohibidas (comas)", tipo: "lista" },
+  ];
+  const NOMBRE_ROL = { balanced: "equilibrada", caster: "lanzadora", agile: "ágil", support: "apoyo", tank: "tanque", striker: "golpeadora" };
+  const RANURA_SLOT = { Head: "cabeza", Torso: "torso", Legs: "piernas", Feet: "pies", MainHand: "arma", OffHand: "mano_izq" };
+  let kClase = Object.keys(D.fichas.clases).sort()[0], kRaza = zRaza;
+  try { const g = localStorage.getItem("forja_clase"); if (g && D.fichas.clases[g]) kClase = g; } catch (e) {}
+  const kDirs = cuatroDirs($("clase_dirs"));
+  const nombreClase = (id) => valorF("clases", id, "name") || id;
+  const listaClases = () => Object.keys(D.fichas.clases).map((id) => { const rol = valorF("clases", id, "role"); return [id, nombreClase(id) + " · " + (NOMBRE_ROL[rol] || rol || ""), !!af.clases[id]]; }).sort((a, b) => a[1].localeCompare(b[1], "es"));
+  const pintaListaClases = () => filtraLista($("clase_lista"), $("clase_filtro").value, listaClases(), kClase);
+  $("clase_filtro").oninput = pintaListaClases;
+  $("clase_lista").onchange = () => { kClase = $("clase_lista").value; try { localStorage.setItem("forja_clase", kClase); } catch (e) {} montaClase(); };
+  const sRazaC = $("clase_raza");
+  // la pieza que se ve de un objeto: la elegida a mano o la del catálogo del juego
+  const visualDe = (oid) => { const p = af.objetos_visual[oid]; if (p) return { ranura: p.ranura, pieza: p.pieza, tinte: null }; const v = D.fichas.visual[oid]; return v ? { ranura: v.ranura, pieza: v.pieza, tinte: v.tinte } : null; };
+  const ranuraBase = (k) => (D.armasFam[D.bases[k][0]] || {}).ranura;
+  const cachePV = {};
+  function piezasVisuales(ranura) {
+    if (ranura === "arma" || ranura === "mano_izq") return cachePV.armas || (cachePV.armas = Object.entries(D.bases).map(([k, b]) => [k, b[1] + (ranuraBase(k) === "mano_izq" ? " (otra mano)" : "")]));
+    if (ranura === "cabeza") return Object.entries(D.cabeza).map(([id, c]) => [id, c.nombre]);
+    return piezasDe(ranura).map(([id, p]) => [id, p.nombre]);
+  }
+  const nombrePieza = (ranura, pz) => { const o = piezasVisuales(ranura).find(([k]) => k === pz); return o ? o[1] : pz; };
+  function specClase() {
+    const rv = razaVis(kRaza), eq = $("clase_conRopa").checked ? JSON.parse(JSON.stringify(D.razas[kRaza].equipo || {})) : {}, tintes = {}, puesto = new Set();
+    (valorF("clases", kClase, "startingEquipment") || []).forEach((oid) => {
+      const v = visualDe(oid); if (!v || puesto.has(v.ranura)) return;
+      puesto.add(v.ranura); eq[v.ranura] = v.pieza; if (v.tinte && v.tinte.length) tintes[v.ranura] = v.tinte;
+    });
+    return { raza: kRaza, pelo: rv.pelo, barba: rv.barba, equipo: eq, tintes };
+  }
+  function montaEquipo() {
+    const ul = $("clase_equipo"); ul.innerHTML = "";
+    const lista = valorF("clases", kClase, "startingEquipment") || [];
+    $("clase_equipoTitulo").classList.toggle("cambiado", !!(af.clases[kClase] && "startingEquipment" in af.clases[kClase]));
+    if (!lista.length) { const li = document.createElement("li"); li.textContent = "Sin equipo inicial."; ul.appendChild(li); }
+    lista.forEach((oid, i) => {
+      const o = D.fichas.equipo[oid] || { name: oid + " (no está en el catálogo)", slot: "" };
+      const li = document.createElement("li"), cab = document.createElement("div"); cab.className = "cab";
+      const n = document.createElement("strong"); n.textContent = o.name;
+      const extra = document.createElement("span"); extra.textContent = [o.slot, o.weightCategory, o.twoHanded ? "a dos manos" : ""].filter(Boolean).join(" · ");
+      const q = document.createElement("button"); q.textContent = "Quitar"; q.setAttribute("aria-label", "Quitar " + o.name);
+      q.onclick = () => { const l = lista.slice(); l.splice(i, 1); ponF("clases", kClase, "startingEquipment", l); montaEquipo(); pintaListaClases(); };
+      cab.appendChild(n); cab.appendChild(extra); cab.appendChild(q); li.appendChild(cab);
+      const deSiempre = D.fichas.visual[oid], ranura = (deSiempre && deSiempre.ranura) || RANURA_SLOT[o.slot];
+      if (!ranura) { const p = document.createElement("span"); p.className = "ayuda"; p.textContent = "No se ve puesto (abalorio)."; li.appendChild(p); ul.appendChild(li); return; }
+      const s = document.createElement("select"); s.id = "clase_vis_" + i;
+      s.appendChild(new Option(deSiempre ? "Como en el juego: " + nombrePieza(deSiempre.ranura, deSiempre.pieza) : "— no se ve —", ""));
+      piezasVisuales(ranura).slice().sort((a, b) => a[1].localeCompare(b[1], "es")).forEach(([k, nm]) => s.appendChild(new Option(nm, k)));
+      s.value = (af.objetos_visual[oid] || {}).pieza || "";
+      s.onchange = () => {
+        if (s.value) af.objetos_visual[oid] = { ranura: D.bases[s.value] ? ranuraBase(s.value) || ranura : ranura, pieza: s.value };
+        else delete af.objetos_visual[oid];
+        guardaF(); montaEquipo();
+      };
+      const l = document.createElement("label"); l.textContent = "Cómo se ve"; l.htmlFor = s.id; l.style.margin = "0"; if (af.objetos_visual[oid]) l.className = "cambiado";
+      li.appendChild(l); li.appendChild(s); ul.appendChild(li);
+    });
+  }
+  const objetos = Object.values(D.fichas.equipo).sort((a, b) => a.name.localeCompare(b.name, "es"));
+  $("clase_buscaObjeto").placeholder = "buscar en el catálogo (" + objetos.length + ")";
+  function pintaObjetos() {
+    const q = quitaAcentos($("clase_buscaObjeto").value.trim()), s = $("clase_objeto"); s.innerHTML = "";
+    objetos.filter((o) => !q || quitaAcentos(o.id + " " + o.name + " " + o.slot).includes(q)).slice(0, 300).forEach((o) => s.appendChild(new Option(o.name + " · " + o.slot + (o.weightCategory ? " · " + o.weightCategory : ""), o.id)));
+  }
+  $("clase_buscaObjeto").oninput = pintaObjetos;
+  $("clase_anadir").onclick = () => { const oid = $("clase_objeto").value; if (!oid) return; const l = (valorF("clases", kClase, "startingEquipment") || []).slice(); if (!l.includes(oid)) l.push(oid); ponF("clases", kClase, "startingEquipment", l); montaEquipo(); pintaListaClases(); };
+  function montaClase() {
+    if (!sRazaC.options.length) Object.keys(D.razas).sort((a, b) => nombreRaza(a).localeCompare(nombreRaza(b), "es")).forEach((id) => sRazaC.appendChild(new Option(nombreRaza(id), id)));
+    sRazaC.value = kRaza; pintaListaClases(); montaEquipo(); pintaObjetos();
+    montaCampos($("clase_campos"), "clases", kClase, CAMPOS_CLASE, () => pintaListaClases());
+  }
+  sRazaC.onchange = () => { kRaza = sRazaC.value; };
+  $("clase_quitar").onclick = () => { delete af.clases[kClase]; guardaF(); montaClase(); };
+  montaSalida("clase", () => montaClase());
+  let pasoF = 0;
+  function andaF() {
+    if (!$("panel_razas").hidden) andaDirs(zDirs, specRaza(), pasoF);
+    if (!$("panel_clases").hidden) andaDirs(kDirs, specClase(), pasoF);
+    pasoF++;
+  }
+
+  // --- pestaña Animaciones ---------------------------------------------------------------------
+  // Igual que tools/actores_animaciones.py (mover_capa): cada frame sale de uno de los 20 de siempre moviendo
+  // partes del cuerpo; cada píxel de cada capa va con la parte más cercana (D.animBase: el mapa de zonas).
+  const ETQ = "hntpaAmMlLfF", BRAZO_DE = { m: "a", M: "A" }, RELLENO = 2;
+  const ZONA_FIJA = { pelo: "h", barba: "h", cabeza: "h", ojos: "h", capa: "t", alas: "t", cola: "p" };
+  const ORDEN_ZONAS = { lado: "amlftpnhLFAM", frente: "tpnlfLFhamAM" };
+  const ESPEJO_BASE = { 4: 10, 5: 11, 6: 12, 15: 19, 16: 20 };
+  const GIRAN = ["todo", "arma", "escudo"];
+  const GRUPOS_UI = ["todo", "tronco", "cabeza", "torso", "cadera", "brazo_arma", "mano_arma", "brazo_otro", "mano_otra", "pierna_1", "pie_1", "pierna_2", "pie_2", "arma", "escudo"];
+  const lado = (d) => d === "derecha" || d === "izquierda";
+  function nombreGrupo(g, d) {
+    const l = lado(d);
+    return { todo: "Todo el cuerpo", tronco: "De cintura arriba", cabeza: "Cabeza", torso: "Torso", cadera: "Cadera",
+      brazo_arma: "Brazo del arma", mano_arma: "Mano del arma", brazo_otro: "El otro brazo", mano_otra: "La otra mano",
+      pierna_1: l ? "Pierna de atrás" : "Pierna izquierda (en pantalla)", pie_1: l ? "Pie de atrás" : "Pie izquierdo (en pantalla)",
+      pierna_2: l ? "Pierna de delante" : "Pierna derecha (en pantalla)", pie_2: l ? "Pie de delante" : "Pie derecho (en pantalla)",
+      arma: "Arma", escudo: "Escudo / otra mano" }[g];
+  }
+  function gruposDe(d) {
+    const ma = D.manos.arma[d], mo = ma === "m" ? "M" : "m";
+    return { tronco: "hntpaAmM", cabeza: "h", torso: "tn", cadera: "p", brazo_arma: BRAZO_DE[ma] + ma, mano_arma: ma,
+             brazo_otro: BRAZO_DE[mo] + mo, mano_otra: mo, pierna_1: "lf", pie_1: "f", pierna_2: "LF", pie_2: "F" };
+  }
+  function despl(m, d) {
+    const g = gruposDe(d), todo = m.todo || [0, 0], off = {};
+    [...ETQ].forEach((e) => (off[e] = [todo[0], todo[1]]));
+    Object.entries(m).forEach(([nombre, v]) => { [...(g[nombre] || "")].forEach((e) => { off[e][0] += v[0]; off[e][1] += v[1]; }); });
+    return off;
+  }
+  function girarBuf(buf, cx, cy, grados) {
+    if (!grados) return buf;
+    const a = grados * (Math.PI / 180), c = Math.cos(a), s = Math.sin(a), out = nuevoBuf();
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const dx = x - cx, dy = y - cy;
+      const sx = Math.floor(cx + c * dx + s * dy + 0.5), sy = Math.floor(cy - s * dx + c * dy + 0.5);
+      if (sx < 0 || sy < 0 || sx >= N || sy >= N) continue;
+      const o = (y * N + x) * 4, i = (sy * N + sx) * 4;
+      out[o] = buf[i]; out[o + 1] = buf[i + 1]; out[o + 2] = buf[i + 2]; out[o + 3] = buf[i + 3];
+    }
+    return out;
+  }
+  const copiaPx = (dst, o, src, i) => { dst[o] = src[i]; dst[o + 1] = src[i + 1]; dst[o + 2] = src[i + 2]; dst[o + 3] = src[i + 3]; };
+  function moverCapa(buf, nombre, B, d, m) {
+    const off = despl(m, d), todo = m.todo || [0, 0, 0];
+    let out = nuevoBuf();
+    if (nombre === "arma" || nombre === "mano_izq") {
+      const g = m[nombre === "arma" ? "arma" : "escudo"] || [0, 0, 0], mano = D.manos[nombre][d];
+      const dx = g[0] + off[mano][0], dy = g[1] + off[mano][1];
+      for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+        const i = (y * N + x) * 4; if (!buf[i + 3]) continue;
+        const X = x + dx, Y = y + dy; if (X >= 0 && X < N && Y >= 0 && Y < N) copiaPx(out, (Y * N + X) * 4, buf, i);
+      }
+      const p = B[mano];
+      if (g[2] && p) out = girarBuf(out, p[0] + dx, p[1] + dy, g[2]);
+    } else {
+      const fija = ZONA_FIJA[nombre], zonaDe = (k) => fija || B.z[k];
+      const zout = new Array(N * N).fill("");
+      for (const e of ORDEN_ZONAS[lado(d) ? "lado" : "frente"]) {
+        const [dx, dy] = off[e];
+        for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+          const k = y * N + x; if (!buf[k * 4 + 3] || zonaDe(k) !== e) continue;
+          const X = x + dx, Y = y + dy; if (X >= 0 && X < N && Y >= 0 && Y < N) { copiaPx(out, (Y * N + X) * 4, buf, k * 4); zout[Y * N + X] = e; }
+        }
+      }
+      // el hueco que deja un brazo junto al torso: el torso se alarga hasta RELLENO píxeles
+      const quietos = new Set([..."aAmM"].filter((e) => off[e][0] === off.t[0] && off[e][1] === off.t[1]));
+      const hueco = (y, x) => { const k = y * N + x, z = zonaDe(k); return buf[k * 4 + 3] && "aAmM".includes(z) && !quietos.has(z) && !out[k * 4 + 3]; };
+      const torso = (y, x) => x >= 0 && x < N && (zout[y * N + x] === "t" || zout[y * N + x] === "p");
+      for (let y = 0; y < N; y++) {
+        let x = 0;
+        while (x < N) {
+          if (!hueco(y, x)) { x++; continue; }
+          const x0 = x; while (x < N && hueco(y, x)) x++; const x1 = x - 1;
+          for (const [ladoT, borde, paso] of [[-1, x0 - 1, -1], [1, x1 + 1, 1]]) {
+            if (borde < 0 || borde >= N || !torso(y, borde)) continue;
+            const dentro = borde + paso, bi = (y * N + borde) * 4;
+            const ii = dentro >= 0 && dentro < N && torso(y, dentro) ? (y * N + dentro) * 4 : bi;
+            let run = []; for (let xx = x0; xx <= x1; xx++) run.push(xx);
+            if (ladoT === 1) run.reverse();
+            run = run.slice(0, RELLENO);
+            run.forEach((xx, j) => { copiaPx(out, (y * N + xx) * 4, out, j === run.length - 1 ? bi : ii); zout[y * N + xx] = "t"; });
+            break;
+          }
+        }
+      }
+    }
+    if (todo.length > 2 && todo[2]) out = girarBuf(out, 32 + todo[0], B.pie + todo[1], todo[2]);
+    return out;
+  }
+  // para comprobar la Forja contra actores_animaciones.py (gen_animaciones.py --comparar)
+  window.forjaPrueba = { figuraAnimada: (spec, fr, d) => Array.from(componerCapas(capasAnimadas(spec, fr, d))) };
+  const cacheAnim = new Map();
+  function capasAnimadas(spec, fr, d) {
+    const r = D.razas[spec.raza]; if (!r) return [];
+    const B = D.animBase[razaVis(spec.raza).talla][String(fr.b)];
+    return capasDe(spec, fr.b).map((c) => ({ ...c, buf: moverCapa(c.buf, c.nombre, B, d, fr.m || {}) }));
+  }
+  function figuraAnimada(spec, fr, d) {
+    const k = JSON.stringify([spec, fr, d]);
+    let b = cacheAnim.get(k);
+    if (!b) { b = componerCapas(capasAnimadas(spec, fr, d)); if (cacheAnim.size > 600) cacheAnim.clear(); cacheAnim.set(k, b); }
+    return b;
+  }
+
+  // los ajustes: tools/ajustes_animaciones.json («animaciones»: {id: animación entera})
+  let aa = { animaciones: {} };
+  try { const g = localStorage.getItem("forja_animaciones"); if (g) aa = JSON.parse(g); } catch (e) {}
+  if (!Object.keys(aa.animaciones || {}).length && D.ajustesAnimaciones && D.ajustesAnimaciones.animaciones) aa = { animaciones: JSON.parse(JSON.stringify(D.ajustesAnimaciones.animaciones)) };
+  aa.animaciones = aa.animaciones || {};
+  const textoA = () => JSON.stringify({ _nota: "Lo escribe la Forja de Onegai (pestaña Animaciones). Lo lee tools/actores_animaciones.py.", animaciones: aa.animaciones }, null, 1);
+  function guardaA() { try { localStorage.setItem("forja_animaciones", JSON.stringify(aa)); } catch (e) {} if (window.forjaCambio) window.forjaCambio(); }
+  const animDe = (id) => aa.animaciones[id] || D.animaciones[id];
+  function framesAnim(anim, d) {
+    if (d === "izquierda" && anim.espejo) return (anim.frames.derecha || []).map((fr) => {
+      const m = {}; Object.entries(fr.m || {}).forEach(([g, v]) => { const w = v.slice(); w[0] = -w[0]; if (w.length > 2) w[2] = -w[2]; m[g] = w; });
+      return { b: ESPEJO_BASE[fr.b] || fr.b, ms: fr.ms || 120, m };
+    });
+    return anim.frames[d] || [];
+  }
+
+  let nRaza = zRaza, nRopa = "_raza", nArma = "_suya", nAnim = "atacar", nDir = "derecha", nFrame = 0, nGrupo = "brazo_arma", nPlay = true;
+  try { const g = JSON.parse(localStorage.getItem("forja_animSel") || "{}"); if (g.raza && D.razas[g.raza]) nRaza = g.raza; if (g.anim) nAnim = g.anim; if (g.dir) nDir = g.dir; if (g.ropa) nRopa = g.ropa; if (g.arma) nArma = g.arma; } catch (e) {}
+  if (!animDe(nAnim)) nAnim = Object.keys(D.animaciones)[0];
+  const recuerdaSel = () => { try { localStorage.setItem("forja_animSel", JSON.stringify({ raza: nRaza, anim: nAnim, dir: nDir, ropa: nRopa, arma: nArma })); } catch (e) {} };
+  function specAnim() {
+    const rv = razaVis(nRaza), conj = nRopa[0] !== "_" ? ar.conjuntos[nRopa] : null;
+    let eq = nRopa === "_raza" ? JSON.parse(JSON.stringify(D.razas[nRaza].equipo || {})) : conj ? JSON.parse(JSON.stringify(conj.equipo || {})) : {};
+    if (nArma === "_ninguna") delete eq.arma; else if (nArma !== "_suya") eq.arma = nArma;
+    const mismo = conj && conj.raza === nRaza;
+    return { raza: nRaza, pelo: mismo ? conj.pelo : rv.pelo, barba: mismo ? conj.barba : rv.barba, equipo: eq };
+  }
+  // la animación que se edita: al primer cambio, una copia propia en los ajustes
+  function editable() {
+    if (!aa.animaciones[nAnim]) aa.animaciones[nAnim] = JSON.parse(JSON.stringify(D.animaciones[nAnim]));
+    return aa.animaciones[nAnim];
+  }
+  const bloqueada = () => nDir === "izquierda" && animDe(nAnim).espejo;
+  function frameActual() { const fs = framesAnim(animDe(nAnim), nDir); return fs[Math.min(nFrame, fs.length - 1)] || null; }
+  function cambiaFrame(fn) {
+    if (bloqueada()) { $("anim_estado").textContent = "La izquierda sale en espejo de la derecha: quita la marca para editarla aparte."; return; }
+    const a = editable(), fs = a.frames[nDir] = a.frames[nDir] || [];
+    fn(fs); guardaA(); montaAnim();
+  }
+
+  function montaAnim() {
+    if ($("panel_anim").hidden) return;
+    const sR = $("anim_raza");
+    if (!sR.options.length) Object.keys(D.razas).sort((a, b) => nombreRaza(a).localeCompare(nombreRaza(b), "es")).forEach((id) => sR.appendChild(new Option(nombreRaza(id), id)));
+    sR.value = nRaza;
+    const sP = $("anim_ropa"); sP.innerHTML = "";
+    [["_raza", "La que lleva la raza"], ["_nada", "Sin ropa"], ...Object.keys(ar.conjuntos).sort((a, b) => a.localeCompare(b, "es")).map((n) => [n, "Conjunto: " + n])].forEach(([v, t]) => sP.appendChild(new Option(t, v)));
+    if (![...sP.options].some((o) => o.value === nRopa)) nRopa = "_raza"; sP.value = nRopa;
+    const sA = $("anim_arma");
+    if (!sA.options.length) {
+      [["_suya", "La que lleve"], ["_ninguna", "Sin arma"]].forEach(([v, t]) => sA.appendChild(new Option(t, v)));
+      opcionesRanura("arma").sort((a, b) => a[1].localeCompare(b[1], "es")).forEach(([id, n]) => sA.appendChild(new Option(n, id)));
+    }
+    sA.value = nArma;
+    const sL = $("anim_lista"); sL.innerHTML = "";
+    [...new Set([...Object.keys(D.animaciones), ...Object.keys(aa.animaciones)])].forEach((id) => sL.appendChild(new Option((aa.animaciones[id] ? "• " : "") + animDe(id).nombre, id)));
+    sL.value = nAnim;
+    const an = animDe(nAnim);
+    $("anim_nombre").value = an.nombre;
+    $("anim_info").textContent = D.animaciones[nAnim] ? (aa.animaciones[nAnim] ? "Cambiada en la Forja." : "La de serie.") : "Nueva de la Forja.";
+    $("anim_espejo").checked = !!an.espejo;
+    const bd = $("anim_dirBotones"); bd.innerHTML = "";
+    DIRS.forEach((d) => { const b = document.createElement("button"); b.textContent = NOMBRE_DIR[d]; b.setAttribute("aria-pressed", String(d === nDir)); b.onclick = () => { nDir = d; nFrame = 0; recuerdaSel(); montaAnim(); }; bd.appendChild(b); });
+    const fs = framesAnim(an, nDir); if (nFrame >= fs.length) nFrame = Math.max(0, fs.length - 1);
+    Object.values(dirsAnim).forEach((c) => (c.dataset.k = ""));
+    const spec = specAnim(), cont = $("anim_frames"); cont.innerHTML = "";
+    fs.forEach((fr, i) => {
+      const b = document.createElement("button"), c = document.createElement("canvas"); c.width = c.height = N; b.appendChild(c);
+      b.setAttribute("aria-label", "Frame " + (i + 1) + " (" + fr.ms + " ms)"); b.setAttribute("aria-pressed", String(i === nFrame)); b.title = (i + 1) + " · " + fr.ms + " ms";
+      b.onclick = () => { nFrame = i; montaAnim(); }; cont.appendChild(b);
+      aCanvas(c.getContext("2d"), figuraAnimada(spec, fr, nDir));
+    });
+    const fr = frameActual(), bloq = bloqueada();
+    ["anim_fAnadir", "anim_fQuitar", "anim_fAntes", "anim_fDespues", "anim_fCero", "anim_base", "anim_ms"].forEach((id) => ($(id).disabled = bloq || (!fr && id !== "anim_fAnadir")));
+    const sB = $("anim_base"); sB.innerHTML = "";
+    const fp = framesPor(nDir), NOMBRE_PASO = { A: "andar, paso A", quieto: "quieto", B: "andar, paso B", reposo1: "reposo 1", reposo2: "reposo 2 (respira)" };
+    ["quieto", "A", "B", "reposo1", "reposo2"].forEach((p) => { if (fp[p]) sB.appendChild(new Option(NOMBRE_PASO[p] + " (" + fp[p] + ")", fp[p])); });
+    if (fr) { sB.value = String(fr.b); $("anim_ms").value = fr.ms || 120; }
+    montaPartes(fr, bloq);
+    pintaGrande();
+    $("anim_estado").textContent = bloq ? "La izquierda sale en espejo de la derecha: quita la marca para editarla aparte." : "";
+  }
+  function pintaGrande() { const fr = frameActual(); aCanvas($("anim_grande").getContext("2d"), fr ? figuraAnimada(specAnim(), fr, nDir) : nuevoBuf()); }
+  function montaPartes(fr, bloq) {
+    const cont = $("anim_partes"); cont.innerHTML = "";
+    GRUPOS_UI.forEach((g) => {
+      const v = (fr && fr.m && fr.m[g]) || [0, 0, 0], fila = document.createElement("div"); fila.className = "parte";
+      const b = document.createElement("button"); b.textContent = nombreGrupo(g, nDir); b.setAttribute("aria-pressed", String(g === nGrupo));
+      if (v[0] || v[1] || v[2]) b.classList.add("movida");
+      b.onclick = () => { nGrupo = g; montaPartes(frameActual(), bloqueada()); $("anim_grande").focus(); };
+      fila.appendChild(b);
+      const campos = GIRAN.includes(g) ? [["x", 0], ["y", 1], ["°", 2]] : [["x", 0], ["y", 1]];
+      campos.forEach(([et, k]) => {
+        const i = document.createElement("input"); i.type = "number"; i.step = k === 2 ? "5" : "1"; i.value = v[k] || 0; i.disabled = bloq || !fr;
+        i.setAttribute("aria-label", nombreGrupo(g, nDir) + ": " + (k === 0 ? "a los lados" : k === 1 ? "arriba y abajo" : "giro en grados")); i.title = et;
+        i.onchange = () => ponMov(g, k, Number(i.value) || 0, false); fila.appendChild(i);
+      });
+      cont.appendChild(fila);
+    });
+  }
+  function ponMov(g, k, valor, sumar) {
+    cambiaFrame((fs) => {
+      const fr = fs[Math.min(nFrame, fs.length - 1)]; if (!fr) return;
+      fr.m = fr.m || {}; const v = (fr.m[g] || [0, 0, 0]).slice(); while (v.length < 3) v.push(0);
+      v[k] = sumar ? v[k] + valor : valor;
+      if (!v[0] && !v[1] && !v[2]) delete fr.m[g]; else fr.m[g] = GIRAN.includes(g) ? v : v.slice(0, 2);
+    });
+  }
+  $("anim_grande").addEventListener("keydown", (e) => {
+    const mov = { ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [1, -1], ArrowDown: [1, 1] }[e.key];
+    if (mov) { e.preventDefault(); ponMov(nGrupo, mov[0], mov[1], true); $("anim_grande").focus(); return; }
+    if (e.key === "q" || e.key === "e" || e.key === "Q" || e.key === "E") { e.preventDefault(); const g = GIRAN.includes(nGrupo) ? nGrupo : "arma"; ponMov(g, 2, e.key.toLowerCase() === "q" ? -5 : 5, true); $("anim_grande").focus(); }
+  });
+  $("anim_grande").addEventListener("click", (e) => {
+    const fr = frameActual(); if (!fr) return;
+    const c = $("anim_grande"), r = c.getBoundingClientRect(), x = Math.floor(((e.clientX - r.left) / r.width) * N), y = Math.floor(((e.clientY - r.top) / r.height) * N);
+    const capas = capasAnimadas(specAnim(), fr, nDir); let g = null;
+    for (let i = capas.length - 1; i >= 0 && !g; i--) {
+      if (!capas[i].buf[(y * N + x) * 4 + 3]) continue;
+      const n = capas[i].nombre;
+      if (n === "arma") g = "arma"; else if (n === "mano_izq") g = "escudo";
+      else {
+        const z = ZONA_FIJA[n] || D.animBase[razaVis(nRaza).talla][String(fr.b)].z[y * N + x], gr = gruposDe(nDir);
+        g = { h: "cabeza", n: "torso", t: "torso", p: "cadera", l: "pierna_1", f: "pie_1", L: "pierna_2", F: "pie_2" }[z]
+          || (gr.mano_arma === z ? "mano_arma" : gr.brazo_arma.includes(z) ? "brazo_arma" : gr.mano_otra === z ? "mano_otra" : "brazo_otro");
+      }
+    }
+    if (g) { nGrupo = g; montaPartes(fr, bloqueada()); }
+    c.focus();
+  });
+  $("anim_raza").onchange = () => { nRaza = $("anim_raza").value; recuerdaSel(); montaAnim(); };
+  $("anim_ropa").onchange = () => { nRopa = $("anim_ropa").value; recuerdaSel(); montaAnim(); };
+  $("anim_arma").onchange = () => { nArma = $("anim_arma").value; recuerdaSel(); montaAnim(); };
+  $("anim_lista").onchange = () => { nAnim = $("anim_lista").value; nFrame = 0; recuerdaSel(); montaAnim(); };
+  $("anim_nombre").onchange = () => { const n = $("anim_nombre").value.trim(); if (!n) return; editable().nombre = n; guardaA(); montaAnim(); };
+  $("anim_espejo").onchange = () => {
+    const a = editable();
+    if (!$("anim_espejo").checked && a.espejo) { a.frames.izquierda = framesAnim(a, "izquierda"); a.espejo = false; }
+    else a.espejo = $("anim_espejo").checked;
+    guardaA(); montaAnim();
+  };
+  $("anim_nueva").onclick = () => {
+    const base = JSON.parse(JSON.stringify(animDe(nAnim))); let id = slug(base.nombre + " 2"), k = 2;
+    while (animDe(id)) id = slug(base.nombre + " " + ++k);
+    base.nombre = base.nombre + " (copia)"; aa.animaciones[id] = base; nAnim = id; guardaA(); recuerdaSel(); montaAnim();
+  };
+  $("anim_quitar").onclick = () => {
+    if (!aa.animaciones[nAnim]) return;
+    delete aa.animaciones[nAnim]; if (!D.animaciones[nAnim]) nAnim = Object.keys(D.animaciones)[0];
+    guardaA(); recuerdaSel(); montaAnim();
+  };
+  $("anim_fAnadir").onclick = () => cambiaFrame((fs) => { const fr = fs[nFrame]; if (fr) { fs.splice(nFrame + 1, 0, JSON.parse(JSON.stringify(fr))); nFrame++; } else { fs.push({ b: framesPor(nDir).quieto, ms: 120, m: {} }); nFrame = fs.length - 1; } });
+  $("anim_fQuitar").onclick = () => cambiaFrame((fs) => { if (fs.length > 1) { fs.splice(nFrame, 1); nFrame = Math.max(0, nFrame - 1); } });
+  $("anim_fAntes").onclick = () => cambiaFrame((fs) => { if (nFrame > 0) { [fs[nFrame - 1], fs[nFrame]] = [fs[nFrame], fs[nFrame - 1]]; nFrame--; } });
+  $("anim_fDespues").onclick = () => cambiaFrame((fs) => { if (nFrame < fs.length - 1) { [fs[nFrame + 1], fs[nFrame]] = [fs[nFrame], fs[nFrame + 1]]; nFrame++; } });
+  $("anim_fCero").onclick = () => cambiaFrame((fs) => { if (fs[nFrame]) fs[nFrame].m = {}; });
+  $("anim_base").onchange = () => cambiaFrame((fs) => { if (fs[nFrame]) fs[nFrame].b = Number($("anim_base").value); });
+  $("anim_ms").onchange = () => cambiaFrame((fs) => { if (fs[nFrame]) fs[nFrame].ms = Math.max(20, Math.min(5000, Number($("anim_ms").value) || 120)); });
+  $("anim_play").onclick = () => { nPlay = !nPlay; $("anim_play").textContent = nPlay ? "Pausa" : "Reproducir"; };
+  const dirsAnim = cuatroDirs($("anim_dirs"));
+  const reloj = { t: 0, ultimo: performance.now() };
+  function andaAnim() {
+    if ($("panel_anim").hidden) return;
+    const ahora = performance.now(); if (nPlay) reloj.t += ahora - reloj.ultimo; reloj.ultimo = ahora;
+    const an = animDe(nAnim), spec = specAnim();
+    DIRS.forEach((d) => {
+      const fs = framesAnim(an, d); if (!fs.length) return;
+      const total = fs.reduce((s, fr) => s + (fr.ms || 120), 0); let t = reloj.t % total, i = 0;
+      while (i < fs.length - 1 && t >= (fs[i].ms || 120)) { t -= fs[i].ms || 120; i++; }
+      const c = dirsAnim[d]; if (c.dataset.k === nAnim + i + JSON.stringify(fs[i])) return;
+      c.dataset.k = nAnim + i + JSON.stringify(fs[i]); aCanvas(c.getContext("2d"), figuraAnimada(spec, fs[i], d));
+    });
+  }
+
+  // --- Guardar (para todos los que tienen el enlace) y Exportar JSON -------------------------------
+  // Oriol (23/10): «otro que sea guardar, que guarde y actualice los sprites dentro de la Forja, así otras
+  // personas pueden trabajar si les comparto el enlace; y otro para exportar un JSON de todo».
+  // Lo guardado va al almacén del artifact (capacidad db): forja/estado dice qué versión es la buena y en
+  // cuántos trozos está; forja_partes/<versión>_<i> son los trozos del JSON (cada documento, como mucho 256 KiB).
+  // Mientras tanto, cada navegador guarda su borrador (localStorage), como siempre.
+  const TROZO = 60000, K_SIN = "forja_sinGuardar", K_VER = "forja_version";
+  let iniciado = false, aplicando = false, sinGuardar = false, versionBase = null, cabeza = null, pendiente = null;
+  let db = null, soloMirar = false, guardando = false, aviso = "", dosVeces = false;
+  try {
+    versionBase = localStorage.getItem(K_VER);
+    const s = localStorage.getItem(K_SIN);
+    // la primera vez con este botón: si este navegador ya tenía cambios, cuentan como «sin guardar»
+    sinGuardar = s === null ? ["forja_onegai", "forja_ropa", "forja_fichas", "forja_animaciones"].some((k) => { const v = localStorage.getItem(k); return v && /"[^"]+":\s*\{\s*"/.test(v); }) : s === "1";
+  } catch (e) {}
+  const recuerda = () => { try { localStorage.setItem(K_SIN, sinGuardar ? "1" : "0"); if (versionBase) localStorage.setItem(K_VER, versionBase); } catch (e) {} };
+  function estadoForja() {
+    return { _nota: "Exportado de la Forja de Onegai: todo lo que se ha cambiado. Se aplica con python3 tools/importar_forja.py <este archivo>.",
+             formato: 1, fecha: new Date().toISOString(),
+             armas: window.forjaArmas ? window.forjaArmas.estado() : {}, ropa: JSON.parse(textoR()), fichas: JSON.parse(textoF()),
+             animaciones: JSON.parse(textoA()) };
+  }
+  function cargaEstado(e) {
+    aplicando = true;
+    try {
+      if (window.forjaArmas) window.forjaArmas.carga(e.armas || {});
+      const r = e.ropa || {}; ar = { nuevas: r.nuevas || {}, cambios: r.cambios || {}, retoques: r.retoques || {}, conjuntos: r.conjuntos || {} };
+      const f = e.fichas || {}; CLAVES_F.forEach((k) => (af[k] = f[k] || {}));
+      aa = { animaciones: (e.animaciones || {}).animaciones || {} }; if (!animDe(nAnim)) nAnim = Object.keys(D.animaciones)[0];
+      guardaR(); guardaF(); guardaA();
+      if (rId && !pieza(rRanura, rId)) rId = null;
+      montaLista(); montaGuardados();
+      let t = "armas"; tabs.forEach((x) => { if (!$("panel_" + x).hidden) t = x; }); abre(t);
+    } finally { aplicando = false; }
+  }
+  const hora = (iso) => { try { return new Date(iso).toLocaleString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); } catch (e) { return iso; } };
+  function pintaEstadoG() {
+    const b = $("forja_guardar"), s = $("forja_estadoG"), c = $("forja_cargarOtra");
+    b.disabled = !db || soloMirar || guardando;
+    b.textContent = guardando ? "Guardando…" : dosVeces ? "Guardar encima" : "Guardar";
+    c.hidden = !pendiente;
+    let txt;
+    if (aviso) txt = aviso;
+    else if (!db) txt = window.claude ? "Conectando…" : "Abierta fuera de Claude: los cambios se quedan en este navegador. Exportar sí funciona.";
+    else if (soloMirar) txt = "Solo puedes mirar: para guardar, pide permiso de Colaborador o Editor.";
+    else if (pendiente) txt = "Alguien guardó una versión más nueva (" + hora(pendiente.fecha) + "). Tus cambios aún no están guardados.";
+    else if (sinGuardar) txt = "Cambios sin guardar.";
+    else if (cabeza) txt = "Guardado · " + hora(cabeza.fecha) + ".";
+    else txt = "Aún no se ha guardado nada para todos.";
+    s.textContent = txt;
+    s.classList.toggle("sin", sinGuardar && !aviso);
+  }
+  window.forjaCambio = () => {
+    if (!iniciado || aplicando) return;
+    aviso = ""; dosVeces = false;
+    if (!sinGuardar) { sinGuardar = true; recuerda(); }
+    pintaEstadoG();
+  };
+  async function leeVersion(h) {
+    const partes = await Promise.all(Array.from({ length: h.partes }, (_, i) => db.doc("forja_partes/" + h.version + "_" + i).get()));
+    if (partes.some((p) => !p.exists)) return null;  // aún se está guardando: llegará otra vez
+    return JSON.parse(partes.map((p) => p.data().s).join(""));
+  }
+  async function cargaGuardada(h) {
+    const e = await leeVersion(h); if (!e) return;
+    await listo;
+    cargaEstado(e); versionBase = h.version; sinGuardar = false; pendiente = null; dosVeces = false; recuerda();
+    aviso = "Cargada la versión guardada (" + hora(h.fecha) + ")."; pintaEstadoG(); setTimeout(() => { aviso = ""; pintaEstadoG(); }, 4000);
+  }
+  async function guardar() {
+    if (!db || guardando || soloMirar) return;
+    if (cabeza && cabeza.version !== versionBase && !dosVeces) {
+      dosVeces = true; aviso = "Otra persona guardó después de que empezaras. «Guardar encima» sustituye su versión por la tuya; «Cargar la suya» descarta tus cambios.";
+      pendiente = pendiente || cabeza; pintaEstadoG(); return;
+    }
+    guardando = true; aviso = ""; pintaEstadoG();
+    try {
+      const texto = JSON.stringify(estadoForja());
+      const ver = Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7);
+      const n = Math.max(1, Math.ceil(texto.length / TROZO));
+      for (let i = 0; i < n; i++) await db.doc("forja_partes/" + ver + "_" + i).set({ s: texto.slice(i * TROZO, (i + 1) * TROZO), v: ver, i });
+      const anterior = cabeza;
+      versionBase = ver;
+      await db.doc("forja/estado").set({ version: ver, partes: n, fecha: new Date().toISOString() });
+      sinGuardar = false; pendiente = null; dosVeces = false; recuerda();
+      aviso = "Guardado para todos los que tienen el enlace."; setTimeout(() => { aviso = ""; pintaEstadoG(); }, 4000);
+      if (anterior && anterior.version && anterior.version !== ver)
+        for (let i = 0; i < (anterior.partes || 0); i++) await db.doc("forja_partes/" + anterior.version + "_" + i).delete().catch(() => {});
+    } catch (e) {
+      const c = e && e.code;
+      if (c === "invalid_argument") { soloMirar = true; aviso = ""; }
+      else if (c === "quota_exceeded") aviso = "El almacén de la Forja está lleno: exporta el JSON y pásaselo a Claude.";
+      else aviso = "No se ha podido guardar (" + (c || "error") + "). Vuelve a probar en un momento.";
+    } finally { guardando = false; pintaEstadoG(); }
+  }
+  async function exportar() {
+    const texto = JSON.stringify(estadoForja(), null, 1);
+    const nombre = "forja_onegai_" + new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "") + ".json";
+    const dl = window.claude ? await claude.use("downloads").catch(() => null) : null;
+    if (dl) {
+      try { await dl.save({ filename: nombre, data: texto }); aviso = "Exportado: " + nombre + "."; }
+      catch (e) { aviso = e && e.code === "declined" ? "No se ha guardado el archivo." : "No se ha podido exportar (" + ((e && e.code) || "error") + ")."; }
+    } else {
+      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([texto], { type: "application/json" })); a.download = nombre;
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+      aviso = "Exportado: " + nombre + ".";
+    }
+    pintaEstadoG(); setTimeout(() => { aviso = ""; pintaEstadoG(); }, 5000);
+  }
+  $("forja_guardar").onclick = guardar;
+  $("forja_exportar").onclick = exportar;
+  $("forja_cargarOtra").onclick = () => { if (pendiente) cargaGuardada(pendiente); };
+  pintaEstadoG();
+  (async () => {
+    if (!window.claude || !claude.use) { pintaEstadoG(); return; }
+    const [d, u] = await Promise.all([claude.use("db").catch(() => null), claude.use("user").catch(() => null)]);
+    db = d;
+    if (u) { try { if ((await u.can("data.write")) === false) soloMirar = true; } catch (e) {} }
+    pintaEstadoG();
+    if (!db) return;
+    db.doc("forja/estado").onSnapshot((snap) => {
+      cabeza = snap.exists ? snap.data() : null;
+      if (cabeza && cabeza.version !== versionBase && !guardando) {
+        if (sinGuardar) pendiente = cabeza; else cargaGuardada(cabeza);
+      }
+      pintaEstadoG();
+    }, () => { db = null; pintaEstadoG(); });
+  })();
+
+  // --- arranque --------------------------------------------------------------------
+  montaLista(); montaFramesR(); montaConj(); montaGuardados(); guardaR(); guardaF();
+  listo.then(() => {
+    iniciado = true;
+    let t = "armas"; try { t = localStorage.getItem("forja_pestana") || "armas"; } catch (e) {}
+    abre(tabs.includes(t) ? t : "armas");
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(() => { andaR(); andaC(); andaF(); }, 170), setInterval(andaAnim, 40);
+    else { andaR(); andaC(); andaF(); nPlay = false; setInterval(andaAnim, 200); }
+  });
+})();
+</script>

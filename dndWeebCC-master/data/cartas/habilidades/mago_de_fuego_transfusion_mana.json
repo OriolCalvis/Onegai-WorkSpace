@@ -1,0 +1,50 @@
+{
+ "id": "mago_de_fuego_transfusion_mana",
+ "name": "Transfusión Maná",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Tu maná absorbe parte de los golpes: +1 a la CA hasta el final del combate.",
+ "flavorText": "",
+ "classTags": [
+  "mago_de_fuego"
+ ],
+ "roleTags": [],
+ "tags": [
+  "mago_de_fuego",
+  "estandar",
+  "Arcano"
+ ],
+ "mechanicTags": [
+  "Arcano"
+ ],
+ "actionType": "accion_principal",
+ "target": "self",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "INT",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Tu maná absorbe parte de los golpes: +1 a la CA hasta el final del combate.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Trasmisión de Maná: +1 a tu CA todo el combate.",
+   "mechanicHook": "propio:combate:bono_ca:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Mago de fuego (Red Mage) · H858 Transfusión Mana"
+}

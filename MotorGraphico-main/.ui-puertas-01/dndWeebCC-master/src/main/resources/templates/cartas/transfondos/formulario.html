@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Editor de carta de trasfondo</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('transfondos')}"></div>
+            <p class="gm-sidebar__eyebrow u-p-0">Sistema de Cartas y Tiers</p>
+            <h1 class="u-mb-sp5" th:text="${esNueva} ? 'Nueva carta de trasfondo' : 'Editar carta de trasfondo'">Nueva carta de trasfondo</h1>
+
+            <form th:action="${esNueva} ? @{/cartas/transfondos} : @{/cartas/transfondos/{id}/editar(id=${form.id})}"
+                  th:object="${form}" method="post">
+
+                <div class="gm-form-grid u-mb-sp4">
+                    <div class="gm-field" th:if="${esNueva}">
+                        <label>ID (opcional)</label>
+                        <input class="gm-input" th:field="*{id}" placeholder="Se genera automático a partir del nombre">
+                        <span class="gm-hint">Déjalo en blanco para que se genere solo, p. ej. "mes_de_la_escarcha".</span>
+                    </div>
+                    <div class="gm-field" th:unless="${esNueva}">
+                        <label>ID</label>
+                        <input class="gm-input" th:field="*{id}" readonly>
+                    </div>
+                    <div class="gm-field">
+                        <label>Nombre</label>
+                        <input class="gm-input" th:field="*{name}" placeholder="Mes de la Escarcha" required>
+                    </div>
+                    <div class="gm-field">
+                        <label>Tier</label>
+                        <input class="gm-input" type="number" min="0" max="5" th:field="*{tier}">
+                    </div>
+                    <div class="gm-field">
+                        <label>CON</label>
+                        <input class="gm-input" type="number" th:field="*{statBonusCon}">
+                    </div>
+                    <div class="gm-field">
+                        <label>DES</label>
+                        <input class="gm-input" type="number" th:field="*{statBonusDes}">
+                    </div>
+                    <div class="gm-field">
+                        <label>CAR</label>
+                        <input class="gm-input" type="number" th:field="*{statBonusCar}">
+                    </div>
+                    <div class="gm-field">
+                        <label>INT</label>
+                        <input class="gm-input" type="number" th:field="*{statBonusInt}">
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Competencias, contactos y equipo adicional ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Competencias narrativas</label>
+                                <input class="gm-input" th:field="*{narrativeSkills}" placeholder="Naturaleza, Persuasión, Concentración">
+                            </div>
+                            <div class="gm-field">
+                                <label>Contactos</label>
+                                <input class="gm-input" th:field="*{contacts}" placeholder="Un antiguo maestro, un gremio...">
+                            </div>
+                            <div class="gm-field">
+                                <label>Equipo adicional</label>
+                                <input class="gm-input" th:field="*{bonusEquipment}" placeholder="Reliquia rota, kit de escritura...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Pasiva narrativa y complicación ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Nombre de la pasiva</label>
+                                <input class="gm-input" th:field="*{narrativePassiveName}" placeholder="L'Ermità Harmònic">
+                            </div>
+                            <div class="gm-field">
+                                <label>Descripción de la pasiva</label>
+                                <input class="gm-input" th:field="*{narrativePassiveDescription}" placeholder="Saviesa introspectiva...">
+                            </div>
+                            <div class="gm-field">
+                                <label>Complicación (opcional)</label>
+                                <input class="gm-input" th:field="*{complication}" placeholder="Apático emocionalmente, desconfiado por naturaleza...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-field u-mt-sp4">
+                    <label>Texto narrativo / flavor</label>
+                    <textarea class="gm-textarea" rows="4" th:field="*{flavorText}"></textarea>
+                </div>
+
+                <div class="u-actions">
+                    <button class="gm-btn gm-btn--primary" type="submit">Guardar</button>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/cartas/transfondos}">Cancelar</a>
+                </div>
+            </form></main>
+</body>
+</html>

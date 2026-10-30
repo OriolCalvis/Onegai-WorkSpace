@@ -1,0 +1,54 @@
+{
+ "id": "thor_desestabilizacion",
+ "name": "Desestabilización",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "El enemigo lejano pierde pie: 3d6 de daño de hielo, y ataca con desventaja 1 turno.",
+ "flavorText": "",
+ "classTags": [
+  "thor"
+ ],
+ "roleTags": [],
+ "tags": [
+  "thor",
+  "estandar",
+  "Hielo"
+ ],
+ "mechanicTags": [
+  "Hielo"
+ ],
+ "actionType": "accion_principal",
+ "target": "zone_radius",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "El enemigo lejano pierde pie: 3d6 de daño de hielo, y ataca con desventaja 1 turno.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "3d6 de daño de hielo.",
+   "mechanicHook": "dano:3d6"
+  },
+  {
+   "description": "Sujeción insegura: ataca con desventaja 1 turno.",
+   "mechanicHook": "estado:1:desventaja:ataque"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Thor · H1988 Desestabilización"
+}

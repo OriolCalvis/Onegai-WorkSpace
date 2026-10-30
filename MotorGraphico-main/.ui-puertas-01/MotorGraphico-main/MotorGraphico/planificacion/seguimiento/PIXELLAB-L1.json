@@ -1,0 +1,36 @@
+{
+ "id": "PIXELLAB-L1",
+ "date": "2026-10-01",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol, sin commit",
+ "encargo": "Lote 1 del plan PixelLab: los materiales del tema pergamino (hoja, papiro, cuero, pestana, lomo, sello) salen de imagenes de PixelLab en 9-slice, con el procedimental de PERGAMINO-01 de reserva. 17 generaciones mas (34 de 2000 en total).",
+ "archivos": {
+  "nuevos": [
+   "include/HUD/Pergamino/BancoMateriales.h + src/HUD/Pergamino/BancoMateriales.cpp (motor_pergamino, sin GL): pieles por material y parametros, 9-slice sin estirar, oscurecido de la hoja, piezas fijas",
+   "tests/HUD/BancoMaterialesTests.cpp (4 casos dentro de test_pergamino; escribe sus propios PNG de prueba)",
+   "tools/pixellab/importar_materiales.py + assets/textures/pixellab/materiales.json (que pieza, que limpieza, que cortes)",
+   "assets/textures/pergamino/ (materiales.json del motor + hoja_a, hoja_b, papiro, cuero, cuero_liso, pestana, lomo, sello)",
+   "assets/textures/pixellab/lote1/ (lo generado, bueno y malo)"
+  ],
+  "modificados": [
+   "cmake/Pergamino.cmake (BancoMateriales.cpp en motor_pergamino; BancoMaterialesTests.cpp en test_pergamino)",
+   "include/Render/PergaminoGL.h + src/Render/PergaminoGL.cpp (m_banco: carga de assets/textures/pergamino y fabrica por el banco)"
+  ]
+ },
+ "reglas": [
+  "Sin assets/textures/pergamino/materiales.json, o sin una piel, el material sale procedimental: nada se rompe por quitar un PNG.",
+  "La piel que nombra mas parametros gana; con varias imagenes la semilla del pedido elige (variedad entre retales).",
+  "Las piezas fijas (sello...) tienen que medir lo que medidaPieza(); si no, aviso y procedimental.",
+  "Los cortes se afinan mirando el juego: el cuerpo del 9-slice se repite, asi que los bordes pintados (filetes, sombras de canto) deben caer dentro de los cortes."
+ ],
+ "verification": [
+  "test_pergamino 37/37 (33 de antes + 4 del banco: sin pieles = procedimental bit a bit; 9-slice con esquinas intactas y bordes/cuerpo repetidos; pieles por material, parametros y semilla; piel rota avisa y no tumba).",
+  "juego compila; ctest -L gl-free con los mismos fallos de siempre; linea_base_core 0 instantaneos.",
+  "Juego real: Claude outputs/pixellab/lote1/ (HUD de exploracion, dialogo con rotulo de cuero, cuaderno con tapas y pestanas, pausa en papiro con rodillos)."
+ ],
+ "pendiente": [
+  "Pestana activa, chincheta, cinta, tachuela, flecha y adorno: PixelLab no dio piezas validas a 1 generacion (siguen procedimentales); probar con otro modelo o pedirlas mas grandes y reducir.",
+  "El cuerpo del 9-slice se nota repetido en paneles grandes: pedir pieles de 256-384 px con mas cuerpo liso, o un modo «espejo» en recorta().",
+  "Titulo y creacion al pergamino (punto 5 del plan)."
+ ]
+}

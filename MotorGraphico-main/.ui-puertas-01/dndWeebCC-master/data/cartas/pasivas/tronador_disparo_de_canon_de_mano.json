@@ -1,0 +1,31 @@
+{
+ "id": "tronador_disparo_de_canon_de_mano",
+ "name": "Disparo de cañón de mano",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Las descargas del cañón del guantelete izquierdo del Tronador: tus golpes con arma hacen +1 de daño (rayo).",
+ "flavorText": "",
+ "classTags": [
+  "tronador"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "Las descargas del cañón del guantelete izquierdo del Tronador: tus golpes con arma hacen +1 de daño (rayo).",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Tus golpes con arma hacen +1 de daño.",
+   "mechanicHook": "siempre:bono_dano_arma:1"
+  },
+  {
+   "description": "[pendiente] la barra de marcas (la llenan sus disparos y, con el Amplificador de batería, las gastan Tiro de alta tensión, Electrochoque, Escudo de electrones, Reforzador de ataque y Sprint eléctrico para reforzarse).",
+   "mechanicHook": "pendiente_parcial:la barra de marcas (la llenan sus disparos y, con el Amplificador de batería, las gastan Tiro de alta tensión, Electrochoque, Escudo de electrones, Reforzador de ataque y Sprint eléctrico para reforzarse)"
+  }
+ ],
+ "fuente": "NosTale · Tronador (Thunderer)"
+}

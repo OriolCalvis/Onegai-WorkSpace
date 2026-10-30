@@ -1,0 +1,43 @@
+{
+ "id": "domador_de_bestias_bestia_de_confianza",
+ "name": "Bestia de confianza",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Al empezar el combate eliges qué bestia te acompaña. Oso: su corpachón te cubre: +1 a la CA. Lobo: cazáis en pareja: atacas con ventaja. Jabalí: su embestida se te contagia: tus golpes con arma hacen +1 de daño.",
+ "flavorText": "",
+ "classTags": [
+  "domador_de_bestias"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "Al empezar el combate eliges qué bestia te acompaña. Oso: su corpachón te cubre: +1 a la CA. Lobo: cazáis en pareja: atacas con ventaja. Jabalí: su embestida se te contagia: tus golpes con arma hacen +1 de daño.",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Eliges tu bestia al empezar el combate.",
+   "mechanicHook": "elige_una:oso,lobo,jabali"
+  },
+  {
+   "description": "Oso: +1 a la CA.",
+   "mechanicHook": "si:oso:bono_ca:1"
+  },
+  {
+   "description": "Lobo: atacas con ventaja.",
+   "mechanicHook": "si:lobo:ventaja:ataque"
+  },
+  {
+   "description": "Jabalí: tus golpes con arma hacen +1 de daño.",
+   "mechanicHook": "si:jabali:bono_dano_arma:1"
+  },
+  {
+   "description": "[pendiente] que las órdenes a la bestia solo salgan con la bestia en pie.",
+   "mechanicHook": "pendiente_parcial:que las órdenes a la bestia solo salgan con la bestia en pie"
+  }
+ ],
+ "fuente": "Propia · Domador de Bestias"
+}

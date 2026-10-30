@@ -1,0 +1,42 @@
+{
+  "id": "CLASES-03",
+  "date": "2026-09-27",
+  "author": "Claude (contenido de Oriol, 3.ª iteracion)",
+  "status": "HECHO en el arbol, sin commit",
+  "descripcion": "Seis clases a elegir (jugador y companeros): Monje del Despertar (nueva), Senor de las Armas, Bardo de las Cuatro Estaciones, El Apostata, Furia de los Creadores y Mago Chasqueador (nueva). Cada una con su pasiva, 7 habilidades y 3 de Creador (tier 2, rare, descanso largo), las dos invocaciones del Apostata, y un NPC companero reclutable por clase. La fuente vive en tools/importar_clases_companeros.py (upsert por id; se corrige el texto y se vuelve a ejecutar). Lo que Oriol marco como [pendiente] sigue marcado en las descripciones, no se invento: la pasiva del Senor de las Armas, sus dos habilidades que faltan, la cantidad de Ki, el 1d[?] del Susurro Demoniaco, la X del Ataque Maldito y la lectura de Cascada Letal. Las habilidades del Monje y del Mago Chasqueador van sin efecto ('[pendiente] sin efecto definido todavia').",
+  "nota_canon": "AGENTS.md dice que el contenido baja canon -> cartas -> motor y no se inventa en el motor. Aqui el canon lo ha dado Oriol en la conversacion; el script es la carta. Las cartas de la 2.ª iteracion (cancion_de_invierno, marca_de_la_oscuridad, furia_divina...) siguen en skills.json con su classTag pero ya no son las de arranque/aprendibles de la clase.",
+  "companeros": "Contrato de datos: npcs.json entrada companero_<clase> con classId, raceId y bloque companion {recruitable, joinFlag, usesClassCards}. Game::Companeros (motor_level, GL-free) lee ese bloque y recluta/despide encendiendo la flag joinFlag en el NarrativeState (sobrevive a nivel y guardado); los reclutados salen en el Codice como Personajes [Companero]. Nombres y razas de los seis companeros son provisionales.",
+  "archivos": {
+    "nuevos": [
+      "tools/importar_clases_companeros.py",
+      "include/Game/Companeros.h",
+      "src/Game/Companeros.cpp",
+      "tests/Game/ClasesCompanerosTests.cpp"
+    ],
+    "modificados": [
+      "assets/catalogs/classes.json (+2 clases, 4 actualizadas)",
+      "assets/catalogs/skills.json (+60 habilidades; arsenal_del_rey actualizada)",
+      "assets/catalogs/passives.json (+6)",
+      "assets/catalogs/summons.json (+2)",
+      "assets/catalogs/npcs.json (+6)",
+      "src/Game/Codice.cpp (flags companero_)",
+      "tests/Game/CodiceTests.cpp",
+      "cmake/FichaVistaTests.cmake (test_clases_companeros)",
+      "CMakeLists.txt"
+    ]
+  },
+  "verification": [
+    "tools/validar_catalogos_rpg.py: OK sin fallos (2773 entradas).",
+    "test_clases_companeros 3/3, test_codice 3/3, test_ficha_vista 5/5 en el oraculo (las seis clases cargan con 10 cartas y pasiva; se pueden elegir en CharacterCreation).",
+    "Diff de catalogos aditivo (+2954/-65); el importador respeta la sangria de cada fichero.",
+    "tools/validar_catalogos.py falla por causas previas (busca expected_fields() en RpgCatalogs.h, que se partio en CatalogLoaders*): no es de este paquete."
+  ],
+  "pendiente": [
+    "Los companeros NO entran todavia en combate ni tienen ficha: BattleState solo lleva al jugador (H2). Cuando se haga, usesClassCards = juegan con las cartas de su clase.",
+    "Ningun beat recluta aun a nadie: falta el evento/dialogo que encienda companero_<clase> (o un comando de evento 'companero.reclutar').",
+    "Rellenar los [pendiente] cuando Oriol los decida y volver a ejecutar el importador."
+  ],
+  "actualizaciones": [
+    "SETS-03 (08/10/2026): las diez cartas del Monje del Despertar y del Mago Chasqueador ya tienen descripcion jugable y gancho (las escribio Claude desde su nombre; Oriol solo habia puesto el titulo y la pasiva), y las seis clases tienen su set de tier 2. Las pasivas Ki y Cascada Letal siguen con sus [pendiente]. Ver planificacion/CANON_SETS_ITERACION3.md y SETS-03.json."
+  ]
+}

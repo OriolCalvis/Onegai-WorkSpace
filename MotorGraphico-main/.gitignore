@@ -1,0 +1,35 @@
+# Directorios de build de CMake
+build/
+build-*/
+out/
+
+# IDE / editores
+.vscode/
+.idea/
+*.swp
+
+# Artefactos de release.yml
+motor-iso-*.tar.gz
+motor-iso-*.zip
+
+# Volcado de framebuffer de demo_textured_quad (verificacion manual)
+*.ppm
+
+# --- build y artefactos (añadido al inicializar el repo) ---
+build/
+*.o
+*.d
+CMakeFiles/
+CMakeCache.txt
+.DS_Store
+__pycache__/
+*.pyc
+
+# Residuos locales de pruebas y cuarentena
+.fuse_hidden*
+/MotorGraphico/wt_*.json
+/MotorGraphico/map_entity_fields_round_trip*.json
+/MotorGraphico/map_round_trip_fixture.json
+/MotorGraphico/project_serializer_atomic_test.json
+/MotorGraphico/_to_delete/
+/MotorGraphico/examples/Check 2.h

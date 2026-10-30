@@ -1,0 +1,29 @@
+{
+  "id": "C-14",
+  "date": "2026-09-11",
+  "author": "Claude (puente inicial) + Codex y agentes (modelo, UI y persistencia)",
+  "status": "Integració del model, UI i persistència implementada; validació local verda, CI pendent",
+  "actions": [
+    "Històric del pont inicial: es va integrar abans de la migració de l’editor. Les accions del 11/09 que segueixen completen el model, la UI i la persistència.",
+    "`Level/LevelDocumentBridge` (header + `.cpp` + test): `MakeEntityId`, `ToEntityDocument`, `ToObjectSpawn`, `ToEntityLayer` i `ToObjectSpawns`.",
+    "Els ids d'entitat es deriven de la cel·la (`<objectId>_<x>_<y>`), que és la identitat que el motor ja fa servir per als objectes del món (`worldObjectIndexAt`, el guardat de partida). Són ESTABLES: migrar dues vegades el mateix nivell dona els mateixos ids i un diff llegible. Dos spawns a la mateixa cel·la — el format ho permet — reben sufix `_2`, `_3` en comptes de trepitjar-se: perdre una entitat en migrar és justament el que aquest pont evita.",
+    "Un `objectId` que no és `[a-z0-9_]+` NO s'arregla per les braves: es retorna error. Un id mutilat en silenci és un objecte que deixa de resoldre contra el catàleg i un nivell que es trenca més tard i en un altre lloc. `ToEntityLayer` és tot-o-res.",
+    "Viu a `Level/` i no a `Map/`: el document de mapa no ha de saber que existeix `LevelDefinition`. `motor_level` ja depèn de `motor_map_document`, o sigui que la fletxa va en la direcció que ja hi havia.",
+    "Fora d'abast, i no per descuit: `LevelDefinition::enemies` (el format de la Fase 6 que `ObjectSpawn` ja generalitza) i `name`/`mapPath`/`playerStart`, que encara no tenen lloc dins un `MapDocument`. On viuen és una decisió d'aquest mateix paquet i avançar-la aquí seria inventar format.",
+    "EditorState usa MapDocument com a única font de capes i entitats; vista objects derivada, IDs estables, undo/redo i operacions per lots.",
+    "La UI importa TMX+objects legacy una vegada i usa mapDocument quan existeix; conserva metadades i dibuixa capes visibles amb opacitat.",
+    "EditorDocumentIO prepara document natiu .map.json, TMX d’interoperabilitat i nivell abans de substituir; revoca els canvis davant error d’I/O. Conserva també EnemySpawn legacy.",
+    "Playtest i canvi d’escenari no continuen quan falla el guardat; mapDocument és opcional i validat al loader."
+  ],
+  "verification": [
+    "`test_level_document_bridge`, 6 casos verds: els onze camps d'autoria van i tornen idèntics; els ids són estables i derivats de la cel·la; un nivell sencer es converteix en capa sense perdre ningú (inclosa la cel·la compartida) i torna; un `objectId` invàlid falla fort i no deixa res a mitges; una cel·la negativa es rebutja amb el seu missatge; un document sense capes d'entitats dona llista buida i no error. Registrat a `motor_level` i a CTest.",
+    "11/09: build completa en còpia aïllada del lot; 67/67 GL-free i 2/2 GL. Inclou 10 casos EditorState i 8 EditorDocumentIO.",
+    "Smoke GL del nivell nou, nivell legacy i document natiu: tres frames cadascun, sortida 0 i glGetError 0. Captura del document natiu revisada.",
+    "Còpia sobre HEAD amb D-02 de zcode ja integrat; no barreja C-15/C-17/C-18 incomplets de sessions concurrents.",
+    "11/09: test_editor_state, test_editor_document_io i test_map_round_trip també verds amb AddressSanitizer i UndefinedBehaviorSanitizer (3/3 executables)."
+  ],
+  "pending": [
+    "CI remota per al tancament formal.",
+    "C-15/G-01: recuperació després d’apagat enmig del lot, coherència del manifest i confirmació de sortida; no es declaren resoltes per aquest canvi."
+  ]
+}

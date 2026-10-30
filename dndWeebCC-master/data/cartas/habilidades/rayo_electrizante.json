@@ -1,0 +1,54 @@
+{
+ "id": "rayo_electrizante",
+ "name": "Rayo Electrizante",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Un chasquido y te salta un rayo de los dedos al enemigo: 2d6 de daño de rayo, y electrizado se defiende con desventaja 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "mago_chasqueador"
+ ],
+ "roleTags": [],
+ "tags": [
+  "mago_chasqueador",
+  "Rayo",
+  "estandar"
+ ],
+ "mechanicTags": [
+  "Rayo"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "2 turnos",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "INT",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Un chasquido y te salta un rayo de los dedos al enemigo: 2d6 de daño de rayo, y electrizado se defiende con desventaja 2 turnos.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "2d6 de daño de rayo.",
+   "mechanicHook": "dano:2d6"
+  },
+  {
+   "description": "Electrizado: se defiende con desventaja 2 turnos.",
+   "mechanicHook": "estado:2:desventaja:defensa"
+  }
+ ]
+}

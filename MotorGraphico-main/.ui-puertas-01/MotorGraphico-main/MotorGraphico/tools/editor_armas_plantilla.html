@@ -1,0 +1,628 @@
+<title>Forja de Onegai</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Mesa de forja: a la izquierda el arma y los frames, en el centro el yunque (el frame grande), a la derecha el dibujo pixel a pixel. Papel de pergamino, tinta y el carmín del juego. */
+:root {
+  --papel: #efe6d2;
+  --papel-2: #e4d8bd;
+  --tinta: #2b2118;
+  --tinta-2: #5c4a39;
+  --linea: #b9a47f;
+  --carmin: #9e2b25;
+  --cuadro-a: #d8ccb1;
+  --cuadro-b: #cfc2a4;
+  --ok: #3f7a3a;
+  --f-titulo: "Silkscreen", "Courier New", monospace;
+  --f-texto: "Lora", Georgia, "Times New Roman", serif;
+  --f-dato: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papel: #1f1a15; --papel-2: #2a231c; --tinta: #eadfc8; --tinta-2: #b9a98e; --linea: #5a4b39;
+    --carmin: #e0675c; --cuadro-a: #3a3128; --cuadro-b: #332a22; --ok: #7fbf72; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papel: #1f1a15; --papel-2: #2a231c; --tinta: #eadfc8; --tinta-2: #b9a98e; --linea: #5a4b39;
+  --carmin: #e0675c; --cuadro-a: #3a3128; --cuadro-b: #332a22; --ok: #7fbf72; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--papel); color: var(--tinta); font-family: var(--f-texto); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+h1 { font-family: var(--f-titulo); font-weight: 400; font-size: 26px; letter-spacing: .04em; margin: 0; text-wrap: balance; }
+h2 { font-family: var(--f-titulo); font-weight: 400; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-2); margin: 0 0 8px; }
+.cabecera { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 20px; margin-bottom: 14px; max-width: 1280px; }
+.cabecera p { margin: 0; color: var(--tinta-2); max-width: 70ch; }
+.mesa { display: grid; grid-template-columns: minmax(220px, 260px) minmax(0, 1fr) minmax(260px, 340px); gap: 18px; max-width: 1280px; align-items: start; }
+@media (max-width: 980px) { .mesa { grid-template-columns: 1fr; } }
+.panel { background: var(--papel-2); border: 1px solid var(--linea); border-radius: 4px; padding: 14px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+label { font-size: 13px; color: var(--tinta-2); display: block; margin-bottom: 4px; }
+select, button, textarea { font: inherit; color: var(--tinta); }
+select { width: 100%; padding: 6px 8px; background: var(--papel); border: 1px solid var(--linea); border-radius: 3px; }
+button { background: var(--papel); border: 1px solid var(--linea); border-radius: 3px; padding: 5px 10px; cursor: pointer; }
+button:hover { border-color: var(--tinta-2); }
+button:focus-visible, select:focus-visible, canvas:focus-visible, textarea:focus-visible { outline: 2px solid var(--carmin); outline-offset: 2px; }
+button.principal { background: var(--carmin); color: var(--papel); border-color: var(--carmin); }
+.direccion { display: grid; grid-template-columns: 5.2em repeat(5, 1fr); gap: 4px; align-items: center; }
+.direccion span { font-size: 12px; color: var(--tinta-2); }
+.frame { aspect-ratio: 1; width: 100%; max-width: 100%; border: 1px solid var(--linea); border-radius: 2px; padding: 0; background: var(--cuadro-a); position: relative; }
+.frame canvas { width: 100%; height: 100%; image-rendering: pixelated; display: block; }
+.frame[aria-pressed="true"] { border: 2px solid var(--carmin); }
+.frame .marca { position: absolute; top: 1px; right: 2px; width: 6px; height: 6px; border-radius: 50%; background: var(--carmin); }
+.yunque { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start; }
+.grande { width: min(384px, 100%); aspect-ratio: 1; image-rendering: pixelated; border: 1px solid var(--linea); border-radius: 3px; background: var(--cuadro-a); }
+.andando { width: 128px; aspect-ratio: 1; image-rendering: pixelated; border: 1px solid var(--linea); border-radius: 3px; background: var(--cuadro-a); }
+.flechas { display: grid; grid-template-columns: repeat(3, 40px); grid-template-rows: repeat(3, 40px); gap: 4px; }
+.flechas button { padding: 0; font-family: var(--f-titulo); }
+.dato { font-family: var(--f-dato); font-variant-numeric: tabular-nums; font-size: 13px; }
+.fila { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ayuda { font-size: 13px; color: var(--tinta-2); margin: 0; max-width: 60ch; }
+.paleta { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
+.paleta button { padding: 4px 0; font-family: var(--f-dato); font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.paleta button i { display: block; width: 18px; height: 12px; border: 1px solid var(--linea); }
+.paleta button[aria-pressed="true"] { border: 2px solid var(--carmin); }
+.lienzo-pixel { overflow: auto; max-width: 100%; border: 1px solid var(--linea); border-radius: 3px; background: var(--cuadro-b); }
+.lienzo-pixel canvas { display: block; image-rendering: pixelated; cursor: crosshair; touch-action: none; }
+textarea { width: 100%; min-height: 140px; font-family: var(--f-dato); font-size: 12px; background: var(--papel); border: 1px solid var(--linea); border-radius: 3px; padding: 8px; resize: vertical; }
+.estado { font-size: 13px; color: var(--ok); min-height: 1.5em; margin: 0; }
+@media (prefers-reduced-motion: reduce) { .andando { display: none; } }
+</style>
+
+<div class="cabecera">
+  <h1>Forja de Onegai</h1>
+  <p>Todas las armas del juego, y las nuevas que crees: su nombre y sus materiales, y cómo se coge su forma (muévela, gírala o ponla delante o detrás del cuerpo en cada frame) o su dibujo pixel a pixel. Las armas de la misma forma comparten dibujo y agarre; «Forma propia» le da al arma un dibujo solo suyo. Al acabar, copia los ajustes a <code class="dato">tools/ajustes_armas.json</code> y rehaz las hojas con <code class="dato">python3 tools/gen_personajes.py</code> (el jugador) y <code class="dato">python3 tools/gen_pnj.py</code> (los PNJ).</p>
+</div>
+
+<div class="mesa">
+  <section class="panel" aria-label="Arma y frames">
+    <div>
+      <label for="familia">Arma</label>
+      <select id="familia"></select>
+    </div>
+    <div>
+      <label for="armaNombre">Nombre</label>
+      <input id="armaNombre" type="text" style="font:inherit;width:100%;padding:5px 8px;background:var(--papel);border:1px solid var(--linea);border-radius:3px;color:var(--tinta)">
+    </div>
+    <div id="armaMats" style="display:flex;flex-direction:column;gap:6px"></div>
+    <div class="fila">
+      <button id="armaNueva">Arma nueva</button>
+      <button id="armaForma">Forma propia</button>
+      <button id="armaQuitar">Quitar</button>
+    </div>
+    <p class="ayuda" id="armaInfo"></p>
+    <div>
+      <h2>Frames del cuerpo</h2>
+      <div id="frames" class="direccion"></div>
+      <p class="ayuda" style="margin-top:8px">A, quieto y B son el paso de andar; R1 y R2, el reposo. El punto rojo marca los frames que has tocado (movido, girado o cambiado de capa).</p>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="Yunque">
+    <div class="yunque">
+      <canvas id="grande" class="grande" width="64" height="64" tabindex="0" aria-label="Frame grande: usa las flechas para mover el arma"></canvas>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div>
+          <h2>Andando</h2>
+          <canvas id="andando" class="andando" width="64" height="64" aria-label="El paso de andar de esta dirección"></canvas>
+        </div>
+        <div>
+          <h2>Mover el arma</h2>
+          <div class="flechas">
+            <span></span><button id="arriba" aria-label="Un pixel arriba">↑</button><span></span>
+            <button id="izq" aria-label="Un pixel a la izquierda">←</button><button id="cero" aria-label="Volver al puño">0</button><button id="der" aria-label="Un pixel a la derecha">→</button>
+            <span></span><button id="abajo" aria-label="Un pixel abajo">↓</button><span></span>
+          </div>
+          <p class="dato" id="desp" style="margin:6px 0 0">dx 0 · dy 0</p>
+        </div>
+        <div>
+          <h2>Girar el arma</h2>
+          <div class="fila">
+            <button id="giroM15" aria-label="Girar 15 grados a la izquierda">↺15</button>
+            <button id="giroM5" aria-label="Girar 5 grados a la izquierda">↺5</button>
+            <button id="giro0" aria-label="Sin giro">0°</button>
+            <button id="giroP5" aria-label="Girar 5 grados a la derecha">↻5</button>
+            <button id="giroP15" aria-label="Girar 15 grados a la derecha">↻15</button>
+          </div>
+          <p class="dato" id="giro" style="margin:6px 0 0">0°</p>
+        </div>
+        <div>
+          <h2>Respecto al cuerpo</h2>
+          <div class="fila" role="group" aria-label="El arma, delante o detrás del cuerpo">
+            <button id="capaDelante" aria-pressed="false">Delante</button>
+            <button id="capaDetras" aria-pressed="false">Detrás</button>
+            <button id="capaNormal" aria-pressed="true">Como venía</button>
+          </div>
+          <p class="dato" id="capa" style="margin:6px 0 0"></p>
+        </div>
+        <div>
+          <h2>Respecto a la mano</h2>
+          <div class="fila" role="group" aria-label="El arma, delante o detrás de la mano que la coge">
+            <button id="manoDelante" aria-pressed="false">Delante</button>
+            <button id="manoDetras" aria-pressed="false">Detrás</button>
+            <button id="manoNormal" aria-pressed="true">Como venía</button>
+          </div>
+          <p class="dato" id="mano" style="margin:6px 0 0"></p>
+        </div>
+      </div>
+    </div>
+    <div class="fila">
+      <button id="aDireccion">Igual en toda esta dirección</button>
+      <button id="aTodos">Igual en los 20 frames</button>
+    </div>
+    <p class="ayuda">«Igual en…» copia la posición, el giro y las capas de este frame. El cuerpo y la mano que coge el arma (con su antebrazo) son dos capas: el arma puede ir detrás del cuerpo y aun así cogida por la mano, que la agarra por encima. Con el frame grande seleccionado, las flechas mueven el arma, Q y E la giran 5°, D la cambia respecto al cuerpo y M respecto a la mano. El giro es alrededor del puño. En los frames sin capas propias, la vista previa no tapa la empuñadura con el puño como hace el generador.</p>
+  </section>
+
+  <section class="panel" aria-label="Dibujo del arma">
+    <div>
+      <h2 id="tituloDibujo">Dibujo</h2>
+      <p class="ayuda">Clic pinta, clic derecho borra. La <b>@</b> es donde agarra el puño: solo hay una.</p>
+    </div>
+    <div id="paleta" class="paleta"></div>
+    <div class="lienzo-pixel"><canvas id="pixel" aria-label="Dibujo del arma, pixel a pixel"></canvas></div>
+    <div class="fila">
+      <button id="filaArriba">+ fila arriba</button><button id="filaAbajo">+ fila abajo</button>
+      <button id="colIzq">+ col. izq.</button><button id="colDer">+ col. der.</button>
+      <button id="recorta">Quitar lo vacío</button>
+    </div>
+    <div class="fila">
+      <button id="aPasos">Mismo dibujo en A, quieto y B</button>
+      <button id="original">Volver al original</button>
+    </div>
+  </section>
+</div>
+
+<section class="panel" style="max-width:1280px;margin-top:18px" aria-label="Ajustes">
+  <h2>Ajustes para tools/ajustes_armas.json</h2>
+  <textarea id="salida" spellcheck="false" aria-label="Ajustes en JSON"></textarea>
+  <div class="fila">
+    <button class="principal" id="copiar">Copiar los ajustes</button>
+    <button id="cargar">Cargar ajustes pegados</button>
+    <button id="borrarTodo">Empezar de cero</button>
+  </div>
+  <p class="estado" id="estado" role="status"></p>
+</section>
+
+<script id="datos" type="application/json">/*DATOS*/</script>
+<script>
+(() => {
+  const D = JSON.parse(document.getElementById("datos").textContent);
+  const $ = (id) => document.getElementById(id);
+  const DIRS = ["abajo", "derecha", "arriba", "izquierda"];
+  const NOMBRE_DIR = { abajo: "De frente", derecha: "Derecha", arriba: "Espalda", izquierda: "Izquierda" };
+  const DIB = ["A", "quieto", "B", "reposo1", "reposo2"];
+  const CORTO = { A: "A", quieto: "Q", B: "B", reposo1: "R1", reposo2: "R2" };
+  const ANCLAS = "@&$";
+  const CLAVES = ["desplazamientos", "dibujos", "giros", "capas", "manos", "armas_nuevas", "armas_cambios", "familias_nuevas"];
+  const vacio = () => ({ desplazamientos: {}, dibujos: {}, giros: {}, capas: {}, manos: {}, armas_nuevas: {}, armas_cambios: {}, familias_nuevas: {} });
+  let aj = vacio();
+  try { const g = localStorage.getItem("forja_onegai"); if (g) aj = JSON.parse(g); } catch (e) {}
+  if (D.ajustes && CLAVES.every((k) => !Object.keys(aj[k] || {}).length)) aj = JSON.parse(JSON.stringify(D.ajustes));
+  CLAVES.forEach((k) => { aj[k] = aj[k] || {}; });
+
+  const cuerpos = {};
+  const listo = Promise.all(D.frames.map((fr) => new Promise((ok) => {
+    const im = new Image(); im.onload = () => ok(); im.onerror = () => ok(); im.src = "data:image/png;base64," + fr.cuerpo; cuerpos[fr.f] = im;
+  })));
+  const porF = {}; D.frames.forEach((fr) => (porF[fr.f] = fr));
+
+  // Oriol (23/10): «también todas las armas y crear nuevas». Se elige un ARMA; su forma (familia) da el
+  // dibujo y el agarre, que comparten las armas de la misma forma.
+  Object.values(D.familias).forEach((v) => (v.anclas = D.anclas[v.ranura]));
+  function famDe(f) {
+    if (D.familias[f]) return D.familias[f];
+    const n = aj.familias_nuevas[f]; const b = n && D.familias[n.base];
+    if (!b) return null;
+    return Object.assign({}, b, { base: n.base, nombre: (aj.armas_nuevas && Object.values(aj.armas_nuevas).find((x) => x.familia === f) || {}).nombre || f });
+  }
+  function armaDe(id) {
+    let a = null;
+    if (aj.armas_nuevas[id]) a = JSON.parse(JSON.stringify(aj.armas_nuevas[id]));
+    else if (D.armas[id]) a = JSON.parse(JSON.stringify(D.armas[id]));
+    if (!a) return null;
+    const c = aj.armas_cambios[id];
+    if (c) { if (c.nombre) a.nombre = c.nombre; if (c.materiales) a.materiales = c.materiales.slice(); }
+    return famDe(a.familia) ? a : null;
+  }
+  let arma = D.armas.espada_hierro ? "espada_hierro" : Object.keys(D.armas)[0];
+  try { const g = localStorage.getItem("forja_arma"); if (g && armaDe(g)) arma = g; } catch (e) {}
+  let familia = armaDe(arma).familia;
+  let frame = 8, codigo = "1";
+
+  // --- datos del arma -------------------------------------------------------
+  const fam = () => famDe(familia);
+  const vistaDe = (dir) => (dir === "abajo" || dir === "arriba" ? "abajo" : "derecha");
+  function filasDe(f, dib, vista) {
+    const o = aj.dibujos[f] && aj.dibujos[f][dib] && aj.dibujos[f][dib][vista];
+    return o || famDe(f).dibujos[dib][vista];
+  }
+  const filas = (dib, vista) => filasDe(familia, dib, vista);
+  function ponFilas(dib, vista, nuevas) {
+    aj.dibujos[familia] = aj.dibujos[familia] || {};
+    aj.dibujos[familia][dib] = aj.dibujos[familia][dib] || {};
+    aj.dibujos[familia][dib][vista] = nuevas;
+    guarda();
+  }
+  const desp = (f) => (aj.desplazamientos[familia] && aj.desplazamientos[familia][String(f)]) || [0, 0];
+  function ponDesp(f, d) {
+    aj.desplazamientos[familia] = aj.desplazamientos[familia] || {};
+    if (!d[0] && !d[1]) delete aj.desplazamientos[familia][String(f)];
+    else aj.desplazamientos[familia][String(f)] = d;
+    if (!Object.keys(aj.desplazamientos[familia]).length) delete aj.desplazamientos[familia];
+    guarda();
+  }
+  // Oriol (23/10): girar el arma y ponerla delante o detrás, frame a frame.
+  const porFrame = (clave, f) => aj[clave][familia] && aj[clave][familia][String(f)];
+  function ponPorFrame(clave, f, v) {
+    aj[clave][familia] = aj[clave][familia] || {};
+    if (v === undefined || v === null || v === 0) delete aj[clave][familia][String(f)];
+    else aj[clave][familia][String(f)] = v;
+    if (!Object.keys(aj[clave][familia]).length) delete aj[clave][familia];
+    guarda();
+  }
+  const giro = (f) => +(porFrame("giros", f) || 0);
+  const capa = (f) => porFrame("capas", f) || null;  // "delante" | "detras" | null (como venía)
+  const delanteEn = (f) => { const c = capa(f); const a = fam().anclas[String(f)]; return c ? c === "delante" : !!(a && a.delante); };
+  const manoRel = (f) => porFrame("manos", f) || null;  // el arma respecto a la mano: "delante" | "detras" | null
+  const bajoMano = (f) => { const m = manoRel(f); return m ? m === "detras" : !fam().tapaPuno; };
+  const conCapas = (f) => !!(capa(f) || manoRel(f));
+  const tocado = (f) => { const d = desp(f); return !!(d[0] || d[1] || giro(f) || capa(f) || manoRel(f)); };
+  // Las máscaras de las manos y los antebrazos de cada frame (bits, de actores_tallas.labs).
+  const mascaras = {};
+  D.frames.forEach((fr) => {
+    mascaras[fr.f] = {};
+    Object.entries(fr.mascaras || {}).forEach(([k, b64]) => {
+      const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)), bits = new Uint8Array(D.frame * D.frame);
+      for (let i = 0; i < bits.length; i++) bits[i] = (bytes[i >> 3] >> (7 - (i & 7))) & 1;
+      mascaras[fr.f][k] = bits;
+    });
+  });
+  const brazoDe = (m) => (m === "m" ? "a" : "A");
+  const alfaCuerpo = {};
+  function alfa(f) {
+    if (alfaCuerpo[f] || !cuerpos[f] || !cuerpos[f].complete) return alfaCuerpo[f];
+    const c = document.createElement("canvas"); c.width = c.height = D.frame; const x = c.getContext("2d"); x.drawImage(cuerpos[f], 0, 0);
+    const px = x.getImageData(0, 0, D.frame, D.frame).data, a = new Uint8Array(D.frame * D.frame);
+    for (let i = 0; i < a.length; i++) a[i] = px[i * 4 + 3] > 0 ? 1 : 0;
+    return (alfaCuerpo[f] = a);
+  }
+  function color(c) {
+    const t = D.tonos[c]; if (!t) return null;
+    const a = armaDe(arma), nm = (a && a.materiales) || [];
+    const m = nm.map((n) => (n && D.rampas[n]) || null);
+    const mat = t[0] === 0 ? m[0] : t[0] === 1 ? m[1] : t[0] === 2 ? (m[2] || m[1]) : (m[3] || m[2] || m[1]);
+    return mat ? mat[t[1]] : null;
+  }
+
+  // --- pintar ----------------------------------------------------------------
+  const hex = (s) => [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16)];
+  function pintaArma(ctx, f) {
+    const fr = porF[f], a = fam().anclas[String(f)];
+    if (!a || !a.ancla) return;
+    const espejo = fr.direccion === "arriba" || fr.direccion === "izquierda";
+    const fs = filas(fr.dibujo, vistaDe(fr.direccion));
+    let ay = fs.findIndex((r) => [...ANCLAS].some((c) => r.includes(c)));
+    if (ay < 0) return;
+    const ax = [...ANCLAS].map((c) => fs[ay].indexOf(c)).find((i) => i >= 0);
+    const [ox, oy] = desp(f);
+    const N = D.frame, capaPx = new Uint8ClampedArray(N * N * 4);
+    const gx = a.ancla[0] + ox, gy = a.ancla[1] + oy;
+    fs.forEach((r, i) => [...r].forEach((c, j) => {
+      if (c === ".") return;
+      const col = color(c); if (!col) return;
+      const dx = j - ax, dy = i - ay;
+      const x = gx + (espejo ? -dx : dx), y = gy + dy;
+      if (x < 0 || y < 0 || x >= N || y >= N) return;
+      const k = (y * N + x) * 4, [rr, gg, bb] = hex(col);
+      capaPx[k] = rr; capaPx[k + 1] = gg; capaPx[k + 2] = bb; capaPx[k + 3] = 255;
+    }));
+    // El giro: lo mismo que actores_armas.gira_capa (vecino más próximo, alrededor del puño).
+    let out = capaPx;
+    const g = giro(f);
+    if (g) {
+      out = new Uint8ClampedArray(N * N * 4);
+      const rad = (g * Math.PI) / 180, co = Math.cos(rad), si = Math.sin(rad);
+      for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+        const u = x + 0.5 - (gx + 0.5), v = y + 0.5 - (gy + 0.5);
+        const sx = Math.floor(gx + 0.5 + co * u + si * v), sy = Math.floor(gy + 0.5 - si * u + co * v);
+        if (sx < 0 || sy < 0 || sx >= N || sy >= N) continue;
+        const s = (sy * N + sx) * 4, d = (y * N + x) * 4;
+        out[d] = capaPx[s]; out[d + 1] = capaPx[s + 1]; out[d + 2] = capaPx[s + 2]; out[d + 3] = capaPx[s + 3];
+      }
+    }
+    // Las capas de la Forja: lo que tapan la mano (y su antebrazo) y el cuerpo, ya girado (como capa_arma).
+    if (conCapas(f)) {
+      const sobre = delanteEn(f), bajo = bajoMano(f), mk = mascaras[f] || {}, mano = a.mano;
+      if (sobre || !bajo) {
+        const ma = mk[mano], br = mk[brazoDe(mano)], al = alfa(f);
+        for (let i = 0; i < N * N; i++) {
+          const esMano = ma && ma[i], esBrazo = br && br[i];
+          if ((bajo && esMano) || (!sobre && al && al[i] && !esMano && !esBrazo)) out[i * 4 + 3] = 0;
+        }
+      }
+    }
+    const tmp = document.createElement("canvas"); tmp.width = tmp.height = N;
+    tmp.getContext("2d").putImageData(new ImageData(out, N, N), 0, 0);
+    ctx.drawImage(tmp, 0, 0);
+  }
+  function pintaFrame(ctx, f) {
+    ctx.clearRect(0, 0, D.frame, D.frame);
+    // Con capas propias, el arma va encima (y se borra lo que la tapa) salvo si va detrás de todo.
+    const delante = conCapas(f) ? (delanteEn(f) || !bajoMano(f)) : delanteEn(f);
+    if (!delante) pintaArma(ctx, f);
+    if (cuerpos[f]) ctx.drawImage(cuerpos[f], 0, 0);
+    if (delante) pintaArma(ctx, f);
+  }
+
+  // --- frames ----------------------------------------------------------------
+  const botones = {};
+  function montaFrames() {
+    const cont = $("frames"); cont.innerHTML = "";
+    cont.appendChild(Object.assign(document.createElement("span"), { textContent: "" }));
+    DIB.forEach((d) => cont.appendChild(Object.assign(document.createElement("span"), { textContent: CORTO[d], style: "text-align:center" })));
+    DIRS.forEach((dir) => {
+      cont.appendChild(Object.assign(document.createElement("span"), { textContent: NOMBRE_DIR[dir] }));
+      DIB.forEach((dib) => {
+        const fr = D.frames.find((x) => x.direccion === dir && x.dibujo === dib);
+        const b = document.createElement("button"); b.className = "frame";
+        if (!fr) { b.disabled = true; cont.appendChild(b); return; }
+        b.setAttribute("aria-label", NOMBRE_DIR[dir] + ", " + dib + " (frame " + fr.f + ")");
+        const c = document.createElement("canvas"); c.width = c.height = D.frame; b.appendChild(c);
+        b.addEventListener("click", () => { frame = fr.f; refresca(); });
+        botones[fr.f] = b; cont.appendChild(b);
+      });
+    });
+  }
+  function refrescaFrames() {
+    Object.entries(botones).forEach(([f, b]) => {
+      const ctx = b.querySelector("canvas").getContext("2d"); ctx.imageSmoothingEnabled = false; pintaFrame(ctx, +f);
+      b.setAttribute("aria-pressed", String(+f === frame));
+      let m = b.querySelector(".marca");
+      if (tocado(+f) && !m) { m = document.createElement("span"); m.className = "marca"; b.appendChild(m); }
+      if (!tocado(+f) && m) m.remove();
+    });
+  }
+
+  // --- yunque ----------------------------------------------------------------
+  function refrescaGrande() {
+    const ctx = $("grande").getContext("2d"); ctx.imageSmoothingEnabled = false; pintaFrame(ctx, frame);
+    const d = desp(frame); $("desp").textContent = "frame " + frame + " · dx " + d[0] + " · dy " + d[1];
+    $("giro").textContent = giro(frame) + "°";
+    const c = capa(frame), a = fam().anclas[String(frame)];
+    $("capaDelante").setAttribute("aria-pressed", String(c === "delante"));
+    $("capaDetras").setAttribute("aria-pressed", String(c === "detras"));
+    $("capaNormal").setAttribute("aria-pressed", String(!c));
+    $("capa").textContent = (delanteEn(frame) ? "delante del cuerpo" : "detrás del cuerpo") + (c ? "" : " (como venía)");
+    const m = manoRel(frame);
+    $("manoDelante").setAttribute("aria-pressed", String(m === "delante"));
+    $("manoDetras").setAttribute("aria-pressed", String(m === "detras"));
+    $("manoNormal").setAttribute("aria-pressed", String(!m));
+    $("mano").textContent = (bajoMano(frame) ? "la mano la agarra por encima" : "el arma tapa la mano") + (m ? "" : " (como venía)");
+  }
+  $("manoDelante").onclick = () => { ponPorFrame("manos", frame, "delante"); refresca(); };
+  $("manoDetras").onclick = () => { ponPorFrame("manos", frame, "detras"); refresca(); };
+  $("manoNormal").onclick = () => { ponPorFrame("manos", frame, null); refresca(); };
+  function gira(dg) { let g = giro(frame) + dg; g = ((g + 180) % 360 + 360) % 360 - 180; ponPorFrame("giros", frame, g); refresca(); }
+  [["giroM15", -15], ["giroM5", -5], ["giroP5", 5], ["giroP15", 15]].forEach(([id, dg]) => ($(id).onclick = () => gira(dg)));
+  $("giro0").onclick = () => { ponPorFrame("giros", frame, 0); refresca(); };
+  $("capaDelante").onclick = () => { ponPorFrame("capas", frame, "delante"); refresca(); };
+  $("capaDetras").onclick = () => { ponPorFrame("capas", frame, "detras"); refresca(); };
+  $("capaNormal").onclick = () => { ponPorFrame("capas", frame, null); refresca(); };
+  function mueve(dx, dy) { const d = desp(frame); ponDesp(frame, [d[0] + dx, d[1] + dy]); refresca(); }
+  $("arriba").onclick = () => mueve(0, -1); $("abajo").onclick = () => mueve(0, 1);
+  $("izq").onclick = () => mueve(-1, 0); $("der").onclick = () => mueve(1, 0);
+  $("cero").onclick = () => { ponDesp(frame, [0, 0]); refresca(); };
+  $("grande").addEventListener("keydown", (e) => {
+    const m = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[e.key];
+    if (m) { e.preventDefault(); mueve(m[0], m[1]); return; }
+    if (e.key === "q" || e.key === "Q") { e.preventDefault(); gira(-5); }
+    else if (e.key === "e" || e.key === "E") { e.preventDefault(); gira(5); }
+    else if (e.key === "d" || e.key === "D") { e.preventDefault(); ponPorFrame("capas", frame, delanteEn(frame) ? "detras" : "delante"); refresca(); }
+    else if (e.key === "m" || e.key === "M") { e.preventDefault(); ponPorFrame("manos", frame, bajoMano(frame) ? "delante" : "detras"); refresca(); }
+  });
+  function copiaA(lista) {
+    const d = desp(frame), g = giro(frame), c = capa(frame), m = manoRel(frame);
+    lista.forEach((x) => { ponDesp(x.f, d.slice()); ponPorFrame("giros", x.f, g); ponPorFrame("capas", x.f, c); ponPorFrame("manos", x.f, m); });
+  }
+  $("aDireccion").onclick = () => {
+    const dir = porF[frame].direccion;
+    copiaA(D.frames.filter((x) => x.direccion === dir)); refresca();
+    avisa("Igual (posición, giro y capas) en los frames de " + NOMBRE_DIR[dir].toLowerCase() + ".");
+  };
+  $("aTodos").onclick = () => { copiaA(D.frames); refresca(); avisa("Igual (posición, giro y capas) en los 20 frames."); };
+
+  let paso = 0;
+  function anda() {
+    const dir = porF[frame].direccion;
+    const orden = ["A", "quieto", "B", "quieto"].map((d) => D.frames.find((x) => x.direccion === dir && x.dibujo === d).f);
+    const ctx = $("andando").getContext("2d"); ctx.imageSmoothingEnabled = false; pintaFrame(ctx, orden[paso % 4]); paso++;
+  }
+
+  // --- dibujo pixel a pixel ------------------------------------------------------
+  const ESC = 14;
+  const vistaActual = () => vistaDe(porF[frame].direccion);
+  function montaPaleta() {
+    const p = $("paleta"); p.innerHTML = "";
+    const codigos = ["1", "2", "3", "4", "5", "w", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "@", "."];
+    codigos.forEach((c) => {
+      const b = document.createElement("button"); b.dataset.c = c;
+      const i = document.createElement("i"); const col = c === "." ? null : color(c === "@" ? "7" : c);
+      i.style.background = col || "transparent"; if (c === ".") i.style.borderStyle = "dashed";
+      b.appendChild(i); b.appendChild(document.createTextNode(c === "." ? "borrar" : c));
+      b.setAttribute("aria-label", c === "." ? "Borrar" : c === "@" ? "Puño (@)" : "Color " + c);
+      b.setAttribute("aria-pressed", String(c === codigo));
+      b.onclick = () => { codigo = c; montaPaleta(); };
+      p.appendChild(b);
+    });
+  }
+  function refrescaPixel() {
+    const dib = porF[frame].dibujo, vista = vistaActual();
+    $("tituloDibujo").textContent = fam().nombre + " · " + dib + " · " + (vista === "abajo" ? "de frente" : "de perfil");
+    const fs = filas(dib, vista), w = Math.max(...fs.map((r) => r.length)), h = fs.length;
+    const cv = $("pixel"); cv.width = w * ESC; cv.height = h * ESC;
+    const ctx = cv.getContext("2d"); const css = getComputedStyle(document.documentElement);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const c = fs[y][x] || ".";
+      ctx.fillStyle = (x + y) % 2 ? css.getPropertyValue("--cuadro-a") : css.getPropertyValue("--cuadro-b");
+      ctx.fillRect(x * ESC, y * ESC, ESC, ESC);
+      if (c !== ".") { ctx.fillStyle = color(c) || "#f0f"; ctx.fillRect(x * ESC, y * ESC, ESC, ESC); }
+      if (ANCLAS.includes(c)) { ctx.strokeStyle = css.getPropertyValue("--carmin"); ctx.lineWidth = 2; ctx.strokeRect(x * ESC + 2, y * ESC + 2, ESC - 4, ESC - 4); }
+    }
+  }
+  function pinta(x, y, c) {
+    const dib = porF[frame].dibujo, vista = vistaActual();
+    const fs = filas(dib, vista).map((r) => [...r]); const w = Math.max(...fs.map((r) => r.length));
+    fs.forEach((r) => { while (r.length < w) r.push("."); });
+    if (!fs[y] || x >= w) return;
+    if (c === "@") fs.forEach((r) => r.forEach((v, i) => { if (ANCLAS.includes(v)) r[i] = "7"; }));
+    if (ANCLAS.includes(fs[y][x]) && c !== "@") return avisa("Ese es el puño: pon la @ en otro sitio antes de borrarlo.");
+    fs[y][x] = c; ponFilas(dib, vista, fs.map((r) => r.join(""))); refresca();
+  }
+  let pintando = false, borrando = false;
+  function celda(e) { const r = $("pixel").getBoundingClientRect(); return [Math.floor((e.clientX - r.left) / ESC), Math.floor((e.clientY - r.top) / ESC)]; }
+  $("pixel").addEventListener("contextmenu", (e) => e.preventDefault());
+  $("pixel").addEventListener("pointerdown", (e) => { pintando = true; borrando = e.button === 2; const [x, y] = celda(e); pinta(x, y, borrando ? "." : codigo); });
+  $("pixel").addEventListener("pointermove", (e) => { if (!pintando || codigo === "@") return; const [x, y] = celda(e); const fs = filas(porF[frame].dibujo, vistaActual()); const c = borrando ? "." : codigo; if (fs[y] && (fs[y][x] || ".") !== c) pinta(x, y, c); });
+  window.addEventListener("pointerup", () => (pintando = false));
+  function cambiaForma(fn) { const dib = porF[frame].dibujo, vista = vistaActual(); const fs = filas(dib, vista); const w = Math.max(...fs.map((r) => r.length)); ponFilas(dib, vista, fn(fs.map((r) => r.padEnd(w, ".")), w)); refresca(); }
+  $("filaArriba").onclick = () => cambiaForma((fs, w) => [".".repeat(w), ...fs]);
+  $("filaAbajo").onclick = () => cambiaForma((fs, w) => [...fs, ".".repeat(w)]);
+  $("colIzq").onclick = () => cambiaForma((fs) => fs.map((r) => "." + r));
+  $("colDer").onclick = () => cambiaForma((fs) => fs.map((r) => r + "."));
+  $("recorta").onclick = () => cambiaForma((fs) => {
+    let a = 0, b = fs.length - 1; while (a < b && !/[^.]/.test(fs[a])) a++; while (b > a && !/[^.]/.test(fs[b])) b--;
+    const r = fs.slice(a, b + 1); const w = Math.max(...r.map((x) => x.length));
+    let i = 0, j = w - 1; const vacia = (k) => r.every((x) => (x[k] || ".") === ".");
+    while (i < j && vacia(i)) i++; while (j > i && vacia(j)) j--;
+    return r.map((x) => x.slice(i, j + 1));
+  });
+  $("aPasos").onclick = () => {
+    const vista = vistaActual(), fs = filas(porF[frame].dibujo, vista);
+    ["A", "quieto", "B"].forEach((d) => ponFilas(d, vista, fs.slice())); refresca(); avisa("El mismo dibujo en el paso A, quieto y B.");
+  };
+  $("original").onclick = () => {
+    const dib = porF[frame].dibujo, vista = vistaActual();
+    if (aj.dibujos[familia] && aj.dibujos[familia][dib]) {
+      delete aj.dibujos[familia][dib][vista];
+      if (!Object.keys(aj.dibujos[familia][dib]).length) delete aj.dibujos[familia][dib];
+      if (!Object.keys(aj.dibujos[familia]).length) delete aj.dibujos[familia];
+    }
+    guarda(); refresca();
+  };
+
+  // --- ajustes --------------------------------------------------------------
+  function texto() { return JSON.stringify({ _nota: "Lo escribe la Forja de Onegai (tools/editor_armas.html). Lo lee tools/actores_armas.py.", desplazamientos: aj.desplazamientos, giros: aj.giros, capas: aj.capas, manos: aj.manos, dibujos: aj.dibujos, armas_nuevas: aj.armas_nuevas, armas_cambios: aj.armas_cambios, familias_nuevas: aj.familias_nuevas }, null, 1); }
+  function guarda() {
+    try { localStorage.setItem("forja_onegai", JSON.stringify(aj)); } catch (e) {}
+    if ($("salida")) $("salida").value = texto();
+    if (window.forjaCambio) window.forjaCambio();  // la Forja: hay cambios sin guardar
+  }
+  // la Forja (Guardar / Exportar) lee y carga los ajustes de las armas
+  window.forjaArmas = {
+    estado: () => JSON.parse(texto()),
+    carga: (n) => { aj = vacio(); CLAVES.forEach((k) => { aj[k] = (n && n[k]) || {}; }); guarda(); if (!armaDe(arma)) arma = D.armas.espada_hierro ? "espada_hierro" : Object.keys(D.armas)[0]; eligeArma(arma); },
+  };
+  function avisa(t) { $("estado").textContent = t; }
+  if ($("copiar")) $("copiar").onclick = () => {
+    const t = texto();
+    const fallo = () => { $("salida").focus(); $("salida").select(); avisa("Selecciona el texto y cópialo a mano (Cmd+C)."); };
+    try { navigator.clipboard.writeText(t).then(() => avisa("Copiado. Pégalo en tools/ajustes_armas.json y ejecuta gen_personajes.py y gen_pnj.py."), fallo); } catch (e) { fallo(); }
+  };
+  if ($("cargar")) $("cargar").onclick = () => {
+    try { const n = JSON.parse($("salida").value); aj = vacio(); CLAVES.forEach((k) => { aj[k] = n[k] || {}; }); guarda(); if (!armaDe(arma)) arma = Object.keys(D.armas)[0]; eligeArma(arma); avisa("Ajustes cargados."); }
+    catch (e) { avisa("Ese texto no es un JSON válido: revisa comas y llaves."); }
+  };
+  $("borrarTodo").onclick = () => {
+    if ($("borrarTodo").dataset.seguro !== "1") { $("borrarTodo").dataset.seguro = "1"; $("borrarTodo").textContent = "Pulsa otra vez para borrarlo todo"; return; }
+    $("borrarTodo").dataset.seguro = ""; $("borrarTodo").textContent = "Empezar de cero";
+    aj = vacio(); guarda(); if (!armaDe(arma)) arma = D.armas.espada_hierro ? "espada_hierro" : Object.keys(D.armas)[0]; eligeArma(arma); avisa("Sin ajustes: las armas vuelven a como estaban.");
+  };
+
+  // --- arranque ---------------------------------------------------------------
+  const sel = $("familia");
+  function montaArmas() {
+    sel.innerHTML = "";
+    const grupos = { arma: Object.assign(document.createElement("optgroup"), { label: "En la mano del arma" }),
+                     mano_izq: Object.assign(document.createElement("optgroup"), { label: "En la otra mano" }) };
+    const ids = [...new Set([...Object.keys(D.armas), ...Object.keys(aj.armas_nuevas)])].map((id) => [id, armaDe(id)]).filter((x) => x[1]);
+    ids.sort((a, b) => a[1].nombre.localeCompare(b[1].nombre, "es"));
+    ids.forEach(([id, a]) => {
+      const f = famDe(a.familia), marca = aj.armas_nuevas[id] ? " · nueva" : aj.armas_cambios[id] ? " · cambiada" : "";
+      grupos[f.ranura].appendChild(new Option(a.nombre + " (" + a.familia + ")" + marca, id));
+    });
+    sel.appendChild(grupos.arma); sel.appendChild(grupos.mano_izq); sel.value = arma;
+  }
+  function eligeArma(id) { arma = id; familia = armaDe(id).familia; try { localStorage.setItem("forja_arma", id); } catch (e) {} montaArmas(); montaArma(); montaPaleta(); refresca(); }
+  sel.onchange = () => eligeArma(sel.value);
+  const optsMat = (() => { const f = document.createDocumentFragment(); Object.keys(D.rampas).forEach((m) => f.appendChild(new Option(m, m))); return f; })();
+  function ponArma(a) {
+    if (aj.armas_nuevas[arma]) aj.armas_nuevas[arma] = { familia: a.familia, nombre: a.nombre, materiales: a.materiales };
+    else {
+      const b = D.armas[arma], c = {};
+      if (a.nombre !== b.nombre) c.nombre = a.nombre;
+      if (JSON.stringify(a.materiales) !== JSON.stringify(b.materiales)) c.materiales = a.materiales;
+      if (Object.keys(c).length) aj.armas_cambios[arma] = c; else delete aj.armas_cambios[arma];
+    }
+    guarda();
+  }
+  function montaArma() {
+    const a = armaDe(arma); $("armaNombre").value = a.nombre;
+    const cont = $("armaMats"); cont.innerHTML = "";
+    ["Material 1 (hoja, cabeza…)", "Material 2 (mango, guarda…)", "Material 3", "Material 4 (gema)"].forEach((txt, k) => {
+      const l = document.createElement("label"); l.textContent = txt;
+      const s = document.createElement("select"); s.style.width = "100%";
+      if (k >= 2) s.appendChild(new Option("— como el 2 —", ""));
+      s.appendChild(optsMat.cloneNode(true)); s.value = a.materiales[k] || "";
+      s.onchange = () => { const b = armaDe(arma); const m = b.materiales.slice(); m[k] = s.value || null; while (m.length && !m[m.length - 1]) m.pop(); b.materiales = m; ponArma(b); montaArmas(); montaPaleta(); refresca(); };
+      l.appendChild(s); cont.appendChild(l);
+    });
+    const f = fam();
+    $("armaInfo").textContent = (aj.armas_nuevas[arma] ? "Arma nueva (" + arma + ")" : "Arma del juego (" + arma + ")") +
+      " · forma «" + familia + "»" + (f.base ? " (propia, a partir de «" + f.base + "»). Lo que muevas o dibujes es solo de esta arma." : ". Lo que muevas o dibujes vale para todas las armas de esta forma.");
+    $("armaQuitar").disabled = !(aj.armas_nuevas[arma] || aj.armas_cambios[arma]);
+  }
+  $("armaNombre").oninput = () => { const a = armaDe(arma); a.nombre = $("armaNombre").value || a.nombre; ponArma(a); };
+  $("armaNombre").onchange = () => montaArmas();
+  const slugA = (t) => t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "") || "arma";
+  const libre = (base, usado) => { let id = base, n = 2; while (usado(id)) id = base + "_" + n++; return id; };
+  $("armaNueva").onclick = () => {
+    const a = armaDe(arma);
+    const id = libre("forja_" + slugA(a.nombre), (x) => D.armas[x] || aj.armas_nuevas[x]);
+    aj.armas_nuevas[id] = { familia: a.familia, nombre: a.nombre + " (nueva)", materiales: a.materiales.slice() };
+    guarda(); eligeArma(id); avisa("Arma nueva con la forma «" + a.familia + "»: cámbiale el nombre y los materiales, o dale «Forma propia» para dibujarla a tu manera.");
+  };
+  $("armaForma").onclick = () => {
+    const a = armaDe(arma);
+    if (!aj.armas_nuevas[arma]) return avisa("La forma propia es para las armas nuevas: crea una con «Arma nueva» primero.");
+    if (aj.familias_nuevas[a.familia]) return avisa("Esta arma ya tiene forma propia.");
+    const fam0 = famDe(a.familia), base = fam0.base || a.familia;
+    const nueva = libre("forja_" + slugA(a.nombre), (x) => D.familias[x] || aj.familias_nuevas[x]);
+    aj.familias_nuevas[nueva] = { base };
+    // empieza con el dibujo (y el agarre) que tenía
+    ["dibujos", "desplazamientos", "giros", "capas", "manos"].forEach((k) => { if (aj[k][a.familia]) aj[k][nueva] = JSON.parse(JSON.stringify(aj[k][a.familia])); });
+    aj.dibujos[nueva] = aj.dibujos[nueva] || {};
+    Object.entries(fam0.dibujos).forEach(([dib, vs]) => { aj.dibujos[nueva][dib] = aj.dibujos[nueva][dib] || {}; ["abajo", "derecha"].forEach((v) => { if (!aj.dibujos[nueva][dib][v]) aj.dibujos[nueva][dib][v] = filasDe(a.familia, dib, v).slice(); }); });
+    aj.armas_nuevas[arma].familia = nueva; guarda(); eligeArma(arma);
+    avisa("Forma propia «" + nueva + "»: lo que dibujes y muevas ahora solo vale para esta arma.");
+  };
+  $("armaQuitar").onclick = () => {
+    if (aj.armas_nuevas[arma]) {
+      const f = aj.armas_nuevas[arma].familia; delete aj.armas_nuevas[arma];
+      if (aj.familias_nuevas[f] && !Object.values(aj.armas_nuevas).some((x) => x.familia === f)) {
+        delete aj.familias_nuevas[f]; ["dibujos", "desplazamientos", "giros", "capas", "manos"].forEach((k) => delete aj[k][f]);
+      }
+      guarda(); eligeArma(D.armas.espada_hierro ? "espada_hierro" : Object.keys(D.armas)[0]); avisa("Arma nueva quitada.");
+    } else { delete aj.armas_cambios[arma]; guarda(); eligeArma(arma); avisa("El arma vuelve a su nombre y sus materiales."); }
+  };
+  function refresca() { refrescaFrames(); refrescaGrande(); refrescaPixel(); }
+  montaArmas(); montaArma(); montaFrames(); montaPaleta(); guarda();
+  listo.then(() => {
+    refresca(); anda();
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(anda, 170);
+  });
+})();
+</script>

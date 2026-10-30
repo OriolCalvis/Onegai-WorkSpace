@@ -1,0 +1,54 @@
+{
+ "id": "romperrocas_extraccion",
+ "name": "Extracción",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Un golpe que hace ceder hasta la roca: 2d6 de daño de fuego y -1 a su CA durante 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "romperrocas"
+ ],
+ "roleTags": [],
+ "tags": [
+  "romperrocas",
+  "estandar",
+  "Fuego"
+ ],
+ "mechanicTags": [
+  "Fuego"
+ ],
+ "actionType": "accion_principal",
+ "target": "zone_radius",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Un golpe que hace ceder hasta la roca: 2d6 de daño de fuego y -1 a su CA durante 2 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "2d6 de daño de fuego.",
+   "mechanicHook": "dano:2d6"
+  },
+  {
+   "description": "Agotado: -1 a la CA durante 2 turnos.",
+   "mechanicHook": "estado:2:penal_ca:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Romperrocas (Stone Breaker) · H364 Extracción"
+}

@@ -1,0 +1,25 @@
+{
+ "id": "COMBATE-01",
+ "date": "2026-10-14",
+ "author": "claude (Cowork)",
+ "status": "HECHO (primera parte) — se ve el daño y cuándo te pegan; los dados ya no se repiten.",
+ "origen": "Oriol (14/10): «algún feedback visual de que me peguen, y cómo es que la vida apenas sube y baja? mira los registros de daño».",
+ "actions": [
+  "HUD Pergamino::GolpesEnPantalla: números sobre quien recibe («-7», «Fallo», «Empate», «Pifia») y bandas rojas en el borde cuando te dan.",
+  "Al empezar el combate la cámara se acerca a los que pelean y al acabar vuelve; un golpe al héroe sacude la cámara.",
+  "Cada combate tiene sus dados (antes, la semilla de siempre: todos los combates salían iguales).",
+  "Análisis del daño (reglas de DANO-02, sin tocar): el 59 % de los ataques no hace nada (los empates hacen 0)."
+ ],
+ "verification": [
+  "test_golpes_en_pantalla 1/1; visto en el juego real (sonda de combate: combate_golpe.png)."
+ ],
+ "para_oriol": [
+  "Decidir: empate = 1 de «roce» (los ataques en vano bajan al 36 %) y/o DES 1–2 en los esbirros.",
+  "El movimiento por casillas (tactics) y las áreas visibles: propuesta aparte."
+ ],
+ "sesion": "sesiones/2026-10-14-claude-feedback.md",
+ "pending": [
+  "Decidir: empate = 1 de «roce» (los ataques en vano bajan al 36 %) y/o DES 1–2 en los esbirros.",
+  "El movimiento por casillas (tactics) y las áreas visibles: propuesta aparte."
+ ]
+}

@@ -1,0 +1,4 @@
+
+En los orígenes de la creación, surgieron de la nada unas voluntades que se hicieron fuertes, palpables. La primera Gran Voluntad, la cual fue clave para dar forma al Mundo, es el conocido como Egaroth, el Padre Elemental. Fue la primera Voluntad que se tornó un poder Creador completo, antes siquiera de la aparición de las demás Voluntades Creadoras. Tornándose un ser gigantesco que flota en medio del Vacío Eterno de donde surgen todas las cosas, cayó en un largo sueño, y durmió durante muchos años mientras la Magia Elemental era emanada de su cuerpo. Esta magia hizo que el Mundo de Egaroth, llamado igual que su creador, se formara alrededor de su cuerpo, cubriéndolo por completo. 
+
+[[TML - CHRONOS]]

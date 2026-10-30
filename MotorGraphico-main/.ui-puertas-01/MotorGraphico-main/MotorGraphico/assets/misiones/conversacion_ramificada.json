@@ -1,0 +1,417 @@
+{
+ "schemaVersion": 1,
+ "id": "conversacion_ramificada",
+ "name": "La taberna de las tres ramas",
+ "width": 16,
+ "height": 12,
+ "tileWidth": 64,
+ "tileHeight": 32,
+ "collisionGids": [],
+ "fogEnabled": false,
+ "fogRevealRadius": 1,
+ "lightingEnabled": false,
+ "ambientR": 0.35,
+ "ambientG": 0.35,
+ "ambientB": 0.4,
+ "layers": [
+  {
+   "id": "eventos",
+   "name": "Eventos",
+   "visible": true,
+   "locked": false,
+   "opacity": 1.0,
+   "order": 0,
+   "type": "event",
+   "events": [
+    {
+     "id": "tabernera",
+     "name": "La tabernera",
+     "position": {
+      "x": 4,
+      "y": 3
+     },
+     "pages": [
+      {
+       "id": "tabernera_desconocida",
+       "name": "tabernera_desconocida",
+       "trigger": "interact",
+       "requiresAllConditions": true,
+       "appearanceObjectId": "",
+       "conditions": [],
+       "commands": [
+        {
+         "type": "texto.mostrar",
+         "version": 1,
+         "params": {
+          "hablante": "Tabernera",
+          "texto": "No te había visto por aquí. ¿Qué quieres?"
+         },
+         "children": []
+        },
+        {
+         "type": "interruptor.fijar",
+         "version": 1,
+         "params": {
+          "evento": "tabernera",
+          "letra": "A",
+          "valor": "true"
+         },
+         "children": []
+        },
+        {
+         "type": "variable.sumar",
+         "version": 1,
+         "params": {
+          "variable": "charlas",
+          "valor": "1"
+         },
+         "children": []
+        }
+       ]
+      },
+      {
+       "id": "tabernera_conocida",
+       "name": "tabernera_conocida",
+       "trigger": "interact",
+       "requiresAllConditions": true,
+       "appearanceObjectId": "",
+       "conditions": [
+        {
+         "kind": "local_switch",
+         "reference": "tabernera.A",
+         "comparison": "==",
+         "value": "true",
+         "negated": false
+        },
+        {
+         "kind": "variable",
+         "reference": "charlas",
+         "comparison": "==",
+         "value": "1",
+         "negated": false
+        }
+       ],
+       "commands": [
+        {
+         "type": "texto.mostrar",
+         "version": 1,
+         "params": {
+          "hablante": "Tabernera",
+          "texto": "Otra vez tú. Siéntate donde quieras."
+         },
+         "children": []
+        },
+        {
+         "type": "variable.sumar",
+         "version": 1,
+         "params": {
+          "variable": "charlas",
+          "valor": "1"
+         },
+         "children": []
+        }
+       ]
+      },
+      {
+       "id": "tabernera_habitual",
+       "name": "tabernera_habitual",
+       "trigger": "interact",
+       "requiresAllConditions": true,
+       "appearanceObjectId": "",
+       "conditions": [
+        {
+         "kind": "variable",
+         "reference": "charlas",
+         "comparison": ">=",
+         "value": "2",
+         "negated": false
+        }
+       ],
+       "commands": [
+        {
+         "type": "texto.mostrar",
+         "version": 1,
+         "params": {
+          "hablante": "Tabernera",
+          "texto": "Eres de la casa. La ronda va por mi cuenta."
+         },
+         "children": []
+        },
+        {
+         "type": "bandera.encender",
+         "version": 1,
+         "params": {
+          "bandera": "habitual_de_la_casa"
+         },
+         "children": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "forastero",
+     "name": "Un forastero",
+     "position": {
+      "x": 8,
+      "y": 3
+     },
+     "pages": [
+      {
+       "id": "forastero_sin_carta",
+       "name": "forastero_sin_carta",
+       "trigger": "interact",
+       "requiresAllConditions": true,
+       "appearanceObjectId": "",
+       "conditions": [],
+       "commands": [
+        {
+         "type": "texto.mostrar",
+         "version": 1,
+         "params": {
+          "hablante": "Forastero",
+          "texto": "Aquí nadie habla con nadie. Y menos sin una carta."
+         },
+         "children": []
+        }
+       ]
+      },
+      {
+       "id": "forastero_con_carta",
+       "name": "forastero_con_carta",
+       "trigger": "interact",
+       "requiresAllConditions": true,
+       "appearanceObjectId": "",
+       "conditions": [
+        {
+         "kind": "item",
+         "reference": "carta_sellada",
+         "comparison": ">=",
+         "value": "1",
+         "negated": false
+        }
+       ],
+       "commands": [
+        {
+         "type": "texto.mostrar",
+         "version": 1,
+         "params": {
+          "hablante": "Forastero",
+          "texto": "Esa carta es del santuario. No la abras aquí dentro."
+         },
+         "children": []
+        },
+        {
+         "type": "bandera.encender",
+         "version": 1,
+         "params": {
+          "bandera": "carta_vista"
+         },
+         "children": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "veterano",
+     "name": "Un veterano",
+     "position": {
+      "x": 8,
+      "y": 6
+     },
+     "pages": [
+      {
+       "id": "veterano_antes",
+       "name": "veterano_antes",
+       "trigger": "interact",
+       "requiresAllConditions": true,
+       "appearanceObjectId": "",
+       "conditions": [],
+       "commands": [
+        {
+         "type": "texto.mostrar",
+         "version": 1,
+         "params": {
+          "hablante": "Veterano",
+          "texto": "El santuario lleva cerrado desde las Grandes Cruzadas."
+         },
+         "children": []
+        }
+       ]
+      },
+      {
+       "id": "veterano_despues",
+       "name": "veterano_despues",
+       "trigger": "interact",
+       "requiresAllConditions": true,
+       "appearanceObjectId": "",
+       "conditions": [
+        {
+         "kind": "flag",
+         "reference": "mision_completada",
+         "comparison": "==",
+         "value": "",
+         "negated": false
+        }
+       ],
+       "commands": [
+        {
+         "type": "texto.mostrar",
+         "version": 1,
+         "params": {
+          "hablante": "Veterano",
+          "texto": "Así que tú lo abriste. Cuéntamelo despacio."
+         },
+         "children": []
+        },
+        {
+         "type": "bandera.encender",
+         "version": 1,
+         "params": {
+          "bandera": "veterano_enterado"
+         },
+         "children": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "carta",
+     "name": "Una carta en el mostrador",
+     "position": {
+      "x": 6,
+      "y": 3
+     },
+     "pages": [
+      {
+       "id": "carta_sin_coger",
+       "name": "carta_sin_coger",
+       "trigger": "interact",
+       "requiresAllConditions": true,
+       "appearanceObjectId": "",
+       "conditions": [],
+       "commands": [
+        {
+         "type": "texto.mostrar",
+         "version": 1,
+         "params": {
+          "texto": "Hay una carta sellada en el mostrador."
+         },
+         "children": []
+        },
+        {
+         "type": "inventario.dar",
+         "version": 1,
+         "params": {
+          "objeto": "carta_sellada",
+          "cantidad": "1"
+         },
+         "children": []
+        },
+        {
+         "type": "bandera.encender",
+         "version": 1,
+         "params": {
+          "bandera": "carta_cogida"
+         },
+         "children": []
+        }
+       ]
+      },
+      {
+       "id": "carta_ya_cogida",
+       "name": "carta_ya_cogida",
+       "trigger": "interact",
+       "requiresAllConditions": true,
+       "appearanceObjectId": "",
+       "conditions": [
+        {
+         "kind": "flag",
+         "reference": "carta_cogida",
+         "comparison": "==",
+         "value": "",
+         "negated": false
+        }
+       ],
+       "commands": [
+        {
+         "type": "texto.mostrar",
+         "version": 1,
+         "params": {
+          "texto": "El mostrador está vacío."
+         },
+         "children": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "buzon",
+     "name": "El buzón del fondo",
+     "position": {
+      "x": 6,
+      "y": 6
+     },
+     "pages": [
+      {
+       "id": "buzon_sin_carta",
+       "name": "buzon_sin_carta",
+       "trigger": "interact",
+       "requiresAllConditions": true,
+       "appearanceObjectId": "",
+       "conditions": [],
+       "commands": [
+        {
+         "type": "texto.mostrar",
+         "version": 1,
+         "params": {
+          "texto": "El buzón está vacío."
+         },
+         "children": []
+        }
+       ]
+      },
+      {
+       "id": "buzon_con_carta",
+       "name": "buzon_con_carta",
+       "trigger": "interact",
+       "requiresAllConditions": true,
+       "appearanceObjectId": "",
+       "conditions": [
+        {
+         "kind": "item",
+         "reference": "carta_sellada",
+         "comparison": ">=",
+         "value": "1",
+         "negated": false
+        }
+       ],
+       "commands": [
+        {
+         "type": "texto.mostrar",
+         "version": 1,
+         "params": {
+          "texto": "Dejas la carta en el buzón."
+         },
+         "children": []
+        },
+        {
+         "type": "inventario.quitar",
+         "version": 1,
+         "params": {
+          "objeto": "carta_sellada",
+          "cantidad": "1"
+         },
+         "children": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

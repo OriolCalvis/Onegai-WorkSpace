@@ -1,0 +1,256 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+  schedule:
+    # Diario 03:00 UTC contra develop, para detectar bit-rot temprano
+    # (dependencias del sistema, nuevas versiones de compilador, etc.)
+    - cron: '0 3 * * *'
+  workflow_dispatch: {}
+
+env:
+  PROJECT_DIR: MotorGraphico
+
+jobs:
+  build-test:
+    # INF-05 — matriz multiplataforma. Linux sigue siendo la referencia
+    # completa (demos GL bajo xvfb + ASan). macOS compila nativo (Cocoa)
+    # y ejecuta solo la batería GL-free: los runners no tienen sesión
+    # gráfica fiable, así que la verificación GL se queda en Linux.
+    # Windows es EXPERIMENTAL (el motor nunca se compiló allí con MSVC):
+    # corre para registrar los fallos reales, pero no bloquea la rama
+    # hasta que se arreglen (quitar entonces continue-on-error).
+    name: build-test (${{ matrix.os }}, ${{ matrix.build_type }}, ${{ matrix.compiler }})${{ matrix.os == 'windows-latest' && ' [experimental]' || '' }}
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.os == 'windows-latest' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        build_type: [Debug, Release]
+        compiler: [g++, clang++]
+        include:
+          - os: macos-latest
+            build_type: Debug
+            compiler: clang++
+          - os: macos-latest
+            build_type: Release
+            compiler: clang++
+          - os: windows-latest
+            build_type: Debug
+            compiler: msvc
+    steps:
+      - uses: actions/checkout@v4
+
+      # motor_core (Texture/Shader/Window/SpriteBatch) necesita GLFW, que
+      # FetchContent compila desde fuente: hacen falta los headers de
+      # desarrollo de X11 y GL. xvfb es la pantalla virtual para poder
+      # ejecutar demo_textured_quad (crea una ventana real) sin display.
+      # macOS/Windows no necesitan paquetes: Cocoa y el SDK de GL vienen
+      # con el sistema, y MSVC ya está en el runner.
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xorg-dev libgl1-mesa-dev xvfb
+
+      # En Windows (MSVC) NO se fijan CC/CXX: CMake debe descubrir el
+      # compilador del runner; una variable vacía podía confundirlo.
+      - name: Configure CMake (gcc/clang)
+        if: runner.os != 'Windows'
+        working-directory: ${{ env.PROJECT_DIR }}
+        env:
+          CC: ${{ matrix.compiler == 'g++' && 'gcc' || 'clang' }}
+          CXX: ${{ matrix.compiler }}
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Configure CMake (MSVC)
+        if: runner.os == 'Windows'
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Build
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: cmake --build build -j --config ${{ matrix.build_type }}
+
+      # INF-05/INF-01 — ctest en todas las plataformas. --no-tests=ignore:
+      # mientras el scaffolding de tests/ no esté commiteado, un checkout
+      # viejo configura sin pruebas y eso no debe romper el CI.
+      - name: Run ctest
+        working-directory: ${{ env.PROJECT_DIR }}/build
+        run: ctest --output-on-failure --no-tests=ignore --build-config ${{ matrix.build_type }} -L "gl-free"
+
+      # Batería GL de Linux: demo_textured_quad/demo_isometric_renderer
+      # abren una ventana real (GLFW+GLAD); xvfb-run les da un display
+      # virtual. "5" = corren 5 frames y salen solos (ver examples/*.cpp),
+      # no se quedan colgados esperando que alguien cierre la ventana.
+      - name: Run GL demos (Linux)
+        if: runner.os == 'Linux'
+        working-directory: ${{ env.PROJECT_DIR }}
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          xvfb-run -a ./build/demo_textured_quad 5
+          xvfb-run -a ./build/demo_isometric_renderer 5
+          xvfb-run -a ctest --test-dir build --output-on-failure --no-tests=error -R "^test_(application|application_shutdown|post_processing.*)$"
+
+      # Batería GL-free explícita de macOS: la campaña y el mundo, que no
+      # están aún registrados en ctest por la sesión de INF-01. Sin ventana.
+      - name: Run GL-free demos (macOS)
+        if: runner.os == 'macOS'
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          ./build/demo_resource_manager
+          ./build/demo_camera
+          ./build/demo_tilemap
+          ./build/demo_campana_boundington
+          ./build/demo_mundo
+
+      - name: Build + run with AddressSanitizer/UBSan (Debug + g++ only)
+        if: matrix.build_type == 'Debug' && matrix.compiler == 'g++' && runner.os == 'Linux'
+        working-directory: ${{ env.PROJECT_DIR }}
+        env:
+          CC: gcc
+          CXX: g++
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          cmake -S . -B build-asan -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
+            -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
+            -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
+          cmake --build build-asan -j
+          ./build-asan/demo_resource_manager
+          ./build-asan/demo_camera
+          ./build-asan/demo_tilemap
+          # C-05: el probe comprueba llamadas GL tardias; ASan/UBSan cubre CPU.
+          # Se excluye solo LeakSanitizer por la cache Mesa documentada abajo.
+          ASAN_OPTIONS=detect_leaks=0 xvfb-run -a ctest --test-dir build-asan --output-on-failure --no-tests=error -R "^test_(application|application_shutdown|post_processing.*)$"
+          ASAN_OPTIONS=detect_leaks=0 xvfb-run -a ./build-asan/juego 3
+          # detect_leaks=0 solo aqui: el propio driver Mesa/llvmpipe (no
+          # nuestro codigo) reserva cache de shaders/JIT que vive hasta el
+          # final del proceso y LeakSanitizer la marca como fuga (todos
+          # los frames del stack son de libGL/llvmpipe, no de este
+          # proyecto). El resto de demos no tocan GL de verdad y se
+          # siguen comprobando con deteccion de fugas activada.
+          ASAN_OPTIONS=detect_leaks=0 xvfb-run -a ./build-asan/demo_textured_quad 5
+          ASAN_OPTIONS=detect_leaks=0 xvfb-run -a ./build-asan/demo_isometric_renderer 5
+
+  static-analysis:
+    name: static-analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Ningun test registrado a medias. Cada test nuevo vive en su propio
+      # cmake/XxxTests.cmake y se engancha con UNA linea include() en
+      # CMakeLists.txt, que es un fichero compartido: un agente que guarda
+      # desde una version anterior se lleva por delante las lineas que otro
+      # anadio mientras tanto. El fragmento sigue ahi, el test sigue ahi,
+      # todo compila... y el test no esta en CI. El 13/09 habia cinco
+      # fragmentos huerfanos de tres agentes distintos.
+      - name: Check cmake test fragments are registered
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: python3 tools/comprobar_fragmentos_cmake.py
+
+      # LEY DEL REPOSITORIO — la otra mitad de comprobar_fragmentos_cmake:
+      # que cada include() tenga su fichero Y ESTE VERSIONADO, y que ningun
+      # Clase::metodo este definido en dos fuentes.
+      - name: Repo configura y sin simbolos duplicados
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: python3 tools/linea_base_core.py --rapido
+
+      - name: Linea base del core (la deuda no sube)
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          python3 tools/test_linea_base_core.py
+          python3 tools/linea_base_core.py
+
+      - name: Verify editor controls
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          python3 tools/test_verificar_controles.py
+          python3 tools/verificar_controles.py
+
+      # D-10 — Validación de catálogos: referències creuades,
+      # objectIds de projectes i beats d'aventures contra els JSONs
+      # reals d'assets/. Si una entrada perd una referència, CI falla.
+      - name: Validate catalog cross-references
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: python3 tools/validar_catalogos_ci.py
+
+      # D-10 (segunda mitad) — Línea base de campos mecánicos. Lo anterior
+      # comprueba que las REFERENCIAS entre catálogos siguen apuntando a
+      # algo; esto comprueba que las ENTRADAS no pierden campos. Son dos
+      # fallos distintos: el desapareamiento saveAttribute/defenseStat no
+      # rompía ninguna referencia y aun así dejaba 465 cartas sin su
+      # defensa. La autoprueba lo reproduce y exige que el guardia falle.
+      - name: Validate catalog field baseline
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          python3 tools/validar_catalogos.py --autoprueba
+          python3 tools/validar_catalogos.py
+
+      # C-05 / TABLERO: registro de validar_todo en CI — comprueba referencias
+      # cruzadas de contenido (catálogos, proyectos, aventuras, objectIds de
+      # niveles) y asegura que no sobreviven errores pendientes entre commits.
+      - name: Validate todo content
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: python3 tools/validar_todo.py
+
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format clang-tidy cppcheck xorg-dev libgl1-mesa-dev
+
+      - name: clang-format --dry-run --Werror
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          find include src examples -name '*.h' -o -name '*.cpp' \
+            | xargs clang-format --dry-run --Werror
+
+      - name: Configure (genera compile_commands.json)
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: clang-tidy
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess, sys
+
+          project_root = os.getcwd()
+          own_dirs = tuple(
+              os.path.join(project_root, d) + os.sep for d in ("include", "src", "examples")
+          )
+
+          with open("build/compile_commands.json") as f:
+              entries = json.load(f)
+          # Excluye dependencias de FetchContent (build/_deps/...): solo
+          # nos interesa el codigo propio del proyecto.
+          files = sorted({e["file"] for e in entries if e["file"].startswith(own_dirs)})
+
+          if not files:
+              print("Sin ficheros propios en compile_commands.json, nada que analizar.")
+              sys.exit(0)
+
+          print(f"Analizando {len(files)} fichero(s) con clang-tidy:")
+          for f in files:
+              print(f"  - {f}")
+
+          subprocess.check_call(["clang-tidy", "-p", "build", *files])
+          PY
+
+      - name: cppcheck
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          # Sin -I a third_party/: cppcheck no necesita resolver GLAD/
+          # stb_image para analizar el codigo propio (ya funcionaba asi
+          # antes de vendorizarlos), y si se le da la ruta se pone a
+          # analizar stb_image.h (codigo de terceros, no nuestro) y
+          # saca ruido/falsos positivos de una libreria de sobra probada.
+          cppcheck --enable=warning,performance,portability \
+            --error-exitcode=1 --inline-suppr --std=c++17 \
+            -I include src examples

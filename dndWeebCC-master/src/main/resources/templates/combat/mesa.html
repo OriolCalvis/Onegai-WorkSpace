@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title" th:text="'Mesa · ' + ${combat.nom}">Mesa de combate</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="u-page-header">
+        <div>
+            <p class="gm-sidebar__eyebrow u-eyebrow">Mesa del director de juego (D10)</p>
+            <h1 th:text="${combat.nom}">Combate</h1>
+            <p class="u-lead--760">
+                Turno actual: <strong th:text="${participantActual.nom}">Nombre</strong>
+                <span th:unless="${participantActual.esPersonatge}"> (NPC)</span>.
+            </p>
+        </div>
+        <div class="u-flex-gap2">
+            <form th:action="@{/combat/mesa/siguiente-turno}" method="post" class="u-inline">
+                <button class="gm-btn gm-btn--primary" type="submit">▶ Siguiente turno</button>
+            </form>
+            <form th:action="@{/combat/mesa/finalizar}" method="post" class="u-inline">
+                <button class="gm-btn gm-btn--outline" type="submit">✕ Finalizar combate</button>
+            </form>
+        </div>
+    </div>
+
+    <h2 class="u-mb-sp2">Orden de iniciativa</h2>
+    <div class="u-card-panel--lg">
+        <table class="u-table">
+            <tr class="u-th-left">
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Iniciativa</th>
+                <th>DES</th>
+                <th>Turno</th>
+            </tr>
+            <tr th:each="pid, iter : ${combat.ordreTorn()}"
+                th:with="p=${combat.participantPerId(pid)}"
+                th:classappend="${pid == participantActual.id} ? 'gm-fila-activa'">
+                <td th:text="${iter.count}">1</td>
+                <td th:text="${p.nom}">Nombre</td>
+                <td th:text="${p.esPersonatge} ? 'PJ' : 'NPC'">PJ</td>
+                <td th:text="${p.iniciativa}">10</td>
+                <td th:text="${p.desBase}">3</td>
+                <td>
+                    <span th:if="${pid == participantActual.id}" class="u-rarity-uncommon">▶ actúa ahora</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <h2 class="u-mb-sp2 u-mt-sp5">Recursos de turno de <span th:text="${participantActual.nom}">Nombre</span></h2>
+    <div class="u-chip-row--flat">
+        <span class="gm-chip" th:classappend="${estatTornActual.accioPrincipalDisponible} ? '' : 'u-text-muted'">
+            ⚔ Acción principal: <span th:text="${estatTornActual.accioPrincipalDisponible} ? 'libre' : 'gastada'">libre</span>
+        </span>
+        <span class="gm-chip" th:classappend="${estatTornActual.accioMovimentDisponible} ? '' : 'u-text-muted'">
+            👣 Movimiento: <span th:text="${estatTornActual.accioMovimentDisponible} ? 'libre' : 'gastado'">libre</span>
+        </span>
+        <span class="gm-chip" th:classappend="${estatTornActual.reaccioDisponible} ? '' : 'u-text-muted'">
+            🛡 Reacción: <span th:text="${estatTornActual.reaccioDisponible} ? 'libre' : 'gastada'">libre</span>
+        </span>
+        <span class="gm-chip" th:if="${estatTornActual.canalitzant}">⏳ Canalizando</span>
+    </div>
+    <p class="gm-hint u-mt-sp2" th:if="${participantActual.esPersonatge}">
+        <a th:href="@{/combat/jugador/{id}(id=${participantActual.id.substring(3)})}">Abrir vista de jugador (jugar cartas)</a>
+    </p>
+
+    <h2 class="u-mb-sp2 u-mt-sp5">Dock de NPCs</h2>
+    <p class="u-text-muted" th:if="${#lists.isEmpty(combat.participants())}">Sin NPCs en este combate.</p>
+    <div class="gm-chip-grid">
+        <div class="gm-chip" th:each="p : ${combat.participants()}" th:if="${!p.esPersonatge}">
+            <span class="gm-chip__title" th:text="${p.nom}">NPC</span>
+            <span class="gm-chip__meta">Iniciativa <span th:text="${p.iniciativa}">0</span> · DES <span th:text="${p.desBase}">0</span></span>
+        </div>
+    </div>
+</main>
+</body>
+</html>

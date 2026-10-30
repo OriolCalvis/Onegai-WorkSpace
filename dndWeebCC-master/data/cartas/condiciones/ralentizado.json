@@ -1,0 +1,19 @@
+{
+ "id": "ralentizado",
+ "name": "Ralentizado",
+ "type": "condition",
+ "category": "negativa",
+ "source": "estado",
+ "stackable": false,
+ "duration": "hasta_curarse",
+ "effects": [
+  {
+   "description": "Tu velocidad se reduce a la mitad.",
+   "mechanicHook": "velocidad_mitad"
+  }
+ ],
+ "cureConditions": [
+  "Lo que indique la fuente (normalmente el final de un turno)"
+ ],
+ "flavorText": "El suelo se vuelve miel."
+}

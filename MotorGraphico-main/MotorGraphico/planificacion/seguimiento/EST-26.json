@@ -1,0 +1,38 @@
+{
+ "id": "EST-26",
+ "paquete": "EST-26",
+ "fase": "estabilizacion",
+ "nombre": "EditorApplication.cpp — sacar de run() lo que se puede probar",
+ "date": "2026-09-24",
+ "author": "Claude (sesion 24/09, maquina de Oriol)",
+ "status": "RELEVO A HECHO — 737 -> 597 lineas, y la linea de comandos del editor tiene por primera vez pruebas (13 casos). NO baja del techo todavia: falta EST-26b, el andamio del test de humo.",
+ "que_se_ha_hecho": {
+  "editor/include/EditorOpciones.h + .cpp": "53/124 lineas. Contenedor de datos (EditorOpciones) y flujo (AnalizaArgumentos). Sin GL y sin disco: se prueba entero con un argv de mentira. Libreria GL-free motor_editor_opciones.",
+  "editor/include/EditorGui.h + .cpp": "34/75 lineas. La fontaneria de ImGui: el contexto con su apagado por destructor, la traduccion de atajo a tecla y el reparto inicial de paneles.",
+  "editor/include/EditorVistaDeMapa.h + .cpp": "117/26 lineas. El unico sitio del editor que dibuja el mundo, y la captura a PPM.",
+  "tests/Editor/EditorOpcionesTests.cpp": "13 casos, verdes.",
+  "cmake/EditorOpcionesTests.cmake": "La libreria GL-free + su bateria, colgada de suite_gl_free. Las dos unidades con GL entran en motor_editor via target_sources, sin tocar cmake/MotorEditor.cmake (que lo tiene abierto otra sesion)."
+ },
+ "decisiones": [
+  "EL FALLO DE EST-11 SE CIERRA AQUI. run() usaba std::stoi/std::stof: `motor_editor --frames abc` respondia «stoi: no conversion», que no es un mensaje, es un volcado. EST-11 lo dejo anotado el 21/09 y no se podia arreglar porque run() vivia en un fichero por encima del techo al que el trinquete prohibia anadir ni una linea. Al sacar la linea de comandos a su propia unidad, el arreglo cabe y ademas se demuestra con una prueba.",
+  "AnalizaArgumentos no lanza NADA: strtol/strtof con errno, sin try/catch. Es la mitad de EST-52 que se puede hacer sin tocar el bucle. run() traduce su Result a la frontera de excepciones que ya monta main.cpp; el codigo de salida y el comportamiento no cambian, solo el texto.",
+  "--help se devuelve como DATO (opciones.ayuda) y no como efecto. Asi la funcion sigue siendo pura y se puede comprobar sin capturar stdout.",
+  "La marca del harness (.motor-editor-smoke) NO se comprueba en el analizador: eso mira el disco y se queda en run(). Dos motivos distintos, dos sitios distintos, y el analizador sigue sin tocar el sistema de ficheros.",
+  "Un numero a medias deja de colar: std::stoi(\"12x\") devolvia 12 tan contento. Ahora el texto tiene que consumirse entero, o quien lo escribio cree que escribio otra cosa.",
+  "NaN e infinito se paran en el analizador. strtof acepta \"nan\" e \"inf\" sin queja, y una escala de interfaz que no es finita revienta mucho mas tarde y lejos de donde se escribio."
+ ],
+ "actions": [
+  "editor/src/EditorApplication.cpp — 140 lineas menos (737 -> 597).",
+  "Tres unidades nuevas con sus cabeceras.",
+  "cmake/EditorOpcionesTests.cmake — nuevo fragmento; una linea de include() en CMakeLists.txt."
+ ],
+ "verification": [
+  "Las cuatro unidades compilan dentro de motor_editor.",
+  "test_editor_opciones: 13 casos, 0 fallos, ejecutado de verdad.",
+  "Suite GL-free completa: 91% (14 fallos de 158), los mismos 6 fallos de construccion que ya existian por trabajo ajeno en vuelo mas 8 validadores que el oraculo no puede correr."
+ ],
+ "pending": [
+  "EST-26b — EL ANDAMIO DEL TEST DE HUMO. De las 541 lineas que tenia run(), 214 son el harness: 16 bloques `if (smoke ...)` repartidos por dentro del bucle de fotograma, que inyectan input, anotan rectangulos de ImGui y afirman sobre el estado en fotogramas concretos. Eso NO es el editor: es la prueba del editor, y mezclarlos es justo la estructura mixta que la ley prohibe. Sacarlo cabe en un GuionDeHumo que se lleve los 13 miembros que solo usa el harness (smokePainted, smokeSaved, smokeRendered, smokeLayer, smokePointer, smokeObjectSearch, smokeObjectRow, smokeMapPoint, smokeSecondPoint, smokeCancelPoint, smokeSearchPoint, smokeFillPoint, smokeFillCell) y reciba por parametro los que comparte con el editor (session, actions, layerPanel, selectedGid, io, screenshot). Con eso run() baja a ~390 y entra bajo el techo.",
+  "POR QUE NO LO HE HECHO HOY: el test de humo se ejecuta con `motor_editor --smoke-check`, que necesita ventana y contexto OpenGL. El oraculo de compilacion no puede correrlo, asi que seria un movimiento de 214 lineas de coreografia ajena verificado solo por el compilador. La medida esta hecha y el diseno anotado; lo que falta es una maquina con pantalla."
+ ]
+}

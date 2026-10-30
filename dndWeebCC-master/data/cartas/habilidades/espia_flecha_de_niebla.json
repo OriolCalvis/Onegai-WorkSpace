@@ -1,0 +1,51 @@
+{
+ "id": "espia_flecha_de_niebla",
+ "name": "Flecha de niebla",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Conviertes al enemigo en una nube de vapor que le quita la vista: ataca con desventaja 1 turno.",
+ "flavorText": "",
+ "classTags": [
+  "espia"
+ ],
+ "roleTags": [],
+ "tags": [
+  "espia",
+  "estandar"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Conviertes al enemigo en una nube de vapor que le quita la vista: ataca con desventaja 1 turno.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Nube de vapor: ataca con desventaja 1 turno.",
+   "mechanicHook": "estado:1:desventaja:ataque"
+  },
+  {
+   "description": "[pendiente] cuánto dura la nube de vapor (la ficha no da los segundos).",
+   "mechanicHook": "pendiente_parcial:cuánto dura la nube de vapor (la ficha no da los segundos)"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Espía (Scout) · H1120 Flecha de niebla"
+}

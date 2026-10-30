@@ -1,0 +1,24 @@
+{
+ "id": "COMBATE-BG3-08",
+ "date": "2026-10-14",
+ "author": "claude (Cowork)",
+ "status": "HECHO — AV13-35: el combate antiguo (sin mesa de cartas) medido y borrado. Ya no hay combate sin mesa: la prueba de nivel del editor (héroe sin ficha) juega con las básicas.",
+ "origen": "Oriol (D0015 §11): «borrar el combate y las pruebas antiguas, después de medir que nadie los usa». Oriol (14/10, 10:58): «Esborrar el combat antic (AV13-35)».",
+ "actions": [
+  "La medida: planificacion_alcance_y_vision/MEDIDA_COMBATE_VIEJO.md (las 127 clases tienen cartas; solo la prueba del editor y las pruebas llegaban al camino sin mesa).",
+  "CartasEnCombate::paraHeroe da siempre mesa (sin ficha, las básicas); GameSession::startBattle la monta siempre (sin catálogo, con uno vacío).",
+  "BattleState: fuera el ataque Nd6 y las habilidades con maná sin mesa, la IA de habilidades del enemigo y las invocaciones pendientes (483 → 286 líneas). Se quedan huir, los objetos y el tick de los estados.",
+  "Borrados: BattleMenuActions, BattleMenuState, TargetSelection (con sus pruebas), demo_battle, la parte antigua de vistaDeBatalla y de Application::confirmBattleCommand.",
+  "Pruebas: test_battle_state sin los 11 casos antiguos; test_g13_combat_commands se queda con los de AV13/AV14 y cada batalla lleva su mesa; demo_game_session por la mesa.",
+  "El paquete aparta los ficheros borrados a out/claude_dialogos04/borrados/ (no los borra)."
+ ],
+ "verification": [
+  "Sonda editor (héroe sin ficha, sin título): mesa con 3 básicas, Atacar resuelve por la mesa («Heroe ataca a Perdido saqueador (Exito …)»).",
+  "ctest gl-free 217/220 (los tres de siempre), GL 11/11; linea_base_core 0 de deuda nueva (fuentes sueltas 62 → 57)."
+ ],
+ "sesion": "sesiones/2026-10-14-claude-combate-casillas.md",
+ "pending": [
+  "Los mapas de clases (MAPA_CLASES_JUEGO.md, MAPA_DEL_CODIGO.md) aún nombran las clases borradas: van con la actualización del UML.",
+  "ApplyBasicAttackNd6 sigue (lo usan demo_battle_nd6 y SkillTests, no el combate)."
+ ]
+}

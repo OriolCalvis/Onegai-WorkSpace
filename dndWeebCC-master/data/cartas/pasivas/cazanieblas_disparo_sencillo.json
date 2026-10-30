@@ -1,0 +1,31 @@
+{
+ "id": "cazanieblas_disparo_sencillo",
+ "name": "Disparo sencillo",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "El rifle de gas del Cazanieblas: tus golpes con arma hacen +1 de daño (tinieblas).",
+ "flavorText": "",
+ "classTags": [
+  "cazanieblas"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "El rifle de gas del Cazanieblas: tus golpes con arma hacen +1 de daño (tinieblas).",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Tus golpes con arma hacen +1 de daño.",
+   "mechanicHook": "siempre:bono_dano_arma:1"
+  },
+  {
+   "description": "[pendiente] la barra de marcas (la llenan los disparos y las marcas las gastan sus técnicas de gas).",
+   "mechanicHook": "pendiente_parcial:la barra de marcas (la llenan los disparos y las marcas las gastan sus técnicas de gas)"
+  }
+ ],
+ "fuente": "NosTale · Cazanieblas (Fog Hunter)"
+}

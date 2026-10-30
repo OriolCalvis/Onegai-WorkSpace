@@ -1,0 +1,25 @@
+{
+  "package": "D-05",
+  "date": "2026-09-12",
+  "author": "codex",
+  "status": "DEC-05 implementada y validada localmente; resto D-05 concurrente y CI pendiente",
+  "actions": [
+    "Boundington deja de declarar test_objects y la mazmorra de rendimiento; se conservan los archivos y se declaran en ejemplos.",
+    "Galeria de cuatro categorias y ejemplos de dialogo, tienda, negocio y enlace a la mazmorra.",
+    "ProjectCatalog GL-free: carga aislada por manifiesto, carpeta configurable, orden de overrides y error completo.",
+    "Paleta y playtest usan los mismos catalogos; proyecto vacio usa catalogo neutro."
+  ],
+  "verification": [
+    "Copia aislada sobre 1b099bf, sin WIP ajeno: compilacion juego/level_editor/suite_gl_free.",
+    "68/68 ejecutables CTest gl-free en verde; test_project_catalog 7 casos con carpetas personalizadas, overrides, proyecto vacio, errores, tienda real y ejemplos.",
+    "GameSession abre el mercado con pocion 30, eter 45 y pan 8; comprar pocion resta 30 y anade inventario; indice invalido y cerrar no cambian el resultado.",
+    "Reintroducir test_objects en el manifest de Boundington hace fallar la nueva regresion; restaurado, pasa.",
+    "Humo real macOS: editor Boundington, editor ejemplos y juego galeria, 3 frames y salida 0; editores glGetError 0. Ventana permitida fuera del sandbox tras timeout restringido."
+  ],
+  "pending": [
+    "CI remota.",
+    "El resto de D-05 (loaders/inventario) pertenece al lote de opencode; esta entrega no lo cierra."
+  ],
+  "id": "D-05",
+  "_normalitzat": "Claus del contracte derivades dels camps propis del registre per tools/normalitza_seguiment.py. Els camps originals no s'han tocat: aquest registre es va escriure en un esquema diferent."
+}

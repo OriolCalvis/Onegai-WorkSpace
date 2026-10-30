@@ -1,0 +1,52 @@
+{
+ "id": "guardian_del_dintel",
+ "name": "Guardian del Dintel",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 2,
+ "role": "defensa",
+ "faction": "yokai_del_umbral",
+ "factionName": "Los Yokai del Umbral",
+ "stats": {
+  "CON": 4,
+  "DES": 3,
+  "INT": 2,
+  "CAR": 3
+ },
+ "derived": {
+  "vida": 16,
+  "ca": 13,
+  "defensaMental": 13,
+  "resistenciaFisica": 14,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Cierre de Marco",
+   "defense": "CA",
+   "effect": "Ataque de oscuro: daño que suma su CON (pool de CON, regla 7.6)."
+  },
+  {
+   "name": "Umbral Negado",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: si el objetivo falla, queda Encantado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "La primera vez que se les golpea cada combate, el atacante debe superar Defensa mental o golpea a una ilusión."
+ },
+ "conditionsInflicted": [
+  "encantado"
+ ],
+ "loot": [
+  "estilete_de_viaje",
+  "faldar_de_explorador"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Oscuro"
+ ],
+ "phases": [],
+ "flavorText": "Viven en el marco de las puertas. Cobran peaje en certezas."
+}

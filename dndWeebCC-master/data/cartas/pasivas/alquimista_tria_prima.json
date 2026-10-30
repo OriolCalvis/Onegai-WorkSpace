@@ -1,0 +1,39 @@
+{
+ "id": "alquimista_tria_prima",
+ "name": "Tria prima",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Al empezar el combate preparas uno de los tres principios. Sal: +1 a la CA. Azufre: tus golpes con arma hacen +1 de daño. Mercurio: te defiendes con ventaja.",
+ "flavorText": "",
+ "classTags": [
+  "alquimista"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "Al empezar el combate preparas uno de los tres principios. Sal: +1 a la CA. Azufre: tus golpes con arma hacen +1 de daño. Mercurio: te defiendes con ventaja.",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Eliges un principio al empezar el combate.",
+   "mechanicHook": "elige_una:sal,azufre,mercurio"
+  },
+  {
+   "description": "Sal: +1 a la CA.",
+   "mechanicHook": "si:sal:bono_ca:1"
+  },
+  {
+   "description": "Azufre: tus golpes con arma hacen +1 de daño.",
+   "mechanicHook": "si:azufre:bono_dano_arma:1"
+  },
+  {
+   "description": "Mercurio: te defiendes con ventaja.",
+   "mechanicHook": "si:mercurio:ventaja:defensa"
+  }
+ ],
+ "fuente": "Propia · Alquimista"
+}

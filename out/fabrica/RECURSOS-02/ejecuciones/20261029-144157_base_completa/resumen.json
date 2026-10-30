@@ -1,0 +1,87 @@
+{
+  "t": "2026-10-29T14:41:57+01:00",
+  "fase": "completa",
+  "etiqueta": "base_completa",
+  "raiz": "/Users/admin/.codex/worktrees/perfilador-motor/Software",
+  "commit": "9349d3e468b96b39110bbf861d6380f61fafa71a",
+  "checks": {
+    "validar_todo": {
+      "codigo": 1,
+      "errores": 0,
+      "avisos": 11,
+      "items": [
+        "validar_todo: código 1"
+      ],
+      "segundos": 1.7,
+      "cmd": "/opt/homebrew/opt/python@3.14/bin/python3.14 tools/validar_todo.py",
+      "log": "RECURSOS-02/ejecuciones/20261029-144157_base_completa/validar_todo.log"
+    },
+    "validar_puertas": {
+      "codigo": 1,
+      "items": [
+        "validar_puertas: código 1"
+      ],
+      "segundos": 0.4,
+      "cmd": "/opt/homebrew/opt/python@3.14/bin/python3.14 tools/validar_puertas.py",
+      "log": "RECURSOS-02/ejecuciones/20261029-144157_base_completa/validar_puertas.log"
+    },
+    "explorar_aventuras": {
+      "codigo": 1,
+      "items": [
+        "explorar_aventuras: código 1"
+      ],
+      "segundos": 1.6,
+      "cmd": "/opt/homebrew/opt/python@3.14/bin/python3.14 tools/explorar_aventura.py",
+      "log": "RECURSOS-02/ejecuciones/20261029-144157_base_completa/explorar_aventuras.log"
+    },
+    "validar_audio": {
+      "codigo": 1,
+      "items": [
+        "validar_audio: código 1"
+      ],
+      "segundos": 0.0,
+      "cmd": "/opt/homebrew/opt/python@3.14/bin/python3.14 tools/validar_audio.py",
+      "log": "RECURSOS-02/ejecuciones/20261029-144157_base_completa/validar_audio.log"
+    },
+    "linea_base_core": {
+      "codigo": 1,
+      "items": [
+        "linea_base_core: código 1"
+      ],
+      "segundos": 13.9,
+      "cmd": "/opt/homebrew/opt/python@3.14/bin/python3.14 tools/linea_base_core.py",
+      "log": "RECURSOS-02/ejecuciones/20261029-144157_base_completa/linea_base_core.log"
+    },
+    "compilar": {
+      "codigo": 0,
+      "items": [],
+      "segundos": 15.8,
+      "cmd": "cmake --preset macos-debug && cmake --build --preset macos-debug",
+      "log": "RECURSOS-02/ejecuciones/20261029-144157_base_completa/compilar.log"
+    },
+    "ctest_gl_free": {
+      "codigo": 8,
+      "items": [
+        "catalog_content_validation",
+        "demo_boundington",
+        "demo_campana_boundington",
+        "demo_creacion_personaje",
+        "linea_base_core",
+        "linea_base_core_configura",
+        "test_aventuras_monsterid",
+        "test_botin_equipo",
+        "test_catalog_content",
+        "test_clases_sp",
+        "test_kit_basico",
+        "test_lugares",
+        "test_pergamino",
+        "test_recompensas_economia",
+        "test_ruta_casillas",
+        "test_validar_todo"
+      ],
+      "segundos": 175.9,
+      "cmd": "ctest --test-dir out/build/macos-debug -L gl-free --output-on-failure",
+      "log": "RECURSOS-02/ejecuciones/20261029-144157_base_completa/ctest_gl_free.log"
+    }
+  }
+}

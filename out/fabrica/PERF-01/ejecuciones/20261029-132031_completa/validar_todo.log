@@ -1,0 +1,59 @@
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 tools/validar_todo.py
+(cwd /Users/admin/.codex/worktrees/perfilador-motor/Software/MotorGraphico-main/MotorGraphico)
+
+=== validar_todo.py (todo el contenido) ===
+[1/5] Validadores existentes
+    OK  validar_botin.py: Botín: 50 reutilizables, 12 únicos, 30 tablas, 58 instancias de campaña
+    OK  validar_recetas.py: 27 recetas; 0 errores, 0 avisos
+    OK  validar_enlaces.py: 93 niveles, 268 puertas comprobadas, 0 problemas
+    OK  conectividad.py:    todas las 35 puertas alcanzables
+    OK  validar_mundo_unido.py:   todo se alcanza y de todo se vuelve
+    OK  validar_catalogos_rpg.py: [OK] Sin fallos.
+    OK  validar_libreria_dnd.py: === TODOS LOS ARCHIVOS PASAN LA VALIDACION ESTRUCTURAL ===
+    FALLO validar_pnj.py (exit 1)
+          boundington_npcs.json: guerrero_gitano_2 se ve como «parroquiano_humilde» de pnj_boundington, no con su propia fila de
+          nina_del_gato: 1 aspectos para 2 colocaciones
+          boundington_npcs.json: padre_de_mira se ve como «parroquiano_humilde» de pnj_boundington, no con su propia fila de pnj
+          boundington_npcs.json: saqueador_antorcha se ve como «carterista» de pnj_boundington, no con su propia fila de pnj_*
+          boundington_npcs.json: vecina_surysal se ve como «bordadora» de pnj_boundington, no con su propia fila de pnj_*
+          boundington_npcs.json: zarela se ve como «anciana» de pnj_boundington, no con su propia fila de pnj_*
+    OK  validar_cinematicas.py: validar_cinematicas: 12 cinematicas, 0 errores, 0 avisos
+[2/5] Referencias internas de assets/catalogs/
+    referencias comprobadas; 1 error(es) hasta ahora
+[3/5] Proyectos: objectIds de niveles contra sus catálogos
+    OK  boundington: 52 niveles contra 2680 objetos de sus catálogos
+    OK  este_norte: 55 niveles contra 1548 objetos de sus catálogos
+    OK  este_sur: 3 niveles contra 28 objetos de sus catálogos
+    OK  mundo: 9 niveles contra 353 objetos de sus catálogos
+    OK  oeste_norte: 4 niveles contra 166 objetos de sus catálogos
+    OK  ejemplos: 2 niveles contra 9 objetos de sus catálogos
+[4/5] Proyectos: entrada
+    OK  mundo -> assets/levels/mapamundi.json
+    OK  oeste_norte -> assets/adventures/on_camino_del_norte.json
+    OK  este_norte -> assets/levels/ciudad_en_guskedor.json
+    OK  ejemplos -> assets/levels/ejemplos_objetos.json
+    OK  boundington -> assets/adventures/boundington_prologo.json
+    OK  este_sur -> assets/levels/es_taurengrad.json
+[5/5] Aventuras: beats contra catálogos
+[extra] Puertas de los niveles: 376 en 127 niveles, 1 aviso(s)
+[extra] Recompensas de escenas: d1 259/280, d2 498/480, d3 421/400, 1 error(es)
+
+AVISOs (11):
+  assets/catalogs/adventures.json :: 12 :: deidadIds :: 'el_toro_de_gongorguma' no existe en deities.json
+  assets/catalogs/adventures.json :: 15 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 35 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 39 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 40 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 45 :: deidadIds :: 'el_sepulturero_amable' no existe en deities.json
+  assets/catalogs/adventures.json :: 47 :: deidadIds :: 'la_luna_hueca' no existe en deities.json
+  assets/catalogs/adventures.json :: 7 :: enemigoIds :: 'paje_traslucido' no existe en monsters.json
+  assets/catalogs/adventures.json :: 7 :: deidadIds :: 'el_toro_de_gongorguma' no existe en deities.json
+  assets/catalogs/adventures.json :: 7 :: deidadIds :: 'la_luna_hueca' no existe en deities.json
+  assets/levels/recuerdo_taberna.json :: escalera_taberna_p0_sube :: targetLevel :: assets/levels/interior_taberna_p1.json no tiene puerta de vuelta a assets/levels/recuerdo_taberna.json
+ERRORES (2):
+  tools/validar_pnj.py :: - :: - :: ver salida arriba
+  tools/recompensas_escenas.json :: - :: - :: boundington_segundo_dia/b2_aigren_orden_entrega opcion None: paga [('obj', 'daga_de_aigren', 1)] y no esta en el libro
+
+RESULTADO: FAIL — 2 error(es), 11 aviso(s)
+
+[código 1 · 1.3 s]

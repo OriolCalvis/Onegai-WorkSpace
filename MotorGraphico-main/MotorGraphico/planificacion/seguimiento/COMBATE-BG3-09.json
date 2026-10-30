@@ -1,0 +1,22 @@
+{
+ "id": "COMBATE-BG3-09",
+ "date": "2026-10-14",
+ "author": "claude (Cowork)",
+ "status": "HECHO — el combate se entiende mejor (evaluación heurística de Sonnet): EH-12, EH-13, EH-16 y EH-21; y el segundo golpe de Venides.",
+ "origen": "planificacion_alcance_y_vision/EVALUACION_HEURISTICA.md (Sonnet, 14/10). Oriol (11:31): «Que el combat s'entengui millor».",
+ "actions": [
+  "EH-12: Game::esperaAlRival — en el turno del rival todas las cartas en gris y el panel dice «Espera: juega <rival>» (vistaDeBatalla con iniciativa; la pantalla mientras sale el rótulo). El cierre solo del turno BG3 no salta en el turno del rival.",
+  "EH-13: cada carta con el icono de su familia (cura, golpe, magia, en área, control, invocación, defensa, mejora: BarraCombate familiaDeCarta, de sus tags) y una franja abajo con el color de su elemento; las de la mano, más anchas (84 px) y el nombre a 16 px en tres líneas.",
+  "EH-16 y EH-21: Game::frases (FrasesDeCombate, nuevo, GL-free): el registro dice «Venides ataca a Lobo: el ataque (1,5) supera la defensa (0). 7 de daño (2d6).» en vez de «(Exito, 1,5 contra 0: 2d6, 7 de dano)»; también las cartas, las curas y las resistencias. «daño» con ñ.",
+  "Venides: si su primer golpe tumba al enemigo, el segundo va a otro que tenga al lado (CartasEnCombate::blancoAlLado, ContextoBatalla::alLado); el de IA ya no pega a uno que no tiene al lado."
+ ],
+ "verification": [
+  "Sonda tactico: t_espera.png (turno del rival: todo en gris, «Espera: juega Perdido saqueador»), t_orden.png (iconos y franjas), registro en palabras.",
+  "test_frases_combate 2/2 (nuevo), test_cartas_combate 56/56 (4 nuevas: iconos, turno del rival, registro en palabras, segundo golpe de Venides); ctest gl-free 218/221 (los tres de siempre), GL 11/11; linea_base_core 0 de deuda nueva."
+ ],
+ "sesion": "sesiones/2026-10-14-claude-combate-casillas.md",
+ "pending": [
+  "EH-14 (el icono de Huir) y EH-15 (la leyenda de tipos) no se han tocado.",
+  "Los nombres muy largos (más de unas 30 letras) siguen con «…»; entero, en el panel de la izquierda."
+ ]
+}

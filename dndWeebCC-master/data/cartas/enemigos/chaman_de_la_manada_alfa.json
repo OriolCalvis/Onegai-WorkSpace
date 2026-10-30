@@ -1,0 +1,64 @@
+{
+ "id": "chaman_de_la_manada_alfa",
+ "name": "Chaman de la Manada Alfa",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "conjurador",
+ "faction": "manada_del_rei_llop",
+ "factionName": "La Manada del Rei Llop",
+ "stats": {
+  "CON": 5,
+  "DES": 5,
+  "INT": 8,
+  "CAR": 6
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 16,
+  "defensaMental": 16,
+  "resistenciaFisica": 15,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Soplo de Escarcha",
+   "defense": "CA",
+   "effect": "Ataque de hielo: daño que suma su INT (pool de INT, regla 7.6)."
+  },
+  {
+   "name": "Bendicion del Colmillo",
+   "defense": "resistencia_fisica",
+   "effect": "Técnica de facción: si el objetivo falla, queda Sangrado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Ventaja en ataques contra objetivos que sangran o huyen."
+ },
+ "conditionsInflicted": [
+  "sangrado"
+ ],
+ "loot": [
+  "cuchillo_de_cazador_de_milicia",
+  "botas_de_cazador",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Hielo"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Gana una segunda técnica por ronda y +1 al daño."
+  }
+ ],
+ "flavorText": "El Rei Llop está muerto. Su hambre, no."
+}

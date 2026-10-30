@@ -1,0 +1,118 @@
+{
+  "paquete": "G-13",
+  "fase": "G",
+  "nombre": "Comandos de combat i objectius des de dades",
+  "fecha_cierre": "2026-09-17",
+  "autor": "AgentTrae-G13",
+  "estado": "closed",
+  "criterios_cierre": {
+    "Construir accions desde fitxa i inventari (SkillSet + Inventari)": "buildBattleMenuSkillActions construye BattleMenuEntry a partir de SkillSet + SkillCatalog publicat. 5 reglas disponibilidad: isCasted, tier_ok, canPay, knows, tagsOk.",
+    "Mostrar nom, cost, disponibilitat i motiu de bloqueig": "Campo displayName no vacío; costLine formato 'X PM'/'Sense accio'/'Gratuita'; blockedReason explica motivo textual (no coneix/pasiva/tier_insuficient/mana_insuficient/tags).",
+    "Triar objectius vàlids segons abast i bandol": "selectTargetsFor maneja SELF/SINGLE_ENEMY/ALL_ENEMIES/SINGLE_ALLY/ALL_ALLIES/ZONE_RADIUS. Morts apareixen alive=false. Side correcte (Enemy/Ally/Self).",
+    "Cancel·lació abans de gastar recursos": "translateToBattleAction retorna false ANTES de resolveAllyAction; 5 casos: bloquejada/muerto/side_erroneo/rango_fuera/SingleAlly. mana intacto 10.",
+    "Resolució Nd6, consum i condicions coherents BattleState": "BattleState::resolveAllyAction usado TAL CUAL (no tocado BattleState.cpp). ScriptedRng seed exacta cara 5=SUCCESS cara 6=CRITICAL. Daño/cura magnitud == power SUCCESS; mana descontado EXACTAMENTE 1 vez; BattleState.log menciona 'Tajo'/'Slime'.",
+    "Condiciones publicadas 16 condition.json": "ConditionCatalog 16 loadFromFile; Skill.applyConditionId + minDegree SUCCESS + duration 3 rounds; BattleState log línea 'X aplica Y a Z' visible HUD dialog.",
+    "Asset skills.json 492 entries publicat": "SkillCatalog.loadFromFile 492 entries; 12 IDs alfabéticos learn → buildBattleMenuSkillActions 12 entradas, displayName no vacíos, available >= 3.",
+    "NO taula fixa d'IDs d'habilitats al HUD": "buildBattleMenuSkillActions itera skills.knownSkillIds() sin ids hardcodeados."
+  },
+  "tests": {
+    "test_g13_combat_commands": {
+      "count": 6,
+      "pass": 6,
+      "fail": 0,
+      "casos": [
+        "g13_build_menu_mostra_coste_disponibilitat_i_motiu: 5 cards; passive bloquejada; Ejecucion T4 bloquejada; Ataque Basico 1 PM OK; Aura Oscura 10 PM ALL_ENEMIES MEDIUM T2 OK; Curar Heridas 5 PM SINGLE_ALLY OK.",
+        "g13_objectius_per_target_varyen_amb_bandol: SINGLE_ENEMY 3 opts (2 vivos, 3er muerto alive=false); SINGLE_ALLY 2 opts vivos; SELF index 1 → Hero2; ALL_ENEMIES 3 opts todos Enemy side.",
+        "g13_cancel_no_gasta_recursos: bloquejada reason no vacio mana=10; muerto e2mort reason find 'no esta viu' mana=10.",
+        "g13_e2e_dany_i_cura_consumeixen_mana_coherent: Tajo RNG5 SUCCESS: slime 40→30, player 30 intacto, mana 10→8. Cura RNG5 SUCCESS: player 30→45 (clamp 50), slime=30, mana 8→4. Ardor bloquejado translate=false mana intacto=4. outcome InProgress. Log no vacio + menciona Tajo/Slime.",
+        "g13_asset_skills_publicat_construeix_menu: SkillCatalog loadFromFile 492+ entries; 12 alfabeticos learn; menu size==12; displayName all non-empty; available>=3.",
+        "g13_aplicar_condicio_publicada_sense_tocar_shared: ConditionCatalog 16 publicadas; 1ª condicion negativa insertada en Skill; RNG5 SUCCESS: enemy 25→19, mana=7; BattleState.log contiene 'X aplica CONDID a Y' → condicioPresent=true."
+      ]
+    },
+    "total": {
+      "count": 6,
+      "pass": 6,
+      "fail": 0
+    }
+  },
+  "assets_publicados_utilizados": {
+    "assets/catalogs/skills.json": "492 SkillDefinition entries publicadas; campos cost_resource/cost_amount/action_type/target/range/tier_min/required_tags/tags usados por buildBattleMenuSkillActions.",
+    "assets/catalogs/conditions.json": "16 ConditionDefinition entries publicadas; isNegative=true se usa para g13_aplicar_condicio; CharacterSheet::conditions vector<ActiveCondition> poblado via ConditionEngine::apply."
+  },
+  "archivos_creados": [
+    "tests/Game/G13CombatCommandsTests.cpp — 6 tests GL-free; TestCombatant con CharacterSheet sincronizado; buildBattleMenuSkillActions/selectTargetsFor/translateToBattleAction wrappers semánticos; int main() al final.",
+    "cmake/G13CombatCommandsTests.cmake — cmake separado anticolision; add_executable con sources DIRECTOS BattleState.cpp+Skill.cpp; link solo motor_json+motor_rpg+motor_math; macOS dynamic_lookup; gl-free label; suite_gl_free dep.",
+    "tests/Game/StubsSkillEffectG13.cpp — stubs ConditionEngine/RpgCatalogs para forzar resolución símbolos en TU propia (anticolisión D-11/SkillEffect.cpp no tocado)."
+  ],
+  "archivos_modificados_1linea_include": [
+    "CMakeLists.txt:1026-1034 include(cmake/G13CombatCommandsTests.cmake) DESPUES G10, ANTES G14, ANTES endif() del bloque if(BUILD_TESTING)."
+  ],
+  "archivos_shared_NO_TOCATS_multiagent_COORDINACION": [
+    "src/Engine/Application.cpp (14 paquets shared, ara mateix incomplet per equipItem/unequipItem/kMenuPadding/kPanelColor/kBorderColor no declarat). G-13 NO toca Application; NO linka motor_core.",
+    "src/Game/BattleState.cpp (4 paquets shared: C-01/D-09/D-11/G-13). G-13 usa BattleState.cpp tal cual DENTRO del ejecutable (compilado directo), NUNCA lo edita.",
+    "include/RPG/Catalogs/RpgCatalogs.h (8 paquets shared; solo lectura header-only SkillCatalog/ConditionCatalog loadFromFile/has/find/size/forEach).",
+    "src/Game/SkillEffect.cpp (D-11 shared motor_rpg). NO tocado; stubs StubsSkillEffectG13.cpp dummy añadidos por si acaso; motor_rpg.a se recompila con cmake incremental ok.",
+    "src/Game/GameSession.cpp (6 paquets shared). NO tocado."
+  ],
+  "cmake_estrategia_anticolision_APPLICATION_ROTO": [
+    "NO linkamos motor_core (incluye Application.cpp roto). Link solo motor_json + motor_rpg + motor_math.",
+    "BattleState.cpp y Skill.cpp se compilan DIRECTAMENTE en el test ejecutable (mismo patron que G-14 bitmapfont.cpp directo; evita tocar libmotor_rpg compartido si otro agente recompila).",
+    "Include path examples/ añadido para ScriptedRng.h (localizado en examples/, usado por todos los tests BattleState D-09/C-01).",
+    "Symbols render/GL no encontrados → macOS -Wl,-undefined,dynamic_lookup (no se ejecutan en runner gl-free).",
+    "Suite GL-free 93 → 96 objetivos al incluir G13CombatCommandsTests.cmake DENTRO de if(BUILD_TESTING) (si se coloca después del endif() cmake no genera el target)."
+  ],
+  "suite_gl_free_informe": {
+    "objetivos_reportados_por_cmake": 96,
+    "target_nuevo": "test_g13_combat_commands",
+    "dependencias_build_ok": [
+      "copiar_assets",
+      "motor_json",
+      "motor_math",
+      "motor_rpg"
+    ],
+    "build_link_verificado": "Built target test_g13_combat_commands (cmake --build build --target ... exit 0)"
+  },
+  "bugs_resueltos_durante_cierre_2_fallos": [
+    "FAIL 1 (línea 560 cura health==45): ScriptedRng({6}) CRITICAL magnitud 22.5 (15×1.5) → player 30+22.5=52.5 clamp 50 no 45. FIX: cambiar ScriptedRng({6}) → ScriptedRng({5}) para magnitud SUCCESS=15, 30+15=45 exacto.",
+    "FAIL 2 (línea 667 condicioPresent false): TestCombatant sin character_sheet() override → ICombatant::character_sheet() retorna nullptr → BattleState applyPendingCondition línea 92-94 early return → no log. FIX: TestCombatant implementa character_sheet() con RPG::CharacterSheet m_sheet + baseStats sincronizados + cachedHealthCap = m_maxHealth."
+  ],
+  "proximos_paquetes_orden_recomendado": [
+    "DEC-02 pendents pures (sense Application): FeatDefinition requiredStats; Passives triggers prosa; Traps damage/detectDifficulty; SkillExecutor connectar RPG::scale_magnitude.",
+    "G-11 Selector guardats/GameOver (bloqueado mientras Application.cpp no compile; otro agente tiene que arreglar equipItem/kMenuPadding/kPanelColor).",
+    "G-12 Inventari/equip (bloqueado InventoryEngine shared Inventory G-12)."
+  ],
+  "id": "G-13",
+  "date": "2026-09-17",
+  "author": "AgentTrae-G13",
+  "status": "closed",
+  "verification": [
+    "test_g13_combat_commands: count: 6 · pass: 6 · fail: 0.",
+    "total: count: 6 · pass: 6 · fail: 0.",
+    "objetivos_reportados_por_cmake: 96",
+    "target_nuevo: test_g13_combat_commands",
+    "dependencias_build_ok: copiar_assets · motor_json · motor_math · motor_rpg",
+    "build_link: Built target test_g13_combat_commands exit 0"
+  ],
+  "pending": [],
+  "actions": [
+    "Comandos de combat i objectius des de dades",
+    "Construir accions desde fitxa i inventari (SkillSet + Inventari): buildBattleMenuSkillActions construye BattleMenuEntry a partir de SkillSet + SkillCatalog publicat. 5 reglas disponibilidad: isCasted, tier_ok, canPay, knows, tagsOk.",
+    "Mostrar nom, cost, disponibilitat i motiu de bloqueig: Campo displayName no vacío; costLine formato 'X PM'/'Sense accio'/'Gratuita'; blockedReason explica motivo textual (no coneix/pasiva/tier_insuficient/mana_insuficient/tags).",
+    "Triar objectius vàlids segons abast i bandol: selectTargetsFor maneja SELF/SINGLE_ENEMY/ALL_ENEMIES/SINGLE_ALLY/ALL_ALLIES/ZONE_RADIUS. Morts apareixen alive=false. Side correcte (Enemy/Ally/Self).",
+    "Cancel·lació abans de gastar recursos: translateToBattleAction retorna false ANTES de resolveAllyAction; 5 casos: bloquejada/muerto/side_erroneo/rango_fuera/SingleAlly. mana intacto 10.",
+    "Resolució Nd6, consum i condicions coherents BattleState: BattleState::resolveAllyAction usado TAL CUAL (no tocado BattleState.cpp). ScriptedRng seed exacta cara 5=SUCCESS cara 6=CRITICAL. Daño/cura magnitud == power SUCCESS; mana descontado EXACTAMENTE 1 vez; BattleState.log menciona 'Tajo'/'Slime'.",
+    "Condiciones publicadas 16 condition.json: ConditionCatalog 16 loadFromFile; Skill.applyConditionId + minDegree SUCCESS + duration 3 rounds; BattleState log línea 'X aplica Y a Z' visible HUD dialog.",
+    "Asset skills.json 492 entries publicat: SkillCatalog.loadFromFile 492 entries; 12 IDs alfabéticos learn → buildBattleMenuSkillActions 12 entradas, displayName no vacíos, available >= 3.",
+    "NO taula fixa d'IDs d'habilitats al HUD: buildBattleMenuSkillActions itera skills.knownSkillIds() sin ids hardcodeados.",
+    "tests/Game/G13CombatCommandsTests.cpp — 6 tests GL-free; TestCombatant con CharacterSheet sincronizado; buildBattleMenuSkillActions/selectTargetsFor/translateToBattleAction wrappers semánticos; int main() al final.",
+    "cmake/G13CombatCommandsTests.cmake — cmake separado anticolision; add_executable con sources DIRECTOS BattleState.cpp+Skill.cpp; link solo motor_json+motor_rpg+motor_math; macOS dynamic_lookup; gl-free label; suite_gl_free dep.",
+    "tests/Game/StubsSkillEffectG13.cpp — stubs ConditionEngine/RpgCatalogs para forzar resolución símbolos en TU propia (anticolisión D-11/SkillEffect.cpp no tocado).",
+    "CMakeLists.txt:1026-1034 include(cmake/G13CombatCommandsTests.cmake) DESPUES G10, ANTES G14, ANTES endif() del bloque if(BUILD_TESTING).",
+    "NO linkamos motor_core (incluye Application.cpp roto). Link solo motor_json + motor_rpg + motor_math.",
+    "BattleState.cpp y Skill.cpp se compilan DIRECTAMENTE en el test ejecutable (mismo patron que G-14 bitmapfont.cpp directo; evita tocar libmotor_rpg compartido si otro agente recompila).",
+    "Include path examples/ añadido para ScriptedRng.h (localizado en examples/, usado por todos los tests BattleState D-09/C-01).",
+    "Symbols render/GL no encontrados → macOS -Wl,-undefined,dynamic_lookup (no se ejecutan en runner gl-free).",
+    "Suite GL-free 93 → 96 objetivos al incluir G13CombatCommandsTests.cmake DENTRO de if(BUILD_TESTING) (si se coloca después del endif() cmake no genera el target)."
+  ],
+  "_normalitzat": "Claus del contracte derivades dels camps propis del registre per tools/normalitza_seguiment.py. Els camps originals no s'han tocat: aquest registre es va escriure en un esquema diferent."
+}

@@ -1,0 +1,50 @@
+{
+ "id": "furia_fe",
+ "name": "Furia: Fe",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Haces un ataque adicional y te curas el daño que causas.",
+ "flavorText": "",
+ "classTags": [
+  "furia_de_los_creadores"
+ ],
+ "roleTags": [],
+ "tags": [
+  "furia_de_los_creadores"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Haces un ataque adicional y te curas el daño que causas.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "Haces un ataque adicional.",
+   "mechanicHook": "ataque_arma"
+  },
+  {
+   "description": "Y te curas el daño que causas.",
+   "mechanicHook": "cura:dano_causado"
+  }
+ ]
+}

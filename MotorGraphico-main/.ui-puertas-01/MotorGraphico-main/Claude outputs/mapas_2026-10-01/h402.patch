@@ -1,0 +1,2499 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index fef1578..50c69e3 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1413,6 +1413,8 @@ include(cmake/PostProcessingTests.cmake)
+ include(cmake/ProjectCatalogTests.cmake)
+ 
+ include(cmake/MotorEditor.cmake)
++# H4-02 / E-11 — test_project_panel: mapas de un proyecto desde el panel, sin ventana.
++include(cmake/ProjectPanelTests.cmake)
+ include(cmake/EventEditorTests.cmake)
+ include(cmake/CommandListTests.cmake)
+ include(cmake/E09BridgeTests.cmake)
+diff --git a/cmake/MotorEditor.cmake b/cmake/MotorEditor.cmake
+index b0f2ae2..b3af29e 100644
+--- a/cmake/MotorEditor.cmake
++++ b/cmake/MotorEditor.cmake
+@@ -1,7 +1,10 @@
+ # E-10: la UI solo pertenece a motor_editor; los modelos siguen sin GL/ImGui.
+ # EDITOR-UX-01: EditorAyuda (texto e icono por accion y por control) va con las
+ # acciones: sin ImGui, con prueba propia.
+-add_library(motor_editor_document src/Editor/EditorDocumentSession.cpp src/Editor/EditorActions.cpp src/Editor/EditorAyuda.cpp)
++add_library(motor_editor_document src/Editor/EditorDocumentSession.cpp src/Editor/EditorActions.cpp src/Editor/EditorAyuda.cpp
++    # H4-02 / E-11: los mapas de un proyecto y el modelo del panel Proyecto, sin ImGui.
++    src/Editor/ProjectMaps.cpp src/Editor/ProjectMapsFiles.cpp src/Editor/ProjectMapsJson.cpp
++    src/Editor/ProjectPanelState.cpp)
+ target_link_libraries(motor_editor_document PUBLIC motor_level motor_map motor_tmx_import)
+ 
+ if(TARGET motor_core AND TARGET glfw)
+@@ -17,6 +20,7 @@ if(TARGET motor_core AND TARGET glfw)
+     # de EditorApplication.cpp (597 -> 500 lineas).
+     add_executable(motor_editor editor/src/main.cpp editor/src/EditorApplication.cpp editor/src/LayerPanel.cpp
+         editor/src/ProblemsPanel.cpp editor/src/EditorIconos.cpp editor/src/ToolsPanel.cpp editor/src/InspectorPanel.cpp
++        editor/src/ProjectPanel.cpp  # H4-02: arbol de proyectos y mapas, nuevo/duplicar/renombrar/quitar
+         src/RPG/AdventureValidation.cpp)
+     target_include_directories(motor_editor PRIVATE editor/include)
+     target_link_libraries(motor_editor PRIVATE editor_imgui motor_editor_problems motor_core motor_editor_document motor_project_catalog)
+diff --git a/cmake/ProjectPanelTests.cmake b/cmake/ProjectPanelTests.cmake
+new file mode 100644
+index 0000000..5b97987
+--- /dev/null
++++ b/cmake/ProjectPanelTests.cmake
+@@ -0,0 +1,18 @@
++# H4-02 / E-11 — test_project_panel: el panel Proyecto de motor_editor sin
++# ventana. Crear proyecto, dos mapas, elegir la entrada, guardar y reabrir;
++# duplicar sin colisiones; cancelar o fallar sin dejar ficheros a medias.
++#
++# Todo contra un assetsRoot temporal con espacios en la ruta: del repo solo se
++# copian un TMX y su textura, por eso depende de copiar_assets.
++if(BUILD_TESTING AND TARGET motor_editor_document)
++    add_executable(test_project_panel tests/Editor/ProjectPanelTests.cpp)
++    target_include_directories(test_project_panel PRIVATE tests)
++    target_link_libraries(test_project_panel PRIVATE motor_editor_document)
++    add_dependencies(test_project_panel copiar_assets)
++    add_test(NAME test_project_panel COMMAND test_project_panel)
++    set_tests_properties(test_project_panel PROPERTIES WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" LABELS "unit;gl-free")
++    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_project_panel)
++    if(TARGET suite_gl_free)
++        add_dependencies(suite_gl_free test_project_panel)
++    endif()
++endif()
+diff --git a/editor/include/ProjectPanel.h b/editor/include/ProjectPanel.h
+new file mode 100644
+index 0000000..d072520
+--- /dev/null
++++ b/editor/include/ProjectPanel.h
+@@ -0,0 +1,63 @@
++// H4-02 / E-11 — La ventana «Proyecto» de motor_editor.
++//
++// Antes era un bloque de EditorApplication::run que solo listaba proyectos y
++// abria mapas. Ahora es su panel, con el arbol de proyectos y mapas (con su
++// nombre visible, no el del fichero) y los formularios para crear un proyecto,
++// crear un mapa eligiendo tamano y tileset, duplicarlo, renombrarlo, sacarlo
++// del proyecto, decidir en que mapa empieza el juego y el titulo del juego.
++//
++// Solo pinta: lo que se decide vive en Editor::ProjectPanelState (sin ImGui,
++// con prueba propia) y el documento abierto sigue siendo de la sesion, que es
++// quien pregunta antes de perder cambios.
++#pragma once
++
++#include <map>
++#include <string>
++#include <vector>
++
++#include "Core/Math/Vector2.h"
++#include "Editor/EditorDocumentSession.h"
++#include "Editor/ProjectPanelState.h"
++
++namespace Editor {
++
++class ProjectPanel {
++public:
++    explicit ProjectPanel(std::string assetsRoot = "assets");
++
++    // Lee los proyectos; si el indice falla, deja el motivo en status.
++    void load(std::string& status);
++    // openProject: el proyecto que se despliega al arrancar (--project).
++    void draw(EditorDocumentSession& session, std::string& status, bool blocked,
++              const std::string& openProject = {});
++
++    // Siempre el mismo vector: quien guarde la referencia ve los cambios.
++    const std::vector<Project>& projects() const { return m_state.projects(); }
++    bool modalOpen() const { return m_state.formOpen(); }
++    const char* search() const { return m_search.data(); }
++    ProjectPanelState& state() { return m_state; }
++
++    // Geometria logica de los controles, para el humo con raton real.
++    Vector2 testPoint(const std::string& control) const;
++
++private:
++    void drawTree(EditorDocumentSession& session, std::string& status, bool blocked,
++                  const std::string& openProject);
++    void drawOpenMapActions(const EditorDocumentSession& session, bool blocked);
++    void drawForm(EditorDocumentSession& session, std::string& status);
++    void record(const std::string& control);
++    // Ruta canonica del documento abierto ("" sin documento); se recalcula
++    // solo cuando cambia, no en cada fotograma ni por cada mapa del arbol.
++    const std::string& openCanonical(const EditorDocumentSession& session);
++
++    ProjectPanelState m_state;
++    std::map<std::string, Vector2> m_points;
++    std::vector<char> m_search = std::vector<char>(128, '\0');
++    std::vector<char> m_text = std::vector<char>(160, '\0');
++    std::string m_boundForm;                  // formulario cuyo texto esta en m_text
++    std::string m_previewFor, m_preview;      // id de fichero que saldria (cache por texto)
++    std::string m_unfolded;                   // ultimo proyecto que se desplego solo
++    std::string m_openPath, m_openCanonical;  // documento abierto (cache por ruta)
++};
++
++}  // namespace Editor
+diff --git a/editor/src/EditorApplication.cpp b/editor/src/EditorApplication.cpp
+index 535c743..c710d40 100644
+--- a/editor/src/EditorApplication.cpp
++++ b/editor/src/EditorApplication.cpp
+@@ -15,6 +15,7 @@
+ #include "EditorVistaDeMapa.h"
+ #include "InspectorPanel.h"
+ #include "LayerPanel.h"
++#include "ProjectPanel.h"
+ #include "ToolsPanel.h"
+ 
+ #include <glad/glad.h>
+@@ -117,11 +118,12 @@ int EditorApplication::run(int argc, char** argv) {
+     ShaderManager shaders;
+     auto shader = shaders.load("editor_sprite", "assets/shaders/sprite");
+     if (!shader.isOk()) throw std::runtime_error(shader.errorMessage());
+-    const auto index = ProjectIndex::scan();
+-    std::vector<Project> projects;
+     std::string status;
+-    if (index.isOk()) projects = index.value().projects();
+-    else status = index.errorMessage();
++    // H4-02 — El arbol de proyectos y la gestion de mapas viven en su panel;
++    // `projects` es su vector, asi que ve los proyectos y mapas que se crean.
++    ProjectPanel projectPanel;
++    projectPanel.load(status);
++    const auto& projects = projectPanel.projects();
+     if (!projectId.empty()) {
+         const auto it = std::find_if(projects.begin(), projects.end(), [&](const auto& p) { return p.id == projectId; });
+         if (it == projects.end() || it->levels.empty()) throw std::runtime_error("Proyecto sin mapas: " + projectId);
+@@ -141,16 +143,17 @@ int EditorApplication::run(int argc, char** argv) {
+     int selectedGid = 1;
+     EditorActions actions;
+     GridCoord selected{-1, -1};
+-    char search[128] = {}, objectSearch[128] = {};
++    char objectSearch[128] = {};
+     std::string selectedObject, catalogPath;
+     bool smokePainted = false, smokeSaved = false, smokeRendered = false;
+     ids::LayerId smokeLayer;
+     ImVec2 smokePointer{-100, -100};
+-    ImVec2 smokeMapPoint{}, smokeSecondPoint{}, smokeCancelPoint{}, smokeSearchPoint{}, smokeFillCell{};
++    ImVec2 smokeMapPoint{}, smokeSecondPoint{}, smokeCancelPoint{}, smokeFillCell{};
+     // EDITOR-UX-01 — Herramientas, ayuda e Inspector viven en sus paneles.
+     ToolsPanel toolsPanel;
+     InspectorPanel inspectorPanel(toolsPanel.iconos());
+     auto panelPoint = [&](const char* control) { const auto p = toolsPanel.testPoint(control); return ImVec2{p.x, p.y}; };
++    auto projectPoint = [&](const char* control) { const auto p = projectPanel.testPoint(control); return ImVec2{p.x, p.y}; };
+     for (int frame = 0; !session.quitReady() && (frames < 0 || frame < frames); ++frame) {
+         window.pollEvents();
+         if (window.shouldClose()) {
+@@ -163,7 +166,7 @@ int EditorApplication::run(int argc, char** argv) {
+             // pulsación y suelta. El harness controla su propio flujo de input.
+             io.ClearEventsQueue();
+             if (frame == 2 || frame == 6 || frame == 11 || frame == 14)
+-                smokePointer = frame == 2 ? smokeMapPoint : (frame == 6 ? smokeCancelPoint : (frame == 11 ? smokeSecondPoint : smokeSearchPoint));
++                smokePointer = frame == 2 ? smokeMapPoint : (frame == 6 ? smokeCancelPoint : (frame == 11 ? smokeSecondPoint : projectPoint("search")));
+             if (frame == 20 || frame == 22 || frame == 24 || frame == 34)
+                 smokePointer = frame == 22 ? panelPoint("fill") : (frame == 24 ? smokeFillCell : smokeMapPoint);
+             if (frame == 44) smokePointer = smokeMapPoint;
+@@ -179,7 +182,17 @@ int EditorApplication::run(int argc, char** argv) {
+                 const auto point = layerPanel.testPoint(control); smokePointer = {point.x, point.y};
+             }
+             if (frame == 102 || frame == 106 || frame == 112) smokePointer = smokeSecondPoint;
++            // H4-02: «+ Mapa» -> nombre -> Crear -> pintar -> Ctrl+S -> reabrir.
++            if (frame == 140 || frame == 145 || frame == 150)
++                smokePointer = frame == 140 ? projectPoint("nuevo_mapa:smoke") : frame == 145 ? projectPoint("form.confirmar") : smokeMapPoint;
+             io.AddMousePosEvent(smokePointer.x, smokePointer.y);
++            if (frame == 140 || frame == 145 || frame == 150 || frame == 141 || frame == 146 || frame == 151)
++                io.AddMouseButtonEvent(ImGuiMouseButton_Left, frame == 140 || frame == 145 || frame == 150);
++            if (frame == 143) io.AddInputCharactersUTF8("Cueva del eco");
++            if (frame == 152 || frame == 153) {
++                io.AddKeyEvent(io.ConfigMacOSXBehaviors ? ImGuiMod_Super : ImGuiMod_Ctrl, frame == 152);
++                io.AddKeyEvent(ImGuiKey_S, frame == 152);
++            }
+             if (frame == 2 || frame == 6 || frame == 11 || frame == 14) {
+                 io.AddMouseButtonEvent(ImGuiMouseButton_Left, true);
+             }
+@@ -243,7 +256,7 @@ int EditorApplication::run(int argc, char** argv) {
+         const auto dock = ImGui::GetID("MotorEditorDock");
+         defaultLayout(dock, mainViewport->WorkSize);
+         ImGui::DockSpaceOverViewport(dock, mainViewport);
+-        const bool blocked = session.confirmationPending() || layerPanel.modalOpen();
++        const bool blocked = session.confirmationPending() || layerPanel.modalOpen() || projectPanel.modalOpen();
+         const ToolsContext toolsContext{session, actions, map, selectedGid, selectedObject, objectSearch, sizeof(objectSearch), status, blocked, uiScale, io.ConfigMacOSXBehaviors};
+         if (ImGui::BeginMainMenuBar()) {
+             for (const auto& menu : {std::pair<const char*, ActionGroup>{"Archivo", ActionGroup::File},
+@@ -263,30 +276,7 @@ int EditorApplication::run(int argc, char** argv) {
+             ImGui::TextDisabled("  %s%s", session.hasDocument() ? session.name().c_str() : "Sin mapa", session.dirty() ? " • cambios sin guardar" : "");
+             ImGui::EndMainMenuBar();
+         }
+-        ImGui::Begin("Proyecto");
+-        ImGui::SetNextItemWidth(-1);
+-        ImGui::InputTextWithHint("##map_search", "Buscar mapa...", search, sizeof(search));
+-        if (smoke) { const auto a = ImGui::GetItemRectMin(), b = ImGui::GetItemRectMax(); smokeSearchPoint = {(a.x+b.x)*0.5f, (a.y+b.y)*0.5f}; }
+-        EditorIconos::tooltip("Buscar mapa", "", ayudaDeControl("proyecto.buscar"));
+-        ImGui::Separator();
+-        ImGui::BeginDisabled(blocked);
+-        for (const auto& project : projects) {
+-            ImGui::PushID(project.id.c_str());
+-            ImGui::SetNextItemOpen(project.id == projectId, ImGuiCond_Once);
+-            if (ImGui::TreeNode(project.name.c_str())) {
+-                for (const auto& file : project.levels) {
+-                    if (*search && file.find(search) == std::string::npos) continue;
+-                    const auto path = (std::filesystem::path("assets") / project.settings.levelsDirectory / file).generic_string();
+-                    const auto label = std::filesystem::path(file).stem().string();
+-                    if (ImGui::Selectable(label.c_str(), session.hasDocument() && session.levelPath() == path)) report(session.request(Action::Open, path));
+-                    EditorIconos::tooltip(file.c_str(), "", ayudaDeControl("proyecto.mapa"));
+-                }
+-                ImGui::TreePop();
+-            }
+-            ImGui::PopID();
+-        }
+-        if (projects.empty()) ImGui::TextWrapped("No hay proyectos disponibles. Puedes abrir un nivel con --load.");
+-        ImGui::EndDisabled(); ImGui::End();
++        projectPanel.draw(session, status, blocked, projectId);
+ 
+         // Resolver el catálogo antes de mostrar la paleta, también al abrir otro mapa.
+         if (session.hasDocument()) {
+@@ -408,9 +398,9 @@ int EditorApplication::run(int argc, char** argv) {
+         }
+         if (smoke && frame == 12 && (!session.dirty() || session.state().tileAt(2, 1) != 2))
+             throw std::runtime_error("Falta una edición deshacible antes de probar el foco");
+-        if (smoke && frame == 19 && (*search || actions.tool() != EditorAction::Paint || !session.dirty() || session.state().tileAt(2, 1) != 2))
++        if (smoke && frame == 19 && (*projectPanel.search() || actions.tool() != EditorAction::Paint || !session.dirty() || session.state().tileAt(2, 1) != 2))
+             throw std::runtime_error("Escribir/deshacer texto modificó el mapa");
+-        if (smoke && frame == 17 && (std::string(search) != "g" || actions.tool() != EditorAction::Paint))
++        if (smoke && frame == 17 && (std::string(projectPanel.search()) != "g" || actions.tool() != EditorAction::Paint))
+             throw std::runtime_error("La búsqueda no recibió la G escrita");
+         if (smoke && frame == 19) report(actions.execute(EditorAction::Save, session));
+         if (smoke && frame == 23 && actions.tool() != EditorAction::Fill)
+@@ -482,6 +472,14 @@ int EditorApplication::run(int argc, char** argv) {
+             if (session.tileLayers().size()!=2 || session.tileLayers().back().id!=smokeLayer || session.state().tileAt(1,2,1)!=2)
+                 throw std::runtime_error("El ciclo borrar/deshacer/guardar perdió la capa");
+         }
++        const std::string nuevo = "assets/levels/smoke_cueva_del_eco.json";
++        if (smoke && frame == 148 && (!session.hasDocument() || session.levelPath() != nuevo || session.state().width() != 16))
++            throw std::runtime_error("Nuevo mapa no creó ni abrió el mapa");
++        if (smoke && frame == 156) {
++            if (session.dirty()) throw std::runtime_error("Guardar el mapa nuevo no se completó");
++            report(session.request(Action::Open, nuevo));
++            if (session.state().tileAt(1, 1) != 2 || session.name() != "Cueva del eco") throw std::runtime_error("Reabrir perdió el mapa nuevo");
++        }
+         ImGui::Render();
+         int width, height; glfwGetFramebufferSize(window.handle(), &width, &height);
+         glBindFramebuffer(GL_FRAMEBUFFER, 0); glViewport(0, 0, width, height);
+@@ -494,7 +492,7 @@ int EditorApplication::run(int argc, char** argv) {
+         window.swapBuffers();
+     }
+     if (smoke && (!smokePainted || !smokeSaved || !smokeRendered)) throw std::runtime_error("No se completó editar/guardar/reabrir");
+-    std::cout << "motor_editor: salida normal, GL 0" << (smoke ? "; editar/cancelar/guardar/reabrir OK; rellenar/borrar/rehacer/ayuda OK; objetos/catalogo/historial OK; capas/seleccion/bloqueo/confirmacion OK" : "") << '\n';
++    std::cout << "motor_editor: salida normal, GL 0" << (smoke ? "; editar/cancelar/guardar/reabrir OK; rellenar/borrar/rehacer/ayuda OK; objetos/catalogo/historial OK; capas/seleccion/bloqueo/confirmacion OK; nuevo mapa/pintar/guardar/reabrir OK" : "") << '\n';
+     return 0;
+ }
+ }  // namespace Editor
+diff --git a/editor/src/ProjectPanel.cpp b/editor/src/ProjectPanel.cpp
+new file mode 100644
+index 0000000..c1475e3
+--- /dev/null
++++ b/editor/src/ProjectPanel.cpp
+@@ -0,0 +1,400 @@
++// H4-02 / E-11 — ver editor/include/ProjectPanel.h.
++#include "ProjectPanel.h"
++
++#include "EditorIconos.h"
++#include "Editor/EditorAyuda.h"
++#include "imgui.h"
++
++#include <algorithm>
++#include <cctype>
++
++namespace Editor {
++namespace {
++using Mode = ProjectPanelState::Mode;
++using Kind = ProjectPanelState::Effect::Kind;
++
++std::string lower(std::string text) {
++    std::transform(text.begin(), text.end(), text.begin(),
++                   [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
++    return text;
++}
++
++const char* title(Mode mode) {
++    switch (mode) {
++        case Mode::NewProject:
++            return "Nuevo proyecto###proyecto_formulario";
++        case Mode::NewMap:
++            return "Nuevo mapa###proyecto_formulario";
++        case Mode::DuplicateMap:
++            return "Duplicar mapa###proyecto_formulario";
++        case Mode::RenameMap:
++            return "Renombrar mapa###proyecto_formulario";
++        case Mode::RemoveMap:
++            return "Quitar mapa del proyecto###proyecto_formulario";
++        case Mode::Title:
++            return "Título del juego###proyecto_formulario";
++        case Mode::Entry:
++            return "Mapa de inicio###proyecto_formulario";
++        case Mode::None:
++            break;
++    }
++    return "###proyecto_formulario";
++}
++
++const char* confirmLabel(Mode mode) {
++    switch (mode) {
++        case Mode::NewProject:
++        case Mode::NewMap:
++            return "Crear";
++        case Mode::DuplicateMap:
++            return "Duplicar";
++        case Mode::RenameMap:
++            return "Renombrar";
++        case Mode::RemoveMap:
++            return "Quitar";
++        case Mode::Title:
++            return "Guardar";
++        case Mode::Entry:
++            return "Empezar aquí";
++        case Mode::None:
++            break;
++    }
++    return "Aceptar";
++}
++
++std::string doneMessage(Mode mode, const std::string& text, const std::string& mapName) {
++    switch (mode) {
++        case Mode::NewProject:
++            return "Proyecto «" + text + "» creado. Ahora dale su primer mapa.";
++        case Mode::NewMap:
++            return "Mapa «" + text + "» creado.";
++        case Mode::DuplicateMap:
++            return "Copia «" + text + "» creada.";
++        case Mode::RenameMap:
++            return "Mapa renombrado a «" + text + "».";
++        case Mode::RemoveMap:
++            return "«" + mapName + "» ya no está en el proyecto; sus ficheros siguen en disco.";
++        case Mode::Title:
++            return "Título del juego guardado.";
++        case Mode::Entry:
++            return "El juego empezará en «" + mapName + "».";
++        case Mode::None:
++            break;
++    }
++    return "Listo";
++}
++
++const ProjectMap* findMap(const std::vector<ProjectMap>& maps, const std::string& level) {
++    const auto it = std::find_if(maps.begin(), maps.end(),
++                                 [&](const ProjectMap& m) { return m.level == level; });
++    return it == maps.end() ? nullptr : &*it;
++}
++}  // namespace
++
++ProjectPanel::ProjectPanel(std::string assetsRoot) : m_state(std::move(assetsRoot)) {}
++
++void ProjectPanel::load(std::string& status) {
++    const auto loaded = m_state.reload();
++    if (!loaded.isOk())
++        status = loaded.errorMessage();
++}
++
++Vector2 ProjectPanel::testPoint(const std::string& control) const {
++    const auto it = m_points.find(control);
++    return it == m_points.end() ? Vector2{} : it->second;
++}
++
++const std::string& ProjectPanel::openCanonical(const EditorDocumentSession& session) {
++    const std::string path = session.hasDocument() ? session.levelPath() : std::string();
++    if (path != m_openPath) {
++        m_openPath = path;
++        m_openCanonical = path.empty() ? std::string() : canonicalPath(path);
++    }
++    return m_openCanonical;
++}
++
++void ProjectPanel::record(const std::string& control) {
++    const auto a = ImGui::GetItemRectMin(), b = ImGui::GetItemRectMax();
++    m_points[control] = {(a.x + b.x) * 0.5f, (a.y + b.y) * 0.5f};
++}
++
++void ProjectPanel::draw(EditorDocumentSession& session, std::string& status, bool blocked,
++                        const std::string& openProject) {
++    ImGui::Begin("Proyecto");
++    ImGui::BeginDisabled(blocked);
++    if (ImGui::Button("Nuevo proyecto..."))
++        m_state.begin(Mode::NewProject);
++    record("nuevo_proyecto");
++    EditorIconos::tooltip("Nuevo proyecto", "", ayudaDeControl("proyecto.nuevo_proyecto"));
++    ImGui::EndDisabled();
++    drawOpenMapActions(session, blocked);
++    ImGui::SetNextItemWidth(-1);
++    ImGui::InputTextWithHint("##map_search", "Buscar mapa...", m_search.data(), m_search.size());
++    record("search");
++    EditorIconos::tooltip("Buscar mapa", "", ayudaDeControl("proyecto.buscar"));
++    ImGui::Separator();
++    drawTree(session, status, blocked, openProject);
++    ImGui::End();
++    drawForm(session, status);
++}
++
++void ProjectPanel::drawTree(EditorDocumentSession& session, std::string& status, bool blocked,
++                            const std::string& openProject) {
++    const std::string filter = lower(m_search.data());
++    ImGui::BeginDisabled(blocked);
++    for (const auto& project : m_state.projects()) {
++        ImGui::PushID(project.id.c_str());
++        // Se despliega solo el de --project al arrancar y el ultimo creado o tocado.
++        const std::string& focus =
++            !m_state.focusProject().empty() ? m_state.focusProject() : openProject;
++        if (project.id == focus && m_unfolded != focus) {
++            ImGui::SetNextItemOpen(true, ImGuiCond_Always);
++            m_unfolded = focus;
++        }
++        // Y, la primera vez, el que tiene el mapa abierto.
++        const auto& maps = m_state.maps(project.id);
++        const bool hasOpenMap = session.hasDocument() &&
++                                std::any_of(maps.begin(), maps.end(), [&](const ProjectMap& m) {
++                                    return m.canonical == openCanonical(session);
++                                });
++        if (hasOpenMap)
++            ImGui::SetNextItemOpen(true, ImGuiCond_Once);
++        const bool open = ImGui::TreeNode(project.name.c_str());
++        record("proyecto:" + project.id);
++        if (ImGui::BeginPopupContextItem("menu_proyecto")) {
++            if (ImGui::MenuItem("Nuevo mapa..."))
++                m_state.begin(Mode::NewMap, project.id);
++            if (ImGui::MenuItem("Título del juego..."))
++                m_state.begin(Mode::Title, project.id);
++            ImGui::EndPopup();
++        }
++        if (open) {
++            // El primer hijo del proyecto: asi no tapa nombres largos.
++            if (ImGui::SmallButton("+ Nuevo mapa"))
++                m_state.begin(Mode::NewMap, project.id);
++            record("nuevo_mapa:" + project.id);
++            EditorIconos::tooltip("Nuevo mapa", "", ayudaDeControl("proyecto.nuevo_mapa"));
++            for (const auto& map : maps) {
++                if (!filter.empty() && lower(map.name).find(filter) == std::string::npos &&
++                    lower(map.level).find(filter) == std::string::npos)
++                    continue;
++                ImGui::PushID(map.level.c_str());
++                const std::string label = map.name + (map.entry ? "  (inicio)" : "") +
++                                          (map.readable ? "" : "  (no se puede leer)");
++                const bool current =
++                    session.hasDocument() && openCanonical(session) == map.canonical;
++                if (ImGui::Selectable(label.c_str(), current)) {
++                    const auto opened =
++                        session.request(EditorDocumentSession::Action::Open, map.path);
++                    if (!opened.isOk())
++                        status = opened.errorMessage();
++                    else if (opened.value())
++                        status = "Listo";
++                }
++                record("mapa:" + map.level);
++                EditorIconos::tooltip(map.level.c_str(), "", ayudaDeControl("proyecto.mapa"));
++                if (ImGui::BeginPopupContextItem("menu_mapa")) {
++                    if (ImGui::MenuItem("Duplicar..."))
++                        m_state.begin(Mode::DuplicateMap, project.id, map.level);
++                    if (ImGui::MenuItem("Renombrar..."))
++                        m_state.begin(Mode::RenameMap, project.id, map.level);
++                    if (ImGui::MenuItem("Empezar aquí", nullptr, false, !map.entry))
++                        m_state.begin(Mode::Entry, project.id, map.level);
++                    if (ImGui::MenuItem("Quitar del proyecto...", nullptr, false, !map.entry))
++                        m_state.begin(Mode::RemoveMap, project.id, map.level);
++                    ImGui::EndPopup();
++                }
++                ImGui::PopID();
++            }
++            if (maps.empty())
++                ImGui::TextDisabled("Sin mapas todavía.");
++            ImGui::TreePop();
++        }
++        ImGui::PopID();
++    }
++    if (m_state.projects().empty())
++        ImGui::TextWrapped("No hay proyectos. Crea uno con «Nuevo proyecto».");
++    ImGui::EndDisabled();
++}
++
++// Lo mismo que el menu del clic derecho, a la vista: el mapa abierto se puede
++// duplicar, renombrar, hacer de inicio o quitar sin saber que hay un menu.
++void ProjectPanel::drawOpenMapActions(const EditorDocumentSession& session, bool blocked) {
++    if (!session.hasDocument())
++        return;
++    for (const auto& project : m_state.projects()) {
++        const auto& maps = m_state.maps(project.id);
++        const auto it = std::find_if(maps.begin(), maps.end(), [&](const ProjectMap& m) {
++            return m.canonical == openCanonical(session);
++        });
++        if (it == maps.end())
++            continue;
++        ImGui::SeparatorText("Mapa abierto");
++        ImGui::TextWrapped("%s  ·  %s", it->name.c_str(), project.name.c_str());
++        ImGui::BeginDisabled(blocked);
++        const struct {
++            const char* label;
++            const char* control;
++            Mode mode;
++            bool enabled;
++        } buttons[] = {
++            {"Duplicar", "abierto.duplicar", Mode::DuplicateMap, true},
++            {"Renombrar", "abierto.renombrar", Mode::RenameMap, true},
++            {"Empezar aquí", "abierto.inicio", Mode::Entry, !it->entry},
++            {"Quitar", "abierto.quitar", Mode::RemoveMap, !it->entry},
++        };
++        // Los cuatro botones no caben en un panel estrecho: pasan a la linea
++        // siguiente cuando el proximo no cabe (el patron de ImGui para fluir).
++        const ImGuiStyle& style = ImGui::GetStyle();
++        const float right = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
++        for (const auto& button : buttons) {
++            const float width = ImGui::CalcTextSize(button.label).x + style.FramePadding.x * 2;
++            if (&button != &buttons[0] &&
++                ImGui::GetItemRectMax().x + style.ItemSpacing.x + width < right)
++                ImGui::SameLine();
++            ImGui::BeginDisabled(!button.enabled);
++            if (ImGui::Button(button.label))
++                m_state.begin(button.mode, project.id, it->level);
++            ImGui::EndDisabled();
++            record(button.control);
++            EditorIconos::tooltip(button.label, "",
++                                  ayudaDeControl(std::string("proyecto.") + button.control));
++        }
++        ImGui::EndDisabled();
++        return;
++    }
++}
++
++void ProjectPanel::drawForm(EditorDocumentSession& session, std::string& status) {
++    auto& form = m_state.form();
++    if (form.mode == Mode::None) {
++        m_boundForm.clear();
++        return;
++    }
++    const std::string key =
++        std::to_string(static_cast<int>(form.mode)) + "|" + form.project + "|" + form.level;
++    if (key != m_boundForm) {
++        m_boundForm = key;
++        m_text.assign(std::max<std::size_t>(160, form.text.size() + 1), '\0');
++        std::copy(form.text.begin(), form.text.end(), m_text.begin());
++        ImGui::OpenPopup("###proyecto_formulario");
++    }
++    const auto* viewport = ImGui::GetMainViewport();
++    ImGui::SetNextWindowPos(viewport->GetCenter(), ImGuiCond_Appearing, {0.5f, 0.5f});
++    if (!ImGui::BeginPopupModal(title(form.mode), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
++        m_state.cancel();  // cerrado desde fuera (Esc)
++        return;
++    }
++    const Project* project = m_state.project(form.project);
++    const ProjectMap* map = findMap(m_state.maps(form.project), form.level);
++    const std::string mapName = map ? map->name : form.level;
++    bool enter = false;
++    const bool hasText = form.mode == Mode::NewProject || form.mode == Mode::NewMap ||
++                         form.mode == Mode::DuplicateMap || form.mode == Mode::RenameMap ||
++                         form.mode == Mode::Title;
++    if (form.mode == Mode::NewMap || form.mode == Mode::Title)
++        ImGui::TextUnformatted(("Proyecto: " + (project ? project->name : form.project)).c_str());
++    if (form.mode == Mode::DuplicateMap || form.mode == Mode::RenameMap)
++        ImGui::TextUnformatted(("Mapa: " + mapName).c_str());
++    if (hasText) {
++        if (ImGui::IsWindowAppearing())
++            ImGui::SetKeyboardFocusHere();
++        ImGui::SetNextItemWidth(360 * ImGui::GetFontSize() / 16.0f);
++        enter = ImGui::InputTextWithHint(
++            "##texto", form.mode == Mode::Title ? "Vacío: el nombre del proyecto" : "Nombre",
++            m_text.data(), m_text.size(), ImGuiInputTextFlags_EnterReturnsTrue);
++        record("form.texto");
++        form.text = m_text.data();
++        EditorIconos::tooltip(
++            "Nombre", "",
++            ayudaDeControl(form.mode == Mode::Title ? "proyecto.titulo" : "proyecto.nombre"));
++    }
++    if (form.mode == Mode::NewProject || form.mode == Mode::NewMap ||
++        form.mode == Mode::DuplicateMap) {
++        if (form.text != m_previewFor) {
++            m_previewFor = form.text;
++            m_preview = m_state.previewFileId();
++        }
++        ImGui::TextDisabled(
++            "%s",
++            m_preview.empty()
++                ? "Escribe un nombre con alguna letra o cifra."
++                : (std::string(form.mode == Mode::NewProject ? "Id: " : "Fichero: ") + m_preview)
++                      .c_str());
++    }
++    if (form.mode == Mode::NewMap) {
++        ImGui::SetNextItemWidth(120 * ImGui::GetFontSize() / 16.0f);
++        ImGui::InputInt("Ancho", &form.width);
++        record("form.ancho");
++        ImGui::SetNextItemWidth(120 * ImGui::GetFontSize() / 16.0f);
++        ImGui::InputInt("Alto", &form.height);
++        record("form.alto");
++        form.width = std::clamp(form.width, ProjectMaps::kMinSide, ProjectMaps::kMaxSide);
++        form.height = std::clamp(form.height, ProjectMaps::kMinSide, ProjectMaps::kMaxSide);
++        EditorIconos::tooltip("Tamaño", "", ayudaDeControl("proyecto.tamano"));
++        const auto& tilesets = m_state.tilesets();
++        if (tilesets.empty())
++            ImGui::TextWrapped("No hay ningún mapa del que copiar un tileset.");
++        else {
++            form.tileset = std::clamp(form.tileset, 0, static_cast<int>(tilesets.size()) - 1);
++            ImGui::SetNextItemWidth(360 * ImGui::GetFontSize() / 16.0f);
++            if (ImGui::BeginCombo("Tileset", tilesets[form.tileset].name.c_str())) {
++                for (int i = 0; i < static_cast<int>(tilesets.size()); ++i) {
++                    if (ImGui::Selectable(tilesets[i].name.c_str(), i == form.tileset))
++                        form.tileset = i;
++                    if (ImGui::IsItemHovered())
++                        ImGui::SetTooltip("Sale de %s", tilesets[i].source.c_str());
++                }
++                ImGui::EndCombo();
++            }
++            record("form.tileset");
++            EditorIconos::tooltip("Tileset", "", ayudaDeControl("proyecto.tileset"));
++        }
++    }
++    // Un modal que se ajusta a su contenido no puede envolver el texto contra
++    // su propio ancho (se encogeria hasta una columna): el ancho lo fija esto.
++    ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + 380 * ImGui::GetFontSize() / 16.0f);
++    if (form.mode == Mode::RemoveMap)
++        ImGui::TextWrapped(
++            "«%s» sale del proyecto. Sus ficheros se quedan en disco: si te equivocas, se puede "
++            "volver a añadir.",
++            mapName.c_str());
++    if (form.mode == Mode::Entry)
++        ImGui::TextWrapped(
++            "El juego empezará en «%s». Ahora empieza en: %s.", mapName.c_str(),
++            project && !project->entry.empty() ? project->entry.c_str() : "ninguna parte");
++    if (!form.error.empty()) {
++        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{1.0f, 0.45f, 0.4f, 1.0f});
++        ImGui::TextWrapped("%s", form.error.c_str());
++        ImGui::PopStyleColor();
++    }
++    ImGui::PopTextWrapPos();
++    if (ImGui::Button(confirmLabel(form.mode)) || enter) {
++        const Mode mode = form.mode;
++        const std::string text = form.text;
++        const auto result = m_state.confirm(session);
++        if (result.isOk()) {
++            status = doneMessage(mode, text, mapName);
++            const auto& effect = result.value();
++            Result<bool> applied = Result<bool>::Ok(true);
++            if (effect.kind == Kind::Open || effect.kind == Kind::Reload)
++                applied = session.request(EditorDocumentSession::Action::Open, effect.path);
++            if (effect.kind == Kind::Close)
++                applied = session.request(EditorDocumentSession::Action::Close);
++            if (!applied.isOk())
++                status = applied.errorMessage();
++            if (!m_state.formOpen())
++                ImGui::CloseCurrentPopup();
++        }
++    }
++    record("form.confirmar");
++    ImGui::SameLine();
++    if (ImGui::Button("Cancelar")) {
++        m_state.cancel();
++        ImGui::CloseCurrentPopup();
++    }
++    record("form.cancelar");
++    ImGui::EndPopup();
++}
++
++}  // namespace Editor
+diff --git a/include/Editor/ProjectMaps.h b/include/Editor/ProjectMaps.h
+new file mode 100644
+index 0000000..a834627
+--- /dev/null
++++ b/include/Editor/ProjectMaps.h
+@@ -0,0 +1,118 @@
++// H4-02 / E-11 — Los mapas de un proyecto, gestionados sin abrir una ventana.
++//
++// Hasta ahora motor_editor solo podia ABRIR los mapas que alguien habia
++// creado a mano: no habia forma de empezar uno nuevo, copiarlo, cambiarle el
++// nombre que ve el jugador ni sacarlo del proyecto sin editar JSON. Esto es
++// esa gestion, como datos: el panel Proyecto (editor/src/ProjectPanel.cpp)
++// solo pinta y llama aqui, y la prueba lo recorre entero sin ImGui.
++//
++// UN MAPA SON TRES FICHEROS: el nivel (levels/<id>.json, lo que el juego
++// carga y donde vive el nombre visible), el TMX (maps/<id>.tmx, lo que pinta
++// el runtime) y el documento de autoria (maps/<id>.map.json). Los escribe
++// EditorDocumentIO, el mismo que usa Guardar: un mapa recien creado es
++// exactamente lo que el editor habria guardado.
++//
++// TODO O NADA, como ProjectIndex::duplicate (criterio de E-11: «cancel·lar o
++// fallar una operacio no deixa un projecte mig registrat»). Primero los
++// ficheros, despues el manifiesto; si el manifiesto falla, los ficheros nuevos
++// se borran. Y nada se sobreescribe: el id se elige libre en las dos carpetas.
++//
++// QUITAR NO BORRA. Igual que ProjectIndex::remove con los proyectos: el mapa
++// sale del manifiesto y sus ficheros se quedan en disco, porque un borrado
++// desde el editor no se puede deshacer y otro proyecto puede estar usandolos.
++#pragma once
++
++#include <string>
++#include <vector>
++
++#include "Core/Errors/Result.h"
++#include "Editor/EditorState.h"
++#include "Project/Project.h"
++
++namespace Editor {
++
++// Un mapa tal como lo ve el autor en el arbol del proyecto.
++struct ProjectMap {
++    std::string level;   // "smoke_cueva.json": lo que guarda el manifiesto
++    std::string path;    // "assets/levels/smoke_cueva.json": lo que abre el editor
++    std::string name;    // nombre visible del nivel; si no se puede leer, el del fichero
++    std::string map;     // TMX al que apunta el nivel ("" si no se pudo leer)
++    bool entry = false;  // es donde empieza el juego (entry del manifiesto)
++    bool readable = true;
++    // La ruta absoluta y normalizada: el documento abierto puede venir de
++    // --load con otra forma de escribir el mismo fichero.
++    std::string canonical;
++};
++
++// Un tileset que se puede elegir al crear un mapa: la cabecera <tileset> de
++// un TMX que ya existe, con sus muros (collision) incluidos.
++struct ProjectTileset {
++    std::string name;    // tilesetName del TMX
++    std::string source;  // TMX del que sale, para que el autor sepa cual es
++    std::string image;   // imagen YA RESUELTA (el TMX la guarda relativa a si mismo)
++    TmxTilesetSettings settings;
++};
++
++class ProjectMaps {
++public:
++    static constexpr int kMinSide = 3;
++    static constexpr int kMaxSide = 256;
++
++    // Los mapas del proyecto, en el orden del manifiesto.
++    static std::vector<ProjectMap> list(const std::string& assetsRoot, const Project& project);
++
++    // Tilesets distintos de los mapas del proyecto; si no tiene ninguno (un
++    // proyecto recien creado), los de todos los proyectos.
++    static std::vector<ProjectTileset> tilesets(const std::string& assetsRoot,
++                                                const std::vector<Project>& projects,
++                                                const std::string& projectId);
++
++    // El id de fichero que tendria un mapa con ese nombre visible: prefijo
++    // del proyecto + id sugerido, libre en las carpetas de niveles y mapas.
++    static Result<std::string> suggestFileId(const std::string& assetsRoot, const Project& project,
++                                             const std::string& visibleName);
++
++    // Mapa nuevo: suelo de la primera baldosa que no es muro, el jugador en
++    // el centro, y nivel + TMX + documento en el manifiesto. La imagen del
++    // tileset se vuelve a hacer relativa a la carpeta del TMX nuevo.
++    static Result<ProjectMap> create(const std::string& assetsRoot, const std::string& projectId,
++                                     const std::string& visibleName, int width, int height,
++                                     const ProjectTileset& tileset);
++
++    // Copia con otro nombre y otro id. Los ficheros se copian tal cual; solo
++    // cambian el nombre visible, las rutas del nivel y el id del documento.
++    static Result<ProjectMap> duplicate(const std::string& assetsRoot, const std::string& projectId,
++                                        const std::string& level,
++                                        const std::string& newVisibleName);
++
++    // Cambia el nombre que ve el jugador. El fichero (el id) no cambia.
++    static Result<bool> rename(const std::string& assetsRoot, const std::string& projectId,
++                               const std::string& level, const std::string& newVisibleName);
++
++    // Saca el mapa del manifiesto; sus ficheros siguen en disco. No deja
++    // quitar el mapa donde empieza el juego.
++    static Result<bool> remove(const std::string& assetsRoot, const std::string& projectId,
++                               const std::string& level);
++
++    // El juego empieza en este mapa (entry del manifiesto).
++    static Result<bool> makeEntry(const std::string& assetsRoot, const std::string& projectId,
++                                  const std::string& level);
++
++    // Lo que ve el JUGADOR en la pantalla de titulo (settings.title). Vacio
++    // vuelve al nombre del proyecto.
++    static Result<bool> setTitle(const std::string& assetsRoot, const std::string& projectId,
++                                 const std::string& title);
++};
++
++// La ruta absoluta y sin "..": para saber si dos rutas son el mismo fichero
++// aunque esten escritas distinto ("assets/levels/x.json" y "/tmp/w/assets/...").
++std::string canonicalPath(const std::string& path);
++
++// Cambia el valor (cadena) de una clave de primer nivel de un objeto JSON sin
++// tocar nada mas del texto: formato, orden y el resto de campos se quedan
++// byte a byte. Si la clave no existe y insertIfMissing, se anade al principio.
++// Error si el texto no es un objeto JSON o la clave tiene un valor no cadena.
++Result<std::string> replaceTopLevelString(const std::string& jsonText, const std::string& key,
++                                          const std::string& value, bool insertIfMissing);
++
++}  // namespace Editor
+diff --git a/include/Editor/ProjectPanelState.h b/include/Editor/ProjectPanelState.h
+new file mode 100644
+index 0000000..6beb918
+--- /dev/null
++++ b/include/Editor/ProjectPanelState.h
+@@ -0,0 +1,95 @@
++// H4-02 / E-11 — El modelo del panel Proyecto de motor_editor, sin ImGui.
++//
++// El panel (editor/src/ProjectPanel.cpp) pinta el arbol de proyectos y mapas
++// y los formularios; lo que decide —que formulario esta abierto, que se
++// valida, que operacion se hace y que tiene que hacer despues la sesion del
++// documento— vive aqui, para que test_project_panel recorra la ruta del autor
++// entera (crear proyecto, dos mapas, elegir entrada, guardar y reabrir) sin
++// abrir una ventana. Es el mismo reparto que ProblemsState/ProblemsPanel.
++//
++// La sesion del documento sigue siendo la duena del mapa abierto: el estado
++// no la toca, devuelve un Effect (abrir, cerrar o recargar) y el panel se lo
++// pide a la sesion, que es quien pregunta si hay cambios sin guardar.
++#pragma once
++
++#include <map>
++#include <string>
++#include <vector>
++
++#include "Core/Errors/Result.h"
++#include "Editor/EditorDocumentSession.h"
++#include "Editor/ProjectMaps.h"
++#include "Project/Project.h"
++
++namespace Editor {
++
++class ProjectPanelState {
++public:
++    enum class Mode { None, NewProject, NewMap, DuplicateMap, RenameMap, RemoveMap, Title, Entry };
++
++    // Lo que el formulario abierto esta editando.
++    struct Form {
++        Mode mode = Mode::None;
++        std::string project;  // id del proyecto
++        std::string level;    // fichero del nivel (duplicar, renombrar, quitar, entrada)
++        std::string text;     // nombre, nombre nuevo o titulo
++        int width = 16;
++        int height = 16;
++        int tileset = 0;    // indice en tilesets()
++        std::string error;  // por que no se pudo confirmar (se ensena en el formulario)
++    };
++
++    // Lo que la sesion del documento tiene que hacer tras confirmar.
++    struct Effect {
++        enum class Kind { None, Open, Close, Reload } kind = Kind::None;
++        std::string path;
++    };
++
++    explicit ProjectPanelState(std::string assetsRoot = "assets");
++
++    // Vuelve a leer proyectos/index.json y los mapas de cada proyecto.
++    Result<bool> reload();
++    const std::string& assetsRoot() const { return m_root; }
++    const std::vector<Project>& projects() const { return m_projects; }
++    const Project* project(const std::string& id) const;
++    const std::vector<ProjectMap>& maps(const std::string& projectId) const;
++
++    // Abrir un formulario. Los de mapa necesitan el proyecto y, salvo
++    // NewMap, el nivel; con datos que no existen el formulario no se abre.
++    bool begin(Mode mode, const std::string& projectId = {}, const std::string& level = {});
++    bool formOpen() const { return m_form.mode != Mode::None; }
++    Form& form() { return m_form; }
++    const Form& form() const { return m_form; }
++    void cancel();
++
++    // Tilesets que se pueden elegir en el formulario NewMap (se leen una vez
++    // por proyecto: abrir un TMX por cada mapa no es gratis).
++    const std::vector<ProjectTileset>& tilesets();
++
++    // El id de fichero que saldria con el nombre escrito ("" si no sirve):
++    // el formulario lo ensena debajo del nombre, como en la pantalla de
++    // proyectos.
++    std::string previewFileId() const;
++
++    // Ejecuta el formulario. Con exito lo cierra (o, tras crear un proyecto,
++    // abre el de su primer mapa) y dice que hacer con el documento; si
++    // falla, el formulario sigue abierto con form().error.
++    Result<Effect> confirm(const EditorDocumentSession& session);
++
++    // El proyecto que el panel debe desplegar (el ultimo creado o tocado).
++    const std::string& focusProject() const { return m_focus; }
++
++private:
++    Result<Effect> run(const EditorDocumentSession& session);
++    Result<bool> refuseIfOpenAndDirty(const EditorDocumentSession& session,
++                                      const std::string& path) const;
++
++    std::string m_root;
++    std::vector<Project> m_projects;
++    std::map<std::string, std::vector<ProjectMap>> m_maps;
++    std::map<std::string, std::vector<ProjectTileset>> m_tilesets;
++    Form m_form;
++    std::string m_focus;
++};
++
++}  // namespace Editor
+diff --git a/sesiones/2026-10-01-claude-mapas.md b/sesiones/2026-10-01-claude-mapas.md
+new file mode 100644
+index 0000000..c7f0443
+--- /dev/null
++++ b/sesiones/2026-10-01-claude-mapas.md
+@@ -0,0 +1,98 @@
++# H4-02 — crear y gestionar mapas desde motor_editor · 01/10/2026
++
++Sesión de Claude (Cowork). Encargo de Oriol: «coge el Gantt del motor y sigue
++programando; usa el mapa del código, pero piensa que hay más agentes trabajando a
++la vez».
++
++## Por qué esta tarea
++
++En `planificacion/gantt_jugabilidad_H.puml`, H0 y H1 estaban cerrados y H2/H3 los
++iban sacando otros agentes el 29/09. DEC-01 pone el editor primero, y en el editor
++**H4-02** era la siguiente tarea: H4-01 ya estaba hecho, y de H4-02 cuelgan H4-03 a
++H4-09 y H5-01. Nadie la tenía (ni registro ni trabajo en vuelo en sus ficheros). En
++el corte B es la mitad con interfaz de **E-11**, que su registro dejaba pendiente:
++«el árbol de mapas y el panel son editor/src/ProjectPanel.cpp».
++
++Antes de programar quedó reservada en `seguimiento/H4-02-MAPAS.json`. Mientras
++tanto, en el árbol había trabajo sin commit de otras sesiones (EDITOR-UX-01 en
++`EditorApplication.cpp`, E-12 en `LayerPanel.cpp`, PERGAMINO-01, APARIENCIA-01) y
++otro agente arreglando HEAD (`0476bb6`). Por eso se tocan sobre todo ficheros
++nuevos, y de `EditorApplication.cpp` solo el bloque de la ventana «Proyecto».
++
++## Qué hace
++
++La ventana **Proyecto** de motor_editor pasa a ser su propio panel:
++
++- El árbol enseña el **nombre que ve el jugador** de cada mapa, no el del fichero,
++  y marca con «(inicio)» el mapa donde empieza el juego.
++- **Nuevo proyecto**: escribes el nombre y el id sale solo; acto seguido pide su
++  primer mapa (un proyecto sin mapas no se puede jugar).
++- **+ Nuevo mapa** (dentro de cada proyecto, o con clic derecho): nombre, ancho y
++  alto (de 3 a 256) y tileset, copiado de un mapa que ya existe con sus muros. Lo
++  crea, lo guarda y lo abre: suelo de la primera baldosa que no es muro y el
++  jugador en el centro.
++- Del mapa abierto, arriba del panel, y de cualquier mapa con clic derecho:
++  **Duplicar**, **Renombrar**, **Empezar aquí** y **Quitar** del proyecto.
++- Clic derecho en un proyecto: **Título del juego** (lo que ve el jugador en la
++  pantalla de inicio; `TitleMenuState` ya lo leía).
++
++## Cómo está hecho
++
++```
++motor_editor_document (sin GL ni ImGui)
++  ProjectMaps        listar, tilesets, crear, duplicar, renombrar, quitar, entrada, título
++  ProjectPanelState  qué formulario hay abierto, qué se valida, qué hace la sesión después
++motor_editor (ImGui)
++  ProjectPanel       árbol + formularios; pinta y llama al estado
++```
++
++- **Un mapa son tres ficheros** (nivel, TMX y documento) y los escribe
++  `EditorDocumentIO`, el mismo que usa Guardar: un mapa recién creado es lo que el
++  editor habría guardado.
++- **Todo o nada.** Primero los ficheros, luego el manifiesto; si el manifiesto
++  falla, los ficheros nuevos se borran. Y no se pisa nada: el id se elige libre en
++  las dos carpetas, aunque el fichero no lo reclame ningún manifiesto.
++- **Quitar no borra.** Igual que `ProjectIndex::remove` con los proyectos: sale del
++  manifiesto y los ficheros se quedan. No deja quitar el mapa de inicio; si el TMX
++  lo usa otro nivel, se queda en `maps`.
++- **Renombrar es un diff de una línea.** `replaceTopLevelString` cambia la cadena
++  sin reescribir el JSON (JsonValue lo devolvería con las claves en otro orden).
++- **El documento abierto sigue siendo de la sesión.** El estado devuelve qué hacer
++  (abrir, recargar o cerrar) y no deja renombrar ni quitar un mapa abierto con
++  cambios sin guardar. Las rutas se comparan en forma canónica: con `--load` el
++  mismo fichero puede venir escrito de otra manera.
++- `EditorApplication.cpp` baja de 500 a 498: el bloque «Proyecto» se va al panel y
++  el humo gana su recorrido.
++
++De paso, un arreglo en `TileMap.cpp`: con un TMX abierto por ruta absoluta, la
++imagen del tileset perdía la `/` inicial y no se encontraba. Lo destapó la prueba,
++que trabaja en una carpeta temporal.
++
++## Verificación
++
++- `test_project_panel` 7/7: la ruta de E-11 (crear proyecto, dos mapas, elegir
++  entrada, guardar y reabrir), dos proyectos en una carpeta con espacios, duplicar
++  sin colisiones, cancelar y fallar sin dejar ficheros ni manifiestos a medias,
++  renombrar como diff de una línea, quitar sin borrar, y el panel frente al mapa
++  abierto con cambios. **Falsable**: 10 de 10 mutaciones la ponen en rojo.
++- `test_motor_editor_smoke_1/2` (ImGui de verdad, ratón y teclado inyectados):
++  además de lo de siempre, «+ Nuevo mapa» → nombre → Crear → pintar → Ctrl+S →
++  reabrir; el script comprueba manifiesto y ficheros.
++- `test_editor_ayuda`: los diez controles nuevos tienen su ayuda.
++- `ctest` completo: fallan las mismas que sin el cambio (más
++  `linea_base_core_configura` mientras los ficheros nuevos no estén versionados).
++  Guardia entera: igual con y sin el cambio; `medir_alcance.py`: las tres
++  cabeceras nuevas las alcanza `motor_editor`.
++- Editor real en el contenedor (Mesa + GLFW nulo con guion): el recorrido completo
++  sobre los proyectos reales, en `Claude outputs/mapas_2026-10-01/`.
++
++## Pendiente
++
++- **Commit**: `cmake/ProjectPanelTests.cmake` va en el mismo commit que su
++  `include()`.
++- Los ficheros nuevos no están en la lista de E-11 de `planificacion/pla/dades.py`:
++  quien regenere `MAPA_DEL_CODIGO.md` puede añadirlos.
++- Lo siguiente del editor en el Gantt: **H4-03** (propiedades de instancia) y
++  **H4-09** (capas; ojo, E-12 de Codex sigue «EN CURSO» en `LayerPanel.cpp`).
++- `ProjectPanel.cpp` se compila suelto en `motor_editor`, como los demás paneles:
++  la guardia cuenta una fuente suelta más (56 → 57, por debajo de la base de 62).
+diff --git a/src/Editor/EditorAyuda.cpp b/src/Editor/EditorAyuda.cpp
+index 06c6adf..bf28f21 100644
+--- a/src/Editor/EditorAyuda.cpp
++++ b/src/Editor/EditorAyuda.cpp
+@@ -32,8 +32,19 @@ const FilaAccion kAcciones[] = {
+ 
+ const std::map<std::string, const char*>& controles() {
+     static const std::map<std::string, const char*> tabla = {
+-        {"proyecto.buscar", "Filtra los mapas de todos los proyectos por nombre de fichero."},
+-        {"proyecto.mapa", "Abre este mapa. Si el actual tiene cambios sin guardar, se pregunta antes."},
++        {"proyecto.buscar", "Filtra los mapas de todos los proyectos por su nombre o por el de su fichero."},
++        {"proyecto.mapa", "Abre este mapa (con cambios sin guardar, pregunta antes). Clic derecho: duplicar, renombrar, empezar aquí o quitar."},
++        // H4-02 / E-11 — gestion de proyectos y mapas desde el panel Proyecto.
++        {"proyecto.nuevo_proyecto", "Crea un proyecto vacío: escribes su nombre y el id sale solo. Después pide su primer mapa."},
++        {"proyecto.nuevo_mapa", "Crea un mapa en este proyecto: nombre, ancho, alto y tileset. Se guarda y se abre."},
++        {"proyecto.nombre", "Nombre que ve el jugador. El fichero sale de él (sin acentos ni espacios) y no cambia al renombrar."},
++        {"proyecto.titulo", "Título que ve el jugador en la pantalla de inicio. Vacío: se usa el nombre del proyecto."},
++        {"proyecto.tamano", "Ancho y alto del mapa en celdas, de 3 a 256. El suelo sale de la primera baldosa que no es muro."},
++        {"proyecto.tileset", "Baldosas del mapa nuevo: se copian de un mapa que ya existe, con sus muros."},
++        {"proyecto.abierto.duplicar", "Copia el mapa abierto con otro nombre y otros ficheros; el original no cambia."},
++        {"proyecto.abierto.renombrar", "Cambia el nombre que ve el jugador; el fichero se queda igual."},
++        {"proyecto.abierto.inicio", "El juego empezará en este mapa (la entrada del proyecto)."},
++        {"proyecto.abierto.quitar", "Saca el mapa del proyecto. Sus ficheros se quedan en disco; el de inicio no se puede quitar."},
+         {"herramientas.objeto.buscar", "Filtra el catalogo de objetos del proyecto por nombre."},
+         {"herramientas.objeto", "Objeto que colocara la herramienta Objetos. Pasa el raton para ver su id."},
+         {"herramientas.baldosa", "Baldosa que pintan Pintar y Rellenar. El numero es su gid en el tileset."},
+diff --git a/src/Editor/ProjectMaps.cpp b/src/Editor/ProjectMaps.cpp
+new file mode 100644
+index 0000000..fd7797b
+--- /dev/null
++++ b/src/Editor/ProjectMaps.cpp
+@@ -0,0 +1,330 @@
++// H4-02 / E-11 — ver include/Editor/ProjectMaps.h.
++#include "Editor/ProjectMaps.h"
++
++#include "ProjectMapsDetail.h"
++
++#include <algorithm>
++#include <filesystem>
++#include <set>
++#include <sstream>
++
++#include "Core/Json/JsonValue.h"
++#include "Editor/EditorDocumentIO.h"
++#include "Level/LevelDocumentBridge.h"
++#include "Project/ProjectIndex.h"
++#include "Project/ProjectSerializer.h"
++#include "Render/TileMap.h"
++
++namespace Editor {
++
++using namespace project_maps;
++
++std::vector<ProjectMap> ProjectMaps::list(const std::string& assetsRoot, const Project& project) {
++    std::vector<ProjectMap> maps;
++    for (const std::string& level : project.levels) {
++        ProjectMap map;
++        map.level = level;
++        map.path = (levelsDir(assetsRoot, project) / level).generic_string();
++        const LevelInfo info = readLevel(map.path);
++        map.readable = info.ok;
++        map.name = info.ok && !trim(info.name).empty() ? info.name : fileId(level);
++        map.map = info.map;
++        map.entry = isEntry(project, level);
++        map.canonical = canonicalPath(map.path);
++        maps.push_back(std::move(map));
++    }
++    return maps;
++}
++
++std::vector<ProjectTileset> ProjectMaps::tilesets(const std::string& assetsRoot,
++                                                  const std::vector<Project>& projects,
++                                                  const std::string& projectId) {
++    std::vector<ProjectTileset> found;
++    std::set<std::string> seen;
++    auto collect = [&](const Project& project) {
++        for (const std::string& name : project.maps) {
++            if (fs::path(name).extension() != ".tmx")
++                continue;
++            const std::string path = (mapsDir(assetsRoot, project) / name).generic_string();
++            TileMap map;
++            if (!map.loadFromFile(path).isOk() || map.getTilesetFirstGid() != 1 ||
++                map.getTilesetTileCount() < 1)
++                continue;
++            ProjectTileset tileset;
++            auto& s = tileset.settings;
++            s.tileWidth = map.getTileWidth();
++            s.tileHeight = map.getTileHeight();
++            s.tilesetName = map.getTilesetName();
++            s.imageSource = map.getTilesetImageSource();
++            s.imageWidth = map.getTilesetImageWidth();
++            s.imageHeight = map.getTilesetImageHeight();
++            s.tilesetTileWidth = map.getTilesetTileWidth();
++            s.tilesetTileHeight = map.getTilesetTileHeight();
++            s.tileCount = map.getTilesetTileCount();
++            s.columns = map.getTilesetColumns();
++            s.collisionGids = map.getCollisionGids();
++            tileset.image = imageOf(path, s.imageSource);
++            tileset.source = path;
++            tileset.name =
++                !s.tilesetName.empty() ? s.tilesetName : fs::path(tileset.image).stem().string();
++            std::ostringstream key;
++            key << relativeTo(tileset.image, ".") << '|' << s.tileWidth << 'x' << s.tileHeight
++                << '|' << s.tilesetTileWidth << 'x' << s.tilesetTileHeight << '|' << s.tileCount
++                << '|';
++            for (int gid : s.collisionGids)
++                key << gid << ',';
++            if (seen.insert(key.str()).second)
++                found.push_back(std::move(tileset));
++        }
++    };
++    for (const Project& project : projects)
++        if (project.id == projectId)
++            collect(project);
++    if (found.empty())
++        for (const Project& project : projects)
++            collect(project);
++    return found;
++}
++
++Result<std::string> ProjectMaps::suggestFileId(const std::string& assetsRoot,
++                                               const Project& project,
++                                               const std::string& visibleName) {
++    const auto base = ProjectIndex::suggestId(trim(visibleName));
++    if (!base.isOk())
++        return Result<std::string>::Error(
++            "ese nombre no sirve para un mapa: escribe al menos una letra o un numero");
++    std::string id = base.value();
++    if (!project.prefix.empty() && id.rfind(project.prefix, 0) != 0)
++        id = project.prefix + id;
++    return Result<std::string>::Ok(ProjectIndex::uniqueId(id, takenIds(assetsRoot, project)));
++}
++
++Result<ProjectMap> ProjectMaps::create(const std::string& assetsRoot, const std::string& projectId,
++                                       const std::string& visibleName, int width, int height,
++                                       const ProjectTileset& tileset) {
++    using R = Result<ProjectMap>;
++    const std::string name = trim(visibleName);
++    if (name.empty())
++        return R::Error("escribe un nombre para el mapa");
++    if (width < kMinSide || width > kMaxSide || height < kMinSide || height > kMaxSide)
++        return R::Error("el mapa tiene que medir entre " + std::to_string(kMinSide) + " y " +
++                        std::to_string(kMaxSide) + " celdas de lado");
++    TmxTilesetSettings settings = tileset.settings;
++    if (settings.tileCount < 1 || settings.tileWidth <= 0 || settings.tileHeight <= 0)
++        return R::Error("elige un tileset");
++    auto loaded = loadProject(assetsRoot, projectId);
++    if (!loaded.isOk())
++        return R::Error(loaded.errorMessage());
++    const Project& project = loaded.value();
++    const auto id = suggestFileId(assetsRoot, project, name);
++    if (!id.isOk())
++        return R::Error(id.errorMessage());
++
++    std::error_code ec;
++    fs::create_directories(levelsDir(assetsRoot, project), ec);
++    fs::create_directories(mapsDir(assetsRoot, project), ec);
++    const std::string levelPath =
++        (levelsDir(assetsRoot, project) / (id.value() + ".json")).generic_string();
++    const std::string tmxPath =
++        (mapsDir(assetsRoot, project) / (id.value() + ".tmx")).generic_string();
++    const std::string documentPath = EditorDocumentIO::documentPathFor(tmxPath);
++    for (const auto& path : {levelPath, tmxPath, documentPath})
++        if (fs::exists(path, ec))
++            return R::Error("ya existe " + path + ": no se sobreescribe");
++    if (!tileset.image.empty())
++        settings.imageSource = relativeTo(tileset.image, mapsDir(assetsRoot, project));
++
++    MapDocument document(ids::MapId::parse(id.value()).value(), name, width, height,
++                         settings.tileWidth, settings.tileHeight);
++    MapLayerMeta floor;
++    floor.id = ids::LayerId::parse("suelo").value();
++    floor.name = "suelo";
++    const auto gids =
++        std::vector<int>(static_cast<std::size_t>(width) * height, floorGid(settings));
++    auto added = document.addLayer(MapLayer::tiles(floor, TileLayerDocument(width, height, gids)));
++    auto objects = level_document::ToEntityLayer({});
++    if (added.isOk() && objects.isOk())
++        added = document.addLayer(MapLayer::entities(
++            {ids::LayerId::parse("level_objects").value(), "Objetos", true, false, 1.0f, 1},
++            std::move(objects.value())));
++    if (!added.isOk())
++        return R::Error("no se pudo preparar el mapa: " + added.errorMessage());
++    EditorState state(1, 1);
++    const auto set = state.setDocument(std::move(document));
++    if (!set.isOk())
++        return R::Error("no se pudo preparar el mapa: " + set.errorMessage());
++    state.setPlayerStart({width / 2, height / 2});
++
++    const auto saved = EditorDocumentIO::save(state, name, tmxPath, levelPath, settings, {});
++    if (!saved.isOk())
++        return R::Error("no se pudo crear el mapa: " + saved.errorMessage());
++    const auto registered =
++        addToManifest(assetsRoot, projectId, id.value() + ".json", id.value() + ".tmx");
++    if (!registered.isOk()) {
++        removeAll({levelPath, tmxPath, documentPath});
++        return R::Error("no se pudo anadir al proyecto (no queda nada a medias): " +
++                        registered.errorMessage());
++    }
++    return R::Ok(ProjectMap{id.value() + ".json", levelPath, name, tmxPath, false, true});
++}
++
++Result<ProjectMap> ProjectMaps::duplicate(const std::string& assetsRoot,
++                                          const std::string& projectId, const std::string& level,
++                                          const std::string& newVisibleName) {
++    using R = Result<ProjectMap>;
++    const std::string name = trim(newVisibleName);
++    if (name.empty())
++        return R::Error("escribe un nombre para la copia");
++    auto loaded = loadProject(assetsRoot, projectId);
++    if (!loaded.isOk())
++        return R::Error(loaded.errorMessage());
++    const Project& project = loaded.value();
++    if (!contains(project.levels, level))
++        return R::Error("el mapa no es de este proyecto: " + level);
++    const std::string sourceLevel = (levelsDir(assetsRoot, project) / level).generic_string();
++    std::string levelText, tmxText, documentText;
++    const LevelInfo info = readLevel(sourceLevel);
++    if (!info.ok || info.map.empty() || !readText(sourceLevel, levelText))
++        return R::Error("no se pudo leer el nivel " + sourceLevel);
++    if (!readText(info.map, tmxText))
++        return R::Error("no se pudo leer el mapa " + info.map);
++    if (!info.document.empty() && !readText(info.document, documentText))
++        return R::Error("no se pudo leer el documento " + info.document);
++
++    const auto id = suggestFileId(assetsRoot, project, name);
++    if (!id.isOk())
++        return R::Error(id.errorMessage());
++    std::error_code ec;
++    fs::create_directories(mapsDir(assetsRoot, project), ec);
++    const std::string levelPath =
++        (levelsDir(assetsRoot, project) / (id.value() + ".json")).generic_string();
++    const std::string tmxPath =
++        (mapsDir(assetsRoot, project) / (id.value() + ".tmx")).generic_string();
++    const std::string documentPath = EditorDocumentIO::documentPathFor(tmxPath);
++
++    // El TMX guarda su imagen relativa a si mismo: si la copia cambia de
++    // carpeta, la ruta se rehace para que siga apuntando a la misma imagen.
++    TileMap map;
++    if (!sameFolder(fs::path(info.map).parent_path(), mapsDir(assetsRoot, project)) &&
++        map.loadFromFile(info.map).isOk() && !map.getTilesetImageSource().empty()) {
++        const std::string raw = map.getTilesetImageSource();
++        const std::string before = "source=\"" + raw + "\"";
++        const std::string after =
++            "source=\"" + relativeTo(imageOf(info.map, raw), mapsDir(assetsRoot, project)) + "\"";
++        const auto at = tmxText.find(before);
++        if (at != std::string::npos)
++            tmxText.replace(at, before.size(), after);
++    }
++    auto text = replaceTopLevelString(levelText, "name", name, true);
++    if (text.isOk())
++        text = replaceTopLevelString(text.value(), "map", tmxPath, true);
++    if (text.isOk() && !documentText.empty())
++        text = replaceTopLevelString(text.value(), "mapDocument", documentPath, true);
++    auto document = documentText.empty()
++                        ? Result<std::string>::Ok("")
++                        : replaceTopLevelString(documentText, "id", id.value(), false);
++    if (document.isOk() && !documentText.empty())
++        document = replaceTopLevelString(document.value(), "name", name, true);
++    if (!text.isOk() || !document.isOk())
++        return R::Error("no se pudo preparar la copia: " +
++                        (text.isOk() ? document.errorMessage() : text.errorMessage()));
++    if (!documentText.empty() && !ProjectSerializer::deserializeMap(document.value()).isOk())
++        return R::Error("la copia del documento no es valida; no se ha escrito nada");
++
++    std::vector<fs::path> written;
++    std::vector<std::pair<std::string, std::string>> files = {{tmxPath, tmxText}};
++    if (!documentText.empty())
++        files.emplace_back(documentPath, document.value());
++    files.emplace_back(levelPath, text.value());
++    for (const auto& file : files) {
++        const auto result = writeFile(file.first, file.second, true);
++        if (!result.isOk()) {
++            removeAll(written);
++            return R::Error(result.errorMessage());
++        }
++        written.push_back(file.first);
++    }
++    const auto registered =
++        addToManifest(assetsRoot, projectId, id.value() + ".json", id.value() + ".tmx");
++    if (!registered.isOk()) {
++        removeAll(written);
++        return R::Error("no se pudo anadir al proyecto (no queda nada a medias): " +
++                        registered.errorMessage());
++    }
++    return R::Ok(ProjectMap{id.value() + ".json", levelPath, name, tmxPath, false, true});
++}
++
++Result<bool> ProjectMaps::rename(const std::string& assetsRoot, const std::string& projectId,
++                                 const std::string& level, const std::string& newVisibleName) {
++    const std::string name = trim(newVisibleName);
++    if (name.empty())
++        return Result<bool>::Error("escribe el nombre nuevo del mapa");
++    auto loaded = loadProject(assetsRoot, projectId);
++    if (!loaded.isOk())
++        return Result<bool>::Error(loaded.errorMessage());
++    if (!contains(loaded.value().levels, level))
++        return Result<bool>::Error("el mapa no es de este proyecto: " + level);
++    const fs::path path = levelsDir(assetsRoot, loaded.value()) / level;
++    std::string text;
++    if (!readText(path.string(), text))
++        return Result<bool>::Error("no se pudo leer " + path.generic_string());
++    const auto renamed = replaceTopLevelString(text, "name", name, true);
++    if (!renamed.isOk())
++        return Result<bool>::Error(renamed.errorMessage());
++    return writeFile(path, renamed.value(), false);
++}
++
++Result<bool> ProjectMaps::remove(const std::string& assetsRoot, const std::string& projectId,
++                                 const std::string& level) {
++    auto loaded = loadProject(assetsRoot, projectId);
++    if (!loaded.isOk())
++        return Result<bool>::Error(loaded.errorMessage());
++    Project project = std::move(loaded.value());
++    const auto it = std::find(project.levels.begin(), project.levels.end(), level);
++    if (it == project.levels.end())
++        return Result<bool>::Error("el mapa no es de este proyecto: " + level);
++    if (isEntry(project, level))
++        return Result<bool>::Error(
++            "es el mapa donde empieza el juego: elige otro mapa de inicio antes de quitarlo");
++    const LevelInfo info = readLevel((levelsDir(assetsRoot, project) / level).generic_string());
++    project.levels.erase(it);
++    // Su TMX sale tambien, salvo que otro nivel del proyecto lo use.
++    const std::string tmx = info.ok ? fs::path(info.map).filename().string() : std::string();
++    bool shared = tmx.empty();
++    for (const std::string& other : project.levels) {
++        const LevelInfo otherInfo =
++            readLevel((levelsDir(assetsRoot, project) / other).generic_string());
++        shared = shared || (otherInfo.ok && fs::path(otherInfo.map).filename().string() == tmx);
++    }
++    if (!shared) {
++        project.maps.erase(std::remove(project.maps.begin(), project.maps.end(), tmx),
++                           project.maps.end());
++        if (project.settings.initialMap == tmx)
++            project.settings.initialMap.clear();
++    }
++    return saveProject(assetsRoot, project);
++}
++
++Result<bool> ProjectMaps::makeEntry(const std::string& assetsRoot, const std::string& projectId,
++                                    const std::string& level) {
++    auto loaded = loadProject(assetsRoot, projectId);
++    if (!loaded.isOk())
++        return Result<bool>::Error(loaded.errorMessage());
++    Project project = std::move(loaded.value());
++    if (!contains(project.levels, level))
++        return Result<bool>::Error("el mapa no es de este proyecto: " + level);
++    project.entry = "assets/" + project.settings.levelsDirectory + "/" + level;
++    return saveProject(assetsRoot, project);
++}
++
++Result<bool> ProjectMaps::setTitle(const std::string& assetsRoot, const std::string& projectId,
++                                   const std::string& title) {
++    auto loaded = loadProject(assetsRoot, projectId);
++    if (!loaded.isOk())
++        return Result<bool>::Error(loaded.errorMessage());
++    Project project = std::move(loaded.value());
++    project.settings.title = trim(title);
++    return saveProject(assetsRoot, project);
++}
++
++}  // namespace Editor
+diff --git a/src/Editor/ProjectMapsDetail.h b/src/Editor/ProjectMapsDetail.h
+new file mode 100644
+index 0000000..34478e3
+--- /dev/null
++++ b/src/Editor/ProjectMapsDetail.h
+@@ -0,0 +1,51 @@
++// H4-02 — Lo que ProjectMaps.cpp necesita y no es su API: leer y escribir
++// ficheros sin dejarlos a medias, el manifiesto, lo que dice un nivel, los ids
++// ocupados y las rutas de imagen. Partido de ProjectMaps.cpp por la ley de los
++// 500 lineas; no lo incluye nadie mas (vive en src/, no en include/).
++#pragma once
++
++#include <filesystem>
++#include <string>
++#include <vector>
++
++#include "Core/Errors/Result.h"
++#include "Editor/EditorState.h"
++#include "Project/Project.h"
++
++namespace Editor::project_maps {
++
++namespace fs = std::filesystem;
++
++std::string trim(const std::string& text);
++bool readText(const std::string& path, std::string& out);
++// Escribe al lado y lo instala con rename; con mustNotExist no pisa nada.
++Result<bool> writeFile(const fs::path& path, const std::string& text, bool mustNotExist);
++void removeAll(const std::vector<fs::path>& paths);
++
++std::string manifestPath(const std::string& root, const std::string& projectId);
++Result<Project> loadProject(const std::string& root, const std::string& projectId);
++Result<bool> saveProject(const std::string& root, const Project& project);
++Result<bool> addToManifest(const std::string& root, const std::string& projectId,
++                           const std::string& level, const std::string& map);
++bool contains(const std::vector<std::string>& names, const std::string& name);
++
++fs::path levelsDir(const std::string& root, const Project& project);
++fs::path mapsDir(const std::string& root, const Project& project);
++
++// Lo que dice un nivel de si mismo (nombre visible, TMX y documento).
++struct LevelInfo {
++    bool ok = false;
++    std::string name, map, document;
++};
++LevelInfo readLevel(const std::string& path);
++bool isEntry(const Project& project, const std::string& level);
++
++std::string fileId(const std::string& fileName);
++std::vector<std::string> takenIds(const std::string& root, const Project& project);
++int floorGid(const TmxTilesetSettings& tileset);
++
++std::string imageOf(const std::string& tmxPath, const std::string& source);
++bool sameFolder(const fs::path& a, const fs::path& b);
++std::string relativeTo(const std::string& target, const fs::path& from);
++
++}  // namespace Editor::project_maps
+diff --git a/src/Editor/ProjectMapsFiles.cpp b/src/Editor/ProjectMapsFiles.cpp
+new file mode 100644
+index 0000000..560b8b0
+--- /dev/null
++++ b/src/Editor/ProjectMapsFiles.cpp
+@@ -0,0 +1,208 @@
++// H4-02 — Las piezas de ProjectMaps que no son su API: ficheros, manifiesto,
++// niveles y rutas. Ver src/Editor/ProjectMapsDetail.h.
++#include "ProjectMapsDetail.h"
++
++#include <algorithm>
++#include <atomic>
++#include <chrono>
++#include <fstream>
++#include <sstream>
++
++#include "Core/Json/JsonValue.h"
++#include "Project/ProjectSerializer.h"
++
++namespace Editor::project_maps {
++
++std::string trim(const std::string& text) {
++    const auto first = text.find_first_not_of(" \t\r\n");
++    if (first == std::string::npos)
++        return {};
++    const auto last = text.find_last_not_of(" \t\r\n");
++    return text.substr(first, last - first + 1);
++}
++
++bool readText(const std::string& path, std::string& out) {
++    std::ifstream file(path, std::ios::binary);
++    if (!file)
++        return false;
++    std::ostringstream buffer;
++    buffer << file.rdbuf();
++    out = buffer.str();
++    return true;
++}
++
++// Escribe al lado y lo instala con rename: quien lea el fichero ve el viejo
++// entero o el nuevo entero, nunca medio. Con mustNotExist no pisa nada.
++Result<bool> writeFile(const fs::path& path, const std::string& text, bool mustNotExist) {
++    static std::atomic<unsigned long> sequence{0};
++    std::error_code ec;
++    if (mustNotExist && fs::exists(path, ec))
++        return Result<bool>::Error("ya existe " + path.generic_string() + ": no se sobreescribe");
++    const fs::path staging =
++        path.string() + ".editor-new-" +
++        std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()) + "-" +
++        std::to_string(sequence++);
++    {
++        std::ofstream file(staging, std::ios::binary | std::ios::trunc);
++        file << text;
++        file.close();
++        if (!file) {
++            fs::remove(staging, ec);
++            return Result<bool>::Error("no se pudo escribir " + path.generic_string());
++        }
++    }
++    fs::rename(staging, path, ec);
++    if (ec) {
++        fs::remove(staging, ec);
++        return Result<bool>::Error("no se pudo instalar " + path.generic_string());
++    }
++    return Result<bool>::Ok(true);
++}
++
++void removeAll(const std::vector<fs::path>& paths) {
++    std::error_code ec;
++    for (const auto& path : paths)
++        fs::remove(path, ec);
++}
++
++std::string manifestPath(const std::string& root, const std::string& projectId) {
++    return root + "/proyectos/" + projectId + ".json";
++}
++
++Result<Project> loadProject(const std::string& root, const std::string& projectId) {
++    if (projectId.empty() ||
++        projectId.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789_") != std::string::npos)
++        return Result<Project>::Error("id de proyecto invalido: '" + projectId + "'");
++    auto project = ProjectSerializer::loadProjectFile(manifestPath(root, projectId));
++    if (!project.isOk())
++        return Result<Project>::Error("no se pudo leer el proyecto '" + projectId +
++                                      "': " + project.errorMessage());
++    return project;
++}
++
++Result<bool> saveProject(const std::string& root, const Project& project) {
++    const auto valid = project.validate();
++    if (!valid.isOk())
++        return Result<bool>::Error("el proyecto quedaria invalido: " + valid.errorMessage());
++    return ProjectSerializer::saveProjectAtomic(manifestPath(root, project.id), project);
++}
++
++bool contains(const std::vector<std::string>& names, const std::string& name) {
++    return std::find(names.begin(), names.end(), name) != names.end();
++}
++
++fs::path levelsDir(const std::string& root, const Project& project) {
++    return fs::path(root) / project.settings.levelsDirectory;
++}
++fs::path mapsDir(const std::string& root, const Project& project) {
++    return fs::path(root) / project.settings.mapsDirectory;
++}
++
++LevelInfo readLevel(const std::string& path) {
++    LevelInfo info;
++    std::string text;
++    if (!readText(path, text))
++        return info;
++    const auto parsed = JsonValue::parse(text);
++    if (!parsed.isOk() || !parsed.value().isObject())
++        return info;
++    const JsonValue& root = parsed.value();
++    info.ok = true;
++    info.name = root["name"].asString("");
++    info.map = root["map"].asString("");
++    info.document = root["mapDocument"].asString("");
++    return info;
++}
++
++// entry admite "assets/levels/x.json", "levels/x.json" y "x.json"
++// (ver resuelveEntrada en ProjectIndex.cpp).
++bool isEntry(const Project& project, const std::string& level) {
++    std::string entry = project.entry;
++    if (entry.rfind("assets/", 0) == 0)
++        entry.erase(0, 7);
++    if (entry.find('/') == std::string::npos)
++        return entry == level;
++    return entry == project.settings.levelsDirectory + "/" + level;
++}
++
++std::string fileId(const std::string& fileName) {
++    for (const char* suffix : {".map.json", ".json", ".tmx"}) {
++        const std::string s = suffix;
++        if (fileName.size() > s.size() &&
++            fileName.compare(fileName.size() - s.size(), s.size(), s) == 0)
++            return fileName.substr(0, fileName.size() - s.size());
++    }
++    return fs::path(fileName).stem().string();
++}
++
++// Lo que ya esta cogido en las dos carpetas, haya o no manifiesto que lo
++// reclame: el nombre de un fichero suelto tambien esta ocupado.
++std::vector<std::string> takenIds(const std::string& root, const Project& project) {
++    std::vector<std::string> taken;
++    for (const fs::path& dir : {levelsDir(root, project), mapsDir(root, project)}) {
++        std::error_code ec;
++        if (!fs::is_directory(dir, ec))
++            continue;
++        for (fs::directory_iterator it(dir, ec), end; !ec && it != end; it.increment(ec))
++            taken.push_back(fileId(it->path().filename().string()));
++    }
++    for (const auto* group : {&project.levels, &project.maps})
++        for (const auto& name : *group)
++            taken.push_back(fileId(name));
++    return taken;
++}
++
++int floorGid(const TmxTilesetSettings& tileset) {
++    for (int gid = 1; gid <= tileset.tileCount; ++gid)
++        if (!std::count(tileset.collisionGids.begin(), tileset.collisionGids.end(), gid))
++            return gid;
++    return 1;
++}
++
++// La imagen de un TMX tal como la guarda (relativa a el) llevada a una ruta
++// que se puede abrir desde el cwd.
++std::string imageOf(const std::string& tmxPath, const std::string& source) {
++    if (source.empty() || fs::path(source).is_absolute())
++        return source;
++    return (fs::path(tmxPath).parent_path() / source).lexically_normal().generic_string();
++}
++
++bool sameFolder(const fs::path& a, const fs::path& b) {
++    std::error_code ec;
++    return fs::weakly_canonical(fs::absolute(a, ec), ec) ==
++           fs::weakly_canonical(fs::absolute(b, ec), ec);
++}
++
++std::string relativeTo(const std::string& target, const fs::path& from) {
++    std::error_code ec;
++    const fs::path a = fs::weakly_canonical(fs::absolute(target, ec), ec);
++    const fs::path b = fs::weakly_canonical(fs::absolute(from, ec), ec);
++    const fs::path relative = a.lexically_relative(b);
++    return relative.empty() ? target : relative.generic_string();
++}
++
++Result<bool> addToManifest(const std::string& root, const std::string& projectId,
++                           const std::string& level, const std::string& map) {
++    auto project = loadProject(root, projectId);
++    if (!project.isOk())
++        return Result<bool>::Error(project.errorMessage());
++    Project p = std::move(project.value());
++    if (!contains(p.levels, level))
++        p.levels.push_back(level);
++    if (!contains(p.maps, map))
++        p.maps.push_back(map);
++    return saveProject(root, p);
++}
++
++}  // namespace Editor::project_maps
++
++namespace Editor {
++
++std::string canonicalPath(const std::string& path) {
++    std::error_code ec;
++    const auto canonical =
++        std::filesystem::weakly_canonical(std::filesystem::absolute(path, ec), ec);
++    return ec ? path : canonical.generic_string();
++}
++
++}  // namespace Editor
+diff --git a/src/Editor/ProjectMapsJson.cpp b/src/Editor/ProjectMapsJson.cpp
+new file mode 100644
+index 0000000..d9b89ca
+--- /dev/null
++++ b/src/Editor/ProjectMapsJson.cpp
+@@ -0,0 +1,144 @@
++// H4-02 — Cambiar una cadena de primer nivel de un JSON sin reescribir el
++// resto. Ver include/Editor/ProjectMaps.h.
++//
++// POR QUE NO PARSEAR Y VOLVER A ESCRIBIR. JsonValue guarda los objetos en un
++// std::map: reescribir un nivel para cambiarle el nombre lo devolveria con
++// las claves en orden alfabetico, otro sangrado y los numeros como doubles.
++// Los niveles estan versionados y los tocan varios autores: un cambio de
++// nombre tiene que ser un diff de una linea, no del fichero entero.
++#include <cstdio>
++#include <string>
++
++#include "Editor/ProjectMaps.h"
++
++namespace Editor {
++namespace {
++
++std::size_t skipSpaces(const std::string& t, std::size_t i) {
++    while (i < t.size() && (t[i] == ' ' || t[i] == '\t' || t[i] == '\r' || t[i] == '\n'))
++        ++i;
++    return i;
++}
++
++// i apunta a la comilla de apertura; devuelve la posicion tras la de cierre
++// (o npos si la cadena no se cierra).
++std::size_t skipString(const std::string& t, std::size_t i) {
++    for (++i; i < t.size(); ++i) {
++        if (t[i] == '\\')
++            ++i;
++        else if (t[i] == '"')
++            return i + 1;
++    }
++    return std::string::npos;
++}
++
++// Salta un valor cualquiera (cadena, objeto, lista o literal). npos si esta roto.
++std::size_t skipValue(const std::string& t, std::size_t i) {
++    i = skipSpaces(t, i);
++    if (i >= t.size())
++        return std::string::npos;
++    if (t[i] == '"')
++        return skipString(t, i);
++    if (t[i] == '{' || t[i] == '[') {
++        int depth = 0;
++        while (i < t.size()) {
++            if (t[i] == '"') {
++                i = skipString(t, i);
++                if (i == std::string::npos)
++                    return i;
++                continue;
++            }
++            if (t[i] == '{' || t[i] == '[')
++                ++depth;
++            if (t[i] == '}' || t[i] == ']') {
++                if (--depth == 0)
++                    return i + 1;
++            }
++            ++i;
++        }
++        return std::string::npos;
++    }
++    while (i < t.size() && t[i] != ',' && t[i] != '}' && t[i] != ']' && t[i] != ' ' &&
++           t[i] != '\n' && t[i] != '\r' && t[i] != '\t')
++        ++i;
++    return i;
++}
++
++std::string quoted(const std::string& value) {
++    std::string out = "\"";
++    for (const char c : value) {
++        switch (c) {
++            case '"':
++                out += "\\\"";
++                break;
++            case '\\':
++                out += "\\\\";
++                break;
++            case '\n':
++                out += "\\n";
++                break;
++            case '\r':
++                out += "\\r";
++                break;
++            case '\t':
++                out += "\\t";
++                break;
++            default:
++                if (static_cast<unsigned char>(c) < 0x20) {
++                    char buffer[8];
++                    std::snprintf(buffer, sizeof(buffer), "\\u%04x", static_cast<unsigned char>(c));
++                    out += buffer;
++                } else {
++                    out += c;
++                }
++        }
++    }
++    return out + "\"";
++}
++
++}  // namespace
++
++Result<std::string> replaceTopLevelString(const std::string& text, const std::string& key,
++                                          const std::string& value, bool insertIfMissing) {
++    using R = Result<std::string>;
++    std::size_t i = skipSpaces(text, 0);
++    if (i >= text.size() || text[i] != '{')
++        return R::Error("el fichero no es un objeto JSON");
++    const std::size_t open = i;
++    i = skipSpaces(text, i + 1);
++    bool empty = i < text.size() && text[i] == '}';
++    while (!empty) {
++        if (i >= text.size() || text[i] != '"')
++            return R::Error("JSON mal formado: se esperaba una clave");
++        const std::size_t keyEnd = skipString(text, i);
++        if (keyEnd == std::string::npos)
++            return R::Error("JSON mal formado: clave sin cerrar");
++        const std::string found = text.substr(i + 1, keyEnd - i - 2);
++        i = skipSpaces(text, keyEnd);
++        if (i >= text.size() || text[i] != ':')
++            return R::Error("JSON mal formado: falta ':'");
++        const std::size_t valueStart = skipSpaces(text, i + 1);
++        const std::size_t valueEnd = skipValue(text, valueStart);
++        if (valueEnd == std::string::npos)
++            return R::Error("JSON mal formado en '" + found + "'");
++        if (found == key) {
++            if (text[valueStart] != '"')
++                return R::Error("'" + key + "' no es una cadena");
++            return R::Ok(text.substr(0, valueStart) + quoted(value) + text.substr(valueEnd));
++        }
++        i = skipSpaces(text, valueEnd);
++        if (i < text.size() && text[i] == ',') {
++            i = skipSpaces(text, i + 1);
++            continue;
++        }
++        if (i < text.size() && text[i] == '}')
++            break;
++        return R::Error("JSON mal formado tras '" + found + "'");
++    }
++    if (!insertIfMissing)
++        return R::Error("falta la clave '" + key + "'");
++    const std::string member = "\n  " + quoted(key) + ": " + quoted(value) + (empty ? "\n" : ",");
++    return R::Ok(text.substr(0, open + 1) + member + text.substr(open + 1));
++}
++
++}  // namespace Editor
+diff --git a/src/Editor/ProjectPanelState.cpp b/src/Editor/ProjectPanelState.cpp
+new file mode 100644
+index 0000000..1b573fa
+--- /dev/null
++++ b/src/Editor/ProjectPanelState.cpp
+@@ -0,0 +1,220 @@
++// H4-02 / E-11 — ver include/Editor/ProjectPanelState.h.
++#include "Editor/ProjectPanelState.h"
++
++#include <algorithm>
++
++#include "Project/ProjectIndex.h"
++
++namespace Editor {
++namespace {
++
++std::string trim(const std::string& text) {
++    const auto first = text.find_first_not_of(" \t\r\n");
++    if (first == std::string::npos)
++        return {};
++    const auto last = text.find_last_not_of(" \t\r\n");
++    return text.substr(first, last - first + 1);
++}
++
++const ProjectMap* findMap(const std::vector<ProjectMap>& maps, const std::string& level) {
++    const auto it = std::find_if(maps.begin(), maps.end(),
++                                 [&](const ProjectMap& map) { return map.level == level; });
++    return it == maps.end() ? nullptr : &*it;
++}
++
++}  // namespace
++
++ProjectPanelState::ProjectPanelState(std::string assetsRoot) : m_root(std::move(assetsRoot)) {}
++
++Result<bool> ProjectPanelState::reload() {
++    auto index = ProjectIndex::scan(m_root);
++    m_tilesets.clear();
++    if (!index.isOk()) {
++        m_projects.clear();
++        m_maps.clear();
++        return Result<bool>::Error(index.errorMessage());
++    }
++    m_projects = index.value().projects();
++    m_maps.clear();
++    for (const Project& project : m_projects)
++        m_maps[project.id] = ProjectMaps::list(m_root, project);
++    return Result<bool>::Ok(true);
++}
++
++const Project* ProjectPanelState::project(const std::string& id) const {
++    const auto it = std::find_if(m_projects.begin(), m_projects.end(),
++                                 [&](const Project& project) { return project.id == id; });
++    return it == m_projects.end() ? nullptr : &*it;
++}
++
++const std::vector<ProjectMap>& ProjectPanelState::maps(const std::string& projectId) const {
++    static const std::vector<ProjectMap> none;
++    const auto it = m_maps.find(projectId);
++    return it == m_maps.end() ? none : it->second;
++}
++
++bool ProjectPanelState::begin(Mode mode, const std::string& projectId, const std::string& level) {
++    Form next;
++    next.mode = mode;
++    next.project = projectId;
++    next.level = level;
++    if (mode == Mode::None)
++        return false;
++    if (mode != Mode::NewProject) {
++        const Project* owner = project(projectId);
++        if (owner == nullptr)
++            return false;
++        if (mode == Mode::Title)
++            next.text = owner->settings.title;
++        if (mode != Mode::NewMap && mode != Mode::Title) {
++            const ProjectMap* map = findMap(maps(projectId), level);
++            if (map == nullptr)
++                return false;
++            if (mode == Mode::DuplicateMap)
++                next.text = "Copia de " + map->name;
++            if (mode == Mode::RenameMap)
++                next.text = map->name;
++        }
++    }
++    m_form = std::move(next);
++    return true;
++}
++
++void ProjectPanelState::cancel() { m_form = Form{}; }
++
++const std::vector<ProjectTileset>& ProjectPanelState::tilesets() {
++    auto it = m_tilesets.find(m_form.project);
++    if (it == m_tilesets.end())
++        it = m_tilesets
++                 .emplace(m_form.project, ProjectMaps::tilesets(m_root, m_projects, m_form.project))
++                 .first;
++    return it->second;
++}
++
++std::string ProjectPanelState::previewFileId() const {
++    if (m_form.mode == Mode::NewProject) {
++        const auto id = ProjectIndex::suggestId(trim(m_form.text));
++        if (!id.isOk())
++            return {};
++        std::vector<std::string> taken;
++        for (const Project& project : m_projects)
++            taken.push_back(project.id);
++        return ProjectIndex::uniqueId(id.value(), taken);
++    }
++    const Project* owner = project(m_form.project);
++    if (owner == nullptr || (m_form.mode != Mode::NewMap && m_form.mode != Mode::DuplicateMap))
++        return {};
++    const auto id = ProjectMaps::suggestFileId(m_root, *owner, m_form.text);
++    return id.isOk() ? id.value() : std::string();
++}
++
++Result<bool> ProjectPanelState::refuseIfOpenAndDirty(const EditorDocumentSession& session,
++                                                     const std::string& path) const {
++    if (session.hasDocument() && canonicalPath(session.levelPath()) == canonicalPath(path) &&
++        (session.dirty() || session.confirmationPending()))
++        return Result<bool>::Error("guarda o descarta los cambios de este mapa antes de seguir");
++    return Result<bool>::Ok(true);
++}
++
++Result<ProjectPanelState::Effect> ProjectPanelState::confirm(const EditorDocumentSession& session) {
++    auto result = run(session);
++    if (!result.isOk())
++        m_form.error = result.errorMessage();
++    return result;
++}
++
++Result<ProjectPanelState::Effect> ProjectPanelState::run(const EditorDocumentSession& session) {
++    using R = Result<Effect>;
++    const Form form = m_form;
++    const ProjectMap* map = findMap(maps(form.project), form.level);
++    const std::string path = map != nullptr ? map->path : std::string();
++    auto done = [&](Effect effect) {
++        reload();
++        m_focus = form.project;
++        cancel();
++        return R::Ok(std::move(effect));
++    };
++    switch (form.mode) {
++        case Mode::None:
++            return R::Error("no hay ningun formulario abierto");
++        case Mode::NewProject: {
++            const std::string name = trim(form.text);
++            const auto base = ProjectIndex::suggestId(name);
++            if (!base.isOk())
++                return R::Error("ese nombre no sirve: escribe al menos una letra o un numero");
++            // El prefijo sale del id, como en la pantalla de proyectos (H4-01):
++            // sus tres primeras letras o cifras ("la_cueva" -> "lac_", no "la__").
++            std::string prefix;
++            for (const char c : base.value())
++                if (c != '_' && prefix.size() < 3)
++                    prefix += c;
++            const auto created =
++                ProjectIndex::createNamed(m_root, name, prefix + "_", "editor", "");
++            if (!created.isOk())
++                return R::Error(created.errorMessage());
++            reload();
++            m_focus = created.value().id;
++            // Un proyecto sin mapas no se puede jugar: se sigue con el primero.
++            begin(Mode::NewMap, created.value().id);
++            return R::Ok(Effect{});
++        }
++        case Mode::NewMap: {
++            const auto& choices = tilesets();
++            if (choices.empty())
++                return R::Error(
++                    "no hay ningun mapa del que copiar el tileset: importa antes un TMX");
++            const std::size_t index = static_cast<std::size_t>(
++                std::clamp(form.tileset, 0, static_cast<int>(choices.size()) - 1));
++            const auto created = ProjectMaps::create(m_root, form.project, form.text, form.width,
++                                                     form.height, choices[index]);
++            if (!created.isOk())
++                return R::Error(created.errorMessage());
++            return done(Effect{Effect::Kind::Open, created.value().path});
++        }
++        case Mode::DuplicateMap: {
++            const auto copy = ProjectMaps::duplicate(m_root, form.project, form.level, form.text);
++            if (!copy.isOk())
++                return R::Error(copy.errorMessage());
++            return done(Effect{Effect::Kind::Open, copy.value().path});
++        }
++        case Mode::RenameMap: {
++            const auto clean = refuseIfOpenAndDirty(session, path);
++            if (!clean.isOk())
++                return R::Error(clean.errorMessage());
++            const auto renamed = ProjectMaps::rename(m_root, form.project, form.level, form.text);
++            if (!renamed.isOk())
++                return R::Error(renamed.errorMessage());
++            // El nombre vive en el nivel: el documento abierto se recarga
++            // para que el proximo Guardar no escriba el viejo encima.
++            const bool open =
++                session.hasDocument() && canonicalPath(session.levelPath()) == canonicalPath(path);
++            return done(open ? Effect{Effect::Kind::Reload, session.levelPath()} : Effect{});
++        }
++        case Mode::RemoveMap: {
++            const auto clean = refuseIfOpenAndDirty(session, path);
++            if (!clean.isOk())
++                return R::Error(clean.errorMessage());
++            const auto removed = ProjectMaps::remove(m_root, form.project, form.level);
++            if (!removed.isOk())
++                return R::Error(removed.errorMessage());
++            const bool open =
++                session.hasDocument() && canonicalPath(session.levelPath()) == canonicalPath(path);
++            return done(open ? Effect{Effect::Kind::Close, session.levelPath()} : Effect{});
++        }
++        case Mode::Title: {
++            const auto titled = ProjectMaps::setTitle(m_root, form.project, form.text);
++            if (!titled.isOk())
++                return R::Error(titled.errorMessage());
++            return done(Effect{});
++        }
++        case Mode::Entry: {
++            const auto entry = ProjectMaps::makeEntry(m_root, form.project, form.level);
++            if (!entry.isOk())
++                return R::Error(entry.errorMessage());
++            return done(Effect{});
++        }
++    }
++    return R::Error("formulario desconocido");
++}
++
++}  // namespace Editor
+diff --git a/src/Render/TileMap.cpp b/src/Render/TileMap.cpp
+index 6a34362..d6aee99 100644
+--- a/src/Render/TileMap.cpp
++++ b/src/Render/TileMap.cpp
+@@ -50,7 +50,10 @@ std::string resolveRelativeTo(const std::string& basePath, const std::string& re
+         parts.push_back(part);
+     }
+ 
+-    std::string result;
++    // Una base ABSOLUTA conserva su raiz: sin esto "/tmp/m/x.tmx" daba
++    // "tmp/textures/y.png", relativa al cwd, y la textura no se encontraba
++    // (H4-02 lo destapo al abrir mapas desde una carpeta temporal).
++    std::string result = basePath[0] == '/' ? "/" : "";
+     for (std::size_t i = 0; i < parts.size(); ++i) {
+         if (i > 0) {
+             result += '/';
+diff --git a/tests/Editor/ProjectPanelTests.cpp b/tests/Editor/ProjectPanelTests.cpp
+new file mode 100644
+index 0000000..6a4e163
+--- /dev/null
++++ b/tests/Editor/ProjectPanelTests.cpp
+@@ -0,0 +1,413 @@
++// H4-02 / E-11 — test_project_panel: los mapas de un proyecto, desde el panel
++// Proyecto de motor_editor, sin ventana.
++//
++// Es la prueba que pide la ficha de E-11 con sus palabras: «dos projectes en
++// carpetes amb espais, duplicacio sense col·lisions i cancel·lacio sense
++// fitxers parcials. Recorregut UI: crear projecte, dos mapes, triar entrada,
++// desar i reobrir». El recorrido va por ProjectPanelState, que es lo que el
++// panel ImGui llama; el mapa se abre, se pinta, se guarda y se reabre con la
++// misma EditorDocumentSession que usa motor_editor. Y el cierre de H4-02:
++// «Nuevo mapa -> elegir tamano -> pintar -> guardar -> reabrir y esta».
++//
++// Todo contra un assetsRoot temporal CON ESPACIOS en la ruta: no toca assets/.
++// Del repo solo se copian un TMX y su textura (via copiar_assets).
++#include "Editor/EditorDocumentSession.h"
++#include "Editor/ProjectMaps.h"
++#include "Editor/ProjectPanelState.h"
++#include "Core/Json/JsonValue.h"
++#include "Project/ProjectIndex.h"
++#include "Project/ProjectSerializer.h"
++#include "Render/TileMap.h"
++
++#include "TestHarness.h"
++
++#include <chrono>
++#include <filesystem>
++#include <fstream>
++#include <set>
++#include <sstream>
++#include <string>
++
++namespace {
++
++namespace fs = std::filesystem;
++using Editor::EditorDocumentSession;
++using Editor::Project;
++using Editor::ProjectIndex;
++using Editor::ProjectMaps;
++using Editor::ProjectPanelState;
++using Action = EditorDocumentSession::Action;
++using Mode = ProjectPanelState::Mode;
++using Kind = ProjectPanelState::Effect::Kind;
++
++std::string readAll(const fs::path& path) {
++    std::ifstream file(path, std::ios::binary);
++    std::ostringstream text;
++    text << file.rdbuf();
++    return text.str();
++}
++
++void writeAll(const fs::path& path, const std::string& text) {
++    std::ofstream file(path, std::ios::binary | std::ios::trunc);
++    file << text;
++}
++
++// Un assetsRoot desechable con un proyecto «base» de un mapa (el TMX de
++// ejemplo: 8x6, gid 1 suelo, gid 2 muro con collision).
++struct Sandbox {
++    fs::path top, root;
++    Sandbox() {
++        top = fs::temp_directory_path() /
++              ("motor panel proyecto " +
++               std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
++        root = top / "assets de prueba";
++        for (const char* dir : {"proyectos", "levels", "maps", "textures", "objects", "adventures"})
++            fs::create_directories(root / dir);
++        fs::copy_file("assets/maps/ejemplo_mapa.tmx", root / "maps/base_mapa.tmx");
++        fs::copy_file("assets/textures/test_checker.png", root / "textures/test_checker.png");
++        writeAll(root / "levels/base_inicio.json",
++                 "{\n  \"name\": \"Inicio de base\",\n  \"map\": \"" +
++                     (root / "maps/base_mapa.tmx").generic_string() +
++                     "\",\n  \"playerStart\": { \"x\": 1, \"y\": 1 },\n  \"objects\": []\n}\n");
++        writeAll(root / "proyectos/index.json", R"({"proyectos": ["base"]})");
++        writeAll(root / "proyectos/base.json",
++                 manifest("base", "Base", "base_", "maps", "assets/levels/base_inicio.json",
++                          R"(["base_inicio.json"])", R"(["base_mapa.tmx"])"));
++    }
++    ~Sandbox() {
++        std::error_code ec;
++        fs::remove_all(top, ec);
++    }
++    static std::string manifest(const std::string& id, const std::string& name,
++                                const std::string& prefix, const std::string& mapsDir,
++                                const std::string& entry, const std::string& levels,
++                                const std::string& maps) {
++        return R"({"schemaVersion": 1, "id": ")" + id + R"(", "name": ")" + name +
++               R"(", "prefix": ")" + prefix +
++               R"(", "description": "", "epoch": "", "author": "test", "settings": {"schemaVersion": 1, )" +
++               R"("mapsDirectory": ")" + mapsDir + R"(", "levelsDirectory": "levels", )" +
++               R"("adventuresDirectory": "adventures", "catalogsDirectory": "objects", "initialMap": ""}, )" +
++               R"("entry": ")" + entry + R"(", "levels": )" + levels + R"(, "maps": )" + maps +
++               R"(, "adventures": [], "catalogs": []})";
++    }
++    // Un segundo proyecto en el mismo assetsRoot.
++    void addProject(const std::string& id, const std::string& prefix,
++                    const std::string& mapsDir = "maps") {
++        writeAll(root / ("proyectos/" + id + ".json"),
++                 manifest(id, "Proyecto " + id, prefix, mapsDir, "", "[]", "[]"));
++        auto index = JsonValue::parse(readAll(root / "proyectos/index.json")).value();
++        std::string ids;
++        for (std::size_t i = 0; i < index["proyectos"].size(); ++i)
++            ids += "\"" + index["proyectos"][i].asString() + "\", ";
++        writeAll(root / "proyectos/index.json", "{\"proyectos\": [" + ids + "\"" + id + "\"]}");
++    }
++    std::string str() const { return root.generic_string(); }
++    bool has(const std::string& rel) const { return fs::exists(root / rel); }
++    Project project(const std::string& id) const {
++        auto p =
++            ProjectSerializer::loadProjectFile((root / ("proyectos/" + id + ".json")).string());
++        MOTOR_CHECK(p.isOk());
++        return p.value();
++    }
++    // Foto de todo lo que hay en el assetsRoot (nombres y bytes).
++    std::string snapshot() const {
++        std::string all;
++        std::set<std::string> files;
++        for (const auto& entry : fs::recursive_directory_iterator(root))
++            if (entry.is_regular_file())
++                files.insert(entry.path().generic_string());
++        for (const auto& file : files)
++            all += file + "\n" + readAll(file) + "\n";
++        return all;
++    }
++};
++
++bool contains(const std::vector<std::string>& names, const std::string& name) {
++    return std::find(names.begin(), names.end(), name) != names.end();
++}
++
++Editor::ProjectTileset firstTileset(const Sandbox& s, const std::string& projectId) {
++    auto index = ProjectIndex::scan(s.str());
++    MOTOR_CHECK(index.isOk());
++    const auto tilesets = ProjectMaps::tilesets(s.str(), index.value().projects(), projectId);
++    MOTOR_CHECK(!tilesets.empty());
++    return tilesets.front();
++}
++
++}  // namespace
++
++MOTOR_TEST_CASE(ruta_del_autor_proyecto_nuevo_dos_mapas_entrada_guardar_y_reabrir) {
++    Sandbox s;
++    ProjectPanelState panel(s.str());
++    MOTOR_CHECK(panel.reload().isOk());
++    MOTOR_CHECK(panel.projects().size() == 1);
++    EditorDocumentSession session;
++
++    MOTOR_CHECK(panel.begin(Mode::NewProject));
++    panel.form().text = "La cueva del eco";
++    MOTOR_CHECK(panel.previewFileId() == "la_cueva_del_eco");
++    const auto created = panel.confirm(session);
++    MOTOR_CHECK(created.isOk() && created.value().kind == Kind::None);
++    const Project* cueva = panel.project("la_cueva_del_eco");
++    MOTOR_CHECK(cueva != nullptr && cueva->prefix == "lac_" && cueva->name == "La cueva del eco");
++    // Un proyecto sin mapas no se juega: el panel sigue con el primero, y los
++    // tilesets salen de otro proyecto porque este todavia no tiene ninguno.
++    MOTOR_CHECK(panel.form().mode == Mode::NewMap && panel.form().project == "la_cueva_del_eco");
++    MOTOR_CHECK(panel.tilesets().size() == 1 && panel.tilesets()[0].name == "test_checker");
++    panel.form().text = "Entrada";
++    panel.form().width = 12;
++    panel.form().height = 10;
++    MOTOR_CHECK(panel.previewFileId() == "lac_entrada");
++    const auto first = panel.confirm(session);
++    MOTOR_CHECK(first.isOk() && first.value().kind == Kind::Open);
++    MOTOR_CHECK(!panel.formOpen() && panel.focusProject() == "la_cueva_del_eco");
++    MOTOR_CHECK(s.has("levels/lac_entrada.json") && s.has("maps/lac_entrada.tmx") &&
++                s.has("maps/lac_entrada.map.json"));
++
++    // Nuevo mapa -> pintar -> guardar -> reabrir y esta.
++    const std::string entrada = first.value().path;
++    MOTOR_CHECK(session.request(Action::Open, entrada).isOk());
++    MOTOR_CHECK(session.state().width() == 12 && session.state().height() == 10);
++    MOTOR_CHECK(session.name() == "Entrada");
++    MOTOR_CHECK(session.state().tileAt(0, 0) == 1);  // suelo: la primera baldosa que no es muro
++    MOTOR_CHECK(session.state().playerStart().x == 6 && session.state().playerStart().y == 5);
++    session.paint(3, 3, 2);
++    MOTOR_CHECK(session.dirty() && session.save().isOk());
++    MOTOR_CHECK(session.request(Action::Open, entrada).isOk());
++    MOTOR_CHECK(session.state().tileAt(3, 3) == 2 && session.state().tileAt(4, 3) == 1);
++
++    MOTOR_CHECK(panel.begin(Mode::NewMap, "la_cueva_del_eco"));
++    panel.form().text = "El bosque";
++    MOTOR_CHECK(panel.confirm(session).isOk());
++    MOTOR_CHECK(panel.maps("la_cueva_del_eco").size() == 2);
++
++    // El juego empieza en el bosque.
++    MOTOR_CHECK(panel.begin(Mode::Entry, "la_cueva_del_eco", "lac_el_bosque.json"));
++    MOTOR_CHECK(panel.confirm(session).isOk());
++    MOTOR_CHECK(!panel.maps("la_cueva_del_eco")[0].entry &&
++                panel.maps("la_cueva_del_eco")[1].entry);
++    auto index = ProjectIndex::scan(s.str());
++    MOTOR_CHECK(index.isOk());
++    const Project* scanned = index.value().find("la_cueva_del_eco");
++    MOTOR_CHECK(scanned != nullptr && scanned->entryKind == Project::EntryKind::Level &&
++                scanned->playable());
++
++    MOTOR_CHECK(panel.begin(Mode::Title, "la_cueva_del_eco"));
++    panel.form().text = "  El eco  ";
++    MOTOR_CHECK(panel.confirm(session).isOk());
++    MOTOR_CHECK(panel.project("la_cueva_del_eco")->settings.title == "El eco");
++
++    // Otro panel que lee del disco ve lo mismo: el proyecto se ha guardado.
++    ProjectPanelState again(s.str());
++    MOTOR_CHECK(again.reload().isOk());
++    const auto& maps = again.maps("la_cueva_del_eco");
++    MOTOR_CHECK(maps.size() == 2 && maps[0].name == "Entrada" && maps[1].name == "El bosque" &&
++                maps[1].entry);
++}
++
++MOTOR_TEST_CASE(duplicar_dos_veces_no_choca_no_toca_el_original_y_cambia_el_id_del_documento) {
++    Sandbox s;
++    const std::string levelBefore = readAll(s.root / "levels/base_inicio.json");
++    const std::string tmxBefore = readAll(s.root / "maps/base_mapa.tmx");
++    const auto a = ProjectMaps::duplicate(s.str(), "base", "base_inicio.json", "Copia");
++    const auto b = ProjectMaps::duplicate(s.str(), "base", "base_inicio.json", "Copia");
++    MOTOR_CHECK(a.isOk() && b.isOk());
++    MOTOR_CHECK(a.value().level == "base_copia.json" && b.value().level == "base_copia_2.json");
++    MOTOR_CHECK(readAll(s.root / "levels/base_inicio.json") == levelBefore);
++    MOTOR_CHECK(readAll(s.root / "maps/base_mapa.tmx") == tmxBefore);
++    MOTOR_CHECK(readAll(s.root / "maps/base_copia.tmx") ==
++                tmxBefore);  // misma carpeta: bytes iguales
++    const auto copy = JsonValue::parse(readAll(s.root / "levels/base_copia.json")).value();
++    MOTOR_CHECK(copy["name"].asString() == "Copia");
++    MOTOR_CHECK(copy["map"].asString() == (s.root / "maps/base_copia.tmx").generic_string());
++    const Project project = s.project("base");
++    MOTOR_CHECK(project.levels.size() == 3 && contains(project.maps, "base_copia_2.tmx"));
++
++    // Con documento de autoria: guardar el original desde el editor lo crea;
++    // la copia lleva el suyo, con SU id, y se abre con lo pintado.
++    EditorDocumentSession session;
++    MOTOR_CHECK(session.request(Action::Open, (s.root / "levels/base_inicio.json").generic_string())
++                    .isOk());
++    session.paint(2, 2, 2);
++    MOTOR_CHECK(session.save().isOk() && s.has("maps/base_mapa.map.json"));
++    const auto c = ProjectMaps::duplicate(s.str(), "base", "base_inicio.json", "Con documento");
++    MOTOR_CHECK(c.isOk() && s.has("maps/base_con_documento.map.json"));
++    const auto doc =
++        ProjectSerializer::loadMapFile((s.root / "maps/base_con_documento.map.json").string());
++    MOTOR_CHECK(doc.isOk() && doc.value().id().value() == "base_con_documento");
++    const auto withDoc =
++        JsonValue::parse(readAll(s.root / "levels/base_con_documento.json")).value();
++    MOTOR_CHECK(withDoc["mapDocument"].asString() ==
++                (s.root / "maps/base_con_documento.map.json").generic_string());
++    EditorDocumentSession copySession;
++    MOTOR_CHECK(copySession.request(Action::Open, c.value().path).isOk());
++    MOTOR_CHECK(copySession.state().tileAt(2, 2) == 2 && copySession.name() == "Con documento");
++}
++
++MOTOR_TEST_CASE(dos_proyectos_en_carpetas_con_espacios_y_cada_uno_con_sus_mapas) {
++    Sandbox s;
++    s.addProject("otro", "otr_");
++    const auto tileset = firstTileset(s, "otro");  // otro no tiene mapas: sale el de base
++    MOTOR_CHECK(tileset.source.find("base_mapa.tmx") != std::string::npos);
++    const auto mine = ProjectMaps::create(s.str(), "otro", "Entrada", 8, 8, tileset);
++    const auto theirs = ProjectMaps::create(s.str(), "base", "Entrada", 8, 8, tileset);
++    MOTOR_CHECK(mine.isOk() && theirs.isOk());
++    MOTOR_CHECK(mine.value().level == "otr_entrada.json" &&
++                theirs.value().level == "base_entrada.json");
++    MOTOR_CHECK(s.project("otro").levels.size() == 1 && s.project("base").levels.size() == 2);
++    // La imagen del tileset nuevo apunta a la misma textura que el original.
++    TileMap created, original;
++    MOTOR_CHECK(created.loadFromFile((s.root / "maps/otr_entrada.tmx").string()).isOk());
++    MOTOR_CHECK(original.loadFromFile((s.root / "maps/base_mapa.tmx").string()).isOk());
++    MOTOR_CHECK(fs::equivalent(created.tilesetImagePath(), original.tilesetImagePath()));
++    MOTOR_CHECK(created.getCollisionGids() == original.getCollisionGids());
++    // Un nombre que ya esta cogido en disco (aunque no en el manifiesto) no se pisa.
++    writeAll(s.root / "levels/otr_suelto.json", "{}");
++    const auto loose = ProjectMaps::create(s.str(), "otro", "Suelto", 5, 5, tileset);
++    MOTOR_CHECK(loose.isOk() && loose.value().level == "otr_suelto_2.json");
++    MOTOR_CHECK(readAll(s.root / "levels/otr_suelto.json") == "{}");
++}
++
++MOTOR_TEST_CASE(cancelar_o_fallar_no_deja_ficheros_ni_manifiestos_a_medias) {
++    Sandbox s;
++    s.addProject("roto", "rot_", "mapas_roto");
++    writeAll(s.root / "mapas_roto", "esto es un fichero, no una carpeta");
++    writeAll(s.root / "levels/base_sin_mapa.json",
++             R"({"name": "Sin mapa", "map": "no/existe.tmx"})");
++    MOTOR_CHECK(ProjectIndex::addLevelToProject(s.str(), "base", "base_sin_mapa.json").isOk());
++    const auto tileset = firstTileset(s, "base");
++    const std::string before = s.snapshot();
++
++    ProjectPanelState panel(s.str());
++    EditorDocumentSession session;
++    MOTOR_CHECK(panel.reload().isOk() && panel.begin(Mode::NewMap, "base"));
++    panel.form().text = "Nunca";
++    panel.cancel();
++    MOTOR_CHECK(!panel.formOpen());
++    MOTOR_CHECK(panel.begin(Mode::NewMap, "base"));
++    panel.form().text = "¿?";
++    MOTOR_CHECK(!panel.confirm(session).isOk() && panel.formOpen() && !panel.form().error.empty());
++    panel.form().text = "Diminuto";
++    panel.form().width = 2;
++    MOTOR_CHECK(!panel.confirm(session).isOk() && panel.formOpen());
++
++    Editor::ProjectTileset empty = tileset;
++    empty.settings.tileCount = 0;
++    MOTOR_CHECK(
++        !ProjectMaps::create(s.str(), "base", "Grande", ProjectMaps::kMaxSide + 1, 8, tileset)
++             .isOk());
++    MOTOR_CHECK(!ProjectMaps::create(s.str(), "base", "Sin tileset", 8, 8, empty).isOk());
++    MOTOR_CHECK(!ProjectMaps::create(s.str(), "no_existe", "Nada", 8, 8, tileset).isOk());
++    MOTOR_CHECK(!ProjectMaps::create(s.str(), "roto", "Nada", 8, 8, tileset)
++                     .isOk());  // no se puede escribir
++    MOTOR_CHECK(!ProjectMaps::duplicate(s.str(), "base", "no_esta.json", "Copia").isOk());
++    MOTOR_CHECK(!ProjectMaps::duplicate(s.str(), "base", "base_sin_mapa.json", "Copia").isOk());
++    MOTOR_CHECK(!ProjectMaps::rename(s.str(), "base", "base_inicio.json", "   ").isOk());
++    MOTOR_CHECK(s.snapshot() == before);
++}
++
++MOTOR_TEST_CASE(renombrar_cambia_solo_el_nombre_y_quitar_saca_del_proyecto_sin_borrar) {
++    Sandbox s;
++    const std::string before = readAll(s.root / "levels/base_inicio.json");
++    MOTOR_CHECK(ProjectMaps::rename(s.str(), "base", "base_inicio.json", "Plaza \"mayor\"").isOk());
++    std::string expected = before;
++    expected.replace(expected.find("Inicio de base"), std::string("Inicio de base").size(),
++                     "Plaza \\\"mayor\\\"");
++    MOTOR_CHECK(readAll(s.root / "levels/base_inicio.json") == expected);  // diff de una linea
++    MOTOR_CHECK(JsonValue::parse(expected).value()["name"].asString() == "Plaza \"mayor\"");
++
++    // La entrada no se quita; un mapa cualquiera si, y sus ficheros se quedan.
++    MOTOR_CHECK(!ProjectMaps::remove(s.str(), "base", "base_inicio.json").isOk());
++    const auto extra = ProjectMaps::create(s.str(), "base", "Extra", 6, 6, firstTileset(s, "base"));
++    MOTOR_CHECK(extra.isOk());
++    Project project = s.project("base");
++    project.settings.initialMap = "base_extra.tmx";
++    MOTOR_CHECK(
++        ProjectSerializer::saveProjectAtomic((s.root / "proyectos/base.json").string(), project)
++            .isOk());
++    MOTOR_CHECK(ProjectMaps::remove(s.str(), "base", "base_extra.json").isOk());
++    project = s.project("base");
++    MOTOR_CHECK(!contains(project.levels, "base_extra.json") &&
++                !contains(project.maps, "base_extra.tmx"));
++    MOTOR_CHECK(project.settings.initialMap.empty());
++    MOTOR_CHECK(s.has("levels/base_extra.json") && s.has("maps/base_extra.tmx"));
++
++    // Un TMX que usa otro nivel del proyecto se queda en maps.
++    writeAll(s.root / "levels/base_otra_vista.json",
++             "{\"name\": \"Otra vista\", \"map\": \"" +
++                 (s.root / "maps/base_mapa.tmx").generic_string() + "\"}");
++    MOTOR_CHECK(ProjectIndex::addLevelToProject(s.str(), "base", "base_otra_vista.json").isOk());
++    MOTOR_CHECK(ProjectMaps::remove(s.str(), "base", "base_otra_vista.json").isOk());
++    MOTOR_CHECK(contains(s.project("base").maps, "base_mapa.tmx"));
++}
++
++MOTOR_TEST_CASE(el_panel_no_pisa_el_mapa_abierto_con_cambios_y_luego_lo_recarga_o_lo_cierra) {
++    Sandbox s;
++    ProjectPanelState panel(s.str());
++    MOTOR_CHECK(panel.reload().isOk());
++    EditorDocumentSession session;
++    const std::string inicio = panel.maps("base")[0].path;
++    MOTOR_CHECK(session.request(Action::Open, inicio).isOk());
++    session.paint(2, 2, 2);
++    MOTOR_CHECK(panel.begin(Mode::RenameMap, "base", "base_inicio.json"));
++    MOTOR_CHECK(panel.form().text == "Inicio de base");
++    panel.form().text = "Renombrado";
++    MOTOR_CHECK(!panel.confirm(session).isOk() && panel.formOpen());
++    MOTOR_CHECK(JsonValue::parse(readAll(inicio)).value()["name"].asString() == "Inicio de base");
++    MOTOR_CHECK(session.save().isOk());
++    const auto renamed = panel.confirm(session);
++    MOTOR_CHECK(renamed.isOk() && renamed.value().kind == Kind::Reload &&
++                renamed.value().path == inicio);
++    MOTOR_CHECK(session.request(Action::Open, inicio).isOk() && session.name() == "Renombrado");
++
++    // El mismo fichero escrito de otra forma (como llega con --load) sigue
++    // siendo el mapa abierto: se recarga con la ruta con la que se abrio.
++    const std::string otherForm = (s.root / "levels/../levels/./base_inicio.json").generic_string();
++    MOTOR_CHECK(session.request(Action::Open, otherForm).isOk());
++    MOTOR_CHECK(panel.begin(Mode::RenameMap, "base", "base_inicio.json"));
++    panel.form().text = "Otra vez";
++    const auto again = panel.confirm(session);
++    MOTOR_CHECK(again.isOk() && again.value().kind == Kind::Reload &&
++                again.value().path == otherForm);
++
++    MOTOR_CHECK(panel.begin(Mode::DuplicateMap, "base", "base_inicio.json"));
++    MOTOR_CHECK(panel.form().text == "Copia de Otra vez");
++    const auto copy = panel.confirm(session);
++    MOTOR_CHECK(copy.isOk() && copy.value().kind == Kind::Open);
++    MOTOR_CHECK(session.request(Action::Open, copy.value().path).isOk());
++    MOTOR_CHECK(panel.begin(Mode::RemoveMap, "base", "base_copia_de_otra_vez.json"));
++    const auto removed = panel.confirm(session);
++    MOTOR_CHECK(removed.isOk() && removed.value().kind == Kind::Close);
++    MOTOR_CHECK(panel.maps("base").size() == 1);
++    MOTOR_CHECK(!panel.begin(Mode::RenameMap, "base", "no_esta.json") &&
++                !panel.begin(Mode::NewMap, "nadie"));
++}
++
++MOTOR_TEST_CASE(cambiar_una_cadena_de_primer_nivel_no_toca_nada_mas) {
++    const std::string nested =
++        R"({"a": {"name": "dentro"}, "t": "a\"name\": \"x\"", "name": "fuera", "n": [1, {"name": 2}]})";
++    const auto replaced = Editor::replaceTopLevelString(nested, "name", "nuevo", false);
++    MOTOR_CHECK(replaced.isOk());
++    MOTOR_CHECK(
++        replaced.value() ==
++        R"({"a": {"name": "dentro"}, "t": "a\"name\": \"x\"", "name": "nuevo", "n": [1, {"name": 2}]})");
++    const auto escaped =
++        Editor::replaceTopLevelString(nested, "t", "comillas \" y \\ barra\n", false);
++    MOTOR_CHECK(escaped.isOk() && JsonValue::parse(escaped.value()).value()["t"].asString() ==
++                                      "comillas \" y \\ barra\n");
++    const auto inserted = Editor::replaceTopLevelString("{\n  \"a\": 1\n}", "name", "x", true);
++    MOTOR_CHECK(inserted.isOk());
++    const auto parsed = JsonValue::parse(inserted.value());
++    MOTOR_CHECK(parsed.isOk() && parsed.value()["name"].asString() == "x" &&
++                parsed.value()["a"].asInt() == 1);
++    const auto intoEmpty = Editor::replaceTopLevelString(" {} ", "name", "x", true);
++    MOTOR_CHECK(intoEmpty.isOk() &&
++                JsonValue::parse(intoEmpty.value()).value()["name"].asString() == "x");
++    MOTOR_CHECK(!Editor::replaceTopLevelString(R"({"name": 3})", "name", "x", true).isOk());
++    MOTOR_CHECK(!Editor::replaceTopLevelString("[1, 2]", "name", "x", true).isOk());
++    MOTOR_CHECK(!Editor::replaceTopLevelString(R"({"a": "b"})", "name", "x", false).isOk());
++    MOTOR_CHECK(
++        !Editor::replaceTopLevelString(R"({"name": "sin cerrar)", "name", "x", false).isOk());
++}
++
++int main() { return motor_test::runAllTests(); }
+diff --git a/tests/Editor/test_motor_editor_smoke.py b/tests/Editor/test_motor_editor_smoke.py
+index c2e3c40..658f085 100644
+--- a/tests/Editor/test_motor_editor_smoke.py
++++ b/tests/Editor/test_motor_editor_smoke.py
+@@ -45,7 +45,7 @@ def main():
+         (assets / "levels/sin_catalogo.json").write_text(json.dumps(dict(level, map="assets/maps/sin_catalogo.tmx")), encoding="utf-8")
+         capture = args.capture.resolve() if args.capture else root / "editor.ppm"
+         process = subprocess.run([str(args.binary.resolve()), "--load", str(assets / "levels/ejemplo.json"),
+-                                  "--frames", "140", "--smoke-check", "--ui-scale", args.scale,
++                                  "--frames", "160", "--smoke-check", "--ui-scale", args.scale,
+                                   "--capture", str(capture)], cwd=root, capture_output=True, text=True, timeout=45)
+         print(process.stdout, end="")
+         print(process.stderr, end="")
+@@ -55,6 +55,7 @@ def main():
+         assert "rellenar/borrar/rehacer/ayuda OK" in process.stdout
+         assert "objetos/catalogo/historial OK" in process.stdout
+         assert "capas/seleccion/bloqueo/confirmacion OK" in process.stdout
++        assert "nuevo mapa/pintar/guardar/reabrir OK" in process.stdout
+         assert catalog_path.read_bytes() == original_catalog
+         assert capture.stat().st_size > 1280 * 720
+         assert Path(str(capture) + ".objects.ppm").stat().st_size > 1280 * 720
+@@ -71,6 +72,15 @@ def main():
+         assert len(tiles) == 2
+         assert tiles[-1]["name"] == "Detalle ## alto"
+         assert not tiles[-1]["visible"] and not tiles[-1]["locked"]
++        # H4-02: el mapa creado desde el panel Proyecto esta en el manifiesto,
++        # con sus tres ficheros y el nombre que se escribio.
++        manifest = json.loads((assets / "proyectos/smoke.json").read_text(encoding="utf-8"))
++        assert "smoke_cueva_del_eco.json" in manifest["levels"]
++        assert "smoke_cueva_del_eco.tmx" in manifest["maps"]
++        created = json.loads((assets / "levels/smoke_cueva_del_eco.json").read_text(encoding="utf-8"))
++        assert created["name"] == "Cueva del eco"
++        assert created["mapDocument"] == "assets/maps/smoke_cueva_del_eco.map.json"
++        assert (assets / "maps/smoke_cueva_del_eco.tmx").is_file()
+         print("[PASS] UI y persistencia verificadas; assets originales intactos")
+ 
+ 

@@ -1,0 +1,76 @@
+/* MotorGraphico · Modelo visual del juego · tokens
+   28/09/2026 · Propuesta. Los valores salen de ESTUDIO_UI_UX.md §4 y se
+   han medido (contraste WCAG) en MODELO_VISUAL.md §3.
+   Regla de oro: el dorado (--acento) marca foco, selección y acción
+   principal. No se usa para títulos, dinero ni decoración. */
+
+@font-face {
+  font-family: "Lora";
+  src: url("../fuentes/Lora-Variable.ttf") format("truetype");
+  font-weight: 400 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Lora";
+  src: url("../fuentes/Lora-Italic-Variable.ttf") format("truetype");
+  font-weight: 400 700;
+  font-style: italic;
+}
+
+:root {
+  /* --- Superficies ------------------------------------------------ */
+  --fondo:        #151820;  /* pantalla completa (título, asistente)   */
+  --panel:        #222735;  /* cuerpo de ventana, siempre opaco        */
+  --panel-2:      #2B3142;  /* cabecera, pie, pestaña inactiva, tarjeta */
+  --panel-3:      #353C51;  /* fila con foco                           */
+  --pista:        #12141B;  /* fondo de barras y deslizadores          */
+  --velo:         rgba(10, 11, 16, 0.72); /* atenúa el mundo tras un menú */
+
+  /* --- Marco pixel de dos tonos ----------------------------------- */
+  --marco-ext:    #0B0D12;  /* línea exterior: separa del mundo claro  */
+  --marco-int:    #5A6386;  /* línea interior: 3,0:1 sobre --fondo      */
+  --divisor:      #3A4158;  /* separadores internos (decorativo)       */
+
+  /* --- Texto ------------------------------------------------------- */
+  --texto:        #F3EBDD;  /* 12,6:1 sobre panel                      */
+  --texto-2:      #C1C9D6;  /*  8,9:1 sobre panel                      */
+  --texto-3:      #8F99AB;  /*  5,2:1 sobre panel · 4,5:1 sobre panel-2 · NUNCA sobre panel-3 */
+  --texto-sobre-acento: #151820; /* 11,0:1 */
+
+  /* --- Semánticos -------------------------------------------------- */
+  --acento:       #EBC77D;  /* foco / selección / acción principal     */
+  --acento-2:     #9C7F45;  /* sombra del botón principal              */
+  --exito:        #91D7B0;
+  --aviso:        #F2A65A;  /* antes #F0C77C: se confundía con --acento */
+  --error:        #FFB2AC;
+  --info:         #9CC3FF;
+  --exito-fondo:  #1E3A30;
+  --aviso-fondo:  #3F2E1C;
+  --error-fondo:  #3E2427;
+  --info-fondo:   #1E2D45;
+
+  /* --- Recursos ---------------------------------------------------- */
+  --pv:           #E8705F;
+  --pm:           #6A9BF4;
+  --moral:        #B79CF0;
+
+  /* --- Tipografía -------------------------------------------------- */
+  /* Dos voces: la fuente pixel 5x7 del motor (títulos, pestañas, teclas,
+     insignias y cifras; siempre en mayúsculas y a escala entera x2/x3) y
+     Lora para leer (nombres de contenido, descripciones, diálogos). */
+  --lectura:      "Lora", Georgia, "Times New Roman", serif;
+  --t-titulo:     28px;   /* nombre en un detalle, pregunta del asistente */
+  --t-grande:     24px;   /* entradas de menús cortos                   */
+  --t-cuerpo:     20px;   /* texto de lectura, filas de lista           */
+  --t-secundario: 18px;   /* ayudas, metadatos, pies                    */
+  --t-meta:       16px;   /* solo información no esencial              */
+
+  /* --- Espacio y medidas (1280x720 lógicos) ------------------------ */
+  --e1: 4px;  --e2: 8px;  --e3: 16px;  --e4: 24px;  --e5: 32px;  --e6: 48px;
+  --margen:    24px;   /* área segura                                  */
+  --cabecera:  56px;
+  --nav:       44px;
+  --pie:       56px;
+  --fila:      44px;   /* juego; el editor usará 32-36                 */
+  --icono:     32px;   /* iconos 16x16 del atlas a x2                  */
+}

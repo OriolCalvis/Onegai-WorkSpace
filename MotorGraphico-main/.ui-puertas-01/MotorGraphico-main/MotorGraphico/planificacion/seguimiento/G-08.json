@@ -1,0 +1,22 @@
+{
+  "id": "G-08",
+  "date": "2026-09-06",
+  "author": "qwen",
+  "status": "Rodaja inicial feta i verificada (encargo directo de Oriol); paquet obert",
+  "actions": [
+    "Pantalla de títol a ./juego sense arguments: campanya de Boundington + escenaris en treball (projectes jugables de l'índex) + Sortir; amb --nivel/--precuela s'entra directe com abans (editor F7, proves).",
+    "Game::TitleScreen amb tot l'estat GL-free (convenció ProjectHub): navegació amb wraparound, skipped() amb els projectes sense entrada jugable i etiquetes des del nom del manifest.",
+    "Application: m_atTitle congela update(), reenvia processInput() (W/S+ENTER com a combat/botiga) i canvia el HUD a refreshHud(); OpenProject carrega catàlegs del projecte, narrativa si l'entrada és aventura (cronologia Boundington apagada, com --precuela) i loadLevel sobre l'entrada resolta; un fallada deixa missatge al títol.",
+    "test_title_screen (5 casos) registrat com a CTest gl-free (cmake/TitleScreenTests.cmake); TitleScreen.cpp a motor_core. Hunk de CMakeLists exclusiu, sense tocar el treball C-14/auditoria en curs d'una altra sessió."
+  ],
+  "verification": [
+    "Build completa de tots els targets en macos-debug sense errors.",
+    "Suite gl-free 62/62 en verd (inclou test_title_screen i el treball concurrent).",
+    "Fum ./juego 3 amb bolcat de frame: títol i menú dibuixats (1156 px daurats del títol, 2040 px del cursor)."
+  ],
+  "pending": [
+    "Resta del paquet segons el pla: arrencada des del manifest del projecte actiu (no només l'índex global), Nova partida/Continuar/Opcions amb els seus motius, imatge del projecte quan n'hi hagi; depèn de C-16 i E-11.",
+    "G-09 (creació de personatge dins de Nova partida) i G-11 (selector de guardats) connectaran amb aquesta pantalla.",
+    "Passar la prova a CI abans de tancar formalment (regla 6 del pla)."
+  ]
+}

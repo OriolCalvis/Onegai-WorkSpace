@@ -1,0 +1,50 @@
+{
+ "id": "escudero_redimido",
+ "name": "Escudero Redimido",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 2,
+ "role": "bruto",
+ "faction": "milicia_corrupta_de_llerba",
+ "factionName": "La Milicia Corrupta de Llerba",
+ "stats": {
+  "CON": 4,
+  "DES": 3,
+  "INT": 2,
+  "CAR": 2
+ },
+ "derived": {
+  "vida": 16,
+  "ca": 13,
+  "defensaMental": 12,
+  "resistenciaFisica": 14,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de sagrado: daño que suma su CON (pool de CON, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "CA",
+   "effect": "Técnica de facción: efecto táctico según su pasiva."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "La primera curación que recibe cada combate también inflige 1 de daño sagrado a un enemigo cercano."
+ },
+ "conditionsInflicted": [],
+ "loot": [
+  "pica_de_guardia_de_milicia",
+  "yelmo_de_milicia"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Sagrado"
+ ],
+ "phases": [],
+ "flavorText": "Combatiente que busca perdon golpeando primero."
+}

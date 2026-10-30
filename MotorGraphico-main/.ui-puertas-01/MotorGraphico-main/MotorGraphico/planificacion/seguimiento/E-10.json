@@ -1,0 +1,49 @@
+{
+  "id": "E-10",
+  "date": "2026-09-14",
+  "author": "Codex",
+  "status": "Shell, acciones y herramientas de objetos integrados localmente; migración completa y CI pendientes",
+  "actions": [
+    "Se reserva E-10 en TABLERO y se consulta MAPA_DEL_CODIGO antes de programar. El lote añade el shell y su modelo documental sin modificar level_editor, EditorState, Application ni GameSession.",
+    "motor_editor usa ImGui docking en una sola ventana, árbol de proyectos/mapas, paleta de tiles, inicio del jugador, inspector, cámara y viewport OpenGL. ImGui es dependencia privada del ejecutable.",
+    "EditorDocumentSession centraliza abrir/cerrar/salir, Guardar/Descartar/Cancelar, deshacer/rehacer y el indicador de cambios. Guardado y carga fallidos conservan el documento anterior.",
+    "Guardado nativo + TMX + nivel mediante EditorDocumentIO; conserva entidades e inicio del jugador. Rechaza importación TMX con pérdida y firstgid no soportado por el exportador.",
+    "Coordenadas de ratón transformadas del panel lógico al framebuffer; corregida la selección de la celda dibujada por IsometricRenderer. Los inputs de texto y modales bloquean acciones del mapa.",
+    "ImGui v1.91.9b-docking vendorizado con licencia y procedencia exacta. Durante la sesión f23dba9 incorporó vendor y pruebas, dejando fuera correctamente el shell reservado; este lote activa MotorEditor.cmake y aporta sus fuentes.",
+    "Workflow independiente editor-shell.yml para modelo y humo gráfico Linux/Xvfb. No se modifica el ci.yml compartido.",
+    "Mapeo E-10 ampliado en dades.py y MAPA_DEL_CODIGO regenerado sin escribir banners en archivos concurrentes.",
+    "13/09, segundo tramo: EditorActions centraliza 11 acciones y 12 atajos para menús, botones y ayuda. Añade Borrar y Rellenar reutilizando EditorState sin modificarlo; el relleno constituye un paso de historial.",
+    "Ctrl/Cmd+Shift+Z y Ctrl/Cmd+Y rehacen. B/E/G/P y Home requieren foco del mapa; texto, widgets activos, modales y modificadores adicionales bloquean los atajos. F1 abre/cierra la ayuda.",
+    "El adaptador usa teclas ImGui estables y su normalización de Cmd a KeyCtrl. Una pulsación solo ejecuta una acción aunque Z figure en Deshacer y Rehacer.",
+    "verificar_controles.py --shell compara enum, tabla, duplicados y despacho; se mantiene el modo legacy. La cabecera de ayuda admite el bloque de MAPA_DEL_CODIGO separado por una línea vacía.",
+    "El humo gráfico mantiene el puntero simulado y limpia los eventos físicos solo en modo de prueba: GLFW podía cambiar la posición entre pulsar y soltar Cancelar. La entrada normal sigue intacta.",
+    "14/09, tercer tramo: Objetos (O) y Borrar objeto (X) pasan por EditorActions/EditorDocumentSession, con undo/redo, dirty y guardado nativo; 13 acciones/14 atajos. El botón derecho borra instancias con estas herramientas y baldosas con las demás.",
+    "Selector por nombre y búsqueda desde los catálogos del proyecto; identidad interna estable, lectura sin modificar el catálogo y selección reiniciada al cambiar de mapa. Se reconoce también el nivel abierto mediante ruta absoluta o normalizada.",
+    "Colocar exige ID presente en el catálogo y celda vacía; repetir sobre la misma instancia no modifica sus propiedades ni historial. Para sustituir una instancia hay que borrarla primero. El borrado respeta capas bloqueadas.",
+    "El ancho inicial de paneles considera el texto y la escala de fuente; la lista de objetos usa la altura disponible. Corrige el recorte de la lista cuando macOS limita una ventana solicitada a escala 2.",
+    "El harness separa texto/atajos de la suelta del ratón: la cola de ImGui podía diferir y después perder esos eventos al limpiar los eventos físicos. Ahora comprueba que G llega al campo antes de deshacerla. Fixture de proyecto v1 completa y capturas antes/después de cambiar de catálogo."
+  ],
+  "verification": [
+    "Configuración CMake explícita y build motor_editor + test_editor_document_session en copia aislada de f23dba9 más este lote, reutilizando fuentes GLM/GLFW locales.",
+    "7/7 casos documentales: cancelar, guardar y reabrir, fallo de guardado, carga transaccional, descartar/salir, foco/coordenadas Retina y selección del tile visible.",
+    "Humo real macOS a escala UI 1 y 2: clic pinta, Cancelar conserva, Ctrl/Cmd+S guarda, reapertura conserva y deshacer texto no deshace la edición pendiente del mapa. Assets originales intactos. GL 0.",
+    "Apertura del proyecto ejemplos durante cinco frames, captura revisada y salida 0. Capturas a ambas escalas revisadas; controles apilados para evitar recorte y nombres de objetos como tooltip para evitar solapamiento.",
+    "7/7 casos y humo GUI en ASan+UBSan sin diagnóstico; detect_leaks=0, no se afirma prueba de fugas.",
+    "Suite general sobre f23dba9 antes de reactivar el target E-10: 95/98; demo_battle y demo_ciudad reproducen deuda ya registrada por zcode. test_application abre una ventana pese a etiqueta gl-free y se interrumpe tras bloquearse en el sandbox. No se atribuyen estos resultados al shell ni se declara todo el árbol compartido validado.",
+    "Segundo tramo sobre daf31c8 en copia aislada: configuración explícita y build motor_editor, test_editor_actions y test_editor_document_session; 9/9 casos de acciones + 7/7 documentales verdes.",
+    "19/19 regresiones Python del verificador; --shell valida 11 acciones/12 atajos. Mutaciones de tecla duplicada, acción sin despacho y llamadas falsas en comentario/literal son rechazadas.",
+    "Humo final macOS a escalas 1 y 2: botón Rellenar, región completa, undo en un paso, Cmd+Shift+Z, E borra solo una celda, Cmd+S/reabrir y F1. G escrita en búsqueda no cambia la herramienta; deshacer texto conserva mapa. GL 0, assets temporales y capturas revisadas.",
+    "ASan+UBSan: 16/16 casos documentales/acciones y el mismo humo GUI verdes. detect_leaks=0; no se afirma comprobación de fugas.",
+    "La configuración inicial sobre 296c6d0 falló por registros de CMake ajenos sin sus fuentes versionadas. Se incorporaron las reparaciones concurrentes 337f3b7/7463671/daf31c8 antes de validar, sin modificar esas rutas. No se repite ni se da por verde la suite general por estos tests enfocados.",
+    "Tercer tramo en copia aislada de c2b8ace: compilación motor_editor/test_editor_actions/test_editor_document_session. 11/11 casos de acciones + 9/9 documentales verdes: colocar/borrar, catálogo desconocido, límites, celdas ocupadas, bloqueos, metadatos/IDs mediante undo y guardado/reapertura.",
+    "19/19 regresiones Python y verificar_controles.py --shell: 13 acciones/14 atajos. Las rutas siguen registradas en MAPA_DEL_CODIGO; no hay nuevas fuentes que mapear.",
+    "Humo gráfico con clics/teclas reales de ImGui a escalas 1 y 2: búsqueda por nombre, O dentro del campo no activa herramientas, selección, colocar, X/botón derecho, undo, guardar/reabrir y cambiar a nivel sin catálogo. Catálogo sin cambios; capturas revisadas.",
+    "ASan+UBSan: los mismos 20 casos C++ y humo gráfico a escala 2 verdes, sin diagnóstico (detect_leaks=0; no se verifica fugas). El primer lanzamiento gráfico en sandbox expiró; ejecución posterior con acceso a la sesión gráfica autorizada por revisión automática."
+  ],
+  "pending": [
+    "Migrar las demás herramientas/formularios del editor antiguo; el verificador del shell ya pasa. La entrega no cierra todo E-10.",
+    "Crear/importar proyectos, edición de capas/propiedades de instancia, playtest y recuperación siguen en los paquetes E/F/G correspondientes.",
+    "CI Linux remota aún no ejecutada. Push pendiente de autorización explícita de destino requerida por revisión automática; no se ha reintentado.",
+    "Escala de fuente calculada al iniciar; cambio de DPI al mover la ventana entre monitores queda por validar."
+  ]
+}

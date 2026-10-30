@@ -1,0 +1,40 @@
+{
+  "id": "H2-05",
+  "date": "2026-09-27",
+  "author": "opencode",
+  "status": "HECHO — ganar un combate mete en la mochila lo que el monstruo declara como botin, con linea de log; huir no da nada.",
+  "criterio_de_cierre": "JUGABILIDAD_FASE_H.md H2-05: 'Ganar un combate da objetos de su tabla; salen en el inventario y se pueden equipar o vender'.",
+  "scope": [
+    "src/Game/GameSessionInteraccion.cpp: nuevo GameSession::repartirBotin(objectId) y su enganche en el caso BattleOutcome::Victory de syncBattleOutcome (el id del enemigo se copia antes de destruir la entidad del World).",
+    "include/Game/GameSession.h: una sola declaracion privada (repartirBotin). Ningun miembro nuevo.",
+    "tests/Game/GameSessionTests.cpp: dos casos (al_ganar_el_botin_del_monstruo_entra_en_la_mochila, huir_no_suelta_botin_y_el_enemigo_sigue_vivo)."
+  ],
+  "mecanismo": {
+    "datos": "El botin ya estava escrito: es el campo `loot` de monsters.json (432 monstruos, 28 ids distintos), que CatalogLoader<MonsterDefinition> mete en MonsterDefinition::lootIds (acepta `loot` y `lootIds`).",
+    "camino_de_vuelta": "Los ids de loot son de EQUIPO, no de objeto. Cada pieza entra con objectIdForEquipment(equipId) — el camino que ya usan equipar y vender: si el catalogo de objetos tiene 'item_<x>', ese es el id; si no, el propio id. Por eso lo que cae se puede equipar y vender sin trabajo nuevo.",
+    "nombres_en_el_log": "Se nombran con EquipmentDefinition::name cuando hay catalogo de equipo inyectado (H0-04); si no, con el id. Mismo criterio que 'Te equipas X.'."
+  },
+  "loot_tables_y_lootresolver": {
+    "estado": "SIGUEN SIN LECTOR, y no es un olvido de este item.",
+    "por_que": "LootTableDefinition (loot_tables.json, 201 tablas) se referencia desde EncounterTableDefinition::lootTableId, y las tablas de encuentro no enrutan al combate todavia. Ningun monstruo referencia una tabla: sus 432 `loot` son ids de pieza directos. Resolver tablas aqui seria inventar una ruta de datos que el canon no declara.",
+    "registro": "Se anota en el TABLERO y en la sesion como pendiente de enrutado, no como tarea cerrada: LootResolver sigue siendo codigo muerto hasta que un encuentro lo alcance."
+  },
+  "non_goals": [
+    "No se toca Application.cpp ni Application.h: el reparto usa m_monsterCatalog y m_inventory, que ya estan inyectados, asi que la zona de cruce de 14 paquetes no se toca y no hay miembros nuevos que adelgazar.",
+    "No se tira oro ni tiradas de botin: el dato del monstruo es una lista de piezas, sin oro.",
+    "No se cablea EncounterTable ni la tabla de encuentros (seria otro item).",
+    "No se repara el WIP ajeno de src/Project/ProjectIndex.cpp (roto y con ProjectIndexDuplicate.cpp a medias) ni el duplicado untracked 'tests/Game/ShopFlowTests 2.cpp'."
+  ],
+  "verification": [
+    "test_game_session 22/22 (los 2 casos nuevos incluidos), con falsabilidad: desactivada la llamada a repartirBotin, al_ganar_el_botin_del_monstruo_entra_en_la_mochila falla en GameSessionTests.cpp:1126 (f.inventory.size() == 2); restaurada, vuelve a verde.",
+    "Sin regresiones en lo que cruza el mismo camino: test_save_game 19/19, test_battle_state 17/17, test_inventory_engine 7/7, test_inventory_menu 9/9, test_g13_combat_commands 8/8, test_application_cableado 10/10.",
+    "juego enlaza y GameSession::repartirBotin esta en el binario (nm juego), asi que un ejecutable real lo alcanza (regla 4).",
+    "tools/linea_base_core.py --rapido: OK al cierre.",
+    "git diff --check limpio."
+  ],
+  "blockers_ajenos": [
+    "src/Project/ProjectIndex.cpp se rompió a mitad de sesion (dstPath sin declarar) mientras otro agente troceaba el fichero, con ProjectIndexDuplicate.cpp duplicando createNamed/duplicate/suggestId/uniqueId: la guardia rapida daba 4 fallos, todos suyos. Se resolvio solo (su dueno lo cerro) antes del cierre; la verificacion final se hizo en limpio. Durante el rato roto se enlazo con make -o sobre ese objeto para no tocarlo.",
+    "tests/Game/ShopFlowTests 2.cpp (untracked): otro duplicado '* 2*'."
+  ],
+  "handoff": "El reparto vive en GameSession::repartirBotin y se llama desde el caso Victory de syncBattleOutcome. Cuando las tablas de encuentro lleguen al combate, el sitio de la tabla es esa misma llamada (resolve_loot_table de RPG::LootResolver), no un camino nuevo: el botin del monstruo y el de su tabla se suman en la mochila con el mismo objectIdForEquipment."
+}

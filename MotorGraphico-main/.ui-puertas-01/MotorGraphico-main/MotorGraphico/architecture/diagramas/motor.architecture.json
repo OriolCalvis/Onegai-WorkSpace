@@ -1,0 +1,407 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "MotorGraphico — arquitectura del motor C++ isométrico",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1620,
+      1060
+    ],
+    "views": [
+      {
+        "id": "bucle",
+        "label": "Bucle de frame",
+        "focus": [
+          "glfw",
+          "app",
+          "scenes",
+          "session",
+          "battle"
+        ],
+        "note": "El camino principal: GLFW entrega el delta real y ApplicationLoop lo convierte en pasos fijos de simulación."
+      },
+      {
+        "id": "presentacion",
+        "label": "Presentación GL",
+        "focus": [
+          "app",
+          "render",
+          "hud",
+          "glfw"
+        ],
+        "note": "Application::render dibuja la escena y después el HUD con blending, y vuelca PPM en el último frame del modo humo."
+      },
+      {
+        "id": "datos",
+        "label": "Datos y catálogos",
+        "focus": [
+          "assets",
+          "rpgdata",
+          "level",
+          "session"
+        ],
+        "note": "Los JSON de assets se cargan en init y alimentan la sesión; un catálogo declarado que no carga aborta el arranque."
+      },
+      {
+        "id": "autoria",
+        "label": "Autoría con el editor",
+        "focus": [
+          "editor",
+          "assets",
+          "level"
+        ],
+        "note": "El editor escribe los mismos documentos canónicos v1 que después leen los loaders del runtime."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "glfw",
+      "type": "external",
+      "label": "GLFW + GLAD",
+      "sublabel": "ventana y contexto GL 3.3",
+      "tag": "glfw vía FetchContent",
+      "pos": [
+        70,
+        112
+      ],
+      "size": [
+        200,
+        80
+      ]
+    },
+    {
+      "id": "app",
+      "type": "backend",
+      "label": "Engine::Application",
+      "sublabel": "init · run · shutdown",
+      "tag": "ADR-007 paso fijo",
+      "pos": [
+        470,
+        110
+      ],
+      "size": [
+        215,
+        84
+      ]
+    },
+    {
+      "id": "render",
+      "type": "frontend",
+      "label": "IsometricRenderer",
+      "sublabel": "SpriteBatch · post-FX",
+      "tag": "FogOfWar · ColorLUT",
+      "pos": [
+        885,
+        110
+      ],
+      "size": [
+        220,
+        84
+      ]
+    },
+    {
+      "id": "hud",
+      "type": "frontend",
+      "label": "HudManager",
+      "sublabel": "widgets IHudElement",
+      "tag": "batch propio del HUD",
+      "pos": [
+        1330,
+        112
+      ],
+      "size": [
+        195,
+        80
+      ]
+    },
+    {
+      "id": "scenes",
+      "type": "backend",
+      "label": "Engine::SceneManager",
+      "sublabel": "pila de Scene + transición diferida",
+      "tag": "ADR-009",
+      "pos": [
+        470,
+        400
+      ],
+      "size": [
+        215,
+        88
+      ]
+    },
+    {
+      "id": "session",
+      "type": "backend",
+      "label": "Game::GameSession",
+      "sublabel": "7 GameMode · GL-free",
+      "tag": "fuente de verdad de la partida",
+      "pos": [
+        885,
+        392
+      ],
+      "size": [
+        245,
+        104
+      ]
+    },
+    {
+      "id": "world",
+      "type": "backend",
+      "label": "Engine::World",
+      "sublabel": "EntityHandle generacional",
+      "tag": "ADR-010",
+      "pos": [
+        1330,
+        400
+      ],
+      "size": [
+        205,
+        88
+      ]
+    },
+    {
+      "id": "level",
+      "type": "database",
+      "label": "Level · Map",
+      "sublabel": "LevelLoader · MapDocument",
+      "tag": "RuntimeTileMap",
+      "pos": [
+        470,
+        650
+      ],
+      "size": [
+        215,
+        90
+      ]
+    },
+    {
+      "id": "rpgdata",
+      "type": "database",
+      "label": "RPG::Catalogs",
+      "sublabel": "CatalogLoader · ICatalog<T>",
+      "tag": "skills · condiciones · loot",
+      "pos": [
+        885,
+        650
+      ],
+      "size": [
+        245,
+        90
+      ]
+    },
+    {
+      "id": "battle",
+      "type": "backend",
+      "label": "Game::BattleState",
+      "sublabel": "DicePoolEngine Nd6",
+      "tag": "RandomEngine inyectable",
+      "pos": [
+        1330,
+        650
+      ],
+      "size": [
+        205,
+        90
+      ]
+    },
+    {
+      "id": "editor",
+      "type": "frontend",
+      "label": "EditorState · ProjectHub",
+      "sublabel": "shell y paneles Dear ImGui",
+      "tag": "target motor_editor",
+      "pos": [
+        1330,
+        880
+      ],
+      "size": [
+        205,
+        90
+      ]
+    },
+    {
+      "id": "assets",
+      "type": "external",
+      "label": "assets/",
+      "sublabel": "catálogos JSON · PNG · TMX",
+      "tag": "stb_image · tinyxml2",
+      "pos": [
+        885,
+        880
+      ],
+      "size": [
+        245,
+        88
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Frontera de ventana — GLFW + OpenGL 3.3",
+      "wraps": [
+        "glfw",
+        "app",
+        "render",
+        "hud"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "Núcleo GL-free — suite_gl_free prueba la partida sin ventana",
+      "wraps": [
+        "scenes",
+        "session",
+        "world",
+        "level",
+        "rpgdata",
+        "battle"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "Editor — Dear ImGui, solo lo enlaza motor_editor",
+      "wraps": [
+        "editor"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "glfw-app",
+      "from": "glfw",
+      "to": "app",
+      "label": "eventos + glfwGetTime()",
+      "variant": "emphasis"
+    },
+    {
+      "id": "app-scenes",
+      "from": "app",
+      "to": "scenes",
+      "label": "loop.tick(services)",
+      "variant": "emphasis",
+      "labelDy": 24
+    },
+    {
+      "id": "app-render",
+      "from": "app",
+      "to": "render",
+      "label": "Application::render()",
+      "variant": "emphasis"
+    },
+    {
+      "id": "render-hud",
+      "from": "render",
+      "to": "hud",
+      "label": "m_hud.render(batch, shader)"
+    },
+    {
+      "id": "scenes-session",
+      "from": "scenes",
+      "to": "session",
+      "label": "fixedUpdate(dt)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "session-world",
+      "from": "session",
+      "to": "world",
+      "label": "WorldMarker + EntityHandle"
+    },
+    {
+      "id": "session-battle",
+      "from": "session",
+      "to": "battle",
+      "label": "entra en combate",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "level-session",
+      "from": "level",
+      "to": "session",
+      "label": "RuntimeTileMap + colision"
+    },
+    {
+      "id": "rpgdata-session",
+      "from": "rpgdata",
+      "to": "session",
+      "label": "ObjectCatalog / SkillCatalog"
+    },
+    {
+      "id": "rpgdata-battle",
+      "from": "rpgdata",
+      "to": "battle",
+      "label": "ConditionCatalog"
+    },
+    {
+      "id": "assets-rpgdata",
+      "from": "assets",
+      "to": "rpgdata",
+      "label": "assets/catalogs/*.json"
+    },
+    {
+      "id": "assets-level",
+      "from": "assets",
+      "to": "level",
+      "label": "niveles JSON / TMX"
+    },
+    {
+      "id": "editor-assets",
+      "from": "editor",
+      "to": "assets",
+      "label": "documento canonico v1",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Bucle y escenas",
+      "items": [
+        "ApplicationLoop: paso fijo 1/60 s, tope 0,10 s por frame y máximo 6 fixedUpdate (ADR-007)",
+        "El tiempo que no cabe se descarta y se informa en droppedSimulationSeconds",
+        "SceneManager aplica una sola transición diferida en finishSceneFrame(), al final del frame (ADR-009)"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Núcleo GL-free",
+      "items": [
+        "GameSession, BattleState, World, Level y catálogos no incluyen GLFW ni OpenGL",
+        "El target agregado suite_gl_free prueba la partida entera sin ventana",
+        "EnemyBrain separa la lógica (vida + patrulla) del sprite: fractura #1 resuelta"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Datos y autoría",
+      "items": [
+        "init() carga los catálogos antes que el nivel para que las referencias del mapa resuelvan",
+        "Un catálogo declarado en el manifiesto que no carga aborta el arranque: no se juega a medias",
+        "El editor escribe el mismo documento canónico v1 que leen LevelLoader y CatalogLoader"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Frontera GL y dependencias",
+      "items": [
+        "GLAD, stb_image, tinyxml2 e ImGui están vendorizados en third_party/",
+        "glfw y glm siguen entrando por FetchContent; DEPENDENCY_POLICY.md pide vendorizarlos",
+        "Post-FX exclusivos (FogOfWar, ColorLUT) y volcado PPM en el último frame del modo humo"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Procedencia de los hechos",
+      "items": [
+        "Diagrama leído del ÁRBOL de trabajo del 28/09/2026, no de un commit fijado: hay 166 ficheros con WIP de otras sesiones",
+        "Fuentes: ApplicationBucle.cpp, SceneManager.h, ApplicationLoop.h, SessionTipos.h, ARCHITECTURE.md y architecture/ADR-007/009/010",
+        "analisis_clases/INDEX.md es una foto del 31/08 y queda desfasada: SceneManager y World ya están cableados en Application"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+ "id": "GUARDAR-FICHA",
+ "date": "2026-10-07",
+ "author": "claude (Cowork)",
+ "status": "HECHO — la partida guarda al heroe (lo elegido al crearlo, lo puesto y su aspecto) y, al cargarla, lo rehace y vuelve al capitulo de la campana en el que iba. Comprobado en el juego de verdad: guardar a mitad del tutorial, cerrar, abrir otra vez, «Continuar» y acabarlo.",
+ "origen": "Lo que quedo de TUTORIAL-01 (y de PART-02): «la partida no guarda la ficha». Guardar y cargar en la misma ejecucion la conservaba (el Player es el mismo), pero «Continuar» al abrir el juego otra vez la perdia: sin clase, sin cartas y sin equipo.",
+ "scope": [
+  "SaveGameData::hero (SavedHero, include/Game/SaveGame.h): pueblo, clase, origen, deidad, las siete respuestas de la historia, lo puesto (una pieza por ranura) y el aspecto (Game::Apariencia: pueblo visual, piel, talla, ojos, pelo, barba, ropa de diario y capas quitadas). Clave aditiva \"hero\" sin subir kSchemaVersion: un guardado sin ella carga como antes, y solo se escribe con clase (guardado-v1.json sigue dando el mismo texto). SaveGameValidation::hero comprueba sus tipos con la ruta exacta.",
+  "GameSession::captureSaveGame apunta el heroe de la ficha (y el nombre en characterName, que el selector de guardados ya leia y nadie escribia); el aspecto lo pone PantallaNuevaPartida::apuntaAspecto, que llama Application::quickSave (la sesion no lo conoce).",
+  "Game::NewGameFlow::fichaGuardada rehace la ficha (fichaSinEquipo con lo elegido y el nombre, lo puesto en su ranura y sus bonos con InventoryEngine::recalc_equipment_bonuses; lo que ya no esta en el catalogo se queda fuera); aparienciaGuardada y guardaApariencia, el aspecto de ida y vuelta.",
+  "PantallaNuevaPartida::restaurarHeroe la pone en su ficha y viste la hoja del jugador con su aspecto, lo puesto y su brillo; Application::loadLevel la da al Player antes de las reglas de inventario y de restoreSaveGame (que pone el nivel, los hitos y la vida).",
+  "Al cargar, la aventura activa es la del capitulo en el que iba la partida (Game::capituloDeLaCampana, por las flags bnd_dia1_empezado, bnd_dia2_empezado y bnd_ocaso_empezado). Antes, en una ejecucion nueva se quedaba la del prologo, ya hecho: ni un beat, y el tutorial no se podia acabar tras «Continuar».",
+  "Pruebas: test_save_game (the_hero_survives_the_round_trip, the_hero_types_are_validated, a_session_saves_who_the_hero_is), test_h104_new_game_flow (guardar_ficha_el_heroe_guardado_se_rehace_igual: misma clase, cartas, lo puesto, bonos y vida; una pieza que ya no existe, fuera; una clase que no existe, sin ficha) y test_diario_misiones (el_capitulo_de_la_campana_sale_de_sus_flags)."
+ ],
+ "pendiente": [
+  "Guardar dentro de un interior no recuerda por que puerta se entro (TUTORIAL-01): al salir, el destino fijo de la salida."
+ ],
+ "non_goals": [
+  "Ranuras de guardado con nombre o varias partidas a la vez (la pausa sigue guardando en la ranura rapida)."
+ ],
+ "verification": [
+  "El juego de verdad: crear a Ilse (Acechador de Tejados), el kit, el prologo, el tendero y el joyero, guardar desde la pausa (el guardado lleva hero con el kit puesto y el aspecto); en otra ejecucion, «Continuar»: Ilse T1, 9/9, el mismo dibujo con la mascara y el arco, el sastre habla, la emboscada salta, el combate con sus cartas (Golpe en Picado, Garfio Ligero, Tejado Amigo, Lluvia desde Arriba) y, al ganar, «Nuevo objetivo: Buscar cama en la Taberna Humilde».",
+  "ctest con los fallos de la linea base y ninguno mas; test_schema_fixtures (guardado-v1.json estable al reescribirlo); validar_todo sin errores; linea_base_core en 44; Application.cpp en 1193 lineas, Application.h y GameSession.h las mismas."
+ ],
+ "para_oriol": [],
+ "sesion": "sesiones/2026-10-07-claude-tutorial.md"
+}

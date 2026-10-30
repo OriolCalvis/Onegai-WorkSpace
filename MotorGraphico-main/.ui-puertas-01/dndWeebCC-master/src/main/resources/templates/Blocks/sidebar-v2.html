@@ -1,0 +1,30 @@
+<aside th:fragment="sidebar" class="gm-sidebar" id="gm-sidebar"
+       tabindex="-1" aria-label="Navegación principal">
+    <p class="gm-sidebar__eyebrow">Sistema de Cartas y Tiers</p>
+    <a th:href="@{/}" th:classappend="${currentPage == 'home'} ? 'is-active'">🏠 Dashboard</a>
+    <a th:href="@{/mapa}" th:classappend="${currentPage == 'mapa'} ? 'is-active'">🧭 Mapa Mundi</a>
+    <a th:href="@{/personatges}" th:classappend="${currentPage == 'personatges'} ? 'is-active'">👤 Personajes</a>
+    <a th:href="@{/cartas/clases}" th:classappend="${currentPage == 'cartas-clases'} ? 'is-active'">🛡️ Clases</a>
+    <a th:href="@{/cartas/razas}" th:classappend="${currentPage == 'cartas-razas'} ? 'is-active'">🧬 Razas</a>
+    <a th:href="@{/cartas/transfondos}" th:classappend="${currentPage == 'cartas-transfondos'} ? 'is-active'">💎 Trasfondos</a>
+    <a th:href="@{/cartas/habilidades}" th:classappend="${currentPage == 'cartas-habilidades'} ? 'is-active'">✨ Habilidades</a>
+    <a th:href="@{/cartas/armas}" th:classappend="${currentPage == 'cartas-armas'} ? 'is-active'">⚔️ Armas y objetos</a>
+    <a th:href="@{/cartas/dotes}" th:classappend="${currentPage == 'cartas-dotes'} ? 'is-active'">🌟 Dotes</a>
+    <a th:href="@{/cartas/pasivas}" th:classappend="${currentPage == 'cartas-pasivas'} ? 'is-active'">🌀 Pasivas</a>
+    <a th:href="@{/cartas/hechizos}" th:classappend="${currentPage == 'cartas-hechizos'} ? 'is-active'">🔮 Hechizos</a>
+    <a th:href="@{/cartas/consumibles}" th:classappend="${currentPage == 'cartas-consumibles'} ? 'is-active'">🧪 Consumibles</a>
+    <a th:href="@{/cartas/rasgos}" th:classappend="${currentPage == 'cartas-rasgos'} ? 'is-active'">📖 Rasgos</a>
+    <a th:href="@{/cartas/invocaciones}" th:classappend="${currentPage == 'cartas-invocaciones'} ? 'is-active'">👻 Invocaciones</a>
+    <a th:href="@{/cartas/enemigos}" th:classappend="${currentPage == 'cartas-enemigos'} ? 'is-active'">💀 Monstruos</a>
+    <a th:href="@{/cartas/deidades}" th:classappend="${currentPage == 'cartas-deidades'} ? 'is-active'">✝ Deidades</a>
+    <a th:href="@{/historias}" th:classappend="${currentPage == 'historias'} ? 'is-active'">📜 Historias</a>
+    <a th:href="@{/npcs}" th:classappend="${currentPage == 'npcs'} ? 'is-active'">🧑 PNJs</a>
+    <a th:href="@{/tesoros}" th:classappend="${currentPage == 'tesoros'} ? 'is-active'">💰 Tesoros</a>
+    <a th:href="@{/aventuras}" th:classappend="${currentPage == 'aventuras'} ? 'is-active'">🗺 Aventuras</a>
+    <a th:href="@{/combat/iniciar}" th:classappend="${currentPage == 'combate'} ? 'is-active'">⚔ Combate</a>
+    <a th:href="@{/eventos}" th:classappend="${currentPage == 'eventos'} ? 'is-active'">⚡ Eventos</a>
+    <a th:href="@{/cartas/condiciones}" th:classappend="${currentPage == 'cartas-condiciones'} ? 'is-active'">🌀 Condiciones</a>
+    <a th:href="@{/exportacions}" th:classappend="${currentPage == 'exportacions'} ? 'is-active'">📦 Exportaciones</a>
+    <a th:href="@{/diagnostico}" th:classappend="${currentPage == 'diagnostico'} ? 'is-active'">🩺 Diagnóstico</a>
+    <a th:href="@{/configuracio}" th:classappend="${currentPage == 'configuracio'} ? 'is-active'">⚙️ Configuración</a>
+</aside>

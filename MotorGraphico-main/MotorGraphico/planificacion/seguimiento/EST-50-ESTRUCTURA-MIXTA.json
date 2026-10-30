@@ -1,0 +1,22 @@
+{
+  "id": "EST-50",
+  "date": "2026-09-23",
+  "author": "Codex",
+  "status": "HECHO — guardia conservadora de estructura mixta.",
+  "scope": [
+    "Detectar en src/ y editor/src un .cpp que define XData/XState local y dirige XController.",
+    "Ejecutarlo también con --rapido, por lo que el hook pre-commit lo rechaza antes del commit.",
+    "Probar datos aislados, controlador aislado, comentarios, controlador local, método externo y la ruta CLI."
+  ],
+  "non_goals": [
+    "No inferir semántica C++ de cualquier struct o método: los adaptadores y RAII locales no son automáticamente una mezcla.",
+    "No tocar CMakeLists.txt, código productivo ni planificacion/linea_base_core.json, que otro agente está actualizando."
+  ],
+  "routing": "El MAPA_DEL_CODIGO cubre rutas de producto; esta puerta de calidad se traza en TABLERO_ESTABILIZACION y se ejecuta por tools/hooks/pre-commit y pre-push.",
+  "verification": [
+    "tools/test_linea_base_core.py pasa 38 casos; el fixture mixto falla por función y también por la ruta --rapido.",
+    "linea_base_core.py --rapido y tools/hooks/pre-commit pasan en el árbol actual; comprueba_estructura_mixta no encuentra candidatos.",
+    "La guardia completa informa 0 problemas instantáneos de EST-50. Su único fallo medido es ajeno: fuentes directas 70 → 72, además de una foto de alcance vieja."
+  ],
+  "handoff": "La heurística no pretende interpretar todo C++: vigila el contrato nombrado XData/XState + XController, incluyendo controladores locales y métodos externos, e ignora comentarios. Una ampliación que quiera clasificar motores, adaptadores o RAII necesita antes ejemplos reales y una prueba de no falsos positivos."
+}

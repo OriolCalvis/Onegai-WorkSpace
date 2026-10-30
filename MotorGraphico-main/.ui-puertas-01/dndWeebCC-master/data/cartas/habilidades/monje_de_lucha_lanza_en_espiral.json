@@ -1,0 +1,58 @@
+{
+ "id": "monje_de_lucha_lanza_en_espiral",
+ "name": "Lanza en espiral",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "La lanza en espiral llega lejos: 2d6 de daño de agua; el trauma le deja -1 a la CA 1 turno y sangrando.",
+ "flavorText": "",
+ "classTags": [
+  "monje_de_lucha"
+ ],
+ "roleTags": [],
+ "tags": [
+  "monje_de_lucha",
+  "estandar",
+  "Agua"
+ ],
+ "mechanicTags": [
+  "Agua"
+ ],
+ "actionType": "accion_principal",
+ "target": "zone_radius",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "La lanza en espiral llega lejos: 2d6 de daño de agua; el trauma le deja -1 a la CA 1 turno y sangrando.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "2d6 de daño de agua.",
+   "mechanicHook": "dano:2d6"
+  },
+  {
+   "description": "Trauma crítico: -1 a la CA 1 turno.",
+   "mechanicHook": "estado:1:penal_ca:1"
+  },
+  {
+   "description": "Trauma crítico: sangra 1 turno.",
+   "mechanicHook": "condicion:sangrado:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Monje de lucha (Battle Monk) · H1097 Lanza en espiral"
+}

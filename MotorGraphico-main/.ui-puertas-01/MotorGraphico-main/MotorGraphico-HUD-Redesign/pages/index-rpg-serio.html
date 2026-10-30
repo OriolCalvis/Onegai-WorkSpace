@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplicativo MotorGraphico - RPG serio</title>
+  <style id="theme-vars">
+:root {
+  --mg-background: #11131a;
+  --mg-foreground: #f2efe7;
+  --mg-card: #181c24;
+  --mg-card-foreground: #f2efe7;
+  --mg-popover: #1d2230;
+  --mg-popover-foreground: #f2efe7;
+  --mg-primary: #d7b15f;
+  --mg-primary-foreground: #15120c;
+  --mg-muted: #202634;
+  --mg-muted-foreground: #9da6b8;
+  --mg-border: #2c3344;
+  --mg-input: #272e3d;
+  --mg-ring: #d7b15f;
+  --mg-radius-sm: 6px;
+  --mg-radius-md: 12px;
+  --mg-radius-lg: 18px;
+
+  --bg: var(--mg-background);
+  --surface: var(--mg-card);
+  --surface-2: #232a39;
+  --ink: var(--mg-foreground);
+  --ink-2: #b6bdca;
+  --ink-3: #727c8f;
+  --line: var(--mg-border);
+  --brand: var(--mg-primary);
+  --brand-ink: var(--mg-primary-foreground);
+  --state-success: #61c083;
+  --state-warning: #d7b15f;
+  --state-error: #d96a58;
+  --state-info: #6ea0ff;
+
+  --shadow-1: 0 10px 30px rgba(6, 8, 12, 0.22);
+  --shadow-2: 0 18px 45px rgba(6, 8, 12, 0.34);
+
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+body {
+  min-height: 100vh;
+}
+  </style>
+  <style id="critical-layout">
+    :root {
+      color-scheme: dark;
+      --hud-border: rgba(191, 176, 141, 0.72);
+      --hud-border-strong: rgba(222, 198, 146, 0.94);
+      --hud-panel: rgba(19, 14, 12, 0.86);
+      --hud-panel-strong: rgba(12, 9, 8, 0.94);
+      --hud-panel-soft: rgba(31, 24, 21, 0.8);
+      --hud-grid: rgba(241, 220, 174, 0.08);
+      --hud-text-dim: #a59a8b;
+      --hud-text-soft: #d9d0c3;
+      --hud-gold: #d7b15f;
+      --hud-gold-soft: #f0d49d;
+      --hud-red: #a9483d;
+      --hud-red-bright: #dc7461;
+      --hud-green: #5e9768;
+      --hud-blue: #6888c6;
+      --hud-bone: #efe6d7;
+      --hud-shadow: 0 18px 40px rgba(0, 0, 0, 0.42);
+      --hud-outline: 0 0 0 1px rgba(255, 247, 228, 0.05), 0 18px 40px rgba(0, 0, 0, 0.42);
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(215, 177, 95, 0.12), transparent 24%),
+        radial-gradient(circle at 20% 20%, rgba(110, 69, 47, 0.26), transparent 28%),
+        radial-gradient(circle at 84% 14%, rgba(92, 24, 18, 0.2), transparent 24%),
+        linear-gradient(180deg, #090806 0%, #110f0d 48%, #090807 100%);
+    }
+
+    .overflow-y-auto {
+      overflow-y: auto;
+    }
+
+    #app-shell {
+      height: 100vh;
+      padding: 22px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mg-scroll-region {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    .mg-scroll-region::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .mg-scroll-region::-webkit-scrollbar-thumb {
+      background: rgba(215, 177, 95, 0.25);
+      border-radius: 999px;
+      border: 2px solid rgba(15, 11, 9, 0.8);
+    }
+
+    .page-shell {
+      max-width: 1540px;
+      margin: 0 auto;
+      display: grid;
+      gap: 18px;
+    }
+
+    .page-header,
+    .stage-card,
+    #rpg-serious-board,
+    #hud-improvements {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      border: 1px solid rgba(122, 103, 79, 0.38);
+      background:
+        linear-gradient(180deg, rgba(30, 22, 18, 0.96), rgba(14, 10, 9, 0.98)),
+        rgba(16, 12, 10, 0.94);
+      box-shadow: var(--shadow-2);
+    }
+
+    .page-header::before,
+    .stage-card::before,
+    #rpg-serious-board::before,
+    #hud-improvements::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(240, 212, 157, 0.8), transparent);
+    }
+
+    .page-header {
+      padding: 24px 26px;
+      display: grid;
+      gap: 16px;
+      background:
+        radial-gradient(circle at 80% 0%, rgba(215, 177, 95, 0.08), transparent 24%),
+        linear-gradient(180deg, rgba(37, 28, 23, 0.96), rgba(16, 12, 10, 0.98));
+    }
+
+    .eyebrow,
+    .micro-label,
+    .panel-tag {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 11px;
+      color: var(--hud-text-dim);
+    }
+
+    .page-title-row,
+    .card-heading,
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .page-title-row h1,
+    .card-heading h2,
+    .section-heading h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      letter-spacing: -0.03em;
+      line-height: 1.04;
+      color: var(--hud-bone);
+    }
+
+    .page-title-row h1 {
+      font-size: clamp(1.55rem, 2.1vw, 2.42rem);
+      margin-top: 8px;
+    }
+
+    .card-heading h2,
+    .section-heading h2 {
+      font-size: 1.34rem;
+    }
+
+    .page-title-row p,
+    .card-heading p,
+    .stage-copy,
+    .board-note,
+    .legend-card p,
+    .mode-card p,
+    .improvement-card p,
+    .preserved-list li,
+    .mode-list li,
+    .board-subcard p {
+      color: #c9c0b2;
+      line-height: 1.55;
+    }
+
+    .header-chips,
+    .meta-strip,
+    .mode-badges,
+    .improvement-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .header-chip,
+    .meta-chip,
+    .mode-badge,
+    .improvement-tag,
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(141, 118, 91, 0.32);
+      background: rgba(45, 33, 27, 0.82);
+      color: #decfb8;
+      font-size: 12px;
+    }
+
+    .header-chip strong,
+    .meta-chip strong,
+    .mode-badge strong {
+      color: #f4e7cb;
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.56fr) minmax(340px, 0.84fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .stage-card,
+    #rpg-serious-board,
+    #hud-improvements {
+      padding: 20px;
+    }
+
+    .status-badge {
+      background: rgba(215, 177, 95, 0.1);
+      border-color: rgba(215, 177, 95, 0.26);
+      color: #efd8a6;
+    }
+
+    .stage-copy,
+    .board-note {
+      margin: 0 0 16px;
+      font-size: 14px;
+    }
+
+    .engine-stage {
+      position: relative;
+      min-height: 980px;
+      overflow: hidden;
+      border-radius: 22px;
+      border: 1px solid rgba(123, 103, 79, 0.26);
+      background:
+        radial-gradient(circle at 50% 22%, rgba(240, 212, 157, 0.12), transparent 18%),
+        radial-gradient(circle at 74% 30%, rgba(145, 58, 48, 0.18), transparent 18%),
+        linear-gradient(180deg, rgba(18, 14, 12, 0.96), rgba(14, 11, 10, 0.97) 28%, rgba(8, 7, 7, 0.99) 100%);
+      box-shadow: inset 0 0 0 1px rgba(255, 248, 232, 0.03);
+    }
+
+    .engine-stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.26)),
+        radial-gradient(circle at 50% 54%, transparent 0%, rgba(0, 0, 0, 0.18) 60%, rgba(0, 0, 0, 0.42) 100%);
+      pointer-events: none;
+    }
+
+    .scene-topnote,
+    .conflict-banner,
+    .travel-ribbon {
+      position: absolute;
+      z-index: 1;
+      border: 1px solid rgba(151, 126, 94, 0.22);
+      background: rgba(19, 14, 12, 0.76);
+      backdrop-filter: blur(10px);
+    }
+
+    .scene-topnote {
+      top: 18px;
+      left: 18px;
+      max-width: 380px;
+      padding: 12px 14px;
+      border-radius: 16px;
+    }
+
+    .scene-topnote strong {
+      display: block;
+      margin-top: 4px;
+      color: #f5ecdd;
+      font-size: 14px;
+    }
+
+    .conflict-banner {
+      top: 18px;
+      right: 18px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      max-width: 320px;
+      text-align: right;
+    }
+
+    .conflict-banner strong {
+      display: block;
+      margin-top: 4px;
+      color: #f1dcc0;
+      font-size: 14px;
+    }
+
+    .travel-ribbon {
+      left: 50%;
+      top: 108px;
+      transform: translateX(-50%);
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: rgba(22, 16, 13, 0.82);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+    }
+
+    .travel-ribbon strong {
+      color: #f0d49d;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .map-surface,
+    .map-surface::before,
+    .map-surface::after,
+    .mist-band,
+    .light-column {
+      position: absolute;
+      inset: 0;
+    }
+
+    .map-surface::before {
+      content: "";
+      background:
+        linear-gradient(135deg, rgba(255, 250, 240, 0.03) 1px, transparent 1px),
+        linear-gradient(45deg, rgba(255, 250, 240, 0.03) 1px, transparent 1px);
+      background-size: 92px 46px;
+      transform: translateY(120px) skewY(-12deg);
+      opacity: 0.6;
+    }
+
+    .map-surface::after {
+      content: "";
+      background:
+        radial-gradient(circle at 24% 46%, rgba(96, 89, 63, 0.24), transparent 16%),
+        radial-gradient(circle at 52% 50%, rgba(78, 92, 79, 0.16), transparent 16%),
+        radial-gradient(circle at 70% 36%, rgba(115, 55, 42, 0.24), transparent 16%),
+        radial-gradient(circle at 77% 60%, rgba(71, 55, 44, 0.22), transparent 16%);
+      opacity: 0.96;
+    }
+
+    .mist-band {
+      background:
+        radial-gradient(circle at 20% 35%, rgba(198, 182, 154, 0.06), transparent 18%),
+        radial-gradient(circle at 64% 58%, rgba(235, 226, 210, 0.08), transparent 20%),
+        radial-gradient(circle at 82% 22%, rgba(226, 167, 130, 0.06), transparent 18%);
+      filter: blur(20px);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .light-column {
+      background:
+        linear-gradient(180deg, rgba(215, 177, 95, 0.1), transparent 22%),
+        linear-gradient(135deg, transparent 0%, rgba(255, 249, 236, 0.04) 50%, transparent 68%);
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .iso-landmark,
+    .iso-shadow,
+    .iso-marker,
+    .road-strip {
+      position: absolute;
+      transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
+    .iso-landmark {
+      border: 1px solid rgba(164, 142, 110, 0.18);
+      background: linear-gradient(180deg, rgba(62, 47, 39, 0.56), rgba(26, 20, 18, 0.9));
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .iso-landmark--keep {
+      width: 220px;
+      height: 220px;
+      left: 50%;
+      top: 46%;
+    }
+
+    .iso-landmark--shop {
+      width: 140px;
+      height: 110px;
+      left: 26%;
+      top: 42%;
+    }
+
+    .iso-landmark--estate {
+      width: 170px;
+      height: 120px;
+      left: 72%;
+      top: 38%;
+    }
+
+    .road-strip {
+      width: 480px;
+      height: 44px;
+      left: 48%;
+      top: 58%;
+      background: linear-gradient(180deg, rgba(78, 61, 48, 0.42), rgba(31, 24, 21, 0.72));
+      border: 1px solid rgba(164, 141, 110, 0.12);
+    }
+
+    .iso-shadow {
+      width: 116px;
+      height: 56px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(0, 0, 0, 0.46), transparent 66%);
+      filter: blur(10px);
+    }
+
+    .iso-shadow--hero {
+      left: 48.5%;
+      top: 58%;
+    }
+
+    .iso-shadow--enemy {
+      left: 59.5%;
+      top: 40%;
+    }
+
+    .iso-shadow--npc {
+      left: 34%;
+      top: 47%;
+    }
+
+    .iso-marker {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      box-shadow: 0 0 0 1px rgba(255, 252, 243, 0.12), 0 8px 20px rgba(0, 0, 0, 0.32);
+    }
+
+    .iso-marker--hero {
+      left: 48.5%;
+      top: 54%;
+      background: linear-gradient(180deg, #b8d2ff, #4666b1);
+    }
+
+    .iso-marker--enemy {
+      left: 59.5%;
+      top: 36%;
+      background: linear-gradient(180deg, #f09c8a, #8d2b24);
+    }
+
+    .iso-marker--npc {
+      left: 34%;
+      top: 43%;
+      background: linear-gradient(180deg, #b9e1b7, #406941);
+    }
+
+    .pole-label {
+      position: absolute;
+      z-index: 1;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(19, 14, 12, 0.76);
+      border: 1px solid rgba(161, 133, 101, 0.24);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #e6d8bc;
+      font-family: var(--font-body);
+      backdrop-filter: blur(8px);
+    }
+
+    .pole-label--hero {
+      left: 33%;
+      top: 190px;
+    }
+
+    .pole-label--enemy {
+      right: 14%;
+      top: 188px;
+    }
+
+    .hud-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      font-family: var(--font-mono);
+      color: #f2ebe0;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.88);
+    }
+
+    .hud-rect {
+      position: absolute;
+      background:
+        linear-gradient(180deg, rgba(36, 26, 22, 0.92), rgba(17, 13, 12, 0.94)),
+        var(--hud-panel);
+      border: 2px solid var(--hud-border);
+      box-shadow: var(--hud-outline);
+      border-radius: 3px;
+    }
+
+    .hud-rect::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(255, 244, 223, 0.04);
+      pointer-events: none;
+    }
+
+    .hud-panel-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(180, 153, 112, 0.18);
+      background: rgba(47, 34, 27, 0.84);
+      color: var(--hud-text-soft);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .hud-player {
+      top: 12px;
+      left: 12px;
+      width: 280px;
+      height: 132px;
+      padding: 10px 12px;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(215, 177, 95, 0.1), transparent 24%),
+        linear-gradient(180deg, rgba(39, 29, 24, 0.94), rgba(14, 11, 10, 0.96));
+    }
+
+    .hud-player::after,
+    .hud-enemy::after {
+      content: "";
+      position: absolute;
+      inset: -18px auto auto -18px;
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(215, 177, 95, 0.12), transparent 70%);
+      pointer-events: none;
+      opacity: 0.75;
+    }
+
+    .hud-enemy::after {
+      inset: -22px -18px auto auto;
+      background: radial-gradient(circle, rgba(169, 72, 61, 0.18), transparent 72%);
+    }
+
+    .hud-enemy {
+      top: 12px;
+      left: 50%;
+      width: 280px;
+      height: 68px;
+      transform: translateX(-50%);
+      padding: 10px 12px;
+      border-color: rgba(178, 110, 96, 0.72);
+      background:
+        radial-gradient(circle at 88% 0%, rgba(169, 72, 61, 0.18), transparent 26%),
+        linear-gradient(180deg, rgba(42, 23, 19, 0.94), rgba(16, 11, 10, 0.96));
+    }
+
+    .hud-status-line,
+    .hud-subline,
+    .hud-moral-line,
+    .hud-hint,
+    .hud-dialogue-line,
+    .menu-item,
+    .shop-line,
+    .business-copy,
+    .business-menu li,
+    .inventory-lines li,
+    .mode-card code {
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .hud-status-line {
+      color: #f6f0e6;
+      margin-bottom: 6px;
+      white-space: pre;
+    }
+
+    .hud-subline {
+      color: #ddd1c1;
+      margin-bottom: 7px;
+      white-space: pre;
+    }
+
+    .bar-block + .bar-block {
+      margin-top: 6px;
+    }
+
+    .hud-bar-wrap {
+      height: 14px;
+      background: rgba(13, 10, 9, 0.92);
+      border: 1px solid rgba(206, 187, 150, 0.34);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hud-bar-wrap--small {
+      height: 10px;
+    }
+
+    .hud-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      height: 100%;
+    }
+
+    .hud-fill--hp {
+      width: 88%;
+      background: linear-gradient(90deg, #4b7e4f, #78b17e);
+    }
+
+    .hud-fill--mp {
+      width: 100%;
+      background: linear-gradient(90deg, #3553a9, #7ca4e2);
+    }
+
+    .hud-fill--enemy {
+      width: 61%;
+      background: linear-gradient(90deg, #7f342a, #d07b63);
+    }
+
+    .hud-fill--moral {
+      width: 72%;
+      background: linear-gradient(90deg, #5b5d6d, #86a1d4);
+    }
+
+    .hud-moral-line {
+      margin-top: 7px;
+      margin-bottom: 5px;
+      color: #d9d0c3;
+      font-size: 12px;
+      white-space: pre;
+    }
+
+    .hud-enemy-name {
+      margin-bottom: 8px;
+      color: #f8e0d8;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .hud-fps {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      color: #cfc6ba;
+      font-size: 14px;
+      padding: 4px 0;
+    }
+
+    .hud-minimap {
+      top: 40px;
+      right: 12px;
+      width: 180px;
+      height: 180px;
+      padding: 10px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(215, 177, 95, 0.08), transparent 28%),
+        linear-gradient(180deg, rgba(28, 20, 17, 0.92), rgba(14, 11, 10, 0.94));
+    }
+
+    .minimap-grid {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border: 1px solid rgba(188, 169, 132, 0.22);
+      background:
+        linear-gradient(rgba(255, 250, 241, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 250, 241, 0.04) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(22, 17, 15, 0.96), rgba(10, 8, 8, 0.98));
+      background-size: 22px 22px, 22px 22px, auto;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.22);
+    }
+
+    .mini-dot {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px rgba(255, 248, 235, 0.22);
+    }
+
+    .mini-dot--hero {
+      left: 86px;
+      top: 96px;
+      background: #86a9e8;
+    }
+
+    .mini-dot--enemy {
+      left: 110px;
+      top: 56px;
+      background: #d06d5a;
+    }
+
+    .mini-dot--npc {
+      left: 48px;
+      top: 72px;
+      background: #7bb47e;
+    }
+
+    .mini-dot--pickup {
+      left: 132px;
+      top: 114px;
+      background: #d7b15f;
+      border-radius: 2px;
+    }
+
+    .hud-inventory {
+      top: 50%;
+      right: 12px;
+      width: 240px;
+      height: 200px;
+      transform: translateY(-50%);
+      padding: 10px 12px;
+      background:
+        linear-gradient(180deg, rgba(32, 24, 20, 0.94), rgba(15, 11, 10, 0.96));
+    }
+
+    .inventory-lines {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 4px;
+      color: #ddd5ca;
+    }
+
+    .inventory-lines li:first-child {
+      color: #f5e5bf;
+      margin-bottom: 6px;
+    }
+
+    .hud-dialogue-frame {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      width: 648px;
+      height: 104px;
+      transform: translateX(-50%);
+      background: rgba(188, 172, 145, 0.78);
+      border: 0;
+      box-shadow: var(--hud-outline);
+      padding: 4px;
+    }
+
+    .hud-dialogue-box {
+      width: 640px;
+      height: 96px;
+      background:
+        linear-gradient(180deg, rgba(16, 11, 10, 0.96), rgba(10, 8, 8, 0.98)),
+        var(--hud-panel-strong);
+      border: 2px solid rgba(82, 67, 55, 0.95);
+      padding: 10px 12px;
+      display: grid;
+      gap: 2px;
+    }
+
+    .hud-dialogue-line {
+      color: #efe7d8;
+    }
+
+    .hud-hint-block {
+      position: absolute;
+      right: 16px;
+      bottom: 10px;
+      width: 280px;
+      text-align: right;
+    }
+
+    .hud-hint {
+      color: #d7cdbf;
+      white-space: nowrap;
+    }
+
+    .hud-anchor-cluster {
+      position: absolute;
+      left: 14px;
+      bottom: 138px;
+      width: 352px;
+      height: 240px;
+    }
+
+    .anchor-caption {
+      position: absolute;
+      left: 0;
+      bottom: 244px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: rgba(22, 17, 14, 0.82);
+      border: 1px solid rgba(160, 131, 98, 0.2);
+      color: #ded4c5;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-family: var(--font-body);
+    }
+
+    .hud-command-panel {
+      position: absolute;
+      inset: 24px auto auto 0;
+      width: 126px;
+      height: 124px;
+      padding: 10px;
+      border-color: rgba(209, 181, 118, 0.72);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(215, 177, 95, 0.12), transparent 28%),
+        linear-gradient(180deg, rgba(40, 28, 20, 0.95), rgba(15, 11, 10, 0.96));
+    }
+
+    .command-list,
+    .shop-list,
+    .business-menu {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 4px;
+    }
+
+    .menu-item,
+    .shop-line,
+    .business-menu li {
+      color: #f2ece2;
+    }
+
+    .menu-item.is-selected,
+    .shop-line.is-selected,
+    .business-menu li.is-selected {
+      color: #f0cf87;
+    }
+
+    .hud-alt-panel {
+      position: absolute;
+      left: 0;
+      top: 0;
+      padding: 10px 12px;
+      opacity: 0.24;
+      filter: saturate(0.84);
+    }
+
+    .hud-alt-panel .panel-tag {
+      color: #e0c892;
+    }
+
+    .hud-shop-panel {
+      width: 340px;
+      height: 230px;
+      transform: translate(8px, 8px);
+    }
+
+    .shop-title {
+      color: #f0cf87;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .hud-business-panel {
+      width: 340px;
+      height: 230px;
+      transform: translate(16px, 16px);
+    }
+
+    .business-copy {
+      color: #ddd4c7;
+      margin-bottom: 10px;
+      white-space: pre-line;
+    }
+
+    .scene-legend,
+    .improvements-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .scene-legend {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .legend-card,
+    .mode-card,
+    .improvement-card,
+    .board-subcard {
+      border-radius: 16px;
+      border: 1px solid rgba(122, 101, 77, 0.22);
+      background: rgba(20, 14, 12, 0.8);
+      padding: 14px;
+    }
+
+    .legend-card strong,
+    .mode-card strong,
+    .improvement-card strong,
+    .board-subcard strong {
+      color: #f5e7cb;
+    }
+
+    .legend-card p,
+    .board-subcard p {
+      margin: 8px 0 0;
+      font-size: 14px;
+    }
+
+    #rpg-serious-board {
+      display: grid;
+      gap: 14px;
+    }
+
+    .board-columns,
+    .mode-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .mode-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mode-card::after {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 3px;
+      background: linear-gradient(180deg, rgba(240, 212, 157, 0.9), rgba(169, 72, 61, 0.68));
+      opacity: 0.78;
+    }
+
+    .mode-card h3,
+    .improvement-card h3 {
+      margin: 6px 0 8px;
+      font-size: 1rem;
+      font-family: var(--font-display);
+      letter-spacing: -0.02em;
+      color: #f6ebd9;
+    }
+
+    .mode-list,
+    .preserved-list {
+      list-style: none;
+      margin: 10px 0 0;
+      padding: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .mode-list li,
+    .preserved-list li {
+      position: relative;
+      padding-left: 14px;
+      font-size: 14px;
+    }
+
+    .mode-list li::before,
+    .preserved-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.56em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(240, 212, 157, 0.84);
+    }
+
+    .mode-card code {
+      display: block;
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(120, 101, 76, 0.2);
+      background: rgba(12, 9, 8, 0.82);
+      color: #ded5c7;
+      white-space: nowrap;
+      overflow: auto;
+    }
+
+    .preserved-list li strong {
+      color: #f3e7d1;
+    }
+
+    #hud-improvements {
+      display: grid;
+      gap: 16px;
+    }
+
+    .improvements-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .improvement-card h3 {
+      color: #f7f0e3;
+    }
+
+    .improvement-card p {
+      margin: 8px 0 0;
+      font-size: 14px;
+    }
+
+    .improvement-card .micro-label {
+      color: #e2c68a;
+    }
+
+    .footer-note {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(18, 13, 11, 0.9);
+      border: 1px solid rgba(122, 101, 77, 0.18);
+      color: #cfc4b5;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 1360px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .engine-stage {
+        min-height: 1120px;
+      }
+
+      .scene-legend,
+      .improvements-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 1080px) {
+      #app-shell {
+        padding: 14px;
+      }
+
+      .page-title-row,
+      .card-heading,
+      .section-heading {
+        flex-direction: column;
+      }
+
+      .engine-stage {
+        min-height: 1380px;
+      }
+
+      .travel-ribbon {
+        top: 136px;
+      }
+
+      .hud-player,
+      .hud-enemy,
+      .hud-minimap,
+      .hud-inventory,
+      .hud-dialogue-frame,
+      .hud-hint-block,
+      .hud-anchor-cluster {
+        transform: none;
+        left: 16px;
+        right: 16px;
+        width: auto;
+      }
+
+      .hud-enemy {
+        top: 164px;
+      }
+
+      .hud-fps {
+        top: 90px;
+        right: 16px;
+      }
+
+      .hud-minimap {
+        top: 210px;
+        height: 180px;
+      }
+
+      .hud-inventory {
+        top: 408px;
+        height: 200px;
+      }
+
+      .hud-anchor-cluster {
+        top: 628px;
+        bottom: auto;
+        height: 280px;
+      }
+
+      .anchor-caption {
+        bottom: auto;
+        top: -34px;
+      }
+
+      .hud-dialogue-frame {
+        bottom: 92px;
+        height: 124px;
+      }
+
+      .hud-dialogue-box {
+        width: 100%;
+        height: 116px;
+      }
+
+      .hud-hint-block {
+        bottom: 24px;
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .scene-legend,
+      .improvements-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header-chips,
+      .meta-strip,
+      .mode-badges,
+      .improvement-tags {
+        gap: 8px;
+      }
+
+      .mode-card code {
+        white-space: pre-wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main id="app-shell" data-viewport-mode="app-shell">
+    <div class="mg-scroll-region overflow-y-auto" data-scroll-region="primary">
+      <div class="page-shell"><header class="page-header">
+          <div class="page-title-row">
+            <div>
+              <div class="eyebrow" data-vd-editable-host="1">Página comparativa derivada del HUD realmente programado hoy</div>
+              <h1>Aplicativo MotorGraphico - RPG serio</h1>
+              <p>
+                Esta página no inventa otro sistema: toma la interfaz construida hoy en <strong>Application.cpp</strong>,
+                conserva sus anclajes, tamaños y modos, y la empuja hacia una lectura inequívocamente JRPG / RPG táctico
+                clásico. El resultado sigue siendo el mismo HUD base del motor, pero ahora se siente como una expedición
+                peligrosa, con conflicto arriba, decisión ritual abajo y aventura persistente a la derecha.
+              </p>
+            </div>
+            <div class="header-chips">
+              <span class="header-chip"><strong>sourcePageId</strong> page-index-programado-actual</span>
+              <span class="header-chip"><strong>nodeId</strong> page-index-rpg-serio</span>
+              <span class="header-chip"><strong>viewport</strong> app-shell</span>
+              <span class="header-chip"><strong>derivation</strong> comparison-page</span>
+            </div>
+          </div>
+          <div class="meta-strip">
+            <span class="meta-chip"><strong>TopLeft</strong> panel jugador 280×132</span>
+            <span class="meta-chip"><strong>TopCenter</strong> enemigo solo cuando importa el combate</span>
+            <span class="meta-chip"><strong>TopRight</strong> FPS + minimapa 180×180</span>
+            <span class="meta-chip"><strong>CenterRight</strong> inventario lateral como expedición</span>
+            <span class="meta-chip"><strong>BottomCenter</strong> diálogo 648/640 como escena</span>
+            <span class="meta-chip"><strong>BottomLeft</strong> Battle / Shop / Business comparten anclaje</span>
+          </div>
+        </header>
+        
+
+        <section class="content-grid">
+          <section class="stage-card" aria-labelledby="hud-stage-heading">
+            <div class="card-heading">
+              <div>
+                <div class="micro-label">Escena central + HUD superpuesto</div>
+                <h2 id="hud-stage-heading">El mismo HUD programado, pero leído como aventura y amenaza</h2>
+              </div>
+              <span class="status-badge">Combate jerárquico, atmósfera sobria, fantasía táctica oscura</span>
+            </div>
+            <p class="stage-copy">
+              El mapa isométrico se mantiene como fondo jugable, pero con más clima, foco y tensión. Los paneles reales
+              siguen en su sitio: el héroe arriba izquierda, la amenaza arriba centro, la lectura táctica arriba derecha,
+              la mochila de campaña a la derecha, el menú ritual abajo izquierda y el cuadro de escena abajo centro.
+            </p>
+
+            <div class="engine-stage">
+              <div class="scene-topnote">
+                <div class="micro-label">Territorio</div>
+                <strong>Paso de ceniza, camino de ruina y vigilancia constante</strong>
+              </div>
+              <div class="conflict-banner">
+                <div class="micro-label">Tensión del encuentro</div>
+                <strong>El enemigo debe sentirse como un polo activo del conflicto, no como un dato accesorio</strong>
+              </div>
+              <div class="travel-ribbon">
+                <strong>La lectura visual prioriza aventura, riesgo y progreso sin romper el layout real</strong>
+              </div>
+
+              <div class="map-surface"></div>
+              <div class="mist-band"></div>
+              <div class="light-column"></div>
+              <div class="road-strip"></div>
+              <div class="iso-landmark iso-landmark--keep"></div>
+              <div class="iso-landmark iso-landmark--shop"></div>
+              <div class="iso-landmark iso-landmark--estate"></div>
+              <div class="iso-shadow iso-shadow--hero"></div>
+              <div class="iso-shadow iso-shadow--enemy"></div>
+              <div class="iso-shadow iso-shadow--npc"></div>
+              <div class="iso-marker iso-marker--hero" title="Jugador"></div>
+              <div class="iso-marker iso-marker--enemy" title="Enemigo"></div>
+              <div class="iso-marker iso-marker--npc" title="NPC / negocio"></div>
+              <div class="pole-label pole-label--hero">Juramento del héroe</div>
+              <div class="pole-label pole-label--enemy">Amenaza activa</div>
+
+              <div class="hud-layer">
+                <section class="hud-rect hud-player" aria-label="Panel del jugador">
+                  <div class="hud-panel-label">TopLeft · 280×132 · Presencia del héroe</div>
+                  <div class="hud-status-line">HEROE   150 ORO</div>
+                  <div class="hud-subline">PV 31/35  PM 8/8</div>
+                  <div class="bar-block">
+                    <div class="hud-bar-wrap">
+                      <div class="hud-fill hud-fill--hp"></div>
+                    </div>
+                  </div>
+                  <div class="bar-block">
+                    <div class="hud-bar-wrap hud-bar-wrap--small">
+                      <div class="hud-fill hud-fill--mp"></div>
+                    </div>
+                  </div>
+                  <div class="hud-moral-line">MORAL  HEROICO  42</div>
+                  <div class="hud-bar-wrap hud-bar-wrap--small">
+                    <div class="hud-fill hud-fill--moral"></div>
+                  </div>
+                </section>
+
+                <section class="hud-rect hud-enemy" aria-label="Panel enemigo">
+                  <div class="hud-panel-label">TopCenter · 280×68 · Battle</div>
+                  <div class="hud-enemy-name">Slime gelatinoso</div>
+                  <div class="hud-bar-wrap">
+                    <div class="hud-fill hud-fill--enemy"></div>
+                  </div>
+                </section>
+
+                <div class="hud-fps">58 FPS</div>
+
+                <section class="hud-rect hud-minimap" aria-label="Minimapa">
+                  <div class="hud-panel-label">TopRight · 180×180 · Lectura táctica</div>
+                  <div class="minimap-grid">
+                    <span class="mini-dot mini-dot--hero"></span>
+                    <span class="mini-dot mini-dot--enemy"></span>
+                    <span class="mini-dot mini-dot--npc"></span>
+                    <span class="mini-dot mini-dot--pickup"></span>
+                  </div>
+                </section>
+
+                <section class="hud-rect hud-inventory" aria-label="Inventario lateral">
+                  <div class="hud-panel-label">CenterRight · 240×200 · Exploration + TAB</div>
+                  <ul class="inventory-lines">
+                    <li>INVENTARIO</li>
+                    <li>pocion X2</li>
+                    <li>llave_cobre</li>
+                    <li>gema_verde</li>
+                    <li>mapa_mina</li>
+                    <li>antorcha X3</li>
+                    <li>entrada_posada</li>
+                  </ul>
+                </section>
+
+                <div class="hud-anchor-cluster" aria-label="Anclaje inferior izquierdo compartido">
+                  <div class="anchor-caption">BottomLeft compartido por Battle, Shop y Business</div>
+
+                  <section class="hud-rect hud-command-panel" aria-label="Menú de combate">
+                    <div class="hud-panel-label">Battle · Liturgia de combate</div>
+                    <ul class="command-list">
+                      <li class="menu-item is-selected">&gt; Atacar</li>
+                      <li class="menu-item">  Tajo</li>
+                      <li class="menu-item">  Cura</li>
+                      <li class="menu-item">  Pocion</li>
+                      <li class="menu-item">  Huir</li>
+                    </ul>
+                  </section>
+
+                  <section class="hud-rect hud-alt-panel hud-shop-panel" aria-label="Modo tienda">
+                    <div class="panel-tag">Shop · misma raíz visual, otro estado de aventura</div>
+                    <div class="shop-title">Tendero del puente</div>
+                    <ul class="shop-list">
+                      <li class="shop-line is-selected">&gt; Pocion  30 ORO</li>
+                      <li class="shop-line">  Antidoto  25 ORO</li>
+                      <li class="shop-line">  VENDER pocion X2</li>
+                      <li class="shop-line">  VENDER gema_verde</li>
+                    </ul>
+                  </section>
+
+                  <section class="hud-rect hud-alt-panel hud-business-panel" aria-label="Modo negocio">
+                    <div class="panel-tag">Business · campamento y patrimonio</div>
+                    <div class="business-copy">EN VENTA: Posada del puente
+PRECIO 120 ORO
+RENTA  15 ORO/CICLO
+TIENES 150 ORO</div>
+                    <ul class="business-menu">
+                      <li class="is-selected">&gt; COMPRAR</li>
+                      <li>  SALIR</li>
+                    </ul>
+                  </section>
+                </div>
+
+                <section class="hud-rect hud-dialogue-frame" aria-label="Cuadro de diálogo">
+                  <div class="hud-dialogue-box">
+                    <div class="hud-dialogue-line">El viento del puente arrastra ceniza sobre las tablas.</div>
+                    <div class="hud-dialogue-line">El slime bloquea la salida.</div>
+                    <div class="hud-dialogue-line">Tajo consume 3 PM.</div>
+                    <div class="hud-dialogue-line">Pulsa ENTER para continuar.</div>
+                  </div>
+                </section>
+
+                <div class="hud-hint-block" aria-label="Hint del modo actual">
+                  <div class="hud-hint">WASD MOVER TAB OBJ ESC SALIR</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="scene-legend">
+              <article class="legend-card">
+                <div class="micro-label">Lectura de conflicto</div>
+                <strong>Héroe y enemigo mandan arriba</strong>
+                <p>La parte superior deja de sentirse administrativa y pasa a leerse como un eje de duelo: héroe a un lado, amenaza al centro, contexto táctico al otro.</p>
+              </article>
+              <article class="legend-card">
+                <div class="micro-label">Lectura de aventura</div>
+                <strong>Inventario como cuaderno de expedición</strong>
+                <p>El panel derecho sigue siendo textual, pero se presenta como mochila y registro de viaje: recursos concretos para avanzar en una travesía hostil.</p>
+              </article>
+              <article class="legend-card">
+                <div class="micro-label">Lectura de escena</div>
+                <strong>Diálogo con gravedad narrativa</strong>
+                <p>La caja inferior no parece un log frío: parece una escena de RPG clásico, aunque conserva el mismo encaje y la misma separación respecto al hint.</p>
+              </article>
+            </div>
+          </section>
+
+          <aside id="rpg-serious-board" aria-labelledby="rpg-serious-heading">
+            <div class="card-heading">
+              <div>
+                <div class="micro-label">rpg-serious-board</div>
+                <h2 id="rpg-serious-heading">Cómo el HUD actual puede leerse como un RPG serio</h2>
+              </div>
+              <div class="mode-badges">
+                <span class="mode-badge"><strong>source</strong> HUD real del motor</span>
+                <span class="mode-badge"><strong>goal</strong> identidad RPG endurecida</span>
+              </div>
+            </div>
+
+            <p class="board-note">
+              La clave no es sustituir widgets, sino cambiar su lectura. El mismo conjunto de paneles se vuelve más
+              solemne cuando se refuerzan conflicto, trayecto, costo y escena. El HUD deja de parecer un overlay técnico
+              y empieza a sentirse como la interfaz de una campaña peligrosa.
+            </p>
+
+            <div class="board-columns">
+              <div class="mode-grid">
+                <article class="mode-card">
+                  <div class="micro-label">Modo 01</div>
+                  <h3>Exploration</h3>
+                  <p>El recorrido domina, pero el héroe sigue vigilado por la UI. El panel del jugador mantiene salud, magia, oro y moral como estado de travesía, mientras el inventario se abre como mochila de campaña.</p>
+                  <ul class="mode-list">
+                    <li>El panel del héroe se siente diegético: recursos para seguir vivo, no métricas abstractas.</li>
+                    <li>El minimapa y los FPS permanecen como soporte de navegación real, no como instrumentación de editor.</li>
+                    <li>La hint line sigue presente, pero se lee como instrucción de marcha.</li>
+                  </ul>
+                  <code>WASD MOVER TAB OBJ ESC SALIR</code>
+                </article>
+
+                <article class="mode-card">
+                  <div class="micro-label">Modo 02</div>
+                  <h3>Battle</h3>
+                  <p>Cuando entra el combate, el tablero visual cambia de prioridad sin moverse de sitio: el enemigo sube a primer plano y el menú inferior izquierdo gana peso ritual.</p>
+                  <ul class="mode-list">
+                    <li>El panel enemigo arriba centro se convierte en la amenaza que activa la escena.</li>
+                    <li>El menú Atacar / Tajo / Cura / Pocion / Huir se siente como liturgia táctica clásica.</li>
+                    <li>El diálogo inferior opera como crónica inmediata del turno.</li>
+                  </ul>
+                  <code>W/S ELEGIR ENTER CONFIRMAR</code>
+                </article>
+
+                <article class="mode-card">
+                  <div class="micro-label">Modo 03</div>
+                  <h3>Dialogue</h3>
+                  <p>La caja centrada abajo se vuelve escena narrativa. No hay árbol complejo nuevo: simplemente se endurece el tono, se limpia el foco y la voz del mundo entra con más peso.</p>
+                  <ul class="mode-list">
+                    <li>El marco del diálogo conserva sus 648/640 px y su posición central inferior.</li>
+                    <li>La separación entre diálogo y hint mantiene la claridad funcional del código.</li>
+                    <li>La microcopy abandona el tono técnico y adopta una cadencia más solemne.</li>
+                  </ul>
+                  <code>ENTER CONTINUAR</code>
+                </article>
+
+                <article class="mode-card">
+                  <div class="micro-label">Modo 04</div>
+                  <h3>Shop</h3>
+                  <p>La tienda deja de parecer un panel utilitario y pasa a sentirse como negociación de ruta: reabastecerse, vender hallazgos y decidir qué cargar para el próximo tramo.</p>
+                  <ul class="mode-list">
+                    <li>Se conserva el mismo anclaje del combate para no romper la lógica de modo.</li>
+                    <li>El tono de mercader y expedición refuerza el mundo sin cambiar el modelo textual.</li>
+                    <li>La lista sigue siendo directa, pero ahora encaja con economía de aventura.</li>
+                  </ul>
+                  <code>W/S ELEGIR ENTER OK E SALIR</code>
+                </article>
+
+                <article class="mode-card">
+                  <div class="micro-label">Modo 05</div>
+                  <h3>Business</h3>
+                  <p>El modo de negocio se interpreta como patrimonio conquistado durante la campaña. Sigue siendo una ficha textual, pero ahora se lee como administración del viaje y del mundo conquistado.</p>
+                  <ul class="mode-list">
+                    <li>Precio, renta e ingreso mantienen la misma estructura de lectura del HUD actual.</li>
+                    <li>El panel comparte raíz con Shop y Battle para reforzar coherencia modal.</li>
+                    <li>Comprar una posada se siente como progreso en el mundo, no como hoja de cálculo.</li>
+                  </ul>
+                  <code>W/S ELEGIR ENTER OK E SALIR</code>
+                </article>
+
+                <article class="mode-card">
+                  <div class="micro-label">Modo 06</div>
+                  <h3>GameOver</h3>
+                  <p>Incluso el cierre de partida conserva el mismo lenguaje duro del HUD, pero con gravedad de derrota. No hace falta una interfaz nueva para transmitir final y consecuencia.</p>
+                  <ul class="mode-list">
+                    <li>El sistema base no muta: se endurece la atmósfera, no el contrato del motor.</li>
+                    <li>La pantalla final sigue siendo breve, legible y sobria.</li>
+                    <li>La salida por ESC permanece como gesto funcional del sistema actual.</li>
+                  </ul>
+                  <code>FIN DE LA PARTIDA ESC SALIR</code>
+                </article>
+              </div>
+
+              <article class="board-subcard">
+                <div class="micro-label">Contexto fuente preservado</div>
+                <strong>Aspectos concretos que siguen intactos desde la UI programada</strong>
+                <ul class="preserved-list">
+                  <li><strong>Anclajes exactos:</strong> TopLeft, TopCenter, TopRight, CenterRight, BottomCenter y BottomLeft continúan siendo la base de toda la composición.</li>
+                  <li><strong>Dimensiones clave:</strong> panel jugador 280×132, panel enemigo 280×68, minimapa 180×180, inventario 240×200 y diálogo 648/640 px siguen presentes.</li>
+                  <li><strong>Dependencia modal:</strong> el enemigo aparece solo en <strong>Battle</strong>, el inventario corresponde a <strong>Exploration + TAB</strong> y el anclaje inferior izquierdo sigue compartido por Battle, Shop y Business.</li>
+                  <li><strong>Texto real del HUD:</strong> se mantienen los literales funcionales <strong>HEROE   150 ORO</strong>, <strong>PV 31/35 PM 8/8</strong> y los hints reales de entrada.</li>
+                  <li><strong>Menú de combate real:</strong> las opciones siguen siendo exactamente <strong>Atacar, Tajo, Cura, Pocion, Huir</strong>.</li>
+                  <li><strong>Separación funcional:</strong> diálogo e instrucciones siguen ocupando cajas distintas, igual que en la implementación actual.</li>
+                </ul>
+              </article>
+            </div>
+          </aside>
+        </section>
+
+        <section id="hud-improvements" aria-labelledby="hud-improvements-heading">
+          <div class="section-heading">
+            <div>
+              <div class="micro-label">hud-improvements</div>
+              <h2 id="hud-improvements-heading">Cómo endurecer la identidad RPG sin romper la UI actual</h2>
+            </div>
+            <div class="improvement-tags">
+              <span class="improvement-tag">Mismo HUD base</span>
+              <span class="improvement-tag">Más peso narrativo y táctico</span>
+              <span class="improvement-tag">Nada de editor ni sci-fi</span>
+            </div>
+          </div>
+
+          <div class="improvements-grid">
+            <article class="improvement-card">
+              <div class="micro-label">01 · Panel del jugador</div>
+              <h3>Volverlo una ficha de viaje</h3>
+              <p>Sin mover un solo bloque, la combinación de textura cálida, luz contenida y jerarquía clara hace que PV, PM, oro y moral se sientan como recursos de supervivencia y progreso.</p>
+            </article>
+
+            <article class="improvement-card">
+              <div class="micro-label">02 · Panel enemigo</div>
+              <h3>Dar gravedad a la amenaza</h3>
+              <p>El panel superior central ya existe; solo necesita más contraste, borde de peligro y relación visual directa con el héroe para que el combate mande cuando está activo.</p>
+            </article>
+
+            <article class="improvement-card">
+              <div class="micro-label">03 · Menú inferior</div>
+              <h3>Tratarlo como un ritual de decisión</h3>
+              <p>El menú de combate deja de parecer una lista técnica cuando el contenedor se presenta como acción ceremonial: selección dorada, masa oscura y foco de primer movimiento.</p>
+            </article>
+
+            <article class="improvement-card">
+              <div class="micro-label">04 · Diálogo</div>
+              <h3>Convertir el log en escena</h3>
+              <p>La estructura del cuadro sigue igual, pero la escritura, el marco y el contexto visual lo convierten en un momento narrativo dentro del mundo, no en una consola impersonal.</p>
+            </article>
+
+            <article class="improvement-card">
+              <div class="micro-label">05 · Inventario</div>
+              <h3>Leerlo como mochila de expedición</h3>
+              <p>El panel lateral puede seguir siendo un listado textual y, aun así, parecer equipo de campaña si se integra al tono de viaje, hallazgo y preparación de ruta.</p>
+            </article>
+
+            <article class="improvement-card">
+              <div class="micro-label">06 · Estados del juego</div>
+              <h3>Hacer que cada modo se sienta aventura</h3>
+              <p><strong>Battle</strong>, <strong>Exploration</strong>, <strong>Dialogue</strong>, <strong>Shop</strong>, <strong>Business</strong> y <strong>GameOver</strong> siguen existiendo como están; cambia su interpretación dramática, no su contrato funcional.</p>
+            </article>
+          </div>
+
+          <div class="footer-note">
+            Resultado buscado: que la página siga reconociéndose como la UI realmente programada hoy, pero ahora con una
+            identidad de RPG serio, táctico y de aventura sombría, sin desobedecer el HUD real ni los modos reales del motor.
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

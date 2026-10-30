@@ -1,0 +1,54 @@
+{
+ "id": "clerigo_del_caminante_gris_la_ultima_despedida",
+ "name": "La última despedida",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Le das la despedida del Caminante Gris: 2d6 de daño de luz, y su viaje queda escrito: los golpes contra él son críticos 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "clerigo_del_caminante_gris"
+ ],
+ "roleTags": [],
+ "tags": [
+  "clerigo_del_caminante_gris",
+  "estandar",
+  "Luz"
+ ],
+ "mechanicTags": [
+  "Luz"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "CAR",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Le das la despedida del Caminante Gris: 2d6 de daño de luz, y su viaje queda escrito: los golpes contra él son críticos 2 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "2d6 de daño de luz.",
+   "mechanicHook": "dano:2d6"
+  },
+  {
+   "description": "Despedida: los golpes contra él son críticos 2 turnos.",
+   "mechanicHook": "estado:2:critico_contra"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "Propia · Clérigo del Caminante Gris"
+}

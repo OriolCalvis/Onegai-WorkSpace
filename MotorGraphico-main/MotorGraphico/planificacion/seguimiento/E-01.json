@@ -1,0 +1,31 @@
+{
+  "id": "E-01",
+  "date": "2026-09-11",
+  "author": "Claude (Cowork)",
+  "status": "Documento y serializacion hechos; CI remota por pasar",
+  "actions": [
+    "Hecho el DOCUMENTO, no el editor ni el interprete. Es la pieza de E-01 que no depende de GL ni de ningun paquete sin cerrar, y que se puede probar entera.",
+    "`Map/EventLayerDocument` (header + .cpp propio + test): MapEventCommand, MapEventCondition, MapEventPage, MapEventDocument y EventLayerDocument con find/findAt/addEvent/removeEvent/setEventPosition/setEventPages/validate.",
+    "Cuarto tipo de capa: MapLayerType::Event, MapLayer::events() y la entrada en el variant MapLayerData. validateLayerForMap ya no tiene un `else` que asuma Region: los cuatro tipos se nombran, para que anadir un quinto no se cuele validandose como evento.",
+    "MapDocument gana addEvent/removeEvent/moveEvent/setEventPages, por el mismo mutateLayer que las entidades: copia, muta, revalida contra el mapa e instala. El get_if va repetido en las cuatro y no en un ayudante libre porque mutableData() es privado y solo MapDocument es su friend; sacarlo fuera rompeteria la garantia de C-12.",
+    "Los parametros de un comando se guardan como TEXTO. No es pereza: el juego de comandas es E-04, y tipar los parametros antes de que E-04 fije las familias seria inventarse el formato y convertir cada comando futuro en una migracion. A cambio, un comando de tipo desconocido se guarda y se reabre sin perder un campo, que es el requisito del diseno de bloques §9.",
+    "La implementacion vive en src/Map/EventLayerDocument.cpp y no dentro de src/Map/MapDocument.cpp, donde estan las otras tres capas. Es una desviacion deliberada de la convencion: MapDocument.cpp lo comparten C-12, C-13, E-01 y F-03, y varios agentes escriben en el repositorio a la vez. Queda anotado en el propio fichero y en el CMakeLists.",
+    "Segunda rebanada — serializacion. ProjectSerializer escribe y lee la capa de eventos: evento (id, nombre, posicion), paginas (id, nombre, disparador, AND/OR, apariencia), condiciones (clase, referencia, comparacion, valor, negada) y el arbol de comandos con sus parametros y ramas. Con esto el criterio «es desa amb el mapa» deja de ser una frase.",
+    "El disparador y la clase de condicion viajan como TEXTO, no como numero: un entero convertiria cualquier reordenacion futura del enum en una corrupcion silenciosa de todos los mapas guardados —un 'interact' que pasa a valer 2 se leeria como 'autorun' y el cofre se abriria solo—. Y un disparador que no se entiende FALLA en vez de caer a un valor por defecto.",
+    "La profundidad de comandos se vigila AL LEER, no solo al validar: validar ocurre despues de construir el arbol, y un fichero con diez mil niveles se lleva la pila por delante mientras se construye. Es la diferencia entre rechazar un fichero corrupto y morir abriendolo.",
+    "schemaVersion del mapa NO sube. Anadir un tipo de capa es compatible al leer y subirla dejaria ilegibles de golpe los 97 niveles que ya existen. Al reves no lo es: un binario anterior que abra un mapa con eventos falla con «capa: tipo desconocido 'event'», que es un error claro y no una perdida de datos. Congelar esquemas es G-07 y ahi debe quedar registrado."
+  ],
+  "verification": [
+    "`test_event_layer_document`, 9 casos verdes. Los 7 del documento (una casilla un evento; comando de tipo desconocido intacto; evento fuera del mapa lo rechaza el documento y no la capa; operacion fallida no cambia nada; paginas en un solo paso conservando orden; anidamiento desbocado rechazado sin reventar la pila; condicion sin nombre rechazada) mas los 2 de serializacion: ida y vuelta del JSON del mapa conservando disparador, AND/OR, apariencia, condicion negada y un comando 'clima.lluvia' con su version, su parametro y su rama —y serializar dos veces da el MISMO texto, no solo uno equivalente—; y un disparador desconocido que falla nombrandolo en vez de caer a 'interact'.",
+    "Regresion verde: test_map_document (8), test_level_document_bridge (6), test_map_round_trip (6), test_editor_state (10, el C-14 recien migrado por otra sesion), y los tres de tests/Project (ManifestTests, ProjectTests, SerializationTests).",
+    "Compilado y ejecutado con g++ directo sobre la maquina del usuario (alli no hay cmake). Registrado en CMakeLists como test_event_layer_document. Falta pasar por CI remota: el paquete no se cierra formalmente hasta entonces."
+  ],
+  "pending": [
+    "CI remota. Es lo unico que separa a este paquete de estar cerrado.",
+    "El editor de paginas (E-05) y el interprete (E-03) son otros paquetes. Este documento no decide que pagina gana si se cumplen varias: es DEC-10 y Oriol no la ha respondido, asi que las paginas se guardan en orden y nada mas.",
+    "Los interruptores locales A-D son E-02. Una condicion puede nombrar lo que quiera; quien resuelve ese nombre no vive aqui.",
+    "El juego de comandas es E-04. Por eso los parametros son texto: tiparlos antes de que E-04 fije las familias seria inventarse el formato. A cambio, un comando de tipo desconocido va y vuelve sin perder un campo.",
+    "kMaxCommandDepth = 16 es un valor de partida. El diseno de bloques pide fijar los limites midiendo escenas reales; cuando las haya, se remide.",
+    "schemas/map-v1.schema.json describe 'layers' como array libre, asi que no ha hecho falta tocarlo. Si G-07 lo aprieta, la capa de eventos tendra que describirse alli."
+  ]
+}

@@ -1,0 +1,64 @@
+{
+ "id": "nucleo_errante_prototipo",
+ "name": "Nucleo Errante Prototipo",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 4,
+ "role": "conjurador",
+ "faction": "forjados_sin_amo",
+ "factionName": "Los Forjados sin Amo",
+ "stats": {
+  "CON": 6,
+  "DES": 6,
+  "INT": 9,
+  "CAR": 7
+ },
+ "derived": {
+  "vida": 40,
+  "ca": 17,
+  "defensaMental": 17,
+  "resistenciaFisica": 16,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Arco Voltaico",
+   "defense": "CA",
+   "effect": "Ataque de fisico: daño que suma su INT (pool de INT, regla 7.6)."
+  },
+  {
+   "name": "Sobrecarga Menor",
+   "defense": "CA",
+   "effect": "Técnica de facción: si el objetivo falla, queda Guardia Rota hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Inmunes a Encantado y Asustado; al quedar bajo media vida, chirrían: −1 a su CA."
+ },
+ "conditionsInflicted": [
+  "guardia_rota"
+ ],
+ "loot": [
+  "martillo_de_guerra_de_viaje",
+  "rodela_de_hierro_de_milicia",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Gana una segunda técnica por ronda y +1 al daño."
+  }
+ ],
+ "flavorText": "Sus creadores murieron. Las órdenes, no."
+}

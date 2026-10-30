@@ -1,0 +1,22 @@
+{
+  "id": "EST-34",
+  "date": "2026-09-22",
+  "author": "Codex",
+  "status": "HECHO — relevo exclusivo de ObjectInspector.",
+  "route": "ObjectInspector.cpp → motor_level → level_editor; demo_object_inspector ejerce el flujo GL-free del panel.",
+  "scope": [
+    "Extraer ObjectInspectorData para el estado de sesión y borrar m_indiceTexto y m_filtro, que no tienen uso.",
+    "Extraer el bucle modal de teclado a ObjectInspectorInput.h header-only para no tocar CMakeLists.txt mientras H0-07 lo modifica.",
+    "Asignar los dos headers nuevos a E-12 y E-14, regenerar MAPA_DEL_CODIGO.md y dejar sus banners para evitar colisiones entre agentes.",
+    "Dejar ObjectInspector.cpp con ciclo de vida, presentación, rebuild y commit; conservar EditorState, level_editor y la API pública sin cambios."
+  ],
+  "verification": [
+    "cmake --build out/build/macos-debug --target demo_object_inspector -j2: correcto.",
+    "ctest --test-dir out/build/macos-debug -R ^demo_object_inspector$ --output-on-failure: 1/1 correcto (GL-free).",
+    "cmake --build out/build/macos-debug --target level_editor -j2: ObjectInspector y motor_level compilan; el enlace final queda bloqueado en src/Engine/Application.cpp por WIP ajeno (m_savePath y Game::TitleAction), sin atribuirlo a EST-34.",
+    "python3 tools/medir_alcance.py . --json <temporal> --comprobar: ObjectInspector, ObjectInspectorData y ObjectInspectorInput llegan a level_editor.",
+    "python3 tools/marcar_paquetes.py --mapa: MAPA_DEL_CODIGO.md registra los dos headers nuevos en E-12 y E-14; sus banners coinciden con la fuente generada.",
+    "python3 tools/linea_base_core.py --rapido: correcto; línea base acotada, cuellos 17 → 16 y estado 8 → 7."
+  ],
+  "handoff": "No otro agente tocó ObjectInspector.h/.cpp durante el relevo. La guardia completa conserva cuellos de RpgCatalogs, RpgCoreDefinitions y ProjectSerializer de otros trabajos; no se reescribió esa foto global."
+}

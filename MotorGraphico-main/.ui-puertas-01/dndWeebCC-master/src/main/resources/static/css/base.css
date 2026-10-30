@@ -1,0 +1,260 @@
+/*
+ * base.css — Piloto de rediseño visual
+ * Reset + shell de página (header / sidebar / main / footer). Requiere tokens.css.
+ */
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    min-height: 100vh;
+    transition: background-color 160ms ease, color 160ms ease;
+}
+
+h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    line-height: var(--lh-heading);
+    margin: 0 0 var(--sp-3) 0;
+    color: var(--text-primary);
+}
+h1 { font-size: var(--fs-display); }
+h2 { font-size: var(--fs-h1); }
+h3 { font-size: var(--fs-h2); }
+h4 { font-size: var(--fs-h3); }
+p { margin: 0 0 var(--sp-3) 0; font-size: var(--fs-body); color: var(--text-secondary); }
+
+a { color: var(--accent-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+::selection { background: var(--accent-primary); color: var(--accent-primary-contrast); }
+
+/* Scrollbar (WebKit) */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg-sunken); }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: var(--radius-sm); }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
+
+/* ===== Shell ===== */
+.gm-app {
+    display: grid;
+    grid-template-rows: var(--header-height) 1fr auto;
+    min-height: 100vh;
+}
+
+.gm-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--sp-5);
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 2px 10px var(--shadow-color);
+}
+
+.gm-header__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-family: var(--font-display);
+    font-size: var(--fs-h2);
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+.gm-header__brand:hover { text-decoration: none; color: var(--accent-primary); }
+
+.gm-header__nav {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-1);
+    flex-wrap: wrap;
+}
+
+.gm-navlink {
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 var(--sp-3);
+    border-radius: var(--radius-md);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+.gm-navlink:hover {
+    background: var(--bg-sunken);
+    color: var(--text-primary);
+    text-decoration: none;
+}
+.gm-navlink.is-active {
+    background: var(--accent-primary);
+    color: var(--accent-primary-contrast);
+    border-color: var(--accent-primary-dark);
+}
+.gm-navlink:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-secondary);
+}
+
+.gm-body {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr;
+    align-items: start;
+}
+
+.gm-sidebar {
+    position: sticky;
+    top: var(--header-height);
+    height: calc(100vh - var(--header-height));
+    overflow-y: auto;
+    padding: var(--sp-4) var(--sp-3);
+    background: var(--bg-elevated);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+}
+
+.gm-sidebar__eyebrow {
+    font-size: var(--fs-micro);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0 var(--sp-2);
+    margin-bottom: var(--sp-2);
+}
+
+.gm-sidebar a {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    height: 38px;
+    padding: 0 var(--sp-2);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 120ms ease, color 120ms ease;
+}
+.gm-sidebar a:hover { background: var(--bg-sunken); color: var(--text-primary); text-decoration: none; }
+.gm-sidebar a.is-active { background: var(--accent-primary); color: var(--accent-primary-contrast); }
+.gm-sidebar a:focus-visible,
+.gm-sidebar:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-secondary);
+}
+
+.gm-main {
+    padding: var(--sp-5);
+    min-width: 0;
+}
+
+.gm-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--sp-3) var(--sp-5);
+    background: var(--bg-elevated);
+    border-top: 1px solid var(--border);
+    font-size: var(--fs-micro);
+    color: var(--text-muted);
+}
+
+/* Toggle día/noche */
+.gm-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--bg-sunken);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: var(--fs-h3);
+    line-height: 1;
+    transition: background-color 120ms ease, transform 120ms ease;
+}
+.gm-theme-toggle:hover { background: var(--accent-primary); color: var(--accent-primary-contrast); }
+.gm-theme-toggle:active { transform: scale(0.9); }
+
+/* Botón de menú móvil (hamburguesa): oculto en escritorio */
+.gm-menu-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--bg-sunken);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: var(--fs-h3);
+    line-height: 1;
+}
+.gm-menu-toggle:hover { background: var(--accent-primary); color: var(--accent-primary-contrast); }
+.gm-menu-toggle:focus-visible,
+.gm-theme-toggle:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-secondary);
+}
+
+/* Fondo oscurecido tras el drawer móvil (creado por panels.js) */
+.gm-sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 55;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease;
+}
+.gm-sidebar-backdrop.is-open { opacity: 1; pointer-events: auto; }
+
+body.gm-scroll-lock {
+    overflow: hidden;
+}
+
+@media (max-width: 820px) {
+    .gm-body { grid-template-columns: 1fr; }
+    /* La sidebar pasa a drawer lateral en vez de desaparecer (Plan de cierre, tarea 43) */
+    .gm-sidebar {
+        position: fixed;
+        top: var(--header-height);
+        left: 0;
+        bottom: 0;
+        height: auto;
+        width: min(78vw, 300px);
+        z-index: 60;
+        transform: translateX(-105%);
+        transition: transform 200ms ease;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    }
+    .gm-sidebar.is-open { transform: translateX(0); }
+    .gm-menu-toggle { display: inline-flex; }
+    .gm-header { padding: 0 var(--sp-3); }
+    .gm-main { padding: var(--sp-3); }
+    .gm-header__nav .gm-navlink span.gm-navlink__label { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gm-sidebar, .gm-sidebar-backdrop { transition: none; }
+}

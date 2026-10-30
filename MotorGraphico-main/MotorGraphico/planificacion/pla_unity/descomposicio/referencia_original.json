@@ -1,0 +1,339 @@
+{
+  "zip": "arranque_codex_plau.zip",
+  "zip_sha256": "ad9ecc9a985c41aca9b76aa5307e3ad6dc1d68c635e84b55b2fa3c1ab2aeecaf",
+  "membre": "planificacion/pla_unity/dades_unity.py",
+  "minuts_jornada": 360,
+  "paquets": [
+    [
+      "U1-01",
+      "U1",
+      "L'àudio sona al joc (AudioDirector + assets/audio)",
+      3,
+      []
+    ],
+    [
+      "G-11",
+      "U1",
+      "Pantalles de guardar i carregar (resta)",
+      3,
+      []
+    ],
+    [
+      "G-01",
+      "U1",
+      "Autosave i recuperació",
+      2,
+      [
+        "G-11"
+      ]
+    ],
+    [
+      "U1-02",
+      "U1",
+      "World guarda les entitats en HandlePool",
+      2,
+      []
+    ],
+    [
+      "U1-03",
+      "U1",
+      "Els enemics persegueixen (estat kChase)",
+      2,
+      [
+        "U1-02"
+      ]
+    ],
+    [
+      "U1-04",
+      "U1",
+      "Rutines de PNJ segons la franja del dia",
+      2,
+      []
+    ],
+    [
+      "U1-05",
+      "U1",
+      "Llum global segons la franja del dia",
+      2,
+      [
+        "U1-04"
+      ]
+    ],
+    [
+      "U2-01",
+      "U2",
+      "Inventari motor / mòdul RPG / dades Onegai + tests de base",
+      2,
+      [
+        "U1-02"
+      ]
+    ],
+    [
+      "U2-02",
+      "U2",
+      "ProjectSettings: escena inicial, catàlegs, idioma",
+      4,
+      [
+        "U2-01"
+      ]
+    ],
+    [
+      "G-08",
+      "U2",
+      "El joc arrenca des del manifest (juego --proyecto)",
+      3,
+      [
+        "U2-02"
+      ]
+    ],
+    [
+      "U2-03",
+      "U2",
+      "IGameModule i mòdul RPG separat a CMake",
+      6,
+      [
+        "U2-02"
+      ]
+    ],
+    [
+      "U2-04",
+      "U2",
+      "Plantilles de projecte (buit, RPG isomètric, demo)",
+      3,
+      [
+        "U2-03",
+        "G-08"
+      ]
+    ],
+    [
+      "E-11",
+      "U2",
+      "Arbre de mapes i panell de projecte (resta)",
+      3,
+      [
+        "U2-03"
+      ]
+    ],
+    [
+      "U2-05",
+      "U2",
+      "Un sol editor: el de level_editor passa a motor_editor",
+      5,
+      [
+        "U2-01"
+      ]
+    ],
+    [
+      "DEC-10",
+      "U3",
+      "Decisió: quina pàgina d'event guanya",
+      0,
+      []
+    ],
+    [
+      "U3-01",
+      "U3",
+      "Beats i events de mapa en un sol sistema",
+      5,
+      [
+        "DEC-10",
+        "U2-03"
+      ]
+    ],
+    [
+      "U3-02",
+      "U3",
+      "Triggers de regió: entrada, permanència, sortida",
+      4,
+      [
+        "U3-01"
+      ]
+    ],
+    [
+      "U3-03",
+      "U3",
+      "Events comuns, bucles i etiquetes",
+      3,
+      [
+        "U3-01"
+      ]
+    ],
+    [
+      "U3-07",
+      "U3",
+      "Utilitat de tweens compartida",
+      2,
+      [
+        "U2-01"
+      ]
+    ],
+    [
+      "U3-04",
+      "U3",
+      "Ordres de moure actor, càmera, so i triar opció",
+      5,
+      [
+        "U3-03",
+        "U3-07"
+      ]
+    ],
+    [
+      "E-05",
+      "U3",
+      "Editor de pàgines d'esdeveniment",
+      8,
+      [
+        "U3-02",
+        "U2-05"
+      ]
+    ],
+    [
+      "E-06",
+      "U3",
+      "Editor vertical de comandes",
+      9,
+      [
+        "E-05",
+        "U3-04"
+      ]
+    ],
+    [
+      "E-08",
+      "U3",
+      "Panell del depurador pas a pas (resta)",
+      2,
+      [
+        "E-06"
+      ]
+    ],
+    [
+      "U3-05",
+      "U3",
+      "Clips d'animació en JSON amb events de fotograma",
+      4,
+      [
+        "U2-03"
+      ]
+    ],
+    [
+      "U3-06",
+      "U3",
+      "Màquina d'estats d'animació en dades",
+      3,
+      [
+        "U3-05"
+      ]
+    ],
+    [
+      "DEC-06",
+      "U4",
+      "Decisió: joc dins l'editor o en finestra a part",
+      0,
+      []
+    ],
+    [
+      "F-01",
+      "U4",
+      "Playtest des de l'editor",
+      4,
+      [
+        "DEC-06",
+        "U2-05"
+      ]
+    ],
+    [
+      "F-02",
+      "U4",
+      "Provar des de la casella seleccionada",
+      2,
+      [
+        "F-01"
+      ]
+    ],
+    [
+      "F-03",
+      "U4",
+      "Recàrrega en calent",
+      4,
+      [
+        "F-01"
+      ]
+    ],
+    [
+      "F-04",
+      "U4",
+      "Consola i inspector d'estat",
+      3,
+      [
+        "F-01"
+      ]
+    ],
+    [
+      "U4-01",
+      "U4",
+      "Càmera: seguiment, sacsejada, límits i dead zone",
+      3,
+      [
+        "U3-07"
+      ]
+    ],
+    [
+      "U4-02",
+      "U4",
+      "Cinemàtiques amb pistes en paral·lel",
+      6,
+      [
+        "U3-04",
+        "U3-06",
+        "U4-01"
+      ]
+    ],
+    [
+      "U4-03",
+      "U4",
+      "Editor de línia de temps",
+      7,
+      [
+        "U4-02",
+        "E-06"
+      ]
+    ],
+    [
+      "U4-04",
+      "U4",
+      "Saltar cinemàtiques i EscenaNoqueo com a cinemàtica",
+      2,
+      [
+        "U4-02"
+      ]
+    ],
+    [
+      "U4-05",
+      "U4",
+      "Prefabs de grups d'objectes (MAP-08)",
+      5,
+      [
+        "U2-05"
+      ]
+    ],
+    [
+      "U4-06",
+      "U4",
+      "Overlay de depuració: col·lisions, regions, rutes",
+      2,
+      [
+        "U3-02",
+        "F-04"
+      ]
+    ],
+    [
+      "U4-07",
+      "U4",
+      "Emissor de partícules genèric",
+      3,
+      [
+        "U3-07"
+      ]
+    ]
+  ]
+}

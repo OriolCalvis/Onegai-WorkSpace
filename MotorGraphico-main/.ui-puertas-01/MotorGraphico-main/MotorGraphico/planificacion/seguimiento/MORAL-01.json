@@ -1,0 +1,36 @@
+{
+ "id": "MORAL-01",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — la moral de varios factores con los seis números que aprobó Oriol, los siete tramos con su aura (comprobada en el juego), la pureza, las marcas y la reputación por facción; en las aventuras, los efectos acto y herida, requires.moral y las tiradas de éxitos fijos.",
+ "origen": "Oriol (08/10): «parametrizar bien la moral, porque al final, si nos corrompemos muy rápido no tendría gracia para nada»; contestó en el documento «Boundington: alternativas, karma y moral» (Claude Docs) y en el chat («Éxitos, a la letra»).",
+ "actions": [
+  "include/Game/Morality.h y src/Game/Morality.cpp: el libro del día (apunta), asentar al dormir (peso, repetición, tope por noche, resistencia; los mayores, sin tope y uno a uno), siete tramos, pureza y marcas.",
+  "include/Game/ReglasMoral.h y src/Game/ReglasMoral.cpp: lee assets/rules/moral.json (los seis números) y assets/rules/actos.json (el catálogo de actos), con sus errores; el estado en la partida guardada.",
+  "include/Game/MoralDeLaSesion.h y src/Game/MoralDeLaSesion.cpp: apuntar los actos de un beat (registro, pureza y reputación) y asentar en el descanso largo («Esta noche se asienta lo de hoy: moral −16 → −20 (Canalla).»).",
+  "Narrativa: efectos acto y herida, requires.moral y skillCheck.exitos (src/RPG/Narrative/MoralAventura.*); GameSessionNarrativa los resuelve.",
+  "Aura: include/Game/AuraMoral.h, src/Render/AuraJugador.cpp: halo, humo, motas y alas (celestiales en Héroe, demoníacas en Villano).",
+  "Partida guardada, ficha (Pureza y Marcas) e inventario con los siete tramos; tests/Game/MoralTests.cpp (12 casos); tools/simular_moral.py y tools/moral/rutas_boundington.json; validar_todo.py comprueba los actos.",
+  "FORMATO_AVENTURAS.md: los campos nuevos y «La moral: el libro del día»."
+ ],
+ "scope": [
+  "include/Game/Morality.h y src/Game/Morality.cpp: el libro del día (apunta), asentar al dormir (peso, repetición, tope por noche, resistencia; los mayores, sin tope y uno a uno), siete tramos, pureza y marcas.",
+  "include/Game/ReglasMoral.h y src/Game/ReglasMoral.cpp: lee assets/rules/moral.json (los seis números) y assets/rules/actos.json (el catálogo de actos), con sus errores; el estado en la partida guardada.",
+  "include/Game/MoralDeLaSesion.h y src/Game/MoralDeLaSesion.cpp: apuntar los actos de un beat (registro, pureza y reputación) y asentar en el descanso largo («Esta noche se asienta lo de hoy: moral −16 → −20 (Canalla).»).",
+  "Narrativa: efectos acto y herida, requires.moral y skillCheck.exitos (src/RPG/Narrative/MoralAventura.*); GameSessionNarrativa los resuelve.",
+  "Aura: include/Game/AuraMoral.h, src/Render/AuraJugador.cpp: halo, humo, motas y alas (celestiales en Héroe, demoníacas en Villano).",
+  "Partida guardada, ficha (Pureza y Marcas) e inventario con los siete tramos; tests/Game/MoralTests.cpp (12 casos); tools/simular_moral.py y tools/moral/rutas_boundington.json; validar_todo.py comprueba los actos.",
+  "FORMATO_AVENTURAS.md: los campos nuevos y «La moral: el libro del día»."
+ ],
+ "verification": [
+  "test_moral: 12 casos (noche, resistencia, mayores y marcas, pureza, reglas, ficheros del juego, las cinco rutas de Boundington entre −60 y 60, partida guardada, aventura y sesión).",
+  "ctest en la VM del Mac (Xvfb): todo en verde salvo linea_base_core (44, la de antes).",
+  "En el juego: la tirada «Persuasión · 2 éxitos» y el aura de los siete tramos (out/claude_bnd_alt/capturas/aura7.jpg)."
+ ],
+ "pending": [],
+ "para_oriol": [
+  "Los éxitos a la letra son muy duros con pocos dados: con Carisma 3, 2 éxitos salen el 8,8 % y 4 éxitos nunca (con 6 dados, el 1,5 %).",
+  "Las alas se ven como abanicos de luz o de sombra a la escala del sprite: si las quieres de otra forma, es AuraMoral.cpp."
+ ],
+ "sesion": "sesiones/2026-10-08-claude-moral-alt.md"
+}

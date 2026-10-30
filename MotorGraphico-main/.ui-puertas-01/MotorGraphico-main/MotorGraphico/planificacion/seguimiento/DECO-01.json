@@ -1,0 +1,37 @@
+{
+ "id": "DECO-01",
+ "date": "2026-10-05",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol (commit local); entrega al Mac como paquete (base 94e50e0)",
+ "encargo": "«Continua»: el paso siguiente propuesto tras ISO-02 y MASC-01, los decorados de la calle con el kit isometrico (bancos, farolas tecnomagicas, paradas, jardineras, carros, vallas) en el mismo estilo que las casas.",
+ "resultado": {
+  "decorados": "22 decorados del kit (tools/iso/decorats.py): banco, banco con brasero de cristal, farola, farola de alambique, fanal octogonal de los Guardianes, parada de mercado, jardinera, pozo, estandarte, noray, barriles, barriles viejos, cajas, sacos, basura de taberna, red de pesca, hoguera, ropa tendida, valla, carretilla y dos carromatos de caravana (lona y a rayas)",
+  "hoja": "assets/textures/kit_decorats.png (53 vistas de 64x96, la base de la celda es el vertice de abajo del rombo); ultima en sprites.json: los ids que ya tenia PixelLab toman el dibujo del kit sin tocar los niveles",
+  "orientacion": "bancos, paradas, carros, valla, pozo y red en 4 vistas (<id>_o1.._o3 en assets/objects/decorados_kit.json); el generador los gira hacia la plaza, el rio o la calle con mas sitio; los carromatos siguen el corro alrededor de la hoguera",
+  "ropa_tendida": "las cuerdas de varias celdas solo llevan poste en los extremos (tendedero_ini, _mig, _mig2, _fi)",
+  "colocacion_nueva": "farolas de alambique en la avenida de los monumentos y el Comercial, farolas de hierro en el Casco, Barrios Altos y el Barrio Militar (arrimadas a una casa o al agua, nunca a la muralla ni junto a una puerta, sin cortar el paso), paradas a las puertas de los dos mercados, carromatos en los corros de Surysal y valla con portillo en sus huertos",
+  "arreglo": "el estandarte que tapaba la puerta del castillo (8,12) pasa a los dos lados de la entrada: con los objetos que bloquean, la puerta era inalcanzable",
+  "pixellab": "0 generaciones; se quedan de PixelLab los arboles, matas, flores, juncos y la fuente del viento (la prueba de arboles procedurales quedaba por debajo)"
+ },
+ "archivos": {
+  "nuevos": [
+   "tools/iso/decorats.py, tools/iso/exportar_decorats.py",
+   "tools/gen_ciudad_deco.py (orientar, cuerdas, farolas a la calle, paradas a la puerta)",
+   "assets/textures/kit_decorats.png/.json, assets/objects/decorados_kit.json",
+   "Claude outputs/decorats/ (vitrina, capturas, LEEME)",
+   "planificacion/seguimiento/DECO-01.json"
+  ],
+  "modificados": [
+   "tools/gen_ciudad.py (decorar con mira, al_final, volatiles; carromatos y valla en Surysal; estandartes del castillo)",
+   "assets/levels/ciudad_centro.json, ciudad_este.json, ciudad_oeste.json, ciudad_surysal.json (solo objetos: los mapas no cambian)",
+   "assets/textures/sprites.json (la hoja kit_decorats), assets/proyectos/boundington.json (el catalogo decorados_kit.json)"
+  ]
+ },
+ "verificacion": [
+  "ctest: demo_ciudad, test_object_catalog, test_registro_sprites, test_bloques, test_monumentos, test_mascotes, test_bandada OK; el resto de fallos son los de siempre (GL, test_catalog_content, test_gdb12_screens, test_marcar_paquetes)",
+  "conectividad (tools/conectividad.py) 100% en los cuatro mapas; con los objetos que bloquean, todas las puertas alcanzables (23, 2, 5 y 2)",
+  "generador idempotente: dos pasadas seguidas dan los mismos niveles",
+  "linea_base_core: las mismas 35 deudas previas (sin C++)",
+  "capturas de la plaza, Surysal, la Barriada, la avenida y Barrios Altos"
+ ]
+}

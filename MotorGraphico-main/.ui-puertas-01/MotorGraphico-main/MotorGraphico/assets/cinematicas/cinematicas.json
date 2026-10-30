@@ -1,0 +1,6033 @@
+{
+  "_nota": "PROLOGO-02 — Las cinematicas del prologo (Game/Cinematica.h dice que hace cada orden). Lo que se dice no esta aqui: cada «beat» enciende una flag que pide un beat de assets/adventures/boundington_prologo.json. Las celdas son las de tools/gen_recuerdos.py.",
+  "espectro": {
+    "_nota": "Mientras «bnd_prologo_espectro» este encendida (de subir a la barca a que Sho-Noco se va), el jugador y Sho-Noco andan translucidos entre los recuerdos.",
+    "flag": "bnd_prologo_espectro",
+    "jugador": true,
+    "objetos": [
+      "sho_noco"
+    ],
+    "tinte": [
+      0.74,
+      0.88,
+      1.0,
+      0.58
+    ]
+  },
+  "apariciones": [
+    {
+      "objeto": "sho_noco",
+      "_nota": "Prólogo (de que la barca viene a que se va) y epílogo (bnd3_epi_empezado).",
+      "visibleSi": {
+        "alguna": [
+          "bnd_prologo_barca_viene",
+          "bnd3_epi_empezado"
+        ]
+      },
+      "ocultoSi": {
+        "todas": [
+          "bnd_pr_shonoco_se_va"
+        ],
+        "ninguna": [
+          "bnd3_epi_empezado"
+        ]
+      }
+    },
+    {
+      "objeto": "barca_de_sho_noco",
+      "visibleSi": {
+        "alguna": [
+          "bnd_prologo_barca_viene",
+          "bnd3_epi_empezado"
+        ]
+      }
+    },
+    {
+      "objeto": "venides_joven",
+      "sin": "bnd_prologo_girado"
+    },
+    {
+      "objeto": "verina_joven",
+      "sin": "bnd_prologo_girado"
+    },
+    {
+      "objeto": "edul_joven",
+      "sin": "bnd_prologo_girado"
+    },
+    {
+      "objeto": "sandes_joven",
+      "sin": "bnd_prologo_girado"
+    },
+    {
+      "objeto": "verina_puerta",
+      "si": "bnd_pr_r2_abre",
+      "sin": "bnd_pr_r2_se_van"
+    },
+    {
+      "objeto": "edul_puerta",
+      "si": "bnd_pr_r2_abre",
+      "sin": "bnd_pr_r2_se_van"
+    },
+    {
+      "objeto": "sandes_puerta",
+      "si": "bnd_pr_r2_abre",
+      "sin": "bnd_pr_r2_se_van"
+    },
+    {
+      "objeto": "venides_vuelta",
+      "sin": "bnd_pr_r3_sale"
+    },
+    {
+      "objeto": "edul",
+      "_nota": "El segundo dia, en el yunque de Aigren (b2_edul_herreria).",
+      "visibleSi": {
+        "todas": [
+          "bnd2_encargo"
+        ],
+        "alguna": [
+          "bnd2_aigren_despedido",
+          "bnd1_invitado_por_aigren"
+        ],
+        "ninguna": [
+          "bnd1_aigren_redimido",
+          "bnd_ocaso_empezado"
+        ]
+      }
+    },
+    {
+      "objeto": "aigren",
+      "_nota": "Se despide el segundo dia (o te mando a la cripta): ya no esta en la herreria.",
+      "ocultoSi": {
+        "todas": [
+          "bnd2_encargo"
+        ],
+        "alguna": [
+          "bnd2_aigren_despedido",
+          "bnd1_invitado_por_aigren",
+          "bnd1_aigren_se_va"
+        ],
+        "ninguna": [
+          "bnd1_aigren_redimido"
+        ]
+      }
+    },
+    {
+      "objeto": "anfitriona",
+      "_nota": "C4 — Los dueños de la mansión solo están la noche de la fiesta.",
+      "visibleSi": {
+        "todas": [
+          "bnd2_fiesta_dentro"
+        ]
+      },
+      "ocultoSi": {
+        "todas": [
+          "bnd2_fiesta_resuelta"
+        ]
+      }
+    },
+    {
+      "objeto": "mercader",
+      "visibleSi": {
+        "todas": [
+          "bnd2_fiesta_dentro"
+        ]
+      },
+      "ocultoSi": {
+        "todas": [
+          "bnd2_fiesta_resuelta"
+        ]
+      }
+    },
+    {
+      "objeto": "nina_del_gato",
+      "_nota": "Mira vive en la Barriada desde el amanecer del día 2 (b2_familia_barriada).",
+      "visibleSi": {
+        "todas": [
+          "bnd2_familia_llevada"
+        ]
+      }
+    },
+    {
+      "objeto": "padre_de_mira",
+      "visibleSi": {
+        "todas": [
+          "bnd2_familia_llevada"
+        ]
+      }
+    },
+    {
+      "objeto": "cabecilla_saqueadores",
+      "si": "bnd2_saq_en_escena",
+      "sin": "bnd2_saq_fuera"
+    },
+    {
+      "objeto": "saqueador_antorcha",
+      "si": "bnd2_saq_en_escena",
+      "sin": "bnd2_saq_fuera"
+    },
+    {
+      "objeto": "perdido_devoto",
+      "_nota": "AV19-08: en la cripta solo cuando has peleado; el día 3, siempre.",
+      "visibleSi": {
+        "alguna": [
+          "bnd1_cripta_hostil",
+          "bnd2_dia_cerrado",
+          "bnd1_cripta_descubierta"
+        ]
+      }
+    },
+    {
+      "objeto": "cultista_carcelero",
+      "visibleSi": {
+        "alguna": [
+          "bnd1_cripta_hostil",
+          "bnd2_dia_cerrado",
+          "bnd1_cripta_descubierta",
+          "bnd1_cripta_capturado"
+        ]
+      }
+    },
+    {
+      "objeto": "edul_cripta",
+      "_nota": "AV19-08: el primer día, en la sala de estudio de la cripta.",
+      "ocultoSi": {
+        "alguna": [
+          "bnd1_guarida_pelea",
+          "bnd1_edul_escoltado",
+          "bnd_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "verina_cripta",
+      "ocultoSi": {
+        "alguna": [
+          "bnd1_guarida_pelea",
+          "bnd1_verina_salvada_guarida",
+          "bnd_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "sandes_cripta",
+      "ocultoSi": {
+        "alguna": [
+          "bnd1_cripta_hostil",
+          "bnd_dia_cerrado",
+          "bnd1_sandes_fuera_camara",
+          "bnd1_sereno_llevado"
+        ]
+      }
+    },
+    {
+      "objeto": "prisionero_cripta",
+      "ocultoSi": {
+        "alguna": [
+          "bnd1_sereno_fuera",
+          "bnd1_sereno_llevado",
+          "bnd_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "venides_castillo",
+      "si": "bnd2_encargo",
+      "sin": "bnd2_dia_cerrado"
+    },
+    {
+      "objeto": "guardia_castillo",
+      "si": "bnd2_encargo"
+    },
+    {
+      "objeto": "capitan_guardia",
+      "si": "bnd2_encargo"
+    },
+    {
+      "objeto": "vecina_ventana",
+      "si": "bnd2_noche_en_taberna",
+      "sin": "bnd2_dia_cerrado"
+    },
+    {
+      "objeto": "xila_noche",
+      "visibleSi": {
+        "todas": [
+          "bnd2_noche_en_taberna"
+        ],
+        "alguna": [
+          "bnd1_xila_honor",
+          "bnd1_xila_borracho"
+        ],
+        "ninguna": [
+          "bnd2_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "tranca_taberna",
+      "si": "bnd2_noche_en_taberna",
+      "sin": "bnd2_dia_cerrado"
+    },
+    {
+      "objeto": "furia_en_hueco",
+      "visibleSi": {
+        "todas": [
+          "bnd2_noche_en_taberna"
+        ],
+        "alguna": [
+          "bnd2_aliado_skilla"
+        ]
+      }
+    },
+    {
+      "objeto": "vela_noche_1",
+      "si": "bnd2_noche_en_taberna",
+      "sin": "bnd2_vela_1_apagada"
+    },
+    {
+      "objeto": "vela_noche_2",
+      "si": "bnd2_noche_en_taberna",
+      "sin": "bnd2_vela_2_apagada"
+    },
+    {
+      "objeto": "aigren_carro",
+      "visibleSi": {
+        "todas": [
+          "bnd2_encargo",
+          "bnd1_aigren_se_va"
+        ],
+        "ninguna": [
+          "bnd2_aigren_carro_fuera",
+          "bnd2_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "hijo_de_aigren",
+      "visibleSi": {
+        "todas": [
+          "bnd2_encargo",
+          "bnd1_aigren_se_va"
+        ],
+        "ninguna": [
+          "bnd2_aigren_carro_fuera",
+          "bnd2_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "carro_aigren",
+      "visibleSi": {
+        "todas": [
+          "bnd2_encargo",
+          "bnd1_aigren_se_va"
+        ],
+        "ninguna": [
+          "bnd2_aigren_carro_fuera",
+          "bnd2_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "puerta_sastreria",
+      "ocultoSi": {
+        "todas": [
+          "bnd2_encargo",
+          "bnd1_luisarda_delatada"
+        ]
+      }
+    },
+    {
+      "objeto": "luisarda",
+      "ocultoSi": {
+        "todas": [
+          "bnd2_encargo",
+          "bnd1_luisarda_delatada"
+        ]
+      }
+    },
+    {
+      "objeto": "boutique_cerrada",
+      "visibleSi": {
+        "todas": [
+          "bnd2_encargo",
+          "bnd1_luisarda_delatada"
+        ]
+      }
+    },
+    {
+      "objeto": "sastre_enfrente",
+      "si": "bnd2_encargo",
+      "sin": "bnd2_dia_cerrado"
+    },
+    {
+      "objeto": "xila_escalon",
+      "visibleSi": {
+        "todas": [
+          "bnd2_encargo",
+          "bnd1_aliado_xila"
+        ],
+        "ninguna": [
+          "bnd2_xila_te_lleva",
+          "bnd2_noche_en_taberna",
+          "bnd2_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "xila_tienda",
+      "si": "bnd2_xila_te_lleva",
+      "sin": "bnd2_noche_en_taberna"
+    },
+    {
+      "objeto": "xila",
+      "ocultoSi": {
+        "todas": [
+          "bnd2_encargo"
+        ],
+        "ninguna": [
+          "bnd_ocaso_empezado"
+        ]
+      }
+    },
+    {
+      "objeto": "instructor_perdido",
+      "si": "bnd2_instructor_visible",
+      "sin": "bnd2_dia_cerrado"
+    },
+    {
+      "objeto": "sandes_culto_d2",
+      "visibleSi": {
+        "todas": [
+          "bnd2_encargo"
+        ],
+        "alguna": [
+          "bnd1_unido_al_culto",
+          "bnd1_verdaderos_unido"
+        ],
+        "ninguna": [
+          "bnd2_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "invitado_noble",
+      "si": "bnd2_fiesta_dentro",
+      "sin": "bnd2_dia_cerrado"
+    },
+    {
+      "objeto": "invitado_mercader",
+      "si": "bnd2_fiesta_dentro",
+      "sin": "bnd2_dia_cerrado"
+    },
+    {
+      "objeto": "seguidor_brinda",
+      "si": "bnd2_fiesta_dentro",
+      "sin": "bnd2_dia_cerrado"
+    },
+    {
+      "objeto": "musico_fiesta",
+      "si": "bnd2_fiesta_dentro",
+      "sin": "bnd2_dia_cerrado"
+    },
+    {
+      "objeto": "criado_fiesta",
+      "si": "bnd2_fiesta_dentro",
+      "sin": "bnd2_dia_cerrado"
+    },
+    {
+      "objeto": "cobrador_fiesta",
+      "si": "bnd2_fiesta_calle",
+      "sin": "bnd2_dia_cerrado"
+    },
+    {
+      "objeto": "vigilante_fiesta",
+      "si": "bnd2_fiesta_calle",
+      "sin": "bnd2_dia_cerrado"
+    },
+    {
+      "objeto": "portero_fiesta",
+      "si": "bnd2_fiesta_calle",
+      "sin": "bnd2_dia_cerrado"
+    },
+    {
+      "objeto": "edul_mascara",
+      "si": "bnd2_edul_buscado",
+      "sin": "bnd2_dia_cerrado"
+    },
+    {
+      "objeto": "noble_recuerda",
+      "visibleSi": {
+        "todas": [
+          "bnd2_noble_borracho",
+          "bnd2_dia_cerrado"
+        ],
+        "ninguna": [
+          "bnd2_noble_senalado"
+        ]
+      }
+    },
+    {
+      "objeto": "guardia_trampilla",
+      "_nota": "CRIPTA-25: los guardias de la trampilla, el primer día.",
+      "ocultoSi": {
+        "alguna": [
+          "bnd1_puerta_ganada",
+          "bnd_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "guardia_trampilla_2",
+      "ocultoSi": {
+        "alguna": [
+          "bnd1_puerta_ganada",
+          "bnd_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "novicio_candil",
+      "ocultoSi": {
+        "alguna": [
+          "bnd1_novicios_fuera",
+          "bnd1_cripta_hostil",
+          "bnd_dia_cerrado",
+          "bnd2_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "copista_cripta",
+      "ocultoSi": {
+        "alguna": [
+          "bnd1_novicios_fuera",
+          "bnd1_cripta_hostil",
+          "bnd_dia_cerrado",
+          "bnd2_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "novicio_litera",
+      "ocultoSi": {
+        "alguna": [
+          "bnd1_novicios_fuera",
+          "bnd1_cripta_hostil",
+          "bnd_dia_cerrado",
+          "bnd2_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "archivero_cripta",
+      "ocultoSi": {
+        "alguna": [
+          "bnd1_novicios_fuera",
+          "bnd1_cripta_hostil",
+          "bnd_dia_cerrado",
+          "bnd2_dia_cerrado",
+          "bnd1_archivero_fuera"
+        ]
+      }
+    },
+    {
+      "objeto": "fiel_cripta",
+      "ocultoSi": {
+        "alguna": [
+          "bnd1_cripta_hostil",
+          "bnd1_ceremonia_acabada",
+          "bnd_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "oficiante_cripta",
+      "ocultoSi": {
+        "alguna": [
+          "bnd1_cripta_hostil",
+          "bnd1_ceremonia_acabada",
+          "bnd_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "edul_rescate",
+      "visibleSi": {
+        "alguna": [
+          "bnd1_edul_rescata"
+        ]
+      },
+      "ocultoSi": {
+        "alguna": [
+          "bnd1_edul_escoltado",
+          "bnd_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "sandes_plaza",
+      "si": "bnd2_dia_cerrado",
+      "sin": "bnd3_campanas"
+    },
+    {
+      "objeto": "verina_estrado",
+      "si": "bnd2_dia_cerrado",
+      "sin": "bnd3_campanas"
+    },
+    {
+      "objeto": "edul_plaza",
+      "si": "bnd2_dia_cerrado",
+      "sin": "bnd3_campanas"
+    },
+    {
+      "objeto": "captor_estrado",
+      "si": "bnd2_dia_cerrado",
+      "sin": "bnd3_campanas"
+    },
+    {
+      "objeto": "sandes_culto_d3",
+      "ocultoSi": {
+        "todas": [
+          "bnd2_dia_cerrado"
+        ]
+      }
+    },
+    {
+      "objeto": "venides_base",
+      "si": "bnd2_dia_cerrado",
+      "sin": "bnd2_venides_sin_aviso"
+    },
+    {
+      "objeto": "soldado_20",
+      "visibleSi": {
+        "todas": [
+          "bnd2_dia_cerrado",
+          "bnd_venides_20"
+        ],
+        "ninguna": [
+          "bnd2_venides_sin_aviso"
+        ]
+      }
+    },
+    {
+      "objeto": "soldado_10",
+      "visibleSi": {
+        "todas": [
+          "bnd2_dia_cerrado",
+          "bnd_venides_10"
+        ],
+        "ninguna": [
+          "bnd_venides_20",
+          "bnd2_venides_sin_aviso"
+        ]
+      }
+    },
+    {
+      "objeto": "explorador_herido",
+      "si": "bnd3_plaza_vista"
+    },
+    {
+      "objeto": "saqueador_muralla",
+      "si": "bnd3_ruta"
+    },
+    {
+      "objeto": "fanatico_tejado",
+      "si": "bnd3_saqueadores_vencidos"
+    },
+    {
+      "objeto": "xila_base",
+      "visibleSi": {
+        "todas": [
+          "bnd2_dia_cerrado"
+        ],
+        "alguna": [
+          "bnd1_xila_honor",
+          "bnd1_xila_borracho"
+        ]
+      }
+    },
+    {
+      "objeto": "aigren_base",
+      "visibleSi": {
+        "todas": [
+          "bnd3_campanas",
+          "bnd1_aigren_redimido"
+        ]
+      }
+    },
+    {
+      "objeto": "capitan_base",
+      "visibleSi": {
+        "todas": [
+          "bnd3_campanas",
+          "bnd2_guardia_preparada"
+        ]
+      }
+    },
+    {
+      "objeto": "verina_retenida",
+      "visibleSi": {
+        "todas": [
+          "bnd3_campanas"
+        ],
+        "ninguna": [
+          "bnd3_verina_libre",
+          "bnd3_verina_muerta",
+          "bnd3_verina_abandonada"
+        ]
+      }
+    },
+    {
+      "objeto": "verina_camino",
+      "visibleSi": {
+        "todas": [
+          "bnd3_verina_libre"
+        ],
+        "ninguna": [
+          "bnd3_esc05_verina_fuera",
+          "bnd3_verina_entregada"
+        ]
+      }
+    },
+    {
+      "objeto": "venides_casco",
+      "si": "bnd3_con_venides",
+      "sin": "bnd3_venides_huye"
+    },
+    {
+      "objeto": "captor_verina",
+      "visibleSi": {
+        "todas": [
+          "bnd3_campanas"
+        ],
+        "ninguna": [
+          "bnd3_verina_libre",
+          "bnd3_verina_muerta",
+          "bnd3_verina_abandonada"
+        ]
+      }
+    },
+    {
+      "objeto": "devoto_verina",
+      "visibleSi": {
+        "todas": [
+          "bnd3_campanas"
+        ],
+        "ninguna": [
+          "bnd3_verina_libre",
+          "bnd3_verina_muerta",
+          "bnd3_verina_abandonada"
+        ]
+      }
+    },
+    {
+      "objeto": "skilla_furia",
+      "visibleSi": {
+        "todas": [
+          "bnd3_campanas",
+          "bnd2_aliado_skilla"
+        ],
+        "ninguna": [
+          "bnd2_rosita_desconfia"
+        ]
+      }
+    },
+    {
+      "objeto": "perdido_antorcha",
+      "visibleSi": {
+        "todas": [
+          "bnd3_campanas",
+          "bnd2_aliado_skilla"
+        ],
+        "ninguna": [
+          "bnd2_rosita_desconfia"
+        ]
+      }
+    },
+    {
+      "objeto": "pulga_tejado",
+      "visibleSi": {
+        "todas": [
+          "bnd3_campanas",
+          "bnd1_carterista_amigo"
+        ]
+      }
+    },
+    {
+      "objeto": "sandes_ocaso",
+      "si": "bnd3_campanas",
+      "sin": "bnd3_esc05_sandes_fuera"
+    },
+    {
+      "objeto": "sectario_portal",
+      "si": "bnd3_campanas",
+      "sin": "bnd3_casco_resuelto"
+    },
+    {
+      "objeto": "fanatico_escalera",
+      "si": "bnd3_campanas",
+      "sin": "bnd3_casco_resuelto"
+    },
+    {
+      "objeto": "verina_segunda",
+      "visibleSi": {
+        "todas": [
+          "bnd3_verina_abandonada",
+          "bnd3_sandes_abierta"
+        ],
+        "ninguna": [
+          "bnd3_verina_libre",
+          "bnd3_verina_muerta"
+        ]
+      }
+    },
+    {
+      "objeto": "sandes_final",
+      "si": "bnd3_campanas",
+      "sin": "bnd3_esc06_sandes_fuera"
+    },
+    {
+      "objeto": "venides_final",
+      "si": "bnd3_con_venides",
+      "sin": "bnd3_venides_huye"
+    },
+    {
+      "objeto": "paso_ocaso_a_afueras",
+      "si": "bnd3_sandes_cerrado"
+    },
+    {
+      "objeto": "mago_de_las_tinieblas",
+      "si": "bnd3_compania_vista"
+    },
+    {
+      "objeto": "guardabosques",
+      "si": "bnd3_compania_vista"
+    },
+    {
+      "objeto": "guerrero_demoniaco",
+      "si": "bnd3_compania_vista"
+    },
+    {
+      "objeto": "edul_retenido",
+      "visibleSi": {
+        "todas": [
+          "bnd3_campanas"
+        ],
+        "ninguna": [
+          "bnd3_edul_trasladado",
+          "bnd3_edul_libre",
+          "bnd3_edul_perdido",
+          "bnd3_edul_cae",
+          "bnd3_edul_gana"
+        ]
+      }
+    },
+    {
+      "objeto": "captor_edul",
+      "visibleSi": {
+        "todas": [
+          "bnd3_campanas"
+        ],
+        "ninguna": [
+          "bnd3_edul_trasladado",
+          "bnd3_edul_libre",
+          "bnd3_edul_perdido",
+          "bnd3_edul_cae",
+          "bnd3_edul_gana"
+        ]
+      }
+    },
+    {
+      "objeto": "devoto_edul",
+      "visibleSi": {
+        "todas": [
+          "bnd3_campanas"
+        ],
+        "ninguna": [
+          "bnd3_edul_trasladado",
+          "bnd3_edul_libre",
+          "bnd3_edul_perdido",
+          "bnd3_edul_cae",
+          "bnd3_edul_gana"
+        ]
+      }
+    },
+    {
+      "objeto": "edul_retenido_fuera",
+      "visibleSi": {
+        "todas": [
+          "bnd3_en_afueras"
+        ],
+        "ninguna": [
+          "bnd3_edul_libre",
+          "bnd3_edul_perdido",
+          "bnd3_edul_cae",
+          "bnd3_edul_gana"
+        ]
+      }
+    },
+    {
+      "objeto": "guardia_edul",
+      "visibleSi": {
+        "todas": [
+          "bnd3_en_afueras"
+        ],
+        "ninguna": [
+          "bnd3_edul_libre",
+          "bnd3_edul_perdido",
+          "bnd3_edul_cae",
+          "bnd3_edul_gana"
+        ]
+      }
+    },
+    {
+      "objeto": "edul_afueras",
+      "si": "bnd3_edul_libre"
+    },
+    {
+      "objeto": "verina_abrazo",
+      "visibleSi": {
+        "todas": [
+          "bnd3_edul_libre",
+          "bnd3_verina_con_grupo"
+        ],
+        "ninguna": [
+          "bnd3_esc06_abrazo"
+        ]
+      }
+    },
+    {
+      "objeto": "gorran_afueras",
+      "visibleSi": {
+        "todas": [
+          "bnd3_en_afueras",
+          "bnd2_gorran_perdonado"
+        ]
+      }
+    },
+    {
+      "objeto": "bandido_gorran_afueras",
+      "visibleSi": {
+        "todas": [
+          "bnd3_en_afueras"
+        ],
+        "alguna": [
+          "bnd2_gorran_perdonado",
+          "bnd2_gorran_muerto"
+        ]
+      }
+    },
+    {
+      "objeto": "zarela_afueras",
+      "visibleSi": {
+        "todas": [
+          "bnd3_en_afueras",
+          "bnd2_guerreros_gitanos"
+        ],
+        "ninguna": [
+          "bnd2_barriada_delatada"
+        ]
+      }
+    },
+    {
+      "objeto": "guerrero_afueras",
+      "visibleSi": {
+        "todas": [
+          "bnd3_en_afueras",
+          "bnd2_guerreros_gitanos"
+        ],
+        "ninguna": [
+          "bnd2_barriada_delatada"
+        ]
+      }
+    },
+    {
+      "objeto": "teo_afueras",
+      "visibleSi": {
+        "todas": [
+          "bnd3_en_afueras",
+          "bnd2_saq_convertidos"
+        ],
+        "ninguna": [
+          "bnd2_barriada_delatada"
+        ]
+      }
+    },
+    {
+      "objeto": "venides_rodillas",
+      "visibleSi": {
+        "todas": [
+          "bnd3_en_afueras",
+          "bnd3_sin_venides"
+        ],
+        "ninguna": [
+          "bnd3_venides_libre",
+          "bnd3_venides_resuelto"
+        ]
+      }
+    },
+    {
+      "objeto": "guardia_venides",
+      "visibleSi": {
+        "todas": [
+          "bnd3_en_afueras",
+          "bnd3_sin_venides"
+        ],
+        "ninguna": [
+          "bnd3_venides_libre",
+          "bnd3_venides_resuelto"
+        ]
+      }
+    },
+    {
+      "objeto": "paso_afueras_a_huida",
+      "si": "bnd3_esc06_afueras_listas"
+    },
+    {
+      "objeto": "venides_huida",
+      "si": "bnd3_con_venides"
+    },
+    {
+      "objeto": "zarela_huida",
+      "visibleSi": {
+        "todas": [
+          "bnd2_aliado_gitanos"
+        ],
+        "ninguna": [
+          "bnd2_barriada_delatada"
+        ]
+      }
+    },
+    {
+      "objeto": "huida_carromato_lona",
+      "visibleSi": {
+        "todas": [
+          "bnd2_aliado_gitanos"
+        ],
+        "ninguna": [
+          "bnd2_barriada_delatada"
+        ]
+      }
+    },
+    {
+      "objeto": "huida_carro",
+      "visibleSi": {
+        "todas": [
+          "bnd2_aliado_gitanos"
+        ],
+        "ninguna": [
+          "bnd2_barriada_delatada"
+        ]
+      }
+    },
+    {
+      "objeto": "huida_carromato",
+      "visibleSi": {
+        "todas": [
+          "bnd2_aliado_gitanos"
+        ],
+        "ninguna": [
+          "bnd2_barriada_delatada"
+        ]
+      }
+    },
+    {
+      "objeto": "gorran_tajo",
+      "visibleSi": {
+        "alguna": [
+          "bnd2_dados_ya"
+        ]
+      },
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_dados_fin",
+          "bnd2_gorran_muerto"
+        ]
+      }
+    },
+    {
+      "objeto": "cojo_tajo",
+      "visibleSi": {
+        "alguna": [
+          "bnd2_dados_ya"
+        ]
+      },
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_dados_fin"
+        ]
+      }
+    },
+    {
+      "objeto": "gorran",
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_subasta_ya",
+          "bnd2_gorran_muerto"
+        ]
+      }
+    },
+    {
+      "objeto": "gorran_subasta",
+      "visibleSi": {
+        "alguna": [
+          "bnd2_subasta_ya"
+        ]
+      },
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_gorran_muerto"
+        ]
+      }
+    },
+    {
+      "objeto": "cojo",
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_subasta_ya",
+          "bnd2_cojo_huido"
+        ]
+      }
+    },
+    {
+      "objeto": "cojo_subasta",
+      "visibleSi": {
+        "alguna": [
+          "bnd2_subasta_ya"
+        ]
+      },
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_cojo_huido"
+        ]
+      }
+    },
+    {
+      "objeto": "joel_joran",
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_subasta_ya"
+        ]
+      }
+    },
+    {
+      "objeto": "joel_pujador",
+      "visibleSi": {
+        "alguna": [
+          "bnd2_subasta_ya"
+        ]
+      },
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_joel_rescatado"
+        ]
+      }
+    },
+    {
+      "objeto": "pujador_mercader",
+      "visibleSi": {
+        "alguna": [
+          "bnd2_subasta_ya"
+        ]
+      }
+    },
+    {
+      "objeto": "pujador_noble",
+      "visibleSi": {
+        "alguna": [
+          "bnd2_subasta_ya"
+        ]
+      }
+    },
+    {
+      "objeto": "victor_yungblood",
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_subasta_ya"
+        ]
+      }
+    },
+    {
+      "objeto": "asdrugal_viejo",
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_subasta_ya"
+        ]
+      }
+    },
+    {
+      "objeto": "victor_subasta",
+      "visibleSi": {
+        "alguna": [
+          "bnd2_subasta_ya"
+        ]
+      },
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_joel_rescatado"
+        ]
+      }
+    },
+    {
+      "objeto": "asdrugal_subasta",
+      "visibleSi": {
+        "alguna": [
+          "bnd2_subasta_ya"
+        ]
+      },
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_joel_rescatado"
+        ]
+      }
+    },
+    {
+      "objeto": "reclutador_gorran",
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_dia_cerrado",
+          "bnd2_gorran_escolta"
+        ]
+      },
+      "visibleSi": {
+        "alguna": [
+          "bnd2_encargo"
+        ]
+      }
+    },
+    {
+      "objeto": "neus_serra",
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_neus_salvada"
+        ]
+      }
+    },
+    {
+      "objeto": "preso_calabozo",
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_preso_libre"
+        ]
+      }
+    },
+    {
+      "objeto": "sectario_mina",
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_sectarios_mina_vencidos"
+        ]
+      }
+    },
+    {
+      "objeto": "sectaria_mina",
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_sectarios_mina_vencidos"
+        ]
+      }
+    },
+    {
+      "objeto": "vigia_cojo",
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_vigia_resuelto"
+        ]
+      }
+    },
+    {
+      "objeto": "juerguista_recinto",
+      "visibleSi": {
+        "alguna": [
+          "bnd2_subasta_ya"
+        ]
+      }
+    },
+    {
+      "objeto": "juerguista_recinto_2",
+      "visibleSi": {
+        "alguna": [
+          "bnd2_subasta_ya"
+        ]
+      }
+    },
+    {
+      "objeto": "musico_recinto",
+      "visibleSi": {
+        "alguna": [
+          "bnd2_subasta_ya"
+        ]
+      }
+    },
+    {
+      "objeto": "venides",
+      "ocultoSi": {
+        "alguna": [
+          "bndg_venides_fuera"
+        ]
+      },
+      "_nota": "GORRAN-DIA2: el día de Gorran, Venides está en el castillo."
+    },
+    {
+      "objeto": "mercenario_tajo",
+      "ocultoSi": {
+        "alguna": [
+          "bga_llegan",
+          "bga_cerrada"
+        ]
+      }
+    },
+    {
+      "objeto": "morvan",
+      "visibleSi": {
+        "alguna": [
+          "bga_llegan"
+        ]
+      },
+      "ocultoSi": {
+        "alguna": [
+          "bga_cerrada"
+        ]
+      }
+    },
+    {
+      "objeto": "garsa",
+      "visibleSi": {
+        "alguna": [
+          "bga_llegan"
+        ]
+      },
+      "ocultoSi": {
+        "alguna": [
+          "bga_cerrada"
+        ]
+      }
+    },
+    {
+      "objeto": "mercenario_morvan",
+      "visibleSi": {
+        "alguna": [
+          "bga_llegan"
+        ]
+      },
+      "ocultoSi": {
+        "alguna": [
+          "bga_cerrada"
+        ]
+      }
+    },
+    {
+      "objeto": "iris_serra",
+      "ocultoSi": {
+        "alguna": [
+          "bga_iris_escondida",
+          "bga_iris_llevada"
+        ]
+      }
+    },
+    {
+      "objeto": "derrumbe_veta",
+      "ocultoSi": {
+        "alguna": [
+          "bgb_abierto"
+        ]
+      }
+    },
+    {
+      "objeto": "ramon_sisdits",
+      "ocultoSi": {
+        "alguna": [
+          "bgb_cerrada"
+        ]
+      }
+    },
+    {
+      "objeto": "mineros_atrapados",
+      "ocultoSi": {
+        "alguna": [
+          "bgb_cerrada"
+        ]
+      }
+    },
+    {
+      "objeto": "mineros_salvados",
+      "visibleSi": {
+        "alguna": [
+          "bgb_rescate_todos",
+          "bgb_rescate_parte"
+        ]
+      }
+    },
+    {
+      "objeto": "tecla_rocafort",
+      "visibleSi": {
+        "alguna": [
+          "bgb_gancho",
+          "bndg_empezado"
+        ]
+      }
+    },
+    {
+      "objeto": "gil_fumat",
+      "ocultoSi": {
+        "alguna": [
+          "bgc_asalto",
+          "bgc_cerrada"
+        ]
+      }
+    },
+    {
+      "objeto": "lluc_fumat",
+      "ocultoSi": {
+        "alguna": [
+          "bgc_asalto",
+          "bgc_cerrada"
+        ]
+      }
+    },
+    {
+      "objeto": "fumat_galeria",
+      "visibleSi": {
+        "alguna": [
+          "bgc_asalto"
+        ]
+      },
+      "ocultoSi": {
+        "alguna": [
+          "bgc_cerrada"
+        ]
+      }
+    },
+    {
+      "objeto": "cajas_cera_gris",
+      "ocultoSi": {
+        "alguna": [
+          "bgc_cerrada"
+        ]
+      }
+    },
+    {
+      "objeto": "nino_aldea",
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_aldea_hostil",
+          "bgd_ninos_fuera"
+        ]
+      }
+    },
+    {
+      "objeto": "nina_aldea",
+      "ocultoSi": {
+        "alguna": [
+          "bnd2_aldea_hostil",
+          "bgd_ninos_fuera"
+        ]
+      }
+    },
+    {
+      "objeto": "tinet_atado",
+      "visibleSi": {
+        "alguna": [
+          "bgd_ninos_fuera"
+        ]
+      }
+    },
+    {
+      "objeto": "mia_atada",
+      "visibleSi": {
+        "alguna": [
+          "bgd_ninos_fuera"
+        ]
+      },
+      "ocultoSi": {
+        "alguna": [
+          "bgd_mia_perdida"
+        ]
+      }
+    },
+    {
+      "objeto": "orfeu",
+      "visibleSi": {
+        "alguna": [
+          "bgd_gancho"
+        ]
+      },
+      "ocultoSi": {
+        "alguna": [
+          "bgd_cerrada"
+        ]
+      }
+    },
+    {
+      "objeto": "devoto_puerta",
+      "visibleSi": {
+        "alguna": [
+          "bgd_gancho"
+        ]
+      },
+      "ocultoSi": {
+        "alguna": [
+          "bgd_cerrada"
+        ]
+      }
+    },
+    {
+      "objeto": "candela",
+      "ocultoSi": {
+        "alguna": [
+          "bgd_candela_fuera"
+        ]
+      }
+    }
+  ],
+  "titulo": {
+    "_nota": "Oriol (13/10): «podríamos hacer alguna animación de la ciudad». Detrás del título, el Casco Antiguo de Boundington: la cámara pasea despacio por este camino, en bucle, y la gente, los pájaros y las mascotas se mueven.",
+    "nivel": "assets/levels/ciudad_centro.json",
+    "conNivelInicial": "assets/levels/prado_del_rio.json",
+    "camino": [
+      [
+        26,
+        27
+      ],
+      [
+        40,
+        27
+      ],
+      [
+        40,
+        40
+      ],
+      [
+        26,
+        40
+      ]
+    ],
+    "velocidad": 0.6,
+    "zoom": 1.0
+  },
+  "fondos": {
+    "assets/levels/prado_del_rio.json": [
+      0.9,
+      0.92,
+      0.94
+    ],
+    "assets/levels/recuerdo_ceaseton.json": [
+      0.86,
+      0.88,
+      0.92
+    ],
+    "assets/levels/recuerdo_puerta.json": [
+      0.86,
+      0.88,
+      0.92
+    ],
+    "assets/levels/recuerdo_aegroum.json": [
+      0.86,
+      0.88,
+      0.92
+    ],
+    "assets/levels/recuerdo_taberna.json": [
+      0.86,
+      0.88,
+      0.92
+    ]
+  },
+  "cinematicas": [
+    {
+      "id": "barquero",
+      "_nota": "Oriol: «cuando exploremos el rio aparezca el barquero». Al llegar a la orilla, la barca baja por el rio y Sho-Noco salta a tierra.",
+      "nivel": "assets/levels/prado_del_rio.json",
+      "zona": [
+        12,
+        0,
+        13,
+        17
+      ],
+      "requiere": [
+        "bnd_prologo_percibe_relatado"
+      ],
+      "pasos": [
+        {
+          "anda": "jugador",
+          "a": [
+            12,
+            9
+          ],
+          "velocidad": 3
+        },
+        {
+          "mira": "jugador",
+          "hacia": "derecha"
+        },
+        {
+          "espera": 0.8
+        },
+        {
+          "flag": "bnd_prologo_barca_viene"
+        },
+        {
+          "anda": "barca_de_sho_noco",
+          "a": [
+            14,
+            8
+          ],
+          "velocidad": 1.4,
+          "sinEsperar": true
+        },
+        {
+          "anda": "sho_noco",
+          "a": [
+            14,
+            8
+          ],
+          "velocidad": 1.4,
+          "desfase": [
+            0,
+            -0.35
+          ]
+        },
+        {
+          "espera": 0.4
+        },
+        {
+          "beat": "bnd_prologo_barca_llega"
+        },
+        {
+          "anda": "sho_noco",
+          "a": [
+            13,
+            9
+          ],
+          "velocidad": 1.2,
+          "desfase": [
+            0,
+            0
+          ]
+        },
+        {
+          "mira": "sho_noco",
+          "hacia": "izquierda"
+        },
+        {
+          "espera": 0.3
+        }
+      ],
+      "alTerminar": [
+        "bnd_prologo_barquero",
+        "bnd_prologo_barca_vista"
+      ]
+    },
+    {
+      "id": "subida",
+      "_nota": "Oriol: «no queremos subir, hablamos con el, subimos al barco». Al elegir «Subir a la barca». PROLOGO-02 (14/10): Sho-Noco, en la popa; tu, en la proa (el dibujo, con «desfase»: tu celda sigue en la orilla).",
+      "nivel": "assets/levels/prado_del_rio.json",
+      "requiere": [
+        "bnd_pr_sube"
+      ],
+      "pasos": [
+        {
+          "anda": "sho_noco",
+          "a": [
+            14,
+            8
+          ],
+          "velocidad": 1.5,
+          "desfase": [
+            0,
+            -0.35
+          ]
+        },
+        {
+          "anda": "jugador",
+          "por": [
+            [
+              13,
+              9
+            ],
+            [
+              13,
+              8
+            ]
+          ],
+          "velocidad": 2
+        },
+        {
+          "coloca": "jugador",
+          "en": [
+            13,
+            8
+          ],
+          "desfase": [
+            1.0,
+            0.3
+          ]
+        },
+        {
+          "mira": "jugador",
+          "hacia": "abajo"
+        },
+        {
+          "mira": "sho_noco",
+          "hacia": "abajo"
+        },
+        {
+          "flag": "bnd_prologo_espectro"
+        },
+        {
+          "beat": "bnd_prologo_subes"
+        },
+        {
+          "espera": 0.6
+        },
+        {
+          "funde": 1,
+          "segundos": 2.0,
+          "color": "blanco"
+        },
+        {
+          "flag": "bnd_pr_r1"
+        }
+      ]
+    },
+    {
+      "id": "recuerdo_ceaseton",
+      "_nota": "Ceaseton, 756: el brindis. Los espectros entran por la puerta y se acercan a la mesa de la ventana. Al acabar (y en los dos siguientes), andas libre entre ellos («_libre»): Oriol, 14/10: «no puedes jugar como fantasma». Para seguir, hablas con Sho-Noco.",
+      "requiere": [
+        "bnd_pr_r1"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 0,
+          "color": "blanco"
+        },
+        {
+          "nivel": "assets/levels/recuerdo_ceaseton.json",
+          "en": [
+            2,
+            9
+          ]
+        },
+        {
+          "mira": "venides_joven",
+          "hacia": "arriba"
+        },
+        {
+          "mira": "verina_joven",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "edul_joven",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "sandes_joven",
+          "hacia": "abajo"
+        },
+        {
+          "mira": "tabernero_ceaseton",
+          "hacia": "abajo"
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "funde": 0,
+          "segundos": 1.6,
+          "color": "blanco"
+        },
+        {
+          "beat": "bnd_pr_r1_llegada"
+        },
+        {
+          "anda": "sho_noco",
+          "por": [
+            [
+              7,
+              10
+            ],
+            [
+              7,
+              5
+            ]
+          ],
+          "velocidad": 2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "jugador",
+          "por": [
+            [
+              6,
+              9
+            ],
+            [
+              6,
+              4
+            ]
+          ],
+          "velocidad": 2.5
+        },
+        {
+          "mira": "jugador",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "sho_noco",
+          "hacia": "arriba"
+        },
+        {
+          "espera": 0.4
+        },
+        {
+          "beat": "bnd_pr_r1_brindis"
+        },
+        {
+          "anda": "edul_joven",
+          "a": [
+            9,
+            3
+          ],
+          "velocidad": 2
+        },
+        {
+          "mira": "edul_joven",
+          "hacia": "izquierda"
+        },
+        {
+          "beat": "bnd_pr_r1_capa"
+        },
+        {
+          "espera": 0.8
+        },
+        {
+          "mira": "sandes_joven",
+          "hacia": "abajo"
+        },
+        {
+          "beat": "bnd_pr_r1_sandes"
+        }
+      ],
+      "alTerminar": [
+        "bnd_prologo_en_pasado",
+        "bnd_pr_r1_libre"
+      ]
+    },
+    {
+      "id": "recuerdo_puerta",
+      "_nota": "Ceaseton, 757: vuelve de las montanas y cierra la puerta a sus amigos.",
+      "requiere": [
+        "bnd_pr_r2"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 1.4,
+          "color": "blanco"
+        },
+        {
+          "nivel": "assets/levels/recuerdo_puerta.json",
+          "en": [
+            7,
+            6
+          ]
+        },
+        {
+          "mira": "venides_vuelta",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "sho_noco",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "jugador",
+          "hacia": "izquierda"
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "funde": 0,
+          "segundos": 1.6,
+          "color": "blanco"
+        },
+        {
+          "beat": "bnd_pr_r2_casa"
+        },
+        {
+          "espera": 1.2
+        },
+        {
+          "beat": "bnd_pr_r2_llaman"
+        },
+        {
+          "anda": "venides_vuelta",
+          "por": [
+            [
+              6,
+              5
+            ],
+            [
+              3,
+              5
+            ]
+          ],
+          "velocidad": 1.4
+        },
+        {
+          "mira": "venides_vuelta",
+          "hacia": "izquierda"
+        },
+        {
+          "flag": "bnd_pr_r2_abre"
+        },
+        {
+          "mira": "verina_puerta",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "edul_puerta",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "sandes_puerta",
+          "hacia": "derecha"
+        },
+        {
+          "espera": 1.0
+        },
+        {
+          "beat": "bnd_pr_r2_puerta"
+        },
+        {
+          "mira": "venides_vuelta",
+          "hacia": "abajo"
+        },
+        {
+          "espera": 1.4
+        },
+        {
+          "mira": "venides_vuelta",
+          "hacia": "izquierda"
+        },
+        {
+          "beat": "bnd_pr_r2_cierra"
+        },
+        {
+          "flag": "bnd_pr_r2_se_van"
+        },
+        {
+          "espera": 1.0
+        },
+        {
+          "anda": "venides_vuelta",
+          "a": [
+            2,
+            5
+          ],
+          "velocidad": 1.2
+        },
+        {
+          "mira": "venides_vuelta",
+          "hacia": "izquierda"
+        },
+        {
+          "espera": 1.2
+        },
+        {
+          "beat": "bnd_pr_r2_tranca"
+        }
+      ],
+      "alTerminar": [
+        "bnd_pr_r2_vista",
+        "bnd_pr_r2_libre"
+      ]
+    },
+    {
+      "id": "recuerdo_aegroum",
+      "_nota": "Aegroum, 757: el reino le manda a Boundington.",
+      "requiere": [
+        "bnd_pr_r3"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 1.4,
+          "color": "blanco"
+        },
+        {
+          "nivel": "assets/levels/recuerdo_aegroum.json",
+          "en": [
+            9,
+            7
+          ]
+        },
+        {
+          "mira": "capitan_aegroum",
+          "hacia": "abajo"
+        },
+        {
+          "mira": "venides_vuelta",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "jugador",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "sho_noco",
+          "hacia": "izquierda"
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "funde": 0,
+          "segundos": 1.6,
+          "color": "blanco"
+        },
+        {
+          "beat": "bnd_pr_r3_sala"
+        },
+        {
+          "anda": "venides_vuelta",
+          "por": [
+            [
+              6,
+              7
+            ],
+            [
+              6,
+              4
+            ]
+          ],
+          "velocidad": 1.6
+        },
+        {
+          "mira": "venides_vuelta",
+          "hacia": "arriba"
+        },
+        {
+          "espera": 0.6
+        },
+        {
+          "beat": "bnd_pr_r3_orden"
+        },
+        {
+          "espera": 0.8
+        },
+        {
+          "beat": "bnd_pr_r3_responde"
+        },
+        {
+          "anda": "venides_vuelta",
+          "por": [
+            [
+              6,
+              7
+            ],
+            [
+              2,
+              7
+            ]
+          ],
+          "velocidad": 1.8
+        },
+        {
+          "flag": "bnd_pr_r3_sale"
+        },
+        {
+          "espera": 1.2
+        }
+      ],
+      "alTerminar": [
+        "bnd_pr_r3_vista",
+        "bnd_pr_r3_libre"
+      ]
+    },
+    {
+      "id": "recuerdo_taberna",
+      "_nota": "Boundington, 757: Venides llega a la Taberna Humilde, Sho-Noco se va y el jugador vuelve a ser de carne y hueso. Despues, el primer dia.",
+      "requiere": [
+        "bnd_pr_r4"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 1.4,
+          "color": "blanco"
+        },
+        {
+          "nivel": "assets/levels/recuerdo_taberna.json",
+          "en": [
+            1,
+            10
+          ]
+        },
+        {
+          "mira": "venides",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "skilla",
+          "hacia": "abajo"
+        },
+        {
+          "mira": "sho_noco",
+          "hacia": "abajo"
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "funde": 0,
+          "segundos": 1.6,
+          "color": "blanco"
+        },
+        {
+          "beat": "bnd_pr_r4_llega"
+        },
+        {
+          "anda": "venides",
+          "por": [
+            [
+              4,
+              10
+            ],
+            [
+              4,
+              7
+            ]
+          ],
+          "velocidad": 1.5
+        },
+        {
+          "mira": "venides",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "skilla",
+          "hacia": "izquierda"
+        },
+        {
+          "beat": "bnd_pr_r4_rosita"
+        },
+        {
+          "anda": "jugador",
+          "a": [
+            3,
+            10
+          ],
+          "velocidad": 2
+        },
+        {
+          "anda": "sho_noco",
+          "por": [
+            [
+              2,
+              9
+            ],
+            [
+              3,
+              9
+            ]
+          ],
+          "velocidad": 1.5
+        },
+        {
+          "mira": "sho_noco",
+          "hacia": "abajo"
+        },
+        {
+          "mira": "jugador",
+          "hacia": "arriba"
+        },
+        {
+          "espera": 0.5
+        },
+        {
+          "beat": "bnd_pr_r4_shonoco"
+        },
+        {
+          "espera": 2.0
+        },
+        {
+          "funde": 1,
+          "segundos": 1.2,
+          "color": "blanco"
+        },
+        {
+          "beat": "bnd_pr_r4_despierta"
+        }
+      ]
+    },
+    {
+      "id": "barriada_mira",
+      "_nota": "Día 2, con la familia del gato ya en la Barriada: Mira sale corriendo a tu encuentro y el Guardián se aparta.",
+      "nivel": "assets/levels/ciudad_surysal.json",
+      "zona": [
+        26,
+        11,
+        29,
+        15
+      ],
+      "requiere": [
+        "bnd2_encargo",
+        "bnd2_familia_llevada"
+      ],
+      "sin": [
+        "bnd2_gitanos_hablado",
+        "bnd2_barriada_persuadir",
+        "bnd2_barriada_rechaza_culto"
+      ],
+      "pasos": [
+        {
+          "mira": "jugador",
+          "hacia": "izquierda"
+        },
+        {
+          "anda": "nina_del_gato",
+          "por": [
+            [
+              22,
+              13
+            ],
+            [
+              26,
+              13
+            ]
+          ],
+          "velocidad": 3.2
+        },
+        {
+          "mira": "nina_del_gato",
+          "hacia": "derecha"
+        },
+        {
+          "beat": "bnd2_mira_corre"
+        },
+        {
+          "anda": "viejo_surysal",
+          "a": [
+            27,
+            9
+          ],
+          "velocidad": 1.6
+        },
+        {
+          "mira": "zarela",
+          "hacia": "derecha"
+        },
+        {
+          "anda": "nina_del_gato",
+          "por": [
+            [
+              22,
+              13
+            ],
+            [
+              22,
+              14
+            ]
+          ],
+          "velocidad": 2.5,
+          "sinEsperar": true
+        },
+        {
+          "beat": "bnd2_zarela_bienvenida"
+        }
+      ],
+      "alTerminar": [
+        "bnd2_barriada_bienvenida"
+      ]
+    },
+    {
+      "id": "barriada_sientate",
+      "_nota": "Zarela te ha dicho «siéntate»: el Guardián se aparta y tú vas al banco del círculo. La charla empieza al llegar.",
+      "nivel": "assets/levels/ciudad_surysal.json",
+      "requiere": [
+        "bnd2_barriada_bienvenida"
+      ],
+      "sin": [
+        "bnd2_zarela_sientate",
+        "bnd2_barriada_rechaza_culto"
+      ],
+      "pasos": [
+        {
+          "anda": "viejo_surysal",
+          "a": [
+            27,
+            9
+          ],
+          "velocidad": 1.6
+        },
+        {
+          "anda": "jugador",
+          "a": [
+            26,
+            13
+          ],
+          "velocidad": 2.5
+        },
+        {
+          "anda": "jugador",
+          "a": [
+            24,
+            13
+          ],
+          "velocidad": 2.5
+        },
+        {
+          "mira": "jugador",
+          "hacia": "arriba"
+        },
+        {
+          "mira": "zarela",
+          "hacia": "abajo"
+        },
+        {
+          "mira": "anciana_barriada",
+          "hacia": "abajo"
+        },
+        {
+          "espera": 0.4
+        },
+        {
+          "beat": "bnd2_zarela_sientate"
+        }
+      ]
+    },
+    {
+      "id": "barriada_anochece_dentro",
+      "_nota": "Te quedas hasta la noche. Las forjas se apagan, el círculo se enciende, y los seis vienen por el puente con antorchas.",
+      "nivel": "assets/levels/ciudad_surysal.json",
+      "requiere": [
+        "bnd2_saq_noche_dentro"
+      ],
+      "sin": [
+        "bnd2_saq_llegan",
+        "bnd2_barriada_rechaza_culto"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 1.6,
+          "color": "negro"
+        },
+        {
+          "beat": "bnd2_saq_anochece"
+        },
+        {
+          "funde": 0,
+          "segundos": 1.2,
+          "color": "negro"
+        },
+        {
+          "mira": "jugador",
+          "hacia": "derecha"
+        },
+        {
+          "flag": "bnd2_saq_en_escena"
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "anda": "cabecilla_saqueadores",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              12
+            ],
+            [
+              27,
+              12
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              11
+            ],
+            [
+              28,
+              11
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              13
+            ],
+            [
+              28,
+              13
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              10
+            ],
+            [
+              27,
+              10
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              14
+            ],
+            [
+              27,
+              14
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              12
+            ],
+            [
+              28,
+              12
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": false
+        },
+        {
+          "mira": "cabecilla_saqueadores",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "viejo_surysal",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "zarela",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "jugador",
+          "hacia": "derecha"
+        },
+        {
+          "espera": 0.5
+        },
+        {
+          "beat": "bnd2_saq_llegan"
+        }
+      ]
+    },
+    {
+      "id": "barriada_anochece_vuelta",
+      "_nota": "Prometiste volver al anochecer y vuelves por el puente: entras en el corro y los seis llegan detrás de ti.",
+      "nivel": "assets/levels/ciudad_surysal.json",
+      "requiere": [
+        "bnd2_saq_noche_vuelta"
+      ],
+      "sin": [
+        "bnd2_saq_llegan",
+        "bnd2_barriada_rechaza_culto"
+      ],
+      "pasos": [
+        {
+          "anda": "viejo_surysal",
+          "a": [
+            27,
+            9
+          ],
+          "velocidad": 1.6,
+          "sinEsperar": true
+        },
+        {
+          "anda": "jugador",
+          "por": [
+            [
+              24,
+              20
+            ],
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              14
+            ],
+            [
+              25,
+              14
+            ],
+            [
+              25,
+              13
+            ]
+          ],
+          "velocidad": 2.8
+        },
+        {
+          "mira": "jugador",
+          "hacia": "derecha"
+        },
+        {
+          "beat": "bnd2_saq_anochece"
+        },
+        {
+          "flag": "bnd2_saq_en_escena"
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "anda": "cabecilla_saqueadores",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              12
+            ],
+            [
+              27,
+              12
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              11
+            ],
+            [
+              28,
+              11
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              13
+            ],
+            [
+              28,
+              13
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              10
+            ],
+            [
+              27,
+              10
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              14
+            ],
+            [
+              27,
+              14
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              12
+            ],
+            [
+              28,
+              12
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": false
+        },
+        {
+          "mira": "cabecilla_saqueadores",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "viejo_surysal",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "zarela",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "jugador",
+          "hacia": "derecha"
+        },
+        {
+          "espera": 0.5
+        },
+        {
+          "beat": "bnd2_saq_llegan"
+        }
+      ]
+    },
+    {
+      "id": "barriada_saqueadores_se_van",
+      "_nota": "Resuelto como sea (a golpes, hablando, con la Furia o pagando), los seis se van por donde vinieron.",
+      "nivel": "assets/levels/ciudad_surysal.json",
+      "requiere": [
+        "bnd2_saqueadores_resuelto",
+        "bnd2_saq_en_escena"
+      ],
+      "sin": [
+        "bnd2_saq_fuera",
+        "bnd2_barriada_rechaza_culto"
+      ],
+      "pasos": [
+        {
+          "anda": "cabecilla_saqueadores",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              26
+            ]
+          ],
+          "velocidad": 3.0,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              26
+            ]
+          ],
+          "velocidad": 3.0,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              26
+            ]
+          ],
+          "velocidad": 3.0,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              26
+            ]
+          ],
+          "velocidad": 3.0,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              26
+            ]
+          ],
+          "velocidad": 3.0,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              26
+            ]
+          ],
+          "velocidad": 3.0,
+          "sinEsperar": true
+        },
+        {
+          "espera": 2.2
+        },
+        {
+          "flag": "bnd2_saq_fuera"
+        },
+        {
+          "espera": 0.3
+        }
+      ]
+    },
+    {
+      "id": "barriada_fuego",
+      "_nota": "El ritual: la Barriada se pone alrededor del círculo y a ti te ponen en el centro.",
+      "nivel": "assets/levels/ciudad_surysal.json",
+      "requiere": [
+        "bnd2_ritual_listo",
+        "bnd2_saq_fuera"
+      ],
+      "sin": [
+        "bnd2_ritual_hecho",
+        "bnd2_barriada_rechaza_culto"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 0.9,
+          "color": "negro"
+        },
+        {
+          "anda": "zarela",
+          "a": [
+            23,
+            10
+          ],
+          "velocidad": 2
+        },
+        {
+          "anda": "guerrero_gitano",
+          "a": [
+            25,
+            9
+          ],
+          "velocidad": 2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "viejo_surysal",
+          "a": [
+            26,
+            10
+          ],
+          "velocidad": 2,
+          "sinEsperar": true
+        },
+        {
+          "funde": 0,
+          "segundos": 1.0,
+          "color": "negro"
+        },
+        {
+          "anda": "jugador",
+          "a": [
+            24,
+            10
+          ],
+          "velocidad": 2.2
+        },
+        {
+          "mira": "zarela",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "anciana_barriada",
+          "hacia": "arriba"
+        },
+        {
+          "mira": "guerrero_gitano",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "viejo_surysal",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "jugador",
+          "hacia": "abajo"
+        },
+        {
+          "espera": 0.6
+        },
+        {
+          "beat": "bnd2_ritual_empieza"
+        }
+      ]
+    },
+    {
+      "id": "xila_desprecio",
+      "_nota": "C4 / AV17-08 — Día 1: al tratar a Xila con desprecio (bnd1_xila_maltratado) se vuelve de espaldas y rumia. Luego sigue b1_xila_resentido como siempre.",
+      "nivel": "assets/levels/ciudad_oeste.json",
+      "requiere": [
+        "bnd1_xila_maltratado"
+      ],
+      "pasos": [
+        {
+          "mira": "xila",
+          "hacia": "arriba"
+        },
+        {
+          "emocion": "xila",
+          "icono": "enfurecido",
+          "segundos": 1.4,
+          "aguarda": true
+        },
+        {
+          "espera": 0.3
+        }
+      ]
+    },
+    {
+      "id": "fiesta_salon",
+      "_nota": "C4 / AV17-06 — Día 2: al entrar en la mansión con bnd2_fiesta_dentro, los dueños (máscaras de plumas) salen a recibirte y vuelven al salón. Lo que se dice sigue en b2_dentro / b2_invitados.",
+      "nivel": "assets/levels/mansion_barrio_alto.json",
+      "requiere": [
+        "bnd2_fiesta_dentro"
+      ],
+      "sin": [
+        "bnd2_fiesta_resuelta"
+      ],
+      "pasos": [
+        {
+          "anda": "mercader",
+          "a": [
+            3,
+            15
+          ],
+          "velocidad": 1.4,
+          "sinEsperar": true
+        },
+        {
+          "anda": "anfitriona",
+          "por": [
+            [
+              4,
+              14
+            ],
+            [
+              3,
+              14
+            ]
+          ],
+          "velocidad": 1.4
+        },
+        {
+          "mira": "anfitriona",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "mercader",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "jugador",
+          "hacia": "derecha"
+        },
+        {
+          "emocion": "anfitriona",
+          "icono": "encantado",
+          "segundos": 1.4,
+          "aguarda": true
+        },
+        {
+          "emocion": "mercader",
+          "icono": "oro",
+          "segundos": 1.0,
+          "aguarda": true
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "anda": "mercader",
+          "a": [
+            9,
+            15
+          ],
+          "velocidad": 1.4,
+          "sinEsperar": true
+        },
+        {
+          "anda": "anfitriona",
+          "a": [
+            9,
+            14
+          ],
+          "velocidad": 1.4
+        },
+        {
+          "mira": "anfitriona",
+          "hacia": "arriba"
+        },
+        {
+          "mira": "mercader",
+          "hacia": "arriba"
+        }
+      ]
+    },
+    {
+      "id": "barricada_llamas",
+      "_nota": "C4 / AV17-07 — Ocaso: al oír los gritos (b3_barricada_vista), el paso central de la tapia de las afueras arde con fuego blanco. Se queda ardiendo hasta barricada_rota.",
+      "nivel": "assets/levels/afueras_boundington_ocaso.json",
+      "requiere": [
+        "bnd3_barricada_vista"
+      ],
+      "pasos": [
+        {
+          "arde": [
+            20,
+            12
+          ]
+        },
+        {
+          "espera": 0.15
+        },
+        {
+          "arde": [
+            19,
+            13
+          ]
+        },
+        {
+          "espera": 0.15
+        },
+        {
+          "arde": [
+            21,
+            13
+          ]
+        },
+        {
+          "espera": 0.15
+        },
+        {
+          "arde": [
+            20,
+            14
+          ]
+        },
+        {
+          "espera": 0.15
+        },
+        {
+          "arde": [
+            20,
+            13
+          ]
+        },
+        {
+          "espera": 0.6
+        }
+      ]
+    },
+    {
+      "id": "barricada_rota",
+      "_nota": "C4 / AV17-07 — Ocaso: resuelta la barricada (bnd3_barricada_resuelta), el fuego se apaga casilla a casilla, el centro el último, y el paso queda abierto.",
+      "nivel": "assets/levels/afueras_boundington_ocaso.json",
+      "requiere": [
+        "bnd3_barricada_resuelta"
+      ],
+      "pasos": [
+        {
+          "apaga": [
+            20,
+            12
+          ]
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "apaga": [
+            19,
+            13
+          ]
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "apaga": [
+            21,
+            13
+          ]
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "apaga": [
+            20,
+            14
+          ]
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "apaga": [
+            20,
+            13
+          ]
+        },
+        {
+          "espera": 0.5
+        }
+      ]
+    },
+    {
+      "id": "epilogo_barca",
+      "_nota": "C4 / AV17-07 — El epílogo (b3_epilogo / b3_epilogo_caido encienden bnd3_epi_empezado): fundido a blanco, el prado del río, la barca de Sho-Noco con él en la popa y tú en la proa, como en la subida del prólogo. b3_barca espera a cine_epilogo_barca_vista.",
+      "requiere": [
+        "bnd3_epi_empezado"
+      ],
+      "pasos": [
+        {
+          "espera": 0.6
+        },
+        {
+          "funde": 1,
+          "segundos": 1.6,
+          "color": "blanco"
+        },
+        {
+          "nivel": "assets/levels/prado_del_rio.json",
+          "en": [
+            13,
+            8
+          ]
+        },
+        {
+          "coloca": "barca_de_sho_noco",
+          "en": [
+            14,
+            8
+          ]
+        },
+        {
+          "coloca": "sho_noco",
+          "en": [
+            14,
+            8
+          ],
+          "desfase": [
+            0,
+            -0.35
+          ]
+        },
+        {
+          "coloca": "jugador",
+          "en": [
+            13,
+            8
+          ],
+          "desfase": [
+            1.0,
+            0.3
+          ]
+        },
+        {
+          "mira": "jugador",
+          "hacia": "abajo"
+        },
+        {
+          "mira": "sho_noco",
+          "hacia": "abajo"
+        },
+        {
+          "espera": 0.4
+        },
+        {
+          "funde": 0,
+          "segundos": 2.2,
+          "color": "blanco"
+        },
+        {
+          "espera": 0.8
+        }
+      ]
+    },
+    {
+      "id": "cripta_estudio",
+      "_nota": "AV19-08 — Oriol: la escena de Edul y Verina salta al entrar en la sala de estudio de los novicios (dependencias_secta, losa clara 8..14 × 15..21), fuera de combate. Verina lee en el banco; Edul entra por el pasillo con su frasco. Lo que se dice: b1_estudio → b1_edul.",
+      "nivel": "assets/levels/dependencias_secta.json",
+      "zona": [
+        8,
+        15,
+        14,
+        21
+      ],
+      "sin": [
+        "bnd1_guarida_pelea",
+        "bnd1_cripta_estudio"
+      ],
+      "pasos": [
+        {
+          "coloca": "edul_cripta",
+          "en": [
+            7,
+            17
+          ]
+        },
+        {
+          "mira": "verina_cripta",
+          "hacia": "arriba"
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "anda": "edul_cripta",
+          "a": [
+            10,
+            19
+          ],
+          "velocidad": 1.6
+        },
+        {
+          "mira": "edul_cripta",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "jugador",
+          "hacia": "izquierda"
+        },
+        {
+          "emocion": "verina_cripta",
+          "icono": "asustado",
+          "segundos": 1.0
+        },
+        {
+          "espera": 0.4
+        },
+        {
+          "beat": "bnd1_cripta_estudio"
+        }
+      ],
+      "alTerminar": [
+        "bnd1_cripta_estudio"
+      ]
+    },
+    {
+      "id": "edul_escolta",
+      "_nota": "AV19-08 — «Edul siempre se ofrece a acompañarte a salvo»: desde las dependencias, Edul va contigo hasta la galería del osario y salís a la calle, junto a la puerta de la iglesia.",
+      "nivel": "assets/levels/dependencias_secta.json",
+      "requiere": [
+        "bnd1_edul_escolta_si"
+      ],
+      "sin": [
+        "bnd1_edul_escoltado"
+      ],
+      "pasos": [
+        {
+          "anda": "edul_cripta",
+          "a": [
+            4,
+            28
+          ],
+          "velocidad": 2.0,
+          "sinEsperar": true
+        },
+        {
+          "anda": "jugador",
+          "a": [
+            5,
+            28
+          ],
+          "velocidad": 2.5
+        },
+        {
+          "mira": "edul_cripta",
+          "hacia": "abajo"
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "funde": 1,
+          "segundos": 0.8
+        },
+        {
+          "nivel": "assets/levels/ciudad_centro.json",
+          "en": [
+            56,
+            53
+          ]
+        },
+        {
+          "espera": 0.2
+        },
+        {
+          "funde": 0,
+          "segundos": 1.4
+        }
+      ],
+      "alTerminar": [
+        "bnd1_edul_escoltado"
+      ]
+    },
+    {
+      "id": "edul_escolta_fuera",
+      "_nota": "AV19-08 — La misma salida con Edul desde cualquier otro mapa de la cripta (santuario, osario).",
+      "requiere": [
+        "bnd1_edul_escolta_si"
+      ],
+      "sin": [
+        "bnd1_edul_escoltado"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 0.8
+        },
+        {
+          "nivel": "assets/levels/ciudad_centro.json",
+          "en": [
+            56,
+            53
+          ]
+        },
+        {
+          "espera": 0.2
+        },
+        {
+          "funde": 0,
+          "segundos": 1.4
+        }
+      ],
+      "alTerminar": [
+        "bnd1_edul_escoltado"
+      ]
+    },
+    {
+      "id": "castillo_venides",
+      "nivel": "assets/levels/interior_castillo.json",
+      "requiere": [
+        "bnd2_encargo",
+        "bnd2_castillo_visto"
+      ],
+      "sin": [
+        "bnd2_venides_castillo_visto"
+      ],
+      "pasos": [
+        {
+          "anda": "venides_castillo",
+          "por": [
+            [
+              21,
+              5
+            ],
+            [
+              18,
+              5
+            ]
+          ],
+          "velocidad": 1.8
+        },
+        {
+          "emocion": "venides_castillo",
+          "icono": "...",
+          "segundos": 1.5
+        },
+        {
+          "beat": "bnd2_venides_castillo_abierta"
+        }
+      ]
+    },
+    {
+      "id": "taberna_xila_entra",
+      "nivel": "assets/levels/interior_taberna.json",
+      "requiere": [
+        "bnd2_noche_en_taberna",
+        "bnd1_xila_honor"
+      ],
+      "pasos": [
+        {
+          "anda": "xila_noche",
+          "por": [
+            [
+              2,
+              8
+            ],
+            [
+              5,
+              8
+            ]
+          ],
+          "velocidad": 2
+        },
+        {
+          "emocion": "xila_noche",
+          "icono": "!",
+          "segundos": 1
+        },
+        {
+          "beat": "bnd2_xila_entrada"
+        }
+      ]
+    },
+    {
+      "id": "taberna_velas",
+      "nivel": "assets/levels/interior_taberna.json",
+      "requiere": [
+        "bnd2_a_dormir"
+      ],
+      "pasos": [
+        {
+          "anda": "skilla",
+          "a": [
+            7,
+            5
+          ],
+          "velocidad": 1.6
+        },
+        {
+          "flag": "bnd2_vela_1_apagada"
+        },
+        {
+          "anda": "skilla",
+          "a": [
+            12,
+            8
+          ],
+          "velocidad": 1.6
+        },
+        {
+          "flag": "bnd2_vela_2_apagada"
+        },
+        {
+          "anda": "skilla",
+          "a": [
+            2,
+            10
+          ],
+          "velocidad": 1.6
+        },
+        {
+          "flag": "bnd2_velas_apagadas"
+        }
+      ]
+    },
+    {
+      "id": "taberna_venides_sobrio",
+      "nivel": "assets/levels/interior_taberna.json",
+      "requiere": [
+        "bnd2_noche_en_taberna"
+      ],
+      "pasos": [
+        {
+          "emocion": "venides",
+          "icono": "...",
+          "segundos": 1.5
+        },
+        {
+          "mira": "venides",
+          "hacia": "derecha"
+        }
+      ]
+    },
+    {
+      "id": "aigren_hijo_carro",
+      "nivel": "assets/levels/ciudad_centro.json",
+      "requiere": [
+        "bnd2_aigren_despedido",
+        "bnd1_aigren_se_va"
+      ],
+      "pasos": [
+        {
+          "anda": "hijo_de_aigren",
+          "a": [
+            8,
+            59
+          ],
+          "velocidad": 1.6
+        },
+        {
+          "emocion": "hijo_de_aigren",
+          "icono": "...",
+          "segundos": 1
+        },
+        {
+          "anda": "aigren_carro",
+          "a": [
+            9,
+            59
+          ],
+          "velocidad": 1.6
+        },
+        {
+          "flag": "bnd2_aigren_carro_fuera"
+        }
+      ]
+    },
+    {
+      "id": "xila_tienda_entra",
+      "nivel": "assets/levels/tienda_abandonada.json",
+      "requiere": [
+        "bnd2_xila_te_lleva",
+        "bnd2_tienda_vista"
+      ],
+      "pasos": [
+        {
+          "anda": "xila_tienda",
+          "a": [
+            4,
+            5
+          ],
+          "velocidad": 2
+        },
+        {
+          "emocion": "xila_tienda",
+          "icono": "!",
+          "segundos": 1.5
+        },
+        {
+          "beat": "bnd2_xila_sombrero"
+        }
+      ]
+    },
+    {
+      "id": "instructor_puente",
+      "nivel": "assets/levels/ciudad_surysal.json",
+      "requiere": [
+        "bnd2_instructor_seguido"
+      ],
+      "pasos": [
+        {
+          "anda": "instructor_perdido",
+          "por": [
+            [
+              12,
+              13
+            ],
+            [
+              12,
+              20
+            ],
+            [
+              27,
+              20
+            ]
+          ],
+          "velocidad": 2
+        },
+        {
+          "mira": "instructor_perdido",
+          "hacia": "derecha"
+        }
+      ]
+    },
+    {
+      "id": "fiesta_edul",
+      "nivel": "assets/levels/ciudad_este.json",
+      "requiere": [
+        "bnd2_edul_buscado"
+      ],
+      "pasos": [
+        {
+          "anda": "edul_mascara",
+          "a": [
+            24,
+            22
+          ],
+          "velocidad": 2
+        },
+        {
+          "beat": "bnd2_edul_en_puerta"
+        }
+      ]
+    },
+    {
+      "id": "fiesta_edul_guia",
+      "nivel": "assets/levels/ciudad_este.json",
+      "requiere": [
+        "bnd2_con_edul"
+      ],
+      "pasos": [
+        {
+          "anda": "edul_mascara",
+          "a": [
+            24,
+            21
+          ],
+          "velocidad": 2
+        },
+        {
+          "anda": "jugador",
+          "a": [
+            24,
+            22
+          ],
+          "velocidad": 2
+        },
+        {
+          "nivel": "assets/levels/mansion_barrio_alto.json",
+          "en": [
+            2,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fiesta_escalada",
+      "nivel": "assets/levels/ciudad_este.json",
+      "requiere": [
+        "bnd2_escalada_pedida"
+      ],
+      "pasos": [
+        {
+          "coloca": "jugador",
+          "en": [
+            17,
+            17
+          ]
+        },
+        {
+          "trepa": "jugador",
+          "altura": 1.5,
+          "segundos": 1.8
+        },
+        {
+          "nivel": "assets/levels/mansion_barrio_alto.json",
+          "en": [
+            14,
+            10
+          ]
+        },
+        {
+          "emocion": "jugador",
+          "icono": "!",
+          "segundos": 1
+        }
+      ]
+    },
+    {
+      "id": "fiesta_entrada",
+      "nivel": "assets/levels/ciudad_este.json",
+      "requiere": [
+        "bnd2_fiesta_dentro"
+      ],
+      "sin": [
+        "bnd2_con_edul",
+        "bnd2_escalada_pedida"
+      ],
+      "pasos": [
+        {
+          "nivel": "assets/levels/mansion_barrio_alto.json",
+          "en": [
+            2,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fiesta_huida_arriba",
+      "nivel": "assets/levels/mansion_barrio_alto_p1.json",
+      "requiere": [
+        "bnd2_fuga_fiesta"
+      ],
+      "pasos": [
+        {
+          "anda": "criado_fiesta",
+          "a": [
+            15,
+            6
+          ],
+          "velocidad": 3
+        },
+        {
+          "emocion": "criado_fiesta",
+          "icono": "!",
+          "segundos": 1
+        },
+        {
+          "nivel": "assets/levels/mansion_barrio_alto.json",
+          "en": [
+            11,
+            3
+          ]
+        },
+        {
+          "anda": "jugador",
+          "por": [
+            [
+              11,
+              9
+            ],
+            [
+              14,
+              9
+            ]
+          ],
+          "velocidad": 4
+        },
+        {
+          "baja": "jugador",
+          "altura": 1.5,
+          "segundos": 1.2
+        },
+        {
+          "nivel": "assets/levels/ciudad_este.json",
+          "en": [
+            17,
+            17
+          ]
+        },
+        {
+          "flag": "bnd2_fuga_terminada"
+        }
+      ]
+    },
+    {
+      "id": "fiesta_huida_salon",
+      "nivel": "assets/levels/mansion_barrio_alto.json",
+      "requiere": [
+        "bnd2_fuga_fiesta"
+      ],
+      "sin": [
+        "bnd2_fuga_terminada"
+      ],
+      "pasos": [
+        {
+          "emocion": "anfitriona",
+          "icono": "!",
+          "segundos": 1
+        },
+        {
+          "anda": "jugador",
+          "a": [
+            14,
+            9
+          ],
+          "velocidad": 4
+        },
+        {
+          "baja": "jugador",
+          "altura": 1.5,
+          "segundos": 1.2
+        },
+        {
+          "nivel": "assets/levels/ciudad_este.json",
+          "en": [
+            17,
+            17
+          ]
+        },
+        {
+          "flag": "bnd2_fuga_terminada"
+        }
+      ]
+    },
+    {
+      "id": "fiesta_cocina",
+      "nivel": "assets/levels/ciudad_este.json",
+      "requiere": [
+        "bnd2_fiesta_segunda_usada"
+      ],
+      "pasos": [
+        {
+          "coloca": "jugador",
+          "en": [
+            17,
+            17
+          ]
+        },
+        {
+          "nivel": "assets/levels/mansion_barrio_alto.json",
+          "en": [
+            14,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fiesta_vigilante_taberna",
+      "nivel": "assets/levels/ciudad_este.json",
+      "requiere": [
+        "bnd2_vigilante_traslado"
+      ],
+      "pasos": [
+        {
+          "anda": "vigilante_fiesta",
+          "a": [
+            20,
+            23
+          ],
+          "velocidad": 2
+        },
+        {
+          "nivel": "assets/levels/interior_taberna.json",
+          "en": [
+            2,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cripta_novicio",
+      "_nota": "CRIPTA-25 [14]: el novicio del candil te sale al paso al llegar a las dependencias invitado.",
+      "nivel": "assets/levels/dependencias_secta.json",
+      "requiere": [
+        "bnd1_guarida_dentro"
+      ],
+      "sin": [
+        "bnd1_dep_vista",
+        "bnd1_cripta_hostil"
+      ],
+      "pasos": [
+        {
+          "coloca": "novicio_candil",
+          "en": [
+            6,
+            26
+          ]
+        },
+        {
+          "anda": "novicio_candil",
+          "a": [
+            3,
+            28
+          ],
+          "velocidad": 2.2
+        },
+        {
+          "mira": "novicio_candil",
+          "hacia": "izquierda"
+        },
+        {
+          "beat": "bnd1_cine_novicio"
+        },
+        {
+          "anda": "novicio_candil",
+          "a": [
+            9,
+            20
+          ],
+          "velocidad": 1.8
+        }
+      ],
+      "alTerminar": [
+        "bnd1_cine_novicio"
+      ]
+    },
+    {
+      "id": "cripta_tambor",
+      "_nota": "CRIPTA-25 [12][14]: suena el tambor y los novicios bajan en fila al santuario por el conducto.",
+      "nivel": "assets/levels/dependencias_secta.json",
+      "requiere": [
+        "bnd1_ceremonia_empezada"
+      ],
+      "sin": [
+        "bnd1_cripta_hostil",
+        "bnd1_novicios_fuera"
+      ],
+      "pasos": [
+        {
+          "anda": "copista_cripta",
+          "a": [
+            24,
+            25
+          ],
+          "velocidad": 1.6,
+          "sinEsperar": true
+        },
+        {
+          "anda": "novicio_candil",
+          "a": [
+            23,
+            25
+          ],
+          "velocidad": 1.6,
+          "sinEsperar": true
+        },
+        {
+          "anda": "novicio_litera",
+          "a": [
+            22,
+            25
+          ],
+          "velocidad": 1.4,
+          "sinEsperar": true
+        },
+        {
+          "anda": "archivero_cripta",
+          "a": [
+            25,
+            25
+          ],
+          "velocidad": 1.4
+        },
+        {
+          "espera": 0.4
+        }
+      ],
+      "alTerminar": [
+        "bnd1_novicios_fuera"
+      ]
+    },
+    {
+      "id": "cripta_archivero_se_va",
+      "_nota": "CRIPTA-25 [8][14]: el archivero se va hacia el conducto (engañado o asustado).",
+      "nivel": "assets/levels/dependencias_secta.json",
+      "requiere": [
+        "bnd1_archivero_se_va"
+      ],
+      "sin": [
+        "bnd1_cripta_hostil",
+        "bnd1_archivero_fuera"
+      ],
+      "pasos": [
+        {
+          "anda": "archivero_cripta",
+          "a": [
+            24,
+            25
+          ],
+          "velocidad": 1.8
+        },
+        {
+          "espera": 0.3
+        }
+      ],
+      "alTerminar": [
+        "bnd1_archivero_fuera"
+      ]
+    },
+    {
+      "id": "camara_sandes_sube",
+      "_nota": "CRIPTA-25 [14]: «Sube», y sube él primero: Sandes se va por la escalera de la cámara.",
+      "nivel": "assets/levels/camara_profunda.json",
+      "requiere": [
+        "bnd1_sandes_se_va"
+      ],
+      "sin": [
+        "bnd1_cripta_hostil",
+        "bnd1_sandes_fuera_camara"
+      ],
+      "pasos": [
+        {
+          "mira": "sandes_cripta",
+          "hacia": "abajo"
+        },
+        {
+          "anda": "sandes_cripta",
+          "a": [
+            14,
+            26
+          ],
+          "velocidad": 1.3
+        },
+        {
+          "espera": 0.3
+        }
+      ],
+      "alTerminar": [
+        "bnd1_sandes_fuera_camara"
+      ]
+    },
+    {
+      "id": "camara_sereno_sube",
+      "_nota": "CRIPTA-25 [21]: suelto, el sereno sube corriendo por la escalera.",
+      "nivel": "assets/levels/camara_profunda.json",
+      "requiere": [
+        "bnd1_sereno_libre"
+      ],
+      "sin": [
+        "bnd1_sereno_fuera"
+      ],
+      "pasos": [
+        {
+          "emocion": "prisionero_cripta",
+          "icono": "alegre",
+          "segundos": 0.8
+        },
+        {
+          "anda": "prisionero_cripta",
+          "a": [
+            14,
+            26
+          ],
+          "velocidad": 2.6
+        },
+        {
+          "espera": 0.2
+        }
+      ],
+      "alTerminar": [
+        "bnd1_sereno_fuera"
+      ]
+    },
+    {
+      "id": "cripta_capturado",
+      "_nota": "CRIPTA-25 [19][22]: te rindes o te cogen: fundido y despiertas encadenado junto al sereno.",
+      "requiere": [
+        "bnd1_cripta_capturado"
+      ],
+      "sin": [
+        "bnd1_cine_capturado"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 1.0
+        },
+        {
+          "nivel": "assets/levels/camara_profunda.json",
+          "en": [
+            20,
+            9
+          ]
+        },
+        {
+          "espera": 0.6
+        },
+        {
+          "funde": 0,
+          "segundos": 1.2
+        },
+        {
+          "mira": "jugador",
+          "hacia": "derecha"
+        },
+        {
+          "beat": "bnd1_cine_capturado"
+        }
+      ],
+      "alTerminar": [
+        "bnd1_cine_capturado"
+      ]
+    },
+    {
+      "id": "cripta_edul_rescate",
+      "_nota": "CRIPTA-25 [20]: Edul siempre se ofrece; si te encadenan, baja a por ti.",
+      "nivel": "assets/levels/camara_profunda.json",
+      "requiere": [
+        "bnd1_edul_rescata"
+      ],
+      "sin": [
+        "bnd1_cine_edul_rescate"
+      ],
+      "pasos": [
+        {
+          "anda": "edul_rescate",
+          "a": [
+            19,
+            9
+          ],
+          "velocidad": 1.8
+        },
+        {
+          "mira": "edul_rescate",
+          "hacia": "derecha"
+        },
+        {
+          "beat": "bnd1_cine_edul_rescate"
+        }
+      ],
+      "alTerminar": [
+        "bnd1_cine_edul_rescate"
+      ]
+    },
+    {
+      "id": "cripta_echado",
+      "_nota": "CRIPTA-25 [21]: Sandes te suelta y te echa: sales a la puerta de la iglesia.",
+      "requiere": [
+        "bnd1_cripta_echado"
+      ],
+      "sin": [
+        "bnd1_cripta_echado_visto"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 0.8
+        },
+        {
+          "nivel": "assets/levels/ciudad_centro.json",
+          "en": [
+            56,
+            53
+          ]
+        },
+        {
+          "espera": 0.2
+        },
+        {
+          "funde": 0,
+          "segundos": 1.4
+        }
+      ],
+      "alTerminar": [
+        "bnd1_cripta_echado_visto"
+      ]
+    },
+    {
+      "id": "cripta_huida",
+      "_nota": "CRIPTA-25 [21]: escapas corriendo de la cripta a la plaza.",
+      "requiere": [
+        "bnd1_cripta_huida"
+      ],
+      "sin": [
+        "bnd1_cripta_huida_vista"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 0.8
+        },
+        {
+          "nivel": "assets/levels/ciudad_centro.json",
+          "en": [
+            56,
+            53
+          ]
+        },
+        {
+          "espera": 0.2
+        },
+        {
+          "funde": 0,
+          "segundos": 1.4
+        }
+      ],
+      "alTerminar": [
+        "bnd1_cripta_huida_vista"
+      ]
+    },
+    {
+      "id": "cripta_pozo",
+      "_nota": "CRIPTA-25 [20][21]: bajas por el pozo de la cámara y sales por el pozo de la plaza.",
+      "nivel": "assets/levels/camara_profunda.json",
+      "requiere": [
+        "bnd1_salir_pozo"
+      ],
+      "sin": [
+        "bnd1_pozo_usado"
+      ],
+      "pasos": [
+        {
+          "anda": "jugador",
+          "a": [
+            6,
+            12
+          ],
+          "velocidad": 2.0
+        },
+        {
+          "funde": 1,
+          "segundos": 1.0
+        },
+        {
+          "nivel": "assets/levels/ciudad_centro.json",
+          "en": [
+            32,
+            50
+          ]
+        },
+        {
+          "espera": 0.4
+        },
+        {
+          "funde": 0,
+          "segundos": 1.4
+        }
+      ],
+      "alTerminar": [
+        "bnd1_pozo_usado"
+      ]
+    },
+    {
+      "id": "cripta_verina_sale",
+      "_nota": "CRIPTA-25 [18][21]: sacas a Verina: se levanta del banco y salís juntos por el osario.",
+      "nivel": "assets/levels/dependencias_secta.json",
+      "requiere": [
+        "bnd1_verina_sale"
+      ],
+      "sin": [
+        "bnd1_verina_fuera"
+      ],
+      "pasos": [
+        {
+          "anda": "verina_cripta",
+          "a": [
+            3,
+            27
+          ],
+          "velocidad": 2.0,
+          "sinEsperar": true
+        },
+        {
+          "anda": "jugador",
+          "a": [
+            4,
+            27
+          ],
+          "velocidad": 2.2
+        },
+        {
+          "espera": 0.2
+        },
+        {
+          "funde": 1,
+          "segundos": 0.8
+        },
+        {
+          "nivel": "assets/levels/ciudad_centro.json",
+          "en": [
+            56,
+            53
+          ]
+        },
+        {
+          "espera": 0.2
+        },
+        {
+          "funde": 0,
+          "segundos": 1.4
+        }
+      ],
+      "alTerminar": [
+        "bnd1_verina_fuera",
+        "bnd1_verina_salvada_guarida"
+      ]
+    },
+    {
+      "id": "plaza_sermon",
+      "nivel": "assets/levels/ciudad_centro.json",
+      "zona": [
+        49,
+        49,
+        61,
+        58
+      ],
+      "requiere": [
+        "bnd2_dia_cerrado"
+      ],
+      "sin": [
+        "bnd3_campanas"
+      ],
+      "pasos": [
+        {
+          "anda": "sandes_plaza",
+          "a": [
+            54,
+            54
+          ],
+          "velocidad": 1.2
+        },
+        {
+          "mira": "sandes_plaza",
+          "hacia": "abajo"
+        },
+        {
+          "emocion": "verina_estrado",
+          "icono": "...",
+          "segundos": 1.5
+        },
+        {
+          "mira": "edul_plaza",
+          "hacia": "abajo"
+        },
+        {
+          "mira": "captor_estrado",
+          "hacia": "izquierda"
+        },
+        {
+          "beat": "bnd3_esc04_sermon"
+        }
+      ]
+    },
+    {
+      "id": "base_campanas",
+      "nivel": "assets/levels/interior_cuartel.json",
+      "requiere": [
+        "bnd3_plaza_vista"
+      ],
+      "sin": [
+        "bnd3_campanas"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 0.5,
+          "color": "negro"
+        },
+        {
+          "anda": "explorador_herido",
+          "a": [
+            3,
+            8
+          ],
+          "velocidad": 1.2
+        },
+        {
+          "tumba": "explorador_herido",
+          "como": "herido"
+        },
+        {
+          "mira": "venides_base",
+          "hacia": "izquierda"
+        },
+        {
+          "funde": 0,
+          "segundos": 0.5,
+          "color": "negro"
+        },
+        {
+          "beat": "bnd3_esc04_campanas"
+        }
+      ]
+    },
+    {
+      "id": "base_arenga",
+      "nivel": "assets/levels/interior_cuartel.json",
+      "requiere": [
+        "bnd3_campanas"
+      ],
+      "pasos": [
+        {
+          "mira": "venides_base",
+          "hacia": "abajo"
+        },
+        {
+          "emocion": "xila_base",
+          "icono": "!",
+          "segundos": 1
+        },
+        {
+          "beat": "bnd3_esc04_arenga"
+        }
+      ]
+    },
+    {
+      "id": "base_ruta_oeste",
+      "nivel": "assets/levels/ciudad_oeste.json",
+      "zona": [
+        3,
+        9,
+        5,
+        12
+      ],
+      "requiere": [
+        "bnd3_salidas_explicadas"
+      ],
+      "sin": [
+        "bnd3_ruta"
+      ],
+      "pasos": [
+        {
+          "beat": "bnd3_esc04_ruta_oeste"
+        }
+      ]
+    },
+    {
+      "id": "base_ruta_norte",
+      "nivel": "assets/levels/ciudad_oeste.json",
+      "zona": [
+        6,
+        6,
+        9,
+        8
+      ],
+      "requiere": [
+        "bnd3_salidas_explicadas"
+      ],
+      "sin": [
+        "bnd3_ruta"
+      ],
+      "pasos": [
+        {
+          "beat": "bnd3_esc04_ruta_norte"
+        }
+      ]
+    },
+    {
+      "id": "base_ruta_quedarse",
+      "nivel": "assets/levels/ciudad_oeste.json",
+      "zona": [
+        10,
+        9,
+        13,
+        12
+      ],
+      "requiere": [
+        "bnd3_salidas_explicadas"
+      ],
+      "sin": [
+        "bnd3_ruta"
+      ],
+      "pasos": [
+        {
+          "beat": "bnd3_esc04_ruta_quedarse"
+        }
+      ]
+    },
+    {
+      "id": "base_saqueadores",
+      "nivel": "assets/levels/ciudad_oeste.json",
+      "requiere": [
+        "bnd3_ruta"
+      ],
+      "pasos": [
+        {
+          "anda": "saqueador_muralla",
+          "a": [
+            6,
+            10
+          ],
+          "velocidad": 3
+        },
+        {
+          "beat": "bnd3_esc04_saqueadores"
+        }
+      ]
+    },
+    {
+      "id": "base_fanaticos",
+      "nivel": "assets/levels/ciudad_oeste.json",
+      "requiere": [
+        "bnd3_saqueadores_vencidos"
+      ],
+      "pasos": [
+        {
+          "trepa": "fanatico_tejado",
+          "altura": 1,
+          "segundos": 0.8
+        },
+        {
+          "arde": [
+            10,
+            8
+          ]
+        },
+        {
+          "beat": "bnd3_esc04_fanaticos"
+        }
+      ]
+    },
+    {
+      "id": "base_oleada",
+      "nivel": "assets/levels/ciudad_oeste.json",
+      "requiere": [
+        "bnd3_fanaticos_vencidos",
+        "bnd3_ruta_quedarse"
+      ],
+      "pasos": [
+        {
+          "emocion": "saqueador_muralla",
+          "icono": "!",
+          "segundos": 1
+        },
+        {
+          "beat": "bnd3_esc04_oleada"
+        }
+      ]
+    },
+    {
+      "id": "base_norte",
+      "nivel": "assets/levels/ciudad_oeste.json",
+      "requiere": [
+        "bnd3_fanaticos_vencidos",
+        "bnd3_ruta_norte"
+      ],
+      "pasos": [
+        {
+          "mira": "fanatico_tejado",
+          "hacia": "abajo"
+        },
+        {
+          "beat": "bnd3_esc04_norte"
+        }
+      ]
+    },
+    {
+      "id": "base_caida",
+      "nivel": "assets/levels/ciudad_oeste.json",
+      "requiere": [
+        "bnd3_oleada_vencida"
+      ],
+      "pasos": [
+        {
+          "arde": [
+            8,
+            12
+          ]
+        },
+        {
+          "arde": [
+            8,
+            12
+          ]
+        },
+        {
+          "beat": "bnd3_esc04_base_arde"
+        }
+      ]
+    },
+    {
+      "id": "base_salida",
+      "nivel": "assets/levels/ciudad_oeste.json",
+      "requiere": [
+        "bnd3_fanaticos_vencidos",
+        "bnd3_ruta_oeste"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 0.5,
+          "color": "negro"
+        },
+        {
+          "nivel": "assets/levels/ciudad_centro_ocaso.json",
+          "en": [
+            48,
+            59
+          ]
+        },
+        {
+          "funde": 0,
+          "segundos": 0.5,
+          "color": "negro"
+        }
+      ]
+    },
+    {
+      "id": "base_salida_norte",
+      "nivel": "assets/levels/ciudad_oeste.json",
+      "requiere": [
+        "bnd3_paso_base_listo"
+      ],
+      "pasos": [
+        {
+          "nivel": "assets/levels/ciudad_centro_ocaso.json",
+          "en": [
+            48,
+            59
+          ]
+        }
+      ]
+    },
+    {
+      "id": "verina_cautiva_con_venides",
+      "nivel": "assets/levels/ciudad_centro_ocaso.json",
+      "zona": [
+        87,
+        17,
+        93,
+        22
+      ],
+      "requiere": [
+        "bnd3_fanaticos_vencidos",
+        "bnd3_ruta_oeste",
+        "bnd3_con_venides"
+      ],
+      "sin": [
+        "bnd3_verina_resuelto"
+      ],
+      "pasos": [
+        {
+          "mira": "captor_verina",
+          "hacia": "abajo"
+        },
+        {
+          "emocion": "devoto_verina",
+          "icono": "!",
+          "segundos": 1
+        },
+        {
+          "anda": "venides_casco",
+          "a": [
+            89,
+            20
+          ],
+          "velocidad": 4
+        },
+        {
+          "beat": "bnd3_esc05_verina"
+        }
+      ]
+    },
+    {
+      "id": "verina_cautiva",
+      "nivel": "assets/levels/ciudad_centro_ocaso.json",
+      "zona": [
+        87,
+        17,
+        93,
+        22
+      ],
+      "requiere": [
+        "bnd3_fanaticos_vencidos",
+        "bnd3_ruta_oeste"
+      ],
+      "sin": [
+        "bnd3_verina_resuelto",
+        "bnd3_con_venides"
+      ],
+      "pasos": [
+        {
+          "mira": "captor_verina",
+          "hacia": "abajo"
+        },
+        {
+          "emocion": "devoto_verina",
+          "icono": "!",
+          "segundos": 1
+        },
+        {
+          "beat": "bnd3_esc05_verina"
+        }
+      ]
+    },
+    {
+      "id": "verina_suelta",
+      "nivel": "assets/levels/ciudad_centro_ocaso.json",
+      "requiere": [
+        "bnd3_verina_libre"
+      ],
+      "pasos": [
+        {
+          "emocion": "verina_camino",
+          "icono": "...",
+          "segundos": 1.5
+        },
+        {
+          "mira": "verina_camino",
+          "hacia": "izquierda"
+        },
+        {
+          "beat": "bnd3_esc05_verina_suelta"
+        }
+      ]
+    },
+    {
+      "id": "verina_sola_se_va",
+      "nivel": "assets/levels/ciudad_centro_ocaso.json",
+      "requiere": [
+        "bnd3_verina_sola"
+      ],
+      "pasos": [
+        {
+          "anda": "verina_camino",
+          "a": [
+            86,
+            20
+          ],
+          "velocidad": 2
+        },
+        {
+          "flag": "bnd3_esc05_verina_fuera"
+        }
+      ]
+    },
+    {
+      "id": "rosita_calle",
+      "nivel": "assets/levels/ciudad_centro_ocaso.json",
+      "zona": [
+        22,
+        55,
+        28,
+        61
+      ],
+      "requiere": [
+        "bnd3_verina_cerrada",
+        "bnd3_ruta_oeste"
+      ],
+      "pasos": [
+        {
+          "mira": "skilla_furia",
+          "hacia": "arriba"
+        },
+        {
+          "emocion": "skilla_furia",
+          "icono": "!",
+          "segundos": 1
+        },
+        {
+          "arde": [
+            25,
+            58
+          ]
+        },
+        {
+          "patrulla": "perdido_antorcha",
+          "por": [
+            [
+              25,
+              58
+            ],
+            [
+              26,
+              58
+            ]
+          ],
+          "veces": 3,
+          "sinEsperar": true
+        },
+        {
+          "beat": "bnd3_esc05_rosita"
+        }
+      ]
+    },
+    {
+      "id": "pulga_tejado",
+      "nivel": "assets/levels/ciudad_centro_ocaso.json",
+      "zona": [
+        25,
+        51,
+        31,
+        57
+      ],
+      "requiere": [
+        "bnd3_verina_cerrada",
+        "bnd1_carterista_amigo"
+      ],
+      "pasos": [
+        {
+          "trepa": "pulga_tejado",
+          "altura": 1,
+          "segundos": 0.5
+        },
+        {
+          "emocion": "pulga_tejado",
+          "icono": "!",
+          "segundos": 1
+        },
+        {
+          "beat": "bnd3_esc05_pulga"
+        }
+      ]
+    },
+    {
+      "id": "sandes_casco",
+      "nivel": "assets/levels/ciudad_centro_ocaso.json",
+      "zona": [
+        50,
+        46,
+        58,
+        54
+      ],
+      "requiere": [
+        "bnd3_verina_cerrada",
+        "bnd3_ruta_oeste"
+      ],
+      "sin": [
+        "bnd3_casco_resuelto"
+      ],
+      "pasos": [
+        {
+          "mira": "sandes_ocaso",
+          "hacia": "abajo"
+        },
+        {
+          "trepa": "fanatico_escalera",
+          "altura": 1,
+          "segundos": 0.5
+        },
+        {
+          "beat": "bnd3_esc05_sandes"
+        }
+      ]
+    },
+    {
+      "id": "sandes_huye_casco",
+      "nivel": "assets/levels/ciudad_centro_ocaso.json",
+      "requiere": [
+        "bnd3_sandes_huye_casco"
+      ],
+      "pasos": [
+        {
+          "anda": "sandes_ocaso",
+          "por": [
+            [
+              54,
+              50
+            ],
+            [
+              55,
+              50
+            ]
+          ],
+          "velocidad": 3
+        },
+        {
+          "baja": "fanatico_escalera",
+          "altura": 1,
+          "segundos": 0.5
+        },
+        {
+          "flag": "bnd3_esc05_sandes_fuera"
+        }
+      ]
+    },
+    {
+      "id": "final_salida_con_venides",
+      "nivel": "assets/levels/ciudad_centro_ocaso.json",
+      "zona": [
+        10,
+        58,
+        18,
+        63
+      ],
+      "requiere": [
+        "bnd3_campanas",
+        "bnd3_con_venides"
+      ],
+      "sin": [
+        "bnd3_combate_final",
+        "bnd3_sandes_cerrado",
+        "bnd3_aliado_sandes"
+      ],
+      "pasos": [
+        {
+          "mira": "sandes_final",
+          "hacia": "arriba"
+        },
+        {
+          "emocion": "sandes_final",
+          "icono": "!",
+          "segundos": 1.2
+        },
+        {
+          "emocion": "venides_final",
+          "icono": "!",
+          "segundos": 1.2
+        },
+        {
+          "beat": "bnd3_esc06_final"
+        }
+      ]
+    },
+    {
+      "id": "final_salida_oeste",
+      "nivel": "assets/levels/ciudad_centro_ocaso.json",
+      "zona": [
+        10,
+        58,
+        18,
+        63
+      ],
+      "requiere": [
+        "bnd3_campanas"
+      ],
+      "sin": [
+        "bnd3_combate_final",
+        "bnd3_sandes_cerrado",
+        "bnd3_aliado_sandes",
+        "bnd3_con_venides"
+      ],
+      "pasos": [
+        {
+          "mira": "sandes_final",
+          "hacia": "arriba"
+        },
+        {
+          "emocion": "sandes_final",
+          "icono": "!",
+          "segundos": 1.2
+        },
+        {
+          "beat": "bnd3_esc06_final"
+        }
+      ]
+    },
+    {
+      "id": "final_salida_pacto",
+      "nivel": "assets/levels/ciudad_centro_ocaso.json",
+      "zona": [
+        10,
+        58,
+        18,
+        63
+      ],
+      "requiere": [
+        "bnd3_aliado_sandes"
+      ],
+      "sin": [
+        "bnd3_sandes_cerrado"
+      ],
+      "pasos": [
+        {
+          "beat": "bnd3_esc06_final"
+        }
+      ]
+    },
+    {
+      "id": "final_venides_cadenas",
+      "nivel": "assets/levels/ciudad_centro_ocaso.json",
+      "requiere": [
+        "bnd3_esc06_final",
+        "bnd3_con_venides"
+      ],
+      "pasos": [
+        {
+          "mira": "venides_final",
+          "hacia": "derecha"
+        },
+        {
+          "emocion": "venides_final",
+          "icono": "!",
+          "segundos": 1.2
+        }
+      ]
+    },
+    {
+      "id": "final_compania_vista",
+      "nivel": "assets/levels/ciudad_centro_ocaso.json",
+      "requiere": [
+        "bnd3_compania_vista"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 0.2,
+          "color": "blanco"
+        },
+        {
+          "funde": 0,
+          "segundos": 0.2,
+          "color": "blanco"
+        },
+        {
+          "emocion": "mago_de_las_tinieblas",
+          "icono": "!",
+          "segundos": 1
+        },
+        {
+          "trepa": "guardabosques",
+          "altura": 1,
+          "segundos": 0.5
+        },
+        {
+          "mira": "guerrero_demoniaco",
+          "hacia": "arriba"
+        }
+      ]
+    },
+    {
+      "id": "final_sandes_humo",
+      "nivel": "assets/levels/ciudad_centro_ocaso.json",
+      "requiere": [
+        "bnd3_sandes_cerrado"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 0.3,
+          "color": "negro"
+        },
+        {
+          "flag": "bnd3_esc06_sandes_fuera"
+        },
+        {
+          "funde": 0,
+          "segundos": 0.3,
+          "color": "negro"
+        }
+      ]
+    },
+    {
+      "id": "edul_casco_retenido",
+      "nivel": "assets/levels/ciudad_centro_ocaso.json",
+      "zona": [
+        76,
+        30,
+        82,
+        36
+      ],
+      "requiere": [
+        "bnd3_campanas"
+      ],
+      "sin": [
+        "bnd3_edul_resuelto",
+        "bnd3_edul_trasladado"
+      ],
+      "pasos": [
+        {
+          "mira": "captor_edul",
+          "hacia": "abajo"
+        },
+        {
+          "emocion": "devoto_edul",
+          "icono": "!",
+          "segundos": 1
+        },
+        {
+          "beat": "bnd3_esc06_edul_casco"
+        }
+      ]
+    },
+    {
+      "id": "edul_afueras_retenido",
+      "nivel": "assets/levels/afueras_boundington_ocaso.json",
+      "zona": [
+        20,
+        13,
+        26,
+        19
+      ],
+      "requiere": [
+        "bnd3_barricada_resuelta"
+      ],
+      "sin": [
+        "bnd3_edul_resuelto"
+      ],
+      "pasos": [
+        {
+          "mira": "guardia_edul",
+          "hacia": "abajo"
+        },
+        {
+          "emocion": "edul_retenido_fuera",
+          "icono": "!",
+          "segundos": 1
+        },
+        {
+          "beat": "bnd3_esc06_edul_afueras"
+        }
+      ]
+    },
+    {
+      "id": "edul_verina_abrazo_casco",
+      "nivel": "assets/levels/ciudad_centro_ocaso.json",
+      "requiere": [
+        "bnd3_edul_libre",
+        "bnd3_verina_con_grupo"
+      ],
+      "sin": [
+        "bnd3_esc06_abrazo"
+      ],
+      "pasos": [
+        {
+          "anda": "verina_abrazo",
+          "a": [
+            79,
+            34
+          ],
+          "velocidad": 2
+        },
+        {
+          "emocion": "edul_afueras",
+          "icono": "...",
+          "segundos": 1
+        },
+        {
+          "emocion": "verina_abrazo",
+          "icono": "...",
+          "segundos": 1
+        },
+        {
+          "beat": "bnd3_esc06_abrazo"
+        }
+      ]
+    },
+    {
+      "id": "edul_verina_abrazo_afueras",
+      "nivel": "assets/levels/afueras_boundington_ocaso.json",
+      "requiere": [
+        "bnd3_edul_libre",
+        "bnd3_verina_con_grupo"
+      ],
+      "sin": [
+        "bnd3_esc06_abrazo"
+      ],
+      "pasos": [
+        {
+          "anda": "verina_abrazo",
+          "a": [
+            23,
+            17
+          ],
+          "velocidad": 2
+        },
+        {
+          "emocion": "edul_afueras",
+          "icono": "...",
+          "segundos": 1
+        },
+        {
+          "emocion": "verina_abrazo",
+          "icono": "...",
+          "segundos": 1
+        },
+        {
+          "beat": "bnd3_esc06_abrazo"
+        }
+      ]
+    },
+    {
+      "id": "afueras_gorran_presente",
+      "nivel": "assets/levels/afueras_boundington_ocaso.json",
+      "requiere": [
+        "bnd3_afueras_vistas",
+        "bnd2_gorran_perdonado"
+      ],
+      "pasos": [
+        {
+          "mira": "gorran_afueras",
+          "hacia": "izquierda"
+        }
+      ]
+    },
+    {
+      "id": "afueras_llegada",
+      "nivel": "assets/levels/afueras_boundington_ocaso.json",
+      "requiere": [
+        "bnd3_en_afueras",
+        "bnd3_sandes_cerrado"
+      ],
+      "pasos": [
+        {
+          "mira": "jugador",
+          "hacia": "abajo"
+        },
+        {
+          "beat": "bnd3_esc06_afueras"
+        }
+      ]
+    },
+    {
+      "id": "afueras_zarela",
+      "nivel": "assets/levels/afueras_boundington_ocaso.json",
+      "requiere": [
+        "bnd3_afueras_vistas",
+        "bnd2_guerreros_gitanos"
+      ],
+      "sin": [
+        "bnd2_barriada_delatada"
+      ],
+      "pasos": [
+        {
+          "anda": "zarela_afueras",
+          "a": [
+            17,
+            9
+          ],
+          "velocidad": 3.2
+        },
+        {
+          "anda": "guerrero_afueras",
+          "a": [
+            18,
+            9
+          ],
+          "velocidad": 2.5
+        },
+        {
+          "mira": "zarela_afueras",
+          "hacia": "arriba"
+        }
+      ]
+    },
+    {
+      "id": "afueras_barricada",
+      "nivel": "assets/levels/afueras_boundington_ocaso.json",
+      "zona": [
+        17,
+        10,
+        23,
+        16
+      ],
+      "requiere": [
+        "bnd3_afueras_vistas"
+      ],
+      "pasos": [
+        {
+          "emocion": "jugador",
+          "icono": "!",
+          "segundos": 1
+        },
+        {
+          "beat": "bnd3_esc06_barricada"
+        }
+      ]
+    },
+    {
+      "id": "venides_de_rodillas",
+      "nivel": "assets/levels/afueras_boundington_ocaso.json",
+      "zona": [
+        7,
+        20,
+        13,
+        26
+      ],
+      "requiere": [
+        "bnd3_edul_cerrado",
+        "bnd3_sin_venides"
+      ],
+      "sin": [
+        "bnd3_venides_resuelto"
+      ],
+      "pasos": [
+        {
+          "tumba": "venides_rodillas",
+          "como": "herido"
+        },
+        {
+          "mira": "guardia_venides",
+          "hacia": "arriba"
+        },
+        {
+          "beat": "bnd3_esc06_venides"
+        }
+      ]
+    },
+    {
+      "id": "huida_mira_boundington",
+      "nivel": "assets/levels/huida_boundington.json",
+      "requiere": [
+        "bnd3_esc06_en_huida",
+        "bnd3_con_venides"
+      ],
+      "pasos": [
+        {
+          "mira": "venides_huida",
+          "hacia": "derecha"
+        },
+        {
+          "espera": 0.8
+        },
+        {
+          "emocion": "venides_huida",
+          "icono": "...",
+          "segundos": 1.5
+        },
+        {
+          "beat": "bnd3_esc06_ciudad_atras"
+        }
+      ]
+    },
+    {
+      "id": "huida_mira_sin_venides",
+      "nivel": "assets/levels/huida_boundington.json",
+      "requiere": [
+        "bnd3_esc06_en_huida"
+      ],
+      "sin": [
+        "bnd3_con_venides"
+      ],
+      "pasos": [
+        {
+          "mira": "jugador",
+          "hacia": "derecha"
+        },
+        {
+          "espera": 0.8
+        },
+        {
+          "beat": "bnd3_esc06_ciudad_atras"
+        }
+      ]
+    },
+    {
+      "id": "cuartel_exterior_llegada",
+      "nivel": "assets/levels/ciudad_oeste.json",
+      "zona": [
+        2,
+        5,
+        15,
+        13
+      ],
+      "requiere": [
+        "bnd3_arenga"
+      ],
+      "pasos": [
+        {
+          "mira": "venides_base",
+          "hacia": "izquierda"
+        },
+        {
+          "flag": "bnd3_esc06_cuartel_exterior"
+        }
+      ]
+    },
+    {
+      "id": "aldea_dados",
+      "_nota": "GORRAN-TRAMA: a tiempo 3, Gorran y el Cojo en la trastienda de El Tajo.",
+      "nivel": "assets/levels/aldea_tajo_p0.json",
+      "requiere": [
+        "bnd2_dados_ya"
+      ],
+      "sin": [
+        "bnd2_dados_fin",
+        "bnd2_aldea_hostil"
+      ],
+      "pasos": [
+        {
+          "mira": "gorran_tajo",
+          "hacia": "derecha"
+        },
+        {
+          "emocion": "gorran_tajo",
+          "icono": "enfadado",
+          "segundos": 0.8
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "beat": "bnd2_cine_dados"
+        }
+      ],
+      "alTerminar": [
+        "bnd2_cine_dados"
+      ]
+    },
+    {
+      "id": "recinto_subasta",
+      "_nota": "GORRAN-TRAMA: a tiempo 6, la subasta en el salón; Victor y Asdrugal entran por el fondo.",
+      "nivel": "assets/levels/recinto_gorran.json",
+      "zona": [
+        54,
+        25,
+        66,
+        37
+      ],
+      "requiere": [
+        "bnd2_subasta_ya"
+      ],
+      "sin": [
+        "bnd2_subasta_vista"
+      ],
+      "pasos": [
+        {
+          "mira": "gorran_subasta",
+          "hacia": "abajo"
+        },
+        {
+          "espera": 0.4
+        },
+        {
+          "anda": "victor_subasta",
+          "a": [
+            57,
+            36
+          ],
+          "velocidad": 1.6,
+          "sinEsperar": true
+        },
+        {
+          "anda": "asdrugal_subasta",
+          "a": [
+            56,
+            35
+          ],
+          "velocidad": 1.4
+        },
+        {
+          "emocion": "joel_pujador",
+          "icono": "asustado",
+          "segundos": 1.0
+        },
+        {
+          "beat": "bnd2_cine_subasta"
+        }
+      ],
+      "alTerminar": [
+        "bnd2_cine_subasta"
+      ]
+    },
+    {
+      "id": "recinto_cojo_huye",
+      "_nota": "GORRAN-TRAMA: el Cojo siempre escapa (sale del salón hacia la aldea y las minas).",
+      "nivel": "assets/levels/recinto_gorran.json",
+      "requiere": [
+        "bnd2_subasta_vista"
+      ],
+      "sin": [
+        "bnd2_cojo_huido"
+      ],
+      "pasos": [
+        {
+          "anda": "cojo_subasta",
+          "a": [
+            50,
+            30
+          ],
+          "velocidad": 2.4
+        },
+        {
+          "beat": "bnd2_cine_cojo"
+        }
+      ],
+      "alTerminar": [
+        "bnd2_cine_cojo"
+      ]
+    },
+    {
+      "id": "aldea_calabozo",
+      "_nota": "GORRAN-TRAMA: sospecha 3, te llevan atado al calabozo del recinto.",
+      "requiere": [
+        "bnd2_aldea_capturado"
+      ],
+      "sin": [
+        "bnd2_cine_calabozo"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 1.0
+        },
+        {
+          "nivel": "assets/levels/recinto_gorran.json",
+          "en": [
+            18,
+            59
+          ]
+        },
+        {
+          "espera": 0.5
+        },
+        {
+          "funde": 0,
+          "segundos": 1.2
+        },
+        {
+          "beat": "bnd2_cine_calabozo"
+        }
+      ],
+      "alTerminar": [
+        "bnd2_cine_calabozo"
+      ]
+    },
+    {
+      "id": "aldea_echado",
+      "_nota": "GORRAN-TRAMA: te echan al Sender del Risc.",
+      "requiere": [
+        "bnd2_echado_aldea"
+      ],
+      "sin": [
+        "bnd2_echado_visto"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 0.8
+        },
+        {
+          "nivel": "assets/levels/montana_gorran.json",
+          "en": [
+            23,
+            7
+          ]
+        },
+        {
+          "espera": 0.2
+        },
+        {
+          "funde": 0,
+          "segundos": 1.2
+        }
+      ],
+      "alTerminar": [
+        "bnd2_echado_visto"
+      ]
+    },
+    {
+      "id": "rio_rapidos",
+      "_nota": "GORRAN-TRAMA: el río, tramo 1.",
+      "nivel": "assets/levels/rio_gorran.json",
+      "zona": [
+        0,
+        16,
+        21,
+        20
+      ],
+      "requiere": [
+        "bnd2_rio_embarcado"
+      ],
+      "sin": [
+        "bnd2_rio_rapidos_visto"
+      ],
+      "pasos": [
+        {
+          "espera": 0.2
+        },
+        {
+          "beat": "bnd2_cine_rio_rapidos"
+        }
+      ],
+      "alTerminar": [
+        "bnd2_cine_rio_rapidos"
+      ]
+    },
+    {
+      "id": "rio_sifon",
+      "_nota": "GORRAN-TRAMA: el río, tramo 2.",
+      "nivel": "assets/levels/rio_gorran.json",
+      "zona": [
+        0,
+        42,
+        21,
+        46
+      ],
+      "requiere": [
+        "bnd2_rio_embarcado"
+      ],
+      "sin": [
+        "bnd2_rio_sifon_visto"
+      ],
+      "pasos": [
+        {
+          "espera": 0.2
+        },
+        {
+          "beat": "bnd2_cine_rio_sifon"
+        }
+      ],
+      "alTerminar": [
+        "bnd2_cine_rio_sifon"
+      ]
+    },
+    {
+      "id": "rio_salto",
+      "_nota": "GORRAN-TRAMA: el río, tramo 3.",
+      "nivel": "assets/levels/rio_gorran.json",
+      "zona": [
+        0,
+        64,
+        21,
+        68
+      ],
+      "requiere": [
+        "bnd2_rio_embarcado"
+      ],
+      "sin": [
+        "bnd2_rio_salto_visto"
+      ],
+      "pasos": [
+        {
+          "espera": 0.2
+        },
+        {
+          "beat": "bnd2_cine_rio_salto"
+        }
+      ],
+      "alTerminar": [
+        "bnd2_cine_rio_salto"
+      ]
+    },
+    {
+      "id": "rio_ahogado",
+      "_nota": "GORRAN-VIDA: el río, ahogado.",
+      "nivel": "assets/levels/rio_gorran.json",
+      "zona": [
+        0,
+        30,
+        21,
+        33
+      ],
+      "requiere": [
+        "bnd2_rio_embarcado"
+      ],
+      "sin": [
+        "bnd2_rio_ahogado_visto"
+      ],
+      "pasos": [
+        {
+          "espera": 0.2
+        },
+        {
+          "beat": "bnd2_cine_rio_ahogado"
+        }
+      ],
+      "alTerminar": [
+        "bnd2_cine_rio_ahogado"
+      ]
+    },
+    {
+      "id": "rio_nombres",
+      "_nota": "GORRAN-VIDA: el río, nombres.",
+      "nivel": "assets/levels/rio_gorran.json",
+      "zona": [
+        0,
+        55,
+        21,
+        58
+      ],
+      "requiere": [
+        "bnd2_rio_embarcado"
+      ],
+      "sin": [
+        "bnd2_rio_nombres_visto"
+      ],
+      "pasos": [
+        {
+          "espera": 0.2
+        },
+        {
+          "beat": "bnd2_cine_rio_nombres"
+        }
+      ],
+      "alTerminar": [
+        "bnd2_cine_rio_nombres"
+      ]
+    },
+    {
+      "id": "rio_luces",
+      "_nota": "GORRAN-VIDA: el río, luces.",
+      "nivel": "assets/levels/rio_gorran.json",
+      "zona": [
+        0,
+        73,
+        21,
+        76
+      ],
+      "requiere": [
+        "bnd2_rio_embarcado"
+      ],
+      "sin": [
+        "bnd2_rio_luces_visto"
+      ],
+      "pasos": [
+        {
+          "espera": 0.2
+        },
+        {
+          "beat": "bnd2_cine_rio_luces"
+        }
+      ],
+      "alTerminar": [
+        "bnd2_cine_rio_luces"
+      ]
+    },
+    {
+      "id": "gorran_alba",
+      "_nota": "GORRAN-DIA2: si duermes en El Tajo, al alba bajas a la Taberna Humilde.",
+      "requiere": [
+        "bndg_dormir_tajo"
+      ],
+      "sin": [
+        "bndg_tajo_bajado"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 1.2
+        },
+        {
+          "nivel": "assets/levels/interior_taberna.json",
+          "en": [
+            1,
+            10
+          ]
+        },
+        {
+          "espera": 0.4
+        },
+        {
+          "funde": 0,
+          "segundos": 1.2
+        }
+      ],
+      "alTerminar": [
+        "bndg_tajo_bajado"
+      ]
+    },
+    {
+      "id": "bga_bajar",
+      "_nota": "GORRAN-DIA2 A: estás arriba cuando llaman: bajas a la sala.",
+      "requiere": [
+        "bga_bajar"
+      ],
+      "sin": [
+        "bga_bajado"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 0.6
+        },
+        {
+          "nivel": "assets/levels/aldea_serra_p0.json",
+          "en": [
+            15,
+            11
+          ]
+        },
+        {
+          "funde": 0,
+          "segundos": 0.6
+        }
+      ],
+      "alTerminar": [
+        "bga_bajado"
+      ]
+    },
+    {
+      "id": "bga_entran",
+      "_nota": "GORRAN-DIA2 A: los mercenarios entran en la sala de Serra (punto 14).",
+      "nivel": "assets/levels/aldea_serra_p0.json",
+      "requiere": [
+        "bga_llegan"
+      ],
+      "sin": [
+        "bga_cerrada"
+      ],
+      "pasos": [
+        {
+          "anda": "morvan",
+          "a": [
+            10,
+            9
+          ],
+          "velocidad": 1.4
+        },
+        {
+          "mira": "serra",
+          "hacia": "derecha"
+        },
+        {
+          "emocion": "serra",
+          "icono": "asustado",
+          "segundos": 0.8
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "beat": "bga_cine_escena"
+        }
+      ],
+      "alTerminar": [
+        "bga_cine_escena"
+      ]
+    },
+    {
+      "id": "bgb_golpes",
+      "_nota": "GORRAN-DIA2 B: al llegar al derrumbe, los golpes al otro lado (punto 14).",
+      "nivel": "assets/levels/mina_gorran.json",
+      "zona": [
+        6,
+        8,
+        13,
+        10
+      ],
+      "requiere": [
+        "bgb_gancho"
+      ],
+      "sin": [
+        "bgb_cerrada"
+      ],
+      "pasos": [
+        {
+          "espera": 0.4
+        },
+        {
+          "emocion": "ramon_sisdits",
+          "icono": "asustado",
+          "segundos": 1.0
+        },
+        {
+          "beat": "bgb_cine_golpes"
+        }
+      ],
+      "alTerminar": [
+        "bgb_cine_golpes"
+      ]
+    },
+    {
+      "id": "bgb_salir",
+      "_nota": "GORRAN-DIA2 B: Tecla te saca con la cuerda del cabrestante (punto 20).",
+      "requiere": [
+        "bgb_salir"
+      ],
+      "sin": [
+        "bgb_salido"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 0.8
+        },
+        {
+          "nivel": "assets/levels/cueva_gorran.json",
+          "en": [
+            31,
+            4
+          ]
+        },
+        {
+          "funde": 0,
+          "segundos": 0.8
+        }
+      ],
+      "alTerminar": [
+        "bgb_salido"
+      ]
+    },
+    {
+      "id": "bgc_asalto",
+      "_nota": "GORRAN-DIA2 C: los Fumat caen del techo del transbordo (punto 14).",
+      "nivel": "assets/levels/galerias_gorran.json",
+      "zona": [
+        22,
+        22,
+        31,
+        29
+      ],
+      "requiere": [
+        "bgc_gancho"
+      ],
+      "sin": [
+        "bgc_cerrada"
+      ],
+      "pasos": [
+        {
+          "espera": 0.3
+        },
+        {
+          "emocion": "bet_saldana",
+          "icono": "enfadado",
+          "segundos": 0.8
+        },
+        {
+          "beat": "bgc_cine_asalto"
+        }
+      ],
+      "alTerminar": [
+        "bgc_cine_asalto",
+        "bgc_asalto"
+      ]
+    },
+    {
+      "id": "bgc_gola",
+      "_nota": "GORRAN-DIA2 C: Bet te saca por la puerta de la Gola (punto 20).",
+      "requiere": [
+        "bgc_salir"
+      ],
+      "sin": [
+        "bgc_salido"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 0.6
+        },
+        {
+          "nivel": "assets/levels/antecova_gorran.json",
+          "en": [
+            10,
+            8
+          ]
+        },
+        {
+          "funde": 0,
+          "segundos": 0.6
+        }
+      ],
+      "alTerminar": [
+        "bgc_salido"
+      ]
+    },
+    {
+      "id": "bgd_velas",
+      "_nota": "GORRAN-DIA2 D: el diácono enciende las velas alrededor de la puerta (punto 14).",
+      "nivel": "assets/levels/mina2_gorran.json",
+      "zona": [
+        15,
+        23,
+        27,
+        31
+      ],
+      "requiere": [
+        "bgd_gancho"
+      ],
+      "sin": [
+        "bgd_cerrada"
+      ],
+      "pasos": [
+        {
+          "mira": "orfeu",
+          "hacia": "arriba"
+        },
+        {
+          "espera": 0.5
+        },
+        {
+          "emocion": "tinet_atado",
+          "icono": "asustado",
+          "segundos": 1.0
+        },
+        {
+          "beat": "bgd_cine_velas"
+        }
+      ],
+      "alTerminar": [
+        "bgd_cine_velas"
+      ]
+    },
+    {
+      "id": "bgd_agua",
+      "_nota": "GORRAN-DIA2 D: Candela te saca por el paso del agua (punto 20).",
+      "requiere": [
+        "bgd_salir"
+      ],
+      "sin": [
+        "bgd_salido"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 0.8
+        },
+        {
+          "nivel": "assets/levels/cueva_gorran.json",
+          "en": [
+            31,
+            4
+          ]
+        },
+        {
+          "funde": 0,
+          "segundos": 0.8
+        }
+      ],
+      "alTerminar": [
+        "bgd_salido"
+      ]
+    },
+    {
+      "id": "bgd_atado",
+      "_nota": "GORRAN-DIA2 D: si te descubren, te dejan junto a la puerta; despiertas en la plaza (punto 22).",
+      "requiere": [
+        "bgd_atado"
+      ],
+      "sin": [
+        "bgd_atado_visto"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 1.0
+        },
+        {
+          "nivel": "assets/levels/cueva_gorran.json",
+          "en": [
+            31,
+            28
+          ]
+        },
+        {
+          "funde": 0,
+          "segundos": 1.4
+        }
+      ],
+      "alTerminar": [
+        "bgd_atado_visto"
+      ]
+    },
+    {
+      "id": "dia1_subes_magullado",
+      "_nota": "Oriol (22/10): la noche del día 1 se acaba arriba, en la cama. Si pierdes la pelea o huyes, subes como puedes (b1_pelea_perdida lo cuenta).",
+      "requiere": [
+        "bnd1_pelea_perdida"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 1.0
+        },
+        {
+          "nivel": "assets/levels/interior_taberna_p1.json",
+          "en": [
+            3,
+            2
+          ]
+        },
+        {
+          "mira": "jugador",
+          "hacia": "abajo"
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "funde": 0,
+          "segundos": 1.0
+        }
+      ]
+    },
+    {
+      "id": "dia1_subes_huida",
+      "_nota": "Como dia1_subes_magullado, si huyes de la pelea.",
+      "requiere": [
+        "bnd1_pelea_huida"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 1.0
+        },
+        {
+          "nivel": "assets/levels/interior_taberna_p1.json",
+          "en": [
+            3,
+            2
+          ]
+        },
+        {
+          "mira": "jugador",
+          "hacia": "abajo"
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "funde": 0,
+          "segundos": 1.0
+        }
+      ]
+    },
+    {
+      "id": "dia1_despertar",
+      "_nota": "Oriol (22/10): «despertamos arriba al lado de una cama y ya es el día 2». Al cerrar el día 1 en el cuarto de arriba: fundido y despiertas junto a la cama.",
+      "nivel": "assets/levels/interior_taberna_p1.json",
+      "requiere": [
+        "bnd_dia_cerrado"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 1.4
+        },
+        {
+          "nivel": "assets/levels/interior_taberna_p1.json",
+          "en": [
+            3,
+            2
+          ]
+        },
+        {
+          "mira": "jugador",
+          "hacia": "abajo"
+        },
+        {
+          "espera": 0.6
+        },
+        {
+          "funde": 0,
+          "segundos": 1.6
+        }
+      ]
+    }
+  ]
+}

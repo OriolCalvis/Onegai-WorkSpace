@@ -1,0 +1,47 @@
+{
+  "_que": "AV14-23 (D0015 §15, D-MOR-09) — Las facciones que te juzgan y las tiendas que son de cada una. La reputación con una facción (CharacterSheet::factionRep, de -100 a 100) la mueven los actos de assets/rules/actos.json («reputacion»: quién lo vio) y cambia el precio en sus tiendas: CharacterSheet::repPriceModPct, acotado aquí. Un tendero que no está en ninguna facción cobra siempre lo mismo. Ver include/Game/ComercioReputacion.h.",
+  "precios": {
+    "_que": "Tope del ajuste, en % del precio. El descuento no pasa del 25 % para que nunca salga a cuenta comprar y revender (el que más recompra, el banquero, paga el 70 %). Si te detestan, además te pagan menos por lo que vendes, en la misma medida.",
+    "descuentoMaximo": 25,
+    "recargoMaximo": 50
+  },
+  "facciones": [
+    {
+      "id": "aegroum",
+      "nombre": "Aegroum",
+      "descripcion": "La gente de Boundington y del reino: tenderos, guardia y vecinos.",
+      "tiendas": [
+        "skilla",
+        "aigren",
+        "luisarda",
+        "tendero_mercado",
+        "herrero",
+        "posadero",
+        "tabernero",
+        "sastre",
+        "joyero",
+        "banquero",
+        "bibliotecaria",
+        "profesora",
+        "sacerdote",
+        "encargada_banos",
+        "taquillera",
+        "maestro_arena",
+        "armero",
+        "anfitriona"
+      ]
+    },
+    {
+      "id": "perdidos",
+      "nombre": "Los Perdidos",
+      "descripcion": "La secta que reparte pan y pide brazos.",
+      "tiendas": []
+    },
+    {
+      "id": "barriada_surysal",
+      "nombre": "La Barriada de Surysal",
+      "descripcion": "Los que nadie quiere, alrededor del fuego de Zarela.",
+      "tiendas": []
+    }
+  ]
+}

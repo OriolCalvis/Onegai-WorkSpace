@@ -1,0 +1,1501 @@
+{
+  "_nota": "PROLOGO-02 — Las cinematicas del prologo (Game/Cinematica.h dice que hace cada orden). Lo que se dice no esta aqui: cada «beat» enciende una flag que pide un beat de assets/adventures/boundington_prologo.json. Las celdas son las de tools/gen_recuerdos.py.",
+  "espectro": {
+    "_nota": "Mientras «bnd_prologo_espectro» este encendida (de subir a la barca a que Sho-Noco se va), el jugador y Sho-Noco andan translucidos entre los recuerdos.",
+    "flag": "bnd_prologo_espectro",
+    "jugador": true,
+    "objetos": [
+      "sho_noco"
+    ],
+    "tinte": [
+      0.74,
+      0.88,
+      1.0,
+      0.58
+    ]
+  },
+  "apariciones": [
+    {
+      "objeto": "sho_noco",
+      "si": "bnd_prologo_barca_viene",
+      "sin": "bnd_pr_shonoco_se_va"
+    },
+    {
+      "objeto": "barca_de_sho_noco",
+      "si": "bnd_prologo_barca_viene"
+    },
+    {
+      "objeto": "venides_joven",
+      "sin": "bnd_prologo_girado"
+    },
+    {
+      "objeto": "verina_joven",
+      "sin": "bnd_prologo_girado"
+    },
+    {
+      "objeto": "edul_joven",
+      "sin": "bnd_prologo_girado"
+    },
+    {
+      "objeto": "sandes_joven",
+      "sin": "bnd_prologo_girado"
+    },
+    {
+      "objeto": "verina_puerta",
+      "si": "bnd_pr_r2_abre",
+      "sin": "bnd_pr_r2_se_van"
+    },
+    {
+      "objeto": "edul_puerta",
+      "si": "bnd_pr_r2_abre",
+      "sin": "bnd_pr_r2_se_van"
+    },
+    {
+      "objeto": "sandes_puerta",
+      "si": "bnd_pr_r2_abre",
+      "sin": "bnd_pr_r2_se_van"
+    },
+    {
+      "objeto": "venides_vuelta",
+      "sin": "bnd_pr_r3_sale"
+    },
+    {
+      "objeto": "edul",
+      "_nota": "El segundo dia, en el yunque de Aigren (b2_edul_herreria).",
+      "visibleSi": {
+        "todas": [
+          "bnd2_encargo"
+        ],
+        "alguna": [
+          "bnd2_aigren_despedido",
+          "bnd1_invitado_por_aigren"
+        ],
+        "ninguna": [
+          "bnd1_aigren_redimido",
+          "bnd_ocaso_empezado"
+        ]
+      }
+    },
+    {
+      "objeto": "aigren",
+      "_nota": "Se despide el segundo dia (o te mando a la cripta): ya no esta en la herreria.",
+      "ocultoSi": {
+        "todas": [
+          "bnd2_encargo"
+        ],
+        "alguna": [
+          "bnd2_aigren_despedido",
+          "bnd1_invitado_por_aigren"
+        ],
+        "ninguna": [
+          "bnd1_aigren_redimido"
+        ]
+      }
+    },
+    {
+      "objeto": "nina_del_gato",
+      "_nota": "Mira vive en la Barriada desde el amanecer del día 2 (b2_familia_barriada).",
+      "visibleSi": {
+        "todas": [
+          "bnd2_familia_llevada"
+        ]
+      }
+    },
+    {
+      "objeto": "padre_de_mira",
+      "visibleSi": {
+        "todas": [
+          "bnd2_familia_llevada"
+        ]
+      }
+    },
+    {
+      "objeto": "cabecilla_saqueadores",
+      "si": "bnd2_saq_en_escena",
+      "sin": "bnd2_saq_fuera"
+    },
+    {
+      "objeto": "saqueador_antorcha",
+      "si": "bnd2_saq_en_escena",
+      "sin": "bnd2_saq_fuera"
+    }
+  ],
+  "titulo": {
+    "_nota": "Oriol (13/10): «podríamos hacer alguna animación de la ciudad». Detrás del título, el Casco Antiguo de Boundington: la cámara pasea despacio por este camino, en bucle, y la gente, los pájaros y las mascotas se mueven.",
+    "nivel": "assets/levels/ciudad_centro.json",
+    "conNivelInicial": "assets/levels/prado_del_rio.json",
+    "camino": [
+      [
+        26,
+        27
+      ],
+      [
+        40,
+        27
+      ],
+      [
+        40,
+        40
+      ],
+      [
+        26,
+        40
+      ]
+    ],
+    "velocidad": 0.6,
+    "zoom": 1.0
+  },
+  "fondos": {
+    "assets/levels/prado_del_rio.json": [
+      0.9,
+      0.92,
+      0.94
+    ],
+    "assets/levels/recuerdo_ceaseton.json": [
+      0.86,
+      0.88,
+      0.92
+    ],
+    "assets/levels/recuerdo_puerta.json": [
+      0.86,
+      0.88,
+      0.92
+    ],
+    "assets/levels/recuerdo_aegroum.json": [
+      0.86,
+      0.88,
+      0.92
+    ],
+    "assets/levels/recuerdo_taberna.json": [
+      0.86,
+      0.88,
+      0.92
+    ]
+  },
+  "cinematicas": [
+    {
+      "id": "barquero",
+      "_nota": "Oriol: «cuando exploremos el rio aparezca el barquero». Al llegar a la orilla, la barca baja por el rio y Sho-Noco salta a tierra.",
+      "nivel": "assets/levels/prado_del_rio.json",
+      "zona": [
+        12,
+        0,
+        13,
+        17
+      ],
+      "requiere": [
+        "bnd_prologo_percibe_relatado"
+      ],
+      "pasos": [
+        {
+          "anda": "jugador",
+          "a": [
+            12,
+            9
+          ],
+          "velocidad": 3
+        },
+        {
+          "mira": "jugador",
+          "hacia": "derecha"
+        },
+        {
+          "espera": 0.8
+        },
+        {
+          "flag": "bnd_prologo_barca_viene"
+        },
+        {
+          "anda": "barca_de_sho_noco",
+          "a": [
+            14,
+            8
+          ],
+          "velocidad": 1.4,
+          "sinEsperar": true
+        },
+        {
+          "anda": "sho_noco",
+          "a": [
+            14,
+            8
+          ],
+          "velocidad": 1.4,
+          "desfase": [
+            0,
+            -0.35
+          ]
+        },
+        {
+          "espera": 0.4
+        },
+        {
+          "beat": "bnd_prologo_barca_llega"
+        },
+        {
+          "anda": "sho_noco",
+          "a": [
+            13,
+            9
+          ],
+          "velocidad": 1.2,
+          "desfase": [
+            0,
+            0
+          ]
+        },
+        {
+          "mira": "sho_noco",
+          "hacia": "izquierda"
+        },
+        {
+          "espera": 0.3
+        }
+      ],
+      "alTerminar": [
+        "bnd_prologo_barquero",
+        "bnd_prologo_barca_vista"
+      ]
+    },
+    {
+      "id": "subida",
+      "_nota": "Oriol: «no queremos subir, hablamos con el, subimos al barco». Al elegir «Subir a la barca». PROLOGO-02 (14/10): Sho-Noco, en la popa; tu, en la proa (el dibujo, con «desfase»: tu celda sigue en la orilla).",
+      "nivel": "assets/levels/prado_del_rio.json",
+      "requiere": [
+        "bnd_pr_sube"
+      ],
+      "pasos": [
+        {
+          "anda": "sho_noco",
+          "a": [
+            14,
+            8
+          ],
+          "velocidad": 1.5,
+          "desfase": [
+            0,
+            -0.35
+          ]
+        },
+        {
+          "anda": "jugador",
+          "por": [
+            [
+              13,
+              9
+            ],
+            [
+              13,
+              8
+            ]
+          ],
+          "velocidad": 2
+        },
+        {
+          "coloca": "jugador",
+          "en": [
+            13,
+            8
+          ],
+          "desfase": [
+            1.0,
+            0.3
+          ]
+        },
+        {
+          "mira": "jugador",
+          "hacia": "abajo"
+        },
+        {
+          "mira": "sho_noco",
+          "hacia": "abajo"
+        },
+        {
+          "flag": "bnd_prologo_espectro"
+        },
+        {
+          "beat": "bnd_prologo_subes"
+        },
+        {
+          "espera": 0.6
+        },
+        {
+          "funde": 1,
+          "segundos": 2.0,
+          "color": "blanco"
+        },
+        {
+          "flag": "bnd_pr_r1"
+        }
+      ]
+    },
+    {
+      "id": "recuerdo_ceaseton",
+      "_nota": "Ceaseton, 756: el brindis. Los espectros entran por la puerta y se acercan a la mesa de la ventana. Al acabar (y en los dos siguientes), andas libre entre ellos («_libre»): Oriol, 14/10: «no puedes jugar como fantasma». Para seguir, hablas con Sho-Noco.",
+      "requiere": [
+        "bnd_pr_r1"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 0,
+          "color": "blanco"
+        },
+        {
+          "nivel": "assets/levels/recuerdo_ceaseton.json",
+          "en": [
+            2,
+            9
+          ]
+        },
+        {
+          "mira": "venides_joven",
+          "hacia": "arriba"
+        },
+        {
+          "mira": "verina_joven",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "edul_joven",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "sandes_joven",
+          "hacia": "abajo"
+        },
+        {
+          "mira": "tabernero_ceaseton",
+          "hacia": "abajo"
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "funde": 0,
+          "segundos": 1.6,
+          "color": "blanco"
+        },
+        {
+          "beat": "bnd_pr_r1_llegada"
+        },
+        {
+          "anda": "sho_noco",
+          "por": [
+            [
+              7,
+              10
+            ],
+            [
+              7,
+              5
+            ]
+          ],
+          "velocidad": 2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "jugador",
+          "por": [
+            [
+              6,
+              9
+            ],
+            [
+              6,
+              4
+            ]
+          ],
+          "velocidad": 2.5
+        },
+        {
+          "mira": "jugador",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "sho_noco",
+          "hacia": "arriba"
+        },
+        {
+          "espera": 0.4
+        },
+        {
+          "beat": "bnd_pr_r1_brindis"
+        },
+        {
+          "anda": "edul_joven",
+          "a": [
+            9,
+            3
+          ],
+          "velocidad": 2
+        },
+        {
+          "mira": "edul_joven",
+          "hacia": "izquierda"
+        },
+        {
+          "beat": "bnd_pr_r1_capa"
+        },
+        {
+          "espera": 0.8
+        },
+        {
+          "mira": "sandes_joven",
+          "hacia": "abajo"
+        },
+        {
+          "beat": "bnd_pr_r1_sandes"
+        }
+      ],
+      "alTerminar": [
+        "bnd_prologo_en_pasado",
+        "bnd_pr_r1_libre"
+      ]
+    },
+    {
+      "id": "recuerdo_puerta",
+      "_nota": "Ceaseton, 757: vuelve de las montanas y cierra la puerta a sus amigos.",
+      "requiere": [
+        "bnd_pr_r2"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 1.4,
+          "color": "blanco"
+        },
+        {
+          "nivel": "assets/levels/recuerdo_puerta.json",
+          "en": [
+            7,
+            6
+          ]
+        },
+        {
+          "mira": "venides_vuelta",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "sho_noco",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "jugador",
+          "hacia": "izquierda"
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "funde": 0,
+          "segundos": 1.6,
+          "color": "blanco"
+        },
+        {
+          "beat": "bnd_pr_r2_casa"
+        },
+        {
+          "espera": 1.2
+        },
+        {
+          "beat": "bnd_pr_r2_llaman"
+        },
+        {
+          "anda": "venides_vuelta",
+          "por": [
+            [
+              6,
+              5
+            ],
+            [
+              3,
+              5
+            ]
+          ],
+          "velocidad": 1.4
+        },
+        {
+          "mira": "venides_vuelta",
+          "hacia": "izquierda"
+        },
+        {
+          "flag": "bnd_pr_r2_abre"
+        },
+        {
+          "mira": "verina_puerta",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "edul_puerta",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "sandes_puerta",
+          "hacia": "derecha"
+        },
+        {
+          "espera": 1.0
+        },
+        {
+          "beat": "bnd_pr_r2_puerta"
+        },
+        {
+          "mira": "venides_vuelta",
+          "hacia": "abajo"
+        },
+        {
+          "espera": 1.4
+        },
+        {
+          "mira": "venides_vuelta",
+          "hacia": "izquierda"
+        },
+        {
+          "beat": "bnd_pr_r2_cierra"
+        },
+        {
+          "flag": "bnd_pr_r2_se_van"
+        },
+        {
+          "espera": 1.0
+        },
+        {
+          "anda": "venides_vuelta",
+          "a": [
+            2,
+            5
+          ],
+          "velocidad": 1.2
+        },
+        {
+          "mira": "venides_vuelta",
+          "hacia": "izquierda"
+        },
+        {
+          "espera": 1.2
+        },
+        {
+          "beat": "bnd_pr_r2_tranca"
+        }
+      ],
+      "alTerminar": [
+        "bnd_pr_r2_vista",
+        "bnd_pr_r2_libre"
+      ]
+    },
+    {
+      "id": "recuerdo_aegroum",
+      "_nota": "Aegroum, 757: el reino le manda a Boundington.",
+      "requiere": [
+        "bnd_pr_r3"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 1.4,
+          "color": "blanco"
+        },
+        {
+          "nivel": "assets/levels/recuerdo_aegroum.json",
+          "en": [
+            9,
+            7
+          ]
+        },
+        {
+          "mira": "capitan_aegroum",
+          "hacia": "abajo"
+        },
+        {
+          "mira": "venides_vuelta",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "jugador",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "sho_noco",
+          "hacia": "izquierda"
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "funde": 0,
+          "segundos": 1.6,
+          "color": "blanco"
+        },
+        {
+          "beat": "bnd_pr_r3_sala"
+        },
+        {
+          "anda": "venides_vuelta",
+          "por": [
+            [
+              6,
+              7
+            ],
+            [
+              6,
+              4
+            ]
+          ],
+          "velocidad": 1.6
+        },
+        {
+          "mira": "venides_vuelta",
+          "hacia": "arriba"
+        },
+        {
+          "espera": 0.6
+        },
+        {
+          "beat": "bnd_pr_r3_orden"
+        },
+        {
+          "espera": 0.8
+        },
+        {
+          "beat": "bnd_pr_r3_responde"
+        },
+        {
+          "anda": "venides_vuelta",
+          "por": [
+            [
+              6,
+              7
+            ],
+            [
+              2,
+              7
+            ]
+          ],
+          "velocidad": 1.8
+        },
+        {
+          "flag": "bnd_pr_r3_sale"
+        },
+        {
+          "espera": 1.2
+        }
+      ],
+      "alTerminar": [
+        "bnd_pr_r3_vista",
+        "bnd_pr_r3_libre"
+      ]
+    },
+    {
+      "id": "recuerdo_taberna",
+      "_nota": "Boundington, 757: Venides llega a la Taberna Humilde, Sho-Noco se va y el jugador vuelve a ser de carne y hueso. Despues, el primer dia.",
+      "requiere": [
+        "bnd_pr_r4"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 1.4,
+          "color": "blanco"
+        },
+        {
+          "nivel": "assets/levels/recuerdo_taberna.json",
+          "en": [
+            1,
+            10
+          ]
+        },
+        {
+          "mira": "venides",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "skilla",
+          "hacia": "abajo"
+        },
+        {
+          "mira": "sho_noco",
+          "hacia": "abajo"
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "funde": 0,
+          "segundos": 1.6,
+          "color": "blanco"
+        },
+        {
+          "beat": "bnd_pr_r4_llega"
+        },
+        {
+          "anda": "venides",
+          "por": [
+            [
+              4,
+              10
+            ],
+            [
+              4,
+              7
+            ]
+          ],
+          "velocidad": 1.5
+        },
+        {
+          "mira": "venides",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "skilla",
+          "hacia": "izquierda"
+        },
+        {
+          "beat": "bnd_pr_r4_rosita"
+        },
+        {
+          "anda": "jugador",
+          "a": [
+            3,
+            10
+          ],
+          "velocidad": 2
+        },
+        {
+          "anda": "sho_noco",
+          "por": [
+            [
+              2,
+              9
+            ],
+            [
+              3,
+              9
+            ]
+          ],
+          "velocidad": 1.5
+        },
+        {
+          "mira": "sho_noco",
+          "hacia": "abajo"
+        },
+        {
+          "mira": "jugador",
+          "hacia": "arriba"
+        },
+        {
+          "espera": 0.5
+        },
+        {
+          "beat": "bnd_pr_r4_shonoco"
+        },
+        {
+          "espera": 2.0
+        },
+        {
+          "beat": "bnd_pr_r4_despierta"
+        }
+      ]
+    },
+    {
+      "id": "barriada_mira",
+      "_nota": "Día 2, con la familia del gato ya en la Barriada: Mira sale corriendo a tu encuentro y el Guardián se aparta.",
+      "nivel": "assets/levels/ciudad_surysal.json",
+      "zona": [
+        26,
+        11,
+        29,
+        15
+      ],
+      "requiere": [
+        "bnd2_encargo",
+        "bnd2_familia_llevada"
+      ],
+      "sin": [
+        "bnd2_gitanos_hablado",
+        "bnd2_barriada_persuadir"
+      ],
+      "pasos": [
+        {
+          "mira": "jugador",
+          "hacia": "izquierda"
+        },
+        {
+          "anda": "nina_del_gato",
+          "por": [
+            [
+              22,
+              13
+            ],
+            [
+              26,
+              13
+            ]
+          ],
+          "velocidad": 3.2
+        },
+        {
+          "mira": "nina_del_gato",
+          "hacia": "derecha"
+        },
+        {
+          "beat": "bnd2_mira_corre"
+        },
+        {
+          "anda": "viejo_surysal",
+          "a": [
+            27,
+            9
+          ],
+          "velocidad": 1.6
+        },
+        {
+          "mira": "zarela",
+          "hacia": "derecha"
+        },
+        {
+          "anda": "nina_del_gato",
+          "por": [
+            [
+              22,
+              13
+            ],
+            [
+              22,
+              14
+            ]
+          ],
+          "velocidad": 2.5,
+          "sinEsperar": true
+        },
+        {
+          "beat": "bnd2_zarela_bienvenida"
+        }
+      ],
+      "alTerminar": [
+        "bnd2_barriada_bienvenida"
+      ]
+    },
+    {
+      "id": "barriada_sientate",
+      "_nota": "Zarela te ha dicho «siéntate»: el Guardián se aparta y tú vas al banco del círculo. La charla empieza al llegar.",
+      "nivel": "assets/levels/ciudad_surysal.json",
+      "requiere": [
+        "bnd2_barriada_bienvenida"
+      ],
+      "sin": [
+        "bnd2_zarela_sientate"
+      ],
+      "pasos": [
+        {
+          "anda": "viejo_surysal",
+          "a": [
+            27,
+            9
+          ],
+          "velocidad": 1.6
+        },
+        {
+          "anda": "jugador",
+          "a": [
+            26,
+            13
+          ],
+          "velocidad": 2.5
+        },
+        {
+          "anda": "jugador",
+          "a": [
+            24,
+            13
+          ],
+          "velocidad": 2.5
+        },
+        {
+          "mira": "jugador",
+          "hacia": "arriba"
+        },
+        {
+          "mira": "zarela",
+          "hacia": "abajo"
+        },
+        {
+          "mira": "anciana_barriada",
+          "hacia": "abajo"
+        },
+        {
+          "espera": 0.4
+        },
+        {
+          "beat": "bnd2_zarela_sientate"
+        }
+      ]
+    },
+    {
+      "id": "barriada_anochece_dentro",
+      "_nota": "Te quedas hasta la noche. Las forjas se apagan, el círculo se enciende, y los seis vienen por el puente con antorchas.",
+      "nivel": "assets/levels/ciudad_surysal.json",
+      "requiere": [
+        "bnd2_saq_noche_dentro"
+      ],
+      "sin": [
+        "bnd2_saq_llegan"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 1.6,
+          "color": "negro"
+        },
+        {
+          "beat": "bnd2_saq_anochece"
+        },
+        {
+          "funde": 0,
+          "segundos": 1.2,
+          "color": "negro"
+        },
+        {
+          "mira": "jugador",
+          "hacia": "derecha"
+        },
+        {
+          "flag": "bnd2_saq_en_escena"
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "anda": "cabecilla_saqueadores",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              12
+            ],
+            [
+              27,
+              12
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              11
+            ],
+            [
+              28,
+              11
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              13
+            ],
+            [
+              28,
+              13
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              10
+            ],
+            [
+              27,
+              10
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              14
+            ],
+            [
+              27,
+              14
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              12
+            ],
+            [
+              28,
+              12
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": false
+        },
+        {
+          "mira": "cabecilla_saqueadores",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "viejo_surysal",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "zarela",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "jugador",
+          "hacia": "derecha"
+        },
+        {
+          "espera": 0.5
+        },
+        {
+          "beat": "bnd2_saq_llegan"
+        }
+      ]
+    },
+    {
+      "id": "barriada_anochece_vuelta",
+      "_nota": "Prometiste volver al anochecer y vuelves por el puente: entras en el corro y los seis llegan detrás de ti.",
+      "nivel": "assets/levels/ciudad_surysal.json",
+      "requiere": [
+        "bnd2_saq_noche_vuelta"
+      ],
+      "sin": [
+        "bnd2_saq_llegan"
+      ],
+      "pasos": [
+        {
+          "anda": "viejo_surysal",
+          "a": [
+            27,
+            9
+          ],
+          "velocidad": 1.6,
+          "sinEsperar": true
+        },
+        {
+          "anda": "jugador",
+          "por": [
+            [
+              24,
+              20
+            ],
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              14
+            ],
+            [
+              25,
+              14
+            ],
+            [
+              25,
+              13
+            ]
+          ],
+          "velocidad": 2.8
+        },
+        {
+          "mira": "jugador",
+          "hacia": "derecha"
+        },
+        {
+          "beat": "bnd2_saq_anochece"
+        },
+        {
+          "flag": "bnd2_saq_en_escena"
+        },
+        {
+          "espera": 0.3
+        },
+        {
+          "anda": "cabecilla_saqueadores",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              12
+            ],
+            [
+              27,
+              12
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              11
+            ],
+            [
+              28,
+              11
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              13
+            ],
+            [
+              28,
+              13
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              10
+            ],
+            [
+              27,
+              10
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              14
+            ],
+            [
+              27,
+              14
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              12
+            ],
+            [
+              28,
+              12
+            ]
+          ],
+          "velocidad": 2.2,
+          "sinEsperar": false
+        },
+        {
+          "mira": "cabecilla_saqueadores",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "viejo_surysal",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "zarela",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "jugador",
+          "hacia": "derecha"
+        },
+        {
+          "espera": 0.5
+        },
+        {
+          "beat": "bnd2_saq_llegan"
+        }
+      ]
+    },
+    {
+      "id": "barriada_saqueadores_se_van",
+      "_nota": "Resuelto como sea (a golpes, hablando, con la Furia o pagando), los seis se van por donde vinieron.",
+      "nivel": "assets/levels/ciudad_surysal.json",
+      "requiere": [
+        "bnd2_saqueadores_resuelto",
+        "bnd2_saq_en_escena"
+      ],
+      "sin": [
+        "bnd2_saq_fuera"
+      ],
+      "pasos": [
+        {
+          "anda": "cabecilla_saqueadores",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              26
+            ]
+          ],
+          "velocidad": 3.0,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              26
+            ]
+          ],
+          "velocidad": 3.0,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              26
+            ]
+          ],
+          "velocidad": 3.0,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              26
+            ]
+          ],
+          "velocidad": 3.0,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              26
+            ]
+          ],
+          "velocidad": 3.0,
+          "sinEsperar": true
+        },
+        {
+          "anda": "saqueador_antorcha",
+          "por": [
+            [
+              28,
+              20
+            ],
+            [
+              28,
+              26
+            ]
+          ],
+          "velocidad": 3.0,
+          "sinEsperar": true
+        },
+        {
+          "espera": 2.2
+        },
+        {
+          "flag": "bnd2_saq_fuera"
+        },
+        {
+          "espera": 0.3
+        }
+      ]
+    },
+    {
+      "id": "barriada_fuego",
+      "_nota": "El ritual: la Barriada se pone alrededor del círculo y a ti te ponen en el centro.",
+      "nivel": "assets/levels/ciudad_surysal.json",
+      "requiere": [
+        "bnd2_ritual_listo",
+        "bnd2_saq_fuera"
+      ],
+      "sin": [
+        "bnd2_ritual_hecho"
+      ],
+      "pasos": [
+        {
+          "funde": 1,
+          "segundos": 0.9,
+          "color": "negro"
+        },
+        {
+          "anda": "zarela",
+          "a": [
+            23,
+            10
+          ],
+          "velocidad": 2
+        },
+        {
+          "anda": "guerrero_gitano",
+          "a": [
+            25,
+            9
+          ],
+          "velocidad": 2,
+          "sinEsperar": true
+        },
+        {
+          "anda": "viejo_surysal",
+          "a": [
+            26,
+            10
+          ],
+          "velocidad": 2,
+          "sinEsperar": true
+        },
+        {
+          "funde": 0,
+          "segundos": 1.0,
+          "color": "negro"
+        },
+        {
+          "anda": "jugador",
+          "a": [
+            24,
+            10
+          ],
+          "velocidad": 2.2
+        },
+        {
+          "mira": "zarela",
+          "hacia": "derecha"
+        },
+        {
+          "mira": "anciana_barriada",
+          "hacia": "arriba"
+        },
+        {
+          "mira": "guerrero_gitano",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "viejo_surysal",
+          "hacia": "izquierda"
+        },
+        {
+          "mira": "jugador",
+          "hacia": "abajo"
+        },
+        {
+          "espera": 0.6
+        },
+        {
+          "beat": "bnd2_ritual_empieza"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+ "id": "ARTE-02",
+ "paquete": "ARTE-02 — personajes por capas: equipo visible, 43 razas y personajes de historia andando",
+ "fase": "arte",
+ "nombre": "Capas de equipo sobre el cuerpo base en 4 tallas, las 43 razas de races.json y los personajes de historia en el estilo de los actores andando",
+ "date": "2026-09-26",
+ "author": "Claude (sesion 25-26/09, maquina de Oriol)",
+ "status": "HECHO en arte + manifiestos + probador (sin cablear en el motor, por decision de Oriol). SIN COMMITEAR: git-safe.sh vive fuera de la carpeta conectada.",
+ "pedido": "«hazme partes de equipacion que se puedan poner encima de ese sprite asi podemos equipar al jugador con diferente estetica segun su equipo, ademas si hacemos estos sprites con las descripciones de las otras razas seria genial, quiero usar el mismo estilo que hemos usado para actores andando en todos los personajes»",
+ "alcance_decidido_por_oriol": [
+  "4 tallas de cuerpo: normal, bajo (enanos), pequeno (medianos) y grande (orcos, minotauros, lagartos, draconidos); cada pieza de equipo en las 4.",
+  "Armas en la mano por familias (espada, daga, hacha, arco, baston, maza/martillo, lanza, escudo, foco/grimorio) con variantes de material.",
+  "Personajes de historia rehechos en el mismo sistema, a escala de juego.",
+  "Arte + manifiestos + probador. NO se toca C++."
+ ],
+ "que_se_ha_hecho": {
+  "assets/textures/personajes/": "Atlas de capas: razas (cuerpo, espalda, cola, alas, morro, rasgos; 43 filas), cuerpos lisos (9 pieles) y ojos (10 colores) por talla, pelo (55 = 7 estilos x 7 colores + 6 de raza) y barba (14) por talla, y equipo por ranura y talla: cabeza 26, torso 39, piernas 13, pies 9, capa 9, arma 19, mano izquierda 8 (123 piezas). equipo_catalogo.json: pieza visible de 391 de los 413 objetos de equipment.json.",
+  "assets/textures/personajes.json": "Contrato: orden de dibujo por ranura y direccion, tallas, filas de cada atlas, compatibilidades de raza (sin pelo, sin pies, sin piernas), piezas que tapan el pelo y los 19 personajes montados como datos.",
+  "assets/textures/razas_andando.png": "Las 43 razas de races.json vestidas como en race_npc_idle.png, andando en 4 direcciones (768x2752).",
+  "assets/textures/personajes_historia.png": "10 personajes de historia andando: Luisarda, Ben Kafka, Griffin, duende de porcelana, saga del bosque, verdugo, nina del gato, caballero, mercader y naga del rio (768x640).",
+  "assets/textures/actores_capas.png": "Los 9 actores de ARTE-01, ahora montados por capas (mismo aspecto; cambian unos pocos pixeles de ojos y bajos).",
+  "tools/": "gen_personajes.py (sustituye a gen_actores_capas.py) y sus modulos actores_*.py; probador_personaje.py (monta con los atlas + manifiesto, como tendra que hacer el motor); revision_personajes.py; validar_sprites.py y test_validar_sprites.py ampliados."
+ },
+ "decisiones": [
+  "Tallas por cirugia de filas y columnas enteras (nunca escalado no entero), aplicada al dibujo y al mapa de partes: la ropa se pinta sobre el mapa de partes de cada talla y encaja pixel a pixel; la cabeza no cambia, asi que pelo, cascos y rasgos valen para las cuatro.",
+  "Cabezas de animal en el estilo de los actores: cabeza redonda y ojos grandes del cuerpo base con el rasgo encima (morro de toro, pico, hocico, capucha de cobra), en vez de redibujar cabezas enteras.",
+  "Colas y cuerpos de serpiente como tubos sombreados anclados a la cadera de cada frame (balanceo al andar); alas ancladas a los hombros; capas construidas con la silueta de cada frame.",
+  "Orden de dibujo por direccion (capa, cola y alas detras de frente y delante de espaldas; arma en la mano de delante de perfil, como en los RPG clasicos).",
+  "Colores horneados en los atlas (una fila por pieza y material): el motor no tiene cambio de paleta y no se toca C++.",
+  "Un personaje es un dato (raza + pelo + equipo); los atlas horneados guardan su composicion y el probador la reproduce pixel a pixel con solo los atlas de capas."
+ ],
+ "hallazgos": [
+  "races.json y equipment.json estan en assets/catalogs/ con forma {\"entries\": [...]}; race_npc_idle.png sigue el orden alfabetico de los id de races.json.",
+  "Los 5 race_* no traen 'Tamano' en la descripcion: se toman de su nombre (enano de las Fraguas bajo, orco de Gongorguma grande, el resto normal).",
+  "orcos_dramaticos se ve en race_npc_idle.png como un trasgo bardo, pero su tamano es 1,80-2,10 m: va en talla grande con traje de bufon.",
+  "22 objetos de equipment.json no tienen pieza visible a proposito: anillos, amuletos, lentes, talismanes, simbolos sagrados y herramientas."
+ ],
+ "verification": [
+  "validar_sprites.py: 8 manifiestos conformes (los 7 atlas y personajes.json con sus 54 atlas de capas).",
+  "test_validar_sprites.py: 34 pruebas verdes. Nuevas: 9 del contrato de capas (cada regla con su caso rojo), generador reproducible (compara pixeles), probador = atlas horneados en los 62 personajes, alturas de talla, cabeza igual en las 4 tallas, nagas sin piernas, yelmo que tapa el pelo, armas pegadas al puno en todos los frames y tallas, capa detras de frente y encima de espaldas, 43 razas con equipo, otra piel solo en razas sin rasgos, reglas del catalogo.",
+  "Laminas de revision (razas desnudas y vestidas, historia, tallas, cada pieza de equipo) y GIF andando revisados a ojo."
+ ],
+ "pending": [
+  "Cablear en el motor una clase que lea personajes.json y apile capas (no en Application.cpp): equipo visible del jugador. Con ella, el arreglo del reparto de personaje.png (ARTE-01).",
+  "Registrar test_validar_sprites.py en CMake/CI.",
+  "Escala comun con los retratos de historia (~58 px frente a 40).",
+  "Criaturas no humanoides (monstruo del pantano, rata): necesitan cuerpo base propio.",
+  "Borrar tools/gen_actores_capas.py y tools/actores_trajes.py si se llegaron a copiar del zip de ARTE-01: gen_personajes.py los sustituye."
+ ],
+ "toca": [
+  "tools/: actores_alas.py, actores_armas.py, actores_capas.py, actores_cascos.py, actores_catalogo.py, actores_colas.py, actores_cuerpos.py, actores_equipo.py, actores_materiales.py, actores_pelo.py, actores_personajes.py, actores_rasgos.py, actores_razas.py, actores_siluetas.py, actores_tallas.py, gen_personajes.py, probador_personaje.py, revision_personajes.py (nuevos); actores_pintura.py, actores_tocados.py, validar_sprites.py, test_validar_sprites.py (cambian); gen_actores_capas.py y actores_trajes.py (se retiran)",
+  "assets/textures/: personajes/ (54 PNG + equipo_catalogo.json), personajes.{json,md}, razas_andando.{png,json}, personajes_historia.{png,json} (nuevos); actores_capas.{png,json,md}, personaje.json (cambian)",
+  "planificacion/seguimiento/ARTE-02-PERSONAJES.json (nuevo), ARTE-01-SPRITES.json (nota)",
+  "SPRITE_BACKLOG.md, SPRITE_AUTHORING_GUIDE.md, SPRITE_DIMENSIONS_GUIDE.md (aplicar_docs.py)"
+ ],
+ "no_toca": [
+  "src/",
+  "include/",
+  "editor/",
+  "CMakeLists.txt",
+  "cmake/",
+  "assets/catalogs/"
+ ]
+}

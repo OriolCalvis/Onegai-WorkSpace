@@ -1,0 +1,19 @@
+{
+  "id": "C-05",
+  "date": "2026-09-08",
+  "author": "Claude (Cowork)",
+  "status": "Implementat i verificat amb GL real i ASan/UBSan; CI pendent",
+  "actions": [
+    "`shutdown()` buida `m_shaderManager` i `m_textureManager` amb el context GL encara viu, després dels atles (que només referencien les textures) i just abans de `m_window.reset()`.",
+    "Abans no es tocaven: sobrevivien fins al destructor d'`Application`, que corre DESPRÉS que `~Window` hagi cridat `glfwTerminate()` — i llavors `~Texture`/`~Shader` emetien `glDeleteTextures`/`glDeleteProgram` sense cap context on anar.",
+    "Els dos gestors ja estaven declarats després de `m_window` (ordre invers de destrucció correcte), però això no bastava perquè `shutdown()` solta la finestra molt abans. Documentat al header.",
+    "És idempotent: `shutdown()` es crida a mà i un altre cop des del destructor."
+  ],
+  "verification": [
+    "Compila net amb `-Wall -Wextra`.",
+    "08/09: test_application_shutdown passa amb context GL real, Debug i ASan/UBSan (detect_leaks=0 per cachés del driver). Suite completa 66/66."
+  ],
+  "pending": [
+    "CI remota pendent; LeakSanitizer no verificat en aquest entorn."
+  ]
+}

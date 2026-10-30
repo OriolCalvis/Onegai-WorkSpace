@@ -1,0 +1,31 @@
+{
+ "id": "EST-23b (parcial)",
+ "paquete": "EST-23b",
+ "fase": "estabilizacion",
+ "nombre": "GameSession.h — los tipos de valor, fuera de la clase",
+ "date": "2026-09-24",
+ "author": "Claude (sesion 24/09, maquina de Oriol)",
+ "status": "PRIMERA MITAD HECHA — 741 -> 664 lineas, y dos cabeceras dejan de arrastrar la sesion entera. Los 40 miembros siguen donde estaban: eso es la segunda mitad.",
+ "que_se_ha_hecho": {
+  "include/Game/SessionTipos.h": "97 lineas. GameMode, OwnedBusiness, PlayerCarryOver, LevelTransition, ShopOffer y el alias WorldEnemy. Tipos de VALOR de una partida: ni un metodo de la sesion, ni una dependencia que no sea la biblioteca estandar, GridCoord y World.",
+  "include/Game/SaveGame.h y include/Game/SaveSlotState.h": "Dejan de incluir GameSession.h. Solo necesitaban OwnedBusiness y GameMode, y se tragaban con ellos BattleState, NarrativeEngine, World y los veinte catalogos del motor Nd6.",
+  "src/Game/SaveGame.cpp": "Incluye GameSession.h el mismo, que es lo que deberia haber hecho siempre: quien USA la clase la incluye."
+ },
+ "decisiones": [
+  "El comentario largo que describe que ES una partida vuelve a la clase, no viaja con GameMode. Un tipo de valor no lleva encima la descripcion del sistema que lo usa.",
+  "No se toca la interfaz de nadie: GameSession.h incluye SessionTipos.h, asi que los 20 consumidores siguen compilando sin cambiar una linea."
+ ],
+ "actions": [
+  "include/Game/SessionTipos.h — nueva.",
+  "include/Game/GameSession.h — 77 lineas menos.",
+  "include/Game/SaveGame.h, include/Game/SaveSlotState.h, src/Game/SaveGame.cpp — includes ajustados."
+ ],
+ "verification": [
+  "Construccion completa de suite_gl_free: los mismos 6 fallos de antes, ni uno mas.",
+  "ctest -L gl-free: 91%, igual que antes."
+ ],
+ "pending": [
+  "LA SEGUNDA MITAD, que es la de verdad: los 40 miembros de GameSession a clases de datos. Se agrupan solos y en los mismos temas en que ya esta partido el .cpp: comercio (12 miembros: dialogo, ofertas, oro, negocios, pasos de renta, moral), combate (6: battle, handle, banderas pendientes, cola, ordinal de invocado), colaboradores inyectados (13 punteros no propietarios) y el resto. Cada grupo con su contenedor, como ObjectInspectorData (EST-34) o IsometricSceneData (EST-35).",
+  "Para bajar GameSession.h del techo hace falta ademas partir la CLASE por tema, y eso cambia la interfaz de sus 20 consumidores: es una decision de diseno de Oriol, no mantenimiento."
+ ]
+}

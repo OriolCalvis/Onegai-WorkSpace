@@ -1,0 +1,59 @@
+{
+ "id": "ARTE-01",
+ "paquete": "ARTE-01 — sprites P0: actores andando por capas + props y pickups",
+ "fase": "arte",
+ "nombre": "Sprites runtime P0 (SPRITE_BACKLOG.md): actores que caminan en 4 direcciones, props y pickups",
+ "date": "2026-09-25",
+ "author": "Claude (sesion 25/09, maquina de Oriol)",
+ "status": "HECHO en arte + manifiestos (sin cablear en el motor, por decision de Oriol). SIN COMMITEAR: git-safe.sh vive fuera de la carpeta conectada.",
+ "alcance_decidido_por_oriol": [
+  "Actores: ropa por capas pintada sobre el cuerpo base de assets/textures/personaje.png.",
+  "Props y pickups P0 extraidos de las laminas de autoria (sin fondo, anclados por la base).",
+  "Solo arte + manifiestos + generadores + documentacion. NO se toca C++: Application.cpp y ApplicationNivel.cpp tienen trabajo ajeno sin commitear."
+ ],
+ "que_se_ha_hecho": {
+  "assets/textures/actores_capas.png": "9 actores x 12 frames de 64x64 (768x576): aventurero jugador y 3 tintes, guardia, aldeano, aldeana, cultista perdido y carcelero. Caminar en 4 direcciones con el mismo ciclo que el cuerpo base. Contrato en actores_capas.json/.md.",
+  "assets/textures/props_p0.png": "33 props en celdas de 64x64 a escala de mundo (persona = 40 px): mesas, sillas, barras, camas, estanterias, barril, caja, cofres, antorcha, farol, brasero, hoguera, puerta de taberna, portal runico, carteles, arbusto, helecho, tocon, arbolito, valla, piedras runicas.",
+  "assets/textures/pickups_p0.png": "20 pickups a escala de lectura: 5 pociones (curativa, mana, veneno, eter, mision), 2 llaves, espada, hacha, arco, daga, baston, escudo, cota, yelmo, botas, grimorio, antorcha, cerveza, jarra. Las variantes de color son tintes del mismo dibujo.",
+  "assets/textures/personaje.json": "El reparto REAL de personaje.png (arriba 1-3, derecha 4-6, abajo 7-9, izquierda 10-12) con sus animaciones.",
+  "tools/": "gen_actores_capas.py (+ actores_partes, actores_pintura, actores_tocados, actores_trajes), gen_props_p0.py (+ sprites_extraccion), validar_sprites.py y test_validar_sprites.py. Los generadores son deterministas: el PNG versionado es exactamente lo que producen."
+ },
+ "hallazgos": [
+  "Application::init registra personaje.png como walk_down {1,2,3,4}, walk_up {5..8}, walk_right/left {9..12} e idle {1}. La hoja real es arriba/derecha/abajo/izquierda x 3: el jugador se queda de espaldas en reposo y 'camina hacia abajo' ensenando la espalda. El reparto correcto esta en personaje.json.",
+  "Props y pickups se pintan hoy contra el tileset del nivel (StaticEntity + def->spriteId) con un tinte por categoria: en partida un arbusto o una pocion son un rombo de suelo tenido.",
+  "Escala: el cuerpo base mide 40 px; los retratos del atlas de historia, ~58 px. La diferencia ya existia (jugador frente a PNJ de Boundington).",
+  "SPRITE_AUTHORING_GUIDE.md documentaba personaje.png con el mismo reparto equivocado que el codigo (1-4 abajo, 5-8 arriba, 9-12 lateral). Corregido."
+ ],
+ "decisiones": [
+  "Ropa por capas en vez de dibujar cada actor: cada pixel del cuerpo base tiene parte y tono; la prenda cambia el color y conserva el volumen, asi que sigue el ciclo de caminar pixel a pixel. Un actor nuevo es una entrada de datos.",
+  "Props a escala de mundo del cuerpo base (40 px) porque el jugador y los PNJ genericos que caminan usan ese cuerpo; los pickups, a escala de lectura.",
+  "Sin inventar arte: todo prop sale de una lamina de autoria del repo. Lo que no tiene dibujo fuente queda en pendientes."
+ ],
+ "verification": [
+  "validar_sprites.py: 5 atlas conformes a su manifiesto (actores_capas, props_p0, pickups_p0, personaje, boundington_story_actors_idle).",
+  "test_validar_sprites.py: 15 pruebas verdes. Mutaciones de las 5 reglas del validador: las 5 ponen una prueba en rojo.",
+  "Mapa de partes: 12 frames sin un pixel del cuerpo sin etiqueta; los 5 espejos se comprueban exactos al construir.",
+  "Escena isometrica de prueba (suelo terreno_iso, actores, props y un retrato de historia) para escala y lectura."
+ ],
+ "pending": [
+  "Cablear en el motor: una clase que lea los manifiestos (no en Application.cpp, que esta sobre el techo de 500). Con ella va el arreglo del reparto de personaje.png.",
+  "Registrar test_validar_sprites.py en CMake/CI: cmake/ y CMakeLists.txt tienen trabajo ajeno en vuelo hoy.",
+  "Decidir la escala comun: cuerpo base 40 px frente a retratos de historia ~58 px.",
+  "Sin dibujo fuente en las laminas: pozo, jaula, alcantarilla, huesos, saco, pan, carta, monedas, gemas, hongo corrupto.",
+  "Caminar para Luisarda, Ben, Griffin, ninos, saga, naga y duende: son retratos pintados, hay que rehacerlos sobre el cuerpo base.",
+  "Arboles grandes y estructuras altas (P1): piden un atlas de celdas mayores."
+ ],
+ "toca": [
+  "tools/: actores_partes.py, actores_pintura.py, actores_tocados.py, actores_trajes.py, gen_actores_capas.py, sprites_extraccion.py, gen_props_p0.py, validar_sprites.py, test_validar_sprites.py (nuevos)",
+  "assets/textures/: actores_capas.{png,json,md}, personaje.json, props_p0.{png,json,md}, pickups_p0.{png,json} (nuevos)",
+  "SPRITE_BACKLOG.md, SPRITE_AUTHORING_GUIDE.md, SPRITE_DIMENSIONS_GUIDE.md (tablas de arte)"
+ ],
+ "no_toca": [
+  "src/",
+  "include/",
+  "editor/",
+  "CMakeLists.txt",
+  "cmake/"
+ ],
+ "nota_arte02": "26/09: ARTE-02 sustituye tools/gen_actores_capas.py y tools/actores_trajes.py por tools/gen_personajes.py (actores montados por capas). actores_capas.png conserva sus 9 filas. Los pendientes de caminar para los personajes de historia quedan hechos en personajes_historia.png. Ver ARTE-02-PERSONAJES.json."
+}

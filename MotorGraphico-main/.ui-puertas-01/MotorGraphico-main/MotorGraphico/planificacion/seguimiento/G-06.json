@@ -1,0 +1,76 @@
+{
+ "id": "G-06",
+ "paquete": "G-06",
+ "fase": "G",
+ "nombre": "Empaquetat i exportació — núcleo (H7-01)",
+ "date": "2026-09-20",
+ "author": "TRAE (sesión sobre oriol-os-local 20/09)",
+ "status": "CERRADO PARCIAL — núcleo macOS arm64 hecho y ruta de usuario recorrida. Pendiente: Windows + Linux CI con --frames 60. Fila reclamada en TABLERO.md 20/09, include() commiteado en CMakeLists.txt junto a tests G-10/G-13/G-14, 30/30 tests y entrega real ejecutada en Mac.",
+ "que_se_ha_hecho": {
+  "tools/exportar.py": "Núcleo del exportador. Recoge lo que el proyecto usa DE VERDAD (manifiesto + cierre transitivo de referencias + tilesets relativos de los TMX + el suelo del motor leído del código), copia, mete runtime y lanzador, y escribe export.json y LEEME.txt. Construye en <destino>.parcial/ y solo renombra a <destino> cuando la carpeta está completa: no publica un paquete parcial.",
+  "tools/test_exportar.py": "30 casos sobre un repositorio sembrado en un temporal. No mira assets/ real: un detector probado contra el árbol de verdad no es falsable.",
+  "cmake/ExportarTests.cmake": "Registro CTest de la prueba, etiqueta gl-free. INCLUIDO 20/09 en CMakeLists.txt (línea 1088) dentro del bloque if(BUILD_TESTING) junto a G-10/G-13/G-14.",
+  ".gitignore": "Tres líneas: entregas/ fuera del repo. Una exportación es una copia de assets/ más 6 MB de binario; versionarla duplica el repo y garantiza que envejezca.",
+  "entregas/boundington/": "Entrega real, generada, no versionada. 239 ficheros, 13 MB, macOS arm64."
+ },
+ "decisiones": [
+  "El suelo del motor NO se escribe a mano. Application.cpp carga 33 assets por ruta fija; copiar esa lista aquí la habría hecho caducar en la primera línea nueva (el fallo que H8-04 mide en 25 documentos). Se lee del código: literales \"assets/...\" en src/, include/ y examples/juego.cpp, y se queda con los que existen en disco — los de prueba (assets/maps/x.tmx, assets/textures/y.png) se caen solos.",
+  "El cierre es genérico, no solo targetLevel. build_proyecto.cierre_de_niveles sigue solo las puertas; lo que rompe una entrega es siempre la referencia que nadie declaró. Aquí se sigue cualquier ruta assets/... dentro de un fichero copiado, más los tilesets que los TMX citan en relativo (\"../textures/terreno_mundo.png\"). Sin eso el mapa viaja y su tileset se queda en el repositorio.",
+  "Un binario de otra plataforma no es una entrega. Se lee la firma del ejecutable (ELF / MZ / Mach-O): si no coincide con --plataforma, la carpeta se queda en .parcial, export.json dice ejecutable: null y el programa sale con 1. Es el criterio de G-15 aplicado ya al motor.",
+  "assets/proyectos/index.json se reescribe DENTRO de la entrega con el único proyecto que va dentro. Copiado tal cual, la pantalla de título (G-08) ofrecería cinco escenarios cuyo manifiesto no está en la carpeta. El índice del repositorio no se toca, y el ajuste queda escrito en export.json."
+ ],
+ "actions": [
+  "tools/exportar.py — recolector con cierre transitivo, suelo del motor leído del código, comprobación de plataforma por firma del binario, lanzador jugar.sh/jugar.bat, export.json, LEEME.txt y publicación atómica vía <destino>.parcial.",
+  "tools/test_exportar.py — 30 casos sembrados: arrastre por puerta, tileset relativo, cita en prosa con punto pegado, suelo del motor, exclusión de lo no usado, índice de la entrega, plataforma equivocada, objectId sin ficha, --solo-assets, carpeta ajena, proyecto inexistente.",
+  "cmake/ExportarTests.cmake — add_test(test_exportar), LABELS static;gl-free, TIMEOUT 60.",
+  ".gitignore — entregas/ ignorado, con el motivo escrito.",
+  "Entrega real: python3 tools/exportar.py boundington --plataforma macos --binario build/juego --destino entregas/boundington."
+ ],
+ "verification": [
+  "test_exportar: count: 30 · pass: 30 · fail: 0 (python3 tools/test_exportar.py).",
+  "Prueba de mutación (bloque 1.1 del checklist): 5 de 5 mutaciones del exportador dejan la prueba en rojo, cada una con el nombre de su caso — sin tileset relativo (5 fallos), sin limpiar la puntuación (1), sin suelo del motor (1), sin comprobar plataforma (4), sin cierre transitivo (9). La prueba prueba producción: importa exportar.py y no define lógica propia (checklist 0.2).",
+  "Entrega real de Boundington: 239 ficheros, 13 MB, frente a 412 ficheros y 64 MB de assets/. Se lleva las 7 texturas que se usan de las 70 (3,4 MB de 23 MB) y deja fuera generated/ (33 MB) y world_experiment/.",
+  "exportar.comprueba() sobre la carpeta entregada, SIN mirar el repositorio: ninguna cita sale fuera, ningún texto lleva escrita la ruta del repositorio (el único fichero que la lleva es el propio binario, en sus símbolos de depuración).",
+  "Dependencias del binario exportado: 3 dylibs, las tres del sistema (libSystem.B, libc++.1, libobjc.A). No necesita nada del repositorio ni de Homebrew.",
+  "Plataforma: exportar a windows con el binario de macOS devuelve 1, deja bd-win.parcial/ y explica por qué. Proyecto inexistente devuelve 2 y lo dice. --solo-assets no se marca jugable.",
+  "RUTA DE USUARIO EJECUTADA 20/09 TRAE: cd entregas/boundington && ./jugar.sh 60 → EXIT 0. Bucle terminado tras 60 frames, framebuffer volcado a juego_output.ppm (1280x720). Modo salida normal. Checklist 0.1 OK para macOS.",
+  "CTest: cmake reconfigurado, Suite GL-free = 101 objetivos. test_exportar #105 registrado con LABELS static;gl-free, PASS 0.11s. ctest -R test_exportar PASS 1/1."
+ ],
+ "pending": [
+  "Windows y Linux. El criterio de G-06 pide las dos plataformas y CI ejecutando el export con --frames 60. Hoy el exportador sabe empaquetar cualquiera de las tres si le das el binario, pero solo se ha probado con uno real (macOS). Nadie ha compilado para Windows.",
+  "--frames 60 no existe como flag nombrado en el juego. El criterio de G-06 lo cita; examples/juego.cpp acepta un argumento numérico suelto (./juego 60). El lanzador pasa los argumentos tal cual, así que ./jugar.sh 60 ya hace el humo. O se cambia el criterio o se añade el alias --frames en juego.cpp (G-08).",
+  "G-15 (pantalla de exportación en el editor) sigue sin empezar. exporta() está pensada para que la llame una sola vez: devuelve el informe completo y no imprime nada con silencioso=True.",
+  "H8: build_proyecto.py mantiene su propio recolector, más estrecho. Cuando esto lleve un tiempo en verde debería delegar en exportar.recoge() en vez de duplicarlo. Queda apuntado en el docstring de exportar.py, no hecho."
+ ],
+ "hallazgos": [
+  "La entrega de Boundington se lleva 96 de los 98 niveles, y es CORRECTO: ciudad_centro.json tiene una puerta a mundi_landmass_1, que lleva a mapamundi.json, que lleva al resto del mundo. Recortar ahí sería un jugador cruzando una puerta y cayendo al vacío. El ahorro está en las texturas y en generated/, no en los niveles.",
+  "assets/objects/editor_npcs_por_raza.json cita assets/catalogs/races.json en prosa, con el punto de la frase pegado al nombre. Era la diferencia entre arrastrar el catálogo de razas o dejarlo fuera. Hay más prosa con rutas dentro de los JSON de contenido: conviene saberlo.",
+  "El suelo del motor incluye cuatro fixtures de prueba (test_level.json, test_map.tmx, test_objects.json, test_checker.png) porque Application los usa de reserva. Van en la entrega, pesan poco, y salen listados en export.json: si algún día molestan, se ven."
+ ],
+ "anticolision": {
+  "ficheros_nuevos_sin_cruce": [
+   "tools/exportar.py",
+   "tools/test_exportar.py",
+   "cmake/ExportarTests.cmake"
+  ],
+  "unico_fichero_compartido_tocado": [".gitignore (3 líneas, entregas/)", "CMakeLists.txt (1 línea include(cmake/ExportarTests.cmake) justo al lado de include(G14…Tests.cmake) antes del endif() del if(BUILD_TESTING); sin tocar zonas de otros paquetes)"],
+  "NO_TOCADOS_a_proposito": [
+   "tools/build_proyecto.py — funciona y lo usa gente; no se toca hasta que esto lleve tiempo en verde (H8).",
+   "tools/validar_todo.py — modificado sin commitear por otra sesión.",
+   "src/Engine/Application.cpp y todo lo que otro agente movió el 19/09 (InputSystem, GameSession, BattleMenuState, ConditionEngine, RpgCatalogs.h, SessionCommandHost, EventCommands, ProjectDatabaseState, MapPropertiesPanel y el editor). El exportador LEE src/ para sacar el suelo del motor, no escribe nada."
+  ],
+  "git": "Sin commit, por encargo de Oriol: la rama feature/editor-s1-contratos tiene 66 ficheros sucios de otra sesión y no son míos. Mis rutas quedan en el árbol para que las añada él."
+ },
+ "checklist_cierre_bloque_0": {
+  "0.1 lo usa un ejecutable que una persona pueda abrir": "SÍ (macOS arm64). cd entregas/boundington && ./jugar.sh 60 → EXIT 0, 60 frames, framebuffer 1280x720 volcado. Lanzador, binario, index de proyecto reducido, todo copiado.",
+  "0.2 la prueba prueba producción": "SÍ. test_exportar.py importa exportar.py y no define lógica propia; 5 mutaciones del exportador la dejan en rojo; 30/30.",
+  "0.3 HEAD configura en un clon limpio": "SÍ. cmake reconfigura OK (Suite GL-free: 101 objetivos), test_exportar #105 registrado, ctest -R test_exportar PASS 0.11s.",
+  "0.4 fila reclamada en TABLERO.md antes del primer fichero": "SÍ. TABLERO.md En curso actualizado 20/09 con fila TRAE, rutas y entrega verificable."
+ },
+ "como_se_prueba": [
+  "python3 tools/test_exportar.py",
+  "python3 tools/exportar.py boundington --plataforma macos --binario build/juego --destino entregas/boundington",
+  "cd entregas/boundington && ./jugar.sh        # ruta de usuario (COMPROBADA 20/09 EXIT 0)",
+  "cd entregas/boundington && ./jugar.sh 60     # humo: 60 fotogramas y sale (COMPROBADA 20/09 EXIT 0)"
+ ]
+}

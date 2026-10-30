@@ -1,0 +1,39 @@
+{
+ "id": "BLOQUES-01",
+ "date": "2026-10-01",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol, sin commit",
+ "encargo": "Edificios con volumen: cada tile de edificio levanta un bloque (tejado a la altura del muro + las dos caras a camara, en vertical) con puertas y ventanas integradas en la pared y visibles solo por fuera. 20 bloques de PixelLab (create_isometric_tile size 64 block, lote 8) + 1 umbral; 23 generaciones (304 de 2.000).",
+ "archivos": {
+  "nuevos": [
+   "include/Game/Bloques.h, src/Game/Bloques.cpp (motor_level, GL-free): bloques.json -> plan por celda con las caras expuestas",
+   "include/Render/BloquesNivel.h, src/Render/BloquesNivel.cpp (motor_core): una StaticEntity por bloque, atenuacion delante del jugador",
+   "tests/Game/BloquesTests.cpp + cmake/BloquesTests.cmake (test_bloques, 4 casos)",
+   "assets/textures/bloques.json (que tile levanta bloque: material, bandas, ventanas, puertas; umbral)",
+   "assets/textures/pixellab_bloques.png/.json (72 frames de 64x96) y tools/pixellab/importar_bloques.py",
+   "assets/textures/pixellab/bloques.json + lote8/ (20 bloques, umbral y generaciones.json)"
+  ],
+  "modificados": [
+   "CMakeLists.txt (Bloques.cpp en motor_level, BloquesNivel.cpp en motor_core, BloquesTests)",
+   "include/Engine/Application.h, src/Engine/Application.cpp, ApplicationNivel.cpp, ApplicationBucle.cpp, ApplicationCierre.cpp (m_bloques: carga, monta antes de los marcadores, atenua, desmonta)",
+   "assets/textures/sprites.json (hoja pixellab_bloques), pixellab/props.json, pixellab_props.png/.json (umbral_puerta)",
+   "assets/levels/ciudad_centro.json y ciudad_este.json (los 16 carteles pasan de delante de la puerta al lado de la entrada)"
+  ]
+ },
+ "reglas": [
+  "Cada celda de edificio pinta el bloque entero en orden x+y: el vecino de delante tapa las caras interiores, sin capa nueva en el renderer.",
+  "Cara izquierda mira a (x, y+1) y derecha a (x+1, y); puerta si ahi hay un objeto puerta_*/on_puerta_* y el material tiene puertas, si no ventana o pared segun un reparto fijo (deterministico).",
+  "Una puerta que ya esta en la pared se dibuja como el prop umbral_puerta (bloques.json «umbral»); las salidas de interiores no cambian.",
+  "Las puertas se leen del World, no de level.objects: el LevelDefinition ya se movio a la sesion cuando se montan los marcadores."
+ ],
+ "verification": [
+  "test_bloques 4/4; ctest -L gl-free sin fallos nuevos (siguen los previos: gdb12_screens, g14 enlace Linux, catalog_content, marcar_paquetes, linea_base_core 35 de deuda previa); tools/linea_base_core.py sin deuda nueva; tools/conectividad.py 100% con todas las puertas alcanzables.",
+  "Capturas: Boundington (plaza y sastreria con la puerta en la pared y el umbral), interior de la posada (muros de una banda), Gongorguma (chabolas), Bomengrid (piedra, on_puerta_)."
+ ],
+ "pendiente": [
+  "Tabernas y mercados de los pueblos generados de chabolas: parches de viejo_piedra_vieja (no edificio), siguen planos con puerta suelta.",
+  "Variantes de tejado por material (2-3 gens cada uno) y bloques de piedra mas claros (3 gens) si se quiere.",
+  "Carteles colgantes en la pared en vez de en el suelo junto a la puerta (1 gen + mover a la celda del muro).",
+  "El Mac tiene build/juego de las 07:29: hay que recompilar para ver tiles de PixelLab y bloques."
+ ]
+}

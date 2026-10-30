@@ -1,0 +1,51 @@
+{
+ "id": "asesino_tambalearse",
+ "name": "Tambalearse",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Saltas hacia atrás en el último momento: contrarrestas los ataques de ese turno y la fuerza del golpe pasa a tu puñal: +1d6 al daño de tus golpes con arma durante 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "asesino"
+ ],
+ "roleTags": [],
+ "tags": [
+  "asesino",
+  "estandar"
+ ],
+ "mechanicTags": [],
+ "actionType": "reaccion",
+ "target": "self",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Saltas hacia atrás en el último momento: contrarrestas los ataques de ese turno y la fuerza del golpe pasa a tu puñal: +1d6 al daño de tus golpes con arma durante 2 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Contrarresta los ataques de ese turno.",
+   "mechanicHook": "bloquea:ataques:1"
+  },
+  {
+   "description": "Absorbe el poder de ataque: +1d6 a tus golpes con arma 2 turnos.",
+   "mechanicHook": "propio:2:bono_dano_arma:1d6"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Asesino (Assassin) · H849 Tambalearse"
+}

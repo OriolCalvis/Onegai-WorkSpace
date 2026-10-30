@@ -1,0 +1,37 @@
+
+# Builds de proyecto (tools/build_proyecto.py). Son copias de assets/ que ya
+# estan versionados: versionarlos otra vez duplica el repo y garantiza que
+# se queden viejas. Se regeneran con: python3 tools/build_proyecto.py --todos
+builds/
+
+# Directorio de build de CMake (binarios, objetos, etc.)
+build/
+
+# Entregas (tools/exportar.py). Una exportacion es una COPIA de assets/ mas
+# el binario: versionarla duplica el repo y ademas mete 6 MB de ejecutable
+# en cada entrega. Se regenera con: python3 tools/exportar.py <proyecto>
+entregas/
+
+# La demo del selector crea este proyecto efímero al probar altas/bajas.
+assets/proyectos/demo_hub_tmp*.json
+
+# Metadatos de macOS y salidas locales de demos. Los binarios se ejecutan
+# desde build/ en CTest, pero estas reglas también protegen ejecuciones
+# manuales desde la raíz del repositorio.
+.DS_Store
+/demo_asset.txt
+/editor_roundtrip_test.tmx
+/*_output.ppm
+/level_editor_output.png
+/personaje.json
+
+# RUN-10 — Guardado rapido de la Application (F5/F9) y los ficheros
+# temporales de test_save_game. Se escriben en el cwd, que en CTest es
+# build/, pero estas reglas cubren tambien una ejecucion desde la raiz.
+/savegame.json
+/savegame.json.tmp
+/run10_*.json
+
+# H8-03 — artefactos de MapRoundTripTests.cpp: escribe en el cwd dos JSON
+# de comparacion; si se ejecuta desde la raiz, no deben colarse en git.
+/map_entity_fields_round_trip*.json

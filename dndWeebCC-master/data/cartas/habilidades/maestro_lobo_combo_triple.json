@@ -1,0 +1,59 @@
+{
+ "id": "maestro_lobo_combo_triple",
+ "name": "Combo triple",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Encadenas la patada con salto, la bola de energía y el gancho: 3d6 de daño de luz, y las tinieblas mortales le dejan 1 turno sin atacar.",
+ "flavorText": "",
+ "classTags": [
+  "maestro_lobo"
+ ],
+ "roleTags": [],
+ "tags": [
+  "maestro_lobo",
+  "creador",
+  "Luz"
+ ],
+ "mechanicTags": [
+  "Luz",
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Encadenas la patada con salto, la bola de energía y el gancho: 3d6 de daño de luz, y las tinieblas mortales le dejan 1 turno sin atacar.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "3d6 de daño de luz.",
+   "mechanicHook": "dano:3d6"
+  },
+  {
+   "description": "Tinieblas mortales: 1 turno sin atacar.",
+   "mechanicHook": "estado:1:incapacitado"
+  },
+  {
+   "description": "[pendiente] la versión definitiva, con 1000 puntos definitivos.",
+   "mechanicHook": "pendiente_parcial:la versión definitiva, con 1000 puntos definitivos"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Maestro Lobo (Master Wolf) · H655/H659 Combo triple"
+}

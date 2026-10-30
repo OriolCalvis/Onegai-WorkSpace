@@ -1,0 +1,31 @@
+{
+ "id": "gravitas_telequinesis",
+ "name": "Telequinesis",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "La piedra que lanza Grávitas con la telequinesis: tus golpes con arma hacen +1 de daño (agua).",
+ "flavorText": "",
+ "classTags": [
+  "gravitas"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "La piedra que lanza Grávitas con la telequinesis: tus golpes con arma hacen +1 de daño (agua).",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Tus golpes con arma hacen +1 de daño.",
+   "mechanicHook": "siempre:bono_dano_arma:1"
+  },
+  {
+   "description": "[pendiente] los puntos de gravedad y antigravedad (los dan sus técnicas y los gasta el Agujero negro) y el Equilibrio gravitatorio.",
+   "mechanicHook": "pendiente_parcial:los puntos de gravedad y antigravedad (los dan sus técnicas y los gasta el Agujero negro) y el Equilibrio gravitatorio"
+  }
+ ],
+ "fuente": "NosTale · Grávitas (Gravity)"
+}

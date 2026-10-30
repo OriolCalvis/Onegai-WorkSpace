@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Crear PNJ</title>
+    <link th:href="@{/css/tokens.css}" rel="stylesheet">
+    <link th:href="@{/css/base.css}" rel="stylesheet">
+    <link th:href="@{/css/components.css}" rel="stylesheet">
+    <link th:href="@{/css/utilities.css}" rel="stylesheet">
+    <link th:href="@{/css/carta-fisica.css}" rel="stylesheet">
+</head>
+<body>
+<div class="gm-app">
+    <div th:replace="~{Blocks/header-v2 :: header}"></div>
+    <div class="gm-body">
+        <div th:replace="~{Blocks/sidebar-v2 :: sidebar}"></div>
+        <main class="gm-main">
+            <p class="gm-sidebar__eyebrow u-p-0">Sistema de Cartas y Tiers</p>
+            <h1 class="u-mb-sp2">🧑 Crear PNJ</h1>
+            <p class="u-lead--760">
+                Más corto que crear personaje o aventura — sin stats de combate, solo lo narrativo:
+                quién es, qué quiere, con qué negocia y el secreto que lo liga a una
+                <a th:href="@{/historias}">historia</a> real.
+            </p>
+
+            <form th:action="@{/npcs/crear}" method="post" class="u-maxw-640">
+
+                <div class="gm-form-grid u-mb-sp3">
+                    <div class="gm-field">
+                        <label>Nombre</label>
+                        <input class="gm-input" name="name" placeholder="Mercader Adiel" required>
+                    </div>
+                    <div class="gm-field">
+                        <label>Rol</label>
+                        <input class="gm-input" name="role" list="roles-existentes" placeholder="mercader">
+                        <datalist id="roles-existentes">
+                            <option th:each="r : ${roles}" th:value="${r}"></option>
+                        </datalist>
+                    </div>
+                    <div class="gm-field">
+                        <label>Facción</label>
+                        <select class="gm-select" name="faction">
+                            <option value="">Sin facción</option>
+                            <option th:each="f : ${facciones}" th:value="${f}" th:text="${#strings.replace(f, '_', ' ')}">facción</option>
+                        </select>
+                    </div>
+                    <div class="gm-field">
+                        <label>Ubicación (gancho de lugar)</label>
+                        <input class="gm-input" name="location" placeholder="Puerto de Mijorn">
+                    </div>
+                    <div class="gm-field">
+                        <label>Mes (trasfondo narrativo)</label>
+                        <select class="gm-select" name="month">
+                            <option value="">Sin mes</option>
+                            <option th:each="m : ${meses}" th:value="${m.id}" th:text="${m.name}">mes</option>
+                        </select>
+                    </div>
+                    <div class="gm-field">
+                        <label>Actitud inicial</label>
+                        <select class="gm-select" name="actitud">
+                            <option value="neutral" selected>Neutral</option>
+                            <option value="amistosa">Amistosa</option>
+                            <option value="recelosa">Recelosa</option>
+                            <option value="hostil">Hostil</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="gm-field u-mb-sp3">
+                    <label>Agenda — qué quiere conseguir</label>
+                    <textarea class="gm-textarea" rows="2" name="agenda"
+                              placeholder="Recuperar una deuda del gremio de Ecla"></textarea>
+                </div>
+
+                <div class="gm-field u-mb-sp3">
+                    <label>Palanca (con qué negocia)</label>
+                    <input class="gm-input" name="palanca" placeholder="oro">
+                </div>
+
+                <!-- El secreto se marca aparte: solo lo ve el GM (wireframe 10a) -->
+                <div class="gm-ficha-bloque gm-ficha-bloque--secreto u-mb-sp3">
+                    <strong>🔒 Secreto (secretHook) — solo lo ve el GM</strong>
+                    <div class="gm-field u-mt-sp1">
+                        <label>Vincular historia (opcional)</label>
+                        <select class="gm-select" name="secretHook">
+                            <option value="">Sin historia vinculada</option>
+                            <option th:each="h : ${historias}" th:value="${h.id}" th:text="${h.title}">historia</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="gm-field u-mb-sp4">
+                    <label>Texto narrativo (flavor, opcional)</label>
+                    <input class="gm-input" name="flavorText" placeholder="Nacido en el mes del Cierzo.">
+                </div>
+
+                <div class="u-actions--wrap">
+                    <button class="gm-btn gm-btn--primary" type="submit">Guardar PNJ</button>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/npcs}">Cancelar</a>
+                </div>
+            </form>
+        </main>
+    </div>
+    <div th:replace="~{Blocks/footer-v2 :: footer}"></div>
+</div>
+<script th:src="@{/js/theme.js}"></script>
+</body>
+</html>

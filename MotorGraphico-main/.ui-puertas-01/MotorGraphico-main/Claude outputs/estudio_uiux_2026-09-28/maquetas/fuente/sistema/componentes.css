@@ -1,0 +1,251 @@
+/* MotorGraphico · Modelo visual del juego · componentes
+   Cada clase corresponde a un componente de MODELO_VISUAL.md §5.
+   Las maquetas son 1280x720 lógicos; nada se coloca por coordenadas
+   sueltas sobre otro control: cada región reserva su altura. */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--fondo); }
+body {
+  font-family: var(--lectura);
+  font-size: var(--t-cuerpo);
+  line-height: 1.45;
+  color: var(--texto);
+  font-variant-numeric: lining-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ------------------------------------------------------------------ */
+/* Lienzo                                                              */
+/* ------------------------------------------------------------------ */
+.pantalla { position: relative; width: 1280px; height: 720px; overflow: hidden; background: var(--fondo); }
+.mundo { position: absolute; inset: 0; background-size: 1280px 720px; background-position: 0 0; image-rendering: pixelated; }
+.velo { position: absolute; inset: 0; background: var(--velo); }
+.capa { position: absolute; }
+
+/* Texto pixel (SVG generado con los glifos 5x7 del motor) */
+.px { display: inline-block; flex: none; vertical-align: middle; overflow: visible; }
+.sombra-px { filter: drop-shadow(2px 2px 0 var(--marco-ext)); }
+.sombra-px3 { filter: drop-shadow(3px 3px 0 var(--marco-ext)); }
+
+/* Iconos del atlas iconos.png (8x7 de 16 px) a x2 o x1 */
+.ic { display: inline-block; flex: none; width: 32px; height: 32px; image-rendering: pixelated;
+      background-image: url("../img/iconos.png"); background-size: 256px 224px; background-repeat: no-repeat; }
+.ic.x1 { width: 16px; height: 16px; background-size: 128px 112px; }
+.ic.apagado { filter: grayscale(1) brightness(.75); opacity: .7; }
+
+/* ------------------------------------------------------------------ */
+/* Marco pixel de dos tonos con esquinas recortadas                    */
+/* ------------------------------------------------------------------ */
+.marco {
+  background: var(--panel);
+  border: 2px solid var(--marco-ext);
+  box-shadow: inset 0 0 0 2px var(--marco-int);
+  clip-path: polygon(2px 0, calc(100% - 2px) 0, 100% 2px, 100% calc(100% - 2px),
+                     calc(100% - 2px) 100%, 2px 100%, 0 calc(100% - 2px), 0 2px);
+}
+.marco > * { position: relative; }
+
+/* ------------------------------------------------------------------ */
+/* Ventana de gestión: cabecera / navegación / cuerpo / pie            */
+/* ------------------------------------------------------------------ */
+.ventana { position: absolute; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: var(--cabecera) auto 1fr var(--pie); }
+.cabecera { display: flex; align-items: center; gap: var(--e3); padding: 0 var(--e4) 0 var(--e4);
+            background: var(--panel-2); border-bottom: 2px solid var(--marco-ext); margin: 2px 2px 0 2px; }
+.cabecera .contexto { font-size: var(--t-secundario); color: var(--texto-2); }
+.cabecera .derecha { margin-left: auto; display: flex; align-items: center; gap: var(--e4); }
+.cabecera .nombre { font-size: 24px; font-weight: 600; color: var(--texto); line-height: 1; }
+
+.pestanas { display: flex; align-items: flex-end; gap: 2px; height: var(--nav); padding: 0 var(--e3);
+            background: var(--panel-2); margin: 0 2px; border-bottom: 2px solid var(--divisor); }
+.pestanas .tecla { margin-bottom: 8px; }
+.pestana { display: flex; align-items: center; gap: var(--e2); height: 36px; padding: 0 var(--e3);
+           color: var(--texto-2); background: transparent; }
+.pestana.activa { color: var(--texto); background: var(--panel); height: 40px; margin-bottom: -2px;
+                  box-shadow: inset 0 3px 0 var(--acento), inset 2px 0 0 var(--divisor), inset -2px 0 0 var(--divisor); }
+.pestanas .hueco { flex: 1; }
+
+.cuerpo { min-height: 0; display: grid; }
+.pie { display: flex; align-items: center; gap: var(--e4); padding: 0 var(--e4); overflow: hidden;
+       background: var(--panel-2); border-top: 2px solid var(--marco-ext); margin: 0 2px 2px 2px; }
+.pie .boton { height: 36px; }
+.pie .boton.foco { outline-offset: 2px; }
+.pie .derecha { margin-left: auto; display: flex; align-items: center; gap: var(--e3); }
+
+/* Ayuda de tecla: [TECLA] etiqueta */
+.ayuda { display: inline-flex; align-items: center; gap: var(--e2); font-size: var(--t-secundario); color: var(--texto-2); white-space: nowrap; }
+.tecla { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-width: 28px; height: 28px;
+         padding: 0 6px; color: var(--texto); background: #3A4158;
+         box-shadow: inset 0 -3px 0 #1A1D27, 0 0 0 2px var(--marco-ext); }
+.tecla + .tecla { margin-left: 4px; }
+
+/* ------------------------------------------------------------------ */
+/* Lista y fila                                                        */
+/* ------------------------------------------------------------------ */
+.lista { display: flex; flex-direction: column; gap: 2px; }
+.fila { display: grid; grid-template-columns: 16px auto 1fr auto; align-items: center; column-gap: 12px;
+        min-height: var(--fila); padding: 4px 12px 4px 8px; color: var(--texto); font-size: var(--t-cuerpo); line-height: 1.25; }
+.fila .marca { color: var(--acento); visibility: hidden; }
+.fila .principal { display: flex; flex-direction: column; min-width: 0; }
+.fila .nombre { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fila .motivo { font-size: var(--t-secundario); font-style: italic; color: var(--texto-3); line-height: 1.3; }
+.fila .valor { display: flex; align-items: center; gap: var(--e2); color: var(--texto-2); }
+.fila.foco { background: var(--panel-3); box-shadow: inset 4px 0 0 var(--acento); }
+.fila.foco .marca { visibility: visible; }
+.fila.foco .nombre { font-weight: 600; }
+.fila.foco .motivo { color: var(--texto-2); }          /* texto-3 no llega a 4,5:1 sobre panel-3 */
+.fila.deshab { color: var(--texto-3); }
+.fila.deshab .valor { color: var(--texto-3); }
+.fila.foco.deshab { color: var(--texto-2); }
+.fila .elegida { color: var(--exito); display: flex; align-items: center; gap: 6px; }
+.fila .sin-icono { width: 0; }
+.separador { height: 2px; background: var(--divisor); margin: var(--e2) var(--e2); }
+
+/* Barra de desplazamiento pixel */
+.scroll { position: absolute; right: 6px; width: 6px; background: var(--pista); }
+.scroll i { position: absolute; left: 0; right: 0; background: var(--marco-int); }
+
+/* ------------------------------------------------------------------ */
+/* Detalle                                                             */
+/* ------------------------------------------------------------------ */
+.detalle { display: flex; flex-direction: column; gap: var(--e3); padding: var(--e4); min-width: 0; }
+.detalle h2 { font-size: var(--t-titulo); font-weight: 600; line-height: 1.15; color: var(--texto); }
+.detalle .sub { font-size: var(--t-secundario); color: var(--texto-2); margin-top: -8px; }
+.detalle .desc { font-size: var(--t-cuerpo); line-height: 1.5; color: var(--texto-2); max-width: 62ch; }
+.detalle .acciones { margin-top: auto; display: flex; align-items: center; gap: var(--e3); flex-wrap: wrap; }
+.etiquetas { display: flex; flex-wrap: wrap; gap: var(--e2); }
+.bloque-titulo { display: flex; align-items: center; gap: var(--e2); color: var(--texto-3); }
+.bloque-titulo::after { content: ""; flex: 1; height: 2px; background: var(--divisor); }
+.datos { display: grid; grid-template-columns: max-content 1fr; column-gap: var(--e4); row-gap: 6px; font-size: var(--t-secundario); }
+.datos dt { color: var(--texto-3); }
+.datos dd { color: var(--texto); }
+.datos.apilados { grid-template-columns: 1fr; row-gap: 0; }
+.datos.apilados dt { font-size: var(--t-meta); margin-top: 8px; }
+.datos.apilados dt:first-child { margin-top: 0; }
+.efecto { display: flex; align-items: center; gap: var(--e2); font-size: var(--t-cuerpo); color: var(--texto); }
+
+/* Insignia: etiqueta corta en pixel */
+.insignia { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 8px;
+            color: var(--texto-2); background: var(--panel-3); box-shadow: inset 0 0 0 2px var(--divisor); }
+.insignia.i-exito { color: var(--exito); background: var(--exito-fondo); box-shadow: inset 0 0 0 2px #2F5A4A; }
+.insignia.i-aviso { color: var(--aviso); background: var(--aviso-fondo); box-shadow: inset 0 0 0 2px #6A4A2A; }
+.insignia.i-error { color: var(--error); background: var(--error-fondo); box-shadow: inset 0 0 0 2px #6A3A3E; }
+.insignia.i-info  { color: var(--info);  background: var(--info-fondo);  box-shadow: inset 0 0 0 2px #34507A; }
+
+/* ------------------------------------------------------------------ */
+/* Botones                                                             */
+/* ------------------------------------------------------------------ */
+.boton { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 44px; padding: 0 20px;
+         color: var(--texto); background: var(--panel-2); box-shadow: inset 0 0 0 2px var(--marco-int), 0 0 0 2px var(--marco-ext); }
+.boton.primario { color: var(--texto-sobre-acento); background: var(--acento);
+                  box-shadow: inset 0 -4px 0 var(--acento-2), 0 0 0 2px var(--marco-ext); }
+.boton.deshab { color: var(--texto-3); background: var(--panel-2); box-shadow: inset 0 0 0 2px var(--divisor), 0 0 0 2px var(--marco-ext); }
+.boton.foco { outline: 2px solid var(--texto); outline-offset: 4px; }
+.boton .marca { color: inherit; }
+.motivo-boton { display: flex; align-items: center; gap: var(--e2); font-size: var(--t-secundario); color: var(--texto-2); }
+
+/* ------------------------------------------------------------------ */
+/* Controles de valor                                                  */
+/* ------------------------------------------------------------------ */
+.contador { display: inline-flex; align-items: center; gap: 0; }
+.contador .b { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center;
+               background: var(--panel-2); color: var(--texto); box-shadow: inset 0 0 0 2px var(--marco-int); }
+.contador .b.deshab { color: var(--texto-3); box-shadow: inset 0 0 0 2px var(--divisor); }
+.contador .v { min-width: 64px; padding: 0 10px; height: 36px; display: inline-flex; align-items: center; justify-content: center;
+               background: var(--pista); color: var(--texto); box-shadow: inset 0 0 0 2px var(--divisor); }
+
+.deslizador { position: relative; display: inline-block; vertical-align: middle; width: 260px; height: 14px; background: var(--pista); box-shadow: 0 0 0 2px var(--marco-ext); }
+.deslizador .relleno { position: absolute; left: 0; top: 0; bottom: 0; background: var(--texto-2); }
+.foco .deslizador .relleno { background: var(--acento); }
+.deslizador .marcas { position: absolute; inset: 0; display: flex; justify-content: space-between; padding: 0 0; }
+.deslizador .marcas i { width: 2px; background: rgba(11,13,18,.55); }
+.deslizador .mando { position: absolute; top: -5px; width: 10px; height: 24px; background: var(--texto); box-shadow: 0 0 0 2px var(--marco-ext); }
+
+.selector { display: inline-flex; align-items: center; gap: var(--e3); color: var(--texto); }
+.selector .flecha { color: var(--texto-3); }
+.foco .selector .flecha { color: var(--acento); }
+
+/* Barra de recurso: etiqueta y cifra ENCIMA de la barra, nunca debajo de ella */
+.recurso { display: flex; flex-direction: column; gap: 5px; }
+.recurso .linea { display: flex; align-items: center; gap: 8px; color: var(--texto-2); }
+.recurso .linea .cifra { margin-left: auto; color: var(--texto); }
+.recurso .barra { position: relative; height: 10px; background: var(--pista); box-shadow: 0 0 0 2px var(--marco-ext); }
+.recurso .barra i { position: absolute; left: 0; top: 0; bottom: 0; }
+.recurso .barra i::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: rgba(255,255,255,.22); }
+.recurso.pv .barra i { background: var(--pv); }
+.recurso.pm .barra i { background: var(--pm); }
+
+/* Escala de moral: un solo eje -100..100 con el centro marcado */
+.moral .escala { position: relative; height: 10px; background: var(--pista); box-shadow: 0 0 0 2px var(--marco-ext); }
+.moral .escala::before { content: ""; position: absolute; left: calc(50% - 1px); top: -3px; bottom: -3px; width: 2px; background: var(--texto-3); }
+.moral .escala b { position: absolute; top: -4px; width: 8px; height: 18px; margin-left: -4px; background: var(--moral); box-shadow: 0 0 0 2px var(--marco-ext); }
+
+/* ------------------------------------------------------------------ */
+/* Respuesta: avisos                                                   */
+/* ------------------------------------------------------------------ */
+.aviso { display: flex; align-items: center; gap: 12px; padding: 10px 16px 10px 12px; min-height: 52px;
+         background: var(--panel); box-shadow: inset 4px 0 0 var(--info), 0 0 0 2px var(--marco-ext); font-size: var(--t-secundario); color: var(--texto); }
+.aviso .t { font-weight: 600; }
+.aviso .d { color: var(--texto-2); }
+.aviso.exito { box-shadow: inset 4px 0 0 var(--exito), 0 0 0 2px var(--marco-ext); }
+.aviso.aviso-a { box-shadow: inset 4px 0 0 var(--aviso), 0 0 0 2px var(--marco-ext); }
+.aviso.error { background: var(--error-fondo); box-shadow: inset 4px 0 0 var(--error), 0 0 0 2px var(--marco-ext); }
+.linea-estado { display: flex; align-items: center; gap: 10px; font-size: var(--t-secundario); }
+.linea-estado.exito { color: var(--exito); } .linea-estado.error { color: var(--error); } .linea-estado.aviso { color: var(--aviso); }
+.linea-estado .d { color: var(--texto-2); }
+
+/* ------------------------------------------------------------------ */
+/* Diálogo con pestaña de hablante                                     */
+/* ------------------------------------------------------------------ */
+.dialogo { position: absolute; }
+.dialogo .hablante { position: absolute; left: 24px; top: -30px; height: 32px; display: flex; align-items: center; gap: 8px;
+                     padding: 0 14px; background: var(--panel-2); color: var(--texto);
+                     box-shadow: inset 0 0 0 2px var(--marco-int), 0 0 0 2px var(--marco-ext); }
+.dialogo .caja { padding: 28px 32px 16px 32px; display: flex; flex-direction: column; gap: 12px; }
+.dialogo .texto { font-size: 22px; line-height: 1.55; color: var(--texto); max-width: 60ch; min-height: 3.1em; }
+.dialogo .pie-dialogo { display: flex; align-items: center; gap: var(--e3); color: var(--texto-3); }
+.dialogo .pie-dialogo .derecha { margin-left: auto; display: flex; align-items: center; gap: var(--e3); }
+
+/* Aviso de interacción en el mundo: [E] Hablar con … */
+.prompt { position: absolute; display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 14px 0 8px;
+          background: var(--panel); box-shadow: inset 0 0 0 2px var(--marco-int), 0 0 0 2px var(--marco-ext);
+          font-size: var(--t-secundario); color: var(--texto); white-space: nowrap; }
+.prompt::after { content: ""; position: absolute; left: calc(50% - 6px); bottom: -10px; border: 6px solid transparent; border-top-color: var(--marco-int); }
+
+/* Rastreador de objetivo */
+.objetivo { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; }
+.objetivo .mision { display: flex; align-items: center; gap: 8px; color: var(--texto-2); }
+.objetivo .paso { display: flex; align-items: flex-start; gap: 8px; font-size: var(--t-secundario); line-height: 1.35; color: var(--texto); }
+
+/* Minimapa con leyenda */
+.minimapa { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.minimapa .zona { display: flex; align-items: center; justify-content: space-between; color: var(--texto-2); }
+.minimapa img { display: block; image-rendering: pixelated; box-shadow: 0 0 0 2px var(--marco-ext); }
+.leyenda { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: var(--t-meta); color: var(--texto-2); }
+.leyenda span { display: inline-flex; align-items: center; gap: 6px; }
+
+/* Etapas del asistente */
+.etapas { display: flex; align-items: center; gap: 6px; }
+.etapa { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; color: var(--texto-3); }
+.etapa.hecha { color: var(--texto-2); }
+.etapa.actual { color: var(--texto); background: var(--panel); box-shadow: inset 0 -3px 0 var(--acento), inset 0 0 0 2px var(--divisor); }
+.etapa-sep { width: 12px; height: 2px; background: var(--divisor); }
+
+/* Tarjeta de partida guardada */
+.tarjeta { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 14px; align-items: center; padding: 12px 16px;
+           background: var(--panel-2); box-shadow: inset 0 0 0 2px var(--divisor); }
+.tarjeta .t { font-size: var(--t-cuerpo); font-weight: 600; }
+.tarjeta .m { grid-column: 2; font-size: var(--t-meta); color: var(--texto-2); }
+
+/* Estado vacío */
+.vacio { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; color: var(--texto-2); padding: var(--e5); }
+.vacio .t { font-size: var(--t-cuerpo); color: var(--texto); font-weight: 600; }
+.vacio .d { font-size: var(--t-secundario); max-width: 36ch; }
+
+/* Utilidades */
+.fila-flex { display: flex; align-items: center; gap: var(--e2); }
+.col { display: flex; flex-direction: column; }
+.t2 { color: var(--texto-2); } .t3 { color: var(--texto-3); } .ac { color: var(--acento); }
+.ok { color: var(--exito); } .ko { color: var(--error); } .av { color: var(--aviso); } .inf { color: var(--info); }
+.meta { font-size: var(--t-meta); } .sec { font-size: var(--t-secundario); }
+.it { font-style: italic; } .b6 { font-weight: 600; }
+.tab-num { font-variant-numeric: tabular-nums lining-nums; }

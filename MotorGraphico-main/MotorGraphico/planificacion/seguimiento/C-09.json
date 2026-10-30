@@ -1,0 +1,18 @@
+{
+  "id": "C-09",
+  "date": "2026-09-03",
+  "author": "qwen",
+  "status": "Tancat localment; el tanca formalment el pas per CI",
+  "actions": [
+    "Texture::operator=(Texture&&) allibera el recurs del destí abans de robar el de l'origen (fuga del nom GL); la definició passa a Texture.cpp perquè necessita glDeleteTextures.",
+    "RuntimeTileMap guanya destructor virtual: TileMap n'hereda i IsometricRenderer/HudMinimap guarden punters a la base (la línia viu al fitxer orfe sense commitear del 28/08).",
+    "test_texture nou (4 casos) amb doble GL fals: redirigeix glad_glDeleteTextures sense obrir context i compta cada alliberació exactament una vegada."
+  ],
+  "verification": [
+    "test_texture verd; el cas de la fuga falla amb el codi anterior.",
+    "Build completa de tots els targets en macos-debug i suite gl-free sencera en verd (commit 50098f8)."
+  ],
+  "pending": [
+    "El destructor virtual de RuntimeTileMap.h queda dins el bloc orfe sense commitear del 28/08 (regla 2); es commitearà amb la consolidació d'aquest bloc."
+  ]
+}

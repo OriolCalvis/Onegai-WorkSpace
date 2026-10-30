@@ -1,0 +1,34 @@
+{
+  "id": "G-12",
+  "date": "2026-09-17",
+  "author": "Claude (Cowork)",
+  "status": "Núcleo sin interfaz hecho: usar, equipar y desequipar de verdad, motivos, destinatario cancelable y vista previa, con su modelo de menú. Paquete ABIERTO: falta que la vista (Application/InventoryScene) lea InventoryMenuState y que Application pase las reglas de equipo; CI",
+  "actions": [
+    "Fila en TABLERO antes de tocar nada. Desarrollo en copia aislada de fee1e85; aplicado con script anclado tras comprobar que GameSession.* no tenía cambios ajenos.",
+    "GameSession::useItem/equipItem/unequipItem eran stubs vacíos de GDB-12 («TODO G-12»). Ahora son reales y devuelven Result<bool>; la llamada de Application sigue compilando igual. Todo o nada: lo imposible devuelve el motivo y no gasta ni cambia nada.",
+    "Motivos consultables: whyCannotUse/whyCannotEquip/whyCannotUnequip. Solo con la partida explorando o en pausa (en combate se usa el menú de combate). Una poción con la vida llena o un éter con el maná lleno no se gastan.",
+    "La mochila es inventory(): la misma que usan tiendas, recogida y combate. La ficha solo guarda lo puesto. Al equipar, la pieza sale de la mochila; lo desplazado (incluidas las dos manos de un arma a dos manos) vuelve a ella y no se queda escondido en CharacterSheet::inventoryEquipment. Las reglas son las de InventoryEngine, sin repetirlas.",
+    "Puente de ids objeto → pieza: el objeto «item_<x>» es la pieza «<x>», la convención de tools/convertir_libreria_dnd.py. Cubre las 413 piezas publicadas.",
+    "setInventoryRules(EquipmentCatalog, ClassDefinition, TierRules). Sin clase no se aplican los límites de peso y símbolos; el de rareza por tier sí.",
+    "unequipItem refresca la ficha (recompute_derived), igual que ya hacía InventoryEngine::equip; sin eso, el tope de vida seguía contando la pieza quitada.",
+    "previewEquip: estadísticas, armadura, tope de vida y piezas desplazadas antes/después, calculados sobre una copia de la ficha con las mismas reglas.",
+    "Nuevo Game::InventoryMenuState (GL-free): categorías Consumibles/Equipo/Objetos clave/Otros, una fila por id con cantidad y descripción, acciones con su motivo, ranuras de equipo con nombre, selección por identidad (al gastar la última unidad pasa a la siguiente fila), destinatario obligatorio al usar (cancelar, cambiar de pestaña o elegir un destinatario inexistente no gasta nada) y mensaje para la barra.",
+    "tests/Game/InventoryMenuTests.cpp + cmake/InventoryMenuTests.cmake (test_inventory_menu), con una línea include en CMakeLists."
+  ],
+  "verification": [
+    "test_inventory_menu 9/9 contra fee1e85 aislado; 9/9 con ASan+UBSan (detect_leaks=1), sin diagnósticos. Incluye un caso con assets/objects/libreria_armas.json y assets/catalogs/equipment.json reales: las 413 piezas tienen su objeto y una común se equipa de verdad.",
+    "10 de 11 mutaciones detectadas (gastar todas las unidades, curar con la vida llena, perder lo desplazado, dejarlo en la ficha, gastar al pedir, gastar al cancelar, no refrescar al quitar, tienda que no bloquea, selección por índice, mochila sin agrupar). La restante (no deshacer en la ficha el intento fallido) es equivalente: equipItem solo toca la ficha real después de comprobarlo en una copia.",
+    "Sin regresiones: test_game_session 20, test_business_mode 16, test_game_mode 14, test_carry_over 7, test_save_game 19, test_business_economy 18 y test_session_command_host 15.",
+    "g++ -fsyntax-only de todos los .cpp que incluyen GameSession.h (Application incluida): sin errores.",
+    "No verificado: CMake real, CI y la vista. Compilado con g++ 11 en la VM."
+  ],
+  "pending": [
+    "LA VISTA: Application/InventoryScene dibuja hoy Game::InventoryScreen (GDB-12.4), que no tiene cantidades, categorías ni motivos. Tiene que leer InventoryMenuState (o fusionarse con él) y enseñar message() y previewSelected(). Es GL y fichero de cruce.",
+    "Application debe llamar a GameSession::setInventoryRules con el EquipmentCatalog, la clase del personaje y las TierRules cargadas. Sin eso, equipar dice «no hay catálogo de equipo cargado».",
+    "Grupo: la lista de destinatarios tiene hoy solo al héroe. El paso ya existe para cuando haya más miembros.",
+    "Consumibles RPG (consumables.json, «cons_<x>»): en la mochila son objetos sin PickupEffect y por eso salen en «Otros» sin acción Usar. Aplicarlos es de D-11 (efectos) y G-13.",
+    "EquipmentDefinition.defenseBonuses sigue sin leerse (vacío en las 413 piezas): ver D-01-contrato.",
+    "Reaparecer tras guardar/cargar: SaveGame guarda la mochila; la ficha la guarda quien la tenga (CharacterSheet no está en SaveGameData). Por comprobar con G-11.",
+    "CI remota."
+  ]
+}

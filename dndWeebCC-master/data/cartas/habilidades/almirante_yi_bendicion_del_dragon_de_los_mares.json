@@ -1,0 +1,53 @@
+{
+ "id": "almirante_yi_bendicion_del_dragon_de_los_mares",
+ "name": "Bendición del Dragón de los Mares",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "La bendición del Dragón de los Mares te fortalece hasta el final del combate: atacas con ventaja y tus golpes con arma hacen +1.",
+ "flavorText": "",
+ "classTags": [
+  "almirante_yi"
+ ],
+ "roleTags": [],
+ "tags": [
+  "almirante_yi",
+  "creador"
+ ],
+ "mechanicTags": [
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "self",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "La bendición del Dragón de los Mares te fortalece hasta el final del combate: atacas con ventaja y tus golpes con arma hacen +1.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Ventaja en ataque todo el combate.",
+   "mechanicHook": "estado:combate:ventaja:ataque"
+  },
+  {
+   "description": "+1 a tus golpes con arma todo el combate.",
+   "mechanicHook": "estado:combate:bono_dano_arma:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Almirante Yi (Admiral Yi) · H1970 Bendición del Dragón de los Mares"
+}

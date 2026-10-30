@@ -1,0 +1,63 @@
+{
+  "id": "H3-06",
+  "date": "2026-10-01",
+  "author": "opencode",
+  "status": "HECHO en el árbol del Mac, sin commit (05/10, Claude): el temporizador de misión se ve en el retal del objetivo del HUD en pergamino (TIEMPO, lo que queda y la barra; rojo el último cuarto). La mitad GL-free de opencode sigue y su regla se comparte (ver «montaje»).",
+  "dependencias": [
+    "H0-08 (MapEventRunner, bdcb3ff)",
+    "H1-02 (HudTimer, rescate G-14)",
+    "F1 (tickTimers + updateNarrativeTimers, en produccion)"
+  ],
+  "criterio_de_cierre": "JUGABILIDAD_FASE_H.md H3-06: 'Una mision con limite muestra su barra; al entrar en combate se congela; al expirar sale como beat de dialogo'.",
+  "scope": [
+    "include/HUD/MissionTimerWidget.h: NUEVO, clase GL-free (namespace Game, patron DiceRollWidget). show(states, definitions) guarda foto; displayLines() una linea por timer visible en el orden de NarrativeState::timers().",
+    "src/HUD/MissionTimerWidget.cpp: NUEVO, 1 linea en motor_level. Contador 'id: M:SS' (trunca, cero delante); Barra '[###-------] M:SS' (10 celdas, floor); Secreto/INACTIVO/EXPIRADO se saltan (2.18); id sin definicion cae a Contador; Barra sin total cae a Contador; documenta el montaje pendiente.",
+    "tests/Game/MissionTimerWidgetTests.cpp: NUEVO, 11 casos (9 a mano + 2 integracion con NarrativeEngine de verdad: arranque por flag, avance, congelacion con dt=0 y expiracion con flagExpira).",
+    "cmake/MissionTimerWidgetTests.cmake: NUEVO, patron DiceRollWidgetTests sin copiar_assets (sin assets).",
+    "CMakeLists.txt: +2 lineas EN EL ARBOL SIN COMMITTER (fuente en motor_level + include del test). El hook --indice rechaza el CMakeLists stagéado por refs ajenas sin versionar (Apariencia/Pergamino/Personajes/Iconos/Hud*/ImagenRGBA/PantallaNuevaPartida/Codice/Companeros/FichaVista + 4 tests de FichaVistaTests); entraran juntas (ley 3) cuando el calor baje. Mismo estado que las 2 lineas de H2-03."
+  ],
+  "non_goals": [
+    "No se toca Application.* (M, H1-03/H1-05 + MenuJugador + MapEventRunner-WIP que hoy rompe motor_core en el arbol: Application.h:381 sin include, deuda de su dueno), GameSession*, NarrativeEngine.*, NarrativeState.*, HudTimer.*, HudWidgets.*, HUD/Iconos.* ni zonas H2-02/AV1-03/AV0-01/E-12/CAPTURAS.",
+    "Sin iconos (ARTE/FICHA en vuelo); el widget es solo texto, complementario a HudTextLayoutTests.",
+    "El widget no avanza tiempo: lee NarrativeState. El reloq lo lleva tickTimers via updateNarrativeTimers (ya en produccion, ApplicationBucle.cpp:254).",
+    "No se regenera MAPA_DEL_CODIGO.md (pla/dades.py reservado por ALPHA-00) ni alcance_real.json (H8-01/D0007)."
+  ],
+  "verification": [
+    "test_mission_timer_widget 11/11 PASS; ctest -R Passed con etiquetas unit;gl-free.",
+    "Falsabilidad por mutacion (3/3 cazadas, restaurado y reverificado 11/11): secreto visible (1 rojo), redondeo en vez de truncar (1 rojo), barra +1 (2 rojos).",
+    "Vecinos 102/102 verdes: condition_widget 11/11, dice_roll 11/11, map_event_runner 21/21, event_interpreter 38/38, condition_engine 12/12, narrative_variables 9/9.",
+    "Suite GL-free completa NO construible en este arbol: motor_core roto por WIP ajeno (Application.h:381 usa RPG::MapEventRunner sin include; en HEAD no existe esa linea). Deuda de su dueno, documentada, no tocada. La ley-4 (alcance via juego) queda unverificable hoy por el mismo roto ajeno.",
+    "analizar_duplicados --comprobar OK: 0 SOLAPAMIENTO_FUNCIONAL. comprobar_fragmentos_cmake: sin queja sobre el mio (solo rojo ajeno G15ExportPanel). diff --check limpio."
+  ],
+  "handoff_montaje": [
+    "Application.h (limpio cuando H1-03/H1-05/MenuJugador aterricen): Game::MissionTimerWidget m_missionTimer.",
+    "Cada frame en exploracion, donde ya corre el reloj (ApplicationBucle.cpp:254): widget.show(narrativeState.timers(), script.timers) con el script de la aventura activa.",
+    "ApplicationHud.cpp: pintar displayLines() en la zona de mision; hide() sin aventura activa. La congelacion ya la hace el motor (dt=0)."
+  ],
+  "montaje": {
+    "date": "2026-10-05",
+    "author": "Claude (Cowork)",
+    "por_que_asi": "El HUD del juego es el pergamino (PERGAMINO-01/UI-BG3-01): el sitio natural de un temporizador de misión es el retal del objetivo, debajo del paso. Para no tener dos reglas de qué se ve, la de MissionTimerWidget sale a una función (relojesVisibles) que usan las dos.",
+    "scope": [
+      "include/HUD/MissionTimerWidget.h + src/HUD/MissionTimerWidget.cpp: Game::RelojVisible, relojesVisibles() (inactivos, expirados y secretos fuera; barra con total) y formatoReloj() («M:SS» truncando). MissionTimerWidget::show() las usa: sus líneas no cambian (11/11 como antes).",
+      "HUD/Pergamino/HudRetales: DatosExploracion::relojes; el retal del objetivo crece una fila por reloj: «TIEMPO», lo que queda y la barra (ámbar; rojo el último cuarto, o el último medio minuto sin total). Sin objetivo seguido, el reloj va en un retal suyo.",
+      "HUD/Pergamino/InterfazPergamino: EstadoJuego::timers (los de la aventura activa); pintaExploracion llena los relojes con el NarrativeState de la sesión. Application (ApplicationHud.cpp) pasa m_narrative.adventure()->timers.",
+      "La congelación no se toca: el reloj lo lleva updateNarrativeTimers (combate, diálogo, cuaderno, cofre o 15 s sin tocar nada = dt 0). En combate y en un diálogo el retal no se pinta (HUD compacto)."
+    ],
+    "verification": [
+      "test_mission_timer_widget 12/12 (relojes_visibles_es_la_misma_regla_que_las_lineas). test_pergamino 60/60 (retales_el_temporizador_va_con_el_objetivo: dentro del objetivo, rojo el último cuarto, retal propio sin objetivo).",
+      "Juego real con una copia del prólogo con un reloj de 25 s en barra (solo en el contenedor): 0:24 → 0:19 explorando; combate de 6 s con el saqueador y al huir 0:18 (congelado); 0:15, 0:13, 0:10, 0:08, 0:05 en rojo, 0:03, 0:00 y el beat de expirar como diálogo. Capturas en Claude outputs/h2_dado_estados_2026-10-05/ (23–27).",
+      "Guardia: las mismas 44 deudas. MissionTimerWidget sigue saliendo como «muerto» porque la foto de alcance (planificacion/alcance_real.json) es anterior; ahora lo alcanza juego por HudRetales. No se regenera aquí (H8-01/D0007)."
+    ],
+    "pending": [
+      "TimerDefinition no tiene nombre: el retal dice «TIEMPO». Si una aventura corre dos a la vez, no se distinguen. Un campo opcional «nombre» en el JSON lo arreglaría (cargador, serializador y FORMATO_AVENTURAS.md).",
+      "Las únicas aventuras con temporizador hoy (el prólogo) lo tienen secreto: en el juego real no se ve ninguno hasta que alguna aventura declare uno en barra o contador."
+    ]
+  },
+  "nombre_2026_10_05": [
+    "Oriol (05/10): «¿Añado un campo nombre opcional a los temporizadores?» «Sí».",
+    "TimerDefinition::nombre: lo lee AdventureScriptLoader; serializeAdventure lo escribe solo si lo tiene (las fixtures congeladas no cambian); FORMATO_AVENTURAS.md lo documenta.",
+    "RelojVisible::nombre; MissionTimerWidget pone el nombre en lugar del id; el retal del pergamino lo pinta en Lora en lugar de «TIEMPO».",
+    "test_mission_timer_widget 14/14 (el nombre en las lineas y de ida y vuelta); test_pergamino 61/61. Ver sesiones/2026-10-05-claude-kit-tiradas-grupos.md."
+  ]
+}

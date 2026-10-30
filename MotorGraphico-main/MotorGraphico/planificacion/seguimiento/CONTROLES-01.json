@@ -1,0 +1,23 @@
+{
+  "id": "CONTROLES-01",
+  "date": "2026-09-26",
+  "author": "Codex",
+  "status": "HECHO",
+  "actions": [
+    "Encargo directo: mejorar game feel y controles; fila propia en TABLERO antes de crear ficheros.",
+    "Mantener grid autoritativo y pasos de GameSession; repeticion WASD y prioridad reciente en PlayerControls, estado separado; interpolacion visual en Player con datos propios.",
+    "Application.cpp solo consume comando de movimiento y sincroniza sprite una vez; Escape cierra interacciones. El fichero debe adelgazar. Patch propio se aplica a HEAD y arbol, conservando eventos/opciones ajenos.",
+    "No se modifican InputMap/InputSystem ni sus pruebas con WIP. Pruebas en PlayerTests existente.",
+    "TAB deja de alternarse dos veces y no se interpreta como Cancel en el mismo frame; inventario bloquea pasos.",
+    "SessionCommandHost.cpp se enlaza desde motor_level y su test reutiliza esa libreria; test_player_populate enlaza motor_input.",
+    "Mapa G-12 y README actualizados; Application.cpp adelgaza 24 lineas sin incorporar eventos/opciones ajenos."
+  ],
+  "verification": [
+    "test_render_player: 50 pruebas verdes, incluyendo cadencia a 30/60/120 FPS, foco, prioridad, teletransporte e interpolacion.",
+    "CTest: test_render_player, test_player_populate, test_session_command_host, test_inventory_menu: 4/4 verdes.",
+    "Objetivo juego compilado; humo macOS con ciudad_oeste.json, 3 frames, salida 0 y framebuffer inspeccionado.",
+    "linea_base_core.py --rapido y git diff --check verdes.",
+    "La compilacion de todos los objetivos conserva errores ajenos en E09BridgeTests y PlayerPathLogTests; no se afirma validacion global.",
+    "Guardia completa bloqueada por deuda ajena ya existente: Application.h 107 miembros frente a base 104; no modificada."
+  ]
+}

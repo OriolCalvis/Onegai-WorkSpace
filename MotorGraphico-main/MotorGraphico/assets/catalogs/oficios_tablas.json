@@ -1,0 +1,457 @@
+{
+  "version": 1,
+  "_nota": "Tabla de la pesca (oficio 'pescar', objeto.tabla='pesca'). Grado mínimo: comunes roce, raros éxito, legendario crítico. 'venta' = lo que paga el tendero: 25 % del precio, división entera, mínimo 1 (ECONOMIA.md §2, AV18-07). Las franjas son mañana, tarde y noche.",
+  "pesca": {
+    "franjas": [
+      "manana",
+      "tarde",
+      "noche"
+    ],
+    "peces": {
+      "gobio_del_rio": {
+        "nombre": "Gobio del río",
+        "precio": 8,
+        "venta": 2,
+        "rareza": "comun",
+        "gradoMinimo": "roce"
+      },
+      "sardina_del_puerto": {
+        "nombre": "Sardina del puerto",
+        "precio": 8,
+        "venta": 2,
+        "rareza": "comun",
+        "gradoMinimo": "roce"
+      },
+      "boga_plateada": {
+        "nombre": "Boga plateada",
+        "precio": 10,
+        "venta": 2,
+        "rareza": "comun",
+        "gradoMinimo": "roce"
+      },
+      "carpa_de_acequia": {
+        "nombre": "Carpa de acequia",
+        "precio": 12,
+        "venta": 3,
+        "rareza": "comun",
+        "gradoMinimo": "roce"
+      },
+      "tenca_del_vado": {
+        "nombre": "Tenca del vado",
+        "precio": 12,
+        "venta": 3,
+        "rareza": "comun",
+        "gradoMinimo": "roce"
+      },
+      "cangrejo_de_rio": {
+        "nombre": "Cangrejo de río",
+        "precio": 12,
+        "venta": 3,
+        "rareza": "comun",
+        "gradoMinimo": "roce"
+      },
+      "anguila_de_fango": {
+        "nombre": "Anguila de fango",
+        "precio": 14,
+        "venta": 3,
+        "rareza": "comun",
+        "gradoMinimo": "roce"
+      },
+      "lubina_del_muelle": {
+        "nombre": "Lubina del muelle",
+        "precio": 16,
+        "venta": 4,
+        "rareza": "comun",
+        "gradoMinimo": "roce"
+      },
+      "trucha_de_las_marcas": {
+        "nombre": "Trucha de las Marcas",
+        "precio": 40,
+        "venta": 10,
+        "rareza": "raro",
+        "gradoMinimo": "exito"
+      },
+      "salmon_de_aegroum": {
+        "nombre": "Salmón de Aegroum",
+        "precio": 50,
+        "venta": 12,
+        "rareza": "raro",
+        "gradoMinimo": "exito"
+      },
+      "lucio_viejo": {
+        "nombre": "Lucio viejo",
+        "precio": 56,
+        "venta": 14,
+        "rareza": "raro",
+        "gradoMinimo": "exito"
+      },
+      "pez_luna_del_vado": {
+        "nombre": "Pez luna del vado",
+        "precio": 60,
+        "venta": 15,
+        "rareza": "raro",
+        "gradoMinimo": "exito"
+      },
+      "esturion_del_puerto": {
+        "nombre": "Esturión del puerto",
+        "precio": 70,
+        "venta": 17,
+        "rareza": "raro",
+        "gradoMinimo": "exito"
+      },
+      "carpa_coronada": {
+        "nombre": "Carpa coronada",
+        "precio": 220,
+        "venta": 55,
+        "rareza": "legendario",
+        "gradoMinimo": "critico"
+      },
+      "anguila_del_farol": {
+        "nombre": "Anguila del farol",
+        "precio": 260,
+        "venta": 65,
+        "rareza": "legendario",
+        "gradoMinimo": "critico"
+      },
+      "esturion_dorado": {
+        "nombre": "Esturión dorado",
+        "precio": 300,
+        "venta": 75,
+        "rareza": "legendario",
+        "gradoMinimo": "critico"
+      },
+      "siluro_del_prado": {
+        "nombre": "Siluro del prado",
+        "precio": 240,
+        "venta": 60,
+        "rareza": "legendario",
+        "gradoMinimo": "critico"
+      },
+      "nacarvarn": {
+        "nombre": "Nacarvarn",
+        "precio": 10,
+        "venta": 2,
+        "rareza": "raro",
+        "gradoMinimo": "exito",
+        "tipo": "joya",
+        "franjas": [
+          "noche"
+        ]
+      },
+      "moneda_deithrok": {
+        "nombre": "Moneda de Deithrok",
+        "precio": 30,
+        "venta": 7,
+        "rareza": "legendario",
+        "gradoMinimo": "critico",
+        "tipo": "joya",
+        "sitios": [
+          "puerto"
+        ],
+        "maxPorDia": 1
+      }
+    },
+    "sitios": {
+      "muelle": {
+        "nombre": "El muelle del puerto",
+        "donde": [
+          {
+            "nivel": "assets/levels/ciudad_centro.json",
+            "objectId": "ponton",
+            "x": 48,
+            "y": 29
+          }
+        ],
+        "franjas": {
+          "manana": {
+            "comunes": [
+              "sardina_del_puerto",
+              "lubina_del_muelle"
+            ],
+            "raros": [
+              "salmon_de_aegroum"
+            ]
+          },
+          "tarde": {
+            "comunes": [
+              "sardina_del_puerto",
+              "boga_plateada"
+            ],
+            "raros": [
+              "esturion_del_puerto"
+            ]
+          },
+          "noche": {
+            "comunes": [
+              "lubina_del_muelle",
+              "anguila_de_fango"
+            ],
+            "raros": [
+              "esturion_del_puerto"
+            ]
+          }
+        },
+        "legendario": {
+          "pez": "esturion_dorado",
+          "franjas": [
+            "noche"
+          ]
+        }
+      },
+      "ribera": {
+        "nombre": "La ribera de Boundington",
+        "donde": [
+          {
+            "nivel": "assets/levels/ciudad_centro.json",
+            "objectId": "ponton",
+            "x": 16,
+            "y": 31
+          },
+          {
+            "nivel": "assets/levels/ciudad_este.json",
+            "objectId": "ponton",
+            "x": 6,
+            "y": 29
+          },
+          {
+            "nivel": "assets/levels/ciudad_este.json",
+            "objectId": "ponton",
+            "x": 22,
+            "y": 31
+          }
+        ],
+        "franjas": {
+          "manana": {
+            "comunes": [
+              "gobio_del_rio",
+              "boga_plateada"
+            ],
+            "raros": [
+              "trucha_de_las_marcas"
+            ]
+          },
+          "tarde": {
+            "comunes": [
+              "gobio_del_rio",
+              "carpa_de_acequia"
+            ],
+            "raros": [
+              "lucio_viejo"
+            ]
+          },
+          "noche": {
+            "comunes": [
+              "anguila_de_fango",
+              "carpa_de_acequia"
+            ],
+            "raros": [
+              "lucio_viejo"
+            ]
+          }
+        },
+        "legendario": {
+          "pez": "anguila_del_farol",
+          "franjas": [
+            "noche"
+          ]
+        }
+      },
+      "vado": {
+        "nombre": "El vado de Surysal",
+        "donde": [
+          {
+            "nivel": "assets/levels/ciudad_surysal.json",
+            "objectId": "ponton",
+            "x": 30,
+            "y": 20
+          }
+        ],
+        "franjas": {
+          "manana": {
+            "comunes": [
+              "tenca_del_vado",
+              "gobio_del_rio"
+            ],
+            "raros": [
+              "trucha_de_las_marcas"
+            ]
+          },
+          "tarde": {
+            "comunes": [
+              "tenca_del_vado",
+              "cangrejo_de_rio"
+            ],
+            "raros": [
+              "trucha_de_las_marcas"
+            ]
+          },
+          "noche": {
+            "comunes": [
+              "cangrejo_de_rio",
+              "anguila_de_fango"
+            ],
+            "raros": [
+              "pez_luna_del_vado"
+            ]
+          }
+        },
+        "legendario": {
+          "pez": "carpa_coronada",
+          "franjas": [
+            "manana"
+          ]
+        }
+      },
+      "prado": {
+        "nombre": "El prado del río",
+        "donde": [
+          {
+            "nivel": "assets/levels/prado_del_rio.json",
+            "objectId": "ponton",
+            "x": 14,
+            "y": 10
+          }
+        ],
+        "franjas": {
+          "manana": {
+            "comunes": [
+              "gobio_del_rio",
+              "cangrejo_de_rio"
+            ],
+            "raros": [
+              "trucha_de_las_marcas"
+            ]
+          },
+          "tarde": {
+            "comunes": [
+              "carpa_de_acequia",
+              "gobio_del_rio"
+            ],
+            "raros": [
+              "lucio_viejo"
+            ]
+          },
+          "noche": {
+            "comunes": [
+              "carpa_de_acequia",
+              "anguila_de_fango"
+            ],
+            "raros": [
+              "lucio_viejo"
+            ]
+          }
+        },
+        "legendario": {
+          "pez": "siluro_del_prado",
+          "franjas": [
+            "noche"
+          ]
+        }
+      }
+    }
+  },
+  "herbolario": {
+    "franjas": [
+      "manana",
+      "tarde",
+      "noche"
+    ],
+    "plantas": {
+      "velalma": {
+        "nombre": "Velalma",
+        "precio": 5,
+        "venta": 1,
+        "rareza": "comun",
+        "gradoMinimo": "roce",
+        "franjas": [
+          "noche"
+        ]
+      },
+      "sangraiz": {
+        "nombre": "Sangraíz",
+        "precio": 6,
+        "venta": 1,
+        "rareza": "comun",
+        "gradoMinimo": "roce"
+      },
+      "semilla_sin_dueno": {
+        "nombre": "Semilla sin dueño",
+        "precio": 25,
+        "venta": 6,
+        "rareza": "legendario",
+        "gradoMinimo": "critico",
+        "region": "afueras",
+        "maxPorDia": 1
+      }
+    },
+    "sitios": {
+      "matas_ribera": [
+        "velalma",
+        "sangraiz"
+      ],
+      "claro_hierbas": [
+        "velalma",
+        "semilla_sin_dueno"
+      ],
+      "musgo_cueva": [
+        "sangraiz"
+      ]
+    },
+    "_nota": "claude/oficios/herbolario.md. 'venta' = 25 % del precio (ECONOMIA.md §2), división entera, mínimo 1."
+  },
+  "mineria": {
+    "franjas": [
+      "manana",
+      "tarde",
+      "noche"
+    ],
+    "menas": {
+      "dormienta": {
+        "nombre": "Dormienta",
+        "precio": 6,
+        "venta": 1,
+        "rareza": "comun",
+        "gradoMinimo": "roce"
+      },
+      "chronita": {
+        "nombre": "Chronita bruta",
+        "precio": 12,
+        "venta": 3,
+        "rareza": "raro",
+        "gradoMinimo": "exito",
+        "sitios": [
+          "bolsa_cristal"
+        ]
+      },
+      "dormienta_revisada": {
+        "nombre": "Dormienta revisada",
+        "precio": 35,
+        "venta": 8,
+        "rareza": "legendario",
+        "gradoMinimo": "critico",
+        "region": "cueva",
+        "maxPorDia": 1
+      },
+      "ceniza_sombras": {
+        "nombre": "Ceniza de Sombras",
+        "precio": 25,
+        "venta": 6,
+        "rareza": "legendario",
+        "gradoMinimo": "critico",
+        "region": "cripta",
+        "maxPorDia": 1
+      }
+    },
+    "sitios": {
+      "veta_dormienta": [
+        "dormienta",
+        "dormienta_revisada",
+        "ceniza_sombras"
+      ],
+      "bolsa_cristal": [
+        "chronita"
+      ]
+    },
+    "_nota": "claude/oficios/mineria.md. La revisada solo en la cueva; la ceniza solo en la cripta (1 al día por región)."
+  }
+}

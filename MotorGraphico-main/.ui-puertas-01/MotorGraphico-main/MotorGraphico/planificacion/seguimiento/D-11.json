@@ -1,0 +1,103 @@
+{
+  "id": "D-11",
+  "nombre": "Vocabulari d'efectes d'habilitat",
+  "fase": "D",
+  "descripcion": "Una habilitat ha de fer exactament el que diu la carta. Cada família (DAMAGE, HEAL, CONDITION, SUMMON, BUFF, DEBUFF, EXTRA_DICE, REROLL, STEAL, CUSTOM) té un contracte tipat, executor i prova pròpia. Un efecte no suportat es rebutja amb diagnòstic. parse_effect_scaling reconeix effect_scaling del JSON (\"damage:CON\", \"INT\", \"none\", \"heal:CAR\", etc.). scale_magnitude escala magnitude*base per caster.stat()/100.",
+  "responsable": "",
+  "dependencias": [
+    "D-02",
+    "D-03",
+    "C-17",
+    "D-08",
+    "D-09"
+  ],
+  "criterio_de_cierre": [
+    "Totes les 492 habilitats publicades a assets/catalogs/skills.json tenen effect_scaling reconegut per parse_effect_scaling() (o nullopt només pels 9 combinats \"con_tier\"/\"con_int\"/\"con_con\"/\"con_sab\" que encara no formen part del vocabulari públic).",
+    "magnitude_by_degree segueix la derivació 2+2·tier per a les 483/492 que NO declaren magnitudeByDegree.",
+    "SkillExecutor::execute sobre skill publicada retorna final_magnitude coincidente amb magnitude_by_degree[final_degree] (x1.5 si was_all_sixes_critical).",
+    "Si alguna skill publicada porta applyConditionId/grantedSummonId, SkillExecutor ho reporta com a pending_condition_id/pending_summon_id quan el grau arriba al mínim.",
+    "TOTS els tests (SkillEffectTests agent anterior + SkillEffectRealAssetsTests complement) PASS."
+  ],
+  "verificaciones": [
+    {
+      "test": "tests/RPG/SkillEffectTests.cpp (preexistent agent anterior)",
+      "target": "test_skill_effect",
+      "resultado": "19/19 PASS. Inclou: parse_effect_scaling damage/heal/STAT/family:STAT/none/buit/desconegut; effect_family_from_string caseless; effect_family to_string(NONE/DAMAGE/HEAL/CONDITION/SUMMON); scale_magnitude NONE retorna base; execute_effect DAMAGE(-10)/HEAL(+10)/NONE no canvia; SkillExecutor suportat damage/desconegut retorna diagnostic; SkillExecutor none scaling pass OK; summon exit SUCCESS genera pending_summon_id; summon pifia BOTCH no genera; summon empty id no genera."
+    },
+    {
+      "test": "tests/RPG/SkillEffectRealAssetsTests.cpp (complement en aquesta sessió)",
+      "target": "test_skill_effect_real_assets",
+      "resultado": "5/5 PASS sobre skills.json publicat (492 entrades, 2026-09-13): (1) parse_effect_scaling OK en ~474/492; 9 nullopt pels combinats \"con_tier\"+familia no standard; 9 effect.scaling buits. (2) magnitude_by_degree = 2+2·tier en la gran majoria (483/492). (3) SkillExecutor execute amb skill publicada final_magnitude == s->magnitude(final_degree) (x1.5 all_sixes). (4) applyConditionId publicat 1 sola skill → pending_condition_id; grantedSummonId 0 skills publicats → fallback inline amb SUCCESS retorna pending_summon_id. (5) scaling_stat/effect_family conversions caseless CON/DES/INT/CAR/DAMAGE/HEAL OK."
+    }
+  ],
+  "archivos_creados": [
+    "tests/RPG/SkillEffectRealAssetsTests.cpp — 5 tests GL-free sobre skills.json publicat. NO toca SkillEffectTests.cpp agent anterior",
+    "cmake/SkillEffectRealAssetsTests.cmake — target test_skill_effect_real_assets, LABELS unit;gl-free, afegit a suite_gl_free i MOTOR_GL_FREE_TARGETS"
+  ],
+  "archivos_editados": [
+    "CMakeLists.txt:1036-1038 — afegit include(cmake/SkillEffectRealAssetsTests.cmake) just després de SkillEffectTests.cmake (1 línia nova, fragment cmake independent)"
+  ],
+  "archivos_compartidos_sin_tocar": [
+    "src/RPG/SkillExecutor.cpp — SHARED (D-09, E-14) — RENUNCIAT A TOCAR per multi-agent; SkillExecutor::execute utilitzat via tests sense modificar codi",
+    "tests/RPG/SkillEffectTests.cpp — propietat agent anterior — NO EDITAT, target test_skill_effect 19/19 PASS separat",
+    "src/RPG/SkillEffect.cpp — SHARED (D-11 implementa parse_effect_scaling/scale_magnitude/execute_effect; propietat agent anterior — NO EDITAT)",
+    "include/RPG/SkillEffect.h, include/RPG/EnhanceHooks.h — NO EDITATS",
+    "include/RPG/Catalogs/RpgCatalogs.h — SHARED (D-01..D-07) — NO TOQUEM — NO TOQUET cap loader; test treballa amb loaders ja existents per SkillDefinition/CharacterSheet) — NO EDITAT"
+  ],
+  "decisio_DEC_02": [
+    "Asset skills.json 492 publicat utilitza `effect.scaling` objecte {scaling} no `effectScaling` top-level clau; loader ho respecta. SkillDefinition.effect_scaling field.",
+    "9/492 skills published effect.scaling combinats \"con_tier\"/\"con_int\"/\"con_con\"/\"con_sab\" encara no formen part del vocabulari públic (parse_effect_scaling retorna nullopt). Documentat per properes sessions.",
+    "MagnitudeByDegree null en 483/492 → deriva 2+2·tier (t1->4, t2->6, t3->8, t4->10, t5->12). Confirmat 98%+ coincideix."
+  ],
+"caveats_y_pending": [
+    "O3 COMPLETAT + VERIFICAT 2026-09-14: SkillExecutor PASO 10 escala final_magnitude via scale_magnitude(effect_def, ctx.caster, skill->magnitude(d)) quan la carta declara scaling per estat i hi ha CharacterSheet* com a caster. Magnitud 0 (BOTCH) es manté en 0; caster null o scaling NONE = no-op (el camí legat de batalla, Game/Skill.cpp, passa caster=nullptr amb override_base_dice/override_target_dice → els demos i la campanya no canvien de números). Radio de canvis en assets publicats: 370/492 skills tenen scaling per stat (INT 258, CAR 45, CON 34, DES 33; none 104, sense clau 9). Per verificar l'O3 sobre assets reals es va desacoblar el target de motor_core (cmake/SkillEffectRealAssetsTests.cmake, ja no enllaça motor_core — només motor_rpg + motor_json): deixa de dependre de Application.cpp (sessió aliena en vol) i test_skill_effect_real_assets compila i passa 6/6 en build GL-free. Contractes: test_skill_effect 46/46 (test nou determinista skill_executor_escala_final_magnitude_amb_caster: SUCCESS INT=8 -> 108, PARTIAL -> 54, INT=0 -> base, sense caster -> base, BOTCH -> 0, CRITICAL sisos x1.5 -> 324); O3 real assets actualitzat i verificat a magnitud escalada.",
+    "ApplyConditionId publicat només a 1 skill de 492; grantedSummonId a 0. Per tant, contractes O4 de condició/summon són flous en l'asset publicat actual. Fallback inline quan no hi ha dades.",
+    "SkillEffect.cpp execute_effect no utilitza caster per a scaling (el passa nullptr a scale_magnitude en DAMAGE/HEAL); pending si es vol que SkillEffect escali amb caster.",
+    "Vocabulari combinat \"con_tier\"/\"con_int\" etc — parse_effect_scaling els accepta (Wave 4) prenent el primer token com a stat; no es defineix semàntica ad hoc mentre DEC-05/D0005 espera Oriol (\"sab\" no és stat del motor).",
+    "14/09 vespre — RACE MULTI-AGENT REGISTRADA (Regla 3, no tocar res ajeno): el O3 executor i el test O3 ja son a HEAD (b80dd43, Fix y push del dia 14). Un agent ajeno està reescrivint EN DIRECTE el fichero compartit src/RPG/SkillEffect.cpp (placeholders execute_effect per CONDITION/SUMMON/BUFF/DEBUFF/EXTRA_DICE/REROLL/STEAL/CUSTOM que retornen true) i ha fet 5 renames a tests/RPG/SkillEffectTests.cpp (returns_false -> returns_true). Durant l'edició el motor_rpg queda sense compilar (ConditionEngine/RPG::Catalogs sense include, estat transitori). Verificacions D-11 (46/46 i 6/6) fetes abans d'aquesta finestra: vàlides per a l'HEAD b80dd43; NO reconstruïbles fins que l'agent ajeno tanqui el canvi."
+  ],
+  "fecha_cierre_estimada": "2026-09-13",
+  "estado": "cerrado",
+  "estadisticas_tests": {
+    "D-11 SkillEffectTests (agent anterior + Wave 4 14/09)": "46/46 PASS (14/09: +1 Wave 4 famil.es ignorades +1 O3 executor scaling)",
+    "D-11 SkillEffectRealAssetsTests (complement)": "6/6 PASS (O1-O4 + zero/critic + conversions; O3 actualitzat a magnitud escalada). Target desacoblat de motor_core (cmake propi): deixa d'enllaçar Application.cpp i compila/verifica en build temporal sense GL. VERIFICAT 14/09 amb ell.",
+    "total_esta_sesion_D11": "test_skill_effect 46/46 NOR · test_skill_effect_real_assets 6/6 NOR · test_skill 13/13 · test_battle_state 14/14 · test_game_session 18/18 · test_catalog_content 32/32 · demo_nd6_distribution sense regressio"
+  },
+  "regresion_combinada_D03_a_D11": "D03=6, D05=9, D06_creation=4, D06_catalogs=7, D07=15, D08_bridge=6, D08_bridge_real_assets=3, D09_battle=13, D09_conditions_real_assets=4, D10_validator=1, D11_skilleffects_tests=19, D11_skilleffects_real_assets=5 → TOTAL 87/87 PASS local",
+  "date": "2026-09-13",
+  "author": "sense signar",
+  "status": "cerrado",
+  "actions": [
+    "Una habilitat ha de fer exactament el que diu la carta. Cada família (DAMAGE, HEAL, CONDITION, SUMMON, BUFF, DEBUFF, EXTRA_DICE, REROLL, STEAL, CUSTOM) té un contracte tipat, executor i prova pròpia. Un efecte no suportat es rebutja amb diagnòstic. parse_effect_scaling reconeix effect_scaling del JSON (\"damage:CON\", \"INT\", \"none\", \"heal:CAR\", etc.). scale_magnitude escala magnitude*base per caster.stat()/100.",
+    "Totes les 492 habilitats publicades a assets/catalogs/skills.json tenen effect_scaling reconegut per parse_effect_scaling() (o nullopt només pels 9 combinats \"con_tier\"/\"con_int\"/\"con_con\"/\"con_sab\" que encara no formen part del vocabulari públic).",
+    "magnitude_by_degree segueix la derivació 2+2·tier per a les 483/492 que NO declaren magnitudeByDegree.",
+    "SkillExecutor::execute sobre skill publicada retorna final_magnitude coincidente amb magnitude_by_degree[final_degree] (x1.5 si was_all_sixes_critical).",
+    "Si alguna skill publicada porta applyConditionId/grantedSummonId, SkillExecutor ho reporta com a pending_condition_id/pending_summon_id quan el grau arriba al mínim.",
+    "TOTS els tests (SkillEffectTests agent anterior + SkillEffectRealAssetsTests complement) PASS.",
+    "tests/RPG/SkillEffectRealAssetsTests.cpp — 5 tests GL-free sobre skills.json publicat. NO toca SkillEffectTests.cpp agent anterior",
+    "cmake/SkillEffectRealAssetsTests.cmake — target test_skill_effect_real_assets, LABELS unit;gl-free, afegit a suite_gl_free i MOTOR_GL_FREE_TARGETS",
+    "CMakeLists.txt:1036-1038 — afegit include(cmake/SkillEffectRealAssetsTests.cmake) just després de SkillEffectTests.cmake (1 línia nova, fragment cmake independent)",
+    "Asset skills.json 492 publicat utilitza `effect.scaling` objecte {scaling} no `effectScaling` top-level clau; loader ho respecta. SkillDefinition.effect_scaling field.",
+    "9/492 skills published effect.scaling combinats \"con_tier\"/\"con_int\"/\"con_con\"/\"con_sab\" encara no formen part del vocabulari públic (parse_effect_scaling retorna nullopt). Documentat per properes sessions.",
+    "MagnitudeByDegree null en 483/492 → deriva 2+2·tier (t1->4, t2->6, t3->8, t4->10, t5->12). Confirmat 98%+ coincideix."
+  ],
+  "verification": [
+    "test: tests/RPG/SkillEffectTests.cpp (preexistent agent anterior)",
+    "target: test_skill_effect",
+    "resultado: 19/19 PASS. Inclou: parse_effect_scaling damage/heal/STAT/family:STAT/none/buit/desconegut; effect_family_from_string caseless; effect_family to_string(NONE/DAMAGE/HEAL/CONDITION/SUMMON); scale_magnitude NONE retorna base; execute_effect DAMAGE(-10)/HEAL(+10)/NONE no canvia; SkillExecutor suportat damage/desconegut retorna diagnostic; SkillExecutor none scaling pass OK; summon exit SUCCESS genera pending_summon_id; summon pifia BOTCH no genera; summon empty id no genera.",
+    "test: tests/RPG/SkillEffectRealAssetsTests.cpp (complement en aquesta sessió)",
+    "target: test_skill_effect_real_assets",
+    "resultado: 5/5 PASS sobre skills.json publicat (492 entrades, 2026-09-13): (1) parse_effect_scaling OK en ~474/492; 9 nullopt pels combinats \"con_tier\"+familia no standard; 9 effect.scaling buits. (2) magnitude_by_degree = 2+2·tier en la gran majoria (483/492). (3) SkillExecutor execute amb skill publicada final_magnitude == s->magnitude(final_degree) (x1.5 all_sixes). (4) applyConditionId publicat 1 sola skill → pending_condition_id; grantedSummonId 0 skills publicats → fallback inline amb SUCCESS retorna pending_summon_id. (5) scaling_stat/effect_family conversions caseless CON/DES/INT/CAR/DAMAGE/HEAL OK.",
+    "D-11 SkillEffectTests (agent anterior + Wave 4 14/09): 46/46 PASS (14/09: +1 Wave 4 famil.es ignorades +1 O3 executor scaling)",
+    "D-11 SkillEffectRealAssetsTests (complement): 5/5 PASS (O1-O4; O3 actualitzat a magnitud escalada) — REVERIFICACIO PENDENT: target enllaça motor_core i Application.cpp esta en edicio ajenae (build temporal no disponible)",
+    "total_esta_sesion_D11: verificar test_skill_effect 46/46 PASS; test_skill 13/13, test_battle_state 14/14, test_game_session 18/18, test_catalog_content 32/32, demo_nd6_distribution sense regressio",
+    "D03=6, D05=9, D06_creation=4, D06_catalogs=7, D07=15, D08_bridge=6, D08_bridge_real_assets=3, D09_battle=13, D09_conditions_real_assets=4, D10_validator=1, D11_skilleffects_tests=19, D11_skilleffects_real_assets=5 → TOTAL 87/87 PASS local"
+  ],
+  "pending": [
+    "O3 COMPLETAT 2026-09-14: SkillExecutor PASO 10 ara escala final_magnitude via scale_magnitude(effect_def, ctx.caster, skill->magnitude(d)) quan la carta declara scaling per estat i hi ha CharacterSheet* com a caster. Magnitud 0 (BOTCH) es manté en 0; caster null o scaling NONE = no-op (el camí legat de batalla, Game/Skill.cpp, passa caster=nullptr amb override_base_dice/target_dice → els demos i la campanya no canvien de números). Radio de canvis en assets publicats: 370/492 skills tenen scaling per stat (INT 258, CAR 45, CON 34, DES 33; none 104, sense clau 9). Contratos actualitzats: test_skill_effect 46/46 (test nou determinista skill_executor_escala_final_magnitude_amb_caster: SUCCESS INT=8 -> 108, PARTIAL -> 54, INT=0 -> base, sense caster -> base, BOTCH -> 0, CRITICAL sisos x1.5 -> 324); O3 real assets actualitzat per esperar la magnitud escalada.",
+    "ApplyConditionId publicat només a 1 skill de 492; grantedSummonId a 0. Per tant, contractes O4 de condició/summon són flous en l'asset publicat actual. Fallback inline quan no hi ha dades.",
+    "SkillEffect.cpp execute_effect no utilitza caster per a scaling (el passa nullptr a scale_magnitude en DAMAGE/HEAL); pending si es vol que SkillEffect escali amb caster.",
+    "Vocabulari combinat \"con_tier\"/\"con_int\" etc — parse_effect_scaling els accepta (Wave 4) prenent el primer token com a stat; no es defineix semàntica ad hoc mentre DEC-05/D0005 espera Oriol (\"sab\" no és stat del motor)."
+  ],
+  "_normalitzat": "Claus del contracte derivades dels camps propis del registre per tools/normalitza_seguiment.py. Els camps originals no s'han tocat: aquest registre es va escriure en un esquema diferent."
+}

@@ -1,0 +1,25 @@
+{
+ "id": "PRUEBAS-01",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — ctest en verde salvo linea_base_core (sus 44 de deuda de antes): 216 de 217.",
+ "origen": "Las pruebas que ya fallaban en el árbol del Mac antes de esta sesión (relevo-2026-10-08 §5), y una que se colaba detrás de un segfault.",
+ "actions": [
+  "src/Engine/Window.cpp, include/Engine/Window.h: GLFW es uno para todo el proceso; glfwTerminate() lo llama la última ventana que muere (antes cada una, y con dos vivas la primera se quedaba sin contexto: el segfault de test_application y test_application_cableado en ~BitmapFont). Window::makeCurrent().",
+  "src/Engine/ApplicationCierre.cpp: shutdown hace actual el contexto de su ventana antes de soltar lo de GL.",
+  "tests/Engine/ApplicationTests.cpp: loadGame_rebutja_guardat_incompatible pedía un test_level_modified.json que nunca existió y esperaba el «no» al momento. Escribe su nivel, lo cambia tras guardar y comprueba que otra aplicación no aplica el guardado en el borde del fotograma (con el nivel sin cambiar, la prueba falla: comprobado).",
+  "tests/Engine/ApplicationSceneTests.cpp: «Nueva partida» abre la creación de personaje (NUEVA-PARTIDA-01); las pruebas de escenas la quitan (sinCreacion) para mirar el cambio de escena. La de proyectos pide openProject con una escena, como el título que listaba proyectos: hoy nada del juego llama a openProject.",
+  "tests/Game/GDB12ScreenTests.cpp: las pestañas Diario y Códice (MISIONES-01); la pestaña Estado es la ficha más la moral.",
+  "tests/RPG/CatalogContentTests.cpp y examples/demo_creacion_personaje.cpp: los recuentos de hoy (1191 cartas y 127 clases desde CP-01, 140 PNJ, 41 pueblos jugables: los yokai no se juegan desde PNJ-02).",
+  "cmake/G14HudTimersAndCommerceTests.cmake: en Linux no enlazaba (el Mac usa -undefined dynamic_lookup); la misma opción para el enlazador de Linux."
+ ],
+ "pending": [
+  "openProject no lo llama nadie en el juego: si el título vuelve a elegir proyecto, la prueba ya está."
+ ],
+ "verification": [
+  "ctest: 216 de 217 (solo linea_base_core, 44 de deuda, las mismas que en la base).",
+  "El juego real sin pantalla: arranca, crea personaje y sale con «salida normal».",
+  "Aplicado en el Mac (out/claude_pruebas01) y comprobado: los 9 ficheros iguales."
+ ],
+ "sesion": "sesiones/2026-10-08-claude-tienda-caer-dioses.md"
+}

@@ -1,0 +1,42 @@
+{
+ "id": "JUICIO-CLASES",
+ "fase": "planificacion",
+ "nombre": "Juicio clase a clase del motor y diseño de «lo que hay + lo que esperamos que haya»",
+ "date": "2026-09-29",
+ "author": "Claude (sesiones del 28/09 y del 29/09)",
+ "status": "Juicio completo (00-INDEX y 01-07) y diseño escrito (08). No hay codigo de producto: lo que sigue es aplicar el diseño por filas.",
+ "ficheros": [
+  "planificacion/juicio_clases/00-INDEX.md — mapa general, hallazgos que cruzan areas, correcciones del 29/09 (seccion 0) y decisiones (seccion 6)",
+  "planificacion/juicio_clases/01-render.md … 06-mapa-nivel-proyecto.md — el juego, 260 clases (28/09)",
+  "planificacion/juicio_clases/07-editor.md — el editor: 36 cabeceras, 59 clases (29/09)",
+  "planificacion/juicio_clases/08-diseno.md — lo que hay y lo que esperamos que haya, con las cuatro decisiones (29/09)"
+ ],
+ "decisiones_de_oriol_2026-09-29": {
+  "iniciativa": "Si: 1d6 + DES, mas los modificadores de initiative_bonus(). El GDD dice 1d20 y hay que cambiarlo aguas arriba. Desempate: el del GDD (mas DES, luego el bando del jugador), asumido y sin confirmar.",
+  "escenas": "Una escena por pantalla, como piden G-08..G-17. Pausa, opciones e inventario se apilan sobre el juego (push/pop).",
+  "subsistemas": "Enlazar lo que se pueda ya: Audio en el juego (el plan tiene que sacar GDB-11 de FORA), LootResolver cuando las tablas de encuentro lleguen al combate, y el panel de Problemas con la validacion de E-07 en motor_editor. AdventureSerializer no tiene a que enlazarse y se queda para G-07.",
+  "editor_EST-42": "Se conecta toda la capa de estado a motor_editor: Problemas, Eventos, Base de datos, y Recursos y mapa."
+ },
+ "correcciones_al_juicio_del_28_09": [
+  "SceneManager esta conectado desde d0fe012 (07/09): C-16 esta cumplido. Lo que falta son las siete escenas de G-08..G-17 y la pila.",
+  "ProjectHub.h no esta muerto: lo usa level_editor por target_sources, un tercer punto ciego de medir_alcance.py.",
+  "La capa de estado del editor sumaba 1350 lineas, no 1264; sin ProjectHub son 11 cabeceras y 1218 lineas.",
+  "De las 130 cabeceras sin bloque, 10 ya tienen paquete en dades.py; sin paquete quedan 120.",
+  "EditorIconos no duplica HUD/Iconos: lo usa.",
+  "Audio, LootResolver y AdventureSerializer estan en motor_rpg, que juego SI enlaza (via motor_level y motor_saves): no entran en el binario porque nadie los usa. Enlazarlos no pide tocar CMake."
+ ],
+ "herramientas": {
+  "tools/marcar_paquetes.py": "Quita todos los bloques (no solo el primero), reconoce el cierre mal escrito, no se lleva codigo por delante con un cierre roto, se salta los ficheros con trabajo sin commitear (git --no-optional-locks), no deja ningun fichero por encima de su techo, y acepta --solo e --incluir-sucios.",
+  "tools/test_marcar_paquetes.py": "37 casos sobre un arbol sembrado en un temporal; registrado en CTest desde cmake/LineaBaseCore.cmake. Falsabilidad comprobada con cinco mutaciones de la herramienta (quitar solo el primer bloque, exigir el cierre exacto, admitir codigo entre apertura y cierre, quitar la guarda de sucios, quitar la del techo): cada una la pone en rojo.",
+  "include/Editor/ProjectDatabaseState.h": "El bloque repetido (copiado a mano en dace0c0 con el cierre mal escrito) se quito con la propia herramienta, --solo; 89 -> 78 lineas."
+ },
+ "incidencia": "El primer git status de la sesion del 29/09 dejo .git/index.lock huerfano, porque en la carpeta conectada no se puede borrar, y la sesion de Codex de controles lo aparto a las 01:15. Desde entonces se usa git --no-optional-locks, que no toma el candado; marcar_paquetes.py tambien.",
+ "pendiente": [
+  "Aplicar 08-diseno.md por filas, en el orden de su seccion 3. El paso 0 es que se commitee el trabajo en vuelo de otras sesiones.",
+  "Cambios en dades.py: sacar el audio de FORA, abrir el paquete de combate con el criterio de 08-diseno 1.1 y reabrir G-03 con su criterio original.",
+  "Aguas arriba: la iniciativa con d6 en el GDD.",
+  "Visto bueno de Oriol para las sustituciones de 07-editor (retirar AssetBrowserPanel y la mitad de capas de MapPropertiesPanel, reescribir CommandListState).",
+  "Aceptar o corregir la propuesta de paquetes de 00-INDEX seccion 5; despues, marcar con marcar_paquetes.py --solo.",
+  "medir_alcance.py: las tres reglas antes de re-congelar la linea base."
+ ]
+}

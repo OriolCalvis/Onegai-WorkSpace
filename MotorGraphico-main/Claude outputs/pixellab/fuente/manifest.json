@@ -1,0 +1,73 @@
+{
+  "manifest_version": "0.3",
+  "name": "pixellab",
+  "display_name": "PixelLab",
+  "version": "1.0.0",
+  "description": "PixelLab (pixel art con IA) para Claude: personajes con animaciones, tilesets, objetos, iconos y UI, y guardado directo en la carpeta del proyecto.",
+  "long_description": "Conecta Claude con el servidor MCP de PixelLab (https://api.pixellab.ai/mcp). La app de Claude solo arranca servidores MCP locales, asi que esta extension es un puente pequeno, sin dependencias, que reenvia cada mensaje a PixelLab con tu token (guardado en el llavero del sistema) y devuelve sus respuestas.\n\nAnade una herramienta propia, **guardar_en_proyecto**, que descarga lo que PixelLab genera y lo guarda dentro de la carpeta del proyecto que elijas (nunca fuera).\n\nHecha para MotorGraphico. Las generaciones gastan los creditos de tu cuenta de PixelLab.",
+  "author": {
+    "name": "Claude (para Oriol, MotorGraphico)"
+  },
+  "homepage": "https://www.pixellab.ai/mcp",
+  "documentation": "https://api.pixellab.ai/mcp/docs",
+  "icon": "icon.png",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"],
+      "env": {
+        "PIXELLAB_API_TOKEN": "${user_config.api_token}",
+        "PIXELLAB_CARPETA": "${user_config.carpeta}"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "guardar_en_proyecto",
+      "description": "Descarga un fichero generado por PixelLab y lo guarda dentro de la carpeta del proyecto."
+    },
+    {
+      "name": "create_character",
+      "description": "Personaje en 4 u 8 direcciones (PixelLab)."
+    },
+    {
+      "name": "animate_character",
+      "description": "Animaciones de un personaje: andar, reposo, correr... (PixelLab)."
+    },
+    {
+      "name": "create_isometric_tile",
+      "description": "Baldosa isometrica (PixelLab)."
+    },
+    {
+      "name": "create_map_object",
+      "description": "Objeto con fondo transparente (PixelLab)."
+    }
+  ],
+  "tools_generated": true,
+  "keywords": ["pixel art", "sprites", "tilesets", "isometrico", "game dev"],
+  "license": "MIT",
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  },
+  "user_config": {
+    "api_token": {
+      "type": "string",
+      "title": "Token de la API de PixelLab",
+      "description": "El de https://api.pixellab.ai/mcp. Se guarda en el llavero del sistema.",
+      "sensitive": true,
+      "required": true
+    },
+    "carpeta": {
+      "type": "directory",
+      "title": "Carpeta del proyecto",
+      "description": "Solo aqui puede escribir guardar_en_proyecto.",
+      "required": true,
+      "default": "${DOCUMENTS}/Documentos - Oriol Os (2)/Software/MotorGraphico-main"
+    }
+  }
+}

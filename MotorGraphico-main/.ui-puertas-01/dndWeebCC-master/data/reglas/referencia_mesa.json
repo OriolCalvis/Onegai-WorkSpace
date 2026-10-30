@@ -1,0 +1,66 @@
+{
+ "_comentario": "CARTAS-CLASES-01 (08/10/2026). Las cartas de reglas de mesa que van al final de cada mazo físico de clase (MazoClaseService). Resumen del reglamento Ed. 4, docs/Sistema_Cartas_Tiers.md §3-§7: si cambia el reglamento, se cambia aquí también. Cada carta: titulo, linea (bajo el título), datos (una viñeta cada uno) y texto (opcional).",
+ "cartas": [
+  {
+   "id": "regla_la_tirada",
+   "titulo": "La tirada",
+   "linea": "Reglas de mesa · Ed. 4",
+   "datos": [
+    "Quien actúa tira 1 + el atributo que dice su carta, en d6; quien se defiende tira su atributo.",
+    "Cada 6 vale 1 éxito y cada 5, medio. Gana quien saca más.",
+    "Ventaja: el 4 también vale medio. Desventaja: el 5 no cuenta. Si tienes las dos, se anulan.",
+    "Pifia: ningún 5 ni 6 y al menos dos 1.",
+    "Crítico: al menos dos 6 (con un dado no hay crítico).",
+    "No hay CA ni CD: todo se resuelve enfrentado. Fuera del combate, el DJ dice cuántos dados tira el rival (la cerradura tira 2, el guardia 3)."
+   ]
+  },
+  {
+   "id": "regla_el_golpe",
+   "titulo": "El golpe",
+   "linea": "Reglas de mesa · ataques físicos",
+   "datos": [
+    "Te defiendes con CON o DES, la que tengas más alta. Cada «+1 a la CA» es un dado más para defenderte de golpes.",
+    "Si ganas, tiras tantos d6 de daño como la diferencia de éxitos, redondeando hacia arriba (medio éxito = 1 dado).",
+    "Los dados de la carta («+2d6») se suman solo si ganas; los bonos del turno, encima.",
+    "Empate o pierdes: no hay daño.",
+    "Tu crítico: +1d6. Pifia del que se defiende: todos tus éxitos en d6 (mínimo 1). Tu pifia: nada."
+   ]
+  },
+  {
+   "id": "regla_la_magia",
+   "titulo": "La magia",
+   "linea": "Reglas de mesa · salvaciones",
+   "datos": [
+    "La carta dice contra qué se salva el objetivo: CON (resistencia física) o CAR (defensa mental).",
+    "Tú tiras 1 + el atributo que dice la carta.",
+    "Si el objetivo falla: los dados de la carta enteros y todos sus estados.",
+    "Si se salva o empata: la mitad del daño y nunca sus estados, salvo que la carta diga otra cosa.",
+    "Pifia del objetivo o crítico tuyo: un dado más de la carta. Tu pifia: nada."
+   ]
+  },
+  {
+   "id": "regla_tu_turno",
+   "titulo": "Tu turno",
+   "linea": "Reglas de mesa · acciones y cartas",
+   "datos": [
+    "Iniciativa: 1d6 + DES, de mayor a menor.",
+    "En tu turno: una acción principal, un movimiento y las acciones libres que quieras. Canalizar ocupa el turno entero.",
+    "Una reacción por ronda, fuera de tu turno, cuando pasa lo que dice la carta.",
+    "Una carta jugada va a su pila (descanso corto o largo) y vuelve a la mano al descansar. Si no lo dice, descanso largo.",
+    "Un estado dura los turnos que diga la carta; ponle una marca encima para no olvidarlo."
+   ]
+  },
+  {
+   "id": "regla_vida_tiers_equipo",
+   "titulo": "Vida, tiers y equipo",
+   "linea": "Reglas de mesa · el personaje",
+   "datos": [
+    "Vida = base de la clase + CON×3 + CAR + bono del tier, sin pasar del techo: T0 14 · T1 18 · T2 25 · T3 35 · T4 48 · T5 63.",
+    "Los atributos empiezan en 0: suman la raza y el equipo que llevas puesto.",
+    "Kit inicial: +2 al atributo principal, +2 al secundario y +1 a los otros dos.",
+    "El equipo no da más dados de los que permite el tier (tope 2 · 4 · 6 · 8 · 8 · 8 del Tier 0 al 5): en Tier 1, como mucho 4, 4, 2 y 2.",
+    "Las cartas de Creador se juegan desde el Tier 2. Se sube de tier con hitos: 2 en Tier 1, 4 en Tier 2, 8 en Tier 3 y 11 en Tier 4. Al subir, la vida se llena."
+   ]
+  }
+ ]
+}

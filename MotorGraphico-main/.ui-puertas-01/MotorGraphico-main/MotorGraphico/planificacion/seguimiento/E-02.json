@@ -1,0 +1,30 @@
+{
+  "id": "E-02",
+  "date": "2026-09-12",
+  "author": "TRAE (Cowork) — Verificacion e implementacion preexistente",
+  "status": "Implementat i verificat localment; CI remot pendent",
+  "actions": [
+    "NarrativeState gana variables numericas con nombre: variable(), hasVariable(), setVariable(), addToVariable(), clearVariable(), variables(). Lectura no crea estado; nombre vacio se ignora; addToVariable satura en limites de int para no desbordar.",
+    "NarrativeState gana interruptores locales A-D por evento: localSwitch(), setLocalSwitch(), clearLocalSwitches(), localSwitches(). Mascara de 4 bits por evento; se aceptan mayusculas y minusculas; letras no A-D devuelven Result de error, no no-op silencioso.",
+    "Reset() limpia variables e interruptores junto a flags y beats; una partida nueva no hereda contadores de la anterior.",
+    "Guardado: serializeSaveGame escribe 'variables' y 'localSwitches' en el nodo 'narrative'. Siempre presentes (incluso vacias) para autoexplicacion; orden estable por clave para que dos saves iguales den el mismo diff.",
+    "Carga: parseSaveGame lee 'variables' y 'localSwitches' como OPCIONALES — un guardado anterior a E-02 (sin esas claves) se carga igual, con los contenedores vacios. No se sube schemaVersion.",
+    "SaveGameData gana campos narrativeVariables (map<string,int>) y narrativeLocalSwitches (vector<LocalSwitches>); la cola SaveGame::snapshot() los copia desde m_narrativeState."
+  ],
+  "verification": [
+    "Compilado: make test_narrative_variables sin warnings (solo ld: duplicate libraries por libmotor_json.a, benigno).",
+    "9/9 tests en test_narrative_variables: variable cero/no-existe; suma con saturacion; nombre vacio ignorado; dos eventos independientes; letra no A-D error clear; evento sin interruptores no ocupa sitio; reset limpia todo; ida-vuelta savegame ESTABLE (mismo JSON); guardado pre-E02 carga limpio sin variables ni switches.",
+    "Build existente de build/libmotor_rpg.a y build/test_save_game comparten NarrativeEngine/SaveGame sin necesitar recompilacion de otros targets (prueba no tocada)."
+  ],
+  "pending": [
+    "CI remota (workflow ctest.yml): no se ha hecho push ni se ha cerrado formalmente el paquete en CI remoto.",
+    "E-03 (Planificador, esperes, processos parallels) usa estas variables e interruptores desde el interprete de comandos; E-04 (joc de comandes) les hara set/clear/test desde las familias de comandos de variables. Este paquete solo expone la API y el guardado."
+  ],
+  "files_changed": [
+    "MotorGraphico/include/RPG/NarrativeEngine.h (declaracion de variables e interruptores locales en NarrativeState)",
+    "MotorGraphico/src/RPG/NarrativeEngine.cpp (implementacion: variables, mascara de bits A-D, normalizacion de letra minuscula)",
+    "MotorGraphico/src/Game/SaveGame.cpp (serialize/parse narrative variables y localSwitches; snapshot() copia los campos)",
+    "MotorGraphico/tests/RPG/NarrativeVariablesTests.cpp (9 casos de prueba unitarios)",
+    "MotorGraphico/cmake/NarrativeVariablesTests.cmake (target de compilacion del test, incluido desde CMakeLists.txt linea 650)"
+  ]
+}

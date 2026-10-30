@@ -1,0 +1,38 @@
+{
+  "id": "EDITOR-UX-01",
+  "date": "2026-09-27",
+  "author": "Claude",
+  "status": "HECHO en el arbol, sin commit",
+  "fase": "E-10 (motor_editor)",
+  "descripcion": "Todas las opciones de motor_editor con ayuda, icono y tooltip: cada EditorAction (14) tiene texto e icono (Editor::EditorAyuda, GL-free) y cada control de los paneles Proyecto, Herramientas, Mapa, Inspector y Capas (22 ids) tiene su explicacion. Menus con tooltip; Herramientas con botones de icono + etiqueta, paleta y catalogo con tooltip, y pie con la herramienta activa y el uso del raton; Inspector con icono por dato y estado ok/problema; Capas con tooltip en lista, nueva, nombre, renombrar, visible, bloqueada y borrar; ventana de ayuda por grupos con iconos y leyenda de las marcas del mapa (inicio verde, objeto amarillo, seleccion azul).",
+  "archivos": {
+    "nuevos": [
+      "tools/gen_iconos_editor.py",
+      "assets/textures/iconos_editor.png",
+      "assets/textures/iconos_editor.json",
+      "include/Editor/EditorAyuda.h",
+      "src/Editor/EditorAyuda.cpp",
+      "tests/Editor/EditorAyudaTests.cpp",
+      "editor/include/EditorIconos.h",
+      "editor/src/EditorIconos.cpp",
+      "editor/include/ToolsPanel.h",
+      "editor/src/ToolsPanel.cpp",
+      "editor/include/InspectorPanel.h",
+      "editor/src/InspectorPanel.cpp"
+    ],
+    "modificados": [
+      "editor/src/EditorApplication.cpp (597 -> 500 lineas: Herramientas, Inspector y Ayuda se MUEVEN a sus paneles; tooltips en menus y Proyecto; los puntos del humo salen de ToolsPanel::testPoint)",
+      "editor/src/LayerPanel.cpp (tooltips)",
+      "cmake/MotorEditor.cmake (EditorAyuda en motor_editor_document; paneles en motor_editor; test_editor_ayuda)"
+    ]
+  },
+  "verification": [
+    "test_editor_ayuda 4/4 en el oraculo (cada accion con ayuda e icono distinto; iconos en el atlas; cada control con texto 20-140 caracteres; uso del raton por herramienta).",
+    "EditorApplication.cpp, ToolsPanel.cpp, InspectorPanel.cpp, EditorIconos.cpp y LayerPanel.cpp compilan como objetos de motor_editor en el oraculo (no se puede enlazar: motor_core no compila en HEAD por Application.cpp ajeno, y el contenedor no tiene glfw real).",
+    "PENDIENTE en el Mac: test_motor_editor_smoke_1/2 (el harness pulsa ahora el ImageButton de Rellenar via ToolsPanel::testPoint('fill')) y mirar los tooltips a mano."
+  ],
+  "pendiente": [
+    "level_editor (UI propia con BitmapFont, 2105 lineas) no se toco: sus opciones no tienen tooltips porque no tiene raton sobre widgets; si se quiere, EditorAyuda ya da los textos.",
+    "ProblemsPanel ya tenia tooltips propios; no se cambio."
+  ]
+}

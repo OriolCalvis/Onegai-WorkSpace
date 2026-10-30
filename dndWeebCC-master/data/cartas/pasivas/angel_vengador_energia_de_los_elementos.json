@@ -1,0 +1,47 @@
+{
+ "id": "angel_vengador_energia_de_los_elementos",
+ "name": "Energía de los elementos",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Una vez por combate, cuando quieras, tu espada absorbe un elemento. Llama: 1 turno, los golpes físicos rebotan contra quien te ataca. Hielo: 1 turno, la fuerza del rival pasa a tu espada: +1d6 a tus golpes con arma. Halo: recuperas un 7 % de vida (pendiente). Oscuridad: 1 turno invisible, te defiendes con ventaja. Sin elemento: +1 a la CA durante 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "angel_vengador"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "Una vez por combate, cuando quieras, tu espada absorbe un elemento. Llama: 1 turno, los golpes físicos rebotan contra quien te ataca. Hielo: 1 turno, la fuerza del rival pasa a tu espada: +1d6 a tus golpes con arma. Halo: recuperas un 7 % de vida (pendiente). Oscuridad: 1 turno invisible, te defiendes con ventaja. Sin elemento: +1 a la CA durante 2 turnos.",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Eliges una energía una vez por combate.",
+   "mechanicHook": "elige_una:llama,hielo,halo,oscuridad,sin elemento"
+  },
+  {
+   "description": "Llama: reflejas los golpes físicos 1 turno.",
+   "mechanicHook": "si:llama@1:refleja:fisico"
+  },
+  {
+   "description": "Hielo: +1d6 a tus golpes con arma 1 turno.",
+   "mechanicHook": "si:hielo@1:bono_dano_arma:1d6"
+  },
+  {
+   "description": "[pendiente] que el Halo te cure un 7 % de vida.",
+   "mechanicHook": "pendiente_parcial:que el Halo te cure un 7 % de vida"
+  },
+  {
+   "description": "Oscuridad: te defiendes con ventaja 1 turno.",
+   "mechanicHook": "si:oscuridad@1:ventaja:defensa"
+  },
+  {
+   "description": "Sin elemento: +1 a la CA 2 turnos.",
+   "mechanicHook": "si:sin elemento@2:bono_ca:1"
+  }
+ ],
+ "fuente": "NosTale · Ángel vengador (Avenging Angel)"
+}

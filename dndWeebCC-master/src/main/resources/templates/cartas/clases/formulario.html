@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Editor de carta de clase</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('clases')}"></div>
+            <p class="gm-sidebar__eyebrow u-p-0">Sistema de Cartas y Tiers</p>
+            <h1 class="u-mb-sp5" th:text="${esNueva} ? 'Nueva carta de clase' : 'Editar carta de clase'">Nueva carta de clase</h1>
+
+            <form th:action="${esNueva} ? @{/cartas/clases} : @{/cartas/clases/{id}/editar(id=${form.id})}"
+                  th:object="${form}" method="post">
+
+                <div class="gm-form-grid u-mb-sp4">
+                    <div class="gm-field" th:if="${esNueva}">
+                        <label>ID (opcional)</label>
+                        <input class="gm-input" th:field="*{id}" placeholder="Se genera automático a partir del nombre">
+                        <span class="gm-hint">Déjalo en blanco para que se genere solo, p. ej. "guardian_de_hierro".</span>
+                    </div>
+                    <div class="gm-field" th:unless="${esNueva}">
+                        <label>ID</label>
+                        <input class="gm-input" th:field="*{id}" readonly>
+                    </div>
+                    <div class="gm-field">
+                        <label>Nombre</label>
+                        <input class="gm-input" th:field="*{name}" placeholder="Guardián de Hierro" required>
+                    </div>
+                    <div class="gm-field">
+                        <label>Rol</label>
+                        <select class="gm-select" th:field="*{role}">
+                            <option value="tank">Tanque</option>
+                            <option value="balanced">Combatiente equilibrado</option>
+                            <option value="agile">Especialista ágil</option>
+                            <option value="caster">Mago / conjurador</option>
+                            <option value="support">Sanador / apoyo</option>
+                        </select>
+                    </div>
+                    <div class="gm-field">
+                        <label>Tier mínimo</label>
+                        <input class="gm-input" type="number" min="0" max="5" th:field="*{tier}">
+                    </div>
+                    <div class="gm-field">
+                        <label>Vida base</label>
+                        <input class="gm-input" type="number" min="0" th:field="*{baseHealth}">
+                        <span class="gm-hint">Vida = base + (CON × multiplicador) + bono de tier.</span>
+                    </div>
+                    <div class="gm-field">
+                        <label>Multiplicador de CON</label>
+                        <input class="gm-input" type="number" step="0.5" min="0" th:field="*{healthScalingCon}">
+                    </div>
+                    <div class="gm-field">
+                        <label>Stat principal</label>
+                        <select class="gm-select" th:field="*{primaryStat}">
+                            <option value="CON">CON — Constitución</option>
+                            <option value="DES">DES — Destreza</option>
+                            <option value="CAR">CAR — Carisma</option>
+                            <option value="INT">INT — Inteligencia</option>
+                        </select>
+                    </div>
+                    <div class="gm-field">
+                        <label>Stat secundaria</label>
+                        <select class="gm-select" th:field="*{secondaryStat}">
+                            <option value="">— Ninguna —</option>
+                            <option value="CON">CON — Constitución</option>
+                            <option value="DES">DES — Destreza</option>
+                            <option value="CAR">CAR — Carisma</option>
+                            <option value="INT">INT — Inteligencia</option>
+                        </select>
+                    </div>
+                    <div class="gm-field">
+                        <label>Recurso principal</label>
+                        <select class="gm-select" th:field="*{primaryResource}">
+                            <option value="energia">Energía</option>
+                            <option value="mana">Maná</option>
+                            <option value="aguante">Aguante</option>
+                            <option value="foco">Foco</option>
+                        </select>
+                    </div>
+                    <div class="gm-field">
+                        <label>Recurso secundario</label>
+                        <select class="gm-select" th:field="*{secondaryResource}">
+                            <option value="">— Ninguno —</option>
+                            <option value="energia">Energía</option>
+                            <option value="mana">Maná</option>
+                            <option value="aguante">Aguante</option>
+                            <option value="foco">Foco</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Equipo y cartas iniciales ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Equipo inicial</label>
+                                <div th:replace="~{Blocks/selector-referencias :: csv('startingEquipment', ${opcionesEquipo}, 'añadir objeto')}"></div>
+                            </div>
+                            <div class="gm-field">
+                                <label>Pasiva inicial</label>
+                                <div th:replace="~{Blocks/selector-referencias :: csv('startingPassives', ${opcionesPasivas}, 'añadir pasiva')}"></div>
+                            </div>
+                            <div class="gm-field">
+                                <label>Habilidades iniciales</label>
+                                <div th:replace="~{Blocks/selector-referencias :: csv('startingSkills', ${opcionesHabilidades}, 'añadir habilidad')}"></div>
+                            </div>
+                            <div class="gm-field">
+                                <label>Hechizos iniciales</label>
+                                <div th:replace="~{Blocks/selector-referencias :: csv('startingSpells', ${opcionesHechizos}, 'añadir hechizo')}"></div>
+                            </div>
+                            <div class="gm-field">
+                                <label>Habilidades aprendibles (Tier 2+)</label>
+                                <div th:replace="~{Blocks/selector-referencias :: csv('learnableSkills', ${opcionesHabilidades}, 'añadir habilidad')}"></div>
+                                <span class="gm-hint">La clase declara qué puede aprender más adelante — no las "posee" desde el inicio (sistema modular, ver GDD 9.1).</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Restricciones y especializaciones ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Peso máximo de armadura</label>
+                                <select class="gm-select" th:field="*{maxArmorWeight}">
+                                    <option value="ligera">△ Ligera</option>
+                                    <option value="media">○ Media</option>
+                                    <option value="pesada">□ Pesada</option>
+                                </select>
+                                <span class="gm-hint">Armaduras más pesadas que esto dan desventaja al equiparlas (GDD 7.2).</span>
+                            </div>
+                            <div class="gm-field">
+                                <label>Peso máximo de arma</label>
+                                <select class="gm-select" th:field="*{maxWeaponWeight}">
+                                    <option value="ligera">△ Ligera</option>
+                                    <option value="media">○ Media</option>
+                                    <option value="pesada">□ Pesada</option>
+                                </select>
+                            </div>
+                            <div class="gm-field">
+                                <label>Equipo permitido (tags)</label>
+                                <div th:replace="~{Blocks/selector-referencias :: csv('allowedEquipmentTags', ${opcionesTagsEquipo}, 'añadir tag de equipo')}"></div>
+                            </div>
+                            <div class="gm-field">
+                                <label>Equipo restringido (tags)</label>
+                                <div th:replace="~{Blocks/selector-referencias :: csv('restrictedTags', ${opcionesTagsTodos}, 'añadir tag')}"></div>
+                            </div>
+                            <div class="gm-field">
+                                <label>Especializaciones (Tier 2+)</label>
+                                <input class="gm-input" th:field="*{specializations}" placeholder="Bastión, Vengador Blindado">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-field u-mt-sp4">
+                    <label>Descripción / identidad de clase</label>
+                    <textarea class="gm-textarea" rows="4" th:field="*{description}"></textarea>
+                </div>
+
+                <div class="u-actions">
+                    <button class="gm-btn gm-btn--primary" type="submit">Guardar</button>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/cartas/clases}">Cancelar</a>
+                </div>
+            </form>
+</main>
+<th:block layout:fragment="extra-js"><script th:src="@{/js/selector-csv.js}"></script></th:block>
+</body>
+</html>

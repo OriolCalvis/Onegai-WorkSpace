@@ -1,0 +1,26 @@
+{
+  "id": "G-08",
+  "date": "2026-09-17",
+  "author": "Claude (Cowork)",
+  "status": "Núcleo sin interfaz del título desde el manifiesto hecho y verificado localmente. Paquete ABIERTO: falta cablear TitleScene/juego --proyecto, la imagen del proyecto y CI",
+  "actions": [
+    "Anexo al registro de qwen (G-08.json, rodaja inicial del 06/09), que se conserva íntegro. Fila en TABLERO antes de tocar nada; solo ficheros nuevos y una línea en CMakeLists subida como blob construido.",
+    "Nuevo Game::TitleMenuState::fromManifest(manifiesto, base de assets, raíz de guardados). Arranca desde UN proyecto, no desde el índice global: título de E-11 (settings.title) o, si no hay, el nombre del proyecto; y Continuar, Nueva partida, Opciones y Salir.",
+    "Un manifiesto que no existe, que no se puede leer o que no valida NO cae en otro proyecto: se explica qué ha fallado (con el nombre del fichero), el subtítulo lo enseña y solo queda Salir.",
+    "Nueva partida se apaga, con su motivo, si el proyecto no tiene entrada o si el nivel de entrada no existe. Se comprueba contra la base de assets, que en un juego exportado es la carpeta del ejecutable.",
+    "Continuar mira las ranuras DEL proyecto (Game::SaveSlots de G-11): apunta a la cargable más reciente (savedAt y, si empatan, la hora del fichero) e incluye la ranura rápida. Sin guardados, sin carpeta de guardados, con guardados dañados o de otra versión, se apaga con el motivo correspondiente. Los guardados de otro proyecto no cuentan, y el título no modifica ningún fichero.",
+    "Las entradas apagadas se pueden señalar (para leer su motivo) pero confirm() no las ejecuta: devuelve None y deja el motivo en message(). El cursor empieza en la primera entrada activa: Continuar si se puede y, si no, Nueva partida.",
+    "tests/Game/TitleFlowTests.cpp + cmake/TitleFlowTests.cmake (test_title_flow)."
+  ],
+  "verification": [
+    "test_title_flow 7/7 contra f32093d aislado, en una carpeta temporal con espacios, más un caso con los manifiestos publicados (ejemplos y boundington). 7/7 con ASan+UBSan, sin diagnósticos.",
+    "7/7 mutaciones detectadas: seguir tras un manifiesto inválido, elegir el primer guardado y no el más reciente, ejecutar entradas apagadas, tomar guardados rotos como cargables, cursor siempre en la primera fila, no comprobar que exista la entrada y mezclar guardados de otros proyectos.",
+    "No verificado: CMake real, CI y la escena de título. Compilado con g++ 11 en la VM."
+  ],
+  "pending": [
+    "Cablear: TitleScene/Application y examples/juego.cpp (--proyecto <manifiesto>) tienen que construir TitleMenuState y actuar según confirm(): NewGame → entryPath() (con G-09), Continue → cargar continueSlot() con SaveSlots, Options → G-10. Game::TitleScreen (el título del índice global) puede quedarse para el modo de desarrollo o retirarse; lo decide quien cablee.",
+    "Imagen del proyecto: el manifiesto no tiene campo para ella. Añadirla toca ProjectSerializer y el esquema (G-07), así que no se inventa aquí.",
+    "Playtest contextual (F-01): seguirá saltándose el título; bloqueado por DEC-06.",
+    "CI remota."
+  ]
+}

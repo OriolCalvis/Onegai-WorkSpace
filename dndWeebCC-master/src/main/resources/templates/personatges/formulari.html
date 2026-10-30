@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Formulario de personaje</title>
+    <link th:href="@{/css/tokens.css}" rel="stylesheet">
+    <link th:href="@{/css/base.css}" rel="stylesheet">
+    <link th:href="@{/css/components.css}" rel="stylesheet">
+    <link th:href="@{/css/utilities.css}" rel="stylesheet">
+</head>
+<body>
+<div class="gm-app">
+    <div th:replace="~{Blocks/header-v2 :: header}"></div>
+    <div class="gm-body">
+        <div th:replace="~{Blocks/sidebar-v2 :: sidebar}"></div>
+        <main class="gm-main">
+            <p class="gm-sidebar__eyebrow u-p-0">Sistema de Cartas y Tiers</p>
+            <h1 class="u-mb-sp2" th:text="${personatge.id == null} ? 'Nuevo personaje' : 'Editar personaje'">Nuevo personaje</h1>
+            <p class="u-lead--760">
+                Un personaje se construye combinando cartas ya creadas. Aquí no se puede inventar una clase,
+                raza o trasfondo nuevo — eso solo se hace en <a th:href="@{/cartas}">/cartas</a>. Si te falta algo
+                en las listas de abajo, créalo primero como carta y vuelve aquí.
+            </p>
+
+            <p class="u-callout-note--alt" th:if="${#lists.isEmpty(clasesDisponibles) or #lists.isEmpty(razasDisponibles)}">
+                Todavía no hay suficientes cartas de clase o raza en el catálogo. Ve a
+                <a th:href="@{/cartas}">/cartas</a> y crea al menos una de cada antes de crear un personaje.
+            </p>
+
+            <div class="u-callout-note" th:if="${erroresEquipo != null and !#lists.isEmpty(erroresEquipo)}">
+                <strong>No se ha guardado el personaje — revisa el equipo:</strong>
+                <ul class="u-list-indent-mt1">
+                    <li th:each="err : ${erroresEquipo}" th:text="${err}">Error</li>
+                </ul>
+            </div>
+
+            <form th:action="${personatge.id == null} ? @{/personatges/crear} : @{/personatges/{id}/editar(id=${personatge.id})}"
+                  th:object="${personatge}" method="post">
+
+                <div class="gm-form-grid u-mb-sp4">
+                    <div class="gm-field">
+                        <label>Nombre del personaje</label>
+                        <input class="gm-input" th:field="*{nom}" placeholder="Aina de la Bruma" required>
+                    </div>
+                    <div class="gm-field">
+                        <label>Tier</label>
+                        <input class="gm-input" type="number" min="0" max="5" id="campo-tier" th:field="*{tier}">
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Identidad — clase, raza y trasfondo ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Clase</label>
+                                <select class="gm-select" id="campo-clase" th:field="*{claseId}" required>
+                                    <option value="">— Elige una clase —</option>
+                                    <option th:each="c : ${clasesDisponibles}" th:value="${c.id}"
+                                            th:text="${c.name} + ' (' + ${c.role} + ')'"
+                                            th:attr="data-max-armadura=${c.maxArmorWeight},data-max-arma=${c.maxWeaponWeight}">Clase</option>
+                                </select>
+                                <span class="gm-hint" id="aviso-compatibilidad-clase"></span>
+                            </div>
+                            <div class="gm-field">
+                                <label>Raza</label>
+                                <select class="gm-select" th:field="*{razaId}" required>
+                                    <option value="">— Elige una raza —</option>
+                                    <option th:each="r : ${razasDisponibles}" th:value="${r.id}" th:text="${r.name}">Raza</option>
+                                </select>
+                            </div>
+                            <div class="gm-field">
+                                <label>Trasfondo</label>
+                                <select class="gm-select" th:field="*{transfonsId}">
+                                    <option value="">— Ninguno —</option>
+                                    <option th:each="t : ${transfondosDisponibles}" th:value="${t.id}" th:text="${t.name}">Trasfondo</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded" id="seccion-quien-eras">
+                    <button type="button" class="gm-panel-section__toggle">Quién eras antes — tu identidad ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p class="gm-hint u-mb-sp3" id="aviso-elige-mes">
+                            Elige arriba tu <strong>trasfondo</strong> (mes de nacimiento) y aquí aparecerán sus
+                            opciones: una personalidad, una virtud, un defecto, un objetivo, un miedo, un ideal
+                            y un vínculo. Solo narrativa — el poder vive en las otras cartas.
+                        </p>
+
+                        <div class="bloque-mes u-hidden" th:each="t : ${transfondosDisponibles}"
+th:attr="data-mes=${t.id}">
+                            <div class="u-quote-block">
+                                <p class="u-bold-mb1" th:text="${t.alignment != null and t.alignment.title != null} ? ${t.alignment.title} : ${t.name}">Arquetipo</p>
+                                <p class="gm-hint" th:text="${t.alignment != null} ? ${t.alignment.description} : ''">Descripción del arquetipo</p>
+                                <p class="gm-hint u-mt-sp1" th:text="${t.description}">Descripción del mes</p>
+                            </div>
+
+                            <th:block th:if="${t.characterCreation != null}">
+                                <p class="gm-grupo-titulo">🎭 Personalidad <span class="gm-hud">elige 1</span></p>
+                                <div class="gm-chip-grid">
+                                    <label class="gm-chip" th:each="o : ${t.characterCreation.personalities}">
+                                        <input type="radio" class="campo-identidad" th:field="*{eleccionPersonalidad}" th:value="${o.id}">
+                                        <span class="gm-chip__title" th:text="${o.etiqueta}">Opción</span>
+                                        <span class="gm-chip__meta" th:text="${o.description}">Descripción</span>
+                                    </label>
+                                </div>
+                                <p class="gm-grupo-titulo">🌱 Virtud <span class="gm-hud">elige 1</span></p>
+                                <div class="gm-chip-grid">
+                                    <label class="gm-chip" th:each="o : ${t.characterCreation.virtues}">
+                                        <input type="radio" class="campo-identidad" th:field="*{eleccionVirtud}" th:value="${o.id}">
+                                        <span class="gm-chip__title" th:text="${o.etiqueta}">Opción</span>
+                                        <span class="gm-chip__meta" th:text="${o.description}">Descripción</span>
+                                    </label>
+                                </div>
+                                <p class="gm-grupo-titulo">🕳 Defecto <span class="gm-hud">elige 1</span></p>
+                                <div class="gm-chip-grid">
+                                    <label class="gm-chip" th:each="o : ${t.characterCreation.flaws}">
+                                        <input type="radio" class="campo-identidad" th:field="*{eleccionDefecto}" th:value="${o.id}">
+                                        <span class="gm-chip__title" th:text="${o.etiqueta}">Opción</span>
+                                        <span class="gm-chip__meta" th:text="${o.description}">Descripción</span>
+                                    </label>
+                                </div>
+                                <p class="gm-grupo-titulo">🎯 Objetivo <span class="gm-hud">elige 1</span></p>
+                                <div class="gm-chip-grid">
+                                    <label class="gm-chip" th:each="o : ${t.characterCreation.goals}">
+                                        <input type="radio" class="campo-identidad" th:field="*{eleccionObjetivo}" th:value="${o.id}">
+                                        <span class="gm-chip__title" th:text="${o.etiqueta}">Opción</span>
+                                        <span class="gm-chip__meta" th:text="${o.description}">Descripción</span>
+                                    </label>
+                                </div>
+                                <p class="gm-grupo-titulo">😨 Miedo <span class="gm-hud">elige 1</span></p>
+                                <div class="gm-chip-grid">
+                                    <label class="gm-chip" th:each="o : ${t.characterCreation.fears}">
+                                        <input type="radio" class="campo-identidad" th:field="*{eleccionMiedo}" th:value="${o.id}">
+                                        <span class="gm-chip__title" th:text="${o.etiqueta}">Opción</span>
+                                        <span class="gm-chip__meta" th:text="${o.description}">Descripción</span>
+                                    </label>
+                                </div>
+                                <p class="gm-grupo-titulo">⚖ Ideal <span class="gm-hud">elige 1</span></p>
+                                <div class="gm-chip-grid">
+                                    <label class="gm-chip" th:each="o : ${t.characterCreation.ideals}">
+                                        <input type="radio" class="campo-identidad" th:field="*{eleccionIdeal}" th:value="${o.id}">
+                                        <span class="gm-chip__title" th:text="${o.etiqueta}">Opción</span>
+                                        <span class="gm-chip__meta" th:text="${o.description}">Descripción</span>
+                                    </label>
+                                </div>
+                                <p class="gm-grupo-titulo">🔗 Vínculo <span class="gm-hud">elige 1</span></p>
+                                <div class="gm-chip-grid">
+                                    <label class="gm-chip" th:each="o : ${t.characterCreation.bonds}">
+                                        <input type="radio" class="campo-identidad" th:field="*{eleccionVinculo}" th:value="${o.id}">
+                                        <span class="gm-chip__title" th:text="${o.etiqueta}">Opción</span>
+                                        <span class="gm-chip__meta" th:text="${o.description}">Descripción</span>
+                                    </label>
+                                </div>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Stats base (1-8) ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p class="gm-hint u-mb-sp3">La vida final se calcula sola con clase + CON + tier + equipo, no hace falta tocarla a mano.</p>
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>CON</label>
+                                <input class="gm-input" type="number" min="1" max="8" th:field="*{statCon}">
+                            </div>
+                            <div class="gm-field">
+                                <label>DES</label>
+                                <input class="gm-input" type="number" min="1" max="8" th:field="*{statDes}">
+                            </div>
+                            <div class="gm-field">
+                                <label>CAR</label>
+                                <input class="gm-input" type="number" min="1" max="8" th:field="*{statCar}">
+                            </div>
+                            <div class="gm-field">
+                                <label>INT</label>
+                                <input class="gm-input" type="number" min="1" max="8" th:field="*{statInt}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Habilidades ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p class="gm-hint u-mb-sp3">
+                            Primero las cartas de <strong>tu clase</strong>, después las <strong>universales</strong>
+                            (invocaciones, objetos...). El resto de clases queda plegado para no estorbar.
+                        </p>
+                        <div class="u-filter-row--tight">
+                            <input type="text" class="gm-input gm-chip-search u-flex-item-220" data-chip-filter="grid-habilidades"
+placeholder="Buscar habilidad por nombre...">
+                            <select class="gm-select u-w-auto" id="filtro-tier-habilidades" aria-label="Filtrar por tier">
+                                <option value="">Todos los tiers</option>
+                                <option value="1">Tier 1</option>
+                                <option value="2">Tier 2</option>
+                                <option value="3">Tier 3</option>
+                                <option value="4">Tier 4</option>
+                                <option value="5">Tier 5</option>
+                            </select>
+                        </div>
+
+                        <div id="grupo-clase">
+                            <p class="gm-grupo-titulo">⚔ De tu clase <span class="gm-hud" id="contador-grupo-clase">0</span></p>
+                            <div class="gm-chip-grid" id="grid-habilidades-clase"></div>
+                            <p class="gm-chip-empty" id="aviso-elige-clase">Elige una clase arriba para ver sus cartas aquí.</p>
+                        </div>
+                        <div id="grupo-universales">
+                            <p class="gm-grupo-titulo">✦ Universales <span class="gm-hud" id="contador-grupo-universales">0</span></p>
+                            <div class="gm-chip-grid" id="grid-habilidades-universales"></div>
+                        </div>
+                        <div id="grupo-otras">
+                            <p class="gm-grupo-titulo">
+                                <button type="button" class="gm-btn gm-btn--outline gm-btn--sm" id="toggle-otras-clases"
+                                        aria-expanded="false" aria-controls="grid-habilidades">
+                                    Mostrar cartas de otras clases
+                                </button>
+                                <span class="gm-hud" id="contador-grupo-otras">0</span>
+                            </p>
+                            <!-- La rejilla original: aquí quedan las cartas de otras clases (ocultas por defecto).
+                                 Sin JavaScript, esta rejilla simplemente muestra todas las habilidades. -->
+                            <div class="gm-chip-grid" id="grid-habilidades">
+                                <label class="gm-chip" th:each="h : ${habilidadesDisponibles}"
+                                       th:attr="data-chip-name=${h.name},data-classes=${#strings.listJoin(h.classTags, ',')},data-tier=${h.tier},data-rarity=${h.rarity}">
+                                    <input type="checkbox" class="campo-habilidad" th:field="*{habilidadIds}" th:value="${h.id}">
+                                    <span class="gm-chip__title" th:text="${h.name}">Habilidad</span>
+                                    <span class="gm-chip__meta">
+                                        <span class="gm-chip__tier" th:text="'T' + ${h.tier}">T1</span>
+                                        <span th:text="' ' + ${h.recovery} + ' · ' + ${h.rarity}">recuperación · rareza</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <p th:if="${#lists.isEmpty(habilidadesDisponibles)}" class="gm-chip-empty">
+                            No hay cartas de habilidad todavía. Créalas en <a th:href="@{/cartas/habilidades}">/cartas/habilidades</a>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Habilidades divinas — máximo 3 ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p class="gm-hint u-mb-sp3">
+                            Las habilidades divinas son <strong>universales</strong>: cualquier clase puede aprenderlas,
+                            pero solo <strong>3 por personaje</strong> (GDD 10.10). Son tu capa de personalización —
+                            dos personajes de la misma clase se diferencian aquí. Recuerda las obligaciones de la deidad.
+                        </p>
+                        <input type="text" class="gm-input gm-chip-search" data-chip-filter="grid-divinas"
+                               placeholder="Buscar habilidad divina por nombre...">
+                        <div class="gm-chip-grid" id="grid-divinas">
+                            <label class="gm-chip" th:each="d : ${divinasDisponibles}"
+                                   th:attr="data-chip-name=${d.name},data-tier=${d.tier},data-rarity=${d.rarity}">
+                                <input type="checkbox" class="campo-divina" th:field="*{hechizoIds}" th:value="${d.id}">
+                                <span class="gm-chip__title" th:text="${d.name}">Divina</span>
+                                <span class="gm-chip__meta">
+                                    <span class="gm-chip__tier" th:text="'T' + ${d.tier}">T1</span>
+                                    <span th:text="' ' + ${d.school} + ' · ' + ${d.recovery}">escuela · recuperación</span>
+                                </span>
+                            </label>
+                        </div>
+                        <p th:if="${#lists.isEmpty(divinasDisponibles)}" class="gm-chip-empty">
+                            No hay habilidades divinas en el catálogo todavía.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Armas, armaduras y objetos ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p class="gm-hint u-mb-sp3">
+                            Solo puedes llevar un objeto por slot (6 slots fijos, ver sección 9.7/19.2 del GDD) —
+                            al elegir un objeto nuevo en un slot ya ocupado, se desmarca el anterior automáticamente.
+                        </p>
+                        <input type="text" class="gm-input gm-chip-search" data-chip-filter="grid-equipo"
+                               placeholder="Buscar objeto por nombre...">
+
+                        <div id="grid-equipo">
+                        <details class="gm-picker" th:each="slotDef : ${ {'cabeza:⛑ Cabeza:armadura',
+                                                                          'torso:👕 Torso:armadura',
+                                                                          'piernas:👖 Piernas:armadura',
+                                                                          'pies:👢 Pies:armadura',
+                                                                          'arma_principal:⚔ Arma principal:arma',
+                                                                          'arma_secundaria:🛡 Arma secundaria:arma'} }"
+                                 th:with="slotId=${#strings.arraySplit(slotDef, ':')[0]},
+                                          slotNombre=${#strings.arraySplit(slotDef, ':')[1]},
+                                          slotCat=${#strings.arraySplit(slotDef, ':')[2]}"
+                                 th:attr="data-slot-picker=${slotId}">
+                            <summary>
+                                <span th:text="${slotNombre}">Slot</span>
+                                <span class="gm-picker__eleccion" th:attr="data-slot-eleccion=${slotId}">— vacío —</span>
+                            </summary>
+                            <div class="gm-picker__body">
+                                <div class="gm-chip-grid">
+                                    <label class="gm-chip" th:each="e : ${equipoDisponible}" th:if="${e.slot == slotId}"
+                                           th:attr="data-chip-name=${e.name},data-rarity=${e.rarity},data-tier=${e.tier}">
+                                        <input type="checkbox" th:field="*{equipoIds}" th:value="${e.id}"
+                                               th:attr="data-slot-group=${slotId},data-cat=${slotCat},data-weight=${e.weightCategory},data-nombre=${e.name}">
+                                        <span class="gm-chip__title" th:text="${e.name}">Objeto</span>
+                                        <span class="gm-chip__meta">
+                                            <span class="gm-chip__tier" th:text="'T' + ${e.tier}">T1</span>
+                                            <span th:text="' ' + ${e.rarity} + ' · ' + ${e.weightCategory}">rareza · peso</span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <p th:if="${#lists.isEmpty(equipoDisponible.?[slot == '__${slotId}__'])}"
+class="gm-chip-empty u-m-0">Sin cartas todavía para este slot.</p>
+                            </div>
+                        </details>
+                        </div>
+
+                        <p th:if="${#lists.isEmpty(equipoDisponible)}" class="gm-chip-empty">
+                            No hay cartas de equipo todavía. Créalas en <a th:href="@{/cartas/armas}">/cartas/armas</a>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Dotes ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p class="gm-hint u-mb-sp3">
+                            El número de dotes lo marca tu tier: <strong>1</strong> en tiers 0-1,
+                            <strong>2</strong> en 2-3 y <strong>3</strong> en 4-5.
+                        </p>
+                        <input type="text" class="gm-input gm-chip-search" data-chip-filter="grid-dotes"
+                               placeholder="Buscar dote por nombre...">
+                        <div class="gm-chip-grid" id="grid-dotes">
+                            <label class="gm-chip" th:each="d : ${dotesDisponibles}"
+                                   th:attr="data-chip-name=${d.name},data-tier=${d.tier},data-rarity=${d.rarity}">
+                                <input type="checkbox" class="campo-dote" th:field="*{doteIds}" th:value="${d.id}">
+                                <span class="gm-chip__title" th:text="${d.name}">Dote</span>
+                                <span class="gm-chip__meta">
+                                    <span class="gm-chip__tier" th:text="'T' + ${d.tier}">T1</span>
+                                </span>
+                            </label>
+                        </div>
+                        <p th:if="${#lists.isEmpty(dotesDisponibles)}" class="gm-chip-empty">
+                            No hay cartas de dote todavía. Créalas en <a th:href="@{/cartas/dotes}">/cartas/dotes</a>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="gm-field u-mt-sp4">
+                    <label>Historia / notas</label>
+                    <textarea class="gm-textarea" rows="3" th:field="*{historia}"></textarea>
+                </div>
+
+                <!-- Barra de construcción: resumen vivo del personaje, siempre visible -->
+                <div class="gm-buildbar" role="status" aria-live="polite">
+                    <span class="gm-hud" id="hud-identidad" title="Identidad del trasfondo: personalidad, virtud, defecto, objetivo, miedo, ideal y vínculo">🎭 Identidad 0/7</span>
+                    <span class="gm-hud" id="hud-mano" title="Cartas de habilidad frente al límite de mano de tu tier">🃏 Mano 0/10</span>
+                    <span class="gm-hud" id="hud-divinas" title="Habilidades divinas (máximo 3 por personaje, GDD 10.10)">🕊 Divinas 0/3</span>
+                    <span class="gm-hud" id="hud-dotes" title="Dotes frente al límite de tu tier">🌟 Dotes 0/1</span>
+                    <span class="gm-hud" id="hud-equipo" title="Slots de equipo ocupados">🛡 Equipo 0/6</span>
+                    <span class="gm-hud" id="hud-stats" title="Suma de stats base">📊 Stats —</span>
+                    <span class="u-flex-1"></span>
+                    <button class="gm-btn gm-btn--primary" type="submit">Guardar personaje</button>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/personatges}">Cancelar</a>
+                </div>
+            </form>
+        </main>
+    </div>
+    <div th:replace="~{Blocks/footer-v2 :: footer}"></div>
+</div>
+<script th:src="@{/js/theme.js}"></script>
+<script th:src="@{/js/panels.js}"></script>
+<script th:inline="javascript">
+    // ==================== HUD de construcción (barra fija) ====================
+    // Feedback constante tipo videojuego: mano X/límite, slots equipados y suma de
+    // stats, con estados de color (ok / lleno / exceso). La validación definitiva
+    // sigue siendo la del servidor.
+    (function () {
+        var limitesPorTier = [6, 10, 15, 20, 24, 28];
+        var limitesDotes = [1, 1, 2, 2, 3, 3];        // misma tabla que el servidor
+        var campoTier = document.getElementById('campo-tier');
+        var hudMano = document.getElementById('hud-mano');
+        var hudDivinas = document.getElementById('hud-divinas');
+        var hudDotes = document.getElementById('hud-dotes');
+        var hudEquipo = document.getElementById('hud-equipo');
+        var hudStats = document.getElementById('hud-stats');
+
+        function estadoHud(elemento, actual, limite) {
+            elemento.classList.remove('gm-hud--ok', 'gm-hud--lleno', 'gm-hud--exceso');
+            if (actual > limite) elemento.classList.add('gm-hud--exceso');
+            else if (actual === limite) elemento.classList.add('gm-hud--lleno');
+            else if (actual > 0) elemento.classList.add('gm-hud--ok');
+        }
+
+        function tierActual() {
+            var tier = parseInt(campoTier && campoTier.value, 10);
+            if (isNaN(tier) || tier < 0) tier = 0;
+            if (tier > 5) tier = 5;
+            return tier;
+        }
+
+        function actualizarHud() {
+            var tier = tierActual();
+
+            var mano = document.querySelectorAll('.campo-habilidad:checked').length;
+            if (hudMano) {
+                hudMano.textContent = '🃏 Mano ' + mano + '/' + limitesPorTier[tier] + (mano > limitesPorTier[tier] ? ' — ¡te pasas!' : '');
+                estadoHud(hudMano, mano, limitesPorTier[tier]);
+            }
+            var divinas = document.querySelectorAll('.campo-divina:checked').length;
+            if (hudDivinas) {
+                hudDivinas.textContent = '🕊 Divinas ' + divinas + '/3' + (divinas > 3 ? ' — ¡máximo 3!' : '');
+                estadoHud(hudDivinas, divinas, 3);
+            }
+            var dotes = document.querySelectorAll('.campo-dote:checked').length;
+            if (hudDotes) {
+                hudDotes.textContent = '🌟 Dotes ' + dotes + '/' + limitesDotes[tier] + (dotes > limitesDotes[tier] ? ' — ¡te pasas!' : '');
+                estadoHud(hudDotes, dotes, limitesDotes[tier]);
+            }
+            var slots = document.querySelectorAll('input[data-slot-group]:checked').length;
+            if (hudEquipo) {
+                hudEquipo.textContent = '🛡 Equipo ' + slots + '/6';
+                estadoHud(hudEquipo, slots, 6);
+            }
+            var hudIdentidad = document.getElementById('hud-identidad');
+            if (hudIdentidad) {
+                // las elecciones de meses no elegidos se limpian al cambiar de mes,
+                // así que el recuento global equivale al del mes visible
+                var identidad = document.querySelectorAll('.campo-identidad:checked').length;
+                hudIdentidad.textContent = '🎭 Identidad ' + identidad + '/7';
+                estadoHud(hudIdentidad, identidad, 7);
+            }
+            if (hudStats) {
+                var suma = 0;
+                ['statCon', 'statDes', 'statCar', 'statInt'].forEach(function (id) {
+                    var campo = document.getElementById(id);
+                    suma += parseInt(campo && campo.value, 10) || 0;
+                });
+                hudStats.textContent = '📊 Stats ' + suma + ' pts';
+            }
+        }
+
+        // Tope duro en cliente: al intentar marcar la divina nº 4 o la dote de más,
+        // el checkbox se revierte y el HUD parpadea (feedback inmediato; el servidor
+        // revalida igualmente al guardar).
+        document.addEventListener('change', function (e) {
+            var caja = e.target;
+            if (!caja || caja.type !== 'checkbox' || !caja.checked) return;
+            if (caja.classList.contains('campo-divina')
+                    && document.querySelectorAll('.campo-divina:checked').length > 3) {
+                caja.checked = false;
+                if (hudDivinas) { hudDivinas.classList.remove('gm-hud--exceso'); void hudDivinas.offsetWidth; hudDivinas.classList.add('gm-hud--exceso'); }
+            }
+            if (caja.classList.contains('campo-dote')
+                    && document.querySelectorAll('.campo-dote:checked').length > limitesDotes[tierActual()]) {
+                caja.checked = false;
+                if (hudDotes) { hudDotes.classList.remove('gm-hud--exceso'); void hudDotes.offsetWidth; hudDotes.classList.add('gm-hud--exceso'); }
+            }
+        }, true);
+
+        // ===== Bloqueo por tier: nunca se juega una carta por encima del tier del
+        // personaje (GDD 10.5). Deshabilita y desmarca las fichas de tier superior. =====
+        function aplicarBloqueoPorTier() {
+            var tier = tierActual();
+            document.querySelectorAll('.gm-chip[data-tier]').forEach(function (chip) {
+                var caja = chip.querySelector('input[type="checkbox"]');
+                if (!caja) return;
+                var cartaTier = parseInt(chip.getAttribute('data-tier'), 10) || 1;
+                var bloqueada = cartaTier > tier;
+                if (bloqueada && caja.checked) caja.checked = false;
+                if (bloqueada) {
+                    caja.disabled = true;
+                    chip.classList.add('gm-chip--tier-bloqueado');
+                    chip.setAttribute('title', 'Tier ' + cartaTier + ': supera el tier ' + tier + ' de tu personaje (GDD 10.5)');
+                } else {
+                    chip.classList.remove('gm-chip--tier-bloqueado');
+                    chip.removeAttribute('title');
+                    if (!chip.classList.contains('gm-chip--incompatible')) caja.disabled = false;
+                }
+            });
+        }
+
+        if (campoTier) campoTier.addEventListener('input', function () { aplicarBloqueoPorTier(); actualizarHud(); });
+        document.addEventListener('change', actualizarHud);
+        document.addEventListener('input', actualizarHud);
+        aplicarBloqueoPorTier();
+        actualizarHud();
+    })();
+
+    // ==================== Habilidades ordenadas por relevancia ====================
+    // Las cartas de TU clase primero, las universales después y las del resto de
+    // clases plegadas tras un botón. Dentro de cada grupo, orden por tier y nombre.
+    // Sin JavaScript, la rejilla original muestra todas (mejora progresiva).
+    (function () {
+        var campoClase = document.getElementById('campo-clase');
+        var gridOtras = document.getElementById('grid-habilidades');
+        var gridClase = document.getElementById('grid-habilidades-clase');
+        var gridUniversales = document.getElementById('grid-habilidades-universales');
+        var avisoEligeClase = document.getElementById('aviso-elige-clase');
+        var botonOtras = document.getElementById('toggle-otras-clases');
+        var filtroTier = document.getElementById('filtro-tier-habilidades');
+        if (!gridOtras || !gridClase || !gridUniversales) return;
+
+        var chips = Array.prototype.slice.call(gridOtras.querySelectorAll('.gm-chip'));
+        var otrasVisibles = false;
+        gridOtras.style.display = 'none';
+
+        function ordenar(lista) {
+            return lista.sort(function (a, b) {
+                var ta = parseInt(a.getAttribute('data-tier'), 10) || 0;
+                var tb = parseInt(b.getAttribute('data-tier'), 10) || 0;
+                if (ta !== tb) return ta - tb;
+                return (a.getAttribute('data-chip-name') || '').localeCompare(b.getAttribute('data-chip-name') || '');
+            });
+        }
+
+        function reagrupar() {
+            var clase = campoClase ? campoClase.value : '';
+            var deClase = [], universales = [], otras = [];
+            chips.forEach(function (chip) {
+                var clases = (chip.getAttribute('data-classes') || '').split(',').filter(Boolean);
+                var marcada = chip.querySelector('input').checked;
+                if (clase && clases.indexOf(clase) !== -1) deClase.push(chip);
+                else if (clases.length === 0) universales.push(chip);
+                else if (marcada) deClase.push(chip);   // seleccionadas de otras clases: siempre a la vista
+                else otras.push(chip);
+            });
+            ordenar(deClase).forEach(function (c) { gridClase.appendChild(c); });
+            ordenar(universales).forEach(function (c) { gridUniversales.appendChild(c); });
+            ordenar(otras).forEach(function (c) { gridOtras.appendChild(c); });
+
+            document.getElementById('contador-grupo-clase').textContent = deClase.length;
+            document.getElementById('contador-grupo-universales').textContent = universales.length;
+            document.getElementById('contador-grupo-otras').textContent = otras.length;
+            if (avisoEligeClase) avisoEligeClase.style.display = clase ? 'none' : '';
+        }
+
+        function aplicarFiltroTier() {
+            var valor = filtroTier ? filtroTier.value : '';
+            chips.forEach(function (chip) {
+                var coincide = !valor || chip.getAttribute('data-tier') === valor;
+                chip.classList.toggle('gm-chip--fuera-de-tier', !coincide);
+                if (!chip.style.display || chip.style.display === 'none') return;
+                chip.style.display = coincide ? '' : 'none';
+            });
+            // el buscador por nombre (data-chip-filter) sigue funcionando por encima
+        }
+
+        if (botonOtras) {
+            botonOtras.addEventListener('click', function () {
+                otrasVisibles = !otrasVisibles;
+                gridOtras.style.display = otrasVisibles ? '' : 'none';
+                botonOtras.textContent = otrasVisibles ? 'Ocultar cartas de otras clases' : 'Mostrar cartas de otras clases';
+                botonOtras.setAttribute('aria-expanded', String(otrasVisibles));
+            });
+        }
+        if (campoClase) campoClase.addEventListener('change', reagrupar);
+        if (filtroTier) filtroTier.addEventListener('change', function () {
+            chips.forEach(function (chip) { chip.style.display = ''; });
+            var valor = filtroTier.value;
+            if (valor) {
+                chips.forEach(function (chip) {
+                    if (chip.getAttribute('data-tier') !== valor) chip.style.display = 'none';
+                });
+            }
+        });
+        reagrupar();
+    })();
+
+    // ==================== "Quién eras antes": bloque del mes elegido ====================
+    // Al cambiar el trasfondo, se muestra SOLO el bloque de ese mes con sus 7 listas;
+    // las elecciones de otros meses se limpian para no enviar ids de un mes distinto.
+    (function () {
+        var selectMes = document.getElementById('transfonsId');
+        var aviso = document.getElementById('aviso-elige-mes');
+        if (!selectMes) return;
+
+        function mostrarMes(limpiarOtros) {
+            var mes = selectMes.value;
+            document.querySelectorAll('.bloque-mes').forEach(function (bloque) {
+                var esElElegido = bloque.getAttribute('data-mes') === mes;
+                bloque.style.display = esElElegido ? 'block' : 'none';
+                if (!esElElegido && limpiarOtros) {
+                    bloque.querySelectorAll('.campo-identidad:checked').forEach(function (radio) {
+                        radio.checked = false;
+                    });
+                }
+            });
+            if (aviso) aviso.style.display = mes ? 'none' : '';
+        }
+
+        selectMes.addEventListener('change', function () { mostrarMes(true); });
+        mostrarMes(false);   // al editar, conserva las elecciones guardadas del mes actual
+    })();
+
+    // ==================== Resumen vivo por slot de equipo ====================
+    // Cada slot es un desplegable cuyo titular muestra QUÉ llevas puesto: al marcar
+    // un objeto, el nombre sube al titular y el picker se marca como lleno.
+    (function () {
+        function actualizarResumenes() {
+            document.querySelectorAll('[data-slot-picker]').forEach(function (picker) {
+                var slot = picker.getAttribute('data-slot-picker');
+                var eleccion = picker.querySelector('[data-slot-eleccion]');
+                var marcado = picker.querySelector('input[data-slot-group="' + slot + '"]:checked');
+                if (eleccion) {
+                    eleccion.textContent = marcado ? ('✓ ' + (marcado.getAttribute('data-nombre') || 'elegido')) : '— vacío —';
+                }
+                picker.classList.toggle('gm-picker--lleno', !!marcado);
+            });
+        }
+        document.addEventListener('change', function (e) {
+            if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-slot-group')) actualizarResumenes();
+        });
+        actualizarResumenes();
+    })();
+
+    // Un objeto por slot: al marcar un checkbox de equipo, desmarca cualquier otro
+    // checkbox que comparta el mismo data-slot-group (mismo slot fijo). Esto es solo
+    // ayuda visual en el cliente — la validación real y definitiva ocurre en el servidor
+    // (PersonatgeService.validarSlotsEquipo), por si el navegador no ejecuta este script.
+    (function () {
+        document.querySelectorAll('input[type="checkbox"][data-slot-group]').forEach(function (casilla) {
+            casilla.addEventListener('change', function () {
+                if (!casilla.checked) return;
+                var grupo = casilla.getAttribute('data-slot-group');
+                document.querySelectorAll('input[type="checkbox"][data-slot-group="' + grupo + '"]').forEach(function (otra) {
+                    if (otra !== casilla) otra.checked = false;
+                });
+            });
+        });
+    })();
+
+    // Solo equipo compatible con la clase elegida: cada clase declara un peso máximo de
+    // armadura y de arma (data-max-armadura/data-max-arma en <option>); el equipo que se pase
+    // de ese peso (data-weight en cada checkbox) se deshabilita y desmarca. Ayuda visual en el
+    // cliente — la validación real y definitiva ocurre en el servidor
+    // (PersonatgeService.validarCompatibilidadEquipo), por si el navegador no ejecuta este script.
+    (function () {
+        var ordenPeso = { ligera: 1, media: 2, pesada: 3 };
+        var campoClase = document.getElementById('campo-clase');
+        var avisoClase = document.getElementById('aviso-compatibilidad-clase');
+        var casillasEquipo = document.querySelectorAll('input[type="checkbox"][data-cat]');
+
+        function actualizarCompatibilidad() {
+            if (!campoClase) return;
+            var opcion = campoClase.options[campoClase.selectedIndex];
+            var maxArmadura = opcion ? (opcion.getAttribute('data-max-armadura') || 'pesada') : 'pesada';
+            var maxArma = opcion ? (opcion.getAttribute('data-max-arma') || 'pesada') : 'pesada';
+
+            if (avisoClase) {
+                avisoClase.textContent = opcion && opcion.value
+                    ? 'Esta clase lleva armadura hasta "' + maxArmadura + '" y armas hasta "' + maxArma + '".'
+                    : '';
+            }
+
+            casillasEquipo.forEach(function (casilla) {
+                var cat = casilla.getAttribute('data-cat');
+                var peso = casilla.getAttribute('data-weight') || 'ligera';
+                var maximo = cat === 'armadura' ? maxArmadura : maxArma;
+                var compatible = (ordenPeso[peso] || 1) <= (ordenPeso[maximo] || 3);
+                var chip = casilla.closest('.gm-chip');
+                if (!compatible) {
+                    casilla.checked = false;
+                    casilla.disabled = true;
+                    if (chip) chip.classList.add('gm-chip--incompatible');
+                } else {
+                    casilla.disabled = false;
+                    if (chip) chip.classList.remove('gm-chip--incompatible');
+                }
+            });
+        }
+
+        if (campoClase) {
+            campoClase.addEventListener('change', actualizarCompatibilidad);
+            actualizarCompatibilidad();
+        }
+    })();
+
+    // Filtro de búsqueda en vivo para cada rejilla de fichas seleccionables
+    // (habilidades/equipo/dotes) — no reordena ni oculta las seleccionadas, solo filtra por nombre.
+    (function () {
+        document.querySelectorAll('[data-chip-filter]').forEach(function (input) {
+            var grid = document.getElementById(input.getAttribute('data-chip-filter'));
+            if (!grid) return;
+            input.addEventListener('input', function () {
+                var texto = input.value.trim().toLowerCase();
+                grid.querySelectorAll('.gm-chip').forEach(function (chip) {
+                    var nombre = (chip.getAttribute('data-chip-name') || '').toLowerCase();
+                    chip.style.display = nombre.indexOf(texto) === -1 ? 'none' : '';
+                });
+            });
+        });
+    })();
+</script>
+</body>
+</html>

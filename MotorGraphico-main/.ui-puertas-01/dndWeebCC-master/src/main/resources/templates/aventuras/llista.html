@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Aventuras</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <p class="gm-sidebar__eyebrow u-p-0">Sistema de Cartas y Tiers</p>
+            <div class="u-page-header">
+                <div>
+                    <h1 class="u-mb-sp1">🗺 Aventuras</h1>
+                    <p class="u-lead">
+                        Una aventura es una recopilación de cartas de <a th:href="@{/historias}">Historia</a>:
+                        elige los ganchos, y las tramas madre les dan el orden narrativo solas.
+                    </p>
+                </div>
+                <a class="gm-btn gm-btn--primary" th:href="@{/aventuras/crear}">+ Nueva aventura</a>
+            </div>
+
+            <div class="gm-chip-grid u-grid-fill-300">
+                <a class="gm-chip u-no-underline" th:each="a : ${aventuras}" th:href="@{/aventuras/{id}(id=${a.id})}">
+                    <span class="gm-chip__title" th:text="${a.nom}">Nombre</span>
+                    <span class="gm-chip__meta">
+                        <span th:if="${a.tema}" th:text="${a.tema} + ' · '">tema</span>
+                        <span th:text="${a.estado}">estado</span>
+                    </span>
+                    <span class="gm-chip__meta" th:if="${a.esPorActos()}"
+                          th:text="${#lists.size(a.cartasHistoria)} + ' cartas · ' + ${a.porcentajeBase(1)} + '/' + ${a.porcentajeBase(2)} + '/' + ${a.porcentajeBase(3)} + '% Base'">cartas</span>
+                    <span class="gm-chip__meta" th:unless="${a.esPorActos()}" th:text="${#lists.size(a.historiaIds)} + ' historias recopiladas'">n historias</span>
+                    <span class="gm-chip__meta" th:if="${a.descripcion}" th:text="${#strings.abbreviate(a.descripcion, 100)}">descripción</span>
+                </a>
+            </div>
+            <p th:if="${#lists.isEmpty(aventuras)}" class="gm-chip-empty">
+                Todavía no hay aventuras. <a th:href="@{/aventuras/crear}">Crea la primera</a> recopilando historias.
+            </p></main>
+</body>
+</html>

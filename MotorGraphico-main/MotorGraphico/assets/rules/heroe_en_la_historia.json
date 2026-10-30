@@ -1,0 +1,117 @@
+{
+  "_doc": "HEROE-01 (13/10/2026). Lo que las aventuras saben del heroe creado. La sesion pone, antes de cada disparo, flags heroe_raza_<id>, heroe_pueblo_<categoria>, heroe_clase_<id>, heroe_rol_<rol>, heroe_base_<clase base>, heroe_origen_<id>, heroe_elemento_<elemento>, heroe_deidad_<id>, heroe_fe_<rango o categoria>, heroe_vinculo_<id>, heroe_miedo_<id>, heroe_defecto_<id>, heroe_meta_<id>, heroe_ideal_<id>, heroe_caracter_<id> y heroe_virtud_<id>; variables heroe_con, heroe_des, heroe_int y heroe_car; y textos {nombre}, {raza}, {pueblo}, {clase}, {origen}, {deidad}, {vinculo}, {miedo}, {defecto}, {meta}, {ideal}, {caracter} y {virtud}. Las categorias se deciden aqui: cada una lista narrativeTags de races.json o ids de raza (pueblos) y ids de deities.json (fe). Una aventura nunca escribe una flag heroe_*.",
+  "pueblos": {
+    "_doc": "Como mira Boundington al heroe. humano: pasa por uno mas. de_aegroum: es de aqui. forastero_visible: se nota a la legua que no es humano (los Verdaderos lo increpan). inquietante: da miedo o mal fario (no muertos, poseidos, los drows mas corrompidos: los de la Locura, del Abismo y de los Vientos...). oscuro: lleva la oscuridad en la sangre o en el nombre (el culto lo mira con interes).",
+    "humano": [
+      "Huma de Aegroum",
+      "Huma de Bastrea",
+      "Huma de Ascaria",
+      "Huma Perdido",
+      "Comun",
+      "Versatil"
+    ],
+    "de_aegroum": [
+      "Huma de Aegroum"
+    ],
+    "forastero_visible": [
+      "Aarakocra",
+      "Home Gat",
+      "Dracónico",
+      "Drow de Ayashii",
+      "Elf de Ecla",
+      "Nan de Udrax",
+      "Undead",
+      "Home Llargandaix",
+      "Mitja",
+      "Minotaure",
+      "Naga",
+      "Orco de Gongorguma",
+      "Saga",
+      "Poseído",
+      "Yokai",
+      "Feerico",
+      "Extraplanar",
+      "Subterraneo",
+      "Artesano",
+      "Longevo",
+      "Silvano",
+      "Tribal",
+      "Resiliente"
+    ],
+    "inquietante": [
+      "Undead",
+      "Poseído",
+      "Saga",
+      "Naga",
+      "Extraplanar",
+      "drow_de_la_locura",
+      "drow_del_abismo",
+      "drow_de_los_vientos"
+    ],
+    "oscuro": [
+      "Huma Perdido",
+      "Poseído",
+      "Drow de Ayashii",
+      "Undead",
+      "Saga"
+    ],
+    "bestial": [
+      "Aarakocra",
+      "Home Gat",
+      "Home Llargandaix",
+      "Minotaure",
+      "Dracónico"
+    ],
+    "pequeno": [
+      "Mitja"
+    ],
+    "longevo": [
+      "Elf de Ecla",
+      "Nan de Udrax",
+      "Longevo"
+    ]
+  },
+  "fe": {
+    "_doc": "Ademas de heroe_fe_creador o heroe_fe_deidad_local (el rango) y heroe_fe_ninguna si no eligio deidad.",
+    "luminosa": [
+      "vida",
+      "sofia",
+      "chronos",
+      "la_dama_del_farol_rojo",
+      "la_espiga_dorada",
+      "la_tejedora_de_estrellas",
+      "egaroth"
+    ],
+    "sombria": [
+      "muerte",
+      "envidia",
+      "guerra",
+      "deity_wolf_king",
+      "egos"
+    ],
+    "artesana": [
+      "forja",
+      "deity_forge_father",
+      "la_forja_del_trueno",
+      "deithrok"
+    ],
+    "del_camino": [
+      "el_caminante_gris",
+      "deity_wild_court",
+      "eros",
+      "deseo",
+      "morfeo",
+      "deity_veiled_queen",
+      "el_oraculo_fragmentado"
+    ]
+  },
+  "elementos": [
+    "TIERRA",
+    "AGUA",
+    "FUEGO",
+    "AIRE",
+    "RAYO",
+    "VEGETACIÓN",
+    "ENERGÍA_SUPREMA"
+  ]
+}

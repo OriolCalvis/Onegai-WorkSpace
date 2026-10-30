@@ -1,0 +1,49 @@
+{
+  "id": "FICHA-01",
+  "date": "2026-09-27",
+  "author": "Claude (encargo de Oriol: ficha 5e-simplificada sobre el canon de 4 stats)",
+  "status": "HECHO en el arbol, sin commit",
+  "descripcion": "Ficha del jugador con iconos: stats desglosados (base/raza/clase/equipo/dotes/condiciones = total del motor), PV/PM/oro/inspiracion, tier, siete ranuras de equipo con nombre de catalogo, pasivas/dotes/rasgos y condiciones con rondas y acumulaciones. Se ve en la pestana Estado de la superposicion de inventario (TAB, A/D cambia de pestana).",
+  "archivos": {
+    "nuevos": [
+      "tools/gen_iconos.py",
+      "assets/textures/iconos.png",
+      "assets/textures/iconos.json",
+      "include/Game/FichaVista.h",
+      "src/Game/FichaVista.cpp",
+      "include/HUD/Iconos.h",
+      "src/HUD/Iconos.cpp",
+      "include/Render/HudFicha.h",
+      "src/Render/HudFicha.cpp",
+      "tests/Game/FichaVistaTests.cpp",
+      "cmake/FichaVistaTests.cmake",
+      "include/Render/HudIconos.h",
+      "src/Render/HudIconos.cpp"
+    ],
+    "modificados": [
+      "CMakeLists.txt (3 lineas: motor_level, motor_core, include del test)",
+      "include/Engine/Application.h (tipo de m_inventoryStatusWidget HudText->HudFicha + include; misma cuenta de miembros)",
+      "src/Engine/ApplicationPantallas.cpp (createInventoryScreenWidgets: panel 760x460, pestanas, lista, ficha; registra los cuatro en m_hud)",
+      "src/Engine/ApplicationHud.cpp (refreshInventoryOverlay como funcion libre; el panel legacy solo si no existen los widgets)",
+      "include/Game/InventoryScreen.h + .cpp (ficha() y statusLabels() desde FichaVista)",
+      "include/Render/HudFicha.h/.cpp usan HudIconos (atlas compartido con HudIconList)"
+    ]
+  },
+  "reglas": [
+    "GL-free: FichaVista e Iconos en motor_level, solo lectura de CharacterSheet y catalogos; ninguna regla nueva.",
+    "HudFicha es el unico con textura (motor_core). Sin iconos.png o sin manifiesto pinta solo texto.",
+    "Application.h no crece: cambio de tipo, no de miembro. Application.cpp intacto.",
+    "Iconos: 56 de 16x16, contorno + 2 colores + brillo; tablas stats/ranuras/condiciones/misiones/codice en el JSON. Las 16 condiciones de conditions.json tienen icono propio; desconocidas -> perjuicio/mejora."
+  ],
+  "verification": [
+    "test_ficha_vista 5/5 en el oraculo del contenedor (catalogos y manifiesto reales).",
+    "ApplicationHud.cpp, ApplicationPantallas.cpp y HudFicha.cpp compilan como objetos de motor_core (motor_core entero no enlaza en HEAD 61d89d7 por Application.cpp ajeno: publishSheetSkills/tickRound).",
+    "PENDIENTE en el Mac: ./juego, TAB, D D -> Estado; comprobar iconos y que el texto no se salga del panel a 1280x720.",
+    "linea_base_core --rapido: solo avisa de que los ficheros nuevos no estan versionados (van en el mismo commit que sus lineas de CMake)."
+  ],
+  "pendiente": [
+    "Nadie ha pasado el humo visual (sin GL en el contenedor).",
+    "InventoryScreen.cpp choca con la version de G12-INVENTARIO-VISTA que Codex dejo en stash@{0}: quien haga stash pop resuelve a favor de conservar ficha()/statusLabels().",
+    "Hover/descripcion de condiciones y rasgos (ESPECIFICACION 17.1) no cabe en un HUD sin raton: falta un modo detalle con W/S sobre la ficha."
+  ]
+}

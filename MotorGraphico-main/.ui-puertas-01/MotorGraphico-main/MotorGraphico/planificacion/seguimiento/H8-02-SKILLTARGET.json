@@ -1,0 +1,30 @@
+{
+  "id": "H8-02",
+  "date": "2026-09-24",
+  "author": "Codex",
+  "status": "HECHO — SkillTarget tiene una sola definición canónica.",
+  "scope": [
+    "RPG::SkillTarget vive en include/RPG/SkillTarget.h y lo incluyen tanto la definición de carta como la habilidad heredada de Game.",
+    "Game conserva using SkillTarget = RPG::SkillTarget; y las grafías PascalCase son enumeradores alias del mismo enum, no una segunda representación.",
+    "La adaptación temporal de Skill a SkillDefinition conserva ahora el objetivo de la habilidad en vez de fijarlo siempre a SINGLE_ENEMY."
+  ],
+  "mapa_del_codigo": {
+    "consulted": [
+      "include/Game/Skill.h pertenece a C-01.",
+      "include/RPG/Definitions/SkillDefinition.h y tests/RPG/CatalogContentTests.cpp pertenecen a D-02.",
+      "src/Game/BattleState.cpp es cruce C-01/D-09/D-11/G-13 y se dejó intacto."
+    ],
+    "note": "H8 no figura como paquete del mapa generado. No se regeneró MAPA_DEL_CODIGO.md: hacerlo en un árbol compartido recogería WIP ajeno."
+  },
+  "non_goals": [
+    "No integrar BattleMenuActions/H1-01 en Application ni alterar el catálogo legado de BattleState.",
+    "No implementar ZONE_RADIUS como resolución de área: ahora se representa sin crear una semántica falsa.",
+    "No tocar Application, CMake, catálogos ni los ficheros de cruce de otros agentes."
+  ],
+  "verification": [
+    "test_skill 1/1, test_battle_state 1/1, test_catalog_content 1/1 y test_g13_combat_commands 1/1 pasan GL-free.",
+    "tools/analizar_duplicados.py --solo NOMBRE_AMBIGUO baja de 3 a 2: SkillTarget desaparece; BattleAction y ShopItem son hallazgos ajenos posteriores.",
+    "tools/linea_base_core.py --rapido y git diff --check pasan."
+  ],
+  "handoff": "Si una llamada nueva usa el contrato canónico, escriba RPG::SkillTarget::SINGLE_ENEMY (u otra grafía en mayúsculas). SkillTarget::SingleEnemy se mantiene solo para que los consumidores heredados se migren de forma independiente de Application.cpp."
+}

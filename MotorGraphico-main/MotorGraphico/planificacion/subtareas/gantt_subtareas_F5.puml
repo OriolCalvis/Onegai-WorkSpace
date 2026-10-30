@@ -1,0 +1,362 @@
+@startgantt
+
+title Fase 5 — Sistema de eventos tipo RPG Maker — subtareas atómicas revisables
+
+' 1 'día' = 1 jornada de esfuerzo (~6 h). Las medias jornadas del
+' roadmap (0,5 j y 1,5 j) se redondean al alza porque PlantUML solo
+' admite días enteros; el esfuerzo exacto va entre corchetes en el
+' nombre de cada subtarea.
+' Las subtareas de paquetes ya avanzados se marcan con su porcentaje
+' heredado del paquete: revísalas antes de darlas por hechas.
+
+Project starts 2026-09-01
+saturday are closed
+sunday are closed
+
+
+-- EVT-01 — Definir EventDefinition y EventPage  [PARCIAL 45%] --
+
+[EVT-01.1 (1,5 j) definir tipos] lasts 2 days
+[EVT-01.1 (1,5 j) definir tipos] is colored in #E3A82B
+[EVT-01.1 (1,5 j) definir tipos] is 45% completed
+[EVT-01.2 (1,5 j) añadir páginas ordenadas] lasts 2 days
+[EVT-01.2 (1,5 j) añadir páginas ordenadas] is colored in #E3A82B
+[EVT-01.2 (1,5 j) añadir páginas ordenadas] is 45% completed
+[EVT-01.1 (1,5 j) definir tipos] -> [EVT-01.2 (1,5 j) añadir páginas ordenadas]
+[EVT-01.3 (1,5 j) serializar] lasts 2 days
+[EVT-01.3 (1,5 j) serializar] is colored in #E3A82B
+[EVT-01.3 (1,5 j) serializar] is 45% completed
+[EVT-01.2 (1,5 j) añadir páginas ordenadas] -> [EVT-01.3 (1,5 j) serializar]
+[EVT-01.4 (1,5 j) validar IDs/prioridad] lasts 2 days
+[EVT-01.4 (1,5 j) validar IDs/prioridad] is colored in #E3A82B
+[EVT-01.4 (1,5 j) validar IDs/prioridad] is 45% completed
+[EVT-01.3 (1,5 j) serializar] -> [EVT-01.4 (1,5 j) validar IDs/prioridad]
+[EVT-01 listo] happens at [EVT-01.4 (1,5 j) validar IDs/prioridad]'s end
+
+-- EVT-02 — Definir Condition, Trigger y EventCommand  [PARCIAL 55%] --
+
+[EVT-02.1 (1,5 j) definir interfaces] lasts 2 days
+[EVT-02.1 (1,5 j) definir interfaces] is colored in #E3A82B
+[EVT-02.1 (1,5 j) definir interfaces] is 55% completed
+[EVT-01.4 (1,5 j) validar IDs/prioridad] -> [EVT-02.1 (1,5 j) definir interfaces]
+[EVT-02.2 (1,5 j) crear IDs de tipo] lasts 2 days
+[EVT-02.2 (1,5 j) crear IDs de tipo] is colored in #E3A82B
+[EVT-02.2 (1,5 j) crear IDs de tipo] is 55% completed
+[EVT-02.1 (1,5 j) definir interfaces] -> [EVT-02.2 (1,5 j) crear IDs de tipo]
+[EVT-02.3 (1,5 j) registrar factories] lasts 2 days
+[EVT-02.3 (1,5 j) registrar factories] is colored in #E3A82B
+[EVT-02.3 (1,5 j) registrar factories] is 55% completed
+[EVT-02.2 (1,5 j) crear IDs de tipo] -> [EVT-02.3 (1,5 j) registrar factories]
+[EVT-02.4 (1,5 j) round-trip tipos desconocidos] lasts 2 days
+[EVT-02.4 (1,5 j) round-trip tipos desconocidos] is colored in #E3A82B
+[EVT-02.4 (1,5 j) round-trip tipos desconocidos] is 55% completed
+[EVT-02.3 (1,5 j) registrar factories] -> [EVT-02.4 (1,5 j) round-trip tipos desconocidos]
+[EVT-02 listo] happens at [EVT-02.4 (1,5 j) round-trip tipos desconocidos]'s end
+
+-- EVT-03 — Implementar EventContext e EventInterpreter  [PARCIAL 50%] --
+
+[EVT-03.1 (2 j) definir frame] lasts 2 days
+[EVT-03.1 (2 j) definir frame] is colored in #E3A82B
+[EVT-03.1 (2 j) definir frame] is 50% completed
+[EVT-02.4 (1,5 j) round-trip tipos desconocidos] -> [EVT-03.1 (2 j) definir frame]
+[EVT-03.2 (1,5 j) ejecutar step] lasts 2 days
+[EVT-03.2 (1,5 j) ejecutar step] is colored in #E3A82B
+[EVT-03.2 (1,5 j) ejecutar step] is 50% completed
+[EVT-03.1 (2 j) definir frame] -> [EVT-03.2 (1,5 j) ejecutar step]
+[EVT-03.3 (1,5 j) soportar pause/resume] lasts 2 days
+[EVT-03.3 (1,5 j) soportar pause/resume] is colored in #E3A82B
+[EVT-03.3 (1,5 j) soportar pause/resume] is 50% completed
+[EVT-03.2 (1,5 j) ejecutar step] -> [EVT-03.3 (1,5 j) soportar pause/resume]
+[EVT-03.4 (1,5 j) propagar error] lasts 2 days
+[EVT-03.4 (1,5 j) propagar error] is colored in #E3A82B
+[EVT-03.4 (1,5 j) propagar error] is 50% completed
+[EVT-03.3 (1,5 j) soportar pause/resume] -> [EVT-03.4 (1,5 j) propagar error]
+[EVT-03.5 (1,5 j) test secuencia] lasts 2 days
+[EVT-03.5 (1,5 j) test secuencia] is colored in #E3A82B
+[EVT-03.5 (1,5 j) test secuencia] is 50% completed
+[EVT-03.4 (1,5 j) propagar error] -> [EVT-03.5 (1,5 j) test secuencia]
+[EVT-03 listo] happens at [EVT-03.5 (1,5 j) test secuencia]'s end
+
+-- EVT-04 — Implementar variables e interruptores  [PARCIAL 60%] --
+
+[EVT-04.1 (1,5 j) definir declarations] lasts 2 days
+[EVT-04.1 (1,5 j) definir declarations] is colored in #E3A82B
+[EVT-04.1 (1,5 j) definir declarations] is 60% completed
+[EVT-03.5 (1,5 j) test secuencia] -> [EVT-04.1 (1,5 j) definir declarations]
+[EVT-04.2 (1,5 j) crear stores] lasts 2 days
+[EVT-04.2 (1,5 j) crear stores] is colored in #E3A82B
+[EVT-04.2 (1,5 j) crear stores] is 60% completed
+[EVT-04.1 (1,5 j) definir declarations] -> [EVT-04.2 (1,5 j) crear stores]
+[EVT-04.3 (1 j) añadir get/set/op] lasts 1 days
+[EVT-04.3 (1 j) añadir get/set/op] is colored in #E3A82B
+[EVT-04.3 (1 j) añadir get/set/op] is 60% completed
+[EVT-04.2 (1,5 j) crear stores] -> [EVT-04.3 (1 j) añadir get/set/op]
+[EVT-04.4 (1 j) integrar save] lasts 1 days
+[EVT-04.4 (1 j) integrar save] is colored in #E3A82B
+[EVT-04.4 (1 j) integrar save] is 60% completed
+[EVT-04.3 (1 j) añadir get/set/op] -> [EVT-04.4 (1 j) integrar save]
+[EVT-04 listo] happens at [EVT-04.4 (1 j) integrar save]'s end
+
+-- EVT-05 — Implementar interruptores locales por evento  [PENDIENTE 10%] --
+
+[EVT-05.1 (1 j) definir clave] lasts 1 days
+[EVT-05.1 (1 j) definir clave] is colored in #B8BEC7
+[EVT-05.1 (1 j) definir clave] is 10% completed
+[EVT-04.4 (1 j) integrar save] -> [EVT-05.1 (1 j) definir clave]
+[EVT-05.2 (1 j) implementar store] lasts 1 days
+[EVT-05.2 (1 j) implementar store] is colored in #B8BEC7
+[EVT-05.2 (1 j) implementar store] is 10% completed
+[EVT-05.1 (1 j) definir clave] -> [EVT-05.2 (1 j) implementar store]
+[EVT-05.3 (0,5 j) persistir] lasts 1 days
+[EVT-05.3 (0,5 j) persistir] is colored in #B8BEC7
+[EVT-05.3 (0,5 j) persistir] is 10% completed
+[EVT-05.2 (1 j) implementar store] -> [EVT-05.3 (0,5 j) persistir]
+[EVT-05.4 (0,5 j) probar mapas duplicados] lasts 1 days
+[EVT-05.4 (0,5 j) probar mapas duplicados] is colored in #B8BEC7
+[EVT-05.4 (0,5 j) probar mapas duplicados] is 10% completed
+[EVT-05.3 (0,5 j) persistir] -> [EVT-05.4 (0,5 j) probar mapas duplicados]
+[EVT-05 listo] happens at [EVT-05.4 (0,5 j) probar mapas duplicados]'s end
+
+-- EVT-06 — Implementar scheduler, esperas y procesos paralelos  [PARCIAL 30%] --
+
+[EVT-06.1 (2 j) gestionar instancias] lasts 2 days
+[EVT-06.1 (2 j) gestionar instancias] is colored in #E3A82B
+[EVT-06.1 (2 j) gestionar instancias] is 30% completed
+[EVT-05.4 (0,5 j) probar mapas duplicados] -> [EVT-06.1 (2 j) gestionar instancias]
+[EVT-06.2 (2 j) implementar wait temporal/condición] lasts 2 days
+[EVT-06.2 (2 j) implementar wait temporal/condición] is colored in #E3A82B
+[EVT-06.2 (2 j) implementar wait temporal/condición] is 30% completed
+[EVT-06.1 (2 j) gestionar instancias] -> [EVT-06.2 (2 j) implementar wait temporal/condición]
+[EVT-06.3 (1,5 j) detectar autorun repetido] lasts 2 days
+[EVT-06.3 (1,5 j) detectar autorun repetido] is colored in #E3A82B
+[EVT-06.3 (1,5 j) detectar autorun repetido] is 30% completed
+[EVT-06.2 (2 j) implementar wait temporal/condición] -> [EVT-06.3 (1,5 j) detectar autorun repetido]
+[EVT-06.4 (1,5 j) añadir límites] lasts 2 days
+[EVT-06.4 (1,5 j) añadir límites] is colored in #E3A82B
+[EVT-06.4 (1,5 j) añadir límites] is 30% completed
+[EVT-06.3 (1,5 j) detectar autorun repetido] -> [EVT-06.4 (1,5 j) añadir límites]
+[EVT-06 listo] happens at [EVT-06.4 (1,5 j) añadir límites]'s end
+
+-- EVT-07 — Implementar comandos de diálogo y elecciones  [PARCIAL 55%] --
+
+[EVT-07.1 (1,5 j) definir DialogueRequest] lasts 2 days
+[EVT-07.1 (1,5 j) definir DialogueRequest] is colored in #E3A82B
+[EVT-07.1 (1,5 j) definir DialogueRequest] is 55% completed
+[EVT-06.4 (1,5 j) añadir límites] -> [EVT-07.1 (1,5 j) definir DialogueRequest]
+[EVT-07.2 (1,5 j) implementar show/wait] lasts 2 days
+[EVT-07.2 (1,5 j) implementar show/wait] is colored in #E3A82B
+[EVT-07.2 (1,5 j) implementar show/wait] is 55% completed
+[EVT-07.1 (1,5 j) definir DialogueRequest] -> [EVT-07.2 (1,5 j) implementar show/wait]
+[EVT-07.3 (1,5 j) implementar choices/branches] lasts 2 days
+[EVT-07.3 (1,5 j) implementar choices/branches] is colored in #E3A82B
+[EVT-07.3 (1,5 j) implementar choices/branches] is 55% completed
+[EVT-07.2 (1,5 j) implementar show/wait] -> [EVT-07.3 (1,5 j) implementar choices/branches]
+[EVT-07.4 (1,5 j) test UI fake] lasts 2 days
+[EVT-07.4 (1,5 j) test UI fake] is colored in #E3A82B
+[EVT-07.4 (1,5 j) test UI fake] is 55% completed
+[EVT-07.3 (1,5 j) implementar choices/branches] -> [EVT-07.4 (1,5 j) test UI fake]
+[EVT-07 listo] happens at [EVT-07.4 (1,5 j) test UI fake]'s end
+
+-- EVT-08 — Implementar comandos de estado e inventario  [PARCIAL 55%] --
+
+[EVT-08.1 (1,5 j) comandos de variable/switch] lasts 2 days
+[EVT-08.1 (1,5 j) comandos de variable/switch] is colored in #E3A82B
+[EVT-08.1 (1,5 j) comandos de variable/switch] is 55% completed
+[EVT-07.4 (1,5 j) test UI fake] -> [EVT-08.1 (1,5 j) comandos de variable/switch]
+[EVT-08.2 (1,5 j) comandos inventario] lasts 2 days
+[EVT-08.2 (1,5 j) comandos inventario] is colored in #E3A82B
+[EVT-08.2 (1,5 j) comandos inventario] is 55% completed
+[EVT-08.1 (1,5 j) comandos de variable/switch] -> [EVT-08.2 (1,5 j) comandos inventario]
+[EVT-08.3 (1,5 j) errores y mensajes] lasts 2 days
+[EVT-08.3 (1,5 j) errores y mensajes] is colored in #E3A82B
+[EVT-08.3 (1,5 j) errores y mensajes] is 55% completed
+[EVT-08.2 (1,5 j) comandos inventario] -> [EVT-08.3 (1,5 j) errores y mensajes]
+[EVT-08.4 (1,5 j) tests transaccionales] lasts 2 days
+[EVT-08.4 (1,5 j) tests transaccionales] is colored in #E3A82B
+[EVT-08.4 (1,5 j) tests transaccionales] is 55% completed
+[EVT-08.3 (1,5 j) errores y mensajes] -> [EVT-08.4 (1,5 j) tests transaccionales]
+[EVT-08 listo] happens at [EVT-08.4 (1,5 j) tests transaccionales]'s end
+
+-- EVT-09 — Implementar movimiento, audio, cámara y teletransporte  [PARCIAL 30%] --
+
+[EVT-09.1 (1,5 j) definir target selector] lasts 2 days
+[EVT-09.1 (1,5 j) definir target selector] is colored in #E3A82B
+[EVT-09.1 (1,5 j) definir target selector] is 30% completed
+[EVT-08.4 (1,5 j) tests transaccionales] -> [EVT-09.1 (1,5 j) definir target selector]
+[EVT-09.2 (1,5 j) adaptar movement] lasts 2 days
+[EVT-09.2 (1,5 j) adaptar movement] is colored in #E3A82B
+[EVT-09.2 (1,5 j) adaptar movement] is 30% completed
+[EVT-09.1 (1,5 j) definir target selector] -> [EVT-09.2 (1,5 j) adaptar movement]
+[EVT-09.3 (1,5 j) audio/camera] lasts 2 days
+[EVT-09.3 (1,5 j) audio/camera] is colored in #E3A82B
+[EVT-09.3 (1,5 j) audio/camera] is 30% completed
+[EVT-09.2 (1,5 j) adaptar movement] -> [EVT-09.3 (1,5 j) audio/camera]
+[EVT-09.4 (1,5 j) transfer map] lasts 2 days
+[EVT-09.4 (1,5 j) transfer map] is colored in #E3A82B
+[EVT-09.4 (1,5 j) transfer map] is 30% completed
+[EVT-09.3 (1,5 j) audio/camera] -> [EVT-09.4 (1,5 j) transfer map]
+[EVT-09.5 (1 j) test fakes] lasts 1 days
+[EVT-09.5 (1 j) test fakes] is colored in #E3A82B
+[EVT-09.5 (1 j) test fakes] is 30% completed
+[EVT-09.4 (1,5 j) transfer map] -> [EVT-09.5 (1 j) test fakes]
+[EVT-09 listo] happens at [EVT-09.5 (1 j) test fakes]'s end
+
+-- EVT-10 — Implementar ramas, bucles y eventos comunes  [PARCIAL 25%] --
+
+[EVT-10.1 (1,5 j) condicionales] lasts 2 days
+[EVT-10.1 (1,5 j) condicionales] is colored in #E3A82B
+[EVT-10.1 (1,5 j) condicionales] is 25% completed
+[EVT-09.5 (1 j) test fakes] -> [EVT-10.1 (1,5 j) condicionales]
+[EVT-10.2 (1,5 j) bucles/break] lasts 2 days
+[EVT-10.2 (1,5 j) bucles/break] is colored in #E3A82B
+[EVT-10.2 (1,5 j) bucles/break] is 25% completed
+[EVT-10.1 (1,5 j) condicionales] -> [EVT-10.2 (1,5 j) bucles/break]
+[EVT-10.3 (1,5 j) call stack] lasts 2 days
+[EVT-10.3 (1,5 j) call stack] is colored in #E3A82B
+[EVT-10.3 (1,5 j) call stack] is 25% completed
+[EVT-10.2 (1,5 j) bucles/break] -> [EVT-10.3 (1,5 j) call stack]
+[EVT-10.4 (1,5 j) límites recursión] lasts 2 days
+[EVT-10.4 (1,5 j) límites recursión] is colored in #E3A82B
+[EVT-10.4 (1,5 j) límites recursión] is 25% completed
+[EVT-10.3 (1,5 j) call stack] -> [EVT-10.4 (1,5 j) límites recursión]
+[EVT-10.5 (1 j) validator] lasts 1 days
+[EVT-10.5 (1 j) validator] is colored in #E3A82B
+[EVT-10.5 (1 j) validator] is 25% completed
+[EVT-10.4 (1,5 j) límites recursión] -> [EVT-10.5 (1 j) validator]
+[EVT-10 listo] happens at [EVT-10.5 (1 j) validator]'s end
+
+-- EVT-11 — Crear editor visual de páginas de evento  [PENDIENTE 5%] --
+
+[EVT-11.1 (2 j) abrir por EventId] lasts 2 days
+[EVT-11.1 (2 j) abrir por EventId] is colored in #B8BEC7
+[EVT-11.1 (2 j) abrir por EventId] is 5% completed
+[EVT-10.5 (1 j) validator] -> [EVT-11.1 (2 j) abrir por EventId]
+[EVT-11.2 (2 j) tabs de página] lasts 2 days
+[EVT-11.2 (2 j) tabs de página] is colored in #B8BEC7
+[EVT-11.2 (2 j) tabs de página] is 5% completed
+[EVT-11.1 (2 j) abrir por EventId] -> [EVT-11.2 (2 j) tabs de página]
+[EVT-11.3 (2 j) editar condiciones/trigger] lasts 2 days
+[EVT-11.3 (2 j) editar condiciones/trigger] is colored in #B8BEC7
+[EVT-11.3 (2 j) editar condiciones/trigger] is 5% completed
+[EVT-11.2 (2 j) tabs de página] -> [EVT-11.3 (2 j) editar condiciones/trigger]
+[EVT-11.4 (1,5 j) copy/paste] lasts 2 days
+[EVT-11.4 (1,5 j) copy/paste] is colored in #B8BEC7
+[EVT-11.4 (1,5 j) copy/paste] is 5% completed
+[EVT-11.3 (2 j) editar condiciones/trigger] -> [EVT-11.4 (1,5 j) copy/paste]
+[EVT-11.5 (1,5 j) preview activa] lasts 2 days
+[EVT-11.5 (1,5 j) preview activa] is colored in #B8BEC7
+[EVT-11.5 (1,5 j) preview activa] is 5% completed
+[EVT-11.4 (1,5 j) copy/paste] -> [EVT-11.5 (1,5 j) preview activa]
+[EVT-11 listo] happens at [EVT-11.5 (1,5 j) preview activa]'s end
+
+-- EVT-12 — Crear editor vertical de comandos  [PENDIENTE 0%] --
+
+[EVT-12.1 (2 j) modelo selección] lasts 2 days
+[EVT-12.1 (2 j) modelo selección] is colored in #B8BEC7
+[EVT-11.5 (1,5 j) preview activa] -> [EVT-12.1 (2 j) modelo selección]
+[EVT-12.2 (2 j) lista indentada] lasts 2 days
+[EVT-12.2 (2 j) lista indentada] is colored in #B8BEC7
+[EVT-12.1 (2 j) modelo selección] -> [EVT-12.2 (2 j) lista indentada]
+[EVT-12.3 (2 j) paleta búsqueda] lasts 2 days
+[EVT-12.3 (2 j) paleta búsqueda] is colored in #B8BEC7
+[EVT-12.2 (2 j) lista indentada] -> [EVT-12.3 (2 j) paleta búsqueda]
+[EVT-12.4 (2 j) editores tipos base] lasts 2 days
+[EVT-12.4 (2 j) editores tipos base] is colored in #B8BEC7
+[EVT-12.3 (2 j) paleta búsqueda] -> [EVT-12.4 (2 j) editores tipos base]
+[EVT-12.5 (2 j) clipboard/undo] lasts 2 days
+[EVT-12.5 (2 j) clipboard/undo] is colored in #B8BEC7
+[EVT-12.4 (2 j) editores tipos base] -> [EVT-12.5 (2 j) clipboard/undo]
+[EVT-12 listo] happens at [EVT-12.5 (2 j) clipboard/undo]'s end
+
+-- EVT-13 — Crear editor visual de rutas de movimiento  [PARCIAL 15%] --
+
+[EVT-13.1 (1,5 j) definir route] lasts 2 days
+[EVT-13.1 (1,5 j) definir route] is colored in #E3A82B
+[EVT-13.1 (1,5 j) definir route] is 15% completed
+[EVT-12.5 (2 j) clipboard/undo] -> [EVT-13.1 (1,5 j) definir route]
+[EVT-13.2 (1,5 j) editor lista] lasts 2 days
+[EVT-13.2 (1,5 j) editor lista] is colored in #E3A82B
+[EVT-13.2 (1,5 j) editor lista] is 15% completed
+[EVT-13.1 (1,5 j) definir route] -> [EVT-13.2 (1,5 j) editor lista]
+[EVT-13.3 (1 j) dibujo overlay] lasts 1 days
+[EVT-13.3 (1 j) dibujo overlay] is colored in #E3A82B
+[EVT-13.3 (1 j) dibujo overlay] is 15% completed
+[EVT-13.2 (1,5 j) editor lista] -> [EVT-13.3 (1 j) dibujo overlay]
+[EVT-13.4 (1 j) preview/cancel] lasts 1 days
+[EVT-13.4 (1 j) preview/cancel] is colored in #E3A82B
+[EVT-13.4 (1 j) preview/cancel] is 15% completed
+[EVT-13.3 (1 j) dibujo overlay] -> [EVT-13.4 (1 j) preview/cancel]
+[EVT-13.5 (1 j) serializar] lasts 1 days
+[EVT-13.5 (1 j) serializar] is colored in #E3A82B
+[EVT-13.5 (1 j) serializar] is 15% completed
+[EVT-13.4 (1 j) preview/cancel] -> [EVT-13.5 (1 j) serializar]
+[EVT-13 listo] happens at [EVT-13.5 (1 j) serializar]'s end
+
+-- EVT-14 — Implementar validación estática de eventos  [PARCIAL 35%] --
+
+[EVT-14.1 (1,5 j) crear modelo diagnóstico] lasts 2 days
+[EVT-14.1 (1,5 j) crear modelo diagnóstico] is colored in #E3A82B
+[EVT-14.1 (1,5 j) crear modelo diagnóstico] is 35% completed
+[EVT-13.5 (1 j) serializar] -> [EVT-14.1 (1,5 j) crear modelo diagnóstico]
+[EVT-14.2 (1,5 j) validar estructura] lasts 2 days
+[EVT-14.2 (1,5 j) validar estructura] is colored in #E3A82B
+[EVT-14.2 (1,5 j) validar estructura] is 35% completed
+[EVT-14.1 (1,5 j) crear modelo diagnóstico] -> [EVT-14.2 (1,5 j) validar estructura]
+[EVT-14.3 (1 j) validar refs/tipos] lasts 1 days
+[EVT-14.3 (1 j) validar refs/tipos] is colored in #E3A82B
+[EVT-14.3 (1 j) validar refs/tipos] is 35% completed
+[EVT-14.2 (1,5 j) validar estructura] -> [EVT-14.3 (1 j) validar refs/tipos]
+[EVT-14.4 (1 j) integrar panel] lasts 1 days
+[EVT-14.4 (1 j) integrar panel] is colored in #E3A82B
+[EVT-14.4 (1 j) integrar panel] is 35% completed
+[EVT-14.3 (1 j) validar refs/tipos] -> [EVT-14.4 (1 j) integrar panel]
+[EVT-14.5 (1 j) fixtures] lasts 1 days
+[EVT-14.5 (1 j) fixtures] is colored in #E3A82B
+[EVT-14.5 (1 j) fixtures] is 35% completed
+[EVT-14.4 (1 j) integrar panel] -> [EVT-14.5 (1 j) fixtures]
+[EVT-14 listo] happens at [EVT-14.5 (1 j) fixtures]'s end
+
+-- EVT-15 — Implementar depuración paso a paso de eventos  [PENDIENTE 0%] --
+
+[EVT-15.1 (1,5 j) añadir trace events] lasts 2 days
+[EVT-15.1 (1,5 j) añadir trace events] is colored in #B8BEC7
+[EVT-14.5 (1 j) fixtures] -> [EVT-15.1 (1,5 j) añadir trace events]
+[EVT-15.2 (1,5 j) breakpoints por nodeId] lasts 2 days
+[EVT-15.2 (1,5 j) breakpoints por nodeId] is colored in #B8BEC7
+[EVT-15.1 (1,5 j) añadir trace events] -> [EVT-15.2 (1,5 j) breakpoints por nodeId]
+[EVT-15.3 (1,5 j) panel stack/state] lasts 2 days
+[EVT-15.3 (1,5 j) panel stack/state] is colored in #B8BEC7
+[EVT-15.2 (1,5 j) breakpoints por nodeId] -> [EVT-15.3 (1,5 j) panel stack/state]
+[EVT-15.4 (1,5 j) step controls] lasts 2 days
+[EVT-15.4 (1,5 j) step controls] is colored in #B8BEC7
+[EVT-15.3 (1,5 j) panel stack/state] -> [EVT-15.4 (1,5 j) step controls]
+[EVT-15.5 (1 j) test traza] lasts 1 days
+[EVT-15.5 (1 j) test traza] is colored in #B8BEC7
+[EVT-15.4 (1,5 j) step controls] -> [EVT-15.5 (1 j) test traza]
+[EVT-15 listo] happens at [EVT-15.5 (1 j) test traza]'s end
+
+-- EVT-16 — Validar misión de llave, puerta y cofre  [PARCIAL 40%] --
+
+[EVT-16.1 (1 j) crear NPC diálogo] lasts 1 days
+[EVT-16.1 (1 j) crear NPC diálogo] is colored in #E3A82B
+[EVT-16.1 (1 j) crear NPC diálogo] is 40% completed
+[EVT-15.5 (1 j) test traza] -> [EVT-16.1 (1 j) crear NPC diálogo]
+[EVT-16.2 (1 j) crear llave] lasts 1 days
+[EVT-16.2 (1 j) crear llave] is colored in #E3A82B
+[EVT-16.2 (1 j) crear llave] is 40% completed
+[EVT-16.1 (1 j) crear NPC diálogo] -> [EVT-16.2 (1 j) crear llave]
+[EVT-16.3 (1 j) crear puerta multipágina] lasts 1 days
+[EVT-16.3 (1 j) crear puerta multipágina] is colored in #E3A82B
+[EVT-16.3 (1 j) crear puerta multipágina] is 40% completed
+[EVT-16.2 (1 j) crear llave] -> [EVT-16.3 (1 j) crear puerta multipágina]
+[EVT-16.4 (1 j) crear cofre/recompensa] lasts 1 days
+[EVT-16.4 (1 j) crear cofre/recompensa] is colored in #E3A82B
+[EVT-16.4 (1 j) crear cofre/recompensa] is 40% completed
+[EVT-16.3 (1 j) crear puerta multipágina] -> [EVT-16.4 (1 j) crear cofre/recompensa]
+[EVT-16.5 (1 j) save/load y recorrido alternativo] lasts 1 days
+[EVT-16.5 (1 j) save/load y recorrido alternativo] is colored in #E3A82B
+[EVT-16.5 (1 j) save/load y recorrido alternativo] is 40% completed
+[EVT-16.4 (1 j) crear cofre/recompensa] -> [EVT-16.5 (1 j) save/load y recorrido alternativo]
+[EVT-16 listo] happens at [EVT-16.5 (1 j) save/load y recorrido alternativo]'s end
+
+@endgantt

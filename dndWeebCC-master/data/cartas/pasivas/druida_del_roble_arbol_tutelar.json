@@ -1,0 +1,39 @@
+{
+ "id": "druida_del_roble_arbol_tutelar",
+ "name": "Árbol tutelar",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Al empezar el combate te encomiendas a un árbol. Roble: su corteza te cubre: +1 a la CA. Espino: sus púas pasan a tu arma: tus golpes con arma hacen +1 de daño. Sauce: su savia te corre por las manos: tus curas curan +1.",
+ "flavorText": "",
+ "classTags": [
+  "druida_del_roble"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "Al empezar el combate te encomiendas a un árbol. Roble: su corteza te cubre: +1 a la CA. Espino: sus púas pasan a tu arma: tus golpes con arma hacen +1 de daño. Sauce: su savia te corre por las manos: tus curas curan +1.",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Te encomiendas a un árbol al empezar el combate.",
+   "mechanicHook": "elige_una:roble,espino,sauce"
+  },
+  {
+   "description": "Roble: +1 a la CA.",
+   "mechanicHook": "si:roble:bono_ca:1"
+  },
+  {
+   "description": "Espino: tus golpes con arma hacen +1 de daño.",
+   "mechanicHook": "si:espino:bono_dano_arma:1"
+  },
+  {
+   "description": "Sauce: tus curas curan +1.",
+   "mechanicHook": "si:sauce:bono_cura:1"
+  }
+ ],
+ "fuente": "Propia · Druida del Roble"
+}

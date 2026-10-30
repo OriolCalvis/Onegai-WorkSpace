@@ -1,0 +1,328 @@
+@startgantt
+
+title Fase 3 — Editor visual de mapas MVP — subtareas atómicas revisables
+
+' 1 'día' = 1 jornada de esfuerzo (~6 h). Las medias jornadas del
+' roadmap (0,5 j y 1,5 j) se redondean al alza porque PlantUML solo
+' admite días enteros; el esfuerzo exacto va entre corchetes en el
+' nombre de cada subtarea.
+' Las subtareas de paquetes ya avanzados se marcan con su porcentaje
+' heredado del paquete: revísalas antes de darlas por hechas.
+
+Project starts 2026-09-01
+saturday are closed
+sunday are closed
+
+
+-- EDT-01 — Crear ejecutable MotorEditor  [PARCIAL 60%] --
+
+[EDT-01.1 (1 j) crear target] lasts 1 days
+[EDT-01.1 (1 j) crear target] is colored in #E3A82B
+[EDT-01.1 (1 j) crear target] is 60% completed
+[EDT-01.2 (1 j) iniciar ventana/contexto] lasts 1 days
+[EDT-01.2 (1 j) iniciar ventana/contexto] is colored in #E3A82B
+[EDT-01.2 (1 j) iniciar ventana/contexto] is 60% completed
+[EDT-01.1 (1 j) crear target] -> [EDT-01.2 (1 j) iniciar ventana/contexto]
+[EDT-01.3 (1 j) abrir proyecto vacío] lasts 1 days
+[EDT-01.3 (1 j) abrir proyecto vacío] is colored in #E3A82B
+[EDT-01.3 (1 j) abrir proyecto vacío] is 60% completed
+[EDT-01.2 (1 j) iniciar ventana/contexto] -> [EDT-01.3 (1 j) abrir proyecto vacío]
+[EDT-01.4 (1 j) cerrar liberando recursos] lasts 1 days
+[EDT-01.4 (1 j) cerrar liberando recursos] is colored in #E3A82B
+[EDT-01.4 (1 j) cerrar liberando recursos] is 60% completed
+[EDT-01.3 (1 j) abrir proyecto vacío] -> [EDT-01.4 (1 j) cerrar liberando recursos]
+[EDT-01 listo] happens at [EDT-01.4 (1 j) cerrar liberando recursos]'s end
+
+-- EDT-02 — Integrar Dear ImGui y docking  [REPLANTEAR 0%] --
+
+[EDT-02.1 (1,5 j) integrar backend GLFW/OpenGL] lasts 2 days
+[EDT-02.1 (1,5 j) integrar backend GLFW/OpenGL] is colored in #D9614C
+[EDT-01.4 (1 j) cerrar liberando recursos] -> [EDT-02.1 (1,5 j) integrar backend GLFW/OpenGL]
+[EDT-02.2 (1,5 j) crear dockspace] lasts 2 days
+[EDT-02.2 (1,5 j) crear dockspace] is colored in #D9614C
+[EDT-02.1 (1,5 j) integrar backend GLFW/OpenGL] -> [EDT-02.2 (1,5 j) crear dockspace]
+[EDT-02.3 (1 j) registrar panel demo] lasts 1 days
+[EDT-02.3 (1 j) registrar panel demo] is colored in #D9614C
+[EDT-02.2 (1,5 j) crear dockspace] -> [EDT-02.3 (1 j) registrar panel demo]
+[EDT-02.4 (1 j) persistir layout local] lasts 1 days
+[EDT-02.4 (1 j) persistir layout local] is colored in #D9614C
+[EDT-02.3 (1 j) registrar panel demo] -> [EDT-02.4 (1 j) persistir layout local]
+[EDT-02 listo] happens at [EDT-02.4 (1 j) persistir layout local]'s end
+
+-- EDT-03 — Integrar viewport OpenGL del mapa  [DONE 80%] --
+
+[EDT-03.1 (1,5 j) crear FBO RAII] lasts 2 days
+[EDT-03.1 (1,5 j) crear FBO RAII] is colored in #7FB069
+[EDT-03.1 (1,5 j) crear FBO RAII] is 80% completed
+[EDT-02.4 (1 j) persistir layout local] -> [EDT-03.1 (1,5 j) crear FBO RAII]
+[EDT-03.2 (1,5 j) renderizar mapa] lasts 2 days
+[EDT-03.2 (1,5 j) renderizar mapa] is colored in #7FB069
+[EDT-03.2 (1,5 j) renderizar mapa] is 80% completed
+[EDT-03.1 (1,5 j) crear FBO RAII] -> [EDT-03.2 (1,5 j) renderizar mapa]
+[EDT-03.3 (1 j) manejar resize diferido] lasts 1 days
+[EDT-03.3 (1 j) manejar resize diferido] is colored in #7FB069
+[EDT-03.3 (1 j) manejar resize diferido] is 80% completed
+[EDT-03.2 (1,5 j) renderizar mapa] -> [EDT-03.3 (1 j) manejar resize diferido]
+[EDT-03.4 (1 j) traducir coordenadas] lasts 1 days
+[EDT-03.4 (1 j) traducir coordenadas] is colored in #7FB069
+[EDT-03.4 (1 j) traducir coordenadas] is 80% completed
+[EDT-03.3 (1 j) manejar resize diferido] -> [EDT-03.4 (1 j) traducir coordenadas]
+[EDT-03.5 (1 j) probar framebuffer] lasts 1 days
+[EDT-03.5 (1 j) probar framebuffer] is colored in #7FB069
+[EDT-03.5 (1 j) probar framebuffer] is 80% completed
+[EDT-03.4 (1 j) traducir coordenadas] -> [EDT-03.5 (1 j) probar framebuffer]
+[EDT-03 listo] happens at [EDT-03.5 (1 j) probar framebuffer]'s end
+
+-- EDT-04 — Crear panel de proyecto y árbol de mapas  [PARCIAL 50%] --
+
+[EDT-04.1 (1,5 j) mostrar árbol] lasts 2 days
+[EDT-04.1 (1,5 j) mostrar árbol] is colored in #E3A82B
+[EDT-04.1 (1,5 j) mostrar árbol] is 50% completed
+[EDT-03.5 (1 j) probar framebuffer] -> [EDT-04.1 (1,5 j) mostrar árbol]
+[EDT-04.2 (1,5 j) seleccionar MapId] lasts 2 days
+[EDT-04.2 (1,5 j) seleccionar MapId] is colored in #E3A82B
+[EDT-04.2 (1,5 j) seleccionar MapId] is 50% completed
+[EDT-04.1 (1,5 j) mostrar árbol] -> [EDT-04.2 (1,5 j) seleccionar MapId]
+[EDT-04.3 (1,5 j) crear/renombrar vía servicio] lasts 2 days
+[EDT-04.3 (1,5 j) crear/renombrar vía servicio] is colored in #E3A82B
+[EDT-04.3 (1,5 j) crear/renombrar vía servicio] is 50% completed
+[EDT-04.2 (1,5 j) seleccionar MapId] -> [EDT-04.3 (1,5 j) crear/renombrar vía servicio]
+[EDT-04.4 (1,5 j) añadir filtro y estados] lasts 2 days
+[EDT-04.4 (1,5 j) añadir filtro y estados] is colored in #E3A82B
+[EDT-04.4 (1,5 j) añadir filtro y estados] is 50% completed
+[EDT-04.3 (1,5 j) crear/renombrar vía servicio] -> [EDT-04.4 (1,5 j) añadir filtro y estados]
+[EDT-04 listo] happens at [EDT-04.4 (1,5 j) añadir filtro y estados]'s end
+
+-- EDT-05 — Crear navegador de assets  [PARCIAL 45%] --
+
+[EDT-05.1 (1,5 j) definir AssetEntry] lasts 2 days
+[EDT-05.1 (1,5 j) definir AssetEntry] is colored in #E3A82B
+[EDT-05.1 (1,5 j) definir AssetEntry] is 45% completed
+[EDT-04.4 (1,5 j) añadir filtro y estados] -> [EDT-05.1 (1,5 j) definir AssetEntry]
+[EDT-05.2 (1,5 j) indexar proyecto] lasts 2 days
+[EDT-05.2 (1,5 j) indexar proyecto] is colored in #E3A82B
+[EDT-05.2 (1,5 j) indexar proyecto] is 45% completed
+[EDT-05.1 (1,5 j) definir AssetEntry] -> [EDT-05.2 (1,5 j) indexar proyecto]
+[EDT-05.3 (1,5 j) mostrar grid/lista] lasts 2 days
+[EDT-05.3 (1,5 j) mostrar grid/lista] is colored in #E3A82B
+[EDT-05.3 (1,5 j) mostrar grid/lista] is 45% completed
+[EDT-05.2 (1,5 j) indexar proyecto] -> [EDT-05.3 (1,5 j) mostrar grid/lista]
+[EDT-05.4 (1,5 j) añadir búsqueda y drag payload] lasts 2 days
+[EDT-05.4 (1,5 j) añadir búsqueda y drag payload] is colored in #E3A82B
+[EDT-05.4 (1,5 j) añadir búsqueda y drag payload] is 45% completed
+[EDT-05.3 (1,5 j) mostrar grid/lista] -> [EDT-05.4 (1,5 j) añadir búsqueda y drag payload]
+[EDT-05 listo] happens at [EDT-05.4 (1,5 j) añadir búsqueda y drag payload]'s end
+
+-- EDT-06 — Crear paleta de tiles  [DONE 85%] --
+
+[EDT-06.1 (1,5 j) mostrar atlas por definiciones] lasts 2 days
+[EDT-06.1 (1,5 j) mostrar atlas por definiciones] is colored in #7FB069
+[EDT-06.1 (1,5 j) mostrar atlas por definiciones] is 85% completed
+[EDT-05.4 (1,5 j) añadir búsqueda y drag payload] -> [EDT-06.1 (1,5 j) mostrar atlas por definiciones]
+[EDT-06.2 (1,5 j) implementar selección] lasts 2 days
+[EDT-06.2 (1,5 j) implementar selección] is colored in #7FB069
+[EDT-06.2 (1,5 j) implementar selección] is 85% completed
+[EDT-06.1 (1,5 j) mostrar atlas por definiciones] -> [EDT-06.2 (1,5 j) implementar selección]
+[EDT-06.3 (1,5 j) añadir tabs/filtros] lasts 2 days
+[EDT-06.3 (1,5 j) añadir tabs/filtros] is colored in #7FB069
+[EDT-06.3 (1,5 j) añadir tabs/filtros] is 85% completed
+[EDT-06.2 (1,5 j) implementar selección] -> [EDT-06.3 (1,5 j) añadir tabs/filtros]
+[EDT-06.4 (1,5 j) exponer ToolContext] lasts 2 days
+[EDT-06.4 (1,5 j) exponer ToolContext] is colored in #7FB069
+[EDT-06.4 (1,5 j) exponer ToolContext] is 85% completed
+[EDT-06.3 (1,5 j) añadir tabs/filtros] -> [EDT-06.4 (1,5 j) exponer ToolContext]
+[EDT-06 listo] happens at [EDT-06.4 (1,5 j) exponer ToolContext]'s end
+
+-- EDT-07 — Implementar selección y picking isométrico  [DONE 85%] --
+
+[EDT-07.1 (1,5 j) normalizar coordenadas] lasts 2 days
+[EDT-07.1 (1,5 j) normalizar coordenadas] is colored in #7FB069
+[EDT-07.1 (1,5 j) normalizar coordenadas] is 85% completed
+[EDT-06.4 (1,5 j) exponer ToolContext] -> [EDT-07.1 (1,5 j) normalizar coordenadas]
+[EDT-07.2 (1,5 j) resolver celda isométrica] lasts 2 days
+[EDT-07.2 (1,5 j) resolver celda isométrica] is colored in #7FB069
+[EDT-07.2 (1,5 j) resolver celda isométrica] is 85% completed
+[EDT-07.1 (1,5 j) normalizar coordenadas] -> [EDT-07.2 (1,5 j) resolver celda isométrica]
+[EDT-07.3 (1 j) hacer hit-test de entidades] lasts 1 days
+[EDT-07.3 (1 j) hacer hit-test de entidades] is colored in #7FB069
+[EDT-07.3 (1 j) hacer hit-test de entidades] is 85% completed
+[EDT-07.2 (1,5 j) resolver celda isométrica] -> [EDT-07.3 (1 j) hacer hit-test de entidades]
+[EDT-07.4 (1 j) añadir política de prioridad] lasts 1 days
+[EDT-07.4 (1 j) añadir política de prioridad] is colored in #7FB069
+[EDT-07.4 (1 j) añadir política de prioridad] is 85% completed
+[EDT-07.3 (1 j) hacer hit-test de entidades] -> [EDT-07.4 (1 j) añadir política de prioridad]
+[EDT-07 listo] happens at [EDT-07.4 (1 j) añadir política de prioridad]'s end
+
+-- EDT-08 — Implementar lápiz, borrador y cuentagotas  [PARCIAL 75%] --
+
+[EDT-08.1 (1,5 j) definir IEditorTool] lasts 2 days
+[EDT-08.1 (1,5 j) definir IEditorTool] is colored in #E3A82B
+[EDT-08.1 (1,5 j) definir IEditorTool] is 75% completed
+[EDT-07.4 (1 j) añadir política de prioridad] -> [EDT-08.1 (1,5 j) definir IEditorTool]
+[EDT-08.2 (1,5 j) implementar trazo deduplicado] lasts 2 days
+[EDT-08.2 (1,5 j) implementar trazo deduplicado] is colored in #E3A82B
+[EDT-08.2 (1,5 j) implementar trazo deduplicado] is 75% completed
+[EDT-08.1 (1,5 j) definir IEditorTool] -> [EDT-08.2 (1,5 j) implementar trazo deduplicado]
+[EDT-08.3 (1,5 j) crear preview] lasts 2 days
+[EDT-08.3 (1,5 j) crear preview] is colored in #E3A82B
+[EDT-08.3 (1,5 j) crear preview] is 75% completed
+[EDT-08.2 (1,5 j) implementar trazo deduplicado] -> [EDT-08.3 (1,5 j) crear preview]
+[EDT-08.4 (1,5 j) probar cancelación] lasts 2 days
+[EDT-08.4 (1,5 j) probar cancelación] is colored in #E3A82B
+[EDT-08.4 (1,5 j) probar cancelación] is 75% completed
+[EDT-08.3 (1,5 j) crear preview] -> [EDT-08.4 (1,5 j) probar cancelación]
+[EDT-08 listo] happens at [EDT-08.4 (1,5 j) probar cancelación]'s end
+
+-- EDT-09 — Implementar rectángulo, relleno y selección  [PARCIAL 80%] --
+
+[EDT-09.1 (1,5 j) rectángulo inclusivo] lasts 2 days
+[EDT-09.1 (1,5 j) rectángulo inclusivo] is colored in #E3A82B
+[EDT-09.1 (1,5 j) rectángulo inclusivo] is 80% completed
+[EDT-08.4 (1,5 j) probar cancelación] -> [EDT-09.1 (1,5 j) rectángulo inclusivo]
+[EDT-09.2 (1,5 j) flood-fill iterativo] lasts 2 days
+[EDT-09.2 (1,5 j) flood-fill iterativo] is colored in #E3A82B
+[EDT-09.2 (1,5 j) flood-fill iterativo] is 80% completed
+[EDT-09.1 (1,5 j) rectángulo inclusivo] -> [EDT-09.2 (1,5 j) flood-fill iterativo]
+[EDT-09.3 (1,5 j) selección rectangular] lasts 2 days
+[EDT-09.3 (1,5 j) selección rectangular] is colored in #E3A82B
+[EDT-09.3 (1,5 j) selección rectangular] is 80% completed
+[EDT-09.2 (1,5 j) flood-fill iterativo] -> [EDT-09.3 (1,5 j) selección rectangular]
+[EDT-09.4 (1,5 j) preview y cancelación] lasts 2 days
+[EDT-09.4 (1,5 j) preview y cancelación] is colored in #E3A82B
+[EDT-09.4 (1,5 j) preview y cancelación] is 80% completed
+[EDT-09.3 (1,5 j) selección rectangular] -> [EDT-09.4 (1,5 j) preview y cancelación]
+[EDT-09 listo] happens at [EDT-09.4 (1,5 j) preview y cancelación]'s end
+
+-- EDT-10 — Crear panel de capas  [PARCIAL 65%] --
+
+[EDT-10.1 (1,5 j) listar capas] lasts 2 days
+[EDT-10.1 (1,5 j) listar capas] is colored in #E3A82B
+[EDT-10.1 (1,5 j) listar capas] is 65% completed
+[EDT-09.4 (1,5 j) preview y cancelación] -> [EDT-10.1 (1,5 j) listar capas]
+[EDT-10.2 (1,5 j) crear/eliminar con confirmación] lasts 2 days
+[EDT-10.2 (1,5 j) crear/eliminar con confirmación] is colored in #E3A82B
+[EDT-10.2 (1,5 j) crear/eliminar con confirmación] is 65% completed
+[EDT-10.1 (1,5 j) listar capas] -> [EDT-10.2 (1,5 j) crear/eliminar con confirmación]
+[EDT-10.3 (1 j) drag reorder] lasts 1 days
+[EDT-10.3 (1 j) drag reorder] is colored in #E3A82B
+[EDT-10.3 (1 j) drag reorder] is 65% completed
+[EDT-10.2 (1,5 j) crear/eliminar con confirmación] -> [EDT-10.3 (1 j) drag reorder]
+[EDT-10.4 (1 j) toggle/opacity] lasts 1 days
+[EDT-10.4 (1 j) toggle/opacity] is colored in #E3A82B
+[EDT-10.4 (1 j) toggle/opacity] is 65% completed
+[EDT-10.3 (1 j) drag reorder] -> [EDT-10.4 (1 j) toggle/opacity]
+[EDT-10 listo] happens at [EDT-10.4 (1 j) toggle/opacity]'s end
+
+-- EDT-11 — Crear inspector contextual  [DONE 80%] --
+
+[EDT-11.1 (1,5 j) crear contexto de selección] lasts 2 days
+[EDT-11.1 (1,5 j) crear contexto de selección] is colored in #7FB069
+[EDT-11.1 (1,5 j) crear contexto de selección] is 80% completed
+[EDT-10.4 (1 j) toggle/opacity] -> [EDT-11.1 (1,5 j) crear contexto de selección]
+[EDT-11.2 (1,5 j) registrar inspectores] lasts 2 days
+[EDT-11.2 (1,5 j) registrar inspectores] is colored in #7FB069
+[EDT-11.2 (1,5 j) registrar inspectores] is 80% completed
+[EDT-11.1 (1,5 j) crear contexto de selección] -> [EDT-11.2 (1,5 j) registrar inspectores]
+[EDT-11.3 (1,5 j) editar campos básicos] lasts 2 days
+[EDT-11.3 (1,5 j) editar campos básicos] is colored in #7FB069
+[EDT-11.3 (1,5 j) editar campos básicos] is 80% completed
+[EDT-11.2 (1,5 j) registrar inspectores] -> [EDT-11.3 (1,5 j) editar campos básicos]
+[EDT-11.4 (1,5 j) mostrar errores inline] lasts 2 days
+[EDT-11.4 (1,5 j) mostrar errores inline] is colored in #7FB069
+[EDT-11.4 (1,5 j) mostrar errores inline] is 80% completed
+[EDT-11.3 (1,5 j) editar campos básicos] -> [EDT-11.4 (1,5 j) mostrar errores inline]
+[EDT-11 listo] happens at [EDT-11.4 (1,5 j) mostrar errores inline]'s end
+
+-- EDT-12 — Implementar CommandHistory y deshacer-rehacer  [REPLANTEAR 70%] --
+
+[EDT-12.1 (1,5 j) definir interfaz] lasts 2 days
+[EDT-12.1 (1,5 j) definir interfaz] is colored in #D9614C
+[EDT-12.1 (1,5 j) definir interfaz] is 70% completed
+[EDT-11.4 (1,5 j) mostrar errores inline] -> [EDT-12.1 (1,5 j) definir interfaz]
+[EDT-12.2 (1,5 j) crear pilas y cursor] lasts 2 days
+[EDT-12.2 (1,5 j) crear pilas y cursor] is colored in #D9614C
+[EDT-12.2 (1,5 j) crear pilas y cursor] is 70% completed
+[EDT-12.1 (1,5 j) definir interfaz] -> [EDT-12.2 (1,5 j) crear pilas y cursor]
+[EDT-12.3 (1,5 j) merge por gesture] lasts 2 days
+[EDT-12.3 (1,5 j) merge por gesture] is colored in #D9614C
+[EDT-12.3 (1,5 j) merge por gesture] is 70% completed
+[EDT-12.2 (1,5 j) crear pilas y cursor] -> [EDT-12.3 (1,5 j) merge por gesture]
+[EDT-12.4 (1,5 j) integrar dirty flag] lasts 2 days
+[EDT-12.4 (1,5 j) integrar dirty flag] is colored in #D9614C
+[EDT-12.4 (1,5 j) integrar dirty flag] is 70% completed
+[EDT-12.3 (1,5 j) merge por gesture] -> [EDT-12.4 (1,5 j) integrar dirty flag]
+[EDT-12.5 (1 j) probar excepciones] lasts 1 days
+[EDT-12.5 (1 j) probar excepciones] is colored in #D9614C
+[EDT-12.5 (1 j) probar excepciones] is 70% completed
+[EDT-12.4 (1,5 j) integrar dirty flag] -> [EDT-12.5 (1 j) probar excepciones]
+[EDT-12 listo] happens at [EDT-12.5 (1 j) probar excepciones]'s end
+
+-- EDT-13 — Implementar copiar, pegar y duplicar  [DONE 85%] --
+
+[EDT-13.1 (1 j) definir payload] lasts 1 days
+[EDT-13.1 (1 j) definir payload] is colored in #7FB069
+[EDT-13.1 (1 j) definir payload] is 85% completed
+[EDT-12.5 (1 j) probar excepciones] -> [EDT-13.1 (1 j) definir payload]
+[EDT-13.2 (1 j) copiar selección] lasts 1 days
+[EDT-13.2 (1 j) copiar selección] is colored in #7FB069
+[EDT-13.2 (1 j) copiar selección] is 85% completed
+[EDT-13.1 (1 j) definir payload] -> [EDT-13.2 (1 j) copiar selección]
+[EDT-13.3 (1 j) pegar con offset] lasts 1 days
+[EDT-13.3 (1 j) pegar con offset] is colored in #7FB069
+[EDT-13.3 (1 j) pegar con offset] is 85% completed
+[EDT-13.2 (1 j) copiar selección] -> [EDT-13.3 (1 j) pegar con offset]
+[EDT-13.4 (1 j) duplicar vía mismo pipeline] lasts 1 days
+[EDT-13.4 (1 j) duplicar vía mismo pipeline] is colored in #7FB069
+[EDT-13.4 (1 j) duplicar vía mismo pipeline] is 85% completed
+[EDT-13.3 (1 j) pegar con offset] -> [EDT-13.4 (1 j) duplicar vía mismo pipeline]
+[EDT-13 listo] happens at [EDT-13.4 (1 j) duplicar vía mismo pipeline]'s end
+
+-- EDT-14 — Implementar guardado, autosave y recuperación  [PARCIAL 40%] --
+
+[EDT-14.1 (1 j) guardar explícito] lasts 1 days
+[EDT-14.1 (1 j) guardar explícito] is colored in #E3A82B
+[EDT-14.1 (1 j) guardar explícito] is 40% completed
+[EDT-13.4 (1 j) duplicar vía mismo pipeline] -> [EDT-14.1 (1 j) guardar explícito]
+[EDT-14.2 (1 j) programar autosave por dirty] lasts 1 days
+[EDT-14.2 (1 j) programar autosave por dirty] is colored in #E3A82B
+[EDT-14.2 (1 j) programar autosave por dirty] is 40% completed
+[EDT-14.1 (1 j) guardar explícito] -> [EDT-14.2 (1 j) programar autosave por dirty]
+[EDT-14.3 (1 j) detectar crash] lasts 1 days
+[EDT-14.3 (1 j) detectar crash] is colored in #E3A82B
+[EDT-14.3 (1 j) detectar crash] is 40% completed
+[EDT-14.2 (1 j) programar autosave por dirty] -> [EDT-14.3 (1 j) detectar crash]
+[EDT-14.4 (1 j) ofrecer restauración] lasts 1 days
+[EDT-14.4 (1 j) ofrecer restauración] is colored in #E3A82B
+[EDT-14.4 (1 j) ofrecer restauración] is 40% completed
+[EDT-14.3 (1 j) detectar crash] -> [EDT-14.4 (1 j) ofrecer restauración]
+[EDT-14.5 (1 j) limpiar al guardar] lasts 1 days
+[EDT-14.5 (1 j) limpiar al guardar] is colored in #E3A82B
+[EDT-14.5 (1 j) limpiar al guardar] is 40% completed
+[EDT-14.4 (1 j) ofrecer restauración] -> [EDT-14.5 (1 j) limpiar al guardar]
+[EDT-14 listo] happens at [EDT-14.5 (1 j) limpiar al guardar]'s end
+
+-- EDT-15 — Validar creación de un mapa sin usar Tiled  [PARCIAL 70%] --
+
+[EDT-15.1 (1 j) crear proyecto desde cero] lasts 1 days
+[EDT-15.1 (1 j) crear proyecto desde cero] is colored in #E3A82B
+[EDT-15.1 (1 j) crear proyecto desde cero] is 70% completed
+[EDT-14.5 (1 j) limpiar al guardar] -> [EDT-15.1 (1 j) crear proyecto desde cero]
+[EDT-15.2 (1 j) importar tileset] lasts 1 days
+[EDT-15.2 (1 j) importar tileset] is colored in #E3A82B
+[EDT-15.2 (1 j) importar tileset] is 70% completed
+[EDT-15.1 (1 j) crear proyecto desde cero] -> [EDT-15.2 (1 j) importar tileset]
+[EDT-15.3 (1 j) pintar capas] lasts 1 days
+[EDT-15.3 (1 j) pintar capas] is colored in #E3A82B
+[EDT-15.3 (1 j) pintar capas] is 70% completed
+[EDT-15.2 (1 j) importar tileset] -> [EDT-15.3 (1 j) pintar capas]
+[EDT-15.4 (0,5 j) deshacer/rehacer] lasts 1 days
+[EDT-15.4 (0,5 j) deshacer/rehacer] is colored in #E3A82B
+[EDT-15.4 (0,5 j) deshacer/rehacer] is 70% completed
+[EDT-15.3 (1 j) pintar capas] -> [EDT-15.4 (0,5 j) deshacer/rehacer]
+[EDT-15.5 (0,5 j) guardar/reabrir/playtest] lasts 1 days
+[EDT-15.5 (0,5 j) guardar/reabrir/playtest] is colored in #E3A82B
+[EDT-15.5 (0,5 j) guardar/reabrir/playtest] is 70% completed
+[EDT-15.4 (0,5 j) deshacer/rehacer] -> [EDT-15.5 (0,5 j) guardar/reabrir/playtest]
+[EDT-15 listo] happens at [EDT-15.5 (0,5 j) guardar/reabrir/playtest]'s end
+
+@endgantt

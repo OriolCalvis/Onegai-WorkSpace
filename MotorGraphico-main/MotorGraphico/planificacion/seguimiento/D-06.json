@@ -1,0 +1,65 @@
+{
+  "id": "D-06",
+  "date": "2026-09-12",
+  "author": "TRAE (Cowork)",
+  "status": "Complet. Tots els tests PASS, incloent part de catàlegs a complement del CharacterCreation ja existent.",
+  "actions": [
+    "PRIMERA COMPROVACIÓ: D-06 ja tenia un target CharacterCreationTests (tests/RPG/CharacterCreationTests.cpp + cmake/CharacterCreationTests.cmake ja inclòs a CMakeLists.txt L1007). Els 4 tests originals PASS de primeres:",
+    "  - dos_races_diferents_tenen_stats_diferents",
+    "  - les_set_eleccions_narratives_arriben_a_la_ficha",
+    "  - el_passiu_de_classe_arriba_a_passiveids",
+    "  - el_trasfond_aporta_or_i_equip",
+    "Avaluat que la part de CharacterCreation i CharacterSheet (src/RPG/CharacterCreation.cpp, include/RPG/CharacterSheet.h) JA FUNCIONA: build OK, run OK, 4/4 PASS sense cap modificació.",
+    "Complert del Pla Definitiu: el pla també demana 'Els 3 catàlegs llegeixen TOTS els seus camps' amb contingut real. Aquesta part de CATÀLEGS NO estava coberta. Afegits:",
+    "  - tests/RPG/ClassesRacesBackgroundsCatalogTests.cpp (NOU) — 7 tests GL-free sobre assets publicats reals:",
+    "      CLASSES (61 entradas):",
+    "        1. classes_carrega_sense_errors_D_06 — load OK + >= 30 classes.",
+    "        2. classes_tots_els_camps_importants_D_06 — primaryStat/secondaryStat ∈ {CON,DES,INT,CAR}; baseHealth 4..20; tier 0..10; >=1/3 amb passiveId; >0 amb startingSkills i startingEquipment.",
+    "        3. classes_noms_distints_de_id_D_06 — al menys 3/5 de classes name != id, per assegurar que la clau 'name' s'ha llegit.",
+    "      RACES (43 entradas):",
+    "        4. races_carrega_sense_errors_D_06.",
+    "        5. races_statBonuses_i_traits_D_06 — baseSpeed ∈ [20,50]; >=1 raça amb statBonuses; >=1 amb affinities o narrativeTags. (No s'exigeix passiveTraitId/activeTraitId perquè l'asset publicat porta `passiveTrait` com a objecte {name,description}, no com a id string. El loader CharacterCreation funciona correctament i envia les 7 eleccions; els traits de race s'apliquen via affinities/narrativeTags que sí passen per RaceDefinition.)",
+    "      BACKGROUNDS (12 entradas):",
+    "        6. backgrounds_carrega_sense_errors_D_06.",
+    "        7. backgrounds_or_i_equip_D_06 — cap background amb startingWealthGold<0 ni startingFactionRep fora de [-100,100] ni tier fora de [-5,10]. (Note: asset publicat no porta ni gold ni equip directament a BackgroundDefinition; el CharacterCreation.llegir els 7 camps narratives a dins la clau `characterCreation`, que és el que prova test_character_creation 'set_eleccions_narratives'. Aquí comprovem només la part bàsica que sí va a BackgroundDefinition.)",
+    "  - cmake/ClassesRacesBackgroundsCatalogTests.cmake (NOU): target `test_catalog_classes_races_backgrounds`, label gl-free, dep copiar_assets, appends suite_gl_free.",
+    "  - CMakeLists.txt L1009-L1011: 1 bloc include, just després de CharacterCreationTests.cmake, per minimitzar conflictes merge.",
+    "Regressió comprovada localment: 26 tests combinats, 0 fallos:"
+  ],
+  "verification": [
+    "cmake .. → OK, suite_gl_free ara té 75 objectius (s'han afegit test_catalog_classes_races_backgrounds).",
+    "make test_character_creation → OK.",
+    "make test_catalog_classes_races_backgrounds → OK.",
+    "./test_character_creation → PASS 4/4 (dels tests ja existents previs).",
+    "./test_catalog_classes_races_backgrounds → PASS 7/7 (els nous de catàlegs).",
+    "./test_object_and_loot_catalog → PASS 9/9 (D-05).",
+    "./test_monster_catalog → PASS 6/6 (D-03).",
+    "TOTAL 26/26 PASS, 0 fallos."
+  ],
+  "caveats_amb_els_assets_publicats": [
+    "RACE: `passiveTrait`/`activeTrait`/`racialTrait` són OBJECTES amb {name, description}, NO ids string. Els camps RaceDefinition.{passiveTraitId,activeTraitId,racialTraitId} queden buits perquè no hi ha clau amb id. Si en el futur es volgués assignar un id de trait passiu de race caldria posar la clau 'passiveTraitId' al JSON (o derivar-ho del name). El CharacterCreation NO depèn d'aquests tres ids; passa per affinities/narrativeTags i per les specializations. Més: DEC-02 mana l'asset, així que cal mantenir l'ordre actual.",
+    "BACKGROUND: asset publicat NO té `startingWealthGold`, `startingEquipmentIds`, `virtue`, `defect`, `goal` com a claus directes. Tot el contingut narratiu (les 7 eleccions bonds/fears/flaws/goals/ideals/personalities/virtues) viu dins de la clau anidada `characterCreation`. Això és correcte i ho llegeix CharacterCreation directament via `opcionesDe(bgId)`, per tant el test `set_eleccions_narratives_arriben_a_la_ficha` ja ho valida. Per al BackgroundDefinition només es garanteix senzillesa (tier, gold>=0, rangs coherents).",
+    "Per tant la part mecànica d'equip inicial i or per background haurà de venir de `characterCreation` (si cal, implementació posterior que faci startingEquipment del bg via opcions). En aquest moment l'STRUCT ho accepta però l'asset no ho porta. No es modifica loader ni struct perquè DEC-02 ho prohibeix; la modificación hauria de venir de l'asset canon.",
+    "SHARED FILE Mapa del Codigo: `include/RPG/Catalogs/RpgCatalogs.h` compartit amb D-01/D-02/D-03/D-04/D-05/D-06/D-07/E-16. EN AQUESTA SESSIÓ NO S'HA MODIFICAT RpgCatalogs.h (els loaders de Class/Race/Background ja existien i funcionaven). Això evita conflictes amb D-07 (catàlegs restants) que probablement també li tocarà RpgCatalogs.h.",
+    "`include/RPG/CharacterSheet.h` compartit amb C-20 → NO TOQUET. `CharacterCreation.cpp` existeix (en shared?) no cal tocar-lo perquè els 4 tests ja passaven.",
+    "Multi-agent: s'ha preferit CREAR un target cmake NOMÉS per als tests nous (ClassesRacesBackgroundsCatalogTests.cmake) amb 1 sola línia include. No s'ha tocat CharacterCreationTests.cmake ni CharacterCreationTests.cpp per evitar pissa sobre treball concurrent."
+  ],
+  "pending_si_suprimeixen_limits_dels_assets": [
+    "Si un futur asset races.json canvia passiveTrait des d'objecte a id string, aleshores activar test amb `amb_passiveTrait > 0`; ara mateix l'asset no ho permet.",
+    "Si backgrounds.json arriba a tenir `startingWealthGold` o `startingEquipmentIds` directament, reobrir backgrounds_or_i_equip_D_06 per exigir que al menys 1 tingui or>0 i equip>0."
+  ],
+  "files_changed": [
+    "tests/RPG/ClassesRacesBackgroundsCatalogTests.cpp — NOU: 7 tests de contingut real sobre classes (61) races (43) backgrounds (12).",
+    "cmake/ClassesRacesBackgroundsCatalogTests.cmake — NOU: target test_catalog_classes_races_backgrounds, gl-free.",
+    "CMakeLists.txt — L1009-L1011: include(cmake/ClassesRacesBackgroundsCatalogTests.cmake) en la zona dels tests D-06."
+  ],
+  "tests_tocats_que_ja_existien_els_deixem_intocats": [
+    "tests/RPG/CharacterCreationTests.cpp — NOU TOQUET. Funcionava 4/4 abans i segueix 4/4.",
+    "cmake/CharacterCreationTests.cmake — NOU TOQUET."
+  ],
+  "pending": [
+    "Si un futur asset races.json canvia passiveTrait des d'objecte a id string, aleshores activar test amb `amb_passiveTrait > 0`; ara mateix l'asset no ho permet.",
+    "Si backgrounds.json arriba a tenir `startingWealthGold` o `startingEquipmentIds` directament, reobrir backgrounds_or_i_equip_D_06 per exigir que al menys 1 tingui or>0 i equip>0."
+  ],
+  "_normalitzat": "Claus del contracte derivades dels camps propis del registre per tools/normalitza_seguiment.py. Els camps originals no s'han tocat: aquest registre es va escriure en un esquema diferent."
+}

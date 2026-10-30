@@ -1,0 +1,17 @@
+{
+  "id": "C-06",
+  "date": "2026-09-03",
+  "author": "Claude (Cowork)",
+  "status": "Tancat",
+  "actions": [
+    "Amb la caixa d'UN sol glif no hi cap «glif + guió»: `maxGlyphs - 1` era 0, no es consumia cap lletra de la paraula i el bucle empenyia «-» per sempre. No era un penjat teòric: el vector creixia fins a quedar-se sense memòria, i hi arribava qualsevol `HudText` prou estret.",
+    "Amb `maxGlyphs == 1` es talla a pèl, un glif per línia i sense inventar guions: el guió és una ajuda de lectura, no una obligació. Amb espai, el comportament d'abans no canvia.",
+    "Guarda addicional: si una volta no consumeix res, se surt en comptes de girar. La mateixa classe de fallada que arregla el paquet.",
+    "Prova nova `tests/Render/BitmapFontTests.cpp` (`test_bitmap_font`)."
+  ],
+  "verification": [
+    "5 casos verds: caixa d'un glif sense penjar-se ni inventar guions; amplades 0, 1 i 2 en temps finit i cap línia més ampla que la caixa; cap lletra perduda; amb espai, el guió es manté; les accentuades segueixen comptant com un glif. Amb el codi antic, 4 dels 5 moren de `bad_alloc` (amb el límit de memòria posat; sense límit, no tornen)."
+  ],
+  "pending": [],
+  "source_markdown": "**Seguiment · 2026-09-03 · Claude (Cowork): Tancat.**\n\n- Amb la caixa d'UN sol glif no hi cap «glif + guió»: `maxGlyphs - 1` era 0, no es consumia cap lletra de la paraula i el bucle empenyia «-» per sempre. No era un penjat teòric: el vector creixia fins a quedar-se sense memòria, i hi arribava qualsevol `HudText` prou estret.\n- Amb `maxGlyphs == 1` es talla a pèl, un glif per línia i sense inventar guions: el guió és una ajuda de lectura, no una obligació. Amb espai, el comportament d'abans no canvia.\n- Guarda addicional: si una volta no consumeix res, se surt en comptes de girar. La mateixa classe de fallada que arregla el paquet.\n- Prova nova `tests/Render/BitmapFontTests.cpp` (`test_bitmap_font`).\n\n**Verificat.** 5 casos verds: caixa d'un glif sense penjar-se ni inventar guions; amplades 0, 1 i 2 en temps finit i cap línia més ampla que la caixa; cap lletra perduda; amb espai, el guió es manté; les accentuades segueixen comptant com un glif. Amb el codi antic, 4 dels 5 moren de `bad_alloc` (amb el límit de memòria posat; sense límit, no tornen)."
+}

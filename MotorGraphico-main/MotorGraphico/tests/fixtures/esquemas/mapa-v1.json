@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "id": "fixture_mapa",
+  "name": "Mapa de referencia",
+  "width": 4,
+  "height": 3,
+  "tileWidth": 64,
+  "tileHeight": 32,
+  "collisionGids": [
+    7,
+    9
+  ],
+  "fogEnabled": false,
+  "fogRevealRadius": 1,
+  "lightingEnabled": false,
+  "ambientR": 0.350000,
+  "ambientG": 0.350000,
+  "ambientB": 0.400000,
+  "layers": [
+    {
+      "id": "suelo",
+      "name": "Suelo",
+      "visible": true,
+      "locked": false,
+      "opacity": 0.750000,
+      "order": 0,
+      "type": "tile",
+      "tiles": [
+        1,
+        1,
+        2,
+        2,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "id": "entidades",
+      "name": "Entidades",
+      "visible": true,
+      "locked": false,
+      "opacity": 0.750000,
+      "order": 1,
+      "type": "entity",
+      "entities": [
+        {
+          "id": "cofre_1",
+          "objectId": "chest",
+          "position": {
+            "x": 1,
+            "y": 1
+          },
+          "displayName": "Cofre del rincón",
+          "properties": {
+            "pista": "lleva acentos a propósito (DEC-15)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "regiones",
+      "name": "Regiones",
+      "visible": true,
+      "locked": false,
+      "opacity": 0.750000,
+      "order": 2,
+      "type": "region",
+      "regions": [
+        {
+          "id": "zona_norte",
+          "name": "Zona norte",
+          "bounds": {
+            "minX": 0,
+            "maxX": 3,
+            "minY": 0,
+            "maxY": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "eventos",
+      "name": "Eventos",
+      "visible": true,
+      "locked": false,
+      "opacity": 0.750000,
+      "order": 3,
+      "type": "event",
+      "events": [
+        {
+          "id": "puerta",
+          "name": "Puerta del santuario",
+          "position": {
+            "x": 2,
+            "y": 2
+          },
+          "pages": [
+            {
+              "id": "puerta_p1",
+              "name": "Cerrada",
+              "trigger": "interact",
+              "requiresAllConditions": true,
+              "appearanceObjectId": "door",
+              "conditions": [],
+              "commands": [
+                {
+                  "type": "control.si",
+                  "version": 1,
+                  "params": {
+                    "clase": "flag",
+                    "referencia": "tiene_llave"
+                  },
+                  "children": [
+                    {
+                      "type": "rama.si",
+                      "version": 1,
+                      "params": {},
+                      "children": [
+                        {
+                          "type": "texto.mostrar",
+                          "version": 1,
+                          "params": {
+                            "texto": "La puerta se abre."
+                          },
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "type": "rama.no",
+                      "version": 1,
+                      "params": {},
+                      "children": [
+                        {
+                          "type": "texto.mostrar",
+                          "version": 1,
+                          "params": {
+                            "texto": "Está cerrada."
+                          },
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "bandera.encender",
+                  "version": 1,
+                  "params": {
+                    "bandera": "puerta_probada"
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "puerta_p2",
+              "name": "Abierta",
+              "trigger": "touch",
+              "requiresAllConditions": false,
+              "appearanceObjectId": "",
+              "conditions": [
+                {
+                  "kind": "flag",
+                  "reference": "puerta_abierta",
+                  "comparison": "==",
+                  "value": "",
+                  "negated": false
+                },
+                {
+                  "kind": "variable",
+                  "reference": "llaves",
+                  "comparison": ">=",
+                  "value": "2",
+                  "negated": true
+                }
+              ],
+              "commands": [
+                {
+                  "type": "texto.mostrar",
+                  "version": 1,
+                  "params": {
+                    "texto": "Ya está abierta."
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

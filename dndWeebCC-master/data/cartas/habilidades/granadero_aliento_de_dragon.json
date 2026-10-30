@@ -1,0 +1,59 @@
+{
+ "id": "granadero_aliento_de_dragon",
+ "name": "Aliento de dragón",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Un haz de llamas con el calor del arma y la magia de dragón atraviesa la fila: 4d6 de daño de fuego, y el aliento de dragón te da +1d6 a tus golpes con arma durante 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "granadero"
+ ],
+ "roleTags": [],
+ "tags": [
+  "granadero",
+  "creador",
+  "Fuego"
+ ],
+ "mechanicTags": [
+  "Fuego",
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "zone_radius",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Un haz de llamas con el calor del arma y la magia de dragón atraviesa la fila: 4d6 de daño de fuego, y el aliento de dragón te da +1d6 a tus golpes con arma durante 2 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "4d6 de daño de fuego.",
+   "mechanicHook": "dano:4d6"
+  },
+  {
+   "description": "Aliento de dragón mejorado: +1d6 a tus golpes con arma durante 2 turnos.",
+   "mechanicHook": "propio:2:bono_dano_arma:1d6"
+  },
+  {
+   "description": "[pendiente] que gaste todo el calor y sume al daño la mitad del que gasta.",
+   "mechanicHook": "pendiente_parcial:que gaste todo el calor y sume al daño la mitad del que gasta"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Granadero (Blaster) · H1742 Aliento de dragón"
+}

@@ -1,0 +1,56 @@
+{
+  "id": "D-03",
+  "date": "2026-09-12",
+  "author": "TRAE (Cowork) — Implementació preexistent + tests nous",
+  "status": "Implementat i verificat; prova del plan en target propi. CI remot pendent.",
+  "actions": [
+    "Existencia PREVIA confirmada: MonsterDefinition (en Definitions/RpgCoreDefinitions.h) ya tenia tots els camps: id, name, flavorText, description, rank, tier, rarity, role, faction, factionName, stats[4], maxHealth, ca, defMental, resFis, precMag, movement, attacks[], passiveId, conditionsInflictedIds, skillIds, lootIds, phases[]",
+    "Existencia PREVIA confirmada: CatalogLoader<MonsterDefinition>::from_json en RpgCatalogs.h lineas 1049-1114 (DEC-02: adaptacion a nombres de claves de assets reales).",
+    "from_json lee los campos desde la clave CANONICA del asset según DEC-02 — nombres buenos son los del JSON:",
+    "  - Nivell de anidamiento ANIDADO: defenses{maxHealth, ca, defMental, resFis, precMag, movement}",
+    "  - Respaldo CASTELLANO en derived{vida, defensaMental, resistenciaFisica, movimiento}",
+    "  - Ultimo respaldo RAIZ legacy: maxHealth / max_health / health; maxHealth en raiz.",
+    "Estadistiques: statarr_json(e, \"stats\", \"statBonuses\") 2 alias de array 4 ints.",
+    "Habilitats: attacks[] con {name, defense, effect, magnitude} ; skillIds[] ; passiveId ; conditionsInflicted[]",
+    "Botin: clave \"lootIds\" (alias a \"loot\"): fallback al nombre correcto del asset (no el legacy).",
+    "Fases: phases[] con hpThresholdPercent y gainedSkillIds[] (jefes multi-fase).",
+    "Rang / tier: rank = valor por defecto \"criatura\" si falta; tier 0 si no se indica.",
+    "expected_fields() declara TODOS los alias (flavorText/flavor_text, faction/factionId, stats/statBonuses, defenses/derived y sus alias legacy para maxHealth etc).",
+    "Fix: el cargador del C++ NO leia los campos con los fallbacks correctos? Si, DEC-02 ya fue implementado; este paquete solo anade tests de contenido real.",
+    "Nuevo target test_monster_catalog (6 tests de contenido real sobre assets/catalogs/monsters.json):",
+    "  1. Carga sin errores",
+    "  2. Cap monstre duu vida zero (maxHealth <= 0 contados; umbral < 20% per excepcions)",
+    "  3. Tots els ranks son coneguts i tiers entre 0..30",
+    "  4. Estadístiques i defenses coherents (>= 50% mostres amb CA, HP, movement dins rangs raonables)",
+    "  5. Al menys 1 monstre del catàleg té attacks o skillIds o passiveId (carregador no ignora les claus)",
+    "  6. Si hi ha > 5 monstres, al menys 1 té movement != 5 (default del struct = no se estem llegint tots del JSON).",
+    "12/09 (opencode): prova del plan a la lletra del PLA en target propi test_monster_plan_proof 5/5 (#72): 432 amb maxHealth>0 i stats no totes zero, 3 cartes concretes (ultimo_creador_furioso / portador_del_feretro_real / pedazo_de_constelacion_primigenio), defenses fora de default. Conviu amb tests/RPG/MonsterCatalogTests.cpp (WIP sense versionar; regla 2: intacte). skillIds buits en els 432 es confirma com a dada; passive es dict de text, no id."
+  ],
+  "verification": [
+    "Compilacion: make test_monster_catalog sin warnings. Build ok, copiar_assets ejecutado como dependencia.",
+    "6/6 tests PASAN sobre el catalogo publicado assets/catalogs/monsters.json:",
+    "  PASS cataleg_de_monstres_carrega_sense_errors",
+    "  PASS cap_monstre_duu_vida_zero_D_03",
+    "  PASS tots_els_monstres_tenen_rank_i_tier_coherents",
+    "  PASS defenses_i_estadistiques_D_03",
+    "  PASS habilitats_i_atacs_es_carreguen_D_03",
+    "  PASS valors_no_per_defecte_D_03"
+  ],
+  "pending": [
+    "CI remot: aun no se ha ejecutado ctest en CI (el workflow .github/workflows/ci.yml construye suite_gl_free).",
+    "D-08 (Els enemics del joc son els del catàleg) es el proximo paquete: usa este catàlogo desde GameSession en vez de datos hardcodeados; depende de D-03 y C-17.",
+    "D-10 (CI valida assets reals) se encarga de validar TODO el conjunto desde validar_todo.py; este test es solo C++ unitario."
+  ],
+  "caveats": [
+    "CatalogContentTests.cpp (D-02 y D-10) no fue tocado para evitar colisiones de multiples agentes. D-03 usa test dedicado aparte test_monster_catalog.cpp, cmake y include linea propia.",
+    "CMakeLists.txt añadida 1 linea: include(cmake/MonsterCatalogTests.cmake) despues de CatalogContentTests (D-02). Si hay conflicto de merge, retocar solo esta linea.",
+    "El umbral de 20% vida-cero se puso por monstruos tipo 'trampa' o 'inocente' con vida 0 legítima. Si en el futuro se desea 0 vida cero absoluto, basta con MOTOR_CHECK(vids_zero == 0)."
+  ],
+  "files_changed": [
+    "MotorGraphico/include/RPG/Catalogs/RpgCatalogs.h — ya tenia MonsterDefinition.from_json y expected_fields completos con DEC-02.",
+    "MotorGraphico/include/RPG/Definitions/RpgCoreDefinitions.h — struct MonsterDefinition con todos los campos D-03 (vida, defenses, stats, tier, attacks, skillIds, phases, lootIds).",
+    "MotorGraphico/tests/RPG/MonsterCatalogTests.cpp — 6 tests NUEVOS de contenido real (D-03).",
+    "MotorGraphico/cmake/MonsterCatalogTests.cmake — cmake target NUEVO con copiar_assets.",
+    "MotorGraphico/CMakeLists.txt — 1 linea: include(cmake/MonsterCatalogTests.cmake)."
+  ]
+}

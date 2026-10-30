@@ -1,0 +1,40 @@
+{
+ "id": "CP-01",
+ "date": "2026-10-07",
+ "author": "claude (Cowork)",
+ "status": "HECHO — 20 clases propias (cuatro bardos, dos clerigos, dos paladines, el Tempestario, el Ingeniero, el Mercader, el Alquimista, la Cartomante, el Druida, el Domador, dos chamanes, el Necromago y los dos piratas de Vinclap) que se eligen al crear como las SP: ficha por rol, 7 cartas + 3 de Creador con ganchos dentro de un presupuesto sacado de las 44 SP, su pasiva y un set entero de tier 2 (raro, que la clase no lleva) dibujado y probado en las cuatro tallas y en el motor, con doce armas nuevas. Siguen las particulas de todas las clases y los anillos, collares y cinturones del tier 2.",
+ "origen": "Oriol (07/10): «crear 3 clases mas de bardo (en plan un actor de teatro, un cantador, un musico instrumental, y un feriante), 2 clerigos, 2 paladines, alguna clase que utilize el rayo como elemento principal, un ingeniero (torretas, trampas e ingenio), 1 mercader, alquimista, 1 druida, 1 necromago que invoque almas en pena, domador de bestias, gambito o un simil tarotista, un par de chamanes tipo los del wow, 2 piratas (el origen de la pirateria fue de Vinclap: uno vampirico y el otro un forajido con pistola y espada), y una armadura de tier dos para cada uno».",
+ "fuente": "Las 44 SP ya hechas (tools/sp_*.py) como modelo y las SP comunes de la enciclopedia de Oriol (el Pirata, el Entrenador de mascotas, el Atuendo de boda, el Pijama) como ideas; el panteon de MotorGraphico para los dioses de clerigos y paladines.",
+ "canon": "planificacion/CANON_CLASES_PROPIAS.md (que sale de cada clase, referencias, presupuesto de una carta, con que se tira, la pasiva, el arranque, el set y el arma, el gancho azar_una y lo que no se simula).",
+ "scope": [
+  "tools/cp_reglas.py (nuevo): las piezas de una carta sin ficha de NosTale (dados 1d6-4d6, rondas, estados, invocaciones, azar_una) y revisa_presupuesto.",
+  "tools/cp_bardos.py, cp_fe.py, cp_ingenio.py, cp_naturaleza.py, cp_noche_y_tormenta.py (nuevos): los datos de las 20 clases (cartas, pasiva, arranque, Creador, arma inicial, armas nuevas de Viaje y el set).",
+  "tools/importar_clases_sp.py: lee tambien las clases propias (fuente «Propia · clase · referencia», entrada «propia» en classes.json con familia, elemento, deidad y referencias).",
+  "Motor: el gancho azar_una (GanchosCarta), CartasEnCombate::echarSuerte y la fila «Echar las cartas» de BarraCombate.",
+  "Catalogos: 127 clases, 1191 cartas, 136 pasivas, 755 objetos (los 20 sets y 12 armas de Viaje nuevas), 217 invocaciones; libreria_armas/completa con sus item_<id>.",
+  "tools/actores_trajes_propias.py (nuevo): las piezas propias de los 20 sets (paletas sin tipo; lo fino con tonos a mano) al final de cada atlas.",
+  "tools/actores_formas_propias.py (nuevo): laud, tambor y baqueta, baston de paseo, hoz, llave inglesa, bolsa de monedas, matraz, naipes, totem, vara de rayo, farol de animas y sable y pistola, cada una con su escalon raro.",
+  "tools/actores_estetica.py: el tema de cada set (despues de los de las SP, antes de «alquimista» y «faro»), la forma de cada arma nueva y la pieza de cada prenda; tools/actores_materiales.py: luz_animas.",
+  "assets/textures/personajes*: 490 piezas de equipo (743 objetos con pieza).",
+  "Pruebas: tests/Game/ClasesPropiasTests.cpp (26), tools/test_validar_sprites.py (las armas de las clases propias y las parejas), CatalogContentTests (217 invocaciones)."
+ ],
+ "non_goals": [
+  "Las particulas de cada clase y los anillos, collares y cinturones del tier 2 (lo siguiente).",
+  "Variaciones de los sets (otros tintes del mismo dibujo).",
+  "Posiciones en el combate, velocidad, cargas y medidores: lo que dependa de ellos queda [pendiente]."
+ ],
+ "verification": [
+  "test_clases_propias 26/26.",
+  "test_validar_sprites: todo menos test_personajes_son_reproducibles, que falla igual en ecfee91 (las filas de PixelLab no salen de generar()).",
+  "ctest: solo los fallos de la linea base (demo_creacion_personaje, test_gdb12_screens, test_g14 sin enlazar, test_application y test_application_cableado, test_catalog_content con skills 492 y NPC 134, test_application_scenes, test_personajes_capas por pnj_boundington/aigren, linea_base_core).",
+  "estetica_todos_los_objetos_se_montan: 743 objetos, 737 aspectos (el mismo margen que antes).",
+  "Laminas de los 20 sets en las cuatro tallas y GIF del motor (sets_cp_1..5.gif)."
+ ],
+ "para_oriol": [
+  "¿Te gustan los veinte sets? Sin referencias tuyas; los corrijo al verlos.",
+  "¿Te vale que la Cartomante eche las cartas al azar al empezar el combate (y no elija)?",
+  "Hice los cuatro bardos que nombraste (no tres): ¿sobra alguno?",
+  "Respondida (Oriol, 07/10: «no estamos limitados a los 4 elementos del nostale aqui»): el Rayo es un elemento suyo, no Luz; los elementos del juego son 13 (PART-01, planificacion/CANON_PARTICULAS.md)."
+ ],
+ "sesion": "sesiones/2026-10-07-claude-clases-propias.md"
+}

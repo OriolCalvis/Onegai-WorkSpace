@@ -1,0 +1,51 @@
+{
+ "id": "cazador_ataque_de_falcon",
+ "name": "Ataque de falcón",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Apuntas con la precisión de un halcón hasta el final del combate: atacas con ventaja y tus golpes con arma hacen +1.",
+ "flavorText": "",
+ "classTags": [
+  "cazador"
+ ],
+ "roleTags": [],
+ "tags": [
+  "cazador",
+  "estandar"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "self",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Apuntas con la precisión de un halcón hasta el final del combate: atacas con ventaja y tus golpes con arma hacen +1.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Ojo del halcón: ventaja en ataque todo el combate.",
+   "mechanicHook": "estado:combate:ventaja:ataque"
+  },
+  {
+   "description": "Ojo del halcón: +1 a tus golpes con arma todo el combate.",
+   "mechanicHook": "estado:combate:bono_dano_arma:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Cazador (Ranger) · H834 Ataque de falcón"
+}

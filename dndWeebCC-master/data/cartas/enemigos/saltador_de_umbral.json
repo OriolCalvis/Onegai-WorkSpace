@@ -1,0 +1,62 @@
+{
+ "id": "saltador_de_umbral",
+ "name": "Saltador de Umbral",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "escaramuzador",
+ "faction": "yokai_del_umbral",
+ "factionName": "Los Yokai del Umbral",
+ "stats": {
+  "CON": 5,
+  "DES": 8,
+  "INT": 6,
+  "CAR": 5
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 19,
+  "defensaMental": 15,
+  "resistenciaFisica": 15,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de magico: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: efecto táctico según su pasiva."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Si falla una salvación, puede teletransportarse 10 pies tras resolver el efecto."
+ },
+ "conditionsInflicted": [],
+ "loot": [
+  "estilete_de_viaje",
+  "faldar_de_explorador",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Magico"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Gana una segunda técnica por ronda y +1 al daño."
+  }
+ ],
+ "flavorText": "Asesino que nunca termina el turno en el mismo plano."
+}

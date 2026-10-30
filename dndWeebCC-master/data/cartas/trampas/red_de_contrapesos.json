@@ -1,0 +1,26 @@
+{
+ "id": "red_de_contrapesos",
+ "name": "Red de Contrapesos",
+ "type": "trap",
+ "tier": 1,
+ "rarity": "common",
+ "category": "mecánica",
+ "trigger": "cruzar el pasillo a media altura",
+ "detection": {
+  "stat": "DES",
+  "cd": 0.5
+ },
+ "disarm": {
+  "stat": "DES",
+  "cd": 0.5,
+  "herramienta": "herramientas de ladrón"
+ },
+ "effect": {
+  "description": "Red lastrada: Agarrado hasta liberarse.",
+  "defensa": "resistencia_fisica",
+  "condicionInfligida": "agarrado"
+ },
+ "onFail": "El contrapeso sube al atrapado al techo: Agarrado y colgado (los ataques contra él tienen ventaja).",
+ "reset": "recargable",
+ "flavorText": "Quien la montó pensaba volver. No volvió."
+}

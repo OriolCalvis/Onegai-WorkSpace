@@ -1,0 +1,54 @@
+{
+ "id": "ninja_ataque_a_la_velocidad_de_la_luz",
+ "name": "Ataque a la velocidad de la luz",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Cruzas el campo en un instante: 2d6 de daño de agua y -1 a su CA durante 3 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "ninja"
+ ],
+ "roleTags": [],
+ "tags": [
+  "ninja",
+  "estandar",
+  "Agua"
+ ],
+ "mechanicTags": [
+  "Agua"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Cruzas el campo en un instante: 2d6 de daño de agua y -1 a su CA durante 3 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "2d6 de daño de agua.",
+   "mechanicHook": "dano:2d6"
+  },
+  {
+   "description": "Debilita su defensa: -1 a la CA durante 3 turnos.",
+   "mechanicHook": "estado:3:penal_ca:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Ninja · H828 Ataque a la velocidad de la luz"
+}

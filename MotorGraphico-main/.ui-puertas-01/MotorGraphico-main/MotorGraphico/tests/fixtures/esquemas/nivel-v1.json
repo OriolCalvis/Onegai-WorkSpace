@@ -1,0 +1,74 @@
+{
+  "name": "Cova de referencia",
+  "map": "assets/maps/cova_entrada.tmx",
+  "mapDocument": "assets/niveles/cova_entrada.json",
+  "playerStart": {
+    "x": 2,
+    "y": 3
+  },
+  "enemies": [
+    {
+      "type": "slime",
+      "position": {
+        "x": 1,
+        "y": 2
+      },
+      "patrolMin": {
+        "x": 0,
+        "y": 2
+      },
+      "patrolMax": {
+        "x": 2,
+        "y": 2
+      },
+      "skills": [
+        "golpe_gelatinoso"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "objectId": "porta_santuari",
+      "position": {
+        "x": 4,
+        "y": 3
+      },
+      "targetLevel": "assets/levels/santuari.json",
+      "targetPosition": {
+        "x": 1,
+        "y": 1
+      }
+    },
+    {
+      "objectId": "cofre_fons",
+      "position": {
+        "x": 3,
+        "y": 1
+      },
+      "loot": [
+        "pocion",
+        "pocion"
+      ],
+      "lootTable": "tesor_comun",
+      "eventId": "cofre_obert",
+      "displayName": "Cofre del fons",
+      "variant": "reforurat",
+      "scale": 1.500000,
+      "effectOverride": "sanacio",
+      "properties": {
+        "pista": "esta humit",
+        "tipus": "fusta"
+      }
+    }
+  ],
+  "fog": {
+    "enabled": true,
+    "revealRadius": 6
+  },
+  "lighting": {
+    "enabled": true,
+    "ambientR": 0.300000,
+    "ambientG": 0.300000,
+    "ambientB": 0.450000
+  }
+}

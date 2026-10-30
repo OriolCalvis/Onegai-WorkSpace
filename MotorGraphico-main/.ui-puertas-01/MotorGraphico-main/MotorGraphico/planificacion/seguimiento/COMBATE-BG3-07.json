@@ -1,0 +1,28 @@
+{
+ "id": "COMBATE-BG3-07",
+ "date": "2026-10-14",
+ "author": "claude (Cowork)",
+ "status": "HECHO — AV13-33: la escena de noqueo o rescate antes de «Has caído». Y lo que faltaba de AV13-29: el de IA anda, quien cae deja su casilla y desaparece, y los golpes a los acompañantes se ven.",
+ "origen": "Oriol (14/10, D0015 §7): «escena de noqueo o rescate, cicatriz y moral; después Game Over». Oriol (10:26): «El meu carril de combat: AV13-33, el que falta dels acompanyants, AV13-14 i AV13-35».",
+ "actions": [
+  "Game::EscenaNoqueo (nuevo, GL-free, test_escena_noqueo 3/3): la caída, el velo, las frases (noqueo, o rescate si alguno de los tuyos sigue en pie) y ENTER para pasar.",
+  "ApplicationCinematica::empiezaNoqueo/noqueo/noqueoTecla (ApplicationHud.cpp): la cicatriz, la escena, el héroe que se hunde y se apaga; Application: ENTER pasa la frase y no elige en el menú.",
+  "InterfazDerrota.cpp (nuevo, sale de InterfazPergamino.cpp): la escena y, al acabar, el papiro de «Has caído». La nota de la cicatriz, corta.",
+  "BattleState::checkOutcome: si cae el héroe, se pierde (antes seguía mientras quedara un acompañante en pie: con Xila, que no es atacable, el combate no acababa).",
+  "BattleState::anotaGolpes: quien cae (no el héroe) deja libre su casilla; su dibujo se va (ApplicationPantallas::golpesALaVista).",
+  "BattleState::resuelveAliadoSolo: con tablero, el de IA anda antes de actuar: hasta los enemigos si pega; si no (Xila), junto al héroe. siguienteTurno anima lo andado.",
+  "ApplicationCinematica::dibujoDe: el dibujo de cualquier combatiente (héroe, enemigo, acompañante); los números, el parpadeo y el retroceso ya salen sobre los acompañantes.",
+  "montaTablero sincroniza al empezar: un enemigo de emboscada cuya casilla no valía ya no se queda dibujado fuera del tablero. Los acompañantes se quedan en el mundo durante «Has caído»."
+ ],
+ "verification": [
+  "Sonda noqueo (Ocaso, ineludible, con Venides y Xila): GameOver con rescate de Venides, tres frases, ENTER pasa la frase sin tocar el menú, y al acabar el papiro dice «Te queda una cicatriz.». Capturas n_cae, n_rescate, n_papiro.",
+  "Sonda acomp: el saqueador que cae desaparece del tablero (a_ataca).",
+  "test_escena_noqueo 3/3 (nueva), test_cartas_combate 52/52 (1 nueva: el de IA anda y quien cae deja su casilla), test_game_session 38/38; ctest gl-free 220/223 (los tres de siempre), GL 11/11; linea_base_core 0 de deuda nueva."
+ ],
+ "sesion": "sesiones/2026-10-14-claude-combate-casillas.md",
+ "pending": [
+  "La moral de caer: PO-38 en la bandeja.",
+  "El segundo golpe de Venides se pierde si el primero mata (no busca a otro que tenga al lado).",
+  "AV13-14 espera las plantillas de ChatGPT (AV13-08); AV13-35 espera la medida de Haiku."
+ ]
+}

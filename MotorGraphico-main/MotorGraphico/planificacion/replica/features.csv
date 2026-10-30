@@ -1,0 +1,36 @@
+feature,area,priority,original,clone,notes
+Audio por escena y zona con volúmenes separados (AudioSource + AudioMixer),audio,must,yes,partial,U1-01: AudioDirector escrito y probado; el juego no lo usa
+Identificadores estables de objetos de escena (instance ID),entidades,must,yes,partial,U1-02: HandlePool escrito; World no lo usa
+Agentes que navegan hacia un objetivo (NavMeshAgent),ia,should,yes,partial,U1-03: estado kChase existe sin transición
+Luz ambiental global configurable,iluminacion,should,yes,no,U1-05
+Project Settings: escena inicial / catálogos / idioma,proyecto,must,yes,no,U2-02
+El juego arranca desde el proyecto (Build Settings),proyecto,must,yes,no,G-08
+Módulos de juego separados del motor (packages y asmdef),proyecto,must,yes,no,U2-03
+Plantillas de proyecto al crear uno nuevo,proyecto,should,yes,no,U2-04
+Ventana de proyecto y jerarquía de escena,editor,must,yes,partial,E-11 (resta)
+Un solo editor para escenas y objetos,editor,must,yes,no,U2-05
+Triggers con entrada / permanencia / salida (OnTriggerEnter/Stay/Exit),eventos,must,yes,no,U3-02
+Scripting visual sin código (grafos de órdenes),eventos,must,yes,no,U3-04 + E-05 + E-06
+Depurar el scripting paso a paso,eventos,should,yes,partial,E-08 (resta)
+Curvas de interpolación compartidas (AnimationCurve),animacion,should,yes,no,U3-07
+Clips de animación con eventos de fotograma (Animation Events),animacion,must,yes,no,U3-05
+Máquina de estados de animación en datos (Animator Controller),animacion,must,yes,no,U3-06
+Play Mode dentro del editor,flujo,must,yes,no,F-01 (espera DEC-06)
+Recarga en caliente de datos y scripts,flujo,should,yes,no,F-03
+Consola e inspector de estado en ejecución,flujo,must,yes,no,F-04
+Cámara virtual: seguimiento / sacudida / límites / dead zone (Cinemachine),camara,should,yes,no,U4-01
+Cinemáticas con pistas en paralelo (Timeline),cinematicas,must,yes,no,U4-02
+Editor de línea de tiempo,cinematicas,should,yes,no,U4-03
+Prefabs de grupos de objetos,editor,must,yes,no,U4-05 (MAP-08)
+Gizmos de depuración: colisiones / regiones / rutas,flujo,should,yes,no,U4-06
+Sistema de partículas genérico,efectos,should,yes,no,U4-07
+Guardar y cargar con ranuras y autosave,guardado,should,no,partial,G-11 + G-01: Unity no lo trae hecho (PlayerPrefs); es nuestro
+Rutinas de PNJ por franja del día,mundo,should,no,no,U1-04: propio del RPG
+Páginas de evento con condiciones,eventos,must,no,no,U3-01 + U3-03 (DEC-10): viene de RPG Maker
+Probar desde la casilla seleccionada,flujo,could,no,no,F-02
+Saltar cinemáticas,cinematicas,could,no,no,U4-04
+Asset Store y paquetes de terceros,ecosistema,could,yes,skip,la tienda y su red no son una función del motor
+Render 3D / PBR / HDRP y URP,render,could,yes,skip,el motor es isométrico 2D
+Exportar a consolas y móvil,plataformas,could,yes,skip,licencias y SDK de plataforma; fuera del alcance
+Servicios en la nube (Unity Cloud / Analytics / Ads),servicios,could,yes,skip,servicios de la empresa; no son el motor
+Scripting en C# con recompilación de dominio,scripting,could,yes,skip,el motor es C++ con datos JSON; el sustituto es el scripting visual

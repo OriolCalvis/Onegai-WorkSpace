@@ -1,0 +1,26 @@
+{
+ "id": "espejo_que_cobra_peaje",
+ "name": "Espejo que Cobra Peaje",
+ "type": "trap",
+ "tier": 1,
+ "rarity": "common",
+ "category": "mágica",
+ "trigger": "mirarse más de un instante",
+ "detection": {
+  "stat": "INT",
+  "cd": 0.5
+ },
+ "disarm": {
+  "stat": "CAR",
+  "cd": 0.5,
+  "herramienta": null
+ },
+ "effect": {
+  "description": "El reflejo roba 0,5 éxitos de tu próxima tirada.",
+  "defensa": "defensa_mental",
+  "condicionInfligida": null
+ },
+ "onFail": "El reflejo sale: un Doble de Perfil (invocación t2) hostil aparece.",
+ "reset": "persistente",
+ "flavorText": "Quien la montó pensaba volver. No volvió."
+}

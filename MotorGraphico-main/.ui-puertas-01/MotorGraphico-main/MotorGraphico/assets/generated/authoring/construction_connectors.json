@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "status": "authoring",
+  "grid": {"tileWidth": 128, "tileHeight": 64, "projection": "isometric_2_1"},
+  "connectorContract": ["north", "east", "south", "west"],
+  "families": {
+    "bridge": {
+      "pieces": [
+        {"id": "straight_h", "connectors": ["east", "west"]},
+        {"id": "straight_v", "connectors": ["north", "south"]},
+        {"id": "diagonal_ne", "connectors": ["north", "east"]},
+        {"id": "diagonal_es", "connectors": ["east", "south"]},
+        {"id": "diagonal_sw", "connectors": ["south", "west"]},
+        {"id": "diagonal_wn", "connectors": ["west", "north"]},
+        {"id": "turn_left", "connectors": ["north", "west"]},
+        {"id": "turn_right", "connectors": ["north", "east"]},
+        {"id": "junction_t", "connectors": ["north", "east", "west"]},
+        {"id": "junction_cross", "connectors": ["north", "east", "south", "west"]},
+        {"id": "end_cap", "connectors": ["west"]},
+        {"id": "rail_straight", "connectors": ["east", "west"]},
+        {"id": "rail_corner", "connectors": ["north", "east"]},
+        {"id": "support_pillar", "connectors": []}
+      ]
+    },
+    "wall": {
+      "pieces": [
+        {"id": "straight", "connectors": ["east", "west"]},
+        {"id": "corner_inner", "connectors": ["north", "east"]},
+        {"id": "corner_outer", "connectors": ["south", "west"]},
+        {"id": "end_cap", "connectors": ["west"]},
+        {"id": "door_gap", "connectors": ["east", "west"]},
+        {"id": "window_gap", "connectors": ["east", "west"]}
+      ]
+    }
+  },
+  "rules": [
+    "A piece can connect only when both touching sides expose the same connector.",
+    "A bridge rail is decorative and must not define walkability by itself.",
+    "A wall, door frame or gate can define collision independently from its art.",
+    "Diagonal pieces keep the same 2:1 footprint as straight pieces."
+  ]
+}

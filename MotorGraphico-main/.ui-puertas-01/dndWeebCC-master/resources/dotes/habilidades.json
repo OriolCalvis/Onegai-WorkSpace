@@ -1,0 +1,1436 @@
+{
+  "atributos": {
+    "fuerza": "FUE",
+    "destreza": "DES",
+    "constitucion": "CON",
+    "inteligencia": "INT",
+    "sabiduria": "SAB",
+    "carisma": "CAR"
+  },
+
+  "competencias": {
+    "armaduras_ligeras": "Armaduras ligeras",
+    "armaduras_medianas": "Armaduras medianas",
+    "armaduras_pesadas": "Armaduras pesadas",
+    "escudos": "Escudos",
+    "armas_simples": "Armas simples",
+    "armas_marciales": "Armas marciales",
+    "ballestas": "Ballestas"
+  },
+
+
+  "dotes": [
+    {
+      "id": "diezmo_de_la_fosa",
+      "nombre": "Diezmo de la Fosa",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 13, "INT": 0, "SAB": 0, "CAR": 13 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["GURKAZAAL", "CON 13+ o CAR 13+"]
+      },
+      "beneficios": [
+        "+1 a Constitución o Carisma (a elegir)",
+        "Cuando te infliges daño para activar una habilidad/invocación, tu siguiente tirada de ataque o de salvación gana +1d4",
+        "1/descanso corto: convierte hasta la mitad del daño autoinfligido de ese turno en daño necrótico adicional de tu próximo impacto"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "ajustador_de_rondas",
+      "nombre": "Ajustador de Rondas",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 13, "CON": 0, "INT": 13, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["CHRONOS", "DES 13+ o INT 13+"]
+      },
+      "beneficios": [
+        "+1 a Destreza o Inteligencia",
+        "1/descanso corto: al inicio del combate puedes intercambiar tu posición de iniciativa con un aliado que veas",
+        "Reacción: cuando una criatura te ataque antes de tu primer turno, impón -2 a ese ataque"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "exegeta_de_ekait",
+      "nombre": "Exégeta de Ekait",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 13, "SAB": 13, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["SOFÍA", "SAB 13+ o INT 13+"]
+      },
+      "beneficios": [
+        "+1 a Sabiduría o Inteligencia",
+        "Competencia en Investigación o Historia (si ya la tienes, obtienes Pericia)",
+        "Cuando uses la acción Ayudar en una tirada de SAB o INT, el aliado añade +1d4 adicional"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "saqueador_de_ashye",
+      "nombre": "Saqueador de Ashye",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 13, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["ENVIDIA"]
+      },
+      "beneficios": [
+        "+1 a Destreza o Carisma",
+        "Una vez por turno, tras impactar en cuerpo a cuerpo, puedes intentar robar un objeto pequeño no empuñado (Juego de Manos vs. Percepción)",
+        "Aprendes la invocación \"Prosperidad Robada\" (1/descanso corto); si ya la tienes, ganas +1 uso por descanso corto"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "aliento_de_argent",
+      "nombre": "Aliento de Argent",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 13, "CAR": 13 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["VIDA", "CAR 13+ o SAB 13+"]
+      },
+      "beneficios": [
+        "+1 a Carisma o Sabiduría",
+        "Cuando cures o otorgues PG temporales, el objetivo gana +3 m de velocidad hasta el final de su siguiente turno",
+        "1/descanso corto: esa curación/PG temporales elimina además una condición menor (Cegado, Ensordecido o Enlentecido no permanente)"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "capataz_de_perishton",
+      "nombre": "Capataz de Perishton",
+      "requisitos": {
+        "atributos": { "FUE": 13, "DES": 0, "CON": 13, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["MUERTE", "FUE 13+ o CON 13+"]
+      },
+      "beneficios": [
+        "+1 a Fuerza o Constitución",
+        "Cuando adoptas Esquivar, aliados a 3 m obtienen cobertura media (+2 a CA) hasta el inicio de tu siguiente turno",
+        "1/descanso largo: eriges una muralla ósea (línea 3 m) que proporciona cobertura tres cuartos durante 1 minuto"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "juramentado_de_ashye",
+      "nombre": "Juramentado de Ashye",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": ["armas_marciales"],
+        "otros": []
+      },
+      "beneficios": [
+        "+1 a Fuerza o Destreza",
+        "Si no te has movido en tu turno, obtienes +1 a CA hasta el inicio de tu siguiente turno",
+        "Cuando realizas un Ataque de Oportunidad y aciertas, puedes intentar desarmar al objetivo en lugar de hacer daño (Atletismo vs. Atletismo/Acrobacias)"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "musa_de_ayashii",
+      "nombre": "Musa de Ayashii",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 13 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["EROS"]
+      },
+      "beneficios": [
+        "+1 a Carisma o Destreza",
+        "Cuando Encantes a una criatura, tú y un aliado a 6 m ganáis PG temporales iguales a tu bonificador de Carisma",
+        "Reacción: cuando una criatura Encantada por ti ataque a tu aliado, impones desventaja a ese ataque (1/turno)"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "astrocorredor",
+      "nombre": "Astrocorredor",
+      "requisitos": {
+        "atributos": { "FUE": 13, "DES": 13, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["Conocer \"Pacto del Cometa\" (opcional)"]
+      },
+      "beneficios": [
+        "+1 a Destreza o Fuerza",
+        "Una vez por turno, al usar Correr, puedes atravesar espacios de enemigos sin provocar OA",
+        "Si conoces \"Pacto del Cometa\": su impacto empuja 1,5 m a las criaturas que fallen el TS; si no lo conoces, lo aprendes con 1 uso/descanso corto"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "portaestandarte_de_ranmont",
+      "nombre": "Portaestandarte de Ranmont",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 13, "SAB": 13, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["SOFÍA", "SAB 13+ o INT 13+"]
+      },
+      "beneficios": [
+        "+1 a Sabiduría o Inteligencia (a elegir)",
+        "Cuando uses Estandarte de Voluntad, su radio es 4,5 m y los aliados dentro ganan +1 al ataque hasta el inicio de tu próximo turno",
+        "Competencia en Perspicacia o Religión (elige uno)"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "caminante_del_segundo",
+      "nombre": "Caminante del Segundo",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 13, "CON": 0, "INT": 13, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["CHRONOS", "DES 13+ o INT 13+"]
+      },
+      "beneficios": [
+        "+1 a Destreza o Inteligencia",
+        "Reacción: al ser objetivo de un ataque, te desplazas 1,5 m sin provocar OA (1/turno)",
+        "Si realizas un Ataque de Oportunidad, puedes teletransportarte 1,5 m antes o después del ataque"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "sacrificador_profano",
+      "nombre": "Sacrificador Profano",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 13, "INT": 0, "SAB": 0, "CAR": 13 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["GURKAZAAL", "CON 13+ o CAR 13+"]
+      },
+      "beneficios": [
+        "+1 a Constitución o Carisma",
+        "Cuando te infliges daño para activar una habilidad o invocación, tu siguiente ataque inflige +1d6 necrótico antes de terminar tu turno",
+        "1/descanso corto: reduces tus PG actuales a la mitad para recuperar 1 espacio de conjuro de nivel 2 o 1 uso de una invocación"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "voz_de_numandum",
+      "nombre": "Voz de Numandum",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 13, "CAR": 13 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["VIDA", "CAR 13+ o SAB 13+"]
+      },
+      "beneficios": [
+        "+1 a Carisma o Sabiduría",
+        "Cuando cures con un hechizo o invocación, el objetivo elimina 1 condición menor (Cegado, Ensordecido o Enlentecido no permanente)",
+        "Acción bonus: un aliado a 9 m gana PG temporales = tu competencia + tu CAR (1/descanso corto)"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "heraldo_de_ayashii",
+      "nombre": "Heraldo de Ayashii",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 13 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["EROS"]
+      },
+      "beneficios": [
+        "+1 a Carisma o Destreza",
+        "Criaturas Encantadas por ti tienen desventaja en su primer ataque contra objetivos que no seas tú cada turno",
+        "Ganas 1 uso adicional de Vínculo de Atracción por descanso corto (si no la tienes, la adquieres 1/descanso corto)"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "legionario_de_nocturnsea",
+      "nombre": "Legionario de Nocturnsea",
+      "requisitos": {
+        "atributos": { "FUE": 13, "DES": 0, "CON": 13, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["MUERTE", "FUE 13+ o CON 13+"]
+      },
+      "beneficios": [
+        "+1 a Fuerza o Constitución",
+        "Al reducir a 0 PG a una criatura, ganas PG temporales iguales a tu bonificador de competencia",
+        "Aprendes la invocación Armadura de Hueso; si ya la tienes, obtienes +1 uso por descanso corto"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "seguidor_de_la_ley_de_tabaxi",
+      "nombre": "Seguidor de la Ley de Tabaxi",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 13, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["ENVIDIA"]
+      },
+      "beneficios": [
+        "+1 a Destreza o Sabiduría",
+        "Ventaja en Sigilo si te desplazaste al menos 3 m en tu turno",
+        "Una vez por turno, tras impactar a una criatura que aún no ha actuado en la ronda, puedes intentar desarmarla (sin acción adicional)"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "arquero_de_la_estrella_fria",
+      "nombre": "Arquero de la Estrella Fría",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["Competencia con arcos"]
+      },
+      "beneficios": [
+        "+1 a Destreza o Sabiduría",
+        "No sufres desventaja por disparar a larga distancia con arcos",
+        "Una vez por turno, si no te has movido, un impacto con arco inflige +1d4 de frío; aprendes la invocación Vínculo de Estrella Fría (1/descanso largo)"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "centella_de_bomengrid",
+      "nombre": "Centella de Bomengrid",
+      "requisitos": {
+        "atributos": { "FUE": 13, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 13 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["EGOS", "CAR 13+ o FUE 13+"]
+      },
+      "beneficios": [
+        "+1 a Carisma o Fuerza",
+        "1/descanso corto: cuando consigas un crítico, emites un grito; enemigos a 3 m hacen TS de SAB o quedan Asustados hasta el final de tu próximo turno",
+        "Cuando actives Aura de Vanagloria, los aliados dentro añaden +1 al daño de su primer impacto del turno"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "devoto_de_gurkazaal",
+      "nombre": "Devoto de Gurkazaal",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 13, "INT": 0, "SAB": 0, "CAR": 13 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["GURKAZAAL", "CON 13+ o CAR 13+"]
+      },
+      "beneficios": [
+        "+1 a Constitución o Carisma (a elegir)",
+        "Cuando te infliges daño a ti mismo por una habilidad o invocación, ganas PG temporales iguales a tu bonificador de Carisma (mín. 1)",
+        "Ganas la reacción \"Negación Profana\" si no la tienes (1/descanso corto)"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "heraldo_del_segundo_perdido",
+      "nombre": "Heraldo del Segundo Perdido",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 13, "CON": 0, "INT": 13, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["CHRONOS", "DES 13+ o INT 13+"]
+      },
+      "beneficios": [
+        "+1 a Destreza o Inteligencia",
+        "Tiras Iniciativa con ventaja 1/descanso corto",
+        "Ganas la reacción \"Reloj de Arena\" (si ya la tienes, su uso por descanso aumenta en +1)"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "discipulo_de_sofia",
+      "nombre": "Discípulo de Sofía",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 13, "SAB": 13, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["SOFÍA", "SAB 13+ o INT 13+"]
+      },
+      "beneficios": [
+        "+1 a Sabiduría o Inteligencia",
+        "Como acción bonus, ayudas a un aliado a 9 m: añade +1d4 a su próxima tirada de SAB o INT (1/turno)",
+        "Aprendes la invocación \"Estandarte de Voluntad\" (1/descanso corto)"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "manos_de_envidia",
+      "nombre": "Manos de Envidia",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 13, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["ENVIDIA"]
+      },
+      "beneficios": [
+        "+1 a Destreza o Carisma",
+        "Competencia en Juego de Manos; si ya la tienes, ganas Pericia",
+        "Aprendes la invocación \"Prosperidad Robada\" (1/descanso corto)"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "portador_de_la_llama_vital",
+      "nombre": "Portador de la Llama Vital",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 13, "INT": 0, "SAB": 0, "CAR": 13 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["VIDA", "CAR 13+ o CON 13+"]
+      },
+      "beneficios": [
+        "+1 a Carisma o Constitución",
+        "Cuando curas o das PG temporales, el aliado gana +1 a CA hasta el inicio de tu próximo turno",
+        "Aprendes la invocación \"Cántico de Restauración\" (1/descanso largo)"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "agente_de_la_parca",
+      "nombre": "Agente de la Parca",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 13, "INT": 0, "SAB": 0, "CAR": 13 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["MUERTE", "CON 13+ o CAR 13+"]
+      },
+      "beneficios": [
+        "+1 a Constitución o Carisma",
+        "Ganas la reacción \"Campana Fúnebre\" (1/descanso corto)",
+        "Una vez por descanso largo, cuando una criatura muera a 9 m, recuperas un espacio de conjuro de nivel 1 (o 1 uso de una invocación si no usas espacios)"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "ego_resplandeciente",
+      "nombre": "Ego Resplandeciente",
+      "requisitos": {
+        "atributos": { "FUE": 13, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 13 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["EGOS", "FUE 13+ o CAR 13+"]
+      },
+      "beneficios": [
+        "+1 a Fuerza o Carisma",
+        "Cuando consigas un golpe crítico, obtienes PG temporales iguales a tu bonificador de Carisma + tu bonificador de competencia",
+        "Ganas la reacción \"Orgullo Protector\" (1/descanso largo)"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "vinculo_de_eros",
+      "nombre": "Vínculo de Eros",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 13, "CON": 0, "INT": 0, "SAB": 0, "CAR": 13 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["EROS", "CAR 13+"]
+      },
+      "beneficios": [
+        "+1 a Carisma o Destreza",
+        "Ganas la reacción \"Vínculo de Atracción\" (1/descanso corto)",
+        "Una vez por descanso corto, conceder ventaja en Persuasión a un aliado a 9 m; si un enemigo está Encantado por ti, tiene desventaja para atacar a objetivos que no seas tú hasta el final de su turno"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "adepto_de_las_dos_vias",
+      "nombre": "Adepto de las Dos Vías",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 4,
+        "competencias": [],
+        "otros": []
+      },
+      "beneficios": [
+        "+1 a una característica a elegir (FUE, DES, INT, SAB o CAR)",
+        "Elige una opción: obtienes la reacción \"Parada Instintiva\" (1/descanso corto) o aprendes la invocación \"Garra Traslúcida\" (1/descanso corto)",
+        "Si eliges reacción, ganas competencia con escudos; si eliges invocación, tus pruebas de Atletismo para agarrar usan tu característica de lanzamiento"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "tejedor_de_pactos",
+      "nombre": "Tejedor de Pactos",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 13, "SAB": 0, "CAR": 13 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["Capacidad de lanzar conjuros o poseer invocaciones"]
+      },
+      "beneficios": [
+        "+1 a Carisma o Inteligencia",
+        "Aprendes 1 invocación adicional de tu lista (debes cumplir sus prerrequisitos)",
+        "Recuperas 1 uso de una invocación al finalizar un descanso corto (1 vez por descanso largo)"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "maestria_de_asta_umbria",
+      "nombre": "Maestría de Asta Umbría",
+      "requisitos": {
+        "atributos": { "FUE": 13, "DES": 13, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": ["armas_marciales"],
+        "otros": []
+      },
+      "beneficios": [
+        "+1 a Fuerza o Destreza",
+        "Cuando realices un ataque de oportunidad con un arma con alcance y aciertes, reduces la velocidad del objetivo en 3 m hasta el final de su turno",
+        "Ese mismo ataque de oportunidad inflige +1d4 de daño necrótico"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "erudito_del_numen",
+      "nombre": "Erudito del Numen",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 13, "SAB": 13, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": ["INT 13+ o SAB 13+"]
+      },
+      "beneficios": [
+        "+1 a Inteligencia o Sabiduría",
+        "Aprendes 2 rituales de nivel 1 de una lista de clase que poseas; puedes lanzar uno de ellos sin gastar espacio 1/descanso largo",
+        "Tras completar un ritual, tú y un aliado a 3 m ganáis +1 a TS de Sabiduría hasta tu próximo descanso corto"
+      ],
+      "fuente": ["Homebrew - Onegai"]
+    },
+    {
+      "id": "actor",
+      "nombre": "Actor",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 13 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": []
+      },
+      "beneficios": [
+        "+1 a Carisma",
+        "Ventaja en pruebas de Engañar e Interpretar",
+        "Puedes imitar voces y sonidos"
+      ],
+      "fuente": ["D&D 5e", "Baldur's Gate 3"]
+    },
+    {
+      "id": "alerta",
+      "nombre": "Alerta",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": []
+      },
+      "beneficios": [
+        "+5 a iniciativa",
+        "No puedes ser sorprendido",
+        "Enemigos no obtienen ventaja por estar ocultos"
+      ],
+      "fuente": ["D&D 5e", "Baldur's Gate 3"]
+    },
+    {
+      "id": "atleta",
+      "nombre": "Atleta",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": []
+      },
+      "beneficios": [
+        "+1 a Fuerza o Destreza",
+        "Escalar cuesta solo 1,5 metros de movimiento",
+        "Salto de pie o con carrerilla mejorado"
+      ],
+      "fuente": ["D&D 5e", "Baldur's Gate 3"]
+    },
+    {
+      "id": "caballero_guerrero",
+      "nombre": "Caballero Guerrero",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 4,
+        "competencias": [],
+        "otros": []
+      },
+      "beneficios": [
+        "Ataques adicionales con armas cuerpo a cuerpo",
+        "Bonificación a defensa montado"
+      ],
+      "fuente": ["Azitora"]
+    },
+    {
+      "id": "construccion_robusta",
+      "nombre": "Construcción Robusta",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": []
+      },
+      "beneficios": [
+        "+1 a Constitución",
+        "Ventaja contra ser derribado",
+        "Resistencia a daño por caídas"
+      ],
+      "fuente": ["Azitora"]
+    },
+    {
+      "id": "defensor",
+      "nombre": "Defensor",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 4,
+        "competencias": [],
+        "otros": []
+      },
+      "beneficios": [
+        "+1 a AC cuando usas armadura",
+        "Puedes proteger aliados adyacentes"
+      ],
+      "fuente": ["Azitora"]
+    },
+    {
+      "id": "duende_acorazado",
+      "nombre": "Duende Acorazado",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": ["armaduras_pesadas"],
+        "otros": []
+      },
+      "beneficios": [
+        "Puedes usar armadura pesada sin penalización",
+        "+1 a AC con armadura pesada"
+      ],
+      "fuente": ["Azitora"]
+    },
+    {
+      "id": "duro_de_matar",
+      "nombre": "Duro de Matar",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": []
+      },
+      "beneficios": [
+        "Recuperas 1 PG adicional por dado de vida",
+        "Ventaja en tiros de salvación contra muerte"
+      ],
+      "fuente": ["Azitora"]
+    },
+    {
+      "id": "embaucador",
+      "nombre": "Embaucador",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 13 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": []
+      },
+      "beneficios": [
+        "Ventaja en Engaño y Persuasión",
+        "Puedes distraer enemigos como acción bonus"
+      ],
+      "fuente": ["Azitora"]
+    },
+    {
+      "id": "mejora_de_caracteristica",
+      "nombre": "Mejora de Característica",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 4,
+        "competencias": [],
+        "otros": []
+      },
+      "beneficios": [
+        "+2 a una característica o +1 a dos características"
+      ],
+      "fuente": ["Baldur's Gate 3"]
+    },
+    {
+      "id": "experto_en_ballestas",
+      "nombre": "Experto en Ballestas",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": ["ballestas"],
+        "otros": []
+      },
+      "beneficios": [
+        "Ignora propiedad de carga",
+        "Sin desventaja en cuerpo a cuerpo",
+        "Ataque adicional con ballesta de mano"
+      ],
+      "fuente": ["Baldur's Gate 3"]
+    },
+    {
+      "id": "afortunado",
+      "nombre": "Afortunado",
+      "requisitos": {
+        "atributos": { "FUE": 0, "DES": 0, "CON": 0, "INT": 0, "SAB": 0, "CAR": 0 },
+        "nivel_minimo": 0,
+        "competencias": [],
+        "otros": []
+      },
+      "beneficios": [
+        "3 puntos de suerte por descanso largo",
+        "Puedes gastar punto para tirar ventaja"
+      ],
+      "fuente": ["Baldur's Gate 3"]
+    }
+  ],
+
+  "habilidades": [
+    {
+      "nombre": "Chispa Umbría",
+      "nivel": 0,
+      "escuela": "Evocación",
+      "tiempo_lanzamiento": "Acción",
+      "alcance": "18 m",
+      "componentes": { "verbal": true, "somatico": true, "material": false, "material_desc": "" },
+      "duracion": "Instantánea",
+      "descripcion": "Lanzas una brasa de sombra que inflige 1d8 necrótico (escala con nivel). Si el objetivo está a oscuras o con luz tenue, el primer impacto del turno te da +1 a la CA hasta el inicio de tu próximo turno.",
+      "clases": ["Hechicero", "Brujo", "Mago"],
+      "fuente": "Homebrew - Onegai"
+    },
+    {
+      "nombre": "Hoja Espectral",
+      "nivel": 1,
+      "escuela": "Conjuración",
+      "tiempo_lanzamiento": "Acción bonus",
+      "alcance": "Personal",
+      "componentes": { "verbal": true, "somatico": true, "material": false, "material_desc": "" },
+      "duracion": "1 minuto (concentración)",
+      "descripcion": "Invocas una espada de energía (1d8 cortante psíquico). Usas tu característica de lanzamiento para las tiradas de ataque. Contra criaturas asustadas, el daño aumenta en +1d4.",
+      "clases": ["Bardo", "Clérigo", "Hechicero", "Mago"],
+      "fuente": "Homebrew - Onegai"
+    },
+    {
+      "nombre": "Bendición de Carbón",
+      "nivel": 2,
+      "escuela": "Nigromancia",
+      "tiempo_lanzamiento": "Acción",
+      "alcance": "Toque",
+      "componentes": { "verbal": true, "somatico": true, "material": true, "material_desc": "Un trozo de carbón bendecido" },
+      "duracion": "10 minutos (concentración)",
+      "descripcion": "La criatura tocada gana 1d6 + tu modificador de lanzamiento en PG temporales. Mientras conserve alguno, sus ataques cuerpo a cuerpo infligen +1 necrótico.",
+      "clases": ["Clérigo", "Paladín", "Hechicero"],
+      "fuente": "Homebrew - Onegai"
+    },
+    {
+      "nombre": "Ráfaga Gravitatoria",
+      "nivel": 3,
+      "escuela": "Transmutación",
+      "tiempo_lanzamiento": "Acción",
+      "alcance": "18 m (círculo de 6 m)",
+      "componentes": { "verbal": true, "somatico": true, "material": false, "material_desc": "" },
+      "duracion": "Instantánea",
+      "descripcion": "Empujas o arrastras (a tu elección) a todas las criaturas en el área 3 m (TS de Fuerza). Objetivos que fallen sufren además 2d8 de daño de fuerza.",
+      "clases": ["Mago", "Hechicero", "Artífice"],
+      "fuente": "Homebrew - Onegai"
+    },
+    {
+      "nombre": "Cúpula de Velos",
+      "nivel": 3,
+      "escuela": "Abjuración",
+      "tiempo_lanzamiento": "Acción",
+      "alcance": "36 m (cúpula de 6 m)",
+      "componentes": { "verbal": true, "somatico": true, "material": true, "material_desc": "Una cinta de plata" },
+      "duracion": "10 minutos (concentración)",
+      "descripcion": "Crea una cúpula semitransparente que amortigua sonido y luz: tiradas de Sigilo de criaturas dentro tienen ventaja; Percepción basada en vista/oir desde fuera sufre desventaja.",
+      "clases": ["Bardo", "Mago"],
+      "fuente": "Homebrew - Onegai"
+    },
+    {
+      "nombre": "Espejo de Sombras",
+      "nivel": 4,
+      "escuela": "Ilusión",
+      "tiempo_lanzamiento": "Acción",
+      "alcance": "Personal",
+      "componentes": { "verbal": true, "somatico": true, "material": false, "material_desc": "" },
+      "duracion": "1 minuto (concentración)",
+      "descripcion": "Creas un doble de sombra. Mientras esté activo, los ataques contra ti tienen desventaja la primera vez que te ataquen cada asalto. Acción bonus: intercambias posición con el doble (9 m).",
+      "clases": ["Mago", "Hechicero", "Bardo"],
+      "fuente": "Homebrew - Onegai"
+    },
+    {
+      "nombre": "Lanza Astral",
+      "nivel": 5,
+      "escuela": "Evocación",
+      "tiempo_lanzamiento": "Acción",
+      "alcance": "36 m (línea 18 m × 1,5 m)",
+      "componentes": { "verbal": true, "somatico": true, "material": true, "material_desc": "Una varilla con polvo de cuarzo" },
+      "duracion": "Instantánea",
+      "descripcion": "Un rayo de energía estelar inflige 6d8 radiante. Las criaturas que fallan su TS de Destreza quedan cegadas hasta el final de su próximo turno.",
+      "clases": ["Mago", "Hechicero", "Clérigo"],
+      "fuente": "Homebrew - Onegai"
+    },
+    {
+      "nombre": "Brecha de Alquitrán",
+      "nivel": 6,
+      "escuela": "Conjuración",
+      "tiempo_lanzamiento": "Acción",
+      "alcance": "27 m (cuadrado 6 m)",
+      "componentes": { "verbal": true, "somatico": true, "material": true, "material_desc": "Un frasco de resina" },
+      "duracion": "1 minuto (concentración)",
+      "descripcion": "El terreno se vuelve viscoso y oscuro. Criaturas que empiecen su turno en el área hacen TS de Fuerza: si fallan quedan Restrigidas; al salir, sufren 3d6 necrótico por el desgarro de la brea.",
+      "clases": ["Hechicero", "Brujo", "Druida"],
+      "fuente": "Homebrew - Onegai"
+    },
+    {
+      "nombre": "Asalto del Finito",
+      "nivel": 7,
+      "escuela": "Transmutación",
+      "tiempo_lanzamiento": "Acción",
+      "alcance": "18 m",
+      "componentes": { "verbal": true, "somatico": true, "material": true, "material_desc": "Arena de reloj" },
+      "duracion": "Concentración, 1 minuto",
+      "descripcion": "La criatura objetivo ve su vitalidad encogerse: 5d8 de daño necrótico y, con TS de Constitución fallido, su PG máximo se reduce por el mismo valor hasta un descanso largo.",
+      "clases": ["Mago", "Hechicero", "Brujo"],
+      "fuente": "Homebrew - Onegai"
+    },
+    {
+      "nombre": "Óbolo Tenebroso",
+      "nivel": 2,
+      "deidad": "Gurkazaal",
+      "categoria": "Apoyo",
+      "accion": "Acción",
+      "alcance": "Toque",
+      "duracion": "Instantánea",
+      "efecto": "Te infliges daño igual a 1d6 + tu CAR y un aliado recupera el doble de esa cantidad.",
+      "uso": "2/descanso corto",
+      "escala": "+1d6 por cada 4 niveles por encima de 2"
+    },
+    {
+      "nombre": "Garra del Verdugo",
+      "nivel": 3,
+      "deidad": "Gurkazaal",
+      "categoria": "Físico",
+      "accion": "Acción",
+      "alcance": "Cuerpo a cuerpo",
+      "duracion": "1 turno",
+      "efecto": "Tu próximo ataque cuerpo a cuerpo inflige +2d6 necrótico y si derribas al objetivo a 0 PG, ganas PG temporales = tu CAR + nivel.",
+      "uso": "1/turno"
+    },
+    {
+      "nombre": "Coro de la Fosa",
+      "nivel": 5,
+      "deidad": "Gurkazaal",
+      "categoria": "Magia",
+      "accion": "Acción",
+      "alcance": "18 m (cono 6 m)",
+      "duracion": "Instantánea",
+      "efecto": "Descargas voces demoníacas que causan 4d8 psíquico (TS SAB mitad). Si fallan, quedan Aterrados hasta tu próximo turno.",
+      "uso": "Proficiencia/descanso largo"
+    },
+    {
+      "nombre": "Ancla Temporal",
+      "nivel": 2,
+      "deidad": "CHRONOS",
+      "categoria": "Apoyo",
+      "accion": "Acción bonus",
+      "alcance": "9 m",
+      "duracion": "1 minuto (concentración)",
+      "efecto": "Un aliado gana +2 a iniciativa y ventaja en su primera tirada de ataque de cada ronda.",
+      "uso": "1/descanso corto"
+    },
+    {
+      "nombre": "Eco de Turno",
+      "nivel": 3,
+      "deidad": "CHRONOS",
+      "categoria": "Físico",
+      "accion": "Acción bonus",
+      "alcance": "Personal",
+      "duracion": "Este turno",
+      "efecto": "Después de impactar, repite el mismo ataque contra el mismo objetivo con -2 al ataque.",
+      "uso": "1/turno"
+    },
+    {
+      "nombre": "Prisma Luminiscente",
+      "nivel": 4,
+      "deidad": "CHRONOS",
+      "categoria": "Magia",
+      "accion": "Acción",
+      "alcance": "12 m (radio 3 m)",
+      "duracion": "1 minuto (concentración)",
+      "efecto": "Zona de luz intensa: enemigos que empiecen turno dentro hacen TS CON; si fallan quedan Cegados hasta final del turno; aliados tienen ventaja en TS contra efectos de encantamiento.",
+      "uso": "2/descanso largo"
+    },
+    {
+      "nombre": "Dictamen Sereno",
+      "nivel": 2,
+      "deidad": "SOFÍA",
+      "categoria": "Apoyo",
+      "accion": "Acción",
+      "alcance": "9 m",
+      "duracion": "1 minuto (concentración)",
+      "efecto": "Un aliado suma +1 a tiradas de SAB y INT; puede repetir una tirada de salvación de SAB durante la duración (debe usar el nuevo resultado).",
+      "uso": "1/descanso corto"
+    },
+    {
+      "nombre": "Razonamiento Táctico",
+      "nivel": 3,
+      "deidad": "SOFÍA",
+      "categoria": "Físico",
+      "accion": "Acción bonus",
+      "alcance": "Personal",
+      "duracion": "1 turno",
+      "efecto": "Si atacas al mismo objetivo que un aliado dentro de 1,5 m, tu golpe cuenta como crítico con un 19–20.",
+      "uso": "1/turno"
+    },
+    {
+      "nombre": "Luz de Comprobación",
+      "nivel": 4,
+      "deidad": "SOFÍA",
+      "categoria": "Magia",
+      "accion": "Acción",
+      "alcance": "18 m",
+      "duracion": "Hasta 1 minuto (concentración)",
+      "efecto": "El objetivo realiza sus tiradas de Concentración con desventaja; aliados a 3 m del objetivo obtienen +1 a Investigación y Percepción.",
+      "uso": "1/descanso largo"
+    },
+    {
+      "nombre": "Dedos de Pluma",
+      "nivel": 2,
+      "deidad": "ENVIDIA",
+      "categoria": "Apoyo",
+      "accion": "Acción",
+      "alcance": "1,5 m",
+      "duracion": "Instantánea",
+      "efecto": "Robas un objeto pequeño no empuñado: prueba de Destreza (Juego de Manos) enfrentada a Percepción del objetivo. En éxito, lo sustraes sin ser detectado.",
+      "uso": "Proficiencia/descanso corto"
+    },
+    {
+      "nombre": "Desarme Perfecto",
+      "nivel": 3,
+      "deidad": "ENVIDIA",
+      "categoria": "Físico",
+      "accion": "Acción",
+      "alcance": "Cuerpo a cuerpo",
+      "duracion": "Instantánea",
+      "efecto": "Al impactar con 18+, fuerzas a soltar el arma; cae a 1,5 m. Si ya estaba desarmado, aplicas desventaja a sus ataques hasta tu próximo turno.",
+      "uso": "1/turno"
+    },
+    {
+      "nombre": "Tríada Ilusoria",
+      "nivel": 4,
+      "deidad": "ENVIDIA",
+      "categoria": "Magia",
+      "accion": "Acción",
+      "alcance": "Personal",
+      "duracion": "1 minuto (concentración)",
+      "efecto": "Creas dos imágenes dobles; mientras al menos una permanezca, tienes ventaja en ataques y los enemigos tienen desventaja para impactarte.",
+      "uso": "1/descanso corto"
+    },
+    {
+      "nombre": "Luz Auxiliadora",
+      "nivel": 2,
+      "deidad": "VIDA",
+      "categoria": "Apoyo",
+      "accion": "Acción",
+      "alcance": "9 m",
+      "duracion": "Instantánea",
+      "efecto": "Un aliado recupera 2d6 + tu CAR PG. Si estaba caído, se levanta con 1 PG adicional.",
+      "uso": "Proficiencia/descanso largo",
+      "escala": "+1d6 cada 2 niveles por encima de 2"
+    },
+    {
+      "nombre": "Golpe Reparador",
+      "nivel": 3,
+      "deidad": "VIDA",
+      "categoria": "Físico",
+      "accion": "Acción",
+      "alcance": "Cuerpo a cuerpo",
+      "duracion": "Instantánea",
+      "efecto": "Al impactar, infliges daño normal y recuperas PG iguales a tu modificador de CON (mín. 1). Con 20 natural, recuperas además 1d6.",
+      "uso": "1/turno"
+    },
+    {
+      "nombre": "Ascua Celestial",
+      "nivel": 4,
+      "deidad": "VIDA",
+      "categoria": "Magia",
+      "accion": "Acción",
+      "alcance": "18 m",
+      "duracion": "1 ronda",
+      "efecto": "El siguiente conjuro de nivel 1–3 que lances este turno se trata como lanzado un nivel por encima sin coste adicional. Sufres 1d6 de daño no reducible.",
+      "uso": "1/descanso corto"
+    },
+    {
+      "nombre": "Velo Necromántico",
+      "nivel": 2,
+      "deidad": "MUERTE",
+      "categoria": "Apoyo",
+      "accion": "Reacción",
+      "alcance": "Personal",
+      "duracion": "Hasta el inicio de tu próximo turno",
+      "efecto": "Cuando seas objetivo de un ataque o conjuro, ganas resistencia al daño de ese origen y devuelves 1d4 necrótico al atacante si te impacta.",
+      "uso": "2/descanso corto"
+    },
+    {
+      "nombre": "Toque Marchito",
+      "nivel": 3,
+      "deidad": "MUERTE",
+      "categoria": "Físico",
+      "accion": "Acción",
+      "alcance": "Toque",
+      "duracion": "Instantánea",
+      "efecto": "Ataque de toque: 2d8 necrótico; si reduce a 0 PG, recuperas 2d8 PG y el cadáver no puede ser reanimado hasta un descanso largo.",
+      "uso": "1/turno"
+    },
+    {
+      "nombre": "Cortejo Decrépito",
+      "nivel": 4,
+      "deidad": "MUERTE",
+      "categoria": "Magia",
+      "accion": "Acción",
+      "alcance": "18 m",
+      "duracion": "10 minutos",
+      "efecto": "Invocas un no muerto CR 1/2 bajo tu control. Fuera de combate se desvanece.",
+      "uso": "1/descanso largo"
+    },
+    {
+      "nombre": "Euforia Competitiva",
+      "nivel": 2,
+      "deidad": "EGOS",
+      "categoria": "Apoyo",
+      "accion": "Acción bonus",
+      "alcance": "9 m",
+      "duracion": "1 minuto (concentración)",
+      "efecto": "Un aliado tiene ventaja en su próxima tirada y +1 a CA hasta que acabe su siguiente turno.",
+      "uso": "Proficiencia/descanso corto"
+    },
+    {
+      "nombre": "Audacia Absoluta",
+      "nivel": 3,
+      "deidad": "EGOS",
+      "categoria": "Físico",
+      "accion": "Acción",
+      "alcance": "Personal",
+      "duracion": "Este turno",
+      "efecto": "Puedes convertir un ataque fallido en impacto, pero recibes desventaja en tu próxima tirada de ataque antes de que acabe tu siguiente turno.",
+      "uso": "1/turno"
+    },
+    {
+      "nombre": "Reinicio Egoico",
+      "nivel": 4,
+      "deidad": "EGOS",
+      "categoria": "Magia",
+      "accion": "Acción",
+      "alcance": "Personal",
+      "duracion": "Instantánea",
+      "efecto": "Recuperas un espacio de conjuro gastado de nivel 1–2. No puedes volver a usarlo hasta terminar un descanso largo.",
+      "uso": "1/descanso largo"
+    },
+    {
+      "nombre": "Velo Encantador",
+      "nivel": 2,
+      "deidad": "EROS",
+      "categoria": "Apoyo",
+      "accion": "Acción",
+      "alcance": "9 m",
+      "duracion": "1 minuto (concentración)",
+      "efecto": "Un aliado gana ventaja en Persuasión y Engaño y +1 a tiradas de ataque contra criaturas Encantadas.",
+      "uso": "2/descanso corto"
+    },
+    {
+      "nombre": "Pacto de Rosas",
+      "nivel": 3,
+      "deidad": "EROS",
+      "categoria": "Físico",
+      "accion": "Acción bonus",
+      "alcance": "Cuerpo a cuerpo",
+      "duracion": "Este turno",
+      "efecto": "Tu siguiente ataque inflige +1d6 psíquico; si el objetivo falla TS de SAB, tiene desventaja en ataques durante 1 turno.",
+      "uso": "1/turno"
+    },
+    {
+      "nombre": "Beso Umbrío",
+      "nivel": 4,
+      "deidad": "EROS",
+      "categoria": "Magia",
+      "accion": "Acción",
+      "alcance": "9 m",
+      "duracion": "Instantánea",
+      "efecto": "Drenas 3d6 PG del objetivo (TS CON mitad) y te curas la mitad del daño infligido.",
+      "uso": "Proficiencia/descanso largo"
+    }
+  ],
+
+  "invocaciones": [
+    {
+      "nombre": "Ojos de la Noche Interior",
+      "tipo": "Mejora sensorial",
+      "duracion": "8 horas",
+      "alcance": "Personal",
+      "efectos": [
+        "Ves a través de oscuridad no mágica y mágica hasta 18 m",
+        "Ventaja en Percepción basada en vista en penumbra"
+      ],
+      "requisitos": "Carisma 13+, Lanzamiento de conjuros o Magia del Pacto",
+      "uso": "1/descanso largo"
+    },
+    {
+      "nombre": "Armadura de Brebaje Umbrío",
+      "tipo": "Protección",
+      "duracion": "1 minuto",
+      "alcance": "Personal",
+      "efectos": [
+        "Ganas PG temporales = nivel + modificador de CAR",
+        "Mientras duren, tus ataques infligen +1 necrótico"
+      ],
+      "requisitos": "Nivel 5+",
+      "uso": "Acción bonus, 2/descanso corto"
+    },
+    {
+      "nombre": "Marca del Aullido",
+      "tipo": "Debilitación",
+      "duracion": "1 minuto (concentración)",
+      "alcance": "18 m",
+      "efectos": [
+        "Marca a una criatura; el primer golpe aliado contra ella hace +1d6 psíquico",
+        "Si falla TS de Sabiduría al aplicar la marca, queda Asustada hasta tu siguiente turno"
+      ],
+      "requisitos": "Competencia en Intimidación",
+      "uso": "1/descanso corto"
+    },
+    {
+      "nombre": "Vínculo de Estrella Fría",
+      "tipo": "Arma imbuida",
+      "duracion": "10 minutos",
+      "alcance": "Toque",
+      "efectos": [
+        "Un arma inflige +1d4 frío",
+        "Al impactar, reduces velocidad del objetivo en 3 m hasta el final de su próximo turno"
+      ],
+      "requisitos": "Nivel 3+",
+      "uso": "Acción, 3/descanso largo"
+    },
+    {
+      "nombre": "Sello de Cauterización",
+      "tipo": "Curación/Apoyo",
+      "duracion": "Instantánea",
+      "alcance": "Toque",
+      "efectos": [
+        "Cierras heridas sangrantes: el objetivo recupera 2d6 PG",
+        "Hasta tu próximo turno, gana resistencia a cortante"
+      ],
+      "requisitos": "Competencia con kit de curandero",
+      "uso": "Acción, 1 minuto para rearmar"
+    },
+    {
+      "nombre": "Garra Traslúcida",
+      "tipo": "Control",
+      "duracion": "1 minuto (concentración)",
+      "alcance": "9 m",
+      "efectos": [
+        "Una mano espectral intenta agarrar (Atletismo usando tu característica de lanzamiento)",
+        "Criatura agarrada sufre 1d6 fuerza al inicio de su turno"
+      ],
+      "requisitos": "Nivel 5+, Fuerza o Carisma 13+",
+      "uso": "Acción"
+    },
+    {
+      "nombre": "Pacto del Cometa",
+      "tipo": "Movilidad/Daño en área",
+      "duracion": "Instantánea",
+      "alcance": "Personal (salto 12 m)",
+      "efectos": [
+        "Te desplazas hasta 12 m en línea recta y caes con impacto estelar",
+        "Criaturas a 3 m hacen TS de DEX; si fallan sufren 3d6 radiante y quedan tumbadas"
+      ],
+      "requisitos": "Nivel 7+",
+      "uso": "Acción, 1/descanso corto"
+    },
+    {
+      "nombre": "Pacto del Espejo",
+      "tipo": "Defensa mágica",
+      "duracion": "1 reacción",
+      "alcance": "18 m",
+      "efectos": [
+        "Cuando seas objetivo de un conjuro, tiras 1d20",
+        "Con 16+, rediriges el conjuro a su lanzador si tiene objetivo único"
+      ],
+      "requisitos": "Nivel 9+",
+      "uso": "Reacción, 1/descanso largo"
+    },
+    {
+      "nombre": "Senda de la Marea",
+      "tipo": "Adaptación",
+      "duracion": "1 hora",
+      "alcance": "Personal",
+      "efectos": [
+        "Respiras bajo el agua y nadas a tu velocidad",
+        "Acción: desplazar 1,5 m una masa de agua de 2,5 m cúbicos"
+      ],
+      "requisitos": "SAB 13+ o DRU/EXPL",
+      "uso": "Acción, 2/descanso largo"
+    },
+    {
+      "nombre": "Pacto de Cadenas Rotas",
+      "tipo": "Movilidad",
+      "duracion": "1 hora",
+      "alcance": "Personal",
+      "efectos": ["Ignoras terreno difícil por cadenas, raíces y escombros", "+3 m a velocidad"],
+      "requisitos": "Nivel 5+",
+      "uso": "1/descanso corto"
+    },
+    {
+      "nombre": "Sello de Amanecer",
+      "tipo": "Apoyo",
+      "duracion": "10 minutos",
+      "alcance": "18 m",
+      "efectos": ["Aliados en radio 3 m ganan +1 a TS de SAB y CAR", "Disipa oscuridad no mágica en el área"],
+      "requisitos": "CHRONOS o VIDA",
+      "uso": "Acción, 2/descanso largo"
+    },
+    {
+      "nombre": "Manto de Sombras Afables",
+      "tipo": "Sigilo",
+      "duracion": "1 hora",
+      "alcance": "Personal",
+      "efectos": ["Ventaja en Sigilo", "Puedes ocultarte con luz tenue"],
+      "requisitos": "ENVIDIA o EROS",
+      "uso": "Acción"
+    },
+    {
+      "nombre": "Armadura de Hueso",
+      "tipo": "Defensa",
+      "duracion": "10 minutos",
+      "alcance": "Personal",
+      "efectos": ["CA base 16 si no llevas armadura pesada", "Resistencia a necrótico mientras dure"],
+      "requisitos": "MUERTE",
+      "uso": "Acción, 1/descanso corto"
+    },
+    {
+      "nombre": "Vínculo Empático",
+      "tipo": "Apoyo",
+      "duracion": "1 hora",
+      "alcance": "Toque",
+      "efectos": ["Compartes daño: la mitad que sufra el aliado la sufres tú", "El aliado gana ventaja en su primera tirada de ataque cada asalto"],
+      "requisitos": "EROS o VIDA, CAR 13+",
+      "uso": "Acción, 1/descanso largo"
+    },
+    {
+      "nombre": "Marca del Reloj Roto",
+      "tipo": "Control",
+      "duracion": "1 minuto (concentración)",
+      "alcance": "18 m",
+      "efectos": ["Criatura marcada reduce su velocidad en 3 m y no puede usar Reacciones si falla TS de SAB al inicio de su turno"],
+      "requisitos": "CHRONOS",
+      "uso": "Acción, 2/descanso corto"
+    },
+    {
+      "nombre": "Cosecha de Ascuas",
+      "tipo": "Recurso",
+      "duracion": "Instantánea",
+      "alcance": "9 m",
+      "efectos": ["Cuando una criatura muere en el alcance, recuperas 1 espacio de conjuro de nivel 1 o 2"],
+      "requisitos": "MUERTE",
+      "uso": "Reacción, 1/descanso largo"
+    },
+    {
+      "nombre": "Aura de Vanagloria",
+      "tipo": "Barrera/Apoyo",
+      "duracion": "1 minuto",
+      "alcance": "Personal (radio 3 m)",
+      "efectos": ["Aliados ganan +1 a CA", "Enemigos que te ataquen por primera vez cada turno hacen TS de SAB o tienen desventaja"],
+      "requisitos": "EGOS",
+      "uso": "Acción, 1/descanso corto"
+    },
+    {
+      "nombre": "Prosperidad Robada",
+      "tipo": "Debilitación",
+      "duracion": "1 minuto",
+      "alcance": "18 m",
+      "efectos": ["Robas 1 ventaja: la próxima tirada con ventaja del objetivo pasa a ser normal y tú ganas ventaja en tu siguiente tirada"],
+      "requisitos": "ENVIDIA",
+      "uso": "Reacción, 1/descanso corto"
+    },
+    {
+      "nombre": "Cántico de Restauración",
+      "tipo": "Curación",
+      "duracion": "1 acción",
+      "alcance": "9 m",
+      "efectos": ["Hasta dos criaturas recuperan 1d8 + tu CAR PG", "Eliminan una condición menor (Enlentecido, Ensordecido o Cegado por efectos no permanentes)"],
+      "requisitos": "VIDA",
+      "uso": "Acción, 1/descanso largo"
+    },
+    {
+      "nombre": "Estandarte de Voluntad",
+      "tipo": "Control de área",
+      "duracion": "1 minuto (concentración)",
+      "alcance": "18 m (radio 3 m)",
+      "efectos": ["Enemigos que entren o empiecen turno dentro hacen TS de SAB; si fallan, no pueden acercarse a ti este turno", "Aliados dentro ganan +1 a TS de SAB"],
+      "requisitos": "SOFÍA",
+      "uso": "Acción, 1/descanso corto"
+    },
+    {
+      "nombre": "Cuerda del Destino",
+      "tipo": "Utilidad",
+      "duracion": "10 minutos",
+      "alcance": "Toque",
+      "efectos": ["Vinculas a dos criaturas consentidoras: pueden usar su Reacción para intercambiar posiciones si ambas están conscientes y a 18 m o menos"],
+      "requisitos": "CHRONOS o SOFÍA",
+      "uso": "Acción, 1/descanso largo"
+    }
+  ],
+
+  "reacciones": [
+    {
+      "nombre": "Parada Instintiva",
+      "disparador": "Te impacta un ataque cuerpo a cuerpo",
+      "efecto": "Aumentas tu CA en +2 contra ese ataque y reduces el daño en 1d6 + tu bonificador de competencia",
+      "limitaciones": "Requiere portar arma cuerpo a cuerpo",
+      "recarga": "Por turno"
+    },
+    {
+      "nombre": "Contramaldición",
+      "disparador": "Una criatura a 9 m lanza o te impone una maldición",
+      "efecto": "Impones desventaja a su tirada de lanzamiento o concentración (elige)",
+      "limitaciones": "Debes verla y oírla",
+      "recarga": "Proficiencia/descanso largo"
+    },
+    {
+      "nombre": "Salto en Sombra",
+      "disparador": "Eres objetivo de un ataque a distancia",
+      "efecto": "Te teletransportas 3 m a un espacio en sombra que veas; si el ataque falla por ello, tienes ventaja en tu próximo ataque contra ese atacante",
+      "limitaciones": "Requiere luz tenue u oscuridad cercana",
+      "recarga": "1/descanso corto"
+    },
+    {
+      "nombre": "Interposición de Escudo",
+      "disparador": "Una criatura aliada a 1,5 m es impactada",
+      "efecto": "Trasladas el impacto a ti y ganas resistencia a ese daño",
+      "limitaciones": "Requiere escudo",
+      "recarga": "Por turno"
+    },
+    {
+      "nombre": "Desvío Etéreo",
+      "disparador": "Eres impactado por un proyectil no mágico",
+      "efecto": "Reducen el daño en 1d10 + DES + competencia; si cae a 0, puedes atraparlo o desviarlo 6 m",
+      "limitaciones": "Debes tener una mano libre",
+      "recarga": "Por turno"
+    },
+    {
+      "nombre": "Rechazo Gravitatorio",
+      "disparador": "Una criatura entra en tu alcance",
+      "efecto": "La empujas 3 m si falla TS de FUE; si supera, su velocidad se reduce 1,5 m hasta el final de su turno",
+      "limitaciones": "No funciona contra criaturas Enormes o mayores",
+      "recarga": "Proficiencia/descanso corto"
+    },
+    {
+      "nombre": "Último Aliento",
+      "disparador": "Bajas a 0 PG",
+      "efecto": "Te quedas a 1 PG en su lugar",
+      "limitaciones": "No si el daño excede tu PG máximo",
+      "recarga": "1/descanso largo"
+    },
+    {
+      "nombre": "Rompecanal",
+      "disparador": "Una criatura a 9 m inicia concentración en un conjuro",
+      "efecto": "Esa criatura hace su primer chequeo de concentración con desventaja antes del final de tu próximo turno",
+      "limitaciones": "Debes verla",
+      "recarga": "1/turno"
+    },
+    {
+      "nombre": "Guardia de la Estrella",
+      "disparador": "Un aliado a 9 m falla una tirada de salvación",
+      "efecto": "Le permites repetir la tirada; debe usar el nuevo resultado",
+      "limitaciones": "No puedes estar incapacitado",
+      "recarga": "Proficiencia/descanso largo"
+    },
+    {
+      "nombre": "Rebote Sombrío",
+      "disparador": "Te impacta un ataque a distancia",
+      "efecto": "Reduces el daño en 1d8 + DES y proyectas 1d6 necrótico al atacante.",
+      "limitaciones": "Debes ver al atacante",
+      "recarga": "Por turno"
+    },
+    {
+      "nombre": "Reloj de Arena",
+      "disparador": "Un aliado a 9 m falla una tirada de salvación",
+      "efecto": "Repite la tirada con -1; si la supera, ambos ganáis +1 a CA hasta el inicio de tu próximo turno.",
+      "limitaciones": "CHRONOS",
+      "recarga": "Proficiencia/descanso largo"
+    },
+    {
+      "nombre": "Sabiduría Interpuesta",
+      "disparador": "Un aliado a 6 m hace una tirada de SAB o INT",
+      "efecto": "Añade +1d4 al resultado.",
+      "limitaciones": "SOFÍA",
+      "recarga": "Por turno"
+    },
+    {
+      "nombre": "Voracidad Envidiosa",
+      "disparador": "Una criatura cercana obtiene ventaja en una tirada de ataque contra ti",
+      "efecto": "Cancelas su ventaja y obtienes ventaja en tu próximo ataque contra esa criatura.",
+      "limitaciones": "ENVIDIA",
+      "recarga": "1/descanso corto"
+    },
+    {
+      "nombre": "Pulso Vital",
+      "disparador": "Un aliado a 3 m recibe daño",
+      "efecto": "Reduces el daño en 1d8 + tu CAR; el aliado gana PG temporales iguales a tu CAR.",
+      "limitaciones": "VIDA",
+      "recarga": "Por turno"
+    },
+    {
+      "nombre": "Campana Fúnebre",
+      "disparador": "Una criatura a 9 m cae a 0 PG",
+      "efecto": "Otra criatura enemiga a 9 m sufre 1d8 necrótico (TS CON mitad).",
+      "limitaciones": "MUERTE",
+      "recarga": "Proficiencia/descanso corto"
+    },
+    {
+      "nombre": "Orgullo Protector",
+      "disparador": "Eres impactado por un crítico",
+      "efecto": "Lo conviertes en impacto normal y ganas ventaja en tu próximo ataque contra el atacante.",
+      "limitaciones": "EGOS",
+      "recarga": "1/descanso largo"
+    },
+    {
+      "nombre": "Vínculo de Atracción",
+      "disparador": "Una criatura hostil a 9 m ataca a tu aliado",
+      "efecto": "La obligas a cambiar el objetivo hacia ti si falla TS de SAB.",
+      "limitaciones": "EROS",
+      "recarga": "1/descanso corto"
+    },
+    {
+      "nombre": "Piso Temporal",
+      "disparador": "Una criatura entra en un espacio adyacente a ti",
+      "efecto": "Reduce su velocidad a 0 hasta el final del turno.",
+      "limitaciones": "No afecta a criaturas Enormes o mayores",
+      "recarga": "Proficiencia/descanso corto"
+    },
+    {
+      "nombre": "Luz Interpuesta",
+      "disparador": "Un conjuro de ataque de energía te tiene como objetivo",
+      "efecto": "Aumentas tu CA en +2 contra ese ataque y si falla, el lanzador sufre 1d6 radiante.",
+      "limitaciones": "Debes ver al lanzador",
+      "recarga": "Por turno"
+    },
+    {
+      "nombre": "Cuchillas Gemelas",
+      "disparador": "Una criatura falla su ataque contra ti a 1,5 m",
+      "efecto": "Realizas un ataque de oportunidad con ventaja.",
+      "limitaciones": "Arma cuerpo a cuerpo desenvainada",
+      "recarga": "Por turno"
+    },
+    {
+      "nombre": "Negación Profana",
+      "disparador": "Una criatura a 9 m inicia concentración",
+      "efecto": "Hace su primer chequeo de concentración con desventaja antes del final de tu próximo turno.",
+      "limitaciones": "MUERTE o GURKAZAAL",
+      "recarga": "1/descanso corto"
+    }
+  ]
+
+}
+

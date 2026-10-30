@@ -1,0 +1,18 @@
+{
+  "id": "C-03",
+  "date": "2026-09-03",
+  "author": "Claude (Cowork)",
+  "status": "Tancat",
+  "actions": [
+    "Tipus nou `PlayerCarryOver` (or, moral, passos des de l'últim cobrament, negocis) i el parell `GameSession::captureCarryOver()` / `applyCarryOver()`: l'ÚNIC camí pel qual l'estat del jugador travessa la frontera entre sessions.",
+    "`Application::loadLevel` ja no rescata només l'or. Un sol tipus en comptes d'una llista de camps escampada.",
+    "`SaveGame.cpp` fa servir el mateix traspàs a `captureSaveGame` i `restoreSaveGame`: afegir demà un camp del jugador surt als dos llocs o a cap.",
+    "`applyCarryOver` ASSIGNA, no acumula: aplicar-lo dues vegades dona el mateix (una recàrrega del mateix nivell no duplica l'or).",
+    "Prova nova `tests/Game/GameSessionTests.cpp` (`test_game_session`)."
+  ],
+  "verification": [
+    "4 casos verds: el cas del pla (moral −30, dos negocis, 90 d'or, reconstruït sobre un altre nivell), que una sessió nova neix buida, la idempotència i que el traspàs no toca vida ni inventari (viuen fora de la sessió). `test_save_game` sencer segueix verd després de reescriure els seus quatre camps."
+  ],
+  "pending": [],
+  "source_markdown": "**Seguiment · 2026-09-03 · Claude (Cowork): Tancat.**\n\n- Tipus nou `PlayerCarryOver` (or, moral, passos des de l'últim cobrament, negocis) i el parell `GameSession::captureCarryOver()` / `applyCarryOver()`: l'ÚNIC camí pel qual l'estat del jugador travessa la frontera entre sessions.\n- `Application::loadLevel` ja no rescata només l'or. Un sol tipus en comptes d'una llista de camps escampada.\n- `SaveGame.cpp` fa servir el mateix traspàs a `captureSaveGame` i `restoreSaveGame`: afegir demà un camp del jugador surt als dos llocs o a cap.\n- `applyCarryOver` ASSIGNA, no acumula: aplicar-lo dues vegades dona el mateix (una recàrrega del mateix nivell no duplica l'or).\n- Prova nova `tests/Game/GameSessionTests.cpp` (`test_game_session`).\n\n**Verificat.** 4 casos verds: el cas del pla (moral −30, dos negocis, 90 d'or, reconstruït sobre un altre nivell), que una sessió nova neix buida, la idempotència i que el traspàs no toca vida ni inventari (viuen fora de la sessió). `test_save_game` sencer segueix verd després de reescriure els seus quatre camps."
+}

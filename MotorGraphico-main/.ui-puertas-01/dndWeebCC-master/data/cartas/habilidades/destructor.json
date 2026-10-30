@@ -1,0 +1,53 @@
+{
+ "id": "destructor",
+ "name": "Destructor",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Atacas con ventaja, pero los enemigos también te atacan con ventaja.",
+ "flavorText": "",
+ "classTags": [
+  "senor_de_las_armas"
+ ],
+ "roleTags": [],
+ "tags": [
+  "senor_de_las_armas",
+  "creador"
+ ],
+ "mechanicTags": [
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "self",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Atacas con ventaja, pero los enemigos también te atacan con ventaja.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "Atacas con ventaja.",
+   "mechanicHook": "ataque_arma:ventaja"
+  },
+  {
+   "description": "Los enemigos también te atacan con ventaja.",
+   "mechanicHook": "estado:1:ventaja_contra:todo"
+  }
+ ]
+}

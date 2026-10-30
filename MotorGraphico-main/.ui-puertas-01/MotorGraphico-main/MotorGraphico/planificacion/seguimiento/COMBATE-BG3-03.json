@@ -1,0 +1,26 @@
+{
+ "id": "COMBATE-BG3-03",
+ "date": "2026-10-14",
+ "author": "claude (Cowork)",
+ "status": "HECHO — los rivales pegan al llegar y a quien tienen a tiro; el turno por iniciativa 1d6+DES, uno a uno; el alcance de las cartas en casillas, con las bloqueadas diciendo por que y el alcance pintado en el suelo.",
+ "origen": "Oriol (14/10, 07:25): «y seguimos para bingo».",
+ "actions": [
+  "BattleState: acercaEnemigos(solo), resuelveEnemigo(i), tiraIniciativa, enemigoEnTurno, pasaAlSiguiente (BattleStateTurno.cpp); ContextoBatalla::llega; objetivoDeEnemigo y la provocacion, solo a tiro.",
+  "Game::OrdenDeTurno + test_orden_de_turno.",
+  "ApplicationPantallas: turnoRival en dos mitades, rivalesPegan, siguienteTurno, turnoRivalEnMarcha; ApplicationCinematica::combate tira la iniciativa con los dados del combate.",
+  "MesaCombateRetales::pintaOrden en el orden de la iniciativa, con la tirada en una ficha.",
+  "Game/AlcanceCartas (casillasDeAlcance, ponAlcances, casillasATiro); CartaBarra rango/alcance/aTiro; BarraObjetivos elige entre los que estan a tiro; la carta grande dice el alcance; SueloCombate::tiro pintado en PergaminoGL.",
+  "test_g13_combat_commands enlaza motor_level (fuentes sueltas 62 -> 58)."
+ ],
+ "verification": [
+  "Sonda tactico: iniciativa (registro y retratos), el rival anda 38 fotogramas y pega en el 38, Atacar bloqueada lejos, 14 casillas a tiro en el suelo.",
+  "test_orden_de_turno 3/3, test_g13_combat_commands 12/12; ctest gl-free 217/220 (los tres de siempre), GL 11/11; linea_base_core 0 de deuda nueva."
+ ],
+ "sesion": "sesiones/2026-10-14-claude-combate-casillas.md",
+ "pending": [
+  "Los acompanantes sin puesto propio en la iniciativa.",
+  "Las cartas a todos los enemigos aun pegan a todos (AV13-14 con AV13-08).",
+  "Las cifras corto 4 / medio 8 / largo 12: propuesta para Oriol.",
+  "COMBATE_BG3.md §4: ¿la accion principal deja de cerrar el turno?"
+ ]
+}

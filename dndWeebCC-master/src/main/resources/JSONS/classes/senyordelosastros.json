@@ -1,0 +1,300 @@
+{
+  "nombre": "Señor de los Astros",
+  "descripcion": "El Señor de los Astros es un hechicero que canaliza el poder de las estrellas, el sol y la luna para afectar el destino en el combate.",
+  "rolTematico": "Mago estratégico que altera el flujo de la batalla con energía cósmica.",
+  "dadoGolpe": "1d6",
+  "puntosGolpeNivel1": "6 + modificador de Constitución",
+  "puntosGolpePorNivel": "1d6 (o 4) + modificador de Constitución",
+  "atributoConjuro": "Inteligencia",
+  "atributosRelevantes": [
+    "Inteligencia",
+    "Sabiduría",
+    "Carisma"
+  ],
+  "competencias": {
+    "armaduras": [],
+    "armas": ["Daga", "Bastón", "Honda", "Dardo"],
+    "habilidadesElegir": ["Arcano", "Engaño", "Perspicacia", "Intimidación", "Persuasión", "Religión"],
+    "salvaciones": ["Inteligencia", "Sabiduría"]
+  },
+  "accionesEspeciales": {
+    "Guardia Celestial": {
+      "descripcion": "Invocas una criatura de energía estelar que lucha a tu lado.",
+      "niveles": {
+        "1-5": { "HP": 50, "CA": 12, "daño": "1d8 + 3" },
+        "6-10": { "HP": 100, "CA": 14, "daño": "1d10 + 5" },
+        "11-15": { "HP": 150, "CA": 16, "daño": "2d8 + 6" },
+        "16-20": { "HP": 200, "CA": 18, "daño": "2d10 + 8" }
+      }
+    }
+  },
+  "niveles": {
+    "1": {
+      "habilidades": [
+        {
+          "nombre": "Magia de las Estrellas",
+          "tipo": "Magia",
+          "efecto": "Puedes proyectar luz u oscuridad para infligir daño o curar.",
+          "usos": "Modificador de Carisma",
+          "accion": "Normal",
+          "duracion": "1 minuto"
+        },
+        {
+          "nombre": "Rayo Estelar",
+          "tipo": "Luz",
+          "efecto": "2d4 de daño directo",
+          "usos": "Modificador de Sabiduría",
+          "accion": "Especial"
+        },
+        {
+          "nombre": "Oscuridad Lunar",
+          "tipo": "Oscuridad",
+          "efecto": "Inflinge 1d4 + 2 + ceguera",
+          "usos": "Modificador de Sabiduría",
+          "accion": "Especial"
+        },
+        {
+          "nombre": "Luz Estelar",
+          "tipo": "Especial",
+          "efecto": "Cura un 2d4",
+          "usos": "Modificador de Sabiduría",
+          "accion": "Especial"
+        }
+      ]
+    },
+    "2": {
+      "habilidades": [
+        {
+          "nombre": "Sabiduría de las Constelaciones",
+          "tipo": "Magia",
+          "efecto": "Puedes invocar las constelaciones para obtener ventaja en las tiradas de ataque o en tiradas de salvación durante 1 minuto,",
+          "usos": "Modificador de Sabiduría por descanso largo.",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "3": {
+      "habilidades": [
+        {
+          "nombre": "Bendición del Sol y la Luna",
+          "tipo": "Magia",
+          "efecto": " Elige entre canalizar la luz del sol para curar (1d8 por nivel de ranura) o invocar oscuridad lunar para infligir daño necrótico (2d6 por nivel de ranura).",
+          "usos": "Modificador de Carisma",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "4": {
+      "habilidades": ["Mejora de Características"]
+    },
+    "5": {
+      "habilidades": [
+        {
+          "nombre": "Eclipse Cósmico",
+          "efecto": "Invocas un eclipse que inflige 3d6 de daño necrótico en un área de 30 pies y otorga desventaja a los enemigos durante 1 minuto.",
+          "usos": "Modificador de Sabiduría",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "6": {
+      "habilidades": [
+        {
+          "nombre": "Lluvia de Meteoros",
+          "efecto": "Manipulas la velocidad de los ataques y movimientos en el campo de batalla, ganando ventajas en tiradas de ataque y salvación durante 1 minuto.",
+          "mejorias":
+                     [
+                        {
+                          "nivel": 6,
+                          "efecto": "+2 a la distancia de ataque y permite ignorar cobertura parcial.",
+                          "usos": "Modificador de Sabiduría",
+                          "accion": "Adicional"
+                        },
+                        {
+                          "nivel": 10,
+                          "efecto": "Puedes usar una acción adicional para hacer un ataque con una habilidad activada.",
+                          "usos": "Modificador de Sabiduría",
+                          "accion": "Adicional"
+                        },
+                        {
+                          "nivel": 14,
+                          "efecto": "Mueves la mitad de tu velocidad sin provocar ataques de oportunidad.",
+                          "usos": "-",
+                          "accion": "Passivo"
+                        },
+                        {
+                          "nivel": 18,
+                          "efecto": "Enemigos atacados deben realizar una tirada de salvación o quedar aturdidos.",
+                          "usos": "Modificador de Sabiduría",
+                          "accion": "Adicional"
+                        }
+                    ]
+          },{
+          "nombre": "Lluvia de Meteoros",
+          "efecto": "Invocas una lluvia de meteoros que inflige 4d6 de daño de fuego y necrótico a los enemigos en un área de 20 pies.",
+          "usos": "Modificador de Carisma",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "7": {
+      "habilidades": [
+        {
+          "nombre": "Manipulación del Tiempo",
+          "efecto": "Puedes acelerar o ralentizar el tiempo, otorgando una acción adicional a un aliado o reduciendo la velocidad de un enemigo.",
+          "usos": "Modificador de Inteligencia",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "8": {
+      "habilidades": ["Mejora de Características"]
+    },
+    "9": {
+      "habilidades": [
+        {
+          "nombre": "Manipulación del Tiempo II",
+          "efecto": "Aumenta en uno la acción adicional o reduce velocidad enemiga. De la Manipulación del tiempo.",
+          "usos": "Modificador de Inteligencia",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "10": {
+      "habilidades": [
+        {
+          "nombre": "Invocación de las Estrellas",
+          "tipo": "Invocación",
+          "accion": "Acción completa",
+          "duracion": "1 minuto (concentración)",
+          "usos": "1 por descanso largo",
+          "efecto": "Invocas una Entidad Estelar que lucha a tu lado. Actúa justo después de tu turno y desaparece si cae a 0 HP o termina la duración."
+        }
+      ],
+      "invocaciones": [
+        {
+          "nivel": 11,
+          "descripcion": "La Entidad Estelar lanza un Destello Cegador en su turno",
+          "nombre": "Destello Cegador",
+          "CA": 16,
+          "HP": 50,
+          "ataque": "+6",
+          "danio": "2d6+4 radiante",
+          "habilidadEspecial": {
+            "efecto": "El objetivo impactado debe hacer una salvación de Constitución (CD = 8 + competencia + tu modificador de Inteligencia) o queda cegado hasta su siguiente turno."
+          }
+        },
+        {
+          "nivel": 14,
+          "descripcion": "La Entidad Estelar lanza una Repulsión Gravitacional en su turno",
+          "nombre": "Repulsión Gravitacional",
+          "CA": 17,
+          "HP": 75,
+          "ataque": "+7",
+          "danio": "2d8+5 radiante y necrótico",
+          "habilidadEspecial": {
+            "efecto": "El objetivo impactado debe hacer una salvación de Constitución (CD = 8 + competencia + tu modificador de Inteligencia) o queda cegado hasta su siguiente turno."
+          }
+        },
+        {
+          "nivel": 17,
+          "descripcion": "La Entidad Estelar lanza un Aura de Constelaciones en su turno",
+          "nombre": "Aura de Constelaciones",
+          "CA": 18,
+          "HP": 100,
+          "ataque": "+8",
+          "danio": "3d8+6 radiante",
+          "habilidadEspecial": {
+            "efecto": "Los aliados a 10 pies ganan +1 a las tiradas de ataque mientras la entidad esté activa."
+          }
+        }
+      ]
+    },
+    "11": {
+      "habilidades": [
+        {
+          "nombre": "Barrera Astral",
+          "efecto": "Reduce a la mitad el daño radiante/necrótico para aliados.",
+          "usos": "Modificador de Inteligencia",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "12": {
+      "habilidades": ["Mejora de Características"]
+    },
+    "13": {
+      "habilidades": [
+        {
+          "nombre": "Impacto Estelar",
+          "efecto": "Desatas el poder de una estrella enana, infligiendo 5d10 de daño radiante o necrótico en un área de 30 pies y empujando a los enemigos 20 pies.",
+          "usos": "Modificador de Sabiduria",
+          "accion": "Adicional"
+        }
+      ]
+    },
+    "14": {
+      "habilidades": [
+        {
+          "nombre": "Maestro de las Constelaciones",
+          "efecto": "Invoca el poder de las constelaciones sin coste y puedes invocar dos veces por descanso.",
+          "usos": "Modificador de Carisma",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "15": {
+      "habilidades": [
+        {
+          "nombre": "Avatar de los Astros",
+          "efecto": "Te transformas en el avatar de los astros, ganando vuelo, inmunidad al daño radiante/necrótico, y añadiendo 2d10 de daño a todos tus hechizos durante 1 minuto.",
+          "usos": "Modificador de Inteligencia",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "16": {
+      "habilidades": ["Mejora de Características"]
+    },
+    "17": {
+      "habilidades": [
+        {
+          "nombre": "Supernova",
+          "efecto": " Desatas una explosión estelar que inflige 10d6 de daño radiante en un radio de 40 pies y ciega a los enemigos.",
+          "usos": "Modificador de Sabiduria",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "18": {
+      "habilidades": [
+        {
+          "nombre": "Control del Destino",
+          "efecto": "Como reacción, forzas a una criatura a repetir una tirada de ataque o tirada de salvación.",
+          "usos": "Modificador de Constitución",
+          "accion": "Reaccion"
+        }
+      ]
+    },
+    "19": {
+      "habilidades": [
+        {
+          "nombre": "Estrella Caída",
+          "efecto": "Invocas una estrella fugaz que inflige 8d8 de daño radiante o necrótico a los enemigos y otorga ventaja a los aliados en un radio de 30 pies durante 1 minuto.",
+          "usos": "Modificador de Carisma",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "20": {
+      "habilidades": [
+        {
+          "nombre": "Convergencia Estelar",
+          "efecto": "Controlas la energía cósmica pura, otorgando inmunidad al daño radiante/necrótico, vuelo, y otorgando ventaja a un aliado. Todos tus hechizos infligen 4d6 de daño adicional.",
+          "usos": "Modificador de Carisma",
+          "accion": "Normal"
+        }
+      ]
+    }
+  }
+}

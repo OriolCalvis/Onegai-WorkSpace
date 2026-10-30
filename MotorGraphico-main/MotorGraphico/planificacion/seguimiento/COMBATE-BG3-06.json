@@ -1,0 +1,28 @@
+{
+ "id": "COMBATE-BG3-06",
+ "date": "2026-10-14",
+ "author": "claude (Cowork)",
+ "status": "HECHO — AV13-29: los acompanantes con su propio turno en la iniciativa y jugados por el jugador (salvo \"ia\": true); su dibujo en el tablero, andando. De paso: los enemigos de las emboscadas de la narrativa no tenian dibujo y el heroe podia quedarse fuera de su casilla.",
+ "origen": "Oriol (14/10, D0015 §1): «turno propio de iniciativa, los juega el jugador salvo que se especifique lo contrario». Oriol (09:51): «Donem tasques per chatgpt i per tu per treballar ara».",
+ "actions": [
+  "OrdenDeTurno::tira(bonosAliados, bonosEnemigos): todos los aliados tiran 1d6+DES.",
+  "BattleState (BattleStateTurno.cpp): aliadoEnTurno, loJuegaElJugador, resuelveAliadoSolo, sumaAliado; pasaAlSiguiente generico.",
+  "CartasEnCombate: resolverAcompanante (Atacar xataques, Curar, Pasar), actuaSolo para los de IA; en modo BG3 cerrarTurno ya no los hace actuar detras del heroe.",
+  "BarraAcompanante.cpp: la barra del acompanante (Atacar, Curar). Application: confirmBattleCommand/pasaTurno/sueloCombate con el aliado activo; GameSession::mueveEnCombate(destino, aliado).",
+  "GameSessionTablero.cpp: montaTablero pone un objeto \"acompanante_<id>\" en el World en su casilla; sincronizaTablero lo mueve; quitaAcompanantes al acabar (y al cargar). SaveGame no los guarda.",
+  "ApplicationCinematica::acompanantesALaVista (ApplicationNivel.cpp): dibujo de PNJ para cada acompanante y para los enemigos nacidos a mitad de partida (emboscadas, oleadas), que antes eran invisibles.",
+  "MesaCombateRetales::pintaOrden: cada acompanante en su puesto de la iniciativa, con su tirada; marco carmin en quien juega.",
+  "El heroe se coloca donde lo pone el tablero (playerPosition y su dibujo) si su casilla no valia."
+ ],
+ "verification": [
+  "Sonda acomp (Ocaso, saqueadores x2 con Venides y Xila): dos dibujos de acompanante en el tablero; la tira en orden de iniciativa con Venides marcado en su turno; Venides anda 27 casillas de alcance con el raton (su dibujo le sigue) y ataca dos veces; Pasar da el turno al siguiente. Capturas a_orden, a_venides, a_anda, a_ataca.",
+  "test_game_session 38/38 (1 nueva: el objeto del acompanante en el mundo, le sigue al andar, no se guarda y se va al acabar); test_cartas_combate 51/51; g13 13/13.",
+  "ctest gl-free 219/222 (los tres de siempre), GL 11/11; linea_base_core 0 de deuda nueva."
+ ],
+ "sesion": "sesiones/2026-10-14-claude-combate-casillas.md",
+ "pending": [
+  "Los acompanantes de IA (\"ia\": true) actuan sin andar por el tablero.",
+  "El enemigo derrotado sigue dibujado en su casilla hasta que acaba el combate.",
+  "Sin efecto de golpe (parpadeo, retroceso) sobre el dibujo del acompanante: solo heroe y enemigos."
+ ]
+}

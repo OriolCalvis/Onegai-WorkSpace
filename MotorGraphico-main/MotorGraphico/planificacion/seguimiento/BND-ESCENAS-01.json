@@ -1,0 +1,47 @@
+{
+ "id": "BND-ESCENAS-01",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO en parte — las escenas de la Campaña 01 sacadas del vault (planificacion/CANON_BOUNDINGTON_CAMPANA01.md) y escritas en las aventuras: el primer día entero, el segundo día entero y la primera parte del Ocaso. Falta Sandes, Edul y Venides retenidos, el fuego y los mapas del Ocaso.",
+ "origen": "Oriol (08/10): «Té, continua la programació dins el motor gràfic del següent:», con la lista «Boundington: lo que hay que sacar del gestor documental».",
+ "fuente": "Vault de Oriol: Campaña 01 (La Matanza de Boundington, Aventura de Venides).docx [C01] y PARTIDAS.docx [PART] (corpus_extraido), y las notas de Obsidian de la campaña.",
+ "actions": [
+  "planificacion/CANON_BOUNDINGTON_CAMPANA01.md (nuevo): las fichas por escena (fuente, cuándo, dónde, quién, texto literal, tiradas, combate, qué da, qué falta), lo que el vault zanja de la lista, las preguntas para Oriol y, en §9 y §10, cómo queda en el juego y qué decidí yo.",
+  "assets/adventures/boundington_primer_dia.json: 78 beats (antes 28). La hora con Skilla; Aigren (Persuasión, 3 dados), Luisarda (Intimidación o Engaño, 2; la sala secreta y las 2 pociones), los sectarios (Persuasión, 3) y la invitación a la cripta; la guarida (dejar las armas, la ceremonia, Gurkazaal, Sandes/Verina/Edul, salir, unirse o pelear); Pico Dragón (la niña del gato por la mañana, los Verdaderos por la tarde o la noche, la comida que es un descanso corto); Xila sobrio por la mañana, con un trago por la tarde, dormido de noche; la noche (Venides borracho con la pista de la zona rica, el carterista, el cuartel, el vigilante del Barrio Alto, la pelea de taberna sin matar). Venides: 20 hombres con una prueba y tres testimonios.",
+  "assets/adventures/boundington_segundo_dia.json: 47 beats (antes 21). La hora con Skilla; el castillo con los hombres de Venides; los tres disfraces; Surysal como prueba; la fiesta del Barrio Alto de noche entera ([C01] y [PART]); el informe; dormir.",
+  "assets/adventures/boundington_ocaso.json: 27 beats (antes 21). El reloj del tercer día; Verina (promesa y +1 Afecto de Venides); la barricada de Las Afueras con su rodeo; el escape de Sho-Noco si no viste huir a Venides.",
+  "examples/demo_boundington.cpp: juega los tres días por muchas rutas y exige que no quede ningún beat sin disparar (152 de 152). examples/demo_campana_boundington.cpp: la campaña entera con las opciones nuevas.",
+  "CMakeLists.txt: solo el comentario de demo_boundington."
+ ],
+ "scope": [
+  "planificacion/CANON_BOUNDINGTON_CAMPANA01.md (nuevo): las fichas por escena (fuente, cuándo, dónde, quién, texto literal, tiradas, combate, qué da, qué falta), lo que el vault zanja de la lista, las preguntas para Oriol y, en §9 y §10, cómo queda en el juego y qué decidí yo.",
+  "assets/adventures/boundington_primer_dia.json: 78 beats (antes 28). La hora con Skilla; Aigren (Persuasión, 3 dados), Luisarda (Intimidación o Engaño, 2; la sala secreta y las 2 pociones), los sectarios (Persuasión, 3) y la invitación a la cripta; la guarida (dejar las armas, la ceremonia, Gurkazaal, Sandes/Verina/Edul, salir, unirse o pelear); Pico Dragón (la niña del gato por la mañana, los Verdaderos por la tarde o la noche, la comida que es un descanso corto); Xila sobrio por la mañana, con un trago por la tarde, dormido de noche; la noche (Venides borracho con la pista de la zona rica, el carterista, el cuartel, el vigilante del Barrio Alto, la pelea de taberna sin matar). Venides: 20 hombres con una prueba y tres testimonios.",
+  "assets/adventures/boundington_segundo_dia.json: 47 beats (antes 21). La hora con Skilla; el castillo con los hombres de Venides; los tres disfraces; Surysal como prueba; la fiesta del Barrio Alto de noche entera ([C01] y [PART]); el informe; dormir.",
+  "assets/adventures/boundington_ocaso.json: 27 beats (antes 21). El reloj del tercer día; Verina (promesa y +1 Afecto de Venides); la barricada de Las Afueras con su rodeo; el escape de Sho-Noco si no viste huir a Venides.",
+  "examples/demo_boundington.cpp: juega los tres días por muchas rutas y exige que no quede ningún beat sin disparar (152 de 152). examples/demo_campana_boundington.cpp: la campaña entera con las opciones nuevas.",
+  "CMakeLists.txt: solo el comentario de demo_boundington."
+ ],
+ "non_goals": [
+  "Sandes (O-09): falta su ficha de enemigo (y la decisión de con cuánta vida) y su sprite.",
+  "Edul y Venides retenidos (O-11, O-13): falta la ficha del guardia.",
+  "La Taberna Rica (D1-12): no está en el mapa.",
+  "Los textos que el vault no trae (rumores de las mesas, el sermón, las palabras de Sandes...): pregunta 5."
+ ],
+ "verification": [
+  "demo_boundington: 152 beats de 152 disparados entre todas las rutas; demo_campana_boundington, las rutas de la campaña.",
+  "validar_todo: 0 errores (los 10 avisos de antes).",
+  "ctest en la VM del Mac (Xvfb): todo en verde salvo linea_base_core (44, la de antes).",
+  "Jugado en el juego (Xvfb): Skilla y sus cuatro respuestas; «Esperar a que anochezca» pasa a la noche; Aigren y su tirada (Persuasión, con la hoja de la tirada) y la herrería cerrada después; Venides de noche (Edul y la zona rica); el amanecer del segundo día con la pista de la tienda; el Barrio Alto de noche, el vigilante, su tirada de Sigilo y lo que sigue."
+ ],
+ "para_oriol": [
+  "Las preguntas de CANON_BOUNDINGTON_CAMPANA01.md §8 (12): los hombres de Venides, Zarela, las monedas, las Santas Montañas y los Puntos, los textos que faltan, el camino del culto, el cuarto encargo, la noche de la fiesta, Sandes, los guardias, el fuego y la Taberna Rica.",
+  "Las decisiones mías de §9.1 y §10.1 y los textos de §9.2: son para revisar."
+ ],
+ "sesion": "sesiones/2026-10-08-claude-bnd-escenas.md",
+ "pending": [
+  "Sandes, Edul y Venides retenidos, el fuego y los mapas del Ocaso: pasan a BND-ALT-03.",
+  "Edul y Venides retenidos (O-11, O-13): falta la ficha del guardia.",
+  "La Taberna Rica (D1-12): no está en el mapa.",
+  "Los textos que el vault no trae (rumores de las mesas, el sermón, las palabras de Sandes...): pregunta 5."
+ ]
+}

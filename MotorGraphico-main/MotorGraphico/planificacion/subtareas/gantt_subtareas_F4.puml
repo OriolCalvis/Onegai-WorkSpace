@@ -1,0 +1,279 @@
+@startgantt
+
+title Fase 4 — Herramientas avanzadas de mapas — subtareas atómicas revisables
+
+' 1 'día' = 1 jornada de esfuerzo (~6 h). Las medias jornadas del
+' roadmap (0,5 j y 1,5 j) se redondean al alza porque PlantUML solo
+' admite días enteros; el esfuerzo exacto va entre corchetes en el
+' nombre de cada subtarea.
+' Las subtareas de paquetes ya avanzados se marcan con su porcentaje
+' heredado del paquete: revísalas antes de darlas por hechas.
+
+Project starts 2026-09-01
+saturday are closed
+sunday are closed
+
+
+-- MAP-01 — Crear importador y editor visual de tilesets  [PARCIAL 35%] --
+
+[MAP-01.1 (2 j) definir documento] lasts 2 days
+[MAP-01.1 (2 j) definir documento] is colored in #E3A82B
+[MAP-01.1 (2 j) definir documento] is 35% completed
+[MAP-01.2 (1,5 j) detectar grid] lasts 2 days
+[MAP-01.2 (1,5 j) detectar grid] is colored in #E3A82B
+[MAP-01.2 (1,5 j) detectar grid] is 35% completed
+[MAP-01.1 (2 j) definir documento] -> [MAP-01.2 (1,5 j) detectar grid]
+[MAP-01.3 (1,5 j) crear preview de corte] lasts 2 days
+[MAP-01.3 (1,5 j) crear preview de corte] is colored in #E3A82B
+[MAP-01.3 (1,5 j) crear preview de corte] is 35% completed
+[MAP-01.2 (1,5 j) detectar grid] -> [MAP-01.3 (1,5 j) crear preview de corte]
+[MAP-01.4 (1,5 j) guardar parámetros] lasts 2 days
+[MAP-01.4 (1,5 j) guardar parámetros] is colored in #E3A82B
+[MAP-01.4 (1,5 j) guardar parámetros] is 35% completed
+[MAP-01.3 (1,5 j) crear preview de corte] -> [MAP-01.4 (1,5 j) guardar parámetros]
+[MAP-01.5 (1,5 j) implementar reimportación segura] lasts 2 days
+[MAP-01.5 (1,5 j) implementar reimportación segura] is colored in #E3A82B
+[MAP-01.5 (1,5 j) implementar reimportación segura] is 35% completed
+[MAP-01.4 (1,5 j) guardar parámetros] -> [MAP-01.5 (1,5 j) implementar reimportación segura]
+[MAP-01 listo] happens at [MAP-01.5 (1,5 j) implementar reimportación segura]'s end
+
+-- MAP-02 — Implementar TileDefinition y metadatos  [PARCIAL 40%] --
+
+[MAP-02.1 (1,5 j) definir metadatos] lasts 2 days
+[MAP-02.1 (1,5 j) definir metadatos] is colored in #E3A82B
+[MAP-02.1 (1,5 j) definir metadatos] is 40% completed
+[MAP-01.5 (1,5 j) implementar reimportación segura] -> [MAP-02.1 (1,5 j) definir metadatos]
+[MAP-02.2 (1,5 j) serializar] lasts 2 days
+[MAP-02.2 (1,5 j) serializar] is colored in #E3A82B
+[MAP-02.2 (1,5 j) serializar] is 40% completed
+[MAP-02.1 (1,5 j) definir metadatos] -> [MAP-02.2 (1,5 j) serializar]
+[MAP-02.3 (1,5 j) crear editor por lote] lasts 2 days
+[MAP-02.3 (1,5 j) crear editor por lote] is colored in #E3A82B
+[MAP-02.3 (1,5 j) crear editor por lote] is 40% completed
+[MAP-02.2 (1,5 j) serializar] -> [MAP-02.3 (1,5 j) crear editor por lote]
+[MAP-02.4 (1,5 j) compilar a runtime] lasts 2 days
+[MAP-02.4 (1,5 j) compilar a runtime] is colored in #E3A82B
+[MAP-02.4 (1,5 j) compilar a runtime] is 40% completed
+[MAP-02.3 (1,5 j) crear editor por lote] -> [MAP-02.4 (1,5 j) compilar a runtime]
+[MAP-02 listo] happens at [MAP-02.4 (1,5 j) compilar a runtime]'s end
+
+-- MAP-03 — Implementar autotiles isométricos  [PENDIENTE 0%] --
+
+[MAP-03.1 (2 j) definir máscara] lasts 2 days
+[MAP-03.1 (2 j) definir máscara] is colored in #B8BEC7
+[MAP-02.4 (1,5 j) compilar a runtime] -> [MAP-03.1 (2 j) definir máscara]
+[MAP-03.2 (2 j) resolver variantes] lasts 2 days
+[MAP-03.2 (2 j) resolver variantes] is colored in #B8BEC7
+[MAP-03.1 (2 j) definir máscara] -> [MAP-03.2 (2 j) resolver variantes]
+[MAP-03.3 (2 j) integrar pincel] lasts 2 days
+[MAP-03.3 (2 j) integrar pincel] is colored in #B8BEC7
+[MAP-03.2 (2 j) resolver variantes] -> [MAP-03.3 (2 j) integrar pincel]
+[MAP-03.4 (1,5 j) crear editor reglas] lasts 2 days
+[MAP-03.4 (1,5 j) crear editor reglas] is colored in #B8BEC7
+[MAP-03.3 (2 j) integrar pincel] -> [MAP-03.4 (1,5 j) crear editor reglas]
+[MAP-03.5 (1,5 j) probar combinaciones] lasts 2 days
+[MAP-03.5 (1,5 j) probar combinaciones] is colored in #B8BEC7
+[MAP-03.4 (1,5 j) crear editor reglas] -> [MAP-03.5 (1,5 j) probar combinaciones]
+[MAP-03 listo] happens at [MAP-03.5 (1,5 j) probar combinaciones]'s end
+
+-- MAP-04 — Crear editor de colisiones direccionales  [PARCIAL 25%] --
+
+[MAP-04.1 (1,5 j) crear overlay] lasts 2 days
+[MAP-04.1 (1,5 j) crear overlay] is colored in #E3A82B
+[MAP-04.1 (1,5 j) crear overlay] is 25% completed
+[MAP-03.5 (1,5 j) probar combinaciones] -> [MAP-04.1 (1,5 j) crear overlay]
+[MAP-04.2 (1,5 j) editar flags] lasts 2 days
+[MAP-04.2 (1,5 j) editar flags] is colored in #E3A82B
+[MAP-04.2 (1,5 j) editar flags] is 25% completed
+[MAP-04.1 (1,5 j) crear overlay] -> [MAP-04.2 (1,5 j) editar flags]
+[MAP-04.3 (1,5 j) añadir presets] lasts 2 days
+[MAP-04.3 (1,5 j) añadir presets] is colored in #E3A82B
+[MAP-04.3 (1,5 j) añadir presets] is 25% completed
+[MAP-04.2 (1,5 j) editar flags] -> [MAP-04.3 (1,5 j) añadir presets]
+[MAP-04.4 (1,5 j) compilar navegación] lasts 2 days
+[MAP-04.4 (1,5 j) compilar navegación] is colored in #E3A82B
+[MAP-04.4 (1,5 j) compilar navegación] is 25% completed
+[MAP-04.3 (1,5 j) añadir presets] -> [MAP-04.4 (1,5 j) compilar navegación]
+[MAP-04.5 (1 j) probar entrada/salida] lasts 1 days
+[MAP-04.5 (1 j) probar entrada/salida] is colored in #E3A82B
+[MAP-04.5 (1 j) probar entrada/salida] is 25% completed
+[MAP-04.4 (1,5 j) compilar navegación] -> [MAP-04.5 (1 j) probar entrada/salida]
+[MAP-04 listo] happens at [MAP-04.5 (1 j) probar entrada/salida]'s end
+
+-- MAP-05 — Crear capas y canales de regiones  [PENDIENTE 10%] --
+
+[MAP-05.1 (2 j) definir canales] lasts 2 days
+[MAP-05.1 (2 j) definir canales] is colored in #B8BEC7
+[MAP-05.1 (2 j) definir canales] is 10% completed
+[MAP-04.5 (1 j) probar entrada/salida] -> [MAP-05.1 (2 j) definir canales]
+[MAP-05.2 (2 j) pintar/borrar] lasts 2 days
+[MAP-05.2 (2 j) pintar/borrar] is colored in #B8BEC7
+[MAP-05.2 (2 j) pintar/borrar] is 10% completed
+[MAP-05.1 (2 j) definir canales] -> [MAP-05.2 (2 j) pintar/borrar]
+[MAP-05.3 (1,5 j) overlay y leyenda] lasts 2 days
+[MAP-05.3 (1,5 j) overlay y leyenda] is colored in #B8BEC7
+[MAP-05.3 (1,5 j) overlay y leyenda] is 10% completed
+[MAP-05.2 (2 j) pintar/borrar] -> [MAP-05.3 (1,5 j) overlay y leyenda]
+[MAP-05.4 (1,5 j) consulta runtime] lasts 2 days
+[MAP-05.4 (1,5 j) consulta runtime] is colored in #B8BEC7
+[MAP-05.4 (1,5 j) consulta runtime] is 10% completed
+[MAP-05.3 (1,5 j) overlay y leyenda] -> [MAP-05.4 (1,5 j) consulta runtime]
+[MAP-05 listo] happens at [MAP-05.4 (1,5 j) consulta runtime]'s end
+
+-- MAP-06 — Implementar editor de propiedades del mapa  [PARCIAL 30%] --
+
+[MAP-06.1 (1,5 j) definir settings] lasts 2 days
+[MAP-06.1 (1,5 j) definir settings] is colored in #E3A82B
+[MAP-06.1 (1,5 j) definir settings] is 30% completed
+[MAP-05.4 (1,5 j) consulta runtime] -> [MAP-06.1 (1,5 j) definir settings]
+[MAP-06.2 (1,5 j) crear diálogo] lasts 2 days
+[MAP-06.2 (1,5 j) crear diálogo] is colored in #E3A82B
+[MAP-06.2 (1,5 j) crear diálogo] is 30% completed
+[MAP-06.1 (1,5 j) definir settings] -> [MAP-06.2 (1,5 j) crear diálogo]
+[MAP-06.3 (1 j) validar resize destructivo] lasts 1 days
+[MAP-06.3 (1 j) validar resize destructivo] is colored in #E3A82B
+[MAP-06.3 (1 j) validar resize destructivo] is 30% completed
+[MAP-06.2 (1,5 j) crear diálogo] -> [MAP-06.3 (1 j) validar resize destructivo]
+[MAP-06.4 (1 j) emitir comando macro] lasts 1 days
+[MAP-06.4 (1 j) emitir comando macro] is colored in #E3A82B
+[MAP-06.4 (1 j) emitir comando macro] is 30% completed
+[MAP-06.3 (1 j) validar resize destructivo] -> [MAP-06.4 (1 j) emitir comando macro]
+[MAP-06 listo] happens at [MAP-06.4 (1 j) emitir comando macro]'s end
+
+-- MAP-07 — Implementar colocación de entidades  [DONE 85%] --
+
+[MAP-07.1 (2 j) definir instancia] lasts 2 days
+[MAP-07.1 (2 j) definir instancia] is colored in #7FB069
+[MAP-07.1 (2 j) definir instancia] is 85% completed
+[MAP-06.4 (1 j) emitir comando macro] -> [MAP-07.1 (2 j) definir instancia]
+[MAP-07.2 (2 j) drag/drop al viewport] lasts 2 days
+[MAP-07.2 (2 j) drag/drop al viewport] is colored in #7FB069
+[MAP-07.2 (2 j) drag/drop al viewport] is 85% completed
+[MAP-07.1 (2 j) definir instancia] -> [MAP-07.2 (2 j) drag/drop al viewport]
+[MAP-07.3 (1,5 j) seleccionar/mover] lasts 2 days
+[MAP-07.3 (1,5 j) seleccionar/mover] is colored in #7FB069
+[MAP-07.3 (1,5 j) seleccionar/mover] is 85% completed
+[MAP-07.2 (2 j) drag/drop al viewport] -> [MAP-07.3 (1,5 j) seleccionar/mover]
+[MAP-07.4 (1,5 j) compilar al World] lasts 2 days
+[MAP-07.4 (1,5 j) compilar al World] is colored in #7FB069
+[MAP-07.4 (1,5 j) compilar al World] is 85% completed
+[MAP-07.3 (1,5 j) seleccionar/mover] -> [MAP-07.4 (1,5 j) compilar al World]
+[MAP-07 listo] happens at [MAP-07.4 (1,5 j) compilar al World]'s end
+
+-- MAP-08 — Implementar prefabs y plantillas  [PARCIAL 30%] --
+
+[MAP-08.1 (1,5 j) definir formato] lasts 2 days
+[MAP-08.1 (1,5 j) definir formato] is colored in #E3A82B
+[MAP-08.1 (1,5 j) definir formato] is 30% completed
+[MAP-07.4 (1,5 j) compilar al World] -> [MAP-08.1 (1,5 j) definir formato]
+[MAP-08.2 (1,5 j) crear desde selección] lasts 2 days
+[MAP-08.2 (1,5 j) crear desde selección] is colored in #E3A82B
+[MAP-08.2 (1,5 j) crear desde selección] is 30% completed
+[MAP-08.1 (1,5 j) definir formato] -> [MAP-08.2 (1,5 j) crear desde selección]
+[MAP-08.3 (1,5 j) instanciar] lasts 2 days
+[MAP-08.3 (1,5 j) instanciar] is colored in #E3A82B
+[MAP-08.3 (1,5 j) instanciar] is 30% completed
+[MAP-08.2 (1,5 j) crear desde selección] -> [MAP-08.3 (1,5 j) instanciar]
+[MAP-08.4 (1,5 j) editar overrides] lasts 2 days
+[MAP-08.4 (1,5 j) editar overrides] is colored in #E3A82B
+[MAP-08.4 (1,5 j) editar overrides] is 30% completed
+[MAP-08.3 (1,5 j) instanciar] -> [MAP-08.4 (1,5 j) editar overrides]
+[MAP-08.5 (1 j) resolver actualización] lasts 1 days
+[MAP-08.5 (1 j) resolver actualización] is colored in #E3A82B
+[MAP-08.5 (1 j) resolver actualización] is 30% completed
+[MAP-08.4 (1,5 j) editar overrides] -> [MAP-08.5 (1 j) resolver actualización]
+[MAP-08 listo] happens at [MAP-08.5 (1 j) resolver actualización]'s end
+
+-- MAP-09 — Implementar navegación y pathfinding  [PARCIAL 20%] --
+
+[MAP-09.1 (1,5 j) compilar grid] lasts 2 days
+[MAP-09.1 (1,5 j) compilar grid] is colored in #E3A82B
+[MAP-09.1 (1,5 j) compilar grid] is 20% completed
+[MAP-08.5 (1 j) resolver actualización] -> [MAP-09.1 (1,5 j) compilar grid]
+[MAP-09.2 (1,5 j) implementar A*] lasts 2 days
+[MAP-09.2 (1,5 j) implementar A*] is colored in #E3A82B
+[MAP-09.2 (1,5 j) implementar A*] is 20% completed
+[MAP-09.1 (1,5 j) compilar grid] -> [MAP-09.2 (1,5 j) implementar A*]
+[MAP-09.3 (1,5 j) integrar occupancy] lasts 2 days
+[MAP-09.3 (1,5 j) integrar occupancy] is colored in #E3A82B
+[MAP-09.3 (1,5 j) integrar occupancy] is 20% completed
+[MAP-09.2 (1,5 j) implementar A*] -> [MAP-09.3 (1,5 j) integrar occupancy]
+[MAP-09.4 (1,5 j) añadir overlay] lasts 2 days
+[MAP-09.4 (1,5 j) añadir overlay] is colored in #E3A82B
+[MAP-09.4 (1,5 j) añadir overlay] is 20% completed
+[MAP-09.3 (1,5 j) integrar occupancy] -> [MAP-09.4 (1,5 j) añadir overlay]
+[MAP-09.5 (1 j) medir presupuesto] lasts 1 days
+[MAP-09.5 (1 j) medir presupuesto] is colored in #E3A82B
+[MAP-09.5 (1 j) medir presupuesto] is 20% completed
+[MAP-09.4 (1,5 j) añadir overlay] -> [MAP-09.5 (1 j) medir presupuesto]
+[MAP-09 listo] happens at [MAP-09.5 (1 j) medir presupuesto]'s end
+
+-- MAP-10 — Implementar conexiones y puntos de aparición  [DONE 80%] --
+
+[MAP-10.1 (1,5 j) crear spawn tool] lasts 2 days
+[MAP-10.1 (1,5 j) crear spawn tool] is colored in #7FB069
+[MAP-10.1 (1,5 j) crear spawn tool] is 80% completed
+[MAP-09.5 (1 j) medir presupuesto] -> [MAP-10.1 (1,5 j) crear spawn tool]
+[MAP-10.2 (1,5 j) editar links] lasts 2 days
+[MAP-10.2 (1,5 j) editar links] is colored in #7FB069
+[MAP-10.2 (1,5 j) editar links] is 80% completed
+[MAP-10.1 (1,5 j) crear spawn tool] -> [MAP-10.2 (1,5 j) editar links]
+[MAP-10.3 (1 j) mostrar referencias] lasts 1 days
+[MAP-10.3 (1 j) mostrar referencias] is colored in #7FB069
+[MAP-10.3 (1 j) mostrar referencias] is 80% completed
+[MAP-10.2 (1,5 j) editar links] -> [MAP-10.3 (1 j) mostrar referencias]
+[MAP-10.4 (1 j) validar y navegar] lasts 1 days
+[MAP-10.4 (1 j) validar y navegar] is colored in #7FB069
+[MAP-10.4 (1 j) validar y navegar] is 80% completed
+[MAP-10.3 (1 j) mostrar referencias] -> [MAP-10.4 (1 j) validar y navegar]
+[MAP-10 listo] happens at [MAP-10.4 (1 j) validar y navegar]'s end
+
+-- MAP-11 — Mejorar profundidad, elevación y capas altas  [PARCIAL 45%] --
+
+[MAP-11.1 (2 j) definir depth key] lasts 2 days
+[MAP-11.1 (2 j) definir depth key] is colored in #E3A82B
+[MAP-11.1 (2 j) definir depth key] is 45% completed
+[MAP-10.4 (1 j) validar y navegar] -> [MAP-11.1 (2 j) definir depth key]
+[MAP-11.2 (1,5 j) emitir tiles como items] lasts 2 days
+[MAP-11.2 (1,5 j) emitir tiles como items] is colored in #E3A82B
+[MAP-11.2 (1,5 j) emitir tiles como items] is 45% completed
+[MAP-11.1 (2 j) definir depth key] -> [MAP-11.2 (1,5 j) emitir tiles como items]
+[MAP-11.3 (1,5 j) unificar entidades] lasts 2 days
+[MAP-11.3 (1,5 j) unificar entidades] is colored in #E3A82B
+[MAP-11.3 (1,5 j) unificar entidades] is 45% completed
+[MAP-11.2 (1,5 j) emitir tiles como items] -> [MAP-11.3 (1,5 j) unificar entidades]
+[MAP-11.4 (1,5 j) añadir capas altas] lasts 2 days
+[MAP-11.4 (1,5 j) añadir capas altas] is colored in #E3A82B
+[MAP-11.4 (1,5 j) añadir capas altas] is 45% completed
+[MAP-11.3 (1,5 j) unificar entidades] -> [MAP-11.4 (1,5 j) añadir capas altas]
+[MAP-11.5 (1,5 j) crear fixture puente] lasts 2 days
+[MAP-11.5 (1,5 j) crear fixture puente] is colored in #E3A82B
+[MAP-11.5 (1,5 j) crear fixture puente] is 45% completed
+[MAP-11.4 (1,5 j) añadir capas altas] -> [MAP-11.5 (1,5 j) crear fixture puente]
+[MAP-11 listo] happens at [MAP-11.5 (1,5 j) crear fixture puente]'s end
+
+-- MAP-12 — Validar aldea, interior y mazmorra conectados  [PARCIAL 55%] --
+
+[MAP-12.1 (1 j) crear aldea] lasts 1 days
+[MAP-12.1 (1 j) crear aldea] is colored in #E3A82B
+[MAP-12.1 (1 j) crear aldea] is 55% completed
+[MAP-11.5 (1,5 j) crear fixture puente] -> [MAP-12.1 (1 j) crear aldea]
+[MAP-12.2 (1 j) crear interior] lasts 1 days
+[MAP-12.2 (1 j) crear interior] is colored in #E3A82B
+[MAP-12.2 (1 j) crear interior] is 55% completed
+[MAP-12.1 (1 j) crear aldea] -> [MAP-12.2 (1 j) crear interior]
+[MAP-12.3 (1 j) crear mazmorra] lasts 1 days
+[MAP-12.3 (1 j) crear mazmorra] is colored in #E3A82B
+[MAP-12.3 (1 j) crear mazmorra] is 55% completed
+[MAP-12.2 (1 j) crear interior] -> [MAP-12.3 (1 j) crear mazmorra]
+[MAP-12.4 (1 j) conectar/spawns] lasts 1 days
+[MAP-12.4 (1 j) conectar/spawns] is colored in #E3A82B
+[MAP-12.4 (1 j) conectar/spawns] is 55% completed
+[MAP-12.3 (1 j) crear mazmorra] -> [MAP-12.4 (1 j) conectar/spawns]
+[MAP-12.5 (1 j) ejecutar recorrido y perf] lasts 1 days
+[MAP-12.5 (1 j) ejecutar recorrido y perf] is colored in #E3A82B
+[MAP-12.5 (1 j) ejecutar recorrido y perf] is 55% completed
+[MAP-12.4 (1 j) conectar/spawns] -> [MAP-12.5 (1 j) ejecutar recorrido y perf]
+[MAP-12 listo] happens at [MAP-12.5 (1 j) ejecutar recorrido y perf]'s end
+
+@endgantt

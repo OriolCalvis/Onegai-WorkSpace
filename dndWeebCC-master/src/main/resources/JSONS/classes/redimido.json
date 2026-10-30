@@ -1,0 +1,263 @@
+{
+  "nombre": "Redimido",
+  "descripcion": "Un antiguo brujo que ha abandonado las artes oscuras y ha decidido seguir el camino de la justicia y la devoción divina, usando su conocimiento prohibido para el bien.",
+  "rolTematico": "Servidor ferviente de su dios, combina magia divina y prohibida para curar, bendecir y castigar.",
+  "dadoGolpe": "1d10",
+  "puntosGolpeNivel1": "10 + modificador de Constitución",
+  "puntosGolpePorNivel": "1d10 (o 6) + modificador de Constitución",
+  "atributoConjuro": "Sabiduría",
+  "atributosRelevantes": [
+    "Sabiduría",
+    "Carisma",
+    "Destreza"
+  ],
+  "competencias": {
+    "armaduras": [
+      "Ligeras",
+      "Medias",
+      "Escudos"
+    ],
+    "armas": [
+      "Simples",
+      "Espadas largas",
+      "Martillos de guerra",
+      "Lanzas"
+    ],
+    "habilidadesElegir": [
+      "Atletismo",
+      "Perspicacia",
+      "Intimidación",
+      "Medicina",
+      "Persuasión",
+      "Religión"
+    ],
+    "salvaciones": [
+      "Sabiduría",
+      "Carisma"
+    ]
+  },
+  "mecanicas": {
+    "magiaDual": "Combina hechizos de brujo redimido con bendiciones divinas."
+  },
+  "accionesEspeciales": {
+    "Pacto de la Luz Sagrada": {
+      "descripcion": "A nivel 3 eliges tu senda de redención: curación o castigo.",
+      "efecto": "Pacto de la Salvación otorga 1d10 + nivel PH temporales. Pacto del Castigo Divino añade 1d6 necrótico extra al dañar."
+      
+    }
+  },
+  "niveles": {
+    "1": {
+      "habilidades": [
+        {
+          "nombre": "Luz Interior",
+          "descripcion": "Emanas una luz divina protectora.",
+          "efecto": "Resistencia al daño necrótico y +mod. Carisma a daño necrótico/radiante.",
+          "usos": "Automático",
+          "accion": "Pasiva"
+        }
+      ]
+    },
+    "2": {
+      "habilidades": [
+        {
+          "nombre": "Canalización Divina",
+          "descripcion": "Canaliza poder divino para sanar o castigar.",
+          "efecto": "Luz Redentora: aliados a 10 pies recuperan 2d8 HP. Castigo del Redimido: enemigos a 10 pies reciben 2d6 radiante (TS Sab CD 8 + PB + mod Car).",
+          "usos": "1 vez por descanso corto",
+          "accion": "Acción Adicional"
+        }
+      ]
+    },
+    "3": {
+      "habilidades": [
+          {
+            "nombre": "Pacto de la Luz Sagrada",
+            "descripcion": "Elige entre Pacto de la Salvación o Pacto del Castigo Divino.",
+            "efecto": "Pacto de la Salvación otorga 1d10 + nivel PH temporales. Pacto del Castigo Divino añade 1d6 necrótico extra al dañar."
+           }
+         ]
+    },
+    "4": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características",
+          "descripcion": "Aumenta dos puntuaciones de habilidad en 1 o elige una proeza.",
+          "efecto": "",
+          "accion": ""
+        }
+      ]
+    },
+    "5": {
+      "habilidades": [
+        {
+          "nombre": "Escudo de Fe Ardiente",
+          "descripcion": "Invocas un escudo de fe que protege a tus aliados.",
+          "efecto": "Aliados a 15 pies ganan +1 CA y resistencia a necrótico/radiante (1 min).",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción Completa"
+        }
+      ]
+    },
+    "6": {
+      "habilidades": [
+        {
+          "nombre": "Condena del Infiel",
+          "descripcion": "Castigo divino a quienes te ataquen.",
+          "efecto": "Enemigos que te golpeen deben TS Sab (o sufrir 2d6 radiante).",
+          "usos": "Automático",
+          "accion": "Pasiva"
+        }
+      ]
+    },
+    "7": {
+      "habilidades": [
+        {
+          "nombre": "Velo de la Pureza",
+          "descripcion": "Un velo de luz pura debilita la magia oscura.",
+          "efecto": "Enemigos usan habilidades oscuras con desventaja (1 min).",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción Completa"
+        }
+      ]
+    },
+    "8": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características",
+          "descripcion": "Aumenta dos puntuaciones de habilidad en 1 o elige una proeza.",
+          "efecto": "",
+          "accion": ""
+        }
+      ]
+    },
+    "9": {
+      "habilidades": [
+        {
+          "nombre": "Luz del Perdón",
+          "descripcion": "Emites luz celestial que cura y hiere.",
+          "efecto": "Aliados a 30 pies recuperan 3d6 HP; enemigos TS Sab (o reciben 3d6 radiante).",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción Completa"
+        }
+      ]
+    },
+    "10": {
+      "habilidades": [
+        {
+          "nombre": "Protección Divina",
+          "descripcion": "Bendición permanente contra daños sagrados.",
+          "efecto": "Resistencia permanente a radiante y necrótico.",
+          "usos": "Automático",
+          "accion": "Pasiva"
+        }
+      ]
+    },
+    "11": {
+      "habilidades": [
+        {
+          "nombre": "Sello de Luz",
+          "descripcion": "Invocas un sello divino que bloquea el mal.",
+          "efecto": "Enemigos a 20 pies TS Sab (o incapacitados 1 turno).",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción Completa"
+        }
+      ]
+    },
+    "12": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características",
+          "descripcion": "Aumenta dos puntuaciones de habilidad en 1 o elige una proeza.",
+          "efecto": "",
+          "accion": ""
+        }
+      ]
+    },
+    "13": {
+      "habilidades": [
+        {
+          "nombre": "Espada de la Redención",
+          "descripcion": "Invocas una espada de luz pura.",
+          "efecto": "60 pies: 6d6 radiante; TS Con (o cegado hasta tu siguiente turno).",
+          "usos": "1 vez por descanso corto",
+          "accion": "Acción Completa"
+        }
+      ]
+    },
+    "14": {
+      "habilidades": [
+        {
+          "nombre": "Justicia Celestial",
+          "descripcion": "Refuerzas a tus aliados con tu presencia divina.",
+          "efecto": "Aliados a 30 pies ganan ventaja en TS (permanente).",
+          "usos": "Permanente",
+          "accion": "Pasiva"
+        }
+      ]
+    },
+    "15": {
+      "habilidades": [
+        {
+          "nombre": "Luz Divina Imparable",
+          "descripcion": "Canalizas un estallido de luz divina.",
+          "efecto": "10d6 radiante a 30 pies + mitad del daño en PH temporales a aliados.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción Completa"
+        }
+      ]
+    },
+    "16": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características",
+          "descripcion": "Aumenta dos puntuaciones de habilidad en 1 o elige una proeza.",
+          "efecto": "",
+          "accion": ""
+        }
+      ]
+    },
+    "17": {
+      "habilidades": [
+        {
+          "nombre": "Estilo de Combate Dual",
+          "descripcion": "Elige un estilo de combate: Duelo, Defensa o Protección.",
+          "efecto": "Varía según estilo elegido.",
+          "accion": ""
+        }
+      ]
+    },
+    "18": {
+      "habilidades": [
+        {
+          "nombre": "Canalizar Divinidad Mejorado",
+          "descripcion": "Ganas un canalizar divinidad adicional.",
+          "efecto": "",
+          "usos": "1 vez por descanso corto",
+          "accion": "Acción Adicional"
+        }
+      ]
+    },
+    "19": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características Final",
+          "descripcion": "Aumenta dos puntuaciones de habilidad en 1 o elige una proeza.",
+          "efecto": "",
+          "accion": ""
+        }
+      ]
+    },
+    "20": {
+      "habilidades": [
+        {
+          "nombre": "Fulgor Divino",
+          "descripcion": "Te conviertes en un ser divino durante 1 minuto.",
+          "efecto": "Inmunidad a radiante/necrótico; puedes lanzar hechizos de nivel ≤5 cada turno sin gastar ranura; enemigos a 30 pies con desventaja en ataques y TS.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Acción Completa"
+        }
+      ]
+    }
+  }
+}

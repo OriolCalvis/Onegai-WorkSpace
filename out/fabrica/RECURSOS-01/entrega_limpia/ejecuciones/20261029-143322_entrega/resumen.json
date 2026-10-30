@@ -1,0 +1,30 @@
+{
+  "t": "2026-10-29T14:33:22+01:00",
+  "fase": "completa",
+  "etiqueta": "entrega",
+  "raiz": "/private/tmp/recursos-limpio-c9b6b81",
+  "commit": "c9b6b81d98c8dd5fa291f72068669d8b8e29a68d",
+  "checks": {
+    "recursos_compilar": {
+      "codigo": 0,
+      "items": [],
+      "segundos": 41.4,
+      "cmd": "cmake --preset macos-debug && cmake --build --preset macos-debug --target motor_editor test_referencias_proyecto test_project_panel test_editor_document_session test_editor_actions test_editor_ayuda --parallel 4",
+      "log": "RECURSOS-01/ejecuciones/20261029-143322_entrega/recursos_compilar.log"
+    },
+    "recursos_pruebas": {
+      "codigo": 0,
+      "items": [],
+      "segundos": 5.3,
+      "cmd": "ctest --test-dir out/build/macos-debug -C Debug -R \"^(test_referencias_proyecto|test_project_panel|test_editor_document_session|test_editor_actions|test_editor_ayuda|test_motor_editor_smoke_[12])$\" --no-tests=error --output-on-failure",
+      "log": "RECURSOS-01/ejecuciones/20261029-143322_entrega/recursos_pruebas.log"
+    },
+    "recursos_paridad": {
+      "codigo": 0,
+      "items": [],
+      "segundos": 0.1,
+      "cmd": "/opt/homebrew/opt/python@3.14/bin/python3.14 -m unittest discover -s planificacion/replica -p \"test_*.py\" -v",
+      "log": "RECURSOS-01/ejecuciones/20261029-143322_entrega/recursos_paridad.log"
+    }
+  }
+}

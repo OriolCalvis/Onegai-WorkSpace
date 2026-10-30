@@ -1,0 +1,6755 @@
+{
+ "cabeceras": {
+  "editor/include/EditorApplication.h": {
+   "implementacion": [
+    "editor/src/EditorApplication.cpp"
+   ],
+   "lineas": 19,
+   "motor_editor": {
+    "desde": "editor/src/main.cpp",
+    "por": [
+     "EditorApplication"
+    ]
+   },
+   "pruebas": 0
+  },
+  "editor/include/EditorGui.h": {
+   "implementacion": [
+    "editor/src/EditorGui.cpp"
+   ],
+   "lineas": 34,
+   "metodos_sin_llamar": {
+    "motor_editor": {
+     "GuiContext": [
+      "shutdown"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "editor/src/EditorApplication.cpp",
+    "por": [
+     "GuiContext",
+     "defaultLayout",
+     "shortcutKey"
+    ]
+   },
+   "pruebas": 0
+  },
+  "editor/include/EditorIconos.h": {
+   "implementacion": [
+    "editor/src/EditorIconos.cpp"
+   ],
+   "lineas": 50,
+   "metodos_sin_llamar": {
+    "motor_editor": {
+     "EditorIconos": [
+      "listo"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "editor/src/EditorApplication.cpp",
+    "por": [
+     "EditorIconos"
+    ]
+   },
+   "pruebas": 0
+  },
+  "editor/include/EditorOpciones.h": {
+   "implementacion": [
+    "editor/src/EditorOpciones.cpp"
+   ],
+   "lineas": 53,
+   "motor_editor": {
+    "desde": "editor/src/EditorApplication.cpp",
+    "por": [
+     "AnalizaArgumentos",
+     "AyudaDeUso",
+     "EditorOpciones"
+    ]
+   },
+   "pruebas": 1
+  },
+  "editor/include/EditorVistaDeMapa.h": {
+   "implementacion": [
+    "editor/src/EditorVistaDeMapa.cpp"
+   ],
+   "lineas": 117,
+   "motor_editor": {
+    "desde": "editor/src/EditorApplication.cpp",
+    "por": [
+     "MapView",
+     "capture"
+    ]
+   },
+   "pruebas": 0
+  },
+  "editor/include/InspectorPanel.h": {
+   "implementacion": [
+    "editor/src/InspectorPanel.cpp"
+   ],
+   "lineas": 28,
+   "motor_editor": {
+    "desde": "editor/src/EditorApplication.cpp",
+    "por": [
+     "InspectorPanel"
+    ]
+   },
+   "pruebas": 0
+  },
+  "editor/include/LayerPanel.h": {
+   "implementacion": [
+    "editor/src/LayerPanel.cpp"
+   ],
+   "lineas": 24,
+   "motor_editor": {
+    "desde": "editor/src/EditorApplication.cpp",
+    "por": [
+     "LayerPanel"
+    ]
+   },
+   "pruebas": 0
+  },
+  "editor/include/LevelEditorArranque.h": {
+   "implementacion": [
+    "editor/src/LevelEditorArranque.cpp"
+   ],
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "pantallaDeArranque"
+    ]
+   },
+   "lineas": 16,
+   "pruebas": 0
+  },
+  "editor/include/LevelEditorEditState.h": {
+   "implementacion": [
+    "editor/src/LevelEditorEditState.cpp"
+   ],
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "EditPhaseExit",
+     "LevelEditorEditState",
+     "ObjectPalettePage",
+     "ReturnToHubRequest"
+    ]
+   },
+   "lineas": 86,
+   "pruebas": 1
+  },
+  "editor/include/LevelEditorHub.h": {
+   "implementacion": [
+    "editor/src/LevelEditorHub.cpp"
+   ],
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "SalidaDelHub",
+     "pantallaDeProyectos"
+    ]
+   },
+   "lineas": 38,
+   "pruebas": 0
+  },
+  "editor/include/LevelEditorInterno.h": {
+   "implementacion": [],
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "KeyEdge",
+     "makeWhiteTexture"
+    ]
+   },
+   "lineas": 63,
+   "pruebas": 0
+  },
+  "editor/include/LevelEditorOpciones.h": {
+   "implementacion": [
+    "editor/src/LevelEditorOpciones.cpp"
+   ],
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "EditorOptions",
+     "parseArgs"
+    ]
+   },
+   "lineas": 41,
+   "pruebas": 1
+  },
+  "editor/include/LevelEditorPaleta.h": {
+   "implementacion": [
+    "editor/src/LevelEditorPaleta.cpp"
+   ],
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "ObjectFilter",
+     "RaceNpcPreview",
+     "TilePaletteInfo",
+     "aMayus"
+    ]
+   },
+   "lineas": 90,
+   "pruebas": 1
+  },
+  "editor/include/ProblemsPanel.h": {
+   "implementacion": [
+    "editor/src/ProblemsPanel.cpp"
+   ],
+   "lineas": 85,
+   "pruebas": 0
+  },
+  "editor/include/ProjectPanel.h": {
+   "implementacion": [
+    "editor/src/ProjectPanel.cpp"
+   ],
+   "lineas": 63,
+   "motor_editor": {
+    "desde": "editor/src/EditorApplication.cpp",
+    "por": [
+     "ProjectPanel"
+    ]
+   },
+   "pruebas": 0
+  },
+  "editor/include/ToolsPanel.h": {
+   "implementacion": [
+    "editor/src/ToolsPanel.cpp"
+   ],
+   "lineas": 53,
+   "motor_editor": {
+    "desde": "editor/src/EditorApplication.cpp",
+    "por": [
+     "ToolsContext",
+     "ToolsPanel"
+    ]
+   },
+   "pruebas": 0
+  },
+  "include/Core/Check.h": {
+   "implementacion": [],
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "require"
+    ]
+   },
+   "lineas": 49,
+   "pruebas": 45
+  },
+  "include/Core/Errors/EngineException.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Render/IsometricRenderer.cpp",
+    "por": [
+     "RenderException"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Engine/Window.cpp",
+    "por": [
+     "EngineException"
+    ]
+   },
+   "lineas": 58,
+   "metodos_sin_llamar": {
+    "juego": {
+     "MapParseException": [
+      "m_lineNumber"
+     ],
+     "ShaderCompileException": [
+      "compileLog",
+      "m_compileLog"
+     ]
+    },
+    "level_editor": {
+     "MapParseException": [
+      "m_lineNumber"
+     ],
+     "ShaderCompileException": [
+      "compileLog",
+      "m_compileLog"
+     ]
+    },
+    "motor_editor": {
+     "MapParseException": [
+      "m_lineNumber"
+     ],
+     "ShaderCompileException": [
+      "compileLog",
+      "m_compileLog"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "src/Engine/Window.cpp",
+    "por": [
+     "EngineException"
+    ]
+   },
+   "pruebas": 2
+  },
+  "include/Core/Errors/Result.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/ApplicationBucle.cpp",
+    "por": [
+     "Result"
+    ]
+   },
+   "level_editor": {
+    "desde": "include/Core/Ids/StrongId.h",
+    "por": [
+     "Result"
+    ]
+   },
+   "lineas": 98,
+   "motor_editor": {
+    "desde": "editor/src/main.cpp",
+    "por": [
+     "Result"
+    ]
+   },
+   "pruebas": 31
+  },
+  "include/Core/Errors/ScopeGuard.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Project/SerializerHelpers.cpp",
+    "por": [
+     "makeScopeGuard"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Project/SerializerHelpers.cpp",
+    "por": [
+     "makeScopeGuard"
+    ]
+   },
+   "lineas": 60,
+   "motor_editor": {
+    "desde": "src/Core/Log/FileSink.cpp",
+    "por": [
+     "makeScopeGuard"
+    ]
+   },
+   "pruebas": 2
+  },
+  "include/Core/Ids/ProjectIds.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/ApplicationBucle.cpp",
+    "por": [
+     "MapId"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "LayerId",
+     "MapId"
+    ]
+   },
+   "lineas": 41,
+   "motor_editor": {
+    "desde": "editor/src/EditorApplication.cpp",
+    "por": [
+     "LayerId"
+    ]
+   },
+   "pruebas": 25
+  },
+  "include/Core/Ids/StrongId.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/ApplicationBucle.cpp",
+    "por": [
+     "Ok"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "Error"
+    ]
+   },
+   "lineas": 87,
+   "motor_editor": {
+    "desde": "src/Editor/EditorDocumentSession.cpp",
+    "por": [
+     "Error",
+     "Ok"
+    ]
+   },
+   "pruebas": 4
+  },
+  "include/Core/Imagen/ImagenRGBA.h": {
+   "implementacion": [
+    "src/Core/Imagen/ImagenRGBA.cpp"
+   ],
+   "juego": {
+    "desde": "src/Render/HojaPersonaje.cpp",
+    "por": [
+     "ImagenRGBA"
+    ]
+   },
+   "lineas": 44,
+   "pruebas": 2
+  },
+  "include/Core/Json/JsonValue.h": {
+   "implementacion": [
+    "src/Core/Json/JsonValue.cpp"
+   ],
+   "juego": {
+    "desde": "include/RPG/Catalogs/RpgCatalogs.h",
+    "por": [
+     "JsonValue"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Level/ObjectCatalog.cpp",
+    "por": [
+     "JsonValue"
+    ]
+   },
+   "lineas": 121,
+   "motor_editor": {
+    "desde": "src/Level/ObjectCatalog.cpp",
+    "por": [
+     "JsonValue"
+    ]
+   },
+   "pruebas": 9
+  },
+  "include/Core/Json/JsonWriter.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/Project/SerializerHelpers.h",
+    "por": [
+     "JsonWriter"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Editor/EditorDocumentIO.cpp",
+    "por": [
+     "JsonWriter"
+    ]
+   },
+   "lineas": 178,
+   "metodos_sin_llamar": {
+    "juego": {
+     "JsonWriter": [
+      "valueNull"
+     ]
+    },
+    "level_editor": {
+     "JsonWriter": [
+      "valueNull"
+     ]
+    },
+    "motor_editor": {
+     "JsonWriter": [
+      "valueNull"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "src/Editor/EditorDocumentIO.cpp",
+    "por": [
+     "JsonWriter"
+    ]
+   },
+   "pruebas": 1
+  },
+  "include/Core/Log/ConsoleSink.h": {
+   "implementacion": [
+    "src/Core/Log/ConsoleSink.cpp"
+   ],
+   "lineas": 28,
+   "motor_editor": {
+    "desde": "editor/src/main.cpp",
+    "por": [
+     "ConsoleSink"
+    ]
+   },
+   "pruebas": 1
+  },
+  "include/Core/Log/FileSink.h": {
+   "implementacion": [
+    "src/Core/Log/FileSink.cpp"
+   ],
+   "lineas": 42,
+   "motor_editor": {
+    "desde": "editor/src/main.cpp",
+    "por": [
+     "FileSink"
+    ]
+   },
+   "pruebas": 1
+  },
+  "include/Core/Log/ILogSink.h": {
+   "implementacion": [],
+   "lineas": 29,
+   "motor_editor": {
+    "desde": "src/Core/Log/ConsoleSink.cpp",
+    "por": [
+     "Ok"
+    ]
+   },
+   "pruebas": 1
+  },
+  "include/Core/Log/LogConfig.h": {
+   "implementacion": [
+    "src/Core/Log/LogConfig.cpp"
+   ],
+   "lineas": 50,
+   "metodos_sin_llamar": {
+    "motor_editor": {
+     "LogConfig": [
+      "disable",
+      "enable",
+      "enableAll",
+      "minLevel",
+      "setMinLevel"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "src/Core/Log/Logger.cpp",
+    "por": [
+     "LogConfig"
+    ]
+   },
+   "pruebas": 2
+  },
+  "include/Core/Log/LogFormat.h": {
+   "implementacion": [
+    "src/Core/Log/LogFormat.cpp"
+   ],
+   "lineas": 24,
+   "motor_editor": {
+    "desde": "src/Core/Log/ConsoleSink.cpp",
+    "por": [
+     "formatRecord"
+    ]
+   },
+   "pruebas": 2
+  },
+  "include/Core/Log/LogRecord.h": {
+   "implementacion": [],
+   "lineas": 90,
+   "motor_editor": {
+    "desde": "editor/src/main.cpp",
+    "por": [
+     "LogCategory"
+    ]
+   },
+   "pruebas": 2
+  },
+  "include/Core/Log/Logger.h": {
+   "implementacion": [
+    "src/Core/Log/Logger.cpp"
+   ],
+   "lineas": 94,
+   "metodos_sin_llamar": {
+    "motor_editor": {
+     "Logger": [
+      "beginSession",
+      "droppedBySink",
+      "filteredOut",
+      "lastSequence",
+      "setConfig",
+      "sinkCount",
+      "trace",
+      "warn"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "editor/src/main.cpp",
+    "por": [
+     "Logger"
+    ]
+   },
+   "pruebas": 2
+  },
+  "include/Core/Log/MemorySink.h": {
+   "implementacion": [],
+   "lineas": 48,
+   "pruebas": 2
+  },
+  "include/Core/Math/GridBounds.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Render/IsometricRenderer.cpp",
+    "por": [
+     "GridBounds"
+    ]
+   },
+   "level_editor": {
+    "desde": "include/Render/TileMap.h",
+    "por": [
+     "GridBounds"
+    ]
+   },
+   "lineas": 15,
+   "motor_editor": {
+    "desde": "include/Map/MapDocument.h",
+    "por": [
+     "GridBounds"
+    ]
+   },
+   "pruebas": 5
+  },
+  "include/Core/Math/GridCoord.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/ApplicationBucle.cpp",
+    "por": [
+     "GridCoord"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "GridCoord"
+    ]
+   },
+   "lineas": 9,
+   "motor_editor": {
+    "desde": "editor/src/EditorApplication.cpp",
+    "por": [
+     "GridCoord"
+    ]
+   },
+   "pruebas": 66
+  },
+  "include/Core/Math/IsoMath.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/ApplicationBucle.cpp",
+    "por": [
+     "gridToScreen"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "gridToScreen",
+     "screenToGrid"
+    ]
+   },
+   "lineas": 41,
+   "motor_editor": {
+    "desde": "src/Editor/EditorDocumentSession.cpp",
+    "por": [
+     "screenToGrid"
+    ]
+   },
+   "pruebas": 2
+  },
+  "include/Core/Math/UVRect.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Render/BitmapFont.cpp",
+    "por": [
+     "UVRect"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "UVRect"
+    ]
+   },
+   "lineas": 11,
+   "motor_editor": {
+    "desde": "src/Core/Resources/TextureAtlas.cpp",
+    "por": [
+     "UVRect"
+    ]
+   },
+   "pruebas": 3
+  },
+  "include/Core/Math/Vector2.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/ApplicationBucle.cpp",
+    "por": [
+     "Vector2"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "Vector2"
+    ]
+   },
+   "lineas": 12,
+   "motor_editor": {
+    "desde": "src/Editor/EditorDocumentSession.cpp",
+    "por": [
+     "Vector2"
+    ]
+   },
+   "pruebas": 22
+  },
+  "include/Core/Math/Vector4.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "Vector4"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "Vector4"
+    ]
+   },
+   "lineas": 16,
+   "motor_editor": {
+    "desde": "include/Render/IsometricRenderer.h",
+    "por": [
+     "Vector4"
+    ]
+   },
+   "pruebas": 9
+  },
+  "include/Core/Memory/HandlePool.h": {
+   "implementacion": [],
+   "lineas": 179,
+   "pruebas": 2
+  },
+  "include/Core/Resources/ICatalog.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/Core/Resources/ResourceManager.h",
+    "por": [
+     "ICatalog"
+    ]
+   },
+   "level_editor": {
+    "desde": "include/Level/ObjectCatalog.h",
+    "por": [
+     "ICatalog"
+    ]
+   },
+   "lineas": 39,
+   "motor_editor": {
+    "desde": "include/Level/ObjectCatalog.h",
+    "por": [
+     "ICatalog"
+    ]
+   },
+   "pruebas": 0
+  },
+  "include/Core/Resources/ResourceManager.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/ApplicationBucle.cpp",
+    "por": [
+     "Ok"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "Error"
+    ]
+   },
+   "lineas": 90,
+   "metodos_sin_llamar": {
+    "juego": {
+     "ResourceManager": [
+      "unload"
+     ]
+    },
+    "level_editor": {
+     "ResourceManager": [
+      "contains",
+      "unload"
+     ]
+    },
+    "motor_editor": {
+     "ResourceManager": [
+      "unload"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "include/Core/Resources/ShaderManager.h",
+    "por": [
+     "ResourceManager"
+    ]
+   },
+   "pruebas": 0
+  },
+  "include/Core/Resources/Shader.h": {
+   "implementacion": [
+    "src/Core/Resources/Shader.cpp"
+   ],
+   "juego": {
+    "desde": "include/Engine/Application.h",
+    "por": [
+     "Shader"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "Shader"
+    ]
+   },
+   "lineas": 33,
+   "metodos_sin_llamar": {
+    "juego": {
+     "Shader": [
+      "setUniformVec2"
+     ]
+    },
+    "level_editor": {
+     "Shader": [
+      "setUniformFloat",
+      "setUniformVec2",
+      "setUniformVec3"
+     ]
+    },
+    "motor_editor": {
+     "Shader": [
+      "setUniformVec2"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "src/Core/Resources/ShaderManager.cpp",
+    "por": [
+     "Shader"
+    ]
+   },
+   "pruebas": 2
+  },
+  "include/Core/Resources/ShaderManager.h": {
+   "implementacion": [
+    "src/Core/Resources/ShaderManager.cpp"
+   ],
+   "juego": {
+    "desde": "include/Engine/Application.h",
+    "por": [
+     "ShaderManager"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "ShaderManager"
+    ]
+   },
+   "lineas": 11,
+   "motor_editor": {
+    "desde": "editor/src/EditorApplication.cpp",
+    "por": [
+     "ShaderManager"
+    ]
+   },
+   "pruebas": 11
+  },
+  "include/Core/Resources/Texture.h": {
+   "implementacion": [
+    "src/Core/Resources/Texture.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "Texture"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "Texture"
+    ]
+   },
+   "lineas": 53,
+   "metodos_sin_llamar": {
+    "juego": {
+     "Texture": [
+      "m_glID"
+     ]
+    },
+    "level_editor": {
+     "Texture": [
+      "m_glID"
+     ]
+    },
+    "motor_editor": {
+     "Texture": [
+      "m_glID"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "src/Render/IsometricRenderer.cpp",
+    "por": [
+     "Texture"
+    ]
+   },
+   "pruebas": 13
+  },
+  "include/Core/Resources/TextureAtlas.h": {
+   "implementacion": [
+    "src/Core/Resources/TextureAtlas.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "TextureAtlas"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "TextureAtlas"
+    ]
+   },
+   "lineas": 40,
+   "metodos_sin_llamar": {
+    "motor_editor": {
+     "TextureAtlas": [
+      "getUVInset"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "editor/include/EditorVistaDeMapa.h",
+    "por": [
+     "TextureAtlas"
+    ]
+   },
+   "pruebas": 9
+  },
+  "include/Core/Resources/TextureManager.h": {
+   "implementacion": [
+    "src/Core/Resources/TextureManager.cpp"
+   ],
+   "juego": {
+    "desde": "include/Engine/Application.h",
+    "por": [
+     "TextureManager"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "TextureManager"
+    ]
+   },
+   "lineas": 11,
+   "motor_editor": {
+    "desde": "editor/include/EditorVistaDeMapa.h",
+    "por": [
+     "TextureManager"
+    ]
+   },
+   "pruebas": 8
+  },
+  "include/Editor/AssetBrowserPanel.h": {
+   "implementacion": [
+    "editor/src/AssetBrowserPanel.cpp"
+   ],
+   "lineas": 53,
+   "pruebas": 1
+  },
+  "include/Editor/AssetBrowserState.h": {
+   "implementacion": [
+    "src/Editor/AssetBrowserState.cpp"
+   ],
+   "lineas": 215,
+   "pruebas": 1
+  },
+  "include/Editor/CatalogPickerState.h": {
+   "implementacion": [
+    "src/Editor/CatalogPickerState.cpp"
+   ],
+   "lineas": 135,
+   "pruebas": 1
+  },
+  "include/Editor/CommandListState.h": {
+   "implementacion": [
+    "editor/src/event_editor.cpp"
+   ],
+   "lineas": 84,
+   "pruebas": 1
+  },
+  "include/Editor/EditorActions.h": {
+   "implementacion": [
+    "src/Editor/EditorActions.cpp"
+   ],
+   "lineas": 52,
+   "motor_editor": {
+    "desde": "editor/src/EditorApplication.cpp",
+    "por": [
+     "ActionGroup",
+     "ActionInput",
+     "EditorAction",
+     "EditorActions"
+    ]
+   },
+   "pruebas": 2
+  },
+  "include/Editor/EditorAyuda.h": {
+   "implementacion": [
+    "src/Editor/EditorAyuda.cpp"
+   ],
+   "lineas": 33,
+   "motor_editor": {
+    "desde": "editor/src/EditorApplication.cpp",
+    "por": [
+     "ayudaDeAccion"
+    ]
+   },
+   "pruebas": 1
+  },
+  "include/Editor/EditorDocumentIO.h": {
+   "implementacion": [
+    "src/Editor/EditorDocumentIO.cpp"
+   ],
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "EditorDocumentIO"
+    ]
+   },
+   "lineas": 16,
+   "motor_editor": {
+    "desde": "src/Editor/EditorDocumentSession.cpp",
+    "por": [
+     "EditorDocumentIO"
+    ]
+   },
+   "pruebas": 1
+  },
+  "include/Editor/EditorDocumentSession.h": {
+   "implementacion": [
+    "src/Editor/EditorDocumentSession.cpp"
+   ],
+   "lineas": 93,
+   "motor_editor": {
+    "desde": "editor/src/EditorApplication.cpp",
+    "por": [
+     "Action",
+     "Choice",
+     "EditorDocumentSession",
+     "ViewportInput"
+    ]
+   },
+   "pruebas": 4
+  },
+  "include/Editor/EditorState.h": {
+   "implementacion": [
+    "src/Editor/EditorState.cpp",
+    "src/Editor/EditorStateExportar.cpp",
+    "src/Editor/EditorStateObjetos.cpp",
+    "src/Editor/EditorStatePintar.cpp"
+   ],
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "EditorState",
+     "EditorTool",
+     "Rect",
+     "TmxTilesetSettings"
+    ]
+   },
+   "lineas": 393,
+   "metodos_sin_llamar": {
+    "level_editor": {
+     "EditorState": [
+      "LineCells",
+      "RectCells",
+      "canRedo",
+      "canUndo",
+      "layerLocked",
+      "levelPaletteTotal",
+      "markModified",
+      "objectPaletteTotal",
+      "paintLine",
+      "paintRect",
+      "paintTile",
+      "pickTileAt",
+      "placeObject",
+      "placeSpawn",
+      "setLayerName",
+      "setObjectTransition",
+      "tilePaletteTotal"
+     ]
+    },
+    "motor_editor": {
+     "EditorState": [
+      "LineCells",
+      "RectCells",
+      "addObjectLoot",
+      "clearSelection",
+      "clipboardHeight",
+      "clipboardWidth",
+      "copySelection",
+      "eraseSelection",
+      "eraseTile",
+      "hasClipboard",
+      "hasSelection",
+      "isModified",
+      "layerOpacity",
+      "layerVisible",
+      "levelPalette",
+      "levelPaletteTotal",
+      "markClean",
+      "markModified",
+      "nextPaletteEntry",
+      "objectPalette",
+      "objectPaletteTotal",
+      "paintLine",
+      "paintRect",
+      "paletteFilter",
+      "pasteAt",
+      "pickTileAt",
+      "placeSpawn",
+      "prevPaletteEntry",
+      "removeLootAt",
+      "removeObjectProperty",
+      "selectedLevelPath",
+      "selectedObjectId",
+      "selectedTileGid",
+      "selection",
+      "setLayerName",
+      "setLevelPalette",
+      "setObjectDisplayName",
+      "setObjectEffectOverride",
+      "setObjectEvent",
+      "setObjectLootTable",
+      "setObjectPalette",
+      "setObjectPaletteLabels",
+      "setObjectPatrol",
+      "setObjectProperty",
+      "setObjectScale",
+      "setObjectTargetLevel",
+      "setObjectTargetPosition",
+      "setObjectTransition",
+      "setObjectVariant",
+      "setPaletteFilter",
+      "setSelection",
+      "setTilePalette",
+      "setTilePaletteLabels",
+      "setTool",
+      "tilePalette",
+      "tilePaletteTotal"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "include/Editor/EditorDocumentSession.h",
+    "por": [
+     "EditorState",
+     "TmxTilesetSettings"
+    ]
+   },
+   "pruebas": 7
+  },
+  "include/Editor/EditorStateHelpers.h": {
+   "implementacion": [
+    "src/Editor/EditorStateHelpers.cpp"
+   ],
+   "level_editor": {
+    "desde": "src/Editor/EditorState.cpp",
+    "por": [
+     "newLayerMeta",
+     "replaceLayer"
+    ]
+   },
+   "lineas": 21,
+   "motor_editor": {
+    "desde": "src/Editor/EditorState.cpp",
+    "por": [
+     "newLayerMeta",
+     "replaceLayer"
+    ]
+   },
+   "pruebas": 0
+  },
+  "include/Editor/EditorValidation.h": {
+   "implementacion": [],
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "EditorValidation",
+     "EditorValidationResult"
+    ]
+   },
+   "lineas": 187,
+   "metodos_sin_llamar": {
+    "level_editor": {
+     "EditorValidation": [
+      "checkRpg"
+     ]
+    }
+   },
+   "pruebas": 1
+  },
+  "include/Editor/EventEditorState.h": {
+   "implementacion": [
+    "editor/src/event_editor.cpp"
+   ],
+   "lineas": 112,
+   "pruebas": 2
+  },
+  "include/Editor/ExportState.h": {
+   "implementacion": [
+    "editor/src/ExportPanel.cpp"
+   ],
+   "lineas": 73,
+   "pruebas": 1
+  },
+  "include/Editor/MapPropertiesPanel.h": {
+   "implementacion": [],
+   "lineas": 64,
+   "pruebas": 1
+  },
+  "include/Editor/ObjectInspector.h": {
+   "implementacion": [
+    "src/Editor/ObjectInspector.cpp"
+   ],
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "ObjectInspector"
+    ]
+   },
+   "lineas": 115,
+   "pruebas": 1
+  },
+  "include/Editor/ObjectInspectorData.h": {
+   "implementacion": [],
+   "level_editor": {
+    "desde": "include/Editor/ObjectInspector.h",
+    "por": [
+     "ObjectInspectorData",
+     "ObjectInspectorField",
+     "ObjectInspectorMode",
+     "ObjectInspectorRow"
+    ]
+   },
+   "lineas": 83,
+   "pruebas": 0
+  },
+  "include/Editor/ObjectInspectorInput.h": {
+   "implementacion": [
+    "src/Editor/ObjectInspector.cpp"
+   ],
+   "level_editor": {
+    "desde": "src/Editor/ObjectInspector.cpp",
+    "por": [
+     "ObjectInspectorInput"
+    ]
+   },
+   "lineas": 329,
+   "pruebas": 0
+  },
+  "include/Editor/ProblemsInternal.h": {
+   "implementacion": [],
+   "lineas": 31,
+   "pruebas": 0
+  },
+  "include/Editor/ProblemsState.h": {
+   "implementacion": [
+    "src/Editor/ProblemsNavigation.cpp",
+    "src/Editor/ProblemsState.cpp"
+   ],
+   "lineas": 277,
+   "pruebas": 1
+  },
+  "include/Editor/ProjectDatabaseState.h": {
+   "implementacion": [
+    "src/Project/ProjectDatabaseState.cpp"
+   ],
+   "lineas": 78,
+   "pruebas": 2
+  },
+  "include/Editor/ProjectHub.h": {
+   "implementacion": [
+    "src/Editor/ProjectHub.cpp"
+   ],
+   "lineas": 150,
+   "pruebas": 2
+  },
+  "include/Editor/ProjectMaps.h": {
+   "implementacion": [
+    "src/Editor/ProjectMaps.cpp"
+   ],
+   "lineas": 118,
+   "motor_editor": {
+    "desde": "editor/src/ProjectPanel.cpp",
+    "por": [
+     "ProjectMap",
+     "ProjectMaps",
+     "canonicalPath",
+     "kMaxSide"
+    ]
+   },
+   "pruebas": 1
+  },
+  "include/Editor/ProjectPanelState.h": {
+   "implementacion": [
+    "src/Editor/ProjectPanelState.cpp"
+   ],
+   "lineas": 95,
+   "motor_editor": {
+    "desde": "editor/src/ProjectPanel.cpp",
+    "por": [
+     "Effect",
+     "Kind",
+     "Mode",
+     "ProjectPanelState"
+    ]
+   },
+   "pruebas": 1
+  },
+  "include/Engine/Application.h": {
+   "implementacion": [
+    "src/Engine/Application.cpp",
+    "src/Engine/ApplicationBucle.cpp",
+    "src/Engine/ApplicationCierre.cpp",
+    "src/Engine/ApplicationHud.cpp",
+    "src/Engine/ApplicationNivel.cpp",
+    "src/Engine/ApplicationPantallas.cpp"
+   ],
+   "juego": {
+    "desde": "examples/juego.cpp",
+    "por": [
+     "Application"
+    ]
+   },
+   "lineas": 510,
+   "metodos_sin_llamar": {
+    "juego": {
+     "Application": [
+      "narrativeWiring"
+     ]
+    }
+   },
+   "pruebas": 5
+  },
+  "include/Engine/ApplicationInternal.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/ApplicationBucle.cpp",
+    "por": [
+     "kTileH",
+     "kTileW",
+     "trace"
+    ]
+   },
+   "lineas": 83,
+   "pruebas": 0
+  },
+  "include/Engine/ApplicationLoop.h": {
+   "implementacion": [
+    "src/Engine/ApplicationLoop.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationBucle.cpp",
+    "por": [
+     "ApplicationLoop",
+     "ApplicationLoopFrame",
+     "ApplicationLoopServices"
+    ]
+   },
+   "lineas": 64,
+   "pruebas": 1
+  },
+  "include/Engine/Input/InputMap.h": {
+   "implementacion": [
+    "src/Engine/Input/InputSystem.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "InputAction",
+     "InputKey",
+     "RawInputState"
+    ]
+   },
+   "lineas": 78,
+   "metodos_sin_llamar": {
+    "juego": {
+     "InputMap": [
+      "isBound"
+     ],
+     "RawInputState": [
+      "isDown"
+     ]
+    }
+   },
+   "pruebas": 2
+  },
+  "include/Engine/Input/InputSystem.h": {
+   "implementacion": [
+    "src/Engine/Input/InputSystem.cpp"
+   ],
+   "juego": {
+    "desde": "include/Engine/Application.h",
+    "por": [
+     "InputSystem"
+    ]
+   },
+   "lineas": 55,
+   "metodos_sin_llamar": {
+    "juego": {
+     "InputSnapshot": [
+      "released"
+     ]
+    }
+   },
+   "pruebas": 2
+  },
+  "include/Engine/InputState.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Render/Player.cpp",
+    "por": [
+     "InputState"
+    ]
+   },
+   "lineas": 13,
+   "pruebas": 7
+  },
+  "include/Engine/Locale.h": {
+   "implementacion": [
+    "src/Engine/Locale.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "Locale"
+    ]
+   },
+   "lineas": 167,
+   "metodos_sin_llamar": {
+    "juego": {
+     "Locale": [
+      "checkPlaceholders",
+      "format",
+      "isValidKey",
+      "loadFromStrings",
+      "missingKeys",
+      "orphanKeys",
+      "placeholdersOf",
+      "referenceLanguage"
+     ]
+    }
+   },
+   "pruebas": 5
+  },
+  "include/Engine/PantallaNuevaPartida.h": {
+   "implementacion": [
+    "src/Engine/PantallaNuevaPartida.cpp"
+   ],
+   "juego": {
+    "desde": "include/Engine/Application.h",
+    "por": [
+     "PantallaNuevaPartida"
+    ]
+   },
+   "lineas": 119,
+   "metodos_sin_llamar": {
+    "juego": {
+     "PantallaNuevaPartida": [
+      "cerrar",
+      "nombresSugeridos"
+     ]
+    }
+   },
+   "pruebas": 0
+  },
+  "include/Engine/Scene/Scene.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/ApplicationBucle.cpp",
+    "por": [
+     "Scene"
+    ]
+   },
+   "lineas": 36,
+   "pruebas": 1
+  },
+  "include/Engine/Scene/SceneManager.h": {
+   "implementacion": [
+    "src/Engine/Scene/SceneManager.cpp"
+   ],
+   "juego": {
+    "desde": "include/Engine/Application.h",
+    "por": [
+     "SceneManager"
+    ]
+   },
+   "lineas": 71,
+   "metodos_sin_llamar": {
+    "juego": {
+     "SceneManager": [
+      "activeMapId",
+      "requestPop",
+      "requestPush",
+      "stackDepth"
+     ]
+    }
+   },
+   "pruebas": 3
+  },
+  "include/Engine/Window.h": {
+   "implementacion": [
+    "src/Engine/Window.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "Window"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "Window"
+    ]
+   },
+   "lineas": 42,
+   "metodos_sin_llamar": {
+    "level_editor": {
+     "Window": [
+      "hasInputFocus"
+     ]
+    },
+    "motor_editor": {
+     "Window": [
+      "hasInputFocus"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "editor/src/EditorApplication.cpp",
+    "por": [
+     "Window"
+    ]
+   },
+   "pruebas": 11
+  },
+  "include/Game/AudioDirector.h": {
+   "implementacion": [],
+   "lineas": 171,
+   "pruebas": 0
+  },
+  "include/Game/AuraMoral.h": {
+   "implementacion": [
+    "src/Game/AuraMoral.cpp"
+   ],
+   "juego": {
+    "desde": "include/Render/AuraJugador.h",
+    "por": [
+     "AspectoAura",
+     "aspectoAura"
+    ]
+   },
+   "lineas": 47,
+   "pruebas": 1
+  },
+  "include/Game/Bandada.h": {
+   "implementacion": [
+    "src/Game/Bandada.cpp"
+   ],
+   "juego": {
+    "desde": "include/Render/BandadaNivel.h",
+    "por": [
+     "Bandada",
+     "Pajaro"
+    ]
+   },
+   "lineas": 61,
+   "pruebas": 1
+  },
+  "include/Game/BattleMenuActions.h": {
+   "implementacion": [
+    "src/Game/BattleMenuActions.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "BattleMenuEntry",
+     "TargetOption",
+     "buildBattleMenuSkillActions",
+     "publishSheetSkills"
+    ]
+   },
+   "lineas": 88,
+   "pruebas": 2
+  },
+  "include/Game/BattleMenuState.h": {
+   "implementacion": [
+    "src/Game/BattleMenuState.cpp"
+   ],
+   "lineas": 78,
+   "pruebas": 1
+  },
+  "include/Game/BattleState.h": {
+   "implementacion": [
+    "src/Game/BattleState.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "BattleAction",
+     "BattleActionType",
+     "BattleOutcome",
+     "BattleState"
+    ]
+   },
+   "lineas": 213,
+   "metodos_sin_llamar": {
+    "juego": {
+     "BattleState": [
+      "pendingSummons"
+     ]
+    }
+   },
+   "pruebas": 10
+  },
+  "include/Game/Bloques.h": {
+   "implementacion": [
+    "src/Game/Bloques.cpp"
+   ],
+   "juego": {
+    "desde": "include/Render/BandadaNivel.h",
+    "por": [
+     "BloqueColocado"
+    ]
+   },
+   "lineas": 103,
+   "metodos_sin_llamar": {
+    "juego": {
+     "Bloques": [
+      "nombreFrame",
+      "tipos",
+      "ventanaDerecha",
+      "ventanaIzquierda"
+     ],
+     "Tipo": [
+      "bandasDe",
+      "materialDe"
+     ]
+    }
+   },
+   "pruebas": 1
+  },
+  "include/Game/Codice.h": {
+   "implementacion": [
+    "src/Game/Codice.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationHud.cpp",
+    "por": [
+     "CodiceDatos"
+    ]
+   },
+   "lineas": 65,
+   "metodos_sin_llamar": {
+    "juego": {
+     "Codice": [
+      "etiquetaTipo",
+      "idDeNivel"
+     ],
+     "CodiceDatos": [
+      "cuantas"
+     ]
+    }
+   },
+   "pruebas": 1
+  },
+  "include/Game/Companeros.h": {
+   "implementacion": [
+    "src/Game/Companeros.cpp"
+   ],
+   "lineas": 45,
+   "pruebas": 1
+  },
+  "include/Game/DefeatRecovery.h": {
+   "implementacion": [
+    "src/Game/DefeatRecovery.cpp"
+   ],
+   "juego": {
+    "desde": "src/Game/GameOverScreen.cpp",
+    "por": [
+     "RecoveryPlan"
+    ]
+   },
+   "lineas": 81,
+   "pruebas": 1
+  },
+  "include/Game/DiarioMisiones.h": {
+   "implementacion": [
+    "src/Game/DiarioMisiones.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationHud.cpp",
+    "por": [
+     "DiarioDatos",
+     "construirDiario"
+    ]
+   },
+   "lineas": 52,
+   "metodos_sin_llamar": {
+    "juego": {
+     "DiarioDatos": [
+      "activas",
+      "completas"
+     ]
+    }
+   },
+   "pruebas": 1
+  },
+  "include/Game/EnemyBrain.h": {
+   "implementacion": [
+    "src/Game/EnemyBrain.cpp"
+   ],
+   "juego": {
+    "desde": "include/World/World.h",
+    "por": [
+     "EnemyBrain"
+    ]
+   },
+   "lineas": 295,
+   "pruebas": 7
+  },
+  "include/Game/EnemyBrainData.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/Game/EnemyBrain.h",
+    "por": [
+     "EnemyBrainData",
+     "kChase",
+     "kIdle",
+     "kPatrol"
+    ]
+   },
+   "lineas": 64,
+   "pruebas": 5
+  },
+  "include/Game/EnemyCatalogBridge.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Game/GameSessionNarrativa.cpp",
+    "por": [
+     "createEnemy"
+    ]
+   },
+   "lineas": 135,
+   "pruebas": 2
+  },
+  "include/Game/FichaVista.h": {
+   "implementacion": [
+    "src/Game/FichaVista.cpp"
+   ],
+   "juego": {
+    "desde": "src/Game/InventoryScreen.cpp",
+    "por": [
+     "FichaDatos",
+     "FichaVista"
+    ]
+   },
+   "lineas": 112,
+   "metodos_sin_llamar": {
+    "juego": {
+     "FichaVista": [
+      "catalogos",
+      "etiquetaRanura",
+      "usarCatalogos"
+     ]
+    }
+   },
+   "pruebas": 1
+  },
+  "include/Game/GameOverScreen.h": {
+   "implementacion": [
+    "src/Game/GameOverScreen.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "GameOverAction",
+     "GameOverScreen"
+    ]
+   },
+   "lineas": 48,
+   "pruebas": 2
+  },
+  "include/Game/GameSession.h": {
+   "implementacion": [
+    "src/Game/GameSession.cpp",
+    "src/Game/GameSessionComercio.cpp",
+    "src/Game/GameSessionInteraccion.cpp",
+    "src/Game/GameSessionInventario.cpp",
+    "src/Game/GameSessionNarrativa.cpp",
+    "src/Game/SaveGame.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "Error",
+     "GameSession"
+    ]
+   },
+   "lineas": 544,
+   "metodos_sin_llamar": {
+    "juego": {
+     "GameSession": [
+      "collectRent",
+      "equipmentIdFor",
+      "lastPickupId",
+      "narrativeState",
+      "objectIdForEquipment",
+      "repartirBotin",
+      "talkNarrative"
+     ]
+    }
+   },
+   "pruebas": 22
+  },
+  "include/Game/InventoryMenuState.h": {
+   "implementacion": [
+    "src/Game/InventoryMenuState.cpp"
+   ],
+   "juego": {
+    "desde": "src/Game/InventoryScreen.cpp",
+    "por": [
+     "InventoryMenuState",
+     "ItemCategory"
+    ]
+   },
+   "lineas": 118,
+   "metodos_sin_llamar": {
+    "juego": {
+     "InventoryMenuState": [
+      "countIn",
+      "moveSelection",
+      "previewSelected",
+      "selectedId",
+      "selectedRow"
+     ]
+    }
+   },
+   "pruebas": 1
+  },
+  "include/Game/InventoryScreen.h": {
+   "implementacion": [
+    "src/Game/InventoryScreen.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "InventoryFocus",
+     "InventoryScreen"
+    ]
+   },
+   "lineas": 115,
+   "metodos_sin_llamar": {
+    "juego": {
+     "InventoryScreen": [
+      "actionLabels",
+      "equipmentLabels",
+      "inventoryIconIds",
+      "inventoryLabels",
+      "morale",
+      "moraleLabel",
+      "panelText",
+      "statusLabels"
+     ]
+    }
+   },
+   "pruebas": 2
+  },
+  "include/Game/MenuLogic.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/Game/OptionsState.h",
+    "por": [
+     "MenuLogic"
+    ]
+   },
+   "lineas": 59,
+   "metodos_sin_llamar": {
+    "juego": {
+     "MenuLogic": [
+      "m_count",
+      "setCount"
+     ]
+    }
+   },
+   "pruebas": 2
+  },
+  "include/Game/Monumentos.h": {
+   "implementacion": [
+    "src/Game/Monumentos.cpp"
+   ],
+   "juego": {
+    "desde": "src/Render/BloquesNivel.cpp",
+    "por": [
+     "MonumentoColocado",
+     "Monumentos",
+     "TiraMonumento"
+    ]
+   },
+   "lineas": 73,
+   "metodos_sin_llamar": {
+    "juego": {
+     "Monumentos": [
+      "celdaDeTira"
+     ]
+    }
+   },
+   "pruebas": 1
+  },
+  "include/Game/Morality.h": {
+   "implementacion": [
+    "src/Game/Morality.cpp"
+   ],
+   "juego": {
+    "desde": "include/Game/GameSession.h",
+    "por": [
+     "Morality"
+    ]
+   },
+   "lineas": 63,
+   "metodos_sin_llamar": {
+    "juego": {
+     "Morality": [
+      "fraction",
+      "history"
+     ]
+    }
+   },
+   "pruebas": 3
+  },
+  "include/Game/NewGameFlow.h": {
+   "implementacion": [
+    "src/Game/NewGameFlow.cpp"
+   ],
+   "juego": {
+    "desde": "include/Engine/PantallaNuevaPartida.h",
+    "por": [
+     "Estado",
+     "NewGameFlow"
+    ]
+   },
+   "lineas": 116,
+   "pruebas": 2
+  },
+  "include/Game/OptionsFile.h": {
+   "implementacion": [
+    "src/Game/OptionsFile.cpp"
+   ],
+   "lineas": 63,
+   "pruebas": 1
+  },
+  "include/Game/OptionsLocaleBridge.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "OptionsLocaleBridge"
+    ]
+   },
+   "lineas": 131,
+   "metodos_sin_llamar": {
+    "juego": {
+     "OptionsLocaleBridge": [
+      "languageTable",
+      "localeCode",
+      "optionsLanguage"
+     ]
+    }
+   },
+   "pruebas": 2
+  },
+  "include/Game/OptionsState.h": {
+   "implementacion": [
+    "src/Game/OptionsState.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "OptionsAction",
+     "OptionsState"
+    ]
+   },
+   "lineas": 92,
+   "metodos_sin_llamar": {
+    "juego": {
+     "OptionsState": [
+      "displayLines",
+      "setVolume"
+     ]
+    }
+   },
+   "pruebas": 4
+  },
+  "include/Game/PasarHoja.h": {
+   "implementacion": [
+    "src/Game/PasarHoja.cpp"
+   ],
+   "juego": {
+    "desde": "src/HUD/Pergamino/Cuaderno.cpp",
+    "por": [
+     "PasarHoja",
+     "TiraHoja"
+    ]
+   },
+   "lineas": 77,
+   "metodos_sin_llamar": {
+    "juego": {
+     "PasarHoja": [
+      "anguloEn",
+      "hacia",
+      "progreso"
+     ]
+    }
+   },
+   "pruebas": 1
+  },
+  "include/Game/PauseMenu.h": {
+   "implementacion": [
+    "src/Game/PauseMenu.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "PauseAction",
+     "PauseMenu"
+    ]
+   },
+   "lineas": 40,
+   "pruebas": 2
+  },
+  "include/Game/Personajes/EditorApariencia.h": {
+   "implementacion": [
+    "src/Game/Personajes/EditorApariencia.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/PantallaNuevaPartida.cpp",
+    "por": [
+     "EditorApariencia",
+     "Fila"
+    ]
+   },
+   "lineas": 88,
+   "metodos_sin_llamar": {
+    "juego": {
+     "EditorApariencia": [
+      "filaMarcada"
+     ]
+    }
+   },
+   "pruebas": 1
+  },
+  "include/Game/Personajes/ManifiestoPersonajes.h": {
+   "implementacion": [
+    "src/Game/Personajes/ManifiestoPersonajes.cpp"
+   ],
+   "juego": {
+    "desde": "src/Render/HojaPersonaje.cpp",
+    "por": [
+     "Apariencia"
+    ]
+   },
+   "lineas": 112,
+   "metodos_sin_llamar": {
+    "juego": {
+     "ManifiestoPersonajes": [
+      "desdeComposicion"
+     ]
+    }
+   },
+   "pruebas": 2
+  },
+  "include/Game/Personajes/MontajePersonajes.h": {
+   "implementacion": [
+    "src/Game/Personajes/MontajePersonajes.cpp"
+   ],
+   "juego": {
+    "desde": "src/Render/HojaPersonaje.cpp",
+    "por": [
+     "MontajePersonajes",
+     "Rumbo",
+     "cicloDeAndar",
+     "frameDeVistaPrevia"
+    ]
+   },
+   "lineas": 98,
+   "metodos_sin_llamar": {
+    "juego": {
+     "MontajePersonajes": [
+      "bytesEnCache"
+     ]
+    }
+   },
+   "pruebas": 2
+  },
+  "include/Game/Personajes/Vestuario.h": {
+   "implementacion": [
+    "src/Game/Personajes/Vestuario.cpp"
+   ],
+   "juego": {
+    "desde": "src/Game/NewGameFlow.cpp",
+    "por": [
+     "equiparInicial"
+    ]
+   },
+   "lineas": 56,
+   "pruebas": 1
+  },
+  "include/Game/PlayerControls.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "PlayerControls",
+     "PlayerEscapeAction"
+    ]
+   },
+   "lineas": 93,
+   "pruebas": 1
+  },
+  "include/Game/PlayerControlsData.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/Game/PlayerControls.h",
+    "por": [
+     "PlayerControlsData"
+    ]
+   },
+   "lineas": 16,
+   "pruebas": 0
+  },
+  "include/Game/QuestLogState.h": {
+   "implementacion": [
+    "src/Game/QuestLogState.cpp"
+   ],
+   "lineas": 119,
+   "pruebas": 1
+  },
+  "include/Game/RegistroSprites.h": {
+   "implementacion": [
+    "src/Game/RegistroSprites.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationNivel.cpp",
+    "por": [
+     "HojaSprites",
+     "SpriteActor",
+     "SpriteFijo"
+    ]
+   },
+   "lineas": 96,
+   "metodos_sin_llamar": {
+    "juego": {
+     "RegistroSprites": [
+      "actores",
+      "fijos"
+     ]
+    }
+   },
+   "pruebas": 1
+  },
+  "include/Game/SaveGame.h": {
+   "implementacion": [
+    "src/Game/SaveGame.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "SaveGameData",
+     "applyNarrativeState"
+    ]
+   },
+   "lineas": 177,
+   "pruebas": 8
+  },
+  "include/Game/SaveGameValidation.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Game/SaveSlotState.cpp",
+    "por": [
+     "integer"
+    ]
+   },
+   "lineas": 178,
+   "pruebas": 0
+  },
+  "include/Game/SaveSlotState.h": {
+   "implementacion": [
+    "src/Game/SaveSlotState.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "CanSaveNow",
+     "SaveGate",
+     "SaveSlot",
+     "SaveSlots"
+    ]
+   },
+   "lineas": 171,
+   "metodos_sin_llamar": {
+    "juego": {
+     "SaveSlots": [
+      "pathFor"
+     ]
+    }
+   },
+   "pruebas": 6
+  },
+  "include/Game/SessionData.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/ApplicationNivel.cpp",
+    "por": [
+     "InventoryRules"
+    ]
+   },
+   "lineas": 90,
+   "pruebas": 1
+  },
+  "include/Game/SessionTipos.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/ApplicationBucle.cpp",
+    "por": [
+     "GameMode",
+     "LevelTransition"
+    ]
+   },
+   "lineas": 97,
+   "pruebas": 21
+  },
+  "include/Game/ShopEngine.h": {
+   "implementacion": [
+    "src/Game/ShopEngine.cpp"
+   ],
+   "lineas": 70,
+   "pruebas": 1
+  },
+  "include/Game/Skill.h": {
+   "implementacion": [
+    "src/Game/Skill.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "Skill",
+     "SkillEffect",
+     "SkillTarget"
+    ]
+   },
+   "level_editor": {
+    "desde": "include/Editor/EditorValidation.h",
+    "por": [
+     "SkillCatalog"
+    ]
+   },
+   "lineas": 194,
+   "metodos_sin_llamar": {
+    "juego": {
+     "SkillSet": [
+      "setMaxMana"
+     ]
+    }
+   },
+   "pruebas": 32
+  },
+  "include/Game/TargetSelection.h": {
+   "implementacion": [
+    "src/Game/TargetSelection.cpp"
+   ],
+   "lineas": 141,
+   "pruebas": 1
+  },
+  "include/Game/TitleMenuState.h": {
+   "implementacion": [
+    "src/Game/TitleMenuState.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "TitleCommand",
+     "TitleMenuState"
+    ]
+   },
+   "lineas": 108,
+   "metodos_sin_llamar": {
+    "juego": {
+     "TitleMenuState": [
+      "continueSummary",
+      "subtitle"
+     ]
+    }
+   },
+   "pruebas": 5
+  },
+  "include/Game/TitleScreen.h": {
+   "implementacion": [
+    "src/Game/TitleScreen.cpp"
+   ],
+   "lineas": 58,
+   "pruebas": 1
+  },
+  "include/Game/WorldTravelState.h": {
+   "implementacion": [
+    "src/Game/WorldTravelState.cpp"
+   ],
+   "lineas": 103,
+   "pruebas": 2
+  },
+  "include/HUD/ConditionWidget.h": {
+   "implementacion": [
+    "src/HUD/ConditionWidget.cpp"
+   ],
+   "lineas": 61,
+   "pruebas": 1
+  },
+  "include/HUD/DiceRollWidget.h": {
+   "implementacion": [
+    "src/HUD/DiceRollWidget.cpp"
+   ],
+   "lineas": 65,
+   "pruebas": 1
+  },
+  "include/HUD/HudTimer.h": {
+   "implementacion": [
+    "src/HUD/HudTimer.cpp"
+   ],
+   "lineas": 56,
+   "pruebas": 1
+  },
+  "include/HUD/Iconos.h": {
+   "implementacion": [
+    "src/HUD/Iconos.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "Iconos"
+    ]
+   },
+   "lineas": 46,
+   "metodos_sin_llamar": {
+    "juego": {
+     "Iconos": [
+      "frameCodice",
+      "frameCondicion",
+      "frameMision",
+      "frameRanura",
+      "frameStat"
+     ]
+    },
+    "motor_editor": {
+     "Iconos": [
+      "frameCodice",
+      "frameCondicion",
+      "frameMision",
+      "frameRanura",
+      "frameStat",
+      "total"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "editor/include/EditorIconos.h",
+    "por": [
+     "Iconos"
+    ]
+   },
+   "pruebas": 3
+  },
+  "include/HUD/MissionTimerWidget.h": {
+   "implementacion": [
+    "src/HUD/MissionTimerWidget.cpp"
+   ],
+   "lineas": 60,
+   "pruebas": 1
+  },
+  "include/HUD/Pergamino/BancoMateriales.h": {
+   "implementacion": [
+    "src/HUD/Pergamino/BancoMateriales.cpp"
+   ],
+   "juego": {
+    "desde": "include/Render/PergaminoGL.h",
+    "por": [
+     "BancoMateriales"
+    ]
+   },
+   "lineas": 82,
+   "metodos_sin_llamar": {
+    "juego": {
+     "BancoMateriales": [
+      "nombresParametros"
+     ]
+    }
+   },
+   "pruebas": 1
+  },
+  "include/HUD/Pergamino/Cuaderno.h": {
+   "implementacion": [
+    "src/HUD/Pergamino/Cuaderno.cpp"
+   ],
+   "juego": {
+    "desde": "include/HUD/Pergamino/InterfazPergamino.h",
+    "por": [
+     "Cuaderno"
+    ]
+   },
+   "lineas": 68,
+   "metodos_sin_llamar": {
+    "juego": {
+     "Cuaderno": [
+      "tapas",
+      "vuelta"
+     ]
+    }
+   },
+   "pruebas": 1
+  },
+  "include/HUD/Pergamino/DialogoHoja.h": {
+   "implementacion": [
+    "src/HUD/Pergamino/DialogoHoja.cpp"
+   ],
+   "juego": {
+    "desde": "include/HUD/Pergamino/InterfazPergamino.h",
+    "por": [
+     "DialogoHoja"
+    ]
+   },
+   "lineas": 52,
+   "metodos_sin_llamar": {
+    "juego": {
+     "DialogoHoja": [
+      "paginas"
+     ]
+    }
+   },
+   "pruebas": 1
+  },
+  "include/HUD/Pergamino/FuenteAtlas.h": {
+   "implementacion": [
+    "src/HUD/Pergamino/FuenteAtlas.cpp"
+   ],
+   "juego": {
+    "desde": "src/Render/PergaminoGL.cpp",
+    "por": [
+     "Fuente"
+    ]
+   },
+   "lineas": 91,
+   "metodos_sin_llamar": {
+    "juego": {
+     "FuenteAtlas": [
+      "cargaTexto"
+     ]
+    }
+   },
+   "pruebas": 2
+  },
+  "include/HUD/Pergamino/HudRetales.h": {
+   "implementacion": [
+    "src/HUD/Pergamino/HudRetales.cpp"
+   ],
+   "juego": {
+    "desde": "include/HUD/Pergamino/InterfazPergamino.h",
+    "por": [
+     "HudRetales"
+    ]
+   },
+   "lineas": 74,
+   "metodos_sin_llamar": {
+    "juego": {
+     "HudRetales": [
+      "avisoObjetivoVisible"
+     ]
+    }
+   },
+   "pruebas": 1
+  },
+  "include/HUD/Pergamino/InterfazPergamino.h": {
+   "implementacion": [
+    "src/HUD/Pergamino/InterfazPergamino.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationHud.cpp",
+    "por": [
+     "EstadoJuego"
+    ]
+   },
+   "lineas": 147,
+   "pruebas": 1
+  },
+  "include/HUD/Pergamino/Lienzo.h": {
+   "implementacion": [
+    "src/HUD/Pergamino/Lienzo.cpp"
+   ],
+   "juego": {
+    "desde": "include/Render/PergaminoGL.h",
+    "por": [
+     "Lienzo"
+    ]
+   },
+   "lineas": 86,
+   "pruebas": 2
+  },
+  "include/HUD/Pergamino/Materiales.h": {
+   "implementacion": [
+    "src/HUD/Pergamino/MaterialesPapel.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "hoja"
+    ]
+   },
+   "lineas": 86,
+   "pruebas": 3
+  },
+  "include/HUD/Pergamino/MinimapaTinta.h": {
+   "implementacion": [
+    "src/HUD/Pergamino/MinimapaTinta.cpp"
+   ],
+   "juego": {
+    "desde": "src/Render/PergaminoGL.cpp",
+    "por": [
+     "MinimapaTinta"
+    ]
+   },
+   "lineas": 46,
+   "metodos_sin_llamar": {
+    "juego": {
+     "MinimapaTinta": [
+      "fabricaTerreno"
+     ]
+    }
+   },
+   "pruebas": 0
+  },
+  "include/HUD/Pergamino/PaginaCuaderno.h": {
+   "implementacion": [
+    "src/HUD/Pergamino/PaginaCuaderno.cpp"
+   ],
+   "juego": {
+    "desde": "src/HUD/Pergamino/InterfazPergamino.cpp",
+    "por": [
+     "PaginaCuaderno"
+    ]
+   },
+   "lineas": 95,
+   "pruebas": 1
+  },
+  "include/HUD/Pergamino/PaginasJugador.h": {
+   "implementacion": [
+    "src/HUD/Pergamino/PaginasJugador.cpp"
+   ],
+   "juego": {
+    "desde": "include/HUD/Pergamino/InterfazPergamino.h",
+    "por": [
+     "NombresHistoria"
+    ]
+   },
+   "lineas": 58,
+   "pruebas": 0
+  },
+  "include/HUD/Pergamino/Papiro.h": {
+   "implementacion": [
+    "src/HUD/Pergamino/Papiro.cpp"
+   ],
+   "juego": {
+    "desde": "src/HUD/Pergamino/InterfazPergamino.cpp",
+    "por": [
+     "DatosPapiro",
+     "EntradaPapiro",
+     "pintaPapiro"
+    ]
+   },
+   "lineas": 56,
+   "pruebas": 1
+  },
+  "include/HUD/Pergamino/Pincel.h": {
+   "implementacion": [
+    "src/HUD/Pergamino/Pincel.cpp"
+   ],
+   "juego": {
+    "desde": "src/HUD/Pergamino/InterfazPergamino.cpp",
+    "por": [
+     "Pincel"
+    ]
+   },
+   "lineas": 85,
+   "metodos_sin_llamar": {
+    "juego": {
+     "Pincel": [
+      "anchoTecla",
+      "contorno",
+      "iconoFrame",
+      "punteadoH"
+     ]
+    }
+   },
+   "pruebas": 1
+  },
+  "include/HUD/Pergamino/Tema.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Render/PergaminoGL.cpp",
+    "por": [
+     "kRombo",
+     "kRomboContorno"
+    ]
+   },
+   "lineas": 68,
+   "pruebas": 1
+  },
+  "include/Import/TmxMapImporter.h": {
+   "implementacion": [
+    "src/Import/TmxMapImporter.cpp"
+   ],
+   "juego": {
+    "desde": "src/Render/TileMap.cpp",
+    "por": [
+     "ImportIssue",
+     "TmxMapImportReport",
+     "TmxMapImporter",
+     "hasErrors"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "TmxMapImporter",
+     "hasErrors"
+    ]
+   },
+   "lineas": 57,
+   "motor_editor": {
+    "desde": "src/Editor/EditorDocumentSession.cpp",
+    "por": [
+     "TmxMapImporter"
+    ]
+   },
+   "pruebas": 3
+  },
+  "include/Level/LevelDefinition.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/ApplicationNivel.cpp",
+    "por": [
+     "LevelDefinition"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "LevelDefinition",
+     "ObjectSpawn"
+    ]
+   },
+   "lineas": 140,
+   "motor_editor": {
+    "desde": "include/Editor/EditorDocumentSession.h",
+    "por": [
+     "LevelDefinition"
+    ]
+   },
+   "pruebas": 34
+  },
+  "include/Level/LevelDocumentBridge.h": {
+   "implementacion": [
+    "src/Level/LevelDocumentBridge.cpp"
+   ],
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "ToEntityLayer"
+    ]
+   },
+   "lineas": 80,
+   "motor_editor": {
+    "desde": "src/Editor/EditorDocumentSession.cpp",
+    "por": [
+     "ToEntityLayer"
+    ]
+   },
+   "pruebas": 2
+  },
+  "include/Level/LevelLoader.h": {
+   "implementacion": [
+    "src/Level/LevelLoader.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationNivel.cpp",
+    "por": [
+     "LevelLoader"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "LevelLoader"
+    ]
+   },
+   "lineas": 26,
+   "motor_editor": {
+    "desde": "src/Editor/EditorDocumentSession.cpp",
+    "por": [
+     "LevelLoader"
+    ]
+   },
+   "pruebas": 15
+  },
+  "include/Level/LevelSerializer.h": {
+   "implementacion": [
+    "src/Level/LevelSerializer.cpp"
+   ],
+   "lineas": 24,
+   "pruebas": 2
+  },
+  "include/Level/ObjectCatalog.h": {
+   "implementacion": [
+    "src/Level/ObjectCatalog.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationCierre.cpp",
+    "por": [
+     "ObjectCatalog"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "ObjectCatalog",
+     "ObjectCategory",
+     "ObjectDefinition",
+     "PickupEffect"
+    ]
+   },
+   "lineas": 210,
+   "metodos_sin_llamar": {
+    "juego": {
+     "ObjectCatalog": [
+      "exportJson",
+      "missingPreviewIds"
+     ]
+    },
+    "level_editor": {
+     "ObjectCatalog": [
+      "exportJson"
+     ]
+    },
+    "motor_editor": {
+     "ObjectCatalog": [
+      "add",
+      "exportJson",
+      "missingPreviewIds"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "editor/include/InspectorPanel.h",
+    "por": [
+     "ObjectCatalog"
+    ]
+   },
+   "pruebas": 33
+  },
+  "include/Level/WorldTopology.h": {
+   "implementacion": [],
+   "lineas": 137,
+   "pruebas": 3
+  },
+  "include/Map/EntityLayerDocument.h": {
+   "implementacion": [
+    "src/Map/EntityLayerDocument.cpp"
+   ],
+   "juego": {
+    "desde": "include/Map/MapDocument.h",
+    "por": [
+     "MapEntityDocument"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Map/MapDocument.cpp",
+    "por": [
+     "EntityLayerDocument",
+     "MapEntityDocument"
+    ]
+   },
+   "lineas": 120,
+   "motor_editor": {
+    "desde": "src/Map/MapDocument.cpp",
+    "por": [
+     "EntityLayerDocument",
+     "MapEntityDocument"
+    ]
+   },
+   "pruebas": 8
+  },
+  "include/Map/EventLayerDocument.h": {
+   "implementacion": [
+    "src/Map/EventLayerDocument.cpp"
+   ],
+   "juego": {
+    "desde": "src/RPG/MapEventRunner.cpp",
+    "por": [
+     "EventLayerDocument",
+     "EventTrigger",
+     "MapEventDocument",
+     "MapEventPage"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Map/MapDocument.cpp",
+    "por": [
+     "EventLayerDocument",
+     "MapEventDocument"
+    ]
+   },
+   "lineas": 179,
+   "metodos_sin_llamar": {
+    "level_editor": {
+     "EventLayerDocument": [
+      "findAt"
+     ]
+    },
+    "motor_editor": {
+     "EventLayerDocument": [
+      "findAt"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "src/Map/MapDocument.cpp",
+    "por": [
+     "EventLayerDocument",
+     "MapEventDocument"
+    ]
+   },
+   "pruebas": 12
+  },
+  "include/Map/MapDocument.h": {
+   "implementacion": [
+    "src/Map/MapDocument.cpp",
+    "src/Map/MapDocumentEdits.cpp"
+   ],
+   "juego": {
+    "desde": "include/Engine/Application.h",
+    "por": [
+     "MapDocument"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "MapDocument"
+    ]
+   },
+   "lineas": 187,
+   "metodos_sin_llamar": {
+    "juego": {
+     "MapDocument": [
+      "editTiles",
+      "fillTiles",
+      "findLayer",
+      "moveEntity",
+      "moveEvent",
+      "moveLayer",
+      "removeLayer",
+      "setLayerMeta",
+      "setTile"
+     ]
+    },
+    "level_editor": {
+     "MapDocument": [
+      "moveEntity",
+      "moveEvent",
+      "moveLayer"
+     ]
+    },
+    "motor_editor": {
+     "MapDocument": [
+      "moveEntity",
+      "moveEvent",
+      "moveLayer"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "src/Editor/EditorDocumentSession.cpp",
+    "por": [
+     "MapDocument"
+    ]
+   },
+   "pruebas": 18
+  },
+  "include/Map/MapLayer.h": {
+   "implementacion": [
+    "src/Map/MapDocument.cpp"
+   ],
+   "juego": {
+    "desde": "src/RPG/MapEventRunner.cpp",
+    "por": [
+     "MapLayer"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "MapLayer"
+    ]
+   },
+   "lineas": 80,
+   "motor_editor": {
+    "desde": "src/Editor/EditorDocumentSession.cpp",
+    "por": [
+     "MapLayer",
+     "MapLayerMeta",
+     "MapLayerType"
+    ]
+   },
+   "pruebas": 17
+  },
+  "include/Map/RegionLayerDocument.h": {
+   "implementacion": [
+    "src/Map/RegionLayerDocument.cpp"
+   ],
+   "juego": {
+    "desde": "include/Map/MapDocument.h",
+    "por": [
+     "MapRegionDocument"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Map/MapDocument.cpp",
+    "por": [
+     "MapRegionDocument",
+     "RegionLayerDocument"
+    ]
+   },
+   "lineas": 36,
+   "motor_editor": {
+    "desde": "src/Map/MapDocument.cpp",
+    "por": [
+     "MapRegionDocument",
+     "RegionLayerDocument"
+    ]
+   },
+   "pruebas": 6
+  },
+  "include/Map/TileLayerDocument.h": {
+   "implementacion": [
+    "src/Map/TileLayerDocument.cpp"
+   ],
+   "juego": {
+    "desde": "include/Map/MapDocument.h",
+    "por": [
+     "TileLayerDocument"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Map/MapDocument.cpp",
+    "por": [
+     "TileLayerDocument"
+    ]
+   },
+   "lineas": 44,
+   "metodos_sin_llamar": {
+    "juego": {
+     "TileLayerDocument": [
+      "gidAt"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "src/Map/MapDocument.cpp",
+    "por": [
+     "TileLayerDocument"
+    ]
+   },
+   "pruebas": 11
+  },
+  "include/Project/DocumentRef.h": {
+   "implementacion": [],
+   "lineas": 29,
+   "pruebas": 1
+  },
+  "include/Project/Project.h": {
+   "implementacion": [
+    "src/Project/Project.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationCierre.cpp",
+    "por": [
+     "EntryKind",
+     "Project"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "Project"
+    ]
+   },
+   "lineas": 52,
+   "metodos_sin_llamar": {
+    "juego": {
+     "Project": [
+      "assetCount",
+      "playable"
+     ]
+    },
+    "level_editor": {
+     "Project": [
+      "assetCount",
+      "playable"
+     ]
+    },
+    "motor_editor": {
+     "Project": [
+      "assetCount",
+      "playable"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "editor/include/EditorVistaDeMapa.h",
+    "por": [
+     "Project"
+    ]
+   },
+   "pruebas": 12
+  },
+  "include/Project/ProjectCatalog.h": {
+   "implementacion": [
+    "src/Project/ProjectCatalog.cpp"
+   ],
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "ProjectCatalog"
+    ]
+   },
+   "lineas": 34,
+   "motor_editor": {
+    "desde": "editor/include/EditorVistaDeMapa.h",
+    "por": [
+     "ProjectCatalog"
+    ]
+   },
+   "pruebas": 1
+  },
+  "include/Project/ProjectIndex.h": {
+   "implementacion": [
+    "src/Project/ProjectIndex.cpp",
+    "src/Project/ProjectIndexDuplicate.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "ProjectIndex"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "ProjectIndex"
+    ]
+   },
+   "lineas": 184,
+   "metodos_sin_llamar": {
+    "juego": {
+     "ProjectIndex": [
+      "addLevelToProject",
+      "check",
+      "createNamed",
+      "orphans",
+      "suggestId",
+      "uniqueId"
+     ]
+    },
+    "level_editor": {
+     "ProjectIndex": [
+      "createNamed",
+      "suggestId",
+      "uniqueId"
+     ]
+    },
+    "motor_editor": {
+     "ProjectIndex": [
+      "addLevelToProject",
+      "check",
+      "orphans"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "src/Editor/ProjectPanelState.cpp",
+    "por": [
+     "ProjectIndex"
+    ]
+   },
+   "pruebas": 8
+  },
+  "include/Project/ProjectSerializer.h": {
+   "implementacion": [
+    "src/Project/MapDeserializer.cpp",
+    "src/Project/MapSerializer.cpp",
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "juego": {
+    "desde": "src/Game/TitleMenuState.cpp",
+    "por": [
+     "ProjectSerializer"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "ProjectSerializer"
+    ]
+   },
+   "lineas": 25,
+   "metodos_sin_llamar": {
+    "juego": {
+     "ProjectSerializer": [
+      "deserializeMap",
+      "loadMapFile",
+      "saveMapAtomic",
+      "serializeMap"
+     ]
+    },
+    "level_editor": {
+     "ProjectSerializer": [
+      "deserializeMap",
+      "loadProjectFile",
+      "saveMapAtomic"
+     ]
+    },
+    "motor_editor": {
+     "ProjectSerializer": [
+      "loadProjectFile",
+      "saveMapAtomic"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "src/Editor/EditorDocumentSession.cpp",
+    "por": [
+     "ProjectSerializer"
+    ]
+   },
+   "pruebas": 17
+  },
+  "include/Project/ProjectSettings.h": {
+   "implementacion": [
+    "src/Project/Project.cpp"
+   ],
+   "juego": {
+    "desde": "include/Project/Project.h",
+    "por": [
+     "ProjectSettings"
+    ]
+   },
+   "level_editor": {
+    "desde": "include/Project/Project.h",
+    "por": [
+     "ProjectSettings"
+    ]
+   },
+   "lineas": 47,
+   "motor_editor": {
+    "desde": "src/Project/ProjectSerializer.cpp",
+    "por": [
+     "ProjectSettings",
+     "kCurrentSchemaVersion"
+    ]
+   },
+   "pruebas": 2
+  },
+  "include/Project/SerializerHelpers.h": {
+   "implementacion": [
+    "src/Project/SerializerHelpers.cpp"
+   ],
+   "juego": {
+    "desde": "src/Game/SaveGame.cpp",
+    "por": [
+     "atomicWrite"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Project/ProjectSerializer.cpp",
+    "por": [
+     "Error",
+     "checkSchema",
+     "kProjectSchemaVersion",
+     "readStrings"
+    ]
+   },
+   "lineas": 90,
+   "motor_editor": {
+    "desde": "src/Project/ProjectSerializer.cpp",
+    "por": [
+     "Error",
+     "checkSchema",
+     "kProjectSchemaVersion",
+     "readStrings"
+    ]
+   },
+   "pruebas": 0
+  },
+  "include/RPG/AdventureSerializer.h": {
+   "implementacion": [
+    "src/RPG/AdventureSerializer.cpp"
+   ],
+   "lineas": 39,
+   "pruebas": 2
+  },
+  "include/RPG/AdventureValidation.h": {
+   "implementacion": [
+    "src/RPG/AdventureValidation.cpp"
+   ],
+   "lineas": 130,
+   "pruebas": 3
+  },
+  "include/RPG/Audio.h": {
+   "implementacion": [
+    "src/RPG/Audio.cpp"
+   ],
+   "lineas": 131,
+   "pruebas": 1
+  },
+  "include/RPG/Catalogs/CatalogLoader.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/RPG/Catalogs/RpgCatalogs.h",
+    "por": [
+     "CatalogField",
+     "CatalogLoader",
+     "CatalogStrictness",
+     "catalog_entry_label"
+    ]
+   },
+   "lineas": 192,
+   "pruebas": 14
+  },
+  "include/RPG/Catalogs/CatalogLoadersContenido.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/RPG/Catalogs/RpgCatalogs.h",
+    "por": [
+     "expected_fields",
+     "from_json"
+    ]
+   },
+   "lineas": 191,
+   "pruebas": 1
+  },
+  "include/RPG/Catalogs/CatalogLoadersCriaturas.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/RPG/Catalogs/RpgCatalogs.h",
+    "por": [
+     "expected_fields",
+     "from_json"
+    ]
+   },
+   "lineas": 265,
+   "pruebas": 1
+  },
+  "include/RPG/Catalogs/CatalogLoadersHabilidades.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/RPG/Catalogs/RpgCatalogs.h",
+    "por": [
+     "expected_fields",
+     "from_json"
+    ]
+   },
+   "lineas": 208,
+   "pruebas": 1
+  },
+  "include/RPG/Catalogs/CatalogLoadersMisiones.h": {
+   "implementacion": [],
+   "lineas": 110,
+   "pruebas": 1
+  },
+  "include/RPG/Catalogs/CatalogLoadersMundo.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/RPG/Catalogs/RpgCatalogs.h",
+    "por": [
+     "expected_fields",
+     "from_json"
+    ]
+   },
+   "lineas": 297,
+   "pruebas": 1
+  },
+  "include/RPG/Catalogs/CatalogLoadersObjetos.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/RPG/Catalogs/RpgCatalogs.h",
+    "por": [
+     "expected_fields",
+     "from_json"
+    ]
+   },
+   "lineas": 258,
+   "pruebas": 1
+  },
+  "include/RPG/Catalogs/CatalogLoadersPersonaje.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/RPG/Catalogs/RpgCatalogs.h",
+    "por": [
+     "expected_fields",
+     "from_json"
+    ]
+   },
+   "lineas": 223,
+   "pruebas": 1
+  },
+  "include/RPG/Catalogs/CatalogLoadersRasgos.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/RPG/Catalogs/RpgCatalogs.h",
+    "por": [
+     "expected_fields",
+     "from_json"
+    ]
+   },
+   "lineas": 268,
+   "pruebas": 1
+  },
+  "include/RPG/Catalogs/RpgCatalogs.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/ApplicationBucle.cpp",
+    "por": [
+     "Ok"
+    ]
+   },
+   "lineas": 211,
+   "pruebas": 59
+  },
+  "include/RPG/CharacterCreation.h": {
+   "implementacion": [
+    "src/RPG/CharacterCreation.cpp"
+   ],
+   "juego": {
+    "desde": "include/Engine/PantallaNuevaPartida.h",
+    "por": [
+     "CharacterCreation"
+    ]
+   },
+   "lineas": 150,
+   "metodos_sin_llamar": {
+    "juego": {
+     "CharacterCreation": [
+      "statsFinales"
+     ]
+    }
+   },
+   "pruebas": 9
+  },
+  "include/RPG/CharacterCreationScreen.h": {
+   "implementacion": [
+    "src/RPG/CharacterCreationScreen.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/PantallaNuevaPartida.cpp",
+    "por": [
+     "CharacterCreationScreen",
+     "Paso"
+    ]
+   },
+   "lineas": 138,
+   "metodos_sin_llamar": {
+    "juego": {
+     "CharacterCreationScreen": [
+      "borrarDelFiltro",
+      "borrarDelNombre",
+      "escribirEnFiltro",
+      "escribirEnNombre",
+      "limpiarFiltro",
+      "totalSinFiltrar"
+     ]
+    }
+   },
+   "pruebas": 6
+  },
+  "include/RPG/CharacterSheet.h": {
+   "implementacion": [
+    "src/RPG/CharacterSheet.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationHud.cpp",
+    "por": [
+     "CharacterSheet"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/RPG/SkillEffect.cpp",
+    "por": [
+     "CharacterSheet"
+    ]
+   },
+   "lineas": 235,
+   "metodos_sin_llamar": {
+    "juego": {
+     "CharacterSheet": [
+      "adjustRep",
+      "car",
+      "conditionStacks",
+      "getRep",
+      "grantMilestones",
+      "hasCondition",
+      "healthCapWith",
+      "int_",
+      "repPriceModPct",
+      "tierUp"
+     ]
+    },
+    "level_editor": {
+     "CharacterSheet": [
+      "adjustRep",
+      "car",
+      "conditionStacks",
+      "defenseValues",
+      "getRep",
+      "grantMilestones",
+      "hasCondition",
+      "healthCapWith",
+      "int_",
+      "recompute_derived",
+      "repPriceModPct",
+      "tierUp"
+     ]
+    }
+   },
+   "pruebas": 29
+  },
+  "include/RPG/ConditionEngine.h": {
+   "implementacion": [
+    "src/RPG/ConditionEngine.cpp"
+   ],
+   "juego": {
+    "desde": "src/Game/BattleState.cpp",
+    "por": [
+     "ConditionEngine"
+    ]
+   },
+   "lineas": 94,
+   "metodos_sin_llamar": {
+    "juego": {
+     "ConditionEngine": [
+      "active_stacks",
+      "grants_advantage_to_enemies",
+      "grants_disadvantage_to_caster",
+      "has_half_speed",
+      "has_prevent_action",
+      "has_speed_zero",
+      "purge_expired",
+      "recalc_condition_modifiers"
+     ]
+    }
+   },
+   "pruebas": 6
+  },
+  "include/RPG/Defense.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/Render/Player.h",
+    "por": [
+     "Defense",
+     "DefenseBlock"
+    ]
+   },
+   "level_editor": {
+    "desde": "include/Render/ICombatant.h",
+    "por": [
+     "Defense",
+     "DefenseBlock"
+    ]
+   },
+   "lineas": 44,
+   "metodos_sin_llamar": {
+    "juego": {
+     "DefenseBlock": [
+      "ca_fisica",
+      "dc_mag",
+      "save_fis",
+      "save_vol"
+     ]
+    },
+    "level_editor": {
+     "DefenseBlock": [
+      "ca_fisica",
+      "dc_mag",
+      "save_fis",
+      "save_vol"
+     ]
+    }
+   },
+   "pruebas": 31
+  },
+  "include/RPG/Definitions/DefinicionesContenido.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/RPG/Catalogs/RpgCatalogs.h",
+    "por": [
+     "AdventureDefinition",
+     "EncounterTableDefinition",
+     "EventDefinition",
+     "LocationDefinition"
+    ]
+   },
+   "lineas": 163,
+   "pruebas": 6
+  },
+  "include/RPG/Definitions/DefinicionesCriaturas.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/RPG/Catalogs/RpgCatalogs.h",
+    "por": [
+     "MonsterDefinition",
+     "MountDefinition",
+     "SummonDefinition"
+    ]
+   },
+   "lineas": 154,
+   "pruebas": 10
+  },
+  "include/RPG/Definitions/DefinicionesMisiones.h": {
+   "implementacion": [],
+   "lineas": 85,
+   "pruebas": 1
+  },
+  "include/RPG/Definitions/DefinicionesMundo.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/RPG/Catalogs/RpgCatalogs.h",
+    "por": [
+     "LootTableDefinition",
+     "NpcDefinition",
+     "TrapDefinition"
+    ]
+   },
+   "lineas": 121,
+   "pruebas": 5
+  },
+  "include/RPG/Definitions/DefinicionesObjetos.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/RPG/Catalogs/RpgCatalogs.h",
+    "por": [
+     "ConditionDefinition",
+     "ConsumableDefinition",
+     "EquipmentDefinition"
+    ]
+   },
+   "lineas": 150,
+   "pruebas": 16
+  },
+  "include/RPG/Definitions/DefinicionesPersonaje.h": {
+   "implementacion": [
+    "src/RPG/CharacterSheet.cpp"
+   ],
+   "juego": {
+    "desde": "include/RPG/Catalogs/RpgCatalogs.h",
+    "por": [
+     "BackgroundDefinition",
+     "ClassDefinition",
+     "RaceDefinition"
+    ]
+   },
+   "level_editor": {
+    "desde": "include/RPG/CharacterSheet.h",
+    "por": [
+     "ClassDefinition"
+    ]
+   },
+   "lineas": 131,
+   "metodos_sin_llamar": {
+    "juego": {
+     "ClassDefinition": [
+      "primary_stat_enum",
+      "secondary_stat_enum"
+     ]
+    },
+    "level_editor": {
+     "ClassDefinition": [
+      "primary_stat_enum",
+      "secondary_stat_enum"
+     ]
+    }
+   },
+   "pruebas": 14
+  },
+  "include/RPG/Definitions/DefinicionesRasgos.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/RPG/Catalogs/RpgCatalogs.h",
+    "por": [
+     "DeityDefinition",
+     "FeatDefinition",
+     "PassiveDefinition",
+     "TraitDefinition"
+    ]
+   },
+   "lineas": 133,
+   "pruebas": 4
+  },
+  "include/RPG/Definitions/RpgCoreDefinitions.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/RPG/Catalogs/RpgCatalogs.h",
+    "por": [
+     "paraguas"
+    ]
+   },
+   "level_editor": {
+    "desde": "include/RPG/CharacterSheet.h",
+    "por": [
+     "paraguas"
+    ]
+   },
+   "lineas": 17,
+   "pruebas": 0
+  },
+  "include/RPG/Definitions/SkillDefinition.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/ApplicationBucle.cpp",
+    "por": [
+     "to_string"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Game/Skill.cpp",
+    "por": [
+     "ActionType",
+     "RecoveryPile",
+     "SaveAttribute",
+     "SkillDefinition"
+    ]
+   },
+   "lineas": 180,
+   "metodos_sin_llamar": {
+    "juego": {
+     "SkillDefinition": [
+      "magnitude_f"
+     ]
+    },
+    "level_editor": {
+     "SkillDefinition": [
+      "has_tag",
+      "magnitude_f",
+      "tier_min_clamped"
+     ]
+    }
+   },
+   "pruebas": 30
+  },
+  "include/RPG/DicePoolEngine.h": {
+   "implementacion": [
+    "src/RPG/DicePoolEngine.cpp"
+   ],
+   "juego": {
+    "desde": "include/RPG/Definitions/SkillDefinition.h",
+    "por": [
+     "Degree"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Game/Skill.cpp",
+    "por": [
+     "Degree",
+     "DiceMod"
+    ]
+   },
+   "lineas": 142,
+   "metodos_sin_llamar": {
+    "juego": {
+     "DicePoolEngine": [
+      "es_pifia",
+      "resolve_opposed"
+     ]
+    },
+    "level_editor": {
+     "DicePoolEngine": [
+      "es_pifia",
+      "resolve_opposed"
+     ]
+    }
+   },
+   "pruebas": 9
+  },
+  "include/RPG/EnhanceHooks.h": {
+   "implementacion": [
+    "src/RPG/SkillExecutor.cpp"
+   ],
+   "juego": {
+    "desde": "src/Game/Skill.cpp",
+    "por": [
+     "ContextBonusFlag",
+     "ExecutionContext",
+     "Out",
+     "SkillExecutor"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Game/Skill.cpp",
+    "por": [
+     "ContextBonusFlag",
+     "ExecutionContext",
+     "Out",
+     "SkillExecutor"
+    ]
+   },
+   "lineas": 137,
+   "pruebas": 5
+  },
+  "include/RPG/EventCommand.h": {
+   "implementacion": [
+    "src/RPG/Eventos/AnfitrionNarrativo.cpp"
+   ],
+   "juego": {
+    "desde": "src/RPG/MapEventRunner.cpp",
+    "por": [
+     "ActivePageResult"
+    ]
+   },
+   "lineas": 208,
+   "pruebas": 5
+  },
+  "include/RPG/EventInterpreter.h": {
+   "implementacion": [
+    "src/RPG/EventInterpreter.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "EventInterpreter"
+    ]
+   },
+   "lineas": 322,
+   "metodos_sin_llamar": {
+    "juego": {
+     "EventInterpreter": [
+      "addBreakpoint",
+      "breakpoints",
+      "canSave",
+      "cancelAll",
+      "clearBreakpoints",
+      "clearTrace",
+      "lastHit",
+      "lastStepNote",
+      "nextCommand",
+      "nextCommandPath",
+      "removeBreakpoint",
+      "runs",
+      "setMode",
+      "stepBlockedReason"
+     ]
+    }
+   },
+   "pruebas": 6
+  },
+  "include/RPG/EventosInterno.h": {
+   "implementacion": [],
+   "lineas": 49,
+   "pruebas": 0
+  },
+  "include/RPG/InventoryEngine.h": {
+   "implementacion": [
+    "src/RPG/InventoryEngine.cpp"
+   ],
+   "juego": {
+    "desde": "src/Game/GameSessionInventario.cpp",
+    "por": [
+     "InventoryEngine"
+    ]
+   },
+   "lineas": 108,
+   "metodos_sin_llamar": {
+    "juego": {
+     "InventoryEngine": [
+      "can_equip",
+      "check_rarity",
+      "check_symbols",
+      "check_weight",
+      "recalc_equipment_bonuses",
+      "slot_name"
+     ]
+    }
+   },
+   "pruebas": 4
+  },
+  "include/RPG/LootResolver.h": {
+   "implementacion": [
+    "src/RPG/LootResolver.cpp"
+   ],
+   "lineas": 21,
+   "pruebas": 1
+  },
+  "include/RPG/MapEventRunner.h": {
+   "implementacion": [
+    "src/RPG/MapEventRunner.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationBucle.cpp",
+    "por": [
+     "MapEventFrame"
+    ]
+   },
+   "lineas": 190,
+   "metodos_sin_llamar": {
+    "juego": {
+     "MapEventRunner": [
+      "interactCandidates",
+      "lastStartedEvent",
+      "resetTriggerState"
+     ]
+    }
+   },
+   "pruebas": 1
+  },
+  "include/RPG/Narrative/AdventureScript.h": {
+   "implementacion": [
+    "src/RPG/Narrative/AdventureScriptLoader.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "AdventureScript"
+    ]
+   },
+   "lineas": 118,
+   "pruebas": 21
+  },
+  "include/RPG/Narrative/NarrativeBeat.h": {
+   "implementacion": [
+    "src/RPG/Narrative/NarrativeState.cpp"
+   ],
+   "juego": {
+    "desde": "src/RPG/Narrative/AdventureScriptLoader.cpp",
+    "por": [
+     "EffectType",
+     "NarrativeBeat",
+     "NarrativeEffect",
+     "TriggerType"
+    ]
+   },
+   "lineas": 184,
+   "pruebas": 4
+  },
+  "include/RPG/Narrative/NarrativeState.h": {
+   "implementacion": [
+    "src/RPG/Narrative/NarrativeState.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationCierre.cpp",
+    "por": [
+     "NarrativeState"
+    ]
+   },
+   "lineas": 169,
+   "metodos_sin_llamar": {
+    "juego": {
+     "NarrativeState": [
+      "clearLocalSwitches",
+      "clearVariable",
+      "hasVariable"
+     ]
+    }
+   },
+   "pruebas": 27
+  },
+  "include/RPG/NarrativeEngine.h": {
+   "implementacion": [
+    "src/RPG/NarrativeEngine.cpp"
+   ],
+   "juego": {
+    "desde": "include/Engine/Application.h",
+    "por": [
+     "NarrativeEngine"
+    ]
+   },
+   "lineas": 152,
+   "metodos_sin_llamar": {
+    "juego": {
+     "NarrativeEngine": [
+      "allObjectivesDone",
+      "fire",
+      "startTimer"
+     ]
+    }
+   },
+   "pruebas": 15
+  },
+  "include/RPG/RandomEngine.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Game/Skill.cpp",
+    "por": [
+     "RandomEngine"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Game/Skill.cpp",
+    "por": [
+     "RandomEngine"
+    ]
+   },
+   "lineas": 87,
+   "metodos_sin_llamar": {
+    "juego": {
+     "RandomEngine": [
+      "roll_in_range",
+      "seed"
+     ],
+     "Xoroshiro128p": [
+      "roll_in_range",
+      "seed"
+     ]
+    },
+    "level_editor": {
+     "RandomEngine": [
+      "roll_in_range",
+      "seed"
+     ]
+    }
+   },
+   "pruebas": 6
+  },
+  "include/RPG/SessionCommandHost.h": {
+   "implementacion": [
+    "src/RPG/SessionCommandHost.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "SessionCommandHost"
+    ]
+   },
+   "lineas": 91,
+   "metodos_sin_llamar": {
+    "juego": {
+     "SessionCommandHost": [
+      "clearRequestedTransition",
+      "lastBattleOutcome",
+      "requestedTransition"
+     ]
+    }
+   },
+   "pruebas": 3
+  },
+  "include/RPG/SkillEffect.h": {
+   "implementacion": [
+    "src/RPG/SkillEffect.cpp"
+   ],
+   "juego": {
+    "desde": "src/RPG/SkillExecutor.cpp",
+    "por": [
+     "EffectFamily",
+     "ScalingStat",
+     "SkillEffectDef",
+     "effect_family_to_string"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/RPG/SkillExecutor.cpp",
+    "por": [
+     "EffectFamily",
+     "ScalingStat",
+     "SkillEffectDef",
+     "effect_family_to_string"
+    ]
+   },
+   "lineas": 100,
+   "pruebas": 2
+  },
+  "include/RPG/SkillTarget.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "SkillTarget"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Game/Skill.cpp",
+    "por": [
+     "SkillTarget"
+    ]
+   },
+   "lineas": 27,
+   "pruebas": 11
+  },
+  "include/RPG/Stat.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "Stat"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Game/Skill.cpp",
+    "por": [
+     "Stat"
+    ]
+   },
+   "lineas": 37,
+   "pruebas": 40
+  },
+  "include/RPG/TierRules.h": {
+   "implementacion": [
+    "src/RPG/TierRules.cpp"
+   ],
+   "juego": {
+    "desde": "include/RPG/Definitions/SkillDefinition.h",
+    "por": [
+     "ItemRarity",
+     "TIER_MAX",
+     "TIER_MIN"
+    ]
+   },
+   "level_editor": {
+    "desde": "include/RPG/Definitions/SkillDefinition.h",
+    "por": [
+     "ItemRarity",
+     "TIER_MAX",
+     "TIER_MIN"
+    ]
+   },
+   "lineas": 114,
+   "metodos_sin_llamar": {
+    "level_editor": {
+     "TierRules": [
+      "at"
+     ]
+    }
+   },
+   "pruebas": 17
+  },
+  "include/Render/AnimatedEntity.h": {
+   "implementacion": [
+    "src/Render/AnimatedEntity.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationNivel.cpp",
+    "por": [
+     "AnimatedEntity"
+    ]
+   },
+   "lineas": 66,
+   "metodos_sin_llamar": {
+    "juego": {
+     "AnimatedEntity": [
+      "currentFrame"
+     ]
+    }
+   },
+   "pruebas": 4
+  },
+  "include/Render/AuraJugador.h": {
+   "implementacion": [
+    "src/Render/AuraJugador.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "AuraJugador"
+    ]
+   },
+   "lineas": 42,
+   "pruebas": 0
+  },
+  "include/Render/BancoAtlas.h": {
+   "implementacion": [
+    "src/Render/BancoAtlas.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "BancoAtlas"
+    ]
+   },
+   "lineas": 54,
+   "pruebas": 0
+  },
+  "include/Render/BandadaNivel.h": {
+   "implementacion": [
+    "src/Render/BandadaNivel.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "BandadaNivel"
+    ]
+   },
+   "lineas": 68,
+   "pruebas": 0
+  },
+  "include/Render/BitmapFont.h": {
+   "implementacion": [
+    "src/Render/BitmapFont.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "BitmapFont"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "BitmapFont"
+    ]
+   },
+   "lineas": 143,
+   "metodos_sin_llamar": {
+    "juego": {
+     "BitmapFont": [
+      "glyphUV",
+      "glyphUVCodepoint"
+     ]
+    },
+    "level_editor": {
+     "BitmapFont": [
+      "clipText",
+      "glyphHeight",
+      "glyphUV",
+      "glyphUVCodepoint"
+     ]
+    }
+   },
+   "pruebas": 6
+  },
+  "include/Render/BlobShadow.h": {
+   "implementacion": [
+    "src/Render/BlobShadow.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "CreateBlobShadowTexture"
+    ]
+   },
+   "lineas": 34,
+   "pruebas": 1
+  },
+  "include/Render/BloquesNivel.h": {
+   "implementacion": [
+    "src/Render/BloquesNivel.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "BloquesNivel"
+    ]
+   },
+   "lineas": 77,
+   "pruebas": 0
+  },
+  "include/Render/Camera.h": {
+   "implementacion": [
+    "src/Render/Camera.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationBucle.cpp",
+    "por": [
+     "Camera",
+     "Easing"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "Camera",
+     "Easing"
+    ]
+   },
+   "lineas": 103,
+   "metodos_sin_llamar": {
+    "juego": {
+     "Camera": [
+      "isTransitioning",
+      "setViewportSize",
+      "setZoom",
+      "worldToGrid"
+     ]
+    },
+    "level_editor": {
+     "Camera": [
+      "isTransitioning",
+      "setViewportSize",
+      "worldToGrid"
+     ]
+    },
+    "motor_editor": {
+     "Camera": [
+      "isTransitioning",
+      "worldToGrid"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "editor/include/EditorVistaDeMapa.h",
+    "por": [
+     "Camera"
+    ]
+   },
+   "pruebas": 15
+  },
+  "include/Render/CapturaGL.h": {
+   "implementacion": [
+    "src/Render/CapturaGL.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationBucle.cpp",
+    "por": [
+     "VuelcaFramebufferPPM"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "VuelcaFramebufferPPM",
+     "VuelcaFramebufferPPMMuestreado"
+    ]
+   },
+   "lineas": 28,
+   "pruebas": 8
+  },
+  "include/Render/ColorLUT.h": {
+   "implementacion": [
+    "src/Render/ColorLUT.cpp"
+   ],
+   "juego": {
+    "desde": "src/Render/IsometricRenderer.cpp",
+    "por": [
+     "ColorLUT"
+    ]
+   },
+   "lineas": 68,
+   "metodos_sin_llamar": {
+    "juego": {
+     "ColorLUT": [
+      "cellColor",
+      "quantizeChannel",
+      "quantizeColor"
+     ]
+    },
+    "motor_editor": {
+     "ColorLUT": [
+      "cellColor",
+      "quantizeChannel",
+      "quantizeColor"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "src/Render/IsometricRenderer.cpp",
+    "por": [
+     "ColorLUT"
+    ]
+   },
+   "pruebas": 2
+  },
+  "include/Render/Culling.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Render/IsometricRenderer.cpp",
+    "por": [
+     "VisibleGridRange"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Render/TileMap.cpp",
+    "por": [
+     "VisibleGridRange"
+    ]
+   },
+   "lineas": 64,
+   "motor_editor": {
+    "desde": "src/Render/TileMap.cpp",
+    "por": [
+     "VisibleGridRange"
+    ]
+   },
+   "pruebas": 2
+  },
+  "include/Render/DynamicLightMap.h": {
+   "implementacion": [
+    "src/Render/DynamicLightMap.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationNivel.cpp",
+    "por": [
+     "DynamicLightMap"
+    ]
+   },
+   "lineas": 91,
+   "metodos_sin_llamar": {
+    "juego": {
+     "DynamicLightMap": [
+      "addLight",
+      "attenuationAt",
+      "lights",
+      "sampleLightAt"
+     ]
+    }
+   },
+   "pruebas": 2
+  },
+  "include/Render/Enemy.h": {
+   "implementacion": [
+    "src/Render/Enemy.cpp"
+   ],
+   "lineas": 88,
+   "pruebas": 7
+  },
+  "include/Render/Entity.h": {
+   "implementacion": [
+    "src/Render/Entity.cpp"
+   ],
+   "juego": {
+    "desde": "include/Engine/Application.h",
+    "por": [
+     "Entity"
+    ]
+   },
+   "lineas": 115,
+   "metodos_sin_llamar": {
+    "juego": {
+     "Entity": [
+      "clearCharacterSprite",
+      "visualScale"
+     ]
+    }
+   },
+   "pruebas": 3
+  },
+  "include/Render/FogOfWar.h": {
+   "implementacion": [
+    "src/Render/FogOfWar.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationNivel.cpp",
+    "por": [
+     "FogOfWar"
+    ]
+   },
+   "lineas": 96,
+   "metodos_sin_llamar": {
+    "juego": {
+     "FogOfWar": [
+      "mapHeight",
+      "mapWidth",
+      "stateAt"
+     ]
+    },
+    "motor_editor": {
+     "FogOfWar": [
+      "beginFrame",
+      "mapHeight",
+      "mapWidth",
+      "reveal",
+      "stateAt",
+      "updateTexture"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "src/Render/IsometricRenderer.cpp",
+    "por": [
+     "FogOfWar"
+    ]
+   },
+   "pruebas": 2
+  },
+  "include/Render/FormatoPPM.h": {
+   "implementacion": [
+    "src/Render/FormatoPPM.cpp"
+   ],
+   "juego": {
+    "desde": "src/Render/CapturaGL.cpp",
+    "por": [
+     "EscribePPM"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Render/CapturaGL.cpp",
+    "por": [
+     "EscribePPM"
+    ]
+   },
+   "lineas": 35,
+   "pruebas": 1
+  },
+  "include/Render/Framebuffer.h": {
+   "implementacion": [
+    "src/Render/Framebuffer.cpp"
+   ],
+   "juego": {
+    "desde": "include/Render/IsometricRenderer.h",
+    "por": [
+     "Framebuffer"
+    ]
+   },
+   "lineas": 61,
+   "metodos_sin_llamar": {
+    "juego": {
+     "Framebuffer": [
+      "unbind"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "editor/include/EditorVistaDeMapa.h",
+    "por": [
+     "Framebuffer"
+    ]
+   },
+   "pruebas": 1
+  },
+  "include/Render/HojaPersonaje.h": {
+   "implementacion": [
+    "src/Render/HojaPersonaje.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "HojaPersonaje"
+    ]
+   },
+   "lineas": 75,
+   "pruebas": 0
+  },
+  "include/Render/HudElement.h": {
+   "implementacion": [
+    "src/Render/HudElement.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "HudAnchor",
+     "HudTransform"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "HudAnchor",
+     "HudTransform"
+    ]
+   },
+   "lineas": 115,
+   "pruebas": 6
+  },
+  "include/Render/HudIconList.h": {
+   "implementacion": [
+    "src/Render/HudIconList.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "HudIconList"
+    ]
+   },
+   "lineas": 69,
+   "metodos_sin_llamar": {
+    "juego": {
+     "HudIconList": [
+      "visibleRows"
+     ]
+    }
+   },
+   "pruebas": 1
+  },
+  "include/Render/HudIconos.h": {
+   "implementacion": [
+    "src/Render/HudIconos.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationPantallas.cpp",
+    "por": [
+     "HudIconos"
+    ]
+   },
+   "lineas": 38,
+   "pruebas": 0
+  },
+  "include/Render/HudManager.h": {
+   "implementacion": [
+    "src/Render/HudManager.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationCierre.cpp",
+    "por": [
+     "HudManager"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "HudManager"
+    ]
+   },
+   "lineas": 67,
+   "metodos_sin_llamar": {
+    "juego": {
+     "HudManager": [
+      "removeElement"
+     ]
+    },
+    "level_editor": {
+     "HudManager": [
+      "removeElement"
+     ]
+    }
+   },
+   "pruebas": 4
+  },
+  "include/Render/HudTextWidgets.h": {
+   "implementacion": [
+    "src/Render/HudTextWidgets.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "HudCommandMenu",
+     "HudDialogueBox",
+     "HudText"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "HudCommandMenu",
+     "HudText"
+    ]
+   },
+   "lineas": 164,
+   "metodos_sin_llamar": {
+    "juego": {
+     "HudCommandMenu": [
+      "layoutRows",
+      "usableWidth"
+     ]
+    },
+    "level_editor": {
+     "HudCommandMenu": [
+      "layoutRows",
+      "usableWidth"
+     ]
+    }
+   },
+   "pruebas": 3
+  },
+  "include/Render/HudTextWidgetsData.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Render/HudTextWidgets.cpp",
+    "por": [
+     "HudMenuRow"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Render/HudTextWidgets.cpp",
+    "por": [
+     "HudMenuRow"
+    ]
+   },
+   "lineas": 65,
+   "pruebas": 0
+  },
+  "include/Render/HudWidgets.h": {
+   "implementacion": [
+    "src/Render/HudWidgets.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "HudBar",
+     "HudPanel"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "HudPanel"
+    ]
+   },
+   "lineas": 115,
+   "metodos_sin_llamar": {
+    "juego": {
+     "HudBar": [
+      "setColors"
+     ]
+    }
+   },
+   "pruebas": 5
+  },
+  "include/Render/HudWidgetsData.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/Render/HudWidgets.h",
+    "por": [
+     "HudBarData",
+     "HudPanelData"
+    ]
+   },
+   "level_editor": {
+    "desde": "include/Render/HudWidgets.h",
+    "por": [
+     "HudBarData",
+     "HudPanelData"
+    ]
+   },
+   "lineas": 50,
+   "pruebas": 0
+  },
+  "include/Render/ICombatant.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/Render/Player.h",
+    "por": [
+     "ICombatant"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Game/Skill.cpp",
+    "por": [
+     "ICombatant"
+    ]
+   },
+   "lineas": 58,
+   "metodos_sin_llamar": {
+    "level_editor": {
+     "ICombatant": [
+      "combatant_id",
+      "defense_value",
+      "initiative_bonus",
+      "isAlive"
+     ]
+    }
+   },
+   "pruebas": 31
+  },
+  "include/Render/IRenderable.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Render/IsometricRenderer.cpp",
+    "por": [
+     "IRenderable"
+    ]
+   },
+   "lineas": 34,
+   "motor_editor": {
+    "desde": "src/Render/IsometricRenderer.cpp",
+    "por": [
+     "IRenderable"
+    ]
+   },
+   "pruebas": 5
+  },
+  "include/Render/IUpdatable.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/Render/Camera.h",
+    "por": [
+     "IUpdatable"
+    ]
+   },
+   "level_editor": {
+    "desde": "include/Render/Camera.h",
+    "por": [
+     "IUpdatable"
+    ]
+   },
+   "lineas": 22,
+   "motor_editor": {
+    "desde": "include/Render/Camera.h",
+    "por": [
+     "IUpdatable"
+    ]
+   },
+   "pruebas": 5
+  },
+  "include/Render/IsometricPostProcessData.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/Render/IsometricRenderer.h",
+    "por": [
+     "IsometricPostProcessData"
+    ]
+   },
+   "lineas": 57,
+   "motor_editor": {
+    "desde": "include/Render/IsometricRenderer.h",
+    "por": [
+     "IsometricPostProcessData"
+    ]
+   },
+   "pruebas": 0
+  },
+  "include/Render/IsometricRenderer.h": {
+   "implementacion": [
+    "src/Render/IsometricRenderer.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "IsometricRenderer"
+    ]
+   },
+   "lineas": 188,
+   "metodos_sin_llamar": {
+    "juego": {
+     "IsometricRenderer": [
+      "blobShadowsEnabled",
+      "clearOcclusionFocus",
+      "clearPostProcessing",
+      "lutEnabled",
+      "postFXEnabled",
+      "setFogColor",
+      "setLUT",
+      "setLUTEnabled",
+      "setOcclusionAlpha",
+      "setOcclusionEnabled",
+      "setSceneClearColor",
+      "sortQueue"
+     ]
+    },
+    "motor_editor": {
+     "IsometricRenderer": [
+      "addToQueue",
+      "blobShadowsEnabled",
+      "clearOcclusionFocus",
+      "clearPostProcessing",
+      "lutEnabled",
+      "postFXEnabled",
+      "removeFromQueue",
+      "setAmbientColor",
+      "setAtlas",
+      "setBlobShadows",
+      "setBlobShadowsEnabled",
+      "setFog",
+      "setFogColor",
+      "setLUT",
+      "setLUTEnabled",
+      "setOcclusionAlpha",
+      "setOcclusionEnabled",
+      "setOcclusionFocus",
+      "setPostFX",
+      "setPostFXEnabled",
+      "setSceneClearColor",
+      "sortQueue"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "editor/include/EditorVistaDeMapa.h",
+    "por": [
+     "IsometricRenderer"
+    ]
+   },
+   "pruebas": 8
+  },
+  "include/Render/IsometricSceneData.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/Render/IsometricRenderer.h",
+    "por": [
+     "IsometricSceneData"
+    ]
+   },
+   "lineas": 28,
+   "motor_editor": {
+    "desde": "include/Render/IsometricRenderer.h",
+    "por": [
+     "IsometricSceneData"
+    ]
+   },
+   "pruebas": 0
+  },
+  "include/Render/MonumentosNivel.h": {
+   "implementacion": [
+    "src/Render/BloquesNivel.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "MonumentosNivel"
+    ]
+   },
+   "lineas": 77,
+   "pruebas": 0
+  },
+  "include/Render/OcclusionRules.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Render/IsometricRenderer.cpp",
+    "por": [
+     "shouldFadeTile"
+    ]
+   },
+   "lineas": 27,
+   "motor_editor": {
+    "desde": "src/Render/IsometricRenderer.cpp",
+    "por": [
+     "shouldFadeTile"
+    ]
+   },
+   "pruebas": 2
+  },
+  "include/Render/PergaminoGL.h": {
+   "implementacion": [
+    "src/Render/PergaminoGL.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "PergaminoGL"
+    ]
+   },
+   "lineas": 80,
+   "metodos_sin_llamar": {
+    "juego": {
+     "PergaminoGL": [
+      "dibuja",
+      "dibujaMarca"
+     ]
+    }
+   },
+   "pruebas": 0
+  },
+  "include/Render/Player.h": {
+   "implementacion": [
+    "src/Render/Player.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "Player"
+    ]
+   },
+   "lineas": 272,
+   "metodos_sin_llamar": {
+    "juego": {
+     "Player": [
+      "addItem",
+      "handleInput",
+      "populate_from_class_race_background"
+     ]
+    }
+   },
+   "pruebas": 9
+  },
+  "include/Render/PlayerData.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/Render/Player.h",
+    "por": [
+     "PlayerData"
+    ]
+   },
+   "lineas": 36,
+   "pruebas": 1
+  },
+  "include/Render/PlayerMotionData.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "include/Render/PlayerData.h",
+    "por": [
+     "PlayerMotionData"
+    ]
+   },
+   "lineas": 17,
+   "pruebas": 0
+  },
+  "include/Render/SpriteBatch.h": {
+   "implementacion": [
+    "src/Render/SpriteBatch.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/Application.cpp",
+    "por": [
+     "SpriteBatch"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "SpriteBatch"
+    ]
+   },
+   "lineas": 99,
+   "metodos_sin_llamar": {
+    "level_editor": {
+     "SpriteBatch": [
+      "submitQuad"
+     ]
+    },
+    "motor_editor": {
+     "SpriteBatch": [
+      "submitQuad"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "include/Render/IsometricRenderer.h",
+    "por": [
+     "SpriteBatch"
+    ]
+   },
+   "pruebas": 5
+  },
+  "include/Render/StaticEntity.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/ApplicationNivel.cpp",
+    "por": [
+     "StaticEntity"
+    ]
+   },
+   "lineas": 24,
+   "pruebas": 1
+  },
+  "include/Render/TileMap.h": {
+   "implementacion": [
+    "src/Render/TileMap.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationNivel.cpp",
+    "por": [
+     "TileMap"
+    ]
+   },
+   "level_editor": {
+    "desde": "editor/src/level_editor.cpp",
+    "por": [
+     "TileMap"
+    ]
+   },
+   "lineas": 107,
+   "metodos_sin_llamar": {
+    "juego": {
+     "TileMap": [
+      "getCollisionGids",
+      "getTilesetImageHeight",
+      "getTilesetImageSource",
+      "getTilesetImageWidth",
+      "getTilesetTileCount",
+      "visibleRange"
+     ]
+    },
+    "level_editor": {
+     "TileMap": [
+      "visibleRange"
+     ]
+    },
+    "motor_editor": {
+     "TileMap": [
+      "visibleRange"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "include/Editor/EditorDocumentSession.h",
+    "por": [
+     "TileMap"
+    ]
+   },
+   "pruebas": 16
+  },
+  "include/Runtime/RuntimeTile.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Render/IsometricRenderer.cpp",
+    "por": [
+     "RuntimeTile"
+    ]
+   },
+   "level_editor": {
+    "desde": "include/Runtime/RuntimeTileMap.h",
+    "por": [
+     "RuntimeTile"
+    ]
+   },
+   "lineas": 20,
+   "metodos_sin_llamar": {
+    "juego": {
+     "RuntimeTile": [
+      "getVariant",
+      "m_tilesetID"
+     ]
+    },
+    "level_editor": {
+     "RuntimeTile": [
+      "getTilesetID",
+      "getVariant",
+      "hasCollision",
+      "m_tilesetID"
+     ]
+    },
+    "motor_editor": {
+     "RuntimeTile": [
+      "getVariant",
+      "m_tilesetID"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "src/Render/IsometricRenderer.cpp",
+    "por": [
+     "RuntimeTile"
+    ]
+   },
+   "pruebas": 1
+  },
+  "include/Runtime/RuntimeTileMap.h": {
+   "implementacion": [
+    "src/Runtime/RuntimeTileMap.cpp"
+   ],
+   "juego": {
+    "desde": "src/Render/BloquesNivel.cpp",
+    "por": [
+     "RuntimeTileMap"
+    ]
+   },
+   "level_editor": {
+    "desde": "include/Render/TileMap.h",
+    "por": [
+     "RuntimeTileMap"
+    ]
+   },
+   "lineas": 73,
+   "metodos_sin_llamar": {
+    "level_editor": {
+     "RuntimeTileMap": [
+      "getLayerCount",
+      "getTile",
+      "layerAt"
+     ]
+    }
+   },
+   "motor_editor": {
+    "desde": "editor/include/EditorVistaDeMapa.h",
+    "por": [
+     "RuntimeTileMap"
+    ]
+   },
+   "pruebas": 7
+  },
+  "include/Runtime/RuntimeTileMapBuilder.h": {
+   "implementacion": [
+    "src/Runtime/RuntimeTileMapBuilder.cpp"
+   ],
+   "juego": {
+    "desde": "src/Render/TileMap.cpp",
+    "por": [
+     "RuntimeTileMapBuilder"
+    ]
+   },
+   "level_editor": {
+    "desde": "src/Render/TileMap.cpp",
+    "por": [
+     "RuntimeTileMapBuilder"
+    ]
+   },
+   "lineas": 13,
+   "motor_editor": {
+    "desde": "editor/include/EditorVistaDeMapa.h",
+    "por": [
+     "RuntimeTileMapBuilder"
+    ]
+   },
+   "pruebas": 3
+  },
+  "include/World/EntityHandle.h": {
+   "implementacion": [],
+   "juego": {
+    "desde": "src/Engine/ApplicationNivel.cpp",
+    "por": [
+     "EntityHandle",
+     "max"
+    ]
+   },
+   "lineas": 25,
+   "pruebas": 14
+  },
+  "include/World/World.h": {
+   "implementacion": [
+    "src/World/World.cpp"
+   ],
+   "juego": {
+    "desde": "src/Engine/ApplicationNivel.cpp",
+    "por": [
+     "EntityKind",
+     "World",
+     "WorldEntity"
+    ]
+   },
+   "lineas": 201,
+   "metodos_sin_llamar": {
+    "juego": {
+     "World": [
+      "pendingCreateCount",
+      "pendingDestroyCount"
+     ]
+    }
+   },
+   "pruebas": 2
+  }
+ },
+ "contenido": {
+  "aventuras": {
+   "assets/adventures/aventura_silbido_medianoche.json": false,
+   "assets/adventures/boundington_ocaso.json": true,
+   "assets/adventures/boundington_precuela_taberna.json": "solo con juego --precuela",
+   "assets/adventures/boundington_primer_dia.json": true,
+   "assets/adventures/boundington_prologo.json": "entrada de boundington",
+   "assets/adventures/boundington_segundo_dia.json": true,
+   "assets/adventures/este_norte_senal_ceniza.json": false,
+   "assets/adventures/on_camino_del_norte.json": "entrada de oeste_norte",
+   "assets/adventures/plaza_de_las_razas.json": false
+  },
+  "catalogos_rpg_que_lee_el_juego": {
+   "assets/catalogs/MANIFIESTO.json": false,
+   "assets/catalogs/adventures.json": false,
+   "assets/catalogs/backgrounds.json": false,
+   "assets/catalogs/classes.json": false,
+   "assets/catalogs/conditions.json": true,
+   "assets/catalogs/consumables.json": false,
+   "assets/catalogs/deities.json": false,
+   "assets/catalogs/encounter_tables.json": false,
+   "assets/catalogs/equipment.json": true,
+   "assets/catalogs/events.json": false,
+   "assets/catalogs/feats.json": false,
+   "assets/catalogs/locations.json": false,
+   "assets/catalogs/locations_trae_test.json": false,
+   "assets/catalogs/loot_tables.json": false,
+   "assets/catalogs/monsters.json": true,
+   "assets/catalogs/mounts.json": false,
+   "assets/catalogs/npcs.json": false,
+   "assets/catalogs/passives.json": false,
+   "assets/catalogs/pregen_characters.json": false,
+   "assets/catalogs/quests.json": false,
+   "assets/catalogs/races.json": false,
+   "assets/catalogs/skills.json": true,
+   "assets/catalogs/spells.json": false,
+   "assets/catalogs/summons.json": false,
+   "assets/catalogs/traits.json": false,
+   "assets/catalogs/traps.json": false
+  },
+  "mapas_nativos_con_eventos": [
+   "assets/misiones/conversacion_ramificada.json",
+   "assets/misiones/mision_llave.json"
+  ],
+  "niveles_alcanzables_desde_el_titulo": 96,
+  "niveles_que_ninguna_ruta_alcanza": [
+   "assets/levels/ejemplo_nivel.json",
+   "assets/levels/test_level.json"
+  ],
+  "niveles_totales": 98,
+  "rutas": {
+   "campaña (Título → Campaña)": {
+    "catalogos": [
+     "assets/objects/boundington_npcs.json"
+    ],
+    "inicio": [
+     "assets/levels/interior_vacio.json",
+     "assets/levels/ciudad_centro.json"
+    ],
+    "niveles": 94,
+    "objetos_sin_catalogo": 483,
+    "puertas_rotas": []
+   },
+   "proyecto boundington": {
+    "catalogos_que_faltan": [],
+    "declarados_inalcanzables": [
+     "assets/levels/interior_vacio.json"
+    ],
+    "en_el_titulo": "como campaña",
+    "entrada": "assets/adventures/boundington_prologo.json",
+    "niveles_alcanzables": 93,
+    "niveles_declarados": 23,
+    "nombre": "Los Perdidos de Boundington",
+    "objetos_sin_catalogo": 0,
+    "puertas_rotas": [],
+    "tipo": "aventura"
+   },
+   "proyecto ejemplos": {
+    "catalogos_que_faltan": [],
+    "declarados_inalcanzables": [],
+    "en_el_titulo": true,
+    "entrada": "assets/levels/ejemplos_objetos.json",
+    "niveles_alcanzables": 2,
+    "niveles_declarados": 2,
+    "nombre": "Ejemplos del motor",
+    "objetos_sin_catalogo": 0,
+    "puertas_rotas": [],
+    "tipo": "nivel"
+   },
+   "proyecto este_norte": {
+    "catalogos_que_faltan": [],
+    "declarados_inalcanzables": [],
+    "en_el_titulo": true,
+    "entrada": "ciudad_en_guskedor.json",
+    "niveles_alcanzables": 93,
+    "niveles_declarados": 55,
+    "nombre": "Egaroth - cuadrante este norte",
+    "objetos_sin_catalogo": 0,
+    "puertas_rotas": [],
+    "tipo": "nivel"
+   },
+   "proyecto este_sur": {
+    "catalogos_que_faltan": [],
+    "declarados_inalcanzables": [],
+    "en_el_titulo": true,
+    "entrada": "es_taurengrad.json",
+    "niveles_alcanzables": 93,
+    "niveles_declarados": 3,
+    "nombre": "Egaroth - cuadrante este sur",
+    "objetos_sin_catalogo": 441,
+    "puertas_rotas": [],
+    "tipo": "nivel"
+   },
+   "proyecto mundo": {
+    "catalogos_que_faltan": [],
+    "declarados_inalcanzables": [],
+    "en_el_titulo": true,
+    "entrada": "mapamundi.json",
+    "niveles_alcanzables": 93,
+    "niveles_declarados": 9,
+    "nombre": "Egaroth - mapamundi",
+    "objetos_sin_catalogo": 216,
+    "puertas_rotas": [],
+    "tipo": "nivel"
+   },
+   "proyecto oeste_norte": {
+    "catalogos_que_faltan": [],
+    "declarados_inalcanzables": [],
+    "en_el_titulo": true,
+    "entrada": "assets/adventures/on_camino_del_norte.json",
+    "niveles_alcanzables": 93,
+    "niveles_declarados": 4,
+    "nombre": "Egaroth - cuadrante oeste norte",
+    "objetos_sin_catalogo": 424,
+    "puertas_rotas": [],
+    "tipo": "aventura"
+   }
+  }
+ },
+ "ejecutables": {
+  "juego": {
+   "alcanzados": [
+    "examples/juego.cpp",
+    "include/Core/Errors/EngineException.h",
+    "include/Core/Errors/Result.h",
+    "include/Core/Errors/ScopeGuard.h",
+    "include/Core/Ids/ProjectIds.h",
+    "include/Core/Ids/StrongId.h",
+    "include/Core/Imagen/ImagenRGBA.h",
+    "include/Core/Json/JsonValue.h",
+    "include/Core/Json/JsonWriter.h",
+    "include/Core/Math/GridBounds.h",
+    "include/Core/Math/GridCoord.h",
+    "include/Core/Math/IsoMath.h",
+    "include/Core/Math/UVRect.h",
+    "include/Core/Math/Vector2.h",
+    "include/Core/Math/Vector4.h",
+    "include/Core/Resources/ICatalog.h",
+    "include/Core/Resources/ResourceManager.h",
+    "include/Core/Resources/Shader.h",
+    "include/Core/Resources/ShaderManager.h",
+    "include/Core/Resources/Texture.h",
+    "include/Core/Resources/TextureAtlas.h",
+    "include/Core/Resources/TextureManager.h",
+    "include/Engine/Application.h",
+    "include/Engine/ApplicationInternal.h",
+    "include/Engine/ApplicationLoop.h",
+    "include/Engine/Input/InputMap.h",
+    "include/Engine/Input/InputSystem.h",
+    "include/Engine/InputState.h",
+    "include/Engine/Locale.h",
+    "include/Engine/PantallaNuevaPartida.h",
+    "include/Engine/Scene/Scene.h",
+    "include/Engine/Scene/SceneManager.h",
+    "include/Engine/Window.h",
+    "include/Game/AuraMoral.h",
+    "include/Game/Bandada.h",
+    "include/Game/BattleMenuActions.h",
+    "include/Game/BattleState.h",
+    "include/Game/Bloques.h",
+    "include/Game/Codice.h",
+    "include/Game/DefeatRecovery.h",
+    "include/Game/DiarioMisiones.h",
+    "include/Game/EnemyBrain.h",
+    "include/Game/EnemyBrainData.h",
+    "include/Game/EnemyCatalogBridge.h",
+    "include/Game/FichaVista.h",
+    "include/Game/GameOverScreen.h",
+    "include/Game/GameSession.h",
+    "include/Game/InventoryMenuState.h",
+    "include/Game/InventoryScreen.h",
+    "include/Game/MenuLogic.h",
+    "include/Game/Monumentos.h",
+    "include/Game/Morality.h",
+    "include/Game/NewGameFlow.h",
+    "include/Game/OptionsLocaleBridge.h",
+    "include/Game/OptionsState.h",
+    "include/Game/PasarHoja.h",
+    "include/Game/PauseMenu.h",
+    "include/Game/Personajes/EditorApariencia.h",
+    "include/Game/Personajes/ManifiestoPersonajes.h",
+    "include/Game/Personajes/MontajePersonajes.h",
+    "include/Game/Personajes/Vestuario.h",
+    "include/Game/PlayerControls.h",
+    "include/Game/PlayerControlsData.h",
+    "include/Game/RegistroSprites.h",
+    "include/Game/SaveGame.h",
+    "include/Game/SaveGameValidation.h",
+    "include/Game/SaveSlotState.h",
+    "include/Game/SessionData.h",
+    "include/Game/SessionTipos.h",
+    "include/Game/Skill.h",
+    "include/Game/TitleMenuState.h",
+    "include/HUD/Iconos.h",
+    "include/HUD/Pergamino/BancoMateriales.h",
+    "include/HUD/Pergamino/Cuaderno.h",
+    "include/HUD/Pergamino/DialogoHoja.h",
+    "include/HUD/Pergamino/FuenteAtlas.h",
+    "include/HUD/Pergamino/HudRetales.h",
+    "include/HUD/Pergamino/InterfazPergamino.h",
+    "include/HUD/Pergamino/Lienzo.h",
+    "include/HUD/Pergamino/Materiales.h",
+    "include/HUD/Pergamino/MinimapaTinta.h",
+    "include/HUD/Pergamino/PaginaCuaderno.h",
+    "include/HUD/Pergamino/PaginasJugador.h",
+    "include/HUD/Pergamino/Papiro.h",
+    "include/HUD/Pergamino/Pincel.h",
+    "include/HUD/Pergamino/Tema.h",
+    "include/Import/TmxMapImporter.h",
+    "include/Level/LevelDefinition.h",
+    "include/Level/LevelLoader.h",
+    "include/Level/ObjectCatalog.h",
+    "include/Map/EntityLayerDocument.h",
+    "include/Map/EventLayerDocument.h",
+    "include/Map/MapDocument.h",
+    "include/Map/MapLayer.h",
+    "include/Map/RegionLayerDocument.h",
+    "include/Map/TileLayerDocument.h",
+    "include/Project/Project.h",
+    "include/Project/ProjectIndex.h",
+    "include/Project/ProjectSerializer.h",
+    "include/Project/ProjectSettings.h",
+    "include/Project/SerializerHelpers.h",
+    "include/RPG/Catalogs/CatalogLoader.h",
+    "include/RPG/Catalogs/CatalogLoadersContenido.h",
+    "include/RPG/Catalogs/CatalogLoadersCriaturas.h",
+    "include/RPG/Catalogs/CatalogLoadersHabilidades.h",
+    "include/RPG/Catalogs/CatalogLoadersMundo.h",
+    "include/RPG/Catalogs/CatalogLoadersObjetos.h",
+    "include/RPG/Catalogs/CatalogLoadersPersonaje.h",
+    "include/RPG/Catalogs/CatalogLoadersRasgos.h",
+    "include/RPG/Catalogs/RpgCatalogs.h",
+    "include/RPG/CharacterCreation.h",
+    "include/RPG/CharacterCreationScreen.h",
+    "include/RPG/CharacterSheet.h",
+    "include/RPG/ConditionEngine.h",
+    "include/RPG/Defense.h",
+    "include/RPG/Definitions/DefinicionesContenido.h",
+    "include/RPG/Definitions/DefinicionesCriaturas.h",
+    "include/RPG/Definitions/DefinicionesMundo.h",
+    "include/RPG/Definitions/DefinicionesObjetos.h",
+    "include/RPG/Definitions/DefinicionesPersonaje.h",
+    "include/RPG/Definitions/DefinicionesRasgos.h",
+    "include/RPG/Definitions/RpgCoreDefinitions.h",
+    "include/RPG/Definitions/SkillDefinition.h",
+    "include/RPG/DicePoolEngine.h",
+    "include/RPG/EnhanceHooks.h",
+    "include/RPG/EventCommand.h",
+    "include/RPG/EventInterpreter.h",
+    "include/RPG/InventoryEngine.h",
+    "include/RPG/MapEventRunner.h",
+    "include/RPG/Narrative/AdventureScript.h",
+    "include/RPG/Narrative/NarrativeBeat.h",
+    "include/RPG/Narrative/NarrativeState.h",
+    "include/RPG/NarrativeEngine.h",
+    "include/RPG/RandomEngine.h",
+    "include/RPG/SessionCommandHost.h",
+    "include/RPG/SkillEffect.h",
+    "include/RPG/SkillTarget.h",
+    "include/RPG/Stat.h",
+    "include/RPG/TierRules.h",
+    "include/Render/AnimatedEntity.h",
+    "include/Render/AuraJugador.h",
+    "include/Render/BancoAtlas.h",
+    "include/Render/BandadaNivel.h",
+    "include/Render/BitmapFont.h",
+    "include/Render/BlobShadow.h",
+    "include/Render/BloquesNivel.h",
+    "include/Render/Camera.h",
+    "include/Render/CapturaGL.h",
+    "include/Render/ColorLUT.h",
+    "include/Render/Culling.h",
+    "include/Render/DynamicLightMap.h",
+    "include/Render/Entity.h",
+    "include/Render/FogOfWar.h",
+    "include/Render/FormatoPPM.h",
+    "include/Render/Framebuffer.h",
+    "include/Render/HojaPersonaje.h",
+    "include/Render/HudElement.h",
+    "include/Render/HudIconList.h",
+    "include/Render/HudIconos.h",
+    "include/Render/HudManager.h",
+    "include/Render/HudTextWidgets.h",
+    "include/Render/HudTextWidgetsData.h",
+    "include/Render/HudWidgets.h",
+    "include/Render/HudWidgetsData.h",
+    "include/Render/ICombatant.h",
+    "include/Render/IRenderable.h",
+    "include/Render/IUpdatable.h",
+    "include/Render/IsometricPostProcessData.h",
+    "include/Render/IsometricRenderer.h",
+    "include/Render/IsometricSceneData.h",
+    "include/Render/MonumentosNivel.h",
+    "include/Render/OcclusionRules.h",
+    "include/Render/PergaminoGL.h",
+    "include/Render/Player.h",
+    "include/Render/PlayerData.h",
+    "include/Render/PlayerMotionData.h",
+    "include/Render/SpriteBatch.h",
+    "include/Render/StaticEntity.h",
+    "include/Render/TileMap.h",
+    "include/Runtime/RuntimeTile.h",
+    "include/Runtime/RuntimeTileMap.h",
+    "include/Runtime/RuntimeTileMapBuilder.h",
+    "include/World/EntityHandle.h",
+    "include/World/World.h",
+    "src/Core/Imagen/ImagenRGBA.cpp",
+    "src/Core/Json/JsonValue.cpp",
+    "src/Core/Resources/Shader.cpp",
+    "src/Core/Resources/ShaderManager.cpp",
+    "src/Core/Resources/Texture.cpp",
+    "src/Core/Resources/TextureAtlas.cpp",
+    "src/Core/Resources/TextureManager.cpp",
+    "src/Engine/Application.cpp",
+    "src/Engine/ApplicationBucle.cpp",
+    "src/Engine/ApplicationCierre.cpp",
+    "src/Engine/ApplicationHud.cpp",
+    "src/Engine/ApplicationLoop.cpp",
+    "src/Engine/ApplicationNivel.cpp",
+    "src/Engine/ApplicationPantallas.cpp",
+    "src/Engine/Input/InputSystem.cpp",
+    "src/Engine/Locale.cpp",
+    "src/Engine/PantallaNuevaPartida.cpp",
+    "src/Engine/Scene/SceneManager.cpp",
+    "src/Engine/Window.cpp",
+    "src/Game/AuraMoral.cpp",
+    "src/Game/Bandada.cpp",
+    "src/Game/BattleMenuActions.cpp",
+    "src/Game/BattleState.cpp",
+    "src/Game/Bloques.cpp",
+    "src/Game/Codice.cpp",
+    "src/Game/DefeatRecovery.cpp",
+    "src/Game/DiarioMisiones.cpp",
+    "src/Game/EnemyBrain.cpp",
+    "src/Game/FichaVista.cpp",
+    "src/Game/GameOverScreen.cpp",
+    "src/Game/GameSession.cpp",
+    "src/Game/GameSessionComercio.cpp",
+    "src/Game/GameSessionInteraccion.cpp",
+    "src/Game/GameSessionInventario.cpp",
+    "src/Game/GameSessionNarrativa.cpp",
+    "src/Game/InventoryMenuState.cpp",
+    "src/Game/InventoryScreen.cpp",
+    "src/Game/Monumentos.cpp",
+    "src/Game/Morality.cpp",
+    "src/Game/NewGameFlow.cpp",
+    "src/Game/OptionsState.cpp",
+    "src/Game/PasarHoja.cpp",
+    "src/Game/PauseMenu.cpp",
+    "src/Game/Personajes/EditorApariencia.cpp",
+    "src/Game/Personajes/ManifiestoPersonajes.cpp",
+    "src/Game/Personajes/MontajePersonajes.cpp",
+    "src/Game/Personajes/Vestuario.cpp",
+    "src/Game/RegistroSprites.cpp",
+    "src/Game/SaveGame.cpp",
+    "src/Game/SaveSlotState.cpp",
+    "src/Game/Skill.cpp",
+    "src/Game/TitleMenuState.cpp",
+    "src/HUD/Iconos.cpp",
+    "src/HUD/Pergamino/BancoMateriales.cpp",
+    "src/HUD/Pergamino/Cuaderno.cpp",
+    "src/HUD/Pergamino/DialogoHoja.cpp",
+    "src/HUD/Pergamino/FuenteAtlas.cpp",
+    "src/HUD/Pergamino/HudRetales.cpp",
+    "src/HUD/Pergamino/InterfazPergamino.cpp",
+    "src/HUD/Pergamino/Lienzo.cpp",
+    "src/HUD/Pergamino/MaterialesPapel.cpp",
+    "src/HUD/Pergamino/MinimapaTinta.cpp",
+    "src/HUD/Pergamino/PaginaCuaderno.cpp",
+    "src/HUD/Pergamino/PaginasJugador.cpp",
+    "src/HUD/Pergamino/Papiro.cpp",
+    "src/HUD/Pergamino/Pincel.cpp",
+    "src/Import/TmxMapImporter.cpp",
+    "src/Level/LevelLoader.cpp",
+    "src/Level/ObjectCatalog.cpp",
+    "src/Map/EntityLayerDocument.cpp",
+    "src/Map/EventLayerDocument.cpp",
+    "src/Map/MapDocument.cpp",
+    "src/Map/MapDocumentEdits.cpp",
+    "src/Map/RegionLayerDocument.cpp",
+    "src/Map/TileLayerDocument.cpp",
+    "src/Project/MapDeserializer.cpp",
+    "src/Project/MapSerializer.cpp",
+    "src/Project/Project.cpp",
+    "src/Project/ProjectIndex.cpp",
+    "src/Project/ProjectIndexDuplicate.cpp",
+    "src/Project/ProjectSerializer.cpp",
+    "src/Project/SerializerHelpers.cpp",
+    "src/RPG/CharacterCreation.cpp",
+    "src/RPG/CharacterCreationScreen.cpp",
+    "src/RPG/CharacterSheet.cpp",
+    "src/RPG/ConditionEngine.cpp",
+    "src/RPG/EventInterpreter.cpp",
+    "src/RPG/Eventos/AnfitrionNarrativo.cpp",
+    "src/RPG/InventoryEngine.cpp",
+    "src/RPG/MapEventRunner.cpp",
+    "src/RPG/Narrative/AdventureScriptLoader.cpp",
+    "src/RPG/Narrative/NarrativeState.cpp",
+    "src/RPG/NarrativeEngine.cpp",
+    "src/RPG/SessionCommandHost.cpp",
+    "src/RPG/SkillEffect.cpp",
+    "src/RPG/SkillExecutor.cpp",
+    "src/RPG/TierRules.cpp",
+    "src/Render/AnimatedEntity.cpp",
+    "src/Render/AuraJugador.cpp",
+    "src/Render/BancoAtlas.cpp",
+    "src/Render/BandadaNivel.cpp",
+    "src/Render/BitmapFont.cpp",
+    "src/Render/BlobShadow.cpp",
+    "src/Render/BloquesNivel.cpp",
+    "src/Render/Camera.cpp",
+    "src/Render/CapturaGL.cpp",
+    "src/Render/ColorLUT.cpp",
+    "src/Render/DynamicLightMap.cpp",
+    "src/Render/Entity.cpp",
+    "src/Render/FogOfWar.cpp",
+    "src/Render/FormatoPPM.cpp",
+    "src/Render/Framebuffer.cpp",
+    "src/Render/HojaPersonaje.cpp",
+    "src/Render/HudElement.cpp",
+    "src/Render/HudIconList.cpp",
+    "src/Render/HudIconos.cpp",
+    "src/Render/HudManager.cpp",
+    "src/Render/HudTextWidgets.cpp",
+    "src/Render/HudWidgets.cpp",
+    "src/Render/IsometricRenderer.cpp",
+    "src/Render/PergaminoGL.cpp",
+    "src/Render/Player.cpp",
+    "src/Render/SpriteBatch.cpp",
+    "src/Render/TileMap.cpp",
+    "src/Runtime/RuntimeTileMap.cpp",
+    "src/Runtime/RuntimeTileMapBuilder.cpp",
+    "src/World/World.cpp"
+   ],
+   "cabeceras_usadas": 183,
+   "ficheros_alcanzados": 311,
+   "fuentes_enlazadas": 165,
+   "fuentes_propias": [
+    "examples/juego.cpp"
+   ],
+   "para": "jugador"
+  },
+  "level_editor": {
+   "alcanzados": [
+    "editor/include/LevelEditorArranque.h",
+    "editor/include/LevelEditorEditState.h",
+    "editor/include/LevelEditorHub.h",
+    "editor/include/LevelEditorInterno.h",
+    "editor/include/LevelEditorOpciones.h",
+    "editor/include/LevelEditorPaleta.h",
+    "editor/src/LevelEditorArranque.cpp",
+    "editor/src/LevelEditorEditState.cpp",
+    "editor/src/LevelEditorOpciones.cpp",
+    "editor/src/LevelEditorPaleta.cpp",
+    "editor/src/level_editor.cpp",
+    "include/Core/Check.h",
+    "include/Core/Errors/EngineException.h",
+    "include/Core/Errors/Result.h",
+    "include/Core/Errors/ScopeGuard.h",
+    "include/Core/Ids/ProjectIds.h",
+    "include/Core/Ids/StrongId.h",
+    "include/Core/Json/JsonValue.h",
+    "include/Core/Json/JsonWriter.h",
+    "include/Core/Math/GridBounds.h",
+    "include/Core/Math/GridCoord.h",
+    "include/Core/Math/IsoMath.h",
+    "include/Core/Math/UVRect.h",
+    "include/Core/Math/Vector2.h",
+    "include/Core/Math/Vector4.h",
+    "include/Core/Resources/ICatalog.h",
+    "include/Core/Resources/ResourceManager.h",
+    "include/Core/Resources/Shader.h",
+    "include/Core/Resources/ShaderManager.h",
+    "include/Core/Resources/Texture.h",
+    "include/Core/Resources/TextureAtlas.h",
+    "include/Core/Resources/TextureManager.h",
+    "include/Editor/EditorDocumentIO.h",
+    "include/Editor/EditorState.h",
+    "include/Editor/EditorStateHelpers.h",
+    "include/Editor/EditorValidation.h",
+    "include/Editor/ObjectInspector.h",
+    "include/Editor/ObjectInspectorData.h",
+    "include/Editor/ObjectInspectorInput.h",
+    "include/Engine/Window.h",
+    "include/Game/Skill.h",
+    "include/Import/TmxMapImporter.h",
+    "include/Level/LevelDefinition.h",
+    "include/Level/LevelDocumentBridge.h",
+    "include/Level/LevelLoader.h",
+    "include/Level/ObjectCatalog.h",
+    "include/Map/EntityLayerDocument.h",
+    "include/Map/EventLayerDocument.h",
+    "include/Map/MapDocument.h",
+    "include/Map/MapLayer.h",
+    "include/Map/RegionLayerDocument.h",
+    "include/Map/TileLayerDocument.h",
+    "include/Project/Project.h",
+    "include/Project/ProjectCatalog.h",
+    "include/Project/ProjectIndex.h",
+    "include/Project/ProjectSerializer.h",
+    "include/Project/ProjectSettings.h",
+    "include/Project/SerializerHelpers.h",
+    "include/RPG/CharacterSheet.h",
+    "include/RPG/Defense.h",
+    "include/RPG/Definitions/DefinicionesPersonaje.h",
+    "include/RPG/Definitions/RpgCoreDefinitions.h",
+    "include/RPG/Definitions/SkillDefinition.h",
+    "include/RPG/DicePoolEngine.h",
+    "include/RPG/EnhanceHooks.h",
+    "include/RPG/RandomEngine.h",
+    "include/RPG/SkillEffect.h",
+    "include/RPG/SkillTarget.h",
+    "include/RPG/Stat.h",
+    "include/RPG/TierRules.h",
+    "include/Render/BitmapFont.h",
+    "include/Render/Camera.h",
+    "include/Render/CapturaGL.h",
+    "include/Render/Culling.h",
+    "include/Render/FormatoPPM.h",
+    "include/Render/HudElement.h",
+    "include/Render/HudManager.h",
+    "include/Render/HudTextWidgets.h",
+    "include/Render/HudTextWidgetsData.h",
+    "include/Render/HudWidgets.h",
+    "include/Render/HudWidgetsData.h",
+    "include/Render/ICombatant.h",
+    "include/Render/IUpdatable.h",
+    "include/Render/SpriteBatch.h",
+    "include/Render/TileMap.h",
+    "include/Runtime/RuntimeTile.h",
+    "include/Runtime/RuntimeTileMap.h",
+    "include/Runtime/RuntimeTileMapBuilder.h",
+    "src/Core/Json/JsonValue.cpp",
+    "src/Core/Resources/Shader.cpp",
+    "src/Core/Resources/ShaderManager.cpp",
+    "src/Core/Resources/Texture.cpp",
+    "src/Core/Resources/TextureAtlas.cpp",
+    "src/Core/Resources/TextureManager.cpp",
+    "src/Editor/EditorDocumentIO.cpp",
+    "src/Editor/EditorState.cpp",
+    "src/Editor/EditorStateExportar.cpp",
+    "src/Editor/EditorStateHelpers.cpp",
+    "src/Editor/EditorStateObjetos.cpp",
+    "src/Editor/EditorStatePintar.cpp",
+    "src/Editor/ObjectInspector.cpp",
+    "src/Engine/Window.cpp",
+    "src/Game/Skill.cpp",
+    "src/Import/TmxMapImporter.cpp",
+    "src/Level/LevelDocumentBridge.cpp",
+    "src/Level/LevelLoader.cpp",
+    "src/Level/ObjectCatalog.cpp",
+    "src/Map/EntityLayerDocument.cpp",
+    "src/Map/EventLayerDocument.cpp",
+    "src/Map/MapDocument.cpp",
+    "src/Map/MapDocumentEdits.cpp",
+    "src/Map/RegionLayerDocument.cpp",
+    "src/Map/TileLayerDocument.cpp",
+    "src/Project/MapDeserializer.cpp",
+    "src/Project/MapSerializer.cpp",
+    "src/Project/Project.cpp",
+    "src/Project/ProjectCatalog.cpp",
+    "src/Project/ProjectIndex.cpp",
+    "src/Project/ProjectIndexDuplicate.cpp",
+    "src/Project/ProjectSerializer.cpp",
+    "src/Project/SerializerHelpers.cpp",
+    "src/RPG/CharacterSheet.cpp",
+    "src/RPG/SkillEffect.cpp",
+    "src/RPG/SkillExecutor.cpp",
+    "src/RPG/TierRules.cpp",
+    "src/Render/BitmapFont.cpp",
+    "src/Render/Camera.cpp",
+    "src/Render/CapturaGL.cpp",
+    "src/Render/FormatoPPM.cpp",
+    "src/Render/HudElement.cpp",
+    "src/Render/HudManager.cpp",
+    "src/Render/HudTextWidgets.cpp",
+    "src/Render/HudWidgets.cpp",
+    "src/Render/SpriteBatch.cpp",
+    "src/Render/TileMap.cpp",
+    "src/Runtime/RuntimeTileMap.cpp",
+    "src/Runtime/RuntimeTileMapBuilder.cpp"
+   ],
+   "cabeceras_usadas": 83,
+   "ficheros_alcanzados": 137,
+   "fuentes_enlazadas": 170,
+   "fuentes_propias": [
+    "editor/src/level_editor.cpp"
+   ],
+   "para": "autor (editor antiguo)"
+  },
+  "motor_editor": {
+   "alcanzados": [
+    "editor/include/EditorApplication.h",
+    "editor/include/EditorGui.h",
+    "editor/include/EditorIconos.h",
+    "editor/include/EditorOpciones.h",
+    "editor/include/EditorVistaDeMapa.h",
+    "editor/include/InspectorPanel.h",
+    "editor/include/LayerPanel.h",
+    "editor/include/ProjectPanel.h",
+    "editor/include/ToolsPanel.h",
+    "editor/src/EditorApplication.cpp",
+    "editor/src/EditorIconos.cpp",
+    "editor/src/EditorOpciones.cpp",
+    "editor/src/InspectorPanel.cpp",
+    "editor/src/LayerPanel.cpp",
+    "editor/src/ProjectPanel.cpp",
+    "editor/src/ToolsPanel.cpp",
+    "editor/src/main.cpp",
+    "include/Core/Errors/EngineException.h",
+    "include/Core/Errors/Result.h",
+    "include/Core/Errors/ScopeGuard.h",
+    "include/Core/Ids/ProjectIds.h",
+    "include/Core/Ids/StrongId.h",
+    "include/Core/Json/JsonValue.h",
+    "include/Core/Json/JsonWriter.h",
+    "include/Core/Log/ConsoleSink.h",
+    "include/Core/Log/FileSink.h",
+    "include/Core/Log/ILogSink.h",
+    "include/Core/Log/LogConfig.h",
+    "include/Core/Log/LogFormat.h",
+    "include/Core/Log/LogRecord.h",
+    "include/Core/Log/Logger.h",
+    "include/Core/Math/GridBounds.h",
+    "include/Core/Math/GridCoord.h",
+    "include/Core/Math/IsoMath.h",
+    "include/Core/Math/UVRect.h",
+    "include/Core/Math/Vector2.h",
+    "include/Core/Math/Vector4.h",
+    "include/Core/Resources/ICatalog.h",
+    "include/Core/Resources/ResourceManager.h",
+    "include/Core/Resources/Shader.h",
+    "include/Core/Resources/ShaderManager.h",
+    "include/Core/Resources/Texture.h",
+    "include/Core/Resources/TextureAtlas.h",
+    "include/Core/Resources/TextureManager.h",
+    "include/Editor/EditorActions.h",
+    "include/Editor/EditorAyuda.h",
+    "include/Editor/EditorDocumentIO.h",
+    "include/Editor/EditorDocumentSession.h",
+    "include/Editor/EditorState.h",
+    "include/Editor/EditorStateHelpers.h",
+    "include/Editor/ProjectMaps.h",
+    "include/Editor/ProjectPanelState.h",
+    "include/Engine/Window.h",
+    "include/HUD/Iconos.h",
+    "include/Import/TmxMapImporter.h",
+    "include/Level/LevelDefinition.h",
+    "include/Level/LevelDocumentBridge.h",
+    "include/Level/LevelLoader.h",
+    "include/Level/ObjectCatalog.h",
+    "include/Map/EntityLayerDocument.h",
+    "include/Map/EventLayerDocument.h",
+    "include/Map/MapDocument.h",
+    "include/Map/MapLayer.h",
+    "include/Map/RegionLayerDocument.h",
+    "include/Map/TileLayerDocument.h",
+    "include/Project/Project.h",
+    "include/Project/ProjectCatalog.h",
+    "include/Project/ProjectIndex.h",
+    "include/Project/ProjectSerializer.h",
+    "include/Project/ProjectSettings.h",
+    "include/Project/SerializerHelpers.h",
+    "include/Render/Camera.h",
+    "include/Render/ColorLUT.h",
+    "include/Render/Culling.h",
+    "include/Render/FogOfWar.h",
+    "include/Render/Framebuffer.h",
+    "include/Render/IRenderable.h",
+    "include/Render/IUpdatable.h",
+    "include/Render/IsometricPostProcessData.h",
+    "include/Render/IsometricRenderer.h",
+    "include/Render/IsometricSceneData.h",
+    "include/Render/OcclusionRules.h",
+    "include/Render/SpriteBatch.h",
+    "include/Render/TileMap.h",
+    "include/Runtime/RuntimeTile.h",
+    "include/Runtime/RuntimeTileMap.h",
+    "include/Runtime/RuntimeTileMapBuilder.h",
+    "src/Core/Json/JsonValue.cpp",
+    "src/Core/Log/ConsoleSink.cpp",
+    "src/Core/Log/FileSink.cpp",
+    "src/Core/Log/LogConfig.cpp",
+    "src/Core/Log/LogFormat.cpp",
+    "src/Core/Log/Logger.cpp",
+    "src/Core/Resources/Shader.cpp",
+    "src/Core/Resources/ShaderManager.cpp",
+    "src/Core/Resources/Texture.cpp",
+    "src/Core/Resources/TextureAtlas.cpp",
+    "src/Core/Resources/TextureManager.cpp",
+    "src/Editor/EditorActions.cpp",
+    "src/Editor/EditorAyuda.cpp",
+    "src/Editor/EditorDocumentIO.cpp",
+    "src/Editor/EditorDocumentSession.cpp",
+    "src/Editor/EditorState.cpp",
+    "src/Editor/EditorStateExportar.cpp",
+    "src/Editor/EditorStateHelpers.cpp",
+    "src/Editor/EditorStateObjetos.cpp",
+    "src/Editor/EditorStatePintar.cpp",
+    "src/Editor/ProjectMaps.cpp",
+    "src/Editor/ProjectPanelState.cpp",
+    "src/Engine/Window.cpp",
+    "src/HUD/Iconos.cpp",
+    "src/Import/TmxMapImporter.cpp",
+    "src/Level/LevelDocumentBridge.cpp",
+    "src/Level/LevelLoader.cpp",
+    "src/Level/ObjectCatalog.cpp",
+    "src/Map/EntityLayerDocument.cpp",
+    "src/Map/EventLayerDocument.cpp",
+    "src/Map/MapDocument.cpp",
+    "src/Map/MapDocumentEdits.cpp",
+    "src/Map/RegionLayerDocument.cpp",
+    "src/Map/TileLayerDocument.cpp",
+    "src/Project/MapDeserializer.cpp",
+    "src/Project/MapSerializer.cpp",
+    "src/Project/Project.cpp",
+    "src/Project/ProjectCatalog.cpp",
+    "src/Project/ProjectIndex.cpp",
+    "src/Project/ProjectIndexDuplicate.cpp",
+    "src/Project/ProjectSerializer.cpp",
+    "src/Project/SerializerHelpers.cpp",
+    "src/Render/Camera.cpp",
+    "src/Render/ColorLUT.cpp",
+    "src/Render/FogOfWar.cpp",
+    "src/Render/Framebuffer.cpp",
+    "src/Render/IsometricRenderer.cpp",
+    "src/Render/SpriteBatch.cpp",
+    "src/Render/TileMap.cpp",
+    "src/Runtime/RuntimeTileMap.cpp",
+    "src/Runtime/RuntimeTileMapBuilder.cpp"
+   ],
+   "cabeceras_usadas": 79,
+   "ficheros_alcanzados": 138,
+   "fuentes_enlazadas": 190,
+   "fuentes_propias": [
+    "editor/src/main.cpp"
+   ],
+   "para": "autor"
+  }
+ },
+ "paquetes": {
+  "C-01": {
+   "ficheros": 2,
+   "juego": [
+    "include/Game/Skill.h",
+    "src/Game/BattleState.cpp"
+   ],
+   "level_editor": [
+    "include/Game/Skill.h"
+   ],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "C-02": {
+   "ficheros": 1,
+   "juego": [
+    "src/Engine/Application.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "C-03": {
+   "ficheros": 3,
+   "juego": [
+    "include/Game/GameSession.h",
+    "src/Engine/Application.cpp",
+    "src/Game/SaveGame.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "C-04": {
+   "ficheros": 2,
+   "juego": [
+    "src/Game/GameSession.cpp",
+    "src/Game/SaveGame.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "C-05": {
+   "ficheros": 2,
+   "juego": [
+    "include/Engine/Application.h",
+    "src/Engine/Application.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "C-06": {
+   "ficheros": 1,
+   "juego": [
+    "src/Render/BitmapFont.cpp"
+   ],
+   "level_editor": [
+    "src/Render/BitmapFont.cpp"
+   ],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "C-07": {
+   "ficheros": 2,
+   "juego": [
+    "include/Engine/Application.h",
+    "src/Engine/Application.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "C-08": {
+   "ficheros": 2,
+   "juego": [
+    "src/Game/SaveGame.cpp",
+    "src/RPG/NarrativeEngine.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "C-09": {
+   "ficheros": 2,
+   "juego": [
+    "include/Core/Resources/Texture.h",
+    "include/Runtime/RuntimeTileMap.h"
+   ],
+   "level_editor": [
+    "include/Core/Resources/Texture.h",
+    "include/Runtime/RuntimeTileMap.h"
+   ],
+   "motor_editor": [
+    "include/Core/Resources/Texture.h",
+    "include/Runtime/RuntimeTileMap.h"
+   ],
+   "nadie": []
+  },
+  "C-10": {
+   "ficheros": 2,
+   "juego": [
+    "include/Core/Json/JsonWriter.h",
+    "src/Core/Json/JsonValue.cpp"
+   ],
+   "level_editor": [
+    "include/Core/Json/JsonWriter.h",
+    "src/Core/Json/JsonValue.cpp"
+   ],
+   "motor_editor": [
+    "include/Core/Json/JsonWriter.h",
+    "src/Core/Json/JsonValue.cpp"
+   ],
+   "nadie": []
+  },
+  "C-11": {
+   "ficheros": 2,
+   "juego": [
+    "src/Project/ProjectIndex.cpp",
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "level_editor": [
+    "src/Project/ProjectIndex.cpp",
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "motor_editor": [
+    "src/Project/ProjectIndex.cpp",
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "nadie": []
+  },
+  "C-12": {
+   "ficheros": 3,
+   "juego": [
+    "include/Map/MapDocument.h",
+    "include/Map/MapLayer.h",
+    "src/Map/MapDocument.cpp"
+   ],
+   "level_editor": [
+    "include/Map/MapDocument.h",
+    "include/Map/MapLayer.h",
+    "src/Map/MapDocument.cpp"
+   ],
+   "motor_editor": [
+    "include/Map/MapDocument.h",
+    "include/Map/MapLayer.h",
+    "src/Map/MapDocument.cpp"
+   ],
+   "nadie": []
+  },
+  "C-13": {
+   "ficheros": 3,
+   "juego": [
+    "include/Map/EntityLayerDocument.h",
+    "src/Map/MapDocument.cpp",
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "level_editor": [
+    "include/Map/EntityLayerDocument.h",
+    "src/Map/MapDocument.cpp",
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "motor_editor": [
+    "include/Map/EntityLayerDocument.h",
+    "src/Map/MapDocument.cpp",
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "nadie": []
+  },
+  "C-14": {
+   "ficheros": 3,
+   "juego": [],
+   "level_editor": [
+    "editor/src/level_editor.cpp",
+    "include/Editor/EditorState.h",
+    "src/Editor/EditorState.cpp"
+   ],
+   "motor_editor": [
+    "include/Editor/EditorState.h",
+    "src/Editor/EditorState.cpp"
+   ],
+   "nadie": []
+  },
+  "C-15": {
+   "ficheros": 3,
+   "juego": [
+    "src/Project/ProjectIndex.cpp"
+   ],
+   "level_editor": [
+    "editor/src/level_editor.cpp",
+    "src/Editor/EditorState.cpp",
+    "src/Project/ProjectIndex.cpp"
+   ],
+   "motor_editor": [
+    "src/Editor/EditorState.cpp",
+    "src/Project/ProjectIndex.cpp"
+   ],
+   "nadie": []
+  },
+  "C-16": {
+   "ficheros": 2,
+   "juego": [
+    "include/Engine/Scene/SceneManager.h",
+    "src/Engine/Application.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "C-17": {
+   "ficheros": 4,
+   "juego": [
+    "include/World/World.h",
+    "src/Engine/Application.cpp",
+    "src/Game/GameSession.cpp",
+    "src/World/World.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "C-18": {
+   "ficheros": 2,
+   "juego": [
+    "src/World/World.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": [
+    "include/Core/Memory/HandlePool.h"
+   ]
+  },
+  "C-19": {
+   "ficheros": 6,
+   "juego": [
+    "include/Render/HudElement.h",
+    "include/Render/IUpdatable.h",
+    "include/Render/IsometricRenderer.h",
+    "include/Render/IsometricSceneData.h",
+    "include/Render/TileMap.h",
+    "src/Render/IsometricRenderer.cpp"
+   ],
+   "level_editor": [
+    "include/Render/HudElement.h",
+    "include/Render/IUpdatable.h",
+    "include/Render/TileMap.h"
+   ],
+   "motor_editor": [
+    "include/Render/IUpdatable.h",
+    "include/Render/IsometricRenderer.h",
+    "include/Render/IsometricSceneData.h",
+    "include/Render/TileMap.h",
+    "src/Render/IsometricRenderer.cpp"
+   ],
+   "nadie": []
+  },
+  "C-20": {
+   "ficheros": 3,
+   "juego": [
+    "include/RPG/CharacterSheet.h",
+    "src/RPG/CharacterSheet.cpp",
+    "src/RPG/ConditionEngine.cpp"
+   ],
+   "level_editor": [
+    "include/RPG/CharacterSheet.h",
+    "src/RPG/CharacterSheet.cpp"
+   ],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "C-21": {
+   "ficheros": 1,
+   "juego": [
+    "include/RPG/RandomEngine.h"
+   ],
+   "level_editor": [
+    "include/RPG/RandomEngine.h"
+   ],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "C-22": {
+   "ficheros": 4,
+   "juego": [
+    "include/RPG/DicePoolEngine.h",
+    "include/RPG/EnhanceHooks.h",
+    "include/RPG/TierRules.h",
+    "include/Runtime/RuntimeTileMap.h"
+   ],
+   "level_editor": [
+    "include/RPG/DicePoolEngine.h",
+    "include/RPG/EnhanceHooks.h",
+    "include/RPG/TierRules.h",
+    "include/Runtime/RuntimeTileMap.h"
+   ],
+   "motor_editor": [
+    "include/Runtime/RuntimeTileMap.h"
+   ],
+   "nadie": []
+  },
+  "C-23": {
+   "ficheros": 6,
+   "juego": [
+    "include/Render/IsometricPostProcessData.h",
+    "include/Render/IsometricRenderer.h",
+    "src/Engine/Application.cpp",
+    "src/Render/DynamicLightMap.cpp",
+    "src/Render/FogOfWar.cpp",
+    "src/Render/IsometricRenderer.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [
+    "include/Render/IsometricPostProcessData.h",
+    "include/Render/IsometricRenderer.h",
+    "src/Render/FogOfWar.cpp",
+    "src/Render/IsometricRenderer.cpp"
+   ],
+   "nadie": []
+  },
+  "D-01": {
+   "ficheros": 1,
+   "juego": [
+    "include/RPG/Catalogs/RpgCatalogs.h"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "D-02": {
+   "ficheros": 1,
+   "juego": [
+    "include/RPG/Catalogs/RpgCatalogs.h"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "D-03": {
+   "ficheros": 1,
+   "juego": [
+    "include/RPG/Catalogs/RpgCatalogs.h"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "D-04": {
+   "ficheros": 1,
+   "juego": [
+    "include/RPG/Catalogs/RpgCatalogs.h"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "D-05": {
+   "ficheros": 5,
+   "juego": [
+    "include/RPG/Catalogs/RpgCatalogs.h",
+    "src/RPG/InventoryEngine.cpp"
+   ],
+   "level_editor": [
+    "editor/src/level_editor.cpp",
+    "include/Project/ProjectCatalog.h",
+    "src/Project/ProjectCatalog.cpp"
+   ],
+   "motor_editor": [
+    "include/Project/ProjectCatalog.h",
+    "src/Project/ProjectCatalog.cpp"
+   ],
+   "nadie": []
+  },
+  "D-06": {
+   "ficheros": 3,
+   "juego": [
+    "include/RPG/Catalogs/RpgCatalogs.h",
+    "include/RPG/CharacterSheet.h",
+    "src/RPG/CharacterCreation.cpp"
+   ],
+   "level_editor": [
+    "include/RPG/CharacterSheet.h"
+   ],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "D-07": {
+   "ficheros": 1,
+   "juego": [
+    "include/RPG/Catalogs/RpgCatalogs.h"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "D-08": {
+   "ficheros": 2,
+   "juego": [
+    "include/Game/EnemyBrain.h",
+    "src/Game/GameSession.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "D-09": {
+   "ficheros": 3,
+   "juego": [
+    "include/RPG/EnhanceHooks.h",
+    "src/Game/BattleState.cpp",
+    "src/RPG/SkillExecutor.cpp"
+   ],
+   "level_editor": [
+    "include/RPG/EnhanceHooks.h",
+    "src/RPG/SkillExecutor.cpp"
+   ],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "D-11": {
+   "ficheros": 3,
+   "juego": [
+    "include/RPG/SkillEffect.h",
+    "src/Game/BattleState.cpp",
+    "src/RPG/SkillExecutor.cpp"
+   ],
+   "level_editor": [
+    "include/RPG/SkillEffect.h",
+    "src/RPG/SkillExecutor.cpp"
+   ],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "E-01": {
+   "ficheros": 3,
+   "juego": [
+    "include/Map/EventLayerDocument.h",
+    "include/Map/MapDocument.h",
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "level_editor": [
+    "include/Map/EventLayerDocument.h",
+    "include/Map/MapDocument.h",
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "motor_editor": [
+    "include/Map/EventLayerDocument.h",
+    "include/Map/MapDocument.h",
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "nadie": []
+  },
+  "E-02": {
+   "ficheros": 3,
+   "juego": [
+    "include/RPG/NarrativeEngine.h",
+    "src/Game/SaveGame.cpp",
+    "src/RPG/NarrativeEngine.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "E-03": {
+   "ficheros": 2,
+   "juego": [
+    "include/RPG/EventInterpreter.h",
+    "src/RPG/EventInterpreter.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "E-04": {
+   "ficheros": 5,
+   "juego": [
+    "include/Game/GameSession.h",
+    "include/RPG/EventCommand.h",
+    "src/Game/GameSession.cpp",
+    "src/RPG/SessionCommandHost.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": [
+    "src/RPG/EventCommands.cpp"
+   ]
+  },
+  "E-05": {
+   "ficheros": 2,
+   "juego": [],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": [
+    "editor/src/event_editor.cpp",
+    "include/Editor/EventEditorState.h"
+   ]
+  },
+  "E-06": {
+   "ficheros": 2,
+   "juego": [],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": [
+    "editor/src/event_editor.cpp",
+    "include/Editor/CommandListState.h"
+   ]
+  },
+  "E-07": {
+   "ficheros": 3,
+   "juego": [],
+   "level_editor": [
+    "editor/src/level_editor.cpp"
+   ],
+   "motor_editor": [],
+   "nadie": [
+    "include/RPG/AdventureValidation.h",
+    "src/RPG/AdventureValidation.cpp"
+   ]
+  },
+  "E-08": {
+   "ficheros": 2,
+   "juego": [
+    "src/RPG/EventInterpreter.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": [
+    "editor/src/event_editor.cpp"
+   ]
+  },
+  "E-10": {
+   "ficheros": 8,
+   "juego": [],
+   "level_editor": [
+    "editor/src/level_editor.cpp"
+   ],
+   "motor_editor": [
+    "editor/include/EditorApplication.h",
+    "editor/src/EditorApplication.cpp",
+    "editor/src/main.cpp",
+    "include/Editor/EditorActions.h",
+    "include/Editor/EditorDocumentSession.h",
+    "src/Editor/EditorActions.cpp",
+    "src/Editor/EditorDocumentSession.cpp"
+   ],
+   "nadie": []
+  },
+  "E-11": {
+   "ficheros": 6,
+   "juego": [
+    "include/Project/ProjectIndex.h",
+    "include/Project/ProjectSettings.h",
+    "src/Project/ProjectIndex.cpp",
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "level_editor": [
+    "include/Project/ProjectIndex.h",
+    "include/Project/ProjectSettings.h",
+    "src/Project/ProjectIndex.cpp",
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "motor_editor": [
+    "editor/src/ProjectPanel.cpp",
+    "include/Project/ProjectIndex.h",
+    "include/Project/ProjectSettings.h",
+    "src/Project/ProjectIndex.cpp",
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "nadie": [
+    "include/Editor/ProjectHub.h"
+   ]
+  },
+  "E-12": {
+   "ficheros": 10,
+   "juego": [],
+   "level_editor": [
+    "include/Editor/ObjectInspector.h",
+    "include/Editor/ObjectInspectorData.h",
+    "include/Editor/ObjectInspectorInput.h",
+    "src/Editor/EditorState.cpp"
+   ],
+   "motor_editor": [
+    "editor/include/LayerPanel.h",
+    "editor/src/EditorApplication.cpp",
+    "editor/src/LayerPanel.cpp",
+    "include/Editor/EditorDocumentSession.h",
+    "src/Editor/EditorDocumentSession.cpp",
+    "src/Editor/EditorState.cpp"
+   ],
+   "nadie": [
+    "editor/src/MapPropertiesPanel.cpp"
+   ]
+  },
+  "E-13": {
+   "ficheros": 4,
+   "juego": [
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "level_editor": [
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "motor_editor": [
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "nadie": [
+    "editor/src/AssetBrowserPanel.cpp",
+    "include/Editor/AssetBrowserState.h",
+    "src/Editor/AssetBrowserState.cpp"
+   ]
+  },
+  "E-14": {
+   "ficheros": 5,
+   "juego": [],
+   "level_editor": [
+    "include/Editor/ObjectInspector.h",
+    "include/Editor/ObjectInspectorData.h",
+    "include/Editor/ObjectInspectorInput.h"
+   ],
+   "motor_editor": [],
+   "nadie": [
+    "include/Editor/CatalogPickerState.h",
+    "include/Editor/CommandListState.h"
+   ]
+  },
+  "E-15": {
+   "ficheros": 3,
+   "juego": [],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": [
+    "editor/src/ProblemsPanel.cpp",
+    "include/Editor/ProblemsState.h",
+    "src/Editor/ProblemsState.cpp"
+   ]
+  },
+  "E-16": {
+   "ficheros": 3,
+   "juego": [
+    "include/RPG/Catalogs/RpgCatalogs.h",
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "level_editor": [
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "motor_editor": [
+    "src/Project/ProjectSerializer.cpp"
+   ],
+   "nadie": [
+    "include/Editor/ProjectDatabaseState.h"
+   ]
+  },
+  "F-01": {
+   "ficheros": 2,
+   "juego": [
+    "src/Engine/Application.cpp"
+   ],
+   "level_editor": [
+    "editor/src/level_editor.cpp"
+   ],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "F-02": {
+   "ficheros": 1,
+   "juego": [],
+   "level_editor": [
+    "editor/src/level_editor.cpp"
+   ],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "F-03": {
+   "ficheros": 2,
+   "juego": [
+    "include/Map/MapDocument.h",
+    "src/Engine/Application.cpp"
+   ],
+   "level_editor": [
+    "include/Map/MapDocument.h"
+   ],
+   "motor_editor": [
+    "include/Map/MapDocument.h"
+   ],
+   "nadie": []
+  },
+  "G-01": {
+   "ficheros": 2,
+   "juego": [],
+   "level_editor": [
+    "editor/src/level_editor.cpp",
+    "src/Editor/EditorState.cpp"
+   ],
+   "motor_editor": [
+    "src/Editor/EditorState.cpp"
+   ],
+   "nadie": []
+  },
+  "G-02": {
+   "ficheros": 3,
+   "juego": [],
+   "level_editor": [
+    "editor/src/level_editor.cpp",
+    "include/Editor/EditorState.h",
+    "src/Editor/EditorState.cpp"
+   ],
+   "motor_editor": [
+    "include/Editor/EditorState.h",
+    "src/Editor/EditorState.cpp"
+   ],
+   "nadie": []
+  },
+  "G-03": {
+   "ficheros": 2,
+   "juego": [],
+   "level_editor": [
+    "include/Editor/EditorState.h",
+    "src/Editor/EditorState.cpp"
+   ],
+   "motor_editor": [
+    "include/Editor/EditorState.h",
+    "src/Editor/EditorState.cpp"
+   ],
+   "nadie": []
+  },
+  "G-05": {
+   "ficheros": 1,
+   "juego": [],
+   "level_editor": [
+    "editor/src/level_editor.cpp"
+   ],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "G-08": {
+   "ficheros": 2,
+   "juego": [
+    "include/Game/TitleMenuState.h",
+    "src/Engine/Application.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "G-09": {
+   "ficheros": 2,
+   "juego": [
+    "include/RPG/CharacterCreationScreen.h",
+    "src/Engine/Application.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "G-10": {
+   "ficheros": 1,
+   "juego": [
+    "src/Engine/Application.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "G-11": {
+   "ficheros": 8,
+   "juego": [
+    "include/Game/SaveGame.h",
+    "include/Game/SaveGameValidation.h",
+    "include/Game/SaveSlotState.h",
+    "include/Project/SerializerHelpers.h",
+    "src/Game/SaveGame.cpp",
+    "src/Game/SaveSlotState.cpp",
+    "src/Project/SerializerHelpers.cpp"
+   ],
+   "level_editor": [
+    "include/Project/SerializerHelpers.h",
+    "src/Project/SerializerHelpers.cpp"
+   ],
+   "motor_editor": [
+    "include/Project/SerializerHelpers.h",
+    "src/Project/SerializerHelpers.cpp"
+   ],
+   "nadie": [
+    "src/Game/SaveGameFormat.cpp"
+   ]
+  },
+  "G-12": {
+   "ficheros": 16,
+   "juego": [
+    "include/Game/InventoryMenuState.h",
+    "include/Game/InventoryScreen.h",
+    "include/Game/PlayerControls.h",
+    "include/Game/PlayerControlsData.h",
+    "include/Render/AnimatedEntity.h",
+    "include/Render/Player.h",
+    "include/Render/PlayerData.h",
+    "include/Render/PlayerMotionData.h",
+    "src/Engine/ApplicationHud.cpp",
+    "src/Engine/ApplicationPantallas.cpp",
+    "src/Game/GameSession.cpp",
+    "src/Game/InventoryMenuState.cpp",
+    "src/Game/InventoryScreen.cpp",
+    "src/RPG/InventoryEngine.cpp",
+    "src/Render/AnimatedEntity.cpp",
+    "src/Render/Player.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "G-13": {
+   "ficheros": 3,
+   "juego": [
+    "src/Engine/Application.cpp",
+    "src/Game/BattleState.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": [
+    "include/Game/BattleMenuState.h"
+   ]
+  },
+  "G-14": {
+   "ficheros": 8,
+   "juego": [
+    "include/Render/HudTextWidgets.h",
+    "include/Render/HudTextWidgetsData.h",
+    "include/Render/HudWidgets.h",
+    "include/Render/HudWidgetsData.h",
+    "src/Engine/Application.cpp",
+    "src/Game/GameSession.cpp",
+    "src/Render/HudTextWidgets.cpp",
+    "src/Render/HudWidgets.cpp"
+   ],
+   "level_editor": [
+    "include/Render/HudTextWidgets.h",
+    "include/Render/HudTextWidgetsData.h",
+    "include/Render/HudWidgets.h",
+    "include/Render/HudWidgetsData.h",
+    "src/Render/HudTextWidgets.cpp",
+    "src/Render/HudWidgets.cpp"
+   ],
+   "motor_editor": [],
+   "nadie": []
+  },
+  "G-15": {
+   "ficheros": 2,
+   "juego": [],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": [
+    "editor/src/ExportPanel.cpp",
+    "include/Editor/ExportState.h"
+   ]
+  },
+  "G-17": {
+   "ficheros": 2,
+   "juego": [
+    "include/Engine/Locale.h",
+    "src/Engine/Locale.cpp"
+   ],
+   "level_editor": [],
+   "motor_editor": [],
+   "nadie": []
+  }
+ }
+}

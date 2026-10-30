@@ -1,0 +1,168 @@
+@startgantt
+
+title Fase 1 — Arquitectura documental — subtareas atómicas revisables
+
+' 1 'día' = 1 jornada de esfuerzo (~6 h). Las medias jornadas del
+' roadmap (0,5 j y 1,5 j) se redondean al alza porque PlantUML solo
+' admite días enteros; el esfuerzo exacto va entre corchetes en el
+' nombre de cada subtarea.
+' Las subtareas de paquetes ya avanzados se marcan con su porcentaje
+' heredado del paquete: revísalas antes de darlas por hechas.
+
+Project starts 2026-09-01
+saturday are closed
+sunday are closed
+
+
+-- DOC-01 — Definir Project y ProjectSettings  [PARCIAL 60%] --
+
+[DOC-01.1 (1,5 j) crear tipos sin I/O] lasts 2 days
+[DOC-01.1 (1,5 j) crear tipos sin I/O] is colored in #E3A82B
+[DOC-01.1 (1,5 j) crear tipos sin I/O] is 60% completed
+[DOC-01.2 (1,5 j) añadir invariantes y validación] lasts 2 days
+[DOC-01.2 (1,5 j) añadir invariantes y validación] is colored in #E3A82B
+[DOC-01.2 (1,5 j) añadir invariantes y validación] is 60% completed
+[DOC-01.1 (1,5 j) crear tipos sin I/O] -> [DOC-01.2 (1,5 j) añadir invariantes y validación]
+[DOC-01.3 (1 j) integrar target `motor_project`] lasts 1 days
+[DOC-01.3 (1 j) integrar target `motor_project`] is colored in #E3A82B
+[DOC-01.3 (1 j) integrar target `motor_project`] is 60% completed
+[DOC-01.2 (1,5 j) añadir invariantes y validación] -> [DOC-01.3 (1 j) integrar target `motor_project`]
+[DOC-01.4 (1 j) probar construcción válida e inválida] lasts 1 days
+[DOC-01.4 (1 j) probar construcción válida e inválida] is colored in #E3A82B
+[DOC-01.4 (1 j) probar construcción válida e inválida] is 60% completed
+[DOC-01.3 (1 j) integrar target `motor_project`] -> [DOC-01.4 (1 j) probar construcción válida e inválida]
+[DOC-01 listo] happens at [DOC-01.4 (1 j) probar construcción válida e inválida]'s end
+
+-- DOC-02 — Definir MapDocument y capas tipadas  [PARCIAL 45%] --
+
+[DOC-02.1 (2 j) crear cabecera base de capa] lasts 2 days
+[DOC-02.1 (2 j) crear cabecera base de capa] is colored in #E3A82B
+[DOC-02.1 (2 j) crear cabecera base de capa] is 45% completed
+[DOC-01.4 (1 j) probar construcción válida e inválida] -> [DOC-02.1 (2 j) crear cabecera base de capa]
+[DOC-02.2 (2 j) crear tres tipos de capa] lasts 2 days
+[DOC-02.2 (2 j) crear tres tipos de capa] is colored in #E3A82B
+[DOC-02.2 (2 j) crear tres tipos de capa] is 45% completed
+[DOC-02.1 (2 j) crear cabecera base de capa] -> [DOC-02.2 (2 j) crear tres tipos de capa]
+[DOC-02.3 (1,5 j) añadir orden e invariantes] lasts 2 days
+[DOC-02.3 (1,5 j) añadir orden e invariantes] is colored in #E3A82B
+[DOC-02.3 (1,5 j) añadir orden e invariantes] is 45% completed
+[DOC-02.2 (2 j) crear tres tipos de capa] -> [DOC-02.3 (1,5 j) añadir orden e invariantes]
+[DOC-02.4 (1,5 j) probar dimensiones y capas duplicadas] lasts 2 days
+[DOC-02.4 (1,5 j) probar dimensiones y capas duplicadas] is colored in #E3A82B
+[DOC-02.4 (1,5 j) probar dimensiones y capas duplicadas] is 45% completed
+[DOC-02.3 (1,5 j) añadir orden e invariantes] -> [DOC-02.4 (1,5 j) probar dimensiones y capas duplicadas]
+[DOC-02 listo] happens at [DOC-02.4 (1,5 j) probar dimensiones y capas duplicadas]'s end
+
+-- DOC-03 — Separar MapDocument de RuntimeTileMap  [REPLANTEAR 40%] --
+
+[DOC-03.1 (2 j) renombrar conceptualmente la representación runtime] lasts 2 days
+[DOC-03.1 (2 j) renombrar conceptualmente la representación runtime] is colored in #D9614C
+[DOC-03.1 (2 j) renombrar conceptualmente la representación runtime] is 40% completed
+[DOC-02.4 (1,5 j) probar dimensiones y capas duplicadas] -> [DOC-03.1 (2 j) renombrar conceptualmente la representación runtime]
+[DOC-03.2 (2 j) crear builder sin cambiar render] lasts 2 days
+[DOC-03.2 (2 j) crear builder sin cambiar render] is colored in #D9614C
+[DOC-03.2 (2 j) crear builder sin cambiar render] is 40% completed
+[DOC-03.1 (2 j) renombrar conceptualmente la representación runtime] -> [DOC-03.2 (2 j) crear builder sin cambiar render]
+[DOC-03.3 (1,5 j) adaptar renderer al nuevo tipo] lasts 2 days
+[DOC-03.3 (1,5 j) adaptar renderer al nuevo tipo] is colored in #D9614C
+[DOC-03.3 (1,5 j) adaptar renderer al nuevo tipo] is 40% completed
+[DOC-03.2 (2 j) crear builder sin cambiar render] -> [DOC-03.3 (1,5 j) adaptar renderer al nuevo tipo]
+[DOC-03.4 (1,5 j) mantener demo TMX mediante adaptador temporal] lasts 2 days
+[DOC-03.4 (1,5 j) mantener demo TMX mediante adaptador temporal] is colored in #D9614C
+[DOC-03.4 (1,5 j) mantener demo TMX mediante adaptador temporal] is 40% completed
+[DOC-03.3 (1,5 j) adaptar renderer al nuevo tipo] -> [DOC-03.4 (1,5 j) mantener demo TMX mediante adaptador temporal]
+[DOC-03 listo] happens at [DOC-03.4 (1,5 j) mantener demo TMX mediante adaptador temporal]'s end
+
+-- DOC-04 — Implementar IDs estables y referencias  [PARCIAL 50%] --
+
+[DOC-04.1 (1 j) crear wrapper fuerte] lasts 1 days
+[DOC-04.1 (1 j) crear wrapper fuerte] is colored in #E3A82B
+[DOC-04.1 (1 j) crear wrapper fuerte] is 50% completed
+[DOC-03.4 (1,5 j) mantener demo TMX mediante adaptador temporal] -> [DOC-04.1 (1 j) crear wrapper fuerte]
+[DOC-04.2 (1 j) añadir generador inyectable] lasts 1 days
+[DOC-04.2 (1 j) añadir generador inyectable] is colored in #E3A82B
+[DOC-04.2 (1 j) añadir generador inyectable] is 50% completed
+[DOC-04.1 (1 j) crear wrapper fuerte] -> [DOC-04.2 (1 j) añadir generador inyectable]
+[DOC-04.3 (1 j) sustituir strings ambiguos] lasts 1 days
+[DOC-04.3 (1 j) sustituir strings ambiguos] is colored in #E3A82B
+[DOC-04.3 (1 j) sustituir strings ambiguos] is 50% completed
+[DOC-04.2 (1 j) añadir generador inyectable] -> [DOC-04.3 (1 j) sustituir strings ambiguos]
+[DOC-04.4 (1 j) probar igualdad y round-trip] lasts 1 days
+[DOC-04.4 (1 j) probar igualdad y round-trip] is colored in #E3A82B
+[DOC-04.4 (1 j) probar igualdad y round-trip] is 50% completed
+[DOC-04.3 (1 j) sustituir strings ambiguos] -> [DOC-04.4 (1 j) probar igualdad y round-trip]
+[DOC-04 listo] happens at [DOC-04.4 (1 j) probar igualdad y round-trip]'s end
+
+-- DOC-05 — Serialización JSON y versionado de esquema  [PARCIAL 55%] --
+
+[DOC-05.1 (1,5 j) elegir/adaptar biblioteca] lasts 2 days
+[DOC-05.1 (1,5 j) elegir/adaptar biblioteca] is colored in #E3A82B
+[DOC-05.1 (1,5 j) elegir/adaptar biblioteca] is 55% completed
+[DOC-04.4 (1 j) probar igualdad y round-trip] -> [DOC-05.1 (1,5 j) elegir/adaptar biblioteca]
+[DOC-05.2 (1,5 j) serializar proyecto y mapa] lasts 2 days
+[DOC-05.2 (1,5 j) serializar proyecto y mapa] is colored in #E3A82B
+[DOC-05.2 (1,5 j) serializar proyecto y mapa] is 55% completed
+[DOC-05.1 (1,5 j) elegir/adaptar biblioteca] -> [DOC-05.2 (1,5 j) serializar proyecto y mapa]
+[DOC-05.3 (1 j) cargar con errores localizados] lasts 1 days
+[DOC-05.3 (1 j) cargar con errores localizados] is colored in #E3A82B
+[DOC-05.3 (1 j) cargar con errores localizados] is 55% completed
+[DOC-05.2 (1,5 j) serializar proyecto y mapa] -> [DOC-05.3 (1 j) cargar con errores localizados]
+[DOC-05.4 (1 j) guardar vía temporal+rename] lasts 1 days
+[DOC-05.4 (1 j) guardar vía temporal+rename] is colored in #E3A82B
+[DOC-05.4 (1 j) guardar vía temporal+rename] is 55% completed
+[DOC-05.3 (1 j) cargar con errores localizados] -> [DOC-05.4 (1 j) guardar vía temporal+rename]
+[DOC-05.5 (1 j) añadir schema y fixtures] lasts 1 days
+[DOC-05.5 (1 j) añadir schema y fixtures] is colored in #E3A82B
+[DOC-05.5 (1 j) añadir schema y fixtures] is 55% completed
+[DOC-05.4 (1 j) guardar vía temporal+rename] -> [DOC-05.5 (1 j) añadir schema y fixtures]
+[DOC-05 listo] happens at [DOC-05.5 (1 j) añadir schema y fixtures]'s end
+
+-- DOC-06 — Convertir el parser TMX en importador  [PARCIAL 40%] --
+
+[DOC-06.1 (1 j) extraer parsing de `TileMap`] lasts 1 days
+[DOC-06.1 (1 j) extraer parsing de `TileMap`] is colored in #E3A82B
+[DOC-06.1 (1 j) extraer parsing de `TileMap`] is 40% completed
+[DOC-05.5 (1 j) añadir schema y fixtures] -> [DOC-06.1 (1 j) extraer parsing de `TileMap`]
+[DOC-06.2 (1 j) mapear capas y colisión] lasts 1 days
+[DOC-06.2 (1 j) mapear capas y colisión] is colored in #E3A82B
+[DOC-06.2 (1 j) mapear capas y colisión] is 40% completed
+[DOC-06.1 (1 j) extraer parsing de `TileMap`] -> [DOC-06.2 (1 j) mapear capas y colisión]
+[DOC-06.3 (1 j) crear informe de importación] lasts 1 days
+[DOC-06.3 (1 j) crear informe de importación] is colored in #E3A82B
+[DOC-06.3 (1 j) crear informe de importación] is 40% completed
+[DOC-06.2 (1 j) mapear capas y colisión] -> [DOC-06.3 (1 j) crear informe de importación]
+[DOC-06.4 (1 j) mantener fixture existente] lasts 1 days
+[DOC-06.4 (1 j) mantener fixture existente] is colored in #E3A82B
+[DOC-06.4 (1 j) mantener fixture existente] is 40% completed
+[DOC-06.3 (1 j) crear informe de importación] -> [DOC-06.4 (1 j) mantener fixture existente]
+[DOC-06.5 (1 j) eliminar I/O TMX del renderer] lasts 1 days
+[DOC-06.5 (1 j) eliminar I/O TMX del renderer] is colored in #E3A82B
+[DOC-06.5 (1 j) eliminar I/O TMX del renderer] is 40% completed
+[DOC-06.4 (1 j) mantener fixture existente] -> [DOC-06.5 (1 j) eliminar I/O TMX del renderer]
+[DOC-06 listo] happens at [DOC-06.5 (1 j) eliminar I/O TMX del renderer]'s end
+
+-- DOC-07 — Pruebas de ida y vuelta TMX-JSON-Runtime  [PARCIAL 60%] --
+
+[DOC-07.1 (1 j) crear expected JSON revisable] lasts 1 days
+[DOC-07.1 (1 j) crear expected JSON revisable] is colored in #E3A82B
+[DOC-07.1 (1 j) crear expected JSON revisable] is 60% completed
+[DOC-06.5 (1 j) eliminar I/O TMX del renderer] -> [DOC-07.1 (1 j) crear expected JSON revisable]
+[DOC-07.2 (1 j) comparar documentos] lasts 1 days
+[DOC-07.2 (1 j) comparar documentos] is colored in #E3A82B
+[DOC-07.2 (1 j) comparar documentos] is 60% completed
+[DOC-07.1 (1 j) crear expected JSON revisable] -> [DOC-07.2 (1 j) comparar documentos]
+[DOC-07.3 (1 j) construir runtime] lasts 1 days
+[DOC-07.3 (1 j) construir runtime] is colored in #E3A82B
+[DOC-07.3 (1 j) construir runtime] is 60% completed
+[DOC-07.2 (1 j) comparar documentos] -> [DOC-07.3 (1 j) construir runtime]
+[DOC-07.4 (0,5 j) comparar colisión y render] lasts 1 days
+[DOC-07.4 (0,5 j) comparar colisión y render] is colored in #E3A82B
+[DOC-07.4 (0,5 j) comparar colisión y render] is 60% completed
+[DOC-07.3 (1 j) construir runtime] -> [DOC-07.4 (0,5 j) comparar colisión y render]
+[DOC-07.5 (0,5 j) ejecutar en CI] lasts 1 days
+[DOC-07.5 (0,5 j) ejecutar en CI] is colored in #E3A82B
+[DOC-07.5 (0,5 j) ejecutar en CI] is 60% completed
+[DOC-07.4 (0,5 j) comparar colisión y render] -> [DOC-07.5 (0,5 j) ejecutar en CI]
+[DOC-07 listo] happens at [DOC-07.5 (0,5 j) ejecutar en CI]'s end
+
+@endgantt

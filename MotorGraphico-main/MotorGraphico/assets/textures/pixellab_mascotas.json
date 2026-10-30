@@ -1,0 +1,767 @@
+{
+ "_nota": "MASC-01 — Mascotes màgiques (tools/pixellab/importar_mascotas.py, no editar a mà): PixelLab create_character quadrúpede (8 direccions) + animacions de plantilla a les 4 diagonals; la màgia, per codi. Per espècie i animació, «dirs» = [primer frame (1-based), quants] a SE, SO, NO, NE. Ho llegeixen Game::RegistroSprites (frames) i Game::FullaMascotes (la resta).",
+ "generador": "tools/pixellab/importar_mascotas.py",
+ "image": "pixellab_mascotas.png",
+ "frameSize": [
+  72,
+  72
+ ],
+ "columns": 16,
+ "rows": 54,
+ "peu": {
+  "x": 36,
+  "y": 61
+ },
+ "frames": {
+  "mascota_gat_alquimia": 25,
+  "mascota_gos_fanal": 133,
+  "mascota_lleonet_llauto": 213,
+  "mascota_llebrer_llum": 305,
+  "mascota_dragonet": 385,
+  "mascota_guineu_vent": 493,
+  "mascota_poni_boira": 581,
+  "mascota_osset_molsa": 685
+ },
+ "especies": [
+  {
+   "id": "gat_alquimia",
+   "nom": "Gat d'alquímia",
+   "velocitat": 1.3,
+   "radi": 4,
+   "afectuosa": true,
+   "ombra": 19,
+   "anims": {
+    "camina": {
+     "fps": 10,
+     "dirs": [
+      [
+       1,
+       6
+      ],
+      [
+       7,
+       6
+      ],
+      [
+       13,
+       6
+      ],
+      [
+       19,
+       6
+      ]
+     ]
+    },
+    "repos": {
+     "fps": 6,
+     "dirs": [
+      [
+       25,
+       8
+      ],
+      [
+       33,
+       8
+      ],
+      [
+       41,
+       8
+      ],
+      [
+       49,
+       8
+      ]
+     ]
+    },
+    "saluda": {
+     "fps": 8,
+     "dirs": [
+      [
+       57,
+       8
+      ],
+      [
+       65,
+       8
+      ],
+      [
+       73,
+       8
+      ],
+      [
+       81,
+       8
+      ]
+     ],
+     "aguanta": true
+    },
+    "dorm": {
+     "fps": 3,
+     "dirs": [
+      [
+       89,
+       10
+      ],
+      [
+       99,
+       10
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   },
+   "magia": {
+    "color": "cristall",
+    "particula": "hexagon",
+    "quantes": 3,
+    "alcada": 10
+   }
+  },
+  {
+   "id": "gos_fanal",
+   "nom": "Gos de fanal",
+   "velocitat": 1.6,
+   "radi": 5,
+   "afectuosa": true,
+   "ombra": 22,
+   "anims": {
+    "camina": {
+     "fps": 10,
+     "dirs": [
+      [
+       109,
+       6
+      ],
+      [
+       115,
+       6
+      ],
+      [
+       121,
+       6
+      ],
+      [
+       127,
+       6
+      ]
+     ]
+    },
+    "repos": {
+     "fps": 6,
+     "dirs": [
+      [
+       133,
+       8
+      ],
+      [
+       141,
+       8
+      ],
+      [
+       149,
+       8
+      ],
+      [
+       157,
+       8
+      ]
+     ]
+    },
+    "saluda": {
+     "fps": 8,
+     "dirs": [
+      [
+       165,
+       6
+      ],
+      [
+       171,
+       6
+      ],
+      [
+       177,
+       6
+      ],
+      [
+       183,
+       6
+      ]
+     ]
+    }
+   },
+   "magia": {
+    "color": "llum",
+    "particula": "espurna",
+    "quantes": 2,
+    "alcada": 16
+   }
+  },
+  {
+   "id": "lleonet_llauto",
+   "nom": "Lleonet de llautó",
+   "velocitat": 1.3,
+   "radi": 3,
+   "afectuosa": true,
+   "ombra": 22,
+   "anims": {
+    "camina": {
+     "fps": 10,
+     "dirs": [
+      [
+       189,
+       6
+      ],
+      [
+       195,
+       6
+      ],
+      [
+       201,
+       6
+      ],
+      [
+       207,
+       6
+      ]
+     ]
+    },
+    "repos": {
+     "fps": 6,
+     "dirs": [
+      [
+       213,
+       9
+      ],
+      [
+       222,
+       9
+      ],
+      [
+       231,
+       9
+      ],
+      [
+       240,
+       9
+      ]
+     ]
+    },
+    "saluda": {
+     "fps": 6,
+     "dirs": [
+      [
+       249,
+       8
+      ],
+      [
+       257,
+       8
+      ],
+      [
+       265,
+       8
+      ],
+      [
+       273,
+       8
+      ]
+     ]
+    }
+   },
+   "magia": {
+    "color": "llauto",
+    "particula": "mota",
+    "quantes": 3,
+    "alcada": 18
+   }
+  },
+  {
+   "id": "llebrer_llum",
+   "nom": "Llebrer de la Llum",
+   "velocitat": 1.9,
+   "radi": 5,
+   "afectuosa": true,
+   "ombra": 24,
+   "anims": {
+    "camina": {
+     "fps": 11,
+     "dirs": [
+      [
+       281,
+       6
+      ],
+      [
+       287,
+       6
+      ],
+      [
+       293,
+       6
+      ],
+      [
+       299,
+       6
+      ]
+     ]
+    },
+    "repos": {
+     "fps": 6,
+     "dirs": [
+      [
+       305,
+       8
+      ],
+      [
+       313,
+       8
+      ],
+      [
+       321,
+       8
+      ],
+      [
+       329,
+       8
+      ]
+     ]
+    },
+    "saluda": {
+     "fps": 8,
+     "dirs": [
+      [
+       337,
+       6
+      ],
+      [
+       343,
+       6
+      ],
+      [
+       349,
+       6
+      ],
+      [
+       355,
+       6
+      ]
+     ]
+    }
+   },
+   "magia": {
+    "color": "llum",
+    "particula": "octagon",
+    "quantes": 3,
+    "alcada": 16
+   }
+  },
+  {
+   "id": "dragonet",
+   "nom": "Dragonet de les brases",
+   "velocitat": 1.2,
+   "radi": 4,
+   "afectuosa": true,
+   "ombra": 24,
+   "anims": {
+    "camina": {
+     "fps": 10,
+     "dirs": [
+      [
+       361,
+       6
+      ],
+      [
+       367,
+       6
+      ],
+      [
+       373,
+       6
+      ],
+      [
+       379,
+       6
+      ]
+     ]
+    },
+    "repos": {
+     "fps": 6,
+     "dirs": [
+      [
+       385,
+       8
+      ],
+      [
+       393,
+       8
+      ],
+      [
+       401,
+       8
+      ],
+      [
+       409,
+       8
+      ]
+     ]
+    },
+    "saluda": {
+     "fps": 8,
+     "dirs": [
+      [
+       417,
+       8
+      ],
+      [
+       425,
+       8
+      ],
+      [
+       433,
+       8
+      ],
+      [
+       441,
+       8
+      ]
+     ],
+     "aguanta": true
+    },
+    "dorm": {
+     "fps": 3,
+     "dirs": [
+      [
+       449,
+       10
+      ],
+      [
+       459,
+       10
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   },
+   "magia": {
+    "color": "foc",
+    "particula": "brasa",
+    "quantes": 4,
+    "alcada": 10
+   }
+  },
+  {
+   "id": "guineu_vent",
+   "nom": "Guineu del vent",
+   "velocitat": 1.7,
+   "radi": 5,
+   "afectuosa": false,
+   "ombra": 22,
+   "anims": {
+    "camina": {
+     "fps": 10,
+     "dirs": [
+      [
+       469,
+       6
+      ],
+      [
+       475,
+       6
+      ],
+      [
+       481,
+       6
+      ],
+      [
+       487,
+       6
+      ]
+     ]
+    },
+    "repos": {
+     "fps": 6,
+     "dirs": [
+      [
+       493,
+       8
+      ],
+      [
+       501,
+       8
+      ],
+      [
+       509,
+       8
+      ],
+      [
+       517,
+       8
+      ]
+     ]
+    },
+    "fuig": {
+     "fps": 12,
+     "dirs": [
+      [
+       525,
+       8
+      ],
+      [
+       533,
+       8
+      ],
+      [
+       541,
+       8
+      ],
+      [
+       549,
+       8
+      ]
+     ]
+    }
+   },
+   "magia": {
+    "color": "vent",
+    "particula": "espurna",
+    "quantes": 2,
+    "alcada": 10,
+    "anell": true
+   }
+  },
+  {
+   "id": "poni_boira",
+   "nom": "Poni de boira",
+   "velocitat": 1.5,
+   "radi": 4,
+   "afectuosa": false,
+   "ombra": 37,
+   "anims": {
+    "camina": {
+     "fps": 10,
+     "dirs": [
+      [
+       557,
+       6
+      ],
+      [
+       563,
+       6
+      ],
+      [
+       569,
+       6
+      ],
+      [
+       575,
+       6
+      ]
+     ]
+    },
+    "repos": {
+     "fps": 6,
+     "dirs": [
+      [
+       581,
+       11
+      ],
+      [
+       592,
+       11
+      ],
+      [
+       603,
+       11
+      ],
+      [
+       614,
+       11
+      ]
+     ]
+    },
+    "repos2": {
+     "fps": 6,
+     "dirs": [
+      [
+       625,
+       5
+      ],
+      [
+       630,
+       5
+      ],
+      [
+       635,
+       5
+      ],
+      [
+       640,
+       5
+      ]
+     ]
+    },
+    "dorm": {
+     "fps": 4,
+     "dirs": [
+      [
+       645,
+       8
+      ],
+      [
+       653,
+       8
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   },
+   "magia": {
+    "color": "boira",
+    "particula": "boira",
+    "quantes": 5,
+    "alcada": 22,
+    "rastre": true
+   }
+  },
+  {
+   "id": "osset_molsa",
+   "nom": "Osset de molsa",
+   "velocitat": 1.0,
+   "radi": 3,
+   "afectuosa": true,
+   "ombra": 28,
+   "anims": {
+    "camina": {
+     "fps": 9,
+     "dirs": [
+      [
+       661,
+       6
+      ],
+      [
+       667,
+       6
+      ],
+      [
+       673,
+       6
+      ],
+      [
+       679,
+       6
+      ]
+     ]
+    },
+    "repos": {
+     "fps": 5,
+     "dirs": [
+      [
+       685,
+       17
+      ],
+      [
+       702,
+       17
+      ],
+      [
+       719,
+       17
+      ],
+      [
+       736,
+       17
+      ]
+     ]
+    },
+    "saluda": {
+     "fps": 6,
+     "dirs": [
+      [
+       753,
+       10
+      ],
+      [
+       763,
+       10
+      ],
+      [
+       773,
+       10
+      ],
+      [
+       783,
+       10
+      ]
+     ]
+    },
+    "dorm": {
+     "fps": 4,
+     "dirs": [
+      [
+       793,
+       8
+      ],
+      [
+       801,
+       8
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ]
+    }
+   },
+   "magia": {
+    "color": "espora",
+    "particula": "espora",
+    "quantes": 4,
+    "alcada": 16
+   }
+  }
+ ],
+ "efectes": {
+  "llum_cristall": 809,
+  "hexagon_cristall": 810,
+  "llum_llum": 814,
+  "espurna_llum": 815,
+  "llum_llauto": 819,
+  "mota_llauto": 820,
+  "octagon_llum": 824,
+  "llum_foc": 828,
+  "brasa_foc": 829,
+  "fum_gris": 833,
+  "llum_vent": 837,
+  "espurna_vent": 838,
+  "anell_rere_vent": 842,
+  "anell_davant_vent": 846,
+  "llum_boira": 850,
+  "boira_boira": 851,
+  "llum_espora": 855,
+  "espora_espora": 856
+ }
+}

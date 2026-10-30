@@ -1,0 +1,47 @@
+{
+ "id": "EST-42",
+ "paquete": "EST-42",
+ "fase": "estabilizacion",
+ "nombre": "Cablear o retirar: nueve funcionalidades terminadas que nadie enchufo",
+ "date": "2026-09-24",
+ "author": "Claude (sesion 24/09) — MEDIDO, no decidido. La decision es de Oriol.",
+ "status": "DECIDIDO 29/09 por Oriol: se conecta toda la capa de estado a motor_editor. Medido el 24/09: 9 piezas, 4959 lineas.",
+ "que_se_ha_hecho": {
+  "por que la cifra vieja no servia": "medir_alcance.py daba 43 cabeceras 'sin alcance', pero NO sigue los #include entre cabeceras: siete de las 43 eran los CatalogLoaders* que RpgCatalogs.h incluye una por una, y RpgCoreDefinitions.h, que incluyen cuatro cabeceras mas. Un listado con falsos positivos no se usa para borrar: se ignora, y por eso EST-42 llevaba semanas 'pendiente'.",
+  "el criterio nuevo": "tools/buscar_sobrante.py --muertos. La pregunta es comprobable a mano: se refiere a esta cabecera algun fichero que no sea ella misma, su .cpp y su prueba? Si no, es una funcionalidad terminada que nadie enchufo.",
+  "la lista": [
+   "include/Editor/AssetBrowserState.h — 1405 lineas (+ AssetBrowserStateTests, AssetBrowserTests)",
+   "include/Game/InventoryMenuState.h — 823",
+   "include/RPG/Audio.h — 653",
+   "include/Editor/ProjectDatabaseState.h — 625 (dos ficheros de prueba, uno de ellos sin versionar: trabajo en vuelo)",
+   "editor/include/ProblemsPanel.h — 454",
+   "include/Game/TitleScreen.h — 280",
+   "include/Game/OptionsLocaleBridge.h — 252 (H1-05, commiteado el 22/09)",
+   "include/RPG/LootResolver.h — 241",
+   "include/Game/BattleMenuState.h — 226"
+  ]
+ },
+ "decisiones": [
+  "NO BORRO NADA. Una funcionalidad terminada y con pruebas no es basura: es trabajo hecho sin enchufar, y decidir cual se cablea y cual se retira es diseno de producto, no mantenimiento. El informe dice 'decide', no 'borra'.",
+  "Dos de las nueve no son iguales que las otras siete, y eso si es informacion: ProblemsPanel.cpp SE COMPILA dentro de motor_editor (esta en su add_executable) y nadie lo llama -- peso muerto dentro de un binario vivo. Y TitleScreen es el unico SUPERADO de verdad: H0-07 lo sustituyo por TitleMenuState, y el Application.h del arbol de trabajo ya no lo incluye. Se puede retirar en cuanto ese trabajo se commitee; hoy no, porque HEAD todavia lo usa."
+ ],
+ "actions": [
+  "tools/buscar_sobrante.py + test_buscar_sobrante.py (10 casos) — la medida deja de ser un favor y pasa a ser un comando.",
+  "cmake/BuscarSobranteTests.cmake — registrada en CTest."
+ ],
+ "verification": [
+  "Los nueve comprobados uno a uno con grep antes de escribir la lista: ninguno aparece en ningun fichero fuera de su propia familia.",
+  "Y al reves: los siete CatalogLoaders* y RpgCoreDefinitions.h, que medir_alcance daba por muertos, SI aparecen (RpgCatalogs.h, ConditionEngine.h, CharacterSheet.h, InventoryEngine.h, CatalogLoader.h). El criterio nuevo no los marca."
+ ],
+ "pending": [
+  "LA DECISION, que es de Oriol: para cada una de las nueve, cablear o retirar. Retirar son ~4959 lineas menos; cablear son nueve funcionalidades que el juego o el editor todavia no ofrecen.",
+  "Si se retira alguna, el borrado es facil: el informe dice exactamente que ficheros se van con cada cabecera."
+ ],
+ "decision_2026-09-29": {
+  "de": "Oriol",
+  "que": "Se conecta TODA la capa de estado a motor_editor: Problemas (E-15, con la validacion de E-07), Eventos (E-05/E-06/E-08), Base de datos (E-16/E-14), Recursos y mapa (E-13/E-12).",
+  "como": "Sobre la mitad buena, no sobre las copias: planificacion/juicio_clases/07-editor.md (hallazgo 3 y resumen final). Pendiente de su visto bueno: retirar AssetBrowserPanel y la mitad de capas de MapPropertiesPanel, y reescribir CommandListState sobre MapEventCommand.",
+  "audio_y_botin": "Audio y LootResolver entran en la decision 'enlazar lo que se pueda ya' (planificacion/juicio_clases/08-diseno.md, 1.3).",
+  "medida_corregida": "La capa de estado del editor son 11 cabeceras sin alcance, no 12: ProjectHub lo usa level_editor (entra por target_sources, que medir_alcance.py no lee)."
+ }
+}

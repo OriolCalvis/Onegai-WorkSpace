@@ -1,0 +1,39 @@
+{
+ "id": "chaman_de_los_espiritus_arma_imbuida",
+ "name": "Arma imbuida",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Al empezar el combate imbuyes tu arma. Lengua de fuego: tu arma arde: tus golpes con arma hacen +1 de daño (fuego). Viento furioso: el viento guía tu brazo: atacas con ventaja. Escarcha: el frío de tu arma frena los golpes del enemigo: te defiendes con ventaja.",
+ "flavorText": "",
+ "classTags": [
+  "chaman_de_los_espiritus"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "Al empezar el combate imbuyes tu arma. Lengua de fuego: tu arma arde: tus golpes con arma hacen +1 de daño (fuego). Viento furioso: el viento guía tu brazo: atacas con ventaja. Escarcha: el frío de tu arma frena los golpes del enemigo: te defiendes con ventaja.",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Imbuyes tu arma al empezar el combate.",
+   "mechanicHook": "elige_una:lengua de fuego,viento furioso,escarcha"
+  },
+  {
+   "description": "Lengua de fuego: tus golpes con arma hacen +1 de daño.",
+   "mechanicHook": "si:lengua de fuego:bono_dano_arma:1"
+  },
+  {
+   "description": "Viento furioso: atacas con ventaja.",
+   "mechanicHook": "si:viento furioso:ventaja:ataque"
+  },
+  {
+   "description": "Escarcha: te defiendes con ventaja.",
+   "mechanicHook": "si:escarcha:ventaja:defensa"
+  }
+ ],
+ "fuente": "Propia · Chamán de los Espíritus"
+}

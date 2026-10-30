@@ -1,0 +1,30 @@
+{
+  "id": "H2-04 + NIVELES-01",
+  "date": "2026-10-06",
+  "author": "claude (Cowork)",
+  "status": "HECHO — aplicado en el arbol del Mac, sin commit",
+  "origen": "Gantt fase H (planificacion/gantt_jugabilidad_H.puml): H2-04 hitos y tierUp, la progresion que ya existe y nadie llama. Oriol (06/10): «continua». Y (06/10, tarde): «dijimos 20 niveles para subir al tier [...] Boundington entero maximo nivel 15 al 80 % y 17 al 100 % [...] el hito 2 sera la siguiente campaña [...] canon como mucho nivel 8 [...] con un par de subquests importantes al nivel 10». «Sin los hitos te quedas al tier 1». «Y sin poder subir al 21».",
+  "criterio_de_cierre": "Veinte niveles por tier (con fracciones de nivel) y los hitos del tier para pasar: 2 en T1, 4 en T2, 8 en T3, 11 en T4, de cero en cada tier; T5 es el techo. Las aventuras dan niveles (grantLevel) y cada capitulo un hito (grantMilestone). Boundington: canon nivel 6 y un hito; 8 con las siete secundarias que ya hay; 10, 15 y 17 con lo que falta por escribir. El guardado lleva tier, nivel, progreso e hitos; la hoja ensena el nivel.",
+  "scope": [
+    "include/RPG/Narrative/NarrativeBeat.h (EffectType::GrantMilestone), include/RPG/NarrativeEngine.h, src/RPG/NarrativeEngine.cpp, src/RPG/Narrative/AdventureScriptLoader.cpp, src/RPG/AdventureSerializer.cpp, src/RPG/AdventureBeatValidation.cpp.",
+    "src/Game/GameSessionNarrativa.cpp (concedeHitos), src/RPG/CharacterSheet.cpp (grantMilestones descuenta lo pagado).",
+    "include/Game/SaveGame.h, src/Game/SaveGame.cpp, src/Game/SaveGameFormat.cpp, include/Game/SaveGameValidation.h (playerMilestones).",
+    "assets/adventures/boundington_ocaso.json (un hito al salir vivo), FORMATO_AVENTURAS.md.",
+    "tests/Game/GameSessionTests.cpp, tests/Game/SaveGameTests.cpp, tests/RPG/SheetMilestonesTests.cpp.",
+    "NIVELES-01: include/RPG/CharacterSheet.h y src/RPG/CharacterSheet.cpp (nivel, grantLevels, nivelMaximo, alcanzaTier), EffectType::GrantLevel, NarrativeResult::levels, playerLevel en el guardado, assets/adventures/boundington_{precuela_taberna,prologo,primer_dia,segundo_dia,ocaso}.json (niveles; el Ocaso ya no da hito).",
+    "Segunda vuelta: progresoNivel y grantLevelPoints, hitosTier/hitosParaSalirDe/restauraProgresion, playerLevelProgress/playerTier/playerTierMilestones, FichaVista (nivel en la cabecera), reparto de Oriol en los cinco JSON de Boundington."
+  ],
+  "non_goals": [
+    "Guardar la ficha entera (clase, raza, cartas, equipo).",
+    "Cuantos hitos vale cada aventura: lo decide Oriol."
+  ],
+  "verification": [
+    "test_sheet_milestones 9/9, test_game_session 33/33, test_save_game 32/32, test_kit_basico 15/15, validar_todo OK; ctest con las mismas 9 que fallaban; la guardia con las mismas 44 deudas."
+  ],
+  "para_oriol": [
+    "Que da cada nivel dentro del tier (hoy el numero y el tope).",
+    "Capitulos no completados que suben su dificultad al tier del heroe, y la eleccion del capitulo 2: pendientes.",
+    "El guardado no lleva la ficha entera."
+  ],
+  "sesion": "sesiones/2026-10-06-claude-hitos.md"
+}

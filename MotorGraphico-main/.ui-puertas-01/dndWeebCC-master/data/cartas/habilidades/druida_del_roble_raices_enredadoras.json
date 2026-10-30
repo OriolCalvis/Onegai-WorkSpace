@@ -1,0 +1,54 @@
+{
+ "id": "druida_del_roble_raices_enredadoras",
+ "name": "Raíces enredadoras",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Unas raíces salen del suelo y atan al enemigo. Si no se resiste (resistencia física), queda 1 turno sin atacar y se defiende con desventaja.",
+ "flavorText": "",
+ "classTags": [
+  "druida_del_roble"
+ ],
+ "roleTags": [],
+ "tags": [
+  "druida_del_roble",
+  "estandar",
+  "Naturaleza"
+ ],
+ "mechanicTags": [
+  "Naturaleza"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "INT",
+ "defenseStat": "resistencia_fisica",
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Unas raíces salen del suelo y atan al enemigo. Si no se resiste (resistencia física), queda 1 turno sin atacar y se defiende con desventaja.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Raíces: no ataca.",
+   "mechanicHook": "estado:1:incapacitado"
+  },
+  {
+   "description": "Raíces: se defiende con desventaja.",
+   "mechanicHook": "estado:1:desventaja:defensa"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "Propia · Druida del Roble · NosTale: Druida flamígero, Raíz flamígera"
+}

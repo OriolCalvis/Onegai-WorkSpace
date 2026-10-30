@@ -1,0 +1,21 @@
+{
+  "registros": "out/fabrica",
+  "variables": {"motor": "MotorGraphico-main/MotorGraphico"},
+  "versiones": {"python": "{python} --version", "git": "git --version"},
+  "checks": [
+    {
+      "id": "replica_regresiones",
+      "fase": "rapida",
+      "cwd": "{motor}",
+      "cmd": "{python} -m unittest discover -s planificacion/replica -p 'test_*.py' -v",
+      "timeout": 60
+    },
+    {
+      "id": "replica_matriz",
+      "fase": "completa",
+      "cwd": "{motor}",
+      "cmd": "{python} planificacion/replica/parity.py planificacion/replica/features.csv --json",
+      "timeout": 30
+    }
+  ]
+}

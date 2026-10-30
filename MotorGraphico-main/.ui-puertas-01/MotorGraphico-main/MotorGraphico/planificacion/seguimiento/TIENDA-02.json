@@ -1,0 +1,19 @@
+{
+ "id": "TIENDA-02",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — la tienda en pergamino, y todos los tenderos saludan antes de abrirla.",
+ "origen": "Relevo de la sesión anterior: «la tienda con el estilo pergamino». Oriol (08/10), sobre si los tenderos sin conversación saludan: «Sí, un mínimo de diálogo todos».",
+ "actions": [
+  "Game/TiendaEstado (modelo sin GL): pestañas Comprar y Vender, el foco de cada una, comprar/vender y la línea de estado («Comprado: Poción · –30 de oro · ahora tienes 3», «Te faltan 20 de oro.»).",
+  "HUD/Pergamino/TiendaHoja: la hoja (cabecera, pestañas, lista y detalle con su botón, estado y pie), con zonas de ratón.",
+  "Application: teclas de la tienda (← → pestaña, W S foco, ENTER) y el pergamino la pinta; sin tema, la lista de siempre.",
+  "GameSessionInteraccion: con ofertas, primero el diálogo y al cerrarlo la tienda (antes, sin beat narrado, la tienda en el acto).",
+  "Tests: TiendaEstadoTests (9), TiendaHojaTests (en test_pergamino), GameModeTests, ProjectCatalogTests, ApplicationSceneTests; demo_ciudad (el tendero saluda)."
+ ],
+ "pending": [],
+ "verification": [
+  "Jugada en el juego (mercado, joyero, sastre); test_pergamino 69/69; demo_ciudad en verde."
+ ],
+ "sesion": "sesiones/2026-10-08-claude-tienda-caer-dioses.md"
+}

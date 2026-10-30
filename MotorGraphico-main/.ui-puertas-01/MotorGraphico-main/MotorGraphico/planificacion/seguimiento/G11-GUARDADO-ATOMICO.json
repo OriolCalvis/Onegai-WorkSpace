@@ -1,0 +1,29 @@
+{
+  "id": "G11-GUARDADO-ATOMICO",
+  "date": "2026-10-01",
+  "author": "Codex",
+  "status": "RODAJA HECHA — G-11 global sigue abierto",
+  "reservation": "../TABLERO.md; SaveGame y SerializerHelpers, sin tocar otras reservas.",
+  "scope": [
+    "writeSaveGameFile reutiliza ProjectIO::atomicWrite: no elimina el destino antes de reemplazarlo.",
+    "Cada escritura reserva un directorio temporal exclusivo junto al destino, comprueba escritura, flush y cierre, y limpia solo sus recursos.",
+    "Partidas, proyectos y mapas comparten el escritor. Rutas UTF-8 al escribir y leer; MoveFileExW en Windows.",
+    "SaveGame.cpp baja de 343 a 323 lineas. Sin clases nuevas, fuentes directas nuevas, cambios de CMake, Application ni GameSession.",
+    "Fuente del plan y bloque G-11 del mapa actualizados sin regenerar zonas de otros agentes."
+  ],
+  "verification": [
+    "Falsabilidad en worktree aislado: con los escritores anteriores fallan 3/32 casos de SaveGame y 1/5 de ProjectSerialization; con la correccion pasan.",
+    "CTest 4/4 tanto en arbol compartido como en worktree aislado: test_save_game 32/32, test_save_slots 16/16, test_project_serialization 5/5 y test_schema_fixtures 9/9 (62 casos).",
+    "Casos nuevos: destino carpeta intacto, fallo de reemplazo con limpieza, .tmp ajeno fichero/carpeta, enlace duro a otro guardado, rutas con espacios y acentos, padre invalido y serializers publicos de proyecto/mapa.",
+    "juego compila en arbol compartido y worktree aislado; humo ciudad_oeste.json de 3 frames termina con codigo 0 en macOS.",
+    "nm confirma writeSaveGameFile y ProjectIO::atomicWrite enlazados en juego.",
+    "Guardia rapida y diff-check pasan. Guardia completa: 37 hallazgos identicos en la base 40a28cd y con esta rodaja; ninguno introducido. No se cambia la linea base."
+  ],
+  "limits": [
+    "Atomicidad del reemplazo no garantiza persistencia ante corte electrico: no se sincroniza el directorio a disco.",
+    "Ruta Windows revisada pero no ejecutada en esta sesion; no se afirma suite global ni recorrido manual por menus."
+  ],
+  "pending": [
+    "Selector visual, confirmacion de sobrescritura y recuperacion de derrota del G-11 global."
+  ]
+}

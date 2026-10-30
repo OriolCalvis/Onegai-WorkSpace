@@ -1,0 +1,29 @@
+{
+  "id": "D-04",
+  "date": "2026-09-11",
+  "author": "zcode",
+  "status": "Implementat i verificat localment; paquet OBERT per CI remota (regla 6 del pla). Dependència del D-09 d'opencode (en curs avui) coberta: el catàleg de condicions ja lliura les dades reals de les cartes",
+  "actions": [
+    "CatalogLoader<ConditionDefinition> migrat als noms de l'asset (DEC-02): stackable/duration/category/effects[]. L'antic llegia stacking/defaultRounds/damagePerRound/isNegative/caMod... i cap d'aquestes claus existeix a conditions.json: les 16 condicions carregaven IDÈNTIQUES (DURATION, 3 rondes, 1 stack, 0 dany, flags apagats).",
+    "stackable (bool, 16/16): true -> STACK_INTENSITY (fatiga, l'única), false -> NONE (reemplaç). DURATION es conserva com a API del motor; cap carta publicada el demana. maxStacks es queda a 1: cap carta declara el màxim i no s'inventa (DEC-02).",
+    "duration: 'hasta_curarse' (15/16) -> nou ConditionDefinition::Duration::UNTIL_CURED — NO expira per rondes, la retira qui la curi (ConditionEngine::remove); '1_turn'/'N_turns'/numèric -> ROUNDS amb defaultRounds = N (guardia_rota = 1 ronda). ConditionEngine::tick_conditions no decrementa ni expira UNTIL_CURED, però aplica el dany per ronda que declari la carta a CADA tick.",
+    "category ('negativa'/'neutro'/'positiva') -> isNegative (anclado i enfurecido són 'neutro').",
+    "effects[].mechanicHook: es conserven TOTS crus al nou camp mechanicHooks (per D-11/E-14/G-13) i es tradueixen només els unívocs amb suport del GDD: dano_por_turno:N -> damagePerRound (sangrado=1), velocidad_mitad -> halfSpeed (ralentizado), desventaja:ataque[_y_habilidad] -> grantDisadvantageToCaster (caido, envenenado, cegado), bloquea:vision -> grantAdvantageToEnemies (cegado), incapacitado -> preventAction (inconsciente). velocidad_0 NO és halfSpeed (és més fort) i queda cru.",
+    "DECISIÓ del criteri 'els modificadors de defensa parsejats i ignorats': caMod/physicalSaveMod/willSaveMod RETIRATS de ConditionDefinition. El cargador vell els parsejava, cap consumidor els llegia (verificat a src/include/tests/examples) i l'Ed. 3 deroga la CA com a número de dificultat. Les cartes expressen aquests ajustos com a hooks (bono_ca:2, penal_ca:2) i queden crus fins a D-11. statMod es conserva: recalc_condition_modifiers sí l'aplica.",
+    "expected_fields() del carregador: 7 camps de l'asset (id/name obligatoris). test_catalog_contract actualitzat: el fixture 'versió anterior' ara són els noms del carregador vell i AllDeclared falla nomenant stackable/duration/effects."
+  ],
+  "verification": [
+    "test_catalog_content 10/10 (5 de D-02 + 5 nous: sangrado amb dany 1, guardia_rota l'única que expira i en UNA ronda, fatiga l'única apilable + anclado no negativa, flags dels hooks unívocs, i la prova del pla: ≥3 combinacions stacking×duració — abans el conjunt tenia UN element).",
+    "test_condition_engine 12/12 amb el cas nou until_cured_never_expires_but_keeps_ticking: 10 rondes sense expirar, dany 1/tick, i remove() la retira; guardia real (1 ronda) expira al primer tick.",
+    "test_catalog_contract 7/7 amb el contracte invertit; demo_catalogos_rpg continua verd (conteos iguals, definicions programàtiques intactes).",
+    "Falsabilitat per mutació (4 mutants, tots caçats i revertits amb còpia de seguretat — mai git checkout, lliçó de D-02): stackable ignorat (2 fails), duration ignorat (3), dano_por_turno sense mapar (1), tick sense el salt UNTIL_CURED (1 a l'engine).",
+    "Suite gl-free: els binaris propis tots verd. FALLS ALIENS DOCUMENTATS (regla 2, no tocats): demo_ciudad aborta creuant la porta del mercat per l'edició concurrent de GameSession.cpp (C-17, 12:47); motor_level/EditorState en obres d'E-01/C-14 (EventLayerDocument ja apareix al variant de MapLayer). Cap d'aquests tests toca carregadors RPG.",
+    "Incident de la sessió: el primer build complet després de les mutacions va deixar binaris mutats (el build avortava a MapDocument.cpp abans de recompilar-los) i va semblar una regressió pròpia; rebuild dels targets i 10/10+12/12. Lliçó: després de mutar, recompilar EXPLÍCITAMENT cada target del paquet abans de llegir la suite."
+  ],
+  "pending": [
+    "CI remota (regla 6 del pla).",
+    "D-09 (opencode, en curs) ja té el que necessita del catàleg; si vol llegir mechanicHooks (p. ex. desventaja al tirar el que pateix la condició), el camp hi és i no cal tornar a parsejar el JSON.",
+    "La veda de velocitat_0: agarrado/paralizado/anclado la declaren i no té flag; quan la simulació la necessiti, és un flag nou (speed_zero) al D-11, no un mapa silenciós a halfSpeed.",
+    "tools/auditar_datos_onegai.py encara espera noms vells ('stacking' com a àlies d'acumulable): eina d'auditoria, no compila; actualitzar-la toca qui la mantingui (D-10 té el marc de validació)."
+  ]
+}

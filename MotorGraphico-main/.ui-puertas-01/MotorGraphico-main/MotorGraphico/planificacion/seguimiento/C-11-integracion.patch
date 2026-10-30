@@ -1,0 +1,1336 @@
+diff --git a/MotorGraphico/src/Project/ProjectIndex.cpp b/MotorGraphico/src/Project/ProjectIndex.cpp
+--- a/MotorGraphico/src/Project/ProjectIndex.cpp
++++ b/MotorGraphico/src/Project/ProjectIndex.cpp
+@@ -5,6 +5,8 @@
+ #include <vector>
+
+ #include "Core/Json/JsonValue.h"
++#include "Project/ProjectSerializer.h"
++#include <algorithm>
+
+ namespace Editor {
+ namespace {
+@@ -35,21 +37,7 @@
+     return true;
+ }
+
+-std::vector<std::string> lista(const JsonValue& v) {
+-    std::vector<std::string> out;
+-    if (!v.isArray()) {
+-        return out;
+-    }
+-    out.reserve(v.size());
+-    for (std::size_t i = 0; i < v.size(); ++i) {
+-        out.push_back(v[i].asString(""));
+-    }
+-    return out;
+-}
+-
+-// Escapa lo justo para volver a escribir un manifiesto. NO se emiten
+-// escapes \uXXXX: el parser JSON del motor no los decodifica a proposito
+-// (ver JsonValue.cpp), asi que el UTF-8 va crudo y punto.
++// El indice solo escribe ids previamente validados como [a-z0-9_].
+ std::string esc(const std::string& s) {
+     std::string r;
+     r.reserve(s.size() + 8);
+@@ -62,46 +50,42 @@
+     return r;
+ }
+
+-// Averigua a que apunta 'entrada'. El campo se escribio de dos formas
+-// distintas -- ruta completa en boundington y oeste_norte, nombre suelto
+-// en este_norte -- porque nunca se documento cual era. En vez de declarar
+-// buena una de las dos y romper el trabajo de otro, se admiten ambas y se
+-// deja anotado en el propio Project a que resolvio.
++// Resuelve las rutas de entrada contra la raiz solicitada, tambien al
++// escanear una build copiada fuera del directorio del motor.
+ void resuelveEntrada(Project& p, const std::string& assetsRoot) {
+     p.entryKind = Project::EntryKind::None;
+     p.entryPath.clear();
+-    if (p.entry.empty()) {
++    if (p.entry.empty()) return;
++    std::string relative = p.entry;
++    if (relative.compare(0, 7, "assets/") == 0) relative.erase(0, 7);
++    if (p.entry.find('/') != std::string::npos) {
++        const auto path = assetsRoot + "/" + relative;
++        if (!existe(path)) {
++            p.entryKind = Project::EntryKind::Missing;
++            return;
++        }
++        p.entryPath = path;
++        const auto directory = p.settings.adventuresDirectory + "/";
++        p.entryKind = relative.compare(0, directory.size(), directory) == 0
++            ? Project::EntryKind::Adventure : Project::EntryKind::Level;
+         return;
+     }
+-    // Con barra: es una ruta y se toma tal cual, sin adivinar.
+-    if (p.entry.find('/') != std::string::npos) {
+-        if (existe(p.entry)) {
+-            p.entryPath = p.entry;
+-            // La carpeta dice que es. No se abre el fichero para mirarlo
+-            // dentro: scan() lo hace al listar el editor y leer 96
+-            // ficheros para pintar una lista es caro y no hace falta.
+-            p.entryKind = p.entry.find("/adventures/") != std::string::npos
+-                              ? Project::EntryKind::Adventure
+-                              : Project::EntryKind::Level;
+-        } else {
+-            p.entryKind = Project::EntryKind::Missing;
+-        }
+-        return;
+-    }
+-    // Nombre suelto: aventuras primero, que es el caso normal.
+-    const std::string comoAv = assetsRoot + "/adventures/" + p.entry;
+-    if (existe(comoAv)) {
+-        p.entryPath = comoAv;
+-        p.entryKind = Project::EntryKind::Adventure;
+-        return;
+-    }
+-    const std::string comoNivel = assetsRoot + "/levels/" + p.entry;
+-    if (existe(comoNivel)) {
+-        p.entryPath = comoNivel;
+-        p.entryKind = Project::EntryKind::Level;
+-        return;
++    for (const auto& group : {std::make_pair(p.settings.adventuresDirectory, Project::EntryKind::Adventure),
++                              std::make_pair(p.settings.levelsDirectory, Project::EntryKind::Level)}) {
++        const auto path = assetsRoot + "/" + group.first + "/" + relative;
++        if (existe(path)) {
++            p.entryPath = path;
++            p.entryKind = group.second;
++            return;
++        }
+     }
+     p.entryKind = Project::EntryKind::Missing;
++}
++
++bool validId(const std::string& id) {
++    return !id.empty() && std::all_of(id.begin(), id.end(), [](char c) {
++        return (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_';
++    });
+ }
+
+ // Reescribe assets/proyectos/index.json con esta lista de ids. Lo usan
+@@ -138,10 +122,20 @@
+     if (!raiz.isOk()) {
+         return Result<ProjectIndex>::Error(rutaIndice + ": " + raiz.errorMessage());
+     }
+-    const std::vector<std::string> ids = lista(raiz.value()["proyectos"]);
+-    if (ids.empty()) {
+-        return Result<ProjectIndex>::Error(rutaIndice + ": la lista 'proyectos' esta vacia");
+-    }
++    const auto& entries = raiz.value()["proyectos"];
++    if (!entries.isArray()) {
++        return Result<ProjectIndex>::Error(rutaIndice + ": falta array 'proyectos'");
++    }
++    std::vector<std::string> ids;
++    for (std::size_t i = 0; i < entries.size(); ++i) {
++        if (!entries[i].isString() || !validId(entries[i].asString()))
++            return Result<ProjectIndex>::Error(rutaIndice + ": id de proyecto invalido");
++        const auto id = entries[i].asString();
++        if (std::find(ids.begin(), ids.end(), id) != ids.end())
++            return Result<ProjectIndex>::Error(rutaIndice + ": id duplicado '" + id + "'");
++        ids.push_back(id);
++    }
++    idx.m_declaredIds = ids;
+
+     for (const std::string& id : ids) {
+         const std::string ruta = assetsRoot + "/proyectos/" + id + ".json";
+@@ -152,32 +146,14 @@
+             idx.m_orphans.push_back("proyectos/" + id + ".json (declarado en index.json, no existe)");
+             continue;
+         }
+-        auto p = JsonValue::parse(t);
+-        if (!p.isOk()) {
+-            idx.m_orphans.push_back("proyectos/" + id + ".json (JSON invalido: " + p.errorMessage() + ")");
++        auto parsed = ProjectSerializer::deserializeProject(t);
++        if (!parsed.isOk()) {
++            idx.m_orphans.push_back("proyectos/" + id + ".json (" + parsed.errorMessage() + ")");
+             continue;
+         }
+-        const JsonValue& v = p.value();
+-        Project pr;
+-        pr.id = v["id"].asString(id);
+-        pr.name = v["nombre"].asString(pr.id);
+-        pr.description = v["descripcion"].asString("");
+-        pr.epoch = v["epoca"].asString("");
+-        pr.author = v["autor"].asString("");
+-        pr.prefix = v["prefijo"].asString("");
+-        // Los manifiestos anteriores a DOC-01 no tienen estos campos; se
+-        // leen con los valores deterministas de ProjectSettings.
+-        pr.settings.schemaVersion = v["schemaVersion"].asInt(ProjectSettings::kCurrentSchemaVersion);
+-        pr.settings.initialMap = v["initialMap"].asString("");
+-        pr.entry = v["entrada"].asString("");
+-        pr.levels = lista(v["niveles"]);
+-        pr.maps = lista(v["mapas"]);
+-        pr.adventures = lista(v["aventuras"]);
+-        pr.catalogs = lista(v["catalogos"]);
+-        const Result<bool> validation = pr.validate();
+-        if (!validation.isOk()) {
+-            idx.m_orphans.push_back("proyectos/" + id + ".json (manifiesto inválido: " +
+-                                    validation.errorMessage() + ")");
++        Project pr = std::move(parsed.value());
++        if (pr.id != id) {
++            idx.m_orphans.push_back("proyectos/" + id + ".json (id no coincide con index.json)");
+             continue;
+         }
+         resuelveEntrada(pr, assetsRoot);
+@@ -206,11 +182,11 @@
+
+     struct Grupo {
+         const std::vector<std::string>* lista;
+-        const char* carpeta;
++        std::string carpeta;
+     };
+     const Grupo grupos[] = {
+-        {&p->levels, "levels"}, {&p->maps, "maps"},
+-        {&p->adventures, "adventures"}, {&p->catalogs, "objects"},
++        {&p->levels, p->settings.levelsDirectory}, {&p->maps, p->settings.mapsDirectory},
++        {&p->adventures, p->settings.adventuresDirectory}, {&p->catalogs, p->settings.catalogsDirectory},
+     };
+     for (const Grupo& g : grupos) {
+         for (const std::string& f : *g.lista) {
+@@ -229,7 +205,8 @@
+         c.problems.push_back("sin 'entrada': no hay aventura ni nivel por el que arrancar");
+     } else if (p->entryKind == Project::EntryKind::Missing) {
+         c.problems.push_back("entrada '" + p->entry + "' no aparece ni en " + m_root +
+-                             "/adventures/ ni en " + m_root + "/levels/");
++                             "/" + p->settings.adventuresDirectory + "/ ni en " + m_root +
++                             "/" + p->settings.levelsDirectory + "/");
+         ++c.missingFiles;
+     }
+     return c;
+@@ -256,7 +233,9 @@
+     }
+
+     auto existente = scan(assetsRoot);
+-    if (existente.isOk() && existente.value().find(id) != nullptr) {
++    if (!existente.isOk()) return Result<Project>::Error(existente.errorMessage());
++    if (std::find(existente.value().m_declaredIds.begin(), existente.value().m_declaredIds.end(), id)
++            != existente.value().m_declaredIds.end()) {
+         return Result<Project>::Error("ya existe un proyecto con id '" + id + "'");
+     }
+     // Y tampoco si hay manifiesto suelto sin entrada en el indice. Pasa
+@@ -280,28 +259,12 @@
+         return Result<Project>::Error(validation.errorMessage());
+     }
+
+-    std::FILE* f = std::fopen(destino.c_str(), "wb");
+-    if (f == nullptr) {
+-        return Result<Project>::Error("no se pudo escribir " + destino);
+-    }
+-    std::fprintf(f,
+-                 "{\n"
+-                 " \"_nota\": \"Manifiesto de proyecto. Creado desde el editor.\",\n"
+-                 " \"schemaVersion\": %d,\n \"id\": \"%s\",\n \"nombre\": \"%s\",\n \"descripcion\": \"\",\n"
+-                 " \"epoca\": \"%s\",\n \"autor\": \"%s\",\n \"prefijo\": \"%s\",\n"
+-                 " \"niveles\": [],\n \"mapas\": [],\n \"aventuras\": [],\n"
+-                 " \"catalogos\": [],\n \"entrada\": \"\"\n}\n",
+-                 p.settings.schemaVersion, esc(id).c_str(), esc(p.name).c_str(), esc(epoch).c_str(),
+-                 esc(author).c_str(), esc(prefix).c_str());
+-    std::fclose(f);
+-
+-    // Y al indice, o el proyecto existe en disco y nadie lo ve.
+-    std::vector<std::string> ids;
+-    if (existente.isOk()) {
+-        for (const Project& q : existente.value().projects()) {
+-            ids.push_back(q.id);
+-        }
+-    }
++    const auto saved = ProjectSerializer::saveProjectAtomic(destino, p);
++    if (!saved.isOk()) return Result<Project>::Error(saved.errorMessage());
++
++    // Conservar tambien ids con manifiestos ausentes o invalidos: crear
++    // otro proyecto no debe borrarlos silenciosamente del indice.
++    std::vector<std::string> ids = existente.value().m_declaredIds;
+     ids.push_back(id);
+     if (!escribeIndice(assetsRoot, ids)) {
+         return Result<Project>::Error("no se pudo actualizar " + assetsRoot + "/proyectos/index.json");
+@@ -311,12 +274,14 @@
+ }
+
+ Result<bool> ProjectIndex::remove(const std::string& assetsRoot, const std::string& id) {
++    if (!validId(id)) return Result<bool>::Error("id de proyecto invalido");
+     auto actual = scan(assetsRoot);
+     if (!actual.isOk()) {
+         return Result<bool>::Error(actual.errorMessage());
+     }
+     const std::string ruta = assetsRoot + "/proyectos/" + id + ".json";
+-    const bool enIndice = actual.value().find(id) != nullptr;
++    const auto& declared = actual.value().m_declaredIds;
++    const bool enIndice = std::find(declared.begin(), declared.end(), id) != declared.end();
+     const bool enDisco = existe(ruta);
+     // Basta con que exista de UNA de las dos formas. Si solo se aceptara
+     // "esta en el indice", un manifiesto huerfano -- fichero suelto que
+@@ -332,9 +297,9 @@
+     // mount raro), el proyecto ya no aparece y no se queda un id en la
+     // lista apuntando a algo que el editor va a intentar abrir.
+     std::vector<std::string> ids;
+-    for (const Project& q : actual.value().projects()) {
+-        if (q.id != id) {
+-            ids.push_back(q.id);
++    for (const auto& projectId : declared) {
++        if (projectId != id) {
++            ids.push_back(projectId);
+         }
+     }
+     if (enIndice && !escribeIndice(assetsRoot, ids)) {
+diff --git a/MotorGraphico/src/Project/ProjectSerializer.cpp b/MotorGraphico/src/Project/ProjectSerializer.cpp
+--- a/MotorGraphico/src/Project/ProjectSerializer.cpp
++++ b/MotorGraphico/src/Project/ProjectSerializer.cpp
+@@ -3,6 +3,7 @@
+ #include <cstdio>
+ #include <fstream>
+ #include <sstream>
++#include <set>
+ #include <string>
+ #include <utility>
+ #include <variant>
+@@ -53,7 +54,7 @@
+     if (!root["schemaVersion"].isNumber()) {
+         return Result<bool>::Error(std::string(context) + ": falta 'schemaVersion'");
+     }
+-    const int actual = root["schemaVersion"].asInt();
++    const double actual = root["schemaVersion"].asNumber();
+     if (actual != expected) {
+         return Result<bool>::Error(std::string(context) + ": schemaVersion incompatible v" +
+                                    std::to_string(actual) + "; se esperaba v" +
+@@ -213,11 +214,26 @@
+         return Result<Editor::Project>::Error("proyecto JSON inválido: " + parsed.errorMessage());
+     }
+     const JsonValue& root = parsed.value();
++    // C-11: rechazar tambien formatos mezclados, sin perder campos en silencio.
++    if (root.isObject()) {
++        bool legacy = !root.has("schemaVersion");
++        for (const char* key : {"nombre", "descripcion", "epoca", "autor", "prefijo", "entrada",
++                                "niveles", "mapas", "aventuras", "catalogos"})
++            legacy = legacy || root.has(key);
++        if (legacy) return Result<Editor::Project>::Error(
++            "formato legacy: ejecuta python3 tools/migrar_proyectos.py --write");
++    }
+     const Result<bool> schema = checkSchema(root, kProjectSchemaVersion, "proyecto");
+     if (!schema.isOk()) {
+         return Result<Editor::Project>::Error(schema.errorMessage());
+     }
+
++    const std::set<std::string> allowed = {"schemaVersion", "id", "name", "description", "epoch",
++        "author", "prefix", "settings", "entry", "levels", "maps", "adventures", "catalogs"};
++    for (const auto& field : root.objectValues()) {
++        if (!allowed.count(field.first)) return Result<Editor::Project>::Error(
++            "proyecto: campo desconocido '" + field.first + "'");
++    }
+     const Result<std::string> id = requiredString(root, "id", "proyecto");
+     const Result<std::string> name = requiredString(root, "name", "proyecto");
+     if (!id.isOk()) {
+@@ -229,6 +245,13 @@
+     if (!root["settings"].isObject()) {
+         return Result<Editor::Project>::Error("proyecto: falta objeto 'settings'");
+     }
++
++    for (const char* key : {"description", "epoch", "author", "prefix", "entry"}) {
++        if (!root[key].isString()) return Result<Editor::Project>::Error(
++            std::string("proyecto: falta string '") + key + "'");
++    }
++    if (!root["settings"]["initialMap"].isString())
++        return Result<Editor::Project>::Error("project.settings: falta string 'initialMap'");
+
+     Editor::Project project;
+     project.id = id.value();
+@@ -240,6 +263,13 @@
+     project.entry = root["entry"].asString("");
+
+     const JsonValue& settings = root["settings"];
++    const std::set<std::string> allowedSettings = {"schemaVersion", "mapsDirectory", "levelsDirectory",
++        "adventuresDirectory", "catalogsDirectory", "initialMap"};
++    for (const auto& field : settings.objectValues()) {
++        if (!allowedSettings.count(field.first)) return Result<Editor::Project>::Error(
++            "project.settings: campo desconocido '" + field.first + "'");
++    }
++
+     const Result<bool> settingsSchema = checkSchema(settings, Editor::ProjectSettings::kCurrentSchemaVersion,
+                                                     "project.settings");
+     if (!settingsSchema.isOk()) {
+diff --git a/MotorGraphico/include/Project/ProjectIndex.h b/MotorGraphico/include/Project/ProjectIndex.h
+--- a/MotorGraphico/include/Project/ProjectIndex.h
++++ b/MotorGraphico/include/Project/ProjectIndex.h
+@@ -79,6 +79,7 @@
+
+ private:
+     std::vector<Project> m_projects;
++    std::vector<std::string> m_declaredIds; // incluye manifiestos invalidos/ausentes
+     std::vector<std::string> m_orphans;
+     std::string m_root;
+ };
+diff --git a/MotorGraphico/schemas/project-v1.schema.json b/MotorGraphico/schemas/project-v1.schema.json
+--- a/MotorGraphico/schemas/project-v1.schema.json
++++ b/MotorGraphico/schemas/project-v1.schema.json
+@@ -2,19 +2,112 @@
+   "$schema": "https://json-schema.org/draft/2020-12/schema",
+   "title": "MotorGraphico Project v1",
+   "type": "object",
+-  "required": ["schemaVersion", "id", "name", "settings", "entry", "levels", "maps", "adventures", "catalogs"],
++  "required": [
++    "schemaVersion",
++    "id",
++    "name",
++    "settings",
++    "entry",
++    "levels",
++    "maps",
++    "adventures",
++    "catalogs",
++    "description",
++    "epoch",
++    "author",
++    "prefix"
++  ],
+   "properties": {
+-    "schemaVersion": { "const": 1 },
+-    "id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+-    "name": { "type": "string", "minLength": 1 },
++    "schemaVersion": {
++      "const": 1
++    },
++    "id": {
++      "type": "string",
++      "pattern": "^[a-z0-9_]+$"
++    },
++    "name": {
++      "type": "string",
++      "minLength": 1
++    },
+     "settings": {
+       "type": "object",
+-      "required": ["schemaVersion", "mapsDirectory", "levelsDirectory", "adventuresDirectory", "catalogsDirectory", "initialMap"]
++      "required": [
++        "schemaVersion",
++        "mapsDirectory",
++        "levelsDirectory",
++        "adventuresDirectory",
++        "catalogsDirectory",
++        "initialMap"
++      ],
++      "additionalProperties": false,
++      "properties": {
++        "mapsDirectory": {
++          "type": "string",
++          "minLength": 1
++        },
++        "levelsDirectory": {
++          "type": "string",
++          "minLength": 1
++        },
++        "adventuresDirectory": {
++          "type": "string",
++          "minLength": 1
++        },
++        "catalogsDirectory": {
++          "type": "string",
++          "minLength": 1
++        },
++        "schemaVersion": {
++          "const": 1
++        },
++        "initialMap": {
++          "type": "string"
++        }
++      }
+     },
+-    "entry": { "type": "string" },
+-    "levels": { "type": "array", "items": { "type": "string" } },
+-    "maps": { "type": "array", "items": { "type": "string" } },
+-    "adventures": { "type": "array", "items": { "type": "string" } },
+-    "catalogs": { "type": "array", "items": { "type": "string" } }
+-  }
++    "entry": {
++      "type": "string"
++    },
++    "levels": {
++      "type": "array",
++      "items": {
++        "type": "string"
++      },
++      "uniqueItems": true
++    },
++    "maps": {
++      "type": "array",
++      "items": {
++        "type": "string"
++      },
++      "uniqueItems": true
++    },
++    "adventures": {
++      "type": "array",
++      "items": {
++        "type": "string"
++      },
++      "uniqueItems": true
++    },
++    "catalogs": {
++      "type": "array",
++      "items": {
++        "type": "string"
++      },
++      "uniqueItems": true
++    },
++    "description": {
++      "type": "string"
++    },
++    "epoch": {
++      "type": "string"
++    },
++    "author": {
++      "type": "string"
++    },
++    "prefix": {
++      "type": "string"
++    }
++  },
++  "additionalProperties": false
+ }
+diff --git a/MotorGraphico/FORMATO_PROYECTOS.md b/MotorGraphico/FORMATO_PROYECTOS.md
+--- a/MotorGraphico/FORMATO_PROYECTOS.md
++++ b/MotorGraphico/FORMATO_PROYECTOS.md
+@@ -5,7 +5,9 @@
+ proyecto; cada cuadrante del experimento de las cuatro IAs es otro.
+
+ Vive en `assets/proyectos/<id>.json`, y su id está listado en
+-`assets/proyectos/index.json`. Lo lee `Editor::ProjectIndex`.
++`assets/proyectos/index.json`. El formato unico es **Project v1** (`schemaVersion: 1`).
++`ProjectSerializer` lo lee y escribe; `Editor::ProjectIndex` delega en el
++serializador y resuelve las rutas contra la raiz de assets solicitada.
+
+ ---
+
+@@ -27,8 +29,9 @@
+ a sus niveles `ciudad_en_*` y Boundington se los tragó enteros — **86
+ niveles en vez de 64**, porque también empieza por `ciudad_`.
+
+-Si un fichero no está en ningún manifiesto, el índice lo reporta como
+-**huérfano** en vez de repartirlo a ojo. Que sobre contenido es un aviso;
++Si el indice declara un manifiesto ausente o invalido, lo reporta como
++**huérfano**. Crear o borrar otro proyecto conserva esa referencia para
++que el autor pueda repararla. Que sobre contenido es un aviso;
+ que se lo quede el proyecto equivocado es un bug silencioso.
+
+ ---
+@@ -37,48 +40,83 @@
+
+ ```json
+ {
++  "schemaVersion": 1,
+   "id": "boundington",
+-  "nombre": "Los Perdidos de Boundington",
+-  "descripcion": "La caída de la ciudad, tres días",
+-  "epoca": "1981 b.f.",
+-  "autor": "Oriol + Claude",
+-  "prefijo": "",
+-  "niveles":   ["ciudad_centro.json", "interior_vacio.json"],
+-  "mapas":     ["ciudad_centro.tmx"],
+-  "aventuras": ["boundington_prologo.json"],
+-  "catalogos": ["boundington_npcs.json"],
+-  "entrada":   "assets/adventures/boundington_prologo.json"
++  "name": "Los Perdidos de Boundington",
++  "description": "La caída de la ciudad, tres días",
++  "epoch": "1981 b.f.",
++  "author": "Oriol + Claude",
++  "prefix": "",
++  "settings": {
++    "schemaVersion": 1,
++    "mapsDirectory": "maps",
++    "levelsDirectory": "levels",
++    "adventuresDirectory": "adventures",
++    "catalogsDirectory": "objects",
++    "initialMap": "ciudad_centro.tmx"
++  },
++  "entry": "assets/adventures/boundington_prologo.json",
++  "levels": ["ciudad_centro.json", "interior_vacio.json"],
++  "maps": ["ciudad_centro.tmx"],
++  "adventures": ["boundington_prologo.json"],
++  "catalogs": ["boundington_npcs.json"]
+ }
+ ```
+
+ | Campo | Qué es |
+ |---|---|
+-| `id` | **Solo `[a-z0-9_]`.** Acaba siendo nombre de fichero *y* prefijo de ids |
+-| `nombre` | Lo que se ve en la pantalla de proyectos |
+-| `epoca` | Fecha del canon, p. ej. `"1981 b.f."`. El mundo está fechado |
+-| `prefijo` | **Debe acabar en `_`**. Sin él sale `mmtabernero`, que ni se lee ni se busca. Vacío = sin prefijo |
+-| `niveles`, `mapas`, `aventuras`, `catalogos` | Nombres de fichero **sin ruta**. Se resuelven contra `assets/levels/`, `assets/maps/`, `assets/adventures/` y `assets/objects/` |
+-| `entrada` | Por dónde arranca. Ver abajo |
+-
+-### `entrada`: dos formas, las dos válidas
++| `schemaVersion` | Version de formato: 1, tanto en la raiz como en settings. |
++| `id` | Solo `[a-z0-9_]`; debe coincidir con el nombre de archivo y el indice. |
++| `name`, `description`, `epoch`, `author` | Metadatos del proyecto. `name` no puede estar vacio. |
++| `prefix` | Vacio o terminado en `_`. |
++| `settings.*Directory` | Directorios relativos a assets, distintos entre si y sin `..`. |
++| `settings.initialMap` | Nombre presente en `maps`, o vacio. |
++| `levels`, `maps`, `adventures`, `catalogs` | Nombres de fichero sin ruta y sin duplicados; resueltos contra sus directorios en settings. |
++| `entry` | Punto de arranque; vacio significa que el proyecto se edita pero no se juega. |
++
++El indice conserva su contrato independiente: `index.json` contiene
++`{"proyectos": ["boundington", ...]}`. No es un manifiesto Project.
++
++### Migrar el formato anterior
++
++Los manifiestos con `nombre`, `niveles`, `entrada`, etc. se rechazan con
++un mensaje que indica el comando de migracion. No se mezclan campos de
++ambos formatos ni se intenta adivinar una version.
++
++```bash
++python3 tools/migrar_proyectos.py          # previsualiza, sin escribir
++python3 tools/migrar_proyectos.py --write  # migra los del indice
++```
++
++`--assets <ruta>` permite migrar otro pack. Se valida todo el lote antes
++de escribir, se guarda una copia previa en la ruta temporal indicada y
++cada manifiesto se reemplaza atomicamente. Si un campo no tiene migracion,
++se informa en vez de perderlo. Una segunda ejecucion produce cero cambios.
++`_nota` era una anotacion editorial y se omite; todos los campos de contenido
++se conservan. Las claves y el formato de salida coinciden byte a byte con
++`ProjectSerializer`, incluido UTF-8, orden, indentacion y salto de linea final.
++
++### `entry`: rutas y nombres de archivo
+
+ Se admiten las dos porque **las dos se escribieron de verdad** antes de
+ que esto estuviera documentado:
+
+ ```json
+-"entrada": "assets/adventures/boundington_prologo.json"   // ruta desde la raíz
+-"entrada": "ciudad_en_guskedor.json"                       // solo el nombre
+-```
+-
+-El nombre suelto se resuelve contra `assets/adventures/` y luego contra
+-`assets/levels/`. `Project::entryKind` deja anotado a qué resolvió
++"entry": "assets/adventures/boundington_prologo.json"   // ruta desde la raíz
++"entry": "ciudad_en_guskedor.json"                       // solo el nombre
++```
++
++Tambien se acepta una ruta relativa a assets, como `adventures/inicio.json`.
++Las rutas con prefijo `assets/` se resuelven contra la raiz de assets
++solicitada, incluso al abrir una copia del pack. El nombre suelto se busca
++primero en `settings.adventuresDirectory` y despues en `settings.levelsDirectory`. `Project::entryKind` deja anotado a qué resolvió
+ (`Adventure`, `Level`, `Missing` o `None`), y la pantalla de proyectos
+ muestra **la ruta resuelta**, no la que pone el manifiesto — para que un
+-`entrada` que no resuelve se vea en vez de fallar callando.
++`entry` que no resuelve se vea en vez de fallar callando.
+
+ **Un proyecto puede arrancar en un nivel y no en una aventura.** Un pack
+ de escenario sin historia es legítimo: se abre y se camina por él. Sin
+-`entrada` el proyecto se puede editar pero no jugar, y el índice lo dice
++`entry` el proyecto se puede editar pero no jugar, y el índice lo dice
+ antes de ofrecer el botón.
+
+ ---
+@@ -153,3 +191,15 @@
+ dejando `assets/` como lo encontró — una prueba que ensucia el árbol de
+ trabajo se paga en cada commit posterior (pasó: `prueba_tmp` acabó
+ versionado).
++
++## Regresiones de C-11
++
++`test_project_manifests` carga todos los manifiestos reales a traves del
++serializador y del indice, compara bytes al guardar y comprueba el punto
++de entrada. Tambien recorre crear/borrar con un indice vacio y conserva
++referencias a proyectos ausentes o invalidos. `test_project_migration`
++comprueba la previsualizacion, campos conservados, errores e idempotencia.
++
++```bash
++ctest --test-dir build --output-on-failure -R 'test_project_(manifests|migration|serialization)'
++```
+diff --git a/MotorGraphico/tools/build_proyecto.py b/MotorGraphico/tools/build_proyecto.py
+--- a/MotorGraphico/tools/build_proyecto.py
++++ b/MotorGraphico/tools/build_proyecto.py
+@@ -32,15 +32,13 @@
+ import shutil
+ import sys
+
++from project_manifest import load_manifest
++
+ AQUI = os.path.dirname(os.path.abspath(__file__))
+ RAIZ = os.path.dirname(AQUI)
+ ASSETS = os.path.join(RAIZ, "assets")
+ BUILDS = os.path.join(RAIZ, "builds")
+
+-CARPETAS = {"niveles": "levels", "mapas": "maps",
+-            "aventuras": "adventures", "catalogos": "objects"}
+-
+-
+ def carga(p):
+     with open(p, encoding="utf-8") as f:
+         return json.load(f)
+@@ -50,10 +48,13 @@
+     ruta = os.path.join(ASSETS, "proyectos", pid + ".json")
+     if not os.path.exists(ruta):
+         sys.exit(f"no existe el proyecto '{pid}' ({ruta})")
+-    return carga(ruta)
+-
+-
+-def cierre_de_niveles(niveles):
++    try:
++        return load_manifest(ruta)
++    except (ValueError, OSError) as exc:
++        sys.exit(f"{ruta}: {exc}")
++
++
++def cierre_de_niveles(niveles, levels_dir="levels"):
+     """Niveles alcanzables siguiendo targetLevel, empezando por los del
+     manifiesto. Devuelve (conjunto, arrastrados)."""
+     pendientes = list(niveles)
+@@ -63,7 +64,7 @@
+         if n in vistos:
+             continue
+         vistos.add(n)
+-        ruta = os.path.join(ASSETS, "levels", n)
++        ruta = os.path.join(ASSETS, levels_dir, n)
+         if not os.path.exists(ruta):
+             continue
+         d = carga(ruta)
+@@ -83,27 +84,31 @@
+
+ def construye(pid, con_binario=False):
+     m = manifiesto(pid)
++    dirs = {kind: m["settings"][setting] for kind, setting in
++            (("levels", "levelsDirectory"), ("maps", "mapsDirectory"),
++             ("adventures", "adventuresDirectory"), ("objects", "catalogsDirectory"))}
+     destino = os.path.join(BUILDS, pid)
+     if os.path.exists(destino):
+         shutil.rmtree(destino, ignore_errors=True)
+-    for sub in ("levels", "maps", "adventures", "objects", "textures"):
++    for sub in (*dirs.values(), "textures"):
+         os.makedirs(os.path.join(destino, "assets", sub), exist_ok=True)
+
+-    niveles, arrastrados = cierre_de_niveles(list(m.get("niveles", [])))
+-    mapas = set(m.get("mapas", []))
++    niveles, arrastrados = cierre_de_niveles(m["levels"], dirs["levels"])
++    mapas = set(m["maps"])
+     for n in niveles:                       # los mapas de lo arrastrado tambien
+-        r = os.path.join(ASSETS, "levels", n)
++        r = os.path.join(ASSETS, dirs["levels"], n)
+         if os.path.exists(r):
+             d = carga(r)
+             if "map" in d:
+                 mapas.add(os.path.basename(d["map"]))
+
+     plan = {"levels": sorted(niveles), "maps": sorted(mapas),
+-            "adventures": list(m.get("aventuras", [])),
+-            "objects": list(m.get("catalogos", []))}
++            "adventures": list(m["adventures"]),
++            "objects": list(m["catalogs"])}
+
+     copiados, faltan = 0, []
+-    for sub, ficheros in plan.items():
++    for kind, ficheros in plan.items():
++        sub = dirs[kind]
+         for f in ficheros:
+             org = os.path.join(ASSETS, sub, f)
+             if not os.path.exists(org):
+@@ -129,7 +134,7 @@
+
+     # --- Comprobacion: todo objectId usado debe tener ficha DENTRO ---
+     catalogo = set()
+-    dir_obj = os.path.join(destino, "assets", "objects")
++    dir_obj = os.path.join(destino, "assets", dirs["objects"])
+     for f in os.listdir(dir_obj):
+         d = carga(os.path.join(dir_obj, f))
+         for o in (d.get("objects") or d.get("entries") or []):
+@@ -137,7 +142,7 @@
+                 catalogo.add(o["id"])
+     sin_ficha = set()
+     for n in plan["levels"]:
+-        r = os.path.join(destino, "assets", "levels", n)
++        r = os.path.join(destino, "assets", dirs["levels"], n)
+         if not os.path.exists(r):
+             continue
+         d = carga(r)
+@@ -154,13 +159,13 @@
+
+     info = {
+         "_nota": "Build de un proyecto. Generado por tools/build_proyecto.py.",
+-        "id": pid, "nombre": m.get("nombre", pid), "epoca": m.get("epoca", ""),
+-        "autor": m.get("autor", ""), "entrada": m.get("entrada", ""),
++        "id": pid, "nombre": m["name"], "epoca": m["epoch"],
++        "autor": m["author"], "entrada": m["entry"],
+         "contenido": {k: len(v) for k, v in plan.items()},
+         "niveles_arrastrados": [{"desde": a, "arrastra": b} for a, b in arrastrados],
+         "ficheros_declarados_que_faltan": faltan,
+         "objectIds_sin_ficha": sorted(sin_ficha),
+-        "jugable": bool(m.get("entrada")) and not faltan and not sin_ficha,
++        "jugable": bool(m["entry"]) and not faltan and not sin_ficha,
+     }
+     with open(os.path.join(destino, "build.json"), "w", encoding="utf-8") as f:
+         json.dump(info, f, ensure_ascii=False, indent=1)
+@@ -176,7 +181,7 @@
+     if sin_ficha:
+         print(f"                {len(sin_ficha)} objectId sin ficha: {sorted(sin_ficha)[:4]}")
+     if not info["jugable"]:
+-        motivo = ("sin entrada" if not m.get("entrada")
++        motivo = ("sin entrada" if not m["entry"]
+                   else "faltan ficheros" if faltan else "objetos sin ficha")
+         print(f"                NO JUGABLE: {motivo}")
+     return info
+diff --git a/MotorGraphico/tools/validar_todo.py b/MotorGraphico/tools/validar_todo.py
+--- a/MotorGraphico/tools/validar_todo.py
++++ b/MotorGraphico/tools/validar_todo.py
+@@ -29,6 +29,7 @@
+ import subprocess
+ import sys
+ from pathlib import Path
++from project_manifest import load_manifest, resolve_entry
+
+ TOOLS = Path(__file__).resolve().parent
+ MOTOR = TOOLS.parent
+@@ -327,19 +328,17 @@
+         if solo and pid != solo:
+             continue
+
+-        man = leer_json(ASSETS / "proyectos" / f"{pid}.json")
+-        if man is None:
+-            err(f"assets/proyectos/{pid}.json", pid, "-", "el manifiesto no existe")
+-            continue
+-
+-        # los manifiestos usan las claves en castellano: niveles/mapas/
+-        # aventuras/catalogos (ver FORMATO_PROYECTOS.md); el struct C++
+-        # Project las mapea a levels/maps/adventures/catalogs al parsear.
++        try:
++            man = load_manifest(ASSETS / "proyectos" / f"{pid}.json")
++        except (ValueError, OSError) as exc:
++            err(f"assets/proyectos/{pid}.json", pid, "-", str(exc))
++            continue
++
+         cat_ids: dict[str, str] = {}
+-        for nombre in man.get("catalogos") or []:
++        for nombre in man["catalogs"]:
+             if not isinstance(nombre, str):
+                 continue
+-            ruta = ASSETS / "objects" / nombre
++            ruta = ASSETS / man["settings"]["catalogsDirectory"] / nombre
+             if not ruta.exists():
+                 err(f"assets/proyectos/{pid}.json", pid, "catalogos",
+                     f"'{nombre}' no existe en assets/objects/")
+@@ -347,10 +346,10 @@
+             cat_ids.update(cargar_objetos(ruta))
+
+         niveles_proyecto = 0
+-        for nombre in man.get("niveles") or []:
++        for nombre in man["levels"]:
+             if not isinstance(nombre, str):
+                 continue
+-            ruta = ASSETS / "levels" / nombre
++            ruta = ASSETS / man["settings"]["levelsDirectory"] / nombre
+             nivel = leer_json(ruta)
+             if nivel is None:
+                 err(f"assets/proyectos/{pid}.json", pid, "niveles",
+@@ -377,25 +376,16 @@
+     for pid in vistos:
+         if solo and pid != solo:
+             continue
+-        man = leer_json(ASSETS / "proyectos" / f"{pid}.json")
+-        if not isinstance(man, dict):
+-            continue
+-        entrada = man.get("entrada")
++        try:
++            man = load_manifest(ASSETS / "proyectos" / f"{pid}.json")
++        except (ValueError, OSError):
++            continue  # diagnosticado en el paso anterior
++        entrada = man["entry"]
+         if not isinstance(entrada, str) or not entrada:
+             aviso(f"assets/proyectos/{pid}.json", pid, "entrada",
+                   "sin entrada: el proyecto se edita pero no se juega")
+             continue
+-        # la ruta del manifiesto es relativa a la raíz del motor (como en
+-        # runtime: cwd = build/, assets/ copiado ahí), no a assets/
+-        candidata = MOTOR / entrada if entrada.startswith("assets/") else None
+-        resuelta = None
+-        if candidata is not None and candidata.exists():
+-            resuelta = candidata
+-        else:
+-            for base in (ASSETS / "adventures", ASSETS / "levels"):
+-                if (base / entrada).exists():
+-                    resuelta = base / entrada
+-                    break
++        resuelta = resolve_entry(man, ASSETS)
+         if resuelta is None:
+             err(f"assets/proyectos/{pid}.json", pid, "entrada",
+                 f"'{entrada}' no resuelve a ninguna aventura ni nivel")
+diff --git a/MotorGraphico/assets/proyectos/boundington.json b/MotorGraphico/assets/proyectos/boundington.json
+--- a/MotorGraphico/assets/proyectos/boundington.json
++++ b/MotorGraphico/assets/proyectos/boundington.json
+@@ -1,86 +1,94 @@
+ {
+- "_nota": "Manifiesto de proyecto. Lo leen Editor/ProjectIndex y tools/build_proyecto.py.",
+- "id": "boundington",
+- "nombre": "Los Perdidos de Boundington",
+- "descripcion": "Campana canonica de Aegroum. Boundington, ano 1981 b.f. Prologo + tres dias.",
+- "epoca": "1981 b.f.",
+- "autor": "Oriol + Claude",
+- "prefijo": "",
+- "niveles": [
+-  "ciudad_centro.json",
+-  "ciudad_este.json",
+-  "ciudad_oeste.json",
+-  "ciudad_surysal.json",
+-  "interior_armeria.json",
+-  "interior_banco.json",
+-  "interior_banos.json",
+-  "interior_biblioteca.json",
+-  "interior_casa_te.json",
+-  "interior_castillo.json",
+-  "interior_coliseo.json",
+-  "interior_cuartel.json",
+-  "interior_herreria.json",
+-  "interior_iglesia.json",
+-  "interior_joyeria.json",
+-  "interior_mercado.json",
+-  "interior_opera.json",
+-  "interior_posada.json",
+-  "interior_sastreria.json",
+-  "interior_taberna.json",
+-  "interior_universidad.json",
+-  "interior_vacio.json",
+-  "mazmorra_64x64.json",
+-  "plaza_de_las_razas.json"
+- ],
+- "mapas": [
+-  "ciudad_centro.tmx",
+-  "ciudad_este.tmx",
+-  "ciudad_oeste.tmx",
+-  "ciudad_surysal.tmx",
+-  "interior_armeria.tmx",
+-  "interior_banco.tmx",
+-  "interior_banos.tmx",
+-  "interior_biblioteca.tmx",
+-  "interior_casa_te.tmx",
+-  "interior_castillo.tmx",
+-  "interior_coliseo.tmx",
+-  "interior_cuartel.tmx",
+-  "interior_herreria.tmx",
+-  "interior_iglesia.tmx",
+-  "interior_joyeria.tmx",
+-  "interior_mercado.tmx",
+-  "interior_opera.tmx",
+-  "interior_posada.tmx",
+-  "interior_sastreria.tmx",
+-  "interior_taberna.tmx",
+-  "interior_universidad.tmx",
+-  "mazmorra_64x64.tmx",
+-  "plaza_de_las_razas.tmx"
+- ],
+- "aventuras": [
+-  "boundington_ocaso.json",
+-  "boundington_precuela_taberna.json",
+-  "boundington_primer_dia.json",
+-  "boundington_prologo.json",
+-  "boundington_segundo_dia.json",
+-  "plaza_de_las_razas.json"
+- ],
+- "catalogos": [
+-  "accesos_cuadrantes.json",
+-  "boundington_npcs.json",
+-  "boundington_pasos.json",
+-  "ciudad_objetos.json",
+-  "editor_biblioteca_enemigos.json",
+-  "editor_biomas_fauna_equipo.json",
+-  "editor_npcs_por_raza.json",
+-  "este_norte_objetos.json",
+-  "mapamundi_objetos.json",
+-  "marcadores_pendientes.json",
+-  "mundi_lugares.json",
+-  "on_npcs.json",
+-  "on_puertas.json",
+-  "plaza_razas_objetos.json",
+-  "test_objects.json"
+- ],
+- "entrada": "assets/adventures/boundington_prologo.json"
+-}
+\ No newline at end of file
++  "schemaVersion": 1,
++  "id": "boundington",
++  "name": "Los Perdidos de Boundington",
++  "description": "Campana canonica de Aegroum. Boundington, ano 1981 b.f. Prologo + tres dias.",
++  "epoch": "1981 b.f.",
++  "author": "Oriol + Claude",
++  "prefix": "",
++  "settings": {
++    "schemaVersion": 1,
++    "mapsDirectory": "maps",
++    "levelsDirectory": "levels",
++    "adventuresDirectory": "adventures",
++    "catalogsDirectory": "objects",
++    "initialMap": ""
++  },
++  "entry": "assets/adventures/boundington_prologo.json",
++  "levels": [
++    "ciudad_centro.json",
++    "ciudad_este.json",
++    "ciudad_oeste.json",
++    "ciudad_surysal.json",
++    "interior_armeria.json",
++    "interior_banco.json",
++    "interior_banos.json",
++    "interior_biblioteca.json",
++    "interior_casa_te.json",
++    "interior_castillo.json",
++    "interior_coliseo.json",
++    "interior_cuartel.json",
++    "interior_herreria.json",
++    "interior_iglesia.json",
++    "interior_joyeria.json",
++    "interior_mercado.json",
++    "interior_opera.json",
++    "interior_posada.json",
++    "interior_sastreria.json",
++    "interior_taberna.json",
++    "interior_universidad.json",
++    "interior_vacio.json",
++    "mazmorra_64x64.json",
++    "plaza_de_las_razas.json"
++  ],
++  "maps": [
++    "ciudad_centro.tmx",
++    "ciudad_este.tmx",
++    "ciudad_oeste.tmx",
++    "ciudad_surysal.tmx",
++    "interior_armeria.tmx",
++    "interior_banco.tmx",
++    "interior_banos.tmx",
++    "interior_biblioteca.tmx",
++    "interior_casa_te.tmx",
++    "interior_castillo.tmx",
++    "interior_coliseo.tmx",
++    "interior_cuartel.tmx",
++    "interior_herreria.tmx",
++    "interior_iglesia.tmx",
++    "interior_joyeria.tmx",
++    "interior_mercado.tmx",
++    "interior_opera.tmx",
++    "interior_posada.tmx",
++    "interior_sastreria.tmx",
++    "interior_taberna.tmx",
++    "interior_universidad.tmx",
++    "mazmorra_64x64.tmx",
++    "plaza_de_las_razas.tmx"
++  ],
++  "adventures": [
++    "boundington_ocaso.json",
++    "boundington_precuela_taberna.json",
++    "boundington_primer_dia.json",
++    "boundington_prologo.json",
++    "boundington_segundo_dia.json",
++    "plaza_de_las_razas.json"
++  ],
++  "catalogs": [
++    "accesos_cuadrantes.json",
++    "boundington_npcs.json",
++    "boundington_pasos.json",
++    "ciudad_objetos.json",
++    "editor_biblioteca_enemigos.json",
++    "editor_biomas_fauna_equipo.json",
++    "editor_npcs_por_raza.json",
++    "este_norte_objetos.json",
++    "mapamundi_objetos.json",
++    "marcadores_pendientes.json",
++    "mundi_lugares.json",
++    "on_npcs.json",
++    "on_puertas.json",
++    "plaza_razas_objetos.json",
++    "test_objects.json"
++  ]
++}
+diff --git a/MotorGraphico/assets/proyectos/este_norte.json b/MotorGraphico/assets/proyectos/este_norte.json
+--- a/MotorGraphico/assets/proyectos/este_norte.json
++++ b/MotorGraphico/assets/proyectos/este_norte.json
+@@ -1,12 +1,21 @@
+ {
+-  "_nota": "Manifiesto de proyecto. Lo leen Editor/ProjectIndex y tools/build_proyecto.py.",
++  "schemaVersion": 1,
+   "id": "este_norte",
+-  "nombre": "Egaroth - cuadrante este norte",
+-  "descripcion": "Experimento 4-IAs, cuadrante Este-Norte (ZCode). Naciones: Choubar, Gongorguma, Mistarium y Nocturnsea (capital Umbrahal = PROPUESTA). 22 asentimientos, 33 interiores.",
+-  "epoca": "2000 b.f.",
+-  "autor": "Zcode",
+-  "prefijo": "en_",
+-  "niveles": [
++  "name": "Egaroth - cuadrante este norte",
++  "description": "Experimento 4-IAs, cuadrante Este-Norte (ZCode). Naciones: Choubar, Gongorguma, Mistarium y Nocturnsea (capital Umbrahal = PROPUESTA). 22 asentimientos, 33 interiores.",
++  "epoch": "2000 b.f.",
++  "author": "Zcode",
++  "prefix": "en_",
++  "settings": {
++    "schemaVersion": 1,
++    "mapsDirectory": "maps",
++    "levelsDirectory": "levels",
++    "adventuresDirectory": "adventures",
++    "catalogsDirectory": "objects",
++    "initialMap": ""
++  },
++  "entry": "ciudad_en_guskedor.json",
++  "levels": [
+     "ciudad_en_aldea_m.json",
+     "ciudad_en_aldea_xix.json",
+     "ciudad_en_aldea_xvi.json",
+@@ -63,7 +72,7 @@
+     "interior_en_venordemn_mercado.json",
+     "interior_en_venordemn_taberna.json"
+   ],
+-  "mapas": [
++  "maps": [
+     "ciudad_en_aldea_m.tmx",
+     "ciudad_en_aldea_xix.tmx",
+     "ciudad_en_aldea_xvi.tmx",
+@@ -120,10 +129,10 @@
+     "interior_en_venordemn_mercado.tmx",
+     "interior_en_venordemn_taberna.tmx"
+   ],
+-  "aventuras": [
++  "adventures": [
+     "este_norte_senal_ceniza.json"
+   ],
+-  "catalogos": [
++  "catalogs": [
+     "accesos_cuadrantes.json",
+     "boundington_enemigos.json",
+     "boundington_npcs.json",
+@@ -141,6 +150,5 @@
+     "on_puertas.json",
+     "plaza_razas_objetos.json",
+     "test_objects.json"
+-  ],
+-  "entrada": "ciudad_en_guskedor.json"
+-}
+\ No newline at end of file
++  ]
++}
+diff --git a/MotorGraphico/assets/proyectos/este_sur.json b/MotorGraphico/assets/proyectos/este_sur.json
+--- a/MotorGraphico/assets/proyectos/este_sur.json
++++ b/MotorGraphico/assets/proyectos/este_sur.json
+@@ -1,25 +1,33 @@
+ {
+- "_nota": "Manifiesto de proyecto. Lo leen Editor/ProjectIndex y tools/build_proyecto.py.",
+- "id": "este_sur",
+- "nombre": "Egaroth - cuadrante este sur",
+- "descripcion": "Experimento de los cuatro. Naciones: Ashye, Bosmurg, Esmua, Tabaxi, Wulcain.",
+- "epoca": "2000 b.f.",
+- "autor": "ChatGPT",
+- "prefijo": "es_",
+- "niveles": [
+-  "es_dhin_thyraxion.json",
+-  "es_naka_tol.json",
+-  "es_taurengrad.json"
+- ],
+- "mapas": [
+-  "es_dhin_thyraxion.tmx",
+-  "es_naka_tol.tmx",
+-  "es_taurengrad.tmx"
+- ],
+- "aventuras": [],
+- "catalogos": [
+-  "marcadores_pendientes.json",
+-  "mapamundi_objetos.json"
+- ],
+- "entrada": ""
+-}
+\ No newline at end of file
++  "schemaVersion": 1,
++  "id": "este_sur",
++  "name": "Egaroth - cuadrante este sur",
++  "description": "Experimento de los cuatro. Naciones: Ashye, Bosmurg, Esmua, Tabaxi, Wulcain.",
++  "epoch": "2000 b.f.",
++  "author": "ChatGPT",
++  "prefix": "es_",
++  "settings": {
++    "schemaVersion": 1,
++    "mapsDirectory": "maps",
++    "levelsDirectory": "levels",
++    "adventuresDirectory": "adventures",
++    "catalogsDirectory": "objects",
++    "initialMap": ""
++  },
++  "entry": "",
++  "levels": [
++    "es_dhin_thyraxion.json",
++    "es_naka_tol.json",
++    "es_taurengrad.json"
++  ],
++  "maps": [
++    "es_dhin_thyraxion.tmx",
++    "es_naka_tol.tmx",
++    "es_taurengrad.tmx"
++  ],
++  "adventures": [],
++  "catalogs": [
++    "marcadores_pendientes.json",
++    "mapamundi_objetos.json"
++  ]
++}
+diff --git a/MotorGraphico/assets/proyectos/mundo.json b/MotorGraphico/assets/proyectos/mundo.json
+--- a/MotorGraphico/assets/proyectos/mundo.json
++++ b/MotorGraphico/assets/proyectos/mundo.json
+@@ -1,38 +1,46 @@
+ {
+- "_nota": "Manifiesto de proyecto. Lo leen Editor/ProjectIndex y tools/build_proyecto.py.",
+- "id": "mundo",
+- "nombre": "Egaroth - mapamundi",
+- "descripcion": "Los 8 mapamundis generados desde la rejilla canonica 26x26. Infraestructura compartida: sus puertas llevan a las ciudades de cada cuadrante.",
+- "epoca": "2000 b.f.",
+- "autor": "Claude",
+- "prefijo": "mundi_",
+- "niveles": [
+-  "mundi_landmass_1.json",
+-  "mundi_landmass_2.json",
+-  "mundi_landmass_3.json",
+-  "mundi_landmass_4.json",
+-  "mundi_landmass_5.json",
+-  "mundi_landmass_6.json",
+-  "mundi_landmass_7.json",
+-  "mundi_landmass_8.json"
+- ],
+- "mapas": [
+-  "mundi_landmass_1.tmx",
+-  "mundi_landmass_2.tmx",
+-  "mundi_landmass_3.tmx",
+-  "mundi_landmass_4.tmx",
+-  "mundi_landmass_5.tmx",
+-  "mundi_landmass_6.tmx",
+-  "mundi_landmass_7.tmx",
+-  "mundi_landmass_8.tmx"
+- ],
+- "aventuras": [],
+- "catalogos": [
+-  "mundi_lugares.json",
+-  "mapamundi_objetos.json",
+-  "accesos_cuadrantes.json",
+-  "este_norte_objetos.json",
+-  "marcadores_pendientes.json"
+- ],
+- "entrada": ""
+-}
+\ No newline at end of file
++  "schemaVersion": 1,
++  "id": "mundo",
++  "name": "Egaroth - mapamundi",
++  "description": "Los 8 mapamundis generados desde la rejilla canonica 26x26. Infraestructura compartida: sus puertas llevan a las ciudades de cada cuadrante.",
++  "epoch": "2000 b.f.",
++  "author": "Claude",
++  "prefix": "mundi_",
++  "settings": {
++    "schemaVersion": 1,
++    "mapsDirectory": "maps",
++    "levelsDirectory": "levels",
++    "adventuresDirectory": "adventures",
++    "catalogsDirectory": "objects",
++    "initialMap": ""
++  },
++  "entry": "",
++  "levels": [
++    "mundi_landmass_1.json",
++    "mundi_landmass_2.json",
++    "mundi_landmass_3.json",
++    "mundi_landmass_4.json",
++    "mundi_landmass_5.json",
++    "mundi_landmass_6.json",
++    "mundi_landmass_7.json",
++    "mundi_landmass_8.json"
++  ],
++  "maps": [
++    "mundi_landmass_1.tmx",
++    "mundi_landmass_2.tmx",
++    "mundi_landmass_3.tmx",
++    "mundi_landmass_4.tmx",
++    "mundi_landmass_5.tmx",
++    "mundi_landmass_6.tmx",
++    "mundi_landmass_7.tmx",
++    "mundi_landmass_8.tmx"
++  ],
++  "adventures": [],
++  "catalogs": [
++    "mundi_lugares.json",
++    "mapamundi_objetos.json",
++    "accesos_cuadrantes.json",
++    "este_norte_objetos.json",
++    "marcadores_pendientes.json"
++  ]
++}
+diff --git a/MotorGraphico/assets/proyectos/oeste_norte.json b/MotorGraphico/assets/proyectos/oeste_norte.json
+--- a/MotorGraphico/assets/proyectos/oeste_norte.json
++++ b/MotorGraphico/assets/proyectos/oeste_norte.json
+@@ -1,30 +1,38 @@
+ {
+- "_nota": "Manifiesto de proyecto. Lo leen Editor/ProjectIndex y tools/build_proyecto.py.",
+- "id": "oeste_norte",
+- "nombre": "Egaroth - cuadrante oeste norte",
+- "descripcion": "Experimento de los cuatro. Naciones: Bastrea, Ecla, Gliaddokx, Ostad, Udrax.",
+- "epoca": "2000 b.f.",
+- "autor": "Claude",
+- "prefijo": "on_",
+- "niveles": [
+-  "on_bomengrid.json",
+-  "on_havargruztak.json",
+-  "on_ostad.json",
+-  "on_umedan.json"
+- ],
+- "mapas": [
+-  "on_bomengrid.tmx",
+-  "on_havargruztak.tmx",
+-  "on_ostad.tmx",
+-  "on_umedan.tmx"
+- ],
+- "aventuras": [
+-  "on_camino_del_norte.json"
+- ],
+- "catalogos": [
+-  "on_npcs.json",
+-  "on_puertas.json",
+-  "mapamundi_objetos.json"
+- ],
+- "entrada": "assets/adventures/on_camino_del_norte.json"
+-}
+\ No newline at end of file
++  "schemaVersion": 1,
++  "id": "oeste_norte",
++  "name": "Egaroth - cuadrante oeste norte",
++  "description": "Experimento de los cuatro. Naciones: Bastrea, Ecla, Gliaddokx, Ostad, Udrax.",
++  "epoch": "2000 b.f.",
++  "author": "Claude",
++  "prefix": "on_",
++  "settings": {
++    "schemaVersion": 1,
++    "mapsDirectory": "maps",
++    "levelsDirectory": "levels",
++    "adventuresDirectory": "adventures",
++    "catalogsDirectory": "objects",
++    "initialMap": ""
++  },
++  "entry": "assets/adventures/on_camino_del_norte.json",
++  "levels": [
++    "on_bomengrid.json",
++    "on_havargruztak.json",
++    "on_ostad.json",
++    "on_umedan.json"
++  ],
++  "maps": [
++    "on_bomengrid.tmx",
++    "on_havargruztak.tmx",
++    "on_ostad.tmx",
++    "on_umedan.tmx"
++  ],
++  "adventures": [
++    "on_camino_del_norte.json"
++  ],
++  "catalogs": [
++    "on_npcs.json",
++    "on_puertas.json",
++    "mapamundi_objetos.json"
++  ]
++}
+diff --git a/MotorGraphico/CMakeLists.txt b/MotorGraphico/CMakeLists.txt
+--- a/MotorGraphico/CMakeLists.txt
++++ b/MotorGraphico/CMakeLists.txt
+@@ -632,6 +632,7 @@
+
+ # C-22 — Comprobador estático de declaraciones sin definición en include/RPG.
+ include(cmake/DeclarationCheck.cmake)
++include(cmake/ProjectManifestTests.cmake)
+
+ # INF-01.1 — Registro inicial de los demos GL-free verificados en la línea
+ # base. Las pruebas se ejecutan desde el directorio de build porque sus rutas

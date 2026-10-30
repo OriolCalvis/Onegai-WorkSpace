@@ -1,0 +1,27 @@
+{
+  "id": "H3-04",
+  "descripcion": "Comercio con stock y precios reales: openShop() -> buy -> sell -> closeInteraction",
+  "fase": "H",
+  "gantt": "gantt_jugabilidad_H.puml",
+  "gantt_color": "#5CB85C",
+  "dependencias": ["H1-02"],
+  "autor": "claude",
+  "estado": "closed",
+  "verificado": true,
+  "commit_motor_graphico": "fa0eab7",
+  "commit_software": null,
+  "archivos": {
+    "nuevos": ["tests/Game/ShopFlowTests.cpp"],
+    "modificados": ["MotorGraphico/CMakeLists.txt", "MotorGraphico/planificacion/MAPA_DEL_CODIGO.md"]
+  },
+  "tests": {
+    "test_shop_flow": {
+      "casos": 13,
+      "pass": 13,
+      "fail": 0
+    }
+  },
+  "sin_toocar": ["Application.cpp/.h", "GameSession.cpp/.h", "GameSessionComercio.cpp"],
+  "cierre": "Entrar en la tienda via openShop() (comercio.abrir) -> ver stock y precios reales -> comprar (oro baja, item al inventario) -> vender (oro sube, item sale) -> closeInteraction vuelve a Exploration",
+  "observaciones": "GameSession + GameSessionComercio ya estaban en motor_level (54e06b5/EST-23). openShop() era el unico punto de entrada de comercio no probado end-to-end (GameModeTests solo cubre interact()). El hook pre-commit falla por ProjectIndexDuplicate.cpp (deuda preexistente d31b91a/EST-33)."
+}

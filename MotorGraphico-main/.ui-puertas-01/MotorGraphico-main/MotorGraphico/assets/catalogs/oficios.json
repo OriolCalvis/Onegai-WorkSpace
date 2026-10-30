@@ -1,0 +1,1379 @@
+{
+  "version": 1,
+  "_nota": "D0017. Contrato de assets/catalogs/oficios.json. 'rival 0' con tirada vacía = sin tirada (grado éxito automático). 'rangos' es una PROPUESTA de claude_oficios_datos01 (D0017 no los fija). Los extras (herramienta, _tanda, _objetosPendientes, montura, objeto.tabla, objeto.tendero) son opcionales y los lee el validador. Tanda 7 (Fable, 16/10): los nueve oficios de claude/oficios/ con familia, cuentaParaLimite y recetas en recetas.json; materiales en oficios_objetos.json.",
+  "rangos": [
+    {
+      "id": "aprendiz",
+      "nombre": "Aprendiz",
+      "expDesde": 0,
+      "dados": 0
+    },
+    {
+      "id": "oficial",
+      "nombre": "Oficial",
+      "expDesde": 20,
+      "dados": 1
+    },
+    {
+      "id": "maestro",
+      "nombre": "Maestro",
+      "expDesde": 60,
+      "dados": 2
+    },
+    {
+      "id": "gran_maestro",
+      "nombre": "Gran maestro",
+      "expDesde": 140,
+      "dados": 3
+    }
+  ],
+  "oficios": {
+    "servir_bar": {
+      "nombre": "Servir en la barra",
+      "verbo": "Servir",
+      "objetos": [
+        "barra_taberna_mig"
+      ],
+      "tirada": {
+        "caracteristica": "CAR",
+        "competencia": "persuasion",
+        "rival": 2
+      },
+      "duracion": 1,
+      "descanso": 120,
+      "coste": {
+        "oro": 0
+      },
+      "paga": {
+        "roce": {
+          "oro": 4,
+          "exp": 1,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 8,
+          "exp": 2,
+          "reputacion": 1
+        },
+        "critico": {
+          "oro": 12,
+          "exp": 3,
+          "reputacion": 2
+        },
+        "pifia": {
+          "oro": -2
+        }
+      },
+      "faccion": "",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -1
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 0,
+        "calidadPorGrado": false
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "Rosita te lanza un delantal. «Las jarras, a la derecha.»",
+        "exito": "Sirves hasta que cierra la cocina. Rosita cuenta las monedas y asiente.",
+        "fallo": "Derramas más de lo que sirves. Rosita suspira y te paga lo justo.",
+        "critico": "La sala entera te aplaude. Hasta los callados dejan propina.",
+        "pifia": "Se te cae la bandeja. Rosita descuenta las jarras rotas."
+      },
+      "_tanda": 1,
+      "familia": "ocio",
+      "cuentaParaLimite": false
+    },
+    "estudiar_biblioteca": {
+      "nombre": "Estudiar en la biblioteca",
+      "verbo": "Estudiar",
+      "objetos": [
+        "mesa_lectura_mig",
+        "estanteria_libros_o3"
+      ],
+      "tirada": {
+        "caracteristica": "INT",
+        "competencia": "investigacion",
+        "rival": 2
+      },
+      "duracion": 1,
+      "descanso": 150,
+      "coste": {
+        "oro": 3
+      },
+      "paga": {
+        "roce": {
+          "oro": 0,
+          "exp": 2,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 0,
+          "exp": 4,
+          "reputacion": 0
+        },
+        "critico": {
+          "oro": 0,
+          "exp": 6,
+          "reputacion": 1
+        }
+      },
+      "faccion": "",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -1
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 0,
+        "calidadPorGrado": false
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "La bibliotecaria te señala una mesa. «Silencio, por favor.»",
+        "exito": "Pasas las horas entre páginas. Sales sabiendo algo que no sabías.",
+        "fallo": "Las letras bailan. Lees mucho y entiendes poco.",
+        "critico": "Un párrafo lo aclara todo. Lo copias antes de que se te escape.",
+        "pifia": "Te duermes sobre el libro. La bibliotecaria carraspea."
+      },
+      "_tanda": 1,
+      "familia": "ocio",
+      "cuentaParaLimite": false,
+      "oficio": "estudio"
+    },
+    "pescar": {
+      "nombre": "Pescar",
+      "verbo": "Pescar",
+      "objetos": [
+        "ponton"
+      ],
+      "tirada": {
+        "caracteristica": "DES",
+        "competencia": "percepcion",
+        "rival": 2
+      },
+      "duracion": 1,
+      "descanso": 60,
+      "coste": {
+        "oro": 0
+      },
+      "paga": {
+        "roce": {
+          "oro": 0,
+          "exp": 1,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 0,
+          "exp": 2,
+          "reputacion": 0
+        },
+        "critico": {
+          "oro": 0,
+          "exp": 4,
+          "reputacion": 1
+        }
+      },
+      "faccion": "aegroum",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -1
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 1,
+        "calidadPorGrado": true,
+        "tabla": "pesca"
+      },
+      "herramienta": "cana_de_pescar",
+      "textos": {
+        "aceptar": "Cebas el anzuelo y lanzas el sedal. Ahora, esperar.",
+        "exito": "El corcho se hunde de golpe. Sacas un pez como es debido.",
+        "fallo": "El agua está quieta. Recoges el sedal con el anzuelo pelado.",
+        "critico": "El sedal canta y la caña se dobla. Lo que sube pesa de verdad.",
+        "pifia": "El sedal se enreda en el pontón y salta. Mala tarde."
+      },
+      "_tanda": 1,
+      "familia": "ocio",
+      "cuentaParaLimite": false
+    },
+    "banarse_termas": {
+      "nombre": "Bañarse en las termas",
+      "verbo": "Bañarse",
+      "objetos": [
+        "estatua_fuente"
+      ],
+      "tirada": {
+        "caracteristica": "",
+        "competencia": "",
+        "rival": 0
+      },
+      "duracion": 1,
+      "descanso": 200,
+      "coste": {
+        "oro": 6
+      },
+      "paga": {
+        "roce": {
+          "oro": 0,
+          "exp": 0,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 0,
+          "exp": 0,
+          "reputacion": 0
+        },
+        "critico": {
+          "oro": 0,
+          "exp": 0,
+          "reputacion": 0
+        }
+      },
+      "faccion": "",
+      "efecto": {
+        "pv": 6,
+        "fatiga": 3
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 0,
+        "calidadPorGrado": false
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "La encargada te da una toalla. «Deja las armas en la entrada.»",
+        "exito": "El agua tibia te suelta los hombros. Sales como nuevo.",
+        "fallo": "El agua se enfría pronto. Algo es algo.",
+        "critico": "Te quedas hasta que el vapor lo borra todo. Sales como un recién nacido.",
+        "pifia": "Resbalas en el borde. Solo se ha mojado tu orgullo."
+      },
+      "_tanda": 2,
+      "_objetosPendientes": [
+        "tina_banos"
+      ],
+      "familia": "ocio",
+      "cuentaParaLimite": false
+    },
+    "sudar_vapor": {
+      "nombre": "Sudar en la sala de vapor",
+      "verbo": "Sudar",
+      "objetos": [
+        "brasero_piedras"
+      ],
+      "tirada": {
+        "caracteristica": "",
+        "competencia": "",
+        "rival": 0
+      },
+      "duracion": 1,
+      "descanso": 200,
+      "coste": {
+        "oro": 3
+      },
+      "paga": {
+        "roce": {
+          "oro": 0,
+          "exp": 0,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 0,
+          "exp": 0,
+          "reputacion": 0
+        },
+        "critico": {
+          "oro": 0,
+          "exp": 0,
+          "reputacion": 0
+        }
+      },
+      "faccion": "",
+      "efecto": {
+        "pv": 3,
+        "fatiga": 4
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 0,
+        "calidadPorGrado": false
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "Echas agua a las piedras. La sala se llena de nube caliente.",
+        "exito": "Sudas hasta el último mal pensamiento. Sales ligero.",
+        "fallo": "Se apaga el brasero. Apenas entras en calor.",
+        "critico": "El vapor te envuelve y el cuerpo se te olvida. Sales renacido.",
+        "pifia": "Te mareas con tanto calor. Sales a gatas."
+      },
+      "_tanda": 2,
+      "familia": "ocio",
+      "cuentaParaLimite": false
+    },
+    "sentarse": {
+      "nombre": "Sentarse",
+      "verbo": "Sentarse",
+      "objetos": [
+        "banco_plaza",
+        "banco_plaza_o2",
+        "banco_brasero",
+        "banco_brasero_o2",
+        "banco",
+        "banco_piedra",
+        "silla",
+        "silla_o1",
+        "silla_o2",
+        "silla_o3",
+        "taburete"
+      ],
+      "tirada": {
+        "caracteristica": "",
+        "competencia": "",
+        "rival": 0
+      },
+      "duracion": 1,
+      "descanso": 150,
+      "coste": {
+        "oro": 0
+      },
+      "paga": {
+        "roce": {
+          "oro": 0,
+          "exp": 0,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 0,
+          "exp": 0,
+          "reputacion": 0
+        },
+        "critico": {
+          "oro": 0,
+          "exp": 0,
+          "reputacion": 0
+        }
+      },
+      "faccion": "aegroum",
+      "efecto": {
+        "pv": 1,
+        "fatiga": 1
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 0,
+        "calidadPorGrado": false
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "Te sientas. Por un rato, la ciudad puede esperar.",
+        "exito": "Miras pasar a la gente. Te levantas con las piernas descansadas.",
+        "fallo": "No encuentras postura. Te levantas igual de cansado.",
+        "critico": "Se te va el tiempo mirando nada. Qué bien sienta.",
+        "pifia": "La silla cruje y se tambalea. Más vale levantarse."
+      },
+      "_tanda": 2,
+      "familia": "ocio",
+      "cuentaParaLimite": false
+    },
+    "servir_posada": {
+      "nombre": "Servir en la posada",
+      "verbo": "Servir",
+      "objetos": [
+        "mostrador_posada_mig"
+      ],
+      "tirada": {
+        "caracteristica": "CAR",
+        "competencia": "persuasion",
+        "rival": 2
+      },
+      "duracion": 1,
+      "descanso": 120,
+      "coste": {
+        "oro": 0
+      },
+      "paga": {
+        "roce": {
+          "oro": 4,
+          "exp": 1,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 7,
+          "exp": 2,
+          "reputacion": 1
+        },
+        "critico": {
+          "oro": 11,
+          "exp": 3,
+          "reputacion": 2
+        },
+        "pifia": {
+          "oro": -2
+        }
+      },
+      "faccion": "",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -1
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 0,
+        "calidadPorGrado": false
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "El posadero te ata un mandil. «Camas arriba, platos abajo.»",
+        "exito": "Llevas platos y recados hasta que cae la noche. Pagan lo acordado.",
+        "fallo": "Te lías con los pedidos. El posadero resopla y paga menos.",
+        "critico": "Un viajero cuenta tu servicio a medio pueblo. Llueven propinas.",
+        "pifia": "Se te cae un plato en pleno comedor. Te lo descuentan."
+      },
+      "_tanda": 2,
+      "familia": "ocio",
+      "cuentaParaLimite": false
+    },
+    "servir_te": {
+      "nombre": "Servir el té",
+      "verbo": "Servir",
+      "objetos": [
+        "mesa_baja"
+      ],
+      "tirada": {
+        "caracteristica": "CAR",
+        "competencia": "persuasion",
+        "rival": 1
+      },
+      "duracion": 1,
+      "descanso": 120,
+      "coste": {
+        "oro": 0
+      },
+      "paga": {
+        "roce": {
+          "oro": 3,
+          "exp": 1,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 6,
+          "exp": 2,
+          "reputacion": 1
+        },
+        "critico": {
+          "oro": 9,
+          "exp": 3,
+          "reputacion": 2
+        },
+        "pifia": {
+          "oro": -1
+        }
+      },
+      "faccion": "",
+      "efecto": {
+        "pv": 0,
+        "fatiga": 0
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 0,
+        "calidadPorGrado": false
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "La anfitriona te da una bandeja. «Sin prisa. La calma también es un lujo.»",
+        "exito": "Sirves el té sin derramar una gota. La anfitriona sonríe.",
+        "fallo": "El té llega frío. Nadie dice nada, pero se nota.",
+        "critico": "Una invitada te pide que te quedes. Dejas la casa con un buen sobre.",
+        "pifia": "Tropiezas con un cojín y el té vuela. Mejor no hablar de ello."
+      },
+      "_tanda": 2,
+      "familia": "ocio",
+      "cuentaParaLimite": false
+    },
+    "estudiar_aula": {
+      "nombre": "Asistir a clase",
+      "verbo": "Estudiar",
+      "objetos": [
+        "pupitre_o2"
+      ],
+      "tirada": {
+        "caracteristica": "INT",
+        "competencia": "investigacion",
+        "rival": 3
+      },
+      "duracion": 1,
+      "descanso": 150,
+      "coste": {
+        "oro": 6
+      },
+      "paga": {
+        "roce": {
+          "oro": 0,
+          "exp": 3,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 0,
+          "exp": 5,
+          "reputacion": 1
+        },
+        "critico": {
+          "oro": 0,
+          "exp": 8,
+          "reputacion": 2
+        }
+      },
+      "faccion": "",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -1
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 0,
+        "calidadPorGrado": false
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "La profesora da dos palmadas. «Al fondo hay sitio.»",
+        "exito": "Tomas apuntes y respondes a la primera. La profesora asiente.",
+        "fallo": "Pierdes el hilo a media lección. Te quedas con la mitad.",
+        "critico": "Tu pregunta deja a la profesora pensando. Hoy has dado clase tú.",
+        "pifia": "Te preguntan y no sabes ni dónde mirar. Risas al fondo."
+      },
+      "_tanda": 2,
+      "familia": "ocio",
+      "cuentaParaLimite": false,
+      "oficio": "estudio"
+    },
+    "forjar_daga": {
+      "nombre": "Forjar dagas",
+      "verbo": "Forjar",
+      "objetos": [
+        "yunque"
+      ],
+      "tirada": {
+        "caracteristica": "CON",
+        "competencia": "atletismo",
+        "rival": 2
+      },
+      "duracion": 1,
+      "descanso": 120,
+      "coste": {
+        "oro": 0
+      },
+      "paga": {
+        "roce": {
+          "oro": 4,
+          "exp": 1,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 9,
+          "exp": 2,
+          "reputacion": 1
+        },
+        "critico": {
+          "oro": 15,
+          "exp": 3,
+          "reputacion": 2
+        },
+        "pifia": {
+          "oro": -3
+        }
+      },
+      "faccion": "",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -2
+      },
+      "objeto": {
+        "id": "daga",
+        "cantidad": 1,
+        "calidadPorGrado": true,
+        "tendero": "aigren"
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "Aigren te pasa el martillo. «Golpe corto y parejo. Lo vende el taller.»",
+        "exito": "La hoja sale recta y afilada. Aigren la cuelga en el mostrador.",
+        "fallo": "El filo sale mellado. Aigren la guarda para fundirla otra vez.",
+        "critico": "Una hoja de las buenas. Aigren la sopesa y se la queda con orgullo.",
+        "pifia": "El metal se parte al templarlo. Aigren cuenta lo que se ha perdido."
+      },
+      "_tanda": 3,
+      "familia": "transformar",
+      "cuentaParaLimite": true,
+      "oficio": "herreria"
+    },
+    "forjar_espada": {
+      "nombre": "Forjar espadas cortas",
+      "verbo": "Forjar",
+      "objetos": [
+        "yunque"
+      ],
+      "tirada": {
+        "caracteristica": "CON",
+        "competencia": "atletismo",
+        "rival": 3
+      },
+      "duracion": 1,
+      "descanso": 150,
+      "coste": {
+        "oro": 0
+      },
+      "paga": {
+        "roce": {
+          "oro": 8,
+          "exp": 2,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 16,
+          "exp": 3,
+          "reputacion": 1
+        },
+        "critico": {
+          "oro": 26,
+          "exp": 5,
+          "reputacion": 2
+        },
+        "pifia": {
+          "oro": -5
+        }
+      },
+      "faccion": "",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -3
+      },
+      "objeto": {
+        "id": "espada_corta",
+        "cantidad": 1,
+        "calidadPorGrado": true,
+        "tendero": "aigren"
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "Aigren señala el yunque. «Una espada, y que no se doble.»",
+        "exito": "Forjas la espada y la entregas. Aigren le da el visto bueno.",
+        "fallo": "El equilibrio no sale. Aigren sacude la cabeza y paga la mano de obra.",
+        "critico": "Una espada digna de escaparate. Aigren la cuelga la primera.",
+        "pifia": "La hoja se agrieta en el temple. Aigren tira el hierro al fuego."
+      },
+      "_tanda": 3,
+      "familia": "transformar",
+      "cuentaParaLimite": true,
+      "oficio": "herreria"
+    },
+    "cuidar_huerto": {
+      "nombre": "Cuidar el huerto",
+      "verbo": "Cultivar",
+      "objetos": [],
+      "tirada": {
+        "caracteristica": "CON",
+        "competencia": "atletismo",
+        "rival": 2
+      },
+      "duracion": 2,
+      "descanso": 200,
+      "coste": {
+        "oro": 0
+      },
+      "paga": {
+        "roce": {
+          "oro": 5,
+          "exp": 1,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 10,
+          "exp": 2,
+          "reputacion": 1
+        },
+        "critico": {
+          "oro": 16,
+          "exp": 3,
+          "reputacion": 2
+        },
+        "pifia": {
+          "oro": -2
+        }
+      },
+      "faccion": "aegroum",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -2
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 0,
+        "calidadPorGrado": false
+      },
+      "herramienta": "pala",
+      "textos": {
+        "aceptar": "Te remangas y coges la pala. La tierra pide trabajo.",
+        "exito": "Escardas, riegas y recoges lo maduro. La cesta vuelve llena.",
+        "fallo": "Entre el sol y las malas hierbas, poco se salva.",
+        "critico": "Todo ha brotado a la vez. Cargas la cesta hasta arriba.",
+        "pifia": "Pisas el bancal entero. Hoy no se cobra."
+      },
+      "_tanda": 4,
+      "_objetosPendientes": [
+        "bancal_huerto"
+      ],
+      "familia": "recolectar",
+      "cuentaParaLimite": true
+    },
+    "luchar_coliseo": {
+      "nombre": "Luchar en la arena",
+      "verbo": "Luchar",
+      "objetos": [
+        "maestro_arena"
+      ],
+      "tirada": {
+        "caracteristica": "CON",
+        "competencia": "atletismo",
+        "rival": 4
+      },
+      "duracion": 1,
+      "descanso": 200,
+      "coste": {
+        "oro": 10
+      },
+      "paga": {
+        "roce": {
+          "oro": 8,
+          "exp": 3,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 25,
+          "exp": 5,
+          "reputacion": 1
+        },
+        "critico": {
+          "oro": 45,
+          "exp": 8,
+          "reputacion": 3
+        },
+        "pifia": {
+          "oro": -5
+        }
+      },
+      "faccion": "",
+      "efecto": {
+        "pv": -3,
+        "fatiga": -2
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 0,
+        "calidadPorGrado": false
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "El maestro de la arena apunta tu nombre. «La arena no perdona a los tibios.»",
+        "exito": "Caes de pie en la arena roja. El público corea tu nombre.",
+        "fallo": "Sales a rastras. El maestro paga por el valor, no por el combate.",
+        "critico": "La Arena Roja se pone en pie. Ese día se habló de ti.",
+        "pifia": "Te sacan de la arena en volandas. Pierdes la apuesta."
+      },
+      "_tanda": 5,
+      "familia": "ocio",
+      "cuentaParaLimite": false
+    },
+    "entrenar_muneco": {
+      "nombre": "Entrenar con el muñeco",
+      "verbo": "Entrenar",
+      "objetos": [
+        "muneco"
+      ],
+      "tirada": {
+        "caracteristica": "CON",
+        "competencia": "atletismo",
+        "rival": 2
+      },
+      "duracion": 1,
+      "descanso": 100,
+      "coste": {
+        "oro": 0
+      },
+      "paga": {
+        "roce": {
+          "oro": 0,
+          "exp": 2,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 0,
+          "exp": 3,
+          "reputacion": 0
+        },
+        "critico": {
+          "oro": 0,
+          "exp": 5,
+          "reputacion": 1
+        }
+      },
+      "faccion": "",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -2
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 0,
+        "calidadPorGrado": false
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "Coges el arma y te plantas frente al muñeco.",
+        "exito": "Golpe tras golpe, el muñeco aguanta y tú mejoras.",
+        "fallo": "Los golpes salen sin fuerza. Hoy no es tu día.",
+        "critico": "Cada golpe acierta donde quieres. Hasta el maestro se para a mirar.",
+        "pifia": "Se te escapa el arma. El muñeco no se ríe, pero casi."
+      },
+      "_tanda": 5,
+      "familia": "ocio",
+      "cuentaParaLimite": false
+    },
+    "montar_caballo": {
+      "nombre": "Montar a caballo",
+      "verbo": "Montar",
+      "objetos": [],
+      "tirada": {
+        "caracteristica": "CON",
+        "competencia": "atletismo",
+        "rival": 2
+      },
+      "duracion": 1,
+      "descanso": 120,
+      "coste": {
+        "oro": 5
+      },
+      "paga": {
+        "roce": {
+          "oro": 0,
+          "exp": 1,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 0,
+          "exp": 2,
+          "reputacion": 0
+        },
+        "critico": {
+          "oro": 0,
+          "exp": 3,
+          "reputacion": 1
+        }
+      },
+      "faccion": "aegroum",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -1
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 0,
+        "calidadPorGrado": false
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "Aflojas el ronzal y pones el pie en el estribo.",
+        "exito": "El caballo se deja guiar. Cabalgas sin tropiezos.",
+        "fallo": "El animal no te hace caso. Acabas llevándolo de la rienda.",
+        "critico": "Montura y jinete son uno. El camino se acaba antes que las ganas.",
+        "pifia": "El caballo se encabrita y te lleva al suelo. Alguien se ríe."
+      },
+      "_tanda": 6,
+      "_objetosPendientes": [
+        "caballo_de_posta_obj"
+      ],
+      "montura": "caballo_de_posta",
+      "familia": "ocio",
+      "cuentaParaLimite": false
+    },
+    "herbolario": {
+      "nombre": "Buscar plantas",
+      "verbo": "Buscar",
+      "objetos": [],
+      "tirada": {
+        "caracteristica": "DES",
+        "competencia": "percepcion",
+        "rival": 2
+      },
+      "duracion": 1,
+      "descanso": 0,
+      "coste": {
+        "oro": 0
+      },
+      "paga": {
+        "roce": {
+          "oro": 0,
+          "exp": 1,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 0,
+          "exp": 2,
+          "reputacion": 0
+        },
+        "critico": {
+          "oro": 0,
+          "exp": 3,
+          "reputacion": 0
+        }
+      },
+      "faccion": "",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -1
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 2,
+        "calidadPorGrado": true,
+        "tabla": "herbolario"
+      },
+      "herramienta": "hoz_pequena",
+      "textos": {
+        "aceptar": "«Con la luna alta, y sin pisar lo que no sea tuyo.»",
+        "exito": "Llenas el zurrón con lo que la noche te deja. Huele a tierra limpia.",
+        "fallo": "Hojas, raíces, barro. Poca cosa aprovechable.",
+        "critico": "Entre dos matas, algo que no plantó nadie. Te lo guardas sin hacer ruido.",
+        "pifia": "Pisas el claro entero. Mañana aquí no crece nada."
+      },
+      "_tanda": 7,
+      "familia": "recolectar",
+      "cuentaParaLimite": true,
+      "_doc": "claude/oficios/",
+      "_objetosPendientes": [
+        "matas_ribera",
+        "claro_hierbas",
+        "musgo_cueva"
+      ]
+    },
+    "mineria": {
+      "nombre": "Picar la veta",
+      "verbo": "Picar",
+      "objetos": [],
+      "tirada": {
+        "caracteristica": "CON",
+        "competencia": "atletismo",
+        "rival": 2
+      },
+      "duracion": 1,
+      "descanso": 0,
+      "coste": {
+        "oro": 0
+      },
+      "paga": {
+        "roce": {
+          "oro": 0,
+          "exp": 1,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 0,
+          "exp": 2,
+          "reputacion": 0
+        },
+        "critico": {
+          "oro": 0,
+          "exp": 3,
+          "reputacion": 0
+        }
+      },
+      "faccion": "",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -1
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 2,
+        "calidadPorGrado": true,
+        "tabla": "mineria"
+      },
+      "herramienta": "pico",
+      "textos": {
+        "aceptar": "«Pica donde suene hueco, y no donde suene a dormido.»",
+        "exito": "La veta cede a golpes mansos. Sacas piedra tibia y la cargas.",
+        "fallo": "Chispas y polvo. Lo que cae no vale ni para lastre.",
+        "critico": "Detrás de la mena, un cristal que pesa más de lo que parece.",
+        "pifia": "El pico rebota y la pared responde. Sales con menos aliento."
+      },
+      "_tanda": 7,
+      "familia": "recolectar",
+      "cuentaParaLimite": true,
+      "_doc": "claude/oficios/",
+      "_objetosPendientes": [
+        "veta_dormienta",
+        "bolsa_cristal"
+      ]
+    },
+    "alquimia": {
+      "nombre": "Destilar",
+      "verbo": "Destilar",
+      "objetos": [],
+      "tirada": {
+        "caracteristica": "INT",
+        "competencia": "conocimiento_arcano",
+        "rival": 2
+      },
+      "duracion": 1,
+      "descanso": 0,
+      "coste": {
+        "oro": 0
+      },
+      "paga": {
+        "roce": {
+          "oro": 0,
+          "exp": 1,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 0,
+          "exp": 2,
+          "reputacion": 0
+        },
+        "critico": {
+          "oro": 0,
+          "exp": 3,
+          "reputacion": 0
+        }
+      },
+      "faccion": "",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -1
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 1,
+        "calidadPorGrado": true,
+        "receta": true
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "«El alambique no perdona prisas. Siéntate.»",
+        "exito": "El vapor cambia de color justo cuando toca. Lo embotellas sin derramar.",
+        "fallo": "Sale turbio. Servirá, pero no presumas de él.",
+        "critico": "Se queda claro como el agua y huele a noche. Esto es de las buenas.",
+        "pifia": "El frasco estalla. La herbolaria ni te mira: ya lo ha visto antes."
+      },
+      "_tanda": 7,
+      "familia": "transformar",
+      "cuentaParaLimite": true,
+      "_doc": "claude/oficios/",
+      "_objetosPendientes": [
+        "alambique"
+      ]
+    },
+    "herreria": {
+      "nombre": "Trabajar la forja",
+      "verbo": "Forjar",
+      "objetos": [
+        "yunque"
+      ],
+      "tirada": {
+        "caracteristica": "CON",
+        "competencia": "atletismo",
+        "rival": 2
+      },
+      "duracion": 1,
+      "descanso": 0,
+      "coste": {
+        "oro": 0
+      },
+      "paga": {
+        "roce": {
+          "oro": 0,
+          "exp": 1,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 0,
+          "exp": 2,
+          "reputacion": 1
+        },
+        "critico": {
+          "oro": 0,
+          "exp": 3,
+          "reputacion": 1
+        }
+      },
+      "faccion": "aegroum",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -1
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 1,
+        "calidadPorGrado": true,
+        "receta": true
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "«Carbón en la mano y la boca cerrada. Luego hablamos.»",
+        "exito": "El metal cede donde tiene que ceder. Lo enfrías y suena limpio.",
+        "fallo": "Aguanta, pero el filo no canta. Otro día lo repasas.",
+        "critico": "Sale mejor de lo que tú sabes hacer. Aigren mira la silla vacía y calla.",
+        "pifia": "Se raja. Los lingotes, al montón de volver a fundir."
+      },
+      "_tanda": 7,
+      "familia": "transformar",
+      "cuentaParaLimite": true,
+      "_doc": "claude/oficios/"
+    },
+    "sastreria": {
+      "nombre": "Coser",
+      "verbo": "Coser",
+      "objetos": [],
+      "tirada": {
+        "caracteristica": "DES",
+        "competencia": "percepcion",
+        "rival": 2
+      },
+      "duracion": 1,
+      "descanso": 0,
+      "coste": {
+        "oro": 0
+      },
+      "paga": {
+        "roce": {
+          "oro": 0,
+          "exp": 1,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 0,
+          "exp": 2,
+          "reputacion": 0
+        },
+        "critico": {
+          "oro": 0,
+          "exp": 3,
+          "reputacion": 0
+        }
+      },
+      "faccion": "",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -1
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 1,
+        "calidadPorGrado": false,
+        "receta": true
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "«Siéntate recto o la costura sale torcida.»",
+        "exito": "La puntada entra y no se ve. Te pones las botas y pisas distinto.",
+        "fallo": "Aguanta, pero se nota el hilo. Nadie lo va a mirar tan de cerca.",
+        "critico": "La sastra levanta la bota a la luz y asiente una vez.",
+        "pifia": "Se te rompe el hilo a la última puntada. Lo cosido, a la basura."
+      },
+      "_tanda": 7,
+      "familia": "transformar",
+      "cuentaParaLimite": true,
+      "_doc": "claude/oficios/",
+      "_objetosPendientes": [
+        "mesa_sastre"
+      ]
+    },
+    "refineria": {
+      "nombre": "Tallar",
+      "verbo": "Tallar",
+      "objetos": [],
+      "tirada": {
+        "caracteristica": "DES",
+        "competencia": "percepcion",
+        "rival": 2
+      },
+      "duracion": 1,
+      "descanso": 0,
+      "coste": {
+        "oro": 0
+      },
+      "paga": {
+        "roce": {
+          "oro": 0,
+          "exp": 1,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 0,
+          "exp": 2,
+          "reputacion": 0
+        },
+        "critico": {
+          "oro": 0,
+          "exp": 3,
+          "reputacion": 0
+        }
+      },
+      "faccion": "",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -1
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 1,
+        "calidadPorGrado": true,
+        "receta": true
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "«Si tiembla la mano, no toques. Vuelve mañana.»",
+        "exito": "La piedra pierde lo que le sobra y se queda con la luz. Está.",
+        "fallo": "Se ve la mano, pero vale.",
+        "critico": "La luz entra y no sale. El joyero te pregunta dónde aprendiste.",
+        "pifia": "Un golpe de más y la piedra se parte en dos. Ninguna sirve."
+      },
+      "_tanda": 7,
+      "familia": "transformar",
+      "cuentaParaLimite": true,
+      "_doc": "claude/oficios/",
+      "_objetosPendientes": [
+        "banco_joyero"
+      ]
+    },
+    "cocina": {
+      "nombre": "Cocinar",
+      "verbo": "Cocinar",
+      "objetos": [],
+      "tirada": {
+        "caracteristica": "CAR",
+        "competencia": "interpretacion",
+        "rival": 1
+      },
+      "duracion": 1,
+      "descanso": 0,
+      "coste": {
+        "oro": 0
+      },
+      "paga": {
+        "roce": {
+          "oro": 0,
+          "exp": 1,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 0,
+          "exp": 2,
+          "reputacion": 1
+        },
+        "critico": {
+          "oro": 0,
+          "exp": 3,
+          "reputacion": 1
+        }
+      },
+      "faccion": "aegroum",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -1
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 2,
+        "calidadPorGrado": true,
+        "receta": true
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "«Sal, fuego y paciencia. Lo demás lo pone el pescado.»",
+        "exito": "Huele a casa. Sacas dos raciones y una te la comes de pie.",
+        "fallo": "Un poco soso, pero caliente. Nadie se queja en voz alta.",
+        "critico": "Rosita prueba con el dedo y se queda callada. Luego apunta la receta.",
+        "pifia": "Se pega. La cocina huele a quemado el resto de la tarde."
+      },
+      "_tanda": 7,
+      "familia": "ocio",
+      "cuentaParaLimite": false,
+      "_doc": "claude/oficios/",
+      "_objetosPendientes": [
+        "fogon"
+      ]
+    },
+    "copiar_hechizo": {
+      "nombre": "Copiar un hechizo",
+      "verbo": "Copiar",
+      "objetos": [
+        "mesa_lectura_mig",
+        "estanteria_libros_o3"
+      ],
+      "tirada": {
+        "caracteristica": "INT",
+        "competencia": "conocimiento_arcano",
+        "rival": 2
+      },
+      "duracion": 1,
+      "descanso": 0,
+      "coste": {
+        "oro": 0
+      },
+      "paga": {
+        "roce": {
+          "oro": 0,
+          "exp": 2,
+          "reputacion": 0
+        },
+        "exito": {
+          "oro": 0,
+          "exp": 4,
+          "reputacion": 0
+        },
+        "critico": {
+          "oro": 0,
+          "exp": 6,
+          "reputacion": 0
+        }
+      },
+      "faccion": "",
+      "efecto": {
+        "pv": 0,
+        "fatiga": -1
+      },
+      "objeto": {
+        "id": "",
+        "cantidad": 1,
+        "calidadPorGrado": false,
+        "receta": true
+      },
+      "herramienta": "",
+      "textos": {
+        "aceptar": "«Tinta, pliego y silencio. Si te duermes, lo sabré.»",
+        "exito": "Las letras se quedan quietas por fin. Cierras el pliego y lo sabes.",
+        "fallo": "Lo copias, pero se te escapa la mitad. Habrá que releerlo.",
+        "critico": "Lo entiendes antes de acabar de copiarlo.",
+        "pifia": "La tinta se corre y el pliego no sirve. Siete monedas al río."
+      },
+      "_tanda": 7,
+      "familia": "saber",
+      "cuentaParaLimite": false,
+      "_doc": "claude/oficios/",
+      "oficio": "estudio"
+    }
+  },
+  "rangos_regla": {
+    "expPorGrado": {
+      "roce": 1,
+      "exito": 2,
+      "critico": 3
+    },
+    "expRecetaNueva": 2,
+    "maxOficiosRecogerFabricar": 2,
+    "_nota": "PO-50 (16/10): exp por trabajo y +2 la primera vez que se hace una receta; máximo 2 oficios de recolectar/transformar activos (cuentaParaLimite); el ocio y el saber no cuentan."
+  }
+}

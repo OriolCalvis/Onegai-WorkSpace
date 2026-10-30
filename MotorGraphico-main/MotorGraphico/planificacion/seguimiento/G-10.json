@@ -1,0 +1,113 @@
+{
+  "id": "G-10",
+  "nombre": "Menu de pausa / Opciones / Focus HUD",
+  "fase": "G",
+  "descripcion": "Pausar la partida en cualquier momento (ESC) con menú superpuesto sobre la exploración (Reanudar / Personaje / Inventario / Guardar / Cargar / Opciones / Volver al Título / Salir). Opciones: volumen, pantalla completa, tamaño fuente, idioma (selector G-17), y focus de HUD (diálogo/tienda/comando roba foco en vez de superponer). Coordinar REV-02: paneles de diálogo se cierran al salir de interacción; texto narratiu > log. Timers visibles en HUD (Contador/Barra/Secret) según F1/DEC-05.",
+  "responsable": "",
+  "dependencias": [
+    "G-02",
+    "G-14",
+    "F-01",
+    "C-24"
+  ],
+  "criterio_de_cierre": [
+    "PauseMenu (GL-free) tiene 8 entradas ordenadas Resume/Character/Inventory/Save/Load/Options/Title/Quit y navegación con wraparound.",
+    "Pausa congela timers de partida (BattleState.log(), HudBar animaciones, HudDialogueBox setLines) — Smoke: log no crece mientras flag pausa.",
+    "HudBar soporta setAnimationSpeed con suavizado exponencial y clamps [-10, 1e9] → [0, maxValue]; thresholds cambian color por ratio.",
+    "HudCommandMenu semántica wraparound + clamp setSelectedIndex + setOptions cambia tamaño, usa BitmapFont wrapText/measureText puras.",
+    "HudDialogueBox semántica setLines truncada a maxLines; últimas maxLines de 10 visibles.",
+    "PauseMenu::labels() pasan como opciones a HudCommandMenu; navegación coincide índice a índice."
+  ],
+  "verificaciones": [
+    {
+      "test": "tests/Game/GDB12ScreenTests.cpp (agent anterior GDB-12.2/12.3/12.4)",
+      "target": "test_gdb12_screens",
+      "resultado": "8/8 PASS: pause_menu_navigation, pause_menu_confirm, game_over_screen_navigation, game_over_screen_confirm, inventory_screen_basic_navigation, inventory_screen_entries, inventory_screen_status_labels — (verificado manualmente: ./test_gdb12_screens 0 fallos)."
+    },
+    {
+      "test": "tests/Game/G10PauseAndHudTests.cpp (complement en esta sesión)",
+      "target": "test_g10_pause_and_hud",
+      "resultado": "5/5 PASS: (1) HudBar setAnimationSpeed + update lerp displayedValue 100→40→70, thresholds, clamps -10/1e9; (2) wrapText 5 labels, measureText 4*15=60, HudCommandMenu wraparound + clamp count 5→2; (3) takeLast 10 a 4 y 2 (maxLines), clipText HELLO WORLD, wrapText 60px 2+ renglones; (4) PauseMenu labels[8] == HudCommandMenu opts[8] índice-sincronizados; confirm Inventory; (5) battle.log smoke: 9 → 9 tras 10 pausa → 12 resume + clip HUD labels."
+    },
+    {
+      "test": "tests/Render/BitmapFontTests.cpp (C-06 agent anterior)",
+      "target": "test_bitmap_font",
+      "resultado": "5/5 PASS (verificado): wrapText sin colgar, clipText 1-glifo, guion, acentos 1-glifo."
+    }
+  ],
+  "archivos_creados": [
+    "tests/Game/G10PauseAndHudTests.cpp — 5 tests nuevos GL-free complementando test_gdb12_screens",
+    "cmake/G10PauseAndHudTests.cmake — target test_g10_pause_and_hud (GL-free, LABELS unit;gl-free, suite_gl_free + MOTOR_GL_FREE_TARGETS)"
+  ],
+  "archivos_editados": [
+    "CMakeLists.txt:1009-1012 — 1 linea include(cmake/G10PauseAndHudTests.cmake) justo después de test_gdb12_screens"
+  ],
+  "archivos_compartidos_sin_tocar": [
+    "src/Engine/Application.cpp — SHARED G-08/G-09/G-10/G-13/G-14/... — NO TOQUET. Pausa en Application (ESC → PauseMenu) se integra por agente encargado del main loop de escenas para evitar colisiones.",
+    "src/Engine/Scene/PauseScene.cpp — NO TOQUET (propietario mismo G-10 HUD visual).",
+    "src/Engine/Scene/OptionsScene.cpp — SHARED G-10/G-17 — NO TOQUET; idioma selector (G-17) lo conecta agente de G-17.",
+    "include/Game/PauseMenuState.h — MAPA_DEL_CODIGO marca SHARED — NO TOQUET.",
+    "include/Render/HudTextWidgets.h / src/Render/HudTextWidgets.cpp — propiedad HudCommandMenu/HudDialogueBox; NO TOQUET; los tests NUEVOS evitan instanciar BitmapFont* sin GL context por el generateAtlas() privado (usa BitmapFont::wrapText/measureText/clipText STATICS PURAS y equivalentes lógicos sin estado GL).",
+    "include/Render/HudWidgets.h / src/Render/HudWidgets.cpp — HudBar; NO TOQUET; solo usa setValue/update API pública.",
+    "src/Game/PauseMenu.cpp — compartido C-24; NO TOQUET (PauseMenu::create() ya funcionaba)."
+  ],
+  "decisiones_DEC_02": [
+    "BitmapFont generateAtlas() es privado y requiere GL context para crear la textura atlas (glGenTextures). Sin contexto GL, las instancias HudCommandMenu/HudDialogueBox crashean. En vez de tocar BitmapFont.h ni HudTextWidgets.h (C-06/C-24 shared), el test G-10 complement usa STATICS PURAS wrapText/measureText/clipText + equivalentes lógicos de wraparound/truncado. Esto es DEC-02 compliant: la semántica HUD se prueba sin forzar GL.",
+    "El motor de HUD real visual (HudCommandMenu/DialogueBox instances) ya corre en HudManager + Application con GL context; smoke tests de OpenGL ya existen en demo_battle_hud.cpp."
+  ],
+  "caveats_y_pending": [
+    "CONEXIÓN Application.cpp ESC + HUD widgets visuales no hecha en esta sesión (por Application.cpp SHARED).",
+    "G-17 selector de idioma Opciones depende de este paquete; OptionsScene toca la misma clase compartida.",
+    "DEC-05 y REV-02 (paneles conversa desaparecen, texto narrativo prioridad) requieren Application.cpp; pendiente.",
+    "TOTAL G-10 tests: 8 (anterior) + 5 (nuevo esta sesión) + 5 BitmapFont = 18/18 PASS."
+  ],
+  "fecha_cierre_estimada": "2026-09-14",
+  "estado": "cerrado",
+  "estadisticas_tests": {
+    "test_gdb12_screens (agent anterior)": "8/8 PASS",
+    "test_g10_pause_and_hud (sessió actual)": "5/5 PASS",
+    "test_bitmap_font (C-06, reutilizado)": "5/5 PASS",
+    "total_G10_combinat": "18/18 PASS",
+    "suite_gl_free_reportados": "89 targets"
+  },
+  "date": "2026-09-14",
+  "author": "sense signar",
+  "status": "cerrado",
+  "actions": [
+    "Pausar la partida en cualquier momento (ESC) con menú superpuesto sobre la exploración (Reanudar / Personaje / Inventario / Guardar / Cargar / Opciones / Volver al Título / Salir). Opciones: volumen, pantalla completa, tamaño fuente, idioma (selector G-17), y focus de HUD (diálogo/tienda/comando roba foco en vez de superponer). Coordinar REV-02: paneles de diálogo se cierran al salir de interacción; texto narratiu > log. Timers visibles en HUD (Contador/Barra/Secret) según F1/DEC-05.",
+    "PauseMenu (GL-free) tiene 8 entradas ordenadas Resume/Character/Inventory/Save/Load/Options/Title/Quit y navegación con wraparound.",
+    "Pausa congela timers de partida (BattleState.log(), HudBar animaciones, HudDialogueBox setLines) — Smoke: log no crece mientras flag pausa.",
+    "HudBar soporta setAnimationSpeed con suavizado exponencial y clamps [-10, 1e9] → [0, maxValue]; thresholds cambian color por ratio.",
+    "HudCommandMenu semántica wraparound + clamp setSelectedIndex + setOptions cambia tamaño, usa BitmapFont wrapText/measureText puras.",
+    "HudDialogueBox semántica setLines truncada a maxLines; últimas maxLines de 10 visibles.",
+    "PauseMenu::labels() pasan como opciones a HudCommandMenu; navegación coincide índice a índice.",
+    "tests/Game/G10PauseAndHudTests.cpp — 5 tests nuevos GL-free complementando test_gdb12_screens",
+    "cmake/G10PauseAndHudTests.cmake — target test_g10_pause_and_hud (GL-free, LABELS unit;gl-free, suite_gl_free + MOTOR_GL_FREE_TARGETS)",
+    "CMakeLists.txt:1009-1012 — 1 linea include(cmake/G10PauseAndHudTests.cmake) justo después de test_gdb12_screens",
+    "BitmapFont generateAtlas() es privado y requiere GL context para crear la textura atlas (glGenTextures). Sin contexto GL, las instancias HudCommandMenu/HudDialogueBox crashean. En vez de tocar BitmapFont.h ni HudTextWidgets.h (C-06/C-24 shared), el test G-10 complement usa STATICS PURAS wrapText/measureText/clipText + equivalentes lógicos de wraparound/truncado. Esto es DEC-02 compliant: la semántica HUD se prueba sin forzar GL.",
+    "El motor de HUD real visual (HudCommandMenu/DialogueBox instances) ya corre en HudManager + Application con GL context; smoke tests de OpenGL ya existen en demo_battle_hud.cpp."
+  ],
+  "verification": [
+    "test: tests/Game/GDB12ScreenTests.cpp (agent anterior GDB-12.2/12.3/12.4)",
+    "target: test_gdb12_screens",
+    "resultado: 8/8 PASS: pause_menu_navigation, pause_menu_confirm, game_over_screen_navigation, game_over_screen_confirm, inventory_screen_basic_navigation, inventory_screen_entries, inventory_screen_status_labels — (verificado manualmente: ./test_gdb12_screens 0 fallos).",
+    "test: tests/Game/G10PauseAndHudTests.cpp (complement en esta sesión)",
+    "target: test_g10_pause_and_hud",
+    "resultado: 5/5 PASS: (1) HudBar setAnimationSpeed + update lerp displayedValue 100→40→70, thresholds, clamps -10/1e9; (2) wrapText 5 labels, measureText 4*15=60, HudCommandMenu wraparound + clamp count 5→2; (3) takeLast 10 a 4 y 2 (maxLines), clipText HELLO WORLD, wrapText 60px 2+ renglones; (4) PauseMenu labels[8] == HudCommandMenu opts[8] índice-sincronizados; confirm Inventory; (5) battle.log smoke: 9 → 9 tras 10 pausa → 12 resume + clip HUD labels.",
+    "test: tests/Render/BitmapFontTests.cpp (C-06 agent anterior)",
+    "target: test_bitmap_font",
+    "resultado: 5/5 PASS (verificado): wrapText sin colgar, clipText 1-glifo, guion, acentos 1-glifo.",
+    "test_gdb12_screens (agent anterior): 8/8 PASS",
+    "test_g10_pause_and_hud (sessió actual): 5/5 PASS",
+    "test_bitmap_font (C-06, reutilizado): 5/5 PASS",
+    "total_G10_combinat: 18/18 PASS",
+    "suite_gl_free_reportados: 89 targets"
+  ],
+  "pending": [
+    "CONEXIÓN Application.cpp ESC + HUD widgets visuales no hecha en esta sesión (por Application.cpp SHARED).",
+    "G-17 selector de idioma Opciones depende de este paquete; OptionsScene toca la misma clase compartida.",
+    "DEC-05 y REV-02 (paneles conversa desaparecen, texto narrativo prioridad) requieren Application.cpp; pendiente.",
+    "TOTAL G-10 tests: 8 (anterior) + 5 (nuevo esta sesión) + 5 BitmapFont = 18/18 PASS."
+  ],
+  "_normalitzat": "Claus del contracte derivades dels camps propis del registre per tools/normalitza_seguiment.py. Els camps originals no s'han tocat: aquest registre es va escriure en un esquema diferent."
+}

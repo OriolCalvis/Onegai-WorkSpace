@@ -1,0 +1,84 @@
+{
+ "id": "el_recaudador_de_la_puerta_norte",
+ "name": "El Recaudador de la Puerta Norte",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "control",
+ "faction": "milicia_corrupta_de_llerba",
+ "stats": {
+  "CON": 6,
+  "DES": 5,
+  "INT": 7,
+  "CAR": 6
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 16,
+  "defensaMental": 16,
+  "resistenciaFisica": 16,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Multa Ejemplar",
+   "defense": "defensa_mental",
+   "effect": "Daño que suma su INT; el que falle queda Endeudado (infracción registrada)."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "defensa_mental",
+   "effect": "Si el objetivo falla, queda Endeudado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Tarifa Plana",
+  "description": "Tarifa Plana: cada carta enemiga de descanso largo jugada en la arena le da +0,5 a su próxima tirada (el lujo tributa)."
+ },
+ "conditionsInflicted": [
+  "endeudado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico",
+  "Importante"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Encadena su técnica tras el ataque firma y +1 al daño."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Comprar la capitanía: solo le faltan dos mil piezas y un escándalo",
+  "metodo": "Convierte el combate en inspección: todo lo que haces tiene tasa",
+  "debilidad_narrativa": "Sus propios libros: robarle el libro de cuentas (DES contra su CD) lo desactiva — persigue el libro, no a ti",
+  "vinculo": "la_serpiente_de_contratos"
+ },
+ "arena": {
+  "name": "La Aduana de Llerba",
+  "hazard": "Barreras y sellos: cruzar el puesto sin 'pagar' (1 de vida o un objeto) provoca a la guardia"
+ },
+ "legendaryActions": [],
+ "storyCard": {
+  "title": "El Recaudador de la Puerta Norte",
+  "text": "Hasta la Cofradía le paga. Por principios, dicen.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "El soborno hecho persona, con recibo."
+}

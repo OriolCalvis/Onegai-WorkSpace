@@ -1,0 +1,51 @@
+{
+ "id": "ocupa_mi_lugar",
+ "name": "Ocupa mi Lugar",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Chasqueas y cambias el sitio con un aliado en apuros (o te quitas tú de en medio): aparece a salvo donde estabas, se libra de los estados en contra y se defiende con ventaja 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "mago_chasqueador"
+ ],
+ "roleTags": [],
+ "tags": [
+  "mago_chasqueador",
+  "estandar"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "single_ally",
+ "range": "short",
+ "duration": "2 turnos",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "INT",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Chasqueas y cambias el sitio con un aliado en apuros (o te quitas tú de en medio): aparece a salvo donde estabas, se libra de los estados en contra y se defiende con ventaja 2 turnos.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "Se libra de los estados en contra.",
+   "mechanicHook": "limpia"
+  },
+  {
+   "description": "A salvo: se defiende con ventaja 2 turnos.",
+   "mechanicHook": "estado:2:ventaja:defensa"
+  }
+ ]
+}

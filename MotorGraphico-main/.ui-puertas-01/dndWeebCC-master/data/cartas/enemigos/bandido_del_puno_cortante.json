@@ -1,0 +1,52 @@
+{
+ "id": "bandido_del_puno_cortante",
+ "name": "Bandido del Puno Cortante",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 1,
+ "role": "atacante",
+ "faction": "bandidos_del_camino_de_ceniza",
+ "factionName": "Los Bandidos del Camino de Ceniza",
+ "stats": {
+  "CON": 2,
+  "DES": 4,
+  "INT": 1,
+  "CAR": 1
+ },
+ "derived": {
+  "vida": 12,
+  "ca": 14,
+  "defensaMental": 11,
+  "resistenciaFisica": 12,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de fisico: daño que suma su DES (pool de DES, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "CA",
+   "effect": "Técnica de facción: si el objetivo falla, queda Guardia Rota hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "La primera vez que golpea cada ronda, reduce la armadura del objetivo hasta el final del turno."
+ },
+ "conditionsInflicted": [
+  "guardia_rota"
+ ],
+ "loot": [
+  "item_short_sword",
+  "armadura_de_cuero"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico"
+ ],
+ "phases": [],
+ "flavorText": "Asaltante entrenado para romper guardias con cuchillas cortas."
+}

@@ -1,0 +1,1225 @@
+{
+  "schemaVersion": "1.0",
+  "skillProvenance": {
+    "schema_version": "1.0",
+    "name": "solo-design",
+    "version": "2026.07.22.00.00.00",
+    "release": "prompt-base-cloud-ssot-migration",
+    "version_source": "skill-release-manifest.json",
+    "read_status": "ok"
+  },
+  "project": {
+    "resolvedLane": "existing_edit_add_comparison",
+    "deviceType": "desktop",
+    "intentProfile": {
+      "caseFamily": "existing_edit_add_comparison",
+      "sourceType": "existing-design-project",
+      "graphicStrategy": null,
+      "routingReason": "Nueva mutación comparativa del proyecto actual para alinear el canvas con el HTML de referencia subido por el usuario, preservando la estructura real del editor: top bar, dock izquierdo, escena isométrica central, inspector derecho y status bar inferior."
+    },
+    "selectedIntentWorkflowRead": true,
+    "contextRequirementsLoaded": [
+      {
+        "path": "shared-runtime/runtime-boundaries/lane-runtime-contracts.md",
+        "readStatus": "loaded",
+        "bodyRead": true,
+        "recordedAt": "2026-08-09T00:00:00.000Z"
+      },
+      {
+        "path": "shared-runtime/agent-dispatch-runtime/lane-dispatch-index.md",
+        "readStatus": "loaded",
+        "bodyRead": true,
+        "recordedAt": "2026-08-09T00:00:00.000Z"
+      },
+      {
+        "path": "delivery-quality/page-rendering-quality-gate.md",
+        "readStatus": "loaded",
+        "bodyRead": true,
+        "recordedAt": "2026-08-09T00:00:00.000Z"
+      },
+      {
+        "path": "delivery-quality/design-artifact-validation.md",
+        "readStatus": "loaded",
+        "bodyRead": true,
+        "recordedAt": "2026-08-09T00:00:00.000Z"
+      },
+      {
+        "path": "delivery-quality/delivery-evidence-contract.md",
+        "readStatus": "loaded",
+        "bodyRead": true,
+        "recordedAt": "2026-08-09T00:00:00.000Z"
+      },
+      {
+        "path": "visual-experience/visual-experience-guidelines.md",
+        "readStatus": "loaded",
+        "bodyRead": true,
+        "recordedAt": "2026-08-09T00:00:00.000Z"
+      },
+      {
+        "path": "shared-runtime/agent-dispatch-runtime/shared-page-rendering-kernel.md",
+        "readStatus": "loaded",
+        "bodyRead": true,
+        "recordedAt": "2026-08-09T00:00:00.000Z"
+      }
+    ],
+    "contextReadScope": {
+      "mainAgent": {
+        "forbiddenReads": [
+          "other intent-workflows/**",
+          "Sub-Agent implementation files before dispatch"
+        ]
+      },
+      "pageSubAgent": {
+        "allowedReads": [
+          "current lane page runtime guide",
+          "current lane dispatch contract excerpt",
+          "current Page Packet",
+          "supplementaryReads[] only"
+        ],
+        "forbiddenReads": [
+          "SKILL.md full re-read",
+          "other intent-workflows/**",
+          "full runtime-orchestration-summary.json unless explicitly sliced"
+        ]
+      },
+      "readScopeLedgerWriter": "shared-runtime/deterministic-tooling/build-page-dispatch-manifest.mjs"
+    },
+    "readScopeLedger": [
+      {
+        "actor": "page-sub-agent",
+        "lane": "free_exploration",
+        "path": "intent-workflows/intent-page-free-exploration/free-exploration-page-runtime.md",
+        "reason": "page runtime guide",
+        "scopeClass": "page-runtime",
+        "declaredBeforeRead": true,
+        "recordedAt": "2026-08-09T15:48:35.482Z",
+        "nodeId": "page-index",
+        "htmlSrc": "pages/index.html"
+      },
+      {
+        "actor": "page-sub-agent",
+        "lane": "free_exploration",
+        "path": "intent-workflows/intent-page-free-exploration/dispatch-contract.md",
+        "reason": "dispatch contract",
+        "scopeClass": "dispatch-contract",
+        "declaredBeforeRead": true,
+        "recordedAt": "2026-08-09T15:48:35.482Z",
+        "nodeId": "page-index",
+        "htmlSrc": "pages/index.html"
+      }
+    ],
+    "dispatchPreflightManifest": [
+      {
+        "recorded_at": "2026-08-09T15:48:35.482Z",
+        "generatedBy": "build-page-dispatch-manifest.mjs",
+        "packetType": "FreePagePacket",
+        "laneContract": {
+          "resolvedLane": "free_exploration",
+          "packetType": "FreePagePacket",
+          "pageRuntimeGuide": "intent-workflows/intent-page-free-exploration/free-exploration-page-runtime.md",
+          "dispatchContract": "intent-workflows/intent-page-free-exploration/dispatch-contract.md"
+        },
+        "taskLinePresent": true,
+        "outputPathPresent": true,
+        "sharedTemplate": "intent-workflows/intent-page-free-exploration/free-exploration-page-runtime.md",
+        "nodeId": "page-index",
+        "htmlSrc": "pages/index.html",
+        "supplementaryReads": [],
+        "allowedWritePaths": [
+          "pages/index.html",
+          "assets/"
+        ],
+        "forbiddenWriteRoots": [
+          "*.design",
+          "runtime-orchestration-summary.json",
+          "validation-report.json",
+          "finish-readiness-report.json",
+          "restore-contract-report.json",
+          "page-generation-summary.json"
+        ],
+        "toolPolicy": {
+          "todoWriteAllowed": false,
+          "validationScriptsAllowed": false,
+          "previewAllowed": false,
+          "helperScriptsAllowed": false,
+          "designFileWriteAllowed": false,
+          "allowedWritePaths": [
+            "pages/index.html",
+            "assets/"
+          ]
+        },
+        "skillRuntime": {
+          "skillDir": "/Users/admin/.trae/builtin/design/default/skills/solo-design",
+          "deterministicToolDir": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling",
+          "toolPaths": {
+            "applyHtmlHeadContract": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/apply-html-head-contract.mjs",
+            "recordDispatchCompletion": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/record-dispatch-completion.mjs",
+            "buildPageDispatchManifest": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/build-page-dispatch-manifest.mjs",
+            "validateDesignWorkspace": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/validate-design-workspace.mjs",
+            "validateFinishReadiness": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/validate-finish-readiness.mjs",
+            "validateRestoreContract": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/validate-restore-contract.mjs"
+          },
+          "requiredForPageSubAgent": [
+            "applyHtmlHeadContract",
+            "recordDispatchCompletion"
+          ],
+          "pathInjection": "absolute",
+          "pathContract": "Do not use {SKILL_DIR} placeholders inside Page Sub-Agent packets; use toolPaths.* absolute paths.",
+          "commandTemplates": {
+            "recordDispatchCompletion": "node '/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/record-dispatch-completion.mjs' '/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign' --node-id='page-index' --html-src='pages/index.html' --status=completed --changed-files=<comma-separated-project-relative-files> --trace-digest=<main-agent-runtime-trace-digest> --tool-ledger-json=<tool-ledger-json-or-file>"
+          }
+        },
+        "cssFilePath": "/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/colors_and_type.css",
+        "htmlFilePath": "/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/pages/index.html",
+        "brandPrefix": "mg",
+        "aestheticsMode": "free-explore",
+        "toolDisciplineBlockPresent": true,
+        "fillHtmlHeadCommand": "node '/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/apply-html-head-contract.mjs' '/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/colors_and_type.css' '/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/pages/index.html' --title='Aplicativo MotorGraphico' --lang='zh-CN' --prefix='mg'",
+        "headFillMode": "skeleton-first",
+        "viewportMode": "app-shell",
+        "completionSchemaExpected": "compact",
+        "restoreFields": null,
+        "restoreContractStatus": null,
+        "restoreCompactPacket": null,
+        "deterministicCommands": null,
+        "sourceAuthorityLock": null,
+        "preDispatchFileHashes": {
+          "motorgraphico-hud-redesign.design": "e3f58b9fc1e1edd5dd0e84cae1a4e19489eadf9bf5ed01ee86f13fe7df42d62e"
+        },
+        "contextPreflight": {
+          "workflowPath": "intent-workflows/intent-page-free-exploration/INTENT_WORKFLOW.md",
+          "requiredContextFiles": [
+            "shared-runtime/runtime-boundaries/lane-runtime-contracts.md",
+            "shared-runtime/agent-dispatch-runtime/lane-dispatch-index.md",
+            "delivery-quality/page-rendering-quality-gate.md",
+            "delivery-quality/design-artifact-validation.md",
+            "delivery-quality/delivery-evidence-contract.md",
+            "visual-experience/visual-experience-guidelines.md"
+          ],
+          "optionalContextFiles": [],
+          "passed": true
+        },
+        "pageSliceOnly": true,
+        "requiredFieldsPresent": true,
+        "missingFields": [],
+        "fillHtmlHeadCommandValid": true,
+        "mobileNavigation": {
+          "required": false,
+          "appliesToThisPage": false,
+          "canonicalHtmlIncluded": false,
+          "missingFields": []
+        },
+        "persistedToSummary": true,
+        "taskQueryAudited": false,
+        "proofSource": "summary-only",
+        "largeWorkflowFilesInTaskQuery": null
+      },
+      {
+        "recorded_at": "2026-08-09T16:10:00.000Z",
+        "generatedBy": "main-agent-manual-mutation-preflight",
+        "packetType": "ExistingEditPagePacket",
+        "laneContract": {
+          "resolvedLane": "existing_edit_add_comparison",
+          "packetType": "ExistingEditPagePacket",
+          "pageRuntimeGuide": "intent-workflows/intent-project-mutation/existing-edit-page-runtime.md",
+          "dispatchContract": "intent-workflows/intent-project-mutation/existing-edit-dispatch-contract.md"
+        },
+        "taskLinePresent": true,
+        "outputPathPresent": true,
+        "sharedTemplate": "intent-workflows/intent-project-mutation/existing-edit-page-runtime.md",
+        "nodeId": "page-index-confort-creador",
+        "htmlSrc": "pages/index-confort-creador.html",
+        "sourcePageId": "page-index",
+        "sourceHtmlSrc": "pages/index.html",
+        "derivationType": "comparison-page",
+        "inPlaceEditAllowed": false,
+        "sourceProjectLaneHeritage": {
+          "resolvedLane": "free_exploration",
+          "designLibrary": null,
+          "restoreMode": false,
+          "graphicLayoutConstraints": false
+        },
+        "supplementaryReads": [
+          {
+            "path": "shared-runtime/agent-dispatch-runtime/shared-page-rendering-kernel.md",
+            "reason": "shared kernel for comparison-page rendering discipline",
+            "ownerLane": "existing_edit_add_comparison"
+          }
+        ],
+        "allowedWritePaths": [
+          "pages/index-confort-creador.html"
+        ],
+        "forbiddenWriteRoots": [
+          "*.design",
+          "runtime-orchestration-summary.json",
+          "validation-report.json",
+          "finish-readiness-report.json",
+          "restore-contract-report.json",
+          "page-generation-summary.json"
+        ],
+        "toolPolicy": {
+          "todoWriteAllowed": false,
+          "validationScriptsAllowed": false,
+          "previewAllowed": false,
+          "helperScriptsAllowed": false,
+          "designFileWriteAllowed": false,
+          "allowedWritePaths": [
+            "pages/index-confort-creador.html"
+          ]
+        },
+        "skillRuntime": {
+          "skillDir": "/Users/admin/.trae/builtin/design/default/skills/solo-design",
+          "deterministicToolDir": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling",
+          "toolPaths": {
+            "applyHtmlHeadContract": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/apply-html-head-contract.mjs",
+            "recordDispatchCompletion": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/record-dispatch-completion.mjs",
+            "validateDesignWorkspace": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/validate-design-workspace.mjs",
+            "validateFinishReadiness": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/validate-finish-readiness.mjs"
+          }
+        },
+        "cssFilePath": "/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/colors_and_type.css",
+        "htmlFilePath": "/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/pages/index-confort-creador.html",
+        "brandPrefix": "mg",
+        "aestheticsMode": "free-explore",
+        "toolDisciplineBlockPresent": true,
+        "fillHtmlHeadCommand": "node '/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/apply-html-head-contract.mjs' '/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/colors_and_type.css' '/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/pages/index-confort-creador.html' --title='Aplicativo MotorGraphico - Confort del creador' --lang='es' --prefix='mg'",
+        "headFillMode": "skeleton-first",
+        "viewportMode": "app-shell",
+        "completionSchemaExpected": "compact",
+        "pageSliceOnly": true,
+        "requiredFieldsPresent": true,
+        "missingFields": []
+      },
+      {
+        "recorded_at": "2026-08-09T16:45:00.000Z",
+        "generatedBy": "main-agent-manual-mutation-preflight",
+        "packetType": "ExistingEditPagePacket",
+        "laneContract": {
+          "resolvedLane": "existing_edit_add_comparison",
+          "packetType": "ExistingEditPagePacket",
+          "pageRuntimeGuide": "intent-workflows/intent-project-mutation/existing-edit-page-runtime.md",
+          "dispatchContract": "intent-workflows/intent-project-mutation/existing-edit-dispatch-contract.md"
+        },
+        "taskLinePresent": true,
+        "outputPathPresent": true,
+        "sharedTemplate": "intent-workflows/intent-project-mutation/existing-edit-page-runtime.md",
+        "nodeId": "page-index-vision-jugador",
+        "htmlSrc": "pages/index-vision-jugador.html",
+        "sourcePageId": "page-index",
+        "sourceHtmlSrc": "pages/index.html",
+        "derivationType": "comparison-page",
+        "inPlaceEditAllowed": false,
+        "sourceProjectLaneHeritage": {
+          "resolvedLane": "free_exploration",
+          "designLibrary": null,
+          "restoreMode": false,
+          "graphicLayoutConstraints": false
+        },
+        "supplementaryReads": [
+          {
+            "path": "shared-runtime/agent-dispatch-runtime/shared-page-rendering-kernel.md",
+            "reason": "shared kernel for comparison-page rendering discipline",
+            "ownerLane": "existing_edit_add_comparison"
+          }
+        ],
+        "allowedWritePaths": [
+          "pages/index-vision-jugador.html"
+        ],
+        "forbiddenWriteRoots": [
+          "*.design",
+          "runtime-orchestration-summary.json",
+          "validation-report.json",
+          "finish-readiness-report.json",
+          "restore-contract-report.json",
+          "page-generation-summary.json"
+        ],
+        "toolPolicy": {
+          "todoWriteAllowed": false,
+          "validationScriptsAllowed": false,
+          "previewAllowed": false,
+          "helperScriptsAllowed": false,
+          "designFileWriteAllowed": false,
+          "allowedWritePaths": [
+            "pages/index-vision-jugador.html"
+          ]
+        },
+        "skillRuntime": {
+          "skillDir": "/Users/admin/.trae/builtin/design/default/skills/solo-design",
+          "deterministicToolDir": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling",
+          "toolPaths": {
+            "applyHtmlHeadContract": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/apply-html-head-contract.mjs",
+            "recordDispatchCompletion": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/record-dispatch-completion.mjs",
+            "validateDesignWorkspace": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/validate-design-workspace.mjs",
+            "validateFinishReadiness": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/validate-finish-readiness.mjs"
+          }
+        },
+        "cssFilePath": "/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/colors_and_type.css",
+        "htmlFilePath": "/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/pages/index-vision-jugador.html",
+        "brandPrefix": "mg",
+        "aestheticsMode": "free-explore",
+        "toolDisciplineBlockPresent": true,
+        "fillHtmlHeadCommand": "node '/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/apply-html-head-contract.mjs' '/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/colors_and_type.css' '/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/pages/index-vision-jugador.html' --title='Aplicativo MotorGraphico - Visión del jugador' --lang='es' --prefix='mg'",
+        "headFillMode": "skeleton-first",
+        "viewportMode": "app-shell",
+        "completionSchemaExpected": "compact",
+        "pageSliceOnly": true,
+        "requiredFieldsPresent": true,
+        "missingFields": []
+      },
+      {
+        "recorded_at": "2026-08-09T16:55:00.000Z",
+        "generatedBy": "main-agent-manual-mutation-preflight",
+        "packetType": "ExistingEditPagePacket",
+        "laneContract": {
+          "resolvedLane": "existing_edit_add_comparison",
+          "packetType": "ExistingEditPagePacket",
+          "pageRuntimeGuide": "intent-workflows/intent-project-mutation/existing-edit-page-runtime.md",
+          "dispatchContract": "intent-workflows/intent-project-mutation/existing-edit-dispatch-contract.md"
+        },
+        "taskLinePresent": true,
+        "outputPathPresent": true,
+        "sharedTemplate": "intent-workflows/intent-project-mutation/existing-edit-page-runtime.md",
+        "nodeId": "page-index-programado-actual",
+        "htmlSrc": "pages/index-programado-actual.html",
+        "sourcePageId": "page-index",
+        "sourceHtmlSrc": "pages/index.html",
+        "derivationType": "comparison-page",
+        "inPlaceEditAllowed": false,
+        "sourceProjectLaneHeritage": {
+          "resolvedLane": "free_exploration",
+          "designLibrary": null,
+          "restoreMode": false,
+          "graphicLayoutConstraints": false
+        },
+        "supplementaryReads": [
+          {
+            "path": "shared-runtime/agent-dispatch-runtime/shared-page-rendering-kernel.md",
+            "reason": "shared kernel for comparison-page rendering discipline",
+            "ownerLane": "existing_edit_add_comparison"
+          }
+        ],
+        "allowedWritePaths": [
+          "pages/index-programado-actual.html"
+        ],
+        "forbiddenWriteRoots": [
+          "*.design",
+          "runtime-orchestration-summary.json",
+          "validation-report.json",
+          "finish-readiness-report.json",
+          "restore-contract-report.json",
+          "page-generation-summary.json"
+        ],
+        "toolPolicy": {
+          "todoWriteAllowed": false,
+          "validationScriptsAllowed": false,
+          "previewAllowed": false,
+          "helperScriptsAllowed": false,
+          "designFileWriteAllowed": false,
+          "allowedWritePaths": [
+            "pages/index-programado-actual.html"
+          ]
+        },
+        "skillRuntime": {
+          "skillDir": "/Users/admin/.trae/builtin/design/default/skills/solo-design",
+          "deterministicToolDir": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling",
+          "toolPaths": {
+            "applyHtmlHeadContract": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/apply-html-head-contract.mjs",
+            "recordDispatchCompletion": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/record-dispatch-completion.mjs",
+            "validateDesignWorkspace": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/validate-design-workspace.mjs",
+            "validateFinishReadiness": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/validate-finish-readiness.mjs"
+          }
+        },
+        "cssFilePath": "/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/colors_and_type.css",
+        "htmlFilePath": "/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/pages/index-programado-actual.html",
+        "brandPrefix": "mg",
+        "aestheticsMode": "free-explore",
+        "toolDisciplineBlockPresent": true,
+        "fillHtmlHeadCommand": "node '/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/apply-html-head-contract.mjs' '/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/colors_and_type.css' '/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/pages/index-programado-actual.html' --title='Aplicativo MotorGraphico - Basado en implementación actual' --lang='es' --prefix='mg'",
+        "headFillMode": "skeleton-first",
+        "viewportMode": "app-shell",
+        "completionSchemaExpected": "compact",
+        "pageSliceOnly": true,
+        "requiredFieldsPresent": true,
+        "missingFields": []
+      },
+      {
+        "recorded_at": "2026-08-09T17:05:00.000Z",
+        "generatedBy": "main-agent-manual-mutation-preflight",
+        "packetType": "ExistingEditPagePacket",
+        "laneContract": {
+          "resolvedLane": "existing_edit_add_comparison",
+          "packetType": "ExistingEditPagePacket",
+          "pageRuntimeGuide": "intent-workflows/intent-project-mutation/existing-edit-page-runtime.md",
+          "dispatchContract": "intent-workflows/intent-project-mutation/existing-edit-dispatch-contract.md"
+        },
+        "taskLinePresent": true,
+        "outputPathPresent": true,
+        "sharedTemplate": "intent-workflows/intent-project-mutation/existing-edit-page-runtime.md",
+        "nodeId": "page-index-rpg-serio",
+        "htmlSrc": "pages/index-rpg-serio.html",
+        "sourcePageId": "page-index-programado-actual",
+        "sourceHtmlSrc": "pages/index-programado-actual.html",
+        "derivationType": "comparison-page",
+        "inPlaceEditAllowed": false,
+        "sourceProjectLaneHeritage": {
+          "resolvedLane": "existing_edit_add_comparison",
+          "designLibrary": null,
+          "restoreMode": false,
+          "graphicLayoutConstraints": false
+        },
+        "supplementaryReads": [
+          {
+            "path": "shared-runtime/agent-dispatch-runtime/shared-page-rendering-kernel.md",
+            "reason": "shared kernel for comparison-page rendering discipline",
+            "ownerLane": "existing_edit_add_comparison"
+          }
+        ],
+        "allowedWritePaths": [
+          "pages/index-rpg-serio.html"
+        ],
+        "forbiddenWriteRoots": [
+          "*.design",
+          "runtime-orchestration-summary.json",
+          "validation-report.json",
+          "finish-readiness-report.json",
+          "restore-contract-report.json",
+          "page-generation-summary.json"
+        ],
+        "toolPolicy": {
+          "todoWriteAllowed": false,
+          "validationScriptsAllowed": false,
+          "previewAllowed": false,
+          "helperScriptsAllowed": false,
+          "designFileWriteAllowed": false,
+          "allowedWritePaths": [
+            "pages/index-rpg-serio.html"
+          ]
+        },
+        "skillRuntime": {
+          "skillDir": "/Users/admin/.trae/builtin/design/default/skills/solo-design",
+          "deterministicToolDir": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling",
+          "toolPaths": {
+            "applyHtmlHeadContract": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/apply-html-head-contract.mjs",
+            "recordDispatchCompletion": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/record-dispatch-completion.mjs",
+            "validateDesignWorkspace": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/validate-design-workspace.mjs",
+            "validateFinishReadiness": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/validate-finish-readiness.mjs"
+          }
+        },
+        "cssFilePath": "/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/colors_and_type.css",
+        "htmlFilePath": "/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/pages/index-rpg-serio.html",
+        "brandPrefix": "mg",
+        "aestheticsMode": "free-explore",
+        "toolDisciplineBlockPresent": true,
+        "fillHtmlHeadCommand": "node '/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/apply-html-head-contract.mjs' '/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/colors_and_type.css' '/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/pages/index-rpg-serio.html' --title='Aplicativo MotorGraphico - RPG serio' --lang='es' --prefix='mg'",
+        "headFillMode": "skeleton-first",
+        "viewportMode": "app-shell",
+        "completionSchemaExpected": "compact",
+        "pageSliceOnly": true,
+        "requiredFieldsPresent": true,
+        "missingFields": []
+      },
+      {
+        "recorded_at": "2026-08-09T17:28:00.000Z",
+        "generatedBy": "main-agent-manual-mutation-preflight",
+        "packetType": "ExistingEditPagePacket",
+        "laneContract": {
+          "resolvedLane": "existing_edit_add_comparison",
+          "packetType": "ExistingEditPagePacket",
+          "pageRuntimeGuide": "intent-workflows/intent-project-mutation/existing-edit-page-runtime.md",
+          "dispatchContract": "intent-workflows/intent-project-mutation/existing-edit-dispatch-contract.md"
+        },
+        "taskLinePresent": true,
+        "outputPathPresent": true,
+        "sharedTemplate": "intent-workflows/intent-project-mutation/existing-edit-page-runtime.md",
+        "nodeId": "page-index-editor-referencia",
+        "htmlSrc": "pages/index-editor-referencia.html",
+        "sourcePageId": "page-index-programado-actual",
+        "sourceHtmlSrc": "pages/index-programado-actual.html",
+        "derivationType": "comparison-page",
+        "inPlaceEditAllowed": false,
+        "sourceProjectLaneHeritage": {
+          "resolvedLane": "existing_edit_add_comparison",
+          "designLibrary": null,
+          "restoreMode": false,
+          "graphicLayoutConstraints": false
+        },
+        "supplementaryReads": [
+          {
+            "path": "shared-runtime/agent-dispatch-runtime/shared-page-rendering-kernel.md",
+            "reason": "shared kernel for comparison-page rendering discipline",
+            "ownerLane": "existing_edit_add_comparison"
+          },
+          {
+            "path": "/Users/admin/.trae/attachments/6a78a09701da6a50babbd006/b782e931-ea18-4c7b-99e5-e55100e83d45_1fc43e29-27c1-4caf-985e-8f04605f294c_MotorGraphico Editor UI.dc.html",
+            "reason": "uploaded reference editor layout authority",
+            "ownerLane": "existing_edit_add_comparison"
+          }
+        ],
+        "allowedWritePaths": [
+          "pages/index-editor-referencia.html"
+        ],
+        "forbiddenWriteRoots": [
+          "*.design",
+          "runtime-orchestration-summary.json",
+          "validation-report.json",
+          "finish-readiness-report.json",
+          "restore-contract-report.json",
+          "page-generation-summary.json"
+        ],
+        "toolPolicy": {
+          "todoWriteAllowed": false,
+          "validationScriptsAllowed": false,
+          "previewAllowed": false,
+          "helperScriptsAllowed": false,
+          "designFileWriteAllowed": false,
+          "allowedWritePaths": [
+            "pages/index-editor-referencia.html"
+          ]
+        },
+        "skillRuntime": {
+          "skillDir": "/Users/admin/.trae/builtin/design/default/skills/solo-design",
+          "deterministicToolDir": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling",
+          "toolPaths": {
+            "applyHtmlHeadContract": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/apply-html-head-contract.mjs",
+            "recordDispatchCompletion": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/record-dispatch-completion.mjs",
+            "validateDesignWorkspace": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/validate-design-workspace.mjs",
+            "validateFinishReadiness": "/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/validate-finish-readiness.mjs"
+          }
+        },
+        "cssFilePath": "/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/colors_and_type.css",
+        "htmlFilePath": "/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/pages/index-editor-referencia.html",
+        "brandPrefix": "mg",
+        "aestheticsMode": "free-explore",
+        "toolDisciplineBlockPresent": true,
+        "fillHtmlHeadCommand": "node '/Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/apply-html-head-contract.mjs' '/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/colors_and_type.css' '/Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/pages/index-editor-referencia.html' --title='MotorGraphico - Editor de referencia' --lang='es' --prefix='mg'",
+        "headFillMode": "skeleton-first",
+        "viewportMode": "app-shell",
+        "completionSchemaExpected": "compact",
+        "pageSliceOnly": true,
+        "requiredFieldsPresent": true,
+        "missingFields": []
+      }
+    ],
+    "validationRunDiscipline": {
+      "maxFullValidationRuns": 2,
+      "softWarningsTriggerRepair": false,
+      "blockingRepairMode": "targeted-once",
+      "forbiddenRepairTriggers": [
+        "soft-warning-only",
+        "provenance-warning-only",
+        "style-warning-only"
+      ]
+    },
+    "validationHistory": [
+      {
+        "reportPath": "validation-report.json",
+        "reportHash": "0164fc509f0af35d0b9216590d9eb20c1116dd34b283d61da8cddb5ef45398d5",
+        "checkedAt": "2026-08-09T15:53:42.017Z",
+        "success": false,
+        "exitCode": 1,
+        "renderBlockingErrorCount": 3,
+        "repairPlanHints": [
+          "hardcoded-color-in-body"
+        ],
+        "errorSignatures": [
+          {
+            "errorClass": "app-shell-viewport",
+            "normalized": "[app-shell-viewport] pages/index.html: viewportMode is app-shell but data-viewport-mode=\"app-shell\" is missing on the shell container.",
+            "signature": "e5cb705f62709e2b75ee564f8100e07971efb44938b123b9755bd3091bf43faf"
+          },
+          {
+            "errorClass": "app-shell-viewport",
+            "normalized": "[app-shell-viewport] pages/index.html: app-shell pages must declare data-scroll-region=\"primary\" on a class list containing overflow-y-auto.",
+            "signature": "8e23327dd9f37898b16fc24ca2492bf3af871da2b0addb128d91473d91bdfab3"
+          },
+          {
+            "errorClass": "app-shell-viewport",
+            "normalized": "[app-shell-viewport] pages/index.html: app-shell page still looks like natural document flow (min-h-screen) without a complete internal scroll shell.",
+            "signature": "cba731c9b99e3efeb0df33753eb6a65d710f2cd3ebe5cd5a9f16cf31373b603c"
+          }
+        ],
+        "terminalState": null
+      },
+      {
+        "reportPath": "validation-report.json",
+        "reportHash": "51c662d59fcdbd1bb126ea09eadce4963e43eda553bca9884748274436bd2d4a",
+        "checkedAt": "2026-08-09T15:54:50.705Z",
+        "success": true,
+        "exitCode": 0,
+        "renderBlockingErrorCount": 0,
+        "repairPlanHints": [
+          "hardcoded-color-in-body"
+        ],
+        "errorSignatures": [],
+        "terminalState": null
+      },
+      {
+        "reportPath": "validation-report.json",
+        "reportHash": "7f3f3039ade84d72b49d2f28d73e82987d8981f5ad489f5939d7757147a12313",
+        "checkedAt": "2026-08-09T16:31:30.592Z",
+        "success": false,
+        "exitCode": 1,
+        "renderBlockingErrorCount": 1,
+        "repairPlanHints": [
+          "hardcoded-color-in-body",
+          "hardcoded-color-in-body"
+        ],
+        "errorSignatures": [
+          {
+            "errorClass": "artifact-readiness",
+            "normalized": "[dispatch-changed-files] pages/index.html: controlled file changed after dispatch preflight without mainAgentPostDispatchMutations evidence: motorgraphico-hud-redesign.design",
+            "signature": "d1b80b7019af0df51dc8ab07f71acef82406e0edc39b4a50f87f89fd2f9da6bb"
+          }
+        ],
+        "terminalState": null
+      }
+    ],
+    "validationRepairLedger": [
+      {
+        "failedReportPath": "validation-report.json",
+        "failedReportHash": "0164fc509f0af35d0b9216590d9eb20c1116dd34b283d61da8cddb5ef45398d5",
+        "repairWorkflowReadPath": "intent-workflows/intent-project-mutation/main-agent-repair-workflow.md",
+        "repairStartedAt": "2026-08-09T15:53:50.546Z",
+        "repairEntryStatus": "revalidated-success",
+        "ownerTriage": [
+          {
+            "owner": "sub-agent",
+            "errorClass": "hardcoded-color-in-body",
+            "affectedFiles": [
+              "index.html"
+            ],
+            "repairScope": "targeted-token-replace",
+            "strategy": "targeted_token_replace_once"
+          }
+        ],
+        "repairPlanHints": [
+          {
+            "errorClass": "hardcoded-color-in-body",
+            "owner": "sub-agent",
+            "repairScope": "targeted-token-replace",
+            "strategy": "targeted_token_replace_once",
+            "affectedFiles": [
+              "index.html"
+            ],
+            "repairReportPath": null,
+            "repairAlreadyAttempted": false,
+            "allowSourceRead": "no-full-html-read",
+            "maxValidationRuns": 2
+          }
+        ],
+        "repairActions": [
+          {
+            "owner": "main-agent",
+            "errorClass": "unknown-blocking",
+            "affectedFiles": [
+              "pages/index.html"
+            ],
+            "action": "targeted-app-shell-viewport-repair",
+            "observedFileHashes": [
+              {
+                "path": "pages/index.html",
+                "hash": "769a3b99b8cb9a1df86d199a5ef70bdba194de7293eec3c1d7d1002801c2896a"
+              }
+            ],
+            "preEditFileHashes": [],
+            "postEditFileHashes": [],
+            "repairOwnedFields": [
+              "unknown-blocking"
+            ],
+            "recordedAt": "2026-08-09T15:54:28.388Z",
+            "repairActionTableRequired": true
+          }
+        ],
+        "revalidationReportPath": "validation-report.json",
+        "revalidationReportHash": "51c662d59fcdbd1bb126ea09eadce4963e43eda553bca9884748274436bd2d4a",
+        "revalidationSuccess": true,
+        "blockedReason": null,
+        "revalidationRecordedAt": "2026-08-09T15:55:02.535Z"
+      },
+      {
+        "failedReportPath": "validation-report.json",
+        "failedReportHash": "7f3f3039ade84d72b49d2f28d73e82987d8981f5ad489f5939d7757147a12313",
+        "repairWorkflowReadPath": "intent-workflows/intent-project-mutation/main-agent-repair-workflow.md",
+        "repairStartedAt": "2026-08-09T16:31:39.534Z",
+        "repairEntryStatus": "started-awaiting-owner-batch-repair",
+        "ownerTriage": [
+          {
+            "owner": "sub-agent",
+            "errorClass": "hardcoded-color-in-body",
+            "affectedFiles": [
+              "index-confort-creador.html"
+            ],
+            "repairScope": "targeted-token-replace",
+            "strategy": "targeted_token_replace_once"
+          },
+          {
+            "owner": "sub-agent",
+            "errorClass": "hardcoded-color-in-body",
+            "affectedFiles": [
+              "index.html"
+            ],
+            "repairScope": "targeted-token-replace",
+            "strategy": "targeted_token_replace_once"
+          }
+        ],
+        "repairPlanHints": [
+          {
+            "errorClass": "hardcoded-color-in-body",
+            "owner": "sub-agent",
+            "repairScope": "targeted-token-replace",
+            "strategy": "targeted_token_replace_once",
+            "affectedFiles": [
+              "index-confort-creador.html"
+            ],
+            "repairReportPath": null,
+            "repairAlreadyAttempted": false,
+            "allowSourceRead": "no-full-html-read",
+            "maxValidationRuns": 2
+          },
+          {
+            "errorClass": "hardcoded-color-in-body",
+            "owner": "sub-agent",
+            "repairScope": "targeted-token-replace",
+            "strategy": "targeted_token_replace_once",
+            "affectedFiles": [
+              "index.html"
+            ],
+            "repairReportPath": null,
+            "repairAlreadyAttempted": false,
+            "allowSourceRead": "no-full-html-read",
+            "maxValidationRuns": 2
+          }
+        ],
+        "repairActions": [],
+        "revalidationReportPath": null,
+        "revalidationReportHash": null,
+        "revalidationSuccess": null,
+        "blockedReason": null
+      }
+    ],
+    "validationSnapshot": {},
+    "artifactReadinessEvidence": {},
+    "lowValueCallWatchdog": {
+      "applies": true,
+      "noProgressSignals": [
+        "no_tool_call",
+        "no_artifact_diff",
+        "no_structured_decision"
+      ],
+      "noProgressNextAction": "enter_readiness_or_blocked_summary",
+      "recordedAt": "2026-08-09T00:00:00.000Z"
+    },
+    "cssPreflightEvidence": {
+      "applies": true,
+      "status": "passed",
+      "command": "node /Users/admin/.trae/builtin/design/default/skills/solo-design/shared-runtime/deterministic-tooling/apply-html-head-contract.mjs /Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/colors_and_type.css /Users/admin/Documents/Documentos - Oriol Os (2)/Software/MotorGraphico-main/MotorGraphico-HUD-Redesign/.preflight/preflight.html --title=\"Preflight\" --lang=es --prefix=mg",
+      "brandPrefix": "mg",
+      "checks": {
+        "themeVars": "present",
+        "semanticTokenFallback": "present",
+        "themeInline": "present",
+        "tailwindCdn": "present",
+        "htmlClass": "present",
+        "semanticMappings": "resolved"
+      },
+      "retryCount": 0,
+      "blockingReason": null
+    },
+    "sourceProjectLaneHeritage": {
+      "resolvedLane": "free_exploration",
+      "designLibrary": null,
+      "restoreMode": false,
+      "graphicLayoutConstraints": false
+    },
+    "sourcePageId": "page-index",
+    "sourceHtmlSrc": "pages/index.html",
+    "derivationType": "comparison-page",
+    "inPlaceEditAllowed": false,
+    "affectedPageIds": [
+      "page-index-confort-creador",
+      "page-index-vision-jugador",
+      "page-index-programado-actual",
+      "page-index-rpg-serio",
+      "page-index-editor-referencia"
+    ],
+    "styleContinuityAnchors": {
+      "colorSystem": "Base oscura azul petróleo y grafito con acento ámbar cálido para foco, éxito en verde moderado y errores en coral apagado. Evitar contrastes agresivos y reducir brillos extensos.",
+      "shapeSystem": "Paneles modulares de esquinas medias, marcos finos y cápsulas funcionales compactas. Priorizar contenedores sobrios y evitar radios excesivos o burbujas blandas.",
+      "typographySystem": "Titulares geométricos sobrios, cuerpo altamente legible y datos críticos en monoespaciada. Jerarquía clara, menos saturación tipográfica y ritmo de lectura más relajado.",
+      "spacingSystem": "Densidad alta pero respirable: separar grupos funcionales con aire consistente, reforzar padding interno y evitar apelmazamiento en barras, tarjetas y listas.",
+      "componentLanguage": "HUD táctico premium con tarjetas de estado, barras de progreso, chips de atajo y subpaneles de consulta. Mantener estructura operativa y legibilidad de herramienta.",
+      "surfaceAndDepth": "Capas oscuras estratificadas con separación por borde tenue y sombras muy contenidas. Reducir peso visual de sombras y usar más contraste de superficie que elevación.",
+      "imageryAndIconography": "Iconografía Lucide sobria, mapa o escena central estilizada sin ruido visual, adornos mínimos y nada decorativo que distraiga de la lectura funcional.",
+      "interactionTone": "Microinteracciones suaves, foco evidente y feedback calmado. Hover discretos, estados activos claros y sensación de control continuo sin destellos ni sobresaltos."
+    },
+    "defaultDeliverableVisibility": {
+      "applies": true,
+      "requiredVisibleRegions": [
+        {
+          "htmlSrc": "pages/index.html",
+          "selector": "#app-shell",
+          "label": "escena principal del aplicativo",
+          "source": "user requirement"
+        },
+        {
+          "htmlSrc": "pages/index.html",
+          "selector": "#hud-improvements",
+          "label": "mejora por cada HUD",
+          "source": "user requirement"
+        },
+        {
+          "htmlSrc": "pages/index-confort-creador.html",
+          "selector": "#app-shell",
+          "label": "versión estabilizada para el creador",
+          "source": "user request"
+        },
+        {
+          "htmlSrc": "pages/index-vision-jugador.html",
+          "selector": "#app-shell",
+          "label": "versión enfocada al jugador",
+          "source": "user request"
+        },
+        {
+          "htmlSrc": "pages/index-programado-actual.html",
+          "selector": "#app-shell",
+          "label": "versión alineada con lo programado",
+          "source": "user request"
+        },
+        {
+          "htmlSrc": "pages/index-rpg-serio.html",
+          "selector": "#app-shell",
+          "label": "versión RPG seria",
+          "source": "user request"
+        },
+        {
+          "htmlSrc": "pages/index-editor-referencia.html",
+          "selector": "#app-shell",
+          "label": "editor basado en referencia subida",
+          "source": "user upload"
+        }
+      ],
+      "hiddenAllowed": []
+    },
+    "expectedDispatches": [
+      {
+        "nodeId": "page-index",
+        "pageId": "page-index",
+        "targetPageId": "page-index",
+        "htmlSrc": "pages/index.html",
+        "packetType": "FreePagePacket",
+        "status": "completed",
+        "changedFiles": [
+          "pages/index.html"
+        ],
+        "toolCallLedger": {
+          "source": "main-agent-runtime-trace",
+          "traceDigest": "main-agent-trace-page-index",
+          "todoWriteCalls": 0,
+          "previewCalls": 0,
+          "validationScriptCalls": 0,
+          "helperScriptWrites": 0
+        },
+        "recordedAt": "2026-08-09T16:56:18.529Z",
+        "source": "record-dispatch-completion.mjs"
+      },
+      {
+        "nodeId": "page-index-confort-creador",
+        "pageId": "page-index-confort-creador",
+        "targetPageId": "page-index-confort-creador",
+        "htmlSrc": "pages/index-confort-creador.html",
+        "packetType": "ExistingEditPagePacket",
+        "status": "completed",
+        "changedFiles": [
+          "pages/index-confort-creador.html"
+        ],
+        "toolCallLedger": {
+          "source": "main-agent-runtime-trace",
+          "traceDigest": "main-agent-trace-page-index-confort-creador",
+          "todoWriteCalls": 0,
+          "previewCalls": 0,
+          "validationScriptCalls": 0,
+          "helperScriptWrites": 0
+        },
+        "recordedAt": "2026-08-09T16:31:19.743Z",
+        "source": "record-dispatch-completion.mjs"
+      },
+      {
+        "nodeId": "page-index-vision-jugador",
+        "pageId": "page-index-vision-jugador",
+        "targetPageId": "page-index-vision-jugador",
+        "htmlSrc": "pages/index-vision-jugador.html",
+        "packetType": "ExistingEditPagePacket",
+        "status": "completed",
+        "changedFiles": [
+          "pages/index-vision-jugador.html"
+        ],
+        "toolCallLedger": {
+          "source": "main-agent-runtime-trace",
+          "traceDigest": "main-agent-trace-page-index-vision-jugador",
+          "todoWriteCalls": 0,
+          "previewCalls": 0,
+          "validationScriptCalls": 0,
+          "helperScriptWrites": 0
+        },
+        "recordedAt": "2026-08-09T16:46:49.828Z",
+        "source": "record-dispatch-completion.mjs"
+      },
+      {
+        "nodeId": "page-index-programado-actual",
+        "pageId": "page-index-programado-actual",
+        "targetPageId": "page-index-programado-actual",
+        "htmlSrc": "pages/index-programado-actual.html",
+        "packetType": "ExistingEditPagePacket",
+        "status": "completed",
+        "changedFiles": [
+          "pages/index-programado-actual.html"
+        ],
+        "toolCallLedger": {
+          "source": "main-agent-runtime-trace",
+          "traceDigest": "main-agent-trace-page-index-programado-actual",
+          "todoWriteCalls": 0,
+          "previewCalls": 0,
+          "validationScriptCalls": 0,
+          "helperScriptWrites": 0
+        },
+        "recordedAt": "2026-08-09T17:20:32.030Z",
+        "source": "record-dispatch-completion.mjs"
+      },
+      {
+        "nodeId": "page-index-rpg-serio",
+        "pageId": "page-index-rpg-serio",
+        "targetPageId": "page-index-rpg-serio",
+        "htmlSrc": "pages/index-rpg-serio.html",
+        "packetType": "ExistingEditPagePacket",
+        "status": "completed",
+        "changedFiles": [
+          "pages/index-rpg-serio.html"
+        ],
+        "toolCallLedger": {
+          "source": "main-agent-runtime-trace",
+          "traceDigest": "main-agent-trace-page-index-rpg-serio",
+          "todoWriteCalls": 0,
+          "previewCalls": 0,
+          "validationScriptCalls": 0,
+          "helperScriptWrites": 0
+        },
+        "recordedAt": "2026-08-09T17:10:30.137Z",
+        "source": "record-dispatch-completion.mjs"
+      },
+      {
+        "nodeId": "page-index-editor-referencia",
+        "pageId": "page-index-editor-referencia",
+        "targetPageId": "page-index-editor-referencia",
+        "htmlSrc": "pages/index-editor-referencia.html",
+        "packetType": "ExistingEditPagePacket",
+        "status": "completed",
+        "changedFiles": [
+          "pages/index-editor-referencia.html"
+        ],
+        "toolCallLedger": {
+          "source": "main-agent-runtime-trace",
+          "traceDigest": "main-agent-trace-page-index-editor-referencia",
+          "todoWriteCalls": 0,
+          "previewCalls": 0,
+          "validationScriptCalls": 0,
+          "helperScriptWrites": 0
+        },
+        "recordedAt": "2026-08-09T17:20:31.098Z",
+        "source": "record-dispatch-completion.mjs"
+      }
+    ],
+    "mainAgentPostDispatchMutations": [
+      {
+        "path": "motorgraphico-hud-redesign.design",
+        "reason": "registered comparison page on canvas after source-page dispatch",
+        "owner": "main-agent",
+        "recordedAt": "2026-08-09T16:32:22.456Z",
+        "source": "record-dispatch-completion.mjs"
+      },
+      {
+        "path": "motorgraphico-hud-redesign.design",
+        "reason": "registered player-vision comparison page on canvas after source-page dispatch",
+        "owner": "main-agent",
+        "recordedAt": "2026-08-09T16:46:28.815Z",
+        "source": "record-dispatch-completion.mjs"
+      },
+      {
+        "path": "motorgraphico-hud-redesign.design",
+        "reason": "registered code-grounded comparison page on canvas after source-page dispatch",
+        "owner": "main-agent",
+        "recordedAt": "2026-08-09T16:56:18.529Z",
+        "source": "record-dispatch-completion.mjs"
+      },
+      {
+        "path": "motorgraphico-hud-redesign.design",
+        "reason": "registered serious-rpg comparison page on canvas after implementation-grounded dispatch",
+        "owner": "main-agent",
+        "recordedAt": "2026-08-09T17:10:31.073Z",
+        "source": "record-dispatch-completion.mjs"
+      },
+      {
+        "path": "motorgraphico-hud-redesign.design",
+        "reason": "registered uploaded-reference editor page on canvas after implementation-grounded dispatch",
+        "owner": "main-agent",
+        "recordedAt": "2026-08-09T17:20:32.030Z",
+        "source": "record-dispatch-completion.mjs"
+      }
+    ],
+    "repairEntryEvidence": [
+      {
+        "failedReportPath": "validation-report.json",
+        "failedReportHash": "0164fc509f0af35d0b9216590d9eb20c1116dd34b283d61da8cddb5ef45398d5",
+        "repairWorkflowReadPath": "intent-workflows/intent-project-mutation/main-agent-repair-workflow.md",
+        "repairStartedAt": "2026-08-09T15:53:50.546Z",
+        "ledgerIndex": 0,
+        "ownerTriageCount": 1,
+        "repairActionCount": 1,
+        "revalidationReportPath": "validation-report.json",
+        "revalidationReportHash": "51c662d59fcdbd1bb126ea09eadce4963e43eda553bca9884748274436bd2d4a",
+        "revalidationSuccess": true
+      },
+      {
+        "failedReportPath": "validation-report.json",
+        "failedReportHash": "7f3f3039ade84d72b49d2f28d73e82987d8981f5ad489f5939d7757147a12313",
+        "repairWorkflowReadPath": "intent-workflows/intent-project-mutation/main-agent-repair-workflow.md",
+        "repairStartedAt": "2026-08-09T16:31:39.534Z",
+        "ledgerIndex": 1,
+        "ownerTriageCount": 2,
+        "repairActionCount": 0,
+        "revalidationReportPath": null,
+        "revalidationReportHash": null,
+        "revalidationSuccess": null
+      }
+    ]
+  },
+  "designSource": {
+    "type": "repository-analysis",
+    "references": [
+      "MotorGraphico/GAMEMACHINE_NECESIDADES.md",
+      "MotorGraphico/ARCHITECTURE.md",
+      "Incomplete request/MotorGraphico Editor UI.dc.html",
+      ".zcode/plans/plan-sess_77286698-2682-48cc-81d0-bcea05afb9c1.md",
+      "/Users/admin/.trae/attachments/6a78a09701da6a50babbd006/b782e931-ea18-4c7b-99e5-e55100e83d45_1fc43e29-27c1-4caf-985e-8f04605f294c_MotorGraphico Editor UI.dc.html"
+    ]
+  },
+  "pages": [
+    {
+      "nodeId": "page-index",
+      "htmlSrc": "pages/index.html",
+      "title": "Aplicativo MotorGraphico",
+      "deviceType": "web",
+      "viewportMode": "app-shell",
+      "pageType": "information-dense",
+      "qualityRisks": [
+        "app-shell",
+        "dense-panels",
+        "first-screen-balance"
+      ]
+    },
+    {
+      "nodeId": "page-index-confort-creador",
+      "slug": "index-confort-creador",
+      "title": "Aplicativo MotorGraphico - Confort del creador",
+      "htmlSrc": "pages/index-confort-creador.html",
+      "deviceType": "web",
+      "viewportMode": "app-shell",
+      "pageType": "information-dense",
+      "businessScenario": "editor táctico cómodo para lectura prolongada y toma de decisiones de creación",
+      "derivationType": "comparison-from-source",
+      "sourcePageId": "page-index",
+      "sourceHtmlSrc": "pages/index.html",
+      "componentPlan": [],
+      "imagePlan": [],
+      "qualityRisks": [
+        "app-shell",
+        "dense-panels",
+        "comfort-optimization",
+        "reduced-glare-balance"
+      ]
+    },
+    {
+      "nodeId": "page-index-vision-jugador",
+      "slug": "index-vision-jugador",
+      "title": "Aplicativo MotorGraphico - Visión del jugador",
+      "htmlSrc": "pages/index-vision-jugador.html",
+      "deviceType": "web",
+      "viewportMode": "app-shell",
+      "pageType": "information-dense",
+      "businessScenario": "interfaz táctica clara para el jugador con énfasis en decisión, riesgo, recompensa y ritmo de combate",
+      "derivationType": "comparison-from-source",
+      "sourcePageId": "page-index",
+      "sourceHtmlSrc": "pages/index.html",
+      "componentPlan": [],
+      "imagePlan": [],
+      "qualityRisks": [
+        "app-shell",
+        "dense-panels",
+        "combat-clarity",
+        "reward-signal-balance"
+      ]
+    },
+    {
+      "nodeId": "page-index-programado-actual",
+      "slug": "index-programado-actual",
+      "title": "Aplicativo MotorGraphico - Basado en implementación actual",
+      "htmlSrc": "pages/index-programado-actual.html",
+      "deviceType": "web",
+      "viewportMode": "app-shell",
+      "pageType": "implementation-grounded",
+      "businessScenario": "reconstrucción visual fiel de la interfaz actualmente programada en Application.cpp",
+      "derivationType": "comparison-from-source",
+      "sourcePageId": "page-index",
+      "sourceHtmlSrc": "pages/index.html",
+      "componentPlan": [],
+      "imagePlan": [],
+      "qualityRisks": [
+        "app-shell",
+        "code-grounded-layout",
+        "mode-dependent-panels",
+        "dense-legacy-hud"
+      ]
+    },
+    {
+      "nodeId": "page-index-rpg-serio",
+      "slug": "index-rpg-serio",
+      "title": "Aplicativo MotorGraphico - RPG serio",
+      "htmlSrc": "pages/index-rpg-serio.html",
+      "deviceType": "web",
+      "viewportMode": "app-shell",
+      "pageType": "code-grounded-rpg",
+      "businessScenario": "reinterpretación seria y claramente RPG del HUD actual del motor, manteniendo estructura real y jerarquía de combate",
+      "derivationType": "comparison-from-source",
+      "sourcePageId": "page-index-programado-actual",
+      "sourceHtmlSrc": "pages/index-programado-actual.html",
+      "componentPlan": [],
+      "imagePlan": [],
+      "qualityRisks": [
+        "app-shell",
+        "rpg-tone-shift",
+        "combat-priority-balance",
+        "legacy-layout-preservation"
+      ]
+    },
+    {
+      "nodeId": "page-index-editor-referencia",
+      "slug": "index-editor-referencia",
+      "title": "MotorGraphico - Editor de referencia",
+      "htmlSrc": "pages/index-editor-referencia.html",
+      "deviceType": "web",
+      "viewportMode": "app-shell",
+      "pageType": "reference-editor-shell",
+      "businessScenario": "reconstrucción fiel del editor completo según el HTML de referencia subido por el usuario",
+      "derivationType": "comparison-from-source",
+      "sourcePageId": "page-index-programado-actual",
+      "sourceHtmlSrc": "pages/index-programado-actual.html",
+      "componentPlan": [],
+      "imagePlan": [],
+      "qualityRisks": [
+        "app-shell",
+        "dock-balance",
+        "dense-editor-panels",
+        "uploaded-reference-parity"
+      ]
+    }
+  ]
+}

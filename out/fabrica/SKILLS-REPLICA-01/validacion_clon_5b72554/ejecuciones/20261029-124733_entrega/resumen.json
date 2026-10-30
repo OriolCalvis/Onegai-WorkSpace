@@ -1,0 +1,23 @@
+{
+  "t": "2026-10-29T12:47:33+01:00",
+  "fase": "completa",
+  "etiqueta": "entrega",
+  "raiz": "/private/tmp/skills-replica-5b72554",
+  "commit": "5b72554022050309a40ca2fdcef2610041d01b39",
+  "checks": {
+    "replica_regresiones": {
+      "codigo": 0,
+      "items": [],
+      "segundos": 0.1,
+      "cmd": "/opt/homebrew/opt/python@3.14/bin/python3.14 -m unittest discover -s planificacion/replica -p 'test_*.py' -v",
+      "log": "SKILLS-REPLICA-01-HERRAMIENTA/ejecuciones/20261029-124733_entrega/replica_regresiones.log"
+    },
+    "replica_matriz": {
+      "codigo": 0,
+      "items": [],
+      "segundos": 0.0,
+      "cmd": "/opt/homebrew/opt/python@3.14/bin/python3.14 planificacion/replica/parity.py planificacion/replica/features.csv --json",
+      "log": "SKILLS-REPLICA-01-HERRAMIENTA/ejecuciones/20261029-124733_entrega/replica_matriz.log"
+    }
+  }
+}

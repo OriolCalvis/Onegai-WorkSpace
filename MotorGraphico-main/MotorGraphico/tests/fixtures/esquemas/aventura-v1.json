@@ -1,0 +1,147 @@
+{
+  "id": "aventura_fixture",
+  "name": "La Clau del Santuari",
+  "description": "Aventura de prova per a la congelacio d'esquemes (G-07).",
+  "objectives": [
+    {
+      "id": "obj_trobar",
+      "text": "Trobar la clau del santuari",
+      "doneFlag": "clau_trobada"
+    },
+    {
+      "id": "obj_obrir",
+      "text": "Obrir la cambra del santuari",
+      "doneFlag": "santuari_obert"
+    }
+  ],
+  "beats": [
+    {
+      "id": "beat_entrada",
+      "trigger": {
+        "type": "enter",
+        "target": "levels/cueva_entrada.json"
+      },
+      "speaker": "",
+      "lines": [
+        "La humitat de la cova es omple de soroll.",
+        "Algo brilla a terra davant teu."
+      ],
+      "once": false,
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "entrada_vista",
+          "value": 0
+        },
+        {
+          "type": "log",
+          "arg": "Has entrat a la cova.",
+          "value": 0
+        },
+        {
+          "type": "grantGold",
+          "arg": "",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "id": "beat_guardia_pide",
+      "trigger": {
+        "type": "talk",
+        "target": "guardia_esqueleto"
+      },
+      "requires": {
+        "allFlags": [
+          "entrada_vista"
+        ],
+        "anyFlags": [],
+        "notFlags": [
+          "clau_trobada"
+        ]
+      },
+      "speaker": "Guardia Esqueleto",
+      "lines": [
+        "-- On va? -- ¿Quien se atreve a pasar?",
+        "La clau esta mas alla, si sabes leer."
+      ],
+      "once": false,
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "guardia_interactuat",
+          "value": 0
+        },
+        {
+          "type": "skillCheck",
+          "arg": "",
+          "value": 0,
+          "skillCheck": {
+            "skillId": "percepcion",
+            "cd": 1.000000,
+            "rivalDice": 2,
+            "flagBotch": "percepcion_fracas",
+            "flagPartial": "percepcion_parcial",
+            "flagSuccess": "percepcion_exito",
+            "flagCritical": "percepcion_critico"
+          }
+        }
+      ]
+    },
+    {
+      "id": "beat_combate",
+      "trigger": {
+        "type": "auto",
+        "target": ""
+      },
+      "requires": {
+        "allFlags": [],
+        "anyFlags": [
+          "clau_trobada"
+        ],
+        "notFlags": []
+      },
+      "speaker": "",
+      "lines": [
+        "L'esquelet emergeix de l'ombra."
+      ],
+      "once": true,
+      "effects": [
+        {
+          "type": "startBattle",
+          "arg": "",
+          "value": 0,
+          "startBattle": {
+            "monsterId": "esqueleto_guardia",
+            "flagVictory": "victoria_esqueleto",
+            "flagDefeat": "derrota_esqueleto"
+          }
+        }
+      ]
+    }
+  ],
+  "timers": [
+    {
+      "id": "timer_cova",
+      "duracion": 120.000000,
+      "arrancaPor": "entrada_vista",
+      "expiraPor": [
+        "tiempo",
+        "salir_de_zona"
+      ],
+      "zona": "levels/cueva_entrada.json",
+      "flagExpira": "cova_es_colapsa",
+      "avisos": [
+        {
+          "fraccion": 0.500000,
+          "flag": "avis_cova_50"
+        },
+        {
+          "fraccion": 0.250000,
+          "flag": "avis_cova_25"
+        }
+      ],
+      "presentacion": "secreto"
+    }
+  ]
+}

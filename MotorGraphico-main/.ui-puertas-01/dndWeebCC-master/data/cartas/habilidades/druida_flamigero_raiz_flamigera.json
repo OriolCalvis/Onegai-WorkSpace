@@ -1,0 +1,55 @@
+{
+ "id": "druida_flamigero_raiz_flamigera",
+ "name": "Raíz flamígera",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Una raíz flamígera brota del suelo y atrapa al enemigo: 2d6 de daño de fuego, y arde: 1 de daño por turno durante 1 turno.",
+ "flavorText": "",
+ "classTags": [
+  "druida_flamigero"
+ ],
+ "roleTags": [],
+ "tags": [
+  "druida_flamigero",
+  "creador",
+  "Fuego"
+ ],
+ "mechanicTags": [
+  "Fuego",
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "zone_radius",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Una raíz flamígera brota del suelo y atrapa al enemigo: 2d6 de daño de fuego, y arde: 1 de daño por turno durante 1 turno.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "2d6 de daño de fuego.",
+   "mechanicHook": "dano:2d6"
+  },
+  {
+   "description": "Raíz flamígera: 1 de daño por turno durante 1 turno.",
+   "mechanicHook": "estado:1:dano_por_turno:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Druida flamígero (Flame Druid) · H1024 Raíz flamígera"
+}

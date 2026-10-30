@@ -1,0 +1,24 @@
+{
+ "id": "encantado",
+ "name": "Encantado",
+ "type": "condition",
+ "category": "negativa",
+ "source": "estado",
+ "stackable": false,
+ "duration": "hasta_curarse",
+ "effects": [
+  {
+   "description": "No puedes atacar a quien te ha encantado.",
+   "mechanicHook": "bloquea_ataque:origen"
+  },
+  {
+   "description": "Sus interacciones sociales contigo tienen ventaja.",
+   "mechanicHook": "ventaja_social:origen"
+  }
+ ],
+ "cureConditions": [
+  "Recibir daño de quien te encantó",
+  "Fin de la escena si la fuente no indica otra cosa"
+ ],
+ "flavorText": "No es amor. Es contabilidad ajena."
+}

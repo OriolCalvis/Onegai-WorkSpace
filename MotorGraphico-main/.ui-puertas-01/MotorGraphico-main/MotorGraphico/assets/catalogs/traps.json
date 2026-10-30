@@ -1,0 +1,1381 @@
+{
+  "entries": [
+    {
+      "category": "mecánica",
+      "description": "Aguja untada: 1 de daño y Envenenado si falla Resistencia física.",
+      "detection": {
+        "cd": 0.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 0.5,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "envenenado",
+        "defensa": "resistencia_fisica",
+        "description": "Aguja untada: 1 de daño y Envenenado si falla Resistencia física."
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "aguja_del_cerrojo_mentiroso",
+      "name": "Aguja del Cerrojo Mentiroso",
+      "onFail": "El veneno entra en vena: Envenenado sin tirada y −1 a DES hasta descansar.",
+      "rarity": "common",
+      "reset": "recargable",
+      "tier": 1,
+      "trigger": "forzar la cerradura equivocada",
+      "type": "trap"
+    },
+    {
+      "category": "narrativa",
+      "description": "No daña: toda la estancia sabe que estáis aquí (refuerzos en 2 rondas).",
+      "detection": {
+        "cd": 0.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 0.5,
+        "herramienta": null,
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "resistencia_fisica",
+        "description": "No daña: toda la estancia sabe que estáis aquí (refuerzos en 2 rondas)."
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "alarma_de_campanillas_muertas",
+      "name": "Alarma de Campanillas Muertas",
+      "onFail": "La campanilla no calla: desventaja en sigilo el resto de la escena.",
+      "rarity": "common",
+      "reset": "única",
+      "tier": 1,
+      "trigger": "mover el hilo a la altura del tobillo",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Vaharada: 2 de fuego en cono corto.",
+      "detection": {
+        "cd": 0.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 0.5,
+        "herramienta": "herramientas de ladrón",
+        "stat": "INT"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "resistencia_fisica",
+        "description": "Vaharada: 2 de fuego en cono corto."
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "boca_de_fuego_de_mantenimiento",
+      "name": "Boca de Fuego de Mantenimiento",
+      "onFail": "La caldera revienta: 3 de fuego y la sala se incendia (1 por ronda dentro).",
+      "rarity": "common",
+      "reset": "única",
+      "tier": 1,
+      "trigger": "abrir la puerta sin purgar la presión",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Cepo al brazo: 1 de daño y Agarrado.",
+      "detection": {
+        "cd": 0.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 0.5,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "agarrado",
+        "defensa": "resistencia_fisica",
+        "description": "Cepo al brazo: 1 de daño y Agarrado."
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "cepo_del_recaudador",
+      "name": "Cepo del Recaudador",
+      "onFail": "El cepo lleva cadena y la cadena campana: Agarrado + refuerzos avisados.",
+      "rarity": "common",
+      "reset": "recargable",
+      "tier": 1,
+      "trigger": "recoger la bolsa de monedas cebo",
+      "type": "trap"
+    },
+    {
+      "category": "narrativa",
+      "description": "No daña: los durmientes sueñan la misma deuda (gancho con las Sagas).",
+      "detection": {
+        "cd": 0.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 0.5,
+        "herramienta": null,
+        "stat": "INT"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "resistencia_fisica",
+        "description": "No daña: los durmientes sueñan la misma deuda (gancho con las Sagas)."
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "circulo_de_hongos_pacientes",
+      "name": "Círculo de Hongos Pacientes",
+      "onFail": "El corro se cierra: 1 nivel de Fatiga y una deuda onírica real (el DJ la apunta).",
+      "rarity": "common",
+      "reset": "persistente",
+      "tier": 1,
+      "trigger": "dormir dentro del corro",
+      "type": "trap"
+    },
+    {
+      "category": "mágica",
+      "description": "El reflejo roba 0,5 éxitos de tu próxima tirada.",
+      "detection": {
+        "cd": 0.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 0.5,
+        "herramienta": null,
+        "stat": "CAR"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "defensa_mental",
+        "description": "El reflejo roba 0,5 éxitos de tu próxima tirada."
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "espejo_que_cobra_peaje",
+      "name": "Espejo que Cobra Peaje",
+      "onFail": "El reflejo sale: un Doble de Perfil (invocación t2) hostil aparece.",
+      "rarity": "common",
+      "reset": "persistente",
+      "tier": 1,
+      "trigger": "mirarse más de un instante",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Caída con estacas: 2 de daño y Caído.",
+      "detection": {
+        "cd": 0.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 0.5,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "caido",
+        "defensa": "resistencia_fisica",
+        "description": "Caída con estacas: 2 de daño y Caído."
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "foso_de_estacas_corteses",
+      "name": "Foso de Estacas Corteses",
+      "onFail": "La losa cede del todo: 3 de daño y Agarrado entre estacas.",
+      "rarity": "common",
+      "reset": "única",
+      "tier": 1,
+      "trigger": "pisar la losa floja",
+      "type": "trap"
+    },
+    {
+      "category": "mágica",
+      "description": "Marca profana: −1 a Defensa mental hasta descansar.",
+      "detection": {
+        "cd": 0.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 0.5,
+        "herramienta": null,
+        "stat": "INT"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "defensa_mental",
+        "description": "Marca profana: −1 a Defensa mental hasta descansar."
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "losa_de_bendicion_invertida",
+      "name": "Losa de Bendición Invertida",
+      "onFail": "El sello se completa: Asustado y la marca no se va hasta un rito.",
+      "rarity": "common",
+      "reset": "única",
+      "tier": 1,
+      "trigger": "pisar el sello borrado",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Red lastrada: Agarrado hasta liberarse.",
+      "detection": {
+        "cd": 0.5,
+        "stat": "DES"
+      },
+      "disarm": {
+        "cd": 0.5,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "agarrado",
+        "defensa": "resistencia_fisica",
+        "description": "Red lastrada: Agarrado hasta liberarse."
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "red_de_contrapesos",
+      "name": "Red de Contrapesos",
+      "onFail": "El contrapeso sube al atrapado al techo: Agarrado y colgado (los ataques contra él tienen ventaja).",
+      "rarity": "common",
+      "reset": "recargable",
+      "tier": 1,
+      "trigger": "cruzar el pasillo a media altura",
+      "type": "trap"
+    },
+    {
+      "category": "mágica",
+      "description": "Resbalón musical: Caído y la melodía delata la posición.",
+      "detection": {
+        "cd": 0.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 0.5,
+        "herramienta": null,
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "caido",
+        "defensa": "defensa_mental",
+        "description": "Resbalón musical: Caído y la melodía delata la posición."
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "suelo_de_escarcha_cantora",
+      "name": "Suelo de Escarcha Cantora",
+      "onFail": "El hielo se abre: Agarrado en agua helada, 1 de frío por ronda.",
+      "rarity": "common",
+      "reset": "persistente",
+      "tier": 1,
+      "trigger": "correr sobre el hielo grabado",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Aguja untada: 1 de daño y Envenenado si falla Resistencia física. (escala: +1 de daño en este tier)",
+      "detection": {
+        "cd": 1,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "envenenado",
+        "defensa": "resistencia_fisica",
+        "description": "Aguja untada: 1 de daño y Envenenado si falla Resistencia física. (escala: +1 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "aguja_del_cerrojo_mentiroso_mejorada",
+      "name": "Aguja del Cerrojo Mentiroso Mejorada",
+      "onFail": "El veneno entra en vena: Envenenado sin tirada y −1 a DES hasta descansar.",
+      "rarity": "uncommon",
+      "reset": "recargable",
+      "tier": 2,
+      "trigger": "forzar la cerradura equivocada",
+      "type": "trap"
+    },
+    {
+      "category": "narrativa",
+      "description": "No daña: toda la estancia sabe que estáis aquí (refuerzos en 2 rondas). (escala: +1 de daño en este tier)",
+      "detection": {
+        "cd": 1,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1,
+        "herramienta": null,
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "resistencia_fisica",
+        "description": "No daña: toda la estancia sabe que estáis aquí (refuerzos en 2 rondas). (escala: +1 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "alarma_de_campanillas_muertas_mejorada",
+      "name": "Alarma de Campanillas Muertas Mejorada",
+      "onFail": "La campanilla no calla: desventaja en sigilo el resto de la escena.",
+      "rarity": "uncommon",
+      "reset": "única",
+      "tier": 2,
+      "trigger": "mover el hilo a la altura del tobillo",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Vaharada: 2 de fuego en cono corto. (escala: +1 de daño en este tier)",
+      "detection": {
+        "cd": 1,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1,
+        "herramienta": "herramientas de ladrón",
+        "stat": "INT"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "resistencia_fisica",
+        "description": "Vaharada: 2 de fuego en cono corto. (escala: +1 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "boca_de_fuego_de_mantenimiento_mejorada",
+      "name": "Boca de Fuego de Mantenimiento Mejorada",
+      "onFail": "La caldera revienta: 3 de fuego y la sala se incendia (1 por ronda dentro).",
+      "rarity": "uncommon",
+      "reset": "única",
+      "tier": 2,
+      "trigger": "abrir la puerta sin purgar la presión",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Cepo al brazo: 1 de daño y Agarrado. (escala: +1 de daño en este tier)",
+      "detection": {
+        "cd": 1,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "agarrado",
+        "defensa": "resistencia_fisica",
+        "description": "Cepo al brazo: 1 de daño y Agarrado. (escala: +1 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "cepo_del_recaudador_mejorada",
+      "name": "Cepo del Recaudador Mejorada",
+      "onFail": "El cepo lleva cadena y la cadena campana: Agarrado + refuerzos avisados.",
+      "rarity": "uncommon",
+      "reset": "recargable",
+      "tier": 2,
+      "trigger": "recoger la bolsa de monedas cebo",
+      "type": "trap"
+    },
+    {
+      "category": "narrativa",
+      "description": "No daña: los durmientes sueñan la misma deuda (gancho con las Sagas). (escala: +1 de daño en este tier)",
+      "detection": {
+        "cd": 1,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1,
+        "herramienta": null,
+        "stat": "INT"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "resistencia_fisica",
+        "description": "No daña: los durmientes sueñan la misma deuda (gancho con las Sagas). (escala: +1 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "circulo_de_hongos_pacientes_mejorada",
+      "name": "Círculo de Hongos Pacientes Mejorada",
+      "onFail": "El corro se cierra: 1 nivel de Fatiga y una deuda onírica real (el DJ la apunta).",
+      "rarity": "uncommon",
+      "reset": "persistente",
+      "tier": 2,
+      "trigger": "dormir dentro del corro",
+      "type": "trap"
+    },
+    {
+      "category": "mágica",
+      "description": "El reflejo roba 0,5 éxitos de tu próxima tirada. (escala: +1 de daño en este tier)",
+      "detection": {
+        "cd": 1,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1,
+        "herramienta": null,
+        "stat": "CAR"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "defensa_mental",
+        "description": "El reflejo roba 0,5 éxitos de tu próxima tirada. (escala: +1 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "espejo_que_cobra_peaje_mejorada",
+      "name": "Espejo que Cobra Peaje Mejorada",
+      "onFail": "El reflejo sale: un Doble de Perfil (invocación t2) hostil aparece.",
+      "rarity": "uncommon",
+      "reset": "persistente",
+      "tier": 2,
+      "trigger": "mirarse más de un instante",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Caída con estacas: 2 de daño y Caído. (escala: +1 de daño en este tier)",
+      "detection": {
+        "cd": 1,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "caido",
+        "defensa": "resistencia_fisica",
+        "description": "Caída con estacas: 2 de daño y Caído. (escala: +1 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "foso_de_estacas_corteses_mejorada",
+      "name": "Foso de Estacas Corteses Mejorada",
+      "onFail": "La losa cede del todo: 3 de daño y Agarrado entre estacas.",
+      "rarity": "uncommon",
+      "reset": "única",
+      "tier": 2,
+      "trigger": "pisar la losa floja",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Una red lastrada sube del agua: 2 de daño y Agarrado si falla Resistencia física.",
+      "detection": {
+        "cd": 1.0,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1.5,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "agarrado",
+        "defensa": "resistencia_fisica",
+        "description": "Una red lastrada sube del agua: 2 de daño y Agarrado si falla Resistencia física."
+      },
+      "flavorText": "La tendieron para peces. Hace años que no pescan peces.",
+      "id": "itx_red_de_salmuera",
+      "name": "Itx Red de Salmuera",
+      "onFail": "La red se cierra del todo: Agarrado sin tirada y arrastrado 2 casillas hacia el agua.",
+      "rarity": "uncommon",
+      "reset": "recargable",
+      "tier": 2,
+      "trigger": "pisar los tablones flojos del extremo del muelle",
+      "type": "trap"
+    },
+    {
+      "category": "mágica",
+      "description": "Marca profana: −1 a Defensa mental hasta descansar. (escala: +1 de daño en este tier)",
+      "detection": {
+        "cd": 1,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1,
+        "herramienta": null,
+        "stat": "INT"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "defensa_mental",
+        "description": "Marca profana: −1 a Defensa mental hasta descansar. (escala: +1 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "losa_de_bendicion_invertida_mejorada",
+      "name": "Losa de Bendición Invertida Mejorada",
+      "onFail": "El sello se completa: Asustado y la marca no se va hasta un rito.",
+      "rarity": "uncommon",
+      "reset": "única",
+      "tier": 2,
+      "trigger": "pisar el sello borrado",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Red lastrada: Agarrado hasta liberarse. (escala: +1 de daño en este tier)",
+      "detection": {
+        "cd": 1,
+        "stat": "DES"
+      },
+      "disarm": {
+        "cd": 1,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "agarrado",
+        "defensa": "resistencia_fisica",
+        "description": "Red lastrada: Agarrado hasta liberarse. (escala: +1 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "red_de_contrapesos_mejorada",
+      "name": "Red de Contrapesos Mejorada",
+      "onFail": "El contrapeso sube al atrapado al techo: Agarrado y colgado (los ataques contra él tienen ventaja).",
+      "rarity": "uncommon",
+      "reset": "recargable",
+      "tier": 2,
+      "trigger": "cruzar el pasillo a media altura",
+      "type": "trap"
+    },
+    {
+      "category": "mágica",
+      "description": "Resbalón musical: Caído y la melodía delata la posición. (escala: +1 de daño en este tier)",
+      "detection": {
+        "cd": 1,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1,
+        "herramienta": null,
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "caido",
+        "defensa": "defensa_mental",
+        "description": "Resbalón musical: Caído y la melodía delata la posición. (escala: +1 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "suelo_de_escarcha_cantora_mejorada",
+      "name": "Suelo de Escarcha Cantora Mejorada",
+      "onFail": "El hielo se abre: Agarrado en agua helada, 1 de frío por ronda.",
+      "rarity": "uncommon",
+      "reset": "persistente",
+      "tier": 2,
+      "trigger": "correr sobre el hielo grabado",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Aguja untada: 1 de daño y Envenenado si falla Resistencia física. (escala: +2 de daño en este tier)",
+      "detection": {
+        "cd": 1.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1.5,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "envenenado",
+        "defensa": "resistencia_fisica",
+        "description": "Aguja untada: 1 de daño y Envenenado si falla Resistencia física. (escala: +2 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "aguja_del_cerrojo_mentiroso_maestra",
+      "name": "Aguja del Cerrojo Mentiroso Maestra",
+      "onFail": "El veneno entra en vena: Envenenado sin tirada y −1 a DES hasta descansar.",
+      "rarity": "rare",
+      "reset": "recargable",
+      "tier": 3,
+      "trigger": "forzar la cerradura equivocada",
+      "type": "trap"
+    },
+    {
+      "category": "narrativa",
+      "description": "No daña: toda la estancia sabe que estáis aquí (refuerzos en 2 rondas). (escala: +2 de daño en este tier)",
+      "detection": {
+        "cd": 1.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1.5,
+        "herramienta": null,
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "resistencia_fisica",
+        "description": "No daña: toda la estancia sabe que estáis aquí (refuerzos en 2 rondas). (escala: +2 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "alarma_de_campanillas_muertas_maestra",
+      "name": "Alarma de Campanillas Muertas Maestra",
+      "onFail": "La campanilla no calla: desventaja en sigilo el resto de la escena.",
+      "rarity": "rare",
+      "reset": "única",
+      "tier": 3,
+      "trigger": "mover el hilo a la altura del tobillo",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Vaharada: 2 de fuego en cono corto. (escala: +2 de daño en este tier)",
+      "detection": {
+        "cd": 1.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1.5,
+        "herramienta": "herramientas de ladrón",
+        "stat": "INT"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "resistencia_fisica",
+        "description": "Vaharada: 2 de fuego en cono corto. (escala: +2 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "boca_de_fuego_de_mantenimiento_maestra",
+      "name": "Boca de Fuego de Mantenimiento Maestra",
+      "onFail": "La caldera revienta: 3 de fuego y la sala se incendia (1 por ronda dentro).",
+      "rarity": "rare",
+      "reset": "única",
+      "tier": 3,
+      "trigger": "abrir la puerta sin purgar la presión",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Cepo al brazo: 1 de daño y Agarrado. (escala: +2 de daño en este tier)",
+      "detection": {
+        "cd": 1.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1.5,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "agarrado",
+        "defensa": "resistencia_fisica",
+        "description": "Cepo al brazo: 1 de daño y Agarrado. (escala: +2 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "cepo_del_recaudador_maestra",
+      "name": "Cepo del Recaudador Maestra",
+      "onFail": "El cepo lleva cadena y la cadena campana: Agarrado + refuerzos avisados.",
+      "rarity": "rare",
+      "reset": "recargable",
+      "tier": 3,
+      "trigger": "recoger la bolsa de monedas cebo",
+      "type": "trap"
+    },
+    {
+      "category": "narrativa",
+      "description": "No daña: los durmientes sueñan la misma deuda (gancho con las Sagas). (escala: +2 de daño en este tier)",
+      "detection": {
+        "cd": 1.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1.5,
+        "herramienta": null,
+        "stat": "INT"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "resistencia_fisica",
+        "description": "No daña: los durmientes sueñan la misma deuda (gancho con las Sagas). (escala: +2 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "circulo_de_hongos_pacientes_maestra",
+      "name": "Círculo de Hongos Pacientes Maestra",
+      "onFail": "El corro se cierra: 1 nivel de Fatiga y una deuda onírica real (el DJ la apunta).",
+      "rarity": "rare",
+      "reset": "persistente",
+      "tier": 3,
+      "trigger": "dormir dentro del corro",
+      "type": "trap"
+    },
+    {
+      "category": "mágica",
+      "description": "El reflejo roba 0,5 éxitos de tu próxima tirada. (escala: +2 de daño en este tier)",
+      "detection": {
+        "cd": 1.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1.5,
+        "herramienta": null,
+        "stat": "CAR"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "defensa_mental",
+        "description": "El reflejo roba 0,5 éxitos de tu próxima tirada. (escala: +2 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "espejo_que_cobra_peaje_maestra",
+      "name": "Espejo que Cobra Peaje Maestra",
+      "onFail": "El reflejo sale: un Doble de Perfil (invocación t2) hostil aparece.",
+      "rarity": "rare",
+      "reset": "persistente",
+      "tier": 3,
+      "trigger": "mirarse más de un instante",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Caída con estacas: 2 de daño y Caído. (escala: +2 de daño en este tier)",
+      "detection": {
+        "cd": 1.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1.5,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "caido",
+        "defensa": "resistencia_fisica",
+        "description": "Caída con estacas: 2 de daño y Caído. (escala: +2 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "foso_de_estacas_corteses_maestra",
+      "name": "Foso de Estacas Corteses Maestra",
+      "onFail": "La losa cede del todo: 3 de daño y Agarrado entre estacas.",
+      "rarity": "rare",
+      "reset": "única",
+      "tier": 3,
+      "trigger": "pisar la losa floja",
+      "type": "trap"
+    },
+    {
+      "category": "mágica",
+      "description": "Marca profana: −1 a Defensa mental hasta descansar. (escala: +2 de daño en este tier)",
+      "detection": {
+        "cd": 1.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1.5,
+        "herramienta": null,
+        "stat": "INT"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "defensa_mental",
+        "description": "Marca profana: −1 a Defensa mental hasta descansar. (escala: +2 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "losa_de_bendicion_invertida_maestra",
+      "name": "Losa de Bendición Invertida Maestra",
+      "onFail": "El sello se completa: Asustado y la marca no se va hasta un rito.",
+      "rarity": "rare",
+      "reset": "única",
+      "tier": 3,
+      "trigger": "pisar el sello borrado",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Red lastrada: Agarrado hasta liberarse. (escala: +2 de daño en este tier)",
+      "detection": {
+        "cd": 1.5,
+        "stat": "DES"
+      },
+      "disarm": {
+        "cd": 1.5,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "agarrado",
+        "defensa": "resistencia_fisica",
+        "description": "Red lastrada: Agarrado hasta liberarse. (escala: +2 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "red_de_contrapesos_maestra",
+      "name": "Red de Contrapesos Maestra",
+      "onFail": "El contrapeso sube al atrapado al techo: Agarrado y colgado (los ataques contra él tienen ventaja).",
+      "rarity": "rare",
+      "reset": "recargable",
+      "tier": 3,
+      "trigger": "cruzar el pasillo a media altura",
+      "type": "trap"
+    },
+    {
+      "category": "mágica",
+      "description": "Resbalón musical: Caído y la melodía delata la posición. (escala: +2 de daño en este tier)",
+      "detection": {
+        "cd": 1.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 1.5,
+        "herramienta": null,
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "caido",
+        "defensa": "defensa_mental",
+        "description": "Resbalón musical: Caído y la melodía delata la posición. (escala: +2 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "suelo_de_escarcha_cantora_maestra",
+      "name": "Suelo de Escarcha Cantora Maestra",
+      "onFail": "El hielo se abre: Agarrado en agua helada, 1 de frío por ronda.",
+      "rarity": "rare",
+      "reset": "persistente",
+      "tier": 3,
+      "trigger": "correr sobre el hielo grabado",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Aguja untada: 1 de daño y Envenenado si falla Resistencia física. (escala: +3 de daño en este tier)",
+      "detection": {
+        "cd": 2,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "envenenado",
+        "defensa": "resistencia_fisica",
+        "description": "Aguja untada: 1 de daño y Envenenado si falla Resistencia física. (escala: +3 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "aguja_del_cerrojo_mentiroso_antigua",
+      "name": "Aguja del Cerrojo Mentiroso Antigua",
+      "onFail": "El veneno entra en vena: Envenenado sin tirada y −1 a DES hasta descansar.",
+      "rarity": "epic",
+      "reset": "recargable",
+      "tier": 4,
+      "trigger": "forzar la cerradura equivocada",
+      "type": "trap"
+    },
+    {
+      "category": "narrativa",
+      "description": "No daña: toda la estancia sabe que estáis aquí (refuerzos en 2 rondas). (escala: +3 de daño en este tier)",
+      "detection": {
+        "cd": 2,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2,
+        "herramienta": null,
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "resistencia_fisica",
+        "description": "No daña: toda la estancia sabe que estáis aquí (refuerzos en 2 rondas). (escala: +3 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "alarma_de_campanillas_muertas_antigua",
+      "name": "Alarma de Campanillas Muertas Antigua",
+      "onFail": "La campanilla no calla: desventaja en sigilo el resto de la escena.",
+      "rarity": "epic",
+      "reset": "única",
+      "tier": 4,
+      "trigger": "mover el hilo a la altura del tobillo",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Vaharada: 2 de fuego en cono corto. (escala: +3 de daño en este tier)",
+      "detection": {
+        "cd": 2,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2,
+        "herramienta": "herramientas de ladrón",
+        "stat": "INT"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "resistencia_fisica",
+        "description": "Vaharada: 2 de fuego en cono corto. (escala: +3 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "boca_de_fuego_de_mantenimiento_antigua",
+      "name": "Boca de Fuego de Mantenimiento Antigua",
+      "onFail": "La caldera revienta: 3 de fuego y la sala se incendia (1 por ronda dentro).",
+      "rarity": "epic",
+      "reset": "única",
+      "tier": 4,
+      "trigger": "abrir la puerta sin purgar la presión",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Cepo al brazo: 1 de daño y Agarrado. (escala: +3 de daño en este tier)",
+      "detection": {
+        "cd": 2,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "agarrado",
+        "defensa": "resistencia_fisica",
+        "description": "Cepo al brazo: 1 de daño y Agarrado. (escala: +3 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "cepo_del_recaudador_antigua",
+      "name": "Cepo del Recaudador Antigua",
+      "onFail": "El cepo lleva cadena y la cadena campana: Agarrado + refuerzos avisados.",
+      "rarity": "epic",
+      "reset": "recargable",
+      "tier": 4,
+      "trigger": "recoger la bolsa de monedas cebo",
+      "type": "trap"
+    },
+    {
+      "category": "narrativa",
+      "description": "No daña: los durmientes sueñan la misma deuda (gancho con las Sagas). (escala: +3 de daño en este tier)",
+      "detection": {
+        "cd": 2,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2,
+        "herramienta": null,
+        "stat": "INT"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "resistencia_fisica",
+        "description": "No daña: los durmientes sueñan la misma deuda (gancho con las Sagas). (escala: +3 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "circulo_de_hongos_pacientes_antigua",
+      "name": "Círculo de Hongos Pacientes Antigua",
+      "onFail": "El corro se cierra: 1 nivel de Fatiga y una deuda onírica real (el DJ la apunta).",
+      "rarity": "epic",
+      "reset": "persistente",
+      "tier": 4,
+      "trigger": "dormir dentro del corro",
+      "type": "trap"
+    },
+    {
+      "category": "mágica",
+      "description": "El reflejo roba 0,5 éxitos de tu próxima tirada. (escala: +3 de daño en este tier)",
+      "detection": {
+        "cd": 2,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2,
+        "herramienta": null,
+        "stat": "CAR"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "defensa_mental",
+        "description": "El reflejo roba 0,5 éxitos de tu próxima tirada. (escala: +3 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "espejo_que_cobra_peaje_antigua",
+      "name": "Espejo que Cobra Peaje Antigua",
+      "onFail": "El reflejo sale: un Doble de Perfil (invocación t2) hostil aparece.",
+      "rarity": "epic",
+      "reset": "persistente",
+      "tier": 4,
+      "trigger": "mirarse más de un instante",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Caída con estacas: 2 de daño y Caído. (escala: +3 de daño en este tier)",
+      "detection": {
+        "cd": 2,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "caido",
+        "defensa": "resistencia_fisica",
+        "description": "Caída con estacas: 2 de daño y Caído. (escala: +3 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "foso_de_estacas_corteses_antigua",
+      "name": "Foso de Estacas Corteses Antigua",
+      "onFail": "La losa cede del todo: 3 de daño y Agarrado entre estacas.",
+      "rarity": "epic",
+      "reset": "única",
+      "tier": 4,
+      "trigger": "pisar la losa floja",
+      "type": "trap"
+    },
+    {
+      "category": "mágica",
+      "description": "Marca profana: −1 a Defensa mental hasta descansar. (escala: +3 de daño en este tier)",
+      "detection": {
+        "cd": 2,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2,
+        "herramienta": null,
+        "stat": "INT"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "defensa_mental",
+        "description": "Marca profana: −1 a Defensa mental hasta descansar. (escala: +3 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "losa_de_bendicion_invertida_antigua",
+      "name": "Losa de Bendición Invertida Antigua",
+      "onFail": "El sello se completa: Asustado y la marca no se va hasta un rito.",
+      "rarity": "epic",
+      "reset": "única",
+      "tier": 4,
+      "trigger": "pisar el sello borrado",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Red lastrada: Agarrado hasta liberarse. (escala: +3 de daño en este tier)",
+      "detection": {
+        "cd": 2,
+        "stat": "DES"
+      },
+      "disarm": {
+        "cd": 2,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "agarrado",
+        "defensa": "resistencia_fisica",
+        "description": "Red lastrada: Agarrado hasta liberarse. (escala: +3 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "red_de_contrapesos_antigua",
+      "name": "Red de Contrapesos Antigua",
+      "onFail": "El contrapeso sube al atrapado al techo: Agarrado y colgado (los ataques contra él tienen ventaja).",
+      "rarity": "epic",
+      "reset": "recargable",
+      "tier": 4,
+      "trigger": "cruzar el pasillo a media altura",
+      "type": "trap"
+    },
+    {
+      "category": "mágica",
+      "description": "Resbalón musical: Caído y la melodía delata la posición. (escala: +3 de daño en este tier)",
+      "detection": {
+        "cd": 2,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2,
+        "herramienta": null,
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "caido",
+        "defensa": "defensa_mental",
+        "description": "Resbalón musical: Caído y la melodía delata la posición. (escala: +3 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "suelo_de_escarcha_cantora_antigua",
+      "name": "Suelo de Escarcha Cantora Antigua",
+      "onFail": "El hielo se abre: Agarrado en agua helada, 1 de frío por ronda.",
+      "rarity": "epic",
+      "reset": "persistente",
+      "tier": 4,
+      "trigger": "correr sobre el hielo grabado",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Aguja untada: 1 de daño y Envenenado si falla Resistencia física. (escala: +4 de daño en este tier)",
+      "detection": {
+        "cd": 2.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2.5,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "envenenado",
+        "defensa": "resistencia_fisica",
+        "description": "Aguja untada: 1 de daño y Envenenado si falla Resistencia física. (escala: +4 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "aguja_del_cerrojo_mentiroso_legendaria",
+      "name": "Aguja del Cerrojo Mentiroso Legendaria",
+      "onFail": "El veneno entra en vena: Envenenado sin tirada y −1 a DES hasta descansar.",
+      "rarity": "mythic",
+      "reset": "recargable",
+      "tier": 5,
+      "trigger": "forzar la cerradura equivocada",
+      "type": "trap"
+    },
+    {
+      "category": "narrativa",
+      "description": "No daña: toda la estancia sabe que estáis aquí (refuerzos en 2 rondas). (escala: +4 de daño en este tier)",
+      "detection": {
+        "cd": 2.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2.5,
+        "herramienta": null,
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "resistencia_fisica",
+        "description": "No daña: toda la estancia sabe que estáis aquí (refuerzos en 2 rondas). (escala: +4 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "alarma_de_campanillas_muertas_legendaria",
+      "name": "Alarma de Campanillas Muertas Legendaria",
+      "onFail": "La campanilla no calla: desventaja en sigilo el resto de la escena.",
+      "rarity": "mythic",
+      "reset": "única",
+      "tier": 5,
+      "trigger": "mover el hilo a la altura del tobillo",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Vaharada: 2 de fuego en cono corto. (escala: +4 de daño en este tier)",
+      "detection": {
+        "cd": 2.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2.5,
+        "herramienta": "herramientas de ladrón",
+        "stat": "INT"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "resistencia_fisica",
+        "description": "Vaharada: 2 de fuego en cono corto. (escala: +4 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "boca_de_fuego_de_mantenimiento_legendaria",
+      "name": "Boca de Fuego de Mantenimiento Legendaria",
+      "onFail": "La caldera revienta: 3 de fuego y la sala se incendia (1 por ronda dentro).",
+      "rarity": "mythic",
+      "reset": "única",
+      "tier": 5,
+      "trigger": "abrir la puerta sin purgar la presión",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Cepo al brazo: 1 de daño y Agarrado. (escala: +4 de daño en este tier)",
+      "detection": {
+        "cd": 2.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2.5,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "agarrado",
+        "defensa": "resistencia_fisica",
+        "description": "Cepo al brazo: 1 de daño y Agarrado. (escala: +4 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "cepo_del_recaudador_legendaria",
+      "name": "Cepo del Recaudador Legendaria",
+      "onFail": "El cepo lleva cadena y la cadena campana: Agarrado + refuerzos avisados.",
+      "rarity": "mythic",
+      "reset": "recargable",
+      "tier": 5,
+      "trigger": "recoger la bolsa de monedas cebo",
+      "type": "trap"
+    },
+    {
+      "category": "narrativa",
+      "description": "No daña: los durmientes sueñan la misma deuda (gancho con las Sagas). (escala: +4 de daño en este tier)",
+      "detection": {
+        "cd": 2.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2.5,
+        "herramienta": null,
+        "stat": "INT"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "resistencia_fisica",
+        "description": "No daña: los durmientes sueñan la misma deuda (gancho con las Sagas). (escala: +4 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "circulo_de_hongos_pacientes_legendaria",
+      "name": "Círculo de Hongos Pacientes Legendaria",
+      "onFail": "El corro se cierra: 1 nivel de Fatiga y una deuda onírica real (el DJ la apunta).",
+      "rarity": "mythic",
+      "reset": "persistente",
+      "tier": 5,
+      "trigger": "dormir dentro del corro",
+      "type": "trap"
+    },
+    {
+      "category": "mágica",
+      "description": "El reflejo roba 0,5 éxitos de tu próxima tirada. (escala: +4 de daño en este tier)",
+      "detection": {
+        "cd": 2.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2.5,
+        "herramienta": null,
+        "stat": "CAR"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "defensa_mental",
+        "description": "El reflejo roba 0,5 éxitos de tu próxima tirada. (escala: +4 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "espejo_que_cobra_peaje_legendaria",
+      "name": "Espejo que Cobra Peaje Legendaria",
+      "onFail": "El reflejo sale: un Doble de Perfil (invocación t2) hostil aparece.",
+      "rarity": "mythic",
+      "reset": "persistente",
+      "tier": 5,
+      "trigger": "mirarse más de un instante",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Caída con estacas: 2 de daño y Caído. (escala: +4 de daño en este tier)",
+      "detection": {
+        "cd": 2.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2.5,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "caido",
+        "defensa": "resistencia_fisica",
+        "description": "Caída con estacas: 2 de daño y Caído. (escala: +4 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "foso_de_estacas_corteses_legendaria",
+      "name": "Foso de Estacas Corteses Legendaria",
+      "onFail": "La losa cede del todo: 3 de daño y Agarrado entre estacas.",
+      "rarity": "mythic",
+      "reset": "única",
+      "tier": 5,
+      "trigger": "pisar la losa floja",
+      "type": "trap"
+    },
+    {
+      "category": "mágica",
+      "description": "Marca profana: −1 a Defensa mental hasta descansar. (escala: +4 de daño en este tier)",
+      "detection": {
+        "cd": 2.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2.5,
+        "herramienta": null,
+        "stat": "INT"
+      },
+      "effect": {
+        "condicionInfligida": null,
+        "defensa": "defensa_mental",
+        "description": "Marca profana: −1 a Defensa mental hasta descansar. (escala: +4 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "losa_de_bendicion_invertida_legendaria",
+      "name": "Losa de Bendición Invertida Legendaria",
+      "onFail": "El sello se completa: Asustado y la marca no se va hasta un rito.",
+      "rarity": "mythic",
+      "reset": "única",
+      "tier": 5,
+      "trigger": "pisar el sello borrado",
+      "type": "trap"
+    },
+    {
+      "category": "mecánica",
+      "description": "Red lastrada: Agarrado hasta liberarse. (escala: +4 de daño en este tier)",
+      "detection": {
+        "cd": 2.5,
+        "stat": "DES"
+      },
+      "disarm": {
+        "cd": 2.5,
+        "herramienta": "herramientas de ladrón",
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "agarrado",
+        "defensa": "resistencia_fisica",
+        "description": "Red lastrada: Agarrado hasta liberarse. (escala: +4 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "red_de_contrapesos_legendaria",
+      "name": "Red de Contrapesos Legendaria",
+      "onFail": "El contrapeso sube al atrapado al techo: Agarrado y colgado (los ataques contra él tienen ventaja).",
+      "rarity": "mythic",
+      "reset": "recargable",
+      "tier": 5,
+      "trigger": "cruzar el pasillo a media altura",
+      "type": "trap"
+    },
+    {
+      "category": "mágica",
+      "description": "Resbalón musical: Caído y la melodía delata la posición. (escala: +4 de daño en este tier)",
+      "detection": {
+        "cd": 2.5,
+        "stat": "INT"
+      },
+      "disarm": {
+        "cd": 2.5,
+        "herramienta": null,
+        "stat": "DES"
+      },
+      "effect": {
+        "condicionInfligida": "caido",
+        "defensa": "defensa_mental",
+        "description": "Resbalón musical: Caído y la melodía delata la posición. (escala: +4 de daño en este tier)"
+      },
+      "flavorText": "Quien la montó pensaba volver. No volvió.",
+      "id": "suelo_de_escarcha_cantora_legendaria",
+      "name": "Suelo de Escarcha Cantora Legendaria",
+      "onFail": "El hielo se abre: Agarrado en agua helada, 1 de frío por ronda.",
+      "rarity": "mythic",
+      "reset": "persistente",
+      "tier": 5,
+      "trigger": "correr sobre el hielo grabado",
+      "type": "trap"
+    }
+  ]
+}

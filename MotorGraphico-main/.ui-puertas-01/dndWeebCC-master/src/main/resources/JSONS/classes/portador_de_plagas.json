@@ -1,0 +1,273 @@
+{
+  "nombre": "Portador de Plagas",
+  "descripcion": "Maestro de la nigromancia vinculada a la naturaleza corrupta, invocando insectos y criaturas en descomposición para propagar enfermedades, plagas y venenos.",
+  "rolTematico": "Especializado en daño de área y control de masas, inflige efectos dañinos mientras debilita con venenos y enfermedades.",
+  "dadoGolpe": "1d10",
+  "puntosGolpeNivel1": "10 + modificador de Constitución",
+  "puntosGolpePorNivel": "1d10 (o 6) + modificador de Constitución",
+  "atributoConjuro": "Carisma",
+  "atributosRelevantes": [
+    "Sabiduría",
+    "Carisma",
+    "Destreza"
+  ],
+  "competencias": {
+    "armaduras": [
+      "Ligeras"
+    ],
+    "armas": [
+      "Simples",
+      "Daga",
+      "Dardo",
+      "Ballesta ligera",
+      "Espada corta"
+    ],
+    "habilidadesElegir": [
+      "Trato con animales",
+      "Atletismo",
+      "Perspicacia",
+      "Investigación",
+      "Naturaleza",
+      "Percepción",
+      "Sigilo",
+      "Supervivencia"
+    ],
+    "salvaciones": [
+      "Carisma",
+      "Destreza"
+    ]
+  },
+  "mecanicas": {
+    "magiaBasadaEnPlagas": "Invoca enjambres de insectos, escarabajos y utiliza cadáveres para manipular el campo de batalla."
+  },
+  "accionesEspeciales": {},
+  "niveles": {
+    "1": {
+      "habilidades": [
+        {
+          "nombre": "Invocar Enjambre de Insectos",
+          "descripcion": "Invocas un enjambre de insectos que acosan a tus enemigos.",
+          "efecto": "1d6 de daño de veneno a todos los enemigos en un área de 10 pies y ralentizados 1 turno.",
+          "usos": "Modificador de Carisma por descanso corto",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "2": {
+      "habilidades": [
+        {
+          "nombre": "Descomposición de la Naturaleza",
+          "descripcion": "Los cadáveres que tocas explotan liberando toxinas.",
+          "efecto": "2d6 de daño de veneno en 5 pies; TS Constitución o envenenado 1 minuto.",
+          "usos": "2 veces por descanso corto",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "3": {
+      "habilidades": [
+        {
+          "nombre": "Aura de Decadencia",
+          "descripcion": "Emana un aura de plagas y decadencia.",
+          "efecto": "Enemigos a 10 pies sufren 1d6 de daño de veneno al inicio de su turno.",
+          "duracion": "1 minuto",
+          "usos": "1 vez por descanso largo",
+          "accion": "Pasiva"
+        }
+      ]
+    },
+    "4": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características",
+          "descripcion": "Aumenta dos puntuaciones de habilidad en 1 o elige una proeza.",
+          "efecto": "",
+          "accion": ""
+        }
+      ]
+    },
+    "5": {
+      "habilidades": [
+        {
+          "nombre": "Enjambre Carroñero",
+          "descripcion": "Invocas criaturas carroñeras que atacan en 15 pies.",
+          "efecto": "3d6 de daño de veneno; TS Destreza o incapacitado 1 turno.",
+          "usos": "1 vez por descanso corto",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "6": {
+      "habilidades": [
+        {
+          "nombre": "Invocar Criatura en Descomposición",
+          "descripcion": "Invocas criatura en descomposición para asistirte.",
+          "efecto": "Criatura con 30 HP que inflige 2d8 veneno y aplica veneno al golpear.",
+          "duracion": "1 minuto",
+          "usos": "Modificador de Carisma por descanso largo",
+          "accion": "Normal"
+        }
+      ],
+      "invocaciones": [
+        {
+          "nivel": "6",
+          "nombre": "Criatura en Descomposición",
+          "CA": "12",
+          "HP": "30",
+          "ataque": "+4 a cuerpo a cuerpo",
+          "danio": "2d8 de daño de veneno y condición de envenenado"
+        }
+      ]
+    },
+    "7": {
+      "habilidades": [
+        {
+          "nombre": "Horda de Insectos",
+          "descripcion": "Invocas una horda masiva de insectos.",
+          "efecto": "Enemigos en 30 pies: TS Destreza o 4d6 de veneno; sufren daño adicional 2 turnos.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "8": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características",
+          "descripcion": "Aumenta dos puntuaciones de habilidad en 1 o elige una proeza.",
+          "efecto": "",
+          "accion": ""
+        }
+      ]
+    },
+    "9": {
+      "habilidades": [
+        {
+          "nombre": "Poder Descomponedor",
+          "descripcion": "Descompones un cadáver para liberar gas tóxico.",
+          "efecto": "5d6 de veneno a 10 pies; TS Constitución o envenenado.",
+          "usos": "1 vez por descanso corto",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "10": {
+      "habilidades": [
+        {
+          "nombre": "Infección Masiva",
+          "descripcion": "Infectas a un enemigo con plaga contagiosa.",
+          "efecto": "2d6 de veneno/turno; al final turno propaga a 5 pies.",
+          "duracion": "3 turnos",
+          "usos": "1 vez por descanso largo",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "11": {
+      "habilidades": [
+        {
+          "nombre": "Invocar Plaga",
+          "descripcion": "Invocas una plaga mortal.",
+          "efecto": "6d6 de veneno a 30 pies; TS Constitución o envenenado 1 minuto.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "12": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características",
+          "descripcion": "Aumenta dos puntuaciones de habilidad en 1 o elige una proeza.",
+          "efecto": "",
+          "accion": ""
+        }
+      ]
+    },
+    "13": {
+      "habilidades": [
+        {
+          "nombre": "Plaga Imparable",
+          "descripcion": "Reusas Invocar Plaga sin gastar uso adicional.",
+          "efecto": "",
+          "usos": "1 vez por descanso corto",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "14": {
+      "habilidades": [
+        {
+          "nombre": "Fuerza de la Putrefacción",
+          "descripcion": "Tu cuerpo gana resistencia a toxinas.",
+          "efecto": "Resistencia a veneno y necrótico; ventaja TS contra venenos y enfermedades.",
+          "accion": "Pasiva"
+        }
+      ]
+    },
+    "15": {
+      "habilidades": [
+        {
+          "nombre": "Destrucción Putrefacta",
+          "descripcion": "Haces que un enemigo se descomponga.",
+          "efecto": "8d6 de veneno; TS Constitución o paralizado 1 turno.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "16": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características",
+          "descripcion": "Aumenta dos puntuaciones de habilidad en 1 o elige una proeza.",
+          "efecto": "",
+          "accion": ""
+        }
+      ]
+    },
+    "17": {
+      "habilidades": [
+        {
+          "nombre": "Furia y Decadencia",
+          "descripcion": "Tus plagas infligen daño extra.",
+          "efecto": "+1d6 de veneno a todas tus habilidades de daño por turno.",
+          "usos": "",
+          "accion": "Pasiva"
+        }
+      ]
+    },
+    "18": {
+      "habilidades": [
+        {
+          "nombre": "Plaga Apocalíptica",
+          "descripcion": "Invocas una plaga de proporciones apocalípticas.",
+          "efecto": "10d6 de veneno a 60 pies; TS Constitución o envenenado permanentemente.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Normal"
+        }
+      ]
+    },
+    "19": {
+      "habilidades": [
+        {
+          "nombre": "Mejora de Características Final",
+          "descripcion": "Aumenta dos puntuaciones de habilidad en 1 o elige una proeza.",
+          "efecto": "",
+          "accion": ""
+        }
+      ]
+    },
+    "20": {
+      "habilidades": [
+        {
+          "nombre": "Señor de las Plagas",
+          "descripcion": "Te conviertes en una entidad de plagas.",
+          "efecto": "Uso ilimitado de habilidades; curas 4d6 por invocación de plaga.",
+          "usos": "1 vez por descanso largo",
+          "accion": "Normal"
+        }
+      ]
+    }
+  }
+}

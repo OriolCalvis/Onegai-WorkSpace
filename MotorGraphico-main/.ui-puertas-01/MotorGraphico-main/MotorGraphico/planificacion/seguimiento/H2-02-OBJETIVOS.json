@@ -1,0 +1,73 @@
+{
+  "id": "H2-02",
+  "date": "2026-09-29",
+  "author": "opencode",
+  "status": "HECHO en el árbol del Mac, sin commit (05/10, Claude): el montaje en la barra de combate en pergamino. La carta señalada marca a quien alcanza; W/S, arriba/abajo o el ratón eligen el objetivo de las de uno; un clic sobre el marcado la juega; nada se gasta hasta jugarla. La mitad GL-free de opencode (TargetSelection) sigue igual (ver «montaje»).",
+  "criterio_de_cierre": "JUGABILIDAD_FASE_H.md H2-02: 'Al elegir un objetivo se ve a quien se apunta, con que alcance y de que bando es, y se puede volver atras sin gastar nada'.",
+  "problema": "H1-01 (G-13 a produccion) dejo las tres funciones puras del menu de combate en Game/BattleMenuActions.h: selectTargetsFor() dice a quien puede apuntar una entrada y translateToBattleAction() la traduce a BattleAction. Lo que no existia era la SELECCION: con que dedo se senala, como se ve el alcance y el bandol, y como se vuelve atras. El jugador tenia una lista de objetivos en la que no se puede mover, y la unica forma de gastar PM era acertar a la primera.",
+  "scope": [
+    "include/Game/TargetSelection.h: NUEVO, clase GL-free (namespace Game, patron OptionsState/HudTimer/BattleMenuState). open/moveUp/moveDown/cancel/confirm + displayLines()/bandLine() + las tres tablas de etiquetas (rangeLabel/bandLabel/sideLabel) publicas y estaticas. 5 miembros.",
+    "src/Game/TargetSelection.cpp: NUEVO, 1 linea en motor_level. open() delega en selectTargetsFor y confirm() en translateToBattleAction: ni una regla de G-13 reimplementada. Documenta el montaje pendiente con ficheros y lineas exactas.",
+    "tests/Game/TargetSelectionTests.cpp: NUEVO, 15 casos. Incluye los 3 queIntegration con BattleState::resolveAllyAction real y mana() antes/despues: confirmar lo cobra BattleState, cancelar no cuesta nada.",
+    "cmake/TargetSelectionTests.cmake: NUEVO, patron BattleMenuStateTests sin copiar_assets (sin assets).",
+    "CMakeLists.txt: +2 hunk (fuente en motor_level + include del test) por staged de blob: 9 lineas propias, el WIP ajeno del fichero intacto en el arbol.",
+    "planificacion/seguimiento/H2-02-OBJETIVOS.json: NUEVO, esta ficha."
+  ],
+  "decisiones": [
+    "Una entrada bloqueada no abre la pantalla: el menu ya ensena el motivo (battleMenuRows) y abrir un cursor para algo que no se puede hacer es invitar a confirmar y leer un error.",
+    "Los caidos SE VEN y NO se confirman. Es el contrato que G-13 cerro (los muertos salen alive=false para que la UI pueda ensenarlos en gris y rechazarlos al traducir): el jugador ve quien esta en pie, que es informacion, y confirmar uno caido devuelve el motivo en vez de fallar en silencio. No se inventan reglas de salto de cursor aqui: si hay que saltar a los vivos, se decide en el HUD y se escribe aqui, no al reves.",
+    "En un hechizo de area se MARCAN los afectados y se elige igual: el area la resuelve translateToBattleAction (fija el indice), no el dedo del jugador. Marcar es informar, no decidir.",
+    "confirm() DEVUELVE la BattleAction y NO la aplica: el gasto es de BattleState::resolveAllyAction. Por eso cancelar aqui no puede costar nada, porque todavia no se ha gastado nada (lo comprueba la prueba contra el SkillSet real).",
+    "Una sola funcion isAffected(side) y no dos (affectsWholeBand + isAffected): con dos, las mutaciones de una mitad eran inertes porque la otra las tapaba. Se simplifico tras ver que la bateria de mutaciones no caia. Ver la nota de falsabilidad.",
+    "Etiquetas en catalan sin tildes, como las de BattleMenuActions ('Sense carta', 'Nivell insuficient'). H6-04 las movera al Locale; hasta entonces no se abre una segunda tabla de textos."
+  ],
+  "non_goals": [
+    "No se toca Application.cpp/.h ni ApplicationMenuJugador.cpp (WIP de H1-03/H1-05/AV1-03/FICHA-01 en vuelo), ni GameSession* (H2-05/H2-08), ni BattleState.*/BattleMenuActions.*/MenuLogic.h (solo se CONSUMEN), ni zonas H3-01/H4-01/G11/E-12/ALPHA-00.",
+    "No se re-decide el idioma de las etiquetas: se siguen las del producto. La pregunta catalan/castellano sigue en la bandeja de Oriol.",
+    "No se regenera MAPA_DEL_CODIGO.md (se genera desde pla/dades.py, reservado por ALPHA-00) ni alcance_real.json (H8-01/D0007, con otra sesion encima ahora mismo).",
+    "No se actualiza linea_base_core.json: es la foto congelada y su re-congelado es trabajo de D0007/EST-42, no de esta sesion."
+  ],
+  "verification": [
+    "test_target_selection 15/15 PASS; ctest -R '^test_target_selection$' Passed.",
+    "Falsabilidad por mutacion 6/6 cazadas (restaurado y reverificado 15/15): open() ignora la entrada bloqueada (1 rojo), open() no reinicia el cursor (1), isAffected marca a cualquiera (1), confirm() no devuelve el motivo (1), cancel() deja la seleccion abierta (1), open() no filtra la banda vacia (1).",
+    "La primera version de la suite NO era falsable en la marca de area: affectsWholeBand() && isAffected() hacia que ninguna mutacion de una mitad se notara. Se elimino affectsWholeBand y ahora la mutacion se caza. Se documenta porque el fallo era del diseno, no del test.",
+    "Vecinos: ctest -R '^(test_target_selection|test_battle_state|test_g13_combat_commands|test_battle_menu|test_inventory_menu|test_h104_new_game_flow|demo_battle|demo_battle_nd6|demo_narrativa_combate|demo_title_menu)$' -> 10/10 Passed.",
+    "juego compila y arranca en modo sin ventana: 11004 frames, salida normal. motor_level enlaza la fuente nueva.",
+    "diff --check limpio; git status deja el WIP ajeno intacto."
+  ],
+  "deuda_que_deja": [
+    "LEY 4 (nada se cierra si no lo alcanza un ejecutable): include/Game/TargetSelection.h y src/Game/TargetSelection.cpp todavia NO los alcanza juego, motor_editor ni level_editor. linea_base_core los marca como DEUDA NUEVA. Es el mismo estado en que entro H2-01 (DiceRollWidget) y las 21 clases muertas de la linea base (InventoryMenuState, SaveSlotState, TitleMenuState...). Se arregla con el montaje de abajo, no con una excepcion a la linea base: la re-congelada es de D0007/EST-42.",
+    "El veredicto de la guardia sobre el ARBOL da 35 de deuda nueva, 2 de ellas mias y 33 de WIP ajeno sin commitear. Con el HEAD actual el instrumento ya sigue el cierre transitivo de cabeceras (5504b63), asi que el veredicto sobre mis dos ficheros es fiable y no un defecto de la medida."
+  ],
+  "handoff_montaje": [
+    "Donde se elige hoy un objetivo: el flujo de menu de combate de Application (battleMenuRows y el consumo de la entrada) mas BattleMenuState. Los tres estan con dueno.",
+    "Punto de montaje minimo: 1 miembro Game::TargetSelection en el objeto que ya guarda la eleccion de menu, open(entry, bandos, indiceAliado) al elegir la entrada, confirm() al pulsar Aceptar devolviendo la BattleAction a BattleState::resolveAllyAction, cancel() al pulsar Cancelar, y displayLines() pintado con el mismo widget de la lista del menu (HudCommandMenu, el que ya usa H2-01).",
+    "Los labels de fila y de banda se pintan tal cual; la unica linea que pide color es la entrada no disponible."
+  ],
+  "coexistencia": [
+    "BattleMenuEntry / TargetOption / TargetSide viven en el ambito GLOBAL (H1-01 los escribio sin namespace). Game::TargetSelection los usa sin qualification; el test no hace using de Game:: y por eso el compilador lo recuerda.",
+    "Zona compartidas con WIP ajeno sin versionar: Application*, GameSession*, HUD/Iconos*, FichaVista/Codice/Companeros/DiarioMisiones, Render/PergaminoGL, editor/*, PERGAMINO-01. Sin colision de nombres (grep TargetSelection solo da mis 5 ficheros).",
+    "CMakeLists.txt: 10 hunks en el arbol, 2 mios. Los 8 ajenos (motor_i18n de H1-05, FICHA-01, MISIONES-01, CODICE-01, CLASES-03, PERGAMINO-01, motor_pergamino) se quedan en el arbol.",
+    "El indice compartido tenia staged el trabajo de otra sesion (planificacion/alcance_real.json y tools/medir_alcance.py, la segunda ronda del instrumento de D0007): se desataron antes de este commit y se vuelven a dejar staged identicos despues. No se han tocado."
+  ],
+  "montaje": {
+    "date": "2026-10-05",
+    "author": "Claude (Cowork)",
+    "por_que_asi": "Desde UI-BG3-01 el combate se juega con la barra de cartas: la primera pulsación señala la carta y la segunda la juega. Ese es el «volver atrás sin gastar»: mirar otra carta. Faltaba ver a quién alcanza y poder elegirlo. TargetSelection (opencode) es del menú de habilidades legado y de texto; la mesa de cartas tiene su propia regla de objetivos, que ahora es una sola función compartida.",
+    "scope": [
+      "Game::CartasEnCombate::alcance(objetivo, elegido, aliadosVivos, enemigosVivos): la regla de a quién alcanza un objetivo (el elegido si vive, si no el primero en pie; el bando entero; uno mismo). La usa jugar() (objetivos()) y la barra para marcar: una sola regla.",
+      "Game::VistaBarra: aliadosVivos y enemigosVivos. Game::Jugada: objetivo. Game::BarraCombate (src/Game/BarraObjetivos.cpp, NUEVO): mueveObjetivo() (W/S), objetivoDe(), afectados() y eligeObjetivo(); Zona::Objetivo (placas y retratos): pasar por encima elige y un clic sobre un marcado juega la carta. Los relojes de la barra se agrupan (Rotulo, TiradaVista): 13 miembros.",
+      "Application::confirmBattleCommand(fila, objetivo): Atacar y las cartas van contra el elegido (sin elegir, el primero en pie, como antes); sin mesa, el objetivo de selectTargetsFor con ese índice. teclasCombate: W/S y arriba/abajo.",
+      "Pergamino (MesaCombateRetales.cpp): retícula carmín (cuatro esquinas) en la placa y el retrato de cada afectado; el marco entero sigue siendo de quien juega. La carta grande dice a quién va y «(W/S: otro)» si hay donde elegir."
+    ],
+    "verification": [
+      "test_barra_combate 18/18 con ObjetivosBarraTests (dos lobos): un área marca a todos y mirar otra carta no gasta ni cierra el turno; un caído ya no se marca; W/S elige y Atacar va contra el elegido (10 al lobo gris, nada al otro); el ratón elige y un clic en un marcado juega; las tuyas apuntan a tu bando; Huir no apunta a nadie; mientras actúa el rival no se marca nada.",
+      "test_pergamino 59/59 (la retícula sigue al elegido y un área marca las dos placas; 5 zonas de objetivo). test_cartas_combate 32/32 con la regla compartida; test_battle_state, test_g13_combat_commands, test_target_selection y test_battle_menu en verde; test_application_scenes como antes (4 fallos conocidos).",
+      "Juego real: Atacar marca al saqueador, Bendición de las Estrellas a Nerea, Canción del Otoño a todos; un clic en la placa la juega."
+    ],
+    "pending": [
+      "En el juego los combates aún son de uno contra uno (GameSession::startBattle mete un enemigo); con varios, la elección ya funciona (probada con dos lobos).",
+      "No se marca al enemigo en el mundo, solo en su placa y en su retrato."
+    ]
+  }
+}

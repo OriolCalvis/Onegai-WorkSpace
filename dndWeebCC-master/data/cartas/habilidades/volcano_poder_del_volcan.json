@@ -1,0 +1,51 @@
+{
+ "id": "volcano_poder_del_volcan",
+ "name": "Poder del volcán",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "El poder del volcán te llena hasta el final del combate: atacas con ventaja y tus golpes con arma hacen +1.",
+ "flavorText": "",
+ "classTags": [
+  "volcano"
+ ],
+ "roleTags": [],
+ "tags": [
+  "volcano",
+  "estandar"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "self",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "INT",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "El poder del volcán te llena hasta el final del combate: atacas con ventaja y tus golpes con arma hacen +1.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Poder del volcán: ventaja en ataque todo el combate.",
+   "mechanicHook": "estado:combate:ventaja:ataque"
+  },
+  {
+   "description": "Poder del volcán: +1 a tus golpes con arma todo el combate.",
+   "mechanicHook": "estado:combate:bono_dano_arma:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Volcano · H1083 Poder del volcán"
+}

@@ -1,0 +1,712 @@
+diff -ruN '--exclude=.git' deps/glfw-src/include/GL/gl.h glfw-cap/include/GL/gl.h
+--- deps/glfw-src/include/GL/gl.h	1970-01-01 01:00:00.000000000 +0100
++++ glfw-cap/include/GL/gl.h	2026-09-28 10:59:09.688225284 +0200
+@@ -0,0 +1,4 @@
++/* stub: solo para compilar imgui_impl_glfw sin cabeceras de Mesa */
++#ifndef __gl_h_
++#define __gl_h_
++#endif
+diff -ruN '--exclude=.git' deps/glfw-src/src/CMakeLists.txt glfw-cap/src/CMakeLists.txt
+--- deps/glfw-src/src/CMakeLists.txt	2026-09-28 09:41:29.000000000 +0200
++++ glfw-cap/src/CMakeLists.txt	2026-09-28 10:54:17.232672027 +0200
+@@ -5,7 +5,8 @@
+                  internal.h platform.h mappings.h
+                  context.c init.c input.c monitor.c platform.c vulkan.c window.c
+                  egl_context.c osmesa_context.c null_platform.h null_joystick.h
+-                 null_init.c null_monitor.c null_window.c null_joystick.c)
++                 null_init.c null_monitor.c null_window.c null_joystick.c
++                 capture_script.c)
+ 
+ # The time, thread and module code is shared between all backends on a given OS,
+ # including the null backend, which still needs those bits to be functional
+diff -ruN '--exclude=.git' deps/glfw-src/src/capture_script.c glfw-cap/src/capture_script.c
+--- deps/glfw-src/src/capture_script.c	1970-01-01 01:00:00.000000000 +0100
++++ glfw-cap/src/capture_script.c	2026-09-28 10:55:25.448864359 +0200
+@@ -0,0 +1,567 @@
++//========================================================================
++// Guion de capturas para la plataforma null de GLFW 3.4.
++//
++// SOLO para el tour de capturas de MotorGraphico: no forma parte del motor.
++// La plataforma null no tiene ventana ni eventos; aqui se inyectan teclas,
++// raton y texto desde un fichero de guion (GLFW_SCRIPT), fotograma a
++// fotograma, y se vuelca el framebuffer (GLFW_SHOT_DIR) justo antes de
++// cada eglSwapBuffers en que se pida una captura.
++//
++// Ordenes (una por linea, '#' comenta):
++//   wait N            espera N fotogramas
++//   sleep MS          espera MS milisegundos de reloj (animaciones, temporizadores)
++//   key K [hold]      pulsa K (p.ej. ENTER, W, CTRL+S) y la suelta tras hold fotogramas (2)
++//   down K / up K     mantiene / suelta
++//   char TEXTO        manda caracteres (entrada de texto)
++//   move X Y          mueve el cursor (coordenadas de ventana)
++//   click X Y [btn]   mueve, pulsa y suelta (btn: left|right|middle)
++//   dclick X Y        doble clic
++//   drag X1 Y1 X2 Y2  arrastra con el boton izquierdo
++//   scroll DY [DX]    rueda
++//   shot NOMBRE       vuelca el siguiente fotograma a NOMBRE.ppm
++//   log TEXTO         escribe en stderr
++//   quit              pide cerrar la ventana
++//========================================================================
++
++#include "internal.h"
++
++#include <ctype.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <time.h>
++
++#define MAX_LINES 20000
++#define MAX_PENDING 128
++
++typedef enum { EV_KEY_UP, EV_MOUSE_DOWN, EV_MOUSE_UP } PendingType;
++
++typedef struct {
++    int framesLeft;
++    PendingType type;
++    int key;
++    int mods;
++    int button;
++} Pending;
++
++static char** s_lines;
++static int s_lineCount;
++static int s_pc;
++static int s_loaded;
++static int s_enabled;
++static long s_waitFrames;
++static double s_sleepUntil;
++static long s_frame;
++static int s_shotPending;
++static char s_shotName[256];
++static Pending s_pending[MAX_PENDING];
++static int s_pendingCount;
++static int s_mods;
++
++static double nowSeconds(void)
++{
++    struct timespec ts;
++    clock_gettime(CLOCK_MONOTONIC, &ts);
++    return (double) ts.tv_sec + (double) ts.tv_nsec / 1e9;
++}
++
++static _GLFWwindow* targetWindow(void)
++{
++    if (_glfw.null.focusedWindow)
++        return _glfw.null.focusedWindow;
++    return _glfw.windowListHead;
++}
++
++static void loadScript(void)
++{
++    const char* path;
++    FILE* f;
++    char buf[1024];
++
++    s_loaded = 1;
++    path = getenv("GLFW_SCRIPT");
++    if (!path || !*path)
++        return;
++
++    f = fopen(path, "r");
++    if (!f)
++    {
++        fprintf(stderr, "[guion] no se pudo abrir %s\n", path);
++        return;
++    }
++
++    s_lines = calloc(MAX_LINES, sizeof(char*));
++    while (fgets(buf, sizeof(buf), f) && s_lineCount < MAX_LINES)
++    {
++        size_t len = strlen(buf);
++        char* start = buf;
++        while (len && (buf[len - 1] == '\n' || buf[len - 1] == '\r'))
++            buf[--len] = '\0';
++        while (*start == ' ' || *start == '\t')
++            start++;
++        if (!*start || *start == '#')
++            continue;
++        s_lines[s_lineCount++] = strdup(start);
++    }
++    fclose(f);
++    s_enabled = 1;
++    fprintf(stderr, "[guion] %d ordenes cargadas de %s\n", s_lineCount, path);
++}
++
++static int keyFromName(const char* name)
++{
++    static const struct { const char* n; int k; } table[] = {
++        {"ENTER", GLFW_KEY_ENTER}, {"RETURN", GLFW_KEY_ENTER},
++        {"ESC", GLFW_KEY_ESCAPE}, {"ESCAPE", GLFW_KEY_ESCAPE},
++        {"TAB", GLFW_KEY_TAB}, {"SPACE", GLFW_KEY_SPACE},
++        {"BACKSPACE", GLFW_KEY_BACKSPACE}, {"DELETE", GLFW_KEY_DELETE},
++        {"INSERT", GLFW_KEY_INSERT},
++        {"UP", GLFW_KEY_UP}, {"DOWN", GLFW_KEY_DOWN},
++        {"LEFT", GLFW_KEY_LEFT}, {"RIGHT", GLFW_KEY_RIGHT},
++        {"HOME", GLFW_KEY_HOME}, {"END", GLFW_KEY_END},
++        {"PAGEUP", GLFW_KEY_PAGE_UP}, {"PAGEDOWN", GLFW_KEY_PAGE_DOWN},
++        {"F1", GLFW_KEY_F1}, {"F2", GLFW_KEY_F2}, {"F3", GLFW_KEY_F3},
++        {"F4", GLFW_KEY_F4}, {"F5", GLFW_KEY_F5}, {"F6", GLFW_KEY_F6},
++        {"F7", GLFW_KEY_F7}, {"F8", GLFW_KEY_F8}, {"F9", GLFW_KEY_F9},
++        {"F10", GLFW_KEY_F10}, {"F11", GLFW_KEY_F11}, {"F12", GLFW_KEY_F12},
++        {"SHIFT", GLFW_KEY_LEFT_SHIFT}, {"CTRL", GLFW_KEY_LEFT_CONTROL},
++        {"ALT", GLFW_KEY_LEFT_ALT}, {"SUPER", GLFW_KEY_LEFT_SUPER},
++        {"CMD", GLFW_KEY_LEFT_SUPER},
++        {"MINUS", GLFW_KEY_MINUS}, {"EQUAL", GLFW_KEY_EQUAL},
++        {"COMMA", GLFW_KEY_COMMA}, {"PERIOD", GLFW_KEY_PERIOD},
++        {"SLASH", GLFW_KEY_SLASH}, {"SEMICOLON", GLFW_KEY_SEMICOLON},
++        {"APOSTROPHE", GLFW_KEY_APOSTROPHE},
++        {"LBRACKET", GLFW_KEY_LEFT_BRACKET}, {"RBRACKET", GLFW_KEY_RIGHT_BRACKET},
++        {"BACKSLASH", GLFW_KEY_BACKSLASH}, {"GRAVE", GLFW_KEY_GRAVE_ACCENT},
++        {"KP_ADD", GLFW_KEY_KP_ADD}, {"KP_SUBTRACT", GLFW_KEY_KP_SUBTRACT},
++        {"KP_ENTER", GLFW_KEY_KP_ENTER},
++        {"KP0", GLFW_KEY_KP_0}, {"KP1", GLFW_KEY_KP_1}, {"KP2", GLFW_KEY_KP_2},
++        {"KP3", GLFW_KEY_KP_3}, {"KP4", GLFW_KEY_KP_4}, {"KP5", GLFW_KEY_KP_5},
++        {"KP6", GLFW_KEY_KP_6}, {"KP7", GLFW_KEY_KP_7}, {"KP8", GLFW_KEY_KP_8},
++        {"KP9", GLFW_KEY_KP_9},
++    };
++    char upper[64];
++    size_t i;
++
++    for (i = 0; name[i] && i < sizeof(upper) - 1; i++)
++        upper[i] = (char) toupper((unsigned char) name[i]);
++    upper[i] = '\0';
++
++    if (strlen(upper) == 1)
++    {
++        const char c = upper[0];
++        if (c >= 'A' && c <= 'Z')
++            return GLFW_KEY_A + (c - 'A');
++        if (c >= '0' && c <= '9')
++            return GLFW_KEY_0 + (c - '0');
++    }
++    for (i = 0; i < sizeof(table) / sizeof(table[0]); i++)
++    {
++        if (strcmp(upper, table[i].n) == 0)
++            return table[i].k;
++    }
++    return -1;
++}
++
++static int modForKey(int key)
++{
++    switch (key)
++    {
++        case GLFW_KEY_LEFT_SHIFT: case GLFW_KEY_RIGHT_SHIFT: return GLFW_MOD_SHIFT;
++        case GLFW_KEY_LEFT_CONTROL: case GLFW_KEY_RIGHT_CONTROL: return GLFW_MOD_CONTROL;
++        case GLFW_KEY_LEFT_ALT: case GLFW_KEY_RIGHT_ALT: return GLFW_MOD_ALT;
++        case GLFW_KEY_LEFT_SUPER: case GLFW_KEY_RIGHT_SUPER: return GLFW_MOD_SUPER;
++        default: return 0;
++    }
++}
++
++static int scancodeFor(int key)
++{
++    if (key < 0 || key > GLFW_KEY_LAST)
++        return 0;
++    return _glfw.null.scancodes[key];
++}
++
++static unsigned int charFor(int key, int mods)
++{
++    const int shift = mods & GLFW_MOD_SHIFT;
++    if (mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT | GLFW_MOD_SUPER))
++        return 0;
++    if (key >= GLFW_KEY_A && key <= GLFW_KEY_Z)
++        return (unsigned int) ((shift ? 'A' : 'a') + (key - GLFW_KEY_A));
++    if (key >= GLFW_KEY_0 && key <= GLFW_KEY_9 && !shift)
++        return (unsigned int) ('0' + (key - GLFW_KEY_0));
++    if (key == GLFW_KEY_SPACE)
++        return ' ';
++    return 0;
++}
++
++static void pushPending(int frames, PendingType type, int key, int mods, int button)
++{
++    if (s_pendingCount >= MAX_PENDING)
++        return;
++    s_pending[s_pendingCount].framesLeft = frames;
++    s_pending[s_pendingCount].type = type;
++    s_pending[s_pendingCount].key = key;
++    s_pending[s_pendingCount].mods = mods;
++    s_pending[s_pendingCount].button = button;
++    s_pendingCount++;
++}
++
++static void pressKey(_GLFWwindow* w, int key)
++{
++    const int mod = modForKey(key);
++    s_mods |= mod;
++    _glfwInputKey(w, key, scancodeFor(key), GLFW_PRESS, s_mods);
++}
++
++static void releaseKey(_GLFWwindow* w, int key)
++{
++    const int mod = modForKey(key);
++    _glfwInputKey(w, key, scancodeFor(key), GLFW_RELEASE, s_mods);
++    s_mods &= ~mod;
++}
++
++// "CTRL+SHIFT+S" -> pulsa modificadores y tecla; programa la suelta.
++static void doCombo(_GLFWwindow* w, char* spec, int hold, int autoRelease)
++{
++    int keys[8];
++    int count = 0;
++    char* tok = strtok(spec, "+");
++    int i;
++
++    while (tok && count < 8)
++    {
++        const int k = keyFromName(tok);
++        if (k < 0)
++        {
++            fprintf(stderr, "[guion] tecla desconocida: %s\n", tok);
++            return;
++        }
++        keys[count++] = k;
++        tok = strtok(NULL, "+");
++    }
++
++    for (i = 0; i < count; i++)
++    {
++        pressKey(w, keys[i]);
++        if (i == count - 1)
++        {
++            const unsigned int c = charFor(keys[i], s_mods);
++            if (c)
++                _glfwInputChar(w, c, s_mods, GLFW_TRUE);
++        }
++    }
++
++    if (autoRelease)
++    {
++        // se sueltan en orden inverso, todas en el mismo fotograma
++        for (i = count - 1; i >= 0; i--)
++            pushPending(hold, EV_KEY_UP, keys[i], 0, 0);
++    }
++}
++
++static void setCursor(_GLFWwindow* w, double x, double y)
++{
++    _glfw.null.xcursor = w->null.xpos + (int) x;
++    _glfw.null.ycursor = w->null.ypos + (int) y;
++    _glfwInputCursorPos(w, x, y);
++}
++
++static int buttonFromName(const char* n)
++{
++    if (!n) return GLFW_MOUSE_BUTTON_LEFT;
++    if (strcmp(n, "right") == 0) return GLFW_MOUSE_BUTTON_RIGHT;
++    if (strcmp(n, "middle") == 0) return GLFW_MOUSE_BUTTON_MIDDLE;
++    return GLFW_MOUSE_BUTTON_LEFT;
++}
++
++static void decodeUtf8AndSend(_GLFWwindow* w, const char* s)
++{
++    const unsigned char* p = (const unsigned char*) s;
++    while (*p)
++    {
++        unsigned int cp = 0;
++        int extra = 0;
++        if (*p < 0x80) { cp = *p; extra = 0; }
++        else if ((*p & 0xE0) == 0xC0) { cp = *p & 0x1F; extra = 1; }
++        else if ((*p & 0xF0) == 0xE0) { cp = *p & 0x0F; extra = 2; }
++        else { cp = *p & 0x07; extra = 3; }
++        p++;
++        while (extra-- > 0 && *p)
++        {
++            cp = (cp << 6) | (*p & 0x3F);
++            p++;
++        }
++        _glfwInputChar(w, cp, 0, GLFW_TRUE);
++    }
++}
++
++static void processPending(_GLFWwindow* w)
++{
++    int i = 0;
++    while (i < s_pendingCount)
++    {
++        Pending* p = &s_pending[i];
++        if (p->framesLeft > 0)
++        {
++            p->framesLeft--;
++            i++;
++            continue;
++        }
++        switch (p->type)
++        {
++            case EV_KEY_UP:
++                releaseKey(w, p->key);
++                break;
++            case EV_MOUSE_DOWN:
++                _glfwInputMouseClick(w, p->button, GLFW_PRESS, s_mods);
++                break;
++            case EV_MOUSE_UP:
++                _glfwInputMouseClick(w, p->button, GLFW_RELEASE, s_mods);
++                break;
++        }
++        s_pending[i] = s_pending[--s_pendingCount];
++    }
++}
++
++// Ejecuta una orden. Devuelve 1 si hay que dejar de ejecutar en este fotograma.
++static int runLine(_GLFWwindow* w, const char* line)
++{
++    char cmd[32] = {0};
++    char rest[1024] = {0};
++    const char* sp = strchr(line, ' ');
++
++    if (sp)
++    {
++        size_t n = (size_t) (sp - line);
++        if (n >= sizeof(cmd)) n = sizeof(cmd) - 1;
++        memcpy(cmd, line, n);
++        strncpy(rest, sp + 1, sizeof(rest) - 1);
++    }
++    else
++        strncpy(cmd, line, sizeof(cmd) - 1);
++
++    if (strcmp(cmd, "wait") == 0)
++    {
++        s_waitFrames = atol(rest);
++        return 1;
++    }
++    if (strcmp(cmd, "sleep") == 0)
++    {
++        s_sleepUntil = nowSeconds() + atof(rest) / 1000.0;
++        return 1;
++    }
++    if (strcmp(cmd, "key") == 0)
++    {
++        char spec[128] = {0};
++        int hold = 2;
++        sscanf(rest, "%127s %d", spec, &hold);
++        doCombo(w, spec, hold, 1);
++        return 0;
++    }
++    if (strcmp(cmd, "down") == 0)
++    {
++        char spec[128] = {0};
++        sscanf(rest, "%127s", spec);
++        doCombo(w, spec, 0, 0);
++        return 0;
++    }
++    if (strcmp(cmd, "up") == 0)
++    {
++        char spec[128] = {0};
++        const int k = (sscanf(rest, "%127s", spec) == 1) ? keyFromName(spec) : -1;
++        if (k >= 0)
++            releaseKey(w, k);
++        return 0;
++    }
++    if (strcmp(cmd, "char") == 0)
++    {
++        decodeUtf8AndSend(w, rest);
++        return 0;
++    }
++    if (strcmp(cmd, "move") == 0)
++    {
++        double x = 0, y = 0;
++        sscanf(rest, "%lf %lf", &x, &y);
++        setCursor(w, x, y);
++        return 0;
++    }
++    if (strcmp(cmd, "click") == 0 || strcmp(cmd, "dclick") == 0)
++    {
++        double x = 0, y = 0;
++        char btn[16] = {0};
++        const int n = sscanf(rest, "%lf %lf %15s", &x, &y, btn);
++        const int b = buttonFromName(n >= 3 ? btn : NULL);
++        setCursor(w, x, y);
++        pushPending(1, EV_MOUSE_DOWN, 0, 0, b);
++        pushPending(3, EV_MOUSE_UP, 0, 0, b);
++        if (strcmp(cmd, "dclick") == 0)
++        {
++            pushPending(5, EV_MOUSE_DOWN, 0, 0, b);
++            pushPending(7, EV_MOUSE_UP, 0, 0, b);
++        }
++        return 0;
++    }
++    if (strcmp(cmd, "mdown") == 0)
++    {
++        _glfwInputMouseClick(w, buttonFromName(rest[0] ? rest : NULL), GLFW_PRESS, s_mods);
++        return 0;
++    }
++    if (strcmp(cmd, "mup") == 0)
++    {
++        _glfwInputMouseClick(w, buttonFromName(rest[0] ? rest : NULL), GLFW_RELEASE, s_mods);
++        return 0;
++    }
++    if (strcmp(cmd, "scroll") == 0)
++    {
++        double dy = 0, dx = 0;
++        sscanf(rest, "%lf %lf", &dy, &dx);
++        _glfwInputScroll(w, dx, dy);
++        return 0;
++    }
++    if (strcmp(cmd, "shot") == 0)
++    {
++        strncpy(s_shotName, rest, sizeof(s_shotName) - 1);
++        s_shotPending = 1;
++        // la captura es del fotograma que se dibuja ahora: no seguir
++        // ejecutando ordenes hasta el siguiente sondeo
++        return 1;
++    }
++    if (strcmp(cmd, "log") == 0)
++    {
++        fprintf(stderr, "[guion] f%ld: %s\n", s_frame, rest);
++        return 0;
++    }
++    if (strcmp(cmd, "quit") == 0)
++    {
++        _glfwInputWindowCloseRequest(w);
++        return 1;
++    }
++    fprintf(stderr, "[guion] orden desconocida: %s\n", line);
++    return 0;
++}
++
++void _glfwScriptTick(void)
++{
++    _GLFWwindow* w;
++
++    if (!s_loaded)
++        loadScript();
++    if (!s_enabled)
++        return;
++
++    w = targetWindow();
++    if (!w)
++        return;
++
++    s_frame++;
++    processPending(w);
++
++    if (s_waitFrames > 0)
++    {
++        s_waitFrames--;
++        return;
++    }
++    if (s_sleepUntil > 0.0)
++    {
++        if (nowSeconds() < s_sleepUntil)
++            return;
++        s_sleepUntil = 0.0;
++    }
++
++    while (s_pc < s_lineCount)
++    {
++        const char* line = s_lines[s_pc++];
++        if (runLine(w, line))
++            break;
++    }
++
++    if (s_pc >= s_lineCount && s_waitFrames == 0 && s_sleepUntil == 0.0 && !s_shotPending)
++    {
++        const char* q = getenv("GLFW_SCRIPT_QUIT");
++        if (q && *q == '1')
++            _glfwInputWindowCloseRequest(w);
++    }
++}
++
++#define GL_READ_FRAMEBUFFER_ 0x8CA8
++#define GL_READ_FRAMEBUFFER_BINDING_ 0x8CAA
++#define GL_PIXEL_PACK_BUFFER_ 0x88EB
++#define GL_PIXEL_PACK_BUFFER_BINDING_ 0x88ED
++#define GL_PACK_ALIGNMENT_ 0x0D05
++#define GL_PACK_ROW_LENGTH_ 0x0D02
++#define GL_RGB_ 0x1907
++#define GL_UNSIGNED_BYTE_ 0x1401
++
++typedef void (*PFN_readPixels)(int, int, int, int, unsigned int, unsigned int, void*);
++typedef void (*PFN_getIntegerv)(unsigned int, int*);
++typedef void (*PFN_bindFramebuffer)(unsigned int, unsigned int);
++typedef void (*PFN_bindBuffer)(unsigned int, unsigned int);
++typedef void (*PFN_pixelStorei)(unsigned int, int);
++typedef void (*PFN_finish)(void);
++
++void _glfwScriptBeforeSwap(_GLFWwindow* window)
++{
++    const char* dir;
++    char path[1024];
++    int width, height;
++    unsigned char* pixels;
++    FILE* f;
++    int prevRead = 0, prevPbo = 0, prevAlign = 4, prevRowLen = 0;
++    int y;
++
++    if (!s_shotPending)
++        return;
++    s_shotPending = 0;
++
++    {
++        PFN_readPixels readPixels = (PFN_readPixels) glfwGetProcAddress("glReadPixels");
++        PFN_getIntegerv getIntegerv = (PFN_getIntegerv) glfwGetProcAddress("glGetIntegerv");
++        PFN_bindFramebuffer bindFramebuffer = (PFN_bindFramebuffer) glfwGetProcAddress("glBindFramebuffer");
++        PFN_bindBuffer bindBuffer = (PFN_bindBuffer) glfwGetProcAddress("glBindBuffer");
++        PFN_pixelStorei pixelStorei = (PFN_pixelStorei) glfwGetProcAddress("glPixelStorei");
++        PFN_finish finish = (PFN_finish) glfwGetProcAddress("glFinish");
++
++        width = window->null.width;
++        height = window->null.height;
++        pixels = malloc((size_t) width * (size_t) height * 3);
++        if (!pixels || !readPixels || !getIntegerv || !bindFramebuffer || !pixelStorei)
++        {
++            fprintf(stderr, "[guion] captura imposible (%s)\n", s_shotName);
++            free(pixels);
++            return;
++        }
++
++        getIntegerv(GL_READ_FRAMEBUFFER_BINDING_, &prevRead);
++        getIntegerv(GL_PIXEL_PACK_BUFFER_BINDING_, &prevPbo);
++        getIntegerv(GL_PACK_ALIGNMENT_, &prevAlign);
++        getIntegerv(GL_PACK_ROW_LENGTH_, &prevRowLen);
++        if (finish) finish();
++        bindFramebuffer(GL_READ_FRAMEBUFFER_, 0);
++        if (bindBuffer) bindBuffer(GL_PIXEL_PACK_BUFFER_, 0);
++        pixelStorei(GL_PACK_ALIGNMENT_, 1);
++        pixelStorei(GL_PACK_ROW_LENGTH_, 0);
++        readPixels(0, 0, width, height, GL_RGB_, GL_UNSIGNED_BYTE_, pixels);
++        pixelStorei(GL_PACK_ALIGNMENT_, prevAlign);
++        pixelStorei(GL_PACK_ROW_LENGTH_, prevRowLen);
++        if (bindBuffer) bindBuffer(GL_PIXEL_PACK_BUFFER_, (unsigned int) prevPbo);
++        bindFramebuffer(GL_READ_FRAMEBUFFER_, (unsigned int) prevRead);
++    }
++
++    dir = getenv("GLFW_SHOT_DIR");
++    snprintf(path, sizeof(path), "%s/%s.ppm", (dir && *dir) ? dir : ".", s_shotName);
++    f = fopen(path, "wb");
++    if (!f)
++    {
++        fprintf(stderr, "[guion] no se pudo escribir %s\n", path);
++        free(pixels);
++        return;
++    }
++    fprintf(f, "P6\n%d %d\n255\n", width, height);
++    for (y = height - 1; y >= 0; y--)
++        fwrite(pixels + (size_t) y * (size_t) width * 3, 1, (size_t) width * 3, f);
++    fclose(f);
++    free(pixels);
++    fprintf(stderr, "[guion] f%ld captura %s\n", s_frame, path);
++}
+diff -ruN '--exclude=.git' deps/glfw-src/src/egl_context.c glfw-cap/src/egl_context.c
+--- deps/glfw-src/src/egl_context.c	2026-09-28 09:41:29.000000000 +0200
++++ glfw-cap/src/egl_context.c	2026-09-28 10:54:21.470166614 +0200
+@@ -133,8 +133,13 @@
+         if (getEGLConfigAttrib(n, EGL_COLOR_BUFFER_TYPE) != EGL_RGB_BUFFER)
+             continue;
+ 
+-        // Only consider window EGLConfigs
+-        if (!(getEGLConfigAttrib(n, EGL_SURFACE_TYPE) & EGL_WINDOW_BIT))
++        // Only consider window EGLConfigs (pbuffer en la plataforma null)
++        if (_glfw.platform.platformID == GLFW_PLATFORM_NULL)
++        {
++            if (!(getEGLConfigAttrib(n, EGL_SURFACE_TYPE) & 0x0001 /*EGL_PBUFFER_BIT*/))
++                continue;
++        }
++        else if (!(getEGLConfigAttrib(n, EGL_SURFACE_TYPE) & EGL_WINDOW_BIT))
+             continue;
+ 
+ #if defined(_GLFW_X11)
+@@ -286,6 +291,7 @@
+     }
+ #endif
+ 
++    _glfwScriptBeforeSwap(window);
+     eglSwapBuffers(_glfw.egl.display, window->context.egl.surface);
+ }
+ 
+@@ -711,9 +717,21 @@
+     SET_ATTRIB(EGL_NONE, EGL_NONE);
+ 
+     native = _glfw.platform.getEGLNativeWindow(window);
++    if (_glfw.platform.platformID == GLFW_PLATFORM_NULL)
++    {
++        // Plataforma null: superficie pbuffer del tamano de la ventana.
++        typedef EGLSurface (* PFN_eglCreatePbufferSurface_)(EGLDisplay,EGLConfig,const EGLint*);
++        PFN_eglCreatePbufferSurface_ createPbuffer = (PFN_eglCreatePbufferSurface_)
++            _glfwPlatformGetModuleSymbol(_glfw.egl.handle, "eglCreatePbufferSurface");
++        const EGLint pbAttribs[] = { 0x3057 /*EGL_WIDTH*/, window->null.width,
++                                     0x3056 /*EGL_HEIGHT*/, window->null.height,
++                                     EGL_NONE };
++        window->context.egl.surface = createPbuffer ?
++            createPbuffer(_glfw.egl.display, config, pbAttribs) : EGL_NO_SURFACE;
++    }
+     // HACK: ANGLE does not implement eglCreatePlatformWindowSurfaceEXT
+     //       despite reporting EGL_EXT_platform_base
+-    if (_glfw.egl.platform && _glfw.egl.platform != EGL_PLATFORM_ANGLE_ANGLE)
++    else if (_glfw.egl.platform && _glfw.egl.platform != EGL_PLATFORM_ANGLE_ANGLE)
+     {
+         window->context.egl.surface =
+             eglCreatePlatformWindowSurfaceEXT(_glfw.egl.display, config, native, attribs);
+diff -ruN '--exclude=.git' deps/glfw-src/src/internal.h glfw-cap/src/internal.h
+--- deps/glfw-src/src/internal.h	2026-09-28 09:41:29.000000000 +0200
++++ glfw-cap/src/internal.h	2026-09-28 10:54:17.232545619 +0200
+@@ -1007,3 +1007,6 @@
+ void* _glfw_realloc(void* pointer, size_t size);
+ void _glfw_free(void* pointer);
+ 
++// Guion de capturas (plataforma null)
++void _glfwScriptTick(void);
++void _glfwScriptBeforeSwap(_GLFWwindow* window);
+diff -ruN '--exclude=.git' deps/glfw-src/src/null_window.c glfw-cap/src/null_window.c
+--- deps/glfw-src/src/null_window.c	2026-09-28 09:41:29.000000000 +0200
++++ glfw-cap/src/null_window.c	2026-09-28 10:54:17.232103217 +0200
+@@ -120,15 +120,15 @@
+ 
+     if (ctxconfig->client != GLFW_NO_API)
+     {
+-        if (ctxconfig->source == GLFW_NATIVE_CONTEXT_API ||
+-            ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
++        if (ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
+         {
+             if (!_glfwInitOSMesa())
+                 return GLFW_FALSE;
+             if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
+                 return GLFW_FALSE;
+         }
+-        else if (ctxconfig->source == GLFW_EGL_CONTEXT_API)
++        else if (ctxconfig->source == GLFW_EGL_CONTEXT_API ||
++                 ctxconfig->source == GLFW_NATIVE_CONTEXT_API)
+         {
+             if (!_glfwInitEGL())
+                 return GLFW_FALSE;
+@@ -486,14 +486,17 @@
+ 
+ void _glfwPollEventsNull(void)
+ {
++    _glfwScriptTick();
+ }
+ 
+ void _glfwWaitEventsNull(void)
+ {
++    _glfwScriptTick();
+ }
+ 
+ void _glfwWaitEventsTimeoutNull(double timeout)
+ {
++    _glfwScriptTick();
+ }
+ 
+ void _glfwPostEmptyEventNull(void)
+diff -ruN '--exclude=.git' deps/glfw-src/src/platform.c glfw-cap/src/platform.c
+--- deps/glfw-src/src/platform.c	2026-09-28 09:41:29.000000000 +0200
++++ glfw-cap/src/platform.c	2026-09-28 10:55:38.321855743 +0200
+@@ -75,13 +75,9 @@
+     }
+ 
+     // Only allow the Null platform if specifically requested
+-    if (desiredID == GLFW_PLATFORM_NULL)
+-        return _glfwConnectNull(desiredID, platform);
+-    else if (count == 0)
+-    {
+-        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "This binary only supports the Null platform");
+-        return GLFW_FALSE;
+-    }
++    // Tour de capturas: sin X11/Wayland compilados, la null es la plataforma.
++    if (desiredID == GLFW_PLATFORM_NULL || count == 0)
++        return _glfwConnectNull(GLFW_PLATFORM_NULL, platform);
+ 
+ #if defined(_GLFW_WAYLAND) && defined(_GLFW_X11)
+     if (desiredID == GLFW_ANY_PLATFORM)

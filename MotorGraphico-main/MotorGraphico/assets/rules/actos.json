@@ -1,0 +1,610 @@
+{
+  "_que": [
+    "MORAL-01 — El catálogo de actos (Oriol, 08/10/2026: «trabajar el carma con las diferentes opciones que el jugador vaya marcando»; wf-04: un catálogo de actos, no `if` sueltos).",
+    "Cada acto: tipo (los del mismo tipo el mismo día cuentan menos), gravedad (menor, medio, mayor: las del documento de visión, §10.1.A), signo (1 te honra, -1 te pesa, 0 no pesa en la moral), contra (inocente, culpable, combatiente o rendido: un mayor contra un inocente deja marca), pureza (lo que te toca lo profano) y reputación (con las facciones que lo vieron).",
+    "Facciones de Boundington (humanas, D-MOR-05; solo las que conoces, D-MOR-07): aegroum (la corona y la ciudad), perdidos y barriada_surysal. Reputación: menor ±5, medio ±15, mayor ±40 (el documento: −40 en Ecla de un solo acto).",
+    "Pelear no corrompe (matar a quien te ataca no está aquí); rematar o ejecutar a quien ya no pelea, sí. Engañar al culto para salvar a alguien no resta: el peso va con el daño, no con la mentira."
+  ],
+  "actos": [
+    {
+      "id": "aigren_saca_a_su_hijo",
+      "tipo": "proteger_inocentes",
+      "gravedad": "menor",
+      "signo": 1,
+      "motivo": "Convenciste a Aigren de sacar a su hijo de la ciudad"
+    },
+    {
+      "id": "aigren_presionado",
+      "tipo": "amenazar_inocentes",
+      "gravedad": "medio",
+      "signo": -1,
+      "contra": "inocente",
+      "reputacion": {
+        "perdidos": -10
+      },
+      "motivo": "Presionaste a Aigren con su hijo"
+    },
+    {
+      "id": "aigren_redimido",
+      "tipo": "redimir",
+      "gravedad": "medio",
+      "signo": 1,
+      "reputacion": {
+        "perdidos": -15,
+        "aegroum": 5
+      },
+      "motivo": "Convenciste a Aigren de que los Perdidos son el mal"
+    },
+    {
+      "id": "luisarda_malos_modos",
+      "tipo": "amenazar_inocentes",
+      "gravedad": "menor",
+      "signo": -1,
+      "contra": "inocente",
+      "motivo": "Le hablaste de malos modos a Luisarda, que tenía miedo"
+    },
+    {
+      "id": "luisarda_silencio",
+      "tipo": "palabra_cumplida",
+      "gravedad": "menor",
+      "signo": 1,
+      "motivo": "Guardaste el silencio que te pidió Luisarda"
+    },
+    {
+      "id": "luisarda_delatada",
+      "tipo": "delatar",
+      "gravedad": "medio",
+      "signo": -1,
+      "contra": "inocente",
+      "reputacion": {
+        "perdidos": 15
+      },
+      "motivo": "Delataste a Luisarda ante Sandes"
+    },
+    {
+      "id": "luisarda_animada",
+      "tipo": "dar_valor",
+      "gravedad": "menor",
+      "signo": 1,
+      "motivo": "Convenciste a Luisarda de que los Perdidos son el mal"
+    },
+    {
+      "id": "luisarda_con_rosita",
+      "tipo": "proteger_inocentes",
+      "gravedad": "menor",
+      "signo": 1,
+      "motivo": "Mandaste a Luisarda con Rosita, a la Taberna Humilde"
+    },
+    {
+      "id": "bajar_sin_armas",
+      "tipo": "profanar",
+      "gravedad": "menor",
+      "signo": 0,
+      "pureza": -5,
+      "motivo": "Bajaste sin armas a la cripta de los Perdidos"
+    },
+    {
+      "id": "ver_ceremonia_gurkazaal",
+      "tipo": "profanar",
+      "gravedad": "menor",
+      "signo": 0,
+      "pureza": -5,
+      "motivo": "Viste la ceremonia ante el ídolo de Gurkazaal"
+    },
+    {
+      "id": "unirse_perdidos",
+      "tipo": "profanar",
+      "gravedad": "menor",
+      "signo": 0,
+      "pureza": -10,
+      "reputacion": {
+        "perdidos": 40
+      },
+      "motivo": "Te uniste a los Perdidos"
+    },
+    {
+      "id": "plantar_cara_guarida",
+      "tipo": "luchar",
+      "gravedad": "menor",
+      "signo": 0,
+      "reputacion": {
+        "perdidos": -15
+      },
+      "motivo": "Les plantaste cara a los Perdidos en su cripta"
+    },
+    {
+      "id": "guarida_exterminada",
+      "tipo": "luchar",
+      "gravedad": "menor",
+      "signo": 0,
+      "reputacion": {
+        "perdidos": -40,
+        "aegroum": 15
+      },
+      "motivo": "Acabaste con los Perdidos de la cripta"
+    },
+    {
+      "id": "dudas_en_verina",
+      "tipo": "redimir",
+      "gravedad": "menor",
+      "signo": 1,
+      "motivo": "Sembraste dudas en Verina sobre los Perdidos"
+    },
+    {
+      "id": "verina_sacada_de_la_guarida",
+      "tipo": "salvar",
+      "gravedad": "medio",
+      "signo": 1,
+      "reputacion": {
+        "perdidos": -15
+      },
+      "motivo": "Sacaste a Verina de la cripta de los Perdidos"
+    },
+    {
+      "id": "gato_bajado",
+      "tipo": "ayudar",
+      "gravedad": "menor",
+      "signo": 1,
+      "motivo": "Bajaste el gato de la niña"
+    },
+    {
+      "id": "sumarse_verdaderos",
+      "tipo": "amenazar_inocentes",
+      "gravedad": "medio",
+      "signo": -1,
+      "contra": "inocente",
+      "reputacion": {
+        "perdidos": 15,
+        "aegroum": -5
+      },
+      "motivo": "Te sumaste a las amenazas contra un padre y su hija"
+    },
+    {
+      "id": "verdaderos_calmados",
+      "tipo": "ayudar",
+      "gravedad": "menor",
+      "signo": 1,
+      "motivo": "Calmaste a los Verdaderos sin que corriera la sangre"
+    },
+    {
+      "id": "verdaderos_enfrentados",
+      "tipo": "defender_inocentes",
+      "gravedad": "medio",
+      "signo": 1,
+      "reputacion": {
+        "perdidos": -15,
+        "aegroum": 5
+      },
+      "motivo": "Defendiste a un padre y su hija de los Verdaderos"
+    },
+    {
+      "id": "familia_a_la_barriada",
+      "tipo": "proteger_inocentes",
+      "gravedad": "menor",
+      "signo": 1,
+      "reputacion": {
+        "barriada_surysal": 5
+      },
+      "motivo": "Llevaste a la familia del gato a la Barriada de Surysal"
+    },
+    {
+      "id": "cobrar_al_padre",
+      "tipo": "aprovecharse",
+      "gravedad": "menor",
+      "signo": -1,
+      "contra": "inocente",
+      "motivo": "Le cobraste al padre por defenderle"
+    },
+    {
+      "id": "xila_escuchado",
+      "tipo": "ayudar",
+      "gravedad": "menor",
+      "signo": 1,
+      "motivo": "Escuchaste a Xila cuando nadie lo hacía"
+    },
+    {
+      "id": "xila_sin_alcohol",
+      "tipo": "redimir",
+      "gravedad": "menor",
+      "signo": 1,
+      "motivo": "Hiciste hablar a Xila sin darle de beber"
+    },
+    {
+      "id": "xila_emborrachado",
+      "tipo": "aprovecharse",
+      "gravedad": "menor",
+      "signo": -1,
+      "contra": "inocente",
+      "motivo": "Emborrachaste a Xila para que hablara"
+    },
+    {
+      "id": "xila_maltratado",
+      "tipo": "humillar",
+      "gravedad": "menor",
+      "signo": -1,
+      "contra": "inocente",
+      "motivo": "Trataste fatal a Xila"
+    },
+    {
+      "id": "camorrista_a_la_guardia",
+      "tipo": "justicia",
+      "gravedad": "menor",
+      "signo": 1,
+      "reputacion": {
+        "aegroum": 5
+      },
+      "motivo": "Entregaste al camorrista a la guardia"
+    },
+    {
+      "id": "camorrista_ejecutado",
+      "tipo": "matar_indefenso",
+      "gravedad": "mayor",
+      "signo": -1,
+      "contra": "rendido",
+      "reputacion": {
+        "aegroum": -5
+      },
+      "motivo": "Sacaste al camorrista de la taberna y lo mataste"
+    },
+    {
+      "id": "carterista_perdonado",
+      "tipo": "perdonar",
+      "gravedad": "menor",
+      "signo": 1,
+      "motivo": "Dejaste ir al carterista"
+    },
+    {
+      "id": "robar_al_ladron",
+      "tipo": "robar",
+      "gravedad": "menor",
+      "signo": -1,
+      "contra": "culpable",
+      "motivo": "Le quitaste al carterista lo que llevaba"
+    },
+    {
+      "id": "gorran_perdonado",
+      "tipo": "perdonar",
+      "gravedad": "menor",
+      "signo": 1,
+      "motivo": "Dejaste huir a Gorran"
+    },
+    {
+      "id": "gorran_rematado",
+      "tipo": "matar_indefenso",
+      "gravedad": "medio",
+      "signo": -1,
+      "contra": "rendido",
+      "motivo": "Remataste a Gorran cuando ya no peleaba"
+    },
+    {
+      "id": "furia_de_alaro_devuelta",
+      "tipo": "palabra_cumplida",
+      "gravedad": "menor",
+      "signo": 1,
+      "motivo": "Le devolviste a Rosita su espada"
+    },
+    {
+      "id": "furia_de_alaro_robada",
+      "tipo": "traicionar",
+      "gravedad": "medio",
+      "signo": -1,
+      "contra": "inocente",
+      "motivo": "Te quedaste la espada de Rosita sin decírselo"
+    },
+    {
+      "id": "barriada_defendida",
+      "tipo": "defender_inocentes",
+      "gravedad": "medio",
+      "signo": 1,
+      "reputacion": {
+        "barriada_surysal": 15
+      },
+      "motivo": "Defendiste a la gente de Zarela de los saqueadores"
+    },
+    {
+      "id": "barriada_delatada",
+      "tipo": "delatar",
+      "gravedad": "medio",
+      "signo": -1,
+      "contra": "inocente",
+      "reputacion": {
+        "perdidos": 15,
+        "barriada_surysal": -15
+      },
+      "motivo": "Avisaste a los Perdidos de que la Barriada se arma"
+    },
+    {
+      "id": "noble_senalado",
+      "tipo": "justicia",
+      "gravedad": "menor",
+      "signo": 1,
+      "reputacion": {
+        "perdidos": -5,
+        "aegroum": 5
+      },
+      "motivo": "Le señalaste a Venides un noble que sirve a los Perdidos"
+    },
+    {
+      "id": "robo_en_la_fiesta",
+      "tipo": "robar",
+      "gravedad": "medio",
+      "signo": -1,
+      "contra": "inocente",
+      "motivo": "Robaste a los invitados de la fiesta"
+    },
+    {
+      "id": "robo_pillado",
+      "tipo": "robar",
+      "gravedad": "menor",
+      "signo": 0,
+      "reputacion": {
+        "aegroum": -15
+      },
+      "motivo": "Te pillaron robando en la fiesta"
+    },
+    {
+      "id": "noble_chantajeado",
+      "tipo": "chantajear",
+      "gravedad": "menor",
+      "signo": -1,
+      "contra": "culpable",
+      "motivo": "Chantajeaste a un noble que sirve a los Perdidos"
+    },
+    {
+      "id": "cobrador_denunciado",
+      "tipo": "justicia",
+      "gravedad": "menor",
+      "signo": 1,
+      "reputacion": {
+        "aegroum": 5
+      },
+      "motivo": "Denunciaste al cobrador corrupto"
+    },
+    {
+      "id": "cobrador_amenazado",
+      "tipo": "amenazar",
+      "gravedad": "menor",
+      "signo": -1,
+      "contra": "culpable",
+      "motivo": "Amenazaste al cobrador corrupto"
+    },
+    {
+      "id": "dudas_en_edul",
+      "tipo": "redimir",
+      "gravedad": "menor",
+      "signo": 1,
+      "motivo": "Le hablaste a Edul de Venides"
+    },
+    {
+      "id": "venides_enganado",
+      "tipo": "mentir_aliado",
+      "gravedad": "menor",
+      "signo": -1,
+      "motivo": "Le ocultaste a Venides lo que sabías"
+    },
+    {
+      "id": "verina_convencida",
+      "tipo": "redimir",
+      "gravedad": "menor",
+      "signo": 1,
+      "motivo": "Convenciste a Verina de avisar a la autoridad"
+    },
+    {
+      "id": "verina_liberada",
+      "tipo": "salvar",
+      "gravedad": "mayor",
+      "signo": 1,
+      "reputacion": {
+        "perdidos": -15,
+        "aegroum": 5
+      },
+      "motivo": "Liberaste a Verina de los cultistas"
+    },
+    {
+      "id": "verina_abandonada",
+      "tipo": "abandonar",
+      "gravedad": "medio",
+      "signo": -1,
+      "contra": "inocente",
+      "motivo": "Dejaste a Verina en manos de los cultistas"
+    },
+    {
+      "id": "verina_entregada",
+      "tipo": "entregar_inocente",
+      "gravedad": "mayor",
+      "signo": -1,
+      "contra": "inocente",
+      "reputacion": {
+        "perdidos": 40
+      },
+      "motivo": "Entregaste a Verina a Sandes"
+    },
+    {
+      "id": "promesa_cumplida",
+      "tipo": "palabra_cumplida",
+      "gravedad": "menor",
+      "signo": 1,
+      "motivo": "Cumpliste la promesa que le hiciste a Verina"
+    },
+    {
+      "id": "promesa_rota",
+      "tipo": "palabra_rota",
+      "gravedad": "menor",
+      "signo": -1,
+      "contra": "inocente",
+      "motivo": "No cumpliste la promesa que le hiciste a Verina"
+    },
+    {
+      "id": "sandes_enfrentado",
+      "tipo": "defender_inocentes",
+      "gravedad": "medio",
+      "signo": 1,
+      "reputacion": {
+        "perdidos": -40,
+        "aegroum": 15
+      },
+      "motivo": "Le plantaste cara a Sandes"
+    },
+    {
+      "id": "aliarse_con_sandes",
+      "tipo": "aliarse",
+      "gravedad": "menor",
+      "signo": 0,
+      "reputacion": {
+        "perdidos": 40,
+        "aegroum": -15
+      },
+      "motivo": "Te aliaste con Sandes"
+    },
+    {
+      "id": "sandes_traicionado",
+      "tipo": "defender_inocentes",
+      "gravedad": "medio",
+      "signo": 1,
+      "reputacion": {
+        "perdidos": -40
+      },
+      "motivo": "Fingiste ante Sandes y te volviste contra él"
+    },
+    {
+      "id": "edul_asesinado",
+      "tipo": "matar_inocente",
+      "gravedad": "mayor",
+      "signo": -1,
+      "contra": "inocente",
+      "motivo": "Mataste a Edul por Sandes"
+    },
+    {
+      "id": "verina_asesinada",
+      "tipo": "matar_inocente",
+      "gravedad": "mayor",
+      "signo": -1,
+      "contra": "inocente",
+      "motivo": "Mataste a Verina por Sandes"
+    },
+    {
+      "id": "venides_liberado",
+      "tipo": "salvar",
+      "gravedad": "mayor",
+      "signo": 1,
+      "reputacion": {
+        "aegroum": 15
+      },
+      "motivo": "Sacaste a Venides de manos de los guardias"
+    },
+    {
+      "id": "venides_atacado",
+      "tipo": "matar_inocente",
+      "gravedad": "mayor",
+      "signo": -1,
+      "contra": "inocente",
+      "reputacion": {
+        "aegroum": -40
+      },
+      "motivo": "Intentaste acabar con Venides"
+    },
+    {
+      "id": "edul_liberado",
+      "tipo": "salvar",
+      "gravedad": "mayor",
+      "signo": 1,
+      "motivo": "Sacaste a Edul de manos de los guardias"
+    },
+    {
+      "id": "edul_abandonado",
+      "tipo": "abandonar",
+      "gravedad": "menor",
+      "signo": -1,
+      "contra": "inocente",
+      "motivo": "Dejaste a Edul con los guardias"
+    },
+    {
+      "id": "atrapados_rescatados",
+      "tipo": "salvar",
+      "gravedad": "medio",
+      "signo": 1,
+      "reputacion": {
+        "aegroum": 5
+      },
+      "motivo": "Sacaste a los que gritaban tras la barricada en llamas"
+    },
+    {
+      "id": "reirse_de_tomas",
+      "tipo": "humillar",
+      "gravedad": "menor",
+      "signo": -1,
+      "contra": "inocente",
+      "motivo": "Te reíste de Tomás, que solo quería pan para los suyos"
+    },
+    {
+      "id": "venides_abandonado",
+      "tipo": "abandonar",
+      "gravedad": "medio",
+      "signo": -1,
+      "contra": "inocente",
+      "motivo": "Dejaste a Venides de rodillas, en manos de los guardias comprados"
+    },
+    {
+      "id": "guardia_preparada",
+      "tipo": "ayudar",
+      "gravedad": "menor",
+      "signo": 1,
+      "reputacion": {
+        "aegroum": 5
+      },
+      "motivo": "Convenciste al capitán de doblar las rondas"
+    },
+    {
+      "id": "saqueadores_convencidos",
+      "tipo": "defender_inocentes",
+      "gravedad": "menor",
+      "signo": 1,
+      "reputacion": {
+        "barriada_surysal": 10
+      },
+      "motivo": "Convenciste a los saqueadores de Surysal de volverse a casa"
+    },
+    {
+      "id": "saqueadores_intimidados",
+      "tipo": "amenazar",
+      "gravedad": "menor",
+      "signo": 0,
+      "contra": "culpable",
+      "reputacion": {
+        "barriada_surysal": 10
+      },
+      "motivo": "Asustaste a los saqueadores con la Furia de Alaro"
+    },
+    {
+      "id": "saqueadores_pagados",
+      "tipo": "ayudar",
+      "gravedad": "menor",
+      "signo": 0,
+      "reputacion": {
+        "barriada_surysal": 5
+      },
+      "motivo": "Compraste a los saqueadores una noche de paz para la Barriada"
+    },
+    {
+      "id": "barriada_sangre",
+      "tipo": "defender_inocentes",
+      "gravedad": "menor",
+      "signo": 1,
+      "reputacion": {
+        "barriada_surysal": 5
+      },
+      "motivo": "Sangraste por la Barriada aunque perdieras"
+    },
+    {
+      "id": "barriada_abandonada",
+      "tipo": "abandonar",
+      "gravedad": "menor",
+      "signo": -1,
+      "contra": "inocente",
+      "reputacion": {
+        "barriada_surysal": -10
+      },
+      "motivo": "Prometiste volver a la Barriada al anochecer y no volviste"
+    }
+  ]
+}

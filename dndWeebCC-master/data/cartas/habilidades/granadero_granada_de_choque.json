@@ -1,0 +1,54 @@
+{
+ "id": "granadero_granada_de_choque",
+ "name": "Granada de choque",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Una granada alquímica que estalla en una onda expansiva: 2d6 de daño de fuego y rigidez 1 turno (no ataca).",
+ "flavorText": "",
+ "classTags": [
+  "granadero"
+ ],
+ "roleTags": [],
+ "tags": [
+  "granadero",
+  "estandar",
+  "Fuego"
+ ],
+ "mechanicTags": [
+  "Fuego"
+ ],
+ "actionType": "accion_principal",
+ "target": "zone_radius",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Una granada alquímica que estalla en una onda expansiva: 2d6 de daño de fuego y rigidez 1 turno (no ataca).",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "2d6 de daño de fuego.",
+   "mechanicHook": "dano:2d6"
+  },
+  {
+   "description": "Rigidez: 1 turno sin atacar.",
+   "mechanicHook": "estado:1:incapacitado"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Granadero (Blaster) · H1733 Granada de choque"
+}

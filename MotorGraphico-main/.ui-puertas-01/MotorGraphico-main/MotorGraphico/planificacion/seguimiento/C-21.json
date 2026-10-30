@@ -1,0 +1,16 @@
+{
+  "id": "C-21",
+  "date": "2026-09-03",
+  "author": "qwen",
+  "status": "Tancat localment; el tanca formalment el pas per CI",
+  "actions": [
+    "Retirada la interfície morta ::IRng/SeededRng (cap referència al repo i sense definició — Rng.cpp no va existir mai) i els dos adaptadors de RandomEngine.h.",
+    "RPG::RandomEngine queda com a única interfície d'atzar del motor; el comentari de la capçalera registra la retirada."
+  ],
+  "verification": [
+    "La prova que demana el pla: el projecte compila i ctest passa sencer amb la interfície retirada — build completa i suite gl-free en verd (commit 50098f8)."
+  ],
+  "pending": [
+    "El borrado físic d'include/RPG/Rng.h viu a l'arbre des de les 12:25 (el va fer una altra sessió, sense commitear); el fitxer ja no té cap referència. Qui commiteu la retirada ha d'incloure aquest borrado, o restaurar-lo."
+  ]
+}

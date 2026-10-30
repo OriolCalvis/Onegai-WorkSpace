@@ -1,0 +1,96 @@
+{
+  "id": "D-09",
+  "nombre": "Les cartes apliquen les seves condicions",
+  "fase": "D",
+  "descripcion": "Una carta amb applyConditionId='asustado' + grau >= exit fa que el receptor tingui la condicio Asustado activa durant conditionDurationRounds. Amb grau < exit (partial) no s'aplica. Dany durant la batalla retira les breaksOnDamage (Encantat, Dormido, Paralizado, etc.). BattleState aplica les condicions.",
+  "responsable": "",
+  "dependencias": [
+    "D-04",
+    "D-03",
+    "C-01",
+    "C-17"
+  ],
+  "criterio_de_cierre": [
+    "Totes les 16 condicions publicades al assets/catalogs/conditions.json (category='negativa'/'positiva'/'neutra') s'apliquen via ConditionEngine::apply sense error",
+    "Les negatives publiquen els seus efectes: o bé flags/statMod/damagePerRound (els 6 ja traduïts: dano_por_turno, velocidad_mitad, desventaja:ataque, bloquea:vision, incapacitado) o bé mechanicHooks (restant, per D-11)",
+    "Una condició amb breaksOnDamage=true roman activa si healthLost=0 i s'esborra si healthLost>0 (ConditionEngine::on_damage_received)",
+    "Condicions amb durationMode=UNTIL_CURED (la majoria publicats) NO expiren després de 10 ticks + purge_expired; condicions ROUNDS (si hi han) expiren després de defaultRounds+2",
+    "TOTS els tests (BattleStateTests agent anterior + ConditionsRealAssetsTests) PASS"
+  ],
+  "verificaciones": [
+    {
+      "test": "tests/Game/BattleStateTests.cpp (preexistent agent anterior, applyCardEffect)",
+      "target": "test_battle_state",
+      "resultado": "13/13 PASS. Inclou: curar/danyar self/objetivo inválido, conditions break on damage (sleep/poison), fallo no rompe condición, apply grau >= exit afegeix condició, grau < partial no afegeix, enemy turn aplica condicions, sense catalog no crashea, conditions catalog propagat"
+    },
+    {
+      "test": "tests/RPG/ConditionsRealAssetsTests.cpp (afegit en aquesta sessió)",
+      "target": "test_conditions_real_assets",
+      "resultado": "4/4 PASS sobre conditions.json publicat (16 condicions, 2026-09-12): (1) totes apliquen, 3/4 amb stacks>0; (2) negatives tenen flags/statMod/damage O mechanicHooks; (3) breaksOnDamage amb published id (si existeix) o fallback inline no buidat amb 0, esborrat amb 10; (4) UNTIL_CURED no expira, ROUNDS expira"
+    }
+  ],
+  "archivos_creados": [
+    "tests/RPG/ConditionsRealAssetsTests.cpp — 4 tests GL-free sobre conditions.json publicat, utilitzant FichaCombatant (ICombatant sense CharacterSheet health fields: health lives on wrapper, no en CharacterSheet; interfície correcte BattleState)",
+    "cmake/ConditionsRealAssetsTests.cmake — target test_conditions_real_assets, LABELS unit;gl-free, afegit a suite_gl_free i MOTOR_GL_FREE_TARGETS"
+  ],
+  "archivos_editados": [
+    "CMakeLists.txt:1028-1029 — afegit include(cmake/ConditionsRealAssetsTests.cmake) (1 línia nova, fragment cmake independent, col·locat abans de D-10)"
+  ],
+  "archivos_compartidos_sin_tocar": [
+    "src/Game/BattleState.cpp — SHARED (E-04, G-12, G-14) — RENUNCIAT A TOCAR per multi-agent; tests utilitzen ConditionEngine directament i BattleStateTests original no s'edita",
+    "tests/Game/BattleStateTests.cpp — propietat agent anterior — NO EDITAT, target add_motor_unit_test existent, s'ha executat separat i PASS",
+    "include/RPG/Catalogs/RpgCatalogs.h — SHARED — NO EDITAT; loader from_json ja tradueix category → isNegative, duration→durationMode, effects[]mechanicHook→mechanicHooks+6 flags/damagePerRound (previ D-04, no canviat)",
+    "include/RPG/ConditionEngine.h, src/RPG/ConditionEngine.cpp — SHARED (D-11, E-14) — NO EDITAT; API utilitzada via apply/remove/tick_conditions/purge_expired/on_damage_received/recalc_condition_modifiers"
+  ],
+  "decisio_DEC_02": [
+    "Mantenim assets publicats tal qual: 15/16 condicions amb 'hasta_curarse' = UNTIL_CURED. No afegim defaultRounds artificials per sortir del pla.",
+    "mechanicHooks sense 'traducció unívoca' (categoria D-11: velocidad_0, ventaja:ataque, etc.) queden a ConditionDefinition.mechanicHooks crudos, com a decisió prèvia D-04/RpgCatalogs.h. Els tests compten mechanicHooks com a 'efecte declarat' per a negatives (complert criteri de tancament)."
+  ],
+  "caveats_y_pending": [
+    "D-11 haurà de traduir més mechanicHooks a flags/statMod/damagePerRound si es vol que ConditionEngine apliqui automàticament més efectes (actualment 6 hooks: dano_por_turno, velocidad_mitad, desventaja:ataque, desventaja:ataque_y_habilidad, bloquea:vision, incapacitado).",
+    "La connexió BattleState.applyCardEffect -> applyConditionId amb degree >= exit, partial < exit JA PROVADA en BattleStateTests.cpp agent anterior (13 tests PASS). No repetit aquí per no tocar BattleState.cpp shared.",
+    "SkillDefinition.applyConditionId publicat al asset: s'ha comprovat al loader RpgCatalogs.h; SkillExecutor D-11 ho consumirà."
+  ],
+  "fecha_cierre_estimada": "2026-09-12",
+  "estado": "cerrado",
+  "estadisticas_tests": {
+    "D-09 BattleState (agent anterior)": "13/13 PASS",
+    "D-09 Conditions real assets (aquesta sessió)": "4/4 PASS",
+    "total_esta_sesion_D09": "17/17 PASS"
+  },
+  "regresion_combinada_D03_a_D09": "D03=6, D05=9, D06_creation=4, D06_catalogs=7, D07=15, D08_bridge=6, D08_bridge_real_assets=3, D09_battle=13, D09_conditions_real_assets=4, D10_validator=1 → TOTAL 64/64 PASS local",
+  "date": "2026-09-12",
+  "author": "sense signar",
+  "status": "cerrado",
+  "actions": [
+    "Una carta amb applyConditionId='asustado' + grau >= exit fa que el receptor tingui la condicio Asustado activa durant conditionDurationRounds. Amb grau < exit (partial) no s'aplica. Dany durant la batalla retira les breaksOnDamage (Encantat, Dormido, Paralizado, etc.). BattleState aplica les condicions.",
+    "Totes les 16 condicions publicades al assets/catalogs/conditions.json (category='negativa'/'positiva'/'neutra') s'apliquen via ConditionEngine::apply sense error",
+    "Les negatives publiquen els seus efectes: o bé flags/statMod/damagePerRound (els 6 ja traduïts: dano_por_turno, velocidad_mitad, desventaja:ataque, bloquea:vision, incapacitado) o bé mechanicHooks (restant, per D-11)",
+    "Una condició amb breaksOnDamage=true roman activa si healthLost=0 i s'esborra si healthLost>0 (ConditionEngine::on_damage_received)",
+    "Condicions amb durationMode=UNTIL_CURED (la majoria publicats) NO expiren després de 10 ticks + purge_expired; condicions ROUNDS (si hi han) expiren després de defaultRounds+2",
+    "TOTS els tests (BattleStateTests agent anterior + ConditionsRealAssetsTests) PASS",
+    "tests/RPG/ConditionsRealAssetsTests.cpp — 4 tests GL-free sobre conditions.json publicat, utilitzant FichaCombatant (ICombatant sense CharacterSheet health fields: health lives on wrapper, no en CharacterSheet; interfície correcte BattleState)",
+    "cmake/ConditionsRealAssetsTests.cmake — target test_conditions_real_assets, LABELS unit;gl-free, afegit a suite_gl_free i MOTOR_GL_FREE_TARGETS",
+    "CMakeLists.txt:1028-1029 — afegit include(cmake/ConditionsRealAssetsTests.cmake) (1 línia nova, fragment cmake independent, col·locat abans de D-10)",
+    "Mantenim assets publicats tal qual: 15/16 condicions amb 'hasta_curarse' = UNTIL_CURED. No afegim defaultRounds artificials per sortir del pla.",
+    "mechanicHooks sense 'traducció unívoca' (categoria D-11: velocidad_0, ventaja:ataque, etc.) queden a ConditionDefinition.mechanicHooks crudos, com a decisió prèvia D-04/RpgCatalogs.h. Els tests compten mechanicHooks com a 'efecte declarat' per a negatives (complert criteri de tancament)."
+  ],
+  "verification": [
+    "test: tests/Game/BattleStateTests.cpp (preexistent agent anterior, applyCardEffect)",
+    "target: test_battle_state",
+    "resultado: 13/13 PASS. Inclou: curar/danyar self/objetivo inválido, conditions break on damage (sleep/poison), fallo no rompe condición, apply grau >= exit afegeix condició, grau < partial no afegeix, enemy turn aplica condicions, sense catalog no crashea, conditions catalog propagat",
+    "test: tests/RPG/ConditionsRealAssetsTests.cpp (afegit en aquesta sessió)",
+    "target: test_conditions_real_assets",
+    "resultado: 4/4 PASS sobre conditions.json publicat (16 condicions, 2026-09-12): (1) totes apliquen, 3/4 amb stacks>0; (2) negatives tenen flags/statMod/damage O mechanicHooks; (3) breaksOnDamage amb published id (si existeix) o fallback inline no buidat amb 0, esborrat amb 10; (4) UNTIL_CURED no expira, ROUNDS expira",
+    "D-09 BattleState (agent anterior): 13/13 PASS",
+    "D-09 Conditions real assets (aquesta sessió): 4/4 PASS",
+    "total_esta_sesion_D09: 17/17 PASS",
+    "D03=6, D05=9, D06_creation=4, D06_catalogs=7, D07=15, D08_bridge=6, D08_bridge_real_assets=3, D09_battle=13, D09_conditions_real_assets=4, D10_validator=1 → TOTAL 64/64 PASS local"
+  ],
+  "pending": [
+    "D-11 haurà de traduir més mechanicHooks a flags/statMod/damagePerRound si es vol que ConditionEngine apliqui automàticament més efectes (actualment 6 hooks: dano_por_turno, velocidad_mitad, desventaja:ataque, desventaja:ataque_y_habilidad, bloquea:vision, incapacitado).",
+    "La connexió BattleState.applyCardEffect -> applyConditionId amb degree >= exit, partial < exit JA PROVADA en BattleStateTests.cpp agent anterior (13 tests PASS). No repetit aquí per no tocar BattleState.cpp shared.",
+    "SkillDefinition.applyConditionId publicat al asset: s'ha comprovat al loader RpgCatalogs.h; SkillExecutor D-11 ho consumirà."
+  ],
+  "_normalitzat": "Claus del contracte derivades dels camps propis del registre per tools/normalitza_seguiment.py. Els camps originals no s'han tocat: aquest registre es va escriure en un esquema diferent."
+}

@@ -1,0 +1,52 @@
+{
+ "id": "ataque_del_rayo",
+ "name": "Ataque del Rayo",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Paralizas a un enemigo y le haces 1d6 de daño de rayo durante 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "furia_de_los_creadores"
+ ],
+ "roleTags": [],
+ "tags": [
+  "furia_de_los_creadores"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "2 turnos",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": "resistencia_fisica",
+ "magnitudeByDegree": {
+  "1": "1d6"
+ },
+ "effect": {
+  "description": "Paralizas a un enemigo y le haces 1d6 de daño de rayo durante 2 turnos.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "Paralizas a un enemigo durante 2 turnos.",
+   "mechanicHook": "condicion:paralizado:2"
+  },
+  {
+   "description": "Y le haces 1d6 de daño de rayo durante 2 turnos.",
+   "mechanicHook": "estado:2:dano_por_turno:1d6"
+  }
+ ]
+}

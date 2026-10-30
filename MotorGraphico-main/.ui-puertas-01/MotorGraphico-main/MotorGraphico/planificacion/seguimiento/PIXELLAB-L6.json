@@ -1,0 +1,28 @@
+{
+ "id": "PIXELLAB-L6",
+ "date": "2026-10-01",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol, sin commit",
+ "encargo": "Lote 6 del plan PixelLab: PNJ con cara propia. 12 personajes (Ben Kafka, Griffin, el duende de porcelana, la saga del bosque, el verdugo, la nina del gato, el caballero, el mercader, Skilla, Venides, Aigren, Xila) con create_character (4 direcciones, 1 gen) + animate_character walk (4 gens): 5 por personaje, 61 en total (el duende fallo una vez y se repitio con otra descripcion).",
+ "archivos": {
+  "nuevos": [
+   "assets/textures/pixellab/lote6/<id>/ (4 quietos + 24 frames de andar por personaje)"
+  ],
+  "modificados": [
+   "assets/textures/pixellab/actores.json (+12 actores con andar)",
+   "assets/textures/pixellab_personajes.png/.json (14 filas)",
+   "tests/Game/RegistroSpritesTests.cpp (las comprobaciones de alias ya no fijan la hoja)"
+  ]
+ },
+ "reglas": [
+  "Cada PNJ de PixelLab sustituye al montado por capas del mismo id solo por estar en pixellab_personajes (ultima hoja del indice). La naga del rio sigue por capas (cuerpo sin piernas: no vale el esqueleto humanoide).",
+  "Las zancadas de la fila se eligen por apertura de piernas entre los 6 frames del ciclo de PixelLab."
+ ],
+ "verification": [
+  "test_registro_sprites 5/5; captura de la taberna (Skilla, Venides, Ben Kafka, Griffin) en Claude outputs/pixellab/lote6-7/."
+ ],
+ "pendiente": [
+  "Retratos para el dialogo (create_portrait_character, 20 gens cada uno): lote aparte si Oriol los quiere.",
+  "La nina del gato salio adulta: repetir con proportions preset infantil."
+ ]
+}

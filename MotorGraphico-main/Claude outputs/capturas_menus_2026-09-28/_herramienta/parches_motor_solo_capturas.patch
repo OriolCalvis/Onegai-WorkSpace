@@ -1,0 +1,111 @@
+--- a/MotorGraphico/include/Engine/Application.h
++++ b/MotorGraphico/include/Engine/Application.h
+@@ -502,6 +502,11 @@
+     std::unique_ptr<HudPanel> m_gameOverScreenPanel;
+     std::unique_ptr<HudText> m_gameOverScreenTitle;
+     std::unique_ptr<HudText> m_gameOverScreenHint;
++    // CAPTURAS (parche local): submenu de opciones visible
++    std::unique_ptr<HudPanel> m_capOptionsPanel;
++    std::unique_ptr<HudCommandMenu> m_capOptionsMenu;
++    void capturasRegistrarPantallas();
++    void capturasVisibilidadPantallas();
+ 
+     // GDB-12.3 — Widgets HUD para pantalla de inventario
+     std::unique_ptr<HudCommandMenu> m_inventoryTabsWidget;
+--- a/MotorGraphico/src/Engine/Application.cpp
++++ b/MotorGraphico/src/Engine/Application.cpp
+@@ -809,6 +809,7 @@
+         const int glyphH = m_font->glyphHeight();
+         createPauseMenuWidgets(glyphW, glyphH);
+         createGameOverScreenWidgets(glyphW, glyphH);
++        capturasRegistrarPantallas();  // CAPTURAS: parche local
+         createInventoryScreenWidgets(glyphW, glyphH);
+     }
+ 
+@@ -1019,7 +1020,7 @@
+     using Engine::Input::InputAction;
+     GLFWwindow* win = m_window->handle();
+     const auto input = m_window->hasInputFocus() ? m_input.update(readGameKeyboard(win)) : m_input.releaseAll();
+-    if (m_nuevaPartida && m_nuevaPartida->activa()) { m_nuevaPartida->procesar(input); return; }
++    if (m_nuevaPartida && m_nuevaPartida->activa()) { m_nuevaPartida->procesar(input); refreshHud(); return; }  // CAPTURAS: parche local
+     const bool canWalk = m_window->hasInputFocus() && !isAtTitle() && m_session &&
+         m_session->mode() == GameMode::Exploration && !m_showInventory &&
+         !m_scenes.hasPendingTransition() && !input.pressed(InputAction::Quit) &&
+--- a/MotorGraphico/src/Engine/ApplicationHud.cpp
++++ b/MotorGraphico/src/Engine/ApplicationHud.cpp
+@@ -114,6 +114,7 @@
+         m_titleHint->setVisible(false);
+     }
+ 
++    capturasVisibilidadPantallas();  // CAPTURAS: parche local
+     const bool inBattle = m_session->mode() == GameMode::Battle;
+     BattleState* battle = m_session->battle();
+ 
+--- a/MotorGraphico/src/Engine/ApplicationPantallas.cpp
++++ b/MotorGraphico/src/Engine/ApplicationPantallas.cpp
+@@ -210,3 +210,54 @@
+         m_hud.addElement(widget);
+     }
+ }
++
++
++// ===== CAPTURAS (parche local, NO forma parte del repo) =====
++// Pausa, Opciones y Game Over se crean pero nunca se registran en el HUD:
++// hoy no se dibujan. Para fotografiar como quedarian con SUS widgets se
++// registran aqui y se encienden segun el modo en refreshHud().
++void Application::capturasRegistrarPantallas() {
++    if (!m_pauseMenuWidget || !m_gameOverMenuWidget) return;
++    const auto opciones = Game::OptionsState::create().displayLines();
++    const Vector2 size = HudCommandMenu::contentSize(*m_font, opciones);
++    HudTransform menuT; menuT.anchor = HudAnchor::Center; menuT.size = {size.x + 48.0f, size.y};
++    m_capOptionsMenu = std::make_unique<HudCommandMenu>(menuT, m_font.get(), opciones);
++    HudTransform panelT; panelT.anchor = HudAnchor::Center;
++    panelT.size = {menuT.size.x + 2.0f * kMenuPadding, menuT.size.y + 2.0f * kMenuPadding};
++    m_capOptionsPanel = std::make_unique<HudPanel>(panelT, m_whiteTexture.get(), kPanelColor);
++    m_capOptionsPanel->setBorder(kBorderColor, 2.0f);
++    for (IHudElement* w : {static_cast<IHudElement*>(m_pauseMenuPanel.get()),
++                           static_cast<IHudElement*>(m_pauseMenuWidget.get()),
++                           static_cast<IHudElement*>(m_capOptionsPanel.get()),
++                           static_cast<IHudElement*>(m_capOptionsMenu.get()),
++                           static_cast<IHudElement*>(m_pauseMenuHint.get()),
++                           static_cast<IHudElement*>(m_gameOverScreenPanel.get()),
++                           static_cast<IHudElement*>(m_gameOverScreenTitle.get()),
++                           static_cast<IHudElement*>(m_gameOverMenuWidget.get()),
++                           static_cast<IHudElement*>(m_gameOverScreenHint.get())}) {
++        w->setVisible(false);
++        m_hud.addElement(w);
++    }
++}
++
++void Application::capturasVisibilidadPantallas() {
++    static const bool comoHoy = std::getenv("CAPTURAS_COMO_HOY") != nullptr;
++    if (comoHoy) return;  // se quedan ocultas, como en el codigo real
++    if (!m_pauseMenuWidget || !m_capOptionsMenu || !m_session) return;
++    const bool pausa = m_session->mode() == GameMode::Pause;
++    const bool opciones = pausa && m_options != nullptr;
++    if (opciones) {
++        m_capOptionsMenu->setOptions(m_options->displayLines());
++        m_capOptionsMenu->setSelectedIndex(m_options->selected());
++    }
++    m_pauseMenuPanel->setVisible(pausa && !opciones);
++    m_pauseMenuWidget->setVisible(pausa && !opciones);
++    m_capOptionsPanel->setVisible(opciones);
++    m_capOptionsMenu->setVisible(opciones);
++    m_pauseMenuHint->setVisible(pausa);
++    const bool fin = m_session->mode() == GameMode::GameOver;
++    m_gameOverScreenPanel->setVisible(fin);
++    m_gameOverScreenTitle->setVisible(fin);
++    m_gameOverMenuWidget->setVisible(fin);
++    m_gameOverScreenHint->setVisible(fin);
++}
+--- a/MotorGraphico/examples/juego.cpp
++++ b/MotorGraphico/examples/juego.cpp
+@@ -93,6 +93,8 @@
+         }
+     }
+ 
++    // CAPTURAS (parche local): titulo y creacion de personaje aunque se pase --nivel.
++    if (std::getenv("CAPTURAS_TITULO") != nullptr) nivelExplicito = false;
+     Application app;
+     // Arranca por el prologo de Boundington: interior_vacio.json es donde
+     // cae el jugador en El Vacio (Cap. 1 del canon), y su beat "enter"

@@ -1,0 +1,47 @@
+{
+ "id": "EST-21",
+ "paquete": "EST-21",
+ "fase": "estabilizacion",
+ "nombre": "level_editor.cpp — sacar el nucleo que no necesita ventana",
+ "date": "2026-09-24",
+ "author": "Claude (sesion 24/09, maquina de Oriol)",
+ "status": "RELEVOS A Y B HECHOS — 2777 -> 2145 lineas. El nucleo GL-free ya tiene pruebas (test_editor_nucleo, 13 casos verdes) y la pantalla de proyectos es un fichero con interfaz en vez de 160 lineas dentro de main.",
+ "que_se_ha_hecho": {
+  "editor/include/LevelEditorPaleta.h + editor/src/LevelEditorPaleta.cpp": "90/313 lineas. El vocabulario que ve el autor: nombre legible de un escenario, semantica de un tile (afinidad, efecto, requisito), icono editorial de un objeto, icono de la biblioteca de enemigos, preview racial de PNJ, filtro de familia y el nombre de paleta. Ni una linea de OpenGL.",
+  "editor/include/LevelEditorOpciones.h + editor/src/LevelEditorOpciones.cpp": "41/73 lineas. EditorOptions, parseSize y parseArgs. Se prueba entera con un argv de mentira.",
+  "tests/Editor/LevelEditorNucleoTests.cpp": "195 lineas, 13 casos. Nombres que no son rutas, caja alta de la barra de estado, el enum de herramientas entero, el de categorias entero, tiles sin semantica, ficheros que no existen, filtros de familia, y la linea de comandos incluido el modo humo de CI.",
+  "cmake/LevelEditorNucleoTests.cmake": "Libreria GL-free motor_editor_niveles + test_editor_nucleo, registrado en MOTOR_GL_FREE_TARGETS y colgado de suite_gl_free. level_editor la enlaza en vez de compilar esas fuentes dentro."
+ },
+ "decisiones": [
+  "Antes de decidir si el editor viejo se retira, saber que hay dentro. level_editor.cpp esta VIVO: add_executable(level_editor ...) en CMakeLists.txt:733, cmake/ProjectCatalogTests.cmake le enlaza motor_project_catalog, y medir_alcance lo cuenta como raiz junto a juego y motor_editor. Retirarlo no es un borrado, es una migracion, y no es una decision de mantenimiento.",
+  "Lo primero que sale es lo que NUNCA necesito una ventana. Eran funciones puras atrapadas junto al bucle de GL: mientras vivieron ahi, cualquier comprobacion habria pedido abrir una ventana, y por eso llevaban anos sin una sola prueba.",
+  "La libreria va en su fragmento y no en el bloque compartido del CMakeLists. Mismo reparto que motor_editor_problems en EST-31: ese bloque lo tocan varios agentes a la vez.",
+  "El main() de ~2000 lineas NO se parte todavia. Tiene decenas de lambdas [&] sobre los mismos locales; sacarlas pide primero un contenedor de datos para ese estado. Eso es un relevo con diseno, no una mudanza mecanica, y hacerlo a medias dejaria el fichero peor que ahora."
+ ],
+ "actions": [
+  "editor/src/level_editor.cpp — 400 lineas menos (393 borradas, 7 anadidas: dos includes y el using).",
+  "editor/include/LevelEditorPaleta.h, LevelEditorOpciones.h — nuevas.",
+  "editor/src/LevelEditorPaleta.cpp, LevelEditorOpciones.cpp — nuevas.",
+  "tests/Editor/LevelEditorNucleoTests.cpp — nueva bateria GL-free.",
+  "cmake/LevelEditorNucleoTests.cmake — nuevo fragmento; una linea de include() en CMakeLists.txt."
+ ],
+ "verification": [
+  "test_editor_nucleo compila, enlaza y pasa: 13 casos, 0 fallos, ejecutado de verdad en el oraculo (no solo syntax-check).",
+  "level_editor.cpp y las dos unidades nuevas compilan. El enlace de level_editor solo falla en el oraculo por simbolos de GLFW, que ahi es un target INTERFACE.",
+  "Los cinco ficheros generados son byte a byte identicos en el contenedor y en la maquina de Oriol (md5 comparados).",
+  "linea_base_core.py --rapido --indice: OK. La guardia cazo de paso que el fragmento nuevo no estaba versionado, que es justo para lo que esta."
+ ],
+ "pending": [
+  "El main(): ~2000 lineas. Relevo B = contenedor de datos del estado del editor, y despues las fases (pantalla de proyectos / edicion) a sus propias unidades.",
+  "pantallaDeArranque sigue dentro: es GL y toca el hub de proyectos, asi que va con el relevo de las fases.",
+  "Decision de Oriol: level_editor y motor_editor son DOS editores. Mientras los dos esten vivos, cada mejora hay que hacerla dos veces.",
+  "makeWhiteTexture y writeFramebufferPPM estan duplicados entre Application.cpp y level_editor.cpp. No los toco: unificarlos cruza la frontera motor/editor y merece su propio paquete."
+ ],
+ "relevo_b": {
+  "editor/src/LevelEditorArranque.cpp": "64 lineas. --proyectos lista lo que hay y --nuevo <id> crea uno; las dos imprimen y salen sin abrir ventana, asi que van en la libreria GL-free.",
+  "editor/src/LevelEditorHub.cpp": "193 lineas. La pantalla de proyectos. Habla GL, asi que se compila dentro del ejecutable via target_sources, sin tocar el bloque compartido del CMakeLists.",
+  "editor/include/LevelEditorInterno.h": "63 lineas. KeyEdge y makeWhiteTexture, que desde hoy comparten dos unidades.",
+  "las cuatro lineas que no viajaron igual": "Convertir un bloque if en funcion obliga a tocar la frontera: los dos `return 1` pasan a SalidaDelHub::Error, el break final pasa a devolver Salir o Abrir segun lo que ya decidia `if (cerrarDelTodo || !salir)`, y `*spriteShader.value()` pasa a `spriteShader` para que la interfaz no arrastre un Result<Shader*>. El resto es byte a byte.",
+  "por que SalidaDelHub tiene tres valores": "Porque son tres destinos distintos: el editor no arranca, se cierra, o hay proyecto elegido. Un bool habria obligado a mirar otra variable para saber cual."
+ }
+}

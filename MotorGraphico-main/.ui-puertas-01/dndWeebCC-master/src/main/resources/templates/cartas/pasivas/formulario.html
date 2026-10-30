@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Editor de carta de pasiva</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('pasivas')}"></div>
+            <p class="gm-sidebar__eyebrow u-p-0">Sistema de Cartas y Tiers</p>
+            <h1 class="u-mb-sp5" th:text="${esNueva} ? 'Nueva carta de pasiva' : 'Editar carta de pasiva'">Nueva carta de pasiva</h1>
+
+            <form th:action="${esNueva} ? @{/cartas/pasivas} : @{/cartas/pasivas/{id}/editar(id=${form.id})}"
+                  th:object="${form}" method="post">
+
+                <div class="gm-form-grid u-mb-sp4">
+                    <div class="gm-field" th:if="${esNueva}">
+                        <label>ID (opcional)</label>
+                        <input class="gm-input" th:field="*{id}" placeholder="Se genera automático a partir del nombre">
+                    </div>
+                    <div class="gm-field" th:unless="${esNueva}">
+                        <label>ID</label>
+                        <input class="gm-input" th:field="*{id}" readonly>
+                    </div>
+                    <div class="gm-field">
+                        <label>Nombre</label>
+                        <input class="gm-input" th:field="*{name}" placeholder="Muro Viviente" required>
+                    </div>
+                    <div class="gm-field">
+                        <label>Tier</label>
+                        <input class="gm-input" type="number" min="0" max="5" th:field="*{tier}">
+                    </div>
+                    <div class="gm-field u-self-end">
+                        <label class="u-inline-row">
+                            <input type="checkbox" th:field="*{unique}"> Pasiva única de clase
+                        </label>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Clasificación y activación ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Clases que la llevan</label>
+                                <div th:replace="~{Blocks/selector-referencias :: csv('classTags', ${opcionesClases}, 'añadir clase')}"></div>
+                            </div>
+                            <div class="gm-field">
+                                <label>Condición de activación</label>
+                                <input class="gm-input" th:field="*{trigger}" placeholder="Mientras lleves escudo equipado">
+                            </div>
+                            <div class="gm-field">
+                                <label>Tags de sinergia</label>
+                                <div th:replace="~{Blocks/selector-referencias :: csv('synergyTags', ${opcionesTagsTodos}, 'añadir tag')}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Efecto ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field u-col-span-all">
+                                <label>Beneficio constante</label>
+                                <textarea class="gm-textarea" rows="3" th:field="*{effectDescription}"></textarea>
+                            </div>
+                            <div class="gm-field">
+                                <label>Escalado</label>
+                                <select th:replace="~{Blocks/selector-referencias :: uno('effectScaling', ${opcionesEscalados}, 'sin escalado')}"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Limitaciones y texto narrativo ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Limitaciones</label>
+                                <input class="gm-input" th:field="*{limitations}">
+                            </div>
+                            <div class="gm-field">
+                                <label>Texto narrativo</label>
+                                <input class="gm-input" th:field="*{flavorText}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="u-actions">
+                    <button class="gm-btn gm-btn--primary" type="submit">Guardar</button>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/cartas/pasivas}">Cancelar</a>
+                </div>
+            </form></main>
+<th:block layout:fragment="extra-js">
+    <script th:src="@{/js/selector-csv.js}"></script>
+    <script th:src="@{/js/selector-csv.js}"></script>
+</th:block>
+</body>
+</html>

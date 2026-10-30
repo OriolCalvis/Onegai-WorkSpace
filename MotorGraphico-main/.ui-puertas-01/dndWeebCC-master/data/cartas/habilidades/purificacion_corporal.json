@@ -1,0 +1,50 @@
+{
+ "id": "purificacion_corporal",
+ "name": "Purificación Corporal",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Respiras hondo y dejas que el Ki recorra tu cuerpo y arrastre lo que lo enferma: te libras de los estados en contra y, con el cuerpo limpio, te defiendes con ventaja 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "monje_del_despertar"
+ ],
+ "roleTags": [],
+ "tags": [
+  "monje_del_despertar"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "self",
+ "range": "short",
+ "duration": "2 turnos",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Respiras hondo y dejas que el Ki recorra tu cuerpo y arrastre lo que lo enferma: te libras de los estados en contra y, con el cuerpo limpio, te defiendes con ventaja 2 turnos.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "Te libras de los estados en contra.",
+   "mechanicHook": "limpia"
+  },
+  {
+   "description": "Cuerpo limpio: te defiendes con ventaja 2 turnos.",
+   "mechanicHook": "estado:2:ventaja:defensa"
+  }
+ ]
+}

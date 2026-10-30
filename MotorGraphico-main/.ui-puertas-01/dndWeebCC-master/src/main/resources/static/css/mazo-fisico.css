@@ -1,0 +1,86 @@
+/*
+ * mazo-fisico.css — El mazo físico de una clase (CARTAS-CLASES-01, 08/10/2026).
+ * En la ficha de la clase (cartas/clases/detalle.html): las opciones de descarga y la
+ * lista de cartas tal como salen en el PDF. En el álbum (cartas/clases/lista.html): la
+ * descarga de los mazos de una familia. El color de cada tipo es el de su marco en el
+ * PDF (tokens --mazo-*). Requiere tokens.css y components.css.
+ */
+
+.mf-opciones {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-2);
+    margin: var(--sp-3) 0;
+}
+
+.mf-opciones__grupo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+    margin: 0;
+    padding: var(--sp-2) var(--sp-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.mf-opciones__grupo legend {
+    padding: 0 var(--sp-1);
+    font-size: var(--fs-small);
+    color: var(--text-secondary);
+}
+
+.mf-opciones__grupo label {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-size: var(--fs-small);
+}
+
+.mf-tabla td {
+    vertical-align: top;
+}
+
+.mf-mecanica,
+.mf-aviso {
+    display: block;
+    font-size: var(--fs-small);
+}
+
+.mf-mecanica {
+    color: var(--text-secondary);
+}
+
+.mf-aviso {
+    color: var(--mazo-aviso);
+    font-weight: 600;
+}
+
+/* El tipo de la carta, con el color de su marco */
+.mf-tipo {
+    display: inline-block;
+    padding: 0 var(--sp-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-small);
+    color: var(--mazo-texto);
+    background: var(--mazo-habilidad);
+}
+
+.mf-tipo--clase { background: var(--mazo-clase); }
+.mf-tipo--pasiva { background: var(--mazo-pasiva); }
+.mf-tipo--habilidad { background: var(--mazo-habilidad); }
+.mf-tipo--creador { background: var(--mazo-creador); box-shadow: inset 0 0 0 2px var(--mazo-oro); }
+.mf-tipo--hechizo { background: var(--mazo-hechizo); }
+.mf-tipo--invocacion { background: var(--mazo-invocacion); }
+.mf-tipo--equipo { background: var(--mazo-equipo); }
+.mf-tipo--regla { background: var(--mazo-regla); }
+
+/* Álbum: la descarga de mazos dentro del panel de filtros */
+.mf-descarga {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-3);
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--border);
+}

@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicativo MotorGraphico - Visión del jugador</title>
+    <style id="theme-vars">
+:root {
+  --mg-background: #11131a;
+  --mg-foreground: #f2efe7;
+  --mg-card: #181c24;
+  --mg-card-foreground: #f2efe7;
+  --mg-popover: #1d2230;
+  --mg-popover-foreground: #f2efe7;
+  --mg-primary: #d7b15f;
+  --mg-primary-foreground: #15120c;
+  --mg-muted: #202634;
+  --mg-muted-foreground: #9da6b8;
+  --mg-border: #2c3344;
+  --mg-input: #272e3d;
+  --mg-ring: #d7b15f;
+  --mg-radius-sm: 6px;
+  --mg-radius-md: 12px;
+  --mg-radius-lg: 18px;
+
+  --bg: var(--mg-background);
+  --surface: var(--mg-card);
+  --surface-2: #232a39;
+  --ink: var(--mg-foreground);
+  --ink-2: #b6bdca;
+  --ink-3: #727c8f;
+  --line: var(--mg-border);
+  --brand: var(--mg-primary);
+  --brand-ink: var(--mg-primary-foreground);
+  --state-success: #61c083;
+  --state-warning: #d7b15f;
+  --state-error: #d96a58;
+  --state-info: #6ea0ff;
+
+  --shadow-1: 0 10px 30px rgba(6, 8, 12, 0.22);
+  --shadow-2: 0 18px 45px rgba(6, 8, 12, 0.34);
+
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+body {
+  min-height: 100vh;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--mg-background);
+    --color-foreground: var(--mg-foreground);
+    --color-card: var(--mg-card);
+    --color-card-foreground: var(--mg-card-foreground);
+    --color-popover: var(--mg-popover);
+    --color-popover-foreground: var(--mg-popover-foreground);
+    --color-primary: var(--mg-primary);
+    --color-primary-foreground: var(--mg-primary-foreground);
+    --color-muted: var(--mg-muted);
+    --color-muted-foreground: var(--mg-muted-foreground);
+    --color-border: var(--mg-border);
+    --color-input: var(--mg-input);
+    --color-ring: var(--mg-ring);
+    --radius-sm: var(--mg-radius-sm);
+    --radius-md: var(--mg-radius-md);
+    --radius-lg: var(--mg-radius-lg);
+  }
+  @layer base {
+    body { background: var(--mg-background); color: var(--mg-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--mg-background); }
+      .text-background { color: var(--mg-background); }
+      .border-background { border-color: var(--mg-background); }
+      .ring-background { --tw-ring-color: var(--mg-background); }
+      .bg-foreground { background-color: var(--mg-foreground); }
+      .text-foreground { color: var(--mg-foreground); }
+      .border-foreground { border-color: var(--mg-foreground); }
+      .ring-foreground { --tw-ring-color: var(--mg-foreground); }
+      .bg-card { background-color: var(--mg-card); }
+      .text-card { color: var(--mg-card); }
+      .border-card { border-color: var(--mg-card); }
+      .ring-card { --tw-ring-color: var(--mg-card); }
+      .bg-card-foreground { background-color: var(--mg-card-foreground); }
+      .text-card-foreground { color: var(--mg-card-foreground); }
+      .border-card-foreground { border-color: var(--mg-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--mg-card-foreground); }
+      .bg-popover { background-color: var(--mg-popover); }
+      .text-popover { color: var(--mg-popover); }
+      .border-popover { border-color: var(--mg-popover); }
+      .ring-popover { --tw-ring-color: var(--mg-popover); }
+      .bg-popover-foreground { background-color: var(--mg-popover-foreground); }
+      .text-popover-foreground { color: var(--mg-popover-foreground); }
+      .border-popover-foreground { border-color: var(--mg-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--mg-popover-foreground); }
+      .bg-primary { background-color: var(--mg-primary); }
+      .text-primary { color: var(--mg-primary); }
+      .border-primary { border-color: var(--mg-primary); }
+      .ring-primary { --tw-ring-color: var(--mg-primary); }
+      .bg-primary-foreground { background-color: var(--mg-primary-foreground); }
+      .text-primary-foreground { color: var(--mg-primary-foreground); }
+      .border-primary-foreground { border-color: var(--mg-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--mg-primary-foreground); }
+      .bg-muted { background-color: var(--mg-muted); }
+      .text-muted { color: var(--mg-muted); }
+      .border-muted { border-color: var(--mg-muted); }
+      .ring-muted { --tw-ring-color: var(--mg-muted); }
+      .bg-muted-foreground { background-color: var(--mg-muted-foreground); }
+      .text-muted-foreground { color: var(--mg-muted-foreground); }
+      .border-muted-foreground { border-color: var(--mg-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--mg-muted-foreground); }
+      .bg-border { background-color: var(--mg-border); }
+      .text-border { color: var(--mg-border); }
+      .border-border { border-color: var(--mg-border); }
+      .ring-border { --tw-ring-color: var(--mg-border); }
+      .bg-input { background-color: var(--mg-input); }
+      .text-input { color: var(--mg-input); }
+      .border-input { border-color: var(--mg-input); }
+      .ring-input { --tw-ring-color: var(--mg-input); }
+      .bg-ring { background-color: var(--mg-ring); }
+      .text-ring { color: var(--mg-ring); }
+      .border-ring { border-color: var(--mg-ring); }
+      .ring-ring { --tw-ring-color: var(--mg-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="font-sans antialiased">
+    <main id="app-shell" data-viewport-mode="app-shell">
+        <div class="mg-scroll-region overflow-y-auto" data-scroll-region="primary">
+            <section class="mg-shell-frame">
+                <header class="mg-topbar" id="HudTopStatus">
+                    <div class="mg-topbar-main">
+                        <div class="mg-brand-kicker">MotorGraphico / Visión del jugador</div>
+                        <div class="mg-brand-line">
+                            <h1>Aplicativo MotorGraphico</h1>
+                            <span class="mg-badge">Turno decisivo · lectura táctica inmediata</span>
+                        </div>
+                        <p class="mg-top-summary">La interfaz prioriza qué puedes jugar ahora, qué te amenaza en esta ventana y qué recompensa desbloqueas si ejecutas bien la secuencia.</p>
+                    </div>
+                    <div class="mg-top-status-grid">
+                        <article class="mg-top-card mg-top-card--hero">
+                            <div class="mg-card-label">HudTopStatus</div>
+                            <div class="mg-top-hero">
+                                <div class="mg-avatar-frame" aria-hidden="true">
+                                    <span class="mg-avatar-ring"></span>
+                                    <div class="mg-avatar-core">
+                                        <i data-lucide="shield"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="mg-top-name">Ariadna de Bronce</div>
+                                    <div class="mg-top-meta">Custodia Arcana · Guardia Solar · Tier 2</div>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="mg-top-card">
+                            <div class="mg-card-label">Turno actual</div>
+                            <div class="mg-pill-row">
+                                <span class="mg-pill mg-pill--active">Ronda 4 · Actúas primero</span>
+                                <span class="mg-top-subline">1 acción principal · 1 movimiento · 1 reacción lista</span>
+                            </div>
+                        </article>
+                        <article class="mg-top-card">
+                            <div class="mg-card-label">Riesgo visible</div>
+                            <div class="mg-metric-row">
+                                <span class="mg-metric mg-metric--danger">Marcado enemigo en 1 acción</span>
+                                <span class="mg-metric-detail">Si no rompes línea de visión, el vigía sube la CD del próximo ataque.</span>
+                            </div>
+                        </article>
+                        <article class="mg-top-card">
+                            <div class="mg-card-label">Recompensa inmediata</div>
+                            <div class="mg-metric-row">
+                                <span class="mg-metric">Inspiración + ventana de loot</span>
+                                <span class="mg-metric-detail">Cerrar la válvula antes del disparo enemigo abre el taller interior.</span>
+                            </div>
+                        </article>
+                        <article class="mg-top-card">
+                            <div class="mg-card-label">Misión y reloj</div>
+                            <div class="mg-metric-row">
+                                <span class="mg-metric">Objetivo a 2 casillas · 01:12</span>
+                                <span class="mg-metric-detail">La caldera entra en fase crítica si el diálogo se estanca.</span>
+                            </div>
+                        </article>
+                    </div>
+                </header>
+
+                <section class="mg-main-grid" aria-label="Vista principal del jugador">
+                    <aside class="mg-side-column mg-side-column--left">
+                        <article class="mg-panel" id="HudCharacterPanel">
+                            <div class="mg-panel-header">
+                                <div>
+                                    <p class="mg-overline">HudCharacterPanel</p>
+                                    <h2>Ficha rápida para sobrevivir y ejecutar</h2>
+                                </div>
+                                <span class="mg-panel-note">Lectura en 5 segundos</span>
+                            </div>
+
+                            <div class="mg-vitals">
+                                <div class="mg-vital-block">
+                                    <span class="mg-vital-label">Vida</span>
+                                    <strong>31 / 35</strong>
+                                    <div class="mg-bar"><span style="width:88%"></span></div>
+                                    <small>Soportas un golpe normal más otro mitigado por pasiva.</small>
+                                </div>
+                                <div class="mg-vital-block">
+                                    <span class="mg-vital-label">Presión táctica</span>
+                                    <strong>4 / 7 cargas</strong>
+                                    <div class="mg-bar mg-bar--amber"><span style="width:57%"></span></div>
+                                    <small>Conviene cerrar turno sin gastar la última reacción.</small>
+                                </div>
+                            </div>
+
+                            <div class="mg-stat-grid">
+                                <div class="mg-stat-card">
+                                    <span>Iniciativa</span>
+                                    <strong>+3</strong>
+                                    <small>Te mantiene por delante del vigía si no quedas inmovilizada.</small>
+                                </div>
+                                <div class="mg-stat-card">
+                                    <span>Precisión</span>
+                                    <strong>15</strong>
+                                    <small>Óptima contra objetivo marcado o con defensa rota.</small>
+                                </div>
+                                <div class="mg-stat-card">
+                                    <span>CA</span>
+                                    <strong>13</strong>
+                                    <small>Sube a 15 si activas Vector defensivo.</small>
+                                </div>
+                                <div class="mg-stat-card">
+                                    <span>Impacto clave</span>
+                                    <strong>+0.5</strong>
+                                    <small>Bonificación sobre enemigos con estado expuesto.</small>
+                                </div>
+                            </div>
+
+                            <div class="mg-subpanel">
+                                <div class="mg-subpanel-title">Lo que habilita tu equipo</div>
+                                <ul class="mg-key-list">
+                                    <li><span>Lanza-émbolo de bronce</span><strong>Empuje corto</strong></li>
+                                    <li><span>Grimorio de sellos vivos</span><strong>Ruta técnica y diálogo</strong></li>
+                                    <li><span>Visor de latón templado</span><strong>Lee presión y cobertura</strong></li>
+                                </ul>
+                            </div>
+
+                            <div class="mg-subpanel">
+                                <div class="mg-subpanel-title">Amenazas activas</div>
+                                <div class="mg-condition-list">
+                                    <div class="mg-condition mg-condition--danger">
+                                        <span class="mg-condition-dot"></span>
+                                        <div>
+                                            <strong>Marcada por el vigía</strong>
+                                            <small>2 rondas. Si terminas expuesta, el enemigo gana ventaja de seguimiento.</small>
+                                        </div>
+                                    </div>
+                                    <div class="mg-condition mg-condition--calm">
+                                        <span class="mg-condition-dot"></span>
+                                        <div>
+                                            <strong>Baluarte calibrado listo</strong>
+                                            <small>Tu primer impacto recibido este turno reduce el grado de éxito enemigo.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="mg-panel" id="HudQuestTracker">
+                            <div class="mg-panel-header">
+                                <div>
+                                    <p class="mg-overline">HudQuestTracker</p>
+                                    <h2>Qué conviene resolver ahora</h2>
+                                </div>
+                                <span class="mg-quest-progress">3 / 5 hitos</span>
+                            </div>
+
+                            <div class="mg-quest-card mg-quest-card--active">
+                                <div class="mg-quest-head">
+                                    <div>
+                                        <strong>Apagar la caldera coral</strong>
+                                        <span>Aventura: Turno de cenizas en el distrito bajo</span>
+                                    </div>
+                                    <span class="mg-quest-tier">Decisión crítica</span>
+                                </div>
+                                <ul class="mg-checklist">
+                                    <li class="is-done"><span class="mg-check"></span>Sello de presión recuperado.</li>
+                                    <li class="is-done"><span class="mg-check"></span>Primera válvula desactivada sin alertar la zona.</li>
+                                    <li class="is-active"><span class="mg-check"></span>Elegir entre negociar con Telmo o romper la línea enemiga y abrir paso.</li>
+                                    <li><span class="mg-check"></span>Cerrar la válvula interna antes de 01:12.</li>
+                                    <li><span class="mg-check"></span>Salir con acceso al taller solar y botín técnico.</li>
+                                </ul>
+                                <div class="mg-quest-footer">
+                                    <span>Si resuelves este nodo sin recibir marcación adicional: desbloqueas taller solar, inspiración y una carta de facción.</span>
+                                </div>
+                            </div>
+
+                            <div class="mg-route-advice">
+                                <div class="mg-route-item">
+                                    <span class="mg-route-label">Ruta segura</span>
+                                    <strong>Cobertura izquierda + mostrar sello</strong>
+                                </div>
+                                <div class="mg-route-item">
+                                    <span class="mg-route-label">Ruta agresiva</span>
+                                    <strong>Golpe de bisagra + forzar compuerta</strong>
+                                </div>
+                            </div>
+                        </article>
+                    </aside>
+
+                    <section class="mg-center-column">
+                        <article class="mg-panel" id="player-vision-board">
+                            <div class="mg-panel-header">
+                                <div>
+                                    <p class="mg-overline">player-vision-board</p>
+                                    <h2>Lectura inmediata del turno</h2>
+                                </div>
+                                <span class="mg-panel-note">Acción, amenaza, ganancia y ventana</span>
+                            </div>
+                            <div class="mg-vision-grid">
+                                <article class="mg-vision-card mg-vision-card--action is-highlighted">
+                                    <div class="mg-vision-icon"><i data-lucide="swords"></i></div>
+                                    <div>
+                                        <span>Puedes hacer ahora</span>
+                                        <strong>Atacar, cubrirte o negociar usando el sello</strong>
+                                        <p>Tu mano activa contiene una línea clara: abrir con Punta de caldera o asegurar posición con Vector defensivo.</p>
+                                    </div>
+                                </article>
+                                <article class="mg-vision-card mg-vision-card--risk">
+                                    <div class="mg-vision-icon"><i data-lucide="triangle-alert"></i></div>
+                                    <div>
+                                        <span>Te amenaza ahora</span>
+                                        <strong>Marcado, disparo de seguimiento y reloj de presión</strong>
+                                        <p>El vigía necesita visión directa. Si rompes línea o lo desestabilizas, reduces la mayor fuente de castigo del encuentro.</p>
+                                    </div>
+                                </article>
+                                <article class="mg-vision-card mg-vision-card--reward">
+                                    <div class="mg-vision-icon"><i data-lucide="sparkles"></i></div>
+                                    <div>
+                                        <span>Ganas si aciertas</span>
+                                        <strong>Inspiración, botín técnico y progreso de misión</strong>
+                                        <p>La mejor resolución combina ventaja táctica inmediata con acceso a un recurso permanente del capítulo.</p>
+                                    </div>
+                                </article>
+                                <article class="mg-vision-card">
+                                    <div class="mg-vision-icon"><i data-lucide="hourglass"></i></div>
+                                    <div>
+                                        <span>Ventana de oportunidad</span>
+                                        <strong>01:12 antes de la sobrepresión</strong>
+                                        <p>El tablero sugiere priorizar una secuencia corta: cobertura, evidencia técnica y cierre de válvula.</p>
+                                    </div>
+                                </article>
+                            </div>
+                        </article>
+
+                        <article class="mg-panel mg-panel--battlefield" id="battlefield-preview">
+                            <div class="mg-panel-header">
+                                <div>
+                                    <p class="mg-overline">Escena central</p>
+                                    <h2>Peligro, objetivo y recompensa en un solo vistazo</h2>
+                                </div>
+                                <div class="mg-scene-meta">
+                                    <span>Cámara de purga 03</span>
+                                    <span>Encuentro: vigía autómata + obrero alterado</span>
+                                </div>
+                            </div>
+
+                            <div class="mg-scene-priority-rail" aria-label="Resumen de prioridades">
+                                <div class="mg-priority-pill is-selected"><i data-lucide="crosshair"></i><span>Romper línea del vigía</span></div>
+                                <div class="mg-priority-pill"><i data-lucide="door-open"></i><span>Abrir acceso al objetivo</span></div>
+                                <div class="mg-priority-pill"><i data-lucide="gem"></i><span>Asegurar recompensa técnica</span></div>
+                            </div>
+
+                            <div class="mg-world-stage">
+                                <div class="mg-stage-grid"></div>
+                                <div class="mg-stage-spotlight"></div>
+                                <div class="mg-stage-threat-cone"></div>
+                                <div class="mg-stage-objective-ring"></div>
+
+                                <div class="mg-scene-flag mg-scene-flag--risk">
+                                    <span>Riesgo principal</span>
+                                    <strong>Disparo de marcación si terminas expuesta</strong>
+                                </div>
+                                <div class="mg-scene-flag mg-scene-flag--reward">
+                                    <span>Recompensa visible</span>
+                                    <strong>Loot técnico + acceso al taller interior</strong>
+                                </div>
+                                <div class="mg-scene-flag mg-scene-flag--goal">
+                                    <span>Objetivo inmediato</span>
+                                    <strong>Válvula interna a 2 casillas</strong>
+                                </div>
+
+                                <div class="mg-turn-ladder">
+                                    <div class="mg-turn-step is-active">
+                                        <span>Ahora</span>
+                                        <strong>Ariadna</strong>
+                                    </div>
+                                    <div class="mg-turn-step">
+                                        <span>Siguiente</span>
+                                        <strong>Vigía autómata</strong>
+                                    </div>
+                                    <div class="mg-turn-step">
+                                        <span>Después</span>
+                                        <strong>Obrero alterado</strong>
+                                    </div>
+                                </div>
+
+                                <div class="mg-unit mg-unit--ally">
+                                    <div class="mg-unit-ring"></div>
+                                    <div class="mg-unit-core">
+                                        <span>Ariadna</span>
+                                        <small>31 PV · Cobertura lateral a 1 paso</small>
+                                    </div>
+                                </div>
+
+                                <div class="mg-unit mg-unit--enemy mg-unit--enemy-a">
+                                    <div class="mg-unit-ring"></div>
+                                    <div class="mg-unit-core">
+                                        <span>Vigía autómata</span>
+                                        <small>12 PV · Línea de visión activa</small>
+                                    </div>
+                                </div>
+
+                                <div class="mg-unit mg-unit--enemy mg-unit--enemy-b">
+                                    <div class="mg-unit-ring"></div>
+                                    <div class="mg-unit-core">
+                                        <span>Obrero alterado</span>
+                                        <small>9 PV · Defensa rota</small>
+                                    </div>
+                                </div>
+
+                                <div class="mg-scene-node mg-scene-node--goal">
+                                    <i data-lucide="flame-kindling"></i>
+                                    <div>
+                                        <span>Válvula interna</span>
+                                        <strong>Cerrar para cortar la sobrepresión</strong>
+                                    </div>
+                                </div>
+
+                                <div class="mg-scene-node mg-scene-node--loot">
+                                    <i data-lucide="package-open"></i>
+                                    <div>
+                                        <span>Ventana de loot</span>
+                                        <strong>Armario técnico se abre al resolver el nodo</strong>
+                                    </div>
+                                </div>
+
+                                <div class="mg-scene-node mg-scene-node--cover">
+                                    <i data-lucide="shield-half"></i>
+                                    <div>
+                                        <span>Cobertura sugerida</span>
+                                        <strong>Columna de vapor neutraliza el disparo</strong>
+                                    </div>
+                                </div>
+
+                                <div class="mg-scene-log">
+                                    <div class="mg-log-line"><span>21:43:08</span>La mano activa favorece una apertura corta y segura.</div>
+                                    <div class="mg-log-line"><span>21:43:11</span>El obrero alterado está expuesto: es el mejor blanco para ganar posición.</div>
+                                    <div class="mg-log-line"><span>21:43:14</span>Mostrar el sello reduce tensión y conserva recursos para la siguiente sala.</div>
+                                </div>
+                            </div>
+                        </article>
+                    </section>
+
+                    <aside class="mg-side-column mg-side-column--right">
+                        <article class="mg-panel" id="HudSkillsPanel">
+                            <div class="mg-panel-header">
+                                <div>
+                                    <p class="mg-overline">HudSkillsPanel</p>
+                                    <h2>Mano activa y acciones disponibles este turno</h2>
+                                </div>
+                                <span class="mg-panel-note">4 cartas listas · 1 reacción en reserva</span>
+                            </div>
+
+                            <div class="mg-hand-summary">
+                                <div class="mg-hand-pill is-accent"><span>Secuencia recomendada</span><strong>Cobertura → Sello → cierre de válvula</strong></div>
+                                <div class="mg-hand-pill"><span>Plan agresivo</span><strong>Golpe de bisagra → forzar compuerta</strong></div>
+                            </div>
+
+                            <div class="mg-card-hand">
+                                <article class="mg-action-card is-featured">
+                                    <div class="mg-action-top">
+                                        <span class="mg-action-type">Acción</span>
+                                        <span class="mg-action-cost">1 AP</span>
+                                    </div>
+                                    <h3>Punta de caldera</h3>
+                                    <p>Golpe preciso. Si el objetivo está marcado o expuesto, ganas +0.5 al grado de éxito.</p>
+                                    <div class="mg-card-tags">
+                                        <span>Daño directo</span>
+                                        <span>Remate</span>
+                                        <span>Sinergia con ventaja</span>
+                                    </div>
+                                    <div class="mg-card-footer">
+                                        <span class="mg-card-range">Alcance corto</span>
+                                        <strong>Ideal tras reposicionarte</strong>
+                                    </div>
+                                </article>
+
+                                <article class="mg-action-card is-selected">
+                                    <div class="mg-action-top">
+                                        <span class="mg-action-type">Reacción</span>
+                                        <span class="mg-action-cost">Reserva</span>
+                                    </div>
+                                    <h3>Vector defensivo</h3>
+                                    <p>Sube tu CA y te desplaza una casilla fuera de línea de visión. Es la carta más segura para negar el disparo enemigo.</p>
+                                    <div class="mg-card-tags">
+                                        <span>Mitiga riesgo</span>
+                                        <span>Reposiciona</span>
+                                        <span>Prioridad alta</span>
+                                    </div>
+                                    <div class="mg-card-footer">
+                                        <span class="mg-card-range">Instantánea</span>
+                                        <strong>Carta foco del turno</strong>
+                                    </div>
+                                </article>
+
+                                <article class="mg-action-card">
+                                    <div class="mg-action-top">
+                                        <span class="mg-action-type">Utilidad</span>
+                                        <span class="mg-action-cost">1 AP</span>
+                                    </div>
+                                    <h3>Lectura de sellos</h3>
+                                    <p>Convierte un recurso de inventario o una pista técnica en ventaja de diálogo y navegación contextual.</p>
+                                    <div class="mg-card-tags">
+                                        <span>Diálogo</span>
+                                        <span>Exploración</span>
+                                        <span>Progreso</span>
+                                    </div>
+                                    <div class="mg-card-footer">
+                                        <span class="mg-card-range">Nodo social</span>
+                                        <strong>Abre ruta limpia</strong>
+                                    </div>
+                                </article>
+
+                                <article class="mg-action-card">
+                                    <div class="mg-action-top">
+                                        <span class="mg-action-type">Movimiento</span>
+                                        <span class="mg-action-cost">1 MV</span>
+                                    </div>
+                                    <h3>Golpe de bisagra</h3>
+                                    <p>Daño moderado y empuje corto. Si impacta sobre defensa rota, crea espacio para llegar a la válvula.</p>
+                                    <div class="mg-card-tags">
+                                        <span>Control</span>
+                                        <span>Empuje</span>
+                                        <span>Ruta agresiva</span>
+                                    </div>
+                                    <div class="mg-card-footer">
+                                        <span class="mg-card-range">Frontal</span>
+                                        <strong>Útil si decides forzar</strong>
+                                    </div>
+                                </article>
+                            </div>
+
+                            <div class="mg-subpanel">
+                                <div class="mg-subpanel-title">Reserva de recuperación</div>
+                                <ul class="mg-key-list">
+                                    <li><span>Descarga de sello</span><strong>Descanso corto</strong></li>
+                                    <li><span>Mandato de escuadra</span><strong>Descanso corto</strong></li>
+                                    <li><span>Juramento del umbral</span><strong>Descanso largo</strong></li>
+                                </ul>
+                            </div>
+                        </article>
+
+                        <article class="mg-panel" id="HudInventoryPanel">
+                            <div class="mg-panel-header">
+                                <div>
+                                    <p class="mg-overline">HudInventoryPanel</p>
+                                    <h2>Inventario útil en este contexto</h2>
+                                </div>
+                                <span class="mg-panel-note">Lo relevante sube primero</span>
+                            </div>
+
+                            <div class="mg-context-bag">
+                                <article class="mg-context-item is-priority">
+                                    <div>
+                                        <span class="mg-context-label">Objeto clave</span>
+                                        <strong>Sello de presión recuperado</strong>
+                                        <p>Permite desbloquear la opción diplomática y estabiliza la compuerta sin iniciar combate adicional.</p>
+                                    </div>
+                                    <span class="mg-context-delta">+ ruta limpia</span>
+                                </article>
+                                <article class="mg-context-item">
+                                    <div>
+                                        <span class="mg-context-label">Consumible útil ahora</span>
+                                        <strong>Vial térmico x3</strong>
+                                        <p>Disipa vapor y mejora visión durante una ronda si el encuentro se alarga.</p>
+                                    </div>
+                                    <span class="mg-context-delta">+ visibilidad</span>
+                                </article>
+                                <article class="mg-context-item">
+                                    <div>
+                                        <span class="mg-context-label">Comparación rápida</span>
+                                        <strong>Grimorio vivo equipado</strong>
+                                        <p>Supera cualquier herramienta secundaria actual porque habilita lectura técnica y opciones de diálogo.</p>
+                                    </div>
+                                    <span class="mg-context-delta">mejor opción</span>
+                                </article>
+                            </div>
+
+                            <div class="mg-slot-grid">
+                                <div class="mg-slot">
+                                    <span>Cabeza</span>
+                                    <strong>Visor de latón templado</strong>
+                                    <small>Detecta presión y cobertura</small>
+                                </div>
+                                <div class="mg-slot">
+                                    <span>Torso</span>
+                                    <strong>Coraza táctica</strong>
+                                    <small>Mitiga el primer impacto</small>
+                                </div>
+                                <div class="mg-slot">
+                                    <span>Arma principal</span>
+                                    <strong>Lanza-émbolo</strong>
+                                    <small>Empuja y abre línea</small>
+                                </div>
+                                <div class="mg-slot">
+                                    <span>Arma secundaria</span>
+                                    <strong>Grimorio vivo</strong>
+                                    <small>Diálogo técnico y sello</small>
+                                </div>
+                            </div>
+                        </article>
+                    </aside>
+                </section>
+
+                <section class="mg-bottom-grid">
+                    <article class="mg-panel" id="HudDialogueOptionsBox">
+                        <div class="mg-panel-header">
+                            <div>
+                                <p class="mg-overline">HudDialogueOptionsBox</p>
+                                <h2>Opciones que ayudan a decidir, no solo a leer</h2>
+                            </div>
+                            <span class="mg-dialogue-state">Nodo: compuerta interior</span>
+                        </div>
+
+                        <div class="mg-dialogue-box">
+                            <div class="mg-speaker-row">
+                                <span class="mg-speaker">Capataz Telmo</span>
+                                <span class="mg-speaker-meta">Neutral. Responde mejor a pruebas técnicas que a presión verbal.</span>
+                            </div>
+                            <p class="mg-dialogue-line">"No abriré esa compuerta si vas a dejar que nos marque el vigía. Enséñame una salida segura o resuelve el riesgo delante de mí."</p>
+                            <div class="mg-option-list">
+                                <button class="mg-option is-active" type="button">
+                                    <span class="mg-option-index">01</span>
+                                    <span class="mg-option-copy">
+                                        <span class="mg-option-badges">
+                                            <small class="mg-badge-chip mg-badge-chip--reward">Baja amenaza</small>
+                                            <small class="mg-badge-chip">Usa sello</small>
+                                            <small class="mg-badge-chip mg-badge-chip--gain">+ progreso</small>
+                                        </span>
+                                        <strong>Mostrar el sello de presión y pedir apertura controlada</strong>
+                                        <small>Conserva recursos, reduce conflicto y deja la mano lista para el siguiente cuarto.</small>
+                                    </span>
+                                </button>
+                                <button class="mg-option" type="button">
+                                    <span class="mg-option-index">02</span>
+                                    <span class="mg-option-copy">
+                                        <span class="mg-option-badges">
+                                            <small class="mg-badge-chip mg-badge-chip--risk">Riesgo medio</small>
+                                            <small class="mg-badge-chip">Chequeo CAR</small>
+                                            <small class="mg-badge-chip">Deuda facción</small>
+                                        </span>
+                                        <strong>Imponer autoridad de la Guardia Solar</strong>
+                                        <small>Puede funcionar rápido, pero un éxito parcial compromete reputación y apoyo posterior.</small>
+                                    </span>
+                                </button>
+                                <button class="mg-option" type="button">
+                                    <span class="mg-option-index">03</span>
+                                    <span class="mg-option-copy">
+                                        <span class="mg-option-badges">
+                                            <small class="mg-badge-chip mg-badge-chip--risk">Riesgo alto</small>
+                                            <small class="mg-badge-chip">Combate extra</small>
+                                            <small class="mg-badge-chip mg-badge-chip--gain">+ acceso inmediato</small>
+                                        </span>
+                                        <strong>Forzar la compuerta y abrir paso por la ruta lateral</strong>
+                                        <small>Te lleva más rápido al objetivo, pero consume mano, exposición y margen del reloj.</small>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <section class="mg-improvements-panel" id="hud-improvements">
+                        <div class="mg-panel-header mg-panel-header--improvements">
+                            <div>
+                                <p class="mg-overline">hud-improvements</p>
+                                <h2>Prioridades del jugador por HUD</h2>
+                            </div>
+                            <p class="mg-improvements-note">Cada bloque traduce el sistema a decisiones útiles: menos contemplación, más acción informada.</p>
+                        </div>
+                        <div class="mg-improvement-grid">
+                            <article class="mg-improvement-card">
+                                <div class="mg-improvement-title">HudTopStatus</div>
+                                <p><strong>Prioridad:</strong> ver turno, reloj y recompensa sin buscar entre métricas secundarias.</p>
+                            </article>
+                            <article class="mg-improvement-card">
+                                <div class="mg-improvement-title">HudCharacterPanel</div>
+                                <p><strong>Prioridad:</strong> entender aguante real, mitigación disponible y estados que alteran la próxima jugada.</p>
+                            </article>
+                            <article class="mg-improvement-card">
+                                <div class="mg-improvement-title">HudSkillsPanel</div>
+                                <p><strong>Prioridad:</strong> que la mano se lea como cartas jugables con coste, rol y secuencia clara.</p>
+                            </article>
+                            <article class="mg-improvement-card">
+                                <div class="mg-improvement-title">HudInventoryPanel</div>
+                                <p><strong>Prioridad:</strong> subir al frente los objetos que desbloquean ruta, ventaja o supervivencia en el contexto actual.</p>
+                            </article>
+                            <article class="mg-improvement-card">
+                                <div class="mg-improvement-title">HudDialogueOptionsBox</div>
+                                <p><strong>Prioridad:</strong> etiquetar riesgo, requisito y ganancia antes del texto descriptivo para decidir sin fricción.</p>
+                            </article>
+                            <article class="mg-improvement-card">
+                                <div class="mg-improvement-title">HudQuestTracker</div>
+                                <p><strong>Prioridad:</strong> mostrar objetivo inmediato, ventana crítica y mejor ruta para que la misión oriente el turno.</p>
+                            </article>
+                        </div>
+                    </section>
+                </section>
+            </section>
+        </div>
+    </main>
+
+    <style id="critical-layout">
+      :root {
+        color-scheme: dark;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        background:
+          radial-gradient(circle at top, rgba(215, 177, 95, 0.08), transparent 26%),
+          linear-gradient(180deg, #0b0e14 0%, #10141c 58%, #0a0d12 100%);
+        overflow: hidden;
+      }
+
+      #app-shell {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding: 24px;
+      }
+
+      .mg-scroll-region {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        padding-right: 8px;
+      }
+
+      .mg-shell-frame {
+        max-width: 1600px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .mg-topbar,
+      .mg-panel,
+      .mg-improvements-panel {
+        position: relative;
+        overflow: hidden;
+        border-radius: 22px;
+        border: 1px solid rgba(120, 132, 152, 0.2);
+        background: linear-gradient(180deg, rgba(27, 32, 43, 0.95), rgba(14, 18, 25, 0.97));
+        box-shadow: var(--shadow-2);
+      }
+
+      .mg-topbar::before,
+      .mg-panel::before,
+      .mg-improvements-panel::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(215, 177, 95, 0.55), transparent);
+      }
+
+      .mg-topbar {
+        display: grid;
+        grid-template-columns: minmax(300px, 1.1fr) minmax(0, 1.9fr);
+        gap: 18px;
+        padding: 20px 22px;
+        position: sticky;
+        top: 12px;
+        z-index: 10;
+        backdrop-filter: blur(14px);
+      }
+
+      .mg-topbar-main {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .mg-brand-kicker,
+      .mg-overline,
+      .mg-card-label {
+        color: #8f98aa;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .mg-brand-line {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .mg-brand-line h1,
+      .mg-panel-header h2,
+      .mg-panel-header--improvements h2 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: clamp(1.25rem, 1.6vw, 2rem);
+        font-weight: 600;
+        letter-spacing: -0.03em;
+      }
+
+      .mg-top-summary,
+      .mg-scene-node span,
+      .mg-route-item span,
+      .mg-improvements-note {
+        margin: 0;
+        color: #a8b1c1;
+        line-height: 1.55;
+      }
+
+      .mg-badge,
+      .mg-panel-note,
+      .mg-dialogue-state,
+      .mg-quest-tier {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(215, 177, 95, 0.24);
+        background: rgba(215, 177, 95, 0.12);
+        color: #ebd3a5;
+        font-size: 12px;
+      }
+
+      .mg-top-status-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .mg-top-card,
+      .mg-vital-block,
+      .mg-stat-card,
+      .mg-subpanel,
+      .mg-quest-card,
+      .mg-vision-card,
+      .mg-action-card,
+      .mg-context-item,
+      .mg-slot,
+      .mg-option,
+      .mg-improvement-card {
+        border-radius: 18px;
+        border: 1px solid rgba(107, 119, 140, 0.18);
+        background: rgba(14, 18, 27, 0.86);
+        transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+      }
+
+      .mg-top-card {
+        min-height: 92px;
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .mg-top-hero {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .mg-avatar-frame {
+        width: 50px;
+        height: 50px;
+        position: relative;
+        flex: none;
+      }
+
+      .mg-avatar-ring,
+      .mg-avatar-core {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+      }
+
+      .mg-avatar-ring {
+        border: 1px solid rgba(215, 177, 95, 0.38);
+        box-shadow: 0 0 0 5px rgba(215, 177, 95, 0.07);
+      }
+
+      .mg-avatar-core {
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at top, rgba(215, 177, 95, 0.24), rgba(36, 45, 60, 0.95));
+        color: #f3dfb4;
+      }
+
+      .mg-avatar-core i,
+      [data-lucide] {
+        width: 18px;
+        height: 18px;
+      }
+
+      .mg-top-name,
+      .mg-vision-card strong,
+      .mg-context-item strong,
+      .mg-route-item strong {
+        color: #f6f1e8;
+        font-weight: 600;
+      }
+
+      .mg-top-meta,
+      .mg-top-subline,
+      .mg-metric-detail,
+      .mg-scene-meta span,
+      .mg-speaker-meta,
+      .mg-quest-head span,
+      .mg-quest-footer span,
+      .mg-vital-block small,
+      .mg-slot small,
+      .mg-context-item p {
+        color: #9ca7b8;
+        font-size: 12px;
+      }
+
+      .mg-pill-row,
+      .mg-metric-row {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .mg-pill {
+        display: inline-flex;
+        align-self: flex-start;
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .mg-pill--active {
+        color: #f3dfb4;
+        background: rgba(215, 177, 95, 0.16);
+        border: 1px solid rgba(215, 177, 95, 0.24);
+      }
+
+      .mg-metric,
+      .mg-quest-progress {
+        font-family: var(--font-mono);
+        font-size: 14px;
+        color: #f5e8c9;
+      }
+
+      .mg-metric--danger {
+        color: #efb3a6;
+      }
+
+      .mg-main-grid {
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr) 360px;
+        gap: 20px;
+        align-items: start;
+      }
+
+      .mg-side-column,
+      .mg-center-column {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .mg-panel,
+      .mg-improvements-panel {
+        padding: 20px;
+      }
+
+      .mg-panel-header,
+      .mg-panel-header--improvements {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+
+      .mg-vitals,
+      .mg-stat-grid,
+      .mg-vision-grid,
+      .mg-slot-grid,
+      .mg-improvement-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .mg-vitals,
+      .mg-stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin-bottom: 12px;
+      }
+
+      .mg-vital-block,
+      .mg-stat-card,
+      .mg-subpanel,
+      .mg-action-card,
+      .mg-context-item,
+      .mg-slot,
+      .mg-improvement-card {
+        padding: 14px;
+      }
+
+      .mg-vital-label,
+      .mg-subpanel-title,
+      .mg-speaker,
+      .mg-improvement-title,
+      .mg-context-label,
+      .mg-route-label,
+      .mg-action-type {
+        color: #e2ca94;
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .mg-vital-block strong,
+      .mg-stat-card strong,
+      .mg-quest-head strong,
+      .mg-route-item strong {
+        display: block;
+        margin-top: 4px;
+        font-family: var(--font-mono);
+      }
+
+      .mg-bar {
+        margin-top: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        overflow: hidden;
+      }
+
+      .mg-bar span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, rgba(117, 162, 255, 0.8), rgba(184, 208, 255, 0.95));
+      }
+
+      .mg-bar--amber span {
+        background: linear-gradient(90deg, rgba(159, 113, 37, 0.78), rgba(225, 187, 111, 0.95));
+      }
+
+      .mg-stat-card strong {
+        font-size: 28px;
+        color: #f7f1e6;
+      }
+
+      .mg-stat-card small,
+      .mg-action-card p,
+      .mg-improvement-card p,
+      .mg-option-copy small,
+      .mg-vision-card p,
+      .mg-context-item p {
+        line-height: 1.48;
+      }
+
+      .mg-key-list,
+      .mg-checklist {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+        display: grid;
+        gap: 10px;
+      }
+
+      .mg-key-list li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        color: #d7dde7;
+      }
+
+      .mg-key-list li strong {
+        color: #f6f1e8;
+      }
+
+      .mg-condition-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .mg-condition {
+        display: flex;
+        gap: 10px;
+        padding: 12px;
+        border-radius: 14px;
+        background: rgba(31, 37, 49, 0.78);
+      }
+
+      .mg-condition-dot {
+        width: 10px;
+        height: 10px;
+        margin-top: 5px;
+        border-radius: 50%;
+        background: #d7b15f;
+        box-shadow: 0 0 0 6px rgba(215, 177, 95, 0.08);
+        flex: none;
+      }
+
+      .mg-condition--danger .mg-condition-dot {
+        background: #d96a58;
+        box-shadow: 0 0 0 6px rgba(217, 106, 88, 0.08);
+      }
+
+      .mg-condition--calm .mg-condition-dot {
+        background: #61c083;
+        box-shadow: 0 0 0 6px rgba(97, 192, 131, 0.08);
+      }
+
+      .mg-quest-card--active {
+        box-shadow: inset 0 0 0 1px rgba(215, 177, 95, 0.18), 0 0 24px rgba(215, 177, 95, 0.05);
+      }
+
+      .mg-quest-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .mg-checklist li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        color: #d7dde7;
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .mg-check {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        border: 1px solid rgba(214, 177, 95, 0.38);
+        background: rgba(214, 177, 95, 0.07);
+        flex: none;
+      }
+
+      .mg-checklist .is-done .mg-check {
+        background: linear-gradient(180deg, rgba(214, 177, 95, 0.95), rgba(150, 114, 38, 0.95));
+      }
+
+      .mg-checklist .is-active {
+        border: 1px solid rgba(214, 177, 95, 0.28);
+        background: rgba(214, 177, 95, 0.08);
+      }
+
+      .mg-route-advice {
+        display: grid;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .mg-route-item {
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: rgba(15, 20, 29, 0.84);
+        border: 1px solid rgba(106, 118, 138, 0.18);
+      }
+
+      .mg-vision-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .mg-vision-card {
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr);
+        gap: 12px;
+        padding: 16px;
+      }
+
+      .mg-vision-card span {
+        display: block;
+        color: #95a0b1;
+        font-size: 12px;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+
+      .mg-vision-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: rgba(41, 49, 66, 0.94);
+        color: #ead29f;
+      }
+
+      .mg-vision-card--risk .mg-vision-icon {
+        color: #efb2a3;
+      }
+
+      .mg-vision-card--reward .mg-vision-icon {
+        color: #c8ddb1;
+      }
+
+      .mg-vision-card.is-highlighted {
+        border-color: rgba(215, 177, 95, 0.34);
+        background: rgba(20, 26, 37, 0.96);
+        box-shadow: 0 0 0 1px rgba(215, 177, 95, 0.1);
+      }
+
+      .mg-panel--battlefield {
+        padding-bottom: 18px;
+      }
+
+      .mg-scene-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .mg-scene-priority-rail {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .mg-priority-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 999px;
+        background: rgba(17, 22, 31, 0.9);
+        border: 1px solid rgba(105, 117, 138, 0.18);
+        color: #d4dae5;
+        font-size: 13px;
+      }
+
+      .mg-priority-pill i {
+        width: 15px;
+        height: 15px;
+      }
+
+      .mg-priority-pill.is-selected {
+        border-color: rgba(215, 177, 95, 0.34);
+        color: #f2dfb9;
+        box-shadow: 0 0 0 1px rgba(215, 177, 95, 0.11);
+      }
+
+      .mg-world-stage {
+        min-height: 620px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 24px;
+        border: 1px solid rgba(104, 116, 136, 0.22);
+        background:
+          radial-gradient(circle at 24% 22%, rgba(229, 191, 116, 0.14), transparent 18%),
+          radial-gradient(circle at 76% 66%, rgba(110, 160, 255, 0.12), transparent 22%),
+          linear-gradient(180deg, rgba(13, 18, 27, 0.95), rgba(18, 24, 34, 0.95));
+      }
+
+      .mg-stage-grid,
+      .mg-stage-spotlight,
+      .mg-stage-threat-cone,
+      .mg-stage-objective-ring {
+        position: absolute;
+        inset: 0;
+      }
+
+      .mg-stage-grid {
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+        background-size: 82px 82px;
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.46), rgba(0, 0, 0, 0.96));
+      }
+
+      .mg-stage-spotlight {
+        background:
+          radial-gradient(circle at 45% 54%, rgba(215, 177, 95, 0.14), transparent 22%),
+          radial-gradient(circle at 60% 40%, rgba(217, 106, 88, 0.08), transparent 16%);
+      }
+
+      .mg-stage-threat-cone {
+        background: linear-gradient(130deg, transparent 0 52%, rgba(217, 106, 88, 0.12) 58%, transparent 68%);
+        transform: translateX(8%);
+      }
+
+      .mg-stage-objective-ring::before {
+        content: "";
+        position: absolute;
+        left: 54%;
+        top: 56%;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        border: 1px dashed rgba(215, 177, 95, 0.28);
+        box-shadow: 0 0 0 18px rgba(215, 177, 95, 0.03);
+      }
+
+      .mg-scene-flag,
+      .mg-scene-node,
+      .mg-turn-ladder,
+      .mg-scene-log {
+        position: absolute;
+        backdrop-filter: blur(10px);
+        background: rgba(9, 13, 21, 0.82);
+        border: 1px solid rgba(117, 129, 149, 0.18);
+      }
+
+      .mg-scene-flag {
+        padding: 10px 12px;
+        border-radius: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .mg-scene-flag span,
+      .mg-turn-step span {
+        font-size: 11px;
+        color: #96a1b3;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .mg-scene-flag strong,
+      .mg-turn-step strong,
+      .mg-scene-node strong {
+        color: #f7f1e6;
+        font-size: 14px;
+      }
+
+      .mg-scene-flag--risk {
+        top: 16px;
+        left: 16px;
+      }
+
+      .mg-scene-flag--reward {
+        top: 16px;
+        right: 16px;
+      }
+
+      .mg-scene-flag--goal {
+        bottom: 120px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .mg-turn-ladder {
+        top: 84px;
+        right: 16px;
+        width: 210px;
+        padding: 12px;
+        border-radius: 18px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .mg-turn-step {
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .mg-turn-step.is-active {
+        border: 1px solid rgba(215, 177, 95, 0.24);
+        background: rgba(215, 177, 95, 0.08);
+      }
+
+      .mg-unit {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .mg-unit--ally {
+        left: 28%;
+        top: 54%;
+      }
+
+      .mg-unit--enemy-a {
+        left: 62%;
+        top: 34%;
+      }
+
+      .mg-unit--enemy-b {
+        left: 70%;
+        top: 62%;
+      }
+
+      .mg-unit-ring {
+        position: absolute;
+        width: 136px;
+        height: 58px;
+        border-radius: 50%;
+        border: 1px solid rgba(215, 177, 95, 0.3);
+        background: radial-gradient(circle, rgba(215, 177, 95, 0.13), transparent 64%);
+      }
+
+      .mg-unit--enemy .mg-unit-ring {
+        border-color: rgba(217, 106, 88, 0.32);
+        background: radial-gradient(circle, rgba(217, 106, 88, 0.12), transparent 64%);
+      }
+
+      .mg-unit-core {
+        position: relative;
+        min-width: 136px;
+        padding: 16px 14px;
+        border-radius: 16px;
+        border: 1px solid rgba(112, 124, 145, 0.22);
+        background: rgba(12, 16, 24, 0.92);
+        text-align: center;
+      }
+
+      .mg-unit-core span {
+        display: block;
+        font-weight: 600;
+        color: #f6f0e5;
+      }
+
+      .mg-unit-core small {
+        color: #9ea8b8;
+      }
+
+      .mg-scene-node {
+        display: grid;
+        grid-template-columns: 36px minmax(0, 1fr);
+        gap: 10px;
+        padding: 12px;
+        border-radius: 16px;
+      }
+
+      .mg-scene-node i {
+        width: 16px;
+        height: 16px;
+        color: #ebd2a0;
+      }
+
+      .mg-scene-node--goal {
+        left: 51%;
+        top: 48%;
+        width: 230px;
+      }
+
+      .mg-scene-node--loot {
+        left: 17%;
+        top: 18%;
+        width: 230px;
+      }
+
+      .mg-scene-node--cover {
+        left: 14%;
+        bottom: 104px;
+        width: 240px;
+      }
+
+      .mg-scene-log {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        padding: 12px;
+        border-radius: 18px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .mg-log-line {
+        display: flex;
+        gap: 10px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: #d8dde6;
+      }
+
+      .mg-log-line span {
+        color: #d7b15f;
+      }
+
+      .mg-hand-summary {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .mg-hand-pill {
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: rgba(15, 20, 29, 0.84);
+        border: 1px solid rgba(106, 118, 138, 0.18);
+      }
+
+      .mg-hand-pill span {
+        display: block;
+        color: #97a1b3;
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+
+      .mg-hand-pill strong {
+        color: #f6f1e8;
+      }
+
+      .mg-hand-pill.is-accent {
+        border-color: rgba(215, 177, 95, 0.28);
+        box-shadow: inset 0 0 0 1px rgba(215, 177, 95, 0.09);
+      }
+
+      .mg-card-hand {
+        display: grid;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .mg-action-card h3 {
+        margin: 0 0 10px;
+        font-size: 16px;
+        color: #f5f0e6;
+      }
+
+      .mg-action-top,
+      .mg-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .mg-action-cost,
+      .mg-card-range {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: #9ca7b8;
+      }
+
+      .mg-card-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 12px 0;
+      }
+
+      .mg-card-tags span {
+        padding: 6px 8px;
+        border-radius: 999px;
+        background: rgba(39, 47, 63, 0.82);
+        border: 1px solid rgba(104, 117, 139, 0.18);
+        color: #d8dde6;
+        font-size: 11px;
+      }
+
+      .mg-action-card.is-featured {
+        box-shadow: inset 0 0 0 1px rgba(97, 192, 131, 0.1);
+      }
+
+      .mg-action-card.is-selected {
+        border-color: rgba(215, 177, 95, 0.38);
+        background: rgba(20, 26, 37, 0.96);
+        box-shadow: 0 0 0 1px rgba(215, 177, 95, 0.12), 0 10px 30px rgba(6, 8, 12, 0.16);
+      }
+
+      .mg-context-bag {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .mg-context-item {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .mg-context-item.is-priority {
+        border-color: rgba(215, 177, 95, 0.3);
+        background: rgba(19, 24, 35, 0.96);
+      }
+
+      .mg-context-delta {
+        align-self: flex-start;
+        padding: 6px 8px;
+        border-radius: 999px;
+        background: rgba(97, 192, 131, 0.12);
+        border: 1px solid rgba(97, 192, 131, 0.2);
+        color: #cbe3d3;
+        font-size: 11px;
+        white-space: nowrap;
+      }
+
+      .mg-slot-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .mg-slot {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .mg-bottom-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+        gap: 20px;
+        align-items: start;
+      }
+
+      .mg-dialogue-box {
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px solid rgba(108, 120, 140, 0.18);
+        background: rgba(12, 16, 23, 0.88);
+      }
+
+      .mg-speaker-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .mg-dialogue-line {
+        margin: 0 0 16px;
+        color: #e8edf5;
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      .mg-option-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .mg-option {
+        width: 100%;
+        padding: 14px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        text-align: left;
+        color: inherit;
+        cursor: pointer;
+      }
+
+      .mg-option-index {
+        min-width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        background: rgba(39, 47, 63, 0.92);
+        color: #f2dfb8;
+        font-family: var(--font-mono);
+      }
+
+      .mg-option-copy {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .mg-option-copy strong {
+        color: #f6f1e8;
+        font-size: 14px;
+      }
+
+      .mg-option-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .mg-badge-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: rgba(40, 47, 63, 0.9);
+        border: 1px solid rgba(105, 118, 140, 0.18);
+        color: #cfd6e3;
+        font-size: 11px;
+      }
+
+      .mg-badge-chip--risk {
+        color: #efb3a6;
+        border-color: rgba(217, 106, 88, 0.2);
+        background: rgba(217, 106, 88, 0.08);
+      }
+
+      .mg-badge-chip--reward {
+        color: #d4e5ba;
+        border-color: rgba(97, 192, 131, 0.2);
+        background: rgba(97, 192, 131, 0.08);
+      }
+
+      .mg-badge-chip--gain {
+        color: #f0ddb1;
+        border-color: rgba(215, 177, 95, 0.2);
+        background: rgba(215, 177, 95, 0.08);
+      }
+
+      .mg-option.is-active {
+        border-color: rgba(215, 177, 95, 0.42);
+        background: rgba(215, 177, 95, 0.08);
+        box-shadow: 0 0 0 1px rgba(215, 177, 95, 0.12);
+      }
+
+      .mg-improvement-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .mg-improvement-card strong {
+        color: #f1ddae;
+      }
+
+      .mg-top-card:hover,
+      .mg-stat-card:hover,
+      .mg-subpanel:hover,
+      .mg-vision-card:hover,
+      .mg-action-card:hover,
+      .mg-context-item:hover,
+      .mg-slot:hover,
+      .mg-option:hover,
+      .mg-improvement-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(215, 177, 95, 0.28);
+        background: rgba(20, 26, 37, 0.97);
+      }
+
+      .mg-action-card.is-selected,
+      .mg-priority-pill.is-selected,
+      .mg-option.is-active,
+      .mg-vision-card.is-highlighted {
+        animation: mgPulse 3.2s ease-in-out infinite;
+      }
+
+      @keyframes mgPulse {
+        0%, 100% {
+          box-shadow: 0 0 0 1px rgba(215, 177, 95, 0.1), 0 8px 22px rgba(6, 8, 12, 0.12);
+        }
+        50% {
+          box-shadow: 0 0 0 1px rgba(215, 177, 95, 0.18), 0 12px 28px rgba(6, 8, 12, 0.18);
+        }
+      }
+
+      @media (max-width: 1380px) {
+        .mg-topbar {
+          grid-template-columns: 1fr;
+        }
+
+        .mg-top-status-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .mg-main-grid,
+        .mg-bottom-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .mg-side-column--left,
+        .mg-side-column--right {
+          order: 2;
+        }
+
+        .mg-center-column {
+          order: 1;
+        }
+      }
+
+      @media (max-width: 920px) {
+        #app-shell {
+          padding: 14px;
+        }
+
+        .mg-top-status-grid,
+        .mg-vitals,
+        .mg-stat-grid,
+        .mg-vision-grid,
+        .mg-slot-grid,
+        .mg-improvement-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .mg-panel-header,
+        .mg-panel-header--improvements,
+        .mg-speaker-row,
+        .mg-quest-head {
+          flex-direction: column;
+        }
+
+        .mg-world-stage {
+          min-height: 760px;
+        }
+
+        .mg-turn-ladder,
+        .mg-scene-flag--goal {
+          position: static;
+          width: auto;
+          margin: 12px;
+          transform: none;
+        }
+
+        .mg-scene-log {
+          position: static;
+          margin: 12px;
+        }
+
+        .mg-scene-node--goal,
+        .mg-scene-node--loot,
+        .mg-scene-node--cover {
+          position: static;
+          width: auto;
+          margin: 12px;
+        }
+      }
+    </style>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+{
+ "id": "almirante_yi_golpe_de_la_corriente_marina",
+ "name": "Golpe de la corriente marina",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Te lanzas sobre el enemigo rápido como la corriente marina: 2d6 de daño de agua, y el incendio de agua marina le quita 1 de vida por turno durante 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "almirante_yi"
+ ],
+ "roleTags": [],
+ "tags": [
+  "almirante_yi",
+  "estandar",
+  "Agua"
+ ],
+ "mechanicTags": [
+  "Agua"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Te lanzas sobre el enemigo rápido como la corriente marina: 2d6 de daño de agua, y el incendio de agua marina le quita 1 de vida por turno durante 2 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "2d6 de daño de agua.",
+   "mechanicHook": "dano:2d6"
+  },
+  {
+   "description": "Incendio de agua marina: 1 de daño por turno durante 2 turnos.",
+   "mechanicHook": "estado:2:dano_por_turno:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Almirante Yi (Admiral Yi) · H1964 Golpe de la corriente marina"
+}

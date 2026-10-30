@@ -1,0 +1,96 @@
+{
+ "id": "gorguz_jefe_de_guerra_exiliado",
+ "name": "Gorguz, Jefe de Guerra Exiliado",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "bruto",
+ "faction": "clan_de_gongorguma_renegado",
+ "stats": {
+  "CON": 10,
+  "DES": 9,
+  "INT": 8,
+  "CAR": 8
+ },
+ "derived": {
+  "vida": 70,
+  "ca": 21,
+  "defensaMental": 18,
+  "resistenciaFisica": 20,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Hacha de Dos Reinos",
+   "defense": "CA",
+   "effect": "Barrido que suma su CON; los impactados que fallen Resistencia física quedan Caídos."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "CA",
+   "effect": "Si el objetivo falla, queda Caido hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en Desesperación: su ataque firma se calcula como éxito crítico (GDD 7.6)."
+  }
+ ],
+ "passive": {
+  "name": "Ley del Más Fuerte",
+  "description": "Ley del Más Fuerte: sus golpes contra personajes Caídos son éxitos críticos automáticos si impactan."
+ },
+ "conditionsInflicted": [
+  "caido"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico",
+  "Importante"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Sigue su método con calma: aún cree que sobra tiempo."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Activa la arena a pleno: Público renegado: intervenir en un duelo declarado provoca a todo el clan (+1 a todos los renegados)"
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final; su debilidad narrativa queda a la vista (el DJ da la pista si no la tienen)."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Fundar un clan nuevo con una sola regla: él",
+  "metodo": "Humilla: derriba, pisa y deja vivir para que cuenten",
+  "debilidad_narrativa": "El duelo formal: retarlo uno contra uno (declaración + prueba de CAR) lo obliga — su clan no interviene mientras dure",
+  "vinculo": "el_toro_de_gongorguma"
+ },
+ "arena": {
+  "name": "El Anillo de Cráneos",
+  "hazard": "Público renegado: intervenir en un duelo declarado provoca a todo el clan (+1 a todos los renegados)"
+ },
+ "legendaryActions": [
+  "Pisotón (1/ronda): 1 de daño a un Caído adyacente y este no puede levantarse su próximo turno"
+ ],
+ "storyCard": {
+  "title": "Gorguz, Jefe de Guerra Exiliado",
+  "text": "Su exilio no fue por crueldad. Fue por presupuesto: nadie podía pagar sus guerras.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Ni Gongorguma quiso quedarse a mirar."
+}

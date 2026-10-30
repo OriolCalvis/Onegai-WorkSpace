@@ -1,0 +1,29 @@
+{
+ "id": "PROLOGO-02",
+ "date": "2026-10-13",
+ "author": "claude (Cowork)",
+ "status": "HECHO — el prólogo nuevo (el prado, el barquero y los recuerdos de Venides como cinemáticas), la taberna con su gente, Edul en la herrería y la ciudad detrás del título.",
+ "origen": "Oriol (13/10): «Sho-Noco tiene que aparecer en un prado donde solo haya un río [...] nos lleva a los recuerdos de Venides: prepara diferentes cinemáticas [...] como si fuéramos espectros entre esos recuerdos, hasta llegar a la taberna»; «en la taberna, en vez del menú del parroquiano, pon los PNJ con su diálogo»; la ciudad animada detrás del título. Y (13/10, 23:18): «continua aplicant elements i depurant la partida preparant escenaris unics i el que faci falta que tinguem a mitges».",
+ "actions": [
+  "Cinemáticas: include/Game/Cinematica.h + src/Game/Cinematica.cpp (motor_level, GL-free: órdenes anda/coloca/mira/espera/beat/flag/nivel/funde, espectro, apariciones con condiciones, fondos, el paseo del título) y src/Engine/ApplicationCinematica.{h,cpp} (el juego: el reproductor, los tintes, el velo, el fondo del fotograma y la ciudad del título). assets/cinematicas/cinematicas.json: barquero, subida y los cuatro recuerdos.",
+  "Niveles nuevos (tools/gen_recuerdos.py): prado_del_rio, recuerdo_ceaseton, recuerdo_puerta, recuerdo_aegroum, recuerdo_taberna. El juego empieza en el prado (examples/juego.cpp).",
+  "assets/adventures/boundington_prologo.json: 42 beats (antes 18), generados con out/claude_dialogos02/guiones/prologo.py.",
+  "PNJ: Sho-Noco, los amigos en 756 y 757, el capitán de Aegroum, la gente de Ceaseton, la de la Taberna Humilde y Edul, con sprite propio (tools/actores_pnj.py; «_unico» = sin variantes de cara); gen_pnj reparte Boundington en pnj_boundington y pnj_boundington_2.",
+  "La Taberna Humilde con su gente en su sitio, cada uno con su charla; Edul en el yunque el segundo día si Aigren se fue (apariciones edul/aigren).",
+  "En una cinemática no sale «[E] Hablar con...» (EstadoJuego::sinAviso).",
+  "Pruebas: tests/Game/CinematicaTests.cpp (12), tools/validar_cinematicas.py (en validar_todo), demo_prologo con las cinemáticas, explorar_boundington con las cinemáticas, 6 escenas del prólogo y 1 del segundo día en demo_boundington.",
+  "Docs: FORMATO_AVENTURAS.md «Cinemáticas»; CANON §13."
+ ],
+ "verification": [
+  "El prólogo entero jugado en el juego real (sonda en la VM con Xvfb, también con ASAN): del prado al primer día, fotograma 4481; capturas revisadas.",
+  "demo_boundington: 58 escenas OK; demo_prologo y demo_campana_boundington OK; explorar_boundington 300 partidas: 0 atascos.",
+  "validar_todo: 0 errores (los 10 avisos de antes). ctest en la VM: gl-free 211/214 (los tres de antes) y GL 11/11 con Xvfb. linea_base_core: 0 de deuda nueva (los 3 «instantáneos» son ficheros nuevos sin versionar: van en el mismo commit que su CMake)."
+ ],
+ "pending": [
+  "El cuelgue de «Nueva partida» en el Mac: no se reproduce en Linux (ni con ASAN). Falta el registro de Oriol: MOTOR_TRACE=1 ./build/juego."
+ ],
+ "para_oriol": [
+  "CANON §13.2 (seis decisiones) y §13.4 (la compañía de Rosita)."
+ ],
+ "sesion": "sesiones/2026-10-13-claude-prologo.md"
+}

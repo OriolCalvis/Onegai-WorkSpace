@@ -1,0 +1,55 @@
+{
+ "id": "berserker_berserker",
+ "name": "Berserker",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Entras en furia hasta el final del combate: atacas con ventaja y tus golpes con arma hacen +1d6, pero tu guardia se abre: -1 a tu CA.",
+ "flavorText": "",
+ "classTags": [
+  "berserker"
+ ],
+ "roleTags": [],
+ "tags": [
+  "berserker",
+  "estandar"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "self",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Entras en furia hasta el final del combate: atacas con ventaja y tus golpes con arma hacen +1d6, pero tu guardia se abre: -1 a tu CA.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Ventaja en ataque todo el combate.",
+   "mechanicHook": "estado:combate:ventaja:ataque"
+  },
+  {
+   "description": "+1d6 a tus golpes con arma todo el combate.",
+   "mechanicHook": "estado:combate:bono_dano_arma:1d6"
+  },
+  {
+   "description": "-1 a tu CA todo el combate.",
+   "mechanicHook": "estado:combate:penal_ca:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Berserker · H903 Berserker"
+}

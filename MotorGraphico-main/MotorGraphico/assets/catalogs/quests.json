@@ -1,0 +1,1237 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "mision_llave",
+      "name": "La llave del santuario",
+      "summary": "El santuario sigue cerrado y el anciano no recuerda dónde dejó la llave. Alguien la escondió en un cofre del rincón del bosque.",
+      "tier": 1,
+      "rarity": "common",
+      "objectives": [
+        {
+          "id": "encontrar_la_llave",
+          "description": "Encontrar la llave oxidada",
+          "optional": false,
+          "requiredCount": 1,
+          "doneFlag": "cofre_abierto"
+        },
+        {
+          "id": "abrir_la_puerta",
+          "description": "Abrir la puerta del santuario",
+          "optional": false,
+          "requiredCount": 1,
+          "doneFlag": "puerta_abierta"
+        }
+      ],
+      "rewardGold": 0,
+      "rewardItemIds": [],
+      "completionFlag": "mision_completada"
+    },
+    {
+      "id": "carta_del_santuario",
+      "name": "La carta sellada",
+      "summary": "En la taberna corre un rumor: una carta sellada del santuario espera a su destinatario, y la tabernera solo suelta de a dos sorbos.",
+      "tier": 1,
+      "rarity": "common",
+      "objectives": [
+        {
+          "id": "escuchar_el_rumor",
+          "description": "Charlar dos veces con la tabernera",
+          "optional": false,
+          "requiredCount": 2
+        },
+        {
+          "id": "entregar_la_carta",
+          "description": "Llevarle la carta sellada al forastero",
+          "optional": false,
+          "requiredCount": 1
+        },
+        {
+          "id": "curiosear_el_buzon",
+          "description": "Mirar que cae en el buzón",
+          "optional": true,
+          "requiredCount": 1
+        }
+      ],
+      "rewardGold": 0,
+      "rewardItemIds": [],
+      "completionFlag": ""
+    },
+    {
+      "id": "bnd_prologo",
+      "name": "Prólogo: Los Perdidos de Boundington",
+      "summary": "Antes de Boundington, antes de la Matanza: una noche en el Vacío y un relato en una barca. Sho-Noco rema por los recuerdos de Venides.",
+      "tier": 1,
+      "rarity": "common",
+      "adventureId": "adv_boundington_prologo",
+      "sections": [
+        {
+          "title": "El Vacío",
+          "summary": "Despiertas en un sitio blanco, sin paredes, con un cofre que guarda tus cosas.",
+          "objectives": [
+            "obj_cofre",
+            "obj_equipo"
+          ]
+        },
+        {
+          "title": "El río y la barca",
+          "summary": "Del Vacío solo se sale por el río.",
+          "objectives": [
+            "obj_rio",
+            "obj_barquero"
+          ]
+        },
+        {
+          "title": "El relato del pasado",
+          "summary": "Lo que Venides vio en Ceaseton, contado por quien no olvida.",
+          "objectives": [
+            "obj_prologo"
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "id": "bnd_pr_vacio",
+          "title": "Lo primero que hiciste en el Vacío",
+          "section": "El Vacío",
+          "choices": [
+            {
+              "flag": "bnd_prologo_percibe_critico",
+              "choice": "Miraste a tu alrededor, despacio.",
+              "consequence": "La niebla no es niebla: es magia, densa como el agua, y el río nace dentro de ella. Es vieja, más que nada que conozcas. Y algo, desde dentro, te devolvió la mirada."
+            },
+            {
+              "flag": "bnd_prologo_percibe_exito",
+              "choice": "Miraste a tu alrededor, despacio.",
+              "consequence": "La niebla no es niebla: es magia, densa como el agua, y el río nace dentro de ella. De quién es, no lo sabes."
+            },
+            {
+              "flag": "bnd_prologo_percibe_parcial",
+              "choice": "Miraste a tu alrededor.",
+              "consequence": "Niebla, hierba y un río. Y tus manos, que temblaban un poco."
+            },
+            {
+              "flag": "bnd_prologo_percibe_botch",
+              "choice": "Miraste a tu alrededor.",
+              "consequence": "Niebla, hierba y un río. Y tus manos, que temblaban un poco."
+            },
+            {
+              "flag": "bnd_prologo_grito",
+              "choice": "Gritaste «¿Hola?» al blanco.",
+              "consequence": "Tu voz no rebotó en nada. El río se la llevó corriente abajo, como si alguien la estuviera esperando."
+            },
+            {
+              "flag": "bnd_prologo_espera",
+              "choice": "Te quedaste quieto, esperando.",
+              "consequence": "Pasó un rato que no sabrías medir. Luego, entre el agua, se oyeron remos: alguien venía."
+            }
+          ]
+        },
+        {
+          "id": "bnd_pr_barca",
+          "title": "La barca que se acercaba",
+          "section": "El río y la barca",
+          "choices": [
+            {
+              "flag": "bnd_prologo_arcano_critico",
+              "choice": "Observaste al barquero con ojos de estudioso.",
+              "consequence": "No tiene carne ni sangre: todo él es una magia tan vieja que el mundo la ha olvidado, y la ha vuelto a olvidar."
+            },
+            {
+              "flag": "bnd_prologo_arcano_exito",
+              "choice": "Observaste al barquero con ojos de estudioso.",
+              "consequence": "No tiene carne ni sangre: todo él es una magia que no conoces."
+            },
+            {
+              "flag": "bnd_prologo_arcano_parcial",
+              "choice": "Observaste al barquero.",
+              "consequence": "Algo en él no encaja con nada que hayas estudiado. Más idea que cuerpo."
+            },
+            {
+              "flag": "bnd_prologo_arcano_botch",
+              "choice": "Observaste al barquero.",
+              "consequence": "Te dio mala espina, y no sabrías decir por qué."
+            },
+            {
+              "flag": "bnd_prologo_pregunta",
+              "choice": "Le preguntaste: «¿Quién eres?».",
+              "consequence": "No contestó. Todavía no."
+            },
+            {
+              "flag": "bnd_prologo_retrocede",
+              "choice": "Retrocediste.",
+              "consequence": "Diste un paso atrás y la barca estaba igual de cerca. Diste otro, y más cerca todavía."
+            }
+          ]
+        }
+      ],
+      "rewardGold": 0,
+      "rewardItemIds": [],
+      "completionFlag": ""
+    },
+    {
+      "id": "bnd_primer_dia",
+      "name": "El Primer Día en Boundington",
+      "summary": "Boundington, al sur de Aegroum, año 757 del Despertar Elemental. Busca cama, escucha a la gente y reúne pruebas de lo que traman los Perdidos: el caballero tiene que saberlo antes de que amanezca.",
+      "tier": 1,
+      "rarity": "common",
+      "adventureId": "adv_boundington_primer_dia",
+      "objectives": [
+        {
+          "id": "bnd1_op_luisarda",
+          "description": "Convence a Luisarda, en La Boutique de Madame, de cenar con Rosita.",
+          "optional": true,
+          "doneFlag": "bnd1_luisarda_con_rosita",
+          "visibleFlag": "bnd1_recado_luisarda",
+          "donde": ["assets/levels/interior_sastreria.json", "luisarda"]
+        },
+        {
+          "id": "bnd1_op_familia",
+          "description": "Ayudar a la familia de la puerta azul, en Pico Dragón",
+          "optional": true,
+          "doneFlag": "bnd1_familia_resuelta",
+          "visibleFlag": "bnd1_mira_visto",
+          "donde": ["assets/levels/ciudad_oeste.json", "nina_del_gato"]
+        },
+        {
+          "id": "bnd1_op_xila",
+          "description": "Haz que Xila, en Pico Dragón, te cuente lo que sabe estando sobrio.",
+          "optional": true,
+          "doneFlag": "bnd1_aliado_xila",
+          "visibleFlag": "bnd1_xila_conocido",
+          "donde": ["assets/levels/ciudad_oeste.json", "xila"]
+        },
+        {
+          "id": "bnd1_op_luisarda_segunda",
+          "description": "Luisarda no habla con la puerta abierta: cóbrale al sastre el hilo de plata, o vuelve de noche a La Boutique de Madame.",
+          "optional": true,
+          "doneFlag": "bnd_pista_luisarda",
+          "visibleFlag": "bnd1_luisarda_segunda",
+          "donde": ["assets/levels/interior_sastreria.json", "luisarda"]
+        },
+        {
+          "id": "bnd1_op_aigren_segunda",
+          "description": "Ayuda a Aigren con el envío de esta noche: la herrería Lingote de Oro.",
+          "optional": true,
+          "doneFlag": "bnd1_aigren_enterado",
+          "visibleFlag": "bnd1_aigren_segunda",
+          "donde": ["assets/levels/interior_herreria.json", "aigren"]
+        },
+        {
+          "id": "bnd1_op_aigren_orden",
+          "description": "Consigue para Aigren una orden del capitán con sello: el castillo, en el distrito militar.",
+          "optional": true,
+          "doneFlag": "bnd2_orden_capitan",
+          "visibleFlag": "bnd1_aigren_orden_pedida",
+          "donde": ["assets/levels/interior_castillo.json"]
+        }
+      ],
+      "sections": [
+        {
+          "title": "Presentarte en la plaza",
+          "summary": "Los tenderos quieren conocer al forastero. Y alguien te sigue desde el mercado.",
+          "objectives": [
+            "obj_tut_tendero",
+            "obj_tut_joyero",
+            "obj_tut_sastre",
+            "obj_tut_emboscada"
+          ]
+        },
+        {
+          "title": "La Taberna Humilde",
+          "summary": "Cama, cena y lo que se cuenta en la barra. Rosita sabe de todo.",
+          "objectives": [
+            "obj_posada",
+            "obj_preguntar"
+          ]
+        },
+        {
+          "title": "Los Perdidos",
+          "summary": "Una secta que reparte pan y pide brazos. Y un caballero que bebe solo.",
+          "objectives": [
+            "obj_pruebas",
+            "obj_venides"
+          ]
+        },
+        {
+          "title": "Encargos de la ciudad",
+          "summary": "Nadie te los manda. Pero alguien se acordará.",
+          "objectives": [
+            "bnd1_op_luisarda",
+            "bnd1_op_familia",
+            "bnd1_op_xila"
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "id": "bnd1_tomas",
+          "title": "Tomás, en el rincón de la taberna",
+          "section": "La Taberna Humilde",
+          "choices": [
+            {
+              "flag": "bnd0_tomas_amigo",
+              "choice": "Le diste la razón a Tomás: si dan pan, algo harán bien.",
+              "consequence": "Te tomó por uno de los suyos: «En la iglesia vieja del Casco Antiguo hay sitio para todos. Pregunta por la luz». Berto se levantó y se fue a la barra."
+            },
+            {
+              "flag": "bnd0_pista_brazos",
+              "choice": "Le preguntaste a Tomás qué piden a cambio del pan.",
+              "consequence": "Dudó, y lo soltó: que lleves a alguien fuerte, que hacen falta brazos. Los Perdidos no buscan fieles: buscan manos."
+            },
+            {
+              "flag": "bnd0_tomas_ofendido",
+              "choice": "Te reíste de Tomás.",
+              "consequence": "Se levantó y se fue. Berto y el tercero pidieron otra ronda sin ti. Esa mesa ya no te habla."
+            }
+          ]
+        },
+        {
+          "id": "bnd1_pelea",
+          "title": "La pelea en la taberna",
+          "section": "La Taberna Humilde",
+          "choices": [
+            {
+              "flag": "bnd1_pelea_ganada",
+              "choice": "Te metiste a separarlos, a golpes.",
+              "consequence": "El camorrista acabó en el suelo, apaleado pero vivo, escupiendo sangre y riéndose. La taberna entera esperó a ver qué hacías con él."
+            },
+            {
+              "flag": "bnd1_pelea_rosita",
+              "choice": "Dejaste que Rosita se ocupara.",
+              "consequence": "Rosita dejó las monedas, cogió al camorrista del cuello de la capa con una sola mano y lo sentó en una silla. Nadie respiró. Esa fuerza no es de tabernera."
+            }
+          ]
+        },
+        {
+          "id": "bnd1_camorrista",
+          "title": "Qué hiciste con el camorrista",
+          "section": "La Taberna Humilde",
+          "choices": [
+            {
+              "flag": "bnd1_camorrista_muerto",
+              "choice": "Lo sacaste a la calle y lo mataste.",
+              "consequence": "Bajo la lluvia. Nadie miraba desde las ventanas, pero todas las cortinas se movieron. Al día siguiente el barrio lo sabía."
+            },
+            {
+              "flag": "bnd1_camorrista_entregado",
+              "choice": "Lo entregaste a la guardia.",
+              "consequence": "Dos guardias empapados se lo llevaron. «Se lo diré al capitán. Gente que trae a los culpables atados no se ve todos los días.»",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd2_capitan_exito"
+                  ],
+                  "text": "Al día siguiente el capitán se acordaba de ti: «¿El de la taberna? Algo me dijo el sargento. Habla»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd1_camorrista_jefe",
+              "choice": "Le hiciste hablar, y le preguntaste quién le manda.",
+              "consequence": "«Uno que habla muy bonito. Nunca grita. Esos son los peores.» Una pista más para Venides."
+            },
+            {
+              "flag": "bnd1_camorrista_habla",
+              "choice": "Le hiciste hablar, y le soltaste.",
+              "consequence": "Te contó lo que sabía, que era poco y era cierto. Una pista más para Venides."
+            },
+            {
+              "flag": "bnd1_camorrista_echado",
+              "choice": "Lo echaste a la calle.",
+              "consequence": "Desde la puerta: «¡Os acordaréis de mí cuando arda!»"
+            }
+          ]
+        },
+        {
+          "id": "bnd1_luisarda",
+          "title": "Las antorchas de Luisarda",
+          "section": "Los Perdidos",
+          "choices": [
+            {
+              "flag": "bnd1_luisarda_asustada",
+              "choice": "Le exigiste a Luisarda, de malos modos, que hablara de las antorchas.",
+              "consequence": "Le diste miedo. Desde entonces te da lo que pidas, pero mirando al mostrador: «Tú otra vez»."
+            },
+            {
+              "flag": "bnd1_luisarda_dejada",
+              "choice": "No insististe con Luisarda.",
+              "consequence": "«Gracias por no insistir, cielo.» Y lo dijo de verdad."
+            },
+            {
+              "flag": "bnd_pista_luisarda",
+              "choice": "Conseguiste que Luisarda te abriera la sala de detrás del tapiz.",
+              "consequence": "Allí se juntaban las tenderas los domingos. Te habló de Sandes: muy educado, muy guapo, muy de sonreír. Se llevó todas las antorchas y pagó con oro nuevo, de ese que no ha pasado por ninguna mano."
+            }
+          ]
+        },
+        {
+          "id": "bnd1_luisarda_pide",
+          "title": "Lo que le prometiste a Luisarda",
+          "section": "Encargos de la ciudad",
+          "choices": [
+            {
+              "flag": "bnd1_luisarda_con_rosita",
+              "choice": "Mandaste a Luisarda a cenar con Rosita, a la Taberna Humilde.",
+              "consequence": "Cerró la Boutique y se fue, riendo y llorando a la vez: «El guiso de Rosita es malo, ¿eh? Siempre ha sido malo». Rosita te debe una.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd2_luisarda_visto"
+                  ],
+                  "text": "Al día siguiente, más tranquila: «Anoche cené en la taberna. El guiso, malo. Rosita, peor. Dormí como hacía semanas. Te debo una, cielo»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd1_luisarda_silencio",
+              "choice": "Le prometiste a Luisarda que no dirías nada.",
+              "consequence": "«Vuelve cuando todo esto pase. Te guardo algo.» Tu silencio le vale dos pociones."
+            }
+          ]
+        },
+        {
+          "id": "bnd1_secta",
+          "title": "Los sectarios de la plaza",
+          "section": "Los Perdidos",
+          "choices": [
+            {
+              "flag": "bnd1_invitado_guarida",
+              "choice": "Les dijiste a los sectarios que querías unirte.",
+              "consequence": "«Eso se dice rápido. Ven esta noche a la iglesia. Sin armas: allí dentro no hacen falta.» Tenías la puerta de la cripta abierta."
+            },
+            {
+              "flag": "bnd1_secta_pelea",
+              "choice": "Te burlaste de ellos, y después insististe.",
+              "consequence": "«Herejía», dijo alguien, y los tres se te echaron encima. La guardia quedó avisada."
+            },
+            {
+              "flag": "bnd1_secta_burla",
+              "choice": "Te reíste de los sectarios.",
+              "consequence": "«Ríe. Ya llorarás.» La gente de la plaza se apartó un paso de ti."
+            }
+          ]
+        },
+        {
+          "id": "bnd1_xila",
+          "title": "Xila, el que lloraba en la plaza",
+          "section": "Encargos de la ciudad",
+          "choices": [
+            {
+              "flag": "bnd1_aliado_xila",
+              "choice": "Le invitaste a desayunar en vez de a beber.",
+              "consequence": "Xila habló sobrio: los rituales en la iglesia medio caída del Casco Antiguo, y la sal y el azufre que los Perdidos compraban en Killville con oro nuevo. Tienes un aliado.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd2_xila_escalon_visto"
+                  ],
+                  "text": "Al día siguiente te esperaba en un escalón, afeitado, con la capa de Venides doblada en el regazo: «Sobrio, como ves. Me duele todo»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd1_xila_convidado",
+              "choice": "Invitaste a Xila a un trago.",
+              "consequence": "Un trago llevó a otro, y el otro a otro más. Entre vaso y vaso salió la historia verdadera de Killville: sal y azufre pagados con oro nuevo."
+            },
+            {
+              "flag": "bnd1_xila_maltratado",
+              "choice": "Trataste a Xila con desprecio.",
+              "consequence": "Le dijiste lo que piensas de los borrachos que lloran en público. Se limpió la cara y te dio la espalda. «¿Vienes a reírte otra vez?»"
+            }
+          ]
+        },
+        {
+          "id": "bnd1_verdaderos",
+          "title": "Los Verdaderos, en la puerta azul",
+          "section": "Encargos de la ciudad",
+          "choices": [
+            {
+              "flag": "bnd1_verdaderos_unido",
+              "choice": "Te sumaste a los Verdaderos.",
+              "consequence": "«¡Uno que lo entiende! Toma, bebe.» La niña te miraba desde la ventana."
+            },
+            {
+              "flag": "bnd1_verdaderos_vencidos",
+              "choice": "Les plantaste cara a los cinco, y los venciste.",
+              "consequence": "Se dispersaron calle abajo. Rufo se quedó en el barro, con la nariz sangrando: «Yo no quería venir. Me dijeron que había pan»."
+            },
+            {
+              "flag": "bnd1_verdaderos_ganan",
+              "choice": "Les plantaste cara a los cinco, y perdiste.",
+              "consequence": "Se fueron riendo. El padre y la niña ya no estaban, y la puerta azul se quedó cerrada."
+            }
+          ]
+        },
+        {
+          "id": "bnd1_familia",
+          "title": "La familia de Mira",
+          "section": "Encargos de la ciudad",
+          "choices": [
+            {
+              "flag": "bnd1_familia_en_barriada",
+              "choice": "Prometiste llevar a la familia a la Barriada de Surysal.",
+              "consequence": "El padre dudó: «¿Los gitanos? Dicen que...». Miró a su hija y no dijo nada más. Esa noche ya estaban recogiendo.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd2_familia_llevada"
+                  ],
+                  "text": "Al amanecer los acompañaste. Mira iba delante, con el gato en brazos, contando los puentes. Zarela os recibió: «Quien trae a los que nadie quiere es bienvenido en este fuego»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd1_familia_cobrada",
+              "choice": "Le cobraste al padre por haberles salvado.",
+              "consequence": "Diez de oro, todo lo que tenía, sacado de debajo de una tabla. Mira dejó de hablar. Ahora se esconde detrás de su padre en cuanto te ve."
+            }
+          ]
+        },
+        {
+          "id": "bnd1_pulga",
+          "title": "Pulga, el carterista",
+          "section": "Encargos de la ciudad",
+          "choices": [
+            {
+              "flag": "bnd1_carterista_amigo",
+              "choice": "Dejaste ir a Pulga.",
+              "consequence": "«¿En serio? Te debo una, forastero. Si algún día necesitas salir de aquí sin que te vean, silba dos veces.»",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd3_pulga_visto"
+                  ],
+                  "text": "En el Ocaso, dos silbidos desde un tejado: «¡Por el patio de los toneles se sale a Las Afueras sin pasar por la plaza!»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd1_carterista_robado",
+              "choice": "Le vaciaste los bolsillos a Pulga.",
+              "consequence": "Diez de oro, una canica y un trozo de pan. «Eso era de mi madre.» Ahora echa a correr en cuanto te ve."
+            }
+          ]
+        },
+        {
+          "id": "bnd1_aigren",
+          "title": "Aigren, en El Lingote de Oro",
+          "section": "Los Perdidos",
+          "choices": [
+            {
+              "flag": "bnd1_aigren_redimido",
+              "choice": "Convenciste a Aigren de que los Perdidos son el mal.",
+              "consequence": "Dejó de forjar para ellos.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd2_daga_dada"
+                  ],
+                  "text": "Al día siguiente te dio una daga envuelta en un trapo: «La mejor que he hecho nunca, y la única que no es para ellos»."
+                },
+                {
+                  "flags": [
+                    "bnd3_aigren_visto"
+                  ],
+                  "text": "En el Ocaso entró en la base con un carro lleno de espadas: «Esta vez, para quien defiende»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd1_aigren_delata",
+              "choice": "Presionaste a Aigren con su hijo.",
+              "consequence": "Cuando volviste, el portón estaba cerrado, con un cartel clavado de cualquier manera: CERRADO POR ENFERMEDAD. Dentro no sonaba ningún martillo."
+            },
+            {
+              "flag": "bnd1_invitado_por_aigren",
+              "choice": "Le dijiste a Aigren que los Perdidos te interesaban.",
+              "consequence": "«Baja a la cripta de la iglesia vieja, en el Casco Antiguo. Di que vas de parte del herrero.» Volvió al yunque y golpeó más fuerte."
+            }
+          ]
+        },
+        {
+          "id": "bnd1_sandes",
+          "title": "Cara a cara con Sandes",
+          "section": "Los Perdidos",
+          "choices": [
+            {
+              "flag": "bnd1_luisarda_delatada",
+              "choice": "Le contaste a Sandes que Luisarda habla de más.",
+              "consequence": "«Me acordaré de que me lo has contado tú.» Esa noche, unos de gris fueron a preguntar por la sala de Luisarda.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd2_encargo"
+                  ],
+                  "text": "Al día siguiente Luisarda hacía la maleta sin doblar nada: «Cierro, y no vuelvo. Y tú no me has visto»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd1_sandes_enfadado",
+              "choice": "No le diste a Sandes lo que quería oír.",
+              "consequence": "La sonrisa no se movió, pero se le notó la rabia en lo blanco de los nudillos: «Alguien que recuerda las caras». Te mandó con Edul."
+            },
+            {
+              "flag": "bnd1_sandes_killville",
+              "choice": "Le dijiste a Sandes que querías unirte.",
+              "consequence": "Te escuchó con la cabeza un poco ladeada, como quien mide algo."
+            }
+          ]
+        },
+        {
+          "id": "bnd1_cripta",
+          "title": "La noche en la cripta",
+          "section": "Los Perdidos",
+          "choices": [
+            {
+              "flag": "bnd1_verina_salvada_guarida",
+              "choice": "Sacaste a Verina de la guarida.",
+              "consequence": "«Ven conmigo. Ahora.» — «¿Y Edul?» — «Volveré por él.» — «No prometas. Haz.» La llevaste a la Taberna Humilde y Rosita la subió arriba sin preguntar.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd2_rosita_verina"
+                  ],
+                  "text": "Rosita, a la mañana siguiente: «La chica que trajiste duerme arriba. No ha comido nada. Le dejé un libro en la almohada; esta mañana estaba leído»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd1_unido_al_culto",
+              "choice": "Te uniste a los Perdidos.",
+              "consequence": "«Entonces ya eres uno de nosotros. Cuando esto acabe tendrás tu sitio.» Y te dijeron dónde irán las barricadas: en Las Afueras y en el puente."
+            },
+            {
+              "flag": "bnd1_dudas_verina",
+              "choice": "Sembraste dudas en Verina: «¿Y si la luz que buscas no es la que te prometen?».",
+              "consequence": "Verina, mirando a Edul: «Eso mismo me pregunto yo cada noche».",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd3_verina_libre",
+                    "bnd3_con_venides"
+                  ],
+                  "text": "En el Ocaso, ya libre: «Tú me hiciste la pregunta. Me la hice cada noche hasta que me la contesté. Lo hice por ti»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd1_guarida_exterminada",
+              "choice": "Intentaste acabar con todos, y no quedó nadie en pie.",
+              "consequence": "Solo huyó el del estrado, por un pasadizo: «Ya lo había previsto. Lo tengo todo previsto». Las antorchas siguen contra la pared, y nadie de allí abajo las encenderá ya."
+            },
+            {
+              "flag": "bnd1_guarida_ganada",
+              "choice": "Les plantaste cara en la cripta, y ganaste.",
+              "consequence": "Los que quedaban en pie huyeron escaleras arriba. Recogiste tus armas en la entrada y saliste antes de que llegara la guardia."
+            },
+            {
+              "flag": "bnd1_guarida_perdida",
+              "choice": "Les plantaste cara en la cripta, y perdiste.",
+              "consequence": "Saliste de la cripta como pudiste. Arriba ya se oía a la guardia."
+            },
+            {
+              "flag": "bnd1_sabe_barricadas",
+              "choice": "Te mezclaste entre los que rezan, para sonsacarles.",
+              "consequence": "Un fanático presumió en voz baja: «El día del fuego no quedará un puente en pie». Ya sabes dónde golpearán."
+            }
+          ]
+        },
+        {
+          "id": "bnd1_edul",
+          "title": "Lo que supo Venides de Edul",
+          "section": "Los Perdidos",
+          "choices": [
+            {
+              "flag": "bnd1_venides_sabe_edul",
+              "choice": "Le contaste a Venides que Edul está con los Perdidos.",
+              "consequence": "Se le pasó la borrachera de golpe. Mucho rato callado. «Mañana. Mañana vamos a por él.»",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd2_venides_castillo_visto"
+                  ],
+                  "text": "Al día siguiente: «Esta noche voy a por Edul. No me digas que no»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd1_edul_callado",
+              "choice": "Te callaste lo de Edul.",
+              "consequence": "Venides siguió hablando de Edul como de un fantasma. No sabe que su amigo reza en la cripta."
+            }
+          ]
+        },
+        {
+          "id": "bnd1_barca",
+          "title": "El sueño de la barca",
+          "section": "Los Perdidos",
+          "choices": [
+            {
+              "flag": "bnd_venides_reconocido",
+              "choice": "Le contaste a Venides que habías soñado con una barca.",
+              "consequence": "Por tu cara supo que tú también la habías visto: «Nadie comparte ese sueño y sigue creyendo que es solo un sueño». Desde entonces, contigo, nada de medias tintas."
+            }
+          ]
+        },
+        {
+          "id": "bnd1_informe",
+          "title": "Lo que le contaste a Venides",
+          "section": "Los Perdidos",
+          "choices": [
+            {
+              "flag": "bnd_venides_20",
+              "choice": "Se lo contaste todo a Venides, con pruebas de sobra.",
+              "consequence": "No bebió. «Esto no son rumores. Esto es una guerra.» Cerró el cuaderno. «Veinte hombres. Mañana los tengo.»",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd3_arenga"
+                  ],
+                  "notFlags": [
+                    "bnd3_sin_venides"
+                  ],
+                  "text": "Cuando sonaron las campanas, había veinte hombres armados esperando en el sitio correcto, con las corazas puestas desde el día anterior."
+                }
+              ]
+            },
+            {
+              "flag": "bnd1_venides_espera",
+              "choice": "Le contaste a Venides lo que tenías.",
+              "consequence": "Asintió a todo con la misma cara: «Con esto el capitán se me ríe en la cara. Tráeme algo que se pueda tocar»."
+            },
+            {
+              "flag": "bnd1_venides_confianza",
+              "choice": "Bebiste con Venides en vez de hablar: «Bebe conmigo y mañana lo arreglamos».",
+              "consequence": "«Hacía tiempo que nadie se sentaba a beber conmigo sin pedirme nada.» Rosita, recogiendo jarras: «Y tú, súbele la capa, que se la deja siempre»."
+            },
+            {
+              "flag": "bnd1_venides_desconfianza",
+              "choice": "Desconfiaste de Venides y te levantaste sin decir nada.",
+              "consequence": "Se encogió de hombros y pidió otra."
+            }
+          ]
+        }
+      ],
+      "rewardGold": 0,
+      "rewardItemIds": [],
+      "completionFlag": ""
+    },
+    {
+      "id": "bnd_segundo_dia",
+      "name": "El Segundo Día en Boundington",
+      "summary": "La investigación. Venides se reparte la ciudad contigo y se abren dos frentes: Pico Dragón y el Barrio Alto. Lo que ates hoy es lo que te salvará mañana.",
+      "tier": 1,
+      "rarity": "common",
+      "adventureId": "adv_boundington_segundo_dia",
+      "sections": [
+        {
+          "title": "El encargo de Venides",
+          "summary": "Sin pruebas no hay hombres.",
+          "objectives": [
+            "obj2_encargo"
+          ]
+        },
+        {
+          "title": "Pico Dragón",
+          "summary": "Rosita quiere su espada de vuelta: la Furia de Alaro.",
+          "objectives": [
+            "obj2_espada"
+          ]
+        },
+        {
+          "title": "El Barrio Alto",
+          "summary": "Una fiesta de nobles donde se habla de más.",
+          "objectives": [
+            "obj2_fiesta"
+          ]
+        },
+        {
+          "title": "Aliados para mañana",
+          "summary": "Cuando suenen las campanas, ¿quién estará contigo?",
+          "objectives": [
+            "obj2_aliados"
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "id": "bnd2_furia",
+          "title": "La Furia de Alaro",
+          "section": "Pico Dragón",
+          "choices": [
+            {
+              "flag": "bnd2_rosita_lo_sabe",
+              "choice": "Le devolviste la espada a Rosita y se lo contaste todo.",
+              "consequence": "«Cuántas cosas cargas para tener tan poca edad.» Escuchó sin interrumpir, y se lo dirá a Venides de su parte.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd2_rosita_revelada"
+                  ],
+                  "text": "Colgando la espada en su hueco: «Fueron siete trolls, por cierto. No doce. Yo era la Furia»."
+                },
+                {
+                  "flags": [
+                    "bnd3_rosita_calle"
+                  ],
+                  "text": "En el Ocaso se plantó sola en su calle, con la espada ardiendo de verdad: «Seguid. Esto es mi calle»."
+                },
+                {
+                  "flags": [
+                    "b3_epi_rosita_dicho"
+                  ],
+                  "text": "Sho-Noco: «La tabernera aguantó su calle hasta el amanecer. Las historias que cuentan los borrachos se quedaron cortas»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd2_aliado_skilla",
+              "choice": "Le devolviste a Rosita su espada.",
+              "consequence": "La hoja se calentó en su mano y las vetas rojas brillaron un instante. «Hola, vieja.» Y a ti: «Gracias».",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd2_rosita_revelada"
+                  ],
+                  "text": "Colgando la espada en su hueco: «Fueron siete trolls, por cierto. No doce. Yo era la Furia»."
+                },
+                {
+                  "flags": [
+                    "bnd3_rosita_calle"
+                  ],
+                  "text": "En el Ocaso se plantó sola en su calle, con la espada ardiendo de verdad: «Seguid. Esto es mi calle»."
+                },
+                {
+                  "flags": [
+                    "b3_epi_rosita_dicho"
+                  ],
+                  "text": "Sho-Noco: «La tabernera aguantó su calle hasta el amanecer. Las historias que cuentan los borrachos se quedaron cortas»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd2_rosita_desconfia",
+              "choice": "Le dijiste a Rosita que no la habías encontrado.",
+              "consequence": "«Ya.» Solo eso. Te sirvió la cerveza y te la cobró.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd3_rosita_vista"
+                  ],
+                  "text": "En el Ocaso, la Taberna Humilde estaba cerrada y a oscuras, con la tranca puesta."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bnd2_gorran",
+          "title": "Gorran, vencido",
+          "section": "Pico Dragón",
+          "choices": [
+            {
+              "flag": "bnd2_gorran_perdonado",
+              "choice": "Le perdonaste la vida a Gorran si peleaba contra los Perdidos.",
+              "consequence": "«Hecho. Busca a los que pelean sin rezar. Esos son míos.» Te llevaste la espada y sus papeles.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd3_gorran_visto"
+                  ],
+                  "text": "En el Ocaso, un grupo de hombres sin capa gris cargó contra los Perdidos por un costado: «¡Te dije que pagaba lo que debía! ¡Estamos en paz!»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd2_gorran_muerto",
+              "choice": "Acabaste con Gorran.",
+              "consequence": "Los bandidos huyeron monte abajo. Gorran no se levantó más. Te llevaste la espada y sus papeles."
+            }
+          ]
+        },
+        {
+          "id": "bnd2_capitan",
+          "title": "El capitán de la guardia",
+          "section": "Aliados para mañana",
+          "choices": [
+            {
+              "flag": "bnd2_guardia_preparada",
+              "choice": "Convenciste al capitán de que van a atacar la ciudad.",
+              "consequence": "«Sin una orden de arriba no muevo a nadie... Pero puedo doblar las rondas en el distrito militar. Si es verdad lo que dices, por allí no pasarán.»"
+            }
+          ]
+        },
+        {
+          "id": "bnd2_barriada",
+          "title": "La Barriada de Surysal",
+          "section": "Aliados para mañana",
+          "choices": [
+            {
+              "flag": "bnd2_barriada_delatada",
+              "choice": "Les contaste a los sectarios que la Barriada se arma.",
+              "consequence": "«Interesante. La luz agradece a quien la ayuda a ver.»"
+            },
+            {
+              "flag": "bnd2_saqueadores_vencidos",
+              "choice": "Peleaste con la Barriada contra los saqueadores.",
+              "consequence": "Huyeron. El último, ya en el puente: «¡Te conozco! ¡Eres el de la taberna!». Zarela: «Mis guerreros estarán contigo cuando suenen las campanas»."
+            },
+            {
+              "flag": "bnd2_saqueadores_ganan",
+              "choice": "Peleaste con la Barriada contra los saqueadores, y no bastó.",
+              "consequence": "Se llevaron lo que pudieron. Zarela no te culpa, pero tampoco te da las gracias."
+            },
+            {
+              "flag": "bnd2_barriada_sola",
+              "choice": "Le dijiste a Zarela que no era tu pelea.",
+              "consequence": "«Ninguna pelea es de nadie hasta que le llega a la puerta.»"
+            }
+          ]
+        },
+        {
+          "id": "bnd2_cobrador",
+          "title": "El cobrador de la fiesta",
+          "section": "El Barrio Alto",
+          "choices": [
+            {
+              "flag": "bnd2_cobrador_denunciado",
+              "choice": "Denunciaste al cobrador ante el vigilante.",
+              "consequence": "«¿Otra vez tú, Pardo? Fuera de aquí.» Y a ti te dejó pasar con un gesto, por haberle ayudado."
+            },
+            {
+              "flag": "bnd2_cobrador_amenazado",
+              "choice": "Amenazaste al cobrador.",
+              "consequence": "Se le cayó el libro. «Hoy es gratis. Hoy es una noche especial.»"
+            }
+          ]
+        },
+        {
+          "id": "bnd2_edul",
+          "title": "Edul, en la fiesta",
+          "section": "El Barrio Alto",
+          "choices": [
+            {
+              "flag": "bnd2_edul_sabe_venides",
+              "choice": "Le dijiste a Edul que Venides quiere sacarle, no detenerle.",
+              "consequence": "«Siempre ha querido salvar a todo el mundo. Nunca le salió bien.» Y en voz baja: «Dile que estoy bien».",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd3_edul_libre"
+                  ],
+                  "text": "En el Ocaso, ya libre: «Tú. El de la fiesta. Dijiste que Venides quería sacarme. ¿Era verdad?»."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bnd2_noble",
+          "title": "El noble que brindaba",
+          "section": "El Barrio Alto",
+          "choices": [
+            {
+              "flag": "bnd2_noble_senalado",
+              "choice": "Te quedaste con la cara y el nombre del noble para Venides.",
+              "consequence": "Esa noche los supo Venides."
+            },
+            {
+              "flag": "bnd2_noble_chantajeado",
+              "choice": "Chantajeaste al noble.",
+              "consequence": "Treinta de oro, y aquí no ha pasado nada."
+            }
+          ]
+        },
+        {
+          "id": "bnd2_informe",
+          "title": "Lo que le contaste a Venides esa noche",
+          "section": "El encargo de Venides",
+          "choices": [
+            {
+              "flag": "bnd2_venides_leal",
+              "choice": "Se lo contaste todo: el ataque, el fuego, los papeles de Gorran, la fiesta, Edul y Verina.",
+              "consequence": "Escuchó sin interrumpir. Cuando nombraste a Verina, cerró los ojos. «Gracias. Por todo. También por lo que duele.»"
+            },
+            {
+              "flag": "bnd2_venides_enganado",
+              "choice": "Le contaste el ataque, pero no lo de Edul y Verina.",
+              "consequence": "«Bien. Con esto me dan hombres.» Te miró un momento de más. «¿Y nada más? ¿Seguro?» — «Seguro.»"
+            },
+            {
+              "flag": "bnd2_venides_sin_aviso",
+              "choice": "No le contaste nada a Venides.",
+              "consequence": "«Dos días y nada. Bueno. Puede que me equivoque con esta ciudad.» Se levantó. «Mañana voy solo a la base.»",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd3_sin_venides"
+                  ],
+                  "text": "En el Ocaso, Venides había salido solo hacia Las Afueras, y unos guardias con cintas grises fueron detrás. Tuviste que salir sin él."
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "rewardGold": 0,
+      "rewardItemIds": [],
+      "completionFlag": "",
+      "objectives": [
+        {
+          "id": "bnd2_op_capitan_prueba",
+          "description": "El capitán no se fía de palabras: vuelve al castillo con una prueba de los Perdidos, o con Venides.",
+          "optional": true,
+          "doneFlag": "bnd2_guardia_preparada",
+          "visibleFlag": "bnd2_capitan_dijo_no",
+          "donde": ["assets/levels/interior_castillo.json"]
+        }
+      ]
+    },
+    {
+      "id": "bnd_ocaso",
+      "name": "El Ocaso de Boundington",
+      "summary": "Las campanas suenan a deshora y la ciudad arde. No hay forma de impedirlo. Solo hay forma de salir, y de decidir con quién.",
+      "tier": 1,
+      "rarity": "common",
+      "adventureId": "adv_boundington_ocaso",
+      "sections": [
+        {
+          "title": "La plaza del Casco Antiguo",
+          "summary": "Un estrado, antorchas y un sermón.",
+          "objectives": [
+            "obj3_plaza"
+          ]
+        },
+        {
+          "title": "Avisar a Venides",
+          "summary": "El caballero tiene que saberlo antes de que suenen las campanas.",
+          "objectives": [
+            "obj3_avisar"
+          ]
+        },
+        {
+          "title": "Salir de Boundington",
+          "summary": "Lejos del fuego, cerca del río. Y con quien quiera venir.",
+          "objectives": [
+            "obj3_salir"
+          ]
+        }
+      ],
+      "decisions": [
+        {
+          "id": "bnd3_ruta",
+          "title": "Por dónde salir",
+          "section": "Salir de Boundington",
+          "choices": [
+            {
+              "flag": "bnd3_ruta_oeste",
+              "choice": "Fuiste hacia el oeste: el camino más largo, el que menos arde.",
+              "consequence": "«Si los gitanos están con nosotros, nos abrirán paso.»"
+            },
+            {
+              "flag": "bnd3_ruta_norte",
+              "choice": "Fuiste hacia el norte, donde está el fuego y lo que lo enciende.",
+              "consequence": "Las calles ardían de lado a lado, y en cada esquina había Perdidos con antorchas. «No vuelve nadie», había dicho Venides."
+            },
+            {
+              "flag": "bnd3_ruta_quedarse",
+              "choice": "Te quedaste a luchar en la base.",
+              "consequence": "«Hasta que caiga la base. O nosotros.» Por la muralla siguieron saltando: una oleada, y detrás otra."
+            }
+          ]
+        },
+        {
+          "id": "bnd3_verina",
+          "title": "Verina, en la barricada",
+          "section": "Salir de Boundington",
+          "choices": [
+            {
+              "flag": "bnd3_promesa_edul",
+              "choice": "Liberaste a Verina y fuisteis juntos a por Edul.",
+              "consequence": "«Entonces vamos.»",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd3_edul_salvado"
+                  ],
+                  "text": "Edul y Verina se abrazaron sin decir nada. «Ya está. Ya está, patoso.» — «No me llames así.» — «Siempre te he llamado así.»"
+                },
+                {
+                  "flags": [
+                    "b3_epi_verina_viva_dicho"
+                  ],
+                  "text": "Sho-Noco: «La lectora salió de la ciudad con su hermano. Tiene muchos libros por delante. Y un caballero que no sabe atarse la capa»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd3_verina_sola",
+              "choice": "Liberaste a Verina, pero le dijiste que no había tiempo para Edul.",
+              "consequence": "«Entonces voy sola.» Y se fue, calle abajo.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "b3_epi_verina_sola_dicho"
+                  ],
+                  "text": "Sho-Noco: «La lectora salió de la ciudad. Sola. Buscó a su hermano entre los que salían, hasta que ya no salió nadie más»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd3_verina_muerta",
+              "choice": "Intentaste liberar a Verina, y no llegaste.",
+              "consequence": "O llegaste y no bastó, que para el caso es lo mismo. Venides no dijo nada durante el resto de la noche."
+            },
+            {
+              "flag": "bnd3_verina_abandonada",
+              "choice": "Seguiste tu camino y dejaste a Verina en la barricada.",
+              "consequence": "Al volver la cabeza, ya no estaba.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "b3_epi_verina_muerta_dicho"
+                  ],
+                  "text": "Sho-Noco: «La lectora no salió. Otra ocupará su sitio en lo que viene. Su hermano no volverá a reír»."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bnd3_sandes",
+          "title": "La oferta de Sandes",
+          "section": "Salir de Boundington",
+          "choices": [
+            {
+              "flag": "bnd3_verina_entregada",
+              "choice": "Le entregaste Verina a Sandes.",
+              "consequence": "Verina, sin gritar, mirándote: «Me lo esperaba de él. De ti, no». Ganaste la lealtad de los Perdidos. Venides, si estaba, huyó, y no le volviste a ver.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "b3_epi_verina_muerta_dicho"
+                  ],
+                  "text": "Sho-Noco: «La lectora no salió. Otra ocupará su sitio en lo que viene. Su hermano no volverá a reír»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd3_aliado_sandes",
+              "choice": "Aceptaste la oferta de Sandes.",
+              "consequence": "Te aliaste con él. Venides, si estaba, huyó.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd3_final_solos"
+                  ],
+                  "text": "Saliste de Boundington por la puerta grande, con los Perdidos y la capa gris al hombro. Detrás, la ciudad ardía. Delante, nadie te esperaba."
+                },
+                {
+                  "flags": [
+                    "b3_epi_sandes_dicho"
+                  ],
+                  "text": "Sho-Noco: «El hijo de Killville te recuerda. Eso, en tu lugar, no me alegraría»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd3_sandes_huye_casco",
+              "choice": "Le dijiste que no a Sandes, y le hiciste huir.",
+              "consequence": "«Hoy no. Mañana tampoco. Pero algún día.» Se fue por la iglesia, cubierto por los fanáticos."
+            },
+            {
+              "flag": "bnd3_sandes_gana_casco",
+              "choice": "Le dijiste que no a Sandes, y te venció.",
+              "consequence": "Sus cadenas te dejaron en el suelo de la plaza. Cuando te levantaste, el estrado ardía vacío: Sandes se había ido hacia Las Afueras, sin prisa, como quien va a una cita."
+            },
+            {
+              "flag": "bnd3_sandes_pelea",
+              "choice": "Le dijiste que no a Sandes.",
+              "consequence": "La sonrisa no se movió. «Qué pena. Me caías bien.»"
+            }
+          ]
+        },
+        {
+          "id": "bnd3_edul",
+          "title": "Edul, atado en las barricadas",
+          "section": "Salir de Boundington",
+          "choices": [
+            {
+              "flag": "bnd3_edul_salvado",
+              "choice": "Liberaste a Edul.",
+              "consequence": "Las barricadas que él mismo preparó no se lo llevaron."
+            },
+            {
+              "flag": "bnd3_edul_perdido",
+              "choice": "Intentaste liberar a Edul, y no llegaste.",
+              "consequence": "Los guardias se lo llevaron hacia el fuego, y el fuego es suyo."
+            },
+            {
+              "flag": "bnd3_edul_abandonado",
+              "choice": "Dejaste a Edul atado en la barricada.",
+              "consequence": "Pasaste de largo. Detrás, Edul dejó de gritar."
+            }
+          ]
+        },
+        {
+          "id": "bnd3_venides",
+          "title": "Venides, de rodillas",
+          "section": "Avisar a Venides",
+          "choices": [
+            {
+              "flag": "bnd3_venides_libre",
+              "choice": "Ayudaste a Venides a escapar.",
+              "consequence": "Libre, frotándose las muñecas: «No me avisaste». Te miró. «Pero has venido. Ya hablaremos.»",
+              "aftermath": [
+                {
+                  "flags": [
+                    "b3_epi_venides_contigo_dicho"
+                  ],
+                  "text": "Sho-Noco: «El caballero llegó a Nefaria. Esa noche escribió mucho. Tu nombre, también»."
+                }
+              ]
+            },
+            {
+              "flags": [
+                "bnd3_venides_huye",
+                "bnd3_venides_resuelto"
+              ],
+              "notFlags": [
+                "bnd3_aliado_sandes"
+              ],
+              "choice": "Intentaste acabar con Venides.",
+              "consequence": "Luchó atado a medias. Al llegar al suelo, se zafó y huyó.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "b3_epi_venides_lejos_dicho"
+                  ],
+                  "text": "Sho-Noco: «El caballero corrió hasta dejar atrás la ciudad, al norte, hasta Nefaria. No miró atrás. Esa noche no escribió nada»."
+                }
+              ]
+            },
+            {
+              "flag": "bnd3_venides_dejado",
+              "choice": "Dejaste a Venides de rodillas.",
+              "consequence": "Sho-Noco te lo contará después. Tú no lo verás.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "b3_epi_venides_lejos_dicho"
+                  ],
+                  "text": "Sho-Noco: «El caballero corrió hasta dejar atrás la ciudad, al norte, hasta Nefaria. No miró atrás. Esa noche no escribió nada»."
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "rewardGold": 0,
+      "rewardItemIds": [],
+      "completionFlag": ""
+    }
+  ]
+}

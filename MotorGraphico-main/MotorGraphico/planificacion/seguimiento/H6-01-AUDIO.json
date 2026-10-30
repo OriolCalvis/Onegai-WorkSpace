@@ -1,0 +1,50 @@
+{
+  "id": "H6-01",
+  "date": "2026-10-05",
+  "author": "qwen",
+  "status": "MITAD GL-FREE — política de sonido decidida y probada; montaje en Application pendiente y bloqueado",
+  "dependencias": [
+    "H0-03 (Esc abre la pausa, cerrado)",
+    "GDB-11 (RPG/AudioEngine sobre miniaudio, versionado y con test_audio verde desde antes del corte H)",
+    "H6-03 (Game::OptionsValues / OptionsFile, versionado en 64922a9)"
+  ],
+  "criterio_de_cierre": "JUGABILIDAD_FASE_H.md H6-01: 'Al entrar en combate suena la música de combate; al golpear, un efecto; al salir, vuelve la de exploración'.",
+  "scope": [
+    "include/Game/AudioDirector.h: NUEVO, 176 líneas. AudioCue + AudioCueCatalog() + FindAudioCue() + MusicForMode() + AudioDirector. Las tres reglas (música exclusiva e idempotente, un modo-capa no la cambia, lo que falta no rompe nada) y el motivo de cada una, escritos en la cabecera.",
+    "src/Game/AudioDirector.cpp: NUEVO, 260 líneas, 1 línea en motor_level. Catálogo de 11 cues = la colección mínima que pide H6-02, ni uno más. bind() carga con la ruta que pasa quien cablea; playMusic/onModeChanged/play; applyVolumes() puentea los 0..10 de OptionsValues al 0..1 por bus; shutdown() para la música y descarga SIN llamar a AudioEngine::shutdown() (el dispositivo es de quien lo abrió).",
+    "tests/Game/AudioDirectorTests.cpp: NUEVO, 617 líneas, 26 casos contra un DOBLE de AudioEngine (MotorFalso): la interfaz es pura, así que no hace falta dispositivo ni tarjeta de sonido y corre en CI.",
+    "cmake/AudioDirectorTests.cmake: NUEVO, patrón ConditionWidgetTests sin copiar_assets (con cero assets en assets/audio la pieza debe arrancar en silencio y decirlo, que es justo lo que se prueba).",
+    "CMakeLists.txt: +11 líneas por hunk-staging (fuente en motor_level + include del test, en el mismo commit que su .cmake, ley 3)."
+  ],
+  "non_goals": [
+    "No se toca include/RPG/Audio.h, src/RPG/Audio.cpp ni tests/RPG/AudioTests.cpp: se leen y se consumen por su interfaz, no se modifican.",
+    "No se toca Application.* (M, H1-03/H1-05 de opencode + MenuJugador), OptionsState.*/OptionsFile.* (H6-03 cerrado), SaveSlotState/SaveGame* (G11-RANURAS-IO de Codex, fila viva de hoy), InventoryScreen.* (G12), Player.*/AnimatedEntity.* (CONTROLES-02), EditorState.*/LayerPanel.cpp (E-12/H4-09) ni DiarioMisiones.* (MISIONES-01).",
+    "No se fabrica contenido de audio: el flujo es canon -> cartas -> motor. El catálogo dice QUÉ hace falta y con qué ruta; los ficheros son H6-02.",
+    "No se hace ducking en Pause ni se inventa un volumen maestro: OptionsValues no los tiene y tocarlos sería un valor que el jugador no puede guardar.",
+    "No se regenera MAPA_DEL_CODIGO.md (pla/dades.py reservado por ALPHA-00) ni alcance_real.json (H8-01/D0007)."
+  ],
+  "verification": [
+    "test_audio_director 26/26 PASS; registrado con LABELS unit;gl-free y dentro de MOTOR_GL_FREE_TARGETS.",
+    "Falsabilidad por mutación: 11/11 cazadas, cada una poniendo rojo el caso que la defiende (música que se reinicia, Dialogue que corta la música, no parar la anterior, escala /100, applyVolumes tocando Master, problems() sin deduplicar, asset ausente que se calla, quedarse mudo si la nueva música no está, efecto que corta la música, shutdown cerrando el dispositivo ajeno, id desconocido en silencio). Restaurado y reverificado 26/26 con el fichero byte a byte idéntico al bueno.",
+    "Vecinos de la zona: test_audio (el motor real, 4 casos) y test_map_event_runner 16/16 sin regresión.",
+    "Suite GL-free: 172 Passed, 6 rojos reales (los 4 ajenos de siempre —demo_creacion_personaje, demo_nova_partida, test_gdb12_screens, test_catalog_content, todos con el test limpio y el sujeto sucio: assets/catalogs/*.json e InventoryScreen.* en vuelo— más los 2 linea_base_core, cuyo único problema instantáneo es el .cmake propio sin versionar y se cura con este commit) y 34 Not Run ajenos (ver 'hallazgo_suite').",
+    "analizar_duplicados --comprobar: OK, 32 casos plantados vistos, ningún falso positivo; 0 SOLAPAMIENTO_FUNCIONAL."
+  ],
+  "hallazgo_suite": [
+    "MEDIDO, NO ARREGLADO (fuera de zona): ctest --label-regex gl-free registra 195 pruebas y 34 salen 'Not Run' — 17 objetivos distintos (test_pergamino, test_quest_log, test_options_file, test_defeat_recovery, test_dice_roll_widget, test_condition_widget, test_mission_timer_widget, test_project_hub, test_project_panel, test_personajes_capas, test_editor_apariencia, test_registro_sprites, test_bloques, test_bandada, test_monumentos, test_target_selection, test_world_travel_state). Compilan y pasan cuando se piden a mano; lo que no los construye es suite_gl_free.",
+    "La ficha de H2-03 (01/10) ya documentaba 5 de estos. Hoy son 17: crece.",
+    "Lo mirado: sus cmake/*.cmake SÍ hacen set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS ...) y el configure imprime 'Suite GL-free: 117 objetivos', pero CMakeFiles/suite_gl_free.dir/build.make no contiene NI UNA referencia a un test y la regla de la suite arranca 93 marcas de progreso. O sea: la lista de 117 no llega entera a add_dependencies. Diagnóstico incompleto a propósito — el cableado de la suite es de quien consolide CMakeLists, no de esta fila.",
+    "Es la MISMA familia que demo_mision_llave (apagado días por una guarda if(TARGET motor_slots) que no se cumplía, curado en bdcb3ff): una prueba registrada que no se ejecuta no falla, y lo que no falla nadie lo echa de menos. Propuesto como Pendiente en el TABLERO."
+  ],
+  "handoff_montaje": [
+    "Application.h (cuando H1-03/H1-05 liberen el fichero): miembro std::unique_ptr<RPG::AudioEngine> m_audio = RPG::createAudioEngine() y Game::AudioDirector m_audioDirector{*m_audio}.",
+    "init(): m_audio->initialize() (su Result es esperable que falle sin tarjeta: se anota y se sigue, misma ley que el catálogo de equipo en H0-04) -> m_audioDirector.bind(<directorio de audio>) -> volcar m_audioDirector.problems() al log -> m_audioDirector.applyVolumes(Game::OptionsFile::read(ruta).values).",
+    "Donde ya se cambia m_session->mode(): m_audioDirector.onModeChanged(session.mode()). Es idempotente, así que se puede llamar cada frame sin miedo, pero va mejor en la transición.",
+    "En el bucle: m_audio->update() una vez por frame (lo pide la interfaz para callbacks y streaming).",
+    "Disparos: sfx.golpe y sfx.cura donde confirmBattleCommand aplica daño/curación; sfx.dado donde DicePoolEngine resuelve una tirada visible (H2-01); sfx.interfaz en los movimientos de menú; sfx.paso en el paso de Player (zona CONTROLES-02, hablar con Codex); sfx.victoria al cerrar un combate en Victoria.",
+    "Pantalla de título: m_audioDirector.playMusic(\"musica.titulo\") — el título no es un GameMode, por eso playMusic es público.",
+    "Opciones al cambiar un volumen: applyVolumes(OptionsFile::fromState(options)) y OptionsFile::write(...). Ahí se cumple el 'se nota al instante' de H6-03.",
+    "shutdown(): m_audioDirector.shutdown() ANTES de m_audio->shutdown(). El orden importa: el director para su música y descarga, y solo entonces se cierra el dispositivo.",
+    "Y con el motor de audio ya vivo en la partida, H6-02 tiene lista de la compra exacta: 11 rutas, 5 .ogg en musica/ y 6 .wav en sfx/."
+  ]
+}

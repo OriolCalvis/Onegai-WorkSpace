@@ -1,0 +1,53 @@
+{
+ "id": "hachero_de_la_cascada_poder_de_la_cascada",
+ "name": "Poder de la cascada",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "La energía de la cascada hasta el final del combate: atacas con ventaja y tus golpes con arma hacen +1.",
+ "flavorText": "",
+ "classTags": [
+  "hachero_de_la_cascada"
+ ],
+ "roleTags": [],
+ "tags": [
+  "hachero_de_la_cascada",
+  "creador"
+ ],
+ "mechanicTags": [
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "self",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "La energía de la cascada hasta el final del combate: atacas con ventaja y tus golpes con arma hacen +1.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Ventaja en ataque todo el combate.",
+   "mechanicHook": "estado:combate:ventaja:ataque"
+  },
+  {
+   "description": "+1 a tus golpes con arma todo el combate.",
+   "mechanicHook": "estado:combate:bono_dano_arma:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Hachero de la cascada (Waterfall Berserker) · H1388 Poder de la cascada"
+}

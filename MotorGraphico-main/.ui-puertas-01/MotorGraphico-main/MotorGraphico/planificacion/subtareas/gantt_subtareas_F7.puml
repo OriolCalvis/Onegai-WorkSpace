@@ -1,0 +1,261 @@
+@startgantt
+
+title Fase 7 — Playtest, extensiones y exportación — subtareas atómicas revisables
+
+' 1 'día' = 1 jornada de esfuerzo (~6 h). Las medias jornadas del
+' roadmap (0,5 j y 1,5 j) se redondean al alza porque PlantUML solo
+' admite días enteros; el esfuerzo exacto va entre corchetes en el
+' nombre de cada subtarea.
+' Las subtareas de paquetes ya avanzados se marcan con su porcentaje
+' heredado del paquete: revísalas antes de darlas por hechas.
+
+Project starts 2026-09-01
+saturday are closed
+sunday are closed
+
+
+-- TOOL-01 — Implementar playtest desde el editor  [PENDIENTE 10%] --
+
+[TOOL-01.1 (1,5 j) crear snapshot validado] lasts 2 days
+[TOOL-01.1 (1,5 j) crear snapshot validado] is colored in #B8BEC7
+[TOOL-01.1 (1,5 j) crear snapshot validado] is 10% completed
+[TOOL-01.2 (1,5 j) lanzar runtime] lasts 2 days
+[TOOL-01.2 (1,5 j) lanzar runtime] is colored in #B8BEC7
+[TOOL-01.2 (1,5 j) lanzar runtime] is 10% completed
+[TOOL-01.1 (1,5 j) crear snapshot validado] -> [TOOL-01.2 (1,5 j) lanzar runtime]
+[TOOL-01.3 (1 j) stream logs] lasts 1 days
+[TOOL-01.3 (1 j) stream logs] is colored in #B8BEC7
+[TOOL-01.3 (1 j) stream logs] is 10% completed
+[TOOL-01.2 (1,5 j) lanzar runtime] -> [TOOL-01.3 (1 j) stream logs]
+[TOOL-01.4 (1 j) stop/restart] lasts 1 days
+[TOOL-01.4 (1 j) stop/restart] is colored in #B8BEC7
+[TOOL-01.4 (1 j) stop/restart] is 10% completed
+[TOOL-01.3 (1 j) stream logs] -> [TOOL-01.4 (1 j) stop/restart]
+[TOOL-01.5 (1 j) limpiar temporales] lasts 1 days
+[TOOL-01.5 (1 j) limpiar temporales] is colored in #B8BEC7
+[TOOL-01.5 (1 j) limpiar temporales] is 10% completed
+[TOOL-01.4 (1 j) stop/restart] -> [TOOL-01.5 (1 j) limpiar temporales]
+[TOOL-01 listo] happens at [TOOL-01.5 (1 j) limpiar temporales]'s end
+
+-- TOOL-02 — Implementar probar desde la celda seleccionada  [PENDIENTE 0%] --
+
+[TOOL-02.1 (1 j) capturar selección] lasts 1 days
+[TOOL-02.1 (1 j) capturar selección] is colored in #B8BEC7
+[TOOL-01.5 (1 j) limpiar temporales] -> [TOOL-02.1 (1 j) capturar selección]
+[TOOL-02.2 (1 j) validar spawn temporal] lasts 1 days
+[TOOL-02.2 (1 j) validar spawn temporal] is colored in #B8BEC7
+[TOOL-02.1 (1 j) capturar selección] -> [TOOL-02.2 (1 j) validar spawn temporal]
+[TOOL-02.3 (1 j) pasar override] lasts 1 days
+[TOOL-02.3 (1 j) pasar override] is colored in #B8BEC7
+[TOOL-02.2 (1 j) validar spawn temporal] -> [TOOL-02.3 (1 j) pasar override]
+[TOOL-02.4 (1 j) mostrar error inline] lasts 1 days
+[TOOL-02.4 (1 j) mostrar error inline] is colored in #B8BEC7
+[TOOL-02.3 (1 j) pasar override] -> [TOOL-02.4 (1 j) mostrar error inline]
+[TOOL-02 listo] happens at [TOOL-02.4 (1 j) mostrar error inline]'s end
+
+-- TOOL-03 — Implementar recarga en caliente segura  [PENDIENTE 0%] --
+
+[TOOL-03.1 (1,5 j) calcular changeset] lasts 2 days
+[TOOL-03.1 (1,5 j) calcular changeset] is colored in #B8BEC7
+[TOOL-02.4 (1 j) mostrar error inline] -> [TOOL-03.1 (1,5 j) calcular changeset]
+[TOOL-03.2 (1,5 j) clasificar cambios] lasts 2 days
+[TOOL-03.2 (1,5 j) clasificar cambios] is colored in #B8BEC7
+[TOOL-03.1 (1,5 j) calcular changeset] -> [TOOL-03.2 (1,5 j) clasificar cambios]
+[TOOL-03.3 (1 j) enviar por IPC] lasts 1 days
+[TOOL-03.3 (1 j) enviar por IPC] is colored in #B8BEC7
+[TOOL-03.2 (1,5 j) clasificar cambios] -> [TOOL-03.3 (1 j) enviar por IPC]
+[TOOL-03.4 (1 j) aplicar transacción] lasts 1 days
+[TOOL-03.4 (1 j) aplicar transacción] is colored in #B8BEC7
+[TOOL-03.3 (1 j) enviar por IPC] -> [TOOL-03.4 (1 j) aplicar transacción]
+[TOOL-03.5 (1 j) rollback/error] lasts 1 days
+[TOOL-03.5 (1 j) rollback/error] is colored in #B8BEC7
+[TOOL-03.4 (1 j) aplicar transacción] -> [TOOL-03.5 (1 j) rollback/error]
+[TOOL-03 listo] happens at [TOOL-03.5 (1 j) rollback/error]'s end
+
+-- TOOL-04 — Crear consola e inspector de estado  [PARCIAL 20%] --
+
+[TOOL-04.1 (1,5 j) logging estructurado] lasts 2 days
+[TOOL-04.1 (1,5 j) logging estructurado] is colored in #E3A82B
+[TOOL-04.1 (1,5 j) logging estructurado] is 20% completed
+[TOOL-03.5 (1 j) rollback/error] -> [TOOL-04.1 (1,5 j) logging estructurado]
+[TOOL-04.2 (1,5 j) IPC logs] lasts 2 days
+[TOOL-04.2 (1,5 j) IPC logs] is colored in #E3A82B
+[TOOL-04.2 (1,5 j) IPC logs] is 20% completed
+[TOOL-04.1 (1,5 j) logging estructurado] -> [TOOL-04.2 (1,5 j) IPC logs]
+[TOOL-04.3 (1 j) panel filtros] lasts 1 days
+[TOOL-04.3 (1 j) panel filtros] is colored in #E3A82B
+[TOOL-04.3 (1 j) panel filtros] is 20% completed
+[TOOL-04.2 (1,5 j) IPC logs] -> [TOOL-04.3 (1 j) panel filtros]
+[TOOL-04.4 (1 j) inspector state] lasts 1 days
+[TOOL-04.4 (1 j) inspector state] is colored in #E3A82B
+[TOOL-04.4 (1 j) inspector state] is 20% completed
+[TOOL-04.3 (1 j) panel filtros] -> [TOOL-04.4 (1 j) inspector state]
+[TOOL-04.5 (1 j) link a fuente] lasts 1 days
+[TOOL-04.5 (1 j) link a fuente] is colored in #E3A82B
+[TOOL-04.5 (1 j) link a fuente] is 20% completed
+[TOOL-04.4 (1 j) inspector state] -> [TOOL-04.5 (1 j) link a fuente]
+[TOOL-04 listo] happens at [TOOL-04.5 (1 j) link a fuente]'s end
+
+-- TOOL-05 — Crear gestor completo de recursos y referencias  [PARCIAL 30%] --
+
+[TOOL-05.1 (2 j) registry persistente] lasts 2 days
+[TOOL-05.1 (2 j) registry persistente] is colored in #E3A82B
+[TOOL-05.1 (2 j) registry persistente] is 30% completed
+[TOOL-04.5 (1 j) link a fuente] -> [TOOL-05.1 (2 j) registry persistente]
+[TOOL-05.2 (1,5 j) hash/metadata] lasts 2 days
+[TOOL-05.2 (1,5 j) hash/metadata] is colored in #E3A82B
+[TOOL-05.2 (1,5 j) hash/metadata] is 30% completed
+[TOOL-05.1 (2 j) registry persistente] -> [TOOL-05.2 (1,5 j) hash/metadata]
+[TOOL-05.3 (1,5 j) índice refs] lasts 2 days
+[TOOL-05.3 (1,5 j) índice refs] is colored in #E3A82B
+[TOOL-05.3 (1,5 j) índice refs] is 30% completed
+[TOOL-05.2 (1,5 j) hash/metadata] -> [TOOL-05.3 (1,5 j) índice refs]
+[TOOL-05.4 (1,5 j) operaciones seguras] lasts 2 days
+[TOOL-05.4 (1,5 j) operaciones seguras] is colored in #E3A82B
+[TOOL-05.4 (1,5 j) operaciones seguras] is 30% completed
+[TOOL-05.3 (1,5 j) índice refs] -> [TOOL-05.4 (1,5 j) operaciones seguras]
+[TOOL-05.5 (1,5 j) UI/preview] lasts 2 days
+[TOOL-05.5 (1,5 j) UI/preview] is colored in #E3A82B
+[TOOL-05.5 (1,5 j) UI/preview] is 30% completed
+[TOOL-05.4 (1,5 j) operaciones seguras] -> [TOOL-05.5 (1,5 j) UI/preview]
+[TOOL-05 listo] happens at [TOOL-05.5 (1,5 j) UI/preview]'s end
+
+-- TOOL-06 — Diseñar API de plugins de runtime  [PENDIENTE 0%] --
+
+[TOOL-06.1 (1,5 j) ADR de tecnología] lasts 2 days
+[TOOL-06.1 (1,5 j) ADR de tecnología] is colored in #B8BEC7
+[TOOL-05.5 (1,5 j) UI/preview] -> [TOOL-06.1 (1,5 j) ADR de tecnología]
+[TOOL-06.2 (1,5 j) manifest/versiones] lasts 2 days
+[TOOL-06.2 (1,5 j) manifest/versiones] is colored in #B8BEC7
+[TOOL-06.1 (1,5 j) ADR de tecnología] -> [TOOL-06.2 (1,5 j) manifest/versiones]
+[TOOL-06.3 (1,5 j) host API mínima] lasts 2 days
+[TOOL-06.3 (1,5 j) host API mínima] is colored in #B8BEC7
+[TOOL-06.2 (1,5 j) manifest/versiones] -> [TOOL-06.3 (1,5 j) host API mínima]
+[TOOL-06.4 (1,5 j) sample plugin] lasts 2 days
+[TOOL-06.4 (1,5 j) sample plugin] is colored in #B8BEC7
+[TOOL-06.3 (1,5 j) host API mínima] -> [TOOL-06.4 (1,5 j) sample plugin]
+[TOOL-06.5 (1 j) compat tests] lasts 1 days
+[TOOL-06.5 (1 j) compat tests] is colored in #B8BEC7
+[TOOL-06.4 (1,5 j) sample plugin] -> [TOOL-06.5 (1 j) compat tests]
+[TOOL-06 listo] happens at [TOOL-06.5 (1 j) compat tests]'s end
+
+-- TOOL-07 — Diseñar API de extensiones de editor  [PENDIENTE 0%] --
+
+[TOOL-07.1 (1,5 j) definir extension points] lasts 2 days
+[TOOL-07.1 (1,5 j) definir extension points] is colored in #B8BEC7
+[TOOL-06.5 (1 j) compat tests] -> [TOOL-07.1 (1,5 j) definir extension points]
+[TOOL-07.2 (1,5 j) registro/lifecycle] lasts 2 days
+[TOOL-07.2 (1,5 j) registro/lifecycle] is colored in #B8BEC7
+[TOOL-07.1 (1,5 j) definir extension points] -> [TOOL-07.2 (1,5 j) registro/lifecycle]
+[TOOL-07.3 (1,5 j) sample panel/importer] lasts 2 days
+[TOOL-07.3 (1,5 j) sample panel/importer] is colored in #B8BEC7
+[TOOL-07.2 (1,5 j) registro/lifecycle] -> [TOOL-07.3 (1,5 j) sample panel/importer]
+[TOOL-07.4 (1,5 j) reload policy] lasts 2 days
+[TOOL-07.4 (1,5 j) reload policy] is colored in #B8BEC7
+[TOOL-07.3 (1,5 j) sample panel/importer] -> [TOOL-07.4 (1,5 j) reload policy]
+[TOOL-07.5 (1 j) tests] lasts 1 days
+[TOOL-07.5 (1 j) tests] is colored in #B8BEC7
+[TOOL-07.4 (1,5 j) reload policy] -> [TOOL-07.5 (1 j) tests]
+[TOOL-07 listo] happens at [TOOL-07.5 (1 j) tests]'s end
+
+-- TOOL-08 — Implementar permisos, versiones y migraciones de plugins  [PENDIENTE 0%] --
+
+[TOOL-08.1 (1,5 j) resolver dependencias] lasts 2 days
+[TOOL-08.1 (1,5 j) resolver dependencias] is colored in #B8BEC7
+[TOOL-07.5 (1 j) tests] -> [TOOL-08.1 (1,5 j) resolver dependencias]
+[TOOL-08.2 (1,5 j) comprobar API version] lasts 2 days
+[TOOL-08.2 (1,5 j) comprobar API version] is colored in #B8BEC7
+[TOOL-08.1 (1,5 j) resolver dependencias] -> [TOOL-08.2 (1,5 j) comprobar API version]
+[TOOL-08.3 (1 j) permission gate] lasts 1 days
+[TOOL-08.3 (1 j) permission gate] is colored in #B8BEC7
+[TOOL-08.2 (1,5 j) comprobar API version] -> [TOOL-08.3 (1 j) permission gate]
+[TOOL-08.4 (1 j) migraciones] lasts 1 days
+[TOOL-08.4 (1 j) migraciones] is colored in #B8BEC7
+[TOOL-08.3 (1 j) permission gate] -> [TOOL-08.4 (1 j) migraciones]
+[TOOL-08.5 (1 j) missing-plugin placeholders] lasts 1 days
+[TOOL-08.5 (1 j) missing-plugin placeholders] is colored in #B8BEC7
+[TOOL-08.4 (1 j) migraciones] -> [TOOL-08.5 (1 j) missing-plugin placeholders]
+[TOOL-08 listo] happens at [TOOL-08.5 (1 j) missing-plugin placeholders]'s end
+
+-- TOOL-09 — Implementar empaquetado de recursos usados  [PENDIENTE 0%] --
+
+[TOOL-09.1 (1,5 j) construir dependency graph] lasts 2 days
+[TOOL-09.1 (1,5 j) construir dependency graph] is colored in #B8BEC7
+[TOOL-08.5 (1 j) missing-plugin placeholders] -> [TOOL-09.1 (1,5 j) construir dependency graph]
+[TOOL-09.2 (1,5 j) marcar roots] lasts 2 days
+[TOOL-09.2 (1,5 j) marcar roots] is colored in #B8BEC7
+[TOOL-09.1 (1,5 j) construir dependency graph] -> [TOOL-09.2 (1,5 j) marcar roots]
+[TOOL-09.3 (1 j) resolver transitivas] lasts 1 days
+[TOOL-09.3 (1 j) resolver transitivas] is colored in #B8BEC7
+[TOOL-09.2 (1,5 j) marcar roots] -> [TOOL-09.3 (1 j) resolver transitivas]
+[TOOL-09.4 (1 j) copiar/atlas] lasts 1 days
+[TOOL-09.4 (1 j) copiar/atlas] is colored in #B8BEC7
+[TOOL-09.3 (1 j) resolver transitivas] -> [TOOL-09.4 (1 j) copiar/atlas]
+[TOOL-09.5 (1 j) emitir manifest] lasts 1 days
+[TOOL-09.5 (1 j) emitir manifest] is colored in #B8BEC7
+[TOOL-09.4 (1 j) copiar/atlas] -> [TOOL-09.5 (1 j) emitir manifest]
+[TOOL-09 listo] happens at [TOOL-09.5 (1 j) emitir manifest]'s end
+
+-- TOOL-10 — Implementar exportación Windows y Linux  [PARCIAL 20%] --
+
+[TOOL-10.1 (2 j) definir ExportTarget] lasts 2 days
+[TOOL-10.1 (2 j) definir ExportTarget] is colored in #E3A82B
+[TOOL-10.1 (2 j) definir ExportTarget] is 20% completed
+[TOOL-09.5 (1 j) emitir manifest] -> [TOOL-10.1 (2 j) definir ExportTarget]
+[TOOL-10.2 (1,5 j) Windows bundle] lasts 2 days
+[TOOL-10.2 (1,5 j) Windows bundle] is colored in #E3A82B
+[TOOL-10.2 (1,5 j) Windows bundle] is 20% completed
+[TOOL-10.1 (2 j) definir ExportTarget] -> [TOOL-10.2 (1,5 j) Windows bundle]
+[TOOL-10.3 (1,5 j) Linux bundle] lasts 2 days
+[TOOL-10.3 (1,5 j) Linux bundle] is colored in #E3A82B
+[TOOL-10.3 (1,5 j) Linux bundle] is 20% completed
+[TOOL-10.2 (1,5 j) Windows bundle] -> [TOOL-10.3 (1,5 j) Linux bundle]
+[TOOL-10.4 (1,5 j) smoke launch] lasts 2 days
+[TOOL-10.4 (1,5 j) smoke launch] is colored in #E3A82B
+[TOOL-10.4 (1,5 j) smoke launch] is 20% completed
+[TOOL-10.3 (1,5 j) Linux bundle] -> [TOOL-10.4 (1,5 j) smoke launch]
+[TOOL-10.5 (1,5 j) licencias] lasts 2 days
+[TOOL-10.5 (1,5 j) licencias] is colored in #E3A82B
+[TOOL-10.5 (1,5 j) licencias] is 20% completed
+[TOOL-10.4 (1,5 j) smoke launch] -> [TOOL-10.5 (1,5 j) licencias]
+[TOOL-10 listo] happens at [TOOL-10.5 (1,5 j) licencias]'s end
+
+-- TOOL-11 — Implementar diagnósticos de exportación  [PENDIENTE 0%] --
+
+[TOOL-11.1 (1 j) preflight pipeline] lasts 1 days
+[TOOL-11.1 (1 j) preflight pipeline] is colored in #B8BEC7
+[TOOL-10.5 (1,5 j) licencias] -> [TOOL-11.1 (1 j) preflight pipeline]
+[TOOL-11.2 (1 j) integrar validadores] lasts 1 days
+[TOOL-11.2 (1 j) integrar validadores] is colored in #B8BEC7
+[TOOL-11.1 (1 j) preflight pipeline] -> [TOOL-11.2 (1 j) integrar validadores]
+[TOOL-11.3 (1 j) UI progreso/resultados] lasts 1 days
+[TOOL-11.3 (1 j) UI progreso/resultados] is colored in #B8BEC7
+[TOOL-11.2 (1 j) integrar validadores] -> [TOOL-11.3 (1 j) UI progreso/resultados]
+[TOOL-11.4 (1 j) links/quick fixes] lasts 1 days
+[TOOL-11.4 (1 j) links/quick fixes] is colored in #B8BEC7
+[TOOL-11.3 (1 j) UI progreso/resultados] -> [TOOL-11.4 (1 j) links/quick fixes]
+[TOOL-11.5 (1 j) tests] lasts 1 days
+[TOOL-11.5 (1 j) tests] is colored in #B8BEC7
+[TOOL-11.4 (1 j) links/quick fixes] -> [TOOL-11.5 (1 j) tests]
+[TOOL-11 listo] happens at [TOOL-11.5 (1 j) tests]'s end
+
+-- TOOL-12 — Publicar alpha del creador de juegos  [PENDIENTE 0%] --
+
+[TOOL-12.1 (1 j) freeze branch] lasts 1 days
+[TOOL-12.1 (1 j) freeze branch] is colored in #B8BEC7
+[TOOL-11.5 (1 j) tests] -> [TOOL-12.1 (1 j) freeze branch]
+[TOOL-12.2 (0,5 j) ejecutar full suite] lasts 1 days
+[TOOL-12.2 (0,5 j) ejecutar full suite] is colored in #B8BEC7
+[TOOL-12.1 (1 j) freeze branch] -> [TOOL-12.2 (0,5 j) ejecutar full suite]
+[TOOL-12.3 (0,5 j) crear artefactos] lasts 1 days
+[TOOL-12.3 (0,5 j) crear artefactos] is colored in #B8BEC7
+[TOOL-12.2 (0,5 j) ejecutar full suite] -> [TOOL-12.3 (0,5 j) crear artefactos]
+[TOOL-12.4 (0,5 j) publicar notas] lasts 1 days
+[TOOL-12.4 (0,5 j) publicar notas] is colored in #B8BEC7
+[TOOL-12.3 (0,5 j) crear artefactos] -> [TOOL-12.4 (0,5 j) publicar notas]
+[TOOL-12.5 (0,5 j) abrir feedback triage] lasts 1 days
+[TOOL-12.5 (0,5 j) abrir feedback triage] is colored in #B8BEC7
+[TOOL-12.4 (0,5 j) publicar notas] -> [TOOL-12.5 (0,5 j) abrir feedback triage]
+[TOOL-12 listo] happens at [TOOL-12.5 (0,5 j) abrir feedback triage]'s end
+
+@endgantt

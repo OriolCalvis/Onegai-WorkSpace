@@ -1,0 +1,26 @@
+{
+ "id": "foso_de_estacas_corteses_legendaria",
+ "name": "Foso de Estacas Corteses Legendaria",
+ "type": "trap",
+ "tier": 5,
+ "rarity": "mythic",
+ "category": "mecánica",
+ "trigger": "pisar la losa floja",
+ "detection": {
+  "stat": "INT",
+  "cd": 2.5
+ },
+ "disarm": {
+  "stat": "DES",
+  "cd": 2.5,
+  "herramienta": "herramientas de ladrón"
+ },
+ "effect": {
+  "description": "Caída con estacas: 2 de daño y Caído. (escala: +4 de daño en este tier)",
+  "defensa": "resistencia_fisica",
+  "condicionInfligida": "caido"
+ },
+ "onFail": "La losa cede del todo: 3 de daño y Agarrado entre estacas.",
+ "reset": "única",
+ "flavorText": "Quien la montó pensaba volver. No volvió."
+}

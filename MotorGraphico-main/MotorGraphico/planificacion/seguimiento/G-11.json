@@ -1,0 +1,35 @@
+{
+  "id": "G-11",
+  "date": "2026-09-14",
+  "author": "Claude (Cowork)",
+  "status": "Servicio de ranuras hecho y DEC-09 comprobable. Paquete ABIERTO: las pantallas (SaveLoadScene, GameOverScene) son GL y van con G-10, y nadie llama todavia al servicio",
+  "actions": [
+    "Nuevos include/Game/SaveSlotState.h y src/Game/SaveSlotState.cpp. Hasta hoy habia UN fichero, savegame.json, y dos teclas: sin ranuras, sin «Continuar» y sin salida desde Game Over.",
+    "EL FALLO MAS GORDO NO ERA LA FALTA DE RANURAS: era que TODOS los proyectos escribian en el mismo savegame.json. Abrir un proyecto y guardar pisaba la partida del otro sin avisar. Ahora las ranuras van en <raiz>/<proyecto>/, que es el criterio con sus palabras («dos projectes no comparteixen slots»).",
+    "Seis ranuras numeradas mas una de guardado rapido aparte, para que un F5 —que tiene que poder ser un manotazo sin consecuencias— no pise nunca una partida guardada a mano.",
+    "La lista SIEMPRE tiene el mismo tamaño, con las libres incluidas. Una lista que cambia de tamaño segun lo que haya obliga al jugador a contar huecos para saber en que ranura esta.",
+    "Cada ranura trae su resumen —personaje, mapa, fecha, vida, oro y cuantos objetos— para pintar la lista SIN cargar ninguna partida entera.",
+    "UNA RANURA ROTA NO SE LLEVA POR DELANTE LA LISTA. Se marca con su motivo y las demas se leen igual; refresh() no falla nunca por un fichero malo. Saltarsela en silencio dejaria al jugador mirando un hueco donde tenia una partida, sin saber si la borro el.",
+    "Y se distingue «de otra version» de «rota»: una se puede migrar y la otra no, y lo que el jugador puede hacer no es lo mismo. La distincion se decide MIRANDO EL FICHERO, no el texto del mensaje de error: olfatear un mensaje es atarse a una cadena que cualquiera puede reescribir sin saber que algo dependia de ella. (El primer intento lo hacia asi y el test lo cazo.)",
+    "DEC-09, QUE ORIOL SI CONTESTO, hecha comprobable. CanSaveNow() dice si el momento es seguro y, cuando no, POR QUE — un boton de guardar que simplemente no responde parece roto. Bloquea combate, dialogo, tienda, negocio y fin de partida; deja pasar exploracion y pausa, porque el menu de pausa es precisamente desde donde el jugador va a querer guardar.",
+    "El caso que se escapa si solo se mira el modo: un evento AUTORUN corre en exploracion. Se mira primero si hay un evento a medias (EventInterpreter::canSave, de E-03), porque guardar ahi obligaria a restaurar el evento a mitad de secuencia.",
+    "SaveGameData gana `characterName` y `savedAt`, ADITIVAS y sin subir kSchemaVersion: regla 1 de FORMATO_PROYECTOS.md. Solo se escriben cuando estan puestas, asi que un guardado antiguo sigue dando el MISMO texto al reescribirlo — lo verifico solo test_schema_fixtures, sin tocar su fixture.",
+    "La fecha NO la estampa writeSaveGameFile: la pone SaveSlots::save. Meterla en el escritor cambiaria el fichero cada vez que alguien lo reescribe por otro motivo.",
+    "save() NO pregunta si la ranura esta ocupada: eso lo decide quien llama, que es el unico que puede enseñar la confirmacion. Lo que si le da es `occupied()` para saberlo."
+  ],
+  "verification": [
+    "test_save_slots, 13 casos verdes, sin ventana ni contexto GL.",
+    "Los del criterio: dos proyectos no comparten ranuras (comprobado en disco, no solo en memoria); una corrupta se lista con su motivo y las de al lado se leen igual; una de otra version se distingue de una rota; cargar una rota falla y NO borra el fichero; borrar una vacia falla en vez de decir que si; una ranura que no existe no escribe en ninguna parte (ni crea la carpeta).",
+    "Los de DEC-09: combate, dialogo, tienda, negocio y fin de partida bloquean con motivo; exploracion y pausa dejan pasar; y un evento a medias bloquea AUNQUE el modo sea exploracion.",
+    "«Cap recompensa s'entrega dues vegades»: se guarda con banderas, beats y variables, se recarga y el estado vuelve encendido, asi que ni el evento ni el beat se repiten y el oro ya cobrado sigue cobrado. No hacia falta codigo nuevo —E-02 ya lo guarda— pero si una prueba, porque es la clase de garantia que se rompe sin que nadie lo note.",
+    "Compilado y ejecutado con g++ directo sobre la maquina del usuario. CI remota pendiente."
+  ],
+  "pending": [
+    "CI remota. Ningun paquete de esta rama se ha construido nunca en CI.",
+    "LAS PANTALLAS: src/Engine/Scene/SaveLoadScene.cpp y GameOverScene.cpp son GL y dependen de G-10, que otra sesion tiene en marcha. Esto es el servicio que las dos usaran.",
+    "NADIE LLAMA TODAVIA AL SERVICIO. src/Engine/Application.cpp sigue con su m_savePath = \"savegame.json\" fijo y F5/F9 escribiendo ahi. Cambiarlo es poco codigo pero Application.cpp lo comparten catorce paquetes (ver MAPA_DEL_CODIGO.md) y ahora mismo hay dos sesiones dentro; se deja para quien cierre G-10, que ya va a estar en ese fichero.",
+    "«Derrota ofereix Carregar o Tornar al titol»: la eleccion es de la pantalla de Game Over. Aqui esta lo que necesita (la lista de ranuras cargables); falta la pantalla.",
+    "El servicio no sabe de MIGRACION: una ranura Incompatible se lista y no se puede cargar. Migrar guardados de una version a otra es lo que G-07 pide documentar cuando se suba kSchemaVersion, y hoy no se ha subido nunca.",
+    "La raiz de guardados no esta decidida: hoy se le pasa al constructor. Donde vive en una instalacion real (carpeta del usuario, junto al ejecutable) es parte de G-06 (empaquetado)."
+  ]
+}

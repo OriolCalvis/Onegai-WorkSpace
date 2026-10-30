@@ -1,0 +1,47 @@
+{
+ "id": "mercader_errante_prima_de_combate",
+ "name": "Prima de combate",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Prometes una prima al que más golpee: tú, tus aliados y tu escolta hacéis +1 con los golpes de arma durante 3 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "mercader_errante"
+ ],
+ "roleTags": [],
+ "tags": [
+  "mercader_errante",
+  "estandar"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "all_allies",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "CAR",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Prometes una prima al que más golpee: tú, tus aliados y tu escolta hacéis +1 con los golpes de arma durante 3 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Prima de combate: +1 a los golpes con arma 3 turnos.",
+   "mechanicHook": "estado:3:bono_dano_arma:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "Propia · Mercader Errante"
+}

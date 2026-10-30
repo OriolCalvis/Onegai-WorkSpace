@@ -1,0 +1,104 @@
+{
+  "id": "D-08",
+  "nombre": "Bridge ObjectCatalog -> MonsterCatalog",
+  "fase": "D",
+  "descripcion": "Els enemics del joc són els del catàleg Monster. Un enemic del món es construeix des de la seva MonsterDefinition: estadístiques, defenses, tier i habilitats. El combat Nd6 dona números diferents per a monstres diferents (Llup vs Drac tenen reserves de daus i defenses diferents).",
+  "responsable": "",
+  "dependencias": [
+    "D-01",
+    "D-02",
+    "D-03",
+    "C-04",
+    "C-17"
+  ],
+  "criterio_de_cierre": [
+    "EnemyCatalogBridge.createEnemy retorna WorldEnemy amb maxHealth/tier/stats poblats des de MonsterDefinition quan existeix (no ObjectCatalog)",
+    "Fallback a ObjectCatalog.maxHealth / ObjectCatalog.combat quan no hi ha MonsterCatalog o no es troba l'ID",
+    "Dos monstres diferents publiats al asset tenen maxHealth/tier/stats NO iguals (Llup vs Drac o alternatiu lowTier vs highTier)",
+    "Bridge NO deixa maxHealth=0, les defenses poblades a tota la cascada i fallbacks",
+    "TOTS els tests (original + assets reals) PASS"
+  ],
+  "verificaciones": [
+    {
+      "test": "tests/Game/EnemyCatalogBridgeTests.cpp (preexistent, JSON sintètic)",
+      "target": "test_enemy_catalog_bridge",
+      "resultado": "6/6 PASS. Inline slime vs dragon_ancient amb MonsterDefinition, fallback nullptr, fallback no trobat, override explicit health, summoned flags"
+    },
+    {
+      "test": "tests/Game/EnemyCatalogRealAssetsTests.cpp (afegit en aquesta sessió)",
+      "target": "test_enemy_catalog_real_assets",
+      "resultado": "3/3 PASS sobre assets/catalogs/monsters.json publicat (432 monstres, 2026-09-12): (a) lowTier vs highTier reserves/dades diferents per Llup/Drac o versió alternativa robusta; (b) la majoria d'entrades tenen amb_stats/maxHealth/tier/skills OK; (c) fallback nullptr + no_trobat retorna ObjectCatalog defaults"
+    }
+  ],
+  "archivos_creados": [
+    "tests/Game/EnemyCatalogRealAssetsTests.cpp — 3 tests GL-free sobre assets publicats reals",
+    "cmake/EnemyCatalogRealAssetsTests.cmake — target test_enemy_catalog_real_assets, LABELS unit;gl-free, afegit a suite_gl_free i MOTOR_GL_FREE_TARGETS"
+  ],
+  "archivos_editados": [
+    "CMakeLists.txt:1022-1026 — afegit include(cmake/EnemyCatalogRealAssetsTests.cmake) (1 línia nova, fragment cmake independent)"
+  ],
+  "archivos_compartidos_sin_tocar": [
+    "include/Game/EnemyCatalogBridge.h — PREEXISTENT, NO EDITAT",
+    "include/Game/EnemyBrain.h — NO EDITAT",
+    "src/Game/GameSession.cpp — SHARED (C-04, C-17, D-09, E-04, G-12, G-14) — RENUNCIAT A TOCAR en multi-agent; bridge utilitzat via tests independents sense GameSession",
+    "include/RPG/Catalogs/RpgCatalogs.h — SHARED (D-01..D-07,E-16) — NO EDITAT",
+    "cmake/EnemyCatalogBridgeTests.cmake — PREEXISTENT d'agent anterior, NO EDITAT (s'ha creat target nou EnemyCatalogRealAssetsTests.cmake separat)"
+  ],
+  "decisio_DEC_02": [
+    "El asset publicat 432 monsters utilitza `attacks[]` (MonsterAttack) com a clau canònica d'habilitats, no `skillIds[]` (buit en tots 432). Bridge ho respecta; tests comprova m.attacks.empty() en lloc de m.skillIds. Mapa del Codi G-12/G-14 ho enllaça via MonsterAttack quan GameSession ho connectarà a BattleState.",
+    "Fa falta que populate_from_monster_catalog mapea defenses (maxHealth/ca/defMental/resFis/precMag) a EnemyBrain — ja implementat previament a EnemyBrain::populate_from_monster_catalog; NO modificat.",
+    "Stats del monstre són objecte {CON,DES,INT,CAR} → statarr_json accepta els dos formats; tot OK."
+  ],
+  "caveats_y_pending": [
+    "GameSession.cpp NO ha estat tocat (super-shared C-04/C-17/D-09/E-04/G-12/G-14); quan l'altre agent allibera el mapa, cal connectar EnemyCatalogBridge.createEnemy al constructor de GameSession en lloc del make_shared<EnemyBrain>(...).",
+    "skillIds vector buit en 432/432 monsters — totes les habilitats d'asset viuen a attacks[] (MonsterAttack). Si SkillExecutor (D-09/D-11) haurà de consumir de attacks[], ara EnemyCatalogBridge.SkillSet aprèn skillIds però és buit.",
+    "invocat/summoned: el pla diu 'invocat no patrulla' ja provat al preexistent; OK."
+  ],
+  "fecha_cierre_estimada": "2026-09-12",
+  "estado": "cerrado",
+  "estadisticas_tests": {
+    "D-08 bridge sintètic": "6/6 PASS",
+    "D-08 bridge assets reals": "3/3 PASS",
+    "total_esta_sesion": "9/9 PASS"
+  },
+  "regresion_combinada_D03_a_D08": "D03=6, D05=9, D06_creation=4, D06_catalogs=7, D07=15, D08_bridge=6, D08_bridge_real_assets=3 → TOTAL 50/50 PASS local",
+  "ho_prova_en_sesion": [
+    "Sessió 2026-09-12-opencode-d08-test-catalogo: afegit el 'Ho prova' del pla a nivell GameSession — tests/Game/GameSessionTests.cpp cas 'monstres_del_cataleg_donen_reserves_i_defenses_diferents': llop i drac del catàleg inyectat al constructor donen reserves de daus (1+stat: 6 vs 8) i defenses diferents, amb vida/tier/habilitats del MonsterDefinition.",
+    "Verificat test_game_session 12/12 PASS (1 nou + 11 regressions C-03/C-24) + test_enemy_catalog_bridge 6/6 + test_enemy_brain + test_battle_state via CTest."
+  ],
+  "date": "2026-09-12",
+  "author": "sense signar",
+  "status": "cerrado",
+  "actions": [
+    "Els enemics del joc són els del catàleg Monster. Un enemic del món es construeix des de la seva MonsterDefinition: estadístiques, defenses, tier i habilitats. El combat Nd6 dona números diferents per a monstres diferents (Llup vs Drac tenen reserves de daus i defenses diferents).",
+    "EnemyCatalogBridge.createEnemy retorna WorldEnemy amb maxHealth/tier/stats poblats des de MonsterDefinition quan existeix (no ObjectCatalog)",
+    "Fallback a ObjectCatalog.maxHealth / ObjectCatalog.combat quan no hi ha MonsterCatalog o no es troba l'ID",
+    "Dos monstres diferents publiats al asset tenen maxHealth/tier/stats NO iguals (Llup vs Drac o alternatiu lowTier vs highTier)",
+    "Bridge NO deixa maxHealth=0, les defenses poblades a tota la cascada i fallbacks",
+    "TOTS els tests (original + assets reals) PASS",
+    "tests/Game/EnemyCatalogRealAssetsTests.cpp — 3 tests GL-free sobre assets publicats reals",
+    "cmake/EnemyCatalogRealAssetsTests.cmake — target test_enemy_catalog_real_assets, LABELS unit;gl-free, afegit a suite_gl_free i MOTOR_GL_FREE_TARGETS",
+    "CMakeLists.txt:1022-1026 — afegit include(cmake/EnemyCatalogRealAssetsTests.cmake) (1 línia nova, fragment cmake independent)",
+    "El asset publicat 432 monsters utilitza `attacks[]` (MonsterAttack) com a clau canònica d'habilitats, no `skillIds[]` (buit en tots 432). Bridge ho respecta; tests comprova m.attacks.empty() en lloc de m.skillIds. Mapa del Codi G-12/G-14 ho enllaça via MonsterAttack quan GameSession ho connectarà a BattleState.",
+    "Fa falta que populate_from_monster_catalog mapea defenses (maxHealth/ca/defMental/resFis/precMag) a EnemyBrain — ja implementat previament a EnemyBrain::populate_from_monster_catalog; NO modificat.",
+    "Stats del monstre són objecte {CON,DES,INT,CAR} → statarr_json accepta els dos formats; tot OK."
+  ],
+  "verification": [
+    "test: tests/Game/EnemyCatalogBridgeTests.cpp (preexistent, JSON sintètic)",
+    "target: test_enemy_catalog_bridge",
+    "resultado: 6/6 PASS. Inline slime vs dragon_ancient amb MonsterDefinition, fallback nullptr, fallback no trobat, override explicit health, summoned flags",
+    "test: tests/Game/EnemyCatalogRealAssetsTests.cpp (afegit en aquesta sessió)",
+    "target: test_enemy_catalog_real_assets",
+    "resultado: 3/3 PASS sobre assets/catalogs/monsters.json publicat (432 monstres, 2026-09-12): (a) lowTier vs highTier reserves/dades diferents per Llup/Drac o versió alternativa robusta; (b) la majoria d'entrades tenen amb_stats/maxHealth/tier/skills OK; (c) fallback nullptr + no_trobat retorna ObjectCatalog defaults",
+    "D-08 bridge sintètic: 6/6 PASS",
+    "D-08 bridge assets reals: 3/3 PASS",
+    "total_esta_sesion: 9/9 PASS",
+    "D03=6, D05=9, D06_creation=4, D06_catalogs=7, D07=15, D08_bridge=6, D08_bridge_real_assets=3 → TOTAL 50/50 PASS local"
+  ],
+  "pending": [
+    "GameSession.cpp NO ha estat tocat (super-shared C-04/C-17/D-09/E-04/G-12/G-14); quan l'altre agent allibera el mapa, cal connectar EnemyCatalogBridge.createEnemy al constructor de GameSession en lloc del make_shared<EnemyBrain>(...).",
+    "skillIds vector buit en 432/432 monsters — totes les habilitats d'asset viuen a attacks[] (MonsterAttack). Si SkillExecutor (D-09/D-11) haurà de consumir de attacks[], ara EnemyCatalogBridge.SkillSet aprèn skillIds però és buit.",
+    "invocat/summoned: el pla diu 'invocat no patrulla' ja provat al preexistent; OK."
+  ],
+  "_normalitzat": "Claus del contracte derivades dels camps propis del registre per tools/normalitza_seguiment.py. Els camps originals no s'han tocat: aquest registre es va escriure en un esquema diferent."
+}

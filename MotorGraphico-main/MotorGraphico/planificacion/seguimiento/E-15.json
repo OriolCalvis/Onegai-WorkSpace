@@ -1,0 +1,39 @@
+{
+  "id": "E-15",
+  "date": "2026-09-13",
+  "author": "Claude (Cowork)",
+  "status": "Mitad sin interfaz hecha (lista de problemas, foco, «Ir ahi» y busqueda); paquete ABIERTO — el panel ImGui es de E-06 y no esta",
+  "actions": [
+    "Nuevos include/Editor/ProblemsState.h y src/Editor/ProblemsState.cpp. E-07 sabia encontrar los defectos de una mision pero los devolvia como textos; un mensaje en consola no cierra el recorrido del autor.",
+    "EL PROBLEMA DE VERDAD ES QUE EL DOCUMENTO CAMBIA. La lista se calcula en un momento y se usa en otro, y entre medias el autor borra una pagina, mueve un comando o quita el evento. Por eso cada sitio guarda IDENTIDAD y no POSICION: id del evento, id de la pagina (las paginas tienen id propio desde E-01) y tipo del comando. Navegar los vuelve a resolver contra el documento de hoy y devuelve los indices actuales; el indice de captura solo se conserva para enseñarlo.",
+    "Es literalmente el criterio de cierre del paquete: «una referencia esborrada no provoca navegacio a una entitat diferent». Borrar la pagina 0 mueve la 2 al hueco de la 1: navegar por indice abriria OTRA pagina sin avisar. Borrar el comando 0 deja otro en el indice 1: seleccionarlo seria señalar al inocente, y por eso se comprueba tambien el TIPO del comando y no solo que la ruta resuelva.",
+    "Cuatro grados de resultado en vez de si/no: Ok, EventGone (no se navega, no hay a donde), PageGone (se abre el evento y se dice que la pagina no esta) y CommandGone (se abre la pagina sin seleccionar comando). Llevar al autor lo mas cerca posible le sirve; llevarlo a lo que ha ocupado el hueco, no.",
+    "MapGone para un problema de otro mapa. La lista es de TODO el proyecto porque un evento roto en otro mapa tambien bloquea el playtest, y dos mapas pueden tener eventos con el mismo id.",
+    "El foco sobrevive al refresco. Corregir un defecto revalida y rehace la lista entera; si el foco fuera un numero de fila, el autor acabaria mirando otro problema cada vez que arregla uno. Se guarda la CLAVE del problema enfocado y se vuelve a buscar. Si ya no esta —porque se acaba de arreglar— el foco baja al siguiente, que es lo que el autor iba a hacer de todos modos, y lastFocusChange() lo dice para que el panel pueda avisarlo.",
+    "La clave lleva el mensaje ademas del sitio: un mismo comando puede tener dos defectos a la vez (falta un parametro Y el tipo no existe) y el foco tiene que distinguirlos.",
+    "refreshMap() sustituye solo los problemas de ESE mapa y deja los de los demas. Si revalidar el mapa abierto vaciara la lista, el autor exportaria roto.",
+    "Errores arriba, avisos abajo, y dentro de cada grupo por mapa/evento/pagina/comando. El autor mira la primera linea: si ahi hay un aviso y el error que le impide probar esta el septimo, la lista no le sirve. canPlaytest() extiende a todo el proyecto la puerta de E-07.",
+    "Busqueda por nombre sin distinguir mayusculas NI acentos. DEC-15 dice que el texto visible lleva ortografia correcta, asi que los eventos se llaman «Mision de la Llave» y el autor escribe «mision»: una busqueda que no encontrara eso seria inutil. El plegado (NormalizeForSearch) es publico para que el panel filtre listas ya cargadas con el mismo criterio — dos criterios distintos en la misma pantalla desconciertan.",
+    "FindReferences() y CollectReferenceNames() responden «donde se usa esta bandera/variable/interruptor/evento/mapa/objeto». NO llevan una lista de comandos escrita a mano: preguntan al catalogo de E-04 de que tipo es cada parametro (FlagRef, VariableRef, SwitchLetter...), asi que un comando nuevo aparece en la busqueda el dia que se añade al catalogo, sin tocar este fichero.",
+    "Unica excepcion, documentada: `control.si` declara `referencia` como texto libre porque su tipo real depende de `clase`. Se mira la clase. Sin eso, buscar la variable «monedas» encontraria tambien la bandera «monedas», que es otra cosa con el mismo nombre — y las condiciones son justo donde mas se leen las banderas.",
+    "Comentario corregido en src/RPG/EventCommands.cpp: seguia diciendo «declaradas y NO cableadas» encima de combate.iniciar y control.segun_desenlace, que se cablearon en la tercera rebanada de E-04. Ahora dice que la unica sin cablear es comercio.abrir y por que (necesita la puerta de tienda de G-14).",
+    "planificacion/pla/dades.py: añadidos src/Editor/ProblemsState.cpp y tests/Editor/ProblemsStateTests.cpp a la lista de ficheros de E-15, y regenerado planificacion/MAPA_DEL_CODIGO.md. Los tres ficheros llevan ya su banner de paquete. PLA_DEFINITIU.md y el Gantt NO se han regenerado: llevan sin regenerarse desde el 10/09 y hacerlo ahora mezclaria en el mismo diff los cambios de D-11 que otra sesion acaba de meter en dades.py."
+  ],
+  "verification": [
+    "test_problems_state, 17 casos verdes, sin ventana ni contexto GL.",
+    "Los del criterio: borrar una pagina no manda el foco a la de al lado (sigue siendo t_p3, ahora en el indice 1); si la pagina desaparece se abre el evento y se dice; borrar un comando no selecciona al vecino que ocupa su hueco; un evento borrado no navega a la casilla que ocupa su sitio (se pone OTRO evento en la misma casilla a proposito); un problema de otro mapa no navega dentro del abierto (mismo id de evento en los dos mapas a proposito).",
+    "Los del foco: revalidar sin cambios lo conserva; arreglar lo que miras lo baja al siguiente y lo dice.",
+    "Los de la busqueda: «mision» encuentra «Mision de la Llave» y «cami» encuentra «Farol del cami»; los usos de una bandera salen de condiciones y de comandos; el condicional cuenta como bandera o como variable segun su clase; los interruptores, eventos y mapas referidos tambien se buscan; la lista de nombres va ordenada y sin repetir.",
+    "Rutas de rama: {1,0,0} se resuelve hasta el comando de dentro del «si». Las rutas alternan indice de comando e indice de rama; leerlas como indices planos apuntaria a cualquier cosa.",
+    "El helper mapaCon() de los tests comprueba addEvent().isOk(). Sin eso un fixture mal escrito produce un mapa VACIO y el test falla mucho mas abajo diciendo que no encuentra el problema, en vez de que el evento nunca llego a entrar. Costo un ciclo de depuracion antes de ponerlo.",
+    "Compilado y ejecutado con g++ directo sobre la maquina del usuario. CI remota pendiente.",
+    "Regresion completa despues de reconstruir libmotor.a ENTERA desde cero: 58 verdes, 0 rojas. Las 8 que no enlazan son las de GL (Texture, BitmapFont, PostProcessing, HudMinimap, PlayerPopulate y las tres de Application): piden GLFW/GLAD, que este arnes sin ventana no tiene. Reconstruir el archivo entero antes de creerse un rojo es obligatorio en esta rama: un .a viejo con headers nuevos ya ha dado tres fallos falsos."
+  ],
+  "pending": [
+    "CI remota. Ningun paquete de esta rama se ha construido nunca en CI.",
+    "El panel: editor/src/ProblemsPanel.cpp. Es la mitad ImGui y depende de E-06, que otra sesion tiene en marcha. Aqui esta el estado que consumira; mismo reparto que E-07 (validacion abajo, dibujo arriba).",
+    "«Errors bloquegen playtest/export» esta como consulta (canPlaytest()) pero nadie la llama todavia: quien conecta la puerta es F-01 (playtest) y G-06 (exportacion).",
+    "src/Editor/ProblemsState.cpp se compila dentro de cmake/ProblemsStateTests.cmake y todavia no dentro de ninguna libreria. Deliberado: meterlo en motor_level obliga a editar el bloque compartido del CMakeLists, que varios agentes tocan a la vez. Cuando el panel lo necesite enlazado, ese paquete lo mueve.",
+    "La busqueda no mira las aventuras de beats, solo los eventos de mapa. Los dos formatos estan vivos a la vez (ver E-07); hacerlo bien pide decidir antes como se enseñan mezclados en una sola lista."
+  ]
+}

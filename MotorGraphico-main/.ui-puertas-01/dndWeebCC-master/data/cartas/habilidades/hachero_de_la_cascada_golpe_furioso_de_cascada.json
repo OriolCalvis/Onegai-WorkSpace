@@ -1,0 +1,55 @@
+{
+ "id": "hachero_de_la_cascada_golpe_furioso_de_cascada",
+ "name": "Golpe furioso de cascada",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Saltas y descargas el hacha en diagonal: 3d6 de daño de agua a cada enemigo, y tus golpes les hacen +1 durante 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "hachero_de_la_cascada"
+ ],
+ "roleTags": [],
+ "tags": [
+  "hachero_de_la_cascada",
+  "creador",
+  "Agua"
+ ],
+ "mechanicTags": [
+  "Agua",
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "all_enemies",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Saltas y descargas el hacha en diagonal: 3d6 de daño de agua a cada enemigo, y tus golpes les hacen +1 durante 2 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "3d6 de daño de agua a cada enemigo.",
+   "mechanicHook": "dano:3d6"
+  },
+  {
+   "description": "Golpe de cascada: tus golpes les hacen +1 durante 2 turnos.",
+   "mechanicHook": "estado:2:bono_dano_contra:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Hachero de la cascada (Waterfall Berserker) · H1389 Golpe furioso de cascada"
+}

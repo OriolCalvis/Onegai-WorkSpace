@@ -1,0 +1,25 @@
+{
+  "id": "D-01",
+  "date": "2026-09-17",
+  "author": "Claude (Cowork)",
+  "status": "Cerrado el pendiente de la comprobación estática from_json ↔ expected_fields; destapó y arregló una regresión real de razas. El paquete sigue ABIERTO por CI y por D0003",
+  "actions": [
+    "Nuevo tools/comprobar_contrato_cargadores.py: por cada CatalogLoader<T> compara las claves de primer nivel que from_json lee de la entrada (e[\"k\"], e.has(\"k\") y claves pasadas a helpers del mismo fichero) con los nombres de expected_fields(). Error si hay una lectura sin declarar, una declaración sin lectura o una especialización sin su pareja; sale 2 si no reconoce la forma del fichero, para no dar verde sin mirar.",
+    "--autoprueba sobre copias: lectura nueva sin declarar, alias mal escrito, lectura a través de helper, comentario que no cuenta, la regresión real de f23dba9 y especialización sin expected_fields; y cabecera irreconocible → 2.",
+    "Una excepción escrita con su motivo: EquipmentDefinition.defenseBonuses se declara a propósito sin lectura (vacío en las 413 piezas, sin campo en el struct, vigilado por la línea base de D-10). El centinela e[\"__null__\"] de statarr_json no cuenta como campo.",
+    "HALLAZGO Y ARREGLO: f23dba9 (13/09) quitó de RaceDefinition::from_json las lecturas de baseSpeed y compatibleDeityIds, mientras su declaración ganaba los alias del asset (speed, compatibleDeities). Desde entonces las 43 razas cargaban velocidad 30 y ninguna deidad, sin error; race_dwarf_deepforge declara 25. Se restauran las dos lecturas con los alias del asset al final de la cadena (el nombre canónico sigue mandando).",
+    "Nuevos tests/RPG/CatalogLoaderRegressionTests.cpp (test_catalog_loader_regressions) y cmake/CatalogLoaderContractCheck.cmake (catalog_loader_contract, catalog_loader_contract_selftest), con una línea include al final de CMakeLists. dades.py: D-01 lista los tres ficheros nuevos."
+  ],
+  "verification": [
+    "catalog_loader_contract: OK en el árbol arreglado (20 cargadores, 486 claves leídas, 487 nombres declarados). Sobre HEAD sin arreglar da los 6 desajustes de RaceDefinition. Autoprueba 7/7.",
+    "test_catalog_loader_regressions 3/3 con el arreglo (también con ASan+UBSan) y 3/3 en rojo sin él.",
+    "Sin regresiones: test_catalog_classes_races_backgrounds 7/7, test_catalog_contract 7/7, test_character_creation 4/4 y test_catalog_content 32/32. tools/validar_catalogos.py sigue en OK respecto de la línea base.",
+    "No verificado: configuración CMake real ni CI. La VM no tiene cmake; se compiló con g++ 11."
+  ],
+  "pending": [
+    "CI remota para el cierre formal del paquete (regla 6).",
+    "decisiones/D0003 (proposed): qué campos pasan a required y en qué orden. Sigue esperando a Oriol.",
+    "EquipmentDefinition.defenseBonuses: decidir con D-05/G-12 si se lee (y dónde se guarda) o se retira de la declaración y de la línea base.",
+    "rpg_declaration_check está en rojo en HEAD por 33 declaraciones sin cuerpo en AssetBrowserState.h, CommandListState.h y EventEditorState.h (E-13/E-05/E-06); no es de este paquete."
+  ]
+}

@@ -1,0 +1,52 @@
+{
+ "id": "automata_de_puerta_veterano",
+ "name": "Automata de Puerta Veterano",
+ "type": "enemy",
+ "rank": "criatura",
+ "tier": 3,
+ "role": "defensa",
+ "faction": "forjados_sin_amo",
+ "factionName": "Los Forjados sin Amo",
+ "stats": {
+  "CON": 5,
+  "DES": 4,
+  "INT": 3,
+  "CAR": 4
+ },
+ "derived": {
+  "vida": 20,
+  "ca": 14,
+  "defensaMental": 14,
+  "resistenciaFisica": 15,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Brazo de Cierre",
+   "defense": "CA",
+   "effect": "Ataque de fisico: daño que suma su CON (pool de CON, regla 7.6)."
+  },
+  {
+   "name": "Sellar el Paso",
+   "defense": "CA",
+   "effect": "Técnica de facción: si el objetivo falla, queda Guardia Rota hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Inmunes a Encantado y Asustado; al quedar bajo media vida, chirrían: −1 a su CA."
+ },
+ "conditionsInflicted": [
+  "guardia_rota"
+ ],
+ "loot": [
+  "martillo_de_guerra_de_viaje",
+  "rodela_de_hierro_de_milicia"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Fisico"
+ ],
+ "phases": [],
+ "flavorText": "Sus creadores murieron. Las órdenes, no."
+}

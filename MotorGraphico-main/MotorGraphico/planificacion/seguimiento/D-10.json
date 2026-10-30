@@ -1,0 +1,34 @@
+{
+  "id": "D-10",
+  "date": "2026-09-13",
+  "author": "Claude (Cowork)",
+  "status": "Segunda mitad hecha: linea base de campos mecanicos con guardia en CI y autoprueba. La primera mitad (referencias cruzadas) ya estaba. Paquete ABIERTO hasta que CI se ejecute de verdad en la rama",
+  "actions": [
+    "Nuevo tools/validar_catalogos.py — el fichero que el plan pide con ese nombre. Lo que ya habia (tools/validar_catalogos_ci.py) comprueba que las REFERENCIAS entre catalogos siguen apuntando a algo; esto comprueba que las ENTRADAS no pierden campos. Son dos fallos distintos: el desapareamiento saveAttribute/defenseStat no rompia ninguna referencia y aun asi dejaba 465 cartas sin su defensa.",
+    "Mide, familia a familia y campo a campo, cuantas entradas reales de assets/catalogs/ llevan cada campo que el cargador dice leer. Dos contadores: `presentes` (la clave esta, que es exactamente el criterio de catalog_field_present en RpgCatalogs.h) y `con_valor` (ademas el valor no esta vacio). Los dos hacen falta: un `\"saveAttribute\": \"\"` en las 492 cartas pasa el primero y no sirve de nada.",
+    "LA LISTA DE CAMPOS NO SE ESCRIBE EN EL SCRIPT: se lee del propio include/RPG/Catalogs/RpgCatalogs.h, de las tablas expected_fields() que dejo D-01. Escribirla a mano en Python seria una segunda fuente de verdad, y una segunda fuente de verdad se desincroniza: acabariamos vigilando campos que el cargador ya no lee y sin vigilar los que lee. Asi la pregunta que responde el guardia es la unica que importa: «lo que el cargador dice que lee, ¿sigue estando en los assets?».",
+    "La medida de hoy queda registrada en tools/linea_base_catalogos.json: 20 familias, 2650 entradas, 336 campos declarados. En cada commit se vuelve a medir. Si BAJA, el job falla. Si sube, no falla —subir es migrar un asset, que es lo que D-02..D-09 estan haciendo— y el job dice que conviene volver a registrar la linea base.",
+    "Tambien falla si aparece un .json en assets/catalogs/ que no carga ninguna familia y no esta en la lista SIN_CARGADOR (hoy: MANIFIESTO.json, pregen_characters.json y locations_trae_test.json, cada uno con su motivo escrito). Sin eso, un catalogo nuevo se colaria sin guardia, que es justo el agujero que este fichero existe para tapar.",
+    "Y avisa de los campos marcados como OBLIGATORIOS que falten en alguna entrada: eso no es una regresion futura, es contenido que hoy no carga. Hoy no hay ninguno.",
+    "--autoprueba: el guardia se prueba a si mismo. Sobre una COPIA en un temporal (los assets del repositorio no se tocan) reproduce el desapareamiento historico renombrando defenseStat -> defensa_stat en las 465 cartas que lo llevan, y comprueba que salta. Repite por la otra via —vaciar el valor sin quitar la clave— y comprueba que tambien salta. Y añade una carta nueva para comprobar que CRECER no hace fallar nada: un guardia que chille cuando añades contenido se desactiva a la semana.",
+    "ci.yml: paso «Validate catalog field baseline», que ejecuta primero la autoprueba y despues la comprobacion. Ese orden es a proposito: si el guardia se rompe, CI lo dice en vez de pasar en verde sin vigilar nada."
+  ],
+  "verification": [
+    "python3 tools/validar_catalogos.py --autoprueba: verde. Detecta el renombrado (SkillDefinition.defenseStat cae de 674 entradas a 209) y el vaciado, y no falla al añadir una carta. Tarda 0,2 s.",
+    "python3 tools/validar_catalogos.py contra la linea base recien escrita: OK, 20 familias y 2650 entradas.",
+    "Comprobado aparte que un catalogo nuevo sin cargador hace saltar el guardia (artefactos.json en una copia temporal).",
+    "El numero de entradas coincide con el que el propio RpgCatalogs.h documenta: «las 2650 entradas de los 21 assets publicados (07/09/2026)». Las 465 cartas con defenseStat coinciden con el «465/492 skills» del comentario de la linea 238. El guardia mide lo mismo que dice el codigo.",
+    "ci.yml validado como YAML.",
+    "Regresion C++ sin cambios: esta tanda no toca ni una linea de C++."
+  ],
+  "pending": [
+    "CI remota. Ningun paquete de esta rama se ha construido nunca en CI, asi que este guardia todavia no ha corrido donde tiene que correr.",
+    "HALLAZGOS DE CONTENIDO que la medida saca a la luz y que NO son de este paquete, pero que alguien tiene que mirar:",
+    "  · MonsterDefinition.skillIds: la clave esta en los 432 monstruos y esta VACIA en los 432. Ningun enemigo del catalogo tiene ni una habilidad asignada. Afecta a D-03 y a G-13 (comandes de combat des de dades).",
+    "  · EquipmentDefinition.defenseBonuses: presente en las 413 piezas, vacio en las 413. Ninguna pieza de equipo da defensa. Afecta a D-05 y a G-12.",
+    "  · SkillDefinition.magnitudeByDegree: solo 9 cartas de 702 lo llevan con valor. El criterio de cierre de D-02 es «magnitud per grau ... es llegeixen de l'entrada; dues cartes diferents donen numeros diferents». Con 9 de 702 eso no se puede cumplir desde los assets tal como estan: es hueco de contenido, no de codigo.",
+    "  · SkillDefinition.defenseStat: presente en 674 y con valor en 201. El campo del desapareamiento historico sigue vacio en 473 cartas.",
+    "  · 126 de los 336 campos declarados no aparecen en NI UNA entrada. DEC-02 dice que esos se clasifican como opcionales o se retiran de la declaracion; mientras sigan declarados, el guardia los vigila en cero, que no cuesta nada pero tampoco protege nada.",
+    "Cuando D-02..D-09 terminen de migrar sus assets, hay que volver a registrar la linea base (--escribir) o el listado de «mejoras» crecera hasta hacerse ilegible."
+  ]
+}

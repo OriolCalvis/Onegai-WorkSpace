@@ -1,0 +1,51 @@
+{
+ "id": "corsario_vampirico_forma_de_niebla",
+ "name": "Forma de niebla",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Te deshaces en niebla cuando llega el golpe: lo bloqueas, y durante 2 turnos te defiendes con ventaja.",
+ "flavorText": "",
+ "classTags": [
+  "corsario_vampirico"
+ ],
+ "roleTags": [],
+ "tags": [
+  "corsario_vampirico",
+  "estandar"
+ ],
+ "mechanicTags": [],
+ "actionType": "reaccion",
+ "target": "self",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "DES",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Te deshaces en niebla cuando llega el golpe: lo bloqueas, y durante 2 turnos te defiendes con ventaja.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Bloqueas el golpe.",
+   "mechanicHook": "bloquea:ataque"
+  },
+  {
+   "description": "Forma de niebla: te defiendes con ventaja 2 turnos.",
+   "mechanicHook": "propio:2:ventaja:defensa"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "Propia · Corsario Vampírico · folclore: el vampiro"
+}

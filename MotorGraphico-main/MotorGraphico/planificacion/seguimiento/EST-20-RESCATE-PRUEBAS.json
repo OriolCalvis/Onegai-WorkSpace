@@ -1,0 +1,29 @@
+{
+ "id": "EST-20-RESCATE-PRUEBAS",
+ "paquete": "H0-05 / H0-07 (nota para quien las tenga)",
+ "fase": "H",
+ "nombre": "Las dos baterias de Application, actualizadas a la API de ranuras",
+ "date": "2026-09-24",
+ "author": "Claude (sesion 24/09) — NO soy el dueno de H0-05/H0-07",
+ "status": "HECHO EN EL ARBOL DE TRABAJO, SIN COMMITEAR. No se puede commitear: depende de la cabecera Application.h que sigue en vuelo.",
+ "que_se_ha_hecho": {
+  "tests/Engine/ApplicationTests.cpp": "Los accesos saveGame/loadGame por ruta pasan a quickSave/quickLoad sobre el servicio de ranuras. useSlots(app, raiz) apunta el servicio a una carpeta temporal de la prueba, para no escribir nunca en saves/ del repositorio; tempSaveRoot() la crea y remove_all la borra. Los tres casos de C-24 conservan lo que comprobaban.",
+  "tests/Engine/ApplicationSceneTests.cpp": "Lo mismo, mas el acceso project(), que construia un Game::TitleScreen desde el indice global y ahora construye un Game::TitleMenuState desde el MANIFIESTO, como hace init() desde H0-07."
+ },
+ "decisiones": [
+  "El caso failed_project_keeps_campaign_and_can_retry_successfully perdio su premisa con H0-07: el titulo ya NO abre proyectos del indice global, asi que 'abrir un proyecto roto y reintentarlo' no existe. Se renombro a title_new_game_keeps_campaign_state y conserva todo lo que sigue siendo cierto -- cruzar el titulo no reconstruye sesion, catalogo, guion ni banderas. Lo que se fue esta escrito en el comentario, con el sitio donde vive ahora (regla 1 de TitleMenuState.h, cubierta por cmake/TitleFlowTests.cmake).",
+  "NO se commitea. El Application.cpp del arbol esta enganchado a tres tareas mas (InputKey::LeftArrow/RightArrow, publishSheetSkills/battleMenuRows, BattleState::tickRound): commitear estas pruebas contra HEAD las dejaria rojas igual, por el otro lado."
+ ],
+ "actions": [
+  "Siete errores de compilacion resueltos: 2 saveGame, 2 loadGame, y TitleScreen/TitleAction en el acceso project().",
+  "El parche esta en out/oraculo/parche_pruebas.py, es idempotente y se puede volver a ejecutar sobre el arbol si una sincronizacion se lo lleva."
+ ],
+ "verification": [
+  "Las dos unidades compilan contra la cabecera Application.h del arbol de trabajo.",
+  "NO se han podido EJECUTAR: son baterias GL (etiqueta gl) y necesitan ventana. Quien cierre H0-05/H0-07 tiene que correrlas antes de darlas por buenas -- sobre todo title_new_game_keeps_campaign_state, que es el unico donde cambie una asercion, no solo una llamada."
+ ],
+ "pending": [
+  "Quien cierre H0-05/H0-07: commitea Application.h, Application.cpp, estas dos baterias y el cableado de motor_saves JUNTOS. Application usa Game::SaveSlots y Game::TitleMenuState desde motor_core, y hoy ni juego ni test_application ni test_application_scenes enlazan esa libreria: lo mas limpio es target_link_libraries(motor_core PUBLIC ... motor_saves), que arregla los tres de una vez (esta puesto en el arbol de trabajo, sin commitear).",
+  "AVISO SERIO: el CMakeLists.txt del arbol de trabajo habia PERDIDO las cuatro fuentes de EST-24 (EditorStateHelpers/Pintar/Objetos/Exportar). Sin ellas motor_level no enlaza -- comprobado, no es una sospecha. Estaban en HEAD y alguien las borro editando desde una copia vieja. Restauradas en el arbol el 24/09. Es el tercer sintoma del mismo problema: el repositorio vive dentro de una carpeta sincronizada en la nube (ver INCIDENCIA_SINCRONIZACION_2026-09-23.md)."
+ ]
+}

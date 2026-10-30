@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Puerta local de la ley del repositorio — etapa pre-push.
+#
+# Version nativa de los hooks `linea-base-core` de .pre-commit-config.yaml.
+# Aqui si va la guardia entera: mide el techo de lineas, los miembros de las
+# cabeceras, la frontera GL de las librerias, los ficheros muertos, la logica
+# dentro de las pruebas y las fuentes compiladas sueltas. La lista puede bajar;
+# no puede subir.
+#
+# No se incluye el build de demo_resource_manager que declara el yaml: en local
+# son minutos y se acaba esquivando. Ese lo hace CI, que es donde de verdad
+# importa.
+#
+# Activar (una vez por clon):
+#   git config core.hooksPath MotorGraphico/tools/hooks
+set -uo pipefail
+
+RAIZ="$(git rev-parse --show-toplevel)"
+PY="$(command -v python3 || echo /usr/bin/python3)"
+GUARDIA="$RAIZ/MotorGraphico/tools/linea_base_core.py"
+
+[ -f "$GUARDIA" ] || exit 0
+
+cd "$RAIZ/MotorGraphico" || exit 1
+
+echo "pre-push: pruebas de la guardia..."
+"$PY" tools/test_linea_base_core.py || exit 1
+
+echo "pre-push: guardia entera..."
+"$PY" tools/linea_base_core.py
+rc=$?
+if [ "$rc" -ne 0 ]; then
+  echo "" >&2
+  echo "pre-push: la deuda medida ha SUBIDO. Eso veta el push." >&2
+  echo "  Si tu trabajo la baja, actualiza la linea base en tu mismo commit:" >&2
+  echo "    python3 tools/linea_base_core.py --actualizar" >&2
+  echo "  Si sube por correccion de medida, hace falta decision: decisiones/D0007." >&2
+fi
+exit "$rc"

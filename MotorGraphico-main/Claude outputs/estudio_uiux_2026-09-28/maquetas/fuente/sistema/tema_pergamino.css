@@ -1,0 +1,121 @@
+/* MotorGraphico · Tema pergamino (variante del modelo visual, 28/09/2026)
+   Se activa poniendo la clase .pergamino en .pantalla. Reutiliza los
+   componentes de componentes.css y solo cambia tokens y acabados.
+
+   Materiales:
+     hoja     pergamino con bordes rasgados (textura generada al tamaño)
+     papiro   hoja con rodillos: menús de una sola página, sin animación
+     cuero    tapas y lomo del cuaderno: menús con pestañas (pasar hoja)
+     retal    trozos pequeños de pergamino para el HUD de exploración
+
+   Regla de oro que se mantiene: un solo color de foco. En pergamino es el
+   carmín (cinta de marcapáginas), que da 4,9:1 sobre el papel base. */
+
+.pergamino {
+  --papel:        #E2CD9C;
+  --papel-claro:  #EBDBB2;
+  --papel-luz:    #F2E4C1;
+  --papel-sombra: #D6BC85;
+  --papel-mancha: #C6A56C;
+  --tinta:        #2B1D12;   /* 10,5:1 sobre papel base */
+  --tinta-2:      #553E2B;   /*  6,4:1 */
+  --tinta-3:      #6B5038;   /*  4,8:1 (no sobre manchas ni cantos) */
+  --tinta-adorno: #6B5038;
+  --carmin:       #9A2A1C;   /*  4,9:1: foco, selección, acción principal */
+  --carmin-2:     #6E1A10;
+  --cuero:        #4E321D;
+  --claro-cuero:  #F2E4C1;   /*  9,3:1 sobre cuero */
+  --claro-cuero-2:#D9C49A;
+  --linea:        #4A3421;   /* contorno de tinta: 5,8:1 sobre arena clara */
+
+  /* Remapeo de los tokens del sistema oscuro */
+  --texto: var(--tinta);  --texto-2: var(--tinta-2);  --texto-3: var(--tinta-3);
+  --acento: var(--carmin);
+  --exito: #2E6337;  --aviso: #7A4409;  --error: #8E1B12;  --info: #29507A;
+  --exito-fondo: rgba(46, 99, 55, .10);  --aviso-fondo: rgba(122, 68, 9, .10);
+  --error-fondo: rgba(142, 27, 18, .10); --info-fondo: rgba(41, 80, 122, .10);
+  --pv: #A83A2A;  --pm: #2F5E9E;  --moral: #6A4A8C;
+  --pista: var(--papel-luz);
+  --divisor: #B69A6C;
+  --marco-ext: var(--linea);
+  --velo: rgba(24, 14, 6, .62);
+  color: var(--tinta);
+}
+
+/* --- Materiales ------------------------------------------------------ */
+.pergamino .hoja, .pergamino .papiro, .pergamino .retal, .pergamino .cuero {
+  background-size: 100% 100%; background-repeat: no-repeat; image-rendering: pixelated;
+}
+.pergamino .hoja, .pergamino .papiro, .pergamino .retal { color: var(--tinta); filter: drop-shadow(0 4px 0 rgba(26, 16, 8, .45)); }
+.pergamino .cuero { color: var(--claro-cuero); filter: drop-shadow(0 4px 0 rgba(10, 6, 2, .5)); }
+.pergamino .sin-sombra { filter: none; }
+
+/* --- Filas: la cinta de marcapáginas es el foco ---------------------- */
+.pergamino .fila { color: var(--tinta); }
+.pergamino .fila .valor { color: var(--tinta-2); }
+.pergamino .fila .marca { visibility: hidden; width: 14px; height: 28px; align-self: center; margin-left: -6px;
+  background: var(--carmin); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 74%, 0 100%);
+  box-shadow: inset -4px 0 0 var(--carmin-2); }
+.pergamino .fila .marca svg { display: none; }
+.pergamino .fila.foco { background: rgba(154, 42, 28, .10); box-shadow: inset 0 -2px 0 rgba(154, 42, 28, .35); }
+.pergamino .fila.foco .marca { visibility: visible; }
+.pergamino .fila.deshab, .pergamino .fila.deshab .valor { color: var(--tinta-3); }
+.pergamino .fila .motivo { color: var(--tinta-3); }
+.pergamino .fila.foco .motivo { color: var(--tinta-2); }
+
+/* --- Botones, teclas e insignias --------------------------------------- */
+.pergamino .boton { color: var(--tinta); background: var(--papel-luz);
+  box-shadow: inset 0 -3px 0 var(--papel-mancha), 0 0 0 2px var(--linea); }
+.pergamino .boton.primario { color: var(--papel-luz); background: var(--carmin);
+  box-shadow: inset 0 -4px 0 var(--carmin-2), 0 0 0 2px var(--linea); }
+.pergamino .boton.deshab { color: var(--tinta-3); background: transparent; box-shadow: none;
+  outline: 2px dashed var(--tinta-3); outline-offset: -2px; }
+.pergamino .boton.foco { outline: 2px solid var(--carmin); outline-offset: 4px; }
+.pergamino .tecla { color: var(--tinta); background: var(--papel-luz);
+  box-shadow: inset 0 -3px 0 var(--papel-mancha), 0 0 0 2px var(--linea); }
+.pergamino .ayuda { color: var(--tinta-2); }
+.pergamino .cuero .ayuda { color: var(--claro-cuero-2); }
+.pergamino .insignia { color: var(--tinta-2); background: transparent; box-shadow: inset 0 0 0 2px var(--tinta-3); }
+.pergamino .insignia.i-exito { color: var(--exito); background: var(--exito-fondo); box-shadow: inset 0 0 0 2px var(--exito); }
+.pergamino .insignia.i-aviso { color: var(--aviso); background: var(--aviso-fondo); box-shadow: inset 0 0 0 2px var(--aviso); }
+.pergamino .insignia.i-error { color: var(--error); background: var(--error-fondo); box-shadow: inset 0 0 0 2px var(--error); }
+.pergamino .insignia.i-info  { color: var(--info);  background: var(--info-fondo);  box-shadow: inset 0 0 0 2px var(--info); }
+.pergamino .cuero .insignia { color: var(--tinta); background: var(--papel-luz); box-shadow: 0 0 0 2px var(--linea); }
+
+/* --- Recursos: barras dibujadas con tinta ------------------------------- */
+.pergamino .recurso .linea { color: var(--tinta-2); }
+.pergamino .recurso .linea .cifra { color: var(--tinta); }
+.pergamino .recurso .barra, .pergamino .moral .escala { background: var(--papel-luz); box-shadow: 0 0 0 2px var(--linea); }
+.pergamino .recurso .barra i::after { background: rgba(255, 255, 255, .28); }
+.pergamino .moral .escala::before { background: var(--tinta-3); }
+.pergamino .moral .escala b { box-shadow: 0 0 0 2px var(--linea); }
+
+/* --- Rótulos, datos y filetes ----------------------------------------- */
+.pergamino .bloque-titulo { color: var(--tinta-3); }
+.pergamino .bloque-titulo::after { height: 2px; background: repeating-linear-gradient(90deg, var(--tinta-adorno) 0 4px, transparent 4px 8px); opacity: .75; }
+.pergamino .datos dt { color: var(--tinta-3); }
+.pergamino .datos dd { color: var(--tinta); }
+.pergamino .detalle .desc, .pergamino .detalle .sub { color: var(--tinta-2); }
+.pergamino .filete { height: 10px; background-position: center; background-repeat: no-repeat; image-rendering: pixelated; }
+.pergamino .linea-estado.exito { color: var(--exito); }
+.pergamino .linea-estado.aviso { color: var(--aviso); }
+.pergamino .linea-estado.error { color: var(--error); }
+.pergamino .linea-estado .d { color: var(--tinta-2); }
+.pergamino .motivo-boton { color: var(--tinta-2); }
+
+/* --- Contador y deslizador -------------------------------------------- */
+.pergamino .contador .b { background: var(--papel-luz); color: var(--tinta); box-shadow: inset 0 0 0 2px var(--linea); }
+.pergamino .contador .b.deshab { color: var(--tinta-3); box-shadow: inset 0 0 0 2px var(--tinta-3); }
+.pergamino .contador .v { background: transparent; color: var(--tinta); box-shadow: inset 0 0 0 2px var(--tinta-3); }
+
+/* --- Piezas propias del pergamino --------------------------------------- */
+/* Aviso de interacción en el mundo: etiqueta de pergamino con flecha de tinta */
+.pergamino .prompt { background: transparent; box-shadow: none; color: var(--tinta); }
+.pergamino .prompt::after { border-top-color: var(--linea); }
+/* Rótulo de cuero para el hablante de un diálogo */
+.pergamino .rotulo { position: absolute; display: flex; align-items: center; justify-content: center; color: var(--claro-cuero); }
+/* Número de hoja del cuaderno */
+.pergamino .folio { position: absolute; color: var(--tinta-3); }
+/* Lomo del cuaderno: la bisagra de las hojas */
+.pergamino .lomo { position: absolute; height: 14px; background: linear-gradient(#2A1A0E, #3F2816 30%, #5E3D23 55%, #3F2816 80%, #2A1A0E); box-shadow: 0 -2px 0 rgba(0,0,0,.25); }
+.pergamino .lomo i { position: absolute; top: 3px; width: 8px; height: 8px; background: #C9A24A; box-shadow: inset -2px -2px 0 #7A5E22, inset 2px 2px 0 #E6C66A, 0 0 0 2px #2A1A0E; }

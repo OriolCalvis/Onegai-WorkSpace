@@ -1,0 +1,79 @@
+name: Juego (Windows + Linux)
+
+# Ejecutar a mano: GitHub -> Actions -> "Juego (Windows + Linux)" -> Run workflow.
+# Al acabar, los .zip / .tar.gz salen en "Artifacts" al final de la ejecucion
+# (privados si el repositorio es privado).
+on:
+  workflow_dispatch:
+
+env:
+  PROJECT_DIR: MotorGraphico
+
+jobs:
+  build:
+    name: juego (${{ matrix.name }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: linux
+          - os: windows-latest
+            name: windows
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependencias (Linux)
+        if: matrix.name == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes libgl1-mesa-dev libx11-dev libxcursor-dev \
+            libxi-dev libxinerama-dev libxrandr-dev
+
+      - name: Configurar CMake (Linux)
+        if: matrix.name == 'linux'
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: >
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc"
+
+      # Runtime de Visual C++ enlazado estatico: el amigo no necesita instalar nada.
+      - name: Configurar CMake (Windows)
+        if: matrix.name == 'windows'
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+
+      - name: Compilar solo el juego
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: cmake --build build --config Release --parallel --target juego
+
+      - name: Empaquetar (Linux)
+        if: matrix.name == 'linux'
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          mkdir -p Onegai
+          cp build/juego Onegai/
+          cp -r assets Onegai/assets
+          printf '#!/bin/sh\ncd "$(dirname "$0")"\nchmod +x ./juego\nexec ./juego\n' > Onegai/jugar.sh
+          chmod +x Onegai/jugar.sh Onegai/juego
+          tar -czf Onegai-linux.tar.gz Onegai
+
+      - name: Empaquetar (Windows)
+        if: matrix.name == 'windows'
+        working-directory: ${{ env.PROJECT_DIR }}
+        shell: bash
+        run: |
+          mkdir -p Onegai
+          cp build/Release/juego.exe Onegai/
+          cp -r assets Onegai/assets
+          7z a Onegai-windows.zip Onegai
+
+      - name: Subir resultado
+        uses: actions/upload-artifact@v4
+        with:
+          name: Onegai-${{ matrix.name }}
+          path: |
+            ${{ env.PROJECT_DIR }}/Onegai-linux.tar.gz
+            ${{ env.PROJECT_DIR }}/Onegai-windows.zip
+          if-no-files-found: error

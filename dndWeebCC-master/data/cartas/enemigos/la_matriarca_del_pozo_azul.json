@@ -1,0 +1,96 @@
+{
+ "id": "la_matriarca_del_pozo_azul",
+ "name": "La Matriarca del Pozo Azul",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "control",
+ "faction": "nagas_del_pozo_azul",
+ "stats": {
+  "CON": 9,
+  "DES": 8,
+  "INT": 10,
+  "CAR": 9
+ },
+ "derived": {
+  "vida": 70,
+  "ca": 20,
+  "defensaMental": 19,
+  "resistenciaFisica": 19,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Cláusula de Ahogo",
+   "defense": "defensa_mental",
+   "effect": "Arrastra 10 pies hacia el agua a un Endeudado que falle; dentro del agua, Agarrado."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "defensa_mental",
+   "effect": "Si el objetivo falla, queda Endeudado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en Desesperación: su ataque firma se calcula como éxito crítico (GDD 7.6)."
+  }
+ ],
+ "passive": {
+  "name": "Liquidez",
+  "description": "Liquidez: en agua, sus tiradas ganan +1 y puede moverse como acción menor."
+ },
+ "conditionsInflicted": [
+  "endeudado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Veneno"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Sigue su método con calma: aún cree que sobra tiempo."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Activa la arena a pleno: Agua subiendo: cada 2 rondas el nivel sube — los no nadadores pierden 5 pies de movimiento"
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final; su debilidad narrativa queda a la vista (el DJ da la pista si no la tienen)."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Cobrar el tributo fundacional: una gota de sangre de cada linaje del valle",
+  "metodo": "Negocia en combate: ofrece tregua a quien firme — y firma demasiada gente",
+  "debilidad_narrativa": "Auditoría: leerle en voz alta una deuda suya impagada (se descubre en la campaña) invierte su pasiva una ronda",
+  "vinculo": "la_serpiente_de_contratos"
+ },
+ "arena": {
+  "name": "El Pozo Azul",
+  "hazard": "Agua subiendo: cada 2 rondas el nivel sube — los no nadadores pierden 5 pies de movimiento"
+ },
+ "legendaryActions": [
+  "Recaudación (1/ronda): un personaje Endeudado que use su acción principal le transfiere 1 de vida"
+ ],
+ "storyCard": {
+  "title": "La Matriarca del Pozo Azul",
+  "text": "El pozo no concede deseos. Concede préstamos.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Todo el agua del reino le debe intereses."
+}

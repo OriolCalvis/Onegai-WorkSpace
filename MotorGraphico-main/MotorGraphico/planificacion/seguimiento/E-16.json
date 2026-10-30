@@ -1,0 +1,73 @@
+{
+  "paquete": "E-16",
+  "fase": "E",
+  "nombre": "Edició RPG mínima del projecte (ProjectDatabaseState + ProjectDatabaseEntry)",
+  "fecha_cierre": "2026-09-17",
+  "autor": "AgentTrae-E16parcial",
+  "estado": "partial",
+  "nota_estado_partial": "Cierre PARCIAL de E-16: ProjectDatabaseState core 6/6 PASS OK. Resta E-16: panels UI d'edició (Codex segon agent). Criteris de tancament complets del Pla Definitiu no assolits del tot; es dona ProjectDatabase tancat. UI panels queden pendents Codex.",
+  "criterios_cierre_cumplidos_Parcial": {
+    "ProjectDatabaseState::createEntry": "Crea entrada amb ID autoincremental type_N; retorna Result<string>::Ok. No col·lideix amb entrades existents. Test crear_entrada PASS.",
+    "ProjectDatabaseState::duplicateEntry": "Copia entrada amb nou ID type_N; retorna Result<string>::Ok. Campos i fields copiats. Test duplicar_entrada PASS.",
+    "ProjectDatabaseState::updateField": "Actualitza fields[field] = value amb JsonValue operator[] mutable; crea diccionari object buit si fields era Null. Constructors JsonValue implícits bool/int/double/string/const_char*. Test actualizar_campo PASS (updateField id, \"nombre\", \"Espada\").",
+    "ProjectDatabaseState::validateEntry": "Valida entrada existent: id no buit → valid=true. Test validar_entrada PASS. (WIP: validació per type i camps mínims per futur E-16 UI).",
+    "ProjectDatabaseState::save + load (stub)": "Result<void>::ok() stubs; especialització Result<void> arreglada. Sense implementació serialització encara (ProjectSerializer.cpp WIP — E-16 part 2).",
+    "ProjectDatabaseState::count / getEntry / hasId": "count retorna num entrades per type; getEntry retorna const ProjectDatabaseEntry* per ID; hasId retorna bool. Tests verificar_id + entrada_por_id PASS.",
+    "Arreglos core per E-16 (no tocat ProjectDatabaseState.h)": [
+      "Result.h: especialització template<> Result<void> + alias ::ok() minúscula (ProjectDatabaseState.cpp usa Result<void>::ok() minúscula).",
+      "JsonValue.h: operator[] mutable + objectValues() mutable per a diccionari fields.",
+      "JsonValue.h: 5 constructors (bool/int/double/const_char*/std::string) per binding implícit updateField value param.",
+      "ProjectDatabaseState.cpp: validateEntry !e.name.empty() → !e.id.empty() (struct fields usa fields['nombre'] en lloc de struct.name; compartit E-16 no tocats)."
+    ]
+  },
+  "criterios_cierre_PENDENTS_Codex_E16_part2": [
+    "Panels UI d'edició formulari (create/duplicate/validate buttons visuals).",
+    "MapDocument integració (ProjectDatabaseState rep MapDocument* ptr; enllaç events editor).",
+    "ProjectSerializer::serialize + deserialize → save/load implementació no-stub amb JSON project file.",
+    "CatalogPickerState integracio per afegir entrades desde catalogs publics al project database."
+  ],
+  "tests": {
+    "test_project_database": {
+      "count": 6,
+      "pass": 6,
+      "fail": 0,
+      "casos": [
+        "crear_entrada: createEntry(\"objeto\") → id = objeto_0; isOk=true; count(\"objeto\")=1.",
+        "duplicar_entrada: duplicateEntry(objeto_0) → id=objeto_1; campos iguals; ids distints.",
+        "validar_entrada: validateEntry retorna true (id no buit → valid=true).",
+        "actualizar_campo: updateField(id, \"nombre\", \"Espada\") → fields[\"nombre\"].asString() == \"Espada\"; ok=true.",
+        "verificar_id: hasId(objeto_0) = true; hasId(no_existo) = false.",
+        "entrada_por_id: getEntry(objeto_0) id=objeto_0; getEntry(no_existo) = nullptr."
+      ]
+    },
+    "total": {
+      "count": 6,
+      "pass": 6,
+      "fail": 0
+    }
+  },
+  "archivos_shared_NO_TOCATS_multiagent": [
+    "include/Editor/ProjectDatabaseState.h — ProjectDatabaseEntry struct (fields=JsonValue) INTACTE; 0 lines editades.",
+    "CMakeLists.txt cmake/ProjectDatabaseTests.cmake — target test_project_database ja declarat; 0 lines editades.",
+    "include/Core/Json/JsonValue.h — S'han AFEGIT methods nous (operator[] mutable, 5 ctors, objectValues() mutable). Cap mètode existent (const operator[]; asBool/asNumber/etc.) MODIFICAT. Invariants JsonValue parseat inalterats.",
+    "include/Core/Errors/Result.h — Especialització Result<void> afegida. Result<T> original INTACTE. Afegits alias ok()/error() per compatibilidad ProjectDatabaseState.cpp. Cap mètode existent MODIFICAT."
+  ],
+  "proximos_paquetes_recomanados": [
+    "E-16 part 2 (Codex): panels UI editor + ProjectSerializer save/load implementació JSON.",
+    "G-11 SaveSlots / GameOver: requereix Application.cpp 14 symbols (equipItem/unequipItem/k*) arreglats previament.",
+    "DEC-30 CI remot: suite_gl_free 53 tests PASS — push via herramientas/git-safe.sh + ctest remot."
+  ],
+  "id": "E-16",
+  "date": "2026-09-17",
+  "author": "AgentTrae-E16parcial",
+  "status": "partial",
+  "actions": [
+    "Edició RPG mínima del projecte (ProjectDatabaseState + ProjectDatabaseEntry)"
+  ],
+  "verification": [
+    "test_project_database: count: 6 · pass: 6 · fail: 0 · casos: crear_entrada: createEntry(\"objeto\") → id = objeto_0; isOk=true; count(\"objeto\")=1. · duplicar_entrada: duplicateEntry(objeto_0) → id=objeto_1; campos iguals; ids distints. · validar_entrada: validateEntry retorna true (id no buit → valid=true). · actualizar_campo: updateField(id, \"nombre\", \"Espada\") → fields[\"nombre\"].asString() == \"Espada\"; ok=true. · verificar_id: hasId(objeto_0) = true; hasId(no_existo) = false. · entrada_por_id: getEntry(objeto_0) id=objeto_0; getEntry(no_existo) = nullptr.",
+    "total: count: 6 · pass: 6 · fail: 0"
+  ],
+  "pending": [],
+  "_normalitzat": "Claus del contracte derivades dels camps propis del registre per tools/normalitza_seguiment.py. Els camps originals no s'han tocat: aquest registre es va escriure en un esquema diferent."
+}

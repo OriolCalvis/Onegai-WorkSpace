@@ -1,0 +1,53 @@
+{
+ "id": "susurro_demoniaco",
+ "name": "Susurro Demoníaco",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Durante 1 turno, tus ataques hacen 1d[pendiente] a los enemigos adyacentes a tu objetivo. Cuesta el doble de recuperar con Desgarro Sangriento.",
+ "flavorText": "",
+ "classTags": [
+  "el_apostata"
+ ],
+ "roleTags": [],
+ "tags": [
+  "el_apostata",
+  "creador"
+ ],
+ "mechanicTags": [
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "self",
+ "range": "short",
+ "duration": "1 turno",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Durante 1 turno, tus ataques hacen 1d[pendiente] a los enemigos adyacentes a tu objetivo. Cuesta el doble de recuperar con Desgarro Sangriento.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "Tus ataques hacen 1d[pendiente] a los enemigos adyacentes a tu objetivo.",
+   "mechanicHook": "pendiente:el dado del Susurro y los enemigos adyacentes"
+  },
+  {
+   "description": "Cuesta el doble de recuperar con Desgarro Sangriento.",
+   "mechanicHook": "coste_desgarro:2"
+  }
+ ]
+}

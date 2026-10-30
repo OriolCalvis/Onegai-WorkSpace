@@ -1,0 +1,33 @@
+{
+ "id": "BND-ALT-02",
+ "date": "2026-10-08",
+ "author": "claude (Cowork)",
+ "status": "HECHO — las alternativas del segundo día que aprobó Oriol, con lo que se cobra del primero. Sigue BND-ALT-03 (el Ocaso).",
+ "origen": "Oriol (08/10), documento «Boundington: alternativas, karma y moral», tabla del día 2.",
+ "actions": [
+  "assets/adventures/boundington_segundo_dia.json: 76 beats (antes 47). Los hombres de Venides por cuándo llevas las pruebas (el informe de la noche da 10); el capitán de la guardia; Gorran de rodillas (dejarle huir o rematarle); la espada de Rosita (devolverla, devolverla y contarle todo, o mentir) y lo que Rosita cuenta con confianza 2 y 3; Zarela, los 6 saqueadores y el ritual del fuego (el amuleto); avisar a los Perdidos de que la Barriada se arma; dentro de la fiesta, robar a los invitados y señalar o chantajear al noble; el cobrador y entrar con Edul; el informe a Venides con tres respuestas; lo que se cobra del primer día (Aigren, Luisarda, Xila, Venides y Edul, la familia del gato).",
+  "assets/adventures/boundington_primer_dia.json: con rumores, Venides espera pruebas (cierre_espera); acabar con todos en la cripta, 3 Devotos y 1 Fanático.",
+  "assets/objects/boundington_objetos.json (nuevo, en el manifiesto de Boundington): la Furia de Alaro, la daga de Aigren y el amuleto gitano. assets/objects/boundington_enemigos.json: el saqueador de Surysal. assets/textures/sprites.json: sus alias. assets/rules/actos.json: gorran_rematado.",
+  "examples/demo_boundington*.cpp y demo_campana_boundington.cpp: las rutas del segundo día. examples/simulador_dificultad.cpp: el modo alternativas (los combates nuevos)."
+ ],
+ "scope": [
+  "assets/adventures/boundington_segundo_dia.json: 76 beats (antes 47). Los hombres de Venides por cuándo llevas las pruebas (el informe de la noche da 10); el capitán de la guardia; Gorran de rodillas (dejarle huir o rematarle); la espada de Rosita (devolverla, devolverla y contarle todo, o mentir) y lo que Rosita cuenta con confianza 2 y 3; Zarela, los 6 saqueadores y el ritual del fuego (el amuleto); avisar a los Perdidos de que la Barriada se arma; dentro de la fiesta, robar a los invitados y señalar o chantajear al noble; el cobrador y entrar con Edul; el informe a Venides con tres respuestas; lo que se cobra del primer día (Aigren, Luisarda, Xila, Venides y Edul, la familia del gato).",
+  "assets/adventures/boundington_primer_dia.json: con rumores, Venides espera pruebas (cierre_espera); acabar con todos en la cripta, 3 Devotos y 1 Fanático.",
+  "assets/objects/boundington_objetos.json (nuevo, en el manifiesto de Boundington): la Furia de Alaro, la daga de Aigren y el amuleto gitano. assets/objects/boundington_enemigos.json: el saqueador de Surysal. assets/textures/sprites.json: sus alias. assets/rules/actos.json: gorran_rematado.",
+  "examples/demo_boundington*.cpp y demo_campana_boundington.cpp: las rutas del segundo día. examples/simulador_dificultad.cpp: el modo alternativas (los combates nuevos)."
+ ],
+ "verification": [
+  "demo_boundington: 94 + 76 + 27 beats, ninguno sin disparar.",
+  "validar_todo: 0 errores (los 10 avisos de antes).",
+  "ctest en la VM del Mac (Xvfb): todo en verde salvo linea_base_core (44, la de antes).",
+  "simulador_dificultad alternativas: la Barriada (6 saqueadores) ~32 %; acabar con todos en la cripta (3 y 1) ~68 %.",
+  "En el juego (Xvfb): la espada de Rosita con sus tres respuestas y el amanecer con Venides y Edul."
+ ],
+ "pending": [
+  "BND-ALT-03: el Ocaso lee las flags del segundo día (el capitán, Gorran, Rosita, los gitanos, el noble, Edul, el informe)."
+ ],
+ "para_oriol": [
+  "Las decisiones de CANON §11.5."
+ ],
+ "sesion": "sesiones/2026-10-08-claude-moral-alt.md"
+}

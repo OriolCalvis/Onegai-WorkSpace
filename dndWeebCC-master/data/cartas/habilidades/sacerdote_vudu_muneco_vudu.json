@@ -1,0 +1,51 @@
+{
+ "id": "sacerdote_vudu_muneco_vudu",
+ "name": "Muñeco vudú",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Maldices al enemigo con un muñeco vudú: pierde 1 de vida por turno durante 3 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "sacerdote_vudu"
+ ],
+ "roleTags": [],
+ "tags": [
+  "sacerdote_vudu",
+  "estandar"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "INT",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Maldices al enemigo con un muñeco vudú: pierde 1 de vida por turno durante 3 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Muñeco vudú: 1 de daño por turno durante 3 turnos.",
+   "mechanicHook": "estado:3:dano_por_turno:1"
+  },
+  {
+   "description": "[pendiente] la consecuencia si la maldición sigue sin quitarse (la ficha no la da).",
+   "mechanicHook": "pendiente_parcial:la consecuencia si la maldición sigue sin quitarse (la ficha no la da)"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Sacerdote vudú (Voodoo Priest) · H1647 Muñeco vudú"
+}

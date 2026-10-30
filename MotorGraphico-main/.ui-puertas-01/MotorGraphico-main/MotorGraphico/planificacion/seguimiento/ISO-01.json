@@ -1,0 +1,35 @@
+{
+ "id": "ISO-01",
+ "date": "2026-10-03",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "PRUEBA en el arbol (commit local), pendiente de que Oriol elija camino; no entregado al Mac (desconectado)",
+ "encargo": "Estetica Habbo Hotel (isometrica 2:1 nitida, piezas que giran en 4 orientaciones como los muebles) con edificios y decorados tipo Stardew Valley. Cada pieza con una imagen por orientacion. Comparar caminos con la misma casa en 4 vistas.",
+ "archivos": {
+  "nuevos": [
+   "tools/iso/motor_iso.py (proyeccion del motor, z-buffer, luz de arriba-izquierda, contornos)",
+   "tools/iso/peces_iso.py (materiales, texturas, caja, tejado a dos aguas, cilindro, rectangulos sobre pared, plantas, humo, dibujo en 4 orientaciones)",
+   "tools/iso/edificis.py (casa/local parametricos)",
+   "tools/iso/oficis.py (taberna, herreria, tienda: porche, terraza, forja, aparador, rotulos)",
+   "tools/iso/monuments.py (templo octagonal de los Guardianes)",
+   "tools/iso/exportar_kit.py (12 casas x 4 orientaciones + 3 locales -> assets/textures/iso + peces.json)",
+   "tools/iso/full_vistes.py, tools/iso/casa_prova.py (hojas de vistas)",
+   "assets/textures/iso/*.png + peces.json, assets/textures/monumentos/iso_*",
+   "Claude outputs/iso/ (capturas y LEEME)"
+  ],
+  "modificados": [
+   "tools/pixellab/importar_monumentos.py (varios indices; piezas exactas sin reescalar con anclaje explicito alineado a las tiras; 'retirado')",
+   "tools/gen_ciudad.py (tiles edifici_o0..o3, orientar_casas: la puerta hacia el lado con mas calle, prefiriendo las fachadas visibles; sin mesa/barriles duplicados en la taberna)",
+   "assets/textures/pixellab/tiles.json + terreno_iso.json + terreno_mundo.png (gids 89-92), bloques.json (+8 tipos de respaldo), pixellab/monumentos.json (herreria/taberna/tienda de PixelLab 'retirado'), monumentos.json, sprites.json, 92 TMX (tilecount 92), ciudad_centro"
+  ]
+ },
+ "verificacion": [
+  "ctest demo_ciudad, test_object_catalog, test_registro_sprites, test_bloques, test_monumentos: OK",
+  "conectividad 100% (centro 2367/2367)",
+  "linea_base_core: las mismas 35 deudas previas"
+ ],
+ "pendiente": [
+  "Camino 3 (PixelLab con prompt de estilo) cuando el Mac vuelva",
+  "Decision de Oriol: camino",
+  "Si gana el kit: props del kit (bancos, farolas, paradas, jardineras, arboles), suelos, resto de la ciudad (nobles, chabolas, barrios), 7 monumentos con la geometria, gramatica por raza (presets), rotacion en el editor"
+ ]
+}

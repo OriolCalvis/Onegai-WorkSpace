@@ -1,0 +1,62 @@
+{
+  "id": "UI-BG3-01",
+  "date": "2026-10-05",
+  "author": "Claude (Cowork)",
+  "status": "HECHO en el arbol del Mac (05/10 ~15:50, hora del Mac), sin commit",
+  "pedido": "Oriol (05/10): menús en cuadrícula con ratón o teclado, como BG3; el combate muestra las cartas como una lista («una lista de la compra, no un HUD»); un cofre en El Vacío con el kit básico de la clase. Eligió: kit a la mochila, tema pergamino con distribución tipo BG3, barra de cartas abajo y maquetas primero.",
+  "maquetas": "Claude outputs/pantallas_bg3_2026-10-05/ (10 PNG + hoy/ + LEEME). Generador: Claude outputs/estudio_uiux_2026-09-28/maquetas/_generador/pergamino/bg3.py.",
+  "aprobado": "Oriol (05/10): «aplícalo al juego, m'encanta»; 7 hojas mejor que 14 pasos; kits del cofre parametrizados por regla.",
+  "entrega": "Claude outputs/ui_bg3_2026-10-05/ (LEEME.md, capturas/ del juego real, combate_barra.gif, kits_63.md). Sesión: sesiones/2026-10-05-claude-ui-bg3-juego.md.",
+  "descripcion": "Las maquetas C01-C04 en el juego: ratón en todas las pantallas; título en papiro; creación en 7 hojas de cuaderno con rejillas (Raza, Aspecto, Clase, Origen, Historia, Deidad, Nombre) y el personaje sin equipo; cofre en El Vacío que deja en la mochila el kit de la clase (regla con parámetros, 63 clases) y el objetivo de ponérselo; combate con barra de cartas en pergamino (básicas y mano con 1-0 o clic, carta grande, turno, orden de turno con retratos, placa del enemigo con estados, registro con L, estación del Bardo en su emergente, F Pasar, rótulo del turno del rival y aviso de la reacción que salta).",
+  "actions": [
+    "Ratón: RawInputState/InputSnapshot con posición, botones, rueda y texto; Window recoge scroll y caracteres; teclas nuevas Q, F, L, Retroceso, flechas y 1-0 (InputMap). Engine::ratonEnPapiro para los papiros de título, pausa, opciones y derrota.",
+    "Pergamino: Lienzo con zonas para el ratón (Zona, zonaEn, desplaza); AtlasRetratos (retratos montados por capas, los sube PergaminoGL); Papiro con entradas apagadas y su motivo, pie con nota y sin velo; Lora de 13 px en el atlas de letras para los nombres de las cartas.",
+    "Creación: Game::CuadernoCreacion (sin GL: hojas, rejillas, búsqueda, filtro, historia en matriz, nombre escrito, ficha final sin equipo) pintado por Pergamino::pintaCreacion (PaginasCreacion*.cpp); PantallaNuevaPartida solo traduce la entrada.",
+    "Kit y cofre: Game::KitBasico (regla de assets/rules/kit_basico.json) y Game::CofreKit (abrir al lado, kit a la mochila, flags bnd_prologo_kit_*); objeto cofre en assets/objects/vacio_objetos.json y en interior_vacio.json; objetivos y temporizador del prólogo en boundington_prologo.json; las reglas de inventario llevan la clase y los tiers (equipar ya no recalcula la vida con la base 8).",
+    "Combate: Game::BarraCombate (sin GL: la vista agrupada por carta, el foco, el emergente, el registro, la espera del rival, el aviso de la reacción; devuelve la fila del menu de siempre) pintada por Pergamino::pintaCombate (MesaCombateHud.cpp, MesaCombateRetales.cpp); Application: teclasCombate, turnoRival, confirmBattleCommand(fila) y pasaTurno; fuera m_enemyPanel/Text/Bar, m_commandPanel/Menu, menuDeCartas y lineasDeCombate; CartasEnCombate entiende #pasar.",
+    "Sin ficha (prueba de nivel del editor), las habilidades de siempre (H1-01) vuelven a jugarse, ahora como cartas de la barra."
+  ],
+  "archivos": {
+    "nuevos": [
+      "include/Engine/RatonMenus.h (32)",
+      "include/Game/CuadernoCreacion.h (204) + src/Game/CuadernoCreacion.cpp (474), src/Game/CuadernoCreacionVistas.cpp (174)",
+      "include/Game/Personajes/KitBasico.h (77) + src/Game/Personajes/KitBasico.cpp (208)",
+      "include/Game/CofreKit.h (82) + src/Game/CofreKit.cpp (81)",
+      "include/Game/BarraCombate.h (178) + src/Game/BarraCombate.cpp (375)",
+      "include/HUD/Pergamino/AtlasRetratos.h (70) + src/HUD/Pergamino/AtlasRetratos.cpp (52)",
+      "include/HUD/Pergamino/PaginasCreacion.h (55) + src/HUD/Pergamino/PaginasCreacion.cpp (422), PaginasCreacionHojas.cpp (285), PaginasCreacionHistoria.cpp (268), PaginasCreacionInterno.h (90)",
+      "include/HUD/Pergamino/MesaCombateHud.h (55) + src/HUD/Pergamino/MesaCombateHud.cpp (365), MesaCombateRetales.cpp (232), MesaCombateInterno.h (42)",
+      "assets/rules/kit_basico.json, assets/objects/vacio_objetos.json",
+      "cmake/CreacionBg3Tests.cmake (va en el MISMO commit que su include() en CMakeLists.txt)",
+      "tests/Game/KitBasicoTests.cpp (199), CofreKitTests.cpp (100), CuadernoCreacionTests.cpp (311), BarraCombateTests.cpp (228); tests/HUD/PaginasCreacionTests.cpp (210), MesaCombateTests.cpp (146)"
+    ],
+    "modificados": [
+      "CMakeLists.txt (fuentes en motor_level + include de CreacionBg3Tests.cmake), cmake/Pergamino.cmake",
+      "include/Engine/Input/InputMap.h, include/Engine/Input/InputSystem.h, src/Engine/Input/InputSystem.cpp, include/Engine/Window.h, src/Engine/Window.cpp, tests/Engine/InputSystemTests.cpp",
+      "include/Engine/Application.h, include/Engine/ApplicationInternal.h, src/Engine/Application.cpp, ApplicationBucle.cpp, ApplicationCierre.cpp, ApplicationHud.cpp, ApplicationNivel.cpp, ApplicationPantallas.cpp",
+      "include/Engine/PantallaNuevaPartida.h, src/Engine/PantallaNuevaPartida.cpp, include/Game/NewGameFlow.h, src/Game/NewGameFlow.cpp, include/RPG/CharacterCreation.h, src/RPG/CharacterCreation.cpp",
+      "include/Game/CartasEnCombate.h, src/Game/CartasEnCombate.cpp (#pasar)",
+      "include/HUD/Pergamino/FuenteAtlas.h, HudRetales.h, InterfazPergamino.h, Lienzo.h, Papiro.h; src/HUD/Pergamino/FuenteAtlas.cpp, HudRetales.cpp, InterfazPergamino.cpp, Lienzo.cpp, Papiro.cpp; src/Render/PergaminoGL.cpp",
+      "assets/textures/letras_pergamino.png/.json y tools/gen_letras_pergamino.py (Lora 13 px; el resto del atlas idéntico)",
+      "assets/levels/interior_vacio.json (cofre en 7,8), assets/proyectos/boundington.json (vacio_objetos.json), assets/adventures/boundington_prologo.json",
+      "examples/demo_prologo.cpp, examples/demo_campana_boundington.cpp, tests/Engine/ApplicationSceneTests.cpp"
+    ]
+  },
+  "ley_del_repo": {
+    "techo_500": "ningún fichero nuevo pasa de 500 (CuadernoCreacion.cpp 474, InterfazPergamino.cpp 473)",
+    "cuellos": "Application.h 515 (techo 519), Application.cpp 1188 (techo 1347)",
+    "miembros": "Application.h 89 según la guardia (techo 109); InterfazPergamino.h 15 (umbral 15); BarraCombate.h 12",
+    "frontera_GL": "la lógica nueva va en motor_level y motor_pergamino, sin GL",
+    "guardia": "guardia entera en el contenedor: las mismas 44 deudas con y sin el paquete; bajan Application.h (519→515 líneas, 109→89 miembros) y Application.cpp (1347→1188)"
+  },
+  "verification": [
+    "test_barra_combate 8/8, test_pergamino 49/49, test_cuaderno_creacion 12/12, test_kit_basico 11/11, test_cartas_combate 30/30.",
+    "ctest en el contenedor sobre el árbol del Mac de las 13:40 UTC + el paquete: 203/211; las 8 que fallan fallan igual sin el paquete (demo_nova_partida, test_gdb12_screens, test_g14_hud_timers_commerce, test_application, test_application_cableado, test_catalog_content, test_application_scenes —de 5 fallos a 4— y linea_base_core).",
+    "Juego real (OpenGL por software): título, las 7 hojas con clics, cofre y kit puesto, combates enteros (victoria, derrota, reacción, pasar, registro). Capturas: Claude outputs/ui_bg3_2026-10-05/.",
+    "Aplicado al Mac: 74 ficheros (30 nuevos, 44 modificados), preimagen md5 74/74 (3 cambiados por otras sesiones desde las 09:40 UTC, fusionados a 3 bandas sin conflictos), postimagen 74/74. Copia: MotorGraphico/out/claude_bg3/ui_bg3_01.tar.gz."
+  ],
+  "pending": [
+    "Commit: los ficheros nuevos con sus líneas de CMake en el mismo commit (cmake/CreacionBg3Tests.cmake y su include(); fuentes nuevas de motor_level y motor_pergamino).",
+    "Preguntas para Oriol (LEEME): el crítico del saqueador (22) contra un bardo de 19 PV sin kit; fondo del título (El Vacío y no la ciudad); sin letras del pergamino no hay título, creación ni combate; tildes de los nombres del catálogo de cartas."
+  ]
+}

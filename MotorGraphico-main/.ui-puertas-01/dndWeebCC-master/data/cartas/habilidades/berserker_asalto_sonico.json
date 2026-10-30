@@ -1,0 +1,54 @@
+{
+ "id": "berserker_asalto_sonico",
+ "name": "Asalto sónico",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Te lanzas sobre el enemigo: 1d6 de daño de tinieblas y sangra 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "berserker"
+ ],
+ "roleTags": [],
+ "tags": [
+  "berserker",
+  "estandar",
+  "Tinieblas"
+ ],
+ "mechanicTags": [
+  "Tinieblas"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Te lanzas sobre el enemigo: 1d6 de daño de tinieblas y sangra 2 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "1d6 de daño de tinieblas.",
+   "mechanicHook": "dano:1d6"
+  },
+  {
+   "description": "Hemorragia mortal: sangra 2 turnos.",
+   "mechanicHook": "condicion:sangrado:2"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Berserker · H904 Asalto sónico"
+}

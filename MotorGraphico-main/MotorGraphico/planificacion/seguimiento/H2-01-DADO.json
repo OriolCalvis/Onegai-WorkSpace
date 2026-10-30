@@ -1,0 +1,62 @@
+{
+  "id": "H2-01",
+  "date": "2026-09-29",
+  "author": "opencode",
+  "status": "HECHO en el árbol del Mac, sin commit (05/10, Claude): el dado se ve en el combate en pergamino y en la prueba de un diálogo. La mitad GL-free de opencode (DiceRollWidget, 29/09) sigue igual; el montaje se hizo sobre el pergamino (ver «montaje»).",
+  "criterio_de_cierre": "JUGABILIDAD_FASE_H.md H2-01: 'Al hablar, al atacar y al usar una habilidad se ve la tirada y su grado. La pifia se distingue a simple vista'.",
+  "scope": [
+    "include/HUD/DiceRollWidget.h: NUEVO, clase GL-free (namespace Game, patron OptionsState/HudTimer). show(pool, degree, label) guarda foto; displayLines() devuelve etiqueta + dados + exitos + grado + marca de pifia; gradeLabel() reutiliza las etiquetas del log de combate.",
+    "src/HUD/DiceRollWidget.cpp: NUEVO, 1 linea en motor_level. Documenta el montaje pendiente con ficheros y lineas exactas.",
+    "tests/Game/DiceRollWidgetTests.cpp: NUEVO, 11 casos (10 con PoolResult escrito a mano + 1 integracion con semilla fija 1234 -> [4,3,5], 0.5 exitos, SUCCESS).",
+    "cmake/DiceRollWidgetTests.cmake: NUEVO, patron WorldTravelStateTests sin copiar_assets (sin assets).",
+    "CMakeLists.txt: +2 lineas (fuente en motor_level + include del test). EN EL ARBOL SIN COMMITTER: van en el mismo commit que su .cmake (ley 3) cuando el indice ajeno aterrice."
+  ],
+  "non_goals": [
+    "No se toca Application.cpp/.h (M, filas H1-03/H1-05 + MenuJugador en vuelo), GameSession* (M, H2-05/H2-08), BattleState.*, HUD/Iconos.* (WIP ARTE/FICHA ajeno), ni zonas H3-01/H4-01/G11/E-12.",
+    "No se re-decide el idioma de las etiquetas: se reutilizan las del producto (Fracàs/Parcial/Èxit/Crític); la pregunta catalan/castellano sigue en la bandeja de Oriol.",
+    "No se tira el dado de nuevo para mostrarlo: el montaje usa el PoolResult ya calculado donde se decide el grado.",
+    "No se regenera MAPA_DEL_CODIGO.md (se genera desde pla/dades.py, reservado por ALPHA-00) ni alcance_real.json (H8-01/D0007)."
+  ],
+  "verification": [
+    "test_dice_roll_widget 11/11 PASS; ctest -R test_dice_roll_widget Passed.",
+    "Falsabilidad por mutacion (3/3 cazadas, restaurado y reverificado 11/11): etiqueta SUCCESS->Parcial (2 rojos), marca PIFIA desactivada (1 rojo), Exitos %d (2 rojos).",
+    "Suite GL-free 180 tests: 174 pass; 6 rojos atribuidos con git status, ninguno mio: demo_creacion_personaje + demo_nova_partida (classes.json M ajeno, 61 vs 63), test_gdb12_screens (InventoryScreen M, fila G12 Codex), test_catalog_content (classes/npcs M ajenos), linea_base_core_configura + linea_base_core (rojos preexistentes por .cmake/fuentes sin versionar de 4+ sesiones; los 3 AVISOS mios son de la misma clase y se curan con el commit).",
+    "analizar_duplicados --comprobar OK: 0 SOLAPAMIENTO_FUNCIONAL. comprobar_fragmentos_cmake: 1 rojo ajeno (G15ExportPanel); el mio registrado. diff --check limpio.",
+    "juego, level_editor y motor_editor compilan con la fuente nueva."
+  ],
+  "handoff_montaje": [
+    "Application.h (limpio cuando H1-03/H1-05 aterricen): miembro Game::DiceRollWidget m_diceWidget.",
+    "Donde se resuelve la tirada (GameSession.cpp:380,393; syncBattleOutcome en GameSessionInteraccion.cpp): m_diceWidget.show(pool, grade, etiqueta) con el PoolResult existente.",
+    "ApplicationHud.cpp: pintar displayLines() con HudCommandMenu; hide() al cambiar de modo. La linea '!! PIFIA !!' pide color de aviso (el widget solo da texto)."
+  ],
+  "coexistencia": [
+    "Zona HUD compartida con WIP ajeno sin versionar: HUD/Iconos.* (ARTE/FICHA), HudFicha/HudIconList/HudIconos, HudTextLayoutTests (otra sesion). Sin colision de nombres (grep DiceRoll solo da mis ficheros).",
+    "CMakeLists.txt tiene staged la entrada H4-01 (ProjectHub, otra sesion en vuelo a las 08:36 segun qwen): mis 2 lineas van por blob y NO se commitean encima."
+  ],
+  "montaje": {
+    "date": "2026-10-05",
+    "author": "Claude (Cowork)",
+    "por_que_asi": "El HUD del juego ya es el pergamino (UI-BG3-01): el panel de comandos donde iba a ir DiceRollWidget::displayLines() ya no existe. La tirada se pinta con caras de d6 en vez de líneas de texto, y las etiquetas son las del registro de la mesa (Fallo/Parcial/Éxito/Crítico), no las catalanas de BattleState.",
+    "scope": [
+      "include/RPG/TiradaVisible.h: NUEVO. La foto de una tirada: qué, quién, contra quién, los dados de cada lado, el bono tras tirar, si fue enfrentada y el grado final. pifia() = ningún 5/6, dos 1 y se queda en fallo.",
+      "Game::CartasEnCombate (CartasTiradas.cpp): tirar() y tirarSinRival() dejan la última en ultimaTirada(), numerada. La lee la barra (VistaBarra::tirada).",
+      "RPG::NarrativeState: ponTirada()/ultimaTirada(); GameSession::resolveSkillChecks la deja con cada prueba de un beat. No se guarda en la partida; reset() conserva la cuenta.",
+      "include/HUD/Pergamino/DadosPergamino.h + src/HUD/Pergamino/DadosPergamino.cpp: NUEVOS. Las caras (6 = éxito en verde, 5 = medio en ámbar, 4 = medio con ventaja; los 1 de la pifia en rojo), el panel de la última tirada del combate (bajo el registro, con halo dorado 1,2 s cuando es nueva; marco rojo y «¡PIFIA!» en caja roja) y la tira de la prueba sobre la última página del diálogo.",
+      "Game::BarraCombate: brilloTirada() (la tirada nueva, también la del rival). DialogoHoja: miraTirada() (la tirada nueva va con el diálogo que se abre; otro diálogo empieza sin ella). InterfazPergamino la mira en todos los modos."
+    ],
+    "verification": [
+      "test_pergamino 58/58 (DadosPergaminoTests: recuento Ed. 3 por cara, puntos de cada cara, el panel cabe entre el registro y la bandeja con su halo, la pifia en rojo y perder no es pifiar, la tira del diálogo y que la tirada va con su beat y solo en su última página).",
+      "test_cartas_combate 32/32 (la mesa guarda la última tirada de cada lado; la pifia se marca y perder no es pifiar); test_barra_combate 14/14 (la tirada nueva brilla y se apaga); test_game_session 26/26 y test_narrative_variables 10/10 (las pruebas de los beats dejan su foto; reset no vuelve a cero).",
+      "Juego real (OpenGL por software): combate con el saqueador (tu tirada, la del rival, una carta, «sin dados» de un rival sin DES) y la prueba de Percepción del prólogo en la página «(Tirada de Percepcion contra el vacio.)». Capturas en Claude outputs/h2_dado_estados_2026-10-05/."
+    ],
+    "pending": [
+      "Con varias tiradas en una acción (un área, dos enemigos) solo se ve la última; el registro las tiene todas.",
+      "Oriol: los nombres sin tildes salen del catálogo («Percepcion»)."
+    ]
+  },
+  "todas_las_tiradas_2026_10_05": [
+    "Oriol (05/10): «Cuando una accion tira varias veces, solo se ve la ultima tirada: dale mas pausa al juego y que se vean todas».",
+    "RPG::HistorialTiradas (TiradaVisible.h): las ultimas 32 con su accion; CartasEnCombate::tiradas(). BarraCombate las pone en cola (1,6 s cada una, «2/3» en el panel); el rival y el desenlace esperan (Application::desenlaceTrasTiradas).",
+    "test_barra_combate 19/19, test_cartas_combate 33/33, test_pergamino 61/61. Seguimiento: COMBATE-GRUPO-01.json."
+  ]
+}

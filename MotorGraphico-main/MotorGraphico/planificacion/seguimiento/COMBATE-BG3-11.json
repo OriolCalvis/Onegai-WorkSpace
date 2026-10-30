@@ -1,0 +1,23 @@
+{
+ "id": "COMBATE-BG3-11",
+ "date": "2026-10-14",
+ "author": "claude (Cowork)",
+ "status": "HECHO — AV15-02: los sitios con nombre. Cartel con emblema, nombre y función sobre cada puerta, nombre en el aviso y en el minimapa, rótulo al entrar y nombre en la cabecera de la tienda.",
+ "origen": "Oriol (14:42): «posar el rètol amb nom i emblema sobre cada porta, el nom al minimapa i el nom de la botiga quan hi entres». Datos: out/chatgpt_av15-02b (lugares.json) con PO-39/40/41.",
+ "actions": [
+  "Game::Lugares (motor_level): lee assets/catalogs/lugares.json y busca por nivel destino; Lugar::icono() da el emblema o el genérico «lugar».",
+  "CartelesPuertas.cpp: cartel sobre las puertas a menos de 8 casillas (no la que tienes delante).",
+  "Aviso de puerta: «Entrar en <nombre del sitio>».",
+  "Minimapa: emblema en cada entrada y línea «Cerca: X»; dentro, el título es el nombre del sitio.",
+  "HudRetales::anunciaLugar: rótulo al entrar (nombre y función, se funde), debajo de «Nuevo objetivo» si coinciden.",
+  "Tienda: la cabecera pone «<sitio> · <tendero>» (InterfazPergamino::pintaTiendaAbierta)."
+ ],
+ "verification": [
+  "Sonda lugares: l_calle.png, l_cartel.png, l_dentro.png. Sonda tienda: l_tienda.png.",
+  "test_lugares 6/6; ctest gl-free 220/223 (los tres de siempre), GL 11/11; linea_base_core 0 de deuda nueva; cadena de 5 paquetes: gl-free 225/226, GL 11/11."
+ ],
+ "sesion": "sesiones/2026-10-14-claude-combate-casillas.md",
+ "pending": [
+  "Emblemas propios para 11 de los 17 sitios (arte nuevo)."
+ ]
+}

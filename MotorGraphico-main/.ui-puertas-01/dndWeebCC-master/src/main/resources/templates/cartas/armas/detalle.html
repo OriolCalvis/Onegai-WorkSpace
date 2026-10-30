@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Carta de equipo</title>
+    <th:block layout:fragment="extra-css">
+    <link th:href="@{/css/carta-fisica.css}" rel="stylesheet">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('armas')}"></div>
+
+            <div class="u-page-header--start">
+                <div>
+                    <p class="gm-sidebar__eyebrow u-p-0">Ficha completa</p>
+                    <h1 th:text="${carta.name}">Nombre</h1>
+                    <p>
+                        <span class="gm-badge" th:text="${carta.slot}">slot</span>
+                        <span class="gm-badge" th:text="${carta.rarity}">common</span>
+                        <span class="gm-badge"
+                              th:text="${carta.weightCategory == 'ligera' ? '△ Ligera' : (carta.weightCategory == 'media' ? '○ Media' : '□ Pesada')}">△ Ligera</span>
+                        <span class="gm-badge">Tier <span th:text="${carta.tier}">1</span></span>
+                        <span class="gm-badge" th:text="'ID ' + ${carta.id}">id</span>
+                    </p>
+                </div>
+                <a class="gm-btn gm-btn--outline" th:href="@{/cartas/armas/{id}/editar(id=${carta.id})}">Editar</a>
+            </div>
+
+            <!-- La propia carta, en el mismo marco visual que el álbum -->
+            <div class="u-detail-layout-300">
+                <!-- Carta física de equipo (wireframe 6c): slot/statBonuses/
+                     penalties/linkedSkill del esquema §1. -->
+                <article class="cf-card u-cursor-default">
+                    <div class="cf-head">
+                        <span class="cf-name" th:text="${carta.name}">Nombre</span>
+                        <span class="cf-gem" th:classappend="'cf-gem--t' + ${carta.tier}">TIER <span th:text="${carta.tier}">1</span></span>
+                    </div>
+
+                    <div class="cf-illustration" th:switch="${carta.slot}">
+                        <span th:case="'cabeza'">⛑</span>
+                        <span th:case="'torso'">👕</span>
+                        <span th:case="'piernas'">👖</span>
+                        <span th:case="'pies'">👢</span>
+                        <span th:case="'arma_principal'">⚔</span>
+                        <span th:case="'arma_secundaria'">🛡</span>
+                        <span th:case="*">✦</span>
+                    </div>
+
+                    <div class="cf-typeline">
+                        <span>Equipo — slot: <span th:text="${#strings.replace(carta.slot, '_', ' ')}">slot</span> · <span th:text="${carta.weightCategory}">ligera</span></span>
+                    </div>
+
+                    <div class="cf-statrow">
+                        <span class="cf-stat" th:if="${carta.bonusCon != 0}" th:text="'CON +' + ${carta.bonusCon}">CON</span>
+                        <span class="cf-stat" th:if="${carta.bonusDes != 0}" th:text="'DES +' + ${carta.bonusDes}">DES</span>
+                        <span class="cf-stat" th:if="${carta.bonusInt != 0}" th:text="'INT +' + ${carta.bonusInt}">INT</span>
+                        <span class="cf-stat" th:if="${carta.bonusCar != 0}" th:text="'CAR +' + ${carta.bonusCar}">CAR</span>
+                        <span class="cf-stat cf-stat--vida" th:if="${carta.bonusHealth != 0}" th:text="'VIDA +' + ${carta.bonusHealth}">VIDA</span>
+                        <span class="cf-stat" th:if="${carta.bonusArmor != 0}" th:text="'CA +' + ${carta.bonusArmor}">CA</span>
+                        <span class="cf-stat cf-stat--malus" th:if="${carta.penaltyCon != 0}" th:text="'CON −' + ${carta.penaltyCon}">CON</span>
+                        <span class="cf-stat cf-stat--malus" th:if="${carta.penaltyDes != 0}" th:text="'DES −' + ${carta.penaltyDes}">DES</span>
+                        <span class="cf-stat cf-stat--malus" th:if="${carta.penaltyInt != 0}" th:text="'INT −' + ${carta.penaltyInt}">INT</span>
+                        <span class="cf-stat cf-stat--malus" th:if="${carta.penaltyCar != 0}" th:text="'CAR −' + ${carta.penaltyCar}">CAR</span>
+                    </div>
+
+                    <div class="cf-rules">
+                        <p class="cf-meta" th:if="${carta.linkedSkill}">Habilidad vinculada: <span th:text="${carta.linkedSkill}">habilidad</span></p>
+                        <p class="cf-meta" th:if="${!#lists.isEmpty(carta.restrictions)}" th:text="'Restricción: ' + ${#strings.listJoin(carta.restrictions, ', ')}">Restricción</p>
+                        <p class="cf-flavor" th:if="${carta.flavorText}" th:text="'“' + ${carta.flavorText} + '”'">Texto narrativo</p>
+                    </div>
+
+                    <p class="cf-id" th:text="'armas · ' + ${carta.id}">armas · id</p>
+                </article>
+
+                <div>
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Bonos ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p>CON +<span th:text="${carta.bonusCon}">0</span> · DES +<span th:text="${carta.bonusDes}">0</span> ·
+                                CAR +<span th:text="${carta.bonusCar}">0</span> · INT +<span th:text="${carta.bonusInt}">0</span> ·
+                                Vida +<span th:text="${carta.bonusHealth}">0</span> ·
+                                CA +<span th:text="${carta.bonusArmor}">0</span></p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section is-expanded">
+                        <button type="button" class="gm-panel-section__toggle">Penalizaciones ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p>CON −<span th:text="${carta.penaltyCon}">0</span> · DES −<span th:text="${carta.penaltyDes}">0</span> ·
+                                CAR −<span th:text="${carta.penaltyCar}">0</span> · INT −<span th:text="${carta.penaltyInt}">0</span></p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section">
+                        <button type="button" class="gm-panel-section__toggle">Tags, habilidad y restricciones ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p><strong>Tags concedidos:</strong></p>
+                            <p th:each="tag : ${carta.grantedTags}" class="gm-badge u-mr-4" th:text="${tag}">tag</p>
+                            <p><strong>Habilidad vinculada:</strong> <span th:text="${carta.linkedSkill}">—</span></p>
+                            <p><strong>Restricciones:</strong></p>
+                            <p th:each="item : ${carta.restrictions}" class="gm-badge u-mr-4" th:text="${item}">item</p>
+                        </div>
+                    </div>
+
+                    <div class="gm-panel-section">
+                        <button type="button" class="gm-panel-section__toggle">Requisitos de stat ▾</button>
+                        <div class="gm-panel-section__content">
+                            <p>CON ≥ <span th:text="${carta.reqCon}">0</span> · DES ≥ <span th:text="${carta.reqDes}">0</span> ·
+                                CAR ≥ <span th:text="${carta.reqCar}">0</span> · INT ≥ <span th:text="${carta.reqInt}">0</span></p>
+                        </div>
+                    </div>
+
+                    <div class="u-actions--wrap">
+                        <a class="gm-btn gm-btn--outline" th:href="@{/cartas/armas}">Volver al listado</a>
+                        <form th:action="@{/cartas/armas/{id}/eliminar(id=${carta.id})}" method="post" th:data-nombre="${carta.name}" onsubmit="return confirm(\'¿Borrar el equipo &quot;' + this.dataset.nombre + '&quot;? No se puede deshacer.');">
+                            <button class="gm-btn gm-btn--danger" type="submit">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div></main>
+</body>
+</html>

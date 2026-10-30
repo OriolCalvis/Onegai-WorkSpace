@@ -1,0 +1,24 @@
+{
+ "id": "endeudado",
+ "name": "Endeudado",
+ "type": "condition",
+ "category": "negativa",
+ "source": "estado",
+ "stackable": false,
+ "duration": "hasta_curarse",
+ "effects": [
+  {
+   "description": "Cada vez que uses tu acción principal, el Usurero que te endeudó acumula 1 de Interés (máximo 3).",
+   "mechanicHook": "interes:+1"
+  },
+  {
+   "description": "Los cobros del Usurero contra ti consumen su Interés acumulado para crecer.",
+   "mechanicHook": "objetivo_de_cobro"
+  }
+ ],
+ "cureConditions": [
+  "Recibir un Cobro de Deuda (la deuda queda saldada)",
+  "Fin del combate"
+ ],
+ "flavorText": "Firmaste al esquivar la primera pregunta."
+}

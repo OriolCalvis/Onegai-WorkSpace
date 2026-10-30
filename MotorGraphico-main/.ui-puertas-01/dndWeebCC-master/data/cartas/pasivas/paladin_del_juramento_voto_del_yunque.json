@@ -1,0 +1,35 @@
+{
+ "id": "paladin_del_juramento_voto_del_yunque",
+ "name": "Voto del yunque",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Al empezar el combate juras sobre el yunque. Proteger: +1 a la CA. Castigar: tus golpes con arma hacen +1 de daño (fuego).",
+ "flavorText": "",
+ "classTags": [
+  "paladin_del_juramento"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "Al empezar el combate juras sobre el yunque. Proteger: +1 a la CA. Castigar: tus golpes con arma hacen +1 de daño (fuego).",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Juras al empezar el combate.",
+   "mechanicHook": "elige_una:proteger,castigar"
+  },
+  {
+   "description": "Proteger: +1 a la CA.",
+   "mechanicHook": "si:proteger:bono_ca:1"
+  },
+  {
+   "description": "Castigar: tus golpes con arma hacen +1 de daño.",
+   "mechanicHook": "si:castigar:bono_dano_arma:1"
+  }
+ ],
+ "fuente": "Propia · Paladín del Juramento"
+}

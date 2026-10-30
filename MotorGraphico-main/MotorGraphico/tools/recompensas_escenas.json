@@ -1,0 +1,696 @@
+{
+  "version": 1,
+  "titulo": "Libro de recompensas de las escenas de Boundington (AV18-08)",
+  "descripcion": "Cada premio que una escena de Boundington paga en oro u objetos esta aqui, con su dia, su canal del presupuesto de ECONOMIA.md y su grupo de alternativas excluyentes. tools/auditar_recompensas_escenas.py lo contrasta con las aventuras y con el presupuesto.",
+  "economia": "planificacion_alcance_y_vision/ECONOMIA.md",
+  "tolerancia_pct": 15,
+  "tope_combates_narrativos_pct": 70,
+  "aventuras": [
+    "boundington_primer_dia",
+    "boundington_segundo_dia",
+    "boundington_ocaso"
+  ],
+  "objetos_de_mision": {
+    "furia_de_alaro": "La espada de Rosita: se devuelve. No es un premio ni se cuenta como valor; el catalogo la valora en 400 y se puede vender (aviso al equipo de catalogos)."
+  },
+  "fuera_de_alcance": {
+    "aventura_silbido_medianoche": "Aventura suelta fuera del manifiesto de Boundington: su premio de 30 de oro no entra en las cuentas."
+  },
+  "premios": [
+    {
+      "id": "d1-luisarda-rosita",
+      "dia": 1,
+      "canal": "misiones",
+      "grupo": "d1_luisarda",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_rosita_luisarda",
+      "opcion": null,
+      "nuevo": false,
+      "nota": "Luisarda cenando con Rosita: dos pociones (alternativa: el silencio)"
+    },
+    {
+      "id": "d1-luisarda-silencio-miedo",
+      "dia": 1,
+      "canal": "misiones",
+      "grupo": "d1_luisarda",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_luisarda_pociones_miedo",
+      "opcion": null,
+      "nuevo": false
+    },
+    {
+      "id": "d1-luisarda-silencio",
+      "dia": 1,
+      "canal": "misiones",
+      "grupo": "d1_luisarda",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_luisarda_pociones",
+      "opcion": null,
+      "nuevo": false
+    },
+    {
+      "id": "d1-luisarda-silencio-dia2",
+      "dia": 1,
+      "canal": "misiones",
+      "grupo": "d1_luisarda",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_luisarda_pociones",
+      "opcion": null,
+      "nuevo": false,
+      "nota": "Mismo pago que el del dia 1 (misma bandera bnd1_luisarda_pociones): se cobra una vez en toda la partida"
+    },
+    {
+      "id": "d1-pulga-quedarse",
+      "dia": 1,
+      "canal": "misiones",
+      "grupo": "d1_pulga",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_pulga_s1_a",
+      "opcion": 1,
+      "nuevo": false,
+      "nota": "Quedarse lo que lleva el ladron"
+    },
+    {
+      "id": "d1-fuego-cobrar",
+      "dia": 1,
+      "canal": "misiones",
+      "grupo": "d1_fuego",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_fuego_s3_a",
+      "opcion": 0,
+      "nuevo": false,
+      "nota": "Cobrar al padre (peor moral)"
+    },
+    {
+      "id": "d1-fuego-regalo",
+      "dia": 1,
+      "canal": "misiones",
+      "grupo": "d1_fuego",
+      "aventura": "boundington_primer_dia",
+      "beat": "rec_fuego_regalo",
+      "opcion": null,
+      "nuevo": true,
+      "nota": "Despedirse con gratitud: dos pasteles; vale mas que cobrar, pero no se vende bien"
+    },
+    {
+      "id": "d1-xila-sobrio",
+      "dia": 1,
+      "canal": "misiones",
+      "grupo": "d1_xila",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_xila_habla_sobrio",
+      "opcion": null,
+      "nuevo": true,
+      "nota": "Convencer a Xila sobrio: dos vendas"
+    },
+    {
+      "id": "d1-verdaderos-calmar",
+      "dia": 1,
+      "canal": "misiones",
+      "grupo": "d1_verdaderos",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_verdaderos_calmados",
+      "opcion": null,
+      "nuevo": true
+    },
+    {
+      "id": "d1-verdaderos-vencer",
+      "dia": 1,
+      "canal": "combates",
+      "grupo": "d1_verdaderos",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_verdaderos_vencidos",
+      "opcion": null,
+      "nuevo": true
+    },
+    {
+      "id": "d1-guarida-verina",
+      "dia": 1,
+      "canal": "misiones",
+      "grupo": "d1_guarida",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_guarida_por_aigren",
+      "opcion": 0,
+      "nuevo": true,
+      "nota": "Sacar a Verina: una pocion"
+    },
+    {
+      "id": "d1-guarida-unirse-aigren",
+      "dia": 1,
+      "canal": "misiones",
+      "grupo": "d1_guarida",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_guarida_por_aigren",
+      "opcion": 2,
+      "nuevo": true,
+      "nota": "Unirse al culto (mala via): oro"
+    },
+    {
+      "id": "d1-guarida-edul-salir",
+      "dia": 1,
+      "canal": "misiones",
+      "grupo": "d1_guarida",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_edul",
+      "opcion": 0,
+      "nuevo": true
+    },
+    {
+      "id": "d1-guarida-edul-unirse",
+      "dia": 1,
+      "canal": "misiones",
+      "grupo": "d1_guarida",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_edul",
+      "opcion": 1,
+      "nuevo": true
+    },
+    {
+      "id": "d1-guarida-ganada",
+      "dia": 1,
+      "canal": "combates",
+      "grupo": "d1_guarida",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_guarida_ganada",
+      "opcion": null,
+      "nuevo": true
+    },
+    {
+      "id": "d1-guarida-exterminada",
+      "dia": 1,
+      "canal": "combates",
+      "grupo": "d1_guarida",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_guarida_exterminada",
+      "opcion": null,
+      "nuevo": true
+    },
+    {
+      "id": "d1-venides-todo",
+      "dia": 1,
+      "canal": "misiones",
+      "grupo": "d1_venides",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_venides_informe_bastan",
+      "opcion": 0,
+      "nuevo": true,
+      "nota": "Informe con pruebas suficientes"
+    },
+    {
+      "id": "d1-venides-rumores",
+      "dia": 1,
+      "canal": "misiones",
+      "grupo": "d1_venides",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_venides_informe",
+      "opcion": 0,
+      "nuevo": true,
+      "nota": "Informe con rumores: la mitad"
+    },
+    {
+      "id": "d1-camorrista-guardia",
+      "dia": 1,
+      "canal": "misiones",
+      "grupo": "d1_camorrista",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_pelea_apaleado",
+      "opcion": 1,
+      "nuevo": true
+    },
+    {
+      "id": "d1-tut-botin",
+      "dia": 1,
+      "canal": "combates",
+      "grupo": "d1_tut",
+      "aventura": "boundington_primer_dia",
+      "beat": "tut_huida",
+      "opcion": null,
+      "nuevo": true,
+      "nota": "Tutorial a la carrera: la bolsa del saqueador"
+    },
+    {
+      "id": "d1-secta-botin",
+      "dia": 1,
+      "canal": "combates",
+      "grupo": "d1_secta",
+      "aventura": "boundington_primer_dia",
+      "beat": "b1_secta_vencidos",
+      "opcion": null,
+      "nuevo": true
+    },
+    {
+      "id": "d2-aigren-daga",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_daga",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_aigren_daga",
+      "opcion": null,
+      "nuevo": false
+    },
+    {
+      "id": "d2-rosita-devolver",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_rosita",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_skilla_espada_devuelta",
+      "opcion": 0,
+      "nuevo": true
+    },
+    {
+      "id": "d2-rosita-contarlo-todo",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_rosita",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_skilla_espada_devuelta",
+      "opcion": 1,
+      "nuevo": true
+    },
+    {
+      "id": "d2-gorran-perdonar",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_gorran",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_gorran_victoria",
+      "opcion": 1,
+      "nuevo": true,
+      "nota": "Perdonar a Gorran: 20 y un aliado en el Ocaso"
+    },
+    {
+      "id": "d2-gorran-matar",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_gorran",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_gorran_victoria",
+      "opcion": 2,
+      "nuevo": true,
+      "nota": "Matar a Gorran: 40 y ningun aliado"
+    },
+    {
+      "id": "d2-zarela-vendas",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_zarela",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_saqueadores_vencidos",
+      "opcion": null,
+      "nuevo": true
+    },
+    {
+      "id": "d2-capitan",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_capitan",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_capitan_convencido",
+      "opcion": null,
+      "nuevo": true
+    },
+    {
+      "id": "d2-ritual-bien",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_ritual",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_ritual_bien",
+      "opcion": null,
+      "nuevo": false
+    },
+    {
+      "id": "d2-ritual-medio",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_ritual",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_ritual_medio",
+      "opcion": null,
+      "nuevo": false
+    },
+    {
+      "id": "d2-disfraz-musico",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_disfraz",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_disfraz_hallado",
+      "opcion": 0,
+      "nuevo": true
+    },
+    {
+      "id": "d2-disfraz-noble",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_disfraz",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_disfraz_hallado",
+      "opcion": 1,
+      "nuevo": true
+    },
+    {
+      "id": "d2-disfraz-actor",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_disfraz",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_disfraz_hallado",
+      "opcion": 2,
+      "nuevo": true
+    },
+    {
+      "id": "d2-disfraz-xila-musico",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_disfraz",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_disfraz_hallado_xila",
+      "opcion": 0,
+      "nuevo": true
+    },
+    {
+      "id": "d2-disfraz-xila-noble",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_disfraz",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_disfraz_hallado_xila",
+      "opcion": 1,
+      "nuevo": true
+    },
+    {
+      "id": "d2-disfraz-xila-actor",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_disfraz",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_disfraz_hallado_xila",
+      "opcion": 2,
+      "nuevo": true
+    },
+    {
+      "id": "d2-fiesta-robo",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_fiesta",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_robo_bien",
+      "opcion": null,
+      "nuevo": false
+    },
+    {
+      "id": "d2-fiesta-chantaje",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_fiesta",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_sonsaca_exito",
+      "opcion": 1,
+      "nuevo": false
+    },
+    {
+      "id": "d2-venides-noche-todo",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_venides",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_venides_noche",
+      "opcion": 0,
+      "nuevo": true
+    },
+    {
+      "id": "d2-venides-noche-ataque",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_venides",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_venides_noche",
+      "opcion": 1,
+      "nuevo": true
+    },
+    {
+      "id": "d2-venides-noche-todo-todo",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_venides",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_venides_noche_todo",
+      "opcion": 0,
+      "nuevo": true
+    },
+    {
+      "id": "d2-venides-noche-todo-ataque",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_venides",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_venides_noche_todo",
+      "opcion": 1,
+      "nuevo": true
+    },
+    {
+      "id": "d2-venides-noche-rosita-todo",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_venides",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_venides_noche_rosita",
+      "opcion": 0,
+      "nuevo": true
+    },
+    {
+      "id": "d2-venides-noche-rosita-ataque",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_venides",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_venides_noche_rosita",
+      "opcion": 1,
+      "nuevo": true
+    },
+    {
+      "id": "d2-venides-noche-rosita2-todo",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_venides",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_venides_noche_rosita2",
+      "opcion": 0,
+      "nuevo": true
+    },
+    {
+      "id": "d2-venides-noche-rosita2-ataque",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_venides",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_venides_noche_rosita2",
+      "opcion": 1,
+      "nuevo": true
+    },
+    {
+      "id": "d3-aigren-escudo",
+      "dia": 3,
+      "canal": "misiones",
+      "grupo": "d3_aigren",
+      "aventura": "boundington_ocaso",
+      "beat": "b3_aigren_carro",
+      "opcion": null,
+      "nuevo": true,
+      "nota": "Solo con Aigren redimido"
+    },
+    {
+      "id": "d3-xila-vendas",
+      "dia": 3,
+      "canal": "misiones",
+      "grupo": "d3_xila",
+      "aventura": "boundington_ocaso",
+      "beat": "b3_xila_vendas",
+      "opcion": null,
+      "nuevo": true,
+      "nota": "Solo con Xila sobrio"
+    },
+    {
+      "id": "d3-rosita-caja",
+      "dia": 3,
+      "canal": "misiones",
+      "grupo": "d3_rosita",
+      "aventura": "boundington_ocaso",
+      "beat": "b3_rosita_calle",
+      "opcion": null,
+      "nuevo": true,
+      "nota": "Solo con Rosita aliada"
+    },
+    {
+      "id": "d3-gorran-bandidos",
+      "dia": 3,
+      "canal": "misiones",
+      "grupo": "d3_gorran",
+      "aventura": "boundington_ocaso",
+      "beat": "b3_gorran",
+      "opcion": null,
+      "nuevo": true,
+      "nota": "Solo con Gorran perdonado"
+    },
+    {
+      "id": "d3-atrapados-golpes",
+      "dia": 3,
+      "canal": "misiones",
+      "grupo": "d3_atrapados",
+      "aventura": "boundington_ocaso",
+      "beat": "b3_barricada_rota",
+      "opcion": 0,
+      "nuevo": true
+    },
+    {
+      "id": "d3-atrapados-distancia",
+      "dia": 3,
+      "canal": "misiones",
+      "grupo": "d3_atrapados",
+      "aventura": "boundington_ocaso",
+      "beat": "b3_barricada_rota",
+      "opcion": 1,
+      "nuevo": true
+    },
+    {
+      "id": "d3-atrapados-hueco",
+      "dia": 3,
+      "canal": "misiones",
+      "grupo": "d3_atrapados",
+      "aventura": "boundington_ocaso",
+      "beat": "b3_barricada_rota",
+      "opcion": 2,
+      "nuevo": true
+    },
+    {
+      "id": "d3-edul-eter",
+      "dia": 3,
+      "canal": "misiones",
+      "grupo": "d3_edul",
+      "aventura": "boundington_ocaso",
+      "beat": "b3_edul_con_verina",
+      "opcion": null,
+      "nuevo": true,
+      "nota": "Edul y Verina juntos"
+    },
+    {
+      "id": "d3-sandes-aceptar",
+      "dia": 3,
+      "canal": "misiones",
+      "grupo": "d3_sandes",
+      "aventura": "boundington_ocaso",
+      "beat": "b3_sandes_oferta",
+      "opcion": 0,
+      "nuevo": true,
+      "nota": "Aliarse con Sandes (mala via)"
+    },
+    {
+      "id": "d3-sandes-entregar",
+      "dia": 3,
+      "canal": "misiones",
+      "grupo": "d3_sandes",
+      "aventura": "boundington_ocaso",
+      "beat": "b3_sandes_verina",
+      "opcion": 0,
+      "nuevo": true,
+      "nota": "Entregar a Verina (peor via)"
+    },
+    {
+      "id": "d3-sandes-vencer",
+      "dia": 3,
+      "canal": "combates",
+      "grupo": "d3_sandes",
+      "aventura": "boundington_ocaso",
+      "beat": "b3_sandes_vencido",
+      "opcion": null,
+      "nuevo": true,
+      "nota": "Vencer a Sandes: 70 y el culto debilitado"
+    },
+    {
+      "id": "d3-huida-gitanos",
+      "dia": 3,
+      "canal": "misiones",
+      "grupo": "d3_huida",
+      "aventura": "boundington_ocaso",
+      "beat": "b3_huida_gitanos",
+      "opcion": null,
+      "nuevo": true
+    },
+    {
+      "id": "d3-huida-sola",
+      "dia": 3,
+      "canal": "misiones",
+      "grupo": "d3_huida",
+      "aventura": "boundington_ocaso",
+      "beat": "b3_huida_sola",
+      "opcion": null,
+      "nuevo": true
+    },
+    {
+      "id": "d3-huida-con-el-culto",
+      "dia": 3,
+      "canal": "misiones",
+      "grupo": "d3_huida",
+      "aventura": "boundington_ocaso",
+      "beat": "b3_aliado_fuera",
+      "opcion": null,
+      "nuevo": true
+    },
+    {
+      "id": "d2-zarela-vendas-mira",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_zarela",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_saqueadores_vencidos_mira",
+      "opcion": null,
+      "nuevo": true,
+      "nota": "Las mismas vendas, con Mira en escena (excluyente con d2-zarela-vendas)"
+    },
+    {
+      "id": "d2-zarela-amuleto-velar",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_ritual",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_saqueadores_ganan",
+      "opcion": 0,
+      "nuevo": true,
+      "nota": "Segunda oportunidad: el amuleto por velar la noche tras caer (excluyente con el del ritual)"
+    },
+    {
+      "id": "d2-ritual-bien-abuela",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_ritual",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_ritual_bien_abuela",
+      "opcion": null,
+      "nuevo": true,
+      "nota": "El mismo amuleto, con la leyenda entera de la abuela de Zarela"
+    },
+    {
+      "id": "d2-rosita-devolver-vista",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_rosita",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_skilla_espada_devuelta_vista",
+      "opcion": 0,
+      "nuevo": true,
+      "nota": "Igual que d2-rosita-devolver, cuando la Furia se vio en Surysal"
+    },
+    {
+      "id": "d2-rosita-contarlo-todo-vista",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_rosita",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_skilla_espada_devuelta_vista",
+      "opcion": 1,
+      "nuevo": true
+    }
+  ]
+}

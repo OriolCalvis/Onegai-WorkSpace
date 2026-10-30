@@ -1,0 +1,54 @@
+{
+ "id": "cazanieblas_vial_de_gas_nervioso",
+ "name": "Vial de gas nervioso",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Lanzas un vial de gas nervioso: se defiende con desventaja y tus golpes le hacen +1 durante 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "cazanieblas"
+ ],
+ "roleTags": [],
+ "tags": [
+  "cazanieblas",
+  "estandar",
+  "Veneno"
+ ],
+ "mechanicTags": [
+  "Veneno"
+ ],
+ "actionType": "accion_principal",
+ "target": "zone_radius",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Lanzas un vial de gas nervioso: se defiende con desventaja y tus golpes le hacen +1 durante 2 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Gas nervioso: se defiende con desventaja 2 turnos.",
+   "mechanicHook": "estado:2:desventaja:defensa"
+  },
+  {
+   "description": "Gas nervioso: tus golpes le hacen +1 durante 2 turnos.",
+   "mechanicHook": "estado:2:bono_dano_contra:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Cazanieblas (Fog Hunter) · H460 Vial de gas nervioso"
+}

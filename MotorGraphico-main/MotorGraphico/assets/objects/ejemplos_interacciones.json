@@ -1,0 +1,60 @@
+{
+  "objects": [
+    {
+      "id": "ejemplos_guia",
+      "name": "Guía de ejemplos",
+      "category": "npc",
+      "spriteId": 1,
+      "blocksMovement": true,
+      "interactable": true,
+      "dialogue": [
+        "Bienvenido a los ejemplos del motor.",
+        "Hay objetos, consumibles, un enemigo, una tienda y un negocio.",
+        "La puerta lleva a la mazmorra de rendimiento."
+      ]
+    },
+    {
+      "id": "ejemplos_tendero",
+      "name": "Tienda de ejemplo",
+      "category": "npc",
+      "spriteId": 1,
+      "blocksMovement": true,
+      "interactable": true,
+      "dialogue": [
+        "Estos precios son datos de prueba de esta tienda."
+      ],
+      "shop": {
+        "items": [
+          {
+            "objectId": "pocion",
+            "price": 10
+          },
+          {
+            "objectId": "eter",
+            "price": 15
+          }
+        ],
+        "buybackPercent": 25
+      }
+    },
+    {
+      "id": "ejemplos_negocio",
+      "name": "Cartel de negocio de ejemplo",
+      "category": "prop",
+      "spriteId": 3,
+      "interactable": true,
+      "business": {
+        "price": 100,
+        "baseIncome": 10,
+        "name": "Local de ejemplo"
+      }
+    },
+    {
+      "id": "ejemplos_puerta",
+      "name": "Ir a la mazmorra de prueba",
+      "category": "prop",
+      "spriteId": 4,
+      "interactable": true
+    }
+  ]
+}

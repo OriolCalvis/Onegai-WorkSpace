@@ -1,0 +1,7793 @@
+{
+ "_nota": "PNJ-01: PNJ montados con las piezas del jugador (tools/actores_pnj.py, horneados por tools/gen_pnj.py: no editar a mano). Una fila por PNJ; los colocados varias veces llevan 'variantes' (filas <id>~2...) y el motor da una a cada colocacion. 'soloPnj': las prendas de oficio que el jugador no puede llevar; el resto de la composicion la puede copiar cualquier jugador. Frames 1-based. Cada fila: arriba 1-3, derecha 4-6, abajo 7-9, izquierda 10-12 (paso, quieto, paso). El motor lo reparte asi desde APARIENCIA-01 (HojaPersonaje::animar, tambien para personaje.png): 'animaciones' es el ciclo de los PNJ; el jugador descansa en el frame quieto y su ciclo de andar empieza en el ({8, 7, 8, 9} hacia abajo). TextureManager invierte los PNG al cargarlos: en un atlas de varias filas la region del frame f es defineRegion(f, (f-1) % columns, rows - 1 - (f-1) / columns), como race_npc_idle.",
+ "estado": "runtime",
+ "generador": "tools/gen_pnj.py",
+ "cuerpoBase": "personaje.png",
+ "image": "pnj_mundo_1.png",
+ "frameSize": [
+  64,
+  64
+ ],
+ "columns": 12,
+ "rows": 120,
+ "anclaje": {
+  "pies": "centro inferior de la celda",
+  "filaPies": 60,
+  "dibujo": "64x64 con characterAnchor(), igual que personaje.png"
+ },
+ "direcciones": {
+  "arriba": [
+   1,
+   2,
+   3
+  ],
+  "derecha": [
+   4,
+   5,
+   6
+  ],
+  "abajo": [
+   7,
+   8,
+   9
+  ],
+  "izquierda": [
+   10,
+   11,
+   12
+  ]
+ },
+ "animacionesPorFila": {
+  "idle": [
+   8
+  ],
+  "idle_down": [
+   8
+  ],
+  "idle_up": [
+   2
+  ],
+  "idle_right": [
+   5
+  ],
+  "idle_left": [
+   11
+  ],
+  "walk_down": [
+   7,
+   8,
+   9,
+   8
+  ],
+  "walk_up": [
+   1,
+   2,
+   3,
+   2
+  ],
+  "walk_right": [
+   4,
+   5,
+   6,
+   5
+  ],
+  "walk_left": [
+   10,
+   11,
+   12,
+   11
+  ]
+ },
+ "actores": [
+  {
+   "id": "ejemplos_guia",
+   "nombre": "Guía de ejemplos",
+   "fila": 1,
+   "primerFrame": 1,
+   "composicion": {
+    "raza": "mercenarios_de_ascaria",
+    "piel": "piel_morena",
+    "ojos": "marron",
+    "pelo": [
+     "greñas",
+     "pelo_negro"
+    ],
+    "barba": [
+     "BARBA_CORTA",
+     "pelo_negro"
+    ],
+    "equipo": {
+     "torso": "aventurero_azul",
+     "piernas": "pantalon_pardo",
+     "pies": "botas",
+     "cabeza": "sombrero_cuero",
+     "arma": "baston_roble"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     8
+    ],
+    "idle_down": [
+     8
+    ],
+    "idle_up": [
+     2
+    ],
+    "idle_right": [
+     5
+    ],
+    "idle_left": [
+     11
+    ],
+    "walk_down": [
+     7,
+     8,
+     9,
+     8
+    ],
+    "walk_up": [
+     1,
+     2,
+     3,
+     2
+    ],
+    "walk_right": [
+     4,
+     5,
+     6,
+     5
+    ],
+    "walk_left": [
+     10,
+     11,
+     12,
+     11
+    ]
+   }
+  },
+  {
+   "id": "ejemplos_tendero",
+   "nombre": "Tienda de ejemplo",
+   "fila": 2,
+   "primerFrame": 13,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_oscura",
+    "ojos": "verde",
+    "pelo": [
+     "largo",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "vestido_azul_delantal",
+     "pies": "zapatos",
+     "cabeza": "sombrero_paja",
+     "mano_izq": "pocion"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     20
+    ],
+    "idle_down": [
+     20
+    ],
+    "idle_up": [
+     14
+    ],
+    "idle_right": [
+     17
+    ],
+    "idle_left": [
+     23
+    ],
+    "walk_down": [
+     19,
+     20,
+     21,
+     20
+    ],
+    "walk_up": [
+     13,
+     14,
+     15,
+     14
+    ],
+    "walk_right": [
+     16,
+     17,
+     18,
+     17
+    ],
+    "walk_left": [
+     22,
+     23,
+     24,
+     23
+    ]
+   }
+  },
+  {
+   "id": "en_anciana_consejo",
+   "nombre": "Anciana del Consejo",
+   "fila": 3,
+   "primerFrame": 25,
+   "soloPnj": [
+    "cesta"
+   ],
+   "composicion": {
+    "raza": "orcos_dramaticos",
+    "ojos": "azul",
+    "pelo": [
+     "largo",
+     "pelo_gris"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "vestido_lila",
+     "cabeza": "cofia",
+     "mano_izq": "cesta",
+     "pies": "zuecos"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     32
+    ],
+    "idle_down": [
+     32
+    ],
+    "idle_up": [
+     26
+    ],
+    "idle_right": [
+     29
+    ],
+    "idle_left": [
+     35
+    ],
+    "walk_down": [
+     31,
+     32,
+     33,
+     32
+    ],
+    "walk_up": [
+     25,
+     26,
+     27,
+     26
+    ],
+    "walk_right": [
+     28,
+     29,
+     30,
+     29
+    ],
+    "walk_left": [
+     34,
+     35,
+     36,
+     35
+    ]
+   }
+  },
+  {
+   "id": "en_archivera_espejos",
+   "nombre": "Archivera de los Espejos",
+   "fila": 4,
+   "primerFrame": 37,
+   "soloPnj": [
+    "birrete",
+    "libro_cuentas",
+    "toga"
+   ],
+   "composicion": {
+    "raza": "tieflings_del_vacio",
+    "ojos": "ambar",
+    "pelo": [
+     "coleta",
+     "pelo_oscuro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "toga",
+     "pies": "zapatos",
+     "cabeza": "birrete",
+     "mano_izq": "libro_cuentas"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     44
+    ],
+    "idle_down": [
+     44
+    ],
+    "idle_up": [
+     38
+    ],
+    "idle_right": [
+     41
+    ],
+    "idle_left": [
+     47
+    ],
+    "walk_down": [
+     43,
+     44,
+     45,
+     44
+    ],
+    "walk_up": [
+     37,
+     38,
+     39,
+     38
+    ],
+    "walk_right": [
+     40,
+     41,
+     42,
+     41
+    ],
+    "walk_left": [
+     46,
+     47,
+     48,
+     47
+    ]
+   }
+  },
+  {
+   "id": "en_capitan_ventobelico",
+   "nombre": "Capitán Ventobelico",
+   "fila": 5,
+   "primerFrame": 49,
+   "composicion": {
+    "raza": "aarakocra_de_las_montanas",
+    "ojos": "marron",
+    "equipo": {
+     "torso": "escamas_acero",
+     "piernas": "grebas_malla",
+     "capa": "capa_negra",
+     "arma": "espada_acero"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     56
+    ],
+    "idle_down": [
+     56
+    ],
+    "idle_up": [
+     50
+    ],
+    "idle_right": [
+     53
+    ],
+    "idle_left": [
+     59
+    ],
+    "walk_down": [
+     55,
+     56,
+     57,
+     56
+    ],
+    "walk_up": [
+     49,
+     50,
+     51,
+     50
+    ],
+    "walk_right": [
+     52,
+     53,
+     54,
+     53
+    ],
+    "walk_left": [
+     58,
+     59,
+     60,
+     59
+    ]
+   }
+  },
+  {
+   "id": "en_choubar_banco_tendero",
+   "nombre": "Factor de la Casa de Fletamento",
+   "fila": 6,
+   "primerFrame": 61,
+   "composicion": {
+    "raza": "aarakocra_del_viento",
+    "ojos": "verde",
+    "equipo": {
+     "torso": "camisa_chaleco_azul",
+     "piernas": "pantalon_pardo",
+     "mano_izq": "pocion"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     68
+    ],
+    "idle_down": [
+     68
+    ],
+    "idle_up": [
+     62
+    ],
+    "idle_right": [
+     65
+    ],
+    "idle_left": [
+     71
+    ],
+    "walk_down": [
+     67,
+     68,
+     69,
+     68
+    ],
+    "walk_up": [
+     61,
+     62,
+     63,
+     62
+    ],
+    "walk_right": [
+     64,
+     65,
+     66,
+     65
+    ],
+    "walk_left": [
+     70,
+     71,
+     72,
+     71
+    ]
+   }
+  },
+  {
+   "id": "en_choubar_fletero",
+   "nombre": "Fletero del río",
+   "fila": 7,
+   "primerFrame": 73,
+   "composicion": {
+    "raza": "aarakocra_del_viento",
+    "ojos": "ambar",
+    "equipo": {
+     "torso": "camisa_chaleco_azul",
+     "piernas": "pantalon_gris",
+     "cabeza": "gorro_rojo",
+     "arma": "lanza_bronce"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     80
+    ],
+    "idle_down": [
+     80
+    ],
+    "idle_up": [
+     74
+    ],
+    "idle_right": [
+     77
+    ],
+    "idle_left": [
+     83
+    ],
+    "walk_down": [
+     79,
+     80,
+     81,
+     80
+    ],
+    "walk_up": [
+     73,
+     74,
+     75,
+     74
+    ],
+    "walk_right": [
+     76,
+     77,
+     78,
+     77
+    ],
+    "walk_left": [
+     82,
+     83,
+     84,
+     83
+    ]
+   }
+  },
+  {
+   "id": "en_choubar_herreria_tendero",
+   "nombre": "Herrero de Choubar",
+   "fila": 8,
+   "primerFrame": 85,
+   "soloPnj": [
+    "mandil_herrero"
+   ],
+   "composicion": {
+    "raza": "aarakocra_de_las_montanas",
+    "ojos": "marron",
+    "equipo": {
+     "torso": "mandil_herrero",
+     "piernas": "pantalon_pardo",
+     "arma": "martillo_acero"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     92
+    ],
+    "idle_down": [
+     92
+    ],
+    "idle_up": [
+     86
+    ],
+    "idle_right": [
+     89
+    ],
+    "idle_left": [
+     95
+    ],
+    "walk_down": [
+     91,
+     92,
+     93,
+     92
+    ],
+    "walk_up": [
+     85,
+     86,
+     87,
+     86
+    ],
+    "walk_right": [
+     88,
+     89,
+     90,
+     89
+    ],
+    "walk_left": [
+     94,
+     95,
+     96,
+     95
+    ]
+   }
+  },
+  {
+   "id": "en_choubar_mercado_tendero",
+   "nombre": "Mercader de Choubar",
+   "fila": 9,
+   "primerFrame": 97,
+   "soloPnj": [
+    "cesta"
+   ],
+   "composicion": {
+    "raza": "aarakocra_de_las_montanas",
+    "ojos": "verde",
+    "equipo": {
+     "torso": "vestido_azul_delantal",
+     "cabeza": "sombrero_paja",
+     "mano_izq": "cesta"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     104
+    ],
+    "idle_down": [
+     104
+    ],
+    "idle_up": [
+     98
+    ],
+    "idle_right": [
+     101
+    ],
+    "idle_left": [
+     107
+    ],
+    "walk_down": [
+     103,
+     104,
+     105,
+     104
+    ],
+    "walk_up": [
+     97,
+     98,
+     99,
+     98
+    ],
+    "walk_right": [
+     100,
+     101,
+     102,
+     101
+    ],
+    "walk_left": [
+     106,
+     107,
+     108,
+     107
+    ]
+   }
+  },
+  {
+   "id": "en_choubar_taberna_tendero",
+   "nombre": "Tabernero de Choubar",
+   "fila": 10,
+   "primerFrame": 109,
+   "composicion": {
+    "raza": "aarakocra_de_las_montanas",
+    "ojos": "negro",
+    "equipo": {
+     "torso": "camisa_chaleco",
+     "piernas": "pantalon_pardo",
+     "mano_izq": "jarra"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     116
+    ],
+    "idle_down": [
+     116
+    ],
+    "idle_up": [
+     110
+    ],
+    "idle_right": [
+     113
+    ],
+    "idle_left": [
+     119
+    ],
+    "walk_down": [
+     115,
+     116,
+     117,
+     116
+    ],
+    "walk_up": [
+     109,
+     110,
+     111,
+     110
+    ],
+    "walk_right": [
+     112,
+     113,
+     114,
+     113
+    ],
+    "walk_left": [
+     118,
+     119,
+     120,
+     119
+    ]
+   }
+  },
+  {
+   "id": "en_cronista_qethatos",
+   "nombre": "Cronista de Qethatos",
+   "fila": 11,
+   "primerFrame": 121,
+   "soloPnj": [
+    "birrete",
+    "libro_cuentas",
+    "toga"
+   ],
+   "composicion": {
+    "raza": "race_orc_gongorguma",
+    "ojos": "azul",
+    "pelo": [
+     "largo",
+     "pelo_rubio"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "toga",
+     "pies": "sandalias",
+     "cabeza": "birrete",
+     "mano_izq": "libro_cuentas"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     128
+    ],
+    "idle_down": [
+     128
+    ],
+    "idle_up": [
+     122
+    ],
+    "idle_right": [
+     125
+    ],
+    "idle_left": [
+     131
+    ],
+    "walk_down": [
+     127,
+     128,
+     129,
+     128
+    ],
+    "walk_up": [
+     121,
+     122,
+     123,
+     122
+    ],
+    "walk_right": [
+     124,
+     125,
+     126,
+     125
+    ],
+    "walk_left": [
+     130,
+     131,
+     132,
+     131
+    ]
+   }
+  },
+  {
+   "id": "en_enviada_neblinia",
+   "nombre": "Enviada Neblinia",
+   "fila": 12,
+   "primerFrame": 133,
+   "composicion": {
+    "raza": "tieflings_del_vacio",
+    "ojos": "verde",
+    "pelo": [
+     "largo",
+     "pelo_negro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "vestido_noble",
+     "pies": "zapatos",
+     "cabeza": "diadema"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     140
+    ],
+    "idle_down": [
+     140
+    ],
+    "idle_up": [
+     134
+    ],
+    "idle_right": [
+     137
+    ],
+    "idle_left": [
+     143
+    ],
+    "walk_down": [
+     139,
+     140,
+     141,
+     140
+    ],
+    "walk_up": [
+     133,
+     134,
+     135,
+     134
+    ],
+    "walk_right": [
+     136,
+     137,
+     138,
+     137
+    ],
+    "walk_left": [
+     142,
+     143,
+     144,
+     143
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_arena_tendero",
+   "nombre": "Maestro de la arena de clanes",
+   "fila": 13,
+   "primerFrame": 145,
+   "composicion": {
+    "raza": "orcos_dramaticos",
+    "ojos": "verde",
+    "pelo": [
+     "largo",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco_azul",
+     "piernas": "pantalon_oliva",
+     "pies": "zuecos",
+     "cabeza": "turbante"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     152
+    ],
+    "idle_down": [
+     152
+    ],
+    "idle_up": [
+     146
+    ],
+    "idle_right": [
+     149
+    ],
+    "idle_left": [
+     155
+    ],
+    "walk_down": [
+     151,
+     152,
+     153,
+     152
+    ],
+    "walk_up": [
+     145,
+     146,
+     147,
+     146
+    ],
+    "walk_right": [
+     148,
+     149,
+     150,
+     149
+    ],
+    "walk_left": [
+     154,
+     155,
+     156,
+     155
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_heraldo",
+   "nombre": "Heraldo de clanes",
+   "fila": 14,
+   "primerFrame": 157,
+   "variantes": [
+    15,
+    16,
+    17,
+    18
+   ],
+   "soloPnj": [
+    "librea_palacio"
+   ],
+   "composicion": {
+    "raza": "race_orc_gongorguma",
+    "ojos": "marron",
+    "pelo": [
+     "coleta",
+     "pelo_castano"
+    ],
+    "barba": [
+     "BARBA",
+     "pelo_castano"
+    ],
+    "equipo": {
+     "torso": "librea_palacio",
+     "piernas": "pantalon_negro",
+     "pies": "botas_altas"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     164
+    ],
+    "idle_down": [
+     164
+    ],
+    "idle_up": [
+     158
+    ],
+    "idle_right": [
+     161
+    ],
+    "idle_left": [
+     167
+    ],
+    "walk_down": [
+     163,
+     164,
+     165,
+     164
+    ],
+    "walk_up": [
+     157,
+     158,
+     159,
+     158
+    ],
+    "walk_right": [
+     160,
+     161,
+     162,
+     161
+    ],
+    "walk_left": [
+     166,
+     167,
+     168,
+     167
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_heraldo~2",
+   "nombre": "Heraldo de clanes",
+   "fila": 15,
+   "primerFrame": 169,
+   "varianteDe": "en_gongorguma_heraldo",
+   "composicion": {
+    "raza": "race_orc_gongorguma",
+    "ojos": "azul",
+    "pelo": [
+     "corto",
+     "pelo_negro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "sobrevesta_roja",
+     "piernas": "pantalon_negro",
+     "pies": "botas_altas",
+     "cabeza": "sombrero_pluma",
+     "capa": "capa_corta_roja"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     176
+    ],
+    "idle_down": [
+     176
+    ],
+    "idle_up": [
+     170
+    ],
+    "idle_right": [
+     173
+    ],
+    "idle_left": [
+     179
+    ],
+    "walk_down": [
+     175,
+     176,
+     177,
+     176
+    ],
+    "walk_up": [
+     169,
+     170,
+     171,
+     170
+    ],
+    "walk_right": [
+     172,
+     173,
+     174,
+     173
+    ],
+    "walk_left": [
+     178,
+     179,
+     180,
+     179
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_heraldo~3",
+   "nombre": "Heraldo de clanes",
+   "fila": 16,
+   "primerFrame": 181,
+   "varianteDe": "en_gongorguma_heraldo",
+   "composicion": {
+    "raza": "race_orc_gongorguma",
+    "ojos": "marron",
+    "pelo": [
+     "corto",
+     "pelo_pelirrojo"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "casaca_granate",
+     "piernas": "calzas_rojas",
+     "pies": "botas_altas"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     188
+    ],
+    "idle_down": [
+     188
+    ],
+    "idle_up": [
+     182
+    ],
+    "idle_right": [
+     185
+    ],
+    "idle_left": [
+     191
+    ],
+    "walk_down": [
+     187,
+     188,
+     189,
+     188
+    ],
+    "walk_up": [
+     181,
+     182,
+     183,
+     182
+    ],
+    "walk_right": [
+     184,
+     185,
+     186,
+     185
+    ],
+    "walk_left": [
+     190,
+     191,
+     192,
+     191
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_heraldo~4",
+   "nombre": "Heraldo de clanes",
+   "fila": 17,
+   "primerFrame": 193,
+   "varianteDe": "en_gongorguma_heraldo",
+   "composicion": {
+    "raza": "race_orc_gongorguma",
+    "ojos": "verde",
+    "pelo": [
+     "largo",
+     "pelo_oscuro"
+    ],
+    "barba": [
+     "BARBA",
+     "pelo_oscuro"
+    ],
+    "equipo": {
+     "torso": "casaca_granate",
+     "piernas": "pantalon_negro",
+     "pies": "botas_altas",
+     "capa": "capa_corta_roja"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     200
+    ],
+    "idle_down": [
+     200
+    ],
+    "idle_up": [
+     194
+    ],
+    "idle_right": [
+     197
+    ],
+    "idle_left": [
+     203
+    ],
+    "walk_down": [
+     199,
+     200,
+     201,
+     200
+    ],
+    "walk_up": [
+     193,
+     194,
+     195,
+     194
+    ],
+    "walk_right": [
+     196,
+     197,
+     198,
+     197
+    ],
+    "walk_left": [
+     202,
+     203,
+     204,
+     203
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_heraldo~5",
+   "nombre": "Heraldo de clanes",
+   "fila": 18,
+   "primerFrame": 205,
+   "varianteDe": "en_gongorguma_heraldo",
+   "soloPnj": [
+    "librea_palacio"
+   ],
+   "composicion": {
+    "raza": "race_orc_gongorguma",
+    "ojos": "marron",
+    "pelo": [
+     "greñas",
+     "pelo_negro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "librea_palacio",
+     "piernas": "calzas_rojas",
+     "pies": "botas_altas",
+     "cabeza": "sombrero_pluma",
+     "capa": "capa_corta_roja"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     212
+    ],
+    "idle_down": [
+     212
+    ],
+    "idle_up": [
+     206
+    ],
+    "idle_right": [
+     209
+    ],
+    "idle_left": [
+     215
+    ],
+    "walk_down": [
+     211,
+     212,
+     213,
+     212
+    ],
+    "walk_up": [
+     205,
+     206,
+     207,
+     206
+    ],
+    "walk_right": [
+     208,
+     209,
+     210,
+     209
+    ],
+    "walk_left": [
+     214,
+     215,
+     216,
+     215
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_herreria_tendero",
+   "nombre": "Herrero de Gongorguma",
+   "fila": 19,
+   "primerFrame": 217,
+   "soloPnj": [
+    "mandil_herrero"
+   ],
+   "composicion": {
+    "raza": "orcos_dramaticos",
+    "ojos": "verde",
+    "pelo": [
+     "greñas",
+     "pelo_castano"
+    ],
+    "barba": [
+     "BARBA",
+     "pelo_castano"
+    ],
+    "equipo": {
+     "torso": "mandil_herrero",
+     "piernas": "pantalon_gris",
+     "pies": "botas",
+     "arma": "martillo_acero"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     224
+    ],
+    "idle_down": [
+     224
+    ],
+    "idle_up": [
+     218
+    ],
+    "idle_right": [
+     221
+    ],
+    "idle_left": [
+     227
+    ],
+    "walk_down": [
+     223,
+     224,
+     225,
+     224
+    ],
+    "walk_up": [
+     217,
+     218,
+     219,
+     218
+    ],
+    "walk_right": [
+     220,
+     221,
+     222,
+     221
+    ],
+    "walk_left": [
+     226,
+     227,
+     228,
+     227
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_mercado_tendero",
+   "nombre": "Mercader de Gongorguma",
+   "fila": 20,
+   "primerFrame": 229,
+   "variantes": [
+    21,
+    22,
+    23,
+    24
+   ],
+   "composicion": {
+    "raza": "race_orc_gongorguma",
+    "ojos": "marron",
+    "pelo": [
+     "corto",
+     "pelo_oscuro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco_azul",
+     "piernas": "pantalon_oliva",
+     "pies": "sandalias"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     236
+    ],
+    "idle_down": [
+     236
+    ],
+    "idle_up": [
+     230
+    ],
+    "idle_right": [
+     233
+    ],
+    "idle_left": [
+     239
+    ],
+    "walk_down": [
+     235,
+     236,
+     237,
+     236
+    ],
+    "walk_up": [
+     229,
+     230,
+     231,
+     230
+    ],
+    "walk_right": [
+     232,
+     233,
+     234,
+     233
+    ],
+    "walk_left": [
+     238,
+     239,
+     240,
+     239
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_mercado_tendero~2",
+   "nombre": "Mercader de Gongorguma",
+   "fila": 21,
+   "primerFrame": 241,
+   "varianteDe": "en_gongorguma_mercado_tendero",
+   "soloPnj": [
+    "cesta"
+   ],
+   "composicion": {
+    "raza": "race_orc_gongorguma",
+    "ojos": "ambar",
+    "pelo": [
+     "recogido",
+     "pelo_rubio"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "blusa_corse",
+     "pies": "zapatos",
+     "mano_izq": "cesta"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     248
+    ],
+    "idle_down": [
+     248
+    ],
+    "idle_up": [
+     242
+    ],
+    "idle_right": [
+     245
+    ],
+    "idle_left": [
+     251
+    ],
+    "walk_down": [
+     247,
+     248,
+     249,
+     248
+    ],
+    "walk_up": [
+     241,
+     242,
+     243,
+     242
+    ],
+    "walk_right": [
+     244,
+     245,
+     246,
+     245
+    ],
+    "walk_left": [
+     250,
+     251,
+     252,
+     251
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_mercado_tendero~3",
+   "nombre": "Mercader de Gongorguma",
+   "fila": 22,
+   "primerFrame": 253,
+   "varianteDe": "en_gongorguma_mercado_tendero",
+   "composicion": {
+    "raza": "race_orc_gongorguma",
+    "ojos": "azul",
+    "pelo": [
+     "largo",
+     "pelo_pelirrojo"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco",
+     "piernas": "pantalon_pardo",
+     "pies": "zuecos",
+     "cabeza": "turbante",
+     "mano_izq": "pocion"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     260
+    ],
+    "idle_down": [
+     260
+    ],
+    "idle_up": [
+     254
+    ],
+    "idle_right": [
+     257
+    ],
+    "idle_left": [
+     263
+    ],
+    "walk_down": [
+     259,
+     260,
+     261,
+     260
+    ],
+    "walk_up": [
+     253,
+     254,
+     255,
+     254
+    ],
+    "walk_right": [
+     256,
+     257,
+     258,
+     257
+    ],
+    "walk_left": [
+     262,
+     263,
+     264,
+     263
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_mercado_tendero~4",
+   "nombre": "Mercader de Gongorguma",
+   "fila": 23,
+   "primerFrame": 265,
+   "varianteDe": "en_gongorguma_mercado_tendero",
+   "composicion": {
+    "raza": "race_orc_gongorguma",
+    "ojos": "marron",
+    "pelo": [
+     "coleta",
+     "pelo_rubio"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "vestido_ocre",
+     "pies": "zapatos",
+     "cabeza": "sombrero_paja",
+     "mano_izq": "pocion"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     272
+    ],
+    "idle_down": [
+     272
+    ],
+    "idle_up": [
+     266
+    ],
+    "idle_right": [
+     269
+    ],
+    "idle_left": [
+     275
+    ],
+    "walk_down": [
+     271,
+     272,
+     273,
+     272
+    ],
+    "walk_up": [
+     265,
+     266,
+     267,
+     266
+    ],
+    "walk_right": [
+     268,
+     269,
+     270,
+     269
+    ],
+    "walk_left": [
+     274,
+     275,
+     276,
+     275
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_mercado_tendero~5",
+   "nombre": "Mercader de Gongorguma",
+   "fila": 24,
+   "primerFrame": 277,
+   "varianteDe": "en_gongorguma_mercado_tendero",
+   "soloPnj": [
+    "cesta"
+   ],
+   "composicion": {
+    "raza": "race_orc_gongorguma",
+    "ojos": "azul",
+    "pelo": [
+     "rizado",
+     "pelo_negro"
+    ],
+    "barba": [
+     "BARBA",
+     "pelo_negro"
+    ],
+    "equipo": {
+     "torso": "tunica_mercader",
+     "piernas": "pantalon_pardo",
+     "pies": "sandalias",
+     "mano_izq": "cesta"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     284
+    ],
+    "idle_down": [
+     284
+    ],
+    "idle_up": [
+     278
+    ],
+    "idle_right": [
+     281
+    ],
+    "idle_left": [
+     287
+    ],
+    "walk_down": [
+     283,
+     284,
+     285,
+     284
+    ],
+    "walk_up": [
+     277,
+     278,
+     279,
+     278
+    ],
+    "walk_right": [
+     280,
+     281,
+     282,
+     281
+    ],
+    "walk_left": [
+     286,
+     287,
+     288,
+     287
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_taberna_tendero",
+   "nombre": "Tabernero de Gongorguma",
+   "fila": 25,
+   "primerFrame": 289,
+   "variantes": [
+    26,
+    27,
+    28,
+    29,
+    30
+   ],
+   "composicion": {
+    "raza": "orcos_dramaticos",
+    "ojos": "azul",
+    "pelo": [
+     "greñas",
+     "pelo_pelirrojo"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco_verde",
+     "piernas": "pantalon_pardo",
+     "pies": "zapatos",
+     "mano_izq": "jarra"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     296
+    ],
+    "idle_down": [
+     296
+    ],
+    "idle_up": [
+     290
+    ],
+    "idle_right": [
+     293
+    ],
+    "idle_left": [
+     299
+    ],
+    "walk_down": [
+     295,
+     296,
+     297,
+     296
+    ],
+    "walk_up": [
+     289,
+     290,
+     291,
+     290
+    ],
+    "walk_right": [
+     292,
+     293,
+     294,
+     293
+    ],
+    "walk_left": [
+     298,
+     299,
+     300,
+     299
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_taberna_tendero~2",
+   "nombre": "Tabernero de Gongorguma",
+   "fila": 26,
+   "primerFrame": 301,
+   "varianteDe": "en_gongorguma_taberna_tendero",
+   "composicion": {
+    "raza": "orcos_dramaticos",
+    "ojos": "ambar",
+    "pelo": [
+     "greñas",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco_oscuro",
+     "piernas": "pantalon_oliva",
+     "pies": "zuecos",
+     "mano_izq": "jarra"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     308
+    ],
+    "idle_down": [
+     308
+    ],
+    "idle_up": [
+     302
+    ],
+    "idle_right": [
+     305
+    ],
+    "idle_left": [
+     311
+    ],
+    "walk_down": [
+     307,
+     308,
+     309,
+     308
+    ],
+    "walk_up": [
+     301,
+     302,
+     303,
+     302
+    ],
+    "walk_right": [
+     304,
+     305,
+     306,
+     305
+    ],
+    "walk_left": [
+     310,
+     311,
+     312,
+     311
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_taberna_tendero~3",
+   "nombre": "Tabernero de Gongorguma",
+   "fila": 27,
+   "primerFrame": 313,
+   "varianteDe": "en_gongorguma_taberna_tendero",
+   "composicion": {
+    "raza": "orcos_dramaticos",
+    "ojos": "marron",
+    "pelo": [
+     "rizado",
+     "pelo_pelirrojo"
+    ],
+    "barba": [
+     "BARBA_CORTA",
+     "pelo_pelirrojo"
+    ],
+    "equipo": {
+     "torso": "camisa_chaleco_granate",
+     "piernas": "pantalon_oliva",
+     "pies": "zapatos",
+     "mano_izq": "jarra"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     320
+    ],
+    "idle_down": [
+     320
+    ],
+    "idle_up": [
+     314
+    ],
+    "idle_right": [
+     317
+    ],
+    "idle_left": [
+     323
+    ],
+    "walk_down": [
+     319,
+     320,
+     321,
+     320
+    ],
+    "walk_up": [
+     313,
+     314,
+     315,
+     314
+    ],
+    "walk_right": [
+     316,
+     317,
+     318,
+     317
+    ],
+    "walk_left": [
+     322,
+     323,
+     324,
+     323
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_taberna_tendero~4",
+   "nombre": "Tabernero de Gongorguma",
+   "fila": 28,
+   "primerFrame": 325,
+   "varianteDe": "en_gongorguma_taberna_tendero",
+   "composicion": {
+    "raza": "orcos_dramaticos",
+    "ojos": "marron",
+    "pelo": [
+     "corto",
+     "pelo_pelirrojo"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco_verde",
+     "piernas": "pantalon_negro",
+     "pies": "zuecos",
+     "mano_izq": "jarra"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     332
+    ],
+    "idle_down": [
+     332
+    ],
+    "idle_up": [
+     326
+    ],
+    "idle_right": [
+     329
+    ],
+    "idle_left": [
+     335
+    ],
+    "walk_down": [
+     331,
+     332,
+     333,
+     332
+    ],
+    "walk_up": [
+     325,
+     326,
+     327,
+     326
+    ],
+    "walk_right": [
+     328,
+     329,
+     330,
+     329
+    ],
+    "walk_left": [
+     334,
+     335,
+     336,
+     335
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_taberna_tendero~5",
+   "nombre": "Tabernero de Gongorguma",
+   "fila": 29,
+   "primerFrame": 337,
+   "varianteDe": "en_gongorguma_taberna_tendero",
+   "composicion": {
+    "raza": "orcos_dramaticos",
+    "ojos": "marron",
+    "pelo": [
+     "largo",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco_verde",
+     "piernas": "pantalon_pardo",
+     "pies": "zapatos",
+     "mano_izq": "jarra"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     344
+    ],
+    "idle_down": [
+     344
+    ],
+    "idle_up": [
+     338
+    ],
+    "idle_right": [
+     341
+    ],
+    "idle_left": [
+     347
+    ],
+    "walk_down": [
+     343,
+     344,
+     345,
+     344
+    ],
+    "walk_up": [
+     337,
+     338,
+     339,
+     338
+    ],
+    "walk_right": [
+     340,
+     341,
+     342,
+     341
+    ],
+    "walk_left": [
+     346,
+     347,
+     348,
+     347
+    ]
+   }
+  },
+  {
+   "id": "en_gongorguma_taberna_tendero~6",
+   "nombre": "Tabernero de Gongorguma",
+   "fila": 30,
+   "primerFrame": 349,
+   "varianteDe": "en_gongorguma_taberna_tendero",
+   "composicion": {
+    "raza": "orcos_dramaticos",
+    "ojos": "verde",
+    "pelo": [
+     "largo",
+     "pelo_oscuro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco",
+     "piernas": "pantalon_pardo",
+     "pies": "botas",
+     "mano_izq": "jarra"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     356
+    ],
+    "idle_down": [
+     356
+    ],
+    "idle_up": [
+     350
+    ],
+    "idle_right": [
+     353
+    ],
+    "idle_left": [
+     359
+    ],
+    "walk_down": [
+     355,
+     356,
+     357,
+     356
+    ],
+    "walk_up": [
+     349,
+     350,
+     351,
+     350
+    ],
+    "walk_right": [
+     352,
+     353,
+     354,
+     353
+    ],
+    "walk_left": [
+     358,
+     359,
+     360,
+     359
+    ]
+   }
+  },
+  {
+   "id": "en_mistarium_archivero",
+   "nombre": "Archivero ambulante",
+   "fila": 31,
+   "primerFrame": 361,
+   "variantes": [
+    32,
+    33
+   ],
+   "soloPnj": [
+    "birrete"
+   ],
+   "composicion": {
+    "raza": "tieflings_del_vacio",
+    "ojos": "verde",
+    "pelo": [
+     "largo",
+     "pelo_plata_lila"
+    ],
+    "barba": [
+     "BARBA",
+     "pelo_negro"
+    ],
+    "equipo": {
+     "torso": "tunica_mago",
+     "pies": "sandalias",
+     "cabeza": "birrete",
+     "mano_izq": "grimorio"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     368
+    ],
+    "idle_down": [
+     368
+    ],
+    "idle_up": [
+     362
+    ],
+    "idle_right": [
+     365
+    ],
+    "idle_left": [
+     371
+    ],
+    "walk_down": [
+     367,
+     368,
+     369,
+     368
+    ],
+    "walk_up": [
+     361,
+     362,
+     363,
+     362
+    ],
+    "walk_right": [
+     364,
+     365,
+     366,
+     365
+    ],
+    "walk_left": [
+     370,
+     371,
+     372,
+     371
+    ]
+   }
+  },
+  {
+   "id": "en_mistarium_archivero~2",
+   "nombre": "Archivero ambulante",
+   "fila": 32,
+   "primerFrame": 373,
+   "varianteDe": "en_mistarium_archivero",
+   "soloPnj": [
+    "birrete",
+    "libro_cuentas"
+   ],
+   "composicion": {
+    "raza": "tieflings_del_vacio",
+    "ojos": "azul",
+    "pelo": [
+     "greñas",
+     "pelo_rubio"
+    ],
+    "barba": [
+     "BARBA",
+     "pelo_rubio"
+    ],
+    "equipo": {
+     "torso": "tunica_mago",
+     "pies": "sandalias",
+     "cabeza": "birrete",
+     "mano_izq": "libro_cuentas"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     380
+    ],
+    "idle_down": [
+     380
+    ],
+    "idle_up": [
+     374
+    ],
+    "idle_right": [
+     377
+    ],
+    "idle_left": [
+     383
+    ],
+    "walk_down": [
+     379,
+     380,
+     381,
+     380
+    ],
+    "walk_up": [
+     373,
+     374,
+     375,
+     374
+    ],
+    "walk_right": [
+     376,
+     377,
+     378,
+     377
+    ],
+    "walk_left": [
+     382,
+     383,
+     384,
+     383
+    ]
+   }
+  },
+  {
+   "id": "en_mistarium_archivero~3",
+   "nombre": "Archivero ambulante",
+   "fila": 33,
+   "primerFrame": 385,
+   "varianteDe": "en_mistarium_archivero",
+   "soloPnj": [
+    "toga"
+   ],
+   "composicion": {
+    "raza": "tieflings_del_vacio",
+    "ojos": "azul",
+    "pelo": [
+     "largo",
+     "pelo_plata_lila"
+    ],
+    "barba": [
+     "BARBA",
+     "pelo_negro"
+    ],
+    "equipo": {
+     "torso": "toga",
+     "pies": "zapatos",
+     "mano_izq": "grimorio"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     392
+    ],
+    "idle_down": [
+     392
+    ],
+    "idle_up": [
+     386
+    ],
+    "idle_right": [
+     389
+    ],
+    "idle_left": [
+     395
+    ],
+    "walk_down": [
+     391,
+     392,
+     393,
+     392
+    ],
+    "walk_up": [
+     385,
+     386,
+     387,
+     386
+    ],
+    "walk_right": [
+     388,
+     389,
+     390,
+     389
+    ],
+    "walk_left": [
+     394,
+     395,
+     396,
+     395
+    ]
+   }
+  },
+  {
+   "id": "en_mistarium_biblioteca_tendero",
+   "nombre": "Custodio del Archivo de la Bruma",
+   "fila": 34,
+   "primerFrame": 397,
+   "composicion": {
+    "raza": "tieflings_de_la_sombra",
+    "ojos": "azul",
+    "pelo": [
+     "coleta",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "tunica_ocre",
+     "piernas": "pantalon_pardo",
+     "pies": "zuecos"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     404
+    ],
+    "idle_down": [
+     404
+    ],
+    "idle_up": [
+     398
+    ],
+    "idle_right": [
+     401
+    ],
+    "idle_left": [
+     407
+    ],
+    "walk_down": [
+     403,
+     404,
+     405,
+     404
+    ],
+    "walk_up": [
+     397,
+     398,
+     399,
+     398
+    ],
+    "walk_right": [
+     400,
+     401,
+     402,
+     401
+    ],
+    "walk_left": [
+     406,
+     407,
+     408,
+     407
+    ]
+   }
+  },
+  {
+   "id": "en_mistarium_herreria_tendero",
+   "nombre": "Herrero de Mistarium",
+   "fila": 35,
+   "primerFrame": 409,
+   "soloPnj": [
+    "mandil_herrero"
+   ],
+   "composicion": {
+    "raza": "tieflings_de_la_sombra",
+    "ojos": "verde",
+    "pelo": [
+     "recogido",
+     "pelo_negro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "mandil_herrero",
+     "piernas": "pantalon_gris",
+     "pies": "botas_claras",
+     "arma": "martillo_acero"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     416
+    ],
+    "idle_down": [
+     416
+    ],
+    "idle_up": [
+     410
+    ],
+    "idle_right": [
+     413
+    ],
+    "idle_left": [
+     419
+    ],
+    "walk_down": [
+     415,
+     416,
+     417,
+     416
+    ],
+    "walk_up": [
+     409,
+     410,
+     411,
+     410
+    ],
+    "walk_right": [
+     412,
+     413,
+     414,
+     413
+    ],
+    "walk_left": [
+     418,
+     419,
+     420,
+     419
+    ]
+   }
+  },
+  {
+   "id": "en_mistarium_mercado_tendero",
+   "nombre": "Mercader de Mistarium",
+   "fila": 36,
+   "primerFrame": 421,
+   "variantes": [
+    37,
+    38
+   ],
+   "soloPnj": [
+    "cesta"
+   ],
+   "composicion": {
+    "raza": "tieflings_de_la_sombra",
+    "ojos": "azul",
+    "pelo": [
+     "coleta",
+     "pelo_negro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "vestido_azul_delantal",
+     "pies": "zapatos",
+     "cabeza": "panuelo_azul",
+     "mano_izq": "cesta"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     428
+    ],
+    "idle_down": [
+     428
+    ],
+    "idle_up": [
+     422
+    ],
+    "idle_right": [
+     425
+    ],
+    "idle_left": [
+     431
+    ],
+    "walk_down": [
+     427,
+     428,
+     429,
+     428
+    ],
+    "walk_up": [
+     421,
+     422,
+     423,
+     422
+    ],
+    "walk_right": [
+     424,
+     425,
+     426,
+     425
+    ],
+    "walk_left": [
+     430,
+     431,
+     432,
+     431
+    ]
+   }
+  },
+  {
+   "id": "en_mistarium_mercado_tendero~2",
+   "nombre": "Mercader de Mistarium",
+   "fila": 37,
+   "primerFrame": 433,
+   "varianteDe": "en_mistarium_mercado_tendero",
+   "soloPnj": [
+    "cesta"
+   ],
+   "composicion": {
+    "raza": "tieflings_de_la_sombra",
+    "ojos": "marron",
+    "pelo": [
+     "coleta",
+     "pelo_rubio"
+    ],
+    "barba": [
+     "BARBA_CORTA",
+     "pelo_rubio"
+    ],
+    "equipo": {
+     "torso": "camisa_chaleco_azul",
+     "piernas": "pantalon_pardo",
+     "pies": "zuecos",
+     "cabeza": "sombrero_paja",
+     "mano_izq": "cesta"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     440
+    ],
+    "idle_down": [
+     440
+    ],
+    "idle_up": [
+     434
+    ],
+    "idle_right": [
+     437
+    ],
+    "idle_left": [
+     443
+    ],
+    "walk_down": [
+     439,
+     440,
+     441,
+     440
+    ],
+    "walk_up": [
+     433,
+     434,
+     435,
+     434
+    ],
+    "walk_right": [
+     436,
+     437,
+     438,
+     437
+    ],
+    "walk_left": [
+     442,
+     443,
+     444,
+     443
+    ]
+   }
+  },
+  {
+   "id": "en_mistarium_mercado_tendero~3",
+   "nombre": "Mercader de Mistarium",
+   "fila": 38,
+   "primerFrame": 445,
+   "varianteDe": "en_mistarium_mercado_tendero",
+   "soloPnj": [
+    "cesta"
+   ],
+   "composicion": {
+    "raza": "tieflings_de_la_sombra",
+    "ojos": "azul",
+    "pelo": [
+     "largo",
+     "pelo_pelirrojo"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "blusa_corse",
+     "pies": "zapatos",
+     "mano_izq": "cesta"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     452
+    ],
+    "idle_down": [
+     452
+    ],
+    "idle_up": [
+     446
+    ],
+    "idle_right": [
+     449
+    ],
+    "idle_left": [
+     455
+    ],
+    "walk_down": [
+     451,
+     452,
+     453,
+     452
+    ],
+    "walk_up": [
+     445,
+     446,
+     447,
+     446
+    ],
+    "walk_right": [
+     448,
+     449,
+     450,
+     449
+    ],
+    "walk_left": [
+     454,
+     455,
+     456,
+     455
+    ]
+   }
+  },
+  {
+   "id": "en_mistarium_taberna_tendero",
+   "nombre": "Tabernero de Mistarium",
+   "fila": 39,
+   "primerFrame": 457,
+   "variantes": [
+    40,
+    41,
+    42,
+    43,
+    44
+   ],
+   "composicion": {
+    "raza": "tieflings_de_la_sombra",
+    "ojos": "marron",
+    "pelo": [
+     "coleta",
+     "pelo_negro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco_verde",
+     "piernas": "pantalon_pardo",
+     "pies": "zapatos",
+     "mano_izq": "jarra"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     464
+    ],
+    "idle_down": [
+     464
+    ],
+    "idle_up": [
+     458
+    ],
+    "idle_right": [
+     461
+    ],
+    "idle_left": [
+     467
+    ],
+    "walk_down": [
+     463,
+     464,
+     465,
+     464
+    ],
+    "walk_up": [
+     457,
+     458,
+     459,
+     458
+    ],
+    "walk_right": [
+     460,
+     461,
+     462,
+     461
+    ],
+    "walk_left": [
+     466,
+     467,
+     468,
+     467
+    ]
+   }
+  },
+  {
+   "id": "en_mistarium_taberna_tendero~2",
+   "nombre": "Tabernero de Mistarium",
+   "fila": 40,
+   "primerFrame": 469,
+   "varianteDe": "en_mistarium_taberna_tendero",
+   "composicion": {
+    "raza": "tieflings_de_la_sombra",
+    "ojos": "verde",
+    "pelo": [
+     "greñas",
+     "pelo_negro"
+    ],
+    "barba": [
+     "BARBA_CORTA",
+     "pelo_negro"
+    ],
+    "equipo": {
+     "torso": "camisa_chaleco_verde",
+     "piernas": "pantalon_negro",
+     "pies": "botas",
+     "mano_izq": "jarra"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     476
+    ],
+    "idle_down": [
+     476
+    ],
+    "idle_up": [
+     470
+    ],
+    "idle_right": [
+     473
+    ],
+    "idle_left": [
+     479
+    ],
+    "walk_down": [
+     475,
+     476,
+     477,
+     476
+    ],
+    "walk_up": [
+     469,
+     470,
+     471,
+     470
+    ],
+    "walk_right": [
+     472,
+     473,
+     474,
+     473
+    ],
+    "walk_left": [
+     478,
+     479,
+     480,
+     479
+    ]
+   }
+  },
+  {
+   "id": "en_mistarium_taberna_tendero~3",
+   "nombre": "Tabernero de Mistarium",
+   "fila": 41,
+   "primerFrame": 481,
+   "varianteDe": "en_mistarium_taberna_tendero",
+   "composicion": {
+    "raza": "tieflings_de_la_sombra",
+    "ojos": "verde",
+    "pelo": [
+     "coleta",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco",
+     "piernas": "pantalon_oliva",
+     "pies": "zapatos",
+     "mano_izq": "jarra"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     488
+    ],
+    "idle_down": [
+     488
+    ],
+    "idle_up": [
+     482
+    ],
+    "idle_right": [
+     485
+    ],
+    "idle_left": [
+     491
+    ],
+    "walk_down": [
+     487,
+     488,
+     489,
+     488
+    ],
+    "walk_up": [
+     481,
+     482,
+     483,
+     482
+    ],
+    "walk_right": [
+     484,
+     485,
+     486,
+     485
+    ],
+    "walk_left": [
+     490,
+     491,
+     492,
+     491
+    ]
+   }
+  },
+  {
+   "id": "en_mistarium_taberna_tendero~4",
+   "nombre": "Tabernero de Mistarium",
+   "fila": 42,
+   "primerFrame": 493,
+   "varianteDe": "en_mistarium_taberna_tendero",
+   "composicion": {
+    "raza": "tieflings_de_la_sombra",
+    "ojos": "marron",
+    "pelo": [
+     "largo",
+     "pelo_negro"
+    ],
+    "barba": [
+     "BARBA_CORTA",
+     "pelo_negro"
+    ],
+    "equipo": {
+     "torso": "camisa_chaleco_verde",
+     "piernas": "pantalon_oliva",
+     "pies": "zapatos",
+     "mano_izq": "jarra"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     500
+    ],
+    "idle_down": [
+     500
+    ],
+    "idle_up": [
+     494
+    ],
+    "idle_right": [
+     497
+    ],
+    "idle_left": [
+     503
+    ],
+    "walk_down": [
+     499,
+     500,
+     501,
+     500
+    ],
+    "walk_up": [
+     493,
+     494,
+     495,
+     494
+    ],
+    "walk_right": [
+     496,
+     497,
+     498,
+     497
+    ],
+    "walk_left": [
+     502,
+     503,
+     504,
+     503
+    ]
+   }
+  },
+  {
+   "id": "en_mistarium_taberna_tendero~5",
+   "nombre": "Tabernero de Mistarium",
+   "fila": 43,
+   "primerFrame": 505,
+   "varianteDe": "en_mistarium_taberna_tendero",
+   "composicion": {
+    "raza": "tieflings_de_la_sombra",
+    "ojos": "ambar",
+    "pelo": [
+     "corto",
+     "pelo_oscuro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco_oscuro",
+     "piernas": "pantalon_oliva",
+     "pies": "botas",
+     "mano_izq": "jarra"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     512
+    ],
+    "idle_down": [
+     512
+    ],
+    "idle_up": [
+     506
+    ],
+    "idle_right": [
+     509
+    ],
+    "idle_left": [
+     515
+    ],
+    "walk_down": [
+     511,
+     512,
+     513,
+     512
+    ],
+    "walk_up": [
+     505,
+     506,
+     507,
+     506
+    ],
+    "walk_right": [
+     508,
+     509,
+     510,
+     509
+    ],
+    "walk_left": [
+     514,
+     515,
+     516,
+     515
+    ]
+   }
+  },
+  {
+   "id": "en_mistarium_taberna_tendero~6",
+   "nombre": "Tabernero de Mistarium",
+   "fila": 44,
+   "primerFrame": 517,
+   "varianteDe": "en_mistarium_taberna_tendero",
+   "composicion": {
+    "raza": "tieflings_de_la_sombra",
+    "ojos": "ambar",
+    "pelo": [
+     "greñas",
+     "pelo_oscuro"
+    ],
+    "barba": [
+     "BARBA_CORTA",
+     "pelo_oscuro"
+    ],
+    "equipo": {
+     "torso": "camisa_chaleco_granate",
+     "piernas": "pantalon_negro",
+     "pies": "zapatos",
+     "mano_izq": "jarra"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     524
+    ],
+    "idle_down": [
+     524
+    ],
+    "idle_up": [
+     518
+    ],
+    "idle_right": [
+     521
+    ],
+    "idle_left": [
+     527
+    ],
+    "walk_down": [
+     523,
+     524,
+     525,
+     524
+    ],
+    "walk_up": [
+     517,
+     518,
+     519,
+     518
+    ],
+    "walk_right": [
+     520,
+     521,
+     522,
+     521
+    ],
+    "walk_left": [
+     526,
+     527,
+     528,
+     527
+    ]
+   }
+  },
+  {
+   "id": "en_nocturnsea_farera",
+   "nombre": "Farera",
+   "fila": 45,
+   "primerFrame": 529,
+   "composicion": {
+    "raza": "espectros",
+    "ojos": "marron",
+    "pelo": [
+     "recogido",
+     "pelo_negro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "tunica_gris",
+     "capa": "capa_gris",
+     "mano_izq": "farol"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     536
+    ],
+    "idle_down": [
+     536
+    ],
+    "idle_up": [
+     530
+    ],
+    "idle_right": [
+     533
+    ],
+    "idle_left": [
+     539
+    ],
+    "walk_down": [
+     535,
+     536,
+     537,
+     536
+    ],
+    "walk_up": [
+     529,
+     530,
+     531,
+     530
+    ],
+    "walk_right": [
+     532,
+     533,
+     534,
+     533
+    ],
+    "walk_left": [
+     538,
+     539,
+     540,
+     539
+    ]
+   }
+  },
+  {
+   "id": "en_nocturnsea_herreria_tendero",
+   "nombre": "Herrero de Nocturnsea",
+   "fila": 46,
+   "primerFrame": 541,
+   "soloPnj": [
+    "mandil_herrero"
+   ],
+   "composicion": {
+    "raza": "revenants",
+    "ojos": "ambar",
+    "pelo": [
+     "coleta",
+     "pelo_gris"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "mandil_herrero",
+     "piernas": "pantalon_gris",
+     "pies": "botas_claras",
+     "arma": "martillo_acero"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     548
+    ],
+    "idle_down": [
+     548
+    ],
+    "idle_up": [
+     542
+    ],
+    "idle_right": [
+     545
+    ],
+    "idle_left": [
+     551
+    ],
+    "walk_down": [
+     547,
+     548,
+     549,
+     548
+    ],
+    "walk_up": [
+     541,
+     542,
+     543,
+     542
+    ],
+    "walk_right": [
+     544,
+     545,
+     546,
+     545
+    ],
+    "walk_left": [
+     550,
+     551,
+     552,
+     551
+    ]
+   }
+  },
+  {
+   "id": "en_nocturnsea_mercado_tendero",
+   "nombre": "Mercader de Nocturnsea",
+   "fila": 47,
+   "primerFrame": 553,
+   "composicion": {
+    "raza": "revenants",
+    "ojos": "azul",
+    "pelo": [
+     "coleta",
+     "pelo_negro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco",
+     "piernas": "pantalon_pardo",
+     "pies": "zapatos",
+     "cabeza": "turbante"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     560
+    ],
+    "idle_down": [
+     560
+    ],
+    "idle_up": [
+     554
+    ],
+    "idle_right": [
+     557
+    ],
+    "idle_left": [
+     563
+    ],
+    "walk_down": [
+     559,
+     560,
+     561,
+     560
+    ],
+    "walk_up": [
+     553,
+     554,
+     555,
+     554
+    ],
+    "walk_right": [
+     556,
+     557,
+     558,
+     557
+    ],
+    "walk_left": [
+     562,
+     563,
+     564,
+     563
+    ]
+   }
+  },
+  {
+   "id": "en_nocturnsea_posada_tendero",
+   "nombre": "Posadero del Faro",
+   "fila": 48,
+   "primerFrame": 565,
+   "composicion": {
+    "raza": "revenants",
+    "ojos": "verde",
+    "pelo": [
+     "corto",
+     "pelo_blanco"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco_verde",
+     "piernas": "pantalon_gris",
+     "pies": "zapatos",
+     "mano_izq": "farol"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     572
+    ],
+    "idle_down": [
+     572
+    ],
+    "idle_up": [
+     566
+    ],
+    "idle_right": [
+     569
+    ],
+    "idle_left": [
+     575
+    ],
+    "walk_down": [
+     571,
+     572,
+     573,
+     572
+    ],
+    "walk_up": [
+     565,
+     566,
+     567,
+     566
+    ],
+    "walk_right": [
+     568,
+     569,
+     570,
+     569
+    ],
+    "walk_left": [
+     574,
+     575,
+     576,
+     575
+    ]
+   }
+  },
+  {
+   "id": "en_nocturnsea_taberna_tendero",
+   "nombre": "Tabernero de Nocturnsea",
+   "fila": 49,
+   "primerFrame": 577,
+   "composicion": {
+    "raza": "revenants",
+    "ojos": "azul",
+    "pelo": [
+     "rizado",
+     "pelo_gris"
+    ],
+    "barba": [
+     "BARBA_CORTA",
+     "pelo_gris"
+    ],
+    "equipo": {
+     "torso": "camisa_chaleco_verde",
+     "piernas": "pantalon_negro",
+     "pies": "zuecos",
+     "mano_izq": "jarra"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     584
+    ],
+    "idle_down": [
+     584
+    ],
+    "idle_up": [
+     578
+    ],
+    "idle_right": [
+     581
+    ],
+    "idle_left": [
+     587
+    ],
+    "walk_down": [
+     583,
+     584,
+     585,
+     584
+    ],
+    "walk_up": [
+     577,
+     578,
+     579,
+     578
+    ],
+    "walk_right": [
+     580,
+     581,
+     582,
+     581
+    ],
+    "walk_left": [
+     586,
+     587,
+     588,
+     587
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_bastia_de_la_esquina",
+   "nombre": "Bastià de la Esquina",
+   "fila": 50,
+   "primerFrame": 589,
+   "composicion": {
+    "raza": "enanos_forjadores",
+    "piel": "piel_clara",
+    "ojos": "marron",
+    "pelo": [
+     "greñas",
+     "pelo_rubio"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "cuero_oscuro",
+     "piernas": "pantalon_negro",
+     "pies": "botas_altas",
+     "cabeza": "antifaz",
+     "capa": "capa_negra",
+     "arma": "daga_hierro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     596
+    ],
+    "idle_down": [
+     596
+    ],
+    "idle_up": [
+     590
+    ],
+    "idle_right": [
+     593
+    ],
+    "idle_left": [
+     599
+    ],
+    "walk_down": [
+     595,
+     596,
+     597,
+     596
+    ],
+    "walk_up": [
+     589,
+     590,
+     591,
+     590
+    ],
+    "walk_right": [
+     592,
+     593,
+     594,
+     593
+    ],
+    "walk_left": [
+     598,
+     599,
+     600,
+     599
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_bastia_dosveces",
+   "nombre": "Bastià Dosveces",
+   "fila": 51,
+   "primerFrame": 601,
+   "composicion": {
+    "raza": "enanos_historiadores",
+    "piel": "piel_rojiza",
+    "ojos": "azul",
+    "pelo": [
+     "greñas",
+     "pelo_negro"
+    ],
+    "barba": [
+     "BARBA_CORTA",
+     "pelo_negro"
+    ],
+    "equipo": {
+     "torso": "casaca_granate",
+     "piernas": "pantalon_pardo",
+     "pies": "sandalias",
+     "mano_izq": "pocion"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     608
+    ],
+    "idle_down": [
+     608
+    ],
+    "idle_up": [
+     602
+    ],
+    "idle_right": [
+     605
+    ],
+    "idle_left": [
+     611
+    ],
+    "walk_down": [
+     607,
+     608,
+     609,
+     608
+    ],
+    "walk_up": [
+     601,
+     602,
+     603,
+     602
+    ],
+    "walk_right": [
+     604,
+     605,
+     606,
+     605
+    ],
+    "walk_left": [
+     610,
+     611,
+     612,
+     611
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_bastia_el_breve",
+   "nombre": "Bastià el Breve",
+   "fila": 52,
+   "primerFrame": 613,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_morena",
+    "talla": "bajo",
+    "ojos": "azul",
+    "pelo": [
+     "coleta",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "harapos",
+     "piernas": "pantalon_pardo",
+     "pies": "zuecos"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     620
+    ],
+    "idle_down": [
+     620
+    ],
+    "idle_up": [
+     614
+    ],
+    "idle_right": [
+     617
+    ],
+    "idle_left": [
+     623
+    ],
+    "walk_down": [
+     619,
+     620,
+     621,
+     620
+    ],
+    "walk_up": [
+     613,
+     614,
+     615,
+     614
+    ],
+    "walk_right": [
+     616,
+     617,
+     618,
+     617
+    ],
+    "walk_left": [
+     622,
+     623,
+     624,
+     623
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_bastia_la_justa",
+   "nombre": "Bastià la Justa",
+   "fila": 53,
+   "primerFrame": 625,
+   "composicion": {
+    "raza": "race_dwarf_deepforge",
+    "piel": "piel_gris",
+    "ojos": "verde",
+    "pelo": [
+     "largo",
+     "pelo_negro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco",
+     "piernas": "pantalon_oliva"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     632
+    ],
+    "idle_down": [
+     632
+    ],
+    "idle_up": [
+     626
+    ],
+    "idle_right": [
+     629
+    ],
+    "idle_left": [
+     635
+    ],
+    "walk_down": [
+     631,
+     632,
+     633,
+     632
+    ],
+    "walk_up": [
+     625,
+     626,
+     627,
+     626
+    ],
+    "walk_right": [
+     628,
+     629,
+     630,
+     629
+    ],
+    "walk_left": [
+     634,
+     635,
+     636,
+     635
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_bastia_la_prestada",
+   "nombre": "Bastià la Prestada",
+   "fila": 54,
+   "primerFrame": 637,
+   "composicion": {
+    "raza": "alquimistas_de_aegroum",
+    "piel": "piel_rojiza",
+    "ojos": "azul",
+    "pelo": [
+     "coleta",
+     "pelo_negro"
+    ],
+    "barba": [
+     "BARBA",
+     "pelo_negro"
+    ],
+    "equipo": {
+     "torso": "tunica_verde",
+     "piernas": "pantalon_oliva",
+     "pies": "zapatos",
+     "cabeza": "sombrero_cuero"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     644
+    ],
+    "idle_down": [
+     644
+    ],
+    "idle_up": [
+     638
+    ],
+    "idle_right": [
+     641
+    ],
+    "idle_left": [
+     647
+    ],
+    "walk_down": [
+     643,
+     644,
+     645,
+     644
+    ],
+    "walk_up": [
+     637,
+     638,
+     639,
+     638
+    ],
+    "walk_right": [
+     640,
+     641,
+     642,
+     641
+    ],
+    "walk_left": [
+     646,
+     647,
+     648,
+     647
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_biel_el_menut",
+   "nombre": "Biel el Menut",
+   "fila": 55,
+   "primerFrame": 649,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_rojiza",
+    "talla": "pequeno",
+    "ojos": "negro",
+    "pelo": [
+     "corto",
+     "pelo_pelirrojo"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "harapos",
+     "piernas": "pantalon_oliva",
+     "pies": "sandalias"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     656
+    ],
+    "idle_down": [
+     656
+    ],
+    "idle_up": [
+     650
+    ],
+    "idle_right": [
+     653
+    ],
+    "idle_left": [
+     659
+    ],
+    "walk_down": [
+     655,
+     656,
+     657,
+     656
+    ],
+    "walk_up": [
+     649,
+     650,
+     651,
+     650
+    ],
+    "walk_right": [
+     652,
+     653,
+     654,
+     653
+    ],
+    "walk_left": [
+     658,
+     659,
+     660,
+     659
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_capitana_bruna",
+   "nombre": "Capitana Bruna",
+   "fila": 56,
+   "primerFrame": 661,
+   "composicion": {
+    "raza": "medianos_urbanos",
+    "piel": "piel_clara",
+    "ojos": "verde",
+    "pelo": [
+     "largo",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "sobrevesta_azul",
+     "piernas": "grebas_malla",
+     "pies": "botas_altas",
+     "capa": "capa_negra",
+     "arma": "espada_acero"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     668
+    ],
+    "idle_down": [
+     668
+    ],
+    "idle_up": [
+     662
+    ],
+    "idle_right": [
+     665
+    ],
+    "idle_left": [
+     671
+    ],
+    "walk_down": [
+     667,
+     668,
+     669,
+     668
+    ],
+    "walk_up": [
+     661,
+     662,
+     663,
+     662
+    ],
+    "walk_right": [
+     664,
+     665,
+     666,
+     665
+    ],
+    "walk_left": [
+     670,
+     671,
+     672,
+     671
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_cosme_de_la_esquina",
+   "nombre": "Cosme de la Esquina",
+   "fila": 57,
+   "primerFrame": 673,
+   "soloPnj": [
+    "cesta"
+   ],
+   "composicion": {
+    "raza": "guardianes_del_elemento",
+    "ojos": "marron",
+    "pelo": [
+     "rizado",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco_granate",
+     "piernas": "pantalon_negro",
+     "pies": "zapatos",
+     "cabeza": "turbante_purpura",
+     "mano_izq": "cesta"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     680
+    ],
+    "idle_down": [
+     680
+    ],
+    "idle_up": [
+     674
+    ],
+    "idle_right": [
+     677
+    ],
+    "idle_left": [
+     683
+    ],
+    "walk_down": [
+     679,
+     680,
+     681,
+     680
+    ],
+    "walk_up": [
+     673,
+     674,
+     675,
+     674
+    ],
+    "walk_right": [
+     676,
+     677,
+     678,
+     677
+    ],
+    "walk_left": [
+     682,
+     683,
+     684,
+     683
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_cosme_dosveces",
+   "nombre": "Cosme Dosveces",
+   "fila": 58,
+   "primerFrame": 685,
+   "composicion": {
+    "raza": "mercenarios_de_ascaria",
+    "piel": "piel_aceituna",
+    "ojos": "ambar",
+    "pelo": [
+     "corto",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "casaca_negra",
+     "piernas": "pantalon_negro",
+     "pies": "botas_altas",
+     "cabeza": "capucha_parda",
+     "capa": "capa_negra",
+     "arma": "daga_hierro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     692
+    ],
+    "idle_down": [
+     692
+    ],
+    "idle_up": [
+     686
+    ],
+    "idle_right": [
+     689
+    ],
+    "idle_left": [
+     695
+    ],
+    "walk_down": [
+     691,
+     692,
+     693,
+     692
+    ],
+    "walk_up": [
+     685,
+     686,
+     687,
+     686
+    ],
+    "walk_right": [
+     688,
+     689,
+     690,
+     689
+    ],
+    "walk_left": [
+     694,
+     695,
+     696,
+     695
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_cosme_el_breve",
+   "nombre": "Cosme el Breve",
+   "fila": 59,
+   "primerFrame": 697,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_aceituna",
+    "talla": "bajo",
+    "ojos": "ambar",
+    "pelo": [
+     "rizado",
+     "pelo_oscuro"
+    ],
+    "barba": [
+     "BARBA",
+     "pelo_oscuro"
+    ],
+    "equipo": {
+     "torso": "casaca_negra",
+     "piernas": "pantalon_negro",
+     "pies": "botas",
+     "capa": "capa_purpura",
+     "arma": "daga_plata"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     704
+    ],
+    "idle_down": [
+     704
+    ],
+    "idle_up": [
+     698
+    ],
+    "idle_right": [
+     701
+    ],
+    "idle_left": [
+     707
+    ],
+    "walk_down": [
+     703,
+     704,
+     705,
+     704
+    ],
+    "walk_up": [
+     697,
+     698,
+     699,
+     698
+    ],
+    "walk_right": [
+     700,
+     701,
+     702,
+     701
+    ],
+    "walk_left": [
+     706,
+     707,
+     708,
+     707
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_cosme_la_justa",
+   "nombre": "Cosme la Justa",
+   "fila": 60,
+   "primerFrame": 709,
+   "soloPnj": [
+    "cesta"
+   ],
+   "composicion": {
+    "raza": "guardianes_del_elemento",
+    "ojos": "negro",
+    "pelo": [
+     "corto",
+     "pelo_oscuro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "tunica_ocre",
+     "piernas": "pantalon_pardo",
+     "pies": "sandalias",
+     "cabeza": "turbante_purpura",
+     "mano_izq": "cesta"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     716
+    ],
+    "idle_down": [
+     716
+    ],
+    "idle_up": [
+     710
+    ],
+    "idle_right": [
+     713
+    ],
+    "idle_left": [
+     719
+    ],
+    "walk_down": [
+     715,
+     716,
+     717,
+     716
+    ],
+    "walk_up": [
+     709,
+     710,
+     711,
+     710
+    ],
+    "walk_right": [
+     712,
+     713,
+     714,
+     713
+    ],
+    "walk_left": [
+     718,
+     719,
+     720,
+     719
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_cosme_sinmiedo",
+   "nombre": "Cosme Sinmiedo",
+   "fila": 61,
+   "primerFrame": 721,
+   "composicion": {
+    "raza": "mercenarios_de_ascaria",
+    "piel": "piel_morena",
+    "ojos": "verde",
+    "pelo": [
+     "coleta",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "casaca_negra",
+     "piernas": "pantalon_negro",
+     "pies": "botas",
+     "cabeza": "capucha_negra",
+     "capa": "capa_purpura",
+     "arma": "daga_plata"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     728
+    ],
+    "idle_down": [
+     728
+    ],
+    "idle_up": [
+     722
+    ],
+    "idle_right": [
+     725
+    ],
+    "idle_left": [
+     731
+    ],
+    "walk_down": [
+     727,
+     728,
+     729,
+     728
+    ],
+    "walk_up": [
+     721,
+     722,
+     723,
+     722
+    ],
+    "walk_right": [
+     724,
+     725,
+     726,
+     725
+    ],
+    "walk_left": [
+     730,
+     731,
+     732,
+     731
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_damaso_clavijo",
+   "nombre": "Damaso Clavijo",
+   "fila": 62,
+   "primerFrame": 733,
+   "composicion": {
+    "raza": "guardianes_del_elemento",
+    "ojos": "marron",
+    "pelo": [
+     "corto",
+     "pelo_negro"
+    ],
+    "barba": [
+     "BARBA_CORTA",
+     "pelo_negro"
+    ],
+    "equipo": {
+     "torso": "camisa_chaleco_oscuro",
+     "piernas": "pantalon_gris",
+     "pies": "botas_altas",
+     "cabeza": "capucha_parda",
+     "capa": "capa_gris"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     740
+    ],
+    "idle_down": [
+     740
+    ],
+    "idle_up": [
+     734
+    ],
+    "idle_right": [
+     737
+    ],
+    "idle_left": [
+     743
+    ],
+    "walk_down": [
+     739,
+     740,
+     741,
+     740
+    ],
+    "walk_up": [
+     733,
+     734,
+     735,
+     734
+    ],
+    "walk_right": [
+     736,
+     737,
+     738,
+     737
+    ],
+    "walk_left": [
+     742,
+     743,
+     744,
+     743
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_delia_de_la_esquina",
+   "nombre": "Delia de la Esquina",
+   "fila": 63,
+   "primerFrame": 745,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_rojiza",
+    "ojos": "marron",
+    "pelo": [
+     "rizado",
+     "pelo_pelirrojo"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco_oscuro",
+     "piernas": "pantalon_gris",
+     "pies": "botas_altas",
+     "cabeza": "capucha_parda",
+     "capa": "capa_negra",
+     "arma": "daga_hierro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     752
+    ],
+    "idle_down": [
+     752
+    ],
+    "idle_up": [
+     746
+    ],
+    "idle_right": [
+     749
+    ],
+    "idle_left": [
+     755
+    ],
+    "walk_down": [
+     751,
+     752,
+     753,
+     752
+    ],
+    "walk_up": [
+     745,
+     746,
+     747,
+     746
+    ],
+    "walk_right": [
+     748,
+     749,
+     750,
+     749
+    ],
+    "walk_left": [
+     754,
+     755,
+     756,
+     755
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_delia_dosveces",
+   "nombre": "Delia Dosveces",
+   "fila": 64,
+   "primerFrame": 757,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_clara",
+    "ojos": "verde",
+    "pelo": [
+     "recogido",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "tunica_mago",
+     "pies": "sandalias",
+     "arma": "baston_roble"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     764
+    ],
+    "idle_down": [
+     764
+    ],
+    "idle_up": [
+     758
+    ],
+    "idle_right": [
+     761
+    ],
+    "idle_left": [
+     767
+    ],
+    "walk_down": [
+     763,
+     764,
+     765,
+     764
+    ],
+    "walk_up": [
+     757,
+     758,
+     759,
+     758
+    ],
+    "walk_right": [
+     760,
+     761,
+     762,
+     761
+    ],
+    "walk_left": [
+     766,
+     767,
+     768,
+     767
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_delia_el_breve",
+   "nombre": "Delia el Breve",
+   "fila": 65,
+   "primerFrame": 769,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_clara",
+    "talla": "bajo",
+    "ojos": "azul",
+    "pelo": [
+     "rizado",
+     "pelo_pelirrojo"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "vestido_lila",
+     "piernas": "falda_larga_parda",
+     "pies": "zapatos",
+     "mano_izq": "pocion"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     776
+    ],
+    "idle_down": [
+     776
+    ],
+    "idle_up": [
+     770
+    ],
+    "idle_right": [
+     773
+    ],
+    "idle_left": [
+     779
+    ],
+    "walk_down": [
+     775,
+     776,
+     777,
+     776
+    ],
+    "walk_up": [
+     769,
+     770,
+     771,
+     770
+    ],
+    "walk_right": [
+     772,
+     773,
+     774,
+     773
+    ],
+    "walk_left": [
+     778,
+     779,
+     780,
+     779
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_delia_la_justa",
+   "nombre": "Delia la Justa",
+   "fila": 66,
+   "primerFrame": 781,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_clara",
+    "ojos": "verde",
+    "pelo": [
+     "largo",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "habito_monje",
+     "pies": "zapatos",
+     "cabeza": "sombrero_mago_azul",
+     "mano_izq": "orbe"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     788
+    ],
+    "idle_down": [
+     788
+    ],
+    "idle_up": [
+     782
+    ],
+    "idle_right": [
+     785
+    ],
+    "idle_left": [
+     791
+    ],
+    "walk_down": [
+     787,
+     788,
+     789,
+     788
+    ],
+    "walk_up": [
+     781,
+     782,
+     783,
+     782
+    ],
+    "walk_right": [
+     784,
+     785,
+     786,
+     785
+    ],
+    "walk_left": [
+     790,
+     791,
+     792,
+     791
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_delia_la_vieja",
+   "nombre": "Delia la Vieja",
+   "fila": 67,
+   "primerFrame": 793,
+   "soloPnj": [
+    "cesta"
+   ],
+   "composicion": {
+    "raza": "medianos_del_bosque",
+    "piel": "piel_aceituna",
+    "ojos": "verde",
+    "pelo": [
+     "recogido",
+     "pelo_gris"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "vestido_ocre",
+     "cabeza": "panuelo_azul",
+     "mano_izq": "cesta",
+     "pies": "zapatos"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     800
+    ],
+    "idle_down": [
+     800
+    ],
+    "idle_up": [
+     794
+    ],
+    "idle_right": [
+     797
+    ],
+    "idle_left": [
+     803
+    ],
+    "walk_down": [
+     799,
+     800,
+     801,
+     800
+    ],
+    "walk_up": [
+     793,
+     794,
+     795,
+     794
+    ],
+    "walk_right": [
+     796,
+     797,
+     798,
+     797
+    ],
+    "walk_left": [
+     802,
+     803,
+     804,
+     803
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_eudald_cartograf",
+   "nombre": "Eudald Cartograf",
+   "fila": 68,
+   "primerFrame": 805,
+   "soloPnj": [
+    "libro_cuentas",
+    "toga"
+   ],
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_morena",
+    "ojos": "azul",
+    "pelo": [
+     "corto",
+     "pelo_rubio"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "toga",
+     "pies": "sandalias",
+     "mano_izq": "libro_cuentas"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     812
+    ],
+    "idle_down": [
+     812
+    ],
+    "idle_up": [
+     806
+    ],
+    "idle_right": [
+     809
+    ],
+    "idle_left": [
+     815
+    ],
+    "walk_down": [
+     811,
+     812,
+     813,
+     812
+    ],
+    "walk_up": [
+     805,
+     806,
+     807,
+     806
+    ],
+    "walk_right": [
+     808,
+     809,
+     810,
+     809
+    ],
+    "walk_left": [
+     814,
+     815,
+     816,
+     815
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_ferran_de_la_esquina",
+   "nombre": "Ferran de la Esquina",
+   "fila": 69,
+   "primerFrame": 817,
+   "composicion": {
+    "raza": "alquimistas_de_aegroum",
+    "piel": "piel_clara",
+    "ojos": "marron",
+    "pelo": [
+     "largo",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "casaca_granate",
+     "piernas": "grebas_malla",
+     "pies": "botas_altas",
+     "capa": "capa_roja"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     824
+    ],
+    "idle_down": [
+     824
+    ],
+    "idle_up": [
+     818
+    ],
+    "idle_right": [
+     821
+    ],
+    "idle_left": [
+     827
+    ],
+    "walk_down": [
+     823,
+     824,
+     825,
+     824
+    ],
+    "walk_up": [
+     817,
+     818,
+     819,
+     818
+    ],
+    "walk_right": [
+     820,
+     821,
+     822,
+     821
+    ],
+    "walk_left": [
+     826,
+     827,
+     828,
+     827
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_ferran_dosveces",
+   "nombre": "Ferran Dosveces",
+   "fila": 70,
+   "primerFrame": 829,
+   "composicion": {
+    "raza": "medianos_urbanos",
+    "piel": "piel_clara",
+    "ojos": "negro",
+    "pelo": [
+     "largo",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "aventurero_pardo",
+     "piernas": "pantalon_gris",
+     "pies": "botas",
+     "capa": "capa_corta_azul",
+     "arma": "espada_hierro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     836
+    ],
+    "idle_down": [
+     836
+    ],
+    "idle_up": [
+     830
+    ],
+    "idle_right": [
+     833
+    ],
+    "idle_left": [
+     839
+    ],
+    "walk_down": [
+     835,
+     836,
+     837,
+     836
+    ],
+    "walk_up": [
+     829,
+     830,
+     831,
+     830
+    ],
+    "walk_right": [
+     832,
+     833,
+     834,
+     833
+    ],
+    "walk_left": [
+     838,
+     839,
+     840,
+     839
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_ferran_el_breve",
+   "nombre": "Ferran el Breve",
+   "fila": 71,
+   "primerFrame": 841,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_clara",
+    "talla": "bajo",
+    "ojos": "azul",
+    "pelo": [
+     "greñas",
+     "pelo_pelirrojo"
+    ],
+    "barba": [
+     "BARBA",
+     "pelo_pelirrojo"
+    ],
+    "equipo": {
+     "torso": "habito_monje",
+     "pies": "sandalias",
+     "arma": "baston_cristal",
+     "mano_izq": "grimorio"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     848
+    ],
+    "idle_down": [
+     848
+    ],
+    "idle_up": [
+     842
+    ],
+    "idle_right": [
+     845
+    ],
+    "idle_left": [
+     851
+    ],
+    "walk_down": [
+     847,
+     848,
+     849,
+     848
+    ],
+    "walk_up": [
+     841,
+     842,
+     843,
+     842
+    ],
+    "walk_right": [
+     844,
+     845,
+     846,
+     845
+    ],
+    "walk_left": [
+     850,
+     851,
+     852,
+     851
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_ferran_el_callado",
+   "nombre": "Ferran el Callado",
+   "fila": 72,
+   "primerFrame": 853,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_palida",
+    "ojos": "verde",
+    "pelo": [
+     "largo",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "cuero_oscuro",
+     "piernas": "pantalon_gris",
+     "pies": "botas_altas",
+     "capa": "capa_negra"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     860
+    ],
+    "idle_down": [
+     860
+    ],
+    "idle_up": [
+     854
+    ],
+    "idle_right": [
+     857
+    ],
+    "idle_left": [
+     863
+    ],
+    "walk_down": [
+     859,
+     860,
+     861,
+     860
+    ],
+    "walk_up": [
+     853,
+     854,
+     855,
+     854
+    ],
+    "walk_right": [
+     856,
+     857,
+     858,
+     857
+    ],
+    "walk_left": [
+     862,
+     863,
+     864,
+     863
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_ferran_el_nuevo",
+   "nombre": "Ferran el Nuevo",
+   "fila": 73,
+   "primerFrame": 865,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_clara",
+    "ojos": "ambar",
+    "pelo": [
+     "greñas",
+     "pelo_pelirrojo"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "tunica_mago",
+     "pies": "sandalias",
+     "cabeza": "capucha_gris",
+     "mano_izq": "grimorio"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     872
+    ],
+    "idle_down": [
+     872
+    ],
+    "idle_up": [
+     866
+    ],
+    "idle_right": [
+     869
+    ],
+    "idle_left": [
+     875
+    ],
+    "walk_down": [
+     871,
+     872,
+     873,
+     872
+    ],
+    "walk_up": [
+     865,
+     866,
+     867,
+     866
+    ],
+    "walk_right": [
+     868,
+     869,
+     870,
+     869
+    ],
+    "walk_left": [
+     874,
+     875,
+     876,
+     875
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_ferran_la_justa",
+   "nombre": "Ferran la Justa",
+   "fila": 74,
+   "primerFrame": 877,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_palida",
+    "ojos": "azul",
+    "pelo": [
+     "largo",
+     "pelo_oscuro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco_oscuro",
+     "piernas": "pantalon_negro",
+     "pies": "botas_altas",
+     "cabeza": "capucha_parda"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     884
+    ],
+    "idle_down": [
+     884
+    ],
+    "idle_up": [
+     878
+    ],
+    "idle_right": [
+     881
+    ],
+    "idle_left": [
+     887
+    ],
+    "walk_down": [
+     883,
+     884,
+     885,
+     884
+    ],
+    "walk_up": [
+     877,
+     878,
+     879,
+     878
+    ],
+    "walk_right": [
+     880,
+     881,
+     882,
+     881
+    ],
+    "walk_left": [
+     886,
+     887,
+     888,
+     887
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_ferran_mano_clara",
+   "nombre": "Ferran Mano Clara",
+   "fila": 75,
+   "primerFrame": 889,
+   "composicion": {
+    "raza": "alquimistas_de_aegroum",
+    "piel": "piel_aceituna",
+    "ojos": "negro",
+    "pelo": [
+     "rizado",
+     "pelo_rubio"
+    ],
+    "barba": [
+     "BARBA",
+     "pelo_rubio"
+    ],
+    "equipo": {
+     "torso": "harapos",
+     "piernas": "pantalon_pardo",
+     "pies": "sandalias"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     896
+    ],
+    "idle_down": [
+     896
+    ],
+    "idle_up": [
+     890
+    ],
+    "idle_right": [
+     893
+    ],
+    "idle_left": [
+     899
+    ],
+    "walk_down": [
+     895,
+     896,
+     897,
+     896
+    ],
+    "walk_up": [
+     889,
+     890,
+     891,
+     890
+    ],
+    "walk_right": [
+     892,
+     893,
+     894,
+     893
+    ],
+    "walk_left": [
+     898,
+     899,
+     900,
+     899
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_guifre_de_la_esquina",
+   "nombre": "Guifré de la Esquina",
+   "fila": 76,
+   "primerFrame": 901,
+   "composicion": {
+    "raza": "enanos_historiadores",
+    "piel": "piel_rojiza",
+    "ojos": "azul",
+    "pelo": [
+     "corto",
+     "pelo_oscuro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "casaca_negra",
+     "piernas": "pantalon_gris",
+     "pies": "botas_altas",
+     "cabeza": "capucha_negra",
+     "capa": "capa_negra",
+     "arma": "daga_hierro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     908
+    ],
+    "idle_down": [
+     908
+    ],
+    "idle_up": [
+     902
+    ],
+    "idle_right": [
+     905
+    ],
+    "idle_left": [
+     911
+    ],
+    "walk_down": [
+     907,
+     908,
+     909,
+     908
+    ],
+    "walk_up": [
+     901,
+     902,
+     903,
+     902
+    ],
+    "walk_right": [
+     904,
+     905,
+     906,
+     905
+    ],
+    "walk_left": [
+     910,
+     911,
+     912,
+     911
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_guifre_dosveces",
+   "nombre": "Guifré Dosveces",
+   "fila": 77,
+   "primerFrame": 913,
+   "soloPnj": [
+    "librea_palacio"
+   ],
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_morena",
+    "ojos": "negro",
+    "pelo": [
+     "corto",
+     "pelo_pelirrojo"
+    ],
+    "barba": [
+     "BARBA_CORTA",
+     "pelo_pelirrojo"
+    ],
+    "equipo": {
+     "torso": "librea_palacio",
+     "piernas": "grebas_malla",
+     "pies": "botas_altas",
+     "capa": "capa_roja",
+     "arma": "espada_acero"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     920
+    ],
+    "idle_down": [
+     920
+    ],
+    "idle_up": [
+     914
+    ],
+    "idle_right": [
+     917
+    ],
+    "idle_left": [
+     923
+    ],
+    "walk_down": [
+     919,
+     920,
+     921,
+     920
+    ],
+    "walk_up": [
+     913,
+     914,
+     915,
+     914
+    ],
+    "walk_right": [
+     916,
+     917,
+     918,
+     917
+    ],
+    "walk_left": [
+     922,
+     923,
+     924,
+     923
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_guifre_el_breve",
+   "nombre": "Guifré el Breve",
+   "fila": 78,
+   "primerFrame": 925,
+   "soloPnj": [
+    "libro_cuentas"
+   ],
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_gris",
+    "talla": "bajo",
+    "ojos": "marron",
+    "pelo": [
+     "largo",
+     "pelo_rubio"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "tunica_ocre",
+     "piernas": "pantalon_negro",
+     "pies": "sandalias",
+     "cabeza": "sombrero_cuero",
+     "mano_izq": "libro_cuentas"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     932
+    ],
+    "idle_down": [
+     932
+    ],
+    "idle_up": [
+     926
+    ],
+    "idle_right": [
+     929
+    ],
+    "idle_left": [
+     935
+    ],
+    "walk_down": [
+     931,
+     932,
+     933,
+     932
+    ],
+    "walk_up": [
+     925,
+     926,
+     927,
+     926
+    ],
+    "walk_right": [
+     928,
+     929,
+     930,
+     929
+    ],
+    "walk_left": [
+     934,
+     935,
+     936,
+     935
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_guifre_la_justa",
+   "nombre": "Guifré la Justa",
+   "fila": 79,
+   "primerFrame": 937,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_clara",
+    "ojos": "marron",
+    "pelo": [
+     "greñas",
+     "pelo_oscuro"
+    ],
+    "barba": [
+     "BARBA",
+     "pelo_oscuro"
+    ],
+    "equipo": {
+     "torso": "tunica_mago",
+     "pies": "zapatos",
+     "cabeza": "capucha_gris",
+     "arma": "baston_roble"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     944
+    ],
+    "idle_down": [
+     944
+    ],
+    "idle_up": [
+     938
+    ],
+    "idle_right": [
+     941
+    ],
+    "idle_left": [
+     947
+    ],
+    "walk_down": [
+     943,
+     944,
+     945,
+     944
+    ],
+    "walk_up": [
+     937,
+     938,
+     939,
+     938
+    ],
+    "walk_right": [
+     940,
+     941,
+     942,
+     941
+    ],
+    "walk_left": [
+     946,
+     947,
+     948,
+     947
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_guifre_la_prestada",
+   "nombre": "Guifré la Prestada",
+   "fila": 80,
+   "primerFrame": 949,
+   "composicion": {
+    "raza": "enanos_forjadores",
+    "piel": "piel_clara",
+    "ojos": "negro",
+    "pelo": [
+     "largo",
+     "pelo_rubio"
+    ],
+    "barba": [
+     "BARBA",
+     "pelo_rubio"
+    ],
+    "equipo": {
+     "torso": "tunica_mago",
+     "pies": "sandalias",
+     "arma": "baston_cristal"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     956
+    ],
+    "idle_down": [
+     956
+    ],
+    "idle_up": [
+     950
+    ],
+    "idle_right": [
+     953
+    ],
+    "idle_left": [
+     959
+    ],
+    "walk_down": [
+     955,
+     956,
+     957,
+     956
+    ],
+    "walk_up": [
+     949,
+     950,
+     951,
+     950
+    ],
+    "walk_right": [
+     952,
+     953,
+     954,
+     953
+    ],
+    "walk_left": [
+     958,
+     959,
+     960,
+     959
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_guillema_de_la_esquina",
+   "nombre": "Guillema de la Esquina",
+   "fila": 81,
+   "primerFrame": 961,
+   "composicion": {
+    "raza": "race_dwarf_deepforge",
+    "piel": "piel_gris",
+    "ojos": "negro",
+    "pelo": [
+     "largo",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "aventurero_rojo",
+     "piernas": "grebas_cuero",
+     "pies": "botas",
+     "arma": "daga_hierro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     968
+    ],
+    "idle_down": [
+     968
+    ],
+    "idle_up": [
+     962
+    ],
+    "idle_right": [
+     965
+    ],
+    "idle_left": [
+     971
+    ],
+    "walk_down": [
+     967,
+     968,
+     969,
+     968
+    ],
+    "walk_up": [
+     961,
+     962,
+     963,
+     962
+    ],
+    "walk_right": [
+     964,
+     965,
+     966,
+     965
+    ],
+    "walk_left": [
+     970,
+     971,
+     972,
+     971
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_guillema_dosveces",
+   "nombre": "Guillema Dosveces",
+   "fila": 82,
+   "primerFrame": 973,
+   "composicion": {
+    "raza": "enanos_forjadores",
+    "piel": "piel_clara",
+    "ojos": "marron",
+    "pelo": [
+     "rizado",
+     "pelo_negro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "vestido_verde",
+     "piernas": "falda_verde",
+     "pies": "zapatos",
+     "cabeza": "panuelo_azul"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     980
+    ],
+    "idle_down": [
+     980
+    ],
+    "idle_up": [
+     974
+    ],
+    "idle_right": [
+     977
+    ],
+    "idle_left": [
+     983
+    ],
+    "walk_down": [
+     979,
+     980,
+     981,
+     980
+    ],
+    "walk_up": [
+     973,
+     974,
+     975,
+     974
+    ],
+    "walk_right": [
+     976,
+     977,
+     978,
+     977
+    ],
+    "walk_left": [
+     982,
+     983,
+     984,
+     983
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_guillema_el_breve",
+   "nombre": "Guillema el Breve",
+   "fila": 83,
+   "primerFrame": 985,
+   "composicion": {
+    "raza": "enanos_forjadores",
+    "piel": "piel_aceituna",
+    "talla": "bajo",
+    "ojos": "negro",
+    "pelo": [
+     "recogido",
+     "pelo_negro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco_oscuro",
+     "piernas": "pantalon_negro",
+     "pies": "botas",
+     "cabeza": "capucha_parda",
+     "capa": "capa_gris"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     992
+    ],
+    "idle_down": [
+     992
+    ],
+    "idle_up": [
+     986
+    ],
+    "idle_right": [
+     989
+    ],
+    "idle_left": [
+     995
+    ],
+    "walk_down": [
+     991,
+     992,
+     993,
+     992
+    ],
+    "walk_up": [
+     985,
+     986,
+     987,
+     986
+    ],
+    "walk_right": [
+     988,
+     989,
+     990,
+     989
+    ],
+    "walk_left": [
+     994,
+     995,
+     996,
+     995
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_guillema_la_justa",
+   "nombre": "Guillema la Justa",
+   "fila": 84,
+   "primerFrame": 997,
+   "composicion": {
+    "raza": "enanos_historiadores",
+    "piel": "piel_rojiza",
+    "ojos": "azul",
+    "pelo": [
+     "coleta",
+     "pelo_rubio"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "casaca_granate",
+     "pies": "botas_altas",
+     "cabeza": "diadema",
+     "capa": "capa_granate"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1004
+    ],
+    "idle_down": [
+     1004
+    ],
+    "idle_up": [
+     998
+    ],
+    "idle_right": [
+     1001
+    ],
+    "idle_left": [
+     1007
+    ],
+    "walk_down": [
+     1003,
+     1004,
+     1005,
+     1004
+    ],
+    "walk_up": [
+     997,
+     998,
+     999,
+     998
+    ],
+    "walk_right": [
+     1000,
+     1001,
+     1002,
+     1001
+    ],
+    "walk_left": [
+     1006,
+     1007,
+     1008,
+     1007
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_guillema_la_prestada",
+   "nombre": "Guillema la Prestada",
+   "fila": 85,
+   "primerFrame": 1009,
+   "composicion": {
+    "raza": "enanos_historiadores",
+    "piel": "piel_rojiza",
+    "ojos": "ambar",
+    "pelo": [
+     "coleta",
+     "pelo_oscuro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "vestido_noble",
+     "pies": "botas_altas",
+     "capa": "capa_roja"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1016
+    ],
+    "idle_down": [
+     1016
+    ],
+    "idle_up": [
+     1010
+    ],
+    "idle_right": [
+     1013
+    ],
+    "idle_left": [
+     1019
+    ],
+    "walk_down": [
+     1015,
+     1016,
+     1017,
+     1016
+    ],
+    "walk_up": [
+     1009,
+     1010,
+     1011,
+     1010
+    ],
+    "walk_right": [
+     1012,
+     1013,
+     1014,
+     1013
+    ],
+    "walk_left": [
+     1018,
+     1019,
+     1020,
+     1019
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_hug_de_la_esquina",
+   "nombre": "Hug de la Esquina",
+   "fila": 86,
+   "primerFrame": 1021,
+   "composicion": {
+    "raza": "orcos_del_consejo",
+    "ojos": "azul",
+    "pelo": [
+     "coleta",
+     "pelo_rubio"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco_azul",
+     "piernas": "pantalon_azul",
+     "pies": "zapatos",
+     "cabeza": "sombrero_cuero",
+     "capa": "capa_parda"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1028
+    ],
+    "idle_down": [
+     1028
+    ],
+    "idle_up": [
+     1022
+    ],
+    "idle_right": [
+     1025
+    ],
+    "idle_left": [
+     1031
+    ],
+    "walk_down": [
+     1027,
+     1028,
+     1029,
+     1028
+    ],
+    "walk_up": [
+     1021,
+     1022,
+     1023,
+     1022
+    ],
+    "walk_right": [
+     1024,
+     1025,
+     1026,
+     1025
+    ],
+    "walk_left": [
+     1030,
+     1031,
+     1032,
+     1031
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_hug_del_vado",
+   "nombre": "Hug del Vado",
+   "fila": 87,
+   "primerFrame": 1033,
+   "composicion": {
+    "raza": "tieflings_del_vacio",
+    "ojos": "negro",
+    "pelo": [
+     "corto",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "aventurero_pardo",
+     "piernas": "grebas_cuero",
+     "pies": "botas_claras",
+     "capa": "capa_corta_roja",
+     "arma": "hacha_hierro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1040
+    ],
+    "idle_down": [
+     1040
+    ],
+    "idle_up": [
+     1034
+    ],
+    "idle_right": [
+     1037
+    ],
+    "idle_left": [
+     1043
+    ],
+    "walk_down": [
+     1039,
+     1040,
+     1041,
+     1040
+    ],
+    "walk_up": [
+     1033,
+     1034,
+     1035,
+     1034
+    ],
+    "walk_right": [
+     1036,
+     1037,
+     1038,
+     1037
+    ],
+    "walk_left": [
+     1042,
+     1043,
+     1044,
+     1043
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_hug_dosveces",
+   "nombre": "Hug Dosveces",
+   "fila": 88,
+   "primerFrame": 1045,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_palida",
+    "ojos": "verde",
+    "pelo": [
+     "corto",
+     "pelo_oscuro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "harapos",
+     "piernas": "pantalon_pardo",
+     "pies": "sandalias"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1052
+    ],
+    "idle_down": [
+     1052
+    ],
+    "idle_up": [
+     1046
+    ],
+    "idle_right": [
+     1049
+    ],
+    "idle_left": [
+     1055
+    ],
+    "walk_down": [
+     1051,
+     1052,
+     1053,
+     1052
+    ],
+    "walk_up": [
+     1045,
+     1046,
+     1047,
+     1046
+    ],
+    "walk_right": [
+     1048,
+     1049,
+     1050,
+     1049
+    ],
+    "walk_left": [
+     1054,
+     1055,
+     1056,
+     1055
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_hug_el_breve",
+   "nombre": "Hug el Breve",
+   "fila": 89,
+   "primerFrame": 1057,
+   "composicion": {
+    "raza": "alquimistas_de_aegroum",
+    "piel": "piel_clara",
+    "talla": "bajo",
+    "ojos": "azul",
+    "pelo": [
+     "rizado",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "sobrevesta_azul",
+     "piernas": "pantalon_negro",
+     "pies": "zapatos",
+     "arma": "espada_acero"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1064
+    ],
+    "idle_down": [
+     1064
+    ],
+    "idle_up": [
+     1058
+    ],
+    "idle_right": [
+     1061
+    ],
+    "idle_left": [
+     1067
+    ],
+    "walk_down": [
+     1063,
+     1064,
+     1065,
+     1064
+    ],
+    "walk_up": [
+     1057,
+     1058,
+     1059,
+     1058
+    ],
+    "walk_right": [
+     1060,
+     1061,
+     1062,
+     1061
+    ],
+    "walk_left": [
+     1066,
+     1067,
+     1068,
+     1067
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_hug_la_justa",
+   "nombre": "Hug la Justa",
+   "fila": 90,
+   "primerFrame": 1069,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_clara",
+    "ojos": "marron",
+    "pelo": [
+     "corto",
+     "pelo_pelirrojo"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "casaca_negra",
+     "piernas": "grebas_malla",
+     "pies": "botas_altas",
+     "arma": "espada_acero"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1076
+    ],
+    "idle_down": [
+     1076
+    ],
+    "idle_up": [
+     1070
+    ],
+    "idle_right": [
+     1073
+    ],
+    "idle_left": [
+     1079
+    ],
+    "walk_down": [
+     1075,
+     1076,
+     1077,
+     1076
+    ],
+    "walk_up": [
+     1069,
+     1070,
+     1071,
+     1070
+    ],
+    "walk_right": [
+     1072,
+     1073,
+     1074,
+     1073
+    ],
+    "walk_left": [
+     1078,
+     1079,
+     1080,
+     1079
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_ilun_de_la_esquina",
+   "nombre": "Ilun de la Esquina",
+   "fila": 91,
+   "primerFrame": 1081,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_clara",
+    "ojos": "negro",
+    "pelo": [
+     "corto",
+     "pelo_pelirrojo"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "tunica_parda",
+     "piernas": "pantalon_pardo",
+     "pies": "zuecos"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1088
+    ],
+    "idle_down": [
+     1088
+    ],
+    "idle_up": [
+     1082
+    ],
+    "idle_right": [
+     1085
+    ],
+    "idle_left": [
+     1091
+    ],
+    "walk_down": [
+     1087,
+     1088,
+     1089,
+     1088
+    ],
+    "walk_up": [
+     1081,
+     1082,
+     1083,
+     1082
+    ],
+    "walk_right": [
+     1084,
+     1085,
+     1086,
+     1085
+    ],
+    "walk_left": [
+     1090,
+     1091,
+     1092,
+     1091
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_ilun_dosveces",
+   "nombre": "Ilun Dosveces",
+   "fila": 92,
+   "primerFrame": 1093,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_palida",
+    "ojos": "negro",
+    "pelo": [
+     "largo",
+     "pelo_negro"
+    ],
+    "barba": [
+     "BARBA_CORTA",
+     "pelo_negro"
+    ],
+    "equipo": {
+     "torso": "casaca_negra",
+     "piernas": "pantalon_negro",
+     "pies": "botas_altas",
+     "cabeza": "antifaz",
+     "capa": "capa_negra",
+     "arma": "daga_hierro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1100
+    ],
+    "idle_down": [
+     1100
+    ],
+    "idle_up": [
+     1094
+    ],
+    "idle_right": [
+     1097
+    ],
+    "idle_left": [
+     1103
+    ],
+    "walk_down": [
+     1099,
+     1100,
+     1101,
+     1100
+    ],
+    "walk_up": [
+     1093,
+     1094,
+     1095,
+     1094
+    ],
+    "walk_right": [
+     1096,
+     1097,
+     1098,
+     1097
+    ],
+    "walk_left": [
+     1102,
+     1103,
+     1104,
+     1103
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_ilun_el_breve",
+   "nombre": "Ilun el Breve",
+   "fila": 93,
+   "primerFrame": 1105,
+   "composicion": {
+    "raza": "revenants",
+    "ojos": "negro",
+    "pelo": [
+     "largo",
+     "pelo_oscuro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "aventurero_rojo",
+     "piernas": "grebas_cuero",
+     "pies": "botas",
+     "arma": "hacha_hierro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1112
+    ],
+    "idle_down": [
+     1112
+    ],
+    "idle_up": [
+     1106
+    ],
+    "idle_right": [
+     1109
+    ],
+    "idle_left": [
+     1115
+    ],
+    "walk_down": [
+     1111,
+     1112,
+     1113,
+     1112
+    ],
+    "walk_up": [
+     1105,
+     1106,
+     1107,
+     1106
+    ],
+    "walk_right": [
+     1108,
+     1109,
+     1110,
+     1109
+    ],
+    "walk_left": [
+     1114,
+     1115,
+     1116,
+     1115
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_ilun_el_callado",
+   "nombre": "Ilun el Callado",
+   "fila": 94,
+   "primerFrame": 1117,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_palida",
+    "ojos": "marron",
+    "pelo": [
+     "greñas",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "cuero",
+     "piernas": "pantalon_gris",
+     "pies": "botas_claras",
+     "capa": "capa_corta_azul",
+     "arma": "arco_roble"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1124
+    ],
+    "idle_down": [
+     1124
+    ],
+    "idle_up": [
+     1118
+    ],
+    "idle_right": [
+     1121
+    ],
+    "idle_left": [
+     1127
+    ],
+    "walk_down": [
+     1123,
+     1124,
+     1125,
+     1124
+    ],
+    "walk_up": [
+     1117,
+     1118,
+     1119,
+     1118
+    ],
+    "walk_right": [
+     1120,
+     1121,
+     1122,
+     1121
+    ],
+    "walk_left": [
+     1126,
+     1127,
+     1128,
+     1127
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_ilun_el_nuevo",
+   "nombre": "Ilun el Nuevo",
+   "fila": 95,
+   "primerFrame": 1129,
+   "composicion": {
+    "raza": "alquimistas_de_aegroum",
+    "piel": "piel_clara",
+    "ojos": "verde",
+    "pelo": [
+     "coleta",
+     "pelo_oscuro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "tunica_verde",
+     "piernas": "pantalon_azul",
+     "pies": "zapatos",
+     "cabeza": "capucha_parda"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1136
+    ],
+    "idle_down": [
+     1136
+    ],
+    "idle_up": [
+     1130
+    ],
+    "idle_right": [
+     1133
+    ],
+    "idle_left": [
+     1139
+    ],
+    "walk_down": [
+     1135,
+     1136,
+     1137,
+     1136
+    ],
+    "walk_up": [
+     1129,
+     1130,
+     1131,
+     1130
+    ],
+    "walk_right": [
+     1132,
+     1133,
+     1134,
+     1133
+    ],
+    "walk_left": [
+     1138,
+     1139,
+     1140,
+     1139
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_ilun_la_justa",
+   "nombre": "Ilun la Justa",
+   "fila": 96,
+   "primerFrame": 1141,
+   "composicion": {
+    "raza": "alquimistas_de_aegroum",
+    "piel": "piel_clara",
+    "ojos": "marron",
+    "pelo": [
+     "largo",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_chaleco_azul",
+     "piernas": "pantalon_oliva",
+     "pies": "botas",
+     "cabeza": "capucha_parda",
+     "capa": "capa_parda"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1148
+    ],
+    "idle_down": [
+     1148
+    ],
+    "idle_up": [
+     1142
+    ],
+    "idle_right": [
+     1145
+    ],
+    "idle_left": [
+     1151
+    ],
+    "walk_down": [
+     1147,
+     1148,
+     1149,
+     1148
+    ],
+    "walk_up": [
+     1141,
+     1142,
+     1143,
+     1142
+    ],
+    "walk_right": [
+     1144,
+     1145,
+     1146,
+     1145
+    ],
+    "walk_left": [
+     1150,
+     1151,
+     1152,
+     1151
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_isabeu_de_la_esquina",
+   "nombre": "Isabeu de la Esquina",
+   "fila": 97,
+   "primerFrame": 1153,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_morena",
+    "ojos": "azul",
+    "pelo": [
+     "largo",
+     "pelo_rubio"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "cuero",
+     "piernas": "pantalon_gris",
+     "pies": "botas_claras",
+     "capa": "capa_corta_azul",
+     "arma": "espada_hierro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1160
+    ],
+    "idle_down": [
+     1160
+    ],
+    "idle_up": [
+     1154
+    ],
+    "idle_right": [
+     1157
+    ],
+    "idle_left": [
+     1163
+    ],
+    "walk_down": [
+     1159,
+     1160,
+     1161,
+     1160
+    ],
+    "walk_up": [
+     1153,
+     1154,
+     1155,
+     1154
+    ],
+    "walk_right": [
+     1156,
+     1157,
+     1158,
+     1157
+    ],
+    "walk_left": [
+     1162,
+     1163,
+     1164,
+     1163
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_isabeu_dosveces",
+   "nombre": "Isabeu Dosveces",
+   "fila": 98,
+   "primerFrame": 1165,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_morena",
+    "ojos": "verde",
+    "pelo": [
+     "rizado",
+     "pelo_oscuro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "cuero_oscuro",
+     "piernas": "pantalon_negro",
+     "pies": "botas",
+     "cabeza": "antifaz",
+     "capa": "capa_purpura",
+     "arma": "daga_plata"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1172
+    ],
+    "idle_down": [
+     1172
+    ],
+    "idle_up": [
+     1166
+    ],
+    "idle_right": [
+     1169
+    ],
+    "idle_left": [
+     1175
+    ],
+    "walk_down": [
+     1171,
+     1172,
+     1173,
+     1172
+    ],
+    "walk_up": [
+     1165,
+     1166,
+     1167,
+     1166
+    ],
+    "walk_right": [
+     1168,
+     1169,
+     1170,
+     1169
+    ],
+    "walk_left": [
+     1174,
+     1175,
+     1176,
+     1175
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_isabeu_el_breve",
+   "nombre": "Isabeu el Breve",
+   "fila": 99,
+   "primerFrame": 1177,
+   "composicion": {
+    "raza": "orcos_del_consejo",
+    "ojos": "verde",
+    "pelo": [
+     "largo",
+     "pelo_oscuro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "aventurero_verde",
+     "piernas": "pantalon_pardo",
+     "pies": "botas",
+     "capa": "capa_corta_azul",
+     "arma": "daga_hierro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1184
+    ],
+    "idle_down": [
+     1184
+    ],
+    "idle_up": [
+     1178
+    ],
+    "idle_right": [
+     1181
+    ],
+    "idle_left": [
+     1187
+    ],
+    "walk_down": [
+     1183,
+     1184,
+     1185,
+     1184
+    ],
+    "walk_up": [
+     1177,
+     1178,
+     1179,
+     1178
+    ],
+    "walk_right": [
+     1180,
+     1181,
+     1182,
+     1181
+    ],
+    "walk_left": [
+     1186,
+     1187,
+     1188,
+     1187
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_isabeu_la_justa",
+   "nombre": "Isabeu la Justa",
+   "fila": 100,
+   "primerFrame": 1189,
+   "composicion": {
+    "raza": "draconidos_de_fuego",
+    "ojos": "marron",
+    "equipo": {
+     "torso": "vestido_azul",
+     "pies": "botas",
+     "cabeza": "panuelo_azul",
+     "capa": "capa_corta_verde"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1196
+    ],
+    "idle_down": [
+     1196
+    ],
+    "idle_up": [
+     1190
+    ],
+    "idle_right": [
+     1193
+    ],
+    "idle_left": [
+     1199
+    ],
+    "walk_down": [
+     1195,
+     1196,
+     1197,
+     1196
+    ],
+    "walk_up": [
+     1189,
+     1190,
+     1191,
+     1190
+    ],
+    "walk_right": [
+     1192,
+     1193,
+     1194,
+     1193
+    ],
+    "walk_left": [
+     1198,
+     1199,
+     1200,
+     1199
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_isabeu_sinmiedo",
+   "nombre": "Isabeu Sinmiedo",
+   "fila": 101,
+   "primerFrame": 1201,
+   "composicion": {
+    "raza": "draconidos_de_fuego",
+    "ojos": "azul",
+    "equipo": {
+     "torso": "vestido_teja",
+     "piernas": "falda_parda",
+     "pies": "zapatos",
+     "capa": "capa_corta_verde"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1208
+    ],
+    "idle_down": [
+     1208
+    ],
+    "idle_up": [
+     1202
+    ],
+    "idle_right": [
+     1205
+    ],
+    "idle_left": [
+     1211
+    ],
+    "walk_down": [
+     1207,
+     1208,
+     1209,
+     1208
+    ],
+    "walk_up": [
+     1201,
+     1202,
+     1203,
+     1202
+    ],
+    "walk_right": [
+     1204,
+     1205,
+     1206,
+     1205
+    ],
+    "walk_left": [
+     1210,
+     1211,
+     1212,
+     1211
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_itx_adiel_de_mijorn",
+   "nombre": "Itx Adiel de Mijorn",
+   "fila": 102,
+   "primerFrame": 1213,
+   "composicion": {
+    "raza": "medianos_urbanos",
+    "piel": "piel_morena",
+    "ojos": "marron",
+    "pelo": [
+     "rizado",
+     "pelo_rubio"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "vestido_ocre",
+     "pies": "sandalias",
+     "cabeza": "panuelo_rojo",
+     "mano_izq": "pocion"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1220
+    ],
+    "idle_down": [
+     1220
+    ],
+    "idle_up": [
+     1214
+    ],
+    "idle_right": [
+     1217
+    ],
+    "idle_left": [
+     1223
+    ],
+    "walk_down": [
+     1219,
+     1220,
+     1221,
+     1220
+    ],
+    "walk_up": [
+     1213,
+     1214,
+     1215,
+     1214
+    ],
+    "walk_right": [
+     1216,
+     1217,
+     1218,
+     1217
+    ],
+    "walk_left": [
+     1222,
+     1223,
+     1224,
+     1223
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_jofre_de_la_esquina",
+   "nombre": "Jofre de la Esquina",
+   "fila": 103,
+   "primerFrame": 1225,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_aceituna",
+    "ojos": "marron",
+    "pelo": [
+     "rizado",
+     "pelo_rubio"
+    ],
+    "barba": [
+     "BARBA_CORTA",
+     "pelo_rubio"
+    ],
+    "equipo": {
+     "torso": "habito_purpura",
+     "piernas": "pantalon_negro",
+     "pies": "botas",
+     "capa": "capa_negra",
+     "arma": "daga_plata"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1232
+    ],
+    "idle_down": [
+     1232
+    ],
+    "idle_up": [
+     1226
+    ],
+    "idle_right": [
+     1229
+    ],
+    "idle_left": [
+     1235
+    ],
+    "walk_down": [
+     1231,
+     1232,
+     1233,
+     1232
+    ],
+    "walk_up": [
+     1225,
+     1226,
+     1227,
+     1226
+    ],
+    "walk_right": [
+     1228,
+     1229,
+     1230,
+     1229
+    ],
+    "walk_left": [
+     1234,
+     1235,
+     1236,
+     1235
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_jofre_dosveces",
+   "nombre": "Jofre Dosveces",
+   "fila": 104,
+   "primerFrame": 1237,
+   "composicion": {
+    "raza": "enanos_forjadores",
+    "piel": "piel_rojiza",
+    "ojos": "ambar",
+    "pelo": [
+     "greñas",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "tunica_verde",
+     "piernas": "pantalon_azul",
+     "pies": "botas",
+     "cabeza": "gorro_rojo"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1244
+    ],
+    "idle_down": [
+     1244
+    ],
+    "idle_up": [
+     1238
+    ],
+    "idle_right": [
+     1241
+    ],
+    "idle_left": [
+     1247
+    ],
+    "walk_down": [
+     1243,
+     1244,
+     1245,
+     1244
+    ],
+    "walk_up": [
+     1237,
+     1238,
+     1239,
+     1238
+    ],
+    "walk_right": [
+     1240,
+     1241,
+     1242,
+     1241
+    ],
+    "walk_left": [
+     1246,
+     1247,
+     1248,
+     1247
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_jofre_el_breve",
+   "nombre": "Jofre el Breve",
+   "fila": 105,
+   "primerFrame": 1249,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_rojiza",
+    "talla": "bajo",
+    "ojos": "azul",
+    "pelo": [
+     "rizado",
+     "pelo_oscuro"
+    ],
+    "barba": [
+     "BARBA",
+     "pelo_oscuro"
+    ],
+    "equipo": {
+     "torso": "camisa_chaleco_azul",
+     "piernas": "pantalon_pardo",
+     "pies": "botas",
+     "cabeza": "sombrero_cuero",
+     "capa": "capa_parda"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1256
+    ],
+    "idle_down": [
+     1256
+    ],
+    "idle_up": [
+     1250
+    ],
+    "idle_right": [
+     1253
+    ],
+    "idle_left": [
+     1259
+    ],
+    "walk_down": [
+     1255,
+     1256,
+     1257,
+     1256
+    ],
+    "walk_up": [
+     1249,
+     1250,
+     1251,
+     1250
+    ],
+    "walk_right": [
+     1252,
+     1253,
+     1254,
+     1253
+    ],
+    "walk_left": [
+     1258,
+     1259,
+     1260,
+     1259
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_jofre_la_justa",
+   "nombre": "Jofre la Justa",
+   "fila": 106,
+   "primerFrame": 1261,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_aceituna",
+    "ojos": "ambar",
+    "pelo": [
+     "corto",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "camisa_sin_mangas",
+     "piernas": "pantalon_oliva",
+     "pies": "zuecos"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1268
+    ],
+    "idle_down": [
+     1268
+    ],
+    "idle_up": [
+     1262
+    ],
+    "idle_right": [
+     1265
+    ],
+    "idle_left": [
+     1271
+    ],
+    "walk_down": [
+     1267,
+     1268,
+     1269,
+     1268
+    ],
+    "walk_up": [
+     1261,
+     1262,
+     1263,
+     1262
+    ],
+    "walk_right": [
+     1264,
+     1265,
+     1266,
+     1265
+    ],
+    "walk_left": [
+     1270,
+     1271,
+     1272,
+     1271
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_jofre_la_vieja",
+   "nombre": "Jofre la Vieja",
+   "fila": 107,
+   "primerFrame": 1273,
+   "soloPnj": [
+    "cesta"
+   ],
+   "composicion": {
+    "raza": "medianos_del_bosque",
+    "piel": "piel_clara",
+    "ojos": "marron",
+    "pelo": [
+     "largo",
+     "pelo_blanco"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "vestido_negro",
+     "mano_izq": "cesta",
+     "pies": "zapatos"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1280
+    ],
+    "idle_down": [
+     1280
+    ],
+    "idle_up": [
+     1274
+    ],
+    "idle_right": [
+     1277
+    ],
+    "idle_left": [
+     1283
+    ],
+    "walk_down": [
+     1279,
+     1280,
+     1281,
+     1280
+    ],
+    "walk_up": [
+     1273,
+     1274,
+     1275,
+     1274
+    ],
+    "walk_right": [
+     1276,
+     1277,
+     1278,
+     1277
+    ],
+    "walk_left": [
+     1282,
+     1283,
+     1284,
+     1283
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_la_viuda_aloma",
+   "nombre": "La Viuda Aloma",
+   "fila": 108,
+   "primerFrame": 1285,
+   "composicion": {
+    "raza": "mercenarios_de_ascaria",
+    "piel": "piel_clara",
+    "ojos": "negro",
+    "pelo": [
+     "coleta",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "vestido_lino"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1292
+    ],
+    "idle_down": [
+     1292
+    ],
+    "idle_up": [
+     1286
+    ],
+    "idle_right": [
+     1289
+    ],
+    "idle_left": [
+     1295
+    ],
+    "walk_down": [
+     1291,
+     1292,
+     1293,
+     1292
+    ],
+    "walk_up": [
+     1285,
+     1286,
+     1287,
+     1286
+    ],
+    "walk_right": [
+     1288,
+     1289,
+     1290,
+     1289
+    ],
+    "walk_left": [
+     1294,
+     1295,
+     1296,
+     1295
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_laia_de_la_esquina",
+   "nombre": "Laia de la Esquina",
+   "fila": 109,
+   "primerFrame": 1297,
+   "soloPnj": [
+    "libro_cuentas"
+   ],
+   "composicion": {
+    "raza": "revenants",
+    "ojos": "ambar",
+    "pelo": [
+     "recogido",
+     "pelo_negro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "vestido_ocre",
+     "piernas": "falda_larga_parda",
+     "pies": "sandalias",
+     "mano_izq": "libro_cuentas"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1304
+    ],
+    "idle_down": [
+     1304
+    ],
+    "idle_up": [
+     1298
+    ],
+    "idle_right": [
+     1301
+    ],
+    "idle_left": [
+     1307
+    ],
+    "walk_down": [
+     1303,
+     1304,
+     1305,
+     1304
+    ],
+    "walk_up": [
+     1297,
+     1298,
+     1299,
+     1298
+    ],
+    "walk_right": [
+     1300,
+     1301,
+     1302,
+     1301
+    ],
+    "walk_left": [
+     1306,
+     1307,
+     1308,
+     1307
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_laia_el_breve",
+   "nombre": "Laia el Breve",
+   "fila": 110,
+   "primerFrame": 1309,
+   "composicion": {
+    "raza": "alquimistas_de_aegroum",
+    "piel": "piel_morena",
+    "talla": "bajo",
+    "ojos": "marron",
+    "pelo": [
+     "largo",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "vestido_lino",
+     "pies": "zapatos",
+     "cabeza": "cofia"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1316
+    ],
+    "idle_down": [
+     1316
+    ],
+    "idle_up": [
+     1310
+    ],
+    "idle_right": [
+     1313
+    ],
+    "idle_left": [
+     1319
+    ],
+    "walk_down": [
+     1315,
+     1316,
+     1317,
+     1316
+    ],
+    "walk_up": [
+     1309,
+     1310,
+     1311,
+     1310
+    ],
+    "walk_right": [
+     1312,
+     1313,
+     1314,
+     1313
+    ],
+    "walk_left": [
+     1318,
+     1319,
+     1320,
+     1319
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_laia_el_callado",
+   "nombre": "Laia el Callado",
+   "fila": 111,
+   "primerFrame": 1321,
+   "composicion": {
+    "raza": "guardianes_de_la_luz",
+    "piel": "piel_clara",
+    "ojos": "ambar",
+    "pelo": [
+     "recogido",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "harapos"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1328
+    ],
+    "idle_down": [
+     1328
+    ],
+    "idle_up": [
+     1322
+    ],
+    "idle_right": [
+     1325
+    ],
+    "idle_left": [
+     1331
+    ],
+    "walk_down": [
+     1327,
+     1328,
+     1329,
+     1328
+    ],
+    "walk_up": [
+     1321,
+     1322,
+     1323,
+     1322
+    ],
+    "walk_right": [
+     1324,
+     1325,
+     1326,
+     1325
+    ],
+    "walk_left": [
+     1330,
+     1331,
+     1332,
+     1331
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_laia_el_nuevo",
+   "nombre": "Laia el Nuevo",
+   "fila": 112,
+   "primerFrame": 1333,
+   "composicion": {
+    "raza": "medianos_urbanos",
+    "piel": "piel_morena",
+    "ojos": "azul",
+    "pelo": [
+     "recogido",
+     "pelo_pelirrojo"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "casaca_negra",
+     "piernas": "pantalon_negro",
+     "pies": "botas_altas",
+     "capa": "capa_purpura",
+     "arma": "daga_hierro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1340
+    ],
+    "idle_down": [
+     1340
+    ],
+    "idle_up": [
+     1334
+    ],
+    "idle_right": [
+     1337
+    ],
+    "idle_left": [
+     1343
+    ],
+    "walk_down": [
+     1339,
+     1340,
+     1341,
+     1340
+    ],
+    "walk_up": [
+     1333,
+     1334,
+     1335,
+     1334
+    ],
+    "walk_right": [
+     1336,
+     1337,
+     1338,
+     1337
+    ],
+    "walk_left": [
+     1342,
+     1343,
+     1344,
+     1343
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_laia_la_justa",
+   "nombre": "Laia la Justa",
+   "fila": 113,
+   "primerFrame": 1345,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_rojiza",
+    "ojos": "azul",
+    "pelo": [
+     "largo",
+     "pelo_pelirrojo"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "casaca_negra",
+     "piernas": "pantalon_negro",
+     "pies": "botas",
+     "cabeza": "capucha_negra",
+     "capa": "capa_purpura",
+     "arma": "daga_hierro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1352
+    ],
+    "idle_down": [
+     1352
+    ],
+    "idle_up": [
+     1346
+    ],
+    "idle_right": [
+     1349
+    ],
+    "idle_left": [
+     1355
+    ],
+    "walk_down": [
+     1351,
+     1352,
+     1353,
+     1352
+    ],
+    "walk_up": [
+     1345,
+     1346,
+     1347,
+     1346
+    ],
+    "walk_right": [
+     1348,
+     1349,
+     1350,
+     1349
+    ],
+    "walk_left": [
+     1354,
+     1355,
+     1356,
+     1355
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_madre_iru",
+   "nombre": "Madre Iru",
+   "fila": 114,
+   "primerFrame": 1357,
+   "composicion": {
+    "raza": "mercenarios_de_ascaria",
+    "piel": "piel_morena",
+    "ojos": "negro",
+    "pelo": [
+     "coleta",
+     "pelo_oscuro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "habito_monje",
+     "pies": "sandalias"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1364
+    ],
+    "idle_down": [
+     1364
+    ],
+    "idle_up": [
+     1358
+    ],
+    "idle_right": [
+     1361
+    ],
+    "idle_left": [
+     1367
+    ],
+    "walk_down": [
+     1363,
+     1364,
+     1365,
+     1364
+    ],
+    "walk_up": [
+     1357,
+     1358,
+     1359,
+     1358
+    ],
+    "walk_right": [
+     1360,
+     1361,
+     1362,
+     1361
+    ],
+    "walk_left": [
+     1366,
+     1367,
+     1368,
+     1367
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_matrona_sibil",
+   "nombre": "Matrona Sibil",
+   "fila": 115,
+   "primerFrame": 1369,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_palida",
+    "ojos": "negro",
+    "pelo": [
+     "coleta",
+     "pelo_oscuro"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "habito_gris",
+     "pies": "sandalias",
+     "cabeza": "capucha_gris",
+     "mano_izq": "farol"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1376
+    ],
+    "idle_down": [
+     1376
+    ],
+    "idle_up": [
+     1370
+    ],
+    "idle_right": [
+     1373
+    ],
+    "idle_left": [
+     1379
+    ],
+    "walk_down": [
+     1375,
+     1376,
+     1377,
+     1376
+    ],
+    "walk_up": [
+     1369,
+     1370,
+     1371,
+     1370
+    ],
+    "walk_right": [
+     1372,
+     1373,
+     1374,
+     1373
+    ],
+    "walk_left": [
+     1378,
+     1379,
+     1380,
+     1379
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_miquel_de_la_esquina",
+   "nombre": "Miquel de la Esquina",
+   "fila": 116,
+   "primerFrame": 1381,
+   "composicion": {
+    "raza": "alquimistas_de_aegroum",
+    "piel": "piel_rojiza",
+    "ojos": "marron",
+    "pelo": [
+     "largo",
+     "pelo_rubio"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "tunica_sacerdote",
+     "pies": "zapatos",
+     "cabeza": "capucha_gris",
+     "arma": "baston_cristal"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1388
+    ],
+    "idle_down": [
+     1388
+    ],
+    "idle_up": [
+     1382
+    ],
+    "idle_right": [
+     1385
+    ],
+    "idle_left": [
+     1391
+    ],
+    "walk_down": [
+     1387,
+     1388,
+     1389,
+     1388
+    ],
+    "walk_up": [
+     1381,
+     1382,
+     1383,
+     1382
+    ],
+    "walk_right": [
+     1384,
+     1385,
+     1386,
+     1385
+    ],
+    "walk_left": [
+     1390,
+     1391,
+     1392,
+     1391
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_miquel_el_breve",
+   "nombre": "Miquel el Breve",
+   "fila": 117,
+   "primerFrame": 1393,
+   "soloPnj": [
+    "libro_cuentas"
+   ],
+   "composicion": {
+    "raza": "enanos_forjadores",
+    "piel": "piel_aceituna",
+    "talla": "bajo",
+    "ojos": "marron",
+    "pelo": [
+     "rizado",
+     "pelo_castano"
+    ],
+    "barba": [
+     "BARBA",
+     "pelo_castano"
+    ],
+    "equipo": {
+     "torso": "tunica_mercader",
+     "pies": "sandalias",
+     "cabeza": "turbante_purpura",
+     "mano_izq": "libro_cuentas"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1400
+    ],
+    "idle_down": [
+     1400
+    ],
+    "idle_up": [
+     1394
+    ],
+    "idle_right": [
+     1397
+    ],
+    "idle_left": [
+     1403
+    ],
+    "walk_down": [
+     1399,
+     1400,
+     1401,
+     1400
+    ],
+    "walk_up": [
+     1393,
+     1394,
+     1395,
+     1394
+    ],
+    "walk_right": [
+     1396,
+     1397,
+     1398,
+     1397
+    ],
+    "walk_left": [
+     1402,
+     1403,
+     1404,
+     1403
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_miquel_la_justa",
+   "nombre": "Miquel la Justa",
+   "fila": 118,
+   "primerFrame": 1405,
+   "soloPnj": [
+    "libro_cuentas"
+   ],
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_aceituna",
+    "ojos": "verde",
+    "pelo": [
+     "coleta",
+     "pelo_castano"
+    ],
+    "barba": [
+     "BARBA_CORTA",
+     "pelo_castano"
+    ],
+    "equipo": {
+     "torso": "camisa_chaleco_granate",
+     "pies": "sandalias",
+     "cabeza": "sombrero_cuero",
+     "mano_izq": "libro_cuentas"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1412
+    ],
+    "idle_down": [
+     1412
+    ],
+    "idle_up": [
+     1406
+    ],
+    "idle_right": [
+     1409
+    ],
+    "idle_left": [
+     1415
+    ],
+    "walk_down": [
+     1411,
+     1412,
+     1413,
+     1412
+    ],
+    "walk_up": [
+     1405,
+     1406,
+     1407,
+     1406
+    ],
+    "walk_right": [
+     1408,
+     1409,
+     1410,
+     1409
+    ],
+    "walk_left": [
+     1414,
+     1415,
+     1416,
+     1415
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_miquel_la_prestada",
+   "nombre": "Miquel la Prestada",
+   "fila": 119,
+   "primerFrame": 1417,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_gris",
+    "ojos": "marron",
+    "pelo": [
+     "largo",
+     "pelo_pelirrojo"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "habito_purpura",
+     "piernas": "pantalon_negro",
+     "pies": "botas_altas",
+     "cabeza": "antifaz",
+     "capa": "capa_purpura",
+     "arma": "daga_plata"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1424
+    ],
+    "idle_down": [
+     1424
+    ],
+    "idle_up": [
+     1418
+    ],
+    "idle_right": [
+     1421
+    ],
+    "idle_left": [
+     1427
+    ],
+    "walk_down": [
+     1423,
+     1424,
+     1425,
+     1424
+    ],
+    "walk_up": [
+     1417,
+     1418,
+     1419,
+     1418
+    ],
+    "walk_right": [
+     1420,
+     1421,
+     1422,
+     1421
+    ],
+    "walk_left": [
+     1426,
+     1427,
+     1428,
+     1427
+    ]
+   }
+  },
+  {
+   "id": "npc_npc_nara_la_serena",
+   "nombre": "Nara la Serena",
+   "fila": 120,
+   "primerFrame": 1429,
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_palida",
+    "ojos": "marron",
+    "pelo": [
+     "coleta",
+     "pelo_castano"
+    ],
+    "barba": null,
+    "equipo": {
+     "torso": "vestido_azul",
+     "piernas": "falda_parda",
+     "pies": "botas",
+     "cabeza": "capucha_verde"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     1436
+    ],
+    "idle_down": [
+     1436
+    ],
+    "idle_up": [
+     1430
+    ],
+    "idle_right": [
+     1433
+    ],
+    "idle_left": [
+     1439
+    ],
+    "walk_down": [
+     1435,
+     1436,
+     1437,
+     1436
+    ],
+    "walk_up": [
+     1429,
+     1430,
+     1431,
+     1430
+    ],
+    "walk_right": [
+     1432,
+     1433,
+     1434,
+     1433
+    ],
+    "walk_left": [
+     1438,
+     1439,
+     1440,
+     1439
+    ]
+   }
+  }
+ ]
+}

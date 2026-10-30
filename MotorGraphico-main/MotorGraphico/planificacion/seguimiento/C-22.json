@@ -1,0 +1,34 @@
+{
+  "id": "C-22",
+  "date": "2026-09-07",
+  "author": "qwen + Codex",
+  "status": "Retirada completa implementada i verificada localment; CI pendent",
+  "actions": [
+    "TierRules: retirats els 7 accessors declarats i mai definits (healthCap, healthBonus, allowsMulticlass, canEquipRarity, maxSummons, maxFeats, maxDivineCards); ningú els cridava, per això l'enllaçador no s'havia queixat mai.",
+    "EnhanceHooks: retirats IQteProvider i QteResult (cap implementació; el pas de timing de SkillExecutor era inabastable), el camp ExecutionContext::qte i l'override_target_defense que Ed. 3 ja ignorava.",
+    "SkillExecutor: eliminat el pas QTE mort i renumerats els passos; Skill.cpp deixa d'assignar nullptr al camp retirat.",
+    "tools/comprobar_declaraciones_rpg.py: xarxa estàtica que comprova que cada mètode declarat a include/RPG/ té definició; registrat a CTest com rpg_declaration_check (cmake/DeclarationCheck.cmake), amb un hunk propi a CMakeLists sense canvis d'altres sessions.",
+    "Codex (continuació): retirats resolve_against_cd, resolve_against_defense, defense_to_cd, CD_MAX i CheckOutcome; eliminades les referències dels consumidors i dels comentaris de codi.",
+    "Migrades les cinc demos pendents: dice_engine i nd6_distribution usen enfrentades; narrativa_nd6, prologo i senal_ceniza resolen els requests amb GameSession real mitjançant una fixture sense mapa ni GL.",
+    "Conservades la ruta SUCCESS del pròleg i les quatre rutes de La Senyal de la Cendra, amb guions explícits del jugador i del rival i comprovació del nombre de daus consumits.",
+    "Coberts els quatre graus narratius, la importació de cd legacy com a pool rival, la prioritat de rivalDice explícit, els pools buits i els casos límit de pifia i tot-sisos. Els camps antics de les aventures continuen sent llegibles pel codi de partida.",
+    "Actualitzats només els tres enllaços necessaris a CMake. No s’han modificat GameSession/Application ni el bloc RuntimeTileMap pendent d’integració.",
+    "07/09 (Codex multiagent): retirats RuntimeTileOverride, setTileOverride, clearTileOverrides, tileOverrides i findLayerIndex; eliminats m_baseLayers i m_overrides. El runtime conserva una sola col·lecció de capes compilades.",
+    "Substituïda la prova de la API retirada per independència entre document i snapshots compilats; cobertes coordenades isomètriques i consultes fora de límits.",
+    "Discrepància documental explícita: ADR-003 (28/08) acceptava overrides; C-22 del pla posterior en demana la retirada. Aquesta entrega executa C-22 encarregat per Oriol el 07/09; no modifica l’ADR acceptat."
+  ],
+  "verification": [
+    "Abans de la retirada, el script reportava exactament els 7 errors que prediu el pla; després, 0 sobre 93 declaracions en 15 capçaleres.",
+    "Build completa de tots els targets en macos-debug sense errors (juego i level_editor inclosos).",
+    "Suite gl-free 57/57 en verd, inclòs rpg_declaration_check i els tests de la sessió concurrent.",
+    "Continuació Codex: en executar el camí real amb els guions antics, prologo i senal_ceniza fallen; després de guionitzar també els daus rivals, les cinc demos passen.",
+    "Build completa local de tots els targets, inclosos juego i level_editor: correcta. Suite GL-free: 57/57 proves en verd (macOS Debug).",
+    "Comprovador de declaracions RPG: 0 errors sobre 93 declaracions; cerca a include/src/examples/tests: cap referència a la API de dificultat retirada.",
+    "Huella SHA-256 dels quatre fitxers reservats GameSession/Application idèntica abans i després.",
+    "07/09: build completa macos-debug (juego i level_editor inclosos), CTest GL-free 62/62, zero errors.",
+    "Runtime: compilació aïllada amb -DNDEBUG -O2, 4/4 casos; cap referència als símbols retirats a include/src/tests/examples."
+  ],
+  "pending": [
+    "Validació remota de CI pendent; no s’ha fet push ni executat un workflow remot."
+  ]
+}

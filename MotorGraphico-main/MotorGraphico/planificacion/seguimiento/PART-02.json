@@ -1,0 +1,52 @@
+{
+ "id": "PART-02",
+ "date": "2026-10-07",
+ "author": "claude (Cowork)",
+ "status": "HECHO — PART-02a (las ranuras por tier: los brazos en el Tier 1; el collar, el cinturon y dos anillos, uno en cada mano, en el Tier 2), PART-02b (los abalorios echan desde su sitio, con las anclas de cada talla y frame; uno de dos efectos echa los dos a medias), PART-02c (43 abalorios de Tier 2: un anillo por elemento, cuatro de dos efectos y un collar o un cinturon por cada tema de clase) y PART-02d (las cartas al jugarse en el combate echan sus particulas sobre quien las recibe). Queda lo de 'pendiente'.",
+ "origen": "Oriol (07/10): «podemos crear un anillo que de esas particulas aumentando la equipacion del tier 2 donde van collares, cinturon y anillos como equipos añadidos, tier 1 que solo es casco, pechera, brazos, piernas, zapatos y armas, no tiene nada de anillos ni todas esas cosas que se desbloquean en tier 2», y «si un anillo aporta un hechizo de fuego y uno de hielo, salgan sprites azules y rojos de la mano del pj». Despues de guardar la prueba del Cazademonios por tier: «retomo las ranuras».",
+ "canon": "planificacion/CANON_PARTICULAS.md §5 (las ranuras por tier) y §6 (los abalorios y sus particulas).",
+ "scope": [
+  "PART-02a — RPG::EquipSlot con 11 ranuras: las 7 de antes con los mismos indices (Accessory es ahora el anillo de la mano principal) y detras Arms, Neck, Belt y Ring2; RPG::kRanurasDeEquipo, RPG::EquipoPuesto (lo puesto en cada una), RPG::tierDeRanura y RPG::ranuraAbierta (una ficha sin tier, 0, cuenta como de Tier 1).",
+  "PART-02a — InventoryEngine: resolve_slot entiende Arms/brazos, Neck/collar/amuleto/cuello, Belt/cinturon y Ring/anillo; can_equip no deja ponerse nada en una ranura cerrada («los anillos, el collar y el cinturon se abren en el Tier 2»); equip() pone el segundo anillo en la otra mano.",
+  "PART-02a — Lo enseñan la ficha (FichaVista: Brazos, Collar, Cinturon, Otro anillo, y las cerradas «desde el Tier 2» con FichaRanura::abreEnTier), el menu de inventario, la pagina de equipo del cuaderno, la creacion (iconos de ranura), el papiro del cofre del kit y los mensajes de la partida; Vestuario y demo_brillo_equipo recorren las 11.",
+  "PART-02a — Catalogo: el slot de las piezas puede ser Arms, Neck, Belt o Ring (validar_catalogos_rpg.py, gen_iconos.py e iconos.json); el Amuleto de Foco pasa a collar (antes, cabeza) y el Anillo de Vitalidad, la Argolla del Toro y el Sello de la Clausula Viva a anillos (antes, cabeza o mano); equipo_catalogo.json regenerado (solo esos 4 slots).",
+  "PART-02a — El kit del cofre de El Vacio es de Tier 1: ya no lleva el amuleto. 19 clases lo llevaban en la cabeza; ahora 18 llevan una pieza de cabeza de verdad (la Mascara del Duelista en 13, la Diadema de Lectora en 3, el Casco de Abordaje, la Corona de Ramas Secas) y la Tejedora de Mareas ninguna; seis con una pieza menos; todas con el mismo +2, +2, +1, +1.",
+  "PART-02a — Pruebas: InventoryEngineTests (las ranuras nuevas y su nombre; en el Tier 1 no hay anillos, collar ni cinturon; dos anillos, uno en cada mano), FichaVistaTests (las del Tier 2 salen cerradas en el 1), y las que usaban el anillo o el colgante en el Tier 1, al Tier 2 o a los brazos.",
+  "PART-02b — tools/actores_anclas.py (nuevo): por talla y frame, el puno de la mano del arma (el mismo donde se coge el arma, en la mano), el de la otra (de perfil y quieto, tapada, la de delante), el pecho bajo el cuello y la linea del cinturon, sacados del mapa de partes; gen_personajes.py los escribe en personajes.json (tallas.<talla>.anclas, \"x,y\" por frame) y validar_sprites.py los comprueba.",
+  "PART-02b — Motor: ManifiestoPersonajes::anclas (AnclasDeTalla) y BrilloDePieza::sitio, otrasParticulas y otroColor; MapaDeCapas trae las anclas de la talla del cuerpo; montarBrillo echa un abalorio con sitio desde unos pixeles alrededor de su ancla (3x3 en la mano y el pecho, 7x2 en la cintura) y uno de dos efectos son dos fuentes a medias (los destellos, una vez); el sitio sale de la ranura del catalogo (Neck, pecho; Belt, cintura; Ring y lo de la mano sin verse, la mano) y de donde va puesto (Vestuario::sitioDeAbalorio: el anillo de la otra mano, de la otra); sin anclas, del cuerpo entero.",
+  "PART-02b — Vestuario::equiparInicial pone un segundo anillo en la otra mano; HojaPersonaje rehace la hoja si cambia el sitio o el otro efecto; demo_brillo_equipo: sitio@familia[,otra] (mano, otraMano, pecho, cintura) y los abalorios del catalogo en su ranura.",
+  "PART-02b — Pruebas: test_brillo_equipo (los abalorios echan desde su sitio en los 20 frames, dos anillos iguales en las dos manos, el cinturon a lo ancho, sin anclas del cuerpo entero; un anillo de dos efectos echa los dos a medias) y test_validar_sprites (las anclas caen en la mano, el torso y la pelvis de cada frame de las cuatro tallas y son las de personajes.json; el validador rechaza anclas mal escritas).",
+  "PART-02c — tools/abalorios_t2.py (nuevo): 13 anillos de elemento, 4 de dos efectos (fuego y escarcha, la tormenta, el eclipse y la cienaga), 16 collares y 10 cinturones de los temas de las clases (una por cada familia que es la primera de alguna clase); raros de Tier 2, +1 al atributo principal de sus clases (+1 y +1 los dobles), el nivel de su regla (20 o 26), el elemento en grantedTags; escribe equipment.json y el objeto puente item_<id> de libreria_armas.json y libreria_completa.json (upsert). actores_estetica.brillo_sin_pieza les da sus particulas (y las del segundo efecto); actores_estetica.estetica y actores_catalogo.pieza_de_objeto no buscan pieza visible a un anillo, collar o cinturon; sp_reglas.SLOT_PUENTE con las ranuras nuevas. equipo_catalogo.json regenerado (43 sinPieza nuevos).",
+  "PART-02c — Pruebas: test_validar_sprites.AbaloriosT2Tests (los datos cuadran, en el catalogo de Tier 2 con su puente y su nivel, cada uno echa sus particulas, cada clase encuentra el suyo) y test_brillo_equipo (el anillo de fuego y escarcha del catalogo en la otra mano, el collar y el cinturon).",
+  "PART-02d — tools/particulas_cartas.py (nuevo) escribe assets/textures/particulas_cartas.json: la familia de cada una de las 963 cartas de clase (particulas.de_cada_carta) y el color de la luz de cada familia.",
+  "PART-02d — Game::ParticulasDeCartas (GL-free): el mapa carta -> familia y, sin clase, la de su elemento (familiaDeElemento, con los alias Sagrado y Oscuro); Game::destellosDeCarta: las particulas de una carta jugada hace `edad` segundos sobre el cuerpo (un abalorio de +8 con el triple de particulas, 1,4 s, entran y se apagan).",
+  "PART-02d — CartasEnCombate::cartasJugadas() (las ultimas ocho: id, etiquetas, quien la juega y sobre quien) apuntadas en jugar(); Render::EfectosDeCartas (en la cola del renderer, encima de todo, lo tiene PergaminoGL y carga el mapa) las pinta; Application (refreshHud) le pasa cada carta nueva con el dibujo del heroe o del enemigo que la recibe. Render::pintaDestellos, la pintura de las particulas, compartida con AuraJugador.",
+  "PART-02d — demo_brillo_equipo: DEMO_BRILLO_CARTA=familia,... lanza una carta sobre cada figura cada 1,6 s.",
+  "PART-02d — Pruebas: test_cartas_combate (jugar_una_carta_la_apunta_para_verla), test_brillo_equipo (brillo_las_cartas_jugadas_echan_las_suyas) y test_validar_sprites.ParticulasTests (test_el_motor_sabe_que_echa_cada_carta: el JSON es el de la regla y los elementos del motor, los de elementos.py).",
+  "PART-01d — Las familias de particulas, en su propio fichero (Game/Personajes/FamiliasDeParticulas): BrilloEquipo.cpp habia pasado el techo de 500 lineas."
+ ],
+ "pendiente": [
+  "El dibujo de los brazales (la capa de los brazos) y los iconos propios de las ranuras nuevas (hoy, el del torso y el del accesorio).",
+  "Que la partida guarde la ficha con su equipo (hoy no lo guarda: GUARDAR-FICHA, ver TUTORIAL-01).",
+  "Repartir los abalorios del Tier 2 en tiendas y botines cuando se juegue el Tier 2.",
+  "Las cartas de los acompañantes, las invocaciones y los monstruos (sin sprite o sin elemento) aun no se ven."
+ ],
+ "non_goals": [
+  "Las armaduras de los tiers superiores (TIERS-01, guardada: «ya seguiremos otro dia»)."
+ ],
+ "verification": [
+  "PART-02a: ctest solo con los fallos de la linea base (demo_creacion_personaje, test_gdb12_screens, test_g14 sin enlazar, test_application y test_application_cableado, test_catalog_content con skills 492 y NPC 134, test_application_scenes, linea_base_core).",
+  "test_validar_sprites: todo menos test_personajes_son_reproducibles (linea base); validar_catalogos_rpg.py sin fallos.",
+  "Los kits de las 127 clases antes y despues: solo cambian los 19 que llevaban el amuleto, y siguen exactos (test_kit_basico los pone pieza a pieza en una ficha de Tier 1).",
+  "PART-02b: test_brillo_equipo 9/9; test_validar_sprites con las pruebas nuevas; ctest en la linea base.",
+  "GIF del motor (demo_brillo_equipo, andando y girando): el anillo de fuego y hielo en la mano del arma, uno de fuego y otro de hielo en cada mano, y un collar de notas y un cinturon de monedas.",
+  "PART-02c: los kits de las 127 clases, iguales; validar_catalogos_rpg sin fallos; validar_todo sin errores; validar_libreria_dnd pasa; validar_catalogos con las mismas regresiones que en HEAD.",
+  "PART-02d: ctest en la linea base; test_cartas_combate 43/43; test_brillo_equipo 10/10; linea_base_core sin deuda nueva propia (44, las de la foto vieja de alcance); GIF del motor con cartas de sangre, dragones, petalos y llamas puras."
+ ],
+ "para_oriol": [
+  "¿Dos anillos (uno en cada mano), un collar y un cinturon en el Tier 2?",
+  "El kit de 13 clases empieza ahora con la Mascara del Duelista (el +1 de CAR que les daba el amuleto): ¿te vale, o prefieres otra pieza de cabeza de Tier 1 con +1 de CAR (una capucha, un pañuelo)?",
+  "¿Los 43 abalorios del Tier 2 (CANON_PARTICULAS §6)? Sobre todo los nombres, el atributo de cada uno y si los collares y los cinturones van con el tema que toca."
+ ],
+ "sesion": "sesiones/2026-10-07-claude-particulas.md"
+}

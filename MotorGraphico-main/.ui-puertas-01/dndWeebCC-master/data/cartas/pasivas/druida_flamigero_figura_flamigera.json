@@ -1,0 +1,39 @@
+{
+ "id": "druida_flamigero_figura_flamigera",
+ "name": "Figura flamígera",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Al empezar el combate eliges tu figura. Druida: tus golpes con arma hacen +1 de daño (fuego). Oso flamígero: +1 a la CA. Leopardo flamígero: te defiendes con ventaja.",
+ "flavorText": "",
+ "classTags": [
+  "druida_flamigero"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "Al empezar el combate eliges tu figura. Druida: tus golpes con arma hacen +1 de daño (fuego). Oso flamígero: +1 a la CA. Leopardo flamígero: te defiendes con ventaja.",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "Eliges una figura al empezar el combate.",
+   "mechanicHook": "elige_una:druida,oso,leopardo"
+  },
+  {
+   "description": "Druida: tus golpes con arma hacen +1 de daño.",
+   "mechanicHook": "si:druida:bono_dano_arma:1"
+  },
+  {
+   "description": "Oso flamígero: +1 a la CA.",
+   "mechanicHook": "si:oso:bono_ca:1"
+  },
+  {
+   "description": "Leopardo flamígero: te defiendes con ventaja.",
+   "mechanicHook": "si:leopardo:ventaja:defensa"
+  }
+ ],
+ "fuente": "NosTale · Druida flamígero (Flame Druid)"
+}

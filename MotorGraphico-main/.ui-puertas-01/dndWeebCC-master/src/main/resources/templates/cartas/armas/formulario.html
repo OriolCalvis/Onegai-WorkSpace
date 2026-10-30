@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Blocks/layout-gm :: layout}">
+<head>
+    <title layout:fragment="title">Editor de carta de equipo</title>
+</head>
+<body>
+<main layout:fragment="content">
+            <div th:replace="~{Blocks/cartas-subnav-v2 :: subnav('armas')}"></div>
+            <p class="gm-sidebar__eyebrow u-p-0">Sistema de Cartas y Tiers</p>
+            <h1 class="u-mb-sp5" th:text="${esNueva} ? 'Nueva carta de equipo' : 'Editar carta de equipo'">Nueva carta de equipo</h1>
+
+            <form th:action="${esNueva} ? @{/cartas/armas} : @{/cartas/armas/{id}/editar(id=${form.id})}"
+                  th:object="${form}" method="post">
+
+                <div class="gm-form-grid u-mb-sp4">
+                    <div class="gm-field" th:if="${esNueva}">
+                        <label>ID (opcional)</label>
+                        <input class="gm-input" th:field="*{id}" placeholder="Se genera automático a partir del nombre">
+                    </div>
+                    <div class="gm-field" th:unless="${esNueva}">
+                        <label>ID</label>
+                        <input class="gm-input" th:field="*{id}" readonly>
+                    </div>
+                    <div class="gm-field">
+                        <label>Nombre</label>
+                        <input class="gm-input" th:field="*{name}" placeholder="Espada Corta" required>
+                    </div>
+                    <div class="gm-field">
+                        <label>Slot (sistema de 6 slots fijos)</label>
+                        <select class="gm-select" th:field="*{slot}">
+                            <option value="cabeza">⛑ Cabeza</option>
+                            <option value="torso">👕 Torso</option>
+                            <option value="piernas">👖 Piernas</option>
+                            <option value="pies">👢 Pies</option>
+                            <option value="arma_principal">⚔ Arma principal</option>
+                            <option value="arma_secundaria">🛡 Arma secundaria (o escudo)</option>
+                        </select>
+                        <span class="gm-hint">Ver GDD sección 9.7: cada personaje solo puede llevar un objeto por slot.</span>
+                    </div>
+                    <div class="gm-field">
+                        <label>Rareza</label>
+                        <select class="gm-select" th:field="*{rarity}">
+                            <option value="common">Común</option>
+                            <option value="uncommon">Poco común</option>
+                            <option value="rare">Rara</option>
+                            <option value="epic">Épica</option>
+                        </select>
+                    </div>
+                    <div class="gm-field">
+                        <label>Categoría de peso</label>
+                        <select class="gm-select" th:field="*{weightCategory}">
+                            <option value="ligera">△ Ligera</option>
+                            <option value="media">○ Media</option>
+                            <option value="pesada">□ Pesada</option>
+                        </select>
+                        <span class="gm-hint">Si supera la compatibilidad de la clase que lo lleva, penaliza en tiradas de ataque (ver GDD 7.2/9.7).</span>
+                    </div>
+                    <div class="gm-field">
+                        <label>Tier</label>
+                        <input class="gm-input" type="number" min="0" max="5" th:field="*{tier}">
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Bonos de stat ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p class="gm-hint u-mb-sp3">Bonos de stat (positivos suman, se usan para equilibrar la vida y las tiradas de la clase)</p>
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>CON</label>
+                                <input class="gm-input" type="number" th:field="*{bonusCon}">
+                            </div>
+                            <div class="gm-field">
+                                <label>DES</label>
+                                <input class="gm-input" type="number" th:field="*{bonusDes}">
+                            </div>
+                            <div class="gm-field">
+                                <label>CAR</label>
+                                <input class="gm-input" type="number" th:field="*{bonusCar}">
+                            </div>
+                            <div class="gm-field">
+                                <label>INT</label>
+                                <input class="gm-input" type="number" th:field="*{bonusInt}">
+                            </div>
+                            <div class="gm-field">
+                                <label>Bono plano de vida</label>
+                                <input class="gm-input" type="number" th:field="*{bonusHealth}">
+                            </div>
+                            <div class="gm-field">
+                                <label>Bono de Clase de Armadura (CA)</label>
+                                <input class="gm-input" type="number" th:field="*{bonusArmor}">
+                                <span class="gm-hint">CA = 10 + DES + este bono (piezas de armadura/escudo).</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section is-expanded">
+                    <button type="button" class="gm-panel-section__toggle">Penalizaciones ▾</button>
+                    <div class="gm-panel-section__content">
+                        <p class="gm-hint u-mb-sp3">Penalizaciones (equipo pesado que resta a otras stats)</p>
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Penalización CON</label>
+                                <input class="gm-input" type="number" th:field="*{penaltyCon}">
+                            </div>
+                            <div class="gm-field">
+                                <label>Penalización DES</label>
+                                <input class="gm-input" type="number" th:field="*{penaltyDes}">
+                            </div>
+                            <div class="gm-field">
+                                <label>Penalización CAR</label>
+                                <input class="gm-input" type="number" th:field="*{penaltyCar}">
+                            </div>
+                            <div class="gm-field">
+                                <label>Penalización INT</label>
+                                <input class="gm-input" type="number" th:field="*{penaltyInt}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-panel-section">
+                    <button type="button" class="gm-panel-section__toggle">Tags, habilidad, restricciones y requisitos ▾</button>
+                    <div class="gm-panel-section__content">
+                        <div class="gm-form-grid">
+                            <div class="gm-field">
+                                <label>Tags concedidos</label>
+                                <div th:replace="~{Blocks/selector-referencias :: csv('grantedTags', ${opcionesTagsEquipo}, 'añadir tag de equipo')}"></div>
+                            </div>
+                            <div class="gm-field">
+                                <label>Habilidad vinculada</label>
+                                <select th:replace="~{Blocks/selector-referencias :: uno('linkedSkill', ${opcionesHabilidades}, 'sin habilidad vinculada')}"></select>
+                            </div>
+                            <div class="gm-field">
+                                <label>Restricciones</label>
+                                <input class="gm-input" th:field="*{restrictions}" placeholder="Solo clases con tag Tanque">
+                            </div>
+                            <div class="gm-field">
+                                <label>Requiere CON</label>
+                                <input class="gm-input" type="number" min="0" th:field="*{reqCon}">
+                            </div>
+                            <div class="gm-field">
+                                <label>Requiere DES</label>
+                                <input class="gm-input" type="number" min="0" th:field="*{reqDes}">
+                            </div>
+                            <div class="gm-field">
+                                <label>Requiere CAR</label>
+                                <input class="gm-input" type="number" min="0" th:field="*{reqCar}">
+                            </div>
+                            <div class="gm-field">
+                                <label>Requiere INT</label>
+                                <input class="gm-input" type="number" min="0" th:field="*{reqInt}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gm-field u-mt-sp4">
+                    <label>Texto narrativo</label>
+                    <textarea class="gm-textarea" rows="2" th:field="*{flavorText}"></textarea>
+                </div>
+
+                <div class="u-actions">
+                    <button class="gm-btn gm-btn--primary" type="submit">Guardar</button>
+                    <a class="gm-btn gm-btn--outline" th:href="@{/cartas/armas}">Cancelar</a>
+                </div>
+            </form></main>
+<th:block layout:fragment="extra-js">
+    <script th:src="@{/js/selector-csv.js}"></script>
+    <script th:src="@{/js/selector-csv.js}"></script>
+</th:block>
+</body>
+</html>

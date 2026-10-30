@@ -1,0 +1,341 @@
+{
+ "_fuente": "Plaza de las Razas (tablero P0). Los PNJ y el mapa son de otro agente; esto son sus voces.",
+ "id": "plaza_de_las_razas",
+ "name": "La Plaza de las Razas",
+ "beats": [
+  {
+   "id": "beat_plaza_llegada",
+   "trigger": {
+    "type": "enter",
+    "target": "assets/levels/plaza_de_las_razas.json"
+   },
+   "requires": {
+    "notFlags": [
+     "plaza_vista"
+    ]
+   },
+   "speaker": "",
+   "lines": [
+    "La plaza está llena y nadie compra nada.",
+    "Once pueblos distintos alrededor del mismo empedrado, y todos mirando al norte por encima del hombro.",
+    "En Boundington a esto lo llaman mercado. Hoy se parece más a una sala de espera."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "plaza_vista"
+    },
+    {
+     "type": "log",
+     "arg": "Plaza de las Razas, víspera."
+    }
+   ]
+  },
+  {
+   "id": "beat_plaza_aarakocra_de_las_montanas",
+   "trigger": {
+    "type": "talk",
+    "target": "npc_race_aarakocra_de_las_montanas"
+   },
+   "requires": {
+    "notFlags": [
+     "plaza_hablado_aarakocra_de_las_montanas"
+    ]
+   },
+   "speaker": "Guía aarakocra de las montañas",
+   "lines": [
+    "Desde arriba se ve el camino del norte. Está lleno. En esta dirección, no."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "plaza_hablado_aarakocra_de_las_montanas"
+    }
+   ]
+  },
+  {
+   "id": "beat_plaza_alquimistas_de_aegroum",
+   "trigger": {
+    "type": "talk",
+    "target": "npc_race_alquimistas_de_aegroum"
+   },
+   "requires": {
+    "notFlags": [
+     "plaza_hablado_alquimistas_de_aegroum"
+    ]
+   },
+   "speaker": "Alquimista de Aegroum",
+   "lines": [
+    "Vendo lo que cura y lo que duerme. Hoy se me va lo que duerme, y eso nunca es buena señal."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "plaza_hablado_alquimistas_de_aegroum"
+    }
+   ]
+  },
+  {
+   "id": "beat_plaza_drow_explorador",
+   "trigger": {
+    "type": "talk",
+    "target": "npc_race_drow_explorador"
+   },
+   "requires": {
+    "notFlags": [
+     "plaza_hablado_drow_explorador"
+    ]
+   },
+   "speaker": "Exploradora drow",
+   "lines": [
+    "He dormido tres noches fuera de la muralla. La tercera no dormí."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "plaza_hablado_drow_explorador"
+    }
+   ]
+  },
+  {
+   "id": "beat_plaza_enanos_forjadores",
+   "trigger": {
+    "type": "talk",
+    "target": "npc_race_enanos_forjadores"
+   },
+   "requires": {
+    "notFlags": [
+     "plaza_hablado_enanos_forjadores"
+    ]
+   },
+   "speaker": "Enana forjadora",
+   "lines": [
+    "Vuestra muralla está bien puesta y mal atada. Se lo dije al capitán. Se rio."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "plaza_hablado_enanos_forjadores"
+    }
+   ]
+  },
+  {
+   "id": "beat_plaza_hombres_lagarto_de_la_selva",
+   "trigger": {
+    "type": "talk",
+    "target": "npc_race_hombres_lagarto_de_la_selva"
+   },
+   "requires": {
+    "notFlags": [
+     "plaza_hablado_hombres_lagarto_de_la_selva"
+    ]
+   },
+   "speaker": "Hombre lagarto de la selva",
+   "lines": [
+    "El agua sabe a hierro desde el jueves. Nadie más lo nota porque nadie más la bebe."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "plaza_hablado_hombres_lagarto_de_la_selva"
+    }
+   ]
+  },
+  {
+   "id": "beat_plaza_medianos_urbanos",
+   "trigger": {
+    "type": "talk",
+    "target": "npc_race_medianos_urbanos"
+   },
+   "requires": {
+    "notFlags": [
+     "plaza_hablado_medianos_urbanos"
+    ]
+   },
+   "speaker": "Mercader mediano urbano",
+   "lines": [
+    "Llevo cartas. Hoy he llevado once, y nueve iban hacia el norte. Ayer iban dos."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "plaza_hablado_medianos_urbanos"
+    }
+   ]
+  },
+  {
+   "id": "beat_plaza_minotauros_del_laberinto",
+   "trigger": {
+    "type": "talk",
+    "target": "npc_race_minotauros_del_laberinto"
+   },
+   "requires": {
+    "notFlags": [
+     "plaza_hablado_minotauros_del_laberinto"
+    ]
+   },
+   "speaker": "Minotaura del laberinto",
+   "lines": [
+    "Traje treinta cabezas y me quedan treinta. Nadie compra carne para mañana cuando no cree en mañana."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "plaza_hablado_minotauros_del_laberinto"
+    }
+   ]
+  },
+  {
+   "id": "beat_plaza_nagas_arcanos",
+   "trigger": {
+    "type": "talk",
+    "target": "npc_race_nagas_arcanos"
+   },
+   "requires": {
+    "notFlags": [
+     "plaza_hablado_nagas_arcanos"
+    ]
+   },
+   "speaker": "Naga arcano",
+   "lines": [
+    "Bajo esta plaza hay más ciudad que encima. Yo no bajaría."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "plaza_hablado_nagas_arcanos"
+    }
+   ]
+  },
+  {
+   "id": "beat_plaza_orcos_del_consejo",
+   "trigger": {
+    "type": "talk",
+    "target": "npc_race_orcos_del_consejo"
+   },
+   "requires": {
+    "notFlags": [
+     "plaza_hablado_orcos_del_consejo"
+    ]
+   },
+   "speaker": "Orca del consejo",
+   "lines": [
+    "El Consejo lleva dos días reunido. Eso no lo hacen ni cuando hay peste."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "plaza_hablado_orcos_del_consejo"
+    }
+   ]
+  },
+  {
+   "id": "beat_plaza_race_elf_canopy",
+   "trigger": {
+    "type": "talk",
+    "target": "npc_race_race_elf_canopy"
+   },
+   "requires": {
+    "notFlags": [
+     "plaza_hablado_race_elf_canopy"
+    ]
+   },
+   "speaker": "Elfa del dosel",
+   "lines": [
+    "Los animales bajaron al río hace dos noches y no han vuelto a subir."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "plaza_hablado_race_elf_canopy"
+    }
+   ]
+  },
+  {
+   "id": "beat_plaza_tieflings_de_la_sombra",
+   "trigger": {
+    "type": "talk",
+    "target": "npc_race_tieflings_de_la_sombra"
+   },
+   "requires": {
+    "notFlags": [
+     "plaza_hablado_tieflings_de_la_sombra"
+    ]
+   },
+   "speaker": "Tiefling de la sombra",
+   "lines": [
+    "Aquí nadie me mira a la cara. Hoy tampoco, pero por otra razón."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "plaza_hablado_tieflings_de_la_sombra"
+    }
+   ]
+  },
+  {
+   "id": "beat_plaza_viajero",
+   "_nota": "Chronos disfrazado de mortal. Opcional: la plaza se cierra con los once pueblos.",
+   "trigger": {
+    "type": "talk",
+    "target": "chronos_disfrazado"
+   },
+   "requires": {
+    "notFlags": [
+     "plaza_hablado_chronos"
+    ]
+   },
+   "speaker": "Viajero de paso",
+   "lines": [
+    "(Susurra, sin mirarte.) He visto caer tres ciudades. Todas olían así la víspera."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "plaza_hablado_chronos"
+    }
+   ]
+  },
+  {
+   "id": "beat_plaza_cuenta",
+   "trigger": {
+    "type": "auto"
+   },
+   "requires": {
+    "allFlags": [
+     "plaza_hablado_aarakocra_de_las_montanas",
+     "plaza_hablado_alquimistas_de_aegroum",
+     "plaza_hablado_drow_explorador",
+     "plaza_hablado_enanos_forjadores",
+     "plaza_hablado_hombres_lagarto_de_la_selva",
+     "plaza_hablado_medianos_urbanos",
+     "plaza_hablado_minotauros_del_laberinto",
+     "plaza_hablado_nagas_arcanos",
+     "plaza_hablado_orcos_del_consejo",
+     "plaza_hablado_race_elf_canopy",
+     "plaza_hablado_tieflings_de_la_sombra"
+    ],
+    "notFlags": [
+     "plaza_completa"
+    ]
+   },
+   "speaker": "",
+   "lines": [
+    "Once personas de once sitios, y ninguna ha dicho la palabra.",
+    "La herbolaria vende somníferos. El arriero no vende nada. La mensajera dice que el camino del norte está lleno.",
+    "Nadie huye de Boundington. Todos están de paso, todos a la vez, en la misma dirección.",
+    "Mañana entenderás por qué."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "plaza_completa"
+    },
+    {
+     "type": "log",
+     "arg": "Has escuchado a los once. Ninguno se queda."
+    }
+   ]
+  }
+ ]
+}

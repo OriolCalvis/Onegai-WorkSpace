@@ -1,0 +1,100 @@
+{
+ "id": "oraculo_de_la_estrella_caida",
+ "name": "Oraculo de la Estrella Caida",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "conjurador",
+ "faction": "horrores_del_cielo_fragmentado",
+ "factionName": "Los Horrores del Cielo Fragmentado",
+ "stats": {
+  "CON": 8,
+  "DES": 8,
+  "INT": 11,
+  "CAR": 9
+ },
+ "derived": {
+  "vida": 70,
+  "ca": 20,
+  "defensaMental": 19,
+  "resistenciaFisica": 18,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de magico: daño que suma su INT (pool de INT, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: si el objetivo falla, queda Cegado hasta el final de su próximo turno."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en fase de Desesperación: daño de magico como éxito crítico (todos sus dados cuentan éxito completo)."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Una vez por ronda convierte una ventaja enemiga en tirada normal."
+ },
+ "conditionsInflicted": [
+  "cegado"
+ ],
+ "loot": [
+  "orbe_de_mano_de_milicia",
+  "vara_de_aprendiz_de_viaje",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Magico"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal: alterna golpe y técnica."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Su técnica de facción no gasta acción: la encadena tras el golpe. Una vez por ronda convierte una ventaja enemiga en tirada normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final y actúa con agresividad total (ignora amenaza, va al más herido)."
+  }
+ ],
+ "flavorText": "Noble astral que anuncia futuros evitables a medias.",
+ "villainProfile": {
+  "objetivo": "Provocar el único futuro en el que su estrella vuelve al cielo",
+  "metodo": "Anuncia desgracias con la voz justa para que ocurran",
+  "debilidad_narrativa": "Contradecir su profecía en voz alta y cumplirlo (hacer lo imposible anunciado) le roba su reacción y 2 de vida",
+  "vinculo": "deity_veiled_queen"
+ },
+ "arena": {
+  "name": "El Cráter Estelar",
+  "hazard": "Polvo de estrella: éxito crítico enemigo en la arena ciega 1 turno a quien lo saque (la luz estalla)"
+ },
+ "legendaryActions": [
+  "Presagio (1/ronda): declara la próxima acción de un personaje; si acierta, ese personaje sufre desventaja al hacerla"
+ ],
+ "storyCard": {
+  "title": "Oraculo de la Estrella Caida",
+  "text": "Su estrella no cayó. Fue expulsada. Insiste en que hay diferencia.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae si el grupo alcanzó la fase de Desesperación",
+  "drops": [
+   "orbe_de_mano_de_milicia",
+   "vara_de_aprendiz_de_viaje",
+   "pocion_de_vigor"
+  ]
+ }
+}

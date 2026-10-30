@@ -1,0 +1,326 @@
+{
+  "id": "adv_on_camino_del_norte",
+  "name": "El Camino del Norte",
+  "description": "Egaroth, año 2000 b.f. Alguien recorre las cuatro naciones del noroeste el mismo año en que empiezan las Cruzadas, preguntando lo mismo en todas partes. Cuadrante oeste-norte del experimento de los cuatro.",
+
+  "_canon": {
+    "epoca": "2000 b.f. — primer ano de la ERA XIII, las Catorce Grandes Cruzadas",
+    "naciones": "Ecla, Udrax, Ostad y Gliaddokx (indice de lugares de Onegai)",
+    "premisa": [
+      "Las cuatro fichas canonicas dicen, cada una por su lado, algo que solo",
+      "significa lo mismo si se leen juntas:",
+      "  Ecla      no tiene NI UN EVENTO propio entre 7941 y 2759 b.f.",
+      "            (cinco mil anos en blanco: 'el mayor agujero geografico del proyecto')",
+      "  Udrax     'guardianes de la historia del mundo', Biblioteca de Runas",
+      "  Ostad     el unico territorio SIN CAPITAL en ninguna fuente",
+      "  Gliaddokx acabara volando sus propios tuneles y abandonando el continente",
+      "",
+      "La aventura no inventa lore: hace que el jugador tropiece con esos cuatro",
+      "huecos y note que son el mismo hueco. Quien decida rellenarlos algun dia",
+      "tendra la pregunta ya formulada."
+    ],
+    "cuidado": "Ninguna respuesta cierra el misterio. Es un vinculo entre naciones, no un arco."
+  },
+
+  "objectives": [
+    { "id": "obj_on_ecla",  "text": "Pregunta a la Archivera de Ekait, en Umedan, por los años que faltan.", "doneFlag": "on_ecla_hueco", "donde": ["assets/levels/on_umedan.json", "on_archivera_ekait"] },
+    { "id": "obj_on_udrax", "text": "Busca al Runista de Rhenor, en la Biblioteca de Runas de Bomengrid.", "doneFlag": "on_udrax_runas", "donde": ["assets/levels/on_bomengrid.json", "on_runista_rhenor"] },
+    { "id": "obj_on_ostad", "text": "Pregunta a la Anciana de la aldea, en Ostad, por qué no tienen capital.",      "doneFlag": "on_ostad_sin_capital",      "donde": ["assets/levels/on_ostad.json", "on_anciana_lagarto"] },
+    { "id": "obj_on_glia",  "text": "Escucha al Chamán de los Bleek, en Havar'gruztak: los goblins ya han decidido.",       "doneFlag": "on_gliaddokx_voto",       "donde": ["assets/levels/on_havargruztak.json", "on_chaman_bleek"] }
+  ],
+
+  "beats": [
+    {
+      "id": "on_beat_umedan",
+      "trigger": { "type": "enter", "target": "assets/levels/on_umedan.json" },
+      "requires": { "notFlags": ["on_umedan_visto"] },
+      "speaker": "",
+      "lines": [
+        "No hay ciudad. Hay bosque, y muy arriba, luz entre las hojas.",
+        "El camino existe: pasarelas de una tabla de ancho entre copa y copa. Existe porque alguien te lo está enseñando ahora mismo; mañana, solo, no lo encontrarías.",
+        "Umedan es esto. Una capital que solo es capital para quien ya ha estado."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "on_umedan_visto" },
+        { "type": "log", "arg": "Umedan, capital de Ecla. 2000 b.f." }
+      ]
+    },
+    {
+      "id": "on_beat_guardacaminos",
+      "trigger": { "type": "talk", "target": "on_guardacaminos" },
+      "requires": { "notFlags": ["on_guardacaminos_hablado"] },
+      "speaker": "Guardacaminos",
+      "lines": [
+        "Has llegado. Casi nadie llega, así que ya sabemos algo de ti.",
+        "Vas a preguntar por los años, ¿verdad? Todos los de fuera preguntan por los años.",
+        "Sube a Ekait. Que te lo diga la archivera, que ella lo lleva peor que yo."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "on_guardacaminos_hablado" }
+      ]
+    },
+    {
+      "id": "on_beat_archivera",
+      "trigger": { "type": "talk", "target": "on_archivera_ekait" },
+      "requires": { "notFlags": ["on_ecla_hueco"] },
+      "speaker": "Archivera de Ekait",
+      "lines": [
+        "Siete mil novecientos cuarenta y uno. Ahí empieza Ecla, dicen las crónicas.",
+        "Lo siguiente que consta es del dos mil setecientos cincuenta y nueve.",
+        "Cinco mil ciento ochenta y dos años. Ni una guerra. Ni una hambruna. Ni un rey.",
+        "Y no es que no pasara nada, forastero. Es que alguien decidió que no constara.",
+        "(Tirada de Investigación en los índices de Ekait.)"
+      ],
+      "effects": [
+        {
+          "type": "skillCheck",
+          "skillCheck": {
+            "skillId": "investigacion",
+            "cd": 1.5,
+            "flagBotch": "on_ecla_botch",
+            "flagPartial": "on_ecla_parcial",
+            "flagSuccess": "on_ecla_exito",
+            "flagCritical": "on_ecla_critico"
+          }
+        },
+        { "type": "setFlag", "arg": "on_ecla_hueco" },
+        { "type": "log", "arg": "PISTA: cinco mil años de Ecla sin registrar." }
+      ]
+    },
+    {
+      "id": "on_beat_ecla_hallazgo",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["on_ecla_hueco"],
+        "anyFlags": ["on_ecla_exito", "on_ecla_critico"],
+        "notFlags": ["on_ecla_resuelto"]
+      },
+      "speaker": "",
+      "lines": [
+        "En el índice, entre dos siglos vacíos, una sola línea sin entrada asociada:",
+        "«Lo de las estrellas no se escribe. Se recuerda o se pierde.»",
+        "Firmado con una runa que no es élfica."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "on_ecla_resuelto" },
+        { "type": "setFlag", "arg": "on_runa_ajena" },
+        { "type": "log", "arg": "PRUEBA: una runa NO élfica en los índices de Ekait." }
+      ]
+    },
+    {
+      "id": "on_beat_ecla_nada",
+      "trigger": { "type": "auto" },
+      "requires": { "allFlags": ["on_ecla_hueco"], "notFlags": ["on_ecla_resuelto"] },
+      "speaker": "",
+      "lines": [
+        "Los índices no dan nada. Cinco mil años de estantes bien ordenados y vacíos.",
+        "La archivera no parece sorprendida."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "on_ecla_resuelto" }
+      ]
+    },
+
+    {
+      "id": "on_beat_bomengrid",
+      "trigger": { "type": "enter", "target": "assets/levels/on_bomengrid.json" },
+      "requires": { "notFlags": ["on_bomengrid_visto"] },
+      "speaker": "",
+      "lines": [
+        "Bajo la roca, la galería mayor de Bomengrid se abre a lo ancho de un pueblo entero.",
+        "A la izquierda, la Forja. A la derecha, la Biblioteca de Runas de Rhenor.",
+        "La Biblioteca es más grande. En Udrax eso no es un detalle de arquitectura: es la ley."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "on_bomengrid_visto" },
+        { "type": "log", "arg": "Bomengrid, capital de Udrax." }
+      ]
+    },
+    {
+      "id": "on_beat_runista_con_runa",
+      "trigger": { "type": "talk", "target": "on_runista_rhenor" },
+      "requires": { "allFlags": ["on_runa_ajena"], "notFlags": ["on_udrax_runas"] },
+      "speaker": "Runista de Rhenor",
+      "lines": [
+        "Dibújamela otra vez. Despacio.",
+        "...",
+        "Esa runa no es élfica ni es nuestra. Y la he visto dos veces en cuarenta años.",
+        "Una en un índice de Ekait, como tú. Otra en un contrato de los goblins de las Ciénagas.",
+        "Guardamos la historia del mundo, forastero, y aun así hay quien escribe donde no le toca."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "on_udrax_runas" },
+        { "type": "setFlag", "arg": "on_pista_gliaddokx" },
+        { "type": "log", "arg": "PISTA: la misma runa aparece en un contrato goblin." }
+      ]
+    },
+    {
+      "id": "on_beat_runista_sin_runa",
+      "trigger": { "type": "talk", "target": "on_runista_rhenor" },
+      "requires": { "notFlags": ["on_udrax_runas"] },
+      "speaker": "Runista de Rhenor",
+      "lines": [
+        "Guardamos la historia del mundo. La de todos, no solo la nuestra.",
+        "Si alguna vez alguien viene a quemarla, empezará por aquí, y lo sabemos.",
+        "Tráeme algo escrito y te diré de quién es la mano. Es lo único que sé hacer."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "on_udrax_runas" }
+      ]
+    },
+
+    {
+      "id": "on_beat_ostad",
+      "trigger": { "type": "enter", "target": "assets/levels/on_ostad.json" },
+      "requires": { "notFlags": ["on_ostad_visto"] },
+      "speaker": "",
+      "lines": [
+        "Ostad no tiene ciudad. Tiene aldeas de palafitos enhebradas por el Río Celeste.",
+        "Y el río da un rodeo absurdo: podría cortar por el centro y ahorrar tres días de viaje.",
+        "En el centro no hay nada. Arena, y más arena. Nadie mira hacia allá."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "on_ostad_visto" },
+        { "type": "log", "arg": "Ostad. El río rodea el centro." }
+      ]
+    },
+    {
+      "id": "on_beat_anciana",
+      "trigger": { "type": "talk", "target": "on_anciana_lagarto" },
+      "requires": { "notFlags": ["on_ostad_sin_capital"] },
+      "speaker": "Anciana de la aldea",
+      "lines": [
+        "¿Capital? No tenemos. Nunca la hemos tenido y no nos hace falta.",
+        "Una capital es un sitio donde ponerlo todo junto para que te lo quemen de una vez.",
+        "Aquí somos siete aldeas y un río. Que quemen la que quieran: quedan seis.",
+        "Los de tierra firme nos llamáis amorales. Yo os llamo cómodos."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "on_ostad_sin_capital" },
+        { "type": "log", "arg": "Ostad no tiene capital A PROPÓSITO." }
+      ]
+    },
+    {
+      "id": "on_beat_vigia",
+      "trigger": { "type": "talk", "target": "on_vigia_del_desierto" },
+      "requires": { "allFlags": ["on_ostad_visto"], "notFlags": ["on_vigia_hablado"] },
+      "speaker": "Vigía del desierto",
+      "lines": [
+        "No vigilo que no entre nadie. Vigilo que no salga nada.",
+        "Ahí duerme Orun Aergan desde antes de que existiera ninguna de vuestras crónicas.",
+        "Y si me preguntas qué hay exactamente ahí dentro, te diré lo mismo que a todos:",
+        "que llevamos ocho mil años sin comprobarlo, y que eso es un éxito, no una ignorancia."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "on_vigia_hablado" },
+        { "type": "log", "arg": "El desierto de Orun Aergan: nadie lo ha comprobado en 8000 años." }
+      ]
+    },
+
+    {
+      "id": "on_beat_havargruztak",
+      "trigger": { "type": "enter", "target": "assets/levels/on_havargruztak.json" },
+      "requires": { "notFlags": ["on_glia_visto"] },
+      "speaker": "",
+      "lines": [
+        "Havar'gruztak es una sola muralla alrededor de cuatro ciudades que no se hablan.",
+        "Zantox al noroeste, Fliark al noreste, Gorthak al suroeste, Bleek al sureste.",
+        "Entre barrio y barrio no hay calle: hay empalizada. En el centro, una plaza que no es de nadie y un asta con un estandarte.",
+        "Doscientos años de unificación y siguen sin mezclar las casas."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "on_glia_visto" },
+        { "type": "log", "arg": "Havar'gruztak: cuatro clanes, un estandarte." }
+      ]
+    },
+    {
+      "id": "on_beat_portaestandarte",
+      "trigger": { "type": "talk", "target": "on_portaestandarte" },
+      "requires": { "notFlags": ["on_porta_hablado"] },
+      "speaker": "Portaestandarte de los Cuatro",
+      "lines": [
+        "Nadie aquí te dirá que somos un solo pueblo. Te diremos que somos cuatro que no se matan.",
+        "En las ciénagas, eso es más de lo que consigue casi nadie.",
+        "¿Buscas a alguien que escriba raro? Habla con el chamán de los Bleek. Ellos firmaron los últimos."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "on_porta_hablado" }
+      ]
+    },
+    {
+      "id": "on_beat_chaman_con_pista",
+      "trigger": { "type": "talk", "target": "on_chaman_bleek" },
+      "requires": { "allFlags": ["on_pista_gliaddokx"], "notFlags": ["on_gliaddokx_voto"] },
+      "speaker": "Chamán de los Bleek",
+      "lines": [
+        "Un enano de Rhenor te manda. Claro.",
+        "Sí, firmamos un contrato con esa runa. Hace mucho. No con goblins ni con elfos.",
+        "Lo que se firmó fue esto: que cuando llegara el momento, los túneles se vuelan y nos vamos.",
+        "Los Zantox creen que aún estamos discutiéndolo.",
+        "Yo ya sé lo que votaré, y ya sé lo que votarán los otros tres. Solo falta el momento.",
+        "Y por lo que se oye del sur, forastero, el momento acaba de empezar."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "on_gliaddokx_voto" },
+        { "type": "setFlag", "arg": "on_contrato_runa" },
+        { "type": "log", "arg": "PRUEBA: el contrato de los Bleek lleva la misma runa." }
+      ]
+    },
+    {
+      "id": "on_beat_chaman_sin_pista",
+      "trigger": { "type": "talk", "target": "on_chaman_bleek" },
+      "requires": { "notFlags": ["on_gliaddokx_voto"] },
+      "speaker": "Chamán de los Bleek",
+      "lines": [
+        "Los Bleek fuimos los últimos en firmar y seremos los últimos en irnos.",
+        "Cuando esto caiga —y caerá— habrá que decidir si volamos los túneles.",
+        "Yo ya sé lo que votaré. Pero eso no se le cuenta a un forastero que llega preguntando."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "on_gliaddokx_voto" }
+      ]
+    },
+
+    {
+      "id": "on_cierre_completo",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["on_ecla_hueco", "on_udrax_runas", "on_ostad_sin_capital",
+                     "on_gliaddokx_voto", "on_contrato_runa"],
+        "notFlags": ["on_camino_cerrado"]
+      },
+      "speaker": "",
+      "lines": [
+        "Cuatro naciones, cuatro respuestas, y todas dicen lo mismo de otra manera.",
+        "Ecla tiene cinco mil años que nadie escribió. Udrax lo escribe todo y no sabe de quién es esa runa. Ostad no tiene capital para que no se la puedan quemar. Y los goblins ya han decidido irse; solo esperan la fecha.",
+        "El noroeste entero lleva siglos preparándose para algo, cada uno a su manera y sin decírselo.",
+        "Al sur, este mismo año, empieza la Primera Cruzada.",
+        "Nadie aquí la ha mencionado. Todos la estaban esperando."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "on_camino_cerrado" },
+        { "type": "log", "arg": "FIN — El Camino del Norte. Las cuatro respuestas encajan." }
+      ]
+    },
+    {
+      "id": "on_cierre_parcial",
+      "trigger": { "type": "auto" },
+      "requires": {
+        "allFlags": ["on_ecla_hueco", "on_udrax_runas", "on_ostad_sin_capital",
+                     "on_gliaddokx_voto"],
+        "notFlags": ["on_camino_cerrado"]
+      },
+      "speaker": "",
+      "lines": [
+        "Cuatro naciones y cuatro respuestas que no acaban de encajar.",
+        "Los elfos no escriben, los enanos escriben de más, los hombres lagarto no quieren capital y los goblins no sueltan prenda.",
+        "Hay algo debajo de las cuatro. No lo has encontrado.",
+        "Al sur, este mismo año, empieza la Primera Cruzada."
+      ],
+      "effects": [
+        { "type": "setFlag", "arg": "on_camino_cerrado" },
+        { "type": "log", "arg": "FIN — El Camino del Norte, sin atar el cabo." }
+      ]
+    }
+  ]
+}

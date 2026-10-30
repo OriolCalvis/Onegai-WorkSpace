@@ -1,0 +1,3360 @@
+{
+  "id": "adv_boundington_prologo",
+  "name": "Prólogo: Los Perdidos de Boundington",
+  "description": "Antes de que el forastero llegara a Boundington, antes de la Matanza, hubo una noche en el vacío y un relato en una barca. Capítulo 1 (El Vacío) y Capítulo 2 (El Relato del Pasado) del canon. Ancla el contexto de Venides, Sandes, Edul y Verina para que el Día 1 sepa de quién hablan.",
+  "_canon": {
+    "fuente": "Campaña 01_ La Matanza de Boundington (Aventura de Venides).docx — Capitulo 1 (El Vacio) y Capitulo 2 (El Relato del Pasado)",
+    "tiradas": "Las dos tiradas del canon (Percepcion DC 12 y Conocimiento Arcano DC 15) se resuelven aqui como Nd6: Percepcion CD 1.0 y conocimiento_arcano CD 1.5. El grado (BOTCH/PARTIAL/SUCCESS/CRITICAL) se traduce a cuatro flags, una por grado.",
+    "encadenamiento": "Al terminar enciende bnd_prologo_terminado (y las de contexto). El Dia 1 (boundington_primer_dia.json) puede leerlas si comparten NarrativeState: las flags son globales y nunca se resetean entre aventuras.",
+    "nota": "Este prologo es canon y lineal: el jugador no puede evitarlo, solo ve mas o menos segun sus tiradas. La barca siempre se sube; el pasado siempre se cuenta. Es la antesala onirica de toda la campana multi-era."
+  },
+  "objectives": [
+    {
+      "id": "obj_cofre",
+      "text": "Abre el cofre: son tus cosas.",
+      "doneFlag": "kit_basico_recogido",
+      "donde": ["assets/levels/prado_del_rio.json", "cofre_del_vacio"]
+    },
+    {
+      "id": "obj_equipo",
+      "text": "Ponte tu equipo (TAB, hoja Inventario).",
+      "doneFlag": "kit_basico_puesto",
+      "donde": "assets/levels/prado_del_rio.json"
+    },
+    {
+      "id": "obj_rio",
+      "text": "Acércate a la orilla del río.",
+      "doneFlag": "bnd_prologo_barquero",
+      "donde": ["assets/levels/prado_del_rio.json", "ponton"]
+    },
+    {
+      "id": "obj_barquero",
+      "text": "Habla con el barquero",
+      "doneFlag": "bnd_pr_sube",
+      "donde": "sho_noco"
+    },
+    {
+      "id": "obj_prologo",
+      "text": "Sigue a Sho-Noco por los recuerdos de Venides. Para seguir, habla con él.",
+      "doneFlag": "bnd_prologo_terminado",
+      "donde": "sho_noco"
+    }
+  ],
+  "_timers": "UI-BG3-01 — El cofre de El Vacio (Game/CofreKit.h): el relato espera a que te pongas el kit de tu clase. Cuando el juego enciende kit_basico_puesto, este temporizador secreto deja pasar un momento de exploracion y enciende bnd_prologo_kit_listo, que es lo que pide prologo_presentacion. Un nivel sin cofre da las dos flags solo: el prologo nunca se queda esperando.",
+  "timers": [
+    {
+      "id": "t_prologo_kit",
+      "arrancaPor": "kit_basico_puesto",
+      "duracion": 0.6,
+      "presentacion": "secreto",
+      "flagExpira": "bnd_prologo_kit_listo"
+    }
+  ],
+  "beats": [
+    {
+      "id": "prologo_caida",
+      "trigger": {
+        "type": "enter",
+        "target": "assets/levels/prado_del_rio.json"
+      },
+      "requires": {
+        "notFlags": [
+          "bnd_prologo_empezado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Oscuridad. Caes desde el vacío hacia el vacío.",
+        "Caes sobre hierba. Blanda, fría, sin una gota de rocío. No te haces daño.",
+        "Alrededor, un prado que no acaba, envuelto en una niebla blanca que no se mueve. En medio, un río. Es lo único que suena.",
+        "A tu lado, un cofre de madera, varado en la hierba como si el río lo hubiera dejado ahí para ti."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_empezado"
+        },
+        {
+          "type": "log",
+          "arg": "Capítulo 1: El Vacío."
+        }
+      ]
+    },
+    {
+      "id": "prologo_presentacion",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_empezado",
+          "bnd_prologo_kit_listo"
+        ],
+        "notFlags": [
+          "bnd_prologo_presentado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Un prado sin horizonte. Tus manos. Tu respiración. Y el río."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_presentado"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Mirar alrededor [Percepción]",
+          "lines": [
+            "(Tirada de Percepción.)"
+          ],
+          "effects": [
+            {
+              "type": "skillCheck",
+              "skillCheck": {
+                "skillId": "percepcion",
+                "rivalDice": 2,
+                "flagBotch": "bnd_prologo_percibe_botch",
+                "flagPartial": "bnd_prologo_percibe_parcial",
+                "flagSuccess": "bnd_prologo_percibe_exito",
+                "flagCritical": "bnd_prologo_percibe_critico"
+              }
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_percibido"
+            }
+          ]
+        },
+        {
+          "texto": "Gritar «¿Hola?»",
+          "lines": [
+            "Tu voz no rebota. El río se la lleva corriente abajo, como si alguien la estuviera esperando."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_percibido"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_percibe_relatado"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_grito"
+            }
+          ]
+        },
+        {
+          "texto": "Quedarte quieto y esperar",
+          "lines": [
+            "Pasa un rato que no sabrías medir. El río suena distinto: ahora, entre el agua, se oyen remos."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_percibido"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_percibe_relatado"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_espera"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prologo_percepcion_botch",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_percibe_botch"
+        ],
+        "notFlags": [
+          "bnd_prologo_percibe_relatado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Niebla, hierba y un río. Y tus manos, que tiemblan un poco."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_percibe_relatado"
+        }
+      ]
+    },
+    {
+      "id": "prologo_percepcion_parcial",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_percibe_parcial"
+        ],
+        "notFlags": [
+          "bnd_prologo_percibe_relatado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Niebla, hierba y un río. Y tus manos, que tiemblan un poco."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_percibe_relatado"
+        }
+      ]
+    },
+    {
+      "id": "prologo_percepcion_exito",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_percibe_exito"
+        ],
+        "notFlags": [
+          "bnd_prologo_percibe_relatado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "La niebla no es niebla: es magia, densa como el agua. No sabes de quién.",
+        "Y el río sale de dentro de ella."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_percibe_relatado"
+        }
+      ]
+    },
+    {
+      "id": "prologo_percepcion_critico",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_percibe_critico"
+        ],
+        "notFlags": [
+          "bnd_prologo_percibe_relatado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "La niebla no es niebla: es magia, densa como el agua. No sabes de quién.",
+        "Y el río sale de dentro de ella.",
+        "Es vieja. Más vieja que cualquier cosa que conozcas, y te está mirando."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_percibe_relatado"
+        }
+      ]
+    },
+    {
+      "id": "prologo_rio",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_percibe_relatado"
+        ],
+        "notFlags": [
+          "bnd_prologo_rio",
+          "bnd_prologo_barquero"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Lo único que se mueve en este sitio es el río. Si hay una salida, está en él."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_rio"
+        },
+        {
+          "type": "log",
+          "arg": "El prado tiene un río. Acércate a la orilla."
+        }
+      ]
+    },
+    {
+      "id": "prologo_barca",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_barca_llega"
+        ],
+        "notFlags": [
+          "bnd_prologo_barca_vista"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Río arriba, de entre la niebla, baja una barca. Nadie la empuja y no hace ruido.",
+        "La rema un ser cubierto por un manto blanco. Sus brazos son huesos secos y, de pronto, brazos jóvenes y fuertes, y otra vez huesos. La pala entra en el agua sin mojarse."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_barca_vista"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Observarle [Conocimiento arcano]",
+          "lines": [
+            "(Tirada de Conocimiento arcano.)"
+          ],
+          "effects": [
+            {
+              "type": "skillCheck",
+              "skillCheck": {
+                "skillId": "conocimiento_arcano",
+                "rivalDice": 3,
+                "flagBotch": "bnd_prologo_arcano_botch",
+                "flagPartial": "bnd_prologo_arcano_parcial",
+                "flagSuccess": "bnd_prologo_arcano_exito",
+                "flagCritical": "bnd_prologo_arcano_critico"
+              }
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_arcano_resuelto"
+            }
+          ]
+        },
+        {
+          "texto": "«¿Quién eres?»",
+          "lines": [
+            "No contesta. Todavía no."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_arcano_resuelto"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_arcano_relatado"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_pregunta"
+            }
+          ]
+        },
+        {
+          "texto": "Retroceder",
+          "lines": [
+            "Das un paso atrás y la barca está igual de cerca. Das otro, y más cerca todavía."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_arcano_resuelto"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_arcano_relatado"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_retrocede"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prologo_arcano_botch",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_arcano_botch"
+        ],
+        "notFlags": [
+          "bnd_prologo_arcano_relatado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Te da mala espina, y no sabrías decir por qué."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_arcano_relatado"
+        }
+      ]
+    },
+    {
+      "id": "prologo_arcano_parcial",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_arcano_parcial"
+        ],
+        "notFlags": [
+          "bnd_prologo_arcano_relatado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Algo en el ser no encaja con nada que hayas estudiado. Más idea que cuerpo."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_arcano_relatado"
+        }
+      ]
+    },
+    {
+      "id": "prologo_arcano_exito",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_arcano_exito"
+        ],
+        "notFlags": [
+          "bnd_prologo_arcano_relatado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "No tiene carne ni sangre. Todo él es una magia que no conoces."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_arcano_relatado"
+        }
+      ]
+    },
+    {
+      "id": "prologo_arcano_critico",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_arcano_critico"
+        ],
+        "notFlags": [
+          "bnd_prologo_arcano_relatado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "No tiene carne ni sangre. Todo él es una magia que no conoces.",
+        "Una magia tan vieja que el mundo la ha olvidado, y la ha vuelto a olvidar."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_arcano_relatado"
+        }
+      ]
+    },
+    {
+      "id": "p_barquero",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_barquero"
+        ],
+        "notFlags": [
+          "bnd_pr_sube",
+          "bnd_p_barquero_visto"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "El barquero salta a la orilla sin hacer ruido. El borde del manto no se moja.",
+        "Sho-Noco: «Sube.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_p_barquero_visto"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "No pienso subir ahí.",
+          "requires": {
+            "notFlags": [
+              "bnd_p_barquero_t_no"
+            ]
+          },
+          "speaker": "",
+          "lines": [
+            "Sho-Noco: «Nadie quiere, la primera vez.»",
+            "Sho-Noco: «Pregunta lo que necesites. El río tiene tiempo, y yo tengo todo el que hay.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_t_no"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Subir a la barca",
+          "requires": {
+            "notFlags": [
+              "bnd_p_barquero_t_subir"
+            ],
+            "anyFlags": [
+              "bnd_p_barquero_t_no",
+              "bnd_p_barquero_t_quien",
+              "bnd_p_barquero_t_donde",
+              "bnd_p_barquero_t_rio"
+            ]
+          },
+          "speaker": "",
+          "lines": [
+            "Le das la mano. Está fría y tibia a la vez, como el agua de un río en verano."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_t_subir"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_pr_sube"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_barquero_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ]
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_barquero_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Todavía no",
+          "lines": [
+            "Sho-Noco: «Aquí estaré.»"
+          ],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_barquero_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ]
+    },
+    {
+      "id": "p_barquero_s0",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_barquero",
+          "bnd_p_barquero_visto",
+          "bnd_p_barquero_en_charla"
+        ],
+        "notFlags": [
+          "bnd_pr_sube"
+        ],
+        "variables": {
+          "bnd_p_barquero_pag": 0
+        }
+      },
+      "speaker": "",
+      "lines": [
+        "El río sigue sonando. Sho-Noco no tiene prisa."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "No pienso subir ahí.",
+          "requires": {
+            "notFlags": [
+              "bnd_p_barquero_t_no"
+            ]
+          },
+          "speaker": "",
+          "lines": [
+            "Sho-Noco: «Nadie quiere, la primera vez.»",
+            "Sho-Noco: «Pregunta lo que necesites. El río tiene tiempo, y yo tengo todo el que hay.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_t_no"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Subir a la barca",
+          "requires": {
+            "notFlags": [
+              "bnd_p_barquero_t_subir"
+            ],
+            "anyFlags": [
+              "bnd_p_barquero_t_no",
+              "bnd_p_barquero_t_quien",
+              "bnd_p_barquero_t_donde",
+              "bnd_p_barquero_t_rio"
+            ]
+          },
+          "speaker": "",
+          "lines": [
+            "Le das la mano. Está fría y tibia a la vez, como el agua de un río en verano."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_t_subir"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_pr_sube"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_barquero_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ]
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_barquero_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Todavía no",
+          "lines": [
+            "Sho-Noco: «Aquí estaré.»"
+          ],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_barquero_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "p_barquero_s1",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_barquero",
+          "bnd_p_barquero_visto",
+          "bnd_p_barquero_en_charla"
+        ],
+        "notFlags": [
+          "bnd_pr_sube"
+        ],
+        "variables": {
+          "bnd_p_barquero_pag": 1
+        }
+      },
+      "speaker": "",
+      "lines": [
+        "El río sigue sonando. Sho-Noco no tiene prisa."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "¿Quién eres?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_barquero_t_quien"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Sho-Noco. El barquero.»",
+            "Sho-Noco: «Hay quien me llama de otras maneras. Ninguna es mentira.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_t_quien"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "¿Dónde estoy?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_barquero_t_donde"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «En la orilla. Todo el mundo pasa por aquí alguna vez. Casi nadie se acuerda.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_t_donde"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_barquero_pag",
+              "value": 2
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Todavía no",
+          "lines": [
+            "Sho-Noco: «Aquí estaré.»"
+          ],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_barquero_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "p_barquero_s2",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_barquero",
+          "bnd_p_barquero_visto",
+          "bnd_p_barquero_en_charla"
+        ],
+        "notFlags": [
+          "bnd_pr_sube"
+        ],
+        "variables": {
+          "bnd_p_barquero_pag": 2
+        }
+      },
+      "speaker": "",
+      "lines": [
+        "El río sigue sonando. Sho-Noco no tiene prisa."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "¿Adónde lleva este río?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_barquero_t_rio"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «A lo que ya pasó. Río arriba, lo que fue; río abajo, lo que será.»",
+            "Sho-Noco: «Hoy vamos río arriba.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_t_rio"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "¿Qué vamos a ver?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_barquero_t_ver"
+            ],
+            "allFlags": [
+              "bnd_p_barquero_t_rio"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Los recuerdos de un caballero. Se llama Venides.»",
+            "Sho-Noco: «Todavía no lo conoces. Lo conocerás.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_t_ver"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_barquero_pag",
+              "value": 3
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Todavía no",
+          "lines": [
+            "Sho-Noco: «Aquí estaré.»"
+          ],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_barquero_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "p_barquero_s3",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_barquero",
+          "bnd_p_barquero_visto",
+          "bnd_p_barquero_en_charla"
+        ],
+        "notFlags": [
+          "bnd_pr_sube"
+        ],
+        "variables": {
+          "bnd_p_barquero_pag": 3
+        }
+      },
+      "speaker": "",
+      "lines": [
+        "El río sigue sonando. Sho-Noco no tiene prisa."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "¿Por qué yo?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_barquero_t_porque"
+            ],
+            "allFlags": [
+              "bnd_p_barquero_t_quien"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Porque alguien tiene que mirar.»",
+            "Sho-Noco: «Y tú has llegado con los ojos abiertos.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_t_porque"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_barquero_pag",
+              "value": 0
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Todavía no",
+          "lines": [
+            "Sho-Noco: «Aquí estaré.»"
+          ],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_barquero_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "p_barquero_p0",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_barquero",
+          "bnd_p_barquero_visto"
+        ],
+        "notFlags": [
+          "bnd_pr_sube",
+          "bnd_p_barquero_en_charla"
+        ],
+        "variables": {
+          "bnd_p_barquero_pag": 0
+        }
+      },
+      "speaker": "Sho-Noco",
+      "lines": [
+        "Sho-Noco: «La barca espera. Yo también.»"
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "No pienso subir ahí.",
+          "requires": {
+            "notFlags": [
+              "bnd_p_barquero_t_no"
+            ]
+          },
+          "speaker": "",
+          "lines": [
+            "Sho-Noco: «Nadie quiere, la primera vez.»",
+            "Sho-Noco: «Pregunta lo que necesites. El río tiene tiempo, y yo tengo todo el que hay.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_t_no"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Subir a la barca",
+          "requires": {
+            "notFlags": [
+              "bnd_p_barquero_t_subir"
+            ],
+            "anyFlags": [
+              "bnd_p_barquero_t_no",
+              "bnd_p_barquero_t_quien",
+              "bnd_p_barquero_t_donde",
+              "bnd_p_barquero_t_rio"
+            ]
+          },
+          "speaker": "",
+          "lines": [
+            "Le das la mano. Está fría y tibia a la vez, como el agua de un río en verano."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_t_subir"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_pr_sube"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_barquero_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ]
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_barquero_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Todavía no",
+          "lines": [
+            "Sho-Noco: «Aquí estaré.»"
+          ],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_barquero_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_barquero_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "prologo_subida",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_subes"
+        ],
+        "notFlags": [
+          "bnd_prologo_subido"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Subes. La barca no se mueve bajo tu peso: de pronto, tú tampoco pesas mucho.",
+        "Sho-Noco empuja con la pala y el prado se queda atrás, deshaciéndose en la niebla. Te miras las manos: se ve la hierba a través de ellas.",
+        "Sho-Noco: «Toda buena historia empieza en una taberna.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_subido"
+        },
+        {
+          "type": "log",
+          "arg": "Capítulo 2: El Relato del Pasado."
+        }
+      ]
+    },
+    {
+      "id": "prologo_taberna",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r1_llegada"
+        ],
+        "notFlags": [
+          "bnd_prologo_en_pasado_visto"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "El blanco se llena de ruido, de humo y de olor a cerveza. Ceaseton, año 756 del Despertar Elemental.",
+        "Una taberna de costa, vigas bajas, redes colgadas del techo, olor a sal y a pescado frito. Una mesa apartada junto a una ventana redonda que da al puerto. Cuatro jóvenes brindan.",
+        "Nadie te ve. Andas entre las mesas como anda el humo."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_en_pasado_visto"
+        }
+      ]
+    },
+    {
+      "id": "p_r1_brindis",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r1_brindis"
+        ],
+        "notFlags": [
+          "bnd_pr_r1_brindis_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Venides, con la cara roja y la risa más fuerte de la sala: «¡Caballero! ¡Caballero de Aegroum! Repetidlo, que todavía no me lo creo.»",
+        "Verina: «Caballero Venides, hijo de Nefaria, que no sabe ni ponerse la capa sin ayuda.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_r1_brindis_dicho"
+        }
+      ]
+    },
+    {
+      "id": "p_r1_capa",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r1_capa"
+        ],
+        "notFlags": [
+          "bnd_pr_r1_capa_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Edul, bajito, sonriendo a su vaso: «Yo se la ato. Para algo tengo manos de herrero.»",
+        "Venides: «Con mi primer permiso nos vamos los cuatro a las Santas Montañas. Lo juro por la capa.»",
+        "Verina: «¡Sí! Dicen que allí arriba hay ruinas más viejas que los reinos. Y libros, Edul. Libros que nadie ha leído.»",
+        "Edul: «Y una semana sin forja. Me vale.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_r1_capa_dicho"
+        }
+      ]
+    },
+    {
+      "id": "p_r1_sandes",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r1_sandes"
+        ],
+        "notFlags": [
+          "bnd_pr_r1_sandes_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes, levantando la copa el último: «Las Santas Montañas. Lo había pensado yo, ¿sabéis? Hace semanas. Pero brindo, brindo.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_r1_sandes_dicho"
+        }
+      ]
+    },
+    {
+      "id": "p_r1_libre",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r1_libre"
+        ],
+        "notFlags": [
+          "bnd_pr_r1_libre_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Nadie te ve. Puedes andar entre las mesas y mirar lo que quieras.",
+        "Cuando quieras seguir, habla con Sho-Noco."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_r1_libre_dicho"
+        }
+      ]
+    },
+    {
+      "id": "p_vision",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r1_libre"
+        ],
+        "notFlags": [
+          "bnd_prologo_girado",
+          "bnd_p_vision_visto"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Sho-Noco: «Mira cuanto quieras. A nosotros no nos ven.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_p_vision_visto"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Sho-Noco, ¿quiénes son?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_vision_t_quienes"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Amigos. Todavía.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_vision_t_quienes"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_vision_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Mirar un poco más",
+          "requires": {
+            "notFlags": [
+              "bnd_p_vision_t_aun"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Aquí estaré.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_vision_t_aun"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_vision_t_aun"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_vision_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_vision_en_charla"
+            }
+          ]
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_vision_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_vision_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Callar y escuchar",
+          "lines": [
+            "Hablan de caballos, de un profesor de Edul que roncaba y de la madre de Venides llorando en la ceremonia. Nada importante.",
+            "Parecen felices."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_vision_vista"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_vision_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_vision_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ]
+    },
+    {
+      "id": "p_vision_s0",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r1_libre",
+          "bnd_p_vision_visto",
+          "bnd_p_vision_en_charla"
+        ],
+        "notFlags": [
+          "bnd_prologo_girado"
+        ],
+        "variables": {
+          "bnd_p_vision_pag": 0
+        }
+      },
+      "speaker": "",
+      "lines": [
+        "Los cuatro siguen brindando. Sho-Noco espera."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Sho-Noco, ¿quiénes son?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_vision_t_quienes"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Amigos. Todavía.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_vision_t_quienes"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_vision_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Mirar un poco más",
+          "requires": {
+            "notFlags": [
+              "bnd_p_vision_t_aun"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Aquí estaré.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_vision_t_aun"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_vision_t_aun"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_vision_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_vision_en_charla"
+            }
+          ]
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_vision_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_vision_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Callar y escuchar",
+          "lines": [
+            "Hablan de caballos, de un profesor de Edul que roncaba y de la madre de Venides llorando en la ceremonia. Nada importante.",
+            "Parecen felices."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_vision_vista"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_vision_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_vision_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "p_vision_s1",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r1_libre",
+          "bnd_p_vision_visto",
+          "bnd_p_vision_en_charla"
+        ],
+        "notFlags": [
+          "bnd_prologo_girado"
+        ],
+        "variables": {
+          "bnd_p_vision_pag": 1
+        }
+      },
+      "speaker": "",
+      "lines": [
+        "Los cuatro siguen brindando. Sho-Noco espera."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Mirar a Sandes",
+          "requires": {
+            "notFlags": [
+              "bnd_p_vision_t_sandes"
+            ]
+          },
+          "lines": [
+            "Es el único que no se ríe cuando ríen los demás. Se ríe un instante después."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_vision_t_sandes"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_vision_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Mirar a Verina y Venides",
+          "requires": {
+            "notFlags": [
+              "bnd_p_vision_t_capa"
+            ]
+          },
+          "lines": [
+            "Ella le arregla la capa sin que él se dé cuenta. Edul sí se da cuenta, y mira a otro lado."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_vision_t_capa"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_vision_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_vision_pag",
+              "value": 0
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_vision_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Callar y escuchar",
+          "lines": [
+            "Hablan de caballos, de un profesor de Edul que roncaba y de la madre de Venides llorando en la ceremonia. Nada importante.",
+            "Parecen felices."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_vision_vista"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_vision_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_vision_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "p_vision_p0",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r1_libre",
+          "bnd_p_vision_visto"
+        ],
+        "notFlags": [
+          "bnd_prologo_girado",
+          "bnd_p_vision_en_charla"
+        ],
+        "variables": {
+          "bnd_p_vision_pag": 0
+        }
+      },
+      "speaker": "",
+      "lines": [
+        "Sho-Noco: «¿Has visto bastante?»"
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Sho-Noco, ¿quiénes son?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_vision_t_quienes"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Amigos. Todavía.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_vision_t_quienes"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_vision_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Mirar un poco más",
+          "requires": {
+            "notFlags": [
+              "bnd_p_vision_t_aun"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Aquí estaré.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_vision_t_aun"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_vision_t_aun"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_vision_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_vision_en_charla"
+            }
+          ]
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_vision_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_vision_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Callar y escuchar",
+          "lines": [
+            "Hablan de caballos, de un profesor de Edul que roncaba y de la madre de Venides llorando en la ceremonia. Nada importante.",
+            "Parecen felices."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_prologo_vision_vista"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_vision_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_vision_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "p_mira_venides_joven",
+      "trigger": {
+        "type": "talk",
+        "target": "venides_joven"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r1_libre"
+        ],
+        "notFlags": [
+          "bnd_prologo_girado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Venides se toca la capa nueva cada poco, como para comprobar que sigue ahí."
+      ],
+      "effects": []
+    },
+    {
+      "id": "p_mira_verina_joven",
+      "trigger": {
+        "type": "talk",
+        "target": "verina_joven"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r1_libre"
+        ],
+        "notFlags": [
+          "bnd_prologo_girado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Verina tiene un libro abierto debajo de la jarra. Lo ha mojado de cerveza dos veces y no le importa."
+      ],
+      "effects": []
+    },
+    {
+      "id": "p_mira_edul_joven",
+      "trigger": {
+        "type": "talk",
+        "target": "edul_joven"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r1_libre"
+        ],
+        "notFlags": [
+          "bnd_prologo_girado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Edul tiene los nudillos llenos de quemaduras de forja. Cuando Verina se ríe, la mira; cuando ella le mira, él mira el vaso."
+      ],
+      "effects": []
+    },
+    {
+      "id": "p_mira_sandes_joven",
+      "trigger": {
+        "type": "talk",
+        "target": "sandes_joven"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r1_libre"
+        ],
+        "notFlags": [
+          "bnd_prologo_girado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes tiene la copa llena. No ha bebido. Escucha a los otros como quien apunta algo para después."
+      ],
+      "effects": []
+    },
+    {
+      "id": "p_mira_tabernero_ceaseton",
+      "trigger": {
+        "type": "talk",
+        "target": "tabernero_ceaseton"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r1_libre"
+        ],
+        "notFlags": [
+          "bnd_prologo_girado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "El tabernero seca una jarra que ya está seca. Escucha a los de la ventana y sonríe sin querer."
+      ],
+      "effects": []
+    },
+    {
+      "id": "p_mira_pescador_ceaseton",
+      "trigger": {
+        "type": "talk",
+        "target": "pescador_ceaseton"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r1_libre"
+        ],
+        "notFlags": [
+          "bnd_prologo_girado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Un pescador duerme con la cabeza sobre la mesa. Huele a sal y a vino barato."
+      ],
+      "effects": []
+    },
+    {
+      "id": "prologo_giro",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_prologo_vision_vista"
+        ],
+        "notFlags": [
+          "bnd_prologo_girado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "El humo se espesa. Cuando se aclara, la mesa está vacía.",
+        "Sho-Noco: «Volvió de las montañas y cerró la puerta a sus amigos. Ellos ya rezaban a otra cosa.»",
+        "Sho-Noco: «Ven. Te lo enseño.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_girado"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_pasado"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "¿Qué pasó en las montañas?",
+          "speaker": "Sho-Noco",
+          "lines": [
+            "Pregúntaselo a él. No te lo dirá."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_pr_r2"
+            }
+          ]
+        },
+        {
+          "texto": "¿Y yo qué pinto aquí?",
+          "speaker": "Sho-Noco",
+          "lines": [
+            "Lo que tú quieras pintar. Por eso estás aquí."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_pr_r2"
+            }
+          ]
+        },
+        {
+          "texto": "Devuélveme a casa.",
+          "speaker": "Sho-Noco",
+          "lines": [
+            "Después."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_pr_r2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p_r2_casa",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r2_casa"
+        ],
+        "notFlags": [
+          "bnd_pr_r2_casa_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "El blanco se oscurece hasta ser la penumbra de una casa pequeña. Ceaseton, un año después: 757.",
+        "Venides ha vuelto de las Santas Montañas. Deshace el equipaje despacio, como si cada cosa pesara más que cuando la metió.",
+        "Sho-Noco: «Algo de él se quedó allí arriba.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_r2_casa_dicho"
+        }
+      ]
+    },
+    {
+      "id": "p_r2_llaman",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r2_llaman"
+        ],
+        "notFlags": [
+          "bnd_pr_r2_llaman_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Llaman a la puerta. Tres golpes, y luego dos.",
+        "Venides se queda quieto. Conoce esa forma de llamar."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_r2_llaman_dicho"
+        }
+      ]
+    },
+    {
+      "id": "p_r2_puerta",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r2_puerta"
+        ],
+        "notFlags": [
+          "bnd_pr_r2_puerta_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Son ellos. Los tres llevan una capucha morada que en la taberna no llevaban.",
+        "Verina: «Venides. Has vuelto.»",
+        "Venides: «Anoche.»",
+        "Edul: «No nos dijiste nada.»",
+        "Sandes: «Da igual. Ya estamos aquí. Esta noche hay una reunión en el almacén del puerto. Ven con nosotros: te va a gustar lo que dicen.»",
+        "Venides: «¿Quién lo dice?»",
+        "Verina contesta con una luz en los ojos que no tenía en la taberna.",
+        "Verina: «Los que escuchan. En Perishton ya son cientos. Dicen que el mundo no es como nos lo contaron, que hay algo esperando a que le abramos.»",
+        "Edul: «Venides. Por favor.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_r2_puerta_dicho"
+        }
+      ]
+    },
+    {
+      "id": "p_r2_cierra",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r2_cierra"
+        ],
+        "notFlags": [
+          "bnd_pr_r2_cierra_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Venides mira el equipaje. Luego, a ellos.",
+        "Venides: «Estoy cansado del viaje. Otro día.»",
+        "Sandes sonríe, como quien ya sabía la respuesta.",
+        "Sandes: «Otro día, entonces.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_r2_cierra_dicho"
+        }
+      ]
+    },
+    {
+      "id": "p_r2_tranca",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r2_tranca"
+        ],
+        "notFlags": [
+          "bnd_pr_r2_tranca_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Venides cierra la puerta y echa la tranca. Se queda de pie, con la mano en la madera, mucho rato."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_r2_tranca_dicho"
+        }
+      ]
+    },
+    {
+      "id": "p_r2_libre",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r2_libre"
+        ],
+        "notFlags": [
+          "bnd_pr_r2_libre_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "El recuerdo se queda quieto, como si esperara. Cuando quieras seguir, habla con Sho-Noco."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_r2_libre_dicho"
+        }
+      ]
+    },
+    {
+      "id": "p_mira_venides_vuelta",
+      "trigger": {
+        "type": "talk",
+        "target": "venides_vuelta"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r2_libre"
+        ],
+        "notFlags": [
+          "bnd_pr_r3"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Venides sigue con la mano en la madera. Respira despacio, como quien cuenta.",
+        "Al otro lado de la puerta ya no se oye a nadie."
+      ],
+      "effects": []
+    },
+    {
+      "id": "p_r2",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r2_libre"
+        ],
+        "notFlags": [
+          "bnd_pr_r3",
+          "bnd_p_r2_visto"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Sho-Noco: «Fue la última vez que llamaron a esa puerta.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_p_r2_visto"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "¿Por qué no fue con ellos?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_r2_t_porque"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Porque él había estado en las montañas. Y ellos no.»",
+            "Sho-Noco: «Lo que se oye allí arriba no se parece a lo que ellos llaman «la voz».»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r2_t_porque"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r2_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Mirar un poco más",
+          "requires": {
+            "notFlags": [
+              "bnd_p_r2_t_aun"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Aquí estaré.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r2_t_aun"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r2_t_aun"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r2_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r2_en_charla"
+            }
+          ]
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r2_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r2_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Seguir a Sho-Noco",
+          "lines": [
+            "Sho-Noco: «Un poco más adelante. Ven.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_pr_r3"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r2_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r2_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ]
+    },
+    {
+      "id": "p_r2_s0",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r2_libre",
+          "bnd_p_r2_visto",
+          "bnd_p_r2_en_charla"
+        ],
+        "notFlags": [
+          "bnd_pr_r3"
+        ],
+        "variables": {
+          "bnd_p_r2_pag": 0
+        }
+      },
+      "speaker": "",
+      "lines": [
+        "Venides sigue con la mano en la tranca."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "¿Por qué no fue con ellos?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_r2_t_porque"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Porque él había estado en las montañas. Y ellos no.»",
+            "Sho-Noco: «Lo que se oye allí arriba no se parece a lo que ellos llaman «la voz».»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r2_t_porque"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r2_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Mirar un poco más",
+          "requires": {
+            "notFlags": [
+              "bnd_p_r2_t_aun"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Aquí estaré.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r2_t_aun"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r2_t_aun"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r2_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r2_en_charla"
+            }
+          ]
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r2_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r2_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Seguir a Sho-Noco",
+          "lines": [
+            "Sho-Noco: «Un poco más adelante. Ven.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_pr_r3"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r2_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r2_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "p_r2_s1",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r2_libre",
+          "bnd_p_r2_visto",
+          "bnd_p_r2_en_charla"
+        ],
+        "notFlags": [
+          "bnd_pr_r3"
+        ],
+        "variables": {
+          "bnd_p_r2_pag": 1
+        }
+      },
+      "speaker": "",
+      "lines": [
+        "Venides sigue con la mano en la tranca."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "¿Qué escuchan, ellos?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_r2_t_voz"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Una voz que promete. Siempre hay una.»",
+            "Sho-Noco: «En Perishton la llaman la luz. En otros sitios, de otras maneras. Nunca acaba bien.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r2_t_voz"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r2_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "¿Y Verina?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_r2_t_verina"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Fue la que más insistió. Y la última en irse de la puerta.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r2_t_verina"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r2_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r2_pag",
+              "value": 0
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r2_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Seguir a Sho-Noco",
+          "lines": [
+            "Sho-Noco: «Un poco más adelante. Ven.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_pr_r3"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r2_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r2_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "p_r2_p0",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r2_libre",
+          "bnd_p_r2_visto"
+        ],
+        "notFlags": [
+          "bnd_pr_r3",
+          "bnd_p_r2_en_charla"
+        ],
+        "variables": {
+          "bnd_p_r2_pag": 0
+        }
+      },
+      "speaker": "Sho-Noco",
+      "lines": [
+        "Sho-Noco: «Fue la última vez que llamaron a esa puerta.»"
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "¿Por qué no fue con ellos?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_r2_t_porque"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Porque él había estado en las montañas. Y ellos no.»",
+            "Sho-Noco: «Lo que se oye allí arriba no se parece a lo que ellos llaman «la voz».»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r2_t_porque"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r2_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Mirar un poco más",
+          "requires": {
+            "notFlags": [
+              "bnd_p_r2_t_aun"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Aquí estaré.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r2_t_aun"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r2_t_aun"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r2_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r2_en_charla"
+            }
+          ]
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r2_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r2_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Seguir a Sho-Noco",
+          "lines": [
+            "Sho-Noco: «Un poco más adelante. Ven.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_pr_r3"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r2_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r2_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "p_r3_sala",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r3_sala"
+        ],
+        "notFlags": [
+          "bnd_pr_r3_sala_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "El blanco se ordena en columnas de piedra, estandartes y una mesa llena de mapas. Aegroum, año 757: la sala de mando de la guardia real.",
+        "Huele a cera y a hierro. Detrás de la mesa espera un capitán con cara de no haber dormido."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_r3_sala_dicho"
+        }
+      ]
+    },
+    {
+      "id": "p_r3_orden",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r3_orden"
+        ],
+        "notFlags": [
+          "bnd_pr_r3_orden_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Capitán: «Caballero Venides, hijo de Nefaria. El reino os destina a Boundington.»",
+        "Capitán: «Una ciudad de mercaderes, junto al río. Tranquila. Demasiado. Allí ha crecido un culto: se hacen llamar los Perdidos. Queremos saber qué buscan.»",
+        "Venides no contesta enseguida.",
+        "Sho-Noco, a tu lado: «Ha oído antes esas palabras. En la puerta de su casa.»",
+        "Capitán: «¿Algún inconveniente, caballero?»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_r3_orden_dicho"
+        }
+      ]
+    },
+    {
+      "id": "p_r3_responde",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r3_responde"
+        ],
+        "notFlags": [
+          "bnd_pr_r3_responde_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Venides: «Ninguno, mi capitán. Partiré mañana.»",
+        "Al darse la vuelta, aprieta contra el pecho un cuaderno de tapas nuevas. Todavía no ha escrito nada en él."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_r3_responde_dicho"
+        }
+      ]
+    },
+    {
+      "id": "p_r3_libre",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r3_libre"
+        ],
+        "notFlags": [
+          "bnd_pr_r3_libre_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "La sala se queda quieta. Cuando quieras seguir, habla con Sho-Noco."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_r3_libre_dicho"
+        }
+      ]
+    },
+    {
+      "id": "p_mira_capitan_aegroum",
+      "trigger": {
+        "type": "talk",
+        "target": "capitan_aegroum"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r3_libre"
+        ],
+        "notFlags": [
+          "bnd_pr_r4"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "El capitán ya está con otro papel. Una firma más, un nombre más.",
+        "En una esquina del mapa, Boundington es un punto pequeño junto al río."
+      ],
+      "effects": []
+    },
+    {
+      "id": "p_r3",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r3_libre"
+        ],
+        "notFlags": [
+          "bnd_pr_r4",
+          "bnd_p_r3_visto"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Sho-Noco: «Un año después de cerrar aquella puerta, el reino le mandó a una ciudad donde se rezaba a lo mismo.»",
+        "Sho-Noco: «No le dijo a nadie que conocía a tres de ellos. Ni siquiera a ese cuaderno.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_p_r3_visto"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "¿Lo sabía el capitán?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_r3_t_saben"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «No. Nadie se lo preguntó. Él tampoco lo dijo.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r3_t_saben"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r3_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Mirar un poco más",
+          "requires": {
+            "notFlags": [
+              "bnd_p_r3_t_aun"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Aquí estaré.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r3_t_aun"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r3_t_aun"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r3_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r3_en_charla"
+            }
+          ]
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r3_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r3_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Ir a Boundington",
+          "lines": [
+            "Sho-Noco: «Llueve. Tápate.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_pr_r4"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r3_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r3_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ]
+    },
+    {
+      "id": "p_r3_s0",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r3_libre",
+          "bnd_p_r3_visto",
+          "bnd_p_r3_en_charla"
+        ],
+        "notFlags": [
+          "bnd_pr_r4"
+        ],
+        "variables": {
+          "bnd_p_r3_pag": 0
+        }
+      },
+      "speaker": "",
+      "lines": [
+        "La sala se vacía despacio, como se vacía un recuerdo."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "¿Lo sabía el capitán?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_r3_t_saben"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «No. Nadie se lo preguntó. Él tampoco lo dijo.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r3_t_saben"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r3_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Mirar un poco más",
+          "requires": {
+            "notFlags": [
+              "bnd_p_r3_t_aun"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Aquí estaré.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r3_t_aun"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r3_t_aun"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r3_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r3_en_charla"
+            }
+          ]
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r3_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r3_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Ir a Boundington",
+          "lines": [
+            "Sho-Noco: «Llueve. Tápate.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_pr_r4"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r3_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r3_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "p_r3_s1",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r3_libre",
+          "bnd_p_r3_visto",
+          "bnd_p_r3_en_charla"
+        ],
+        "notFlags": [
+          "bnd_pr_r4"
+        ],
+        "variables": {
+          "bnd_p_r3_pag": 1
+        }
+      },
+      "speaker": "",
+      "lines": [
+        "La sala se vacía despacio, como se vacía un recuerdo."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "¿Quiénes le esperan allí?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_r3_t_alli"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Tres amigos. Uno de ellos, ya no tanto.»",
+            "Sho-Noco: «Tú los verás antes que él.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r3_t_alli"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r3_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "¿Qué tengo que hacer yo?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_r3_t_yo"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Nada que no quieras.»",
+            "Sho-Noco: «Pero en esa ciudad va a haber muchas puertas. Y alguien tendrá que decidir cuáles se abren.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r3_t_yo"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r3_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r3_pag",
+              "value": 0
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r3_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Ir a Boundington",
+          "lines": [
+            "Sho-Noco: «Llueve. Tápate.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_pr_r4"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r3_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r3_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "p_r3_p0",
+      "trigger": {
+        "type": "talk",
+        "target": "sho_noco"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r3_libre",
+          "bnd_p_r3_visto"
+        ],
+        "notFlags": [
+          "bnd_pr_r4",
+          "bnd_p_r3_en_charla"
+        ],
+        "variables": {
+          "bnd_p_r3_pag": 0
+        }
+      },
+      "speaker": "Sho-Noco",
+      "lines": [
+        "Sho-Noco: «Un año después de cerrar aquella puerta, el reino le mandó a una ciudad donde se rezaba a lo mismo.»",
+        "Sho-Noco: «No le dijo a nadie que conocía a tres de ellos. Ni siquiera a ese cuaderno.»"
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "¿Lo sabía el capitán?",
+          "requires": {
+            "notFlags": [
+              "bnd_p_r3_t_saben"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «No. Nadie se lo preguntó. Él tampoco lo dijo.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r3_t_saben"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r3_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Mirar un poco más",
+          "requires": {
+            "notFlags": [
+              "bnd_p_r3_t_aun"
+            ]
+          },
+          "lines": [
+            "Sho-Noco: «Aquí estaré.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r3_t_aun"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r3_t_aun"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r3_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r3_en_charla"
+            }
+          ]
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r3_pag",
+              "value": 1
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd_p_r3_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Ir a Boundington",
+          "lines": [
+            "Sho-Noco: «Llueve. Tápate.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd_pr_r4"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd_p_r3_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd_p_r3_en_charla"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "p_r4_llega",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r4_llega"
+        ],
+        "notFlags": [
+          "bnd_pr_r4_llega_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Boundington, año 757. De noche. Llueve fino sobre las cuerdas de tender.",
+        "Venides entra en la Taberna Humilde con el pelo mojado y el cuaderno nuevo bajo el brazo. Nadie levanta la vista. Aún nadie sabe quién es."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_r4_llega_dicho"
+        }
+      ]
+    },
+    {
+      "id": "p_r4_rosita",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r4_rosita"
+        ],
+        "notFlags": [
+          "bnd_pr_r4_rosita_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "La tabernera, desde la barra: «¡Mojado como un gato! Siéntate, que te pongo algo caliente.»",
+        "Venides: «Lo que sea. Gracias.»",
+        "Se sienta al fondo, bajo el farol. Abre el cuaderno y escribe la fecha. Luego, nada más."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_r4_rosita_dicho"
+        }
+      ]
+    },
+    {
+      "id": "p_r4_shonoco",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r4_shonoco"
+        ],
+        "notFlags": [
+          "bnd_pr_r4_shonoco_dicho"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Sho-Noco: «Boundington. Año 757. Cuatro días.»",
+        "Sho-Noco: «Aquí te dejo. Lo que pase a partir de ahora ya no es un recuerdo: es lo que vas a hacer tú.»",
+        "Antes de que puedas preguntar nada, el barquero ya no está. Y tus manos ya no dejan ver nada a través."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_r4_shonoco_dicho"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd_pr_shonoco_se_va"
+        },
+        {
+          "type": "clearFlag",
+          "arg": "bnd_prologo_espectro"
+        }
+      ]
+    },
+    {
+      "id": "prologo_despertar",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd_pr_r4_despierta"
+        ],
+        "notFlags": [
+          "bnd_prologo_terminado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Y el blanco se convierte en una mesa de madera, una pinta de cerveza y el ruido de una taberna llena."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_terminado"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd_prologo_shonoco"
+        },
+        {
+          "type": "log",
+          "arg": "Prólogo completado. Sho-Noco te ha mostrado el pasado de Venides."
+        },
+        {
+          "type": "grantLevel",
+          "value": 0.6,
+          "arg": "acabar el prólogo"
+        }
+      ]
+    }
+  ],
+  "_cinematicas": "PROLOGO-02: lo que se ve (quién anda, quién aparece, los fundidos) está en assets/cinematicas/cinematicas.json; cada orden «beat» enciende una flag bnd_pr_* o bnd_prologo_* que pide un beat de aquí."
+}

@@ -1,0 +1,51 @@
+{
+ "id": "forajido_de_vinclap_barril_de_ron",
+ "name": "Barril de ron",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Te metes en un barril de ron cuando llega el golpe: lo bloqueas, y te libras de los estados en contra.",
+ "flavorText": "",
+ "classTags": [
+  "forajido_de_vinclap"
+ ],
+ "roleTags": [],
+ "tags": [
+  "forajido_de_vinclap",
+  "estandar"
+ ],
+ "mechanicTags": [],
+ "actionType": "reaccion",
+ "target": "self",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "DES",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Te metes en un barril de ron cuando llega el golpe: lo bloqueas, y te libras de los estados en contra.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Bloqueas el golpe.",
+   "mechanicHook": "bloquea:ataque"
+  },
+  {
+   "description": "Te libras de los estados en contra.",
+   "mechanicHook": "limpia"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "Propia · Forajido de Vinclap · NosTale: Pirata, Esconder en barril de ron"
+}

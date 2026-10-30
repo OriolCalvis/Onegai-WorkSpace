@@ -1,0 +1,36 @@
+{
+  "id": "MISIONES-01",
+  "date": "2026-09-27",
+  "author": "Claude",
+  "status": "HECHO en el arbol, sin commit",
+  "fase": "H",
+  "cubre": "H3-02 (diario de misiones) sin inventar QuestDefinition: el diario es una VISTA de las flags (FORMATO_AVENTURAS §2, ObjectiveDefinition.doneFlag).",
+  "descripcion": "Pestana Misiones del menu del jugador (TAB, A/D): la aventura activa del NarrativeEngine primero y el resto de la campana de Boundington (prologo, dia 1, dia 2, ocaso) con sus objetivos resueltos contra el NarrativeState; icono activa/hecha por mision y objetivo/objetivoHecho por fila; la descripcion de la aventura en el pie de detalle.",
+  "archivos": {
+    "nuevos": [
+      "include/Game/DiarioMisiones.h",
+      "src/Game/DiarioMisiones.cpp",
+      "include/Render/HudIconos.h",
+      "src/Render/HudIconos.cpp",
+      "include/Render/HudIconList.h",
+      "src/Render/HudIconList.cpp",
+      "tests/Game/DiarioMisionesTests.cpp"
+    ],
+    "modificados": [
+      "cmake/FichaVistaTests.cmake (test_diario_misiones)",
+      "CMakeLists.txt (motor_level + motor_core)",
+      "include/Game/InventoryScreen.h/.cpp (InventoryFocus::Quests/Codex, setExternalRowCount, inventoryIconIds)",
+      "include/Engine/Application.h (m_inventoryListWidget HudCommandMenu -> HudIconList; misma cuenta)",
+      "src/Engine/ApplicationHud.cpp (filasDiario/filasCodice/filasConIcono; refreshInventoryOverlay como funcion libre)",
+      "src/Engine/ApplicationPantallas.cpp (6 pestanas, HudIconList)"
+    ]
+  },
+  "verification": [
+    "test_diario_misiones 3/3 en el oraculo.",
+    "Objetos de motor_core (ApplicationHud/Pantallas/HudIconList/HudIconos) compilan; Application.cpp del arbol compila salvo publishSheetSkills/tickRound (ajenos, ya en HEAD).",
+    "PENDIENTE humo visual en el Mac."
+  ],
+  "pendiente": [
+    "H3-02 pide tambien que los questIds de los niveles resuelvan: eso sigue colgando de AdventureDefinition.questIds (AUDITORIA_CONTRATOS); aqui no se toca el contrato."
+  ]
+}

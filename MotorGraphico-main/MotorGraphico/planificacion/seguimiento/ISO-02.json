@@ -1,0 +1,47 @@
+{
+ "id": "ISO-02",
+ "date": "2026-10-03",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol (commit local); entrega al Mac como paquete (base 67f7604, incluye ISO-01)",
+ "encargo": "Oriol eligio el camino del kit procedural ('m'encanta! apostem per aquest nivell artistic 100%') y 'Tota la ciutat, cases i locals': todas las casas y todos los locales de los 4 mapas de Boundington con piezas del kit, por barrio, cada local con su oficio y orientado hacia la calle. Adios a las casas de bloque.",
+ "resultado": {
+  "ciudad_centro": "13 locales con su oficio + 79 casas populares (16 huecos demasiado pequenos pasan a patio)",
+  "ciudad_este": "8 casas nobles de pizarra en jardines + casa de te",
+  "ciudad_oeste": "7 barracones (Barrio Militar) + armeria, 10 cabanas (Pico Dragon), 20 barracas (Barriada)",
+  "ciudad_surysal": "4 tiendas de lona (de paredes, pabellon redondo, con toldo)",
+  "kit": "78 piezas x 4 orientaciones = 312 vistas (assets/textures/iso, 16 s); 68 tiles de familia/oficio y orientacion; 64 bloques de respaldo"
+ },
+ "archivos": {
+  "nuevos": [
+   "tools/iso/cataleg_kit.py (catalogo solo de datos: familias, medidas, variantes, oficios, puerta->oficio, suelo de cada familia, nombres de tiles, celda del umbral)",
+   "tools/iso/families.py (barraca de tablones remendados; tienda: paredes, pabellon redondo a gajos con fleco, toldo sobre dos palos)",
+   "tools/iso/patis.py (patios por barrio: casa, jardin, pescador, armas)",
+   "tools/iso/rajoles_kit.py (tiles del kit en tiles.json con la imagen del suelo del barrio + bloques de respaldo en bloques.json)",
+   "tools/gen_ciudad_kit.py (locales: oficio por la puerta, orientacion con calle delante, umbral y puerta movidos; casas: rectangulo mayor que sabe dibujar el catalogo sin tocar otra pieza, giradas hacia la calle; revisa_kit tras conectar)",
+   "planificacion/seguimiento/ISO-02.json"
+  ],
+  "modificados": [
+   "tools/iso/edificis.py (estilos popular, noble, cabana, caserna; lucarnas en tejados de 4 celdas o mas)",
+   "tools/iso/oficis.py (11 oficios: taberna, herreria, tienda, mercado, joyeria, banco, sastreria, posada, banos con cupula sobre tambor y linterna, casa de te, armeria)",
+   "tools/iso/peces_iso.py (un_vessant, poligon_cara, cilindre, culling de vuelos del tejado trasero)",
+   "tools/iso/exportar_kit.py (todo el catalogo)",
+   "tools/pixellab/importar_monumentos.py (poda las hojas monumento_iso_* que ya no estan en el indice)",
+   "tools/gen_ciudad.py (familias por barrio, kit_ciutat + revisa_kit; sin orientar_casas)",
+   "assets: 4 mapas de ciudad (TMX + JSON), interiores herreria/mercado/posada (salida a la puerta movida), tiles.json, terreno_iso.json, terreno_mundo.png, bloques.json, monumentos.json, sprites.json, pixellab/monumentos.json (casa_alma_* retiradas), assets/textures/iso/*, assets/textures/monumentos/iso_*"
+  ]
+ },
+ "verificacion": [
+  "ctest demo_ciudad, test_object_catalog, test_registro_sprites, test_bloques, test_monumentos: OK",
+  "conectividad 100%: centro 2490/2490 (262 puertas), este 1557/1557, oeste 1392/1392, surysal 1319/1319",
+  "cobertura: cada huella del kit tiene pieza (revisa_kit sin errores)",
+  "linea_base_core: las mismas 35 deudas previas (ningun cambio en C++)",
+  "capturas de los 4 mapas (Casco Antiguo, Comercial, catedral, Barrios Altos, casa de te, Militar, Pico Dragon, Barriada, Surysal)"
+ ],
+ "pendiente": [
+  "Decorados del kit en el mismo estilo (bancos, farolas tecnomagicas, paradas, jardineras, carros, vallas, arboles) y suelos",
+  "Los 7 monumentos con la geometria de Aegroum (catedral, castillo, opera... siguen siendo PixelLab)",
+  "Rotacion en el editor (#36)",
+  "Presets de gramatica por raza",
+  "CIUDAD-01: la capa de vida (reloj, rutas de PNJ, guardias, pescadores, sprites animados)"
+ ]
+}

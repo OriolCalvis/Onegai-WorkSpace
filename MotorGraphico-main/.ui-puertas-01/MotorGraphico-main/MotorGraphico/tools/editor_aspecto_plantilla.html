@@ -1,0 +1,271 @@
+<title>Sastrería de Onegai</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Probador de la sastrería: la lista de PNJ a la izquierda, el maniquí (antes y ahora, de frente y de perfil) en el centro, las prendas a la derecha. Mismo papel y carmín que la Forja. */
+:root {
+  --papel: #efe6d2;
+  --papel-2: #e4d8bd;
+  --tinta: #2b2118;
+  --tinta-2: #5c4a39;
+  --linea: #b9a47f;
+  --carmin: #9e2b25;
+  --cuadro: #d8ccb1;
+  --ok: #3f7a3a;
+  --f-titulo: "Silkscreen", "Courier New", monospace;
+  --f-texto: "Lora", Georgia, "Times New Roman", serif;
+  --f-dato: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papel: #1f1a15; --papel-2: #2a231c; --tinta: #eadfc8; --tinta-2: #b9a98e; --linea: #5a4b39;
+    --carmin: #e0675c; --cuadro: #3a3128; --ok: #7fbf72; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papel: #1f1a15; --papel-2: #2a231c; --tinta: #eadfc8; --tinta-2: #b9a98e; --linea: #5a4b39;
+  --carmin: #e0675c; --cuadro: #3a3128; --ok: #7fbf72; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--papel); color: var(--tinta); font-family: var(--f-texto); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+h1 { font-family: var(--f-titulo); font-weight: 400; font-size: 26px; letter-spacing: .04em; margin: 0; text-wrap: balance; }
+h2 { font-family: var(--f-titulo); font-weight: 400; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-2); margin: 0 0 8px; }
+.cabecera { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 20px; margin-bottom: 14px; max-width: 1280px; }
+.cabecera p { margin: 0; color: var(--tinta-2); max-width: 72ch; }
+code, .dato { font-family: var(--f-dato); font-size: 13px; font-variant-numeric: tabular-nums; }
+.mesa { display: grid; grid-template-columns: minmax(220px, 280px) minmax(0, 1fr) minmax(260px, 340px); gap: 18px; max-width: 1280px; align-items: start; }
+@media (max-width: 980px) { .mesa { grid-template-columns: 1fr; } }
+.panel { background: var(--papel-2); border: 1px solid var(--linea); border-radius: 4px; padding: 14px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+label { font-size: 13px; color: var(--tinta-2); display: block; margin-bottom: 3px; }
+input, select, button, textarea { font: inherit; color: var(--tinta); }
+input[type="search"], select { width: 100%; padding: 6px 8px; background: var(--papel); border: 1px solid var(--linea); border-radius: 3px; }
+select:disabled { opacity: .5; }
+button { background: var(--papel); border: 1px solid var(--linea); border-radius: 3px; padding: 5px 10px; cursor: pointer; }
+button:hover { border-color: var(--tinta-2); }
+button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--carmin); outline-offset: 2px; }
+button.principal { background: var(--carmin); color: var(--papel); border-color: var(--carmin); }
+.lista { max-height: 560px; overflow: auto; display: flex; flex-direction: column; border: 1px solid var(--linea); border-radius: 3px; background: var(--papel); }
+.lista button { border: 0; border-bottom: 1px solid var(--linea); border-radius: 0; text-align: left; padding: 6px 10px; display: flex; justify-content: space-between; gap: 8px; background: transparent; }
+.lista button[aria-current="true"] { background: var(--papel-2); box-shadow: inset 3px 0 0 var(--carmin); }
+.lista small { color: var(--tinta-2); font-family: var(--f-dato); font-size: 11px; }
+.lista .cambiado { color: var(--carmin); font-family: var(--f-titulo); font-size: 11px; }
+.maniqui { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.vista { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.vista canvas { width: 100%; max-width: 320px; aspect-ratio: 1; image-rendering: pixelated; border: 1px solid var(--linea); border-radius: 3px; background: var(--cuadro); }
+.antes { display: flex; gap: 8px; align-items: center; }
+.antes canvas { width: 96px; aspect-ratio: 1; image-rendering: pixelated; border: 1px dashed var(--linea); border-radius: 3px; background: var(--cuadro); }
+.ranuras { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.doble { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.fila { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ayuda { font-size: 13px; color: var(--tinta-2); margin: 0; max-width: 62ch; }
+textarea { width: 100%; min-height: 140px; font-family: var(--f-dato); font-size: 12px; background: var(--papel); border: 1px solid var(--linea); border-radius: 3px; padding: 8px; resize: vertical; }
+.estado { font-size: 13px; color: var(--ok); min-height: 1.5em; margin: 0; }
+</style>
+
+<div class="cabecera">
+  <h1>Sastrería de Onegai</h1>
+  <p>Viste a cada PNJ con las piezas que ya existen: ropa, tocado, armas, peinado y barba. Al acabar, copia los ajustes a <code>tools/ajustes_pnj.json</code> y rehaz las hojas con <code>python3 tools/gen_pnj.py</code>.</p>
+</div>
+
+<div class="mesa">
+  <section class="panel" aria-label="Personajes">
+    <div>
+      <label for="busca">Buscar</label>
+      <input type="search" id="busca" placeholder="Rosita, guardia, minero…" autocomplete="off">
+    </div>
+    <div id="lista" class="lista" role="list"></div>
+    <p class="ayuda" id="cuantos"></p>
+  </section>
+
+  <section class="panel" aria-label="Maniquí">
+    <div>
+      <h2 id="quien">—</h2>
+      <p class="ayuda dato" id="ident"></p>
+    </div>
+    <div class="maniqui">
+      <div class="vista"><canvas id="frente" width="64" height="64" aria-label="Ahora, de frente"></canvas><span class="ayuda">Ahora, de frente</span></div>
+      <div class="vista"><canvas id="perfil" width="64" height="64" aria-label="Ahora, de perfil"></canvas><span class="ayuda">Ahora, de perfil</span></div>
+    </div>
+    <div class="antes">
+      <canvas id="antesFrente" width="64" height="64" aria-label="Antes, de frente"></canvas>
+      <canvas id="antesPerfil" width="64" height="64" aria-label="Antes, de perfil"></canvas>
+      <span class="ayuda">Así era antes de tus cambios.</span>
+    </div>
+    <p class="ayuda">La vista previa es el quieto de frente y de perfil. Las variantes de un PNJ que sale varias veces se hacen solas a partir de este.</p>
+  </section>
+
+  <section class="panel" aria-label="Prendas">
+    <h2>Prendas</h2>
+    <div id="ranuras" class="ranuras"></div>
+    <div>
+      <label for="peloEstilo">Pelo</label>
+      <div class="doble"><select id="peloEstilo"></select><select id="peloColor" aria-label="Color del pelo"></select></div>
+    </div>
+    <div>
+      <label for="barbaEstilo">Barba</label>
+      <div class="doble"><select id="barbaEstilo"></select><select id="barbaColor" aria-label="Color de la barba"></select></div>
+    </div>
+    <div class="fila"><button id="original">Volver al original</button></div>
+  </section>
+</div>
+
+<section class="panel" style="max-width:1280px;margin-top:18px" aria-label="Ajustes">
+  <h2>Ajustes para tools/ajustes_pnj.json</h2>
+  <textarea id="salida" spellcheck="false" aria-label="Ajustes en JSON"></textarea>
+  <div class="fila">
+    <button class="principal" id="copiar">Copiar los ajustes</button>
+    <button id="cargar">Cargar ajustes pegados</button>
+    <button id="borrarTodo">Empezar de cero</button>
+  </div>
+  <p class="estado" id="estado" role="status"></p>
+</section>
+
+<script id="datos" type="application/json">/*DATOS*/</script>
+<script>
+(() => {
+  const D = JSON.parse(document.getElementById("datos").textContent);
+  const $ = (id) => document.getElementById(id);
+  const NOMBRE_RANURA = { cabeza: "Cabeza", torso: "Torso", piernas: "Piernas", pies: "Pies", capa: "Capa", arma: "Arma", mano_izq: "Mano izquierda" };
+  const NOMBRE_COLOR = (c) => c.replace(/^pelo_/, "").replace(/_/g, " ");
+  let aj = {};
+  try { const g = localStorage.getItem("sastreria_onegai"); if (g) aj = JSON.parse(g); } catch (e) {}
+  if (!Object.keys(aj).length && D.ajustes) aj = JSON.parse(JSON.stringify(D.ajustes));
+  const ids = Object.keys(D.pnj).sort((a, b) => D.pnj[a].nombre.localeCompare(D.pnj[b].nombre, "es"));
+  let actual = ids.includes("skilla") ? "skilla" : ids[0];
+
+  // --- imagenes ---------------------------------------------------------------
+  const cacheImg = new Map();
+  function img(b64) {
+    if (!cacheImg.has(b64)) { const im = new Image(); im.src = "data:image/png;base64," + b64; im.onload = () => dibuja(); cacheImg.set(b64, im); }
+    return cacheImg.get(b64);
+  }
+
+  // --- el aspecto de un PNJ (con o sin ajustes) ------------------------------------
+  function aspecto(id, conAjustes) {
+    const p = D.pnj[id];
+    const a = { equipo: Object.assign({}, p.equipo), pelo: p.pelo, barba: p.barba };
+    const c = conAjustes && aj[id];
+    if (c) {
+      if (c.equipo) Object.entries(c.equipo).forEach(([r, v]) => { if (v) a.equipo[r] = v; else delete a.equipo[r]; });
+      if ("pelo" in c) a.pelo = c.pelo; if ("barba" in c) a.barba = c.barba;
+    }
+    return a;
+  }
+  const ocultaPelo = (cabeza) => { const e = cabeza && D.piezas.cabeza.find((x) => x[0] === cabeza); return !!(e && e[2]); };
+  function capasDe(id, a) {
+    const p = D.pnj[id], T = D.capas[p.talla];
+    const lista = D.cuerpos[p.cuerpo].slice();
+    if (a.barba) lista.push(T["barba:" + a.barba[0] + ":" + a.barba[1]]);
+    if (a.pelo && !ocultaPelo(a.equipo.cabeza)) lista.push(T["pelo:" + a.pelo[0] + ":" + a.pelo[1]]);
+    D.ranuras.forEach((r) => { if (a.equipo[r]) lista.push(T[r + ":" + a.equipo[r]]); });
+    return lista.filter(Boolean);
+  }
+  function pinta(cv, id, a, vista) {
+    const ctx = cv.getContext("2d"); ctx.imageSmoothingEnabled = false; ctx.clearRect(0, 0, 64, 64);
+    capasDe(id, a).map((c, i) => [c.z[vista], i, c.v[vista]]).filter((x) => x[2]).sort((x, y) => x[0] - y[0] || x[1] - y[1])
+      .forEach(([, , v]) => { const im = img(v[2]); if (im.complete) ctx.drawImage(im, v[0], v[1]); });
+  }
+  function dibuja() {
+    const a = aspecto(actual, true), o = aspecto(actual, false);
+    pinta($("frente"), actual, a, "abajo"); pinta($("perfil"), actual, a, "derecha");
+    pinta($("antesFrente"), actual, o, "abajo"); pinta($("antesPerfil"), actual, o, "derecha");
+  }
+
+  // --- guardar un cambio -----------------------------------------------------------
+  function cambia(fn) {
+    const o = aspecto(actual, false), a = aspecto(actual, true); fn(a);
+    const c = {};
+    const eq = {};
+    D.ranuras.forEach((r) => { if ((a.equipo[r] || null) !== (o.equipo[r] || null)) eq[r] = a.equipo[r] || null; });
+    if (Object.keys(eq).length) c.equipo = eq;
+    if (JSON.stringify(a.pelo) !== JSON.stringify(o.pelo)) c.pelo = a.pelo;
+    if (JSON.stringify(a.barba) !== JSON.stringify(o.barba)) c.barba = a.barba;
+    if (Object.keys(c).length) aj[actual] = c; else delete aj[actual];
+    guarda(); pintaLista(); dibuja();
+  }
+
+  // --- prendas --------------------------------------------------------------------
+  function opcion(sel, valor, texto) { sel.appendChild(Object.assign(document.createElement("option"), { value: valor, textContent: texto })); }
+  function montaRanuras() {
+    const cont = $("ranuras"); cont.innerHTML = "";
+    D.ranuras.forEach((r) => {
+      const d = document.createElement("div");
+      const l = Object.assign(document.createElement("label"), { textContent: NOMBRE_RANURA[r] }); l.htmlFor = "r_" + r;
+      const s = document.createElement("select"); s.id = "r_" + r;
+      opcion(s, "", "— nada —"); D.piezas[r].forEach(([i, n]) => opcion(s, i, n));
+      s.onchange = () => cambia((a) => { if (s.value) a.equipo[r] = s.value; else delete a.equipo[r]; });
+      d.appendChild(l); d.appendChild(s); cont.appendChild(d);
+    });
+    const estilos = [...new Set(D.pelos.map((p) => p[0]))], colores = [...new Set(D.pelos.map((p) => p[1]))];
+    opcion($("peloEstilo"), "", "— sin pelo —"); estilos.forEach((e) => opcion($("peloEstilo"), e, e));
+    colores.forEach((c) => opcion($("peloColor"), c, NOMBRE_COLOR(c)));
+    const bEst = [...new Set(D.barbas.map((b) => b[0]))], bCol = [...new Set(D.barbas.map((b) => b[1]))];
+    opcion($("barbaEstilo"), "", "— sin barba —"); bEst.forEach((e) => opcion($("barbaEstilo"), e, e === "BARBA" ? "larga" : "corta"));
+    bCol.forEach((c) => opcion($("barbaColor"), c, NOMBRE_COLOR(c)));
+    const pelo = () => cambia((a) => {
+      const e = $("peloEstilo").value; let c = $("peloColor").value;
+      if (e && !D.pelos.some((p) => p[0] === e && p[1] === c)) c = D.pelos.find((p) => p[0] === e)[1];
+      a.pelo = e ? [e, c] : null;
+    });
+    $("peloEstilo").onchange = pelo; $("peloColor").onchange = pelo;
+    const barba = () => cambia((a) => { const e = $("barbaEstilo").value; a.barba = e ? [e, $("barbaColor").value] : null; });
+    $("barbaEstilo").onchange = barba; $("barbaColor").onchange = barba;
+  }
+  function refrescaPrendas() {
+    const p = D.pnj[actual], a = aspecto(actual, true);
+    D.ranuras.forEach((r) => { const s = $("r_" + r); s.value = a.equipo[r] || ""; s.disabled = !p.admite[r]; s.title = p.admite[r] ? "" : "Esta raza no lleva " + NOMBRE_RANURA[r].toLowerCase(); });
+    $("peloEstilo").value = a.pelo ? a.pelo[0] : ""; if (a.pelo) $("peloColor").value = a.pelo[1];
+    $("peloEstilo").disabled = $("peloColor").disabled = !p.admite.pelo;
+    $("barbaEstilo").value = a.barba ? a.barba[0] : ""; if (a.barba) $("barbaColor").value = a.barba[1];
+    $("barbaEstilo").disabled = $("barbaColor").disabled = !p.admite.pelo;
+    $("quien").textContent = p.nombre; $("ident").textContent = actual + " · talla " + p.talla;
+  }
+  $("original").onclick = () => { delete aj[actual]; guarda(); pintaLista(); refrescaPrendas(); dibuja(); avisa(D.pnj[actual].nombre + " vuelve a como era."); };
+
+  // --- lista -----------------------------------------------------------------------
+  function pintaLista() {
+    const q = $("busca").value.trim().toLowerCase();
+    const cont = $("lista"); cont.innerHTML = "";
+    const vis = ids.filter((id) => !q || id.includes(q) || D.pnj[id].nombre.toLowerCase().includes(q));
+    vis.slice(0, 300).forEach((id) => {
+      const b = document.createElement("button"); b.setAttribute("role", "listitem");
+      b.setAttribute("aria-current", String(id === actual));
+      const n = document.createElement("span"); n.textContent = D.pnj[id].nombre;
+      const m = document.createElement("small"); m.textContent = aj[id] ? "" : id;
+      if (aj[id]) { m.className = "cambiado"; m.textContent = "cambiado"; }
+      b.appendChild(n); b.appendChild(m);
+      b.onclick = () => { actual = id; pintaLista(); refrescaPrendas(); dibuja(); };
+      cont.appendChild(b);
+    });
+    $("cuantos").textContent = vis.length + " de " + ids.length + " PNJ" + (vis.length > 300 ? " (se ven los 300 primeros: busca para afinar)" : "") +
+      " · " + Object.keys(aj).length + " cambiados";
+  }
+  $("busca").addEventListener("input", pintaLista);
+
+  // --- ajustes ---------------------------------------------------------------------
+  const texto = () => JSON.stringify(Object.assign({ _nota: "Lo escribe la Sastrería de Onegai (tools/editor_aspecto.html). Lo lee tools/actores_pnj.py." }, aj), null, 1);
+  function guarda() { try { localStorage.setItem("sastreria_onegai", JSON.stringify(aj)); } catch (e) {} $("salida").value = texto(); }
+  function avisa(t) { $("estado").textContent = t; }
+  $("copiar").onclick = () => {
+    const fallo = () => { $("salida").focus(); $("salida").select(); avisa("Selecciona el texto y cópialo a mano (Cmd+C)."); };
+    try { navigator.clipboard.writeText(texto()).then(() => avisa("Copiado. Pégalo en tools/ajustes_pnj.json y ejecuta python3 tools/gen_pnj.py."), fallo); } catch (e) { fallo(); }
+  };
+  $("cargar").onclick = () => {
+    try { const n = JSON.parse($("salida").value); delete n._nota; aj = n; guarda(); pintaLista(); refrescaPrendas(); dibuja(); avisa("Ajustes cargados."); }
+    catch (e) { avisa("Ese texto no es un JSON válido: revisa comas y llaves."); }
+  };
+  $("borrarTodo").onclick = () => {
+    const b = $("borrarTodo");
+    if (b.dataset.seguro !== "1") { b.dataset.seguro = "1"; b.textContent = "Pulsa otra vez para borrarlo todo"; return; }
+    b.dataset.seguro = ""; b.textContent = "Empezar de cero";
+    aj = {}; guarda(); pintaLista(); refrescaPrendas(); dibuja(); avisa("Sin ajustes: todos vuelven a como eran.");
+  };
+
+  montaRanuras(); guarda(); pintaLista(); refrescaPrendas(); dibuja();
+})();
+</script>

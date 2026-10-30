@@ -1,0 +1,367 @@
+{
+  "_fuente": [
+    "Enemigos de la campana canonica de Aegroum, 'Campana 01: La Matanza de",
+    "Boundington (Aventura de Venides)', seccion BASE MILITAR y combates del",
+    "Ocaso. Las vidas son las del documento tal cual:",
+    "  Perdidos Saqueadores (x3): CA 14, HP 22, espada corta +4 (1d6+2)",
+    "  Fanaticos del Culto (x2):  CA 13, HP 18, usan magia",
+    "",
+    "CombatData del motor solo guarda maxHealth/maxMana/skills: la CA y el",
+    "dado de dano del documento los resuelve el Nd6 (ApplyBasicAttackNd6 tira",
+    "contra la defensa del objetivo), asi que no se copian como campos.",
+    "El mana de los fanaticos sale de que el canon dice que 'usaran magia'.",
+    "",
+    "Oriol (05/10), PARTIDAS.docx: los Devotos al culto de los Perdidos son la",
+    "ficha Cultist (CA 12, HP 9, cimitarra +3 1d6+1). Van en grupo en el Ocaso:",
+    "cuantos llegan hasta ti depende de los hombres de Venides.",
+    "",
+    "Oriol (06/10): «un combate 1 contra 3 [...] mueres un 40 % de las veces; 2",
+    "contra 3, pocas veces; 3 contra 3, solo si son todos mas fuertes». Con el",
+    "simulador del estudio de dificultad (sesiones/2026-10-06-claude-acompanantes-",
+    "dificultad.md) los del Ocaso van en la escalera de fuerza de Tier 1, con sus",
+    "dados en combat.stats (ataque 1 + DES, defensa el mayor de CON y DES).",
+    "",
+    "DANO-02 (Oriol, 06/10): el dano son d6 por la diferencia de exitos, asi que",
+    "las vidas bajan a la mitad y un enemigo que ataca con un dado ya casi no",
+    "hiere: el devoto pasa a DES 1 para seguir siendo el estandar.",
+    "  devoto    = F3 estandar:   8 PV, CON 1, DES 1 (1 contra 3 con el kit: ~40 %)",
+    "  fanatico  = F4 veterano:   6 PV, CON 1, DES 2 (usan magia: peor que armados)",
+    "  carcelero = F3 mas duro:  10 PV, CON 1, DES 1",
+    "  saqueador = 11 PV, CON 1 (1 contra 1 con el kit: casi nunca cae el heroe)",
+    "  Gorran    = 17 PV, CON 1, DES 1 (1 contra 1: ~4 %, como antes; con DES 2,",
+    "              ~10 %; con CON 2 y DES 3, ~25 %)",
+    "",
+    "BND-ALT-02 (08/10): los «6 saqueadores» de la Barriada ([C01]) son esbirros de Surysal (F1: 4 PV,",
+    "CON 0, DES 0): seis contra el heroe solo es un 1 contra 3 (cae el ~32 %; simulador_dificultad",
+    "alternativas).",
+    "",
+    "D0014 (Oriol, 14/10): el empate roza (1) y los esbirros suben a DES 1-2 para que",
+    "acierten el 30-35 % de sus ataques («mas dinamico pero sin pasarnos: un buen reto, no imposible»).",
+    "Medido con simulador_dificultad esbirros (Tier 1 con el kit, las 43 razas y las 4 clases):",
+    "  saqueador = 5 PV, CON 1, DES 2 (antes 11 PV y DES 0: acertaba el 12 %). Contra dos: aciertan",
+    "              el 32 %, rozan el 18 %, 4 rondas, el heroe gana el ~87 % y acaba con ~3/4 de su vida.",
+    "  saqueador_local (la Barriada, F1) sigue con DES 0: con el roce, los seis ya tumban al heroe",
+    "              el ~43 % (antes ~32 %), el «1 contra 3 = 40 %» de Oriol (06/10). Con DES 1, el 83 %."
+  ],
+  "objects": [
+    {
+      "id": "perdido_saqueador",
+      "name": "Perdido saqueador",
+      "category": "enemy",
+      "spriteId": 2,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 5,
+        "maxMana": 0,
+        "skills": [
+          "bnd_enemigo_perdido_saqueador_golpe",
+          "bnd_enemigo_perdido_saqueador_control"
+        ],
+        "stats": {
+          "CON": 1,
+          "DES": 2,
+          "INT": 0,
+          "CAR": 0
+        }
+      }
+    },
+    {
+      "id": "perdido_fanatico",
+      "name": "Fanático del culto",
+      "category": "enemy",
+      "spriteId": 3,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 6,
+        "maxMana": 6,
+        "skills": [
+          "bnd_enemigo_perdido_fanatico_golpe",
+          "bnd_enemigo_perdido_fanatico_control"
+        ],
+        "stats": {
+          "CON": 1,
+          "DES": 2,
+          "INT": 0,
+          "CAR": 0
+        }
+      }
+    },
+    {
+      "id": "cultista_carcelero",
+      "name": "Cultista carcelero",
+      "category": "enemy",
+      "spriteId": 4,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 10,
+        "maxMana": 0,
+        "skills": [
+          "bnd_enemigo_cultista_carcelero_golpe",
+          "bnd_enemigo_cultista_carcelero_control"
+        ],
+        "stats": {
+          "CON": 1,
+          "DES": 1,
+          "INT": 0,
+          "CAR": 0
+        }
+      }
+    },
+    {
+      "id": "gorran_bandido",
+      "name": "Gorran, jefe de los bandidos",
+      "category": "enemy",
+      "spriteId": 5,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 17,
+        "maxMana": 0,
+        "skills": [
+          "bnd_enemigo_gorran_bandido_golpe",
+          "bnd_enemigo_gorran_bandido_control",
+          "bnd_enemigo_gorran_bandido_impulso"
+        ],
+        "stats": {
+          "CON": 1,
+          "DES": 1,
+          "INT": 0,
+          "CAR": 0
+        }
+      }
+    },
+    {
+      "id": "perdido_devoto",
+      "name": "Devoto de los Perdidos",
+      "category": "enemy",
+      "spriteId": 2,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 8,
+        "maxMana": 0,
+        "skills": [
+          "bnd_enemigo_perdido_devoto_golpe",
+          "bnd_enemigo_perdido_devoto_control"
+        ],
+        "stats": {
+          "CON": 1,
+          "DES": 1,
+          "INT": 0,
+          "CAR": 0
+        }
+      }
+    },
+    {
+      "id": "saqueador_local",
+      "name": "Saqueador de Surysal",
+      "category": "enemy",
+      "spriteId": 2,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 4,
+        "maxMana": 0,
+        "skills": [
+          "bnd_enemigo_saqueador_local_golpe",
+          "bnd_enemigo_saqueador_local_control"
+        ],
+        "stats": {
+          "CON": 0,
+          "DES": 0,
+          "INT": 0,
+          "CAR": 0
+        }
+      }
+    },
+    {
+      "id": "sandes",
+      "name": "Sandes",
+      "category": "enemy",
+      "spriteId": 3,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 22,
+        "maxMana": 6,
+        "skills": [
+          "bnd_enemigo_sandes_golpe",
+          "bnd_enemigo_sandes_control",
+          "bnd_enemigo_sandes_impulso"
+        ],
+        "stats": {
+          "CON": 2,
+          "DES": 2,
+          "INT": 1,
+          "CAR": 3
+        }
+      }
+    },
+    {
+      "id": "guardia_comprado",
+      "name": "Guardia con cinta gris",
+      "category": "enemy",
+      "spriteId": 4,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 7,
+        "maxMana": 0,
+        "skills": [
+          "bnd_enemigo_guardia_comprado_golpe",
+          "bnd_enemigo_guardia_comprado_control"
+        ],
+        "stats": {
+          "CON": 1,
+          "DES": 1,
+          "INT": 0,
+          "CAR": 0
+        }
+      }
+    },
+    {
+      "id": "edul_furioso",
+      "name": "Edul, furioso",
+      "category": "enemy",
+      "spriteId": 5,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 16,
+        "maxMana": 0,
+        "skills": [
+          "bnd_enemigo_edul_furioso_golpe",
+          "bnd_enemigo_edul_furioso_control",
+          "bnd_enemigo_edul_furioso_impulso"
+        ],
+        "stats": {
+          "CON": 3,
+          "DES": 2,
+          "INT": 1,
+          "CAR": 0
+        }
+      }
+    },
+    {
+      "id": "bandido_de_gorran",
+      "name": "Bandido de Gorran",
+      "category": "enemy",
+      "spriteId": 2,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 6,
+        "maxMana": 0,
+        "skills": [
+          "bnd_enemigo_bandido_de_gorran_golpe",
+          "bnd_enemigo_bandido_de_gorran_control"
+        ],
+        "stats": {
+          "CON": 1,
+          "DES": 2,
+          "INT": 0,
+          "CAR": 0
+        }
+      }
+    },
+    {
+      "id": "mercenario_killville",
+      "name": "Mercenario de Killville",
+      "category": "enemy",
+      "spriteId": 4,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 8,
+        "maxMana": 0,
+        "stats": {
+          "CON": 2,
+          "DES": 1,
+          "INT": 0,
+          "CAR": 0
+        },
+        "skills": [
+          "bnd_enemigo_mercenario_killville_golpe",
+          "bnd_enemigo_mercenario_killville_control"
+        ]
+      }
+    },
+    {
+      "id": "morvan_tallapedra",
+      "name": "Morvan Tallapedra",
+      "category": "enemy",
+      "spriteId": 5,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 15,
+        "maxMana": 0,
+        "stats": {
+          "CON": 2,
+          "DES": 1,
+          "INT": 0,
+          "CAR": 0
+        },
+        "skills": [
+          "bnd_enemigo_morvan_tallapedra_golpe",
+          "bnd_enemigo_morvan_tallapedra_control",
+          "bnd_enemigo_morvan_tallapedra_impulso"
+        ]
+      }
+    },
+    {
+      "id": "hermano_fumat",
+      "name": "Hermano Fumat",
+      "category": "enemy",
+      "spriteId": 2,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 6,
+        "maxMana": 0,
+        "stats": {
+          "CON": 1,
+          "DES": 2,
+          "INT": 0,
+          "CAR": 0
+        },
+        "skills": [
+          "bnd_enemigo_hermano_fumat_golpe",
+          "bnd_enemigo_hermano_fumat_control"
+        ]
+      }
+    },
+    {
+      "id": "guardia_muelle",
+      "name": "Guardia del muelle",
+      "category": "enemy",
+      "spriteId": 4,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 7,
+        "maxMana": 0,
+        "stats": {
+          "CON": 1,
+          "DES": 1,
+          "INT": 0,
+          "CAR": 0
+        },
+        "skills": [
+          "bnd_enemigo_guardia_muelle_golpe",
+          "bnd_enemigo_guardia_muelle_control"
+        ]
+      }
+    },
+    {
+      "id": "diacono_orfeu",
+      "name": "El diácono Orfeu",
+      "category": "enemy",
+      "spriteId": 4,
+      "blocksMovement": true,
+      "combat": {
+        "maxHealth": 14,
+        "maxMana": 0,
+        "stats": {
+          "CON": 1,
+          "DES": 1,
+          "INT": 0,
+          "CAR": 0
+        },
+        "skills": [
+          "bnd_enemigo_diacono_orfeu_golpe",
+          "bnd_enemigo_diacono_orfeu_control"
+        ]
+      }
+    }
+  ]
+}

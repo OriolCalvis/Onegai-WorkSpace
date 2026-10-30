@@ -1,0 +1,43 @@
+{
+ "id": "cartomante_la_lectura",
+ "name": "La lectura",
+ "type": "passive",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Al empezar el combate echas las cartas y la suerte saca tu arcano. El Sol: atacas con ventaja. La Luna: te defiendes con ventaja. La Estrella: tus curas curan +1. La Torre: tus golpes con arma hacen +1 de daño.",
+ "flavorText": "",
+ "classTags": [
+  "cartomante"
+ ],
+ "trigger": "Constante",
+ "effect": {
+  "description": "Al empezar el combate echas las cartas y la suerte saca tu arcano. El Sol: atacas con ventaja. La Luna: te defiendes con ventaja. La Estrella: tus curas curan +1. La Torre: tus golpes con arma hacen +1 de daño.",
+  "scaling": "none"
+ },
+ "limitations": [],
+ "synergyTags": [],
+ "unique": true,
+ "effects": [
+  {
+   "description": "La suerte saca tu arcano al empezar el combate.",
+   "mechanicHook": "azar_una:sol,luna,estrella,torre"
+  },
+  {
+   "description": "El Sol: atacas con ventaja.",
+   "mechanicHook": "si:sol:ventaja:ataque"
+  },
+  {
+   "description": "La Luna: te defiendes con ventaja.",
+   "mechanicHook": "si:luna:ventaja:defensa"
+  },
+  {
+   "description": "La Estrella: tus curas curan +1.",
+   "mechanicHook": "si:estrella:bono_cura:1"
+  },
+  {
+   "description": "La Torre: tus golpes con arma hacen +1 de daño.",
+   "mechanicHook": "si:torre:bono_dano_arma:1"
+  }
+ ],
+ "fuente": "Propia · Cartomante"
+}

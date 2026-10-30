@@ -1,0 +1,18 @@
+# E-10: calculo del encuadre del visor, independiente de OpenGL.
+add_library(motor_editor_framing src/Editor/MapFraming.cpp)
+target_include_directories(motor_editor_framing PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+if(TARGET motor_editor)
+    target_link_libraries(motor_editor PRIVATE motor_editor_framing)
+endif()
+
+if(BUILD_TESTING)
+    add_executable(test_editor_map_framing tests/Editor/MapFramingTests.cpp)
+    target_include_directories(test_editor_map_framing PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+    target_link_libraries(test_editor_map_framing PRIVATE motor_editor_framing)
+    add_test(NAME test_editor_map_framing COMMAND test_editor_map_framing)
+    set_tests_properties(test_editor_map_framing PROPERTIES LABELS "unit;gl-free")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_editor_map_framing)
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_editor_map_framing)
+    endif()
+endif()

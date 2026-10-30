@@ -1,0 +1,632 @@
+{
+ "_nota": "Atlas runtime de actores genericos con caminar en 4 direcciones. Generado por tools/gen_personajes.py: no editar a mano. Frames 1-based. Cada fila: arriba 1-3, derecha 4-6, abajo 7-9, izquierda 10-12 (paso, quieto, paso). El motor lo reparte asi desde APARIENCIA-01 (HojaPersonaje::animar, tambien para personaje.png): 'animaciones' es el ciclo de los PNJ; el jugador descansa en el frame quieto y su ciclo de andar empieza en el ({8, 7, 8, 9} hacia abajo). TextureManager invierte los PNG al cargarlos: en un atlas de varias filas la region del frame f es defineRegion(f, (f-1) % columns, rows - 1 - (f-1) / columns), como race_npc_idle.",
+ "estado": "runtime",
+ "generador": "tools/gen_personajes.py",
+ "cuerpoBase": "personaje.png",
+ "image": "actores_capas.png",
+ "frameSize": [
+  64,
+  64
+ ],
+ "columns": 12,
+ "rows": 9,
+ "anclaje": {
+  "pies": "centro inferior de la celda",
+  "filaPies": 60,
+  "dibujo": "64x64 con characterAnchor(), igual que personaje.png"
+ },
+ "direcciones": {
+  "arriba": [
+   1,
+   2,
+   3
+  ],
+  "derecha": [
+   4,
+   5,
+   6
+  ],
+  "abajo": [
+   7,
+   8,
+   9
+  ],
+  "izquierda": [
+   10,
+   11,
+   12
+  ]
+ },
+ "animacionesPorFila": {
+  "idle": [
+   8
+  ],
+  "idle_down": [
+   8
+  ],
+  "idle_up": [
+   2
+  ],
+  "idle_right": [
+   5
+  ],
+  "idle_left": [
+   11
+  ],
+  "walk_down": [
+   7,
+   8,
+   9,
+   8
+  ],
+  "walk_up": [
+   1,
+   2,
+   3,
+   2
+  ],
+  "walk_right": [
+   4,
+   5,
+   6,
+   5
+  ],
+  "walk_left": [
+   10,
+   11,
+   12,
+   11
+  ]
+ },
+ "actores": [
+  {
+   "id": "aventurero",
+   "nombre": "Aventurero (jugador)",
+   "fila": 1,
+   "primerFrame": 1,
+   "uso": "Jugador: sustituto de personaje.png como sprite del protagonista.",
+   "composicion": {
+    "raza": "race_human_marches",
+    "ojos": "azul",
+    "barba": null,
+    "pelo": [
+     "corto",
+     "pelo_castano"
+    ],
+    "equipo": {
+     "torso": "aventurero_verde",
+     "piernas": "pantalon_pardo",
+     "pies": "botas"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     8
+    ],
+    "idle_down": [
+     8
+    ],
+    "idle_up": [
+     2
+    ],
+    "idle_right": [
+     5
+    ],
+    "idle_left": [
+     11
+    ],
+    "walk_down": [
+     7,
+     8,
+     9,
+     8
+    ],
+    "walk_up": [
+     1,
+     2,
+     3,
+     2
+    ],
+    "walk_right": [
+     4,
+     5,
+     6,
+     5
+    ],
+    "walk_left": [
+     10,
+     11,
+     12,
+     11
+    ]
+   }
+  },
+  {
+   "id": "aventurero_azul",
+   "nombre": "Aventurero (tinte azul)",
+   "fila": 2,
+   "primerFrame": 13,
+   "uso": "Tinte del aventurero: companero o PNJ viajero.",
+   "composicion": {
+    "raza": "race_human_marches",
+    "barba": null,
+    "pelo": [
+     "corto",
+     "pelo_negro"
+    ],
+    "equipo": {
+     "torso": "aventurero_azul",
+     "piernas": "pantalon_pardo",
+     "pies": "botas"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     20
+    ],
+    "idle_down": [
+     20
+    ],
+    "idle_up": [
+     14
+    ],
+    "idle_right": [
+     17
+    ],
+    "idle_left": [
+     23
+    ],
+    "walk_down": [
+     19,
+     20,
+     21,
+     20
+    ],
+    "walk_up": [
+     13,
+     14,
+     15,
+     14
+    ],
+    "walk_right": [
+     16,
+     17,
+     18,
+     17
+    ],
+    "walk_left": [
+     22,
+     23,
+     24,
+     23
+    ]
+   }
+  },
+  {
+   "id": "aventurero_rojo",
+   "nombre": "Aventurero (tinte rojo)",
+   "fila": 3,
+   "primerFrame": 25,
+   "uso": "Tinte del aventurero: companero o PNJ viajero.",
+   "composicion": {
+    "raza": "race_human_marches",
+    "ojos": "verde",
+    "barba": null,
+    "pelo": [
+     "corto",
+     "pelo_rubio"
+    ],
+    "equipo": {
+     "torso": "aventurero_rojo",
+     "piernas": "pantalon_gris",
+     "pies": "botas"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     32
+    ],
+    "idle_down": [
+     32
+    ],
+    "idle_up": [
+     26
+    ],
+    "idle_right": [
+     29
+    ],
+    "idle_left": [
+     35
+    ],
+    "walk_down": [
+     31,
+     32,
+     33,
+     32
+    ],
+    "walk_up": [
+     25,
+     26,
+     27,
+     26
+    ],
+    "walk_right": [
+     28,
+     29,
+     30,
+     29
+    ],
+    "walk_left": [
+     34,
+     35,
+     36,
+     35
+    ]
+   }
+  },
+  {
+   "id": "aventurero_pardo",
+   "nombre": "Aventurero (tinte pardo)",
+   "fila": 4,
+   "primerFrame": 37,
+   "uso": "Tinte del aventurero: companero o PNJ viajero.",
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_morena",
+    "barba": null,
+    "pelo": [
+     "corto",
+     "pelo_pelirrojo"
+    ],
+    "equipo": {
+     "torso": "aventurero_pardo",
+     "piernas": "pantalon_oliva",
+     "pies": "botas"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     44
+    ],
+    "idle_down": [
+     44
+    ],
+    "idle_up": [
+     38
+    ],
+    "idle_right": [
+     41
+    ],
+    "idle_left": [
+     47
+    ],
+    "walk_down": [
+     43,
+     44,
+     45,
+     44
+    ],
+    "walk_up": [
+     37,
+     38,
+     39,
+     38
+    ],
+    "walk_right": [
+     40,
+     41,
+     42,
+     41
+    ],
+    "walk_left": [
+     46,
+     47,
+     48,
+     47
+    ]
+   }
+  },
+  {
+   "id": "guardia",
+   "nombre": "Guardia de Boundington",
+   "fila": 5,
+   "primerFrame": 49,
+   "uso": "Guardia que patrulla (puertas y zonas de riesgo).",
+   "composicion": {
+    "raza": "race_human_marches",
+    "barba": null,
+    "pelo": null,
+    "equipo": {
+     "cabeza": "chapel",
+     "torso": "sobrevesta_azul",
+     "piernas": "pantalon_gris",
+     "pies": "botas_acero"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     56
+    ],
+    "idle_down": [
+     56
+    ],
+    "idle_up": [
+     50
+    ],
+    "idle_right": [
+     53
+    ],
+    "idle_left": [
+     59
+    ],
+    "walk_down": [
+     55,
+     56,
+     57,
+     56
+    ],
+    "walk_up": [
+     49,
+     50,
+     51,
+     50
+    ],
+    "walk_right": [
+     52,
+     53,
+     54,
+     53
+    ],
+    "walk_left": [
+     58,
+     59,
+     60,
+     59
+    ]
+   }
+  },
+  {
+   "id": "aldeano",
+   "nombre": "Aldeano",
+   "fila": 6,
+   "primerFrame": 61,
+   "uso": "Parroquiano, tendero o vecino que pasea.",
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_morena",
+    "barba": null,
+    "pelo": [
+     "corto",
+     "pelo_rubio"
+    ],
+    "equipo": {
+     "torso": "camisa_chaleco",
+     "piernas": "pantalon_oliva",
+     "pies": "zapatos"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     68
+    ],
+    "idle_down": [
+     68
+    ],
+    "idle_up": [
+     62
+    ],
+    "idle_right": [
+     65
+    ],
+    "idle_left": [
+     71
+    ],
+    "walk_down": [
+     67,
+     68,
+     69,
+     68
+    ],
+    "walk_up": [
+     61,
+     62,
+     63,
+     62
+    ],
+    "walk_right": [
+     64,
+     65,
+     66,
+     65
+    ],
+    "walk_left": [
+     70,
+     71,
+     72,
+     71
+    ]
+   }
+  },
+  {
+   "id": "aldeana",
+   "nombre": "Aldeana",
+   "fila": 7,
+   "primerFrame": 73,
+   "uso": "Parroquiana, tabernera o vecina que pasea.",
+   "composicion": {
+    "raza": "race_human_marches",
+    "ojos": "verde",
+    "barba": null,
+    "pelo": [
+     "largo",
+     "pelo_oscuro"
+    ],
+    "equipo": {
+     "torso": "vestido_tabernera",
+     "pies": "zapatos"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     80
+    ],
+    "idle_down": [
+     80
+    ],
+    "idle_up": [
+     74
+    ],
+    "idle_right": [
+     77
+    ],
+    "idle_left": [
+     83
+    ],
+    "walk_down": [
+     79,
+     80,
+     81,
+     80
+    ],
+    "walk_up": [
+     73,
+     74,
+     75,
+     74
+    ],
+    "walk_right": [
+     76,
+     77,
+     78,
+     77
+    ],
+    "walk_left": [
+     82,
+     83,
+     84,
+     83
+    ]
+   }
+  },
+  {
+   "id": "cultista",
+   "nombre": "Perdido encapuchado (cultista)",
+   "fila": 8,
+   "primerFrame": 85,
+   "uso": "Perdido encapuchado: saqueador o fanatico que se mueve.",
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_palida",
+    "ojos": "ambar",
+    "barba": null,
+    "pelo": null,
+    "equipo": {
+     "cabeza": "capucha_purpura",
+     "torso": "habito_purpura",
+     "pies": "sandalias"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     92
+    ],
+    "idle_down": [
+     92
+    ],
+    "idle_up": [
+     86
+    ],
+    "idle_right": [
+     89
+    ],
+    "idle_left": [
+     95
+    ],
+    "walk_down": [
+     91,
+     92,
+     93,
+     92
+    ],
+    "walk_up": [
+     85,
+     86,
+     87,
+     86
+    ],
+    "walk_right": [
+     88,
+     89,
+     90,
+     89
+    ],
+    "walk_left": [
+     94,
+     95,
+     96,
+     95
+    ]
+   }
+  },
+  {
+   "id": "cultista_carcelero",
+   "nombre": "Carcelero del culto",
+   "fila": 9,
+   "primerFrame": 97,
+   "uso": "Carcelero del culto.",
+   "composicion": {
+    "raza": "race_human_marches",
+    "piel": "piel_palida",
+    "ojos": "ambar",
+    "barba": null,
+    "pelo": null,
+    "equipo": {
+     "cabeza": "capucha_gris",
+     "torso": "habito_gris",
+     "pies": "sandalias"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     104
+    ],
+    "idle_down": [
+     104
+    ],
+    "idle_up": [
+     98
+    ],
+    "idle_right": [
+     101
+    ],
+    "idle_left": [
+     107
+    ],
+    "walk_down": [
+     103,
+     104,
+     105,
+     104
+    ],
+    "walk_up": [
+     97,
+     98,
+     99,
+     98
+    ],
+    "walk_right": [
+     100,
+     101,
+     102,
+     101
+    ],
+    "walk_left": [
+     106,
+     107,
+     108,
+     107
+    ]
+   }
+  }
+ ]
+}

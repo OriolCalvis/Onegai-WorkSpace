@@ -1,0 +1,47 @@
+{
+ "id": "INT-02",
+ "date": "2026-10-05",
+ "author": "Claude (Cowork, encargo de Oriol)",
+ "status": "HECHO en el arbol (dos commits locales: el viajero y los interiores); entrega al Mac como paquete (base 39a1b21). Hay C++ (un demo y una prueba): recompilar.",
+ "encargo": "«1. La frase del yokai de la plaza («He visto caer tres ciudades. Todas olían así la víspera») se fue con él. ¿Quieres que la diga otro? Que lo susurre Chronos disfrazado de mortal. 2. Amueblamos las zonas.» Respuestas: «Viajero anonimo» (nadie dice que es Chronos, opcional); «Los 33 interiores del este»; «Un toque por nacion».",
+ "resultado": {
+  "viajero": "chronos_disfrazado («Viajero de paso»): capucha y habito grises, ojos dorados, barba blanca, baston de roble y un reloj de arena en la mano izquierda (pieza nueva solo de PNJ, reloj_arena). Susurra la frase del yokai. Beat opcional beat_plaza_viajero (flag plaza_hablado_chronos): la plaza se sigue cerrando con los once pueblos. demo_plaza_razas: 14 beats.",
+  "interiores": "Los 33 interior_en_* son salas del kit de INT-01 con el tamano de su tier (pueblo 11x9, ciudad 13x10 y 14x11, capital 14x11 y 16x12) y el toque de su nacion: Gongorguma (piedra calida con mascaras de teatro, estandartes, tambores, totems; se bebe de pie: mesas largas sin asientos; la mesa de los clanes en Guskedor; la taberna con escenario en Qethatos), Choubar (madera con cuerdas, perchas, mesa de cartas, cabrestantes), Mistarium (estuco azul en los pueblos, noble azul con espejos en ciudades; espejos de corte, cristales de bruma, libros que flotan; el mercado, poco y caro), Nocturnsea (piedra oscura con telaranas, velas derretidas, huesos, sin hogar; ataudes por cama en la Posada del Faro). Locales propios: Arena de clanes, Casa de fletamento, Archivo de la Bruma, Posada del Faro. 1071 muebles.",
+  "variedad": "Dos plantillas por tipo y tamano y cada una tambien en espejo (x<->y): los locales hermanos de una nacion no salen iguales.",
+  "kit": "10 muebles nuevos (tools/iso/mobles_nacions.py) y 4 decoraciones de pared (telarana, espejo, mascaras, cuerdas; tools/iso/sales.py); el ladrillo tambien con cuerdas.",
+  "pnj": "249 PNJ en 325 aspectos (uno mas: el viajero); los tenderos del este, los mismos, detras de su mostrador",
+  "pixellab": "0 generaciones"
+ },
+ "archivos": {
+  "nuevos": [
+   "tools/iso/mobles_nacions.py",
+   "tools/interiors_kit/este.py",
+   "tools/interiors_kit/este_sales.py",
+   "Claude outputs/int2/ (laminas, capturas del juego, LEEME)",
+   "planificacion/seguimiento/INT-02.json"
+  ],
+  "modificados": [
+   "tools/iso/sales.py, tools/iso/mobles.py, tools/iso/exportar_mobles.py (las hojas del kit se quedan en su sitio en sprites.json)",
+   "tools/gen_interiores_kit.py (filtro por prefijo: `en`, `en_grytoz`), tools/interiors_kit/__init__.py, tools/gen_este_norte.py (aviso)",
+   "assets/textures/kit_parets.*, kit_mobles.*, assets/objects/mobles_kit.json",
+   "assets/levels/interior_en_*.json y assets/maps/interior_en_*.tmx (33), assets/levels/ciudad_en_*.json (15: la puerta a la estera nueva), assets/textures/sprites.json (alias de las 33 salidas), assets/proyectos/este_norte.json (mobles_kit.json)",
+   "tools/actores_pnj.py, tools/actores_oficios.py, assets/textures/personajes.json, personajes.md, personajes/equipo/mano_izq_*.png, pnj_boundington.*",
+   "assets/objects/plaza_razas_objetos.json, assets/levels/plaza_de_las_razas.json, assets/adventures/plaza_de_las_razas.json",
+   "examples/demo_este_norte.cpp (carga tambien mobles_kit.json), tests/Game/RegistroSpritesTests.cpp (las salidas del este, la estera), examples/demo_plaza_razas.cpp"
+  ]
+ },
+ "verificacion": [
+  "demo_este_norte: 22 exteriores + 33 interiores cargan y todos sus objetos tienen ficha",
+  "test_registro_sprites, test_project_catalog, test_personajes_capas, test_editor_apariencia OK; demo_plaza_razas OK (11 razas y el viajero, 14 beats)",
+  "validar_todo 0 errores (este_norte: 55 niveles contra 1467 objetos); validar_pnj 249/325; conectividad OK",
+  "el generador comprueba que de la entrada se llega a todas las celdas libres y al tendero; es determinista",
+  "ctest: las 18 fallas de siempre; linea_base_core con las 35 deudas previas",
+  "capturas del juego de las 33 salas y del viajero en la plaza"
+ ],
+ "pendiente": [
+  "los muebles son decorativos (sentarse, abrir cofres, dormir: otro encargo)",
+  "los interiores del este tienen solo al tendero: parroquianos, si Oriol quiere",
+  "tools/gen_este_norte.py ya no corre (gen_ciudad.py ya no tiene PIEDRA_VIEJA); si se arregla y se vuelve a correr, despues `python3 tools/gen_interiores_kit.py en`",
+  "31 enemigos de la faccion yokai_del_umbral: sin tocar, a decidir por Oriol (de PNJ-02)"
+ ]
+}

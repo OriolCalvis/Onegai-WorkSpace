@@ -1,0 +1,20 @@
+# D-05 / DEC-05: carga de catálogos de proyecto compartida por paleta/playtest.
+add_library(motor_project_catalog src/Project/ProjectCatalog.cpp)
+target_link_libraries(motor_project_catalog PUBLIC motor_project motor_level)
+if(TARGET level_editor)
+    target_link_libraries(level_editor PRIVATE motor_project_catalog)
+endif()
+
+if(BUILD_TESTING)
+    add_executable(test_project_catalog tests/Project/ProjectCatalogTests.cpp)
+    target_include_directories(test_project_catalog PRIVATE tests)
+    target_link_libraries(test_project_catalog PRIVATE motor_project_catalog motor_map)
+    add_dependencies(test_project_catalog copiar_assets)
+    add_test(NAME test_project_catalog COMMAND test_project_catalog)
+    set_tests_properties(test_project_catalog PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" LABELS "unit;gl-free")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_project_catalog)
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_project_catalog)
+    endif()
+endif()

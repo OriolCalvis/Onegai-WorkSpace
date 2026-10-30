@@ -1,0 +1,51 @@
+{
+ "id": "paladin_del_juramento_grilletes_al_rojo",
+ "name": "Grilletes al rojo",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Unos grilletes al rojo le sujetan los brazos. Si falla la salvación (resistencia física), se defiende con desventaja y con -1 a la CA 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "paladin_del_juramento"
+ ],
+ "roleTags": [],
+ "tags": [
+  "paladin_del_juramento",
+  "estandar"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "CAR",
+ "defenseStat": "resistencia_fisica",
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Unos grilletes al rojo le sujetan los brazos. Si falla la salvación (resistencia física), se defiende con desventaja y con -1 a la CA 2 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Grilletes: se defiende con desventaja 2 turnos.",
+   "mechanicHook": "estado:2:desventaja:defensa"
+  },
+  {
+   "description": "Grilletes: -1 a la CA 2 turnos.",
+   "mechanicHook": "estado:2:penal_ca:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "Propia · Paladín del Juramento"
+}

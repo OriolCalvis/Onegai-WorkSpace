@@ -1,0 +1,38 @@
+{
+ "id": "deity_wild_court",
+ "name": "La Corte Salvaje",
+ "type": "deity",
+ "domain": "caza, espesura y lo indómito",
+ "favor": {
+  "description": "1/descanso largo: el bosque te esconde — ganas ventaja en todas tus pruebas de sigilo durante una escena.",
+  "scaling": "CAR"
+ },
+ "compatibleWith": [
+  "race_elf_canopy",
+  "cambiaformas",
+  "devoto_del_bosque"
+ ],
+ "obligations": [
+  "No caces jamás por deporte ni dejes una presa herida sin rematar o sanar."
+ ],
+ "grantedSpells": [
+  "salvaje_savia_compartida",
+  "salvaje_gracia_del_ciervo",
+  "salvaje_flecha_de_espinas",
+  "salvaje_maleza_subita",
+  "salvaje_lengua_verde",
+  "salvaje_claro_del_bosque",
+  "salvaje_justicia_de_la_espesura",
+  "salvaje_marcha_de_la_caceria",
+  "salvaje_llamada_del_territorio",
+  "salvaje_el_senor_de_las_astas"
+ ],
+ "flavorText": "La Corte no tiene trono. Tiene territorio.",
+ "rank": "deidad_local",
+ "_correccion": {
+  "identidad_anterior": "life / Vida",
+  "motivo": "El nombre de Creador estaba pegado sobre contenido ajeno.",
+  "evidencia": "dominio 'caza, espesura y lo indomito' + salvaje_* · Escarcha, Sol",
+  "aplicado_por": "Onegai-Core/bridge/restaurar_identidad_deidades.py"
+ }
+}

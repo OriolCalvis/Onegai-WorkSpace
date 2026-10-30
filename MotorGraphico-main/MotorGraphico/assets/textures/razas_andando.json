@@ -1,0 +1,2628 @@
+{
+ "_nota": "Las 43 razas del catalogo vestidas, andando en 4 direcciones (sustituye a los retratos quietos de race_npc_idle.png). Generado por tools/gen_personajes.py: no editar a mano. Frames 1-based. Cada fila: arriba 1-3, derecha 4-6, abajo 7-9, izquierda 10-12 (paso, quieto, paso). El motor lo reparte asi desde APARIENCIA-01 (HojaPersonaje::animar, tambien para personaje.png): 'animaciones' es el ciclo de los PNJ; el jugador descansa en el frame quieto y su ciclo de andar empieza en el ({8, 7, 8, 9} hacia abajo). TextureManager invierte los PNG al cargarlos: en un atlas de varias filas la region del frame f es defineRegion(f, (f-1) % columns, rows - 1 - (f-1) / columns), como race_npc_idle.",
+ "estado": "runtime",
+ "generador": "tools/gen_personajes.py",
+ "cuerpoBase": "personaje.png",
+ "image": "razas_andando.png",
+ "frameSize": [
+  64,
+  64
+ ],
+ "columns": 12,
+ "rows": 45,
+ "anclaje": {
+  "pies": "centro inferior de la celda",
+  "filaPies": 60,
+  "dibujo": "64x64 con characterAnchor(), igual que personaje.png"
+ },
+ "direcciones": {
+  "arriba": [
+   1,
+   2,
+   3
+  ],
+  "derecha": [
+   4,
+   5,
+   6
+  ],
+  "abajo": [
+   7,
+   8,
+   9
+  ],
+  "izquierda": [
+   10,
+   11,
+   12
+  ]
+ },
+ "animacionesPorFila": {
+  "idle": [
+   8
+  ],
+  "idle_down": [
+   8
+  ],
+  "idle_up": [
+   2
+  ],
+  "idle_right": [
+   5
+  ],
+  "idle_left": [
+   11
+  ],
+  "walk_down": [
+   7,
+   8,
+   9,
+   8
+  ],
+  "walk_up": [
+   1,
+   2,
+   3,
+   2
+  ],
+  "walk_right": [
+   4,
+   5,
+   6,
+   5
+  ],
+  "walk_left": [
+   10,
+   11,
+   12,
+   11
+  ]
+ },
+ "actores": [
+  {
+   "id": "aarakocra_de_las_montanas",
+   "nombre": "Aarakocra de las Montañas",
+   "fila": 1,
+   "primerFrame": 1,
+   "uso": "PNJ de raza Aarakocra de las Montañas (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "aarakocra_de_las_montanas",
+    "equipo": {
+     "torso": "tunica_azul",
+     "arma": "baston_roble"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     8
+    ],
+    "idle_down": [
+     8
+    ],
+    "idle_up": [
+     2
+    ],
+    "idle_right": [
+     5
+    ],
+    "idle_left": [
+     11
+    ],
+    "walk_down": [
+     7,
+     8,
+     9,
+     8
+    ],
+    "walk_up": [
+     1,
+     2,
+     3,
+     2
+    ],
+    "walk_right": [
+     4,
+     5,
+     6,
+     5
+    ],
+    "walk_left": [
+     10,
+     11,
+     12,
+     11
+    ]
+   }
+  },
+  {
+   "id": "aarakocra_del_viento",
+   "nombre": "Aarakocra del Viento",
+   "fila": 2,
+   "primerFrame": 13,
+   "uso": "PNJ de raza Aarakocra del Viento (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "aarakocra_del_viento",
+    "equipo": {
+     "torso": "tunica_sacerdote",
+     "mano_izq": "orbe"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     20
+    ],
+    "idle_down": [
+     20
+    ],
+    "idle_up": [
+     14
+    ],
+    "idle_right": [
+     17
+    ],
+    "idle_left": [
+     23
+    ],
+    "walk_down": [
+     19,
+     20,
+     21,
+     20
+    ],
+    "walk_up": [
+     13,
+     14,
+     15,
+     14
+    ],
+    "walk_right": [
+     16,
+     17,
+     18,
+     17
+    ],
+    "walk_left": [
+     22,
+     23,
+     24,
+     23
+    ]
+   }
+  },
+  {
+   "id": "alquimistas_de_aegroum",
+   "nombre": "Alquimistas de Aegroum",
+   "fila": 3,
+   "primerFrame": 25,
+   "uso": "PNJ de raza Alquimistas de Aegroum (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "alquimistas_de_aegroum",
+    "equipo": {
+     "torso": "camisa_chaleco_oscuro",
+     "piernas": "pantalon_pardo",
+     "pies": "botas",
+     "mano_izq": "pocion"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     32
+    ],
+    "idle_down": [
+     32
+    ],
+    "idle_up": [
+     26
+    ],
+    "idle_right": [
+     29
+    ],
+    "idle_left": [
+     35
+    ],
+    "walk_down": [
+     31,
+     32,
+     33,
+     32
+    ],
+    "walk_up": [
+     25,
+     26,
+     27,
+     26
+    ],
+    "walk_right": [
+     28,
+     29,
+     30,
+     29
+    ],
+    "walk_left": [
+     34,
+     35,
+     36,
+     35
+    ]
+   }
+  },
+  {
+   "id": "cara_loca",
+   "nombre": "Cara Loca",
+   "fila": 4,
+   "primerFrame": 37,
+   "uso": "PNJ de raza Cara Loca (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "cara_loca",
+    "equipo": {
+     "torso": "tunica_roja",
+     "piernas": "pantalon_pardo",
+     "pies": "botas",
+     "capa": "capa_corta_verde",
+     "arma": "baston_roble"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     44
+    ],
+    "idle_down": [
+     44
+    ],
+    "idle_up": [
+     38
+    ],
+    "idle_right": [
+     41
+    ],
+    "idle_left": [
+     47
+    ],
+    "walk_down": [
+     43,
+     44,
+     45,
+     44
+    ],
+    "walk_up": [
+     37,
+     38,
+     39,
+     38
+    ],
+    "walk_right": [
+     40,
+     41,
+     42,
+     41
+    ],
+    "walk_left": [
+     46,
+     47,
+     48,
+     47
+    ]
+   }
+  },
+  {
+   "id": "cazador_nocturno",
+   "nombre": "Cazador Nocturno",
+   "fila": 5,
+   "primerFrame": 49,
+   "uso": "PNJ de raza Cazador Nocturno (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "cazador_nocturno",
+    "equipo": {
+     "cabeza": "capucha_negra",
+     "torso": "cuero_oscuro",
+     "piernas": "pantalon_negro",
+     "pies": "botas",
+     "capa": "capa_purpura",
+     "arma": "arco_ceniza"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     56
+    ],
+    "idle_down": [
+     56
+    ],
+    "idle_up": [
+     50
+    ],
+    "idle_right": [
+     53
+    ],
+    "idle_left": [
+     59
+    ],
+    "walk_down": [
+     55,
+     56,
+     57,
+     56
+    ],
+    "walk_up": [
+     49,
+     50,
+     51,
+     50
+    ],
+    "walk_right": [
+     52,
+     53,
+     54,
+     53
+    ],
+    "walk_left": [
+     58,
+     59,
+     60,
+     59
+    ]
+   }
+  },
+  {
+   "id": "diplomaticos_de_bastrea",
+   "nombre": "Diplomáticos de Bastrea",
+   "fila": 6,
+   "primerFrame": 61,
+   "uso": "PNJ de raza Diplomáticos de Bastrea (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "diplomaticos_de_bastrea",
+    "equipo": {
+     "torso": "tunica_sacerdote",
+     "pies": "sandalias",
+     "arma": "baston_roble"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     68
+    ],
+    "idle_down": [
+     68
+    ],
+    "idle_up": [
+     62
+    ],
+    "idle_right": [
+     65
+    ],
+    "idle_left": [
+     71
+    ],
+    "walk_down": [
+     67,
+     68,
+     69,
+     68
+    ],
+    "walk_up": [
+     61,
+     62,
+     63,
+     62
+    ],
+    "walk_right": [
+     64,
+     65,
+     66,
+     65
+    ],
+    "walk_left": [
+     70,
+     71,
+     72,
+     71
+    ]
+   }
+  },
+  {
+   "id": "draconidos_de_fuego",
+   "nombre": "Dracónidos de Fuego",
+   "fila": 7,
+   "primerFrame": 73,
+   "uso": "PNJ de raza Dracónidos de Fuego (talla grande), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "draconidos_de_fuego",
+    "equipo": {
+     "torso": "escamas_bronce",
+     "piernas": "grebas_cuero",
+     "pies": "botas",
+     "arma": "espada_ceniza"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     80
+    ],
+    "idle_down": [
+     80
+    ],
+    "idle_up": [
+     74
+    ],
+    "idle_right": [
+     77
+    ],
+    "idle_left": [
+     83
+    ],
+    "walk_down": [
+     79,
+     80,
+     81,
+     80
+    ],
+    "walk_up": [
+     73,
+     74,
+     75,
+     74
+    ],
+    "walk_right": [
+     76,
+     77,
+     78,
+     77
+    ],
+    "walk_left": [
+     82,
+     83,
+     84,
+     83
+    ]
+   }
+  },
+  {
+   "id": "draconidos_de_hielo",
+   "nombre": "Dracónidos de Hielo",
+   "fila": 8,
+   "primerFrame": 85,
+   "uso": "PNJ de raza Dracónidos de Hielo (talla grande), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "draconidos_de_hielo",
+    "equipo": {
+     "torso": "cota_malla",
+     "piernas": "pantalon_gris",
+     "pies": "botas",
+     "arma": "hacha_acero"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     92
+    ],
+    "idle_down": [
+     92
+    ],
+    "idle_up": [
+     86
+    ],
+    "idle_right": [
+     89
+    ],
+    "idle_left": [
+     95
+    ],
+    "walk_down": [
+     91,
+     92,
+     93,
+     92
+    ],
+    "walk_up": [
+     85,
+     86,
+     87,
+     86
+    ],
+    "walk_right": [
+     88,
+     89,
+     90,
+     89
+    ],
+    "walk_left": [
+     94,
+     95,
+     96,
+     95
+    ]
+   }
+  },
+  {
+   "id": "drow_de_la_casa_noble",
+   "nombre": "Drow de la Casa Noble",
+   "fila": 9,
+   "primerFrame": 97,
+   "uso": "PNJ de raza Drow de la Casa Noble (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "drow_de_la_casa_noble",
+    "equipo": {
+     "torso": "habito_purpura",
+     "pies": "botas_altas",
+     "arma": "espada_ceniza",
+     "mano_izq": "orbe"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     104
+    ],
+    "idle_down": [
+     104
+    ],
+    "idle_up": [
+     98
+    ],
+    "idle_right": [
+     101
+    ],
+    "idle_left": [
+     107
+    ],
+    "walk_down": [
+     103,
+     104,
+     105,
+     104
+    ],
+    "walk_up": [
+     97,
+     98,
+     99,
+     98
+    ],
+    "walk_right": [
+     100,
+     101,
+     102,
+     101
+    ],
+    "walk_left": [
+     106,
+     107,
+     108,
+     107
+    ]
+   }
+  },
+  {
+   "id": "drow_explorador",
+   "nombre": "Drow Explorador",
+   "fila": 10,
+   "primerFrame": 109,
+   "uso": "PNJ de raza Drow Explorador (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "drow_explorador",
+    "equipo": {
+     "torso": "cuero_oscuro",
+     "piernas": "pantalon_negro",
+     "pies": "botas_altas",
+     "capa": "capa_verde",
+     "arma": "martillo_acero"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     116
+    ],
+    "idle_down": [
+     116
+    ],
+    "idle_up": [
+     110
+    ],
+    "idle_right": [
+     113
+    ],
+    "idle_left": [
+     119
+    ],
+    "walk_down": [
+     115,
+     116,
+     117,
+     116
+    ],
+    "walk_up": [
+     109,
+     110,
+     111,
+     110
+    ],
+    "walk_right": [
+     112,
+     113,
+     114,
+     113
+    ],
+    "walk_left": [
+     118,
+     119,
+     120,
+     119
+    ]
+   }
+  },
+  {
+   "id": "drow_de_las_sombras",
+   "nombre": "Drow de las Sombras",
+   "fila": 11,
+   "primerFrame": 121,
+   "uso": "PNJ de raza Drow de las Sombras (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "drow_de_las_sombras",
+    "equipo": {
+     "torso": "kimono_negro",
+     "pies": "sandalias",
+     "mano_izq": "farol"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     128
+    ],
+    "idle_down": [
+     128
+    ],
+    "idle_up": [
+     122
+    ],
+    "idle_right": [
+     125
+    ],
+    "idle_left": [
+     131
+    ],
+    "walk_down": [
+     127,
+     128,
+     129,
+     128
+    ],
+    "walk_up": [
+     121,
+     122,
+     123,
+     122
+    ],
+    "walk_right": [
+     124,
+     125,
+     126,
+     125
+    ],
+    "walk_left": [
+     130,
+     131,
+     132,
+     131
+    ]
+   }
+  },
+  {
+   "id": "elfos_de_las_estrellas",
+   "nombre": "Elfos de las Estrellas",
+   "fila": 12,
+   "primerFrame": 133,
+   "uso": "PNJ de raza Elfos de las Estrellas (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "elfos_de_las_estrellas",
+    "equipo": {
+     "cabeza": "diadema",
+     "torso": "tunica_mago",
+     "pies": "zapatos",
+     "arma": "baston_cristal"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     140
+    ],
+    "idle_down": [
+     140
+    ],
+    "idle_up": [
+     134
+    ],
+    "idle_right": [
+     137
+    ],
+    "idle_left": [
+     143
+    ],
+    "walk_down": [
+     139,
+     140,
+     141,
+     140
+    ],
+    "walk_up": [
+     133,
+     134,
+     135,
+     134
+    ],
+    "walk_right": [
+     136,
+     137,
+     138,
+     137
+    ],
+    "walk_left": [
+     142,
+     143,
+     144,
+     143
+    ]
+   }
+  },
+  {
+   "id": "elfos_del_bosque",
+   "nombre": "Elfos del Bosque",
+   "fila": 13,
+   "primerFrame": 145,
+   "uso": "PNJ de raza Elfos del Bosque (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "elfos_del_bosque",
+    "equipo": {
+     "torso": "tunica_verde",
+     "piernas": "calzas_verdes",
+     "pies": "botas_claras",
+     "capa": "capa_corta_verde",
+     "arma": "arco_roble"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     152
+    ],
+    "idle_down": [
+     152
+    ],
+    "idle_up": [
+     146
+    ],
+    "idle_right": [
+     149
+    ],
+    "idle_left": [
+     155
+    ],
+    "walk_down": [
+     151,
+     152,
+     153,
+     152
+    ],
+    "walk_up": [
+     145,
+     146,
+     147,
+     146
+    ],
+    "walk_right": [
+     148,
+     149,
+     150,
+     149
+    ],
+    "walk_left": [
+     154,
+     155,
+     156,
+     155
+    ]
+   }
+  },
+  {
+   "id": "enanos_forjadores",
+   "nombre": "Enanos Forjadores",
+   "fila": 14,
+   "primerFrame": 157,
+   "uso": "PNJ de raza Enanos Forjadores (talla bajo), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "enanos_forjadores",
+    "equipo": {
+     "torso": "camisa_chaleco_oscuro",
+     "piernas": "pantalon_pardo",
+     "pies": "botas",
+     "arma": "martillo_acero"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     164
+    ],
+    "idle_down": [
+     164
+    ],
+    "idle_up": [
+     158
+    ],
+    "idle_right": [
+     161
+    ],
+    "idle_left": [
+     167
+    ],
+    "walk_down": [
+     163,
+     164,
+     165,
+     164
+    ],
+    "walk_up": [
+     157,
+     158,
+     159,
+     158
+    ],
+    "walk_right": [
+     160,
+     161,
+     162,
+     161
+    ],
+    "walk_left": [
+     166,
+     167,
+     168,
+     167
+    ]
+   }
+  },
+  {
+   "id": "enanos_historiadores",
+   "nombre": "Enanos Historiadores",
+   "fila": 15,
+   "primerFrame": 169,
+   "uso": "PNJ de raza Enanos Historiadores (talla bajo), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "enanos_historiadores",
+    "equipo": {
+     "torso": "tunica_mago",
+     "pies": "botas",
+     "mano_izq": "grimorio"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     176
+    ],
+    "idle_down": [
+     176
+    ],
+    "idle_up": [
+     170
+    ],
+    "idle_right": [
+     173
+    ],
+    "idle_left": [
+     179
+    ],
+    "walk_down": [
+     175,
+     176,
+     177,
+     176
+    ],
+    "walk_up": [
+     169,
+     170,
+     171,
+     170
+    ],
+    "walk_right": [
+     172,
+     173,
+     174,
+     173
+    ],
+    "walk_left": [
+     178,
+     179,
+     180,
+     179
+    ]
+   }
+  },
+  {
+   "id": "espectros",
+   "nombre": "Espectros",
+   "fila": 16,
+   "primerFrame": 181,
+   "uso": "PNJ de raza Espectros (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "espectros",
+    "equipo": {}
+   },
+   "animaciones": {
+    "idle": [
+     188
+    ],
+    "idle_down": [
+     188
+    ],
+    "idle_up": [
+     182
+    ],
+    "idle_right": [
+     185
+    ],
+    "idle_left": [
+     191
+    ],
+    "walk_down": [
+     187,
+     188,
+     189,
+     188
+    ],
+    "walk_up": [
+     181,
+     182,
+     183,
+     182
+    ],
+    "walk_right": [
+     184,
+     185,
+     186,
+     185
+    ],
+    "walk_left": [
+     190,
+     191,
+     192,
+     191
+    ]
+   }
+  },
+  {
+   "id": "guardianes_de_la_luz",
+   "nombre": "Guardianes de la Luz",
+   "fila": 17,
+   "primerFrame": 193,
+   "uso": "PNJ de raza Guardianes de la Luz (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "guardianes_de_la_luz",
+    "equipo": {
+     "torso": "placas_acero",
+     "piernas": "quijotes",
+     "pies": "escarpes",
+     "capa": "capa_azul",
+     "arma": "espada_oro",
+     "mano_izq": "escudo_oro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     200
+    ],
+    "idle_down": [
+     200
+    ],
+    "idle_up": [
+     194
+    ],
+    "idle_right": [
+     197
+    ],
+    "idle_left": [
+     203
+    ],
+    "walk_down": [
+     199,
+     200,
+     201,
+     200
+    ],
+    "walk_up": [
+     193,
+     194,
+     195,
+     194
+    ],
+    "walk_right": [
+     196,
+     197,
+     198,
+     197
+    ],
+    "walk_left": [
+     202,
+     203,
+     204,
+     203
+    ]
+   }
+  },
+  {
+   "id": "guardianes_del_elemento",
+   "nombre": "Guardianes del Elemento",
+   "fila": 18,
+   "primerFrame": 205,
+   "uso": "PNJ de raza Guardianes del Elemento (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "guardianes_del_elemento",
+    "equipo": {
+     "cabeza": "corona_ramas",
+     "torso": "cuero",
+     "piernas": "pantalon_pardo",
+     "pies": "sandalias",
+     "arma": "baston_roble"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     212
+    ],
+    "idle_down": [
+     212
+    ],
+    "idle_up": [
+     206
+    ],
+    "idle_right": [
+     209
+    ],
+    "idle_left": [
+     215
+    ],
+    "walk_down": [
+     211,
+     212,
+     213,
+     212
+    ],
+    "walk_up": [
+     205,
+     206,
+     207,
+     206
+    ],
+    "walk_right": [
+     208,
+     209,
+     210,
+     209
+    ],
+    "walk_left": [
+     214,
+     215,
+     216,
+     215
+    ]
+   }
+  },
+  {
+   "id": "hechiceros_oscuros",
+   "nombre": "Hechiceros Oscuros",
+   "fila": 19,
+   "primerFrame": 217,
+   "uso": "PNJ de raza Hechiceros Oscuros (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "hechiceros_oscuros",
+    "equipo": {
+     "torso": "habito_purpura",
+     "pies": "zapatos",
+     "capa": "capa_negra",
+     "arma": "baston_cristal"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     224
+    ],
+    "idle_down": [
+     224
+    ],
+    "idle_up": [
+     218
+    ],
+    "idle_right": [
+     221
+    ],
+    "idle_left": [
+     227
+    ],
+    "walk_down": [
+     223,
+     224,
+     225,
+     224
+    ],
+    "walk_up": [
+     217,
+     218,
+     219,
+     218
+    ],
+    "walk_right": [
+     220,
+     221,
+     222,
+     221
+    ],
+    "walk_left": [
+     226,
+     227,
+     228,
+     227
+    ]
+   }
+  },
+  {
+   "id": "hombres_lagarto_de_la_selva",
+   "nombre": "Hombres Lagarto de la Selva",
+   "fila": 20,
+   "primerFrame": 229,
+   "uso": "PNJ de raza Hombres Lagarto de la Selva (talla grande), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "hombres_lagarto_de_la_selva",
+    "equipo": {
+     "torso": "cuero",
+     "arma": "lanza_bronce",
+     "mano_izq": "escudo_madera"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     236
+    ],
+    "idle_down": [
+     236
+    ],
+    "idle_up": [
+     230
+    ],
+    "idle_right": [
+     233
+    ],
+    "idle_left": [
+     239
+    ],
+    "walk_down": [
+     235,
+     236,
+     237,
+     236
+    ],
+    "walk_up": [
+     229,
+     230,
+     231,
+     230
+    ],
+    "walk_right": [
+     232,
+     233,
+     234,
+     233
+    ],
+    "walk_left": [
+     238,
+     239,
+     240,
+     239
+    ]
+   }
+  },
+  {
+   "id": "hombres_lagarto_del_pantano",
+   "nombre": "Hombres Lagarto del Pantano",
+   "fila": 21,
+   "primerFrame": 241,
+   "uso": "PNJ de raza Hombres Lagarto del Pantano (talla grande), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "hombres_lagarto_del_pantano",
+    "equipo": {
+     "torso": "harapos",
+     "arma": "tridente"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     248
+    ],
+    "idle_down": [
+     248
+    ],
+    "idle_up": [
+     242
+    ],
+    "idle_right": [
+     245
+    ],
+    "idle_left": [
+     251
+    ],
+    "walk_down": [
+     247,
+     248,
+     249,
+     248
+    ],
+    "walk_up": [
+     241,
+     242,
+     243,
+     242
+    ],
+    "walk_right": [
+     244,
+     245,
+     246,
+     245
+    ],
+    "walk_left": [
+     250,
+     251,
+     252,
+     251
+    ]
+   }
+  },
+  {
+   "id": "medianos_del_bosque",
+   "nombre": "Medianos del Bosque",
+   "fila": 22,
+   "primerFrame": 253,
+   "uso": "PNJ de raza Medianos del Bosque (talla pequeno), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "medianos_del_bosque",
+    "equipo": {
+     "torso": "camisa_chaleco",
+     "piernas": "pantalon_pardo",
+     "capa": "capa_corta_verde",
+     "arma": "baston_roble"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     260
+    ],
+    "idle_down": [
+     260
+    ],
+    "idle_up": [
+     254
+    ],
+    "idle_right": [
+     257
+    ],
+    "idle_left": [
+     263
+    ],
+    "walk_down": [
+     259,
+     260,
+     261,
+     260
+    ],
+    "walk_up": [
+     253,
+     254,
+     255,
+     254
+    ],
+    "walk_right": [
+     256,
+     257,
+     258,
+     257
+    ],
+    "walk_left": [
+     262,
+     263,
+     264,
+     263
+    ]
+   }
+  },
+  {
+   "id": "medianos_urbanos",
+   "nombre": "Medianos Urbanos",
+   "fila": 23,
+   "primerFrame": 265,
+   "uso": "PNJ de raza Medianos Urbanos (talla pequeno), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "medianos_urbanos",
+    "equipo": {
+     "torso": "aventurero_rojo",
+     "piernas": "pantalon_pardo"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     272
+    ],
+    "idle_down": [
+     272
+    ],
+    "idle_up": [
+     266
+    ],
+    "idle_right": [
+     269
+    ],
+    "idle_left": [
+     275
+    ],
+    "walk_down": [
+     271,
+     272,
+     273,
+     272
+    ],
+    "walk_up": [
+     265,
+     266,
+     267,
+     266
+    ],
+    "walk_right": [
+     268,
+     269,
+     270,
+     269
+    ],
+    "walk_left": [
+     274,
+     275,
+     276,
+     275
+    ]
+   }
+  },
+  {
+   "id": "mercenarios_de_ascaria",
+   "nombre": "Mercenarios de Ascaria",
+   "fila": 24,
+   "primerFrame": 277,
+   "uso": "PNJ de raza Mercenarios de Ascaria (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "mercenarios_de_ascaria",
+    "equipo": {
+     "torso": "cuero",
+     "piernas": "pantalon_negro",
+     "pies": "botas_altas",
+     "arma": "espada_hierro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     284
+    ],
+    "idle_down": [
+     284
+    ],
+    "idle_up": [
+     278
+    ],
+    "idle_right": [
+     281
+    ],
+    "idle_left": [
+     287
+    ],
+    "walk_down": [
+     283,
+     284,
+     285,
+     284
+    ],
+    "walk_up": [
+     277,
+     278,
+     279,
+     278
+    ],
+    "walk_right": [
+     280,
+     281,
+     282,
+     281
+    ],
+    "walk_left": [
+     286,
+     287,
+     288,
+     287
+    ]
+   }
+  },
+  {
+   "id": "minotauros_de_la_llanura",
+   "nombre": "Minotauros de la Llanura",
+   "fila": 25,
+   "primerFrame": 289,
+   "uso": "PNJ de raza Minotauros de la Llanura (talla grande), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "minotauros_de_la_llanura",
+    "equipo": {
+     "torso": "cuero_oscuro",
+     "piernas": "falda_parda",
+     "arma": "hacha_ceniza"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     296
+    ],
+    "idle_down": [
+     296
+    ],
+    "idle_up": [
+     290
+    ],
+    "idle_right": [
+     293
+    ],
+    "idle_left": [
+     299
+    ],
+    "walk_down": [
+     295,
+     296,
+     297,
+     296
+    ],
+    "walk_up": [
+     289,
+     290,
+     291,
+     290
+    ],
+    "walk_right": [
+     292,
+     293,
+     294,
+     293
+    ],
+    "walk_left": [
+     298,
+     299,
+     300,
+     299
+    ]
+   }
+  },
+  {
+   "id": "minotauros_del_laberinto",
+   "nombre": "Minotauros del Laberinto",
+   "fila": 26,
+   "primerFrame": 301,
+   "uso": "PNJ de raza Minotauros del Laberinto (talla grande), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "minotauros_del_laberinto",
+    "equipo": {
+     "torso": "sin_mangas_gris",
+     "piernas": "falda_parda",
+     "arma": "baston_roble",
+     "mano_izq": "farol"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     308
+    ],
+    "idle_down": [
+     308
+    ],
+    "idle_up": [
+     302
+    ],
+    "idle_right": [
+     305
+    ],
+    "idle_left": [
+     311
+    ],
+    "walk_down": [
+     307,
+     308,
+     309,
+     308
+    ],
+    "walk_up": [
+     301,
+     302,
+     303,
+     302
+    ],
+    "walk_right": [
+     304,
+     305,
+     306,
+     305
+    ],
+    "walk_left": [
+     310,
+     311,
+     312,
+     311
+    ]
+   }
+  },
+  {
+   "id": "nagas_arcanos",
+   "nombre": "Nagas Arcanos",
+   "fila": 27,
+   "primerFrame": 313,
+   "uso": "PNJ de raza Nagas Arcanos (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "nagas_arcanos",
+    "equipo": {
+     "torso": "habito_purpura",
+     "arma": "baston_cristal"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     320
+    ],
+    "idle_down": [
+     320
+    ],
+    "idle_up": [
+     314
+    ],
+    "idle_right": [
+     317
+    ],
+    "idle_left": [
+     323
+    ],
+    "walk_down": [
+     319,
+     320,
+     321,
+     320
+    ],
+    "walk_up": [
+     313,
+     314,
+     315,
+     314
+    ],
+    "walk_right": [
+     316,
+     317,
+     318,
+     317
+    ],
+    "walk_left": [
+     322,
+     323,
+     324,
+     323
+    ]
+   }
+  },
+  {
+   "id": "nagas_venenosos",
+   "nombre": "Nagas Venenosos",
+   "fila": 28,
+   "primerFrame": 325,
+   "uso": "PNJ de raza Nagas Venenosos (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "nagas_venenosos",
+    "equipo": {
+     "torso": "cuero",
+     "arma": "baston_roble"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     332
+    ],
+    "idle_down": [
+     332
+    ],
+    "idle_up": [
+     326
+    ],
+    "idle_right": [
+     329
+    ],
+    "idle_left": [
+     335
+    ],
+    "walk_down": [
+     331,
+     332,
+     333,
+     332
+    ],
+    "walk_up": [
+     325,
+     326,
+     327,
+     326
+    ],
+    "walk_right": [
+     328,
+     329,
+     330,
+     329
+    ],
+    "walk_left": [
+     334,
+     335,
+     336,
+     335
+    ]
+   }
+  },
+  {
+   "id": "nobles_de_ascaria",
+   "nombre": "Nobles de Ascaria",
+   "fila": 29,
+   "primerFrame": 337,
+   "uso": "PNJ de raza Nobles de Ascaria (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "nobles_de_ascaria",
+    "equipo": {
+     "cabeza": "diadema",
+     "torso": "vestido_noble",
+     "pies": "zapatos",
+     "capa": "capa_roja"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     344
+    ],
+    "idle_down": [
+     344
+    ],
+    "idle_up": [
+     338
+    ],
+    "idle_right": [
+     341
+    ],
+    "idle_left": [
+     347
+    ],
+    "walk_down": [
+     343,
+     344,
+     345,
+     344
+    ],
+    "walk_up": [
+     337,
+     338,
+     339,
+     338
+    ],
+    "walk_right": [
+     340,
+     341,
+     342,
+     341
+    ],
+    "walk_left": [
+     346,
+     347,
+     348,
+     347
+    ]
+   }
+  },
+  {
+   "id": "orcos_del_consejo",
+   "nombre": "Orcos del Consejo",
+   "fila": 30,
+   "primerFrame": 349,
+   "uso": "PNJ de raza Orcos del Consejo (talla grande), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "orcos_del_consejo",
+    "equipo": {
+     "torso": "cuero_oscuro",
+     "piernas": "pantalon_pardo",
+     "pies": "botas",
+     "capa": "capa_parda",
+     "arma": "baston_roble"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     356
+    ],
+    "idle_down": [
+     356
+    ],
+    "idle_up": [
+     350
+    ],
+    "idle_right": [
+     353
+    ],
+    "idle_left": [
+     359
+    ],
+    "walk_down": [
+     355,
+     356,
+     357,
+     356
+    ],
+    "walk_up": [
+     349,
+     350,
+     351,
+     350
+    ],
+    "walk_right": [
+     352,
+     353,
+     354,
+     353
+    ],
+    "walk_left": [
+     358,
+     359,
+     360,
+     359
+    ]
+   }
+  },
+  {
+   "id": "orcos_dramaticos",
+   "nombre": "Orcos Dramáticos",
+   "fila": 31,
+   "primerFrame": 361,
+   "uso": "PNJ de raza Orcos Dramáticos (talla grande), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "orcos_dramaticos",
+    "equipo": {
+     "torso": "bufon",
+     "piernas": "calzas_rojas",
+     "pies": "zapatos",
+     "capa": "capa_corta_roja"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     368
+    ],
+    "idle_down": [
+     368
+    ],
+    "idle_up": [
+     362
+    ],
+    "idle_right": [
+     365
+    ],
+    "idle_left": [
+     371
+    ],
+    "walk_down": [
+     367,
+     368,
+     369,
+     368
+    ],
+    "walk_up": [
+     361,
+     362,
+     363,
+     362
+    ],
+    "walk_right": [
+     364,
+     365,
+     366,
+     365
+    ],
+    "walk_left": [
+     370,
+     371,
+     372,
+     371
+    ]
+   }
+  },
+  {
+   "id": "race_ascaria_fey_blood",
+   "nombre": "Sangre Feérica de Ascaria",
+   "fila": 32,
+   "primerFrame": 373,
+   "uso": "PNJ de raza Sangre Feérica de Ascaria (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "race_ascaria_fey_blood",
+    "equipo": {
+     "torso": "tunica_sacerdote",
+     "pies": "sandalias"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     380
+    ],
+    "idle_down": [
+     380
+    ],
+    "idle_up": [
+     374
+    ],
+    "idle_right": [
+     377
+    ],
+    "idle_left": [
+     383
+    ],
+    "walk_down": [
+     379,
+     380,
+     381,
+     380
+    ],
+    "walk_up": [
+     373,
+     374,
+     375,
+     374
+    ],
+    "walk_right": [
+     376,
+     377,
+     378,
+     377
+    ],
+    "walk_left": [
+     382,
+     383,
+     384,
+     383
+    ]
+   }
+  },
+  {
+   "id": "race_dwarf_deepforge",
+   "nombre": "Enano de las Fraguas Profundas",
+   "fila": 33,
+   "primerFrame": 385,
+   "uso": "PNJ de raza Enano de las Fraguas Profundas (talla bajo), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "race_dwarf_deepforge",
+    "equipo": {
+     "cabeza": "bacinete",
+     "torso": "cuero",
+     "piernas": "pantalon_gris",
+     "pies": "botas",
+     "arma": "martillo_acero",
+     "mano_izq": "farol"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     392
+    ],
+    "idle_down": [
+     392
+    ],
+    "idle_up": [
+     386
+    ],
+    "idle_right": [
+     389
+    ],
+    "idle_left": [
+     395
+    ],
+    "walk_down": [
+     391,
+     392,
+     393,
+     392
+    ],
+    "walk_up": [
+     385,
+     386,
+     387,
+     386
+    ],
+    "walk_right": [
+     388,
+     389,
+     390,
+     389
+    ],
+    "walk_left": [
+     394,
+     395,
+     396,
+     395
+    ]
+   }
+  },
+  {
+   "id": "race_elf_canopy",
+   "nombre": "Elfo del Dosel",
+   "fila": 34,
+   "primerFrame": 397,
+   "uso": "PNJ de raza Elfo del Dosel (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "race_elf_canopy",
+    "equipo": {
+     "cabeza": "corona_ramas",
+     "torso": "tunica_verde",
+     "piernas": "calzas_verdes",
+     "pies": "botas_claras",
+     "capa": "capa_verde",
+     "arma": "arco_roble"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     404
+    ],
+    "idle_down": [
+     404
+    ],
+    "idle_up": [
+     398
+    ],
+    "idle_right": [
+     401
+    ],
+    "idle_left": [
+     407
+    ],
+    "walk_down": [
+     403,
+     404,
+     405,
+     404
+    ],
+    "walk_up": [
+     397,
+     398,
+     399,
+     398
+    ],
+    "walk_right": [
+     400,
+     401,
+     402,
+     401
+    ],
+    "walk_left": [
+     406,
+     407,
+     408,
+     407
+    ]
+   }
+  },
+  {
+   "id": "race_human_marches",
+   "nombre": "Humano de las Marcas",
+   "fila": 35,
+   "primerFrame": 409,
+   "uso": "PNJ de raza Humano de las Marcas (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "race_human_marches",
+    "equipo": {
+     "torso": "gambeson",
+     "piernas": "pantalon_pardo",
+     "pies": "botas",
+     "capa": "capa_parda",
+     "arma": "lanza_hierro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     416
+    ],
+    "idle_down": [
+     416
+    ],
+    "idle_up": [
+     410
+    ],
+    "idle_right": [
+     413
+    ],
+    "idle_left": [
+     419
+    ],
+    "walk_down": [
+     415,
+     416,
+     417,
+     416
+    ],
+    "walk_up": [
+     409,
+     410,
+     411,
+     410
+    ],
+    "walk_right": [
+     412,
+     413,
+     414,
+     413
+    ],
+    "walk_left": [
+     418,
+     419,
+     420,
+     419
+    ]
+   }
+  },
+  {
+   "id": "race_orc_gongorguma",
+   "nombre": "Orco de Gongorguma",
+   "fila": 36,
+   "primerFrame": 421,
+   "uso": "PNJ de raza Orco de Gongorguma (talla grande), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "race_orc_gongorguma",
+    "equipo": {
+     "torso": "harapos",
+     "piernas": "pantalon_pardo",
+     "pies": "botas",
+     "arma": "maza_hierro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     428
+    ],
+    "idle_down": [
+     428
+    ],
+    "idle_up": [
+     422
+    ],
+    "idle_right": [
+     425
+    ],
+    "idle_left": [
+     431
+    ],
+    "walk_down": [
+     427,
+     428,
+     429,
+     428
+    ],
+    "walk_up": [
+     421,
+     422,
+     423,
+     422
+    ],
+    "walk_right": [
+     424,
+     425,
+     426,
+     425
+    ],
+    "walk_left": [
+     430,
+     431,
+     432,
+     431
+    ]
+   }
+  },
+  {
+   "id": "revenants",
+   "nombre": "Revenants",
+   "fila": 37,
+   "primerFrame": 433,
+   "uso": "PNJ de raza Revenants (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "revenants",
+    "equipo": {
+     "cabeza": "capucha_gris",
+     "torso": "habito_gris",
+     "mano_izq": "farol"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     440
+    ],
+    "idle_down": [
+     440
+    ],
+    "idle_up": [
+     434
+    ],
+    "idle_right": [
+     437
+    ],
+    "idle_left": [
+     443
+    ],
+    "walk_down": [
+     439,
+     440,
+     441,
+     440
+    ],
+    "walk_up": [
+     433,
+     434,
+     435,
+     434
+    ],
+    "walk_right": [
+     436,
+     437,
+     438,
+     437
+    ],
+    "walk_left": [
+     442,
+     443,
+     444,
+     443
+    ]
+   }
+  },
+  {
+   "id": "drow_de_la_locura",
+   "nombre": "Drow de la Locura",
+   "fila": 38,
+   "primerFrame": 445,
+   "uso": "PNJ de raza Drow de la Locura (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "drow_de_la_locura",
+    "equipo": {
+     "torso": "habito_harapiento",
+     "arma": "baston_roble"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     452
+    ],
+    "idle_down": [
+     452
+    ],
+    "idle_up": [
+     446
+    ],
+    "idle_right": [
+     449
+    ],
+    "idle_left": [
+     455
+    ],
+    "walk_down": [
+     451,
+     452,
+     453,
+     452
+    ],
+    "walk_up": [
+     445,
+     446,
+     447,
+     446
+    ],
+    "walk_right": [
+     448,
+     449,
+     450,
+     449
+    ],
+    "walk_left": [
+     454,
+     455,
+     456,
+     455
+    ]
+   }
+  },
+  {
+   "id": "drow_del_abismo",
+   "nombre": "Drow del Abismo",
+   "fila": 39,
+   "primerFrame": 457,
+   "uso": "PNJ de raza Drow del Abismo (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "drow_del_abismo",
+    "equipo": {
+     "torso": "tunica_mago",
+     "mano_izq": "grimorio"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     464
+    ],
+    "idle_down": [
+     464
+    ],
+    "idle_up": [
+     458
+    ],
+    "idle_right": [
+     461
+    ],
+    "idle_left": [
+     467
+    ],
+    "walk_down": [
+     463,
+     464,
+     465,
+     464
+    ],
+    "walk_up": [
+     457,
+     458,
+     459,
+     458
+    ],
+    "walk_right": [
+     460,
+     461,
+     462,
+     461
+    ],
+    "walk_left": [
+     466,
+     467,
+     468,
+     467
+    ]
+   }
+  },
+  {
+   "id": "drow_de_los_vientos",
+   "nombre": "Drow de los Vientos",
+   "fila": 40,
+   "primerFrame": 469,
+   "uso": "PNJ de raza Drow de los Vientos (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "drow_de_los_vientos",
+    "equipo": {
+     "torso": "kimono_blanco",
+     "pies": "sandalias"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     476
+    ],
+    "idle_down": [
+     476
+    ],
+    "idle_up": [
+     470
+    ],
+    "idle_right": [
+     473
+    ],
+    "idle_left": [
+     479
+    ],
+    "walk_down": [
+     475,
+     476,
+     477,
+     476
+    ],
+    "walk_up": [
+     469,
+     470,
+     471,
+     470
+    ],
+    "walk_right": [
+     472,
+     473,
+     474,
+     473
+    ],
+    "walk_left": [
+     478,
+     479,
+     480,
+     479
+    ]
+   }
+  },
+  {
+   "id": "tieflings_de_la_sombra",
+   "nombre": "Poseídos de la Sombra",
+   "fila": 41,
+   "primerFrame": 481,
+   "uso": "PNJ de raza Poseídos de la Sombra (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "tieflings_de_la_sombra",
+    "equipo": {
+     "torso": "cuero_oscuro",
+     "piernas": "pantalon_negro",
+     "pies": "botas_altas",
+     "capa": "capa_negra",
+     "arma": "daga_hierro"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     488
+    ],
+    "idle_down": [
+     488
+    ],
+    "idle_up": [
+     482
+    ],
+    "idle_right": [
+     485
+    ],
+    "idle_left": [
+     491
+    ],
+    "walk_down": [
+     487,
+     488,
+     489,
+     488
+    ],
+    "walk_up": [
+     481,
+     482,
+     483,
+     482
+    ],
+    "walk_right": [
+     484,
+     485,
+     486,
+     485
+    ],
+    "walk_left": [
+     490,
+     491,
+     492,
+     491
+    ]
+   }
+  },
+  {
+   "id": "tieflings_del_vacio",
+   "nombre": "Poseídos del Vacío",
+   "fila": 42,
+   "primerFrame": 493,
+   "uso": "PNJ de raza Poseídos del Vacío (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "tieflings_del_vacio",
+    "equipo": {
+     "torso": "tunica_mago",
+     "pies": "zapatos",
+     "arma": "baston_cristal"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     500
+    ],
+    "idle_down": [
+     500
+    ],
+    "idle_up": [
+     494
+    ],
+    "idle_right": [
+     497
+    ],
+    "idle_left": [
+     503
+    ],
+    "walk_down": [
+     499,
+     500,
+     501,
+     500
+    ],
+    "walk_up": [
+     493,
+     494,
+     495,
+     494
+    ],
+    "walk_right": [
+     496,
+     497,
+     498,
+     497
+    ],
+    "walk_left": [
+     502,
+     503,
+     504,
+     503
+    ]
+   }
+  },
+  {
+   "id": "traidores_oscuros",
+   "nombre": "Traidores Oscuros",
+   "fila": 43,
+   "primerFrame": 505,
+   "uso": "PNJ de raza Traidores Oscuros (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "traidores_oscuros",
+    "equipo": {
+     "cabeza": "capucha_parda",
+     "torso": "harapos",
+     "piernas": "pantalon_pardo",
+     "pies": "botas"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     512
+    ],
+    "idle_down": [
+     512
+    ],
+    "idle_up": [
+     506
+    ],
+    "idle_right": [
+     509
+    ],
+    "idle_left": [
+     515
+    ],
+    "walk_down": [
+     511,
+     512,
+     513,
+     512
+    ],
+    "walk_up": [
+     505,
+     506,
+     507,
+     506
+    ],
+    "walk_right": [
+     508,
+     509,
+     510,
+     509
+    ],
+    "walk_left": [
+     514,
+     515,
+     516,
+     515
+    ]
+   }
+  },
+  {
+   "id": "yokai_de_las_sombras",
+   "nombre": "Yokai de las Sombras",
+   "fila": 44,
+   "primerFrame": 517,
+   "uso": "PNJ de raza Yokai de las Sombras (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "yokai_de_las_sombras",
+    "equipo": {
+     "torso": "kimono_negro",
+     "pies": "sandalias",
+     "mano_izq": "farol"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     524
+    ],
+    "idle_down": [
+     524
+    ],
+    "idle_up": [
+     518
+    ],
+    "idle_right": [
+     521
+    ],
+    "idle_left": [
+     527
+    ],
+    "walk_down": [
+     523,
+     524,
+     525,
+     524
+    ],
+    "walk_up": [
+     517,
+     518,
+     519,
+     518
+    ],
+    "walk_right": [
+     520,
+     521,
+     522,
+     521
+    ],
+    "walk_left": [
+     526,
+     527,
+     528,
+     527
+    ]
+   }
+  },
+  {
+   "id": "yokai_de_los_vientos",
+   "nombre": "Yokai de los Vientos",
+   "fila": 45,
+   "primerFrame": 529,
+   "uso": "PNJ de raza Yokai de los Vientos (talla medio), vestido como en race_npc_idle.png",
+   "composicion": {
+    "raza": "yokai_de_los_vientos",
+    "equipo": {
+     "torso": "kimono_blanco",
+     "pies": "sandalias"
+    }
+   },
+   "animaciones": {
+    "idle": [
+     536
+    ],
+    "idle_down": [
+     536
+    ],
+    "idle_up": [
+     530
+    ],
+    "idle_right": [
+     533
+    ],
+    "idle_left": [
+     539
+    ],
+    "walk_down": [
+     535,
+     536,
+     537,
+     536
+    ],
+    "walk_up": [
+     529,
+     530,
+     531,
+     530
+    ],
+    "walk_right": [
+     532,
+     533,
+     534,
+     533
+    ],
+    "walk_left": [
+     538,
+     539,
+     540,
+     539
+    ]
+   }
+  }
+ ]
+}

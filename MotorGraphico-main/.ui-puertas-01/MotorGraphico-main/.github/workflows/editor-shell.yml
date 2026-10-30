@@ -1,0 +1,33 @@
+name: Editor shell
+
+on:
+  pull_request:
+    paths: ['MotorGraphico/**', '.github/workflows/editor-shell.yml']
+  push:
+    branches: [main, develop]
+    paths: ['MotorGraphico/**', '.github/workflows/editor-shell.yml']
+  workflow_dispatch:
+
+jobs:
+  editor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install graphics dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xorg-dev libgl1-mesa-dev xvfb
+      - name: Configure
+        run: cmake -S MotorGraphico -B MotorGraphico/build -DCMAKE_BUILD_TYPE=Debug
+      - name: Build editor and document tests
+        run: cmake --build MotorGraphico/build --target motor_editor test_editor_document_session test_editor_actions -j2
+      - name: Document actions
+        run: ctest --test-dir MotorGraphico/build -R '^test_editor_(document_session|actions)$' --output-on-failure
+      - name: Advertised controls
+        run: |
+          python3 MotorGraphico/tools/test_verificar_controles.py
+          python3 MotorGraphico/tools/verificar_controles.py --shell
+      - name: UI input, persistence and scale
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: xvfb-run -a -s '-screen 0 2560x1440x24' ctest --test-dir MotorGraphico/build -R '^test_motor_editor_smoke_' --output-on-failure

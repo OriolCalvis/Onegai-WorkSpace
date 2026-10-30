@@ -1,0 +1,55 @@
+{
+ "id": "mago_sagrado_canto_del_cielo",
+ "name": "Canto del cielo",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Un canto del cielo quita a los enemigos las ganas de luchar: se quedan 2 turnos sin atacar y, adormecidos, con -1 a la CA.",
+ "flavorText": "",
+ "classTags": [
+  "mago_sagrado"
+ ],
+ "roleTags": [],
+ "tags": [
+  "mago_sagrado",
+  "estandar"
+ ],
+ "mechanicTags": [],
+ "actionType": "accion_principal",
+ "target": "all_enemies",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": "INT",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Un canto del cielo quita a los enemigos las ganas de luchar: se quedan 2 turnos sin atacar y, adormecidos, con -1 a la CA.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "Canto del cielo: 2 turnos sin atacar.",
+   "mechanicHook": "estado:2:incapacitado"
+  },
+  {
+   "description": "Somnolencia: -1 a la CA durante 2 turnos.",
+   "mechanicHook": "estado:2:penal_ca:1"
+  },
+  {
+   "description": "[pendiente] que el canto se rompa si reciben daño.",
+   "mechanicHook": "pendiente_parcial:que el canto se rompa si reciben daño"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Mago sagrado (Holy Mage) · H870 Canto del cielo"
+}

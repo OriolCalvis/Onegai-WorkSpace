@@ -1,0 +1,53 @@
+{
+ "id": "forajido_de_vinclap_duelo_al_amanecer",
+ "name": "Duelo al amanecer",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Le retas a un duelo al amanecer, a sable y pistola: 4d6 de daño, y durante 2 turnos todos los golpes que le aciertan son críticos.",
+ "flavorText": "",
+ "classTags": [
+  "forajido_de_vinclap"
+ ],
+ "roleTags": [],
+ "tags": [
+  "forajido_de_vinclap",
+  "creador"
+ ],
+ "mechanicTags": [
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": "DES",
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Le retas a un duelo al amanecer, a sable y pistola: 4d6 de daño, y durante 2 turnos todos los golpes que le aciertan son críticos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "4d6 de daño.",
+   "mechanicHook": "dano:4d6"
+  },
+  {
+   "description": "Duelo al amanecer: los golpes contra él son críticos 2 turnos.",
+   "mechanicHook": "estado:2:critico_contra"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "Propia · Forajido de Vinclap"
+}

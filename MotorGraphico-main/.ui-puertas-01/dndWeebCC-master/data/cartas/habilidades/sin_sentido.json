@@ -1,0 +1,55 @@
+{
+ "id": "sin_sentido",
+ "name": "Sin Sentido",
+ "type": "skill",
+ "tier": 2,
+ "rarity": "rare",
+ "description": "Le chasqueas los dedos delante de los ojos y le dejas sin sentido. Si no se resiste (defensa mental), pasa 2 turnos sin atacar y se defiende con desventaja.",
+ "flavorText": "",
+ "classTags": [
+  "mago_chasqueador"
+ ],
+ "roleTags": [],
+ "tags": [
+  "mago_chasqueador",
+  "creador",
+  "Arcano"
+ ],
+ "mechanicTags": [
+  "Arcano",
+  "Creador"
+ ],
+ "actionType": "accion_principal",
+ "target": "single_enemy",
+ "range": "short",
+ "duration": "2 turnos",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_largo",
+ "castingStat": "INT",
+ "defenseStat": "defensa_mental",
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Le chasqueas los dedos delante de los ojos y le dejas sin sentido. Si no se resiste (defensa mental), pasa 2 turnos sin atacar y se defiende con desventaja.",
+  "scaling": "none"
+ },
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "iteracion": 3,
+ "effects": [
+  {
+   "description": "Sin sentido: no ataca 2 turnos.",
+   "mechanicHook": "estado:2:incapacitado"
+  },
+  {
+   "description": "Se defiende con desventaja 2 turnos.",
+   "mechanicHook": "estado:2:desventaja:defensa"
+  }
+ ]
+}

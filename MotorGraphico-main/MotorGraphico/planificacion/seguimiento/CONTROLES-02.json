@@ -1,0 +1,28 @@
+{
+  "id": "CONTROLES-02",
+  "date": "2026-09-29",
+  "author": "Codex → Claude (relevo 27/09 14:20 UTC, encargo de Oriol)",
+  "status": "HECHO",
+  "actions": [
+    "Reserva TABLERO: Player/Controls y API pequena de AnimatedEntity; Application/InputMap/arte intactos.",
+    "Rumbo en reposo, continuidad del ciclo al encadenar pasos, velocidad limitada tambien al alternar teclas.",
+    "getSortKey de Player interpola la clave entre posiciones visibles, sin copiar la regla de profundidad de Entity; evita cambiar de plano antes de cruzar.",
+    "AnimatedEntity.showRestFrame conserva la fase y presenta el primer frame del rumbo. Player congela el ciclo entre pasos y lo continua al caminar.",
+    "Relevo Claude: el trabajo de Codex estaba en stash@{0} tras un stash ajeno de las 13:56; se recuperaron solo Player.h/.cpp, AnimatedEntity.h/.cpp, PlayerMotionData.h y PlayerTests.cpp (el resto del stash no se toca).",
+    "Revision: rumbo en reposo, continuidad de fase y profundidad interpolada correctos; se conservan tal cual.",
+    "Anadido Player::bump(step): al rechazar la sesion un paso, el sprite mira al muro (frame de reposo del rumbo) y rebota 80 ms un 12% de casilla, sin cambiar gridPosition ni clave de profundidad; ignorado a mitad de paso; un paso posterior recupera 140 ms. Application.cpp: una linea en el 'return' del paso rechazado (misma cuenta de lineas).",
+    "Entrega Codex c4b939e: conserva el rebote aportado por Claude en el arbol compartido y lo excluye del commit propio; no se atribuye ese trabajo."
+  ],
+  "verification": [
+    "Arbol compartido: juego compila; humo ciudad_oeste.json de 3 frames termina con codigo 0 y framebuffer inspeccionado.",
+    "Arbol compartido: CTest 2/2, test_render_player (63 casos: 61 de esta entrega y 2 del rebote ajeno) y test_inventory_menu (13 casos, cuatro de pantalla con GameSession).",
+    "Worktree aislado: CTest 5/5, test_render_player, test_player_populate, test_inventory_menu, test_gdb12_screens y test_sheet_equipment_cap; juego y humo tambien pasan.",
+    "La validacion aislada inicial sobre 4fc8c00 necesito cuatro ficheros BattleState/BattleMenuActions del WIP existente para publishSheetSkills/tickRound; solo se copiaron para validar y se excluyeron del commit.",
+    "linea_base_core.py --rapido, diff-check y pre-commit normal pasan. El hook fija rutas Git absolutas para funcionar al cambiar de directorio en worktrees.",
+    "InventoryMenuTests obtiene InventoryRules mediante inventoryRules() para admitir el refactor concurrente de GameSession, sin modificarlo.",
+    "No se ejecuto la suite global completa. CUA no reconocio el binario nativo como app; la prueba manual completa del menu sigue pendiente."
+  ],
+  "pending": [
+    "Prueba manual completa del inventario."
+  ]
+}

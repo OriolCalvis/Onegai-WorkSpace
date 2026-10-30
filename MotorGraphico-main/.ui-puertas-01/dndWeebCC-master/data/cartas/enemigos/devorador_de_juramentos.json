@@ -1,0 +1,98 @@
+{
+ "id": "devorador_de_juramentos",
+ "name": "Devorador de Juramentos",
+ "type": "enemy",
+ "rank": "jefe",
+ "tier": 4,
+ "role": "bruto",
+ "faction": "cofradia_de_mascaras_de_plata",
+ "factionName": "La Cofradía de las Máscaras de Plata",
+ "stats": {
+  "CON": 10,
+  "DES": 9,
+  "INT": 8,
+  "CAR": 8
+ },
+ "derived": {
+  "vida": 70,
+  "ca": 21,
+  "defensaMental": 18,
+  "resistenciaFisica": 20,
+  "movimiento": 5
+ },
+ "attacks": [
+  {
+   "name": "Golpe Inicial",
+   "defense": "CA",
+   "effect": "Ataque de sagrado: daño que suma su CON (pool de CON, regla 7.6)."
+  },
+  {
+   "name": "Técnica de Control",
+   "defense": "defensa_mental",
+   "effect": "Técnica de facción: efecto táctico según su pasiva."
+  },
+  {
+   "name": "Ruptura Final",
+   "defense": "CA",
+   "effect": "Solo en fase de Desesperación: daño de sagrado como éxito crítico (todos sus dados cuentan éxito completo)."
+  }
+ ],
+ "passive": {
+  "name": "Instinto de facción",
+  "description": "Cuando baja de la mitad de vida gana un escudo temporal igual a su tier."
+ },
+ "conditionsInflicted": [],
+ "loot": [
+  "estilete_de_milicia",
+  "amuleto_de_foco",
+  "pocion_de_vigor"
+ ],
+ "mechanicTags": [
+  "Enemigo",
+  "Sagrado"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal: alterna golpe y técnica."
+  },
+  {
+   "name": "Presión",
+   "healthThreshold": 60,
+   "change": "Su técnica de facción no gasta acción: la encadena tras el golpe. Cuando baja de la mitad de vida gana un escudo temporal igual a su tier."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 25,
+   "change": "Desbloquea Ruptura Final y actúa con agresividad total (ignora amenaza, va al más herido)."
+  }
+ ],
+ "flavorText": "Templario inverso que se alimenta de promesas rotas.",
+ "villainProfile": {
+  "objetivo": "Coleccionar la promesa rota de cada héroe del reino",
+  "metodo": "Fuerza dilemas donde cualquier elección incumple algo, y se come el incumplimiento",
+  "debilidad_narrativa": "Un juramento cumplido delante de él le hace daño real: 3 de daño sagrado automático",
+  "vinculo": "cofradia_de_mascaras_de_plata"
+ },
+ "arena": {
+  "name": "El Archivo de Votos Rotos",
+  "hazard": "Ecos de promesas: quien mienta en la arena (jugador que declare y no cumpla) le da +1 al Devorador"
+ },
+ "legendaryActions": [
+  "Cláusula (1/ronda): recuerda a un personaje un voto — desventaja en su próxima tirada si falla Defensa mental"
+ ],
+ "storyCard": {
+  "title": "Devorador de Juramentos",
+  "text": "Empezó comiéndose sus propias promesas. Saben mejor las ajenas.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae si el grupo alcanzó la fase de Desesperación",
+  "drops": [
+   "estilete_de_milicia",
+   "amuleto_de_foco",
+   "pocion_de_vigor"
+  ]
+ }
+}

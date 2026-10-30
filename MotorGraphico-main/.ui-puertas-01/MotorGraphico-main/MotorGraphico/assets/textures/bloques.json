@@ -1,0 +1,1197 @@
+{
+  "_nota": "BLOQUES-01 — que tiles del tileset levantan un edificio con volumen (Game::Bloques). material = familia de caras en la hoja pixellab_bloques (tools/pixellab/importar_bloques.py); bandas = plantas (1 a 3), un numero o una lista con «pesos» que se reparte edificio a edificio con un hash fijo; un edificio sin objeto puerta_* lleva una puerta decorativa en una cara que da a una celda transitable; ventanas = false y puertas = false para muros y setos (sin bloque de puerta). Las caras expuestas llevan puerta donde el nivel pone un objeto puerta_* (y entonces ese objeto se dibuja como el prop «umbral», no como puerta suelta); el resto, ventana o pared segun un reparto fijo. «material» puede ser una lista con «pesosMaterial» (variantes por edificio; con «variantePorCelda» por tramos de 3 celdas, para la muralla a medio caer). Oriol (22/10): el material lo decide la función — caserna (antes «aegroum»: piedra oscura con puertas rojas) solo para cuarteles y armerías, nunca para casas; las casas, entramado de madera y algo de piedra; los locales, según su oficio. Nombres de material (22/10): fortaleza, caserna, piedra_publica, entramado, entramado_balcon, senorial, senorial_balcon, templo, chabola, muralla, muralla_rota, seto.",
+  "hoja": "pixellab_bloques",
+  "umbral": "umbral_puerta",
+  "tileset": "terreno_mundo",
+  "indiceTileset": "textures/terreno_iso.json",
+  "tipos": {
+    "viejo_muralla": {
+      "material": [
+        "muralla",
+        "muralla_rota"
+      ],
+      "bandas": 1,
+      "ventanas": false,
+      "puertas": false,
+      "pesosMaterial": [
+        5,
+        1
+      ],
+      "variantePorCelda": true
+    },
+    "viejo_castillo": {
+      "material": "fortaleza",
+      "bandas": 3
+    },
+    "viejo_iglesia": {
+      "material": "templo",
+      "bandas": 3
+    },
+    "viejo_universidad": {
+      "material": "piedra_publica",
+      "bandas": 3
+    },
+    "viejo_biblioteca": {
+      "material": "piedra_publica",
+      "bandas": 3
+    },
+    "viejo_opera": {
+      "material": "senorial",
+      "bandas": 3
+    },
+    "viejo_coliseo": {
+      "material": "fortaleza",
+      "bandas": 2
+    },
+    "viejo_militar": {
+      "material": "caserna",
+      "bandas": 2
+    },
+    "viejo_tienda": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        2,
+        3
+      ],
+      "pesos": [
+        3,
+        1
+      ],
+      "pesosMaterial": [
+        2,
+        1
+      ]
+    },
+    "viejo_ropa": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        2,
+        3
+      ],
+      "pesos": [
+        3,
+        1
+      ],
+      "pesosMaterial": [
+        2,
+        1
+      ]
+    },
+    "viejo_joyeria": {
+      "material": "senorial",
+      "bandas": 2
+    },
+    "viejo_banco": {
+      "material": "piedra_publica",
+      "bandas": [
+        2,
+        3
+      ],
+      "pesos": [
+        2,
+        1
+      ]
+    },
+    "viejo_posada": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        2,
+        3
+      ],
+      "pesos": [
+        1,
+        1
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "viejo_banos": {
+      "material": "piedra_publica",
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        1
+      ]
+    },
+    "viejo_seto": {
+      "material": "seto",
+      "bandas": 1,
+      "ventanas": false,
+      "puertas": false
+    },
+    "viejo_casa_piedra": {
+      "material": [
+        "piedra_publica",
+        "entramado"
+      ],
+      "bandas": [
+        1,
+        2,
+        3
+      ],
+      "pesos": [
+        5,
+        3,
+        1
+      ],
+      "pesosMaterial": [
+        3,
+        1
+      ]
+    },
+    "viejo_casa_madera": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        1,
+        2,
+        3
+      ],
+      "pesos": [
+        2,
+        5,
+        2
+      ],
+      "pesosMaterial": [
+        3,
+        2
+      ]
+    },
+    "viejo_casa_noble": {
+      "material": [
+        "senorial",
+        "senorial_balcon"
+      ],
+      "bandas": [
+        2,
+        3
+      ],
+      "pesos": [
+        3,
+        1
+      ],
+      "pesosMaterial": [
+        2,
+        3
+      ]
+    },
+    "viejo_chabola": {
+      "material": "chabola",
+      "bandas": 1
+    },
+    "edifici_o0": {
+      "material": [
+        "entramado",
+        "entramado_balcon",
+        "piedra_publica"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        3,
+        2,
+        1
+      ]
+    },
+    "edifici_o1": {
+      "material": [
+        "entramado",
+        "entramado_balcon",
+        "piedra_publica"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        3,
+        2,
+        1
+      ]
+    },
+    "edifici_o2": {
+      "material": [
+        "entramado",
+        "entramado_balcon",
+        "piedra_publica"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        3,
+        2,
+        1
+      ]
+    },
+    "edifici_o3": {
+      "material": [
+        "entramado",
+        "entramado_balcon",
+        "piedra_publica"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        3,
+        2,
+        1
+      ]
+    },
+    "casa_alma": {
+      "material": [
+        "entramado",
+        "entramado_balcon",
+        "piedra_publica"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        3,
+        2,
+        1
+      ]
+    },
+    "local_herreria": {
+      "material": [
+        "piedra_publica",
+        "entramado"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_taberna": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        2,
+        1
+      ]
+    },
+    "local_tienda": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        2,
+        1
+      ]
+    },
+    "noble_o0": {
+      "material": [
+        "senorial",
+        "senorial_balcon"
+      ],
+      "bandas": 2,
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "cabana_o0": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": 1,
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "caserna_o0": {
+      "material": "caserna",
+      "bandas": 1
+    },
+    "barraca_o0": {
+      "material": "chabola",
+      "bandas": 1
+    },
+    "tenda_o0": {
+      "material": "chabola",
+      "bandas": 1
+    },
+    "local_ferreria_o0": {
+      "material": [
+        "piedra_publica",
+        "entramado"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_taverna_o0": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        2,
+        1
+      ]
+    },
+    "local_botiga_o0": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        2,
+        1
+      ]
+    },
+    "local_mercat_o0": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_joieria_o0": {
+      "material": [
+        "senorial",
+        "senorial_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_banc_o0": {
+      "material": "piedra_publica",
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ]
+    },
+    "local_sastreria_o0": {
+      "material": [
+        "entramado_balcon",
+        "entramado"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_posada_o0": {
+      "material": [
+        "entramado_balcon",
+        "entramado"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_banys_o0": {
+      "material": "piedra_publica",
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ]
+    },
+    "local_casa_te_o0": {
+      "material": [
+        "entramado_balcon",
+        "senorial"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_armeria_o0": {
+      "material": "caserna",
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ]
+    },
+    "noble_o1": {
+      "material": [
+        "senorial",
+        "senorial_balcon"
+      ],
+      "bandas": 2,
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "cabana_o1": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": 1,
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "caserna_o1": {
+      "material": "caserna",
+      "bandas": 1
+    },
+    "barraca_o1": {
+      "material": "chabola",
+      "bandas": 1
+    },
+    "tenda_o1": {
+      "material": "chabola",
+      "bandas": 1
+    },
+    "local_ferreria_o1": {
+      "material": [
+        "piedra_publica",
+        "entramado"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_taverna_o1": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        2,
+        1
+      ]
+    },
+    "local_botiga_o1": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        2,
+        1
+      ]
+    },
+    "local_mercat_o1": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_joieria_o1": {
+      "material": [
+        "senorial",
+        "senorial_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_banc_o1": {
+      "material": "piedra_publica",
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ]
+    },
+    "local_sastreria_o1": {
+      "material": [
+        "entramado_balcon",
+        "entramado"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_posada_o1": {
+      "material": [
+        "entramado_balcon",
+        "entramado"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_banys_o1": {
+      "material": "piedra_publica",
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ]
+    },
+    "local_casa_te_o1": {
+      "material": [
+        "entramado_balcon",
+        "senorial"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_armeria_o1": {
+      "material": "caserna",
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ]
+    },
+    "noble_o2": {
+      "material": [
+        "senorial",
+        "senorial_balcon"
+      ],
+      "bandas": 2,
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "cabana_o2": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": 1,
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "caserna_o2": {
+      "material": "caserna",
+      "bandas": 1
+    },
+    "barraca_o2": {
+      "material": "chabola",
+      "bandas": 1
+    },
+    "tenda_o2": {
+      "material": "chabola",
+      "bandas": 1
+    },
+    "local_ferreria_o2": {
+      "material": [
+        "piedra_publica",
+        "entramado"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_taverna_o2": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        2,
+        1
+      ]
+    },
+    "local_botiga_o2": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        2,
+        1
+      ]
+    },
+    "local_mercat_o2": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_joieria_o2": {
+      "material": [
+        "senorial",
+        "senorial_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_banc_o2": {
+      "material": "piedra_publica",
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ]
+    },
+    "local_sastreria_o2": {
+      "material": [
+        "entramado_balcon",
+        "entramado"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_posada_o2": {
+      "material": [
+        "entramado_balcon",
+        "entramado"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_banys_o2": {
+      "material": "piedra_publica",
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ]
+    },
+    "local_casa_te_o2": {
+      "material": [
+        "entramado_balcon",
+        "senorial"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_armeria_o2": {
+      "material": "caserna",
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ]
+    },
+    "noble_o3": {
+      "material": [
+        "senorial",
+        "senorial_balcon"
+      ],
+      "bandas": 2,
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "cabana_o3": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": 1,
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "caserna_o3": {
+      "material": "caserna",
+      "bandas": 1
+    },
+    "barraca_o3": {
+      "material": "chabola",
+      "bandas": 1
+    },
+    "tenda_o3": {
+      "material": "chabola",
+      "bandas": 1
+    },
+    "local_ferreria_o3": {
+      "material": [
+        "piedra_publica",
+        "entramado"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_taverna_o3": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        2,
+        1
+      ]
+    },
+    "local_botiga_o3": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        2,
+        1
+      ]
+    },
+    "local_mercat_o3": {
+      "material": [
+        "entramado",
+        "entramado_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_joieria_o3": {
+      "material": [
+        "senorial",
+        "senorial_balcon"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_banc_o3": {
+      "material": "piedra_publica",
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ]
+    },
+    "local_sastreria_o3": {
+      "material": [
+        "entramado_balcon",
+        "entramado"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_posada_o3": {
+      "material": [
+        "entramado_balcon",
+        "entramado"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_banys_o3": {
+      "material": "piedra_publica",
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ]
+    },
+    "local_casa_te_o3": {
+      "material": [
+        "entramado_balcon",
+        "senorial"
+      ],
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ],
+      "pesosMaterial": [
+        1,
+        1
+      ]
+    },
+    "local_armeria_o3": {
+      "material": "caserna",
+      "bandas": [
+        1,
+        2
+      ],
+      "pesos": [
+        1,
+        2
+      ]
+    }
+  }
+}

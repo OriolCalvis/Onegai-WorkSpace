@@ -1,0 +1,51 @@
+name: CTest
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  gl-free-tests:
+    name: GL-free tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Obtener el código
+        uses: actions/checkout@v4
+
+      # GLFW se configura junto al motor aunque esta suite no abra una
+      # ventana. Estas cabeceras permiten compilar esos targets de forma
+      # determinista en el runner Linux.
+      - name: Instalar dependencias de compilación
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes \
+            libgl1-mesa-dev \
+            libx11-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libxinerama-dev \
+            libxrandr-dev
+
+      - name: Configurar CMake
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+
+      # Construimos solamente lo que CTest va a ejecutar. La lista NO se
+      # escribe aqui: "suite_gl_free" es un target agregado que CMake arma
+      # con todo lo registrado bajo la etiqueta gl-free (ver el final de
+      # CMakeLists.txt). Anadir un test nuevo no obliga a tocar este YAML,
+      # que es justo como se habian quedado fuera de la compilacion varios
+      # tests ya registrados en CTest.
+      - name: Compilar la suite GL-free
+        run: cmake --build build --config Debug --parallel --target suite_gl_free
+
+      # CTest devuelve un código distinto de cero cuando cualquier prueba
+      # falla; GitHub Actions marca el job como fallido automáticamente.
+      - name: Ejecutar CTest
+        run: ctest --test-dir build -C Debug --output-on-failure --label-regex gl-free

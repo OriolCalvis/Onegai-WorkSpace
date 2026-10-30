@@ -1,0 +1,999 @@
+@startgantt
+
+title Onegai — Plan derivado del Documento de Alcance y Vision
+
+caption 1 dia = 1 JORNADA de esfuerzo (~6 h), no un dia natural. Total 422.2 jornadas = 281 semanas a ~1.5 j/semana. Las fechas son una escala de esfuerzo con dependencias, NO una prevision de entrega.
+
+' Generado por planificacion_alcance_y_vision/build.py desde dades.py.
+' No se edita a mano.
+' 224 tareas en 21 fases; 7 flujos de diseno y 8 secundarios en workflows_juego/.
+
+' cruce declarado: AV4-14 (AV4) depende de AV10-02 (AV10): cruce de fase hacia delante
+' cruce declarado: AV5-08 (AV5) depende de AV9-05 (AV9): cruce de fase hacia delante
+' cruce declarado: AV6-17 (AV6) depende de AV10-01 (AV10): cruce de fase hacia delante
+' cruce declarado: AV17-06 (AV17) depende de AV19-05 (AV19): cruce de fase hacia delante
+' cruce declarado: AV17-07 (AV17) depende de AV19-06 (AV19): cruce de fase hacia delante
+
+Project starts {'AV0-01': 0.0, 'AV0-03': 0.0, 'AV1-03': 0.0, 'AV13-01': 0.0, 'AV13-04': 0.0, 'AV13-06': 0, 'AV13-07': 0.0, 'AV13-08': 0, 'AV13-09': 0, 'AV13-21': 0.0, 'AV13-30': 0, 'AV13-31': 0.0, 'AV13-33': 0.0, 'AV13-34': 0, 'AV13-35': 0.0, 'AV13-36': 0, 'AV14-01': 0, 'AV14-04': 0, 'AV14-09': 0.0, 'AV14-10': 0, 'AV14-13': 0, 'AV14-15': 0.0, 'AV14-18': 0, 'AV14-19': 0, 'AV14-20': 0.0, 'AV14-21': 0, 'AV14-22': 0, 'AV14-23': 0, 'AV14-24': 0, 'AV15-01': 0.0, 'AV15-02': 0, 'AV15-06': 0, 'AV16-00': 0.0, 'AV16-01': 0.0, 'AV16-02': 0, 'AV16-03': 0.0, 'AV16-04': 0.0, 'AV16-05': 0, 'AV16-06': 0.0, 'AV16-07': 0, 'AV16-10': 0, 'AV16-11': 0.0, 'AV16-12': 0.0, 'AV16-13': 0.0, 'AV16-14': 0.0, 'AV16-15': 0, 'AV17-09': 0, 'AV17-10': 0, 'AV17-11': 0.0, 'AV18-07': 0, 'AV19-02': 0, 'AV20-01': 0, 'AV0-02': 1.5, 'AV0-04': 1.5, 'AV0-05': 1.5, 'AV0-06': 1.5, 'AV0-07': 1.5, 'AV1-01': 1.5, 'AV1-04': 1.5, 'AV1-07': 1.5, 'AV12-05': 1.5, 'AV13-02': 0.5, 'AV13-10': 2, 'AV13-22': 1.5, 'AV14-02': 1, 'AV14-03': 1.0, 'AV14-05': 2.0, 'AV14-06': 2, 'AV14-07': 1, 'AV14-08': 1.0, 'AV14-11': 3.0, 'AV14-14': 3, 'AV14-17': 2, 'AV15-03': 1.5, 'AV15-04': 2.0, 'AV15-05': 1, 'AV15-07': 1.0, 'AV16-08': 0.19999999999999996, 'AV16-09': 0.20000000000000018, 'AV17-01': 0.20000000000000018, 'AV17-02': 0.19999999999999996, 'AV17-03': 0.20000000000000018, 'AV17-04': 0.20000000000000018, 'AV17-05': 1, 'AV17-08': 1, 'AV17-12': 1.0, 'AV18-01': 0.19999999999999996, 'AV18-06': 1.5, 'AV19-01': 0.20000000000000018, 'AV19-05': 0.20000000000000018, 'AV2-01': 1.5, 'AV7-01': 1.5, 'AV1-02': 3.0, 'AV1-05': 3.5, 'AV1-06': 3.5, 'AV10-01': 3.5, 'AV11-01': 2.5, 'AV12-01': 2.5, 'AV13-03': 1.0, 'AV13-05': 1.5, 'AV13-11': 3, 'AV14-12': 4.5, 'AV14-16': 3.5, 'AV17-06': 2.2, 'AV18-02': 1.2000000000000002, 'AV18-03': 1.5, 'AV19-03': 3.2, 'AV19-06': 3.2, 'AV2-02': 4.5, 'AV2-04': 4.5, 'AV3-01': 3.5, 'AV3-03': 3.5, 'AV4-01': 3.5, 'AV5-01': 3.5, 'AV6-01': 3.5, 'AV6-06': 3.5, 'AV6-09': 4.5, 'AV6-13': 4.5, 'AV6-14': 2.5, 'AV7-02': 4.5, 'AV7-03': 4.5, 'AV7-04': 4.5, 'AV7-05': 4.5, 'AV7-08': 4.5, 'AV8-03': 3.5, 'AV9-01': 3.5, 'AV9-05': 4.5, 'AV10-02': 5.0, 'AV10-04': 6.5, 'AV11-02': 5.5, 'AV12-02': 4.0, 'AV13-12': 5.0, 'AV13-32': 3.0, 'AV17-07': 5.2, 'AV18-04': 3.5, 'AV18-05': 4.2, 'AV19-04': 5.199999999999999, 'AV2-03': 6.5, 'AV2-05': 6.5, 'AV3-02': 6.5, 'AV3-04': 6.5, 'AV3-05': 6.5, 'AV3-08': 6.5, 'AV4-02': 5.5, 'AV4-03': 6.5, 'AV4-07': 5.5, 'AV4-08': 5.5, 'AV4-15': 5.5, 'AV5-02': 6.0, 'AV5-05': 6.0, 'AV5-09': 6.0, 'AV5-11': 6.0, 'AV6-02': 6.0, 'AV6-03': 6.5, 'AV6-08': 5.5, 'AV6-10': 6.5, 'AV6-11': 6.5, 'AV6-15': 5.5, 'AV6-16': 5.5, 'AV7-06': 6.5, 'AV7-07': 6.5, 'AV8-04': 5.5, 'AV8-09': 6.5, 'AV9-02': 6.5, 'AV9-04': 6.5, 'AV9-06': 7.5, 'AV9-07': 5.0, 'AV10-03': 8.5, 'AV10-05': 9.0, 'AV10-06': 7.0, 'AV11-03': 7.5, 'AV11-05': 9.5, 'AV12-04': 8.0, 'AV12-06': 6.0, 'AV13-13': 7.5, 'AV13-15': 7.5, 'AV3-06': 8.5, 'AV3-07': 8.5, 'AV4-04': 8.5, 'AV4-05': 8.5, 'AV4-09': 8.0, 'AV4-10': 8.5, 'AV4-16': 8.0, 'AV5-03': 8.0, 'AV5-08': 8.0, 'AV5-10': 8.0, 'AV6-04': 8.5, 'AV6-12': 8.0, 'AV8-01': 8.0, 'AV8-05': 7.5, 'AV8-10': 8.5, 'AV11-04': 10.0, 'AV12-03': 10.0, 'AV12-07': 10.0, 'AV13-14': 9.0, 'AV13-16': 9.5, 'AV13-17': 9.0, 'AV13-20': 9.5, 'AV13-23': 9.5, 'AV13-24': 9.0, 'AV13-28': 9.5, 'AV4-06': 10.0, 'AV4-11': 11.5, 'AV4-13': 11.5, 'AV5-04': 10.0, 'AV5-06': 10.0, 'AV5-07': 10.0, 'AV6-05': 11.5, 'AV8-02': 10.5, 'AV8-06': 10.5, 'AV9-03': 10.5, 'AV9-08': 10.5, 'AV13-18': 10.5, 'AV13-19': 10.5, 'AV13-25': 10.5, 'AV13-29': 11.0, 'AV4-12': 14.5, 'AV4-14': 14.0, 'AV6-07': 12.5, 'AV6-17': 14.5, 'AV8-07': 12.5, 'AV13-26': 13.5, 'AV13-27': 13.5, 'AV8-08': 15.0}
+saturday are closed
+sunday are closed
+
+-- AV0 — Contratos de datos y decisiones de diseno previas (9.5 j) --
+
+[AV0-01 (1.5 j) Glosario unico de magnitudes: moral multifactor, reputacion por afinidad, estamina, peso en kg, ruido, sospecha, prosperidad] as [AV001] lasts 2 days
+[AV001] is colored in #C0503C
+' AV0-01 flujo: WF-03,WF-04,WF-05,WF-06 | doc: §1, §3, §10.1, §10.12, §10.14 | existe: nada: cada documento usa estos terminos por su cuenta
+[AV0-03 (1.5 j) Mapa de solapamientos con los paquetes vivos (Fase H, EST, corte B, fase E): que esta ya escrito y de quien es] as [AV003] lasts 2 days
+[AV003] is colored in #C0503C
+' AV0-03 flujo: transversal | doc: §9, §12 | existe: JUGABILIDAD_FASE_H.md, TABLERO_ESTABILIZACION.md, ALCANCE_REAL_2026-09-17.md, medir_alcance.py
+[AV0-02 (2 j) Contratos JSON de los catalogos nuevos (facciones, reputacion, propiedades, rentas, rutinas, clima, delitos, cartas)] as [AV002] lasts 2 days
+[AV002] is colored in #C0503C
+' AV0-02 flujo: transversal | doc: §3.2, §5, §10.1, §10.13, §10.14 | existe: D-01 ya fija como se declaran los campos de un catalogo RPG (20 loaders, 308 campos, carga todo-o-nada)
+[AV0-04 (1 j) Autoridad cliente/servidor por sistema y validacion del contenido de expansion] as [AV004] lasts 1 days
+[AV004] is colored in #C0503C
+' AV0-04 flujo: transversal | doc: §2 | existe: nada de red en el motor
+[AV0-05 (1 j) Fichas de decision pendientes de Oriol que bloquean fases] as [AV005] lasts 1 days
+[AV005] is colored in #C0503C
+' AV0-05 flujo: transversal | doc: §10.3, §10.4, §12 | existe: en «Esperando a Oriol» ya viven 3 numeraciones de fases sin resolver y el contrato de catalogos D0003
+[AV0-06 (1 j) Criterio de cierre «que sea divertido»: que se prueba en cada fase antes de darla por hecha] as [AV006] lasts 1 days
+[AV006] is colored in #C0503C
+' AV0-06 flujo: transversal | doc: §1 | existe: regla de cierre por alcance propuesta por Claude el 17/09 (medir_alcance.py), sin decidir
+[AV0-07 (1.5 j) Afinidad y maestria (oficio, fe, dominio de clase) como progresion paralela al tier] as [AV007] lasts 2 days
+[AV007] is colored in #C0503C
+' AV0-07 flujo: WF-06 | doc: §10.7 | existe: nada: el motor solo tiene hitos y tiers (CharacterSheet.h:72, «el reglamento no va de XP»)
+
+-- AV1 — HUD, legibilidad y ergonomia (10.5 j) --
+
+[AV1-03 (1.5 j) Tipografia UTF-8 limpia y wrapWidth automatico] as [AV103] lasts 2 days
+[AV103] is colored in #E3A82B
+' AV1-03 flujo: transversal | doc: §9.1 | existe: la fuente dibuja acentos desde el 17/08; la veda de tildes en los JSON de aventura sigue en «Esperando a Oriol»
+[AV1-01 (1.5 j) Barras PV/PM/Moral sin solapamiento y con la moral como magnitud visible] as [AV101] lasts 2 days
+[AV101] is colored in #E3A82B
+' AV1-01 flujo: WF-04 | doc: §9.1, §1 | existe: el HUD actual solapa barras (AUDITORIA_UI_ETIQUETAS); la moral no existe como magnitud
+[AV1-04 (2 j) Widget de tirada de dados d6 en el HUD: pool, exitos 4-6, critico y pifia] as [AV104] lasts 2 days
+[AV104] is colored in #E3A82B
+' AV1-04 flujo: WF-01 | doc: §6.3, §10.6.A4 | existe: H2-01: DicePoolEngine::roll_pool y opposed_degree ya resuelven de verdad; falta toda la presentacion
+[AV1-07 (1 j) Contrato de lectura de estamina, ruido y carga hacia el HUD] as [AV107] lasts 1 days
+[AV107] is colored in #E3A82B
+' AV1-07 flujo: WF-02 | doc: §10.12.A, §10.12.B | existe: nada
+[AV1-02 (1 j) Barra contextual fija de controles [ESC] [I] [E] [M] por modo] as [AV102] lasts 1 days
+[AV102] is colored in #E3A82B
+' AV1-02 flujo: transversal | doc: §9.1 | existe: PlayerControls/PlayerControlsData existen; H1-03 cableo ESC→Opciones y H1-05 el idioma
+[AV1-05 (2 j) Iconos de condiciones y estados con rondas restantes] as [AV105] lasts 2 days
+[AV105] is colored in #E3A82B
+' AV1-05 flujo: WF-01 | doc: §10.6.A1 | existe: H2-03: ConditionEngine con 3 modos de stacking y damage = damagePerRound x stacks; CharacterSheet::conditions
+[AV1-06 (1.5 j) Reloj de mundo, calendario y clima en el HUD] as [AV106] lasts 2 days
+[AV106] is colored in #E3A82B
+' AV1-06 flujo: transversal | doc: §10.13.A, §10.14.B | existe: nada: no hay reloj de mundo; F1 de zcode ya congela el dt activo en dialogo/combate
+
+-- AV2 — Unificacion del editor (ImGui) y retirada de level_editor (9.5 j) --
+
+[AV2-01 (3 j) Propiedades de instancia dentro de motor_editor (ImGui)] as [AV201] lasts 3 days
+[AV201] is colored in #5BA85B
+' AV2-01 flujo: transversal | doc: §9.2, §11 | existe: EditorState::setObject* y el panel de capas E-12 ya estan; H4 cuenta 14 acciones de autor
+[AV2-02 (2 j) Gestor de proyectos en motor_editor] as [AV202] lasts 2 days
+[AV202] is colored in #5BA85B
+' AV2-02 flujo: transversal | doc: §9.2 | existe: Project/ProjectIndex separados del editor (EST-24, opencode 24/09)
+[AV2-04 (2 j) Herramientas clicables completas y marcadores en rombo] as [AV204] lasts 2 days
+[AV204] is colored in #5BA85B
+' AV2-04 flujo: transversal | doc: §9.2 | existe: hitbox de herramienta incompleta (revision de zcode 03/09)
+[AV2-03 (1 j) Retirar level_editor de CMake y dejar motor_editor como unico editor] as [AV203] lasts 1 days
+[AV203] is colored in #5BA85B
+' AV2-03 flujo: transversal | doc: §9.2 | existe: los dos conviven; level_editor tiene cruces con E-15/E-16
+[AV2-05 (1.5 j) Panel de problemas y referencias integrado en el flujo de autor] as [AV205] lasts 2 days
+[AV205] is colored in #5BA85B
+' AV2-05 flujo: transversal | doc: §11 | existe: E-15 (qwen): ProblemsPanel con 3 pestañas y busqueda con acentos plegados, sin integrar del todo
+
+-- AV3 — Reactividad fisica, moral y reputacion territorial (19 j) --
+
+[AV3-01 (3 j) Modelo de apariencia por capas: cicatrices, venas de mana, musculatura, tatuajes, ropa] as [AV301] lasts 3 days
+[AV301] is colored in #4E86B4
+' AV3-01 flujo: WF-04 | doc: §3.1 | existe: AnimatedEntity y Render/Player.h; ninguna apariencia reactiva
+[AV3-03 (3 j) Reputacion por faccion (-100..+100) y tabla de efectos por banda] as [AV303] lasts 3 days
+[AV303] is colored in #4E86B4
+' AV3-03 flujo: WF-04 | doc: §3.2, §10.3.A | existe: nada; locations.json ya tiene las 19 naciones canonicas
+[AV3-02 (2 j) Disparadores de mutacion: abuso de magia, cero magia, derrotas, prision] as [AV302] lasts 2 days
+[AV302] is colored in #4E86B4
+' AV3-02 flujo: WF-01,WF-04 | doc: §3.1 | existe: H3-08/G-11 hablan de recuperacion de derrota, sin cicatriz; el tatuaje carcelario no existe
+[AV3-04 (2 j) Afinidad cruzada: el mismo acto suma y resta en facciones distintas] as [AV304] lasts 2 days
+[AV304] is colored in #4E86B4
+' AV3-04 flujo: WF-04 | doc: §10.3.B | existe: nada
+[AV3-05 (2 j) Reaccion social del NPC segun banda: aplaudir, huir, escupir, rendir pleitesia] as [AV305] lasts 2 days
+[AV305] is colored in #4E86B4
+' AV3-05 flujo: WF-04 | doc: §3.2, §10.3.A | existe: NarrativeEngine con beats y skillCheck diferido (H3-03), sin entrada de reputacion
+[AV3-08 (3 j) Moral multifactor: un unico valor complejo con sus factores, y reputacion por afinidad de grupo, raza, estado y politica] as [AV308] lasts 3 days
+[AV308] is colored in #4E86B4
+' AV3-08 flujo: WF-04 | doc: §3.2, §10.3 | existe: Morality (eje unico con motivo e historial), CharacterSheet::morality y ShopEngine::moral (float 0..1): tres morales conviven; factionRep existe sin cablear
+[AV3-06 (2 j) Fronteras vivas: salvoconductos, acceso a espacios cerrados y escaramuzas en la raya] as [AV306] lasts 2 days
+[AV306] is colored in #4E86B4
+' AV3-06 flujo: WF-04 | doc: §3.2, §10.3.C | existe: LevelTransition existe pero nadie conecta el atlas con ella (H3-01)
+[AV3-07 (2 j) Corrupcion y redencion moral de NPC: la brujula de los allegados se mueve] as [AV307] lasts 2 days
+[AV307] is colored in #4E86B4
+' AV3-07 flujo: WF-04,FS-04 | doc: §10.5 | existe: nada
+
+-- AV4 — Vida social y economia: comercio, propiedades, oficios, romance, gremio (34 j) --
+
+[AV4-01 (2 j) Pantalla de compra/venta con stock, oro y precios del catalogo real] as [AV401] lasts 2 days
+[AV401] is colored in #8A6BA8
+' AV4-01 flujo: WF-03 | doc: §5.4, §10.14.C | existe: H3-04 (claude 26/09) y ShopEngine (H1-02); H2-08 precios bloqueado: EquipmentDefinition::price (413) no lo lee nadie
+[AV4-02 (1.5 j) Regateo activo por carisma y reputacion mercantil] as [AV402] lasts 2 days
+[AV402] is colored in #8A6BA8
+' AV4-02 flujo: WF-03 | doc: §5.4 | existe: opposed_degree del reglamento Ed. 3 resuelve tiradas enfrentadas, sin uso comercial
+[AV4-03 (2 j) Compra de inmuebles y escrituras (viviendas, tiendas, talleres)] as [AV403] lasts 2 days
+[AV403] is colored in #8A6BA8
+' AV4-03 flujo: WF-05 | doc: §5.1, §10.9 | existe: nada; el editor ya puede marcar una puerta como inmueble comprable (§11.4.2, por hacer en AV6)
+[AV4-07 (2.5 j) Oficio de herreria: mineral, forja, minijuego de yunque, temple y calidades] as [AV407] lasts 3 days
+[AV407] is colored in #8A6BA8
+' AV4-07 flujo: WF-05,FS-05 | doc: §10.8 | existe: nada; el catalogo de equipo ya tiene 413 piezas y rarezas (rarityRank)
+[AV4-08 (2.5 j) Oficio de alquimia: recoleccion, laboratorio, destilacion y recetas] as [AV408] lasts 3 days
+[AV408] is colored in #8A6BA8
+' AV4-08 flujo: WF-05,FS-05 | doc: §10.8 | existe: consumables.json existe y el juego no lo lee (H2-08)
+[AV4-15 (2 j) Bolsa de oro por NPC, precio base de tienda y dificultad de comercio o escasez de recursos] as [AV415] lasts 2 days
+[AV415] is colored in #8A6BA8
+' AV4-15 flujo: WF-03 | doc: §5.4, §10.14.C | existe: ShopItem tiene price y stock; ningun NPC tiene limite de dinero
+[AV4-04 (2 j) Decoracion de interiores en cuadricula isometrica 2.5D] as [AV404] lasts 2 days
+[AV404] is colored in #8A6BA8
+' AV4-04 flujo: WF-05,FS-08 | doc: §5.3, §10.9 | existe: capas de baldosas y objetos del mapa (E-12), pero no una cuadricula de mobiliario del jugador
+[AV4-05 (1.5 j) Rentas e inquilinos: alquiler bajo prospera, alquiler usurero genera odio] as [AV405] lasts 2 days
+[AV405] is colored in #8A6BA8
+' AV4-05 flujo: WF-05 | doc: §5.1, §10.9 | existe: H3-05 (zcode 28/09): GameSession::collectRent existe y nadie de fuera la llama
+[AV4-09 (1.5 j) Jornada laboral, mostrador propio, diezmos e impuestos locales] as [AV409] lasts 2 days
+[AV409] is colored in #8A6BA8
+' AV4-09 flujo: WF-05,FS-05 | doc: §10.8 | existe: nada
+[AV4-10 (3 j) Los tres medidores del NPC: afecto, respeto y confianza] as [AV410] lasts 3 days
+[AV410] is colored in #8A6BA8
+' AV4-10 flujo: FS-04 | doc: §10.4.A | existe: nada
+[AV4-16 (2 j) Durabilidad y degradacion del equipo: se estropea con el uso y se repara en el taller] as [AV416] lasts 2 days
+[AV416] is colored in #8A6BA8
+' AV4-16 flujo: WF-06 | doc: §10.8, §10.7 | existe: nada: el equipo no se degrada (EquipmentDefinition no tiene durabilidad)
+[AV4-06 (2 j) Inversion publica municipal: reparar infraestructuras y transformar el pueblo] as [AV406] lasts 2 days
+[AV406] is colored in #8A6BA8
+' AV4-06 flujo: WF-05 | doc: §5.2, §10.9 | existe: nada
+[AV4-11 (3 j) Cortejo en 5 fases: primera impresion, dialéctica, regalos, intimidad, enlace] as [AV411] lasts 3 days
+[AV411] is colored in #8A6BA8
+' AV4-11 flujo: FS-04 | doc: §10.4.B | existe: NarrativeEngine con beats y skillCheck (H3-03); nada de romance
+[AV4-13 (2.5 j) Gremio de aventureros: mercenarios con moralidad y tarifa diaria] as [AV413] lasts 3 days
+[AV413] is colored in #8A6BA8
+' AV4-13 flujo: WF-07 | doc: §4.4, §10.11 | existe: nada
+[AV4-12 (2 j) Matrimonio, convivencia, descendencia y beneficios de hogar] as [AV412] lasts 2 days
+[AV412] is colored in #8A6BA8
+' AV4-12 flujo: FS-04,FS-08 | doc: §10.4.B5 | existe: nada
+[AV4-14 (2 j) Publicar encargos propios en el tablon y recogerlos dias despues] as [AV414] lasts 2 days
+[AV414] is colored in #8A6BA8
+' AV4-14 flujo: WF-07 | doc: §4.4, §10.11 | existe: nada
+
+-- AV5 — Combate tactico: cartas, dados d6 y caida sin game over (22.5 j) --
+
+[AV5-01 (2.5 j) Mazo de habilidades y mano visible con limite por INT/SAB] as [AV501] lasts 3 days
+[AV501] is colored in #B4557E
+' AV5-01 flujo: WF-01,WF-06 | doc: §6.1, §10.6.A2 | existe: skills.json y spells.json cargan en pruebas; el juego no lee spells (H2-06) y 202 de 210 hechizos estan huerfanos
+[AV5-02 (2 j) Enfriamiento de carta por reposo corto o largo (sin PA ni PM) y rango] as [AV502] lasts 2 days
+[AV502] is colored in #B4557E
+' AV5-02 flujo: WF-01 | doc: §6.1, §10.6.A3 | existe: SkillEffect y BattleState resuelven efectos; los costes no se muestran ni se validan en pantalla
+[AV5-05 (2 j) Cartas de Creadores (legendarias) con efectos que alteran el campo] as [AV505] lasts 2 days
+[AV505] is colored in #B4557E
+' AV5-05 flujo: WF-01 | doc: §6.2, §10.6.A3 | existe: passives.json y summons.json existen; las cartas de Run'Vel/Voluntades Gemelas/TML no
+[AV5-09 (2 j) Progresion por hitos: tier, atributos y eleccion de carta entre 3] as [AV509] lasts 2 days
+[AV509] is colored in #B4557E
+' AV5-09 flujo: WF-01,WF-06 | doc: §10.7 | existe: H2-04 (zcode 28/09): CharacterSheet::tierUp implementado y grantMilestoneOnEnd parseado; nadie lo llamaba
+[AV5-11 (1.5 j) Iniciativa 1d6 + Destreza y orden de turno] as [AV511] lasts 2 days
+[AV511] is colored in #B4557E
+' AV5-11 flujo: WF-01 | doc: §10.6.A1 | existe: BattleState evita la iniciativa a proposito (BattleState.h:24-32: aliados uno a uno y una pasada enemiga)
+[AV5-03 (2 j) Resolucion por pool de d6: exitos Ed.3 (6=1, 5=0.5), critico si la mitad son 6, pifia sin 5/6 y dos 1es] as [AV503] lasts 2 days
+[AV503] is colored in #B4557E
+' AV5-03 flujo: WF-01 | doc: §6.3, §10.6.A4 | existe: DicePoolEngine::roll_pool y opposed_degree (reglamento Ed. 3, sin CA ni CD)
+[AV5-08 (2 j) Interaccion del combate con el decorado: cobertura, objetos arrojadizos, incendios] as [AV508] lasts 2 days
+[AV508] is colored in #B4557E
+' AV5-08 flujo: WF-01 | doc: §10.14.C | existe: nada; los objetos de la ciudad son inertes (H3-07)
+[AV5-10 (1.5 j) Personalizacion del mazo entre combates y EXP por vias no violentas] as [AV510] lasts 2 days
+[AV510] is colored in #B4557E
+' AV5-10 flujo: WF-01,WF-06 | doc: §10.7 | existe: nada
+[AV5-04 (2.5 j) Seleccion de objetivos, alcance y area con cancelacion sin gasto] as [AV504] lasts 3 days
+[AV504] is colored in #B4557E
+' AV5-04 flujo: WF-01 | doc: §10.6.A3 | existe: H2-02: selectTargetsFor con SELF/SINGLE_ENEMY/ALL_ENEMIES/SINGLE_ALLY/ALL_ALLIES/ZONE_RADIUS
+[AV5-06 (2.5 j) IA tactica enemiga: agresivo, cobarde, emboscador, con su propia mano] as [AV506] lasts 3 days
+[AV506] is colored in #B4557E
+' AV5-06 flujo: WF-01 | doc: §10.6.A5, §11.3.3 | existe: EnemyBrain (constructor simple pos/patMin/patMax/maxHealth/stepInterval) y el menu de combate hardcodeado
+[AV5-07 (2 j) Caida sin game over: noqueo y robo, rescate del eremita, cicatriz permanente] as [AV507] lasts 2 days
+[AV507] is colored in #B4557E
+' AV5-07 flujo: WF-01 | doc: §10.6.B | existe: H3-08: G-11 menciona slots y recuperacion de derrota, sin decidir donde reapareces ni que pierdes
+
+-- AV6 — Editor universal de autoria y matriz de privilegios (37 j) --
+
+[AV6-01 (2.5 j) Catalogo de NPC: personalidad, voz, complexion y sprite base] as [AV601] lasts 3 days
+[AV601] is colored in #3F9C8F
+' AV6-01 flujo: transversal | doc: §11.1.1 | existe: npcs.json existe y se genera desde el canon (BITACORA 2.6); sin personalidad ni rutina
+[AV6-06 (2 j) Creador de monstruos: tier y formulas automaticas de CA, PV y bono de ataque] as [AV606] lasts 2 days
+[AV606] is colored in #3F9C8F
+' AV6-06 flujo: transversal | doc: §11.3.1 | existe: monsters.json con 432 fichas; populate_from_monster_catalog corrige via recompute_derived (H2-07)
+[AV6-09 (2 j) Pincel de zonas de ley y jurisdiccion: orden imperial, mercado neutro, tierra de nadie] as [AV609] lasts 2 days
+[AV609] is colored in #3F9C8F
+' AV6-09 flujo: transversal | doc: §11.4.1 | existe: capas de baldosas (E-12); ninguna capa de jurisdiccion
+[AV6-13 (2.5 j) Entorno y atmosfera de region: ciclo de luz, generador de lluvia y audio 3D espacial] as [AV613] lasts 3 days
+[AV613] is colored in #3F9C8F
+' AV6-13 flujo: FS-07 | doc: §11.8 | existe: shaders de fog y lightmap en el motor; ningun editor de atmosfera
+[AV6-14 (3 j) Matriz de privilegios Admin MMO / Game Master / Jugador con bloqueo de escritura sobre catalogos oficiales] as [AV614] lasts 3 days
+[AV614] is colored in #3F9C8F
+' AV6-14 flujo: transversal | doc: §8, §11.5 | existe: nada
+[AV6-02 (2 j) Editor de rutina diaria 24 h por franjas y modo (comercio, social, dormir)] as [AV602] lasts 2 days
+[AV602] is colored in #3F9C8F
+' AV6-02 flujo: FS-06 | doc: §11.1.2 | existe: nada
+[AV6-03 (2 j) Editor de parametros morales: faccion, romance habilitado, gustos y tolerancia al crimen] as [AV603] lasts 2 days
+[AV603] is colored in #3F9C8F
+' AV6-03 flujo: transversal | doc: §11.1.3 | existe: nada
+[AV6-08 (1.5 j) Generador de botin con porcentajes de drop] as [AV608] lasts 2 days
+[AV608] is colored in #3F9C8F
+' AV6-08 flujo: transversal | doc: §11.3.4 | existe: RPG::LootResolver y loot_tables.json; H2-05 ya cablea el botin al ganar (verificado 28/09, sin commit)
+[AV6-10 (1.5 j) Marcar edificio como inmueble comprable con precio, renta base y capacidad de muebles] as [AV610] lasts 2 days
+[AV610] is colored in #3F9C8F
+' AV6-10 flujo: WF-05,FS-08 | doc: §11.4.2 | existe: nada
+[AV6-11 (2 j) Rutas de patrulla: waypoints con espera, orientacion de cabeza y animacion] as [AV611] lasts 2 days
+[AV611] is colored in #3F9C8F
+' AV6-11 flujo: FS-06 | doc: §11.6 | existe: propiedades de instancia de patrulla (MapEntityDocument, patMin/patMax de EnemyBrain)
+[AV6-15 (2 j) Barra de control en vivo del Master: pausar mundo, inyectar monstruo, tirada secreta] as [AV615] lasts 2 days
+[AV615] is colored in #3F9C8F
+' AV6-15 flujo: transversal | doc: §11.5 | existe: nada
+[AV6-16 (1.5 j) Aislamiento en disco de la campana del Master (partidas/mi_campana/*.json)] as [AV616] lasts 2 days
+[AV616] is colored in #3F9C8F
+' AV6-16 flujo: transversal | doc: §11.5 | existe: ProjectIndex escanea proyectos; no hay separacion por rol
+[AV6-04 (3 j) Editor de arboles de dialogo por nodos con tiradas y bifurcaciones] as [AV604] lasts 3 days
+[AV604] is colored in #3F9C8F
+' AV6-04 flujo: WF-07 | doc: §11.1.4 | existe: NarrativeEngine con beats y skillCheck diferido (4 grados → 4 flags); el editor no los dibuja
+[AV6-12 (2.5 j) Tiendas fisicas: props comerciales y ranuras de mercancia con DC de hurto y reposicion] as [AV612] lasts 3 days
+[AV612] is colored in #3F9C8F
+' AV6-12 flujo: WF-03 | doc: §11.7 | existe: DEC-05 aislo los catalogos de tienda; la mercancia no existe como objeto colocado en el mundo
+[AV6-05 (3 j) Editor de misiones: objetivos dinamicos, triggers de celda y condiciones compuestas] as [AV605] lasts 3 days
+[AV605] is colored in #3F9C8F
+' AV6-05 flujo: WF-07 | doc: §11.2 | existe: questIds en los documentos y QuestDefinition NO existe (AUDITORIA_CONTRATOS); fase E tiene interruptores locales
+[AV6-07 (2 j) Asignacion de baraja y de comportamiento tactico al monstruo] as [AV607] lasts 2 days
+[AV607] is colored in #3F9C8F
+' AV6-07 flujo: transversal | doc: §11.3.2, §11.3.3 | existe: nada
+[AV6-17 (2 j) Segregacion de misiones por tipo en el editor y en el diario: principales, eventos, secundarias, profesion, raza y evento unico] as [AV617] lasts 2 days
+[AV617] is colored in #3F9C8F
+' AV6-17 flujo: WF-07 | doc: §7, §10.10, §11.2 | existe: DiarioMisiones construye una lista plana desde las flags del NarrativeState
+
+-- AV7 — Locomocion, carga y fisicas del jugador (16 j) --
+
+[AV7-01 (3 j) Modos de locomocion con su velocidad, ruido y gasto de estamina] as [AV701] lasts 3 days
+[AV701] is colored in #7A8B2E
+' AV7-01 flujo: WF-02 | doc: §10.12.A | existe: Player.h, PlayerMotionData.h y CONTROLES-02 de Codex en vuelo (fase al caminar, reposo orientado)
+[AV7-02 (1.5 j) Inercia y derrape: frenada en seco, giro de 180º e impacto en multitudes] as [AV702] lasts 2 days
+[AV702] is colored in #7A8B2E
+' AV7-02 flujo: WF-02 | doc: §10.12.A4 | existe: rebump/bump de Player en vuelo por otra sesion, sin inercia de sprint
+[AV7-03 (1 j) Publicar estamina, ruido y carga al HUD por el canal acordado] as [AV703] lasts 1 days
+[AV703] is colored in #7A8B2E
+' AV7-03 flujo: WF-02 | doc: §10.12 | existe: nada
+[AV7-04 (2 j) Carga y peso: cuatro bandas con su efecto en movilidad, esquiva, ruido y daño lumbar] as [AV704] lasts 2 days
+[AV704] is colored in #7A8B2E
+' AV7-04 flujo: WF-02,WF-06 | doc: §10.12.B | existe: InventoryEngine con rarityRank y equipo por tier (BITACORA 2.13); ningun peso por objeto
+[AV7-05 (2.5 j) Biomecanica por superficie: adoquin, barro con huellas 45 s, hielo y aceite, madera crujiente] as [AV705] lasts 3 days
+[AV705] is colored in #7A8B2E
+' AV7-05 flujo: WF-02 | doc: §10.12.C | existe: nada; las baldosas no llevan material
+[AV7-08 (3 j) Pathfinding A* sobre celdas y movimiento con clic de raton con interpolacion visual] as [AV708] lasts 3 days
+[AV708] is colored in #7A8B2E
+' AV7-08 flujo: WF-02 | doc: §10.12.A | existe: tryMovePlayer(dx,dy) por celdas, RuntimeTile::hasCollision y CONTROLES-02 (fase al caminar, reposo orientado)
+[AV7-06 (1.5 j) Vadeo y natacion con peso: chapoteo, velocidad al 70% y hundirse con placas] as [AV706] lasts 2 days
+[AV706] is colored in #7A8B2E
+' AV7-06 flujo: WF-02 | doc: §10.12.A8 | existe: nada
+[AV7-07 (1.5 j) Radio sonoro por calzado y armadura como dato consultable por la IA] as [AV707] lasts 2 days
+[AV707] is colored in #7A8B2E
+' AV7-07 flujo: WF-02 | doc: §10.1.B, §10.12.B | existe: nada
+
+-- AV8 — Sigilo, crimen, guardias, prision e identidad (20.5 j) --
+
+[AV8-03 (2 j) Catalogo de delitos por gravedad (menores, medios, mayores) y quien los presencia] as [AV803] lasts 2 days
+[AV803] is colored in #A9673F
+' AV8-03 flujo: FS-01 | doc: §10.1.A | existe: nada
+[AV8-04 (2 j) Mecanica del cadaver: entidad fisica, arrastre, escondite, descubrimiento y panico] as [AV804] lasts 2 days
+[AV804] is colored in #A9673F
+' AV8-04 flujo: FS-01 | doc: §10.1.B | existe: nada
+[AV8-09 (2 j) Passing Score del disfraz: ropa, cosmetica, anatomia y magia de ilusion] as [AV809] lasts 2 days
+[AV809] is colored in #A9673F
+' AV8-09 flujo: FS-03 | doc: §10.2.A | existe: nada
+[AV8-01 (2.5 j) Cono de vision de 120º con zona central 6 m, periferica 12 m y espalda ciega] as [AV801] lasts 3 days
+[AV801] is colored in #A9673F
+' AV8-01 flujo: WF-02,FS-01 | doc: §10.1.B | existe: nada; los NPC no perciben
+[AV8-05 (3 j) Niveles de alerta 1-5: interrogatorio, detencion, campana y rastrillos, cazarrecompensas, proscripcion] as [AV805] lasts 3 days
+[AV805] is colored in #A9673F
+' AV8-05 flujo: FS-01 | doc: §10.1.C | existe: nada
+[AV8-10 (1.5 j) Repercusiones culturales del disfraz por region e infiltracion en zonas segregadas] as [AV810] lasts 2 days
+[AV810] is colored in #A9673F
+' AV8-10 flujo: FS-03 | doc: §10.2.B | existe: nada
+[AV8-02 (1.5 j) Barra de sospecha progresiva en la zona periferica y deteccion instantanea en la central] as [AV802] lasts 2 days
+[AV802] is colored in #A9673F
+' AV8-02 flujo: FS-01 | doc: §10.1.B | existe: nada
+[AV8-06 (2 j) Intercepcion y tres salidas: rendirse, sobornar/engañar, resistirse armado] as [AV806] lasts 2 days
+[AV806] is colored in #A9673F
+' AV8-06 flujo: FS-01 | doc: §10.1.C | existe: opposed_degree resuelve la tirada enfrentada de carisma contra honestidad
+[AV8-07 (2.5 j) Prision jugable: confiscacion, salto temporal, rutina carcelaria, trabajos forzados y tatuaje] as [AV807] lasts 3 days
+[AV807] is colored in #A9673F
+' AV8-07 flujo: FS-02 | doc: §10.1.C | existe: nada; el salto temporal necesita el reloj de mundo (AV1-06)
+[AV8-08 (1.5 j) Fuga carcelaria: ganzua del carcelero borracho, pozo ciego, cloacas] as [AV808] lasts 2 days
+[AV808] is colored in #A9673F
+' AV8-08 flujo: FS-02 | doc: §10.1.C | existe: nada
+
+-- AV9 — IA viva: rutinas 24 h, patrullas, clima y escenografia (19.5 j) --
+
+[AV9-01 (3 j) Arboles de comportamiento y horario circadiano del ciudadano (06:00→23:00)] as [AV901] lasts 3 days
+[AV901] is colored in #4A6FA5
+' AV9-01 flujo: FS-06 | doc: §10.13.A | existe: EnemyBrain y patrullas en propiedades de instancia; ningun NPC civil con rutina
+[AV9-05 (3 j) Objetos del mundo que hacen algo: puertas con destino, cofres con botin, mesas volcables, fuego] as [AV905] lasts 3 days
+[AV905] is colored in #4A6FA5
+' AV9-05 flujo: WF-01,FS-07 | doc: §10.14.C | existe: H3-07: MapEntityDocument y propiedades de instancia ya existen; el runtime no las ejecuta y los objetos son inertes
+[AV9-02 (2 j) Dialogo ambiental dinamico con memoria de sucesos recientes] as [AV902] lasts 2 days
+[AV902] is colored in #4A6FA5
+' AV9-02 flujo: FS-06 | doc: §10.13.A | existe: NarrativeEngine con beats; sin memoria de sucesos del mundo
+[AV9-04 (1.5 j) Fauna urbana y pilluelos: perros que delatan, gatos, ratas y carteristas] as [AV904] lasts 2 days
+[AV904] is colored in #4A6FA5
+' AV9-04 flujo: FS-06 | doc: §10.13.C | existe: nada
+[AV9-06 (2 j) Distritos con estetica y seguridad propias: noble, mercado, arrabales, muelles] as [AV906] lasts 2 days
+[AV906] is colored in #4A6FA5
+' AV9-06 flujo: FS-07 | doc: §10.14.A | existe: el generador de ciudad produce barrios (BITACORA Parte 3: los callejones derivan y se comen la muralla)
+[AV9-07 (2.5 j) Clima dinamico con su efecto en visibilidad, reflejos, charcos, sonido y reaccion social] as [AV907] lasts 3 days
+[AV907] is colored in #4A6FA5
+' AV9-07 flujo: FS-07 | doc: §10.14.B | existe: shaders de fog y lightmap; nada de clima
+[AV9-03 (3 j) Estados de alerta de la patrulla: verde, amarillo, naranja con enjambre y rojo con acoso coordinado] as [AV903] lasts 3 days
+[AV903] is colored in #4A6FA5
+' AV9-03 flujo: FS-06 | doc: §10.13.B | existe: nada
+[AV9-08 (2.5 j) Tiendas con mercancia fisica en mostrador y hurto en tiempo real] as [AV908] lasts 3 days
+[AV908] is colored in #4A6FA5
+' AV9-08 flujo: WF-03,FS-07 | doc: §10.14.C | existe: ShopEngine (H1-02) y H3-04 resuelven la compra por menu, no por objeto colocado
+
+-- AV10 — Misiones organicas, investigacion y bibliotecas (14.5 j) --
+
+[AV10-01 (3 j) Contrato QuestDefinition, cargador y diario de misiones] as [AV1001] lasts 3 days
+[AV1001] is colored in #9B5DE5
+' AV10-01 flujo: WF-07 | doc: §7.2, §10.10 | existe: H3-02: questIds en los documentos y QuestDefinition NO existe; cuelga al vacio
+[AV10-02 (2 j) Tiempo de mundo REAL: reloj que avanza aunque el jugador este quieto, con fases dia/noche] as [AV1002] lasts 2 days
+[AV1002] is colored in #9B5DE5
+' AV10-02 flujo: WF-03,WF-05,WF-07,FS-02,FS-06 | doc: §10.9, §10.11 | existe: updateNarrativeTimers(dtActivo) de F1 (zcode) congela en dialogo/combate/AFK; no hay calendario
+[AV10-04 (2.5 j) Investigacion en bibliotecas: estanterias interactivas, tiradas de Investigacion/Historia, paginas sueltas] as [AV1004] lasts 3 days
+[AV1004] is colored in #9B5DE5
+' AV10-04 flujo: WF-07 | doc: §7.1, §10.10 | existe: nada
+[AV10-03 (2 j) Rumores en la taberna y misiones sin iconos flotantes] as [AV1003] lasts 2 days
+[AV1003] is colored in #9B5DE5
+' AV10-03 flujo: WF-07 | doc: §7.2, §10.10 | existe: nada
+[AV10-05 (2 j) Cadenas de mision con repercusion regional y botin unico] as [AV1005] lasts 2 days
+[AV1005] is colored in #9B5DE5
+' AV10-05 flujo: WF-07 | doc: §7.2 | existe: nada
+[AV10-06 (3 j) Viajar entre naciones conectando el atlas con LevelTransition] as [AV1006] lasts 3 days
+[AV1006] is colored in #9B5DE5
+' AV10-06 flujo: WF-07 | doc: §10.3.C | existe: H3-01: 8 TMX de mapamundi y locations.json con 19 naciones; nadie los conecta y 13 desembarcos son inalcanzables
+
+-- AV11 — Red: MMO open world (solo expansion) e instancias privadas (15 j) --
+
+[AV11-01 (3 j) Protocolo de red y autoridad: que viaja, que se valida en servidor, como se reconcilia] as [AV1101] lasts 3 days
+[AV1101] is colored in #D08C34
+' AV11-01 flujo: transversal | doc: §2 | existe: nada de red en el motor
+[AV11-02 (4 j) Servidor de mundo abierto con filtro de contenido de expansion] as [AV1102] lasts 4 days
+[AV1102] is colored in #D08C34
+' AV11-02 flujo: transversal | doc: §2 | existe: nada
+[AV11-03 (3 j) Servidor de salas privadas con Master y sus herramientas en vivo] as [AV1103] lasts 3 days
+[AV1103] is colored in #D08C34
+' AV11-03 flujo: transversal | doc: §2, §11.5 | existe: nada
+[AV11-05 (2 j) Antitrampas basico: validacion de tiradas y de movimientos en servidor] as [AV1105] lasts 2 days
+[AV1105] is colored in #D08C34
+' AV11-05 flujo: transversal | doc: §2 | existe: nada
+[AV11-04 (3 j) Economia unificada del MMO y persistencia de propiedades, rentas e impuestos] as [AV1104] lasts 3 days
+[AV1104] is colored in #D08C34
+' AV11-04 flujo: transversal | doc: §2, §5 | existe: nada
+
+-- AV12 — Aceptacion, equilibrio y deuda de contenido (13.5 j) --
+
+[AV12-05 (3 j) Deuda de contenido aguas arriba: 202 hechizos huerfanos, 432 monstruos con vida 0, 59 clases sin hechizos] as [AV1205] lasts 3 days
+[AV1205] is colored in #6B7B8C
+' AV12-05 flujo: transversal | doc: §12 | existe: BITACORA 4.1 y 4.3; va por canon → cartas → motor, no se inventa en el motor
+[AV12-01 (1.5 j) Pasar medir_alcance.py por cada fase: nada se cierra si no llega al jugador] as [AV1201] lasts 2 days
+[AV1201] is colored in #6B7B8C
+' AV12-01 flujo: transversal | doc: §1, §12 | existe: tools/medir_alcance.py mide por uso desde cada main(); la regla de cierre esta propuesta y sin decidir
+[AV12-02 (2 j) Partida de prueba guionizada que recorre los 7 flujos de workflows_juego/] as [AV1202] lasts 2 days
+[AV1202] is colored in #6B7B8C
+' AV12-02 flujo: transversal | doc: §10 | existe: nada
+[AV12-04 (2 j) Equilibrado de combate: pools de d6, coste de cartas, tiers y healthCap] as [AV1204] lasts 2 days
+[AV1204] is colored in #6B7B8C
+' AV12-04 flujo: WF-01,WF-06 | doc: §6, §10.6 | existe: en «Esperando a Oriol»: la vida doblada por tier contra el healthCap actual (tier 5 = 128/192 contra tope 125)
+[AV12-06 (1 j) Actualizar BITACORA, TABLERO y el documento de alcance con el estado real] as [AV1206] lasts 1 days
+[AV1206] is colored in #6B7B8C
+' AV12-06 flujo: transversal | doc: §12 | existe: el protocolo ya obliga a dejar huella por sesion
+[AV12-03 (2 j) Equilibrado economico: precios, rentas, impuestos y oro en circulacion] as [AV1203] lasts 2 days
+[AV1203] is colored in #6B7B8C
+' AV12-03 flujo: WF-03,WF-05 | doc: §5 | existe: mercado real medido: pocion 30, eter 45, pan 8; 413 precios generados que nadie leia (H2-08)
+[AV12-07 (2 j) Harness de balanceo: dano maximo por clase en grupos de 1 contra 1..n enemigos (n hasta 10)] as [AV1207] lasts 2 days
+[AV1207] is colored in #6B7B8C
+' AV12-07 flujo: WF-01 | doc: §6, §12 | existe: nada: 432 monstruos con vida 0 y 59 clases sin hechizos
+
+-- AV13 — Combate tactico a lo Baldur's Gate 3: tablero, alcance, areas e IA (55 j) --
+
+[AV13-01 (0.5 j) Reglamento: el empate roza (1), la ayuda de dados en Tier 0-1 y los esbirros a DES 1-2] as [AV1301] lasts 1 days
+[AV1301] is colored in #C0503C
+' AV13-01 flujo: WF-01 | doc: D0014 §1-3 | existe: DANO-02 (06/10) dice «empate o pierde -> 0»; el reglamento manda sobre el motor (canon -> cartas -> motor) | carril: principal (Claude)
+[AV13-04 (1.5 j) Probabilidad exacta de una tirada enfrentada: ganar, roce y fallar, con ventaja, critico de dos 6 y pifia] as [AV1304] lasts 2 days
+[AV1304] is colored in #FFFFFF/#C0503C
+' AV13-04 flujo: WF-01 | doc: COMBATE_BG3.md §6 | existe: DicePoolEngine::roll_pool tira; nadie calcula la probabilidad (por convolucion, sin simular) | carril: paralelo (opencode)
+[AV13-06 (2 j) Tablero de combate sin GL: recuadro de 15x15 casillas del nivel, transitables, ocupadas, distancias y linea de vision] as [AV1306] lasts 2 days
+[AV1306] is colored in #C0503C
+' AV13-06 flujo: WF-01 | doc: COMBATE_BG3.md §3 | existe: BattleState no tiene posiciones (BattleState.h: turno Dragon Quest); el nivel ya sabe que casilla bloquea (RuntimeTile::hasCollision) | carril: principal (Claude)
+[AV13-07 (1.5 j) Ruta A* y casillas alcanzables con presupuesto, sin GL (sirve al combate y al clic de raton de AV7-08)] as [AV1307] lasts 2 days
+[AV1307] is colored in #C0503C
+' AV13-07 flujo: WF-01 | doc: COMBATE_BG3.md §3, §10.12.A | existe: nada: tryMovePlayer va casilla a casilla; AV7-08 pide el mismo A* | carril: principal (Claude (14/10: la necesitaba el movimiento en combate; trae pasa a AV14-20))
+[AV13-08 (1 j) Plantillas de area sobre casillas, sin GL: circulo, cono de 90 grados, linea y cuadrado] as [AV1308] lasts 1 days
+[AV1308] is colored in #FFFFFF/#C0503C
+' AV13-08 flujo: WF-01 | doc: COMBATE_BG3.md §5 | existe: SkillTarget tiene ZONE_RADIUS sin geometria; ALL_ENEMIES alcanza a todos sin mirar donde estan | carril: paralelo (codex)
+[AV13-09 (2 j) Alcance y area de cada carta, aguas arriba: cuerpo a cuerpo, alcance N, a distancia, sobre si; y su plantilla] as [AV1309] lasts 2 days
+[AV1309] is colored in #FFFFFF/#C0503C
+' AV13-09 flujo: WF-01 | doc: COMBATE_BG3.md §5 | existe: las cartas no dicen su alcance; el motor tendria que deducirlo de SkillTarget y las etiquetas | carril: paralelo (gemini)
+[AV13-21 (1.5 j) Tipos de dano, resistencias y vulnerabilidades en los datos: cartas de las clases jugables y monstruos de Boundington] as [AV1321] lasts 2 days
+[AV1321] is colored in #FFFFFF/#C0503C
+' AV13-21 flujo: WF-01 | doc: COMBATE_BG3.md §8 | existe: las cartas llevan etiquetas de elemento (Fuego, Sagrado...) que usan las particulas; no hay resistencias | carril: paralelo (gemini)
+[AV13-30 (1 j) El critico atraviesa el bloqueo salvo bloqueo critico; la pifia del atacante da un ataque de oportunidad fisico] as [AV1330] lasts 1 days
+[AV1330] is colored in #C0503C
+' AV13-30 flujo: WF-01 | doc: D0015 §4 y §6 | existe: El bloqueo para el golpe antes de tirar; la pifia del atacante solo hace 0 | carril: principal (Claude)
+[AV13-31 (0.5 j) La pifia en una salvacion: te entra el dano y el efecto, duplicado] as [AV1331] lasts 1 days
+[AV1331] is colored in #C0503C
+' AV13-31 flujo: WF-01 | doc: D0015 §10 | existe: La pifia del objetivo da un dado mas de la carta | carril: principal (Claude)
+[AV13-33 (1.5 j) Morir: escena de noqueo o rescate, cicatriz y moral, Game Over y vuelta al ultimo guardado con una cicatriz mas] as [AV1333] lasts 2 days
+[AV1333] is colored in #C0503C
+' AV13-33 flujo: WF-01 | doc: D0015 §7 (sustituye a D-COMB-05) | existe: GameOver con Cargar y Titulo; la cicatriz no se guarda al cargar | carril: principal (Claude)
+[AV13-34 (1 j) La compania de Rosita llega cuando Sandes, a 1/4 de vida o menos, te da un golpe mortal; scripteado para que pase siempre] as [AV1334] lasts 1 days
+[AV1334] is colored in #C0503C
+' AV13-34 flujo: WF-01 | doc: D0015 §13, canon §13.4 | existe: ROSITA-01: llega cuando Sandes o tu bajais a un cuarto | carril: principal (Claude)
+[AV13-35 (1.5 j) Borrar el combate y las pruebas antiguas (sin mesa de cartas), midiendo antes que nadie los usa] as [AV1335] lasts 2 days
+[AV1335] is colored in #C0503C
+' AV13-35 flujo: WF-01 | doc: D0015 §11 | existe: El camino sin mesa (etiquetas Exit/Fracas) sigue vivo por la prueba de nivel del editor y varias pruebas | carril: principal (Claude)
+[AV13-36 (2 j) Las 950 cartas de ejemplo y las clases escondidas, convertidas en habilidades y clases de monstruos y enemigos] as [AV1336] lasts 2 days
+[AV1336] is colored in #FFFFFF/#C0503C
+' AV13-36 flujo: WF-01 | doc: D0015 §17 | existe: 950 cartas de ejemplo (Llerba/Tomba) sin uso; clases escondidas | carril: paralelo (gemini)
+[AV13-02 (0.5 j) Roce en el motor: un golpe fisico empatado quita 1 y el registro dice «Roce»] as [AV1302] lasts 1 days
+[AV1302] is colored in #C0503C
+' AV13-02 flujo: WF-01 | doc: D0014 §1 | existe: RPG::dano::dadosFisicos devuelve 0 con el empate; GolpesEnPantalla ya pinta «EMPATE» | carril: principal (Claude)
+[AV13-10 (1 j) Colocar a todos al empezar: heroe y enemigos donde estaban, acompanantes y refuerzos en la libre mas cercana; el borde en tinta] as [AV1310] lasts 1 days
+[AV1310] is colored in #C0503C
+' AV13-10 flujo: WF-01 | doc: COMBATE_BG3.md §3 | existe: la camara ya se acerca a los que pelean (COMBATE-01); los refuerzos se suman al bando sin sitio | carril: principal (Claude)
+[AV13-22 (1 j) Resistencia mitad, vulnerabilidad doble, inmunidad cero en el motor; el numero y el sonido salen del tipo] as [AV1322] lasts 1 days
+[AV1322] is colored in #C0503C
+' AV13-22 flujo: WF-01 | doc: COMBATE_BG3.md §8 | existe: el dano no tiene tipo en el motor | carril: principal (Claude)
+[AV13-03 (1 j) Esbirros a DES 1-2 y re-medir: te pegan el 30-35 % y el 1 contra 3 sigue en el 40 % (Oriol, 06/10)] as [AV1303] lasts 1 days
+[AV1303] is colored in #C0503C
+' AV13-03 flujo: WF-01 | doc: D0014 §3 | existe: simulador_dificultad (GDD §21, Tier 1); el saqueador acierta el 14 % (analisis del 14/10) | carril: principal (Claude)
+[AV13-05 (1.5 j) Ayuda de dados: al apuntar, % de ganar, roce y fallar, dano previsto y vida que quedaria; nota la primera vez; opcion] as [AV1305] lasts 2 days
+[AV1305] is colored in #C0503C
+' AV13-05 flujo: WF-01 | doc: D0014 §2, COMBATE_BG3.md §6 | existe: la barra de cartas (UI-BG3-01) ensena la carta senalada y la placa del enemigo; no hay prevision | carril: principal (Claude)
+[AV13-11 (2 j) Turno por iniciativa 1d6+DES, uno a uno y enemigos incluidos, con los retratos arriba (absorbe AV5-11)] as [AV1311] lasts 2 days
+[AV1311] is colored in #C0503C
+' AV13-11 flujo: WF-01 | doc: D-COMB-03, COMBATE_BG3.md §3 | existe: AV5-11 lo pedia sin tablero; BattleState resuelve a todos los enemigos de golpe | carril: principal (Claude)
+[AV13-12 (2.5 j) Moverse por casillas en tu turno: 6 casillas, las alcanzables resaltadas, la ruta con su coste y el aviso de ataque de oportunidad] as [AV1312] lasts 3 days
+[AV1312] is colored in #C0503C
+' AV13-12 flujo: WF-01 | doc: COMBATE_BG3.md §3, D0014 §7.1 | existe: fuera de combate se anda casilla a casilla; en combate no se anda | carril: principal (Claude)
+[AV13-32 (1.5 j) La ayuda de dados dura hasta 4 dados en la caracteristica de ataque principal, y si bajas no vuelve] as [AV1332] lasts 2 days
+[AV1332] is colored in #C0503C
+' AV13-32 flujo: WF-01 | doc: D0015 §2 | existe: AV13-05 la planeaba para Tier 0-1 | carril: principal (Claude)
+[AV13-13 (1.5 j) Alcance en juego: solo se apunta a quien esta a tiro; los validos resaltados; deducido mientras falten los datos de AV13-09 (absorbe AV5-04)] as [AV1313] lasts 2 days
+[AV1313] is colored in #C0503C
+' AV13-13 flujo: WF-01 | doc: COMBATE_BG3.md §5 | existe: AV5-04 (seleccion de objetivos con cancelacion sin gasto); hoy cualquier carta llega a cualquiera | carril: principal (Claude)
+[AV13-15 (2 j) Economia del turno a la vista: movimiento, accion, movimiento-carta, canalizacion, reaccion, «Terminar turno» y Correr/Esquivar/Retirarse/Ayudar] as [AV1315] lasts 2 days
+[AV1315] is colored in #C0503C
+' AV13-15 flujo: WF-01 | doc: COMBATE_BG3.md §4 | existe: TurnoHeroe (GAMEMACHINE B7) lleva la cuenta; la accion principal cierra el turno | carril: principal (Claude)
+[AV13-14 (1.5 j) Areas visibles en el suelo al apuntar: pillan a todos los de dentro, aliados incluidos] as [AV1314] lasts 2 days
+[AV1314] is colored in #C0503C
+' AV13-14 flujo: WF-01 | doc: COMBATE_BG3.md §5, D0014 §7.1 | existe: ALL_ENEMIES alcanza a todos los enemigos y a ningun aliado | carril: principal (Claude)
+[AV13-16 (1.5 j) Ataques de oportunidad al salir del alcance (salvo Retirarse) y la parada como reaccion] as [AV1316] lasts 2 days
+[AV1316] is colored in #C0503C
+' AV13-16 flujo: WF-01 | doc: COMBATE_BG3.md §7 | existe: las reacciones preparadas saltan solas (H2-06), sin posiciones | carril: principal (Claude)
+[AV13-17 (1.5 j) La posicion como dados: flanqueo da ventaja, la cobertura quita un dado, disparar con un enemigo al lado da desventaja] as [AV1317] lasts 2 days
+[AV1317] is colored in #C0503C
+' AV13-17 flujo: WF-01 | doc: COMBATE_BG3.md §7 | existe: ventaja/desventaja ya existen en el pool y en los estados de las cartas | carril: principal (Claude)
+[AV13-20 (1.5 j) Caido, no muerto: tiradas por turno, Ayudar levanta, tres fallos = fuera de combate; el heroe va a la consecuencia sin Game Over] as [AV1320] lasts 2 days
+[AV1320] is colored in #C0503C
+' AV13-20 flujo: WF-01 | doc: COMBATE_BG3.md §8, D-COMB-05 | existe: AV5-07 (caida sin game over); hoy un aliado a 0 PV desaparece del combate | carril: principal (Claude)
+[AV13-23 (1 j) Canalizacion = concentracion: un sostenido a la vez y tirada de CON al recibir dano] as [AV1323] lasts 1 days
+[AV1323] is colored in #C0503C
+' AV13-23 flujo: WF-01 | doc: COMBATE_BG3.md §8 | existe: la canalizacion es una de las acciones del turno (B7) y no se rompe | carril: principal (Claude)
+[AV13-24 (1 j) Las cartas que esperaban posiciones: requiere_posiciones y la velocidad de movimiento] as [AV1324] lasts 1 days
+[AV1324] is colored in #C0503C
+' AV13-24 flujo: WF-01 | doc: COMBATE_BG3.md §2 | existe: skills.json: 1 requiere_posiciones y 2 «pendiente: la velocidad de movimiento (sin posiciones en el combate)» | carril: principal (Claude)
+[AV13-28 (1.5 j) La accion principal ya no cierra el turno: «Terminar turno» y el turno se acaba solo cuando no queda nada que gastar] as [AV1328] lasts 2 days
+[AV1328] is colored in #C0503C
+' AV13-28 flujo: WF-01 | doc: D0014 §8, COMBATE_BG3.md §4 | existe: GAMEMACHINE B7: la accion principal cierra el turno | carril: principal (Claude)
+[AV13-18 (1 j) Empujar: tirada enfrentada que mueve 1-2 casillas; si choca, roza] as [AV1318] lasts 1 days
+[AV1318] is colored in #C0503C
+' AV13-18 flujo: WF-01 | doc: COMBATE_BG3.md §4 | existe: nada | carril: principal (Claude)
+[AV13-19 (3 j) IA enemiga por puntuacion sobre el tablero (casilla x carta x % de ganar), con roles: bruto, tirador, flanqueador y cobarde (amplia AV5-06)] as [AV1319] lasts 3 days
+[AV1319] is colored in #C0503C
+' AV13-19 flujo: WF-01 | doc: COMBATE_BG3.md §10 | existe: EnemyBrain: agresivo/cobarde/emboscador sin tablero (AV5-06); Elemechs: «falta coordinacion» | carril: principal (Claude)
+[AV13-25 (3 j) Superficies que se combinan (fuego, agua, grasa, hielo, humo) y barriles (amplia AV5-08)] as [AV1325] lasts 3 days
+[AV1325] is colored in #C0503C
+' AV13-25 flujo: WF-01 | doc: COMBATE_BG3.md §9 | existe: AV5-08 y AV9-05 (objetos del mundo que hacen algo) | carril: principal (Claude)
+[AV13-29 (3 j) Los acompanantes con su propio turno en la iniciativa, y los juega el jugador (salvo los que su ficha diga que van solos)] as [AV1329] lasts 3 days
+[AV1329] is colored in #C0503C
+' AV13-29 flujo: WF-01 | doc: D0015 §1 | existe: Venides, Xila y los demas actuan con IA justo despues del heroe (cerrarTurno) | carril: principal (Claude)
+[AV13-26 (2 j) Encuentros por presupuesto segun la dificultad, refuerzos con tope y jefes que se preparan (butchery)] as [AV1326] lasts 2 days
+[AV1326] is colored in #C0503C
+' AV13-26 flujo: WF-01 | doc: COMBATE_BG3.md §9 | existe: ROSITA-01: refuerzos por vida; los encuentros son fijos en la aventura | carril: principal (Claude)
+[AV13-27 (1.5 j) Escena de demo y simulador con tablero: el combate de Boundington jugado de punta a punta con posiciones] as [AV1327] lasts 2 days
+[AV1327] is colored in #C0503C
+' AV13-27 flujo: WF-01 | doc: COMBATE_BG3.md, AV12-07 | existe: demo_boundington juega 58 escenas sin tablero; el simulador mide sin posiciones | carril: principal (Claude)
+
+-- AV14 — Gamefeel y pulido de lo jugado: golpes, sonido, andar, poses y menus (43.5 j) --
+
+[AV14-01 (1 j) Un solo evento de golpe (quien, a quien, cuanto, tipo, grado) del que cuelgan numero, particulas, sonido y marco] as [AV1401] lasts 1 days
+[AV1401] is colored in #E3A82B
+' AV14-01 flujo: WF-01 | doc: COMBATE_BG3.md §11 | existe: ApplicationCinematica::combate deduce los golpes comparando vidas entre fotogramas (COMBATE-01) | carril: principal (Claude)
+[AV14-04 (2 j) Banco de sonidos de combate, interfaz y pasos (CC0 o propios, con licencia): golpes por material, fallo, roce, critico, dados, cartas, botones, papel] as [AV1404] lasts 2 days
+[AV1404] is colored in #FFFFFF/#E3A82B
+' AV14-04 flujo: transversal | doc: COMBATE_BG3.md §11-12 | existe: AudioDirector (H6-01) sin efectos de combate; ningun sonido de golpe en assets | carril: paralelo (qwen)
+[AV14-09 (1.5 j) Andar fluido con los frames de hoy: sin paron entre casillas, aceleracion y frenada, camara suave, pasos y polvo] as [AV1409] lasts 2 days
+[AV1409] is colored in #E3A82B
+' AV14-09 flujo: WF-02 | doc: D0014 §7.3, COMBATE_BG3.md §12 | existe: Player interpola 140 ms por casilla; Oriol: «la animacion de andar es horrible», «no puede ser que el movimiento no se vea fluido» | carril: principal (Claude)
+[AV14-10 (3 j) Pixel: ciclo de andar de 6 frames en 4 direcciones para los cuerpos base y los personajes de la historia] as [AV1410] lasts 3 days
+[AV1410] is colored in #FFFFFF/#E3A82B
+' AV14-10 flujo: WF-02 | doc: COMBATE_BG3.md §13 | existe: ciclo de 3 frames (paso, quieto, paso) por direccion, 64 px (razas_andando.json) | carril: paralelo (pixel)
+[AV14-13 (3 j) Pixel: poses dignas (sentado en 4 direcciones, brindar, escribir, llamar, apoyado en la barra, dormir) para los personajes de la historia] as [AV1413] lasts 3 days
+[AV1413] is colored in #FFFFFF/#E3A82B
+' AV14-13 flujo: transversal | doc: D0014 §7.2, COMBATE_BG3.md §13 | existe: los PNJ solo tienen 12 frames de andar | carril: paralelo (pixel)
+[AV14-15 (1.5 j) Recorrido automatico de todos los botones de todos los menus, con informe de los que no responden o no se ven] as [AV1415] lasts 2 days
+[AV1415] is colored in #FFFFFF/#E3A82B
+' AV14-15 flujo: transversal | doc: D0014 §6 | existe: CAPTURAS-UI (zcode) saca las pantallas; nadie pulsa sus botones | carril: paralelo (zcode)
+[AV14-18 (2 j) Pixel: iconos de los objetos de las tiendas de Boundington, de la economia del turno y de los tipos de dano] as [AV1418] lasts 2 days
+[AV1418] is colored in #FFFFFF/#E3A82B
+' AV14-18 flujo: transversal | doc: COMBATE_BG3.md §13 | existe: iconos.json tiene los de estados y algunos objetos | carril: paralelo (pixel)
+[AV14-19 (1 j) El lag: compilar en Release en el Mac, medir arranque y creador, y hacer los retratos del creador por partes] as [AV1419] lasts 1 days
+[AV1419] is colored in #E3A82B
+' AV14-19 flujo: transversal | doc: Oriol 14/10: «se lagea al principio y en el creador» | existe: el build del Mac es -O0 (CMAKE_BUILD_TYPE vacio); en la VM: arranque 180 ms, primer fotograma del creador ~300 ms | carril: principal (Claude)
+[AV14-20 (1.5 j) Validador de puertas: cada puerta lleva a un nivel que existe, y la casilla a la que llega se pisa y tiene puerta de vuelta] as [AV1420] lasts 2 days
+[AV1420] is colored in #FFFFFF/#E3A82B
+' AV14-20 flujo: transversal | doc: MAPA-01 (el rumbo va por las puertas), D0014 §6 (que todo vaya bien) | existe: validar_todo valida catalogos y aventuras; nadie mira que las puertas lleven a un sitio pisable | carril: paralelo (trae)
+[AV14-21 (1 j) Prologo: los tres amigos con tunica y sin capucha; despues se la ponen y salen andando de la habitacion] as [AV1421] lasts 1 days
+[AV1421] is colored in #E3A82B
+' AV14-21 flujo: transversal | doc: D0015 §12 | existe: Los tres amigos de 757 llevan capucha morada desde el principio | carril: principal (Claude)
+[AV14-22 (3 j) El diario de misiones completo: apartados, decisiones tomadas, sus consecuencias y lo que se te pide (H3-02 + MISIONES-01 juntos)] as [AV1422] lasts 3 days
+[AV1422] is colored in #E3A82B
+' AV14-22 flujo: transversal | doc: D0015 §16 | existe: Dos mitades: la ficha quests.json (H3-02) y la vista de las flags (MISIONES-01) | carril: principal (Claude)
+[AV14-23 (1 j) D-MOR-09 y D-MIS-03: la reputacion por faccion en el comercio y el HUD; el rumor es un beat que salta al hablar] as [AV1423] lasts 1 days
+[AV1423] is colored in #E3A82B
+' AV14-23 flujo: transversal | doc: D0015 §15 | existe: factionRep existe y nadie lo lee; los rumores como texto suelto | carril: principal (Claude)
+[AV14-24 (1 j) Plan de integracion de lo terminado que nadie usa (las 13 piezas de H8-06), en el Gantt] as [AV1424] lasts 1 days
+[AV1424] is colored in #E3A82B
+' AV14-24 flujo: transversal | doc: D0015 §18 | existe: 13 piezas, 7.645 lineas, sin consumidor | carril: principal (Claude)
+[AV14-02 (2 j) El golpe integrado en la hoja: el marco del pergamino se tine y tiembla, numero en tinta con Roce/Critico/Fallo, parpadeo, retroceso y hit-stop] as [AV1402] lasts 2 days
+[AV1402] is colored in #E3A82B
+' AV14-02 flujo: WF-01 | doc: D0014 §5, COMBATE_BG3.md §11 | existe: COMBATE-01: numeros y bandas rojas superpuestas; Oriol: «el recuadro rojo podria ser como el marco de la hoja» | carril: principal (Claude)
+[AV14-03 (1.5 j) Particulas de impacto por tipo de dano (astillas, chispas, brasas, sangre) con las familias de CANON_PARTICULAS] as [AV1403] lasts 2 days
+[AV1403] is colored in #E3A82B
+' AV14-03 flujo: WF-01 | doc: COMBATE_BG3.md §11 | existe: PART-02d: las particulas de la carta jugada; ninguna en el impacto | carril: principal (Claude)
+[AV14-05 (1.5 j) Que suene: cada golpe, fallo, roce y critico, los dados, las cartas, los pasos y los botones, con variaciones] as [AV1405] lasts 2 days
+[AV1405] is colored in #E3A82B
+' AV14-05 flujo: WF-01 | doc: COMBATE_BG3.md §11 | existe: AudioDirector (qwen) reparte musica y efectos por bus | carril: principal (Claude)
+[AV14-06 (1 j) Musica de combate en bucle de energia constante, sin solista (Elemechs 16:18), con golpe de entrada y salida] as [AV1406] lasts 1 days
+[AV1406] is colored in #FFFFFF/#E3A82B
+' AV14-06 flujo: transversal | doc: COMBATE_BG3.md §11 | existe: nada de musica de combate | carril: paralelo (qwen)
+[AV14-07 (2 j) Los dados del pool ruedan en el centro: los 6 brillan, los 5 a medias, contra los del defensor (absorbe AV1-04)] as [AV1407] lasts 2 days
+[AV1407] is colored in #E3A82B
+' AV14-07 flujo: WF-01 | doc: COMBATE_BG3.md §11, AV1-04 | existe: AV1-04 lo pedia; DiceRollWidget existe con pruebas y no sale en el combate en pergamino | carril: principal (Claude)
+[AV14-08 (1.5 j) La camara sigue al que actua; velocidad del combate x1/x1,5/x2 y saltar animaciones (accesibilidad)] as [AV1408] lasts 2 days
+[AV1408] is colored in #E3A82B
+' AV14-08 flujo: WF-01 | doc: COMBATE_BG3.md §11 | existe: COMBATE-01: zoom a la pelea al empezar | carril: principal (Claude)
+[AV14-11 (1.5 j) Integrar el ciclo de 6 frames: hojas, generador y animacion (con el paso de 3 frames para lo que aun no tenga 6)] as [AV1411] lasts 2 days
+[AV1411] is colored in #E3A82B
+' AV14-11 flujo: WF-02 | doc: COMBATE_BG3.md §12 | existe: HojaPersonaje::animar reparte 3 frames por direccion | carril: principal (Claude)
+[AV14-14 (2 j) Sentarse y poses en el motor: punto de asiento en sillas y bancos, ordenes «sienta» y «pose» en las cinematicas, PNJ sentados en la taberna] as [AV1414] lasts 2 days
+[AV1414] is colored in #E3A82B
+' AV14-14 flujo: transversal | doc: D0014 §7.2 | existe: las cinematicas mueven y orientan; nadie se sienta (Oriol 14/10: «haz sentarse a los personajes») | carril: principal (Claude)
+[AV14-17 (2 j) Tienda rehecha con lo que diga Oriol, con los iconos de cada objeto] as [AV1417] lasts 2 days
+[AV1417] is colored in #E3A82B
+' AV14-17 flujo: transversal | doc: Oriol 14/10: «los HUDs de comprar tienda aun estan fatal» | existe: TIENDA-02 y TIENDA-04 (sin folio); falta saber que es lo que mas molesta | carril: principal (Claude)
+[AV14-12 (4 j) Pixel: las prendas con el ciclo de 6 frames, por lotes] as [AV1412] lasts 4 days
+[AV1412] is colored in #FFFFFF/#E3A82B
+' AV14-12 flujo: WF-02 | doc: COMBATE_BG3.md §12 | existe: las prendas tienen el ciclo de 3 | carril: paralelo (pixel)
+[AV14-16 (2 j) Arreglar los menus: estado encima y pulsado en cada boton, sonido de papel, transiciones sin tirones] as [AV1416] lasts 2 days
+[AV1416] is colored in #E3A82B
+' AV14-16 flujo: transversal | doc: D0014 §6 | existe: TITULO-01 (14/10) avisa al elegir; muchos botones no cambian al pasar por encima | carril: principal (Claude)
+
+-- AV15 — Usabilidad y la ciudad: moverse, orientarse, menus coherentes y accesibles (13.5 j) --
+
+[AV15-01 (1.5 j) Evaluacion heuristica (Nielsen + Norman) y recorrido cognitivo de las cuatro tareas del jugador nuevo] as [AV1501] lasts 2 days
+[AV1501] is colored in #5BA85B
+' AV15-01 flujo: transversal | doc: USABILIDAD_UOC.md §3 | existe: Nadie ha evaluado el juego con metodo | carril: principal (Claude)
+[AV15-02 (2 j) Los sitios por su nombre: carteles con nombre y emblema sobre la puerta («El lingote de oro» donde esta Luisarda), el mismo en minimapa, tienda y dialogo] as [AV1502] lasts 2 days
+[AV1502] is colored in #5BA85B
+' AV15-02 flujo: transversal | doc: D0015 §14, USABILIDAD_UOC.md §2 | existe: Los sitios se llaman por su funcion | carril: principal (Claude)
+[AV15-06 (1 j) La guia de estilo de Onegai: paleta, letras, reticula de 8 px, botones con sus 5 estados, iconos y voz] as [AV1506] lasts 1 days
+[AV1506] is colored in #5BA85B
+' AV15-06 flujo: transversal | doc: USABILIDAD_UOC.md §2 | existe: Tema.h tiene los colores; nada escrito para el equipo | carril: principal (Claude)
+[AV15-03 (3 j) Quitar ruido de la ciudad: calles principales continuas, fuera los objetos que tapan o cortan el paso, lo que tapa al jugador translucido] as [AV1503] lasts 3 days
+[AV1503] is colored in #5BA85B
+' AV15-03 flujo: transversal | doc: D0015 §14, USABILIDAD_UOC.md §2 | existe: Muchos objetos tapan la vista e impiden ir recto (Oriol, 14/10) | carril: principal (Claude)
+[AV15-04 (1.5 j) El minimapa como mapa: lugares con nombre e icono, hitos y filtros (tiendas, servicios, casas)] as [AV1504] lasts 2 days
+[AV1504] is colored in #5BA85B
+' AV15-04 flujo: transversal | doc: USABILIDAD_UOC.md §2 | existe: El minimapa marca el objetivo y la zona | carril: principal (Claude)
+[AV15-05 (3 j) Los menus viejos al pergamino: comprar casas, las termas y el resto, con confirmacion en lo caro e irreversible] as [AV1505] lasts 3 days
+[AV1505] is colored in #5BA85B
+' AV15-05 flujo: transversal | doc: D0015 §14, USABILIDAD_UOC.md §2 | existe: Varios menus con la estetica antigua | carril: principal (Claude)
+[AV15-07 (1.5 j) Legibilidad y accesibilidad: contraste 4,5:1 sobre el pergamino, lineas de 45-75, nada solo por color, texto escalable, menos temblor si se pide] as [AV1507] lasts 2 days
+[AV1507] is colored in #5BA85B
+' AV15-07 flujo: transversal | doc: USABILIDAD_UOC.md §2 | existe: Contraste sin medir; el color solo distingue algunas marcas | carril: principal (Claude)
+
+-- AV16 — Pulido de lo jugado el 15/10: creacion, capas, salidas y puertas, suelo, combate (20.2 j) --
+
+[AV16-00 (0.2 j) Commitear el arbol de hoy (los 17 paquetes del 14 y 15/10 aplicados) para que las otras IAs partan de el] as [AV1600] lasts 1 days
+[AV1600] is colored in #4E86B4
+' AV16-00 flujo: transversal | doc: PLAN_15-10.md §0, PO-04 | existe: Todo lo aplicado esta sin commitear: una rama nueva saldria del 08/10 | carril: principal (Oriol)
+[AV16-01 (0.5 j) Creacion: el Espectro (y cualquier raza no jugable) no sale en la lista ni en la busqueda] as [AV1601] lasts 1 days
+[AV1601] is colored in #4E86B4
+' AV16-01 flujo: transversal | doc: PLAN_15-10.md §2.1 | existe: Oriol lo ha pedido varias veces; la lista ensena las 43 razas, Espectros incluidos | carril: principal (Claude)
+[AV16-02 (1 j) Creacion: los atributos empiezan todos a 0; ni la raza ni el kit suman; solo se destacan los principales de la clase] as [AV1602] lasts 1 days
+[AV1602] is colored in #4E86B4
+' AV16-02 flujo: transversal | doc: PLAN_15-10.md §2.2 | existe: La hoja ensena «raza +2» y el kit «+1 INT»; Oriol: «han de estar tots en 0, no sumis coses» | carril: principal (Claude)
+[AV16-03 (1.5 j) Ropa que no cuadra con el cuerpo: auditoria automatica de cada prenda x cuerpo x talla x rumbo y arreglo (o fuera de la lista)] as [AV1603] lasts 2 days
+[AV1603] is colored in #4E86B4
+' AV16-03 flujo: transversal | doc: PLAN_15-10.md §2.3 | existe: La tunica de mago (PixelLab) con talla Normal no encaja (captura 15/10 10:24) | carril: principal (Claude)
+[AV16-04 (1.5 j) Orden de dibujo: lo plano del suelo (alfombras, felpudos) siempre debajo de los personajes; el barquero delante de su barca] as [AV1604] lasts 2 days
+[AV1604] is colored in #4E86B4
+' AV16-04 flujo: transversal | doc: PLAN_15-10.md §2.4 | existe: La alfombra de la taberna y del banco se pinta encima del jugador; Sho-noco queda detras de la barca | carril: principal (Claude)
+[AV16-05 (1 j) El jugador anda en las cinematicas tan fluido como Sho-noco] as [AV1605] lasts 1 days
+[AV1605] is colored in #4E86B4
+' AV16-05 flujo: transversal | doc: PLAN_15-10.md §2.5 | existe: En cinematicas el jugador va a tirones; Sho-noco se mueve fluido | carril: principal (Claude)
+[AV16-06 (1.5 j) Salidas que se ven: la salida a otro mapa marcada en el suelo con su cartel «Hacia X»; dentro, «Salir a la calle»; nombres de todas las puertas revisados] as [AV1606] lasts 2 days
+[AV1606] is colored in #4E86B4
+' AV16-06 flujo: transversal | doc: PLAN_15-10.md §2.6, PO-47 | existe: Las salidas del borde no se ven; dentro de los edificios el aviso dice «Entrar en Salida» | carril: principal (Claude)
+[AV16-07 (1 j) Puertas que se ven: al acercarte, la puerta se resalta aunque la tape un tejado, y el cartel apunta a ella] as [AV1607] lasts 1 days
+[AV1607] is colored in #4E86B4
+' AV16-07 flujo: transversal | doc: PLAN_15-10.md §2.7 | existe: La puerta del Lingote de Oro no se ve desde la calle | carril: principal (Claude)
+[AV16-10 (2 j) Suelo mas sencillo y con transiciones: menos variantes y sin rayado; bordes suaves entre materiales (dual-grid)] as [AV1610] lasts 2 days
+[AV1610] is colored in #4E86B4
+' AV16-10 flujo: transversal | doc: PLAN_15-10.md §2.10 | existe: El suelo tiene mas detalle que las casas; cambios de material en linea recta | carril: principal (Claude)
+[AV16-11 (1.5 j) Combate: el turno del rival se entiende (se esconde tu mano, la camara va al que actua, cartel «Turno de X») y la tira de iniciativa se lee mejor] as [AV1611] lasts 2 days
+[AV1611] is colored in #4E86B4
+' AV16-11 flujo: transversal | doc: PLAN_15-10.md §2.11 | existe: Oriol: la tira y el turno del rival «a mejorar» | carril: principal (Claude)
+[AV16-12 (0.5 j) Combate: menos pasos por turno (6 -> 4 casillas, DES 3+ suma 1) y re-medir] as [AV1612] lasts 1 days
+[AV1612] is colored in #4E86B4
+' AV16-12 flujo: transversal | doc: PLAN_15-10.md §2.12 | existe: Oriol: «demasiados pasos en general» | carril: principal (Claude)
+[AV16-13 (0.5 j) El fundido no molesta: solo se funde lo que tapa al jugador, no lo que tiene al lado] as [AV1613] lasts 1 days
+[AV1613] is colored in #4E86B4
+' AV16-13 flujo: transversal | doc: PLAN_15-10.md §2.13 | existe: El 40 % de fundido molesta cuando el objeto te corta el paso | carril: principal (Claude)
+[AV16-14 (1.5 j) Estados nuevos (PO-37): quemado, congelado, aturdido y silenciado, y dados extra] as [AV1614] lasts 2 days
+[AV1614] is colored in #4E86B4
+' AV16-14 flujo: transversal | doc: PLAN_15-10.md §2.14, D0018 | existe: 16 estados; faltan estos cuatro | carril: principal (Claude)
+[AV16-15 (2 j) Los mapas en Excel: cada nivel como una hoja de casillas con colores y codigos que Oriol edita, y vuelta al juego] as [AV1615] lasts 2 days
+[AV1615] is colored in #4E86B4
+' AV16-15 flujo: transversal | doc: PLAN_15-10.md §2.15 (Oriol, 15/10 10:38) | existe: Para hablar de un mapa solo hay capturas | carril: principal (Claude)
+[AV16-08 (1 j) Cada puerta, un sitio distinto: los segundos (Boutique de Madame, Taberna Rica, Caja Firme, mercado) con nombre e interior propios] as [AV1608] lasts 1 days
+[AV1608] is colored in #FFFFFF/#4E86B4
+' AV16-08 flujo: transversal | doc: PLAN_15-10.md §2.8 | existe: Hay dos Boutique de Madame, dos Taberna Rica y dos Caja Firme | carril: paralelo (ChatGPT)
+[AV16-09 (3 j) Boundington con amplitud: reubicar los edificios del centro (calles anchas, puertas a la calle, paso plaza-iglesia) y regenerar] as [AV1609] lasts 3 days
+[AV1609] is colored in #FFFFFF/#4E86B4
+' AV16-09 flujo: transversal | doc: PLAN_15-10.md §2.9, PO-44 | existe: La ciudad sigue apretada; puertas escondidas; la iglesia a 44 % de desvio | carril: paralelo (Qwen)
+
+-- AV17 — La historia con teatro: escenas con personajes, segundas oportunidades, el dia 3 y el ocaso en llamas (19.5 j) --
+
+[AV17-09 (1 j) Escribir las 10 deidades que faltan (PO-45)] as [AV1709] lasts 1 days
+[AV1709] is colored in #8A6BA8
+' AV17-09 flujo: transversal | doc: PLAN_15-10.md §3.9, DEUDA_DE_CONTENIDO.md | existe: 100 hechizos cuelgan de 10 deidades que no existen | carril: principal (Oriol)
+[AV17-10 (1 j) Ordenes nuevas de cinematica para Z.AI: trepar y bajar, arder, tumbado, patrulla, emocion (bocadillo)] as [AV1710] lasts 1 days
+[AV1710] is colored in #8A6BA8
+' AV17-10 flujo: transversal | doc: PLAN_15-10.md §3.10 | existe: Las cinematicas mueven, giran y hablan | carril: principal (Claude)
+[AV17-11 (1.5 j) Fuego y humo en el mundo: casas en llamas y celdas que queman] as [AV1711] lasts 2 days
+[AV1711] is colored in #8A6BA8
+' AV17-11 flujo: transversal | doc: PLAN_15-10.md §3.11 | existe: Hay particulas de golpe y braseros | carril: principal (Claude)
+[AV17-01 (2 j) Segundas oportunidades: ninguna tirada fallada cierra una via; el PNJ ofrece otra (un favor) y, si vuelves a fallar, una de explorar] as [AV1701] lasts 2 days
+[AV1701] is colored in #FFFFFF/#8A6BA8
+' AV17-01 flujo: transversal | doc: PLAN_15-10.md §3.1 | existe: Fallar con Luisarda o con Aigren cierra la via; invitar a cenar no tiene alternativa | carril: paralelo (Z.AI)
+[AV17-02 (1.5 j) Pasar el tiempo: esperar a mediodia, tarde o noche en tabernas y posada; el dia 3 empieza por la manana] as [AV1702] lasts 2 days
+[AV1702] is colored in #FFFFFF/#8A6BA8
+' AV17-02 flujo: transversal | doc: PLAN_15-10.md §3.2 | existe: Solo se puede esperar a la noche; el dia 3 empieza ya de noche | carril: paralelo (Z.AI)
+[AV17-03 (3 j) La cripta bajo la iglesia jugable: sectarios, Edul y Verina, enganar o unirse, escuchar, escapar] as [AV1703] lasts 3 days
+[AV1703] is colored in #FFFFFF/#8A6BA8
+' AV17-03 flujo: transversal | doc: PLAN_15-10.md §3.3 | existe: Es un texto sin personajes | carril: paralelo (Z.AI)
+[AV17-04 (2 j) El castillo con personajes y cinematica] as [AV1704] lasts 2 days
+[AV1704] is colored in #FFFFFF/#8A6BA8
+' AV17-04 flujo: transversal | doc: PLAN_15-10.md §3.4 | existe: La historia del castillo es estatica | carril: paralelo (Z.AI)
+[AV17-05 (1 j) El gato en el arbol: cinematica de trepar a un arbol cercano y bajar con el gato] as [AV1705] lasts 1 days
+[AV1705] is colored in #FFFFFF/#8A6BA8
+' AV17-05 flujo: transversal | doc: PLAN_15-10.md §3.5 | existe: Solo un texto | carril: paralelo (Z.AI)
+[AV17-08 (1 j) Teatralidad: guia de escena (entrar, girarse, acercarse, pausas, bocadillos) aplicada a las 10 escenas principales] as [AV1708] lasts 1 days
+[AV1708] is colored in #FFFFFF/#8A6BA8
+' AV17-08 flujo: transversal | doc: PLAN_15-10.md §3.8 | existe: Muchas escenas son solo texto | carril: paralelo (Z.AI)
+[AV17-12 (0.5 j) Las plegarias de deidad en el juego (prayerSkillIds)] as [AV1712] lasts 1 days
+[AV1712] is colored in #8A6BA8
+' AV17-12 flujo: transversal | doc: PLAN_15-10.md §3.9 | existe: Se carga y nadie lo lee | carril: principal (Claude)
+[AV17-06 (3 j) La fiesta del Barrio Alto jugable: Xila por la manana, la tienda abandonada (colarse, investigar, los trajes) y la fiesta (moverse, hablar, espiar, salir)] as [AV1706] lasts 3 days
+[AV1706] is colored in #FFFFFF/#8A6BA8
+' AV17-06 flujo: transversal | doc: PLAN_15-10.md §3.6 | existe: Toda la infiltracion es una conversacion | carril: paralelo (Z.AI)
+[AV17-07 (2 j) El ocaso en llamas: Perdidos patrullando, rutas no deseadas en llamas, casas ardiendo, muertos; contraste con el dia] as [AV1707] lasts 2 days
+[AV1707] is colored in #FFFFFF/#8A6BA8
+' AV17-07 flujo: transversal | doc: PLAN_15-10.md §3.7 | existe: El ocaso es estatico | carril: paralelo (Z.AI)
+
+-- AV18 — Botin, economia y oficios: cofres, tesoros, tablas, precios y la hoja Trabajar (13.5 j) --
+
+[AV18-07 (3 j) Oficios, tanda 1: servir, estudiar y pescar, con la hoja Trabajar y los dados rodando] as [AV1807] lasts 3 days
+[AV1807] is colored in #B4557E
+' AV18-07 flujo: transversal | doc: D0017, OFICIOS.md, PLAN_15-10.md §4.7 | existe: Catalogo y arte hechos (oficios_datos01, arte01, dado01) | carril: principal (Claude)
+[AV18-01 (1 j) La economia cerrada de los tres dias de Boundington: presupuesto por dia y mapa, precios por rareza, venta al 25 %, tres perfiles] as [AV1801] lasts 1 days
+[AV1801] is colored in #FFFFFF/#B4557E
+' AV18-01 flujo: transversal | doc: PLAN_15-10.md §4.1 (analisis de Oriol) | existe: Precios sueltos (pan 8, daga 60, espada 120); sin presupuesto | carril: paralelo (ChatGPT)
+[AV18-06 (1.5 j) Enemigos con mas acciones (PO-46): dano en los 900 ataques y 2-3 cartas por monstruo de Boundington] as [AV1806] lasts 2 days
+[AV1806] is colored in #FFFFFF/#B4557E
+' AV18-06 flujo: transversal | doc: PLAN_15-10.md §4.6 | existe: Los ataques no tienen cifra; los monstruos no tienen cartas | carril: paralelo (ChatGPT)
+[AV18-02 (3 j) Contenedores en el motor: cofres, barriles, sacos, armarios y tesoros ocultos con tabla, presupuesto, garantizados y requisitos; se tiran una vez y se guardan] as [AV1802] lasts 3 days
+[AV1802] is colored in #FFFFFF/#B4557E
+' AV18-02 flujo: transversal | doc: PLAN_15-10.md §4.2 | existe: Hay un papiro de cofre (m_cofre) para objetos sueltos | carril: paralelo (ChatGPT)
+[AV18-03 (2 j) Tablas de botin y objetos: 40-60 reutilizables y 10-15 unicos con efecto tactico] as [AV1803] lasts 2 days
+[AV1803] is colored in #FFFFFF/#B4557E
+' AV18-03 flujo: transversal | doc: PLAN_15-10.md §4.3 | existe: Hay 28 ids de botin con precio | carril: paralelo (ChatGPT)
+[AV18-04 (1 j) Simulador de economia por dia con tres perfiles (explorador, historia, optimizador)] as [AV1804] lasts 1 days
+[AV1804] is colored in #FFFFFF/#B4557E
+' AV18-04 flujo: transversal | doc: PLAN_15-10.md §4.4 | existe: Nada | carril: paralelo (ChatGPT)
+[AV18-05 (2 j) Repartir el botin por Boundington, el prologo y las afueras con el presupuesto por mapa] as [AV1805] lasts 2 days
+[AV1805] is colored in #FFFFFF/#B4557E
+' AV18-05 flujo: transversal | doc: PLAN_15-10.md §4.5 | existe: Casi no hay nada que registrar | carril: paralelo (Qwen)
+
+-- AV19 — Las afueras de Boundington y la cueva de Gorran (con altura) (15 j) --
+
+[AV19-02 (3 j) Altura en el motor para niveles naturales: escalones y rampas, dibujo por altura, colision] as [AV1902] lasts 3 days
+[AV1902] is colored in #3F9C8F
+' AV19-02 flujo: transversal | doc: PLAN_15-10.md §5.2 | existe: Todo es plano | carril: principal (Claude)
+[AV19-01 (3 j) Las afueras: senda desde el vado a un rio, un bosquecillo, granjas con huerto y un establo] as [AV1901] lasts 3 days
+[AV1901] is colored in #FFFFFF/#3F9C8F
+' AV19-01 flujo: transversal | doc: PLAN_15-10.md §5.1 | existe: Nada: la cueva de Gorran no tiene puerta | carril: paralelo (Qwen)
+[AV19-05 (2 j) Niveles para la fiesta: la tienda abandonada y la mansion del Barrio Alto (salon, jardin, piso de arriba)] as [AV1905] lasts 2 days
+[AV1905] is colored in #FFFFFF/#3F9C8F
+' AV19-05 flujo: transversal | doc: PLAN_15-10.md §5.5 | existe: Nada | carril: paralelo (Qwen)
+[AV19-03 (2 j) La montana pequena con altura: el sendero que sube a la cueva] as [AV1903] lasts 2 days
+[AV1903] is colored in #FFFFFF/#3F9C8F
+' AV19-03 flujo: transversal | doc: PLAN_15-10.md §5.3 | existe: Nada | carril: paralelo (Qwen)
+[AV19-06 (2 j) Boundington en el ocaso: fuego, escombros, rutas cortadas por las llamas, cadaveres y Perdidos patrullando] as [AV1906] lasts 2 days
+[AV1906] is colored in #FFFFFF/#3F9C8F
+' AV19-06 flujo: transversal | doc: PLAN_15-10.md §5.6 | existe: El ocaso usa la ciudad de dia | carril: paralelo (Qwen)
+[AV19-04 (3 j) La cueva de Gorran: 3-5 salas, patrullas, cofre protegido y la guarida con la Furia de Alaro] as [AV1904] lasts 3 days
+[AV1904] is colored in #FFFFFF/#3F9C8F
+' AV19-04 flujo: transversal | doc: PLAN_15-10.md §5.4 | existe: La mision apunta a un nivel de ejemplo | carril: paralelo (Qwen)
+
+-- AV20 — Temor y respeto por la apariencia (PO-38) (1 j) --
+
+[AV20-01 (1 j) Diseno: temor y respeto por la apariencia (cicatrices, raza, mutaciones, ropa) cruzado con moral y reputacion] as [AV2001] lasts 1 days
+[AV2001] is colored in #7A8B2E
+' AV20-01 flujo: transversal | doc: PLAN_15-10.md §6, PO-38 | existe: La moral no se toca al caer; la apariencia no cuenta | carril: principal (Claude)
+
+' --- dependencias (en orden topologico: PlantUML coloca cada tarea
+' cuando lee su enlace y no reajusta las que ya ha situado) ---
+[AV001] -> [AV002]
+[AV001] -> [AV004]
+[AV003] -> [AV005]
+[AV003] -> [AV006]
+[AV001] -> [AV007]
+[AV001] -> [AV101]
+[AV001] -> [AV104]
+[AV001] -> [AV107]
+[AV003] -> [AV1205]
+[AV1301] -> [AV1302]
+[AV1306] -> [AV1310]
+[AV1321] -> [AV1322]
+[AV1401] -> [AV1402]
+[AV1401] -> [AV1403]
+[AV1401] -> [AV1405]
+[AV1404] -> [AV1405]
+[AV1404] -> [AV1406]
+[AV1401] -> [AV1407]
+[AV1401] -> [AV1408]
+[AV1409] -> [AV1411]
+[AV1410] -> [AV1411]
+[AV1413] -> [AV1414]
+[AV1418] -> [AV1417]
+[AV1501] -> [AV1503]
+[AV1502] -> [AV1504]
+[AV1506] -> [AV1505]
+[AV1506] -> [AV1507]
+[AV1600] -> [AV1608]
+[AV1600] -> [AV1609]
+[AV1600] -> [AV1701]
+[AV1600] -> [AV1702]
+[AV1600] -> [AV1703]
+[AV1600] -> [AV1704]
+[AV1710] -> [AV1705]
+[AV1710] -> [AV1708]
+[AV1709] -> [AV1712]
+[AV1600] -> [AV1801]
+[AV1614] -> [AV1806]
+[AV1600] -> [AV1901]
+[AV1600] -> [AV1905]
+[AV003] -> [AV201]
+[AV001] -> [AV701]
+[AV101] -> [AV102]
+[AV104] -> [AV105]
+[AV002] -> [AV106]
+[AV002] -> [AV1001]
+[AV004] -> [AV1101]
+[AV006] -> [AV1201]
+[AV1302] -> [AV1303]
+[AV1302] -> [AV1305]
+[AV1304] -> [AV1305]
+[AV1310] -> [AV1311]
+[AV1411] -> [AV1412]
+[AV1415] -> [AV1416]
+[AV1405] -> [AV1416]
+[AV1905] -> [AV1706]
+[AV1701] -> [AV1706]
+[AV1801] -> [AV1802]
+[AV1801] -> [AV1803]
+[AV1614] -> [AV1803]
+[AV1902] -> [AV1903]
+[AV1901] -> [AV1903]
+[AV1711] -> [AV1906]
+[AV1609] -> [AV1906]
+[AV201] -> [AV202]
+[AV201] -> [AV204]
+[AV002] -> [AV301]
+[AV002] -> [AV303]
+[AV002] -> [AV401]
+[AV002] -> [AV501]
+[AV002] -> [AV601]
+[AV002] -> [AV606]
+[AV201] -> [AV609]
+[AV201] -> [AV613]
+[AV004] -> [AV614]
+[AV701] -> [AV702]
+[AV107] -> [AV703]
+[AV701] -> [AV703]
+[AV701] -> [AV704]
+[AV701] -> [AV705]
+[AV701] -> [AV708]
+[AV002] -> [AV803]
+[AV002] -> [AV901]
+[AV201] -> [AV905]
+[AV106] -> [AV1002]
+[AV1001] -> [AV1004]
+[AV1101] -> [AV1102]
+[AV1201] -> [AV1202]
+[AV1307] -> [AV1312]
+[AV1311] -> [AV1312]
+[AV1304] -> [AV1332]
+[AV1305] -> [AV1332]
+[AV1711] -> [AV1707]
+[AV1702] -> [AV1707]
+[AV1906] -> [AV1707]
+[AV1803] -> [AV1804]
+[AV1609] -> [AV1805]
+[AV1803] -> [AV1805]
+[AV1802] -> [AV1805]
+[AV1802] -> [AV1904]
+[AV1903] -> [AV1904]
+[AV202] -> [AV203]
+[AV202] -> [AV205]
+[AV301] -> [AV302]
+[AV303] -> [AV304]
+[AV303] -> [AV305]
+[AV002] -> [AV308]
+[AV303] -> [AV308]
+[AV401] -> [AV402]
+[AV401] -> [AV403]
+[AV303] -> [AV403]
+[AV401] -> [AV407]
+[AV401] -> [AV408]
+[AV401] -> [AV415]
+[AV501] -> [AV502]
+[AV501] -> [AV505]
+[AV501] -> [AV509]
+[AV501] -> [AV511]
+[AV601] -> [AV602]
+[AV601] -> [AV603]
+[AV303] -> [AV603]
+[AV606] -> [AV608]
+[AV609] -> [AV610]
+[AV609] -> [AV611]
+[AV614] -> [AV615]
+[AV614] -> [AV616]
+[AV704] -> [AV706]
+[AV704] -> [AV707]
+[AV803] -> [AV804]
+[AV301] -> [AV809]
+[AV901] -> [AV902]
+[AV901] -> [AV904]
+[AV905] -> [AV906]
+[AV106] -> [AV907]
+[AV1001] -> [AV1003]
+[AV902] -> [AV1003]
+[AV303] -> [AV1005]
+[AV1004] -> [AV1005]
+[AV1002] -> [AV1006]
+[AV1101] -> [AV1103]
+[AV615] -> [AV1103]
+[AV1102] -> [AV1105]
+[AV509] -> [AV1204]
+[AV1202] -> [AV1206]
+[AV1312] -> [AV1313]
+[AV1312] -> [AV1315]
+[AV303] -> [AV306]
+[AV305] -> [AV306]
+[AV305] -> [AV307]
+[AV403] -> [AV404]
+[AV403] -> [AV405]
+[AV407] -> [AV409]
+[AV408] -> [AV409]
+[AV305] -> [AV410]
+[AV407] -> [AV416]
+[AV104] -> [AV503]
+[AV502] -> [AV503]
+[AV905] -> [AV508]
+[AV502] -> [AV508]
+[AV509] -> [AV510]
+[AV603] -> [AV604]
+[AV610] -> [AV612]
+[AV707] -> [AV801]
+[AV804] -> [AV805]
+[AV303] -> [AV810]
+[AV809] -> [AV810]
+[AV1102] -> [AV1104]
+[AV405] -> [AV1104]
+[AV405] -> [AV1203]
+[AV1204] -> [AV1207]
+[AV1308] -> [AV1314]
+[AV1313] -> [AV1314]
+[AV1315] -> [AV1316]
+[AV1313] -> [AV1317]
+[AV1315] -> [AV1320]
+[AV1315] -> [AV1323]
+[AV1312] -> [AV1324]
+[AV1313] -> [AV1324]
+[AV1315] -> [AV1328]
+[AV303] -> [AV406]
+[AV405] -> [AV406]
+[AV410] -> [AV411]
+[AV410] -> [AV413]
+[AV503] -> [AV504]
+[AV503] -> [AV506]
+[AV302] -> [AV507]
+[AV503] -> [AV507]
+[AV604] -> [AV605]
+[AV801] -> [AV802]
+[AV805] -> [AV806]
+[AV901] -> [AV903]
+[AV805] -> [AV903]
+[AV905] -> [AV908]
+[AV612] -> [AV908]
+[AV1315] -> [AV1318]
+[AV1317] -> [AV1318]
+[AV1304] -> [AV1319]
+[AV1312] -> [AV1319]
+[AV1313] -> [AV1319]
+[AV1317] -> [AV1319]
+[AV1322] -> [AV1325]
+[AV1314] -> [AV1325]
+[AV1311] -> [AV1329]
+[AV1328] -> [AV1329]
+[AV403] -> [AV412]
+[AV411] -> [AV412]
+[AV1002] -> [AV414]
+[AV413] -> [AV414]
+[AV606] -> [AV607]
+[AV506] -> [AV607]
+[AV1001] -> [AV617]
+[AV605] -> [AV617]
+[AV302] -> [AV807]
+[AV806] -> [AV807]
+[AV1319] -> [AV1326]
+[AV1319] -> [AV1327]
+[AV807] -> [AV808]
+
+' --- hitos de fase ---
+[AV0 cerrada] happens at [AV002]'s end
+[AV1 cerrada] happens at [AV105]'s end
+[AV2 cerrada] happens at [AV205]'s end
+[AV3 cerrada] happens at [AV306]'s end
+[AV4 cerrada] happens at [AV412]'s end
+[AV5 cerrada] happens at [AV504]'s end
+[AV6 cerrada] happens at [AV617]'s end
+[AV7 cerrada] happens at [AV706]'s end
+[AV8 cerrada] happens at [AV808]'s end
+[AV9 cerrada] happens at [AV903]'s end
+[AV10 cerrada] happens at [AV1005]'s end
+[AV11 cerrada] happens at [AV1104]'s end
+[AV12 cerrada] happens at [AV1203]'s end
+[AV13 cerrada] happens at [AV1326]'s end
+[AV14 cerrada] happens at [AV1412]'s end
+[AV15 cerrada] happens at [AV1503]'s end
+[AV16 cerrada] happens at [AV1609]'s end
+[AV17 cerrada] happens at [AV1707]'s end
+[AV18 cerrada] happens at [AV1805]'s end
+[AV19 cerrada] happens at [AV1904]'s end
+[AV20 cerrada] happens at [AV2001]'s end
+
+@endgantt

@@ -1,0 +1,84 @@
+{
+ "id": "el_gato_del_dintel",
+ "name": "El Gato del Dintel",
+ "type": "enemy",
+ "rank": "elite",
+ "tier": 3,
+ "role": "escaramuzador",
+ "faction": "yokai_del_umbral",
+ "stats": {
+  "CON": 5,
+  "DES": 8,
+  "INT": 6,
+  "CAR": 5
+ },
+ "derived": {
+  "vida": 34,
+  "ca": 19,
+  "defensaMental": 15,
+  "resistenciaFisica": 15,
+  "movimiento": 6
+ },
+ "attacks": [
+  {
+   "name": "Zarpazo desde Ninguna Parte",
+   "defense": "defensa_mental",
+   "effect": "Daño que suma su DES con ventaja si salió de un umbral este turno."
+  },
+  {
+   "name": "Técnica de Facción",
+   "defense": "defensa_mental",
+   "effect": "Si el objetivo falla, queda Cegado hasta el final de su próximo turno."
+  }
+ ],
+ "passive": {
+  "name": "Siete Entradas",
+  "description": "Siete Entradas: una vez por ronda, cuando fallan un ataque contra él, reaparece en el umbral más cercano (puerta, ventana, arco)."
+ },
+ "conditionsInflicted": [
+  "cegado"
+ ],
+ "loot": [
+  "pocion_de_vigor"
+ ],
+ "lootTable": {
+  "note": "El drop épico/mítico solo cae por condición de fase (Desesperación alcanzada)",
+  "drops": [
+   "pocion_de_vigor"
+  ]
+ },
+ "mechanicTags": [
+  "Enemigo",
+  "Importante",
+  "Oscuro"
+ ],
+ "phases": [
+  {
+   "name": "Apertura",
+   "healthThreshold": 100,
+   "change": "Patrón normal."
+  },
+  {
+   "name": "Desesperación",
+   "healthThreshold": 40,
+   "change": "Encadena su técnica tras el ataque firma y +1 al daño."
+  }
+ ],
+ "villainProfile": {
+  "objetivo": "Robar la siesta perfecta: el cojín del trono, sea de quien sea",
+  "metodo": "Entra, roba, sale; pelea solo si la salida está cerrada",
+  "debilidad_narrativa": "Un cuenco de leche fresca (ofrecido en serio) lo distrae completamente una ronda — es un gato",
+  "vinculo": "yokai_del_umbral"
+ },
+ "arena": {
+  "name": "El Pasaje de los Marcos",
+  "hazard": "Umbrales por todas partes: también los personajes pueden usarlos (10 pies) con prueba de DES"
+ },
+ "legendaryActions": [],
+ "storyCard": {
+  "title": "El Gato del Dintel",
+  "text": "Tiene nueve vidas. Las cuenta en puertas.",
+  "unlock": "Al encontrarlo o derrotarlo, según el uso de campaña."
+ },
+ "flavorText": "Cruza puertas que aún no se han construido."
+}

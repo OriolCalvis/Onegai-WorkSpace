@@ -1,0 +1,12 @@
+<aside th:fragment="sidebar" class="sidebar-card">
+    <p class="eyebrow mb-2">Sistema de Cartas y Tiers</p>
+    <a th:href="@{/}" th:classappend="${currentPage == 'home'} ? 'active'">🏠 Dashboard</a>
+    <a th:href="@{/personatges}" th:classappend="${currentPage == 'personatges'} ? 'active'">👤 Personatges</a>
+    <a th:href="@{/cartas/clases}" th:classappend="${currentPage == 'cartas-clases'} ? 'active'">🛡️ Classes</a>
+    <a th:href="@{/cartas/razas}" th:classappend="${currentPage == 'cartas-razas'} ? 'active'">🧬 Races</a>
+    <a th:href="@{/cartas/transfondos}" th:classappend="${currentPage == 'cartas-transfondos'} ? 'active'">💎 Transfons</a>
+    <a th:href="@{/exportacions}" th:classappend="${currentPage == 'exportacions'} ? 'active'">📦 Exportacions</a>
+
+    <hr class="my-1">
+    <a th:href="@{/configuracio}" th:classappend="${currentPage == 'configuracio'} ? 'active'">⚙️ Configuració</a>
+</aside>

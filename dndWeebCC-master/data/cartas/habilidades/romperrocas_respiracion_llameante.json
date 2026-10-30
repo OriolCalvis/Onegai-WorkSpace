@@ -1,0 +1,54 @@
+{
+ "id": "romperrocas_respiracion_llameante",
+ "name": "Respiración llameante",
+ "type": "skill",
+ "tier": 1,
+ "rarity": "common",
+ "description": "Lanzas bolas de fuego: 3d6 de daño de fuego, y arde: 1 de daño por turno durante 2 turnos.",
+ "flavorText": "",
+ "classTags": [
+  "romperrocas"
+ ],
+ "roleTags": [],
+ "tags": [
+  "romperrocas",
+  "estandar",
+  "Fuego"
+ ],
+ "mechanicTags": [
+  "Fuego"
+ ],
+ "actionType": "accion_principal",
+ "target": "zone_radius",
+ "range": "short",
+ "duration": "instant",
+ "cost": {
+  "amount": 0,
+  "resource": "none"
+ },
+ "recovery": "descanso_corto",
+ "castingStat": null,
+ "defenseStat": null,
+ "magnitudeByDegree": null,
+ "effect": {
+  "description": "Lanzas bolas de fuego: 3d6 de daño de fuego, y arde: 1 de daño por turno durante 2 turnos.",
+  "scaling": "none"
+ },
+ "effects": [
+  {
+   "description": "3d6 de daño de fuego.",
+   "mechanicHook": "dano:3d6"
+  },
+  {
+   "description": "Fuego de cohete: 1 de daño por turno durante 2 turnos.",
+   "mechanicHook": "estado:2:dano_por_turno:1"
+  }
+ ],
+ "requiredStats": {},
+ "requiredTags": [],
+ "incompatibleTags": [],
+ "limitations": [],
+ "evolvesInto": null,
+ "upgradePath": [],
+ "fuente": "NosTale · Romperrocas (Stone Breaker) · H367 Respiración llameante"
+}

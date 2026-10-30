@@ -1,0 +1,75 @@
+{
+  "objects": [
+    {
+      "id": "cebo_pesca",
+      "name": "Cebo de pesca",
+      "category": "pickup",
+      "spriteId": 16,
+      "interactable": true,
+      "price": 4,
+      "pickup": {
+        "effect": "none",
+        "power": 0
+      },
+      "description": "Caja de lombrices para cebar el anzuelo."
+    },
+    {
+      "id": "trampa_caza",
+      "name": "Trampa de caza",
+      "category": "pickup",
+      "spriteId": 16,
+      "interactable": true,
+      "price": 10,
+      "pickup": {
+        "effect": "none",
+        "power": 0
+      },
+      "description": "Trampa plegable para piezas pequenas del monte."
+    },
+    {
+      "id": "semillas_huerto",
+      "name": "Semillas para el huerto",
+      "category": "pickup",
+      "spriteId": 16,
+      "interactable": true,
+      "price": 6,
+      "pickup": {
+        "effect": "none",
+        "power": 0
+      },
+      "description": "Mezcla de semillas para sembrar un bancal."
+    },
+    {
+      "id": "dependiente_pesca_caza",
+      "name": "Dependiente del Zurrón",
+      "category": "npc",
+      "spriteId": 18,
+      "blocksMovement": true,
+      "interactable": true,
+      "dialogue": [
+        "Canas, cebos, trampas y semillas. Todo empieza por preparar las manos.",
+        "El rio, el monte y el huerto piden herramientas distintas. Mira lo que te haga falta."
+      ],
+      "shop": {
+        "buybackPercent": 25,
+        "items": [
+          "cana_de_pescar",
+          "cebo_pesca",
+          "trampa_caza",
+          "semillas_huerto",
+          "cuerda_de_canamo",
+          "pala",
+          "pico_de_minero"
+        ]
+      }
+    },
+    {
+      "id": "salida_interior_pesca_caza",
+      "name": "Salir al Casco",
+      "category": "prop",
+      "spriteId": 23,
+      "blocksMovement": false,
+      "interactable": true
+    }
+  ]
+}

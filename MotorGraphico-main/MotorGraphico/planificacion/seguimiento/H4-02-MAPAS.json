@@ -1,0 +1,55 @@
+{
+  "id": "H4-02",
+  "paquete_corte_b": "E-11 (la mitad con interfaz: editor/src/ProjectPanel.cpp)",
+  "date": "2026-10-01",
+  "author": "Claude (Cowork)",
+  "status": "HECHO en el arbol, sin commit",
+  "pedido": "Oriol: «coge el gantt del motor graphico y sigue programando; utiliza mapadelcodigo, pero piensa que hay mas agentes trabajando en el proyecto de manera simultanea». H4-02 era la siguiente del editor (DEC-01): H4-01 hecho, de ella cuelgan H4-03..H4-09 y H5-01, y nadie la tenia.",
+  "descripcion": "La ventana Proyecto de motor_editor pasa a ser su propio panel: arbol de proyectos y mapas con el nombre que ve el jugador y «(inicio)» en el mapa de entrada; Nuevo proyecto (el id sale solo y acto seguido pide su primer mapa); + Nuevo mapa con nombre, ancho y alto (3..256) y tileset copiado de un mapa existente con sus muros; Duplicar, Renombrar, Empezar aqui y Quitar del mapa abierto (arriba del panel) o de cualquier mapa (clic derecho); Titulo del juego (clic derecho en el proyecto).",
+  "actions": [
+    "ProjectMaps (motor_editor_document, sin GL): listar, tilesets, crear (suelo de la primera baldosa que no es muro y jugador en el centro; nivel + TMX + documento escritos por EditorDocumentIO, como Guardar), duplicar, renombrar (solo el nombre visible: diff de una linea con replaceTopLevelString), quitar del manifiesto SIN borrar ficheros (no deja quitar el de inicio), mapa de inicio y titulo. Todo o nada: ficheros primero, manifiesto despues; si falla, se retiran los nuevos. Nada se pisa: el id se elige libre en levels/ y maps/.",
+    "ProjectPanelState (sin ImGui): formulario abierto, validacion, operacion y Effect para la sesion (abrir, recargar, cerrar). No deja renombrar ni quitar un mapa abierto con cambios sin guardar; las rutas se comparan en forma canonica (--load puede escribir el mismo fichero de otra manera).",
+    "ProjectPanel (ImGui): el bloque Proyecto de EditorApplication pasa a panel propio con arbol, menus de clic derecho y un modal por formulario.",
+    "EditorApplication.cpp: solo el bloque de la ventana Proyecto y el recorrido nuevo del humo (500 -> 498 lineas).",
+    "De paso, TileMap.cpp: un TMX abierto por ruta absoluta perdia la / inicial de la ruta de su textura.",
+    "EditorAyuda: los 10 controles nuevos tienen su ayuda."
+  ],
+  "archivos": {
+    "nuevos": [
+      "include/Editor/ProjectMaps.h (118) + src/Editor/ProjectMaps.cpp (330), src/Editor/ProjectMapsDetail.h (51), src/Editor/ProjectMapsFiles.cpp (208), src/Editor/ProjectMapsJson.cpp (144)",
+      "include/Editor/ProjectPanelState.h (95) + src/Editor/ProjectPanelState.cpp (220)",
+      "editor/include/ProjectPanel.h (63) + editor/src/ProjectPanel.cpp (400)",
+      "tests/Editor/ProjectPanelTests.cpp (413, 7 casos)",
+      "cmake/ProjectPanelTests.cmake (va en el MISMO commit que su include() en CMakeLists.txt)",
+      "sesiones/2026-10-01-claude-mapas.md"
+    ],
+    "modificados": [
+      "CMakeLists.txt (include de ProjectPanelTests.cmake)",
+      "cmake/MotorEditor.cmake (4 fuentes en motor_editor_document, ProjectPanel.cpp en motor_editor)",
+      "editor/src/EditorApplication.cpp (bloque Proyecto -> ProjectPanel; humo 140..156)",
+      "src/Editor/EditorAyuda.cpp",
+      "src/Render/TileMap.cpp (resolveRelativeTo conserva la raiz de una ruta absoluta)",
+      "tests/Editor/test_motor_editor_smoke.py (160 fotogramas; comprueba manifiesto, nivel y TMX del mapa nuevo)"
+    ]
+  },
+  "ley_del_repo": {
+    "techo_500": "ninguno pasa de 500 (ProjectPanel.cpp 400, ProjectPanelTests.cpp 413); EditorApplication.cpp baja a 498",
+    "miembros": "ProjectPanel.h 10, ProjectPanelState.h 6",
+    "frontera_GL": "ProjectMaps y ProjectPanelState en motor_editor_document (sin GL ni ImGui); solo ProjectPanel.cpp en motor_editor",
+    "alcance": "las 3 cabeceras nuevas las alcanza motor_editor (medir_alcance.py)",
+    "guardia": "linea_base_core --rapido en el Mac: antes 2 problemas (AparienciaTests.cmake y Pergamino.cmake sin versionar), despues 3: solo se suma cmake/ProjectPanelTests.cmake sin versionar (+6 AVISOS de fuentes nuevas sin versionar). Se arregla con el commit. Guardia entera en el contenedor: igual con y sin el cambio (fuentes sueltas 56 -> 57, base 62)."
+  },
+  "verification": [
+    "test_project_panel 7/7 (ruta de E-11 entera, dos proyectos en carpeta con espacios, duplicar sin colisiones, cancelar y fallar sin dejar nada a medias, renombrar = diff de una linea, quitar sin borrar, panel frente al mapa abierto con cambios). 10/10 mutaciones la ponen en rojo.",
+    "test_motor_editor_smoke_1/2 con ImGui real: + Nuevo mapa -> nombre -> Crear -> pintar -> Ctrl+S -> reabrir; el script comprueba manifiesto y ficheros.",
+    "ctest completo: las mismas fallas que sin el cambio (mas linea_base_core_configura mientras los ficheros nuevos no esten versionados).",
+    "Aplicado al arbol del Mac el 01/10 ~10:30 con preimagen md5 6/6, patch --dry-run limpio y postimagen 18/18 (copia del parche: Claude outputs/mapas_2026-10-01/h402.patch).",
+    "Recorrido visual completo en el editor real: Claude outputs/mapas_2026-10-01/ (video, gif y 19 capturas)."
+  ],
+  "pending": [
+    "Commit: todos los ficheros nuevos y cmake/ProjectPanelTests.cmake con su include() en el mismo commit.",
+    "Los ficheros nuevos no estan en la lista de E-11 de planificacion/pla/dades.py: quien regenere MAPA_DEL_CODIGO.md puede anadirlos.",
+    "Siguiente del editor en el Gantt: H4-03 (propiedades de instancia) y H4-09 (capas; E-12 de Codex sigue EN CURSO en LayerPanel.cpp).",
+    "Libre para otros: ya no hace falta hablar antes de tocar ProjectPanel.cpp ni el bloque Proyecto de EditorApplication.cpp."
+  ]
+}

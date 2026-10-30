@@ -1,0 +1,30 @@
+{
+  "name": "Cueva de entrada",
+  "map": "assets/maps/test_map.tmx",
+  "playerStart": { "x": 0, "y": 0 },
+  "enemies": [
+    {
+      "type": "slime",
+      "position": { "x": 3, "y": 0 },
+      "patrolMin": { "x": 0, "y": 0 },
+      "patrolMax": { "x": 3, "y": 0 },
+      "skills": ["golpe_gelatinoso"]
+    },
+    {
+      "type": "goblin",
+      "position": { "x": 2, "y": 2 },
+      "skills": ["tajo", "grito_de_guerra"]
+    }
+  ],
+  "objects": [
+    { "objectId": "arbusto", "position": { "x": 0, "y": 2 } },
+    { "objectId": "llave_cueva", "position": { "x": 3, "y": 2 } },
+    { "objectId": "pocion", "position": { "x": 1, "y": 0 } },
+    {
+      "objectId": "slime",
+      "position": { "x": 2, "y": 0 },
+      "patrolMin": { "x": 2, "y": 0 },
+      "patrolMax": { "x": 3, "y": 0 }
+    }
+  ]
+}
