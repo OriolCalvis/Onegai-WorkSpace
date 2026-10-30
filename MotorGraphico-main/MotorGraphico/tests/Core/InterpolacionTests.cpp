@@ -2,6 +2,7 @@
 
 #include "TestHarness.h"
 
+#include <cfloat>
 #include <cmath>
 #include <limits>
 #include <string>
@@ -275,6 +276,42 @@ MOTOR_TEST_CASE(tweenVec2_iguales_devuelve_a) {
     for (int i = 0; i <= 100; ++i) {
         MOTOR_CHECK(igualVec(tweenVec2(a, a, i / 100.0), a.x, a.y));
     }
+}
+
+float viaDouble(float a, float b, double p) {
+    return static_cast<float>(static_cast<double>(a) * (1.0 - p) + static_cast<double>(b) * p);
+}
+
+MOTOR_TEST_CASE(tweenVec2_calcula_en_double_y_convierte_una_vez) {
+    // p interiores no exactos en float: mezclar en float daria otro resultado (p.ej. 1.46800005f).
+    const double ps[] = {0.18, 0.37, 0.91};
+    const float pares[][2] = {{0.1f, 7.7f}, {7.7f, 0.1f}, {-3.3f, 0.7f}};
+    for (double p : ps) {
+        for (const auto& q : pares) {
+            const Vector2 r = tweenVec2({q[0], q[1]}, {q[1], q[0]}, p);
+            MOTOR_CHECK(r.x == viaDouble(q[0], q[1], p));
+            MOTOR_CHECK(r.y == viaDouble(q[1], q[0], p));
+        }
+    }
+}
+
+MOTOR_TEST_CASE(tweenVec2_extremos_float_max) {
+    const Vector2 r = tweenVec2({-FLT_MAX, FLT_MAX}, {FLT_MAX, -FLT_MAX}, 0.5);
+    MOTOR_CHECK(std::isfinite(r.x) && std::isfinite(r.y));
+    MOTOR_CHECK(igualVec(r, 0.0f, 0.0f));
+    MOTOR_CHECK(igualVec(tweenVec2({-FLT_MAX, 0.0f}, {FLT_MAX, 0.0f}, 1.0), FLT_MAX, 0.0f));
+}
+
+MOTOR_TEST_CASE(tweenVec2_subnormales) {
+    const float sub = FLT_MIN / 4.0f;  // subnormal
+    MOTOR_CHECK(sub > 0.0f && sub < FLT_MIN);
+    const Vector2 a{0.0f, sub}, b{sub, 0.0f};
+    MOTOR_CHECK(igualVec(tweenVec2(a, b, 0.0), a.x, a.y));
+    MOTOR_CHECK(igualVec(tweenVec2(a, b, 1.0), b.x, b.y));
+    const Vector2 m = tweenVec2(a, b, 0.5);
+    MOTOR_CHECK(m.x == viaDouble(a.x, b.x, 0.5) && m.y == viaDouble(a.y, b.y, 0.5));
+    MOTOR_CHECK(m.x == sub / 2.0f && m.y == sub / 2.0f);
+    MOTOR_CHECK(igualVec(tweenVec2({sub, sub}, {sub, sub}, 0.3), sub, sub));
 }
 
 }  // namespace
