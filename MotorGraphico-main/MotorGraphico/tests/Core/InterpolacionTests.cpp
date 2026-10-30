@@ -278,8 +278,10 @@ MOTOR_TEST_CASE(tweenVec2_iguales_devuelve_a) {
     }
 }
 
+// Referencia: la propia tweenEscalar (double) convertida a float una vez. No recalcula la
+// formula en esta TU, asi no depende de que dos TUs contraigan a fmadd igual.
 float viaDouble(float a, float b, double p) {
-    return static_cast<float>(static_cast<double>(a) * (1.0 - p) + static_cast<double>(b) * p);
+    return static_cast<float>(tweenEscalar(static_cast<double>(a), static_cast<double>(b), p));
 }
 
 MOTOR_TEST_CASE(tweenVec2_calcula_en_double_y_convierte_una_vez) {
@@ -302,6 +304,7 @@ MOTOR_TEST_CASE(tweenVec2_extremos_float_max) {
     MOTOR_CHECK(igualVec(tweenVec2({-FLT_MAX, 0.0f}, {FLT_MAX, 0.0f}, 1.0), FLT_MAX, 0.0f));
 }
 
+// Nota: asume IEEE estricto en subnormales (sin -ffast-math ni FTZ/DAZ); con ellos fallaria.
 MOTOR_TEST_CASE(tweenVec2_subnormales) {
     const float sub = FLT_MIN / 4.0f;  // subnormal
     MOTOR_CHECK(sub > 0.0f && sub < FLT_MIN);
