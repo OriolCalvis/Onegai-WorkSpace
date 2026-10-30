@@ -1,4 +1,4 @@
-# U3-06.E01 r1 registro de citas (verificadas por contenido; base 08ef8db). Rutas relativas a MotorGraphico-main/MotorGraphico/
+# U3-06.E01 r2 registro de citas (verificadas por contenido; base 08ef8db). Rutas relativas a MotorGraphico-main/MotorGraphico/
 # primera linea contiene la aguja A y la ultima la aguja B (extremos de cada rango)
 
 OK  src/Render/AnimatedEntity.cpp:37-52
@@ -413,11 +413,51 @@ OK  include/Engine/EntidadClip.h:44-44
    primera[44]: std::unique_ptr<Game::DestinoFuncion> m_destino;
    ultima [44]: std::unique_ptr<Game::DestinoFuncion> m_destino;
    esperado: 'm_destino' / None
+OK  src/Engine/ApplicationBucle.cpp:297-323
+   primera[297]: if (!ApplicationCinematica::enCurso(*this)) {
+   ultima [323]: }
+   esperado: 'if (!ApplicationCinematica::enCurso' / '}'
+OK  src/Engine/ApplicationBucle.cpp:319-321
+   primera[319]: const float dx = pnj->desfaseX(), dy = pnj->desfaseY();
+   ultima [321]: (dx + dy) * static_cast<float>(kTileH) * 0.5f + Game::RutinasPnj::saltoPx(*pnj, reducidas)});
+   esperado: 'const float dx' / 'saltoPx'
+OK  src/Engine/ApplicationPantallas.cpp:495-495
+   primera[495]: app.m_cine->rutasEnemigos.emplace_back(handle, std::move(r));
+   ultima [495]: app.m_cine->rutasEnemigos.emplace_back(handle, std::move(r));
+   esperado: 'rutasEnemigos.emplace_back' / None
+OK  src/Engine/ApplicationPantallas.cpp:284-284
+   primera[284]: if (!m_cine->rutasEnemigos.empty()) return;
+   ultima [284]: if (!m_cine->rutasEnemigos.empty()) return;
+   esperado: 'rutasEnemigos.empty()' / None
+OK  include/Game/RutinasPnj.h:121-121
+   primera[121]: bool parado = false;  // combate, dialogo, tienda...: nadie echa a andar
+   ultima [121]: bool parado = false;  // combate, dialogo, tienda...: nadie echa a andar
+   esperado: 'bool parado' / None
+OK  include/Game/RutinasPnj.h:85-122
+   primera[85]: struct EstadoPnj {
+   ultima [122]: };
+   esperado: 'struct EstadoPnj' / '};'
+OK  src/Engine/EntidadClip.cpp:7-12
+   primera[7]: struct PuertosSinEfecto : Game::PuertosEventoClip {
+   ultima [12]: }  // namespace
+   esperado: 'struct PuertosSinEfecto' / '}'
+OK  src/Game/ClipActor.cpp:33-33
+   primera[33]: if (m_generacion != generacion) {
+   ultima [33]: if (m_generacion != generacion) {
+   esperado: 'm_generacion != generacion' / None
+OK  src/Render/HojaPersonaje.cpp:149-164
+   primera[149]: actor.addAnimation("idle", {Game::frameQuieto(Rumbo::Abajo, reparto)});
+   ultima [164]: actor.addAnimation("idle_left", Game::cicloDeReposo(Rumbo::Izquierda, reparto));
+   esperado: 'addAnimation("idle"' / 'Izquierda'
+OK  CMakeLists.txt:827-827
+   primera[827]: src/Engine/ApplicationBucle.cpp
+   ultima [827]: src/Engine/ApplicationBucle.cpp
+   esperado: 'ApplicationBucle.cpp' / None
 OK  cmake/ClipsAnimacion.cmake:82-82
    primera[82]: target_sources(motor_core PRIVATE src/Engine/EntidadClip.cpp)
    ultima [82]: target_sources(motor_core PRIVATE src/Engine/EntidadClip.cpp)
    esperado: 'EntidadClip.cpp' / None
-TOTAL 104 BAD 0
+TOTAL 114 BAD 0
 
 # wc -l
     1282 src/Engine/Application.cpp

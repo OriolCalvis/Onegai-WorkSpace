@@ -1,6 +1,6 @@
 # U3-06 · Màquina d'estats d'animació en dades: auditoria E01 i contractes E02–E07
 
-**Versió de disseny v1 r1 (ronda 1 de revisió aplicada), pendent de revisió.** Base: `08ef8db` (branca `replica-r1/U3-06`, sobre `replica-r1/U3-05`).
+**Versió de disseny v1 r2 (rondes 1 i 2 de revisió aplicades; darrera ronda del contracte), pendent d'aprovació.** Base: `08ef8db` (branca `replica-r1/U3-06`, sobre `replica-r1/U3-05`).
 Cap codi escrit en aquesta E (és un document). Rutes relatives a `MotorGraphico-main/MotorGraphico/`.
 Cada `fitxer:línia` està comprovada **per contingut** (primera i última línia de cada rang) a
 `out/fabrica/REPLICA-R1/U3-06.E01_citas.log` (arrel del worktree). Tot el que no té cita va marcat **(inferit)**.
@@ -39,12 +39,12 @@ sobre `src/ include/ editor/ examples/ tests/`. `editor/` **no té cap selector*
 | S9 | Cinemàtica, jugador | nom que passa el guió | `app.m_player->play(animacion)` | `src/Engine/ApplicationCinematica.cpp:128-142` (`:141`) | sí |
 | S10 | Cinemàtica, altres actors | nom del guió; si és `idle*` registra abans els `idle_*` | `play(animacion)` si `currentAnimation() != animacion` | `ApplicationCinematica.cpp:155-172` (registre `:159-170`, `play` `:171`) | sí |
 | S11 | Cinemàtica: **qui genera els noms** | tipus de pas (`Coloca`, `Mira`, `Trepa`, camí) | `"idle"`, `"idle_<rumb>"`, `"climb"`/`"climb_down"`, `walk_*` → `idle_*` en parar-se | `src/Game/Cinematica.cpp:405`, `:409`, `:435`, `:474`, `:553-556`; `animacionDePaso` `:165-167`; port `include/Game/Cinematica.h:160-162`. **«climb»/«climb_down» no es registren enlloc** (només apareixen a `Cinematica.cpp:435` i `:474`) → `play` els ignora | sí |
-| S12 | Combat: enemics recorren una ruta | `PasosEnRuta::andar()` (delta de la ruta) | `play(sigue ? r.andar() : r.antes)` cada fotograma | `ApplicationCinematica.cpp:452-463` (`:461`); `include/Game/PasosEnRuta.h:52-58`; guarda del nom previ `src/Engine/ApplicationPantallas.cpp:493` | sí |
+| S12 | Combat: enemics recorren una ruta | `PasosEnRuta::andar()` (delta de la ruta) | `play(sigue ? r.andar() : r.antes)` cada fotograma | `ApplicationCinematica.cpp:452-463` (`:461`); `include/Game/PasosEnRuta.h:52-58`; guarda del nom previ `src/Engine/ApplicationPantallas.cpp:493`; les rutes les escriu `ApplicationPantallas.cpp:495` i `:284` (comprova `rutasEnemigos.empty()`) | sí |
 | S13 | Combat: heroi recorre la ruta | pas de la ruta | `m_player->moveTo(...)` (→ S2) | `ApplicationCinematica.cpp:445-449` | sí |
 | S14 | Cinemàtica: heroi camina | pas del guió | `bump` (S3) o `moveTo(..., m_segundosPorCelda)` (S2) | `ApplicationCinematica.cpp:176-181` | sí |
 | S15 | Naixement d'actors del món | té fila d'hoja o no | amb hoja: `animar`+`play("idle")`+`showRestFrame`; sense hoja: `EntidadClip::idleCuerpoBase` | `src/Engine/ApplicationNivel.cpp:403-412` i `:490-498` | sí |
 | S16 | Avanç de fotogrames (no tria, només avança) | `dt` | `m_player->update`, `marker.entity->update` | `ApplicationBucle.cpp:141-150` | sí |
-| S17 | `Enemy` (Render) | `m_brain.direction()` quan canvia de casella | `play(walk_right/walk_left)` | `src/Render/Enemy.cpp:11-26` (`:24`); **no instanciat des de `src/` ni `editor/`**: `grep -rln "Enemy enemy\|Enemy(\|<Enemy>" examples tests` dóna 10 fitxers, tots demos/proves | només demos/proves |
+| S17 | `Enemy` (Render) | `m_brain.direction()` quan canvia de casella | `play(walk_right/walk_left)` | `src/Render/Enemy.cpp:11-26` (`:24`); **no instanciat des de `src/` ni `editor/`**: els **7** usuaris que l'instancien són demos/proves: `examples/demo_animated_entity.cpp`, `demo_dynamic_lights.cpp`, `demo_enemy_sprite.cpp`, `demo_hud.cpp`, `demo_lighting.cpp`, `demo_lut.cpp` i `tests/Render/EnemyTests.cpp` (`include "Render/Enemy.h"` a `src/` només a `src/Render/Enemy.cpp`) | només demos/proves |
 | S19 | `HojaPersonaje::ponerA` (vestir el jugador de «nova partida») | la hoja triada | `setCharacterSprite` + `animar` + `animarReposo` + `play("idle")` + `showRestFrame()` | `src/Render/HojaPersonaje.cpp:121-130`; cridada des de `src/Engine/PantallaNuevaPartida.cpp:125` (`vestir(Player&)`) | sí |
 | S20 | Fallback de `EntidadClip::ponIdle` (clip nul o buit) | — | `addAnimation("idle", 1..12)` + `play("idle")` | `src/Engine/EntidadClip.cpp:35-37` | sí (si l'asset no carrega) |
 | S18 | `EnemyBrain` (IA) | patrulla/persecució | **no tria animació**: exposa `direction()` «sin duplicar aqui el concepto de animacion»; `aiState` (`kIdle/kPatrol/kChase`) no el llegeix cap selector | `include/Game/EnemyBrain.h:252-256`, `include/Game/EnemyBrainData.h:18-20`, `:44` | n/a |
@@ -64,7 +64,7 @@ sobre `src/ include/ editor/ examples/ tests/`. `editor/` **no té cap selector*
 
 ### 1.3 Altres escriptors de fotograma que **no** són selectors d'estat (fora d'àmbit)
 
-`FullaMascotes::frameDe`, `Bandada::frameDe`, `frameAla`, `EfectosDeCartas` ja estan auditats a `contratos/U3-05_clips.md` §1.2b/§1.3 (càlcul pur per rellotge/distància, no per estat, sense `play`): la màquina **no els toca**. Les demos de `examples/` (`demo_animated_entity.cpp`, `demo_lighting.cpp`, `demo_dynamic_lights.cpp`, `demo_hud.cpp`, `demo_lut.cpp`, `demo_fog.cpp`, `demo_brillo_equipo.cpp`) i les proves (`tests/Render/PlayerTests.cpp`, `AnimatedEntityTests.cpp`, `tests/Engine/IdleCuerpoBaseTests.cpp`, `tests/Game/CinematicaTests.cpp`, `RutinasPnjTests.cpp`, `EnemyBrainTests.cpp`, `AudioDirectorTests.cpp`, `ClipActorFpsTests.cpp`) criden `play/addAnimation` o fixen noms; **no s'han de migrar** i són la xarxa de seguretat.
+`FullaMascotes::frameDe`, `Bandada::frameDe`, `frameAla`, `EfectosDeCartas` ja estan auditats a `contratos/U3-05_clips.md` §1.2b/§1.3 (càlcul pur per rellotge/distància, no per estat, sense `play`): la màquina **no els toca**. Les demos de `examples/` (`demo_animated_entity.cpp`, `demo_lighting.cpp`, `demo_dynamic_lights.cpp`, `demo_hud.cpp`, `demo_lut.cpp`, `demo_fog.cpp`, `demo_brillo_equipo.cpp`) i les proves (`tests/Render/PlayerTests.cpp`, `AnimatedEntityTests.cpp`, `tests/Engine/IdleCuerpoBaseTests.cpp`, `tests/Game/CinematicaTests.cpp`, `RutinasPnjTests.cpp`, `ClipActorFpsTests.cpp`) criden `play/addAnimation` o fixen noms; **no s'han de migrar** i són la xarxa de seguretat.
 
 ### 1.4 Conclusions de l'auditoria
 
@@ -113,7 +113,7 @@ Regles del format:
 - **Condició:** `{"param", "op", "valor"?}`, `op` ∈ `cierto|falso|igual|distinto|mayor|mayorIgual|menor|menorIgual|disparado`. Un `op` incompatible amb el tipus del paràmetre és error. Totes les condicions d'una transició es combinen amb **AND**.
 - **Transició:** `desde` (**absent = qualsevol estat**), `hacia`, `cuando` (llista; pot ser buida només amb `esperaFinClip: true`), `esperaFinClip` (equival a `finClip == cierto`), `politica` ∈ `reiniciarSiempre|reiniciarSiDistinto|conservarFase` (1:1 amb `PoliticaCambio`, `CursorClip.h:54`), `prioridad` (int, defecte 0; major guanya), `orden` implícit = posició al JSON.
 - **Ordre de decisió (determinista):** candidates = transicions amb `desde == actual` o sense `desde`; ordenades per `(prioridad desc, desde específic abans que «qualsevol», posició al JSON asc)`; **guanya la primera amb totes les condicions certes**. **Màxim una transició per pas** (cap cadena dins un fotograma: evita oscil·lacions A→B→A en zero temps).
-- **Errors del lector (camp exacte, text pla, com U3-05.E02):** `maquinas[0].estados[1].clip no existe: <id>`; `maquinas[0].transiciones[2].hacia estado desconocido: <id>`; `...cuando[0].param no declarado: <id>`; `...cuando[0].op desconocido: <op>`; `...cuando[0].op <op> no aplica a parametro <tipo>`; `inicial` absent/desconegut; estat amb `clip` **i** `clipsPorRumbo` (o cap); `clipsPorRumbo` sense les 4 claus; `id` repetit (màquina/estat/paràmetre); paràmetre amb nom reservat; **transició sense condicions ni `esperaFinClip`** (sempre certa → oscil·lació); `schemaVersion` absent o ≠ 1. `JsonValue` torna defaults silenciosos en tipus erronis: cal `isNumber()/isString()/isArray()` explícit (mateixa trampa que U3-05 §3.4).
+- **Errors del lector (camp exacte, text pla, com U3-05.E02):** `maquinas[0].estados[1].clip no existe: <id>`; `maquinas[0].transiciones[2].hacia estado desconocido: <id>`; `...cuando[0].param no declarado: <id>`; `...cuando[0].op desconocido: <op>`; `...cuando[0].op <op> no aplica a parametro <tipo>`; `inicial` absent/desconegut; estat amb `clip` **i** `clipsPorRumbo` (o cap); `clipsPorRumbo` sense les 4 claus; `id` repetit (màquina/estat/paràmetre); paràmetre amb nom reservat; **transició sense condicions ni `esperaFinClip`** (sempre certa → oscil·lació); `schemaVersion` absent o ≠ 1. `JsonValue` torna defaults silenciosos en tipus erronis: cal `isNumber()/isString()/isArray()` explícit (mateixa trampa que U3-05 §3, «Riscos i trampes» núm. 4).
 
 ### 2.1 Tipus proposats (`namespace Game`, gl-free, `motor_level`)
 
@@ -173,7 +173,7 @@ Principis heretats de U3-05: peça pura gl-free a `motor_level`, `Result<T>` per
 | Entrades (rumb, moviment, fases de rellotge) | el **productor** (`RutinasPnj`/`EstadoPnj` per als PNJ, E05) | `entradasDePnj` | el productor; mai la màquina |
 | Estat del joc que mou l'actor (casella, progrés) | `RutinasPnj` / `Player` / sessió | només el productor d'entrades | ells |
 
-**Ordre dins un fotograma d'`Application::update` (E06b el fixa; avui ja és així):** (1) `m_player->update` i `marker.entity->update(mundo)` avancen els clips (`src/Engine/ApplicationBucle.cpp:141-150`); (2) `RutinasPnj` decideix i `refreshWorldMarkers` (`:293`); (3) bucle de PNJ: es **construeixen les entrades** i es crida `ControladorAnimacion::aplica` al lloc exacte del `play()` actual (`:318`). Així, com avui, el canvi de clip es nota a l'`update()` del fotograma següent: **retard d'un fotograma que ja existeix (inferit** de l'ordre `:141-150` abans de `:318`**)**; no se'n crea cap de nou. Dins `aplica`: (a) `finClip` ← `ClipActor::cursor().terminado`; (b) `pasoAnimacion`; (c) si hi ha canvi → `ClipActor::cambia(...)` (descarta el temps pendent, `ClipActor.h:72-75`); (d) els `disparos` consumits es retornen al productor.
+**Ordre dins un fotograma d'`Application::update` (E06b el fixa; avui ja és així):** (1) `m_player->update` i `marker.entity->update(mundo)` avancen els clips (`src/Engine/ApplicationBucle.cpp:141-150`); (2) `ApplicationCinematica::combate` (`:173`) i `RutinasPnj` decideixen, `refreshWorldMarkers` (`:293`); (3) bucle de PNJ (`:297-323`): es **construeixen les entrades** i es crida `ControladorAnimacion::aplica` al lloc exacte del `play()` actual (`:318`). Les **tres fases** de `aplica` (selecció, entrega inicial, avanç) estan definides a E06a: la **entrega inicial és immediata** (D-T8, com `play`), l'**avanç** del clip nou passa a l'`update()` del fotograma següent. Aquest desfasament d'un fotograma entre decidir i avançar **ja existeix** avui (inferit de l'ordre `:141-150` abans de `:318`); no se'n crea cap de nou. Dins `aplica`: (a) `finClip` ← `ClipActor::cursor().terminado` (només destí CLIP); (b) `pasoAnimacion`; (c) destí LEGACY: `play(nom)`; destí CLIP: `ponClip` o `cambia`+`avanza(0.0)` (E06a); (d) els `disparos` consumits es retornen al productor.
 
 ### Renoms respecte de la fitxa (registrats, cap en silenci)
 
@@ -243,53 +243,100 @@ Lliurable: §1 (auditoria), §2 (format), §3–§7. **Àmbit:** només aquest `
   2. si no, `e.actividad > 0.0f`, segons `e.def.movimiento`: **Vaiven** només si `!reducidas` → `andando=0`, `rumbo = (fmod(reloj,1.2f) < 0.6f ? 3 : 1)`; amb `reducidas` cau al defecte. **AndarSitio** només si `!reducidas` → `andando=1`, `rumbo=e.rumbo`; amb `reducidas` cau al defecte. **Giro** (també amb `reducidas`) → `andando=0`, `rumbo = (e.rumbo + int(e.reloj/0.8f)) mod 4`. **Golpe/Respirar** → defecte.
   3. defecte: `andando=0`, `rumbo=e.rumbo`.
 
-  Contraexemple que la versió anterior d'aquest contracte fallava: `progreso=1, actividad=1, Vaiven, rumbo=2, reloj=0, reducidas=true` → l'oracle dona `idle_down` (cau al defecte); calcular el vaivé sense les guardes donaria `idle_left`. Cap consulta a globals ni a píxels d'aura. Actor parat/mort → `andando=false`.
-- **Prova d'equivalència (obligatòria, `tests/Game/RutinasPnjAnimacionTests.cpp`):** per a un recorregut enumerat de `EstadoPnj` (progrés ∈ {0, 0.5, 1}, `actividad` ∈ {0, 1}, cada `MovimientoPnj`, cada rumb, `reloj` ∈ {0, 0.3, 0.7, 1.25, 2.5}, `reducidas` ∈ {false, true}; **inclou obligatòriament el cas del contraexemple**; el recorregut és el producte complet, ≥1200 combinacions, 0 discrepàncies), el clip que dona `pasoAnimacion` sobre la màquina `pnj_basico` **== `RutinasPnj::animacion(e, reducidas)`**. La migració no canvia ni un nom. Mutacions: (a) trencar `prioridad`, (b) `rumbo` sense mòdul → en vermell.
+  Contraexemple que la versió anterior d'aquest contracte fallava: `progreso=1, actividad=1, Vaiven, rumbo=2, reloj=0, reducidas=true` → l'oracle dona `idle_down` (cau al defecte); calcular el vaivé sense les guardes donaria `idle_left`. Cap consulta a globals ni a píxels d'aura. Un PNJ parat té `progreso==1` i cau al defecte (`andando=false`); `EstadoPnj` **no té cap camp de mort** i `MundoPnj::parado` (`include/Game/RutinasPnj.h:121`) és un indicador global de combat/diàleg que només frena les decisions: «mort» no s'especifica aquí **(inferit** de la lectura de `RutinasPnj.h:85-122`**)**. L'offset de dibuix (`desfaseX/Y`, `saltoPx`, `ApplicationBucle.cpp:319-321`) **continua fora de la màquina**: el calcula el bucle com avui.
+- **Prova d'equivalència (obligatòria, `tests/Game/RutinasPnjAnimacionTests.cpp`):** per a un recorregut enumerat de `EstadoPnj` (progrés ∈ {0, 0.5, 1}, `actividad` ∈ {0, 1}, cada `MovimientoPnj`, cada rumb, `reloj` ∈ {0, 0.3, 0.7, 1.25, 2.5}, `reducidas` ∈ {false, true}; **inclou obligatòriament el cas del contraexemple**; el recorregut és el producte complet, ≥1200 combinacions, 0 discrepàncies), el clip que dona `pasoAnimacion` sobre la màquina `pnj_basico` **== `RutinasPnj::animacion(e, reducidas)`**. La migració no canvia ni un nom. Mutació: (b) treure el mòdul 4 del Giro → en vermell, perquè la prova comprova a cada cas que `EntradasAnimacion::valores["rumbo"]` ∈ {0,1,2,3} (sense aquesta comprovació la mutació seria equivalent: `clipDeEstado` ja fa mòdul). La mutació «trencar `prioridad`» **no** és d'E05: passa a les proves d'E03, amb **dues transicions candidates alhora** de prioritats diferents.
 - **Àmbit:** `include/Game/RutinasPnjAnimacion.h`, `src/Game/RutinasPnjAnimacion.cpp`, `tests/Game/RutinasPnjAnimacionTests.cpp`, `assets/animaciones/pnj_basico.estados.json`, append a `cmake/ClipsAnimacion.cmake`. **No** modifica `RutinasPnj.cpp/.h` ni `RutinasPnjCatalogo.cpp` (`RutinasPnj::animacion` es manté com a oracle). **Bloquejada per:** E04, D-T5.
 
 ### U3-06.E06 · Connectar la màquina al cursor de clip (dividida en E06a + E06b)
 
-La fitxa defineix E06 com «`document: adapter animation-state → clip`», però el seu lliurable és «un actor real usa la màquina». Es **divideix** com U3-05.E07a/b (D-T3; no bloqueja E06a).
+La fitxa defineix E06 com «`document: adapter animation-state → clip`», però el seu lliurable és «un actor real usa la màquina». Es **divideix** com U3-05.E07a/b (D-T3).
 
-**E06a · `Game::ControladorAnimacion` (gl-free, peça):**
+#### Regla única de destí (D-T10)
+
+El destí d'un actor, a cada `aplica`, es decideix **pel clip que demana l'estat actual** (`clipDeEstado(estat, rumbo)`):
+- **CLIP** si aquest `IdClip` existeix al catàleg de clips carregat (`std::vector<ClipAnimacion>` de `leerCatalogoClips`, §«Catàleg i propietat»): el clip el reprodueix `ClipActor`.
+- **LEGACY** en cas contrari: `AnimatedEntity::play(id.value())` **a CADA `aplica`**. És idempotent (`play` no reinicia amb el mateix nom, `AnimatedEntity.cpp:42-44`: és la guarda de «mateix nom», **no una política**) i **conserva l'autoreparació actual**: avui `ApplicationBucle.cpp:318` crida `play` cada fotograma, de manera que després d'una cinemàtica el PNJ torna sol al seu `idle_*`. Una versió que només cridés `play` en canviar d'estat ho trencaria (sonda de l'adversarial: cue «idle» + 600 fotogrames dona avui `idle_down`; l'esborrany donava `idle`).
+- Conseqüència: els **PNJ amb hoja i els de cos base** tenen ids legacy (`idle_*`/`walk_*`, no són al catàleg de clips) → **LEGACY** → equivalència exacta amb avui (inclòs `idle_down` del cos base dels PNJ: S8 + `:318`). **Els PNJ de cos base NO passen a clip a v1.** El reenganxament al clip només afecta actors l'estat dels quals apunta a un clip del catàleg (avui només l'`idle` del cos base, `assets/animaciones/idle_cuerpo_base.clips.json`).
+- Garantia de prova: cap id de `pnj_basico` és al catàleg de clips (si un dia ho fos, el PNJ passaria a CLIP sense avís: prova `pnj_basico ∩ catàleg = ∅`, R10).
+
+#### Catàleg i propietat (qui carrega, qui posseeix, cicle de vida)
+
+```cpp
+// include/Game/CatalogoAnimacion.h   (E06a, pura, gl-free)
+struct CatalogoAnimacion {                          // immutable un cop construït
+    std::vector<ClipAnimacion> clips;               // taula id -> ClipAnimacion
+    std::vector<MaquinaAnimacion> maquinas;
+    const ClipAnimacion* clip(const IdClip&) const;           // nullptr si no hi és
+    const MaquinaAnimacion* maquina(const IdMaquina&) const;  // nullptr si no hi és
+};
+bool esNombreLegacy(const IdClip&);                 // els 9 noms que registra HojaPersonaje::animar/animarReposo (HojaPersonaje.cpp:149-164)
+Result<CatalogoAnimacion> construyeCatalogoAnimacion(const std::vector<JsonValue>& docsClips,
+                                                     const std::vector<JsonValue>& docsEstados);
+```
+- `construyeCatalogoAnimacion` llegeix tots els `*.clips.json` amb `leerCatalogoClips` i **després** els `*.estados.json` amb `leerCatalogoMaquinas`, passant `ExisteClip = [&](id){ return catalogo.clip(id) != nullptr || esNombreLegacy(id); }`. Un id que no és ni clip ni nom legacy és **error de parse** (errata detectada a la càrrega, no en joc).
+- **Càrrega (E06b, `include/Game/CatalogoAnimacionJuego.h`, `src/Game/CatalogoAnimacionJuego.cpp`, gl-free, `motor_level`):** `const CatalogoAnimacion& catalogoAnimacionDelJuego();` — singleton de lectura (`static const`, mateix patró que `Game::idleCuerpoBase()`, `src/Game/IdleCuerpoBase.cpp:36`), construït la primera vegada amb una **llista fixa** (sense escaneig de directori; ordre estable): `assets/animaciones/idle_cuerpo_base.clips.json`, `assets/animaciones/pnj_basico.estados.json`, `assets/animaciones/enemigo_base.estados.json`. Si el catàleg de clips no carrega, **un únic avís per `std::cerr`** i les màquines es construeixen igualment (els ids `idle` són noms legacy vàlids) i cauen a LEGACY: `play("idle")`, que el fallback d'`EntidadClip::ponIdle(nullptr)` ja registra (`EntidadClip.cpp:35-37`). Si falla una màquina: avís únic i aquella màquina no existeix → política d'actor sense màquina.
+- **Propietat i cicle de vida:** les `MaquinaAnimacion` i els `ClipAnimacion` són propietat del singleton (vida de procés, immutables); `ControladorAnimacion` i `EntidadClip` en tenen un `const MaquinaAnimacion*` **no propietari** (cap punter penjat: el singleton no es destrueix ni canvia de nivell). Els JSON són propietat dels assets (es copien al build amb `copiar_assets`).
+- **Qui crea cada asset:** `pnj_basico.estados.json` → **E05**; `enemigo_base.estados.json` → **E06b**.
+
+#### Màquina `enemigo_base` (D-O3)
+
+```json
+{"schemaVersion": 1,
+ "maquinas": [{"id": "enemigo_base", "inicial": "reposo", "parametros": [],
+   "estados": [{"id": "reposo", "clip": "idle"}], "transiciones": []}]}
+```
+Un únic estat, clip `idle` (del catàleg → destí CLIP), cap transició (el lector admet `parametros` i `transiciones` buits). L'assigna lazy el bucle a tot `EntidadClip` amb `esCuerpoBase()` **i sense `EstadoPnj`** (els enemics de cos base: llop, llimac). Entrades buides (`EntradasAnimacion{}`). Els PNJ de cos base **no** la reben: tenen `EstadoPnj` → `pnj_basico` → LEGACY. **E07(2) (reenganxament) es prova sobre `enemigo_base`, no sobre `pnj_basico`.**
+
+#### E06a · `Game::ControladorAnimacion` + `CatalogoAnimacion` (gl-free, peça)
+
 ```cpp
 class DestinoAnimacion {                     // port; Render no el coneix
 public:
     virtual ~DestinoAnimacion() = default;
-    // Selecciona I ENTREGA ja el primer fotograma (veure «tres fases»). politica tal com es defineix a PoliticaCambio.
-    virtual void cambiaAnimacion(const IdClip& id, PoliticaCambio politica) = 0;
-    virtual bool conservaControl() const = 0;   // false: alguien (play()) le quito el control; hay que reconstruir
+    virtual bool esClip(const IdClip& id) const = 0;               // regla D-T10: id al catalogo de clips
+    // LEGACY: AnimatedEntity::play(nombre). Idempotente; el controlador lo llama en CADA aplica.
+    virtual void ponNombre(const IdClip& id) = 0;
+    // CLIP: cambio de clip con entrega inicial inmediata (cambia + avanza(0.0)). Solo si tieneControl().
+    virtual void cambiaClip(const IdClip& id, PoliticaCambio politica) = 0;
+    // CLIP: reconstruye el ClipActor y recupera el control (ponClip). Entrega inicial inmediata.
+    virtual void reengancha(const IdClip& id) = 0;
+    virtual bool tieneControl() const = 0;                         // CLIP: tieneClip() && controlExterno()
+    virtual bool finClip() const = 0;                              // CLIP: cursor().terminado; LEGACY: false
 };
 class ControladorAnimacion {
 public:
     explicit ControladorAnimacion(const MaquinaAnimacion* maquina);   // no propietaria; estado = maquina->inicial
-    // true si hubo cambio de clip. rumbo/finClip van dentro de EntradasAnimacion. Suspendido: no toca el destino.
-    bool aplica(const EntradasAnimacion& entradas, DestinoAnimacion& destino,
+    // true si hubo cambio de estado o de clip. Suspendido: no toca el destino.
+    bool aplica(EntradasAnimacion entradas, DestinoAnimacion& destino,
                 std::vector<IdParametro>* disparosConsumidos = nullptr);
-    void suspende();                              // otro propietario manda (ruta de combate, cinematica)
-    void reanuda();                               // el siguiente aplica() reemite el clip del estado actual (ReiniciarSiempre)
+    void suspende();     // otro propietario manda (ruta de combate)
+    void reanuda();      // el siguiente aplica() reemite el clip del estado actual
     bool suspendido() const;
     const EstadoAnimacionVivo& vivo() const;
 };
 ```
-- **Tres fases, que no es poden confondre (E04 ho presenta separat):** (1) **selecció** = `pasoAnimacion` (pura, sense efectes); (2) **entrega inicial** = `DestinoAnimacion::cambiaAnimacion`, que ha de deixar el sprite del primer fotograma **ja renderitzable en tornar** (és el que fa `AnimatedEntity::play`, `AnimatedEntity.cpp:47-50`); (3) **avanç** = `ClipActor::avanza` a l'`update()`. `ClipActor::cambia` **no** fa la (2): només reinicia el cursor i deixa `m_ultimoSprite=0` perquè l'`avanza` següent reentregui (`ClipActor.cpp:58-67`, `ClipActor.h:72-74`). Per tant la destinació de clip fa `cambia(...)` **seguit d'`avanza(0.0, ...)`** (el camí de `EntidadClip::ponIdle`, `EntidadClip.cpp:40-43`); `avanza(0)` emet també els events del fotograma 0 (D4 de U3-05: «en iniciar»). Es **preserva** l'entrega immediata del `play()` actual (D-T8): la substitució `play` → `aplica` no canvia el que es veu en el fotograma del canvi. **Prova:** una subclasse d'`EntidadClip` amb accessor `sprite()` (patró de `tests/Engine/IdleCuerpoBaseTests.cpp:15-18`) comprova `sprite() == primer sprite del clip nou` **just després d'`aplica`**, sense cap `update`.
-- **Reenganxament viable (HIGH de la ronda 1):** `play()` posa `m_controlExterno=false` (`AnimatedEntity.cpp:45`) i `EntidadClip::update` **destrueix** `m_actor` abans d'avançar-lo (`EntidadClip.cpp:15-18`), de manera que després d'una cinemàtica el cursor ja no existeix; un `ClipActor::cambia` sobre un actor mort o no refet no recupera el control ni entrega sprite, i un `ClipActor` reconstruït sense recuperar el control es destruiria en el següent `update`. Per això el reenganxament **no** és «reemetre amb `cambia`»: és una **operació explícita d'`EntidadClip`** (E06b): `void ponClip(const Game::ClipAnimacion* clip)` (generalització de `ponIdle`) que (i) refà `m_actor`+`m_destino` i (ii) crida `avanza(0.0)`, el qual passa per `ponerFotograma` i deixa **`controlExterno()==true` abans del següent `update`** (`AnimatedEntity.cpp:60-63`), de manera que la guarda de `update` (`EntidadClip.cpp:15`) no el torna a destruir. No cal canviar la guarda. La destinació de clip implementa: `conservaControl() = tieneClip() && controlExterno()`; `cambiaAnimacion(id, pol)` = si `!conservaControl()` → `ponClip(catàleg[id])` (reinici complet, equivalent a `ReiniciarSiempre`); si el conserva → `m_actor->cambia(id, clip, pol)` + `avanza(0.0)`. `ControladorAnimacion::aplica` crida primer `conservaControl()`: si és fals, reemet el clip de l'estat actual (abans d'avaluar transicions).
-- **Prova obligatòria amb `EntidadClip` real (E06a amb destí fals + E06b amb la real):** `play(...) → update → aplica → update` i també `play(...) → aplica → update`: en tots dos, després d'`aplica` `tieneClip()` i `controlExterno()` són certs, el sprite és el del clip, i l'`update()` següent **avança el clip** (no el destrueix) i no duplica events.
-- **Autoritat durant rutes de combat (MEDIUM; D-T7):** `ApplicationCinematica::combate` s'executa a `ApplicationBucle.cpp:173` (abans del bucle de PNJ de `:297`) i, mentre hi ha ruta (`!rutaHeroe.empty() || !rutasEnemigos.empty()`, `ApplicationCinematica.cpp:446`), fa `play(r.andar())` cada fotograma sobre l'enemic (`:461`). `enCurso()` només mira cinemàtiques (`:78-80`). Si el bucle reenganxés tots els `EntidadClip` (D-O3) trepitjaria aquell `walk_*` cada fotograma. Regla: **el controlador es suspèn (`suspende()`) mentre l'actor té una ruta de combat activa i es `reanuda()` en acabar** (el següent `aplica` reemet el clip de l'estat: reenganxament). El bucle ho sap llegint `m_cine->rutasEnemigos` (`include/Engine/ApplicationCinematica.h:57`, `m_cine` a `include/Engine/Application.h:348`), **sense tocar `ApplicationCinematica.cpp`**. Prova: ruta activa → destí fals rep **0** crides; ruta acabada → **1** reemissió.
-- **Política d'actor sense màquina (fitxa E06):** un `EntidadClip` sense màquina assignada (no s'ha cridat `ponMaquina`, o el JSON ha fallat en carregar: un avís únic per `std::cerr`) **manté exactament el comportament actual**: per als PNJ, `actor->play(RutinasPnj::animacion(...))` a `:318`; per a la resta, res. Mai hi ha màquina i `play` alhora sobre el mateix actor al mateix fotograma.
-- **Implementació (B) legacy:** `cambiaAnimacion` = `AnimatedEntity::play(id.value())` (ja entrega el sprite); `conservaControl()` sempre cert (no hi ha clip a reconstruir); **no admet** `ReiniciarSiempre`/`ConservarFase` (`AnimatedEntity.cpp:42-44`) i els tracta com `ReiniciarSiDistinto`; una prova ho fixa.
-- **Àmbit E06a:** `include/Game/ControladorAnimacion.h`, `src/Game/ControladorAnimacion.cpp`, `tests/Game/ControladorAnimacionTests.cpp` (destí fals), append a `cmake/ClipsAnimacion.cmake`. **Bloquejada per:** E04.
+Algorisme de `aplica` (una vegada per fotograma): (1) si suspès → res. (2) `entradas.finClip = destino.finClip()`. (3) `pasoAnimacion` → estat nou i `clip = clipDeEstado(estat, rumbo)`. (4) **si `!destino.esClip(clip)` → `destino.ponNombre(clip)` sempre** (LEGACY idempotent). (5) si `esClip(clip)`: **flanc** — si `!destino.tieneControl()` (el control s'ha perdut des del `aplica` anterior, o és el primer) → `destino.reengancha(clip)`; si no, si el pas demana canvi de clip → `destino.cambiaClip(clip, politica)`; si no, res. El reenganxament es fa **només en el flanc** (control perdut), mai com a règim permanent ni mentre està suspès; el control "perdut" l'evita D-T7 durant les rutes de combat.
 
-**E06b · integració (el que tanca el paquet; LLEI punt 4):**
-- **Consumidor:** el bucle de PNJ, `src/Engine/ApplicationBucle.cpp:297-322`: l'`actor->play(Game::RutinasPnj::animacion(*pnj, reducidas))` de `:318` passa a `ControladorAnimacion::aplica(entradasDePnj(*pnj, reducidas), destino, ...)`. El registre de noms `:305-317` (S8) **es manté** (els noms legacy continuen sent la sortida; D-T1).
-- **A `EntidadClip`** (`include/Engine/EntidadClip.h`, 45 línies; `src/Engine/EntidadClip.cpp`, 44 línies): `ponClip(const ClipAnimacion*)` (`ponIdle` hi queda com a embolcall), `ponMaquina(const Game::MaquinaAnimacion*)`, `aplicaEntradas(const EntradasAnimacion&)`, `suspende()/reanuda()` i els dos `DestinoAnimacion`. El `ControladorAnimacion` viu amb l'entitat (mateix criteri que `m_actor`, `EntidadClip.h:3-6`). `update()` no canvia. Cal també un catàleg de clips accessible a la destinació (`Game::idleCuerpoBase()` ja és un singleton de lectura: patró `IdleCuerpoBase.cpp:36`).
-- **Qui reenganxa què:** només els marcadors amb `EstadoPnj` (`ApplicationBucle.cpp:302-304`). Els **enemics no tenen `EstadoPnj`** (el `continue` de `:304`): D-O3 (recomanat sí) fa que `aplicaEntradas` de «repòs» també s'apliqui als `EntidadClip` sense `EstadoPnj`, **amb la suspensió per ruta de combat de dalt**.
-- **Mida:** el bloc `:301-322` es **retalla**, no creix (`ApplicationBucle.cpp`: 473 línies, net negatiu; si l'afegit de D-O3 no cap, es treu a una funció lliure d'un fitxer nou). **Cap E d'aquest paquet toca** `ApplicationNivel.cpp` (502), `ApplicationCinematica.cpp` (516), `Application.cpp` (1282) ni `Cinematica.cpp` (593); la màquina s'assigna **lazy** al bucle (no al naixement, `ApplicationNivel.cpp:403-412`).
-- **Àmbit E06b (a congelar quan E06a existeixi):** `src/Engine/ApplicationBucle.cpp`, `include/Engine/EntidadClip.h`, `src/Engine/EntidadClip.cpp`, `tests/Engine/IdleCuerpoBaseTests.cpp` (ampliar) o `tests/Engine/EntidadClipMaquinaTests.cpp`; l'asset es copia al build amb `copiar_assets`. `EntidadClip.cpp` ja és a `cmake/ClipsAnimacion.cmake:82`. **Bloquejada per:** E05, D-T1, D-T7, D-T8, D-O1, D-O3.
+- **Tres fases, que no es poden confondre:** (1) **selecció** = `pasoAnimacion` (pura); (2) **entrega inicial** = `ponNombre`/`cambiaClip`/`reengancha`, que deixen el sprite del primer fotograma **ja renderitzable en tornar** (com `AnimatedEntity::play`, `AnimatedEntity.cpp:47-50`; D-T8); (3) **avanç** = `ClipActor::avanza` a l'`update()`. `ClipActor::cambia` per si sol **no** fa la (2) (`ClipActor.cpp:58-67`, `ClipActor.h:72-74`), per això `cambiaClip` = `cambia(...)` + `avanza(0.0)` (camí de `EntidadClip::ponIdle`, `EntidadClip.cpp:40-43`); `avanza(0)` emet també els events del fotograma 0. **Prova:** subclasse d'`EntidadClip` amb accessor `sprite()` (patró `tests/Engine/IdleCuerpoBaseTests.cpp:15-18`): `sprite() == primer sprite` just després d'`aplica`, sense `update`.
+- **Reenganxament viable:** `play()` posa `m_controlExterno=false` (`AnimatedEntity.cpp:45`) i `EntidadClip::update` destrueix `m_actor` (`EntidadClip.cpp:15-18`). Per això `reengancha` = `EntidadClip::ponClip(clip)` (E06b: refà `m_actor`+`m_destino` i `avanza(0.0)`, que passa per `ponerFotograma` i deixa `controlExterno()==true` abans del següent `update`, `AnimatedEntity.cpp:60-63`); la guarda d'`update` no canvia (D-T9). **Prova obligatòria amb `EntidadClip` real** (sobre `enemigo_base`): `play → update → aplica → update` i `play → aplica → update`: després d'`aplica`, `tieneClip()` i `controlExterno()` són certs, el sprite és el del clip, l'`update` següent **avança** el clip (no el destrueix) i no duplica events.
+- **Contracte de reentrada:** `aplica`, `reengancha`, `cambiaClip` i `ponClip` **no es poden cridar mai des d'un `PuertosEventoClip` ni un `DestinoFotograma`** de l'actor que reben: `ponClip` destrueix el `ClipActor` en curs i `ClipActor::avanza` seguiria usant-lo (ASan dona use-after-free a `ClipActor.cpp:33` si es fa). Els ports d'`EntidadClip` no fan res (`PuertosSinEfecto`, `EntidadClip.cpp:7-12`). Es documenta a la capçalera i una prova de revisió (comentari + cas de prova que verifica que `aplicaEntradas` fa servir un destí amb ports sense efecte). El cas de reentrada que `ClipActor` sí suporta és `cambia()` des d'un port (`ClipActor.h`), no aquest.
+- **Implementació LEGACY de `DestinoAnimacion`:** `esClip` → fals; `ponNombre` → `play`; `tieneControl()` → cert; no admet `ReiniciarSiempre`/`ConservarFase`.
+- **Autoritat durant rutes de combat (D-T7):** `ApplicationCinematica::combate` s'executa a `ApplicationBucle.cpp:173` (abans del bucle de PNJ de `:297`) i, mentre hi ha ruta (`!rutaHeroe.empty() || !rutasEnemigos.empty()`, `ApplicationCinematica.cpp:446`), fa `play(r.andar())` cada fotograma sobre l'enemic (`:461`); `enCurso()` només mira cinemàtiques (`:78-80`). El controlador es **suspèn** mentre l'actor té ruta activa i es `reanuda()` en acabar; el bucle ho sap llegint `m_cine->rutasEnemigos` (`include/Engine/ApplicationCinematica.h:57`; `m_cine` a `include/Engine/Application.h:348`; accés públic, sense `friend`), **sense tocar `ApplicationCinematica.cpp`**. Prova: ruta activa → destí fals rep **0** crides; ruta acabada → **1** reemissió.
+- **Política d'actor sense màquina (fitxa E06):** un `EntidadClip` sense màquina (no s'ha assignat o el JSON ha fallat) **manté el comportament actual**: PNJ → `actor->play(RutinasPnj::animacion(...))` a `:318`; la resta, res. Mai màquina i `play` alhora sobre el mateix actor al mateix fotograma.
+- **Àmbit E06a:** `include/Game/MaquinaAnimacion.h` (només si cal re-exportar), `include/Game/CatalogoAnimacion.h`, `src/Game/CatalogoAnimacion.cpp`, `include/Game/ControladorAnimacion.h`, `src/Game/ControladorAnimacion.cpp`, `tests/Game/ControladorAnimacionTests.cpp` (destí fals: seqüència, LEGACY a cada `aplica`, flanc, suspensió, `pnj_basico ∩ catàleg = ∅`), append a `cmake/ClipsAnimacion.cmake`. **Bloquejada per:** E04, D-T1, D-T7, D-T8, D-T10.
+
+#### E06b · integració (el que tanca el paquet; LLEI punt 4)
+
+- **Consumidor:** el bucle de PNJ, `src/Engine/ApplicationBucle.cpp:297-323`: `actor->play(Game::RutinasPnj::animacion(*pnj, reducidas))` de `:318` passa a `aplicaEntradas(entradasDePnj(*pnj, reducidas), enRuta)` sobre el `EntidadClip` (si el `dynamic_cast` falla o no hi ha màquina: política sense màquina). El registre de noms `:305-317` (S8) **es manté**.
+- **`EntidadClip` (agrupat per no passar de 15 membres):** `include/Engine/EntidadClip.h` (45 línies) i `src/Engine/EntidadClip.cpp` (44 línies). Estat actual: 7 (ctor `using`, 2 còpies esborrades, `update`, `idleCuerpoBase`, `ponIdle`, `tieneClip`) + 2 membres privats = 9. Afegeix **4 mètodes** (`ponClip`, `ponMaquina`, `aplicaEntradas`, `esCuerpoBase`) i **1 membre** `std::unique_ptr<Engine::MaquinaEntidad> m_maquina` (nou `include/Engine/MaquinaEntidad.h/.cpp`: conté el `ControladorAnimacion`, la implementació `DestinoEntidadClip` creada a la pila a cada `aplicaEntradas`, la suspensió i el flag `cuerpoBase`; `idleCuerpoBase()` el crea amb `cuerpoBase=true` i sense màquina fins que `ponMaquina` l'omple, de manera que `esCuerpoBase()` sobreviu a una cinemàtica que ha destruït el clip). **Total: 9 + 4 + 1 = 14 ≤ 15, marge 1.** Si el recompte real passés de 15, es passa `ponMaquina/aplicaEntradas` a una funció lliure de `MaquinaEntidad.h`.
+- **Qui obté què:** `EstadoPnj` → `pnj_basico` (LEGACY); `EntidadClip` amb `esCuerpoBase()` i sense `EstadoPnj` → `enemigo_base` (CLIP, D-O3; una funció lliure `inline bool tieneRutaDeCombate(const EstadoCinematicas*, Engine::EntityHandle)` a `include/Engine/AnimacionMundo.h`, header-only, la fan servir els dos bucles); la resta, res. L'assignació és **lazy** al bucle (no es toca `ApplicationNivel.cpp`).
+- **Mida de `ApplicationBucle.cpp` (473 línies), estimació honesta:** el bloc `:301-322` canvia 1 línia per ~3 i s'afegeix el bucle d'enemics de D-O3 (~6 línies): **net +~10 → ~483**, **no** negatiu. Límit de porta: **≤ 495**; si es passa, el cos del bucle es mou a una funció lliure d'un fitxer nou (`src/Engine/AnimacionMundo.cpp`, afegit a la llista de `CMakeLists.txt:827`). Cap E toca `ApplicationNivel.cpp` (502), `ApplicationCinematica.cpp` (516), `Application.cpp` (1282) ni `Cinematica.cpp` (593).
+- **Assets:** `assets/animaciones/enemigo_base.estados.json` (nou, aquesta E); la càrrega `catalogoAnimacionDelJuego()` descrita dalt.
+- **Àmbit E06b (a congelar quan E06a existeixi):** `src/Engine/ApplicationBucle.cpp`, `include/Engine/EntidadClip.h`, `src/Engine/EntidadClip.cpp`, `include/Engine/MaquinaEntidad.h`, `src/Engine/MaquinaEntidad.cpp`, `include/Engine/AnimacionMundo.h`, `include/Game/CatalogoAnimacionJuego.h`, `src/Game/CatalogoAnimacionJuego.cpp`, `assets/animaciones/enemigo_base.estados.json`, `tests/Engine/IdleCuerpoBaseTests.cpp` (ampliar) o `tests/Engine/EntidadClipMaquinaTests.cpp`; `EntidadClip.cpp` és a `cmake/ClipsAnimacion.cmake:82` (append dels nous fitxers `motor_core`/`motor_level`). **Bloquejada per:** E05, E06a, D-T9, D-T10, D-O1, D-O3.
 
 ### U3-06.E07 · Verificar idle/caminar/acció
 
-- **Documental + proves, sense font nou.** (1) Equivalència d'E05 repetida **a diversos FPS** (`dt` 1/30, 1/60, 1/144, 0,5 s) amb `EntidadClip` real simulant el bucle: mateixa seqüència d'estats/clips (la màquina no té `dt`, el clip sí; patró `ClipActorFpsTests.cpp`). (2) Reenganxament: `idle (clip)` → `play("idle_left")` simulant cinemàtica → `aplica` → torna al clip **una sola vegada**, sense events duplicats. (2b) Ruta de combat activa → el controlador no escriu; en acabar, reemissió única. (2c) Entrega inicial: sprite correcte just després d'`aplica`. (3) Estat igual no reinicia en 600 fotogrames. (4) «Acció»: clip no cíclic `golpe` + transició `esperaFinClip` → `reposo`; el disparo `golpear` es consumeix una vegada. **L'«acció» es demostra amb una màquina de prova (tres clips: idle, caminar, acció), no amb el joc real**: avui cap actor té acció (§1.1). (5) «Reobrir/exportar carrega la mateixa màquina»: només verificable si l'asset entra al camí d'exportació; **no verificat aquí** (mateixa reserva que U3-05.E08).
+- **Documental + proves, sense font nou.** (1) Equivalència d'E05 repetida **a diversos FPS** (`dt` 1/30, 1/60, 1/144, 0,5 s) amb `EntidadClip` real simulant el bucle: mateixa seqüència d'estats/clips (la màquina no té `dt`, el clip sí; patró `ClipActorFpsTests.cpp`). (2) Reenganxament **sobre `enemigo_base`** (no `pnj_basico`): `idle (clip)` → `play("idle_left")` simulant cinemàtica (i 600 fotogrames de bucle) → `aplicaEntradas` → torna al clip **una sola vegada**, sense events duplicats. (2a) Control sobre `pnj_basico` (LEGACY): després de la mateixa cue + 600 fotogrames dona `idle_down`, igual que avui. (2b) Ruta de combat activa → el controlador no escriu; en acabar, reemissió única. (2c) Entrega inicial: sprite correcte just després d'`aplica`. (3) Estat igual no reinicia en 600 fotogrames. (4) «Acció»: clip no cíclic `golpe` + transició `esperaFinClip` → `reposo`; el disparo `golpear` es consumeix una vegada. **L'«acció» es demostra amb una màquina de prova (tres clips: idle, caminar, acció), no amb el joc real**: avui cap actor té acció (§1.1). (5) «Reobrir/exportar carrega la mateixa màquina»: només verificable si l'asset entra al camí d'exportació; **no verificat aquí** (mateixa reserva que U3-05.E08).
 - La **aprovació visual** (idle/caminar al joc) queda **PENDENT d'observació d'Oriol** (D-O4).
 - **Àmbit:** proves + (si cal) JSON de prova; registre de sessió. **Bloquejada per:** E06b.
 
@@ -301,7 +348,7 @@ public:
 
 | ID | Pregunta | Opcions | Recomanació | Bloqueja |
 |---|---|---|---|---|
-| D-T1 | Com valida el lector que un clip «existeix», i què emet la màquina per a actors amb hoja? | **A)** només `std::vector<ClipAnimacion>`: cal generar clips per hoja (`cicloDeAndar`/`cicloDeReposo` → ms) = migrar els cicles. **B)** predicat injectat `ExisteClip`; la sortida és un `IdClip` que per als PNJ coincideix amb el nom legacy (`walk_up`… compleixen `[a-z0-9_]+`) i la destinació (B) crida `play(id.value())`. | **B** per a v1; A com a paquet futur | E02, E06a/b |
+| D-T1 | Com valida el lector que un clip «existeix», i què emet la màquina per a actors amb hoja? | **A)** només `std::vector<ClipAnimacion>`: cal generar clips per hoja (`cicloDeAndar`/`cicloDeReposo` → ms) = migrar els cicles. **B)** predicat injectat `ExisteClip` = «és al catàleg de clips **o** és un dels 9 noms legacy» (`esNombreLegacy`); la sortida és un `IdClip` que per als PNJ coincideix amb el nom legacy i la destinació LEGACY crida `play(id.value())`. | **B** per a v1; A com a paquet futur | E02, E06a/b |
 | D-T3 | E06 és «document» a la fitxa però el lliurable és integració | dividir en E06a + E06b / mantenir una E | dividir (cap en 60-90 min i el tancament exigeix integració) | E06 |
 | D-T4 | `stepAnimationState` amb `dt`? | amb (rellotge a la màquina) / sense (temps = clip + `finClip`) | **sense**; fases temporals (vaivé, giro) les calcula el productor | E04 |
 | D-T5 | On viu el temps de fase de PNJ (`reloj`) | dins la màquina / al productor | productor (E05); cost: vaivé/giro no són «dades» sinó codi d'E05 (R3) | E05 |
@@ -309,6 +356,8 @@ public:
 | D-T6 | Una transició per pas o cadenes | una / fins a N | **una** | E03/E04 |
 | D-T7 | Autoritat durant rutes de combat | el controlador es suspèn mentre l'actor té ruta activa i reenganxa en acabar / el bucle trepitja `walk_*` cada fotograma | **suspendre** (llegint `m_cine->rutasEnemigos`, sense tocar `ApplicationCinematica.cpp`) | E06a/E06b |
 | D-T8 | Entrega del primer fotograma en canviar | immediata (com `play`) / a l'`avanza` següent (com `ClipActor::cambia` sol) | **immediata** (`cambia` + `avanza(0.0)`) per no canviar el que es veu | E06a |
+| D-T10 | Destí per actor | CLIP si l'id del clip de l'estat és al catàleg, LEGACY (`play(nom)` a cada `aplica`, idempotent) si no / un únic destí per màquina | **regla per catàleg**; conserva l'autoreparació i la identitat amb avui per als PNJ | E06a/b |
+| D-T11 | Propietat del catàleg i de les màquines | singleton de lectura immutable (`catalogoAnimacionDelJuego()`) amb llista fixa d'assets / còpia per entitat | **singleton** (vida de procés, punters `const*` no propietaris) | E06b |
 | D-T9 | Com es reenganxa el cos base | `EntidadClip::ponClip` explícit (refà `ClipActor` + recupera control) / canviar la guarda de `update` | **`ponClip`**; la guarda no canvia | E06b |
 
 ### D-O (Oriol / propietari; tria de producte)
@@ -317,7 +366,7 @@ public:
 |---|---|---|---|---|
 | D-O1 | Actor pilot del joc (LLEI punt 4) | **A)** PNJ (bucle `ApplicationBucle.cpp`: selector pur, equivalència demostrable). **B)** Jugador (el més visible; `Player::update` barreja temporitzadors, risc alt). **C)** Enemics de combat (no tenen acció avui) | **A** | E06b, E07 |
 | D-O2 | `Player` dins l'àmbit de v1 | dins / fora | **fora** (paquet de seguiment); l'API no el bloqueja | E06b |
-| D-O3 | Reenganxar el cos base també per als enemics (no PNJ) | sí (~3 línies al bucle) / només PNJ | sí | E06b |
+| D-O3 | Reenganxar el cos base dels enemics (sense `EstadoPnj`) amb la màquina mínima `enemigo_base` (CLIP `idle`) | sí (~+10 línies a `ApplicationBucle.cpp`) / només PNJ (cap reenganxament de clip a v1) | sí | E06b |
 | D-O4 | Aprovació visual de idle/caminar/acció | — | pendent d'observació real, com U3-05 | tancament visual d'E07 |
 
 **Poden començar sense cap decisió d'Oriol:** E01 (aquesta), **E02, E03, E04** (només D-T amb la recomanació), **E05 i E06a**. Bloquejades per Oriol: **E06b** (D-O1, D-O3) i **E07** (D-O4 per al tancament visual; les proves no).
@@ -329,10 +378,10 @@ public:
 Tots gl-free, sense rellotge, `MOTOR_CHECK` (no `assert`; `tests/TestHarness.h`).
 
 - **E02:** positiu; clip absent; estat destí absent; condició/op desconeguda; op incompatible; `clip`+`clipsPorRumbo`; 3 claus de rumb; transició sense condicions; paràmetre reservat; id repetit; `schemaVersion` 0/2/absent; tipus erronis (`"cuando": 3`, `"valor": "1"`).
-- **E03:** prioritat; empat específic/qualsevol; empat per ordre; cap certa; `rumbo` -1/4/5; estat inicial; disparo armat/no armat.
+- **E03:** prioritat **amb dues transicions candidates alhora (mutació: ignorar `prioridad` → vermell)**; empat específic/qualsevol; empat per ordre; cap certa; `rumbo` -1/4/5; estat inicial; disparo armat/no armat.
 - **E04:** estat igual (600 fotogrames, 0 canvis); canvi de rumb dins estat (1 canvi); `reiniciarSiempre` dues vegades = 2 canvis; `finClip` amb clip cíclic = mai; amb no cíclic = una vegada; determinisme 1000 iteracions.
-- **E05:** equivalència exhaustiva amb `RutinasPnj::animacion`; actor parat; `reducidas`; mutacions (a)/(b).
-- **E06a:** destí fals: seqüència d'estat; `conservaControl()=false` → reemet clip (1 vegada); destí legacy ignora política.
+- **E05:** equivalència exhaustiva amb `RutinasPnj::animacion` (incl. el contraexemple); `reducidas`; invariant `rumbo` ∈ 0..3; mutació (b) treure el mòdul.
+- **E06a:** destí fals: seqüència d'estat; destí LEGACY: `ponNombre` a cada `aplica` (idempotent); destí CLIP: `tieneControl()=false` → `reengancha` (1 vegada, flanc); suspensió → 0 crides; `pnj_basico ∩ catàleg = ∅`; `esNombreLegacy` = els 9 noms.
 - **E06b/E07:** vegeu E07.
 
 ## 6. Fitxers que ja passen de 500 línies
@@ -342,7 +391,7 @@ Mesurats amb `wc -l`: `src/Engine/Application.cpp` 1282, `src/Game/Cinematica.cp
 | E | Fitxers existents que modifica | Pot créixer? |
 |---|---|---|
 | E02–E05, E06a | cap de >500; afegeixen fitxers nous i `cmake/ClipsAnimacion.cmake` | n/a |
-| E06b | `ApplicationBucle.cpp` (473 → net negatiu), `EntidadClip.h` (45 línies) i `EntidadClip.cpp` (44 línies) | `ApplicationBucle` no pot passar de 473 |
+| E06b | `ApplicationBucle.cpp` (473 → ~483 estimat, límit de porta 495), `EntidadClip.h` (45 línies) i `EntidadClip.cpp` (44 línies) | `ApplicationBucle` ≤ 495; si no, es mou a fitxer nou |
 | E07 | proves | n/a |
 | **Cap E** | `Application.cpp`, `Cinematica.cpp`, `ApplicationCinematica.cpp`, `ApplicationNivel.cpp` | **no es toquen** (si calgués, només per treure línies) |
 
@@ -354,9 +403,10 @@ Mesurats amb `wc -l`: `src/Engine/Application.cpp` 1282, `src/Game/Cinematica.cp
 4. **R4 (noms legacy depenen de la hoja):** `walk_*`/`idle_*` s'enregistren per `Reparto` (`HojaPersonaje.cpp:145-164`, `ApplicationBucle.cpp:305-317`); el lector no pot validar-los (D-T1-B). Un nom no registrat es perd en silenci (`AnimatedEntity.cpp:37-41`): cal una prova que la màquina de PNJ només emet noms que `HojaPersonaje::animar` registra.
 5. **R5 («acció»):** no existeix cap selector d'atac/mort (§1.1); la fitxa suposa «acció existent». No s'inventa un consumidor: es demostra en prova (E07).
 6. **R6 («climb»):** nom sense animació registrada a `Cinematica.cpp:435/:474`; es registra, no es corregeix.
-7. **R7 (retard d'un fotograma):** el canvi de clip es nota a l'`update()` següent (§3); `Player` canvia dins el mateix `update`: la diferència no és un error.
+7. **R7 (decidir vs avançar):** l'entrega inicial és immediata (D-T8) i l'avanç del clip nou passa a l'`update()` següent, igual que avui amb `play` a `:318`; no hi ha cap retard nou. `Player` canvia dins el mateix `update`: la diferència entre actors no és un error.
 8. **R8 (fitxers amb espai al nom):** `ApplicationPantallas 2.cpp`, `CMakeLists 2.txt`, `LevelEditorPaleta 2.cpp` existeixen; no els confonguis amb els reals.
-9. **R9 (no mesurat):** aquesta E no ha compilat ni executat res; tot és lectura estàtica.
+9. **R10 (col·lisió de noms):** si algun dia el catàleg de clips conté un id igual a un nom legacy de PNJ (`idle_down`, `walk_up`…), aquell PNJ passaria a CLIP i canviaria el que es veu; la prova `pnj_basico ∩ catàleg = ∅` ho atura (E06a).
+10. **R9 (no mesurat):** aquesta E no ha compilat ni executat res; tot és lectura estàtica.
 
 ### Resum de l'àmbit congelat proposat (per E)
 
@@ -366,6 +416,6 @@ Mesurats amb `wc -l`: `src/Engine/Application.cpp` 1282, `src/Game/Cinematica.cp
 | E03 | — (o `SeleccionAnimacion.h/.cpp`) | `MaquinaAnimacion.*`, `MaquinaAnimacionTests.cpp` | el mateix |
 | E04 | — (o `PasoAnimacion.h/.cpp`) | idem | el mateix |
 | E05 | `include/Game/RutinasPnjAnimacion.h`, `src/Game/RutinasPnjAnimacion.cpp`, `tests/Game/RutinasPnjAnimacionTests.cpp`, `assets/animaciones/pnj_basico.estados.json` | `cmake/ClipsAnimacion.cmake` | `test_rutinas_pnj_animacion` |
-| E06a | `include/Game/ControladorAnimacion.h`, `src/Game/ControladorAnimacion.cpp`, `tests/Game/ControladorAnimacionTests.cpp` | `cmake/ClipsAnimacion.cmake` | `test_controlador_animacion` |
-| E06b | `tests/Engine/EntidadClipMaquinaTests.cpp` (si no s'amplia `IdleCuerpoBaseTests.cpp`) | `src/Engine/ApplicationBucle.cpp`, `include/Engine/EntidadClip.h`, `src/Engine/EntidadClip.cpp` | prova + recorregut real |
+| E06a | `include/Game/CatalogoAnimacion.h`, `src/Game/CatalogoAnimacion.cpp`, `include/Game/ControladorAnimacion.h`, `src/Game/ControladorAnimacion.cpp`, `tests/Game/ControladorAnimacionTests.cpp` | `cmake/ClipsAnimacion.cmake` | `test_controlador_animacion` |
+| E06b | `include/Engine/MaquinaEntidad.h`, `src/Engine/MaquinaEntidad.cpp`, `include/Engine/AnimacionMundo.h`, `include/Game/CatalogoAnimacionJuego.h`, `src/Game/CatalogoAnimacionJuego.cpp`, `assets/animaciones/enemigo_base.estados.json`, `tests/Engine/EntidadClipMaquinaTests.cpp` (si no s'amplia `IdleCuerpoBaseTests.cpp`) | `src/Engine/ApplicationBucle.cpp`, `include/Engine/EntidadClip.h`, `src/Engine/EntidadClip.cpp`, `cmake/ClipsAnimacion.cmake` | prova + recorregut real |
 | E07 | — | proves | prova + observació d'Oriol |
