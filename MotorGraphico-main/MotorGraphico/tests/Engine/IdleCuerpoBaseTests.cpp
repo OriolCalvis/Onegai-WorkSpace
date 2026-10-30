@@ -1,4 +1,5 @@
-// U3-05.E07b -- el idle del cuerpo base como clip: ritmo, fallback y ciclo de vida. Sin GL ni ventana.
+// U3-05.E07b -- el idle del cuerpo base como clip: ritmo, fallback y ciclo de vida. Enlaza motor_core pero no abre ventana ni contexto GL
+// (atlas nullptr, nada se dibuja), como test_animated_entity.
 #include "TestHarness.h"
 
 #include <memory>
@@ -71,6 +72,42 @@ MOTOR_TEST_CASE(el_clip_muere_con_la_entidad_al_cambiar_de_nivel) {
     nivel.back()->update(0.25f);
     MOTOR_CHECK(nivel.back()->sprite() == 2);
     MOTOR_CHECK(Game::idleCuerpoBase() != nullptr);  // el catalogo compartido sigue vivo
+}
+
+MOTOR_TEST_CASE(play_devuelve_el_control_y_ponIdle_vuelve_al_clip) {
+    Sonda e(0);
+    e.ponIdle(Game::idleCuerpoBase());
+    e.addAnimation("idle_left", {9});
+    e.play("idle_left");
+    e.update(0.23f);
+    MOTOR_CHECK(e.sprite() == 9);  // no el 2 del clip
+    MOTOR_CHECK(!e.tieneClip());
+    e.ponIdle(Game::idleCuerpoBase());  // vuelta explicita al clip
+    MOTOR_CHECK(e.tieneClip());
+    e.update(0.23f);
+    MOTOR_CHECK(e.sprite() == 2);
+}
+
+MOTOR_TEST_CASE(ponIdle_nullptr_descarta_el_clip_previo) {
+    Sonda e(0);
+    e.ponIdle(Game::idleCuerpoBase());
+    MOTOR_CHECK(e.tieneClip());
+    e.ponIdle(nullptr);
+    MOTOR_CHECK(!e.tieneClip());
+    MOTOR_CHECK(e.currentAnimation() == "idle");
+    e.update(0.23f);
+    MOTOR_CHECK(e.sprite() == 2);
+}
+
+// La ruta del asset es una constante con estado compartido (static): el camino «asset ausente» de
+// idleCuerpoBase() no es inyectable; lo cubre ponIdle(nullptr) + cargaClipDeFichero(ruta mala).
+MOTOR_TEST_CASE(la_entrada_real_idleCuerpoBase_pone_el_clip) {
+    Sonda e(0);
+    e.idleCuerpoBase(kSinAtlas, 64, 64, Vector2{0.0f, 0.0f});
+    MOTOR_CHECK(e.tieneClip());
+    MOTOR_CHECK(e.sprite() == 1);
+    e.update(0.23f);
+    MOTOR_CHECK(e.sprite() == 2);
 }
 
 int main() { return motor_test::runAllTests(); }

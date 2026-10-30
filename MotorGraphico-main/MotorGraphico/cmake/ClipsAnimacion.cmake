@@ -86,4 +86,9 @@ if(BUILD_TESTING AND TARGET motor_core AND TARGET motor_level)
     target_link_libraries(test_idle_cuerpo_base PRIVATE motor_core motor_level motor_math)
     set_tests_properties(test_idle_cuerpo_base PROPERTIES
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    # Enlaza motor_core (EntidadClip) igual que test_animated_entity: nunca abre ventana ni GL.
+    # Este fichero se incluye tras crear el agregado, de ahi la dependencia explicita.
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_idle_cuerpo_base)
+    endif()
 endif()

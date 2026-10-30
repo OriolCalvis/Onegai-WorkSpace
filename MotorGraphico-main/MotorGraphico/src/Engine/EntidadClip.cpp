@@ -12,6 +12,10 @@ struct PuertosSinEfecto : Game::PuertosEventoClip {
 }  // namespace
 
 void EntidadClip::update(float deltaTime) {
+    if (m_actor != nullptr && !controlExterno()) {  // play() devolvio el control a la entidad
+        m_actor.reset();
+        m_destino.reset();
+    }
     if (m_actor == nullptr) {
         AnimatedEntity::update(deltaTime);
         return;

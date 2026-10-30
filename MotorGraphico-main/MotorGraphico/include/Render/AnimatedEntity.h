@@ -61,6 +61,8 @@ public:
     // el ciclo de animacion (que frame esta activo, cuantos frames tiene
     // la animacion actual) sin tener que inspeccionar pixeles de un
     // framebuffer, mismo criterio que Entity::gridPosition()/offset().
+    // true mientras un clip controla el sprite (tras ponerFotograma(), hasta que play() lo devuelva).
+    bool controlExterno() const { return m_controlExterno; }
     const std::string& currentAnimation() const { return m_currentAnimation; }
     int currentFrame() const { return m_currentFrame; }
 

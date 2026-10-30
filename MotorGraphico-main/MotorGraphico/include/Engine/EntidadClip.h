@@ -5,6 +5,13 @@
 // (ApplicationBucle / ApplicationCinematica), asi que no hay registro aparte: el ClipActor vive y
 // muere con la entidad y no puede haber punteros colgantes al cambiar de nivel. Sin clip se
 // comporta exactamente como AnimatedEntity. No hay eventos aun: los puertos no hacen nada.
+// Control: mientras el clip manda, AnimatedEntity::controlExterno() es true. Si alguien llama a
+// play() (tambien via AnimatedEntity*: animaciones direccionales de la cinematica o del bucle),
+// la entidad recupera el control, el clip se descarta en el siguiente update() y se usa
+// AnimatedEntity::update. Para volver al clip hay que llamar de nuevo a ponIdle()/idleCuerpoBase().
+// Fase: el clip cuenta en ms (double) y AnimatedEntity en float; en multiplos exactos de 0,22 s
+// el cambio de fotograma puede llegar un paso de update() antes o despues que con la animacion
+// anterior. El ritmo (220 ms) y la secuencia 1..12 son los mismos.
 
 #include <memory>
 
