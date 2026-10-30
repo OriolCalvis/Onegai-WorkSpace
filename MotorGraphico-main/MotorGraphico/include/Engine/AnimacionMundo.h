@@ -31,11 +31,11 @@ inline bool tieneRutaDeCombate(const EstadoCinematicas* cine, EntityHandle h) {
     return cine != nullptr && hayRutaDeCombate(cine->rutasEnemigos, h);
 }
 
-// Asigna la maquina `id` de forma lazy (la primera vez) y aplica un fotograma. false = no hay
-// maquina para este actor (JSON roto o ausente): el llamador aplica la politica sin maquina.
+// Pone la maquina `id` (ponMaquina es idempotente para la misma, asi que se llama cada fotograma:
+// un actor con OTRA maquina ya puesta la cambia, no la reutiliza) y aplica un fotograma. false = no
+// hay maquina `id` (JSON roto o ausente): el llamador aplica la politica sin maquina.
 inline bool animaConMaquina(EntidadClip& clip, const char* id, const Game::EntradasAnimacion& entradas,
                             bool enRuta) {
-    if (clip.aplicaEntradas(entradas, enRuta)) return true;
     const Game::CatalogoAnimacion& cat = Game::catalogoAnimacionDelJuego();
     const Game::MaquinaAnimacion* m = cat.maquina(Game::IdMaquina::parse(id).value());
     if (m == nullptr) return false;

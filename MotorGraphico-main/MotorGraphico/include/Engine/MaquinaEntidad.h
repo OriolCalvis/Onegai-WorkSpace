@@ -17,6 +17,7 @@ namespace Engine {
 struct MaquinaEntidad {
     bool cuerpoBase = false;  // sobrevive a una cinematica que destruya el clip
     const Game::CatalogoAnimacion* catalogo = nullptr;
+    const Game::MaquinaAnimacion* maquina = nullptr;  // la del controlador (para ponMaquina idempotente)
     std::optional<Game::ControladorAnimacion> controlador;
 };
 

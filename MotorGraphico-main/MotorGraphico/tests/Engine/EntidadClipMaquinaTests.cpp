@@ -81,6 +81,9 @@ const char* const kEstados = R"({"schemaVersion":1,"maquinas":[
  {"id":"accion","inicial":"a","parametros":[],
   "estados":[{"id":"a","clip":"golpe"},{"id":"b","clip":"cicl"}],
   "transiciones":[{"desde":"a","hacia":"b","esperaFinClip":true,"cuando":[{"param":"finClip","op":"cierto"}]}]},
+ {"id":"dosclips","inicial":"a","parametros":[{"id":"go","tipo":"booleano"}],
+  "estados":[{"id":"a","clip":"idle"},{"id":"b","clip":"golpe"}],
+  "transiciones":[{"desde":"a","hacia":"b","politica":"reiniciarSiempre","cuando":[{"param":"go","op":"cierto"}]}]},
  {"id":"legacy","inicial":"a","parametros":[{"id":"go","tipo":"booleano"}],
   "estados":[{"id":"a","clip":"idle"},{"id":"b","clip":"idle_left"}],
   "transiciones":[
@@ -117,6 +120,19 @@ std::string sinComentarios(const std::string& s) {
         }
     }
     return o;
+}
+
+std::string sinBlancos(const std::string& s) {
+    std::string o;
+    for (char c : s)
+        if (c != ' ' && c != '\n' && c != '\t' && c != '\r') o += c;
+    return o;
+}
+
+int cuenta(const std::string& pajar, const std::string& aguja) {
+    int n = 0;
+    for (std::size_t i = pajar.find(aguja); i != std::string::npos; i = pajar.find(aguja, i + 1)) ++n;
+    return n;
 }
 }  // namespace
 
@@ -398,6 +414,118 @@ MOTOR_TEST_CASE(bucle_de_enemigos_dentro_de_no_enCurso_y_con_ruta_de_combate) { 
     MOTOR_CHECK(reg != std::string::npos && reg < dentro.find("\"pnj_basico\""));
     // El play() de siempre solo como politica sin maquina.
     MOTOR_CHECK(dentro.find("actor->play(Game::RutinasPnj::animacion(*pnj, reducidas))") != std::string::npos);
+}
+
+// ------------------------------------------------------------------ r1: revision
+
+MOTOR_TEST_CASE(ponClip_limpia_la_animacion_actual_y_una_cue_igual_se_vuelve_a_aplicar) {  // H1
+    Sonda e;
+    enemigo(e);
+    e.addAnimation("idle_down", {9});
+    e.aplicaEntradas({}, false);
+    MOTOR_CHECK(e.currentAnimation().empty());
+    e.play("idle_down");  // cinematica A (S10: currentAnimation() != animacion -> play)
+    e.update(0.01f);
+    MOTOR_CHECK(e.currentAnimation() == "idle_down" && e.sprite() == 9);
+    e.aplicaEntradas({}, false);  // reenganche tras la cinematica
+    MOTOR_CHECK(e.tieneClip() && e.currentAnimation().empty());
+    // cinematica B con el mismo nombre: la guarda de S10 la deja pasar
+    MOTOR_CHECK(e.currentAnimation() != "idle_down");
+    e.play("idle_down");
+    e.update(0.01f);
+    MOTOR_CHECK(!e.tieneClip() && e.sprite() == 9);  // la pose, no el clip
+}
+
+MOTOR_TEST_CASE(animaConMaquina_cambia_a_la_maquina_pedida_por_id) {  // M1
+    Sonda e;
+    enemigo(e);
+    for (const char* n : {"idle_down", "idle_up"}) e.addAnimation(n, {7});
+    MOTOR_CHECK(Engine::animaConMaquina(e, "enemigo_base", {}, false));
+    MOTOR_CHECK(e.tieneClip());
+    MOTOR_CHECK(Engine::animaConMaquina(e, "pnj_basico", pnj(0, 2), false));
+    MOTOR_CHECK(e.currentAnimation() == "idle_down");  // pnj_basico, no enemigo_base
+    e.update(0.01f);
+    MOTOR_CHECK(!e.tieneClip());
+    MOTOR_CHECK(Engine::animaConMaquina(e, "pnj_basico", pnj(0, 2), false));
+    MOTOR_CHECK(e.currentAnimation() == "idle_down");
+}
+
+MOTOR_TEST_CASE(cambiaClip_clip_a_clip_entrega_el_sprite_sin_update) {  // M05/M6
+    const CatalogoAnimacion cat = catalogoDePrueba();
+    Sonda e;
+    e.ponMaquina(&cat, cat.maquina(maqId("dosclips")));
+    EntradasAnimacion go0, go1;
+    go0.valores[par("go")] = 0;
+    go1.valores[par("go")] = 1;
+    e.aplicaEntradas(go0, false);
+    MOTOR_CHECK(e.sprite() == 1);
+    e.update(0.5f);
+    MOTOR_CHECK(e.sprite() == 3);
+    e.aplicaEntradas(go1, false);  // idle -> golpe por cambiaClip
+    MOTOR_CHECK(e.tieneClip() && e.controlExterno());
+    MOTOR_CHECK(e.sprite() == 5);  // ya, sin update
+}
+
+MOTOR_TEST_CASE(ponMaquina_otra_maquina_reinicia_el_controlador) {  // M10
+    const CatalogoAnimacion cat = catalogoDePrueba();
+    Sonda e;
+    e.ponMaquina(&cat, cat.maquina(maqId("ciclico")));
+    for (int i = 0; i < 10; ++i) {
+        e.update(0.05f);
+        e.aplicaEntradas({}, false);
+    }
+    MOTOR_CHECK(e.sprite() == 1 || e.sprite() == 2);
+    e.ponMaquina(&cat, cat.maquina(maqId("accion")));  // estado inicial: golpe (5)
+    e.aplicaEntradas({}, false);
+    MOTOR_CHECK(e.sprite() == 5);
+    // la misma maquina otra vez no reinicia
+    e.update(0.11f);
+    const int s = e.sprite();
+    e.ponMaquina(&cat, cat.maquina(maqId("accion")));
+    e.aplicaEntradas({}, false);
+    MOTOR_CHECK(e.sprite() == s);
+}
+
+MOTOR_TEST_CASE(las_maquinas_del_juego_viven_en_el_singleton_y_una_copia_no_las_conserva) {  // (d)
+    const CatalogoAnimacion& single = catalogoAnimacionDelJuego();
+    const MaquinaAnimacion* m = single.maquina(maqId("enemigo_base"));
+    MOTOR_CHECK(m != nullptr);
+    auto dentro = [](const CatalogoAnimacion& c, const MaquinaAnimacion* p) {
+        return !c.maquinas.empty() && p >= c.maquinas.data() && p < c.maquinas.data() + c.maquinas.size();
+    };
+    MOTOR_CHECK(dentro(single, m));
+    const CatalogoAnimacion copia = single;  // E06a no impide copiar; una copia SI invalida los punteros
+    MOTOR_CHECK(!dentro(copia, m));
+    Sonda e;
+    enemigo(e);
+    e.aplicaEntradas({}, false);
+    MOTOR_CHECK(Engine::animaConMaquina(e, "enemigo_base", {}, false));
+    MOTOR_CHECK(dentro(catalogoAnimacionDelJuego(), catalogoAnimacionDelJuego().maquina(maqId("enemigo_base"))));
+    MOTOR_CHECK(catalogoAnimacionDelJuego().maquina(maqId("enemigo_base")) == m);
+}
+
+MOTOR_TEST_CASE(tieneRutaDeCombate_con_estado_real) {  // M01/M2/M11
+    EstadoCinematicas cine;
+    const Engine::EntityHandle con{3, 1}, sin{4, 1};
+    MOTOR_CHECK(!Engine::tieneRutaDeCombate(&cine, con));
+    cine.rutasEnemigos.emplace_back(con, Game::PasosEnRuta{});
+    MOTOR_CHECK(Engine::tieneRutaDeCombate(&cine, con));
+    MOTOR_CHECK(!Engine::tieneRutaDeCombate(&cine, sin));
+}
+
+MOTOR_TEST_CASE(bucle_condiciones_estrictas) {  // M1, M2/M11, M3 (texto sin comentarios ni blancos)
+    const std::string src = sinBlancos(sinComentarios(leeFichero("src/Engine/ApplicationBucle.cpp")));
+    // Enemigos: solo sin EstadoPnj, solo EntidadClip de cuerpo base, ruta de combate como enRuta.
+    MOTOR_CHECK(cuenta(src, "auto*clip=rutinas.de(marcador.handle)==nullptr?dynamic_cast<EntidadClip*>(marcador.entity.get()):nullptr;"
+                            "if(clip!=nullptr&&clip->esCuerpoBase())Engine::animaConMaquina(*clip,\"enemigo_base\",{},"
+                            "Engine::tieneRutaDeCombate(m_cine.get(),marcador.handle));") == 1);
+    // PNJ: la maquina decide; el play() de siempre SOLO como alternativa (nunca ambos).
+    MOTOR_CHECK(cuenta(src, "auto*clip=dynamic_cast<EntidadClip*>(actor);"
+                            "if(clip==nullptr||!Engine::animaConMaquina(*clip,\"pnj_basico\",Game::entradasDePnj(*pnj,reducidas),"
+                            "Engine::tieneRutaDeCombate(m_cine.get(),marcador.handle)))"
+                            "actor->play(Game::RutinasPnj::animacion(*pnj,reducidas));") == 1);
+    MOTOR_CHECK(cuenta(src, "actor->play(") == 1);
+    MOTOR_CHECK(cuenta(src, "tieneRutaDeCombate(") == 2);
 }
 
 int main() { return motor_test::runAllTests(); }

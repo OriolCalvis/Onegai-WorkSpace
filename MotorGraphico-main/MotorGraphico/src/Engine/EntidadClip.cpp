@@ -48,6 +48,13 @@ void EntidadClip::ponIdle(const Game::ClipAnimacion* clip) {
 }
 
 void EntidadClip::ponClip(const Game::ClipAnimacion& clip) {
+    // Con el clip al mando currentAnimation() es "" (U3-06 §1.0). Si no, una cue posterior con el mismo
+    // nombre que la anterior se saltaria la guarda de ApplicationCinematica.cpp:156 (`currentAnimation()
+    // != animacion`) y el cuerpo base seguiria respirando en vez de tomar la pose. AnimatedEntity no
+    // ofrece un borrado: play("") sobre una animacion vacia registrada deja el nombre vacio sin tocar
+    // el sprite (el avanza(0.0) de abajo lo pone y recupera el control).
+    addAnimation("", {});
+    play("");
     m_actor = std::make_unique<Game::ClipActor>(clip.id, clip);
     m_destino = std::make_unique<Game::DestinoFuncion>([this](int s) { ponerFotograma(s); });
     PuertosSinEfecto puertos;
@@ -57,7 +64,11 @@ void EntidadClip::ponClip(const Game::ClipAnimacion& clip) {
 void EntidadClip::ponMaquina(const Game::CatalogoAnimacion* catalogo,
                              const Game::MaquinaAnimacion* maquina) {
     if (m_maquina == nullptr) m_maquina = std::make_unique<Engine::MaquinaEntidad>();
+    // Idempotente para la misma maquina (el bucle lo llama cada fotograma); otra maquina o nula
+    // reinicia el controlador (estado inicial, primer aplica reemite).
+    if (m_maquina->controlador.has_value() && m_maquina->catalogo == catalogo && m_maquina->maquina == maquina) return;
     m_maquina->catalogo = catalogo;
+    m_maquina->maquina = maquina;
     m_maquina->controlador.reset();
     if (catalogo != nullptr && maquina != nullptr) m_maquina->controlador.emplace(maquina);
 }
