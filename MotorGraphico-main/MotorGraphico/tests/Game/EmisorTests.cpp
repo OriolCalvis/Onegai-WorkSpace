@@ -216,16 +216,16 @@ MOTOR_TEST_CASE(emisiones_residuo_exacto_entre_pasos) {
 }
 
 MOTOR_TEST_CASE(emisiones_tasa_cero_y_dt_cero_dejan_el_estado_intacto) {
-    for (const double r0 : {0.0, 0.3, 0.999}) {
+    for (const double r0 : {0.0, 0.3, 0.999, 0.9999999995}) {
         const auto t = emisiones(EstadoEmision{r0}, 0.1, 0.0);
         MOTOR_CHECK(t.isOk() && t.value().cuantas == 0 && t.value().estado.residuo == r0 && !t.value().recortado);
         const auto d = emisiones(EstadoEmision{r0}, 0.0, 500.0);  // pausa (D-O6)
         MOTOR_CHECK(d.isOk() && d.value().cuantas == 0 && d.value().estado.residuo == r0 && !d.value().recortado);
     }
-    const auto cien = corre(100, 0.0, 40.0, 0.5);
-    MOTOR_CHECK(cien.ok && cien.cuantas == 0 && cien.residuo == 0.5);
-    const auto tasa0 = corre(100, 1.0 / 60.0, 0.0);
-    MOTOR_CHECK(tasa0.ok && tasa0.cuantas == 0 && tasa0.residuo == 0.0);
+    const auto cien = corre(100, 0.0, 40.0, 0.9999999995);
+    MOTOR_CHECK(cien.ok && cien.cuantas == 0 && cien.residuo == 0.9999999995);
+    const auto tasa0 = corre(100, 1.0 / 60.0, 0.0, 0.9999999995);
+    MOTOR_CHECK(tasa0.ok && tasa0.cuantas == 0 && tasa0.residuo == 0.9999999995);
 }
 
 MOTOR_TEST_CASE(emisiones_entradas_invalidas_son_error) {
@@ -278,7 +278,7 @@ MOTOR_TEST_CASE(emisiones_tolerancia_numerica) {
     // 1000 x 0.001 a tasa 7 == 7
     const auto m = corre(1000, 0.001, 7.0);
     MOTOR_CHECK(m.ok && m.cuantas == 7);
-    // Acumulado a 1e-9 del siguiente entero: nace (borde incluido); 2e-9 por debajo con tasa*dt: no
+    // Residuo a 5e-10 del siguiente entero + paso minusculo: nace (dentro de kTolEmision); a 1e-8: no
     const auto borde = emisiones(EstadoEmision{0.9999999995}, 0.0001, 1.0);  // 0.9999999995 + 1e-4 = 1.0000999995
     MOTOR_CHECK(borde.isOk() && borde.value().cuantas == 1);
     const auto justo = emisiones(EstadoEmision{0.9999999995}, 1e-12, 1.0);  // 0.9999999995 + 1e-12 + 1e-9 >= 1
@@ -298,9 +298,9 @@ MOTOR_TEST_CASE(emisiones_particion_equivalente) {
         const double total = c.n * c.dt;
         MOTOR_CHECK(t.ok);
         if (c.dt <= kMaxPasoEmision) {
-            const int esperado = static_cast<int>(std::floor(tasa * total + 1e-6));
+            const int esperado = static_cast<int>(std::floor(tasa * total + 1e-9));
             MOTOR_CHECK(t.cuantas == esperado);
-            MOTOR_CHECK(std::fabs(t.residuo - (tasa * total - esperado)) < 1e-6);
+            MOTOR_CHECK(std::fabs(t.residuo - (tasa * total - esperado)) < 1e-9);
         }
     }
     MOTOR_CHECK(corre(180, 1.0 / 60.0, tasa).cuantas == 36);
@@ -309,7 +309,7 @@ MOTOR_TEST_CASE(emisiones_particion_equivalente) {
     MOTOR_CHECK(corre(1, 0.25, tasa).cuantas == 3 && corre(1, 0.25, tasa).residuo == 0.0);
     // 0.016 x 225 = 3.6 s a tasa 12 = 43,2 -> 43 y residuo ~0.2
     const auto c016 = corre(225, 0.016, tasa);
-    MOTOR_CHECK(c016.cuantas == 43 && std::fabs(c016.residuo - 0.2) < 1e-6);
+    MOTOR_CHECK(c016.cuantas == 43 && std::fabs(c016.residuo - 0.2) < 1e-9);
     // 0.3 recortado a 0.25: el total NO es el del tiempo real, y se prueba aparte
     const auto rec = corre(10, 0.3, tasa);
     MOTOR_CHECK(rec.ok && rec.cuantas == 30 && rec.recortes == 10);   // 10 x 0.25 x 12, no 36
@@ -353,7 +353,6 @@ MOTOR_TEST_CASE(emisiones_polvo_recuento_exacto_y_corte_en_duracion) {
     }
     MOTOR_CHECK(primero == 6);
 }
-
 
 }  // namespace
 
