@@ -12,7 +12,8 @@
 //  - una transicion sin `desde` no se elige hacia el estado actual (ver eligeTransicion);
 //  - los `disparo` usados por las condiciones de la transicion ganadora salen en
 //    disparosConsumidos (sin repetidos, orden de declaracion). Un estado desconocido -> sin cambios.
-// `rumbo` se lee de entradas.valores["rumbo"] (ausente = 0, truncado a int).
+// `rumbo` se lee de entradas.valores[kParametroRumbo]: ausente, NaN o +-inf = 0; si no, se trunca
+// y se reduce modulo 4 a 0..3 en double (3e9 -> 0, -1 -> 3, -1e300 -> 0), sin cast fuera de rango.
 
 #include <vector>
 
@@ -20,6 +21,9 @@
 #include "Game/SeleccionAnimacion.h"
 
 namespace Game {
+
+// Nombre del parametro reservado "rumbo" (entero 0..3), siempre leido de `valores`.
+inline constexpr const char* kParametroRumbo = "rumbo";
 
 struct EstadoAnimacionVivo {
     IdEstado estado;

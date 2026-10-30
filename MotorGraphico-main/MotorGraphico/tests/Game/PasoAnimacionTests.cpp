@@ -3,6 +3,8 @@
 
 #include "Game/PasoAnimacion.h"
 
+#include <cmath>
+#include <limits>
 #include <string>
 
 using namespace Game;
@@ -230,6 +232,47 @@ MOTOR_TEST_CASE(determinismo_1000_iteraciones_y_estado_desconocido) {
     }
     const PasoAnimacion x = pasoAnimacion(m, vivo("d", "idle"), e);
     MOTOR_CHECK(!x.cambioDeClip && x.vivo.estado == est("d"));
+}
+
+MOTOR_TEST_CASE(si_distinto_compara_clips_no_estados) {
+    // (a) dos estados distintos con el mismo clip: reiniciarSiDistinto no cambia de clip.
+    auto m = maq({tr("reposo", "espera", {kAnda}, PoliticaCambio::ReiniciarSiDistinto)});
+    m.estados.push_back(estado("espera", "idle"));
+    const PasoAnimacion a = pasoAnimacion(m, vivo("reposo", "idle"), con({{"anda", 1}}));
+    MOTOR_CHECK(a.vivo.estado == est("espera") && !a.cambioDeClip);
+    // (b) autotransicion explicita andar->andar con rumbo distinto: cambia al clip del rumbo nuevo.
+    const auto m2 = maq({tr("andar", "andar", {kAnda}, PoliticaCambio::ReiniciarSiDistinto)});
+    const PasoAnimacion b = pasoAnimacion(m2, vivo("andar", "der"), con({{"anda", 1}, {"rumbo", 3}}));
+    MOTOR_CHECK(b.cambioDeClip && b.clipNuevo == clip("izq") && b.vivo.clip == clip("izq"));
+}
+
+MOTOR_TEST_CASE(solo_los_disparos_cuentan_como_consumidos) {
+    const auto m = maq({tr("reposo", "golpe", {kAnda, cond("golpear", OperadorCondicion::Disparado)})});
+    const PasoAnimacion p = pasoAnimacion(m, vivo("reposo", "idle"), con({{"anda", 1}, {"golpear", 1}}));
+    MOTOR_CHECK(p.vivo.estado == est("golpe"));
+    MOTOR_CHECK(p.disparosConsumidos.size() == 1u && p.disparosConsumidos[0] == par("golpear"));
+}
+
+MOTOR_TEST_CASE(estado_sin_rumbos_no_cambia_de_clip_sin_transicion) {
+    // Regla (1): sin clipsPorRumbo, un vivo.clip ajeno al del estado no provoca cambio.
+    const auto m = maq({});
+    const PasoAnimacion p = pasoAnimacion(m, vivo("reposo", "otro"), con({}));
+    MOTOR_CHECK(!p.cambioDeClip && p.vivo.clip == clip("otro"));
+}
+
+MOTOR_TEST_CASE(rumbo_no_finito_o_enorme_es_determinista_sin_ub) {
+    const auto m = maq({});
+    const double inf = std::numeric_limits<double>::infinity();
+    const double nan = std::numeric_limits<double>::quiet_NaN();
+    const struct { double r; const char* clip; } casos[] = {
+        {nan, "arr"}, {inf, "arr"}, {-inf, "arr"}, {3e9, "arr"}, {-1e300, "arr"},
+        {1e300, "arr"}, {-1.0, "izq"}, {5.9, "der"}, {-0.5, "arr"}};
+    for (const auto& c : casos) {
+        const PasoAnimacion p = pasoAnimacion(m, vivo("andar", "izq"), con({{"rumbo", c.r}}));
+        const bool esperaCambio = std::string(c.clip) != "izq";
+        MOTOR_CHECK(p.cambioDeClip == esperaCambio);
+        MOTOR_CHECK(p.vivo.clip == clip(c.clip));
+    }
 }
 
 int main() { return motor_test::runAllTests(); }

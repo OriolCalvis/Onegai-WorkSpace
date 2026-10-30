@@ -2,6 +2,7 @@
 #include "Game/PasoAnimacion.h"
 
 #include <algorithm>
+#include <cmath>
 
 namespace Game {
 
@@ -17,8 +18,17 @@ const EstadoAnimacion* buscaEstado(const MaquinaAnimacion& m, const IdEstado& id
 }
 
 int rumboDe(const EntradasAnimacion& e) {
-    const auto it = e.valores.find(IdParametro::parse("rumbo").value());
-    return it == e.valores.end() ? 0 : static_cast<int>(it->second);
+    static const IdParametro kRumbo = IdParametro::parse(kParametroRumbo).value();
+    const auto it = e.valores.find(kRumbo);
+    if (it == e.valores.end() || !std::isfinite(it->second)) {
+        return 0;
+    }
+    // Se reduce en double antes del cast (un cast fuera de rango de int seria UB).
+    double r = std::fmod(std::trunc(it->second), 4.0);
+    if (r < 0.0) {
+        r += 4.0;
+    }
+    return static_cast<int>(r);
 }
 
 void anotaDisparos(const TransicionAnimacion& t, PasoAnimacion& paso) {
@@ -57,10 +67,10 @@ PasoAnimacion pasoAnimacion(const MaquinaAnimacion& maquina, const EstadoAnimaci
     }
     const TransicionAnimacion& t = maquina.transiciones[*elegida];
     const EstadoAnimacion* destino = buscaEstado(maquina, t.hacia);
-    anotaDisparos(t, paso);
     if (destino == nullptr) {
-        return paso;  // el lector lo impide; defensivo
+        return paso;  // el lector lo impide; defensivo: sin cambios, sin disparos
     }
+    anotaDisparos(t, paso);
     const IdClip clip = clipDeEstado(*destino, rumbo);
     paso.vivo.estado = t.hacia;
     paso.vivo.clip = clip;
