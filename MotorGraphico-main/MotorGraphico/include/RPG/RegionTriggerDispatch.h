@@ -89,8 +89,10 @@ Result<RegionDispatchResult> dispatchRegionTriggers(
 // Un frame completo: `runner.update(frame)` y despues el despacho. Si al
 // empezar hay una escena bloqueante viva, el runner se alimenta SIN mapa
 // (setMap(nullptr) y se restaura): avanza el interprete y registra la casilla
-// pero no dispara automaticos. Efecto: Autorun/Parallel nuevos esperan a que
-// la escena termine (no se registran como arrancados). Sin mapa en el runner
+// pero no dispara automaticos. Efecto CONTRACTUAL: Autorun y tambien Parallel
+// nuevos esperan a que la escena termine y no se pierden (coherente con
+// MapEventRunner.h:69-71: mientras algo bloquee no arranca NADA nuevo). El
+// mapa se restaura con una guarda RAII, tambien si `update()` lanza. Sin mapa en el runner
 // no hay despacho.
 Result<RegionDispatchResult> updateEventsAndRegions(
     MapEventRunner& runner, EventInterpreter& interpreter, const NarrativeState& narrative,

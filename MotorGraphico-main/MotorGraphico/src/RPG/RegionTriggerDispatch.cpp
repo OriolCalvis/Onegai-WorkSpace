@@ -74,6 +74,30 @@ void despacharAEvento(RegionDispatchResult& out, const MapEventDocument& event,
     out.started.push_back(RegionStarted{event.id.value(), activa.index, trigger});
 }
 
+// Quita el mapa al runner y lo devuelve al salir del ambito, tambien si
+// `update()` lanza (el anfitrion de comandos no es noexcept).
+class MapaSuspendido {
+public:
+    MapaSuspendido(MapEventRunner& runner, bool suspender)
+        : m_runner(runner), m_mapa(runner.map()), m_activo(suspender) {
+        if (m_activo) {
+            m_runner.setMap(nullptr);
+        }
+    }
+    ~MapaSuspendido() {
+        if (m_activo) {
+            m_runner.setMap(m_mapa);
+        }
+    }
+    MapaSuspendido(const MapaSuspendido&) = delete;
+    MapaSuspendido& operator=(const MapaSuspendido&) = delete;
+
+private:
+    MapEventRunner& m_runner;
+    const MapDocument* m_mapa;
+    bool m_activo;
+};
+
 }  // namespace
 
 Result<RegionDispatchResult> dispatchRegionTriggers(
@@ -104,15 +128,11 @@ Result<RegionDispatchResult> updateEventsAndRegions(
     // `update()` solo limpia, registra la casilla y avanza el interprete, y
     // `dispararAutomaticos()` (que no mira blocksPlayer) no puede arrancar
     // un Autorun encima. No se pierde nada: ni Touch ni Interact arrancan con
-    // algo bloqueando, y los automaticos no se registran, asi que arrancan
-    // cuando la escena termina.
-    const bool bloqueado = interpreter.blocksPlayer();
-    if (bloqueado) {
-        runner.setMap(nullptr);
-    }
-    runner.update(frame);
-    if (bloqueado) {
-        runner.setMap(mapa);
+    // algo bloqueando, y los automaticos (Autorun Y Parallel) no se registran,
+    // asi que arrancan cuando la escena termina.
+    {
+        const MapaSuspendido guarda(runner, interpreter.blocksPlayer());
+        runner.update(frame);
     }
     if (mapa == nullptr) {
         return Result<RegionDispatchResult>::Ok(RegionDispatchResult{});

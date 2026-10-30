@@ -21,6 +21,7 @@
 #include "Render/ICombatant.h"
 
 #include <map>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -381,6 +382,83 @@ MOTOR_TEST_CASE(autorun_activado_con_una_region_viva_espera_a_que_termine) {
     MOTOR_CHECK(e.interprete.isRunning("aut"));
     MOTOR_CHECK(bloqueantes() == 1);
     MOTOR_CHECK(e.runner.map() == &mapa);
+}
+
+MOTOR_TEST_CASE(un_parallel_activado_con_escena_viva_arranca_al_terminar_y_no_se_pierde) {
+    MapEventCondition c;
+    c.kind = EventConditionKind::Flag;
+    c.reference = "ambiente";
+    MapEventDocument par = evento("par", GridCoord{9, 9}, pagina("par_p0", EventTrigger::Parallel));
+    par.pages[0].conditions = {c};
+    const MapDocument mapa = mapaCon({par, eventoRegion("trampa", 1, EventTrigger::RegionEnter)});
+    Escena e;
+    e.runner.setMap(&mapa);
+    MapEventFrame f;
+    f.playerCell = GridCoord{1, 0};
+    f.deltaMs = 16;
+    MOTOR_CHECK(updateEventsAndRegions(e.runner, e.interprete, e.estado, e.inventario, f,
+                                       {disp(Kind::Enter)}).isOk());
+    MOTOR_CHECK(e.interprete.isRunning("trampa"));
+    e.estado.setFlag("ambiente");
+    for (int i = 0; i < 10 && e.interprete.isRunning("trampa"); ++i) {
+        MOTOR_CHECK(updateEventsAndRegions(e.runner, e.interprete, e.estado, e.inventario, f,
+                                           {}).isOk());
+        if (e.interprete.isRunning("trampa")) {
+            MOTOR_CHECK(!e.interprete.isRunning("par"));
+        }
+        f.deltaMs = 400;
+    }
+    MOTOR_CHECK(!e.interprete.isRunning("trampa"));
+    MOTOR_CHECK(updateEventsAndRegions(e.runner, e.interprete, e.estado, e.inventario, f,
+                                       {}).isOk());
+    MOTOR_CHECK(e.interprete.isRunning("par"));
+}
+
+// Anfitrion que lanza en execute(): simula un fallo del host durante el tick.
+class HostQueLanza : public EventHost {
+public:
+    bool lanza = true;
+    CommandResult execute(const MapEventCommand&) override {
+        if (lanza) {
+            throw std::runtime_error("fallo del anfitrion");
+        }
+        return CommandResult{};
+    }
+};
+
+MOTOR_TEST_CASE(el_mapa_del_runner_se_restaura_aunque_update_lance) {
+    MapEventCondition c;
+    c.kind = EventConditionKind::Flag;
+    c.reference = "listo";
+    MapEventDocument aut = evento("aut", GridCoord{9, 9}, pagina("aut_p0", EventTrigger::Autorun));
+    aut.pages[0].conditions = {c};
+    const MapDocument mapa = mapaCon({aut});
+    HostQueLanza host;
+    EventInterpreter interprete(host);
+    NarrativeState estado;
+    std::vector<std::string> inventario;
+    MapEventRunner runner(estado, inventario, interprete);
+    runner.setMap(&mapa);
+    // Escena viva => el wrapper suspende el mapa; el tick lanza.
+    const MapEventDocument viva =
+        evento("viva", GridCoord{5, 5}, pagina("viva_p0", EventTrigger::Interact));
+    MOTOR_CHECK(interprete.start(viva, 0).isOk());
+    MapEventFrame f;
+    f.deltaMs = 16;
+    bool lanzo = false;
+    try {
+        (void)updateEventsAndRegions(runner, interprete, estado, inventario, f, {});
+    } catch (const std::runtime_error&) {
+        lanzo = true;
+    }
+    MOTOR_CHECK(lanzo);
+    MOTOR_CHECK(runner.map() == &mapa);
+    // El frame siguiente dispara con normalidad.
+    host.lanza = false;
+    interprete.cancelAll();
+    estado.setFlag("listo");
+    MOTOR_CHECK(updateEventsAndRegions(runner, interprete, estado, inventario, f, {}).isOk());
+    MOTOR_CHECK(runner.lastStartedEvent() == "aut");
 }
 
 }  // namespace
