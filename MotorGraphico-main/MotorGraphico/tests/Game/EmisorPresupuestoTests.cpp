@@ -236,6 +236,39 @@ MOTOR_TEST_CASE(valores_concretos_de_cada_formula) {
     MOTOR_CHECK(p.x == 0.0f && p.y == 0.0f);
 }
 
+MOTOR_TEST_CASE(fase_k_vida_de_la_particula_vy0_y_colocacion_al_nacer) {
+    // k != 0 desplaza la fase del balanceo: Cae/Sube con sin(3t+k) y Deriva con sin(5t+k)
+    Particula p = nacida(0.5f, 1.0f, 1.0f, 3);
+    colocaParticula(tipo(1.0f, 6.0f, MovimientoDeParticula::Cae), p);
+    MOTOR_CHECK(cerca(p.x, static_cast<float>(std::sin(4.5)) * 0.4f + 0.25f) && cerca(p.y, 3.0f));
+    p = nacida(0.5f, 1.0f, 0.5f, 7);
+    colocaParticula(tipo(9.0f, -2.0f, MovimientoDeParticula::Deriva), p);
+    MOTOR_CHECK(cerca(p.x, 4.5f + static_cast<float>(std::sin(9.5)) * 0.6f));
+    // Converge usa la vida de la PARTICULA (2), no la de la familia (1 por defecto)
+    p = nacida(0.5f, 2.0f, 0.0f, 0);
+    p.radio0 = 8.0f; p.ang0 = 0.0f;
+    colocaParticula(tipo(0.0f, 0.0f, MovimientoDeParticula::Converge), p);
+    MOTOR_CHECK(cerca(p.x, 6.0f) && cerca(p.y, 0.0f));
+    // Salpica suma vy0*t y vx0*t
+    p = nacida(0.25f, 0.5f, -0.5f, 0);
+    p.vx0 = 4.0f; p.vy0 = -10.0f;
+    colocaParticula(tipo(10.0f, -24.0f, MovimientoDeParticula::Salpica), p);
+    MOTOR_CHECK(cerca(p.x, -1.25f + 1.0f) && cerca(p.y, -3.0f - 2.5f));
+    // el recien nacido ya esta colocado (edad 0) en el paso de su nacimiento
+    Emisor o(def("polvo", 500.0, 0.01, 2.0, 16, 41), tipo(6.0f, -3.0f, MovimientoDeParticula::Orbita), Vector2{}, GrupoDeDibujo{});
+    PresupuestoParticulas pr;
+    paso(o, 0.01, 1.0, pr);
+    for (const auto& q : o.buffer().datos()) {
+        MOTOR_CHECK(q.edad == 0.0f && std::fabs(q.x) + std::fabs(q.y) > 0.5f);
+        const float r = (q.radio0 - 6.0f) * 0.75f + 5.0f;
+        MOTOR_CHECK(cerca(q.x, r * std::cos(q.ang0), 1e-3f));
+    }
+    Emisor s(def("polvo", 500.0, 0.01, 2.0, 16, 42), tipo(10.0f, 0.0f, MovimientoDeParticula::Sube), Vector2{}, GrupoDeDibujo{});
+    paso(s, 0.01, 1.0, pr);
+    const auto& v = s.buffer().datos();   // vx0 = 0 no se aplica a t=0; el balanceo de k=1 si
+    MOTOR_CHECK(v.size() == 5 && v[0].x == 0.0f && cerca(v[1].x, 10.0f * static_cast<float>(std::sin(1.0)) * 0.4f, 1e-3f));
+}
+
 MOTOR_TEST_CASE(orbita_reescala_radio0_de_6_10_a_5_8) {
     const TipoDeParticula t = tipo(0.0f, 0.0f, MovimientoDeParticula::Orbita);   // vx 0: el angulo no gira
     Particula p = nacida(0.0f, 1.0f, 0.0f, 0);

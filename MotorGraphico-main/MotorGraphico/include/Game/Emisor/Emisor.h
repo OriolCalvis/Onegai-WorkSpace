@@ -25,7 +25,8 @@
 
 namespace Game::Emisor {
 
-constexpr std::uint64_t kModuloK = 65536;   // k = nacidas mod kModuloK (cabe en uint16)
+// Modulo EXPLICITO (no depende de que el cast a uint16 ya trunque): k = nacidas mod kModuloK.
+constexpr std::uint64_t kModuloK = 65536;
 
 struct GrupoDeDibujo {          // DUENO: Emisor.h. El espacio al que pertenecen las coordenadas del emisor
     Vector2 esquina{0.0f, 0.0f};   // px de mundo de la esquina del dibujo
