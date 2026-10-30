@@ -1219,6 +1219,9 @@ include(cmake/MonstruosAcciones.cmake)  # AV18-02: datos, persistencia y papiro 
     # desconocido que no pierden datos, y limite de anidamiento.
     add_motor_unit_test(test_event_layer_document tests/Map/EventLayerDocumentTests.cpp)
     target_link_libraries(test_event_layer_document PRIVATE motor_map_document motor_project)
+    # U3-02.E06a — Triggers de region en paginas de evento (referencias, ediciones, carga).
+    add_motor_unit_test(test_event_region_trigger tests/Map/EventRegionTriggerTests.cpp)
+    target_link_libraries(test_event_region_trigger PRIVATE motor_map_document motor_project)
     target_link_libraries(test_map_document PRIVATE motor_map_document)
 
     add_motor_unit_test(test_runtime_tilemap tests/Runtime/RuntimeTileMapBuilderTests.cpp)

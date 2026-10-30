@@ -1,0 +1,323 @@
+#include "Map/EventLayerDocument.h"
+#include "Map/MapDocument.h"
+#include "Project/ProjectSerializer.h"
+
+#include "TestHarness.h"
+
+#include <string>
+#include <vector>
+
+// U3-02.E06a — Triggers de region en las paginas de evento (partido de EventLayerDocumentTests).
+//
+// Lo que estas pruebas defienden, en una linea cada una: que una casilla
+// no pueda tener dos eventos, que un comando de un tipo que este motor no
+// conoce se guarde y se lea sin perder un campo, que un evento fuera del
+// mapa lo rechace el documento y no la capa, y que una operacion que
+// falla deje el documento exactamente como estaba.
+
+namespace {
+
+ids::EventId evt(const std::string& v) { return ids::EventId::parse(v).value(); }
+ids::LayerId lyr(const std::string& v) { return ids::LayerId::parse(v).value(); }
+
+MapEventPage pagina(const std::string& id) {
+    MapEventPage p;
+    p.id = evt(id);
+    p.name = "pagina " + id;
+    return p;
+}
+
+MapEventDocument cofre(const std::string& id, int x, int y) {
+    MapEventDocument e;
+    e.id = evt(id);
+    e.name = "Cofre";
+    e.position = GridCoord{x, y};
+    MapEventPage sinAbrir = pagina(id + "_p1");
+    sinAbrir.trigger = EventTrigger::Interact;
+    MapEventCondition cond;
+    cond.kind = EventConditionKind::Flag;
+    cond.reference = "cofre_abierto";
+    cond.comparison = "==";
+    cond.value = "false";
+    sinAbrir.conditions.push_back(cond);
+    MapEventCommand dar;
+    dar.type = "recompensa.entregar";
+    dar.params["recompensa"] = "llave_cueva";
+    sinAbrir.commands.push_back(dar);
+    e.pages.push_back(sinAbrir);
+    return e;
+}
+
+MapDocument mapaCon(const MapEventDocument& evento, int ancho = 8, int alto = 8) {
+    MapDocument doc(ids::MapId::parse("mapa").value(), "mapa", ancho, alto, 64, 32);
+    MapLayerMeta meta;
+    meta.id = lyr("eventos");
+    meta.name = "eventos";
+    meta.order = 0;
+    doc.addLayer(MapLayer::events(meta, EventLayerDocument()));
+    doc.addEvent(lyr("eventos"), evento);
+    return doc;
+}
+
+
+// ---- U3-02.E06a (D1 = b): la pagina dice a que region escucha ----
+
+MapDocument mapaConRegion(const MapEventPage& pag) {
+    MapDocument doc(ids::MapId::parse("mapa").value(), "mapa", 8, 8, 64, 32);
+    MapLayerMeta rm;
+    rm.id = lyr("regiones");
+    rm.name = "regiones";
+    rm.order = 0;
+    MapRegionDocument zona;
+    zona.id = ids::RegionId::parse("zona_norte").value();
+    zona.name = "Zona";
+    zona.bounds = GridBounds{0, 3, 0, 3};
+    doc.addLayer(MapLayer::regions(rm, RegionLayerDocument({zona})));
+    MapLayerMeta em;
+    em.id = lyr("eventos");
+    em.name = "eventos";
+    em.order = 1;
+    doc.addLayer(MapLayer::events(em, EventLayerDocument()));
+    MapEventDocument e;
+    e.id = evt("vigia");
+    e.name = "Vigia";
+    e.position = GridCoord{5, 5};
+    e.pages.push_back(pag);
+    doc.addEvent(lyr("eventos"), e);
+    return doc;
+}
+
+MapEventPage paginaDeRegion(EventTrigger trigger, const std::string& capa,
+                            const std::string& region) {
+    MapEventPage p = pagina("vigia_p1");
+    p.trigger = trigger;
+    if (!capa.empty()) {
+        p.regionLayerId = lyr(capa);
+    }
+    if (!region.empty()) {
+        p.regionId = ids::RegionId::parse(region).value();
+    }
+    return p;
+}
+
+MOTOR_TEST_CASE(los_tres_triggers_de_region_van_y_vuelven_con_su_region) {
+    const EventTrigger todos[] = {EventTrigger::RegionEnter, EventTrigger::RegionStay,
+                                  EventTrigger::RegionExit};
+    const char* textos[] = {"region_enter", "region_stay", "region_exit"};
+    for (int i = 0; i < 3; ++i) {
+        MapDocument doc = mapaConRegion(paginaDeRegion(todos[i], "regiones", "zona_norte"));
+        MOTOR_CHECK(doc.validate().isOk());
+        const Result<std::string> json = ProjectSerializer::serializeMap(doc);
+        MOTOR_CHECK(json.isOk());
+        MOTOR_CHECK(json.value().find(std::string("\"") + textos[i] + "\"") != std::string::npos);
+        const Result<MapDocument> vuelta = ProjectSerializer::deserializeMap(json.value());
+        MOTOR_CHECK(vuelta.isOk());
+        const auto& capa =
+            std::get<EventLayerDocument>(vuelta.value().findLayer(lyr("eventos"))->data());
+        const MapEventPage& leida = capa.find(evt("vigia"))->pages[0];
+        MOTOR_CHECK(leida.trigger == todos[i]);
+        MOTOR_CHECK(leida.regionLayerId.value() == "regiones");
+        MOTOR_CHECK(leida.regionId.value() == "zona_norte");
+        const Result<std::string> segunda = ProjectSerializer::serializeMap(vuelta.value());
+        MOTOR_CHECK(segunda.isOk() && segunda.value() == json.value());
+    }
+}
+
+MOTOR_TEST_CASE(un_trigger_de_region_sin_referencia_se_rechaza_en_todas_las_vias) {
+    // Documento de eventos: capa o region vacias.
+    EventLayerDocument capa;
+    MapEventDocument e;
+    e.id = evt("vigia");
+    e.position = GridCoord{1, 1};
+    e.pages.push_back(paginaDeRegion(EventTrigger::RegionEnter, "", ""));
+    MOTOR_CHECK(!capa.addEvent(e).isOk());
+    e.pages[0] = paginaDeRegion(EventTrigger::RegionStay, "regiones", "");
+    MOTOR_CHECK(!capa.addEvent(e).isOk());
+    e.pages[0] = paginaDeRegion(EventTrigger::RegionExit, "", "zona_norte");
+    MOTOR_CHECK(!capa.addEvent(e).isOk());
+    // Y un trigger que NO es de region no admite referencia.
+    e.pages[0] = paginaDeRegion(EventTrigger::Touch, "regiones", "zona_norte");
+    MOTOR_CHECK(!capa.addEvent(e).isOk());
+    MOTOR_CHECK(capa.events().empty());
+
+    // JSON escrito a mano: region_enter sin la clave "region" no carga.
+    MapDocument ok =
+        mapaConRegion(paginaDeRegion(EventTrigger::RegionEnter, "regiones", "zona_norte"));
+    std::string json = ProjectSerializer::serializeMap(ok).value();
+    const std::size_t a = json.find("\"region\": {");
+    MOTOR_CHECK(a != std::string::npos);
+    const std::size_t b = json.find('}', a);
+    json.erase(a, b - a + 1);
+    MOTOR_CHECK(!ProjectSerializer::deserializeMap(json).isOk());
+}
+
+MOTOR_TEST_CASE(el_mapa_rechaza_un_trigger_que_escucha_una_region_inexistente) {
+    // Desde r1 las ediciones tambien lo rechazan: addEvent con region inexistente o en una
+    // capa que no es de regiones no entra en el documento.
+    const auto sinEvento = [](const MapDocument& d) {
+        return std::get<EventLayerDocument>(d.findLayer(lyr("eventos"))->data()).events().empty();
+    };
+    MOTOR_CHECK(sinEvento(
+        mapaConRegion(paginaDeRegion(EventTrigger::RegionEnter, "regiones", "no_existe"))));
+    MOTOR_CHECK(sinEvento(
+        mapaConRegion(paginaDeRegion(EventTrigger::RegionEnter, "eventos", "zona_norte"))));
+    // Un JSON roto a mano (el unico camino que queda) lo rechaza el deserializador.
+    std::string json = ProjectSerializer::serializeMap(
+        mapaConRegion(paginaDeRegion(EventTrigger::RegionEnter, "regiones", "zona_norte")))
+                           .value();
+    const std::size_t ref = json.find("\"region\": {");
+    MOTOR_CHECK(ref != std::string::npos);
+    const std::size_t nombre = json.find("zona_norte", ref);
+    MOTOR_CHECK(nombre != std::string::npos);
+    json.replace(nombre, std::string("zona_norte").size(), "no_existe");
+    const Result<MapDocument> vuelta = ProjectSerializer::deserializeMap(json);
+    MOTOR_CHECK(!vuelta.isOk());
+    MOTOR_CHECK(vuelta.errorMessage().find("no_existe") != std::string::npos);
+}
+
+MOTOR_TEST_CASE(un_json_antiguo_sin_clave_region_sigue_cargando_igual) {
+    // Compatibilidad hacia atras: ningun mapa sin trigger de region escribe "region".
+    MapDocument doc = mapaCon(cofre("cofre_1", 1, 1));
+    const Result<std::string> json = ProjectSerializer::serializeMap(doc);
+    MOTOR_CHECK(json.isOk());
+    MOTOR_CHECK(json.value().find("\"region\"") == std::string::npos);
+    const Result<MapDocument> vuelta = ProjectSerializer::deserializeMap(json.value());
+    MOTOR_CHECK(vuelta.isOk());
+    const auto& capa =
+        std::get<EventLayerDocument>(vuelta.value().findLayer(lyr("eventos"))->data());
+    const MapEventPage& p = capa.find(evt("cofre_1"))->pages[0];
+    MOTOR_CHECK(p.regionLayerId.empty() && p.regionId.empty());
+}
+
+MapDocument mapaConDosRegiones() {
+    MapDocument doc =
+        mapaConRegion(paginaDeRegion(EventTrigger::RegionEnter, "regiones", "zona_norte"));
+    MapRegionDocument libre;
+    libre.id = ids::RegionId::parse("zona_libre").value();
+    libre.name = "Libre";
+    libre.bounds = GridBounds{4, 5, 4, 5};
+    doc.addRegion(lyr("regiones"), libre);
+    return doc;
+}
+
+// Rechazado, con el mapa intacto (valido y serializa igual) y el mensaje nombrando la pagina.
+bool rechazadaSinTocar(const MapDocument& doc, const std::string& antes, const Result<bool>& r) {
+    return !r.isOk() && r.errorMessage().find("vigia_p1") != std::string::npos &&
+           doc.validate().isOk() && ProjectSerializer::serializeMap(doc).value() == antes;
+}
+
+MOTOR_TEST_CASE(las_ediciones_no_dejan_una_pagina_escuchando_una_region_que_ya_no_existe) {
+    MapDocument doc = mapaConDosRegiones();
+    const std::string antes = ProjectSerializer::serializeMap(doc).value();
+
+    MOTOR_CHECK(rechazadaSinTocar(
+        doc, antes, doc.removeRegion(lyr("regiones"), ids::RegionId::parse("zona_norte").value())));
+    MOTOR_CHECK(rechazadaSinTocar(doc, antes, doc.removeLayer(lyr("regiones"))));
+
+    MapLayerMeta renombrada = doc.findLayer(lyr("regiones"))->meta();
+    renombrada.id = lyr("otras");
+    MOTOR_CHECK(rechazadaSinTocar(doc, antes, doc.setLayerMeta(lyr("regiones"), renombrada)));
+
+    std::vector<MapEventPage> paginas = {
+        paginaDeRegion(EventTrigger::RegionStay, "regiones", "no_existe")};
+    MOTOR_CHECK(rechazadaSinTocar(
+        doc, antes, doc.setEventPages(lyr("eventos"), evt("vigia"), paginas)));
+
+    // Positivo: lo que nadie escucha se puede borrar, y cambiar el orden de capa tambien.
+    MOTOR_CHECK(
+        doc.removeRegion(lyr("regiones"), ids::RegionId::parse("zona_libre").value()).isOk());
+    MapLayerMeta reordenada = doc.findLayer(lyr("regiones"))->meta();
+    reordenada.order = 5;
+    MOTOR_CHECK(doc.setLayerMeta(lyr("regiones"), reordenada).isOk());
+    MOTOR_CHECK(doc.validate().isOk());
+    // Y repuntar la pagina a una region que si existe funciona.
+    paginas = {paginaDeRegion(EventTrigger::RegionStay, "regiones", "zona_norte")};
+    paginas[0].id = evt("vigia_p1");
+    MOTOR_CHECK(doc.setEventPages(lyr("eventos"), evt("vigia"), paginas).isOk());
+}
+
+MOTOR_TEST_CASE(una_pagina_normal_con_region_vacia_da_el_mensaje_de_solo_region) {
+    MapDocument doc = mapaCon(cofre("cofre_1", 1, 1));
+    std::string json = ProjectSerializer::serializeMap(doc).value();
+    const std::size_t t = json.find("\"trigger\": \"interact\",");
+    MOTOR_CHECK(t != std::string::npos);
+    json.insert(t, "\"region\": {}, ");
+    const Result<MapDocument> r = ProjectSerializer::deserializeMap(json);
+    MOTOR_CHECK(!r.isOk());
+    MOTOR_CHECK(r.errorMessage().find("solo un trigger de region") != std::string::npos);
+}
+
+MapLayerMeta metaCapa(const std::string& id, int order) {
+    MapLayerMeta m;
+    m.id = lyr(id);
+    m.name = id;
+    m.order = order;
+    return m;
+}
+
+MapEventDocument vigiaQueEscucha(const std::string& capa, const std::string& region) {
+    MapEventDocument e;
+    e.id = evt("vigia");
+    e.position = GridCoord{5, 5};
+    e.pages.push_back(paginaDeRegion(EventTrigger::RegionEnter, capa, region));
+    return e;
+}
+
+MOTOR_TEST_CASE(addLayer_comprueba_las_regiones_que_escuchan_las_paginas_y_es_atomico) {
+    MapDocument doc(ids::MapId::parse("mapa").value(), "mapa", 8, 8, 64, 32);
+    MapRegionDocument zona;
+    zona.id = ids::RegionId::parse("zona_norte").value();
+    zona.name = "Zona";
+    zona.bounds = GridBounds{0, 3, 0, 3};
+    MOTOR_CHECK(
+        doc.addLayer(MapLayer::regions(metaCapa("regiones", 0), RegionLayerDocument({zona}))).isOk());
+    MOTOR_CHECK(doc.addLayer(MapLayer::tiles(metaCapa("suelo", 1),
+                                             TileLayerDocument(8, 8, std::vector<int>(64, 1))))
+                    .isOk());
+    const std::size_t antes = doc.layers().size();
+    const std::string json = ProjectSerializer::serializeMap(doc).value();
+
+    // Region inexistente en una capa que si es de regiones.
+    MOTOR_CHECK(!doc.addLayer(MapLayer::events(metaCapa("eventos", 2),
+        EventLayerDocument({vigiaQueEscucha("regiones", "no_existe")}))).isOk());
+    // Capa inexistente.
+    MOTOR_CHECK(!doc.addLayer(MapLayer::events(metaCapa("eventos", 2),
+        EventLayerDocument({vigiaQueEscucha("ausente", "zona_norte")}))).isOk());
+    // Capa que existe pero es de tiles.
+    const Result<bool> tipo = doc.addLayer(MapLayer::events(metaCapa("eventos", 2),
+        EventLayerDocument({vigiaQueEscucha("suelo", "zona_norte")})));
+    MOTOR_CHECK(!tipo.isOk() && tipo.errorMessage().find("vigia_p1") != std::string::npos);
+    // Atomico: ni capas nuevas, ni cambios, y el documento sigue valido.
+    MOTOR_CHECK(doc.layers().size() == antes);
+    MOTOR_CHECK(doc.validate().isOk() && ProjectSerializer::serializeMap(doc).value() == json);
+    // Referencia valida: entra.
+    MOTOR_CHECK(doc.addLayer(MapLayer::events(metaCapa("eventos", 2),
+        EventLayerDocument({vigiaQueEscucha("regiones", "zona_norte")}))).isOk());
+    MOTOR_CHECK(doc.layers().size() == antes + 1 && doc.validate().isOk());
+    // Editar tiles no cambia de comportamiento (no barre referencias).
+    MOTOR_CHECK(doc.setTile(lyr("suelo"), GridCoord{1, 1}, 2).isOk());
+}
+
+MOTOR_TEST_CASE(un_mapa_con_la_capa_de_eventos_antes_que_la_de_regiones_carga_bien) {
+    MapDocument doc(ids::MapId::parse("mapa").value(), "mapa", 8, 8, 64, 32);
+    MapRegionDocument zona;
+    zona.id = ids::RegionId::parse("zona_norte").value();
+    zona.name = "Zona";
+    zona.bounds = GridBounds{0, 3, 0, 3};
+    MOTOR_CHECK(
+        doc.addLayer(MapLayer::regions(metaCapa("regiones", 5), RegionLayerDocument({zona}))).isOk());
+    MOTOR_CHECK(doc.addLayer(MapLayer::events(metaCapa("eventos", 0),
+        EventLayerDocument({vigiaQueEscucha("regiones", "zona_norte")}))).isOk());
+    MOTOR_CHECK(doc.layers()[0].meta().id == lyr("eventos"));  // eventos primero en el fichero
+    const Result<std::string> json = ProjectSerializer::serializeMap(doc);
+    MOTOR_CHECK(json.isOk());
+    MOTOR_CHECK(json.value().find("\"eventos\"") < json.value().find("\"regiones\""));
+    const Result<MapDocument> vuelta = ProjectSerializer::deserializeMap(json.value());
+    MOTOR_CHECK(vuelta.isOk());
+    MOTOR_CHECK(vuelta.isOk() &&
+                ProjectSerializer::serializeMap(vuelta.value()).value() == json.value());
+}
+
+}  // namespace
+
+int main() { return motor_test::runAllTests(); }
