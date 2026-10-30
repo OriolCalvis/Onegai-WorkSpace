@@ -1,0 +1,15 @@
+# U4-01 — Politica pura de camara (Core/Math/PoliticaCamara). GL-free.
+# La fuente entra SIEMPRE en motor_math; solo el test depende de BUILD_TESTING.
+target_sources(motor_math PRIVATE src/Core/Math/PoliticaCamara.cpp)
+
+if(BUILD_TESTING)
+    add_executable(test_politica_camara tests/Core/PoliticaCamaraTests.cpp)
+    target_include_directories(test_politica_camara PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+    target_link_libraries(test_politica_camara PRIVATE motor_math)
+    add_test(NAME test_politica_camara COMMAND test_politica_camara)
+    set_tests_properties(test_politica_camara PROPERTIES WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" LABELS "unit;gl-free")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_politica_camara)
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_politica_camara)
+    endif()
+endif()

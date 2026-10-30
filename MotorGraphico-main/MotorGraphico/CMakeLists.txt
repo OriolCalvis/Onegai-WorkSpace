@@ -74,6 +74,7 @@ include(cmake/Interpolacion.cmake)  # U3-07: progreso temporal e interpolacion (
 
 add_executable(demo_camera examples/demo_camera.cpp)
 target_link_libraries(demo_camera PRIVATE motor_math)
+include(cmake/PoliticaCamara.cmake)  # U4-01: politica pura de camara (GL-free)
 
 # RUN-01 — El reloj y el contrato del bucle no dependen de GLFW ni de GL.
 # Mantenerlos en su propio target permite probar la salida y el timestep sin
