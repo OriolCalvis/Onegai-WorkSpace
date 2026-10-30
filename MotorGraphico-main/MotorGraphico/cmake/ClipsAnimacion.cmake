@@ -72,3 +72,18 @@ if(BUILD_TESTING AND TARGET motor_level)
         add_dependencies(suite_gl_free test_clip_actor)
     endif()
 endif()
+
+# U3-05.E07b -- El idle del cuerpo base como clip (primera integracion en `juego`).
+# IdleCuerpoBase (gl-free) en motor_level; EntidadClip (AnimatedEntity + ClipActor) en motor_core.
+if(TARGET motor_level)
+    target_sources(motor_level PRIVATE src/Game/IdleCuerpoBase.cpp)
+endif()
+if(TARGET motor_core)
+    target_sources(motor_core PRIVATE src/Engine/EntidadClip.cpp)
+endif()
+if(BUILD_TESTING AND TARGET motor_core AND TARGET motor_level)
+    add_motor_unit_test(test_idle_cuerpo_base tests/Engine/IdleCuerpoBaseTests.cpp)
+    target_link_libraries(test_idle_cuerpo_base PRIVATE motor_core motor_level motor_math)
+    set_tests_properties(test_idle_cuerpo_base PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+endif()
