@@ -30,7 +30,9 @@ constexpr int kMaxPorEmisor = 256;            // aforo de un emisor
 constexpr int kMaxEmisores = 64;              // RESERVADO: sin consumidor en U4-07
 constexpr int kMaxParticulasGlobal = 2048;    // vivas entre todos los emisores
 constexpr int kMaxQuadsPorFotograma = 8192;   // cuerpo + contorno de todos los destellos
-constexpr double kMaxSemilla = 9007199254740992.0;  // 2^53: el mayor entero exacto en un double JSON
+// 2^53 - 1: el mayor entero que un double JSON distingue de su vecino. JsonValue convierte a double ANTES de
+// validar, asi que un 2^53+1 en el fichero llega ya redondeado a 2^53: por eso se rechaza todo x >= 2^53.
+constexpr double kMaxSemilla = 9007199254740991.0;
 
 struct DefinicionEmisor {
     std::string familia;          // material: una de familiasDeParticulas() (las 40)
@@ -41,7 +43,7 @@ struct DefinicionEmisor {
     double velocidadMin = 0.0, velocidadMax = 0.0;  // px/s, 0..kMaxVelocidad
     double anguloCentro = 0.0, abanico = 360.0;     // grados; abanico en (0..360]
     int    maximo = 0;            // aforo del emisor, 1..kMaxPorEmisor
-    std::uint64_t semilla = 0;    // 0..2^53
+    std::uint64_t semilla = 0;    // 0..2^53-1
     float opacidad = 1.0f;        // (0..2]; alfa = min(1, vivo*opacidad)
     float contraste = 0.0f;       // [0,1]: parte que nace oscura y tapa
     std::array<std::uint8_t, 3> colorBase{255, 240, 210};  // si tipo.colores esta vacio

@@ -37,6 +37,8 @@ std::string parEn(const JsonValue& v, double min, double max, bool minExcluido, 
 
 bool esEntero(double x) { return std::floor(x) == x; }
 
+// Copia deliberada del leerColor de ParticulasDeCartas.cpp (esta en su namespace anonimo y no se puede
+// reutilizar sin tocar un fichero fuera del ambito): aqui un formato malo es Error, no el color por defecto.
 bool leerColor(const std::string& hex, std::array<std::uint8_t, 3>& c) {
     if (hex.size() != 6 || hex.find_first_not_of("0123456789abcdefABCDEF") != std::string::npos) return false;
     for (std::size_t i = 0; i < 3; ++i)
@@ -109,11 +111,13 @@ Result<DefinicionEmisor> leerEmisor(const JsonValue& json) {
     if (json.has("semilla")) {
         e = numeroEn(json["semilla"], 0.0, kMaxSemilla, false, x);
         if (e.empty() && !esEntero(x)) e = "debe ser entero";
-        if (!e.empty()) return fallo(raiz + ".semilla", e + " (entero 0..2^53)");
+        if (!e.empty()) return fallo(raiz + ".semilla", e + " (entero 0..2^53-1)");
         d.semilla = static_cast<std::uint64_t>(x);
     }
     if (json.has("opacidad")) {
         e = numeroEn(json["opacidad"], 0.0, 2.0, true, x);
+        // Se vuelve a comprobar tras el cast: 1e-46 es > 0 como double y 0.0f como float.
+        if (e.empty() && !(static_cast<float>(x) > 0.0f && static_cast<float>(x) <= 2.0f)) e = "fuera de rango";
         if (!e.empty()) return fallo(raiz + ".opacidad", e + " ((0..2])");
         d.opacidad = static_cast<float>(x);
     }

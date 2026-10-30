@@ -35,10 +35,24 @@ MOTOR_TEST_CASE(json_valido_da_los_campos_exactos) {
     MOTOR_CHECK(d.colorBase[0] == 0x5a && d.colorBase[1] == 0xb4 && d.colorBase[2] == 0xff);
 }
 
-MOTOR_TEST_CASE(semilla_borde_2_53_exacta) {
-    // 2^53 exacto cabe (y la validacion no la redondea).
-    const auto r = lee("{\"familia\":\"agua\",\"vida\":[1,1],\"maximo\":4,\"semilla\":9007199254740992}");
-    MOTOR_CHECK(r.isOk() && r.value().semilla == 9007199254740992ULL);
+MOTOR_TEST_CASE(semilla_borde_2_53) {
+    // 2^53-1 cabe; 2^53 y 2^53+1 (que el parser ya redondea a 2^53) son Error.
+    const auto ok = lee("{\"familia\":\"agua\",\"vida\":[1,1],\"maximo\":4,\"semilla\":9007199254740991}");
+    MOTOR_CHECK(ok.isOk() && ok.value().semilla == 9007199254740991ULL);
+    const auto a = lee("{\"familia\":\"agua\",\"vida\":[1,1],\"maximo\":4,\"semilla\":9007199254740992}");
+    MOTOR_CHECK(!a.isOk() && contiene(a.errorMessage(), "emisor.semilla"));
+    const auto b = lee("{\"familia\":\"agua\",\"vida\":[1,1],\"maximo\":4,\"semilla\":9007199254740993}");
+    MOTOR_CHECK(!b.isOk() && contiene(b.errorMessage(), "emisor.semilla"));
+}
+
+MOTOR_TEST_CASE(opacidad_que_se_vuelve_cero_en_float_es_error) {
+    const auto r = lee("{\"familia\":\"agua\",\"vida\":[1,1],\"maximo\":4,\"opacidad\":1e-46}");
+    MOTOR_CHECK(!r.isOk() && contiene(r.errorMessage(), "emisor.opacidad"));
+}
+
+MOTOR_TEST_CASE(familia_no_texto_dice_obligatoria) {
+    const auto r = lee("{\"familia\":3,\"vida\":[1,1],\"maximo\":4}");
+    MOTOR_CHECK(!r.isOk() && contiene(r.errorMessage(), "emisor.familia") && contiene(r.errorMessage(), "obligatoria (texto)"));
 }
 
 MOTOR_TEST_CASE(minimo_usa_los_por_defecto) {
@@ -59,9 +73,20 @@ MOTOR_TEST_CASE(acepta_las_40_familias) {
 }
 
 MOTOR_TEST_CASE(acepta_los_extremos_de_los_limites) {
-    const auto r = lee("{\"familia\":\"agua\",\"tasa\":500,\"duracion\":60,\"vida\":[10,10],"
-                       "\"velocidad\":[0,2000],\"abanico\":360,\"maximo\":256,\"opacidad\":2,\"contraste\":1}");
-    MOTOR_CHECK(r.isOk());
+    const auto alto = lee("{\"familia\":\"agua\",\"tasa\":500,\"duracion\":60,\"vida\":[10,10],"
+                          "\"velocidad\":[0,2000],\"angulo\":1000000,\"abanico\":360,\"maximo\":256,"
+                          "\"opacidad\":2,\"contraste\":1}");
+    MOTOR_CHECK(alto.isOk());
+    const auto& a = alto.value();
+    MOTOR_CHECK(a.tasa == 500.0 && a.duracion == 60.0 && a.vidaMin == 10.0 && a.vidaMax == 10.0);
+    MOTOR_CHECK(a.velocidadMin == 0.0 && a.velocidadMax == 2000.0 && a.anguloCentro == 1000000.0);
+    MOTOR_CHECK(a.abanico == 360.0 && a.maximo == 256 && a.opacidad == 2.0f && a.contraste == 1.0f);
+    const auto bajo = lee("{\"familia\":\"agua\",\"tasa\":0,\"duracion\":0,\"vida\":[0.001,0.001],"
+                          "\"angulo\":-1000000,\"abanico\":0.5,\"maximo\":1,\"contraste\":0}");
+    MOTOR_CHECK(bajo.isOk());
+    const auto& b = bajo.value();
+    MOTOR_CHECK(b.tasa == 0.0 && b.duracion == 0.0 && b.vidaMin == 0.001 && b.anguloCentro == -1000000.0);
+    MOTOR_CHECK(b.abanico == 0.5 && b.maximo == 1 && b.contraste == 0.0f);
 }
 
 MOTOR_TEST_CASE(familia_inexistente_es_error_y_dice_cual) {
@@ -126,6 +151,11 @@ MOTOR_TEST_CASE(cada_caso_negativo_es_error) {
         {"color corto", R"J({"familia":"agua","vida":[1,1],"maximo":4,"color":"fff"})J"},
         {"color con almohadilla", R"J({"familia":"agua","vida":[1,1],"maximo":4,"color":"#ffffff"})J"},
         {"color no texto", R"J({"familia":"agua","vida":[1,1],"maximo":4,"color":16777215})J"},
+        {"duracion -1", R"J({"familia":"agua","duracion":-1,"vida":[1,1],"maximo":4})J"},
+        {"vida 3 elem", R"J({"familia":"agua","vida":[1,2,3],"maximo":4})J"},
+        {"opacidad 1e-46", R"J({"familia":"agua","vida":[1,1],"maximo":4,"opacidad":1e-46})J"},
+        {"semilla 2^53", R"J({"familia":"agua","vida":[1,1],"maximo":4,"semilla":9007199254740992})J"},
+        {"semilla 2^53+1", R"J({"familia":"agua","vida":[1,1],"maximo":4,"semilla":9007199254740993})J"},
         {"clave desconocida", R"J({"familia":"agua","vida":[1,1],"maximo":4,"tassa":5})J"},
         {"clave desconocida (errata de opcional)", R"J({"familia":"agua","vida":[1,1],"maximo":4,"opacity":0.5})J"},
         {"no objeto", R"J([1,2])J"},
