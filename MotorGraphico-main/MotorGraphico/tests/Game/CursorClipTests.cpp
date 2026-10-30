@@ -319,7 +319,6 @@ MOTOR_TEST_CASE(mismo_clip_no_se_reinicia_cada_frame) {
 MOTOR_TEST_CASE(clip_distinto_reinicia_y_emite_el_fotograma_cero) {
     const ClipAnimacion c = clipTres(true);
     CursorClip k = Game::avanzaClip({}, 0.250, c).cursor;
-    k.eventoPendiente = 0;
     const CursorClip n = Game::cambiaClip(k, idDe("idle"), idDe("run"), c, Game::PoliticaCambio::ReiniciarSiDistinto);
     MOTOR_CHECK(!n.iniciado && n.fotograma == 0 && n.enFotogramaMs == 0.0 && n.vueltas == 0);
     MOTOR_CHECK(!n.terminado && n.eventoPendiente == 0);
@@ -355,10 +354,37 @@ MOTOR_TEST_CASE(conservar_fase_mantiene_o_acota_el_fotograma) {
     const ClipAnimacion corto = clipCon({30, 40}, {{"z", 1}}, false);
     const CursorClip m = Game::cambiaClip(k, idDe("a"), idDe("b"), corto, Game::PoliticaCambio::ConservarFase);
     MOTOR_CHECK(m.fotograma == 1 && m.enFotogramaMs == 10.0 && !m.terminado);
+    MOTOR_CHECK(Game::avanzaClip(m, 0.010, corto).cursor.enFotogramaMs == 20.0);  // no queda congelado
     const CursorClip fin = Game::avanzaClip({}, 5.0, clipTres(false)).cursor;  // terminado
     const CursorClip f = Game::cambiaClip(fin, idDe("a"), idDe("b"), corto, Game::PoliticaCambio::ConservarFase);
     MOTOR_CHECK(f.terminado && f.fotograma == 1 && f.enFotogramaMs == 40.0);
-    MOTOR_CHECK(!Game::cambiaClip(fin, idDe("a"), idDe("b"), clipTres(true), Game::PoliticaCambio::ConservarFase).terminado);
+    MOTOR_CHECK(Game::avanzaClip(f, 1.0, corto).cursor.terminado);
+    const CursorClip c = Game::cambiaClip(fin, idDe("a"), idDe("b"), clipTres(true), Game::PoliticaCambio::ConservarFase);
+    MOTOR_CHECK(!c.terminado);
+    MOTOR_CHECK(Game::avanzaClip(c, 1.0, clipTres(true)).cursor.vueltas >= 1);  // reanuda
+}
+
+MOTOR_TEST_CASE(conservar_fase_acota_los_ms_y_no_congela) {
+    const ClipAnimacion tres = clipTres(false);
+    const CursorClip k = Game::avanzaClip({}, 0.170, tres).cursor;  // fotograma 2, 50 ms, no terminado
+    MOTOR_CHECK(k.fotograma == 2 && k.enFotogramaMs == 50.0 && !k.terminado);
+    const ClipAnimacion corto = clipCon({30, 40}, {{"z", 1}}, false);
+    const CursorClip m = Game::cambiaClip(k, idDe("a"), idDe("b"), corto, Game::PoliticaCambio::ConservarFase);
+    MOTOR_CHECK(m.fotograma == 1 && m.enFotogramaMs == 40.0 && !m.terminado);
+    const PasoClip p = Game::avanzaClip(m, 0.010, corto);
+    MOTOR_CHECK(p.cursor.terminado && listaIds(p).empty());  // progresa (antes: cursor fuera de dominio)
+}
+
+MOTOR_TEST_CASE(conservar_fase_solo_conserva_terminado_en_el_ultimo_fotograma) {
+    const CursorClip fin = Game::avanzaClip({}, 5.0, clipTres(false)).cursor;  // fotograma 2, terminado
+    MOTOR_CHECK(fin.terminado && fin.fotograma == 2);
+    const ClipAnimacion largo = clipCon({10, 10, 10, 10}, {{"z", 3}}, false);
+    const CursorClip m = Game::cambiaClip(fin, idDe("a"), idDe("b"), largo, Game::PoliticaCambio::ConservarFase);
+    MOTOR_CHECK(!m.terminado && m.fotograma == 2);
+    const PasoClip uno = Game::avanzaClip(m, 0.005, largo);
+    MOTOR_CHECK(uno.cursor.fotograma == 3 && !uno.cursor.terminado && listaIds(uno) == "z,");
+    const PasoClip dos = Game::avanzaClip(uno.cursor, 1.0, largo);
+    MOTOR_CHECK(dos.cursor.fotograma == 3 && dos.cursor.terminado);
 }
 
 MOTOR_TEST_CASE(cambiar_a_clip_sin_fotogramas_deja_el_cursor_igual) {

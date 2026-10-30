@@ -48,7 +48,9 @@ PasoClip avanzaClip(const CursorClip& cursor, double dt, const ClipAnimacion& cl
 
 // ReiniciarSiempre: vuelve a lanzar el clip aunque sea el mismo (p. ej. repetir un ataque).
 // ReiniciarSiDistinto: reinicia solo si idNuevo != idActual (como AnimatedEntity::play).
-// ConservarFase: mantiene fotograma, vueltas e iniciado; clamp si el nuevo clip es mas corto.
+// ConservarFase: mantiene fotograma, vueltas e iniciado; fotograma y enFotogramaMs se acotan al clip
+// nuevo. `terminado` solo se conserva si el clip nuevo no es ciclico y el cursor queda en su ultimo
+// fotograma (con enFotogramaMs = duracion); en cualquier otro caso se reanuda (terminado=false).
 enum class PoliticaCambio { ReiniciarSiempre, ReiniciarSiDistinto, ConservarFase };
 
 // Pura. Nuevo clip sin fotogramas: devuelve `actual` sin cambios. Reiniciar = cursor por

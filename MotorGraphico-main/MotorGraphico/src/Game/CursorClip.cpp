@@ -1,8 +1,8 @@
 // U3-05.E04 -- Avanzar el cursor de un clip (ver CursorClip.h).
 #include "Game/CursorClip.h"
 
-#include <climits>
 #include <algorithm>
+#include <climits>
 #include <cmath>
 #include <utility>
 
