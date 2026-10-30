@@ -391,6 +391,48 @@ MOTOR_TEST_CASE(golpes_alineados_durante_sacudida_con_zoom_1_a_1_7) {
     MOTOR_CHECK(cam.zoom() > 1.0f);
 }
 
+MOTOR_TEST_CASE(fotograma_compone_con_la_posicion_de_este_update_y_los_limites) {
+    ponReducido(false);
+    Camera cam(800, 600);
+    EstadoCamaraJuego e;
+    const LimitesMapa m = limites(3, 2);  // mapa pequeno: la vista se recorta siempre
+    colocaEn(cam, Vector2{0.0f, 0.0f}, 1.0f);
+    cam.transitionTo(Vector2{1000.0f, 0.0f}, 1.0f, 0.16f, Camera::Easing::Linear);  // en movimiento, a mitad de tween
+    Registro r;
+    auto in = entradaBase(0.08f);
+    in.limites = &m;
+    ApplicationCamara::fotogramaCamara(cam, e, in, r.pasos(cam));
+    MOTOR_CHECK(cam.position().x > 400.0f);  // el update de ESTE fotograma ya corrio antes de componer
+    const auto p = PoliticaCamara::componerPose(cam.position(), cam.zoom(), Vector2{}, {800, 600}, &m);
+    MOTOR_CHECK(p.isOk());
+    MOTOR_CHECK(cerca(cam.posicionVista().x, p.value().vista.x) && cerca(cam.posicionVista().y, p.value().vista.y));
+}
+
+MOTOR_TEST_CASE(fotograma_el_tween_del_combate_corre_en_su_fotograma) {
+    Camera cam(800, 600);
+    EstadoCamaraJuego e;
+    colocaEn(cam, Vector2{0.0f, 0.0f}, 1.0f);
+    Registro r;
+    auto pasos = r.pasos(cam);
+    pasos.combate = [&] { cam.transitionTo(Vector2{200.0f, 0.0f}, 1.7f, 0.0f, Camera::Easing::Linear); };  // corte
+    ApplicationCamara::fotogramaCamara(cam, e, entradaBase(), pasos);
+    MOTOR_CHECK(cerca(cam.position().x, 200.0f) && cerca(cam.zoom(), 1.7f));  // el callback va ANTES de Camera::update
+}
+
+MOTOR_TEST_CASE(fotograma_seguimiento_usa_la_zona_muerta_del_producto) {
+    Camera cam(800, 600);
+    EstadoCamaraJuego e;
+    colocaEn(cam, Vector2{0.0f, 0.0f}, 1.0f);
+    e.destino = Vector2{0.0f, 0.0f};
+    e.conDestino = true;
+    Registro r;
+    auto in = entradaBase();
+    in.celda = GridCoord{3, 2};
+    in.objetivo = Vector2{50.0f, 20.0f};  // dentro de +-96x48
+    const GridCoord nueva = ApplicationCamara::fotogramaCamara(cam, e, in, r.pasos(cam));
+    MOTOR_CHECK(nueva.x == 3 && iguales(e.destino, Vector2{0.0f, 0.0f}) && !cam.isTransitioning());
+}
+
 // Vigilante textual (lo unico que no se ejecuta sin ventana): quien lee posicionVista() y quien llama a quien.
 // Se mira el codigo SIN comentarios y solo la presencia de la llamada; el orden y los efectos los prueban los casos de arriba.
 MOTOR_TEST_CASE(los_consumidores_leen_posicion_de_vista_y_los_puntos_de_llamada_existen) {
@@ -404,7 +446,15 @@ MOTOR_TEST_CASE(los_consumidores_leen_posicion_de_vista_y_los_puntos_de_llamada_
     const std::string cine = sinComentarios(leeFuente("src/Engine/ApplicationCinematica.cpp"));
     MOTOR_CHECK(contiene(cine, "ponVista(app.m_camera->posicionVista()") && !contiene(cine, "m_camera->position()"));
     MOTOR_CHECK(!contiene(cine, "ApplicationCamara::reinicia"));  // el ciclo de combate vive en fotogramaCamara
-    MOTOR_CHECK(contiene(sinComentarios(leeFuente("src/Engine/ApplicationBucle.cpp")), "ApplicationCamara::fotogramaCamara("));
+    const std::string bucle = sinComentarios(leeFuente("src/Engine/ApplicationBucle.cpp"));
+    MOTOR_CHECK(contiene(bucle, "m_lastCameraCell = ApplicationCamara::fotogramaCamara(*m_camera, m_cine->camara"));
+    // La conexion de Application::update con la entrada del fotograma (no ejecutable sin ventana): una por asignacion.
+    for (const char* t : {"entrada.combate = m_session->battle()", "entrada.pausa = m_session->mode() == GameMode::Pause",
+                          "entrada.enBatalla = m_session->mode() == GameMode::Battle", "entrada.limites = hayMapa ? &limitesMapa : nullptr",
+                          "entrada.ultimaCelda = m_lastCameraCell", "entrada.celda = playerCell", "entrada.dt = deltaTime",
+                          "pasos.combate = [this, deltaTime] { ApplicationCinematica::combate(*this, deltaTime); }",
+                          "pasos.vistaGolpes = [this] { ApplicationCinematica::vistaGolpes(*this); }", "pasos.nieblaYLuces = nieblaYLuces"})
+        MOTOR_CHECK(contiene(bucle, t));
     const std::string titulo = sinComentarios(leeFuente("src/Engine/ApplicationCinematicaTitulo.cpp"));
     MOTOR_CHECK(contiene(titulo, "ApplicationCamara::actualizaTitulo("));
 }

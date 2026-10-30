@@ -404,6 +404,14 @@ llave huérfana.
   `Application::update` y el título llamen a las dos funciones; los vigila un test textual sobre el código sin
   comentarios (solo presencia). `GolpesEnPantalla::aPantalla` (nuevo, la fórmula de `pinta`) se compara con la matriz
   de la cámara y con la fórmula de `EstadoJuego` (copiada en el test; el HUD real no es gl-free).
+- **Huecos r2**: el vigilante textual cubre una a una las asignaciones de la entrada en `Application::update`
+  (`combate`, `pausa`, `enBatalla`, `limites`, `ultimaCelda`, `celda`, `dt`, los tres callbacks y la asignacion de
+  `m_lastCameraCell`); solo comprueba presencia, no valor en ejecucion.
+- **Para E07 (M4, preexistente)**: en oleadas `m_battle.reset()` + `make_unique<BattleState>` pueden reutilizar la misma
+  direccion, asi que la identidad por puntero NO detecta «cambiar de combate» sin pasar por exploracion. Solucion
+  propuesta: un contador de generacion en `GameSession` (se incrementa al crear un `BattleState`) que sustituya al
+  puntero en `EntradaFotograma::combate`. L1: el puntero de un combate ya liberado solo se compara por identidad y
+  nunca se desreferencia.
 - **Para E07**: tras un combate, cambiar de casilla durante la transición de salida (0,6 s) deja el zoom intermedio
   (preexistente, no introducido por E06).
 

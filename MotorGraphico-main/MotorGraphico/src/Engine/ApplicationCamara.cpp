@@ -83,7 +83,7 @@ GridCoord fotogramaCamara(Camera& cam, EstadoCamaraJuego& e, const EntradaFotogr
         ultima = in.celda;
     }
     if (pasos.combate) pasos.combate();
-    if (e.combate != in.combate) {  // entrar, salir o cambiar de combate: sin destino viejo, sacudida y vista a 0
+    if (e.combate != in.combate) {  // entrar o salir de combate (por identidad del puntero; ver contrato E07): sin destino viejo, sacudida y vista a 0
         reinicia(e, cam);
         e.combate = in.combate;
     }
