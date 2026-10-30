@@ -192,6 +192,7 @@ region <=> referencia) y en `MapDocument::validate()` (la region existe). El run
 - **D5 · Primer frame / mapa nuevo — DECIDIDA por Oriol (30/10): SI.** Aparecer dentro de una region (carga o cambio de mapa) dispara Enter.
 - **D6 · Nombre de namespace** `Regiones` (propuesto) y si `visible=false`/`locked` de la capa excluye sus regiones (propuesto: no excluye, es autoria).
 - **D7 · Politica de Stay — DECIDIDA por Oriol (30/10):** Stay cada N ms configurable por region (ej. 1000), sin catch-up (un dt grande da como mucho 1 Stay), en pausa no cuenta.
+- **D8 (abierta, Oriol):** ¿un Enter/Exit que cae en el frame en que termina una escena debe reencolarse? Hoy se descarta (`DeferredToAutomatics`, `RegionTriggerDispatch.h`); solo Stay se regenera.
 
 **Trampas:**
 

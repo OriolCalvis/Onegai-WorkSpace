@@ -101,9 +101,14 @@ Result<RegionDispatchResult> dispatchRegionTriggers(
 // pendientes no arrancarian nunca. El frame siguiente empieza sin bloqueo,
 // evalua primero los automaticos (`runner.update` con mapa) y despues
 // despacha: un Autorun pendiente SIEMPRE gana a un trigger de region en el
-// frame en que termina una escena. Sin automaticos pendientes, el siguiente
-// trigger si arranca (la region no se pierde). Sin mapa en el runner
-// no hay despacho.
+// frame en que termina una escena.
+// PERDIDA DE Enter/Exit (contractual, D8 abierta): el diferido NO distingue
+// si hay automaticos pendientes. Un Enter/Exit (disparo unico) que cae en un
+// frame que empezo bloqueado se DESCARTA con `DeferredToAutomatics` aunque
+// no haya ningun automatico pendiente, y no se reintenta (la presencia ya
+// avanzo). Solo el Stay se regenera mientras dure la presencia en la region.
+// Las entradas diferidas llevan `eventId` vacio: no se miro que evento las
+// habria arrancado. Sin mapa en el runner no hay despacho.
 Result<RegionDispatchResult> updateEventsAndRegions(
     MapEventRunner& runner, EventInterpreter& interpreter, const NarrativeState& narrative,
     const std::vector<std::string>& inventory, const MapEventFrame& frame,
