@@ -1,6 +1,7 @@
 #include "Core/Math/PoliticaCamara.h"
 
 #include <cmath>
+#include <cstdint>
 #include <limits>
 #include <vector>
 
@@ -17,6 +18,22 @@ double seguirEje(double centro, double actor, double semiMundo) {
     if (std::fabs(d) <= semiMundo + kToleranciaBordePx) return centro;
     return d > 0.0 ? actor - semiMundo : actor + semiMundo;
 }
+
+// splitmix64: mezcla la semilla para que semillas consecutivas no den el mismo primer sorteo.
+std::uint64_t splitmix64(std::uint64_t x) {
+    x += 0x9E3779B97F4A7C15ull;
+    x = (x ^ (x >> 30)) * 0xBF58476D1CE4E5B9ull;
+    x = (x ^ (x >> 27)) * 0x94D049BB133111EBull;
+    return x ^ (x >> 31);
+}
+
+// 24 bits -> [-1,1].
+double aUnitario(std::uint64_t bits24) {
+    return static_cast<double>(bits24 & 0xFFFFFFull) / 8388607.5 - 1.0;
+}
+
+constexpr double kFotogramasPorSegundo = 60.0;
+constexpr double kFactorEjeY = 0.6;
 
 }  // namespace
 
@@ -233,6 +250,29 @@ Result<Vector2> limitarAlMapa(const Vector2& centro, float zoom, const TamanoVis
     const float rx = (q.x == static_cast<double>(centro.x)) ? centro.x : static_cast<float>(q.x);
     const float ry = (q.y == static_cast<double>(centro.y)) ? centro.y : static_cast<float>(q.y);
     return Result<Vector2>::Ok(Vector2{rx, ry});
+}
+
+Result<Vector2> desplazamientoSacudida(const EstadoSacudida& s, double transcurrido,
+                                       std::uint32_t semilla, float factorMovimiento) {
+    if (!std::isfinite(s.amplitudPx) || !std::isfinite(s.duracion) || !std::isfinite(transcurrido)) {
+        return Result<Vector2>::Error("PoliticaCamara::desplazamientoSacudida: estado o tiempo no finito");
+    }
+    if (!std::isfinite(factorMovimiento) || factorMovimiento < 0.0f || factorMovimiento > 1.0f) {
+        return Result<Vector2>::Error("PoliticaCamara::desplazamientoSacudida: factorMovimiento fuera de [0,1]");
+    }
+    if (s.amplitudPx <= 0.0f || s.duracion <= 0.0f || factorMovimiento == 0.0f ||
+        transcurrido < 0.0 || transcurrido >= static_cast<double>(s.duracion)) {
+        return Result<Vector2>::Ok(Vector2{0.0f, 0.0f});
+    }
+    const double restante = 1.0 - transcurrido / static_cast<double>(s.duracion);
+    const double amp = static_cast<double>(s.amplitudPx) * static_cast<double>(factorMovimiento) *
+                       restante * restante;
+    const std::uint64_t fotograma = static_cast<std::uint64_t>(transcurrido * kFotogramasPorSegundo);
+    const std::uint64_t h = splitmix64((static_cast<std::uint64_t>(semilla) << 32) ^ splitmix64(fotograma));
+    const double ux = aUnitario(h);
+    const double uy = aUnitario(h >> 32);
+    return Result<Vector2>::Ok(Vector2{static_cast<float>(amp * ux),
+                                       static_cast<float>(amp * kFactorEjeY * uy)});
 }
 
 }  // namespace PoliticaCamara

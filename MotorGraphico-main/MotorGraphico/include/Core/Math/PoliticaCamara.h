@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "Core/Errors/Result.h"
 #include "Core/Math/Vector2.h"
 
@@ -77,7 +79,8 @@ Result<LimitesMapa> limitesDeMapa(int columnas, int filas, int anchoTile, int al
 //  2. Rombo (si usaRombo): el centro se lleva al punto MAS CERCANO (euclideo) del contorno. Si ese
 //     punto saca la vista de la caja (eje estrecho), se vuelve por el segmento desde un ANCLA que
 //     pertenece al rombo y al rango de la caja (centroide de los 4 vertices si cae en el rango; si
-//     no, centroide de interseccion caja-rombo) hasta el limite del rango. Con margen superior el centro de
+//     no, promedio de los vertices del poligono interseccion caja-rombo recortado con
+//     Sutherland-Hodgman; es interior por convexidad) hasta el limite del rango. Con margen superior el centro de
 //     la CAJA se desplaza y puede quedar fuera del rombo: por eso no se usa como ancla.
 //     Si caja y rombo no se cortan (rango-rombo vacio) gana el rombo: el resultado es el punto
 //     del contorno mas cercano al centro dado y la caja no se respeta.
@@ -93,5 +96,24 @@ Result<LimitesMapa> limitesDeMapa(int columnas, int filas, int anchoTile, int al
 //    rombo no finitos; caja invertida (derecha < izquierda o abajo < arriba).
 Result<Vector2> limitarAlMapa(const Vector2& centro, float zoom, const TamanoVista& vista,
                               const LimitesMapa& limites);
+
+// Sacudida de camara (E04). Amplitud en pixeles de PANTALLA (no depende del zoom; quien la aplica
+// divide por zoom, ver E05). Sin estado: el desplazamiento es una funcion pura de (estado, t, semilla).
+struct EstadoSacudida {
+    float amplitudPx = 0.0f;  // amplitud maxima por eje X, en pixeles de pantalla
+    float duracion = 0.0f;    // segundos
+};
+
+// Desplazamiento de vista en pixeles de PANTALLA en el instante `transcurrido` (segundos desde el
+// disparo). Determinista: ruido por hash splitmix64 de (semilla, floor(transcurrido*60)), sin rand()
+// ni reloj; la misma entrada da el mismo resultado bit a bit y no es acumulativa.
+//  - Envolvente: (1 - t/duracion)^2 (decrece hasta 0 en t = duracion); eje X en [-1,1], eje Y por 0,6.
+//    |x| <= amplitud*factor*envolvente, |y| <= 0,6 de eso.
+//  - factorMovimiento en [0,1] escala linealmente (D-O4: 0 = apagada => (0,0) exacto).
+//  - Devuelve (0,0) exacto si transcurrido < 0 o >= duracion, o amplitud <= 0, o duracion <= 0,
+//    o factorMovimiento == 0.
+//  - Error: amplitud, duracion o transcurrido no finitos; factorMovimiento no finito o fuera de [0,1].
+Result<Vector2> desplazamientoSacudida(const EstadoSacudida& s, double transcurrido,
+                                       std::uint32_t semilla, float factorMovimiento = 1.0f);
 
 }  // namespace PoliticaCamara
