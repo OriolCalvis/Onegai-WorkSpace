@@ -20,6 +20,11 @@
 // cuenta. El actor solo conoce los cambios hechos por cambia(): si codigo externo cambia el sprite
 // de la entidad sin pasar por aqui (play/showRestFrame sin control externo), el actor no lo sabe;
 // lo gestiona el consumidor (E07b).
+// Contrato de reentrada (avanza/repinta anidados): mientras avanza() o repinta() despachan a un
+// puerto, una llamada anidada a avanza() o repinta() NO hace nada (avanza devuelve 0, sin mover el
+// cursor ni entregar sprite); cambia() sigue permitido (ver generacion arriba). repinta() copia los
+// eventos del fotograma por valor antes de despachar y se detiene si cambia la generacion. La marca
+// se limpia por RAII aunque un puerto lance una excepcion.
 
 #include <functional>
 #include <utility>
@@ -64,7 +69,7 @@ public:
 
     // Repinta (muestraVisual, repetible) los eventos visuales del fotograma actual; nunca aplica
     // logica ni suena. Para reconstruir el render sin avanzar el clip.
-    void repinta(PuertosEventoClip& eventos) const;
+    void repinta(PuertosEventoClip& eventos);
 
     const CursorClip& cursor() const { return m_cursor; }
     const IdClip& id() const { return m_id; }
@@ -73,6 +78,7 @@ private:
     IdClip m_id;
     ClipAnimacion m_clip;
     CursorClip m_cursor;
+    bool m_enDespacho = false;  // true mientras avanza()/repinta() llaman a los puertos
     int m_generacion = 0;    // +1 por cada cambia() aceptado; detecta reentrada en avanza()
     double m_resto = 0.0;    // segundos no consumidos si se agoto el tope de drenado
     int m_ultimoSprite = 0;  // 0 = nada entregado aun (los sprites son >= 1)

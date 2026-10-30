@@ -2,12 +2,26 @@
 #include "Game/ClipActor.h"
 
 #include <cstddef>
+#include <vector>
 
 namespace Game {
+
+namespace {
+// Marca «despachando» mientras vive; se limpia aunque un puerto lance.
+struct GuardaDespacho {
+    explicit GuardaDespacho(bool& b) : m_b(b) { m_b = true; }
+    ~GuardaDespacho() { m_b = false; }
+    GuardaDespacho(const GuardaDespacho&) = delete;
+    GuardaDespacho& operator=(const GuardaDespacho&) = delete;
+    bool& m_b;
+};
+}  // namespace
 
 ClipActor::ClipActor(IdClip id, ClipAnimacion clip) : m_id(std::move(id)), m_clip(std::move(clip)) {}
 
 int ClipActor::avanza(double dt, PuertosEventoClip& eventos, DestinoFotograma& destino) {
+    if (m_enDespacho) return 0;  // avanza() anidado desde un puerto: sin efectos
+    const GuardaDespacho guarda(m_enDespacho);
     int rechazados = 0;
     const int generacion = m_generacion;
     PasoClip p = avanzaClip(m_cursor, dt + m_resto, m_clip);
@@ -52,11 +66,17 @@ void ClipActor::cambia(const IdClip& idNuevo, const ClipAnimacion& nuevo, Politi
     ++m_generacion;       // avisa a un avanza() en curso (reentrada desde un puerto)
 }
 
-void ClipActor::repinta(PuertosEventoClip& eventos) const {
-    for (const EventoFotograma* e : eventosDeFotograma(m_clip, m_cursor.fotograma)) {
-        repintaVisual(*e, eventos);
+void ClipActor::repinta(PuertosEventoClip& eventos) {
+    if (m_enDespacho) return;  // anidado: sin efectos
+    const GuardaDespacho guarda(m_enDespacho);
+    const int generacion = m_generacion;
+    // Copia por valor: un puerto que llame a cambia() reemplaza m_clip y dejaria punteros colgantes.
+    std::vector<EventoFotograma> lote;
+    for (const EventoFotograma* e : eventosDeFotograma(m_clip, m_cursor.fotograma)) lote.push_back(*e);
+    for (const EventoFotograma& e : lote) {
+        repintaVisual(e, eventos);
+        if (m_generacion != generacion) break;
     }
 }
 
 }  // namespace Game
-

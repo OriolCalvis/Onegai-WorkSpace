@@ -255,4 +255,95 @@ MOTOR_TEST_CASE(cambio_a_si_mismo_con_reiniciar_si_distinto_dentro_del_evento_es
     MOTOR_CHECK(d.recibidos == std::vector<int>({6}));
 }
 
+namespace {
+// Puerto que, en su primer evento logico, llama de nuevo a avanza() del mismo actor
+// (opcionalmente tras un cambia() ignorado: ReiniciarSiDistinto con el mismo id).
+struct PuertoAnidado : PuertosFalsos {
+    ClipActor* actor = nullptr;
+    DestinoFalso* destino = nullptr;
+    bool conCambiaIgnorado = false;
+    int anidadas = 0, devuelto = -1;
+    void aplicaLogico(const Game::EventoFotograma& e) override {
+        PuertosFalsos::aplicaLogico(e);
+        if (!actor || anidadas > 0) return;
+        ++anidadas;
+        if (conCambiaIgnorado)
+            actor->cambia(idDe("a"), clipTres(true), PoliticaCambio::ReiniciarSiDistinto);
+        devuelto = actor->avanza(1.0, *this, *destino);
+    }
+};
+}  // namespace
+
+MOTOR_TEST_CASE(avanza_anidado_no_hace_nada_ni_duplica_eventos) {
+    for (const bool ignorado : {false, true}) {
+        ClipActor a(idDe("a"), clipTres(true));
+        PuertoAnidado p;
+        DestinoFalso d;
+        p.actor = &a;
+        p.destino = &d;
+        p.conCambiaIgnorado = ignorado;
+        a.avanza(0.15, p, d);  // e0 (f0) y e1 (f1); el avanza anidado no cuenta
+        MOTOR_CHECK(p.anidadas == 1 && p.devuelto == 0);
+        MOTOR_CHECK(p.logicos == std::vector<std::string>({"e0"}));
+        MOTOR_CHECK(p.visuales == std::vector<std::string>({"e1"}));
+        MOTOR_CHECK(a.cursor().fotograma == 1);
+        MOTOR_CHECK(d.recibidos == std::vector<int>({6}));
+        a.avanza(0.1, p, d);  // la guarda se limpio: sigue funcionando (f2)
+        MOTOR_CHECK(p.sonidos == std::vector<std::string>({"e2"}));
+    }
+}
+
+namespace {
+// Puerto visual que, al repintar, cambia a un clip con muchos eventos (fuerza realocar m_clip) y/o
+// repinta de nuevo (anidado).
+struct PuertoVisualReentrante : PuertosFalsos {
+    ClipActor* actor = nullptr;
+    ClipAnimacion grande;
+    bool anida = false;
+    bool armado = true;
+    void muestraVisual(const Game::EventoFotograma& e) override {
+        PuertosFalsos::muestraVisual(e);
+        if (!actor || !armado) return;
+        if (anida) {
+            actor->repinta(*this);
+            return;
+        }
+        actor->cambia(idDe("grande"), grande, PoliticaCambio::ReiniciarSiempre);
+    }
+};
+}  // namespace
+
+MOTOR_TEST_CASE(repinta_con_cambia_en_el_puerto_no_usa_punteros_colgantes) {
+    ClipAnimacion c = clipTres(true);
+    c.eventos.push_back({"v1b", 1, "visual", "", 3});  // dos visuales en el fotograma 1
+    ClipActor a(idDe("a"), c);
+    PuertoVisualReentrante p;
+    p.actor = &a;
+    for (int i = 0; i < 300; ++i) {
+        p.grande.fotogramas.push_back({1 + i, 10});
+        p.grande.eventos.push_back({"g" + std::to_string(i), 0, "visual", "", i});
+    }
+    DestinoFalso d;
+    p.armado = false;
+    a.avanza(0.15, p, d);  // fotograma 1 de A
+    p.visuales.clear();
+    p.armado = true;
+    a.repinta(p);
+    MOTOR_CHECK(p.visuales == std::vector<std::string>({"e1"}));  // "v1b" no se emite tras el cambio
+    MOTOR_CHECK(a.id() == idDe("grande"));
+}
+
+MOTOR_TEST_CASE(repinta_anidado_no_hace_nada) {
+    ClipActor a(idDe("a"), clipTres(true));
+    PuertoVisualReentrante p;
+    p.actor = &a;
+    p.anida = true;
+    DestinoFalso d;
+    a.avanza(0.15, p, d);  // aqui avanza() despacha e1 (visual) -> repinta anidado: sin efecto
+    MOTOR_CHECK(p.visuales == std::vector<std::string>({"e1"}));
+    p.visuales.clear();
+    a.repinta(p);  // repinta externo: e1 una vez; su repinta anidado no hace nada
+    MOTOR_CHECK(p.visuales == std::vector<std::string>({"e1"}));
+}
+
 int main() { return motor_test::runAllTests(); }
