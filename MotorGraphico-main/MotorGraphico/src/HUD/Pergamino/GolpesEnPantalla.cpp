@@ -28,6 +28,11 @@ void GolpesEnPantalla::olvida() {
     m_golpes.clear();
 }
 
+Vector2 GolpesEnPantalla::aPantalla(const Vector2& mundo, int anchoVista, int altoVista) const {
+    return {(mundo.x - m_camara.x) * m_zoom + static_cast<float>(anchoVista) * 0.5f,
+            (mundo.y - m_camara.y) * m_zoom + static_cast<float>(altoVista) * 0.5f};
+}
+
 void GolpesEnPantalla::pinta(const Pincel& p, int anchoVista, int altoVista) {
     m_lienzo.limpia();
     for (const Golpe& g : m_golpes) {
@@ -43,8 +48,7 @@ void GolpesEnPantalla::pinta(const Pincel& p, int anchoVista, int altoVista) {
         color.w = alfa;
         Vector4 borde = rgb(0x1C, 0x12, 0x09, alfa);
         const float ancho = p.anchoPixel(g.texto, escala);
-        const Vector2 pantalla{(g.mundo.x - m_camara.x) * m_zoom + static_cast<float>(anchoVista) * 0.5f,
-                               (g.mundo.y - m_camara.y) * m_zoom + static_cast<float>(altoVista) * 0.5f};
+        const Vector2 pantalla = aPantalla(g.mundo, anchoVista, altoVista);
         const float x = std::round(pantalla.x - ancho * 0.5f);
         const float y = std::round(pantalla.y - 40.0f * t - 9.0f * static_cast<float>(escala));
         for (const Vector2& o : {Vector2{-2, 0}, Vector2{2, 0}, Vector2{0, -2}, Vector2{0, 2}})

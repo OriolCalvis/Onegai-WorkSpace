@@ -150,46 +150,43 @@ void Application::update(float deltaTime) {
         marker.entity->update(mundo);
     }
 
-    // Camara que sigue al jugador (U4-01.E06: zona muerta +-96x48 px, limites de mapa, sacudida con caida;
-    // la politica vive en ApplicationCamara). Sigue usando transitionTo() y NO move(): move() desplaza el
-    // destino por un DELTA relativo y el destino interno es privado. Solo se dispara cuando el jugador
-    // CAMBIA de celda (movimiento discreto, ver processInput): relanzarla cada frame reiniciaria la
-    // animacion continuamente y la camara nunca llegaria.
-    const GridCoord& playerCell = m_session->playerPosition();
-    PoliticaCamara::LimitesMapa limitesMapa;
-    const bool hayMapa = ApplicationCamara::limitesDelMapa(m_map.getWidth(), m_map.getHeight(), kTileW, kTileH, limitesMapa);
-    const PoliticaCamara::LimitesMapa* limites = ApplicationCamara::limitesAplicables(isAtTitle(), hayMapa, limitesMapa);
-    if (m_cine) ApplicationCamara::reiniciaSiCentinela(m_lastCameraCell, m_cine->camara, *m_camera);  // mapa nuevo
-    // AV13-12: en combate no; alli la camara la lleva ApplicationCinematica::combate.
-    if (m_cine && (playerCell.x != m_lastCameraCell.x || playerCell.y != m_lastCameraCell.y) && m_session->mode() != GameMode::Battle) {
-        Vector2 target = IsoMath::gridToScreen(playerCell, static_cast<float>(kTileW),
-                                               static_cast<float>(kTileH));
-        target.y += m_map.alturas().desfasePx(playerCell);  // AV19-02: la camara sube con el terreno
-        // AV14-09: lineal y con lo que dura el paso del jugador (0,16 s): camara y dibujo van a la par.
-        ApplicationCamara::sigueJugador(*m_camera, m_cine->camara, target, limites, ApplicationCamara::kZonaMuerta);
-        m_lastCameraCell = playerCell;
-    }
-    ApplicationCinematica::combate(*this, deltaTime);  // COMBATE-01: la camara cerca y los golpes a la vista
-    trace("update: camara");
-    m_camera->update(deltaTime);
-    if (m_cine) {  // la pausa no avanza la sacudida (update sigue corriendo en GameMode::Pause)
-        ApplicationCamara::compone(*m_camera, m_cine->camara, m_session->mode() == GameMode::Pause ? 0.0f : deltaTime, limites,
-                                   ApplicationCamara::factorMovimiento(ApplicationCamara::movimientoReducidoEnEntorno()));
-        ApplicationCinematica::vistaGolpes(*this);
-    }
+    // Camara (U4-01.E06): el orden por fotograma vive en ApplicationCamara::fotogramaCamara (probado sin
+    // ventana): centinela, seguimiento con zona muerta (solo al CAMBIAR de casilla; transitionTo y no move()),
+    // combate, Camera::update, compone, golpes y, al final, niebla y luces con la vista de ESTE fotograma.
     if (m_vida != nullptr && m_session != nullptr) m_vida->avanza(deltaTime, m_session->playerPosition());  // BLOQUES-02, MASC-01
-
-    // C-23 — Actualitzacio del post-processat per frame. El cicle es:
-    // beginFrame() (degrada Visible->Explored) -> reveal() (ilumina
-    // al voltant del jugador) -> updateTexture() (rasteritza a la textura
-    // GL). Si no hi ha fog, tot aixo es un no-op (m_fog es nullptr).
-    if (m_fog) {
-        m_fog->beginFrame();
-        m_fog->reveal(m_session->playerPosition(), m_fogRevealRadius);
-        m_fog->updateTexture(*m_camera);
-    }
-    if (m_lightMap) {
-        m_lightMap->updateTexture(*m_camera);
+    trace("update: camara");
+    // C-23 — Post-procesado por frame: beginFrame() (Visible->Explored), reveal() (ilumina alrededor del
+    // jugador) y updateTexture() (rasteriza a la textura GL). Sin fog / sin luces es un no-op.
+    const auto nieblaYLuces = [this] {
+        if (m_fog) {
+            m_fog->beginFrame();
+            m_fog->reveal(m_session->playerPosition(), m_fogRevealRadius);
+            m_fog->updateTexture(*m_camera);
+        }
+        if (m_lightMap) m_lightMap->updateTexture(*m_camera);
+    };
+    if (m_cine) {
+        const GridCoord& playerCell = m_session->playerPosition();
+        PoliticaCamara::LimitesMapa limitesMapa;  // D-O6: el titulo no pasa por aqui (ver actualizaTitulo)
+        const bool hayMapa = ApplicationCamara::limitesDelMapa(m_map.getWidth(), m_map.getHeight(), kTileW, kTileH, limitesMapa);
+        ApplicationCamara::EntradaFotograma entrada;
+        entrada.dt = deltaTime;
+        entrada.pausa = m_session->mode() == GameMode::Pause;  // update sigue corriendo en pausa
+        entrada.enBatalla = m_session->mode() == GameMode::Battle;
+        entrada.celda = playerCell;
+        entrada.ultimaCelda = m_lastCameraCell;
+        entrada.objetivo = IsoMath::gridToScreen(playerCell, static_cast<float>(kTileW), static_cast<float>(kTileH));
+        entrada.objetivo.y += m_map.alturas().desfasePx(playerCell);  // AV19-02: la camara sube con el terreno
+        entrada.combate = m_session->battle();
+        entrada.limites = hayMapa ? &limitesMapa : nullptr;
+        ApplicationCamara::PasosFotograma pasos;
+        pasos.combate = [this, deltaTime] { ApplicationCinematica::combate(*this, deltaTime); };  // COMBATE-01
+        pasos.vistaGolpes = [this] { ApplicationCinematica::vistaGolpes(*this); };
+        pasos.nieblaYLuces = nieblaYLuces;
+        m_lastCameraCell = ApplicationCamara::fotogramaCamara(*m_camera, m_cine->camara, entrada, pasos);
+    } else {
+        m_camera->update(deltaTime);
+        nieblaYLuces();
     }
 
     // El mundo avanza: patrullas de los enemigos (solo en exploracion,

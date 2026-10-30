@@ -1,15 +1,20 @@
 // U4-01.E06 — Adaptador ApplicationCamara (GL-free, sin Application): reinicio por centinela, orden de
-// fotograma, golpes alineados con la pose, titulo sin limites, pausa y movimiento reducido.
+// fotograma EJECUTADO con dobles (orden, vista de cada consumidor, pausa, movimiento reducido, combate), golpes
+// alineados con la pose, titulo sin limites. Solo la lectura de posicionVista() por HUD/niebla/luces es textual.
 #include "Engine/ApplicationCamara.h"
 
 #include "TestHarness.h"
 
 #include <cmath>
+#include <cstdlib>
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include <glm/glm.hpp>
+
+#include "HUD/Pergamino/GolpesEnPantalla.h"
 
 namespace {
 
@@ -46,6 +51,49 @@ std::string leeFuente(const std::string& rel) {
     return ss.str();
 }
 bool contiene(const std::string& s, const std::string& t) { return s.find(t) != std::string::npos; }
+std::string sinComentarios(const std::string& s) {  // quita // y /* */ (un texto en un comentario no cuenta)
+    std::string o;
+    for (std::size_t i = 0; i < s.size(); ++i) {
+        if (s.compare(i, 2, "//") == 0) { while (i < s.size() && s[i] != '\n') ++i; o += '\n'; }
+        else if (s.compare(i, 2, "/*") == 0) { const auto f = s.find("*/", i + 2); i = f == std::string::npos ? s.size() : f + 1; }
+        else o += s[i];
+    }
+    return o;
+}
+void ponReducido(bool reducido) {
+#ifdef _WIN32
+    _putenv_s("MOTOR_MOVIMIENTO_REDUCIDO", reducido ? "1" : "");
+#else
+    if (reducido) setenv("MOTOR_MOVIMIENTO_REDUCIDO", "1", 1); else unsetenv("MOTOR_MOVIMIENTO_REDUCIDO");
+#endif
+}
+
+// Doble del fotograma: registra el orden y la vista que ve cada consumidor.
+struct Registro {
+    std::vector<std::string> orden;
+    Vector2 vistaCombate, vistaGolpes, vistaNiebla, posNiebla;
+    float zoomGolpes = 1.0f;
+    Pergamino::GolpesEnPantalla golpes;
+    ApplicationCamara::PasosFotograma pasos(Camera& cam) {
+        ApplicationCamara::PasosFotograma p;
+        p.combate = [this, &cam] { orden.push_back("combate"); vistaCombate = cam.posicionVista(); };
+        p.vistaGolpes = [this, &cam] {
+            orden.push_back("golpes");
+            vistaGolpes = cam.posicionVista();
+            zoomGolpes = cam.zoom();
+            golpes.ponVista(cam.posicionVista(), cam.zoom());
+        };
+        p.nieblaYLuces = [this, &cam] { orden.push_back("niebla"); vistaNiebla = cam.posicionVista(); posNiebla = cam.position(); };
+        return p;
+    }
+};
+ApplicationCamara::EntradaFotograma entradaBase(float dt = 1.0f / 60.0f) {
+    ApplicationCamara::EntradaFotograma in;
+    in.dt = dt;
+    in.celda = GridCoord{2, 2};
+    in.ultimaCelda = GridCoord{2, 2};  // sin cambio de casilla
+    return in;
+}
 
 MOTOR_TEST_CASE(reinicio_con_centinela_durante_una_sacudida_deja_todo_a_cero) {
     Camera cam(800, 600);
@@ -101,29 +149,6 @@ MOTOR_TEST_CASE(golpes_hud_y_matriz_coinciden_con_la_pose) {
     MOTOR_CHECK(cerca(w.x, 100.0f, 0.01f) && cerca(w.y, 50.0f, 0.01f));
 }
 
-MOTOR_TEST_CASE(golpes_alineados_durante_sacudida_con_zoom_1_a_1_7) {
-    Camera cam(800, 600);
-    EstadoCamaraJuego e;
-    const LimitesMapa m = limites(64, 64);
-    colocaEn(cam, Vector2{0.0f, 1000.0f}, 1.0f);
-    cam.transitionTo(Vector2{0.0f, 1000.0f}, 1.7f, 0.5f, Camera::Easing::EaseInOutQuad);
-    ApplicationCamara::sacude(e, 7.0f, 0.24f, 3);
-    bool tembloAlgo = false;
-    for (int i = 0; i < 16; ++i) {
-        cam.update(1.0f / 60.0f);
-        ApplicationCamara::compone(cam, e, 1.0f / 60.0f, &m, 1.0f);
-        const Vector2 mundo{40.0f, 1010.0f};
-        const Vector2 a = aPantalla(mundo, cam.posicionVista(), cam.zoom(), 800, 600);  // golpes
-        const Vector2 b = aPantalla(mundo, cam.posicionVista(), cam.zoom(), 800, 600);  // EstadoJuego
-        const Vector2 c = porMatriz(cam, mundo);
-        MOTOR_CHECK(std::fabs(a.x - c.x) < 0.01f && std::fabs(a.y - c.y) < 0.01f);
-        MOTOR_CHECK(std::fabs(b.x - c.x) < 0.01f && std::fabs(b.y - c.y) < 0.01f);
-        tembloAlgo = tembloAlgo || !iguales(cam.posicionVista(), cam.position());
-    }
-    MOTOR_CHECK(tembloAlgo);
-    MOTOR_CHECK(cam.zoom() > 1.0f);
-}
-
 MOTOR_TEST_CASE(la_sacudida_cae_a_cero_exacto_y_no_toca_la_posicion_logica) {
     Camera cam(800, 600);
     EstadoCamaraJuego e;
@@ -148,52 +173,6 @@ MOTOR_TEST_CASE(sacude_nueva_solo_sustituye_si_dura_mas) {
     MOTOR_CHECK(e.semilla == 3 && e.reloj == 0.0);
 }
 
-MOTOR_TEST_CASE(titulo_sin_limites_y_exploracion_con_limites) {
-    const LimitesMapa m = limites(3, 2);
-    MOTOR_CHECK(ApplicationCamara::limitesAplicables(true, true, m) == nullptr);
-    MOTOR_CHECK(ApplicationCamara::limitesAplicables(false, false, m) == nullptr);
-    MOTOR_CHECK(ApplicationCamara::limitesAplicables(false, true, m) == &m);
-    Camera cam(800, 600);
-    EstadoCamaraJuego e;
-    colocaEn(cam, Vector2{1500.0f, 1000.0f}, 1.0f);
-    ApplicationCamara::compone(cam, e, 1.0f / 60.0f, nullptr, 1.0f);  // titulo
-    MOTOR_CHECK(iguales(cam.posicionVista(), cam.position()));
-    ApplicationCamara::compone(cam, e, 1.0f / 60.0f, &m, 1.0f);  // con limites se recorta al mapa
-    MOTOR_CHECK(!iguales(cam.posicionVista(), cam.position()));
-    MOTOR_CHECK(cerca(cam.posicionVista().x, 48.0f) && cerca(cam.posicionVista().y, 40.0f));
-}
-
-MOTOR_TEST_CASE(pausa_no_avanza_la_sacudida) {
-    Camera cam(800, 600);
-    EstadoCamaraJuego e;
-    colocaEn(cam, Vector2{300.0f, 400.0f}, 1.0f);
-    ApplicationCamara::sacude(e, 7.0f, 0.24f, 4);
-    ApplicationCamara::compone(cam, e, 0.05f, nullptr, 1.0f);
-    const double reloj = e.reloj;
-    const Vector2 vista = cam.posicionVista();
-    for (int i = 0; i < 30; ++i) ApplicationCamara::compone(cam, e, 0.0f, nullptr, 1.0f);  // dt = 0 en pausa
-    MOTOR_CHECK(e.reloj == reloj && iguales(cam.posicionVista(), vista));
-    const std::string bucle = leeFuente("src/Engine/ApplicationBucle.cpp");
-    MOTOR_CHECK(contiene(bucle, "GameMode::Pause ? 0.0f : deltaTime"));
-}
-
-MOTOR_TEST_CASE(movimiento_reducido_apaga_la_sacudida) {
-    MOTOR_CHECK(ApplicationCamara::factorMovimiento(true) == 0.0f);
-    MOTOR_CHECK(ApplicationCamara::factorMovimiento(false) == 1.0f);
-    for (const bool reducido : {true, false}) {
-        Camera cam(800, 600);
-        EstadoCamaraJuego e;
-        colocaEn(cam, Vector2{300.0f, 400.0f}, 1.7f);
-        ApplicationCamara::sacude(e, 7.0f, 0.24f, 21);
-        bool movio = false;
-        for (int i = 0; i < 14; ++i) {
-            ApplicationCamara::compone(cam, e, 1.0f / 60.0f, nullptr, ApplicationCamara::factorMovimiento(reducido));
-            movio = movio || !iguales(cam.posicionVista(), cam.position());
-        }
-        MOTOR_CHECK(movio == !reducido);
-    }
-}
-
 MOTOR_TEST_CASE(seguimiento_con_zona_muerta_y_limites) {
     Camera cam(800, 600);
     EstadoCamaraJuego e;
@@ -213,24 +192,221 @@ MOTOR_TEST_CASE(seguimiento_con_zona_muerta_y_limites) {
     MOTOR_CHECK(cerca(e2.destino.x, 48.0f) && cerca(e2.destino.y, 40.0f));
 }
 
-// Vigilantes de los puntos de llamada que no se pueden ejecutar sin ventana ni Application.
-MOTOR_TEST_CASE(los_consumidores_leen_posicion_de_vista_y_el_titulo_no_limita) {
+MOTOR_TEST_CASE(fotograma_orden_y_vista_de_cada_consumidor_durante_una_sacudida) {
+    Camera cam(800, 600);
+    EstadoCamaraJuego e;
+    colocaEn(cam, Vector2{300.0f, 400.0f}, 1.0f);
+    ApplicationCamara::sacude(e, 7.0f, 0.24f, 9);
+    Registro r;
+    ApplicationCamara::fotogramaCamara(cam, e, entradaBase(), r.pasos(cam));
+    MOTOR_CHECK((r.orden == std::vector<std::string>{"combate", "golpes", "niebla"}));
+    const auto s = PoliticaCamara::desplazamientoSacudida({7.0f, 0.24f}, static_cast<double>(1.0f / 60.0f), 9, 1.0f);
+    MOTOR_CHECK(s.isOk());
+    MOTOR_CHECK(!iguales(cam.posicionVista(), cam.position()));
+    MOTOR_CHECK(cerca(cam.posicionVista().x, cam.position().x + s.value().x / cam.zoom(), 1e-4f));
+    // Golpes y niebla/luces ven la vista de ESTE fotograma (ya con la sacudida); el combate, aun la anterior.
+    MOTOR_CHECK(iguales(r.vistaGolpes, cam.posicionVista()) && iguales(r.vistaNiebla, cam.posicionVista()));
+    MOTOR_CHECK(iguales(r.vistaCombate, r.posNiebla));
+    MOTOR_CHECK(!iguales(r.vistaGolpes, r.posNiebla));
+}
+
+MOTOR_TEST_CASE(fotograma_camera_update_antes_de_componer_y_seguimiento_antes_del_combate) {
+    Camera cam(800, 600);
+    EstadoCamaraJuego e;
+    colocaEn(cam, Vector2{0.0f, 0.0f}, 1.0f);
+    auto in = entradaBase(0.08f);
+    in.celda = GridCoord{3, 2};  // cambia de casilla
+    in.objetivo = Vector2{160.0f, 0.0f};
+    Registro r;
+    auto pasos = r.pasos(cam);
+    bool vistoTransitando = false;
+    pasos.combate = [&] { vistoTransitando = cam.isTransitioning(); };  // el seguimiento ya lanzo el tween
+    const GridCoord nueva = ApplicationCamara::fotogramaCamara(cam, e, in, pasos);
+    MOTOR_CHECK(vistoTransitando);
+    MOTOR_CHECK(nueva.x == 3 && nueva.y == 2);
+    MOTOR_CHECK(cam.position().x > 70.0f && cam.position().x < 90.0f);  // el update de este fotograma ya corrio
+}
+
+MOTOR_TEST_CASE(fotograma_en_batalla_o_sin_cambio_de_casilla_no_sigue) {
+    for (const bool batalla : {true, false}) {
+        Camera cam(800, 600);
+        EstadoCamaraJuego e;
+        colocaEn(cam, Vector2{0.0f, 0.0f}, 1.0f);
+        auto in = entradaBase();
+        in.objetivo = Vector2{500.0f, 300.0f};
+        in.enBatalla = batalla;
+        in.celda = GridCoord{5, 5};  // cambia
+        in.combate = batalla ? &in : nullptr;
+        Registro r;
+        const GridCoord nueva = ApplicationCamara::fotogramaCamara(cam, e, in, r.pasos(cam));
+        MOTOR_CHECK(batalla ? (nueva.x == 2 && !e.conDestino) : (nueva.x == 5 && e.conDestino));
+        in.ultimaCelda = in.celda;  // misma casilla: nada
+        EstadoCamaraJuego e2;
+        ApplicationCamara::fotogramaCamara(cam, e2, in, r.pasos(cam));
+        MOTOR_CHECK(!e2.conDestino);
+    }
+}
+
+MOTOR_TEST_CASE(fotograma_pausa_congela_la_sacudida_pero_la_camara_sigue) {
+    ponReducido(false);
+    Camera cam(800, 600);
+    EstadoCamaraJuego e;
+    colocaEn(cam, Vector2{300.0f, 400.0f}, 1.0f);
+    ApplicationCamara::sacude(e, 7.0f, 0.24f, 4);
+    Registro r;
+    ApplicationCamara::fotogramaCamara(cam, e, entradaBase(0.05f), r.pasos(cam));
+    const double reloj = e.reloj;
+    const Vector2 vista = cam.posicionVista();
+    MOTOR_CHECK(reloj > 0.0);
+    cam.transitionTo(Vector2{400.0f, 400.0f}, 1.0f, 0.5f, Camera::Easing::Linear);
+    auto in = entradaBase(0.05f);
+    in.pausa = true;
+    for (int i = 0; i < 3; ++i) ApplicationCamara::fotogramaCamara(cam, e, in, r.pasos(cam));
+    MOTOR_CHECK(e.reloj == reloj);                    // la sacudida no avanza con dt != 0 en pausa
+    MOTOR_CHECK(cam.position().x > 300.0f);           // Camera::update si corre (la camara no se cuelga)
+    const Vector2 d{cam.posicionVista().x - cam.position().x, cam.posicionVista().y - cam.position().y};
+    MOTOR_CHECK(cerca(d.x, vista.x - 300.0f, 1e-4f) && cerca(d.y, vista.y - 400.0f, 1e-4f));  // mismo desplazamiento congelado
+}
+
+MOTOR_TEST_CASE(fotograma_movimiento_reducido_apaga_la_sacudida) {
+    MOTOR_CHECK(ApplicationCamara::factorMovimiento(true) == 0.0f);
+    MOTOR_CHECK(ApplicationCamara::factorMovimiento(false) == 1.0f);
+    for (const bool reducido : {true, false}) {
+        ponReducido(reducido);
+        Camera cam(800, 600);
+        EstadoCamaraJuego e;
+        colocaEn(cam, Vector2{300.0f, 400.0f}, 1.7f);
+        ApplicationCamara::sacude(e, 7.0f, 0.24f, 21);
+        Registro r;
+        bool movio = false;
+        for (int i = 0; i < 14; ++i) {
+            ApplicationCamara::fotogramaCamara(cam, e, entradaBase(), r.pasos(cam));
+            movio = movio || !iguales(cam.posicionVista(), cam.position());
+        }
+        MOTOR_CHECK(movio == !reducido);
+    }
+    ponReducido(false);
+}
+
+MOTOR_TEST_CASE(fotograma_ciclo_de_combate_reinicia_al_entrar_y_al_salir) {
+    ponReducido(false);
+    Camera cam(800, 600);
+    EstadoCamaraJuego e;
+    colocaEn(cam, Vector2{300.0f, 400.0f}, 1.0f);
+    int combate = 0;
+    auto in = entradaBase();
+    Registro r;
+    const auto sacudeYDestino = [&] {
+        ApplicationCamara::sacude(e, 7.0f, 0.24f, 3);
+        e.destino = Vector2{1.0f, 2.0f};
+        e.conDestino = true;
+    };
+    sacudeYDestino();
+    in.enBatalla = true;
+    in.combate = &combate;  // ENTRA
+    ApplicationCamara::fotogramaCamara(cam, e, in, r.pasos(cam));
+    MOTOR_CHECK(e.amplitudPx == 0.0f && !e.conDestino && iguales(cam.posicionVista(), cam.position()) && e.combate == &combate);
+    sacudeYDestino();  // dentro del mismo combate NO reinicia (los golpes sacuden)
+    ApplicationCamara::fotogramaCamara(cam, e, in, r.pasos(cam));
+    MOTOR_CHECK(e.amplitudPx > 0.0f && e.conDestino && !iguales(cam.posicionVista(), cam.position()));
+    in.enBatalla = false;
+    in.combate = nullptr;  // SALE
+    ApplicationCamara::fotogramaCamara(cam, e, in, r.pasos(cam));
+    MOTOR_CHECK(e.amplitudPx == 0.0f && !e.conDestino && iguales(cam.posicionVista(), cam.position()) && e.combate == nullptr);
+    sacudeYDestino();  // fuera de combate sigue sin reiniciar
+    ApplicationCamara::fotogramaCamara(cam, e, in, r.pasos(cam));
+    MOTOR_CHECK(e.amplitudPx > 0.0f && e.conDestino);
+}
+
+MOTOR_TEST_CASE(fotograma_centinela_reinicia_antes_del_seguimiento) {
+    ponReducido(false);
+    Camera cam(800, 600);
+    EstadoCamaraJuego e;
+    const LimitesMapa m32 = limites(3, 2);
+    colocaEn(cam, Vector2{1500.0f, 1000.0f}, 1.0f);
+    ApplicationCamara::sacude(e, 7.0f, 0.24f, 5);
+    e.destino = Vector2{1500.0f, 1000.0f};
+    e.conDestino = true;
+    auto in = entradaBase();
+    in.ultimaCelda = GridCoord{-9999, -9999};
+    in.objetivo = Vector2{1500.0f, 1000.0f};
+    in.limites = &m32;
+    Registro r;
+    const GridCoord nueva = ApplicationCamara::fotogramaCamara(cam, e, in, r.pasos(cam));
+    MOTOR_CHECK(nueva.x == 2 && nueva.y == 2);
+    MOTOR_CHECK(e.amplitudPx == 0.0f);                              // la sacudida del mapa anterior murio
+    MOTOR_CHECK(iguales(e.destino, Vector2{48.0f, 40.0f}));         // el seguimiento centro (no zona muerta del destino viejo)
+    in.ultimaCelda = nueva;
+    for (int i = 0; i < 20; ++i) ApplicationCamara::fotogramaCamara(cam, e, in, r.pasos(cam));
+    MOTOR_CHECK(cerca(cam.posicionVista().x, 48.0f) && cerca(cam.posicionVista().y, 40.0f));
+}
+
+MOTOR_TEST_CASE(titulo_actualiza_sin_limites_ni_sacudida_y_deja_la_vista_en_cero) {
+    Camera cam(800, 600);
+    EstadoCamaraJuego e;
+    colocaEn(cam, Vector2{1500.0f, 1000.0f}, 1.0f);  // lejos de cualquier mapa: sin limites no se recorta
+    ApplicationCamara::sacude(e, 7.0f, 0.24f, 2);    // resto de una partida anterior
+    cam.setDesplazamientoVista(Vector2{9.0f, 9.0f});
+    ApplicationCamara::actualizaTitulo(cam, e, 1.0f / 60.0f);
+    MOTOR_CHECK(iguales(cam.posicionVista(), cam.position()));
+    MOTOR_CHECK(cerca(cam.position().x, 1500.0f) && cerca(cam.position().y, 1000.0f));
+    cam.transitionTo(Vector2{1600.0f, 1000.0f}, 1.0f, 0.5f, Camera::Easing::Linear);  // el titulo pasea: update corre
+    ApplicationCamara::actualizaTitulo(cam, e, 0.25f);
+    MOTOR_CHECK(cam.position().x > 1540.0f && iguales(cam.posicionVista(), cam.position()));
+    // Con limites (exploracion) el mismo punto SI se recorta: la diferencia es el nullptr del titulo.
+    const LimitesMapa m = limites(3, 2);
+    Registro r;
+    auto in = entradaBase();
+    in.limites = &m;
+    ApplicationCamara::fotogramaCamara(cam, e, in, r.pasos(cam));
+    MOTOR_CHECK(!iguales(cam.posicionVista(), cam.position()));
+}
+
+MOTOR_TEST_CASE(golpes_alineados_durante_sacudida_con_zoom_1_a_1_7) {
+    ponReducido(false);
+    Camera cam(800, 600);
+    EstadoCamaraJuego e;
+    const LimitesMapa m = limites(64, 64);
+    colocaEn(cam, Vector2{0.0f, 1000.0f}, 1.0f);
+    cam.transitionTo(Vector2{0.0f, 1000.0f}, 1.7f, 0.5f, Camera::Easing::EaseInOutQuad);
+    ApplicationCamara::sacude(e, 7.0f, 0.24f, 3);
+    Registro r;
+    r.golpes.lanza(Vector2{40.0f, 1010.0f}, "-5", Pergamino::GolpesEnPantalla::Tipo::Dano);
+    const Vector2 mundo = r.golpes.golpes()[0].mundo;
+    bool tembloAlgo = false;
+    auto in = entradaBase();
+    in.limites = &m;
+    for (int i = 0; i < 16; ++i) {
+        ApplicationCamara::fotogramaCamara(cam, e, in, r.pasos(cam));
+        const Vector2 a = r.golpes.aPantalla(mundo, 800, 600);                       // la proyeccion REAL de los golpes
+        const Vector2 b = aPantalla(mundo, cam.posicionVista(), cam.zoom(), 800, 600);  // la formula de EstadoJuego/HUD (camaraX/Y, zoom)
+        const Vector2 c = porMatriz(cam, mundo);                                     // la matriz de la camara
+        MOTOR_CHECK(std::fabs(a.x - c.x) < 0.01f && std::fabs(a.y - c.y) < 0.01f);
+        MOTOR_CHECK(std::fabs(b.x - c.x) < 0.01f && std::fabs(b.y - c.y) < 0.01f);
+        const Vector2 w = cam.screenToWorld(a);
+        MOTOR_CHECK(std::fabs(w.x - mundo.x) < 0.02f && std::fabs(w.y - mundo.y) < 0.02f);
+        tembloAlgo = tembloAlgo || !iguales(cam.posicionVista(), cam.position());
+    }
+    MOTOR_CHECK(tembloAlgo);
+    MOTOR_CHECK(cam.zoom() > 1.0f);
+}
+
+// Vigilante textual (lo unico que no se ejecuta sin ventana): quien lee posicionVista() y quien llama a quien.
+// Se mira el codigo SIN comentarios y solo la presencia de la llamada; el orden y los efectos los prueban los casos de arriba.
+MOTOR_TEST_CASE(los_consumidores_leen_posicion_de_vista_y_los_puntos_de_llamada_existen) {
     const std::string hud = leeFuente("src/Engine/ApplicationHud.cpp");
     MOTOR_CHECK(contiene(hud, "m_camera->posicionVista().x") && contiene(hud, "m_camera->posicionVista().y"));
     MOTOR_CHECK(!contiene(hud, "m_camera->position()"));
     for (const char* f : {"src/Render/FogOfWar.cpp", "src/Render/DynamicLightMap.cpp"}) {
-        const std::string s = leeFuente(f);
-        MOTOR_CHECK(contiene(s, "camera.posicionVista()") && !contiene(s, "camera.position()"));
+        const std::string c = leeFuente(f);
+        MOTOR_CHECK(contiene(c, "camera.posicionVista()") && !contiene(c, "camera.position()"));
     }
-    const std::string cine = leeFuente("src/Engine/ApplicationCinematica.cpp");
+    const std::string cine = sinComentarios(leeFuente("src/Engine/ApplicationCinematica.cpp"));
     MOTOR_CHECK(contiene(cine, "ponVista(app.m_camera->posicionVista()") && !contiene(cine, "m_camera->position()"));
-    const std::string bucle = leeFuente("src/Engine/ApplicationBucle.cpp");
-    MOTOR_CHECK(contiene(bucle, "limitesAplicables(isAtTitle()") && contiene(bucle, "vistaGolpes(*this)"));
-    const auto reinicio = bucle.find("reiniciaSiCentinela(m_lastCameraCell");
-    const auto sobrescribe = bucle.find("m_lastCameraCell = playerCell");
-    MOTOR_CHECK(reinicio != std::string::npos && sobrescribe != std::string::npos && reinicio < sobrescribe);
-    const std::string titulo = leeFuente("src/Engine/ApplicationCinematicaTitulo.cpp");
-    MOTOR_CHECK(contiene(titulo, "compone(*app.m_camera, estado.camara, dt, nullptr,"));
+    MOTOR_CHECK(!contiene(cine, "ApplicationCamara::reinicia"));  // el ciclo de combate vive en fotogramaCamara
+    MOTOR_CHECK(contiene(sinComentarios(leeFuente("src/Engine/ApplicationBucle.cpp")), "ApplicationCamara::fotogramaCamara("));
+    const std::string titulo = sinComentarios(leeFuente("src/Engine/ApplicationCinematicaTitulo.cpp"));
+    MOTOR_CHECK(contiene(titulo, "ApplicationCamara::actualizaTitulo("));
 }
 
 }  // namespace

@@ -20,11 +20,6 @@ bool reiniciaSiCentinela(const GridCoord& ultimaCelda, EstadoCamaraJuego& e, Cam
     return true;
 }
 
-const PoliticaCamara::LimitesMapa* limitesAplicables(bool enTitulo, bool hayMapa,
-                                                     const PoliticaCamara::LimitesMapa& limites) {
-    return (enTitulo || !hayMapa) ? nullptr : &limites;
-}
-
 bool limitesDelMapa(int columnas, int filas, int anchoTile, int altoTile, PoliticaCamara::LimitesMapa& salida) {
     const auto r = PoliticaCamara::limitesDeMapa(columnas, filas, anchoTile, altoTile, kMargenSuperiorPx);
     if (!r.isOk()) return false;
@@ -34,10 +29,7 @@ bool limitesDelMapa(int columnas, int filas, int anchoTile, int altoTile, Politi
 
 float factorMovimiento(bool reducido) { return reducido ? 0.0f : 1.0f; }
 
-bool movimientoReducidoEnEntorno() {
-    static const bool reducido = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;  // como el HUD
-    return reducido;
-}
+bool movimientoReducidoEnEntorno() { return std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr; }  // como el HUD
 
 void sigueJugador(Camera& cam, EstadoCamaraJuego& e, const Vector2& objetivoMundo,
                   const PoliticaCamara::LimitesMapa* limites, const PoliticaCamara::ZonaMuerta& zona) {
@@ -81,6 +73,30 @@ void compone(Camera& cam, EstadoCamaraJuego& e, float dt, const PoliticaCamara::
     }
     const auto pose = PoliticaCamara::componerPose(cam.position(), cam.zoom(), sacudida, vistaDe(cam), limites);
     cam.setDesplazamientoVista(pose.isOk() ? pose.value().vista - cam.position() : Vector2{});
+}
+
+GridCoord fotogramaCamara(Camera& cam, EstadoCamaraJuego& e, const EntradaFotograma& in, const PasosFotograma& pasos) {
+    GridCoord ultima = in.ultimaCelda;
+    reiniciaSiCentinela(ultima, e, cam);  // mapa nuevo: ANTES de que el seguimiento sobrescriba la celda
+    if (!in.enBatalla && (in.celda.x != ultima.x || in.celda.y != ultima.y)) {
+        sigueJugador(cam, e, in.objetivo, in.limites, kZonaMuerta);
+        ultima = in.celda;
+    }
+    if (pasos.combate) pasos.combate();
+    if (e.combate != in.combate) {  // entrar, salir o cambiar de combate: sin destino viejo, sacudida y vista a 0
+        reinicia(e, cam);
+        e.combate = in.combate;
+    }
+    cam.update(in.dt);
+    compone(cam, e, in.pausa ? 0.0f : in.dt, in.limites, factorMovimiento(movimientoReducidoEnEntorno()));
+    if (pasos.vistaGolpes) pasos.vistaGolpes();
+    if (pasos.nieblaYLuces) pasos.nieblaYLuces();
+    return ultima;
+}
+
+void actualizaTitulo(Camera& cam, EstadoCamaraJuego& e, float dt) {
+    cam.update(dt);
+    compone(cam, e, dt, nullptr, 0.0f);
 }
 
 }  // namespace ApplicationCamara

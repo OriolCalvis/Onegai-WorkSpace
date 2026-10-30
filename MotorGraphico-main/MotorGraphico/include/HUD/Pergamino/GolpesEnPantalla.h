@@ -33,6 +33,8 @@ public:
         m_camara = camara;
         m_zoom = zoom;
     }
+    // Donde cae un punto del mundo en la pantalla con la vista puesta (la formula de pinta; las pruebas la comparan).
+    Vector2 aPantalla(const Vector2& mundo, int anchoVista, int altoVista) const;
     void avanza(float segundos);
     void olvida();
 

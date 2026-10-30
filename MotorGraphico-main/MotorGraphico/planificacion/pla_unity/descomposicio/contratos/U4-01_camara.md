@@ -389,6 +389,24 @@ llave huérfana.
   (tarea de E06: localizar quién deja de llamar a `Application::update`); el requisito es que el
   `reloj` no avance y el desplazamiento vuelva a 0 al reanudar.
 
+**Implementación r1 de E06 (orden ejecutable, desviaciones conscientes)**:
+- La secuencia 0-4 vive ahora en `ApplicationCamara::fotogramaCamara(cam, estado, EntradaFotograma, PasosFotograma)`
+  (sin GL, sin `Application`); `Application::update` la llama una vez con tres callbacks (combate, golpes, niebla y
+  luces). `ApplicationCamara::actualizaTitulo` hace lo mismo para el título (sin límites ni sacudida). Los tests
+  ejecutan la función con dobles que registran el orden y la vista que ve cada consumidor.
+- El `reinicia` de entrada/salida de combate ya no está en `ApplicationCinematica::combate`: lo hace
+  `fotogramaCamara` al cambiar la identidad del combate (`EstadoCamaraJuego::combate`), justo después del paso del
+  combate (mismo efecto: `reinicia` no toca el tween en curso).
+- `movimientoReducidoEnEntorno()` ya no cachea (lee el entorno en cada llamada) para que las pruebas lo conmuten.
+- **Desviación consciente**: la pausa **congela** la sacudida (`compone` con `dt = 0`; la vista conserva el
+  desplazamiento) en vez de llevarla a 0. Hoy no hay sacudida fuera de combate, así que no se ve.
+- **Hueco documentado**: lo único no ejecutable sin ventana es que HUD, niebla y luces lean `posicionVista()` y que
+  `Application::update` y el título llamen a las dos funciones; los vigila un test textual sobre el código sin
+  comentarios (solo presencia). `GolpesEnPantalla::aPantalla` (nuevo, la fórmula de `pinta`) se compara con la matriz
+  de la cámara y con la fórmula de `EstadoJuego` (copiada en el test; el HUD real no es gl-free).
+- **Para E07**: tras un combate, cambiar de casilla durante la transición de salida (0,6 s) deja el zoom intermedio
+  (preexistente, no introducido por E06).
+
 ### E07 · Verificar esquina y zona muerta (60 min, DOCUMENTO)
 Casos mínimos (todos con captura a escala real, `kTileW/H=64/32`, zoom 1): actor en el centro
 (sin movimiento), en cada borde de la zona (sin vibración, 120 `update`), en las 4 esquinas del

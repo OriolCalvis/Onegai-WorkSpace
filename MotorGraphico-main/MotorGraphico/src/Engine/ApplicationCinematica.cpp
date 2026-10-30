@@ -344,7 +344,6 @@ void ApplicationCinematica::combate(Application& app, float dt) {
                                                        static_cast<float>(kTileH));
             app.m_camera->transitionTo(aqui, e.zoomAntes, 0.6f, Camera::Easing::EaseInOutQuad);
             e.combateVisto = nullptr;
-            ApplicationCamara::reinicia(e.camara, *app.m_camera);  // U4-01: el primer seguimiento vuelve a centrar
             e.efectos.olvida();
             e.basesGolpe.clear();
             e.pvFantasma = -1.0f;
@@ -361,7 +360,6 @@ void ApplicationCinematica::combate(Application& app, float dt) {
         // Un combate nuevo: sus dados (antes todos tiraban con la misma semilla y
         // cada combate empezaba con los mismos dados) y la camara, cerca.
         e.combateVisto = b;
-        ApplicationCamara::reinicia(e.camara, *app.m_camera);  // U4-01: el combate lleva la camara, sin destino viejo
         e.dados = std::make_unique<RPG::Xoroshiro128p>(semillaNueva());
         b->setRandomEngine(*e.dados);
         b->tiraIniciativa();  // AV13-11: 1d6 + DES; si empieza un enemigo, su rotulo (la barra, ya

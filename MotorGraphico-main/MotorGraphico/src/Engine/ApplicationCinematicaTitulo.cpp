@@ -61,8 +61,7 @@ void ApplicationCinematica::titulo(Application& app, float dt) {
     fondo.punto(estado.tituloRecorrido, x, y);
     const Vector2 destino{(x - y) * static_cast<float>(kTileW) * 0.5f, (x + y) * static_cast<float>(kTileH) * 0.5f};
     app.m_camera->transitionTo(destino, fondo.zoom, primera ? 0.001f : 0.25f, Camera::Easing::EaseOutCubic);
-    app.m_camera->update(dt);
-    ApplicationCamara::compone(*app.m_camera, estado.camara, dt, nullptr, 0.0f);  // U4-01 D-O6: titulo sin limites ni sacudida
+    ApplicationCamara::actualizaTitulo(*app.m_camera, estado.camara, dt);  // U4-01 D-O6: titulo sin limites ni sacudida
 }
 
 std::function<Result<bool>()> ApplicationCinematica::alSalirDelTitulo(Application& app) {
