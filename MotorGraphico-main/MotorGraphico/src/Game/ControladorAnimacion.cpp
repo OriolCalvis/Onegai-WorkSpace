@@ -5,7 +5,8 @@
 
 namespace Game {
 
-ControladorAnimacion::ControladorAnimacion(const MaquinaAnimacion* maquina) : m_maquina(maquina) {
+ControladorAnimacion::ControladorAnimacion(const MaquinaAnimacion* maquina)
+    : m_maquina(maquina), m_forzar(true) {
     require(maquina != nullptr);
     m_vivo.estado = maquina->inicial;
     for (const EstadoAnimacion& e : maquina->estados) {
@@ -23,7 +24,7 @@ bool ControladorAnimacion::aplica(EntradasAnimacion entradas, DestinoAnimacion& 
     if (m_suspendido) {
         return false;
     }
-    entradas.finClip = destino.finClip();
+    entradas.finClip = destino.esClip(m_vivo.clip) && destino.finClip();  // solo destino CLIP
     const PasoAnimacion paso = pasoAnimacion(*m_maquina, m_vivo, entradas);
     const bool cambio = paso.cambioDeClip || !(paso.vivo.estado == m_vivo.estado);
     m_vivo = paso.vivo;
@@ -45,8 +46,10 @@ bool ControladorAnimacion::aplica(EntradasAnimacion entradas, DestinoAnimacion& 
 void ControladorAnimacion::suspende() { m_suspendido = true; }
 
 void ControladorAnimacion::reanuda() {
+    if (m_suspendido) {
+        m_forzar = true;  // idempotente: sin suspension previa no fuerza nada
+    }
     m_suspendido = false;
-    m_forzar = true;
 }
 
 bool ControladorAnimacion::suspendido() const { return m_suspendido; }

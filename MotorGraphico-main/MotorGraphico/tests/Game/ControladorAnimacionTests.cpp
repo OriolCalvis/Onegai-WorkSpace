@@ -84,6 +84,15 @@ const char* const kJsonDisparo = R"({"schemaVersion":1,"maquinas":[{"id":"m","in
  "estados":[{"id":"a","clip":"idle"},{"id":"b","clip":"idle_up"}],
  "transiciones":[{"desde":"a","hacia":"b","politica":"conservarFase","cuando":[{"param":"salta","op":"disparado"}]}]}]})";
 
+const char* const kJsonSoloMismoClip = R"({"schemaVersion":1,"maquinas":[{"id":"m","inicial":"a",
+ "parametros":[{"id":"go","tipo":"booleano"}],
+ "estados":[{"id":"a","clip":"idle"},{"id":"b","clip":"idle"}],
+ "transiciones":[{"desde":"a","hacia":"b","politica":"reiniciarSiDistinto","cuando":[{"param":"go","op":"cierto"}]}]}]})";
+const char* const kJsonLegacyAClip = R"({"schemaVersion":1,"maquinas":[{"id":"m","inicial":"a",
+ "parametros":[{"id":"go","tipo":"booleano"}],
+ "estados":[{"id":"a","clip":"idle"},{"id":"b","clip":"idle_up"}],
+ "transiciones":[{"desde":"a","hacia":"b","cuando":[{"param":"go","op":"cierto"}]}]}]})";
+
 CatalogoAnimacion catalogoDe(const char* json) {
     auto r = construyeCatalogoAnimacion({}, {textoJson(json)});
     MOTOR_CHECK(r.isOk());
@@ -330,6 +339,75 @@ MOTOR_TEST_CASE(esNombreLegacy_exactamente_los_nueve) {
         MOTOR_CHECK(!esNombreLegacy(clipId(n)));
     }
     MOTOR_CHECK(!esNombreLegacy(IdClip{}));
+}
+
+MOTOR_TEST_CASE(reanuda_es_idempotente_sin_suspension) {
+    const CatalogoAnimacion cat = catalogoReal();
+    ControladorAnimacion c(cat.maquina(IdMaquina::parse("pnj_basico").value()));
+    Falso d;
+    d.clips = {"idle_down"};
+    c.aplica(entradas(0, 2), d);
+    d.llamadas.clear();
+    for (int i = 0; i < 5; ++i) {
+        c.reanuda();
+        c.aplica(entradas(0, 2), d);
+    }
+    MOTOR_CHECK(d.llamadas.empty());
+    c.suspende();
+    c.reanuda();
+    c.aplica(entradas(0, 2), d);
+    MOTOR_CHECK(d.llamadas.size() == 1 && d.llamadas[0] == "reengancha:idle_down");
+}
+
+MOTOR_TEST_CASE(finClip_solo_se_lee_en_destino_clip) {
+    const CatalogoAnimacion cat = catalogoDe(kJsonFin);
+    ControladorAnimacion c(cat.maquina(IdMaquina::parse("m").value()));
+    Falso d;  // LEGACY: ningun clip
+    d.fin = true;
+    for (int i = 0; i < 5; ++i) {
+        MOTOR_CHECK(!c.aplica(EntradasAnimacion{}, d));
+    }
+    MOTOR_CHECK(c.vivo().estado.value() == "a");
+}
+
+MOTOR_TEST_CASE(primer_aplica_reengancha_aunque_haya_control) {
+    const CatalogoAnimacion cat = catalogoReal();
+    ControladorAnimacion c(cat.maquina(IdMaquina::parse("pnj_basico").value()));
+    Falso d;
+    d.clips = {"idle_down"};
+    d.control = true;  // reproduce otro clip del catalogo
+    c.aplica(entradas(0, 2), d);
+    MOTOR_CHECK(d.llamadas.size() == 1 && d.llamadas[0] == "reengancha:idle_down");
+    c.aplica(entradas(0, 2), d);
+    MOTOR_CHECK(d.llamadas.size() == 1);
+}
+
+MOTOR_TEST_CASE(cambio_de_estado_con_mismo_clip_devuelve_true) {
+    const CatalogoAnimacion cat = catalogoDe(kJsonSoloMismoClip);
+    ControladorAnimacion c(cat.maquina(IdMaquina::parse("m").value()));
+    Falso d;
+    c.aplica(EntradasAnimacion{}, d);
+    EntradasAnimacion e;
+    e.valores[par("go")] = 1.0;
+    MOTOR_CHECK(c.aplica(e, d));  // cambio de estado, sin cambio de clip
+    MOTOR_CHECK(c.vivo().estado.value() == "b");
+}
+
+MOTOR_TEST_CASE(forzar_se_consume_tambien_en_legacy) {
+    const CatalogoAnimacion cat = catalogoDe(kJsonLegacyAClip);
+    ControladorAnimacion c(cat.maquina(IdMaquina::parse("m").value()));
+    Falso d;
+    d.clips = {"idle_up"};  // "idle" es LEGACY; "idle_up" es CLIP
+    c.aplica(EntradasAnimacion{}, d);  // primera reemision, consumida por ponNombre
+    c.suspende();
+    c.reanuda();
+    c.aplica(EntradasAnimacion{}, d);  // reemision forzada, consumida por ponNombre
+    d.control = true;
+    d.llamadas.clear();
+    EntradasAnimacion e;
+    e.valores[par("go")] = 1.0;
+    c.aplica(e, d);
+    MOTOR_CHECK(d.llamadas.size() == 1 && d.llamadas[0] == "cambia:idle_up");
 }
 
 int main() { return motor_test::runAllTests(); }

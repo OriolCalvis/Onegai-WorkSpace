@@ -11,6 +11,11 @@
 // ponNombre/cambiaClip/reengancha, que dejan el primer fotograma ya renderizable al volver
 // (D-T8); (3) AVANCE = el update() del clip, fuera de aqui.
 //
+// finClip solo se lee del destino cuando el clip actual es CLIP (en LEGACY vale false).
+// CatalogoAnimacion: construyeCatalogoAnimacion falla ENTERO ante un documento roto; quien cargue
+// (E06b) debe cargar documento a documento o reintentar ({}, estados). El catalogo no se copia
+// tras tomar punteros a sus maquinas (singleton).
+//
 // REENTRADA PROHIBIDA: aplica, reengancha, cambiaClip y ponClip NO se pueden llamar nunca desde un
 // PuertosEventoClip ni un DestinoFotograma del actor que los recibe: ponClip destruye el ClipActor
 // en curso y ClipActor::avanza seguiria usandolo (use-after-free). Los puertos de EntidadClip no
@@ -48,8 +53,10 @@ public:
     bool aplica(EntradasAnimacion entradas, DestinoAnimacion& destino,
                 std::vector<IdParametro>* disparosConsumidos = nullptr);
     void suspende();  // otro propietario manda (ruta de combate)
-    // Fuerza UNA reemision en el siguiente aplica (LEGACY: un ponNombre mas; CLIP: un reengancha),
-    // aunque el control no se hubiera perdido.
+    // Si estaba suspendido, fuerza UNA reemision en el siguiente aplica (LEGACY: un ponNombre mas;
+    // CLIP: un reengancha), aunque el control no se hubiera perdido. Idempotente: sin suspension
+    // previa no hace nada (valido llamarlo cada fotograma). El PRIMER aplica tras construir
+    // tambien reemite siempre (un reengancha en CLIP aunque el destino ya tenga control).
     void reanuda();
     bool suspendido() const;
     const EstadoAnimacionVivo& vivo() const;

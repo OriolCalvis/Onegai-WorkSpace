@@ -31,6 +31,8 @@ bool esNombreLegacy(const IdClip& id);
 // leerCatalogoMaquinas, con ExisteClip = "esta en el catalogo de clips O es nombre legacy". Un id
 // que no es ni una cosa ni la otra es error de parse (errata detectada al cargar). Ids de clip o
 // de maquina repetidos entre documentos tambien son error.
+// Falla ENTERO ante cualquier documento roto: quien cargue (E06b) y quiera degradar debe cargar
+// documento a documento o reintentar ({}, estados).
 Result<CatalogoAnimacion> construyeCatalogoAnimacion(const std::vector<JsonValue>& docsClips,
                                                      const std::vector<JsonValue>& docsEstados);
 
