@@ -270,6 +270,8 @@ add_library(motor_level
     # jugador. Vive en motor_level y no en motor_rpg porque elige pagina con
     # ActivePageWithInventory, que esta en SessionCommandHost.cpp.
     src/RPG/MapEventRunner.cpp
+    # U3-02.E06b: despacho de triggers de region al interprete (API publica).
+    src/RPG/RegionTriggerDispatch.cpp
     # H3-01 (Fase H): el atlas (WorldTopology) conectado a LevelTransition.
     # Vive en motor_level porque necesita las dos puntas: las puertas del
     # nivel (Level/) y la transicion que ejecuta Application (Game/SessionTipos).
@@ -1029,6 +1031,7 @@ include(cmake/MonstruosAcciones.cmake)  # AV18-02: datos, persistencia y papiro 
     # H0-08 (Fase H) — MapEventRunner: los cuatro disparadores conducidos por
     # casillas, jugados sobre el asset publicado assets/misiones/mision_llave.
     include(cmake/MapEventRunnerTests.cmake)
+    include(cmake/RegionTriggerDispatchTests.cmake)  # U3-02.E06b
     # H6-01 (Fase H) — AudioDirector: la politica de sonido, probada contra un
     # doble de AudioEngine (sin dispositivo, sin assets, corre en CI).
     include(cmake/AudioDirectorTests.cmake)
