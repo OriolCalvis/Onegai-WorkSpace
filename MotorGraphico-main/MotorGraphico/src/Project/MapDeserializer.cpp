@@ -328,6 +328,10 @@ Result<MapDocument> ProjectSerializer::deserializeMap(const std::string& text) {
                         // U3-02.E06a: clave opcional; ausente = sin region.
                         if (pageNode.has("region")) {
                             const JsonValue& regionNode = pageNode["region"];
+                            if (!isRegionTrigger(trigger.value())) {
+                                return Result<MapDocument>::Error(
+                                    "pagina de evento: solo un trigger de region lleva 'region'");
+                            }
                             const Result<ids::LayerId> regionLayer =
                                 readId<ids::LayerId>(regionNode, "layer", "region de pagina");
                             const Result<ids::RegionId> regionId =
