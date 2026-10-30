@@ -144,6 +144,77 @@ Result<bool> MapDocument::validateLayerForMap(const MapLayer& layer) const {
         layer.data());
 }
 
+namespace {
+
+// U3-02.E06a (D1 = b) — Una pagina con trigger de region debe nombrar una
+// region que EXISTA en una capa de regiones de este mapa. Es validacion
+// entre capas, por eso vive aqui y no en EventLayerDocument. Recibe punteros
+// a las capas del estado CANDIDATO (sin copiarlas) para que cada edicion
+// pueda comprobarlo antes de instalar. Solo revisa paginas de region.
+using LayerView = std::vector<const MapLayer*>;
+
+Result<bool> validarReferenciasDeRegion(const LayerView& layers) {
+    for (const MapLayer* layer : layers) {
+        const auto* eventos = std::get_if<EventLayerDocument>(&layer->data());
+        if (eventos == nullptr) {
+            continue;
+        }
+        for (const MapEventDocument& event : eventos->events()) {
+            for (const MapEventPage& page : event.pages) {
+                if (!isRegionTrigger(page.trigger)) {
+                    continue;
+                }
+                const MapLayer* destino = nullptr;
+                for (const MapLayer* candidata : layers) {
+                    if (candidata->meta().id == page.regionLayerId) {
+                        destino = candidata;
+                    }
+                }
+                const auto* regiones =
+                    destino == nullptr ? nullptr
+                                       : std::get_if<RegionLayerDocument>(&destino->data());
+                const bool existe =
+                    regiones != nullptr &&
+                    std::any_of(regiones->regions().begin(), regiones->regions().end(),
+                                [&page](const MapRegionDocument& r) { return r.id == page.regionId; });
+                if (!existe) {
+                    return Result<bool>::Error(
+                        "el evento '" + event.id.value() + "', pagina '" + page.id.value() +
+                        "' escucha la region '" + page.regionLayerId.value() + "/" +
+                        page.regionId.value() + "', que no existe en el mapa");
+                }
+            }
+        }
+    }
+    return Result<bool>::Ok(true);
+}
+
+// Solo las capas de eventos (las que referencian) y de regiones (las referenciadas)
+// pueden crear o romper una referencia de region: tiles y entidades no se barren.
+bool afectaReferenciasDeRegion(const MapLayer& layer) {
+    return layer.type() == MapLayerType::Event || layer.type() == MapLayerType::Region;
+}
+
+// Las capas actuales, sustituyendo `original` por `candidata` (si hay) o
+// quitandola (candidata == nullptr).
+LayerView vistaCandidata(const std::vector<MapLayer>& layers, const MapLayer* original,
+                         const MapLayer* candidata) {
+    LayerView vista;
+    vista.reserve(layers.size());
+    for (const MapLayer& layer : layers) {
+        if (&layer == original) {
+            if (candidata != nullptr) {
+                vista.push_back(candidata);
+            }
+        } else {
+            vista.push_back(&layer);
+        }
+    }
+    return vista;
+}
+
+}  // namespace
+
 Result<bool> MapDocument::addLayer(MapLayer layer) {
     if (m_id.empty() || m_name.empty() || m_width <= 0 || m_height <= 0 || m_tileWidth <= 0 ||
         m_tileHeight <= 0) {
@@ -162,6 +233,15 @@ Result<bool> MapDocument::addLayer(MapLayer layer) {
         if (existing.meta().order == layer.meta().order) {
             return Result<bool>::Error("orden de capa duplicado: " +
                                        std::to_string(layer.meta().order));
+        }
+    }
+
+    if (afectaReferenciasDeRegion(layer)) {
+        LayerView vista = vistaCandidata(m_layers, nullptr, nullptr);
+        vista.push_back(&layer);
+        const Result<bool> refs = validarReferenciasDeRegion(vista);
+        if (!refs.isOk()) {
+            return refs;
         }
     }
 
@@ -215,71 +295,6 @@ void MapDocument::sortLayersByOrder() {
                      });
 }
 
-namespace {
-
-// U3-02.E06a (D1 = b) — Una pagina con trigger de region debe nombrar una
-// region que EXISTA en una capa de regiones de este mapa. Es validacion
-// entre capas, por eso vive aqui y no en EventLayerDocument. Recibe punteros
-// a las capas del estado CANDIDATO (sin copiarlas) para que cada edicion
-// pueda comprobarlo antes de instalar. Solo revisa paginas de region.
-using LayerView = std::vector<const MapLayer*>;
-
-Result<bool> validarReferenciasDeRegion(const LayerView& layers) {
-    for (const MapLayer* layer : layers) {
-        const auto* eventos = std::get_if<EventLayerDocument>(&layer->data());
-        if (eventos == nullptr) {
-            continue;
-        }
-        for (const MapEventDocument& event : eventos->events()) {
-            for (const MapEventPage& page : event.pages) {
-                if (!isRegionTrigger(page.trigger)) {
-                    continue;
-                }
-                const MapLayer* destino = nullptr;
-                for (const MapLayer* candidata : layers) {
-                    if (candidata->meta().id == page.regionLayerId) {
-                        destino = candidata;
-                    }
-                }
-                const auto* regiones =
-                    destino == nullptr ? nullptr
-                                       : std::get_if<RegionLayerDocument>(&destino->data());
-                const bool existe =
-                    regiones != nullptr &&
-                    std::any_of(regiones->regions().begin(), regiones->regions().end(),
-                                [&page](const MapRegionDocument& r) { return r.id == page.regionId; });
-                if (!existe) {
-                    return Result<bool>::Error(
-                        "el evento '" + event.id.value() + "', pagina '" + page.id.value() +
-                        "' escucha la region '" + page.regionLayerId.value() + "/" +
-                        page.regionId.value() + "', que no existe en el mapa");
-                }
-            }
-        }
-    }
-    return Result<bool>::Ok(true);
-}
-
-// Las capas actuales, sustituyendo `original` por `candidata` (si hay) o
-// quitandola (candidata == nullptr).
-LayerView vistaCandidata(const std::vector<MapLayer>& layers, const MapLayer* original,
-                         const MapLayer* candidata) {
-    LayerView vista;
-    vista.reserve(layers.size());
-    for (const MapLayer& layer : layers) {
-        if (&layer == original) {
-            if (candidata != nullptr) {
-                vista.push_back(candidata);
-            }
-        } else {
-            vista.push_back(&layer);
-        }
-    }
-    return vista;
-}
-
-}  // namespace
-
 Result<bool> MapDocument::mutateLayer(const ids::LayerId& layerId,
                                       const std::function<Result<bool>(MapLayer&)>& mutation) {
     MapLayer* layer = findLayerMutable(layerId);
@@ -301,10 +316,12 @@ Result<bool> MapDocument::mutateLayer(const ids::LayerId& layerId,
     }
     // U3-02.E06a: borrar una region (o anadir/cambiar una pagina) no puede
     // dejar una pagina escuchando una region que ya no existe.
-    const Result<bool> refs =
-        validarReferenciasDeRegion(vistaCandidata(m_layers, layer, &candidate));
-    if (!refs.isOk()) {
-        return refs;
+    if (afectaReferenciasDeRegion(candidate)) {
+        const Result<bool> refs =
+            validarReferenciasDeRegion(vistaCandidata(m_layers, layer, &candidate));
+        if (!refs.isOk()) {
+            return refs;
+        }
     }
     *layer = std::move(candidate);
     return Result<bool>::Ok(true);
@@ -318,9 +335,12 @@ Result<bool> MapDocument::removeLayer(const ids::LayerId& layerId) {
     if (it == m_layers.end()) {
         return Result<bool>::Error("no existe la capa '" + layerId.value() + "'");
     }
-    const Result<bool> refs = validarReferenciasDeRegion(vistaCandidata(m_layers, &*it, nullptr));
-    if (!refs.isOk()) {
-        return refs;
+    if (afectaReferenciasDeRegion(*it)) {
+        const Result<bool> refs =
+            validarReferenciasDeRegion(vistaCandidata(m_layers, &*it, nullptr));
+        if (!refs.isOk()) {
+            return refs;
+        }
     }
     m_layers.erase(it);
     return Result<bool>::Ok(true);
@@ -353,10 +373,12 @@ Result<bool> MapDocument::setLayerMeta(const ids::LayerId& layerId, MapLayerMeta
     if (!valid.isOk()) {
         return valid;
     }
-    const Result<bool> refs =
-        validarReferenciasDeRegion(vistaCandidata(m_layers, layer, &candidate));
-    if (!refs.isOk()) {
-        return refs;
+    if (afectaReferenciasDeRegion(candidate)) {
+        const Result<bool> refs =
+            validarReferenciasDeRegion(vistaCandidata(m_layers, layer, &candidate));
+        if (!refs.isOk()) {
+            return refs;
+        }
     }
     *layer = std::move(candidate);
     sortLayersByOrder();

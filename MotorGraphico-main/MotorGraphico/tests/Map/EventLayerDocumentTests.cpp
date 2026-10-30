@@ -494,6 +494,77 @@ MOTOR_TEST_CASE(una_pagina_normal_con_region_vacia_da_el_mensaje_de_solo_region)
     MOTOR_CHECK(r.errorMessage().find("solo un trigger de region") != std::string::npos);
 }
 
+MapLayerMeta metaCapa(const std::string& id, int order) {
+    MapLayerMeta m;
+    m.id = lyr(id);
+    m.name = id;
+    m.order = order;
+    return m;
+}
+
+MapEventDocument vigiaQueEscucha(const std::string& capa, const std::string& region) {
+    MapEventDocument e;
+    e.id = evt("vigia");
+    e.position = GridCoord{5, 5};
+    e.pages.push_back(paginaDeRegion(EventTrigger::RegionEnter, capa, region));
+    return e;
+}
+
+MOTOR_TEST_CASE(addLayer_comprueba_las_regiones_que_escuchan_las_paginas_y_es_atomico) {
+    MapDocument doc(ids::MapId::parse("mapa").value(), "mapa", 8, 8, 64, 32);
+    MapRegionDocument zona;
+    zona.id = ids::RegionId::parse("zona_norte").value();
+    zona.name = "Zona";
+    zona.bounds = GridBounds{0, 3, 0, 3};
+    MOTOR_CHECK(
+        doc.addLayer(MapLayer::regions(metaCapa("regiones", 0), RegionLayerDocument({zona}))).isOk());
+    MOTOR_CHECK(doc.addLayer(MapLayer::tiles(metaCapa("suelo", 1),
+                                             TileLayerDocument(8, 8, std::vector<int>(64, 1))))
+                    .isOk());
+    const std::size_t antes = doc.layers().size();
+    const std::string json = ProjectSerializer::serializeMap(doc).value();
+
+    // Region inexistente en una capa que si es de regiones.
+    MOTOR_CHECK(!doc.addLayer(MapLayer::events(metaCapa("eventos", 2),
+        EventLayerDocument({vigiaQueEscucha("regiones", "no_existe")}))).isOk());
+    // Capa inexistente.
+    MOTOR_CHECK(!doc.addLayer(MapLayer::events(metaCapa("eventos", 2),
+        EventLayerDocument({vigiaQueEscucha("ausente", "zona_norte")}))).isOk());
+    // Capa que existe pero es de tiles.
+    const Result<bool> tipo = doc.addLayer(MapLayer::events(metaCapa("eventos", 2),
+        EventLayerDocument({vigiaQueEscucha("suelo", "zona_norte")})));
+    MOTOR_CHECK(!tipo.isOk() && tipo.errorMessage().find("vigia_p1") != std::string::npos);
+    // Atomico: ni capas nuevas, ni cambios, y el documento sigue valido.
+    MOTOR_CHECK(doc.layers().size() == antes);
+    MOTOR_CHECK(doc.validate().isOk() && ProjectSerializer::serializeMap(doc).value() == json);
+    // Referencia valida: entra.
+    MOTOR_CHECK(doc.addLayer(MapLayer::events(metaCapa("eventos", 2),
+        EventLayerDocument({vigiaQueEscucha("regiones", "zona_norte")}))).isOk());
+    MOTOR_CHECK(doc.layers().size() == antes + 1 && doc.validate().isOk());
+    // Editar tiles no cambia de comportamiento (no barre referencias).
+    MOTOR_CHECK(doc.setTile(lyr("suelo"), GridCoord{1, 1}, 2).isOk());
+}
+
+MOTOR_TEST_CASE(un_mapa_con_la_capa_de_eventos_antes_que_la_de_regiones_carga_bien) {
+    MapDocument doc(ids::MapId::parse("mapa").value(), "mapa", 8, 8, 64, 32);
+    MapRegionDocument zona;
+    zona.id = ids::RegionId::parse("zona_norte").value();
+    zona.name = "Zona";
+    zona.bounds = GridBounds{0, 3, 0, 3};
+    MOTOR_CHECK(
+        doc.addLayer(MapLayer::regions(metaCapa("regiones", 5), RegionLayerDocument({zona}))).isOk());
+    MOTOR_CHECK(doc.addLayer(MapLayer::events(metaCapa("eventos", 0),
+        EventLayerDocument({vigiaQueEscucha("regiones", "zona_norte")}))).isOk());
+    MOTOR_CHECK(doc.layers()[0].meta().id == lyr("eventos"));  // eventos primero en el fichero
+    const Result<std::string> json = ProjectSerializer::serializeMap(doc);
+    MOTOR_CHECK(json.isOk());
+    MOTOR_CHECK(json.value().find("\"eventos\"") < json.value().find("\"regiones\""));
+    const Result<MapDocument> vuelta = ProjectSerializer::deserializeMap(json.value());
+    MOTOR_CHECK(vuelta.isOk());
+    MOTOR_CHECK(vuelta.isOk() &&
+                ProjectSerializer::serializeMap(vuelta.value()).value() == json.value());
+}
+
 }  // namespace
 
 int main() { return motor_test::runAllTests(); }

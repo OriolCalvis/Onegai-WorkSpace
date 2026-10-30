@@ -87,7 +87,13 @@ Result<MapDocument> ProjectSerializer::deserializeMap(const std::string& text) {
         map.setAmbientB(static_cast<float>(root["ambientB"].asNumber()));
     }
 
-    for (std::size_t index = 0; index < root["layers"].size(); ++index) {
+    // U3-02.E06a r2: carga en dos fases. addLayer comprueba que las paginas de region
+    // apunten a una region EXISTENTE, asi que las capas de eventos entran despues de
+    // todas las demas aunque el fichero las declare antes (el orden final lo da `order`).
+    const std::size_t layerCount = root["layers"].size();
+    for (std::size_t step = 0; step < 2 * layerCount; ++step) {
+        const std::size_t index = step % layerCount;
+        const bool eventPass = step >= layerCount;
         const JsonValue& node = root["layers"][index];
         if (!node.isObject()) {
             return Result<MapDocument>::Error("mapa: layer no es objeto en índice " +
@@ -115,6 +121,10 @@ Result<MapDocument> ProjectSerializer::deserializeMap(const std::string& text) {
         const Result<std::string> type = requiredString(node, "type", "capa");
         if (!type.isOk()) {
             return Result<MapDocument>::Error(type.errorMessage());
+        }
+
+        if ((type.value() == "event") != eventPass) {
+            continue;
         }
 
         Result<bool> added = Result<bool>::Error("capa sin construir");
