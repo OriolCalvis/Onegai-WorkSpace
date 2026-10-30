@@ -112,7 +112,8 @@ endif()
 
 # U3-06.E02 -- Lector de maquinas de estados de animacion (gl-free, Game::MaquinaAnimacion).
 if(TARGET motor_level)
-    target_sources(motor_level PRIVATE src/Game/MaquinaAnimacion.cpp)
+    target_sources(motor_level PRIVATE src/Game/MaquinaAnimacion.cpp
+        src/Game/MaquinaAnimacionValidacion.cpp)
 endif()
 if(BUILD_TESTING AND TARGET motor_level)
     add_executable(test_maquina_animacion tests/Game/MaquinaAnimacionTests.cpp)

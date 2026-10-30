@@ -154,6 +154,10 @@ struct EntradasAnimacion {                       // valores del fotograma; sin g
 };
 ```
 
+**`finClip` (decisió E02 r1):** `finClip` no és un `IdParametro` vàlid (`[a-z0-9_]+`, sense majúscules). Al JSON només s'accepta `"finClip"` exacte (`param` d'una condició); el lector el desa com `kParametroFinClip = "finclip"` (`MaquinaAnimacion.h`). L'àlies `"finclip"` en una condició es **rebutja** (`param no declarado`), i un paràmetre d'usuari anomenat `finclip`, `finClip` o `rumbo` és error de reservat. **Per a E03:** la condició `finClip` s'avalua amb `EntradasAnimacion::finClip`, mai cercant a `valores`; `rumbo` surt de `valores`.
+
+**Validacions semàntiques (E02 r1):** el lector rebutja claus desconegudes a arrel, màquina, estat, transició, condició i paràmetre (`<ruta>: clave desconocida: X`; llista blanca per objecte); `rumbo` amb `valor` fora de 0..3; paràmetre `entero` comparat amb valor no enter; `valor` present amb `cierto|falso|disparado`; `valor` no finit. Els errors porten el format `<ruta>: <motiu>` (p. ex. `maquinas[0].estados[1].clip: clip no existe: x`). `leerMaquinaAnimacion` (una sola màquina) no comprova `schemaVersion` (és del document; ho fa `leerCatalogoMaquinas`) i les seves rutes comencen per `maquina`, no `maquinas[i]`.
+
 `ids::StrongId` ofereix `operator<` (`include/Core/Ids/StrongId.h:52`), així que serveix com a clau de `std::map`. Cap `struct` passa de 7 membres (límit 15).
 
 ---
@@ -183,6 +187,7 @@ Principis heretats de U3-05: peça pura gl-free a `motor_level`, `Result<T>` per
 | E03 `chooseAnimationTransition(...) -> optional<Transition>` | `eligeTransicion(...) -> optional<std::size_t>` (**índex** dins `maquina.transiciones`, no còpia) | evita copiar la transició i fa la prova exacta |
 | E04 `stepAnimationState(state, inputs, double dt) -> AnimationStep` | `pasoAnimacion(maquina, vivo, entradas) -> PasoAnimacion` sense `dt` | D-T4 |
 | E05 `actorAnimationInputs(const ActorSnapshot&)` | `entradasDePnj(const EstadoPnj&, bool reducidas)` | `ActorSnapshot` no existeix; el productor real és `EstadoPnj` |
+| E02 «`ClipIndex`» / ruta d'error | els missatges són `ruta: motiu`; `schemas/estados-v1.schema.json` amb `additionalProperties: false`; ajudants interns a `src/Game/MaquinaAnimacionValidacion.{h,cpp}` (cap de 500 línies) | E02 r1 |
 | E06 «`document: adapter`» | E06a (peça) + E06b (integració) | D-T3 |
 | E06 «política d'actor sense màquina» | definida a E06b | vegeu allà |
 
@@ -201,6 +206,7 @@ Lliurable: §1 (auditoria), §2 (format), §3–§7. **Àmbit:** només aquest `
   Funcions lliures, sense estat. **Desviació de la fitxa:** la fitxa diu `parseAnimationMachine(const JsonValue&, const ClipIndex&)`, però `ClipIndex` no existeix. El catàleg real és `std::vector<ClipAnimacion>` (`ClipAnimacion.h:62`) i els noms legacy dels PNJ depenen del repartiment de cada full, que el lector no coneix: un predicat injectat serveix per a tots dos casos (D-T1).
 - **Errors:** els de §2. **Prova (`tests/Game/MaquinaAnimacionTests.cpp`, `test_maquina_animacion`):** positiu (l'exemple), clip absent (**distingint un id absent del catàleg i que tampoc és nom legacy → error, d'un nom legacy vàlid com `idle_up` que no és al catàleg → acceptat**), estat destí absent, condició/op desconeguda, op incompatible, estat amb dos modes, transició sense condicions, paràmetre reservat, `schemaVersion` absent.
 - **Àmbit congelat:** `include/Game/MaquinaAnimacion.h`, `src/Game/MaquinaAnimacion.cpp`, `tests/Game/MaquinaAnimacionTests.cpp`, `schemas/estados-v1.schema.json`, i **append** a `cmake/ClipsAnimacion.cmake` (fonts a `motor_level` incondicionals + target de prova sota `BUILD_TESTING`, patró de `test_cursor_clip`: LABELS `unit;gl-free`, `MOTOR_GL_FREE_TARGETS`, `suite_gl_free`). **Cap nou `include(...)` a `CMakeLists.txt`** (el `.cmake` ja hi és).
+- **Fitxers afegits a E02 r1:** `src/Game/MaquinaAnimacionValidacion.{h,cpp}` (ajudants interns de paràmetres/condicions; `MaquinaAnimacion.cpp` ≤500 línies). **E03 va a `SeleccionAnimacion.{h,cpp}` i E04 a `PasoAnimacion.{h,cpp}`**, amb proves en fitxers propis (`SeleccionAnimacionTests.cpp`, `PasoAnimacionTests.cpp`) i el seu target; `MaquinaAnimacionTests.cpp` queda només per al lector.
 - **Bloquejada per:** D-T1 i D-T2 (nom/ruta). Pot començar amb les recomanacions.
 
 ### U3-06.E03 · Seleccionar transició

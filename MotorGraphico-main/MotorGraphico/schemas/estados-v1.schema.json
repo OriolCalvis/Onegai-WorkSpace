@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MotorGraphico Estados de animacion v1",
+  "type": "object",
+  "required": ["schemaVersion", "maquinas"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "maquinas": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/maquina" } }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+    "politica": { "enum": ["reiniciarSiempre", "reiniciarSiDistinto", "conservarFase"] },
+    "maquina": {
+      "type": "object",
+      "required": ["id", "inicial", "estados"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "inicial": { "$ref": "#/$defs/id" },
+        "parametros": { "type": "array", "items": { "$ref": "#/$defs/parametro" } },
+        "estados": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/estado" } },
+        "transiciones": { "type": "array", "items": { "$ref": "#/$defs/transicion" } }
+      }
+    },
+    "parametro": {
+      "type": "object",
+      "required": ["id", "tipo"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "allOf": [{ "$ref": "#/$defs/id" }, { "not": { "enum": ["rumbo", "finclip"] } }] },
+        "tipo": { "enum": ["booleano", "entero", "real", "disparo"] }
+      }
+    },
+    "estado": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "oneOf": [{ "required": ["clip"], "not": { "required": ["clipsPorRumbo"] } },
+                { "required": ["clipsPorRumbo"], "not": { "required": ["clip"] } }],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "clip": { "$ref": "#/$defs/id" },
+        "clipsPorRumbo": {
+          "type": "object",
+          "required": ["arriba", "derecha", "abajo", "izquierda"],
+          "additionalProperties": false,
+          "properties": {
+            "arriba": { "$ref": "#/$defs/id" },
+            "derecha": { "$ref": "#/$defs/id" },
+            "abajo": { "$ref": "#/$defs/id" },
+            "izquierda": { "$ref": "#/$defs/id" }
+          }
+        },
+        "politicaRumbo": { "$ref": "#/$defs/politica" }
+      }
+    },
+    "transicion": {
+      "type": "object",
+      "required": ["hacia"],
+      "additionalProperties": false,
+      "anyOf": [{ "required": ["cuando"], "properties": { "cuando": { "minItems": 1 } } },
+                { "required": ["esperaFinClip"], "properties": { "esperaFinClip": { "const": true } } }],
+      "properties": {
+        "desde": { "$ref": "#/$defs/id" },
+        "hacia": { "$ref": "#/$defs/id" },
+        "cuando": { "type": "array", "items": { "$ref": "#/$defs/condicion" } },
+        "esperaFinClip": { "type": "boolean" },
+        "politica": { "$ref": "#/$defs/politica" },
+        "prioridad": { "type": "integer" }
+      }
+    },
+    "condicion": {
+      "type": "object",
+      "required": ["param", "op"],
+      "additionalProperties": false,
+      "properties": {
+        "param": { "type": "string", "pattern": "^([a-z0-9_]+|finClip)$", "not": { "const": "finclip" } },
+        "op": { "enum": ["cierto", "falso", "igual", "distinto", "mayor", "mayorIgual", "menor", "menorIgual", "disparado"] },
+        "valor": { "type": "number" }
+      }
+    }
+  }
+}

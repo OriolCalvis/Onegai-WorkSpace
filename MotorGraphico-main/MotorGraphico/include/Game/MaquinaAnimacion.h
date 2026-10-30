@@ -38,7 +38,9 @@ using IdEstado = ids::StrongId<IdEstadoTag>;        // [a-z0-9_]+
 using IdParametro = ids::StrongId<IdParametroTag>;  // [a-z0-9_]+ (los reservados: "rumbo", "finClip")
 
 // Parametro reservado "finClip" del JSON (booleano). "finClip" no es un IdParametro valido
-// ([a-z0-9_]+), asi que las condiciones lo guardan con este id interno.
+// ([a-z0-9_]+), asi que las condiciones lo guardan con este id interno. En el JSON solo vale
+// "finClip" exacto: el alias "finclip" se rechaza. E03 evalua esta condicion con
+// EntradasAnimacion::finClip, nunca buscando en `valores`.
 inline constexpr const char* kParametroFinClip = "finclip";
 
 enum class TipoParametro { Booleano, Entero, Real, Disparo };
@@ -95,6 +97,8 @@ struct MaquinaAnimacion {  // inmutable tras leerla
 // Un predicado vacio (nullptr) equivale a "ningun clip existe".
 using ExisteClip = std::function<bool(const IdClip&)>;
 
+// Una sola maquina (objeto de "maquinas[i]"): no comprueba schemaVersion (es del documento) y sus
+// rutas de error empiezan por "maquina"; leerCatalogoMaquinas usa "maquinas[i]". Rechaza claves desconocidas.
 Result<MaquinaAnimacion> leerMaquinaAnimacion(const JsonValue& maquina, const ExisteClip& existeClip);
 
 // Lee un documento con 1..n maquinas; ids de maquina repetidos son error.

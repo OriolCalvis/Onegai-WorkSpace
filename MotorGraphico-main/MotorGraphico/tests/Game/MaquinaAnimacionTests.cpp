@@ -256,4 +256,79 @@ MOTOR_TEST_CASE(raiz_y_maquina_no_objeto) {
     falla(R"({"schemaVersion":1,"maquinas":[5]})", "maquinas[0]", "objeto");
 }
 
+MOTOR_TEST_CASE(claves_desconocidas_rechazadas_en_cada_nivel) {
+    // Sonda del adversarial: claves mal escritas no se ignoran en silencio.
+    falla(maq(R"([{"id":"a","clipsPorRumbo":{"arriba":"idle","derecha":"idle","abajo":"idle","izquierda":"idle"},"politcaRumbo":"conservarFase"}])"),
+          "maquinas[0].estados[0]", "clave desconocida: politcaRumbo");
+    falla(maq(kDosEstados, R"([{"desde":"a","hacia":"b","esperaFinclip":true}])"),
+          "maquinas[0].transiciones[0]", "clave desconocida: esperaFinclip");
+    falla(R"({"schemaVersion":1,"extra":1,"maquinas":[]})", "raiz", "clave desconocida: extra");
+    falla(R"({"schemaVersion":1,"maquinas":[{"id":"m","inicial":"a","estados":[{"id":"a","clip":"idle"}],"estado":[]}]})",
+          "maquinas[0]", "clave desconocida: estado");
+    falla(maq(kDosEstados, "[]", R"([{"id":"x","tipo":"booleano","defecto":true}])"),
+          "maquinas[0].parametros[0]", "clave desconocida: defecto");
+    falla(maq(kDosEstados, R"([{"desde":"a","hacia":"b","cuando":[{"param":"finClip","op":"cierto","val":1}]}])"),
+          "transiciones[0].cuando[0]", "clave desconocida: val");
+    falla(maq(R"([{"id":"a","clip":"idle","clips":"x"}])"), "estados[0]", "clave desconocida: clips");
+}
+
+MOTOR_TEST_CASE(finclip_solo_con_nombre_exacto_y_reservado) {
+    auto cond = [](const std::string& param) {
+        return "[{\"desde\":\"a\",\"hacia\":\"b\",\"cuando\":[{\"param\":\"" + param + "\",\"op\":\"cierto\"}]}]";
+    };
+    auto ok = leerCatalogoMaquinas(json(maq(kDosEstados, cond("finClip"))), existe);
+    MOTOR_CHECK(ok.isOk());
+    MOTOR_CHECK(ok.value()[0].transiciones[0].cuando[0].parametro.value() == kParametroFinClip);
+    // El alias interno en minusculas no vale en condiciones aunque sea un id sintacticamente valido.
+    falla(maq(kDosEstados, cond("finclip")), "cuando[0].param", "no declarado: finclip");
+    // Un parametro de usuario con cualquiera de los nombres reservados es error.
+    for (const char* n : {"finclip", "finClip", "rumbo"}) {
+        falla(maq(kDosEstados, "[]", std::string("[{\"id\":\"") + n + "\",\"tipo\":\"booleano\"}]"),
+              "parametros[0].id", "reservado");
+    }
+    MOTOR_CHECK(!IdParametro::parse(kParametroFinClip).value().empty());
+}
+
+MOTOR_TEST_CASE(validaciones_semanticas_de_valor) {
+    const std::string p = R"([{"id":"n","tipo":"entero"},{"id":"v","tipo":"real"},{"id":"b","tipo":"booleano"},{"id":"d","tipo":"disparo"}])";
+    auto t = [](const std::string& cond) { return "[{\"desde\":\"a\",\"hacia\":\"b\",\"cuando\":[" + cond + "]}]"; };
+    // rumbo fuera de 0..3 (7, -1, 4) es error; 0 y 3 son validos.
+    falla(maq(kDosEstados, t(R"({"param":"rumbo","op":"igual","valor":7})"), p), "cuando[0].valor", "rumbo fuera de 0..3");
+    falla(maq(kDosEstados, t(R"({"param":"rumbo","op":"igual","valor":-1})"), p), "cuando[0].valor", "rumbo fuera de 0..3");
+    falla(maq(kDosEstados, t(R"({"param":"rumbo","op":"menor","valor":4})"), p), "cuando[0].valor", "rumbo fuera de 0..3");
+    MOTOR_CHECK(leerCatalogoMaquinas(json(maq(kDosEstados, t(R"({"param":"rumbo","op":"igual","valor":0})"), p)), existe).isOk());
+    MOTOR_CHECK(leerCatalogoMaquinas(json(maq(kDosEstados, t(R"({"param":"rumbo","op":"igual","valor":3})"), p)), existe).isOk());
+    // Parametro entero con valor no entero es error; uno real lo admite.
+    falla(maq(kDosEstados, t(R"({"param":"n","op":"mayor","valor":1.5})"), p), "cuando[0].valor", "entero");
+    MOTOR_CHECK(leerCatalogoMaquinas(json(maq(kDosEstados, t(R"({"param":"v","op":"mayor","valor":1.5})"), p)), existe).isOk());
+    // valor presente con cierto/falso/disparado es error (no se ignora).
+    falla(maq(kDosEstados, t(R"({"param":"b","op":"cierto","valor":1})"), p), "cuando[0].valor", "no aplica");
+    falla(maq(kDosEstados, t(R"({"param":"b","op":"falso","valor":0})"), p), "cuando[0].valor", "no aplica");
+    falla(maq(kDosEstados, t(R"({"param":"d","op":"disparado","valor":1})"), p), "cuando[0].valor", "no aplica");
+    // valor no finito.
+    falla(maq(kDosEstados, t(R"({"param":"v","op":"mayor","valor":1e999})"), p), "cuando[0].valor");
+}
+
+MOTOR_TEST_CASE(esperafinclip_falso_con_condiciones_se_guarda_falso) {
+    auto r = leerCatalogoMaquinas(
+        json(maq(kDosEstados,
+                 R"([{"desde":"a","hacia":"b","esperaFinClip":false,"cuando":[{"param":"finClip","op":"falso"}]}])")),
+        existe);
+    MOTOR_CHECK(r.isOk());
+    const TransicionAnimacion& tr = r.value()[0].transiciones[0];
+    MOTOR_CHECK(!tr.esperaFinClip && tr.cuando.size() == 1);
+    MOTOR_CHECK(tr.cuando[0].op == OperadorCondicion::Falso);
+}
+
+MOTOR_TEST_CASE(maquina_sola_no_exige_schema_version) {
+    // leerMaquinaAnimacion lee el objeto de una maquina: schemaVersion es del documento.
+    auto ok = leerMaquinaAnimacion(json(kEnemigo)["maquinas"][0], soloCatalogo);
+    MOTOR_CHECK(ok.isOk());
+    auto mal = leerMaquinaAnimacion(json(R"({"id":"m","inicial":"zz","estados":[{"id":"a","clip":"idle"}]})"), existe);
+    MOTOR_CHECK(!mal.isOk());
+    MOTOR_CHECK(mal.errorMessage().rfind("maquina.inicial", 0) == 0);  // prefijo "maquina", no "maquinas[i]"
+    auto cat = leerCatalogoMaquinas(json(maq(kDosEstados, "[]", "[]", "zz")), existe);
+    MOTOR_CHECK(cat.errorMessage().rfind("maquinas[0].inicial", 0) == 0);
+}
+
 int main() { return motor_test::runAllTests(); }

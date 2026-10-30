@@ -1,7 +1,7 @@
 #include "Game/MaquinaAnimacion.h"
 
-#include <cmath>
-#include <limits>
+#include "MaquinaAnimacionValidacion.h"
+
 #include <set>
 #include <utility>
 
@@ -9,129 +9,8 @@ namespace Game {
 
 namespace {
 
+using namespace lectura;
 using MaqResult = Result<MaquinaAnimacion>;
-
-// Cada ayudante devuelve "" si todo va bien o el mensaje de error con su ruta.
-using Fallo = std::string;
-
-std::string idx(const std::string& base, std::size_t i) {
-    return base + "[" + std::to_string(i) + "]";
-}
-
-Fallo fallo(const std::string& ruta, const std::string& motivo) {
-    return ruta + ": " + motivo;
-}
-
-bool esEntero(const JsonValue& v) {
-    if (!v.isNumber()) {
-        return false;
-    }
-    const double d = v.asNumber();
-    return std::isfinite(d) && d == std::floor(d) &&
-           d >= static_cast<double>(std::numeric_limits<int>::min()) &&
-           d <= static_cast<double>(std::numeric_limits<int>::max());
-}
-
-// Campo de texto obligatorio con forma de id; deja el valor en "salida".
-template <class Id>
-Fallo leerId(const JsonValue& padre, const char* clave, const std::string& ruta, Id& salida) {
-    const std::string rutaC = ruta + "." + clave;
-    if (!padre.has(clave) || !padre[clave].isString()) {
-        return fallo(rutaC, "ausente o no es cadena");
-    }
-    auto id = Id::parse(padre[clave].asString());
-    if (!id.isOk()) {
-        return fallo(rutaC, "no valido (se espera [a-z0-9_]+): " + padre[clave].asString());
-    }
-    salida = id.value();
-    return "";
-}
-
-// Array opcional: si la clave existe debe ser un array. "presente" indica si existe.
-Fallo arrayOpcional(const JsonValue& padre, const char* clave, const std::string& ruta) {
-    if (padre.has(clave) && !padre[clave].isArray()) {
-        return fallo(ruta + "." + clave, "se espera un array");
-    }
-    return "";
-}
-
-Fallo leerPolitica(const JsonValue& padre, const char* clave, const std::string& ruta,
-                   PoliticaCambio& salida) {
-    if (!padre.has(clave)) {
-        return "";
-    }
-    const std::string rutaC = ruta + "." + clave;
-    if (!padre[clave].isString()) {
-        return fallo(rutaC, "se espera una cadena");
-    }
-    const std::string s = padre[clave].asString();
-    if (s == "reiniciarSiempre") {
-        salida = PoliticaCambio::ReiniciarSiempre;
-    } else if (s == "reiniciarSiDistinto") {
-        salida = PoliticaCambio::ReiniciarSiDistinto;
-    } else if (s == "conservarFase") {
-        salida = PoliticaCambio::ConservarFase;
-    } else {
-        return fallo(rutaC, "politica desconocida: " + s);
-    }
-    return "";
-}
-
-// ---- parametros ----
-
-// "finClip" (nombre en el JSON) no cabe en un IdParametro ([a-z0-9_]+): internamente es kParametroFinClip.
-bool esReservado(const std::string& nombre) {
-    return nombre == "rumbo" || nombre == "finClip" || nombre == kParametroFinClip;
-}
-
-Fallo leerTipoParametro(const JsonValue& p, const std::string& ruta, TipoParametro& tipo) {
-    const std::string rutaT = ruta + ".tipo";
-    if (!p.has("tipo") || !p["tipo"].isString()) {
-        return fallo(rutaT, "ausente o no es cadena");
-    }
-    const std::string s = p["tipo"].asString();
-    if (s == "booleano") {
-        tipo = TipoParametro::Booleano;
-    } else if (s == "entero") {
-        tipo = TipoParametro::Entero;
-    } else if (s == "real") {
-        tipo = TipoParametro::Real;
-    } else if (s == "disparo") {
-        tipo = TipoParametro::Disparo;
-    } else {
-        return fallo(rutaT, "tipo desconocido: " + s);
-    }
-    return "";
-}
-
-Fallo leerParametros(const JsonValue& m, const std::string& ruta, MaquinaAnimacion& maq) {
-    if (Fallo f = arrayOpcional(m, "parametros", ruta); !f.empty()) {
-        return f;
-    }
-    const JsonValue& arr = m["parametros"];
-    std::set<std::string> vistos;
-    for (std::size_t i = 0; i < arr.size(); ++i) {
-        const std::string rutaI = idx(ruta + ".parametros", i);
-        if (!arr[i].isObject()) {
-            return fallo(rutaI, "se espera un objeto");
-        }
-        ParametroAnimacion p;
-        if (arr[i]["id"].isString() && esReservado(arr[i]["id"].asString())) {
-            return fallo(rutaI + ".id", "nombre reservado: " + arr[i]["id"].asString());
-        }
-        if (Fallo f = leerId(arr[i], "id", rutaI, p.id); !f.empty()) {
-            return f;
-        }
-        if (!vistos.insert(p.id.value()).second) {
-            return fallo(rutaI + ".id", "parametro repetido: " + p.id.value());
-        }
-        if (Fallo f = leerTipoParametro(arr[i], rutaI, p.tipo); !f.empty()) {
-            return f;
-        }
-        maq.parametros.push_back(std::move(p));
-    }
-    return "";
-}
 
 // ---- estados ----
 
@@ -177,6 +56,9 @@ Fallo leerEstado(const JsonValue& e, const std::string& ruta, const ExisteClip& 
                  EstadoAnimacion& estado) {
     if (!e.isObject()) {
         return fallo(ruta, "se espera un objeto");
+    }
+    if (Fallo f = claveDesconocida(e, ruta, {"id", "clip", "clipsPorRumbo", "politicaRumbo"}); !f.empty()) {
+        return f;
     }
     if (Fallo f = leerId(e, "id", ruta, estado.id); !f.empty()) {
         return f;
@@ -229,118 +111,6 @@ bool existeEstado(const MaquinaAnimacion& maq, const IdEstado& id) {
     return false;
 }
 
-// ---- condiciones ----
-
-const ParametroAnimacion* buscaDeclarado(const MaquinaAnimacion& maq, const IdParametro& id) {
-    for (const ParametroAnimacion& p : maq.parametros) {
-        if (p.id == id) {
-            return &p;
-        }
-    }
-    return nullptr;
-}
-
-// Tipo de un parametro declarado o reservado; false si no existe.
-bool tipoDe(const MaquinaAnimacion& maq, const IdParametro& id, TipoParametro& tipo) {
-    if (id.value() == "rumbo") {
-        tipo = TipoParametro::Entero;
-        return true;
-    }
-    if (id.value() == kParametroFinClip) {
-        tipo = TipoParametro::Booleano;
-        return true;
-    }
-    if (const ParametroAnimacion* p = buscaDeclarado(maq, id)) {
-        tipo = p->tipo;
-        return true;
-    }
-    return false;
-}
-
-bool operadorDeTexto(const std::string& s, OperadorCondicion& op) {
-    static const std::pair<const char*, OperadorCondicion> tabla[] = {
-        {"cierto", OperadorCondicion::Cierto},         {"falso", OperadorCondicion::Falso},
-        {"igual", OperadorCondicion::Igual},           {"distinto", OperadorCondicion::Distinto},
-        {"mayor", OperadorCondicion::Mayor},           {"mayorIgual", OperadorCondicion::MayorIgual},
-        {"menor", OperadorCondicion::Menor},           {"menorIgual", OperadorCondicion::MenorIgual},
-        {"disparado", OperadorCondicion::Disparado}};
-    for (const auto& par : tabla) {
-        if (s == par.first) {
-            op = par.second;
-            return true;
-        }
-    }
-    return false;
-}
-
-bool esNumerico(OperadorCondicion op) {
-    return op != OperadorCondicion::Cierto && op != OperadorCondicion::Falso &&
-           op != OperadorCondicion::Disparado;
-}
-
-bool compatible(OperadorCondicion op, TipoParametro tipo) {
-    switch (tipo) {
-        case TipoParametro::Booleano:
-            return op == OperadorCondicion::Cierto || op == OperadorCondicion::Falso;
-        case TipoParametro::Disparo:
-            return op == OperadorCondicion::Disparado;
-        case TipoParametro::Entero:
-        case TipoParametro::Real:
-            return esNumerico(op);
-    }
-    return false;
-}
-
-const char* nombreTipo(TipoParametro tipo) {
-    switch (tipo) {
-        case TipoParametro::Booleano:
-            return "booleano";
-        case TipoParametro::Entero:
-            return "entero";
-        case TipoParametro::Real:
-            return "real";
-        case TipoParametro::Disparo:
-            return "disparo";
-    }
-    return "?";
-}
-
-Fallo leerCondicion(const JsonValue& c, const std::string& ruta, const MaquinaAnimacion& maq,
-                    CondicionAnimacion& cond) {
-    if (!c.isObject()) {
-        return fallo(ruta, "se espera un objeto");
-    }
-    if (c["param"].isString() && c["param"].asString() == "finClip") {
-        cond.parametro = IdParametro::parse(kParametroFinClip).value();
-    } else if (Fallo f = leerId(c, "param", ruta, cond.parametro); !f.empty()) {
-        return f;
-    }
-    TipoParametro tipo = TipoParametro::Booleano;
-    if (!tipoDe(maq, cond.parametro, tipo)) {
-        return fallo(ruta + ".param", "no declarado: " + cond.parametro.value());
-    }
-    if (!c.has("op") || !c["op"].isString()) {
-        return fallo(ruta + ".op", "ausente o no es cadena");
-    }
-    const std::string texto = c["op"].asString();
-    if (!operadorDeTexto(texto, cond.op)) {
-        return fallo(ruta + ".op", "desconocido: " + texto);
-    }
-    if (!compatible(cond.op, tipo)) {
-        return fallo(ruta + ".op", texto + " no aplica a parametro " + nombreTipo(tipo));
-    }
-    if (esNumerico(cond.op) && !c.has("valor")) {
-        return fallo(ruta + ".valor", "ausente (el operador " + texto + " lo exige)");
-    }
-    if (c.has("valor")) {
-        if (!c["valor"].isNumber() || !std::isfinite(c["valor"].asNumber())) {
-            return fallo(ruta + ".valor", "se espera un numero finito");
-        }
-        cond.valor = c["valor"].asNumber();
-    }
-    return "";
-}
-
 // ---- transiciones ----
 
 Fallo leerCuando(const JsonValue& t, const std::string& ruta, const MaquinaAnimacion& maq,
@@ -372,6 +142,10 @@ Fallo leerTransicion(const JsonValue& t, const std::string& ruta, const MaquinaA
                      TransicionAnimacion& tr) {
     if (!t.isObject()) {
         return fallo(ruta, "se espera un objeto");
+    }
+    if (Fallo f = claveDesconocida(t, ruta, {"desde", "hacia", "cuando", "esperaFinClip", "politica", "prioridad"});
+        !f.empty()) {
+        return f;
     }
     if (t.has("desde")) {
         IdEstado desde;
@@ -424,6 +198,10 @@ Fallo leerMaquinaEn(const JsonValue& m, const std::string& ruta, const ExisteCli
     if (!m.isObject()) {
         return fallo(ruta, "se espera un objeto");
     }
+    if (Fallo f = claveDesconocida(m, ruta, {"id", "inicial", "parametros", "estados", "transiciones"});
+        !f.empty()) {
+        return f;
+    }
     if (Fallo f = leerId(m, "id", ruta, maq.id); !f.empty()) {
         return f;
     }
@@ -452,6 +230,8 @@ MaqResult leerMaquinaRuta(const JsonValue& m, const std::string& ruta, const Exi
 
 }  // namespace
 
+// Una sola maquina (el objeto de "maquinas[i]"): no hay raiz, asi que no comprueba schemaVersion
+// (es del documento, lo valida leerCatalogoMaquinas) y sus rutas de error empiezan por "maquina".
 Result<MaquinaAnimacion> leerMaquinaAnimacion(const JsonValue& maquina, const ExisteClip& existeClip) {
     return leerMaquinaRuta(maquina, "maquina", existeClip);
 }
@@ -461,6 +241,9 @@ Result<std::vector<MaquinaAnimacion>> leerCatalogoMaquinas(const JsonValue& raiz
     using R = Result<std::vector<MaquinaAnimacion>>;
     if (!raiz.isObject()) {
         return R::Error("raiz: se espera un objeto");
+    }
+    if (Fallo f = claveDesconocida(raiz, "raiz", {"schemaVersion", "maquinas"}); !f.empty()) {
+        return R::Error(f);
     }
     if (!esEntero(raiz["schemaVersion"]) || raiz["schemaVersion"].asInt() != 1) {
         return R::Error("schemaVersion: ausente o distinto de 1");
