@@ -155,7 +155,7 @@ void Application::update(float deltaTime) {
     // combate, Camera::update, compone, golpes y, al final, niebla y luces con la vista de ESTE fotograma.
     if (m_vida != nullptr && m_session != nullptr) m_vida->avanza(deltaTime, m_session->playerPosition());  // BLOQUES-02, MASC-01
     const float dtPolvo = (mundo == 0.0f || (m_session != nullptr && m_session->mode() == GameMode::Pause)) ? 0.0f : deltaTime;  // U4-07.E07 (D-O6)
-    if (m_vida != nullptr && m_session != nullptr) m_vida->avanzaPolvo(dtPolvo, ApplicationCinematica::enCurso(*this) ? GridCoord{-1000, -1000} : m_session->playerPosition());
+    if (m_vida != nullptr && m_session != nullptr) m_vida->avanzaPolvo(dtPolvo, ApplicationCinematica::enCurso(*this) ? GridCoord{-1000, -1000} : m_session->playerPosition(), m_session->mode() == GameMode::Battle);  // D-O7
     trace("update: camara");
     // C-23 — Post-procesado por frame: beginFrame() (Visible->Explored), reveal() (ilumina alrededor del
     // jugador) y updateTexture() (rasteriza a la textura GL). Sin fog / sin luces es un no-op.

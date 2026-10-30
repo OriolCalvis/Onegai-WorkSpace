@@ -1,9 +1,11 @@
 // U4-07.E07 — Ver include/Game/Emisor/PasosDePolvo.h.
 #include "Game/Emisor/PasosDePolvo.h"
 
+#include <cmath>
 #include <cstdlib>
 #include <utility>
 
+#include "Core/Check.h"
 #include "Core/Math/IsoMath.h"
 #include "Runtime/Alturas.h"
 
@@ -76,15 +78,17 @@ void PasosDePolvo::creaNube(const GridCoord& anterior) {
     m_emisores.emplace_back(definicionDePolvo(semilla), Vector2{0.0f, 0.0f}, g);
 }
 
-void PasosDePolvo::avanza(double dtPolvo, const GridCoord& celda, bool reducido) {
+void PasosDePolvo::avanza(double dtPolvo, const GridCoord& celda, bool reducido, bool enCombate) {
     if (celda.x == kCeldaCentinela.x && celda.y == kCeldaCentinela.y) {
         olvida();
         return;
     }
-    if (!(dtPolvo > 0.0))
+    if (!(dtPolvo > 0.0) || !std::isfinite(dtPolvo))
         return;   // pausa (D-O6): nada nace, nada envejece, y la deteccion espera
     m_presupuesto.recuenta(m_emisores);
-    if (!m_hayUltima) {
+    if (enCombate) {
+        m_hayUltima = false;   // D-O7: ni pasos ni saltos; las nubes vivas siguen; al salir solo se memoriza
+    } else if (!m_hayUltima) {
         m_ultima = celda;
         m_hayUltima = true;
     } else if (celda.x != m_ultima.x || celda.y != m_ultima.y) {
@@ -99,7 +103,7 @@ void PasosDePolvo::avanza(double dtPolvo, const GridCoord& celda, bool reducido)
     }
     const double escala = reducido ? kEscalaTasaReducida : 1.0;
     for (Emisor& e : m_emisores)
-        (void)avanzarEmisor(e, dtPolvo, escala, m_presupuesto);   // dt y escala validos: no falla
+        require(avanzarEmisor(e, dtPolvo, escala, m_presupuesto).isOk());   // dt finito >0 y escala valida: no falla
     podaAcabados(m_emisores, m_presupuesto);
 }
 

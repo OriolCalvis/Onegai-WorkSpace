@@ -6,6 +6,7 @@
 // se memoriza. Posee los emisores (orden de creacion), UN presupuesto de 256 y el contador de pasos. Nada
 // `static`. La pintura es Render::PolvoDePasos (GL).
 //
+// D-O7 (Oriol): sin polvo en combate (ver avanza).
 // Ticks: `avanza` se llama una vez por tick fijo de 1/60 s. Con dtPolvo == 0 (pausa, D-O6) NADA nace ni
 // envejece (la celda centinela si se atiende: olvida aunque haya pausa).
 #pragma once
@@ -43,13 +44,16 @@ public:
     void monta(std::uint32_t llavor, int tileW, int tileH, const Alturas* alturas);
     void olvida();      // sin nubes, sin celda memorizada y presupuesto a 0; conserva el montaje
     void desmonta();    // olvida y suelta el puntero a las alturas
-    void avanza(double dtPolvo, const GridCoord& celda, bool reducido);
+    // D-O7: con enCombate no nace polvo ni se detectan pasos (el heroe se mueve varias casillas por tick); las
+    // nubes que ya existian se agotan solas. Al salir, la primera celda solo se memoriza.
+    void avanza(double dtPolvo, const GridCoord& celda, bool reducido, bool enCombate = false);
 
     const std::vector<Emisor>& emisores() const { return m_emisores; }
     const PresupuestoParticulas& presupuesto() const { return m_presupuesto; }
     std::uint64_t pasos() const { return m_pasos; }
 
-    // El adaptador GL pone aqui si tiene textura blanca; sin ella no se puede pintar (listo() falso).
+    // El adaptador GL pone aqui si tiene textura blanca (es el unico estado de blanco: Render::PolvoDePasos solo
+    // guarda ademas el puntero Texture*, que este modulo gl-free no puede nombrar); sin ella listo() es falso.
     void ponBlanco(bool disponible) { m_blanco = disponible; }
     bool listo() const { return m_blanco; }
 

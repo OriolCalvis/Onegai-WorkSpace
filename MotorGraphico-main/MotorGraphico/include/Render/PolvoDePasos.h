@@ -3,6 +3,7 @@
 // Se pinta en `renderShadow`: el renderer lo llama DESPUES de los tiles y ANTES de render() de todas las
 // entidades, asi todas las nubes quedan sobre el suelo y bajo todos los sprites, sin clave de orden por nube.
 // Limitacion: un edificio alto detras del jugador se pinta despues y puede tapar la parte alta de la nube.
+// El aviso unico de textura blanca ausente (std::cerr) sale en renderShadow, no al montar.
 // Solo se pinta con el pase de sombras del renderer activo (como el aura de la moral).
 #pragma once
 
@@ -24,7 +25,9 @@ public:
     void monta(std::uint32_t llavor, int tileW, int tileH, const Alturas* alturas) { m_pasos.monta(llavor, tileW, tileH, alturas); }
     void olvida() { m_pasos.olvida(); }
     void desmonta() { m_pasos.desmonta(); }
-    void avanza(float dtPolvo, const GridCoord& celda, bool reducido) { m_pasos.avanza(dtPolvo, celda, reducido); }
+    void avanza(float dtPolvo, const GridCoord& celda, bool reducido, bool enCombate) {
+        m_pasos.avanza(dtPolvo, celda, reducido, enCombate);
+    }
     void ponBlanco(Texture* blanco);
     bool listo() const { return m_pasos.listo(); }
     const Game::Emisor::PasosDePolvo& pasos() const { return m_pasos; }

@@ -375,10 +375,10 @@ void VidaNivel::avanza(float dt, const GridCoord& jugador) {
     m_mascotes.avanza(dt, jugador);
 }
 
-void VidaNivel::avanzaPolvo(float dtPolvo, const GridCoord& celda) {
+void VidaNivel::avanzaPolvo(float dtPolvo, const GridCoord& celda, bool enCombate) {
     // Animaciones reducidas (D-O3): el patron de ApplicationHud.cpp, tasa al 25 %.
     static const bool reducido = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;
-    m_polvo.avanza(dtPolvo, celda, reducido);
+    m_polvo.avanza(dtPolvo, celda, reducido, enCombate);
 }
 
 }  // namespace Render

@@ -255,6 +255,87 @@ MOTOR_TEST_CASE(proyeccion_de_una_nube_con_el_estilo_del_polvo) {
     }
 }
 
+MOTOR_TEST_CASE(definicion_del_polvo_campo_a_campo) {
+    const DefinicionEmisor d = definicionDePolvo(123456789ull);
+    MOTOR_CHECK(d.familia == "polvo");
+    MOTOR_CHECK(d.tasa == 40.0 && d.duracion == 0.15 && !d.cortar);
+    MOTOR_CHECK(d.vidaMin == 0.5 && d.vidaMax == 0.9);
+    MOTOR_CHECK(d.velocidadMin == 3.0 && d.velocidadMax == 8.0);
+    MOTOR_CHECK(d.anguloCentro == -90.0 && d.abanico == 140.0);
+    MOTOR_CHECK(d.maximo == 16 && d.opacidad == 1.0f && d.contraste == 0.0f);
+    MOTOR_CHECK(d.semilla == 123456789ull);
+    MOTOR_CHECK(kEscalaTasaReducida == 0.25);
+    MOTOR_CHECK(kMaxEmisoresPolvo == 16 && kAforoPolvo == 16 && kPresupuestoPolvo == 256);
+}
+
+MOTOR_TEST_CASE(monta_reinicia_contador_y_desmonta_anula_alturas) {
+    PasosDePolvo p, limpio;
+    p.monta(50, kTW, kTH, nullptr);
+    limpio.monta(50, kTW, kTH, nullptr);
+    for (int x = 0; x < 4; ++x) tick(p, {x, 0});
+    MOTOR_CHECK(p.pasos() == 3);
+    p.monta(50, kTW, kTH, nullptr);
+    MOTOR_CHECK(p.pasos() == 0 && p.emisores().empty());
+    tick(p, {0, 0}); tick(p, {1, 0});
+    tick(limpio, {0, 0}); tick(limpio, {1, 0});
+    MOTOR_CHECK(p.emisores()[0].definicion().semilla == limpio.emisores()[0].definicion().semilla);
+    MOTOR_CHECK(p.emisores()[0].definicion().semilla == mezclarSemilla(50ull));
+    Alturas a;
+    a.reinicia(10, 10);
+    a.pon(3, 2, 2);
+    PasosDePolvo q;
+    q.monta(1, kTW, kTH, &a);
+    q.desmonta();                   // sin un monta(nullptr) que lo tape
+    tick(q, {3, 2});
+    tick(q, {4, 2});
+    MOTOR_CHECK(q.emisores().size() == 1 && casi(q.emisores()[0].grupo.esquina.y, pies(3, 2).y));
+}
+
+MOTOR_TEST_CASE(cien_ciclos_y_dos_segundos_sin_pasos) {
+    PasosDePolvo p;
+    for (int c = 0; c < 100; ++c) {
+        p.monta(static_cast<std::uint32_t>(c), kTW, kTH, nullptr);
+        tick(p, {0, 0}); tick(p, {1, 0}); tick(p, {2, 0});
+        MOTOR_CHECK(p.presupuesto().vivas == vivasEnBuffers(p));
+        p.olvida();
+        MOTOR_CHECK(p.presupuesto().vivas == 0 && p.emisores().empty());
+    }
+    tick(p, {0, 0}); tick(p, {1, 0});
+    ticks(p, {1, 0}, 120);          // 2 s sin pasos: todo agotado y podado
+    MOTOR_CHECK(p.emisores().empty() && p.presupuesto().vivas == 0);
+}
+
+MOTOR_TEST_CASE(sin_polvo_en_combate_d_o7) {
+    PasosDePolvo p;
+    p.monta(5, kTW, kTH, nullptr);
+    tick(p, {5, 5});
+    tick(p, {6, 5});                // una nube previa al combate
+    ticks(p, {6, 5}, 3);
+    MOTOR_CHECK(p.emisores().size() == 1);
+    const double t0 = p.emisores()[0].tiempo();
+    p.avanza(kTick, {6, 5}, false, true);   // entra el combate: la nube sigue, no se olvida
+    MOTOR_CHECK(p.emisores().size() == 1 && p.emisores()[0].tiempo() > t0);
+    // en combate: saltos varias casillas y pasos adyacentes no levantan nada
+    p.avanza(kTick, {9, 5}, false, true);
+    p.avanza(kTick, {10, 5}, false, true);
+    p.avanza(kTick, {10, 6}, false, true);
+    MOTOR_CHECK(p.emisores().size() == 1 && p.pasos() == 1);
+    for (int i = 0; i < 120; ++i) p.avanza(kTick, {10, 6}, false, true);   // la nube previa se agota sola
+    MOTOR_CHECK(p.emisores().empty() && p.presupuesto().vivas == 0);
+    // y al salir, la primera celda solo se memoriza (no hay nube por el salto de la vuelta)
+    tick(p, {3, 3});
+    MOTOR_CHECK(p.emisores().empty() && p.pasos() == 1);
+    tick(p, {4, 3});
+    MOTOR_CHECK(p.emisores().size() == 1 && p.pasos() == 2);
+    // salir del combate con una nube viva y celda adyacente a la ultima de fuera: tampoco nace
+    PasosDePolvo q;
+    q.monta(5, kTW, kTH, nullptr);
+    tick(q, {1, 1}); tick(q, {2, 1});
+    q.avanza(kTick, {2, 1}, false, true);
+    tick(q, {3, 1});
+    MOTOR_CHECK(q.pasos() == 1);
+}
+
 // (c) La pausa D-O6 solo es vigilable en ApplicationBucle.cpp (Application::update no se puede construir sin GL):
 // prueba textual sobre el codigo SIN comentarios ni cadenas.
 std::string sinComentarios(const std::string& s) {
@@ -283,7 +364,25 @@ MOTOR_TEST_CASE(pausa_del_polvo_en_application_bucle) {
     MOTOR_CHECK(c.find(decl) != std::string::npos);
     MOTOR_CHECK(c.find("m_vida->avanzaPolvo(dtPolvo,") != std::string::npos);
     MOTOR_CHECK(c.find("m_vida->avanza(deltaTime,m_session->playerPosition());") != std::string::npos);  // mascotas intactas
-    MOTOR_CHECK(c.find("kCeldaCentinela") != std::string::npos || c.find("GridCoord{-1000,-1000}") != std::string::npos);
+    MOTOR_CHECK(c.find("m_vida->avanzaPolvo(dtPolvo,ApplicationCinematica::enCurso(*this)?GridCoord{-1000,-1000}:"
+                       "m_session->playerPosition(),m_session->mode()==GameMode::Battle);") != std::string::npos);
+}
+
+std::string fuente(const char* ruta) {
+    std::ifstream f(std::string(MOTOR_FUENTES_DIR) + "/" + ruta);
+    MOTOR_CHECK(f.good());
+    std::stringstream ss;
+    ss << f.rdbuf();
+    return sinEspacios(sinComentarios(ss.str()));
+}
+
+MOTOR_TEST_CASE(cableado_de_hud_y_vida_nivel) {
+    const std::string h = fuente("src/Engine/ApplicationHud.cpp");
+    MOTOR_CHECK(h.find("if(m_vida!=nullptr)m_vida->ponBlanco(m_whiteTexture.get());if(m_aura){") != std::string::npos);
+    const std::string v = fuente("src/Render/VidaNivel.cpp");
+    MOTOR_CHECK(v.find("m_polvo.monta(llavor,tileW,tileH,&mapa.alturas());renderer.removeFromQueue(&m_polvo);"
+                       "renderer.addToQueue(&m_polvo);") != std::string::npos);
+    MOTOR_CHECK(v.find("renderer.removeFromQueue(&m_polvo);m_polvo.desmonta();") != std::string::npos);
 }
 
 }  // namespace
