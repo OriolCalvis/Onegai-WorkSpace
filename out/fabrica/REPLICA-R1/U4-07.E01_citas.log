@@ -1,5 +1,5 @@
 # U4-07.E01 registro de citas (generado con sed-equivalente por contenido)
-# base: 2cb66437
+# base: fc27c3c1
 OK              src/Game/Personajes/BrilloEquipo.cpp:205-358 [361l]
     L205: void destellosDeBrillo(const HojaDeBrillo& brillo, int frame, double segundos, std::vector<Destello>& out) {
     L358: }
@@ -456,9 +456,15 @@ OK              CMakeLists.txt:388-388 [1640l]
 OK              include/Core/Math/EstadoTween.h:24-24 [71l]
     L24: constexpr double kToleranciaFinTween = 1e-9;
     L24: constexpr double kToleranciaFinTween = 1e-9;
+OK              src/Game/Personajes/BrilloEquipo.cpp:273-273 [361l]
+    L273: const float lado = azar01(kk, ii, ciclo + 2000u) * 2.0f - 1.0f;
+    L273: const float lado = azar01(kk, ii, ciclo + 2000u) * 2.0f - 1.0f;
 OK              src/Game/Personajes/BrilloEquipo.cpp:282-286 [361l]
     L282: bool suma = tipo.suma;
     L286: suma = false;
+OK              src/Game/Personajes/BrilloEquipo.cpp:288-288 [361l]
+    L288: float x = static_cast<float>(p[0]), y = static_cast<float>(p[1]);
+    L288: float x = static_cast<float>(p[0]), y = static_cast<float>(p[1]);
 OK              src/Game/Personajes/BrilloEquipo.cpp:348-352 [361l]
     L348: default:  // sube, cae o salta: lo de siempre
     L352: break;
@@ -495,6 +501,9 @@ OK              src/Game/Personajes/BrilloEquipo.cpp:337-347 [361l]
 OK              src/Game/Personajes/FamiliasDeParticulas.cpp:70-70 [225l]
     L70: {"polvo", {-2.0f, 9.0f, 1.2f, F::Voluta, false, M::Deriva, {{0xc8, 0xaa, 0x82}, {0xa0, 0x86, 0x64}}}},
     L70: {"polvo", {-2.0f, 9.0f, 1.2f, F::Voluta, false, M::Deriva, {{0xc8, 0xaa, 0x82}, {0xa0, 0x86, 0x64}}}},
+OK              src/Render/Player.cpp:132-132 [175l]
+    L132: if (std::abs(dx) + std::abs(dy) != 1) {
+    L132: if (std::abs(dx) + std::abs(dy) != 1) {
 OK              src/Render/Player.cpp:149-149 [175l]
     L149: Entity::setGridPosition(destination);
     L149: Entity::setGridPosition(destination);
@@ -507,27 +516,78 @@ OK              src/Render/Player.cpp:75-91 [175l]
 OK              src/Engine/ApplicationBucle.cpp:164-164 [474l]
     L164: if ((playerCell.x != m_lastCameraCell.x || playerCell.y != m_lastCameraCell.y) && m_session->mode() != GameMod
     L164: if ((playerCell.x != m_lastCameraCell.x || playerCell.y != m_lastCameraCell.y) && m_session->mode() != GameMod
-OK              src/Render/VidaNivel.cpp:366-369 [372l]
-    L366: void VidaNivel::avanza(float dt, const GridCoord& jugador) {
-    L369: }
 OK              src/Render/AuraJugador.cpp:76-76 [321l]
     L76: const Vector2 pies{base.x + tw * 0.5f, base.y + th * 0.9f};
     L76: const Vector2 pies{base.x + tw * 0.5f, base.y + th * 0.9f};
-OK              src/Engine/ApplicationBucle.cpp:167-167 [474l]
-    L167: target.y += m_map.alturas().desfasePx(playerCell);  // AV19-02: la camara sube con el terreno
-    L167: target.y += m_map.alturas().desfasePx(playerCell);  // AV19-02: la camara sube con el terreno
+OK              include/Render/VidaNivel.h:45-45 [62l]
+    L45: void monta(const Entrada& entrada, const RuntimeTileMap& mapa, std::uint32_t llavor, BancoAtlas& banco,
+    L45: void monta(const Entrada& entrada, const RuntimeTileMap& mapa, std::uint32_t llavor, BancoAtlas& banco,
+OK              include/Runtime/RuntimeTileMap.h:50-50 [80l]
+    L50: const Alturas& alturas() const { return m_alturas; }
+    L50: const Alturas& alturas() const { return m_alturas; }
+OK              src/Render/BloquesNivel.cpp:75-75 [187l]
+    L75: entidad->setAlturas(&mapa.alturas());
+    L75: entidad->setAlturas(&mapa.alturas());
+OK              src/Render/BloquesNivel.cpp:154-154 [187l]
+    L154: origen.y += mapa.alturas().desfasePx(GridCoord{t.x, t.y});
+    L154: origen.y += mapa.alturas().desfasePx(GridCoord{t.x, t.y});
+OK              include/Runtime/Alturas.h:93-94 [101l]
+    L93: static float desfasePx(int nivel) { return -static_cast<float>(nivel) * kPasoPx; }
+    L94: float desfasePx(const GridCoord& c) const { return desfasePx(en(c)); }
+OK              include/Runtime/Alturas.h:40-40 [101l]
+    L40: static constexpr float kPasoPx = 16.0f;
+    L40: static constexpr float kPasoPx = 16.0f;
 OK              src/Engine/ApplicationCinematica.cpp:300-300 [517l]
     L300: if (app.m_vida != nullptr) app.m_vida->avanza(dt, GridCoord{-1000, -1000});
     L300: if (app.m_vida != nullptr) app.m_vida->avanza(dt, GridCoord{-1000, -1000});
+OK              src/Engine/ApplicationCinematica.cpp:270-272 [517l]
+    L270: void ApplicationCinematica::titulo(Application& app, float dt) {
+    L272: EstadoCinematicas& estado = *app.m_cine;
+OK              src/Engine/ApplicationBucle.cpp:195-195 [474l]
+    L195: m_session->rutinasPnj().ponPausa(ApplicationCinematica::enCurso(*this));  // PNJ-02: en una cinematica manda e
+    L195: m_session->rutinasPnj().ponPausa(ApplicationCinematica::enCurso(*this));  // PNJ-02: en una cinematica manda e
+OK              src/Engine/ApplicationBucle.cpp:297-297 [474l]
+    L297: if (!ApplicationCinematica::enCurso(*this)) {
+    L297: if (!ApplicationCinematica::enCurso(*this)) {
+OK              src/Engine/ApplicationBucle.cpp:85-85 [474l]
+    L85: void fixedUpdate(float dt) override { if (!m_title) m_tick(dt); else if (m_titleTick) m_titleTick(dt); }
+    L85: void fixedUpdate(float dt) override { if (!m_title) m_tick(dt); else if (m_titleTick) m_titleTick(dt); }
+OK              src/Engine/ApplicationBucle.cpp:101-101 [474l]
+    L101: [this](float dt) { update(dt); },
+    L101: [this](float dt) { update(dt); },
+OK              src/Game/GameSessionInteraccion.cpp:174-180 [500l]
+    L174: bool GameSession::pause() {
+    L180: }
+OK              include/Game/SessionTipos.h:26-26 [109l]
+    L26: enum class GameMode { Exploration, Battle, GameOver, Dialogue, Shop, Business, Pause };
+    L26: enum class GameMode { Exploration, Battle, GameOver, Dialogue, Shop, Business, Pause };
+OK              src/Engine/ApplicationBucle.cpp:141-141 [474l]
+    L141: const float mundo = ApplicationCinematica::pausaDeGolpe(*this, deltaTime) ? 0.0f : deltaTime;
+    L141: const float mundo = ApplicationCinematica::pausaDeGolpe(*this, deltaTime) ? 0.0f : deltaTime;
+OK              src/Engine/ApplicationBucle.cpp:282-282 [474l]
+    L282: const bool ocupado = m_session->mode() != GameMode::Exploration || m_showInventory ||
+    L282: const bool ocupado = m_session->mode() != GameMode::Exploration || m_showInventory ||
+OK              include/Engine/ApplicationLoop.h:14-14 [65l]
+    L14: float fixedStepSeconds = 1.0f / 60.0f;
+    L14: float fixedStepSeconds = 1.0f / 60.0f;
+OK              include/Engine/ApplicationLoop.h:22-22 [65l]
+    L22: std::size_t maxFixedUpdatesPerFrame = 6;
+    L22: std::size_t maxFixedUpdatesPerFrame = 6;
 OK              src/Render/PintaDestellos.cpp:101-105 [110l]
     L101: for (const Activa& a : m_activas) {
     L105: pintaDestellos(batch, m_destellos, a.esquina, a.tam, m_blanco);
-OK              src/Render/Entity.cpp:77-80 [129l]
-    L77: int Entity::getSortKey() const {
-    L80: }
+OK              include/Render/IRenderable.h:21-22 [35l]
+    L21: // IsometricRenderer DESPUES de los tiles y ANTES de render() de
+    L22: // todas las entidades: todas las sombras quedan bajo todos los
+OK              include/Render/IRenderable.h:26-26 [35l]
+    L26: virtual void renderShadow(SpriteBatch& batch, Texture* shadowTexture) {
+    L26: virtual void renderShadow(SpriteBatch& batch, Texture* shadowTexture) {
 OK              include/Render/CapaDeDibujo.h:41-41 [82l]
     L41: constexpr int clave(int claveDePie, CapaDeDibujo capa, int sesgo = 0) {
     L41: constexpr int clave(int claveDePie, CapaDeDibujo capa, int sesgo = 0) {
+OK              src/Render/Entity.cpp:77-80 [129l]
+    L77: int Entity::getSortKey() const {
+    L80: }
 OK              include/Render/VidaNivel.h:32-48 [62l]
     L32: class VidaNivel {
     L48: void avanza(float dt, const GridCoord& jugador);
@@ -537,12 +597,15 @@ OK              include/Render/IsometricRenderer.h:76-81 [201l]
 OK              src/Render/IsometricRenderer.cpp:61-65 [367l]
     L61: void IsometricRenderer::removeFromQueue(IRenderable* obj) {
     L65: }
-OK              src/Engine/ApplicationHud.cpp:316-316 [466l]
-    L316: m_aura->ponBrillo(m_nuevaPartida ? m_nuevaPartida->hojaDelJugador() : nullptr, m_whiteTexture.get());
-    L316: m_aura->ponBrillo(m_nuevaPartida ? m_nuevaPartida->hojaDelJugador() : nullptr, m_whiteTexture.get());
+OK              src/Engine/ApplicationHud.cpp:312-317 [466l]
+    L312: if (m_aura) {
+    L317: }
 OK              src/Engine/Application.cpp:551-551 [1283l]
     L551: m_whiteTexture.reset(makeWhiteTexture());
     L551: m_whiteTexture.reset(makeWhiteTexture());
+OK              src/Render/PintaDestellos.cpp:30-30 [110l]
+    L30: if (destellos.empty() || blanco == nullptr)
+    L30: if (destellos.empty() || blanco == nullptr)
 OK              src/Engine/Application.cpp:368-368 [1283l]
     L368: m_vida = std::make_unique<Render::VidaNivel>();
     L368: m_vida = std::make_unique<Render::VidaNivel>();
@@ -555,15 +618,6 @@ OK              src/Engine/ApplicationNivel.cpp:327-327 [507l]
 OK              src/Engine/ApplicationCierre.cpp:133-134 [163l]
     L133: if (m_renderer && m_vida) m_vida->desmonta(*m_renderer);
     L134: m_vida.reset();
-OK              src/Engine/ApplicationBucle.cpp:85-85 [474l]
-    L85: void fixedUpdate(float dt) override { if (!m_title) m_tick(dt); else if (m_titleTick) m_titleTick(dt); }
-    L85: void fixedUpdate(float dt) override { if (!m_title) m_tick(dt); else if (m_titleTick) m_titleTick(dt); }
-OK              include/Engine/ApplicationLoop.h:14-14 [65l]
-    L14: float fixedStepSeconds = 1.0f / 60.0f;
-    L14: float fixedStepSeconds = 1.0f / 60.0f;
-OK              include/Engine/ApplicationLoop.h:22-22 [65l]
-    L22: std::size_t maxFixedUpdatesPerFrame = 6;
-    L22: std::size_t maxFixedUpdatesPerFrame = 6;
 OK              include/Render/SpriteBatch.h:94-94 [100l]
     L94: std::vector<Vertex> m_vertices;
     L94: std::vector<Vertex> m_vertices;
@@ -597,9 +651,6 @@ OK              include/RPG/RandomEngine.h:66-68 [88l]
 OK              include/RPG/RandomEngine.h:60-60 [88l]
     L60: uint64_t range = static_cast<uint64_t>(b - a + 1);
     L60: uint64_t range = static_cast<uint64_t>(b - a + 1);
-OK              src/Engine/ApplicationBucle.cpp:141-141 [474l]
-    L141: const float mundo = ApplicationCinematica::pausaDeGolpe(*this, deltaTime) ? 0.0f : deltaTime;
-    L141: const float mundo = ApplicationCinematica::pausaDeGolpe(*this, deltaTime) ? 0.0f : deltaTime;
 OK              src/Game/Personajes/FamiliasDeParticulas.cpp:14-14 [225l]
     L14: static const std::map<std::string, TipoDeParticula> kTipos = {
     L14: static const std::map<std::string, TipoDeParticula> kTipos = {
@@ -630,4 +681,4 @@ OK              src/Game/Personajes/BrilloEquipo.cpp:317-317 [361l]
 OK              src/Game/ParticulasDeCartas.cpp:78-78 [106l]
     L78: if (familia.empty() || edad < 0.0 || edad >= kDuracionDeCarta)
     L78: if (familia.empty() || edad < 0.0 || edad >= kDuracionDeCarta)
-# citas unicas: 210  incidencias: 0
+# citas unicas: 227  incidencias: 0
