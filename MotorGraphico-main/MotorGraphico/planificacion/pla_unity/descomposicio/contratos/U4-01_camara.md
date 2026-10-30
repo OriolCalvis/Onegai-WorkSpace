@@ -161,23 +161,35 @@ Result<Vector2> seguirConZonaMuerta(const Vector2& centroActual, float zoom,
 - Casos: dentro (sin cambio), cuatro costados, exactamente en el borde, actor a `+1e-3` del
   borde, zoom 0.5/2 (la zona en mundo cambia), idempotencia (aplicar dos veces = una).
 
-### E03 · Límites al mapa real (90 min)
+### E03 · Límites al mapa real (90 min) — r1: centro siempre sobre terreno (decisión de Oriol 30/10)
 ```cpp
-struct LimitesMapa { float izquierda = 0, derecha = 0, arriba = 0, abajo = 0; };  // píxeles de mundo iso
+struct RomboMapa { Vector2 superior, derecho, inferior, izquierdo; };            // contorno real, px de mundo
+struct LimitesMapa { float izquierda = 0, derecha = 0, arriba = 0, abajo = 0;   // caja, px de mundo iso
+                     bool usaRombo = false; RomboMapa rombo; };
+Result<RomboMapa> romboDeMapa(int columnas, int filas, int anchoTile, int altoTile);
 Result<LimitesMapa> limitesDeMapa(int columnas, int filas, int anchoTile, int altoTile,
                                   float margenSuperiorPx = 0.0f);
 Result<Vector2> limitarAlMapa(const Vector2& centro, float zoom, const TamanoVista& vista,
                               const LimitesMapa& limites);
 ```
-- `limitesDeMapa`: misma geometría que `MapFraming.cpp:17-19` (+`arriba=-margenSuperiorPx`,
-  que cubre sprites/alturas, D-T7). **No** depende de `RuntimeTileMap` (precedente:
-  `Culling.h:26-29` mantiene esa dirección); el adaptador pasa `m_map.getWidth()...`.
-- `limitarAlMapa`: por eje, `mitad = vista/(2*zoom)`; si `(max-min) <= 2*mitad` → **centrado**
-  `(min+max)/2`; si no, `clamp(centro, min+mitad, max-mitad)`. Rectangular isométrico: se limita
-  la caja que contiene el rombo (no el rombo) — D-O3 decide si se admite ver el vacío de las
-  cuatro esquinas del rombo.
-- Casos: mapa 1x1, 3x2 y 64x64 (como `MapFramingTests`), mapa mayor/menor que la vista en un
-  solo eje, zoom 0.15/1/3, centro ya dentro (identidad), `columnas<=0` → Error.
+- `limitesDeMapa`: caja con la misma geometría que `MapFraming.cpp:17-19` (+`arriba=-margenSuperiorPx`,
+  que cubre sprites/alturas, D-T7) y `rombo = romboDeMapa(...)`, `usaRombo=true`. **No** depende de
+  `RuntimeTileMap` (precedente: `Culling.h:26-29`); el adaptador pasa `m_map.getWidth()...`.
+- Rombo: el rectángulo `tw x th` de la casilla (gx,gy) arranca en `IsoMath::gridToScreen`; su rombo
+  tiene la esquina superior en `+tw/2`. Vértices: superior `(tw/2, 0)`; derecho = esquina derecha de
+  `(columnas-1,0)`; inferior = esquina inferior de `(columnas-1,filas-1)`; izquierdo = esquina izquierda
+  de `(0,filas-1)` (paralelogramo; rombo si columnas==filas). Cuenta como «sobre terreno» cualquier punto
+  del rombo de alguna casilla (se usa el rombo entero de la casilla).
+- `limitarAlMapa` (orden): (1) caja: por eje, `mitad = vista/(2*zoom)`; si `(max-min) <= 2*mitad` →
+  **centrado** `(min+max)/2`; si no, `clamp(centro, min+mitad, max-mitad)`. (2) rombo: el centro pasa
+  al punto **más cercano** (euclídeo) del contorno (identidad con tolerancia 1e-3 px si ya está dentro).
+  Si ese punto saca el centro del rango de la caja (eje estrecho), se acerca al centro de la caja por el
+  segmento hasta el límite del rango. El resultado está siempre en rango de caja y en rombo; en bordes y
+  esquinas puede verse algo de vacío, nunca una pantalla sin terreno en el centro.
+- Casos (valores calculados a mano, comprobados por `PoliticaCamaraLimitesTests.cpp`): ver §E05 (64x64,
+  3x2); mapa 30x1 (vista 800x600, zoom 1, centro (-5000,900)) ⇒ `(496,248)` por el segmento al centro de
+  la caja; 3x2 zoom 20 centro (-100,-100) ⇒ `(-9,2; 20,6)`; centro (500,500) ⇒ `(105,2; 59,4)`;
+  `columnas<=0` → Error.
 
 ### E04 · Sacudida determinista (90 min)
 ```cpp
@@ -217,15 +229,16 @@ Result<PoseCamara> componerPose(const Vector2& posicionLogica, float zoom, const
   (cero deriva acumulada; test: 10 000 llamadas, `base` bit-idéntica). `PoseCamara.vista -
   posicionLogica` es el **desplazamiento de vista** que el adaptador entrega a `Camera`
   (incluye el recorte de límites y la sacudida, ver E06 y D-T5/D-T12).
-- Casos numéricos obligatorios (mapa 64x64, tiles 64x32 ⇒ `izquierda=-2016`, `derecha=2080`,
-  `arriba=0`, `abajo=2048`; vista 800x600): zoom 1,7, centro x=-2000 ⇒ borde izq. de vista
-  -2235,3 (fuera) → `base.x = -2016 + 800/(2*1,7) = -1780,7`; zoom 1, centro (0,0) ⇒ `base =
-  (0,300)` (solo el eje Y se recorta) y centro (-2000,-50) ⇒ `(-1616,300)`;
-  zoom 3, centro (2080,2048) (esquina inferior derecha) ⇒ `base=(1946,667; 1948)`
-  (mitades 133,333 y 100); zoom 1, centro **exactamente** en `min+mitad` = (-1616,300) ⇒ identidad, y
-  (-1616,001; 299,999) ⇒ `(-1616,300)` con tolerancia 1e-3; mapa 3x2 (`izq=-32, der=128, arr=0, aba=80`) con
-  vista 800x600 ⇒ `base=(48,40)`; cambio de mapa: destino viejo (1500,1000) sobre mapa 3x2 ⇒
-  `(48,40)`.
+- Casos numéricos obligatorios (mapa 64x64, tiles 64x32 ⇒ caja `izquierda=-2016`, `derecha=2080`,
+  `arriba=0`, `abajo=2048`; rombo `(32,0) (2080,1024) (32,2048) (-2016,1024)`; vista 800x600; **r1**: tras la
+  caja se proyecta el centro al rombo): zoom 1,7, centro x=-2000 y=1000 ⇒ `(-1780,706; 1000)` (la caja
+  recorta X, el punto ya está en el rombo); zoom 1, centro (0,0) ⇒ `(0,300)` (solo Y; ya en el rombo);
+  zoom 1, centro (-2000,-50) ⇒ caja `(-1616,300)` fuera del rombo ⇒ **`(-1406,4; 719,2)`** (antes
+  `(-1616,300)`); zoom 3, centro (2080,2048) ⇒ caja `(1946,667; 1948)` fuera ⇒ **`(1603,733; 1262,133)`**
+  (antes `(1946,667; 1948)`); zoom 1, centro **exactamente** en `min+mitad` y sobre el eje del rombo
+  (-1616,1024) ⇒ identidad, y (-1616,001; 1024) ⇒ `(-1616,1024)` con tolerancia 1e-3; mapa 3x2 (`izq=-32,
+  der=128, arr=0, aba=80`) con vista 800x600 ⇒ `base=(48,40)` (centro del paralelogramo); cambio de
+  mapa: destino viejo (1500,1000) sobre mapa 3x2 ⇒ `(48,40)`.
 - `limites == nullptr` ⇒ sin límites (dónde se aplican: D-O6). Puntero opcional en lugar de
   `std::optional` (elección de estilo; E05 puede cambiarlo).
 
@@ -439,7 +452,7 @@ la transición a un `struct EstadoTransicion` (propuesta en R1) — no se hace e
 |---|---|---|---|---|
 | **D-O1** | Tamaño de la zona muerta por defecto | (a) 0 = centrar siempre (hoy); (b) ±1 tile `64x32` px; (c) ±1,5 tiles `96x48` px; (d) 25 % de la ventana | **(c) ±96x±48 px**, constante en un solo sitio y ajustable en E07 tras verlo | Valor en **E06**; E02 se implementa y se prueba sin él (recibe `ZonaMuerta`). Defecto de código = (a) hasta decidir |
 | **D-O2** | Intensidad y duración de la sacudida | (a) como hoy: ±4/±2,4 px, 0,14 s (daño) y 0,24 s (crítico) pero con caída a 0; (b) más suave (±3); (c) más fuerte (±6, crítico 0,35 s) | **(a)** conservar valores, añadir caída. Nota: hoy son 4 px de **mundo**, con zoom de combate 1,7 se ven ≈6,8 px de pantalla; la amplitud de v1 es de pantalla, así que (a) equivale a pasar `4*1,7≈7` px | Valores en **E06**; E04 no | 
-| **D-O3** | ¿La cámara puede mostrar fuera del mapa? | (a) nunca (salvo mapa menor que la vista: centrado); (b) margen de 1 tile; (c) libre | **(a)**; mapas menores que la ventana se centran con el vacío alrededor | Parámetro por defecto en **E06** y criterio de aceptación de **E07**; E03 lo implementa parametrizado (0 = estricto) |
+| **D-O3** | ¿La cámara puede mostrar fuera del mapa? | (a) nunca (salvo mapa menor que la vista: centrado); (b) margen de 1 tile; (c) libre | **(a)**; mapas menores que la ventana se centran con el vacío alrededor. **Precisión de Oriol (30/10, isométrico): «el centro de la pantalla siempre sobre terreno»**: caja + proyección del centro al rombo real del mapa; en bordes/esquinas puede verse algo de vacío | Parámetro por defecto en **E06** y criterio de aceptación de **E07**; E03 lo implementa parametrizado (0 = estricto) |
 | **D-O4** | Reduced motion: ¿sacudida apagada o atenuada? | (a) off (`factorMovimiento=0`); (b) 25 % (`0,25`) | **(a) off**, coherente con cómo el HUD omite animaciones (`DialogoHoja.cpp:219`) | Defecto en **E06**; E04 ya admite ambos |
 | **D-O6** | ¿Dónde se aplican los límites? | (a) exploración y combate, no título/cinemáticas; (b) también combate sin límites (el encuadre del combate manda); (c) solo exploración | **(a)**; revisar en E07 si el combate junto al borde queda descentrado | Defecto en **E06**; E07 lo verifica |
 | **D-O5** | Aprobación visual/jugable (dead zone, esquinas, sacudida a escala real) | — | Observación real por Oriol | **E07**, y el cierre del paquete (porta de la ficha) |

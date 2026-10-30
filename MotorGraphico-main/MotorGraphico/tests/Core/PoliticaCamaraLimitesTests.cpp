@@ -19,6 +19,16 @@ const TamanoVista kVista{800, 600};
 // Tolerancia fijada en el header: 1e-3 px de mundo absolutos para |coord| <= 4096.
 bool cerca(float a, float b, float tol = 1e-3f) { return std::fabs(a - b) <= tol; }
 
+// El centro esta dentro del paralelogramo del mapa (tolerancia 1e-3): lo prueba en coordenadas de
+// casilla continuas (a,b) invirtiendo gridToScreen respecto a la esquina superior del rombo.
+bool centroSobreRombo(const Vector2& p, const LimitesMapa& l, double hw = 32.0, double hh = 16.0) {
+    const double columnas = l.rombo.derecho.y / hh, filas = l.rombo.izquierdo.y / hh;
+    const double dx = p.x - l.rombo.superior.x, dy = p.y - l.rombo.superior.y;
+    const double a = (dx / hw + dy / hh) * 0.5, b = (dy / hh - dx / hw) * 0.5;
+    const double e = 1e-4;
+    return a >= -e && a <= columnas + e && b >= -e && b <= filas + e;
+}
+
 LimitesMapa limites(int c, int f, int tw = 64, int th = 32, float margen = 0.0f) {
     const auto r = limitesDeMapa(c, f, tw, th, margen);
     MOTOR_CHECK(r.isOk());
@@ -61,29 +71,35 @@ MOTOR_TEST_CASE(caso_zoom_1_centro_origen_solo_recorta_y) {
     MOTOR_CHECK(r.x == 0.0f && cerca(r.y, 300.0f));
 }
 
-MOTOR_TEST_CASE(caso_esquina_superior_izquierda) {
+// Decision de Oriol (r1): tras la caja, el centro se lleva al punto mas cercano del rombo.
+// Caja da (-1616,300), que esta fuera del rombo (|dx|/2048+|dy|/1024 = 1,51); arista izquierda-
+// superior dx+2dy=-2048 desde (32,1024): proyeccion (-1406,4; 719,2).
+MOTOR_TEST_CASE(caso_esquina_superior_izquierda_sube_al_rombo) {
     const LimitesMapa l = limites(64, 64);
     const Vector2 r = limita({-2000.0f, -50.0f}, 1.0f, kVista, l);
-    MOTOR_CHECK(cerca(r.x, -1616.0f) && cerca(r.y, 300.0f));
+    MOTOR_CHECK(cerca(r.x, -1406.4f) && cerca(r.y, 719.2f));
+    MOTOR_CHECK(centroSobreRombo(r, l));
 }
 
 MOTOR_TEST_CASE(caso_zoom_3_esquina_inferior_derecha) {
     const LimitesMapa l = limites(64, 64);
+    // Caja: (1946,667; 1948) (fuera del rombo); arista derecha-inferior dx+2dy=2048: proyeccion.
     const Vector2 r = limita({2080.0f, 2048.0f}, 3.0f, kVista, l);
-    MOTOR_CHECK(cerca(r.x, 1946.666667f) && cerca(r.y, 1948.0f));
+    MOTOR_CHECK(cerca(r.x, 1603.733333f) && cerca(r.y, 1262.133333f));
+    MOTOR_CHECK(centroSobreRombo(r, l));
 }
 
 MOTOR_TEST_CASE(centro_exacto_min_mas_mitad_es_identidad) {
     const LimitesMapa l = limites(64, 64);
-    const Vector2 c{-1616.0f, 300.0f};
+    const Vector2 c{-1616.0f, 1024.0f};  // x = min+mitad, y sobre el eje horizontal del rombo
     const Vector2 r = limita(c, 1.0f, kVista, l);
     MOTOR_CHECK(r.x == c.x && r.y == c.y);
 }
 
 MOTOR_TEST_CASE(centro_a_1e_3_del_borde_se_recorta) {
     const LimitesMapa l = limites(64, 64);
-    const Vector2 r = limita({-1616.001f, 299.999f}, 1.0f, kVista, l);
-    MOTOR_CHECK(cerca(r.x, -1616.0f) && cerca(r.y, 300.0f));
+    const Vector2 r = limita({-1616.001f, 1024.0f}, 1.0f, kVista, l);
+    MOTOR_CHECK(cerca(r.x, -1616.0f) && cerca(r.y, 1024.0f));
 }
 
 MOTOR_TEST_CASE(mapa_3x2_menor_que_la_vista_se_centra_en_ambos_ejes) {
@@ -100,8 +116,11 @@ MOTOR_TEST_CASE(mapa_menor_que_la_vista_solo_en_un_eje) {
     const LimitesMapa l = limites(30, 1);
     MOTOR_CHECK(l.derecha == 992.0f && l.abajo == 496.0f);
     const Vector2 r = limita({-5000.0f, 900.0f}, 1.0f, kVista, l);
-    MOTOR_CHECK(cerca(r.x, l.izquierda + 400.0f));  // clamp en X
-    MOTOR_CHECK(cerca(r.y, l.abajo * 0.5f));        // centrado en Y
+    // Caja: (400, 248) (clamp en X, Y centrado), fuera del paralelogramo fino; la arista b=1
+    // (desde (32,32), direccion (2,1)) da (412,8; 222,4), con Y fuera del rango colapsado
+    // (248): se acerca al centro de la caja (496,248) hasta el limite de Y: el centro.
+    MOTOR_CHECK(cerca(r.x, 496.0f) && cerca(r.y, 248.0f));
+    MOTOR_CHECK(centroSobreRombo(r, l));
 }
 
 MOTOR_TEST_CASE(zoom_que_cambia_vuelve_a_caber_o_no) {
@@ -110,15 +129,81 @@ MOTOR_TEST_CASE(zoom_que_cambia_vuelve_a_caber_o_no) {
     Vector2 r = limita({0.0f, 0.0f}, 0.15f, kVista, l);
     MOTOR_CHECK(cerca(r.x, 48.0f) && cerca(r.y, 40.0f));
     r = limita({-100.0f, -100.0f}, 20.0f, kVista, l);
-    MOTOR_CHECK(cerca(r.x, -32.0f + 20.0f) && cerca(r.y, 15.0f));
+    // Caja: (-12,15) fuera del paralelogramo; arista T-L: proyeccion (-9,2; 20,6).
+    MOTOR_CHECK(cerca(r.x, -9.2f) && cerca(r.y, 20.6f));
     r = limita({500.0f, 500.0f}, 20.0f, kVista, l);
-    MOTOR_CHECK(cerca(r.x, 128.0f - 20.0f) && cerca(r.y, 80.0f - 15.0f));
+    // Caja: (108,65); arista R-B: (105,2; 59,4).
+    MOTOR_CHECK(cerca(r.x, 105.2f) && cerca(r.y, 59.4f));
 }
 
 MOTOR_TEST_CASE(mapa_que_justo_cabe_se_centra) {
     const LimitesMapa l{0.0f, 800.0f, 0.0f, 600.0f};
     const Vector2 r = limita({123.0f, -45.0f}, 1.0f, kVista, l);
     MOTOR_CHECK(r.x == 400.0f && r.y == 300.0f);
+}
+
+MOTOR_TEST_CASE(vertices_del_rombo_con_gridToScreen) {
+    const auto r = PoliticaCamara::romboDeMapa(3, 2, 64, 32);
+    MOTOR_CHECK(r.isOk());
+    const auto& v = r.value();
+    MOTOR_CHECK(v.superior.x == 32.0f && v.superior.y == 0.0f);
+    MOTOR_CHECK(v.derecho.x == 128.0f && v.derecho.y == 48.0f);
+    MOTOR_CHECK(v.inferior.x == 64.0f && v.inferior.y == 80.0f);
+    MOTOR_CHECK(v.izquierdo.x == -32.0f && v.izquierdo.y == 32.0f);
+    const auto g = PoliticaCamara::romboDeMapa(64, 64, 64, 32).value();
+    MOTOR_CHECK(g.superior.x == 32.0f && g.derecho.x == 2080.0f && g.derecho.y == 1024.0f);
+    MOTOR_CHECK(g.inferior.x == 32.0f && g.inferior.y == 2048.0f);
+    MOTOR_CHECK(g.izquierdo.x == -2016.0f && g.izquierdo.y == 1024.0f);
+    MOTOR_CHECK(!PoliticaCamara::romboDeMapa(0, 2, 64, 32).isOk());
+}
+
+MOTOR_TEST_CASE(barrido_el_centro_siempre_cae_sobre_terreno) {
+    for (int dim : {1, 3, 64}) {
+        const LimitesMapa l = limites(dim, dim == 3 ? 2 : dim);
+        for (float zoom : {0.15f, 1.0f, 1.7f, 3.0f}) {
+            for (float x = -3000.0f; x <= 3000.0f; x += 250.0f) {
+                for (float y = -1000.0f; y <= 3000.0f; y += 250.0f) {
+                    const Vector2 r = limita({x, y}, zoom, kVista, l);
+                    MOTOR_CHECK(centroSobreRombo(r, l));
+                    // El tile bajo el centro existe: sus indices (floor de a,b) caen en el mapa.
+                    const Vector2 d = r - l.rombo.superior;
+                    const double a = (d.x / 32.0 + d.y / 16.0) * 0.5, b = (d.y / 16.0 - d.x / 32.0) * 0.5;
+                    MOTOR_CHECK(std::floor(a + 1e-4) >= 0 && std::floor(b + 1e-4) >= 0);
+                    // Idempotente (tolerancia 1e-3) y dentro de la caja.
+                    const Vector2 s = limita(r, zoom, kVista, l);
+                    MOTOR_CHECK(cerca(s.x, r.x) && cerca(s.y, r.y));
+                    MOTOR_CHECK(r.x >= l.izquierda - 1e-3f && r.x <= l.derecha + 1e-3f);
+                    MOTOR_CHECK(r.y >= l.arriba - 1e-3f && r.y <= l.abajo + 1e-3f);
+                }
+            }
+        }
+    }
+}
+
+MOTOR_TEST_CASE(las_cuatro_esquinas_del_mapa_se_alcanzan) {
+    // Los vertices del rombo son validos como centro (zoom 20: la vista cabe holgada).
+    const LimitesMapa l = limites(64, 64);
+    const Vector2 vs[4] = {l.rombo.superior, l.rombo.derecho, l.rombo.inferior, l.rombo.izquierdo};
+    for (const Vector2& v : vs) {
+        const Vector2 r = limita(v, 20.0f, kVista, l);
+        MOTOR_CHECK(centroSobreRombo(r, l));
+        // Cada vertice se acerca a <= 40 px del propio vertice (la caja de zoom 20 es 20 x 15).
+        MOTOR_CHECK(std::hypot(r.x - v.x, r.y - v.y) <= 25.0);
+    }
+}
+
+MOTOR_TEST_CASE(centro_ya_sobre_terreno_y_dentro_de_caja_es_identidad) {
+    const LimitesMapa l = limites(64, 64);
+    const Vector2 c{123.5f, 987.25f};
+    const Vector2 r = limita(c, 1.0f, kVista, l);
+    MOTOR_CHECK(r.x == c.x && r.y == c.y);
+}
+
+MOTOR_TEST_CASE(sin_rombo_solo_se_aplica_la_caja) {
+    LimitesMapa l = limites(64, 64);
+    l.usaRombo = false;
+    const Vector2 r = limita({-2000.0f, -50.0f}, 1.0f, kVista, l);
+    MOTOR_CHECK(cerca(r.x, -1616.0f) && cerca(r.y, 300.0f));
 }
 
 MOTOR_TEST_CASE(precision_con_coordenadas_grandes) {
