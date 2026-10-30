@@ -110,9 +110,10 @@ MOTOR_TEST_CASE(empate_de_prioridad_especifico_antes_que_cualquiera) {
 
 MOTOR_TEST_CASE(desde_ausente_aplica_desde_cualquier_estado) {
     const auto m = maq({tr(nullptr, "d", {kX})});
-    for (const char* actual : {"a", "b", "c", "d"}) {
+    for (const char* actual : {"a", "b", "c"}) {
         MOTOR_CHECK(hacia(m, con({{"x", 1}}), actual) == "d");
     }
+    MOTOR_CHECK(hacia(m, con({{"x", 1}}), "d") == "<ninguna>");  // hacia == actual: excluida
     // Con desde concreto, solo ese estado.
     const auto m2 = maq({tr("b", "d", {kX})});
     MOTOR_CHECK(hacia(m2, con({{"x", 1}}), "a") == "<ninguna>");
@@ -188,6 +189,7 @@ MOTOR_TEST_CASE(operadores_de_entero_real_booleano_y_disparo) {
     // Disparo armado (1) / no armado (0 o ausente).
     MOTOR_CHECK(dispara(cond("n", OperadorCondicion::Disparado), 1.0));
     MOTOR_CHECK(!dispara(cond("n", OperadorCondicion::Disparado), 0.0));
+    MOTOR_CHECK(dispara(cond("n", OperadorCondicion::Disparado), -1.0));  // armado = valor != 0
     MOTOR_CHECK(hacia(una(cond("n", OperadorCondicion::Disparado)), con({})) == "<ninguna>");
     // Booleano ausente = falso.
     MOTOR_CHECK(hacia(una(cond("n", OperadorCondicion::Falso)), con({})) == "b");
@@ -200,6 +202,25 @@ MOTOR_TEST_CASE(rumbo_sale_de_valores_y_el_cambio_de_direccion_no_es_transicion)
     // Sin transiciones, cambiar el rumbo no elige nada (lo resuelve clipDeEstado).
     MaquinaAnimacion solo = maq({});
     MOTOR_CHECK(!eligeTransicion(solo, est("a"), con({{"rumbo", 2}})).has_value());
+}
+
+MOTOR_TEST_CASE(parte_del_estado_inicial_de_la_maquina) {
+    auto m = maq({tr("a", "b", {kX}), tr("b", "c", {kX})});
+    MOTOR_CHECK(hacia(m, con({{"x", 1}}), m.inicial.value().c_str()) == "b");
+    m.inicial = est("b");
+    MOTOR_CHECK(hacia(m, con({{"x", 1}}), m.inicial.value().c_str()) == "c");
+}
+
+MOTOR_TEST_CASE(cualquiera_no_transita_a_si_mismo) {
+    // "cualquiera" -> c: desde c se excluye; desde otro estado sigue valiendo.
+    const auto m = maq({tr(nullptr, "c", {kX}, 9), tr("c", "d", {kX}, 1)});
+    MOTOR_CHECK(hacia(m, con({{"x", 1}}), "c") == "d");  // no bloquea la salida de menor prioridad
+    MOTOR_CHECK(hacia(m, con({{"x", 1}}), "a") == "c");
+    const auto solo = maq({tr(nullptr, "c", {kX})});
+    MOTOR_CHECK(hacia(solo, con({{"x", 1}}), "c") == "<ninguna>");
+    // Con desde especifico, la autotransicion explicita si vale (repetir un ataque).
+    const auto expl = maq({tr("c", "c", {kX})});
+    MOTOR_CHECK(hacia(expl, con({{"x", 1}}), "c") == "c");
 }
 
 MOTOR_TEST_CASE(clip_de_estado_modulo_4_del_rumbo) {

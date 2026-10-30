@@ -72,6 +72,9 @@ std::optional<std::size_t> eligeTransicion(const MaquinaAnimacion& maquina, cons
         if (t.desde.has_value() && !(*t.desde == actual)) {
             continue;
         }
+        if (!t.desde.has_value() && t.hacia == actual) {
+            continue;  // "cualquiera" nunca transita a si mismo (Can Transition To Self desactivado)
+        }
         if (!dispara(t, entradas)) {
             continue;
         }
