@@ -345,7 +345,8 @@ MOTOR_TEST_CASE(aspecto_se_cambia_con_las_flechas_de_su_fila) {
     const std::string antes = c.editor()->apariencia().clave();
     int ojos = -1;
     for (std::size_t i = 0; i < c.editor()->filas().size(); ++i)
-        if (c.editor()->filas()[i] == Game::EditorApariencia::Fila::Ojos) ojos = static_cast<int>(i);
+        // CAR-2: los alquimistas no tienen capa de ojos; la fila que se prueba es el peinado.
+        if (c.editor()->filas()[i] == Game::EditorApariencia::Fila::Peinado) ojos = static_cast<int>(i);
     MOTOR_CHECK(ojos >= 0);
     c.pulsa(Zona::Mas, ojos);
     MOTOR_CHECK(c.foco() == ojos);
