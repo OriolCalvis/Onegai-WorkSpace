@@ -91,6 +91,7 @@ Las tres listas se combinan con AND entre sí. Omitirla entera = siempre cierta.
 | `tierMinimo` | el héroe está en **ese tier o más** |
 | `variables` | cada variable con nombre, **dentro de su rango** (VARIABLES-01): `{"afecto_venides": {"min": 1}, "franja": 2}`. Un número es el valor exacto; un objeto, `min` y/o `max` (los dos incluidos). Una variable que nadie ha tocado vale 0. |
 | `moral` | la moral del héroe (la ya asentada, de −100 a 100) **dentro del rango** (MORAL-01): `{"min": 20}` es «Respetado o más»; `{"max": -20}`, «Canalla o menos». Sirve para **añadir** líneas u opciones según el tramo, nunca para cerrar el camino (wf-04: «el villano juega, no es expulsado del juego»). |
+| `reputacion` | la reputación del héroe con una o más facciones, **dentro del rango** (BND-04; sección «La reputación en `requires`»): `{"aegroum": {"min": 10}}`. Con varias facciones, hacen falta todas. |
 | `lugar` | el nivel donde está el jugador (DIALOGOS-01): `"assets/levels/interior_herreria.json"` o una lista. El mismo PNJ dice otra cosa en otro sitio. Si el juego no sabe dónde está (demos sin niveles), no se mira. |
 
 **El día y la franja** (FASE1-BND-01) son dos variables más: `dia` (1, 2, 3...) y
@@ -332,6 +333,31 @@ mueve en el momento.
 `tools/simular_moral.py` juega las cinco rutas de `tools/moral/rutas_boundington.json`
 con estos números (y con los que se le pasen) y `test_moral` falla si una ruta de
 Boundington llega a ±60.
+
+### La reputación en `requires` (BND-04)
+
+`requires.reputacion` lee lo que cada facción piensa del héroe (la de
+`CharacterSheet::getRep`, de −100 a 100, que mueven los actos; 0 si la facción
+nunca lo ha visto). Es `{faccion: {"min": n, "max": m}}`: `min` y `max` son
+opcionales (al menos uno) y se cumplen **incluidos**; con varias facciones
+hacen falta **todas**, y se combina con el resto de condiciones (`allFlags`,
+`moral`...). La facción tiene que ser un `id` de `assets/rules/facciones.json`
+(`aegroum`, `perdidos`, `barriada_surysal`): otra cosa es un error de carga y de
+`validar_todo.py`, no un «falso» callado. Vale en beats y en opciones.
+
+```json
+{"id": "fiador", "trigger": {"type": "talk", "target": "skilla"},
+ "requires": {"allFlags": ["conoce_skilla"],
+              "reputacion": {"aegroum": {"min": 15}, "perdidos": {"max": 0}}},
+ "lines": ["Por ti, me la juego."]}
+```
+
+Como la moral, sirve para **añadir** líneas u opciones según cómo te ven, no para
+cerrar el camino.
+
+**Ojo con el orden:** las opciones de un beat se filtran cuando el beat salta,
+antes de que su propio `acto` mueva la reputación. Una opción no ve el `acto`
+del mismo beat que la ofrece; si tiene que verlo, ponla en el beat siguiente.
 
 ## Comandos de evento (E-04)
 

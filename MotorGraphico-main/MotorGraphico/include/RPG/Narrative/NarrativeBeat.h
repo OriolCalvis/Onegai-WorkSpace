@@ -52,6 +52,14 @@ struct NarrativeCondition {
         int max = std::numeric_limits<int>::max();
     };
     std::vector<RangoDeVariable> variables;
+    // BND-04 — La reputacion con facciones ("reputacion": {"aegroum": {"min": 10}}),
+    // la de la ficha del heroe (-100..100), min y max incluidos. Todas a la vez.
+    struct RangoDeReputacion {
+        std::string faccion;
+        int min = std::numeric_limits<int>::min();
+        int max = std::numeric_limits<int>::max();
+    };
+    std::vector<RangoDeReputacion> reputaciones;
     // MORAL-01 — Un tramo de la moral asentada del heroe ("moral": {"min",
     // "max"}, los dos incluidos). Para lineas y opciones de mas, nunca para
     // cerrar el camino (wf-04: «el villano juega, no es expulsado del juego»).
@@ -66,7 +74,7 @@ struct NarrativeCondition {
     }
     bool isEmpty() const {
         return allFlags.empty() && anyFlags.empty() && notFlags.empty() && nivelMinimo <= 0 && tierMinimo <= 0 &&
-               variables.empty() && !tieneMoral() && lugares.empty();
+               variables.empty() && reputaciones.empty() && !tieneMoral() && lugares.empty();
     }
 };
 

@@ -4,6 +4,7 @@
 #include <filesystem>
 
 #include "Game/GameSession.h"
+#include "Game/MoralDeLaSesion.h"  // BND-04
 #include "Game/SessionData.h"
 
 namespace Game {
@@ -45,8 +46,10 @@ void GameSession::avaluaEventosDelMundo() {
         std::string diag;
         const auto confirmadas = RPG::eventos::evalua(*d.m_eventos, *d.m_narrativeState, &diag);
         if (!diag.empty()) logLine("eventos: " + diag);
-        if (!confirmadas.empty() && d.m_narrative != nullptr && d.m_mode == GameMode::Exploration)
+        if (!confirmadas.empty() && d.m_narrative != nullptr && d.m_mode == GameMode::Exploration) {
+            moral::reflejaLaReputacion(d);  // BND-04
             applyNarrative(d.m_narrative->tick(*d.m_narrativeState));
+        }
         if (!d.m_eventosPendientes) break;
     }
     d.m_eventosPendientes = false;

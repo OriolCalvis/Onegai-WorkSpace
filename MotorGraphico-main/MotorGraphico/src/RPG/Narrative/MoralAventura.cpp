@@ -1,5 +1,6 @@
 // MORAL-01 — Ver MoralAventura.h.
 #include "MoralAventura.h"
+#include "ReputacionAventura.h"  // BND-04: requires.reputacion cuelga de aqui
 
 #include <limits>
 
@@ -21,6 +22,8 @@ Result<bool> leeEfecto(const JsonValue& entrada, NarrativeEffect& effect, const 
 }
 
 Result<bool> leeCondicion(const JsonValue& requiresValue, NarrativeCondition& c, const std::string& donde) {
+    auto reputacion = reputacionAventura::leeCondicion(requiresValue, c, donde);  // BND-04
+    if (!reputacion.isOk()) return reputacion;
     const JsonValue& moral = requiresValue["moral"];
     if (moral.isNull()) return Result<bool>::Ok(true);
     if (!moral.isObject() || (!moral.has("min") && !moral.has("max")))
@@ -35,6 +38,7 @@ Result<bool> leeCondicion(const JsonValue& requiresValue, NarrativeCondition& c,
 }
 
 void escribeCondicion(JsonWriter& w, const NarrativeCondition& c) {
+    reputacionAventura::escribeCondicion(w, c);  // BND-04
     if (!c.tieneMoral()) return;
     w.key("moral");
     w.beginObject();

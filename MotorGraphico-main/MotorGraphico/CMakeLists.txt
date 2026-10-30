@@ -128,6 +128,7 @@ add_library(motor_rpg
     src/RPG/Narrative/AdventureScriptLoader.cpp
     src/RPG/Narrative/AcompanantesAventura.cpp  # ACOMPANANTES-01: los acompañantes de la aventura
     src/RPG/Narrative/MoralAventura.cpp  # MORAL-01: acto, herida, requires.moral y exitos fijos
+    src/RPG/Narrative/ReputacionAventura.cpp  # BND-04: requires.reputacion
     src/RPG/Narrative/CharlaAventura.cpp  # DIALOGOS-01: requires.lugar y los papeles de las opciones
     src/RPG/Narrative/BeatsAventura.cpp  # VARIABLES-01 / OPCIONES-01: condiciones, efectos y opciones de un beat
     src/RPG/Narrative/FranjasDelDia.cpp  # FASE1-BND-01: el dia y la franja de la historia
@@ -995,6 +996,7 @@ if(BUILD_TESTING)
     include(cmake/OpcionesDialogoTests.cmake)  # OPCIONES-01 / VARIABLES-01
     include(cmake/FaseUnoBoundingtonTests.cmake)  # FASE1-BND-01: franjas, tabla, descanso, huir y sin matar
     include(cmake/MoralTests.cmake)  # MORAL-01: la moral de varios factores
+    include(cmake/ReputacionAventuraTests.cmake)  # BND-04: requires.reputacion
     include(cmake/HeroeEnLaHistoria.cmake)  # HEROE-01: la historia sabe quien es el heroe creado
     include(cmake/Charlas.cmake)  # DIALOGOS-01: lugar, "sigue" y las paginas de charla
     include(cmake/Cinematica.cmake)  # PROLOGO-02: las cinematicas del prologo

@@ -255,10 +255,9 @@ public:
     //
     // El motor va const y el estado no: la aventura es contenido de solo
     // lectura, las flags son la partida.
-    void setNarrative(const RPG::NarrativeEngine* engine, RPG::NarrativeState* state) {
-        m_data->m_narrative = engine;
-        m_data->m_narrativeState = state;
-    }
+    // BND-04: al enchufarla, el estado copia ya la reputacion de la ficha.
+    void setNarrative(const RPG::NarrativeEngine* engine, RPG::NarrativeState* state);
+    void reflejaReputacion();  // BND-04: ficha -> estado, antes de evaluar beats
     const RPG::NarrativeState* narrativeState() const { return m_data->m_narrativeState; }
     // C8-03c — Catalogo de eventos del mundo (no propietario, como setNarrative). nullptr = sin eventos.
     void setEventosDelMundo(const RPG::eventos::Catalogo* c);

@@ -30,7 +30,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from project_manifest import load_manifest, resolve_entry
+from project_manifest import load_manifest, resolve_entry; import validar_reputacion  # BND-04
 
 TOOLS = Path(__file__).resolve().parent
 MOTOR = TOOLS.parent
@@ -670,8 +670,8 @@ def validar_aventuras() -> None:
                         err(f"assets/adventures/{nombre}", bid, "opciones." + campo, "es true o false")
             if "pagina" in beat and not isinstance(beat["pagina"], bool):  # DIALOGOS-01: página de charla
                 err(f"assets/adventures/{nombre}", bid, "pagina", "es true o false")
-            # MORAL-01: el tramo de moral que piden, de -100 a 100
-            for req in requisitos_de(beat):
+            for req in requisitos_de(beat):  # MORAL-01: el tramo de moral, de -100 a 100 (y BND-04: la reputación)
+                validar_reputacion.revisa(req, err, f"assets/adventures/{nombre}", bid)
                 m = req.get("moral") if isinstance(req, dict) else None
                 if m is None:
                     continue

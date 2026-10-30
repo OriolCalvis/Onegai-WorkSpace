@@ -34,6 +34,7 @@
 #include "Game/Actuacion.h"  // ACTUAR-01
 #include "Game/RutinasPnj.h"  // PNJ-02
 #include "Game/SessionData.h"
+#include "Game/MoralDeLaSesion.h"  // BND-04
 #include "Game/EnemyCatalogBridge.h"
 
 #include "RPG/InventoryEngine.h"  // G-12
@@ -400,6 +401,7 @@ void GameSession::applyCarryOver(const PlayerCarryOver& state) {
     sessionData()->m_morality.setValue(state.moralityValue);
     sessionData()->m_morality.restauraEstado(state.moral);  // MORAL-01
     if (sessionData()->m_narrativeState != nullptr) sessionData()->m_narrativeState->ponMoral(state.moralityValue);
+    moral::reflejaEnLaAventura(*sessionData());  // BND-04: y la reputacion de la ficha
     sessionData()->m_stepsSinceRent = std::max(0, state.stepsSinceRent);
     sessionData()->m_businesses = state.businesses;
 }
