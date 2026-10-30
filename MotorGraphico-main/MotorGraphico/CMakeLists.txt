@@ -844,6 +844,7 @@ if (EXISTS ${GLAD_DIR}/src/glad.c AND EXISTS ${STB_DIR}/stb_image.h)
         src/Engine/ApplicationNivel.cpp
         src/Engine/ApplicationCinematica.cpp  # PROLOGO-02: las cinematicas en el juego
         src/Engine/ApplicationCinematicaEscena.cpp  # C2-04b: la escena viva en el juego
+        src/Engine/ApplicationCinematicaTitulo.cpp
         ${GLAD_DIR}/src/glad.c
         ${CMAKE_BINARY_DIR}/stb_image_impl.cpp
     )
