@@ -180,6 +180,54 @@ MOTOR_TEST_CASE(particion_que_cruza_el_final_emite_una_vez_en_ambos_casos) {
     }
 }
 
+// Parte `total` en n trozos iguales; devuelve emisiones y deja el estado final en e.
+int avanzaEnTrozos(EstadoTween& e, double total, int n) {
+    int emisiones = 0;
+    for (int i = 0; i < n; ++i) {
+        const auto r = avanzaTween(e, total / n);
+        MOTOR_CHECK(r.isOk());
+        if (r.value().acabaDeTerminar) ++emisiones;
+        e = r.value().estado;
+    }
+    return emisiones;
+}
+
+MOTOR_TEST_CASE(tolerancia_de_final_en_particiones_que_acumulan_por_debajo) {
+    EstadoTween e = nuevo(1.0);
+    // 10 x 0.1 acumula 0.9999999999999999: debe terminar en el ultimo trozo.
+    EstadoTween diez = nuevo(1.0);
+    int emisiones = 0;
+    for (int i = 0; i < 10; ++i) {
+        const auto r = avanzaTween(diez, 0.1);
+        MOTOR_CHECK(r.isOk());
+        MOTOR_CHECK(r.value().acabaDeTerminar == (i == 9));
+        emisiones += r.value().acabaDeTerminar ? 1 : 0;
+        diez = r.value().estado;
+    }
+    const auto una = avanzaTween(e, 1.0);
+    MOTOR_CHECK(emisiones == 1 && diez.terminado && diez.transcurrido == 1.0);
+    MOTOR_CHECK(igualEstado(diez, una.value().estado));
+    // 7 x (1/7)
+    EstadoTween siete = nuevo(1.0);
+    MOTOR_CHECK(avanzaEnTrozos(siete, 1.0, 7) == 1);
+    MOTOR_CHECK(igualEstado(siete, una.value().estado));
+}
+
+MOTOR_TEST_CASE(la_tolerancia_no_se_come_tiempo_real) {
+    const auto r = avanzaTween(nuevo(1.0), 1.0 - 1e-6);  // margen 1e-6 > tolerancia
+    MOTOR_CHECK(r.isOk() && !r.value().acabaDeTerminar && !r.value().estado.terminado);
+}
+
+MOTOR_TEST_CASE(dt_cero_en_el_borde_no_termina_ni_avanza) {
+    for (double transcurrido : {1.0, 1.5}) {
+        const EstadoTween e = nuevo(1.0, transcurrido);  // no terminado
+        const auto r = avanzaTween(e, 0.0);
+        MOTOR_CHECK(r.isOk() && igualEstado(r.value().estado, e) && !r.value().acabaDeTerminar);
+        const auto s = avanzaTween(e, 0.001);  // termina en el siguiente avance con dt > 0
+        MOTOR_CHECK(s.isOk() && s.value().acabaDeTerminar && s.value().estado.transcurrido == 1.0);
+    }
+}
+
 MOTOR_TEST_CASE(dt_enorme_no_rompe) {
     const auto r = avanzaTween(nuevo(1.0), std::numeric_limits<double>::max());
     MOTOR_CHECK(r.isOk() && r.value().acabaDeTerminar && r.value().estado.transcurrido == 1.0);

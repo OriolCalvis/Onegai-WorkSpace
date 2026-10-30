@@ -6,6 +6,8 @@ namespace Interpolacion {
 
 namespace {
 
+constexpr double kTolFin = 1e-9;  // tolerancia relativa de final (ver cabecera)
+
 Result<PasoTween> componPaso(const EstadoTween& estado, bool acabaDeTerminar) {
     const Result<double> p = progreso(estado.transcurrido, estado.duracion);
     if (!p.isOk()) return Result<PasoTween>::Error(p.errorMessage());
@@ -39,7 +41,7 @@ Result<PasoTween> avanzaTween(const EstadoTween& estado, double dt) {
     if (dt == 0.0) return componPaso(estado, false);
 
     nuevo.transcurrido = estado.transcurrido + dt;
-    if (nuevo.transcurrido >= nuevo.duracion) {
+    if (nuevo.transcurrido >= nuevo.duracion - kTolFin * nuevo.duracion) {
         nuevo.transcurrido = nuevo.duracion;
         nuevo.terminado = true;
         return componPaso(nuevo, true);
