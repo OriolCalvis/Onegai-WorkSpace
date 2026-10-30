@@ -6,6 +6,7 @@
 
 #include "TestHarness.h"
 
+#include <algorithm>
 #include <cmath>
 
 MOTOR_TEST_CASE(camera_constructor_sets_initial_values) {
@@ -75,11 +76,11 @@ MOTOR_TEST_CASE(camera_easing_enum_values_exist) {
     MOTOR_CHECK(static_cast<int>(Camera::Easing::EaseOutCubic) >= 0);
 }
 
-
 // --- Regresion numerica U3-07.E08 ---
 // Valores registrados con el codigo ANTERIOR de Camera.cpp (applyEasing +
 // mezcla float propia), destino (110,80) zoom 3 desde (0,0) zoom 1,
-// duracion 1. Tolerancia 1e-5; el fotograma de fin es exacto.
+// duracion 1. Tolerancia relativa 1e-5; el fotograma de fin es exacto.
+// Segundo bloque: origen no nulo y destino grande (valores del Camera.cpp de 701d56c).
 namespace {
 
 constexpr float kTolRegresion = 1e-5f;
@@ -159,7 +160,68 @@ const MuestraSecuencia kSecuencia[3][7] = {
 // float de Camera acumula 0.99999970 tras 60 updates y cierra en el 61.
 constexpr int kUpdateFin = 61;
 
-bool casi(float a, float b) { return std::abs(a - b) < kTolRegresion; }
+const MuestraT kGrandeT[3][4] = {
+    {
+        {0.25f, -625.0f, -25.0f, 1.375f, true},
+        {0.5f, 250.0f, -850.0f, 2.25f, true},
+        {0.75f, 1125.0f, -1675.0f, 3.125f, true},
+        {1.0f, 2000.0f, -2500.0f, 4.0f, false},
+    },
+    {
+        {0.25f, -1062.5f, 387.5f, 0.9375f, true},
+        {0.5f, 250.0f, -850.0f, 2.25f, true},
+        {0.75f, 1562.5f, -2087.5f, 3.5625f, true},
+        {1.0f, 2000.0f, -2500.0f, 4.0f, false},
+    },
+    {
+        {0.25f, 523.4375f, -1107.8125f, 2.5234375f, true},
+        {0.5f, 1562.5f, -2087.5f, 3.5625f, true},
+        {0.75f, 1945.3125f, -2448.4375f, 3.9453125f, true},
+        {1.0f, 2000.0f, -2500.0f, 4.0f, false},
+    },
+};
+
+const MuestraSecuencia kGrandeSeq[3][7] = {
+    {
+        {1, -1441.66663f, 0.558333337f, true},
+        {15, -625.0f, 1.375f, true},
+        {30, 250.00061f, 2.25000072f, true},
+        {45, 1124.99976f, 3.12499976f, true},
+        {59, 1941.66577f, 3.94166565f, true},
+        {60, 1999.99902f, 3.99999905f, true},
+        {61, 2000.0f, 4.0f, false},
+    },
+    {
+        {1, -1498.05554f, 0.501944423f, true},
+        {15, -1062.5f, 0.9375f, true},
+        {30, 250.001221f, 2.25000119f, true},
+        {45, 1562.49976f, 3.56249976f, true},
+        {59, 1998.05542f, 3.99805546f, true},
+        {60, 2000.0f, 4.0f, true},
+        {61, 2000.0f, 4.0f, false},
+    },
+    {
+        {1, -1327.90051f, 0.672099471f, true},
+        {15, 523.4375f, 2.5234375f, true},
+        {30, 1562.50049f, 3.56250048f, true},
+        {45, 1945.3125f, 3.9453125f, true},
+        {59, 1999.98364f, 3.99998379f, true},
+        {60, 2000.0f, 4.0f, true},
+        {61, 2000.0f, 4.0f, false},
+    },
+};
+
+Camera camaraGrande(Camera::Easing easing) {
+    Camera camera(800, 600);
+    camera.transitionTo(Vector2{-1500.0f, 800.0f}, 0.5f, 0.0f, easing);
+    camera.update(0.0f);
+    camera.transitionTo(Vector2{2000.0f, -2500.0f}, 4.0f, 1.0f, easing);
+    return camera;
+}
+
+bool casi(float a, float b) {
+    return std::abs(a - b) <= kTolRegresion * std::max({1.0f, std::abs(a), std::abs(b)});
+}
 
 }  // namespace
 
@@ -206,6 +268,34 @@ MOTOR_TEST_CASE(camera_duracion_negativa_es_corte_instantaneo) {
     MOTOR_CHECK(camera.position().y == 200.0f);
     MOTOR_CHECK(camera.zoom() == 2.0f);
     MOTOR_CHECK(!camera.isTransitioning());
+}
+
+MOTOR_TEST_CASE(camera_regresion_origen_no_nulo_y_destino_grande) {
+    for (int e = 0; e < 3; ++e) {
+        for (const MuestraT& m : kGrandeT[e]) {
+            Camera camera = camaraGrande(kCurvas[e]);
+            camera.update(m.dt);
+            MOTOR_CHECK(casi(camera.position().x, m.x));
+            MOTOR_CHECK(casi(camera.position().y, m.y));
+            MOTOR_CHECK(casi(camera.zoom(), m.zoom));
+            MOTOR_CHECK(camera.isTransitioning() == m.activa);
+        }
+        Camera camera = camaraGrande(kCurvas[e]);
+        int fin = -1;
+        int siguiente = 0;
+        for (int i = 1; i <= 62; ++i) {
+            camera.update(1.0f / 60.0f);
+            if (siguiente < 7 && kGrandeSeq[e][siguiente].update == i) {
+                const MuestraSecuencia& m = kGrandeSeq[e][siguiente++];
+                MOTOR_CHECK(casi(camera.position().x, m.x));
+                MOTOR_CHECK(casi(camera.zoom(), m.zoom));
+                MOTOR_CHECK(camera.isTransitioning() == m.activa);
+            }
+            if (fin < 0 && !camera.isTransitioning()) fin = i;
+        }
+        MOTOR_CHECK(siguiente == 7);
+        MOTOR_CHECK(fin == kUpdateFin);
+    }
 }
 
 int main() { return motor_test::runAllTests(); }

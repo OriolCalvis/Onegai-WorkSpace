@@ -27,8 +27,8 @@ enum class TipoCurva {
 
 // Easing de t. t se acota a [0,1]; NaN -> 0.0. f(0)=0 y f(1)=1 exactos; monotona.
 //  Lineal t | EntradaCuad t^2 | SalidaCuad 1-(1-t)^2
-//  EntradaSalidaCuad t<0.5 ? 2t^2 : 1-(-2t+2)^2/2   (= Camera.cpp:22)
-//  EntradaCubica t^3 | SalidaCubica 1-(1-t)^3        (= Camera.cpp:24)
+//  EntradaSalidaCuad t<0.5 ? 2t^2 : 1-(-2t+2)^2/2   (= formula de Camera::applyEasing hasta U3-07.E08)
+//  EntradaCubica t^3 | SalidaCubica 1-(1-t)^3        (= idem, hasta U3-07.E08)
 //  EntradaSalidaCubica t<0.5 ? 4t^3 : 1-(-2t+2)^3/2
 double curva(TipoCurva tipo, double t);
 

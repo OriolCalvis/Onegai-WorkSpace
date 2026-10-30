@@ -4,10 +4,10 @@
 #include "Core/Math/Interpolacion.h"
 
 // U3-07.E06-E07 — Estado de un tween y avance puro (sin GL, sin heap, sin callbacks).
-// Sala limpia. Compatible con Camera::update (Camera.cpp:34-41): duracion 0 termina en el
+// Sala limpia. Compatible con Camera::update: duracion 0 termina en el
 // primer avance, incluso con dt == 0. El llamador reacciona a PasoTween::acabaDeTerminar.
 //
-// Camera (E08): Camera::update acumula en float (Camera.cpp:36); con 60 x (1.0f/60) llega a
+// Camera (E08): Camera::update acumula en float (m_transitionElapsed); con 60 x (1.0f/60) llega a
 // 0.99999970 y sigue activa, mientras avanzaTween en double llega a 1.00000005 y termina un
 // fotograma antes. Decision: en E08 Camera CONSERVA su reloj float y solo reutiliza
 // progreso/curva/tweenVec2; si migra a avanzaTween sera con prueba diferencial del fotograma

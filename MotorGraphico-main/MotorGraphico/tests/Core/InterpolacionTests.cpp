@@ -113,7 +113,7 @@ MOTOR_TEST_CASE(curva_monotona_en_rejilla) {
 MOTOR_TEST_CASE(curva_coincide_con_formulas_de_camera) {
     for (int i = 0; i <= 100; ++i) {
         const double t = i / 100.0;
-        // Literales copiados de Camera.cpp:22 y :24 (en double).
+        // Literales copiados de Camera::applyEasing tal como era hasta U3-07.E08 (en double).
         const double inOutQuad = t < 0.5 ? 2.0 * t * t : 1.0 - std::pow(-2.0 * t + 2.0, 2.0) / 2.0;
         const double outCubic = 1.0 - std::pow(1.0 - t, 3.0);
         MOTOR_CHECK(cerca(curva(TipoCurva::EntradaSalidaCuadratica, t), inOutQuad));

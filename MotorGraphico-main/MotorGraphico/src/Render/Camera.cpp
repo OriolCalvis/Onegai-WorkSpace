@@ -36,7 +36,9 @@ void Camera::update(float deltaTime) {
         // a >= 0): t=1 de golpe en la primera update(), sin dividir por cero.
         // El reloj sigue siendo float (m_transitionElapsed); progreso() solo
         // normaliza. Si devolviera Error (no ocurre con duracion finita >= 0),
-        // se trata como fin de transicion (t=1).
+        // se trata como fin de transicion (t=1). Cambio aceptado en U3-07.E08:
+        // duracion +inf o deltaTime NaN ahora terminan la transicion en la
+        // primera update (antes no terminaba nunca).
         float t = 1.0f;
         if (m_transitionDuration > 0.0f) {
             auto progreso = Interpolacion::progreso(static_cast<double>(m_transitionElapsed),
