@@ -207,4 +207,52 @@ MOTOR_TEST_CASE(cambiar_reentrega_el_sprite_aunque_coincida_con_el_ultimo) {
     MOTOR_CHECK(d.recibidos == std::vector<int>({5, 5}));
 }
 
+namespace {
+// Puerto que, al ver su evento logico "e0", cambia el actor a `destino` con `pol`.
+struct PuertoQueCambia : PuertosFalsos {
+    ClipActor* actor = nullptr;
+    ClipAnimacion nuevo;
+    IdClip id = idDe("b");
+    PoliticaCambio pol = PoliticaCambio::ReiniciarSiempre;
+    void aplicaLogico(const Game::EventoFotograma& e) override {
+        PuertosFalsos::aplicaLogico(e);
+        if (actor && e.id == "e0") actor->cambia(id, nuevo, pol);
+    }
+};
+}  // namespace
+
+MOTOR_TEST_CASE(cambia_desde_un_evento_no_deja_el_cursor_del_clip_viejo) {
+    ClipActor a(idDe("a"), clipTres(true));
+    PuertoQueCambia p;
+    p.actor = &a;
+    p.nuevo.bucle = false;
+    p.nuevo.fotogramas.push_back({30, 50});
+    p.nuevo.eventos.push_back({"b0", 0, "logico", "", 0});
+    DestinoFalso d;
+    a.avanza(0.25, p, d);  // A: e0 en f0 cambia a B; e1/e2 de A no deben emitirse
+    MOTOR_CHECK(p.logicos == std::vector<std::string>({"e0"}));
+    MOTOR_CHECK(p.visuales.empty() && p.sonidos.empty());
+    MOTOR_CHECK(a.id() == idDe("b") && a.cursor().fotograma == 0);
+    MOTOR_CHECK(d.recibidos == std::vector<int>({30}));
+    a.avanza(0.0, p, d);  // B arranca normalmente: emite b0
+    MOTOR_CHECK(p.logicos == std::vector<std::string>({"e0", "b0"}));
+    a.avanza(1.0, p, d);
+    MOTOR_CHECK(a.cursor().terminado && p.logicos.size() == 2);
+    MOTOR_CHECK(d.recibidos == std::vector<int>({30}));
+}
+
+MOTOR_TEST_CASE(cambio_a_si_mismo_con_reiniciar_si_distinto_dentro_del_evento_es_inocuo) {
+    ClipActor a(idDe("a"), clipTres(true));
+    PuertoQueCambia p;
+    p.actor = &a;
+    p.id = idDe("a");
+    p.nuevo = clipTres(true);
+    p.pol = PoliticaCambio::ReiniciarSiDistinto;
+    DestinoFalso d;
+    a.avanza(0.15, p, d);
+    MOTOR_CHECK(a.cursor().fotograma == 1);
+    MOTOR_CHECK(p.logicos == std::vector<std::string>({"e0"}) && p.visuales == std::vector<std::string>({"e1"}));
+    MOTOR_CHECK(d.recibidos == std::vector<int>({6}));
+}
+
 int main() { return motor_test::runAllTests(); }

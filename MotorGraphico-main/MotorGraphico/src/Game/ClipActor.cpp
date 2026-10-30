@@ -9,12 +9,19 @@ ClipActor::ClipActor(IdClip id, ClipAnimacion clip) : m_id(std::move(id)), m_cli
 
 int ClipActor::avanza(double dt, PuertosEventoClip& eventos, DestinoFotograma& destino) {
     int rechazados = 0;
+    const int generacion = m_generacion;
     PasoClip p = avanzaClip(m_cursor, dt + m_resto, m_clip);
     m_resto = 0.0;
-    for (int i = 0;; ++i) {
+    bool reentrada = false;  // un puerto llamo a cambia() sobre este actor durante el despacho
+    for (int i = 0; !reentrada; ++i) {
         for (const EventoFotograma& e : p.eventos) {
             if (!enrutaEvento(e, eventos).isOk()) ++rechazados;
+            if (m_generacion != generacion) {
+                reentrada = true;  // el resto del lote es del clip viejo: no se emite
+                break;
+            }
         }
+        if (reentrada) break;
         m_cursor = p.cursor;
         if (!p.pendiente) break;
         if (i + 1 >= kMaxPasosPorAvance) {
@@ -36,13 +43,13 @@ int ClipActor::avanza(double dt, PuertosEventoClip& eventos, DestinoFotograma& d
 
 void ClipActor::cambia(const IdClip& idNuevo, const ClipAnimacion& nuevo, PoliticaCambio politica) {
     if (nuevo.fotogramas.empty()) return;
-    const bool mismo = idNuevo == m_id;
+    if (politica == PoliticaCambio::ReiniciarSiDistinto && idNuevo == m_id) return;
     m_cursor = cambiaClip(m_cursor, m_id, idNuevo, nuevo, politica);
-    if (politica == PoliticaCambio::ReiniciarSiDistinto && mismo) return;
     m_id = idNuevo;
     m_clip = nuevo;
     m_resto = 0.0;        // el tiempo pendiente era del clip anterior
     m_ultimoSprite = 0;   // la entidad puede mostrar otro sprite: el proximo avanza lo reentrega
+    ++m_generacion;       // avisa a un avanza() en curso (reentrada desde un puerto)
 }
 
 void ClipActor::repinta(PuertosEventoClip& eventos) const {

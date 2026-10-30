@@ -13,6 +13,13 @@
 // ni duplicar eventos.
 // Eventos con tipo no reconocido (clip armado a mano; el lector ya los rechaza): no se enrutan y
 // avanza() devuelve cuantos fueron rechazados, para que quien llama lo registre.
+// Reentrada: un puerto de evento puede llamar a cambia() sobre este mismo actor (p. ej. «fin de
+// ataque» vuelve al idle). Se detecta con un contador de generacion: avanza() deja de emitir el
+// resto del lote del clip viejo, NO sobrescribe cursor ni resto con los del paso viejo y entrega el
+// sprite del clip nuevo. Un cambia() que no cambia nada (ReiniciarSiDistinto con el mismo id) no
+// cuenta. El actor solo conoce los cambios hechos por cambia(): si codigo externo cambia el sprite
+// de la entidad sin pasar por aqui (play/showRestFrame sin control externo), el actor no lo sabe;
+// lo gestiona el consumidor (E07b).
 
 #include <functional>
 #include <utility>
@@ -66,6 +73,7 @@ private:
     IdClip m_id;
     ClipAnimacion m_clip;
     CursorClip m_cursor;
+    int m_generacion = 0;    // +1 por cada cambia() aceptado; detecta reentrada en avanza()
     double m_resto = 0.0;    // segundos no consumidos si se agoto el tope de drenado
     int m_ultimoSprite = 0;  // 0 = nada entregado aun (los sprites son >= 1)
 };
