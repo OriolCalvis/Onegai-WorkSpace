@@ -75,8 +75,14 @@ Result<LimitesMapa> limitesDeMapa(int columnas, int filas, int anchoTile, int al
 //     en (min+max)/2; si no, clamp(centro, min+mitad, max-mitad). Garantiza vista dentro de la
 //     caja cuando cabe.
 //  2. Rombo (si usaRombo): el centro se lleva al punto MAS CERCANO (euclideo) del contorno. Si ese
-//     punto saca la vista de la caja (eje estrecho), se acerca al centro de la caja por el
-//     segmento hasta el limite de la caja: el resultado esta SIEMPRE en caja (paso 1) y rombo.
+//     punto saca la vista de la caja (eje estrecho), se vuelve por el segmento desde un ANCLA que
+//     pertenece al rombo y al rango de la caja (centroide de los 4 vertices si cae en el rango; si
+//     no, centroide de interseccion caja-rombo) hasta el limite del rango. Con margen superior el centro de
+//     la CAJA se desplaza y puede quedar fuera del rombo: por eso no se usa como ancla.
+//     Si caja y rombo no se cortan (rango-rombo vacio) gana el rombo: el resultado es el punto
+//     del contorno mas cercano al centro dado y la caja no se respeta.
+//  Resultado: SIEMPRE sobre el rombo; en rango de caja siempre que rango-rombo no sea vacio;
+//  idempotente (la rama solo depende de limites/zoom/vista).
 //  Un centro que ya cumple ambas cosas (rombo con tolerancia 1e-3 px) se devuelve IDENTICO. En
 //  bordes y esquinas puede verse algo de vacio; nunca una pantalla sin terreno en el centro.
 //  Precision: todo en double; el resultado limitado se redondea a float una vez, asi que el

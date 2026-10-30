@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <limits>
+#include <vector>
 
 namespace PoliticaCamara {
 
@@ -112,6 +113,48 @@ double fraccionEnRango(double c, double r, double lo, double hi) {
     return 1.0;
 }
 
+// Recorta el rombo (poligono convexo) con el rectangulo [lox,hix] x [loy,hiy] (Sutherland-
+// Hodgman, bordes inclusivos con tolerancia) y devuelve un punto de la interseccion: el
+// centroide del rombo si cae en el rectangulo; si no, el promedio de los vertices recortados.
+// false si la interseccion es vacia. Solo depende de limites/zoom/vista, no del centro: asi la
+// rama elegida no cambia al reaplicar (idempotencia).
+bool anclaEnInterseccion(const RomboMapa& rombo, double lox, double hix, double loy, double hiy,
+                         P2* ancla) {
+    constexpr double eps = 1e-9;
+    std::vector<P2> poli = {aP2(rombo.superior), aP2(rombo.derecho), aP2(rombo.inferior),
+                            aP2(rombo.izquierdo)};
+    P2 cen{0.0, 0.0};
+    for (const P2& p : poli) { cen.x += p.x * 0.25; cen.y += p.y * 0.25; }
+    if (cen.x >= lox - eps && cen.x <= hix + eps && cen.y >= loy - eps && cen.y <= hiy + eps) {
+        *ancla = cen;
+        return true;
+    }
+    // Cuatro semiplanos: eje (0=x,1=y), cota y signo (+1: valor >= cota; -1: valor <= cota).
+    const double cotas[4] = {lox, hix, loy, hiy};
+    for (int h = 0; h < 4 && !poli.empty(); ++h) {
+        const int eje = h / 2;
+        const double signo = (h % 2 == 0) ? 1.0 : -1.0;
+        auto dist = [&](const P2& p) { return signo * ((eje == 0 ? p.x : p.y) - cotas[h]) + eps; };
+        std::vector<P2> salida;
+        for (size_t i = 0; i < poli.size(); ++i) {
+            const P2& a = poli[i];
+            const P2& b = poli[(i + 1) % poli.size()];
+            const double da = dist(a), db = dist(b);
+            if (da >= 0.0) salida.push_back(a);
+            if ((da >= 0.0) != (db >= 0.0)) {
+                const double t = da / (da - db);
+                salida.push_back({a.x + t * (b.x - a.x), a.y + t * (b.y - a.y)});
+            }
+        }
+        poli.swap(salida);
+    }
+    if (poli.empty()) return false;
+    P2 m{0.0, 0.0};
+    for (const P2& p : poli) { m.x += p.x / poli.size(); m.y += p.y / poli.size(); }
+    *ancla = m;
+    return true;
+}
+
 }  // namespace
 
 Result<RomboMapa> romboDeMapa(int columnas, int filas, int anchoTile, int altoTile) {
@@ -168,7 +211,6 @@ Result<Vector2> limitarAlMapa(const Vector2& centro, float zoom, const TamanoVis
     P2 q{limitarEje(centro.x, limites.izquierda, limites.derecha, mx),
          limitarEje(centro.y, limites.arriba, limites.abajo, my)};
     if (limites.usaRombo) {
-        P2 r = proyectarARombo(limites.rombo, q);
         const double xmin = limites.izquierda + mx, xmax = limites.derecha - mx;
         const double ymin = limites.arriba + my, ymax = limites.abajo - my;
         const double cx = (limites.izquierda + limites.derecha) * 0.5;
@@ -176,11 +218,15 @@ Result<Vector2> limitarAlMapa(const Vector2& centro, float zoom, const TamanoVis
         // Rango de la caja para el centro (colapsado al centro de la caja si el mapa cabe).
         const double lox = xmin <= xmax ? xmin : cx, hix = xmin <= xmax ? xmax : cx;
         const double loy = ymin <= ymax ? ymin : cy, hiy = ymin <= ymax ? ymax : cy;
-        if (r.x != q.x || r.y != q.y) {
-            const double t = std::fmin(fraccionEnRango(cx, r.x, lox, hix),
-                                       fraccionEnRango(cy, r.y, loy, hiy));
-            if (t < 1.0) r = {cx + t * (r.x - cx), cy + t * (r.y - cy)};
-            q = r;
+        P2 ancla{0.0, 0.0};
+        if (!anclaEnInterseccion(limites.rombo, lox, hix, loy, hiy, &ancla)) {
+            // Caja y rombo incompatibles: gana el rombo (el centro siempre sobre terreno).
+            q = proyectarARombo(limites.rombo, P2{centro.x, centro.y});
+        } else {
+            P2 r = proyectarARombo(limites.rombo, q);
+            const double t = std::fmin(fraccionEnRango(ancla.x, r.x, lox, hix),
+                                       fraccionEnRango(ancla.y, r.y, loy, hiy));
+            q = t < 1.0 ? P2{ancla.x + t * (r.x - ancla.x), ancla.y + t * (r.y - ancla.y)} : r;
         }
     }
     // Eje ya valido: se devuelve el float original, sin redondeo.

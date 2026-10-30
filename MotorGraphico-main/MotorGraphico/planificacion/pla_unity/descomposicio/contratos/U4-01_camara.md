@@ -183,13 +183,18 @@ Result<Vector2> limitarAlMapa(const Vector2& centro, float zoom, const TamanoVis
 - `limitarAlMapa` (orden): (1) caja: por eje, `mitad = vista/(2*zoom)`; si `(max-min) <= 2*mitad` →
   **centrado** `(min+max)/2`; si no, `clamp(centro, min+mitad, max-mitad)`. (2) rombo: el centro pasa
   al punto **más cercano** (euclídeo) del contorno (identidad con tolerancia 1e-3 px si ya está dentro).
-  Si ese punto saca el centro del rango de la caja (eje estrecho), se acerca al centro de la caja por el
-  segmento hasta el límite del rango. El resultado está siempre en rango de caja y en rombo; en bordes y
+  Si ese punto saca el centro del rango de la caja (eje estrecho), se vuelve por el segmento desde un
+  **ancla que pertenece al rombo y al rango** (centroide de los 4 vértices; si no cae en el rango,
+  centroide de rango∩rombo) hasta el límite del rango. **r2:** el centro de la *caja* NO sirve de ancla:
+  con `margenSuperiorPx>0` se desplaza y puede caer fuera del rombo. Si rango∩rombo es vacío gana el
+  rombo (resultado = punto del contorno más cercano al centro dado; la caja no se respeta). Resultado
+  siempre sobre el rombo, en rango de caja cuando rango∩rombo no es vacío, e idempotente; en bordes y
   esquinas puede verse algo de vacío, nunca una pantalla sin terreno en el centro.
 - Casos (valores calculados a mano, comprobados por `PoliticaCamaraLimitesTests.cpp`): ver §E05 (64x64,
   3x2); mapa 30x1 (vista 800x600, zoom 1, centro (-5000,900)) ⇒ `(496,248)` por el segmento al centro de
   la caja; 3x2 zoom 20 centro (-100,-100) ⇒ `(-9,2; 20,6)`; centro (500,500) ⇒ `(105,2; 59,4)`;
-  `columnas<=0` → Error.
+  `columnas<=0` → Error. **r2 (margen 96):** 3x2 zoom 1 centro (0,0) ⇒ `(6,4; 12,8)`; 1x1 zoom 0,15
+  centro (1,575; -33,55) ⇒ `(21,08; 5,46)`; 30x1 zoom 1,5 centro (643,296) ⇒ `(619,626; 296)`.
 
 ### E04 · Sacudida determinista (90 min)
 ```cpp

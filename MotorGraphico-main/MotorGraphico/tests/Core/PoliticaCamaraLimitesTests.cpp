@@ -206,6 +206,75 @@ MOTOR_TEST_CASE(sin_rombo_solo_se_aplica_la_caja) {
     MOTOR_CHECK(cerca(r.x, -1616.0f) && cerca(r.y, 300.0f));
 }
 
+// r2: con margen superior el centro de la CAJA (48,-8) esta fuera del rombo y el rango colapsa a
+// ese punto: rango-rombo vacio, gana el rombo. Cerca de (0,0): arista T-L desde (32,0), dir (-2,1):
+// t=64/5=12,8 => (6,4; 12,8).
+MOTOR_TEST_CASE(r2_margen_96_mapa_3x2_gana_el_rombo) {
+    const LimitesMapa l = limites(3, 2, 64, 32, 96.0f);
+    const Vector2 r = limita({0.0f, 0.0f}, 1.0f, kVista, l);
+    MOTOR_CHECK(cerca(r.x, 6.4f) && cerca(r.y, 12.8f));
+    MOTOR_CHECK(centroSobreRombo(r, l));
+    const Vector2 s = limita(r, 1.0f, kVista, l);
+    MOTOR_CHECK(cerca(s.x, r.x) && cerca(s.y, r.y));
+}
+
+// Mapa 1x1, margen 96, zoom 0,15: rango colapsado en (32,-32) fuera del rombo. Arista T-L desde
+// (32,0): t=(60,85-33,55)/5=5,46 => (21,08; 5,46).
+MOTOR_TEST_CASE(r2_margen_96_mapa_1x1_zoom_015) {
+    const LimitesMapa l = limites(1, 1, 64, 32, 96.0f);
+    const Vector2 r = limita({1.575f, -33.55f}, 0.15f, kVista, l);
+    MOTOR_CHECK(cerca(r.x, 21.08f) && cerca(r.y, 5.46f));
+    MOTOR_CHECK(centroSobreRombo(r, l));
+}
+
+// 30x1, margen 96, zoom 1,5: rango x [266,667; 725,333], y [104; 296]; ancla = centroide del rombo
+// (496,248) (en el rango). Caja: (643,296); rombo: arista T-R, t=303,6 => (639,2; 303,6), fuera del
+// rango en Y; vuelta por el segmento: t=48/55,6 => (619,6259; 296).
+MOTOR_TEST_CASE(r2_margen_96_mapa_30x1_vuelve_por_el_segmento_desde_el_ancla) {
+    const LimitesMapa l = limites(30, 1, 64, 32, 96.0f);
+    const Vector2 r = limita({643.0f, 296.0f}, 1.5f, kVista, l);
+    MOTOR_CHECK(cerca(r.x, 619.6259f, 2e-3f) && cerca(r.y, 296.0f));
+    MOTOR_CHECK(centroSobreRombo(r, l));
+    const Vector2 s = limita(r, 1.5f, kVista, l);
+    MOTOR_CHECK(cerca(s.x, r.x) && cerca(s.y, r.y));
+}
+
+// Barrido con margen 0/96/200, mapas cuadrados y no cuadrados, varios zooms: centro sobre el
+// rombo, idempotente, y en el rango de la caja cuando rango-rombo no es vacio (el ancla
+// es el centroide del rombo o, si este no cae en el rango, se comprueba solo con el segundo).
+MOTOR_TEST_CASE(r2_barrido_con_margen_sobre_rombo_e_idempotente) {
+    const int mapas[5][2] = {{1, 1}, {3, 2}, {30, 1}, {8, 8}, {20, 5}};
+    for (float margen : {0.0f, 96.0f, 200.0f}) {
+        for (const auto& m : mapas) {
+            const LimitesMapa l = limites(m[0], m[1], 64, 32, margen);
+            for (float zoom : {0.15f, 0.7f, 1.5f, 3.0f}) {
+                const double mx = 400.0 / zoom, my = 300.0 / zoom;
+                for (float x = -1500.0f; x <= 1500.0f; x += 190.0f) {
+                    for (float y = -400.0f; y <= 1200.0f; y += 130.0f) {
+                        const Vector2 r = limita({x, y}, zoom, kVista, l);
+                        MOTOR_CHECK(centroSobreRombo(r, l));
+                        const Vector2 s = limita(r, zoom, kVista, l);
+                        MOTOR_CHECK(cerca(s.x, r.x) && cerca(s.y, r.y));
+                        // Si el centroide del rombo esta en el rango de la caja, el rango no
+                        // es vacio con el rombo y el resultado debe estar en el rango.
+                        const double cx = (l.izquierda + l.derecha) * 0.5, cy = (l.arriba + l.abajo) * 0.5;
+                        const double xl = l.izquierda + mx <= l.derecha - mx ? l.izquierda + mx : cx;
+                        const double xh = l.izquierda + mx <= l.derecha - mx ? l.derecha - mx : cx;
+                        const double yl = l.arriba + my <= l.abajo - my ? l.arriba + my : cy;
+                        const double yh = l.arriba + my <= l.abajo - my ? l.abajo - my : cy;
+                        const double gx = (l.rombo.superior.x + l.rombo.derecho.x + l.rombo.inferior.x + l.rombo.izquierdo.x) / 4.0;
+                        const double gy = (l.rombo.superior.y + l.rombo.derecho.y + l.rombo.inferior.y + l.rombo.izquierdo.y) / 4.0;
+                        if (gx >= xl && gx <= xh && gy >= yl && gy <= yh) {
+                            MOTOR_CHECK(r.x >= xl - 1e-3 && r.x <= xh + 1e-3);
+                            MOTOR_CHECK(r.y >= yl - 1e-3 && r.y <= yh + 1e-3);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 MOTOR_TEST_CASE(precision_con_coordenadas_grandes) {
     // Limites a +-3000: el error de un redondeo a float (ulp 2.4e-4 a 2048..4096) cabe en 1e-3.
     const LimitesMapa l{-3000.0f, 3000.0f, -3000.0f, 3000.0f};
