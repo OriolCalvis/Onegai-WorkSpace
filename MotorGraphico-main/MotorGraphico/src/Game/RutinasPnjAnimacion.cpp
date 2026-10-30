@@ -36,9 +36,11 @@ EntradasAnimacion entradasDePnj(const EstadoPnj& e, bool reducidas) {
                 break;
         }
     }
+    static const IdParametro kAndando = IdParametro::parse("andando").value();
+    static const IdParametro kRumbo = IdParametro::parse(kParametroRumbo).value();
     EntradasAnimacion entradas;
-    entradas.valores[IdParametro::parse("andando").value()] = andando ? 1.0 : 0.0;
-    entradas.valores[IdParametro::parse(kParametroRumbo).value()] = static_cast<double>(rumbo);
+    entradas.valores[kAndando] = andando ? 1.0 : 0.0;
+    entradas.valores[kRumbo] = static_cast<double>(modulo4(rumbo));
     return entradas;
 }
 
