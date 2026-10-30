@@ -25,6 +25,13 @@
 // cursor ni entregar sprite); cambia() sigue permitido (ver generacion arriba). repinta() copia los
 // eventos del fotograma por valor antes de despachar y se detiene si cambia la generacion. La marca
 // se limpia por RAII aunque un puerto lance una excepcion.
+// Excepciones de los puertos: el motor solo usa excepciones al cargar recursos, nunca en logica de
+// juego, asi que los puertos (PuertosEventoClip y DestinoFotograma) NO deben lanzar. Si lanzan,
+// ClipActor solo da la garantia basica: sin comportamiento indefinido y la guarda de despacho se
+// libera, pero un evento ya aplicado puede repetirse y el sprite puede no reentregarse hasta el
+// siguiente cambio.
+// cambia() desde el DestinoFotograma aplica el clip nuevo, y su sprite se entrega en el siguiente
+// avanza().
 
 #include <functional>
 #include <utility>
