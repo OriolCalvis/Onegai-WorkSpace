@@ -65,8 +65,8 @@ struct StayBatch {
     std::vector<RegionRef> fired;
 };
 
-// U3-02.E05 — Orden de los hechos simultaneos de una casilla. PROVISIONAL: la
-// politica (D3) sigue abierta para Oriol (DEC-10, MapEventRunner.h:60-68).
+// U3-02.E05 — Orden de los hechos simultaneos de una casilla. D3 DECIDIDA
+// (Oriol, 30/10): Exit -> Enter -> Stay (DEC-10, MapEventRunner.h:60-68).
 // No se trata aqui el bloqueo de evento (Autorun/escena bloqueante): es de E06.
 struct RegionTrigger {
     enum class Kind { Enter, Stay, Exit };
@@ -74,7 +74,8 @@ struct RegionTrigger {
     RegionRef ref;
 };
 struct RegionPolicy {
-    bool exitsFirst = true;  // PROVISIONAL (DEC-10): true => Exit, Enter, Stay; false => Enter, Exit, Stay
+    // D3: true (defecto) => Exit, Enter, Stay; false => Enter, Exit, Stay.
+    bool exitsFirst = true;
 };
 
 // GridBounds es inclusivo en AMBOS extremos ([minX..maxX] x [minY..maxY]), asi
@@ -113,14 +114,15 @@ Result<StayBatch> stayEvents(RegionPresence& presence, const std::vector<RegionR
 // contradiria D5. Idempotente.
 RegionPresence resetRegionPresence();
 
-// Triggers de un paso, en orden determinista. PROVISIONAL (DEC-10). Grupos:
-// exitsFirst=true => Exit, Enter, Stay; exitsFirst=false => Enter, Exit, Stay
+// Triggers de un paso, en orden determinista. Orden por defecto (D3, decidido):
+// Exit, Enter, Stay (exitsFirst=true); con exitsFirst=false: Enter, Exit, Stay
 // (Stay siempre al final). Dentro de cada grupo se CONSERVA el orden de entrada:
 // exited en el de `before`, entered en el de `now`, y los Stay en el de
-// `stays.fired`. `fired` debe venir SIN duplicados (lo garantiza stayEvents); esta
-// funcion no deduplica, asi que un fired repetido produce Stay repetidos. No reordena por RegionId ni conoce el mapa; el orden de capa y
-// declaracion ya viene de regionsAt. Los Stay salen solo de `stays.fired`; un
-// fired que no este en delta.stayed es incoherente y se IGNORA.
+// `stays.fired`. `fired` debe venir SIN duplicados (lo garantiza stayEvents);
+// esta funcion no deduplica, asi que un fired repetido produce Stay repetidos.
+// No reordena por RegionId ni conoce el mapa; el orden de capa y declaracion
+// ya viene de regionsAt. Los Stay salen solo de `stays.fired`; un fired que no
+// este en delta.stayed es incoherente y se IGNORA.
 std::vector<RegionTrigger> orderRegionEvents(const RegionDelta& delta, const StayBatch& stays,
                                              const RegionPolicy& policy);
 

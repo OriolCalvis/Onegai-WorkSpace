@@ -292,6 +292,49 @@ Result<bool> MapDocument::moveLayer(const ids::LayerId& layerId, int newOrder) {
     return setLayerMeta(layerId, std::move(meta));
 }
 
+namespace {
+
+// U3-02.E06a (D1 = b) — Una pagina con trigger de region debe nombrar una
+// region que EXISTA en una capa de regiones de este mapa. Es validacion
+// entre capas, por eso vive aqui y no en EventLayerDocument.
+Result<bool> validarReferenciasDeRegion(const std::vector<MapLayer>& layers) {
+    for (const MapLayer& layer : layers) {
+        const auto* eventos = std::get_if<EventLayerDocument>(&layer.data());
+        if (eventos == nullptr) {
+            continue;
+        }
+        for (const MapEventDocument& event : eventos->events()) {
+            for (const MapEventPage& page : event.pages) {
+                if (!isRegionTrigger(page.trigger)) {
+                    continue;
+                }
+                const MapLayer* destino = nullptr;
+                for (const MapLayer& candidata : layers) {
+                    if (candidata.meta().id == page.regionLayerId) {
+                        destino = &candidata;
+                    }
+                }
+                const auto* regiones =
+                    destino == nullptr ? nullptr
+                                       : std::get_if<RegionLayerDocument>(&destino->data());
+                const bool existe =
+                    regiones != nullptr &&
+                    std::any_of(regiones->regions().begin(), regiones->regions().end(),
+                                [&page](const MapRegionDocument& r) { return r.id == page.regionId; });
+                if (!existe) {
+                    return Result<bool>::Error(
+                        "el evento '" + event.id.value() + "', pagina '" + page.id.value() +
+                        "': la region '" + page.regionLayerId.value() + "/" +
+                        page.regionId.value() + "' no existe en el mapa");
+                }
+            }
+        }
+    }
+    return Result<bool>::Ok(true);
+}
+
+}  // namespace
+
 Result<bool> MapDocument::validate() const {
     if (m_id.empty()) {
         return Result<bool>::Error("un mapa no puede tener un id vacío");
@@ -329,6 +372,6 @@ Result<bool> MapDocument::validate() const {
         }
         previousOrder = layer.meta().order;
     }
-    return Result<bool>::Ok(true);
+    return validarReferenciasDeRegion(m_layers);
 }
 

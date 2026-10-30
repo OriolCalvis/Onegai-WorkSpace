@@ -325,6 +325,21 @@ Result<MapDocument> ProjectSerializer::deserializeMap(const std::string& text) {
                                 ? pageNode["requiresAllConditions"].asBool(true)
                                 : true;
                         page.appearanceObjectId = pageNode["appearanceObjectId"].asString();
+                        // U3-02.E06a: clave opcional; ausente = sin region.
+                        if (pageNode.has("region")) {
+                            const JsonValue& regionNode = pageNode["region"];
+                            const Result<ids::LayerId> regionLayer =
+                                readId<ids::LayerId>(regionNode, "layer", "region de pagina");
+                            const Result<ids::RegionId> regionId =
+                                readId<ids::RegionId>(regionNode, "id", "region de pagina");
+                            if (!regionLayer.isOk() || !regionId.isOk()) {
+                                return Result<MapDocument>::Error(
+                                    !regionLayer.isOk() ? regionLayer.errorMessage()
+                                                        : regionId.errorMessage());
+                            }
+                            page.regionLayerId = regionLayer.value();
+                            page.regionId = regionId.value();
+                        }
 
                         if (pageNode.has("conditions")) {
                             const JsonValue& conditions = pageNode["conditions"];

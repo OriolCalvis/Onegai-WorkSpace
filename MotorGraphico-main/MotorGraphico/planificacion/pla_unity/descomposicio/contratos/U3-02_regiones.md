@@ -121,7 +121,7 @@ struct StayPolicy    { int intervalMs = 1000; };                                
 struct RegionPresence{ std::vector<RegionRef> current; std::vector<int> stayMs; bool known = false; };
 struct StayBatch     { std::vector<RegionRef> fired; };                                 // como mucho UNO por region y llamada
 struct RegionTrigger { enum class Kind { Enter, Stay, Exit }; Kind kind; RegionRef ref; };
-struct RegionPolicy  { bool exitsFirst = true; };                                       // PROVISIONAL pendiente de DEC-10 (D3)
+struct RegionPolicy  { bool exitsFirst = true; };                                       // D3 decidida: Exit, Enter, Stay (defecto exitsFirst=true)
 
 bool contains(const GridBounds& b, GridCoord c);                                        // inclusive, base de E02
 // E02
@@ -142,8 +142,8 @@ Criterios de aceptacion anadidos:
 - **E03:** mover la presencia de `(capaA, "zona")` a `(capaB, "zona")` (mismo `RegionId`, otra capa) produce
   `exited={A/zona}` y `entered={B/zona}`, **no** `stayed`. Sin duplicados con la misma `RegionRef`.
 - **E04:** `dt=0` no dispara ni acumula; `dt=5*intervalo` produce a lo sumo un Stay por region (sin catch-up).
-- **E05:** orden provisional (DEC-10): Exit, luego Enter, luego Stay (`RegionPolicy::exitsFirst=false`: Enter, Exit,
-  Stay); dentro de cada grupo se conserva el orden de entrada (exited = `before`, entered/Stay = `now`, que ya es
+- **E05:** orden D3 (decidido): Exit, luego Enter, luego Stay (defecto `exitsFirst=true`; `exitsFirst=false`: Enter,
+  Exit, Stay); dentro de cada grupo se conserva el orden de entrada (exited = `before`, entered/Stay = `now`, que ya es
   orden de capa en `layers()` y luego de declaracion por `regionsAt`); la funcion no reordena por `RegionId`. Un
   `fired` fuera de `stayed` se ignora. El bloqueo de evento es de E06.
 
@@ -156,7 +156,13 @@ antiguo sobre el nuevo). Firma sin parametros: recibir la lista de la casilla de
 suprimir Enter contradice D5, asi que no existe. Idempotente.
 `EntryContext` no existe en el repo; no se crea.
 
-### 2.4 Parte de integracion (E06, E08): solo si se resuelven D1 y D2
+### 2.4 Parte de integracion (E06a, E06b, E08)
+
+**E06 partida (30/10).** **E06a (datos, hecha):** D1 = (b): `EventTrigger` += `RegionEnter/RegionStay/RegionExit`
+(JSON `region_enter/region_stay/region_exit`) y `MapEventPage` guarda `regionLayerId` + `regionId`; JSON
+`"region": {"layer": ..., "id": ...}` solo en paginas de region; validacion en `EventLayerDocument` (trigger de
+region <=> referencia) y en `MapDocument::validate()` (la region existe). El runner no arranca estos triggers.
+**E06b (despacho):** lo descrito abajo, pendiente. E08 sigue bloqueada por D2.
 
 `include/RPG/MapEventRunner.h` ya incumple la ley 1b (9 datos + 16 metodos): **no se extiende**. E06 no toca
 `MapEventRunner.*`.
@@ -174,13 +180,13 @@ suprimir Enter contradice D5, asi que no existe. Idempotente.
 
 - **D1 · Como se enlaza una region con un evento.** Hoy `MapRegionDocument` no tiene campo de enlace
   (`RegionLayerDocument.h:13-17`) ni `EventTrigger` tiene Enter/Stay/Exit (`EventLayerDocument.h:70-75`).
-  Opciones: (a) anadir a la region `onEnter/onStay/onExit` = id de evento (cambia formato JSON,
+  Opciones (D1 DECIDIDA 30/10 = (b), E06a): (a) anadir a la region `onEnter/onStay/onExit` = id de evento (cambia formato JSON,
   serializador, deserializador, schema y `FORMATO_NIVELES.md`); (b) anadir 3 valores a `EventTrigger` y que
-  el evento diga a que region escucha; (c) solo triggers programaticos sin datos de autor. **Bloquea E06 y E08.**
+  el evento diga a que region escucha; (c) solo triggers programaticos sin datos de autor. **D1 = (b), decidida por Oriol (30/10); formato de regiones intacto.**
 - **D2 · Camino al juego.** El runner existente no corre en `juego` (1.5): ni `setMap` ni `MapDocument`.
   Hay que decidir si el juego pasa a cargar `MapDocument` o si las regiones se puentean desde `LevelDefinition`.
-  **Bloquea E08** y deja E06 como "producido pendiente de integracion" (porta de cierre del paquete).
-- **D3 · Orden de simultaneos (E05) — ABIERTA (DEC-10 sigue abierta).** E05 implementa el defecto determinista PROVISIONAL Exit -> Enter -> Stay (`RegionPolicy::exitsFirst=false`: Enter, Exit, Stay); dentro de cada grupo se conserva el orden de entrada (exited = `before`, entered/Stay = `now` / `fired`, ya en orden de capa y declaracion por `regionsAt`), sin reordenar por `RegionId`; `fired` debe venir sin duplicados. No cierra la decision: espera a Oriol (`MapEventRunner.h:60-68`).
+  **Sigue ABIERTA. Bloquea E08** y deja E06b como "producido pendiente de integracion" (porta de cierre del paquete).
+- **D3 · Orden de simultaneos (E05) — DECIDIDA por Oriol (30/10): Exit -> Enter -> Stay, definitivo.** El defecto es `RegionPolicy::exitsFirst=true` (`false` da Enter, Exit, Stay); dentro de cada grupo se conserva el orden de entrada (exited = `before`, entered/Stay = `now` / `fired`, ya en orden de capa y declaracion por `regionsAt`), sin reordenar por `RegionId`; `fired` debe venir sin duplicados. Cierra DEC-10 para regiones (`MapEventRunner.h:60-68`).
 - **D4 · Estado mutable en E04 — ACEPTADA por Brain (30/10):** `stayEvents(RegionPresence&, ...)`.
 - **D5 · Primer frame / mapa nuevo — DECIDIDA por Oriol (30/10): SI.** Aparecer dentro de una region (carga o cambio de mapa) dispara Enter.
 - **D6 · Nombre de namespace** `Regiones` (propuesto) y si `visible=false`/`locked` de la capa excluye sus regiones (propuesto: no excluye, es autoria).

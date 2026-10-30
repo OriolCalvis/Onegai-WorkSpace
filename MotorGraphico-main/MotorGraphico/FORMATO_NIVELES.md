@@ -556,3 +556,26 @@ desplazada media casilla (dual-grid) con recortes de borde difuminado entre mate
 - Sin `transiciones.json`, o con un tileset que no sea `terreno_mundo.png`, no se pinta nada: el suelo es el de siempre.
 - Donde el terreno cambia de altura no se dibuja la unión (ahí se ve la pared).
 - La decisión (qué capas lleva cada celda) es `Game::Transiciones` y tiene pruebas (`test_transiciones`).
+
+
+## Triggers de region en las paginas de evento (U3-02.E06a)
+
+Una pagina de evento (`layers[type=event].events[].pages[]`) admite tres `trigger` nuevos, ademas de
+`interact`, `touch`, `autorun` y `parallel`: `region_enter`, `region_stay` y `region_exit`. La **pagina** dice a
+que region escucha; el formato de las regiones no cambia. La clave `region` es obligatoria si y solo si el
+trigger es de region, y no puede aparecer con los demas:
+
+```json
+{ "id": "vigia_p1", "name": "Vigia", "trigger": "region_enter",
+  "region": { "layer": "regiones", "id": "zona_norte" },
+  "requiresAllConditions": true, "appearanceObjectId": "", "conditions": [], "commands": [] }
+```
+
+`layer` es el id de una capa de tipo `region` del mismo mapa e `id` el de una region de esa capa (un `RegionId`
+solo es unico dentro de su capa). Si no existen, el mapa no carga. Los mapas sin `region` se leen y se
+escriben exactamente igual que antes (cambio aditivo, `schemaVersion` sigue en 1).
+
+Semantica: `region_enter` al pasar de fuera a dentro (tambien al aparecer dentro, D5); `region_stay` cada N ms
+mientras sigue dentro, por region y sin recuperar tiempo perdido (D7); `region_exit` al salir. Orden de
+hechos simultaneos: Exit, Enter, Stay (D3). **El despacho llega en U3-02.E06b: hoy ningun runner arranca
+estas paginas**, y el editor no las ofrece todavia.

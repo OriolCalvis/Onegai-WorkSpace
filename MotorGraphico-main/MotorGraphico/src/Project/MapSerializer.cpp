@@ -175,6 +175,14 @@ Result<std::string> ProjectSerializer::serializeMap(const MapDocument& map) {
                     writer.member("id", page.id.value());
                     writer.member("name", page.name);
                     writer.member("trigger", eventTriggerToText(page.trigger));
+                    if (isRegionTrigger(page.trigger)) {
+                        // U3-02.E06a: solo si hay region; los JSON antiguos no cambian.
+                        writer.key("region");
+                        writer.beginObject();
+                        writer.member("layer", page.regionLayerId.value());
+                        writer.member("id", page.regionId.value());
+                        writer.endObject();
+                    }
                     writer.member("requiresAllConditions", page.requiresAllConditions);
                     writer.member("appearanceObjectId", page.appearanceObjectId);
                     writer.key("conditions");

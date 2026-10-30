@@ -307,6 +307,133 @@ MOTOR_TEST_CASE(un_disparador_que_no_se_entiende_falla_en_vez_de_caer_a_uno_por_
     MOTOR_CHECK(vuelta.errorMessage().find("cuando_llueve") != std::string::npos);
 }
 
+// ---- U3-02.E06a (D1 = b): la pagina dice a que region escucha ----
+
+MapDocument mapaConRegion(const MapEventPage& pag) {
+    MapDocument doc(ids::MapId::parse("mapa").value(), "mapa", 8, 8, 64, 32);
+    MapLayerMeta rm;
+    rm.id = lyr("regiones");
+    rm.name = "regiones";
+    rm.order = 0;
+    MapRegionDocument zona;
+    zona.id = ids::RegionId::parse("zona_norte").value();
+    zona.name = "Zona";
+    zona.bounds = GridBounds{0, 3, 0, 3};
+    doc.addLayer(MapLayer::regions(rm, RegionLayerDocument({zona})));
+    MapLayerMeta em;
+    em.id = lyr("eventos");
+    em.name = "eventos";
+    em.order = 1;
+    doc.addLayer(MapLayer::events(em, EventLayerDocument()));
+    MapEventDocument e;
+    e.id = evt("vigia");
+    e.name = "Vigia";
+    e.position = GridCoord{5, 5};
+    e.pages.push_back(pag);
+    doc.addEvent(lyr("eventos"), e);
+    return doc;
+}
+
+MapEventPage paginaDeRegion(EventTrigger trigger, const std::string& capa,
+                            const std::string& region) {
+    MapEventPage p = pagina("vigia_p1");
+    p.trigger = trigger;
+    if (!capa.empty()) {
+        p.regionLayerId = lyr(capa);
+    }
+    if (!region.empty()) {
+        p.regionId = ids::RegionId::parse(region).value();
+    }
+    return p;
+}
+
+MOTOR_TEST_CASE(los_tres_triggers_de_region_van_y_vuelven_con_su_region) {
+    const EventTrigger todos[] = {EventTrigger::RegionEnter, EventTrigger::RegionStay,
+                                  EventTrigger::RegionExit};
+    const char* textos[] = {"region_enter", "region_stay", "region_exit"};
+    for (int i = 0; i < 3; ++i) {
+        MapDocument doc = mapaConRegion(paginaDeRegion(todos[i], "regiones", "zona_norte"));
+        MOTOR_CHECK(doc.validate().isOk());
+        const Result<std::string> json = ProjectSerializer::serializeMap(doc);
+        MOTOR_CHECK(json.isOk());
+        MOTOR_CHECK(json.value().find(std::string("\"") + textos[i] + "\"") != std::string::npos);
+        const Result<MapDocument> vuelta = ProjectSerializer::deserializeMap(json.value());
+        MOTOR_CHECK(vuelta.isOk());
+        const auto& capa =
+            std::get<EventLayerDocument>(vuelta.value().findLayer(lyr("eventos"))->data());
+        const MapEventPage& leida = capa.find(evt("vigia"))->pages[0];
+        MOTOR_CHECK(leida.trigger == todos[i]);
+        MOTOR_CHECK(leida.regionLayerId.value() == "regiones");
+        MOTOR_CHECK(leida.regionId.value() == "zona_norte");
+        const Result<std::string> segunda = ProjectSerializer::serializeMap(vuelta.value());
+        MOTOR_CHECK(segunda.isOk() && segunda.value() == json.value());
+    }
+}
+
+MOTOR_TEST_CASE(un_trigger_de_region_sin_referencia_se_rechaza_en_todas_las_vias) {
+    // Documento de eventos: capa o region vacias.
+    EventLayerDocument capa;
+    MapEventDocument e;
+    e.id = evt("vigia");
+    e.position = GridCoord{1, 1};
+    e.pages.push_back(paginaDeRegion(EventTrigger::RegionEnter, "", ""));
+    MOTOR_CHECK(!capa.addEvent(e).isOk());
+    e.pages[0] = paginaDeRegion(EventTrigger::RegionStay, "regiones", "");
+    MOTOR_CHECK(!capa.addEvent(e).isOk());
+    e.pages[0] = paginaDeRegion(EventTrigger::RegionExit, "", "zona_norte");
+    MOTOR_CHECK(!capa.addEvent(e).isOk());
+    // Y un trigger que NO es de region no admite referencia.
+    e.pages[0] = paginaDeRegion(EventTrigger::Touch, "regiones", "zona_norte");
+    MOTOR_CHECK(!capa.addEvent(e).isOk());
+    MOTOR_CHECK(capa.events().empty());
+
+    // JSON escrito a mano: region_enter sin la clave "region" no carga.
+    MapDocument ok =
+        mapaConRegion(paginaDeRegion(EventTrigger::RegionEnter, "regiones", "zona_norte"));
+    std::string json = ProjectSerializer::serializeMap(ok).value();
+    const std::size_t a = json.find("\"region\": {");
+    MOTOR_CHECK(a != std::string::npos);
+    const std::size_t b = json.find('}', a);
+    json.erase(a, b - a + 1);
+    MOTOR_CHECK(!ProjectSerializer::deserializeMap(json).isOk());
+}
+
+MOTOR_TEST_CASE(el_mapa_rechaza_un_trigger_que_escucha_una_region_inexistente) {
+    MapDocument fantasma =
+        mapaConRegion(paginaDeRegion(EventTrigger::RegionEnter, "regiones", "no_existe"));
+    MOTOR_CHECK(!fantasma.validate().isOk());
+    MapDocument otraCapa =
+        mapaConRegion(paginaDeRegion(EventTrigger::RegionEnter, "eventos", "zona_norte"));
+    MOTOR_CHECK(!otraCapa.validate().isOk());
+    // El serializador tampoco escribe un mapa invalido; el JSON roto se fabrica a mano.
+    MOTOR_CHECK(!ProjectSerializer::serializeMap(fantasma).isOk());
+    std::string json = ProjectSerializer::serializeMap(
+        mapaConRegion(paginaDeRegion(EventTrigger::RegionEnter, "regiones", "zona_norte")))
+                           .value();
+    const std::size_t ref = json.find("\"region\": {");
+    MOTOR_CHECK(ref != std::string::npos);
+    const std::size_t nombre = json.find("zona_norte", ref);
+    MOTOR_CHECK(nombre != std::string::npos);
+    json.replace(nombre, std::string("zona_norte").size(), "no_existe");
+    const Result<MapDocument> vuelta = ProjectSerializer::deserializeMap(json);
+    MOTOR_CHECK(!vuelta.isOk());
+    MOTOR_CHECK(vuelta.errorMessage().find("no_existe") != std::string::npos);
+}
+
+MOTOR_TEST_CASE(un_json_antiguo_sin_clave_region_sigue_cargando_igual) {
+    // Compatibilidad hacia atras: ningun mapa sin trigger de region escribe "region".
+    MapDocument doc = mapaCon(cofre("cofre_1", 1, 1));
+    const Result<std::string> json = ProjectSerializer::serializeMap(doc);
+    MOTOR_CHECK(json.isOk());
+    MOTOR_CHECK(json.value().find("\"region\"") == std::string::npos);
+    const Result<MapDocument> vuelta = ProjectSerializer::deserializeMap(json.value());
+    MOTOR_CHECK(vuelta.isOk());
+    const auto& capa =
+        std::get<EventLayerDocument>(vuelta.value().findLayer(lyr("eventos"))->data());
+    const MapEventPage& p = capa.find(evt("cofre_1"))->pages[0];
+    MOTOR_CHECK(p.regionLayerId.empty() && p.regionId.empty());
+}
+
 }  // namespace
 
 int main() { return motor_test::runAllTests(); }

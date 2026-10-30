@@ -71,8 +71,27 @@ enum class EventTrigger {
     Interact,   // el jugador pulsa la tecla de accion mirando a la casilla
     Touch,      // el jugador entra en la casilla
     Autorun,    // arranca solo y bloquea al jugador hasta que termina
-    Parallel    // arranca solo y NO bloquea al jugador
+    Parallel,   // arranca solo y NO bloquea al jugador
+    // U3-02.E06a (D1 = b) — Triggers de REGION. La pagina dice a que region
+    // escucha (MapEventPage::regionLayerId + regionId); el formato de las
+    // regiones no cambia. Semantica (el despacho llega en E06b; hoy NINGUN
+    // runner los arranca ni por Touch/Interact/Autorun):
+    //  - RegionEnter: el jugador pasa de fuera a dentro. D5: aparecer ya
+    //    dentro (entrar al mapa) tambien dispara Enter.
+    //  - RegionStay: cada N ms mientras sigue dentro, por region y sin
+    //    catch-up (D7). Entrar no cuenta como permanencia.
+    //  - RegionExit: el jugador pasa de dentro a fuera.
+    // Orden de hechos simultaneos en un paso: Exit, Enter, Stay (D3).
+    RegionEnter,
+    RegionStay,
+    RegionExit
 };
+
+// Un trigger de region exige referencia a region; los demas no la admiten.
+inline bool isRegionTrigger(EventTrigger trigger) {
+    return trigger == EventTrigger::RegionEnter || trigger == EventTrigger::RegionStay ||
+           trigger == EventTrigger::RegionExit;
+}
 
 // De que habla una condicion. El nombre concreto va en `reference`.
 enum class EventConditionKind {
@@ -119,6 +138,13 @@ struct MapEventPage {
     ids::EventId id;
     std::string name;
     EventTrigger trigger = EventTrigger::Interact;
+    // Region a la que escucha una pagina con trigger de region: identidad
+    // compuesta capa + region (como RegionRef; un RegionId solo es unico
+    // dentro de su capa). Ambos presentes y no vacios si y solo si el
+    // trigger es de region (validate()). Que la capa/region EXISTAN lo
+    // comprueba MapDocument::validate(), que ve todas las capas.
+    ids::LayerId regionLayerId;
+    ids::RegionId regionId;
     std::vector<MapEventCondition> conditions;
     // AND o OR sobre TODAS las condiciones de la pagina. La
     // especificacion §12.5 pide que la precedencia sea visible y nunca
