@@ -298,6 +298,8 @@ MOTOR_TEST_CASE(validaciones_semanticas_de_valor) {
     falla(maq(kDosEstados, t(R"({"param":"rumbo","op":"menor","valor":4})"), p), "cuando[0].valor", "rumbo fuera de 0..3");
     MOTOR_CHECK(leerCatalogoMaquinas(json(maq(kDosEstados, t(R"({"param":"rumbo","op":"igual","valor":0})"), p)), existe).isOk());
     MOTOR_CHECK(leerCatalogoMaquinas(json(maq(kDosEstados, t(R"({"param":"rumbo","op":"igual","valor":3})"), p)), existe).isOk());
+    // "rumbo" es entero: un valor fraccionario dentro de 0..3 tambien es error (no se trata como real).
+    falla(maq(kDosEstados, t(R"({"param":"rumbo","op":"igual","valor":1.5})"), p), "cuando[0].valor", "entero");
     // Parametro entero con valor no entero es error; uno real lo admite.
     falla(maq(kDosEstados, t(R"({"param":"n","op":"mayor","valor":1.5})"), p), "cuando[0].valor", "entero");
     MOTOR_CHECK(leerCatalogoMaquinas(json(maq(kDosEstados, t(R"({"param":"v","op":"mayor","valor":1.5})"), p)), existe).isOk());

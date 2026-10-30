@@ -1,6 +1,6 @@
 # U3-06 · Màquina d'estats d'animació en dades: auditoria E01 i contractes E02–E07
 
-**Versió de disseny v1 r3 (tancament; rondes 1 i 2 aplicades), pendent d'aprovació.** Base: `08ef8db` (branca `replica-r1/U3-06`, sobre `replica-r1/U3-05`).
+**Versió de disseny v1 r3 (tancament; rondes 1 i 2 aplicades), aprovat (Brain, 30/10).** Base: `08ef8db` (branca `replica-r1/U3-06`, sobre `replica-r1/U3-05`).
 Cap codi escrit en aquesta E (és un document). Rutes relatives a `MotorGraphico-main/MotorGraphico/`.
 Cada `fitxer:línia` està comprovada **per contingut** (primera i última línia de cada rang) a
 `out/fabrica/REPLICA-R1/U3-06.E01_citas.log` (arrel del worktree). Tot el que no té cita va marcat **(inferit)**.

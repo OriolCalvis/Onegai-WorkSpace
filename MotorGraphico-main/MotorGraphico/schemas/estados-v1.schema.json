@@ -36,7 +36,7 @@
       "type": "object",
       "required": ["id"],
       "additionalProperties": false,
-      "oneOf": [{ "required": ["clip"], "not": { "required": ["clipsPorRumbo"] } },
+      "oneOf": [{ "required": ["clip"], "not": { "anyOf": [{ "required": ["clipsPorRumbo"] }, { "required": ["politicaRumbo"] }] } },
                 { "required": ["clipsPorRumbo"], "not": { "required": ["clip"] } }],
       "properties": {
         "id": { "$ref": "#/$defs/id" },
@@ -67,13 +67,15 @@
         "cuando": { "type": "array", "items": { "$ref": "#/$defs/condicion" } },
         "esperaFinClip": { "type": "boolean" },
         "politica": { "$ref": "#/$defs/politica" },
-        "prioridad": { "type": "integer" }
+        "prioridad": { "type": "integer", "minimum": -2147483648, "maximum": 2147483647 }
       }
     },
     "condicion": {
       "type": "object",
       "required": ["param", "op"],
       "additionalProperties": false,
+      "if": { "properties": { "op": { "enum": ["cierto", "falso", "disparado"] } }, "required": ["op"] },
+      "then": { "not": { "required": ["valor"] } },
       "properties": {
         "param": { "type": "string", "pattern": "^([a-z0-9_]+|finClip)$", "not": { "const": "finclip" } },
         "op": { "enum": ["cierto", "falso", "igual", "distinto", "mayor", "mayorIgual", "menor", "menorIgual", "disparado"] },
