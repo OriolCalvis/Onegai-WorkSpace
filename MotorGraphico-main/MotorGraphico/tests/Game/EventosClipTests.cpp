@@ -74,6 +74,30 @@ MOTOR_TEST_CASE(enruta_los_eventos_de_un_paso_real_en_orden) {
                 p.llamadas[2] == "S:zas");
 }
 
+MOTOR_TEST_CASE(repintar_un_paso_real_solo_toca_lo_visual) {
+    ClipAnimacion c;
+    c.bucle = false;
+    c.fotogramas.push_back({1, 50});
+    c.eventos.push_back({"golpe", 0, "logico", "danio", 0});
+    c.eventos.push_back({"chispa", 0, "visual", "flash", 1});
+    c.eventos.push_back({"zas", 0, "sonido", "espada", 2});
+    const Game::PasoClip paso = Game::avanzaClip({}, 0.0, c);
+    MOTOR_CHECK(paso.eventos.size() == 3);
+    PuertosFalsos p;
+    for (const EventoFotograma& e : paso.eventos) MOTOR_CHECK(Game::enrutaEvento(e, p).isOk());
+    for (int i = 0; i < 3; ++i)
+        for (const EventoFotograma& e : paso.eventos) Game::repintaVisual(e, p);
+    int l = 0, s = 0, v = 0;
+    for (const std::string& x : p.llamadas) (x[0] == 'L' ? l : x[0] == 'S' ? s : v)++;
+    MOTOR_CHECK(l == 1 && s == 1 && v == 4);
+}
+
+MOTOR_TEST_CASE(repintar_ignora_tipos_no_visuales_o_desconocidos) {
+    PuertosFalsos p;
+    for (const char* t : {"logico", "sonido", "particula", ""}) Game::repintaVisual(ev("x", t), p);
+    MOTOR_CHECK(p.llamadas.empty());
+}
+
 MOTOR_TEST_CASE(repintar_no_reaplica_el_logico) {
     // Solo el evento visual se repite: reenrutarlo no toca aplicaLogico ni suena.
     PuertosFalsos p;

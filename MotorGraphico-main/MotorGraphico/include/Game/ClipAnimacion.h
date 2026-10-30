@@ -30,7 +30,7 @@ struct FotogramaClip {
 struct EventoFotograma {
     std::string id;       // [a-z0-9_]+
     int fotograma = 0;    // 0-based, 0 <= f < fotogramas.size()
-    std::string tipo;     // "logico" (defecto) | "visual" | "sonido"; lo valida E06
+    std::string tipo;     // "logico" (defecto) | "visual" | "sonido"; validado al leer (tipoEventoValido)
     std::string dato;     // parametro libre
     int orden = 0;        // posicion declarada en el JSON
 };
@@ -50,6 +50,10 @@ std::vector<EventoFotograma> eventosOrdenados(const ClipAnimacion& clip);
 
 // Punteros a los eventos de un fotograma, por orden declarado (validos mientras viva el clip).
 std::vector<const EventoFotograma*> eventosDeFotograma(const ClipAnimacion& clip, int fotograma);
+
+// U3-05.E06 -- Unica lista de tipos de evento: "logico" | "visual" | "sonido" (sensible a mayusculas).
+// La usan el lector (error de parse) y enrutaEvento (EventosClip.h).
+bool tipoEventoValido(const std::string& tipo);
 
 // Lee un documento con exactamente un clip en "clips".
 Result<ClipAnimacion> leerClip(const JsonValue& raiz);

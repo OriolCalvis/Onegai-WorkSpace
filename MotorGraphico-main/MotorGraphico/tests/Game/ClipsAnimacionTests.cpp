@@ -139,6 +139,15 @@ MOTOR_TEST_CASE(error_evento_fuera_del_clip_o_mal_formado) {
     falla(doc(cab + R"({"id":"B B","fotograma":1}]})"), "clips[0].eventos[1].id");
 }
 
+MOTOR_TEST_CASE(error_tipo_de_evento_no_reconocido) {
+    const std::string cab = R"({"id":"x","fotogramas":[{"sprite":1,"duracionMs":10}],"eventos":[)";
+    for (const char* t : {"particula", "Logico", "", "sonido "})
+        falla(doc(cab + R"({"id":"b","fotograma":0,"tipo":")" + t + R"("}]})"), "clips[0].eventos[0].tipo",
+              "tipo de evento no reconocido");
+    for (const char* t : {"logico", "visual", "sonido"})
+        MOTOR_CHECK(Game::leerClip(json(doc(cab + R"({"id":"b","fotograma":0,"tipo":")" + t + R"("}]})"))).isOk());
+}
+
 MOTOR_TEST_CASE(error_enteros_fuera_de_rango_sin_comportamiento_indefinido) {
     const std::string cab = R"({"id":"x","fotogramas":[{"sprite":1,"duracionMs":)";
     const char* ruta = "clips[0].fotogramas[0].duracionMs";

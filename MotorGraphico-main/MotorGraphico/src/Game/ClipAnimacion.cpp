@@ -8,6 +8,10 @@
 
 namespace Game {
 
+bool tipoEventoValido(const std::string& tipo) {
+    return tipo == "logico" || tipo == "visual" || tipo == "sonido";
+}
+
 double ClipAnimacion::duracionTotal() const {
     double total = 0.0;
     for (const FotogramaClip& f : fotogramas) {
@@ -119,6 +123,10 @@ ClipResult leerEventos(const JsonValue& clipJson, const std::string& ruta, ClipA
         }
         if (e.has("tipo") && !e["tipo"].isString()) {
             return fallo(rutaI + ".tipo", "se espera una cadena");
+        }
+        if (e.has("tipo") && !tipoEventoValido(e["tipo"].asString())) {
+            return fallo(rutaI + ".tipo", "tipo de evento no reconocido: " + e["tipo"].asString() +
+                                              " (se espera logico, visual o sonido)");
         }
         if (e.has("dato") && !e["dato"].isString()) {
             return fallo(rutaI + ".dato", "se espera una cadena");

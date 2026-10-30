@@ -6,8 +6,10 @@
 // que reconstruir o repintar el render nunca puede llamar a aplicaLogico (no se aplica dano dos veces).
 // Patron EscenarioCinematica (Cinematica.h): interfaz pura inyectada; las pruebas ponen una falsa.
 // Esta pieza NO llama a AudioDirector: el puerto de sonido real es el adaptador de E07.
-// Quien llama decide cuando enrutar (p. ej. los eventos de PasoClip::eventos, en orden, una vez cada
-// uno); enrutaEvento no guarda estado ni deduplica.
+// Avance real del clip (PasoClip::eventos, en orden) -> enrutaEvento, UNA vez por ocurrencia.
+// Repintado -> repintaVisual, repetible. enrutaEvento no guarda estado ni deduplica por id (una
+// vuelta nueva o un ataque nuevo debe poder reaplicar): la garantia de «una vez» es de quien llama,
+// y repintaVisual le da una via que no puede reaplicar dano.
 
 #include "Core/Errors/Result.h"
 #include "Game/ClipAnimacion.h"
@@ -28,5 +30,10 @@ public:
 // sin destino" y hoy no se devuelve nunca: se mantiene Result<bool> por el contrato de E06, para
 // poder anadir tipos sin destino sin cambiar la firma.
 Result<bool> enrutaEvento(const EventoFotograma& e, PuertosEventoClip& puertos);
+
+// Repintado (reconstruir el render, recargar, volver a dibujar): solo llama a muestraVisual y solo
+// para tipo "visual"; ignora "logico", "sonido" y cualquier otro tipo. Estructuralmente no puede
+// llamar a aplicaLogico ni a suena. Repetible.
+void repintaVisual(const EventoFotograma& e, PuertosEventoClip& puertos);
 
 }  // namespace Game
