@@ -2,6 +2,8 @@
 // atlas nullptr) a varios dt (1/30, 1/60, 1/144, 0,5 s), reenganche del cuerpo base tras una
 // cinematica y maquina de PRUEBA de tres clips (idle, caminar, accion). Sin codigo de producto.
 // Lo ya cubierto en EntidadClipMaquinaTests / ControladorAnimacionTests no se repite (ver informe).
+// Eventos: los puertos de EntidadClip no hacen nada (EntidadClip.h), asi que el conteo de eventos se
+// comprueba sobre ClipActor (el mismo que posee EntidadClip) con un puerto contador, no a traves de la entidad.
 // Lee assets/ (WORKING_DIRECTORY = fuentes).
 #include "TestHarness.h"
 
@@ -12,6 +14,7 @@
 #include "Core/Math/GridCoord.h"
 #include "Engine/AnimacionMundo.h"
 #include "Engine/EntidadClip.h"
+#include "Game/ClipActor.h"
 #include "Game/CatalogoAnimacionJuego.h"
 #include "Game/RutinasPnjAnimacion.h"
 
@@ -46,6 +49,52 @@ long pasosDe(double dt, double total) { return std::lround(total / dt); }
 
 // Avance de un fotograma del idle (1..12) entre dos observaciones: 0..(pasos que cabe en dt)+1.
 int delta(int antes, int ahora) { return ((ahora - antes) % 12 + 12) % 12; }
+
+// Sprite esperado (1..12) del idle (12 x 220 ms, bucle) tras `t` segundos desde el reenganche. Con t a
+// menos de 1e-3 fotogramas de una frontera vale el sprite anterior o el siguiente (la fase del clip es
+// double y la de la prueba tambien, pero el redondeo de la suma de dt puede mover el cruce un paso).
+bool idleEn(int sprite, double t) {
+    const double x = t / 0.22;
+    const long k = static_cast<long>(std::floor(x));
+    const double frac = x - static_cast<double>(k);
+    auto de = [](long n) { return static_cast<int>(((n % 12) + 12) % 12) + 1; };
+    if (frac < 1e-3) return sprite == de(k) || sprite == de(k - 1);
+    if (frac > 1.0 - 1e-3) return sprite == de(k) || sprite == de(k + 1);
+    return sprite == de(k);
+}
+
+// Puerto contador: guarda cada evento por orden de llegada (todos los tipos juntos).
+struct Cuenta final : PuertosEventoClip {
+    std::vector<std::string> ids;
+    void aplicaLogico(const EventoFotograma& e) override { ids.push_back(e.id); }
+    void muestraVisual(const EventoFotograma& e) override { ids.push_back(e.id); }
+    void suena(const EventoFotograma& e) override { ids.push_back(e.id); }
+    long cuantos(const char* id) const {
+        long n = 0;
+        for (const std::string& s : ids) n += s == id ? 1 : 0;
+        return n;
+    }
+};
+struct SinDestino final : DestinoFotograma {
+    void ponerFotograma(int) override {}
+};
+
+// El idle REAL (12 x 220 ms) con tres eventos: ini (fotograma 0), mid (6) y fin (11).
+ClipAnimacion idleConEventos(bool bucle) {
+    const ClipAnimacion* base = catalogoAnimacionDelJuego().clip(IdClip::parse("idle").value());
+    MOTOR_CHECK(base != nullptr);
+    ClipAnimacion c = *base;
+    c.bucle = bucle;
+    c.eventos = {{"ini", 0, "logico", "", 0}, {"mid", 6, "logico", "", 1}, {"fin", 11, "logico", "", 2}};
+    return c;
+}
+
+// Eventos acumulados esperados tras `e` segundos para un evento en el fotograma f de un ciclo de 2,64 s
+// (se emite al ENTRAR en el fotograma f: una vez por cruce, en f*0,22 + k*2,64).
+long esperadosHasta(int f, double e) {
+    const double ini = f * 0.22;
+    return e + 1e-9 < ini ? 0 : static_cast<long>(std::floor((e - ini + 1e-9) / 2.64)) + 1;
+}
 
 // ---------------------------------------------------------------- maquina de prueba (3 clips)
 const char* const kClips = R"({"schemaVersion":1,"clips":[
@@ -99,11 +148,10 @@ std::vector<int> corridaTres(const CatalogoAnimacion& cat, double dt, int* golpe
 // Destino espia con finClip controlable (para los disparos consumidos).
 struct Espia final : DestinoAnimacion {
     bool fin = false, control = false;
-    int reengancha_ = 0;
     bool esClip(const IdClip&) const override { return true; }
     void ponNombre(const IdClip&) override {}
     void cambiaClip(const IdClip&, PoliticaCambio) override {}
-    void reengancha(const IdClip&) override { ++reengancha_; control = true; }
+    void reengancha(const IdClip&) override { control = true; }
     bool tieneControl() const override { return control; }
     bool finClip() const override { return fin; }
 };
@@ -154,17 +202,112 @@ MOTOR_TEST_CASE(idle_de_enemigo_base_mismo_fotograma_final_y_sin_saltos_a_los_cu
     for (double dt : kDts) {
         Sonda e;
         enemigo(e);
-        int antes = 0, saltos = 0;
+        int antes = 0, saltos = 0, malos = 0;
         const int maxDelta = static_cast<int>(dt / 0.22) + 1;
         for (long i = 0, n = pasosDe(dt, 6.0); i < n; ++i) {
             MOTOR_CHECK(e.aplicaEntradas({}, false));
             e.update(static_cast<float>(dt));
-            if (antes != 0 && delta(antes, e.sprite()) > maxDelta) ++saltos;  // un reinicio a 1 se vera aqui
+            if (antes != 0 && delta(antes, e.sprite()) > maxDelta) ++saltos;
+            if (!idleEn(e.sprite(), static_cast<double>(i + 1) * dt)) ++malos;  // fase exacta en CADA fotograma
             antes = e.sprite();
         }
         MOTOR_CHECK(saltos == 0);
+        MOTOR_CHECK(malos == 0);  // un reinicio (tambien a 1 desde 1/12) cambia la fase y se ve aqui
         MOTOR_CHECK(e.tieneClip() && e.controlExterno());
         MOTOR_CHECK(e.sprite() == 4);  // 6,0 s / 0,22 s = 27,27 -> fotograma 27 mod 12 = 3 -> sprite 4
+    }
+}
+
+MOTOR_TEST_CASE(evento_de_clip_exactamente_uno_por_cruce_a_los_cuatro_dt) {
+    // Un ClipActor (el que posee EntidadClip) con puerto contador: tras CADA paso, cada evento ha sonado
+    // exactamente tantas veces como cruces del fotograma lleva el reloj; el orden es ini, mid, fin, ini...
+    const ClipAnimacion clip = idleConEventos(true);
+    for (double dt : kDts) {
+        ClipActor a(IdClip::parse("idle").value(), clip);
+        Cuenta c;
+        SinDestino d;
+        double t = 0.0;
+        for (long i = 0, n = pasosDe(dt, 10.0); i < n; ++i) {
+            MOTOR_CHECK(a.avanza(dt, c, d) == 0);
+            t = static_cast<double>(i + 1) * dt;
+            MOTOR_CHECK(c.cuantos("ini") == esperadosHasta(0, t));
+            MOTOR_CHECK(c.cuantos("mid") == esperadosHasta(6, t));
+            MOTOR_CHECK(c.cuantos("fin") == esperadosHasta(11, t));
+        }
+        // 10 s: ini en 0, 2,64, 5,28, 7,92 (4); mid en 1,32, 3,96, 6,6, 9,24 (4); fin en 2,42, 5,06, 7,7 (3).
+        MOTOR_CHECK(c.cuantos("ini") == 4 && c.cuantos("mid") == 4 && c.cuantos("fin") == 3);
+        // Orden global ini mid fin ini mid fin ini mid fin ini mid (11 eventos).
+        const std::vector<std::string> orden = {"ini", "mid", "fin", "ini", "mid", "fin", "ini", "mid", "fin", "ini", "mid"};
+        MOTOR_CHECK(c.ids == orden);
+    }
+}
+
+MOTOR_TEST_CASE(evento_de_clip_no_ciclico_una_sola_vez_a_los_cuatro_dt) {
+    const ClipAnimacion clip = idleConEventos(false);
+    for (double dt : kDts) {
+        ClipActor a(IdClip::parse("idle").value(), clip);
+        Cuenta c;
+        SinDestino d;
+        for (long i = 0, n = pasosDe(dt, 10.0); i < n; ++i) MOTOR_CHECK(a.avanza(dt, c, d) == 0);
+        const std::vector<std::string> unaVez = {"ini", "mid", "fin"};
+        MOTOR_CHECK(c.ids == unaVez);
+        MOTOR_CHECK(a.cursor().terminado);
+    }
+}
+
+MOTOR_TEST_CASE(vaiven_y_giro_misma_secuencia_de_sprites_a_los_cuatro_dt) {
+    // PNJ con actividad: anda 1,5 s hacia la derecha, vaiven 4,8 s (idle_left/idle_right cada 0,6 s), giro
+    // 4 s (cuatro rumbos cada 0,8 s) y reposo. La maquina con EntidadClip real debe dar, en CADA fotograma,
+    // el mismo sprite que el oraculo RutinasPnj::animacion; y con dt finos, la secuencia analitica.
+    int sprites[8];  // sprite unico por animacion, para comparar secuencias de SPRITES
+    const char* const nombres[8] = {"idle_up", "idle_right", "idle_down", "idle_left",
+                                    "walk_up", "walk_right", "walk_down", "walk_left"};
+    for (int i = 0; i < 8; ++i) sprites[i] = 20 + i;
+    auto spriteDe = [&](const std::string& n) {
+        for (int i = 0; i < 8; ++i)
+            if (n == nombres[i]) return sprites[i];
+        return -1;
+    };
+    auto estadoEn = [&](double t) {
+        EstadoPnj p;
+        p.rumbo = t < 6.3 ? 1 : 0;
+        p.progreso = t < 1.5 ? 0.5f : 1.0f;
+        if (t >= 1.5 && t < 6.3) {
+            p.def.movimiento = MovimientoPnj::Vaiven;
+            p.actividad = 1.0f;
+            p.reloj = static_cast<float>(t - 1.5);
+        } else if (t >= 6.3 && t < 10.3) {
+            p.def.movimiento = MovimientoPnj::Giro;
+            p.actividad = 1.0f;
+            p.reloj = static_cast<float>(t - 6.3);
+        }
+        return p;
+    };
+    // walk_right, 4 x (idle_left, idle_right), idle_up/right/down/left/up (el reposo final es idle_up).
+    const std::vector<int> analitica = {sprites[5], sprites[3], sprites[1], sprites[3], sprites[1], sprites[3],
+                                        sprites[1], sprites[3], sprites[1], sprites[0], sprites[1], sprites[2],
+                                        sprites[3], sprites[0]};
+    for (double dt : kDts) {
+        Sonda e;
+        e.idleCuerpoBase(kSinAtlas, 64, 64, Vector2{0.0f, 0.0f});
+        for (int i = 0; i < 8; ++i) e.addAnimation(nombres[i], {sprites[i]});
+        std::vector<int> vista, oraculo;
+        for (long i = 0, n = pasosDe(dt, 11.0); i < n; ++i) {
+            const double t = static_cast<double>(i) * dt;
+            const EstadoPnj p = estadoEn(t);
+            MOTOR_CHECK(Engine::animaConMaquina(e, "pnj_basico", entradasDePnj(p, false), false));
+            e.update(static_cast<float>(dt));
+            const int esperado = spriteDe(RutinasPnj::animacion(p, false));
+            MOTOR_CHECK(esperado > 0 && e.sprite() == esperado);  // cada fotograma
+            if (vista.empty() || vista.back() != e.sprite()) vista.push_back(e.sprite());
+            if (oraculo.empty() || oraculo.back() != esperado) oraculo.push_back(esperado);
+        }
+        MOTOR_CHECK(vista == oraculo);
+        if (dt < 0.1) {
+            MOTOR_CHECK(vista == analitica);  // 0,5 s muestrea a mas de 0,6 s/2: aliasing, solo oraculo
+        } else {
+            MOTOR_CHECK(vista.size() >= 8u);  // con dt 0,5 s al menos se ven los dos lados y los giros
+        }
     }
 }
 
@@ -187,15 +330,16 @@ MOTOR_TEST_CASE(enemigo_base_cue_600_fotogramas_vuelve_al_clip_una_sola_vez) {
     MOTOR_CHECK(reenganches == 0);
     e.aplicaEntradas({}, false);  // acaba la cinematica
     MOTOR_CHECK(e.tieneClip() && e.controlExterno() && e.sprite() == 1);
-    int antes = 1, saltos = 0, vueltas = 0;
-    for (int i = 0; i < 600; ++i) {  // 10 s de juego normal: sin segundo reenganche ni eventos duplicados
+    int antes = 1, saltos = 0, vueltas = 0, malos = 0;
+    for (int i = 0; i < 600; ++i) {  // 10 s de juego normal: sin segundo reenganche (fase continua desde el reenganche)
         e.aplicaEntradas({}, false);
         e.update(1.0f / 60.0f);
         if (delta(antes, e.sprite()) > 1) ++saltos;
+        if (!idleEn(e.sprite(), static_cast<double>(i + 1) / 60.0)) ++malos;
         if (e.sprite() == 1 && antes == 12) ++vueltas;
         antes = e.sprite();
     }
-    MOTOR_CHECK(saltos == 0);
+    MOTOR_CHECK(saltos == 0 && malos == 0);
     MOTOR_CHECK(vueltas == 3);  // 10 s / 2,64 s = 3,79 vueltas completas
     MOTOR_CHECK(e.sprite() == 10);  // 10 s / 0,22 = 45,45 -> 45 mod 12 = 9 -> sprite 10
 }
@@ -228,18 +372,26 @@ MOTOR_TEST_CASE(cinematica_con_los_idle_registrados_pose_toda_la_cinematica_y_un
 }
 
 MOTOR_TEST_CASE(estado_igual_no_reinicia_en_600_fotogramas_a_cada_dt) {  // (3)
-    for (double dt : kDts) {
+    const int finales[4] = {7, 10, 7, 8};
+    for (std::size_t k = 0; k < kDts.size(); ++k) {
+        const double dt = kDts[k];
         Sonda e;
         enemigo(e);
-        int antes = 0, reinicios = 0;
+        int antes = 0, reinicios = 0, malos = 0;
         const int maxDelta = static_cast<int>(dt / 0.22) + 1;
         for (int i = 0; i < 600; ++i) {
             e.aplicaEntradas({}, false);
             e.update(static_cast<float>(dt));
-            if (antes != 0 && delta(antes, e.sprite()) > maxDelta) ++reinicios;  // un reinicio no cabe en un paso
+            if (antes != 0 && delta(antes, e.sprite()) > maxDelta) ++reinicios;  // un reinicio que no cabe en un paso
+            // El salto por delta NO ve un reinicio a 1 desde 1/10/11/12 (cabe en un paso): la fase exacta si.
+            if (!idleEn(e.sprite(), static_cast<double>(i + 1) * dt)) ++malos;
             antes = e.sprite();
         }
         MOTOR_CHECK(reinicios == 0);
+        MOTOR_CHECK(malos == 0);
+        // Sprite final explicito: un reinicio en el ultimo fotograma lo dejaria en 1.
+        // 600*dt = 20 s, 10 s, 4,17 s, 300 s -> /0,22 = 90,9 / 45,5 / 18,9 / 1363,6 -> mod 12 = 6 / 9 / 6 / 7.
+        MOTOR_CHECK(e.sprite() == finales[k]);
     }
 }
 

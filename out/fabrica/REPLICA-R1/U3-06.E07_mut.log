@@ -48,3 +48,65 @@
 [FAIL] pnj_basico_misma_secuencia_de_clips_a_los_cuatro_dt
 === RESTAURADO (sin mutacion)
 100% tests passed out of 5
+
+##### E07 r1 (2026-11-02): mutaciones de las comprobaciones NUEVAS (prueba: eventos por cruce, vaiven/giro, fase exacta). Cada una: aplica -> ROJO -> restaura -> VERDE.
+=== E07r1 MUTACION r1-a: reengancha en cada aplica (fase exacta idle)  [src/Game/ControladorAnimacion.cpp]
+    } else if (forzar || !destino.tieneControl()) {  ->  } else if (true) {
+[FAIL] idle_de_enemigo_base_mismo_fotograma_final_y_sin_saltos_a_los_cuatro_dt: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionAnimacionTests.cpp:215 -- comprobación fallida: malos == 0
+[FAIL] enemigo_base_cue_600_fotogramas_vuelve_al_clip_una_sola_vez: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionAnimacionTests.cpp:342 -- comprobación fallida: saltos == 0 && malos == 0
+[FAIL] estado_igual_no_reinicia_en_600_fotogramas_a_cada_dt: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionAnimacionTests.cpp:391 -- comprobación fallida: malos == 0
+[FAIL] h2_al_acabar_la_ruta_el_idle_salta_de_fase_una_vez: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionAnimacionTests.cpp:415 -- comprobación fallida: e.sprite() == 2
+[FAIL] maquina_de_tres_clips_misma_secuencia_idle_caminar_idle_accion_idle_a_los_cuatro_dt: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionAnimacionTests.cpp:425 -- comprobación fallida: (seq == std::vector<int>{0, 1, 0, 2, 0})
+[FAIL] accion_se_entrega_ya_y_termina_con_el_clip_no_ciclico: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionAnimacionTests.cpp:451 -- comprobación fallida: e.sprite() == 6
+Ejecutados 13 test(s); 6 fallo(s).
+    ROJO si hay [FAIL] arriba
+=== E07r1 MUTACION r1-e1: evento emitido dos veces  [src/Game/ClipActor.cpp]
+    if (!enrutaEvento(e, eventos).isOk()) ++rechazados;  ->  enrutaEvento(e, eventos); if (!enrutaEvento(e, eventos).isOk()) ++rechazados;
+[FAIL] evento_de_clip_exactamente_uno_por_cruce_a_los_cuatro_dt: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionAnimacionTests.cpp:233 -- comprobación fallida: c.cuantos("ini") == esperadosHasta(0, t)
+[FAIL] evento_de_clip_no_ciclico_una_sola_vez_a_los_cuatro_dt: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionAnimacionTests.cpp:253 -- comprobación fallida: c.ids == unaVez
+Ejecutados 13 test(s); 2 fallo(s).
+    ROJO si hay [FAIL] arriba
+=== E07r1 MUTACION r1-e2: pierde el evento del fotograma 0 desde la 2a vuelta  [src/Game/ClipActor.cpp]
+            for (const EventoFotograma& e : p.eventos) {
+            if (!enrutaEvento  ->          for (const EventoFotograma& e : p.eventos) {
+            if (e.fotograma == 0 && p.cursor.vueltas > 0) continue;
+            if (!enrutaEvento
+[FAIL] evento_de_clip_exactamente_uno_por_cruce_a_los_cuatro_dt: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionAnimacionTests.cpp:233 -- comprobación fallida: c.cuantos("ini") == esperadosHasta(0, t)
+Ejecutados 13 test(s); 1 fallo(s).
+    ROJO si hay [FAIL] arriba
+=== E07r1 MUTACION r1-e3: clip no ciclico repite (no termina)  [src/Game/CursorClip.cpp]
+    if (ultimo && !clip.bucle) {
+            k.enFotogramaMs = dur;  ->  if (false && ultimo && !clip.bucle) {
+            k.enFotogramaMs = dur;
+[FAIL] evento_de_clip_no_ciclico_una_sola_vez_a_los_cuatro_dt: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionAnimacionTests.cpp:253 -- comprobación fallida: c.ids == unaVez
+Ejecutados 13 test(s); 1 fallo(s).
+    ROJO si hay [FAIL] arriba
+=== E07r1 MUTACION r1-v1: vaiven cambia de lado cada 0,7 s en vez de 0,6 s (E05)  [src/Game/RutinasPnjAnimacion.cpp]
+    std::fmod(e.reloj, 1.2f) < 0.6f ? 3 : 1  ->  std::fmod(e.reloj, 1.2f) < 0.7f ? 3 : 1
+[FAIL] vaiven_y_giro_misma_secuencia_de_sprites_a_los_cuatro_dt: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionAnimacionTests.cpp:301 -- comprobación fallida: esperado > 0 && e.sprite() == esperado
+Ejecutados 13 test(s); 1 fallo(s).
+    ROJO si hay [FAIL] arriba
+=== E07r1 MUTACION r1-v2: giro cada 0,9 s en vez de 0,8 s (E05)  [src/Game/RutinasPnjAnimacion.cpp]
+    static_cast<int>(e.reloj / 0.8f)  ->  static_cast<int>(e.reloj / 0.9f)
+[FAIL] vaiven_y_giro_misma_secuencia_de_sprites_a_los_cuatro_dt: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionAnimacionTests.cpp:301 -- comprobación fallida: esperado > 0 && e.sprite() == esperado
+Ejecutados 13 test(s); 1 fallo(s).
+    ROJO si hay [FAIL] arriba
+=== E07r1 MUTACION r1-v3: giro sin vuelta (rumbo fijo; E05)  [src/Game/RutinasPnjAnimacion.cpp]
+    rumbo = modulo4(e.rumbo + static_cast<int>(e.reloj / 0.8f));  ->  rumbo = modulo4(e.rumbo);
+[FAIL] vaiven_y_giro_misma_secuencia_de_sprites_a_los_cuatro_dt: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionAnimacionTests.cpp:301 -- comprobación fallida: esperado > 0 && e.sprite() == esperado
+Ejecutados 13 test(s); 1 fallo(s).
+    ROJO si hay [FAIL] arriba
+=== E07r1 MUTACION r1-f: reinicio SOLO en el ultimo fotograma de estado_igual (en la prueba; comprueba el sprite final explicito)  [tests/Engine/VerificacionAnimacionTests.cpp]
+            for (int i = 0; i < 600; ++i) {
+            e.aplicaEntradas({}, false);
+            e.update(static_cast<float>(dt));
+            if (antes != 0 && delta(antes, e.sprite()) > maxDelta) ++reinicios;  // un reinicio que no cabe en un paso  ->          for (int i = 0; i < 600; ++i) {
+            e.aplicaEntradas({}, false);
+            e.update(static_cast<float>(dt));
+            if (i == 599) e.ponClip(*catalogoAnimacionDelJuego().clip(IdClip::parse("idle").value()));
+            if (antes != 0 && delta(antes, e.sprite()) > maxDelta) ++reinicios;  // un reinicio que no cabe en un paso
+[FAIL] estado_igual_no_reinicia_en_600_fotogramas_a_cada_dt: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/VerificacionAnimacionTests.cpp:391 -- comprobación fallida: reinicios == 0
+Ejecutados 13 test(s); 1 fallo(s).
+    ROJO si hay [FAIL] arriba
+=== E07r1 RESTAURADO tras las 8 mutaciones: src/ sin cambios (git status), build completo, 13/13 en verde (U3-06.E07_ctest.log)
+=== NOTA r1-a: con la prueba anterior el salto por delta (reinicios==0) NO se ponia rojo en estado_igual; la fase exacta (malos==0) si. r1-f: reinicio en el ultimo fotograma, lo caza reinicios==0 (el sprite final explicito y malos son redundantes aqui)
