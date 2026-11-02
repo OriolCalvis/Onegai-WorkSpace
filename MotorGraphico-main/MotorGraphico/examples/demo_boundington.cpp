@@ -444,13 +444,6 @@ int main() {
         }
     }
     std::printf("\nbeats que salen en estas escenas: %d de %d (todos: explorar_boundington)\n", n, total);
-    if (!pendientesOriol().empty()) {
-        std::printf("\nPENDIENTE_ORIOL (%d escenas; no cuentan como fallo, esperan respuesta):\n",
-                    static_cast<int>(pendientesOriol().size()));
-        std::set<std::string> motivos;  // el motivo suele ser el mismo para todas: una sola vez
-        for (const std::string& p : pendientesOriol()) motivos.insert(p.substr(p.find(" — ") + 5));
-        for (const std::string& m : motivos) std::printf("  - %s\n", m.c_str());
-    }
     std::printf("todas las escenas han pasado\n");
     return 0;
 }

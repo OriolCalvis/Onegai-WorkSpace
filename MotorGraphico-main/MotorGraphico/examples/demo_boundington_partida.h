@@ -424,21 +424,6 @@ struct Jugador {
         }
     }
 
-    // H4 (02/11): el Ocaso NO pasa de la base. b3_campanas (auto, sin notFlags, antes que los
-    // demas en el JSON; el cargador no lee "once") se vuelve a elegir en cada tick y tapa a
-    // b3_aviso_en_base / b3_venides_arenga_* / b3_venides_retenido (y b3_campanas_solas, :1368, si se espera
-    // a las campanas en vez de avisar), que son los unicos que
-    // encienden bnd3_arenga. Con las campanas sonando y sin arenga no hay salidas (b3_por_donde).
-    // Es el JSON, no el guion: las escenas del Ocaso salen como PENDIENTE ORIOL mientras sea asi
-    // (y se reactivan solas cuando el JSON lo arregle).
-    bool ocasoBloqueado() const { return s.hasFlag("bnd3_campanas") && !s.hasFlag("bnd3_arenga"); }
-
-    // H4 (02/11): la ruta del paso norte tambien se atasca. b3_norte_pasado (auto, y su guarda
-    // "notFlags bnd3_en_afueras" no es suya: no se apaga a si misma) se vuelve a elegir en cada tick
-    // y tapa a todos los beats que vienen despues (b3_afueras..., huida), que son los que encienden
-    // bnd3_en_afueras: con paso_base_listo y sin afueras, no se sale.
-    bool norteBloqueado() const { return s.hasFlag("bnd3_paso_base_listo") && !s.hasFlag("bnd3_en_afueras"); }
-
     // Cierra el DIA 3 (boundington_segundo_dia): anochece si hace falta y «Subir a dormir» con
     // Rosita (b2_skilla_hora pide franja >= 1); apagaLasVelas() hace el resto (bnd2_dia_cerrado).
     void duermeDia3() {
@@ -524,24 +509,6 @@ struct Jugador {
     }
 };
 
-// H4 (UNI-02-11): escenas cuyo objetivo ya no existe en el guion vigente (GORRAN-DIA2). No se
-// borran ni se falsean: se marcan con Escena::pendienteOriol(motivo), salen en la salida como
-// «PENDIENTE ORIOL: <escena> — <motivo>» y NO cuentan como fallo.
-inline std::vector<std::string>& pendientesOriol() {
-    static std::vector<std::string> v;
-    return v;
-}
-
-inline const char* kMotivoOcaso =
-    "Ocaso bloqueado por el JSON: b3_campanas (boundington_ocaso.json:1395) y b3_campanas_solas (:1368), autos sin guarda, tapan a "
-    "b3_aviso_en_base (:1418), b3_venides_retenido (:1451) y b3_venides_arenga_* (:1484), los unicos que encienden "
-    "bnd3_arenga; sin ella no hay salidas. Al arreglarlo, rehacer las rutas (zonas de ciudad_oeste, cinematicas base_ruta_*)";
-
-inline const char* kMotivoNorte =
-    "paso norte bloqueado por el JSON: b3_norte_pasado (boundington_ocaso.json:2374, auto) se vuelve a elegir en cada tick "
-    "(solo se apaga con bnd3_en_afueras, que encienden beats posteriores) y tapa a los que siguen; con una guarda "
-    "notFlags bnd3_paso_base_listo la escena pasa";
-
 // Una escena con nombre: lo que se comprueba por el camino se apunta, y al
 // final se dice todo lo que fallo (y entonces la demo falla).
 struct Escena {
@@ -581,28 +548,7 @@ struct Escena {
     void di(std::initializer_list<const char*> ts) {
         j.prefiere.insert(j.prefiere.begin(), ts.begin(), ts.end());
     }
-    // Ocaso bloqueado por el JSON (ver Jugador::ocasoBloqueado): true y la escena queda pendiente.
-    bool ocasoBloqueado() {
-        if (!j.ocasoBloqueado()) return false;
-        pendienteOriol(kMotivoOcaso);
-        return true;
-    }
-    // Idem para el paso norte (ver Jugador::norteBloqueado).
-    bool norteBloqueado() {
-        if (!j.norteBloqueado()) return false;
-        pendienteOriol(kMotivoNorte);
-        return true;
-    }
-    // La escena sigue jugandose (para que Oriol vea hasta donde llega) pero su resultado no cuenta.
-    std::string pendiente;
-    void pendienteOriol(const char* motivo) { pendiente = motivo; }
     void fin() {
-        if (!pendiente.empty()) {
-            std::printf("  PENDIENTE ORIOL: %s — %s\n", titulo.c_str(), pendiente.c_str());
-            for (const std::string& f : fallos) std::printf("        (informativo) %s\n", f.c_str());
-            pendientesOriol().push_back(titulo + " — " + pendiente);
-            return;
-        }
         std::printf("  %s %s\n", fallos.empty() ? "OK " : "MAL", titulo.c_str());
         for (const std::string& f : fallos) std::printf("        %s\n", f.c_str());
         require(fallos.empty());

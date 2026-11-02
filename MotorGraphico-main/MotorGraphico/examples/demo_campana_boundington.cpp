@@ -44,15 +44,6 @@ using namespace demo_bnd;
 
 namespace {
 
-// H4 (UNI-02-11): el Ocaso se bloquea en la base por el JSON (ver Jugador::ocasoBloqueado).
-// Las partes de la campana que dependen de el salen como PENDIENTE ORIOL (no cuentan como fallo)
-// y lo anterior (prologo, dia 1, Gorran, dia 3) se sigue exigiendo entero.
-int g_pendientes = 0;
-void pendienteOcaso(const char* que) {
-    ++g_pendientes;
-    std::printf("  PENDIENTE ORIOL: campana, %s — %s\n", que, kMotivoOcaso);
-}
-
 // Ruta A — el heroe que lo hace todo: investiga, ayuda a todo el mundo,
 // devuelve la espada y salva a Verina y a Edul.
 const std::vector<std::string> kHeroe = {
@@ -82,8 +73,7 @@ const std::vector<std::string> kHeroe = {
     "Correr a avisar a Venides", "Al oeste", "Vamos a por el.", "Ven con nosotros.", "Liberarle",
 };
 
-// false si el Ocaso no se pudo jugar (bloqueado por el JSON).
-bool juegaHeroe(Jugador& j) {
+void juegaHeroe(Jugador& j) {
     j.prefiere = kHeroe;
     j.prologo();
 
@@ -137,12 +127,10 @@ bool juegaHeroe(Jugador& j) {
 
     j.fase("ocaso");
     j.ocasoBase();                   // el sermon de Sandes, correr a avisar, las campanas, Venides
-    if (j.ocasoBloqueado()) return false;
     j.zonasPrimero = {"edul_casco_retenido"};  // al heroe le da tiempo a liberar a Edul antes del final
     j.ocasoRecorrido();              // la salida oeste, Verina, Sandes, Edul, Las Afueras, la huida y la barca
     require(j.s.hasFlag("bnd3_fuera"));
     require(j.s.hasFlag("bnd3_epilogo"));
-    return true;
 }
 
 // Ruta B — el que va a lo justo: cama, desayuno, lo que oyes, a dormir.
@@ -156,7 +144,7 @@ const std::vector<std::string> kJusto = {
     "Correr a avisar a Venides", "Quedarse y luchar",
 };
 
-bool juegaJusto(Jugador& j) {
+void juegaJusto(Jugador& j) {
     j.prefiere = kJusto;
     j.prologo();
 
@@ -181,11 +169,9 @@ bool juegaJusto(Jugador& j) {
 
     j.fase("ocaso");
     j.ocasoBase();
-    if (j.ocasoBloqueado()) return false;
     j.ocasoRecorrido();              // la salida oeste y lo que va saliendo hasta la huida
     require(j.s.hasFlag("bnd3_fuera"));
     require(j.s.hasFlag("bnd3_epilogo"));
-    return true;
 }
 
 void cuenta(const NarrativeState& s, const char* que) {
@@ -214,7 +200,7 @@ int main() {
         Jugador j(g, Suerte::Buena, {"heroe_pueblo_humano", "heroe_pueblo_de_aegroum", "heroe_rol_tank"}, true);
         j.pierde.insert("bnd3_sandes_vencido");
         j.anotador = &vistos;
-        const bool ocaso = juegaHeroe(j);
+        juegaHeroe(j);
         const NarrativeState& s = j.s;
         for (const char* f : {"bnd_venides_reconocido", "bnd_venides_20", "bnd2_furia_alaro", "bnd2_aliado_gitanos",
                               "bnd2_rosita_semilla"}) {
@@ -222,18 +208,13 @@ int main() {
             require(s.hasFlag(f));
         }
         require(s.variable("confianza_rosita") >= 2);
-        if (ocaso) {
-            for (const char* f : {"bnd3_verina_con_grupo", "bnd3_edul_salvado", "bnd3_con_xila", "bnd3_compania",
-                                  "bnd3_final_oeste"}) {
-                cuenta(s, f);
-                require(s.hasFlag(f));
-            }
-            std::printf("  -> barca compartida, 20 hombres, espada, gitanos, Verina y Edul vivos,\n"
-                        "     la compania de Rosita en Las Afueras y salida por el oeste. OK\n");
-        } else {
-            pendienteOcaso("partida A (Verina y Edul vivos, Xila, la compania de Rosita, salida por el oeste)");
-            std::printf("  -> barca compartida, 20 hombres, espada y gitanos (dias 1 a 3). OK\n");
+        for (const char* f : {"bnd3_verina_con_grupo", "bnd3_edul_salvado", "bnd3_con_xila", "bnd3_compania",
+                              "bnd3_final_oeste"}) {
+            cuenta(s, f);
+            require(s.hasFlag(f));
         }
+        std::printf("  -> barca compartida, 20 hombres, espada, gitanos, Verina y Edul vivos,\n"
+                    "     la compania de Rosita en Las Afueras y salida por el oeste. OK\n");
     }
 
     // ---------------------------------------------------------------
@@ -243,7 +224,7 @@ int main() {
     {
         Jugador j(g, Suerte::Regular, {"heroe_pueblo_humano", "heroe_rol_agile"});
         j.anotador = &vistos;
-        const bool ocaso = juegaJusto(j);
+        juegaJusto(j);
         const NarrativeState& s = j.s;
         for (const char* f : {"bnd_venides_10", "bnd_venides_20", "bnd2_aliado_gitanos", "bnd3_compania",
                               "bnd3_final_oeste", "bnd3_final_caido"})
@@ -251,14 +232,9 @@ int main() {
         require(s.hasFlag("bnd_venides_10"));        // solo diez hombres, y el tercer dia
         require(!s.hasFlag("bnd_venides_20"));
         require(!s.hasFlag("bnd2_aliado_gitanos"));  // nadie le debe nada
-        if (ocaso) {
-            require(!s.hasFlag("bnd3_compania"));
-            require(!s.hasFlag("bnd3_final_oeste"));  // sale sin ayuda o cae
-            std::printf("  -> 10 hombres, sin aliados, final distinto. OK\n");
-        } else {
-            pendienteOcaso("partida B (sin compania, sin salida por el oeste: final distinto)");
-            std::printf("  -> 10 hombres, sin aliados (dias 1 a 3). OK\n");
-        }
+        require(!s.hasFlag("bnd3_compania"));
+        require(!s.hasFlag("bnd3_final_oeste"));  // sale sin ayuda o cae
+        std::printf("  -> 10 hombres, sin aliados, final distinto. OK\n");
     }
 
     // ---------------------------------------------------------------
@@ -272,12 +248,8 @@ int main() {
             for (bool heroe : {true, false}) {
                 Jugador j(g, suerte, {"heroe_pueblo_humano", heroe ? "heroe_rol_tank" : "heroe_rol_caster"});
                 j.anotador = &vistos;
-                const bool ocaso = heroe ? juegaHeroe(j) : juegaJusto(j);
+                if (heroe) juegaHeroe(j); else juegaJusto(j);
                 require(j.s.hasFlag("bnd3_campanas"));  // la Matanza ocurre
-                if (!ocaso) {
-                    pendienteOcaso("invariante (el epilogo y la barca de cada una de las 8 combinaciones)");
-                    continue;
-                }
                 require(j.s.hasFlag("bnd3_epilogo"));   // y la campana cierra
                 std::string fin = "?";
                 for (const char* f : {"bnd3_final_oeste", "bnd3_final_solos", "bnd3_final_caido"})
@@ -285,8 +257,7 @@ int main() {
                 std::printf("  %-8s %-6s -> final %s\n", nombre(suerte), heroe ? "heroe" : "justo", fin.c_str());
             }
         }
-        std::printf("  -> las 8 combinaciones: la ciudad arde (campanas)%s. OK\n",
-                    g_pendientes > 0 ? "; epilogo pendiente (Ocaso bloqueado)" : " y la campana cierra");
+        std::printf("  -> las 8 combinaciones: la ciudad arde (campanas) y la campana cierra. OK\n");
     }
 
     // ---------------------------------------------------------------
@@ -320,7 +291,6 @@ int main() {
     {
         int total = 0;
         int n = 0;
-        int sinOcaso = 0;
         for (const AdventureScript* a : {&g.prologo, &g.dia1, &g.gorran, &g.dia2, &g.ocaso}) {
             for (const auto& b : a->beats) {
                 ++total;
@@ -340,19 +310,12 @@ int main() {
             bool visto = false;
             for (const auto& v : vistos)
                 if (v == clave) { visto = true; break; }
-            if (!visto && g_pendientes > 0 && std::string(clave).rfind("b3_", 0) == 0) {
-                ++sinOcaso;  // Ocaso bloqueado por el JSON (PENDIENTE ORIOL, arriba)
-                continue;
-            }
             if (!visto) std::printf("    !! sin disparar: %s\n", clave);
             require(visto);
         }
-        if (sinOcaso > 0)
-            std::printf("  PENDIENTE ORIOL: campana, cobertura — %d momentos clave del Ocaso (b3_*) — %s\n", sinOcaso, kMotivoOcaso);
-        std::printf("  -> los %d momentos clave de los dias 1 a 3 salen. OK\n", 30 - sinOcaso);
+        std::printf("  -> los 30 momentos clave salen. OK\n");
     }
 
-    if (g_pendientes > 0) std::printf("\nPENDIENTE_ORIOL: %d comprobaciones del Ocaso (no cuentan como fallo)\n", g_pendientes);
     std::printf("\ntodas las comprobaciones han pasado\n");
     return 0;
 }

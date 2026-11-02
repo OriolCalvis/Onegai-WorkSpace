@@ -579,7 +579,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.pon({"bnd_venides_20", "bnd2_aliado_gitanos", "bnd2_aliado_skilla", "bnd2_documentos", "bnd2_fiesta_nobles"});
         e.j.fase("ocaso");
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_sermon", "b3_campanas", "b3_venides_arenga_20", "b3_saqueadores_20", "b3_verina_salvada",
                  "b3_edul_con_verina", "b3_huida_gitanos", "b3_epilogo", "b3_barca"});
@@ -605,7 +604,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.pon({"bnd_venides_20", "bnd2_documentos"});
         e.j.fase("ocaso");
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_epi_verina_sola"});
         e.nove({"bnd3_edul_salvado"});
@@ -629,9 +627,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.pon({"bnd_venides_10", "bnd2_documentos"});
         e.j.fase("ocaso");
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.ocasoRecorrido("base_ruta_norte");
-        if (e.norteBloqueado()) { e.fin(); break; }
         e.visto({"b3_venides_arenga_10"});
         e.ve({"bnd3_ruta_norte", "bnd3_fuera", "bnd3_epilogo"});
         e.fin();
@@ -654,7 +650,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.pon({"bnd_venides_10", "bnd2_documentos"});
         e.j.fase("ocaso");
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.ocasoRecorrido("base_ruta_norte");
         e.ve({"bnd3_final_caido", "bnd3_epilogo"});
         e.fin();
@@ -677,7 +672,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.pon({"bnd_venides_20", "bnd2_documentos"});
         e.j.fase("ocaso");
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.ocasoRecorrido("base_ruta_quedarse");
         e.visto({"b3_oleada"});
         e.ve({"bnd3_fuera", "bnd3_epilogo"});
@@ -701,7 +695,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.pon({"bnd_venides_20", "bnd2_documentos"});
         e.j.fase("ocaso");
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.ocasoRecorrido("base_ruta_oeste");
         e.ve({"bnd3_aliado_sandes", "bnd3_fuera", "bnd3_epilogo"});
         e.fin();
@@ -724,7 +717,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.pon({"bnd_venides_20", "bnd2_documentos"});
         e.j.fase("ocaso");
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.ocasoRecorrido("base_ruta_oeste");
         e.ve({"bnd3_verina_entregada", "bnd3_fuera"});
         e.visto({"b3_epi_verina_muerta"});
@@ -748,7 +740,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.pon({"bnd2_documentos", "bnd2_venides_sin_aviso"});
         e.j.fase("ocaso");
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_venides_retenido", "b3_verina_reconocida", "b3_epi_verina_muerta"});
         e.ve({"bnd3_fuera"});
@@ -772,7 +763,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.pon({"bnd2_documentos", "bnd2_venides_sin_aviso"});
         e.j.fase("ocaso");
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_venides_retenido", "b3_venides_rodillas"});
         e.ve({"bnd3_fuera"});
@@ -800,7 +790,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.habla("skilla");
         e.j.entra("interior_cuartel");
         e.ve({"bnd3_campanas"});  // al caer el sol, sin que nadie avise (evento comienza_ocaso)
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.ocasoRecorrido("base_ruta_oeste");
         e.ve({"bnd3_fuera", "bnd3_epilogo"});
         e.fin();
@@ -824,7 +813,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("ocaso");
         e.j.pierde.insert("bnd3_rodeo_vencidos");
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.ocasoRecorrido("base_ruta_oeste");
         e.ve({"bnd3_fuera"});
         e.fin();
@@ -848,7 +836,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("ocaso");
         e.j.suerte = Suerte::Buena;
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.ocasoRecorrido("base_ruta_oeste");
         e.ve({"bnd3_edul_abandonado", "bnd3_fuera"});
         e.fin();
@@ -871,7 +858,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.pon({"bnd_venides_20", "bnd2_documentos", "bnd1_carterista_amigo"});
         e.j.fase("ocaso");
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_pulga"});
         e.ve({"bnd3_fuera"});
@@ -898,7 +884,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.var("confianza_rosita", 2);
         e.j.pierde.insert("bnd3_sandes_vencido");
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.zonasPrimero = {"edul_casco_retenido"};  // salvar a Edul antes del final: asi llega la compania
         e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_capitan_ronda", "b3_aigren_carro", "b3_xila_vendas", "b3_rosita_calle", "b3_compania",
@@ -928,7 +913,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.var("confianza_rosita", 2);
         e.j.pierde.insert("bnd3_sandes_vencido");
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.zonasPrimero = {"edul_casco_retenido"};  // salvar a Edul antes del final: asi llega la compania
         e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_compania", "b3_compania_de_los_tuyos"});
@@ -954,7 +938,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("ocaso");
         e.var("confianza_rosita", 2);
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.zonasPrimero = {"edul_casco_retenido"};  // salvar a Edul antes del final: asi llega la compania
         e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_sandes_vencido"});
@@ -982,7 +965,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.var("confianza_rosita", 2);
         e.j.pierde.insert("bnd3_sandes_vencido");
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.ocasoRecorrido("base_ruta_oeste");
         e.nove({"bnd3_compania"});
         e.ve({"bnd3_sandes_gana", "bnd3_fuera", "bnd3_epilogo"});
@@ -1006,7 +988,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.pon({"bnd_venides_20", "bnd2_documentos"});
         e.j.fase("ocaso");
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.zonasEvita = {"edul_casco_retenido"};  // no se acerca a Edul en el casco: se lo encuentra tras la barricada
         e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_edul_furia"});
@@ -1032,7 +1013,6 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.pon({"bnd_venides_20", "bnd2_documentos", "bnd2_edul_sabe_venides"});
         e.j.fase("ocaso");
         e.j.ocasoBase();
-        if (e.ocasoBloqueado()) { e.fin(); break; }
         e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_edul_fiesta"});
         e.ve({"bnd3_edul_salvado"});
