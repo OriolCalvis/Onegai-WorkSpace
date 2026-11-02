@@ -27,6 +27,7 @@
 // (Generado por genera.py: no editar a mano sin cambiar tambien la lista.)
 
 #include <cstdio>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -428,14 +429,14 @@ int main() {
     escenasPrologo(g, &vistos);
     std::printf("\n-- La primera noche y el primer dia --\n");
     escenasDiaUno(g, &vistos);
-    std::printf("\n-- El segundo dia --\n");
+    std::printf("\n-- El segundo dia (Gorran) y el tercero --\n");
     escenasDiaDos(g, &vistos);
     std::printf("\n-- El Ocaso --\n");
     escenasOcaso(g, &vistos);
 
     int total = 0;
     int n = 0;
-    for (const AdventureScript* a : {&g.prologo, &g.dia1, &g.dia2, &g.ocaso}) {
+    for (const AdventureScript* a : {&g.prologo, &g.dia1, &g.gorran, &g.dia2, &g.ocaso}) {
         for (const auto& b : a->beats) {
             ++total;
             for (const auto& v : vistos)
@@ -443,6 +444,13 @@ int main() {
         }
     }
     std::printf("\nbeats que salen en estas escenas: %d de %d (todos: explorar_boundington)\n", n, total);
+    if (!pendientesOriol().empty()) {
+        std::printf("\nPENDIENTE_ORIOL (%d escenas; no cuentan como fallo, esperan respuesta):\n",
+                    static_cast<int>(pendientesOriol().size()));
+        std::set<std::string> motivos;  // el motivo suele ser el mismo para todas: una sola vez
+        for (const std::string& p : pendientesOriol()) motivos.insert(p.substr(p.find(" — ") + 5));
+        for (const std::string& m : motivos) std::printf("  - %s\n", m.c_str());
+    }
     std::printf("todas las escenas han pasado\n");
     return 0;
 }

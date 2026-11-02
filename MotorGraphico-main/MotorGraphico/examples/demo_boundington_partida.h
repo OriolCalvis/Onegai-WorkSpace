@@ -19,7 +19,10 @@
 // moral los mide explorar_boundington, que juega al azar.
 #pragma once
 
+#include <algorithm>
 #include <cstdio>
+#include <cstdlib>  // getenv (BND_RUIDO, solo para diagnosticar)
+#include <map>
 #include <set>
 #include <string>
 #include <vector>
@@ -27,6 +30,7 @@
 #include "Core/Check.h"
 #include "Game/Cinematica.h"  // PROLOGO-02
 #include "RPG/NarrativeEngine.h"
+#include "RPG/Narrative/EventosDelMundo.h"  // H4: el Ocaso se pone en marcha con eventos del mundo
 
 namespace demo_bnd {
 
@@ -57,10 +61,14 @@ inline const char* nombre(Suerte s) {
 }
 
 struct Guiones {
-    AdventureScript prologo, dia1, dia2, ocaso;
+    // GORRAN-DIA2 (22/10): el dia 2 es la montaña de Gorran (boundington_dia_gorran.json,
+    // flags bndg_*/bnd2_*) y el antiguo dia 2 (boundington_segundo_dia.json) es ya el DIA 3.
+    // Los nombres "dia2" de las demos se quedan para este ultimo, como en Application.cpp (m_dia2).
+    AdventureScript prologo, dia1, gorran, dia2, ocaso;
     const AdventureScript& por(const std::string& n) const {
         if (n == "prologo") return prologo;
         if (n == "dia1") return dia1;
+        if (n == "dia_gorran") return gorran;
         if (n == "dia2") return dia2;
         require(n == "ocaso");
         return ocaso;
@@ -72,11 +80,13 @@ inline Guiones cargaTodo() {
     auto a = AdventureScript::loadFromFile("assets/adventures/boundington_primer_dia.json");
     auto b = AdventureScript::loadFromFile("assets/adventures/boundington_segundo_dia.json");
     auto c = AdventureScript::loadFromFile("assets/adventures/boundington_ocaso.json");
+    auto d = AdventureScript::loadFromFile("assets/adventures/boundington_dia_gorran.json");
     require(p);
     require(a);
     require(b);
     require(c);
-    return Guiones{p.value(), a.value(), b.value(), c.value()};
+    require(d);
+    return Guiones{p.value(), a.value(), d.value(), b.value(), c.value()};
 }
 
 // La despedida de una charla: la marca el guion ("despedida"); en un beat
@@ -109,6 +119,10 @@ struct Jugador {
     const AdventureScript* guion = nullptr;
     Suerte suerte = Suerte::Buena;
     bool ruido = false;
+    bool cinesAlEntrar = false;
+    std::vector<std::string> zonasPrimero;  // cinematicas con zona a las que va antes que a las demas (pisaUnaZona)
+    std::vector<std::string> zonasEvita;    // ... y a las que no va nunca
+    bool enCine = false;  // dentro de cinematica(): no se encadenan otras desde drena()
     std::vector<std::string> prefiere;    // lo que contesta, por orden de gusto
     std::set<std::string> usadas;         // "beat|texto": no repite en la misma pantalla
     std::set<std::string> pierde;         // flagVictory de combates que pierde (una vez cada uno)
@@ -128,6 +142,9 @@ struct Jugador {
 
     void fase(const std::string& n) {
         guion = &g.por(n);
+        // Desde el dia de Gorran, al entrar en un nivel arrancan solas las cinematicas sin zona
+        // (castillo_venides, taberna_velas, plaza_sermon...) como en el juego.
+        cinesAlEntrar = n == "dia_gorran" || n == "dia2" || n == "ocaso";
         e.setAdventure(guion);  // el motor cambia de libreto; el estado NO se toca
         if (ruido) std::printf("\n  ---- %s ----\n", n.c_str());
     }
@@ -205,6 +222,17 @@ struct Jugador {
         procesa(e.elige(k, s));
     }
 
+    // C8-03c: GameSession::avaluaEventosDelMundo() una vez por fotograma. Aqui, cada vez que la
+    // historia se queda quieta. true si algo salto (y entonces hay que volver a mirar los beats).
+    bool evaluaEventos() {
+        static const RPG::eventos::Catalogo cat = [] {
+            auto r = RPG::eventos::cargaCatalogo("assets/eventos/boundington.json");
+            require(r);
+            return r.value();
+        }();
+        return !RPG::eventos::evalua(cat, s).empty();
+    }
+
     // Lo que pasa sin que el jugador haga nada: contestar lo que se pregunte,
     // los beats automaticos y la charla que sigue (DIALOGOS-01).
     void drena() {
@@ -213,10 +241,24 @@ struct Jugador {
                 contesta();
                 continue;
             }
+            // En el juego se vuelve a mirar los beats cuando el estado cambia, no en bucle: un beat
+            // auto sin guarda (b3_campanas) saldria para siempre. Desde el dia de Gorran, si un beat
+            // salta y no cambia ninguna bandera ni variable (ni deja una eleccion), se para.
+            const bool vigila = cinesAlEntrar;
+            const auto banderasAntes = vigila ? s.flags() : std::vector<std::string>{};
+            const auto variablesAntes = vigila ? s.variables() : std::map<std::string, int>{};
             NarrativeResult r = e.tick(s);
             if (!r.fired) r = e.sigue(s);
-            if (!r.fired) return;
+            if (!r.fired) {
+                // Como el juego, fotograma a fotograma: primero el mundo (eventos), luego lo que
+                // arranca solo en este nivel (cinematicas sin zona). Solo desde el dia de Gorran.
+                if (cinesAlEntrar && evaluaEventos()) continue;
+                if (cinesAlEntrar && !enCine && cinematica(GridCoord{-1, -1})) continue;
+                return;
+            }
             procesa(r);
+            if (vigila && !s.eleccion().activa() && s.flags() == banderasAntes && s.variables() == variablesAntes)
+                return;
         }
         std::printf("    !! drena: 150 pasos seguidos sin parar\n");
         require(false);
@@ -229,6 +271,10 @@ struct Jugador {
         procesa(e.enterLevel(ruta, s));
         drena();
         empiezaElDesayuno(nivel);
+        cinesSinZona();
+        // El Ocaso empieza en la plaza de ciudad_centro: el sermon de Sandes (plaza_sermon) salta al
+        // pisar su zona [49,49,61,58]; el jugador va por ella.
+        if (guion == &g.ocaso && nivel == "ciudad_centro" && !enCine) cinematica(GridCoord{54, 54});
     }
 
     // H-DIA1-1: bajar a la taberna ya no empieza el desayuno. Empieza al pasar
@@ -248,7 +294,26 @@ struct Jugador {
         procesa(r);
         drena();
         subeConRosita();
+        apagaLasVelas();
+        cinesSinZona();
         return r;
+    }
+
+    // Las cinematicas sin zona del nivel en que estas arrancan solas en cuanto se cumplen sus
+    // condiciones (al entrar y despues de hablar), solo desde el dia de Gorran (ver fase()).
+    void cinesSinZona() {
+        if (!cinesAlEntrar || enCine) return;
+        for (int vez = 0; vez < 4 && cinematica(GridCoord{-1, -1}); ++vez) {
+        }
+    }
+
+    // Dia 3 (boundington_segundo_dia): «Subir a dormir» (bnd2_a_dormir) lanza la cinematica
+    // taberna_velas (Rosita apaga las velas: bnd2_velas_apagadas) y entonces cierra el dia
+    // (b2_cierre*, que exigen las velas apagadas y estar en la taberna).
+    void apagaLasVelas() {
+        if (!s.hasFlag("bnd2_a_dormir") || s.hasFlag("bnd2_velas_apagadas") || s.hasFlag("bnd2_dia_cerrado")) return;
+        if (s.lugar().find("interior_taberna.json") == std::string::npos) return;
+        cinematica(GridCoord{-1, -1});
     }
 
     // G4-02: «Subir a dormir» (bnd0_a_dormir) ya no duerme al instante: salta
@@ -273,6 +338,116 @@ struct Jugador {
         subeAlCuarto();
     }
 
+    // GORRAN-DIA2: el dia 2 entero es la montaña de Gorran (dia_gorran). Esto NO lo juega:
+    // es el atajo de las escenas que prueban el DIA 3 (boundington_segundo_dia, fase "dia2"),
+    // que solo necesitan que el dia de Gorran haya acabado (bndg_dia_cerrado, que exige
+    // b2_amanece). Amanece, Rosita da el encargo (bnd2_rosita_encargo_visto) y, con la
+    // subasta ya pasada (bnd2_subasta_vista: antes bg_skilla_hora_pronto no te deja
+    // acostarte), el jugador sube a dormir: bg_cierre cierra el dia y amanece el tercero.
+    void pasaElDiaDeGorran() {
+        fase("dia_gorran");
+        drena();  // bg_amanece
+        entra("interior_taberna");
+        habla("skilla");  // b2_rosita_encargo (la primera vez)
+        s.setFlag("bnd2_subasta_vista");
+        s.setFlag("bndg_a_dormir");  // «Subir a dormir» de bg_skilla_hora
+        entra("interior_taberna");   // bg_cierre exige estar en la taberna
+        require(s.hasFlag("bndg_dia_cerrado"));
+        fase("dia2");
+        drena();  // b2_amanece: bnd2_encargo
+        require(s.hasFlag("bnd2_encargo"));
+    }
+
+    // GORRAN-DIA2 — La espada de Rosita (dia_gorran): el encargo de Rosita, el paso por la Gola
+    // Fosca (se paga) y el pedestal del recinto cuando suena el cuerno de la subasta. Los cuatro
+    // «lios de la aldea» (Cal Serra, la Veta Honda, las Galerias, la mina vieja) NO se juegan: la
+    // subasta exige tres cerrados (gorran_misiones >= 3, b2_subasta_aviso) y aqui se dan por
+    // hechos, como las demas escenas dan por hecho lo de «antes» (Escena::pon / var).
+    void laEspadaDeRosita() {
+        entra("interior_taberna");
+        habla("skilla");  // b2_rosita_encargo -> bnd2_skilla_encargo
+        entra("antecova_gorran");  // b2_cueva_llegada: pagar el paso -> bnd2_aldea_dentro
+        s.setVariable("gorran_misiones", 3);
+        drena();  // b2_subasta_aviso -> bnd2_subasta_ya
+        entra("recinto_gorran");
+        habla("pedestal_furia");  // b2_pedestal -> «Cogerla sin que te oigan [Sigilo]»
+    }
+
+    // El jugador pisa, en el nivel en que esta, la zona de la primera cinematica que arranca ahi
+    // (el centro de su zona). `ruta` es la salida que elige en la base (base_ruta_oeste / _norte /
+    // _quedarse): las otras zonas se esquivan. false si no hay ninguna que pisar.
+    bool pisaUnaZona(const std::string& ruta = "base_ruta_oeste") {
+        static const Game::CatalogoCinematicas cat = [] {
+            auto r = Game::CatalogoCinematicas::carga("assets/cinematicas/cinematicas.json");
+            require(r);
+            return r.value();
+        }();
+        const auto tiene = [this](const std::string& f) { return s.hasFlag(f); };
+        // El orden lo pone el jugador: las que prefiere ir primero, y despues las del catalogo.
+        std::vector<const Game::Cinematica*> orden;
+        for (const std::string& id : zonasPrimero)
+            for (const Game::Cinematica& c : cat.lista)
+                if (c.id == id) orden.push_back(&c);
+        for (const Game::Cinematica& c : cat.lista) orden.push_back(&c);
+        for (const Game::Cinematica* pc : orden) {
+            const Game::Cinematica& c = *pc;
+            if (!c.hayZona || c.nivel != s.lugar()) continue;
+            if (c.id.rfind("base_ruta_", 0) == 0 && c.id != ruta) continue;
+            if (std::find(zonasEvita.begin(), zonasEvita.end(), c.id) != zonasEvita.end()) continue;
+            const GridCoord centro{(c.zonaDesde.x + c.zonaHasta.x) / 2, (c.zonaDesde.y + c.zonaHasta.y) / 2};
+            if (cat.laQueEmpieza(s.lugar(), centro, tiene) != &c) continue;
+            return cinematica(centro);
+        }
+        return false;
+    }
+
+    // El Ocaso desde la base hasta la huida: la salida elegida (zona de ciudad_oeste), la ciudad
+    // del Ocaso, Las Afueras y la huida. En cada sitio pisa las zonas que van saliendo.
+    void ocasoRecorrido(const std::string& ruta = "base_ruta_oeste") {
+        for (const char* nivel : {"ciudad_oeste", "afueras_boundington_ocaso", "huida_boundington"}) {
+            entra(nivel);
+            for (int vez = 0; vez < 12 && pisaUnaZona(ruta); ++vez) {
+            }
+        }
+    }
+
+    // El Ocaso (boundington_ocaso), el principio: la plaza (sermon de Sandes: «Correr a avisar a
+    // Venides»), la base y Venides (b3_avisar_venides -> evento comienza_ocaso -> campanas, arenga).
+    void ocasoBase() {
+        entra("ciudad_centro");
+        entra("interior_cuartel");
+        habla("venides_base");
+        if (!s.hasFlag("bnd3_campanas")) {  // nadie ha avisado: suenan solas al ponerse el sol (evento ocaso_puesta)
+            entra("interior_taberna");
+            anochece();
+            entra("interior_cuartel");
+        }
+    }
+
+    // H4 (02/11): el Ocaso NO pasa de la base. b3_campanas (auto, sin notFlags, antes que los
+    // demas en el JSON; el cargador no lee "once") se vuelve a elegir en cada tick y tapa a
+    // b3_aviso_en_base / b3_venides_arenga_* / b3_venides_retenido (y b3_campanas_solas, :1368, si se espera
+    // a las campanas en vez de avisar), que son los unicos que
+    // encienden bnd3_arenga. Con las campanas sonando y sin arenga no hay salidas (b3_por_donde).
+    // Es el JSON, no el guion: las escenas del Ocaso salen como PENDIENTE ORIOL mientras sea asi
+    // (y se reactivan solas cuando el JSON lo arregle).
+    bool ocasoBloqueado() const { return s.hasFlag("bnd3_campanas") && !s.hasFlag("bnd3_arenga"); }
+
+    // H4 (02/11): la ruta del paso norte tambien se atasca. b3_norte_pasado (auto, y su guarda
+    // "notFlags bnd3_en_afueras" no es suya: no se apaga a si misma) se vuelve a elegir en cada tick
+    // y tapa a todos los beats que vienen despues (b3_afueras..., huida), que son los que encienden
+    // bnd3_en_afueras: con paso_base_listo y sin afueras, no se sale.
+    bool norteBloqueado() const { return s.hasFlag("bnd3_paso_base_listo") && !s.hasFlag("bnd3_en_afueras"); }
+
+    // Cierra el DIA 3 (boundington_segundo_dia): anochece si hace falta y «Subir a dormir» con
+    // Rosita (b2_skilla_hora pide franja >= 1); apagaLasVelas() hace el resto (bnd2_dia_cerrado).
+    void duermeDia3() {
+        if (s.variable("franja") < 2) anochece();
+        prefiere.insert(prefiere.begin(), "Subir a dormir");
+        habla("skilla");
+        prefiere.erase(prefiere.begin());
+    }
+
     // Rosita lleva la hora: «Esperar a que anochezca».
     void anochece() {
         prefiere.insert(prefiere.begin(), "Esperar a que anochezca");
@@ -292,6 +467,8 @@ struct Jugador {
         }();
         const Game::Cinematica* c = cat.laQueEmpieza(s.lugar(), donde, [this](const std::string& f) { return s.hasFlag(f); });
         if (c == nullptr) return false;
+        const bool yaEnCine = enCine;
+        enCine = true;
         if (ruido) std::printf("\n  [cinematica %s]\n", c->id.c_str());
         for (const Game::PasoCinematica& p : c->pasos) {
             if (p.tipo == Game::PasoCinematica::Tipo::Beat) {
@@ -307,6 +484,7 @@ struct Jugador {
         s.setFlag(c->vista());
         for (const std::string& f : c->alTerminar) s.setFlag(f);
         drena();
+        enCine = yaEnCine;
         // FANTASMA-01: en los recuerdos, al acabar, andas libre; para seguir, se
         // habla con Sho-Noco (mas de una vez si antes eliges «Mirar un poco mas»).
         bool libre = false;
@@ -317,6 +495,7 @@ struct Jugador {
             if (cat.laQueEmpieza(s.lugar(), GridCoord{-1, -1}, [this](const std::string& f) { return s.hasFlag(f); }) != nullptr)
                 break;
         }
+        if (!yaEnCine) cinesSinZona();  // las que arrancan solas al acabar esta
         return true;
     }
 
@@ -345,6 +524,24 @@ struct Jugador {
     }
 };
 
+// H4 (UNI-02-11): escenas cuyo objetivo ya no existe en el guion vigente (GORRAN-DIA2). No se
+// borran ni se falsean: se marcan con Escena::pendienteOriol(motivo), salen en la salida como
+// «PENDIENTE ORIOL: <escena> — <motivo>» y NO cuentan como fallo.
+inline std::vector<std::string>& pendientesOriol() {
+    static std::vector<std::string> v;
+    return v;
+}
+
+inline const char* kMotivoOcaso =
+    "Ocaso bloqueado por el JSON: b3_campanas (boundington_ocaso.json:1395) y b3_campanas_solas (:1368), autos sin guarda, tapan a "
+    "b3_aviso_en_base (:1418), b3_venides_retenido (:1451) y b3_venides_arenga_* (:1484), los unicos que encienden "
+    "bnd3_arenga; sin ella no hay salidas. Al arreglarlo, rehacer las rutas (zonas de ciudad_oeste, cinematicas base_ruta_*)";
+
+inline const char* kMotivoNorte =
+    "paso norte bloqueado por el JSON: b3_norte_pasado (boundington_ocaso.json:2374, auto) se vuelve a elegir en cada tick "
+    "(solo se apaga con bnd3_en_afueras, que encienden beats posteriores) y tapa a los que siguen; con una guarda "
+    "notFlags bnd3_paso_base_listo la escena pasa";
+
 // Una escena con nombre: lo que se comprueba por el camino se apunta, y al
 // final se dice todo lo que fallo (y entonces la demo falla).
 struct Escena {
@@ -355,6 +552,9 @@ struct Escena {
     Escena(const Guiones& g, const char* t, Suerte su, const std::vector<std::string>& heroe,
            const std::vector<std::string>& dice, std::vector<std::string>* anotador)
         : j(g, su, heroe), titulo(t) {
+        // Diagnostico: BND_RUIDO="trozo del titulo" cuenta la partida de esa escena paso a paso.
+        const char* ruido = std::getenv("BND_RUIDO");
+        if (ruido != nullptr && titulo.find(ruido) != std::string::npos) j.ruido = true;
         j.prefiere = dice;
         j.anotador = anotador;
     }
@@ -381,7 +581,28 @@ struct Escena {
     void di(std::initializer_list<const char*> ts) {
         j.prefiere.insert(j.prefiere.begin(), ts.begin(), ts.end());
     }
+    // Ocaso bloqueado por el JSON (ver Jugador::ocasoBloqueado): true y la escena queda pendiente.
+    bool ocasoBloqueado() {
+        if (!j.ocasoBloqueado()) return false;
+        pendienteOriol(kMotivoOcaso);
+        return true;
+    }
+    // Idem para el paso norte (ver Jugador::norteBloqueado).
+    bool norteBloqueado() {
+        if (!j.norteBloqueado()) return false;
+        pendienteOriol(kMotivoNorte);
+        return true;
+    }
+    // La escena sigue jugandose (para que Oriol vea hasta donde llega) pero su resultado no cuenta.
+    std::string pendiente;
+    void pendienteOriol(const char* motivo) { pendiente = motivo; }
     void fin() {
+        if (!pendiente.empty()) {
+            std::printf("  PENDIENTE ORIOL: %s — %s\n", titulo.c_str(), pendiente.c_str());
+            for (const std::string& f : fallos) std::printf("        (informativo) %s\n", f.c_str());
+            pendientesOriol().push_back(titulo + " — " + pendiente);
+            return;
+        }
         std::printf("  %s %s\n", fallos.empty() ? "OK " : "MAL", titulo.c_str());
         for (const std::string& f : fallos) std::printf("        %s\n", f.c_str());
         require(fallos.empty());
