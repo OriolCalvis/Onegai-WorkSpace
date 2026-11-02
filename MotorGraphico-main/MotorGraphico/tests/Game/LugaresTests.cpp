@@ -75,7 +75,8 @@ MOTOR_TEST_CASE(lugares_cada_puerta_interior_tiene_una_ficha_sin_sobrantes) {
         if (++fichas[nivel] != 1) MOTOR_CHECK_FAIL("nivel repetido: " + nivel);
     }
     std::set<std::string> destinos;
-    for (const char* ciudad : {"ciudad_centro", "ciudad_este", "ciudad_oeste"}) {
+    // AV19-11: la puerta del cuartel esta en el patio de armas (base_militar), no en la calle de ciudad_oeste.
+    for (const char* ciudad : {"ciudad_centro", "ciudad_este", "ciudad_oeste", "base_militar"}) {
         const auto nivel = leeJson("assets/levels/" + std::string(ciudad) + ".json");
         MOTOR_CHECK(nivel["objects"].isArray());
         for (std::size_t i = 0; i < nivel["objects"].size(); ++i) {

@@ -1,3 +1,4 @@
+#include <cmath>
 #include "HUD/Pergamino/CartelesPuertas.h"
 #include "HUD/Pergamino/InterfazPergamino.h"
 #include "HUD/Pergamino/Materiales.h"
@@ -78,7 +79,7 @@ MOTOR_TEST_CASE(cartel_y_flecha_unicos_sin_contorno_negro) {
     LevelDefinition nivel;
     nivel.playerStart = {6, 5};
     GameSession sesion(&mapa, nullptr, nullptr, nivel, nullptr, nullptr, nullptr);
-    for (int x = 5; x <= 7; ++x) puerta(*sesion.world(), x, 4, "assets/levels/antecova_gorran.json");
+    for (int x = 5; x <= 7; ++x) puerta(*sesion.world(), x, 4, "assets/levels/interior_banco.json");
     EstadoJuego e; e.sesion = &sesion; e.mapa = &mapa;
     e.camaraX = 64; e.camaraY = 160;
     const auto marcas = salidasCercanas(e);
@@ -90,12 +91,19 @@ MOTOR_TEST_CASE(cartel_y_flecha_unicos_sin_contorno_negro) {
     Pincel p(letras, iconos);
     // Como puerta de entrada, debe llevar un unico retal con emblema y brillo.
     sesion.world()->eachEntity([](Engine::EntityHandle, Engine::WorldEntity& ent) {
-        ent.object.objectId = "boca_cueva_gorran";
+        ent.object.objectId = "puerta_banco";
     });
     Lienzo l;
     pintaCarteles(l, p, e, "");
-    int hojas = 0, luz = 0;
+    int hojas = 0, luz = 0, emblemas = 0;
     for (const auto& t : l.trazos()) {
+        if (t.fuente == Fuente::Iconos) {  // el emblema de la ficha («oro»), no el generico «lugar»
+            const int frame = iconos.frame("oro");
+            MOTOR_CHECK(frame > 0 && frame != iconos.frame("lugar"));
+            const float u = static_cast<float>((frame - 1) % iconos.columnas()) / static_cast<float>(iconos.columnas());
+            const float v = static_cast<float>((frame - 1) / iconos.columnas()) / static_cast<float>(iconos.filas());
+            if (std::fabs(t.uv[0].x - u) < 1e-4f && std::fabs(t.uv[0].y - v) < 1e-4f) ++emblemas;
+        }
         if (t.material >= 0 && l.materiales()[t.material].tipo == Material::Hoja) ++hojas;
         if (t.fuente == Fuente::Blanco) {
             MOTOR_CHECK(t.color.w < 0.3f);
@@ -104,7 +112,8 @@ MOTOR_TEST_CASE(cartel_y_flecha_unicos_sin_contorno_negro) {
     }
     MOTOR_CHECK(hojas == 2); // sombra y retal
     MOTOR_CHECK(luz == 7);
+    MOTOR_CHECK(emblemas == 1); // el emblema de la ficha (interior_banco: oro)
     Lienzo oculto;
-    pintaCarteles(oculto, p, e, "la Gola Fosca");
+    pintaCarteles(oculto, p, e, "La Caja Firme");
     MOTOR_CHECK(oculto.vacio());
 }

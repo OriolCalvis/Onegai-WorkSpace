@@ -239,7 +239,7 @@ void pintaOrden(const Ctx& k, const DatosCombate& d) {
     }
 }
 
-// La placa compacta (60 de alto): el nombre a la izquierda y «12/22» a la
+// La placa compacta (50 de alto): el nombre a la izquierda y «12/22» a la
 // derecha en la misma fila; debajo, la barra y, a su lado, sus estados en
 // fichas.
 static void pintaPlacaCompacta(const Ctx& k, const EnemigoEnMesa& e,
@@ -266,7 +266,7 @@ static void pintaPlacaCompacta(const Ctx& k, const EnemigoEnMesa& e,
     const float anchoBarra = estados.empty() ? r.w - 32.0f : 132.0f;
     k.p.barra(k.l, Rect{x, r.y + 40.0f, anchoBarra, 8.0f},
               e.pvMax > 0 ? static_cast<float>(e.pv) / static_cast<float>(e.pvMax) : 0.0f, Color::kPv);
-    pintaEstadosPlaca(k, estados, i + 1, x + anchoBarra + 8.0f, r.y + 32.0f, r.w - 32.0f - anchoBarra - 8.0f, true);
+    pintaEstadosPlaca(k, estados, i + 1, x + anchoBarra + 8.0f, r.y + 26.0f, r.w - 32.0f - anchoBarra - 8.0f, true);
 }
 
 void pintaPlaca(const Ctx& k, const DatosCombate& d) {
@@ -290,7 +290,7 @@ void pintaPlaca(const Ctx& k, const DatosCombate& d) {
         if (!e.vivo) continue;
         const std::vector<Game::EstadoVisible>& estados = estadosDe(i);
         if (compacta) {
-            const float alto = 60.0f;
+            const float alto = 50.0f;  // 170 + 5*(50+6) - 6 = 444 <= 446: caben cinco
             if (y + alto > hasta) break;
             pintaPlacaCompacta(k, e, estados, static_cast<int>(i), Rect{688.0f, y, 250.0f, alto},
                                alcanzado(afectados, false, i));
