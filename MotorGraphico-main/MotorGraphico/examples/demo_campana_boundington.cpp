@@ -88,7 +88,7 @@ void juegaHeroe(Jugador& j) {
     j.entra("interior_taberna");
     j.anochece();
     j.habla("venides");              // borracho: el informe -> veinte hombres
-    j.habla("skilla");               // a dormir: la pelea de la taberna
+    j.duerme();                 // a dormir: la pelea de la taberna
     require(j.s.hasFlag("bnd_dia_cerrado"));
 
     j.fase("dia2");
@@ -134,7 +134,7 @@ void juegaJusto(Jugador& j) {
     j.habla("skilla");
     j.anochece();
     j.habla("venides");
-    j.habla("skilla");
+    j.duerme();
     require(j.s.hasFlag("bnd_dia_cerrado"));
 
     j.fase("dia2");

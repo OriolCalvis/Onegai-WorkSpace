@@ -79,7 +79,7 @@ void escenasDiaUno(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.anochece();
         e.j.habla("venides");
         e.ve({"bnd_venides_20"});
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd1_pelea_ganada", "bnd_dia_cerrado"});
         e.visto({"b1_camorrista_habla", "cierre_creadores"});
         e.fin();
@@ -115,7 +115,7 @@ void escenasDiaUno(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.habla("venides");
         e.ve({"bnd1_venides_espera"});
         e.nove({"bnd_venides_20", "bnd_venides_10"});
-        e.j.habla("skilla");
+        e.j.duerme();
         e.visto({"b1_pelea_oido", "cierre_espera"});
         e.ve({"bnd_dia_cerrado"});
         e.fin();
@@ -131,10 +131,13 @@ void escenasDiaUno(const Guiones& g, std::vector<std::string>* vistos) {
         e.nove({"bnd0_cama"});
         e.j.entra("ciudad_centro");
         e.visto({"b0_calle_sin_cama"});
-        e.ve({"bnd0_cama", "bnd0_dormido"});
+        e.ve({"bnd0_cama"});
+        e.j.entra("interior_taberna");  // G4-02: Rosita te sube desde la taberna
         e.j.habla("skilla");
         e.di({"Subir a dormir"});
-        e.j.habla("skilla");
+        e.j.habla("skilla");  // G4-02: Rosita te sube; ya no duermes al pagar en la calle
+        e.ve({"bnd0_dormido"});
+        e.j.duerme();
         e.nove({"bnd_aviso_dado", "bnd_venides_20", "bnd_venides_10", "bnd1_pelea_ganada"});
         e.visto({"cierre_silencio"});
         e.ve({"bnd_dia_cerrado"});
@@ -212,6 +215,7 @@ void escenasDiaUno(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.habla("sectario_perdido");
         e.ve({"bnd1_invitado_guarida"});
         e.j.entra("interior_iglesia_s1");
+        e.j.entra("santuario_subterraneo");
         e.visto({"b1_guarida_ceremonia", "b1_edul"});
         e.ve({"bnd_pruebas_suficientes", "bnd1_dudas_verina", "bnd1_guarida_resuelta"});
         e.fin();
@@ -229,6 +233,7 @@ void escenasDiaUno(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.habla("aigren");
         e.ve({"bnd1_invitado_por_aigren"});
         e.j.entra("interior_iglesia_s1");
+        e.j.entra("santuario_subterraneo");
         e.visto({"b1_guarida_por_aigren"});
         e.ve({"bnd1_verina_salvada_guarida"});
         e.j.entra("interior_herreria");
@@ -247,6 +252,7 @@ void escenasDiaUno(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.entra("interior_herreria");
         e.j.habla("aigren");
         e.j.entra("interior_iglesia_s1");
+        e.j.entra("santuario_subterraneo");
         e.ve({"bnd1_guarida_resuelta"});
         e.visto({"b1_guarida_exterminada"});
         e.fin();
@@ -263,6 +269,7 @@ void escenasDiaUno(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.entra("interior_herreria");
         e.j.habla("aigren");
         e.j.entra("interior_iglesia_s1");
+        e.j.entra("santuario_subterraneo");
         e.ve({"bnd1_guarida_resuelta"});
         e.visto({"b1_guarida_perdida"});
         e.fin();
@@ -319,7 +326,7 @@ void escenasDiaUno(const Guiones& g, std::vector<std::string>* vistos) {
 
     {
         Escena e(g, "DIA 1: Xila, despreciado y emborrachado", Suerte::Buena, {"heroe_pueblo_humano", "heroe_rol_agile"},
-                 {"Pagar la cama", "Subir a dormir", "Tratarle con desprecio", "Invitarle a un trago (1)"}, vistos);
+                 {"Pagar la cama", "Subir a dormir", "Tratarle con desprecio", "Invitarle a un trago (1) y hacer las paces"}, vistos);
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
@@ -378,7 +385,7 @@ void escenasDiaUno(const Guiones& g, std::vector<std::string>* vistos) {
         e.visto({"b1_vigilante", "b1_vigilante_te_para"});
         e.j.entra("interior_taberna");
         e.di({"Subir a dormir"});
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.fin();
     }
@@ -392,7 +399,7 @@ void escenasDiaUno(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.visto({"b1_pelea_rosita"});
         e.ve({"bnd1_camorrista_muerto", "bnd_dia_cerrado"});
         e.fin();
@@ -406,7 +413,7 @@ void escenasDiaUno(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.visto({"b1_pelea_perdida"});
         e.ve({"bnd_dia_cerrado"});
         e.fin();

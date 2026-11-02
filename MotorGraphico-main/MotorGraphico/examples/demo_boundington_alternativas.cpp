@@ -154,7 +154,7 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -180,7 +180,7 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -204,7 +204,7 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -227,7 +227,7 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.pon({"bnd1_verina_salvada_guarida"});
         e.j.fase("dia2");
@@ -253,7 +253,7 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.pon({"bnd1_camorrista_entregado"});
         e.j.fase("dia2");
@@ -271,7 +271,7 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -295,7 +295,7 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -315,7 +315,7 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -337,7 +337,7 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -361,7 +361,7 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -393,7 +393,7 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.pon({"bnd1_aigren_se_va"});
         e.j.fase("dia2");
@@ -425,7 +425,7 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.pon({"bnd1_invitado_por_aigren"});
         e.j.fase("dia2");
@@ -447,7 +447,7 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.pon({"bnd1_aigren_redimido", "bnd1_luisarda_silencio"});
         e.j.fase("dia2");
@@ -469,7 +469,7 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.pon({"bnd1_luisarda_delatada"});
         e.j.fase("dia2");
@@ -490,7 +490,7 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.pon({"bnd1_aliado_xila", "bnd1_xila_honor"});
         e.j.fase("dia2");
@@ -516,7 +516,7 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.pon({"bnd1_aliado_xila", "bnd1_xila_honor"});
         e.j.fase("dia2");
@@ -540,7 +540,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -567,7 +567,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -592,7 +592,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -617,7 +617,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -641,7 +641,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -666,7 +666,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -690,7 +690,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -715,7 +715,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -740,7 +740,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -765,7 +765,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -791,7 +791,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -816,7 +816,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -841,7 +841,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -866,7 +866,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -896,7 +896,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -923,7 +923,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -951,7 +951,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -978,7 +978,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
@@ -1004,7 +1004,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();

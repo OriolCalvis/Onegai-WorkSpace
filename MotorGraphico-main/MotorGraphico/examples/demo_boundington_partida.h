@@ -261,6 +261,18 @@ struct Jugador {
         if (s.hasFlag("bnd0_dormido")) entra("interior_taberna");
     }
 
+    // Oriol (22/10): la noche del dia 1 acaba arriba, en la cama. Con la noche
+    // hecha, subir al cuarto (enter interior_taberna_p1) enciende bnd1_en_cuarto,
+    // que exigen los cierre_* del dia 1.
+    void subeAlCuarto() { entra("interior_taberna_p1"); }
+
+    // «Subir a dormir» como lo hace el jugador: habla con Rosita y sube al cuarto.
+    void duerme() {
+        if (!s.hasFlag("bnd_noche")) anochece();  // el cuarto se sube de noche
+        habla("skilla");
+        subeAlCuarto();
+    }
+
     // Rosita lleva la hora: «Esperar a que anochezca».
     void anochece() {
         prefiere.insert(prefiere.begin(), "Esperar a que anochezca");
