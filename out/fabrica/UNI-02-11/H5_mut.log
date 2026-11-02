@@ -1,0 +1,7 @@
+H5 (recorrer_recompensas ejecuta cinematicas y eventos del mundo) - mutaciones
+Comprobacion: rutas regeneradas con flags_finales = bnd_dia_cerrado, bnd1_en_cuarto, bnd0_rosita_te_sube, solo dia 1.
+base:                         rc 0
+sin subir al cuarto (se quita 'entrar interior_taberna_p1' de la ruta): rc 1 "Ruta incompleta: falta bnd_dia_cerrado"  -> ROJO
+sin cinematicas (p.cines = nullptr en main): rc 1 "Ruta incompleta: falta bnd_dia_cerrado"  -> ROJO
+restaurado: rc 0
+NOTA: test_recompensas_economia sigue rojo (falta bnd3_fuera) por el dia 2/3: ver informe (sintetizar_rutas.py desfasado).

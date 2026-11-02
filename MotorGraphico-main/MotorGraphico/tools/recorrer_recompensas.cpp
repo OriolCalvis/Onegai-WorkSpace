@@ -1,7 +1,12 @@
 // AV18-04: recorre decisiones con NarrativeEngine y devuelve sus premios/costes.
 // No ejecuta combate, movimiento ni comercio: los resultados externos son escenarios explícitos.
+// UNI-02-11 H5: SI ejecuta las cinemáticas y los eventos del mundo como el juego (y como el arnés de las
+// demos, examples/demo_boundington_partida.h): las que arrancan solas al entrar o hablar, las de zona
+// (acción "pisar") y las que enciende la noche del día 1 (bnd0_rosita_te_sube, bnd1_desayuno_llamado...).
 #include "Core/Json/JsonValue.h"
 #include "Core/Json/JsonWriter.h"
+#include "Game/Cinematica.h"
+#include "RPG/Narrative/EventosDelMundo.h"
 #include "RPG/NarrativeEngine.h"
 #include <algorithm>
 #include <fstream>
@@ -34,7 +39,20 @@ struct Partida {
     RPG::NarrativeState estado;
     RPG::NarrativeEngine motor;
     std::set<std::string> usadas;
+    // Sin catálogo (nullptr) no hay cinemáticas ni eventos: es el caso de los proyectos de prueba.
+    const Game::CatalogoCinematicas* cines = nullptr;
+    const RPG::eventos::Catalogo* eventos = nullptr;
+    bool enCine = false;  // dentro de una cinemática no se encadenan otras desde drena()
 };
+// Lo que una acción necesita para avanzar la historia (lo mismo que se pasaba a drena()).
+struct Contexto {
+    const JsonValue& ruta;
+    const std::vector<std::string>& preferencias;
+    Partida& p;
+    Paso paso;
+    JsonWriter& w;
+};
+
 void resultado(const RPG::NarrativeResult& r, const JsonValue& ruta, Partida& p,
                const Paso& paso, JsonWriter& w) {
     if (!r.fired) return;
@@ -81,14 +99,67 @@ bool salida(const RPG::OpcionDeDialogo& o) {
     }
     return true;
 }
-void drena(const JsonValue& ruta, const std::vector<std::string>& preferencias, Partida& p,
-           Paso paso, JsonWriter& w) {
+void drena(Contexto& c);
+void entra(Contexto& c, const std::string& nivel);
+
+// GameSession::avaluaEventosDelMundo(): una vez por fotograma. true si algo saltó.
+bool evaluaEventos(Partida& p) {
+    return p.eventos != nullptr && !RPG::eventos::evalua(*p.eventos, p.estado).empty();
+}
+
+// PROLOGO-02: una cinemática reproducida sin imagen. Lo que se ve se salta; lo que pide a la historia (sus
+// beats, sus flags, sus niveles) no. `donde`: la celda del jugador ({-1,-1}: las que no tienen zona).
+// false si no empieza ninguna.
+bool cinematica(Contexto& c, const GridCoord& donde) {
+    Partida& p = c.p;
+    if (p.cines == nullptr) return false;
+    const auto tiene = [&p](const std::string& f) { return p.estado.hasFlag(f); };
+    const Game::Cinematica* cine = p.cines->laQueEmpieza(p.estado.lugar(), donde, tiene);
+    if (cine == nullptr) return false;
+    const bool yaEnCine = p.enCine;
+    p.enCine = true;
+    for (const auto& paso : cine->pasos) {
+        using T = Game::PasoCinematica::Tipo;
+        if (paso.tipo == T::Beat) { p.estado.setFlag(paso.texto); drena(c); }
+        else if (paso.tipo == T::Flag) p.estado.setFlag(paso.texto);
+        else if (paso.tipo == T::Nivel) {
+            const std::string n = paso.texto.substr(paso.texto.rfind('/') + 1);
+            entra(c, n.substr(0, n.size() - 5));  // sin «.json»
+        }
+    }
+    p.estado.setFlag(cine->vista());
+    for (const auto& f : cine->alTerminar) p.estado.setFlag(f);
+    drena(c);
+    p.enCine = yaEnCine;
+    if (!yaEnCine) for (int vez = 0; vez < 4 && cinematica(c, GridCoord{-1, -1}); ++vez) {}
+    return true;
+}
+// Las cinemáticas sin zona del nivel arrancan solas en cuanto se cumplen sus condiciones.
+void cinesSinZona(Contexto& c) {
+    if (c.p.enCine) return;
+    for (int vez = 0; vez < 4 && cinematica(c, GridCoord{-1, -1}); ++vez) {}
+}
+// Los beats por charla, de uno en uno; las decisiones se toman con las preferencias de la ruta.
+void drena(Contexto& c) {
+    Partida& p = c.p;
+    const JsonValue& ruta = c.ruta;
     for (int n = 0; n < 200; ++n) {
         if (!p.estado.eleccion().activa()) {
+            // Como el juego, los beats se vuelven a mirar cuando el estado cambia, no en bucle.
+            const auto banderasAntes = p.estado.flags();
+            const auto variablesAntes = p.estado.variables();
             auto r = p.motor.tick(p.estado);
             if (!r.fired) r = p.motor.sigue(p.estado);
-            if (!r.fired) return;
-            paso.opcion.clear(); resultado(r, ruta, p, paso, w); continue;
+            if (!r.fired) {
+                // Fotograma a fotograma: primero el mundo (eventos), luego lo que arranca solo en el nivel.
+                if (evaluaEventos(p)) continue;
+                if (!p.enCine && cinematica(c, GridCoord{-1, -1})) continue;
+                return;
+            }
+            c.paso.opcion.clear(); resultado(r, ruta, p, c.paso, c.w);
+            if (p.cines != nullptr && !p.estado.eleccion().activa() && p.estado.flags() == banderasAntes &&
+                p.estado.variables() == variablesAntes) return;
+            continue;
         }
         const auto eleccion = p.estado.eleccion();
         const auto* guion = p.motor.adventure();
@@ -97,7 +168,7 @@ void drena(const JsonValue& ruta, const std::vector<std::string>& preferencias, 
         exige(b != guion->beats.end(), "Elección sin beat");
         int k = -1;
         auto libre = [&](std::size_t i) { return !p.usadas.count(eleccion.beatId + "|" + eleccion.textos[i]); };
-        for (const auto& texto : preferencias)
+        for (const auto& texto : c.preferencias)
             for (std::size_t i = 0; k < 0 && i < eleccion.textos.size(); ++i)
                 if (eleccion.textos[i] == texto && libre(i)) k = static_cast<int>(i);
         for (std::size_t i = 0; k < 0 && i < eleccion.indices.size(); ++i)
@@ -111,11 +182,51 @@ void drena(const JsonValue& ruta, const std::vector<std::string>& preferencias, 
         }
         // Sin política ni preferencia no se inventa una decisión.
         exige(k >= 0, "Falta preferencia en " + eleccion.beatId);
-        paso.opcion = eleccion.textos[k];
-        p.usadas.insert(eleccion.beatId + "|" + paso.opcion);
-        resultado(p.motor.elige(k, p.estado), ruta, p, paso, w);
+        c.paso.opcion = eleccion.textos[k];
+        p.usadas.insert(eleccion.beatId + "|" + c.paso.opcion);
+        resultado(p.motor.elige(k, p.estado), ruta, p, c.paso, c.w);
     }
     throw std::runtime_error("La charla no termina (200 pasos)");
+}
+
+// H-DIA1-1: bajar a la taberna ya no empieza el desayuno; empieza al pasar junto a Venides (venides_llama,
+// que lo pide) y venides_te_sienta te lleva a su mesa. El jugador llega a la celda (5, 7).
+void empiezaElDesayuno(Contexto& c, const std::string& nivel) {
+    const auto& s = c.p.estado;
+    if (nivel != "interior_taberna" || !s.hasFlag("bnd0_dormido")) return;
+    if (s.hasFlag("bnd1_desayuno_visto") || s.hasFlag("bnd1_desayuno_hecho")) return;
+    for (int vez = 0; vez < 2 && !s.hasFlag("bnd1_desayuno_llamado"); ++vez)
+        if (!cinematica(c, GridCoord{5, 7})) break;
+}
+void entra(Contexto& c, const std::string& nivel) {
+    const std::string ruta = "assets/levels/" + nivel + ".json";
+    c.p.estado.ponLugar(ruta);
+    resultado(c.p.motor.enterLevel(ruta, c.p.estado), c.ruta, c.p, c.paso, c.w);
+    drena(c);
+    empiezaElDesayuno(c, nivel);
+    cinesSinZona(c);
+}
+// G4-02: «Subir a dormir» (bnd0_a_dormir) lanza taberna_rosita_puja (bnd0_rosita_te_sube) y, al amanecer,
+// se baja a la taberna, donde empieza el desayuno.
+void subeConRosita(Contexto& c) {
+    const auto& s = c.p.estado;
+    if (!s.hasFlag("bnd0_a_dormir") || s.hasFlag("bnd0_dormido") || s.hasFlag("bnd0_rosita_te_sube")) return;
+    if (!cinematica(c, GridCoord{-1, -1})) return;
+    if (s.hasFlag("bnd0_dormido")) entra(c, "interior_taberna");
+}
+// Dia 3: «Subir a dormir» (bnd2_a_dormir) lanza taberna_velas (bnd2_velas_apagadas).
+void apagaLasVelas(Contexto& c) {
+    const auto& s = c.p.estado;
+    if (!s.hasFlag("bnd2_a_dormir") || s.hasFlag("bnd2_velas_apagadas") || s.hasFlag("bnd2_dia_cerrado")) return;
+    if (s.lugar().find("interior_taberna.json") == std::string::npos) return;
+    cinematica(c, GridCoord{-1, -1});
+}
+void habla(Contexto& c, const std::string& npc) {
+    resultado(c.p.motor.talkTo(npc, c.p.estado), c.ruta, c.p, c.paso, c.w);
+    drena(c);
+    subeConRosita(c);
+    apagaLasVelas(c);
+    cinesSinZona(c);
 }
 }
 
@@ -134,10 +245,20 @@ int main() {
             exige(g.isOk(), g.isOk() ? "" : g.errorMessage());
             guiones.emplace(nombre, std::move(g.value()));
         }
+        // Cinemáticas y eventos del mundo del proyecto; sin fichero (proyectos de prueba), no hay.
+        auto cines = Game::CatalogoCinematicas::carga("assets/cinematicas/cinematicas.json");
+        exige(cines.isOk(), cines.isOk() ? "" : cines.errorMessage());
+        RPG::eventos::Catalogo eventos;
+        if (std::ifstream("assets/eventos/boundington.json")) {
+            auto ev = RPG::eventos::cargaCatalogo("assets/eventos/boundington.json");
+            exige(ev.isOk(), ev.isOk() ? "" : ev.errorMessage());
+            eventos = ev.value();
+        }
         JsonWriter w; w.beginArray();
         std::set<std::string> perfiles;
         for (std::size_t i = 0; i < rutas.size(); ++i) {
             const auto& ruta = rutas[i]; Partida p;
+            p.cines = &cines.value(); p.eventos = &eventos;
             const std::string perfil = ruta["perfil"].asString(), grado = ruta["grado"].asString();
             exige(!perfil.empty() && perfiles.insert(perfil).second, "Perfil vacío o repetido");
             exige(grado == "exito" || grado == "parcial" || grado == "pifia" || grado == "critico", "Grado inválido");
@@ -160,13 +281,10 @@ int main() {
                 const auto generales = textos(ruta["preferencias"]);
                 preferencias.insert(preferencias.end(), generales.begin(), generales.end());
                 const auto accion = a["accion"].asString(), destino = a["destino"].asString();
-                if (accion == "entrar") {
-                    const std::string nivel = "assets/levels/" + destino + ".json";
-                    p.estado.ponLugar(nivel);
-                    resultado(p.motor.enterLevel(nivel, p.estado), ruta, p, paso, w);
-                } else if (accion == "hablar") resultado(p.motor.talkTo(destino, p.estado), ruta, p, paso, w);
-                else exige(accion == "auto", "Acción desconocida: " + accion);
-                drena(ruta, preferencias, p, paso, w);
+                Contexto c{ruta, preferencias, p, paso, w};
+                if (accion == "entrar") entra(c, destino);
+                else if (accion == "hablar") habla(c, destino);
+                else { exige(accion == "auto", "Acción desconocida: " + accion); drena(c); }
             }
             w.endArray(); w.key("flags"); w.beginArray();
             for (const auto& f : p.estado.flags()) w.value(f);
