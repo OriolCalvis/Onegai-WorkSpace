@@ -25,7 +25,8 @@ if(BUILD_TESTING AND TARGET motor_level)
     endif()
     add_test(NAME test_personajes_capas COMMAND test_personajes_capas)
     set_tests_properties(test_personajes_capas PROPERTIES
-        LABELS "unit;gl-free"
+        LABELS "unit;gl-free;lenta"
+        TIMEOUT 600
         WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
     set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_personajes_capas)
     if(TARGET suite_gl_free)
