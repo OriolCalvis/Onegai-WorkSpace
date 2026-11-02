@@ -206,6 +206,60 @@ MOTOR_TEST_CASE(eachEntity_visits_only_live_entities_in_slot_order) {
     MOTOR_CHECK(constCount == 1);
 }
 
+// Caracterizacion U1-02.E02
+MOTOR_TEST_CASE(create_does_not_grow_size_until_flush) {
+    Engine::World world;
+    const Engine::EntityHandle first = world.create({entityId("padre"), true});
+    world.flushPendingChanges();
+    MOTOR_CHECK(world.size() == 1);
+
+    const Engine::EntityHandle second = world.create({entityId("hijo"), true});
+    MOTOR_CHECK(world.size() == 1);
+    MOTOR_CHECK(world.pendingCreateCount() == 1);
+    world.flushPendingChanges();
+    MOTOR_CHECK(world.size() == 2);
+    MOTOR_CHECK(world.pendingCreateCount() == 0);
+}
+
+// Caracterizacion U1-02.E02
+MOTOR_TEST_CASE(entity_created_during_fixedUpdate_is_updated_only_on_the_next_tick) {
+    Engine::World world;
+    const Engine::EntityHandle padre = world.create({entityId("padre"), true});
+    world.flushPendingChanges();
+
+    Engine::EntityHandle hijo{};
+    bool spawned = false;
+    std::size_t padreCalls = 0;
+    std::size_t hijoCalls = 0;
+
+    world.fixedUpdate([&](Engine::EntityHandle handle, Engine::WorldEntity&) {
+        if (handle == padre) {
+            ++padreCalls;
+            if (!spawned) {
+                hijo = world.create({entityId("hijo"), true});
+                spawned = true;
+            }
+        } else if (handle == hijo) {
+            ++hijoCalls;
+        }
+    });
+
+    MOTOR_CHECK(hijoCalls == 0);
+    MOTOR_CHECK(padreCalls == 1);
+    MOTOR_CHECK(world.contains(hijo));
+
+    world.fixedUpdate([&](Engine::EntityHandle handle, Engine::WorldEntity&) {
+        if (handle == padre) {
+            ++padreCalls;
+        } else if (handle == hijo) {
+            ++hijoCalls;
+        }
+    });
+
+    MOTOR_CHECK(hijoCalls == 1);
+    MOTOR_CHECK(padreCalls == 2);
+}
+
 MOTOR_TEST_CASE(enemies_snapshot_shares_the_live_brain) {
     // Las vistas derivadas (GameSession::enemies()) copian WorldEnemy pero
     // NO el brain: compartir la instancia viva es lo que hace que mutar la
@@ -223,6 +277,54 @@ MOTOR_TEST_CASE(enemies_snapshot_shares_the_live_brain) {
     snapshot.brain->takeDamage(10);
     MOTOR_CHECK(world.get(handle)->enemy.brain->health() == 30);
     MOTOR_CHECK(snapshot.brain == world.get(handle)->enemy.brain);
+}
+
+// Caracterizacion U1-02.E03
+MOTOR_TEST_CASE(destroy_of_invalid_or_default_handle_returns_false) {
+    Engine::World world;
+    const Engine::EntityHandle live = world.create({entityId("viva"), true});
+    world.flushPendingChanges();
+    MOTOR_CHECK(world.size() == 1);
+
+    MOTOR_CHECK(!world.destroy(Engine::EntityHandle{}));
+    MOTOR_CHECK(!world.destroy(Engine::EntityHandle{live.index + 100, live.generation}));
+    MOTOR_CHECK(!world.destroy(Engine::EntityHandle{live.index, live.generation + 1}));
+
+    MOTOR_CHECK(world.size() == 1);
+    MOTOR_CHECK(world.pendingDestroyCount() == 0);
+    MOTOR_CHECK(world.contains(live));
+}
+
+// Caracterizacion U1-02.E03
+MOTOR_TEST_CASE(second_destroy_returns_false_and_does_not_duplicate_the_queue) {
+    Engine::World world;
+    const Engine::EntityHandle doomed = world.create({entityId("condenada"), true});
+    const Engine::EntityHandle other = world.create({entityId("otra"), true});
+    world.flushPendingChanges();
+    MOTOR_CHECK(world.size() == 2);
+
+    MOTOR_CHECK(world.destroy(doomed));
+    MOTOR_CHECK(!world.destroy(doomed));
+    MOTOR_CHECK(world.pendingDestroyCount() == 1);
+
+    world.flushPendingChanges();
+    MOTOR_CHECK(world.size() == 1);
+    MOTOR_CHECK(!world.contains(doomed));
+    MOTOR_CHECK(world.contains(other));
+}
+
+// Caracterizacion U1-02.E03
+MOTOR_TEST_CASE(create_and_destroy_before_flush_leave_nothing_alive) {
+    Engine::World world;
+    const Engine::EntityHandle handle = world.create({entityId("efimera"), true});
+    MOTOR_CHECK(world.destroy(handle));
+
+    world.flushPendingChanges();
+    MOTOR_CHECK(world.size() == 0);
+    MOTOR_CHECK(!world.contains(handle));
+    MOTOR_CHECK(world.get(handle) == nullptr);
+    MOTOR_CHECK(world.pendingCreateCount() == 0);
+    MOTOR_CHECK(world.pendingDestroyCount() == 0);
 }
 
 }  // namespace
