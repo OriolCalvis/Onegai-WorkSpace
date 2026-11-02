@@ -1,0 +1,449 @@
+--- MotorGraphico-main/MotorGraphico/CMakeLists.txt	2026-11-02 21:08:16
++++ MotorGraphico-main/MotorGraphico/CMakeLists 2.txt	2026-11-02 21:03:49
+@@ -70,12 +70,9 @@
+ 
+ add_library(motor_math src/Render/Camera.cpp)
+ target_link_libraries(motor_math PUBLIC glm::glm)
+-include(cmake/Interpolacion.cmake)  # U3-07: progreso temporal e interpolacion (GL-free)
+ 
+ add_executable(demo_camera examples/demo_camera.cpp)
+ target_link_libraries(demo_camera PRIVATE motor_math)
+-include(cmake/PoliticaCamara.cmake)  # U4-01: politica pura de camara (GL-free)
+-include(cmake/ApplicationCamara.cmake)  # U4-01.E06: adaptador de camara en juego (GL-free)
+ 
+ # RUN-01 — El reloj y el contrato del bucle no dependen de GLFW ni de GL.
+ # Mantenerlos en su propio target permite probar la salida y el timestep sin
+@@ -128,14 +125,6 @@
+     # cabecera 543. Partido en datos / carga / flujo:
+     src/RPG/Narrative/NarrativeState.cpp
+     src/RPG/Narrative/AdventureScriptLoader.cpp
+-    src/RPG/Narrative/AcompanantesAventura.cpp  # ACOMPANANTES-01: los acompañantes de la aventura
+-    src/RPG/Narrative/MoralAventura.cpp  # MORAL-01: acto, herida, requires.moral y exitos fijos
+-    src/RPG/Narrative/ReputacionAventura.cpp  # BND-04: requires.reputacion
+-    src/RPG/Narrative/CharlaAventura.cpp  # DIALOGOS-01: requires.lugar y los papeles de las opciones
+-    src/RPG/Narrative/BeatsAventura.cpp  # VARIABLES-01 / OPCIONES-01: condiciones, efectos y opciones de un beat
+-    src/RPG/Narrative/FranjasDelDia.cpp  # FASE1-BND-01: el dia y la franja de la historia
+-    src/RPG/Narrative/EventosDelMundo.cpp  # C8-03b: eventos del mundo
+-    src/RPG/Narrative/HeroeEnLaHistoria.cpp  # HEROE-01: lo que la historia sabe del heroe creado
+ )
+ # motor_rpg = Motor Onegai Nd6. GL-free puro: contiene DicePoolEngine,
+ # CharacterSheet, EnhanceHooks, SkillExecutor, TierRules, InventoryEngine,
+@@ -186,8 +175,7 @@
+     src/Map/TileLayerDocument.cpp
+     src/Map/EntityLayerDocument.cpp
+     src/Map/RegionLayerDocument.cpp
+-    src/Map/MapDocumentEdits.cpp src/Map/EventLayerDocument.cpp
+-    src/Map/RegionPresence.cpp)
++    src/Map/MapDocumentEdits.cpp src/Map/EventLayerDocument.cpp)
+ target_link_libraries(motor_map_document PUBLIC motor_json motor_project)
+ 
+ # RUN-03 — Máquina de escenas sin ventana. Una Scene concreta decide cómo
+@@ -234,11 +222,15 @@
+     # depende de motor_map_document, no al reves.
+     src/Level/LevelDocumentBridge.cpp
+     src/Game/Skill.cpp
+-     # AV13-35: el menu de habilidades antiguo (BattleMenuState, BattleMenuActions, TargetSelection)
+-     # se borro con el combate sin mesa (planificacion_alcance_y_vision/MEDIDA_COMBATE_VIEJO.md).
++src/Game/BattleMenuState.cpp
++     # H1-01 (G-13 a produccion): menu de combate desde datos, funciones
++     # puras consumibles por Application/tests. Ver BattleMenuActions.h.
++     src/Game/BattleMenuActions.cpp
++     # H2-02 (Fase H): la pantalla de "a quien apunto" que H1-01 dejo sin
++     # soporte. Estado GL-free sobre las funciones de arriba; ver
++     # include/Game/TargetSelection.h.
++     src/Game/TargetSelection.cpp
+      src/Game/BattleState.cpp
+-     src/Game/BattleStateTurno.cpp  # AV13-11: la iniciativa y quien llega a quien
+-     src/Game/BattleStateGolpes.cpp  # AV14-01: los golpes que resuelve la batalla
+      src/Level/ObjectCatalog.cpp
+     src/Editor/CatalogPickerState.cpp
+     src/Editor/EditorState.cpp
+@@ -260,9 +252,7 @@
+     src/Game/GameSessionComercio.cpp
+     src/Game/GameSessionNarrativa.cpp
+     src/Game/GameSessionInteraccion.cpp
+-    src/Game/GameSessionTablero.cpp  # AV13-10: cada uno en su casilla al empezar el combate
+     src/Game/GameSessionInventario.cpp
+-    src/Game/Actuacion.cpp  # ACTUAR-01: actuar en la calle (la tirada, el publico y el oro)
+     src/RPG/SessionCommandHost.cpp
+     # H0-08 (Fase H): la capa de DISPARADORES que faltaba entre el mapa y el
+     # interprete. El interprete arranca la pagina que alguien le da a mano;
+@@ -270,8 +260,6 @@
+     # jugador. Vive en motor_level y no en motor_rpg porque elige pagina con
+     # ActivePageWithInventory, que esta en SessionCommandHost.cpp.
+     src/RPG/MapEventRunner.cpp
+-    # U3-02.E06b: despacho de triggers de region al interprete (API publica).
+-    src/RPG/RegionTriggerDispatch.cpp
+     # H3-01 (Fase H): el atlas (WorldTopology) conectado a LevelTransition.
+     # Vive en motor_level porque necesita las dos puntas: las puertas del
+     # nivel (Level/) y la transicion que ejecuta Application (Game/SessionTipos).
+@@ -283,11 +271,6 @@
+     # serializeSaveGame/applyNarrativeState). Vive con su gemelo, en motor_level.
+     src/Game/SaveGameFormat.cpp
+     src/Game/Morality.cpp
+-    # MORAL-01: los seis numeros y el catalogo de actos (ReglasMoral) y lo que la
+-    # aventura apunta en la moral de la sesion (MoralDeLaSesion).
+-    src/Game/ReglasMoral.cpp
+-    src/Game/MoralDeLaSesion.cpp
+-    src/Game/EventosDeLaSesion.cpp  # C8-03c
+     src/Game/EnemyBrain.cpp
+     src/Game/PauseMenu.cpp
+     src/Game/OptionsState.cpp
+@@ -312,10 +295,10 @@
+     src/Game/AudioDirector.cpp
+     src/Game/InventoryScreen.cpp
+     src/Game/InventoryMenuState.cpp
+-    src/Game/TiendaEstado.cpp  # TIENDA-02: la tienda en dos pestanas, sin GL
+-    # H3-02 (Fase H): el diario de misiones. Su progreso propio
+-    # (QuestLogState) se retiro en AV14-22 (D0016): el estado son las flags y
+-    # el diario es Game/DiarioMisiones (abajo), con la ficha QuestDefinition.
++    # H3-02 (Fase H): el diario de misiones — progreso y estado de las
++    # QuestDefinition. Vive en motor_level junto a las demas pantallas GL-free;
++    # no toca Application ni GameSession (los une el montaje).
++    src/Game/QuestLogState.cpp
+     # H1-02 (Fase H): rescate de G-14. HudTimer i ShopEngine vivien
+     # solo en tests/Game/G14HudTimersAndCommerceTests.cpp; aqui pasan a
+     # motor_level para que Application/H3-04 los consiga.
+@@ -335,56 +318,15 @@
+     src/Game/FichaVista.cpp
+     src/HUD/Iconos.cpp
+     src/Game/DiarioMisiones.cpp  # MISIONES-01: diario = vista de las flags
+-    src/Game/FichasDeMisiones.cpp  # AV14-22: las fichas de quests.json para el diario (D0016)
+-    src/Game/RumboNiveles.cpp  # MAPA-01: por que puerta se va hacia el objetivo
+-    src/Game/TableroCombate.cpp  # AV13-06: las casillas del nivel donde se pelea
+-    src/Game/RutaCasillas.cpp  # AV13-07: la ruta por casillas y hasta donde se llega
+-    src/Game/Transiciones.cpp  # AV16-10: las capas de transicion entre suelos (dual-grid)
+-    src/Game/PlantillaArea.cpp  # AV13-08 (ChatGPT): las plantillas de area sobre casillas
+-    src/Game/Lugares.cpp  # AV15-02: los sitios de la ciudad por su nombre (lugares.json)
+-    src/Game/OrdenDeTurno.cpp  # AV13-11: el orden de turno por iniciativa
+-    src/Game/AlcanceCartas.cpp  # AV13-13: a quien llega cada carta sobre el tablero
+-    src/Game/EfectosDeGolpe.cpp  # AV14-02: lo que hace cada golpe en el cuerpo y en tu hoja
+-    src/Game/Cicatrices.cpp  # AV13-33: las cicatrices que deja morir, fuera de las partidas
+-    src/Game/EscenaNoqueo.cpp  # AV13-33: la escena de noqueo o rescate antes de «Has caido»
+-    src/Game/FrasesDeCombate.cpp  # EH-16: el resultado de las tiradas, en palabras
+-    src/Game/MarcasMapa.cpp  # MAPA-02: la mision seguida y las chinchetas (van en la partida)
+     src/Game/Codice.cpp  # CODICE-01: lo conocido, desde beats/ficha/flags
+     src/Game/Companeros.cpp  # CLASES-03: companeros reclutables por flag
+-    # H2-06 (Fase H): las cartas de clase en combate. Los ganchos de la carta
+-    # (effects[].mechanicHook), el catalogo que los junta y la mesa que
+-    # BattleState consulta cuando el heroe tiene ficha (Game/MesaCombate.h).
+-    src/Game/GanchosCarta.cpp
+-    src/Game/CatalogoCartas.cpp
+-    src/Game/CartasEnCombate.cpp
+-    src/Game/CartasJugar.cpp
+-    src/Game/CartasTiradas.cpp
+-    src/Game/CartasBloqueo.cpp  # AV13-30: el critico contra el bloqueo y la pifia que da ataque de oportunidad
+-    src/Game/CartasEnemigas.cpp  # AV18-06: los enemigos juegan las cartas nativas de su repertorio
+-    src/Game/CartasAcompanantes.cpp  # ACOMPANANTES-01: los acompanantes de la historia en la mesa
+-    src/Game/Refuerzos.cpp  # ROSITA-01: los que llegan a mitad del combate (la compania de Rosita)
+     # APARIENCIA-01: personajes por capas (manifiesto, montaje byte a byte
+     # como el probador, paso Apariencia de la creacion y equipo inicial
+     # puesto). GL-free; la textura la sube Render/HojaPersonaje.
+     src/Game/Personajes/ManifiestoPersonajes.cpp
+     src/Game/Personajes/MontajePersonajes.cpp
+-    src/Game/Personajes/MontajeCache.cpp
+-    src/Game/Personajes/MontajeFilas.cpp
+-    src/Game/Personajes/BrilloEquipo.cpp
+-    src/Game/Personajes/FamiliasDeParticulas.cpp  # PART-01: las familias de particulas (equipo y cartas)
+-    src/Game/Personajes/VisibilidadRasgos.cpp
+-    src/Game/Personajes/RasgosApariencia.cpp
+     src/Game/Personajes/EditorApariencia.cpp
+     src/Game/Personajes/Vestuario.cpp
+-    src/Game/Personajes/KitBasico.cpp  # UI-BG3-01: el kit del cofre de El Vacio, con una regla
+-    src/Game/CuadernoCreacion.cpp  # UI-BG3-01: la creacion en siete hojas con rejillas (GL-free)
+-    src/Game/CuadernoCreacionVistas.cpp
+-    src/Game/CofreKit.cpp  # UI-BG3-01: el cofre de El Vacio (kit a la mochila y sus flags)
+-    src/Game/BarraCombate.cpp  # UI-BG3-01: la barra de cartas del combate (GL-free)
+-    src/Game/BarraAcompanante.cpp  # AV13-29: la barra del acompañante que juegas tu
+-    src/Game/ParticulasDeCartas.cpp  # PART-02d: las particulas de las cartas al jugarse (GL-free)
+-    src/Game/EstadosCombate.cpp  # H2-03: los estados de cada combatiente, con icono y rondas (GL-free)
+-    src/Game/BarraObjetivos.cpp  # H2-02: a quien apunta la carta senalada de la barra (GL-free)
+     # SPRITES-01 (01/10/2026): que hoja dibuja a cada cosa, desde datos
+     # (assets/textures/sprites.json). GL-free; el que sube las texturas es
+     # Render/BancoAtlas en motor_core.
+@@ -394,9 +336,6 @@
+     src/Game/Mascotes.cpp  # MASC-01: mascotas que pasean, saludan o huyen (GL-free)
+     src/Game/FullaMascotes.cpp  # MASC-01: la hoja de mascotas como datos (GL-free)
+     src/Game/Monumentos.cpp  # BLOQUES-03: edificios con sprite propio (GL-free)
+-    src/Game/Cinematica.cpp  # PROLOGO-02: las cinematicas (ordenes, espectros y apariciones; GL-free)
+-    src/Game/EscenaViva.cpp  # C2-04a: estado vivo de la escena (GL-free)
+-    src/Game/FuegoCeldas.cpp  # C2-04c: casillas de fuego y semilla (GL-free)
+ )
+ # GameSession.cpp usa TileMap (motor_map) para la colision, pero
+ # motor_map se declara mas abajo en este archivo: en vez de reordenar
+@@ -405,7 +344,6 @@
+ # demo_editor_state. Ninguna de las dos trae GLAD/GLFW: siguen siendo
+ # GL-free.
+ target_link_libraries(motor_level PUBLIC motor_json motor_project motor_rpg motor_runtime_map motor_world motor_imagen)
+-include(cmake/Emisor.cmake)  # U4-07: emisor de particulas generico (GL-free)
+ 
+ # H0-05 — Selector de guardados (G-08/G-11) como libreria GL-free propia:
+ # TitleMenuState y SaveSlotState viven aqui y ya no se compilan sueltos en
+@@ -429,8 +367,11 @@
+ add_executable(demo_skills examples/demo_skills.cpp)
+ target_link_libraries(demo_skills PRIVATE motor_level)
+ 
+-# AV13-35: demo_battle (el combate por turnos de la Fase 8, sin mesa de cartas) se borro con el
+-# combate antiguo.
++# Fase 8 de motor_grafico_gantt_rpg.puml: combate por turnos. GL-free
++# igual que LevelLoader/Skill (BattleState opera sobre ICombatant/
++# SkillSet, no sobre Player/Enemy concretos).
++add_executable(demo_battle examples/demo_battle.cpp)
++target_link_libraries(demo_battle PRIVATE motor_level)
+ 
+ # ================== NUEVOS: Motor Nd6 Onegai (Fase 0) ==================
+ # demo_nd6_distribution — distribución de grados + Context Enhancements.
+@@ -469,22 +410,13 @@
+ add_dependencies(demo_este_sur copiar_assets)
+ 
+ # ====================================================================
+-# demo_boundington — los tres dias en Boundington (1981 b.f.): el primer dia
+-# con sus tres cierres, el segundo y el Ocaso (BND-ESCENAS-01). Juega varias
+-# rutas y comprueba que no queden beats muertos. GL-free, corre en CI.
+-# BND-ALT-01: las rutas de las alternativas, en su propio fichero.
+-add_executable(demo_boundington examples/demo_boundington.cpp examples/demo_boundington_alternativas.cpp)
++# demo_boundington — el primer dia en Boundington (1981 b.f.), la primera
++# aventura con final ramificado. Juega tres rutas, comprueba los tres
++# cierres y que no queden beats muertos. GL-free, corre en CI.
++add_executable(demo_boundington examples/demo_boundington.cpp)
+ target_link_libraries(demo_boundington PRIVATE motor_level)
+ set_target_properties(demo_boundington PROPERTIES CXX_STANDARD 17)
+ add_dependencies(demo_boundington copiar_assets)
+-
+-# explorar_boundington — DIALOGOS-01: juega la campaña entera cientos de veces
+-# con héroes de la creación de personaje y estilos (azar/bondadoso/cruel), y
+-# dice atascos, beats y opciones sin ver, finales y la moral. GL-free.
+-add_executable(explorar_boundington examples/explorar_boundington.cpp)
+-target_link_libraries(explorar_boundington PRIVATE motor_level)
+-set_target_properties(explorar_boundington PROPERTIES CXX_STANDARD 17)
+-add_dependencies(explorar_boundington copiar_assets)
+ 
+ # Precuela de la Taberna Humilde: rutas de rescate y tragedia persistentes.
+ add_executable(demo_precuela_boundington examples/demo_precuela_boundington.cpp)
+@@ -819,13 +751,10 @@
+         # Sustituyen a HudMinimap, HudFicha y ApplicationMenuJugador.
+         src/Render/PergaminoGL.cpp
+         src/Render/AuraJugador.cpp
+-        src/Render/FuegoNivel.cpp  # C2-04c: el fuego de arde/apaga
+-        src/Render/PintaDestellos.cpp  # PART-02d: las particulas sobre un sprite y las cartas jugadas
+         # SPRITES-01 — las hojas de sprites del registro, subidas y recortadas.
+         src/Render/BancoAtlas.cpp
+         src/Render/BloquesNivel.cpp  # BLOQUES-01: los bloques del nivel en la cola del renderer
+         src/Render/VidaNivel.cpp  # BLOQUES-02 + MASC-01: la capa de vida (palomas y mascotas)
+-        src/Render/PolvoDePasos.cpp  # U4-07.E07: el polvo de pasos del jugador (GL)
+         src/Render/HojaPersonaje.cpp  # APARIENCIA-01: hoja montada en la GPU + vista previa
+         src/Render/DynamicLightMap.cpp
+         src/Render/BlobShadow.cpp
+@@ -847,10 +776,6 @@
+         # nivel, los dos flujos largos que quedaban.
+         src/Engine/ApplicationHud.cpp
+         src/Engine/ApplicationNivel.cpp
+-        src/Engine/ApplicationCinematica.cpp  # PROLOGO-02: las cinematicas en el juego
+-        src/Engine/ApplicationCinematicaEscena.cpp  # C2-04b: la escena viva en el juego
+-        src/Engine/ApplicationCinematicaTitulo.cpp
+-        src/Engine/ApplicationCamara.cpp  # U4-01.E06
+         ${GLAD_DIR}/src/glad.c
+         ${CMAKE_BINARY_DIR}/stb_image_impl.cpp
+     )
+@@ -929,11 +854,6 @@
+     add_executable(demo_dynamic_lights examples/demo_dynamic_lights.cpp)
+     target_link_libraries(demo_dynamic_lights PRIVATE motor_core motor_math motor_captura_gl)
+ 
+-    # ESTETICA-01: el brillo del equipo por lo fuerte que es (estilo NosTale),
+-    # con HojaPersonaje + AuraJugador sobre el IsometricRenderer de verdad.
+-    add_executable(demo_brillo_equipo examples/demo_brillo_equipo.cpp)
+-    target_link_libraries(demo_brillo_equipo PRIVATE motor_core motor_math motor_level motor_captura_gl)
+-
+     # Fase 12: editor de niveles visual. UI con el HUD propio (Fase 9),
+     # no con Dear ImGui (sin red para vendorizarlo en el entorno de
+     # desarrollo, ver EditorState.h); el nucleo GL-free ya esta verificado
+@@ -989,41 +909,12 @@
+     include(cmake/ProjectLevelsTests.cmake)
+     # E-02 — variables narrativas e interruptores locales A-D.
+     include(cmake/NarrativeVariablesTests.cmake)
+-    include(cmake/PuertaCerradaTests.cmake)  # G4-01: puertas cerradas por flags
+-    # C8-03b — catálogo de eventos del mundo (lectura y validación).
+-    include(cmake/EventosDelMundoTests.cmake)
+-    include(cmake/EscenaVivaTests.cmake)  # C2-04a: posturas, fuego y emociones
+-    include(cmake/PosicionBocadilloTests.cmake)  # C2-04d: posicion del bocadillo
+-    include(cmake/FuegoNivelTests.cmake)  # C2-04c: casillas de fuego y semilla
+     # E-03 — planificador de eventos (esperas, paralelos, orden determinista).
+     include(cmake/EventInterpreterTests.cmake)
+     # E-04 — juego de comandas y su integracion con el planificador.
+     include(cmake/EventCommandsTests.cmake)
+     # E-07 — validacion estatica de eventos.
+     include(cmake/AdventureValidationTests.cmake)
+-    include(cmake/OpcionesDialogoTests.cmake)  # OPCIONES-01 / VARIABLES-01
+-    include(cmake/FaseUnoBoundingtonTests.cmake)  # FASE1-BND-01: franjas, tabla, descanso, huir y sin matar
+-    include(cmake/MoralTests.cmake)  # MORAL-01: la moral de varios factores
+-    include(cmake/ReputacionAventuraTests.cmake)  # BND-04: requires.reputacion
+-    include(cmake/HeroeEnLaHistoria.cmake)  # HEROE-01: la historia sabe quien es el heroe creado
+-    include(cmake/Charlas.cmake)  # DIALOGOS-01: lugar, "sigue" y las paginas de charla
+-    include(cmake/Cinematica.cmake)  # PROLOGO-02: las cinematicas del prologo
+-    include(cmake/RumboNiveles.cmake)  # MAPA-01: el objetivo en el minimapa
+-    include(cmake/TableroCombate.cmake)  # AV13-06: el tablero del combate a lo BG3
+-    include(cmake/RutaCasillas.cmake)  # AV13-07: la ruta por casillas
+-    include(cmake/RegionTriggersTests.cmake)  # U3-02.E02: pertenencia de casilla a regiones
+-    include(cmake/PlantillaArea.cmake)  # AV13-08 (ChatGPT): las plantillas de area
+-    include(cmake/Contenedores.cmake)
+-include(cmake/Botin.cmake)
+-include(cmake/SimularEconomia.cmake)
+-include(cmake/MonstruosAcciones.cmake)  # AV18-02: datos, persistencia y papiro de botín
+-    include(cmake/Lugares.cmake)  # AV15-02b (ChatGPT): los sitios de Boundington por su nombre
+-    include(cmake/OrdenDeTurno.cmake)  # AV13-11: el orden de turno por iniciativa
+-    include(cmake/EfectosDeGolpe.cmake)  # AV14-02: el golpe en el cuerpo y en la hoja
+-    include(cmake/Cicatrices.cmake)  # AV13-33: las cicatrices que deja morir
+-    include(cmake/EscenaNoqueo.cmake)  # AV13-33: la escena de noqueo o rescate
+-    include(cmake/FrasesDeCombate.cmake)  # EH-16: las tiradas en palabras
+-    include(cmake/GuiaMapa.cmake)  # MAPA-02: seguir una mision, la flecha y las chinchetas
+     # E-08 — depuracion paso a paso (pausa, puntos de parada, traza).
+     include(cmake/EventDebugTests.cmake)
+     # E-04 (2a rebanada) — familias de comando que necesitan la partida.
+@@ -1031,7 +922,6 @@
+     # H0-08 (Fase H) — MapEventRunner: los cuatro disparadores conducidos por
+     # casillas, jugados sobre el asset publicado assets/misiones/mision_llave.
+     include(cmake/MapEventRunnerTests.cmake)
+-    include(cmake/RegionTriggerDispatchTests.cmake)  # U3-02.E06b
+     # H6-01 (Fase H) — AudioDirector: la politica de sonido, probada contra un
+     # doble de AudioEngine (sin dispositivo, sin assets, corre en CI).
+     include(cmake/AudioDirectorTests.cmake)
+@@ -1133,6 +1023,7 @@
+     add_motor_gl_free_demo_test(demo_object_catalog)
+     add_motor_gl_free_demo_test(demo_catalogos_rpg)
+     add_motor_gl_free_demo_test(demo_skills)
++    add_motor_gl_free_demo_test(demo_battle)
+     add_motor_gl_free_demo_test(demo_battle_nd6)
+     add_motor_gl_free_demo_test(demo_dice_engine)
+     add_motor_gl_free_demo_test(demo_nd6_distribution)
+@@ -1222,18 +1113,11 @@
+     # desconocido que no pierden datos, y limite de anidamiento.
+     add_motor_unit_test(test_event_layer_document tests/Map/EventLayerDocumentTests.cpp)
+     target_link_libraries(test_event_layer_document PRIVATE motor_map_document motor_project)
+-    # U3-02.E06a — Triggers de region en paginas de evento (referencias, ediciones, carga).
+-    add_motor_unit_test(test_event_region_trigger tests/Map/EventRegionTriggerTests.cpp)
+-    target_link_libraries(test_event_region_trigger PRIVATE motor_map_document motor_project)
+     target_link_libraries(test_map_document PRIVATE motor_map_document)
+ 
+     add_motor_unit_test(test_runtime_tilemap tests/Runtime/RuntimeTileMapBuilderTests.cpp)
+     target_link_libraries(test_runtime_tilemap PRIVATE motor_runtime_map)
+ 
+-    # AV19-02 — La altura del terreno (rejilla, rampas, regla de paso, JSON del nivel).
+-    add_motor_unit_test(test_alturas tests/Level/AlturasTests.cpp)
+-    target_link_libraries(test_alturas PRIVATE motor_level motor_json)
+-
+     add_motor_unit_test(test_tmx_importer tests/Import/TmxImporterTests.cpp)
+     target_link_libraries(test_tmx_importer PRIVATE motor_tmx_import)
+ 
+@@ -1266,13 +1150,6 @@
+     # assets, igual que test_save_game.
+     add_motor_unit_test(test_game_session tests/Game/GameSessionTests.cpp)
+     target_link_libraries(test_game_session PRIVATE motor_level motor_map motor_rpg motor_json)
+-    # C8-03c — la sesión evalúa los eventos del mundo.
+-    include(cmake/EventosDeLaSesionTests.cmake)
+-    # ACTUAR-01 — Actuar en la calle: la tirada, el publico, el oro y el descanso de cada sitio.
+-    add_motor_unit_test(test_actuacion tests/Game/ActuacionTests.cpp)
+-    target_link_libraries(test_actuacion PRIVATE motor_level motor_map motor_rpg motor_json)
+-    add_motor_unit_test(test_transiciones tests/Game/TransicionesTests.cpp)  # AV16-10
+-    target_link_libraries(test_transiciones PRIVATE motor_level motor_map motor_rpg motor_json)
+ 
+     # C-24 — Economia del negoci: funcions pures (occupancyPercent,
+     # incomeFor) i cobrament de lloguers amb moral.
+@@ -1311,17 +1188,7 @@
+     # GameSession + GameSessionComercio ya estan en motor_level.
+     add_motor_unit_test(test_shop_flow tests/Game/ShopFlowTests.cpp)
+     target_link_libraries(test_shop_flow PRIVATE motor_level motor_map motor_rpg motor_json)
+-    # TIENDA-02 — La tienda en dos pestanas (Game::TiendaEstado): comprar y vender
+-    # separados, lo que se ensena es lo que se cobra y el foco no se sale.
+-    add_motor_unit_test(test_tienda_estado tests/Game/TiendaEstadoTests.cpp)
+-    target_link_libraries(test_tienda_estado PRIVATE motor_level motor_map motor_rpg motor_json)
+ 
+-    # CAER-01 — Huir y caer segun la mision (Oriol, 08/10): caer en un combate
+-    # de la historia no acaba la partida salvo que sea ineludible; huir tiene
+-    # su flag; los combates del mapa siguen acabandola.
+-    add_motor_unit_test(test_caer_en_mision tests/Game/CaerEnMisionTests.cpp)
+-    target_link_libraries(test_caer_en_mision PRIVATE motor_level motor_map motor_rpg motor_json)
+-
+     # C-24 — La resolución de combate Nd6 (ApplyBasicAttackNd6 y
+     # ApplySkillEffect) y SkillSet/SkillCatalog. ScriptedRng escribe la
+     # cara a mano para fijar el grado exacto.
+@@ -1529,7 +1396,6 @@
+ 
+ # Tutorial de Boundington en la zona principal — comerciantes, emboscada y combate.
+ include(cmake/BoundingtonTutorialTests.cmake)
+-include(cmake/BoundingtonDia1Tests.cmake)
+ 
+ # D-06 — Creació de personatge: bonificacions de classe/raça/trasfond
+ # i set eleccions narratives arriben a la CharacterSheet.
+@@ -1576,13 +1442,6 @@
+     set_tests_properties(test_city_regeneration PROPERTIES LABELS "unit;gl-free" TIMEOUT 30)
+ endif()
+ 
+-# AV16-08 — Un nivel como Excel y de vuelta (tools/nivel_a_excel.py, tools/excel_a_nivel.py).
+-if(BUILD_TESTING AND MOTOR_PYTHON3)
+-    add_test(NAME test_nivel_excel
+-        COMMAND ${MOTOR_PYTHON3} "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/test_nivel_excel.py")
+-    set_tests_properties(test_nivel_excel PROPERTIES LABELS "unit;gl-free" TIMEOUT 60)
+-endif()
+-
+ include(cmake/PostProcessingTests.cmake)
+ 
+ include(cmake/ProjectCatalogTests.cmake)
+@@ -1598,6 +1457,7 @@
+ include(cmake/AssetBrowserTests.cmake)
+ include(cmake/ProjectDatabaseTests.cmake)
+ include(cmake/NewGameFlowTests.cmake)
++include(cmake/BattleMenuTests.cmake)
+ include(cmake/MapPropertiesTests.cmake)
+ include(cmake/EditorToolsTests.cmake)
+ include(cmake/CatalogLoaderContractCheck.cmake)
+@@ -1606,18 +1466,7 @@
+ # MISIONES-01 — el diario es una vista de las flags. En su propio fichero:
+ # el compartido (FichaVistaTests) arrastra las fuentes de tres sesiones mas.
+ include(cmake/DiarioMisionesTests.cmake)
+-# AV14-22 (D0016) — el diario completo: la hoja de Misiones y su prueba con Boundington.
+-include(cmake/DiarioCompleto.cmake)
+-# AV14-23 (D0015 §15) — la reputacion por faccion en la tienda y la ficha, y los rumores.
+-include(cmake/ComercioReputacion.cmake)
+-# PNJ-02 (ronda 15/10, pnj_motor) — los PNJ andan y hacen su oficio (rutinas_pnj.json).
+-include(cmake/RutinasPnj.cmake)
+-include(cmake/ClipsAnimacion.cmake)
+-# AV15-05a — confirmar lo caro e irreversible (EH-22, 23, 29, 30).
+-include(cmake/Confirmar.cmake)
+ include(cmake/AparienciaTests.cmake)
+-include(cmake/MontajeCacheTests.cmake)  # PERF-1: la cache de atlas del montaje
+-include(cmake/CreacionBg3Tests.cmake)  # UI-BG3-01: kit del cofre, cuaderno de creacion y barra de cartas
+ # SPRITES-01 — el indice de hojas de sprites y sus reglas de busqueda.
+ include(cmake/RegistroSpritesTests.cmake)
+ include(cmake/BloquesTests.cmake)
+@@ -1634,7 +1483,6 @@
+ include(cmake/ScopeGuardTests.cmake)
+ include(cmake/LevelEditorNucleoTests.cmake)
+ include(cmake/EditorOpcionesTests.cmake)
+-include(cmake/EditorMapFraming.cmake)
+ include(cmake/FormatoPPMTests.cmake)
+ # EST-56 — Cuatro fragmentos que existian, registraban seis pruebas y no
+ # los incluia nadie: las pruebas estaban escritas, pasaban, y CI no las
+@@ -1655,20 +1503,6 @@
+ # que EST-51, para que motor_log y motor_level ya existan al enlazar.
+ include(cmake/BoundaryExceptionsTests.cmake)
+ 
+-
+-# H2-06 (Fase H) — las cartas de clase en combate (Game::CartasEnCombate).
+-# Al final, igual que H2-02: la prueba enlaza motor_level.
+-include(cmake/CartasCombateTests.cmake)
+-
+-# SP-02 — las SP de NosTale como clases nuevas (enlaza motor_level).
+-include(cmake/ClasesSpTests.cmake)
+-
+-# CP-01 — las clases propias (enlaza motor_level).
+-include(cmake/ClasesPropiasTests.cmake)
+-
+-# AV13-04 (COMBATE_BG3.md §6) — la probabilidad exacta de una tirada enfrentada;
+-# D0013: el critico son dos 6 (enlaza motor_rpg).
+-include(cmake/ProbabilidadPool.cmake)
+-
+-# ACOMPANANTES-01 — el simulador del estudio de dificultad (enlaza motor_level).
+-include(cmake/SimuladorDificultad.cmake)
++# H2-02 (Fase H) — la seleccion de objetivo del combate (Game::TargetSelection).
++# Al final, igual que EST-51/EST-52: la prueba enlaza motor_level.
++include(cmake/TargetSelectionTests.cmake)

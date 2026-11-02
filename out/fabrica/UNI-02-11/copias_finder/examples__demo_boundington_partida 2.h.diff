@@ -1,0 +1,59 @@
+--- MotorGraphico-main/MotorGraphico/examples/demo_boundington_partida.h	2026-11-02 21:03:49
++++ MotorGraphico-main/MotorGraphico/examples/demo_boundington_partida 2.h	2026-11-02 21:03:49
+@@ -228,39 +228,16 @@
+         if (ruido) std::printf("\n  [entras en %s]\n", nivel.c_str());
+         procesa(e.enterLevel(ruta, s));
+         drena();
+-        empiezaElDesayuno(nivel);
+     }
+ 
+-    // H-DIA1-1: bajar a la taberna ya no empieza el desayuno. Empieza al pasar
+-    // junto a Venides (cinematica venides_llama, que lo pide) y la cinematica
+-    // venides_te_sienta te lleva a su mesa; de ahi salta b1_desayuno. Aqui el
+-    // jugador hace ese camino: llega a la celda de su derecha (5, 7).
+-    void empiezaElDesayuno(const std::string& nivel) {
+-        if (nivel != "interior_taberna" || !s.hasFlag("bnd0_dormido")) return;
+-        if (s.hasFlag("bnd1_desayuno_visto") || s.hasFlag("bnd1_desayuno_hecho")) return;
+-        for (int vez = 0; vez < 2 && !s.hasFlag("bnd1_desayuno_llamado"); ++vez)
+-            if (!cinematica(GridCoord{5, 7})) break;
+-    }
+-
+     NarrativeResult habla(const std::string& npc) {
+         if (ruido) std::printf("\n  [hablas con %s]\n", npc.c_str());
+         NarrativeResult r = e.talkTo(npc, s);
+         procesa(r);
+         drena();
+-        subeConRosita();
+         return r;
+     }
+ 
+-    // G4-02: «Subir a dormir» (bnd0_a_dormir) ya no duerme al instante: salta
+-    // la cinematica taberna_rosita_puja (enciende bnd0_rosita_te_sube y deja al
+-    // jugador arriba) y, al amanecer, se baja a la taberna, donde empieza el
+-    // desayuno (b1_desayuno: enter interior_taberna).
+-    void subeConRosita() {
+-        if (!s.hasFlag("bnd0_a_dormir") || s.hasFlag("bnd0_dormido") || s.hasFlag("bnd0_rosita_te_sube")) return;
+-        if (!cinematica(GridCoord{-1, -1})) return;
+-        if (s.hasFlag("bnd0_dormido")) entra("interior_taberna");
+-    }
+-
+     // Rosita lleva la hora: «Esperar a que anochezca».
+     void anochece() {
+         prefiere.insert(prefiere.begin(), "Esperar a que anochezca");
+@@ -295,16 +272,6 @@
+         s.setFlag(c->vista());
+         for (const std::string& f : c->alTerminar) s.setFlag(f);
+         drena();
+-        // FANTASMA-01: en los recuerdos, al acabar, andas libre; para seguir, se
+-        // habla con Sho-Noco (mas de una vez si antes eliges «Mirar un poco mas»).
+-        bool libre = false;
+-        for (const std::string& f : c->alTerminar)
+-            libre = libre || (f.size() > 6 && f.compare(f.size() - 6, 6, "_libre") == 0);
+-        for (int vez = 0; libre && vez < 4; ++vez) {
+-            habla("sho_noco");
+-            if (cat.laQueEmpieza(s.lugar(), GridCoord{-1, -1}, [this](const std::string& f) { return s.hasFlag(f); }) != nullptr)
+-                break;
+-        }
+         return true;
+     }
+ 

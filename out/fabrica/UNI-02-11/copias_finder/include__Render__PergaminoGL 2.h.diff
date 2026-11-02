@@ -1,0 +1,40 @@
+--- MotorGraphico-main/MotorGraphico/include/Render/PergaminoGL.h	2026-11-02 21:03:49
++++ MotorGraphico-main/MotorGraphico/include/Render/PergaminoGL 2.h	2026-11-02 21:03:49
+@@ -26,9 +26,7 @@
+ 
+ #include "Core/Errors/Result.h"
+ #include "HUD/Pergamino/BancoMateriales.h"
+-#include "HUD/Pergamino/GolpesEnPantalla.h"
+ #include "HUD/Pergamino/InterfazPergamino.h"
+-#include "HUD/Pergamino/SueloCombate.h"
+ #include "Render/EfectosDeCartas.h"
+ #include "Render/HudElement.h"
+ #include "Render/IRenderable.h"
+@@ -68,10 +66,6 @@
+     IRenderable* marcaSuelo() { return m_marca.get(); }
+     // PART-02d: las cartas jugadas, a la vista (encima de todo).
+     EfectosDeCartas& efectosDeCartas() { return *m_efectos; }
+-    // COMBATE-01: los numeros de los golpes y el destello rojo (encima de la capa baja).
+-    Pergamino::GolpesEnPantalla& golpes() { return m_golpes; }
+-    // AV13-10: el borde del tablero del combate (en el pase de sombras, con el rombo).
+-    Pergamino::SueloCombate& suelo() { return m_suelo; }
+     // Lo que va en la cola del IsometricRenderer: el rombo y las cartas.
+     std::vector<IRenderable*> delMundo() { return {m_marca.get(), m_efectos.get()}; }
+ 
+@@ -79,7 +73,6 @@
+     void dibuja(SpriteBatch& batch, const Pergamino::Lienzo& lienzo) const;
+     // El rombo del suelo, en coordenadas del mundo (lo usa marcaSuelo()).
+     void dibujaMarca(SpriteBatch& batch) const;
+-    void dibujaSuelo(SpriteBatch& batch) const;  // AV13-10
+ 
+ private:
+     struct Recursos;
+@@ -90,8 +83,6 @@
+     std::unique_ptr<IHudElement> m_capaAlta;
+     std::unique_ptr<IRenderable> m_marca;
+     std::unique_ptr<EfectosDeCartas> m_efectos;  // PART-02d
+-    Pergamino::GolpesEnPantalla m_golpes;        // COMBATE-01
+-    Pergamino::SueloCombate m_suelo;             // AV13-10
+ };
+ 
+ }  // namespace Render
