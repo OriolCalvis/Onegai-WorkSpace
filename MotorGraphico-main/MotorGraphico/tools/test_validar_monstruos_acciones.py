@@ -25,7 +25,11 @@ class AccionesTests(unittest.TestCase):
     def test_formula_alterada(self):self.d['monstruos'][0]['attacks'][0]['magnitude']+=1;self.falla('Fórmula')
     def test_falta_actor_actual(self):self.d['repertorios'].pop(0);self.falla('Actor de Boundington')
     def test_carta_inexistente(self):id=self.d['repertorios'][0]['skillIds'][0];del self.d['cartas'][id];self.falla('inexistente')
-    def test_estado_futuro_no_cuela(self):id=self.d['repertorios'][0]['skillIds'][1];self.d['cartas'][id]['effects'][0]['mechanicHook']='condicion:quemado:1';self.falla('Estado desconocido')
+    def test_estado_futuro_no_cuela(self):
+        # Id que NO existe en conditions.json (antes se usaba 'quemado', que PO-37 anadio al catalogo y la prueba se desfaso).
+        futuro='estado_futuro_inexistente_de_prueba'
+        self.assertNotIn(futuro,self.d['condiciones'])
+        id=self.d['repertorios'][0]['skillIds'][1];self.d['cartas'][id]['effects'][0]['mechanicHook']='condicion:'+futuro+':1';self.falla('Estado desconocido')
     def test_objeto_desconectado(self):id=self.d['repertorios'][0]['id'];self.d['objetos'][id]['combat']['skills']=[];self.falla('sin conectar')
 
 if __name__=='__main__':unittest.main()

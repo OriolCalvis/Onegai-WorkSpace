@@ -63,7 +63,7 @@ MOTOR_TEST_CASE(abrir_deja_el_kit_en_la_mochila_y_quita_el_cofre) {
     MOTOR_CHECK(p != nullptr && p->piezas.size() == 2);
     if (p == nullptr || p->piezas.size() != 2) return;
     MOTOR_CHECK(p->piezas[0].ranura == "Arma" && p->piezas[0].bono.empty());
-    MOTOR_CHECK(p->piezas[1].ranura == "Cabeza" && p->piezas[1].bono == "+1 CAR");
+    MOTOR_CHECK(p->piezas[1].ranura == "Cabeza" && p->piezas[1].bono.empty());  // AV16-02: las prendas del kit no dicen que sumen
     MOTOR_CHECK(p->foco == 0);  // «Ponermelo»
     cofre.cierra();
     MOTOR_CHECK(cofre.papiro() == nullptr);
