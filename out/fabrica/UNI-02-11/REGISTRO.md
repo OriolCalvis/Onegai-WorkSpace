@@ -88,3 +88,32 @@ r1 llançada amb Sonnet (21:31).
 
 ## Cuelgues
 - Codex 21:09: `codex exec` en segundo plano esperaba stdin («Reading additional input from stdin»). Detectado a los 2 min, matado, relanzado con `< /dev/null`.
+
+## Fase 3 — heredadas (Oriol 21:55: «Heretades»)
+Diagnóstico: `HEREDADAS.md` (subagente Sonnet, solo lectura, sobre `08b0602d`).
+
+### H1 — 6 pruebas desfasadas/entorno sin decisión de Oriol (Sonnet)
+Ámbito congelado (rutas bajo `MotorGraphico-main/MotorGraphico/`), solo pruebas:
+- `tests/Game/RutaCasillasTests.cpp` (umbral de tiempo distinto en Debug, `NDEBUG`) — test_ruta_casillas
+- `tools/test_validar_monstruos_acciones.py` (id de «estado futuro» que no exista) — test_validar_monstruos_acciones
+- `tests/RPG/CatalogContentTests.cpp` (16 → 20 condiciones, PO-37) — test_catalog_content
+- `tests/Game/BotinEquipoTests.cpp` (26 → 43 contenedores) — test_botin_equipo
+- `tests/Game/CofreKitTests.cpp:66` (`bono.empty()`, AV16-02) — test_kit_basico
+- `examples/demo_creacion_personaje.cpp:43,156,172` (72 razas / 69 jugables) — demo_creacion_personaje
+Nada de `src/`, `include/`, assets ni catálogos. Cada número nuevo con una mutación del dato que lo haga fallar.
+
+### H2 — Boundington y economía (después de H1, mismo worktree)
+- `examples/demo_boundington_partida.h`, `examples/demo_boundington.cpp`, `examples/demo_boundington_alternativas.cpp`, `examples/demo_campana_boundington.cpp` (ayudante `duerme()` que entra en `interior_taberna_p1`)
+- `tools/rutas_economia.json` regenerado con `tools/sintetizar_rutas.py` — test_recompensas_economia
+
+### Esperando a Oriol: test_lugares, test_pergamino (5.ª placa), «… 2.cpp» de Finder, rebase de linea_base_core.
+
+### Avance fase 3 (22:00–22:25)
+- **H1 `02477277`** VALIDADA: 6 pruebas en verde (catalog 16→20, botin 26→43, kit AV16-02, validar_monstruos id futuro, creacion 72/69, ruta_casillas umbral Debug 20 ms / Release 5 ms). Mutación por dato; el Brain repitió una (catálogo vaciado → ROJO; más burda que la del Sonnet).
+- **H3a** (decisión de Oriol): 7 copias de Finder « 2» fuera de la rama, guardadas con su diff en `out/fabrica/UNI-02-11/copias_finder/` para Fable.
+- **H2 `0f86c34d`** PARCIAL: `duerme()` (anochece + skilla + `interior_taberna_p1`); demo_boundington pasa prólogo + 17/17 del día 1 y cae en el día 2. Brain: el primer verde/rojo que vio era de un binario viejo (mtime tras `git checkout`); con `touch` + rebuild se confirma. `rutas_economia.json` revertido (la entrada manual no cambiaba nada y se perdería al regenerar).
+- Decisiones de Oriol (22:20): lugares «corregir y guardar emblemas»; pergamino «actualizar 3 + arreglar placa»; copias « 2» «fuera y que Fable las mire»; linea_base «rebasar»; **día 2 «reescribir guiones contra boundington_dia_gorran.json sin tocar historia»**; **recorredor «que ejecute cinemáticas»**.
+- H3 (lugares + pergamino) lanzada con Sonnet. Siguen en serie: H4 (guiones día 2: `examples/demo_boundington*.cpp`, `demo_boundington_partida.h`, `demo_campana_boundington.cpp`), H5 (`tools/recorrer_recompensas.cpp` + su prueba + `tools/rutas_economia*.json` regenerados), rebase de `planificacion/linea_base_core.json`, suite completa.
+
+### Cierre fase 3 (03/11)
+H2+H4 `7fb3368a` (día 2 = Gorran; PENDIENTE ORIOL temporal), H4b `45e66555` (once en 3 beats; 58/58), H3 `6bc14fe3`, H5 parcial `dc6fbb48` (BLOQUEADA: Oriol «otra tanda»), H3b `cf991f58` (rebase). Suite gl-free completa sobre `cf991f58`: 287/288. Corrección al informe de H4: el cargador SÍ lee `once` (`AdventureScriptLoader.cpp:143`); los beats no lo llevaban.

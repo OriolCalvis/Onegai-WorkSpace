@@ -62,3 +62,36 @@ Reloj: 20:45–21:50 aprox. Cuelgue: Codex esperando stdin a las 21:09 (detectad
 2. Hacer los vistos visuales D-O4/D-O5 jugando esta rama.
 3. Renovar la clave del Token Plan de Bailian si queréis volver a usar Qwen.
 4. Fase de juego (sonido U1-01, misiones U3-01, sprites PixelLab): hace falta aprobar un lote con los ficheros congelados. Para el sonido: hoy no hay **ningún fichero de audio** en `assets/`.
+
+---
+
+# Ampliación — fase 3: pruebas heredadas (02–03/11, «continua» → «Heretades»)
+
+**Punta nueva:** `agente/claude/UNI-02-11` @ `cf991f58` (+ commit de informe). Diagnóstico de partida: `HEREDADAS.md`.
+
+**Resultado:** suite gl-free completa sobre `cf991f58` (`ctest -L gl-free -j 6`, con las `lenta`): **287/288** (antes 275/288). Solo queda en rojo `test_recompensas_economia` (BLOQUEADA a propósito, ver abajo). `ctest_final2.log`.
+
+| Bloque | Pruebas | Estado | Commit |
+|---|---|---|---|
+| H1 | test_catalog_content, test_botin_equipo, test_kit_basico, test_validar_monstruos_acciones, demo_creacion_personaje, test_ruta_casillas | VALIDADA (pruebas desfasadas / umbral Debug; 0 cambios de código o datos) | `02477277` |
+| H3a | linea_base_core_configura | VALIDADA: 7 copias de Finder « 2» fuera, guardadas con diff en `copias_finder/` para Fable | (H3a) |
+| H2 + H4 | demo_boundington, demo_campana_boundington | VALIDADA: día 1 sube al cuarto; día 2 = Gorran, antiguo día 2 = día 3; 58/58 escenas | `0f86c34d`, `7fb3368a` |
+| **H4b** | (bug de juego) | **VALIDADA: el Ocaso se atascaba en el juego.** `once: true` en 3 beats auto de `boundington_ocaso.json` (`NarrativeEngine.cpp:57` elige el primero que encaja) | `45e66555` |
+| H3 | test_lugares, test_pergamino (+ test de carteles) | VALIDADA: lugares.json corregido (validar_lugares 30 → 0 errores); 5 placas de enemigo caben (alto 60 → 50; fichas a y+26) | `6bc14fe3` |
+| H3b | linea_base_core | VALIDADA: rebase al 03/11; 53 deudas aceptadas, en `DEUDA_LINEA_BASE.md` | `cf991f58` |
+| H5 | test_recompensas_economia | **BLOQUEADA** (Oriol: «otra tanda»): el recorredor ya ejecuta cinemáticas y el día 1 cierra, pero `tools/sintetizar_rutas.py` solo conoce 3 días (no Gorran), ni flags de cinemáticas ni pisar zonas del Ocaso | `dc6fbb48` (parcial) |
+
+**Mutaciones:** cada prueba nueva o cambiada tiene la suya (`H1_mut.log`, `H2_mut.log`, `H3_mut.log`, `H4_mut.log`, `H4b_mut.log`, `H5_mut.log`). El Brain repitió una por bloque: catálogo vaciado → ROJO; alto 60 → `MesaCombateTests.cpp:305` ROJO; `once` en la copia de assets del build → 58/58 (sin él, 19 escenas atascadas).
+
+**Trampas nuevas (han mordido hoy):**
+- Tras `git checkout -- f`, el mtime puede no cambiar → binario viejo y falso verde/rojo. Hay que hacer `touch` + build.
+- Los assets solo se copian al build con el build completo (`copiar_assets`); `--target X` no los sincroniza.
+- `genera.py` (fuera de git, `out/claude_dialogos02/guiones/`) regenera `demo_boundington*.cpp` y **pisaría H2 y H4**.
+
+**Decisiones / cosas para Oriol (fase 3):**
+1. Emblemas de Gorran que salieron de `lugares.json`: `EMBLEMAS_GORRAN_PENDIENTES.md`.
+2. Captura de la mesa de combate con 5 enemigos (placa compacta de 50 px).
+3. Copias « 2» de Finder para Fable: `copias_finder/` (las que más cambian: ApplicationPantallas, CMakeLists, InterfazPergamino).
+4. Día 2 de las demos: los 4 «líos» de la aldea de Gorran no se juegan (`gorran_misiones=3` dado por hecho); la charla directa con Gorran (`b2_gorran_hablar`) sin cubrir.
+5. Economía a 4 días: tanda aparte (~2 h de herramienta).
+6. Revisar el resto de beats `auto` sin `once` ni guarda: es el mismo tipo de bug que el del Ocaso (no se ha auditado).
