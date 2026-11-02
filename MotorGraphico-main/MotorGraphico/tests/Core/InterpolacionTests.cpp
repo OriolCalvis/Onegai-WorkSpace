@@ -216,6 +216,28 @@ MOTOR_TEST_CASE(tween_extremos_conservan_signo_de_b) {
     MOTOR_CHECK(std::signbit(tweenEscalar(-0.0, +0.0, -1.0)));  // p<=0 -> a (con su signo)
 }
 
+MOTOR_TEST_CASE(tween_extremos_opuestos_enormes_dan_el_valor_correcto) {
+    // b-a desborda a inf: la rama de mitades debe dar el valor exacto, no el clamp a un extremo.
+    const double a = -1.7e308, b = 1.7e308;
+    const double tol = 1e-12 * 1.7e308;
+    const double r25 = tweenEscalar(a, b, 0.25);
+    const double r50 = tweenEscalar(a, b, 0.5);
+    const double r75 = tweenEscalar(a, b, 0.75);
+    MOTOR_CHECK(std::isfinite(r25) && std::isfinite(r50) && std::isfinite(r75));
+    MOTOR_CHECK(std::fabs(r25 - (-8.5e307)) <= tol);
+    MOTOR_CHECK(std::fabs(r50 - 0.0) <= tol);
+    MOTOR_CHECK(std::fabs(r75 - 8.5e307) <= tol);
+    double previo = a;
+    for (int i = 1; i <= 100; ++i) {
+        const double x = tweenEscalar(a, b, i / 100.0);
+        MOTOR_CHECK(x >= previo && x >= a && x <= b);
+        previo = x;
+    }
+    // Descendente: simetrico.
+    MOTOR_CHECK(std::fabs(tweenEscalar(b, a, 0.75) - (-8.5e307)) <= tol);
+    MOTOR_CHECK(std::fabs(tweenEscalar(b, a, 0.25) - 8.5e307) <= tol);
+}
+
 MOTOR_TEST_CASE(tween_rango_exacto_sin_tolerancia_y_monotono) {
     const double a = 1.1;
     const double pares[][2] = {{a, std::nextafter(a, 2.0)}, {std::nextafter(a, 2.0), a},

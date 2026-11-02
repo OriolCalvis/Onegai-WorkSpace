@@ -49,9 +49,10 @@ double tweenEscalar(double a, double b, double p) {
     if (std::isnan(p)) return std::nan("");
     if (a == b) return a;
     // Monotona en p: p*(b-a) y la suma son monotonas con redondeo al mas cercano.
-    // Si b-a desborda (extremos opuestos enormes) se reparte en mitades, que no desbordan.
+    // Si b-a desborda (extremos opuestos enormes) se reparte en mitades, que no desbordan:
+    // 2*(a/2 + p*(b/2 - a/2)); el *2 final solo es inexacto si el resultado excede DBL_MAX (se acota).
     const double d = b - a;
-    const double x = std::isfinite(d) ? a + p * d : a + 2.0 * (p * (0.5 * b - 0.5 * a));
+    const double x = std::isfinite(d) ? a + p * d : 2.0 * (0.5 * a + p * (0.5 * b - 0.5 * a));
     const double lo = a < b ? a : b;
     const double hi = a < b ? b : a;
     return x < lo ? lo : (x > hi ? hi : x);

@@ -41,8 +41,9 @@ Result<TipoCurva> curvaDesdeTexto(const std::string& texto);
 //  - p finito se acota a [0,1] (p NaN NO se acota: es indefinido, D4; a diferencia de
 //    curva(), que mapea NaN a 0). p<=0 -> a exacto; p>=1 -> b exacto; a==b -> a exacto.
 //  - Interior: a + p*(b-a) acotado a [min(a,b), max(a,b)], monotono en p (si b-a desborda
-//    se reparte en mitades). Las guardes de p van antes de a==b (p>=1 -> b con su signo).
-//    Error <= ~4 ulp de max(|a|,|b|); los tests usan tolerancia 1e-12 relativa a esa magnitud.
+//    se reparte en mitades: 2*(a/2 + p*(b/2 - a/2))). Las guardes de p van antes de a==b (p>=1 -> b con su signo).
+//    Error <= ~4 ulp de max(|a|,|b|) (sin fusion FMA: Interpolacion.cpp se compila con
+//    -ffp-contract=off fuera de MSVC); los tests usan tolerancia 1e-12 relativa a esa magnitud.
 //  - Descendente (b<a) permitido. Entradas no finitas (a, b o p NaN/inf): resultado
 //    indefinido por contrato; el llamador valida antes.
 double tweenEscalar(double a, double b, double p);

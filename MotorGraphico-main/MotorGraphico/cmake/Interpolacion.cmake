@@ -1,6 +1,11 @@
 # U3-07 — Interpolacion pura (Core/Math/Interpolacion). GL-free.
 # La fuente entra SIEMPRE en motor_math; solo el test depende de BUILD_TESTING.
 target_sources(motor_math PRIVATE src/Core/Math/Interpolacion.cpp src/Core/Math/EstadoTween.cpp)
+# Determinismo entre plataformas: sin fusion FMA (MSVC no la hace por defecto; clang/gcc si).
+# La prueba de extremos opuestos enormes depende del orden exacto de redondeos.
+if(NOT MSVC)
+    set_source_files_properties(src/Core/Math/Interpolacion.cpp PROPERTIES COMPILE_OPTIONS "-ffp-contract=off")
+endif()
 
 if(BUILD_TESTING)
     add_executable(test_interpolacion tests/Core/InterpolacionTests.cpp)
