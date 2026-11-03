@@ -36,6 +36,7 @@
 #include "Game/GameOverScreen.h"
 #include "Game/InventoryScreen.h"
 #include "Project/ProjectIndex.h"
+#include "Engine/GuionCaptura.h"  // E-GUION-01
 #include "Engine/PantallaNuevaPartida.h"
 #include "Game/BarraCombate.h"
 #include "Game/CofreKit.h"
@@ -102,10 +103,9 @@ public:
                       const std::vector<std::string>& extraCatalogPaths = {},
                       bool startAtTitle = false);
 
-    // Bucle principal hasta que se cierre la ventana o se pulse ESC.
-    // maxFrames >= 0 corre exactamente ese numero de frames y sale (modo
-    // humo para CI, igual que los demos GL).
-    void run(int maxFrames = -1);
+    // Bucle principal hasta que se cierre la ventana o se pulse ESC. maxFrames >= 0 corre ese numero de frames y
+    // sale (modo humo para CI). Con `guion` (E-GUION-01; ver GuionCaptura.h) corre sus fotogramas 0..ultimo con dt fijo.
+    void run(int maxFrames = -1, const Engine::GuionCaptura* guion = nullptr);
 
     void shutdown();
 
@@ -151,7 +151,7 @@ private:
     RPG::Catalogs::ConditionCatalog m_conditions;
     RPG::Catalogs::MonsterCatalog m_monsterCatalog;  // D-08
     ids::MapId m_currentMapId;
-    bool m_captureFrame = false;
+    Engine::CapturaEnCurso m_captura;  // E-GUION-01: modo humo (humo) y guion en curso
 
     void processInput();
     void update(float deltaTime);

@@ -1,0 +1,54 @@
+# E-GUION-01 — Titulo -> Nueva partida -> creador de personaje (7 hojas) -> partida (el prado del rio) y un paseo.
+# Uso (desde out/build/macos-debug):  ./juego --guion ../../../tools/guiones/titulo_nueva_partida.txt
+# Un fotograma son 1/60 s de juego (dt fijo): no depende de la maquina ni de que la ventana tenga el foco.
+# ENTER elige y otro ENTER sigue (Aspecto lleva uno; Historia, ocho: siete preguntas y seguir).
+# Las capturas se vuelcan a captura_<nombre>.ppm en el directorio de trabajo.
+10 captura titulo
+20 toca ENTER   # Nueva partida
+59 captura creador_raza
+60 toca ENTER
+68 toca ENTER
+76 captura tras_raza
+78 toca ENTER
+86 toca ENTER
+94 captura tras_clase
+96 toca ENTER
+104 captura tras_aspecto
+106 toca ENTER
+114 toca ENTER
+122 captura tras_origen
+124 toca ENTER
+132 toca ENTER
+140 toca ENTER
+148 toca ENTER
+156 toca ENTER
+164 toca ENTER
+172 toca ENTER
+180 toca ENTER
+188 captura tras_historia
+190 toca ENTER
+198 toca ENTER
+206 captura tras_deidad
+208 toca DERECHA   # elige la primera sugerencia de nombre
+216 captura nombre_elegido
+218 toca ENTER   # Empezar la aventura
+260 captura prologo_dialogo
+270 toca ENTER
+285 toca ENTER
+300 toca ENTER
+317 toca ENTER
+332 toca ENTER
+347 toca ENTER
+364 toca ENTER
+379 toca ENTER
+394 toca ENTER
+411 toca ENTER
+426 toca ENTER
+441 toca ENTER
+458 toca ENTER
+473 toca ENTER
+533 captura partida_empieza   # tras el prologo: el jugador en el prado, vestido
+534 pulsa D
+564 suelta D
+573 captura partida_paseo
+574 fin

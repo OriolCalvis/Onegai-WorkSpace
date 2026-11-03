@@ -85,6 +85,7 @@ add_library(motor_engine_loop src/Engine/ApplicationLoop.cpp)
 # RUN-02 — Estado de teclado, bindings y snapshots de acciones. Es un núcleo
 # puro: GLFW se adapta desde Application y los tests usan teclas simuladas.
 add_library(motor_input src/Engine/Input/InputSystem.cpp)
+include(cmake/GuionCaptura.cmake)  # E-GUION-01: guion de captura (GL-free)
 
 # --- Fase 6 de motor_grafico_gantt_rpg.puml (sistema de niveles y
 # contenido): JsonValue (parser JSON propio, sin dependencias de terceros
@@ -862,7 +863,7 @@ if (EXISTS ${GLAD_DIR}/src/glad.c AND EXISTS ${STB_DIR}/stb_image.h)
     # expone en su propia interfaz publica, y no trae GLAD/GLFW consigo
     # (ver comentario mas arriba), asi que no reintroduce ninguna
     # dependencia nueva sobre motor_core.
-    target_link_libraries(motor_core PUBLIC glfw glm::glm motor_map motor_engine_loop motor_input motor_scene motor_saves motor_captura_gl motor_i18n motor_pergamino)
+    target_link_libraries(motor_core PUBLIC glfw glm::glm motor_map motor_engine_loop motor_input motor_guion_captura motor_scene motor_saves motor_captura_gl motor_i18n motor_pergamino)
 
     add_executable(sandbox_window examples/sandbox_window.cpp)
     target_link_libraries(sandbox_window PRIVATE motor_core)

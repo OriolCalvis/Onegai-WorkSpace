@@ -101,7 +101,7 @@ std::unique_ptr<Engine::Scene> Application::makeScene(
     bool title, std::function<Result<bool>()> load) {
     return std::make_unique<ApplicationScene>(title, std::move(load),
         [this](float dt) { update(dt); },
-        [this] { render(m_captureFrame); },
+        [this] { render(m_captura.humo); },
         [this] { return m_currentMapId; },
         [this](float dt) { ApplicationCinematica::titulo(*this, dt); });  // PROLOGO-02
 }
@@ -414,6 +414,11 @@ void Application::render(bool capture) {
     m_hudBatch->end();
     glDisable(GL_BLEND);
 
+    for (const std::string& nombre : m_captura.tomaCapturas()) {  // E-GUION-01: capturas del guion, en cualquier fotograma
+        const std::string ruta = Engine::GuionCaptura::ficheroDe(nombre);
+        const auto v = Render::VuelcaFramebufferPPM(ruta, m_width, m_height);
+        std::cout << (v.isOk() ? "Captura " + ruta + " (fotograma " + std::to_string(m_captura.fotograma()) + ")" : v.errorMessage()) << "\n";
+    }
     if (capture) {
         const auto volcado = Render::VuelcaFramebufferPPM("juego_output.ppm", m_width, m_height);
         if (!volcado.isOk()) std::cerr << volcado.errorMessage() << "\n";
@@ -424,8 +429,9 @@ void Application::render(bool capture) {
     m_window->swapBuffers();
 }
 
-void Application::run(int maxFrames) {
+void Application::run(int maxFrames, const Engine::GuionCaptura* guion) {
     int frame = 0;
+    if (guion != nullptr) { m_captura.empieza(*guion); maxFrames = m_captura.fotogramas(); }  // E-GUION-01
     // RUN-01: la fuente de tiempo sigue siendo GLFW, pero el ritmo de la
     // simulacion vive en ApplicationLoop (ADR-007). Asi Application solo
     // adapta servicios de plataforma/GL y el reloj se prueba sin ventana.
@@ -435,11 +441,12 @@ void Application::run(int maxFrames) {
     bool interactPressedThisFrame = false;
     while (maxFrames < 0 || frame < maxFrames) {
         const double now = glfwGetTime();
-        const float deltaTime = static_cast<float>(now - lastTime);
+        const float deltaTime = m_captura.dt(static_cast<float>(now - lastTime), loop.settings().fixedStepSeconds);
         lastTime = now;
+        m_captura.situa(frame);  // E-GUION-01: con guion, dt fijo y las teclas y capturas de este fotograma
 
         trace("run: frame nuevo");
-        const bool capture = maxFrames >= 0 && frame == maxFrames - 1;
+        const bool capture = !m_captura.guionado() && maxFrames >= 0 && frame == maxFrames - 1;
         const Engine::ApplicationLoopFrame loopFrame = loop.tick(
             deltaTime,
             Engine::ApplicationLoopServices{
@@ -451,7 +458,7 @@ void Application::run(int maxFrames) {
                 },
                 [this](float fixedDeltaTime) { m_scenes.fixedUpdate(fixedDeltaTime); },
                 [this, capture](float alpha) {
-                    m_captureFrame = capture;
+                    m_captura.humo = capture;
                     m_scenes.render(alpha);
                 }});
 
@@ -471,6 +478,7 @@ void Application::run(int maxFrames) {
             break;
         }
         finishSceneFrame();
+        m_captura.avisaPerdidas();
         // Modo humo (maxFrames >= 0): en el ULTIMO frame se vuelca el
         // framebuffer, igual que los demos GL. Asi "juego 3" deja un
         // juego_output.ppm inspeccionable con el HUD real dibujado --

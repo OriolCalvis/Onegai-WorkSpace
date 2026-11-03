@@ -125,6 +125,26 @@ void PantallaNuevaPartida::vestir(Player& jugador) const {
     m_jugador->ponerA(jugador, Interno::kCharacterDrawW, Interno::kCharacterDrawH, Interno::characterAnchor());
 }
 
+bool PantallaNuevaPartida::vestirPorDefecto(Player& jugador) {
+    if (!cargaDatos().isOk() || !m_datos.montaje) {
+        std::cerr << "GUION-01: sin personajes.json; el jugador conserva el marcador personaje.png\n";
+        return false;
+    }
+    const Game::ManifiestoPersonajes& manifiesto = m_datos.montaje->manifiesto();
+    // El humano de las Marcas es la raza por defecto; si el manifiesto ya no la trae, la primera que haya.
+    const Game::RazaVisual* raza = manifiesto.raza("race_human_marches");
+    if (raza == nullptr && !manifiesto.razas.empty()) raza = &manifiesto.razas.front();
+    if (raza == nullptr) return false;
+    const auto vestido = m_jugador->vestir(*m_datos.montaje, Game::Apariencia::deRaza(*raza), {});
+    if (!vestido.isOk()) {
+        std::cerr << "APARIENCIA-01: " << vestido.errorMessage() << "\n";
+        return false;
+    }
+    m_datos.montaje->vaciarCache();
+    vestir(jugador);
+    return m_jugador->lista();
+}
+
 void PantallaNuevaPartida::actualizarAspecto() {
     if (!m_jugador->lista() || !m_datos.montaje || activa()) return;
     const auto& manifiesto = m_datos.montaje->manifiesto();

@@ -378,8 +378,7 @@ Result<bool> Application::init(int width, int height, const std::string& title,
     // Sprite de personaje: el bebé de personaje.png, no el tileset.
     m_player->setCharacterSprite(m_characterAtlas.get(), kCharacterDrawW, kCharacterDrawH,
                                  characterAnchor());
-    // Los ciclos de andar del reparto real de la hoja (ver arriba). Al crear
-    // personaje, PantallaNuevaPartida::vestir() le pone su propia hoja.
+    // Ciclos de andar de la hoja real (ver arriba); el creador, o vestirPorDefecto() con --nivel, le pone su hoja.
     HojaPersonaje::animar(*m_player);
     m_player->play("idle");  // frame valido desde el primer render()
 
@@ -718,6 +717,7 @@ Result<bool> Application::init(int width, int height, const std::string& title,
     m_gameOverScreen = std::make_unique<Game::GameOverScreen>(Game::GameOverScreen::create());
     m_inventoryScreen = std::make_unique<Game::InventoryScreen>(*m_session);
     createIconWidgets();
+    if (!startAtTitle && m_nuevaPartida) m_nuevaPartida->vestirPorDefecto(*m_player);  // E-GUION-01: sin creador, humano por defecto
     m_hud.addElement(m_pergamino->capaAlta());  // cuaderno y papiros: encima de todo
 
     auto sceneStarted = m_scenes.start(makeScene(startAtTitle && m_title != nullptr));
@@ -916,8 +916,8 @@ void Application::requestResume() {
 
 void Application::processInput() {
     using Engine::Input::InputAction;
-    const auto input = m_window->hasInputFocus() ? m_input.update(readGameInput(*m_window, m_width, m_height))
-                                                 : m_input.releaseAll();
+    const bool conFoco = m_captura.guionado() || m_window->hasInputFocus();  // E-GUION-01: el guion no necesita foco
+    const auto input = conFoco ? m_input.update(m_captura.guionado() ? m_captura.teclas() : readGameInput(*m_window, m_width, m_height)) : m_input.releaseAll();  // con guion sus teclas SUSTITUYEN a GLFW y al raton
     if (m_nuevaPartida && m_nuevaPartida->activa()) {
         m_nuevaPartida->procesar(input, interfazDe(m_pergamino));
         refreshHud();
@@ -932,12 +932,12 @@ void Application::processInput() {
         teclasMapa(m_pergamino->interfaz().guia(), input);
         return;
     }
-    const bool canWalk = m_window->hasInputFocus() && !isAtTitle() && m_session &&
+    const bool canWalk = conFoco && !isAtTitle() && m_session &&
         m_session->mode() == GameMode::Exploration && !m_showInventory &&
         !m_scenes.hasPendingTransition() && !input.pressed(InputAction::Quit) &&
         !input.pressed(InputAction::ToggleInventory) && !input.pressed(InputAction::Interact) &&
         !input.pressed(InputAction::QuickLoad);
-    const GridCoord step = m_player->movementCommand(input, glfwGetTime(), canWalk);
+    const GridCoord step = m_player->movementCommand(input, m_captura.reloj(glfwGetTime()), canWalk);
     // La marca AFK se actualiza únicamente si hubo actividad real. Antes se
     // actualizaba por el mero hecho de sondear cada frame, de modo que el
     // temporizador narrativo nunca llegaba a considerar al jugador ausente.

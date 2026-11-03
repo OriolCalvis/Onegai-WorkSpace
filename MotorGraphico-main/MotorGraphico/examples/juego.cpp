@@ -39,8 +39,10 @@
 // inventario -- si esta verificado de verdad en demo_game_session.cpp,
 // porque GameSession es GL-free a proposito (ver su header).
 #include "Engine/Application.h"
+#include "Engine/GuionCaptura.h"
 
 #include <cstdlib>
+#include <memory>
 #include <string>
 #include <iostream>
 
@@ -55,6 +57,7 @@ int main(int argc, char** argv) {
     //   ./juego --nivel assets/levels/ciudad_sur.json prueba ese nivel
     //   ./juego --nivel X --catalogo Y                y con ese catalogo
     //   ./juego 3                                     modo humo, 3 frames
+    //   ./juego [--nivel X] --guion guion.txt         teclas y capturas por guion (Engine/GuionCaptura.h)
     //
     // Se lanza como PROCESO APARTE desde el editor (tecla F7). Application
     // crea su propia ventana y su propio contexto GL, asi que no se puede
@@ -71,6 +74,7 @@ int main(int argc, char** argv) {
     // Con nivel explicito (editor F7, pruebas, un nivel concreto) se entra
     // directo, como siempre.
     bool nivelExplicito = false;
+    std::string rutaGuion;  // E-GUION-01
     for (int i = 1; i < argc; ++i) {
         const std::string a = argv[i];
         if (a == "--nivel" && i + 1 < argc) {
@@ -80,6 +84,8 @@ int main(int argc, char** argv) {
             catalogo = argv[++i];
         } else if (a == "--catalogo-extra" && i + 1 < argc) {
             catalogosExtra.push_back(argv[++i]);
+        } else if (a == "--guion" && i + 1 < argc) {
+            rutaGuion = argv[++i];
         } else if (a == "--precuela") {
             nivel = "assets/levels/interior_taberna.json";
             aventuraInicial = "assets/adventures/boundington_precuela_taberna.json";
@@ -88,9 +94,20 @@ int main(int argc, char** argv) {
             maxFrames = std::atoi(a.c_str());
         } else {
             std::cerr << "Uso: juego [--precuela] [--nivel ruta.json] [--catalogo ruta.json] "
-                         "[--catalogo-extra ruta.json] [nFrames]\n";
+                         "[--catalogo-extra ruta.json] [--guion guion.txt] [nFrames]\n";
             return 2;
         }
+    }
+
+    // E-GUION-01 — Un guion erroneo impide arrancar: se dice la linea y el motivo, y no se abre la ventana.
+    std::unique_ptr<Engine::GuionCaptura> guion;
+    if (!rutaGuion.empty()) {
+        auto leido = Engine::GuionCaptura::carga(rutaGuion);
+        if (!leido.isOk()) {
+            std::cerr << "Guion no valido: " << leido.errorMessage() << "\n";
+            return 2;
+        }
+        guion = std::make_unique<Engine::GuionCaptura>(std::move(leido.value()));
     }
 
     Application app;
@@ -111,7 +128,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    app.run(maxFrames);
+    app.run(maxFrames, guion.get());  // con guion: dt fijo, sus teclas y capturas en cualquier fotograma
     app.shutdown();
     return 0;
 }
