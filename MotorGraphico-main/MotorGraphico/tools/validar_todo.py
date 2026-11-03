@@ -51,6 +51,7 @@ VALIDADORES_EXISTENTES = [
     ("trocejar_atlas_personajes.py", "--comprobar"),  # PERF-4: los .filas de los atlas de personajes al dia con su PNG
     "validar_cinematicas.py",  # PROLOGO-02: niveles, actores, beats y flags de las cinematicas
     "validar_eventos.py",  # C8-03a: eventos del mundo, sin lugar ni escenas vistas como causa
+    "validar_beats_auto.py",  # UNI-02-11 B1: ningun beat auto pegajoso (soft-lock por bucle)
 ]
 
 errores: list[str] = []

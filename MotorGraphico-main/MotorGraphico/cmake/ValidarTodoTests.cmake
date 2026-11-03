@@ -15,4 +15,12 @@ if (BUILD_TESTING AND MOTOR_PYTHON3)
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
     set_tests_properties(test_validar_todo PROPERTIES
         LABELS "static;gl-free" TIMEOUT 300)
+    # UNI-02-11 B1: ningun beat auto pegajoso (se reabriria en bucle y taparia a los posteriores).
+    add_test(NAME test_validar_beats_auto
+        COMMAND ${MOTOR_PYTHON3} "${CMAKE_CURRENT_SOURCE_DIR}/tools/test_validar_beats_auto.py")
+    set_tests_properties(test_validar_beats_auto PROPERTIES LABELS "unit;gl-free")
+    add_test(NAME validar_beats_auto
+        COMMAND ${MOTOR_PYTHON3} "${CMAKE_CURRENT_SOURCE_DIR}/tools/validar_beats_auto.py"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    set_tests_properties(validar_beats_auto PROPERTIES LABELS "static;gl-free")
 endif ()
