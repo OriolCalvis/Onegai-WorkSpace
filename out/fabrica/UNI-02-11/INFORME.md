@@ -95,3 +95,20 @@ Reloj: 20:45–21:50 aprox. Cuelgue: Codex esperando stdin a las 21:09 (detectad
 4. Día 2 de las demos: los 4 «líos» de la aldea de Gorran no se juegan (`gorran_misiones=3` dado por hecho); la charla directa con Gorran (`b2_gorran_hablar`) sin cubrir.
 5. Economía a 4 días: tanda aparte (~2 h de herramienta).
 6. Revisar el resto de beats `auto` sin `once` ni guarda: es el mismo tipo de bug que el del Ocaso (no se ha auditado).
+
+---
+
+# Ampliación 2 — beats que atascan la historia (03/11, «continua» → «Arreglar beats encallats»)
+
+**Punta:** `agente/claude/UNI-02-11` @ `f5efdfb6`. Suite gl-free completa: **289/290** (2 pruebas nuevas); solo `test_recompensas_economia` (aplazada). `ctest_final3.log`.
+
+| Bloque | Qué | Estado | Commit |
+|---|---|---|---|
+| Auditoría | 728 beats auto sin `once` en `assets/adventures/` (`AUDITORIA_AUTO.md`, solo lectura). Validada: detecta los 3 del Ocaso si se les quita el `once` | hecha | — |
+| B1 | `b3_dia_pasa` (soft-lock si suenan las campanas sin avisar ni esperar: se reabre en cada cierre de diálogo y tapa todo el Ocaso) y `b3_xila_avisa` (se repetía hasta la arenga): `"once": true`, sin textos. NUEVO `tools/validar_beats_auto.py` + 17 pruebas, en CTest y `validar_todo` | VALIDADA (mutación del Brain: sin `once` en `b3_xila_avisa` → ROJO) | `417e8d66` |
+| B2 | `b1_sectarios_seguir` (persecución [Sigilo] del día 1, da `bnd_pista_sectarios`) era inalcanzable: `b1_sectarios_despues` iba 166 beats antes con requisitos más débiles. Movido justo antes, sin tocar textos (393 beats idénticos, comprobado). El validador detecta ahora beats tapados (32 pruebas) | VALIDADA | `f5efdfb6` |
+
+**Para Oriol:**
+1. Probar jugando: la persecución de los sectarios (día 1, hablar con `sectario_perdido` tras resolverlos) y el Ocaso dejando que suenen las campanas sin avisar.
+2. `tools/parche_c_trama.py` ya no se puede ejecutar (falla en `:229`) y volvería a dejar la persecución detrás: no hay que volver a ejecutarlo.
+3. Límite del validador: no ve los efectos de las cinemáticas ni de los eventos del mundo.
