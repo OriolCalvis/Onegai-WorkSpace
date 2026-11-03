@@ -19,6 +19,7 @@
 // GL-free. Lo usan la herramienta (fabricar_guardados.cpp) y su prueba (tests/Engine/GuardadosDeCapturaTests.cpp).
 #pragma once
 
+#include <algorithm>
 #include <cstdio>
 #include <filesystem>
 #include <limits>
@@ -33,12 +34,16 @@
 #include "Game/Personajes/Vestuario.h"
 #include "Game/NewGameFlow.h"
 #include "Game/SaveGame.h"
+#include "Game/BattleState.h"
 #include "Game/GameSession.h"
+#include "Game/MoralDeLaSesion.h"
+#include "Game/SessionData.h"
 #include "Level/LevelLoader.h"
 #include "Level/ObjectCatalog.h"
 #include "Project/ProjectIndex.h"
 #include "RPG/CharacterCreation.h"
 #include "RPG/CharacterSheet.h"
+#include "RPG/Narrative/FranjasDelDia.h"
 #include "RPG/Narrative/HeroeEnLaHistoria.h"
 #include "RPG/TierRules.h"
 #include "Render/ICombatant.h"
@@ -231,17 +236,55 @@ inline GridCoord casillaJuntoA(GameSession& sesion, const LevelDefinition& nivel
     return {};
 }
 
+// E-MATRIZ-01b — Vuelca en la sesion montada lo que el arnes apunto (demo_bnd::Cuentas), en el mismo orden y con las piezas
+// que usa GameSession::applyNarrative (privada): el oro (addGold: nunca por debajo de 0), los hitos y niveles de la ficha
+// (concedeNiveles -> CharacterSheet::grantMilestones / grantLevelPoints), los actos (moral::apuntaActos) y, con un descanso
+// largo, la noche que los asienta (moral::asientaNoche), y los objetos (daObjetos: los que no estan en el catalogo no entran).
+// La moral se calcula sobre un SessionData de ida y vuelta (lo que pide moral::) y se copia a la sesion.
+inline void aplicaLasCuentas(NivelMontado& n, RPG::NarrativeState& estado, const demo_bnd::Cuentas& cuentas) {
+    SessionData d;
+    d.m_playerBody = n.cuerpo.get();
+    d.m_inventory = &n.inventario;
+    d.m_catalog = &n.catalogo;
+    d.m_narrativeState = &estado;
+    d.m_gold = demo_bnd::Cuentas::kBolsaInicial;
+    static const RPG::TierRules reglasDeNivel;  // las de por defecto = assets/rules/tier_rules.json
+    RPG::CharacterSheet* ficha = n.cuerpo->character_sheet();
+    for (const demo_bnd::Cuentas::Paso& p : cuentas.pasos) {
+        if (std::getenv("MATRIZ_CUENTAS") != nullptr) {  // diagnostico: que beat da que
+            std::fprintf(stderr, "    [cuentas] %s oro%+d niv%+d hit%+d", p.beat.c_str(), p.oro, p.puntos, p.hitos);
+            for (const std::string& a : p.actos) std::fprintf(stderr, " acto:%s", a.c_str());
+            for (const std::string& o : p.objetos) std::fprintf(stderr, " obj:%s", o.c_str());
+            for (const std::string& o : p.descansos) std::fprintf(stderr, " descanso:%s", o.c_str());
+            std::fprintf(stderr, "\n");
+        }
+        d.m_gold = std::max(0, d.m_gold + p.oro);
+        if (p.puntos > 0 || p.hitos > 0) {
+            ficha->grantMilestones(p.hitos, reglasDeNivel);
+            ficha->grantLevelPoints(p.puntos, reglasDeNivel);
+        }
+        moral::apuntaActos(d, p.actos);
+        if (std::find(p.descansos.begin(), p.descansos.end(), "largo") != p.descansos.end()) moral::asientaNoche(d);
+        for (const std::string& id : p.objetos)
+            if (n.catalogo.find(id) != nullptr) n.inventario.push_back(id);
+    }
+    moral::reflejaEnLaAventura(d);
+    n.sesion->addGold(d.m_gold);
+    n.sesion->morality() = d.m_morality;
+}
+
 // Fotografia de la partida del arnes en `momento`.
 inline SaveGameData fotografia(const demo_bnd::Jugador& j, const Heroe& heroe, const Momento& momento) {
     auto montado = montaNivel(momento.nivel, heroe.ficha);
     montado->sesion->setNarrative(&j.e, const_cast<RPG::NarrativeState*>(&j.s));
+    aplicaLasCuentas(*montado, const_cast<RPG::NarrativeState&>(j.s), j.cuentas);  // E-MATRIZ-01b: oro, nivel, moral, objetos
     SaveGameData data = montado->sesion->captureSaveGame(montado->ruta);
     // Los objetos que comparten casilla (ciudad_centro: la puerta de la herreria y aigren_carro en (6,59), y otros
     // dos) van enteros: restoreSaveGame los distingue por id desde E-GUION-02b.
     data.playerPosition = casillaJuntoA(*montado->sesion, montado->nivel, momento);
     data.hero = heroe.guardado;
     data.characterName = heroe.ficha.displayName;
-    data.playerHealth = data.playerMaxHealth = heroe.ficha.healthCap();
+    data.playerHealth = data.playerMaxHealth = montado->cuerpo->maxHealth();  // (el tope sube si el heroe sube de tier)
     return data;
 }
 
@@ -416,10 +459,27 @@ struct Lector {
 
 // Mutacion: en una COPIA del JSON del dia 1 (temporal), la primera aparicion de `cadena` despues de la opcion
 // (`beat`, `opcion`) pasa a ser otra: la opcion deja de hacer su efecto.
+// `opcion` vacia = desde el principio del beat (un efecto del beat, no de una opcion). `hacia`: por que se cambia (por
+// defecto un nombre que no existe: el efecto no hace nada; "log" convierte un grantGold en un log; un acto distinto
+// mueve la moral a otro valor).
 struct Mutacion {
     const char* beat;
     const char* opcion;
     const char* cadena;
+    const char* hacia = "zz_mutada";
+    int vez = 1;   // la n-esima opcion con ese texto (b1_pelea tiene dos «Proteger al borracho dormido»)
+    int salta = 0; // apariciones de `cadena` que se dejan como estan antes de la que se cambia (la 1.ª puede ser un requires)
+};
+
+// Lo que el guardado trae ademas de las flags (E-MATRIZ-01b): el oro (150 de la bolsa inicial mas lo que se cobra y se paga),
+// el valor de la moral asentada (el eje de siete tramos: moral::tramoDe), el nivel y el avance hacia el siguiente, y la
+// mochila (ids, ordenados).
+struct Cuenta {
+    int oro = 0;
+    int moral = 0;
+    int nivel = 1;
+    int progreso = 0;
+    std::vector<std::string> mochila;
 };
 
 struct CaminoDia1 {
@@ -433,6 +493,11 @@ struct CaminoDia1 {
     std::vector<Lector> lectores;
     Mutacion mutacion;
     const char* nota;
+    Cuenta cuenta;       // E-MATRIZ-01b: lo que tiene que traer la partida
+    Mutacion mutOro;     // ... y una copia del JSON en la que el oro de este camino deja de ser el que es
+    Mutacion mutMoral;   // ... y otra en la que cambia la moral (beat vacio = sin acto que mover: no se prueba)
+    std::vector<std::pair<std::string, demo_bnd::Suerte>> fuerza;  // tiradas (por su flagBotch) que salen con esta suerte aunque las demas salgan bien
+    std::vector<std::pair<std::string, int>> igual;                // variable == n
 };
 
 inline bool cierraElDia1(demo_bnd::Jugador& j) {
@@ -448,7 +513,31 @@ inline bool cierraElDia1(demo_bnd::Jugador& j) {
 inline void recorre(demo_bnd::Jugador& j, const std::string& ruta) {
     j.entra("interior_taberna");
     j.habla("skilla");  // la cama
-    if (ruta == "sectarios") {
+    if (ruta == "sandes" || ruta == "sandes_luisarda") {  // la cripta con la pifia de «Hablar con alguien»: Sandes sale a hablarte
+        if (ruta == "sandes_luisarda") {  // ... habiendo pasado antes por la sastreria (bnd1_luisarda_sala)
+            j.entra("interior_sastreria");
+            j.habla("luisarda");
+        }
+        j.entra("ciudad_centro");
+        j.habla("sectario_perdido");
+        require(j.s.hasFlag("bnd1_invitado_guarida"));
+        j.entra("interior_iglesia_s1");
+        j.entra("santuario_subterraneo");
+    } else if (ruta == "aigren_convence") {  // «Convencerle de que son el mal»: sale bien o mal, y por la noche Aigren ya sabe
+        j.entra("interior_herreria");
+        j.habla("aigren");
+        j.anochece();
+        j.entra("interior_herreria");
+    } else if (ruta == "luisarda_pelea") {  // Luisarda cenando con Rosita y, de noche, la pelea de la taberna
+        j.entra("interior_herreria");
+        j.habla("aigren");
+        j.habla("aigren");
+        j.entra("interior_sastreria");
+        j.habla("luisarda");
+        j.entra("interior_taberna");
+        j.habla("skilla");
+        j.duerme();
+    } else if (ruta == "sectarios") {
         j.entra("ciudad_centro");
         j.habla("sectario_perdido");
         require(j.s.hasFlag("bnd1_invitado_guarida"));
@@ -502,6 +591,7 @@ inline SaveGameData dia1(const demo_bnd::Guiones& g, const Heroe& h, const Camin
     demo_bnd::Jugador& j = p.j;
     j.prefiere = c.dice;
     j.prefiere.insert(j.prefiere.end(), {"Pagar la cama", "Subir a dormir"});
+    for (const auto& f : c.fuerza) j.tiradas[f.first] = f.second;
     j.prologo();
     fase(j, "dia1");
     recorre(j, c.ruta);
@@ -526,12 +616,14 @@ inline demo_bnd::Guiones conMutacion(const demo_bnd::Guiones& g, const Mutacion&
     }
     const std::size_t b = t.find(std::string("\"id\": \"") + m.beat + "\"");
     require(b != std::string::npos);
-    const std::size_t o = t.find(std::string("\"texto\": \"") + m.opcion + "\"", b);
+    std::size_t o = std::string(m.opcion).empty() ? b : t.find(std::string("\"texto\": \"") + m.opcion + "\"", b);
+    for (int v = 1; v < m.vez && o != std::string::npos; ++v) o = t.find(std::string("\"texto\": \"") + m.opcion + "\"", o + 1);
     require(o != std::string::npos);
     const std::string quiero = std::string("\"") + m.cadena + "\"";
-    const std::size_t x = t.find(quiero, o);
+    std::size_t x = t.find(quiero, o);
+    for (int v = 0; v < m.salta && x != std::string::npos; ++v) x = t.find(quiero, x + 1);
     require(x != std::string::npos);
-    t.replace(x, quiero.size(), "\"zz_mutada\"");
+    t.replace(x, quiero.size(), std::string("\"") + m.hacia + "\"");
     FILE* f = std::fopen(temporal.c_str(), "wb");
     require(f != nullptr);
     std::fwrite(t.data(), 1, t.size(), f);
@@ -632,14 +724,37 @@ inline std::vector<std::string> compruebaDia1(const demo_bnd::Guiones& g, Restau
         if (j.s.hasFlag(f)) falta("sobra " + f);
     for (const auto& v : c.minimos)
         if (j.s.variable(v.first) < v.second) falta(v.first + "=" + std::to_string(j.s.variable(v.first)) + " < " + std::to_string(v.second));
+    for (const auto& v : c.igual)
+        if (j.s.variable(v.first) != v.second) falta(v.first + "=" + std::to_string(j.s.variable(v.first)) + " != " + std::to_string(v.second));
     for (const std::string& b : c.beats)
         if (!j.s.beatFired(b)) falta("no disparado " + b);
+    // El oro, la moral, el nivel y la mochila: restaurados por el juego (restoreSaveGame), no por el arnes.
+    {
+        GameSession& sesion = *r.nivel->sesion;
+        const RPG::CharacterSheet* ficha = r.nivel->cuerpo->character_sheet();
+        if (sesion.gold() != c.cuenta.oro) falta("oro=" + std::to_string(sesion.gold()) + " != " + std::to_string(c.cuenta.oro));
+        if (sesion.morality().value() != c.cuenta.moral)
+            falta("moral=" + std::to_string(sesion.morality().value()) + " != " + std::to_string(c.cuenta.moral));
+        if (sesion.morality().tramo() != moral::tramoDe(c.cuenta.moral))
+            falta(std::string("tramo de moral ") + sesion.morality().label() + " != " + moral::nombreTramo(moral::tramoDe(c.cuenta.moral)));
+        if (!sesion.morality().pendientes().empty()) falta("moral sin asentar: " + std::to_string(sesion.morality().pendientes().size()) + " actos pendientes");
+        if (ficha->nivel != c.cuenta.nivel || ficha->progresoNivel != c.cuenta.progreso)
+            falta("nivel " + std::to_string(ficha->nivel) + " (" + std::to_string(ficha->progresoNivel) + " %) != " + std::to_string(c.cuenta.nivel) + " (" +
+                  std::to_string(c.cuenta.progreso) + " %)");
+        std::vector<std::string> mochila = *sesion.inventory();
+        std::sort(mochila.begin(), mochila.end());
+        if (mochila != c.cuenta.mochila) falta("mochila de " + std::to_string(mochila.size()) + " objetos != la esperada de " + std::to_string(c.cuenta.mochila.size()));
+    }
     if (!j.s.hasFlag("bnd_dia_cerrado")) falta("el dia no esta cerrado");
     if (j.s.hasFlag("bnd_diag_empezado")) falta("el guardado ya es de Gorran");
     // El inicio del dia siguiente, como lo hace el juego al cargar: cambio de aventura y primer fotograma.
+    // El HUD lee el dia del estado (MinimapaTinta::rellena -> franjas::rotulo): el guardado trae «Día 1 · Noche» y el reloj
+    // pasa a «Día 2 · Mañana» cuando salta bg_amanece (pasarFranja), que en el juego es al acabar la cinematica dia1_despertar.
+    if (RPG::franjas::rotulo(RPG::franjas::momentoDe(j.s)) != "Día 1 · Noche") falta("el guardado no trae «Día 1 · Noche»");
     fase(j, "dia_gorran");
     j.drena();
     if (!j.visto("bg_amanece")) falta("no amanece Gorran (bg_amanece)");
+    if (RPG::franjas::rotulo(RPG::franjas::momentoDe(j.s)) != "Día 2 · Mañana") falta("al amanecer el HUD no dice «Día 2 · Mañana»");
     if (!j.s.hasFlag("bnd_diag_empezado")) falta("Gorran no ha empezado");
     // Que la decision siga en pie tras el primer fotograma del dia siguiente.
     for (const std::string& f : c.ve)
@@ -682,59 +797,116 @@ inline const std::vector<CaminoDia1>& caminosDia1() {
          {"b1_edul"}, {"bnd1_unido_al_culto", "bnd1_guarida_resuelta", "bnd1_sabe_barricadas"}, {"bnd1_dudas_verina"},
          {{"puntos_gurkazaal", 1}},
          {{"dia_gorran", "bgd_velas_hermano", "", true}, {"dia2", "b2_po54_sandes", "", true}, {"ocaso", "b3_verina_salvada_dudas", "", false}},
-         {"b1_edul", "Unirte de verdad", "bnd1_unido_al_culto"}, "b1_edul: unirse al culto"},
+         {"b1_edul", "Unirte de verdad", "bnd1_unido_al_culto"}, "b1_edul: unirse al culto",
+         {165, 0, 2, 50, {}}, {"b1_edul", "Unirte de verdad", "grantGold", "log"}, {"b1_edul", "Unirte de verdad", "unirse_perdidos", "dudas_en_verina"}},
         {"edul_dudas", "sectarios", junta({"Sembrar dudas en Verina", "Contárselo todo"}, kCriptaSectarios), Suerte::Buena,
          {"b1_edul"}, {"bnd1_dudas_verina", "bnd1_verina_vista", "bnd1_guarida_resuelta"}, {"bnd1_unido_al_culto"}, {},
          {{"ocaso", "b3_verina_salvada_dudas", "", true}, {"dia_gorran", "bgd_velas_hermano", "", false}, {"dia2", "b2_po54_sandes", "", false}},
-         {"b1_edul", "Sembrar dudas en Verina", "bnd1_dudas_verina"}, "b1_edul: sembrar dudas en Verina"},
+         {"b1_edul", "Sembrar dudas en Verina", "bnd1_dudas_verina"}, "b1_edul: sembrar dudas en Verina",
+         {125, 2, 2, 50, {}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"b1_edul", "Sembrar dudas en Verina", "dudas_en_verina"}},
         {"informe_cuenta_todo", "completa", junta({"Sembrar dudas en Verina", "Contárselo todo"}, junta(kCriptaSectarios, kRutaDelHeroe)), Suerte::Buena,
          {"b1_venides_informe_bastan"}, {"bnd1_venides_informe_hecho", "bnd_venides_20", "bnd_aviso_dado"}, {"bnd1_venides_desconfianza"}, {},
          {{"dia2", "b2_venides_castillo_v0", "", true}, {"dia2", "b2_noche_rosita_informa", "Contarselo todo y ensenarle", false}},
-         {"b1_venides_informe_bastan", "Contárselo todo", "bnd_venides_20"}, "b1_venides_informe_bastan: contárselo todo a Venides"},
+         {"b1_venides_informe_bastan", "Contárselo todo", "bnd_venides_20"}, "b1_venides_informe_bastan: contárselo todo a Venides",
+         {165, 5, 3, 38, {"vendas", "vendas"}}, {"b1_venides_informe_bastan", "", "grantGold", "log"}, {"b1_aigren_redimido", "", "aigren_redimido"}},
         {"informe_desconfia", "completa", junta({"Sembrar dudas en Verina", "Desconfiar de él"}, junta(kCriptaSectarios, kRutaDelHeroe)), Suerte::Buena,
          {"b1_venides_informe_bastan"}, {"bnd1_venides_informe_hecho", "bnd1_venides_desconfianza"}, {"bnd_venides_20"}, {},
          {{"dia2", "b2_venides_castillo_v0", "", false}, {"dia2", "b2_noche_rosita_informa", "Contarselo todo y ensenarle", true}},
-         {"b1_venides_informe_bastan", "Desconfiar de él", "bnd1_venides_desconfianza"}, "b1_venides_informe_bastan: desconfiar de Venides"},
+         {"b1_venides_informe_bastan", "Desconfiar de él", "bnd1_venides_desconfianza"}, "b1_venides_informe_bastan: desconfiar de Venides",
+         {125, 5, 3, 10, {"vendas", "vendas"}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"b1_aigren_redimido", "", "aigren_redimido"}},
         // --- b1_guarida_por_aigren (la cripta, de parte del herrero) ---
         {"aigren_verina", "aigren", junta({"Sacar a Verina de aquí", "Contárselo todo"}, kCriptaAigren), Suerte::Buena,
          {"b1_guarida_por_aigren"}, {"bnd1_verina_salvada_guarida", "bnd1_guarida_resuelta", "bnd1_invitado_por_aigren"}, {"bnd1_unido_al_culto", "bnd1_pista_guarida"}, {},
          {{"dia2", "b2_herreria_cripta", "", true}, {"dia_gorran", "bgd_velas_hermano", "", false}, {"dia2", "b2_rosita_verina", "", false}},
-         {"b1_guarida_por_aigren", "Sacar a Verina de aquí", "bnd1_verina_salvada_guarida"}, "b1_guarida_por_aigren: sacar a Verina"},
+         {"b1_guarida_por_aigren", "Sacar a Verina de aquí", "bnd1_verina_salvada_guarida"}, "b1_guarida_por_aigren: sacar a Verina",
+         {125, 5, 2, 50, {"pocion"}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"b1_guarida_por_aigren", "Sacar a Verina de aquí", "verina_sacada_de_la_guarida"}},
         {"aigren_sonsacar", "aigren", junta({"Sonsacar para Venides", "Contárselo todo"}, kCriptaAigren), Suerte::Buena,
          {"b1_guarida_por_aigren"}, {"bnd1_pista_guarida", "bnd1_sabe_barricadas", "bnd1_guarida_resuelta"}, {"bnd1_verina_salvada_guarida", "bnd1_unido_al_culto"}, {{"pistas", 1}},
          {{"dia2", "b2_castillo_prueba", "", true}, {"dia2", "b2_rosita_verina_arriba", "", false}},
-         {"b1_guarida_por_aigren", "Sonsacar para Venides", "bnd1_pista_guarida"}, "b1_guarida_por_aigren: sonsacar para Venides"},
+         {"b1_guarida_por_aigren", "Sonsacar para Venides", "bnd1_pista_guarida"}, "b1_guarida_por_aigren: sonsacar para Venides",
+         {125, 0, 2, 50, {}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"b1_guarida_ceremonia", "", "ver_ceremonia_gurkazaal", "verina_sacada_de_la_guarida"}},
         {"aigren_unirse", "aigren", junta({"Unirte", "Contárselo todo"}, kCriptaAigren), Suerte::Buena,
          {"b1_guarida_por_aigren"}, {"bnd1_unido_al_culto", "bnd1_sabe_barricadas", "bnd1_guarida_resuelta"}, {"bnd1_verina_salvada_guarida", "bnd1_pista_guarida"}, {{"puntos_gurkazaal", 1}},
          {{"dia_gorran", "bgd_velas_hermano", "", true}, {"dia2", "b2_rosita_verina_arriba", "", false}},
-         {"b1_guarida_por_aigren", "Unirte", "bnd1_unido_al_culto"}, "b1_guarida_por_aigren: unirse al culto"},
+         {"b1_guarida_por_aigren", "Unirte", "bnd1_unido_al_culto"}, "b1_guarida_por_aigren: unirse al culto",
+         {165, 0, 2, 50, {}}, {"b1_guarida_por_aigren", "Unirte", "grantGold", "log"}, {"b1_guarida_por_aigren", "Unirte", "unirse_perdidos", "verina_sacada_de_la_guarida"}},
         // --- b1_luisarda_pide ---
         {"luisarda_silencio", "luisarda", junta({"No diré nada. Tranquila.", "Contárselo todo"}, kLuisarda), Suerte::Buena,
          {"b1_luisarda_pide"}, {"bnd1_luisarda_silencio"}, {"bnd1_luisarda_con_rosita"}, {},
          {{"dia2", "b2_luisarda_pociones", "", true}, {"dia2", "b2_luisarda", "", false}},
-         {"b1_luisarda_pide", "No diré nada. Tranquila.", "bnd1_luisarda_silencio"}, "b1_luisarda_pide: guardar silencio"},
+         {"b1_luisarda_pide", "No diré nada. Tranquila.", "bnd1_luisarda_silencio"}, "b1_luisarda_pide: guardar silencio",
+         {125, -5, 2, 20, {}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"b1_aigren_hijo", "", "aigren_presionado"}},
         {"luisarda_cena", "luisarda", junta({"Ven a cenar a la taberna. Rosita te espera.", "Contárselo todo"}, kLuisarda), Suerte::Buena,
          {"b1_luisarda_pide"}, {"bnd1_luisarda_con_rosita"}, {"bnd1_luisarda_silencio"}, {{"confianza_rosita", 1}},
          {{"dia2", "b2_luisarda", "", true}, {"dia2", "b2_luisarda_pociones", "", false}},
-         {"b1_luisarda_pide", "Ven a cenar a la taberna. Rosita te espera.", "bnd1_luisarda_con_rosita"}, "b1_luisarda_pide: Luisarda a cenar con Rosita"},
+         {"b1_luisarda_pide", "Ven a cenar a la taberna. Rosita te espera.", "bnd1_luisarda_con_rosita"}, "b1_luisarda_pide: Luisarda a cenar con Rosita",
+         {125, -3, 2, 20, {"pocion", "pocion"}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"b1_luisarda_pide", "Ven a cenar a la taberna. Rosita te espera.", "luisarda_con_rosita"}},
         // --- b1_verdaderos (Pico Dragon) ---
         {"verdaderos_sumarse", "verdaderos", {"Comer algo mientras pasa la mañana (5)", "Sumarte a ellos", "Contárselo todo"}, Suerte::Buena,
          {"b1_verdaderos"}, {"bnd1_verdaderos_unido", "bnd1_familia_resuelta"}, {"bnd1_verdaderos_vencidos", "bnd1_familia_defendida"}, {},
          {{"dia2", "b2_po54_sandes", "", true}, {"ocaso", "b3_sermon_po54", "", true}},
-         {"b1_verdaderos", "Sumarte a ellos", "bnd1_verdaderos_unido"}, "b1_verdaderos: sumarse a los Verdaderos"},
+         {"b1_verdaderos", "Sumarte a ellos", "bnd1_verdaderos_unido"}, "b1_verdaderos: sumarse a los Verdaderos",
+         {120, -5, 2, 20, {}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"b1_verdaderos", "Sumarte a ellos", "sumarse_verdaderos"}},
         {"verdaderos_cara", "verdaderos", {"Comer algo mientras pasa la mañana (5)", "Plantarles cara", "Contárselo todo"}, Suerte::Buena,
          {"b1_verdaderos"}, {"bnd1_verdaderos_vencidos", "bnd1_familia_defendida"}, {"bnd1_verdaderos_unido"}, {},
          {{"dia2", "b2_po54_sandes", "", false}, {"ocaso", "b3_sermon_po54", "", false}},
-         {"b1_verdaderos", "Plantarles cara", "bnd1_verdaderos_vencidos"}, "b1_verdaderos: plantarles cara (y ganar)"},
+         {"b1_verdaderos", "Plantarles cara", "bnd1_verdaderos_vencidos"}, "b1_verdaderos: plantarles cara (y ganar)",
+         {140, 5, 2, 45, {"pastel", "pastel"}}, {"b1_verdaderos_vencidos", "", "grantGold", "log"}, {"b1_verdaderos", "Plantarles cara", "verdaderos_enfrentados"}},
         // --- b1_pelea (la noche en la taberna) ---
         {"pelea_separar", "pelea", {"Separarlos [pelea sin matar]", "Contárselo todo"}, Suerte::Buena,
          {"b1_pelea"}, {"bnd1_pelea_lanzada", "bnd1_pelea_ganada"}, {"bnd1_pelea_rosita"}, {},
          {{"dia2", "b2_venides_castillo_s1_a", "¿Anoche escribiste", true}},
-         {"b1_pelea", "Separarlos [pelea sin matar]", "bnd1_pelea_ganada"}, "b1_pelea: separarlos a golpes"},
+         {"b1_pelea", "Separarlos [pelea sin matar]", "bnd1_pelea_ganada"}, "b1_pelea: separarlos a golpes",
+         {125, 0, 2, 20, {}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"", "", ""}},
         {"pelea_proteger", "pelea", {"Proteger al borracho dormido", "Contárselo todo"}, Suerte::Buena,
          {"b1_pelea"}, {"bnd1_pelea_lanzada", "bnd1_pelea_rosita", "bnd1_rosita_fuerza_vista"}, {"bnd1_pelea_ganada"}, {{"confianza_rosita", 1}},
          {{"dia2", "b2_venides_castillo_s1_a", "¿Anoche escribiste", true}},
-         {"b1_pelea", "Proteger al borracho dormido", "bnd1_pelea_rosita"}, "b1_pelea: proteger al borracho dormido"},
+         {"b1_pelea", "Proteger al borracho dormido", "bnd1_pelea_rosita"}, "b1_pelea: proteger al borracho dormido",
+         {125, 0, 2, 20, {}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"", "", ""}},
+        // --- E-MATRIZ-01b: los caminos que faltaban ---
+        // b1_charla_sandes: la pifia de «Hablar con alguien [Persuasion]» en la ceremonia (la fuerza el arnes) y no ir con Edul.
+        {"sandes_solo", "sandes", junta({"Solo miraba.", "Salir con él"}, kCriptaSectarios), Suerte::Buena,
+         {"b1_charla_sandes", "b1_edul"}, {"bnd1_charla_pifia", "bnd1_con_edul", "bnd1_sandes_conocido", "bnd1_sandes_enfadado", "bnd1_sandes_te_conoce"}, {"bnd1_unido_al_culto", "bnd1_luisarda_delatada"}, {},
+         {{"dia2", "b2_fiesta_puerta", "Buscar a Edul para entrar como", true}},
+         {"b1_charla_sandes", "Solo miraba.", "bnd1_con_edul"}, "b1_charla_sandes: «Solo miraba.»",
+         {125, 0, 2, 50, {"pocion"}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"", "", ""},
+         {{"bnd1_charla_pifia", Suerte::Mala}}},
+        {"sandes_mandar", "sandes", junta({"¿Y tú quién eres para mandar?", "Salir con él"}, kCriptaSectarios), Suerte::Buena,
+         {"b1_charla_sandes", "b1_edul"}, {"bnd1_charla_pifia", "bnd1_con_edul", "bnd1_sandes_conocido", "bnd1_sandes_enfadado", "bnd1_sandes_te_conoce"}, {"bnd1_unido_al_culto", "bnd1_luisarda_delatada"}, {},
+         {{"dia2", "b2_fiesta_puerta", "Buscar a Edul para entrar como", true}},
+         {"b1_charla_sandes", "¿Y tú quién eres para mandar?", "bnd1_con_edul"}, "b1_charla_sandes: «¿Y tú quién eres para mandar?»",
+         {125, 0, 2, 50, {"pocion"}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"", "", ""},
+         {{"bnd1_charla_pifia", Suerte::Mala}}},
+        {"sandes_luisarda", "sandes_luisarda", junta({"Contarle lo de Luisarda", "Salir con él"}, junta(kCriptaSectarios, kLuisarda)), Suerte::Buena,
+         {"b1_charla_sandes", "b1_edul"}, {"bnd1_charla_pifia", "bnd1_con_edul", "bnd1_sandes_conocido", "bnd1_luisarda_delatada", "bnd1_sandes_te_conoce"}, {"bnd1_unido_al_culto", "bnd1_sandes_enfadado"}, {},
+         {{"dia2", "b2_cartel_luisarda", "", true}, {"dia2", "b2_sastre_delatada", "", true}, {"dia2", "b2_fiesta_puerta", "Buscar a Edul para entrar como", true}},
+         {"b1_charla_sandes", "Contarle lo de Luisarda", "bnd1_luisarda_delatada", "zz_mutada", 1, 1}, "b1_charla_sandes: contarle a Sandes lo de Luisarda",
+         {125, -5, 2, 50, {"pocion"}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"b1_charla_sandes", "Contarle lo de Luisarda", "luisarda_delatada"},
+         {{"bnd1_charla_pifia", Suerte::Mala}}},
+        // b1_aigren_perdidos: la tirada de «Convencerle de que son el mal [Persuasion]», con su exito y su pifia.
+        {"aigren_convence_exito", "aigren_convence", {"Preguntarle por los Perdidos", "Convencerle de que son el mal [Persuasión]"}, Suerte::Buena,
+         {"b1_aigren_perdidos", "b1_aigren_redimido"}, {"bnd1_aigren_c_exito", "bnd1_aigren_redimido", "bnd1_aigren_resuelto", "bnd_pista_aigren"}, {"bnd1_aigren_c_pifia", "bnd1_pista_espadas", "bnd1_aigren_orden_pedida", "bnd1_invitado_por_aigren"}, {{"pistas", 1}},
+         {{"dia2", "b2_herreria_redimido", "", true}, {"dia2", "b2_capitan_orden", "", false}},
+         {"b1_aigren_perdidos", "Convencerle de que son el mal [Persuasión]", "bnd1_aigren_c_exito"}, "b1_aigren_perdidos: la tirada de persuasion sale bien",
+         {125, 5, 2, 20, {}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"b1_aigren_redimido", "", "aigren_redimido"}},
+        {"aigren_convence_pifia", "aigren_convence", {"Preguntarle por los Perdidos", "Convencerle de que son el mal [Persuasión]"}, Suerte::Buena,
+         {"b1_aigren_perdidos", "b1_aigren_papel", "b1_aigren_noche"}, {"bnd1_aigren_c_pifia", "bnd1_aigren_orden_pedida", "bnd1_pista_espadas"}, {"bnd1_aigren_c_exito", "bnd1_aigren_redimido", "bnd_pista_aigren", "bnd1_invitado_por_aigren"}, {},
+         {{"dia2", "b2_capitan_orden", "", true}, {"dia2", "b2_herreria_redimido", "", false}},
+         {"b1_aigren_perdidos", "Convencerle de que son el mal [Persuasión]", "bnd1_aigren_c_pifia"}, "b1_aigren_perdidos: la tirada de persuasion sale mal",
+         {125, 0, 2, 20, {}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"", "", ""},
+         {{"bnd1_aigren_c_pifia", Suerte::Mala}}},
+        // b1_pelea: «Quedarte mirando» y la variante de «Proteger» con Luisarda (las mismas flags que la probada; ver MATRIZ_DIA1.md).
+        {"pelea_mirar", "pelea", {"Quedarte mirando", "Contárselo todo"}, Suerte::Buena,
+         {"b1_pelea"}, {"bnd1_pelea_lanzada", "bnd1_pelea_rosita", "bnd1_rosita_fuerza_vista"}, {"bnd1_pelea_ganada"}, {},
+         {{"dia2", "b2_venides_castillo_s1_a", "¿Anoche escribiste", true}},
+         {"b1_pelea", "Quedarte mirando", "bnd1_pelea_rosita"}, "b1_pelea: quedarte mirando",
+         {125, 0, 2, 20, {}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"", "", ""}, {}, {{"confianza_rosita", 0}}},
+        {"pelea_proteger_luisarda", "luisarda_pelea", junta({"Ven a cenar a la taberna. Rosita te espera.", "Proteger al borracho dormido", "Contárselo todo"}, kLuisarda), Suerte::Buena,
+         {"b1_pelea", "b1_luisarda_pide"}, {"bnd1_pelea_lanzada", "bnd1_pelea_rosita", "bnd1_rosita_fuerza_vista", "bnd1_luisarda_con_rosita"}, {"bnd1_pelea_ganada"}, {},
+         {{"dia2", "b2_venides_castillo_s1_a", "¿Anoche escribiste", true}},
+         {"b1_pelea", "Proteger al borracho dormido", "bnd1_pelea_rosita", "zz_mutada", 2}, "b1_pelea: proteger al borracho dormido (con Luisarda en la taberna)",
+         {125, -3, 2, 20, {"pocion", "pocion"}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"},
+         {"b1_luisarda_pide", "Ven a cenar a la taberna. Rosita te espera.", "luisarda_con_rosita"}, {}, {{"confianza_rosita", 1}}},
     };
     return c;
 }

@@ -111,11 +111,33 @@ inline bool esSalida(const OpcionDeDialogo& o) {
     return true;
 }
 
+// E-MATRIZ-01b — Lo que el motor narrativo NO aplica por si mismo y que en el juego es de GameSession::applyNarrative:
+// el oro, los niveles y hitos, los actos (la moral) y los objetos que da un beat. El arnes lo APUNTA, en orden, junto
+// al NarrativeState; no lo aplica al jugar (ningun guion lee oro, moral ni nivel, y asi ninguna demo cambia de camino).
+// Quien quiera las cuentas (fabricar_guardados.h: aplicaLasCuentas) las vuelca en una sesion con el heroe, usando lo que
+// el juego usa (moral::apuntaActos / asientaNoche, CharacterSheet::grantLevelPoints): applyNarrative es privada.
+struct Cuentas {
+    static constexpr int kBolsaInicial = 150;  // la del juego al empezar (Application.cpp: addGold(150) tras cargar el primer nivel)
+    struct Paso {
+        std::string beat;
+        int oro = 0, puntos = 0, hitos = 0;
+        std::vector<std::string> actos, objetos, descansos;
+    };
+    std::vector<Paso> pasos;
+
+    void anota(const NarrativeResult& r) {
+        if (r.goldDelta == 0 && r.levelPoints == 0 && r.milestones == 0 && r.actos.empty() && r.objetos.empty() && r.descansos.empty())
+            return;
+        pasos.push_back({r.beatId, r.goldDelta, r.levelPoints, r.milestones, r.actos, r.objetos, r.descansos});
+    }
+};
+
 // Un jugador: un estado para toda la campana y una forma de contestar.
 struct Jugador {
     const Guiones& g;
     NarrativeEngine e;
     NarrativeState s;  // <- UNO SOLO para las cuatro aventuras
+    Cuentas cuentas;   // E-MATRIZ-01b: oro, niveles, actos y objetos (al lado del estado; ver Cuentas)
     const AdventureScript* guion = nullptr;
     Suerte suerte = Suerte::Buena;
     bool ruido = false;
@@ -126,6 +148,7 @@ struct Jugador {
     std::vector<std::string> prefiere;    // lo que contesta, por orden de gusto
     std::set<std::string> usadas;         // "beat|texto": no repite en la misma pantalla
     std::set<std::string> pierde;         // flagVictory de combates que pierde (una vez cada uno)
+    std::map<std::string, Suerte> tiradas;  // E-MATRIZ-01b: la suerte que sale en UNA tirada (por su flagBotch); las demas, `suerte`
     std::vector<std::string>* anotador = nullptr;  // cobertura: cada beat que dispara
     std::vector<std::string> vistos;               // los de esta partida
 
@@ -157,6 +180,7 @@ struct Jugador {
 
     void procesa(const NarrativeResult& r) {
         if (!r.fired) return;
+        cuentas.anota(r);
         if (!r.beatId.empty()) {
             vistos.push_back(r.beatId);
             if (anotador != nullptr) anotador->push_back(r.beatId);
@@ -168,14 +192,16 @@ struct Jugador {
         }
         for (const SkillCheckRequest& c : r.skillChecks) {
             std::string f;
-            switch (suerte) {
+            const auto forzada = tiradas.find(c.flagBotch);
+            const Suerte su = forzada != tiradas.end() ? forzada->second : suerte;
+            switch (su) {
                 case Suerte::Critica: f = c.flagCritical; break;
                 case Suerte::Buena: f = c.flagSuccess; break;
                 case Suerte::Regular: f = c.flagPartial; break;
                 case Suerte::Mala: f = c.flagBotch; break;
             }
             // Las tiradas «de exitos» solo tienen dos salidas.
-            if (f.empty()) f = buena() ? c.flagSuccess : c.flagBotch;
+            if (f.empty()) f = (su == Suerte::Critica || su == Suerte::Buena) ? c.flagSuccess : c.flagBotch;
             if (!f.empty()) s.setFlag(f);
         }
         for (const BattleRequest& b : r.battles) {
