@@ -112,3 +112,16 @@ Reloj: 20:45–21:50 aprox. Cuelgue: Codex esperando stdin a las 21:09 (detectad
 1. Probar jugando: la persecución de los sectarios (día 1, hablar con `sectario_perdido` tras resolverlos) y el Ocaso dejando que suenen las campanas sin avisar.
 2. `tools/parche_c_trama.py` ya no se puede ejecutar (falla en `:229`) y volvería a dejar la persecución detrás: no hay que volver a ejecutarlo.
 3. Límite del validador: no ve los efectos de las cinemáticas ni de los eventos del mundo.
+
+---
+
+# Ampliación 3 — economía a 4 días (03/11, «Economia a 4 dies»)
+
+**Punta:** `agente/claude/UNI-02-11` @ `89d60223`. **Suite gl-free completa: 290/290** (`ctest_final4.log`).
+
+- `sintetizar_rutas.py` y `recorrer_recompensas.cpp` a 4 días (día 2 = Gorran); las cinemáticas y los eventos del mundo cuentan como proveedores de flags; acciones nuevas `pisar` y `poner`. Rutas regeneradas por el script. Premios sin cadena: 31/41 y 57/74 → 5/48 y 10/84.
+- Mutaciones: sin los 23 `pisar` del día 4 → ROJO (repetida por el Brain); sin el día de Gorran → ROJO.
+- **Límites (para Oriol):**
+  1. `poner` da por hechos, igual que la demo, los 4 líos de Gorran, la subasta y el «Subir a dormir» del día 2. Sus premios no se recorren.
+  2. La cobertura que cuenta el script es simbólica (hay una cadena hasta el premio). En la traza real disparan 15 de 40 premios (historia) y 21 de 63 (explora/optimiza). La prueba exige llegar al final, no cubrir todos los premios.
+  3. `tools/simular_economia.py` sigue modelado a 3 días; con datos reales descartaría el día 4.

@@ -117,3 +117,6 @@ Nada de `src/`, `include/`, assets ni catálogos. Cada número nuevo con una mut
 
 ### Cierre fase 3 (03/11)
 H2+H4 `7fb3368a` (día 2 = Gorran; PENDIENTE ORIOL temporal), H4b `45e66555` (once en 3 beats; 58/58), H3 `6bc14fe3`, H5 parcial `dc6fbb48` (BLOQUEADA: Oriol «otra tanda»), H3b `cf991f58` (rebase). Suite gl-free completa sobre `cf991f58`: 287/288. Corrección al informe de H4: el cargador SÍ lee `once` (`AdventureScriptLoader.cpp:143`); los beats no lo llevaban.
+
+### E5 — economía a 4 días (Oriol 03/11: «Economia a 4 dies»)
+Ámbito congelado (bajo `MotorGraphico-main/MotorGraphico/`): `tools/sintetizar_rutas.py`, `tools/recorrer_recompensas.cpp`, `tools/rutas_economia_base.json`, `tools/rutas_economia.json` (regenerado), las pruebas propias de esas herramientas (`tools/test_*sintetizar*`/`recorrer*` si existen) y las expectativas de `test_recompensas_economia` solo si están desfasadas. Nada de src/, include/, assets ni aventuras. Presupuesto: 120 min (tope A4: 180).
