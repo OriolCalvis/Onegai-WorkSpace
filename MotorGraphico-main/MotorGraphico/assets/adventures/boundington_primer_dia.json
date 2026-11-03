@@ -8329,6 +8329,62 @@
    "pagina": true
   },
   {
+   "id": "b1_sectarios_seguir",
+   "trigger": {
+    "type": "talk",
+    "target": "sectario_perdido"
+   },
+   "requires": {
+    "allFlags": [
+     "bnd1_sectarios_resueltos"
+    ],
+    "notFlags": [
+     "bnd1_invitado_guarida",
+     "bnd_pista_sectarios",
+     "bnd1_sectarios_seguir_visto"
+    ]
+   },
+   "speaker": "",
+   "lines": [
+    "Los tres sectarios recogen sus cosas sin prisa y echan a andar hacia el Casco Antiguo, en fila, sin hablar."
+   ],
+   "effects": [
+    {
+     "type": "setFlag",
+     "arg": "bnd1_sectarios_seguir_visto"
+    }
+   ],
+   "opciones": [
+    {
+     "texto": "Seguirles de lejos [Sigilo]",
+     "lines": [
+      "Dejas veinte pasos. Ellos no se vuelven: la gente que se cree con razón nunca mira atrás.",
+      "(Tirada de Sigilo.)"
+     ],
+     "effects": [
+      {
+       "type": "skillCheck",
+       "skillCheck": {
+        "skillId": "sigilo",
+        "rivalDice": 2,
+        "flagBotch": "bnd1_seguir_pifia",
+        "flagPartial": "bnd1_seguir_parcial",
+        "flagSuccess": "bnd1_seguir_exito",
+        "flagCritical": "bnd1_seguir_critico"
+       }
+      }
+     ]
+    },
+    {
+     "texto": "Dejarles ir",
+     "lines": [
+      "Que se vayan. La ciudad es pequeña."
+     ],
+     "effects": []
+    }
+   ]
+  },
+  {
    "id": "b1_sectarios_despues",
    "trigger": {
     "type": "talk",
@@ -19549,62 +19605,6 @@
     {
      "type": "setFlag",
      "arg": "bnd1_sectarios_resueltos"
-    }
-   ]
-  },
-  {
-   "id": "b1_sectarios_seguir",
-   "trigger": {
-    "type": "talk",
-    "target": "sectario_perdido"
-   },
-   "requires": {
-    "allFlags": [
-     "bnd1_sectarios_resueltos"
-    ],
-    "notFlags": [
-     "bnd1_invitado_guarida",
-     "bnd_pista_sectarios",
-     "bnd1_sectarios_seguir_visto"
-    ]
-   },
-   "speaker": "",
-   "lines": [
-    "Los tres sectarios recogen sus cosas sin prisa y echan a andar hacia el Casco Antiguo, en fila, sin hablar."
-   ],
-   "effects": [
-    {
-     "type": "setFlag",
-     "arg": "bnd1_sectarios_seguir_visto"
-    }
-   ],
-   "opciones": [
-    {
-     "texto": "Seguirles de lejos [Sigilo]",
-     "lines": [
-      "Dejas veinte pasos. Ellos no se vuelven: la gente que se cree con razón nunca mira atrás.",
-      "(Tirada de Sigilo.)"
-     ],
-     "effects": [
-      {
-       "type": "skillCheck",
-       "skillCheck": {
-        "skillId": "sigilo",
-        "rivalDice": 2,
-        "flagBotch": "bnd1_seguir_pifia",
-        "flagPartial": "bnd1_seguir_parcial",
-        "flagSuccess": "bnd1_seguir_exito",
-        "flagCritical": "bnd1_seguir_critico"
-       }
-      }
-     ]
-    },
-    {
-     "texto": "Dejarles ir",
-     "lines": [
-      "Que se vayan. La ciudad es pequeña."
-     ],
-     "effects": []
     }
    ]
   },

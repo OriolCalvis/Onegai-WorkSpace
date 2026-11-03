@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""validar_beats_auto.py — ningun beat `auto` se queda «pegajoso» (UNI-02-11, bloque B1).
+"""validar_beats_auto.py — ningun beat `auto` se queda «pegajoso» y ningun beat talk/enter queda
+«tapado» (UNI-02-11, bloques B1 y B2).
 
 El motor (NarrativeEngine::disparaEn) recorre los beats EN ORDEN y dispara el PRIMERO del
 tipo `auto` cuyo `requires` encaje y que no sea `once` ya disparado. Y `closeInteraction`
@@ -23,12 +24,26 @@ simula el disparo repetido sobre un modelo abstracto del estado:
 
 Es pegajoso si sigue cumpliendo su `requires` tras PASOS disparos. Arreglo: `"once": true`
 o una guarda (un notFlags que el propio beat encienda, o quitar con clearFlag una flag
-de su allFlags). Los triggers talk/enter no se miran: repetir la respuesta de un PNJ es normal.
+de su allFlags). Los triggers talk/enter no se miran por pegajosos: repetir la respuesta de un PNJ es normal.
 
-    python3 tools/validar_beats_auto.py              # 0 pegajosos -> sale con 0
+BEATS TAPADOS (B2). Los beats talk/enter (cualquier trigger que no sea auto) tambien se
+disparan «el PRIMERO que encaja»: mismo tipo de trigger y mismo target, gana el de mas arriba.
+Un beat B queda TAPADO si hay un A ANTERIOR con el mismo trigger.type y target tal que
+  - A es repetible: no tiene `once` (con `once`, A se agota y B llega despues), y
+  - todo estado que cumple los requisitos de B cumple tambien los de A (B implica A):
+      allFlags(A) ⊆ allFlags(B); notFlags(A) ⊆ notFlags(B) (si B admitiera una flag que A
+      prohibe, cuando esa flag estuviera puesta A se apartaria y B saldria); anyFlags(A) cubiertas
+      por B; variables de B dentro del rango de A; lugar de B dentro del de A (o A sin lugar);
+      cualquier otra clave de requires de A (nivel, moral...) igual en B.
+  Entonces A dispara siempre antes y B no sale jamas, de ahi que los efectos de A no importen:
+  si A apaga sus propios requisitos, tambien apaga los de B. Caso real: «Ya hemos hablado» (A,
+  sin efectos) delante de la persecucion de los sectarios (B). Arreglo: poner B antes que A,
+  darle a A una guarda que B no tenga, o `"once": true` en A.
+
+    python3 tools/validar_beats_auto.py              # 0 problemas -> sale con 0
     python3 tools/validar_beats_auto.py --raiz DIR   # otra raiz del motor (pruebas)
 
-Salida: una linea por beat pegajoso, `fichero:beat (linea N): motivo`. Exit 1 si hay alguno.
+Salida: una linea por problema, `fichero:beat (linea N): motivo`. Exit 1 si hay alguno.
 Solo stdlib. Limites: no ve los efectos de cinematicas.json ni de eventos/*.json (una flag
 que solo ellos apaguen puede salvar a un «pegajoso» en juego); ver out/fabrica/UNI-02-11/
 AUDITORIA_AUTO.md. Si un pegajoso fuera intencionado, anotalo en EXCEPCIONES.
@@ -45,8 +60,9 @@ import sys
 # Cuantas veces se simula el disparo seguido. Mas de lo que dura cualquier pagina de charla.
 PASOS = 25
 
-# Excepciones: beats auto sin `once` que se dejan pegajosos a proposito, como "fichero.json:id_del_beat".
-# Vacia por defecto: un pegajoso es un soft-lock. Si añades uno, di aqui POR QUE es intencionado.
+# Excepciones: beats auto sin `once` que se dejan pegajosos a proposito, o beats talk/enter tapados
+# (se anota el beat TAPADO), como "fichero.json:id_del_beat".
+# Un pegajoso es un soft-lock y un tapado es contenido que nunca sale. Si añades uno, di aqui POR QUE.
 EXCEPCIONES: set[str] = set()
 
 INF = 10 ** 9
@@ -226,6 +242,48 @@ def es_pegajoso(beat: dict) -> bool:
     return any(sigue(s0, PASOS) for s0 in estados_iniciales(req))
 
 
+# ---------------------------------------------------------------- tapados
+
+def _rango_lugar(requires: dict):
+    """Lugares permitidos por el requires (set), o None si no restringe el lugar."""
+    lugar = (requires or {}).get("lugar")
+    return set(lista(lugar)) if lugar else None
+
+
+def implica(b: dict, a: dict) -> bool:
+    """¿Todo estado que cumple el requires de `b` cumple tambien el de `a`? (ver «BEATS TAPADOS»)."""
+    rb, ra = b.get("requires") or {}, a.get("requires") or {}
+    qb, qa = requisitos(b), requisitos(a)
+    if not qa["all"] <= qb["all"] or not qa["not"] <= qb["not"]:
+        return False
+    if qa["any"] and not (qb["all"] & qa["any"] or (qb["any"] and qb["any"] <= qa["any"])):
+        return False
+    for nombre, (lo, hi) in qa["vars"].items():
+        if nombre not in qb["vars"] or not (lo <= qb["vars"][nombre][0] and qb["vars"][nombre][1] <= hi):
+            return False
+    la, lb = _rango_lugar(ra), _rango_lugar(rb)
+    if la is not None and (lb is None or not lb <= la):
+        return False
+    modelados = ("allFlags", "anyFlags", "notFlags", "variables", "lugar")
+    return all(rb.get(k) == v for k, v in ra.items() if k not in modelados)
+
+
+def tapados(beats: list) -> list[tuple[str, str]]:
+    """[(beat tapado, beat que lo tapa)] entre los beats que no son auto."""
+    salida, vistos = [], {}
+    for beat in beats:
+        trig = beat.get("trigger") or {}
+        if trig.get("type") in (None, "auto"):
+            continue
+        anteriores = vistos.setdefault((trig.get("type"), trig.get("target")), [])
+        for a in anteriores:
+            if not a.get("once") and implica(beat, a):
+                salida.append((beat.get("id", "?"), a.get("id", "?")))
+                break
+        anteriores.append(beat)
+    return salida
+
+
 def numero_de_linea(texto: str, beat_id: str):
     """Linea (1-based) donde se declara el beat, o None."""
     patron = f'"id": "{beat_id}"'
@@ -260,6 +318,14 @@ def comprueba(raiz: str) -> tuple[list[tuple[str, str, object, str]], int]:
                                   "se reabre en bucle al cerrar el dialogo y tapa a los beats posteriores. "
                                   'Pon "once": true o una guarda (un notFlags que el beat encienda, '
                                   "o un clearFlag de una de sus allFlags)"))
+        for bid, tapa in tapados(datos.get("beats", []) if isinstance(datos, dict) else []):
+            if f"{nombre}:{bid}" in EXCEPCIONES:
+                continue
+            problemas.append((nombre, bid, numero_de_linea(texto, bid),
+                              f"beat tapado por '{tapa}' (linea {numero_de_linea(texto, tapa)}): mismo trigger y target, "
+                              "va antes, es repetible y sus requisitos incluyen los de este; el motor dispara el primero "
+                              "que encaja y este no sale nunca. Ponlo ANTES, dale al otro una guarda que este no tenga "
+                              'o un "once": true'))
     return problemas, revisados
 
 
@@ -271,7 +337,8 @@ def main(argv=None) -> int:
     for fichero, bid, linea, motivo in problemas:
         donde = f" (linea {linea})" if linea else ""
         print(f"ERROR {fichero}:{bid}{donde}: {motivo}")
-    print(f"validar_beats_auto: {revisados} beats auto sin once revisados; {len(problemas)} pegajosos")
+    print(f"validar_beats_auto: {revisados} beats auto sin once revisados; {len(problemas)} problemas "
+          "(pegajosos o tapados)")
     return 1 if problemas else 0
 
 
