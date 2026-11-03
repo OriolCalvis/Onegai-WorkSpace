@@ -228,6 +228,89 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.fin();
     }
 
+    // GORRAN-LIOS (D0022 3.2): el dia 2 jugado de verdad, sin setVariable("gorran_misiones"): los cuatro
+    // lios de la aldea (cada uno con su beat de cierre, que suma uno), el cuerno, la subasta y a dormir.
+    {
+        Escena e(g, "DIA 2: los cuatro lios de la aldea, la subasta y a dormir", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.pasaElDiaDeGorranJugando();
+        // cada lio, cerrado por su propio beat
+        e.visto({"bgb_golpes", "bgb_salen_todos", "bga_escena", "bga_garsa_exito", "bgc_asalto", "bgc_hundir_exito",
+                 "bgd_velas", "bgd_sacar_exito", "b2_subasta_aviso", "b2_subasta_cojo_pobre", "b2_gorran_victoria",
+                 "bg_cierre_furia"});
+        e.ve({"bgb_cerrada", "bga_cerrada", "bgc_cerrada", "bgd_cerrada", "bgb_rescate_todos", "bga_iris_salvada",
+              "bgc_cajas_hundidas", "bgd_ninos_salvados", "bnd2_subasta_ya", "bnd2_subasta_vista", "bndg_dia_cerrado"});
+        e.ve({"bnd2_furia_alaro", "bnd2_gorran_perdonado"});  // la Furia sale de la pelea de la subasta, no del pedestal
+        e.nove({"bnd2_gorran_muerto", "bnd2_sigilo_exito"});
+        e.min("gorran_misiones", 4);
+        e.fin();
+    }
+
+    // La xerrada directa amb Gorran (b2_gorran_hablar), sin pasar por el pedestal: abre la charla
+    // (bnd2_gorran_abierta), el dialogo de b2_gorran y «Dejarlo para esta noche» la cierra; se puede repetir.
+    {
+        Escena e(g, "DIA 2: hablar con Gorran de frente", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)", "«Vengo a ver al jefe.» [Persuasión]", "Esa espada.",
+                  "¿Quién te la encargó?", "Es de la Furia."}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");  // el encargo
+        e.j.entra("antecova_gorran");  // pagar el paso
+        e.j.entra("recinto_gorran");   // b2_porton: «Vengo a ver al jefe.»
+        e.ve({"bnd2_aldea_dentro", "bnd2_porton_resuelto"});
+        e.nove({"bnd2_gorran_abierta", "bnd2_gorran_visto"});
+        e.j.habla("gorran");  // b2_gorran_hablar -> b2_gorran
+        e.visto({"b2_gorran_hablar", "b2_gorran"});
+        e.ve({"bnd2_gorran_visto", "bnd2_cueva_entrada", "bnd2_gorran_t_espada", "bnd2_gorran_t_quien",
+              "bnd2_pista_gorran", "bnd2_gorran_t_furia", "bnd2_gorran_asustado"});
+        e.nove({"bnd2_gorran_abierta", "bnd2_gorran_resuelto", "bnd2_furia_alaro", "bnd2_gorran_muerto"});  // «Dejarlo para esta noche»
+        e.j.vistos.clear();
+        e.j.habla("gorran");  // otra vez: la charla se vuelve a abrir (b2_gorran_hablar), ahora sin temas nuevos
+        e.visto({"b2_gorran_hablar"});
+        e.nove({"bnd2_gorran_resuelto", "bnd2_furia_alaro"});
+        e.fin();
+    }
+
+    // Los lios con mala suerte: no todos se cierran bien (la caja con el sello roto te lleva al calabozo,
+    // el diacono te ata) y el cuerno no suena todavia (dos cerrados de tres).
+    {
+        Escena e(g, "DIA 2: los lios de la aldea con mala suerte", Suerte::Mala, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)"}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.entra("antecova_gorran");
+        e.j.losLiosDeLaAldea(2, false);  // las tiradas salen mal: se cierran solo la Veta Honda (sin tirada) y Cal Serra
+        e.ve({"bgb_cerrada", "bga_cerrada", "bga_iris_llevada", "bgd_atado"});
+        e.visto({"bgb_salen_todos", "bga_garsa_pifia", "bgc_abrir_pifia", "bgd_sacar_pifia"});
+        e.nove({"bgc_cerrada", "bgd_cerrada", "bnd2_subasta_ya"});
+        e.min("gorran_misiones", 2);
+        e.fin();
+    }
+
     {
         Escena e(g, "DIA 2: Rosita cuenta su historia", Suerte::Buena, {"heroe_pueblo_humano"},
                  {"Aceptar el encargo", "Pagar el paso (5)", "Cogerla sin que te oigan [Sigilo]",

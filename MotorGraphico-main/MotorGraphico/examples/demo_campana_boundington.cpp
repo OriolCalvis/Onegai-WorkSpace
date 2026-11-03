@@ -98,7 +98,10 @@ void juegaHeroe(Jugador& j) {
     // GORRAN-DIA2 (22/10): el dia 2 es la montaña de Gorran y el antiguo segundo dia es ya el 3.
     j.fase("dia_gorran");
     j.drena();                       // amanece el segundo dia
-    j.laEspadaDeRosita();            // el encargo, la Gola Fosca, el pedestal: Gorran, vencido y perdonado
+    j.laEspadaDeRosita();            // el encargo, la Gola Fosca, los cuatro lios, el pedestal: Gorran, vencido y perdonado
+    // GORRAN-LIOS: los lios se juegan (no se da gorran_misiones por hecho): cada uno cerrado por su beat.
+    for (const char* f : {"bga_cerrada", "bgb_cerrada", "bgc_cerrada", "bgd_cerrada", "bnd2_subasta_ya"}) require(j.s.hasFlag(f));
+    require(j.s.variable("gorran_misiones") >= 3);
     j.entra("interior_taberna");     // ... y a la taberna con la Furia
     j.habla("skilla");               // a dormir
     // (la Furia solo se consigue con buena suerte; con mala, Gorran gana y se cierra la cueva)

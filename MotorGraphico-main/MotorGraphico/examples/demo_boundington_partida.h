@@ -344,6 +344,8 @@ struct Jugador {
     // b2_amanece). Amanece, Rosita da el encargo (bnd2_rosita_encargo_visto) y, con la
     // subasta ya pasada (bnd2_subasta_vista: antes bg_skilla_hora_pronto no te deja
     // acostarte), el jugador sube a dormir: bg_cierre cierra el dia y amanece el tercero.
+    // Para jugarlo de verdad (lios, subasta, dormir): pasaElDiaDeGorranJugando(). Cambiar este atajo
+    // por ella rompe "DIA 3: la fiesta, por la puerta y hablando" (ver GORRAN_LIOS.md).
     void pasaElDiaDeGorran() {
         fase("dia_gorran");
         drena();  // bg_amanece
@@ -358,17 +360,122 @@ struct Jugador {
         require(s.hasFlag("bnd2_encargo"));
     }
 
+    // La cinematica con zona `id`, pisada por el jugador (el centro de su zona) en el nivel en que esta.
+    // false si no esta en ese nivel o no se cumplen sus condiciones (no se juega nada).
+    bool pisaLaZona(const std::string& id) {
+        static const Game::CatalogoCinematicas cat = [] {
+            auto r = Game::CatalogoCinematicas::carga("assets/cinematicas/cinematicas.json");
+            require(r);
+            return r.value();
+        }();
+        for (const Game::Cinematica& c : cat.lista) {
+            if (c.id != id || !c.hayZona || c.nivel != s.lugar()) continue;
+            return cinematica(GridCoord{(c.zonaDesde.x + c.zonaHasta.x) / 2, (c.zonaDesde.y + c.zonaHasta.y) / 2});
+        }
+        return false;
+    }
+
+    // GORRAN-LIOS (D0022 3.2): los cuatro «lios de la aldea» de Gorran, jugados como el jugador
+    // (hablar, pisar la zona de la cinematica, elegir en el dialogo), no dados por hechos: cada uno
+    // se cierra con su propio beat (bgb_/bga_/bgd_/bgc_cerrada) y es ese beat el que suma a
+    // gorran_misiones. Va por orden de reloj (aldea_tiempo; solo avanza con lo que haces): la Veta
+    // Honda (vigas del taller y apuntalar), Cal Serra (la Garsa contra los mercenarios), la mina
+    // vieja (sacar a los ninos en silencio) y las Galerias (hundir la carga gris). Al tercero
+    // cerrado suena el cuerno (b2_subasta_aviso -> bnd2_subasta_ya). Los viajes entre niveles no
+    // se andan (entra() es un salto, como en el resto de ayudas). Con mala suerte algunos lios se
+    // cierran peor (o por tiempo): `cuantos` es el minimo de lios que tienen que haber cerrado.
+    // `cuantos` es el minimo que tiene que haber cerrado; `tiradasBuenas` hace que las tiradas de
+    // los lios salgan bien aunque el jugador tenga mala suerte para lo que viene (las escenas que
+    // prueban el pedestal con mala suerte no son las que prueban los lios).
+    int losLiosDeLaAldea(int cuantos = 3, bool tiradasBuenas = true) {
+        const std::vector<std::string> antes = prefiere;
+        const Suerte suerteAntes = suerte;
+        if (tiradasBuenas && !buena()) suerte = Suerte::Buena;
+        prefiere.insert(prefiere.begin(),
+                        {"«Me quedo. Nadie se la lleva.»", "Hablarle a la Garsa [Persuasión]", "Dejar que se la lleven",
+                         "Apuntalar con las vigas del taller", "Sacar a los críos en silencio [Sigilo]",
+                         "Abrir una sin romper el sello [Investigación]", "Hundirlas en el río [Atletismo]"});
+        entra("cueva_gorran");  // la plaza de la aldea: bg_aldea_problemas
+        // Cada lio tiene que sumar exactamente 1 a gorran_misiones (su beat de cierre, una sola vez).
+        int misiones = s.variable("gorran_misiones");
+        const auto suma = [&](const char* cerrada, const char* quien) {
+            if (!s.hasFlag(cerrada)) return;  // ese lio no se ha cerrado: no suma
+            misiones += 1;
+            if (s.variable("gorran_misiones") != std::min(misiones, 4))
+                std::printf("    !! %s: gorran_misiones=%d, esperado %d\n", quien, s.variable("gorran_misiones"), misiones);
+            require(s.variable("gorran_misiones") == std::min(misiones, 4));
+        };
+        // B — La Veta Honda: la minera cuenta lo del derrumbe, cuatro vigas del taller (+1 de reloj) y
+        // los golpes al otro lado (+1): apuntalar.
+        entra("mina_gorran");
+        habla("minera_comedor");  // bgb_minera: los mineros atrapados (bgb_gancho)
+        entra("galerias_gorran");
+        habla("carpintero_galeria");
+        entra("mina_gorran");
+        pisaLaZona("bgb_golpes");
+        suma("bgb_cerrada", "Veta Honda");
+        // A — Cal Serra: con el reloj en 2 llegan los mercenarios (bga_llegan -> bga_entran): la Garsa.
+        entra("aldea_serra_p0");
+        habla("serra");
+        suma("bga_cerrada", "Cal Serra");
+        // C — Las Galerias: la carga gris (abrir una caja, el asalto del transbordo).
+        entra("galerias_gorran");
+        habla("aduanero_galeria");
+        habla("cajas_cera_gris");
+        pisaLaZona("bgc_asalto");
+        suma("bgc_cerrada", "Galerias");
+        // D — la mina vieja: Tinet y Mia (bgd_rapto, reloj 2); el diacono enciende las velas.
+        entra("mina2_gorran");
+        pisaLaZona("bgd_velas");
+        suma("bgd_cerrada", "mina vieja");
+        prefiere = antes;
+        suerte = suerteAntes;
+        int cerrados = 0;
+        for (const char* f : {"bga_cerrada", "bgb_cerrada", "bgc_cerrada", "bgd_cerrada"}) cerrados += s.hasFlag(f) ? 1 : 0;
+        if (ruido) std::printf("      [lios cerrados: %d, gorran_misiones=%d]\n", cerrados, s.variable("gorran_misiones"));
+        require(cerrados >= cuantos);
+        require(s.variable("gorran_misiones") == cerrados);  // por merito: lo cuenta cada beat de cierre
+        return cerrados;
+    }
+
+    // GORRAN-LIOS: el dia 2 de Gorran SIN atajos, hasta el dia 3. El encargo de Rosita, la Gola Fosca
+    // (se paga), los cuatro lios de la aldea (losLiosDeLaAldea), el cuerno, el porton del recinto y
+    // la subasta de la Furia (cinematica recinto_subasta) y, con ella pasada, «Subir a dormir»
+    // (bg_skilla_hora: bndg_a_dormir -> bg_cierre / bg_cierre_furia). Amanece el tercero (b2_amanece:
+    // bnd2_encargo). La espada no se roba del pedestal (eso es laEspadaDeRosita): en la subasta
+    // «Dejar que estalle» acaba en pelea con Gorran, y vencido «Suelta a los presos y estamos en paz.».
+    void pasaElDiaDeGorranJugando() {
+        const std::vector<std::string> antes = prefiere;
+        prefiere.insert(prefiere.end(), {"Aceptar el encargo", "Pagar el paso (5)", "«Vengo a ver al jefe.» [Persuasión]",
+                                         "Dejar que estalle", "Suelta a los presos y estamos en paz.",
+                                         "Subir a dormir"});
+        fase("dia_gorran");
+        drena();  // bg_amanece
+        entra("interior_taberna");
+        habla("skilla");  // b2_rosita_encargo
+        entra("antecova_gorran");  // b2_cueva_llegada: pagar el paso -> bnd2_aldea_dentro
+        losLiosDeLaAldea();  // -> b2_subasta_aviso -> bnd2_subasta_ya
+        entra("recinto_gorran");  // b2_porton
+        require(pisaLaZona("recinto_subasta"));  // b2_subasta(_cojo_pobre): «Dejar que estalle»
+        require(s.hasFlag("bnd2_subasta_vista"));
+        entra("interior_taberna");
+        habla("skilla");  // bg_skilla_hora: «Subir a dormir» -> bndg_a_dormir -> bg_cierre
+        require(s.hasFlag("bndg_dia_cerrado"));
+        prefiere = antes;
+        fase("dia2");
+        drena();  // b2_amanece: bnd2_encargo
+        require(s.hasFlag("bnd2_encargo"));
+    }
+
     // GORRAN-DIA2 — La espada de Rosita (dia_gorran): el encargo de Rosita, el paso por la Gola
-    // Fosca (se paga) y el pedestal del recinto cuando suena el cuerno de la subasta. Los cuatro
-    // «lios de la aldea» (Cal Serra, la Veta Honda, las Galerias, la mina vieja) NO se juegan: la
-    // subasta exige tres cerrados (gorran_misiones >= 3, b2_subasta_aviso) y aqui se dan por
-    // hechos, como las demas escenas dan por hecho lo de «antes» (Escena::pon / var).
+    // Fosca (se paga), los lios de la aldea (losLiosDeLaAldea: la subasta exige tres cerrados,
+    // gorran_misiones >= 3, b2_subasta_aviso) y el pedestal del recinto cuando suena el cuerno
+    // de la subasta.
     void laEspadaDeRosita() {
         entra("interior_taberna");
         habla("skilla");  // b2_rosita_encargo -> bnd2_skilla_encargo
         entra("antecova_gorran");  // b2_cueva_llegada: pagar el paso -> bnd2_aldea_dentro
-        s.setVariable("gorran_misiones", 3);
-        drena();  // b2_subasta_aviso -> bnd2_subasta_ya
+        losLiosDeLaAldea();  // -> b2_subasta_aviso -> bnd2_subasta_ya
         entra("recinto_gorran");
         habla("pedestal_furia");  // b2_pedestal -> «Cogerla sin que te oigan [Sigilo]»
     }
