@@ -430,7 +430,8 @@ struct Jugador {
     // `cuantos` es el minimo que tiene que haber cerrado; `tiradasBuenas` hace que las tiradas de
     // los lios salgan bien aunque el jugador tenga mala suerte para lo que viene (las escenas que
     // prueban el pedestal con mala suerte no son las que prueban los lios).
-    int losLiosDeLaAldea(int cuantos = 3, bool tiradasBuenas = true, const std::string& orden = "BADC") {
+    int losLiosDeLaAldea(int cuantos = 3, bool tiradasBuenas = true, const std::string& orden = "BADC",
+                         const std::vector<std::string>& primero = {}) {
         const std::vector<std::string> antes = prefiere;
         const Suerte suerteAntes = suerte;
         if (tiradasBuenas && !buena()) suerte = Suerte::Buena;
@@ -438,6 +439,7 @@ struct Jugador {
                         {"«Me quedo. Nadie se la lleva.»", "Hablarle a la Garsa [Persuasión]", "Dejar que se la lleven",
                          "Apuntalar con las vigas del taller", "Sacar a los críos en silencio [Sigilo]",
                          "Abrir una sin romper el sello [Investigación]", "Hundirlas en el río [Atletismo]"});
+        prefiere.insert(prefiere.begin(), primero.begin(), primero.end());  // E-MATRIZ-02: las decisiones propias van antes que las de siempre
         entra("cueva_gorran");  // la plaza de la aldea: bg_aldea_problemas
         // Cada lio tiene que sumar exactamente 1 a gorran_misiones (su beat de cierre, una sola vez).
         int misiones = s.variable("gorran_misiones");
@@ -502,27 +504,90 @@ struct Jugador {
     // (bg_skilla_hora: bndg_a_dormir -> bg_cierre / bg_cierre_furia). Amanece el tercero (b2_amanece:
     // bnd2_encargo). La espada no se roba del pedestal (eso es laEspadaDeRosita): en la subasta
     // «Dejar que estalle» acaba en pelea con Gorran, y vencido «Suelta a los presos y estamos en paz.».
-    void pasaElDiaDeGorranJugando(const std::string& ordenLios = "BADC") {
+    // E-MATRIZ-02: las decisiones del dia son parametros (DiaDeGorran); con los de por defecto es lo de siempre.
+    struct DiaDeGorran {
+        std::string lios = "BADC";                     // letras de los lios que se juegan, en orden (B Veta Honda, A Cal Serra, C Galerias, D mina vieja)
+        bool aval = false;                             // vuelve con Serra tras salvar a Iris y ella le avala ante el recinto (bga_despues_bien: bnd2_aval_serra)
+        bool tregua = false;                           // ante Gorran, con el aval y los lios, «Proponerle una tregua» (b2_gorran_tregua) antes de la subasta
+        std::vector<std::string> subasta = {"Dejar que estalle"};  // lo que elige en la subasta, por orden de gusto
+        std::string final = "Suelta a los presos y estamos en paz.";  // vencido Gorran: esta o «Acabar con él (no volverá a ayudarte)»
+        std::vector<std::string> antes;                // respuestas que van por delante de las demas (p. ej. «Unirte: «Yo enciendo la vela.»»)
+        bool trato = false;                            // en la casa del Cojo se lleva el trato (b2_libros_cojo) y se lo lee a Gorran (b2_gorran_trato) en vez de la subasta
+        std::vector<std::pair<std::string, Suerte>> tiradas;  // tiradas (por su flagBotch) que salen con esta suerte aunque las demas salgan bien
+        bool exige = true;                             // false (las mutaciones): lo que no sale no aborta, la prueba lo mira despues
+        std::string parada;                            // E-MATRIZ-02 (capturas): "tregua" | "subasta" | "balance" | "dormir" = se para JUSTO ANTES de ese momento
+        bool amaneceElTercero = true;                  // false = se queda en el cierre del dia (bndg_dia_cerrado): el guardado de fin de dia
+        int cuantos = 3;                               // minimo de lios cerrados
+    };
+
+    void juegaElDiaDeGorran(const DiaDeGorran& d) {
         const std::vector<std::string> antes = prefiere;
-        prefiere.insert(prefiere.end(), {"Aceptar el encargo", "Pagar el paso (5)", "«Vengo a ver al jefe.» [Persuasión]",
-                                         "Dejar que estalle", "Suelta a los presos y estamos en paz.",
-                                         "Subir a dormir"});
+        prefiere.insert(prefiere.begin(), d.antes.begin(), d.antes.end());
+        for (const auto& t : d.tiradas) tiradas[t.first] = t.second;
+        if (d.trato) prefiere.push_back("Llevarte el trato");
+        if (d.trato) prefiere.push_back("Leérselo en voz alta");
+        if (d.tregua) prefiere.push_back("Proponerle una tregua");
+        prefiere.insert(prefiere.end(), d.subasta.begin(), d.subasta.end());
+        prefiere.insert(prefiere.end(), {"Aceptar el encargo", "Pagar el paso (5)", "«Vengo a ver al jefe.» [Persuasión]"});
+        prefiere.push_back(d.final);
+        prefiere.insert(prefiere.end(), {"Suelta a los presos y estamos en paz.", "Subir a dormir"});
         fase("dia_gorran");
         drena();  // bg_amanece
         entra("interior_taberna");
         habla("skilla");  // b2_rosita_encargo
         entra("antecova_gorran");  // b2_cueva_llegada: pagar el paso -> bnd2_aldea_dentro
-        losLiosDeLaAldea(3, true, ordenLios);  // -> b2_subasta_aviso -> bnd2_subasta_ya
+        losLiosDeLaAldea(d.cuantos, true, d.lios, d.antes);  // -> b2_subasta_aviso -> bnd2_subasta_ya
+        if (d.aval) {  // Serra, ya con Iris a salvo (bga_despues_bien), avala al heroe ante el recinto: bnd2_aval_serra
+            entra("aldea_serra_p0");
+            habla("serra");
+            require(!d.exige || s.hasFlag("bnd2_aval_serra"));
+        }
+        if (d.trato) {  // el trato del Cojo con Gorran, de su casa
+            entra("aldea_cojo_p1");
+            habla("libros_cojo");
+            require(!d.exige || s.hasFlag("bnd2_trato_venta"));
+        }
         entra("recinto_gorran");  // b2_porton
-        require(pisaLaZona("recinto_subasta"));  // b2_subasta(_cojo_pobre): «Dejar que estalle»
-        require(s.hasFlag("bnd2_subasta_vista"));
+        if (d.parada == "tregua") {
+            prefiere = antes;
+            return;
+        }
+        if (d.trato) {
+            habla("gorran");  // b2_gorran_trato: «Leérselo en voz alta»
+            require(!d.exige || s.hasFlag("bnd2_gorran_trato_visto"));
+        }
+        if (d.tregua) {
+            habla("gorran");  // b2_gorran_tregua (talk): aval de Serra + tres lios
+            require(!d.exige || s.hasFlag("bnd2_gorran_tregua"));
+        }
+        if (d.parada == "subasta") {
+            prefiere = antes;
+            return;
+        }
+        require(pisaLaZona("recinto_subasta") || !d.exige);  // b2_subasta(_cojo_pobre): la eleccion de `subasta`
+        require(!d.exige || s.hasFlag("bnd2_subasta_vista"));
+        if (d.parada == "balance") {  // aun no se ha bajado a la taberna: al entrar sale el hito y el balance de la aldea
+            prefiere = antes;
+            return;
+        }
         entra("interior_taberna");
+        if (d.parada == "dormir") {
+            prefiere = antes;
+            return;
+        }
         habla("skilla");  // bg_skilla_hora: «Subir a dormir» -> bndg_a_dormir -> bg_cierre
-        require(s.hasFlag("bndg_dia_cerrado"));
+        require(!d.exige || s.hasFlag("bndg_dia_cerrado"));
         prefiere = antes;
+        if (!d.amaneceElTercero) return;
         fase("dia2");
         drena();  // b2_amanece: bnd2_encargo
         require(s.hasFlag("bnd2_encargo"));
+    }
+
+    void pasaElDiaDeGorranJugando(const std::string& ordenLios = "BADC") {
+        DiaDeGorran d;
+        d.lios = ordenLios;
+        juegaElDiaDeGorran(d);
     }
 
     // GORRAN-DIA2 — La espada de Rosita (dia_gorran): el encargo de Rosita, el paso por la Gola

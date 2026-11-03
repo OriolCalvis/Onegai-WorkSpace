@@ -194,6 +194,7 @@ struct Momento {
     const char* nivel;    // sin "assets/levels/" ni ".json"
     const char* pnj;      // objectId junto al que se pone; "" = el inicio del nivel
     int dx, dy;           // la casilla de al lado que se prefiere (la que se ve bien en la camara); si no se pisa, otra
+    int px = -1, py = -1; // E-MATRIZ-02: casilla exacta (si px >= 0 manda sobre el PNJ)
 };
 
 inline constexpr Momento kSectarios{"sectarios.json", "ciudad_centro", "sectario_perdido", 0, -1};
@@ -210,6 +211,7 @@ struct Opciones {
 // si se puede pisar (hay camino hasta ella) y, si no, la vecina pisable de mayor x+y.
 inline GridCoord casillaJuntoA(GameSession& sesion, const LevelDefinition& nivel, const Momento& momento) {
     const std::string pnj = momento.pnj;
+    if (momento.px >= 0) return GridCoord{momento.px, momento.py};
     if (pnj.empty()) return nivel.playerStart;
     for (const ObjectSpawn& o : nivel.objects) {
         if (o.objectId != pnj) continue;
@@ -669,7 +671,7 @@ inline Restaurada restaura(const demo_bnd::Guiones& g, const Heroe& h, const Sav
 
 // ¿Se puede ver el beat (u opcion) lector con los hechos del dia 1 de `base`? Los requisitos de los dias posteriores
 // (flags que no son bnd0_/bnd1_, variables ajenas al dia 1) se dan por cumplidos; los del dia 1 se leen del guardado.
-inline bool lectorSeVe(const demo_bnd::Guiones& g, const Lector& l, const RPG::NarrativeState& base) {
+inline bool lectorSeVe(const demo_bnd::Guiones& g, const Lector& l, const RPG::NarrativeState& base, bool tambienGorran = false) {
     const RPG::AdventureScript& guion = g.por(l.dia);
     const RPG::NarrativeBeat* beat = nullptr;
     for (const RPG::NarrativeBeat& b : guion.beats)
@@ -694,7 +696,13 @@ inline bool lectorSeVe(const demo_bnd::Guiones& g, const Lector& l, const RPG::N
         recoge(b.effects);
         for (const RPG::OpcionDeDialogo& o : b.opciones) recoge(o.efectos);
     }
-    for (const char* v : {"dia", "franja", "bnd_dia_cerrado"}) deldia1.erase(v);  // el reloj y el cierre los mueve cada dia
+    if (tambienGorran) {  // E-MATRIZ-02: el guardado es del final del dia de Gorran: tambien son hechos suyos los del dia 2
+        for (const RPG::NarrativeBeat& b : g.gorran.beats) {
+            recoge(b.effects);
+            for (const RPG::OpcionDeDialogo& o : b.opciones) recoge(o.efectos);
+        }
+    }
+    for (const char* v : {"dia", "franja", "bnd_dia_cerrado", "bndg_dia_cerrado"}) deldia1.erase(v);  // el reloj y el cierre los mueve cada dia
     const auto propio = [&](const std::string& f) { return deldia1.count(f) > 0; };
     const auto variableDelDia1 = propio;
     const auto visible = [&](const RPG::NarrativeCondition& c) {
@@ -1043,6 +1051,296 @@ inline const CaminoDia1& caminoDia1(const std::string& id) {
     std::fprintf(stderr, "fabricar_guardados: no hay camino %s\n", id.c_str());
     require(false);
     return caminosDia1().front();
+}
+
+
+// ===========================================================================================================
+// E-MATRIZ-02 — Un guardado por camino del dia de Gorran.
+//
+// Cada CaminoGorran parte de un camino del dia 1 (CaminoDia1: el de unirse al culto o uno neutral), lo juega con el arnes,
+// cierra el dia 1 y sigue con el dia de Gorran DE VERDAD (Jugador::juegaElDiaDeGorran: los lios, la subasta, dormir) hasta
+// su cierre (bndg_dia_cerrado, sin dar el paso al tercer dia). Fotografia la partida en el cuarto de la taberna. La prueba
+// (tests/Engine/MatrizGorranTests.cpp) la restaura en una sesion limpia, deja que amanezca el dia 3, juega su comienzo y
+// mira lo que inventaria tools/matriz_decisiones.py --dia dia_gorran. Las ranuras salen de fabricar_guardados --matriz-gorran.
+// ===========================================================================================================
+struct CaminoGorran {
+    const char* id;     // gorran_<id>.json
+    const char* desde;  // id del CaminoDia1 con el que llega al dia de Gorran
+    demo_bnd::Jugador::DiaDeGorran dia;
+    std::vector<std::string> beats;                    // beats que se tienen que haber visto en el dia
+    std::vector<std::string> ve, noVe;                 // flags al cerrar el dia (y tras amanecer el tercero)
+    std::vector<std::pair<std::string, int>> igual;    // variable == n
+    std::vector<Lector> lectores;                      // beats del dia 3 / Ocaso que leen la decision: se ven o no
+    std::vector<std::string> sale, noSale;             // lo que se LEE al empezar el tercer dia (hablando con Rosita)
+    Mutacion mutacion;                                 // una copia del JSON de Gorran en la que la decision no hace su efecto
+    const char* nota;
+    Cuenta cuenta;                                     // oro, moral, nivel y mochila al cerrar el dia
+    Mutacion mutOro;
+    Mutacion mutMoral;
+};
+
+inline const std::vector<CaminoGorran>& caminosGorran();
+
+// Una mutacion sobre boundington_dia_gorran.json (ver Mutacion).
+inline Mutacion mg(const char* beat, const char* opcion, const char* cadena, const char* hacia = "zz_mutada") {
+    return Mutacion{beat, opcion, cadena, hacia, 1, 0, "dia_gorran"};
+}
+
+// Las decisiones del dia de Gorran de un camino (ver Jugador::DiaDeGorran).
+inline demo_bnd::Jugador::DiaDeGorran gd(const char* lios, bool aval = false, bool tregua = false,
+                                         std::vector<std::string> subasta = {"Dejar que estalle"},
+                                         const char* final = "Suelta a los presos y estamos en paz.", std::vector<std::string> antes = {},
+                                         bool trato = false, std::vector<std::pair<std::string, demo_bnd::Suerte>> tiradas = {}) {
+    demo_bnd::Jugador::DiaDeGorran d;
+    d.lios = lios;
+    d.aval = aval;
+    d.tregua = tregua;
+    d.subasta = std::move(subasta);
+    d.final = final;
+    d.antes = std::move(antes);
+    d.trato = trato;
+    d.tiradas = std::move(tiradas);
+    return d;
+}
+
+inline SaveGameData gorran(const demo_bnd::Guiones& g, const Heroe& h, const CaminoGorran& c, std::vector<std::string>* jugado = nullptr,
+                           bool exigeCierre = true) {
+    const CaminoDia1& d1 = caminoDia1(c.desde);
+    Partida p(g, h, d1.suerte);
+    demo_bnd::Jugador& j = p.j;
+    j.prefiere = d1.dice;
+    j.prefiere.insert(j.prefiere.end(), {"Pagar la cama", "Subir a dormir"});
+    for (const auto& f : d1.fuerza) j.tiradas[f.first] = f.second;
+    for (const std::string& f : d1.pierde) j.pierde.insert(f);
+    for (const std::string& f : d1.huye) j.huyen.insert(f);
+    j.prologo();
+    fase(j, "dia1");
+    recorre(j, d1.ruta);
+    j.suerte = demo_bnd::Suerte::Buena;
+    require(cierraElDia1(j));
+    // El dia de Gorran, con sus propias respuestas (las del dia 1 ya no pintan nada).
+    j.prefiere.clear();
+    j.suerte = demo_bnd::Suerte::Buena;
+    demo_bnd::Jugador::DiaDeGorran dg = c.dia;
+    dg.amaneceElTercero = false;
+    dg.exige = exigeCierre;
+    fase(j, "dia_gorran");  // (con la flag privada del capitulo, como el juego)
+    j.juegaElDiaDeGorran(dg);
+    if (exigeCierre) require(j.s.hasFlag("bndg_dia_cerrado"));
+    if (jugado != nullptr) *jugado = j.vistos;
+    static const Momento kGorran{"gorran.json", "interior_taberna_p1", "", 0, 0};
+    return fotografia(j, h, kGorran);
+}
+
+// E-MATRIZ-02 (capturas): el mismo camino, parado JUSTO ANTES de un momento clave del dia de Gorran ("tregua": ante Gorran con el aval y
+// los lios; "subasta": en el salon del recinto con el cuerno sonado; "balance": al bajar a la taberna, antes del hito y del balance de la aldea;
+// "dormir": en la taberna, antes de «Subir a dormir»).
+inline SaveGameData gorranParada(const demo_bnd::Guiones& g, const Heroe& h, const CaminoGorran& c, const std::string& parada) {
+    CaminoGorran p = c;
+    p.dia.parada = parada;
+    const CaminoDia1& d1 = caminoDia1(c.desde);
+    Partida pa(g, h, d1.suerte);
+    demo_bnd::Jugador& j = pa.j;
+    j.prefiere = d1.dice;
+    j.prefiere.insert(j.prefiere.end(), {"Pagar la cama", "Subir a dormir"});
+    for (const auto& f : d1.fuerza) j.tiradas[f.first] = f.second;
+    for (const std::string& f : d1.pierde) j.pierde.insert(f);
+    for (const std::string& f : d1.huye) j.huyen.insert(f);
+    j.prologo();
+    fase(j, "dia1");
+    recorre(j, d1.ruta);
+    j.suerte = demo_bnd::Suerte::Buena;
+    require(cierraElDia1(j));
+    j.prefiere.clear();
+    demo_bnd::Jugador::DiaDeGorran dg = p.dia;
+    dg.amaneceElTercero = false;
+    fase(j, "dia_gorran");
+    j.juegaElDiaDeGorran(dg);
+    // Subasta: en el borde del salon (zona [54,25,66,37] de la cinematica recinto_subasta).
+    static const Momento kTregua{"m2_tregua.json", "recinto_gorran", "gorran", 0, -1};
+    static const Momento kSubasta{"m2_subasta.json", "recinto_gorran", "", 0, 0, 55, 31};
+    static const Momento kDormir{"m2_dormir.json", "interior_taberna", "skilla", 0, -1};
+    static const Momento kBalance{"m2_balance.json", "interior_taberna", "", 0, 0};  // al cargar, el heroe «entra» en la taberna: hito y balance de la aldea
+    return fotografia(j, h, parada == "tregua" ? kTregua : parada == "subasta" ? kSubasta : parada == "balance" ? kBalance : kDormir);
+}
+
+// Lo que tiene que cumplir el camino al restaurarse, al amanecer el tercer dia y en su comienzo. Devuelve las faltas.
+inline std::vector<std::string> compruebaGorran(const demo_bnd::Guiones& g, Restaurada& r, const CaminoGorran& c) {
+    std::vector<std::string> fallos;
+    demo_bnd::Jugador& j = *r.j;
+    const auto falta = [&](const std::string& s) { fallos.push_back(s); };
+    for (const std::string& f : c.ve)
+        if (!j.s.hasFlag(f)) falta("falta " + f);
+    for (const std::string& f : c.noVe)
+        if (j.s.hasFlag(f)) falta("sobra " + f);
+    for (const auto& v : c.igual)
+        if (j.s.variable(v.first) != v.second) falta(v.first + "=" + std::to_string(j.s.variable(v.first)) + " != " + std::to_string(v.second));
+    for (const std::string& b : c.beats)
+        if (!j.s.beatFired(b)) falta("no disparado " + b);
+    {
+        GameSession& sesion = *r.nivel->sesion;
+        const RPG::CharacterSheet* ficha = r.nivel->cuerpo->character_sheet();
+        if (sesion.gold() != c.cuenta.oro) falta("oro=" + std::to_string(sesion.gold()) + " != " + std::to_string(c.cuenta.oro));
+        if (sesion.morality().value() != c.cuenta.moral)
+            falta("moral=" + std::to_string(sesion.morality().value()) + " != " + std::to_string(c.cuenta.moral));
+        if (sesion.morality().tramo() != moral::tramoDe(c.cuenta.moral))
+            falta(std::string("tramo de moral ") + sesion.morality().label() + " != " + moral::nombreTramo(moral::tramoDe(c.cuenta.moral)));
+        if (!sesion.morality().pendientes().empty()) falta("moral sin asentar: " + std::to_string(sesion.morality().pendientes().size()) + " actos pendientes");
+        if (ficha->nivel != c.cuenta.nivel || ficha->progresoNivel != c.cuenta.progreso)
+            falta("nivel " + std::to_string(ficha->nivel) + " (" + std::to_string(ficha->progresoNivel) + " %) != " + std::to_string(c.cuenta.nivel) + " (" +
+                  std::to_string(c.cuenta.progreso) + " %)");
+        std::vector<std::string> mochila = *sesion.inventory();
+        std::sort(mochila.begin(), mochila.end());
+        if (mochila != c.cuenta.mochila) {
+            std::string m;
+            for (const std::string& x : mochila) m += x + ",";
+            falta("mochila [" + m + "] != la esperada de " + std::to_string(c.cuenta.mochila.size()) + " objetos");
+        }
+    }
+    if (!j.s.hasFlag("bndg_dia_cerrado")) falta("el dia de Gorran no esta cerrado");
+    if (j.s.hasFlag("bnd2_dia_empezado")) falta("el guardado ya es del tercer dia");
+    // (El reloj del dia de Gorran lo lleva aldea_tiempo, no la franja: al cerrar el dia el HUD sigue en «Día 2 · Mañana»; hallazgo en MATRIZ_GORRAN.md.)
+    if (RPG::franjas::rotulo(RPG::franjas::momentoDe(j.s)).rfind("Día 2", 0) != 0) falta("el guardado no trae el «Día 2»");
+    // El comienzo del tercer dia, como lo hace el juego al cargar: cambio de aventura y primer fotograma (b2_amanece).
+    fase(j, "dia2");
+    j.drena();
+    if (!j.visto("b2_amanece")) falta("no amanece el tercer dia (b2_amanece)");
+    if (!j.s.hasFlag("bnd2_encargo")) falta("falta bnd2_encargo al amanecer");
+    if (RPG::franjas::rotulo(RPG::franjas::momentoDe(j.s)) != "Día 3 · Mañana") falta("al amanecer el HUD no dice «Día 3 · Mañana»");
+    for (const std::string& f : c.ve)
+        if (!j.s.hasFlag(f)) falta("tras amanecer ya no esta " + f);
+    for (const Lector& l : c.lectores) {
+        const bool ve = lectorSeVe(g, l, j.s, true);
+        if (ve != l.seVe)
+            falta(std::string(l.dia) + ":" + l.beat + (std::string(l.opcion).empty() ? "" : std::string("/") + l.opcion) +
+                  (l.seVe ? " deberia verse" : " no deberia verse"));
+    }
+    // Lo que se lee al empezar el tercer dia: Rosita en la taberna (la espada devuelta o su ausencia).
+    j.entra("interior_taberna");
+    j.habla("skilla");
+    for (const std::string& t : c.sale)
+        if (!j.dijo(t)) falta("no sale «" + t + "»");
+    for (const std::string& t : c.noSale)
+        if (j.dijo(t)) falta("sobra «" + t + "»");
+    return fallos;
+}
+
+inline const CaminoGorran& caminoGorran(const std::string& id) {
+    for (const CaminoGorran& c : caminosGorran())
+        if (id == c.id) return c;
+    std::fprintf(stderr, "fabricar_guardados: no hay camino de Gorran %s\n", id.c_str());
+    require(false);
+    return caminosGorran().front();
+}
+
+// --- Los caminos del dia de Gorran (la tabla de la prueba y de las ranuras) ---
+// Los lectores y los efectos esperados salen de out/fabrica/UNI-02-11/MATRIZ_GORRAN.md (tools/matriz_decisiones.py --dia dia_gorran).
+inline const std::vector<CaminoGorran>& caminosGorran() {
+    using demo_bnd::Suerte;
+    // Orden de campos: id, desde, decisiones, beats, ve, noVe, igual, lectores, sale, noSale, mutacion, nota, cuenta, mutOro, mutMoral.
+    static const std::vector<CaminoGorran> c = {
+        // --- los cuatro lios (D0023.1): todos caben; luego «Dejar que estalle» y «Suelta a los presos» ---
+        {"cuatro_lios", "pelea_separar", gd("BADC"),
+         {"bgc_hundir_exito", "bgd_sacar_exito", "b2_subasta_aviso", "b2_gorran_victoria"},
+         {"bgb_cerrada", "bga_cerrada", "bgc_cerrada", "bgd_cerrada", "bgc_cajas_hundidas", "bgd_ninos_salvados", "bnd2_subasta_ya", "bnd2_gorran_perdonado",
+          "bnd2_furia_alaro", "bnd2_documentos", "bnd2_preso_libre", "bndg_dia_cerrado"},
+         {"bgd_mia_perdida", "bnd2_gorran_muerto", "bnd2_gorran_tregua"}, {{"gorran_misiones", 4}, {"aldea_tiempo", 6}},
+         {{"ocaso", "b3_gorran", "", true}, {"ocaso", "b3_rev_teobaldo", "", true}, {"ocaso", "b3_barricada_floja", "", true}, {"ocaso", "b3_gorran_sin_jefe", "", false},
+          {"ocaso", "b3_epi_iris", "", true}, {"dia2", "b2_skilla_espada_devuelta", "", true}},
+         {"Le pones la espada sobre la barra"}, {"Rosita lee el trato"},
+         mg("bgc_hundir_exito", "", "bgc_cajas_hundidas"), "los 4 lios cerrados, estalla la subasta y se perdona a Gorran",
+         {140, 2, 3, 80, {"furia_de_alaro"}}, mg("b2_gorran_victoria", "Suelta a los presos y estamos en paz.", "grantGold", "log"),
+         mg("b2_gorran_victoria", "Suelta a los presos y estamos en paz.", "gorran_perdonado", "gorran_rematado")},
+        // --- solo tres lios: el de las Galerias (C) queda sin jugar; el cuerno suena igual (min 3) ---
+        {"tres_lios", "pelea_separar", gd("BAD"),
+         {"b2_subasta_aviso", "b2_gorran_victoria"},
+         {"bgb_cerrada", "bga_cerrada", "bgd_cerrada", "bnd2_subasta_ya", "bnd2_gorran_perdonado", "bndg_dia_cerrado"},
+         {"bgc_cerrada", "bgc_cajas_hundidas", "bgc_gancho", "bgd_mia_perdida"}, {{"gorran_misiones", 3}, {"aldea_tiempo", 4}},
+         {{"ocaso", "b3_barricada_floja", "", false}, {"ocaso", "b3_gorran", "", true}, {"ocaso", "b3_rev_viga", "", true}},
+         {"Le pones la espada sobre la barra"}, {},
+         Mutacion{"b2_subasta_aviso", "", "bnd2_subasta_ya", "zz_mutada", 1, 1, "dia_gorran"}, "solo 3 lios (B, A, D): el cuerno de la subasta suena a la tercera",
+         {140, 2, 3, 50, {"furia_de_alaro"}}, mg("b2_gorran_victoria", "Suelta a los presos y estamos en paz.", "grantGold", "log"),
+         mg("b2_gorran_victoria", "Suelta a los presos y estamos en paz.", "gorran_perdonado", "gorran_rematado")},
+        // --- Mia perdida (D0023.2): la mina vieja se hace con el reloj en 5: solo se salva a Tinet ---
+        {"mia_perdida", "pelea_separar", gd("BACD"),
+         {"bgd_sacar_exito_tinet"},
+         {"bgd_mia_perdida", "bgd_tinet_salvado", "bgd_solo_tinet", "bgd_cerrada", "bnd2_gorran_perdonado"},
+         {"bgd_ninos_salvados"}, {{"gorran_misiones", 4}},
+         {{"ocaso", "b3_orfeu", "", true}, {"ocaso", "b3_gorran", "", true}},
+         {"Le pones la espada sobre la barra"}, {},
+         mg("bgd_sacar_exito_tinet", "", "bgd_solo_tinet"), "la mina vieja tarde: Mia perdida, solo Tinet",
+         {140, 2, 3, 80, {"furia_de_alaro"}}, mg("b2_gorran_victoria", "Suelta a los presos y estamos en paz.", "grantGold", "log"),
+         mg("b2_gorran_victoria", "Suelta a los presos y estamos en paz.", "gorran_perdonado", "gorran_rematado")},
+        // --- tregua con Gorran (D0023.3): el aval de Serra, tres lios y «Proponerle una tregua»; la subasta se resuelve salvandole la cara ---
+        {"tregua", "pelea_separar", gd("BADC", true, true, {"Salvarle la cara a Gorran [Persuasión]"}),
+         {"bga_despues_bien", "b2_gorran_tregua", "b2_honor_exito"},
+         {"bnd2_aval_serra", "bnd2_gorran_tregua", "bnd2_gorran_honor", "bnd2_gorran_redimido", "bnd2_tiene_aliados", "bnd2_joel_rescatado", "bndg_dia_cerrado"},
+         {"bnd2_gorran_tregua_ofrecida", "bnd2_gorran_perdonado", "bnd2_furia_alaro", "bnd2_documentos"}, {{"gorran_misiones", 4}},
+         {{"ocaso", "b3_gorran", "", false}, {"ocaso", "b3_amigos_afueras", "", true}, {"dia2", "b2_skilla_espada_devuelta", "", false}},
+         {}, {"Le pones la espada sobre la barra"},
+         mg("b2_gorran_tregua", "Proponerle una tregua", "bnd2_gorran_tregua"), "tregua con Gorran (aval de Serra + 3 lios) y subasta salvandole la cara [solo la alcanza el arnes: Gorran esta oculto]",
+         {120, 2, 4, 10, {}}, mg("b2_cueva_llegada", "Pagar el paso (5)", "grantGold", "log"),
+         mg("b2_honor_exito", "", "gorran_perdonado", "gorran_rematado")},
+        // --- subasta: «Dejar que estalle» y luego «Acabar con él» ---
+        {"estalle_acaba", "pelea_separar", gd("BADC", false, false, {"Dejar que estalle"}, "Acabar con él (no volverá a ayudarte)"),
+         {"b2_gorran_victoria"},
+         {"bnd2_gorran_muerto", "bnd2_furia_alaro", "bnd2_documentos", "bnd2_gorran_decidido", "bnd2_cueva_cerrada", "bndg_dia_cerrado"},
+         {"bnd2_gorran_perdonado", "bnd2_gorran_redimido", "bnd2_preso_libre", "bnd2_tiene_aliados"}, {{"gorran_misiones", 4}},
+         {{"ocaso", "b3_gorran_sin_jefe", "", true}, {"ocaso", "b3_gorran", "", false}, {"ocaso", "b3_rev_teobaldo", "", false}, {"dia2", "b2_skilla_espada_devuelta", "", true}},
+         {"Le pones la espada sobre la barra"}, {},
+         mg("b2_gorran_victoria", "Acabar con él (no volverá a ayudarte)", "bnd2_gorran_muerto"), "la subasta estalla y se acaba con Gorran",
+         {160, -5, 3, 80, {"furia_de_alaro"}}, mg("b2_gorran_victoria", "Acabar con él (no volverá a ayudarte)", "grantGold", "log"),
+         mg("b2_gorran_victoria", "Acabar con él (no volverá a ayudarte)", "gorran_rematado", "gorran_perdonado")},
+        // --- el culto: llega unido a la secta del dia 1 y en la mina vieja «Yo enciendo la vela» ---
+        {"culto_velas", "edul_unirse", gd("BADC", false, false, {"Dejar que estalle"}, "Suelta a los presos y estamos en paz.", {"Unirte: «Yo enciendo la vela.»"}),
+         {"bgd_velas_hermano"},
+         {"bgd_unido", "bnd1_unido_al_culto", "bgd_ninos_perdidos", "bgd_orfeu_huido", "bgd_cerrada", "bnd2_gorran_perdonado"},
+         {"bgd_ninos_salvados", "bgd_mia_perdida"}, {{"gorran_misiones", 4}, {"aldea_sospecha", 3}},
+         {{"ocaso", "b3_orfeu", "", false}, {"dia2", "b2_po54_sandes", "", true}, {"ocaso", "b3_gorran", "", true}},
+         {"Le pones la espada sobre la barra"}, {},
+         mg("bgd_velas_hermano", "Unirte: «Yo enciendo la vela.»", "bgd_unido"), "culto: unido en el dia 1 y «Yo enciendo la vela» con los crios de la mina",
+         {180, 2, 3, 80, {"furia_de_alaro"}}, mg("b2_gorran_victoria", "Suelta a los presos y estamos en paz.", "grantGold", "log"),
+         mg("b2_gorran_victoria", "Suelta a los presos y estamos en paz.", "gorran_perdonado", "gorran_rematado")},
+        // --- subasta: «Llevarte la Furia en el caos [Sigilo]» (sin pelea con Gorran) ---
+        {"caos", "pelea_separar", gd("BADC", false, false, {"Llevarte la Furia en el caos [Sigilo]", "Sacar a Joel en el caos [Sigilo]"}),
+         {"b2_caos_exito", "b2_caos_furia"},
+         {"bnd2_caos_exito", "bnd2_joel_rescatado", "bnd2_furia_alaro", "bnd2_documentos", "bnd2_cueva_cerrada", "bndg_dia_cerrado"},
+         {"bnd2_gorran_perdonado", "bnd2_gorran_redimido", "bnd2_gorran_vencido", "bnd2_gorran_muerto"}, {{"gorran_misiones", 4}},
+         {{"ocaso", "b3_amigos_afueras", "", true}, {"ocaso", "b3_gorran", "", false}, {"dia2", "b2_skilla_espada_devuelta", "", true}},
+         {"Le pones la espada sobre la barra"}, {},
+         mg("b2_caos_exito", "", "bnd2_joel_rescatado"), "subasta: llevarse la Furia en el caos",
+         {120, 0, 4, 10, {"furia_de_alaro"}}, mg("b2_cueva_llegada", "Pagar el paso (5)", "grantGold", "log"), {"", "", ""}},
+        // --- subasta: «Unirte a la farsa [Interpretación]» (la comedia: Joel a salvo, sin la Furia) ---
+        {"farsa", "pelea_separar", gd("BADC", false, false, {"Unirte a la farsa [Interpretación]"}),
+         {"b2_farsa_exito"},
+         {"bnd2_farsa_exito", "bnd2_joel_rescatado", "bnd2_subasta_vista", "bndg_dia_cerrado"},
+         {"bnd2_furia_alaro", "bnd2_gorran_resuelto", "bnd2_documentos", "bnd2_gorran_perdonado"}, {{"gorran_misiones", 4}},
+         {{"ocaso", "b3_amigos_afueras", "", true}, {"dia2", "b2_skilla_espada_devuelta", "", false}, {"ocaso", "b3_gorran", "", false}},
+         {}, {"Le pones la espada sobre la barra"},
+         mg("b2_farsa_exito", "", "bnd2_joel_rescatado"), "subasta: unirse a la farsa (Joel a salvo, sin la Furia)",
+         {120, 0, 4, 10, {}}, mg("b2_cueva_llegada", "Pagar el paso (5)", "grantGold", "log"), {"", "", ""}},
+        // --- el trato del Cojo: se lleva de su casa y se le lee a Gorran en voz alta ---
+        {"trato_cojo", "pelea_separar", gd("BADC", false, false, {"Dejar que estalle"}, "Suelta a los presos y estamos en paz.", {}, true),
+         {"b2_libros_cojo", "b2_gorran_trato"},
+         {"bnd2_trato_venta", "bnd2_gorran_contra_cojo", "bnd2_gorran_trato_visto", "bnd2_gorran_redimido", "bnd2_furia_alaro", "bnd2_tiene_aliados"},
+         {"bnd2_gorran_perdonado", "bnd2_documentos", "bnd2_trato_copia"}, {{"gorran_misiones", 4}},
+         {{"dia2", "b2_rosita_trato", "", true}, {"ocaso", "b3_gorran", "", false}, {"dia2", "b2_skilla_espada_devuelta", "", true}},
+         {"Rosita lee el trato dos veces"}, {"Le pones la espada sobre la barra"},
+         mg("b2_libros_cojo", "Llevarte el trato", "bnd2_trato_venta"), "Gorran contra el Cojo: le lees el trato en voz alta [solo lo alcanza el arnes: Gorran esta oculto]",
+         {120, 2, 4, 10, {"furia_de_alaro"}}, mg("b2_cueva_llegada", "Pagar el paso (5)", "grantGold", "log"),
+         mg("b2_gorran_trato", "Leérselo en voz alta", "gorran_perdonado", "gorran_rematado")},
+        // --- Cal Serra con mala suerte: se llevan a Iris; luego Gorran perdonado la suelta (b2_gorran_suelta_iris) ---
+        {"iris_llevada", "pelea_separar", gd("BADC", false, false, {"Dejar que estalle"}, "Suelta a los presos y estamos en paz.", {"Dejar que se la lleven"}, false, {{"bga_garsa_pifia", Suerte::Mala}}),
+         {"bga_ultimo", "b2_gorran_suelta_iris"},
+         {"bga_ultimo_visto", "bga_serra_ofendida", "b2_gorran_suelta_iris_visto", "bga_iris_salvada", "bnd2_gorran_perdonado", "bga_cerrada"},
+         {"bga_iris_llevada", "bga_garsa_exito", "bga_morvan_huido"}, {{"gorran_misiones", 4}},
+         {{"ocaso", "b3_epi_iris", "", true}, {"ocaso", "b3_rev_casa", "", true}, {"ocaso", "b3_garsa", "", false}, {"ocaso", "b3_morvan", "", false}},
+         {"Le pones la espada sobre la barra"}, {},
+         Mutacion{"b2_gorran_suelta_iris", "", "bga_iris_salvada", "zz_mutada", 1, 1, "dia_gorran"}, "se llevan a Iris (mala suerte con la Garsa) y Gorran perdonado la suelta",
+         {140, 2, 3, 50, {"furia_de_alaro"}}, mg("b2_gorran_victoria", "Suelta a los presos y estamos en paz.", "grantGold", "log"),
+         mg("b2_gorran_victoria", "Suelta a los presos y estamos en paz.", "gorran_perdonado", "gorran_rematado")},
+    };
+    return c;
 }
 
 

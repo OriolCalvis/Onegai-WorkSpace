@@ -1,0 +1,13 @@
+# E-MATRIZ-02 — Dia de Gorran, camino «tregua»: cuatro lios cerrados, el aval de Serra (bnd2_aval_serra) y el heroe junto al sitio de
+# Gorran en el recinto (39,13). b2_gorran_tregua se ofrece hablando con `gorran`, pero con gorran_misiones >= 3 ya ha sonado el cuerno
+# (bnd2_subasta_ya) y cinematicas.json («apariciones») esconde a `gorran` con esa flag: no se le ve, no se le habla (E no abre nada) y se
+# le atraviesa. La tregua solo la alcanza el arnes (talkTo), no el jugador. Hallazgo en out/fabrica/UNI-02-11/MATRIZ_GORRAN.md.
+# Uso (desde out/build/macos-debug):
+#   ./fabricar_guardados --capturas-gorran guardados
+#   ./juego --guardado guardados/m2_tregua.json --guion ../../../tools/guiones/m2_tregua.txt
+32 toca E
+60 captura tregua_sin_dialogo
+62 toca S
+66 toca S
+90 captura tregua_atraviesa
+120 fin
