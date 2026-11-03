@@ -3,6 +3,7 @@
 // UNI-02-11 H5: SI ejecuta las cinemáticas y los eventos del mundo como el juego (y como el arnés de las
 // demos, examples/demo_boundington_partida.h): las que arrancan solas al entrar o hablar, las de zona
 // (acción "pisar") y las que enciende la noche del día 1 (bnd0_rosita_te_sube, bnd1_desayuno_llamado...).
+// UNI-02-11 E5: cuatro días (1 primer_dia, 2 dia_gorran, 3 segundo_dia, 4 ocaso), «pisar <zona>» y «poner <x>».
 #include "Core/Json/JsonValue.h"
 #include "Core/Json/JsonWriter.h"
 #include "Game/Cinematica.h"
@@ -221,6 +222,35 @@ void apagaLasVelas(Contexto& c) {
     if (s.lugar().find("interior_taberna.json") == std::string::npos) return;
     cinematica(c, GridCoord{-1, -1});
 }
+// UNI-02-11 E5: «pisar <zona>». El jugador entra en la celda central de la zona de la cinemática `id` (en el nivel
+// en que está), como pisaUnaZona() del arnés de las demos. Si esa zona no arranca (le faltan condiciones o ya se
+// vio), la ruta está mal escrita: se dice, no se sigue en silencio.
+void pisa(Contexto& c, const std::string& id) {
+    Partida& p = c.p;
+    exige(p.cines != nullptr, "Sin cinematicas no se puede pisar " + id);
+    const Game::Cinematica* cine = p.cines->busca(id);
+    exige(cine != nullptr && cine->hayZona, "Zona desconocida: " + id);
+    const std::string lugar = p.estado.lugar();
+    exige(lugar.size() >= cine->nivel.size() &&
+              lugar.compare(lugar.size() - cine->nivel.size(), cine->nivel.size(), cine->nivel) == 0,
+          "La zona " + id + " es de " + cine->nivel + " y el jugador esta en " + lugar);
+    const GridCoord centro{(cine->zonaDesde.x + cine->zonaHasta.x) / 2, (cine->zonaDesde.y + cine->zonaHasta.y) / 2};
+    const auto tiene = [&p](const std::string& f) { return p.estado.hasFlag(f); };
+    const Game::Cinematica* empieza = p.cines->laQueEmpieza(lugar, centro, tiene);
+    exige(empieza == cine, "La zona " + id + " no arranca ahora" +
+                               (empieza != nullptr ? " (arranca " + empieza->id + ")" : " (no arranca ninguna)"));
+    cinematica(c, centro);
+}
+// UNI-02-11 E5: «poner <bandera>» o «poner <variable>=<n>»: lo que la demo da por hecho sin jugarlo (p. ej.
+// gorran_misiones=3, los cuatro «lios» de la aldea). Cada uso es una trampa declarada en la ruta, no un atajo mudo.
+void pon(Contexto& c, const std::string& que) {
+    const auto igual = que.find('=');
+    exige(!que.empty(), "poner sin nada que poner");
+    if (igual == std::string::npos) c.p.estado.setFlag(que);
+    else c.p.estado.setVariable(que.substr(0, igual), std::stoi(que.substr(igual + 1)));
+    drena(c);
+    cinesSinZona(c);
+}
 void habla(Contexto& c, const std::string& npc) {
     resultado(c.p.motor.talkTo(npc, c.p.estado), c.ruta, c.p, c.paso, c.w);
     drena(c);
@@ -266,13 +296,13 @@ int main() {
             for (const auto& f : textos(ruta["flags_iniciales"])) p.estado.setFlag(f);
             w.beginObject(); w.member("perfil", perfil); w.key("traza"); w.beginArray();
             const auto& acciones = ruta["acciones"];
-            exige(acciones.isArray() && acciones.size() <= 200, "Acciones inválidas");
+            exige(acciones.isArray() && acciones.size() <= 600, "Acciones inválidas");
             int anterior = 0;
             for (std::size_t j = 0; j < acciones.size(); ++j) {
                 const auto& a = acciones[j];
                 Paso paso{a["dia"].asInt(), a["orden"].asInt(), a["aventura"].asString(), {}};
                 const int tiempo = paso.dia * 100 + paso.orden;
-                exige(paso.dia >= 1 && paso.dia <= 3 && paso.orden > 0 && paso.orden < 90 && tiempo >= anterior, "Día/orden inválido");
+                exige(paso.dia >= 1 && paso.dia <= 4 && paso.orden > 0 && paso.orden < 90 && tiempo >= anterior, "Día/orden inválido");
                 anterior = tiempo;
                 const auto g = guiones.find(paso.aventura);
                 exige(g != guiones.end(), "Aventura fuera del proyecto: " + paso.aventura);
@@ -282,9 +312,17 @@ int main() {
                 preferencias.insert(preferencias.end(), generales.begin(), generales.end());
                 const auto accion = a["accion"].asString(), destino = a["destino"].asString();
                 Contexto c{ruta, preferencias, p, paso, w};
-                if (accion == "entrar") entra(c, destino);
-                else if (accion == "hablar") habla(c, destino);
-                else { exige(accion == "auto", "Acción desconocida: " + accion); drena(c); }
+                // Un fallo dice en qué acción de qué ruta ocurrió (con 200 acciones, el beat solo no basta).
+                try {
+                    if (accion == "entrar") entra(c, destino);
+                    else if (accion == "hablar") habla(c, destino);
+                    else if (accion == "pisar") pisa(c, destino);
+                    else if (accion == "poner") pon(c, destino);
+                    else { exige(accion == "auto", "Acción desconocida: " + accion); drena(c); }
+                } catch (const std::exception& e) {
+                    throw std::runtime_error(std::string(e.what()) + " [ruta " + perfil + ", acción " + std::to_string(j) +
+                                             ": día " + std::to_string(paso.dia) + " " + accion + " " + destino + "]");
+                }
             }
             w.endArray(); w.key("flags"); w.beginArray();
             for (const auto& f : p.estado.flags()) w.value(f);
