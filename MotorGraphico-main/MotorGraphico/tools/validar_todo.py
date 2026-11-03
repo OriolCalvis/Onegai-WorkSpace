@@ -52,6 +52,7 @@ VALIDADORES_EXISTENTES = [
     "validar_cinematicas.py",  # PROLOGO-02: niveles, actores, beats y flags de las cinematicas
     "validar_eventos.py",  # C8-03a: eventos del mundo, sin lugar ni escenas vistas como causa
     "validar_beats_auto.py",  # UNI-02-11 B1: ningun beat auto pegajoso (soft-lock por bucle)
+    "validar_opciones_beat.py",  # E-MATRIZ-02 A0: ningun beat con mas de kMaxOpciones opciones (el cargador rechaza la aventura)
 ]
 
 errores: list[str] = []

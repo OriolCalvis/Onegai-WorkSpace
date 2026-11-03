@@ -23,4 +23,17 @@ if (BUILD_TESTING AND MOTOR_PYTHON3)
         COMMAND ${MOTOR_PYTHON3} "${CMAKE_CURRENT_SOURCE_DIR}/tools/validar_beats_auto.py"
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
     set_tests_properties(validar_beats_auto PROPERTIES LABELS "static;gl-free")
+    # E-MATRIZ-02 A0: ningun beat con mas de kMaxOpciones (4) opciones; el cargador rechaza la aventura entera.
+    add_test(NAME test_validar_opciones_beat
+        COMMAND ${MOTOR_PYTHON3} "${CMAKE_CURRENT_SOURCE_DIR}/tools/test_validar_opciones_beat.py")
+    set_tests_properties(test_validar_opciones_beat PROPERTIES LABELS "unit;gl-free")
+    # E-MATRIZ-01/02: el inventario de decisiones (dia 1 y dia de Gorran).
+    add_test(NAME test_matriz_decisiones
+        COMMAND ${MOTOR_PYTHON3} -I "${CMAKE_CURRENT_SOURCE_DIR}/tools/test_matriz_decisiones.py"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    set_tests_properties(test_matriz_decisiones PROPERTIES LABELS "unit;gl-free")
+    add_test(NAME validar_opciones_beat
+        COMMAND ${MOTOR_PYTHON3} "${CMAKE_CURRENT_SOURCE_DIR}/tools/validar_opciones_beat.py"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    set_tests_properties(validar_opciones_beat PROPERTIES LABELS "static;gl-free")
 endif ()

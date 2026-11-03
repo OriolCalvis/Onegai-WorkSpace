@@ -40,6 +40,8 @@ PROPIOS = {
 # Marcas de «ya es otro dia» para cinematicas del dia 1 (cierran el dia o ya son del siguiente).
 POSTERIORES = {
     "primer_dia": ("bnd2_", "bnd3_", "bndg_", "bga_", "bgb_", "bgc_", "bgd_", "bg_", "bnd_dia_cerrado", "bnd_venides_20"),
+    # E-MATRIZ-02: las cinematicas del dia de Gorran leen bnd2_/bg*_ de su propio dia; las posteriores se reconocen por el Ocaso (bnd3_).
+    "dia_gorran": ("bnd3_", "bnd2_dia_cerrado"),
 }
 # Variables y flags que lee todo el mundo (el reloj y el cierre del dia): no distinguen una decision de otra.
 CONCENTRADORES = {"dia", "franja", "bnd_dia_cerrado"}
@@ -250,6 +252,27 @@ def lecturas_posteriores(dia):
             if "senal" in dsp:
                 lect[str(dsp["senal"])].append({"donde": "%s:%d" % (rel(ruta), linea(dsp["senal"])), "cual": str(ev["id"]),
                                                 "tipo": "evento", "rol": "senal", "dia": "ocaso"})
+    # El diario (E-MATRIZ-02): los objetivos (`doneFlag`) de los dias posteriores y las misiones de assets/catalogs/quests.json.
+    # Cuentan como lector de DIARIO (tipo "diario"): la flag se apunta en el cuaderno pero no cambia nada del juego.
+    for otro in ORDEN[i + 1:]:
+        ruta = os.path.join(RAIZ, "assets/adventures/boundington_%s.json" % otro)
+        for ob in carga(ruta).get("objectives", []):
+            f = ob.get("doneFlag")
+            if f:
+                lect[str(f)].append({"donde": "%s:%d" % (rel(ruta), linea(f)), "cual": str(ob.get("id", "")), "tipo": "diario", "rol": "flag", "dia": otro})
+    ruta = os.path.join(RAIZ, "assets/catalogs/quests.json")
+    if os.path.exists(ruta):
+        pila = [carga(ruta)]
+        while pila:
+            x = pila.pop()
+            if isinstance(x, dict):
+                for k, v in x.items():
+                    if k in ("doneFlag", "completionFlag") and isinstance(v, str) and v:
+                        lect[str(v)].append({"donde": "%s:%d" % (rel(ruta), linea(v)), "cual": str(x.get("id", "")), "tipo": "diario", "rol": "flag", "dia": "diario"})
+                    else:
+                        pila.append(v)
+            elif isinstance(x, list):
+                pila.extend(x)
     # Cinematicas que ya no son de este dia
     post = POSTERIORES.get(dia, ())
     propios = PROPIOS.get(dia, ())
@@ -358,13 +381,15 @@ def peso_opcion(o):
     """Cuanto pesa una opcion: lecturas posteriores (distintos ficheros:linea, mas el hecho de ser de beat/evento/cine),
     salto indirecto a mitad, moral por gravedad, oro y nivel."""
     lecturas = set()
+    diario = set()
     for v in o["directas"].values():
-        lecturas.update((x["dia"], x["cual"].split("/")[0]) for x in v)
+        lecturas.update((x["dia"], x["cual"].split("/")[0]) for x in v if x["tipo"] != "diario")
+        diario.update((x["dia"], x["cual"]) for x in v if x["tipo"] == "diario")
     indirectas = set()
     for v in o["indirectas"].values():
-        indirectas.update((x["dia"], x["cual"].split("/")[0]) for x in v["lecturas"])
+        indirectas.update((x["dia"], x["cual"].split("/")[0]) for x in v["lecturas"] if x["tipo"] != "diario")
     moral = sum(PESO_GRAVEDAD.get(m["gravedad"], 0) for m in o["moral"] if m["signo"] != 0)
-    return len(lecturas) + 0.5 * len(indirectas - lecturas) + moral + abs(o["oro"]) // 10 + (3 if o["nivel"] >= 0.5 else 0)
+    return len(lecturas) + 0.5 * len(indirectas - lecturas) + 0.5 * len(diario) + moral + abs(o["oro"]) // 10 + (3 if o["nivel"] >= 0.5 else 0)
 
 
 def es_importante(o):
@@ -372,23 +397,39 @@ def es_importante(o):
                 or abs(o["oro"]) >= 20 or o["nivel"] >= 0.5)
 
 
+def es_contabilidad(nombre):
+    """Flags de contabilidad de un beat o de una charla (tema ya tratado, tirada pedida, beat resuelto): nadie tiene por que leerlas fuera."""
+    return "_t_" in nombre or nombre.endswith(("_tirada", "_resuelto", "_resuelta", "_cerrado", "_cerrada", "_ayudado", "_abierto", "_hecho", "_dicho"))
+
+
+def es_variante(lector, setter):
+    """¿`lector` es el propio beat `setter` o una de sus paginas (_s0, _p0_a...)? Su guarda («notFlags» de lo que el beat enciende) no es un lector."""
+    return lector == setter or re.fullmatch(re.escape(setter) + r"_[sp]\d+(_[a-z])?", lector) is not None
+
+
 def hallazgos(filas, beats, dia, lect, ruta):
     """Sospechas automaticas: flags que nadie lee, opciones que dan lo mismo, lecturas de flags que nadie pone."""
     avisos = []
-    leidas_dia = set()
+    lee_dia = defaultdict(set)  # nombre -> ids de los beats del dia que lo leen
     for b in beats:
         for nombre, rol, _ in lecturas_de_requires(b.get("requires")):
-            leidas_dia.add(nombre)
+            lee_dia[nombre].add(str(b["id"]))
         for o in b.get("opciones", []):
             for nombre, rol, _ in lecturas_de_requires(o.get("requires")):
-                leidas_dia.add(nombre)
-    leidas = leidas_dia | set(lect)
-    # 1. flags que una opcion IMPORTANTE de decision pone y nadie lee en ningun sitio
+                lee_dia[nombre].add(str(b["id"]))
+    # 1. flags que una opcion de decision pone y nadie lee en ningun sitio (ni el propio beat como guarda), o solo lee el diario
     for f in filas:
         for o in f["opciones"]:
             for fl in o["pone"]:
-                if fl not in leidas and not fl.startswith("heroe_") and not es_libro(fl):
+                if fl.startswith("heroe_") or es_libro(fl) or es_contabilidad(fl):
+                    continue
+                lectores_dia = {x for x in lee_dia.get(fl, set()) if not es_variante(x, f["beat"])}
+                lectores_post = lect.get(fl, [])
+                if not lectores_dia and not lectores_post:
                     avisos.append({"tipo": "flag-sin-lector", "donde": "%s:%d" % (f["beat"], o["linea"]), "dato": fl, "opcion": o["texto"]})
+                elif not lectores_dia and all(x["tipo"] == "diario" for x in lectores_post):
+                    avisos.append({"tipo": "solo-diario", "donde": "%s:%d" % (f["beat"], o["linea"]), "dato": fl,
+                                   "opcion": "%s; lo lee solo el diario: %s" % (o["texto"], lectores_post[0]["donde"])})
     # 2. opciones hermanas que dan lo mismo (mismas flags y variables, sin diferencia de moral/oro) y no son charla
     for f in filas:
         grupos = defaultdict(list)

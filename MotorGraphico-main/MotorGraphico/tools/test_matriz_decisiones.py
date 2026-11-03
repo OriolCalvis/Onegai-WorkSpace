@@ -36,4 +36,28 @@ with tempfile.TemporaryDirectory() as d:
                   "la salida %s es estable" % ext)
     texto = open(os.path.join(d, "a1.md"), encoding="utf-8").read()
     comprueba("b1_edul" in texto, "el md nombra b1_edul")
+# E-MATRIZ-02 — el dia de Gorran, con el diario como lector y sin contar la guarda del propio beat.
+gf, gb, gr, gl = m.inventario("dia_gorran")
+g_por = {f["beat"]: f for f in gf}
+vic = g_por["b2_gorran_victoria"]
+perdona = [o for o in vic["opciones"] if o["texto"].startswith("Suelta a los presos")][0]
+acaba = [o for o in vic["opciones"] if o["texto"].startswith("Acabar con")][0]
+comprueba(any(x["dia"] == "ocaso" and x["cual"] == "b3_gorran" for x in perdona["directas"].get("bnd2_gorran_perdonado", [])), "perdonar a Gorran lo lee el Ocaso (b3_gorran)")
+comprueba(any(x["cual"] == "b3_gorran_sin_jefe" for x in acaba["directas"].get("bnd2_gorran_muerto", [])), "acabar con Gorran lo lee el Ocaso (b3_gorran_sin_jefe)")
+comprueba(any(x["tipo"] == "cinematica" and x["cual"] == "afueras_gorran_presente" for x in perdona["directas"].get("bnd2_gorran_perdonado", [])),
+          "... y la cinematica afueras_gorran_presente")
+comprueba(any(x["tipo"] == "diario" for x in perdona["directas"].get("bnd2_tiene_aliados", [])), "bnd2_tiene_aliados la lee el diario (objetivo obj2_aliados)")
+comprueba(all(x["tipo"] == "diario" for x in perdona["directas"].get("bnd2_tiene_aliados", [])), "... y solo el diario")
+comprueba(m.es_importante(acaba) and m.peso_opcion(acaba) > 5, "acabar con Gorran pesa")
+gav = m.hallazgos(gf, gb, "dia_gorran", gl, gr)
+sin = {a["dato"] for a in gav if a["tipo"] == "flag-sin-lector"}
+comprueba("bnd2_gorran_tregua" in sin, "la tregua con Gorran no la lee nadie (su propia guarda no cuenta)")
+comprueba("bnd2_gorran_perdonado" not in sin, "perdonar a Gorran si se lee")
+comprueba(any(a["tipo"] == "solo-diario" and a["dato"] == "bnd2_tiene_aliados" for a in gav), "bnd2_tiene_aliados solo la lee el diario")
+with tempfile.TemporaryDirectory() as d:
+    for n in (1, 2):
+        m.main(["--dia", "dia_gorran", "--md", os.path.join(d, "g%d.md" % n), "--json", os.path.join(d, "g%d.json" % n)])
+    for ext in ("md", "json"):
+        comprueba(open(os.path.join(d, "g1." + ext), encoding="utf-8").read() == open(os.path.join(d, "g2." + ext), encoding="utf-8").read(),
+                  "la salida del dia de Gorran (%s) es estable" % ext)
 print("OK matriz_decisiones: %d beats con alguna opcion importante en el dia 1" % sum(1 for f in filas if any(m.es_importante(o) for o in f["opciones"])))
