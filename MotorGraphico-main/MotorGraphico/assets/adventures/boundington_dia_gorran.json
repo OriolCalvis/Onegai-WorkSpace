@@ -953,6 +953,31 @@
       ]
     },
     {
+      "id": "bg_balance_bgd_tinet_salvado",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bg_hito_balance_visto",
+          "bgd_solo_tinet"
+        ],
+        "notFlags": [
+          "bg_balance_bgd_tinet_salvado_visto"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Tinet, en casa. Mia, no."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bg_balance_bgd_tinet_salvado_visto"
+        }
+      ]
+    },
+    {
       "id": "bg_balance_bgd_ninos_perdidos",
       "trigger": {
         "type": "auto"
@@ -2840,7 +2865,8 @@
           "bgd_sacar_critico"
         ],
         "notFlags": [
-          "bgd_sacar_cerrado"
+          "bgd_sacar_cerrado",
+          "bgd_mia_perdida"
         ]
       },
       "speaker": "",
@@ -2891,6 +2917,78 @@
         {
           "type": "log",
           "arg": "La puerta de abajo: sacas a los críos sin que te vean."
+        }
+      ]
+    },
+    {
+      "id": "bgd_sacar_exito_tinet",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "anyFlags": [
+          "bgd_sacar_exito",
+          "bgd_sacar_critico"
+        ],
+        "allFlags": [
+          "bgd_mia_perdida"
+        ],
+        "notFlags": [
+          "bgd_sacar_cerrado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Una cuerda, y no da tiempo a mas. Tinet no dice nada; donde estaba Mia solo queda el palo en el suelo.",
+        "Cuando el diacono se vuelve, el circulo de velas tiene un hueco."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bgd_sacar_cerrado"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bgd_tinet_salvado"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bgd_solo_tinet"
+        },
+        {
+          "type": "clearFlag",
+          "arg": "bgd_ninos_fuera"
+        },
+        {
+          "type": "addVariable",
+          "arg": "aldea_sospecha",
+          "value": -1,
+          "min": 0,
+          "max": 4
+        },
+        {
+          "type": "setFlag",
+          "arg": "bgd_orfeu_huido"
+        },
+        {
+          "type": "grantLevel",
+          "value": 0.3,
+          "arg": "sacar a Tinet de la mina vieja"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bgd_cerrada"
+        },
+        {
+          "type": "addVariable",
+          "arg": "gorran_misiones",
+          "value": 1,
+          "min": 0,
+          "max": 4
+        },
+        {
+          "type": "log",
+          "arg": "La puerta de abajo: sacas a Tinet. A Mia ya no llegas."
         }
       ]
     },
@@ -3198,6 +3296,31 @@
       "speaker": "",
       "lines": [
         "En la plaza, la madre de Mia se arrodilla en el barro. Tinet le cuenta a todo el mundo que no tuvo miedo. Mia no cuenta nada: te devuelve el palo, por si acaso."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bgd_plaza_vista"
+        }
+      ]
+    },
+    {
+      "id": "bgd_plaza_tinet",
+      "trigger": {
+        "type": "enter",
+        "target": "assets/levels/cueva_gorran.json"
+      },
+      "requires": {
+        "allFlags": [
+          "bgd_solo_tinet"
+        ],
+        "notFlags": [
+          "bgd_plaza_vista"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "En la plaza, Tinet le cuenta a todo el mundo que no tuvo miedo. La madre de Mia no pregunta nada: te mira las manos."
       ],
       "effects": [
         {
@@ -4301,7 +4424,8 @@
         ],
         "notFlags": [
           "bgc_cerrada",
-          "bgc_asalto"
+          "bgc_asalto",
+          "bgc_asalto_visto"
         ],
         "variables": {
           "aldea_tiempo": {
@@ -5000,10 +5124,10 @@
     {
       "id": "bgb_campana",
       "trigger": {
-        "type": "enter",
-        "target": "assets/levels/cueva_gorran.json"
+        "type": "auto"
       },
       "requires": {
+        "lugar": "assets/levels/cueva_gorran.json",
         "allFlags": [
           "bndg_empezado",
           "bg_aldea_problemas_visto"
@@ -16046,6 +16170,73 @@
             "Gorran: «Eso. Guárdalo. Los papeles, guardados.»"
           ],
           "effects": []
+        }
+      ]
+    },
+    {
+      "id": "b2_gorran_tregua",
+      "trigger": {
+        "type": "talk",
+        "target": "gorran"
+      },
+      "requires": {
+        "lugar": "assets/levels/recinto_gorran.json",
+        "allFlags": [
+          "bnd2_aval_serra"
+        ],
+        "notFlags": [
+          "bnd2_gorran_resuelto",
+          "bnd2_gorran_tregua",
+          "bnd2_gorran_tregua_ofrecida"
+        ],
+        "variables": {
+          "gorran_misiones": {
+            "min": 3
+          }
+        }
+      },
+      "speaker": "",
+      "lines": [
+        "Gorran te mira de arriba abajo. En la aldea ya no suena ninguna campana.",
+        "Gorran: «Serra responde por ti y mis mineros duermen en su cama. Eso no lo hace cualquiera. Habla.»"
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Proponerle una tregua",
+          "lines": [
+            "Gorran: «Tregua. Esta noche, en mi casa, nadie le debe nada a nadie. Manana ya veremos.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_gorran_tregua"
+            },
+            {
+              "type": "addVariable",
+              "arg": "aldea_sospecha",
+              "value": -1,
+              "min": 0,
+              "max": 4
+            },
+            {
+              "type": "log",
+              "arg": "Tregua con Gorran: la aldea y el jefe, en paz hasta la subasta."
+            }
+          ]
+        },
+        {
+          "texto": "Dejarlo para luego",
+          "lines": [
+            "Gorran: «Como quieras. La puerta sigue abierta.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_gorran_tregua_ofrecida"
+            }
+          ],
+          "sigue": true
         }
       ]
     },

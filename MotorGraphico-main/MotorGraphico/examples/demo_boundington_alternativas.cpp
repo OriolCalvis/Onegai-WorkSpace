@@ -244,7 +244,8 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         // cada lio, cerrado por su propio beat
         e.visto({"bgb_golpes", "bgb_salen_todos", "bga_escena", "bga_garsa_exito", "bgc_asalto", "bgc_hundir_exito",
                  "bgd_velas", "bgd_sacar_exito", "b2_subasta_aviso", "b2_subasta_cojo_pobre", "b2_gorran_victoria",
-                 "bg_cierre_furia"});
+                 "bg_cierre_furia", "bg_balance_bgd_ninos_salvados"});
+        e.noVisto({"bgd_mia", "bgd_sacar_exito_tinet", "bg_balance_bgd_tinet_salvado"});  // a tiempo: Tinet y Mia, los dos
         e.ve({"bgb_cerrada", "bga_cerrada", "bgc_cerrada", "bgd_cerrada", "bgb_rescate_todos", "bga_iris_salvada",
               "bgc_cajas_hundidas", "bgd_ninos_salvados", "bnd2_subasta_ya", "bnd2_subasta_vista", "bndg_dia_cerrado"});
         e.ve({"bnd2_furia_alaro", "bnd2_gorran_perdonado"});  // la Furia sale de la pelea de la subasta, no del pedestal
@@ -308,6 +309,229 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.visto({"bgb_salen_todos", "bga_garsa_pifia", "bgc_abrir_pifia", "bgd_sacar_pifia"});
         e.nove({"bgc_cerrada", "bgd_cerrada", "bnd2_subasta_ya"});
         e.min("gorran_misiones", 2);
+        e.fin();
+    }
+
+    // GORRAN-FIX 1: el lio C sumaba dos veces cuando el asalto empezaba con el reloj en 5 o mas: bgc_barca_sale
+    // (la barca sale sola) y bgc_hundir_exito (hundirlas) saltaban los dos. Aqui gorran_misiones parte de 0 y
+    // tiene que acabar en 1 exacto (con el tope de 4 de la aventura, desde 3 no se veria).
+    {
+        Escena e(g, "DIA 2: el lio de las Galerias con el reloj en 5 suma una sola vez", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)", "Abrir una sin romper el sello [Investigación]",
+                  "Hundirlas en el río [Atletismo]"}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.entra("antecova_gorran");
+        e.j.entra("galerias_gorran");
+        e.j.habla("aduanero_galeria");
+        e.j.habla("cajas_cera_gris");
+        e.ve({"bgc_gancho"});
+        e.nove({"bgc_cerrada"});
+        e.igual("gorran_misiones", 0);
+        e.var("aldea_tiempo", 4);  // el asalto (+1 de reloj) llega con el reloj en 5
+        e.j.pisaLaZona("bgc_asalto");
+        e.visto({"bgc_asalto", "bgc_hundir_exito"});
+        e.noVisto({"bgc_barca_sale"});
+        e.ve({"bgc_cerrada", "bgc_cajas_hundidas"});
+        e.igual("gorran_misiones", 1);
+        e.min("aldea_tiempo", 5);
+        e.fin();
+    }
+
+    // GORRAN-FIX 2: bgb_campana (derrumbe) necesita bg_aldea_problemas_visto, que pone el aviso de la plaza al
+    // entrar en la aldea: en la PRIMERA visita tienen que saltar los dos, el aviso y luego la campana.
+    {
+        Escena e(g, "DIA 2: la primera vez en la aldea, el aviso de la plaza y la campana", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)"}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.entra("antecova_gorran");
+        e.nove({"bg_aldea_problemas_visto", "bgb_gancho"});
+        e.j.entra("cueva_gorran");
+        e.visto({"bg_aldea_problemas", "bgb_campana"});
+        e.ve({"bg_aldea_problemas_visto", "bgb_gancho"});
+        e.igual("mina_aire", 6);
+        e.j.vistos.clear();
+        e.j.entra("cueva_gorran");  // la segunda vez no se repite ninguno de los dos
+        e.noVisto({"bg_aldea_problemas", "bgb_campana"});
+        e.fin();
+    }
+
+    // GORRAN-FIX 3 (D0023.2): llegar tarde a la mina vieja (reloj 5 o mas: bgd_mia_perdida) y sacar a los crios en
+    // silencio salva solo a Tinet. El dia entero con los lios en orden B, A, C, D: Tinet en casa, Mia no.
+    {
+        Escena e(g, "DIA 2: la mina vieja a reloj 5, solo se salva a Tinet", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.pasaElDiaDeGorranJugando("BACD");
+        e.visto({"bgd_velas", "bgd_mia", "bgd_sacar_exito_tinet", "bg_balance_bgd_tinet_salvado"});
+        e.noVisto({"bgd_sacar_exito", "bg_balance_bgd_ninos_salvados"});
+        e.ve({"bgd_cerrada", "bgd_mia_perdida", "bgd_tinet_salvado", "bgd_solo_tinet", "bgd_sacar_cerrado"});
+        e.nove({"bgd_ninos_salvados", "bgd_ninos_perdidos", "bgd_ninos_fuera"});
+        e.ve({"bgb_cerrada", "bga_cerrada", "bgc_cerrada", "bnd2_subasta_ya", "bndg_dia_cerrado"});
+        e.min("gorran_misiones", 4);
+        e.fin();
+    }
+
+    // ... y al volver a la plaza de la aldea, Tinet cuenta que no tuvo miedo y la madre de Mia no pregunta.
+    {
+        Escena e(g, "DIA 2: la plaza, con Tinet en casa y sin Mia", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)"}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.entra("antecova_gorran");
+        e.j.losLiosDeLaAldea(3, true, "BACD");
+        e.ve({"bgd_solo_tinet", "bgd_mia_perdida"});
+        e.j.entra("cueva_gorran");
+        e.visto({"bgd_plaza_tinet"});
+        e.noVisto({"bgd_plaza"});
+        e.ve({"bgd_plaza_vista"});
+        e.fin();
+    }
+
+    // y con el reloj a tiempo ("BADC": la mina vieja se hace con el reloj en 3) se salva a los dos.
+    {
+        Escena e(g, "DIA 2: la plaza, con Tinet y Mia en casa", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)"}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.entra("antecova_gorran");
+        e.j.losLiosDeLaAldea(3, true, "BADC");
+        e.ve({"bgd_ninos_salvados"});
+        e.nove({"bgd_mia_perdida", "bgd_solo_tinet"});
+        e.noVisto({"bgd_mia", "bgd_sacar_exito_tinet"});
+        e.visto({"bgd_sacar_exito"});
+        e.j.entra("cueva_gorran");
+        e.visto({"bgd_plaza"});
+        e.noVisto({"bgd_plaza_tinet"});
+        e.fin();
+    }
+
+    // GORRAN-FIX 4 (D0023.3): hablar con Gorran de frente con los lios cerrados (tres o mas) y el aval de Doña
+    // Serra lleva a la tregua (b2_gorran_tregua); sin el aval, o con menos de tres lios, es la charla de siempre.
+    {
+        Escena e(g, "DIA 2: hablar con Gorran con los lios cerrados y el aval de Serra: tregua", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)", "Proponerle una tregua"}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.entra("antecova_gorran");
+        e.j.losLiosDeLaAldea();
+        e.pon({"bnd2_aval_serra"});  // el aval de Serra: «Di en el portón que vas de mi parte»
+        e.ve({"bnd2_subasta_ya"});
+        e.min("gorran_misiones", 3);
+        e.nove({"bnd2_gorran_tregua"});
+        e.j.entra("recinto_gorran");
+        e.j.habla("gorran");
+        e.visto({"b2_gorran_tregua"});
+        e.noVisto({"b2_gorran_hablar", "b2_gorran"});
+        e.ve({"bnd2_gorran_tregua"});
+        e.nove({"bnd2_gorran_tregua_ofrecida", "bnd2_gorran_resuelto", "bnd2_gorran_abierta", "bnd2_gorran_muerto"});
+        e.j.vistos.clear();
+        e.j.habla("gorran");  // con la tregua hecha, se habla como siempre
+        e.visto({"b2_gorran_hablar"});
+        e.noVisto({"b2_gorran_tregua"});
+        e.fin();
+    }
+
+    {
+        Escena e(g, "DIA 2: hablar con Gorran sin el aval de Serra: no hay tregua", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)", "Proponerle una tregua"}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.entra("antecova_gorran");
+        e.j.losLiosDeLaAldea();
+        e.nove({"bnd2_aval_serra"});
+        e.min("gorran_misiones", 3);
+        e.j.entra("recinto_gorran");
+        e.j.habla("gorran");
+        e.visto({"b2_gorran_hablar", "b2_gorran"});
+        e.noVisto({"b2_gorran_tregua"});
+        e.nove({"bnd2_gorran_tregua"});
+        e.fin();
+    }
+
+    {
+        Escena e(g, "DIA 2: hablar con Gorran con el aval de Serra pero sin los lios: no hay tregua", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)", "Proponerle una tregua"}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.entra("antecova_gorran");
+        e.pon({"bnd2_aval_serra", "bnd2_porton_resuelto"});
+        e.igual("gorran_misiones", 0);
+        e.j.entra("recinto_gorran");
+        e.j.habla("gorran");
+        e.visto({"b2_gorran_hablar", "b2_gorran"});
+        e.noVisto({"b2_gorran_tregua"});
+        e.nove({"bnd2_gorran_tregua"});
         e.fin();
     }
 

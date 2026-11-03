@@ -384,10 +384,13 @@ struct Jugador {
     // cerrado suena el cuerno (b2_subasta_aviso -> bnd2_subasta_ya). Los viajes entre niveles no
     // se andan (entra() es un salto, como en el resto de ayudas). Con mala suerte algunos lios se
     // cierran peor (o por tiempo): `cuantos` es el minimo de lios que tienen que haber cerrado.
+    // GORRAN-FIX: `orden` son las letras de los lios en el orden en que se juegan (B Veta Honda, A Cal Serra,
+    // C Galerias, D mina vieja). El reloj manda: con "BADC" la mina vieja se hace con el reloj en 3 y se salva
+    // a Mia; con "BACD" se llega con el reloj en 5 (bgd_mia_perdida) y solo se salva a Tinet (D0023.2).
     // `cuantos` es el minimo que tiene que haber cerrado; `tiradasBuenas` hace que las tiradas de
     // los lios salgan bien aunque el jugador tenga mala suerte para lo que viene (las escenas que
     // prueban el pedestal con mala suerte no son las que prueban los lios).
-    int losLiosDeLaAldea(int cuantos = 3, bool tiradasBuenas = true) {
+    int losLiosDeLaAldea(int cuantos = 3, bool tiradasBuenas = true, const std::string& orden = "BADC") {
         const std::vector<std::string> antes = prefiere;
         const Suerte suerteAntes = suerte;
         if (tiradasBuenas && !buena()) suerte = Suerte::Buena;
@@ -407,27 +410,42 @@ struct Jugador {
         };
         // B — La Veta Honda: la minera cuenta lo del derrumbe, cuatro vigas del taller (+1 de reloj) y
         // los golpes al otro lado (+1): apuntalar.
-        entra("mina_gorran");
-        habla("minera_comedor");  // bgb_minera: los mineros atrapados (bgb_gancho)
-        entra("galerias_gorran");
-        habla("carpintero_galeria");
-        entra("mina_gorran");
-        pisaLaZona("bgb_golpes");
-        suma("bgb_cerrada", "Veta Honda");
+        const auto lioB = [&] {
+            entra("mina_gorran");
+            habla("minera_comedor");  // bgb_minera: los mineros atrapados (bgb_gancho)
+            entra("galerias_gorran");
+            habla("carpintero_galeria");
+            entra("mina_gorran");
+            pisaLaZona("bgb_golpes");
+            suma("bgb_cerrada", "Veta Honda");
+        };
         // A — Cal Serra: con el reloj en 2 llegan los mercenarios (bga_llegan -> bga_entran): la Garsa.
-        entra("aldea_serra_p0");
-        habla("serra");
-        suma("bga_cerrada", "Cal Serra");
+        const auto lioA = [&] {
+            entra("aldea_serra_p0");
+            habla("serra");
+            suma("bga_cerrada", "Cal Serra");
+        };
         // C — Las Galerias: la carga gris (abrir una caja, el asalto del transbordo).
-        entra("galerias_gorran");
-        habla("aduanero_galeria");
-        habla("cajas_cera_gris");
-        pisaLaZona("bgc_asalto");
-        suma("bgc_cerrada", "Galerias");
-        // D — la mina vieja: Tinet y Mia (bgd_rapto, reloj 2); el diacono enciende las velas.
-        entra("mina2_gorran");
-        pisaLaZona("bgd_velas");
-        suma("bgd_cerrada", "mina vieja");
+        const auto lioC = [&] {
+            entra("galerias_gorran");
+            habla("aduanero_galeria");
+            habla("cajas_cera_gris");
+            pisaLaZona("bgc_asalto");
+            suma("bgc_cerrada", "Galerias");
+        };
+        // D — la mina vieja: Tinet y Mia (bgd_rapto, reloj 2); el diacono enciende las velas. Con el reloj
+        // en 5 o mas Mia ya no esta (bgd_mia_perdida, D0023.2): el cierre salva solo a Tinet.
+        const auto lioD = [&] {
+            entra("mina2_gorran");
+            pisaLaZona("bgd_velas");
+            suma("bgd_cerrada", "mina vieja");
+        };
+        for (const char c : orden) {
+            if (c == 'B') lioB();
+            if (c == 'A') lioA();
+            if (c == 'C') lioC();
+            if (c == 'D') lioD();
+        }
         prefiere = antes;
         suerte = suerteAntes;
         int cerrados = 0;
@@ -444,7 +462,7 @@ struct Jugador {
     // (bg_skilla_hora: bndg_a_dormir -> bg_cierre / bg_cierre_furia). Amanece el tercero (b2_amanece:
     // bnd2_encargo). La espada no se roba del pedestal (eso es laEspadaDeRosita): en la subasta
     // «Dejar que estalle» acaba en pelea con Gorran, y vencido «Suelta a los presos y estamos en paz.».
-    void pasaElDiaDeGorranJugando() {
+    void pasaElDiaDeGorranJugando(const std::string& ordenLios = "BADC") {
         const std::vector<std::string> antes = prefiere;
         prefiere.insert(prefiere.end(), {"Aceptar el encargo", "Pagar el paso (5)", "«Vengo a ver al jefe.» [Persuasión]",
                                          "Dejar que estalle", "Suelta a los presos y estamos en paz.",
@@ -454,7 +472,7 @@ struct Jugador {
         entra("interior_taberna");
         habla("skilla");  // b2_rosita_encargo
         entra("antecova_gorran");  // b2_cueva_llegada: pagar el paso -> bnd2_aldea_dentro
-        losLiosDeLaAldea();  // -> b2_subasta_aviso -> bnd2_subasta_ya
+        losLiosDeLaAldea(3, true, ordenLios);  // -> b2_subasta_aviso -> bnd2_subasta_ya
         entra("recinto_gorran");  // b2_porton
         require(pisaLaZona("recinto_subasta"));  // b2_subasta(_cojo_pobre): «Dejar que estalle»
         require(s.hasFlag("bnd2_subasta_vista"));
@@ -643,6 +661,14 @@ struct Escena {
     void visto(std::initializer_list<const char*> ids) {
         for (const char* id : ids)
             if (!j.visto(id)) fallos.push_back(std::string("no se vio ") + id);
+    }
+    void igual(const char* var, int n) {
+        if (j.s.variable(var) != n)
+            fallos.push_back(std::string(var) + "=" + std::to_string(j.s.variable(var)) + " != " + std::to_string(n));
+    }
+    void noVisto(std::initializer_list<const char*> ids) {
+        for (const char* id : ids)
+            if (j.visto(id)) fallos.push_back(std::string("se vio ") + id);
     }
     void min(const char* var, int n) {
         if (j.s.variable(var) < n)

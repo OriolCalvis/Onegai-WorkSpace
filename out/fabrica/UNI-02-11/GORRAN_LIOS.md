@@ -42,3 +42,17 @@ Quitar `pisaLaZona("bgd_velas")` (lio D): `demo_boundington` falla («MAL ... fa
 1. Cuantos lios caben en un dia? A) Los 4 caben (coste 5 de 7): dejarlo asi y que 3 sea solo el umbral de la subasta. B) Que no quepan (subir coste de alguna accion) para obligar a elegir 3.
 2. Mia tarde (hallazgo 2)? A) Que `bgd_mia_perdida` haga que solo se salve Tinet. B) Quitar el aviso «Mia ya no esta».
 3. Hablar con Gorran de frente (`b2_gorran_hablar`)? A) Que lleve a algo: tregua/aliado si hay lios cerrados y aval. B) Dejarlo como charla de ambiente (hoy).
+
+## GORRAN-FIX (D0023 puntos 2 y 3 + los dos errores de arriba)
+Trailer `Fabrica-E: GORRAN-FIX`. Todo en `boundington_dia_gorran.json` (J) y las demos `demo_boundington_{partida.h,alternativas.cpp}`.
+1. **Lio C doble** (hallazgo 3): `bgc_barca_sale` lleva ahora `bgc_asalto_visto` en notFlags (se pone al empezar el asalto, antes de la eleccion; `bgc_asalto` se pone despues y no servia). Escena: partiendo de 0, `gorran_misiones` acaba en 1 exacto con el reloj en 5.
+2. **`bgb_campana`**: pasa de `enter` a `auto` con `lugar` cueva_gorran: salta justo despues de `bg_aldea_problemas` en la PRIMERA entrada (el aviso de la plaza antes, luego la campana). Texto intacto. (Con `enter` solo cabia mover el orden, y entonces el aviso de la plaza se iria a la 2.a entrada.)
+3. **D0023.2**: `bgd_sacar_exito` exige no `bgd_mia_perdida`; nuevo `bgd_sacar_exito_tinet` (cierra el lio, +1 una vez, flags `bgd_tinet_salvado`+`bgd_solo_tinet`, NO `bgd_ninos_salvados`) y variantes `bg_balance_bgd_tinet_salvado` («Tinet, en casa. Mia, no.») y `bgd_plaza_tinet`. Mismo grantLevel 0.3 (sin decision nueva).
+4. **D0023.3**: nuevo `b2_gorran_tregua` (talk gorran, antes de `b2_gorran_hablar`): pide `bnd2_aval_serra` (la unica flag de aval, la da Serra) + `gorran_misiones >= 3` (el mismo umbral de «aldea en calma»; elegido por mi). «Proponerle una tregua» -> `bnd2_gorran_tregua` (+ sospecha -1); «Dejarlo para luego» -> `bnd2_gorran_tregua_ofrecida` y sigue con la charla de siempre.
+5. **Subasta**: sin cambios. En el juego real NO hay opcion por defecto: con eleccion pendiente no se puede cerrar el dialogo (`GameSession::closeInteraction`). El «Acabar con el» por defecto es solo el relleno de `Jugador::contesta` (la ultima opcion salida). No hay nada que reordenar.
+## Decisiones que quedan para Oriol (no tocadas)
+- `bnd2_gorran_tregua` solo se enciende y se registra: no activa nada despues. Si la tregua debe dar aliados (`bnd2_tiene_aliados`, `bnd2_gorran_perdonado`) o quitar «Dejar que estalle» de la subasta, hay que decidirlo (hoy matar a Gorran tras una tregua es posible).
+- D0023.2 solo cubre el cierre de `bgd_sacar_exito`; los otros cierres del lio D (`bgd_ganada`, Candela, «¡Gorran! ¡Ahora!») siguen poniendo `bgd_ninos_salvados` aunque Mia este perdida. Y la cinematica `bgd_velas` sigue diciendo «Tinet y Mia, atados» con Mia perdida.
+- El orden de los lios en las demos pasa a B, A, D, C (antes B, A, C, D): con el antiguo la mina vieja llega con reloj 5 y Mia se pierde; `orden` es parametro (`"BACD"` = tarde).
+## Pruebas y mutaciones
+8 escenas nuevas en `demo_boundington_alternativas.cpp`; mutaciones (todas fallan, restaurado + touch + recompilado en verde): M1 quitar `bgc_asalto_visto`, M2 `bgb_campana` a enter, M3 quitar `bgd_mia_perdida` de exito, M4a sin aval, M4b sin umbral de lios, M4c sin la flag de tregua. `validar_todo` 0 errores (729 autos, 0 pegajosos/tapados); boundington|campana 6/6; gl-free 291/291.
