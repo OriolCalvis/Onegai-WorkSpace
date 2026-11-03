@@ -469,6 +469,7 @@ struct Mutacion {
     const char* hacia = "zz_mutada";
     int vez = 1;   // la n-esima opcion con ese texto (b1_pelea tiene dos «Proteger al borracho dormido»)
     int salta = 0; // apariciones de `cadena` que se dejan como estan antes de la que se cambia (la 1.ª puede ser un requires)
+    const char* dia = "primer_dia";  // E-DIA1-CONSEC: el JSON que se muta (primer_dia | dia_gorran | segundo_dia | ocaso)
 };
 
 // Lo que el guardado trae ademas de las flags (E-MATRIZ-01b): el oro (150 de la bolsa inicial mas lo que se cobra y se paga),
@@ -498,6 +499,7 @@ struct CaminoDia1 {
     Mutacion mutMoral;   // ... y otra en la que cambia la moral (beat vacio = sin acto que mover: no se prueba)
     std::vector<std::pair<std::string, demo_bnd::Suerte>> fuerza;  // tiradas (por su flagBotch) que salen con esta suerte aunque las demas salgan bien
     std::vector<std::pair<std::string, int>> igual;                // variable == n
+    std::vector<std::string> pierde, huye;                         // E-DIA1-CONSEC: combates (por su flagVictory) que se pierden / de los que se huye
 };
 
 inline bool cierraElDia1(demo_bnd::Jugador& j) {
@@ -578,6 +580,9 @@ inline void recorre(demo_bnd::Jugador& j, const std::string& ruta) {
     } else if (ruta == "pelea") {
         j.entra("interior_taberna");
         j.duerme();  // anochece, «Subir a dormir» y b1_pelea
+    } else if (ruta == "camara") {  // E-DIA1-CONSEC: la novicia copista cuenta lo de Killville y se baja a la camara honda de Sandes
+        j.habla("copista_cripta");
+        j.entra("camara_profunda");
     } else {
         require(false);
     }
@@ -592,6 +597,8 @@ inline SaveGameData dia1(const demo_bnd::Guiones& g, const Heroe& h, const Camin
     j.prefiere = c.dice;
     j.prefiere.insert(j.prefiere.end(), {"Pagar la cama", "Subir a dormir"});
     for (const auto& f : c.fuerza) j.tiradas[f.first] = f.second;
+    for (const std::string& f : c.pierde) j.pierde.insert(f);
+    for (const std::string& f : c.huye) j.huyen.insert(f);
     j.prologo();
     fase(j, "dia1");
     recorre(j, c.ruta);
@@ -607,7 +614,7 @@ inline SaveGameData dia1(const demo_bnd::Guiones& g, const Heroe& h, const Camin
 inline demo_bnd::Guiones conMutacion(const demo_bnd::Guiones& g, const Mutacion& m, const std::string& temporal) {
     std::string t;
     {
-        FILE* f = std::fopen("assets/adventures/boundington_primer_dia.json", "rb");
+        FILE* f = std::fopen((std::string("assets/adventures/boundington_") + m.dia + ".json").c_str(), "rb");
         require(f != nullptr);
         char buf[65536];
         std::size_t n;
@@ -632,7 +639,8 @@ inline demo_bnd::Guiones conMutacion(const demo_bnd::Guiones& g, const Mutacion&
     std::remove(temporal.c_str());
     require(mutada.isOk());
     demo_bnd::Guiones r = g;
-    r.dia1 = mutada.value();
+    const std::string dia = m.dia;
+    (dia == "primer_dia" ? r.dia1 : dia == "dia_gorran" ? r.gorran : dia == "segundo_dia" ? r.dia2 : r.ocaso) = mutada.value();
     return r;
 }
 
@@ -707,9 +715,15 @@ inline bool lectorSeVe(const demo_bnd::Guiones& g, const Lector& l, const RPG::N
     };
     bool ve = visible(beat->requirements);
     if (std::string(l.opcion).empty()) return ve;
+    // E-DIA1-CONSEC: una opcion puede desdoblarse en variantes con el mismo texto (b2_venides_castillo_s1_a, b3_sermon_s3_a):
+    // se ve si se ve alguna.
+    bool hay = false;
     for (const RPG::OpcionDeDialogo& o : beat->opciones)
-        if (o.texto.rfind(l.opcion, 0) == 0) return ve && visible(o.requisitos);
-    require(false);
+        if (o.texto.rfind(l.opcion, 0) == 0) {
+            hay = true;
+            if (ve && visible(o.requisitos)) return true;
+        }
+    require(hay);
     return false;
 }
 
@@ -907,8 +921,128 @@ inline const std::vector<CaminoDia1>& caminosDia1() {
          {"b1_pelea", "Proteger al borracho dormido", "bnd1_pelea_rosita", "zz_mutada", 2}, "b1_pelea: proteger al borracho dormido (con Luisarda en la taberna)",
          {125, -3, 2, 20, {"pocion", "pocion"}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"},
          {"b1_luisarda_pide", "Ven a cenar a la taberna. Rosita te espera.", "luisarda_con_rosita"}, {}, {{"confianza_rosita", 1}}},
+
+        // --- E-DIA1-CONSEC: los caminos que dan su eco a Gorran, al dia 3 y al Ocaso (ver MATRIZ_DIA1.md y out/fabrica/UNI-02-11/fable/F-DIA1_CONSECUENCIAS.md) ---
+        {"informe_confia", "completa", junta({"Sembrar dudas en Verina", "Confiar en él: «Bebe conmigo»"}, junta(kCriptaSectarios, kRutaDelHeroe)), Suerte::Buena,
+         {"b1_venides_informe_bastan"}, {"bnd1_venides_informe_hecho", "bnd1_venides_confianza"}, {"bnd1_venides_desconfianza", "bnd_venides_20"}, {},
+         {{"dia2", "b2_noche_rosita_informa_confianza", "Contarselo todo", true}, {"dia2", "b2_noche_rosita_informa", "Contarselo todo", false},
+          {"dia2", "b2_venides_castillo_v0", "", false}},
+         {"b1_venides_informe_bastan", "Confiar en él: «Bebe conmigo»", "bnd1_venides_confianza"}, "b1_venides_informe_bastan: confiar en Venides (bebe conmigo)",
+         {125, 5, 3, 10, {"vendas", "vendas"}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"b1_aigren_redimido", "", "aigren_redimido"}},
+        {"camorrista_muerto", "pelea", {"Separarlos [pelea sin matar]", "Rematarle", "Sacarlo y matarlo en la calle", "Contárselo todo"}, Suerte::Buena,
+         {"b1_pelea", "b1_pelea_apaleado", "b1_pelea_rosita"}, {"bnd1_pelea_ganada", "bnd1_camorrista_muerto"}, {"bnd1_camorrista_echado", "bnd1_camorrista_entregado", "bnd1_capitan_te_conoce"}, {},
+         {{"dia2", "b2_capitan_muerto", "Pedirle que prepare a la guardia", true}, {"dia2", "b2_capitan", "Pedirle que prepare a la guardia", false},
+          {"dia2", "b2_capitan", "Soy el que te trajo", false}},
+         {"b1_pelea_rosita", "Sacarlo y matarlo en la calle", "bnd1_camorrista_muerto"}, "b1_pelea_rosita: sacar al camorrista y matarlo en la calle",
+         {125, -12, 2, 20, {}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"b1_pelea_rosita", "Sacarlo y matarlo en la calle", "camorrista_ejecutado", "camorrista_a_la_guardia"}},
+        {"camara_perdido", "camara", {"¿Quién es Sandes?", "Me he perdido.", "Contárselo todo"}, Suerte::Buena,
+         {"b1_copista", "b1_camara_sandes"}, {"bnd1_sandes_killville_oido", "bnd1_sandes_te_conoce", "bnd1_sandes_se_va"}, {"bnd1_sandes_carta_dicha", "bnd1_sandes_enfadado"}, {},
+         {{"ocaso", "b3_edul_killville", "", false}},
+         {"b1_camara_sandes", "Me he perdido.", "bnd1_sandes_se_va"}, "b1_camara_sandes: «Me he perdido.»",
+         {125, 0, 2, 20, {}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"", "", ""}},
+        {"camara_carta", "camara", {"¿Quién es Sandes?", "«Tu padre te escribe desde Killville.»", "Contárselo todo"}, Suerte::Buena,
+         {"b1_copista", "b1_camara_sandes"}, {"bnd1_sandes_killville_oido", "bnd1_sandes_te_conoce", "bnd1_sandes_se_va", "bnd1_sandes_carta_dicha"}, {"bnd1_sandes_enfadado"}, {},
+         {{"ocaso", "b3_edul_killville", "", true}},
+         {"b1_camara_sandes", "«Tu padre te escribe desde Killville.»", "bnd1_sandes_carta_dicha"}, "b1_camara_sandes: «Tu padre te escribe desde Killville.»",
+         {125, 0, 2, 20, {}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"", "", ""}},
+        {"edul_cara", "sectarios", junta({"Plantarles cara", "Contárselo todo"}, kCriptaSectarios), Suerte::Buena,
+         {"b1_edul"}, {"bnd1_guardias_avisados", "bnd1_guarida_pelea"}, {"bnd1_unido_al_culto"}, {},
+         {{"dia2", "b2_capitan_ronda", "", true}},
+         {"b1_edul", "Plantarles cara", "bnd1_guardias_avisados"}, "b1_edul: plantarles cara a los sectarios (alguien llama a la guardia)",
+         {165, 0, 2, 50, {}}, {"b1_guarida_ganada", "", "grantGold", "log"}, {"", "", ""}},
+        {"verdaderos_ganan", "verdaderos", {"Comer algo mientras pasa la mañana (5)", "Plantarles cara", "Contárselo todo"}, Suerte::Buena,
+         {"b1_verdaderos"}, {"bnd1_verdaderos_ganan", "bnd1_verdaderos_intentado"}, {"bnd1_verdaderos_vencidos", "bnd1_verdaderos_huido", "bnd1_verdaderos_unido"}, {},
+         {{"ocaso", "b3_cabecilla_pan", "", true}, {"ocaso", "b3_rufo_pan", "", false}},
+         {"b1_verdaderos", "Plantarles cara", "bnd1_verdaderos_ganan"}, "b1_verdaderos: plantarles cara y perder",
+         {120, 5, 2, 20, {}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"b1_verdaderos", "Plantarles cara", "verdaderos_enfrentados", "sumarse_verdaderos"},
+         {}, {}, {"bnd1_verdaderos_vencidos"}},
+        {"verdaderos_huido", "verdaderos", {"Comer algo mientras pasa la mañana (5)", "Plantarles cara", "Contárselo todo"}, Suerte::Buena,
+         {"b1_verdaderos"}, {"bnd1_verdaderos_huido", "bnd1_verdaderos_intentado"}, {"bnd1_verdaderos_vencidos", "bnd1_verdaderos_ganan", "bnd1_verdaderos_unido"}, {},
+         {{"ocaso", "b3_cabecilla_pan", "", true}, {"ocaso", "b3_rufo_pan", "", false}},
+         {"b1_verdaderos", "Plantarles cara", "bnd1_verdaderos_huido"}, "b1_verdaderos: plantarles cara y huir",
+         {120, 5, 2, 20, {}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"b1_verdaderos", "Plantarles cara", "verdaderos_enfrentados", "sumarse_verdaderos"},
+         {}, {}, {}, {"bnd1_verdaderos_vencidos"}},
+        {"pelea_perdida", "pelea", {"Separarlos [pelea sin matar]", "Contárselo todo"}, Suerte::Buena,
+         {"b1_pelea"}, {"bnd1_pelea_lanzada", "bnd1_pelea_perdida"}, {"bnd1_pelea_ganada", "bnd1_pelea_huida", "bnd1_pelea_rosita"}, {},
+         {{"dia2", "b2_venides_castillo_s1_a", "¿Anoche escribiste", true}},
+         {"b1_pelea", "Separarlos [pelea sin matar]", "bnd1_pelea_perdida"}, "b1_pelea: separarlos a golpes y perder",
+         {125, 0, 2, 20, {}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"", "", ""},
+         {}, {}, {"bnd1_pelea_ganada"}},
+        {"pelea_huida", "pelea", {"Separarlos [pelea sin matar]", "Contárselo todo"}, Suerte::Buena,
+         {"b1_pelea"}, {"bnd1_pelea_lanzada", "bnd1_pelea_huida"}, {"bnd1_pelea_ganada", "bnd1_pelea_perdida", "bnd1_pelea_rosita"}, {},
+         {{"dia2", "b2_venides_castillo_s1_a", "¿Anoche escribiste", true}},
+         {"b1_pelea", "Separarlos [pelea sin matar]", "bnd1_pelea_huida"}, "b1_pelea: separarlos a golpes y huir",
+         {125, 0, 2, 20, {}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"", "", ""},
+         {}, {}, {}, {"bnd1_pelea_ganada"}},
     };
     return c;
+}
+
+
+// ===========================================================================================================
+// E-DIA1-CONSEC — Lo que el resto de la campana hace con lo decidido en el dia 1.
+//
+// Desde un guardado del dia 1 cerrado (restaura()) se juega lo que sigue COMO LA RUTA DEL HEROE de demo_campana_boundington
+// (Gorran con sus cuatro lios, el dia 3 y el Ocaso) hasta la etapa que se pide, con las respuestas `dice` por delante de las de
+// la ruta, y el Jugador apunta lo que lee (Jugador::dicho) y los dados rivales de las tiradas (Jugador::dados).
+// ===========================================================================================================
+enum class Hasta { Gorran, Dia3, Sermon, Ocaso };
+
+// `cajasLlegan`: el cargamento gris del Cojo llega a las Afueras (camino C de Gorran: nadie lo hunde ni lo cambia).
+// `edulEnLasAfueras`: el heroe no pasa por Edul retenido en el Casco Antiguo, asi que le encuentra contra el abrevadero (b3_edul).
+inline void sigueLaCampana(demo_bnd::Jugador& j, const std::vector<std::string>& dice, Hasta hasta, bool cajasLlegan = false,
+                           bool edulEnLasAfueras = false) {
+    j.ruido = std::getenv("BND_RUIDO_CAMPANA") != nullptr;  // para diagnosticar: cuenta lo que sigue paso a paso
+    j.prefiere = dice;
+    for (const std::string& r : kRutaDelHeroe)
+        if (r != "Correr a avisar a Venides" && r != "Ir con Venides a ver al capitan")
+            j.prefiere.push_back(r);  // el sermon y la charla del castillo se recorren pagina a pagina; al final sale la despedida
+    fase(j, "dia_gorran");
+    j.drena();                    // amanece Gorran
+    j.laEspadaDeRosita();         // el encargo, la Gola Fosca, los cuatro lios, el pedestal
+    j.entra("interior_taberna");
+    for (int vez = 0; vez < 3 && !j.s.hasFlag("bndg_dia_cerrado"); ++vez) j.habla("skilla");  // a dormir (tras la reaccion de Rosita, si hay)
+    if (hasta == Hasta::Gorran) return;
+    fase(j, "dia2");
+    j.drena();                    // amanece el tercero
+    j.habla("skilla");
+    j.entra("interior_castillo");
+    j.entra("interior_castillo_p1");
+    for (int vez = 0; vez < 5 && !j.s.hasFlag("bnd2_capitan_hablado"); ++vez) j.habla("capitan_guardia");  // (las reacciones del capitan van delante)
+    j.entra("ciudad_oeste");
+    j.entra("tienda_abandonada");
+    j.entra("ciudad_surysal");
+    j.habla("viejo_surysal");
+    j.anochece();
+    j.entra("ciudad_este");
+    j.entra("mansion_barrio_alto");
+    j.habla("seguidor_brinda");
+    j.habla("seguidor_brinda");
+    j.entra("interior_taberna");
+    j.habla("venides");           // el informe de la noche
+    j.duermeDia3();
+    if (hasta == Hasta::Dia3) return;
+    if (cajasLlegan) {
+        j.s.setFlag("bgc_cajas_llegan");
+        for (const char* f : {"bgc_cajas_robadas", "bgc_cajas_hundidas", "bgc_cajas_cambiadas", "bgc_media_carga"}) j.s.clearFlag(f);
+    }
+    fase(j, "ocaso");
+    if (hasta == Hasta::Sermon) {
+        j.entra("ciudad_centro");   // la plaza: el sermon de Sandes, pagina a pagina
+        return;
+    }
+    j.ocasoBase();
+    if (edulEnLasAfueras) j.zonasEvita = {"edul_casco_retenido"};
+    else j.zonasPrimero = {"edul_casco_retenido"};
+    j.ocasoRecorrido();
+}
+
+inline const CaminoDia1& caminoDia1(const std::string& id) {
+    for (const CaminoDia1& c : caminosDia1())
+        if (id == c.id) return c;
+    std::fprintf(stderr, "fabricar_guardados: no hay camino %s\n", id.c_str());
+    require(false);
+    return caminosDia1().front();
 }
 
 

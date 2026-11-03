@@ -151,6 +151,16 @@ struct Jugador {
     std::map<std::string, Suerte> tiradas;  // E-MATRIZ-01b: la suerte que sale en UNA tirada (por su flagBotch); las demas, `suerte`
     std::vector<std::string>* anotador = nullptr;  // cobertura: cada beat que dispara
     std::vector<std::string> vistos;               // los de esta partida
+    // E-DIA1-CONSEC: lo que el jugador ha leido (lineas de beats y de respuestas, con {nombre} ya puesto), el dado rival de cada
+    // tirada pedida ("beat/habilidad") y los combates de los que huye (por su flagVictory: sale su flagHuida). Las demos no lo miran.
+    std::vector<std::string> dicho;
+    std::vector<std::pair<std::string, int>> dados;
+    std::set<std::string> huyen;
+    bool dijo(const std::string& trozo) const {
+        for (const std::string& l : dicho)
+            if (l.find(trozo) != std::string::npos) return true;
+        return false;
+    }
 
     Jugador(const Guiones& guiones, Suerte su, const std::vector<std::string>& flagsHeroe = {}, bool r = false)
         : g(guiones), suerte(su), ruido(r) {
@@ -181,6 +191,8 @@ struct Jugador {
     void procesa(const NarrativeResult& r) {
         if (!r.fired) return;
         cuentas.anota(r);
+        for (const std::string& l : r.lines) dicho.push_back(l);
+        for (const SkillCheckRequest& c : r.skillChecks) dados.emplace_back(r.beatId + "/" + c.skillId, c.rivalDice);
         if (!r.beatId.empty()) {
             vistos.push_back(r.beatId);
             if (anotador != nullptr) anotador->push_back(r.beatId);
@@ -209,17 +221,19 @@ struct Jugador {
             // (Game::llegaRefuerzos); un combate que se pierde a proposito
             // («pierde») es el de un golpe que te tumba sin darles tiempo.
             for (const BattleRequest::Refuerzo& rf : b.refuerzos) {
-                if (pierde.count(b.flagVictory) != 0 || !rf.requiere.isSatisfiedBy(s)) continue;
+                if (pierde.count(b.flagVictory) != 0 || huyen.count(b.flagVictory) != 0 || !rf.requiere.isSatisfiedBy(s)) continue;
                 for (const std::string& f : rf.flags) s.setFlag(f);
                 if (ruido) std::printf("      [refuerzos]\n");
             }
             // Un combate NO se resuelve en el mismo instante que el beat que lo
             // pide: en el juego real pasan turnos y la flag la enciende
             // syncBattleOutcome. Aqui se simula ese "despues" encendiendola ya.
-            const bool gana = buena() && pierde.count(b.flagVictory) == 0;
+            const bool huye = huyen.count(b.flagVictory) != 0 && !b.flagHuida.empty();  // E-DIA1-CONSEC
+            const bool gana = !huye && buena() && pierde.count(b.flagVictory) == 0;
             pierde.erase(b.flagVictory);
-            s.setFlag(gana || b.flagDefeat.empty() ? b.flagVictory : b.flagDefeat);
-            if (ruido) std::printf("      [combate: %s]\n", gana ? "victoria" : "derrota");
+            huyen.erase(b.flagVictory);
+            s.setFlag(huye ? b.flagHuida : gana || b.flagDefeat.empty() ? b.flagVictory : b.flagDefeat);
+            if (ruido) std::printf("      [combate: %s]\n", huye ? "huida" : gana ? "victoria" : "derrota");
         }
         for (const TablaAleatoriaRequest& t : r.tablas)
             if (!t.flags.empty()) s.setFlag(buena() ? t.flags.front() : t.flags.back());

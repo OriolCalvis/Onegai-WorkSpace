@@ -310,12 +310,67 @@
             {
               "flag": "bnd1_pelea_ganada",
               "choice": "Te metiste a separarlos, a golpes.",
-              "consequence": "El camorrista acabó en el suelo, apaleado pero vivo, escupiendo sangre y riéndose. La taberna entera esperó a ver qué hacías con él."
+              "consequence": "El camorrista acabó en el suelo, apaleado pero vivo, escupiendo sangre y riéndose. La taberna entera esperó a ver qué hacías con él.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd2_venides_castillo_t_pelea"
+                  ],
+                  "text": "Venides, en el castillo: Rosita le conto que lo tumbaste tu solo. Eso si lo pone en el cuaderno."
+                }
+              ]
+            },
+            {
+              "flag": "bnd1_pelea_perdida",
+              "choice": "Te metiste a separarlos y te sacaron a rastras.",
+              "consequence": "La taberna entera lo vio. Rosita acabo con la pelea de una sola mano.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd2_venides_castillo_t_pelea"
+                  ],
+                  "text": "Venides, en el castillo: Rosita le conto que te sacaron a rastras. Eso no lo pone en el cuaderno."
+                }
+              ]
+            },
+            {
+              "flag": "bnd1_pelea_huida",
+              "choice": "Te metiste a separarlos y saliste corriendo.",
+              "consequence": "La taberna entera lo vio. Rosita acabo con la pelea de una sola mano.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd2_venides_castillo_t_pelea"
+                  ],
+                  "text": "Venides, en el castillo: Rosita le conto que te sacaron a rastras. Eso no lo pone en el cuaderno."
+                }
+              ]
+            },
+            {
+              "flag": "bnd1_pelea_protegido",
+              "choice": "Te pusiste entre la pelea y el borracho dormido.",
+              "consequence": "Rosita sento al camorrista de una mano. Bien hecho. Ese es un pesado, pero es mi pesado.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bndg_rosita_pelea_t"
+                  ],
+                  "text": "Al dia siguiente, Rosita: el pesado seguia arriba, preguntando quien le guardo la espalda. Le dijo que tu."
+                }
+              ]
             },
             {
               "flag": "bnd1_pelea_rosita",
               "choice": "Dejaste que Rosita se ocupara.",
-              "consequence": "Rosita dejó las monedas, cogió al camorrista del cuello de la capa con una sola mano y lo sentó en una silla. Nadie respiró. Esa fuerza no es de tabernera."
+              "consequence": "Rosita dejó las monedas, cogió al camorrista del cuello de la capa con una sola mano y lo sentó en una silla. Nadie respiró. Esa fuerza no es de tabernera.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bndg_rosita_pelea_t"
+                  ],
+                  "text": "Al dia siguiente, Rosita te echo en cara que anoche te quedaras mirando: mira menos y ayuda mas."
+                }
+              ]
             }
           ]
         },
@@ -327,7 +382,15 @@
             {
               "flag": "bnd1_camorrista_muerto",
               "choice": "Lo sacaste a la calle y lo mataste.",
-              "consequence": "Bajo la lluvia. Nadie miraba desde las ventanas, pero todas las cortinas se movieron. Al día siguiente el barrio lo sabía."
+              "consequence": "Bajo la lluvia. Nadie miraba desde las ventanas, pero todas las cortinas se movieron. Al día siguiente el barrio lo sabía.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd2_capitan_hablado"
+                  ],
+                  "text": "Anteayer el capitan ya sabia de ti: un muerto con capa gris en la calle de la Humilde. Hablarle costo mas."
+                }
+              ]
             },
             {
               "flag": "bnd1_camorrista_entregado",
@@ -355,7 +418,15 @@
             {
               "flag": "bnd1_camorrista_echado",
               "choice": "Lo echaste a la calle.",
-              "consequence": "Desde la puerta: «¡Os acordaréis de mí cuando arda!»"
+              "consequence": "Desde la puerta: «¡Os acordaréis de mí cuando arda!»",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd3_barricada_gris_vista"
+                  ],
+                  "text": "En las Afueras, el del ultimo barril te estaba esperando: capa gris, la cara aun hinchada de la taberna."
+                }
+              ]
             }
           ]
         },
@@ -471,12 +542,41 @@
             {
               "flag": "bnd1_verdaderos_vencidos",
               "choice": "Les plantaste cara a los cinco, y los venciste.",
-              "consequence": "Se dispersaron calle abajo. Rufo se quedó en el barro, con la nariz sangrando: «Yo no quería venir. Me dijeron que había pan»."
+              "consequence": "Se dispersaron calle abajo. Rufo se quedó en el barro, con la nariz sangrando: «Yo no quería venir. Me dijeron que había pan».",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd3_rufo_visto"
+                  ],
+                  "text": "En la plaza del sermon, Rufo cogio el pan, te vio y se fue calle abajo sin mirar atras."
+                }
+              ]
             },
             {
               "flag": "bnd1_verdaderos_ganan",
               "choice": "Les plantaste cara a los cinco, y perdiste.",
-              "consequence": "Se fueron riendo. El padre y la niña ya no estaban, y la puerta azul se quedó cerrada."
+              "consequence": "Se fueron riendo. El padre y la niña ya no estaban, y la puerta azul se quedó cerrada.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd3_rufo_visto"
+                  ],
+                  "text": "En la plaza del sermon, el cabecilla de la puerta azul repartia pan con capa gris nueva y se rio al verte."
+                }
+              ]
+            },
+            {
+              "flag": "bnd1_verdaderos_huido",
+              "choice": "Les plantaste cara a los cinco, y saliste corriendo.",
+              "consequence": "Se rieron a tu espalda. La puerta azul se quedo cerrada.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd3_rufo_visto"
+                  ],
+                  "text": "En la plaza del sermon, el cabecilla de la puerta azul repartia pan con capa gris nueva y se rio al verte."
+                }
+              ]
             }
           ]
         },
@@ -585,9 +685,44 @@
               ]
             },
             {
+              "flag": "bnd1_sandes_desafiado",
+              "choice": "Le preguntaste a Sandes quien es el para mandar.",
+              "consequence": "La sonrisa no se movio, pero se le noto la rabia en lo blanco de los nudillos: Alguien que recuerda las caras. Te mando con Edul.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd3_sermon_t_estrado_nombre"
+                  ],
+                  "text": "En la plaza, desde el estrado: el que preguntaba quien es el para mandar. Mira a tu alrededor: esta es la respuesta."
+                }
+              ]
+            },
+            {
               "flag": "bnd1_sandes_enfadado",
               "choice": "No le diste a Sandes lo que quería oír.",
-              "consequence": "La sonrisa no se movió, pero se le notó la rabia en lo blanco de los nudillos: «Alguien que recuerda las caras». Te mandó con Edul."
+              "consequence": "La sonrisa no se movió, pero se le notó la rabia en lo blanco de los nudillos: «Alguien que recuerda las caras». Te mandó con Edul.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd3_sermon_t_estrado_nombre",
+                    "bnd1_sandes_conocido"
+                  ],
+                  "text": "En la plaza, Sandes te reconocio: el que solo miraba. Sigue mirando; hoy hay mucho que ver."
+                }
+              ]
+            },
+            {
+              "flag": "bnd1_sandes_carta_dicha",
+              "choice": "Le dijiste a Sandes que su padre le escribe desde Killville.",
+              "consequence": "Por primera vez, la sonrisa tardo en volver. Sube. Ahora.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd3_edul_resuelto"
+                  ],
+                  "text": "En las Afueras, un guardia de cinta gris te lo repitio: Sandes dijo que si aparecia el de la carta de Killville, ardiera con Edul."
+                }
+              ]
             },
             {
               "flag": "bnd1_sandes_killville",
@@ -652,6 +787,26 @@
               "flag": "bnd1_sabe_barricadas",
               "choice": "Te mezclaste entre los que rezan, para sonsacarles.",
               "consequence": "Un fanático presumió en voz baja: «El día del fuego no quedará un puente en pie». Ya sabes dónde golpearán."
+            }
+          ]
+        },
+        {
+          "id": "bnd1_guardias",
+          "title": "La guardia, en la cripta",
+          "section": "Los Perdidos",
+          "choices": [
+            {
+              "flag": "bnd1_guardias_avisados",
+              "choice": "Armaste ruido en la cripta de la iglesia vieja y arriba alguien llamo a la guardia.",
+              "consequence": "Tres se te echaron encima. Arriba, un grito pidiendo a la guardia.",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd2_capitan_t_iglesia"
+                  ],
+                  "text": "Anteayer la ronda volvio diciendo que no habia nada y oliendo a incienso. Dos de esos hoy no han venido a formar."
+                }
+              ]
             }
           ]
         },
@@ -721,7 +876,15 @@
             {
               "flag": "bnd1_venides_confianza",
               "choice": "Bebiste con Venides en vez de hablar: «Bebe conmigo y mañana lo arreglamos».",
-              "consequence": "«Hacía tiempo que nadie se sentaba a beber conmigo sin pedirme nada.» Rosita, recogiendo jarras: «Y tú, súbele la capa, que se la deja siempre»."
+              "consequence": "«Hacía tiempo que nadie se sentaba a beber conmigo sin pedirme nada.» Rosita, recogiendo jarras: «Y tú, súbele la capa, que se la deja siempre».",
+              "aftermath": [
+                {
+                  "flags": [
+                    "bnd2_venides_leal"
+                  ],
+                  "text": "Dos noches despues volviste y se lo contaste todo. Venides: dos veces; eso no se me olvida."
+                }
+              ]
             },
             {
               "flag": "bnd1_venides_desconfianza",

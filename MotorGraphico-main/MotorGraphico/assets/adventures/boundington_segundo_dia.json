@@ -3258,6 +3258,252 @@
       "pagina": true
     },
     {
+      "id": "b2_venides_castillo_s1_a_pelea_perdida",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd2_venides_castillo_abierta",
+          "bnd2_venides_castillo_visto",
+          "bnd2_venides_castillo_en_charla"
+        ],
+        "variables": {
+          "bnd2_venides_castillo_pag": 1
+        },
+        "anyFlags": [
+          "bnd1_pelea_perdida",
+          "bnd1_pelea_huida"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Venides se frota las sienes."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "¿Que tal la resaca?",
+          "requires": {
+            "notFlags": [
+              "bnd2_venides_castillo_t_resaca"
+            ]
+          },
+          "lines": [
+            "Tengo un herrero dentro de la cabeza. Y no es Aigren, que ese por lo menos lleva el compas."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_venides_castillo_t_resaca"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_venides_castillo_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "¿Anoche escribiste lo de la pelea?",
+          "requires": {
+            "notFlags": [
+              "bnd2_venides_castillo_t_pelea"
+            ],
+            "anyFlags": [
+              "bnd1_pelea_perdida",
+              "bnd1_pelea_huida"
+            ]
+          },
+          "lines": [
+            "¿Que pelea? Ah.",
+            "Rosita dice que te sacaron a rastras. Eso no lo pongo. Por tu bien, y por el mio."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_venides_castillo_t_pelea"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_venides_castillo_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd2_venides_castillo_pag",
+              "value": 0
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_venides_castillo_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Ir con Venides a ver al capitan",
+          "lines": [
+            "Venides: «Sube conmigo. Yo respondo por ti.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_capitan_abierto"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd2_venides_castillo_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd2_venides_castillo_en_charla"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd2_venides_castillo_abierta"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_capitan_con_venides"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "b2_venides_castillo_s1_a_pelea_ganada",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd2_venides_castillo_abierta",
+          "bnd2_venides_castillo_visto",
+          "bnd2_venides_castillo_en_charla"
+        ],
+        "variables": {
+          "bnd2_venides_castillo_pag": 1
+        },
+        "anyFlags": [
+          "bnd1_pelea_ganada"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Venides se frota las sienes."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "¿Que tal la resaca?",
+          "requires": {
+            "notFlags": [
+              "bnd2_venides_castillo_t_resaca"
+            ]
+          },
+          "lines": [
+            "Tengo un herrero dentro de la cabeza. Y no es Aigren, que ese por lo menos lleva el compas."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_venides_castillo_t_resaca"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_venides_castillo_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "¿Anoche escribiste lo de la pelea?",
+          "requires": {
+            "notFlags": [
+              "bnd2_venides_castillo_t_pelea"
+            ],
+            "anyFlags": [
+              "bnd1_pelea_ganada"
+            ]
+          },
+          "lines": [
+            "¿Que pelea?",
+            "...¿Y yo dormia? Rosita dice que lo tumbaste tu solo. Eso si lo pongo: un hombre que se mete vale por diez que miran."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_venides_castillo_t_pelea"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_venides_castillo_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd2_venides_castillo_pag",
+              "value": 0
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_venides_castillo_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Ir con Venides a ver al capitan",
+          "lines": [
+            "Venides: «Sube conmigo. Yo respondo por ti.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_capitan_abierto"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd2_venides_castillo_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd2_venides_castillo_en_charla"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd2_venides_castillo_abierta"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_capitan_con_venides"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
       "id": "b2_venides_castillo_s1_a",
       "trigger": {
         "type": "auto"
@@ -3507,6 +3753,39 @@
       ]
     },
     {
+      "id": "b2_capitan_ronda",
+      "trigger": {
+        "type": "talk",
+        "target": "capitan_guardia"
+      },
+      "requires": {
+        "lugar": "assets/levels/interior_castillo_p1.json",
+        "allFlags": [
+          "bnd2_encargo",
+          "bnd1_guardias_avisados"
+        ],
+        "notFlags": [
+          "bnd2_capitan_hablado",
+          "bnd2_capitan_t_iglesia"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Capitan: «Anteayer llamaron a la guardia a la iglesia vieja. Mande una ronda: volvieron diciendo que no habia nada y oliendo a incienso.»",
+        "Capitan: «Dos de esos hoy no han venido a formar. ¿Tu sabes algo de eso?»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd2_capitan_t_iglesia"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd2_pista_guardia"
+        }
+      ]
+    },
+    {
       "id": "b2_capitan_sereno",
       "trigger": {
         "type": "talk",
@@ -3566,6 +3845,98 @@
       ]
     },
     {
+      "id": "b2_capitan_muerto",
+      "trigger": {
+        "type": "talk",
+        "target": "capitan_guardia"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd2_capitan_abierto",
+          "bnd1_camorrista_muerto"
+        ],
+        "notFlags": [
+          "bnd2_capitan_hablado"
+        ],
+        "lugar": "assets/levels/interior_castillo_p1.json"
+      },
+      "speaker": "",
+      "lines": [
+        "La torre del capitan: una mesa llena de papeles, un brasero y un tintero volcado que nadie ha limpiado.",
+        "Un veterano con la barba gris cortada a cuchillo y la armadura con abolladuras de hace anos.",
+        "Capitan: «¿Y tu quien eres? Aqui no se pasea nadie que no lleve el escudo de la ciudad.»"
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Pedirle que prepare a la guardia [Persuasion]",
+          "requires": {
+            "notFlags": [
+              "bnd1_capitan_te_conoce"
+            ]
+          },
+          "speaker": "",
+          "lines": [
+            "Capitan: «¿El de la taberna? Anteayer me trajeron un muerto con capa gris de la calle de la Humilde. Ya se quien eres. Habla, y rapido.»",
+            "(Tirada de Persuasion.)"
+          ],
+          "effects": [
+            {
+              "type": "skillCheck",
+              "skillCheck": {
+                "skillId": "persuasion",
+                "rivalDice": 4,
+                "flagBotch": "bnd2_capitan_pifia",
+                "flagPartial": "bnd2_capitan_parcial",
+                "flagSuccess": "bnd2_capitan_exito",
+                "flagCritical": "bnd2_capitan_critico"
+              }
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_capitan_hablado"
+            }
+          ]
+        },
+        {
+          "texto": "¿Cuantos hombres tienes?",
+          "requires": {
+            "notFlags": [
+              "bnd2_capitan_hombres"
+            ]
+          },
+          "speaker": "Capitan",
+          "lines": [
+            "Menos de los que dice el papel y mas de los que me pagan.",
+            "Y la mitad tiene primos en el Casco Antiguo, asi que no se de quien son cuando no los miro."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_capitan_hombres"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_pista_guardia"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "No molestarle",
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_capitan_hablado"
+            }
+          ],
+          "lines": [
+            "Te vas. Ya no habra otra ocasion: el capitan solo da una."
+          ]
+        }
+      ]
+    },
+    {
       "id": "b2_capitan",
       "trigger": {
         "type": "talk",
@@ -3576,7 +3947,8 @@
           "bnd2_capitan_abierto"
         ],
         "notFlags": [
-          "bnd2_capitan_hablado"
+          "bnd2_capitan_hablado",
+          "bnd1_camorrista_muerto"
         ],
         "lugar": "assets/levels/interior_castillo_p1.json"
       },
@@ -13155,6 +13527,145 @@
       ]
     },
     {
+      "id": "b2_noche_rosita_informa_confianza",
+      "trigger": {
+        "type": "talk",
+        "target": "venides"
+      },
+      "requires": {
+        "lugar": "assets/levels/interior_taberna.json",
+        "allFlags": [
+          "bnd2_encargo",
+          "bnd2_noche_en_taberna",
+          "bnd2_rosita_lo_sabe",
+          "bnd1_venides_confianza"
+        ],
+        "notFlags": [
+          "bnd2_informe_dado",
+          "bnd2_informe_callado"
+        ]
+      },
+      "speaker": "Venides",
+      "lines": [
+        "Venides: «Rosita ya me ha contado lo del ataque. De lo demas, prefiero oirte a ti.»"
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Contarselo todo",
+          "lines": [
+            "Venides: «Hace dos noches bebiste conmigo sin pedirme nada. Hoy me lo cuentas todo. Dos veces; eso no se me olvida.»",
+            "Venides escucha sin interrumpir. Cuando nombras a Verina, cierra los ojos.",
+            "Venides: «Gracias. Por todo. Tambien por lo que duele.»",
+            "Abre el cuaderno y escribe tu nombre.",
+            "Venides: «Cuando esto acabe, vienes conmigo. Comida, techo y la Corona detras. Te lo has ganado.»",
+            "Venides vuelca sobre la mesa la paga del mes sin contarla.",
+            "Venides: «Del intendente al contable y de ahi a ti. Que sirva para algo.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_informe_dado"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_venides_leal"
+            },
+            {
+              "type": "addVariable",
+              "arg": "afecto_venides",
+              "value": 1
+            },
+            {
+              "type": "log",
+              "arg": "Venides tiene con qué presionar al capitán. Y te debe lealtad: fondos, reconocimiento y el ejército Real."
+            },
+            {
+              "type": "grantGold",
+              "value": 50
+            },
+            {
+              "type": "log",
+              "arg": "Recibes 50 de oro (la paga de Venides)."
+            }
+          ],
+          "speaker": ""
+        },
+        {
+          "texto": "Contarle el ataque, pero no lo de Edul y Verina",
+          "requires": {
+            "anyFlags": [
+              "bnd1_edul_hablado",
+              "bnd1_verina_vista",
+              "bnd1_venides_desconfianza"
+            ]
+          },
+          "lines": [
+            "Venides: «Bien. Con esto me dan hombres.»",
+            "Te mira un momento de mas.",
+            "Venides: «¿Y nada mas? ¿Seguro?»",
+            "«Seguro.»",
+            "Venides deja veinticinco monedas junto al cuaderno y no vuelve a mirarte.",
+            "Venides: «Para gastos.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_informe_dado"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_venides_enganado"
+            },
+            {
+              "type": "acto",
+              "arg": "venides_enganado"
+            },
+            {
+              "type": "log",
+              "arg": "Venides tiene con qué presionar al capitán. De Edul y Verina no sabe nada."
+            },
+            {
+              "type": "grantGold",
+              "value": 25
+            },
+            {
+              "type": "log",
+              "arg": "Recibes 25 de oro (los gastos de Venides)."
+            }
+          ],
+          "speaker": ""
+        },
+        {
+          "texto": "No contarle nada",
+          "lines": [
+            "Venides: «Dos dias y nada. Bueno. Puede que me equivoque con esta ciudad.»",
+            "Se levanta.",
+            "Venides: «Manana voy solo a la base.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_informe_callado"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_venides_sin_aviso"
+            },
+            {
+              "type": "log",
+              "arg": "Venides no sabe nada del ataque."
+            },
+            {
+              "type": "acto",
+              "arg": "venides_enganado"
+            }
+          ],
+          "speaker": ""
+        }
+      ]
+    },
+    {
       "id": "b2_noche_rosita_informa",
       "trigger": {
         "type": "talk",
@@ -13169,7 +13680,8 @@
         ],
         "notFlags": [
           "bnd2_informe_dado",
-          "bnd2_informe_callado"
+          "bnd2_informe_callado",
+          "bnd1_venides_confianza"
         ]
       },
       "speaker": "Venides",

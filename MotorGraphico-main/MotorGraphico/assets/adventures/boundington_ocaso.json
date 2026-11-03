@@ -1009,6 +1009,252 @@
       "pagina": true
     },
     {
+      "id": "b3_sermon_s3_a_miraba",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sermon_abierta",
+          "bnd3_sermon_visto",
+          "bnd3_sermon_en_charla",
+          "bnd1_sandes_conocido",
+          "bnd1_sandes_enfadado"
+        ],
+        "variables": {
+          "bnd3_sermon_pag": 3
+        },
+        "lugar": "assets/levels/ciudad_centro.json",
+        "notFlags": [
+          "bnd1_sandes_desafiado"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes reparte pan. La gente lo coge sin mirarle a los ojos."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Acercarte al estrado",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_estrado_nombre",
+              "bnd1_aigren_delata"
+            ],
+            "allFlags": [
+              "bnd1_sandes_te_conoce"
+            ]
+          },
+          "lines": [
+            "Sandes: «{nombre}. El que solo miraba. Sigue mirando; hoy hay mucho que ver.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_estrado_nombre"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Buscar al noble del brindis",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_noble"
+            ],
+            "allFlags": [
+              "bnd2_noble_senalado"
+            ]
+          },
+          "lines": [
+            "Su sitio en el estrado está vacío.",
+            "Un sectario: «El señor no ha podido venir. Unos guardias. Una lástima.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_noble"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 0
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Correr a avisar a Venides",
+          "lines": [
+            "Corres hacia la Base Militar."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_a_la_base"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_en_charla"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_abierta"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
+      "id": "b3_sermon_s3_a_desafiado",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sermon_abierta",
+          "bnd3_sermon_visto",
+          "bnd3_sermon_en_charla",
+          "bnd1_sandes_desafiado"
+        ],
+        "variables": {
+          "bnd3_sermon_pag": 3
+        },
+        "lugar": "assets/levels/ciudad_centro.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Sandes reparte pan. La gente lo coge sin mirarle a los ojos."
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Acercarte al estrado",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_estrado_nombre",
+              "bnd1_aigren_delata"
+            ],
+            "allFlags": [
+              "bnd1_sandes_te_conoce"
+            ]
+          },
+          "lines": [
+            "Sandes: «{nombre}. El que preguntaba quien soy yo para mandar. Mira a tu alrededor: esta es la respuesta. Coge pan.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_estrado_nombre"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Buscar al noble del brindis",
+          "requires": {
+            "notFlags": [
+              "bnd3_sermon_t_noble"
+            ],
+            "allFlags": [
+              "bnd2_noble_senalado"
+            ]
+          },
+          "lines": [
+            "Su sitio en el estrado está vacío.",
+            "Un sectario: «El señor no ha podido venir. Unos guardias. Una lástima.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_t_noble"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true
+        },
+        {
+          "texto": "Hablar de otra cosa",
+          "lines": [],
+          "effects": [
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 0
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_sermon_en_charla"
+            }
+          ],
+          "sigue": true,
+          "pasaPagina": true
+        },
+        {
+          "texto": "Correr a avisar a Venides",
+          "lines": [
+            "Corres hacia la Base Militar."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_a_la_base"
+            },
+            {
+              "type": "setVariable",
+              "arg": "bnd3_sermon_pag",
+              "value": 0
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_en_charla"
+            },
+            {
+              "type": "clearFlag",
+              "arg": "bnd3_sermon_abierta"
+            }
+          ],
+          "despedida": true
+        }
+      ],
+      "pagina": true
+    },
+    {
       "id": "b3_sermon_s3_a",
       "trigger": {
         "type": "auto"
@@ -1252,6 +1498,65 @@
         }
       ],
       "pagina": true
+    },
+    {
+      "id": "b3_rufo_pan",
+      "once": true,
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sermon_visto"
+        ],
+        "notFlags": [
+          "bnd3_rufo_visto"
+        ],
+        "anyFlags": [
+          "bnd1_verdaderos_vencidos"
+        ],
+        "lugar": "assets/levels/ciudad_centro.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Entre los que cogen pan, Rufo, con la nariz torcida. Te ve, deja el pan en la cesta y se va calle abajo sin mirar atras."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_rufo_visto"
+        }
+      ]
+    },
+    {
+      "id": "b3_cabecilla_pan",
+      "once": true,
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_sermon_visto"
+        ],
+        "notFlags": [
+          "bnd3_rufo_visto"
+        ],
+        "anyFlags": [
+          "bnd1_verdaderos_ganan",
+          "bnd1_verdaderos_huido"
+        ],
+        "lugar": "assets/levels/ciudad_centro.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Entre los que reparten pan, el cabecilla de la puerta azul con capa gris nueva. Te senala con la barbilla y se rie."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_rufo_visto"
+        }
+      ]
     },
     {
       "id": "b3_avisar_venides",
@@ -4116,6 +4421,43 @@
       ]
     },
     {
+      "id": "b3_barricada_gris_echado",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_afueras_vistas",
+          "bgc_cajas_llegan",
+          "bnd1_camorrista_echado"
+        ],
+        "notFlags": [
+          "bgc_media_carga",
+          "bnd3_barricada_gris_vista"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "En cada esquina de las Afueras, un barril con el sello de cera gris del Cojo. El fuego blanco sale de todos a la vez.",
+        "El fanatico del ultimo barril se vuelve: barba de dias, capa gris y la cara aun hinchada de la taberna. «Te dije que te acordarias de mi.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_barricada_gris_vista"
+        },
+        {
+          "type": "startBattle",
+          "startBattle": {
+            "monsterId": "perdido_fanatico",
+            "flagVictory": "bnd3_barril_vencido",
+            "flagDefeat": "bnd3_barril_gana",
+            "flagHuida": "bnd3_barril_huido"
+          }
+        }
+      ]
+    },
+    {
       "id": "b3_barricada_gris",
       "trigger": {
         "type": "auto"
@@ -4127,7 +4469,8 @@
         ],
         "notFlags": [
           "bgc_media_carga",
-          "bnd3_barricada_gris_vista"
+          "bnd3_barricada_gris_vista",
+          "bnd1_camorrista_echado"
         ]
       },
       "speaker": "",
@@ -4977,6 +5320,93 @@
       ]
     },
     {
+      "id": "b3_edul_killville",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd3_barricada_resuelta",
+          "bnd3_esc06_edul_afueras",
+          "bnd1_sandes_carta_dicha"
+        ],
+        "notFlags": [
+          "bnd3_edul_resuelto"
+        ],
+        "lugar": "assets/levels/afueras_boundington_ocaso.json"
+      },
+      "speaker": "",
+      "lines": [
+        "Tras la barricada, una plaza interior con un abrevadero y un árbol grande. Tres guardias de la ciudad, con cintas grises en el brazo, sujetan a Edul contra el abrevadero.",
+        "Guardia: «Este quería apagar lo que él mismo encendió. Sandes dice que arda con ello.»",
+        "Guardia, mirandote: «Y Sandes dice otra cosa: que si aparece el de la carta de Killville, arda con el. Asi que tu veras.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd3_edul_resuelto"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Liberarle",
+          "lines": [
+            "Los tres sueltan a Edul y sacan las espadas."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_edul_pelea"
+            },
+            {
+              "type": "startBattle",
+              "startBattle": {
+                "monsterId": "guardia_comprado",
+                "flagVictory": "bnd3_edul_libre",
+                "flagDefeat": "bnd3_edul_perdido",
+                "enemigos": [
+                  {
+                    "id": "guardia_comprado",
+                    "cantidad": 3
+                  }
+                ],
+                "acompanantes": [
+                  {
+                    "id": "venides",
+                    "siFlag": "bnd3_con_venides"
+                  },
+                  {
+                    "id": "xila",
+                    "siFlag": "bnd3_con_xila"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Dejarle",
+          "lines": [
+            "Pasas de largo. Detrás, Edul deja de gritar."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd3_edul_abandonado"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd3_edul_cerrado"
+            },
+            {
+              "type": "acto",
+              "arg": "edul_abandonado"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "b3_edul",
       "trigger": {
         "type": "auto"
@@ -4987,7 +5417,8 @@
           "bnd3_esc06_edul_afueras"
         ],
         "notFlags": [
-          "bnd3_edul_resuelto"
+          "bnd3_edul_resuelto",
+          "bnd1_sandes_carta_dicha"
         ],
         "lugar": "assets/levels/afueras_boundington_ocaso.json"
       },

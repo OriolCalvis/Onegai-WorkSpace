@@ -10432,6 +10432,76 @@
       ]
     },
     {
+      "id": "bg_rosita_pelea_protegido",
+      "trigger": {
+        "type": "enter",
+        "target": "assets/levels/interior_taberna.json"
+      },
+      "requires": {
+        "allFlags": [
+          "bndg_empezado",
+          "bnd1_pelea_rosita",
+          "bnd1_pelea_protegido"
+        ],
+        "notFlags": [
+          "bndg_dia_cerrado",
+          "bndg_a_dormir",
+          "bndg_rosita_pelea_t",
+          "bnd2_aldea_dentro"
+        ],
+        "variables": {
+          "franja": {
+            "max": 1
+          }
+        }
+      },
+      "speaker": "",
+      "lines": [
+        "Rosita: «Arriba, con la cabeza como un bombo. Ha preguntado quien le guardo la espalda y le he dicho que tu. Hoy el guiso lo pagas con eso.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bndg_rosita_pelea_t"
+        }
+      ]
+    },
+    {
+      "id": "bg_rosita_pelea_mirando",
+      "trigger": {
+        "type": "enter",
+        "target": "assets/levels/interior_taberna.json"
+      },
+      "requires": {
+        "allFlags": [
+          "bndg_empezado",
+          "bnd1_pelea_rosita"
+        ],
+        "notFlags": [
+          "bndg_dia_cerrado",
+          "bndg_a_dormir",
+          "bndg_rosita_pelea_t",
+          "bnd1_pelea_protegido",
+          "bnd2_aldea_dentro"
+        ],
+        "variables": {
+          "franja": {
+            "max": 1
+          }
+        }
+      },
+      "speaker": "",
+      "lines": [
+        "Rosita: «Arriba. Y tu anoche de pie, mirandome las manos. Mira menos y ayuda mas, que aqui las sillas vuelan.»"
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bndg_rosita_pelea_t"
+        }
+      ]
+    },
+    {
       "id": "bg_skilla_hora_pronto",
       "trigger": {
         "type": "talk",

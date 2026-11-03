@@ -111,4 +111,177 @@ MOTOR_TEST_CASE(con_otro_acto_la_moral_del_camino_falla) {
     MOTOR_CHECK(probados >= 14);  // todos menos los de moral 0 sin acto (la pelea, la pifia de Aigren)
 }
 
+// ===========================================================================================================
+// E-DIA1-CONSEC — Cada decision del dia 1 que no dejaba rastro (MATRIZ_DIA1.md, «Hallazgos») tiene ahora su eco. Para cada
+// una: se carga el guardado del camino (el mismo de caminosDia1()), se juega lo que sigue como la ruta del heroe hasta donde
+// sale (sigueLaCampana) y se mira lo que el jugador LEE (Jugador::dicho): sale en su camino y no sale en el contrario.
+// Mutacion: una copia temporal del JSON (el del dia 1 o el del dia posterior) sin la flag nueva o sin la condicion de la
+// variante, y el mismo camino tiene que dejar de ver su eco.
+// ===========================================================================================================
+struct Eco {
+    const char* id;
+    const char* camino;
+    Hasta hasta;
+    std::vector<std::string> dice;   // respuestas que van por delante de las de la ruta
+    std::vector<std::string> sale;   // trozos de lo leido que tienen que salir
+    std::vector<std::string> noSale; // ... y que no
+    int rival = 0;                   // dado rival de la tirada de Persuasion del capitan (0 = no se mira)
+    bool cajas = false;              // el cargamento gris llega a las Afueras
+    Mutacion muta{"", "", ""};       // beat vacio = sin mutacion (el contrario de otra fila)
+    bool edulAfueras = false;        // Edul no se encuentra en el Casco: contra el abrevadero de las Afueras
+};
+
+std::vector<std::string> juegaElEco(const demo_bnd::Guiones& g, const Heroe& h, const Eco& e, bool mutada) {
+    const CaminoDia1& c = caminoDia1(e.camino);
+    const SaveGameData d = dia1(g, h, c, nullptr, !mutada);
+    Restaurada r = restaura(g, h, d, std::string(c.id) + "_eco.json");
+    demo_bnd::Jugador& j = *r.j;
+    sigueLaCampana(j, e.dice, e.hasta, e.cajas, e.edulAfueras);
+    std::vector<std::string> fallos;
+    for (const std::string& s : e.sale)
+        if (!j.dijo(s)) fallos.push_back("no sale «" + s + "»");
+    for (const std::string& s : e.noSale)
+        if (j.dijo(s)) fallos.push_back("sobra «" + s + "»");
+    if (e.rival != 0) {
+        int vistas = 0;
+        for (const auto& d2 : j.dados)
+            if (d2.first.rfind("b2_capitan", 0) == 0 && d2.first.size() > 11 && d2.first.compare(d2.first.size() - 11, 11, "/persuasion") == 0) {
+                ++vistas;
+                if (d2.second != e.rival) fallos.push_back("la tirada del capitan usa " + std::to_string(d2.second) + " dados, no " + std::to_string(e.rival));
+            }
+        if (vistas == 0) fallos.push_back("no hubo tirada de Persuasion con el capitan");
+    }
+    return fallos;
+}
+
+const std::vector<Eco>& ecos() {
+    static const std::vector<Eco> v = {
+        // 1. Venides: «Confiar en él» -> el informe de la noche del dia 3
+        {"venides_confia", "informe_confia", Hasta::Dia3, {"Contarselo todo"}, {"Hace dos noches bebiste conmigo"}, {}, 0, false,
+         {"b2_noche_rosita_informa_confianza", "", "bnd1_venides_confianza", "zz_mutada", 1, 0, "segundo_dia"}},
+        {"venides_cuenta_todo", "informe_cuenta_todo", Hasta::Dia3, {"Contarselo todo"}, {"Se lo cuentas todo: el ataque"}, {"bebiste conmigo"}},
+        // 2. La pelea: protegido / mirando -> Rosita en Gorran
+        {"rosita_protegido", "pelea_proteger", Hasta::Gorran, {}, {"Hoy el guiso lo pagas con eso"}, {"mirandome las manos"},
+         0, false, {"b1_pelea", "Proteger al borracho dormido", "bnd1_pelea_protegido"}},
+        {"rosita_protegido_luisarda", "pelea_proteger_luisarda", Hasta::Gorran, {}, {"Hoy el guiso lo pagas con eso"}, {"mirandome las manos"},
+         0, false, {"b1_pelea", "Proteger al borracho dormido", "bnd1_pelea_protegido", "zz_mutada", 2}},
+        {"rosita_mirando", "pelea_mirar", Hasta::Gorran, {}, {"Mira menos y ayuda mas"}, {"guiso"},
+         0, false, {"bg_rosita_pelea_mirando", "", "bnd1_pelea_rosita", "zz_mutada", 1, 0, "dia_gorran"}},
+        {"rosita_separar_no_dice_nada", "pelea_separar", Hasta::Gorran, {}, {}, {"guiso", "mirandome las manos"}},
+        // 3. La pelea: separarlos ganada / perdida / huida -> Venides en el castillo
+        {"venides_pelea_ganada", "pelea_separar", Hasta::Dia3, {"¿Anoche escribiste lo de la pelea?"}, {"lo tumbaste tu solo"}, {"a rastras"}, 0, false,
+         {"b2_venides_castillo_s1_a_pelea_ganada", "", "bnd1_pelea_ganada", "zz_mutada", 1, 0, "segundo_dia"}},
+        {"venides_pelea_perdida", "pelea_perdida", Hasta::Dia3, {"¿Anoche escribiste lo de la pelea?"}, {"te sacaron a rastras"}, {"lo tumbaste tu solo"}, 0, false,
+         {"b2_venides_castillo_s1_a_pelea_perdida", "", "bnd1_pelea_perdida", "zz_mutada", 1, 0, "segundo_dia"}},
+        {"venides_pelea_huida", "pelea_huida", Hasta::Dia3, {"¿Anoche escribiste lo de la pelea?"}, {"te sacaron a rastras"}, {"lo tumbaste tu solo"}, 0, false,
+         {"b2_venides_castillo_s1_a_pelea_perdida", "", "bnd1_pelea_huida", "zz_mutada", 1, 0, "segundo_dia"}},
+        {"venides_pelea_rosita", "pelea_proteger", Hasta::Dia3, {"¿Anoche escribiste lo de la pelea?"}, {"Pues eso no lo pongo"}, {"a rastras", "lo tumbaste tu solo"}, 0, false,
+         {"b2_venides_castillo_s1_a", "¿Anoche escribiste lo de la pelea?", "bnd1_pelea_lanzada", "zz_mutada", 1, 0, "segundo_dia"}},
+        // 4. El camorrista: muerto -> el capitan (un dado rival mas); echado -> el fanatico del ultimo barril
+        {"capitan_muerto", "camorrista_muerto", Hasta::Dia3, {"Pedirle que prepare a la guardia [Persuasion]"}, {"Anteayer me trajeron un muerto"}, {}, 4, false,
+         {"b2_capitan_muerto", "", "bnd1_camorrista_muerto", "zz_mutada", 1, 0, "segundo_dia"}},
+        {"capitan_sin_muerto", "pelea_separar", Hasta::Dia3, {"Pedirle que prepare a la guardia [Persuasion]"}, {}, {"un muerto"}, 3},
+        {"barril_echado", "pelea_separar", Hasta::Ocaso, {}, {"Te dije que te acordarias de mi"}, {}, 0, true,
+         {"b3_barricada_gris_echado", "", "bnd1_camorrista_echado", "zz_mutada", 1, 0, "ocaso"}},
+        {"barril_sin_echar", "camorrista_muerto", Hasta::Ocaso, {}, {"barril con el sello de cera gris"}, {"Te dije que te acordarias de mi"}, 0, true},
+        // 5. Sandes: «¿Y tú quién eres para mandar?» / «Solo miraba.» / el resto -> el estrado
+        {"estrado_desafiado", "sandes_mandar", Hasta::Sermon, {"Acercarte al estrado"}, {"preguntaba quien soy yo para mandar"}, {"solo miraba", "Recuerdo todas las caras"}, 0, false,
+         {"b1_charla_sandes", "¿Y tú quién eres para mandar?", "bnd1_sandes_desafiado"}},
+        {"estrado_solo_miraba", "sandes_solo", Hasta::Sermon, {"Acercarte al estrado"}, {"El que solo miraba"}, {"preguntaba quien soy yo", "Recuerdo todas las caras"}, 0, false,
+         {"b1_charla_sandes", "Solo miraba.", "bnd1_sandes_enfadado"}},
+        {"estrado_de_siempre", "sandes_luisarda", Hasta::Sermon, {"Acercarte al estrado"}, {"Recuerdo todas las caras"}, {"El que solo miraba", "preguntaba quien soy yo"}, 0, false,
+         {"b3_sermon_s3_a", "Acercarte al estrado", "bnd1_sandes_te_conoce", "zz_mutada", 1, 0, "ocaso"}},
+        // 6. Sandes: «Tu padre te escribe desde Killville» -> Edul contra el abrevadero
+        {"edul_carta", "camara_carta", Hasta::Ocaso, {}, {"carta de Killville"}, {},
+         0, false, {"b1_camara_sandes", "«Tu padre te escribe desde Killville.»", "bnd1_sandes_carta_dicha"}, true},
+        {"edul_sin_carta", "camara_perdido", Hasta::Ocaso, {}, {"Sandes dice que arda con ello"}, {"carta de Killville"}, 0, false, {"", "", ""}, true},
+        // 7. La guarida: «Plantarles cara» -> el capitan y la ronda de la iglesia vieja
+        {"capitan_ronda", "edul_cara", Hasta::Dia3, {"Pedirle que prepare a la guardia [Persuasion]"}, {"oliendo a incienso"}, {}, 0, false,
+         {"b1_edul", "Plantarles cara", "bnd1_guardias_avisados"}},
+        {"capitan_sin_ronda", "edul_unirse", Hasta::Dia3, {"Pedirle que prepare a la guardia [Persuasion]"}, {}, {"oliendo a incienso"}},
+        // 8. Los Verdaderos: vencidos / ganan / huido -> el reparto de pan
+        {"pan_rufo", "verdaderos_cara", Hasta::Sermon, {}, {"Rufo, con la nariz torcida"}, {"cabecilla de la puerta azul con capa gris nueva"}, 0, false,
+         {"b3_rufo_pan", "", "bnd1_verdaderos_vencidos", "zz_mutada", 1, 0, "ocaso"}},
+        {"pan_cabecilla_ganan", "verdaderos_ganan", Hasta::Sermon, {}, {"cabecilla de la puerta azul con capa gris nueva"}, {"Rufo, con la nariz torcida"}, 0, false,
+         {"b3_cabecilla_pan", "", "bnd1_verdaderos_ganan", "zz_mutada", 1, 0, "ocaso"}},
+        {"pan_cabecilla_huido", "verdaderos_huido", Hasta::Sermon, {}, {"cabecilla de la puerta azul con capa gris nueva"}, {"Rufo, con la nariz torcida"}, 0, false,
+         {"b3_cabecilla_pan", "", "bnd1_verdaderos_huido", "zz_mutada", 1, 0, "ocaso"}},
+        {"pan_sin_rastro", "verdaderos_sumarse", Hasta::Sermon, {}, {}, {"Rufo, con la nariz torcida", "cabecilla de la puerta azul con capa gris nueva"}},
+    };
+    return v;
+}
+
+MOTOR_TEST_CASE(cada_decision_del_dia1_con_eco_lo_tiene_en_su_camino_y_no_en_el_contrario) {
+    Fabrica f;
+    const char* solo = std::getenv("CONSEC_SOLO");  // para diagnosticar: una sola fila (con BND_RUIDO_CAMPANA=1 cuenta la campana paso a paso)
+    for (const Eco& e : ecos()) {
+        if (solo != nullptr && std::string(solo) != e.id) continue;
+        if (std::getenv("CONSEC_TRAZA") != nullptr) std::fprintf(stderr, "  ... %s\n", e.id);
+        const std::vector<std::string> fallos = juegaElEco(f.g, f.heroe, e, false);
+        for (const std::string& x : fallos) std::fprintf(stderr, "  [%s / %s] %s\n", e.id, e.camino, x.c_str());
+        MOTOR_CHECK(fallos.empty());
+    }
+}
+
+MOTOR_TEST_CASE(sin_la_flag_o_la_condicion_el_eco_desaparece) {
+    Fabrica f;
+    int probadas = 0;
+    for (const Eco& e : ecos()) {
+        if (std::string(e.muta.beat).empty()) continue;  // la fila del camino contrario
+        if (std::getenv("CONSEC_TRAZA") != nullptr) std::fprintf(stderr, "  ... mutando %s\n", e.id);
+        ++probadas;
+        const std::string temporal = (std::filesystem::temp_directory_path() / (std::string("consec_mut_") + e.id + ".json")).string();
+        const demo_bnd::Guiones mutada = conMutacion(f.g, e.muta, temporal);
+        const std::vector<std::string> fallos = juegaElEco(mutada, f.heroe, e, true);
+        if (fallos.empty()) std::fprintf(stderr, "  [%s] la mutacion (%s / %s / %s) no hizo fallar nada\n", e.id, e.muta.beat, e.muta.opcion, e.muta.cadena);
+        else if (std::getenv("MATRIZ_VERBOSO")) std::fprintf(stderr, "  [%s] mutacion en rojo: %s\n", e.id, fallos.front().c_str());
+        MOTOR_CHECK(!fallos.empty());
+    }
+    MOTOR_CHECK(probadas >= 18);
+}
+
+// «Acercarte al estrado» (b3_sermon_s3_a): para cada combinacion de lo que el dia 1 puede dejar con `bnd1_sandes_te_conoce`, el motor
+// (NarrativeEngine::tick, el primer beat que encaja) enseña la pagina que toca y en ella UNA sola salida con ese texto.
+std::string paginaDelEstrado(const demo_bnd::Guiones& g, bool conocido, bool enfadado, bool desafiado, int* cuantas) {
+    demo_bnd::Jugador j(g, demo_bnd::Suerte::Buena);
+    j.fase("ocaso");
+    for (const char* f : {"bnd3_sermon_abierta", "bnd3_sermon_visto", "bnd3_sermon_en_charla", "bnd1_sandes_te_conoce"}) j.s.setFlag(f);
+    j.s.setVariable("bnd3_sermon_pag", 3);
+    j.s.ponLugar("assets/levels/ciudad_centro.json");
+    if (conocido) j.s.setFlag("bnd1_sandes_conocido");
+    if (enfadado) j.s.setFlag("bnd1_sandes_enfadado");
+    if (desafiado) j.s.setFlag("bnd1_sandes_desafiado");
+    const RPG::NarrativeResult r = j.e.tick(j.s);
+    *cuantas = static_cast<int>(std::count(j.s.eleccion().textos.begin(), j.s.eleccion().textos.end(), "Acercarte al estrado"));
+    return r.fired ? r.beatId : "(nada)";
+}
+
+bool todasLasCombinacionesDelEstradoTienenUnaSalida(const demo_bnd::Guiones& g) {
+    bool bien = true;
+    for (int conocido = 0; conocido < 2; ++conocido)
+        for (int enfadado = 0; enfadado < 2; ++enfadado)
+            for (int desafiado = 0; desafiado < 2; ++desafiado) {
+                if (desafiado && !(conocido && enfadado)) continue;  // «¿Y tu quien eres para mandar?» pone las tres
+                const std::string quiero = desafiado ? "b3_sermon_s3_a_desafiado" : (conocido && enfadado) ? "b3_sermon_s3_a_miraba" : "b3_sermon_s3_a";
+                int cuantas = 0;
+                const std::string sale = paginaDelEstrado(g, conocido != 0, enfadado != 0, desafiado != 0, &cuantas);
+                if (sale != quiero || cuantas != 1) {
+                    std::fprintf(stderr, "  estrado: conocido=%d enfadado=%d desafiado=%d -> %s con %d salidas (queria %s con 1)\n", conocido, enfadado, desafiado,
+                                 sale.c_str(), cuantas, quiero.c_str());
+                    bien = false;
+                }
+            }
+    return bien;
+}
+
+MOTOR_TEST_CASE(el_estrado_tiene_una_sola_salida_para_cada_combinacion_del_dia1) {
+    Fabrica f;
+    MOTOR_CHECK(todasLasCombinacionesDelEstradoTienenUnaSalida(f.g));
+    // Mutacion: sin la condicion de la pagina de «solo miraba» (enfadado) esa combinacion cae en la pagina de siempre.
+    const std::string temporal = (std::filesystem::temp_directory_path() / "consec_mut_estrado.json").string();
+    const Mutacion m{"b3_sermon_s3_a_miraba", "", "bnd1_sandes_enfadado", "zz_mutada", 1, 0, "ocaso"};
+    const demo_bnd::Guiones mutada = conMutacion(f.g, m, temporal);
+    MOTOR_CHECK(!todasLasCombinacionesDelEstradoTienenUnaSalida(mutada));
+}
+
 int main() { return motor_test::runAllTests(); }
