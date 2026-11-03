@@ -44,6 +44,10 @@ MOTOR_TEST_CASE(sectarios_justo_antes_de_seguirlos) {
     const SaveGameData d = ida_y_vuelta(sectarios(f.g, f.heroe), f.heroe, "sectarios.json", &ok);
     MOTOR_CHECK(ok);
     MOTOR_CHECK(d.levelPath == "assets/levels/ciudad_centro.json");
+    // E-GUION-02b: la puerta de la herreria y el carro de Aigren comparten (6,59); los dos viajan y se restauran.
+    int en_6_59 = 0;
+    for (const SavedWorldObject& o : d.worldObjects) en_6_59 += (o.position.x == 6 && o.position.y == 59) ? 1 : 0;
+    MOTOR_CHECK(en_6_59 == 2);
     // Resueltos, sin la pista ni la invitacion (que cancelan el beat) y el beat sin disparar.
     MOTOR_CHECK(tiene(d.narrativeFlags, "bnd1_sectarios_resueltos"));
     MOTOR_CHECK(!tiene(d.narrativeFlags, "bnd_pista_sectarios") && !tiene(d.narrativeFlags, "bnd1_invitado_guarida"));

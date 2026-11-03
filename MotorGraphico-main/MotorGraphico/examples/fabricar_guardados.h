@@ -233,19 +233,8 @@ inline SaveGameData fotografia(const demo_bnd::Jugador& j, const Heroe& heroe, c
     auto montado = montaNivel(momento.nivel, heroe.ficha);
     montado->sesion->setNarrative(&j.e, const_cast<RPG::NarrativeState*>(&j.s));
     SaveGameData data = montado->sesion->captureSaveGame(montado->ruta);
-    // Dos objetos en la misma casilla (ciudad_centro: la puerta de la herreria y aigren_carro en (6,59), y otras dos)
-    // no se pueden restaurar: restoreSaveGame busca cada uno por su casilla (objectAt, el primero) y el segundo
-    // "no encaja". Aqui se queda el primero de cada casilla, que es el que objectAt devuelve; el otro desaparece
-    // del nivel cargado. Es un defecto del contenido (ver el informe de E-GUION-02): cualquier guardado hecho en
-    // ese nivel con el juego sale igual de incompatible.
-    std::vector<SavedWorldObject> unicos;
-    for (const SavedWorldObject& o : data.worldObjects) {
-        bool repetido = false;
-        for (const SavedWorldObject& u : unicos)
-            repetido = repetido || (u.position.x == o.position.x && u.position.y == o.position.y);
-        if (!repetido) unicos.push_back(o);
-    }
-    data.worldObjects = unicos;
+    // Los objetos que comparten casilla (ciudad_centro: la puerta de la herreria y aigren_carro en (6,59), y otros
+    // dos) van enteros: restoreSaveGame los distingue por id desde E-GUION-02b.
     data.playerPosition = casillaJuntoA(*montado->sesion, montado->nivel, momento);
     data.hero = heroe.guardado;
     data.characterName = heroe.ficha.displayName;
