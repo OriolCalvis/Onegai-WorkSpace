@@ -20,8 +20,11 @@
 #pragma once
 
 #include <cstdio>
+#include <filesystem>
+#include <limits>
 #include <cstdlib>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -391,5 +394,350 @@ inline SaveGameData combate5(const demo_bnd::Guiones& g, const Heroe& h) {
     j.s.setFlag("bnd1_verdaderos_pifia");
     return fotografia(j, h, kCombate5);
 }
+
+
+// ===========================================================================================================
+// E-MATRIZ-01 — Un guardado por camino del dia 1.
+//
+// Cada CaminoDia1 juega el prologo y el dia 1 DE VERDAD con el arnes (ruta + respuestas), hasta cerrar el dia
+// (bnd_dia_cerrado, sin dar el paso a Gorran), y fotografia la partida en el cuarto de la taberna. La prueba
+// (tests/Engine/MatrizDia1Tests.cpp) los restaura en una sesion limpia, juega el inicio del dia siguiente y mira
+// las consecuencias que inventaria tools/matriz_decisiones.py. Las ranuras salen de fabricar_guardados --matriz.
+// ===========================================================================================================
+
+// Un beat de un dia posterior que lee la decision y si, con los hechos del dia 1 que trae el guardado, se puede ver.
+// (Los requisitos propios de ese dia, bnd2_/bnd3_/..., se dan por cumplidos: lo que se mide es el efecto de la decision.)
+struct Lector {
+    const char* dia;    // "dia_gorran" | "dia2" (= boundington_segundo_dia) | "ocaso"
+    const char* beat;
+    const char* opcion; // "" = el requires del beat; si no, el de esa opcion (ademas del beat)
+    bool seVe;
+};
+
+// Mutacion: en una COPIA del JSON del dia 1 (temporal), la primera aparicion de `cadena` despues de la opcion
+// (`beat`, `opcion`) pasa a ser otra: la opcion deja de hacer su efecto.
+struct Mutacion {
+    const char* beat;
+    const char* opcion;
+    const char* cadena;
+};
+
+struct CaminoDia1 {
+    const char* id;    // dia1_<id>.json
+    const char* ruta;  // sectarios | aigren | verdaderos | luisarda | pelea
+    std::vector<std::string> dice;
+    demo_bnd::Suerte suerte;
+    std::vector<std::string> beats;             // beats que se tienen que haber visto
+    std::vector<std::string> ve, noVe;          // flags
+    std::vector<std::pair<std::string, int>> minimos;  // variable >= n
+    std::vector<Lector> lectores;
+    Mutacion mutacion;
+    const char* nota;
+};
+
+inline bool cierraElDia1(demo_bnd::Jugador& j) {
+    if (j.s.hasFlag("bnd_dia_cerrado")) return true;
+    j.entra("interior_taberna");
+    j.anochece();
+    j.habla("venides");
+    j.duerme();
+    return j.s.hasFlag("bnd_dia_cerrado");
+}
+
+// El recorrido del dia 1 hasta la decision. Cada ruta es la de la escena de demo_boundington que la juega.
+inline void recorre(demo_bnd::Jugador& j, const std::string& ruta) {
+    j.entra("interior_taberna");
+    j.habla("skilla");  // la cama
+    if (ruta == "sectarios") {
+        j.entra("ciudad_centro");
+        j.habla("sectario_perdido");
+        require(j.s.hasFlag("bnd1_invitado_guarida"));
+        j.entra("interior_iglesia_s1");
+        j.entra("santuario_subterraneo");
+    } else if (ruta == "completa") {  // la cripta de los sectarios y, ademas, los PNJ de la ruta del heroe: pistas de sobra
+        j.entra("ciudad_centro");
+        j.habla("sectario_perdido");
+        require(j.s.hasFlag("bnd1_invitado_guarida"));
+        j.entra("interior_iglesia_s1");
+        j.entra("santuario_subterraneo");
+        j.entra("interior_herreria");
+        j.habla("aigren");
+        j.entra("interior_sastreria");
+        j.habla("luisarda");
+        j.entra("ciudad_oeste");
+        j.habla("xila");
+        j.entra("interior_iglesia");
+    } else if (ruta == "aigren") {
+        j.entra("interior_herreria");
+        j.habla("aigren");
+        require(j.s.hasFlag("bnd1_invitado_por_aigren") || j.s.hasFlag("bnd1_aigren_tema_perdidos") || j.s.hasFlag("bnd1_aigren_resuelto"));
+        j.entra("interior_iglesia_s1");
+        j.entra("santuario_subterraneo");
+    } else if (ruta == "verdaderos") {
+        j.entra("interior_taberna");
+        j.habla("skilla");  // pasa la mañana
+        j.entra("ciudad_oeste");
+        j.habla("nina_del_gato");
+    } else if (ruta == "luisarda") {
+        j.entra("interior_herreria");
+        j.habla("aigren");
+        j.habla("aigren");
+        j.entra("interior_sastreria");
+        j.habla("luisarda");
+        j.entra("interior_taberna");
+        j.habla("skilla");
+    } else if (ruta == "pelea") {
+        j.entra("interior_taberna");
+        j.duerme();  // anochece, «Subir a dormir» y b1_pelea
+    } else {
+        require(false);
+    }
+}
+
+// Juega el camino y devuelve el guardado del final del dia. `jugado` (opcional) recibe los beats vistos.
+// `exigeCierre` = false para las mutaciones, que pueden dejar el dia sin poder cerrarse (la comprobacion lo dira).
+inline SaveGameData dia1(const demo_bnd::Guiones& g, const Heroe& h, const CaminoDia1& c, std::vector<std::string>* jugado = nullptr,
+                         bool exigeCierre = true) {
+    Partida p(g, h, c.suerte);
+    demo_bnd::Jugador& j = p.j;
+    j.prefiere = c.dice;
+    j.prefiere.insert(j.prefiere.end(), {"Pagar la cama", "Subir a dormir"});
+    j.prologo();
+    fase(j, "dia1");
+    recorre(j, c.ruta);
+    j.suerte = demo_bnd::Suerte::Buena;
+    const bool cerrado = cierraElDia1(j);
+    if (exigeCierre) require(cerrado);
+    if (jugado != nullptr) *jugado = j.vistos;
+    static const Momento kDia1{"dia1.json", "interior_taberna_p1", "", 0, 0};
+    return fotografia(j, h, kDia1);
+}
+
+// Copia del dia 1 con la opcion neutralizada: se lee el JSON real, se cambia en memoria y se escribe en un temporal.
+inline demo_bnd::Guiones conMutacion(const demo_bnd::Guiones& g, const Mutacion& m, const std::string& temporal) {
+    std::string t;
+    {
+        FILE* f = std::fopen("assets/adventures/boundington_primer_dia.json", "rb");
+        require(f != nullptr);
+        char buf[65536];
+        std::size_t n;
+        while ((n = std::fread(buf, 1, sizeof buf, f)) > 0) t.append(buf, n);
+        std::fclose(f);
+    }
+    const std::size_t b = t.find(std::string("\"id\": \"") + m.beat + "\"");
+    require(b != std::string::npos);
+    const std::size_t o = t.find(std::string("\"texto\": \"") + m.opcion + "\"", b);
+    require(o != std::string::npos);
+    const std::string quiero = std::string("\"") + m.cadena + "\"";
+    const std::size_t x = t.find(quiero, o);
+    require(x != std::string::npos);
+    t.replace(x, quiero.size(), "\"zz_mutada\"");
+    FILE* f = std::fopen(temporal.c_str(), "wb");
+    require(f != nullptr);
+    std::fwrite(t.data(), 1, t.size(), f);
+    std::fclose(f);
+    auto mutada = RPG::AdventureScript::loadFromFile(temporal);
+    std::remove(temporal.c_str());
+    require(mutada.isOk());
+    demo_bnd::Guiones r = g;
+    r.dia1 = mutada.value();
+    return r;
+}
+
+// Un guardado restaurado en una sesion limpia: el nivel real, la sesion, y un Jugador cuyo estado narrativo ES el de la sesion.
+struct Restaurada {
+    SaveGameData leido;
+    std::unique_ptr<NivelMontado> nivel;
+    std::unique_ptr<demo_bnd::Jugador> j;
+};
+
+inline Restaurada restaura(const demo_bnd::Guiones& g, const Heroe& h, const SaveGameData& data, const std::string& archivo) {
+    Restaurada r;
+    const std::string ruta = (std::filesystem::temp_directory_path() / ("matriz_dia1_" + archivo)).string();
+    std::string error;
+    require(writeSaveGameFile(ruta, data, &error));
+    require(readSaveGameFile(ruta, &r.leido, &error));
+    std::filesystem::remove(ruta);
+    const std::string nombre = r.leido.levelPath.substr(std::string("assets/levels/").size());
+    r.nivel = montaNivel(nombre.substr(0, nombre.size() - 5), h.ficha);
+    r.j = std::make_unique<demo_bnd::Jugador>(g, demo_bnd::Suerte::Buena);
+    r.nivel->sesion->setNarrative(&r.j->e, &r.j->s);
+    require(r.nivel->sesion->restoreSaveGame(r.leido, &error));
+    r.j->s.ponLugar(r.leido.levelPath);
+    return r;
+}
+
+// ¿Se puede ver el beat (u opcion) lector con los hechos del dia 1 de `base`? Los requisitos de los dias posteriores
+// (flags que no son bnd0_/bnd1_, variables ajenas al dia 1) se dan por cumplidos; los del dia 1 se leen del guardado.
+inline bool lectorSeVe(const demo_bnd::Guiones& g, const Lector& l, const RPG::NarrativeState& base) {
+    const RPG::AdventureScript& guion = g.por(l.dia);
+    const RPG::NarrativeBeat* beat = nullptr;
+    for (const RPG::NarrativeBeat& b : guion.beats)
+        if (b.id == l.beat) beat = &b;
+    require(beat != nullptr);
+    // Los hechos del dia 1: todo nombre que el JSON del dia 1 enciende, apaga o suma (flags, salidas de tiradas y
+    // combates, variables). Lo demas lo ponen los dias posteriores y se da por cumplido.
+    std::set<std::string> deldia1;
+    const auto recoge = [&](const std::vector<RPG::NarrativeEffect>& efs) {
+        for (const RPG::NarrativeEffect& e : efs) {
+            if (e.type == RPG::EffectType::SetFlag || e.type == RPG::EffectType::ClearFlag ||
+                e.type == RPG::EffectType::SetVariable || e.type == RPG::EffectType::AddVariable)
+                deldia1.insert(e.arg);
+            if (e.type == RPG::EffectType::SkillCheck)
+                for (const std::string& f : {e.skillCheck.flagBotch, e.skillCheck.flagPartial, e.skillCheck.flagSuccess, e.skillCheck.flagCritical})
+                    deldia1.insert(f);
+            if (e.type == RPG::EffectType::StartBattle)
+                for (const std::string& f : {e.battle.flagVictory, e.battle.flagDefeat, e.battle.flagHuida}) deldia1.insert(f);
+        }
+    };
+    for (const RPG::NarrativeBeat& b : g.dia1.beats) {
+        recoge(b.effects);
+        for (const RPG::OpcionDeDialogo& o : b.opciones) recoge(o.efectos);
+    }
+    for (const char* v : {"dia", "franja", "bnd_dia_cerrado"}) deldia1.erase(v);  // el reloj y el cierre los mueve cada dia
+    const auto propio = [&](const std::string& f) { return deldia1.count(f) > 0; };
+    const auto variableDelDia1 = propio;
+    const auto visible = [&](const RPG::NarrativeCondition& c) {
+        RPG::NarrativeState s = base;
+        for (const std::string& f : c.allFlags)
+            if (!propio(f)) s.setFlag(f);
+        for (const std::string& f : c.notFlags)
+            if (!propio(f)) s.clearFlag(f);
+        // anyFlags: si mezcla flags del dia 1 con otras (bgd_capucha o bnd1_unido_al_culto), mandan las del dia 1: las
+        // otras podrian darse sin la decision y no la distinguen. Si no tiene ninguna del dia 1, se da la primera.
+        bool hayPropia = false;
+        for (const std::string& f : c.anyFlags) hayPropia = hayPropia || propio(f);
+        if (!c.anyFlags.empty() && !hayPropia) s.setFlag(c.anyFlags.front());
+        for (const auto& v : c.variables)
+            if (!variableDelDia1(v.nombre)) s.setVariable(v.nombre, v.min != std::numeric_limits<int>::min() ? v.min : 0);
+        if (!c.lugares.empty()) s.ponLugar(c.lugares.front());
+        return c.isSatisfiedBy(s);
+    };
+    bool ve = visible(beat->requirements);
+    if (std::string(l.opcion).empty()) return ve;
+    for (const RPG::OpcionDeDialogo& o : beat->opciones)
+        if (o.texto.rfind(l.opcion, 0) == 0) return ve && visible(o.requisitos);
+    require(false);
+    return false;
+}
+
+// Lo que tiene que cumplir el camino al restaurarse. Devuelve las faltas ("" = ninguna).
+inline std::vector<std::string> compruebaDia1(const demo_bnd::Guiones& g, Restaurada& r, const CaminoDia1& c) {
+    std::vector<std::string> fallos;
+    demo_bnd::Jugador& j = *r.j;
+    const auto falta = [&](const std::string& s) { fallos.push_back(s); };
+    for (const std::string& f : c.ve)
+        if (!j.s.hasFlag(f)) falta("falta " + f);
+    for (const std::string& f : c.noVe)
+        if (j.s.hasFlag(f)) falta("sobra " + f);
+    for (const auto& v : c.minimos)
+        if (j.s.variable(v.first) < v.second) falta(v.first + "=" + std::to_string(j.s.variable(v.first)) + " < " + std::to_string(v.second));
+    for (const std::string& b : c.beats)
+        if (!j.s.beatFired(b)) falta("no disparado " + b);
+    if (!j.s.hasFlag("bnd_dia_cerrado")) falta("el dia no esta cerrado");
+    if (j.s.hasFlag("bnd_diag_empezado")) falta("el guardado ya es de Gorran");
+    // El inicio del dia siguiente, como lo hace el juego al cargar: cambio de aventura y primer fotograma.
+    fase(j, "dia_gorran");
+    j.drena();
+    if (!j.visto("bg_amanece")) falta("no amanece Gorran (bg_amanece)");
+    if (!j.s.hasFlag("bnd_diag_empezado")) falta("Gorran no ha empezado");
+    // Que la decision siga en pie tras el primer fotograma del dia siguiente.
+    for (const std::string& f : c.ve)
+        if (!j.s.hasFlag(f)) falta("tras amanecer ya no esta " + f);
+    for (const Lector& l : c.lectores) {
+        const bool ve = lectorSeVe(g, l, j.s);
+        if (ve != l.seVe)
+            falta(std::string(l.dia) + ":" + l.beat + (std::string(l.opcion).empty() ? "" : std::string("/") + l.opcion) +
+                  (l.seVe ? " deberia verse" : " no deberia verse"));
+    }
+    return fallos;
+}
+
+// --- Los caminos del dia 1 (la tabla de la prueba y de las ranuras) ---
+// Respuestas comunes y recorridos, como en demo_boundington («DIA 1: la cripta, ...»). Los lectores y los efectos
+// esperados salen de out/fabrica/UNI-02-11/MATRIZ_DIA1.md (tools/matriz_decisiones.py).
+
+// Respuestas comunes de la cripta, como en demo_boundington («DIA 1: la cripta, ...»).
+inline const std::vector<std::string> kCriptaSectarios = {
+    "Mostrar interés [Persuasión]", "Cuenta conmigo.", "Dejar las armas", "Mirar la estatua [Conocimiento arcano]",
+    "Escuchar el canto", "Hablar con alguien [Persuasión]", "¿Qué mezclas?", "¿Conoces a un caballero llamado Venides?",
+    "Callar"};
+inline const std::vector<std::string> kCriptaAigren = {"Preguntarle por los Perdidos", "Decirle que te interesan",
+                                                "Vengo de parte del herrero.", "Ir a por lo tuyo"};
+
+inline const std::vector<std::string> kLuisarda = {"¿Trabajas solo?", "Pues suena muy sano.", "Presionarle con su hijo [Intimidación]", "Busco antorchas.",
+                                            "Volver a sacar las antorchas", "Hacerle creer que ya lo sabes todo [Engaño]", "Escuchar lo que te pide"};
+
+inline std::vector<std::string> junta(std::vector<std::string> a, const std::vector<std::string>& b) {
+    a.insert(a.end(), b.begin(), b.end());
+    return a;
+}
+
+inline const std::vector<CaminoDia1>& caminosDia1() {
+    // Orden de campos: id, ruta, dice, suerte, beats, ve, noVe, minimos, lectores, mutacion, nota.
+    using demo_bnd::Suerte;
+    static const std::vector<CaminoDia1> c = {
+        // --- b1_edul (la cripta, invitado por los sectarios) + b1_venides_informe_bastan ---
+        {"edul_unirse", "sectarios", junta({"Unirte de verdad", "Contárselo todo"}, kCriptaSectarios), Suerte::Buena,
+         {"b1_edul"}, {"bnd1_unido_al_culto", "bnd1_guarida_resuelta", "bnd1_sabe_barricadas"}, {"bnd1_dudas_verina"},
+         {{"puntos_gurkazaal", 1}},
+         {{"dia_gorran", "bgd_velas_hermano", "", true}, {"dia2", "b2_po54_sandes", "", true}, {"ocaso", "b3_verina_salvada_dudas", "", false}},
+         {"b1_edul", "Unirte de verdad", "bnd1_unido_al_culto"}, "b1_edul: unirse al culto"},
+        {"edul_dudas", "sectarios", junta({"Sembrar dudas en Verina", "Contárselo todo"}, kCriptaSectarios), Suerte::Buena,
+         {"b1_edul"}, {"bnd1_dudas_verina", "bnd1_verina_vista", "bnd1_guarida_resuelta"}, {"bnd1_unido_al_culto"}, {},
+         {{"ocaso", "b3_verina_salvada_dudas", "", true}, {"dia_gorran", "bgd_velas_hermano", "", false}, {"dia2", "b2_po54_sandes", "", false}},
+         {"b1_edul", "Sembrar dudas en Verina", "bnd1_dudas_verina"}, "b1_edul: sembrar dudas en Verina"},
+        {"informe_cuenta_todo", "completa", junta({"Sembrar dudas en Verina", "Contárselo todo"}, junta(kCriptaSectarios, kRutaDelHeroe)), Suerte::Buena,
+         {"b1_venides_informe_bastan"}, {"bnd1_venides_informe_hecho", "bnd_venides_20", "bnd_aviso_dado"}, {"bnd1_venides_desconfianza"}, {},
+         {{"dia2", "b2_venides_castillo_v0", "", true}, {"dia2", "b2_noche_rosita_informa", "Contarselo todo y ensenarle", false}},
+         {"b1_venides_informe_bastan", "Contárselo todo", "bnd_venides_20"}, "b1_venides_informe_bastan: contárselo todo a Venides"},
+        {"informe_desconfia", "completa", junta({"Sembrar dudas en Verina", "Desconfiar de él"}, junta(kCriptaSectarios, kRutaDelHeroe)), Suerte::Buena,
+         {"b1_venides_informe_bastan"}, {"bnd1_venides_informe_hecho", "bnd1_venides_desconfianza"}, {"bnd_venides_20"}, {},
+         {{"dia2", "b2_venides_castillo_v0", "", false}, {"dia2", "b2_noche_rosita_informa", "Contarselo todo y ensenarle", true}},
+         {"b1_venides_informe_bastan", "Desconfiar de él", "bnd1_venides_desconfianza"}, "b1_venides_informe_bastan: desconfiar de Venides"},
+        // --- b1_guarida_por_aigren (la cripta, de parte del herrero) ---
+        {"aigren_verina", "aigren", junta({"Sacar a Verina de aquí", "Contárselo todo"}, kCriptaAigren), Suerte::Buena,
+         {"b1_guarida_por_aigren"}, {"bnd1_verina_salvada_guarida", "bnd1_guarida_resuelta", "bnd1_invitado_por_aigren"}, {"bnd1_unido_al_culto", "bnd1_pista_guarida"}, {},
+         {{"dia2", "b2_herreria_cripta", "", true}, {"dia_gorran", "bgd_velas_hermano", "", false}, {"dia2", "b2_rosita_verina", "", false}},
+         {"b1_guarida_por_aigren", "Sacar a Verina de aquí", "bnd1_verina_salvada_guarida"}, "b1_guarida_por_aigren: sacar a Verina"},
+        {"aigren_sonsacar", "aigren", junta({"Sonsacar para Venides", "Contárselo todo"}, kCriptaAigren), Suerte::Buena,
+         {"b1_guarida_por_aigren"}, {"bnd1_pista_guarida", "bnd1_sabe_barricadas", "bnd1_guarida_resuelta"}, {"bnd1_verina_salvada_guarida", "bnd1_unido_al_culto"}, {{"pistas", 1}},
+         {{"dia2", "b2_castillo_prueba", "", true}, {"dia2", "b2_rosita_verina_arriba", "", false}},
+         {"b1_guarida_por_aigren", "Sonsacar para Venides", "bnd1_pista_guarida"}, "b1_guarida_por_aigren: sonsacar para Venides"},
+        {"aigren_unirse", "aigren", junta({"Unirte", "Contárselo todo"}, kCriptaAigren), Suerte::Buena,
+         {"b1_guarida_por_aigren"}, {"bnd1_unido_al_culto", "bnd1_sabe_barricadas", "bnd1_guarida_resuelta"}, {"bnd1_verina_salvada_guarida", "bnd1_pista_guarida"}, {{"puntos_gurkazaal", 1}},
+         {{"dia_gorran", "bgd_velas_hermano", "", true}, {"dia2", "b2_rosita_verina_arriba", "", false}},
+         {"b1_guarida_por_aigren", "Unirte", "bnd1_unido_al_culto"}, "b1_guarida_por_aigren: unirse al culto"},
+        // --- b1_luisarda_pide ---
+        {"luisarda_silencio", "luisarda", junta({"No diré nada. Tranquila.", "Contárselo todo"}, kLuisarda), Suerte::Buena,
+         {"b1_luisarda_pide"}, {"bnd1_luisarda_silencio"}, {"bnd1_luisarda_con_rosita"}, {},
+         {{"dia2", "b2_luisarda_pociones", "", true}, {"dia2", "b2_luisarda", "", false}},
+         {"b1_luisarda_pide", "No diré nada. Tranquila.", "bnd1_luisarda_silencio"}, "b1_luisarda_pide: guardar silencio"},
+        {"luisarda_cena", "luisarda", junta({"Ven a cenar a la taberna. Rosita te espera.", "Contárselo todo"}, kLuisarda), Suerte::Buena,
+         {"b1_luisarda_pide"}, {"bnd1_luisarda_con_rosita"}, {"bnd1_luisarda_silencio"}, {{"confianza_rosita", 1}},
+         {{"dia2", "b2_luisarda", "", true}, {"dia2", "b2_luisarda_pociones", "", false}},
+         {"b1_luisarda_pide", "Ven a cenar a la taberna. Rosita te espera.", "bnd1_luisarda_con_rosita"}, "b1_luisarda_pide: Luisarda a cenar con Rosita"},
+        // --- b1_verdaderos (Pico Dragon) ---
+        {"verdaderos_sumarse", "verdaderos", {"Comer algo mientras pasa la mañana (5)", "Sumarte a ellos", "Contárselo todo"}, Suerte::Buena,
+         {"b1_verdaderos"}, {"bnd1_verdaderos_unido", "bnd1_familia_resuelta"}, {"bnd1_verdaderos_vencidos", "bnd1_familia_defendida"}, {},
+         {{"dia2", "b2_po54_sandes", "", true}, {"ocaso", "b3_sermon_po54", "", true}},
+         {"b1_verdaderos", "Sumarte a ellos", "bnd1_verdaderos_unido"}, "b1_verdaderos: sumarse a los Verdaderos"},
+        {"verdaderos_cara", "verdaderos", {"Comer algo mientras pasa la mañana (5)", "Plantarles cara", "Contárselo todo"}, Suerte::Buena,
+         {"b1_verdaderos"}, {"bnd1_verdaderos_vencidos", "bnd1_familia_defendida"}, {"bnd1_verdaderos_unido"}, {},
+         {{"dia2", "b2_po54_sandes", "", false}, {"ocaso", "b3_sermon_po54", "", false}},
+         {"b1_verdaderos", "Plantarles cara", "bnd1_verdaderos_vencidos"}, "b1_verdaderos: plantarles cara (y ganar)"},
+        // --- b1_pelea (la noche en la taberna) ---
+        {"pelea_separar", "pelea", {"Separarlos [pelea sin matar]", "Contárselo todo"}, Suerte::Buena,
+         {"b1_pelea"}, {"bnd1_pelea_lanzada", "bnd1_pelea_ganada"}, {"bnd1_pelea_rosita"}, {},
+         {{"dia2", "b2_venides_castillo_s1_a", "¿Anoche escribiste", true}},
+         {"b1_pelea", "Separarlos [pelea sin matar]", "bnd1_pelea_ganada"}, "b1_pelea: separarlos a golpes"},
+        {"pelea_proteger", "pelea", {"Proteger al borracho dormido", "Contárselo todo"}, Suerte::Buena,
+         {"b1_pelea"}, {"bnd1_pelea_lanzada", "bnd1_pelea_rosita", "bnd1_rosita_fuerza_vista"}, {"bnd1_pelea_ganada"}, {{"confianza_rosita", 1}},
+         {{"dia2", "b2_venides_castillo_s1_a", "¿Anoche escribiste", true}},
+         {"b1_pelea", "Proteger al borracho dormido", "bnd1_pelea_rosita"}, "b1_pelea: proteger al borracho dormido"},
+    };
+    return c;
+}
+
 
 }  // namespace fabricar

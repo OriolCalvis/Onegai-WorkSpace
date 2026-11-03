@@ -201,6 +201,32 @@ Peso = beats/eventos/cinematicas posteriores distintos que leen (+0,5 por los de
 - `opciones-iguales` b1_charla_sandes:22779 — Solo miraba. | ¿Y tú quién eres para mandar? (bnd1_con_edul,bnd1_sandes_conocido,bnd1_sandes_enfadado)
 - `opciones-iguales` b1_pelea:26972 — Proteger al borracho dormido | Quedarte mirando (bnd1_pelea_lanzada,bnd1_pelea_rosita,bnd1_rosita_fuerza_vista)
 
+## Fase B — Guardados y pruebas (13 caminos, 7 de las 8 decisiones de más peso)
+
+`fabricar_guardados --matriz [carpeta]` (desde `MG/out/build/macos-debug`) juega el prólogo y el día 1 con el arnés hasta cerrar el día (`bnd_dia_cerrado`, sin el paso a Gorran) y escribe `dia1_<camino>.json` (en esta carpeta: `guardados_dia1/`) y las ranuras de «Continuar» en `saves/boundington/` (rápida = 1.º camino, 1 a 6 = los siguientes; el resto solo con `juego --guardado`). Prueba: `test_matriz_dia1` (gl-free, `MG/tests/Engine/MatrizDia1Tests.cpp`, tabla de caminos en `MG/examples/fabricar_guardados.h`). Cada camino se restaura en una sesión limpia, se juega el inicio de Gorran (`bg_amanece`) y se comprueba: flags, variables y beats del día 1; que sigan en pie al amanecer; y que los beats de los días siguientes que leen la decisión se vean o no con ese guardado (los requisitos propios de esos días se dan por cumplidos; los del día 1 se leen del guardado).
+
+| camino (guardado) | decisión | opción | mutación (se quita en una copia del JSON; la prueba tiene que fallar) | resultado |
+|---|---|---|---|---|
+| dia1_edul_unirse | b1_edul | Unirte de verdad | `bnd1_unido_al_culto` | verde / mutación en rojo |
+| dia1_edul_dudas | b1_edul | Sembrar dudas en Verina | `bnd1_dudas_verina` | verde / rojo |
+| dia1_informe_cuenta_todo | b1_venides_informe_bastan | Contárselo todo | `bnd_venides_20` | verde / rojo |
+| dia1_informe_desconfia | b1_venides_informe_bastan | Desconfiar de él | `bnd1_venides_desconfianza` | verde / rojo |
+| dia1_aigren_verina | b1_guarida_por_aigren (+ b1_aigren_perdidos «Decirle que te interesan») | Sacar a Verina | `bnd1_verina_salvada_guarida` | verde / rojo |
+| dia1_aigren_sonsacar | b1_guarida_por_aigren | Sonsacar para Venides | `bnd1_pista_guarida` | verde / rojo |
+| dia1_aigren_unirse | b1_guarida_por_aigren | Unirte | `bnd1_unido_al_culto` | verde / rojo |
+| dia1_luisarda_silencio | b1_luisarda_pide | No diré nada | `bnd1_luisarda_silencio` | verde / rojo |
+| dia1_luisarda_cena | b1_luisarda_pide | Ven a cenar | `bnd1_luisarda_con_rosita` | verde / rojo |
+| dia1_verdaderos_sumarse | b1_verdaderos | Sumarte a ellos | `bnd1_verdaderos_unido` | verde / rojo |
+| dia1_verdaderos_cara | b1_verdaderos | Plantarles cara (y ganar) | `bnd1_verdaderos_vencidos` | verde / rojo |
+| dia1_pelea_separar | b1_pelea | Separarlos | `bnd1_pelea_ganada` | verde / rojo |
+| dia1_pelea_proteger | b1_pelea | Proteger al borracho dormido | `bnd1_pelea_rosita` | verde / rojo |
+
+**Sin guardado ni prueba** (queda listado, no es que falte la decisión): b1_charla_sandes (las 3 opciones: exige la pifia de «Hablar con alguien [Persuasión]» en la ceremonia y no haber ido con Edul), b1_aigren_perdidos «Convencerle de que son el mal [Persuasión]» (la tirada), b1_pelea «Quedarte mirando» y la variante de «Proteger» con Luisarda (mismas flags que la probada: ver ⚠). Tampoco las otras 49 decisiones de la tabla de arriba (solo las 8 de más peso).
+
+## Fase C — Capturas
+
+`MG/tools/guiones/m1_unirse.txt` y `m1_dudas.txt`, sobre `dia1_edul_unirse.json` y `dia1_edul_dudas.json`; salen en `capturas/m1_*.png`. Lo que se ve: el juego carga el día 1 cerrado y cambia a «El Segundo Día: la montaña de Gorran» (aviso «Nuevo objetivo: Rosita ... quiere su espada», 0/7), y luego funde a blanco. **Las dos capturas son idénticas byte a byte**: el comienzo del día siguiente no enseña la diferencia entre unirse al culto y sembrar dudas; esa se ve días después (la mina vieja de Gorran para unirse, la plaza del Ocaso para las dudas). Detalles de las capturas: el HUD sigue diciendo «Día 1 · Noche» al amanecer de Gorran y el oro es 0 (el arnés no guarda oro).
+
 ## Hallazgos ⚠ (revisados a mano sobre los avisos)
 
 Ninguno cambia historia (alcance congelado); son para Oriol.
