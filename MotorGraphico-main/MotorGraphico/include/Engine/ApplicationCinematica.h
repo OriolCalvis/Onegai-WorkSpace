@@ -34,6 +34,7 @@
 #include "RPG/RandomEngine.h"
 
 class Application;
+struct SaveGameData;
 class BattleState;
 class Entity;
 class HudPanel;
@@ -164,6 +165,8 @@ struct ApplicationCinematica {
     // el aviso en la línea del papiro y un fotograma pintado con él: que se vea
     // que la elección ha llegado aunque lo siguiente tarde.
     static void avisoYa(Application& app, const std::string& texto);
+    // H0-05 / E-GUION-02: cargar una partida guardada (ApplicationCinematica.cpp); la usan loadSlot y `juego --guardado`.
+    static bool cargaPartida(Application& app, const SaveGameData& datos);
     // Lo alto de la cabeza de un combatiente, en el mundo (false: no tiene dibujo).
     static bool cabezaDe(const Application& app, const ICombatant* cuerpo, Vector2& cabeza);
     // Su dibujo en el mundo (el heroe, el marcador de un enemigo o el de un acompanante); nullptr si no tiene.

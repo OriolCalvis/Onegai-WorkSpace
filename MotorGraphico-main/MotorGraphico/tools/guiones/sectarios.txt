@@ -1,0 +1,16 @@
+# E-GUION-02 — Dia 1, la plaza: los tres sectarios recogen sus cosas y echan a andar hacia el Casco Antiguo.
+# El guardado (guardados/sectarios.json) deja al heroe junto a sectario_perdido con los sectarios ya resueltos:
+# hablarles otra vez dispara b1_sectarios_seguir («Seguirles de lejos [Sigilo]»).
+# Uso (desde out/build/macos-debug):
+#   ./fabricar_guardados            # escribe guardados/{sectarios,ocaso,combate5}.json
+#   ./juego --guardado guardados/sectarios.json --guion ../../../tools/guiones/sectarios.txt
+30 captura plaza
+32 toca E
+50 captura dialogo
+52 toca ENTER
+70 captura sigilo
+72 toca ENTER
+90 captura tirada
+92 toca ENTER
+120 captura seguimiento
+150 fin

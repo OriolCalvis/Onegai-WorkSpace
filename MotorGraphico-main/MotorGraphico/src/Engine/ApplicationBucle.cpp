@@ -429,9 +429,10 @@ void Application::render(bool capture) {
     m_window->swapBuffers();
 }
 
-void Application::run(int maxFrames, const Engine::GuionCaptura* guion) {
+void Application::run(int maxFrames, const Engine::GuionCaptura* guion, const SaveGameData* guardado) {
     int frame = 0;
     if (guion != nullptr) { m_captura.empieza(*guion); maxFrames = m_captura.fotogramas(); }  // E-GUION-01
+    if (guardado != nullptr) ApplicationCinematica::cargaPartida(*this, *guardado);  // E-GUION-02: como «Continuar»
     // RUN-01: la fuente de tiempo sigue siendo GLFW, pero el ritmo de la
     // simulacion vive en ApplicationLoop (ADR-007). Asi Application solo
     // adapta servicios de plataforma/GL y el reloj se prueba sin ventana.

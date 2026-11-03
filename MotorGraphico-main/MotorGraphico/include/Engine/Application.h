@@ -103,9 +103,9 @@ public:
                       const std::vector<std::string>& extraCatalogPaths = {},
                       bool startAtTitle = false);
 
-    // Bucle principal hasta que se cierre la ventana o se pulse ESC. maxFrames >= 0 corre ese numero de frames y
-    // sale (modo humo para CI). Con `guion` (E-GUION-01; ver GuionCaptura.h) corre sus fotogramas 0..ultimo con dt fijo.
-    void run(int maxFrames = -1, const Engine::GuionCaptura* guion = nullptr);
+    // Bucle principal hasta que se cierre la ventana o se pulse ESC. maxFrames >= 0: ese numero de frames y sale (modo humo).
+    // `guion` (E-GUION-01): sus fotogramas 0..ultimo con dt fijo. `guardado` (E-GUION-02): arranca cargandolo, como «Continuar».
+    void run(int maxFrames = -1, const Engine::GuionCaptura* guion = nullptr, const SaveGameData* guardado = nullptr);
 
     void shutdown();
 

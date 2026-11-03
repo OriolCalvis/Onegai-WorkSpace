@@ -867,17 +867,7 @@ bool Application::loadSlot(int index) {
         m_session->logNote("No se pudo cargar: " + leida.errorMessage());
         return false;
     }
-    const SaveGameData data = leida.value();  // copia: el dato entra en la lambda
-    const auto requested = m_scenes.requestReplace(makeScene(false, [this, data] {
-        auto loaded = loadLevel(data.levelPath, false, GridCoord{}, [this, &data] {
-            m_narrativeState.reset();
-            applyNarrativeState(data, m_narrativeState);
-            if (m_pergamino) m_pergamino->interfaz().guia().marcas() = data.marcasMapa;  // MAPA-02
-        }, &data);
-        if (loaded.isOk()) m_session->logNote("Partida cargada.");
-        return loaded;
-    }));
-    return requested.isOk();
+    return ApplicationCinematica::cargaPartida(*this, leida.value());
 }
 
 bool Application::quickLoad() { return loadSlot(Game::SaveSlots::kQuickSlot); }

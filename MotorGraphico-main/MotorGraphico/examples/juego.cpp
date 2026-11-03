@@ -40,6 +40,7 @@
 // porque GameSession es GL-free a proposito (ver su header).
 #include "Engine/Application.h"
 #include "Engine/GuionCaptura.h"
+#include "Game/SaveGame.h"
 
 #include <cstdlib>
 #include <memory>
@@ -58,6 +59,8 @@ int main(int argc, char** argv) {
     //   ./juego --nivel X --catalogo Y                y con ese catalogo
     //   ./juego 3                                     modo humo, 3 frames
     //   ./juego [--nivel X] --guion guion.txt         teclas y capturas por guion (Engine/GuionCaptura.h)
+    //   ./juego --guardado partida.json [--guion g]   arranca cargando ese guardado, sin titulo, como «Continuar»
+    //                                                 (los fabrica fabricar_guardados; E-GUION-02)
     //
     // Se lanza como PROCESO APARTE desde el editor (tecla F7). Application
     // crea su propia ventana y su propio contexto GL, asi que no se puede
@@ -75,6 +78,7 @@ int main(int argc, char** argv) {
     // directo, como siempre.
     bool nivelExplicito = false;
     std::string rutaGuion;  // E-GUION-01
+    std::string rutaGuardado;  // E-GUION-02
     for (int i = 1; i < argc; ++i) {
         const std::string a = argv[i];
         if (a == "--nivel" && i + 1 < argc) {
@@ -86,6 +90,8 @@ int main(int argc, char** argv) {
             catalogosExtra.push_back(argv[++i]);
         } else if (a == "--guion" && i + 1 < argc) {
             rutaGuion = argv[++i];
+        } else if (a == "--guardado" && i + 1 < argc) {
+            rutaGuardado = argv[++i];
         } else if (a == "--precuela") {
             nivel = "assets/levels/interior_taberna.json";
             aventuraInicial = "assets/adventures/boundington_precuela_taberna.json";
@@ -94,7 +100,7 @@ int main(int argc, char** argv) {
             maxFrames = std::atoi(a.c_str());
         } else {
             std::cerr << "Uso: juego [--precuela] [--nivel ruta.json] [--catalogo ruta.json] "
-                         "[--catalogo-extra ruta.json] [--guion guion.txt] [nFrames]\n";
+                         "[--catalogo-extra ruta.json] [--guion guion.txt] [--guardado partida.json] [nFrames]\n";
             return 2;
         }
     }
@@ -110,6 +116,18 @@ int main(int argc, char** argv) {
         guion = std::make_unique<Engine::GuionCaptura>(std::move(leido.value()));
     }
 
+    // E-GUION-02 — Un guardado ilegible impide arrancar (codigo 2, con el motivo) y no se abre la ventana. Se lee con
+    // el lector del juego: si pasa, «Continuar» lo habria cargado igual.
+    std::unique_ptr<SaveGameData> guardado;
+    if (!rutaGuardado.empty()) {
+        guardado = std::make_unique<SaveGameData>();
+        std::string error;
+        if (!readSaveGameFile(rutaGuardado, guardado.get(), &error)) {
+            std::cerr << "Guardado no valido: " << error << "\n";
+            return 2;
+        }
+    }
+
     Application app;
     // Arranca por el prologo de Boundington: interior_vacio.json es donde
     // cae el jugador en El Vacio (Cap. 1 del canon), y su beat "enter"
@@ -120,7 +138,7 @@ int main(int argc, char** argv) {
     // no falla: el motor grafico sigue siendo usable sin ella.
     auto init = app.init(1280, 720, "Motor Gráfico - Boundington", nivel, catalogo,
                          aventuraInicial, catalogosExtra,
-                         /*startAtTitle=*/!nivelExplicito);
+                         /*startAtTitle=*/!nivelExplicito || guardado != nullptr);  // con guardado, los catalogos de la campana
     if (!init.isOk()) {
         // init() nunca lanza: los fallos de arranque (ventana, shaders,
         // assets que faltan) llegan como Result::Error con el motivo.
@@ -128,7 +146,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    app.run(maxFrames, guion.get());  // con guion: dt fijo, sus teclas y capturas en cualquier fotograma
+    app.run(maxFrames, guion.get(), guardado.get());  // con guion: dt fijo, sus teclas y capturas en cualquier fotograma
     app.shutdown();
     return 0;
 }

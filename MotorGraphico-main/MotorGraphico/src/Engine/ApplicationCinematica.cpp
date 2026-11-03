@@ -20,6 +20,7 @@
 #include "Game/GameOverScreen.h"
 #include "RPG/CharacterSheet.h"
 #include "Game/CartasEnCombate.h"
+#include "Game/SaveGame.h"  // cargaPartida
 #include "Render/PergaminoGL.h"
 
 #include <chrono>
@@ -455,4 +456,22 @@ void ApplicationCinematica::avisoYa(Application& app, const std::string& texto) 
     app.m_pergamino->interfaz().avisaPausa(true, texto, "");
     app.refreshHud();
     app.render(false);  // pinta y presenta este fotograma ya, con el aviso
+}
+
+// H0-05 / E-GUION-02 — Cargar una partida guardada: una escena nueva que carga el nivel del guardado (la narrativa, antes
+// que el nivel, para que no repita el prologo) y le aplica el guardado. La usan «Continuar», las ranuras (loadSlot) y
+// `juego --guardado`. Vive aqui y no en Application.cpp porque este esta en su techo de lineas.
+bool ApplicationCinematica::cargaPartida(Application& app, const SaveGameData& datos) {
+    const SaveGameData data = datos;  // copia: el dato entra en la lambda y la escena se monta al final del fotograma
+    const auto requested = app.m_scenes.requestReplace(app.makeScene(false, [&app, data] {
+        auto loaded = app.loadLevel(data.levelPath, false, GridCoord{}, [&app, &data] {
+            app.m_narrativeState.reset();
+            applyNarrativeState(data, app.m_narrativeState);
+            if (app.m_pergamino) app.m_pergamino->interfaz().guia().marcas() = data.marcasMapa;  // MAPA-02
+        }, &data);
+        if (loaded.isOk()) app.m_session->logNote("Partida cargada.");
+        else std::cerr << "No se pudo cargar la partida: " << loaded.errorMessage() << "\n";
+        return loaded;
+    }));
+    return requested.isOk();
 }
