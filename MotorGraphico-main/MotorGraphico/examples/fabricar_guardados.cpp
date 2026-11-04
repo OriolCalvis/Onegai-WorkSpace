@@ -119,6 +119,58 @@ int capturasOcasoM1(const std::string& carpeta) {
     return fallos == 0 ? 0 : 1;
 }
 
+// E-MISIONES-01 fase C: un guardado "justo antes" del momento clave de cada mision del dia 1 (q1_<mision>.json), para los guiones
+// tools/guiones/q1_*.txt. Cada uno es la cama pagada y el desayuno hecho (o el inicio de la noche), de pie junto al PNJ de la mision.
+int capturasMisiones1(const std::string& carpeta) {
+    std::filesystem::create_directories(carpeta);
+    const demo_bnd::Guiones g = demo_bnd::cargaTodo();
+    const fabricar::Heroe heroe = fabricar::creaHeroe();
+    struct Fila {
+        const char* mision;
+        bool cama;
+        std::vector<const char*> entra;  // niveles que pisa, por orden; el ultimo es donde se guarda
+        const char* pnj;
+        std::vector<const char*> habla;  // PNJ con los que habla antes de guardar
+    };
+    const std::vector<Fila> filas = {
+        {"ventana", false, {"interior_taberna"}, "bordadora", {}},
+        {"jornaleros", false, {"interior_taberna"}, "tomas_jornalero", {}},
+        {"venides_noche", false, {"interior_taberna"}, "venides", {}},
+        {"encapuchado", false, {"interior_taberna"}, "encapuchado", {}},
+        {"aigren", true, {"interior_herreria"}, "aigren", {}},
+        {"luisarda", true, {"interior_herreria", "interior_sastreria"}, "luisarda", {}},
+        {"xila", true, {"ciudad_oeste"}, "xila", {}},
+        {"familia", true, {"interior_taberna", "ciudad_oeste"}, "nina_del_gato", {}},
+        {"almacen", true, {"interior_iglesia_s1", "dependencias_secta"}, "almacen_perdidos", {}},
+    };
+    int fallos = 0;
+    for (const Fila& f : filas) {
+        fabricar::Partida p(g, heroe, demo_bnd::Suerte::Buena);
+        demo_bnd::Jugador& j = p.j;
+        j.prefiere = {"Pagar la cama", "Subir a dormir", "Dejar las armas", "Ponerse en marcha"};
+        j.prologo();
+        fabricar::fase(j, "dia1");
+        if (f.cama) {
+            j.entra("interior_taberna");
+            j.habla("skilla");
+        }
+        for (const char* n : f.entra) j.entra(n);
+        for (const char* h : f.habla) j.habla(h);
+        const std::string archivo = std::string("q1_") + f.mision + ".json";
+        const fabricar::Momento m{archivo.c_str(), f.entra.back(), f.pnj, 0, 1};
+        const SaveGameData data = fabricar::fotografia(j, heroe, m);
+        const std::string ruta = carpeta + "/" + archivo;
+        std::string error;
+        if (!writeSaveGameFile(ruta, data, &error)) {
+            std::cerr << "No se pudo escribir " << ruta << ": " << error << "\n";
+            ++fallos;
+            continue;
+        }
+        std::cout << ruta << ": " << f.mision << " en " << data.levelPath << " oro " << data.gold << "\n";
+    }
+    return fallos == 0 ? 0 : 1;
+}
+
 // E-MATRIZ-03 fase C: los guardados "justo antes" de las escenas de los guiones m3_*.txt.
 int capturasDia3(const std::string& carpeta) {
     std::filesystem::create_directories(carpeta);
@@ -168,6 +220,7 @@ int capturasGorran(const std::string& carpeta) {
 }
 
 int main(int argc, char** argv) {
+    if (argc > 1 && std::string(argv[1]) == "--capturas-misiones1") return capturasMisiones1(argc > 2 ? argv[2] : "guardados");
     if (argc > 1 && std::string(argv[1]) == "--capturas-dia3") return capturasDia3(argc > 2 ? argv[2] : "guardados");
     if (argc > 1 && std::string(argv[1]) == "--matriz-ocaso") return matrizOcaso(argc > 2 ? argv[2] : "guardados");
     if (argc > 1 && std::string(argv[1]) == "--capturas-ocaso-m1") return capturasOcasoM1(argc > 2 ? argv[2] : "guardados");

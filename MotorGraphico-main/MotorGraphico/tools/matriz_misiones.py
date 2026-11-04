@@ -599,10 +599,14 @@ def main(argv=None):
     ap.add_argument("--json", default=None)
     ap.add_argument("--log", default=None)
     ap.add_argument("--adventure", default=None, help="JSON de aventura alternativo (para la prueba)")
+    ap.add_argument("--notas", default=None, help="fichero .md con los hallazgos de las pruebas (fase B), que se añade al final")
     a = ap.parse_args(argv)
     inv = inventario(a.dia, a.adventure, a.log)
     md_ruta = a.md or os.path.join(RAIZ, "MISIONES_%s.md" % a.dia)
     escribe_md(inv, md_ruta)
+    if a.notas and os.path.exists(a.notas):
+        with open(md_ruta, "a", encoding="utf-8") as f:
+            f.write("\n" + open(a.notas, encoding="utf-8").read())
     if a.json:
         with open(a.json, "w", encoding="utf-8") as j:
             json.dump(inv, j, ensure_ascii=False, indent=1)

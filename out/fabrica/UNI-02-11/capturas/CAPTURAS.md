@@ -41,3 +41,22 @@ Guardados: `out/fabrica/UNI-02-11/guardados_ocaso/` (`fabricar_guardados` base, 
 | `m3_fiesta_sala_tras_eleccion.png` | `m3_fiesta.txt` f130 | **Renombrada** (antes `preguntas`): la sala de la mansión con el HUD, **sin diálogo**. ⚠ No se ve la elección «Prefiero hacerle preguntas» ni su respuesta. La elección sí está en `m3_fiesta_noble.png` («Tres copas de mi cuenta (6 de oro)» / «Prefiero hacerle preguntas», NOBLE: «La copa esta vacia otra vez.»). |
 | `m4_oeste_todos.png`, `m4_solos_delatada.png`, `m4_caido.png` | `m4_*.txt` f60 | ⚠ **Los tres son casi la misma imagen**: el guardado final cargado en `huida_boundington` (héroe junto a Venides, «Hablar con Venides»). Solo cambian el **oro del HUD (510 / 420 / 170)** y la hora (Tarde / Mañana / Mañana). **No enseñan el final** (ni el epílogo ni la huida con gitanos): el estado final es el del arnés, que fotografía en el nivel de la huida. Para un final de verdad habría que capturar el epílogo (`b3_epilogo`) tras cargar. |
 | `m2_tregua_menu.png`, `m2_tregua_pactos.png`, `m2_tregua_cerrada.png` | `m2_tregua.txt` | Descritas en `MATRIZ_GORRAN.md` Fase C (corregida). `cerrada` es solo la página 2/4. |
+
+---
+
+# E-MISIONES-01 fase C (04/11) — capturas `q1_*` de las misiones del día 1
+Guardados `fabricar_guardados --capturas-misiones1 guardados_q1` (cama pagada y desayuno hecho, de pie junto al PNJ) y guiones `tools/guiones/q1_<mision>.txt` (`toca E` y captura del diálogo). Solo se guardan las de diálogo (9 de 25 misiones; las otras 16 se quedan con la prueba y el log de mutación, sin captura). Todas miradas con Read.
+
+| Fichero | Qué se ve de verdad |
+|---|---|
+| `q1_ventana_dialogo.png` | Taberna Humilde de noche, narración «La bordadora aparta la labor para hacerte sitio…» (abre la misión de los vecinos de la ventana). HUD sin oro ni objetivo (aún no es de día). |
+| `q1_jornaleros_dialogo.png` | Tomás: «¿Vienes a darme la razón o a quitármela?» (abre el rincón de los jornaleros); el héroe junto a la mesa de los tres. |
+| `q1_venides_noche_dialogo.png` | Venides con el menú de 4 opciones (¿Qué te trae a Boundington? / ¿Qué escribes? / Hablar de otra cosa / Dejarle con su cuaderno). |
+| `q1_encapuchado_dialogo.png` | Narración del hombre de la capucha («Bebe solo, de espaldas a la pared…»), héroe junto a la puerta. |
+| `q1_aigren_dialogo.png` | Herrería Lingote de Oro: **sale la narración de entrada al nivel (1/4), no la charla de Aigren**; el guion llega al PNJ pero la charla empieza un `ENTER` después. |
+| `q1_luisarda_dialogo.png` | La Boutique de Madame: igual, narración de entrada (1/4), no la charla. |
+| `q1_xila_dialogo.png` | Pico Dragón / Taberna del Gremio de Ladrones: narración de entrada (1/4). Se ve el edificio del jugador translúcido. |
+| `q1_familia_dialogo.png` | Pico Dragón, narración de entrada (1/3); el héroe en el borde izquierdo, la niña del gato a su lado. |
+| `q1_almacen_dialogo.png` | **Sin diálogo**: dependencias de la secta con el HUD del día 1 todavía en «Preséntate al tendero» (1/8) porque el guardado se fabrica saltándose el tutorial; el `E` no abrió el almacén (el héroe no está pegado al PNJ en este recinto). ⚠ Captura no válida como prueba del almacén. |
+
+Lo que NO demuestran: ninguna es el cierre de su misión (eso lo prueban las escenas de `MisionesDia1Tests` con su log en `logs_misiones1/`); enseñan el gancho. Pendiente: guardados «justo antes del cierre» para las otras 16.
