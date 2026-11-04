@@ -100,19 +100,33 @@ GridCoord Cinematica::puntoDeEntrada(const std::function<bool(const GridCoord&)>
 
 // ---------------------------------------------------------------- cuando empieza
 
+namespace {
+
+bool acabaEn(const std::string& s, const std::string& fin) {
+    return s.size() >= fin.size() && s.compare(s.size() - fin.size(), fin.size(), fin) == 0;
+}
+
+bool enLaZona(const Cinematica& c, const GridCoord& j) {
+    return c.hayZona && j.x >= c.zonaDesde.x && j.x <= c.zonaHasta.x && j.y >= c.zonaDesde.y && j.y <= c.zonaHasta.y;
+}
+
+// El radio de la cinematica con disparador alrededor de su foco (con `vista`; sin ella no hay radio).
+bool enElRadio(const Cinematica& c, const GridCoord& j, const VistaDelNivel& vista) {
+    const int radio = c.disparador.radio >= 0 ? c.disparador.radio : radioDelAmbito(vista.ambito);
+    return j.x >= 0 && distanciaChebyshev(j, c.puntoDeEntrada()) <= radio;
+}
+
+}  // namespace
+
 const Cinematica* CatalogoCinematicas::laQueEmpieza(const std::string& nivel, const GridCoord& jugador,
                                                     const TieneFlag& flag, const VistaDelNivel* vista) const {
-    auto acabaEn = [](const std::string& s, const std::string& fin) {
-        return s.size() >= fin.size() && s.compare(s.size() - fin.size(), fin.size(), fin) == 0;
-    };
     for (const Cinematica& c : lista) {
         // 1. Las condiciones.
         if (flag(c.vista())) continue;
         if (!c.nivel.empty() && !acabaEn(nivel, c.nivel)) continue;
         if (std::any_of(c.requiere.begin(), c.requiere.end(), [&](const std::string& f) { return !flag(f); })) continue;
         if (std::any_of(c.sin.begin(), c.sin.end(), flag)) continue;
-        const bool enZona = c.hayZona && jugador.x >= c.zonaDesde.x && jugador.x <= c.zonaHasta.x &&
-                            jugador.y >= c.zonaDesde.y && jugador.y <= c.zonaHasta.y;
+        const bool enZona = enLaZona(c, jugador);
         if (!c.disparador.hay) {  // la de siempre: su zona, o en cualquier sitio si no la tiene
             if (c.hayZona && !enZona) continue;
             return &c;
@@ -124,8 +138,7 @@ const Cinematica* CatalogoCinematicas::laQueEmpieza(const std::string& nivel, co
             if (vista == nullptr) {
                 if (jugador.x != foco.x || jugador.y != foco.y) continue;  // sin vista: EN el foco (el arnes)
             } else {
-                const int radio = c.disparador.radio >= 0 ? c.disparador.radio : radioDelAmbito(vista->ambito);
-                if (jugador.x < 0 || distanciaChebyshev(jugador, foco) > radio) continue;
+                if (!enElRadio(c, jugador, *vista)) continue;
                 porRadio = true;
             }
         }
@@ -138,6 +151,28 @@ const Cinematica* CatalogoCinematicas::laQueEmpieza(const std::string& nivel, co
         return &c;  // 4. lleva + accion: pasosEfectivos
     }
     return nullptr;
+}
+
+// ---------------------------------------------------------------- rearmar (E5, D0026.4)
+
+// Una zona repetible (`once: false`) se rearma cuando el jugador sale de ella, como los Touch del mapa
+// (MapEventRunner): la flag «vista» que dejo su ultima escena es lo unico que la desarma, y se apaga al salir.
+// «Dentro» es lo mismo que hace empezar: en otro nivel, no; en su zona o, con `vista`, en su radio, si; sin `vista`
+// (arnes, explorador), la zona o EN el foco.
+std::vector<std::string> CatalogoCinematicas::rearmadas(const std::string& nivel, const GridCoord& jugador, const TieneFlag& flag,
+                                                        const VistaDelNivel* vista) const {
+    std::vector<std::string> out;
+    for (const Cinematica& c : lista) {
+        if (!c.disparador.hay || c.disparador.once || !flag(c.vista())) continue;
+        bool dentro = c.nivel.empty() || acabaEn(nivel, c.nivel);
+        if (dentro) {
+            const GridCoord foco = c.puntoDeEntrada();
+            dentro = enLaZona(c, jugador) || (c.hayFoco() && (vista != nullptr ? enElRadio(c, jugador, *vista)
+                                                                               : jugador.x == foco.x && jugador.y == foco.y));
+        }
+        if (!dentro) out.push_back(c.vista());
+    }
+    return out;
 }
 
 // ---------------------------------------------------------------- que se juega

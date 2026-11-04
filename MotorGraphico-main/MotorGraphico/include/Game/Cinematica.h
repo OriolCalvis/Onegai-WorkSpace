@@ -161,6 +161,10 @@ struct CatalogoCinematicas {
     // foco (donde el arnes lo pone). Las cinematicas sin disparador no cambian: zona o nada.
     const Cinematica* laQueEmpieza(const std::string& nivel, const GridCoord& jugador, const TieneFlag& flag,
                                    const VistaDelNivel* vista = nullptr) const;
+    // E-DISPARADORES-2 E5 (D0026.4) — Las flags «vista» que hay que apagar porque el jugador ha salido de la zona (y del
+    // radio) de una cinematica con `disparador.once: false`: vuelve a estar armada. Las `once` (por defecto) nunca.
+    std::vector<std::string> rearmadas(const std::string& nivel, const GridCoord& jugador, const TieneFlag& flag,
+                                       const VistaDelNivel* vista = nullptr) const;
     // Las ordenes que se juegan cuando empieza `c`: sin disparador, sus pasos; con el, [lleva, mira] + la accion.
     // Sin `lleva` (el arnes, que ya teletransporta al foco) no hay ordenes de llevar. `lleva` con ruta: Anda;
     // sin ruta (o `como: fundido`): funde a negro, Coloca, funde de vuelta.

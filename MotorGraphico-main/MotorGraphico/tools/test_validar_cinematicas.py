@@ -164,10 +164,13 @@ class DisparadorTests(unittest.TestCase):
         _, salida = Mundo([cine()]).valida()
         self.assertNotIn("ven el foco", salida)
 
-    def test_once_false_avisa_que_aun_no_rearma(self):
+    def test_once_false_es_valido_y_ya_no_avisa(self):  # E5 rearma al salir de la zona (D0026.4)
         codigo, salida = Mundo([cine(disparador={"once": False})]).valida()
         self.assertEqual(codigo, 0, salida)
-        self.assertIn("E5 aún no rearma", salida)
+        self.assertNotIn("rearma", salida)
+
+    def test_once_tiene_que_ser_un_booleano(self):
+        self.espera_error(Mundo([cine(disparador={"once": "no"})]), "once es true o false")
 
     def test_las_zonas_de_siempre_solo_avisan_si_su_centro_no_se_pisa(self):
         c = {"id": "vieja", "nivel": "assets/levels/n.json", "zona": [4, 4, 8, 8]}

@@ -29,6 +29,9 @@ inline const Game::Cinematica* ApplicationCinematica::laQueEmpieza(Application& 
         const ObjectDefinition* def = e != nullptr ? app.m_objectCatalog.find(e->object.objectId) : nullptr;
         return def != nullptr && def->tapaVista;  // los PNJ y los objetos pequenos no
     };
+    // E5 (D0026.4): las zonas repetibles que el jugador ha dejado atras se rearman (se apaga su «vista») antes de mirar cual empieza.
+    for (const std::string& f : estado.catalogo.rearmadas(app.m_currentLevelPath, app.m_session->playerPosition(), tiene, &vista))
+        app.m_narrativeState.clearFlag(f);
     return estado.catalogo.laQueEmpieza(app.m_currentLevelPath, app.m_session->playerPosition(), tiene, &vista);
 }
 

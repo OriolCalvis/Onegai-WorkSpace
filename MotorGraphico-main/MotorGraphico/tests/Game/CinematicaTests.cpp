@@ -676,6 +676,38 @@ MOTOR_TEST_CASE(combate_lleva_lanza_el_encuentro_y_espera_a_que_acabe) {
     MOTOR_CHECK(e.combates.size() == 1);                                      // y se lanza una sola vez
 }
 
+// E-DISPARADORES-2 E5 (D0026.4) — `once: false`: la zona se rearma cuando el jugador sale de ella, como los Touch del mapa.
+MOTOR_TEST_CASE(once_false_se_rearma_al_salir_de_la_zona_y_once_true_nunca) {
+    const auto cat = catalogo(R"({"cinematicas": [
+        {"id": "r", "nivel": "assets/levels/n.json", "zona": [2, 1, 6, 3], "disparador": {"once": false, "radio": 2, "accion": {"marca": "a"}}},
+        {"id": "u", "nivel": "assets/levels/n.json", "zona": [2, 6, 6, 8], "disparador": {"accion": {"marca": "b"}}},
+        {"id": "s", "nivel": "assets/levels/n.json", "zona": [2, 10, 6, 12]}]})");
+    const Cinematica* r = cat.busca("r");
+    NivelDeMentira n;
+    const VistaDelNivel v = n.vista(AmbitoNivel::Exterior);
+    std::set<std::string> f;
+    auto flag = [&](const std::string& s) { return f.count(s) != 0; };
+    auto rearma = [&](const std::string& nivel, GridCoord j, const VistaDelNivel* vista) { return cat.rearmadas(nivel, j, flag, vista); };
+    MOTOR_CHECK(cat.laQueEmpieza(kNivel, {4, 2}, flag, &v) == r);  // armada: empieza
+    f = {"cine_r_vista", "cine_u_vista", "cine_s_vista"};           // se juegan las tres (la vista que deja termina())
+    MOTOR_CHECK(cat.laQueEmpieza(kNivel, {4, 2}, flag, &v) == nullptr);
+    // Dentro de la zona o del radio (foco (4, 2), radio 2): sigue desarmada.
+    MOTOR_CHECK(rearma(kNivel, {4, 2}, &v).empty() && rearma(kNivel, {6, 3}, &v).empty());
+    MOTOR_CHECK(rearma(kNivel, {4, 4}, &v).empty());   // fuera de la zona pero a 2 del foco
+    // Fuera de la zona y del radio: se rearma (solo r; u es once y s no tiene disparador).
+    const auto fuera = rearma(kNivel, {4, 5}, &v);
+    MOTOR_CHECK(fuera.size() == 1 && fuera[0] == "cine_r_vista");
+    MOTOR_CHECK(rearma(kNivel, {20, 20}, &v).size() == 1);
+    // Otro nivel: tambien ha salido.
+    MOTOR_CHECK(rearma("assets/levels/otro.json", {4, 2}, &v).size() == 1);
+    // Sin vista (arnes, explorador): la zona o EN el foco; (4, 4) esta fuera de la zona y no es el foco.
+    MOTOR_CHECK(rearma(kNivel, {5, 3}, nullptr).empty() && rearma(kNivel, {4, 4}, nullptr).size() == 1);
+    // Rearmada (se apaga la vista), vuelve a empezar; y si no se salio, no.
+    for (const std::string& x : fuera) f.erase(x);
+    MOTOR_CHECK(cat.laQueEmpieza(kNivel, {4, 2}, flag, &v) == r);
+    MOTOR_CHECK(rearma(kNivel, {4, 2}, &v).empty());  // armada otra vez: no hay nada que apagar
+}
+
 MOTOR_TEST_CASE(lleva_con_fundido_si_no_hay_camino_o_se_pide) {
     const std::string base = R"({"cinematicas": [{"id": "x", "disparador": {"lleva": {"a": [7, 7], "como": ")";
     for (const char* como : {"fundido", "andando"}) {  // «andando» sin camino (ruta vacia) cae al fundido (D0026.2)

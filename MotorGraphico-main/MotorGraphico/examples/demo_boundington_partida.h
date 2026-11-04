@@ -718,6 +718,8 @@ struct Jugador {
             require(r);
             return r.value();
         }();
+        for (const std::string& f : cat.rearmadas(s.lugar(), donde, [this](const std::string& f) { return s.hasFlag(f); }))
+            s.clearFlag(f);  // E5 (D0026.4): salir de una zona `once: false` la rearma
         const Game::Cinematica* c = cat.laQueEmpieza(s.lugar(), donde, [this](const std::string& f) { return s.hasFlag(f); });
         if (c == nullptr) return false;
         const bool yaEnCine = enCine;

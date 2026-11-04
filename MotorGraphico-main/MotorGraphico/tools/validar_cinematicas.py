@@ -270,8 +270,8 @@ def main():
                     avisos.append(f"{donde}: ningún beat pide «{valor}» (no dirá nada)")
                 if clave in ("beat", "marca") and c.get("pasos"):
                     avisos.append(f"{donde}: su accion es {clave}: los «pasos» propios no se juegan")
-        if d.get("once", True) is not True:
-            avisos.append(f"{donde}: once es false y E5 aún no rearma: se juega una sola vez como siempre")
+        if d.get("once", True) not in (True, False):
+            errores.append(f"{donde}: disparador.once es true o false")
         radio = d.get("radio", "nivel")
         if radio != "nivel" and not (isinstance(radio, int) and not isinstance(radio, bool) and 0 <= radio <= 20):
             errores.append(f"{donde}: disparador.radio es un entero 0..20 o \"nivel\"")
