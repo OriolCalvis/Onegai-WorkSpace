@@ -42,6 +42,11 @@ Result<LevelDefinition> parseDefinition(const JsonValue& root) {
         level.mapDocumentPath = root["mapDocument"].asString();
     }
     level.playerStart = parseGridCoord(root["playerStart"], GridCoord{0, 0});
+    if (root.has("ambito")) {  // E-DISPARADORES-1 (D0026.7)
+        if (!root["ambito"].isString() || !ambitoDeTexto(root["ambito"].asString(), level.ambito)) {
+            return Result<LevelDefinition>::Error("\"ambito\" debe ser interior_pequeno, interior_grande o exterior");
+        }
+    }
 
     const JsonValue& enemiesValue = root["enemies"];
     if (!enemiesValue.isNull() && !enemiesValue.isArray()) {

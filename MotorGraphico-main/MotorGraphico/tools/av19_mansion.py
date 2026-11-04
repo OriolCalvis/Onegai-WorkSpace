@@ -52,7 +52,7 @@ P1_ANCHO, P1_ALTO = 22, 12
 
 MARCADORES = [
     {"id": "verja_dorada", "name": "Verja de hierro con hojas doradas (marcador para Pixel)",
-     "category": "prop", "spriteId": 3, "blocksMovement": True, "interactable": False},
+     "category": "prop", "spriteId": 3, "blocksMovement": True, "tapaVista": True, "interactable": False},
     {"id": "seto_recortado", "name": "Seto recortado (marcador para Pixel)", "category": "prop",
      "spriteId": 3, "blocksMovement": True, "interactable": False},
     {"id": "farolillo_papel", "name": "Farol de papel (marcador para Pixel)", "category": "prop",

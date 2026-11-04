@@ -1,6 +1,8 @@
 // AV13-06 — Ver include/Game/TableroCombate.h.
 #include "Game/TableroCombate.h"
 
+#include "Game/LineaDeVision.h"
+
 #include <algorithm>
 #include <cstdlib>
 
@@ -80,30 +82,10 @@ const std::string* TableroCombate::quienEsta(GridCoord c) const {
     return nullptr;
 }
 
-int TableroCombate::distancia(GridCoord a, GridCoord b) { return std::max(std::abs(a.x - b.x), std::abs(a.y - b.y)); }
+int TableroCombate::distancia(GridCoord a, GridCoord b) { return distanciaChebyshev(a, b); }
 
 bool TableroCombate::seVen(GridCoord a, GridCoord b) const {
-    // Bresenham de centro a centro; los extremos no cuentan (quien mira y a
-    // quien se mira pueden estar en una casilla «bloqueada» del nivel, como
-    // un banco).
-    int x = a.x, y = a.y;
-    const int dx = std::abs(b.x - a.x), dy = -std::abs(b.y - a.y);
-    const int sx = a.x < b.x ? 1 : -1, sy = a.y < b.y ? 1 : -1;
-    int err = dx + dy;
-    while (!(x == b.x && y == b.y)) {
-        const int e2 = 2 * err;
-        if (e2 >= dy) {
-            err += dy;
-            x += sx;
-        }
-        if (e2 <= dx) {
-            err += dx;
-            y += sy;
-        }
-        if (x == b.x && y == b.y) break;
-        if (m_bloquea && m_bloquea(x, y)) return false;
-    }
-    return true;
+    return lineaDeVision(a, b, m_bloquea);  // Game/LineaDeVision.h: la misma cuenta que los disparadores de cinematica
 }
 
 std::optional<GridCoord> TableroCombate::libreMasCercana(GridCoord desde) const {

@@ -174,6 +174,10 @@ struct ObjectDefinition {
     std::string raceId;
 
     bool blocksMovement = false;
+    // E-DISPARADORES-1 (D0026.8) — Tapa la vista (linea de vision de los disparadores de cinematica): paredes,
+    // vallas, carros, armarios, estanterias. Los PNJ y los objetos pequenos (farolas, taburetes, mesas) no. Solo
+    // tiene sentido con blocksMovement; por defecto false (nada tapa).
+    bool tapaVista = false;
     bool interactable = false;
 
     CombatData combat;      // solo significativo si category == Enemy

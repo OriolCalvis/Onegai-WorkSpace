@@ -1236,6 +1236,10 @@ include(cmake/MonstruosAcciones.cmake)  # AV18-02: datos, persistencia y papiro 
     add_motor_unit_test(test_alturas tests/Level/AlturasTests.cpp)
     target_link_libraries(test_alturas PRIVATE motor_level motor_json)
 
+    # E-DISPARADORES-1 E2b — la linea de vision compartida, el ambito del nivel y tapaVista de los objetos.
+    add_motor_unit_test(test_vision_y_ambito tests/Level/VisionYAmbitoTests.cpp)
+    target_link_libraries(test_vision_y_ambito PRIVATE motor_level motor_json)
+
     add_motor_unit_test(test_tmx_importer tests/Import/TmxImporterTests.cpp)
     target_link_libraries(test_tmx_importer PRIVATE motor_tmx_import)
 

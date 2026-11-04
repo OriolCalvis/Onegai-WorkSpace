@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Core/Math/GridCoord.h"
+#include "Level/AmbitoNivel.h"
 #include "Runtime/Alturas.h"
 
 // Definicion de datos de un nivel jugable (motor_grafico_gantt_rpg.puml,
@@ -139,6 +140,9 @@ struct LevelDefinition {
     // Fase 2).
     std::string mapPath;
     GridCoord playerStart;
+    // E-DISPARADORES-1 (D0026.7) — "ambito" del JSON: interior_pequeno / interior_grande / exterior. Deducido
+    // (por defecto): lo decide ambitoDelNivel (Level/AmbitoNivel.h) con el nombre del fichero y el tamano del mapa.
+    AmbitoNivel ambito = AmbitoNivel::Deducido;
     // AV19-02 — Altura del terreno (ver Runtime/Alturas.h). Vacio = todo plano.
     std::vector<AlturaRegion> alturas;
 

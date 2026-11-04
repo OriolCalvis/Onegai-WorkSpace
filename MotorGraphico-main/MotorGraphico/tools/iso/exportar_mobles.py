@@ -30,6 +30,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from exportar_decorats import cella  # noqa: E402
 from mobles import MOBLES, NOMS, ORIENTABLES, SENSE_NOSA, TRAMS  # noqa: E402
 from sales import ALT_SALA, ESTILS, ids_parets, PARETS  # noqa: E402
+from tapavista import tapa_vista  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 TEX = ROOT / "assets/textures"
@@ -127,8 +128,10 @@ def cataleg(vistes):
     objectes = []
     for vid, base in vistes:
         nosa = base not in SENSE_NOSA
-        objectes.append({"id": vid, "name": nom_de(vid, base), "category": "prop", "spriteId": 3,
-                         "blocksMovement": nosa})
+        o = {"id": vid, "name": nom_de(vid, base), "category": "prop", "spriteId": 3, "blocksMovement": nosa}
+        if tapa_vista(vid, nosa):  # E-DISPARADORES-1: tapa la vista (paredes, armarios, estanterias...)
+            o["tapaVista"] = True
+        objectes.append(o)
     (ROOT / "assets/objects" / CATALEG).write_text(json.dumps({
         "_fuente": "INT-01 — paredes y muebles de los interiores del kit isometrico (tools/iso/exportar_mobles.py, no "
                    "editar a mano). Paredes: paret_<estilo>[_alta]_<decoracion> es la pared del fondo de la fila y = 0 "
