@@ -191,3 +191,12 @@ Quedan listadas sin guardado ni prueba: `b2_saq_llegan` (4 opciones), `b2_edul_f
 
 ## Cómo reproducir
 `python3 MotorGraphico/tools/matriz_decisiones.py --dia segundo_dia --top 10` · `ctest -L gl-free` (`test_matriz_dia3`) · `./fabricar_guardados --matriz-dia3 guardados`.
+
+## E-DIA3-FIX — Xila, Verina y el aviso (D0025, 04/11)
+
+1. **Xila con resaca** (`cinematicas.json`): `xila` se oculta con `bnd2_encargo` salvo `bnd_ocaso_empezado` **o `bnd1_xila_borracho`**; una segunda regla (O) lo oculta de nuevo con `bnd2_xila_resaca_visto`. Borracho el dia 1 se ve el dia 3 hasta que se le habla; `b2_xila_resaca_bien` pone `bnd1_xila_honor`, quita `bnd1_xila_borracho` y se vuelve a esconder. Camino `xila_resaca`: borracho (dia 1) -> desayuno (dia 3) -> avisa en el Ocaso (`bnd3_xila_avisa`, `b3_xila_avisa`, `b3_aviso_en_base`).
+2. **Verina arriba**: `b2_rosita_verina_arriba` pide `confianza_rosita >= 2` (antes 3). Camino `verina_arriba_2` (Verina salvada + devolver y contarlo todo, sin proteger al borracho; el `verina_arriba` de confianza 3 sigue).
+3. **Aviso de Xila** (`eventos/boundington.json`): sin `bnd3_campanas` en las condiciones del evento; dos disparadores en O sobre `ocaso_tarde`: sin campanas (el de siempre) o con `bnd3_avisado` (el jugador corrio a avisar a Venides: las campanas ya suenan). Se mantienen `bnd1_xila_honor` (el recuperado lo tiene), sin `bnd1_xila_borracho` y sin `bnd2_venides_sin_aviso` (si Venides salio solo, no esta en la base). Camino `xila_corre`.
+   - Mínimo coherente: la escena `b3_xila_avisa` (ocaso.json, fuera de abasto) narra el aviso "antes de las campanas" y exige no `bnd3_arenga`; en `xila_corre` la arenga ya se hizo, asi que solo se pone `bnd3_xila_avisa` (el evento salta, la escena no se ve). Si Oriol quiere la escena tras avisar, hace falta un beat nuevo en el Ocaso.
+   - El tiempo en el arnes de `xila_corre`: tras `ocasoBase` se pone `franja=1` a mano (el juego avanza la franja con las acciones).
+- Pruebas: `MatrizDia3Tests.cpp` (3 caminos nuevos, 2 pruebas unitarias de visibilidad y del evento) y mutaciones: cinematicas.json de HEAD -> `xila_resaca` aborta (`seVe("xila")`) y la prueba de visibilidad falla; eventos de HEAD -> `xila_corre` y la prueba del evento fallan (`xila_resaca` sigue pasando: el recuperado ya tenia honor y no borracho); `min` 3 -> `verina_arriba_2` falla.

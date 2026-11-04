@@ -515,8 +515,10 @@ inline bool cierraElDia1(demo_bnd::Jugador& j) {
 
 // El recorrido del dia 1 hasta la decision. Cada ruta es la de la escena de demo_boundington que la juega.
 inline void recorre(demo_bnd::Jugador& j, const std::string& ruta) {
-    j.entra("interior_taberna");
-    j.habla("skilla");  // la cama
+    if (ruta != "xila_borracho") {  // (xila_borracho se suma a otra ruta del dia 1: la cama ya esta pagada y no se duerme antes de tiempo)
+        j.entra("interior_taberna");
+        j.habla("skilla");  // la cama
+    }
     if (ruta == "sandes" || ruta == "sandes_luisarda") {  // la cripta con la pifia de «Hablar con alguien»: Sandes sale a hablarte
         if (ruta == "sandes_luisarda") {  // ... habiendo pasado antes por la sastreria (bnd1_luisarda_sala)
             j.entra("interior_sastreria");
@@ -560,6 +562,12 @@ inline void recorre(demo_bnd::Jugador& j, const std::string& ruta) {
         j.entra("ciudad_oeste");
         j.habla("xila");
         j.entra("interior_iglesia");
+    } else if (ruta == "xila_borracho") {  // D0025.1: Xila despreciado y convidado (b1_xila_resentido -> b1_xila_habla): se duerme borracho
+        j.prefiere.insert(j.prefiere.begin(), {"Tratarle con desprecio", "Invitarle a un trago (1) y hacer las paces"});
+        j.entra("ciudad_oeste");
+        j.habla("xila");
+        j.habla("xila");
+        require(j.s.hasFlag("bnd1_xila_borracho") && !j.s.hasFlag("bnd1_xila_honor"));
     } else if (ruta == "aigren") {
         j.entra("interior_herreria");
         j.habla("aigren");
@@ -1363,6 +1371,8 @@ struct DiaTres {
     std::vector<std::string> antes;                                 // respuestas que van por delante de las de siempre
     std::vector<std::pair<std::string, demo_bnd::Suerte>> tiradas;  // tiradas (por su flagBotch) con esta suerte aunque las demas salgan bien
     bool fiesta = true;     // false = no sube al Barrio Alto de noche (va derecho a la taberna)
+    bool resaca = false;    // D0025.1: el dia 3 despierta a Xila borracho (b2_xila_resaca: desayuno caliente) en ciudad_oeste
+    bool corre = false;     // D0025.3: el Ocaso empieza corriendo a avisar a Venides (ocasoBase) y despues se deja pasar la tarde
     bool delata = false;    // tras la Barriada vuelve a la plaza y habla con el sectario (b2_sectarios: «La Barriada se arma»)
     bool exige = true;      // false (las mutaciones): lo que no sale no aborta
     std::string parada;     // capturas: "fiesta" = en ciudad_este JUSTO ANTES de pisar la calle; "mansion" = dentro, junto al noble que brinda; "informe" = en la taberna antes de hablar con Venides
@@ -1384,6 +1394,7 @@ struct CaminoDia3 {
     Cuenta cuenta;
     Mutacion mutOro, mutMoral;
     bool espera = false;  // el Ocaso empieza sin avisar a Venides: se espera a la tarde en la taberna (el aviso de Xila, evento xila_avisa_a_venides)
+    std::vector<std::string> ocasoFlags;  // D0025: flags que tiene que haber puesto el comienzo del Ocaso (p. ej. bnd3_xila_avisa del evento xila_avisa_a_venides)
 };
 
 inline const std::vector<CaminoDia3>& caminosDia3();
@@ -1420,6 +1431,14 @@ inline void juegaElDia3(demo_bnd::Jugador& j, const DiaTres& d) {
     for (int vez = 0; vez < 5 && !j.s.hasFlag("bnd2_capitan_hablado"); ++vez) j.habla("capitan_guardia");
     for (int vez = 0; vez < 2 && !j.s.hasFlag("bnd2_guardia_preparada") && !j.s.hasFlag("b2_castillo_prueba_cerrada"); ++vez) j.habla("capitan_guardia");  // b2_castillo_prueba
     j.entra("ciudad_oeste");
+    if (d.resaca) {
+        require(j.seVe("xila"));  // D0025.1: borracho y sin hablarle, se ve el dia 3
+        j.prefiere.insert(j.prefiere.begin(), "Pagarle un desayuno caliente (6)");
+        j.habla("xila");
+        j.prefiere.erase(j.prefiere.begin());
+        require(!d.exige || (j.s.hasFlag("bnd1_xila_honor") && !j.s.hasFlag("bnd1_xila_borracho")));
+        require(!j.seVe("xila"));  // ya recuperado, vuelve a esconderse como siempre
+    }
     j.entra("tienda_abandonada");  // el disfraz
     j.entra("ciudad_surysal");
     j.habla("viejo_surysal");  // la Barriada: Zarela, los saqueadores, el ritual (y la noche)
@@ -1479,8 +1498,16 @@ inline SaveGameData dia3(const demo_bnd::Guiones& g, const Heroe& h, const Camin
     for (const std::string& f : d1.huye) j.huyen.insert(f);
     j.prologo();
     fase(j, "dia1");
+    // D0025.1: Xila despreciado y emborrachado se hace por la manana, antes que la ruta del dia 1 (que acaba de noche).
+    const bool xilaBorracho = std::find(c.mas1.begin(), c.mas1.end(), "xila_borracho") != c.mas1.end();
+    if (xilaBorracho) {
+        j.entra("interior_taberna");
+        j.habla("skilla");  // la cama
+        recorre(j, "xila_borracho");
+    }
     recorre(j, d1.ruta);
-    for (const std::string& r : c.mas1) recorre(j, r);
+    for (const std::string& r : c.mas1)
+        if (r != "xila_borracho") recorre(j, r);
     j.suerte = demo_bnd::Suerte::Buena;
     require(cierraElDia1(j) || !exigeCierre);
     j.prefiere.clear();
@@ -1518,6 +1545,10 @@ inline void empiezaElOcaso(demo_bnd::Jugador& j, const CaminoDia3& c) {
         j.drena();
     } else {
         j.ocasoBase();
+        if (c.dia.corre) {  // D0025.3: se corrio a avisar a Venides (bnd3_avisado, campanas) y la tarde se cruza despues (sin Venides, solo cruza)
+            j.s.setVariable("franja", 1);
+            j.drena();
+        }
     }
 }
 
@@ -1566,6 +1597,8 @@ inline std::vector<std::string> compruebaDia3(const demo_bnd::Guiones& g, Restau
         if (!j.visto(b)) falta("el Ocaso no cuenta " + b);
     for (const std::string& b : c.ocasoNoVe)
         if (j.visto(b)) falta("el Ocaso cuenta " + b);
+    for (const std::string& f : c.ocasoFlags)
+        if (!j.s.hasFlag(f)) falta("el Ocaso no pone " + f);
     return fallos;
 }
 
@@ -1660,6 +1693,30 @@ inline const std::vector<CaminoDia3>& caminosDia3() {
          m3("b2_noche_rosita_informa", "No contarle nada", "bnd2_venides_sin_aviso"), "Xila aliado pero Venides sin aviso: el evento del aviso de Xila no salta",
          {230, 15, 6, 64, {"amuleto_gitano", "entrada_opera", "furia_de_alaro", "vendas", "vendas", "vendas"}}, mg("b2_cueva_llegada", "Pagar el paso (5)", "grantGold", "log"),
          m3("b2_saqueadores_vencidos", "", "barriada_defendida", "noble_chantajeado"), true},
+        // --- D0025.1: Xila borracho el dia 1 se ve el dia 3, se le despierta (desayuno caliente) y avisa a Venides la tarde del Ocaso ---
+        {"xila_resaca", "tregua", "", {"xila_borracho"}, {}, [] { DiaTres d; d.resaca = true; return d; }(),
+         {"b2_xila_resaca", "b2_xila_resaca_bien", "b2_venides_noche"},
+         {"bnd1_xila_honor", "bnd1_aliado_xila", "bnd2_xila_resaca_visto", "bnd2_xila_resaca_cerrada", "bnd2_informe_dado", "bnd2_venides_leal"}, {"bnd1_xila_borracho", "bnd2_venides_sin_aviso"}, {},
+         {}, {"b3_tarde_aviso", "b3_xila_avisa", "b3_aviso_en_base"}, {},
+         m3("b2_xila_resaca", "Pagarle un desayuno caliente (6)", "bnd2_resaca_exito"), "Xila borracho: se ve el dia 3, el desayuno le recupera y avisa a Venides la tarde del Ocaso",
+         {163, 8, 5, 47, {"amuleto_gitano", "entrada_opera", "vendas"}}, m3("b2_venides_noche", "Contarselo todo", "grantGold", "log"),
+         m3("b2_saqueadores_vencidos", "", "barriada_defendida", "noble_chantajeado"), true, {"bnd3_xila_avisa"}},
+        // --- D0025.2: Verina arriba con confianza_rosita 2 (Verina salvada + devolver la espada y contarlo todo, sin proteger al borracho) ---
+        {"verina_arriba_2", "cuatro_lios", "aigren_verina", {}, {}, [] { DiaTres d; d.antes = {"Devolvérsela y contarle todo"}; return d; }(),
+         {"b2_skilla_espada_devuelta", "b2_rosita_revela", "b2_rosita_verina_arriba"},
+         {"bnd1_verina_salvada_guarida", "bnd2_rosita_revelada", "bnd2_rosita_verina"}, {"bnd2_rosita_desconfia"},
+         {{"confianza_rosita", 2}}, {}, {}, {},
+         m3("b2_rosita_verina_arriba", "", "bnd1_verina_salvada_guarida", "bnd1_zz_mutada"), "Verina arriba con confianza 2: Verina salvada + devolver y contarlo todo",
+         {190, 15, 5, 76, {"amuleto_gitano", "entrada_opera", "furia_de_alaro", "pocion", "vendas"}}, mg("b2_cueva_llegada", "Pagar el paso (5)", "grantGold", "log"),
+         m3("b2_saqueadores_vencidos", "", "barriada_defendida", "noble_chantajeado")},
+        // --- D0025.3: Xila aliado (dia 1), el jugador corre a avisar a Venides por la manana (campanas) y la tarde Xila avisa igual ---
+        {"xila_corre", "cuatro_lios", "informe_cuenta_todo", {}, {}, [] { DiaTres d; d.corre = true; return d; }(),
+         {"b2_noche_xila", "b2_noche_rosita_informa"},
+         {"bnd1_xila_honor", "bnd2_informe_dado", "bnd2_venides_leal"}, {"bnd2_venides_sin_aviso"}, {},
+         {}, {"b3_avisar_venides"}, {},
+         m3("b2_noche_rosita_informa", "Contarselo todo", "bnd2_venides_leal", "bnd2_venides_sin_aviso"), "Xila aliado y el jugador corre a avisar a Venides: Xila avisa igual la tarde (bnd3_xila_avisa)",
+         {280, 16, 6, 64, {"amuleto_gitano", "entrada_opera", "furia_de_alaro", "vendas", "vendas", "vendas"}}, m3("b2_noche_rosita_informa", "Contarselo todo", "grantGold", "log"),
+         m3("b2_saqueadores_vencidos", "", "barriada_defendida", "noble_chantajeado"), false, {"bnd3_xila_avisa", "bnd3_avisado"}},
         // --- chantajear al noble de la fiesta en vez de senalarlo ---
         {"noble_chantaje", "tregua", "", {}, {}, [] { DiaTres d; d.antes = {"Chantajearle"}; return d; }(),
          {"b2_sonsaca_exito"},

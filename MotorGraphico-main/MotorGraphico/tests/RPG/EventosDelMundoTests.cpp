@@ -560,7 +560,7 @@ MOTOR_TEST_CASE(xila_avisa_a_venides_la_tarde_del_ocaso_si_es_aliada_y_sobria) {
         MOTOR_CHECK(s.variable("evt_comienza_ocaso__causa") == 3);
     }
     {
-        // Venides ya avisado el dia 3: causa 1 y Xila ya no avisa.
+        // Venides ya avisado el dia 3: causa 1 y, D0025.3, Xila avisa igual la tarde del Ocaso (las campanas ya suenan).
         RPG::NarrativeState s;
         en(s, 3, 0);
         s.setFlag("bnd1_xila_honor");
@@ -569,7 +569,19 @@ MOTOR_TEST_CASE(xila_avisa_a_venides_la_tarde_del_ocaso_si_es_aliada_y_sobria) {
         MOTOR_CHECK(s.variable("evt_comienza_ocaso__causa") == 1);
         en(s, 4, 1);
         RPG::eventos::evalua(cat, s);
-        MOTOR_CHECK(!s.hasFlag("bnd3_xila_avisa") && !s.hasFlag("evt_xila_avisa_a_venides"));
+        MOTOR_CHECK(s.hasFlag("bnd3_xila_avisa") && s.hasFlag("evt_xila_avisa_a_venides"));
+    }
+    {
+        // ... pero no si Venides salio solo (no esta en la base), aunque se haya corrido a avisar.
+        RPG::NarrativeState s;
+        en(s, 3, 0);
+        s.setFlag("bnd1_xila_honor");
+        s.setFlag("bnd3_avisado");
+        s.setFlag("bnd2_venides_sin_aviso");
+        RPG::eventos::evalua(cat, s);
+        en(s, 4, 1);
+        RPG::eventos::evalua(cat, s);
+        MOTOR_CHECK(!s.hasFlag("bnd3_xila_avisa"));
     }
 }
 

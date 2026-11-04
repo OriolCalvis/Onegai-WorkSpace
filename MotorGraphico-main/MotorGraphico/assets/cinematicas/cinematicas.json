@@ -396,9 +396,23 @@
     },
     {
       "objeto": "xila",
+      "_nota": "D0025.1: Xila borracho del dia 1 (bnd1_xila_borracho) sigue visible el dia 3 hasta que se le habla (b2_xila_resaca pone bnd2_xila_resaca_visto), para poder recuperarle. Dos reglas = O: se oculta si no esta borracho, o si ya se le hablo.",
       "ocultoSi": {
         "todas": [
           "bnd2_encargo"
+        ],
+        "ninguna": [
+          "bnd_ocaso_empezado",
+          "bnd1_xila_borracho"
+        ]
+      }
+    },
+    {
+      "objeto": "xila",
+      "ocultoSi": {
+        "todas": [
+          "bnd2_encargo",
+          "bnd2_xila_resaca_visto"
         ],
         "ninguna": [
           "bnd_ocaso_empezado"

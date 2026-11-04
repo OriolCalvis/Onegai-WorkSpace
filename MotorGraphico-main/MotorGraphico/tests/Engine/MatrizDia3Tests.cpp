@@ -53,6 +53,7 @@ MOTOR_TEST_CASE(cada_camino_del_dia_3_deja_lo_que_dice_la_matriz) {
         std::vector<std::string> jugado;
         const std::vector<std::string> fallos = juegaYComprueba(f.g, f.heroe, c, &jugado);
         for (const std::string& x : fallos) std::fprintf(stderr, "  [%s] %s\n", c.id, x.c_str());
+        if (std::getenv("MATRIZ_BEATS")) for (const std::string& b : jugado) std::fprintf(stderr, "  [%s] beat %s\n", c.id, b.c_str());
         MOTOR_CHECK(fallos.empty());
         // Los beats que el camino anuncia se vieron jugando (no solo en el estado).
         for (const std::string& b : c.beats)
@@ -101,6 +102,7 @@ MOTOR_TEST_CASE(sin_su_cobro_el_oro_del_camino_del_dia_3_falla) {
         if (solo != nullptr && std::string(solo) != c.id) continue;
         const demo_bnd::Guiones mutada = conMutacion(f.g, c.mutOro, temporalDe("dia3_oro_", c.id));
         const std::vector<std::string> fallos = juegaYComprueba(mutada, f.heroe, c, nullptr, true);
+        if (std::getenv("MATRIZ_VERBOSO")) for (const std::string& x : fallos) std::fprintf(stderr, "  [%s] (oro) %s\n", c.id, x.c_str());
         if (!algunoEmpiezaPor(fallos, "oro=")) std::fprintf(stderr, "  [%s] quitar el oro (%s / %s) no cambio el oro\n", c.id, c.mutOro.beat, c.mutOro.opcion);
         MOTOR_CHECK(algunoEmpiezaPor(fallos, "oro="));
     }
@@ -123,9 +125,9 @@ MOTOR_TEST_CASE(con_otro_acto_la_moral_del_camino_del_dia_3_falla) {
 MOTOR_TEST_CASE(estan_los_caminos_que_pide_la_matriz_del_dia_3) {
     std::vector<std::string> ids;
     for (const CaminoDia3& c : caminosDia3()) ids.push_back(c.id);
-    for (const char* quiero : {"fiesta_dentro", "sin_fiesta", "verina_arriba", "xila_avisa", "xila_sin_aviso", "informe_nada"})
+    for (const char* quiero : {"fiesta_dentro", "sin_fiesta", "verina_arriba", "verina_arriba_2", "xila_avisa", "xila_sin_aviso", "xila_resaca", "xila_corre", "informe_nada"})
         MOTOR_CHECK(std::find(ids.begin(), ids.end(), quiero) != ids.end());
-    MOTOR_CHECK(ids.size() <= 10);
+    MOTOR_CHECK(ids.size() <= 13);
     std::set<std::string> gorran;
     for (const CaminoDia3& c : caminosDia3()) gorran.insert(c.gorran);
     MOTOR_CHECK(gorran.count("tregua") == 1 && gorran.count("cuatro_lios") == 1);  // la tregua y la pelea (estalla la subasta y se perdona)
@@ -166,23 +168,55 @@ MOTOR_TEST_CASE(a_la_fiesta_se_llega_de_noche_y_sin_acostarse) {
         }
 }
 
-// ⚠ Hallazgo: b2_xila_resaca (talk con `xila`, exige bnd2_encargo y bnd1_xila_borracho) NO se alcanza jugando: el objeto `xila` esta oculto en cuanto
-// hay bnd2_encargo (cinematicas.json:398, ocultoSi bnd2_encargo salvo bnd_ocaso_empezado). Xila borracho no se despierta el dia 3 por ningun camino.
-MOTOR_TEST_CASE(hallazgo_xila_resaca_no_se_alcanza_porque_xila_esta_oculto_el_dia_3) {
+// D0025.1 (antes hallazgo): Xila borracho del dia 1 (bnd1_xila_borracho) se ve el dia 3 hasta que se le habla (bnd2_xila_resaca_visto), y
+// b2_xila_resaca se alcanza. Sobrio (o ya recuperado) se esconde en cuanto hay bnd2_encargo, como siempre; con el Ocaso vuelve.
+MOTOR_TEST_CASE(xila_borracho_se_ve_el_dia_3_hasta_que_se_le_habla) {
     Fabrica f;
     demo_bnd::Jugador j(f.g, Suerte::Buena);
     j.s.ponLugar("assets/levels/ciudad_oeste.json");
     MOTOR_CHECK(j.seVe("xila"));  // antes del encargo (dia 1) se ve
     j.s.setFlag("bnd2_encargo");
+    MOTOR_CHECK(!j.seVe("xila"));  // sobrio, el dia 3 no
     j.s.setFlag("bnd1_xila_borracho");
-    MOTOR_CHECK(!j.seVe("xila"));  // ... y el dia 3 no
+    MOTOR_CHECK(j.seVe("xila"));  // borracho, si
+    j.s.setFlag("bnd2_xila_resaca_visto");
+    MOTOR_CHECK(!j.seVe("xila"));  // ya se le hablo: se esconde
+    j.s.clearFlag("bnd2_xila_resaca_visto");
+    j.s.clearFlag("bnd1_xila_borracho");
+    j.s.setFlag("bnd1_xila_honor");  // recuperado
+    MOTOR_CHECK(!j.seVe("xila"));
+    j.s.setFlag("bnd1_xila_borracho");
+    j.s.setFlag("bnd2_xila_resaca_visto");
+    j.s.setFlag("bnd_ocaso_empezado");
+    MOTOR_CHECK(j.seVe("xila"));  // con el Ocaso vuelve
     const RPG::NarrativeBeat* resaca = nullptr;
     for (const RPG::NarrativeBeat& b : f.g.dia2.beats)
         if (b.id == "b2_xila_resaca") resaca = &b;
     MOTOR_CHECK(resaca != nullptr && resaca->trigger.target == "xila");
-    MOTOR_CHECK(std::find(resaca->requirements.allFlags.begin(), resaca->requirements.allFlags.end(), "bnd2_encargo") != resaca->requirements.allFlags.end());
-    j.s.setFlag("bnd_ocaso_empezado");
-    MOTOR_CHECK(j.seVe("xila"));  // solo vuelve con el Ocaso, cuando b2_xila_resaca (bnd2_encargo) ya no tiene sentido
+}
+
+// D0025.3: el evento del aviso de Xila vale con Xila recuperado (honor sin borracho), con el heroe que corrio a avisar a Venides (bnd3_avisado:
+// las campanas ya suenan) y sigue sin valer si Venides salio solo (bnd2_venides_sin_aviso) o si Xila sigue borracho.
+MOTOR_TEST_CASE(el_aviso_de_xila_vale_recuperado_y_tras_correr_a_avisar_pero_no_sin_venides) {
+    const auto avisa = [](std::initializer_list<const char*> flags, bool tarde) {
+        auto r = RPG::eventos::cargaCatalogo("assets/eventos/boundington.json");
+        require(r);
+        RPG::NarrativeState s;
+        for (const char* f : flags) s.setFlag(f);
+        s.setVariable("dia", 4);
+        s.setVariable("franja", tarde ? 1 : 0);
+        RPG::eventos::evalua(r.value(), s);
+        return s.hasFlag("bnd3_xila_avisa");
+    };
+    MOTOR_CHECK(avisa({"bnd1_xila_honor"}, true));                                   // el de siempre
+    MOTOR_CHECK(avisa({"bnd1_xila_honor", "bnd1_aliado_xila", "bnd2_xila_resaca_visto"}, true));  // recuperado: honor, sin borracho
+    MOTOR_CHECK(avisa({"bnd1_xila_honor", "bnd3_avisado", "bnd3_campanas"}, true));  // corrio a avisar a Venides
+    MOTOR_CHECK(!avisa({"bnd1_xila_honor", "bnd3_campanas"}, true));                 // campanas sin haber avisado (puesta, el evento no vuelve)
+    MOTOR_CHECK(!avisa({"bnd1_xila_honor", "bnd2_venides_sin_aviso"}, true));        // Venides ya salio solo
+    MOTOR_CHECK(!avisa({"bnd1_xila_honor", "bnd2_venides_sin_aviso", "bnd3_avisado", "bnd3_campanas"}, true));
+    MOTOR_CHECK(!avisa({"bnd1_xila_borracho"}, true));                               // borracho sin recuperar (sin honor)
+    MOTOR_CHECK(!avisa({"bnd1_xila_honor", "bnd1_xila_borracho"}, true));
+    MOTOR_CHECK(!avisa({"bnd1_xila_honor"}, false));                                 // sin cruzar la tarde
 }
 
 // ⚠ Hallazgo: bnd2_rosita_verina solo la lee el diario (quests.json:746): Verina arriba no cambia nada en el Ocaso.
