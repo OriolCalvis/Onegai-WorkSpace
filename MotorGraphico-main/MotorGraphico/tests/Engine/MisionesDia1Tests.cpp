@@ -109,10 +109,11 @@ struct Resultado {
 };
 
 // Juega la escena sobre los guiones `g` y devuelve lo que falla (vacio = la mision se abre y se cierra como dice la escena).
-Resultado juega(const demo_bnd::Guiones& g, const Heroe& h, const Esc& e) {
+Resultado juega(const demo_bnd::Guiones& g, const Heroe& h, const Esc& e, bool mutada = false) {
     Resultado r;
     Partida p(g, h, e.suerte);
     demo_bnd::Jugador& j = p.j;
+    j.vigilaSiempre = mutada && std::getenv("MISIONES_SIN_VIGILA") == nullptr;  // MISIONES_SIN_VIGILA=1 reproduce el arnes de antes (log de contraste)  // un cierre mutado (auto que no enciende su flag) no se repite 150 veces: la escena queda en rojo
     j.prefiere = e.dice;
     j.prefiere.insert(j.prefiere.end(), {"Ponerse en marcha", "Pagar la cama", "Subir a dormir"});
     j.prologo();
@@ -161,12 +162,19 @@ const std::vector<std::string> kManana = junta(kCama, {"E:ciudad_centro"});  // 
 const std::vector<std::string> kTutorial = junta(kManana, {"E:interior_mercado", "H:tendero_mercado", "E:interior_joyeria", "H:joyero",
                                                             "E:interior_sastreria", "H:sastre", "E:ciudad_centro"});  // las tres presentaciones y la emboscada
 
+// La guarida: la iglesia vieja (invitado o no), las dependencias de la secta y el santuario.
+const std::vector<std::string> kDep = junta(kCama, {"E:interior_iglesia_s1", "E:dependencias_secta"});
+const std::vector<std::string> kSantuario = junta(kCama, {"E:ciudad_centro", "H:sectario_perdido", "E:interior_iglesia_s1", "E:santuario_subterraneo"});
+const std::vector<std::string> kDiceSantuario = {"Sembrar dudas en Verina", "Contárselo todo", "Mostrar interés [Persuasión]", "Cuenta conmigo.", "Dejar las armas",
+                                                 "Mirar la estatua [Conocimiento arcano]", "Escuchar el canto", "Hablar con alguien [Persuasión]", "¿Qué mezclas?",
+                                                 "¿Conoces a un caballero llamado Venides?", "Callar"};
+
 const std::vector<Esc>& escenas() {
     // Orden de campos: id, mision, principal, pasos, dice, suerte, beats, ve, noVe, mutacion (beat, opcion, flag).
     static const std::vector<Esc> c = {
         // 1 --- La primera noche: cama y rumores
         {"llegada_cama", "llegada_cama", true, kCama, {}, Suerte::Buena,
-         {"b0_llegada", "b0_rosita", "b0_subir"}, {"bnd0_noche", "bnd0_cama", "bnd0_a_dormir", "bnd0_dormido"}, {}, {"b0_rosita_s0", "Subir a dormir", "bnd0_a_dormir"}},
+         {"b0_llegada", "b0_rosita", "b0_subir"}, {"bnd0_noche", "bnd0_cama", "bnd0_a_dormir", "bnd0_dormido"}, {}, {"b0_subir", "", "bnd0_dormido"}},
         {"calle_sin_pagar", "llegada_cama", false, {"E:interior_taberna", "E:ciudad_centro"}, {}, Suerte::Buena,
          {"b0_llegada", "b0_calle_sin_cama"}, {"bnd0_cama", "bnd0_a_dormir", "bnd_skilla"}, {"bnd0_dormido"}, {}},
         {"rosita_perdidos", "llegada_cama", false, {"E:interior_taberna", "H:skilla"},
@@ -211,10 +219,10 @@ const std::vector<Esc>& escenas() {
         // 8 --- Recorrer la plaza
         {"plaza", "plaza", true, junta(kTutorial, {"E:interior_mercado", "E:ciudad_centro", "H:anciana", "H:vecino_de_plaza"}), {"¿Por qué hay tanto bordado negro?", "Dejarla en su portal"}, Suerte::Buena,
          {"tut_plaza_ya", "b1_vieja", "b1_vecina_plaza_pista"}, {"bnd1_plaza_explorada", "bnd1_vieja_visto", "bnd1_xila_pista_plaza"}, {},
-         {"b1_vecina_plaza_pista", "", "bnd1_xila_pista_plaza"}},
+         {"tut_plaza_ya", "", "bnd1_plaza_explorada"}},
         // 9 --- El carterista
         {"carterista", "carterista", true, junta(kTutorial, {"E:interior_mercado", "E:ciudad_centro"}), {"Dejarle ir"}, Suerte::Buena,
-         {"b1_carterista", "b1_carterista_pillado"}, {"bnd1_carterista_resuelto"}, {"bnd1_carterista_pifia"}, {"b1_carterista", "", "bnd1_carterista_exito"}},
+         {"b1_carterista", "b1_carterista_pillado"}, {"bnd1_carterista_resuelto"}, {"bnd1_carterista_pifia"}, {"b1_carterista_pillado", "", "bnd1_carterista_resuelto"}},
         {"carterista_robo", "carterista", false, junta({"T:bnd1_carterista_pifia=mala"}, junta(kTutorial, {"E:interior_mercado", "E:ciudad_centro"})), {}, Suerte::Buena,
          {"b1_carterista", "b1_carterista_robo"}, {"bnd1_carterista_resuelto", "bnd1_carterista_pifia"}, {"bnd1_pulga_abierta"}, {}},
         {"carterista_rapido", "carterista", false, junta({"V:heroe_des=3"}, junta(kTutorial, {"E:interior_mercado", "E:ciudad_centro"})), {}, Suerte::Buena,
@@ -222,7 +230,7 @@ const std::vector<Esc>& escenas() {
         // 10 --- Aigren
         {"aigren", "aigren", true, junta(kCama, {"E:interior_herreria", "H:aigren"}), {"Preguntarle por los Perdidos", "Convencerle de que son el mal [Persuasión]"}, Suerte::Buena,
          {"b1_aigren_perdidos", "b1_aigren_redimido"}, {"bnd1_aigren_c_exito", "bnd1_aigren_redimido", "bnd1_aigren_resuelto"}, {"bnd1_aigren_c_pifia"},
-         {"b1_aigren_perdidos", "Convencerle de que son el mal [Persuasión]", "bnd1_aigren_c_exito"}},
+         {"b1_aigren_redimido", "", "bnd1_aigren_resuelto"}},
         {"aigren_discurso", "aigren", false, junta(kCama, {"E:interior_herreria", "H:aigren"}), {"Preguntarle por los Perdidos", "Convencerle de que son el mal [Persuasión]"}, Suerte::Regular,
          {"b1_aigren_perdidos", "b1_aigren_papel"}, {"bnd1_aigren_c_parcial", "bnd1_aigren_orden_pedida"}, {"bnd1_aigren_redimido", "bnd1_aigren_resuelto"}, {}, {"b1_aigren_discurso"}},
         // 11 --- Luisarda
@@ -232,7 +240,7 @@ const std::vector<Esc>& escenas() {
          {"b1_luisarda_pide"}, {"bnd1_luisarda_con_rosita"}, {}, {"b1_luisarda_pide", "Ven a cenar a la taberna. Rosita te espera.", "bnd1_luisarda_con_rosita"}},
         // 12 --- Los sectarios de la plaza
         {"sectarios", "sectarios", true, junta(kCama, {"E:ciudad_centro", "H:sectario_perdido"}), {"Mostrar interés [Persuasión]", "Cuenta conmigo."}, Suerte::Buena,
-         {"b1_secta"}, {"bnd1_invitado_guarida", "bnd1_sectarios_resueltos"}, {}, {"b1_secta_s2", "Mostrar interés [Persuasión]", "bnd1_sectarios_exito"}},
+         {"b1_secta"}, {"bnd1_invitado_guarida", "bnd1_sectarios_resueltos"}, {}, {"b1_sectarios_masacre", "", "bnd1_sectarios_resueltos"}},
         // 13 --- Xila
         {"xila", "xila", true, junta(kCama, {"E:ciudad_oeste", "H:xila", "E:interior_taberna", "H:skilla", "E:ciudad_oeste", "H:xila"}),
          {"Sentarte con él, sin decir nada", "Comer algo mientras pasa la mañana (5)", "Invitarle a un trago (1)", "Irte"}, Suerte::Buena,
@@ -291,7 +299,7 @@ const std::vector<Esc>& escenas() {
         {"archivo", "archivo", true, junta(kCama, {"E:interior_iglesia_s1", "E:dependencias_secta", "H:almacen_perdidos"}), {"Dejar las armas"}, Suerte::Buena,
          {"b1_guarida_puerta", "b1_almacen"}, {"bnd1_almacen_visto", "bnd1_pista_aceite", "bnd1_sabe_barricadas"}, {}, {"b1_almacen", "", "bnd1_pista_aceite"}},
         {"archivo_estudio", "archivo", false, junta(kCama, {"E:interior_iglesia_s1", "E:dependencias_secta", "Z:cripta_estudio"}), {"Dejar las armas"}, Suerte::Buena,
-         {"b1_guarida_puerta", "b1_estudio"}, {"bnd1_cripta_estudio", "bnd1_estudio_visto", "bnd1_verina_vista"}, {}, {}},
+         {"b1_guarida_puerta", "b1_estudio"}, {"bnd1_cripta_estudio", "bnd1_estudio_visto", "bnd1_verina_vista"}, {}, {"b1_estudio", "", "bnd1_estudio_visto"}},
         // 21 --- La camara honda
         {"camara_sereno", "camara_sereno", true, junta(kCama, {"E:ciudad_centro", "H:sectario_perdido", "E:interior_iglesia_s1", "E:santuario_subterraneo", "H:copista_cripta", "E:camara_profunda"}),
          {"¿Quién es Sandes?", "Me he perdido.", "Contárselo todo", "Mostrar interés [Persuasión]", "Cuenta conmigo.", "Dejar las armas"}, Suerte::Buena,
@@ -305,7 +313,99 @@ const std::vector<Esc>& escenas() {
          {"b1_pelea", "b1_pelea_apaleado"}, {"bnd1_pelea_lanzada", "bnd1_pelea_ganada", "bnd1_camorrista_visto"}, {"bnd1_pelea_perdida"}, {"b1_pelea", "Separarlos [pelea sin matar]", "bnd1_pelea_ganada"}},
         // 25 --- Cerrar el dia
         {"cierre_dia", "cierre_dia", true, junta(kCama, {"E:interior_taberna", "N", "H:venides", "D"}), {"Contárselo todo"}, Suerte::Buena,
-         {"b1_sube_al_cuarto"}, {"bnd1_en_cuarto", "bnd_dia_cerrado"}, {}, {"b1_sube_al_cuarto", "", "bnd1_en_cuarto"}},
+         {"b1_sube_al_cuarto"}, {"bnd1_en_cuarto", "bnd_dia_cerrado"}, {}, {"cierre_silencio", "", "bnd_dia_cerrado"}},
+
+        // ---- E-MISIONES-01b: las salidas que ni el explorador ni la primera pasada vieron (una escena por salida) ----
+        // 8 --- tut_plaza (enter): el tutorial se cierra FUERA de la plaza y se pisa despues. En el juego la emboscada salta al entrar en la plaza y el
+        // enter que se adelanta es b1_carterista (171, el mismo trigger que tut_plaza, 172): solo un enter por entrada, asi que tut_plaza_ya (auto) lo
+        // sustituye siempre. Aqui el carterista ya esta visto (S) para dejar libre el enter y probar la salida de respaldo.
+        {"plaza_entrar", "plaza", false, junta(kManana, {"E:interior_mercado", "S:bnd_tut_cerrado", "S:bnd_tut_emboscada_lanzada", "S:bnd1_carterista_visto", "E:ciudad_centro"}), {}, Suerte::Buena,
+         {"tut_plaza"}, {"bnd1_plaza_explorada"}, {}, {"tut_plaza", "", "bnd1_plaza_explorada"}, {"tut_plaza_ya"}},
+        // 11 --- Luisarda: el recado de las antorchas y el silencio pagado con pociones
+        {"luisarda_recado", "luisarda", false, junta(kCama, {"S:bnd0_favor_luisarda", "E:interior_sastreria", "H:luisarda"}),
+         {"Rosita dice que no vas a cenar.", "Que allí tienes un plato caliente.", "Busco antorchas.", "Volver a sacar las antorchas", "Insistir, de malos modos [Intimidación]"}, Suerte::Buena,
+         {"b1_luisarda_tienda", "b1_luisarda_recado"}, {"bnd1_luisarda_vista", "bnd1_luisarda_asustada"}, {}, {}},
+        {"luisarda_pociones_miedo", "luisarda", false,
+         junta(kCama, {"S:bnd0_favor_luisarda", "E:interior_sastreria", "H:luisarda", "S:bnd1_luisarda_pide", "K", "H:luisarda"}),
+         {"Rosita dice que no vas a cenar.", "Que allí tienes un plato caliente.", "Busco antorchas.", "Volver a sacar las antorchas", "Insistir, de malos modos [Intimidación]", "No diré nada. Tranquila."}, Suerte::Buena,
+         {"b1_luisarda_recado", "b1_luisarda_pide", "b1_luisarda_pociones_miedo"}, {"bnd1_luisarda_silencio", "bnd1_luisarda_pociones"}, {"bnd1_luisarda_con_rosita"}, {}},
+        {"luisarda_pociones", "luisarda", false, junta(kCama, {"S:bnd0_favor_luisarda", "E:interior_sastreria", "H:luisarda", "S:bnd1_luisarda_pide", "K", "H:luisarda"}),
+         {"Rosita dice que no vas a cenar.", "Que allí tienes un plato caliente.", "Busco antorchas.", "Volver a sacar las antorchas",
+          "Hacerle creer que ya lo sabes todo [Engaño]", "No diré nada. Tranquila."}, Suerte::Buena,
+         {"b1_luisarda_pide", "b1_luisarda_pociones"}, {"bnd1_luisarda_silencio", "bnd1_luisarda_pociones"}, {"bnd1_luisarda_con_rosita", "bnd1_luisarda_asustada"},
+         {"b1_luisarda_pociones", "", "bnd1_luisarda_pociones"}},
+        // 12 --- Sectarios: la pelea perdida y el sigilo
+        {"secta_ganan", "sectarios", false, junta(kCama, {"L:bnd1_secta_vencidos", "E:ciudad_centro", "H:sectario_perdido"}), {"Reírte de ellos", "Insistir en la burla"}, Suerte::Buena,
+         {"b1_secta_burla", "b1_secta_ganan"}, {"bnd1_secta_ganan", "bnd1_secta_fin", "bnd1_sectarios_resueltos"}, {"bnd1_secta_vencidos"}, {"b1_secta_ganan", "", "bnd1_secta_fin"}},
+        {"sectarios_seguidos", "sectarios", false, junta(kCama, {"E:ciudad_centro", "H:sectario_perdido", "H:sectario_perdido"}),
+         {"Reírte de ellos", "Dejarlo ahí", "Seguirles de lejos [Sigilo]"}, Suerte::Buena,
+         {"b1_secta_burla", "b1_sectarios_seguir", "b1_sectarios_seguidos"}, {"bnd_pista_sectarios", "bnd1_sectarios_resueltos"}, {"bnd1_invitado_guarida"}, {}},
+        {"sectarios_te_ven", "sectarios", false, junta(kCama, {"E:ciudad_centro", "H:sectario_perdido", "H:sectario_perdido"}),
+         {"Reírte de ellos", "Dejarlo ahí", "Seguirles de lejos [Sigilo]"}, Suerte::Mala,
+         {"b1_secta_burla", "b1_sectarios_seguir", "b1_sectarios_te_ven"}, {"bnd1_sectarios_resueltos"}, {"bnd_pista_sectarios"}, {}},
+        // 20 --- El archivo, el archivero y las literas (dependencias de la secta)
+        {"archivo_cuentas", "archivo", false, junta(kDep, {"H:archivo_perdidos"}), {"Dejar las armas", "Leer de reojo [Investigación]", "Arrancar la página de las cuentas"}, Suerte::Buena,
+         {"b1_archivo_vigilado", "b1_archivo_cuentas"}, {"bnd1_archivo_leido", "bnd1_sabe_barricadas", "bnd1_sabe_sereno"}, {"bnd1_archivo_cerrado"}, {"b1_archivo_cuentas", "", "bnd1_archivo_leido"}},
+        {"archivo_parcial", "archivo", false, junta(kDep, {"H:archivo_perdidos"}), {"Dejar las armas", "Leer de reojo [Investigación]"}, Suerte::Regular,
+         {"b1_archivo_vigilado", "b1_archivo_parcial"}, {"bnd1_archivo_cerrado", "bnd1_cripta_sospecha"}, {"bnd1_archivo_leido"}, {}},
+        {"archivo_pifia", "archivo", false, junta(kDep, {"H:archivo_perdidos"}), {"Dejar las armas", "Leer de reojo [Investigación]"}, Suerte::Mala,
+         {"b1_archivo_vigilado", "b1_archivo_pifia"}, {"bnd1_archivo_cerrado", "bnd1_cripta_sospecha"}, {"bnd1_archivo_leido"}, {}},
+        {"archivo_libre", "archivo", false, junta(kDep, {"S:bnd1_archivero_fuera", "H:archivo_perdidos"}), {"Dejar las armas", "Registrar los cajones"}, Suerte::Buena,
+         {"b1_archivo_libre", "b1_archivo_cuentas"}, {"bnd1_archivo_ok", "bnd1_archivo_leido"}, {"bnd1_cripta_sospecha"}, {}},
+        {"archivero_engano_exito", "archivo", false, junta(kDep, {"H:archivero_cripta", "C", "C"}), {"Dejar las armas", "«Sandes te llama al santuario.» [Engaño]"}, Suerte::Buena,
+         {"b1_archivero", "b1_archivero_eng_exito"}, {"bnd1_archivero_se_va", "bnd1_archivero_fuera"}, {"bnd1_cripta_sospecha"}, {"b1_archivero_eng_exito", "", "bnd1_archivero_se_va"}},
+        {"archivero_engano_parcial", "archivo", false, junta(kDep, {"H:archivero_cripta", "C"}), {"Dejar las armas", "«Sandes te llama al santuario.» [Engaño]"}, Suerte::Regular,
+         {"b1_archivero", "b1_archivero_eng_parcial"}, {"bnd1_archivero_se_va", "bnd1_cripta_sospecha"}, {}, {}},
+        {"archivero_engano_pifia", "archivo", false, junta(kDep, {"H:archivero_cripta"}), {"Dejar las armas", "«Sandes te llama al santuario.» [Engaño]"}, Suerte::Mala,
+         {"b1_archivero", "b1_archivero_eng_pifia"}, {"bnd1_cripta_sospecha"}, {"bnd1_archivero_se_va"}, {}},
+        {"archivero_persuadir_exito", "archivo", false, junta(kDep, {"H:archivero_cripta"}), {"Dejar las armas", "«Quiero aprender a leerlas.» [Persuasión]"}, Suerte::Buena,
+         {"b1_archivero", "b1_archivero_per_exito"}, {"bnd1_archivo_escrituras"}, {"bnd1_cripta_sospecha"}, {}},
+        {"archivero_persuadir_parcial", "archivo", false, junta(kDep, {"H:archivero_cripta"}), {"Dejar las armas", "«Quiero aprender a leerlas.» [Persuasión]"}, Suerte::Regular,
+         {"b1_archivero", "b1_archivero_per_parcial"}, {"bnd1_archivo_escrituras", "bnd1_cripta_sospecha"}, {}, {}},
+        {"archivero_persuadir_pifia", "archivo", false, junta(kDep, {"H:archivero_cripta"}), {"Dejar las armas", "«Quiero aprender a leerlas.» [Persuasión]"}, Suerte::Mala,
+         {"b1_archivero", "b1_archivero_per_pifia"}, {"bnd1_cripta_sospecha"}, {"bnd1_archivo_escrituras"}, {}},
+        {"archivero_intimidar_exito", "archivo", false, junta(kDep, {"H:archivero_cripta"}), {"Dejar las armas", "«Lárgate.» [Intimidación]"}, Suerte::Buena,
+         {"b1_archivero", "b1_archivero_int_exito"}, {"bnd1_archivero_se_va", "bnd1_cripta_sospecha"}, {}, {}},
+        {"archivero_intimidar_parcial", "archivo", false, junta(kDep, {"H:archivero_cripta"}), {"Dejar las armas", "«Lárgate.» [Intimidación]"}, Suerte::Regular,
+         {"b1_archivero", "b1_archivero_int_parcial"}, {"bnd1_archivero_se_va", "bnd1_cripta_sospecha"}, {}, {}},
+        {"archivero_intimidar_pifia", "archivo", false, junta(kDep, {"H:archivero_cripta"}), {"Dejar las armas", "«Lárgate.» [Intimidación]"}, Suerte::Mala,
+         {"b1_archivero", "b1_archivero_int_pifia"}, {"bnd1_cripta_sospecha"}, {"bnd1_archivero_se_va"}, {}},
+        {"literas_tunica_exito", "archivo", false, junta(kDep, {"H:literas_novicios"}), {"Dejar las armas", "Coger una túnica [Sigilo]"}, Suerte::Buena,
+         {"b1_literas", "b1_tunica_exito"}, {"bnd1_cripta_tunica", "bnd1_cripta_colado", "bnd1_tunica_cerrado"}, {"bnd1_cripta_sospecha"}, {"b1_tunica_exito", "", "bnd1_cripta_tunica"}},
+        {"literas_tunica_parcial", "archivo", false, junta(kDep, {"H:literas_novicios"}), {"Dejar las armas", "Coger una túnica [Sigilo]"}, Suerte::Regular,
+         {"b1_literas", "b1_tunica_parcial"}, {"bnd1_cripta_tunica", "bnd1_cripta_sospecha"}, {}, {}},
+        {"literas_tunica_pifia", "archivo", false, junta(kDep, {"H:literas_novicios"}), {"Dejar las armas", "Coger una túnica [Sigilo]"}, Suerte::Mala,
+         {"b1_literas", "b1_tunica_pifia"}, {"bnd1_literas_cerradas", "bnd1_cripta_sospecha"}, {"bnd1_cripta_tunica"}, {}},
+        {"literas_libro", "archivo", false, junta(kDep, {"H:literas_novicios"}), {"Dejar las armas", "Mirar el libro de la almohada"}, Suerte::Buena,
+         {"b1_literas"}, {"bnd1_cuaderno_verina"}, {"bnd1_cripta_tunica"}, {}},
+        {"literas_vacias", "archivo", false, junta(kDep, {"S:bnd1_novicios_fuera", "H:literas_novicios"}), {"Dejar las armas", "Coger una túnica"}, Suerte::Buena,
+         {"b1_literas_vacias"}, {"bnd1_cripta_tunica", "bnd1_cripta_colado"}, {}, {}},
+        // 19 --- El idolo (pifia), el banco de Verina y los frascos de Edul, y las tres salidas de la pelea de la guarida
+        {"idolo_misterio", "ceremonia", false, junta({"T:bnd1_idolo_pifia=mala"}, kSantuario), kDiceSantuario, Suerte::Buena,
+         {"b1_ceremonia", "b1_idolo_misterio"}, {"bnd1_idolo_resuelto"}, {"bnd1_idolo_exito"}, {}},
+        {"banco_verina", "verina_edul", false, junta({"T:bnd1_charla_pifia=regular"}, kSantuario), junta({"¿Qué lees?", "¿De dónde eres?", "Fingir que crees", "Sembrar dudas en Verina"}, kDiceSantuario), Suerte::Buena,
+         {"b1_charla_verina", "b1_banco", "b1_edul"}, {"bnd1_banco_visto", "bnd1_verina_perishton", "bnd1_con_edul", "bnd1_guarida_resuelta"}, {"bnd1_frascos_abierta"}, {}},
+        {"frascos_edul", "verina_edul", false, kSantuario, junta({"¿Qué mezclas?", "¿Conoces a un caballero llamado Venides?", "Callar", "Sembrar dudas en Verina"}, kDiceSantuario), Suerte::Buena,
+         {"b1_charla_edul", "b1_frascos", "b1_edul"}, {"bnd1_frascos_visto", "bnd1_edul_mezcla", "bnd1_edul_venides", "bnd1_con_edul"}, {"bnd1_banco_abierta"}, {}},
+        {"guarida_ganada", "verina_edul", false, junta({"T:bnd1_charla_pifia=regular"}, kSantuario), junta({"Fingir que crees", "Plantarles cara"}, kDiceSantuario), Suerte::Buena,
+         {"b1_banco", "b1_edul", "b1_guarida_ganada"}, {"bnd1_guarida_ganada", "bnd1_guarida_resuelta", "bnd1_guarida_pelea"}, {"bnd1_guarida_perdida"}, {"b1_guarida_ganada", "", "bnd1_guarida_resuelta"}},
+        {"guarida_perdida", "verina_edul", false, junta({"T:bnd1_charla_pifia=regular", "L:bnd1_guarida_ganada"}, kSantuario), junta({"Fingir que crees", "Plantarles cara"}, kDiceSantuario), Suerte::Buena,
+         {"b1_banco", "b1_edul", "b1_guarida_perdida"}, {"bnd1_guarida_perdida", "bnd1_guarida_resuelta"}, {"bnd1_guarida_ganada"}, {"b1_guarida_perdida", "", "bnd1_guarida_resuelta"}},
+        {"guarida_exterminada", "verina_edul", false, junta(kCama, {"E:interior_herreria", "H:aigren", "E:interior_iglesia_s1", "E:santuario_subterraneo"}),
+         {"Intentar acabar con todos", "Contárselo todo", "Preguntarle por los Perdidos", "Decirle que te interesan", "Vengo de parte del herrero.", "Ir a por lo tuyo"}, Suerte::Buena,
+         {"b1_guarida_por_aigren", "b1_guarida_exterminada"}, {"bnd1_guarida_exterminada", "bnd1_guarida_resuelta", "bnd1_sabe_sandes"}, {"bnd1_guarida_perdida"}, {"b1_guarida_exterminada", "", "bnd1_guarida_resuelta"}},
+        // 22 --- Edul baja a por ti si te encadenan, y la llave de las cadenas del sereno
+        {"edul_rescate", "verina_edul", false, junta(kCama, {"E:interior_iglesia_s1", "V:cripta_sospecha=3", "S:bnd1_edul_hablado", "K", "C", "C"}), {"Dejar las armas", "Rendirte", "Esperar a Edul", "Subir con él"}, Suerte::Buena,
+         {"b1_cripta_descubierto", "b1_capturado", "b1_edul_rescate"}, {"bnd1_cine_edul_rescate", "bnd1_capturado_resuelto", "bnd1_edul_escolta_si", "bnd1_llave_cadenas"}, {}, {"b1_edul_rescate", "", "bnd1_capturado_resuelto"}},
+        {"llave_exito", "verina_edul", false, junta(kSantuario, {"S:bnd1_sabe_sereno", "E:dependencias_secta", "H:edul_cripta"}),
+         junta({"Fingir que crees", "Sembrar dudas en Verina", "Hay un hombre encadenado abajo.", "Dame la llave. [Persuasión]"}, kDiceSantuario), Suerte::Buena,
+         {"b1_edul", "b1_edul_cripta", "b1_llave_exito"}, {"bnd1_llave_cerrado", "bnd1_llave_cadenas"}, {"bnd1_edul_retenido"}, {"b1_llave_exito", "", "bnd1_llave_cadenas"}},
+        {"llave_parcial", "verina_edul", false, junta(kSantuario, {"S:bnd1_sabe_sereno", "E:dependencias_secta", "H:edul_cripta"}),
+         junta({"Fingir que crees", "Sembrar dudas en Verina", "Hay un hombre encadenado abajo.", "Dame la llave. [Persuasión]"}, kDiceSantuario), Suerte::Regular,
+         {"b1_llave_parcial"}, {"bnd1_llave_cerrado", "bnd1_llave_cadenas", "bnd1_cripta_sospecha"}, {"bnd1_edul_retenido"}, {}},
+        {"llave_pifia", "verina_edul", false, junta(kSantuario, {"S:bnd1_sabe_sereno", "E:dependencias_secta", "H:edul_cripta"}),
+         junta({"Fingir que crees", "Sembrar dudas en Verina", "Hay un hombre encadenado abajo.", "Dame la llave. [Persuasión]"}, kDiceSantuario), Suerte::Mala,
+         {"b1_llave_pifia"}, {"bnd1_llave_cerrado", "bnd1_edul_retenido"}, {"bnd1_llave_cadenas"}, {}},
     };
     return c;
 }
@@ -340,7 +440,7 @@ MOTOR_TEST_CASE(sin_el_efecto_de_cierre_la_escena_de_la_mision_falla) {
         if (std::string(e.mut.beat).empty() || (solo != nullptr && std::string(solo) != e.id)) continue;
         const std::string temporal = (std::filesystem::temp_directory_path() / (std::string("misiones_mut_") + e.id + ".json")).string();
         const demo_bnd::Guiones mutada = conQuita(g, e.mut, temporal);
-        const Resultado r = juega(mutada, h, e);
+        const Resultado r = juega(mutada, h, e, true);
         if (r.fallos.empty()) std::fprintf(stderr, "  [%s] la mutacion (%s / %s / %s) no hizo fallar nada\n", e.id, e.mut.beat, e.mut.opcion, e.mut.flag);
         else if (std::getenv("MISIONES_VERBOSO") != nullptr) std::fprintf(stderr, "  [%s] mutacion en rojo: %s%s\n", e.id, r.fallos.front().c_str(), r.fallos.size() > 1 ? " (+mas)" : "");
         MOTOR_CHECK(!r.fallos.empty());

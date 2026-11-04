@@ -1,0 +1,8 @@
+guardados_q1c/q1c_luisarda.json: luisarda en assets/levels/interior_sastreria.json (3,5) oro 125
+   BEAT b1_luisarda_tienda [] lineas=3 «La Boutique de Madame. Estanterías hasta el techo, una esca»
+   MENU b1_luisarda_tienda -> 4  {1. Busco antorchas. | 2. Rosita dice que no vas a cenar. | 3. Hablar de otra cosa | 4. Irte}
+   BEAT b1_luisarda_tienda [] lineas=0
+   BEAT b1_luisarda_pide [Luisarda] lineas=1 «Y ahora te pido yo una cosa, cielo.»
+   MENU b1_luisarda_pide -> 2  {1. No diré nada. Tranquila. | 2. Ven a cenar a la taberna. Rosita te espera. | 3. Irte sin prometer nada}
+   BEAT b1_luisarda_pide [] lineas=5 «Luisarda: «¿Y dejar la tienda sola?»»
+   CIERRE bnd1_luisarda_con_rosita

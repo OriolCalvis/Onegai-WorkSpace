@@ -196,6 +196,7 @@ struct Momento {
     const char* pnj;      // objectId junto al que se pone; "" = el inicio del nivel
     int dx, dy;           // la casilla de al lado que se prefiere (la que se ve bien en la camara); si no se pisa, otra
     int px = -1, py = -1; // E-MATRIZ-02: casilla exacta (si px >= 0 manda sobre el PNJ)
+    bool sobre = false;   // E-MISIONES-01b: el objeto es una puerta (una puerta se PISA, GameSession::interact): el heroe se pone encima
 };
 
 inline constexpr Momento kSectarios{"sectarios.json", "ciudad_centro", "sectario_perdido", 0, -1};
@@ -216,6 +217,7 @@ inline GridCoord casillaJuntoA(GameSession& sesion, const LevelDefinition& nivel
     if (pnj.empty()) return nivel.playerStart;
     for (const ObjectSpawn& o : nivel.objects) {
         if (o.objectId != pnj) continue;
+        if (momento.sobre) return o.position;
         const GridCoord preferida{o.position.x + momento.dx, o.position.y + momento.dy};
         const std::vector<GridCoord> hasta = sesion.rutaAndando(preferida);
         if (!hasta.empty() && hasta.back().x == preferida.x && hasta.back().y == preferida.y) return preferida;
@@ -299,6 +301,32 @@ struct Partida {
         j.ruido = std::getenv("BND_RUIDO") != nullptr;  // para diagnosticar: cuenta la partida paso a paso
     }
 };
+
+// E-MISIONES-01b: un paso de una escena de MisionesDia1Tests (E:nivel H:pnj N D Z:cine C K S:flag V:var=n T:flagBotch=suerte L:flag U:flag G:suerte),
+// para fabricar los guardados «justo antes del cierre» con los mismos pasos que la prueba.
+inline demo_bnd::Suerte suerteDePaso(const std::string& t) {
+    return t == "critica" ? demo_bnd::Suerte::Critica : t == "buena" ? demo_bnd::Suerte::Buena : t == "regular" ? demo_bnd::Suerte::Regular : demo_bnd::Suerte::Mala;
+}
+inline void ejecutaPaso(demo_bnd::Jugador& j, const std::string& paso) {
+    const char op = paso[0];
+    const std::string arg = paso.size() > 2 ? paso.substr(2) : "";
+    switch (op) {
+        case 'E': j.entra(arg); break;
+        case 'H': j.habla(arg); break;
+        case 'N': j.anochece(); break;
+        case 'D': j.duerme(); break;
+        case 'Z': require(j.pisaLaZona(arg)); break;
+        case 'C': j.cinematica(GridCoord{-1, -1}); break;
+        case 'K': j.drena(); break;
+        case 'S': j.s.setFlag(arg); break;
+        case 'V': j.s.setVariable(arg.substr(0, arg.find('=')), std::atoi(arg.substr(arg.find('=') + 1).c_str())); break;
+        case 'T': j.tiradas[arg.substr(0, arg.find('='))] = suerteDePaso(arg.substr(arg.find('=') + 1)); break;
+        case 'L': j.pierde.insert(arg); break;
+        case 'U': j.huyen.insert(arg); break;
+        case 'G': j.suerte = suerteDePaso(arg); break;
+        default: require(false);
+    }
+}
 
 // Cambia de aventura como la Application (ApplicationBucle.cpp, «transiciones de AVENTURA»): ademas de dar el libreto,
 // el juego enciende una flag privada por capitulo para no reentrar en la transicion cada fotograma. El arnes de las

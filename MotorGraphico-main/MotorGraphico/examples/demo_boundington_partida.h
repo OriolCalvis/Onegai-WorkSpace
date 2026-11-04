@@ -142,6 +142,7 @@ struct Jugador {
     Suerte suerte = Suerte::Buena;
     bool ruido = false;
     bool cinesAlEntrar = false;
+    bool vigilaSiempre = false;  // E-MISIONES-01b: como en el juego, un beat que salta sin cambiar nada no se repite en bucle (ver drena); lo pide quien muta el guion
     std::vector<std::string> zonasPrimero;  // cinematicas con zona a las que va antes que a las demas (pisaUnaZona)
     std::vector<std::string> zonasEvita;    // ... y a las que no va nunca
     bool enCine = false;  // dentro de cinematica(): no se encadenan otras desde drena()
@@ -154,6 +155,16 @@ struct Jugador {
     // E-DIA1-CONSEC: lo que el jugador ha leido (lineas de beats y de respuestas, con {nombre} ya puesto), el dado rival de cada
     // tirada pedida ("beat/habilidad") y los combates de los que huye (por su flagVictory: sale su flagHuida). Las demos no lo miran.
     std::vector<std::string> dicho;
+    // E-MISIONES-01b: traza de lo que ve el jugador (beat y lineas, menu y opcion elegida) y de cuando se enciende una de las flags de `trazaFlags`.
+    // Sirve para escribir los guiones de captura de los cierres (tools/guiones/q1_*_cierre.txt). Las demos no la piden.
+    std::vector<std::string>* traza = nullptr;
+    std::vector<std::string> trazaFlags;
+    std::set<std::string> trazaVistas;
+    void trazaCierre() {
+        if (traza == nullptr) return;
+        for (const std::string& f : trazaFlags)
+            if (s.hasFlag(f) && trazaVistas.insert(f).second) traza->push_back("CIERRE " + f);
+    }
     std::vector<std::pair<std::string, int>> dados;
     std::set<std::string> huyen;
     bool dijo(const std::string& trozo) const {
@@ -192,6 +203,7 @@ struct Jugador {
         if (!r.fired) return;
         cuentas.anota(r);
         for (const std::string& l : r.lines) dicho.push_back(l);
+        if (traza != nullptr) traza->push_back("BEAT " + r.beatId + " [" + r.speaker + "] lineas=" + std::to_string(r.lines.size()) + (r.lines.empty() ? std::string() : " «" + r.lines.front().substr(0, 60) + "»"));
         for (const SkillCheckRequest& c : r.skillChecks) dados.emplace_back(r.beatId + "/" + c.skillId, c.rivalDice);
         if (!r.beatId.empty()) {
             vistos.push_back(r.beatId);
@@ -237,6 +249,7 @@ struct Jugador {
         }
         for (const TablaAleatoriaRequest& t : r.tablas)
             if (!t.flags.empty()) s.setFlag(buena() ? t.flags.front() : t.flags.back());
+        trazaCierre();
     }
 
     void contesta() {
@@ -258,6 +271,11 @@ struct Jugador {
         }
         const std::string elegida = textos[static_cast<std::size_t>(k)];
         usadas.insert(id + "|" + elegida);
+        if (traza != nullptr) {
+            std::string menu;
+            for (std::size_t i = 0; i < textos.size(); ++i) menu += (menu.empty() ? "" : " | ") + std::to_string(i + 1) + ". " + textos[i];
+            traza->push_back("MENU " + id + " -> " + std::to_string(k + 1) + "  {" + menu + "}");
+        }
         if (ruido) std::printf("    > %s\n", elegida.c_str());
         procesa(e.elige(k, s));
     }
@@ -276,6 +294,7 @@ struct Jugador {
     // Lo que pasa sin que el jugador haga nada: contestar lo que se pregunte,
     // los beats automaticos y la charla que sigue (DIALOGOS-01).
     void drena() {
+        std::string ultimoAuto;
         for (int i = 0; i < 150; ++i) {
             if (s.eleccion().activa()) {
                 contesta();
@@ -284,7 +303,7 @@ struct Jugador {
             // En el juego se vuelve a mirar los beats cuando el estado cambia, no en bucle: un beat
             // auto sin guarda (b3_campanas) saldria para siempre. Desde el dia de Gorran, si un beat
             // salta y no cambia ninguna bandera ni variable (ni deja una eleccion), se para.
-            const bool vigila = cinesAlEntrar;
+            const bool vigila = cinesAlEntrar || vigilaSiempre;
             const auto banderasAntes = vigila ? s.flags() : std::vector<std::string>{};
             const auto variablesAntes = vigila ? s.variables() : std::map<std::string, int>{};
             NarrativeResult r = e.tick(s);
@@ -299,6 +318,10 @@ struct Jugador {
             procesa(r);
             if (vigila && !s.eleccion().activa() && s.flags() == banderasAntes && s.variables() == variablesAntes)
                 return;
+            // Un guion mutado puede dejar un auto que se repite cambiando un contador (addVariable) sin llegar a su flag: el mismo beat
+            // dos veces seguidas (aunque se conteste una eleccion entre medias) ya es un bucle (E-MISIONES-01b).
+            if (vigilaSiempre && !r.beatId.empty() && r.beatId == ultimoAuto) return;
+            ultimoAuto = r.beatId;
         }
         std::printf("    !! drena: 150 pasos seguidos sin parar\n");
         require(false);

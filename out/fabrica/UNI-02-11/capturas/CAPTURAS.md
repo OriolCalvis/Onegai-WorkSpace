@@ -60,3 +60,41 @@ Guardados `fabricar_guardados --capturas-misiones1 guardados_q1` (cama pagada y 
 | `q1_almacen_dialogo.png` | **Sin diálogo**: dependencias de la secta con el HUD del día 1 todavía en «Preséntate al tendero» (1/8) porque el guardado se fabrica saltándose el tutorial; el `E` no abrió el almacén (el héroe no está pegado al PNJ en este recinto). ⚠ Captura no válida como prueba del almacén. |
 
 Lo que NO demuestran: ninguna es el cierre de su misión (eso lo prueban las escenas de `MisionesDia1Tests` con su log en `logs_misiones1/`); enseñan el gancho. Pendiente: guardados «justo antes del cierre» para las otras 16.
+
+
+---
+
+# E-MISIONES-01b (04/11) — capturas de CIERRE de las 25 misiones del dia 1: `q1_<mision>_cierre.png`
+Cada una es el dialogo o resultado del cierre de su mision, jugado en el juego real desde un guardado «justo antes» (`fabricar_guardados --capturas-cierre guardados_q1c`, guardados `q1c_<mision>.json`) con el guion `tools/guiones/q1_<mision>_cierre.txt` (la cabecera lleva las pulsaciones). Todas miradas con Read. Los guiones se generaron con `logs_misiones1b/{gen_guion_cierre.py,mkguion.py,final.sh,final_gen.sh}`.
+
+Lo que el juego hace al cargar (importa para entender los guardados): un beat `auto` NO salta al cargar, salta al CERRAR un dialogo (tick del cierre), y uno `enter`, al pisar una puerta (E sobre la puerta). Por eso los cierres automaticos acaban tras una charla con un PNJ de al lado y los de entrada se guardan encima de la puerta. Donde el cierre depende de una tirada o un combate, el guardado ya lleva la flag del resultado (S:) y el juego lo cuenta al cerrar el dialogo; no se ha forzado ninguna tirada en el juego.
+
+| Mision | Que se ve (pagina) |
+|---|---|
+| llegada_cama | Narracion «La cama huele a lavanda...» en el cuarto de arriba (b0_subir, enciende bnd0_dormido) |
+| ventana | Bordadora: «Uy, uno nuevo...» con el menu de 4 (b0_ventana; el cierre es `visto`, que se enciende con este beat) |
+| jornaleros | Tomas: «¡Eso! En la iglesia vieja...» (1/2, tras «Darle la razon»; rincon_hecho) |
+| encapuchado | «Hay mesas libres.» (3/3, b0_capucha) |
+| venides_noche | Venides: «Lo que pasa. Quien estaba, que dijo...» tras «¿Que escribes?» (el cierre es `visto`) |
+| desayuno | Narracion 5/5: Venides se va y se abren los sitios del dia (tras «Ponerse en marcha») |
+| presentaciones | 4/4 de tut_victoria: la bolsa del saqueador, tutorial cerrado (tras la charla de la vieja, que el juego abre antes) |
+| plaza | tut_plaza_ya: «Recorres la plaza entre puestos y corrillos...» |
+| carterista | Chaval: «¡No te robaba!...» (2/2, b1_carterista_pillado) |
+| aigren | Aigren 3/3: «No les entregare las ultimas...» (b1_aigren_redimido) |
+| luisarda | Luisarda 5/5: «Voy. Pero si me matan, sera culpa tuya.» (con_rosita) |
+| sectarios | Sectario mayor 2/2 con «Cuenta conmigo / Me lo pensare» (b1_sectarios_masacre) |
+| xila | Xila 1/4: «Los Perdidos llevan lunas preparandose...» (b1_xila_habla) |
+| familia | El padre 4/4 tras «Os llevo a la Barriada de Surysal» (familia_resuelta) |
+| iglesia | 3/3 de beat_iglesia: el nombre Gurkazaal en el circulo de cera |
+| ronda_noche | 2/2 de b1_cuartel_noche: «Nada fuera de lo normal...» |
+| entrada_guarida | «Sueltas el arma en el cesto...» (guarida_dentro) |
+| descubierto | Sandes 2/2: «Ya has visto bastante. Sube...» (te rindes y esperas: capturado_resuelto) |
+| ceremonia | «Nadie te mira todavia. ¿Que haces?» con el menu de 4 (b1_ceremonia; el cierre es `ceremonia_visto`) |
+| archivo | Edul 4/4 en la sala de estudio (la zona cripta_estudio enciende estudio_visto) |
+| camara_sereno | Sandes 2/2: «Y sube el primero...» (sandes_se_va, tras «Me he perdido») |
+| verina_edul | Verina 3/3 tras «Sembrar dudas en Verina» (guarida_resuelta) |
+| informe_venides | Venides 5/5: «Por el tiempo perdido...» (venides_informe_hecho) |
+| pelea_taberna | Rosita 3/3 tras «Proteger al borracho dormido» (pelea_lanzada) |
+| cierre_dia | Narracion 4/4 de cierre_silencio: «y manana nadie estara mirando hacia alli.» (dia_cerrado) |
+
+Limites honestos: (1) en ventana, venides_noche, encapuchado y ceremonia el cierre es una flag de «visto» que enciende el primer beat, asi que la captura enseña ese dialogo, no un final distinto. (2) En archivo se ve la escena de la sala de estudio (el flag cierra al pisar la zona), no un dialogo propio del archivo. (3) Las tiradas no se forzaron en el juego: se sembro la flag del resultado (aigren, carterista, sectarios, familia, presentaciones). (4) `edul_hablado` se siembra a mano en la escena `edul_rescate` de la prueba (no en las capturas). Borradas por no ensenar el dialogo: `q1_almacen_dialogo.png` (sin dialogo) y `q1_{aigren,luisarda,xila,familia}_dialogo.png` (solo la narracion de entrada); se quedan `q1_{ventana,jornaleros,venides_noche,encapuchado}_dialogo.png`.

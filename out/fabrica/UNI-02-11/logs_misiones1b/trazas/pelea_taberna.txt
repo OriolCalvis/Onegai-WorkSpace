@@ -1,0 +1,14 @@
+guardados_q1c/q1c_pelea_taberna.json: pelea_taberna en assets/levels/interior_taberna.json (6,4) oro 125
+   BEAT b1_skilla_hora [Rosita] lineas=1 «¿Qué va a ser?»
+   MENU b1_skilla_hora -> 1  {1. Subir a dormir | 2. Nada, gracias}
+   BEAT b1_skilla_hora [Rosita] lineas=2 «Sube. La escalera cruje en el cuarto escalón.»
+   BEAT b1_pelea [] lineas=5 «Ya muy de noche. Venides arriba, roncando. Quedan los dos mo»
+   MENU b1_pelea -> 2  {1. Separarlos [pelea sin matar] | 2. Proteger al borracho dormido | 3. Quedarte mirando}
+   BEAT b1_pelea [] lineas=3 «Te pones entre la pelea y el borracho de las historias, que »
+   CIERRE bnd1_pelea_lanzada
+   BEAT b1_pelea_apaleado [] lineas=2 «El camorrista acaba en el suelo. Apaleado, pero vivo: escupe»
+   MENU b1_pelea_apaleado -> 4  {1. Hacerle hablar | 2. Entregarle a la guardia | 3. Rematarle | 4. Echarle a la calle}
+   BEAT b1_pelea_apaleado [] lineas=1 «Camorrista, desde la puerta: «¡Os acordaréis de mí cuand»
+   BEAT b1_rosita_noche [Rosita] lineas=1 «(barriendo cristales) Y ahora todos a dormir, que mañana se»
+   MENU b1_rosita_noche -> 2  {1. Tienes mucha fuerza para ser tabernera. | 2. Subir sin decir nada}
+   BEAT b1_rosita_noche [Rosita] lineas=0
