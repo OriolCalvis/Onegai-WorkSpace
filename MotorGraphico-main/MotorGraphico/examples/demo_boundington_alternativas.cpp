@@ -124,7 +124,8 @@ void escenasPrologo(const Guiones& g, std::vector<std::string>* vistos) {
         e.ve({"bnd_prologo_espera"});
         e.j.cinematica(GridCoord{4, 9});
         e.nove({"bnd_prologo_barquero", "bnd_prologo_barca_viene"});
-        e.j.habla("sho_noco");
+        // D0024.3: sin la barca, Sho-Noco no esta en el prado (cinematicas.json: visibleSi bnd_prologo_barca_viene): no se le habla.
+        if (e.j.seVe("sho_noco")) e.fallos.push_back("Sho-Noco se ve en el prado antes de que baje la barca");
         e.nove({"bnd_p_barquero_visto"});
         e.j.cinematica(GridCoord{13, 3});
         e.ve({"bnd_prologo_barquero"});
@@ -449,11 +450,12 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.fin();
     }
 
-    // GORRAN-FIX 4 (D0023.3): hablar con Gorran de frente con los lios cerrados (tres o mas) y el aval de Doña
-    // Serra lleva a la tregua (b2_gorran_tregua); sin el aval, o con menos de tres lios, es la charla de siempre.
+    // D0024: la tregua con Gorran se pacta EN LA SUBASTA (desde el cuerno Gorran esta oculto, cinematicas.json: no se le habla). Con el aval
+    // de Doña Serra la subasta ofrece «Proponerle una tregua» (b2_subasta_aval*, gemela de b2_subasta*) y luego los pactos (b2_subasta_tregua);
+    // sin el aval es la subasta de siempre. Los detalles (traicion, mutaciones) los prueba MatrizGorranTests.
     {
-        Escena e(g, "DIA 2: hablar con Gorran con los lios cerrados y el aval de Serra: tregua", Suerte::Buena, {"heroe_pueblo_humano"},
-                 {"Aceptar el encargo", "Pagar el paso (5)", "Proponerle una tregua"}, vistos);
+        Escena e(g, "DIA 2: la subasta con el aval de Serra: tregua pactada, Gorran no pelea", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)", "Proponerle una tregua", "Salvarle la cara a Gorran"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
@@ -472,21 +474,18 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.min("gorran_misiones", 3);
         e.nove({"bnd2_gorran_tregua"});
         e.j.entra("recinto_gorran");
-        e.j.habla("gorran");
-        e.visto({"b2_gorran_tregua"});
         e.noVisto({"b2_gorran_hablar", "b2_gorran"});
-        e.ve({"bnd2_gorran_tregua"});
-        e.nove({"bnd2_gorran_tregua_ofrecida", "bnd2_gorran_resuelto", "bnd2_gorran_abierta", "bnd2_gorran_muerto"});
-        e.j.vistos.clear();
-        e.j.habla("gorran");  // con la tregua hecha, se habla como siempre
-        e.visto({"b2_gorran_hablar"});
-        e.noVisto({"b2_gorran_tregua"});
+        e.j.pisaLaZona("recinto_subasta");
+        e.visto({"b2_subasta_tregua", "b2_honor_exito"});
+        e.ve({"bnd2_subasta_vista", "bnd2_gorran_tregua", "bnd2_tregua_cerrada", "bnd2_gorran_honor"});
+        e.nove({"bnd2_tregua_rota", "bnd2_comedia_pelea", "bnd2_gorran_muerto"});
+        e.noVisto({"b2_subasta", "b2_subasta_cojo_pobre", "b2_subasta_sin_espada", "b2_comedia_pelea"});
         e.fin();
     }
 
     {
-        Escena e(g, "DIA 2: hablar con Gorran sin el aval de Serra: no hay tregua", Suerte::Buena, {"heroe_pueblo_humano"},
-                 {"Aceptar el encargo", "Pagar el paso (5)", "Proponerle una tregua"}, vistos);
+        Escena e(g, "DIA 2: la subasta sin el aval de Serra: no hay tregua", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)", "Salvarle la cara a Gorran [Persuasión]"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
@@ -503,10 +502,10 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.nove({"bnd2_aval_serra"});
         e.min("gorran_misiones", 3);
         e.j.entra("recinto_gorran");
-        e.j.habla("gorran");
-        e.visto({"b2_gorran_hablar", "b2_gorran"});
-        e.noVisto({"b2_gorran_tregua"});
-        e.nove({"bnd2_gorran_tregua"});
+        e.j.pisaLaZona("recinto_subasta");
+        e.ve({"bnd2_subasta_vista"});
+        e.noVisto({"b2_subasta_aval", "b2_subasta_aval_cojo_pobre", "b2_subasta_aval_sin_espada", "b2_subasta_tregua"});
+        e.nove({"bnd2_gorran_tregua", "bnd2_tregua_cerrada"});
         e.fin();
     }
 
@@ -528,9 +527,9 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
         e.pon({"bnd2_aval_serra", "bnd2_porton_resuelto"});
         e.igual("gorran_misiones", 0);
         e.j.entra("recinto_gorran");
-        e.j.habla("gorran");
+        e.j.habla("gorran");  // sin los lios no ha sonado el cuerno: Gorran esta en su sala
         e.visto({"b2_gorran_hablar", "b2_gorran"});
-        e.noVisto({"b2_gorran_tregua"});
+        e.noVisto({"b2_subasta_aval", "b2_subasta_tregua"});
         e.nove({"bnd2_gorran_tregua"});
         e.fin();
     }

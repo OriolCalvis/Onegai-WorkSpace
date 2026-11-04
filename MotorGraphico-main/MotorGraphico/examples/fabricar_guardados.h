@@ -1132,8 +1132,8 @@ inline SaveGameData gorran(const demo_bnd::Guiones& g, const Heroe& h, const Cam
     return fotografia(j, h, kGorran);
 }
 
-// E-MATRIZ-02 (capturas): el mismo camino, parado JUSTO ANTES de un momento clave del dia de Gorran ("tregua": ante Gorran con el aval y
-// los lios; "subasta": en el salon del recinto con el cuerno sonado; "balance": al bajar a la taberna, antes del hito y del balance de la aldea;
+// E-MATRIZ-02 (capturas): el mismo camino, parado JUSTO ANTES de un momento clave del dia de Gorran ("subasta": en el salon del recinto con
+// el cuerno sonado (con el camino `tregua`, la subasta con tregua, D0024); "balance": al bajar a la taberna, antes del hito y del balance de la aldea;
 // "dormir": en la taberna, antes de «Subir a dormir»).
 inline SaveGameData gorranParada(const demo_bnd::Guiones& g, const Heroe& h, const CaminoGorran& c, const std::string& parada) {
     CaminoGorran p = c;
@@ -1157,11 +1157,10 @@ inline SaveGameData gorranParada(const demo_bnd::Guiones& g, const Heroe& h, con
     fase(j, "dia_gorran");
     j.juegaElDiaDeGorran(dg);
     // Subasta: en el borde del salon (zona [54,25,66,37] de la cinematica recinto_subasta).
-    static const Momento kTregua{"m2_tregua.json", "recinto_gorran", "gorran", 0, -1};
     static const Momento kSubasta{"m2_subasta.json", "recinto_gorran", "", 0, 0, 55, 31};
     static const Momento kDormir{"m2_dormir.json", "interior_taberna", "skilla", 0, -1};
     static const Momento kBalance{"m2_balance.json", "interior_taberna", "", 0, 0};  // al cargar, el heroe «entra» en la taberna: hito y balance de la aldea
-    return fotografia(j, h, parada == "tregua" ? kTregua : parada == "subasta" ? kSubasta : parada == "balance" ? kBalance : kDormir);
+    return fotografia(j, h, parada == "subasta" ? kSubasta : parada == "balance" ? kBalance : kDormir);
 }
 
 // Lo que tiene que cumplir el camino al restaurarse, al amanecer el tercer dia y en su comienzo. Devuelve las faltas.
@@ -1271,14 +1270,14 @@ inline const std::vector<CaminoGorran>& caminosGorran() {
          mg("bgd_sacar_exito_tinet", "", "bgd_solo_tinet"), "la mina vieja tarde: Mia perdida, solo Tinet",
          {140, 2, 3, 80, {"furia_de_alaro"}}, mg("b2_gorran_victoria", "Suelta a los presos y estamos en paz.", "grantGold", "log"),
          mg("b2_gorran_victoria", "Suelta a los presos y estamos en paz.", "gorran_perdonado", "gorran_rematado")},
-        // --- tregua con Gorran (D0023.3): el aval de Serra, tres lios y «Proponerle una tregua»; la subasta se resuelve salvandole la cara ---
-        {"tregua", "pelea_separar", gd("BADC", true, true, {"Salvarle la cara a Gorran [Persuasión]"}),
-         {"bga_despues_bien", "b2_gorran_tregua", "b2_honor_exito"},
-         {"bnd2_aval_serra", "bnd2_gorran_tregua", "bnd2_gorran_honor", "bnd2_gorran_redimido", "bnd2_tiene_aliados", "bnd2_joel_rescatado", "bndg_dia_cerrado"},
-         {"bnd2_gorran_tregua_ofrecida", "bnd2_gorran_perdonado", "bnd2_furia_alaro", "bnd2_documentos"}, {{"gorran_misiones", 4}},
+        // --- tregua con Gorran (D0024): el aval de Serra, tres lios y, EN LA SUBASTA, «Proponerle una tregua» (b2_subasta_aval); la tregua le protege y se cumple salvandole la cara ---
+        {"tregua", "pelea_separar", gd("BADC", true, true, {"Salvarle la cara a Gorran"}),
+         {"bga_despues_bien", "b2_subasta_aval_cojo_pobre", "b2_subasta_tregua", "b2_honor_exito"},
+         {"bnd2_aval_serra", "bnd2_gorran_tregua", "bnd2_tregua_cerrada", "bnd2_gorran_honor", "bnd2_gorran_redimido", "bnd2_tiene_aliados", "bnd2_joel_rescatado", "bndg_dia_cerrado"},
+         {"bnd2_tregua_rota", "bnd2_comedia_pelea", "bnd2_gorran_lanzado", "bnd2_gorran_muerto", "bnd2_gorran_perdonado", "bnd2_furia_alaro", "bnd2_documentos"}, {{"gorran_misiones", 4}},
          {{"ocaso", "b3_gorran", "", false}, {"ocaso", "b3_amigos_afueras", "", true}, {"dia2", "b2_skilla_espada_devuelta", "", false}},
          {}, {"Le pones la espada sobre la barra"},
-         mg("b2_gorran_tregua", "Proponerle una tregua", "bnd2_gorran_tregua"), "tregua con Gorran (aval de Serra + 3 lios) y subasta salvandole la cara [solo la alcanza el arnes: Gorran esta oculto]",
+         mg("b2_subasta_aval_cojo_pobre", "Proponerle una tregua", "bnd2_gorran_tregua"), "tregua con Gorran (aval de Serra + 3 lios) pactada en la subasta, que se cierra salvandole la cara",
          {120, 2, 4, 10, {}}, mg("b2_cueva_llegada", "Pagar el paso (5)", "grantGold", "log"),
          mg("b2_honor_exito", "", "gorran_perdonado", "gorran_rematado")},
         // --- subasta: «Dejar que estalle» y luego «Acabar con él» ---
@@ -1320,15 +1319,15 @@ inline const std::vector<CaminoGorran>& caminosGorran() {
          mg("b2_farsa_exito", "", "bnd2_joel_rescatado"), "subasta: unirse a la farsa (Joel a salvo, sin la Furia)",
          {120, 0, 4, 10, {}}, mg("b2_cueva_llegada", "Pagar el paso (5)", "grantGold", "log"), {"", "", ""}},
         // --- el trato del Cojo: se lleva de su casa y se le lee a Gorran en voz alta ---
-        {"trato_cojo", "pelea_separar", gd("BADC", false, false, {"Dejar que estalle"}, "Suelta a los presos y estamos en paz.", {}, true),
-         {"b2_libros_cojo", "b2_gorran_trato"},
-         {"bnd2_trato_venta", "bnd2_gorran_contra_cojo", "bnd2_gorran_trato_visto", "bnd2_gorran_redimido", "bnd2_furia_alaro", "bnd2_tiene_aliados"},
+        {"trato_cojo", "pelea_separar", gd("BADC", false, false, {"Unirte a la farsa [Interpretación]"}, "Suelta a los presos y estamos en paz.", {}, true, {{"bnd2_farsa_pifia", Suerte::Mala}}),
+         {"b2_libros_cojo", "b2_farsa_pifia", "b2_calabozo"},
+         {"bnd2_trato_venta", "bnd2_gorran_contra_cojo", "bnd2_calabozo_resuelto", "bnd2_gorran_trato_visto", "bnd2_gorran_redimido", "bnd2_furia_alaro", "bnd2_tiene_aliados"},
          {"bnd2_gorran_perdonado", "bnd2_documentos", "bnd2_trato_copia"}, {{"gorran_misiones", 4}},
          {{"dia2", "b2_rosita_trato", "", true}, {"ocaso", "b3_gorran", "", false}, {"dia2", "b2_skilla_espada_devuelta", "", true}},
          {"Rosita lee el trato dos veces"}, {"Le pones la espada sobre la barra"},
-         mg("b2_libros_cojo", "Llevarte el trato", "bnd2_trato_venta"), "Gorran contra el Cojo: le lees el trato en voz alta [solo lo alcanza el arnes: Gorran esta oculto]",
-         {120, 2, 4, 10, {"furia_de_alaro"}}, mg("b2_cueva_llegada", "Pagar el paso (5)", "grantGold", "log"),
-         mg("b2_gorran_trato", "Leérselo en voz alta", "gorran_perdonado", "gorran_rematado")},
+         mg("b2_libros_cojo", "Llevarte el trato", "bnd2_trato_venta"), "Gorran contra el Cojo: la farsa sale mal, te llevan al calabozo y le lees el trato (el beat b2_gorran_trato no se alcanza: Gorran esta oculto)",
+         {120, 2, 3, 80, {"furia_de_alaro"}}, mg("b2_cueva_llegada", "Pagar el paso (5)", "grantGold", "log"),
+         mg("b2_calabozo", "Enseñarle el trato y leérselo", "gorran_perdonado", "gorran_rematado")},
         // --- Cal Serra con mala suerte: se llevan a Iris; luego Gorran perdonado la suelta (b2_gorran_suelta_iris) ---
         {"iris_llevada", "pelea_separar", gd("BADC", false, false, {"Dejar que estalle"}, "Suelta a los presos y estamos en paz.", {"Dejar que se la lleven"}, false, {{"bga_garsa_pifia", Suerte::Mala}}),
          {"bga_ultimo", "b2_gorran_suelta_iris"},

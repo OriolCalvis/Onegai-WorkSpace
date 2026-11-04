@@ -132,17 +132,128 @@ MOTOR_TEST_CASE(estan_los_caminos_que_pide_la_matriz) {
     MOTOR_CHECK(std::string(caminoGorran("cuatro_lios").desde) == "pelea_separar");
 }
 
-// ⚠ Hallazgos comprobados jugando (MATRIZ_GORRAN.md): combinaciones que la historia de hoy PERMITE aunque se contradigan. Si Oriol
-// decide cerrarlas (D0023: tregua que impide matar a Gorran), estas expectativas cambian con la decision.
-MOTOR_TEST_CASE(hallazgo_se_puede_acabar_con_gorran_despues_de_su_tregua) {
-    Fabrica f;
+// D0024 — La tregua con Gorran se pacta EN LA SUBASTA y le protege. Con el aval de Serra, la subasta tiene una pagina gemela
+// (b2_subasta_aval) que cambia «Dejar que estalle» por «Proponerle una tregua» (4 opciones, el maximo) y, con la tregua puesta,
+// b2_subasta_tregua ofrece pactos y UNA opcion explicita de traicion («Traicionar la tregua»), la unica que lleva a la baralla.
+namespace {
+struct Tregua {
+    std::vector<std::string> jugado;
+    std::vector<std::string> fallos;
+};
+
+// Juega el camino `tregua` con la decision `dia` y mira si Gorran sigue vivo y sin pelea (protegido) o si hubo baralla (traicion).
+Tregua juegaLaTregua(const demo_bnd::Guiones& g, const Heroe& h, const demo_bnd::Jugador::DiaDeGorran& dia, bool traicion, bool mutada) {
+    Tregua t;
     CaminoGorran c = caminoGorran("tregua");
-    c.dia = gd("BADC", true, true, {"Dejar que estalle"}, "Acabar con él (no volverá a ayudarte)");  // tregua, y luego la subasta estalla y se le mata
-    const SaveGameData d = gorran(f.g, f.heroe, c);
-    Restaurada r = restaura(f.g, f.heroe, d, "gorran_tregua_y_muerte.json");
-    MOTOR_CHECK(r.j->s.hasFlag("bnd2_gorran_tregua"));
-    MOTOR_CHECK(r.j->s.hasFlag("bnd2_gorran_muerto"));
-    MOTOR_CHECK(!r.j->s.hasFlag("bnd2_gorran_perdonado"));
+    c.dia = dia;
+    const SaveGameData d = gorran(g, h, c, &t.jugado, !mutada);
+    Restaurada r = restaura(g, h, d, std::string("gorran_tregua_") + (traicion ? "traicion" : "pacto") + (mutada ? "_mut" : "") + ".json");
+    const auto flag = [&](const char* f) { return r.j->s.hasFlag(f); };
+    const auto visto = [&](const char* b) { return std::find(t.jugado.begin(), t.jugado.end(), b) != t.jugado.end(); };
+    const auto falta = [&](const std::string& m) { t.fallos.push_back(m); };
+    if (!flag("bnd2_gorran_tregua")) falta("falta bnd2_gorran_tregua");
+    if (!visto("b2_subasta_aval_cojo_pobre") || !visto("b2_subasta_tregua")) {
+        std::string vistos;
+        for (const std::string& b : t.jugado)
+            if (b.find("subasta") != std::string::npos || b.find("honor") != std::string::npos) vistos += " " + b;
+        falta("la tregua no paso por la subasta (b2_subasta_aval* / b2_subasta_tregua); beats de la subasta vistos:" + vistos);
+    }
+    if (traicion) {
+        if (!flag("bnd2_tregua_rota")) falta("falta bnd2_tregua_rota");
+        if (!flag("bnd2_comedia_pelea") || !flag("bnd2_gorran_lanzado") || !flag("bnd2_comedia_pelea_lanzada")) falta("la traicion no lleva a la baralla");
+        if (!flag("bnd2_gorran_muerto")) falta("tras la traicion se le puede matar (b2_gorran_victoria) y no pasa");
+    } else {
+        if (flag("bnd2_tregua_rota") || flag("bnd2_comedia_pelea") || flag("bnd2_gorran_lanzado") || flag("bnd2_comedia_pelea_lanzada")) falta("la tregua no impidio la baralla");
+        if (flag("bnd2_gorran_muerto") || visto("b2_gorran_victoria")) falta("Gorran ha muerto con la tregua puesta");
+        if (!flag("bnd2_tregua_cerrada")) falta("la tregua no se cerro");
+    }
+    return t;
+}
+}  // namespace
+
+MOTOR_TEST_CASE(la_tregua_se_pacta_en_la_subasta_y_gorran_no_muere) {
+    Fabrica f;
+    const Tregua t = juegaLaTregua(f.g, f.heroe, caminoGorran("tregua").dia, false, false);
+    for (const std::string& x : t.fallos) std::fprintf(stderr, "  [tregua] %s\n", x.c_str());
+    MOTOR_CHECK(t.fallos.empty());
+    // La pagina antigua (hablar con Gorran en el salon, escondido desde el cuerno) ya no esta: nada que no se pueda alcanzar.
+    for (const RPG::NarrativeBeat& b : f.g.gorran.beats) MOTOR_CHECK(b.id != "b2_gorran_tregua");
+}
+
+MOTOR_TEST_CASE(traicionar_la_tregua_lleva_a_la_baralla_y_solo_entonces_se_puede_acabar_con_gorran) {
+    Fabrica f;
+    const auto dia = gd("BADC", true, true, {"Traicionar la tregua"}, "Acabar con él (no volverá a ayudarte)");
+    const Tregua t = juegaLaTregua(f.g, f.heroe, dia, true, false);
+    for (const std::string& x : t.fallos) std::fprintf(stderr, "  [traicion] %s\n", x.c_str());
+    MOTOR_CHECK(t.fallos.empty());
+}
+
+// Mutaciones: sin el efecto de la traicion no hay baralla; y si un pacto lleva a la baralla, la tregua no protege.
+MOTOR_TEST_CASE(sin_la_traicion_no_hay_baralla_y_si_el_pacto_pelea_la_tregua_no_protege) {
+    Fabrica f;
+    const auto traidor = gd("BADC", true, true, {"Traicionar la tregua"}, "Acabar con él (no volverá a ayudarte)");
+    const demo_bnd::Guiones sinPelea = conMutacion(f.g, mg("b2_subasta_tregua", "Traicionar la tregua", "bnd2_comedia_pelea"), temporalDe("gorran_mut_", "traicion"));
+    MOTOR_CHECK(!juegaLaTregua(sinPelea, f.heroe, traidor, true, true).fallos.empty());
+    const demo_bnd::Guiones peleaSiempre =
+        conMutacion(f.g, mg("b2_subasta_tregua", "Salvarle la cara a Gorran", "bnd2_honor_exito", "bnd2_comedia_pelea"), temporalDe("gorran_mut_", "protege"));
+    MOTOR_CHECK(!juegaLaTregua(peleaSiempre, f.heroe, caminoGorran("tregua").dia, false, true).fallos.empty());
+}
+
+// La gemela cambia SOLO la ultima opcion: 4 opciones en las tres variantes, sin «Dejar que estalle», con la tregua; las pacificas de
+// b2_subasta_tregua no encienden la baralla y la traicion si.
+MOTOR_TEST_CASE(las_gemelas_de_la_subasta_ofrecen_la_tregua_sin_pasar_de_cuatro_opciones) {
+    Fabrica f;
+    const auto beat = [&](const char* id) -> const RPG::NarrativeBeat& {
+        for (const RPG::NarrativeBeat& b : f.g.gorran.beats)
+            if (b.id == id) return b;
+        MOTOR_CHECK(false);
+        return f.g.gorran.beats.front();
+    };
+    const auto efectos = [](const RPG::OpcionDeDialogo& o, const char* flag) {
+        return std::any_of(o.efectos.begin(), o.efectos.end(), [&](const RPG::NarrativeEffect& e) { return e.arg == flag; });
+    };
+    for (const char* id : {"b2_subasta_aval_cojo_pobre", "b2_subasta_aval", "b2_subasta_aval_sin_espada"}) {
+        const RPG::NarrativeBeat& b = beat(id);
+        MOTOR_CHECK(b.opciones.size() == 4);
+        MOTOR_CHECK(b.opciones.size() <= RPG::NarrativeBeat::kMaxOpciones);
+        MOTOR_CHECK(std::any_of(b.requirements.allFlags.begin(), b.requirements.allFlags.end(), [](const std::string& x) { return x == "bnd2_aval_serra"; }));
+        int tregua = 0;
+        for (const RPG::OpcionDeDialogo& o : b.opciones) {
+            MOTOR_CHECK(o.texto != "Dejar que estalle");
+            if (o.texto == "Proponerle una tregua") {
+                ++tregua;
+                MOTOR_CHECK(efectos(o, "bnd2_gorran_tregua"));
+                MOTOR_CHECK(!efectos(o, "bnd2_comedia_pelea"));
+            }
+        }
+        MOTOR_CHECK(tregua == 1);
+    }
+    for (const RPG::OpcionDeDialogo& o : beat("b2_subasta_tregua").opciones)
+        MOTOR_CHECK(efectos(o, "bnd2_comedia_pelea") == (o.texto == "Traicionar la tregua"));
+    MOTOR_CHECK(beat("b2_subasta_tregua").opciones.size() <= RPG::NarrativeBeat::kMaxOpciones);
+}
+
+// D0024.3 — El arnes respeta `ocultoSi` de cinematicas.json (Jugador::seVe: el mismo CatalogoCinematicas::visible que el juego): desde el
+// cuerno de la subasta (bnd2_subasta_ya) `gorran` esta oculto y el que se ve es `gorran_subasta`. Hablar con quien se esconde hace fallar
+// la prueba con un mensaje claro (require en Jugador::habla), asi que los caminos no pueden volver a tocar a un Gorran que no esta.
+// ⚠ Hallazgo que sigue abierto: b2_gorran_trato (talk con `gorran`, bnd2_subasta_ya) NO se alcanza jugando (D0024 no lo toca); el trato
+// se lee en el calabozo (b2_calabozo, camino `trato_cojo`).
+MOTOR_TEST_CASE(el_arnes_no_habla_con_un_gorran_oculto_y_el_trato_en_su_salon_sigue_sin_alcanzarse) {
+    Fabrica f;
+    demo_bnd::Jugador limpio(f.g, Suerte::Buena);
+    limpio.s.ponLugar("assets/levels/recinto_gorran.json");
+    MOTOR_CHECK(limpio.seVe("gorran"));
+    const SaveGameData d = gorranParada(f.g, f.heroe, caminoGorran("tregua"), "subasta");  // con el cuerno ya sonado
+    Restaurada r = restaura(f.g, f.heroe, d, "gorran_parada_tregua.json");
+    r.j->s.ponLugar("assets/levels/recinto_gorran.json");
+    MOTOR_CHECK(r.j->s.hasFlag("bnd2_subasta_ya"));
+    MOTOR_CHECK(!r.j->seVe("gorran"));
+    MOTOR_CHECK(r.j->seVe("gorran_subasta"));
+    const RPG::NarrativeBeat* trato = nullptr;
+    for (const RPG::NarrativeBeat& x : f.g.gorran.beats)
+        if (x.id == "b2_gorran_trato") trato = &x;
+    MOTOR_CHECK(trato != nullptr);
+    MOTOR_CHECK(std::find(trato->requirements.allFlags.begin(), trato->requirements.allFlags.end(), "bnd2_subasta_ya") != trato->requirements.allFlags.end());
 }
 
 MOTOR_TEST_CASE(hallazgo_acabar_con_gorran_deja_a_iris_llevada) {
@@ -155,30 +266,6 @@ MOTOR_TEST_CASE(hallazgo_acabar_con_gorran_deja_a_iris_llevada) {
     MOTOR_CHECK(!r.j->s.hasFlag("bga_iris_salvada"));
     MOTOR_CHECK(!lectorSeVe(f.g, Lector{"ocaso", "b3_epi_iris", "", true}, r.j->s, true));
     MOTOR_CHECK(!lectorSeVe(f.g, Lector{"ocaso", "b3_rev_casa", "", true}, r.j->s, true));
-}
-
-// ⚠ La tregua (b2_gorran_tregua) y el trato (b2_gorran_trato) se ofrecen hablando con `gorran`, y el juego lo esconde justo entonces:
-// cinematicas.json («apariciones») pone `gorran` oculto con bnd2_subasta_ya, que enciende b2_subasta_aviso (auto) en cuanto hay
-// gorran_misiones >= 3 (el mismo umbral de la tregua). Los dos beats se cumplen con el heroe delante... de un Gorran que no esta.
-// El arnes (Jugador::habla -> talkTo) no mira la escena, por eso los caminos `tregua` y `trato_cojo` pasan; el jugador no llega.
-MOTOR_TEST_CASE(hallazgo_la_tregua_y_el_trato_se_ofrecen_a_un_gorran_que_el_juego_esconde) {
-    Fabrica f;
-    auto catalogo = Game::CatalogoCinematicas::carga("assets/cinematicas/cinematicas.json");
-    MOTOR_CHECK(catalogo.isOk());
-    for (const char* camino : {"tregua", "trato_cojo"}) {
-        const SaveGameData d = gorranParada(f.g, f.heroe, caminoGorran(camino), "tregua");  // justo antes de hablar con Gorran
-        Restaurada r = restaura(f.g, f.heroe, d, std::string("gorran_parada_") + camino + ".json");
-        const auto flag = [&](const std::string& n) { return r.j->s.hasFlag(n); };
-        const char* beat = std::string(camino) == "tregua" ? "b2_gorran_tregua" : "b2_gorran_trato";
-        const RPG::NarrativeBeat* b = nullptr;
-        for (const RPG::NarrativeBeat& x : f.g.gorran.beats)
-            if (x.id == beat) b = &x;
-        MOTOR_CHECK(b != nullptr);
-        MOTOR_CHECK(b->requirements.isSatisfiedBy(r.j->s));  // el beat se dispararia al hablar...
-        MOTOR_CHECK(r.j->s.hasFlag("bnd2_subasta_ya"));
-        MOTOR_CHECK(!catalogo.value().visible("gorran", d.levelPath, flag));  // ... pero Gorran no esta (oculto: ni se ve ni se le habla)
-        MOTOR_CHECK(catalogo.value().visible("gorran_subasta", d.levelPath, flag));  // el que se ve es el del salon, que no tiene esos beats
-    }
 }
 
 int main() { return motor_test::runAllTests(); }

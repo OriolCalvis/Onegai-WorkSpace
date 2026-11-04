@@ -51,7 +51,7 @@ comprueba(all(x["tipo"] == "diario" for x in perdona["directas"].get("bnd2_tiene
 comprueba(m.es_importante(acaba) and m.peso_opcion(acaba) > 5, "acabar con Gorran pesa")
 gav = m.hallazgos(gf, gb, "dia_gorran", gl, gr)
 sin = {a["dato"] for a in gav if a["tipo"] == "flag-sin-lector"}
-comprueba("bnd2_gorran_tregua" in sin, "la tregua con Gorran no la lee nadie (su propia guarda no cuenta)")
+comprueba("bnd2_gorran_tregua" not in sin, "la tregua con Gorran ya la lee la pagina que la cumple (b2_subasta_tregua, D0024)")
 comprueba("bnd2_gorran_perdonado" not in sin, "perdonar a Gorran si se lee")
 comprueba(any(a["tipo"] == "solo-diario" and a["dato"] == "bnd2_tiene_aliados" for a in gav), "bnd2_tiene_aliados solo la lee el diario")
 with tempfile.TemporaryDirectory() as d:

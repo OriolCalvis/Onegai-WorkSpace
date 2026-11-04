@@ -16244,73 +16244,6 @@
       ]
     },
     {
-      "id": "b2_gorran_tregua",
-      "trigger": {
-        "type": "talk",
-        "target": "gorran"
-      },
-      "requires": {
-        "lugar": "assets/levels/recinto_gorran.json",
-        "allFlags": [
-          "bnd2_aval_serra"
-        ],
-        "notFlags": [
-          "bnd2_gorran_resuelto",
-          "bnd2_gorran_tregua",
-          "bnd2_gorran_tregua_ofrecida"
-        ],
-        "variables": {
-          "gorran_misiones": {
-            "min": 3
-          }
-        }
-      },
-      "speaker": "",
-      "lines": [
-        "Gorran te mira de arriba abajo. En la aldea ya no suena ninguna campana.",
-        "Gorran: «Serra responde por ti y mis mineros duermen en su cama. Eso no lo hace cualquiera. Habla.»"
-      ],
-      "effects": [],
-      "opciones": [
-        {
-          "texto": "Proponerle una tregua",
-          "lines": [
-            "Gorran: «Tregua. Esta noche, en mi casa, nadie le debe nada a nadie. Manana ya veremos.»"
-          ],
-          "effects": [
-            {
-              "type": "setFlag",
-              "arg": "bnd2_gorran_tregua"
-            },
-            {
-              "type": "addVariable",
-              "arg": "aldea_sospecha",
-              "value": -1,
-              "min": 0,
-              "max": 4
-            },
-            {
-              "type": "log",
-              "arg": "Tregua con Gorran: la aldea y el jefe, en paz hasta la subasta."
-            }
-          ]
-        },
-        {
-          "texto": "Dejarlo para luego",
-          "lines": [
-            "Gorran: «Como quieras. La puerta sigue abierta.»"
-          ],
-          "effects": [
-            {
-              "type": "setFlag",
-              "arg": "bnd2_gorran_tregua_ofrecida"
-            }
-          ],
-          "sigue": true
-        }
-      ]
-    },
-    {
       "id": "b2_gorran_hablar",
       "trigger": {
         "type": "talk",
@@ -16815,6 +16748,155 @@
       ]
     },
     {
+      "id": "b2_subasta_aval_cojo_pobre",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd2_cine_subasta",
+          "bnd2_aval_serra"
+        ],
+        "notFlags": [
+          "bnd2_subasta_vista",
+          "bnd2_furia_alaro"
+        ],
+        "anyFlags": [
+          "bgc_cajas_robadas",
+          "bgc_cajas_hundidas",
+          "bgc_cajas_cambiadas"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "El salón del recinto, lleno. Gorran, de pie junto a la mesa larga, con la Furia de Alaro encima.",
+        "Gorran: «Esta es la Furia. Lo que es mío es mío, y esta noche es del que más pague. ¡Pujad!»",
+        "Pujador de Killville: «Cien.»",
+        "Pujador con anillos: «Ciento veinte, si la hoja es la que dicen.»",
+        "El Cojo, en un rincón, cuenta con los labios. Sin la carga gris no tiene con qué pagar a nadie.",
+        "A media puja, el enmascarado sube la voz para cubrir al de Killville:",
+        "Pujador enmascarado: «¡Ciento cincuenta! ¡Ay, señores míos, que esto es arte!»",
+        "Desde el fondo del salón, alguien deja caer una jarra.",
+        "Victor Yungblood: «¡Ese «ay, señores míos» es de «Escape Room 8»!»",
+        "Asdrugal el Viejo: «¡Joel! ¡Sinvergüenza! ¡Que nos debes dinero!»",
+        "Y los dos se echan encima del pujador, el uno por la capa y el otro por la máscara. La sala entera se levanta."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd2_subasta_vista"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd2_joel_revelado"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd2_t_subasta"
+        },
+        {
+          "type": "addVariable",
+          "arg": "aldea_tiempo",
+          "value": 1,
+          "min": 0,
+          "max": 9
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Unirte a la farsa [Interpretación]",
+          "lines": [
+            "(Tirada de Interpretación.)"
+          ],
+          "effects": [
+            {
+              "type": "skillCheck",
+              "skillCheck": {
+                "skillId": "interpretacion",
+                "rivalDice": 1,
+                "flagBotch": "bnd2_farsa_pifia",
+                "flagPartial": "bnd2_farsa_parcial",
+                "flagSuccess": "bnd2_farsa_exito",
+                "flagCritical": "bnd2_farsa_critico"
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Llevarte la Furia en el caos [Sigilo]",
+          "lines": [
+            "(Tirada de Sigilo.)"
+          ],
+          "effects": [
+            {
+              "type": "skillCheck",
+              "skillCheck": {
+                "skillId": "sigilo",
+                "rivalDice": 2,
+                "flagBotch": "bnd2_caos_pifia",
+                "flagPartial": "bnd2_caos_parcial",
+                "flagSuccess": "bnd2_caos_exito",
+                "flagCritical": "bnd2_caos_critico"
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Salvarle la cara a Gorran [Persuasión]",
+          "requires": {
+            "notFlags": [
+              "bnd2_gorran_muerto"
+            ]
+          },
+          "lines": [
+            "(Tirada de Persuasión.)"
+          ],
+          "effects": [
+            {
+              "type": "skillCheck",
+              "skillCheck": {
+                "skillId": "persuasion",
+                "rivalDice": 2,
+                "flagBotch": "bnd2_honor_pifia",
+                "flagPartial": "bnd2_honor_parcial",
+                "flagSuccess": "bnd2_honor_exito",
+                "flagCritical": "bnd2_honor_critico"
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Proponerle una tregua",
+          "requires": {
+            "notFlags": [
+              "bnd2_gorran_muerto"
+            ]
+          },
+          "lines": [
+            "Dices en voz alta que Serra responde por ti.",
+            "Gorran: «Serra no avala a cualquiera. Tregua, pues. Esta noche, en mi casa, nadie le debe nada a nadie.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_gorran_tregua"
+            },
+            {
+              "type": "addVariable",
+              "arg": "aldea_sospecha",
+              "value": -1,
+              "min": 0,
+              "max": 4
+            },
+            {
+              "type": "log",
+              "arg": "Tregua con Gorran: la subasta se queda en paz mientras dure."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "b2_subasta_cojo_pobre",
       "trigger": {
         "type": "auto"
@@ -16989,6 +17071,150 @@
       ]
     },
     {
+      "id": "b2_subasta_aval",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd2_cine_subasta",
+          "bnd2_aval_serra"
+        ],
+        "notFlags": [
+          "bnd2_subasta_vista",
+          "bnd2_furia_alaro"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "El salón del recinto, lleno. Gorran, de pie junto a la mesa larga, con la Furia de Alaro encima.",
+        "Gorran: «Esta es la Furia. Lo que es mío es mío, y esta noche es del que más pague. ¡Pujad!»",
+        "Pujador de Killville: «Cien.»",
+        "Pujador con anillos: «Ciento veinte, si la hoja es la que dicen.»",
+        "El Cojo, en un rincón, cuenta con los labios.",
+        "A media puja, el enmascarado sube la voz para cubrir al de Killville:",
+        "Pujador enmascarado: «¡Ciento cincuenta! ¡Ay, señores míos, que esto es arte!»",
+        "Desde el fondo del salón, alguien deja caer una jarra.",
+        "Victor Yungblood: «¡Ese «ay, señores míos» es de «Escape Room 8»!»",
+        "Asdrugal el Viejo: «¡Joel! ¡Sinvergüenza! ¡Que nos debes dinero!»",
+        "Y los dos se echan encima del pujador, el uno por la capa y el otro por la máscara. La sala entera se levanta."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd2_subasta_vista"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd2_joel_revelado"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd2_t_subasta"
+        },
+        {
+          "type": "addVariable",
+          "arg": "aldea_tiempo",
+          "value": 1,
+          "min": 0,
+          "max": 9
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Unirte a la farsa [Interpretación]",
+          "lines": [
+            "(Tirada de Interpretación.)"
+          ],
+          "effects": [
+            {
+              "type": "skillCheck",
+              "skillCheck": {
+                "skillId": "interpretacion",
+                "rivalDice": 2,
+                "flagBotch": "bnd2_farsa_pifia",
+                "flagPartial": "bnd2_farsa_parcial",
+                "flagSuccess": "bnd2_farsa_exito",
+                "flagCritical": "bnd2_farsa_critico"
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Llevarte la Furia en el caos [Sigilo]",
+          "lines": [
+            "(Tirada de Sigilo.)"
+          ],
+          "effects": [
+            {
+              "type": "skillCheck",
+              "skillCheck": {
+                "skillId": "sigilo",
+                "rivalDice": 2,
+                "flagBotch": "bnd2_caos_pifia",
+                "flagPartial": "bnd2_caos_parcial",
+                "flagSuccess": "bnd2_caos_exito",
+                "flagCritical": "bnd2_caos_critico"
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Salvarle la cara a Gorran [Persuasión]",
+          "requires": {
+            "notFlags": [
+              "bnd2_gorran_muerto"
+            ]
+          },
+          "lines": [
+            "(Tirada de Persuasión.)"
+          ],
+          "effects": [
+            {
+              "type": "skillCheck",
+              "skillCheck": {
+                "skillId": "persuasion",
+                "rivalDice": 2,
+                "flagBotch": "bnd2_honor_pifia",
+                "flagPartial": "bnd2_honor_parcial",
+                "flagSuccess": "bnd2_honor_exito",
+                "flagCritical": "bnd2_honor_critico"
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Proponerle una tregua",
+          "requires": {
+            "notFlags": [
+              "bnd2_gorran_muerto"
+            ]
+          },
+          "lines": [
+            "Dices en voz alta que Serra responde por ti.",
+            "Gorran: «Serra no avala a cualquiera. Tregua, pues. Esta noche, en mi casa, nadie le debe nada a nadie.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_gorran_tregua"
+            },
+            {
+              "type": "addVariable",
+              "arg": "aldea_sospecha",
+              "value": -1,
+              "min": 0,
+              "max": 4
+            },
+            {
+              "type": "log",
+              "arg": "Tregua con Gorran: la subasta se queda en paz mientras dure."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "b2_subasta",
       "trigger": {
         "type": "auto"
@@ -17123,6 +17349,137 @@
       ]
     },
     {
+      "id": "b2_subasta_aval_sin_espada",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd2_cine_subasta",
+          "bnd2_furia_alaro",
+          "bnd2_aval_serra"
+        ],
+        "notFlags": [
+          "bnd2_subasta_vista"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "El salón del recinto, lleno. Gorran, junto a la mesa larga vacía.",
+        "Gorran: «La espada se ha ido de paseo. Pero se subasta igual: el que la encuentre, que puje.»",
+        "Nadie se ríe. El Cojo, en un rincón, se ha quedado blanco.",
+        "A media puja, el enmascarado sube la voz para cubrir al de Killville:",
+        "Pujador enmascarado: «¡Ciento cincuenta! ¡Ay, señores míos, que esto es arte!»",
+        "Desde el fondo del salón, alguien deja caer una jarra.",
+        "Victor Yungblood: «¡Ese «ay, señores míos» es de «Escape Room 8»!»",
+        "Asdrugal el Viejo: «¡Joel! ¡Sinvergüenza! ¡Que nos debes dinero!»",
+        "Y los dos se echan encima del pujador, el uno por la capa y el otro por la máscara. La sala entera se levanta."
+      ],
+      "effects": [
+        {
+          "type": "setFlag",
+          "arg": "bnd2_subasta_vista"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd2_joel_revelado"
+        }
+      ],
+      "opciones": [
+        {
+          "texto": "Unirte a la farsa [Interpretación]",
+          "lines": [
+            "(Tirada de Interpretación.)"
+          ],
+          "effects": [
+            {
+              "type": "skillCheck",
+              "skillCheck": {
+                "skillId": "interpretacion",
+                "rivalDice": 2,
+                "flagBotch": "bnd2_farsa_pifia",
+                "flagPartial": "bnd2_farsa_parcial",
+                "flagSuccess": "bnd2_farsa_exito",
+                "flagCritical": "bnd2_farsa_critico"
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Sacar a Joel en el caos [Sigilo]",
+          "lines": [
+            "(Tirada de Sigilo.)"
+          ],
+          "effects": [
+            {
+              "type": "skillCheck",
+              "skillCheck": {
+                "skillId": "sigilo",
+                "rivalDice": 2,
+                "flagBotch": "bnd2_caos_pifia",
+                "flagPartial": "bnd2_caos_parcial",
+                "flagSuccess": "bnd2_caos_exito",
+                "flagCritical": "bnd2_caos_critico"
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Salvarle la cara a Gorran [Persuasión]",
+          "requires": {
+            "notFlags": [
+              "bnd2_gorran_muerto"
+            ]
+          },
+          "lines": [
+            "(Tirada de Persuasión.)"
+          ],
+          "effects": [
+            {
+              "type": "skillCheck",
+              "skillCheck": {
+                "skillId": "persuasion",
+                "rivalDice": 2,
+                "flagBotch": "bnd2_honor_pifia",
+                "flagPartial": "bnd2_honor_parcial",
+                "flagSuccess": "bnd2_honor_exito",
+                "flagCritical": "bnd2_honor_critico"
+              }
+            }
+          ]
+        },
+        {
+          "texto": "Proponerle una tregua",
+          "requires": {
+            "notFlags": [
+              "bnd2_gorran_muerto"
+            ]
+          },
+          "lines": [
+            "Dices en voz alta que Serra responde por ti.",
+            "Gorran: «Serra no avala a cualquiera. Tregua, pues. Esta noche, en mi casa, nadie le debe nada a nadie.»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_gorran_tregua"
+            },
+            {
+              "type": "addVariable",
+              "arg": "aldea_sospecha",
+              "value": -1,
+              "min": 0,
+              "max": 4
+            },
+            {
+              "type": "log",
+              "arg": "Tregua con Gorran: la subasta se queda en paz mientras dure."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "b2_subasta_sin_espada",
       "trigger": {
         "type": "auto"
@@ -17238,6 +17595,96 @@
             {
               "type": "setFlag",
               "arg": "bnd2_joel_revelado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b2_subasta_tregua",
+      "trigger": {
+        "type": "auto"
+      },
+      "requires": {
+        "allFlags": [
+          "bnd2_subasta_vista",
+          "bnd2_gorran_tregua"
+        ],
+        "notFlags": [
+          "bnd2_tregua_cerrada",
+          "bnd2_gorran_muerto"
+        ]
+      },
+      "speaker": "",
+      "lines": [
+        "La sala espera con la capa de Joel en el aire. Gorran no ha tirado la mesa.",
+        "Gorran: «Hay tregua, y una tregua se cumple. Pero la sala me mira. Tu diras.»"
+      ],
+      "effects": [],
+      "opciones": [
+        {
+          "texto": "Salvarle la cara a Gorran",
+          "lines": [
+            "Te pones a su lado, de cara a la sala."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_honor_exito"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_tregua_cerrada"
+            }
+          ]
+        },
+        {
+          "texto": "Pedirle a Joel con su permiso",
+          "lines": [
+            "Gorran: «Llevatelo. La tregua llega hasta la puerta, no mas.»",
+            "Victor y Asdrugal sacan a Joel de la sala sin una porra encima."
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_tregua_cerrada"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_joel_rescatado"
+            },
+            {
+              "type": "log",
+              "arg": "Victor y Asdrugal sacan a Joel de la subasta."
+            }
+          ]
+        },
+        {
+          "texto": "Traicionar la tregua",
+          "lines": [
+            "Esperas a que Gorran baje la guardia y tiras la primera.",
+            "Gorran: «¡Tregua rota! ¡A por el!»"
+          ],
+          "effects": [
+            {
+              "type": "setFlag",
+              "arg": "bnd2_tregua_rota"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_tregua_cerrada"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_comedia_pelea"
+            },
+            {
+              "type": "setFlag",
+              "arg": "bnd2_gorran_resuelto"
+            },
+            {
+              "type": "log",
+              "arg": "Rompiste la tregua con Gorran en plena subasta."
             }
           ]
         }

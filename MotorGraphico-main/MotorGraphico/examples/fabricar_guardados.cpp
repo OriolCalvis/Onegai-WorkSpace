@@ -91,7 +91,7 @@ int capturasGorran(const std::string& carpeta) {
         std::cout << ruta << ": " << camino << " parado antes de " << parada << " en " << data.levelPath << " (" << data.playerPosition.x << ","
                   << data.playerPosition.y << ")\n";
     };
-    escribe("tregua", "tregua", "m2_tregua.json");
+    escribe("tregua", "subasta", "m2_tregua.json");  // D0024: la subasta con tregua
     escribe("mia_perdida", "balance", "m2_mia_perdida.json");
     escribe("cuatro_lios", "balance", "m2_cuatro_lios.json");
     escribe("estalle_acaba", "subasta", "m2_subasta.json");

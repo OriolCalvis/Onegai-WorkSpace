@@ -328,7 +328,34 @@ struct Jugador {
             if (!cinematica(GridCoord{5, 7})) break;
     }
 
+    // D0024.3: el jugador no habla con quien no ve. La escena (cinematicas.json, «apariciones»: visibleSi/ocultoSi) la lee el mismo
+    // CatalogoCinematicas::visible que usa el juego (ApplicationCinematica.cpp), con las flags del estado y el nivel en que esta.
+    // Un objeto sin regla (o un npc que no es un objeto de la escena) cuenta como visible.
+    bool seVe(const std::string& objeto) const {
+        static const Game::CatalogoCinematicas cat = [] {
+            auto r = Game::CatalogoCinematicas::carga("assets/cinematicas/cinematicas.json");
+            require(r);
+            return r.value();
+        }();
+        return cat.visible(objeto, s.lugar(), [&](const std::string& f) { return s.hasFlag(f); });
+    }
+
     NarrativeResult habla(const std::string& npc) {
+        if (!seVe(npc)) {
+            // HALLAZGOS que E-GORRAN-TREGUA destapo fuera de Gorran y NO resolvio (MATRIZ_GORRAN.md, «Hallazgos del arnes»): los caminos de la campana
+            // y del dia 1 hablan con `seguidor_brinda` (mansion, sin haber entrado en la fiesta: bnd2_fiesta_dentro) y con `venides_base` (cuartel del Ocaso,
+            // oculto) cuando ya no estan. Se avisan una vez y se siguen jugando; cualquier otro oculto (Gorran incluido) hace fallar la prueba.
+            static const std::set<std::string> pendientes = {"seguidor_brinda", "venides_base"};
+            static std::set<std::string> avisados;
+            if (pendientes.count(npc) != 0) {
+                if (avisados.insert(npc).second)
+                    std::printf("    ?? HALLAZGO: se habla con «%s», oculto en %s (cinematicas.json); pendiente de arreglar el camino\n", npc.c_str(), s.lugar().c_str());
+            } else {
+                std::printf("    !! habla: «%s» esta oculto en %s con estas flags (ocultoSi/visibleSi de cinematicas.json): el jugador no lo ve ni puede hablarle\n",
+                            npc.c_str(), s.lugar().c_str());
+                if (std::getenv("BND_OCULTO_AVISA") == nullptr) require(false);  // para diagnosticar: lista todos los que se tocan sin abortar
+            }
+        }
         if (ruido) std::printf("\n  [hablas con %s]\n", npc.c_str());
         NarrativeResult r = e.talkTo(npc, s);
         procesa(r);
@@ -508,14 +535,14 @@ struct Jugador {
     struct DiaDeGorran {
         std::string lios = "BADC";                     // letras de los lios que se juegan, en orden (B Veta Honda, A Cal Serra, C Galerias, D mina vieja)
         bool aval = false;                             // vuelve con Serra tras salvar a Iris y ella le avala ante el recinto (bga_despues_bien: bnd2_aval_serra)
-        bool tregua = false;                           // ante Gorran, con el aval y los lios, «Proponerle una tregua» (b2_gorran_tregua) antes de la subasta
+        bool tregua = false;                           // D0024: en la subasta, con el aval de Serra, «Proponerle una tregua» (b2_subasta_aval) y luego lo que diga `subasta`
         std::vector<std::string> subasta = {"Dejar que estalle"};  // lo que elige en la subasta, por orden de gusto
         std::string final = "Suelta a los presos y estamos en paz.";  // vencido Gorran: esta o «Acabar con él (no volverá a ayudarte)»
         std::vector<std::string> antes;                // respuestas que van por delante de las demas (p. ej. «Unirte: «Yo enciendo la vela.»»)
         bool trato = false;                            // en la casa del Cojo se lleva el trato (b2_libros_cojo) y se lo lee a Gorran (b2_gorran_trato) en vez de la subasta
         std::vector<std::pair<std::string, Suerte>> tiradas;  // tiradas (por su flagBotch) que salen con esta suerte aunque las demas salgan bien
         bool exige = true;                             // false (las mutaciones): lo que no sale no aborta, la prueba lo mira despues
-        std::string parada;                            // E-MATRIZ-02 (capturas): "tregua" | "subasta" | "balance" | "dormir" = se para JUSTO ANTES de ese momento
+        std::string parada;                            // E-MATRIZ-02 (capturas): "subasta" | "balance" | "dormir" = se para JUSTO ANTES de ese momento
         bool amaneceElTercero = true;                  // false = se queda en el cierre del dia (bndg_dia_cerrado): el guardado de fin de dia
         int cuantos = 3;                               // minimo de lios cerrados
     };
@@ -525,7 +552,7 @@ struct Jugador {
         prefiere.insert(prefiere.begin(), d.antes.begin(), d.antes.end());
         for (const auto& t : d.tiradas) tiradas[t.first] = t.second;
         if (d.trato) prefiere.push_back("Llevarte el trato");
-        if (d.trato) prefiere.push_back("Leérselo en voz alta");
+        if (d.trato) prefiere.push_back("Enseñarle el trato y leérselo");
         if (d.tregua) prefiere.push_back("Proponerle una tregua");
         prefiere.insert(prefiere.end(), d.subasta.begin(), d.subasta.end());
         prefiere.insert(prefiere.end(), {"Aceptar el encargo", "Pagar el paso (5)", "«Vengo a ver al jefe.» [Persuasión]"});
@@ -548,24 +575,15 @@ struct Jugador {
             require(!d.exige || s.hasFlag("bnd2_trato_venta"));
         }
         entra("recinto_gorran");  // b2_porton
-        if (d.parada == "tregua") {
-            prefiere = antes;
-            return;
-        }
-        if (d.trato) {
-            habla("gorran");  // b2_gorran_trato: «Leérselo en voz alta»
-            require(!d.exige || s.hasFlag("bnd2_gorran_trato_visto"));
-        }
-        if (d.tregua) {
-            habla("gorran");  // b2_gorran_tregua (talk): aval de Serra + tres lios
-            require(!d.exige || s.hasFlag("bnd2_gorran_tregua"));
-        }
+        // D0024.3: Gorran esta oculto desde el cuerno (bnd2_subasta_ya): b2_gorran_trato (talk) no se alcanza jugando. El trato que
+        // se lleva del Cojo se lee en el calabozo (b2_calabozo): una farsa que sale mal (sospecha 3) te lleva atado a Gorran.
         if (d.parada == "subasta") {
             prefiere = antes;
             return;
         }
         require(pisaLaZona("recinto_subasta") || !d.exige);  // b2_subasta(_cojo_pobre): la eleccion de `subasta`
         require(!d.exige || s.hasFlag("bnd2_subasta_vista"));
+        require(!d.exige || !d.tregua || s.hasFlag("bnd2_gorran_tregua"));  // D0024: la tregua se pacta en la subasta
         if (d.parada == "balance") {  // aun no se ha bajado a la taberna: al entrar sale el hito y el balance de la aldea
             prefiere = antes;
             return;
