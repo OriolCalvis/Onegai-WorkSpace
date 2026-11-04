@@ -1,10 +1,13 @@
 # Índice de sesiones — regenerado, no editar a mano
 
-_Regenerado: 2026-11-04T21:04 · 256 sesiones_
+_Regenerado: 2026-11-04T21:24 · 259 sesiones_
 
 | Fecha | Autor | Sesión | Commits | Esperando a Oriol |
 |---|---|---|---|---|
 | 2026-11-04 | claude | [ecc tres harnesses](2026-11-04-claude-ecc-tres-harnesses.md) | `8e0a5b19` (rama `recuperat/software-copia-30-10`: `.claude/` del workspace, TABLERO, índice y esta nota) + commit de cierre que anota este hash. Sin cambios de código; la configuración de Codex y Qwen vive fuera del repo. | nada bloqueante. Decidió «paquete entero disponible, pero cada proyecto carga solo lo útil»; aplicado (ver «Cierre»). Pidió commitear `.claude/`; hecho. |
+| 2026-11-04 | claude | [integracion uni 02 11](2026-11-04-claude-integracion-uni-02-11.md) | — | nada bloqueante. Ver «Para Oriol». |
+| 2026-11-03 | claude | [respuestas y guion](2026-11-03-claude-respuestas-y-guion.md) | — | el guardado no se restaura en `ciudad_centro` (dos objetos en la misma casilla: (41,25), (6,59), (16,59); `src/Game/SaveGame.cpp:199` busca solo por posición); fusionar o no `agente/fable/UNI-RESTAURA`; subir los commits nuevos; PixelLab (`out/fabrica/UNI-02-11/PIXELLAB_ENCARREC.md`). |
+| 2026-11-02 | claude | [uni 02 11](2026-11-02-claude-uni-02-11.md) | — | — |
 | 2026-10-29 | codex | [boundington contenido](2026-10-29-codex-boundington-contenido.md) | — | — |
 | 2026-10-29 | codex | [comparativa boundington](2026-10-29-codex-comparativa-boundington.md) | — | — |
 | 2026-10-29 | codex | [perfilador motor](2026-10-29-codex-perfilador-motor.md) | `7fa2117` (implementación probada); commit posterior de evidencia documental en la misma rama. | aceptación jugable del CSV y decisión posterior de integración con el árbol compartido; no se presupone el visto. |
