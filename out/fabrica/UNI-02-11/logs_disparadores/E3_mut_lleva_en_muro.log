@@ -1,0 +1,15 @@
+MUTACION transitable_ignora_la_colision
+fichero: tools/validar_cinematicas.py
+viejo: 'return dentro(cel) and tuple(cel) not in lv["colision"] and tuple(cel) not in lv["bloquea"]'
+nuevo: 'return dentro(cel) and tuple(cel) not in lv["bloquea"]'
+fecha: 2026-11-04 13:24:38
+
+test rc=1
+FAIL: test_aviso_si_menos_de_la_mitad_de_la_zona_ve_el_foco (__main__.DisparadorTests.test_aviso_si_menos_de_la_mitad_de_la_zona_ve_el_foco)
+FAIL: test_el_foco_sin_lleva_es_el_centro_de_la_zona_y_tiene_que_ser_transitable (__main__.DisparadorTests.test_el_foco_sin_lleva_es_el_centro_de_la_zona_y_tiene_que_ser_transitable)
+FAIL: test_las_zonas_de_siempre_solo_avisan_si_su_centro_no_se_pisa (__main__.DisparadorTests.test_las_zonas_de_siempre_solo_avisan_si_su_centro_no_se_pisa)
+FAIL: test_lleva_a_en_un_muro_de_tiles (__main__.DisparadorTests.test_lleva_a_en_un_muro_de_tiles)
+Ran 22 tests in 0.175s
+FAILED (failures=4)
+RESULTADO: MUTANTE MUERTO (el test falla)
+restaurado: test rc=0

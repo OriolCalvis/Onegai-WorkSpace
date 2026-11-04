@@ -1,0 +1,12 @@
+MUTACION sin_umbral_del_50
+fichero: tools/validar_cinematicas.py
+viejo: 'if ven * 2 < len(pisables):'
+nuevo: 'if ven * 2 < 0:'
+fecha: 2026-11-04 13:24:38
+
+test rc=1
+FAIL: test_aviso_si_menos_de_la_mitad_de_la_zona_ve_el_foco (__main__.DisparadorTests.test_aviso_si_menos_de_la_mitad_de_la_zona_ve_el_foco)
+Ran 22 tests in 0.176s
+FAILED (failures=1)
+RESULTADO: MUTANTE MUERTO (el test falla)
+restaurado: test rc=0
