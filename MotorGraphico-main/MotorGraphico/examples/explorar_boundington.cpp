@@ -305,7 +305,7 @@ private:
         for (const Game::Cinematica& c : cinematicas().lista) {  // PROLOGO-02: las ponen las cinematicas
             puestas.insert(c.vista());
             puestas.insert(c.alTerminar.begin(), c.alTerminar.end());
-            for (const Game::PasoCinematica& p : c.pasos) puestas.insert(p.texto);
+            for (const Game::PasoCinematica& p : cinematicas().pasosEfectivos(c)) puestas.insert(p.texto);  // E-DISPARADORES-1: con lleva y accion
         }
         for (const NarrativeBeat& b : g.beats) {
             pide(b.requirements);
@@ -323,6 +323,7 @@ private:
 
     const Game::Cinematica* m_cine = nullptr;  // PROLOGO-02: la que esta en curso
     std::size_t m_cinePaso = 0;
+    std::vector<Game::PasoCinematica> m_cinePasos;  // E-DISPARADORES-1: los pasos efectivos de m_cine
 
     std::string clave(const std::string& beat) const { return std::string(kFases[m_fase].nombre) + "/" + beat; }
 
@@ -360,11 +361,12 @@ private:
         if (m_cine == nullptr) {
             m_cine = cineQueEmpieza(m_s.lugar(), m_s);
             m_cinePaso = 0;
+            if (m_cine != nullptr) m_cinePasos = cinematicas().pasosEfectivos(*m_cine);  // E-DISPARADORES-1: lleva + accion
         }
         if (m_cine != nullptr) {
             using Tipo = Game::PasoCinematica::Tipo;
-            if (m_cinePaso < m_cine->pasos.size()) {
-                const Game::PasoCinematica& p = m_cine->pasos[m_cinePaso++];
+            if (m_cinePaso < m_cinePasos.size()) {
+                const Game::PasoCinematica& p = m_cinePasos[m_cinePaso++];
                 if (p.tipo == Tipo::Beat || p.tipo == Tipo::Flag) {
                     m_s.setFlag(p.texto);
                 } else if (p.tipo == Tipo::Nivel) {

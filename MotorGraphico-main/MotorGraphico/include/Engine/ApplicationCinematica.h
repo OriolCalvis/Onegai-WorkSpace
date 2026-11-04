@@ -50,6 +50,9 @@ struct EstadoCinematicas {
     float tituloRecorrido = 0.0f;                 // el paseo de la cámara del título (celdas)
     bool tituloCargando = false, tituloFallido = false;
     std::unique_ptr<HudPanel> velo;
+    // E-DISPARADORES-1 — El ambito del nivel en curso (se resuelve al cambiar de nivel: JSON + tamano del mapa).
+    std::string ambitoDeNivel;
+    AmbitoNivel ambito = AmbitoNivel::Exterior;
     // COMBATE-01 — El combate a la vista (ApplicationCinematica::combate).
     const void* combateVisto = nullptr;   // el BattleState que ya tiene camara y semilla
     float zoomAntes = 1.0f;               // el de explorar, para volver
@@ -99,6 +102,11 @@ struct ApplicationCinematica {
     static bool enCurso(const Application& app);
     // En update, después del cambio de nivel pendiente.
     static void actualiza(Application& app, float dt);
+    // E-DISPARADORES-1 (D0026; codigo en src/Engine/ApplicationCinematicaDisparador.h) — La que empieza ahora: con el
+    // ambito del nivel y lo que tapa la vista (tiles con colision y objetos `tapaVista`). Y la misma con los
+    // pasos de llevar al jugador (GameSession::rutaAndando, o un fundido si no hay camino) y la accion.
+    static const Game::Cinematica* laQueEmpieza(Application& app, const Game::TieneFlag& tiene);
+    static Game::Cinematica efectiva(Application& app, const Game::Cinematica& c);
     // En update, después de refreshHud (que pone el tinte de la moral).
     static void tintes(Application& app, float dt);
     // C2-04b — La escena viva, cada fotograma (tras tintes): avanza las emociones, la rehace si

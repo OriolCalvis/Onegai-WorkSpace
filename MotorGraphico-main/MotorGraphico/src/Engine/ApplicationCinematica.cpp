@@ -7,6 +7,7 @@
 
 #include "Engine/Application.h"
 #include "Engine/ApplicationInternal.h"
+#include "ApplicationCinematicaDisparador.h"  // E-DISPARADORES-1
 #include "Render/AnimatedEntity.h"
 #include "Render/Camera.h"
 #include "Render/VidaNivel.h"
@@ -87,10 +88,9 @@ void ApplicationCinematica::actualiza(Application& app, float dt) {
     const GameMode modo = app.m_session->mode();
     if (!estado.reproductor.activa() && modo == GameMode::Exploration && !app.m_showInventory &&
         !app.m_scenes.hasPendingTransition() && app.m_narrativaLista) {
-        if (const Game::Cinematica* c =
-                estado.catalogo.laQueEmpieza(app.m_currentLevelPath, app.m_session->playerPosition(), tiene)) {
+        if (const Game::Cinematica* c = laQueEmpieza(app, tiene)) {  // E-DISPARADORES-1
             Engine::Interno::trace("cinematica: empieza");
-            estado.reproductor.empieza(*c);
+            estado.reproductor.empieza(efectiva(app, *c));
         }
     }
     if (modo == GameMode::GameOver && !estado.cicatrizPuesta) empiezaNoqueo(app);  // AV13-33: cicatriz y escena

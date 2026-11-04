@@ -723,7 +723,7 @@ struct Jugador {
         const bool yaEnCine = enCine;
         enCine = true;
         if (ruido) std::printf("\n  [cinematica %s]\n", c->id.c_str());
-        for (const Game::PasoCinematica& p : c->pasos) {
+        for (const Game::PasoCinematica& p : cat.pasosEfectivos(*c)) {  // E-DISPARADORES-1: con disparador, lleva + accion
             if (p.tipo == Game::PasoCinematica::Tipo::Beat) {
                 s.setFlag(p.texto);
                 drena();

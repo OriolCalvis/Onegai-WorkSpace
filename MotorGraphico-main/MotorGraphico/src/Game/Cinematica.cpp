@@ -232,6 +232,11 @@ Result<CatalogoCinematicas> CatalogoCinematicas::lee(const std::string& textoJso
             c.zonaDesde = GridCoord{std::min(zona[0].asInt(), zona[2].asInt()), std::min(zona[1].asInt(), zona[3].asInt())};
             c.zonaHasta = GridCoord{std::max(zona[0].asInt(), zona[2].asInt()), std::max(zona[1].asInt(), zona[3].asInt())};
         }
+        if (o.has("disparador")) {  // E-DISPARADORES-1 (D0026): CinematicaDisparador.cpp
+            auto d = leeDisparador(o["disparador"], c.id);
+            if (!d.isOk()) return Result<CatalogoCinematicas>::Error(d.errorMessage());
+            c.disparador = d.value();
+        }
         const JsonValue& pasos = o["pasos"];
         for (std::size_t k = 0; pasos.isArray() && k < pasos.size(); ++k) {
             auto paso = leePaso(pasos[k], "cinematicas: «" + c.id + "», paso " + std::to_string(k));
@@ -254,21 +259,6 @@ Result<CatalogoCinematicas> CatalogoCinematicas::carga(const std::string& ruta) 
 const Cinematica* CatalogoCinematicas::busca(const std::string& id) const {
     for (const Cinematica& c : lista)
         if (c.id == id) return &c;
-    return nullptr;
-}
-
-const Cinematica* CatalogoCinematicas::laQueEmpieza(const std::string& nivel, const GridCoord& jugador,
-                                                    const TieneFlag& flag) const {
-    for (const Cinematica& c : lista) {
-        if (flag(c.vista())) continue;
-        if (!c.nivel.empty() && !acabaEn(nivel, c.nivel)) continue;
-        if (std::any_of(c.requiere.begin(), c.requiere.end(), [&](const std::string& f) { return !flag(f); })) continue;
-        if (std::any_of(c.sin.begin(), c.sin.end(), flag)) continue;
-        if (c.hayZona && (jugador.x < c.zonaDesde.x || jugador.x > c.zonaHasta.x || jugador.y < c.zonaDesde.y ||
-                          jugador.y > c.zonaHasta.y))
-            continue;
-        return &c;
-    }
     return nullptr;
 }
 

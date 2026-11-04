@@ -1,0 +1,11 @@
+MUTACION zona_exige_vision
+fichero: src/Game/CinematicaDisparador.cpp
+viejo: '        if (porRadio) {\n            const bool conVision'
+nuevo: '        if (porRadio || (vista != nullptr && enZona)) {\n            const bool conVision'
+fecha: 2026-11-04 13:15:54
+
+compilacion: rc=0
+test rc=1
+Ejecutados 27 test(s); 1 fallo(s).
+RESULTADO: MUTANTE MUERTO (el test falla)
+restaurado: test rc=0 :: ['Ejecutados 27 test(s); 0 fallo(s).']

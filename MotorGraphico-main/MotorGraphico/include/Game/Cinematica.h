@@ -45,6 +45,7 @@
 #include "Core/Errors/Result.h"
 #include "Core/Math/GridCoord.h"
 #include "Core/Math/Vector4.h"
+#include "Game/Disparador.h"
 
 namespace Game {
 
@@ -84,11 +85,14 @@ struct Cinematica {
     GridCoord zonaDesde, zonaHasta;  // las dos esquinas, incluidas
     std::vector<PasoCinematica> pasos;
     std::vector<std::string> alTerminar;
+    Disparador disparador;  // E-DISPARADORES-1: lleva + accion + radio/vision (hay = false: la zona de siempre)
     std::string vista() const { return "cine_" + id + "_vista"; }
-    // E-DISPARADORES-1 (D0026) — Donde se pone el jugador para que la cinematica empiece: el centro de su
-    // zona ({-1, -1} si no tiene). Si se pasa `transitable` y el centro no lo es, la casilla transitable
-    // de la zona mas cercana al centro (Chebyshev; a igualdad, la de menor y y luego x). El motor, el
-    // arnes (`pisaLaZona`) y el explorador usan ESTA cuenta, no una copia.
+    // ¿Tiene casilla de referencia (el foco del radio y de la vision)? Su zona o `disparador.lleva`.
+    bool hayFoco() const { return hayZona || disparador.hayLleva; }
+    // E-DISPARADORES-1 (D0026) — Donde se pone el jugador para que la cinematica empiece: `disparador.lleva`
+    // si lo tiene; si no, el centro de su zona ({-1, -1} si tampoco). Con `transitable` y sin `lleva`, si el
+    // centro no lo es, la casilla transitable de la zona mas cercana (Chebyshev; a igualdad, la de menor y y
+    // luego x). El motor, el arnes (`pisaLaZona`) y el explorador usan ESTA cuenta, no una copia.
     GridCoord puntoDeEntrada(const std::function<bool(const GridCoord&)>& transitable = nullptr) const;
 };
 
@@ -150,7 +154,17 @@ struct CatalogoCinematicas {
 
     const Cinematica* busca(const std::string& id) const;
     // La que empieza ahora (no vista, en su nivel, con lo que pide), o nullptr.
-    const Cinematica* laQueEmpieza(const std::string& nivel, const GridCoord& jugador, const TieneFlag& flag) const;
+    // `vista` (E-DISPARADORES-1): el ambito y lo que tapa la vista del nivel; nullptr (el arnes, el explorador, las
+    // pruebas viejas) = sin radio ni vision: una cinematica con disparador empieza en su zona o con el jugador EN el
+    // foco (donde el arnes lo pone). Las cinematicas sin disparador no cambian: zona o nada.
+    const Cinematica* laQueEmpieza(const std::string& nivel, const GridCoord& jugador, const TieneFlag& flag,
+                                   const VistaDelNivel* vista = nullptr) const;
+    // Las ordenes que se juegan cuando empieza `c`: sin disparador, sus pasos; con el, [lleva, mira] + la accion.
+    // Sin `lleva` (el arnes, que ya teletransporta al foco) no hay ordenes de llevar. `lleva` con ruta: Anda;
+    // sin ruta (o `como: fundido`): funde a negro, Coloca, funde de vuelta.
+    std::vector<PasoCinematica> pasosEfectivos(const Cinematica& c, const LlevaDelJugador* lleva = nullptr) const;
+    // `c` con `pasosEfectivos` en lugar de sus pasos (para ReproductorCinematica::empieza; conserva id y alTerminar).
+    Cinematica efectiva(const Cinematica& c, const LlevaDelJugador* lleva = nullptr) const;
     bool visible(const std::string& objeto, const std::string& nivel, const TieneFlag& flag) const;
     bool esEspectro(const std::string& objeto, const TieneFlag& flag) const;
     bool jugadorEspectro(const TieneFlag& flag) const;
