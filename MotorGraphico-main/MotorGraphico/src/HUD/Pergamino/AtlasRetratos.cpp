@@ -16,6 +16,10 @@ Rect AtlasRetratos::uvDe(int celda) const {
 }
 
 void AtlasRetratos::vacia() {
+    for (auto it = m_avisos.begin(); it != m_avisos.end();) {
+        if (it->first.rfind(m_claveTira + "#", 0) == 0) ++it;
+        else it = m_avisos.erase(it);
+    }
     m_celdas.clear();
     m_imagen.crea(kAncho, kAncho);
     ++m_version;

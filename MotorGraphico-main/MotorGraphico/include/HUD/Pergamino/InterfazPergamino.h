@@ -21,6 +21,7 @@
 #include "HUD/Pergamino/AtlasRetratos.h"
 #include "HUD/Pergamino/Cuaderno.h"
 #include "HUD/Pergamino/DialogoHoja.h"
+#include "HUD/Pergamino/EmocionVista.h"
 #include "HUD/Pergamino/FuenteAtlas.h"
 #include "HUD/Pergamino/HudRetales.h"
 #include "HUD/Pergamino/HojaNegocio.h"
@@ -101,6 +102,8 @@ struct EstadoJuego {
     const Game::TiendaEstado* tienda = nullptr;
     // AV15-05a — El negocio abierto: sus filas, su foco y su pregunta (comprar, revender).
     const Game::NegocioEstado* negocio = nullptr;
+    // C2-04d — Las emociones de las cinematicas sobre su actor (lo rellena refreshHud).
+    const std::vector<EmocionVista>* emociones = nullptr;
 };
 
 // Lo que haria la tecla E ahora mismo (la misma busqueda que
@@ -117,6 +120,9 @@ AvisoInteraccion avisoInteraccion(const GameSession& sesion);
 void pintaCarteles(Lienzo& l, const Pincel& p, const EstadoJuego& e, const std::string& salvo);
 // PNJ-02 (BocadillosPnj.cpp) — Sobre los PNJ: el icono de su oficio mientras lo hacen y sus frases (a 4 casillas o menos).
 void pintaBocadillosPnj(Lienzo& l, const Pincel& p, const EstadoJuego& e, const std::string& salvo);
+// C2-04d (BocadillosEmocion.cpp) — Las emociones de las cinematicas: la misma bafarada, con alfa de
+// entrada/salida; el texto literal ("!", "...") si el icono no esta en el atlas.
+void pintaEmociones(Lienzo& l, const Pincel& p, const EstadoJuego& e);
 
 // La baldosa de quien atiende a la E (P03a): un rombo carmin en el suelo,
 // bajo los sprites y centrado en sus pies (los sprites pisan en el 90 % del

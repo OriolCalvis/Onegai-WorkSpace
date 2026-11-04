@@ -77,6 +77,7 @@ struct SituacionCombate {
     int protector = -1;  // Furia Justiciera: aliado que recibe sus golpes esta ronda
     int agresor = -1;    // ACOMPANANTES-01: el aliado que le hizo daño el ultimo (heroe o acompañante)
     bool actuo = false;  // AV13-29: un acompañante ya ha hecho su accion este turno
+    int repertorio = 0;  // AV18-06: la carta que toca en el siguiente turno de este enemigo
 };
 
 struct CartaEnMano {
@@ -241,6 +242,9 @@ private:
     bool bloqueoAtravesado(ContextoBatalla& c, Ref atacante, Ref bloquea, const std::string& carta);
     void contraPorPifia(ContextoBatalla& c, bool pifia, Ref atacante, Ref objetivo);
     static const Gancho& ganchoCritico();
+    // AV18-06 (CartasEnemigas.cpp): el enemigo juega la siguiente carta nativa de su repertorio.
+    // false = no tiene ninguna que pueda jugar (sigue la IA de siempre).
+    bool jugarRepertorio(ContextoBatalla& c, std::size_t enemigo, Ref objetivo, bool desarmado);
     void trasDano(ContextoBatalla& c, Ref objetivo);
     void turnoInvocaciones(ContextoBatalla& c);
     int dadosExtraDe(ContextoBatalla& c, Ref quien);

@@ -28,6 +28,7 @@ class ICombatant;
 class SkillSet;
 class BattleState;
 class Morality;
+namespace RPG { namespace eventos { struct Catalogo; } }  // C8-03c
 
 struct InventoryRules {
     const RPG::Catalogs::EquipmentCatalog* equipment = nullptr;
@@ -78,6 +79,9 @@ struct SessionData {
 
     const RPG::NarrativeEngine* m_narrative = nullptr;
     RPG::NarrativeState* m_narrativeState = nullptr;
+    const RPG::eventos::Catalogo* m_eventos = nullptr;  // C8-03c: no propietario; nullptr = sin eventos
+    bool m_evaluandoEventos = false;                    // C8-03c: una sola evaluacion a la vez
+    bool m_eventosPendientes = false;                   // C8-03c: llamada de dentro; se repite al acabar la de fuera
 
     RPG::Xoroshiro128p m_rng;
     RPG::RandomEngine* m_rngInUse = &m_rng;

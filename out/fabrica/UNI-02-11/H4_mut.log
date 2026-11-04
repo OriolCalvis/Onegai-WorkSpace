@@ -1,0 +1,40 @@
+H4 mutaciones Tue Nov  3 00:18:41 CET 2026
+2bc1e8a51c4d29971e1dc628583a49ff
+== M1: DIA 2 Gorran de buenas: bnd2_furia_alaro -> bnd2_furia_alaro_NUNCA (flag que no se alcanza)
+1/2 Test #113: demo_boundington .................Subprocess aborted***Exception:   0.43 sec
+  MAL DIA 2: Gorran, de buenas
+        falta bnd2_furia_alaro_NUNCA
+CHECK FALLO en /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/examples/demo_boundington_partida.h:580 -- fallos.empty()
+2/2 Test #115: demo_campana_boundington .........   Passed    0.31 sec
+50% tests passed, 1 tests failed out of 2
+restaurado md5 2bc1e8a51c4d29971e1dc628583a49ff
+== M2: DIA 3 castillo: bnd2_guardia_preparada -> bnd2_guardia_preparada_NUNCA
+1/2 Test #113: demo_boundington .................Subprocess aborted***Exception:   0.44 sec
+  MAL DIA 3: el castillo, con el camorrista
+        falta bnd2_guardia_preparada_NUNCA
+CHECK FALLO en /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/examples/demo_boundington_partida.h:580 -- fallos.empty()
+2/2 Test #115: demo_campana_boundington .........   Passed    0.31 sec
+50% tests passed, 1 tests failed out of 2
+restaurado md5 2bc1e8a51c4d29971e1dc628583a49ff
+== VERDE tras restaurar (touch + build completo)
+1/2 Test #113: demo_boundington .................   Passed    0.73 sec
+2/2 Test #115: demo_campana_boundington .........   Passed    0.30 sec
+100% tests passed out of 2
+== FINAL (touch + build completo): ctest boundington|campana
+1/6 Test  #33: test_fase_uno_boundington ........   Passed    0.02 sec
+2/6 Test #113: demo_boundington .................   Passed    0.74 sec
+3/6 Test #114: demo_precuela_boundington ........   Passed    0.01 sec
+4/6 Test #115: demo_campana_boundington .........   Passed    0.56 sec
+5/6 Test #190: test_boundington_tutorial ........   Passed    0.47 sec
+6/6 Test #191: test_boundington_dia1 ............   Passed    0.39 sec
+100% tests passed out of 6
+== M3 (final): DIA 3 Xila: b2_cierre_xila -> b2_cierre_xila_NUNCA
+1/1 Test #113: demo_boundington .................Subprocess aborted***Exception:   0.54 sec
+  MAL DIA 3: Xila en el escalon
+        no se vio b2_cierre_xila_NUNCA
+restaurado; verde de nuevo:
+100% tests passed out of 6
+== Evidencia del Ocaso (copia PARCHEADA del build, no del repo): guardas de una linea en b3_campanas y b3_campanas_solas
+   (notFlags cine_base_arenga_vista) y b3_norte_pasado (notFlags bnd3_paso_base_listo) => demo_boundington 19/19 escenas del Ocaso OK
+   y demo_campana_boundington completa OK (A, B, 8 combinaciones, 30 momentos clave). Build restaurado (cmp con assets/ = igual).
+build intacto

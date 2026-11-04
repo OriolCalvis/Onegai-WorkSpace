@@ -10,6 +10,9 @@ AnimatedEntity::AnimatedEntity(GridCoord gridPosition, TextureAtlas* atlas, int 
     : Entity(gridPosition, 0, atlas, tileWidth, tileHeight), m_frameTime(frameTime) {}
 
 void AnimatedEntity::update(float deltaTime) {
+    if (m_controlExterno) {
+        return;
+    }
     auto it = m_animations.find(m_currentAnimation);
     if (it == m_animations.end() || it->second.empty()) {
         return;
@@ -32,13 +35,14 @@ void AnimatedEntity::addAnimation(const std::string& name, std::vector<int> fram
 }
 
 void AnimatedEntity::play(const std::string& name) {
-    if (name == m_currentAnimation) {
-        return;
-    }
     auto it = m_animations.find(name);
     if (it == m_animations.end()) {
         return;
     }
+    if (name == m_currentAnimation && !m_controlExterno) {
+        return;
+    }
+    m_controlExterno = false;
     m_currentAnimation = name;
     m_currentFrame = 0;
     m_elapsedTime = 0.0f;
@@ -48,6 +52,12 @@ void AnimatedEntity::play(const std::string& name) {
 }
 
 void AnimatedEntity::showRestFrame() {
+    if (m_controlExterno) return;  // el clip manda hasta que play() devuelva el control
     const auto it = m_animations.find(m_currentAnimation);
     if (it != m_animations.end() && !it->second.empty()) m_spriteID = it->second.front();
+}
+
+void AnimatedEntity::ponerFotograma(int sprite) {
+    m_controlExterno = true;
+    m_spriteID = sprite;
 }

@@ -19,7 +19,9 @@
 // relevo que anota el tablero como EST-20b).
 
 #include "Engine/Application.h"
+#include "Engine/ApplicationCamara.h"  // U4-01
 #include "Engine/ApplicationCinematica.h"  // PROLOGO-02
+#include "Engine/AnimacionMundo.h"  // U3-06.E06b: la maquina de animacion
 #include "Render/BloquesNivel.h"
 #include "Render/VidaNivel.h"
 #include "Render/MonumentosNivel.h"
@@ -99,7 +101,7 @@ std::unique_ptr<Engine::Scene> Application::makeScene(
     bool title, std::function<Result<bool>()> load) {
     return std::make_unique<ApplicationScene>(title, std::move(load),
         [this](float dt) { update(dt); },
-        [this] { render(m_captureFrame); },
+        [this] { render(m_captura.humo); },
         [this] { return m_currentMapId; },
         [this](float dt) { ApplicationCinematica::titulo(*this, dt); });  // PROLOGO-02
 }
@@ -149,43 +151,45 @@ void Application::update(float deltaTime) {
         marker.entity->update(mundo);
     }
 
-    // Camara centrada en el jugador. Se usa transitionTo() (Fase 4) y
-    // NO move(): move() desplaza el destino por un DELTA relativo, asi
-    // que "seguir a una posicion absoluta" con el habria que calcularlo
-    // contra el destino interno de la camara (privado) -- llamarlo con
-    // (target - position()) cada frame sobre-acumula, porque position()
-    // va por detras del destino mientras el lerp converge. transitionTo()
-    // toma la posicion absoluta directamente. Solo se dispara cuando el
-    // jugador CAMBIA de celda (movimiento discreto, ver processInput):
-    // relanzarla cada frame reiniciaria la animacion continuamente y la
-    // camara nunca llegaria.
-    const GridCoord& playerCell = m_session->playerPosition();
-    // AV13-12: en combate no; alli la camara la lleva ApplicationCinematica::combate.
-    if ((playerCell.x != m_lastCameraCell.x || playerCell.y != m_lastCameraCell.y) && m_session->mode() != GameMode::Battle) {
-        Vector2 target = IsoMath::gridToScreen(playerCell, static_cast<float>(kTileW),
-                                               static_cast<float>(kTileH));
-        target.y += m_map.alturas().desfasePx(playerCell);  // AV19-02: la camara sube con el terreno
-        // AV14-09: lineal y con lo que dura el paso del jugador (0,16 s): camara y
-        // dibujo van a la par. Con EaseOutCubic la camara daba un tiron en cada casilla.
-        m_camera->transitionTo(target, m_camera->zoom(), 0.16f, Camera::Easing::Linear);
-        m_lastCameraCell = playerCell;
-    }
-    ApplicationCinematica::combate(*this, deltaTime);  // COMBATE-01: la camara cerca y los golpes a la vista
-    trace("update: camara");
-    m_camera->update(deltaTime);
+    // Camara (U4-01.E06): el orden por fotograma vive en ApplicationCamara::fotogramaCamara (probado sin
+    // ventana): centinela, seguimiento con zona muerta (solo al CAMBIAR de casilla; transitionTo y no move()),
+    // combate, Camera::update, compone, golpes y, al final, niebla y luces con la vista de ESTE fotograma.
     if (m_vida != nullptr && m_session != nullptr) m_vida->avanza(deltaTime, m_session->playerPosition());  // BLOQUES-02, MASC-01
-
-    // C-23 — Actualitzacio del post-processat per frame. El cicle es:
-    // beginFrame() (degrada Visible->Explored) -> reveal() (ilumina
-    // al voltant del jugador) -> updateTexture() (rasteritza a la textura
-    // GL). Si no hi ha fog, tot aixo es un no-op (m_fog es nullptr).
-    if (m_fog) {
-        m_fog->beginFrame();
-        m_fog->reveal(m_session->playerPosition(), m_fogRevealRadius);
-        m_fog->updateTexture(*m_camera);
-    }
-    if (m_lightMap) {
-        m_lightMap->updateTexture(*m_camera);
+    const float dtPolvo = (mundo == 0.0f || (m_session != nullptr && m_session->mode() == GameMode::Pause)) ? 0.0f : deltaTime;  // U4-07.E07 (D-O6)
+    if (m_vida != nullptr && m_session != nullptr) m_vida->avanzaPolvo(dtPolvo, ApplicationCinematica::enCurso(*this) ? GridCoord{-1000, -1000} : m_session->playerPosition(), m_session->mode() == GameMode::Battle);  // D-O7
+    trace("update: camara");
+    // C-23 — Post-procesado por frame: beginFrame() (Visible->Explored), reveal() (ilumina alrededor del
+    // jugador) y updateTexture() (rasteriza a la textura GL). Sin fog / sin luces es un no-op.
+    const auto nieblaYLuces = [this] {
+        if (m_fog) {
+            m_fog->beginFrame();
+            m_fog->reveal(m_session->playerPosition(), m_fogRevealRadius);
+            m_fog->updateTexture(*m_camera);
+        }
+        if (m_lightMap) m_lightMap->updateTexture(*m_camera);
+    };
+    if (m_cine) {
+        const GridCoord& playerCell = m_session->playerPosition();
+        PoliticaCamara::LimitesMapa limitesMapa;  // D-O6: el titulo no pasa por aqui (ver actualizaTitulo)
+        const bool hayMapa = ApplicationCamara::limitesDelMapa(m_map.getWidth(), m_map.getHeight(), kTileW, kTileH, limitesMapa);
+        ApplicationCamara::EntradaFotograma entrada;
+        entrada.dt = deltaTime;
+        entrada.pausa = m_session->mode() == GameMode::Pause;  // update sigue corriendo en pausa
+        entrada.enBatalla = m_session->mode() == GameMode::Battle;
+        entrada.celda = playerCell;
+        entrada.ultimaCelda = m_lastCameraCell;
+        entrada.objetivo = IsoMath::gridToScreen(playerCell, static_cast<float>(kTileW), static_cast<float>(kTileH));
+        entrada.objetivo.y += m_map.alturas().desfasePx(playerCell);  // AV19-02: la camara sube con el terreno
+        entrada.combate = m_session->battle();
+        entrada.limites = hayMapa ? &limitesMapa : nullptr;
+        ApplicationCamara::PasosFotograma pasos;
+        pasos.combate = [this, deltaTime] { ApplicationCinematica::combate(*this, deltaTime); };  // COMBATE-01
+        pasos.vistaGolpes = [this] { ApplicationCinematica::vistaGolpes(*this); };
+        pasos.nieblaYLuces = nieblaYLuces;
+        m_lastCameraCell = ApplicationCamara::fotogramaCamara(*m_camera, m_cine->camara, entrada, pasos);
+    } else {
+        m_camera->update(deltaTime);
+        nieblaYLuces();
     }
 
     // El mundo avanza: patrullas de los enemigos (solo en exploracion,
@@ -200,7 +204,7 @@ void Application::update(float deltaTime) {
     ApplicationCinematica::actualiza(*this, deltaTime);  // PROLOGO-02
 
     // Transiciones de AVENTURA (no de nivel): la campana encadena prologo
-    // -> Dia 1 -> Dia 2 -> Ocaso. Cada salto cambia el AdventureScript
+    // -> Dia 1 -> Dia 2 (Gorran) -> Dia 3 -> Ocaso. Cada salto cambia el AdventureScript
     // activo y, segun el capitulo, recarga o no el nivel. Es orquestacion
     // que le toca a Application (igual que loadLevel), no a un beat.
     //
@@ -222,19 +226,33 @@ void Application::update(float deltaTime) {
         // ese beat.
         if (m_narrativeState.hasFlag("bnd_prologo_terminado") &&
             !m_narrativeState.hasFlag("bnd_dia1_empezado")) {
-            m_scenes.requestReplace(makeScene(false, [this] {
-                return loadLevel("assets/levels/interior_taberna.json", false, GridCoord{}, [this] {
+            // Oriol (22/10): al despertar del recuerdo, en la misma casilla que el fantasma (el recuerdo
+            // es la misma taberna; la cinematica acaba en blanco y el velo se va solo). Desde otro
+            // sitio, la entrada de siempre.
+            const bool delRecuerdo = m_currentLevelPath.find("recuerdo_taberna") != std::string::npos;
+            const GridCoord fantasma = m_session->playerPosition();
+            m_scenes.requestReplace(makeScene(false, [this, delRecuerdo, fantasma] {
+                return loadLevel("assets/levels/interior_taberna.json", delRecuerdo, fantasma, [this] {
                     m_narrativeState.setFlag("bnd_dia1_empezado");
                     m_narrative.setAdventure(&m_dia1);
                 });
             }));
         }
-        // Dia 1 -> Dia 2: el Dia 2 abre con un beat "auto" (b2_amanece),
-        // NO con un "enter". Asi que NO recargamos nivel (solo resetearia
-        // la posicion del jugador sin beneficio). Al cambiar el guion, el
-        // siguiente tick() (al cerrar el dialogo actual) dispara
-        // b2_amanece, que ya pide bnd_dia_cerrado en su requires.
+        // Dia 1 -> Dia 2 (Gorran): GORRAN-DIA2 (Oriol, 22/10: «passar de 3 a 4
+        // dies; Gorran ocupa el dia 2 sencer»). Abre con un beat "auto"
+        // (bg_amanece), NO con un "enter": no recargamos nivel.
         else if (m_narrativeState.hasFlag("bnd_dia_cerrado") &&
+                 !m_narrativeState.hasFlag("bnd_diag_empezado")) {
+            m_scenes.requestReplace(makeScene(false, [this] {
+                m_narrativeState.setFlag("bnd_diag_empezado");
+                m_narrative.setAdventure(&m_diaGorran);
+                return Result<bool>::Ok(true);
+            }));
+        }
+        // Dia 2 (Gorran) -> Dia 3: el antiguo Dia 2 (boundington_segundo_dia)
+        // abre con un beat "auto" (b2_amanece), que pide bndg_dia_cerrado.
+        // Tampoco recargamos nivel: el dia de Gorran acaba en la Taberna Humilde.
+        else if (m_narrativeState.hasFlag("bndg_dia_cerrado") &&
                  !m_narrativeState.hasFlag("bnd_dia2_empezado")) {
             m_scenes.requestReplace(makeScene(false, [this] {
                 m_narrativeState.setFlag("bnd_dia2_empezado");
@@ -290,20 +308,37 @@ void Application::update(float deltaTime) {
             if (actor == nullptr) continue;
             if (!pnj->dibujoListo) {  // las hojas de PNJ no traen el reposo: el quieto de cada rumbo
                 HojaPersonaje::animar(*actor);
-                for (int r = 0; r < 4; ++r)
+                // Oriol (24/10): las hojas en diagonal (40 frames) si traen el reposo: respiran
+                const Game::Reparto reparto = HojaPersonaje::repartoDe(*actor);
+                for (int r = 0; r < 4; ++r) {
+                    const auto rumbo = static_cast<Game::Rumbo>(r);
                     actor->addAnimation(std::string("idle_") + Game::RutinasPnj::nombreRumbo(r),
-                                        {Game::frameQuieto(static_cast<Game::Rumbo>(r))});
+                                        reparto == Game::Reparto::Diagonal
+                                            ? Game::cicloDeReposo(rumbo, reparto)
+                                            : std::vector<int>{Game::frameQuieto(rumbo)});
+                }
                 pnj->dibujoListo = true;
             }
-            actor->play(Game::RutinasPnj::animacion(*pnj, reducidas));
+            auto* clip = dynamic_cast<EntidadClip*>(actor);  // U3-06.E06b: pnj_basico (LEGACY) o politica de siempre
+            if (clip == nullptr || !Engine::animaConMaquina(*clip, "pnj_basico", Game::entradasDePnj(*pnj, reducidas),
+                                                            Engine::tieneRutaDeCombate(m_cine.get(), marcador.handle)))
+                actor->play(Game::RutinasPnj::animacion(*pnj, reducidas));
             const float dx = pnj->desfaseX(), dy = pnj->desfaseY();
             actor->setOffset(Vector2{(dx - dy) * static_cast<float>(kTileW) * 0.5f,
                                      (dx + dy) * static_cast<float>(kTileH) * 0.5f + Game::RutinasPnj::saltoPx(*pnj, reducidas)});
+        }
+        // U3-06.E06b (D-O3): enemigos de cuerpo base (sin EstadoPnj) reenganchan su clip. DENTRO de !enCurso.
+        for (WorldMarker& marcador : m_worldMarkers) {
+            auto* clip = rutinas.de(marcador.handle) == nullptr ? dynamic_cast<EntidadClip*>(marcador.entity.get()) : nullptr;
+            if (clip != nullptr && clip->esCuerpoBase())
+                Engine::animaConMaquina(*clip, "enemigo_base", {}, Engine::tieneRutaDeCombate(m_cine.get(), marcador.handle));
         }
     }
     trace("update: refreshHud");
     refreshHud();
     ApplicationCinematica::tintes(*this, deltaTime);  // PROLOGO-02: espectros y apariciones
+    m_session->avaluaEventosDelMundo();  // C8-03c: una vez por fotograma; cubre cinematicas, cofres, companeros...
+    ApplicationCinematica::escena(*this, deltaTime);  // C2-04b: posturas, fuego y emociones
 
     // Animacion de las barras DESPUES de refreshHud() (que fija los
     // valores objetivo de este frame): asi la barra empieza a perseguir
@@ -379,6 +414,11 @@ void Application::render(bool capture) {
     m_hudBatch->end();
     glDisable(GL_BLEND);
 
+    for (const std::string& nombre : m_captura.tomaCapturas()) {  // E-GUION-01: capturas del guion, en cualquier fotograma
+        const std::string ruta = Engine::GuionCaptura::ficheroDe(nombre);
+        const auto v = Render::VuelcaFramebufferPPM(ruta, m_width, m_height);
+        std::cout << (v.isOk() ? "Captura " + ruta + " (fotograma " + std::to_string(m_captura.fotograma()) + ")" : v.errorMessage()) << "\n";
+    }
     if (capture) {
         const auto volcado = Render::VuelcaFramebufferPPM("juego_output.ppm", m_width, m_height);
         if (!volcado.isOk()) std::cerr << volcado.errorMessage() << "\n";
@@ -389,8 +429,10 @@ void Application::render(bool capture) {
     m_window->swapBuffers();
 }
 
-void Application::run(int maxFrames) {
+void Application::run(int maxFrames, const Engine::GuionCaptura* guion, const SaveGameData* guardado) {
     int frame = 0;
+    if (guion != nullptr) { m_captura.empieza(*guion); maxFrames = m_captura.fotogramas(); }  // E-GUION-01
+    if (guardado != nullptr) ApplicationCinematica::cargaPartida(*this, *guardado);  // E-GUION-02: como «Continuar»
     // RUN-01: la fuente de tiempo sigue siendo GLFW, pero el ritmo de la
     // simulacion vive en ApplicationLoop (ADR-007). Asi Application solo
     // adapta servicios de plataforma/GL y el reloj se prueba sin ventana.
@@ -400,11 +442,12 @@ void Application::run(int maxFrames) {
     bool interactPressedThisFrame = false;
     while (maxFrames < 0 || frame < maxFrames) {
         const double now = glfwGetTime();
-        const float deltaTime = static_cast<float>(now - lastTime);
+        const float deltaTime = m_captura.dt(static_cast<float>(now - lastTime), loop.settings().fixedStepSeconds);
         lastTime = now;
+        m_captura.situa(frame);  // E-GUION-01: con guion, dt fijo y las teclas y capturas de este fotograma
 
         trace("run: frame nuevo");
-        const bool capture = maxFrames >= 0 && frame == maxFrames - 1;
+        const bool capture = !m_captura.guionado() && maxFrames >= 0 && frame == maxFrames - 1;
         const Engine::ApplicationLoopFrame loopFrame = loop.tick(
             deltaTime,
             Engine::ApplicationLoopServices{
@@ -416,7 +459,7 @@ void Application::run(int maxFrames) {
                 },
                 [this](float fixedDeltaTime) { m_scenes.fixedUpdate(fixedDeltaTime); },
                 [this, capture](float alpha) {
-                    m_captureFrame = capture;
+                    m_captura.humo = capture;
                     m_scenes.render(alpha);
                 }});
 
@@ -436,6 +479,7 @@ void Application::run(int maxFrames) {
             break;
         }
         finishSceneFrame();
+        m_captura.avisaPerdidas();
         // Modo humo (maxFrames >= 0): en el ULTIMO frame se vuelca el
         // framebuffer, igual que los demos GL. Asi "juego 3" deja un
         // juego_output.ppm inspeccionable con el HUD real dibujado --

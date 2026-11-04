@@ -13,5 +13,25 @@
     "tileHeight": { "type": "integer", "minimum": 1 },
     "collisionGids": { "type": "array", "items": { "type": "integer", "minimum": 1 }, "uniqueItems": true },
     "layers": { "type": "array" }
+  },
+  "$defs": {
+    "eventPageRegionTrigger": {
+      "$comment": "U3-02.E06a (D1=b). Las capas siguen sin describirse aqui; esta definicion documenta la parte de una pagina de evento (layers[type=event].events[].pages[]) que anade los triggers de region. 'region' es obligatoria si y solo si trigger es region_*; region.layer es el id de una capa de tipo region y region.id el de una region de ella.",
+      "type": "object",
+      "properties": {
+        "trigger": { "enum": ["interact", "touch", "autorun", "parallel", "region_enter", "region_stay", "region_exit"] },
+        "region": {
+          "type": "object",
+          "required": ["layer", "id"],
+          "properties": {
+            "layer": { "type": "string", "minLength": 1 },
+            "id": { "type": "string", "minLength": 1 }
+          }
+        }
+      },
+      "if": { "properties": { "trigger": { "enum": ["region_enter", "region_stay", "region_exit"] } }, "required": ["trigger"] },
+      "then": { "required": ["region"] },
+      "else": { "not": { "required": ["region"] } }
+    }
   }
 }

@@ -50,10 +50,9 @@ EXCLUIDOS = {
     # AV19-06: el ocaso es la misma ciudad en otra franja del dia 3: se llega por
     # la cinematica de AV17-07 (Z.AI), no por una puerta del mundo.
     "ciudad_centro_ocaso.json",
-    # AV19-09: las Afueras al ocaso y la huida cuelgan del Casco en llamas (que ya
-    # esta excluido): se entra por la cinematica del Ocaso y se sale por el evento
-    # `huida_a_egaroth`, no por puertas del mapamundi.
-    "afueras_ocaso.json", "huida_boundington.json",
+    # 18/10: los otros dos mapas de esa noche (Oriol): las Afueras al ocaso y la huida; se llega por el ocaso.
+    "afueras_boundington_ocaso.json", "huida_boundington.json",
+    # AV19-07: la Gola Fosca se alcanza por la boca de la montaña (y la montaña, por las afueras)
 }
 
 

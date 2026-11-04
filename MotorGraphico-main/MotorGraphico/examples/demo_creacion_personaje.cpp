@@ -40,7 +40,7 @@ int main() {
     std::printf("  catalogos: %d razas, %d clases, %d trasfondos, %d deidades\n",
                 (int)cc.races().size(), (int)cc.classes().size(),
                 (int)cc.backgrounds().size(), (int)cc.deities().size());
-    require(cc.races().size() == 45);  // DIALOGOS-01: + el drow de las sombras y la saga de los vientos
+    require(cc.races().size() == 72);  // DIALOGOS-01 y el 2000 b.f.: 72 pueblos en races.json
     require(cc.classes().size() == 127);  // 63 desde el arbol del 29/09; 127 desde CP-01 (44 especialistas y 20 propias)
     require(cc.backgrounds().size() == 12);
 
@@ -149,8 +149,8 @@ int main() {
     std::printf("\n[la pantalla, paso a paso]\n");
     CharacterCreationScreen p(cc);
     require(p.paso() == Paso::Raza);
-    // 45 pueblos en el catalogo; los dos yokai no se juegan (PNJ-02): 43.
-    require(p.opciones().size() == 43);
+    // 72 pueblos en el catalogo; 3 llevan playable:false en races.json (espectros y los dos yokai) y no se juegan: 69.
+    require(p.opciones().size() == 69);
     std::printf("  paso %d/%d  %s  (%d opciones)\n", p.numeroDePaso(),
                 CharacterCreationScreen::totalDePasos(), p.tituloPaso(),
                 (int)p.opciones().size());
@@ -165,8 +165,8 @@ int main() {
     // --- Filtrar: 41 razas pasan a las que importan ---
     for (char c : std::string("enan")) p.tecla(c);
     require(p.filtro() == "enan");
-    require(p.opciones().size() < 43 && !p.opciones().empty());
-    require(p.totalSinFiltrar() == 43);  // DIALOGOS-01: + dos de Ayashii
+    require(p.opciones().size() < 69 && !p.opciones().empty());
+    require(p.totalSinFiltrar() == 69);  // las jugables (72 menos 3 con playable:false)
     std::printf("  filtro 'enan': %d de %d razas -> %s\n", (int)p.opciones().size(),
                 (int)p.totalSinFiltrar(), p.etiquetas()[0].c_str());
     // El filtro busca por NOMBRE y por id: "Enano de las Fraguas

@@ -21,8 +21,35 @@ MOTOR_TEST_CASE(default_map_resolves_move_and_interact_from_simulated_keys) {
     MOTOR_CHECK(snapshot.held(InputAction::MoveNorth));
     MOTOR_CHECK(snapshot.pressed(InputAction::MenuUp));
     MOTOR_CHECK(snapshot.pressed(InputAction::Interact));
-    MOTOR_CHECK(snapshot.pressed(InputAction::Cancel));
+    MOTOR_CHECK(snapshot.pressed(InputAction::Confirm));  // Oriol (22/10): E = Enter (ya no cancela)
     MOTOR_CHECK(snapshot.hasActivity());
+}
+
+// Oriol (25/10): se vuelve a andar con W A S D (cada una por un eje de la rejilla isometrica); A y D
+// tambien van a los lados en los menus, Q sigue pasando de pestana y las flechas mueven el cursor del
+// mapa sin andar.
+MOTOR_TEST_CASE(wasd_walks_and_menus_keep_their_keys) {
+    InputSystem input;
+    const auto con = [&](InputKey k) { RawInputState raw; raw.setDown(k); input.update(RawInputState{}); return input.update(raw); };
+    const auto w = con(InputKey::W);
+    MOTOR_CHECK(w.pressed(InputAction::MoveNorth));
+    MOTOR_CHECK(w.pressed(InputAction::MenuUp));
+    const auto a = con(InputKey::A);
+    MOTOR_CHECK(a.pressed(InputAction::MoveWest));
+    MOTOR_CHECK(a.pressed(InputAction::SideLeft));
+    const auto s = con(InputKey::S);
+    MOTOR_CHECK(s.pressed(InputAction::MoveSouth));
+    MOTOR_CHECK(s.pressed(InputAction::MenuDown));
+    const auto d = con(InputKey::D);
+    MOTOR_CHECK(d.pressed(InputAction::MoveEast));
+    MOTOR_CHECK(d.pressed(InputAction::SideRight));
+    const auto q = con(InputKey::Q);
+    MOTOR_CHECK(q.pressed(InputAction::PrevTab));
+    MOTOR_CHECK(!q.pressed(InputAction::MoveWest));
+    const auto flecha = con(InputKey::LeftArrow);
+    MOTOR_CHECK(flecha.pressed(InputAction::CursorLeft));
+    MOTOR_CHECK(flecha.pressed(InputAction::MenuLeft));
+    MOTOR_CHECK(!flecha.pressed(InputAction::MoveWest));
 }
 
 MOTOR_TEST_CASE(snapshot_tracks_pressed_held_and_released_transitions) {
@@ -110,6 +137,8 @@ MOTOR_TEST_CASE(new_keys_resolve_tabs_turn_log_erase_and_slots) {
     const auto s2 = input.update(e);
     MOTOR_CHECK(s2.pressed(InputAction::NextTab));
     MOTOR_CHECK(s2.pressed(InputAction::Interact));
+    MOTOR_CHECK(s2.pressed(InputAction::Confirm));   // Oriol (22/10): E = Enter
+    MOTOR_CHECK(!s2.pressed(InputAction::Cancel));
 }
 
 MOTOR_TEST_CASE(mouse_buttons_have_edges_and_movement_counts_as_activity) {

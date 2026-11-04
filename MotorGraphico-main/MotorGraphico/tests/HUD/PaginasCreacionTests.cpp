@@ -4,6 +4,7 @@
 // boton), que nada se sale de la vista de 1280x720, que las teselas no se
 // pisan y que sin quien monte personajes la hoja se pinta igual (sin
 // retratos). Tambien el papiro del titulo con su motivo y sus zonas.
+#include <algorithm>
 #include <map>
 #include <set>
 #include <stdexcept>
@@ -208,3 +209,88 @@ MOTOR_TEST_CASE(papiro_apagada_lleva_su_motivo_y_cada_entrada_su_zona) {
 }
 
 }  // namespace
+
+MOTOR_TEST_CASE(creacion_aspecto_muestra_dos_orientaciones_sin_pisar_las_columnas) {
+    auto cargado = Game::ManifiestoPersonajes::cargar("assets/textures");
+    MOTOR_CHECK(cargado.isOk()); if (!cargado.isOk()) return;
+    auto personajes = cargado.value();
+    auto datos = mundo().datos(); datos.personajes = &personajes;
+    CuadernoCreacion c(datos);
+    auto razas = c.ids(Hoja::Raza);
+    const auto it = std::find(razas.begin(), razas.end(), "minotauros_de_la_llanura");
+    MOTOR_CHECK(it != razas.end()); if (it == razas.end()) return;
+    c.pulsa(ZonaC::Tesela, static_cast<int>(it - razas.begin())); c.irA(Hoja::Aspecto);
+    Game::MontajePersonajes montaje(personajes, "assets/textures");
+    AtlasRetratos atlas; Retratista retratos(atlas, &montaje);
+    Lienzo l; const Pincel p(mundo().letras, mundo().iconos);
+    pintaCreacion(l, p, c, retratos, 1280, 720);
+    int vistas = 0;
+    for (const auto& trazo : l.trazos()) if (trazo.fuente == Fuente::Retratos) {
+        ++vistas; MOTOR_CHECK(trazo.p[0].x >= 650.0f); MOTOR_CHECK(trazo.p[2].x <= 906.0f);
+    }
+    MOTOR_CHECK(vistas == 2); MOTOR_CHECK(dentroDeLaVista(l));
+}
+
+MOTOR_TEST_CASE(el_aviso_del_retrato_sobrevive_a_la_primera_reserva_del_atlas) {
+    AtlasRetratos atlas; Imagen tira; tira.crea(64,64);
+    atlas.guardaTira("apariencia", std::move(tira));
+    atlas.guardaAviso("apariencia#0", "Cuernos no visibles en esta vista");
+    atlas.celda("apariencia#0", [](Imagen& f) { f.crea(64,64); return true; });
+    MOTOR_CHECK(!atlas.aviso("apariencia#0").empty());
+}
+
+// PERF-2: la rejilla de Raza pide 20 retratos y en frio cada raza cuesta casi
+// un segundo; como mucho 2 montajes nuevos por fotograma, el resto en los
+// siguientes. Se cuentan las celdas nuevas del atlas (una por retrato montado).
+namespace {
+int retratosPintados(const Lienzo& l) {
+    int n = 0;
+    for (const auto& t : l.trazos()) n += t.fuente == Fuente::Retratos ? 1 : 0;
+    return n;
+}
+// Solo los de la rejilla (columna izquierda); el personaje central queda fuera.
+int retratosEnRejilla(const Lienzo& l) {
+    int n = 0;
+    for (const auto& t : l.trazos()) n += t.fuente == Fuente::Retratos && t.p[0].x < 640.0f ? 1 : 0;
+    return n;
+}
+}  // namespace
+
+MOTOR_TEST_CASE(creacion_raza_monta_como_mucho_dos_retratos_por_fotograma_y_los_llena_en_diez) {
+    auto cargado = Game::ManifiestoPersonajes::cargar("assets/textures");
+    MOTOR_CHECK(cargado.isOk()); if (!cargado.isOk()) return;
+    auto personajes = cargado.value();
+    auto datos = mundo().datos(); datos.personajes = &personajes;
+    CuadernoCreacion c(datos);
+    Game::MontajePersonajes montaje(personajes, "assets/textures");
+    AtlasRetratos atlas; Retratista retratos(atlas, &montaje);
+    const Pincel p(mundo().letras, mundo().iconos);
+    int previos = 0, pintados = 0;
+    for (int fotograma = 0; fotograma < 10; ++fotograma) {
+        atlas.nuevoFotograma();
+        Lienzo l; pintaCreacion(l, p, c, retratos, 1280, 720);
+        const int nuevas = static_cast<int>(atlas.cuantas()) - previos;
+        previos = static_cast<int>(atlas.cuantas());
+        MOTOR_CHECK(nuevas <= AtlasRetratos::kMontajesPorFotograma);
+        MOTOR_CHECK(atlas.montajes() <= AtlasRetratos::kMontajesPorFotograma);
+        if (fotograma == 0) MOTOR_CHECK(retratosEnRejilla(l) == 2);  // las dos primeras casillas
+        pintados = retratosEnRejilla(l);
+    }
+    MOTOR_CHECK(pintados == cuantas(pinta(c), ZonaC::Tesela));  // las 20 con retrato
+}
+
+MOTOR_TEST_CASE(creacion_aspecto_el_central_monta_aunque_el_cupo_este_gastado) {
+    auto cargado = Game::ManifiestoPersonajes::cargar("assets/textures");
+    MOTOR_CHECK(cargado.isOk()); if (!cargado.isOk()) return;
+    auto personajes = cargado.value();
+    auto datos = mundo().datos(); datos.personajes = &personajes;
+    CuadernoCreacion c(datos);
+    c.pulsa(ZonaC::Tesela, 0); c.irA(Hoja::Aspecto);
+    Game::MontajePersonajes montaje(personajes, "assets/textures");
+    AtlasRetratos atlas; Retratista retratos(atlas, &montaje);
+    for (int i = 0; i < AtlasRetratos::kMontajesPorFotograma; ++i) atlas.cuentaMontaje();
+    const Pincel p(mundo().letras, mundo().iconos);
+    Lienzo l; pintaCreacion(l, p, c, retratos, 1280, 720);
+    MOTOR_CHECK(retratosPintados(l) == 2);  // sin cupo, el central se monta igual
+    MOTOR_CHECK(atlas.montajes() == AtlasRetratos::kMontajesPorFotograma);  // y no cuenta
+}

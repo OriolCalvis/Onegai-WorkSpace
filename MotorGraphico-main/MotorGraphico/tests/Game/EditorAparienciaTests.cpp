@@ -19,6 +19,8 @@
 //      no las ofrece.
 #include "TestHarness.h"
 
+#include <algorithm>
+#include <set>
 #include <string>
 #include <utility>
 
@@ -95,19 +97,50 @@ MOTOR_TEST_CASE(apariencia_filas_segun_el_pueblo) {
     Game::EditorApariencia e(manifiesto());
     e.empezar("race_human_marches");
     MOTOR_CHECK(tiene(e, Fila::Piel) && tiene(e, Fila::Talla));
-    MOTOR_CHECK(tiene(e, Fila::Peinado) && tiene(e, Fila::ColorPelo));
+    MOTOR_CHECK(tiene(e, Fila::Peinado) && !tiene(e, Fila::ColorPelo));  // H-PEL-1: pelo propio de serie, con sus colores
     MOTOR_CHECK(tiene(e, Fila::Barba) && tiene(e, Fila::ColorBarba));  // barba corta de serie
     MOTOR_CHECK(tiene(e, Fila::Pies) && tiene(e, Fila::AlAzar) && tiene(e, Fila::ComoSuRaza));
 
+    // EDITOR-PERSONALIZACION-01: el aarakocra tambien elige piel (las de su talla). CAR-1: pero ni peinado,
+    // ni barba, ni ojos genericos (cabeza de ave).
     e.empezar("aarakocra_de_las_montanas");
-    MOTOR_CHECK(!tiene(e, Fila::Piel) && !tiene(e, Fila::Peinado) && !tiene(e, Fila::Barba));
-    MOTOR_CHECK(!tiene(e, Fila::Pies) && tiene(e, Fila::Torso) && tiene(e, Fila::Ojos));
+    MOTOR_CHECK(tiene(e, Fila::Piel) && !tiene(e, Fila::Peinado) && !tiene(e, Fila::Barba) && !tiene(e, Fila::Talla));
+    MOTOR_CHECK(!tiene(e, Fila::Pies) && tiene(e, Fila::Torso) && !tiene(e, Fila::Ojos));
+    // Las alas propias ahora tambien se pueden conservar, quitar o sustituir.
+    MOTOR_CHECK(tiene(e, Fila::Alas) && tiene(e, Fila::Cola) && tiene(e, Fila::Cuernos) && tiene(e, Fila::Marca1));
 
     e.empezar("nagas_arcanos");
     MOTOR_CHECK(!tiene(e, Fila::Piernas) && !tiene(e, Fila::Pies) && tiene(e, Fila::Capa));
     // Una armadura no se le pone a una naga sin su talla sin piernas: la
     // apariencia de la raza se monta (las piezas existen en esa talla).
     MOTOR_CHECK(e.apariencia().raza == "nagas_arcanos");
+}
+
+// NET-E2: el creador ofrece 26 peinados de siempre (sin «raya», que era un «corto» con 6 px de diferencia) y no
+// ofrece la barba trenzada. H-PEL-2: una raza de talla medio ve ademas los 12 pelos compartidos (38 en total).
+MOTOR_TEST_CASE(apariencia_peinados_y_barbas_sin_los_retirados) {
+    Game::EditorApariencia e(manifiesto());
+    e.empezar("race_human_marches");
+    marcar(e, Fila::Peinado);
+    std::set<std::string> peinados;
+    for (int i = 0; i < 90; ++i) {
+        e.derecha();
+        if (!e.apariencia().peloEstilo.empty())
+            peinados.insert(e.apariencia().peloEstilo);
+    }
+    peinados.erase("propio");  // H-PEL-1: el pelo propio de la raza tambien se ofrece (EditorAparienciaPeloPropioTests)
+    MOTOR_CHECK(peinados.size() == 26 + 12);  // H-PEL-2
+    MOTOR_CHECK(peinados.count("raya") == 0 && peinados.count("corto") == 1 && peinados.count("undercut") == 1 &&
+                peinados.count("flequillo") == 1);
+    if (tiene(e, Fila::Barba)) {
+        marcar(e, Fila::Barba);
+        std::set<std::string> barbas;
+        for (int i = 0; i < 40; ++i) {
+            e.derecha();
+            barbas.insert(e.apariencia().barbaEstilo);
+        }
+        MOTOR_CHECK(barbas.count("BARBA_TRENZADA") == 0 && barbas.count("BARBA_LARGA") == 1);
+    }
 }
 
 MOTOR_TEST_CASE(apariencia_valores_con_la_vuelta) {
@@ -117,7 +150,7 @@ MOTOR_TEST_CASE(apariencia_valores_con_la_vuelta) {
     const std::string antes = e.apariencia().peloEstilo;
     MOTOR_CHECK(!antes.empty());
     // Hasta «sin pelo»: la fila de color desaparece y el cursor sigue en PEINADO.
-    for (int i = 0; i < 20 && !e.apariencia().peloEstilo.empty(); ++i)
+    for (int i = 0; i < 40 && !e.apariencia().peloEstilo.empty(); ++i)  // PL-ROPA-01: 27 peinados (NET-E2: 26)
         e.izquierda();
     MOTOR_CHECK(e.apariencia().peloEstilo.empty());
     MOTOR_CHECK(!tiene(e, Fila::ColorPelo));
@@ -129,6 +162,13 @@ MOTOR_TEST_CASE(apariencia_valores_con_la_vuelta) {
     MOTOR_CHECK(tiene(e, Fila::ColorPelo));
     e.derecha();
     e.derecha();
+    MOTOR_CHECK(e.apariencia().peloEstilo == "propio");  // H-PEL-1: sin pelo, el propio de la raza y los genericos
+    while (e.apariencia().peloEstilo == "propio")  // el propio y los de sus razas germanas
+        e.derecha();
+    MOTOR_CHECK(e.apariencia().peloEstilo == "mono_mechones");  // H-PEL-2: tras los propios, los 12 compartidos
+    MOTOR_CHECK(e.valor(Fila::Peinado) == "Moño con mechones");
+    for (int i = 0; i < 12; ++i)
+        e.derecha();
     MOTOR_CHECK(e.apariencia().peloEstilo == "corto");
     MOTOR_CHECK(e.valor(Fila::Peinado) == "Corto");
 
@@ -145,7 +185,14 @@ MOTOR_TEST_CASE(apariencia_valores_con_la_vuelta) {
 
 MOTOR_TEST_CASE(apariencia_la_barba_sigue_al_pelo) {
     Game::EditorApariencia e(manifiesto());
-    e.empezar("race_human_marches");  // pelo y barba oscuros
+    e.empezar("race_human_marches");
+    // H-PEL-1: de serie lleva el pelo propio (sin fila de color): un peinado generico y una barba a juego
+    marcar(e, Fila::Peinado);
+    while (e.apariencia().peloEstilo != "corto")
+        e.derecha();
+    marcar(e, Fila::Barba);
+    while (e.apariencia().barbaEstilo != "BARBA_CORTA")
+        e.derecha();
     MOTOR_CHECK(e.apariencia().barbaColor == e.apariencia().peloColor);
     marcar(e, Fila::ColorPelo);
     e.derecha();
@@ -181,14 +228,16 @@ MOTOR_TEST_CASE(apariencia_al_azar_siempre_se_monta) {
             ++montadas;
         }
     }
-    MOTOR_CHECK(montadas == 45 * 12);  // DIALOGOS-01: + el drow de las sombras y la saga de los vientos
+    MOTOR_CHECK(montadas == 72 * 12);  // DIALOGOS-01: + el drow de las sombras y la saga de los vientos; + 27 del 2000 b.f.
     // Y montar de verdad una tanda (lee los atlas).
     Game::EditorApariencia e(manifiesto());
     e.empezar("race_human_marches");
     marcar(e, Fila::AlAzar);
     for (int i = 0; i < 5; ++i) {
         e.derecha();
-        MOTOR_CHECK(montaje.montar(e.apariencia()).isOk());
+        const auto montada = montaje.montar(e.apariencia());
+        if (!montada.isOk())
+            MOTOR_CHECK_FAIL(e.apariencia().clave() + ": " + montada.errorMessage());
     }
 }
 
@@ -208,7 +257,10 @@ MOTOR_TEST_CASE(apariencia_sin_prendas_de_oficio) {
         const Game::FilaDeCapa* f = grupo == manifiesto().equipo.end() ? nullptr : grupo->second.buscar(id);
         return f != nullptr && f->noEncaja;
     };
-    MOTOR_CHECK(noEncaja("torso", "tunica_mago_pl"));  // la de la captura del 15/10: se salia del cuerpo
+    // PL-JUEGO-01: la de la captura del 15/10 (tunica_mago_pl, que se salia del cuerpo) era una prenda de
+    // PIXELLAB-L7, de cuatro vistas, y con los personajes de PixelLab no esta en los atlas (cada prenda se
+    // dibuja sobre la familia de su talla). La regla sigue: lo que marque la lista no se ofrece.
+    MOTOR_CHECK(manifiesto().equipo.at("torso").buscar("tunica_mago_pl") == nullptr);
     Game::EditorApariencia e(manifiesto());
     e.empezar("race_human_marches");
     const std::pair<Fila, const char*> ropa[] = {
@@ -401,3 +453,61 @@ MOTOR_TEST_CASE(apariencia_sin_manifiesto_el_flujo_de_siempre) {
 }
 
 int main() { return motor_test::runAllTests(); }
+
+// EDITOR-PERSONALIZACION-01 (Oriol, 26/10): piel de cualquier raza, cualquier color de pelo, marcas y rasgos.
+MOTOR_TEST_CASE(apariencia_personalizacion_piel_marcas_y_rasgos) {
+    Game::EditorApariencia e(manifiesto());
+    e.empezar("draconidos_de_fuego");
+    MOTOR_CHECK(tiene(e, Fila::Piel) && !tiene(e, Fila::Talla));
+    MOTOR_CHECK(e.valor(Fila::Piel) == "La de tu pueblo");
+    marcar(e, Fila::Piel);
+    e.derecha();
+    MOTOR_CHECK(!e.apariencia().piel.empty() && e.apariencia().piel != "draconidos_de_fuego");
+    MOTOR_CHECK(e.valor(Fila::Piel) != "La de tu pueblo");
+    e.izquierda();
+    MOTOR_CHECK(e.valor(Fila::Piel) == "La de tu pueblo");
+
+    // Cualquier color en cualquier peinado: la lista de colores trae todos los materiales de pelo.
+    marcar(e, Fila::Peinado);
+    while (e.apariencia().peloEstilo != "afro")
+        e.derecha();
+    marcar(e, Fila::ColorPelo);
+    std::vector<std::string> colores;
+    const std::string primero = e.apariencia().peloColor;
+    do {
+        colores.push_back(e.apariencia().peloColor);
+        e.derecha();
+    } while (e.apariencia().peloColor != primero && colores.size() < 50);
+    MOTOR_CHECK(colores.size() >= 11);
+    MOTOR_CHECK(std::find(colores.begin(), colores.end(), "pelo_llama") != colores.end());
+
+    // Marcas: la segunda fila aparece al poner la primera; quitar la primera corre la segunda.
+    marcar(e, Fila::Marca1);
+    MOTOR_CHECK(!tiene(e, Fila::Marca2) && e.valor(Fila::Marca1) == "Ninguna");
+    e.derecha();
+    MOTOR_CHECK(e.apariencia().marcas.size() == 1 && tiene(e, Fila::Marca2));
+    marcar(e, Fila::Marca2);
+    e.derecha();
+    e.derecha();
+    MOTOR_CHECK(e.apariencia().marcas.size() == 2 && tiene(e, Fila::Marca3));
+    const std::string segunda = e.apariencia().marcas[1];
+    marcar(e, Fila::Marca1);
+    e.izquierda();
+    MOTOR_CHECK(e.apariencia().marcas.size() == 1 && e.apariencia().marcas[0] == segunda);
+
+    // Un dracónido tiene cola propia: no se le ofrece otra. A un humano, cola y cuernos van en la ropa
+    // (ranuras propias) y tienen nombre.
+    MOTOR_CHECK(tiene(e, Fila::Cola) && tiene(e, Fila::Cuernos));
+    e.empezar("race_human_marches");
+    marcar(e, Fila::Cola);
+    e.derecha();
+    MOTOR_CHECK(e.apariencia().ropa.count("cola") == 1 && e.valor(Fila::Cola) != "Ninguna");
+    marcar(e, Fila::Cuernos);
+    e.derecha();
+    MOTOR_CHECK(e.apariencia().ropa.count("cuernos") == 1);
+    // Todo eso se monta.
+    auto m = Game::MontajePersonajes::cargar("assets/textures");
+    MOTOR_CHECK(m.isOk());
+    if (m.isOk())
+        MOTOR_CHECK(m.value()->capas(e.apariencia()).isOk());
+}

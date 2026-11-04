@@ -97,10 +97,10 @@ void hastaElNombre(CuadernoCreacion& c) {
     c.pulsa(Zona::Pestana, static_cast<int>(Hoja::Nombre));
 }
 
-MOTOR_TEST_CASE(empieza_en_raza_con_las_42_y_sin_nada_elegido) {
+MOTOR_TEST_CASE(empieza_en_raza_con_las_69_y_sin_nada_elegido) {
     CuadernoCreacion c(datos());
     MOTOR_CHECK(c.hoja() == Hoja::Raza);
-    MOTOR_CHECK(c.ids().size() == 42);  // 45 del catalogo menos los dos yokai y los Espectros (AV16-01)
+    MOTOR_CHECK(c.ids().size() == 69);  // 72 del catalogo menos los dos yokai y los Espectros (AV16-01); 27 del 2000 b.f.
     for (const std::string& id : c.ids()) MOTOR_CHECK(id != "espectros" && id.rfind("yokai", 0) != 0);
     CuadernoCreacion busca(datos());
     busca.pulsa(Zona::Buscar, 0);
@@ -261,7 +261,7 @@ MOTOR_TEST_CASE(los_pueblos_ya_no_traen_la_plantilla_de_dnd) {
         for (const char* dnd : {"Competencia", "Sabiduría", "Fuerza", "salvación", "1d4", "metros", "truco"})
             MOTOR_CHECK(it->second.texto.find(dnd) == std::string::npos);
     });
-    MOTOR_CHECK(vistas == 45);  // DIALOGOS-01: + el drow de las sombras y la saga de los vientos
+    MOTOR_CHECK(vistas == 72);  // DIALOGOS-01: + el drow de las sombras y la saga de los vientos; + 27 del 2000 b.f.
     const RPG::RaceDefinition* sombra = reglas().races().find("tieflings_de_la_sombra");
     MOTOR_CHECK(sombra != nullptr && sombra->name == "Poseídos de la Sombra");
     MOTOR_CHECK(rasgos().at("minotauros_de_la_llanura").nombre == "Carga feroz");
@@ -345,7 +345,8 @@ MOTOR_TEST_CASE(aspecto_se_cambia_con_las_flechas_de_su_fila) {
     const std::string antes = c.editor()->apariencia().clave();
     int ojos = -1;
     for (std::size_t i = 0; i < c.editor()->filas().size(); ++i)
-        if (c.editor()->filas()[i] == Game::EditorApariencia::Fila::Ojos) ojos = static_cast<int>(i);
+        // CAR-2: los alquimistas no tienen capa de ojos; la fila que se prueba es el peinado.
+        if (c.editor()->filas()[i] == Game::EditorApariencia::Fila::Peinado) ojos = static_cast<int>(i);
     MOTOR_CHECK(ojos >= 0);
     c.pulsa(Zona::Mas, ojos);
     MOTOR_CHECK(c.foco() == ojos);

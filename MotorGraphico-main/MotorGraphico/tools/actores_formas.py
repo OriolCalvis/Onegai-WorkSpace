@@ -2813,3 +2813,4 @@ def registrar():
         assert ident not in armas.ARMAS, f"pieza repetida: {ident}"
         assert valor[0] in armas.FORMAS, f"{ident}: no hay forma '{valor[0]}'"
         armas.ARMAS[ident] = valor
+    armas.aplicar_forja()  # Oriol (23/10): las armas nuevas de la Forja con estas formas

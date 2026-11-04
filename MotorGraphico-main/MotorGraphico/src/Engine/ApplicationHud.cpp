@@ -45,6 +45,7 @@
 #include "Render/AuraJugador.h"
 #include "Render/BancoAtlas.h"
 #include "Render/PergaminoGL.h"
+#include "Render/VidaNivel.h"
 #include "Render/Player.h"
 #include "Render/StaticEntity.h"
 
@@ -146,7 +147,7 @@ void Application::refreshHud() {
         case GameMode::Dialogue: m_hintText->setText("ENTER CONTINUAR"); break;
         case GameMode::Pause: m_hintText->setText("W/S ELEGIR ENTER OK ESC SALIR"); break;
         case GameMode::Shop:
-        case GameMode::Business: m_hintText->setText("W/S ELEGIR ENTER OK E SALIR"); break;
+        case GameMode::Business: m_hintText->setText("W/S ELEGIR E/ENTER OK ESC SALIR"); break;
     }
 
     // UI-BG3-01 — La barra de cartas (sustituye al panel del enemigo y al
@@ -309,6 +310,7 @@ void Application::refreshHud() {
 
     // --- PERGAMINO-01: la moral se ve en el avatar (aura a los pies y
     // tinte del sprite), no en el HUD (Oriol, 29/09). ---
+    if (m_vida != nullptr) m_vida->ponBlanco(m_whiteTexture.get());  // U4-07.E07: fuera de `if (m_aura)`
     if (m_aura) {
         m_aura->ponMoral(m_session->morality().value());
         m_player->setTint(m_aura->aspecto().tinteSprite);
@@ -321,7 +323,7 @@ void Application::refreshHud() {
     // Diario: la aventura activa del NarrativeEngine y el resto de la
     // campana de Boundington, resueltas contra las flags de la partida. Se
     // arma cada fotograma: el retal de objetivo lo necesita siempre.
-    const std::vector<const RPG::AdventureScript*> campana = {&m_prologo, &m_dia1, &m_dia2, &m_ocaso};
+    const std::vector<const RPG::AdventureScript*> campana = {&m_prologo, &m_dia1, &m_diaGorran, &m_dia2, &m_ocaso};
     Game::DiarioDatos diario = Game::construirDiario(
         campana, m_narrativaLista ? m_narrative.adventure() : nullptr, m_narrativeState);
     diario.seguida = m_pergamino->interfaz().guia().marcas().misionSeguida;  // MAPA-02: la que eliges en el cuaderno
@@ -376,12 +378,13 @@ void Application::refreshHud() {
     estado.timers = m_narrativaLista && m_narrative.adventure() != nullptr ? &m_narrative.adventure()->timers : nullptr;
     estado.mapa = &m_map;  // TileMap es un RuntimeTileMap
     if (m_camera) {
-        estado.camaraX = m_camera->position().x;
-        estado.camaraY = m_camera->position().y;
+        estado.camaraX = m_camera->posicionVista().x;
+        estado.camaraY = m_camera->posicionVista().y;
         estado.zoom = m_camera->zoom();
     }
     estado.animacionesReducidas = movimientoReducido();
     estado.tienda = inShop ? &m_tienda : nullptr;  // TIENDA-02
+    estado.emociones = ApplicationCinematica::emocionesVista(*this);  // C2-04d
     if (m_cine && inBattle) {  // AV14-02: tu hoja, si te han pegado
         estado.golpeHoja = m_cine->efectos.hoja();
         estado.temblorHojaX = m_cine->efectos.temblorHoja().x, estado.temblorHojaY = m_cine->efectos.temblorHoja().y;

@@ -124,7 +124,8 @@ void escenasPrologo(const Guiones& g, std::vector<std::string>* vistos) {
         e.ve({"bnd_prologo_espera"});
         e.j.cinematica(GridCoord{4, 9});
         e.nove({"bnd_prologo_barquero", "bnd_prologo_barca_viene"});
-        e.j.habla("sho_noco");
+        // D0024.3: sin la barca, Sho-Noco no esta en el prado (cinematicas.json: visibleSi bnd_prologo_barca_viene): no se le habla.
+        if (e.j.seVe("sho_noco")) e.fallos.push_back("Sho-Noco se ve en el prado antes de que baje la barca");
         e.nove({"bnd_p_barquero_visto"});
         e.j.cinematica(GridCoord{13, 3});
         e.ve({"bnd_prologo_barquero"});
@@ -143,182 +144,510 @@ void escenasPrologo(const Guiones& g, std::vector<std::string>* vistos) {
     }
 }
 
-// El segundo dia.
+// El segundo dia (la montaña de Gorran, boundington_dia_gorran.json) y el tercero
+// (boundington_segundo_dia.json, el antiguo «segundo dia»; fase "dia2" del Jugador).
 void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
     {
         Escena e(g, "DIA 2: Gorran, de buenas", Suerte::Buena, {"heroe_pueblo_humano"},
-                 {"Aceptar el encargo", "Pagar el paso (5)", "Esa espada.", "¿Quién te la encargó?",
-                  "Pelear por la espada", "Acabar con él", "Devolvérsela"}, vistos);
+                 {"Aceptar el encargo", "Pagar el paso (5)", "Cogerla sin que te oigan [Sigilo]",
+                  "Suelta a los presos y estamos en paz.", "Devolvérsela"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
+        e.j.fase("dia_gorran");
         e.j.drena();
+        e.ve({"bndg_empezado"});
+        e.j.laEspadaDeRosita();
+        e.ve({"bnd2_skilla_encargo", "bnd2_aldea_dentro", "bnd2_subasta_ya"});
+        e.visto({"b2_rosita_encargo", "b2_cueva_llegada", "b2_pedestal", "b2_gorran_sigilo_casi", "b2_gorran_combate",
+                 "b2_gorran_victoria"});
+        e.ve({"bnd2_furia_alaro", "bnd2_gorran_redimido", "bnd2_gorran_perdonado"});
+        e.nove({"bnd2_gorran_muerto"});
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.ve({"bnd2_skilla_encargo"});
-        e.j.entra("mazmorra_64x64");
-        e.visto({"b2_gorran", "b2_gorran_victoria"});
-        e.ve({"bnd2_furia_alaro"});
-        e.j.entra("interior_taberna");
+        e.visto({"b2_hito_gorran_taberna"});
+        e.j.habla("skilla");  // Subir a dormir: bg_cierre_furia
+        e.ve({"bndg_dia_cerrado"});
+        e.j.fase("dia2");  // el dia 3
+        e.j.drena();
         e.j.habla("skilla");
         e.visto({"b2_skilla_espada_devuelta"});
-        e.ve({"bnd2_aliado_skilla"});
+        e.ve({"bnd2_skilla_pagada", "bnd2_aliado_skilla"});
         e.min("confianza_rosita", 1);
         e.fin();
     }
 
     {
         Escena e(g, "DIA 2: Gorran, a escondidas", Suerte::Critica, {"heroe_pueblo_humano"},
-                 {"Aceptar el encargo", "Colarte por detrás [Sigilo]", "Decirle que no la encontraste"}, vistos);
+                 {"Aceptar el encargo", "Pagar el paso (5)", "Cogerla sin que te oigan [Sigilo]",
+                  "Decirle que no la encontraste"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.laEspadaDeRosita();
+        e.ve({"bnd2_skilla_encargo", "bnd2_subasta_ya", "bnd2_sigilo_critico"});
+        e.visto({"b2_pedestal", "b2_gorran_sigilo", "b2_gorran_robo_limpio"});
+        e.ve({"bnd2_furia_alaro", "bnd2_documentos", "bnd2_cueva_cerrada"});
+        e.nove({"b2_gorran_victoria", "bnd2_gorran_perdonado", "bnd2_gorran_redimido"});
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");  // Subir a dormir
+        e.ve({"bndg_dia_cerrado"});
         e.j.fase("dia2");
         e.j.drena();
-        e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.ve({"bnd2_skilla_encargo"});
-        e.j.entra("mazmorra_64x64");
-        e.visto({"b2_gorran_sigilo", "b2_gorran_robo_limpio"});
-        e.ve({"bnd2_furia_alaro"});
-        e.j.entra("interior_taberna");
-        e.j.habla("skilla");
+        e.visto({"b2_skilla_espada_devuelta"});
+        e.ve({"bnd2_skilla_pagada"});
         e.nove({"bnd2_aliado_skilla"});
         e.fin();
     }
 
     {
         Escena e(g, "DIA 2: Gorran gana", Suerte::Mala, {"heroe_pueblo_humano"},
-                 {"Aceptar el encargo", "Vengo a hablar con Gorran.", "Pelear por la espada"}, vistos);
+                 {"Aceptar el encargo", "Pagar el paso (5)", "Cogerla sin que te oigan [Sigilo]"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.laEspadaDeRosita();
+        e.ve({"bnd2_skilla_encargo", "bnd2_subasta_ya", "bnd2_sigilo_botch", "bnd2_gorran_gana", "bnd2_cueva_cerrada"});
+        e.visto({"b2_pedestal", "b2_gorran_sigilo", "b2_gorran_sigilo_torpe", "b2_gorran_combate", "b2_gorran_derrota"});
+        e.nove({"bnd2_furia_alaro", "bnd2_gorran_redimido", "bnd2_gorran_perdonado"});
+        e.fin();
+    }
+
+    // GORRAN-LIOS (D0022 3.2): el dia 2 jugado de verdad, sin setVariable("gorran_misiones"): los cuatro
+    // lios de la aldea (cada uno con su beat de cierre, que suma uno), el cuerno, la subasta y a dormir.
+    {
+        Escena e(g, "DIA 2: los cuatro lios de la aldea, la subasta y a dormir", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.pasaElDiaDeGorranJugando();
+        // cada lio, cerrado por su propio beat
+        e.visto({"bgb_golpes", "bgb_salen_todos", "bga_escena", "bga_garsa_exito", "bgc_asalto", "bgc_hundir_exito",
+                 "bgd_velas", "bgd_sacar_exito", "b2_subasta_aviso", "b2_subasta_cojo_pobre", "b2_gorran_victoria",
+                 "bg_cierre_furia", "bg_balance_bgd_ninos_salvados"});
+        e.noVisto({"bgd_mia", "bgd_sacar_exito_tinet", "bg_balance_bgd_tinet_salvado"});  // a tiempo: Tinet y Mia, los dos
+        e.ve({"bgb_cerrada", "bga_cerrada", "bgc_cerrada", "bgd_cerrada", "bgb_rescate_todos", "bga_iris_salvada",
+              "bgc_cajas_hundidas", "bgd_ninos_salvados", "bnd2_subasta_ya", "bnd2_subasta_vista", "bndg_dia_cerrado"});
+        e.ve({"bnd2_furia_alaro", "bnd2_gorran_perdonado"});  // la Furia sale de la pelea de la subasta, no del pedestal
+        e.nove({"bnd2_gorran_muerto", "bnd2_sigilo_exito"});
+        e.min("gorran_misiones", 4);
+        e.fin();
+    }
+
+    // La xerrada directa amb Gorran (b2_gorran_hablar), sin pasar por el pedestal: abre la charla
+    // (bnd2_gorran_abierta), el dialogo de b2_gorran y «Dejarlo para esta noche» la cierra; se puede repetir.
+    {
+        Escena e(g, "DIA 2: hablar con Gorran de frente", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)", "«Vengo a ver al jefe.» [Persuasión]", "Esa espada.",
+                  "¿Quién te la encargó?", "Es de la Furia."}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");  // el encargo
+        e.j.entra("antecova_gorran");  // pagar el paso
+        e.j.entra("recinto_gorran");   // b2_porton: «Vengo a ver al jefe.»
+        e.ve({"bnd2_aldea_dentro", "bnd2_porton_resuelto"});
+        e.nove({"bnd2_gorran_abierta", "bnd2_gorran_visto"});
+        e.j.habla("gorran");  // b2_gorran_hablar -> b2_gorran
+        e.visto({"b2_gorran_hablar", "b2_gorran"});
+        e.ve({"bnd2_gorran_visto", "bnd2_cueva_entrada", "bnd2_gorran_t_espada", "bnd2_gorran_t_quien",
+              "bnd2_pista_gorran", "bnd2_gorran_t_furia", "bnd2_gorran_asustado"});
+        e.nove({"bnd2_gorran_abierta", "bnd2_gorran_resuelto", "bnd2_furia_alaro", "bnd2_gorran_muerto"});  // «Dejarlo para esta noche»
+        e.j.vistos.clear();
+        e.j.habla("gorran");  // otra vez: la charla se vuelve a abrir (b2_gorran_hablar), ahora sin temas nuevos
+        e.visto({"b2_gorran_hablar"});
+        e.nove({"bnd2_gorran_resuelto", "bnd2_furia_alaro"});
+        e.fin();
+    }
+
+    // Los lios con mala suerte: no todos se cierran bien (la caja con el sello roto te lleva al calabozo,
+    // el diacono te ata) y el cuerno no suena todavia (dos cerrados de tres).
+    {
+        Escena e(g, "DIA 2: los lios de la aldea con mala suerte", Suerte::Mala, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)"}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
         e.j.drena();
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.ve({"bnd2_skilla_encargo"});
-        e.j.entra("mazmorra_64x64");
-        e.visto({"b2_gorran_derrota"});
-        e.nove({"bnd2_furia_alaro"});
+        e.j.entra("antecova_gorran");
+        e.j.losLiosDeLaAldea(2, false);  // las tiradas salen mal: se cierran solo la Veta Honda (sin tirada) y Cal Serra
+        e.ve({"bgb_cerrada", "bga_cerrada", "bga_iris_llevada", "bgd_atado"});
+        e.visto({"bgb_salen_todos", "bga_garsa_pifia", "bgc_abrir_pifia", "bgd_sacar_pifia"});
+        e.nove({"bgc_cerrada", "bgd_cerrada", "bnd2_subasta_ya"});
+        e.min("gorran_misiones", 2);
+        e.fin();
+    }
+
+    // GORRAN-FIX 1: el lio C sumaba dos veces cuando el asalto empezaba con el reloj en 5 o mas: bgc_barca_sale
+    // (la barca sale sola) y bgc_hundir_exito (hundirlas) saltaban los dos. Aqui gorran_misiones parte de 0 y
+    // tiene que acabar en 1 exacto (con el tope de 4 de la aventura, desde 3 no se veria).
+    {
+        Escena e(g, "DIA 2: el lio de las Galerias con el reloj en 5 suma una sola vez", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)", "Abrir una sin romper el sello [Investigación]",
+                  "Hundirlas en el río [Atletismo]"}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.entra("antecova_gorran");
+        e.j.entra("galerias_gorran");
+        e.j.habla("aduanero_galeria");
+        e.j.habla("cajas_cera_gris");
+        e.ve({"bgc_gancho"});
+        e.nove({"bgc_cerrada"});
+        e.igual("gorran_misiones", 0);
+        e.var("aldea_tiempo", 4);  // el asalto (+1 de reloj) llega con el reloj en 5
+        e.j.pisaLaZona("bgc_asalto");
+        e.visto({"bgc_asalto", "bgc_hundir_exito"});
+        e.noVisto({"bgc_barca_sale"});
+        e.ve({"bgc_cerrada", "bgc_cajas_hundidas"});
+        e.igual("gorran_misiones", 1);
+        e.min("aldea_tiempo", 5);
+        e.fin();
+    }
+
+    // GORRAN-FIX 2: bgb_campana (derrumbe) necesita bg_aldea_problemas_visto, que pone el aviso de la plaza al
+    // entrar en la aldea: en la PRIMERA visita tienen que saltar los dos, el aviso y luego la campana.
+    {
+        Escena e(g, "DIA 2: la primera vez en la aldea, el aviso de la plaza y la campana", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)"}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.entra("antecova_gorran");
+        e.nove({"bg_aldea_problemas_visto", "bgb_gancho"});
+        e.j.entra("cueva_gorran");
+        e.visto({"bg_aldea_problemas", "bgb_campana"});
+        e.ve({"bg_aldea_problemas_visto", "bgb_gancho"});
+        e.igual("mina_aire", 6);
+        e.j.vistos.clear();
+        e.j.entra("cueva_gorran");  // la segunda vez no se repite ninguno de los dos
+        e.noVisto({"bg_aldea_problemas", "bgb_campana"});
+        e.fin();
+    }
+
+    // GORRAN-FIX 3 (D0023.2): llegar tarde a la mina vieja (reloj 5 o mas: bgd_mia_perdida) y sacar a los crios en
+    // silencio salva solo a Tinet. El dia entero con los lios en orden B, A, C, D: Tinet en casa, Mia no.
+    {
+        Escena e(g, "DIA 2: la mina vieja a reloj 5, solo se salva a Tinet", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.pasaElDiaDeGorranJugando("BACD");
+        e.visto({"bgd_velas", "bgd_mia", "bgd_sacar_exito_tinet", "bg_balance_bgd_tinet_salvado"});
+        e.noVisto({"bgd_sacar_exito", "bg_balance_bgd_ninos_salvados"});
+        e.ve({"bgd_cerrada", "bgd_mia_perdida", "bgd_tinet_salvado", "bgd_solo_tinet", "bgd_sacar_cerrado"});
+        e.nove({"bgd_ninos_salvados", "bgd_ninos_perdidos", "bgd_ninos_fuera"});
+        e.ve({"bgb_cerrada", "bga_cerrada", "bgc_cerrada", "bnd2_subasta_ya", "bndg_dia_cerrado"});
+        e.min("gorran_misiones", 4);
+        e.fin();
+    }
+
+    // ... y al volver a la plaza de la aldea, Tinet cuenta que no tuvo miedo y la madre de Mia no pregunta.
+    {
+        Escena e(g, "DIA 2: la plaza, con Tinet en casa y sin Mia", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)"}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.entra("antecova_gorran");
+        e.j.losLiosDeLaAldea(3, true, "BACD");
+        e.ve({"bgd_solo_tinet", "bgd_mia_perdida"});
+        e.j.entra("cueva_gorran");
+        e.visto({"bgd_plaza_tinet"});
+        e.noVisto({"bgd_plaza"});
+        e.ve({"bgd_plaza_vista"});
+        e.fin();
+    }
+
+    // y con el reloj a tiempo ("BADC": la mina vieja se hace con el reloj en 3) se salva a los dos.
+    {
+        Escena e(g, "DIA 2: la plaza, con Tinet y Mia en casa", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)"}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.entra("antecova_gorran");
+        e.j.losLiosDeLaAldea(3, true, "BADC");
+        e.ve({"bgd_ninos_salvados"});
+        e.nove({"bgd_mia_perdida", "bgd_solo_tinet"});
+        e.noVisto({"bgd_mia", "bgd_sacar_exito_tinet"});
+        e.visto({"bgd_sacar_exito"});
+        e.j.entra("cueva_gorran");
+        e.visto({"bgd_plaza"});
+        e.noVisto({"bgd_plaza_tinet"});
+        e.fin();
+    }
+
+    // D0024: la tregua con Gorran se pacta EN LA SUBASTA (desde el cuerno Gorran esta oculto, cinematicas.json: no se le habla). Con el aval
+    // de Doña Serra la subasta ofrece «Proponerle una tregua» (b2_subasta_aval*, gemela de b2_subasta*) y luego los pactos (b2_subasta_tregua);
+    // sin el aval es la subasta de siempre. Los detalles (traicion, mutaciones) los prueba MatrizGorranTests.
+    {
+        Escena e(g, "DIA 2: la subasta con el aval de Serra: tregua pactada, Gorran no pelea", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)", "Proponerle una tregua", "Salvarle la cara a Gorran"}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.entra("antecova_gorran");
+        e.j.losLiosDeLaAldea();
+        e.pon({"bnd2_aval_serra"});  // el aval de Serra: «Di en el portón que vas de mi parte»
+        e.ve({"bnd2_subasta_ya"});
+        e.min("gorran_misiones", 3);
+        e.nove({"bnd2_gorran_tregua"});
+        e.j.entra("recinto_gorran");
+        e.noVisto({"b2_gorran_hablar", "b2_gorran"});
+        e.j.pisaLaZona("recinto_subasta");
+        e.visto({"b2_subasta_tregua", "b2_honor_exito"});
+        e.ve({"bnd2_subasta_vista", "bnd2_gorran_tregua", "bnd2_tregua_cerrada", "bnd2_gorran_honor"});
+        e.nove({"bnd2_tregua_rota", "bnd2_comedia_pelea", "bnd2_gorran_muerto"});
+        e.noVisto({"b2_subasta", "b2_subasta_cojo_pobre", "b2_subasta_sin_espada", "b2_comedia_pelea"});
+        e.fin();
+    }
+
+    {
+        Escena e(g, "DIA 2: la subasta sin el aval de Serra: no hay tregua", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)", "Salvarle la cara a Gorran [Persuasión]"}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.entra("antecova_gorran");
+        e.j.losLiosDeLaAldea();
+        e.nove({"bnd2_aval_serra"});
+        e.min("gorran_misiones", 3);
+        e.j.entra("recinto_gorran");
+        e.j.pisaLaZona("recinto_subasta");
+        e.ve({"bnd2_subasta_vista"});
+        e.noVisto({"b2_subasta_aval", "b2_subasta_aval_cojo_pobre", "b2_subasta_aval_sin_espada", "b2_subasta_tregua"});
+        e.nove({"bnd2_gorran_tregua", "bnd2_tregua_cerrada"});
+        e.fin();
+    }
+
+    {
+        Escena e(g, "DIA 2: hablar con Gorran con el aval de Serra pero sin los lios: no hay tregua", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Aceptar el encargo", "Pagar el paso (5)", "Proponerle una tregua"}, vistos);
+        e.di({"Pagar la cama", "Subir a dormir"});
+        e.j.prologo();
+        e.j.fase("dia1");
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.duerme();
+        e.ve({"bnd_dia_cerrado"});
+        e.j.fase("dia_gorran");
+        e.j.drena();
+        e.j.entra("interior_taberna");
+        e.j.habla("skilla");
+        e.j.entra("antecova_gorran");
+        e.pon({"bnd2_aval_serra", "bnd2_porton_resuelto"});
+        e.igual("gorran_misiones", 0);
+        e.j.entra("recinto_gorran");
+        e.j.habla("gorran");  // sin los lios no ha sonado el cuerno: Gorran esta en su sala
+        e.visto({"b2_gorran_hablar", "b2_gorran"});
+        e.noVisto({"b2_subasta_aval", "b2_subasta_tregua"});
+        e.nove({"bnd2_gorran_tregua"});
         e.fin();
     }
 
     {
         Escena e(g, "DIA 2: Rosita cuenta su historia", Suerte::Buena, {"heroe_pueblo_humano"},
-                 {"Aceptar el encargo", "Vengo a hablar con Gorran.", "Pelear por la espada",
-                  "Si peleas contra ellos, estamos en paz.", "Devolvérsela y contarle todo",
+                 {"Aceptar el encargo", "Pagar el paso (5)", "Cogerla sin que te oigan [Sigilo]",
+                  "Suelta a los presos y estamos en paz.", "Devolvérsela y contarle todo",
                   "¿Qué fue de los otros tres?"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.pon({"bnd1_verina_salvada_guarida"});
-        e.j.fase("dia2");
+        e.j.fase("dia_gorran");
         e.j.drena();
         e.var("confianza_rosita", 1);
+        e.j.laEspadaDeRosita();
+        e.ve({"bnd2_skilla_encargo", "bnd2_furia_alaro"});
         e.j.entra("interior_taberna");
+        e.j.habla("skilla");  // Subir a dormir
+        e.ve({"bndg_dia_cerrado"});
+        e.j.fase("dia2");
+        e.j.drena();
         e.j.habla("skilla");
-        e.ve({"bnd2_skilla_encargo"});
-        e.j.entra("mazmorra_64x64");
-        e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.visto({"b2_rosita_revela", "b2_rosita_verina_arriba"});
-        e.ve({"bnd2_rosita_semilla", "bnd2_rosita_revelada"});
+        e.visto({"b2_skilla_espada_devuelta", "b2_rosita_revela", "b2_rosita_verina_arriba"});
+        e.ve({"bnd2_rosita_lo_sabe", "bnd2_rosita_semilla", "bnd2_rosita_revelada"});
         e.fin();
     }
 
     {
-        Escena e(g, "DIA 2: el castillo, con el camorrista", Suerte::Buena, {"heroe_pueblo_humano"},
-                 {"Vengo con el caballero Venides.", "Subir a ver al capitán",
+        Escena e(g, "DIA 3: el castillo, con el camorrista", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Vengo con el caballero Venides.", "Ir con Venides a ver al capitan",
                   "Soy el que te trajo al camorrista anoche."}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.pon({"bnd1_camorrista_entregado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.pon({"bnd1_camorrista_entregado", "bnd1_capitan_te_conoce"});  // b1_pelea_apaleado enciende las dos
+        e.j.pasaElDiaDeGorran();
         e.j.entra("interior_castillo");
-        e.visto({"b2_puerta", "b2_capitan", "b2_castillo_salida"});
+        e.visto({"b2_puerta", "b2_venides_castillo"});
+        e.ve({"bnd2_castillo_visto", "bnd2_venides_castillo_visto", "bnd2_capitan_con_venides", "bnd2_capitan_abierto"});
+        e.j.entra("interior_castillo_p1");
+        e.j.habla("capitan_guardia");  // el saludo: Venides responde por ti (b2_capitan_escolta)
+        e.visto({"b2_capitan_escolta"});
+        e.j.habla("capitan_guardia");  // y ahora la charla
+        e.visto({"b2_capitan", "b2_capitan_convencido", "b2_castillo_salida"});
+        e.ve({"bnd2_capitan_hablado", "bnd2_capitan_resuelto", "bnd2_guardia_preparada"});
         e.fin();
     }
 
     {
-        Escena e(g, "DIA 2: la tienda abandonada y la Barriada", Suerte::Buena, {"heroe_pueblo_humano", "heroe_elemento_fuego"},
-                 {"De actor", "Vengo a preguntar si necesitáis algo", "Preguntarle qué necesitan", "Cuenta conmigo."}, vistos);
+        Escena e(g, "DIA 3: la tienda abandonada y la Barriada", Suerte::Buena, {"heroe_pueblo_humano", "heroe_elemento_fuego"},
+                 {"De actor", "Vengo a preguntar si necesitáis algo", "Preguntarle qué necesitan", "Me quedo hasta que vengan.",
+                  "Plantarte delante."}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();
         e.j.entra("ciudad_oeste");
+        e.j.entra("tienda_abandonada");
         e.visto({"b2_tienda_abandonada", "b2_disfraz_hallado"});
-        e.ve({"bnd2_disfraz"});
+        e.ve({"bnd2_disfraz", "bnd2_disfraz_actor"});
         e.j.entra("ciudad_surysal");
-        e.j.habla("mercader");
+        e.j.habla("forjador_surysal");
         e.visto({"b2_forjador"});
         e.j.habla("viejo_surysal");
-        e.visto({"b2_zarela", "b2_zarela_pide", "b2_saqueadores_vencidos", "b2_ritual_fuego"});
-        e.ve({"bnd2_aliado_gitanos"});
+        e.visto({"b2_guardian", "b2_gitanos", "b2_gitanos_alianza"});
+        e.ve({"bnd2_zarela_confia", "bnd2_aliado_gitanos"});
+        e.visto({"b2_zarela_sientate", "b2_zarela"});
+        e.ve({"bnd2_zarela_pide_ya", "bnd2_barriada_pedida", "bnd2_saq_noche_dentro"});
+        e.visto({"b2_barriada_anochece", "b2_saq_llegan", "b2_saq_combate", "b2_saqueadores_vencidos", "b2_ritual_fuego"});
+        e.ve({"bnd2_saqueadores_vencidos", "bnd2_guerreros_gitanos", "bnd2_ritual_hecho"});
         e.fin();
     }
 
     {
-        Escena e(g, "DIA 2: la Barriada sin ayuda", Suerte::Buena, {"heroe_pueblo_humano"},
+        Escena e(g, "DIA 3: la Barriada sin ayuda", Suerte::Buena, {"heroe_pueblo_humano"},
                  {"Vengo a preguntar si necesitáis algo", "Preguntarle qué necesitan", "No es mi pelea."}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("ciudad_oeste");
         e.j.entra("ciudad_surysal");
         e.j.habla("viejo_surysal");
-        e.visto({"b2_gitanos_alianza", "b2_zarela_pide"});
-        e.nove({"bnd2_saqueadores_vencidos", "bnd2_guerreros_gitanos"});
+        e.visto({"b2_gitanos_alianza", "b2_zarela", "b2_zarela_pide"});
+        e.ve({"bnd2_barriada_pedida", "bnd2_barriada_sola"});  // «No es mi pelea.»
+        e.nove({"bnd2_saq_noche_dentro", "bnd2_saqueadores_vencidos", "bnd2_guerreros_gitanos"});
         e.fin();
     }
 
     {
-        Escena e(g, "DIA 2: la Barriada, de los Perdidos", Suerte::Buena, {"heroe_pueblo_humano"},
+        Escena e(g, "DIA 3: la Barriada, de los Perdidos", Suerte::Buena, {"heroe_pueblo_humano"},
                  {"Quiero hablar de los Perdidos.", "La Barriada se arma: empalizada y guerreros"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("ciudad_surysal");
         e.j.habla("viejo_surysal");
         e.j.entra("ciudad_centro");
@@ -328,19 +657,18 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
     }
 
     {
-        Escena e(g, "DIA 2: la fiesta, por la ventana y con el traje roto", Suerte::Regular, {"heroe_pueblo_humano"},
+        Escena e(g, "DIA 3: la fiesta, por la ventana y con el traje roto", Suerte::Regular, {"heroe_pueblo_humano"},
                  {"Esquivar al vigilante [Sigilo]", "Buscar otra ruta por los jardines",
                   "Saltar la verja y entrar por una ventana [Atletismo]", "Mezclarte con los invitados",
-                  "Sonsacarle, con el traje roto [Engaño]"}, vistos);
+                  "Sonsacarle, con el traje roto [Engano]"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
         e.ve({"bnd2_skilla_encargo"});
@@ -351,64 +679,71 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
     }
 
     {
-        Escena e(g, "DIA 2: la fiesta, por la puerta y hablando", Suerte::Buena, {"heroe_pueblo_humano"},
-                 {"De noble excéntrico de Ascaria", "Hablar con el vigilante", "¿Muchos años de vigilante?",
-                  "Convencerle de que te deje pasar [Persuasión]",
-                  "Entrar por la puerta, con disfraz [Interpretación]", "Mezclarte con los invitados",
-                  "Sonsacar al noble que brinda [Engaño]", "Señalárselo a Venides", "Contárselo todo"}, vistos);
+        Escena e(g, "DIA 3: la fiesta, por la puerta y hablando", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"De noble excéntrico de Ascaria", "Hablar con el vigilante", "¿Muchos anos de vigilante?",
+                  "Convencerle de que te deje pasar [Persuasion]",
+                  "Entrar por la puerta, con disfraz [Interpretacion]", "Mezclarte con los invitados",
+                  "Prefiero hacerle preguntas", "Sonsacar al noble que brinda [Engano]", "Senalarselo a Venides",
+                  "Contarselo todo"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("ciudad_oeste");
+        e.j.entra("tienda_abandonada");
+        e.ve({"bnd2_disfraz", "bnd2_disfraz_noble"});
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.ve({"bnd2_skilla_encargo"});
         e.j.anochece();
         e.j.entra("ciudad_este");
-        e.visto({"b2_vigilante_charla", "b2_mansion", "b2_dentro_disfraz", "b2_invitados", "b2_sonsaca_exito"});
-        e.ve({"bnd2_fiesta_nobles"});
+        e.visto({"b2_fiesta_puerta", "b2_vigilante_charla", "b2_vigilante_pasado", "b2_mansion", "b2_dentro_disfraz"});
+        e.ve({"bnd2_vigilante_amigo", "bnd2_en_la_mansion", "bnd2_fiesta_dentro"});
+        e.j.entra("mansion_barrio_alto");
+        e.visto({"b2_dentro"});
+        e.j.habla("seguidor_brinda");  // b2_fiesta_copas: «Prefiero hacerle preguntas»
+        e.j.habla("seguidor_brinda");  // b2_invitados
+        e.visto({"b2_invitados", "b2_sonsaca_exito"});
+        e.ve({"bnd2_fiesta_nobles", "bnd2_conspiradores", "bnd2_noble_senalado"});
         e.j.entra("interior_taberna");
         e.j.habla("venides");
         e.ve({"bnd2_informe_dado", "bnd_venides_10"});
         e.j.habla("venides");
         e.visto({"b2_venides_tras"});
-        e.di({"Subir a dormir"});
-        e.j.habla("skilla");
+        e.j.duermeDia3();
         e.ve({"bnd2_dia_cerrado"});
         e.fin();
     }
 
     {
-        Escena e(g, "DIA 2: la fiesta, el cobrador y Edul", Suerte::Buena, {"heroe_pueblo_humano"},
-                 {"Acercarte al cobrador", "¿Quién no paga en este barrio? [Persuasión]",
-                  "Buscar a Edul para entrar como seguidor", "Hablarle de Venides", "No contarle nada"}, vistos);
+        Escena e(g, "DIA 3: la fiesta, el cobrador y Edul", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"Acercarte al cobrador", "¿Quien no paga en este barrio? [Persuasion]", "Irte (esta noche no podras volver sin pagar)",
+                  "Contarselo todo"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.pon({"bnd1_aigren_se_va"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();
         e.j.entra("interior_herreria");
-        e.j.habla("aigren");
+        e.visto({"b2_herreria_partida"});
+        e.j.entra("ciudad_centro");
+        e.j.habla("aigren_carro");
         e.visto({"b2_aigren_se_va"});
+        e.ve({"bnd2_aigren_despedido"});
+        e.j.entra("interior_herreria");
         e.j.habla("edul");
         e.visto({"b2_edul_herreria"});
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.ve({"bnd2_skilla_encargo"});
         e.j.anochece();
         e.j.entra("ciudad_este");
-        e.visto({"b2_cobrador", "b2_cobrador_libro"});
+        e.visto({"b2_fiesta_puerta", "b2_cobrador", "b2_cobrador_libro"});
+        e.ve({"bnd2_cobrador_hablado", "bnd2_pista_nobles"});
         e.j.entra("interior_taberna");
         e.j.habla("bordadora");
         e.visto({"b2_vecina"});
@@ -418,20 +753,19 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
     }
 
     {
-        Escena e(g, "DIA 2: Aigren en la cripta, Edul en el yunque", Suerte::Buena, {"heroe_pueblo_humano"},
-                 {"¿Y Aigren?", "¿Qué hay en esos frascos?"}, vistos);
+        Escena e(g, "DIA 3: Aigren en la cripta, Edul en el yunque", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"¿Y Aigren?", "¿Que hay en esos frascos?"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.pon({"bnd1_invitado_por_aigren"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_herreria");
-        e.j.habla("aigren");
+        e.visto({"b2_herreria_cripta"});  // Aigren no esta: lo tiene la cripta, Edul sigue en su yunque
         e.nove({"bnd2_aigren_despedido"});
         e.j.habla("edul");
         e.visto({"b2_edul_herreria"});
@@ -440,18 +774,17 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
     }
 
     {
-        Escena e(g, "DIA 2: Aigren y Luisarda, segun el primer dia", Suerte::Buena, {"heroe_pueblo_humano"},
+        Escena e(g, "DIA 3: Aigren y Luisarda, segun el primer dia", Suerte::Buena, {"heroe_pueblo_humano"},
                  {}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.pon({"bnd1_aigren_redimido", "bnd1_luisarda_silencio"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_herreria");
         e.j.habla("aigren");
         e.visto({"b2_aigren_daga"});
@@ -462,104 +795,105 @@ void escenasDiaDos(const Guiones& g, std::vector<std::string>* vistos) {
     }
 
     {
-        Escena e(g, "DIA 2: Luisarda delatada", Suerte::Buena, {"heroe_pueblo_humano"},
+        Escena e(g, "DIA 3: Luisarda delatada", Suerte::Buena, {"heroe_pueblo_humano"},
                  {}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.pon({"bnd1_luisarda_delatada"});
-        e.j.fase("dia2");
-        e.j.drena();
-        e.j.entra("interior_sastreria");
-        e.j.habla("luisarda");
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
+        e.j.entra("ciudad_centro");
+        e.j.habla("sastre_enfrente");
         e.visto({"b2_luisarda_cerrada"});
+        e.j.entra("interior_sastreria");
         e.j.habla("sastre");
         e.visto({"b2_sastre_delatada"});
         e.fin();
     }
 
     {
-        Escena e(g, "DIA 2: Xila en el escalon", Suerte::Buena, {"heroe_pueblo_humano"},
-                 {"¿Qué sabes hoy?", "De músico"}, vistos);
+        Escena e(g, "DIA 3: Xila en el escalon", Suerte::Buena, {"heroe_pueblo_humano"},
+                 {"¿Que sabes hoy?", "De músico"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.pon({"bnd1_aliado_xila", "bnd1_xila_honor"});
-        e.j.fase("dia2");
-        e.j.drena();
-        e.j.entra("ciudad_oeste");
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
+        e.j.entra("ciudad_centro");
         e.nove({"bnd2_tienda_vista"});
-        e.j.habla("xila");
-        e.visto({"b2_xila_escalon", "b2_tienda_con_pista", "b2_disfraz_hallado_xila"});
-        e.ve({"bnd2_disfraz_musico"});
+        e.j.habla("xila_escalon");
+        e.visto({"b2_xila_escalon"});
+        e.ve({"bnd2_xila_pista", "bnd2_xila_te_lleva"});
+        e.j.entra("tienda_abandonada");
+        e.visto({"b2_tienda_con_pista", "b2_disfraz_hallado_xila", "b2_xila_sombrero"});
+        e.ve({"bnd2_disfraz", "bnd2_disfraz_musico"});
         e.j.entra("interior_taberna");
-        e.di({"Subir a dormir"});
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();
         e.visto({"b2_cierre_xila"});
+        e.ve({"bnd2_dia_cerrado"});
         e.fin();
     }
 
     {
-        Escena e(g, "DIA 2: Xila en el escalon, sin pedirle nada", Suerte::Buena, {"heroe_pueblo_humano"},
+        Escena e(g, "DIA 3: Xila en el escalon, sin pedirle nada", Suerte::Buena, {"heroe_pueblo_humano"},
                  {"Te veo bien."}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
         e.pon({"bnd1_aliado_xila", "bnd1_xila_honor"});
-        e.j.fase("dia2");
-        e.j.drena();
-        e.j.entra("ciudad_oeste");
-        e.j.habla("xila");
-        e.nove({"bnd2_tienda_vista"});
-        e.j.entra("ciudad_oeste");
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
+        e.j.entra("ciudad_centro");
+        e.j.habla("xila_escalon");
+        e.visto({"b2_xila_escalon"});
+        e.ve({"bnd2_xila_escalon_t_bien"});
+        e.nove({"bnd2_tienda_vista", "bnd2_xila_pista"});
+        e.j.entra("tienda_abandonada");
         e.visto({"b2_tienda_tras_xila"});
+        e.ve({"bnd2_tienda_vista"});
         e.fin();
     }
 }
 
 // El Ocaso: la Matanza, Verina, Edul, Sandes y la barca.
 void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
-    {
+    do {
         Escena e(g, "OCASO: veinte hombres, Verina, Edul y los carros", Suerte::Buena, {"heroe_pueblo_humano"},
-                 {"Correr a avisar a Venides", "Al oeste", "Vamos a por él.", "No.", "Liberarle"}, vistos);
+                 {"Correr a avisar a Venides", "Al oeste", "Vamos a por el.", "No.", "Liberarle"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_20", "bnd2_aliado_gitanos", "bnd2_aliado_skilla", "bnd2_documentos", "bnd2_fiesta_nobles"});
         e.j.fase("ocaso");
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.ocasoBase();
+        e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_sermon", "b3_campanas", "b3_venides_arenga_20", "b3_saqueadores_20", "b3_verina_salvada",
                  "b3_edul_con_verina", "b3_huida_gitanos", "b3_epilogo", "b3_barca"});
         e.ve({"bnd3_final_oeste", "bnd3_verina_con_grupo", "bnd3_edul_salvado", "bnd3_epilogo"});
         e.visto({"b3_epi_verina_viva"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: Verina sola, Edul dentro", Suerte::Buena, {"heroe_pueblo_humano"},
                  {"Correr a avisar a Venides", "Al oeste", "No podemos. No hay tiempo.", "Dejarle"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
@@ -567,24 +901,22 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_20", "bnd2_documentos"});
         e.j.fase("ocaso");
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.ocasoBase();
+        e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_epi_verina_sola"});
         e.nove({"bnd3_edul_salvado"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: diez hombres, al norte", Suerte::Buena, {"heroe_pueblo_humano"},
                  {"Correr a avisar a Venides", "Al norte"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
@@ -592,24 +924,23 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_10", "bnd2_documentos"});
         e.j.fase("ocaso");
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.rutaOcaso = "base_ruta_norte";
+        e.j.ocasoBase();
+        e.j.ocasoRecorrido("base_ruta_norte");
         e.visto({"b3_venides_arenga_10"});
         e.ve({"bnd3_ruta_norte", "bnd3_fuera", "bnd3_epilogo"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: al norte, y no se llega", Suerte::Mala, {"heroe_pueblo_humano"},
                  {"Correr a avisar a Venides", "Al norte"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
@@ -617,23 +948,22 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_10", "bnd2_documentos"});
         e.j.fase("ocaso");
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.rutaOcaso = "base_ruta_norte";
+        e.j.ocasoBase();
+        e.j.ocasoRecorrido("base_ruta_norte");
         e.ve({"bnd3_final_caido", "bnd3_epilogo"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: quedarse a defender la base", Suerte::Buena, {"heroe_pueblo_humano"},
                  {"Correr a avisar a Venides", "Quedarse y luchar"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
@@ -641,24 +971,23 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_20", "bnd2_documentos"});
         e.j.fase("ocaso");
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.rutaOcaso = "base_ruta_quedarse";
+        e.j.ocasoBase();
+        e.j.ocasoRecorrido("base_ruta_quedarse");
         e.visto({"b3_oleada"});
         e.ve({"bnd3_fuera", "bnd3_epilogo"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: unirse a Sandes", Suerte::Buena, {"heroe_pueblo_humano"},
                  {"Correr a avisar a Venides", "Al oeste", "Seguir tu camino", "Acepto."}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
@@ -666,73 +995,67 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_20", "bnd2_documentos"});
         e.j.fase("ocaso");
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.ocasoBase();
+        e.j.ocasoRecorrido("base_ruta_oeste");
         e.ve({"bnd3_aliado_sandes", "bnd3_fuera", "bnd3_epilogo"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: entregarle Verina a Sandes", Suerte::Buena, {"heroe_pueblo_humano"},
-                 {"Correr a avisar a Venides", "Al oeste", "Vamos a por él.", "Entregársela"}, vistos);
+                 {"Correr a avisar a Venides", "Al oeste", "Vamos a por el.", "Entregársela"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_20", "bnd2_documentos"});
         e.j.fase("ocaso");
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.ocasoBase();
+        e.j.ocasoRecorrido("base_ruta_oeste");
         e.ve({"bnd3_verina_entregada", "bnd3_fuera"});
         e.visto({"b3_epi_verina_muerta"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: Verina, mirada y dejada", Suerte::Buena, {"heroe_pueblo_humano"},
-                 {"Correr a avisar a Venides", "Al oeste", "Mirarla [Percepción]", "Seguir tu camino", "Dejarle"}, vistos);
+                 {"Correr a avisar a Venides", "Al oeste", "Mirarla [Percepcion]", "Seguir tu camino", "Dejarle"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd2_documentos", "bnd2_venides_sin_aviso"});
         e.j.fase("ocaso");
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.ocasoBase();
+        e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_venides_retenido", "b3_verina_reconocida", "b3_epi_verina_muerta"});
         e.ve({"bnd3_fuera"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: Venides de rodillas, y le ayudas", Suerte::Buena, {"heroe_pueblo_humano"},
                  {"Correr a avisar a Venides", "Al oeste", "Ayudarle a escapar"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
@@ -740,24 +1063,22 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd2_documentos", "bnd2_venides_sin_aviso"});
         e.j.fase("ocaso");
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.ocasoBase();
+        e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_venides_retenido", "b3_venides_rodillas"});
         e.ve({"bnd3_fuera"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: nadie avisa a Venides", Suerte::Buena, {"heroe_pueblo_humano"},
                  {"Esperar a que anochezca", "Al oeste", "Ayudarle a escapar"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
@@ -765,13 +1086,11 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.j.fase("ocaso");
         e.j.entra("ciudad_centro");
@@ -779,11 +1098,13 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
         e.j.entra("interior_cuartel");
-        e.ve({"bnd3_campanas", "bnd3_fuera", "bnd3_epilogo"});
+        e.ve({"bnd3_campanas"});  // al caer el sol, sin que nadie avise (evento comienza_ocaso)
+        e.j.ocasoRecorrido("base_ruta_oeste");
+        e.ve({"bnd3_fuera", "bnd3_epilogo"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: la barricada, por el rodeo", Suerte::Mala, {"heroe_pueblo_humano"},
                  {"Correr a avisar a Venides", "Al oeste", "Buscar dónde no hay frascos"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
@@ -791,24 +1112,22 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_20", "bnd2_documentos"});
         e.j.fase("ocaso");
         e.j.pierde.insert("bnd3_rodeo_vencidos");
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.ocasoBase();
+        e.j.ocasoRecorrido("base_ruta_oeste");
         e.ve({"bnd3_fuera"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: la barricada, a golpes", Suerte::Buena, {"heroe_pueblo_humano"},
                  {"Correr a avisar a Venides", "Al oeste", "Derribarla a golpes", "Dejarle"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
@@ -816,24 +1135,22 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_20", "bnd2_documentos"});
         e.j.fase("ocaso");
         e.j.suerte = Suerte::Buena;
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.ocasoBase();
+        e.j.ocasoRecorrido("base_ruta_oeste");
         e.ve({"bnd3_edul_abandonado", "bnd3_fuera"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: Pulga conoce un atajo", Suerte::Buena, {"heroe_pueblo_humano"},
                  {"Correr a avisar a Venides", "Al oeste", "Seguir a Pulga"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
@@ -841,136 +1158,129 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_20", "bnd2_documentos", "bnd1_carterista_amigo"});
         e.j.fase("ocaso");
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.ocasoBase();
+        e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_pulga"});
         e.ve({"bnd3_fuera"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: la antigua compania de Rosita", Suerte::Buena, {"heroe_pueblo_humano"},
-                 {"Correr a avisar a Venides", "Al oeste", "Vamos a por él.", "Ven con nosotros.", "No.", "Liberarle"}, vistos);
+                 {"Correr a avisar a Venides", "Al oeste", "Vamos a por el.", "Ven con nosotros.", "No.", "Liberarle"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_20", "bnd2_aliado_gitanos", "bnd2_aliado_skilla", "bnd2_rosita_semilla",
                "bnd1_xila_honor", "bnd1_aigren_redimido", "bnd2_guardia_preparada", "bnd2_documentos"});
         e.j.fase("ocaso");
         e.var("confianza_rosita", 2);
         e.j.pierde.insert("bnd3_sandes_vencido");
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.ocasoBase();
+        e.j.zonasPrimero = {"edul_casco_retenido"};  // salvar a Edul antes del final: asi llega la compania
+        e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_capitan_ronda", "b3_aigren_carro", "b3_xila_vendas", "b3_rosita_calle", "b3_compania",
                  "b3_sandes_vencido", "b3_epi_xila"});
         e.nove({"bnd3_compania_tuyo"});
         e.ve({"bnd3_con_xila", "bnd3_compania", "bnd3_final_oeste"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: la compania, con un guerrero demoniaco", Suerte::Buena, {"heroe_pueblo_humano", "heroe_clase_guerrero_demoniaco"},
-                 {"Correr a avisar a Venides", "Al oeste", "Vamos a por él.", "No.", "Liberarle"}, vistos);
+                 {"Correr a avisar a Venides", "Al oeste", "Vamos a por el.", "No.", "Liberarle"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_20", "bnd2_aliado_gitanos", "bnd2_aliado_skilla", "bnd2_rosita_semilla",
                "bnd1_xila_honor", "bnd2_documentos"});
         e.j.fase("ocaso");
         e.var("confianza_rosita", 2);
         e.j.pierde.insert("bnd3_sandes_vencido");
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.ocasoBase();
+        e.j.zonasPrimero = {"edul_casco_retenido"};  // salvar a Edul antes del final: asi llega la compania
+        e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_compania", "b3_compania_de_los_tuyos"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: la compania llega a mitad del combate", Suerte::Buena, {"heroe_pueblo_humano", "heroe_clase_guerrero_demoniaco"},
-                 {"Correr a avisar a Venides", "Al oeste", "Vamos a por él.", "Ven con nosotros.", "No.", "Liberarle"}, vistos);
+                 {"Correr a avisar a Venides", "Al oeste", "Vamos a por el.", "Ven con nosotros.", "No.", "Liberarle"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_20", "bnd2_aliado_gitanos", "bnd2_aliado_skilla", "bnd2_rosita_semilla",
                "bnd1_xila_honor", "bnd1_aigren_redimido", "bnd2_guardia_preparada", "bnd2_documentos"});
         e.j.fase("ocaso");
         e.var("confianza_rosita", 2);
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.ocasoBase();
+        e.j.zonasPrimero = {"edul_casco_retenido"};  // salvar a Edul antes del final: asi llega la compania
+        e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_sandes_vencido"});
         e.ve({"bnd3_compania", "bnd3_compania_vista", "bnd3_compania_tuyo", "bnd3_sandes_vencido"});
         e.nove({"bnd3_sandes_gana"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: sin la compania, Sandes gana", Suerte::Buena, {"heroe_pueblo_humano"},
-                 {"Correr a avisar a Venides", "Al oeste", "Vamos a por él.", "No.", "Liberarle"}, vistos);
+                 {"Correr a avisar a Venides", "Al oeste", "Vamos a por el.", "No.", "Liberarle"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_20", "bnd2_aliado_gitanos", "bnd2_aliado_skilla", "bnd1_xila_honor", "bnd2_documentos"});
         e.j.fase("ocaso");
         e.var("confianza_rosita", 2);
         e.j.pierde.insert("bnd3_sandes_vencido");
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.ocasoBase();
+        e.j.ocasoRecorrido("base_ruta_oeste");
         e.nove({"bnd3_compania"});
         e.ve({"bnd3_sandes_gana", "bnd3_fuera", "bnd3_epilogo"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: Edul, con la furia de Sandes", Suerte::Buena, {"heroe_pueblo_humano"},
                  {"Correr a avisar a Venides", "Al oeste", "Seguir tu camino", "Acepto."}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
@@ -978,24 +1288,23 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_20", "bnd2_documentos"});
         e.j.fase("ocaso");
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.ocasoBase();
+        e.j.zonasEvita = {"edul_casco_retenido"};  // no se acerca a Edul en el casco: se lo encuentra tras la barricada
+        e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_edul_furia"});
         e.ve({"bnd3_fuera"});
         e.fin();
-    }
+    } while (false);
 
-    {
+    do {
         Escena e(g, "OCASO: Edul sabe lo de Venides", Suerte::Buena, {"heroe_pueblo_humano"},
                  {"Correr a avisar a Venides", "Al oeste", "No podemos. No hay tiempo.", "No.", "Liberarle",
                   "Es verdad."}, vistos);
@@ -1004,20 +1313,18 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.fase("dia1");
         e.j.entra("interior_taberna");
         e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duerme();
         e.ve({"bnd_dia_cerrado"});
-        e.j.fase("dia2");
-        e.j.drena();
+        e.j.pasaElDiaDeGorran();  // GORRAN-DIA2: atajo; el dia 2 es la montaña
         e.j.entra("interior_taberna");
-        e.j.habla("skilla");
-        e.j.habla("skilla");
+        e.j.duermeDia3();  // dia 3: anochece, sube a dormir, las velas
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_20", "bnd2_documentos", "bnd2_edul_sabe_venides"});
         e.j.fase("ocaso");
-        e.j.entra("ciudad_centro");
-        e.j.entra("interior_cuartel");
+        e.j.ocasoBase();
+        e.j.ocasoRecorrido("base_ruta_oeste");
         e.visto({"b3_edul_fiesta"});
         e.ve({"bnd3_edul_salvado"});
         e.fin();
-    }
+    } while (false);
 }

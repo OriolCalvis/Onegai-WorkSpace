@@ -1,0 +1,176 @@
+== BASELINE (sin mutar)
+1/1 Test #15: test_emisor_carga ................   Passed    0.98 sec
+100% tests passed out of 1
+
+== MUTACION a_sin_reserva_presupuesto (hallazgo previa; src/Game/Emisor/AvanzarEmisor.cpp)
+-old: if (e.m_buffer.llena() || !p.reserva()) {
++new: if (e.m_buffer.llena() || (p.reserva(), false)) {
+1/1 Test #15: test_emisor_carga ................***Failed    3.71 sec
+[FAIL] carga_64_emisores_respeta_aforo_presupuesto_y_quads: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:225 -- comprobación fallida: m.maxVivasGlobal <= static_cast<std::size_t>(kMaxParticulasGlobal)
+[FAIL] presupuesto_global_el_nacimiento_2048_entra_y_el_2049_se_rechaza: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:362 -- comprobación fallida: r2049.value().nacidas == 0 && r2049.value().rechazadas == 1
+0% tests passed, 1 tests failed out of 1
+RESULTADO: ROJO
+
+== MUTACION b_quads_sin_contorno (hallazgo previa; src/Game/Emisor/ProyeccionParticulas.cpp)
+-old: return pixelesDeForma(f).size() + contornoDeForma(f).size(); }
++new: return pixelesDeForma(f).size(); }
+1/1 Test #15: test_emisor_carga ................***Failed    1.15 sec
+[FAIL] carga_64_emisores_respeta_aforo_presupuesto_y_quads: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:231 -- comprobación fallida: !m.desacuerdoQuads
+[FAIL] aforo_de_un_emisor_con_pocos_emisores_llega_a_256: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:245 -- comprobación fallida: !m.excedeQuads && !m.desacuerdoQuads && !m.sumaIncoherente
+[FAIL] caso_peor_calavera_quads_contra_recuento_independiente: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:262 -- comprobación fallida: quadsDeDestellos(d) == 240u * 34u && quadsDeDestellos(d) == quadsComoPintaDestellos(d)
+[FAIL] proyeccion_exacta_8192_quads_se_admite_entera_y_la_siguiente_unidad_se_descarta: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:408 -- comprobación fallida: suma(calaveras).quads == 240u * 34u
+[FAIL] proyectar_con_distinto_presupuesto_no_cambia_la_simulacion: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:457 -- comprobación fallida: desc0 > 0u && desc1 > 0u && desc2 == 0u
+0% tests passed, 1 tests failed out of 1
+RESULTADO: ROJO
+
+== MUTACION c_sin_tope_de_quads (hallazgo previa; src/Game/Emisor/ProyeccionParticulas.cpp)
+-old: if (lleno || r.quads + qLote > quadsMax) {
++new: if (false) {
+1/1 Test #15: test_emisor_carga ................***Failed    1.79 sec
+[FAIL] carga_64_emisores_respeta_aforo_presupuesto_y_quads: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:229 -- comprobación fallida: !m.excedeQuads && m.maxQuads <= static_cast<std::size_t>(kMaxQuadsPorFotograma)
+[FAIL] aforo_de_un_emisor_con_pocos_emisores_llega_a_256: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:245 -- comprobación fallida: !m.excedeQuads && !m.desacuerdoQuads && !m.sumaIncoherente
+[FAIL] caso_peor_calavera_quads_contra_recuento_independiente: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:277 -- comprobación fallida: quads <= static_cast<std::size_t>(kMaxQuadsPorFotograma) && quads == quadsDeDestellos(out)
+[FAIL] proyeccion_exacta_8192_quads_se_admite_entera_y_la_siguiente_unidad_se_descarta: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:413 -- comprobación fallida: r.quads == 0u && r.destellos == 0u && r.descartados == 1u
+[FAIL] proyectar_con_distinto_presupuesto_no_cambia_la_simulacion: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:457 -- comprobación fallida: desc0 > 0u && desc1 > 0u && desc2 == 0u
+0% tests passed, 1 tests failed out of 1
+RESULTADO: ROJO
+
+== MUTACION d1_semilla_por_direccion (hallazgo previa; src/Game/Emisor/AvanzarEmisor.cpp)
+-old: m_azar(crearAzarEmisor(d.semilla))
++new: m_azar(crearAzarEmisor(d.semilla ^ reinterpret_cast<std::uintptr_t>(&d)))
+1/1 Test #15: test_emisor_carga ................***Failed    0.94 sec
+[FAIL] emisores_independientes_el_rng_no_se_comparte: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:216 -- comprobación fallida: std::memcmp(a.buffer().datos().data(), b.buffer().datos().data(), a.buffer().vivas() * sizeof(Particula)) == 0
+[FAIL] proyectar_con_distinto_presupuesto_no_cambia_la_simulacion: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:452 -- comprobación fallida: hashDeUno(e0) == h && hashDeUno(e1) == h
+[FAIL] caminar_sin_parar_mantiene_los_topes_del_polvo: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:525 -- comprobación fallida: a.maxVivas == (reducido ? 6u : 31u)
+0% tests passed, 1 tests failed out of 1
+RESULTADO: ROJO
+
+== MUTACION d2_rng_compartido_entre_emisores (hallazgo previa; src/Game/Emisor/AvanzarEmisor.cpp)
+-old: Particula q = crearParticula(d, e.m_tipo, *e.m_azar);
++new: Particula q = crearParticula(d, e.m_tipo, *compartido());
+1/1 Test #15: test_emisor_carga ................***Failed    0.77 sec
+[FAIL] dos_runs_misma_entrada_mismo_hash_y_otra_semilla_distinto: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:194 -- comprobación fallida: a.hash == b.hash && a.hashTras == b.hashTras && a.traza == b.traza
+[FAIL] emisores_independientes_el_rng_no_se_comparte: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:216 -- comprobación fallida: std::memcmp(a.buffer().datos().data(), b.buffer().datos().data(), a.buffer().vivas() * sizeof(Particula)) == 0
+[FAIL] el_hash_cubre_origen_grupo_definicion_y_tipo: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:300 -- comprobación fallida: base == hecho([](Emisor&) {})
+[FAIL] proyectar_con_distinto_presupuesto_no_cambia_la_simulacion: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:452 -- comprobación fallida: hashDeUno(e0) == h && hashDeUno(e1) == h
+[FAIL] caminar_sin_parar_mantiene_los_topes_del_polvo: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:516 -- comprobación fallida: a.hash == b.hash
+0% tests passed, 1 tests failed out of 1
+RESULTADO: ROJO
+
+== MUTACION e_sin_kMaxEmisoresPolvo (hallazgo previa; src/Game/Emisor/PasosDePolvo.cpp)
+-old: if (m_emisores.size() >= static_cast<std::size_t>(kMaxEmisoresPolvo))
++new: if (false)
+1/1 Test #15: test_emisor_carga ................***Failed    0.98 sec
+[FAIL] caminar_sin_parar_mantiene_los_topes_del_polvo: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:537 -- comprobación fallida: p.emisores().size() <= static_cast<std::size_t>(kMaxEmisoresPolvo)
+0% tests passed, 1 tests failed out of 1
+RESULTADO: ROJO
+
+== MUTACION H2a_reserva_un_hueco_antes (hallazgo 2; src/Game/Emisor/AvanzarEmisor.cpp)
+-old: if (vivas >= maximo) return false;
++new: if (vivas >= maximo - 1) return false;
+1/1 Test #15: test_emisor_carga ................***Failed    1.00 sec
+[FAIL] presupuesto_global_el_nacimiento_2048_entra_y_el_2049_se_rechaza: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:356 -- comprobación fallida: r2048.value().nacidas == 1 && r2048.value().rechazadas == 0
+0% tests passed, 1 tests failed out of 1
+RESULTADO: ROJO
+
+== MUTACION H2b_reserva_un_hueco_de_mas (hallazgo 2; src/Game/Emisor/AvanzarEmisor.cpp)
+-old: if (vivas >= maximo) return false;
++new: if (vivas > maximo) return false;
+1/1 Test #15: test_emisor_carga ................***Failed    1.00 sec
+[FAIL] carga_64_emisores_respeta_aforo_presupuesto_y_quads: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:225 -- comprobación fallida: m.maxVivasGlobal <= static_cast<std::size_t>(kMaxParticulasGlobal)
+[FAIL] presupuesto_global_el_nacimiento_2048_entra_y_el_2049_se_rechaza: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:362 -- comprobación fallida: r2049.value().nacidas == 0 && r2049.value().rechazadas == 1
+0% tests passed, 1 tests failed out of 1
+RESULTADO: ROJO
+
+== MUTACION H3a_tolerancia_quadsMax_mas_1 (hallazgo 3; src/Game/Emisor/ProyeccionParticulas.cpp)
+-old: r.quads + qLote > quadsMax)
++new: r.quads + qLote > quadsMax + 1)
+1/1 Test #15: test_emisor_carga ................***Failed    0.97 sec
+[FAIL] proyeccion_exacta_8192_quads_se_admite_entera_y_la_siguiente_unidad_se_descarta: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:413 -- comprobación fallida: r.quads == 0u && r.destellos == 0u && r.descartados == 1u
+0% tests passed, 1 tests failed out of 1
+RESULTADO: ROJO
+
+== MUTACION H3b_recorte_una_unidad_antes (hallazgo 3; src/Game/Emisor/ProyeccionParticulas.cpp)
+-old: r.quads + qLote > quadsMax)
++new: r.quads + qLote >= quadsMax)
+1/1 Test #15: test_emisor_carga ................***Failed    0.98 sec
+[FAIL] proyeccion_exacta_8192_quads_se_admite_entera_y_la_siguiente_unidad_se_descarta: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:408 -- comprobación fallida: suma(puntos).quads == 32u
+0% tests passed, 1 tests failed out of 1
+RESULTADO: ROJO
+
+== MUTACION H4_polvo_sin_emplace_back_con_contador (hallazgo 4; src/Game/Emisor/PasosDePolvo.cpp)
+-old:     m_emisores.emplace_back(definicionDePolvo(semilla), Vector2{0.0f, 0.0f}, g);
++new:     (void)g; (void)semilla;
+1/1 Test #15: test_emisor_carga ................***Failed    1.07 sec
+[FAIL] caminar_sin_parar_mantiene_los_topes_del_polvo: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:521 -- comprobación fallida: a.maxEmisores > 0u && a.maxVivas > 0u && a.maxQuads > 0u
+0% tests passed, 1 tests failed out of 1
+RESULTADO: ROJO
+
+== MUTACION H5_proyeccion_pone_k0_al_descartado (hallazgo 5; src/Game/Emisor/ProyeccionParticulas.cpp)
+-old:             r.descartados += n;
+            continue;
++new:             r.descartados += n;
+            const_cast<Particula&>(p).k = 0;
+            continue;
+1/1 Test #15: test_emisor_carga ................***Failed    0.96 sec
+[FAIL] proyectar_con_distinto_presupuesto_no_cambia_la_simulacion: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:452 -- comprobación fallida: hashDeUno(e0) == h && hashDeUno(e1) == h
+0% tests passed, 1 tests failed out of 1
+RESULTADO: ROJO
+
+== MUTACION H1a_hash_sin_origen (hallazgo 1; tests/Game/EmisorCargaTests.cpp)
+-old:     h.val(e.origen.x); h.val(e.origen.y);
+
++new: 
+1/1 Test #15: test_emisor_carga ................***Failed    1.00 sec
+[FAIL] el_hash_cubre_origen_grupo_definicion_y_tipo: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:300 -- comprobación fallida: base != hecho([](Emisor& e) { e.origen.x += 100.0f; })
+0% tests passed, 1 tests failed out of 1
+RESULTADO: ROJO
+
+== MUTACION H1b_hash_sin_grupo (hallazgo 1; tests/Game/EmisorCargaTests.cpp)
+-old:     h.val(e.grupo.esquina.x); h.val(e.grupo.esquina.y); h.val(e.grupo.tam.x); h.val(e.grupo.tam.y);
+
++new: 
+1/1 Test #15: test_emisor_carga ................***Failed    1.01 sec
+[FAIL] el_hash_cubre_origen_grupo_definicion_y_tipo: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:302 -- comprobación fallida: base != hecho([](Emisor& e) { e.grupo.esquina.x += 1.0f; })
+0% tests passed, 1 tests failed out of 1
+RESULTADO: ROJO
+
+== MUTACION H1c_hash_sin_familia_ni_definicion (hallazgo 1; tests/Game/EmisorCargaTests.cpp)
+-old:     h.val(d.familia.size());
+    h.bytes(d.familia.data(), d.familia.size());
+
++new: 
+1/1 Test #15: test_emisor_carga ................***Failed    1.20 sec
+[FAIL] el_hash_cubre_origen_grupo_definicion_y_tipo: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:314 -- comprobación fallida: f0 != fresco([](DefinicionEmisor& d, Game::TipoDeParticula&) { d.familia = "luz"; })
+0% tests passed, 1 tests failed out of 1
+RESULTADO: ROJO
+
+== MUTACION H1d_hash_sin_tipo (hallazgo 1; tests/Game/EmisorCargaTests.cpp)
+-old:     h.val(static_cast<int>(t.forma)); h.val(t.suma);
++new:     h.val(t.suma);
+1/1 Test #15: test_emisor_carga ................***Failed    1.01 sec
+[FAIL] el_hash_cubre_origen_grupo_definicion_y_tipo: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/EmisorCargaTests.cpp:321 -- comprobación fallida: f0 != fresco([](DefinicionEmisor&, Game::TipoDeParticula& t) { t.forma = FormaDeParticula::Punto; })
+0% tests passed, 1 tests failed out of 1
+RESULTADO: ROJO
+
+== POST-RESTAURACION (touch + recompilar)
+1/1 Test #15: test_emisor_carga ................   Passed    1.17 sec
+100% tests passed out of 1
+
+== TABLA
+a_sin_reserva_presupuesto                  hallazgo previa  ROJO  carga_64_emisores_respeta_aforo_presupuesto_y_quads, presupuesto_global_el_nacimiento_2048_entra_y_el_2049_se_rechaza
+b_quads_sin_contorno                       hallazgo previa  ROJO  carga_64_emisores_respeta_aforo_presupuesto_y_quads, aforo_de_un_emisor_con_pocos_emisores_llega_a_256, caso_peor_calavera_quads_contra_recuento_independiente, proyeccion_exacta_8192_quads_se_admite_entera_y_la_siguiente_unidad_se_descarta, proyectar_con_distinto_presupuesto_no_cambia_la_simulacion
+c_sin_tope_de_quads                        hallazgo previa  ROJO  carga_64_emisores_respeta_aforo_presupuesto_y_quads, aforo_de_un_emisor_con_pocos_emisores_llega_a_256, caso_peor_calavera_quads_contra_recuento_independiente, proyeccion_exacta_8192_quads_se_admite_entera_y_la_siguiente_unidad_se_descarta, proyectar_con_distinto_presupuesto_no_cambia_la_simulacion
+d1_semilla_por_direccion                   hallazgo previa  ROJO  emisores_independientes_el_rng_no_se_comparte, proyectar_con_distinto_presupuesto_no_cambia_la_simulacion, caminar_sin_parar_mantiene_los_topes_del_polvo
+d2_rng_compartido_entre_emisores           hallazgo previa  ROJO  dos_runs_misma_entrada_mismo_hash_y_otra_semilla_distinto, emisores_independientes_el_rng_no_se_comparte, el_hash_cubre_origen_grupo_definicion_y_tipo, proyectar_con_distinto_presupuesto_no_cambia_la_simulacion, caminar_sin_parar_mantiene_los_topes_del_polvo
+e_sin_kMaxEmisoresPolvo                    hallazgo previa  ROJO  caminar_sin_parar_mantiene_los_topes_del_polvo
+H2a_reserva_un_hueco_antes                 hallazgo 2       ROJO  presupuesto_global_el_nacimiento_2048_entra_y_el_2049_se_rechaza
+H2b_reserva_un_hueco_de_mas                hallazgo 2       ROJO  carga_64_emisores_respeta_aforo_presupuesto_y_quads, presupuesto_global_el_nacimiento_2048_entra_y_el_2049_se_rechaza
+H3a_tolerancia_quadsMax_mas_1              hallazgo 3       ROJO  proyeccion_exacta_8192_quads_se_admite_entera_y_la_siguiente_unidad_se_descarta
+H3b_recorte_una_unidad_antes               hallazgo 3       ROJO  proyeccion_exacta_8192_quads_se_admite_entera_y_la_siguiente_unidad_se_descarta
+H4_polvo_sin_emplace_back_con_contador     hallazgo 4       ROJO  caminar_sin_parar_mantiene_los_topes_del_polvo
+H5_proyeccion_pone_k0_al_descartado        hallazgo 5       ROJO  proyectar_con_distinto_presupuesto_no_cambia_la_simulacion
+H1a_hash_sin_origen                        hallazgo 1       ROJO  el_hash_cubre_origen_grupo_definicion_y_tipo
+H1b_hash_sin_grupo                         hallazgo 1       ROJO  el_hash_cubre_origen_grupo_definicion_y_tipo
+H1c_hash_sin_familia_ni_definicion         hallazgo 1       ROJO  el_hash_cubre_origen_grupo_definicion_y_tipo
+H1d_hash_sin_tipo                          hallazgo 1       ROJO  el_hash_cubre_origen_grupo_definicion_y_tipo

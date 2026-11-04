@@ -27,6 +27,7 @@
 #include "Core/Resources/TextureManager.h"
 #include "Render/BitmapFont.h"
 #include "Game/GameSession.h"
+#include "RPG/Narrative/EventosDelMundo.h"  // C8-03c
 #include "Game/SaveSlotState.h"
 #include "Game/TitleMenuState.h"
 #include "Game/NegocioEstado.h"  // AV15-05a; trae Game/PauseMenu.h
@@ -35,6 +36,7 @@
 #include "Game/GameOverScreen.h"
 #include "Game/InventoryScreen.h"
 #include "Project/ProjectIndex.h"
+#include "Engine/GuionCaptura.h"  // E-GUION-01
 #include "Engine/PantallaNuevaPartida.h"
 #include "Game/BarraCombate.h"
 #include "Game/CofreKit.h"
@@ -101,10 +103,9 @@ public:
                       const std::vector<std::string>& extraCatalogPaths = {},
                       bool startAtTitle = false);
 
-    // Bucle principal hasta que se cierre la ventana o se pulse ESC.
-    // maxFrames >= 0 corre exactamente ese numero de frames y sale (modo
-    // humo para CI, igual que los demos GL).
-    void run(int maxFrames = -1);
+    // Bucle principal hasta que se cierre la ventana o se pulse ESC. maxFrames >= 0: ese numero de frames y sale (modo humo).
+    // `guion` (E-GUION-01): sus fotogramas 0..ultimo con dt fijo. `guardado` (E-GUION-02): arranca cargandolo, como «Continuar».
+    void run(int maxFrames = -1, const Engine::GuionCaptura* guion = nullptr, const SaveGameData* guardado = nullptr);
 
     void shutdown();
 
@@ -150,7 +151,7 @@ private:
     RPG::Catalogs::ConditionCatalog m_conditions;
     RPG::Catalogs::MonsterCatalog m_monsterCatalog;  // D-08
     ids::MapId m_currentMapId;
-    bool m_captureFrame = false;
+    Engine::CapturaEnCurso m_captura;  // E-GUION-01: modo humo (humo) y guion en curso
 
     void processInput();
     void update(float deltaTime);
@@ -361,9 +362,12 @@ private:
     // Mismo criterio que m_player/m_playerSkills/m_inventory.
     RPG::NarrativeState m_narrativeState;
     RPG::NarrativeEngine m_narrative;
+    std::unique_ptr<RPG::eventos::Catalogo> m_eventos;  // C8-03c: eventos del mundo del proyecto (nullptr = sin ellos)
+    bool m_eventosIntentados = false;                    // se cargan una sola vez
     RPG::AdventureScript m_prologo;
     RPG::AdventureScript m_dia1;
-    RPG::AdventureScript m_dia2;
+    RPG::AdventureScript m_diaGorran;  // GORRAN-DIA2: el día 2 entero en la aldea de Gorran
+    RPG::AdventureScript m_dia2;       // desde GORRAN-DIA2, el día 3 (boundington_segundo_dia.json)
     RPG::AdventureScript m_ocaso;
     RPG::Catalogs::SkillCatalog m_nd6Skills;  // skills.json (percepcion, sigilo, ...)
     bool m_narrativaLista = false;  // init() lo enciende solo si todo cargo bien
@@ -433,6 +437,10 @@ private:
     // Necesario para disparar Touch al ENTRAR en la casilla (no mientras
     // se está quieto), y para el MapEventRunner distinguir pulsación única.
     bool m_interactPressedThisFrame = false;
+    // Oriol (22/10): fuera del combate tambien se anda con el raton. Clic en una casilla: el camino
+    // (GameSession::rutaAndando) se anda paso a paso; cualquier tecla de moverse lo corta.
+    std::vector<GridCoord> m_rutaRaton;
+    double m_rutaRatonSiguiente = 0.0;
 
     // PERGAMINO-01 — colaborador: el tema pergamino entero (HUD en retales,
     // dialogo en hoja, cuaderno TAB y papiros de pausa y derrota). Sustituye

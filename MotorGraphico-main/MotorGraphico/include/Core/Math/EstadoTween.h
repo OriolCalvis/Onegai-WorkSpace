@@ -1,0 +1,70 @@
+#pragma once
+
+#include "Core/Errors/Result.h"
+#include "Core/Math/Interpolacion.h"
+
+// U3-07.E06-E07 — Estado de un tween y avance puro (sin GL, sin heap, sin callbacks).
+// Sala limpia. Compatible con Camera::update: duracion 0 termina en el
+// primer avance, incluso con dt == 0. El llamador reacciona a PasoTween::acabaDeTerminar.
+//
+// Camera (E08): Camera::update acumula en float (m_transitionElapsed); con 60 x (1.0f/60) llega a
+// 0.99999970 y sigue activa, mientras avanzaTween en double llega a 1.00000005 y termina un
+// fotograma antes. Decision: en E08 Camera CONSERVA su reloj float y solo reutiliza
+// progreso/curva/tweenVec2; si migra a avanzaTween sera con prueba diferencial del fotograma
+// de fin.
+namespace Interpolacion {
+
+// Tolerancia relativa de final: la suma de trozos puede quedar por debajo de duracion por
+// redondeo (10 x 0.1 = 0.9999999999999999). Se termina si
+// transcurrido + dt >= duracion - kToleranciaFinTween * duracion (y transcurrido se fija a
+// duracion). Margen absoluto = kToleranciaFinTween * duracion: 1 ns por segundo de duracion
+// (con duracion 1e12 serian 1000 s; aceptado, el juego no usa duraciones asi). 1e-12 NO sirve:
+// las particiones largas (100000 x 1e-5, 1e6 x 1e-3) acumulan error mayor y nunca terminan.
+// La frontera es inclusiva (>=): justo en el umbral termina.
+constexpr double kToleranciaFinTween = 1e-9;
+struct EstadoTween {
+    double duracion = 0;
+    double transcurrido = 0;
+    TipoCurva curva = TipoCurva::Lineal;
+    bool pausado = false;
+    bool terminado = false;
+};
+
+struct PasoTween {
+    EstadoTween estado;           // estado tras el avance
+    double progreso = 0;          // Interpolacion::progreso(transcurrido, duracion)
+    double valorCurvado = 0;      // Interpolacion::curva(curva, progreso)
+    bool acabaDeTerminar = false; // verdadero SOLO en la llamada que cruza el final
+};
+
+// Avanza el tween dt segundos.
+//  - Estado invalido (duracion o transcurrido no finitos, duracion < 0, transcurrido < 0)
+//    o dt no finito o dt < 0 -> Error (se valida siempre, incluso pausado o terminado).
+//  - pausado (manda sobre todo) o terminado -> mismo estado, acabaDeTerminar = false.
+//  - duracion == 0 (no pausado, no terminado) -> termina ya, incluso con dt == 0.
+//  - duracion > 0: dt == 0 no avanza (aunque transcurrido ya sea >= duracion: termina en el
+//    siguiente avance con dt > 0); si transcurrido + dt >= duracion*(1-kToleranciaFinTween)
+//    termina y transcurrido se fija a duracion (la sobra de dt se descarta; asi avanzar en n trozos
+//    equivale a avanzar de una vez).
+Result<PasoTween> avanzaTween(const EstadoTween& estado, double dt);
+
+// Politica de cancelacion (sin callbacks: el llamador reacciona a acabaDeTerminar).
+enum class PoliticaCancelacion {
+    MantenerActual,  // congela transcurrido; progreso/valorCurvado son los del momento
+    Terminar         // transcurrido = duracion, progreso = 1
+};
+
+// Cancela el tween. Devuelve Result<PasoTween> (no PasoTween a secas) para ser coherente con
+// avanzaTween ante estado invalido.
+//  - Estado invalido (duracion/transcurrido no finitos o negativos) -> Error, igual que
+//    avanzaTween (se valida siempre, tambien si esta terminado).
+//  - Ya terminado (por avance o por una cancelacion previa) -> mismo estado,
+//    acabaDeTerminar = false: cancelar es idempotente y no cambia nada.
+//  - Pausado: SI se puede cancelar; el flag pausado se conserva tal cual (terminado manda).
+//  - En otro caso termina (terminado = true) y acabaDeTerminar = true: es el flanco de final
+//    (una sola vez), de modo que el llamador reacciona igual que con avanzaTween.
+//  - MantenerActual deja transcurrido acotado a <= duracion (un estado hecho a mano con
+//    transcurrido > duracion se congela en duracion); Terminar lo fija a duracion.
+Result<PasoTween> cancelaTween(const EstadoTween& estado, PoliticaCancelacion politica);
+
+}  // namespace Interpolacion

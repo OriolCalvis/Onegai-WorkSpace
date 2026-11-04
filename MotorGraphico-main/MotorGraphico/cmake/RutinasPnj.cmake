@@ -9,7 +9,8 @@ if(TARGET motor_level)
     target_sources(motor_level PRIVATE src/Game/RutinasPnj.cpp src/Game/RutinasPnjCatalogo.cpp)
 endif()
 if(TARGET motor_pergamino)
-    target_sources(motor_pergamino PRIVATE src/HUD/Pergamino/BocadillosPnj.cpp)
+    target_sources(motor_pergamino PRIVATE src/HUD/Pergamino/BocadillosPnj.cpp
+        src/HUD/Pergamino/BocadillosEmocion.cpp)  # C2-04d: emociones de cinematica
 endif()
 include(CTest)
 if(BUILD_TESTING AND TARGET motor_level)

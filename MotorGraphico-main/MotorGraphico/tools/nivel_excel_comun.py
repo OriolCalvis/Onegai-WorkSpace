@@ -29,7 +29,67 @@ CLASES = {
     "Ruinas": ("9A8F80", "ciudad_ruinas"),
     "Tierra / sendero": ("C9A877", "sendero_tierra"),
     "Umbral (adoquín gastado)": ("9E9E9E", "adoquin_gastado"),
+    # --- Lo natural (cuevas, montaña, campo): 19/10, Oriol pintaba la cueva con colores del azar
+    "Roca (no se pasa)": ("554C39", "roca"),
+    "Hierba seca": ("D3D351", "hierba_seca"),
+    "Tierra musgosa": ("449932", "tierra_musgosa"),
+    "Piedra antigua (cima, losas)": ("7777A0", "piedra_antigua"),
+    "Tierra de cañón": ("88663A", "tierra_canon"),
+    "Barro": ("784C2D", "barro"),
+    "Losa oscura (suelo de cueva)": ("7D6582", "losa_oscura"),
+    "Losa clara": ("B2AC8E", "losa_clara"),
+    "Agua somera (charco)": ("7CC5D3", "agua_somera"),
+    "Hojarasca": ("ADA02B", "hojarasca"),
+    "Nieve": ("D8DDE8", "nieve"),
+    # --- Los edificios, por familia (cada uno levanta su bloque; nuevo = orientación o0)
+    "Casa noble": ("E05199", "noble_o0"),
+    "Cabaña": ("CC7F32", "cabana_o0"),
+    "Caserna": ("4F4FA6", "caserna_o0"),
+    "Barraca": ("A8694C", "barraca_o0"),
+    "Tienda de campaña": ("EEEC9F", "tenda_o0"),
+    "Local: herrería": ("F2460C", "local_ferreria_o0"),
+    "Local: taberna": ("FFC665", "local_taverna_o0"),
+    "Local: tienda": ("F69855", "local_botiga_o0"),
+    "Local: mercado": ("FFF570", "local_mercat_o0"),
+    "Local: joyería": ("FEFCC1", "local_joieria_o0"),
+    "Local: banco": ("D1B047", "local_banc_o0"),
+    "Local: sastrería": ("F2A190", "local_sastreria_o0"),
+    "Local: posada": ("EB7813", "local_posada_o0"),
+    "Local: baños": ("F5D0BE", "local_banys_o0"),
+    "Local: casa de té": ("E9C985", "local_casa_te_o0"),
+    "Local: armería": ("A96812", "local_armeria_o0"),
+    "Monumento: castillo": ("58357C", "viejo_castillo"),
+    "Monumento: iglesia": ("BE60D1", "viejo_iglesia"),
+    "Monumento: universidad": ("3265CC", "viejo_universidad"),
+    "Monumento: biblioteca": ("2B9684", "viejo_biblioteca"),
+    "Monumento: ópera": ("B13376", "viejo_opera"),
+    "Monumento: coliseo": ("8E8E3D", "viejo_coliseo"),
+    "Monumento: cuartel (militar)": ("355063", "viejo_militar"),
 }
+# Las familias: pintar el color GENÉRICO sobre una casilla que ya es de una familia concreta no la cambia.
+FAMILIA = {}
+for _c in list(CLASES):
+    if _c.startswith("Local: "):
+        FAMILIA[_c] = "Local (tienda, taberna...)"
+    elif _c.startswith("Monumento: "):
+        FAMILIA[_c] = "Monumento"
+    elif _c in ("Casa noble", "Cabaña", "Caserna", "Barraca", "Tienda de campaña"):
+        FAMILIA[_c] = "Casa"
+LOCAL_TILE = {"ferreria": "Local: herrería", "taverna": "Local: taberna", "botiga": "Local: tienda", "mercat": "Local: mercado",
+              "joieria": "Local: joyería", "banc": "Local: banco", "sastreria": "Local: sastrería", "posada": "Local: posada",
+              "banys": "Local: baños", "casa_te": "Local: casa de té", "armeria": "Local: armería",
+              "herreria": "Local: herrería", "taberna": "Local: taberna", "tienda": "Local: tienda"}
+# La puerta de un monumento -> su tile (excel_a_nivel: la manzana morada que tiene delante es ese monumento).
+PUERTA_MONUMENTO = {"puerta_iglesia": "viejo_iglesia", "puerta_coliseo": "viejo_coliseo", "puerta_castillo": "viejo_castillo",
+                    "puerta_universidad": "viejo_universidad", "puerta_biblioteca": "viejo_biblioteca",
+                    "puerta_opera": "viejo_opera", "puerta_cuartel": "viejo_militar"}
+MON_TILE = {"viejo_castillo": "Monumento: castillo", "viejo_iglesia": "Monumento: iglesia", "viejo_universidad": "Monumento: universidad",
+            "viejo_biblioteca": "Monumento: biblioteca", "viejo_opera": "Monumento: ópera", "viejo_coliseo": "Monumento: coliseo",
+            "viejo_militar": "Monumento: cuartel (militar)"}
+NATURAL_TILE = {"roca": "Roca (no se pasa)", "hierba_seca": "Hierba seca", "tierra_musgosa": "Tierra musgosa",
+                "piedra_antigua": "Piedra antigua (cima, losas)", "tierra_canon": "Tierra de cañón", "barro": "Barro",
+                "losa_oscura": "Losa oscura (suelo de cueva)", "losa_clara": "Losa clara", "agua_somera": "Agua somera (charco)",
+                "hojarasca": "Hojarasca", "nieve": "Nieve"}
 LOCALES = ("viejo_tienda", "viejo_ropa", "viejo_joyeria", "viejo_banco", "viejo_posada", "viejo_banos")
 MONUMENTOS = ("viejo_castillo", "viejo_iglesia", "viejo_universidad", "viejo_biblioteca", "viejo_opera",
               "viejo_coliseo", "viejo_militar")
@@ -48,6 +108,18 @@ def clase_de_tile(nombre):
         return "Agua (río)"
     if n == "pavimento_antiguo":
         return "Carril (pavimento antiguo)"
+    if n in NATURAL_TILE:
+        return NATURAL_TILE[n]
+    if n in MON_TILE:
+        return MON_TILE[n]
+    for fam, clase in (("noble_o", "Casa noble"), ("cabana_o", "Cabaña"), ("caserna_o", "Caserna"),
+                       ("barraca_o", "Barraca"), ("tenda_o", "Tienda de campaña")):
+        if n.startswith(fam):
+            return clase
+    if n.startswith("local_"):
+        base = n[len("local_"):].rsplit("_o", 1)[0]
+        if base in LOCAL_TILE:
+            return LOCAL_TILE[base]
     if n.startswith(("edifici_", "viejo_casa", "viejo_chabola", "casa_alma")):
         return "Casa"
     if n == "tierra_piedras":
@@ -88,7 +160,8 @@ LETRAS = {
     "t": "Ropa tendida", "x": "Carga y trastos", "·": "Otro objeto (mira el comentario)",
 }
 DEFECTO = {"A": "arbol_roble", "B": "bandera_ciudad", "F": "farola", "b": "banco_plaza", "j": "jardinera",
-           "x": "fardos", "M": "parada_mercado"}
+           "x": "fardos", "M": "parada_mercado", "t": "tendedero", "C": "cofre", "O": "pozo", "K": "barca",
+           "m": "mascota_gat_alquimia", "c": "cartel_taberna"}
 ESTRELLA = "★"
 
 

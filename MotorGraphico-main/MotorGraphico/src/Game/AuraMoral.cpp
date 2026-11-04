@@ -54,7 +54,8 @@ int frameAla(float segundos) {
 
 float bateAla(float segundos) { return 5.0f * std::sin(segundos * 2.0f * kPi / 2.6f); }
 
-int alasEnSprite(const AspectoAura& aspecto, int frameSprite, float segundos, AlaEnSprite (&out)[2]) {
+int alasEnSprite(const AspectoAura& aspecto, int frameSprite, float segundos, AlaEnSprite (&out)[2],
+                 Reparto reparto) {
     const int fila = filaAla(aspecto.alas, aspecto.nivelAlas);
     if (!aspecto.visible || fila < 0) return 0;
     // Cada ala: el pivote (el hombro), cuanto se encoge de ancho, si va hacia
@@ -65,8 +66,21 @@ int alasEnSprite(const AspectoAura& aspecto, int frameSprite, float segundos, Al
         float alfa;
     };
     Pieza p[2];
-    const Rumbo rumbo = rumboDeFrame(frameSprite);
-    switch (rumbo) {
+    const Rumbo rumbo = rumboDeFrame(frameSprite, reparto);
+    if (reparto == Reparto::Diagonal) {
+        // PL-JUEGO-01: Arriba = noreste, Derecha = sureste, Abajo = suroeste, Izquierda = noroeste. La
+        // cercana es la de la izquierda de la pantalla mirando al sureste y al noroeste, y la de la derecha
+        // mirando al suroeste y al noreste.
+        const float hx = kHombroDiagonalX, hy = kHombroDiagonalY;
+        const bool cercaIzquierda = rumbo == Rumbo::Derecha || rumbo == Rumbo::Izquierda;
+        if (cercaIzquierda) {
+            p[0] = {hx + 2.0f, hy - 2.0f, 0.55f, false, 0.8f};  // la lejana, a la derecha
+            p[1] = {hx - 1.0f, hy, 0.88f, true, 1.0f};          // la cercana, a la izquierda
+        } else {
+            p[0] = {hx - 2.0f, hy - 2.0f, 0.55f, true, 0.8f};
+            p[1] = {hx + 1.0f, hy, 0.88f, false, 1.0f};
+        }
+    } else switch (rumbo) {
         case Rumbo::Derecha:  // mira a la derecha: las alas van hacia atras (la izquierda)
             p[0] = {kHombroX - 2.0f, kHombroY - 3.0f, 0.55f, true, 0.8f};
             p[1] = {kHombroX - 4.0f, kHombroY, 0.70f, true, 1.0f};
@@ -100,7 +114,9 @@ int alasEnSprite(const AspectoAura& aspecto, int frameSprite, float segundos, Al
             a.y[k] = p[i].y + ex[k] * s + ey[k] * c;
         }
         a.espejo = p[i].espejo;
-        a.delante = rumbo == Rumbo::Arriba;
+        // de espaldas: en el clasico, mirando arriba; en diagonal, al noreste y al noroeste
+        a.delante = reparto == Reparto::Diagonal ? (rumbo == Rumbo::Arriba || rumbo == Rumbo::Izquierda)
+                                                 : rumbo == Rumbo::Arriba;
         a.alfa = std::clamp(aspecto.alfaAlas * p[i].alfa, 0.0f, 1.0f);
         a.fila = fila;
         a.columna = frameAla(segundos);

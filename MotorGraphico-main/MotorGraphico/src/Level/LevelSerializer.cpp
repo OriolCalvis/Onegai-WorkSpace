@@ -114,6 +114,16 @@ std::string serializeLevelDefinition(const LevelDefinition& level) {
         if (spawn.hasTargetPosition) {
             writeGridCoord(w, "targetPosition", spawn.targetPosition);
         }
+        if (!spawn.cerradaTodas.empty() || !spawn.cerradaNinguna.empty()) {  // G4-01
+            w.key("cerradaSi");
+            w.beginObject();
+            writeStringArray(w, "todas", spawn.cerradaTodas);
+            writeStringArray(w, "ninguna", spawn.cerradaNinguna);
+            w.endObject();
+        }
+        if (!spawn.beatCerrada.empty()) {
+            w.member("beatCerrada", spawn.beatCerrada);
+        }
         if (!spawn.loot.empty()) {
             writeStringArray(w, "loot", spawn.loot);
         }

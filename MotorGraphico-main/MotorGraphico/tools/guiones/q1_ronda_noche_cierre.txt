@@ -1,0 +1,10 @@
+# E-MISIONES-01b — cierre de la mision «ronda_noche»: se carga el guardado q1c_ronda_noche.json (justo antes del cierre) y se juega el final.
+# Uso (desde out/build/macos-debug):
+#   ./fabricar_guardados --capturas-cierre guardados_q1c
+#   perl -e 'alarm 150; exec @ARGV' ./juego --guardado guardados_q1c/q1c_ronda_noche.json --guion ../../../tools/guiones/q1_ronda_noche_cierre.txt
+40 toca E
+204 captura ronda_noche_c00
+212 toca ENTER
+220 captura ronda_noche_c01
+240 captura q1_ronda_noche_cierre
+260 fin

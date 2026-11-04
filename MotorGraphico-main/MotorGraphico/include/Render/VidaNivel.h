@@ -21,9 +21,11 @@
 #include "Game/Monumentos.h"
 #include "Render/BandadaNivel.h"
 #include "Render/MascotesNivel.h"
+#include "Render/PolvoDePasos.h"
 
 class IsometricRenderer;
 class RuntimeTileMap;
+class Texture;
 
 namespace Render {
 
@@ -46,6 +48,11 @@ public:
                IsometricRenderer& renderer, int tileW, int tileH);
     void desmonta(IsometricRenderer& renderer);
     void avanza(float dt, const GridCoord& jugador);
+    // U4-07.E07: el polvo de pasos del jugador. `dtPolvo` es 0 en pausa (D-O6); `celda` es kCeldaCentinela en
+    // las cinematicas; `enCombate` (D-O7): sin polvo nuevo. El dt de avanza() (mascotas y bandada) no se toca.
+    void avanzaPolvo(float dtPolvo, const GridCoord& celda, bool enCombate);
+    void ponBlanco(Texture* blanco) { m_polvo.ponBlanco(blanco); }
+    const PolvoDePasos& polvo() const { return m_polvo; }
     const BandadaNivel& bandada() const { return m_bandada; }
     const MascotesNivel& mascotes() const { return m_mascotes; }
 
@@ -56,6 +63,7 @@ public:
 private:
     BandadaNivel m_bandada;
     MascotesNivel m_mascotes;
+    PolvoDePasos m_polvo;
 };
 
 }  // namespace Render

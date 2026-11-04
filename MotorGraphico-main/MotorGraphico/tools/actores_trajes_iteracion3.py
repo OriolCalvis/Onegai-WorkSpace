@@ -492,7 +492,8 @@ def casaca_duque(negro, oro, rojo, mana, guante, hoja, gema):
     oro, las lineas de mana rojo de los brazos y los punos de oro, los guantes negros, la hombrera grande de oro
     con el ribete rojo en el brazo del arma y la pequena en el otro, el cinturon ancho de oro con la placa de
     gema, las placas de oro y las tiras rojas de las caderas, la capa roja de la cintura y sus cuatro hojas."""
-    return {"partes": {"t": negro, "a": negro, "A": negro, "n": negro, "m": guante, "M": guante},
+    return {"flotante": True,  # PL-ROPA-01: lo que sale del cuerpo es de diseno
+            "partes": {"t": negro, "a": negro, "A": negro, "n": negro, "m": guante, "M": guante},
             "extras": [capa_cintura(rojo, oro), cierre_duque(oro), lineas_mana(mana), punos(oro),
                        cuello_alto(negro, oro, 3),
                        hombrera_grande(oro, rojo, "A", placas=2), hombrera_grande(oro, None, "a", placas=1),
@@ -741,7 +742,8 @@ def placas_soberano(placa, oro, tabardo, espectro):
     """Las placas del Soberano: negras con la arista, las lamas y el canto de oro abajo, los punos de oro, tres
     placas de oro en cada hombro con el ribete rojo, el cinturon de oro, el tabardo rojo con la corona de espadas
     de oro, la capa larga roja con el bajo de oro y las hojas espectrales."""
-    return {"partes": {"t": placa, "a": placa, "A": placa, "m": placa, "M": placa, "n": placa},
+    return {"flotante": True,  # PL-ROPA-01: lo que sale del cuerpo es de diseno
+            "partes": {"t": placa, "a": placa, "A": placa, "m": placa, "M": placa, "n": placa},
             "bajo": (placa, 3), "texturas": {placa: equipo.chapa}, "cinturon": (oro, None, 0),
             "extras": [equipo.peto(placa), canto_bajo(oro), punos(oro),
                        tabardo_largo(tabardo, oro, oro, largo=10, semi=1, forma="corona_espadas", cantos=True),

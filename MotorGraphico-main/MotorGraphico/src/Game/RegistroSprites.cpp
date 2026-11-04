@@ -1,7 +1,9 @@
 // SPRITES-01 — ver include/Game/RegistroSprites.h.
 #include "Game/RegistroSprites.h"
 
+#include <cstdio>
 #include <fstream>
+#include <set>
 #include <sstream>
 
 #include "Core/Json/JsonValue.h"
@@ -167,6 +169,18 @@ const SpriteFijo* RegistroSprites::fijo(const std::string& objectId) const {
         if (it != m_fijos.end()) return &it->second;
     }
     return nullptr;
+}
+
+const SpriteActor* actorConRespaldo(const RegistroSprites& registro, const std::string& objectId,
+                                    const std::string& raceId, bool humanoide) {
+    if (const SpriteActor* propio = registro.actor(objectId, raceId)) return propio;
+    if (!humanoide) return nullptr;
+    const SpriteActor* neutra = registro.actor("", kRazaRespaldo);
+    static std::set<std::string> avisados;
+    if (neutra != nullptr && avisados.insert(objectId).second)
+        std::fprintf(stderr, "RegistroSprites: «%s» no tiene fila propia: lleva race:%s (respaldo)\n",
+                     objectId.c_str(), kRazaRespaldo);
+    return neutra;
 }
 
 }  // namespace Game

@@ -33,10 +33,21 @@ void RawInputState::setDown(MouseButton button, bool down) {
 InputMap InputMap::gameplayDefaults() {
     InputMap map;
     map.bind(InputAction::Quit, InputKey::Escape);
+    // Oriol (25/10): «volver al wasd para moverse, el qwas es demasiado dificil». W A S D, cada una por un
+    // eje de la rejilla isometrica (IsoMath), que en pantalla son las cuatro diagonales de los personajes
+    // de PixelLab: W arriba-derecha (-y), S abajo-izquierda (+y), A arriba-izquierda (-x) y D
+    // abajo-derecha (+x).
     map.bind(InputAction::MoveNorth, InputKey::W);
     map.bind(InputAction::MoveSouth, InputKey::S);
     map.bind(InputAction::MoveWest, InputKey::A);
     map.bind(InputAction::MoveEast, InputKey::D);
+    // Los menus siguen en cruz: W/S arriba y abajo (MenuUp/MenuDown), A/D a los lados.
+    map.bind(InputAction::SideLeft, InputKey::A);
+    map.bind(InputAction::SideRight, InputKey::D);
+    map.bind(InputAction::CursorUp, InputKey::UpArrow);
+    map.bind(InputAction::CursorDown, InputKey::DownArrow);
+    map.bind(InputAction::CursorLeft, InputKey::LeftArrow);
+    map.bind(InputAction::CursorRight, InputKey::RightArrow);
     map.bind(InputAction::Interact, InputKey::E);
     map.bind(InputAction::ToggleInventory, InputKey::Tab);
     map.bind(InputAction::QuickSave, InputKey::F5);
@@ -50,7 +61,9 @@ InputMap InputMap::gameplayDefaults() {
     map.bind(InputAction::MenuRight, InputKey::RightArrow);
     map.bind(InputAction::Confirm, InputKey::Enter);
     map.bind(InputAction::Confirm, InputKey::Space);
-    map.bind(InputAction::Cancel, InputKey::E);
+    // Oriol (22/10): «la tecla E = Enter». La E confirma en menus, dialogos y tiendas
+    // (antes cerraba); se sale con ESC o TAB.
+    map.bind(InputAction::Confirm, InputKey::E);
     map.bind(InputAction::Cancel, InputKey::Tab);
     // UI-BG3-01 — Las flechas de arriba y abajo mueven el foco igual que W/S
     // (en las cuadriculas tambien se mueve con las cuatro).

@@ -140,6 +140,7 @@ Result<int> ObjectCatalog::loadFromString(const std::string& jsonText) {
         def.previewPng = entry["previewPng"].asString();
         def.raceId = entry["raceId"].asString();
         def.blocksMovement = entry["blocksMovement"].asBool(false);
+        def.tapaVista = entry["tapaVista"].asBool(false);
         def.interactable = entry["interactable"].asBool(false);
 
         if (def.category == ObjectCategory::Enemy) {
@@ -274,6 +275,9 @@ std::string ObjectCatalog::exportJson() const {
         }
         if (def->blocksMovement) {
             out << "      \"blocksMovement\": true,\n";
+        }
+        if (def->tapaVista) {
+            out << "      \"tapaVista\": true,\n";
         }
         if (def->interactable) {
             out << "      \"interactable\": true,\n";

@@ -38,6 +38,13 @@ public:
         Piernas,
         Pies,
         Capa,
+        // EDITOR-PERSONALIZACION-01 (Oriol, 26/10): marcas de la piel (tres a la vez), alas, cola y cuernos
+        Marca1,
+        Marca2,
+        Marca3,
+        Alas,
+        Cola,
+        Cuernos,
         AlAzar,
         ComoSuRaza
     };
@@ -75,6 +82,9 @@ private:
     void cambiar(Fila fila, int paso);
     void alAzar();
     std::vector<std::string> opciones(Fila fila) const;
+    // H-PEL-1: los pelos propios que se ofrecen a la raza («propio/<raza>»): el suyo y el de sus razas germanas.
+    std::vector<std::string> pelosPropios() const;
+    std::vector<std::string> peinados() const;  // sin pelo, los propios y los genericos
     std::string actual(Fila fila) const;
     void poner(Fila fila, const std::string& valor);
 
@@ -82,6 +92,7 @@ private:
     Apariencia m_apariencia;
     std::vector<Fila> m_filas;
     std::size_t m_marcada = 0;
+    std::string m_colorGenerico;  // H-PEL-1: el ultimo color de pelo tenido de un peinado generico (el propio no se tine)
     std::uint32_t m_tirada = 0;  // AL AZAR: cuantas veces se ha pulsado
 };
 

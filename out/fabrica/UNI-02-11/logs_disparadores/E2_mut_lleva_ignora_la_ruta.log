@@ -1,0 +1,11 @@
+MUTACION lleva_sin_ruta
+fichero: src/Game/CinematicaDisparador.cpp
+viejo: 'if (!alli && !ruta.empty()) {  // andando'
+nuevo: 'if (false) {  // andando'
+fecha: 2026-11-04 13:16:00
+
+compilacion: rc=0
+test rc=1
+Ejecutados 27 test(s); 1 fallo(s).
+RESULTADO: MUTANTE MUERTO (el test falla)
+restaurado: test rc=0 :: ['Ejecutados 27 test(s); 0 fallo(s).']

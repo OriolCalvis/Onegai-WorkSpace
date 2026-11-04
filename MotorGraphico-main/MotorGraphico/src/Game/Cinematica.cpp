@@ -188,9 +188,10 @@ Result<CatalogoCinematicas> CatalogoCinematicas::lee(const std::string& textoJso
         return c;
     };
     for (std::size_t i = 0; aps.isArray() && i < aps.size(); ++i) {
-        Aparicion a{aps[i]["objeto"].asString(), aps[i]["si"].asString(), aps[i]["sin"].asString(), {}, {}};
+        Aparicion a{aps[i]["objeto"].asString(), aps[i]["si"].asString(), aps[i]["sin"].asString(), {}, {}, {}};
         a.visibleSi = condicion(aps[i]["visibleSi"]);
         a.ocultoSi = condicion(aps[i]["ocultoSi"]);
+        a.niveles = cadenas(aps[i]["nivel"]);
         if (a.objeto.empty()) return Result<CatalogoCinematicas>::Error("cinematicas: una aparicion sin «objeto»");
         cat.apariciones.push_back(std::move(a));
     }
@@ -231,6 +232,11 @@ Result<CatalogoCinematicas> CatalogoCinematicas::lee(const std::string& textoJso
             c.zonaDesde = GridCoord{std::min(zona[0].asInt(), zona[2].asInt()), std::min(zona[1].asInt(), zona[3].asInt())};
             c.zonaHasta = GridCoord{std::max(zona[0].asInt(), zona[2].asInt()), std::max(zona[1].asInt(), zona[3].asInt())};
         }
+        if (o.has("disparador")) {  // E-DISPARADORES-1 (D0026): CinematicaDisparador.cpp
+            auto d = leeDisparador(o["disparador"], c.id);
+            if (!d.isOk()) return Result<CatalogoCinematicas>::Error(d.errorMessage());
+            c.disparador = d.value();
+        }
         const JsonValue& pasos = o["pasos"];
         for (std::size_t k = 0; pasos.isArray() && k < pasos.size(); ++k) {
             auto paso = leePaso(pasos[k], "cinematicas: «" + c.id + "», paso " + std::to_string(k));
@@ -256,30 +262,21 @@ const Cinematica* CatalogoCinematicas::busca(const std::string& id) const {
     return nullptr;
 }
 
-const Cinematica* CatalogoCinematicas::laQueEmpieza(const std::string& nivel, const GridCoord& jugador,
-                                                    const TieneFlag& flag) const {
-    for (const Cinematica& c : lista) {
-        if (flag(c.vista())) continue;
-        if (!c.nivel.empty() && !acabaEn(nivel, c.nivel)) continue;
-        if (std::any_of(c.requiere.begin(), c.requiere.end(), [&](const std::string& f) { return !flag(f); })) continue;
-        if (std::any_of(c.sin.begin(), c.sin.end(), flag)) continue;
-        if (c.hayZona && (jugador.x < c.zonaDesde.x || jugador.x > c.zonaHasta.x || jugador.y < c.zonaDesde.y ||
-                          jugador.y > c.zonaHasta.y))
-            continue;
-        return &c;
-    }
-    return nullptr;
-}
-
 bool CondicionFlags::cumple(const TieneFlag& flag) const {
     if (std::any_of(todas.begin(), todas.end(), [&](const std::string& f) { return !flag(f); })) return false;
     if (!alguna.empty() && std::none_of(alguna.begin(), alguna.end(), flag)) return false;
     return std::none_of(ninguna.begin(), ninguna.end(), flag);
 }
 
-bool CatalogoCinematicas::visible(const std::string& objeto, const TieneFlag& flag) const {
+// ¿Vale la regla en este nivel? Sin «nivel», en todos.
+static bool aplicaEn(const Aparicion& a, const std::string& nivel) {
+    return a.niveles.empty() ||
+           std::any_of(a.niveles.begin(), a.niveles.end(), [&](const std::string& n) { return acabaEn(nivel, n); });
+}
+
+bool CatalogoCinematicas::visible(const std::string& objeto, const std::string& nivel, const TieneFlag& flag) const {
     for (const Aparicion& a : apariciones) {
-        if (a.objeto != objeto) continue;
+        if (a.objeto != objeto || !aplicaEn(a, nivel)) continue;
         if (!a.siFlag.empty() && !flag(a.siFlag)) return false;
         if (!a.sinFlag.empty() && flag(a.sinFlag)) return false;
         if (!a.visibleSi.vacia() && !a.visibleSi.cumple(flag)) return false;
@@ -324,8 +321,9 @@ void FondoTitulo::punto(float celdas, float& x, float& y) const {
     }
 }
 
-bool CatalogoCinematicas::afecta(const std::string& objeto) const {
-    return std::any_of(apariciones.begin(), apariciones.end(), [&](const Aparicion& a) { return a.objeto == objeto; }) ||
+bool CatalogoCinematicas::afecta(const std::string& objeto, const std::string& nivel) const {
+    return std::any_of(apariciones.begin(), apariciones.end(),
+                       [&](const Aparicion& a) { return a.objeto == objeto && aplicaEn(a, nivel); }) ||
            std::find(espectro.objetos.begin(), espectro.objetos.end(), objeto) != espectro.objetos.end();
 }
 
@@ -402,6 +400,7 @@ bool ReproductorCinematica::empiezaPaso(const PasoCinematica& p, EscenarioCinema
         case Tipo::Coloca:
             suelta(p.actor);
             if (p.hayDesfase) m_desfases[p.actor] = {p.desfaseX, p.desfaseY};
+            if (p.lleva && p.actor == "jugador") e.situaJugador(p.celda);
             pon(e, p.actor, p.celda, 0.0f, 0.0f, "idle");
             return true;
         case Tipo::Mira: {
@@ -418,6 +417,9 @@ bool ReproductorCinematica::empiezaPaso(const PasoCinematica& p, EscenarioCinema
         case Tipo::Flag:
             e.enciende(p.texto);
             return true;
+        case Tipo::Combate:
+            e.combate(p.texto, p.flagGana, p.flagPierde);
+            return !e.hablando();
         case Tipo::Nivel:
             m_paseos.clear();  // los de este nivel se quedan donde estén
             quitaDesfaseDelJugador(e);
@@ -479,6 +481,7 @@ bool ReproductorCinematica::sigueEnPaso(const PasoCinematica& p, float dt, Escen
         case Tipo::Emocion:
             return m_reloj >= p.segundos;
         case Tipo::Beat:
+        case Tipo::Combate:
             return !e.hablando();
         case Tipo::Nivel:
             return !e.cargandoNivel();
@@ -569,12 +572,14 @@ void ReproductorCinematica::pon(EscenarioCinematica& e, const std::string& actor
     // AV17-10: subido a `altura` celdas = el dibujo sube altura * alto de casilla (dx = dy = -altura).
     const auto tr = m_trepa.find(actor);
     const float alto = tr != m_trepa.end() ? -tr->second : 0.0f;
+    e.montado(actor, hay || tr != m_trepa.end());  // subido a algo, tambien encima
     e.pon(actor, c, dx + alto + (hay ? it->second.first : 0.0f), dy + alto + (hay ? it->second.second : 0.0f), animacion);
 }
 
 void ReproductorCinematica::quitaDesfaseDelJugador(EscenarioCinematica& e) {
     const bool subido = m_trepa.erase("jugador") > 0;
     if (m_desfases.erase("jugador") == 0 && !subido) return;
+    e.montado("jugador", false);
     if (GridCoord c; e.posicion("jugador", c)) e.pon("jugador", c, 0.0f, 0.0f, "");
 }
 

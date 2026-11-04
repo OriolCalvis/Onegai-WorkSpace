@@ -18,7 +18,7 @@ import numpy as np
 import actores_cascos as cascos
 import actores_equipo as equipo
 from actores_materiales import MATERIALES
-from actores_pintura import Material as M
+from actores_pintura import cubierto, Material as M
 from actores_pintura import _tramo_torso, filas_torso, pintar, top_pie
 from actores_trajes import (DELANTE, _CAPUCHA_ESPALDA, _CAPUCHA_FRENTE, _CAPUCHA_PERFIL, _CUPULA_ESPALDA,
                             _CUPULA_FRENTE, _CUPULA_PERFIL, _arte, _caja, _cuello, _espejo_x, _pinta, _plantilla,
@@ -131,7 +131,7 @@ def estola(material):
             return
         for y in range(y0 + 1, lab.shape[0]):
             for x, t in columnas:
-                if (y, x) in ctx["cubre"] and lab[y, x] not in DELANTE:
+                if cubierto(ctx, y, x) and lab[y, x] not in DELANTE:
                     pintar(ctx, y, x, m, t)
     return fn
 
@@ -243,7 +243,7 @@ def capa(material, forro=None, largo=0.85):
         for (y, x), t in tonos.items():
             if not (0 <= y < lab.shape[0] and 0 <= x < lab.shape[1]):
                 continue
-            if d != "arriba" and (not _vacio(lab, y, x) or (y, x) in ctx["cubre"]):
+            if d != "arriba" and (not _vacio(lab, y, x) or cubierto(ctx, y, x)):
                 continue  # de frente y de perfil, detras del cuerpo
             pintar(ctx, y, x, mf if (mf is not None and t == "d" and d == "abajo") else m, t)
     return fn
@@ -270,7 +270,7 @@ def cartas(papel, tinta):
         if cint is None or d == "arriba":
             return
         mp, mt = ctx["mat"][papel], ctx["mat"][tinta]
-        xs = [x for x in range(lab.shape[1]) if lab[cint, x] in ("p", "t") or (cint, x) in ctx["cubre"]]
+        xs = [x for x in range(lab.shape[1]) if lab[cint, x] in ("p", "t") or cubierto(ctx, cint, x)]
         if not xs:
             return
         x0, x1 = min(xs), max(xs)
@@ -296,7 +296,7 @@ def libro_cinto(tapa, cierre):
         if cint is None or d == "arriba":
             return
         mt, mc = ctx["mat"][tapa], ctx["mat"][cierre]
-        xs = [x for x in range(lab.shape[1]) if lab[cint, x] in ("p", "t") or (cint, x) in ctx["cubre"]]
+        xs = [x for x in range(lab.shape[1]) if lab[cint, x] in ("p", "t") or cubierto(ctx, cint, x)]
         if not xs:
             return
         x0, x1 = min(xs), max(xs)
@@ -385,7 +385,7 @@ def bandas(material, filas=(4, 8)):
         for k in filas:
             y = y0 + k
             for x in range(lab.shape[1]):
-                if lab[y, x] in ("t", "a", "A") and (y, x) in ctx["cubre"]:
+                if lab[y, x] in ("t", "a", "A") and cubierto(ctx, y, x):
                     pintar(ctx, y, x, m, "s" if lab[y, x] == "t" else "d")
     return fn
 
@@ -561,7 +561,8 @@ def tunica_gravitas(noche, piedra, brillo):
     """La tunica de Gravitas: azul noche hasta los pies, mangas anchas con el puno violeta, la
     faja de piedra, el cuello alto con el forro violeta y las esferas de piedra que orbitan
     sobre los hombros."""
-    return {"partes": {e: noche for e in _TODO}, "habito": (noche, 2, None),
+    return {"flotante": True,  # PL-ROPA-01: lo que sale del cuerpo es de diseno
+            "partes": {e: noche for e in _TODO}, "habito": (noche, 2, None),
             "extras": [mangas_anchas(noche, brillo, 2), faja(piedra, 3), cuello_alto(noche, brillo, 3),
                        esferas(piedra, brillo)]}
 

@@ -179,6 +179,26 @@ class ReglasPuertas(unittest.TestCase):
         _, _, problemas = self.comprueba()
         self.una(problemas, "no tiene puerta de vuelta")
 
+    def _vuelta_por_tierra(self, con_camino):
+        """origen -> destino (sin puerta directa de vuelta); destino -> tierra -> origen si hay camino."""
+        p = self.r.puerta(llegada=(2, 2))
+        p["vueltaPorTierra"] = "assets/levels/tierra.json"
+        self.r.nivel("origen.json", "assets/maps/origen.tmx", [p])
+        destino = [self.r.puerta(objetivo="assets/levels/tierra.json", llegada=(1, 1), oid="a_tierra")] if con_camino else []
+        self.r.nivel("destino.json", "assets/maps/destino.tmx", destino)
+        self.r.nivel("tierra.json", "assets/maps/destino.tmx",
+                     [self.r.vuelta(oid="tierra_a_origen"), self.r.puerta(llegada=(1, 1), oid="tierra_a_destino")])
+
+    def test_vuelta_por_tierra_con_camino(self):
+        self._vuelta_por_tierra(con_camino=True)
+        _, _, problemas = self.comprueba()
+        self.assertEqual([p for p in problemas if p[1] == "puerta_a"], [])
+
+    def test_vuelta_por_tierra_sin_camino(self):
+        self._vuelta_por_tierra(con_camino=False)
+        _, _, problemas = self.comprueba()
+        self.una(problemas, "no hay camino de vuelta por puertas")
+
     def test_sin_targetPosition_usa_el_playerStart_del_destino(self):
         self.r.mapa("assets/maps/destino.tmx", tmx(4, 4, [suelo(4, 4, muros=[(2, 2)])]))
         self.base(self.r.puerta(llegada=None), inicio=(2, 2))   # playerStart en el muro

@@ -70,6 +70,9 @@ void BloquesNivel::monta(const RuntimeTileMap& mapa, const std::string& tileset,
         }
         auto entidad = std::make_unique<StaticEntity>(GridCoord{b.x, b.y}, frame->frame, atlas, tileW, tileH);
         entidad->setCharacterSprite(atlas, hoja->celdaAncho, hoja->celdaAlto, anclaje);
+        // Oriol (22/10): en la aldea de Gorran hay desniveles; el edificio se apoya en el nivel de su casilla
+        // (AV19-02), no en el 0, o se hunde en la meseta.
+        entidad->setAlturas(&mapa.alturas());
         renderer.addToQueue(entidad.get());
         m_indice[{b.x, b.y}] = m_bloques.size();
         m_bloques.push_back({std::move(entidad), b.x, b.y});
@@ -104,7 +107,8 @@ TiraEntity::TiraEntity(const GridCoord& celda, int frame, TextureAtlas* atlas, i
 
 void TiraEntity::render(SpriteBatch& batch) {
     // Sin inset: las tiras tienen que tocarse pixel a pixel.
-    const Vector2 base = IsoMath::gridToScreen(m_gridPosition, 64.0f, 32.0f);
+    Vector2 base = IsoMath::gridToScreen(m_gridPosition, 64.0f, 32.0f);
+    base.y += elevacion();  // AV19-02: el monumento sube con el terreno de su casilla
     UVRect uv = m_atlas->getUV(m_spriteID);
     std::swap(uv.v0, uv.v1);  // el flip vertical de TextureManager, como en el sprite de personaje
     batch.submit(base + m_offset + m_desplazamiento, Vector2{static_cast<float>(m_ancho), static_cast<float>(m_alto)}, uv,
@@ -127,10 +131,13 @@ void MonumentosNivel::desmonta(IsometricRenderer& renderer) {
 }
 
 std::set<std::pair<int, int>> MonumentosNivel::monta(const RuntimeTileMap& mapa, const std::string& tileset,
-                                                     BancoAtlas& banco, IsometricRenderer& renderer) {
+                                                     BancoAtlas& banco, IsometricRenderer& renderer,
+                                                     const std::vector<GridCoord>& puertas) {
     desmonta(renderer);
     m_renderer = &renderer;
-    std::vector<Game::MonumentoColocado> plan = m_plan.planifica(mapa, tileset);
+    std::vector<std::pair<int, int>> celdas;  // J-4: la casa de tile antiguo orienta su puerta a la puerta_*
+    for (const GridCoord& p : puertas) celdas.push_back({p.x, p.y});
+    std::vector<Game::MonumentoColocado> plan = m_plan.planifica(mapa, tileset, celdas);
     std::vector<Game::MonumentoColocado> montados;
     const int tileW = mapa.getTileWidth(), tileH = mapa.getTileHeight();
     for (const Game::MonumentoColocado& m : plan) {
@@ -144,8 +151,10 @@ std::set<std::pair<int, int>> MonumentosNivel::monta(const RuntimeTileMap& mapa,
         for (const Game::TiraMonumento& t : m.tiras) {
             auto e = std::make_unique<TiraEntity>(GridCoord{t.x, t.y}, t.frame, atlas, tileW, tileH, Vector2{t.dx, t.dy},
                                                   hoja->celdaAncho, hoja->celdaAlto);
+            e->setAlturas(&mapa.alturas());
             renderer.addToQueue(e.get());
-            const Vector2 origen = IsoMath::gridToScreen(GridCoord{t.x, t.y}, 64.0f, 32.0f);
+            Vector2 origen = IsoMath::gridToScreen(GridCoord{t.x, t.y}, 64.0f, 32.0f);
+            origen.y += mapa.alturas().desfasePx(GridCoord{t.x, t.y});
             m_zonas.push_back({origen.x + t.dx, origen.x + t.dx + static_cast<float>(hoja->celdaAncho), origen.y + t.dy,
                                origen.y + t.dy + static_cast<float>(hoja->celdaAlto), t.x + t.y});
             m_tiras.push_back(std::move(e));

@@ -199,7 +199,14 @@ MOTOR_TEST_CASE(los_ganchos_nuevos_se_leen) {
     MOTOR_CHECK(Game::leerGancho("propio:combate:ventaja:ataque").rondas == -1);
     MOTOR_CHECK(Game::leerGancho("limpia").tipo == T::Limpia);
     // Lo que el combate no simula no vale como rasgo de una pasiva.
-    MOTOR_CHECK(Game::leerGancho("siempre:velocidad_0").tipo == T::Desconocido);
+    MOTOR_CHECK(Game::leerGancho("siempre:no_existe").tipo == T::Desconocido);
+    // Un efecto ignorado en combate es legal suelto, pero no como rasgo de una pasiva.
+    MOTOR_CHECK(Game::leerGancho("ventaja_social").tipo == T::Ignorado);
+    MOTOR_CHECK(Game::leerGancho("siempre:ventaja_social").tipo == T::Desconocido);
+    // Un rasgo que el combate si simula si vale.
+    const Game::Gancho siempreVel0 = Game::leerGancho("siempre:velocidad_0");
+    MOTOR_CHECK(siempreVel0.tipo == T::Siempre);
+    MOTOR_CHECK(siempreVel0.rasgo.size() == 1 && siempreVel0.rasgo[0].tipo == T::VelocidadCero);
     MOTOR_CHECK(Game::leerGancho("propio:2:nada").tipo == T::Desconocido);
     // A favor o en contra (el icono del estado y «limpia»).
     MOTOR_CHECK(Game::esPerjuicio(Game::leerGancho("penal_ca:1")));

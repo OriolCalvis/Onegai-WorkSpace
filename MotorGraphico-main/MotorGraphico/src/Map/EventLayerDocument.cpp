@@ -72,6 +72,17 @@ Result<bool> ValidarPagina(const MapEventPage& pagina, const std::string& donde)
         return Result<bool>::Error(donde + ": hay una pagina sin id");
     }
     const std::string dondePagina = donde + ", pagina '" + pagina.id.value() + "'";
+    // U3-02.E06a (D1 = b) — trigger de region <=> referencia a region.
+    const bool conRegion = !pagina.regionLayerId.empty() || !pagina.regionId.empty();
+    if (isRegionTrigger(pagina.trigger)) {
+        if (pagina.regionLayerId.empty() || pagina.regionId.empty()) {
+            return Result<bool>::Error(dondePagina +
+                                       ": un trigger de region necesita capa y region");
+        }
+    } else if (conRegion) {
+        return Result<bool>::Error(dondePagina +
+                                   ": solo un trigger de region puede nombrar una region");
+    }
     for (const MapEventCondition& condicion : pagina.conditions) {
         // Una condicion que no nombra nada se evaluaria siempre igual y
         // el autor no tendria forma de saber por que su cofre no se abre.

@@ -125,6 +125,26 @@ void PantallaNuevaPartida::vestir(Player& jugador) const {
     m_jugador->ponerA(jugador, Interno::kCharacterDrawW, Interno::kCharacterDrawH, Interno::characterAnchor());
 }
 
+bool PantallaNuevaPartida::vestirPorDefecto(Player& jugador) {
+    if (!cargaDatos().isOk() || !m_datos.montaje) {
+        std::cerr << "GUION-01: sin personajes.json; el jugador conserva el marcador personaje.png\n";
+        return false;
+    }
+    const Game::ManifiestoPersonajes& manifiesto = m_datos.montaje->manifiesto();
+    // El humano de las Marcas es la raza por defecto; si el manifiesto ya no la trae, la primera que haya.
+    const Game::RazaVisual* raza = manifiesto.raza("race_human_marches");
+    if (raza == nullptr && !manifiesto.razas.empty()) raza = &manifiesto.razas.front();
+    if (raza == nullptr) return false;
+    const auto vestido = m_jugador->vestir(*m_datos.montaje, Game::Apariencia::deRaza(*raza), {});
+    if (!vestido.isOk()) {
+        std::cerr << "APARIENCIA-01: " << vestido.errorMessage() << "\n";
+        return false;
+    }
+    m_datos.montaje->vaciarCache();
+    vestir(jugador);
+    return m_jugador->lista();
+}
+
 void PantallaNuevaPartida::actualizarAspecto() {
     if (!m_jugador->lista() || !m_datos.montaje || activa()) return;
     const auto& manifiesto = m_datos.montaje->manifiesto();
@@ -163,7 +183,10 @@ RPG::CharacterSheet* PantallaNuevaPartida::restaurarHeroe(const SaveGameData& da
     // Su aspecto, con lo que lleva puesto y su brillo.
     if (m_datos.montaje && !data.hero.raza.empty()) {
         const auto& manifiesto = m_datos.montaje->manifiesto();
-        const auto vestido = m_jugador->vestir(*m_datos.montaje, Game::NewGameFlow::aparienciaGuardada(data.hero),
+        Game::Apariencia guardada = Game::NewGameFlow::aparienciaGuardada(data.hero);
+        if (const Game::RazaVisual* raza = manifiesto.raza(guardada.raza))
+            guardada.limpiarSegunRaza(*raza);  // CAR-1: pelo, barba y ojos que su pueblo no admite
+        const auto vestido = m_jugador->vestir(*m_datos.montaje, guardada,
                                                Game::Vestuario::piezasVisibles(m_ficha.equippedIds, manifiesto),
                                                Game::Vestuario::brillosVisibles(m_ficha.equippedIds, manifiesto));
         if (!vestido.isOk()) std::cerr << vestido.errorMessage() << "\n";
@@ -204,11 +227,13 @@ void PantallaNuevaPartida::procesar(const Engine::Input::InputSnapshot& input, c
     } else {
         if (input.pressed(InputAction::PrevTab)) c.anterior();
         if (input.pressed(InputAction::NextTab)) c.siguiente();
-        const int dx = (input.pressed(InputAction::MoveEast) || derecha ? 1 : 0) -
-                       (input.pressed(InputAction::MoveWest) || izquierda ? 1 : 0);
+        // La E pasa de hoja aqui (Q/E) aunque en el resto del juego confirme: no hace las dos cosas.
+        const bool pasaHoja = input.pressed(InputAction::PrevTab) || input.pressed(InputAction::NextTab);
+        const int dx = (input.pressed(InputAction::SideRight) || derecha ? 1 : 0) -
+                       (input.pressed(InputAction::SideLeft) || izquierda ? 1 : 0);
         const int dy = (input.pressed(InputAction::MenuDown) ? 1 : 0) - (input.pressed(InputAction::MenuUp) ? 1 : 0);
         if (dx != 0 || dy != 0) c.mueve(dx, dy);
-        if (input.pressed(InputAction::Confirm)) c.acepta();
+        if (input.pressed(InputAction::Confirm) && !pasaHoja) c.acepta();
         if (input.pressed(InputAction::Quit)) c.atras();
     }
     if (c.estado() == Game::CuadernoCreacion::Estado::Terminado) {

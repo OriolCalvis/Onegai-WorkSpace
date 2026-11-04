@@ -1,0 +1,27 @@
+# U4-01.E06 — Adaptador de camara del juego (Engine/ApplicationCamara). GL-free: solo Camera + politica pura.
+# Ejecuta fotogramaCamara con dobles y la proyeccion real de GolpesEnPantalla (motor_pergamino, sin GL). Lee ademas fuentes del juego (MOTOR_FUENTES_DIR) para vigilar quien lee posicionVista().
+if(BUILD_TESTING)
+    add_executable(test_application_camara tests/Engine/ApplicationCamaraTests.cpp src/Engine/ApplicationCamara.cpp)
+    target_include_directories(test_application_camara PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+    target_compile_definitions(test_application_camara PRIVATE MOTOR_FUENTES_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+    target_link_libraries(test_application_camara PRIVATE motor_math motor_pergamino)
+    add_test(NAME test_application_camara COMMAND test_application_camara)
+    set_tests_properties(test_application_camara PROPERTIES WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" LABELS "unit;gl-free")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_application_camara)
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_application_camara)
+    endif()
+endif()
+
+# U4-01.E07 — Verificacion de esquinas, zona muerta y sacudida (fotogramaCamara + Camera reales, gl-free).
+if(BUILD_TESTING)
+    add_executable(test_verificacion_camara tests/Engine/VerificacionCamaraTests.cpp src/Engine/ApplicationCamara.cpp)
+    target_include_directories(test_verificacion_camara PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+    target_link_libraries(test_verificacion_camara PRIVATE motor_math)
+    add_test(NAME test_verificacion_camara COMMAND test_verificacion_camara)
+    set_tests_properties(test_verificacion_camara PROPERTIES WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" LABELS "unit;gl-free")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_verificacion_camara)
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_verificacion_camara)
+    endif()
+endif()

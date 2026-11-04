@@ -38,6 +38,7 @@ namespace {
 // textos de {nombre}, {raza}... Se lee de los catalogos una vez por ficha.
 void reflejaHeroe(SessionData& d) {
     if (d.m_narrativeState == nullptr || d.m_playerBody == nullptr) return;
+    moral::reflejaLaReputacion(d);  // BND-04
     const RPG::CharacterSheet* ficha = d.m_playerBody->character_sheet();
     if (ficha == nullptr) return;
     static std::map<std::string, RPG::HeroeEnLaHistoria> cache;
@@ -411,8 +412,27 @@ bool GameSession::applyNarrative(const RPG::NarrativeResult& result) {
         // speaker vacio = voz del narrador: la linea va sola, sin "X: ".
         logLine(sessionData()->m_dialogueSpeaker.empty() ? line : sessionData()->m_dialogueSpeaker + ": " + line);
     }
+    avaluaEventosDelMundo();  // C8-03c
     return true;
 }
+
+// G4-01 — Una puerta cerrada por flags no cambia de nivel: habla su beat (como
+// un talk) o, sin beat, avisa. false = abierta, se cruza como siempre.
+bool GameSession::cierraPuerta(const ObjectSpawn& puerta) {
+    const RPG::NarrativeState* estado = sessionData()->m_narrativeState;
+    if (!puerta.estaCerrada([estado](const std::string& f) { return estado != nullptr && estado->hasFlag(f); }))
+        return false;
+    if (puerta.beatCerrada.empty() || !talkNarrative(puerta.beatCerrada)) logLine("La puerta está cerrada.");
+    return true;
+}
+
+void GameSession::setNarrative(const RPG::NarrativeEngine* engine, RPG::NarrativeState* state) {
+    m_data->m_narrative = engine;
+    m_data->m_narrativeState = state;
+    moral::reflejaLaReputacion(*m_data);  // BND-04: restoreSaveGame pudo ir antes
+}
+
+void GameSession::reflejaReputacion() { moral::reflejaLaReputacion(*m_data); }
 
 bool GameSession::enterLevelNarrative(const std::string& levelId) {
     if (sessionData()->m_narrative == nullptr || sessionData()->m_narrativeState == nullptr) {
@@ -470,6 +490,7 @@ bool GameSession::chooseOption(int indice) {
         estado == nullptr || !estado->eleccion().activa()) {
         return false;
     }
+    moral::reflejaLaReputacion(*sessionData());  // BND-04
     const RPG::NarrativeResult elegida = sessionData()->m_narrative->elige(indice, *estado);
     if (!elegida.fired) return false;
     applyNarrative(elegida);

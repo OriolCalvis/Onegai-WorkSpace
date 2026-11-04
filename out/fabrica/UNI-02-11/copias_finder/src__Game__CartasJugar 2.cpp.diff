@@ -1,0 +1,145 @@
+--- MotorGraphico-main/MotorGraphico/src/Game/CartasJugar.cpp	2026-11-02 21:03:49
++++ MotorGraphico-main/MotorGraphico/src/Game/CartasJugar 2.cpp	2026-11-02 21:03:49
+@@ -2,8 +2,6 @@
+ // (ver include/Game/GanchosCarta.h). Las tiradas y los golpes estan en
+ // CartasTiradas.cpp.
+ #include "CartasEnCombateInterno.h"
+-#include "Game/FrasesDeCombate.h"  // EH-16
+-#include "Game/AreaDeCarta.h"  // AV13-14
+ 
+ #include <map>
+ 
+@@ -87,29 +85,6 @@
+     return salida;
+ }
+ 
+-// AV13-14 — Los que pilla un area: todos los que esten en pie dentro de sus casillas, de los dos
+-// bandos, menos quien la lanza. El centro, la casilla del enemigo elegido (o del primero en pie).
+-std::vector<CartasEnCombate::Ref> CartasEnCombate::enElArea(const ContextoBatalla& c, const AreaDeCarta& area,
+-                                                            int elegido) const {
+-    int e = elegido;
+-    if (e < 0 || static_cast<std::size_t>(e) >= c.enemigos.size() || !vivo(c, {Lado::Enemigo, static_cast<std::size_t>(e)}))
+-        e = primerVivo(c, Lado::Enemigo);
+-    const auto yo = c.casillaDe(true, 0);
+-    const auto diana = e >= 0 ? c.casillaDe(false, static_cast<std::size_t>(e)) : std::nullopt;
+-    std::vector<Ref> dentro;
+-    if (!yo || !diana) return dentro;
+-    const std::vector<GridCoord> zona = casillasDelArea(area, *yo, *diana, c.muro);
+-    const auto esta = [&](bool aliado, std::size_t i) {
+-        const auto donde = c.casillaDe(aliado, i);
+-        return donde && std::any_of(zona.begin(), zona.end(), [&](GridCoord z) { return z.x == donde->x && z.y == donde->y; });
+-    };
+-    for (std::size_t i = 1; i < c.aliados.size(); ++i)
+-        if (vivo(c, {Lado::Aliado, i}) && esta(true, i)) dentro.push_back({Lado::Aliado, i});
+-    for (std::size_t i = 0; i < c.enemigos.size(); ++i)
+-        if (vivo(c, {Lado::Enemigo, i}) && esta(false, i)) dentro.push_back({Lado::Enemigo, i});
+-    return dentro;
+-}
+-
+ EstadoCarta CartasEnCombate::estadoDeCondicion(const std::string& id, int rondas) const {
+     EstadoCarta e;
+     e.id = id;
+@@ -239,7 +214,7 @@
+     const std::string motivo = motivoCarta(indice);
+     if (!motivo.empty()) {
+         c.log.push_back(c.aliados[0].name + " no puede usar " + def.name + ": " + motivo + ".");
+-        m_turno.abierto = sigueAbierto();
++        m_turno.abierto = !m_turno.principal;
+         return false;
+     }
+     const Ref heroe{Lado::Aliado, 0};
+@@ -248,32 +223,22 @@
+         const std::vector<Ref> para = objetivos(c, def.target, objetivo);
+         m_turno.preparadaPara = !para.empty() && para[0].lado == Lado::Aliado ? para[0].i : 0;
+         c.log.push_back(c.aliados[0].name + " prepara " + def.name + ".");
+-        m_turno.abierto = sigueAbierto();
++        m_turno.abierto = !m_turno.principal;
+         return true;
+     }
+ 
+-    std::vector<Ref> principales = objetivos(c, def.target, objetivo);
+-    if (const auto area = areaDe(def); area && c.casillaDe) principales = enElArea(c, *area, objetivo);  // AV13-14
++    const std::vector<Ref> principales = objetivos(c, def.target, objetivo);
+     // Los golpes y el dano van siempre al bando contrario, aunque la carta
+     // apunte a ti (Arsenal del Rey: «invocas un arma que ataca por ti»).
+     const std::vector<Ref> golpeados =
+         contraEnemigos(def.target) ? principales
+                                    : objetivos(c, RPG::SkillTarget::SINGLE_ENEMY, -1);
+-    std::map<std::pair<int, std::size_t>, Tirada> tiradas;  // una por blanco y carta (un area pilla aliados)
++    std::map<std::size_t, Tirada> tiradas;  // una tirada enfrentada por enemigo y carta
+     const auto tiradaDe = [&](Ref r) -> const Tirada& {
+-        const std::pair<int, std::size_t> clave{static_cast<int>(r.lado), r.i};
+-        auto it = tiradas.find(clave);
+-        if (it == tiradas.end()) it = tiradas.emplace(clave, tirar(c, heroe, r, def, !esMagia(def), false)).first;
++        auto it = tiradas.find(r.i);
++        if (it == tiradas.end()) it = tiradas.emplace(r.i, tirar(c, heroe, r, def, !esMagia(def), false)).first;
+         return it->second;
+     };
+-    // D0015 — Si el objetivo pifio la salvacion, el estado le dura el doble.
+-    const auto conPifia = [&](EstadoCarta e, Ref r, bool magia) {
+-        if (magia && e.rondas > 0 && RPG::dano::efectoDoble(tiradaDe(r).exitos)) {
+-            e.rondas *= 2;
+-            c.log.push_back(nombre(c, r) + " pifia la salvacion: " + e.nombre + " le dura el doble.");
+-        }
+-        return e;
+-    };
+     // Los estados de la carta, uno por duracion (Cancion del Invierno deja
+     // UN estado con sus dos rasgos).
+     std::map<int, EstadoCarta> estados;
+@@ -314,8 +279,8 @@
+                     std::string como;
+                     int dano = danoDeCarta(t, propios, esMagia(def), c.rng, como);
+                     if (dano > 0) dano += bonoDanoContra(c, heroe, r);
+-                    c.log.push_back(def.name + " sobre " + nombre(c, r) + ": " + t.resumen + ". " +
+-                                    frases::dano(dano, como) + ".");
++                    c.log.push_back(def.name + " sobre " + nombre(c, r) + " (" + t.resumen + ": " + como + ", " +
++                                    std::to_string(dano) + " de dano).");
+                     danoCausado += aplicarDano(c, heroe, r, dano, false);
+                 }
+                 break;
+@@ -329,7 +294,7 @@
+                     }
+                     const int curado = curar(*combatiente(c, r), cura);
+                     c.log.push_back(curado > 0 ? def.name + " cura " + std::to_string(curado) + " a " +
+-                                                     nombre(c, r) + ": " + t.resumen + "."
++                                                     nombre(c, r) + " (" + t.resumen + ")."
+                                                : def.name + ": " + nombre(c, r) + " ya tiene la vida llena.");
+                 }
+                 break;
+@@ -366,10 +331,10 @@
+                 e.origen = 0;
+                 for (const Ref& r : principales) {
+                     if (r.lado == Lado::Enemigo && tiradaDe(r).grado < RPG::Degree::SUCCESS) {
+-                        c.log.push_back(nombre(c, r) + " resiste " + def.name + ": " + tiradaDe(r).resumen + ".");
++                        c.log.push_back(nombre(c, r) + " resiste " + def.name + " (" + tiradaDe(r).resumen + ").");
+                         continue;
+                     }
+-                    ponerEstado(c, r, conPifia(e, r, esMagia(def) && r.lado == Lado::Enemigo));
++                    ponerEstado(c, r, e);
+                 }
+                 break;
+             }
+@@ -378,7 +343,7 @@
+                     if (r.lado != Lado::Enemigo || tiradaDe(r).grado < RPG::Degree::SUCCESS) continue;
+                     EstadoCarta e = estadoDeCondicion(g.texto, g.rondas);
+                     e.origen = 0;
+-                    ponerEstado(c, r, conPifia(e, r, esMagia(def)));
++                    ponerEstado(c, r, e);
+                 }
+                 break;
+             case T::Escudo:
+@@ -444,11 +409,11 @@
+             break;
+         default:
+             if (!turnoExtra) {
+-                gastarPrincipal(c);  // AV13-28: a lo BG3, no cierra
+-                if (!m_turno.abierto) return true;
++                cerrarTurno(c);
++                return true;
+             }
+     }
+-    m_turno.abierto = sigueAbierto();
++    m_turno.abierto = !m_turno.principal;
+     return true;
+ }
+ 

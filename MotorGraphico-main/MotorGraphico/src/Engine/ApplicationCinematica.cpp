@@ -1,15 +1,18 @@
 // PROLOGO-02 — ver include/Engine/ApplicationCinematica.h.
 #include "Engine/ApplicationCinematica.h"
 
+#include <set>
 #include <algorithm>
 #include <iostream>
 
 #include "Engine/Application.h"
 #include "Engine/ApplicationInternal.h"
+#include "ApplicationCinematicaDisparador.h"  // E-DISPARADORES-1
 #include "Render/AnimatedEntity.h"
 #include "Render/Camera.h"
 #include "Render/VidaNivel.h"
 #include "Game/Personajes/MontajePersonajes.h"
+#include "Render/HojaPersonaje.h"  // Oriol (24/10): el reparto de la hoja de un actor
 #include "Render/HudWidgets.h"
 #include "Render/Player.h"
 #include "World/World.h"
@@ -18,6 +21,7 @@
 #include "Game/GameOverScreen.h"
 #include "RPG/CharacterSheet.h"
 #include "Game/CartasEnCombate.h"
+#include "Game/SaveGame.h"  // cargaPartida
 #include "Render/PergaminoGL.h"
 
 #include <chrono>
@@ -28,7 +32,6 @@
 
 using Engine::Interno::kTileH;
 using Engine::Interno::kTileW;
-
 EstadoCinematicas::EstadoCinematicas() = default;
 EstadoCinematicas::~EstadoCinematicas() = default;
 
@@ -84,10 +87,9 @@ void ApplicationCinematica::actualiza(Application& app, float dt) {
     const GameMode modo = app.m_session->mode();
     if (!estado.reproductor.activa() && modo == GameMode::Exploration && !app.m_showInventory &&
         !app.m_scenes.hasPendingTransition() && app.m_narrativaLista) {
-        if (const Game::Cinematica* c =
-                estado.catalogo.laQueEmpieza(app.m_currentLevelPath, app.m_session->playerPosition(), tiene)) {
+        if (const Game::Cinematica* c = laQueEmpieza(app, tiene)) {  // E-DISPARADORES-1
             Engine::Interno::trace("cinematica: empieza");
-            estado.reproductor.empieza(*c);
+            estado.reproductor.empieza(efectiva(app, *c));
         }
     }
     if (modo == GameMode::GameOver && !estado.cicatrizPuesta) empiezaNoqueo(app);  // AV13-33: cicatriz y escena
@@ -118,8 +120,16 @@ void ApplicationCinematica::actualiza(Application& app, float dt) {
             celda = e->position();
             return true;
         }
+        std::set<std::string> montados;  // los que van dentro de lo que los lleva (con desfase)
+        void montado(const std::string& actor, bool si) override {
+            if (si) montados.insert(actor);
+            else montados.erase(actor);
+        }
         void pon(const std::string& actor, const GridCoord& celda, float dx, float dy,
                  const std::string& animacion) override {
+            // Medio paso de profundidad mas solo si va montado: andando, la barca y el barquero
+            // empataban (los dos con desfase de paseo) y la barca salia por encima.
+            const int sesgo = montados.count(actor) != 0 ? CapasDeDibujo::kPasoDeProfundidad / 2 : 0;
             if (actor == "jugador") {
                 // PROLOGO-02: el jugador no salta de celda (eso es andar, con sus
                 // reglas); su dibujo, si: el desfase (subir a la barca).
@@ -127,7 +137,7 @@ void ApplicationCinematica::actualiza(Application& app, float dt) {
                                                 (dx + dy) * static_cast<float>(kTileH) * 0.5f});
                 // AV16-04: con desfase va DENTRO de lo que lo lleva (la barca, en su
                 // misma celda): medio paso de profundidad mas, para dibujarse encima.
-                app.m_player->setSortBias(dx != 0.0f || dy != 0.0f ? CapasDeDibujo::kPasoDeProfundidad / 2 : 0);
+                app.m_player->setSortBias(sesgo);
                 if (!animacion.empty()) app.m_player->play(animacion);
                 return;
             }
@@ -139,7 +149,7 @@ void ApplicationCinematica::actualiza(Application& app, float dt) {
                 if (!(m.handle == h)) continue;
                 m.position = celda;
                 m.entity->setGridPosition(celda);
-                m.entity->setSortBias(dx != 0.0f || dy != 0.0f ? CapasDeDibujo::kPasoDeProfundidad / 2 : 0);
+                m.entity->setSortBias(sesgo);
                 m.entity->setOffset(Vector2{(dx - dy) * static_cast<float>(kTileW) * 0.5f,
                                             (dx + dy) * static_cast<float>(kTileH) * 0.5f});
                 auto* actorAnimado = dynamic_cast<AnimatedEntity*>(m.entity.get());
@@ -148,10 +158,15 @@ void ApplicationCinematica::actualiza(Application& app, float dt) {
                     // el reposo): al pararse, el quieto del ciclo de andar de ese rumbo.
                     if (animacion.rfind("idle", 0) == 0) {
                         using Game::Rumbo;
-                        actorAnimado->addAnimation("idle_up", {Game::frameQuieto(Rumbo::Arriba)});
-                        actorAnimado->addAnimation("idle_right", {Game::frameQuieto(Rumbo::Derecha)});
-                        actorAnimado->addAnimation("idle_down", {Game::frameQuieto(Rumbo::Abajo)});
-                        actorAnimado->addAnimation("idle_left", {Game::frameQuieto(Rumbo::Izquierda)});
+                        const Game::Reparto reparto = HojaPersonaje::repartoDe(*actorAnimado);
+                        if (reparto == Game::Reparto::Diagonal) {  // Oriol (24/10): las de 40 respiran
+                            HojaPersonaje::animarReposo(*actorAnimado, reparto);
+                        } else {
+                            actorAnimado->addAnimation("idle_up", {Game::frameQuieto(Rumbo::Arriba)});
+                            actorAnimado->addAnimation("idle_right", {Game::frameQuieto(Rumbo::Derecha)});
+                            actorAnimado->addAnimation("idle_down", {Game::frameQuieto(Rumbo::Abajo)});
+                            actorAnimado->addAnimation("idle_left", {Game::frameQuieto(Rumbo::Izquierda)});
+                        }
                     }
                     actorAnimado->play(animacion);
                 }
@@ -165,6 +180,7 @@ void ApplicationCinematica::actualiza(Application& app, float dt) {
             app.m_player->moveTo(app.m_session->playerPosition(), m_segundosPorCelda);
             return true;
         }
+        void situaJugador(const GridCoord& celda) override { app.m_session->situaJugador(celda); app.m_player->setGridPosition(celda); }
         void ritmoDelJugador(float segundosPorCelda) override { m_segundosPorCelda = segundosPorCelda; }
         float m_segundosPorCelda = 0.0f;
         void enciende(const std::string& flag) override { app.m_narrativeState.setFlag(flag); }
@@ -185,6 +201,10 @@ void ApplicationCinematica::actualiza(Application& app, float dt) {
             }
         }
         bool cargandoNivel() const override { return app.m_cine->cargando; }
+        void postura(const std::string& a, const std::string& p) override { app.m_cine->escena.postura(a, p); }
+        void fuego(const GridCoord& c, bool on) override { app.m_cine->escena.fuego(c, on); }
+        void emocion(const std::string& a, const std::string& i, float s) override { app.m_cine->escena.emocion(a, i, s); }
+        void combate(const std::string& e, const std::string& g, const std::string& p) override { lanzaCombate(app, e, g, p); }  // E4
     };
     Escenario escenario(app);
     estado.reproductor.avanza(dt, escenario);
@@ -219,9 +239,9 @@ void ApplicationCinematica::tintes(Application& app, float dt) {
     const bool deGolpe = estado.sesionVista != app.m_session.get();
     estado.sesionVista = app.m_session.get();
     for (auto& m : app.m_worldMarkers) {
-        if (!cat.afecta(m.id)) continue;
+        if (!cat.afecta(m.id, app.m_currentLevelPath)) continue;
         Vector4 meta = cat.esEspectro(m.id, tiene) ? cat.espectro.tinte : kBlanco;
-        const bool visible = cat.visible(m.id, tiene);
+        const bool visible = cat.visible(m.id, app.m_currentLevelPath, tiene);
         if (!visible) meta.w = 0.0f;
         m.entity->setTint(deGolpe ? meta : acerca(m.entity->tint(), meta, dt * 1.5f));
         // Escondido, tampoco estorba: ni cierra el paso ni se le habla.
@@ -244,61 +264,6 @@ void ApplicationCinematica::limpiaPantalla(const Application& app) {
     const Vector4 color = fondo(app);
     glClearColor(color.x, color.y, color.z, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-}
-
-namespace {
-bool acabaEn(const std::string& s, const std::string& fin) {
-    return !fin.empty() && s.size() >= fin.size() && s.compare(s.size() - fin.size(), fin.size(), fin) == 0;
-}
-}  // namespace
-
-void ApplicationCinematica::titulo(Application& app, float dt) {
-    if (!app.m_cine || !app.isAtTitle() || app.m_camera == nullptr) return;
-    EstadoCinematicas& estado = *app.m_cine;
-    const Game::FondoTitulo& fondo = estado.catalogo.titulo;
-    if (fondo.nivel.empty() || estado.tituloFallido) return;
-    if (!fondo.conNivelInicial.empty() && !acabaEn(app.m_nivelInicial, fondo.conNivelInicial)) return;
-    if (!acabaEn(app.m_currentLevelPath, fondo.nivel)) {
-        if (estado.tituloCargando || app.m_scenes.hasPendingTransition()) return;
-        estado.tituloCargando = true;
-        Application* a = &app;
-        EstadoCinematicas* e = &estado;
-        const std::string nivel = fondo.nivel;
-        const auto pedido = app.m_scenes.requestReplace(app.makeScene(true, [a, e, nivel] {
-            auto r = a->loadLevel(nivel, false, GridCoord{});
-            e->tituloCargando = false;
-            if (!r.isOk()) {
-                std::cerr << "PROLOGO-02: el fondo del titulo no carga: " << r.errorMessage() << "\n";
-                e->tituloFallido = true;
-            }
-            e->tituloRecorrido = 0.0f;
-            return r;
-        }));
-        if (!pedido.isOk()) {
-            estado.tituloCargando = false;
-            estado.tituloFallido = true;
-        }
-        return;
-    }
-    // La ciudad, viva: los PNJ respiran, los pájaros vuelan, las mascotas pasean.
-    for (auto& m : app.m_worldMarkers) m.entity->update(dt);
-    if (app.m_vida != nullptr) app.m_vida->avanza(dt, GridCoord{-1000, -1000});
-    // El jugador no está todavía: fuera de cuadro (loadLevel le pone en su sitio).
-    app.m_player->setGridPosition(GridCoord{-1000, -1000});
-    // La cámara pasea despacio por el camino.
-    const bool primera = estado.tituloRecorrido <= 0.0f;
-    estado.tituloRecorrido += dt * fondo.velocidad;
-    float x = 0.0f, y = 0.0f;
-    fondo.punto(estado.tituloRecorrido, x, y);
-    const Vector2 destino{(x - y) * static_cast<float>(kTileW) * 0.5f, (x + y) * static_cast<float>(kTileH) * 0.5f};
-    app.m_camera->transitionTo(destino, fondo.zoom, primera ? 0.001f : 0.25f, Camera::Easing::EaseOutCubic);
-    app.m_camera->update(dt);
-}
-
-std::function<Result<bool>()> ApplicationCinematica::alSalirDelTitulo(Application& app) {
-    if (!app.m_cine || !acabaEn(app.m_currentLevelPath, app.m_cine->catalogo.titulo.nivel)) return {};
-    Application* a = &app;
-    return [a] { return a->partidaDeCero(); };
 }
 
 // --- COMBATE-01: el combate a la vista ---------------------------------------
@@ -380,7 +345,6 @@ void ApplicationCinematica::combate(Application& app, float dt) {
                                                        static_cast<float>(kTileH));
             app.m_camera->transitionTo(aqui, e.zoomAntes, 0.6f, Camera::Easing::EaseInOutQuad);
             e.combateVisto = nullptr;
-            e.sacudida = 0.0f;
             e.efectos.olvida();
             e.basesGolpe.clear();
             e.pvFantasma = -1.0f;
@@ -423,7 +387,6 @@ void ApplicationCinematica::combate(Application& app, float dt) {
         e.actorVisto = actorDe(app, *b);
         if (golpes) golpes->olvida();
     }
-    if (golpes) golpes->ponVista(app.m_camera->position(), app.m_camera->zoom());
     golpesALaVista(app, *b, dt);  // AV14-01/02: los golpes de la batalla, cada uno una vez
     // AV13-12 — Andar: el heroe, un paso cada 0,16 s; los enemigos, su dibujo por la ruta. Al
     // acabar todos, la camara se recoloca entre los que pelean. En tu turno, lo que alcanzas.
@@ -474,15 +437,10 @@ void ApplicationCinematica::combate(Application& app, float dt) {
             for (const auto& a : b->tablero()->alcanzables(b->allies()[activo].name)) s.alcance.push_back(a.casilla);
         if (!tuTurno) s.ruta.clear();
     }
-    // Te han dado: la camara tiembla un momento y vuelve a su sitio.
-    if (e.sacudida > 0.0f) {
-        e.sacudida -= dt;
-        static std::minstd_rand temblor(7);
-        std::uniform_real_distribution<float> d(-4.0f, 4.0f);
-        if (e.sacudida > 0.0f) app.m_camera->transitionTo(e.centroCombate + Vector2{d(temblor), d(temblor) * 0.6f},
-                                                         app.m_camera->zoom(), 0.0f);
-        else app.m_camera->transitionTo(e.centroCombate, app.m_camera->zoom(), 0.08f);
-    }
+}
+
+void ApplicationCinematica::vistaGolpes(Application& app) {
+    if (app.m_pergamino && app.m_camera) app.m_pergamino->golpes().ponVista(app.m_camera->posicionVista(), app.m_camera->zoom());
 }
 
 bool ApplicationCinematica::pausaDeGolpe(Application& app, float segundos) {
@@ -498,4 +456,22 @@ void ApplicationCinematica::avisoYa(Application& app, const std::string& texto) 
     app.m_pergamino->interfaz().avisaPausa(true, texto, "");
     app.refreshHud();
     app.render(false);  // pinta y presenta este fotograma ya, con el aviso
+}
+
+// H0-05 / E-GUION-02 — Cargar una partida guardada: una escena nueva que carga el nivel del guardado (la narrativa, antes
+// que el nivel, para que no repita el prologo) y le aplica el guardado. La usan «Continuar», las ranuras (loadSlot) y
+// `juego --guardado`. Vive aqui y no en Application.cpp porque este esta en su techo de lineas.
+bool ApplicationCinematica::cargaPartida(Application& app, const SaveGameData& datos) {
+    const SaveGameData data = datos;  // copia: el dato entra en la lambda y la escena se monta al final del fotograma
+    const auto requested = app.m_scenes.requestReplace(app.makeScene(false, [&app, data] {
+        auto loaded = app.loadLevel(data.levelPath, false, GridCoord{}, [&app, &data] {
+            app.m_narrativeState.reset();
+            applyNarrativeState(data, app.m_narrativeState);
+            if (app.m_pergamino) app.m_pergamino->interfaz().guia().marcas() = data.marcasMapa;  // MAPA-02
+        }, &data);
+        if (loaded.isOk()) app.m_session->logNote("Partida cargada.");
+        else std::cerr << "No se pudo cargar la partida: " << loaded.errorMessage() << "\n";
+        return loaded;
+    }));
+    return requested.isOk();
 }

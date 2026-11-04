@@ -108,4 +108,13 @@ private:
     bool m_cargado = false;
 };
 
+// MODELOS-PL-01 — el respaldo de los actores sin hoja. Un PNJ (o quien vaya vestido de persona)
+// que se queda sin fila NO cae en personaje.png (el cuerpo base desnudo y calvo, cuatro vistas, 12
+// frames): lleva la fila neutra de PixelLab «race:race_human_marches» (40 frames en diagonal) y se
+// avisa una vez por id en stderr, para ponerle su fila. Quien no es persona (lobos, slimes...)
+// devuelve nullptr y sigue en el cuerpo base hasta que tenga su dibujo (out/modelos_antiguos.md).
+inline constexpr const char* kRazaRespaldo = "race_human_marches";
+const SpriteActor* actorConRespaldo(const RegistroSprites& registro, const std::string& objectId,
+                                    const std::string& raceId, bool humanoide);
+
 }  // namespace Game

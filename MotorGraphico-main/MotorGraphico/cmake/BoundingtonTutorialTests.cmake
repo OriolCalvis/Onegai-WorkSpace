@@ -5,10 +5,10 @@
 # guion y la plaza desde el directorio de build, de ahi copiar_assets y
 # WORKING_DIRECTORY.
 include(CTest)
-if(BUILD_TESTING AND TARGET motor_rpg)
+if(BUILD_TESTING AND TARGET motor_rpg AND TARGET motor_level)
     add_executable(test_boundington_tutorial tests/RPG/BoundingtonTutorialTests.cpp)
-    target_include_directories(test_boundington_tutorial PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
-    target_link_libraries(test_boundington_tutorial PRIVATE motor_rpg)
+    target_include_directories(test_boundington_tutorial PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests" "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    target_link_libraries(test_boundington_tutorial PRIVATE motor_rpg motor_level motor_json)
     add_dependencies(test_boundington_tutorial copiar_assets)
     add_test(NAME test_boundington_tutorial COMMAND test_boundington_tutorial)
     set_tests_properties(test_boundington_tutorial PROPERTIES

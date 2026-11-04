@@ -7,7 +7,8 @@ if(BUILD_TESTING AND TARGET motor_level AND TARGET motor_rpg)
     add_executable(test_moral tests/Game/MoralTests.cpp)
     target_include_directories(test_moral PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/tests"
-        "${CMAKE_CURRENT_SOURCE_DIR}/include")
+        "${CMAKE_CURRENT_SOURCE_DIR}/include"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/RPG")
     target_compile_definitions(test_moral PRIVATE MOTOR_FUENTE="${CMAKE_CURRENT_SOURCE_DIR}")
     target_link_libraries(test_moral PRIVATE motor_level motor_map_document motor_map motor_rpg motor_json)
     add_test(NAME test_moral COMMAND test_moral)

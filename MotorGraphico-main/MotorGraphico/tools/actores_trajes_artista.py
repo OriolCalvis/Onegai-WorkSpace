@@ -18,7 +18,7 @@ Se registra al importar actores_trajes (al final de cada atlas: ninguna fila de 
 import actores_cascos as cascos
 import actores_equipo as equipo
 from actores_materiales import MATERIALES
-from actores_pintura import Material as M
+from actores_pintura import cubierto, Material as M
 from actores_pintura import _tramo_torso, bandolera, chaleco, filas_torso, pintar, top_pie
 from actores_trajes import (_CUPULA_ESPALDA, _CUPULA_FRENTE, _CUPULA_PERFIL, ALAS_CRUZADO, CINTA_NINJA,
                             CUERNOS_BERSERKER, EMBLEMAS, YELMO_CRUZADO, _caja, _cuello, _espejo_x,
@@ -178,7 +178,7 @@ def flores_loto(material):
             return
         for x in (cx - 3, cx, cx + 3):
             for y, t in ((cint - 1, "H"), (cint, "s")):
-                if (y, x) in ctx["cubre"] or lab[y, x] in ("p", "t"):
+                if cubierto(ctx, y, x) or lab[y, x] in ("p", "t"):
                     pintar(ctx, y, x, m, t)
     return fn
 
@@ -226,7 +226,7 @@ def alas_murcielago(material):
         for (y, x), t in tonos.items():
             if not (0 <= y < lab.shape[0] and 0 <= x < lab.shape[1]):
                 continue
-            if not cubre_cuerpo and (lab[y, x] not in ("", ".") or (y, x) in ctx["cubre"]):
+            if not cubre_cuerpo and (lab[y, x] not in ("", ".") or cubierto(ctx, y, x)):
                 continue
             pintar(ctx, y, x, m, t)
     return fn
@@ -249,7 +249,7 @@ def hojas_rojas(material):
             puntos = [(y0 + 1, xc + delante * 2, delante), (y0 + 3, xc - delante * 3, -delante)]
         for y, x, lado in puntos:
             for (yy, xx, t) in ((y, x, "H"), (y + 1, x, "s"), (y + 1, x + lado, "d")):
-                if 0 <= yy < lab.shape[0] and 0 <= xx < lab.shape[1] and ((yy, xx) in ctx["cubre"] or lab[yy, xx]):
+                if 0 <= yy < lab.shape[0] and 0 <= xx < lab.shape[1] and (cubierto(ctx, yy, xx) or lab[yy, xx]):
                     pintar(ctx, yy, xx, m, t)
     return fn
 
@@ -312,7 +312,8 @@ def chaleco_lobo(piel, cuello, venda):
 def coraza_demonio(negro, rojo, membrana):
     """La coraza del Guerrero demoniaco: placas negras con el peto, las hombreras con el ribete y
     los pinchos rojos, el cinturon rojo y las alas de murcielago a la espalda."""
-    return {"partes": {"t": negro, "a": negro, "A": negro, "m": negro, "M": negro, "n": negro},
+    return {"flotante": True,  # PL-ROPA-01: lo que sale del cuerpo es de diseno
+            "partes": {"t": negro, "a": negro, "A": negro, "m": negro, "M": negro, "n": negro},
             "bajo": (negro, 3), "texturas": {negro: equipo.chapa}, "cinturon": (rojo, None, 0),
             "extras": [equipo.peto(negro), alas_murcielago(membrana),
                        hombrera_grande(negro, rojo, "A", placas=2, pinchos=rojo),

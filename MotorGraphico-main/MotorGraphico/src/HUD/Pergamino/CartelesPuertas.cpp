@@ -3,6 +3,7 @@
 // (Game::Lugares, assets/catalogs/lugares.json), un retal con su emblema, su nombre y su función:
 // «La Boutique de Madame / sastre y tela». Solo las de alrededor (8 casillas), para no llenar la calle.
 #include "HUD/Pergamino/InterfazPergamino.h"
+#include "HUD/Pergamino/CartelesPuertas.h"
 
 #include <algorithm>
 #include <cmath>
@@ -19,6 +20,47 @@
 
 namespace Pergamino {
 
+std::vector<const Engine::WorldEntity*> puertasAgrupadas(const Engine::World& mundo) {
+    std::vector<const Engine::WorldEntity*> pendientes, grupos;
+    mundo.eachEntity([&](Engine::EntityHandle, const Engine::WorldEntity& ent) {
+        if (ent.kind == Engine::EntityKind::Object && !ent.object.targetLevel.empty())
+            pendientes.push_back(&ent);
+    });
+    // Orden estable incluso si World enumera las entidades en otro orden.
+    std::sort(pendientes.begin(), pendientes.end(), [](const auto* a, const auto* b) {
+        const auto ca = a->position(), cb = b->position();
+        if (ca.x != cb.x) return ca.x < cb.x;
+        return ca.y < cb.y;
+    });
+    while (!pendientes.empty()) {
+        std::vector<const Engine::WorldEntity*> tramo{pendientes.front()};
+        pendientes.erase(pendientes.begin());
+        for (std::size_t i = 0; i < tramo.size(); ++i) {
+            const auto c = tramo[i]->position();
+            for (auto it = pendientes.begin(); it != pendientes.end();) {
+                const auto d = (*it)->position();
+                if ((*it)->object.targetLevel == tramo[0]->object.targetLevel &&
+                    std::max(std::abs(c.x - d.x), std::abs(c.y - d.y)) <= 1) {
+                    tramo.push_back(*it);
+                    it = pendientes.erase(it);
+                } else ++it;
+            }
+        }
+        // Casilla real mas cercana al centro; nunca inventar una puerta en un hueco.
+        double x = 0, y = 0;
+        for (const auto* puerta : tramo) { x += puerta->position().x; y += puerta->position().y; }
+        x /= tramo.size(); y /= tramo.size();
+        auto distancia = [&](const auto* puerta) {
+            const auto c = puerta->position();
+            return (c.x - x) * (c.x - x) + (c.y - y) * (c.y - y);
+        };
+        grupos.push_back(*std::min_element(tramo.begin(), tramo.end(), [&](const auto* a, const auto* b) {
+            return distancia(a) < distancia(b);
+        }));
+    }
+    return grupos;
+}
+
 std::vector<MarcaSalida> salidasCercanas(const EstadoJuego& e) {
     std::vector<MarcaSalida> fuera;
     const Engine::World* mundo = e.sesion != nullptr ? e.sesion->world() : nullptr;
@@ -27,16 +69,15 @@ std::vector<MarcaSalida> salidasCercanas(const EstadoJuego& e) {
     const float th = static_cast<float>(e.mapa->getTileHeight() > 0 ? e.mapa->getTileHeight() : 32);
     const GridCoord yo = e.sesion->playerPosition();
     constexpr int kLejos = 12;
-    mundo->eachEntity([&](Engine::EntityHandle, const Engine::WorldEntity& ent) {
-        if (ent.kind != Engine::EntityKind::Object || ent.object.targetLevel.empty() ||
-            !Game::Lugares::esSalida(ent.object.objectId))
-            return;
+    for (const auto* puerta : puertasAgrupadas(*mundo)) {
+        const auto& ent = *puerta;
+        if (!Game::Lugares::esSalida(ent.object.objectId)) continue;
         const GridCoord c = ent.position();
-        if (std::max(std::abs(c.x - yo.x), std::abs(c.y - yo.y)) > kLejos) return;
+        if (std::max(std::abs(c.x - yo.x), std::abs(c.y - yo.y)) > kLejos) continue;
         MarcaSalida m;
         m.celdaX = c.x, m.celdaY = c.y, m.anchoBaldosa = tw, m.altoBaldosa = th;
         fuera.push_back(m);
-    });
+    }
     return fuera;
 }
 
@@ -48,8 +89,9 @@ void pintaCarteles(Lienzo& l, const Pincel& p, const EstadoJuego& e, const std::
     const float th = static_cast<float>(e.mapa->getTileHeight() > 0 ? e.mapa->getTileHeight() : 32);
     const GridCoord yo = e.sesion->playerPosition();
     constexpr int kCerca = 8;
-    mundo->eachEntity([&](Engine::EntityHandle, const Engine::WorldEntity& ent) {
-        if (ent.kind != Engine::EntityKind::Object || ent.object.targetLevel.empty()) return;
+    for (const auto* puerta : puertasAgrupadas(*mundo)) {
+      const auto pinta = [&] {
+        const auto& ent = *puerta;
         const GridCoord c = ent.position();
         if (std::max(std::abs(c.x - yo.x), std::abs(c.y - yo.y)) > kCerca) return;
         if (Game::Lugares::esSalida(ent.object.objectId)) {
@@ -89,23 +131,18 @@ void pintaCarteles(Lienzo& l, const Pincel& p, const EstadoJuego& e, const std::
         // AV16-07: la punta del cartel apunta a la puerta, aunque el cartel se haya corrido de sitio.
         const float punta = std::round(std::min(std::max(x, x0 + 12.0f), x0 + w - 12.0f));
         l.material(pieza(Material::Flecha), Vector2{punta - 6.0f, y0 + h - 1.0f});
-        // AV16-07: a 6 casillas o menos la puerta se marca ENCIMA de lo que la tape (esta capa va sobre
-        // el mundo): un halo suave y un contorno de tinta alrededor de su hueco.
+        // Propuesta UI-PUERTAS-01: luz rasante en el umbral, sin caja en el aire.
         if (std::max(std::abs(c.x - yo.x), std::abs(c.y - yo.y)) <= 6) {
-            const float ancho = 46.0f * e.zoom, alto = 62.0f * e.zoom;
-            const Rect hueco{x - ancho * 0.5f, pies - alto, ancho, alto};
-            constexpr float kHalo = 7.0f;
-            l.color(Rect{hueco.x - kHalo, hueco.y - kHalo, hueco.w + 2 * kHalo, hueco.h + 2 * kHalo},
-                    Vector4{Color::kPapelLuz.x, Color::kPapelLuz.y, Color::kPapelLuz.z, 0.16f});
-            l.color(Rect{hueco.x - 3.0f, hueco.y - 3.0f, hueco.w + 6.0f, hueco.h + 6.0f},
-                    Vector4{Color::kPapelLuz.x, Color::kPapelLuz.y, Color::kPapelLuz.z, 0.20f});
-            const Vector4 tinta{Color::kTinta.x, Color::kTinta.y, Color::kTinta.z, 0.9f};
-            l.color(Rect{hueco.x, hueco.y, hueco.w, 2.0f}, tinta);
-            l.color(Rect{hueco.x, hueco.y + hueco.h - 2.0f, hueco.w, 2.0f}, tinta);
-            l.color(Rect{hueco.x, hueco.y, 2.0f, hueco.h}, tinta);
-            l.color(Rect{hueco.x + hueco.w - 2.0f, hueco.y, 2.0f, hueco.h}, tinta);
+            for (int banda = 0; banda < 7; ++banda) {
+                const float t = static_cast<float>(banda) / 6.0f;
+                const float ancho = (44.0f - 30.0f * t) * e.zoom;
+                l.color(Rect{x - ancho * 0.5f, pies - (7.0f - banda) * e.zoom, ancho, e.zoom},
+                        Vector4{Color::kPapelLuz.x, Color::kPapelLuz.y, Color::kPapelLuz.z, 0.06f + 0.12f * t});
+            }
         }
-    });
+      };
+      pinta();
+    }
 }
 
 }  // namespace Pergamino

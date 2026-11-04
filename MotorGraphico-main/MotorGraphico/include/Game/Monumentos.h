@@ -9,7 +9,9 @@
 // por detras queda tapada, exactamente como con los bloques. La huella es el
 // rectangulo de celdas del tile del edificio (p. ej. viejo_coliseo, 8x6): si
 // en el mapa el edificio no mide lo que dice el monumento, sigue saliendo con
-// bloques. Sin OpenGL: quien pinta es Render/MonumentosNivel.
+// bloques. H-CIU-2: un edificio es su familia entera (edifici_o0..o3 son la
+// misma casa vista de cuatro lados) y las casillas de la planta que el sprite
+// no ocupa se pisan. Sin OpenGL: quien pinta es Render/MonumentosNivel.
 #pragma once
 
 #include <map>
@@ -40,8 +42,16 @@ struct MonumentoColocado {
     std::string id, hoja;
     int x0 = 0, y0 = 0;        // esquina de la huella
     int ancho = 1, alto = 1;   // huella en celdas
+    // Oriol (22/10): la mancha del mapa puede tener una fila o una columna de mas por detras
+    // (el Excel pinta la manzana entera). El sprite se alinea por delante (donde esta la puerta).
+    // J-2: en una casa o un local (menos de 30 casillas) las celdas de mas que no pisa («libres») se
+    // dibujan con bloques del material del tile y siguen bloqueando; si no, serian paredes invisibles.
+    int cubreX0 = 0, cubreY0 = 0, cubreAncho = 0, cubreAlto = 0;
     std::vector<TiraMonumento> tiras;
     std::vector<PosaderoMonumento> posaderos;  // ya en celdas del mapa
+    // H-CIU-2 (E-CIU-5): casillas de la planta pintada que el sprite no ocupa (las libres de su
+    // definicion y las filas o columnas de mas por detras), ya en celdas del mapa. Se pisan.
+    std::vector<std::pair<int, int>> libres;
 };
 
 class Monumentos {
@@ -54,6 +64,10 @@ public:
         int anclajeX = 0, anclajeY = 0;  // pixel de la hoja que cae en la esquina delantera de la huella
         int columnas = 0;
         std::vector<PosaderoMonumento> posaderos;  // desde la esquina de la huella
+        std::vector<std::pair<int, int>> libres;   // H-CIU-2: casillas (i, j) de la huella sin base del sprite
+        // J-4: >= 0 en las definiciones de un tile antiguo (viejo_chabola -> barraca...): el sprite es la
+        // orientacion 0-3 de su familia (o0 puerta +y, o1 -x, o2 -y, o3 +x) y planifica elige la que mira a la puerta.
+        int orientacion = -1;
     };
 
     // Lee <carpetaAssets>/textures/monumentos.json y el indice del tileset.
@@ -64,8 +78,15 @@ public:
 
     // Monumentos del mapa (huellas que miden lo que dice su definicion) y
     // las celdas que cubren (para que Bloques no levante bloque ahi).
-    std::vector<MonumentoColocado> planifica(const RuntimeTileMap& mapa, const std::string& tileset) const;
+    // J-4: «puertas» son las celdas de los objetos puerta_* del nivel; una casa de tile antiguo toma la
+    // orientacion cuya puerta cae a su lado, o la cara visible que da a una celda libre.
+    std::vector<MonumentoColocado> planifica(const RuntimeTileMap& mapa, const std::string& tileset,
+                                             const std::vector<std::pair<int, int>>& puertas = {}) const;
+    // J-2: la huella del sprite, las casillas «libres» y, si es grande (>= 30), su patio; el resto levanta bloques.
     static std::set<std::pair<int, int>> celdasCubiertas(const std::vector<MonumentoColocado>& plan);
+    // H-CIU-2: quita la colision de las casillas «libres» de cada monumento (el tile sigue dibujando el
+    // suelo de debajo). Devuelve cuantas casillas han pasado de bloquear a no bloquear.
+    static int liberaCeldas(RuntimeTileMap& mapa, const std::vector<MonumentoColocado>& plan);
 
     // Que celda de una huella ancho x alto sostiene la tira k (0-based) de
     // una hoja de «columnas» tiras cuyo anclaje cae en la esquina delantera.

@@ -106,10 +106,12 @@ MOTOR_TEST_CASE(el_capitulo_de_la_campana_sale_de_sus_flags) {
     MOTOR_CHECK(Game::capituloDeLaCampana(estado) == 0);  // terminado, pero aun no ha saltado
     estado.setFlag("bnd_dia1_empezado");
     MOTOR_CHECK(Game::capituloDeLaCampana(estado) == 1);
-    estado.setFlag("bnd_dia2_empezado");
+    estado.setFlag("bnd_diag_empezado");  // GORRAN-DIA2: el dia de Gorran
     MOTOR_CHECK(Game::capituloDeLaCampana(estado) == 2);
-    estado.setFlag("bnd_ocaso_empezado");
+    estado.setFlag("bnd_dia2_empezado");
     MOTOR_CHECK(Game::capituloDeLaCampana(estado) == 3);
+    estado.setFlag("bnd_ocaso_empezado");
+    MOTOR_CHECK(Game::capituloDeLaCampana(estado) == 4);
 }
 
 int main() { return motor_test::runAllTests(); }

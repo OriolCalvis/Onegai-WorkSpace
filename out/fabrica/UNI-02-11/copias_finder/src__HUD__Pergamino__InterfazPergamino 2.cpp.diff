@@ -1,0 +1,251 @@
+--- MotorGraphico-main/MotorGraphico/src/HUD/Pergamino/InterfazPergamino.cpp	2026-11-02 21:03:49
++++ MotorGraphico-main/MotorGraphico/src/HUD/Pergamino/InterfazPergamino 2.cpp	2026-11-02 21:03:49
+@@ -12,7 +12,6 @@
+ #include "Game/GameOverScreen.h"
+ #include "Game/GameSession.h"
+ #include "Game/InventoryScreen.h"
+-#include "Game/Lugares.h"  // AV15-02
+ #include "Game/OptionsState.h"
+ #include "Game/PauseMenu.h"
+ #include "Game/TitleMenuState.h"
+@@ -67,11 +66,20 @@
+     return valor;
+ }
+ 
+-// El paso seguido: lo que toca de la mision seguida (MAPA-02: la que elige el jugador).
++// El paso seguido: el primer objetivo sin hacer de la mision activa.
+ void objetivoSeguido(const Game::DiarioDatos* diario, DatosExploracion& d) {
+-    const Game::DiarioMision* m = diario != nullptr ? Game::misionSeguida(*diario) : nullptr;
+-    const Game::DiarioObjetivo* o = m != nullptr ? m->siguiente() : nullptr;
+-    if (o != nullptr) d.mision = m->nombre, d.paso = o->texto, d.hechos = m->hechos, d.total = m->total;
++    if (diario == nullptr) return;
++    for (const Game::DiarioMision& m : diario->misiones) {
++        if (!m.activa || m.completa()) continue;
++        for (const Game::DiarioObjetivo& o : m.objetivos) {
++            if (o.hecho) continue;
++            d.mision = m.nombre;
++            d.paso = o.texto;
++            d.hechos = m.hechos;
++            d.total = m.total;
++            return;
++        }
++    }
+ }
+ 
+ // El objeto del mundo de un enemigo del combate (para su retrato): la
+@@ -102,12 +110,8 @@
+     if (const Engine::WorldEntity* aqui = mundo->get(mundo->findObjectAt(p.x, p.y))) {
+         if (!aqui->object.targetLevel.empty()) {
+             const ObjectDefinition* def = definicion(aqui);
+-            // AV15-02 / AV16-06: «Entrar en La Boutique de Madame»; una salida, «Salir a la calle».
+-            const Game::TextoPuerta t = Game::Lugares::delJuego().textoDePuerta(
+-                aqui->object.objectId, aqui->object.targetLevel,
+-                def != nullptr ? def->name : aqui->object.objectId);
+-            a.verbo = t.verbo;
+-            a.destino = t.destino;
++            a.verbo = "Entrar en";
++            a.destino = def != nullptr ? def->name : aqui->object.objectId;
+             a.celdaX = p.x;
+             a.celdaY = p.y;
+             a.enLaCelda = true;
+@@ -154,11 +158,8 @@
+ }
+ 
+ void InterfazPergamino::ponZona(const std::string& nombre, const std::string& claveNivel) {
+-    const Game::Lugar* lugar = Game::Lugares::delJuego().de(claveNivel);  // AV15-02: un sitio con nombre
+-    m_zona = lugar != nullptr ? lugar->nombre : nombre;
+-    if (lugar != nullptr && claveNivel != m_claveNivel) m_retales.anunciaLugar(lugar->nombre, lugar->funcion, lugar->icono());
++    m_zona = nombre;
+     m_claveNivel = claveNivel;
+-    m_guia.ponNivel(claveNivel);  // MAPA-02: las chinchetas de este nivel
+ }
+ 
+ void InterfazPergamino::avisaPausa(bool ok, const std::string& texto, const std::string& detalle) {
+@@ -173,15 +174,13 @@
+ void InterfazPergamino::avanza(float segundos) {
+     m_retales.avanza(segundos);
+     m_cuaderno.avanza(segundos);
+-    m_guia.avanza(segundos);
+ }
+ 
+ void InterfazPergamino::actualiza(const EstadoJuego& e) {
+-    m_salidas.clear();  // AV16-06: las vuelve a poner pintaExploracion
+     m_capas.baja.limpia();
+-    m_capas.alta.limpia(); m_capas.hoja.limpia();
++    m_capas.alta.limpia();
++    m_capas.hoja.limpia();
+     m_capas.hojaVisible = false;
+-    m_retratos.nuevoFotograma();  // PERF-2: el cupo de montajes de retratos, por cada actualiza
+     if ((e.titulo != nullptr || e.creacion != nullptr) && cargada()) {
+         m_cuadernoAbierto = false;
+         m_dialogo.cierra();
+@@ -207,8 +206,6 @@
+     if (modo != GameMode::Pause || opciones != m_opcionesAbiertas) m_avisoPausa = AvisoPausa{};
+     m_opcionesAbiertas = opciones;
+     const bool cuaderno = modo == GameMode::Exploration && e.cuadernoAbierto && e.cuaderno != nullptr;
+-    if (modo != GameMode::Exploration || cuaderno) m_guia.cierra();  // MAPA-02: el mapa grande, solo explorando
+-    if (e.diario != nullptr) m_guia.miraDiario(*e.diario);           // MAPA-02: para seguir desde la hoja Misiones
+     // H2-01: la ultima tirada se mira en todos los modos, para que una de
+     // fuera del dialogo no se pegue al siguiente que se abra.
+     if (modo == GameMode::Dialogue) m_dialogo.mira(e.sesion->dialogueSpeaker(), e.sesion->dialogueLines(), m_letras);
+@@ -221,7 +218,6 @@
+             } else {
+                 pintaExploracion(e, false);
+                 if (e.cofre != nullptr) pintaCofre(e);
+-                else if (m_guia.abierto()) m_guia.pintaMapa(m_capas.alta, Pincel(m_letras, m_iconos), *e.sesion, e.diario, m_zona, e.anchoVista, e.altoVista);
+             }
+             break;
+         case GameMode::Dialogue: {
+@@ -238,9 +234,9 @@
+             pintaExploracion(e, true);
+             pintaTiendaAbierta(e);
+             break;
+-        case GameMode::Business:  // AV15-05a: la hoja del negocio y su pregunta, en papiro
++        case GameMode::Business:
+             pintaExploracion(e, true);
+-            if (e.negocio != nullptr) pintaNegocio(m_capas.alta, Pincel(m_letras, m_iconos), *e.sesion, *e.negocio, e.anchoVista, e.altoVista); break;
++            break;
+         case GameMode::Battle:
+             pintaExploracion(e, true);
+             pintaCombate(e);
+@@ -259,10 +255,10 @@
+     const Pincel p(m_letras, m_iconos);
+     DatosExploracion d;
+     d.compacto = compacto;
+-    const FuentesCuaderno fc{e.sesion, e.cuaderno, e.diario, e.codice, &m_nombres, e.cicatrices};
++    const FuentesCuaderno fc{e.sesion, e.cuaderno, e.diario, e.codice, &m_nombres};
+     const CabeceraCuaderno cab = cabeceraCuaderno(fc);
+-    d.nombre = cab.nombre, d.tier = cab.tier;
+-    d.golpe = e.golpeHoja, d.pvFantasma = e.pvFantasma, d.temblor = Vector2{e.temblorHojaX, e.temblorHojaY};  // AV14-02
++    d.nombre = cab.nombre;
++    d.tier = cab.tier;
+     if (compacto && e.vistaBarra != nullptr && e.sesion->mode() == GameMode::Battle)
+         d.insignia = e.vistaBarra->elegida;  // la estacion del Bardo (C03a)
+     d.oro = e.sesion->gold();
+@@ -292,34 +288,22 @@
+             if (!a.enLaCelda) m_marca = MarcaSuelo{true, a.celdaX, a.celdaY, tw, th, kPies, a.destino};
+             d.avisoAncla = Vector2{pies.x, pies.y - 54.0f * e.zoom};
+         }
+-        m_guia.minimapa().mira(e.mapa, m_claveNivel);
+-        m_guia.minimapa().rellena(d, *e.sesion, e.diario, &m_guia.chinchetasAqui());  // MAPA-01/02: objetivo y chinchetas
++        m_minimapa.mira(e.mapa, m_claveNivel);
++        m_minimapa.rellena(d, *e.sesion);
+         d.zona = m_zona;
+     }
+-    const std::size_t desdeHud = m_capas.baja.cuantos();  // MAPA-02: la flecha no pisa carteles ni retales
+-    if (!compacto) m_salidas = salidasCercanas(e);  // AV16-06: la flecha de suelo de cada salida
+-    if (!compacto) pintaCarteles(m_capas.baja, p, e, d.avisoDestino);  // AV15-02: el nombre sobre cada puerta
+-    if (!compacto) pintaBocadillosPnj(m_capas.baja, p, e, d.avisoDestino);  // PNJ-02: el oficio y las frases de los PNJ
+-    if (!compacto) pintaEmociones(m_capas.baja, p, e);  // C2-04d: "!" y compania de las cinematicas
+     m_retales.pinta(m_capas.baja, p, d, e.anchoVista, e.altoVista);
+-    const GuiaMapa::Vista vista{e.anchoVista, e.altoVista, e.camaraX, e.camaraY, e.zoom, e.mapa ? e.mapa->getTileWidth() : 0,
+-                                e.mapa ? e.mapa->getTileHeight() : 0, e.animacionesReducidas};
+-    if (!compacto && !m_guia.abierto()) m_guia.pintaFlecha(m_capas.baja, p, *e.sesion, e.diario, vista, desdeHud);  // MAPA-02
+ }
+ 
+ void InterfazPergamino::pintaTiendaAbierta(const EstadoJuego& e) {
+     if (e.tienda == nullptr) return;
+     const Pincel p(m_letras, m_iconos);
+-    DatosTienda d = datosTienda(*e.tienda, *e.sesion);
+-    // AV15-02: la tienda dice dónde estás («Lingote de Oro · Aigren»).
+-    if (const Game::Lugar* lugar = Game::Lugares::delJuego().de(m_claveNivel); lugar != nullptr)
+-        d.tendero = d.tendero.empty() ? lugar->nombre : lugar->nombre + " · " + d.tendero;
+-    pintaTienda(m_capas.alta, p, d, e.anchoVista, e.altoVista);
++    pintaTienda(m_capas.alta, p, datosTienda(*e.tienda, *e.sesion), e.anchoVista, e.altoVista);
+ }
+ 
+ void InterfazPergamino::pintaCuaderno(const EstadoJuego& e) {
+     const Pincel p(m_letras, m_iconos);
+-    const FuentesCuaderno fc{e.sesion, e.cuaderno, e.diario, e.codice, &m_nombres, e.cicatrices};
++    const FuentesCuaderno fc{e.sesion, e.cuaderno, e.diario, e.codice, &m_nombres};
+     const PaginaCuaderno pagina = paginaActual(fc);
+     const int foco = static_cast<int>(e.cuaderno->focus());
+     if (!m_cuadernoAbierto) m_cuaderno.abre(foco);
+@@ -350,7 +334,7 @@
+         d.foco = static_cast<int>(e.opciones->selected());
+         d.pie = {{{"←", "→"}, "Ajustar"}, {{"ENTER"}, "Aceptar"}, {{"ESC"}, "Volver"}};
+     } else if (e.pausa != nullptr) {
+-        d.titulo = e.pausa->titulo(), d.subtitulo = e.pausa->subtitulo();  // AV15-05a: o la pregunta
++        d.titulo = "EN PAUSA";
+         for (const Game::PauseEntry& entrada : e.pausa->entries()) {
+             EntradaPapiro fila;
+             fila.texto = textoPausa(entrada.action);
+@@ -359,7 +343,7 @@
+             d.entradas.push_back(fila);
+         }
+         d.foco = static_cast<int>(e.pausa->selected());
+-        d.pie = {{{"ENTER"}, "Aceptar"}, {{"ESC"}, e.pausa->preguntando() ? "Volver" : "Reanudar"}};
++        d.pie = {{{"ENTER"}, "Aceptar"}, {{"ESC"}, "Reanudar"}};
+     } else {
+         return;
+     }
+@@ -437,10 +421,10 @@
+     const Pincel p(m_letras, m_iconos);
+     DatosPapiro d;
+     d.ancho = 520.0f;
+-    d.titulo = e.cofre->contenedor.empty() ? "COFRE" : "BOTIN";
+-    d.subtitulo = !e.cofre->contenedor.empty() ? e.cofre->clase : e.cofre->clase.empty() ? std::string("Lo que traías contigo")
++    d.titulo = "COFRE";
++    d.subtitulo = e.cofre->clase.empty() ? std::string("Lo que traías contigo")
+                                          : "El kit básico de " + e.cofre->clase;
+-    if (m_letras.ancho(Letra::Lora18, d.subtitulo) > 440) d.subtitulo = e.cofre->contenedor.empty() ? "El kit básico de tu clase" : "Contenedor";
++    if (m_letras.ancho(Letra::Lora18, d.subtitulo) > 440) d.subtitulo = "El kit básico de tu clase";
+     // Con mas de tres piezas (el kit de +2, +2, +1, +1 lleva hasta cinco) no
+     // caben dos lineas por pieza: la ranura va donde iria el bono si no lo
+     // tiene, y lo de «sin requisitos» (lo es todo el kit) se calla.
+@@ -449,16 +433,16 @@
+         EntradaPapiro fila;
+         fila.texto = pieza.nombre;
+         fila.valor = compacto && pieza.bono.empty() ? pieza.ranura : pieza.bono;
+-        if (!compacto) fila.motivo = pieza.ranura + (e.cofre->contenedor.empty() ? " · sin requisitos" : "");
++        if (!compacto) fila.motivo = pieza.ranura + " · sin requisitos";
+         d.entradas.push_back(fila);
+     }
+     if (d.entradas.empty()) d.entradas.push_back(EntradaPapiro{"Está vacío", false, "", -1, true, ""});
+-    EntradaPapiro ponermelo{e.cofre->accion, true};
++    EntradaPapiro ponermelo{"Ponérmelo", true};
+     d.entradas.push_back(ponermelo);
+     d.entradas.push_back(EntradaPapiro{"Cerrar"});
+     d.foco = static_cast<int>(e.cofre->piezas.size()) + e.cofre->foco;
+-    d.estado = e.cofre->contenedor.empty() ? "Guardado en tu mochila" : "Contenido del contenedor abierto";
+-    d.estadoDetalle = e.cofre->contenedor.empty() ? "Póntelo con TAB, en la hoja Inventario." : "Lo que dejes se conserva al cerrar.";
++    d.estado = "Guardado en tu mochila";
++    d.estadoDetalle = "Póntelo con TAB, en la hoja Inventario.";
+     d.pie = {{{"ENTER"}, "Aceptar"}, {{"ESC"}, "Cerrar"}};
+     pintaPapiro(m_capas.alta, p, d, e.anchoVista, e.altoVista);
+ }
+@@ -471,8 +455,8 @@
+     const BattleState* batalla = e.sesion->battle();
+     if (batalla == nullptr || e.vistaBarra == nullptr || e.barra == nullptr) return;
+     DatosCombate d;
+-    d.vista = e.vistaBarra, d.barra = e.barra;
+-    d.orden = batalla->orden().puestos(), d.enTurno = batalla->orden().actual();  // AV13-11
++    d.vista = e.vistaBarra;
++    d.barra = e.barra;
+     d.heroe = batalla->allies().empty() ? std::string() : batalla->allies().front().name;
+     d.retratoHeroe = e.retratoHeroe;
+     d.sprites = e.sprites;
+@@ -495,6 +479,22 @@
+     Pergamino::pintaCombate(m_capas.baja, p, d, retratos, e.anchoVista, e.altoVista);
+ }
+ 
+-// pintaDerrota, en InterfazDerrota.cpp (AV13-33: con la escena de noqueo antes).
++void InterfazPergamino::pintaDerrota(const EstadoJuego& e) {
++    if (e.derrota == nullptr) return;
++    const Pincel p(m_letras, m_iconos);
++    DatosPapiro d;
++    d.titulo = "HAS CAÍDO";
++    d.subtitulo = "La aventura se detiene aquí.";
++    for (const Game::GameOverEntry& entrada : e.derrota->entries()) {
++        EntradaPapiro fila;
++        fila.texto = entrada.action == Game::GameOverAction::Load ? "Cargar último guardado"
++                   : entrada.action == Game::GameOverAction::Title ? "Volver al título"
++                                                                    : entrada.label;
++        d.entradas.push_back(fila);
++    }
++    d.foco = static_cast<int>(e.derrota->selected());
++    d.pie = {{{"W", "S"}, "Elegir"}, {{"ENTER"}, "Aceptar"}};
++    pintaPapiro(m_capas.alta, p, d, e.anchoVista, e.altoVista);
++}
+ 
+ }  // namespace Pergamino

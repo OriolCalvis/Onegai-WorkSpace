@@ -526,6 +526,32 @@ MOTOR_TEST_CASE(un_modo_que_parpadea_no_llena_el_diagnostico) {
     MOTOR_CHECK(e.director.problems().size() == trasBind + 1);
 }
 
+MOTOR_TEST_CASE(un_cue_que_falta_avisa_una_sola_vez) {
+    // Sin ningún asset, pedir 100 veces el mismo efecto y la misma música no
+    // añade ni una línea más: el aviso es el de bind(), una vez por cue.
+    Escena e;
+    e.motor.existeTodo = false;
+    e.director.bind("assets/audio");
+    const std::size_t trasBind = e.director.problems().size();
+    MOTOR_CHECK(trasBind == AudioCueCatalog().size());
+
+    for (int i = 0; i < 100; ++i) {
+        e.director.play("sfx.golpe");
+        e.director.playMusic("musica.combate");
+    }
+
+    MOTOR_CHECK(e.director.problems().size() == trasBind);
+    int golpe = 0;
+    int combate = 0;
+    for (const std::string& p : e.director.problems()) {
+        if (p.find("sfx/golpe.wav") != std::string::npos) ++golpe;
+        if (p.find("musica/combate.ogg") != std::string::npos) ++combate;
+    }
+    MOTOR_CHECK(golpe == 1);
+    MOTOR_CHECK(combate == 1);
+    MOTOR_CHECK(e.motor.reproducidos.empty());
+}
+
 MOTOR_TEST_CASE(si_el_motor_no_puede_reproducir_se_dice) {
     Escena e;
     e.director.bind("assets/audio");

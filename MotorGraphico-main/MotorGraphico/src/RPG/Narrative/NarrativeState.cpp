@@ -170,6 +170,7 @@ void NarrativeState::reset() {
     m_localSwitches.clear();
     m_nivelHeroe = 1;  // NIVELES-01: partida nueva, heroe nuevo
     m_tierHeroe = 1;
+    m_reputacion.clear();  // BND-04: la reputacion es de la ficha, no de la partida anterior
     // La foto se va, pero la cuenta sigue: quien ya vio la tirada N no
     // confunde la primera de la partida nueva con una vieja.
     const int numero = m_ultimaTirada.numero;
@@ -225,6 +226,13 @@ bool NarrativeCondition::isSatisfiedBy(const NarrativeState& state) const {
     // VARIABLES-01 — Cada variable, dentro de su rango (0 si nadie la tocó).
     for (const RangoDeVariable& rango : variables) {
         const int v = state.variable(rango.nombre);
+        if (v < rango.min || v > rango.max) {
+            return false;
+        }
+    }
+    // BND-04 — Cada reputacion, dentro de su rango (0 si la faccion no te ha visto).
+    for (const RangoDeReputacion& rango : reputaciones) {
+        const int v = state.reputacion(rango.faccion);
         if (v < rango.min || v > rango.max) {
             return false;
         }

@@ -103,6 +103,83 @@ MOTOR_TEST_CASE(move_assignment_transfers_free_list_correctly) {
     MOTOR_CHECK(replacement.index == first.index);
 }
 
+// U1-02.E01 — Prueba de caracterización: el vector interno puede reasignar y
+// mover los slots (los T* previos dejan de ser fiables), pero el Handle
+// (índice + generación) sigue resolviendo al mismo objeto.
+MOTOR_TEST_CASE(pointer_may_move_but_handle_stays_valid_after_growth) {
+    HandlePool<std::string> pool;
+    const auto stable = pool.emplace("stable");
+
+    // Handle obsoleto: su slot se reutiliza con otra generación. Se comprueba
+    // tras crecer para que un findSlot sin generación no pase desapercibido.
+    const auto victim = pool.emplace("victim");
+    MOTOR_CHECK(pool.erase(victim));
+    const auto reuser = pool.emplace("reuser");
+    MOTOR_CHECK(reuser.index == victim.index);
+    MOTOR_CHECK(reuser.generation != victim.generation);
+
+    // Se fuerza la reasignación: emplace sin slot libre y con el vector lleno.
+    // No se usa ningún puntero anterior al crecimiento (sería UB).
+    const std::size_t initialCapacity = pool.capacity();
+    for (int i = 0; i < 1024 && pool.capacity() == initialCapacity; ++i) {
+        pool.emplace("filler");
+    }
+    MOTOR_CHECK(pool.capacity() != initialCapacity);
+
+    MOTOR_CHECK(pool.contains(stable));
+    MOTOR_CHECK(pool.get(stable) != nullptr);
+    MOTOR_CHECK(*pool.get(stable) == "stable");
+
+    MOTOR_CHECK(!pool.contains(victim));
+    MOTOR_CHECK(pool.get(victim) == nullptr);
+    MOTOR_CHECK(pool.get(reuser) != nullptr);
+    MOTOR_CHECK(*pool.get(reuser) == "reuser");
+}
+
+// Caracterizacion U1-02.E04
+MOTOR_TEST_CASE(erase_and_reuse_keep_the_other_live_entry_and_do_not_alias_the_old_handle) {
+    HandlePool<std::string> pool;
+    const auto first = pool.emplace("first");
+    const auto second = pool.emplace("second");
+    const auto secondBeforeErase = second;
+
+    MOTOR_CHECK(pool.erase(first));
+    const auto newcomer = pool.emplace("newcomer");
+
+    MOTOR_CHECK(pool.contains(second));
+    MOTOR_CHECK(*pool.get(second) == "second");
+    MOTOR_CHECK(secondBeforeErase.index == second.index);
+    MOTOR_CHECK(secondBeforeErase.generation == second.generation);
+    MOTOR_CHECK(pool.contains(secondBeforeErase));
+
+    MOTOR_CHECK(newcomer.index == first.index);
+    MOTOR_CHECK(newcomer.generation != first.generation);
+
+    MOTOR_CHECK(pool.get(first) == nullptr);
+    MOTOR_CHECK(!pool.contains(first));
+
+    MOTOR_CHECK(pool.get(newcomer) != nullptr);
+    MOTOR_CHECK(*pool.get(newcomer) == "newcomer");
+
+    MOTOR_CHECK(pool.size() == 2);
+}
+
+// Caracterizacion U1-02.E04
+MOTOR_TEST_CASE(erase_of_an_already_erased_handle_returns_false) {
+    HandlePool<std::string> pool;
+    const auto only = pool.emplace("only");
+
+    MOTOR_CHECK(pool.erase(only));
+    MOTOR_CHECK(!pool.erase(only));
+    MOTOR_CHECK(pool.size() == 0);
+
+    const auto newcomer = pool.emplace("newcomer");
+    MOTOR_CHECK(!pool.erase(only));
+    MOTOR_CHECK(pool.contains(newcomer));
+    MOTOR_CHECK(*pool.get(newcomer) == "newcomer");
+    MOTOR_CHECK(pool.size() == 1);
+}
+
 }  // namespace
 
 int main() { return motor_test::runAllTests(); }

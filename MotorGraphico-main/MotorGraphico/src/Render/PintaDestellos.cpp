@@ -6,6 +6,7 @@
 #include <cmath>
 #include <utility>
 
+#include "Game/Emisor/ProyeccionParticulas.h"
 #include "Render/EfectosDeCartas.h"
 
 #include "Game/Personajes/MontajePersonajes.h"
@@ -32,6 +33,7 @@ void pintaDestellos(SpriteBatch& batch, const std::vector<Game::Destello>& deste
     const float px = tam.x / static_cast<float>(Game::MontajePersonajes::kLado);
     const float py = tam.y / static_cast<float>(Game::MontajePersonajes::kLado);
     const UVRect entera{0.0f, 0.0f, 1.0f, 1.0f};
+    const Game::Emisor::GrupoDeDibujo grupo{esquina, tam};   // U4-07.E07: la misma formula que el test (mundoDePixel)
     auto pintar = [&](bool suma) {
         for (const Game::Destello& d : destellos) {
             if (d.suma != suma || d.alfa <= 0.0f)
@@ -39,9 +41,7 @@ void pintaDestellos(SpriteBatch& batch, const std::vector<Game::Destello>& deste
             for (const Game::PixelDeForma& p : Game::pixelesDeForma(d.forma)) {
                 const float a = d.alfa * p.peso * (suma ? 1.2f : 0.85f);
                 const Vector4 c{d.color[0] / 255.0f, d.color[1] / 255.0f, d.color[2] / 255.0f, std::min(1.0f, a)};
-                const float x = std::round(d.x) + static_cast<float>(p.dx);
-                const float y = std::round(d.y) + static_cast<float>(p.dy);
-                batch.submit(Vector2{esquina.x + x * px, esquina.y + y * py}, Vector2{px, py}, entera, blanco, c);
+                batch.submit(Game::Emisor::mundoDePixel(grupo, d.x, d.y, p.dx, p.dy), Vector2{px, py}, entera, blanco, c);
             }
         }
     };
@@ -53,9 +53,7 @@ void pintaDestellos(SpriteBatch& batch, const std::vector<Game::Destello>& deste
         const Vector4 c{d.color[0] / 255.0f * 0.25f, d.color[1] / 255.0f * 0.25f, d.color[2] / 255.0f * 0.25f,
                         0.55f * std::min(1.0f, d.alfa)};
         for (const Game::PixelDeForma& p : Game::contornoDeForma(d.forma)) {
-            const float x = std::round(d.x) + static_cast<float>(p.dx);
-            const float y = std::round(d.y) + static_cast<float>(p.dy);
-            batch.submit(Vector2{esquina.x + x * px, esquina.y + y * py}, Vector2{px, py}, entera, blanco, c);
+            batch.submit(Game::Emisor::mundoDePixel(grupo, d.x, d.y, p.dx, p.dy), Vector2{px, py}, entera, blanco, c);
         }
     }
     pintar(false);  // lo que tapa (sombra, hojas, ceniza) con la mezcla normal

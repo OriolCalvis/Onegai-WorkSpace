@@ -36,4 +36,20 @@ Result<ImagenRGBA> cargarPNG(const std::string& ruta) {
     return Result<ImagenRGBA>::Ok(std::move(imagen));
 }
 
+Result<ImagenRGBA> decodificarPNG(const std::uint8_t* datos, std::size_t bytes) {
+    int ancho = 0, alto = 0, canales = 0;
+    stbi_uc* px = stbi_load_from_memory(datos, static_cast<int>(bytes), &ancho, &alto, &canales, 4);
+    if (px == nullptr) {
+        const char* motivo = stbi_failure_reason();
+        return Result<ImagenRGBA>::Error(std::string("PNG en memoria ilegible: ") +
+                                         (motivo != nullptr ? motivo : "motivo desconocido"));
+    }
+    ImagenRGBA imagen;
+    imagen.ancho = ancho;
+    imagen.alto = alto;
+    imagen.pixeles.assign(px, px + static_cast<std::size_t>(ancho) * static_cast<std::size_t>(alto) * 4);
+    stbi_image_free(px);
+    return Result<ImagenRGBA>::Ok(std::move(imagen));
+}
+
 }  // namespace imagen

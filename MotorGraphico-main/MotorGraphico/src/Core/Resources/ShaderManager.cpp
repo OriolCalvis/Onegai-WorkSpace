@@ -9,7 +9,7 @@ namespace {
 std::string readFileOrThrow(const std::string& path) {
     std::ifstream file(path);
     if (!file.is_open()) {
-         throw ResourceLoadException(path);
+        throw ResourceLoadException(path);
     }
     std::ostringstream ss;
     ss << file.rdbuf();

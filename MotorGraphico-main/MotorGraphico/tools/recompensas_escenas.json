@@ -7,6 +7,7 @@
   "tope_combates_narrativos_pct": 70,
   "aventuras": [
     "boundington_primer_dia",
+    "boundington_dia_gorran",
     "boundington_segundo_dia",
     "boundington_ocaso"
   ],
@@ -273,7 +274,7 @@
       "dia": 2,
       "canal": "misiones",
       "grupo": "d2_gorran",
-      "aventura": "boundington_segundo_dia",
+      "aventura": "boundington_dia_gorran",
       "beat": "b2_gorran_victoria",
       "opcion": 1,
       "nuevo": true,
@@ -284,11 +285,55 @@
       "dia": 2,
       "canal": "misiones",
       "grupo": "d2_gorran",
-      "aventura": "boundington_segundo_dia",
+      "aventura": "boundington_dia_gorran",
       "beat": "b2_gorran_victoria",
       "opcion": 2,
       "nuevo": true,
       "nota": "Matar a Gorran: 40 y ningun aliado"
+    },
+    {
+      "id": "d2-gorran-bet-flete",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_gorran_cajas",
+      "aventura": "boundington_dia_gorran",
+      "beat": "bgc_fumat_vencidos",
+      "opcion": null,
+      "nuevo": true,
+      "nota": "GORRAN-DIA2 C: Bet paga diez por defender la carga gris"
+    },
+    {
+      "id": "d2-gorran-cuchara-amigos",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_gorran_baul",
+      "aventura": "boundington_dia_gorran",
+      "beat": "b2_v_baul_amigos",
+      "opcion": 0,
+      "nuevo": true,
+      "nota": "GORRAN-VIDA: la cuchara de plata del baúl de Victor y Asdrugal (8)"
+    },
+    {
+      "id": "d2-gorran-bolsa-recadero",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_gorran_recadero",
+      "aventura": "boundington_dia_gorran",
+      "beat": "b2_v_cama_recadero",
+      "opcion": 0,
+      "nuevo": true,
+      "nota": "GORRAN-VIDA: la bolsa que el recadero le quitó al Cojo (15; alternativa: decírselo al chico)"
+    },
+    {
+      "id": "d2-gorran-ahogado",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_gorran_rio",
+      "aventura": "boundington_dia_gorran",
+      "beat": "b2_v_rio_ahogado",
+      "opcion": null,
+      "nuevo": true,
+      "nota": "GORRAN-VIDA: la bolsa del contrabandista ahogado en el río (10)"
     },
     {
       "id": "d2-zarela-vendas",
@@ -427,7 +472,7 @@
       "grupo": "d2_venides",
       "aventura": "boundington_segundo_dia",
       "beat": "b2_venides_noche",
-      "opcion": 1,
+      "opcion": 2,
       "nuevo": true
     },
     {
@@ -447,7 +492,7 @@
       "grupo": "d2_venides",
       "aventura": "boundington_segundo_dia",
       "beat": "b2_venides_noche_todo",
-      "opcion": 1,
+      "opcion": 2,
       "nuevo": true
     },
     {
@@ -467,7 +512,7 @@
       "grupo": "d2_venides",
       "aventura": "boundington_segundo_dia",
       "beat": "b2_venides_noche_rosita",
-      "opcion": 1,
+      "opcion": 2,
       "nuevo": true
     },
     {
@@ -487,7 +532,7 @@
       "grupo": "d2_venides",
       "aventura": "boundington_segundo_dia",
       "beat": "b2_venides_noche_rosita2",
-      "opcion": 1,
+      "opcion": 2,
       "nuevo": true
     },
     {
@@ -691,6 +736,147 @@
       "beat": "b2_skilla_espada_devuelta_vista",
       "opcion": 1,
       "nuevo": true
+    },
+    {
+      "id": "d2-venides-noche-pruebas",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_venides",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_venides_noche",
+      "opcion": 1,
+      "nuevo": true,
+      "nota": "Fable C3 #7: con desconfianza del dia 1, los 50 solo con pruebas (alternativa de la opcion 0)"
+    },
+    {
+      "id": "d2-venides-noche-todo-pruebas",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_venides",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_venides_noche_todo",
+      "opcion": 1,
+      "nuevo": true,
+      "nota": "Fable C3 #7: con desconfianza del dia 1, los 50 solo con pruebas (alternativa de la opcion 0)"
+    },
+    {
+      "id": "d2-venides-noche-rosita-pruebas",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_venides",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_venides_noche_rosita",
+      "opcion": 1,
+      "nuevo": true,
+      "nota": "Fable C3 #7: con desconfianza del dia 1, los 50 solo con pruebas (alternativa de la opcion 0)"
+    },
+    {
+      "id": "d2-venides-noche-rosita2-pruebas",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_venides",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_venides_noche_rosita2",
+      "opcion": 1,
+      "nuevo": true,
+      "nota": "Fable C3 #7: con desconfianza del dia 1, los 50 solo con pruebas (alternativa de la opcion 0)"
+    },
+    {
+      "id": "d2-disfraz-parcial",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_disfraz",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_disfraz_parcial",
+      "opcion": null,
+      "nuevo": true,
+      "nota": "Fable C1 X-3: el traje gastado (alternativa del disfraz)"
+    },
+    {
+      "id": "d2-disfraz-segunda",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_disfraz",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_disfraz_segunda_bien",
+      "opcion": null,
+      "nuevo": true,
+      "nota": "Fable C1 X-3: segunda tirada en la tienda (alternativa del disfraz)"
+    },
+    {
+      "id": "d3-bandidos-sin-jefe",
+      "dia": 3,
+      "canal": "misiones",
+      "grupo": "d3_gorran",
+      "aventura": "boundington_ocaso",
+      "beat": "b3_bandidos_vencidos",
+      "opcion": null,
+      "nuevo": true,
+      "nota": "Fable C3 #8: si mataste a Gorran, sus bandidos sin jefe (alternativa de los 30 de Gorran perdonado)"
+    },
+    {
+      "id": "d2-aigren-orden-entrega",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_daga",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_aigren_orden_entrega",
+      "opcion": null,
+      "nuevo": false,
+      "nota": "AV18-08: la daga por orden del capitan (alternativa de b2_aigren_daga)"
+    },
+    {
+      "id": "d2-noche-rosita-mediada-0",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_venides",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_noche_rosita_informa",
+      "opcion": 0,
+      "nuevo": true
+    },
+    {
+      "id": "d2-noche-rosita-mediada-1",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_venides",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_noche_rosita_informa",
+      "opcion": 1,
+      "nuevo": true,
+      "nota": "Fable C3 #7: con desconfianza del dia 1, los 50 solo con pruebas (alternativa de la opcion 0)"
+    },
+    {
+      "id": "d2-noche-rosita-mediada-2",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_venides",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_noche_rosita_informa",
+      "opcion": 2,
+      "nuevo": true
+    },
+    {
+      "id": "d2-noche-rosita-confianza-0",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_venides",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_noche_rosita_informa_confianza",
+      "opcion": 0,
+      "nuevo": true,
+      "nota": "E-DIA1-CONSEC #1: con «Bebe conmigo» del dia 1, los mismos 50 con el eco de Venides (alternativa de la opcion 0 de b2_noche_rosita_informa)"
+    },
+    {
+      "id": "d2-noche-rosita-confianza-1",
+      "dia": 2,
+      "canal": "misiones",
+      "grupo": "d2_venides",
+      "aventura": "boundington_segundo_dia",
+      "beat": "b2_noche_rosita_informa_confianza",
+      "opcion": 1,
+      "nuevo": true,
+      "nota": "E-DIA1-CONSEC #1: gemela de la opcion 2 de b2_noche_rosita_informa"
     }
   ]
 }

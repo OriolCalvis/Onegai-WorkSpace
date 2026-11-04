@@ -80,6 +80,13 @@ enum class InputAction : std::size_t {
     Slot9,
     Slot10,
     ToggleMap,  // MAPA-02 — M: abrir y cerrar el mapa grande
+    // Andar va con W A S D (Oriol, 25/10; del 23/10 al 25/10 fue Q W A S); los menus, en cruz.
+    SideLeft,     // A: a la izquierda en los menus (pestanas, barra de cartas, cuaderno)
+    SideRight,    // D: a la derecha en los menus
+    CursorUp,     // flechas: el cursor del mapa grande (solo flechas, para no chocar con W A S D)
+    CursorDown,
+    CursorLeft,
+    CursorRight,
     Count,
 };
 

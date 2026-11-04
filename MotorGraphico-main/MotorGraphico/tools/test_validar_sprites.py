@@ -149,6 +149,21 @@ class ValidadorPersonajesTests(unittest.TestCase):
     def test_manifiesto_conforme_no_da_errores(self):
         self.assertEqual(self.validar(), [])
 
+    def test_cuerpo_casi_vacio_en_celdas_de_64(self):
+        # CAR-3b: con celdas reales (64x64) un cuerpo de pocos pixeles es un error; uno sano, no
+        self.man["frameSize"] = [64, 64]
+        for n, px in (("r/cuerpo.png", 4), ("r/cola.png", 0)):
+            img = np.zeros((64, 12 * 64, 4), np.uint8)
+            for f in range(12):
+                img[10:10 + px, f * 64 + 10:f * 64 + 10 + px] = (200, 100, 50, 255)
+            Image.fromarray(img, "RGBA").save(self.dir / n)
+        self.assertTrue(any("cuerpo con 16 px opacos" in e for e in self.validar()))
+        img = np.zeros((64, 12 * 64, 4), np.uint8)
+        for f in range(12):
+            img[5:25, f * 64 + 5:f * 64 + 25] = (200, 100, 50, 255)
+        Image.fromarray(img, "RGBA").save(self.dir / "r/cuerpo.png")
+        self.assertFalse(any("cuerpo con" in e for e in self.validar()))
+
     def test_falta_un_atlas(self):
         (self.dir / "p.png").unlink()
         self.assertTrue(any("falta p.png" in e for e in self.validar()))
@@ -269,7 +284,59 @@ class ProbadorTests(unittest.TestCase):
 
     def test_el_probador_monta_lo_mismo_que_los_atlas_horneados(self):
         import probador_personaje
+        self._comparar(probador_personaje.Probador(TEX))
+
+    def test_el_probador_tine_la_castana_si_falta_la_fila_de_color(self):
+        """NET-E1a: con pelo y barba sin las filas de color (solo la castana y los propios) el probador
+        tine la castana con la paleta del color y sale exactamente lo mismo que la fila cuita."""
+        import probador_personaje
         pr = probador_personaje.Probador(TEX)
+        for grupo in ("pelo", "barba"):
+            g = pr.man[grupo]
+            filas = g["filas"]
+            castanos = {f["estilo"]: f for f in filas if f["color"] == "pelo_castano"}
+            muestra = [f for f in filas if f["estilo"] in castanos and f["color"] != "pelo_castano"]
+            if not muestra:
+                # NET-E1b: los atlas ya van recortados (solo castana y propias): no queda fila cuita con la que
+                # comparar; el probador tine siempre y test_el_probador_monta_lo_mismo_que_los_atlas_horneados
+                # lo compara con los pnj_* y razas_andando ya cuitos. Aqui: la paleta de cada color da cambios.
+                for c in ("pelo_rubio", "pelo_negro", "pelo_llama", "pelo_plata_lila"):
+                    if grupo == "barba" and c == "pelo_llama":
+                        continue
+                    self.assertTrue(pr._fila_color(g, f"{next(iter(castanos))}/{c}", grupo)[1], f"{grupo} {c}")
+                continue
+            for talla in ("medio", "pequeno"):
+                if talla not in g["atlas"]:
+                    continue
+                # un estilo por color basta: la misma paleta tine todos los estilos
+                vistos = set()
+                for f in muestra:
+                    if f["color"] in vistos:
+                        continue
+                    vistos.add(f["color"])
+                    cuita = pr.fila(g["atlas"][talla], f["fila"])
+                    fila, cambios = pr._fila_color({"filas": [x for x in filas if x["id"] != f["id"]]}, f["id"], grupo)
+                    self.assertIsNotNone(cambios, f["id"])
+                    tenida = pr.fila(g["atlas"][talla], fila, cambios)
+                    for i, (a, b) in enumerate(zip(cuita, tenida)):
+                        self.assertTrue(np.array_equal(a, b), f"{grupo}.{talla}.{f['id']} frame {i + 1}")
+        with self.assertRaises(SystemExit):
+            pr._fila_color(pr.man["pelo"], "corto/pelo_inventado", "peinado")
+        self.assertEqual(pr._fila_color(pr.man["pelo"], "corto/pelo_castano", "peinado")[1], None)
+
+    def test_la_lamina_tine_la_castana_si_falta_la_fila_de_color(self):
+        """NET-E1a: pixellab_lamina.Atlas.pelo cae a la fila castana tenida (antes devolvia None)."""
+        import pixellab_lamina
+        at = pixellab_lamina.Atlas(TEX)
+        g = at.man["pelo"]
+        cuita = at.pelo("corto/pelo_rubio", "pequeno")
+        g["filas"] = [f for f in g["filas"] if f["id"] != "corto/pelo_rubio"]
+        tenida = at.pelo("corto/pelo_rubio", "pequeno")
+        self.assertIsNotNone(tenida)
+        self.assertTrue(all(np.array_equal(a, b) for a, b in zip(cuita, tenida)))
+        self.assertIsNone(at.pelo("corto/pelo_inventado", "pequeno"))
+
+    def _comparar(self, pr):
         for nombre in ("actores_capas", "razas_andando", "personajes_historia"):
             man = json.loads((TEX / f"{nombre}.json").read_text(encoding="utf-8"))
             img = np.array(Image.open(TEX / f"{nombre}.png").convert("RGBA"))
@@ -553,14 +620,16 @@ class ComposicionTests(unittest.TestCase):
         import actores_formas
         from actores_materiales import MATERIALES
         actores_formas.registrar()
-        self.assertIsNone(armas.orden_de("f_espada"))
+        self.assertIsNone(armas.orden_de("f_hacha"))  # la espada no: la Forja la pone delante en unos frames
         parejas = sorted(k for k, v in armas.ARMAS.items() if v[0] in armas.PAREJA)
         self.assertEqual(parejas, ["f_brazos_mecanicos", "f_canon_de_mano", "f_garras", "f_garras_raro",
                                    "f_guanteletes", "f_guanteletes_raro", "f_guantes", "f_guantes_raro",
                                    "f_sable_y_pistola", "f_sable_y_pistola_raro", "f_tambor", "f_tambor_raro",
                                    "f_violin"])
         man = json.loads((TEX / "personajes.json").read_text(encoding="utf-8"))
-        con_orden = sorted(p["id"] for p in man["equipo"]["arma"]["piezas"] if "orden" in p)
+        forja = set(armas.AJUSTES.get("capas", {})) | set(armas.AJUSTES.get("manos", {}))  # Oriol (23/10): la Forja
+        con_orden = sorted(p["id"] for p in man["equipo"]["arma"]["piezas"] if "orden" in p
+                           and (p["id"] not in armas.ARMAS or armas.ARMAS[p["id"]][0] not in forja))
         self.assertEqual(con_orden, parejas)
         for ident in parejas:
             orden = armas.orden_de(ident)
@@ -780,6 +849,8 @@ class ComposicionTests(unittest.TestCase):
         actores_formas.registrar()
         for clave, t in self.tallas.items():
             for ident, valor in armas.ARMAS.items():
+                if any(valor[0] in armas.AJUSTES.get(k, {}) for k in ("dibujos", "desplazamientos", "giros")):
+                    continue  # Oriol (23/10): lo dibujado o movido en la Forja se recorta al pintar (capa_arma)
                 fuera = armas.desborde_en_talla(t, valor[0], armas.ranura_de(ident))
                 self.assertEqual(fuera, (0, 0, 0), f"{ident} en talla {clave}: se sale (arriba, abajo, lados)")
 
@@ -992,9 +1063,8 @@ class ComposicionTests(unittest.TestCase):
         import actores_rasgos as rasgos
         import actores_razas as razas
         ids = [r["id"] for r in razas.RAZAS]
-        self.assertEqual(len(ids), 43)
-        self.assertEqual(len(set(ids)), 43)
-        self.assertEqual(ids, sorted(ids))  # mismo orden que race_npc_idle.png
+        self.assertEqual(len(ids), 72)  # 45 + las 27 del 2000 b.f. (Oriol, 23/10)
+        self.assertEqual(len(set(ids)), 72)
         self.assertEqual(set(pers.EQUIPO_RAZAS), set(ids))
         for r in razas.RAZAS:
             for _ranura, nombre, _m1, _m2 in r.get("rasgos", []):

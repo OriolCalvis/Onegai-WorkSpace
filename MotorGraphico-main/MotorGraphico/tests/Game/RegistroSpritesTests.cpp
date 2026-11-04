@@ -64,7 +64,7 @@ MOTOR_TEST_CASE(cada_hoja_existe_con_su_rejilla) {
         MOTOR_CHECK(img.value().alto == h->celdaAlto * h->filas);
     }
     MOTOR_CHECK(r.hoja("personajes_historia")->actores);
-    MOTOR_CHECK(r.hoja("personajes_historia")->columnas == 12);
+    MOTOR_CHECK(r.hoja("personajes_historia")->columnas == 40);  // PL-JUEGO-01: los 40 frames de PixelLab
     MOTOR_CHECK(!r.hoja("props_p0")->actores);
     MOTOR_CHECK(r.hoja("no_existe") == nullptr);
 }
@@ -75,14 +75,15 @@ MOTOR_TEST_CASE(actores_por_id_alias_patron_y_raza) {
     // hojas pnj_*, que van las ultimas del indice (la ultima hoja manda): Luisarda
     // ya no es el dibujo de PixelLab ni el montado de personajes_historia.
     const Game::SpriteActor* luisarda = r.actor("luisarda");
-    MOTOR_CHECK(luisarda != nullptr && luisarda->hoja == "pnj_boundington");
+    // GORRAN-REVISION: con mas PNJ, gen_pnj reparte las filas en pnj_boundington, _2, _3...
+    MOTOR_CHECK(luisarda != nullptr && luisarda->hoja.rfind("pnj_boundington", 0) == 0);
     MOTOR_CHECK(r.actor("naga_del_rio") != nullptr && r.actor("naga_del_rio")->hoja == "personajes_historia");
     // Alias del catalogo a la hoja (la saga no es un objeto PNJ).
     const Game::SpriteActor* saga = r.actor("saga_bosque");
     MOTOR_CHECK(saga != nullptr && saga->hoja == r.actor("saga_del_bosque")->hoja);
     // Sin ropa prestada: el sectario, el posadero o el thalgrim tienen fila propia.
-    MOTOR_CHECK(r.actor("sectario_perdido") != nullptr && r.actor("sectario_perdido")->hoja == "pnj_boundington");
-    MOTOR_CHECK(r.actor("posadero") != nullptr && r.actor("posadero")->hoja == "pnj_boundington");
+    MOTOR_CHECK(r.actor("sectario_perdido") != nullptr && r.actor("sectario_perdido")->hoja.rfind("pnj_boundington", 0) == 0);
+    MOTOR_CHECK(r.actor("posadero") != nullptr && r.actor("posadero")->hoja.rfind("pnj_boundington", 0) == 0);
     MOTOR_CHECK(r.actor("posadero")->fila != r.actor("mercader")->fila);
     MOTOR_CHECK(r.actor("on_thalgrim_menor") != nullptr && r.actor("on_thalgrim_menor")->hoja.rfind("pnj_mundo_", 0) == 0);
     MOTOR_CHECK(r.actor("en_gongorguma_taberna_tendero")->hoja.rfind("pnj_", 0) == 0);
@@ -94,7 +95,7 @@ MOTOR_TEST_CASE(actores_por_id_alias_patron_y_raza) {
     const Game::SpriteActor* raza = r.actor("pnj_de_un_mapa_nuevo", "drow_explorador");
     MOTOR_CHECK(raza != nullptr && raza->hoja == "razas_andando" && raza->fila == 10);
     // El id manda sobre la raza.
-    MOTOR_CHECK(r.actor("luisarda", "drow_explorador")->hoja == "pnj_boundington");
+    MOTOR_CHECK(r.actor("luisarda", "drow_explorador")->hoja.rfind("pnj_boundington", 0) == 0);
     MOTOR_CHECK(r.actor("npc_race_drow_explorador", "drow_explorador")->hoja.rfind("pnj_", 0) == 0);
     // Sin nada: el sprite base.
     MOTOR_CHECK(r.actor("nadie_con_este_id") == nullptr);
@@ -219,6 +220,46 @@ MOTOR_TEST_CASE(indice_roto_avisa_y_no_tumba) {
     // Volver a cargar empieza de cero.
     MOTOR_CHECK(!r.carga(c.ruta() + "/no").isOk());
     MOTOR_CHECK(r.hojas() == 0 && r.fijos() == 0 && !r.cargado());
+}
+
+// MODELOS-PL-01: ningun actor con nombre lleva ya un modelo antiguo (cuatro vistas, 12 columnas) ni el cuerpo
+// base. Las hojas se cargan en orden y la ultima manda: la antigua pixellab_personajes va la primera.
+MOTOR_TEST_CASE(los_actores_de_la_trama_van_en_pixellab_en_diagonal) {
+    const RegistroSprites& r = registro();
+    const auto cuarenta = [&](const char* id) {
+        const Game::SpriteActor* a = r.actor(id);
+        return a != nullptr && r.hoja(a->hoja) != nullptr && r.hoja(a->hoja)->columnas == 40;
+    };
+    // Los de personajes_historia ya no los tapa la hoja antigua (caballero, verdugo, saga, duende)...
+    for (const char* id : {"caballero", "verdugo", "saga_del_bosque", "duende_porcelana", "luisarda", "ben_kafka",
+                           "griffin", "mercader", "nina_del_gato", "skilla", "venides", "aigren", "xila"})
+        MOTOR_CHECK(cuarenta(id));
+    MOTOR_CHECK(r.actor("caballero")->hoja == "personajes_historia");
+    // ...y los enemigos con nombre de la trama (bandidos, guardias, mercenarios, cultistas) llevan fila de persona.
+    for (const char* id : {"bandido_de_gorran", "gorran_bandido", "mercenario_killville", "morvan_tallapedra",
+                           "hermano_fumat", "guardia_muelle", "guardia_comprado", "edul_furioso", "sandes",
+                           "diacono_orfeu", "perdido_saqueador", "perdido_fanatico", "cultista_carcelero"})
+        MOTOR_CHECK(cuarenta(id));
+}
+
+MOTOR_TEST_CASE(un_pnj_sin_fila_lleva_el_respaldo_de_pixellab_no_el_cuerpo_base) {
+    const RegistroSprites& r = registro();
+    // Con fila propia (o su raza), nada cambia.
+    MOTOR_CHECK(Game::actorConRespaldo(r, "skilla", "", true) == r.actor("skilla"));
+    MOTOR_CHECK(Game::actorConRespaldo(r, "id_inventado", "race_human_marches", true) == r.actor("", "race_human_marches"));
+    // Un PNJ sin fila ni raza: la fila neutra de razas_andando (40 columnas).
+    const Game::SpriteActor* respaldo = Game::actorConRespaldo(r, "pnj_que_no_existe", "", true);
+    MOTOR_CHECK(respaldo != nullptr && respaldo->hoja == "razas_andando");
+    MOTOR_CHECK(r.hoja(respaldo->hoja)->columnas == 40);
+    MOTOR_CHECK(respaldo == r.actor("", Game::kRazaRespaldo));
+    // Quien no es persona no se viste de humano: sigue sin hoja (cuerpo base) hasta tener su dibujo.
+    MOTOR_CHECK(Game::actorConRespaldo(r, "lobo_que_no_existe", "", false) == nullptr);
+    // Sin la raza de respaldo en el indice, no hay nada que inventar.
+    CarpetaTemporal c;
+    c.escribe("textures/sprites.json", R"({"hojas": []})");
+    RegistroSprites vacio;
+    MOTOR_CHECK(vacio.carga(c.ruta()).isOk());
+    MOTOR_CHECK(Game::actorConRespaldo(vacio, "x", "", true) == nullptr);
 }
 
 int main() { return motor_test::runAllTests(); }

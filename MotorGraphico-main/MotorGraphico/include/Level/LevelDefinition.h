@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Core/Math/GridCoord.h"
+#include "Level/AmbitoNivel.h"
 #include "Runtime/Alturas.h"
 
 // Definicion de datos de un nivel jugable (motor_grafico_gantt_rpg.puml,
@@ -75,6 +76,22 @@ struct ObjectSpawn {
     GridCoord targetPosition;
     bool hasTargetPosition = false;
 
+    // G4-01 — Puerta cerrada por flags: "cerradaSi": {"todas": [...], "ninguna": [...]}.
+    // Cerrada = estan encendidas TODAS las de `cerradaTodas` y NINGUNA de
+    // `cerradaNinguna`. Con las dos listas vacias (o sin el campo) la puerta
+    // esta abierta. Cerrada, no hay transicion: se dispara el beat
+    // `beatCerrada` (un talk cuyo target es ese id) o, sin beat, un aviso.
+    std::vector<std::string> cerradaTodas;
+    std::vector<std::string> cerradaNinguna;
+    std::string beatCerrada;
+    template <class TieneFlag>
+    bool estaCerrada(TieneFlag tieneFlag) const {
+        if (cerradaTodas.empty() && cerradaNinguna.empty()) return false;
+        for (const std::string& f : cerradaTodas) if (!tieneFlag(f)) return false;
+        for (const std::string& f : cerradaNinguna) if (tieneFlag(f)) return false;
+        return true;
+    }
+
     // --- Botin de la instancia (cofres, enemigos con drop propio) ---
     // El catalogo define el TIPO de objeto; lo que suelta ESTA instancia
     // es decision del autor del nivel (mismo principio que targetLevel
@@ -123,6 +140,9 @@ struct LevelDefinition {
     // Fase 2).
     std::string mapPath;
     GridCoord playerStart;
+    // E-DISPARADORES-1 (D0026.7) — "ambito" del JSON: interior_pequeno / interior_grande / exterior. Deducido
+    // (por defecto): lo decide ambitoDelNivel (Level/AmbitoNivel.h) con el nombre del fichero y el tamano del mapa.
+    AmbitoNivel ambito = AmbitoNivel::Deducido;
     // AV19-02 — Altura del terreno (ver Runtime/Alturas.h). Vacio = todo plano.
     std::vector<AlturaRegion> alturas;
 

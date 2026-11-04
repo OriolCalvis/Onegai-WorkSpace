@@ -45,16 +45,25 @@ Vector4 color(const RPG::TiradaVisible& t);
 // «1,5»: los éxitos con coma, como en el registro.
 std::string exitos(float n);
 
+// Oriol (22/10): «falta la animación de lanzar dados». Los dados de `r` dando vueltas en el instante
+// `t` (segundos desde que salen): cada cara cambia unas 14 veces por segundo; nada de pifias ni éxitos.
+RPG::PoolResult rodando(const RPG::PoolResult& r, float t);
+// Lo que dura la vuelta antes de que se vea el resultado.
+inline constexpr float kRodar = 0.7f;
+
 }  // namespace dados
 
 // El panel de la última tirada del combate, de 280 de ancho, con la esquina
 // arriba a la izquierda en (x, y). `brillo` (0..1) la resalta cuando es nueva.
 // Con `en` > 1 la acción tiró varias veces y la cabecera dice cuál es
 // («2/3»). Devuelve el alto.
+// `rodar` >= 0: los dados aun ruedan (segundos desde que salieron, ver dados::rodando): sin grado ni
+// marco hasta que paran. Por defecto (-1), quietos.
 float pintaTiradaCombate(Lienzo& l, const Pincel& p, const RPG::TiradaVisible& t, float x, float y,
-                         float brillo, int de = 0, int en = 0);
+                         float brillo, int de = 0, int en = 0, float rodar = -1.0f);
 // La tira de la prueba de un beat, apoyada encima de la hoja del diálogo con
 // su borde derecho en `derecha` y su pie en `abajo`.
-void pintaTiradaDialogo(Lienzo& l, const Pincel& p, const RPG::TiradaVisible& t, float derecha, float abajo);
+void pintaTiradaDialogo(Lienzo& l, const Pincel& p, const RPG::TiradaVisible& t, float derecha, float abajo,
+                        float rodar = -1.0f);
 
 }  // namespace Pergamino

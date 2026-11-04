@@ -1,3 +1,4 @@
+#include "Game/Personajes/RasgosApariencia.h"
 #include "Game/NewGameFlow.h"
 
 #include "Game/Personajes/Vestuario.h"
@@ -216,6 +217,9 @@ Apariencia NewGameFlow::aparienciaGuardada(const SavedHero& heroe) {
     a.barbaColor = heroe.barbaColor;
     a.ropa = heroe.ropa;
     a.quitarCapas = heroe.quitarCapas;
+    a.marcas = heroe.marcas;
+    RasgosApariencia::migrarTallaAnterior(a);
+    RasgosApariencia::migrarEstilosRetirados(a);
     return a;
 }
 
@@ -230,6 +234,7 @@ void NewGameFlow::guardaApariencia(const Apariencia& a, SavedHero& heroe) {
     heroe.barbaColor = a.barbaColor;
     heroe.ropa = a.ropa;
     heroe.quitarCapas = a.quitarCapas;
+    heroe.marcas = a.marcas;
 }
 
 }  // namespace Game

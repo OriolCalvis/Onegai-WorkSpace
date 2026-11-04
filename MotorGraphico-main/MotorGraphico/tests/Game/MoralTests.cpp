@@ -20,7 +20,9 @@
 #include "RPG/AdventureSerializer.h"
 #include "RPG/Catalogs/RpgCatalogs.h"
 #include "RPG/Definitions/SkillDefinition.h"
+#include "RPG/CharacterSheet.h"
 #include "RPG/NarrativeEngine.h"
+#include "Narrative/ReputacionAventura.h"  // BND-04
 #include "Render/ICombatant.h"
 
 #include <algorithm>
@@ -407,6 +409,88 @@ MOTOR_TEST_CASE(la_herida_no_mata_y_los_exitos_van_a_la_letra) {
         MOTOR_CHECK(!p.trama.ultimaTirada().enfrentada && p.trama.ultimaTirada().que == "Persuasión · 2 éxitos");
     }
     moral::ponReglas(nullptr);
+}
+
+// --- BND-04 · la reputacion de la ficha llega a requires.reputacion ----------------
+
+namespace {
+
+class CuerpoConFicha : public Cuerpo {
+public:
+    CuerpoConFicha() : Cuerpo(20, 3) {}
+    RPG::CharacterSheet* character_sheet() override { return &m_ficha; }
+    const RPG::CharacterSheet* character_sheet() const override { return &m_ficha; }
+    RPG::CharacterSheet m_ficha;
+};
+
+// Un beat que solo salta con aegroum >= 10, y su gemelo con aegroum <= -10.
+RPG::AdventureScript aventuraConReputacion() {
+    RPG::reputacionAventura::ponFaccionesConocidas({"aegroum", "perdidos", "barriada_surysal"});
+    auto r = RPG::AdventureScript::loadFromString(R"({"id": "rep", "beats": [
+        {"id": "amigo", "trigger": {"type": "talk", "target": "guardia"},
+         "requires": {"reputacion": {"aegroum": {"min": 10}}}, "lines": ["Pasa, amigo."]},
+        {"id": "fuera", "trigger": {"type": "talk", "target": "guardia"}, "lines": ["Largo."]}]})");
+    MOTOR_CHECK(r.isOk());
+    return r.isOk() ? r.value() : RPG::AdventureScript{};
+}
+
+struct PartidaRep {
+    RPG::AdventureScript aventura = aventuraConReputacion();
+    RPG::NarrativeEngine motor;
+    RPG::NarrativeState trama;
+    ObjectCatalog objetos;
+    SkillCatalog habilidades;
+    SkillSet aprendidas{10};
+    std::vector<std::string> mochila;
+    CuerpoConFicha heroe;
+    GameSession sesion;
+    PartidaRep()
+        : sesion(nullptr, &objetos, &habilidades, Partida::nivel(), &heroe, &aprendidas, &mochila) {
+        motor.setAdventure(&aventura);
+    }
+    std::string dice() {
+        sesion.closeInteraction();
+        return sesion.talkNarrative("guardia") ? sesion.dialogueLines().front() : "";
+    }
+};
+
+}  // namespace
+
+// El orden real de la carga (ApplicationNivel): applyCarryOver -> setNarrative -> beat.
+// Con la reputacion copiada solo despues del beat, el primero la veia a 0.
+MOTOR_TEST_CASE(tras_cargar_el_primer_beat_ve_la_reputacion_de_la_ficha) {
+    PartidaRep p;
+    p.trama.ponReputaciones({{"aegroum", -50}});  // restos de la partida anterior
+    PlayerCarryOver guardado;
+    guardado.moralityValue = 0;
+    p.sesion.applyCarryOver(guardado);            // aun sin narrativa enchufada
+    p.heroe.m_ficha.factionRep["aegroum"] = 30;   // lo que trae el guardado
+    p.sesion.setNarrative(&p.motor, &p.trama);
+    MOTOR_CHECK(p.trama.reputacion("aegroum") == 30);  // ya al enchufar
+    MOTOR_CHECK(p.dice() == "Pasa, amigo.");
+}
+
+MOTOR_TEST_CASE(un_adjustRep_fuera_de_beat_lo_ve_el_siguiente_beat) {
+    {
+        PartidaRep p;
+        p.sesion.setNarrative(&p.motor, &p.trama);
+        p.heroe.m_ficha.adjustRep("aegroum", 15);  // fuera de un beat: nadie llama a reflejaEnLaAventura
+        MOTOR_CHECK(p.sesion.talkNarrative("guardia") && p.sesion.dialogueLines().front() == "Pasa, amigo.");
+    }
+    {
+        PartidaRep p;
+        p.heroe.m_ficha.adjustRep("aegroum", 15);
+        p.sesion.setNarrative(&p.motor, &p.trama);
+        p.heroe.m_ficha.adjustRep("aegroum", -15);  // y al reves: la bajada tambien se ve
+        MOTOR_CHECK(p.sesion.talkNarrative("guardia") && p.sesion.dialogueLines().front() == "Largo.");
+    }
+}
+
+MOTOR_TEST_CASE(partida_nueva_vacia_la_reputacion_del_estado) {
+    RPG::NarrativeState s;
+    s.ponReputaciones({{"aegroum", 40}});
+    s.reset();
+    MOTOR_CHECK(s.reputacion("aegroum") == 0);
 }
 
 int main() { return motor_test::runAllTests(); }

@@ -1,0 +1,613 @@
+Test project /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug
+        Start  48: test_recompensas_economia
+        Start 260: test_montaje_filas
+        Start 259: test_montaje_cache
+        Start 253: test_personajes_capas
+        Start 204: test_nivel_excel
+        Start 298: test_probabilidad_pool
+  1/288 Test  #48: test_recompensas_economia ................***Failed    1.23 sec
+.........E...
+======================================================================
+ERROR: test_las_tres_rutas_publicadas_llegan_al_final_sin_sumar_fiesta_doble (__main__.RecorridoTests.test_las_tres_rutas_publicadas_llegan_al_final_sin_sumar_fiesta_doble)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tools/test_recompensas_economia.py", line 133, in test_las_tres_rutas_publicadas_llegan_al_final_sin_sumar_fiesta_doble
+    r = self.nativo(MOTOR, lee(MOTOR/'tools/rutas_economia.json'))
+  File "/Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tools/test_recompensas_economia.py", line 41, in nativo
+    return recorre(m, args.recorrido, d)
+  File "/Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tools/recompensas_economia.py", line 51, in recorre
+    raise ValueError('Recorrido nativo: '+r.stderr.strip())
+ValueError: Recorrido nativo: Ruta incompleta: falta bnd3_fuera
+
+----------------------------------------------------------------------
+Ran 13 tests in 1.135s
+
+FAILED (errors=1)
+
+        Start 258: test_editor_apariencia_pelo_propio
+  2/288 Test #258: test_editor_apariencia_pelo_propio .......   Passed    3.12 sec
+        Start 105: demo_aventura
+  3/288 Test #298: test_probabilidad_pool ...................   Passed    4.42 sec
+        Start 291: test_validar_todo
+  4/288 Test #204: test_nivel_excel .........................   Passed    5.24 sec
+        Start 185: test_aventuras_monsterid
+  5/288 Test #105: demo_aventura ............................   Passed    2.40 sec
+        Start 254: test_brillo_equipo
+  6/288 Test #291: test_validar_todo ........................   Passed    2.77 sec
+        Start 255: test_editor_apariencia
+  7/288 Test #185: test_aventuras_monsterid .................   Passed    2.61 sec
+        Start 299: simulador_dificultad_humo
+  8/288 Test #254: test_brillo_equipo .......................   Passed    1.89 sec
+        Start  81: test_editor_state_history
+  9/288 Test #255: test_editor_apariencia ...................   Passed    1.51 sec
+        Start 231: test_inventory_menu
+ 10/288 Test #231: test_inventory_menu ......................   Passed    0.93 sec
+        Start 104: demo_ciudad
+ 11/288 Test #299: simulador_dificultad_humo ................   Passed    2.08 sec
+        Start  83: test_h104_new_game_flow
+ 12/288 Test  #81: test_editor_state_history ................   Passed    1.45 sec
+        Start 236: test_diario_completo
+ 13/288 Test  #83: test_h104_new_game_flow ..................   Passed    0.47 sec
+        Start 146: test_business_economy
+ 14/288 Test #146: test_business_economy ....................   Passed    0.34 sec
+        Start  20: rpg_declaration_check
+ 15/288 Test #236: test_diario_completo .....................   Passed    0.70 sec
+        Start 144: test_actuacion
+ 16/288 Test #104: demo_ciudad ..............................   Passed    1.30 sec
+        Start 149: test_game_mode
+ 17/288 Test #144: test_actuacion ...........................   Passed    0.33 sec
+        Start 143: test_eventos_de_la_sesion
+ 18/288 Test #149: test_game_mode ...........................   Passed    0.49 sec
+        Start 234: test_clases_companeros
+ 19/288 Test #143: test_eventos_de_la_sesion ................   Passed    0.59 sec
+        Start 152: test_shop_flow
+ 20/288 Test #234: test_clases_companeros ...................   Passed    0.79 sec
+        Start  64: test_region_trigger_orchestration
+ 21/288 Test #152: test_shop_flow ...........................   Passed    0.53 sec
+        Start 141: test_battle_state
+ 22/288 Test  #20: rpg_declaration_check ....................   Passed    1.60 sec
+        Start 147: test_morality
+ 23/288 Test  #64: test_region_trigger_orchestration ........   Passed    0.33 sec
+        Start 107: demo_congelacio
+ 24/288 Test #141: test_battle_state ........................   Passed    0.57 sec
+        Start 103: demo_mundo
+ 25/288 Test #147: test_morality ............................   Passed    0.67 sec
+        Start  79: test_project_hub
+ 26/288 Test #107: demo_congelacio ..........................   Passed    0.73 sec
+        Start  65: test_audio_director
+ 27/288 Test #103: demo_mundo ...............................   Passed    0.78 sec
+        Start 155: test_skill
+ 28/288 Test  #79: test_project_hub .........................   Passed    0.82 sec
+        Start 151: test_enemy_brain
+ 29/288 Test  #65: test_audio_director ......................   Passed    0.77 sec
+        Start  37: test_charlas
+ 30/288 Test #155: test_skill ...............................   Passed    0.73 sec
+        Start  38: test_cinematicas
+ 31/288 Test #151: test_enemy_brain .........................   Passed    0.70 sec
+        Start  36: test_heroe_en_la_historia
+ 32/288 Test  #37: test_charlas .............................   Passed    0.84 sec
+        Start  68: test_options_file
+ 33/288 Test  #38: test_cinematicas .........................   Passed    0.77 sec
+        Start  69: test_defeat_recovery
+ 34/288 Test  #36: test_heroe_en_la_historia ................   Passed    1.05 sec
+        Start 150: test_carry_over
+ 35/288 Test  #68: test_options_file ........................   Passed    0.90 sec
+        Start 198: test_enemy_catalog_real_assets
+ 36/288 Test  #69: test_defeat_recovery .....................   Passed    0.96 sec
+        Start  80: test_save_slots
+ 37/288 Test #150: test_carry_over ..........................   Passed    0.75 sec
+        Start 108: demo_nova_partida
+ 38/288 Test #198: test_enemy_catalog_real_assets ...........   Passed    0.96 sec
+        Start 157: test_object_catalog
+ 39/288 Test  #80: test_save_slots ..........................   Passed    0.86 sec
+        Start  34: test_moral
+ 40/288 Test #108: demo_nova_partida ........................   Passed    0.94 sec
+        Start 256: test_editor_apariencia_razas
+ 41/288 Test #157: test_object_catalog ......................   Passed    0.82 sec
+        Start 199: test_conditions_real_assets
+ 42/288 Test  #34: test_moral ...............................   Passed    0.94 sec
+        Start 140: test_save_game
+ 43/288 Test #199: test_conditions_real_assets ..............   Passed    0.85 sec
+        Start 156: test_monster_plan_proof
+ 44/288 Test #256: test_editor_apariencia_razas .............   Passed    1.16 sec
+        Start  49: test_monstruos_acciones
+ 45/288 Test #140: test_save_game ...........................   Passed    0.83 sec
+        Start 257: test_editor_apariencia_colores
+ 46/288 Test #156: test_monster_plan_proof ..................   Passed    0.68 sec
+        Start  94: demo_catalogos_rpg
+ 47/288 Test  #49: test_monstruos_acciones ..................   Passed    0.87 sec
+        Start  77: test_schema_fixtures
+ 48/288 Test #257: test_editor_apariencia_colores ...........   Passed    0.86 sec
+        Start  44: test_contenedores
+ 49/288 Test  #94: demo_catalogos_rpg .......................   Passed    1.03 sec
+        Start  67: test_quest_log
+ 50/288 Test  #77: test_schema_fixtures .....................   Passed    0.90 sec
+        Start 112: demo_prologo
+ 51/288 Test  #44: test_contenedores ........................   Passed    1.06 sec
+        Start 145: test_transiciones
+ 52/288 Test  #67: test_quest_log ...........................   Passed    0.70 sec
+        Start  39: test_rumbo_niveles
+ 53/288 Test #112: demo_prologo .............................   Passed    1.01 sec
+        Start 128: test_editor_document_io
+ 54/288 Test #145: test_transiciones ........................   Passed    0.73 sec
+        Start 142: test_game_session
+ 55/288 Test  #39: test_rumbo_niveles .......................   Passed    0.93 sec
+        Start  66: test_world_travel_state
+ 56/288 Test #128: test_editor_document_io ..................   Passed    0.76 sec
+        Start 138: test_map_round_trip
+ 57/288 Test #138: test_map_round_trip ......................   Passed    0.01 sec
+        Start 153: test_tienda_estado
+ 58/288 Test #142: test_game_session ........................   Passed    1.17 sec
+        Start  96: demo_battle_nd6
+ 59/288 Test  #66: test_world_travel_state ..................   Passed    1.09 sec
+        Start 175: test_options_state
+ 60/288 Test #153: test_tienda_estado .......................   Passed    0.86 sec
+        Start 173: test_gdb12_screens
+ 61/288 Test  #96: demo_battle_nd6 ..........................   Passed    0.58 sec
+        Start 154: test_caer_en_mision
+ 62/288 Test #175: test_options_state .......................   Passed    0.48 sec
+        Start 116: demo_senal_ceniza
+ 63/288 Test #173: test_gdb12_screens .......................   Passed    0.86 sec
+        Start 197: test_enemy_catalog_bridge
+ 64/288 Test #253: test_personajes_capas ....................   Passed   24.01 sec
+        Start 163: test_camera_transition
+ 65/288 Test #163: test_camera_transition ...................   Passed    0.01 sec
+        Start 129: test_editor_state
+ 66/288 Test #154: test_caer_en_mision ......................   Passed    0.92 sec
+        Start  63: test_region_trigger_dispatch
+ 67/288 Test #116: demo_senal_ceniza ........................   Passed    1.22 sec
+        Start  17: test_golpes_en_pantalla
+ 68/288 Test #197: test_enemy_catalog_bridge ................   Passed    0.96 sec
+        Start  95: demo_skills
+ 69/288 Test #129: test_editor_state ........................   Passed    0.92 sec
+        Start  76: demo_mision_llave
+ 70/288 Test  #63: test_region_trigger_dispatch .............   Passed    1.27 sec
+        Start  93: demo_object_catalog
+ 71/288 Test  #17: test_golpes_en_pantalla ..................   Passed    0.97 sec
+        Start 127: test_world
+ 72/288 Test  #95: demo_skills ..............................   Passed    1.07 sec
+        Start 176: test_g13_combat_commands
+ 73/288 Test  #76: demo_mision_llave ........................   Passed    1.13 sec
+        Start  61: test_session_command_host
+ 74/288 Test  #93: demo_object_catalog ......................   Passed    1.02 sec
+        Start 164: test_animated_entity
+ 75/288 Test #127: test_world ...............................   Passed    1.03 sec
+        Start 252: test_confirmar
+ 76/288 Test #176: test_g13_combat_commands .................   Passed    1.05 sec
+        Start  62: test_map_event_runner
+ 77/288 Test  #61: test_session_command_host ................   Passed    1.04 sec
+        Start 213: test_editor_ayuda
+ 78/288 Test #164: test_animated_entity .....................   Passed    1.00 sec
+        Start  18: test_suelo_combate
+ 79/288 Test #252: test_confirmar ...........................   Passed    1.20 sec
+        Start  99: demo_enemy_brain
+ 80/288 Test  #62: test_map_event_runner ....................   Passed    1.26 sec
+        Start 136: test_alturas
+ 81/288 Test #213: test_editor_ayuda ........................   Passed    1.30 sec
+        Start 238: test_rutinas_pnj
+ 82/288 Test  #18: test_suelo_combate .......................   Passed    1.29 sec
+        Start 106: demo_title_menu
+ 83/288 Test  #99: demo_enemy_brain .........................   Passed    1.12 sec
+        Start 135: test_runtime_tilemap
+ 84/288 Test #135: test_runtime_tilemap .....................   Passed    0.01 sec
+        Start  71: test_condition_widget
+ 85/288 Test #136: test_alturas .............................   Passed    1.04 sec
+        Start 139: test_world_topology
+ 86/288 Test #238: test_rutinas_pnj .........................   Passed    1.12 sec
+        Start  40: test_tablero_combate
+ 87/288 Test #106: demo_title_menu ..........................   Passed    1.22 sec
+        Start 118: demo_este_sur
+ 88/288 Test  #71: test_condition_widget ....................   Passed    1.16 sec
+        Start 214: test_editor_layers
+ 89/288 Test #139: test_world_topology ......................   Passed    1.18 sec
+        Start 289: test_linea_base_core
+ 90/288 Test  #40: test_tablero_combate .....................   Passed    1.07 sec
+        Start  32: test_opciones_dialogo
+ 91/288 Test #118: demo_este_sur ............................   Passed    1.00 sec
+        Start 232: test_ficha_vista
+ 92/288 Test #214: test_editor_layers .......................   Passed    1.10 sec
+        Start 233: test_codice
+ 93/288 Test #289: test_linea_base_core .....................   Passed    1.17 sec
+        Start 101: demo_object_inspector
+ 94/288 Test  #32: test_opciones_dialogo ....................   Passed    0.88 sec
+        Start 217: test_project_panel
+ 95/288 Test #232: test_ficha_vista .........................   Passed    0.92 sec
+        Start 187: test_object_and_loot_catalog
+ 96/288 Test #233: test_codice ..............................   Passed    0.82 sec
+        Start 100: demo_game_session
+ 97/288 Test #101: demo_object_inspector ....................   Passed    0.74 sec
+        Start 201: catalog_content_validation
+ 98/288 Test #217: test_project_panel .......................   Passed    1.08 sec
+        Start 165: test_level_document_bridge
+ 99/288 Test #187: test_object_and_loot_catalog .............   Passed    1.15 sec
+        Start  43: test_plantilla_area
+100/288 Test #100: demo_game_session ........................   Passed    1.12 sec
+        Start  59: test_guia_mapa
+101/288 Test #165: test_level_document_bridge ...............   Passed    0.79 sec
+        Start  53: test_orden_de_turno
+102/288 Test #201: catalog_content_validation ...............   Passed    1.26 sec
+        Start 221: test_catalog_picker
+103/288 Test  #43: test_plantilla_area ......................   Passed    0.64 sec
+        Start 218: test_event_editor
+104/288 Test  #59: test_guia_mapa ...........................   Passed    0.71 sec
+        Start  72: test_mission_timer_widget
+105/288 Test #221: test_catalog_picker ......................   Passed    0.54 sec
+        Start 148: test_business_mode
+106/288 Test  #53: test_orden_de_turno ......................   Passed    0.69 sec
+        Start  70: test_dice_roll_widget
+107/288 Test #218: test_event_editor ........................   Passed    0.70 sec
+        Start 212: test_editor_actions
+108/288 Test  #72: test_mission_timer_widget ................   Passed    0.68 sec
+        Start 265: test_registro_sprites
+109/288 Test #148: test_business_mode .......................   Passed    0.78 sec
+        Start 162: test_occlusion
+110/288 Test #162: test_occlusion ...........................   Passed    0.01 sec
+        Start 178: test_options_locale_bridge
+111/288 Test  #70: test_dice_roll_widget ....................   Passed    0.97 sec
+        Start 237: test_comercio_reputacion
+112/288 Test #212: test_editor_actions ......................   Passed    1.03 sec
+        Start 189: test_application_narrative_wiring
+113/288 Test #178: test_options_locale_bridge ...............   Passed    0.93 sec
+        Start 219: test_command_list
+114/288 Test #265: test_registro_sprites ....................   Passed    1.46 sec
+        Start 210: test_project_catalog
+115/288 Test #237: test_comercio_reputacion .................   Passed    1.04 sec
+        Start  58: test_marcas_mapa
+116/288 Test #189: test_application_narrative_wiring ........   Passed    1.03 sec
+        Start  91: demo_editor_state
+117/288 Test #219: test_command_list ........................   Passed    0.84 sec
+        Start 223: test_asset_browser
+118/288 Test #210: test_project_catalog .....................   Passed    0.98 sec
+        Start  92: demo_level_loader
+119/288 Test  #58: test_marcas_mapa .........................   Passed    1.05 sec
+        Start 235: test_diario_misiones
+120/288 Test  #91: demo_editor_state ........................   Passed    1.03 sec
+        Start  28: test_fuego_nivel
+121/288 Test #223: test_asset_browser .......................   Passed    1.00 sec
+        Start  24: test_PuertaCerrada
+122/288 Test  #92: demo_level_loader ........................   Passed    0.95 sec
+        Start 270: test_monumentos_antiguos
+123/288 Test #235: test_diario_misiones .....................   Passed    1.04 sec
+        Start 117: demo_este_norte
+124/288 Test  #28: test_fuego_nivel .........................   Passed    0.99 sec
+        Start 193: test_catalog_classes_races_backgrounds
+125/288 Test  #24: test_PuertaCerrada .......................   Passed    1.11 sec
+        Start 296: test_clases_sp
+126/288 Test #117: demo_este_norte ..........................   Passed    1.06 sec
+        Start 279: test_render_static_entity
+127/288 Test #270: test_monumentos_antiguos .................   Passed    1.37 sec
+        Start  57: test_frases_combate
+128/288 Test #193: test_catalog_classes_races_backgrounds ...   Passed    1.07 sec
+        Start 261: test_trocejar_atlas_personajes
+129/288 Test #279: test_render_static_entity ................   Passed    0.67 sec
+        Start 202: test_catalog_restants
+130/288 Test #296: test_clases_sp ...........................   Passed    1.24 sec
+        Start 278: test_render_player
+131/288 Test  #57: test_frases_combate ......................   Passed    0.81 sec
+        Start 111: demo_narrativa_combate
+132/288 Test #261: test_trocejar_atlas_personajes ...........   Passed    0.94 sec
+        Start  27: test_posicion_bocadillo
+133/288 Test #202: test_catalog_restants ....................   Passed    0.49 sec
+        Start 211: test_editor_document_session
+134/288 Test #278: test_render_player .......................   Passed    0.84 sec
+        Start  90: demo_tilemap
+135/288 Test  #90: demo_tilemap .............................   Passed    0.01 sec
+        Start 172: test_audio
+136/288 Test #172: test_audio ...............................   Passed    0.28 sec
+        Start 183: test_catalog_contract
+137/288 Test #111: demo_narrativa_combate ...................   Passed    1.14 sec
+        Start 226: test_map_properties
+138/288 Test #183: test_catalog_contract ....................   Passed    0.24 sec
+        Start  56: test_escena_noqueo
+139/288 Test  #27: test_posicion_bocadillo ..................   Passed    1.07 sec
+        Start 276: test_render_entity
+140/288 Test #211: test_editor_document_session .............   Passed    1.35 sec
+        Start 110: demo_narrativa_nd6
+141/288 Test #226: test_map_properties ......................   Passed    0.70 sec
+        Start 282: test_editor_nucleo
+142/288 Test  #56: test_escena_noqueo .......................   Passed    0.84 sec
+        Start  98: demo_nd6_distribution
+143/288 Test  #98: demo_nd6_distribution ....................   Passed    0.16 sec
+        Start 200: test_speed_zero_flag
+144/288 Test #200: test_speed_zero_flag .....................   Passed    0.01 sec
+        Start  54: test_efectos_de_golpe
+145/288 Test #276: test_render_entity .......................   Passed    0.94 sec
+        Start  29: test_event_interpreter
+146/288 Test #110: demo_narrativa_nd6 .......................   Passed    1.08 sec
+        Start 196: test_skill_effect_real_assets
+147/288 Test #282: test_editor_nucleo .......................   Passed    1.03 sec
+        Start  26: test_escena_viva
+148/288 Test #196: test_skill_effect_real_assets ............   Passed    0.38 sec
+        Start  23: test_narrative_variables
+149/288 Test  #54: test_efectos_de_golpe ....................   Passed    0.96 sec
+        Start  82: test_character_creation_flow
+150/288 Test  #82: test_character_creation_flow .............   Passed    0.09 sec
+        Start  89: demo_camera
+151/288 Test  #89: demo_camera ..............................   Passed    0.00 sec
+        Start  55: test_cicatrices
+152/288 Test  #29: test_event_interpreter ...................   Passed    1.19 sec
+        Start 227: test_editor_tools
+153/288 Test  #26: test_escena_viva .........................   Passed    0.84 sec
+        Start  35: test_reputacion_aventura
+154/288 Test  #35: test_reputacion_aventura .................   Passed    0.01 sec
+        Start 297: test_clases_propias
+155/288 Test  #23: test_narrative_variables .................   Passed    0.86 sec
+        Start 262: test_kit_basico
+156/288 Test  #55: test_cicatrices ..........................   Passed    0.89 sec
+        Start 109: demo_temporizadores
+157/288 Test #109: demo_temporizadores ......................   Passed    0.01 sec
+        Start 170: test_loot_resolver
+158/288 Test #170: test_loot_resolver .......................   Passed    0.10 sec
+        Start  78: test_project_naming
+159/288 Test  #78: test_project_naming ......................   Passed    0.02 sec
+        Start 166: test_inventory_engine
+160/288 Test #166: test_inventory_engine ....................   Passed    0.05 sec
+        Start 186: test_monster_catalog
+161/288 Test #227: test_editor_tools ........................   Passed    0.93 sec
+        Start 158: test_player_populate
+162/288 Test #158: test_player_populate .....................   Passed    0.01 sec
+        Start 269: test_monumentos
+163/288 Test #186: test_monster_catalog .....................   Passed    0.21 sec
+        Start  45: test_botin_equipo
+164/288 Test #297: test_clases_propias ......................   Passed    1.20 sec
+        Start 133: test_event_layer_document
+165/288 Test #133: test_event_layer_document ................   Passed    0.01 sec
+        Start  19: test_condition_engine
+166/288 Test  #19: test_condition_engine ....................   Passed    0.02 sec
+        Start  84: test_project_manifests
+167/288 Test  #84: test_project_manifests ...................   Passed    0.03 sec
+        Start 132: test_map_document
+168/288 Test #132: test_map_document ........................   Passed    0.01 sec
+        Start 263: test_barra_combate
+169/288 Test #269: test_monumentos ..........................   Passed    0.95 sec
+        Start  74: test_locale
+170/288 Test  #74: test_locale ..............................   Passed    0.01 sec
+        Start 137: test_tmx_importer
+171/288 Test #137: test_tmx_importer ........................   Passed    0.01 sec
+        Start  97: demo_dice_engine
+172/288 Test  #97: demo_dice_engine .........................   Passed    0.00 sec
+        Start 134: test_event_region_trigger
+173/288 Test #134: test_event_region_trigger ................   Passed    0.01 sec
+        Start 131: test_project_serialization
+174/288 Test #131: test_project_serialization ...............   Passed    0.01 sec
+        Start  73: test_problems_state
+175/288 Test  #73: test_problems_state ......................   Passed    0.01 sec
+        Start 159: test_bitmap_font
+176/288 Test #159: test_bitmap_font .........................   Passed    0.00 sec
+        Start 264: test_cuaderno_creacion
+177/288 Test #263: test_barra_combate .......................   Passed    0.91 sec
+        Start 130: test_project
+178/288 Test #130: test_project .............................   Passed    0.00 sec
+        Start 169: test_sheet_milestones
+179/288 Test #169: test_sheet_milestones ....................   Passed    0.02 sec
+        Start 119: demo_bitmap_font
+180/288 Test #119: demo_bitmap_font .........................   Passed    0.01 sec
+        Start 295: test_cartas_combate
+181/288 Test #264: test_cuaderno_creacion ...................   Passed    0.89 sec
+        Start 167: test_sheet_life_cap
+182/288 Test #167: test_sheet_life_cap ......................   Passed    0.01 sec
+        Start 161: test_json
+183/288 Test #161: test_json ................................   Passed    0.01 sec
+        Start 168: test_sheet_equipment_cap
+184/288 Test #168: test_sheet_equipment_cap .................   Passed    0.00 sec
+        Start  75: test_locale_extension
+185/288 Test  #75: test_locale_extension ....................   Passed    0.01 sec
+        Start 171: test_encounter_tables
+186/288 Test #171: test_encounter_tables ....................   Passed    0.01 sec
+        Start 125: test_input_system
+187/288 Test #125: test_input_system ........................   Passed    0.00 sec
+        Start 179: test_title_screen
+188/288 Test #179: test_title_screen ........................   Passed    0.01 sec
+        Start 121: demo_enemy_sprite
+189/288 Test #121: demo_enemy_sprite ........................   Passed    0.01 sec
+        Start 160: test_texture
+190/288 Test #160: test_texture .............................   Passed    0.01 sec
+        Start 126: test_scene_manager
+191/288 Test #126: test_scene_manager .......................   Passed    0.02 sec
+        Start  87: demo_handle_pool
+192/288 Test  #87: demo_handle_pool .........................   Passed    0.02 sec
+        Start 124: test_application_loop
+193/288 Test #124: test_application_loop ....................   Passed    0.01 sec
+        Start 123: test_strong_id
+194/288 Test #123: test_strong_id ...........................   Passed    0.01 sec
+        Start 266: test_bloques
+195/288 Test #295: test_cartas_combate ......................   Passed    0.72 sec
+        Start  86: demo_resource_manager
+196/288 Test  #86: demo_resource_manager ....................   Passed    0.01 sec
+        Start 275: test_render_enemy
+197/288 Test #266: test_bloques .............................   Passed    0.28 sec
+        Start 293: test_player_path_log
+198/288 Test #275: test_render_enemy ........................   Passed    0.31 sec
+        Start 274: test_render_occlusion_rules
+199/288 Test #274: test_render_occlusion_rules ..............   Passed    0.01 sec
+        Start 122: test_handle_pool
+200/288 Test #122: test_handle_pool .........................   Passed    0.02 sec
+        Start  42: test_region_triggers
+201/288 Test  #42: test_region_triggers .....................   Passed    0.01 sec
+        Start  60: test_event_debug
+202/288 Test  #60: test_event_debug .........................   Passed    0.01 sec
+        Start 294: test_boundary_exceptions
+203/288 Test #293: test_player_path_log .....................   Passed    0.49 sec
+        Start 220: test_e09_bridge
+204/288 Test #220: test_e09_bridge ..........................   Passed    0.01 sec
+        Start 268: test_mascotes
+205/288 Test #262: test_kit_basico ..........................   Passed    3.43 sec
+        Start 271: test_title_flow
+206/288 Test #294: test_boundary_exceptions .................   Passed    0.48 sec
+        Start 224: test_project_database
+207/288 Test #224: test_project_database ....................   Passed    0.01 sec
+        Start 194: test_skill_effect
+208/288 Test #194: test_skill_effect ........................   Passed    0.00 sec
+        Start 222: test_asset_browser_state
+209/288 Test #222: test_asset_browser_state .................   Passed    0.01 sec
+        Start  31: test_adventure_validation
+210/288 Test  #31: test_adventure_validation ................   Passed    0.01 sec
+        Start 225: test_new_game_flow
+211/288 Test #225: test_new_game_flow .......................   Passed    0.01 sec
+        Start  30: test_event_commands
+212/288 Test  #30: test_event_commands ......................   Passed    0.01 sec
+        Start 267: test_bandada
+213/288 Test #268: test_mascotes ............................   Passed    0.61 sec
+        Start  88: demo_occlusion_rules
+214/288 Test  #88: demo_occlusion_rules .....................   Passed    0.00 sec
+        Start 285: test_formato_ppm
+215/288 Test #285: test_formato_ppm .........................   Passed    0.00 sec
+        Start 272: test_render_camera
+216/288 Test #272: test_render_camera .......................   Passed    0.00 sec
+        Start 192: test_character_creation
+217/288 Test  #45: test_botin_equipo ........................   Passed    3.27 sec
+        Start 281: test_scope_guard
+218/288 Test #281: test_scope_guard .........................   Passed    0.00 sec
+        Start  25: test_eventos_del_mundo
+219/288 Test  #25: test_eventos_del_mundo ...................   Passed    0.01 sec
+        Start 230: test_catalog_loader_regressions
+220/288 Test #230: test_catalog_loader_regressions ..........   Passed    0.01 sec
+        Start 280: test_log
+221/288 Test #280: test_log .................................   Passed    0.01 sec
+        Start 273: test_render_culling
+222/288 Test #273: test_render_culling ......................   Passed    0.00 sec
+        Start 203: test_city_regeneration
+223/288 Test #192: test_character_creation ..................   Passed    0.09 sec
+        Start 283: test_editor_opciones
+224/288 Test #283: test_editor_opciones .....................   Passed    0.00 sec
+        Start 284: test_editor_map_framing
+225/288 Test #284: test_editor_map_framing ..................   Passed    0.00 sec
+        Start  22: test_project_levels
+226/288 Test  #22: test_project_levels ......................   Passed    0.02 sec
+        Start 195: test_skill_executor
+227/288 Test #195: test_skill_executor ......................   Passed    0.00 sec
+        Start  15: test_emisor_carga
+228/288 Test #271: test_title_flow ..........................   Passed    0.81 sec
+        Start 184: test_catalog_content
+229/288 Test #267: test_bandada .............................   Passed    0.81 sec
+        Start 244: test_clip_actor_fps
+230/288 Test #203: test_city_regeneration ...................   Passed    0.50 sec
+        Start   7: test_application_camara
+231/288 Test #244: test_clip_actor_fps ......................   Passed    0.69 sec
+        Start 242: test_clip_actor
+232/288 Test   #7: test_application_camara ..................   Passed    0.89 sec
+        Start 248: test_rutinas_pnj_animacion
+233/288 Test  #15: test_emisor_carga ........................   Passed    1.37 sec
+        Start 240: test_cursor_clip
+234/288 Test #184: test_catalog_content .....................   Passed    1.32 sec
+        Start  16: test_pergamino
+235/288 Test #242: test_clip_actor ..........................   Passed    0.49 sec
+        Start 250: test_entidad_clip_maquina
+236/288 Test #248: test_rutinas_pnj_animacion ...............   Passed    0.62 sec
+        Start 249: test_controlador_animacion
+237/288 Test #240: test_cursor_clip .........................   Passed    0.72 sec
+        Start 241: test_eventos_clip
+238/288 Test #250: test_entidad_clip_maquina ................   Passed    1.78 sec
+        Start 246: test_seleccion_animacion
+239/288 Test #249: test_controlador_animacion ...............   Passed    1.88 sec
+        Start 243: test_idle_cuerpo_base
+240/288 Test #241: test_eventos_clip ........................   Passed    1.95 sec
+        Start 245: test_maquina_animacion
+241/288 Test #246: test_seleccion_animacion .................   Passed    0.90 sec
+        Start  46: test_validar_botin
+242/288 Test #243: test_idle_cuerpo_base ....................   Passed    0.80 sec
+        Start 239: test_clips_animacion
+243/288 Test #245: test_maquina_animacion ...................   Passed    0.80 sec
+        Start 247: test_paso_animacion
+244/288 Test  #46: test_validar_botin .......................   Passed    0.61 sec
+        Start 251: test_verificacion_animacion
+245/288 Test  #16: test_pergamino ...........................   Passed    3.32 sec
+        Start  21: test_static_validators
+246/288 Test  #21: test_static_validators ...................   Passed    0.16 sec
+        Start   8: test_verificacion_camara
+247/288 Test #239: test_clips_animacion .....................   Passed    0.46 sec
+        Start 290: test_marcar_paquetes
+248/288 Test #290: test_marcar_paquetes .....................   Passed    0.19 sec
+        Start   2: test_estado_tween
+249/288 Test   #8: test_verificacion_camara .................   Passed    0.26 sec
+        Start 113: demo_boundington
+250/288 Test #247: test_paso_animacion ......................   Passed    0.48 sec
+        Start  50: test_validar_monstruos_acciones
+251/288 Test   #2: test_estado_tween ........................   Passed    0.15 sec
+        Start   6: test_politica_camara_pose
+252/288 Test #251: test_verificacion_animacion ..............   Passed    0.75 sec
+        Start   4: test_politica_camara_limites
+253/288 Test  #50: test_validar_monstruos_acciones ..........   Passed    0.31 sec
+        Start  14: test_polvo_pasos
+254/288 Test   #6: test_politica_camara_pose ................   Passed    0.18 sec
+        Start 229: catalog_loader_contract_selftest
+255/288 Test #229: catalog_loader_contract_selftest .........   Passed    0.07 sec
+        Start 115: demo_campana_boundington
+256/288 Test   #4: test_politica_camara_limites .............   Passed    0.13 sec
+        Start 286: test_exportar
+257/288 Test #286: test_exportar ............................   Passed    0.07 sec
+        Start  11: test_emisor_avance
+258/288 Test  #14: test_polvo_pasos .........................   Passed    0.43 sec
+        Start  13: test_emisor_proyeccion
+259/288 Test  #11: test_emisor_avance .......................   Passed    0.73 sec
+        Start  12: test_emisor_presupuesto
+260/288 Test #113: demo_boundington .........................   Passed    1.29 sec
+        Start   1: test_interpolacion
+261/288 Test   #1: test_interpolacion .......................   Passed    0.01 sec
+        Start  85: test_project_migration
+262/288 Test  #85: test_project_migration ...................   Passed    0.05 sec
+        Start 292: test_buscar_sobrante
+263/288 Test #292: test_buscar_sobrante .....................   Passed    0.04 sec
+        Start 228: catalog_loader_contract
+264/288 Test #228: catalog_loader_contract ..................   Passed    0.04 sec
+        Start   9: test_emisor
+265/288 Test  #13: test_emisor_proyeccion ...................   Passed    0.69 sec
+        Start  47: test_simular_economia
+266/288 Test #115: demo_campana_boundington .................   Passed    1.06 sec
+        Start 190: test_boundington_tutorial
+267/288 Test  #12: test_emisor_presupuesto ..................   Passed    0.42 sec
+        Start  10: test_emisor_particula
+268/288 Test   #9: test_emisor ..............................   Passed    0.47 sec
+        Start 174: test_g10_pause_and_hud
+269/288 Test  #10: test_emisor_particula ....................   Passed    0.91 sec
+        Start   3: test_politica_camara
+270/288 Test #190: test_boundington_tutorial ................   Passed    1.10 sec
+        Start   5: test_politica_camara_sacudida
+271/288 Test   #3: test_politica_camara .....................   Passed    0.00 sec
+        Start 191: test_boundington_dia1
+272/288 Test   #5: test_politica_camara_sacudida ............   Passed    0.00 sec
+        Start 277: test_render_hud_transform
+273/288 Test  #47: test_simular_economia ....................   Passed    1.14 sec
+        Start  52: test_validar_lugares
+274/288 Test #174: test_g10_pause_and_hud ...................   Passed    0.91 sec
+        Start  51: test_lugares
+275/288 Test  #52: test_validar_lugares .....................   Passed    0.31 sec
+        Start 102: demo_creacion_personaje
+276/288 Test #277: test_render_hud_transform ................   Passed    0.68 sec
+        Start 177: test_g14_hud_timers_commerce
+277/288 Test #177: test_g14_hud_timers_commerce .............   Passed    0.05 sec
+        Start  41: test_ruta_casillas
+278/288 Test #191: test_boundington_dia1 ....................   Passed    0.84 sec
+        Start  33: test_fase_uno_boundington
+279/288 Test  #51: test_lugares .............................   Passed    0.86 sec
+        Start 114: demo_precuela_boundington
+280/288 Test #114: demo_precuela_boundington ................   Passed    0.01 sec
+        Start 120: demo_hud_update
+281/288 Test #120: demo_hud_update ..........................   Passed    0.00 sec
+        Start 287: linea_base_core_configura
+282/288 Test #102: demo_creacion_personaje ..................   Passed    0.86 sec
+        Start 288: linea_base_core
+283/288 Test  #41: test_ruta_casillas .......................   Passed    0.65 sec
+284/288 Test #287: linea_base_core_configura ................   Passed    0.31 sec
+285/288 Test  #33: test_fase_uno_boundington ................   Passed    0.83 sec
+286/288 Test #288: linea_base_core ..........................   Passed   19.14 sec
+287/288 Test #259: test_montaje_cache .......................   Passed   87.25 sec
+288/288 Test #260: test_montaje_filas .......................   Passed  133.86 sec
+
+99% tests passed, 1 tests failed out of 288
+
+Label Time Summary:
+aceptacion    =   1.13 sec*proc (1 test)
+content       =   2.61 sec*proc (1 test)
+gl-free       = 469.33 sec*proc (288 tests)
+lenta         =  24.01 sec*proc (1 test)
+smoke         =  29.22 sec*proc (38 tests)
+static        =  26.49 sec*proc (12 tests)
+unit          = 411.01 sec*proc (237 tests)
+
+Total Test time (real) = 133.87 sec
+
+The following tests FAILED:
+	 48 - test_recompensas_economia (Failed)                gl-free unit
+Errors while running CTest
+exit=8

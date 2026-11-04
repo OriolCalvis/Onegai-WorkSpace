@@ -1,0 +1,30 @@
+# sandes_aliado  2026-11-04 10:48:26  HEAD 4898fb94
+md5: ../../assets/adventures/boundington_ocaso.json: No such file or directory
+# Mutacion sobre copia temporal de boundington_ocaso.json (el original no se toca): md5 original a038b568c295ae4b01ef818bca69c5df fuente 
+## 1. ORIGINAL (esperado: verde)
+  [sandes_aliado] verde: final bnd3_final_oeste, 250 beats jugados
+  [sandes_aliado] mutacion (b3_sandes_oferta / Acepto. / bnd3_aliado_sandes) en rojo: 10 fallos, el primero: falta bnd3_aliado_sandes
+[PASS] cada_final_del_ocaso_deja_lo_que_dice_la_matriz
+Ejecutados 5 test(s); 0 fallo(s).
+exit=
+## 2. MUTADA (esperado: ROJO)
+  [sandes_aliado] MUTADO: b3_sandes_oferta / Acepto. / bnd3_aliado_sandes -> zz_mutada
+  [sandes_aliado] falta bnd3_aliado_sandes
+  [sandes_aliado] sobra bnd3_sandes_vencido
+  [sandes_aliado] sobra bnd3_edul_salvado
+  [sandes_aliado] no disparado b3_esc06_pacto_salida
+  [sandes_aliado] no disparado b3_edul_furia_casco
+  [sandes_aliado] no disparado b3_epi_sandes
+  [sandes_aliado] oro=410 != 340
+  [sandes_aliado] moral=25 != 3
+  [sandes_aliado] el diario no ensena la decision bnd3_sandes
+  [sandes_aliado] el diario ensena la decision bnd3_edul («Liberaste a Edul.»)
+[FAIL] cada_final_del_ocaso_deja_lo_que_dice_la_matriz: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/MatrizOcasoTests.cpp:53 -- comprobación fallida: fallos.empty()
+  [sandes_aliado] mutacion (b3_sandes_oferta / Acepto. / bnd3_aliado_sandes) en rojo: 10 fallos, el primero: falta bnd3_aliado_sandes
+Ejecutados 5 test(s); 1 fallo(s).
+exit=
+## 3. RESTAURADA (original otra vez, verde)
+[PASS] cada_final_del_ocaso_deja_lo_que_dice_la_matriz
+Ejecutados 5 test(s); 0 fallo(s).
+exit=
+## md5 tras: a038b568c295ae4b01ef818bca69c5df

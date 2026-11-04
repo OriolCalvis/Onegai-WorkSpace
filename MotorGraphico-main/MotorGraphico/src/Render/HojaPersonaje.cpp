@@ -17,7 +17,6 @@
 namespace {
 
 constexpr int kLado = Game::MontajePersonajes::kLado;
-constexpr int kFrames = Game::MontajePersonajes::kFrames;
 constexpr int kFilaPies = 60;         // los pies apoyan en la fila 60 de la celda
 constexpr float kAltoFranja = 84.0f;  // la franja de los cuatro lados
 constexpr float kHueco = 16.0f;
@@ -68,6 +67,14 @@ Result<bool> HojaPersonaje::vestir(Game::MontajePersonajes& montaje,
     auto hoja = montaje.montar(apariencia, equipo, brillos.empty() ? nullptr : &mapa);
     if (!hoja.isOk())
         return Result<bool>::Error("Apariencia: " + hoja.errorMessage());
+    const Game::Reparto reparto = Game::repartoDeColumnas(hoja.value().ancho / kLado);
+    if (m_textura != nullptr && reparto != m_reparto) {  // otra hoja (20 <-> 40 frames): textura nueva
+        m_textura.reset();
+        m_atlas.reset();
+        m_texturaBrillo.reset();
+        m_atlasBrillo.reset();
+    }
+    m_reparto = reparto;
     subir(hoja.value(), m_textura, m_atlas);
     m_brillo = brillos.empty() ? Game::HojaDeBrillo{} : Game::montarBrillo(hoja.value(), mapa, brillos);
     if (!m_brillo.vacia())
@@ -99,10 +106,11 @@ void HojaPersonaje::subir(const imagen::ImagenRGBA& hoja, std::unique_ptr<Textur
                      GL_UNSIGNED_BYTE, volteada.data());
         textura = std::make_unique<Texture>(id, hoja.ancho, hoja.alto);
         atlas = std::make_unique<TextureAtlas>(textura.get(), kLado, kLado);
-        for (int f = 1; f <= kFrames; ++f)
+        for (int f = 1; f <= hoja.ancho / kLado; ++f)
             atlas->defineRegion(f, f - 1, 0);
     } else {
-        // Siempre 1280x64: se reescribe en su sitio y el atlas no cambia.
+        // Siempre del mismo ancho (vestir() la rehace si cambia el reparto): se reescribe en su sitio y
+        // el atlas no cambia.
         textura->bind();
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, hoja.ancho, hoja.alto, GL_RGBA, GL_UNSIGNED_BYTE,
                         volteada.data());
@@ -115,28 +123,45 @@ void HojaPersonaje::ponerA(AnimatedEntity& actor, int anchoDibujo, int altoDibuj
     if (m_atlas == nullptr)
         return;
     actor.setCharacterSprite(m_atlas.get(), anchoDibujo, altoDibujo, anclaje);
-    animar(actor);
-    animarReposo(actor);
+    animar(actor, m_reparto);
+    animarReposo(actor, m_reparto);
     actor.play("idle");
     actor.showRestFrame();
 }
 
-void HojaPersonaje::animar(AnimatedEntity& actor) {
-    using Game::Rumbo;
-    actor.addAnimation("idle", {Game::frameQuieto(Rumbo::Abajo)});
-    actor.addAnimation("walk_up", Game::cicloDeAndar(Rumbo::Arriba));
-    actor.addAnimation("walk_right", Game::cicloDeAndar(Rumbo::Derecha));
-    actor.addAnimation("walk_down", Game::cicloDeAndar(Rumbo::Abajo));
-    actor.addAnimation("walk_left", Game::cicloDeAndar(Rumbo::Izquierda));
+Game::Reparto HojaPersonaje::repartoDe(const AnimatedEntity& actor) {
+    const TextureAtlas* atlas = actor.characterAtlas();
+    if (atlas == nullptr || atlas->texture() == nullptr)
+        return Game::Reparto::Clasico;
+    return Game::repartoDeColumnas(atlas->texture()->getWidth() / kLado);
 }
 
-void HojaPersonaje::animarReposo(AnimatedEntity& actor) {
+bool HojaPersonaje::tieneReposo(const AnimatedEntity& actor) {
+    const TextureAtlas* atlas = actor.characterAtlas();
+    return atlas != nullptr && atlas->texture() != nullptr &&
+           atlas->texture()->getWidth() / kLado >= Game::MontajePersonajes::kFrames;
+}
+
+void HojaPersonaje::animar(AnimatedEntity& actor) { animar(actor, repartoDe(actor)); }
+
+void HojaPersonaje::animar(AnimatedEntity& actor, Game::Reparto reparto) {
     using Game::Rumbo;
-    actor.addAnimation("idle", Game::cicloDeReposo(Rumbo::Abajo));
-    actor.addAnimation("idle_up", Game::cicloDeReposo(Rumbo::Arriba));
-    actor.addAnimation("idle_right", Game::cicloDeReposo(Rumbo::Derecha));
-    actor.addAnimation("idle_down", Game::cicloDeReposo(Rumbo::Abajo));
-    actor.addAnimation("idle_left", Game::cicloDeReposo(Rumbo::Izquierda));
+    actor.addAnimation("idle", {Game::frameQuieto(Rumbo::Abajo, reparto)});
+    actor.addAnimation("walk_up", Game::cicloDeAndar(Rumbo::Arriba, reparto));
+    actor.addAnimation("walk_right", Game::cicloDeAndar(Rumbo::Derecha, reparto));
+    actor.addAnimation("walk_down", Game::cicloDeAndar(Rumbo::Abajo, reparto));
+    actor.addAnimation("walk_left", Game::cicloDeAndar(Rumbo::Izquierda, reparto));
+}
+
+void HojaPersonaje::animarReposo(AnimatedEntity& actor) { animarReposo(actor, repartoDe(actor)); }
+
+void HojaPersonaje::animarReposo(AnimatedEntity& actor, Game::Reparto reparto) {
+    using Game::Rumbo;
+    actor.addAnimation("idle", Game::cicloDeReposo(Rumbo::Abajo, reparto));
+    actor.addAnimation("idle_up", Game::cicloDeReposo(Rumbo::Arriba, reparto));
+    actor.addAnimation("idle_right", Game::cicloDeReposo(Rumbo::Derecha, reparto));
+    actor.addAnimation("idle_down", Game::cicloDeReposo(Rumbo::Abajo, reparto));
+    actor.addAnimation("idle_left", Game::cicloDeReposo(Rumbo::Izquierda, reparto));
 }
 
 void HojaPersonaje::render(SpriteBatch& batch, int viewportWidth, int viewportHeight) const {
@@ -161,7 +186,7 @@ void HojaPersonaje::render(SpriteBatch& batch, int viewportWidth, int viewportHe
         std::chrono::duration<double>(std::chrono::steady_clock::now() - m_inicio).count();
     const Vector2 grande{std::floor(esquina.x + (tam.x - lado) * 0.5f),
                          suelo - static_cast<float>(kFilaPies * escala)};
-    dibujarFrame(batch, *m_atlas, Game::frameDeVistaPrevia(segundos), grande, lado);
+    dibujarFrame(batch, *m_atlas, Game::frameDeVistaPrevia(segundos, m_reparto), grande, lado);
 
     // Debajo, los cuatro lados en reposo: abajo, derecha, arriba e izquierda.
     const float ancho = 4.0f * kLado + 3.0f * kHueco;
@@ -170,7 +195,7 @@ void HojaPersonaje::render(SpriteBatch& batch, int viewportWidth, int viewportHe
     const Game::Rumbo lados[4] = {Game::Rumbo::Abajo, Game::Rumbo::Derecha, Game::Rumbo::Arriba,
                                   Game::Rumbo::Izquierda};
     for (int i = 0; i < 4; ++i) {
-        dibujarFrame(batch, *m_atlas, Game::framesDeReposo(lados[i])[0],
+        dibujarFrame(batch, *m_atlas, Game::framesDeReposo(lados[i], m_reparto)[0],
                      Vector2{x0 + static_cast<float>(i) * (kLado + kHueco), y0},
                      static_cast<float>(kLado));
     }

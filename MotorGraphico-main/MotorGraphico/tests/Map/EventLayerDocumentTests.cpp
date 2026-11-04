@@ -307,6 +307,7 @@ MOTOR_TEST_CASE(un_disparador_que_no_se_entiende_falla_en_vez_de_caer_a_uno_por_
     MOTOR_CHECK(vuelta.errorMessage().find("cuando_llueve") != std::string::npos);
 }
 
+
 }  // namespace
 
 int main() { return motor_test::runAllTests(); }

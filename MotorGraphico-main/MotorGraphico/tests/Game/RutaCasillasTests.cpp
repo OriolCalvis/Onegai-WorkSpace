@@ -87,7 +87,14 @@ MOTOR_TEST_CASE(cien_por_cien_casillas_en_menos_de_cinco_ms) {
     const auto camino = r.ruta({0, 50}, {99, 50});
     const auto ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
     MOTOR_CHECK(!camino.empty());
-    MOTOR_CHECK(ms < 5.0);
+    // 5 ms es el presupuesto del juego (build optimizada, NDEBUG). En Debug (-O0, sin inlining)
+    // el mismo Dijkstra 100x100 mide 4,6-5,9 ms: se deja margen para no dar falsos rojos.
+#ifdef NDEBUG
+    constexpr double kLimiteMs = 5.0;
+#else
+    constexpr double kLimiteMs = 20.0;
+#endif
+    MOTOR_CHECK(ms < kLimiteMs);
 }
 
 int main() { return motor_test::runAllTests(); }

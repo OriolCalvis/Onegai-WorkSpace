@@ -98,20 +98,76 @@ def top_pie(lab, etiqueta):
 
 # --- pintar en la capa -------------------------------------------------------
 
+def cubierto(ctx, y, x):
+    """Si la prenda ya ha pintado (y, x). PL-ROPA-01: en PixelLab solo cuenta dentro del cuerpo (+1 px): las
+    mangas anchas que cuelgan fuera no ensanchan la faja ni el cinturon."""
+    if (y, x) not in ctx["cubre"]:
+        return False
+    limite = ctx.get("limite")
+    return limite is None or bool(limite[y, x])
+
+
 def pintar(ctx, y, x, m, t, alfa=None):
     if not (0 <= y < ctx["px"].shape[0] and 0 <= x < ctx["px"].shape[1]):
         return
+    limite = ctx.get("limite")
+    if limite is not None and not limite[y, x]:
+        return  # PL-ROPA-01: fuera del cuerpo no se pinta: hombreras y fajines de la vista recta que flotaban
     ctx["px"][y, x, :3] = m[t]
     ctx["px"][y, x, 3] = m.alfa if alfa is None else alfa
+
+
+def limite_cuerpo(talla, f, cint, flotante=False):
+    """PL-ROPA-01: hasta donde puede pintar en el frame f una prenda que no es de cabeza (torso, piernas,
+    pies). El cuerpo y 1 px alrededor (2 del cinturon para abajo); si la prenda es «flotante», todo.
+    Y nunca la cara (Oriol, 26/10: «vigila en tapar la cara amb objectes que no son de cap», «d'esquenes
+    esta bé tapar el cap»): de frente (sureste, suroeste) nada en las filas de la cabeza; de espaldas, lo
+    de siempre (un cuello alto o una capucha echada pueden subir por la nuca). Una prenda flotante pierde
+    de frente solo la cabeza en si y 1 px alrededor: sus hojas y orbes flotan al lado, no encima."""
+    from scipy import ndimage
+    lab = talla.labs[f]
+    alfa_ = np.asarray(talla.alfa[f]) > 0
+    if flotante:
+        limite = np.ones(alfa_.shape, bool)
+    else:
+        limite = ndimage.binary_dilation(alfa_, iterations=1)
+        if cint is not None:
+            limite[cint:] = ndimage.binary_dilation(alfa_, iterations=2)[cint:]
+    cabeza = lab == "h"
+    diag = talla.diagonal(f) if hasattr(talla, "diagonal") else ""
+    if not cabeza.any() or not diag.startswith("sur"):
+        return limite
+    if flotante:
+        limite &= ~ndimage.binary_dilation(cabeza, iterations=1)
+        return limite
+    filas = np.nonzero(cabeza.any(axis=1))[0]
+    limite[filas.min():filas.max() + 1] = False
+    return limite
+
+
+def fila_cinturon_x(lab, cint):
+    """PL-ROPA-01: la fila del cinturon en cada columna. En diagonal la cadera va inclinada y la pelvis (p)
+    empieza una fila mas abajo en un lado que en el otro: el cinturon y el bajo de la prenda la siguen. En
+    las vistas rectas de siempre la pelvis es horizontal y sale cint en todas las columnas."""
+    if cint is None:
+        return None
+    out = np.full(lab.shape[1], cint, int)
+    for x in range(lab.shape[1]):
+        col = np.nonzero(lab[:, x] == "p")[0]
+        if len(col) and cint <= col.min() <= cint + 2:
+            out[x] = int(col.min())
+    return out
 
 
 def contexto(talla, f, materiales):
     """Contexto de pintura de un frame: capa vacia + datos del cuerpo."""
     lab = talla.labs[f]
+    cint = fila_cinturon(lab)
+    diagonal = talla.diagonal(f) if hasattr(talla, "diagonal") else None
     return {"px": np.zeros((talla.alto, talla.ancho, 4), np.uint8), "lab": lab,
             "tono": talla.tonos[f].copy(), "dir": talla.direccion(f), "mat": materiales,
-            "cint": fila_cinturon(lab), "cubre": {}, "alfa": talla.alfa[f],
-            "ojos": talla.ojos[f], "talla": talla, "frame": f}
+            "cint": cint, "cint_x": fila_cinturon_x(lab, cint), "diag": diagonal,
+            "cubre": {}, "alfa": talla.alfa[f], "ojos": talla.ojos[f], "talla": talla, "frame": f}
 
 
 def pintar_prenda(talla, f, prenda, materiales):
@@ -130,8 +186,16 @@ def pintar_prenda(talla, f, prenda, materiales):
     ctx = contexto(talla, f, materiales)
     lab, cint = ctx["lab"], ctx["cint"]
     mat = ctx["cubre"]
+    if hasattr(talla, "esqueletos"):
+        # PL-ROPA-01 (Oriol, 25/10, el catalogo en diagonal): los extras de las corazas (hombreras, fajines,
+        # placas) estan pensados para la vista recta y en diagonal sobresalian 3-5 px del cuerpo por el lado
+        # lejano. Nada de la prenda se pinta a mas de 1 px del cuerpo (2 del cinturon para abajo, el vuelo de
+        # los faldones), salvo que la prenda sea «flotante» (las hojas del duque y del soberano, los orbes
+        # del gravitas, las alas del angel y del demonio: de diseno).
+        ctx["limite"] = limite_cuerpo(talla, f, cint, prenda.get("flotante", False))
     mangas = prenda.get("mangas", "largas")
     hombro = None
+    brazo_t = getattr(talla, "brazo_t", {}).get(f)  # PL-ROPA-01: la manga corta llega al codo por el hueso
     if mangas != "largas":
         filas_t = np.nonzero((lab == "t").any(axis=1))[0]
         hombro = int(filas_t.min()) if len(filas_t) else 0
@@ -139,14 +203,22 @@ def pintar_prenda(talla, f, prenda, materiales):
         m = materiales[nombre]
         ys, xs = np.nonzero(lab == e)
         for y, x in zip(ys.tolist(), xs.tolist()):
-            if e in ("a", "A") and hombro is not None and (mangas == "sin" or y > hombro + 5):
-                continue
+            if e in ("a", "A") and hombro is not None:
+                if mangas == "sin":
+                    continue
+                if brazo_t is not None and not np.isnan(brazo_t[y, x]):
+                    if brazo_t[y, x] > 0.5:
+                        continue
+                elif y > hombro + 5:
+                    continue
             mat[(y, x)] = m
     if "bajo" in prenda and cint is not None:
         m, filas = prenda["bajo"]
-        for y in range(cint + 1, min(talla.alto, cint + 1 + filas)):
+        cx = ctx["cint_x"]
+        for y in range(cint + 1, min(talla.alto, cint + 3 + filas)):
             for x in np.nonzero(np.isin(lab[y], ("p", "l", "L")))[0].tolist():
-                mat[(y, x)] = materiales[m]
+                if cx[x] < y <= cx[x] + filas:
+                    mat[(y, x)] = materiales[m]
     if "botas" in prenda:
         m, cana = prenda["botas"]
         for pierna, pie in (("l", "f"), ("L", "F")):
@@ -186,29 +258,37 @@ def pintar_prenda(talla, f, prenda, materiales):
 
 
 def cinturon(ctx, material, hebilla=None, cabo=0):
-    """Una fila de cuero (o cuerda) sobre la linea del cinturon."""
+    """Una fila de cuero (o cuerda) sobre la linea del cinturon (PL-ROPA-01: la de cada columna, que en
+    diagonal va inclinada; la hebilla, en el lado cercano a la camara)."""
     lab, tono, cint, d = ctx["lab"], ctx["tono"], ctx["cint"], ctx["dir"]
+    cx_ = ctx["cint_x"]
     mc = ctx["mat"][material]
-    xs = [x for x in range(lab.shape[1]) if lab[cint, x] in ("p", "t")]
+    xs = [x for x in range(lab.shape[1]) if lab[cx_[x], x] in ("p", "t")]
     if not xs:
         return
     for x in xs:
-        t = tono[cint, x]
-        pintar(ctx, cint, x, mc, "O" if es_contorno(t) else ("d" if t == "d" else "s"))
-    interior = [x for x in xs if not es_contorno(tono[cint, x])]
+        t = tono[cx_[x], x]
+        pintar(ctx, cx_[x], x, mc, "O" if es_contorno(t) else ("d" if t == "d" else "s"))
+    interior = [x for x in xs if not es_contorno(tono[cx_[x], x])]
     if not interior or d == "arriba":
         return
-    if d == "abajo":
+    diag = ctx.get("diag")
+    if diag == "sureste":
+        hx = interior[(len(interior) * 2) // 3]
+    elif diag == "suroeste":
+        hx = interior[len(interior) // 3]
+    elif d == "abajo":
         hx = interior[len(interior) // 2]
     elif d == "derecha":
         hx = interior[-1]
     else:
         hx = interior[0]
+    hy = cx_[hx]
     if hebilla:
-        pintar(ctx, cint, hx, ctx["mat"][hebilla], "H")
+        pintar(ctx, hy, hx, ctx["mat"][hebilla], "H")
     for k in range(1, cabo + 1):  # cabo de la cuerda colgando
-        y = cint + k
-        if y < lab.shape[0] and (ctx["alfa"][y, hx] or (y, hx) in ctx["cubre"]):
+        y = hy + k
+        if y < lab.shape[0] and (ctx["alfa"][y, hx] or cubierto(ctx, y, hx)):
             pintar(ctx, y, hx, mc, "s" if k < cabo else "d")
 
 
@@ -355,7 +435,7 @@ def delantal(material):
             return
         fondo = min(pies) - 3
         for y in range(cint, fondo + 1):
-            xs = [x for x in range(lab.shape[1]) if (y, x) in ctx["cubre"]]
+            xs = [x for x in range(lab.shape[1]) if cubierto(ctx, y, x)]
             if not xs:
                 continue
             x0, x1 = min(xs), max(xs)

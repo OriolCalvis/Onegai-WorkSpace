@@ -1,0 +1,12 @@
+# E-MISIONES-01b — cierre de la mision «iglesia»: se carga el guardado q1c_iglesia.json (justo antes del cierre) y se juega el final.
+# Uso (desde out/build/macos-debug):
+#   ./fabricar_guardados --capturas-cierre guardados_q1c
+#   perl -e 'alarm 150; exec @ARGV' ./juego --guardado guardados_q1c/q1c_iglesia.json --guion ../../../tools/guiones/q1_iglesia_cierre.txt
+40 toca E
+204 captura iglesia_c00
+212 toca ENTER
+220 captura iglesia_c01
+234 toca ENTER
+242 captura iglesia_c02
+262 captura q1_iglesia_cierre
+282 fin

@@ -89,6 +89,6 @@ MOTOR_TEST_CASE(las_tablas_publicadas_generan_con_el_catalogo_real) {
         }
         ++comprobados;
     }
-    MOTOR_CHECK(comprobados==26);
+    MOTOR_CHECK(comprobados==43);  // + variantes botin_afueras_* y botin_cueva_* (AV19)
 }
 int main(){return motor_test::runAllTests();}

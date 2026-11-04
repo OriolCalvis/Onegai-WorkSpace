@@ -309,4 +309,9 @@ MOTOR_TEST_CASE(guardar_ficha_el_heroe_guardado_se_rehace_igual) {
     ap.quitarCapas = {"capa"};
     Flow::guardaApariencia(ap, h);
     MOTOR_CHECK(Flow::aparienciaGuardada(h).clave() == ap.clave());
+    // NET-E2: una partida con el peinado «raya» o la barba trenzada (ya quitados del atlas) carga como corto / larga.
+    h.peloEstilo = "raya";
+    h.barbaEstilo = "BARBA_TRENZADA";
+    const Game::Apariencia vieja = Flow::aparienciaGuardada(h);
+    MOTOR_CHECK(vieja.peloEstilo == "corto" && vieja.barbaEstilo == "BARBA_LARGA");
 }

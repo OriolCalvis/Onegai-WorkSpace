@@ -16,6 +16,7 @@
 #pragma once
 
 #include "Game/CuadernoCreacion.h"
+#include "Game/Personajes/MontajePersonajes.h"  // Oriol (24/10): Game::Reparto
 #include "HUD/Pergamino/AtlasRetratos.h"
 #include "HUD/Pergamino/Lienzo.h"
 
@@ -30,6 +31,11 @@ namespace Pergamino {
 
 class Pincel;
 
+// J-3 — La columna (0-based) del frame «de cara y quieto» de una hoja de `columnas` columnas:
+// 12 -> la 7 (el frame 8); 40 (PixelLab) -> la 32 (el frame 33, respirar de cara).
+// Es Game::frameQuieto(Abajo, repartoDeColumnas(columnas)) - 1.
+int columnaDeCaraQuieta(int columnas);
+
 // Pone los retratos de personajes en el atlas: monta la hoja de 12 frames
 // por capas (Game::MontajePersonajes) y guarda el frame pedido. Sin montaje
 // no hay retratos (las teselas quedan con su nombre).
@@ -37,8 +43,14 @@ class Retratista {
 public:
     Retratista(AtlasRetratos& atlas, Game::MontajePersonajes* montaje) : m_atlas(atlas), m_montaje(montaje) {}
     // La region del atlas con el frame `frame` (0..11) de esa vista; Rect
-    // vacio si no se puede.
-    Rect frame(const Game::CuadernoCreacion::Vista& v, int frame);
+    // vacio si no se puede. PERF-2: con `prioritario` false (las rejillas) no
+    // monta si ya se han montado AtlasRetratos::kMontajesPorFotograma en este
+    // fotograma: devuelve Rect vacio y se rellena en los siguientes. El
+    // personaje central (prioritario) monta siempre y no cuenta en el limite.
+    Rect frame(const Game::CuadernoCreacion::Vista& v, int frame, bool prioritario = true);
+    // Oriol (24/10): el reparto de las hojas que monta (20 frames o 40 en diagonal).
+    Game::Reparto reparto() const;
+    std::string aviso(const Game::CuadernoCreacion::Vista& v, int frame) const;
     // UI-BG3-01 — El retrato de un enemigo (su frame de frente, quieto) desde
     // la hoja que le da el registro de sprites (MesaCombateRetales.cpp).
     Rect enemigo(const Game::RegistroSprites& registro, const std::string& objectId);

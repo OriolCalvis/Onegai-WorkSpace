@@ -45,11 +45,12 @@
 #include "Core/Errors/Result.h"
 #include "Core/Math/GridCoord.h"
 #include "Core/Math/Vector4.h"
+#include "Game/Disparador.h"
 
 namespace Game {
 
 struct PasoCinematica {
-    enum class Tipo { Anda, Coloca, Mira, Espera, Beat, Flag, Nivel, Funde, Trepa, Baja, Fuego, Postura, Emocion };
+    enum class Tipo { Anda, Coloca, Mira, Espera, Beat, Flag, Nivel, Funde, Trepa, Baja, Fuego, Postura, Emocion, Combate };
     Tipo tipo = Tipo::Espera;
     std::string actor;              // id del objeto en el nivel, o «jugador»
     std::vector<GridCoord> camino;  // Anda: los puntos, en orden
@@ -59,6 +60,7 @@ struct PasoCinematica {
     float valor = 0.0f;             // Funde: la opacidad final
     float velocidad = 2.5f;         // Anda: celdas por segundo
     bool espera = true;             // Anda: la orden siguiente espera a que llegue
+    bool lleva = false;             // Coloca del `lleva` con fundido: el jugador SI cambia de casilla (D0026.2)
     // PROLOGO-02 (14/10) — Anda y Coloca: «desfase» [dx, dy] en celdas, el
     // dibujo corrido dentro de su celda y hasta que la cinematica acabe (Sho-Noco
     // en la popa de la barca, tu en la proa). El del jugador se quita al cargar
@@ -74,6 +76,8 @@ struct PasoCinematica {
     bool patrulla = false;
     int veces = 1;
     float altura = 1.5f;
+    // E-DISPARADORES-2 E4 — Combate: `texto` es el enemigo y estas, las flags de victoria y de derrota (o huida).
+    std::string flagGana, flagPierde;
 };
 
 struct Cinematica {
@@ -84,7 +88,15 @@ struct Cinematica {
     GridCoord zonaDesde, zonaHasta;  // las dos esquinas, incluidas
     std::vector<PasoCinematica> pasos;
     std::vector<std::string> alTerminar;
+    Disparador disparador;  // E-DISPARADORES-1: lleva + accion + radio/vision (hay = false: la zona de siempre)
     std::string vista() const { return "cine_" + id + "_vista"; }
+    // ¿Tiene casilla de referencia (el foco del radio y de la vision)? Su zona o `disparador.lleva`.
+    bool hayFoco() const { return hayZona || disparador.hayLleva; }
+    // E-DISPARADORES-1 (D0026) — Donde se pone el jugador para que la cinematica empiece: `disparador.lleva`
+    // si lo tiene; si no, el centro de su zona ({-1, -1} si tampoco). Con `transitable` y sin `lleva`, si el
+    // centro no lo es, la casilla transitable de la zona mas cercana (Chebyshev; a igualdad, la de menor y y
+    // luego x). El motor, el arnes (`pisaLaZona`) y el explorador usan ESTA cuenta, no una copia.
+    GridCoord puntoDeEntrada(const std::function<bool(const GridCoord&)>& transitable = nullptr) const;
 };
 
 // Los que andan entre recuerdos: translúcidos y azulados mientras `flag`.
@@ -126,6 +138,8 @@ struct CondicionFlags {
 struct Aparicion {
     std::string objeto, siFlag, sinFlag;
     CondicionFlags visibleSi, ocultoSi;
+    // Los niveles (rutas, por el final) donde vale la regla; vacío = todos.
+    std::vector<std::string> niveles;
 };
 
 struct CatalogoCinematicas {
@@ -143,12 +157,26 @@ struct CatalogoCinematicas {
 
     const Cinematica* busca(const std::string& id) const;
     // La que empieza ahora (no vista, en su nivel, con lo que pide), o nullptr.
-    const Cinematica* laQueEmpieza(const std::string& nivel, const GridCoord& jugador, const TieneFlag& flag) const;
-    bool visible(const std::string& objeto, const TieneFlag& flag) const;
+    // `vista` (E-DISPARADORES-1): el ambito y lo que tapa la vista del nivel; nullptr (el arnes, el explorador, las
+    // pruebas viejas) = sin radio ni vision: una cinematica con disparador empieza en su zona o con el jugador EN el
+    // foco (donde el arnes lo pone). Las cinematicas sin disparador no cambian: zona o nada.
+    const Cinematica* laQueEmpieza(const std::string& nivel, const GridCoord& jugador, const TieneFlag& flag,
+                                   const VistaDelNivel* vista = nullptr) const;
+    // E-DISPARADORES-2 E5 (D0026.4) — Las flags «vista» que hay que apagar porque el jugador ha salido de la zona (y del
+    // radio) de una cinematica con `disparador.once: false`: vuelve a estar armada. Las `once` (por defecto) nunca.
+    std::vector<std::string> rearmadas(const std::string& nivel, const GridCoord& jugador, const TieneFlag& flag,
+                                       const VistaDelNivel* vista = nullptr) const;
+    // Las ordenes que se juegan cuando empieza `c`: sin disparador, sus pasos; con el, [lleva, mira] + la accion.
+    // Sin `lleva` (el arnes, que ya teletransporta al foco) no hay ordenes de llevar. `lleva` con ruta: Anda;
+    // sin ruta (o `como: fundido`): funde a negro, Coloca, funde de vuelta.
+    std::vector<PasoCinematica> pasosEfectivos(const Cinematica& c, const LlevaDelJugador* lleva = nullptr) const;
+    // `c` con `pasosEfectivos` en lugar de sus pasos (para ReproductorCinematica::empieza; conserva id y alTerminar).
+    Cinematica efectiva(const Cinematica& c, const LlevaDelJugador* lleva = nullptr) const;
+    bool visible(const std::string& objeto, const std::string& nivel, const TieneFlag& flag) const;
     bool esEspectro(const std::string& objeto, const TieneFlag& flag) const;
     bool jugadorEspectro(const TieneFlag& flag) const;
     // Si el objeto es de los que se tiñen o se esconden (los demás no se tocan).
-    bool afecta(const std::string& objeto) const;
+    bool afecta(const std::string& objeto, const std::string& nivel) const;
 };
 
 // Lo que la cinemática le pide al juego.
@@ -161,6 +189,11 @@ public:
     virtual void pon(const std::string& actor, const GridCoord& celda, float dx, float dy,
                      const std::string& animacion) = 0;
     virtual bool pasoDelJugador(int dx, int dy) = 0;  // false: no puede
+    virtual void situaJugador(const GridCoord& /*celda*/) {}  // E-DISPARADORES-3: lo pone en la casilla, sin andar
+    // Oriol (22/10): «Sho-Noco se pone debajo de la barca». El actor va DENTRO de lo que lo lleva (tiene
+    // «desfase»: la barca, en su misma celda) y se dibuja encima; andar sin desfase no cambia el orden.
+    // Se llama antes de cada pon(). Por defecto, nada (las pruebas).
+    virtual void montado(const std::string& /*actor*/, bool /*si*/) {}
     // Lo que dura cada celda de lo que anda (1/velocidad): el jugador alarga su paso
     // visual a ese tiempo y encadena uno con otro, como un PNJ. Por defecto, nada.
     virtual void ritmoDelJugador(float /*segundosPorCelda*/) {}
@@ -173,6 +206,9 @@ public:
     virtual void fuego(const GridCoord& /*celda*/, bool /*encendido*/) {}
     virtual void postura(const std::string& /*actor*/, const std::string& /*postura*/) {}
     virtual void emocion(const std::string& /*actor*/, const std::string& /*icono*/, float /*segundos*/) {}
+    // E4 (D0026.3) — Lanza el encuentro `enemigo` por la puerta de siempre (GameSession::startNarrativeBattle, la del efecto
+    // `startBattle` de un beat). La orden espera a que acabe (hablando() es true mientras dura el combate).
+    virtual void combate(const std::string& /*enemigo*/, const std::string& /*flagGana*/, const std::string& /*flagPierde*/) {}
 };
 
 class ReproductorCinematica {

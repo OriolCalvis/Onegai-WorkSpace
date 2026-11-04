@@ -1,0 +1,21 @@
+# oeste_xila_avisa  2026-11-04 10:48:06  HEAD 4898fb94
+md5: ../../assets/adventures/boundington_ocaso.json: No such file or directory
+# Mutacion sobre copia temporal de boundington_ocaso.json (el original no se toca): md5 original a038b568c295ae4b01ef818bca69c5df fuente 
+## 1. ORIGINAL (esperado: verde)
+  [oeste_xila_avisa] verde: final bnd3_final_oeste, 345 beats jugados
+  [oeste_xila_avisa] mutacion (b3_xila_avisa /  / evt_xila_avisa_a_venides) en rojo: 1 fallos, el primero: no disparado b3_xila_avisa
+[PASS] cada_final_del_ocaso_deja_lo_que_dice_la_matriz
+Ejecutados 5 test(s); 0 fallo(s).
+exit=
+## 2. MUTADA (esperado: ROJO)
+  [oeste_xila_avisa] MUTADO: b3_xila_avisa /  / evt_xila_avisa_a_venides -> zz_mutada
+  [oeste_xila_avisa] no disparado b3_xila_avisa
+[FAIL] cada_final_del_ocaso_deja_lo_que_dice_la_matriz: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/MatrizOcasoTests.cpp:53 -- comprobación fallida: fallos.empty()
+  [oeste_xila_avisa] mutacion (b3_xila_avisa /  / evt_xila_avisa_a_venides) en rojo: 1 fallos, el primero: no disparado b3_xila_avisa
+Ejecutados 5 test(s); 1 fallo(s).
+exit=
+## 3. RESTAURADA (original otra vez, verde)
+[PASS] cada_final_del_ocaso_deja_lo_que_dice_la_matriz
+Ejecutados 5 test(s); 0 fallo(s).
+exit=
+## md5 tras: a038b568c295ae4b01ef818bca69c5df

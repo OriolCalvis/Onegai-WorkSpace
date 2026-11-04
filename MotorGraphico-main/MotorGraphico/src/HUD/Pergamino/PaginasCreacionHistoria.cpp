@@ -46,7 +46,12 @@ void pintaAspecto(const Contexto& k) {
     k.p.pixel(k.l, "TU ASPECTO", kIzqX, 122.0f, 2, Color::kTinta3);
     k.p.texto(k.l, Letra::Lora16, "Pasa el ratón por una fila y cambia con las flechas", 260.0f, 118.0f, 24.0f,
               Color::kTinta3);
-    const float ancho = 560.0f, alto = 32.0f;
+    // EDITOR-PERSONALIZACION-01: con las filas nuevas (piel, marcas, alas, cola, cuernos) pueden ser veinte:
+    // las filas se aprietan para caber en la pagina (de 32 px a 22 como poco).
+    const float ancho = 560.0f;
+    const float n = static_cast<float>(std::max<std::size_t>(1, ed->filas().size()));
+    const float alto = std::clamp(std::floor((588.0f - 152.0f) / n), 22.0f, 32.0f);
+    const float hTexto = alto - 4.0f, dy = std::round((alto - 32.0f) * 0.5f);
     float y = 152.0f;
     for (std::size_t i = 0; i < ed->filas().size(); ++i, y += alto) {
         const Fila fila = ed->filas()[i];
@@ -54,23 +59,23 @@ void pintaAspecto(const Contexto& k) {
         const Rect r{kIzqX, y, ancho, alto - 2.0f};
         if (foco) k.p.filaFoco(k.l, r);
         k.l.zona(r, tipo(ZonaC::FilaAspecto), static_cast<int>(i));
-        k.p.icono(k.l, Game::EditorApariencia::icono(fila), r.x + 22.0f, y + 7.0f, 1);
+        k.p.icono(k.l, Game::EditorApariencia::icono(fila), r.x + 22.0f, y + 7.0f + dy, 1);
         k.p.texto(k.l, foco ? Letra::Lora18b : Letra::Lora18, frase(Game::EditorApariencia::etiqueta(fila)), r.x + 46.0f,
-                  y + 1.0f, 28.0f, Color::kTinta);
+                  y + 1.0f, hTexto, Color::kTinta);
         const std::string valor = ed->valor(fila);
         const bool accion = fila == Fila::AlAzar || fila == Fila::ComoSuRaza;
         const float xi = r.x + 300.0f, xd = r.derecha() - 26.0f;
         if (accion) {
-            k.p.texto(k.l, Letra::Lora18i, valor, xi + 24.0f, y + 1.0f, 28.0f, Color::kTinta2);
+            k.p.texto(k.l, Letra::Lora18i, valor, xi + 24.0f, y + 1.0f, hTexto, Color::kTinta2);
             k.l.zona(Rect{xi, y, xd + 26.0f - xi, alto}, tipo(ZonaC::Mas), static_cast<int>(i));
             continue;
         }
         const float wv = static_cast<float>(k.p.letras().ancho(Letra::Lora18, valor));
-        k.p.texto(k.l, Letra::Lora18, valor, std::round(xi + 26.0f + (xd - xi - 26.0f - wv) * 0.5f), y + 1.0f, 28.0f,
+        k.p.texto(k.l, Letra::Lora18, valor, std::round(xi + 26.0f + (xd - xi - 26.0f - wv) * 0.5f), y + 1.0f, hTexto,
                   Color::kTinta);
         const Vector4 flecha = foco ? Color::kCarmin : Color::kTinta3;
-        k.p.pixel(k.l, "◀", xi + 4.0f, y + 6.0f, 2, flecha);
-        k.p.pixel(k.l, "▶", xd + 4.0f, y + 6.0f, 2, flecha);
+        k.p.pixel(k.l, "◀", xi + 4.0f, y + 6.0f + dy, 2, flecha);
+        k.p.pixel(k.l, "▶", xd + 4.0f, y + 6.0f + dy, 2, flecha);
         k.l.zona(Rect{xi - 4.0f, y, 30.0f, alto}, tipo(ZonaC::Menos), static_cast<int>(i));
         k.l.zona(Rect{xd - 4.0f, y, 30.0f, alto}, tipo(ZonaC::Mas), static_cast<int>(i));
     }

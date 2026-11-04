@@ -15,7 +15,7 @@ Se registra al importar actores_trajes (al final de cada atlas: ninguna fila de 
 import actores_cascos as cascos
 import actores_equipo as equipo
 from actores_materiales import MATERIALES
-from actores_pintura import Material as M
+from actores_pintura import cubierto, Material as M
 from actores_pintura import _tramo_torso, bandolera, chaleco, filas_torso, pintar
 from actores_trajes import (DELANTE, _CAPUCHA_ESPALDA, _CAPUCHA_FRENTE, _CAPUCHA_PERFIL, _CUPULA_ESPALDA,
                             _CUPULA_FRENTE, _CUPULA_PERFIL, _arte, _caja, _cuello, _espejo_x,
@@ -370,7 +370,7 @@ def alitas(material):
                 continue
             # (fuera del cuerpo la etiqueta es la vacia: antes se comparaba con "." y de frente y de
             # perfil no salia ninguna punta)
-            if not cubre_cuerpo and (lab[y, x] not in ("", ".") or (y, x) in ctx["cubre"]):
+            if not cubre_cuerpo and (lab[y, x] not in ("", ".") or cubierto(ctx, y, x)):
                 continue
             pintar(ctx, y, x, m, t)
     return fn
@@ -441,7 +441,7 @@ def botes_gas(correa, gas):
         if cint is None or d == "arriba":
             return
         mc, mg = ctx["mat"][correa], ctx["mat"][gas]
-        xs = [x for x in range(lab.shape[1]) if lab[cint, x] in ("p", "t") or (cint, x) in ctx["cubre"]]
+        xs = [x for x in range(lab.shape[1]) if lab[cint, x] in ("p", "t") or cubierto(ctx, cint, x)]
         if not xs:
             return
         x0, x1 = min(xs), max(xs)
@@ -534,7 +534,8 @@ def gabardina_espia(tela, forro, correa, plumaje, pecho, pico):
 def armadura_angel(blanco, oro, ala):
     """La armadura del Angel vengador: placas blancas con el oro en las hombreras y el cinturon,
     el sol en el pecho y las dos alas pequenas a la espalda."""
-    return {"partes": {"t": blanco, "a": blanco, "A": blanco, "m": blanco, "M": blanco, "n": blanco},
+    return {"flotante": True,  # PL-ROPA-01: lo que sale del cuerpo es de diseno
+            "partes": {"t": blanco, "a": blanco, "A": blanco, "m": blanco, "M": blanco, "n": blanco},
             "bajo": (blanco, 3), "texturas": {blanco: equipo.chapa}, "cinturon": (oro, None, 0),
             "extras": [equipo.peto(blanco), alitas(ala), hombrera_grande(blanco, oro, "A", placas=2),
                        hombrera_grande(blanco, oro, "a", placas=2), sol_pecho(oro, 4)]}

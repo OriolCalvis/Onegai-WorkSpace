@@ -65,13 +65,14 @@ inline const char* nombre(CapaDeDibujo capa) {
 
 // La capa de un objeto por su id cuando el objeto no la dice (las alfombras y
 // salidas del kit no llevan el campo): los felpudos, alfombras y tapetes, las
-// manchas y charcos, los rombos de salida y los carteles de suelo son planos;
+// manchas y charcos, los rombos de salida, los carteles de suelo y los estrados
+// (C2-01: el orador se dibuja encima del estrado, no detras) son planos;
 // los tejados y las copas, encima; todo lo demas, de pie. Ignora el sufijo de
 // orientacion («_o1»..«_o3»).
 inline CapaDeDibujo capaDeObjeto(const std::string& objectId) {
     const auto empieza = [&](const char* prefijo) { return objectId.rfind(prefijo, 0) == 0; };
     for (const char* prefijo : {"felpudo", "alfombra", "tapete", "catifa", "mancha_", "charco", "cartel_suelo",
-                                "salida_", "marca_suelo", "sombra_"})
+                                "salida_", "marca_suelo", "sombra_", "estrado"})
         if (empieza(prefijo)) return CapaDeDibujo::Plano;
     for (const char* prefijo : {"tejado_", "copa_"})
         if (empieza(prefijo)) return CapaDeDibujo::Encima;

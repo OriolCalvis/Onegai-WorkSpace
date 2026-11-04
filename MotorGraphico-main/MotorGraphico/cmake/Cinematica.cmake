@@ -14,4 +14,11 @@ if(BUILD_TESTING AND TARGET motor_level)
     if(TARGET suite_gl_free)
         add_dependencies(suite_gl_free test_cinematicas)
     endif()
+
+# E-DISPARADORES-1 E3 — validar_cinematicas.py con un nivel de mentira (foco y destino de «lleva», una sola accion, zona,
+# radio, ambito, tapaVista y el aviso de vision).
+if(BUILD_TESTING AND MOTOR_PYTHON3)
+    add_test(NAME test_validar_cinematicas COMMAND "${MOTOR_PYTHON3}" "${CMAKE_CURRENT_SOURCE_DIR}/tools/test_validar_cinematicas.py")
+    set_tests_properties(test_validar_cinematicas PROPERTIES LABELS "unit;gl-free" TIMEOUT 60)
+endif()
 endif()

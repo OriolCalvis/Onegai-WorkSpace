@@ -12,6 +12,7 @@
 #include <cmath>
 
 #include "Game/Personajes/MontajePersonajes.h"
+#include "Game/Personajes/VisibilidadRasgos.h"
 #include "PaginasCreacionInterno.h"
 
 namespace Pergamino {
@@ -215,12 +216,15 @@ void sombraRombo(const Contexto& k, float cx, float cy, float a, float b) {
     }
 }
 
-void pintaVista(const Contexto& k, const Cuaderno::Vista& v, float cx, float yPies, int escala) {
+void pintaVista(const Contexto& k, const Cuaderno::Vista& v, float cx, float yPies, int escala, int orientacion) {
     if (v.vacia()) return;
     sombraRombo(k, cx, yPies, 74.0f, 22.0f);
-    int frame = 8;  // de frente, quieto (1-based)
+    // de frente, quieto (1-based): el 8 de siempre; en diagonal, el suroeste respirando
+    const Game::Reparto reparto = k.r.reparto();
+    int frame = Game::frameQuieto(Game::Rumbo::Abajo, reparto);
     // DIALOGOS-01 (Oriol, 13/10): siempre de cara; solo gira con «Girar».
-    if (k.c.rumbo() >= 0) frame = Game::frameQuieto(static_cast<Game::Rumbo>(k.c.rumbo()));
+    if (k.c.rumbo() >= 0) frame = Game::frameQuieto(static_cast<Game::Rumbo>(k.c.rumbo()), reparto);
+    if (orientacion >= 0) frame = Game::VisibilidadRasgos::frame(k.c.segundos(), static_cast<Game::Rumbo>(orientacion), reparto);
     const Rect uv = k.r.frame(v, frame - 1);
     if (uv.w <= 0.0f) return;
     const float lado = 64.0f * static_cast<float>(escala);
@@ -257,7 +261,16 @@ void pintaCentro(const Contexto& k, const Cuaderno::Vista& v, float yPies, float
         centrado(k, Letra::Lora18i, "Elige tu raza y aquí aparecerás tú.", kCentroX, yPies - 120.0f, kCentroW, 26.0f,
                  3, Color::kTinta3);
     } else {
-        pintaVista(k, v, cx, yPies, 3);
+        if (k.c.hoja() == Hoja::Aspecto) {
+            const int rumbo = k.c.rumbo() < 0 ? 2 : k.c.rumbo();
+            const int opuesto = (rumbo + 2) % 4;
+            pintaVista(k, v, cx - 64.0f, yPies, 2, rumbo);
+            pintaVista(k, v, cx + 64.0f, yPies, 2, opuesto);
+            centrado(k, Letra::Lora16, (rumbo == 1 || rumbo == 2) ? "Frente / Espalda" : "Espalda / Frente", kCentroX, yPies - 150.0f, kCentroW, 22.0f, 1, Color::kTinta2);
+            const int f = Game::VisibilidadRasgos::frame(k.c.segundos(), static_cast<Game::Rumbo>(rumbo), k.r.reparto());
+            const auto aviso = k.r.aviso(v, f - 1);
+            if (!aviso.empty()) centrado(k, Letra::Lora16, aviso, kCentroX, yPies + 75.0f, kCentroW, 20.0f, 2, Color::kCarmin);
+        } else pintaVista(k, v, cx, yPies, 3);
         // ◀ Girar ▶
         const float yg = yPies + 34.0f;
         const float wg = static_cast<float>(k.p.letras().ancho(Letra::Lora18, "Girar"));
@@ -309,7 +322,7 @@ void pintaRejilla(const Contexto& k, float x, float y, bool retratos, const char
             }
             bool conRetrato = false;
             if (retratos) {
-                const Rect uv = k.r.frame(k.c.retrato(h, id), 7);
+                const Rect uv = k.r.frame(k.c.retrato(h, id), Game::frameQuieto(Game::Rumbo::Abajo, k.r.reparto()) - 1, false);
                 if (uv.w > 0.0f) {
                     k.l.rect(Fuente::Retratos, Rect{std::round(r.x + (r.w - 64.0f) * 0.5f), r.y + 2.0f, 64.0f, 64.0f},
                              uv, Color::kBlanco);
@@ -373,15 +386,38 @@ float fichaBloque(const Contexto& k, const std::string& rotulo, const std::strin
 
 }  // namespace creacion
 
-Rect Retratista::frame(const Game::CuadernoCreacion::Vista& v, int frame) {
-    if (m_montaje == nullptr || v.vacia() || frame < 0 || frame >= Game::MontajePersonajes::kFrames) return Rect{};
+int columnaDeCaraQuieta(int columnas) {
+    if (columnas >= Game::MontajePersonajes::kFramesDiagonal)
+        return Game::frameQuieto(Game::Rumbo::Abajo, Game::repartoDeColumnas(columnas)) - 1;
+    return 7;  // las hojas de 12: el frame 8, de cara y quieto
+}
+
+Game::Reparto Retratista::reparto() const {
+    return m_montaje == nullptr ? Game::Reparto::Clasico : Game::repartoDeColumnas(m_montaje->frames());
+}
+
+std::string Retratista::aviso(const Game::CuadernoCreacion::Vista& v, int frame) const {
+    std::string base = v.apariencia.clave();
+    for (const auto& [ranura, pieza] : v.equipo) base += "|" + ranura + "=" + pieza;
+    return m_atlas.aviso(base + "#" + std::to_string(frame));
+}
+
+Rect Retratista::frame(const Game::CuadernoCreacion::Vista& v, int frame, bool prioritario) {
+    if (m_montaje == nullptr || v.vacia() || frame < 0 || frame >= m_montaje->frames()) return Rect{};
     std::string base = v.apariencia.clave();
     for (const auto& [ranura, pieza] : v.equipo) base += "|" + ranura + "=" + pieza;
     const std::string clave = base + "#" + std::to_string(frame);
     if (m_atlas.tiene(clave)) return m_atlas.celda(clave, nullptr);
     if (m_atlas.tira(base) == nullptr) {
-        auto hoja = m_montaje->montar(v.apariencia, v.equipo);
+        if (!prioritario) {
+            if (!m_atlas.hayCupo()) return Rect{};  // PERF-2: ya se montaron las de este fotograma
+            m_atlas.cuentaMontaje();
+        }
+        Game::MapaDeCapas mapa;
+        auto hoja = m_montaje->montar(v.apariencia, v.equipo, &mapa);
         if (!hoja.isOk()) return Rect{};
+        const auto avisos = Game::VisibilidadRasgos::avisos(v.apariencia, mapa, m_montaje->frames());
+        for (std::size_t f = 0; f < avisos.size(); ++f) m_atlas.guardaAviso(base + "#" + std::to_string(f), avisos[f]);
         Imagen tira;
         tira.ancho = hoja.value().ancho;
         tira.alto = hoja.value().alto;

@@ -41,6 +41,7 @@
 
 #include "Core/Math/Vector4.h"
 #include "Game/Morality.h"
+#include "Game/Personajes/MontajePersonajes.h"  // PL-JUEGO-01: Reparto
 
 namespace imagen {
 struct ImagenRGBA;
@@ -142,7 +143,22 @@ struct AlaEnSprite {
     float hombroX = 0.0f, hombroY = 0.0f, ancho = 1.0f, giro = 0.0f;
 };
 // Cuantas alas (0 o 2) deja en `out`, la lejana primero.
-int alasEnSprite(const AspectoAura& aspecto, int frameSprite, float segundos, AlaEnSprite (&out)[2]);
+//
+// PL-JUEGO-01 (Oriol, 25/10: «encaja las alas con la rotacion actual del personaje»): con la hoja en
+// diagonal de PixelLab (Reparto::Diagonal, 40 frames) el personaje mira en diagonal, asi que cada ala va
+// a medio camino entre de frente y de perfil: la del lado de la camara (la cercana), casi entera (0,88)
+// y algo mas baja; la otra (la lejana), encogida (0,55), mas alta y mas tenue (0,8), como la lejana del
+// perfil. Mirando al sur (sureste y suroeste), las dos detras del cuerpo; al norte, delante (se le ve la
+// espalda). El hombro de los cuerpos de PixelLab esta mas alto que el de los de siempre: kHombroDiagonal.
+int alasEnSprite(const AspectoAura& aspecto, int frameSprite, float segundos, AlaEnSprite (&out)[2],
+                 Reparto reparto = Reparto::Clasico);
+// El nacimiento de las alas en los cuerpos de PixelLab y el pecho, de donde salen los rayos. PL-JUEGO-01
+// (25/10): las familias se bajan hasta tener los pies en la fila 60, como los personajes de siempre
+// (pixellab_cuerpo.FILA_PIES), y el humano baja 9 filas: sus hombros, de la 28 a la 37; el ala nace dos
+// pixeles por debajo, en la espalda.
+constexpr float kHombroDiagonalX = 32.0f;
+constexpr float kHombroDiagonalY = 39.0f;
+constexpr float kPechoDiagonalY = 44.0f;
 // Un punto de la celda del ala (pixeles del atlas, origen arriba a la izquierda) en el sprite: las esquinas
 // de la celda caen en las del cuadrilatero.
 void celdaASprite(const AlaEnSprite& ala, float cx, float cy, float& sx, float& sy);

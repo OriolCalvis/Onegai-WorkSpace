@@ -1,0 +1,18 @@
+guardados_q1c/q1c_llegada_cama.json: llegada_cama en assets/levels/interior_taberna.json (6,4) oro 150
+   BEAT b0_rosita [Rosita] lineas=1 «Veinticinco de plata la noche. Y no, no hay descuento por ca»
+   MENU b0_rosita -> 1  {1. Pagar la cama | 2. Hablar de otra cosa | 3. Nada más}
+   BEAT b0_rosita [Rosita] lineas=2 «Arriba, la segunda puerta.»
+   BEAT b0_rosita_n_cama [Rosita] lineas=1 «¿Algo más, o subes ya?»
+   MENU b0_rosita_n_cama -> 2  {1. ¿Luisarda es amiga tuya? | 2. Dejarlo ahí}
+   BEAT b0_rosita_n_cama [Rosita] lineas=0
+   BEAT b0_rosita_s0 [] lineas=1 «Rosita sigue secando el mismo vaso.»
+   MENU b0_rosita_s0 -> 1  {1. Subir a dormir | 2. Hablar de otra cosa | 3. Nada más}
+   BEAT b0_rosita_s0 [] lineas=1 «Que descanses. Y no bajes descalzo, que el suelo de arriba m»
+   BEAT b0_subiendo [] lineas=2 «Al subir, la mesa de la puerta está vacía. El de la capuch»
+   BEAT b0_rosita_sube [Rosita] lineas=1 «Esta es la tuya. Sábanas limpias, que para eso cobro. Buena»
+   BEAT b0_subir [] lineas=1 «La cama huele a lavanda y a la lluvia de otros. Te duermes a»
+   CIERRE bnd0_dormido
+   BEAT b1_venides_llama [Venides] lineas=1 «¡Eh, tú! Ven aquí, que el desayuno se enfría.»
+   BEAT b1_desayuno_v0 [] lineas=4 «Por la mañana. Las cortinas descorridas: entra una luz gris»
+   MENU b1_desayuno_v0 -> 4  {1. ¿Qué trabajo? | 2. ¿Qué sabes de los Perdidos? | 3. Hablar de otra cosa | 4. Ponerse en marcha}
+   BEAT b1_desayuno_v0 [] lineas=5 «Venides: «Empieza por las tiendas del tendero, el joyero y »

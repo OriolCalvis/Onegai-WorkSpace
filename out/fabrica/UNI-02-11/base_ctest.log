@@ -1,0 +1,60 @@
+build exit=0
+Test project /Users/admin/onegai-ramas/UNI-02-11-base/MotorGraphico-main/MotorGraphico/out/build/macos-debug
+      Start   2: test_pergamino
+ 1/14 Test   #2: test_pergamino ....................***Failed    2.72 sec
+      Start  26: test_ruta_casillas
+ 2/14 Test  #26: test_ruta_casillas ................***Failed    0.25 sec
+      Start  30: test_botin_equipo
+ 3/14 Test  #30: test_botin_equipo .................***Failed    2.60 sec
+      Start  33: test_recompensas_economia
+ 4/14 Test  #33: test_recompensas_economia .........***Failed    0.54 sec
+      Start  35: test_validar_monstruos_acciones
+ 5/14 Test  #35: test_validar_monstruos_acciones ...***Failed    0.32 sec
+      Start  36: test_lugares
+ 6/14 Test  #36: test_lugares ......................***Failed    0.42 sec
+      Start  85: demo_creacion_personaje
+ 7/14 Test  #85: demo_creacion_personaje ...........Subprocess aborted***Exception:   0.41 sec
+      Start  96: demo_boundington
+ 8/14 Test  #96: demo_boundington ..................Subprocess aborted***Exception:   0.34 sec
+      Start  98: demo_campana_boundington
+ 9/14 Test  #98: demo_campana_boundington ..........Subprocess aborted***Exception:   0.36 sec
+      Start 166: test_catalog_content
+10/14 Test #166: test_catalog_content ..............***Failed    0.97 sec
+      Start 233: test_kit_basico
+11/14 Test #233: test_kit_basico ...................***Failed    2.70 sec
+      Start 258: linea_base_core_configura
+12/14 Test #258: linea_base_core_configura .........***Failed    0.31 sec
+      Start 259: linea_base_core
+13/14 Test #259: linea_base_core ...................***Failed   17.51 sec
+      Start 267: test_clases_sp
+14/14 Test #267: test_clases_sp ....................***Failed    0.59 sec
+
+0% tests passed, 14 tests failed out of 14
+
+Label Time Summary:
+gl-free    =  30.04 sec*proc (14 tests)
+smoke      =   1.11 sec*proc (3 tests)
+static     =  17.82 sec*proc (2 tests)
+unit       =  11.11 sec*proc (9 tests)
+
+Total Test time (real) =  30.05 sec
+
+The following tests FAILED:
+	  2 - test_pergamino (Failed)                           gl-free unit
+	 26 - test_ruta_casillas (Failed)                       gl-free unit
+	 30 - test_botin_equipo (Failed)                        gl-free unit
+	 33 - test_recompensas_economia (Failed)                gl-free unit
+	 35 - test_validar_monstruos_acciones (Failed)          gl-free unit
+	 36 - test_lugares (Failed)                             gl-free unit
+	 85 - demo_creacion_personaje (Subprocess aborted)      gl-free smoke
+	 96 - demo_boundington (Subprocess aborted)             gl-free smoke
+	 98 - demo_campana_boundington (Subprocess aborted)     gl-free smoke
+	166 - test_catalog_content (Failed)                     gl-free unit
+	233 - test_kit_basico (Failed)                          gl-free unit
+	258 - linea_base_core_configura (Failed)                gl-free static
+	259 - linea_base_core (Failed)                          gl-free static
+	267 - test_clases_sp (Failed)                           gl-free unit
+Errors while running CTest
+Output from these tests are in: /Users/admin/onegai-ramas/UNI-02-11-base/MotorGraphico-main/MotorGraphico/out/build/macos-debug/Testing/Temporary/LastTest.log
+Use "--rerun-failed --output-on-failure" to re-run the failed cases verbosely.
+exit=8

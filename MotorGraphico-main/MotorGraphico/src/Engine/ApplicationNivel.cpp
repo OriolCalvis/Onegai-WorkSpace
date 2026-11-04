@@ -24,6 +24,7 @@
 #include "Engine/Input/InputSystem.h"
 #include "Engine/ApplicationLoop.h"
 #include "Engine/Window.h"
+#include "Engine/EntidadClip.h"
 #include "Render/AnimatedEntity.h"
 #include "Render/BancoAtlas.h"
 #include "Render/BloquesNivel.h"
@@ -36,6 +37,7 @@
 #include "Render/FogOfWar.h"
 #include "Engine/InputState.h"
 #include "Game/CatalogoCartas.h"  // H2-06
+#include "Game/EventosDeLaSesion.h"  // C8-03c
 #include "Game/DiarioMisiones.h"  // GUARDAR-FICHA: capituloDeLaCampana
 #include "Game/SaveGame.h"
 #include "Level/LevelLoader.h"
@@ -255,7 +257,7 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
         }
     }
     if (savedGame != nullptr && narrativeWiring(m_narrativaLista, m_narrativeCampaignTransitions).chainCampaignTimeline) {
-        const RPG::AdventureScript* capitulos[] = {&m_prologo, &m_dia1, &m_dia2, &m_ocaso};
+        const RPG::AdventureScript* capitulos[] = {&m_prologo, &m_dia1, &m_diaGorran, &m_dia2, &m_ocaso};
         m_narrative.setAdventure(capitulos[Game::capituloDeLaCampana(m_narrativeState)]);
     }
     InventoryRules inventoryRules;
@@ -298,6 +300,15 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
     if (narrativeWiring(m_narrativaLista, m_narrativeCampaignTransitions).attachToSession) {
         m_session->setNarrative(&m_narrative, &m_narrativeState);
         m_session->setNd6SkillCatalog(&m_nd6Skills);
+        if (!m_eventosIntentados) {  // C8-03c: assets/eventos/<proyecto>.json, una vez
+            m_eventosIntentados = true;
+            std::string errorEventos;
+            if (!m_projectIndex.projects().empty())
+                m_eventos = Game::cargaEventosDelProyecto(m_projectIndex.projects().front().id, &errorEventos);
+            if (!errorEventos.empty()) m_session->logNote("eventos: " + errorEventos);
+        }
+        m_session->setEventosDelMundo(m_eventos.get());
+        if (savedGame) m_session->avaluaEventosDelMundo();  // reconciliacion al cargar
         // m_session ya tiene su propio Xoroshiro128p por defecto; solo
         // inyectariamos otro si quisieramos reproducibilidad (tests).
         // Dispara el beat "enter" del nivel que acaba de cargar.
@@ -333,7 +344,12 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
                 puertas.push_back(entity.position());
         });
         // BLOQUES-03 — primero los monumentos con sprite propio; sus celdas no levantan bloque.
-        if (m_monumentos != nullptr) cubiertas = m_monumentos->monta(m_map, m_map.getTilesetName(), *m_bancoAtlas, *m_renderer);
+        if (m_monumentos != nullptr) {
+            cubiertas = m_monumentos->monta(m_map, m_map.getTilesetName(), *m_bancoAtlas, *m_renderer, puertas);
+            // H-CIU-2 — las casillas de la planta que el sprite no ocupa (la iglesia pinta 10x9 y el dibujo
+            // tiene base en 51) se pisan: el tile sigue dibujando el suelo, solo se quita la colision.
+            Game::Monumentos::liberaCeldas(m_map, m_monumentos->montados());
+        }
         m_bloques->monta(m_map, m_map.getTilesetName(), puertas, *m_bancoAtlas, *m_renderer, &cubiertas);
         // BLOQUES-02 / MASC-01 — la capa de vida: la bandada sobre azoteas y
         // tejados del kit, y las mascotas (objetos mascota_*) por las calles,
@@ -388,31 +404,26 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
         const bool umbral = !esActor && m_bloques != nullptr && esPuerta(id) &&
                             !m_bloques->plan().umbral().empty() &&
                             (m_bloques->puertaEnPared(position) || juntoAMonumento(position));
-        const Game::SpriteActor* hojaActor =
-            esActor && m_bancoAtlas ? m_bancoAtlas->registro().actor(id, def->raceId) : nullptr;
+        const Game::SpriteActor* hojaActor = esActor && m_bancoAtlas  // MODELOS-PL-01: un PNJ sin fila lleva el respaldo
+            ? Game::actorConRespaldo(m_bancoAtlas->registro(), id, def->raceId, def->category == ObjectCategory::Npc) : nullptr;
         const Game::SpriteFijo* hojaFija =
             !esActor && m_bancoAtlas ? m_bancoAtlas->registro().fijo(umbral ? m_bloques->plan().umbral() : id) : nullptr;
         TextureAtlas* atlasActor =
             hojaActor ? m_bancoAtlas->fila(hojaActor->hoja, hojaActor->filaPara(colocados[id]++)) : nullptr;
         TextureAtlas* atlasFijo = hojaFija ? m_bancoAtlas->hoja(hojaFija->hoja) : nullptr;
         if (esActor) {
-            // AnimatedEntity con hoja de personaje. Con fila propia (una
-            // hoja de 12 frames), descansa en su frame quieto mirando abajo
-            // y lleva los ciclos de andar por si algun dia se mueve. Sin
-            // ella, el cuerpo base: la "idle" reproduce el ciclo entero de
-            // caminar a velocidad lenta, asi el actor se ve vivo en parado.
-            auto anim = std::make_unique<AnimatedEntity>(position, m_atlas.get(), kTileW, kTileH,
-                                                          /*frameTime=*/0.22f);
+            // AnimatedEntity con hoja de personaje: descansa en su frame quieto mirando abajo y lleva
+            // los ciclos de andar. Sin fila (solo un enemigo que no es persona: lobo, slime...), el
+            // cuerpo base: la "idle" reproduce el ciclo entero de caminar, lento, para verse vivo.
+            auto anim = std::make_unique<EntidadClip>(position, m_atlas.get(), kTileW, kTileH,
+                                                       /*frameTime=*/0.22f);
             if (atlasActor != nullptr) {
                 anim->setCharacterSprite(atlasActor, kCharacterDrawW, kCharacterDrawH, characterAnchor());
                 HojaPersonaje::animar(*anim);
                 anim->play("idle");
                 anim->showRestFrame();
             } else {
-                anim->setCharacterSprite(m_characterAtlas.get(), kCharacterDrawW, kCharacterDrawH,
-                                         characterAnchor());
-                anim->addAnimation("idle", {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
-                anim->play("idle");
+                anim->idleCuerpoBase(m_characterAtlas.get(), kCharacterDrawW, kCharacterDrawH, characterAnchor());
             }
             marker.entity = std::move(anim);
         } else if (atlasFijo != nullptr) {
@@ -488,19 +499,17 @@ void ApplicationCinematica::acompanantesALaVista(Application& app) {
             if (m.handle == h) return;  // ya lo tiene
         const std::string id = acompanante ? e.objectId().substr(kPrefijo.size()) : e.objectId();
         const ObjectDefinition* def = app.m_objectCatalog.find(id);
-        const Game::SpriteActor* hoja =
-            app.m_bancoAtlas ? app.m_bancoAtlas->registro().actor(id, def != nullptr ? def->raceId : "") : nullptr;
+        const Game::SpriteActor* hoja = app.m_bancoAtlas ? Game::actorConRespaldo(  // MODELOS-PL-01
+            app.m_bancoAtlas->registro(), id, def != nullptr ? def->raceId : "", acompanante) : nullptr;
         TextureAtlas* atlas = hoja ? app.m_bancoAtlas->fila(hoja->hoja, hoja->filaPara(0)) : nullptr;
-        auto anim = std::make_unique<AnimatedEntity>(e.position(), app.m_atlas.get(), kTileW, kTileH, 0.22f);
+        auto anim = std::make_unique<EntidadClip>(e.position(), app.m_atlas.get(), kTileW, kTileH, 0.22f);
         if (atlas != nullptr) {
             anim->setCharacterSprite(atlas, kCharacterDrawW, kCharacterDrawH, characterAnchor());
             HojaPersonaje::animar(*anim);
             anim->play("idle");
             anim->showRestFrame();
-        } else {  // sin hoja propia, el cuerpo base
-            anim->setCharacterSprite(app.m_characterAtlas.get(), kCharacterDrawW, kCharacterDrawH, characterAnchor());
-            anim->addAnimation("idle", {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
-            anim->play("idle");
+        } else {  // sin hoja (enemigo que no es persona): el cuerpo base
+            anim->idleCuerpoBase(app.m_characterAtlas.get(), kCharacterDrawW, kCharacterDrawH, characterAnchor());
         }
         app.m_renderer->addToQueue(anim.get());
         app.m_worldMarkers.push_back(Application::WorldMarker{e.objectId(), e.position(), h, std::move(anim)});

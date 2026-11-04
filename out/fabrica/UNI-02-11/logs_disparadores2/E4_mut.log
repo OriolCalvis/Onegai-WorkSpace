@@ -1,0 +1,32 @@
+=== MUTACION en src/Game/Cinematica.cpp: [        case Tipo::Beat:
+        case Tipo::Combate:
+            return !e.hablando();] -> [        case Tipo::Beat:
+            return !e.hablando();]
+[FAIL] combate_lleva_lanza_el_encuentro_y_espera_a_que_acabe: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/CinematicaTests.cpp:672 -- comprobación fallida: r.activa() && e.flags.count("cine_emboscada_vista") == 0 && e.flags.count("fin_emboscada") == 0
+Ejecutados 28 test(s); 1 fallo(s).
+-> MUERTA (rc=1)
+=== MUTACION en src/Game/CinematicaDisparador.cpp: [d.accion == Disparador::Accion::Combate ? Tipo::Combate : Tipo::Flag] -> [d.accion == Disparador::Accion::Combate ? Tipo::Flag : Tipo::Flag]
+[FAIL] combate_lleva_lanza_el_encuentro_y_espera_a_que_acabe: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/CinematicaTests.cpp:661 -- comprobación fallida: pasos.back().tipo == PasoCinematica::Tipo::Combate && pasos.back().texto == "perdido_saqueador"
+Ejecutados 28 test(s); 1 fallo(s).
+-> MUERTA (rc=1)
+=== MUTACION en src/Game/CinematicaDisparador.cpp: [p.flagGana = "cine_" + c.id + "_ganado";] -> [p.flagGana = "cine_" + c.id + "_perdido";]
+[FAIL] combate_lleva_lanza_el_encuentro_y_espera_a_que_acabe: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/CinematicaTests.cpp:670 -- comprobación fallida: e.combates.size() == 1 && e.combates[0] == "perdido_saqueador|cine_emboscada_ganado|cine_emboscada_perdido"
+Ejecutados 28 test(s); 1 fallo(s).
+-> MUERTA (rc=1)
+=== MUTACION en src/Game/Cinematica.cpp: [            e.combate(p.texto, p.flagGana, p.flagPierde);
+            return !e.hablando();] -> [            e.combate(p.texto, p.flagGana, p.flagPierde);
+            e.combate(p.texto, p.flagGana, p.flagPierde);
+            return !e.hablando();]
+[FAIL] combate_lleva_lanza_el_encuentro_y_espera_a_que_acabe: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/CinematicaTests.cpp:670 -- comprobación fallida: e.combates.size() == 1 && e.combates[0] == "perdido_saqueador|cine_emboscada_ganado|cine_emboscada_perdido"
+Ejecutados 28 test(s); 1 fallo(s).
+-> MUERTA (rc=1)
+=== MUTACION en src/Game/CinematicaDisparador.cpp: [if (clave == "combate") d.accion = Disparador::Accion::Combate;] -> [if (clave == "combate") d.accion = Disparador::Accion::Marca;]
+[FAIL] combate_lleva_lanza_el_encuentro_y_espera_a_que_acabe: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/CinematicaTests.cpp:650 -- comprobación fallida: c != nullptr && c->disparador.accion == Disparador::Accion::Combate && c->disparador.accionId == "perdido_saqueador"
+Ejecutados 28 test(s); 1 fallo(s).
+-> MUERTA (rc=1)
+=== MUTACION en tools/validar_cinematicas.py: [defs.get(valor, {}).get("category") != "enemy"] -> [False]
+----------------------------------------------------------------------
+Ran 22 tests in 0.171s
+
+FAILED (failures=1)
+-> MUERTA (rc=1)

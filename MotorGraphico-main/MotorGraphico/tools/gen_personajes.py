@@ -45,6 +45,7 @@ import actores_personajes as pers
 import actores_razas as razas
 from actores_tallas import TALLAS, construir_tallas
 import actores_anclas
+from actores_materiales import MATERIALES as MAT
 
 formas.registrar()  # ESTETICA-01: las formas por objeto, detras de las piezas de siempre
 
@@ -54,7 +55,7 @@ FRAME = 64
 COLUMNAS = 12        # hojas horneadas (actores, razas, historia, PNJ) y personaje.png: andar
 COLUMNAS_CAPAS = 20  # ESTETICA-01: los atlas de capas llevan ademas los 8 frames de reposo
 ORDEN_TALLAS = ["medio", "bajo", "pequeno", "grande"]
-CAPAS_RAZA = ["cuerpo", "espalda", "cola", "alas", "morro", "rasgos"]
+CAPAS_RAZA = ["cuerpo", "espalda", "cola", "alas", "cuernos", "orejas", "morro", "rasgos"]
 
 PIELES = ["piel_clara", "piel_morena", "piel_palida", "piel_oscura", "piel_aceituna", "piel_rojiza",
           "piel_gris", "piel_elfo", "porcelana"]
@@ -83,6 +84,67 @@ NOTA_REPARTO = (
     "rows - 1 - (f-1) / columns), como race_npc_idle.")
 
 
+# --- PL-JUEGO-01 (Oriol, 25/10: «todos a la vez»): los personajes en diagonal de PixelLab ---------------------
+# Con --pl (lo de siempre a partir de ahora) las tallas son las familias de PixelLab (pixellab_cuerpo:
+# medio = humano, bajo = enano, pequeno = mediano, grande = orco, y naga, aarakocra, espectro y minotauro
+# con su cuerpo propio), cada fila de los atlas lleva 40 frames (andar de seis y respirar de cuatro en las
+# cuatro diagonales: noreste, sureste, suroeste y noroeste, que son arriba, derecha, abajo e izquierda de
+# la rejilla) y las hojas horneadas (actores, razas, historia y PNJ) tambien. El motor lo sabe por las
+# columnas (Game::repartoDeColumnas) y por «frames» del manifiesto. --clasico escribe lo de antes.
+PL = False
+NOMBRES_PL = {"medio": "Humano (PixelLab)", "bajo": "Enano (PixelLab)", "pequeno": "Mediano (PixelLab)",
+              "grande": "Orco (PixelLab)", "naga": "Naga (PixelLab)", "aarakocra": "Aarakocra (PixelLab)",
+              "espectro": "Espectro (PixelLab)", "minotauro": "Minotauro (PixelLab)"}
+
+
+def _modo_pl():
+    """Pasa el modulo a PixelLab: columnas, tallas, reparto y animaciones de 40 frames."""
+    global PL, COLUMNAS, COLUMNAS_CAPAS, ORDEN_TALLAS, DIRECCIONES, ANIMACIONES, REPOSO, NOTA_REPARTO
+    import pixellab_cuerpo as pc
+    import pixellab_cascos
+    PL = True
+    # PL-ROPA-01: las capuchas de PixelLab (pixellab_cascos.capucha_pl) tapan el pelo
+    for k, v in cascos.CABEZA.items():
+        if pixellab_cascos.es_capucha(k):
+            v["oculta_pelo"] = True
+    COLUMNAS = COLUMNAS_CAPAS = pc.COLUMNAS
+    ORDEN_TALLAS = [t for t in pc.FAMILIAS if (pc.CARPETA / f"{pc.FAMILIAS[t]}.json").exists()]
+    rumbos = ["arriba", "derecha", "abajo", "izquierda"]
+    na, nr = pc.FRAMES_ANDAR, pc.FRAMES_RESPIRAR
+    DIRECCIONES = {r: [i * na + k + 1 for k in range(na)] for i, r in enumerate(rumbos)}
+    REPOSO = {r: [4 * na + i * nr + k + 1 for k in range(nr)] for i, r in enumerate(rumbos)}
+    ANIMACIONES = {"idle": REPOSO["abajo"], "idle_down": REPOSO["abajo"], "idle_up": REPOSO["arriba"],
+                   "idle_right": REPOSO["derecha"], "idle_left": REPOSO["izquierda"],
+                   "walk_down": DIRECCIONES["abajo"], "walk_up": DIRECCIONES["arriba"],
+                   "walk_right": DIRECCIONES["derecha"], "walk_left": DIRECCIONES["izquierda"]}
+    NOTA_REPARTO = (
+        "Frames 1-based, 40 por fila (PL-JUEGO-01, PixelLab en diagonal): andar 1-24, seis por rumbo "
+        "(arriba = noreste 1-6, derecha = sureste 7-12, abajo = suroeste 13-18, izquierda = noroeste 19-24), y "
+        "respirar 25-40, cuatro por rumbo en el mismo orden. El motor lo reparte asi (Game::Reparto::Diagonal, "
+        "por las columnas de la hoja). TextureManager invierte los PNG al cargarlos.")
+    return pc.construir_tallas_pl()
+
+
+def pelo_defecto(r, talla):
+    """PL-ROPA-01: {pelo, barba} por defecto de la raza en PixelLab (los propios si los trae)."""
+    if not PL:
+        return {}
+    return pers.pelo_por_defecto(r, talla)
+
+
+def talla_de_raza(r, tallas):
+    """La talla (en PixelLab, la familia) de una raza; sin el cuerpo de su familia, el mas parecido."""
+    if not PL:
+        return r["talla"]
+    import pixellab_razas
+    t = pixellab_razas.familia_de(r)
+    if t not in tallas:
+        if t == "minotauro":
+            raise ValueError("Falta la familia minotauro; no se permite sustituirla por orco")
+        t = "medio"
+    return t
+
+
 # --- utilidades ----------------------------------------------------------------
 
 def _ruta(p):
@@ -92,16 +154,27 @@ def _ruta(p):
         return str(p)
 
 
+RECORTADOS = []  # PL-JUEGO-01: lo que se ha recortado del borde (las piezas dibujadas para otro cuerpo)
+
+
 def comprobar(frames, que):
-    """Nada puede tocar el borde de la celda: se veria en el frame vecino."""
+    """Nada puede tocar el borde de la celda: se veria en el frame vecino. En PixelLab, las piezas de
+    siempre puestas en cuerpos mas grandes (los cuernos del minotauro en el del orco) a veces llegan:
+    se recorta ese pixel del borde y se apunta, en vez de parar."""
     for f, px in enumerate(frames, 1):
         a = px[..., 3] > 0
         if a[0].any() or a[-1].any() or a[:, 0].any() or a[:, -1].any():
-            raise SystemExit(f"{que}, frame {f}: el dibujo toca el borde de la celda")
+            if not PL:
+                raise SystemExit(f"{que}, frame {f}: el dibujo toca el borde de la celda")
+            for sl in (np.s_[0, :], np.s_[-1, :], np.s_[:, 0], np.s_[:, -1]):
+                px[sl] = 0
+            RECORTADOS.append(f"{que}, frame {f}")
 
 
-def guardar_atlas(filas, ruta, columnas=COLUMNAS):
-    """filas: lista de listas de frames RGBA -> PNG de `columnas` columnas."""
+def guardar_atlas(filas, ruta, columnas=None):
+    """filas: lista de listas de frames RGBA -> PNG de `columnas` columnas (sin ellas, las de las hojas
+    horneadas del modo en curso: 12, o 40 en PixelLab)."""
+    columnas = columnas or COLUMNAS
     ruta = Path(ruta)
     ruta.parent.mkdir(parents=True, exist_ok=True)
     img = np.zeros((max(1, len(filas)) * FRAME, columnas * FRAME, 4), np.uint8)
@@ -169,13 +242,14 @@ def generar_capas(tallas, salida, filas_medio=None):
     dir_capas = salida / "personajes"
     man = {"razas": {}, "cuerpos": {}, "ojos": {}, "pelo": {}, "barba": {}, "equipo": {}}
     tallas_ropa = dict(tallas)
-    tallas_ropa["medio_sin_piernas"] = tallas["medio"].sin_piernas()
+    if not PL:  # en PixelLab, nagas y espectros visten su propio cuerpo
+        tallas_ropa["medio_sin_piernas"] = tallas["medio"].sin_piernas()
 
     # razas: una fila por raza y una hoja por capa
     filas = {c: [] for c in CAPAS_RAZA}
     lista = []
     for r in razas.RAZAS:
-        t = tallas[r["talla"]]
+        t = tallas[talla_de_raza(r, tallas)]
         por_ranura = {}
         for ranura, frames in pers.capas_raza(r, t):
             por_ranura.setdefault(ranura, []).append(frames)
@@ -185,12 +259,27 @@ def generar_capas(tallas, salida, filas_medio=None):
             filas[c].append(fr)
         lista.append({
             "id": r["id"], "nombre": r["nombre"], "linaje": r["linaje"],
-            "talla": r["talla"], "tallaRopa": "medio_sin_piernas" if r.get("cuerpo") else r["talla"],
+            "talla": talla_de_raza(r, tallas),
+            "tallaRopa": talla_de_raza(r, tallas) if PL else ("medio_sin_piernas" if r.get("cuerpo") else r["talla"]),
             "fila": len(lista) + 1, "capas": [c for c in CAPAS_RAZA if c in por_ranura],
-            "sin": r.get("sin", []), "piel": r["piel"] if isinstance(r["piel"], str) else None,
-            "ojos": r["ojos"], "pelo": list(r["pelo"]) if r.get("pelo") else None,
-            "barba": list(r["barba"]) if r.get("barba") else None,
+            # PL-ROPA-01 (Oriol, 26/10, «dejar calvo o con pelazo»): en PixelLab el pelo vale para todas: sale de «sin»
+            "sin": sorted(set([x for x in r.get("sin", []) if not (PL and x == "pelo")] +
+                               (["piernas", "pies"] if PL and t.clave == "minotauro" else []) +
+                               # CAR-1: pelo, barba y ojos genericos solo donde tienen sentido (cabeza no humana)
+                               (["pelo", "barba", "ojos"]
+                                if PL and t.clave in ("minotauro", "aarakocra", "naga", "espectro") else []))),
+            "piel": r["piel"] if isinstance(r["piel"], str) else None,
+            "ojos": r["ojos"],
+            # PL-ROPA-01: el pelo y la barba por defecto; en PixelLab, los propios de la raza si los trae
+            "pelo": list(pelo_defecto(r, t).get("pelo") or r.get("pelo") or []) or None,
+            "barba": list(pelo_defecto(r, t).get("barba") or r.get("barba") or []) or None,
+            **({"peloPropio": True} if (pelo_defecto(r, t).get("pelo") or ("", ""))[0] == "propio" else {}),
             "equipo": pers.EQUIPO_RAZAS[r["id"]],
+            # PL-JUEGO-01: si admite otra piel u otra talla (pers.cambia_cuerpo): sin rasgos, cola, alas ni
+            # cuerpo propios en el catalogo, aunque su cabeza de PixelLab venga en «rasgos»
+            **({"liso": bool(isinstance(r["piel"], str) and not (r.get("cuerpo") or r.get("rasgos")
+                                                                or r.get("cola") or r.get("alas")))}
+               if PL else {}),
         })
     for c in CAPAS_RAZA:
         guardar_atlas(filas[c], dir_capas / "razas" / f"{c}.png", COLUMNAS_CAPAS)
@@ -209,11 +298,36 @@ def generar_capas(tallas, salida, filas_medio=None):
             guardar_atlas(filas_t, dir_capas / "cuerpos" / f"{clave}_{tk}.png", COLUMNAS_CAPAS)
             atlas[tk] = f"personajes/cuerpos/{clave}_{tk}.png"
         man[clave] = {"atlas": atlas, "filas": [{"id": i, "fila": n + 1} for n, i in enumerate(lista_ids)]}
+    if PL:  # CAR-2: el atlas de ojos (iris) de cada raza y talla humanoide, y las razas sin ojos
+        from capa_ojos_iris import generar as generar_ojos; generar_ojos(salida, man=man)
 
     # pelo y barba: una hoja por talla
-    combos = [(e, c) for e in pelo.ESTILOS for c in COLORES_PELO]
-    combos += [(e, c) for e in ("corto", "largo") for c in COLORES_PELO_RAZA]
-    barbas = [(b, c) for b in BARBAS for c in COLORES_PELO]
+    # PL-ROPA-01 (Oriol, 26/10, «em falten molts mes cabells»): en PixelLab los 21 peinados y las 5 barbas de
+    # pixellab_cabeza, y los colores de raza en ocho peinados. El atlas de pelo no pasa de 256 filas (16384 px).
+    if PL:
+        import pixellab_cabeza
+        estilos, barbas_ids = pixellab_cabeza.ESTILOS, pixellab_cabeza.BARBAS
+    else:
+        estilos, barbas_ids = list(pelo.ESTILOS), BARBAS
+    # NET-E1b (Oriol, 29/10, «neteja de sprites desfasats»): una sola fila por estilo, la castana; el motor y el
+    # creador tinen los demas colores (pelo_rubio, pelo_llama, los de raza...) y dan los mismos pixeles
+    # (tools/recortar_colores_capa.py lo comprueba). Solo las filas propias de raza llevan su color dibujado.
+    combos = [(e, "pelo_castano") for e in estilos]
+    barbas = [(b, "pelo_castano") for b in barbas_ids]
+    propios = {"pelo": [], "barba": []}
+    if PL:
+        # PL-ROPA-01: el pelo y la barba que PixelLab dibujo en la cabeza de cada raza, como filas propias
+        # («propio/<raza>», con «raza» para que la creacion solo las ofrezca a esa raza)
+        import pixellab_razas
+        for c in propios:
+            for rid in pixellab_razas.razas_con_propio(c):
+                t = tallas[talla_de_raza(razas.POR_ID[rid], tallas)]
+                if any(fr[..., 3].any() for fr in pixellab_razas.pelo_propio(rid, t, c)):
+                    propios[c].append(("propio", rid))
+        combos += propios["pelo"]
+        barbas += propios["barba"]
+    if len(combos) > 256 or len(barbas) > 256:
+        raise SystemExit(f"demasiadas filas de pelo/barba ({len(combos)}/{len(barbas)}): el atlas no puede pasar de 256")
     for clave, lista_combos, fn in (("pelo", combos, pers.capa_pelo), ("barba", barbas, pers.capa_barba)):
         atlas = {}
         for tk in ORDEN_TALLAS:
@@ -225,7 +339,11 @@ def generar_capas(tallas, salida, filas_medio=None):
             guardar_atlas(filas_t, dir_capas / clave / f"{clave}_{tk}.png", COLUMNAS_CAPAS)
             atlas[tk] = f"personajes/{clave}/{clave}_{tk}.png"
         man[clave] = {"atlas": atlas, "filas": [
-            {"id": f"{e}/{c}", "estilo": e, "color": c, "fila": i + 1}
+            # PL-ROPA-01: las filas «propio/<raza>» llevan estilo y color vacios y «raza»: asi el editor de hoy
+            # (EditorApariencia::estilos) no las ofrece como peinado a todas las razas, y el montaje las
+            # encuentra por su id. Cuando el motor filtre por «raza», pueden llevar estilo «propio».
+            ({"id": f"{e}/{c}", "estilo": "", "color": "", "raza": c, "fila": i + 1} if e == "propio" else
+             {"id": f"{e}/{c}", "estilo": e, "color": c, "fila": i + 1})
             for i, (e, c) in enumerate(lista_combos)]}
 
     # equipo: una hoja por ranura y talla
@@ -238,14 +356,27 @@ def generar_capas(tallas, salida, filas_medio=None):
         "arma": {k: v[3] for k, v in armas.ARMAS.items() if armas.ranura_de(k) == "arma"},
         "mano_izq": {k: v[3] for k, v in armas.ARMAS.items() if armas.ranura_de(k) == "mano_izq"},
     }
+    if PL:
+        # PL-ROPA-01 (Oriol, 26/10, «alas, colas, cuernos, manchas en el cuerpo, tatuajes, cicatrices»): alas y
+        # colas como piezas de «capa», cuernos como piezas de «cabeza» (asi el editor de hoy las ofrece y el
+        # motor las tine); las marcas de la piel, en su grupo «marcas» (abajo)
+        import pixellab_extras
+        # EDITOR-PERSONALIZACION-01 (26/10, 10:51, «integra aixo en el creador»): ranuras propias «alas», «cola» y
+        # «cuernos» (el motor las monta y el creador las ofrece en filas propias; conviven con capa y casco)
+        piezas_por_ranura["alas"] = {k: v[0] for k, v in pixellab_extras.ALAS.items()}
+        piezas_por_ranura["cola"] = {k: v[0] for k, v in pixellab_extras.COLAS.items()}
+        piezas_por_ranura["cuernos"] = {k: v[0] for k, v in pixellab_extras.CUERNOS.items()}
     for ranura, piezas in piezas_por_ranura.items():
         atlas = {}
-        tallas_ranura = ORDEN_TALLAS + (["medio_sin_piernas"] if ranura in ("torso", "capa") else [])
+        tallas_ranura = ORDEN_TALLAS + (["medio_sin_piernas"] if ranura in ("torso", "capa") and not PL else [])
+        ordenes = {}  # PL-JUEGO-01: {ident: {talla: orden}} de las armas (delante o detras, frame a frame)
         for tk in tallas_ranura:
             t = tallas_ropa[tk]
             filas_t = []
             for ident in piezas:
                 _r, fr = pers.capa_equipo(t, ranura, ident, t)
+                if PL and ranura in ("arma", "mano_izq") and isinstance(_r, dict):
+                    ordenes.setdefault(ident, {})[tk] = dict(_r)
                 comprobar(fr, f"{ranura} {ident} ({tk})")
                 filas_t.append(fr)
                 if filas_medio is not None and tk == "medio":
@@ -259,9 +390,67 @@ def generar_capas(tallas, salida, filas_medio=None):
         # guanteletes (uno en cada mano) traen su orden de dibujo: encima del cuerpo tambien de espaldas
         man["equipo"][ranura] = dict({"atlas": atlas, "piezas": [
             dict({"id": k, "nombre": n, "fila": i + 1}, **({"soloPnj": True} if k in oficios.SOLO_PNJ else {}),
-                 **({"orden": armas.orden_de(k)} if ranura in ("arma", "mano_izq") and armas.orden_de(k) else {}))
+                 **({"orden": orden_pl(ordenes[k])} if k in ordenes else
+                    {"orden": armas.orden_de(k)} if ranura in ("arma", "mano_izq") and armas.orden_de(k) else {}))
             for i, (k, n) in enumerate(piezas.items())]}, **extra)
+    if PL:
+        # PL-ROPA-01 (26/10): las marcas de la piel (pecas, manchas, rayas, tatuajes, cicatrices, pintura),
+        # capa «marcas» entre el cuerpo y la ropa (orden 12). El motor aun no la dibuja: seccion 6 del encargo.
+        atlas = {}
+        marcas = list(pixellab_extras.MARCAS.items())
+        for tk in ORDEN_TALLAS:
+            filas_t = []
+            for k, (n, _m1, _m2) in marcas:
+                fr = pixellab_extras.capa_extra(tallas[tk], k)
+                comprobar(fr, f"marcas {k} ({tk})")
+                filas_t.append(fr)
+            guardar_atlas(filas_t, dir_capas / "marcas" / f"marcas_{tk}.png", COLUMNAS_CAPAS)
+            atlas[tk] = f"personajes/marcas/marcas_{tk}.png"
+        man["marcas"] = {"atlas": atlas, "filas": [{"id": k, "nombre": n, "fila": i + 1} for i, (k, (n, _a, _b)) in enumerate(marcas)]}
     return man
+
+
+def pieles_pl(tallas):
+    """PL-ROPA-01 (Oriol, 26/10, «cambiar el color de la piel de la raza»): por talla, los colores del cuerpo de
+    la familia y, para cada opcion de piel (cada raza de la talla y cada material de piel), el color que toma
+    cada uno. El cuerpo de una raza usa exactamente los colores de su opcion (pixellab_razas.mapa_canonico), asi
+    que cambiarle la piel es sustituir, pixel a pixel, los colores de su opcion por los de la elegida (como el
+    tinte de las piezas, ESTETICA-01). Seccion 6 del encargo: lo dibuja el motor."""
+    import pixellab_razas
+    out = {}
+    materiales = sorted(k for k in MAT if k.startswith("piel_"))
+    for tk, t in tallas.items():
+        familia = pixellab_razas.colores_familia(t)
+        opciones = {}
+        for r in razas.RAZAS:
+            if talla_de_raza(r, tallas) != tk:
+                continue
+            if tk == "minotauro":
+                from pixellab_minotauro import colores_de_raza
+                opciones[r["id"]] = {"nombre": r["nombre"], "raza": True, "colores": colores_de_raza(t, r["id"], familia)}
+                continue
+            prep = pixellab_razas._preparar(t, pixellab_razas.bases().get(r["id"], {}), bool(r.get("cola")),
+                                            bool(r.get("alas")), r["id"] in pixellab_razas._SOBRE_FAMILIA, None)
+            mapa = next(iter(prep.values()))["mapa"]
+            opciones[r["id"]] = {"nombre": r["nombre"], "raza": True, "colores": [list(mapa[c]) for c in familia]}
+        for m in materiales:
+            opciones[m] = {"nombre": m[5:].replace("_", " ").capitalize(), "colores": [list(c) for c in pixellab_razas.opcion_material(t, m)]}
+        out[tk] = {"familia": [list(c) for c in familia], "opciones": opciones}
+    return out
+
+
+def orden_pl(por_talla):
+    """PL-JUEGO-01: el orden de dibujo de un arma de PixelLab. Cada talla tiene su esqueleto, y en cada frame el
+    arma va delante o detras del cuerpo segun su muneca este mas cerca o mas lejos de la camara que los
+    hombros: el de la talla media para todas («f<n>») y, donde otra talla cambia, «<talla>/f<n>»
+    (MontajePersonajes::capas se queda con el de la talla del atlas)."""
+    base = por_talla.get("medio") or next(iter(por_talla.values()))
+    orden = dict(base)
+    for tk, o in por_talla.items():
+        for clave, z in o.items():
+            if clave.startswith("f") and base.get(clave) != z:
+                orden[f"{tk}/{clave}"] = z
+    return orden
 
 
 # --- ESTETICA-01: paletas y estetica de cada objeto ----------------------------------------
@@ -390,9 +579,9 @@ USOS_ACTORES = {
 }
 
 
-def generar(vista=False, salida=TEX):
+def generar(vista=False, salida=TEX, pl=True):
     salida = Path(salida)
-    tallas = construir_tallas()
+    tallas = _modo_pl() if pl else construir_tallas()
     ruta_razas = buscar("races.json")
     if ruta_razas:
         n = comprobar_razas(ruta_razas)
@@ -414,11 +603,16 @@ def generar(vista=False, salida=TEX):
                        {k: "Personaje de historia de Boundington a escala de juego."
                         for k in pers.HISTORIA},
                        "Personajes de historia de Boundington andando, en el estilo de los actores.")
-    # PNJ-01: todos los PNJ del juego, con las piezas del jugador (tools/gen_pnj.py)
+    # PNJ-01: todos los PNJ del juego, con las piezas del jugador (tools/gen_pnj.py). Lanzado como
+    # programa, este modulo es __main__: gen_pnj tiene que ver este (con el modo PixelLab puesto), no otro
+    sys.modules["gen_personajes"] = sys.modules[__name__]
     import gen_pnj
     hojas_pnj = gen_pnj.generar(tallas, salida, ROOT)
 
-    escribir_json({
+    # PL-JUEGO-01: personaje.png (el cuerpo base de antes, del que leen las herramientas) no cambia con
+    # PixelLab: su contrato tampoco. Solo se reescribe con los personajes de antes.
+    if not PL:
+      escribir_json({
         "_nota": "Contrato del cuerpo base: 12 frames de 64x64 en una fila. " + NOTA_REPARTO,
         "estado": "runtime temporal (fallback de actores sin hoja propia)",
         "image": "personaje.png", "frameSize": [FRAME, FRAME], "columns": COLUMNAS, "rows": 1,
@@ -427,7 +621,7 @@ def generar(vista=False, salida=TEX):
                     "11": "espejo de 5", "12": "espejo de 6"},
         "vestidoEn": "actores_capas.png, razas_andando.png y personajes_historia.png "
                      "(tools/gen_personajes.py); capas en personajes.json",
-    }, salida / "personaje.json")
+      }, salida / "personaje.json")
 
     # ESTETICA-01: la estetica de cada objeto antes que el manifiesto (los acabados
     # crean sus paletas, y el manifiesto las lleva todas)
@@ -444,7 +638,12 @@ def generar(vista=False, salida=TEX):
             print("  aviso:", aviso)
 
     orden = {r: dict(v) for r, v in capas_mod.ORDEN.items()}
+    if PL:
+        orden["marcas"] = {d: 12 for d in ("abajo", "arriba", "derecha", "izquierda")}  # PL-ROPA-01: sobre la piel
+        orden["cuernos"] = {d: 66 for d in ("abajo", "arriba", "derecha", "izquierda")}  # entre rasgos y cabeza
     alturas = {k: tallas[k].altura() for k in ORDEN_TALLAS}
+    nombre_talla = (lambda k: NOMBRES_PL.get(k, "Minotaure")) if PL else (lambda k: TALLAS[k]["nombre"])
+    altura_m = (lambda k: TALLAS.get(k, {}).get("altura_m", "")) if PL else (lambda k: TALLAS[k]["altura_m"])
     # PART-02b: las manos, el pecho y la cintura de cada frame, de donde echan los abalorios
     anclas = actores_anclas.anclas(tallas, ORDEN_TALLAS)
     manifiesto = {
@@ -460,17 +659,19 @@ def generar(vista=False, salida=TEX):
                   "bajo el cuello ('pecho') y la linea del cinturon ('cintura'): de ahi echan sus "
                   "particulas los anillos, el collar y el cinturon (tools/actores_anclas.py)."),
         "generador": "tools/gen_personajes.py", "cuerpoBase": "personaje.png",
-        "frameSize": [FRAME, FRAME], "columns": COLUMNAS_CAPAS,
+        "frameSize": [FRAME, FRAME], "columns": COLUMNAS_CAPAS, "frames": COLUMNAS_CAPAS,
         "direcciones": DIRECCIONES, "reposo": REPOSO, "animacionesPorFila": ANIMACIONES,
         "orden": orden,
-        "tallas": dict({k: {"nombre": TALLAS[k]["nombre"], "alturaM": TALLAS[k]["altura_m"],
+        "tallas": dict({k: {"nombre": nombre_talla(k), "alturaM": altura_m(k),
                             "alturaPx": alturas[k],
                             "anclas": {p: " ".join(f"{x},{y}" for x, y in v)
                                        for p, v in anclas[k].items()}} for k in ORDEN_TALLAS},
-                       medio_sin_piernas={"nombre": "Normal sin piernas (nagas y espectros)",
-                                          "base": "medio"}),
+                       **({} if PL else {"medio_sin_piernas": {"nombre": "Normal sin piernas (nagas y espectros)",
+                                                               "base": "medio"}})),
         "razas": man["razas"], "cuerpos": man["cuerpos"], "ojos": man["ojos"], "pelo": man["pelo"],
         "barba": man["barba"], "equipo": man["equipo"],
+        **({"marcas": man["marcas"]} if "marcas" in man else {}),
+        **({"pieles": pieles_pl(tallas)} if PL else {}),
         "personajes": {"actores": {k: _spec_json(v) for k, v in pers.ACTORES.items()},
                        "historia": {k: _spec_json(v) for k, v in pers.HISTORIA.items()}},
         "horneados": ["actores_capas.json", "razas_andando.json", "personajes_historia.json"]
@@ -480,14 +681,24 @@ def generar(vista=False, salida=TEX):
         "paletas": paletas(),
     }
     escribir_json(manifiesto, salida / "personajes.json")
+    if PL:  # CAR-4: las huellas de las laminas, al dia con las capas recien escritas (el modo clasico es de 12 columnas)
+        import laminas_desde_capas
+        laminas_desde_capas.registrar(salida)
 
+    if RECORTADOS:
+        import collections
+        por = collections.Counter(r.rsplit(", frame", 1)[0] for r in RECORTADOS)
+        print(f"PL-JUEGO-01: {len(RECORTADOS)} frames de {len(por)} piezas tocaban el borde y se han recortado:")
+        for que, n in por.most_common(40):
+            print(f"   {n:3d}  {que}")
     n_pelo = len(man["pelo"]["filas"])
     n_equipo = sum(len(v["piezas"]) for v in man["equipo"].values())
-    print(f"{_ruta(salida / 'personajes')}: 43 razas x {len(CAPAS_RAZA)} capas, {n_pelo} peinados, "
-          f"{len(man['barba']['filas'])} barbas y {n_equipo} piezas de equipo, en 4 tallas")
+    print(f"{_ruta(salida / 'personajes')}: {len(razas.RAZAS)} razas x {len(CAPAS_RAZA)} capas, {n_pelo} peinados, "
+          f"{len(man['barba']['filas'])} barbas y {n_equipo} piezas de equipo, en {len(ORDEN_TALLAS)} tallas"
+          + (" (PixelLab, 40 frames)" if PL else ""))
     print(f"{_ruta(salida)}: actores_capas ({len(actores)}), razas_andando ({len(filas_razas)}) y "
-          f"personajes_historia ({len(historia)}), + personajes.json y personaje.json")
-    if vista:
+          f"personajes_historia ({len(historia)}), + personajes.json" + ("" if PL else " y personaje.json"))
+    if vista and not PL:
         import revision_personajes
         revision_personajes.revision(tallas, actores, filas_razas, historia)
 
@@ -496,12 +707,16 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--vista", action="store_true", help="laminas en out/revision_personajes/")
     ap.add_argument("--salida", default=str(TEX), help="carpeta de salida (assets/textures)")
+    ap.add_argument("--clasico", action="store_true",
+                    help="los personajes de antes (cuatro vistas rectas, 20 frames) en vez de los de PixelLab")
     args = ap.parse_args()
-    generar(args.vista, args.salida)
+    generar(args.vista, args.salida, pl=not args.clasico)
     # PIXELLAB-L7: las prendas de PixelLab viven en filas propias de los
     # atlas de equipo; regenerarlos las borra, asi que se reponen aqui.
+    # PL-JUEGO-01: solo con los personajes de antes: son filas de 20 frames y
+    # cuatro vistas rectas, que en los atlas de 40 de PixelLab no caben.
     indice_prendas = Path(args.salida) / "pixellab" / "prendas.json"
-    if indice_prendas.is_file():
+    if args.clasico and indice_prendas.is_file():
         import subprocess
         subprocess.run([sys.executable, str(Path(__file__).resolve().parent / "pixellab" / "importar_prendas.py"),
                         str(indice_prendas)], check=True)

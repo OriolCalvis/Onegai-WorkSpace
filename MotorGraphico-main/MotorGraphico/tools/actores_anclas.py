@@ -47,11 +47,13 @@ def _mano(lab, direccion, ranura):
     return [int(x), int(y)]
 
 
-def _pecho(lab):
+def _pecho(lab, pl=False):
     c = _centro(lab, ["n"])
     if c is not None:
         xs, ys = c
-        return [int(round(xs.mean())), int(ys.max()) + 2]
+        # Oriol (25/10, la V que dibujo sobre la lamina): en PixelLab el colgante cae en el fondo del escote,
+        # 5 filas bajo el cuello; en el cuerpo de siempre, 2
+        return [int(round(xs.mean())), int(ys.max()) + (5 if pl else 2)]
     c = _centro(lab, ["t"])  # sin cuello: lo alto del torso
     if c is None:
         return None
@@ -74,8 +76,12 @@ def anclas_de_talla(talla):
     out = {k: [] for k in PUNTOS}
     for f in range(1, talla.n_frames + 1):
         lab, d = talla.labs[f], talla.direccion(f)
+        if getattr(talla, "clave", "") == "minotauro":
+            from pixellab_minotauro import anclas as anclas_centauro
+            for k, punto in anclas_centauro(talla, f).items(): out[k].append(punto)
+            continue
         puntos = {"mano": _mano(lab, d, "arma"), "otraMano": _mano(lab, d, "mano_izq"),
-                  "pecho": _pecho(lab), "cintura": _cintura(lab)}
+                  "pecho": _pecho(lab, hasattr(talla, "esqueletos")), "cintura": _cintura(lab)}
         for k in PUNTOS:
             if puntos[k] is None:
                 raise ValueError(f"talla {talla.clave}, frame {f}: sin {k}")

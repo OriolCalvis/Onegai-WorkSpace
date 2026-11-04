@@ -6,24 +6,22 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Core/Math/IsoMath.h"
+#include "Core/Math/Interpolacion.h"
 
 namespace {
 
-// Curvas de easing: t en [0,1] (progreso lineal de tiempo) -> progreso
-// "curvado" en [0,1]. EaseInOutQuad y EaseOutCubic son las formulas
-// estandar (ver easings.net); Linear es la identidad (equivalente a no
-// tener easing, para transiciones mecanicas/instantaneas en vez de
-// "suaves").
-float applyEasing(Camera::Easing easing, float t) {
+// Adaptador del enum publico Camera::Easing a la curva compartida
+// (Core/Math/Interpolacion.h, U3-07). Las formulas viven alli.
+Interpolacion::TipoCurva tipoDeEasing(Camera::Easing easing) {
     switch (easing) {
         case Camera::Easing::Linear:
-            return t;
+            return Interpolacion::TipoCurva::Lineal;
         case Camera::Easing::EaseInOutQuad:
-            return t < 0.5f ? 2.0f * t * t : 1.0f - std::pow(-2.0f * t + 2.0f, 2.0f) / 2.0f;
+            return Interpolacion::TipoCurva::EntradaSalidaCuadratica;
         case Camera::Easing::EaseOutCubic:
-            return 1.0f - std::pow(1.0f - t, 3.0f);
+            return Interpolacion::TipoCurva::SalidaCubica;
     }
-    return t;  // inalcanzable, pero algunos compiladores lo exigen
+    return Interpolacion::TipoCurva::Lineal;  // inalcanzable
 }
 
 }  // namespace
@@ -34,15 +32,24 @@ Camera::Camera(int viewportWidth, int viewportHeight)
 void Camera::update(float deltaTime) {
     if (m_transitionActive) {
         m_transitionElapsed += deltaTime;
-        // duration <= 0 (corte instantaneo, ver transitionTo()): t=1 de
-        // golpe en la primera update(), sin dividir por cero.
-        float t = m_transitionDuration > 0.0f
-                      ? std::clamp(m_transitionElapsed / m_transitionDuration, 0.0f, 1.0f)
-                      : 1.0f;
-        float eased = applyEasing(m_transitionEasing, t);
-        m_position = m_transitionStartPosition +
-                    (m_transitionTargetPosition - m_transitionStartPosition) * eased;
-        m_zoom = m_transitionStartZoom + (m_transitionTargetZoom - m_transitionStartZoom) * eased;
+        // duration <= 0 (corte instantaneo, ver transitionTo(), que ya acota
+        // a >= 0): t=1 de golpe en la primera update(), sin dividir por cero.
+        // El reloj sigue siendo float (m_transitionElapsed); progreso() solo
+        // normaliza. Si devolviera Error (no ocurre con duracion finita >= 0),
+        // se trata como fin de transicion (t=1). Cambio aceptado en U3-07.E08:
+        // duracion +inf o deltaTime NaN ahora terminan la transicion en la
+        // primera update (antes no terminaba nunca).
+        float t = 1.0f;
+        if (m_transitionDuration > 0.0f) {
+            auto progreso = Interpolacion::progreso(static_cast<double>(m_transitionElapsed),
+                                                    static_cast<double>(m_transitionDuration));
+            if (progreso.isOk()) t = static_cast<float>(progreso.value());
+        }
+        double eased = Interpolacion::curva(tipoDeEasing(m_transitionEasing), t);
+        m_position = Interpolacion::tweenVec2(m_transitionStartPosition,
+                                              m_transitionTargetPosition, eased);
+        m_zoom = static_cast<float>(
+            Interpolacion::tweenEscalar(m_transitionStartZoom, m_transitionTargetZoom, eased));
         if (t >= 1.0f) {
             // Fija el destino exacto (evita que quede a 0.9999... por
             // redondeo de la curva) y desactiva la transicion: update()
@@ -92,7 +99,7 @@ glm::mat4 Camera::getViewProjectionMatrix() const {
 
     // bottom=halfH, top=-halfH: ver comentario de Y invertida en el .h.
     glm::mat4 projection = glm::ortho(-halfW, halfW, halfH, -halfH, -1.0f, 1.0f);
-    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-m_position.x, -m_position.y, 0.0f));
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-posicionVista().x, -posicionVista().y, 0.0f));
     return projection * view;
 }
 
@@ -101,7 +108,7 @@ Vector2 Camera::screenToWorld(const Vector2& screenPos) const {
         screenPos.x - static_cast<float>(m_viewportWidth) * 0.5f,
         screenPos.y - static_cast<float>(m_viewportHeight) * 0.5f,
     };
-    return m_position + centered * (1.0f / m_zoom);
+    return posicionVista() + centered * (1.0f / m_zoom);
 }
 
 GridCoord Camera::worldToGrid(const Vector2& worldPos, float tileWidth, float tileHeight) const {

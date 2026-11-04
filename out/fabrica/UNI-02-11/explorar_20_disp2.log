@@ -1,0 +1,962 @@
+== explorar_boundington: 20 partidas (semilla 1), 69 razas, 70 clases, 12 origenes, 23 deidades
+
+-- Flags que pone el juego (no las aventuras)
+   prologo: kit_basico_puesto
+
+-- PNJ con los que se habla y que no estan en ningun nivel
+   ancianos_familias
+   b0_puerta_cerrada
+   bandido_cuartel
+   baul_amigos
+   cama_recadero
+   capitan_aegroum
+   cartas_joel
+   cartel_escape_room
+   cojo
+   contable_almacen
+   contrabandista
+   edul_joven
+   herido_aldea
+   herrero_sucio
+   joel_joran
+   libros_cojo
+   pescador_ceaseton
+   posadero
+   recadero
+   sandes_joven
+   tabernero_ceaseton
+   venides_joven
+   venides_vuelta
+   verina_joven
+
+-- Fases completadas
+   prologo    20 / 20
+   dia1       20 / 20
+   dia_gorran   20 / 20
+   dia2       20 / 20
+   ocaso      20 / 20
+   (partidas que han tenido que repetir conversaciones para seguir: dia1 20 dia2 17 dia_gorran 10 prologo 8)
+
+-- Finales
+   oeste                                       3
+   solos                                      17
+
+-- Atascos: 0 partidas
+
+-- Moral al final (asentada en cada descanso largo)
+   azar       media  +7.3  min  -11  max  +20   Neutral 5  Respetado 2  
+              por noche: n1  +3.1 (7) n2  +2.7 (7) n3  +3.9 (7) n4  -1.5 (4) n5 +10.0 (2)
+   bondadoso  media +29.3  min  +22  max  +40   Respetado 7  
+              por noche: n1  +4.6 (7) n2 +13.4 (7) n3 +15.9 (7) n4 +23.4 (7) n5 +32.7 (3)
+   cruel      media -22.8  min  -30  max   -7   Canalla 5  Neutral 1  
+              por noche: n1  -3.2 (6) n2 -12.7 (6) n3 -17.2 (6) n4 -22.0 (5) n5 -20.3 (3)
+
+-- Actos que han pesado (veces)
+   aigren_presionado 4 · aigren_redimido 3 · aigren_saca_a_su_hijo 1 · atrapados_rescatados 20 · barriada_delatada 13 · camorrista_a_la_guardia 8 · camorrista_ejecutado 2 · carterista_perdonado 13 · cobrador_amenazado 1 · dudas_en_edul 6 · dudas_en_verina 11 · edul_abandonado 20 · edul_compania_aceptada 5 · edul_liberado 7 · familia_a_la_barriada 2 · furia_de_alaro_devuelta 6 · furia_de_alaro_robada 4 · gato_bajado 4 · gorran_perdonado 7 · gorran_rematado 3 · guardia_preparada 20 · luisarda_animada 1 · luisarda_con_rosita 6 · luisarda_malos_modos 3 · luisarda_silencio 1 · noble_chantajeado 1 · noble_emborrachado 3 · noble_senalado 2 · reirse_de_tomas 5 · robar_al_ladron 7 · robo_en_la_fiesta 5 · saqueadores_convencidos 2 · saqueadores_pagados 2 · sumarse_verdaderos 3 · unirse_perdidos 11 · venides_atacado 4 · venides_enganado 11 · venides_liberado 1 · ver_ceremonia_gurkazaal 5 · verdaderos_calmados 2 · verdaderos_enfrentados 13 · verina_sacada_de_la_guarida 3 · xila_emborrachado 11 · xila_escuchado 10 · xila_maltratado 9 · xila_sin_alcohol 9 ·
+
+-- Beats que no ha visto ninguna partida (de 1216)
+   prologo/prologo_arcano_critico
+   dia1/b0_rosita_n_perdidos
+   dia1/b0_rosita_n_furia
+   dia1/b0_rosita_p0
+   dia1/b0_venides_n_el
+   dia1/b0_venides_v0  (del héroe)
+   dia1/b0_venides_s2  (del héroe)
+   dia1/b0_venides_p0
+   dia1/b0_tomas_amigo
+   dia1/b0_berto_ya
+   dia1/b1_aigren_envio
+   dia1/b1_luisarda_recado
+   dia1/b1_luisarda_pociones
+   dia1/b1_xila_desconocido_caster  (del héroe)
+   dia1/b1_xila_desconocido_tank  (del héroe)
+   dia1/b1_familia_despues_cobrada
+   dia1/b1_borracho_p0
+   dia1/b1_sacerdote_s2  (del héroe)
+   dia1/b1_carterista_rapido  (del héroe)
+   dia1/tut_plaza
+   dia1/b1_cripta_descubierto
+   dia1/b1_calma_exito
+   dia1/b1_calma_parcial
+   dia1/b1_calma_pifia
+   dia1/b1_carrera_exito
+   dia1/b1_carrera_parcial
+   dia1/b1_carrera_pifia
+   dia1/b1_capturado_solo
+   dia1/b1_capturado
+   dia1/b1_escape_exito
+   dia1/b1_escape_parcial
+   dia1/b1_escape_pifia
+   dia1/b1_edul_rescate
+   dia1/b1_guarida_puerta
+   dia1/b1_herrero_exito
+   dia1/b1_herrero_parcial
+   dia1/b1_herrero_pifia
+   dia1/b1_puerta_ganada
+   dia1/b1_dep_llegada_dentro
+   dia1/b1_colarse_pifia
+   dia1/b1_novicio_parcial
+   dia1/b1_novicio_pifia
+   dia1/b1_archivo_aviso  (del héroe)
+   dia1/b1_archivo_parcial
+   dia1/b1_archivo_pifia
+   dia1/b1_archivero_eng_pifia
+   dia1/b1_archivero_per_exito
+   dia1/b1_archivero_per_parcial
+   dia1/b1_archivero_int_parcial
+   dia1/b1_archivero_int_pifia
+   dia1/b1_tunica_parcial
+   dia1/b1_tunica_pifia
+   dia1/b1_estudio_vuelta
+   dia1/b1_reloj
+   dia1/b1_aigren_otra_cosa
+   dia1/b1_aigren_papel
+   dia1/b1_aigren_nada
+   dia1/b1_sala_p0_a
+   dia1/b1_luisarda_favor_cumplido
+   dia1/b1_luisarda_noche
+   dia1/b1_luisarda_calla
+   dia1/b1_secta_ganan
+   dia1/b1_sectarios_seguidos
+   dia1/b1_camara_sandes_herrero
+   dia1/b1_sandes_eng_exito
+   dia1/b1_sandes_eng_parcial
+   dia1/b1_sandes_eng_pifia
+   dia1/b1_sereno_s2
+   dia1/b1_idolo_gurkazaal
+   dia1/b1_idolo_misterio
+   dia1/b1_guarida_por_aigren
+   dia1/b1_charla_sandes  (del héroe)
+   dia1/b1_sandes_killville
+   dia1/b1_charla_verina
+   dia1/b1_banco
+   dia1/b1_banco_s0_a
+   dia1/b1_banco_p0_a
+   dia1/b1_charla_edul
+   dia1/b1_frascos
+   dia1/b1_frascos_s0_a
+   dia1/b1_frascos_p0_a
+   dia1/b1_llave_exito
+   dia1/b1_llave_parcial
+   dia1/b1_llave_pifia
+   dia1/b1_guarida_ganada
+   dia1/b1_guarida_exterminada
+   dia1/b1_guarida_perdida
+   dia1/b1_pulga_p0_a
+   dia1/b1_carterista_robo
+   dia1/b1_ceremonia
+   dia1/b1_ceremonia_s0_a
+   dia1/b1_ceremonia_s1_a
+   dia1/b1_ceremonia_p0_a
+   dia1/b1_fuego_s3_a
+   dia1/b1_fuego_p0_a
+   dia_gorran/bg_reloj
+   dia_gorran/bg_balance_bgb_rescate_parte
+   dia_gorran/bg_balance_bgc_cajas_cambiadas
+   dia_gorran/bg_balance_bgd_tinet_salvado
+   dia_gorran/bgd_candela_pifia
+   dia_gorran/bgd_convence_exito
+   dia_gorran/bgd_convence_parcial
+   dia_gorran/bgd_signo_pifia
+   dia_gorran/bgd_sacar_exito_tinet
+   dia_gorran/bgd_plaza_tinet
+   dia_gorran/bgc_gil
+   dia_gorran/bgc_gil_s0
+   dia_gorran/bgc_gil_p0
+   dia_gorran/bgc_abrir_pifia
+   dia_gorran/bgc_lluc
+   dia_gorran/bgc_hundir_parcial
+   dia_gorran/bgc_hundir_pifia
+   dia_gorran/bgc_cambiar_exito
+   dia_gorran/bgc_cambiar_parcial
+   dia_gorran/bgc_cambiar_pifia
+   dia_gorran/bgb_bru_parcial
+   dia_gorran/bgb_bru_pifia
+   dia_gorran/bgb_hueco_exito
+   dia_gorran/bgb_hueco_parcial
+   dia_gorran/bgb_hueco_pifia
+   dia_gorran/bgb_detras
+   dia_gorran/bgb_detras_exito
+   dia_gorran/bgb_detras_parcial
+   dia_gorran/bgb_detras_pifia
+   dia_gorran/bgb_detras_ganada
+   dia_gorran/bgb_detras_perdida
+   dia_gorran/bgb_aire_fin
+   dia_gorran/bgb_salen_tres
+   dia_gorran/bga_iris_p0
+   dia_gorran/bga_ventana_exito
+   dia_gorran/bga_ventana_pifia
+   dia_gorran/bga_carta_pifia
+   dia_gorran/bga_escena_escondida
+   dia_gorran/bga_escena_carta
+   dia_gorran/bga_contrato_pifia
+   dia_gorran/bga_pago_exito
+   dia_gorran/bga_pago_parcial
+   dia_gorran/bga_pago_pifia
+   dia_gorran/bga_garsa2_parcial
+   dia_gorran/bga_garsa2_pifia
+   dia_gorran/bga_saca_parcial
+   dia_gorran/bga_ganada
+   dia_gorran/bg_rosita_pelea_protegido
+   dia_gorran/bg_rosita_pelea_mirando
+   dia_gorran/b2_rosita_encargo_p0
+   dia_gorran/b2_negocio_exito
+   dia_gorran/b2_cueva_llegada
+   dia_gorran/b2_gola_otra
+   dia_gorran/b2_apuesta_pifia
+   dia_gorran/b2_gola_eng_exito
+   dia_gorran/b2_gola_eng_parcial
+   dia_gorran/b2_gola_eng_pifia
+   dia_gorran/b2_gola_sig_exito
+   dia_gorran/b2_gola_sig_parcial
+   dia_gorran/b2_gola_sig_pifia
+   dia_gorran/b2_gola_ganada
+   dia_gorran/b2_escolta_recogida
+   dia_gorran/b2_subasta_aval_cojo_pobre
+   dia_gorran/b2_subasta_aval_sin_espada
+   dia_gorran/b2_farsa_parcial
+   dia_gorran/b2_honor_pifia
+   dia_gorran/b2_comedia_pelea_mineros
+   dia_gorran/b2_gorran_v0  (del héroe)
+   dia_gorran/b2_gorran_p0_a
+   dia_gorran/b2_gorran_robo_limpio
+   dia_gorran/b2_gorran_sigilo_torpe
+   dia_gorran/b2_v_escribiente_parcial
+   dia_gorran/b2_v_escribiente_pifia
+   dia_gorran/b2_v_preso_pifia
+   dia_gorran/b2_v_sectario_pifia
+   dia_gorran/b2_v_vigia_pifia
+   dia_gorran/b2_v_rio_nombres_amigos
+   dia_gorran/b2_v_rio_luces_amigos
+   dia_gorran/b2_rio_rapidos_pifia
+   dia_gorran/b2_rio_salto_parcial
+   dia_gorran/b2_hito_gorran_afueras
+   dia2/b2_herreria_ausente
+   dia2/b2_skilla_espada_devuelta_vista
+   dia2/b2_aigren_orden_entrega
+   dia2/b2_cartel_luisarda
+   dia2/b2_luisarda_cerrada
+   dia2/b2_luisarda_pociones
+   dia2/b2_sastre_delatada
+   dia2/b2_sargento_segunda
+   dia2/b2_puerta_p0
+   dia2/b2_capitan_sereno_preso
+   dia2/b2_capitan_muerto
+   dia2/b2_capitan_no
+   dia2/b2_capitan_orden
+   dia2/b2_zarela_p0_a
+   dia2/b2_saq_llegan_emboscada
+   dia2/b2_saq_persu_parcial
+   dia2/b2_saq_persu_pifia
+   dia2/b2_saq_furia_exito
+   dia2/b2_saq_furia_fallo
+   dia2/b2_saq_combate_emboscada
+   dia2/b2_saq_combate_tres
+   dia2/b2_saq_combate
+   dia2/b2_saqueadores_vencidos_mira
+   dia2/b2_saqueadores_vencidos
+   dia2/b2_saqueadores_ganan
+   dia2/b2_ritual_fuego  (del héroe)
+   dia2/b2_ritual_bien_abuela
+   dia2/b2_ritual_medio
+   dia2/b2_fiesta_cocina
+   dia2/b2_cobrador_calla
+   dia2/b2_vigilante_echa
+   dia2/b2_escucha_rumores
+   dia2/b2_escucha_nada
+   dia2/b2_roto_culo
+   dia2/b2_roto_axilas
+   dia2/b2_roto_espalda
+   dia2/b2_dentro_disfraz
+   dia2/b2_disfraz_sospechas
+   dia2/b2_fiesta_nobles_s0
+   dia2/b2_fiesta_nobles_p0
+   dia2/b2_robo_pillado
+   dia2/b2_sonsaca_fallo
+   dia2/b2_venides_noche_rosita
+   dia2/b2_barriada_no_volviste
+   dia2/b2_cierre_todo_xila_borracho
+   dia2/b2_cierre_todo_vela
+   dia2/b2_cierre_todo
+   dia2/b2_cierre_xila_borracho_vela
+   dia2/b2_disfraz_parcial
+   dia2/b2_disfraz_pifia
+   dia2/b2_disfraz_segunda_bien
+   dia2/b2_disfraz_segunda_mal
+   dia2/b2_boutique_robo_mal
+   dia2/b2_gitanos_puerta_cerrada
+   ocaso/b3_plaza_vacia
+   ocaso/b3_dia_pasa
+   ocaso/b3_tarde_aviso
+   ocaso/b3_reloj
+   ocaso/b3_sermon_s3_a_miraba  (del héroe)
+   ocaso/b3_sermon_s3_a_desafiado  (del héroe)
+   ocaso/b3_sermon_p0_a
+   ocaso/b3_campanas_solas
+   ocaso/b3_aviso_en_base
+   ocaso/b3_xila_avisa
+   ocaso/b3_esc04_camino_oeste
+   ocaso/b3_esc04_camino_norte
+   ocaso/b3_esc04_camino_quedarse
+   ocaso/b3_saqueadores_20
+   ocaso/b3_saqueadores_10
+   ocaso/b3_saqueadores_guardia
+   ocaso/b3_saqueadores
+   ocaso/b3_fanaticos_escolta
+   ocaso/b3_fanaticos
+   ocaso/b3_oleada
+   ocaso/b3_base_cae
+   ocaso/b3_norte
+   ocaso/b3_norte_pasado
+   ocaso/b3_verina_tarde
+   ocaso/b3_verina_cautiva_escolta
+   ocaso/b3_verina_cautiva
+   ocaso/b3_verina_reconocida
+   ocaso/b3_verina_no_reconocida
+   ocaso/b3_esc05_verina_libre
+   ocaso/b3_verina_salvada_dudas
+   ocaso/b3_verina_salvada
+   ocaso/b3_verina_salvada_sola
+   ocaso/b3_verina_perdida
+   ocaso/b3_esc05_rosita_pasada
+   ocaso/b3_rosita_calle
+   ocaso/b3_taberna_cerrada
+   ocaso/b3_pulga
+   ocaso/b3_casco
+   ocaso/b3_rev_viga
+   ocaso/b3_rev_casa
+   ocaso/b3_rev_teobaldo
+   ocaso/b3_sandes_venides
+   ocaso/b3_sandes_xila
+   ocaso/b3_sandes_verina
+   ocaso/b3_sandes_oferta
+   ocaso/b3_verina_segunda
+   ocaso/b3_esc05_iglesia
+   ocaso/b3_sandes_huye_casco
+   ocaso/b3_sandes_gana_casco
+   ocaso/b3_barricada_zarela
+   ocaso/b3_rodeo_caido
+   ocaso/b3_edul_furia_casco
+   ocaso/b3_esc06_edul_traslado
+   ocaso/b3_edul_furia
+   ocaso/b3_edul_killville
+   ocaso/b3_edul_con_verina
+   ocaso/b3_edul_vencido
+   ocaso/b3_esc06_pacto_salida
+   ocaso/b3_compania
+   ocaso/b3_compania_de_los_tuyos  (del héroe)
+   ocaso/b3_rev_compania_cubre
+   ocaso/b3_aliado_fuera
+   ocaso/b3_caida
+   ocaso/b3_epilogo_caido
+   ocaso/b3_epi_rosita
+   ocaso/b3_epi_verina_viva
+   ocaso/b3_epi_verina_sola
+   ocaso/b3_epi_verina_muerta
+   ocaso/b3_epi_sandes
+   ocaso/b3_epi_compania
+   ocaso/b3_barca
+   ocaso/b3_barca_s0_a
+   ocaso/b3_barca_s1_a
+   = 303 sin ver
+
+-- Beats raros (vistos en < 3% de las partidas)
+
+-- Opciones que no ha elegido nadie
+   dia1/b0_rosita_n_ella#0                          «¿Cómo te llamas?»
+   dia1/b0_rosita_n_ella#1                          «Presentarte: me llamo {nombre}»
+   dia1/b0_rosita_n_ella#3                          «¿Qué hay de cenar?»
+   dia1/b0_rosita_n_furia#0                         «¿Siete trolls?»
+   dia1/b0_rosita_n_furia#1                         «¿Quién es la Furia?»
+   dia1/b0_rosita_n_furia#2                         «Dejarlo ahí»
+   dia1/b0_rosita_n_perdidos#0                      «¿Qué se dice de los Perdidos?»
+   dia1/b0_rosita_n_perdidos#1                      «Bajar la voz y preguntar por los Perdidos»
+   dia1/b0_rosita_n_perdidos#2                      «Dejarlo ahí»
+   dia1/b0_rosita_p0#0                              «Pagar la cama»
+   dia1/b0_rosita_p0#1                              «Subir a dormir»
+   dia1/b0_rosita_p0#2                              «Hablar de otra cosa»
+   dia1/b0_rosita_p0#3                              «Nada más»
+   dia1/b0_rosita_s0#0                              «Pagar la cama»
+   dia1/b0_rosita_s0#2                              «Hablar de otra cosa»
+   dia1/b0_rosita_s1#0                              «Preguntar por los Perdidos»
+   dia1/b0_rosita_s1#3                              «Nada más»
+   dia1/b0_rosita_s2#1                              «Preguntar por la Furia»
+   dia1/b0_rosita_s2#2                              «Hablar de otra cosa»
+   dia1/b0_venides#0                                «¿Qué te trae a Boundington?»
+   dia1/b0_venides#1                                «¿Qué escribes?»
+   dia1/b0_venides#2                                «Hablar de otra cosa»
+   dia1/b0_venides_n_el#0                           «¿Un caballero bebiendo solo?»
+   dia1/b0_venides_n_el#1                           «¿De dónde eres?»
+   dia1/b0_venides_n_el#2                           «Pareces preocupado.»
+   dia1/b0_venides_n_el#3                           «Dejarlo ahí»
+   dia1/b0_venides_n_escribes#1                     «Dejarlo ahí»
+   dia1/b0_venides_p0#0                             «¿Qué te trae a Boundington?»
+   dia1/b0_venides_p0#1                             «¿Qué escribes?»
+   dia1/b0_venides_p0#2                             «Hablar de otra cosa»
+   dia1/b0_venides_p0#3                             «Dejarle con su cuaderno»
+   dia1/b0_venides_s0#0                             «¿Qué te trae a Boundington?»
+   dia1/b0_venides_s0#1                             «¿Qué escribes?»
+   dia1/b0_venides_s0#2                             «Hablar de otra cosa»
+   dia1/b0_venides_s1#0                             «Preguntarle por él»
+   dia1/b0_venides_s1#1                             «Beber con él sin preguntar nada»
+   dia1/b0_venides_s1#2                             «Hablar de otra cosa»
+   dia1/b0_venides_s2#0                             «Contarle a qué te dedicas»
+   dia1/b0_venides_s2#1                             «Hablar de otra cosa»
+   dia1/b0_venides_s2#2                             «Dejarle con su cuaderno»
+   dia1/b0_venides_v0#0                             «¿Qué te trae a Boundington?»
+   dia1/b0_venides_v0#1                             «¿Qué escribes?»
+   dia1/b0_venides_v0#2                             «Hablar de otra cosa»
+   dia1/b0_venides_v0#3                             «Dejarle con su cuaderno»
+   dia1/b0_venides_v1#0                             «¿Qué te trae a Boundington?»
+   dia1/b0_venides_v1#3                             «Dejarle con su cuaderno»
+   dia1/b0_ventana#2                                «Hablar de otra cosa»
+   dia1/b0_ventana#3                                «Volver a tu mesa»
+   dia1/b0_ventana_p0_a#0                           «Contestar de dónde vienes»
+   dia1/b0_ventana_p0_a#2                           «Hablar de otra cosa»
+   dia1/b0_ventana_p0_a#3                           «Volver a tu mesa»
+   dia1/b1_aigren_charla_n_ceaseton#0               «¿Por qué te fuiste?»
+   dia1/b1_aigren_charla_s0#0                       «Buen acero. ¿Para quién es tanta hoja?»
+   dia1/b1_aigren_hijo#2                            «Dejarlo estar»
+   dia1/b1_archivo_aviso#0                          «Leer de reojo [Investigación]»
+   dia1/b1_archivo_aviso#1                          «Leer las Escrituras»
+   dia1/b1_archivo_aviso#2                          «Volver luego»
+   dia1/b1_archivo_libre#1                          «Leer las Escrituras»
+   dia1/b1_archivo_vigilado#1                       «Leer las Escrituras»
+   dia1/b1_banco#0                                  «¿Qué lees?»
+   dia1/b1_banco#1                                  «¿De dónde eres?»
+   dia1/b1_banco#2                                  «¿Por qué estás aquí?»
+   dia1/b1_banco#3                                  «Fingir que crees»
+   dia1/b1_banco_p0_a#0                             «¿Qué lees?»
+   dia1/b1_banco_p0_a#1                             «¿De dónde eres?»
+   dia1/b1_banco_p0_a#2                             «¿Por qué estás aquí?»
+   dia1/b1_banco_p0_a#3                             «Fingir que crees»
+   dia1/b1_banco_s0_a#0                             «¿Qué lees?»
+   dia1/b1_banco_s0_a#1                             «¿De dónde eres?»
+   dia1/b1_banco_s0_a#2                             «¿Por qué estás aquí?»
+   dia1/b1_banco_s0_a#3                             «Fingir que crees»
+   dia1/b1_borracho_n_montanas#1                    «Insistir otra vez»
+   dia1/b1_borracho_p0#0                            «¿Quién es Edul?»
+   dia1/b1_borracho_p0#1                            «¿Qué pasó en las Santas Montañas?»
+   dia1/b1_borracho_p0#2                            «Hablar de otra cosa»
+   dia1/b1_borracho_p0#3                            «Hablar de lo que has averiguado»
+   dia1/b1_borracho_s0#3                            «Hablar de lo que has averiguado»
+   dia1/b1_camara_sandes#3                          ««Tu padre te escribe desde Killville.»»
+   dia1/b1_camara_sandes_herrero#0                  ««Me he perdido.» [Engaño]»
+   dia1/b1_camara_sandes_herrero#1                  ««Vengo a unirme de verdad.»»
+   dia1/b1_camara_sandes_herrero#2                  «Soltarlo ahora mismo»
+   dia1/b1_camara_sandes_herrero#3                  «Volver escaleras arriba»
+   dia1/b1_camara_sandes_sospecha#0                 ««Me he perdido.» [Engaño]»
+   dia1/b1_camara_sandes_sospecha#2                 «Soltarlo ahora mismo»
+   dia1/b1_camara_sandes_sospecha#3                 «Volver escaleras arriba»
+   dia1/b1_camara_sandes_tunica#2                   «Soltarlo ahora mismo»
+   dia1/b1_camara_sandes_tunica#3                   ««Tu padre te escribe desde Killville.»»
+   dia1/b1_capturado#0                              «Romper las cadenas [Atletismo]»
+   dia1/b1_capturado#1                              «Esperar a Edul»
+   dia1/b1_capturado#2                              «Esperar a que te suelten»
+   dia1/b1_capturado_solo#0                         «Romper las cadenas [Atletismo]»
+   dia1/b1_capturado_solo#1                         «Esperar a Edul»
+   dia1/b1_capturado_solo#2                         «Esperar a que te suelten»
+   dia1/b1_ceremonia#0                              «Mirar la estatua [Conocimiento arcano]»
+   dia1/b1_ceremonia#1                              «Escuchar el canto»
+   dia1/b1_ceremonia#2                              «Hablar de otra cosa»
+   dia1/b1_ceremonia#3                              «Volver a subir»
+   dia1/b1_ceremonia_p0_a#0                         «Mirar la estatua [Conocimiento arcano]»
+   dia1/b1_ceremonia_p0_a#1                         «Escuchar el canto»
+   dia1/b1_ceremonia_p0_a#2                         «Hablar de otra cosa»
+   dia1/b1_ceremonia_p0_a#3                         «Volver a subir»
+   dia1/b1_ceremonia_s0_a#0                         «Mirar la estatua [Conocimiento arcano]»
+   dia1/b1_ceremonia_s0_a#1                         «Escuchar el canto»
+   dia1/b1_ceremonia_s0_a#2                         «Hablar de otra cosa»
+   dia1/b1_ceremonia_s0_a#3                         «Volver a subir»
+   dia1/b1_ceremonia_s1_a#0                         «Hablar con alguien [Persuasión]»
+   dia1/b1_ceremonia_s1_a#1                         «Ir a por lo tuyo»
+   dia1/b1_ceremonia_s1_a#2                         «Hablar de otra cosa»
+   dia1/b1_ceremonia_s1_a#3                         «Volver a subir»
+   dia1/b1_charla_sandes#0                          «Quiero unirme.»
+   dia1/b1_charla_sandes#1                          «Solo miraba.»
+   dia1/b1_charla_sandes#2                          «¿Y tú quién eres para mandar?»
+   dia1/b1_charla_sandes#3                          «Contarle lo de Luisarda»
+   dia1/b1_colarse_parcial#0                        «Soy nuevo. Me manda el herrero. [Engaño]»
+   dia1/b1_copista#2                                «Hablar de otra cosa»
+   dia1/b1_copista_s0#0                             «¿Qué copias?»
+   dia1/b1_cripta_descubierto#0                     ««Sandes me ha mandado a mí.» [Engaño]»
+   dia1/b1_cripta_descubierto#1                     «Rendirte»
+   dia1/b1_cripta_descubierto#2                     «Correr hacia la salida [Atletismo]»
+   dia1/b1_cripta_descubierto#3                     «Pelear»
+   dia1/b1_desayuno#2                               «Hablar de otra cosa»
+   dia1/b1_desayuno_n_rosita_a#1                    «Dejarlo ahí»
+   dia1/b1_edul#2                                   «Plantarles cara»
+   dia1/b1_edul_cripta_s0#0                         «Sí, acompáñame arriba»
+   dia1/b1_edul_cripta_s0#1                         «¿Por qué no te vas tú?»
+   dia1/b1_edul_cripta_s1#3                         «Todavía no»
+   dia1/b1_edul_cripta_s3#0                         «Dame la llave. [Persuasión]»
+   dia1/b1_edul_cripta_s3#2                         «Hablar de otra cosa»
+   dia1/b1_edul_cripta_s4#0                         «He mojado la lona del almacén.»
+   dia1/b1_edul_rescate#0                           ««Y el sereno?»»
+   dia1/b1_edul_rescate#1                           «Subir con él»
+   dia1/b1_frascos#0                                «¿Qué mezclas?»
+   dia1/b1_frascos#1                                «¿Eres herrero? Tienes las manos de uno.»
+   dia1/b1_frascos#2                                «¿Conoces a un caballero llamado Venides?»
+   dia1/b1_frascos#3                                «Callar»
+   dia1/b1_frascos_p0_a#0                           «¿Qué mezclas?»
+   dia1/b1_frascos_p0_a#1                           «¿Eres herrero? Tienes las manos de uno.»
+   dia1/b1_frascos_p0_a#2                           «¿Conoces a un caballero llamado Venides?»
+   dia1/b1_frascos_p0_a#3                           «Callar»
+   dia1/b1_frascos_s0_a#0                           «¿Qué mezclas?»
+   dia1/b1_frascos_s0_a#1                           «¿Eres herrero? Tienes las manos de uno.»
+   dia1/b1_frascos_s0_a#2                           «¿Conoces a un caballero llamado Venides?»
+   dia1/b1_frascos_s0_a#3                           «Callar»
+   dia1/b1_fuego_p0_a#0                             «¿De dónde sois?»
+   dia1/b1_fuego_p0_a#1                             «¿Por qué Boundington?»
+   dia1/b1_fuego_p0_a#2                             «Hablar de otra cosa»
+   dia1/b1_fuego_p0_a#3                             «Dar las gracias e irte»
+   dia1/b1_fuego_s0_a#0                             «¿De dónde sois?»
+   dia1/b1_fuego_s0_a#3                             «Dar las gracias e irte»
+   dia1/b1_fuego_s2_a#0                             «¿Os molestan mucho?»
+   dia1/b1_fuego_s3_a#0                             «Os he salvado la vida. Eso vale algo.»
+   dia1/b1_fuego_s3_a#1                             «Hablar de otra cosa»
+   dia1/b1_fuego_s3_a#2                             «Dar las gracias e irte»
+   dia1/b1_guarida_por_aigren#0                     «Sacar a Verina de aquí»
+   dia1/b1_guarida_por_aigren#1                     «Sonsacar para Venides»
+   dia1/b1_guarida_por_aigren#2                     «Unirte»
+   dia1/b1_guarida_por_aigren#3                     «Intentar acabar con todos»
+   dia1/b1_guarida_puerta#0                         «Dejar las armas»
+   dia1/b1_guarida_puerta#1                         «Vengo de parte del herrero.»
+   dia1/b1_guarida_puerta#2                         ««Vengo de parte del herrero.» [Engaño]»
+   dia1/b1_guarida_puerta#3                         «Darte la vuelta»
+   dia1/b1_herrero_pifia#0                          «Dejar las armas y bajar»
+   dia1/b1_herrero_pifia#1                          «Apartarlos a las bravas»
+   dia1/b1_herrero_pifia#2                          «Darte la vuelta»
+   dia1/b1_literas#1                                «Coger una túnica sin que se entere»
+   dia1/b1_literas#2                                «Mirar el libro de la almohada»
+   dia1/b1_luisarda_pide#1                          «Ven a cenar a la taberna. Rosita te espera.»
+   dia1/b1_luisarda_recado#0                        «Insistir, de malos modos [Intimidación]»
+   dia1/b1_luisarda_recado#1                        «Hacerle creer que ya lo sabes todo [Engaño]»
+   dia1/b1_luisarda_recado#2                        «Convencerla, con lo de Rosita [Persuasión]»
+   dia1/b1_luisarda_recado#3                        «Dejarla tranquila»
+   dia1/b1_luisarda_tienda_p0#1                     «Rosita dice que no vas a cenar.»
+   dia1/b1_luisarda_tienda_s0#1                     «Rosita dice que no vas a cenar.»
+   dia1/b1_luisarda_tienda_s0#3                     «Irte»
+   dia1/b1_mira_v0#1                                «¿Y tú cómo te llamas?»
+   dia1/b1_mira_v0#2                                «Hablar de otra cosa»
+   dia1/b1_mira_v0#3                                «Ahora no puedo»
+   dia1/b1_pelea_rosita#1                           «Soltarlo»
+   dia1/b1_pulga_p0_a#0                             «¿Cómo te llamas?»
+   dia1/b1_pulga_p0_a#1                             «¿Por qué robas?»
+   dia1/b1_pulga_p0_a#2                             «Hablar de otra cosa»
+   dia1/b1_pulga_p0_a#3                             «Dejarle ir»
+   dia1/b1_sacerdote_s2#0                           «Rezar con él»
+   dia1/b1_sacerdote_s2#1                           «Hablar de otra cosa»
+   dia1/b1_sacerdote_s2#2                           «Irte»
+   dia1/b1_sacerdote_v0#0                           «¿Qué pasa en esta iglesia?»
+   dia1/b1_sacerdote_v0#1                           «¿Quién baja ahí?»
+   dia1/b1_sacerdote_v0#3                           «Irte»
+   dia1/b1_sala#1                                   «¿Cómo era Sandes?»
+   dia1/b1_sala_p0_a#0                              «¿Qué luz?»
+   dia1/b1_sala_p0_a#1                              «¿Cómo era Sandes?»
+   dia1/b1_sala_p0_a#2                              «¿Vienen más como él?»
+   dia1/b1_sala_p0_a#3                              «Escuchar lo que te pide»
+   dia1/b1_sandes_killville#0                       «¿Killville?»
+   dia1/b1_sandes_killville#1                       «Asentir y callar»
+   dia1/b1_santuario_intruso#0                      «Sentarte con los novicios, con tu túnica»
+   dia1/b1_secta_burla#1                            «Dejarlo ahí»
+   dia1/b1_secta_s2#0                               «¿Qué luz?»
+   dia1/b1_secta_v0#0                               «Sí. Mi bolsa.»
+   dia1/b1_secta_v0#1                               «¿Quiénes sois?»
+   dia1/b1_secta_v0#2                               «Hablar de otra cosa»
+   dia1/b1_sereno_s2#0                              «¿Qué cantan arriba?»
+   dia1/b1_sereno_s2#1                              «Abrir el candado con la llave»
+   dia1/b1_sereno_s2#2                              «Hablar de otra cosa»
+   dia1/b1_sereno_s2#3                              «Todavía no»
+   dia1/b1_sereno_s3#1                              «Arrancar la argolla de la pared»
+   dia1/b1_venides_informe#1                        «Confiar en él: «Bebe conmigo»»
+   dia1/b1_verina_cripta#3                          «Dejarla leer»
+   dia1/b1_verina_cripta_p0#1                       «¿De dónde eres?»
+   dia1/b1_verina_cripta_p0#2                       «Hablar de otra cosa»
+   dia1/b1_verina_cripta_s0#2                       «Hablar de otra cosa»
+   dia1/b1_verina_cripta_s3#1                       «He leído tus notas del margen.»
+   dia1/b1_xila#3                                   «Irte»
+   dia1/b1_xila_desconocido_agile#1                 «¿Estás bien?»
+   dia1/b1_xila_desconocido_agile#3                 «Dejarle en paz»
+   dia1/b1_xila_desconocido_caster#0                «Sentarte con él, sin decir nada»
+   dia1/b1_xila_desconocido_caster#1                «¿Estás bien?»
+   dia1/b1_xila_desconocido_caster#2                «Tratarle con desprecio»
+   dia1/b1_xila_desconocido_caster#3                «Dejarle en paz»
+   dia1/b1_xila_desconocido_tank#0                  «Sentarte con él, sin decir nada»
+   dia1/b1_xila_desconocido_tank#1                  «¿Estás bien?»
+   dia1/b1_xila_desconocido_tank#2                  «Tratarle con desprecio»
+   dia1/b1_xila_desconocido_tank#3                  «Dejarle en paz»
+   dia1/b1_xila_n_de_donde#1                        «Nací en el {origen}.»
+   dia1/b1_xila_n_de_donde_a#2                      «Dejarlo ahí»
+   dia1/b1_xila_s0#0                                «¿Qué te pasó?»
+   dia1/b1_xila_s0#2                                «Hablar de otra cosa»
+   dia1/b1_xila_s0#3                                «Irte»
+   dia1/b1_xila_s0_a#1                              «¿Cómo llegaste aquí?»
+   dia1/b1_xila_s2_a#1                              «¿Cómo se llamaban?»
+   dia1/b1_xila_s2_a#3                              «Irte»
+   dia1/b1_xila_s3_a#0                              «¿Te suena un tal Sandes, de Killville?»
+   dia1/b1_xila_s3_a#3                              «Irte»
+   dia1/b1_xila_s4_a#1                              «Hablar de otra cosa»
+   dia1/b1_xila_s4_a#2                              «Irte»
+   dia2/b2_ancianas#1                               «¿Qué decís de mí?»
+   dia2/b2_boutique_robo_mal#0                      «Pagar (40)»
+   dia2/b2_boutique_robo_mal#1                      «Irte»
+   dia2/b2_capitan#0                                «Pedirle que prepare a la guardia [Persuasion]»
+   dia2/b2_capitan#2                                «¿Cuantos hombres tienes?»
+   dia2/b2_capitan_muerto#0                         «Pedirle que prepare a la guardia [Persuasion]»
+   dia2/b2_capitan_muerto#1                         «¿Cuantos hombres tienes?»
+   dia2/b2_capitan_muerto#2                         «No molestarle»
+   dia2/b2_castillo_prueba#0                        «Ensenarle una prueba de los Perdidos»
+   dia2/b2_castillo_prueba#2                        «Retirarse»
+   dia2/b2_cobrador#0                               «Pagar (20)»
+   dia2/b2_cobrador#1                               «Denunciarle al vigilante»
+   dia2/b2_disfraz_hallado_xila#0                   «De músico»
+   dia2/b2_disfraz_hallado_xila#1                   «De noble excéntrico de Ascaria»
+   dia2/b2_disfraz_pifia#0                          «Volver a mirar, con calma [Investigación]»
+   dia2/b2_disfraz_pifia#1                          «Irte: Luisarda vende capas»
+   dia2/b2_edul_herreria#0                          «¿Y Aigren?»
+   dia2/b2_edul_herreria#2                          «Hablar de otra cosa»
+   dia2/b2_edul_herreria_n_venides#1                «Dejarlo ahi»
+   dia2/b2_edul_herreria_s0#2                       «Hablar de otra cosa»
+   dia2/b2_fiesta_anfitriona#1                      «Y manana?»
+   dia2/b2_fiesta_anfitriona_p0#0                   «Como va la noche?»
+   dia2/b2_fiesta_anfitriona_p0#2                   «Seguir con la fiesta»
+   dia2/b2_fiesta_anfitriona_s0#0                   «Como va la noche?»
+   dia2/b2_fiesta_anfitriona_s0#1                   «Y manana?»
+   dia2/b2_fiesta_cocina#0                          «Entrar por la cocina»
+   dia2/b2_fiesta_cocina#1                          «Otra noche sera»
+   dia2/b2_fiesta_criados_p0#1                      «Y manana?»
+   dia2/b2_fiesta_mercaderes#1                      «Y manana?»
+   dia2/b2_fiesta_mercaderes#2                      «Seguir con la fiesta»
+   dia2/b2_fiesta_mercaderes_p0#0                   «Como va la noche?»
+   dia2/b2_fiesta_mercaderes_p0#1                   «Y manana?»
+   dia2/b2_fiesta_mercaderes_s0#0                   «Como va la noche?»
+   dia2/b2_fiesta_musicos#1                         «Y manana?»
+   dia2/b2_fiesta_musicos_p0#0                      «Como va la noche?»
+   dia2/b2_fiesta_musicos_p0#1                      «Y manana?»
+   dia2/b2_fiesta_musicos_s0#0                      «Como va la noche?»
+   dia2/b2_fiesta_nobles#0                          «Como va la noche?»
+   dia2/b2_fiesta_nobles#1                          «Y manana?»
+   dia2/b2_fiesta_nobles_p0#0                       «Como va la noche?»
+   dia2/b2_fiesta_nobles_p0#1                       «Y manana?»
+   dia2/b2_fiesta_nobles_p0#2                       «Seguir con la fiesta»
+   dia2/b2_fiesta_nobles_s0#0                       «Como va la noche?»
+   dia2/b2_fiesta_nobles_s0#1                       «Y manana?»
+   dia2/b2_fiesta_nobles_s0#2                       «Seguir con la fiesta»
+   dia2/b2_fiesta_vuelta#0                          «Volver y pagar al portero (10)»
+   dia2/b2_gitanos_puerta_cerrada#0                 «Volver con un saco de grano (10) y cargar tablas»
+   dia2/b2_gitanos_puerta_cerrada#1                 «Irte»
+   dia2/b2_gitanos_recelo#0                         «Cargar agua del río hasta llenar los cubos»
+   dia2/b2_guardian_charla#3                        «Dejarle vigilar»
+   dia2/b2_guardian_segunda#0                       «¿Qué favor?»
+   dia2/b2_instructor_gris_p0#2                     «Seguirle sin que te vea [Sigilo]»
+   dia2/b2_instructor_gris_s0#1                     «Quien vigila el puente?»
+   dia2/b2_invitados#0                              «Sonsacar al noble que brinda [Engano]»
+   dia2/b2_invitados#1                              «Sonsacarle, con el traje roto [Engano]»
+   dia2/b2_invitados#3                              «Irte (esta noche no podras volver sin pagar)»
+   dia2/b2_luisarda_s0#0                            «¿Y si vuelve Sandes?»
+   dia2/b2_mansion#0                                «Entrar por la puerta, con disfraz [Interpretacion]»
+   dia2/b2_mansion#1                                «Escuchar desde el jardin [Percepcion]»
+   dia2/b2_mira_barriada#0                          «¿Tienes amigas ya?»
+   dia2/b2_mira_barriada#2                          «¿Echas de menos tu casa?»
+   dia2/b2_mira_barriada_s0#0                       «¿Tienes amigas ya?»
+   dia2/b2_mira_barriada_s0#1                       «¿Tienes miedo por la noche?»
+   dia2/b2_noche_rosita_informa#2                   «Contarle el ataque, pero no lo de Edul y Verina»
+   dia2/b2_noche_rosita_informa#3                   «No contarle nada»
+   dia2/b2_noche_rosita_informa_confianza#1         «Contarle el ataque, pero no lo de Edul y Verina»
+   dia2/b2_noche_rosita_informa_confianza#2         «No contarle nada»
+   dia2/b2_padre_barriada#0                         «¿Cómo os tratan aquí?»
+   dia2/b2_padre_barriada#3                         «Dejarle»
+   dia2/b2_padre_barriada_p0#2                      «¿Volveréis a la ciudad?»
+   dia2/b2_padre_barriada_s0#0                      «¿Cómo os tratan aquí?»
+   dia2/b2_padre_barriada_s0#1                      «¿Sabes lo de esta noche?»
+   dia2/b2_puerta_p0#0                              «¿Que escudo es ese?»
+   dia2/b2_puerta_p0#1                              «Vengo con el caballero Venides.»
+   dia2/b2_puerta_s0#0                              «¿Que escudo es ese?»
+   dia2/b2_saq_llegan#0                             «Plantarte delante.»
+   dia2/b2_saq_llegan#2                             «Desenvainar la Furia de Alaro [Intimidación]»
+   dia2/b2_saqueadores_ganan#0                      «Quedarte a velar la noche con ellos»
+   dia2/b2_saqueadores_ganan#1                      «Irte a curarte»
+   dia2/b2_skilla_espada_devuelta_vista#0           «Devolvérsela»
+   dia2/b2_skilla_espada_devuelta_vista#1           «Devolvérsela y contarle todo»
+   dia2/b2_skilla_espada_devuelta_vista#2           «Decirle que no la encontraste»
+   dia2/b2_sonsaca_exito#2                          «Dejarlo estar»
+   dia2/b2_sonsaca_fallo#0                          «Invitarle a tres copas (6 de oro)»
+   dia2/b2_sonsaca_fallo#1                          «Dejarle en paz»
+   dia2/b2_venides_castillo#0                       «Voy contigo.»
+   dia2/b2_venides_castillo#1                       «Es una mala idea.»
+   dia2/b2_venides_castillo_s0_a#1                  «Es una mala idea.»
+   dia2/b2_venides_castillo_s0_a#2                  «Hablar de otra cosa»
+   dia2/b2_venides_castillo_s1_a_pelea_perdida#0    «¿Que tal la resaca?»
+   dia2/b2_venides_castillo_v0#0                    «Voy contigo.»
+   dia2/b2_venides_castillo_v0#1                    «Es una mala idea.»
+   dia2/b2_venides_castillo_v0#3                    «Ir con Venides a ver al capitan»
+   dia2/b2_venides_castillo_v1#0                    «Voy contigo.»
+   dia2/b2_venides_noche#1                          «Contarselo todo y ensenarle las pruebas»
+   dia2/b2_venides_noche_rosita#0                   «Contarselo todo»
+   dia2/b2_venides_noche_rosita#1                   «Contarselo todo y ensenarle las pruebas»
+   dia2/b2_venides_noche_rosita#2                   «Contarle el ataque, pero no lo de Edul y Verina»
+   dia2/b2_venides_noche_rosita#3                   «No contarle nada»
+   dia2/b2_venides_noche_rosita2#0                  «Contarselo todo»
+   dia2/b2_venides_noche_rosita2#1                  «Contarselo todo y ensenarle las pruebas»
+   dia2/b2_venides_noche_rosita2#3                  «No contarle nada»
+   dia2/b2_venides_noche_todo#0                     «Contarselo todo»
+   dia2/b2_venides_noche_todo#1                     «Contarselo todo y ensenarle las pruebas»
+   dia2/b2_venides_noche_todo#2                     «Contarle el ataque, pero no lo de Edul y Verina»
+   dia2/b2_vigilante_charla#0                       «Convencerle de que te deje pasar [Persuasion]»
+   dia2/b2_vigilante_te_para#1                      «Buscar otra ruta por los jardines»
+   dia2/b2_vigilante_te_para#2                      «Irte»
+   dia2/b2_xila_escalon_p0#0                        «Te veo bien.»
+   dia2/b2_xila_escalon_p0#1                        «¿Que sabes hoy?»
+   dia2/b2_xila_escalon_s0#0                        «Te veo bien.»
+   dia2/b2_xila_escalon_s0#1                        «¿Que sabes hoy?»
+   dia2/b2_xila_resaca_mal#0                        «Pagarle el desayuno de todas formas (6)»
+   dia2/b2_zarela#1                                 «¿Cuánto lleváis aquí?»
+   dia2/b2_zarela_p0_a#0                            «¿De qué se ríen?»
+   dia2/b2_zarela_p0_a#1                            «¿Cuánto lleváis aquí?»
+   dia2/b2_zarela_p0_a#2                            «Hablar de otra cosa»
+   dia2/b2_zarela_p0_a#3                            «Preguntarle qué necesitan»
+   dia2/b2_zarela_pide#1                            «Preparar una emboscada en la empalizada»
+   dia2/b2_zarela_pide#3                            «No es mi pelea.»
+   dia2/b2_zarela_s0_a#0                            «¿De qué se ríen?»
+   dia2/b2_zarela_s0_a#2                            «Hablar de otra cosa»
+   dia2/b2_zarela_s0_a#3                            «Preguntarle qué necesitan»
+   dia2/b2_zarela_s1_a#3                            «Preguntarle qué necesitan»
+   dia2/b2_zarela_s2_a#2                            «Hablar de otra cosa»
+   dia2/b2_zarela_s3_a#0                            «¿Tu abuela sabía mucho?»
+   dia2/b2_zarela_s4_a#0                            «¿A ti también te miran así en la ciudad?»
+   dia2/b2_zarela_s4_a#2                            «Preguntarle qué necesitan»
+   dia_gorran/b2_barca#0                            «Embarcar con ellos»
+   dia_gorran/b2_calabozo#1                         «Esperar a Victor y Asdrugal»
+   dia_gorran/b2_calabozo#3                         «Aguantar hasta que te echen»
+   dia_gorran/b2_cojo_p0#0                          «¿A qué se juega aquí?»
+   dia_gorran/b2_cojo_p0#2                          «Echar una partida [Percepción]»
+   dia_gorran/b2_cojo_p0#3                          «Levantarte»
+   dia_gorran/b2_cojo_s0#1                          «¿Gorran te debe dinero?»
+   dia_gorran/b2_cueva_llegada#0                    «Pagar el paso (5)»
+   dia_gorran/b2_cueva_llegada#1                    ««Vengo a ver la subasta.»»
+   dia_gorran/b2_cueva_llegada#2                    «Enseñar la cinta de la escolta»
+   dia_gorran/b2_cueva_llegada#3                    «Probar otra manera»
+   dia_gorran/b2_dados#1                            «Cambiar los dados»
+   dia_gorran/b2_gola_otra#0                        ««Soy comprador.» [Engaño]»
+   dia_gorran/b2_gola_otra#1                        «Colarte por las sombras [Sigilo]»
+   dia_gorran/b2_gola_otra#2                        «Apartarle a las bravas»
+   dia_gorran/b2_gola_otra#3                        «Darte la vuelta»
+   dia_gorran/b2_gorran#0                           «Esa espada.»
+   dia_gorran/b2_gorran_p0_a#0                      «Esa espada.»
+   dia_gorran/b2_gorran_p0_a#1                      «¿Quién te la encargó?»
+   dia_gorran/b2_gorran_p0_a#2                      «Es de la Furia.»
+   dia_gorran/b2_gorran_p0_a#3                      «Dejarlo para esta noche»
+   dia_gorran/b2_gorran_s0_a#2                      «Es de la Furia.»
+   dia_gorran/b2_gorran_v0#0                        «Esa espada.»
+   dia_gorran/b2_gorran_v0#1                        «¿Quién te la encargó?»
+   dia_gorran/b2_gorran_v0#2                        «Es de la Furia.»
+   dia_gorran/b2_gorran_v0#3                        «Dejarlo para esta noche»
+   dia_gorran/b2_gorran_victoria#0                  «¿Qué dicen los papeles?»
+   dia_gorran/b2_joel#1                             «¿Qué te obligan a hacer?»
+   dia_gorran/b2_joel_p0#0                          «¿Qué te pasa?»
+   dia_gorran/b2_joel_p0#2                          «Hablar de otra cosa»
+   dia_gorran/b2_joel_s0#0                          «¿Qué te pasa?»
+   dia_gorran/b2_porton#0                           ««Vengo de parte de Doña Serra.»»
+   dia_gorran/b2_recadero#1                         «Ya le he llevado lo tuyo a Serra.»
+   dia_gorran/b2_recadero_s0#0                      «¿Qué recados llevas?»
+   dia_gorran/b2_recadero_s0#1                      «Ya le he llevado lo tuyo a Serra.»
+   dia_gorran/b2_reclutador#0                       «¿Qué trabajo?»
+   dia_gorran/b2_reclutador_p0#0                    «¿Qué trabajo?»
+   dia_gorran/b2_reclutador_p0#2                    «Acepto el trabajo.»
+   dia_gorran/b2_reclutador_s0#0                    «¿Qué trabajo?»
+   dia_gorran/b2_reclutador_s0#1                    «¿Qué subasta?»
+   dia_gorran/b2_reclutador_s0#2                    «Acepto el trabajo.»
+   dia_gorran/b2_rio_rapidos#1                      «Dejar que Victor y Asdrugal la lleven»
+   dia_gorran/b2_rio_salto#1                        «Dejar que Victor y Asdrugal la lleven»
+   dia_gorran/b2_rio_sifon#1                        «Dejar que Victor y Asdrugal la lleven»
+   dia_gorran/b2_rosita_encargo_p0#0                «¿Qué tiene de especial?»
+   dia_gorran/b2_rosita_encargo_p0#1                «¿Una tabernera con una espada mágica?»
+   dia_gorran/b2_rosita_encargo_p0#2                «Hablar de otra cosa»
+   dia_gorran/b2_rosita_encargo_p0#3                «Aceptar el encargo»
+   dia_gorran/b2_rosita_encargo_v0#1                «¿Una tabernera con una espada mágica?»
+   dia_gorran/b2_subasta_aval_cojo_pobre#0          «Unirte a la farsa [Interpretación]»
+   dia_gorran/b2_subasta_aval_cojo_pobre#1          «Llevarte la Furia en el caos [Sigilo]»
+   dia_gorran/b2_subasta_aval_cojo_pobre#2          «Salvarle la cara a Gorran [Persuasión]»
+   dia_gorran/b2_subasta_aval_cojo_pobre#3          «Proponerle una tregua»
+   dia_gorran/b2_subasta_aval_sin_espada#0          «Unirte a la farsa [Interpretación]»
+   dia_gorran/b2_subasta_aval_sin_espada#1          «Sacar a Joel en el caos [Sigilo]»
+   dia_gorran/b2_subasta_aval_sin_espada#2          «Salvarle la cara a Gorran [Persuasión]»
+   dia_gorran/b2_subasta_aval_sin_espada#3          «Proponerle una tregua»
+   dia_gorran/b2_subasta_cojo_pobre#0               «Unirte a la farsa [Interpretación]»
+   dia_gorran/b2_subasta_cojo_pobre#3               «Dejar que estalle»
+   dia_gorran/b2_subasta_sin_espada#0               «Unirte a la farsa [Interpretación]»
+   dia_gorran/b2_subasta_sin_espada#2               «Salvarle la cara a Gorran [Persuasión]»
+   dia_gorran/b2_subasta_sin_espada#3               «Dejar que estalle»
+   dia_gorran/b2_subasta_tregua#0                   «Salvarle la cara a Gorran»
+   dia_gorran/b2_subasta_tregua#2                   «Traicionar la tregua»
+   dia_gorran/b2_tabernera_p0#0                     «¿Qué se dice de la espada?»
+   dia_gorran/b2_tabernera_p0#1                     «¿Gorran baja por aquí?»
+   dia_gorran/b2_tabernera_s0#0                     «¿Qué se dice de la espada?»
+   dia_gorran/b2_v_contable_p0#1                    «Leer el registro [Investigación]»
+   dia_gorran/b2_v_contable_s0#0                    «¿Qué entra por la galería?»
+   dia_gorran/b2_v_escribiente#2                    «Apretarle [Intimidación]»
+   dia_gorran/bg_skilla_hora#0                      «Lo de la espada: acepto»
+   dia_gorran/bg_skilla_hora_pronto#0               «Lo de la espada: acepto»
+   dia_gorran/bg_skilla_hora_pronto#3               «Nada, gracias»
+   dia_gorran/bga_escena#0                          ««Ese contrato es falso.» [Investigación]»
+   dia_gorran/bga_escena_carta#0                    ««Ese contrato es falso.» [Investigación]»
+   dia_gorran/bga_escena_carta#1                    «Enseñar la carta de pago [Engaño]»
+   dia_gorran/bga_escena_carta#2                    «Hablarle a la Garsa [Persuasión]»
+   dia_gorran/bga_escena_carta#3                    «Sacar a Iris mientras hablan [Sigilo]»
+   dia_gorran/bga_escena_escondida#0                ««Iris no está.»»
+   dia_gorran/bga_escena_escondida#1                ««Ese contrato es falso.» [Investigación]»
+   dia_gorran/bga_escena_escondida#2                «Hablarle a la Garsa [Persuasión]»
+   dia_gorran/bga_escena_luz#1                      «Hablarle a la Garsa [Persuasión]»
+   dia_gorran/bga_ganada#0                          ««Fuera de la aldea.»»
+   dia_gorran/bga_ganada#1                          «Entregárselo a Gorran»
+   dia_gorran/bga_iris#3                            «Dejarla coser»
+   dia_gorran/bga_iris_p0#0                         «¿De dónde eres?»
+   dia_gorran/bga_iris_p0#1                         «¿Qué dice tu contrato?»
+   dia_gorran/bga_iris_p0#2                         «Hablar de otra cosa»
+   dia_gorran/bga_iris_p0#3                         «Dejarla coser»
+   dia_gorran/bga_iris_s0#1                         «¿Qué dice tu contrato?»
+   dia_gorran/bgb_bru#0                             «¿Dónde estabas cuando cayó?»
+   dia_gorran/bgb_bru#1                             «¿Quién paga a los de gris por la mina?»
+   dia_gorran/bgb_bru_p0#0                          «¿Dónde estabas cuando cayó?»
+   dia_gorran/bgb_bru_p0#1                          «¿Quién paga a los de gris por la mina?»
+   dia_gorran/bgb_bru_p0#2                          «Hablar de otra cosa»
+   dia_gorran/bgb_bru_s0#1                          «¿Quién paga a los de gris por la mina?»
+   dia_gorran/bgb_bru_s1#1                          ««Ramon tiene hijos, Bru.» [Persuasión]»
+   dia_gorran/bgb_bru_s1#2                          «Hablar de otra cosa»
+   dia_gorran/bgb_bru_s1#3                          «Dejarle»
+   dia_gorran/bgb_derrumbe#1                        «Apuntalar con las vigas del taller»
+   dia_gorran/bgb_derrumbe#2                        «Por la derecha, detrás de la viga»
+   dia_gorran/bgb_derrumbe#3                        «Bajar por la mina vieja, por detrás»
+   dia_gorran/bgb_detras#0                          «Pasar a su espalda [Sigilo]»
+   dia_gorran/bgb_detras#1                          ««La luz me manda a relevaros.» [Engaño]»
+   dia_gorran/bgb_detras#2                          «Echarles»
+   dia_gorran/bgb_golpes#1                          «Apuntalar con las vigas del taller»
+   dia_gorran/bgb_golpes#2                          «Por la derecha, detrás de la viga»
+   dia_gorran/bgb_golpes#3                          «Bajar por la mina vieja, por detrás»
+   dia_gorran/bgb_tecla_s0#1                        «¿Cuánto aire les queda?»
+   dia_gorran/bgc_asalto#3                          «Cambiar el contenido por aceite de lámpara [Engaño]»
+   dia_gorran/bgc_gil#0                             «¿Cuál es el plan?»
+   dia_gorran/bgc_gil#1                             «Me apunto.»
+   dia_gorran/bgc_gil#2                             «Dejarlos»
+   dia_gorran/bgc_gil_p0#0                          «¿Cuál es el plan?»
+   dia_gorran/bgc_gil_p0#1                          «Me apunto.»
+   dia_gorran/bgc_gil_p0#2                          «Dejarlos»
+   dia_gorran/bgc_gil_s0#0                          «¿Cuál es el plan?»
+   dia_gorran/bgc_gil_s0#1                          «Me apunto.»
+   dia_gorran/bgc_gil_s0#2                          «Dejarlos»
+   dia_gorran/bgd_gorran#0                          «Que lo sepa por los mineros»
+   dia_gorran/bgd_gorran#2                          «Dejarlo»
+   dia_gorran/bgd_velas#1                           «Volver a Candela contra ellos»
+   dia_gorran/bgd_velas#2                           ««¡Gorran! ¡Ahora!»»
+   dia_gorran/bgd_velas_hermano#2                   «Volver a Candela contra ellos»
+   ocaso/b3_barca#0                                 «¿Quién eres?»
+   ocaso/b3_barca#1                                 «¿Por qué me enseñaste esto?»
+   ocaso/b3_barca#2                                 «Hablar de otra cosa»
+   ocaso/b3_barca#3                                 «Cerrar los ojos (fin de la aventura)»
+   ocaso/b3_barca_s0_a#0                            «¿Quién eres?»
+   ocaso/b3_barca_s0_a#1                            «¿Por qué me enseñaste esto?»
+   ocaso/b3_barca_s0_a#2                            «Hablar de otra cosa»
+   ocaso/b3_barca_s0_a#3                            «Cerrar los ojos (fin de la aventura)»
+   ocaso/b3_barca_s1_a#0                            «¿Lo que hice ha cambiado algo?»
+   ocaso/b3_barca_s1_a#1                            «Quiero volver a casa.»
+   ocaso/b3_barca_s1_a#2                            «Hablar de otra cosa»
+   ocaso/b3_barca_s1_a#3                            «Cerrar los ojos (fin de la aventura)»
+   ocaso/b3_edul#0                                  «Liberarle»
+   ocaso/b3_edul_killville#0                        «Liberarle»
+   ocaso/b3_edul_killville#1                        «Dejarle»
+   ocaso/b3_pulga#0                                 «Seguir a Pulga»
+   ocaso/b3_pulga#1                                 «Ir a la plaza»
+   ocaso/b3_rosita_calle#0                          «Ven con nosotros.»
+   ocaso/b3_rosita_calle#1                          «Gracias, Furia.»
+   ocaso/b3_rosita_calle#2                          «Seguir sin decir nada»
+   ocaso/b3_rosita_ocaso#0                          «Esperar a la tarde»
+   ocaso/b3_rosita_ocaso#1                          «Esperar a que anochezca»
+   ocaso/b3_sandes_oferta#0                         «Acepto.»
+   ocaso/b3_sandes_oferta#1                         «¿Y tú qué ganas?»
+   ocaso/b3_sandes_oferta#2                         «No.»
+   ocaso/b3_sandes_verina#0                         «Entregársela»
+   ocaso/b3_sandes_verina#1                         «No.»
+   ocaso/b3_sermon#1                                «Mirar a Verina»
+   ocaso/b3_sermon_p0_a#0                           «Escuchar entre la gente»
+   ocaso/b3_sermon_p0_a#1                           «Mirar a Verina»
+   ocaso/b3_sermon_p0_a#2                           «Hablar de otra cosa»
+   ocaso/b3_sermon_p0_a#3                           «Correr a avisar a Venides»
+   ocaso/b3_sermon_s2_a#1                           «Acercarte al estrado»
+   ocaso/b3_sermon_s3_a#1                           «Buscar al noble del brindis»
+   ocaso/b3_sermon_s3_a_desafiado#0                 «Acercarte al estrado»
+   ocaso/b3_sermon_s3_a_desafiado#1                 «Buscar al noble del brindis»
+   ocaso/b3_sermon_s3_a_desafiado#2                 «Hablar de otra cosa»
+   ocaso/b3_sermon_s3_a_desafiado#3                 «Correr a avisar a Venides»
+   ocaso/b3_sermon_s3_a_miraba#0                    «Acercarte al estrado»
+   ocaso/b3_sermon_s3_a_miraba#1                    «Buscar al noble del brindis»
+   ocaso/b3_sermon_s3_a_miraba#2                    «Hablar de otra cosa»
+   ocaso/b3_sermon_s3_a_miraba#3                    «Correr a avisar a Venides»
+   ocaso/b3_venides_rodillas#2                      «Dejarle»
+   ocaso/b3_verina_cautiva#0                        «Mirarla [Percepcion]»
+   ocaso/b3_verina_cautiva#1                        «Liberarla»
+   ocaso/b3_verina_cautiva#2                        «Seguir tu camino»
+   ocaso/b3_verina_no_reconocida#0                  «Liberarla»
+   ocaso/b3_verina_no_reconocida#1                  «Seguir tu camino»
+   ocaso/b3_verina_reconocida#0                     «Liberarla»
+   ocaso/b3_verina_reconocida#1                     «Seguir tu camino»
+   ocaso/b3_verina_salvada#0                        «Vamos a por el.»
+   ocaso/b3_verina_salvada#1                        «No podemos. No hay tiempo.»
+   ocaso/b3_verina_salvada_dudas#0                  «Vamos a por el.»
+   ocaso/b3_verina_salvada_dudas#1                  «No podemos. No hay tiempo.»
+   ocaso/b3_verina_salvada_sola#0                   «Vamos a por el.»
+   ocaso/b3_verina_salvada_sola#1                   «No podemos. No hay tiempo.»
+   ocaso/b3_verina_segunda#0                        «Liberarla ahora, cueste lo que cueste»
+   ocaso/b3_verina_segunda#1                        «Dejarla donde está»
+   prologo/p_barquero#1                             «Subir a la barca»
+   prologo/p_barquero_s3#1                          «Hablar de otra cosa»
+   prologo/p_r2_s0#0                                «¿Por qué no fue con ellos?»
+   prologo/p_r2_s1#1                                «¿Y Verina?»
+   prologo/p_r3_p0#0                                «¿Lo sabía el capitán?»
+   prologo/p_r3_p0#1                                «Mirar un poco más»
+   prologo/p_r3_s0#0                                «¿Lo sabía el capitán?»
+   = 552 de 1727
+
+-- Del héroe creado: 37 beats dependen de él
+   dia1/b0_rosita_n_ella                            2
+   dia1/b0_se_oye_forastero                         13
+   dia1/b0_venides_s2                               0
+   dia1/b0_venides_v0                               0
+   dia1/b0_venides_v1                               4
+   dia1/b0_ventana_n_donde_a                        12
+   dia1/b0_ventana_v0                               16
+   dia1/b1_aigren_charla_s2                         36
+   dia1/b1_archivo_aviso                            0
+   dia1/b1_archivo_libre                            50
+   dia1/b1_archivo_vigilado                         4
+   dia1/b1_carterista_rapido                        0
+   dia1/b1_charla_sandes                            0
+   dia1/b1_literas                                  4
+   dia1/b1_mira_v0                                  4
+   dia1/b1_sacerdote_s2                             0
+   dia1/b1_sacerdote_v0                             2
+   dia1/b1_secta_s1                                 92
+   dia1/b1_secta_s2                                 88
+   dia1/b1_secta_v1                                 8
+   dia1/b1_sereno_s3                                68
+   dia1/b1_verdaderos                               14
+   dia1/b1_verdaderos_forastero                     26
+   dia1/b1_verina_cripta_s2                         24
+   dia1/b1_xila_desconocido_agile                   8
+   dia1/b1_xila_desconocido_caster                  0
+   dia1/b1_xila_desconocido_tank                    0
+   dia1/b1_xila_n_de_donde                          6
+   dia1/b1_xila_n_de_donde_a                        4
+   dia2/b2_ritual_fuego                             0
+   dia2/b2_zarela_s4_a                              2
+   dia_gorran/b2_gorran_v0                          0
+   dia_gorran/bga_escena_luz                        10
+   ocaso/b3_compania_de_los_tuyos                   0
+   ocaso/b3_sermon_s3_a                             12
+   ocaso/b3_sermon_s3_a_desafiado                   0
+   ocaso/b3_sermon_s3_a_miraba                      0
+
+-- Textos sin sustituir / actos desconocidos: 0
+
+OK — ninguna partida atascada, todo sustituido
+rc=0

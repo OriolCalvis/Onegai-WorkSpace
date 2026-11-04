@@ -177,6 +177,13 @@ public:
     // aqui porque es de la sesion (Morality).
     void ponMoral(int valor) { m_moralHeroe = valor < -100 ? -100 : valor > 100 ? 100 : valor; }
     int moralHeroe() const { return m_moralHeroe; }
+    // BND-04 — La reputacion del heroe por faccion (la de CharacterSheet::factionRep),
+    // para requires.reputacion. La pone la sesion; sin apuntar, 0. No se guarda aqui.
+    void ponReputaciones(std::map<std::string, int> reputaciones) { m_reputacion = std::move(reputaciones); }
+    int reputacion(const std::string& faccion) const {
+        const auto it = m_reputacion.find(faccion);
+        return it == m_reputacion.end() ? 0 : it->second;
+    }
     // DIALOGOS-01 — El nivel en el que esta el heroe («assets/levels/x.json»),
     // para los beats que piden un lugar (requires.lugar): un PNJ que sale en
     // varios niveles (la anciana, el guardia) dice cosas distintas en cada
@@ -243,6 +250,7 @@ private:
     int m_nivelHeroe = 1;  // NIVELES-01
     int m_tierHeroe = 1;
     int m_moralHeroe = 0;  // MORAL-01
+    std::map<std::string, int> m_reputacion;  // BND-04
     std::string m_lugar;   // DIALOGOS-01
     int m_sigueTipo = -1;  // DIALOGOS-01: TriggerType de la charla que sigue (-1: ninguna)
     std::string m_sigueObjetivo;

@@ -64,12 +64,20 @@ public:
     void ponerA(AnimatedEntity& actor, int anchoDibujo, int altoDibujo,
                 const Vector2& anclaje) const;
     // Los ciclos de andar de cualquier hoja con este reparto (las horneadas
-    // de 12 frames incluidas).
+    // de 12 frames incluidas). Oriol (24/10): el reparto sale de las columnas
+    // de la hoja que lleva el actor (40 = en diagonal, la de PixelLab).
     static void animar(AnimatedEntity& actor);
+    static void animar(AnimatedEntity& actor, Game::Reparto reparto);
     // ESTETICA-01: los ciclos de reposo ("idle_up", "idle_right", "idle_down",
     // "idle_left"; "idle" es el de abajo) de una hoja montada de 20 frames.
-    // No para las horneadas de 12: no tienen esos frames.
+    // No para las horneadas de 12: no tienen esos frames (si para las de 40).
     static void animarReposo(AnimatedEntity& actor);
+    static void animarReposo(AnimatedEntity& actor, Game::Reparto reparto);
+    // El reparto de la hoja de personaje de un actor (clasico si no tiene).
+    static Game::Reparto repartoDe(const AnimatedEntity& actor);
+    // Si la hoja del actor trae reposo propio (20 o 40 frames): las de 12 solo tienen el quieto.
+    static bool tieneReposo(const AnimatedEntity& actor);
+    Game::Reparto reparto() const { return m_reparto; }
 
     // --- Vista previa en el HUD ---
     void setMarco(const HudTransform& marco) { m_marco = marco; }
@@ -78,11 +86,12 @@ public:
     void render(SpriteBatch& batch, int viewportWidth, int viewportHeight) const override;
 
 private:
-    // Sube una hoja de 1280x64 a su textura (la crea la primera vez).
+    // Sube una hoja de 1280x64 (o 2560x64, en diagonal) a su textura (la crea la primera vez).
     static void subir(const imagen::ImagenRGBA& hoja, std::unique_ptr<Texture>& textura,
                       std::unique_ptr<TextureAtlas>& atlas);
 
     Texture* m_blanco;
+    Game::Reparto m_reparto = Game::Reparto::Clasico;
     std::unique_ptr<Texture> m_textura;
     std::unique_ptr<TextureAtlas> m_atlas;
     Game::HojaDeBrillo m_brillo;

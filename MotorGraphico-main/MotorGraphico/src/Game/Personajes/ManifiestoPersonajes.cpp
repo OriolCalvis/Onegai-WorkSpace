@@ -1,4 +1,5 @@
 // APARIENCIA-01 — ver include/Game/Personajes/ManifiestoPersonajes.h.
+#include "Game/Personajes/RasgosApariencia.h"
 #include "Game/Personajes/ManifiestoPersonajes.h"
 
 #include <algorithm>
@@ -16,6 +17,8 @@ const char* const kRanurasDeEquipo[7] = {"cabeza", "torso", "piernas", "pies",
 bool esRanuraDeRopa(const std::string& ranura) {
     return ranura == "torso" || ranura == "piernas" || ranura == "pies" || ranura == "capa";
 }
+
+const char* const kRanurasDeRasgos[3] = {"alas", "cola", "cuernos"};
 
 namespace {
 
@@ -79,6 +82,8 @@ GrupoDeCapas leerGrupo(const JsonValue& v, const char* claveFilas) {
         fila.nombre = f["nombre"].asString();
         fila.fila = f["fila"].asInt(0);
         fila.soloPnj = f["soloPnj"].asBool(false);
+        fila.razas = textos(f["razas"]);
+        fila.tallas = textos(f["tallas"]);
         if (f["orden"].isObject()) {
             for (const auto& [rumbo, z] : f["orden"].objectValues())
                 fila.orden[rumbo] = z.asInt(0);
@@ -104,6 +109,8 @@ RazaVisual leerRaza(const JsonValue& r) {
     leerPar(r["pelo"], raza.peloEstilo, raza.peloColor);
     leerPar(r["barba"], raza.barbaEstilo, raza.barbaColor);
     raza.equipo = mapaDeTextos(r["equipo"]);
+    if (r["liso"].isBool())
+        raza.lisoDeclarado = r["liso"].asBool() ? 1 : 0;
     return raza;
 }
 
@@ -227,14 +234,29 @@ Apariencia Apariencia::deRaza(const RazaVisual& raza, bool conArmas) {
         a.peloEstilo = raza.peloEstilo;
         a.peloColor = raza.peloColor;
     }
-    a.barbaEstilo = raza.barbaEstilo;
-    a.barbaColor = raza.barbaColor;
+    if (raza.admite("barba")) {
+        a.barbaEstilo = raza.barbaEstilo;
+        a.barbaColor = raza.barbaColor;
+    }
     for (const auto& [ranura, pieza] : raza.equipo) {
         if (!conArmas && (ranura == "arma" || ranura == "mano_izq"))
             continue;
         a.ropa[ranura] = pieza;
     }
     return a;
+}
+
+void Apariencia::limpiarSegunRaza(const RazaVisual& raza) {
+    if (!raza.admite("pelo")) {
+        peloEstilo.clear();
+        peloColor.clear();
+    }
+    if (!raza.admite("barba")) {
+        barbaEstilo.clear();
+        barbaColor.clear();
+    }
+    if (!raza.admite("ojos"))
+        ojos = raza.ojos;
 }
 
 std::string Apariencia::clave() const {
@@ -245,6 +267,11 @@ std::string Apariencia::clave() const {
     c += "|";
     for (const std::string& q : quitarCapas)
         c += q + ";";
+    if (!marcas.empty()) {
+        c += "|";
+        for (const std::string& q : marcas)
+            c += q + ";";
+    }
     return c;
 }
 
@@ -262,6 +289,7 @@ Result<ManifiestoPersonajes> ManifiestoPersonajes::cargar(const std::string& car
         return Result<ManifiestoPersonajes>::Error("Personajes: " + leido.errorMessage());
     const JsonValue& raiz = leido.value();
     ManifiestoPersonajes m;
+    m.frames = raiz["frames"].asInt(20);
 
     for (const auto& [ranura, dirs] : raiz["orden"].objectValues()) {
         for (const auto& [dir, z] : dirs.objectValues())
@@ -290,6 +318,36 @@ Result<ManifiestoPersonajes> ManifiestoPersonajes::cargar(const std::string& car
     m.ojos = leerGrupo(raiz["ojos"], "filas");
     m.pelo = leerGrupo(raiz["pelo"], "filas");
     m.barba = leerGrupo(raiz["barba"], "filas");
+    // EDITOR-PERSONALIZACION-01: las marcas de la piel (si el generador las trae)
+    if (raiz["marcas"].isObject())
+        m.marcas = leerGrupo(raiz["marcas"], "filas");
+    // EDITOR-PERSONALIZACION-01: las pieles de cada talla
+    for (const auto& [talla, def] : raiz["pieles"].objectValues()) {
+        PielesDeTalla p;
+        const auto leerColores = [](const JsonValue& v) {
+            std::vector<std::array<std::uint8_t, 3>> out;
+            for (std::size_t i = 0; v.isArray() && i < v.size(); ++i) {
+                const JsonValue& c = v[i];
+                if (c.isArray() && c.size() == 3)
+                    out.push_back({static_cast<std::uint8_t>(c[0].asInt(0)), static_cast<std::uint8_t>(c[1].asInt(0)),
+                                   static_cast<std::uint8_t>(c[2].asInt(0))});
+            }
+            return out;
+        };
+        p.familia = leerColores(def["familia"]);
+        for (const auto& [id, op] : def["opciones"].objectValues()) {
+            OpcionDePiel o;
+            o.nombre = op["nombre"].asString(id);
+            o.raza = op["raza"].asBool(false);
+            o.colores = leerColores(op["colores"]);
+            if (o.colores.size() == p.familia.size() && !p.familia.empty()) {
+                p.orden.push_back(id);
+                p.opciones[id] = std::move(o);
+            }
+        }
+        if (!p.opciones.empty())
+            m.pieles[talla] = std::move(p);
+    }
     for (const auto& [ranura, def] : raiz["equipo"].objectValues()) {
         m.equipo[ranura] = leerGrupo(def, "piezas");
     }
@@ -311,8 +369,9 @@ Result<ManifiestoPersonajes> ManifiestoPersonajes::cargar(const std::string& car
         }
     }
     for (RazaVisual& r : m.razas) {
-        r.cuerpoLiso =
-            r.capas.size() == 1 && r.capas[0] == "cuerpo" && m.cuerpos.buscar(r.piel) != nullptr;
+        const bool capasLisas = r.lisoDeclarado >= 0 ? r.lisoDeclarado == 1
+                                                      : r.capas.size() == 1 && r.capas[0] == "cuerpo";
+        r.cuerpoLiso = capasLisas && m.cuerpos.buscar(r.piel) != nullptr;
     }
 
     if (m.orden.empty() || m.razas.empty() || m.pelo.filas.empty() || m.equipo.empty()) {
@@ -407,6 +466,9 @@ Result<Apariencia> ManifiestoPersonajes::desdeComposicion(const JsonValue& spec)
         leerPar(spec["barba"], a.barbaEstilo, a.barbaColor);
     a.ropa = mapaDeTextos(spec["equipo"]);
     a.quitarCapas = textos(spec["quitar_capas"]);
+    a.marcas = textos(spec["marcas"]);
+    RasgosApariencia::migrarTallaAnterior(a);
+    RasgosApariencia::migrarEstilosRetirados(a);
     return Result<Apariencia>::Ok(std::move(a));
 }
 

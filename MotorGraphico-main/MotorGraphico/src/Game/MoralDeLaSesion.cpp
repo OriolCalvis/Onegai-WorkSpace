@@ -75,7 +75,16 @@ std::vector<std::string> asientaNoche(SessionData& d) {
 }
 
 void reflejaEnLaAventura(SessionData& d) {
-    if (d.m_narrativeState != nullptr) d.m_narrativeState->ponMoral(d.m_morality.value());
+    if (d.m_narrativeState == nullptr) return;
+    d.m_narrativeState->ponMoral(d.m_morality.value());
+    reflejaLaReputacion(d);
+}
+
+void reflejaLaReputacion(SessionData& d) {
+    if (d.m_narrativeState == nullptr) return;
+    // BND-04 — La reputacion de la ficha, para requires.reputacion.
+    const RPG::CharacterSheet* ficha = d.m_playerBody != nullptr ? d.m_playerBody->character_sheet() : nullptr;
+    d.m_narrativeState->ponReputaciones(ficha != nullptr ? ficha->factionRep : std::map<std::string, int>{});
 }
 
 }  // namespace moral

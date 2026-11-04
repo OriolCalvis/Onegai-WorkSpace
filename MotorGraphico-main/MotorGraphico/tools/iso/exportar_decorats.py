@@ -31,6 +31,7 @@ from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from decorats import DECORATS, ORIENTABLES, TRAMS  # noqa: E402
+from tapavista import tapa_vista  # noqa: E402
 from vegetacio import VARIANTS, VEGETACIO  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -111,7 +112,10 @@ def cataleg(ids_nous):
             nom = f"{nom} ({TRAM[sufix]})"
         elif sufix:
             nom = f"{nom} (variante {sufix})"
-        objectes.append({"id": fid, "name": nom, "category": "prop", "spriteId": 3, "blocksMovement": nosa})
+        o = {"id": fid, "name": nom, "category": "prop", "spriteId": 3, "blocksMovement": nosa}
+        if tapa_vista(fid, nosa):  # E-DISPARADORES-1: vallas, empalizadas, carros
+            o["tapaVista"] = True
+        objectes.append(o)
     (ROOT / "assets/objects" / CATALEG).write_text(json.dumps({
         "_fuente": "DECO-01 / VEG-01 — decorados y vegetacion del kit isometrico (tools/iso/exportar_decorats.py, no "
                    "editar a mano): las orientaciones <id>_o1.._o3 (o0 es el id de siempre, de frente a +y), los tramos "

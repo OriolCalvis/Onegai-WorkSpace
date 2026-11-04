@@ -12,6 +12,7 @@
 
 #include <functional>
 #include <map>
+#include <set>
 #include <memory>
 #include <string>
 #include <utility>
@@ -20,15 +21,20 @@
 #include "Core/Errors/Result.h"
 
 #include "Core/Math/Vector2.h"
+#include "Engine/ApplicationCamara.h"
 #include "Core/Math/Vector4.h"
 #include "Game/Cinematica.h"
 #include "Game/EfectosDeGolpe.h"
+#include "Game/EscenaViva.h"
+#include "Render/FuegoNivel.h"
 #include "Game/EscenaNoqueo.h"
 #include "Game/PasosEnRuta.h"
+#include "HUD/Pergamino/EmocionVista.h"
 #include "World/EntityHandle.h"
 #include "RPG/RandomEngine.h"
 
 class Application;
+struct SaveGameData;
 class BattleState;
 class Entity;
 class HudPanel;
@@ -44,11 +50,14 @@ struct EstadoCinematicas {
     float tituloRecorrido = 0.0f;                 // el paseo de la cámara del título (celdas)
     bool tituloCargando = false, tituloFallido = false;
     std::unique_ptr<HudPanel> velo;
+    // E-DISPARADORES-1 — El ambito del nivel en curso (se resuelve al cambiar de nivel: JSON + tamano del mapa).
+    std::string ambitoDeNivel;
+    AmbitoNivel ambito = AmbitoNivel::Exterior;
     // COMBATE-01 — El combate a la vista (ApplicationCinematica::combate).
     const void* combateVisto = nullptr;   // el BattleState que ya tiene camara y semilla
     float zoomAntes = 1.0f;               // el de explorar, para volver
     Vector2 centroCombate;                // entre el heroe y sus rivales
-    float sacudida = 0.0f;                // segundos que le quedan a la camara temblando
+    EstadoCamaraJuego camara;             // U4-01: seguimiento, destino y sacudida de la camara virtual
     std::unique_ptr<RPG::Xoroshiro128p> dados;  // los del combate en curso, con semilla nueva
     // AV13-12 — Andar en el combate: la ruta del heroe (un paso cada 0,16 s, con
     // Player::moveTo) y la de cada enemigo que se ha acercado (su dibujo la anda).
@@ -72,6 +81,15 @@ struct EstadoCinematicas {
     std::unique_ptr<Game::EscenaNoqueo> noqueo;
     std::string rescatador;
     Vector2 baseNoqueo;  // el sitio del dibujo del heroe antes de caer
+    // C2-04b — La escena viva (posturas, fuego, emociones): ApplicationCinematica::escena.
+    Game::EscenaViva escena;
+    Render::FuegoNivel fuego;                 // C2-04c: las llamas de arde/apaga (cola del renderer)
+    const void* escenaSesion = nullptr;       // la sesion y el nivel con que se rehizo
+    std::string escenaNivel;
+    std::set<std::string> tumbados;           // marcadores con tinte de postura (para devolverlos a blanco)
+    Vector4 tinteJugadorPostura{0.0f, 0.0f, 0.0f, 0.0f};  // el ultimo que puso la postura al heroe
+    bool jugadorTumbado = false;
+    std::vector<Pergamino::EmocionVista> emocionesVista;  // C2-04d: las de `escena`, resueltas a px de mundo
     EstadoCinematicas();
     ~EstadoCinematicas();
 };
@@ -84,8 +102,23 @@ struct ApplicationCinematica {
     static bool enCurso(const Application& app);
     // En update, después del cambio de nivel pendiente.
     static void actualiza(Application& app, float dt);
+    // E-DISPARADORES-1 (D0026; codigo en src/Engine/ApplicationCinematicaDisparador.h) — La que empieza ahora: con el
+    // ambito del nivel y lo que tapa la vista (tiles con colision y objetos `tapaVista`). Y la misma con los
+    // pasos de llevar al jugador (GameSession::rutaAndando, o un fundido si no hay camino) y la accion.
+    static const Game::Cinematica* laQueEmpieza(Application& app, const Game::TieneFlag& tiene);
+    static Game::Cinematica efectiva(Application& app, const Game::Cinematica& c);
+    // E-DISPARADORES-2 E4 (D0026.3) — Lanza el encuentro `enemigo` de un disparador `combate` por la puerta del efecto
+    // `startBattle` de los beats (GameSession::startNarrativeBattle).
+    static void lanzaCombate(Application& app, const std::string& enemigo, const std::string& gana, const std::string& pierde);
     // En update, después de refreshHud (que pone el tinte de la moral).
     static void tintes(Application& app, float dt);
+    // C2-04b — La escena viva, cada fotograma (tras tintes): avanza las emociones, la rehace si
+    // cambia el nivel o la sesion, y pone las posturas (tumba/levanta) a los dibujos.
+    // Codigo en ApplicationCinematicaEscena.cpp.
+    static void escena(Application& app, float dt);
+    // C2-04d — Las emociones en curso con su sitio (pies del actor, px de mundo) y su alfa; nullptr
+    // si no hay. Para EstadoJuego::emociones en refreshHud.
+    static const std::vector<Pergamino::EmocionVista>* emocionesVista(Application& app);
     // El color de fondo del nivel (los recuerdos, en una niebla clara).
     static Vector4 fondo(const Application& app);
     // Al empezar a pintar: limpia el fotograma con ese color (glClear).
@@ -103,6 +136,8 @@ struct ApplicationCinematica {
     // lo recibe, lo que no entra dice «Fallo» o «Empate», y si te pegan a ti la
     // pantalla tiembla y se enrojece un instante. Al acabar, la cámara vuelve.
     static void combate(Application& app, float dt);
+    // U4-01: tras Camera::update y ApplicationCamara::compone, los numeros de golpe leen la vista ya sacudida.
+    static void vistaGolpes(Application& app);
     // AV13-12 (Oriol, 14/10: «moverse por casillas en combate, como en un tactics»): en tu turno,
     // con el raton sobre el suelo, la ruta hasta esa casilla; con clic, el heroe la anda.
     static void sueloCombate(Application& app, const Engine::Input::InputSnapshot& input);
@@ -141,6 +176,8 @@ struct ApplicationCinematica {
     // el aviso en la línea del papiro y un fotograma pintado con él: que se vea
     // que la elección ha llegado aunque lo siguiente tarde.
     static void avisoYa(Application& app, const std::string& texto);
+    // H0-05 / E-GUION-02: cargar una partida guardada (ApplicationCinematica.cpp); la usan loadSlot y `juego --guardado`.
+    static bool cargaPartida(Application& app, const SaveGameData& datos);
     // Lo alto de la cabeza de un combatiente, en el mundo (false: no tiene dibujo).
     static bool cabezaDe(const Application& app, const ICombatant* cuerpo, Vector2& cabeza);
     // Su dibujo en el mundo (el heroe, el marcador de un enemigo o el de un acompanante); nullptr si no tiene.

@@ -1,0 +1,5208 @@
+{
+ "dia": "dia_gorran",
+ "decisiones": [
+  {
+   "beat": "b2_gorran_victoria",
+   "linea": 18618,
+   "peso": 57.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "¿Qué dicen los papeles?",
+     "linea": 18645,
+     "despedida": false,
+     "pone": [
+      "bnd2_gorran_papeles"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_gorran_papeles": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:189",
+        "cual": "b3_plaza_vacia",
+        "tipo": "beat",
+        "rol": "noflag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": [
+      "bnd2_gorran_papeles"
+     ]
+    },
+    {
+     "texto": "Suelta a los presos y estamos en paz.",
+     "linea": 18665,
+     "despedida": false,
+     "pone": [
+      "bnd2_gorran_perdonado",
+      "bnd2_tiene_aliados",
+      "bnd2_gorran_decidido",
+      "bnd2_cueva_cerrada",
+      "bnd2_furia_alaro",
+      "bnd2_documentos",
+      "bnd2_gorran_redimido"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "gorran_perdonado",
+       "gravedad": "menor",
+       "signo": 1,
+       "reputacion": {}
+      }
+     ],
+     "oro": 20,
+     "nivel": 0.0,
+     "objetos": [
+      "furia_de_alaro x1"
+     ],
+     "heridas": [],
+     "directas": {
+      "bnd2_gorran_perdonado": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:4649",
+        "cual": "b3_gorran",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/cinematicas/cinematicas.json:5125",
+        "cual": "afueras_gorran_presente",
+        "tipo": "cinematica",
+        "rol": "flag",
+        "dia": "posterior"
+       }
+      ],
+      "bnd2_tiene_aliados": [
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:42",
+        "cual": "obj2_aliados",
+        "tipo": "diario",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       }
+      ],
+      "bnd2_furia_alaro": [
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:720",
+        "cual": "b2_skilla_espada_devuelta_vista",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:894",
+        "cual": "b2_skilla_espada_devuelta",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:9289",
+        "cual": "b2_saq_llegan/Desenvainar la Furia de Alaro ",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       }
+      ],
+      "bnd2_documentos": [
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:4204",
+        "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:13782",
+        "cual": "b2_noche_rosita_informa/Contarselo todo y ensenarle la",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:13873",
+        "cual": "b2_noche_papeles",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:14270",
+        "cual": "b2_venides_noche_rosita",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:14379",
+        "cual": "b2_venides_noche_rosita/Contarselo todo y ensenarle la",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:14467",
+        "cual": "b2_venides_noche_todo",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:14574",
+        "cual": "b2_venides_noche_todo/Contarselo todo y ensenarle la",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:14665",
+        "cual": "b2_venides_noche_rosita2",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:14776",
+        "cual": "b2_venides_noche_rosita2/Contarselo todo y ensenarle la",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:14866",
+        "cual": "b2_venides_noche",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:14976",
+        "cual": "b2_venides_noche/Contarselo todo y ensenarle la",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:15491",
+        "cual": "b2_cierre_todo_xila_vela",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:15539",
+        "cual": "b2_cierre_todo_xila",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:15581",
+        "cual": "b2_cierre_todo_xila_borracho_vela",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:15630",
+        "cual": "b2_cierre_todo_xila_borracho",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:15673",
+        "cual": "b2_cierre_todo_vela",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:15720",
+        "cual": "b2_cierre_todo",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:16749",
+        "cual": "b2_fiesta_vuelta",
+        "tipo": "beat",
+        "rol": "noflag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:183",
+        "cual": "b3_plaza_vacia",
+        "tipo": "beat",
+        "rol": "noflag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {
+      "bndg_dia_cerrado": {
+       "via": "bg_cierre_furia",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:580",
+         "cual": "b2_amanece",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "src/Engine/ApplicationBucle.cpp:255",
+         "cual": "codigo",
+         "tipo": "codigo",
+         "rol": "flag",
+         "dia": "motor"
+        }
+       ]
+      },
+      "bnd2_preso_libre": {
+       "via": "b2_gorran_suelta",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3729",
+         "cual": "b3_rev_teobaldo",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_iris_salvada": {
+       "via": "b2_gorran_suelta_iris",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3691",
+         "cual": "b3_rev_casa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6973",
+         "cual": "b3_epi_iris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    },
+    {
+     "texto": "Acabar con él (no volverá a ayudarte)",
+     "linea": 18727,
+     "despedida": false,
+     "pone": [
+      "bnd2_gorran_muerto",
+      "bnd2_gorran_decidido",
+      "bnd2_cueva_cerrada",
+      "bnd2_furia_alaro",
+      "bnd2_documentos"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "gorran_rematado",
+       "gravedad": "medio",
+       "signo": -1,
+       "reputacion": {}
+      }
+     ],
+     "oro": 40,
+     "nivel": 0.0,
+     "objetos": [
+      "furia_de_alaro x1"
+     ],
+     "heridas": [],
+     "directas": {
+      "bnd2_gorran_muerto": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:4685",
+        "cual": "b3_gorran_sin_jefe",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ],
+      "bnd2_furia_alaro": [
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:720",
+        "cual": "b2_skilla_espada_devuelta_vista",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:894",
+        "cual": "b2_skilla_espada_devuelta",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:9289",
+        "cual": "b2_saq_llegan/Desenvainar la Furia de Alaro ",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       }
+      ],
+      "bnd2_documentos": [
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:4204",
+        "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:13782",
+        "cual": "b2_noche_rosita_informa/Contarselo todo y ensenarle la",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:13873",
+        "cual": "b2_noche_papeles",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:14270",
+        "cual": "b2_venides_noche_rosita",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:14379",
+        "cual": "b2_venides_noche_rosita/Contarselo todo y ensenarle la",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:14467",
+        "cual": "b2_venides_noche_todo",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:14574",
+        "cual": "b2_venides_noche_todo/Contarselo todo y ensenarle la",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:14665",
+        "cual": "b2_venides_noche_rosita2",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:14776",
+        "cual": "b2_venides_noche_rosita2/Contarselo todo y ensenarle la",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:14866",
+        "cual": "b2_venides_noche",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:14976",
+        "cual": "b2_venides_noche/Contarselo todo y ensenarle la",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:15491",
+        "cual": "b2_cierre_todo_xila_vela",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:15539",
+        "cual": "b2_cierre_todo_xila",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:15581",
+        "cual": "b2_cierre_todo_xila_borracho_vela",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:15630",
+        "cual": "b2_cierre_todo_xila_borracho",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:15673",
+        "cual": "b2_cierre_todo_vela",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:15720",
+        "cual": "b2_cierre_todo",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:16749",
+        "cual": "b2_fiesta_vuelta",
+        "tipo": "beat",
+        "rol": "noflag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:183",
+        "cual": "b3_plaza_vacia",
+        "tipo": "beat",
+        "rol": "noflag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {
+      "bndg_dia_cerrado": {
+       "via": "bg_cierre_furia",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:580",
+         "cual": "b2_amanece",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "src/Engine/ApplicationBucle.cpp:255",
+         "cual": "codigo",
+         "tipo": "codigo",
+         "rol": "flag",
+         "dia": "motor"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_subasta_cojo_pobre",
+   "linea": 16818,
+   "peso": 19.5,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Unirte a la farsa [Interpretación]",
+     "linea": 16873,
+     "despedida": false,
+     "pone": [
+      "bnd2_farsa_pifia",
+      "bnd2_farsa_parcial",
+      "bnd2_farsa_exito",
+      "bnd2_farsa_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "interpretacion",
+       "flags": {
+        "botch": "bnd2_farsa_pifia",
+        "partial": "bnd2_farsa_parcial",
+        "success": "bnd2_farsa_exito",
+        "critical": "bnd2_farsa_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_joel_rescatado": {
+       "via": "b2_farsa_parcial",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4585",
+         "cual": "b3_amigos_afueras",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    },
+    {
+     "texto": "Llevarte la Furia en el caos [Sigilo]",
+     "linea": 16892,
+     "despedida": false,
+     "pone": [
+      "bnd2_caos_pifia",
+      "bnd2_caos_parcial",
+      "bnd2_caos_exito",
+      "bnd2_caos_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "sigilo",
+       "flags": {
+        "botch": "bnd2_caos_pifia",
+        "partial": "bnd2_caos_parcial",
+        "success": "bnd2_caos_exito",
+        "critical": "bnd2_caos_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_joel_rescatado": {
+       "via": "b2_caos_parcial",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4585",
+         "cual": "b3_amigos_afueras",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bnd2_furia_alaro": {
+       "via": "b2_caos_furia",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:720",
+         "cual": "b2_skilla_espada_devuelta_vista",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:894",
+         "cual": "b2_skilla_espada_devuelta",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:9289",
+         "cual": "b2_saq_llegan/Desenvainar la Furia de Alaro ",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        }
+       ]
+      },
+      "bnd2_documentos": {
+       "via": "b2_caos_furia",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:4204",
+         "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:13782",
+         "cual": "b2_noche_rosita_informa/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:13873",
+         "cual": "b2_noche_papeles",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14270",
+         "cual": "b2_venides_noche_rosita",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14379",
+         "cual": "b2_venides_noche_rosita/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14467",
+         "cual": "b2_venides_noche_todo",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14574",
+         "cual": "b2_venides_noche_todo/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14665",
+         "cual": "b2_venides_noche_rosita2",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14776",
+         "cual": "b2_venides_noche_rosita2/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14866",
+         "cual": "b2_venides_noche",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14976",
+         "cual": "b2_venides_noche/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15491",
+         "cual": "b2_cierre_todo_xila_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15539",
+         "cual": "b2_cierre_todo_xila",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15581",
+         "cual": "b2_cierre_todo_xila_borracho_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15630",
+         "cual": "b2_cierre_todo_xila_borracho",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15673",
+         "cual": "b2_cierre_todo_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15720",
+         "cual": "b2_cierre_todo",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:16749",
+         "cual": "b2_fiesta_vuelta",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:183",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    },
+    {
+     "texto": "Salvarle la cara a Gorran [Persuasión]",
+     "linea": 16911,
+     "despedida": false,
+     "pone": [
+      "bnd2_honor_pifia",
+      "bnd2_honor_parcial",
+      "bnd2_honor_exito",
+      "bnd2_honor_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "persuasion",
+       "flags": {
+        "botch": "bnd2_honor_pifia",
+        "partial": "bnd2_honor_parcial",
+        "success": "bnd2_honor_exito",
+        "critical": "bnd2_honor_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_joel_rescatado": {
+       "via": "b2_honor_parcial",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4585",
+         "cual": "b3_amigos_afueras",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bnd2_tiene_aliados": {
+       "via": "b2_honor_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:42",
+         "cual": "obj2_aliados",
+         "tipo": "diario",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bnd2_gorran_muerto"
+     ]
+    },
+    {
+     "texto": "Dejar que estalle",
+     "linea": 16935,
+     "despedida": false,
+     "pone": [
+      "bnd2_comedia_pelea",
+      "bnd2_gorran_resuelto",
+      "bnd2_joel_revelado"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_furia_alaro": {
+       "via": "b2_gorran_robo_limpio",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:720",
+         "cual": "b2_skilla_espada_devuelta_vista",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:894",
+         "cual": "b2_skilla_espada_devuelta",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:9289",
+         "cual": "b2_saq_llegan/Desenvainar la Furia de Alaro ",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        }
+       ]
+      },
+      "bnd2_documentos": {
+       "via": "b2_gorran_robo_limpio",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:4204",
+         "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:13782",
+         "cual": "b2_noche_rosita_informa/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:13873",
+         "cual": "b2_noche_papeles",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14270",
+         "cual": "b2_venides_noche_rosita",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14379",
+         "cual": "b2_venides_noche_rosita/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14467",
+         "cual": "b2_venides_noche_todo",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14574",
+         "cual": "b2_venides_noche_todo/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14665",
+         "cual": "b2_venides_noche_rosita2",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14776",
+         "cual": "b2_venides_noche_rosita2/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14866",
+         "cual": "b2_venides_noche",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14976",
+         "cual": "b2_venides_noche/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15491",
+         "cual": "b2_cierre_todo_xila_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15539",
+         "cual": "b2_cierre_todo_xila",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15581",
+         "cual": "b2_cierre_todo_xila_borracho_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15630",
+         "cual": "b2_cierre_todo_xila_borracho",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15673",
+         "cual": "b2_cierre_todo_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15720",
+         "cual": "b2_cierre_todo",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:16749",
+         "cual": "b2_fiesta_vuelta",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:183",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_subasta_sin_espada",
+   "linea": 17126,
+   "peso": 19.5,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Unirte a la farsa [Interpretación]",
+     "linea": 17163,
+     "despedida": false,
+     "pone": [
+      "bnd2_farsa_pifia",
+      "bnd2_farsa_parcial",
+      "bnd2_farsa_exito",
+      "bnd2_farsa_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "interpretacion",
+       "flags": {
+        "botch": "bnd2_farsa_pifia",
+        "partial": "bnd2_farsa_parcial",
+        "success": "bnd2_farsa_exito",
+        "critical": "bnd2_farsa_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_joel_rescatado": {
+       "via": "b2_farsa_parcial",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4585",
+         "cual": "b3_amigos_afueras",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    },
+    {
+     "texto": "Sacar a Joel en el caos [Sigilo]",
+     "linea": 17182,
+     "despedida": false,
+     "pone": [
+      "bnd2_caos_pifia",
+      "bnd2_caos_parcial",
+      "bnd2_caos_exito",
+      "bnd2_caos_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "sigilo",
+       "flags": {
+        "botch": "bnd2_caos_pifia",
+        "partial": "bnd2_caos_parcial",
+        "success": "bnd2_caos_exito",
+        "critical": "bnd2_caos_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_joel_rescatado": {
+       "via": "b2_caos_parcial",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4585",
+         "cual": "b3_amigos_afueras",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bnd2_furia_alaro": {
+       "via": "b2_caos_furia",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:720",
+         "cual": "b2_skilla_espada_devuelta_vista",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:894",
+         "cual": "b2_skilla_espada_devuelta",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:9289",
+         "cual": "b2_saq_llegan/Desenvainar la Furia de Alaro ",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        }
+       ]
+      },
+      "bnd2_documentos": {
+       "via": "b2_caos_furia",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:4204",
+         "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:13782",
+         "cual": "b2_noche_rosita_informa/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:13873",
+         "cual": "b2_noche_papeles",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14270",
+         "cual": "b2_venides_noche_rosita",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14379",
+         "cual": "b2_venides_noche_rosita/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14467",
+         "cual": "b2_venides_noche_todo",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14574",
+         "cual": "b2_venides_noche_todo/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14665",
+         "cual": "b2_venides_noche_rosita2",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14776",
+         "cual": "b2_venides_noche_rosita2/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14866",
+         "cual": "b2_venides_noche",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14976",
+         "cual": "b2_venides_noche/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15491",
+         "cual": "b2_cierre_todo_xila_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15539",
+         "cual": "b2_cierre_todo_xila",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15581",
+         "cual": "b2_cierre_todo_xila_borracho_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15630",
+         "cual": "b2_cierre_todo_xila_borracho",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15673",
+         "cual": "b2_cierre_todo_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15720",
+         "cual": "b2_cierre_todo",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:16749",
+         "cual": "b2_fiesta_vuelta",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:183",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    },
+    {
+     "texto": "Salvarle la cara a Gorran [Persuasión]",
+     "linea": 17201,
+     "despedida": false,
+     "pone": [
+      "bnd2_honor_pifia",
+      "bnd2_honor_parcial",
+      "bnd2_honor_exito",
+      "bnd2_honor_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "persuasion",
+       "flags": {
+        "botch": "bnd2_honor_pifia",
+        "partial": "bnd2_honor_parcial",
+        "success": "bnd2_honor_exito",
+        "critical": "bnd2_honor_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_joel_rescatado": {
+       "via": "b2_honor_parcial",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4585",
+         "cual": "b3_amigos_afueras",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bnd2_tiene_aliados": {
+       "via": "b2_honor_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:42",
+         "cual": "obj2_aliados",
+         "tipo": "diario",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bnd2_gorran_muerto"
+     ]
+    },
+    {
+     "texto": "Dejar que estalle",
+     "linea": 17225,
+     "despedida": false,
+     "pone": [
+      "bnd2_comedia_pelea",
+      "bnd2_gorran_resuelto",
+      "bnd2_joel_revelado"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_furia_alaro": {
+       "via": "b2_gorran_robo_limpio",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:720",
+         "cual": "b2_skilla_espada_devuelta_vista",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:894",
+         "cual": "b2_skilla_espada_devuelta",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:9289",
+         "cual": "b2_saq_llegan/Desenvainar la Furia de Alaro ",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        }
+       ]
+      },
+      "bnd2_documentos": {
+       "via": "b2_gorran_robo_limpio",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:4204",
+         "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:13782",
+         "cual": "b2_noche_rosita_informa/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:13873",
+         "cual": "b2_noche_papeles",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14270",
+         "cual": "b2_venides_noche_rosita",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14379",
+         "cual": "b2_venides_noche_rosita/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14467",
+         "cual": "b2_venides_noche_todo",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14574",
+         "cual": "b2_venides_noche_todo/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14665",
+         "cual": "b2_venides_noche_rosita2",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14776",
+         "cual": "b2_venides_noche_rosita2/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14866",
+         "cual": "b2_venides_noche",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14976",
+         "cual": "b2_venides_noche/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15491",
+         "cual": "b2_cierre_todo_xila_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15539",
+         "cual": "b2_cierre_todo_xila",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15581",
+         "cual": "b2_cierre_todo_xila_borracho_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15630",
+         "cual": "b2_cierre_todo_xila_borracho",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15673",
+         "cual": "b2_cierre_todo_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15720",
+         "cual": "b2_cierre_todo",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:16749",
+         "cual": "b2_fiesta_vuelta",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:183",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_calabozo",
+   "linea": 11425,
+   "peso": 15.5,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Enseñarle el trato y leérselo",
+     "linea": 11451,
+     "despedida": false,
+     "pone": [
+      "bnd2_calabozo_resuelto",
+      "bnd2_gorran_contra_cojo",
+      "bnd2_gorran_resuelto",
+      "bnd2_gorran_decidido",
+      "bnd2_tiene_aliados",
+      "bnd2_furia_alaro",
+      "bnd2_gorran_redimido"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "gorran_perdonado",
+       "gravedad": "menor",
+       "signo": 1,
+       "reputacion": {}
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [
+      "furia_de_alaro x1"
+     ],
+     "heridas": [],
+     "directas": {
+      "bnd2_tiene_aliados": [
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:42",
+        "cual": "obj2_aliados",
+        "tipo": "diario",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       }
+      ],
+      "bnd2_furia_alaro": [
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:720",
+        "cual": "b2_skilla_espada_devuelta_vista",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:894",
+        "cual": "b2_skilla_espada_devuelta",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:9289",
+        "cual": "b2_saq_llegan/Desenvainar la Furia de Alaro ",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       }
+      ]
+     },
+     "indirectas": {
+      "bnd2_documentos": {
+       "via": "b2_gorran_robo_limpio",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:4204",
+         "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:13782",
+         "cual": "b2_noche_rosita_informa/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:13873",
+         "cual": "b2_noche_papeles",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14270",
+         "cual": "b2_venides_noche_rosita",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14379",
+         "cual": "b2_venides_noche_rosita/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14467",
+         "cual": "b2_venides_noche_todo",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14574",
+         "cual": "b2_venides_noche_todo/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14665",
+         "cual": "b2_venides_noche_rosita2",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14776",
+         "cual": "b2_venides_noche_rosita2/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14866",
+         "cual": "b2_venides_noche",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14976",
+         "cual": "b2_venides_noche/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15491",
+         "cual": "b2_cierre_todo_xila_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15539",
+         "cual": "b2_cierre_todo_xila",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15581",
+         "cual": "b2_cierre_todo_xila_borracho_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15630",
+         "cual": "b2_cierre_todo_xila_borracho",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15673",
+         "cual": "b2_cierre_todo_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15720",
+         "cual": "b2_cierre_todo",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:16749",
+         "cual": "b2_fiesta_vuelta",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:183",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bndg_dia_cerrado": {
+       "via": "bg_cierre_furia",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:580",
+         "cual": "b2_amanece",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "src/Engine/ApplicationBucle.cpp:255",
+         "cual": "codigo",
+         "tipo": "codigo",
+         "rol": "flag",
+         "dia": "motor"
+        }
+       ]
+      },
+      "bnd2_preso_libre": {
+       "via": "b2_gorran_suelta",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3729",
+         "cual": "b3_rev_teobaldo",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_iris_salvada": {
+       "via": "b2_gorran_suelta_iris",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3691",
+         "cual": "b3_rev_casa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6973",
+         "cual": "b3_epi_iris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bnd2_trato_venta",
+      "bnd2_subasta_ya"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "b2_gorran_trato",
+   "linea": 16152,
+   "peso": 15.5,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Leérselo en voz alta",
+     "linea": 16180,
+     "despedida": false,
+     "pone": [
+      "bnd2_gorran_contra_cojo",
+      "bnd2_gorran_resuelto",
+      "bnd2_gorran_decidido",
+      "bnd2_cueva_cerrada",
+      "bnd2_furia_alaro",
+      "bnd2_tiene_aliados",
+      "bnd2_gorran_redimido"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "gorran_perdonado",
+       "gravedad": "menor",
+       "signo": 1,
+       "reputacion": {}
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.3,
+     "objetos": [
+      "furia_de_alaro x1"
+     ],
+     "heridas": [],
+     "directas": {
+      "bnd2_furia_alaro": [
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:720",
+        "cual": "b2_skilla_espada_devuelta_vista",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:894",
+        "cual": "b2_skilla_espada_devuelta",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:9289",
+        "cual": "b2_saq_llegan/Desenvainar la Furia de Alaro ",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       }
+      ],
+      "bnd2_tiene_aliados": [
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:42",
+        "cual": "obj2_aliados",
+        "tipo": "diario",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       }
+      ]
+     },
+     "indirectas": {
+      "bnd2_documentos": {
+       "via": "b2_gorran_robo_limpio",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:4204",
+         "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:13782",
+         "cual": "b2_noche_rosita_informa/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:13873",
+         "cual": "b2_noche_papeles",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14270",
+         "cual": "b2_venides_noche_rosita",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14379",
+         "cual": "b2_venides_noche_rosita/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14467",
+         "cual": "b2_venides_noche_todo",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14574",
+         "cual": "b2_venides_noche_todo/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14665",
+         "cual": "b2_venides_noche_rosita2",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14776",
+         "cual": "b2_venides_noche_rosita2/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14866",
+         "cual": "b2_venides_noche",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:14976",
+         "cual": "b2_venides_noche/Contarselo todo y ensenarle la",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15491",
+         "cual": "b2_cierre_todo_xila_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15539",
+         "cual": "b2_cierre_todo_xila",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15581",
+         "cual": "b2_cierre_todo_xila_borracho_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15630",
+         "cual": "b2_cierre_todo_xila_borracho",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15673",
+         "cual": "b2_cierre_todo_vela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:15720",
+         "cual": "b2_cierre_todo",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:16749",
+         "cual": "b2_fiesta_vuelta",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:183",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bndg_dia_cerrado": {
+       "via": "bg_cierre_furia",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:580",
+         "cual": "b2_amanece",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "src/Engine/ApplicationBucle.cpp:255",
+         "cual": "codigo",
+         "tipo": "codigo",
+         "rol": "flag",
+         "dia": "motor"
+        }
+       ]
+      },
+      "bnd2_preso_libre": {
+       "via": "b2_gorran_suelta",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3729",
+         "cual": "b3_rev_teobaldo",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_iris_salvada": {
+       "via": "b2_gorran_suelta_iris",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3691",
+         "cual": "b3_rev_casa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6973",
+         "cual": "b3_epi_iris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "bgd_velas_hermano",
+   "linea": 2474,
+   "peso": 8.5,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Sacar a los críos en silencio [Sigilo]",
+     "linea": 2517,
+     "despedida": false,
+     "pone": [
+      "bgd_sacar_pifia",
+      "bgd_sacar_parcial",
+      "bgd_sacar_exito",
+      "bgd_sacar_critico"
+     ],
+     "quita": [],
+     "variables": [
+      "gris_sospecha+1"
+     ],
+     "tiradas": [
+      {
+       "skill": "sigilo",
+       "flags": {
+        "botch": "bgd_sacar_pifia",
+        "partial": "bgd_sacar_parcial",
+        "success": "bgd_sacar_exito",
+        "critical": "bgd_sacar_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bgd_orfeu_huido": {
+       "via": "bgd_sacar_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4339",
+         "cual": "b3_orfeu",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    },
+    {
+     "texto": "Unirte: «Yo enciendo la vela.»",
+     "linea": 2543,
+     "despedida": false,
+     "pone": [
+      "bgd_unido",
+      "bnd1_unido_al_culto",
+      "bgd_orfeu_huido",
+      "bgd_ninos_perdidos",
+      "bgd_cerrada"
+     ],
+     "quita": [],
+     "variables": [
+      "aldea_sospecha+2",
+      "gorran_misiones+1"
+     ],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bgd_unido": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:4343",
+        "cual": "b3_orfeu",
+        "tipo": "beat",
+        "rol": "noflag",
+        "dia": "ocaso"
+       }
+      ],
+      "bnd1_unido_al_culto": [
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:61",
+        "cual": "b2_po54_sandes",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:157",
+        "cual": "b2_po54_sandes_s0",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:250",
+        "cual": "b2_po54_sandes_p0",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:343",
+        "cual": "b2_po54_barriada",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:152",
+        "cual": "b3_po54_barriada",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:410",
+        "cual": "b3_sermon_po54",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ],
+      "bgd_orfeu_huido": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:4339",
+        "cual": "b3_orfeu",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": []
+    },
+    {
+     "texto": "Volver a Candela contra ellos",
+     "linea": 2591,
+     "despedida": false,
+     "pone": [
+      "bgd_ninos_salvados",
+      "bgd_orfeu_huido",
+      "bgd_candela_con_aldea",
+      "bgd_cerrada"
+     ],
+     "quita": [
+      "bgd_ninos_fuera"
+     ],
+     "variables": [
+      "aldea_sospecha+-1",
+      "gorran_misiones+1"
+     ],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.3,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bgd_orfeu_huido": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:4339",
+        "cual": "b3_orfeu",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": [
+      "bgd_candela_vuelta"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "bgc_asalto",
+   "linea": 4463,
+   "peso": 8.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Proteger las cajas con Bet",
+     "linea": 4501,
+     "despedida": false,
+     "pone": [
+      "bgc_lado_bet",
+      "bgc_fumat_vencidos",
+      "bgc_perdida",
+      "bgc_perdida"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [
+      {
+       "enemigos": [
+        "hermano_fumat x2"
+       ],
+       "flags": {
+        "victory": "bgc_fumat_vencidos",
+        "defeat": "bgc_perdida",
+        "huida": "bgc_perdida"
+       }
+      }
+     ],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bgc_cajas_llegan": {
+       "via": "bgc_fumat_vencidos",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4431",
+         "cual": "b3_barricada_gris_echado",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4468",
+         "cual": "b3_barricada_gris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bgc_con_fumat"
+     ]
+    },
+    {
+     "texto": "Robarlas con los Fumat",
+     "linea": 4535,
+     "despedida": false,
+     "pone": [
+      "bgc_lado_fumat",
+      "bgc_guardias_vencidos",
+      "bgc_perdida",
+      "bgc_perdida"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [
+      {
+       "enemigos": [
+        "guardia_muelle x2"
+       ],
+       "flags": {
+        "victory": "bgc_guardias_vencidos",
+        "defeat": "bgc_perdida",
+        "huida": "bgc_perdida"
+       }
+      }
+     ],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bgc_cajas_robadas": {
+       "via": "bgc_guardias_vencidos",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4369",
+         "cual": "b3_cojo_cajas",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4400",
+         "cual": "b3_barricada_floja",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bgc_frasco_prueba": {
+       "via": "bgc_guardias_vencidos",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:4211",
+         "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        }
+       ]
+      },
+      "bgc_cajas_llegan": {
+       "via": "bgc_perdida",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4431",
+         "cual": "b3_barricada_gris_echado",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4468",
+         "cual": "b3_barricada_gris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bgc_con_bet"
+     ]
+    },
+    {
+     "texto": "Hundirlas en el río [Atletismo]",
+     "linea": 4569,
+     "despedida": false,
+     "pone": [
+      "bgc_hundir_pifia",
+      "bgc_hundir_parcial",
+      "bgc_hundir_exito",
+      "bgc_hundir_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "atletismo",
+       "flags": {
+        "botch": "bgc_hundir_pifia",
+        "partial": "bgc_hundir_parcial",
+        "success": "bgc_hundir_exito",
+        "critical": "bgc_hundir_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bgc_cajas_llegan": {
+       "via": "bgc_hundir_pifia",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4431",
+         "cual": "b3_barricada_gris_echado",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4468",
+         "cual": "b3_barricada_gris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bgc_media_carga": {
+       "via": "bgc_hundir_parcial",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4435",
+         "cual": "b3_barricada_gris_echado",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4471",
+         "cual": "b3_barricada_gris",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bgc_cajas_hundidas": {
+       "via": "bgc_hundir_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4370",
+         "cual": "b3_cojo_cajas",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4401",
+         "cual": "b3_barricada_floja",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    },
+    {
+     "texto": "Cambiar el contenido por aceite de lámpara [Engaño]",
+     "linea": 4588,
+     "despedida": false,
+     "pone": [
+      "bgc_cambiar_pifia",
+      "bgc_cambiar_parcial",
+      "bgc_cambiar_exito",
+      "bgc_cambiar_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "engano",
+       "flags": {
+        "botch": "bgc_cambiar_pifia",
+        "partial": "bgc_cambiar_parcial",
+        "success": "bgc_cambiar_exito",
+        "critical": "bgc_cambiar_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bgc_cajas_llegan": {
+       "via": "bgc_cambiar_pifia",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4431",
+         "cual": "b3_barricada_gris_echado",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4468",
+         "cual": "b3_barricada_gris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bgc_media_carga": {
+       "via": "bgc_cambiar_parcial",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4435",
+         "cual": "b3_barricada_gris_echado",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4471",
+         "cual": "b3_barricada_gris",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bgc_cajas_cambiadas": {
+       "via": "bgc_cambiar_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4371",
+         "cual": "b3_cojo_cajas",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4402",
+         "cual": "b3_barricada_floja",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bgc_frasco_prueba": {
+       "via": "bgc_cambiar_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:4211",
+         "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bgc_sabe_mezcla",
+      "bgc_ficha"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "bga_escena_escondida",
+   "linea": 8733,
+   "peso": 7.5,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "«Iris no está.»",
+     "linea": 8762,
+     "despedida": false,
+     "pone": [
+      "bga_iris_salvada",
+      "bga_morvan_huido",
+      "bga_cerrada"
+     ],
+     "quita": [],
+     "variables": [
+      "gorran_misiones+1"
+     ],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.2,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bga_iris_salvada": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:3691",
+        "cual": "b3_rev_casa",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:6973",
+        "cual": "b3_epi_iris",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ],
+      "bga_morvan_huido": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:4505",
+        "cual": "b3_morvan",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": [
+      "bga_iris_escondida"
+     ]
+    },
+    {
+     "texto": "«Ese contrato es falso.» [Investigación]",
+     "linea": 8805,
+     "despedida": false,
+     "pone": [
+      "bga_contrato_tirada",
+      "bga_contrato_pifia",
+      "bga_contrato_parcial",
+      "bga_contrato_exito",
+      "bga_contrato_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "investigacion",
+       "flags": {
+        "botch": "bga_contrato_pifia",
+        "partial": "bga_contrato_parcial",
+        "success": "bga_contrato_exito",
+        "critical": "bga_contrato_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bga_contrato": {
+       "via": "bga_contrato_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:4209",
+         "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        }
+       ]
+      },
+      "bga_iris_salvada": {
+       "via": "bga_contrato_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3691",
+         "cual": "b3_rev_casa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6973",
+         "cual": "b3_epi_iris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_garsa_vuelta": {
+       "via": "bga_contrato_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4532",
+         "cual": "b3_garsa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_morvan_huido": {
+       "via": "bga_contrato_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4505",
+         "cual": "b3_morvan",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bga_contrato_tirada"
+     ]
+    },
+    {
+     "texto": "Hablarle a la Garsa [Persuasión]",
+     "linea": 8833,
+     "despedida": false,
+     "pone": [
+      "bga_garsa_tirada",
+      "bga_garsa_pifia",
+      "bga_garsa_parcial",
+      "bga_garsa_exito",
+      "bga_garsa_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "persuasion",
+       "flags": {
+        "botch": "bga_garsa_pifia",
+        "partial": "bga_garsa_parcial",
+        "success": "bga_garsa_exito",
+        "critical": "bga_garsa_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bga_iris_salvada": {
+       "via": "bga_garsa_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3691",
+         "cual": "b3_rev_casa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6973",
+         "cual": "b3_epi_iris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_garsa_vuelta": {
+       "via": "bga_garsa_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4532",
+         "cual": "b3_garsa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_morvan_huido": {
+       "via": "bga_garsa_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4505",
+         "cual": "b3_morvan",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bga_garsa_tirada"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "bga_escena_carta",
+   "linea": 8863,
+   "peso": 7.5,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "«Ese contrato es falso.» [Investigación]",
+     "linea": 8895,
+     "despedida": false,
+     "pone": [
+      "bga_contrato_tirada",
+      "bga_contrato_pifia",
+      "bga_contrato_parcial",
+      "bga_contrato_exito",
+      "bga_contrato_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "investigacion",
+       "flags": {
+        "botch": "bga_contrato_pifia",
+        "partial": "bga_contrato_parcial",
+        "success": "bga_contrato_exito",
+        "critical": "bga_contrato_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bga_contrato": {
+       "via": "bga_contrato_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:4209",
+         "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        }
+       ]
+      },
+      "bga_iris_salvada": {
+       "via": "bga_contrato_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3691",
+         "cual": "b3_rev_casa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6973",
+         "cual": "b3_epi_iris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_garsa_vuelta": {
+       "via": "bga_contrato_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4532",
+         "cual": "b3_garsa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_morvan_huido": {
+       "via": "bga_contrato_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4505",
+         "cual": "b3_morvan",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bga_contrato_tirada"
+     ]
+    },
+    {
+     "texto": "Enseñar la carta de pago [Engaño]",
+     "linea": 8923,
+     "despedida": false,
+     "pone": [
+      "bga_pago_tirada",
+      "bga_pago_pifia",
+      "bga_pago_parcial",
+      "bga_pago_exito",
+      "bga_pago_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "engano",
+       "flags": {
+        "botch": "bga_pago_pifia",
+        "partial": "bga_pago_parcial",
+        "success": "bga_pago_exito",
+        "critical": "bga_pago_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bga_iris_salvada": {
+       "via": "bga_pago_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3691",
+         "cual": "b3_rev_casa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6973",
+         "cual": "b3_epi_iris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_morvan_huido": {
+       "via": "bga_pago_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4505",
+         "cual": "b3_morvan",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bga_carta_falsa",
+      "bga_carta_floja",
+      "bga_pago_tirada"
+     ]
+    },
+    {
+     "texto": "Hablarle a la Garsa [Persuasión]",
+     "linea": 8955,
+     "despedida": false,
+     "pone": [
+      "bga_garsa_tirada",
+      "bga_garsa_pifia",
+      "bga_garsa_parcial",
+      "bga_garsa_exito",
+      "bga_garsa_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "persuasion",
+       "flags": {
+        "botch": "bga_garsa_pifia",
+        "partial": "bga_garsa_parcial",
+        "success": "bga_garsa_exito",
+        "critical": "bga_garsa_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bga_iris_salvada": {
+       "via": "bga_garsa_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3691",
+         "cual": "b3_rev_casa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6973",
+         "cual": "b3_epi_iris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_garsa_vuelta": {
+       "via": "bga_garsa_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4532",
+         "cual": "b3_garsa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_morvan_huido": {
+       "via": "bga_garsa_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4505",
+         "cual": "b3_morvan",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bga_garsa_tirada"
+     ]
+    },
+    {
+     "texto": "Sacar a Iris mientras hablan [Sigilo]",
+     "linea": 8983,
+     "despedida": false,
+     "pone": [
+      "bga_saca_tirada",
+      "bga_saca_pifia",
+      "bga_saca_parcial",
+      "bga_saca_exito",
+      "bga_saca_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "sigilo",
+       "flags": {
+        "botch": "bga_saca_pifia",
+        "partial": "bga_saca_parcial",
+        "success": "bga_saca_exito",
+        "critical": "bga_saca_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bga_iris_salvada": {
+       "via": "bga_saca_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3691",
+         "cual": "b3_rev_casa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6973",
+         "cual": "b3_epi_iris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_morvan_huido": {
+       "via": "bga_saca_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4505",
+         "cual": "b3_morvan",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bga_iris_escondida",
+      "bga_saca_tirada"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "bga_escena_luz",
+   "linea": 9014,
+   "peso": 6.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "«Ese contrato es falso.» [Investigación]",
+     "linea": 9044,
+     "despedida": false,
+     "pone": [
+      "bga_contrato_tirada",
+      "bga_contrato_pifia",
+      "bga_contrato_parcial",
+      "bga_contrato_exito",
+      "bga_contrato_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "investigacion",
+       "flags": {
+        "botch": "bga_contrato_pifia",
+        "partial": "bga_contrato_parcial",
+        "success": "bga_contrato_exito",
+        "critical": "bga_contrato_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bga_contrato": {
+       "via": "bga_contrato_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:4209",
+         "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        }
+       ]
+      },
+      "bga_iris_salvada": {
+       "via": "bga_contrato_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3691",
+         "cual": "b3_rev_casa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6973",
+         "cual": "b3_epi_iris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_garsa_vuelta": {
+       "via": "bga_contrato_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4532",
+         "cual": "b3_garsa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_morvan_huido": {
+       "via": "bga_contrato_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4505",
+         "cual": "b3_morvan",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bga_contrato_tirada"
+     ]
+    },
+    {
+     "texto": "Hablarle a la Garsa [Persuasión]",
+     "linea": 9072,
+     "despedida": false,
+     "pone": [
+      "bga_garsa_tirada",
+      "bga_garsa_pifia",
+      "bga_garsa_parcial",
+      "bga_garsa_exito",
+      "bga_garsa_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "persuasion",
+       "flags": {
+        "botch": "bga_garsa_pifia",
+        "partial": "bga_garsa_parcial",
+        "success": "bga_garsa_exito",
+        "critical": "bga_garsa_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bga_iris_salvada": {
+       "via": "bga_garsa_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3691",
+         "cual": "b3_rev_casa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6973",
+         "cual": "b3_epi_iris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_garsa_vuelta": {
+       "via": "bga_garsa_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4532",
+         "cual": "b3_garsa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_morvan_huido": {
+       "via": "bga_garsa_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4505",
+         "cual": "b3_morvan",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bga_garsa_tirada"
+     ]
+    },
+    {
+     "texto": "Sacar a Iris mientras hablan [Sigilo]",
+     "linea": 9100,
+     "despedida": false,
+     "pone": [
+      "bga_saca_tirada",
+      "bga_saca_pifia",
+      "bga_saca_parcial",
+      "bga_saca_exito",
+      "bga_saca_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "sigilo",
+       "flags": {
+        "botch": "bga_saca_pifia",
+        "partial": "bga_saca_parcial",
+        "success": "bga_saca_exito",
+        "critical": "bga_saca_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bga_iris_salvada": {
+       "via": "bga_saca_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3691",
+         "cual": "b3_rev_casa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6973",
+         "cual": "b3_epi_iris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_morvan_huido": {
+       "via": "bga_saca_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4505",
+         "cual": "b3_morvan",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bga_iris_escondida",
+      "bga_saca_tirada"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "bga_ganada",
+   "linea": 10060,
+   "peso": 6.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "«Fuera de la aldea.»",
+     "linea": 10080,
+     "despedida": false,
+     "pone": [
+      "bga_iris_salvada",
+      "bga_morvan_huido",
+      "bga_mercenarios_fuera",
+      "bga_cerrada"
+     ],
+     "quita": [],
+     "variables": [
+      "gorran_misiones+1"
+     ],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.3,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bga_iris_salvada": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:3691",
+        "cual": "b3_rev_casa",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:6973",
+        "cual": "b3_epi_iris",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ],
+      "bga_morvan_huido": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:4505",
+        "cual": "b3_morvan",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": []
+    },
+    {
+     "texto": "Entregárselo a Gorran",
+     "linea": 10120,
+     "despedida": false,
+     "pone": [
+      "bga_iris_salvada",
+      "bga_morvan_huido",
+      "bga_mercenarios_fuera",
+      "bga_gorran_morvan",
+      "bga_cerrada"
+     ],
+     "quita": [],
+     "variables": [
+      "gorran_misiones+1"
+     ],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.3,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bga_iris_salvada": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:3691",
+        "cual": "b3_rev_casa",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:6973",
+        "cual": "b3_epi_iris",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ],
+      "bga_morvan_huido": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:4505",
+        "cual": "b3_morvan",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "bga_ultimo",
+   "linea": 9872,
+   "peso": 4.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Hablarle a la Garsa [Persuasión]",
+     "linea": 9907,
+     "despedida": false,
+     "pone": [
+      "bga_garsa_tirada",
+      "bga_garsa2_pifia",
+      "bga_garsa2_parcial",
+      "bga_garsa2_exito",
+      "bga_garsa2_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "persuasion",
+       "flags": {
+        "botch": "bga_garsa2_pifia",
+        "partial": "bga_garsa2_parcial",
+        "success": "bga_garsa2_exito",
+        "critical": "bga_garsa2_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bga_iris_salvada": {
+       "via": "bga_garsa2_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3691",
+         "cual": "b3_rev_casa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6973",
+         "cual": "b3_epi_iris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_garsa_vuelta": {
+       "via": "bga_garsa2_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4532",
+         "cual": "b3_garsa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bga_morvan_huido": {
+       "via": "bga_garsa2_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4505",
+         "cual": "b3_morvan",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bga_garsa_tirada"
+     ]
+    },
+    {
+     "texto": "Irte por la cocina con Neus",
+     "linea": 9951,
+     "despedida": false,
+     "pone": [
+      "bga_iris_llevada",
+      "bga_cerrada"
+     ],
+     "quita": [],
+     "variables": [
+      "gorran_misiones+1"
+     ],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bga_iris_salvada": {
+       "via": "b2_gorran_suelta_iris",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3691",
+         "cual": "b3_rev_casa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6973",
+         "cual": "b3_epi_iris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bga_cocina"
+     ]
+    },
+    {
+     "texto": "Dejar que se la lleven",
+     "linea": 9983,
+     "despedida": false,
+     "pone": [
+      "bga_iris_llevada",
+      "bga_serra_ofendida",
+      "bga_cerrada"
+     ],
+     "quita": [],
+     "variables": [
+      "gorran_misiones+1"
+     ],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bga_iris_salvada": {
+       "via": "b2_gorran_suelta_iris",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3691",
+         "cual": "b3_rev_casa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6973",
+         "cual": "b3_epi_iris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_libros_cojo",
+   "linea": 14450,
+   "peso": 4.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Llevarte el trato",
+     "linea": 14468,
+     "despedida": false,
+     "pone": [
+      "bnd2_trato_venta",
+      "bnd_pruebas_suficientes",
+      "bnd2_t_trato"
+     ],
+     "quita": [],
+     "variables": [
+      "aldea_tiempo+1",
+      "aldea_sospecha+1"
+     ],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_trato_venta": [
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:688",
+        "cual": "b2_rosita_trato",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:4206",
+        "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": []
+    },
+    {
+     "texto": "Copiarlo y dejarlo",
+     "linea": 14506,
+     "despedida": false,
+     "pone": [
+      "bnd2_trato_venta",
+      "bnd2_trato_copia",
+      "bnd2_t_trato"
+     ],
+     "quita": [],
+     "variables": [
+      "aldea_tiempo+1"
+     ],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_trato_venta": [
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:688",
+        "cual": "b2_rosita_trato",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       },
+       {
+        "donde": "assets/adventures/boundington_segundo_dia.json:4206",
+        "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "segundo_dia"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "bgd_velas",
+   "linea": 2663,
+   "peso": 2.5,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Sacar a los críos en silencio [Sigilo]",
+     "linea": 2701,
+     "despedida": false,
+     "pone": [
+      "bgd_sacar_pifia",
+      "bgd_sacar_parcial",
+      "bgd_sacar_exito",
+      "bgd_sacar_critico"
+     ],
+     "quita": [],
+     "variables": [
+      "gris_sospecha+1"
+     ],
+     "tiradas": [
+      {
+       "skill": "sigilo",
+       "flags": {
+        "botch": "bgd_sacar_pifia",
+        "partial": "bgd_sacar_parcial",
+        "success": "bgd_sacar_exito",
+        "critical": "bgd_sacar_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bgd_orfeu_huido": {
+       "via": "bgd_sacar_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4339",
+         "cual": "b3_orfeu",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    },
+    {
+     "texto": "Volver a Candela contra ellos",
+     "linea": 2727,
+     "despedida": false,
+     "pone": [
+      "bgd_ninos_salvados",
+      "bgd_orfeu_huido",
+      "bgd_candela_con_aldea",
+      "bgd_cerrada"
+     ],
+     "quita": [
+      "bgd_ninos_fuera"
+     ],
+     "variables": [
+      "aldea_sospecha+-1",
+      "gorran_misiones+1"
+     ],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.3,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bgd_orfeu_huido": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:4339",
+        "cual": "b3_orfeu",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": [
+      "bgd_candela_vuelta"
+     ]
+    },
+    {
+     "texto": "«¡Gorran! ¡Ahora!»",
+     "linea": 2785,
+     "despedida": false,
+     "pone": [
+      "bgd_ninos_salvados",
+      "bgd_orfeu_huido",
+      "bgd_gorran_salvo",
+      "bgd_cerrada"
+     ],
+     "quita": [
+      "bgd_ninos_fuera"
+     ],
+     "variables": [
+      "aldea_sospecha+-1",
+      "gorran_misiones+1"
+     ],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.3,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bgd_orfeu_huido": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:4339",
+        "cual": "b3_orfeu",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": [
+      "bgd_gorran_baja",
+      "bgd_gorran_dos"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "bgb_golpes",
+   "linea": 6532,
+   "peso": 2.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Cavar [Atletismo]",
+     "linea": 6569,
+     "despedida": false,
+     "pone": [
+      "bgb_cavar_pifia",
+      "bgb_cavar_parcial",
+      "bgb_cavar_exito",
+      "bgb_cavar_critico"
+     ],
+     "quita": [],
+     "variables": [
+      "mina_aire+-2"
+     ],
+     "tiradas": [
+      {
+       "skill": "atletismo",
+       "flags": {
+        "botch": "bgb_cavar_pifia",
+        "partial": "bgb_cavar_parcial",
+        "success": "bgb_cavar_exito",
+        "critical": "bgb_cavar_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bgb_rescate_todos": {
+       "via": "bgb_cavar_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3656",
+         "cual": "b3_rev_viga",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    },
+    {
+     "texto": "Apuntalar con las vigas del taller",
+     "linea": 6596,
+     "despedida": false,
+     "pone": [
+      "bgb_rescate_todos",
+      "bgb_abierto",
+      "bgb_rescatando"
+     ],
+     "quita": [],
+     "variables": [
+      "mina_aire+-1"
+     ],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.3,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bgb_rescate_todos": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:3656",
+        "cual": "b3_rev_viga",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {
+      "bgb_rescate_parte": {
+       "via": "bgb_salen_tres",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3657",
+         "cual": "b3_rev_viga",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bgb_vigas"
+     ]
+    },
+    {
+     "texto": "Por la derecha, detrás de la viga",
+     "linea": 6637,
+     "despedida": false,
+     "pone": [
+      "bgb_hueco_pifia",
+      "bgb_hueco_parcial",
+      "bgb_hueco_exito",
+      "bgb_hueco_critico"
+     ],
+     "quita": [],
+     "variables": [
+      "mina_aire+-1"
+     ],
+     "tiradas": [
+      {
+       "skill": "atletismo",
+       "flags": {
+        "botch": "bgb_hueco_pifia",
+        "partial": "bgb_hueco_parcial",
+        "success": "bgb_hueco_exito",
+        "critical": "bgb_hueco_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bgb_rescate_todos": {
+       "via": "bgb_hueco_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3656",
+         "cual": "b3_rev_viga",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bgb_bru_habla",
+      "bgb_bru_medio"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "bga_lote",
+   "linea": 10276,
+   "peso": 2.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Pujar más fuerte que nadie [Persuasión]",
+     "linea": 10302,
+     "despedida": false,
+     "pone": [
+      "bga_puja_pifia",
+      "bga_puja_parcial",
+      "bga_puja_exito",
+      "bga_puja_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "persuasion",
+       "flags": {
+        "botch": "bga_puja_pifia",
+        "partial": "bga_puja_parcial",
+        "success": "bga_puja_exito",
+        "critical": "bga_puja_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bga_iris_salvada": {
+       "via": "bga_puja_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3691",
+         "cual": "b3_rev_casa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6973",
+         "cual": "b3_epi_iris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    },
+    {
+     "texto": "Cortar la cuerda en el barullo [Sigilo]",
+     "linea": 10321,
+     "despedida": false,
+     "pone": [
+      "bga_puja_pifia",
+      "bga_puja_parcial",
+      "bga_puja_exito",
+      "bga_puja_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "sigilo",
+       "flags": {
+        "botch": "bga_puja_pifia",
+        "partial": "bga_puja_parcial",
+        "success": "bga_puja_exito",
+        "critical": "bga_puja_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bga_iris_salvada": {
+       "via": "bga_puja_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3691",
+         "cual": "b3_rev_casa",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6973",
+         "cual": "b3_epi_iris",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "bgb_detras",
+   "linea": 7076,
+   "peso": 1.5,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Pasar a su espalda [Sigilo]",
+     "linea": 7104,
+     "despedida": false,
+     "pone": [
+      "bgb_detras_pifia",
+      "bgb_detras_parcial",
+      "bgb_detras_exito",
+      "bgb_detras_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "sigilo",
+       "flags": {
+        "botch": "bgb_detras_pifia",
+        "partial": "bgb_detras_parcial",
+        "success": "bgb_detras_exito",
+        "critical": "bgb_detras_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bgb_rescate_parte": {
+       "via": "bgb_detras_parcial",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3657",
+         "cual": "b3_rev_viga",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bgb_rescate_todos": {
+       "via": "bgb_detras_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3656",
+         "cual": "b3_rev_viga",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    },
+    {
+     "texto": "«La luz me manda a relevaros.» [Engaño]",
+     "linea": 7123,
+     "despedida": false,
+     "pone": [
+      "bgb_detras_pifia",
+      "bgb_detras_parcial",
+      "bgb_detras_exito",
+      "bgb_detras_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "engano",
+       "flags": {
+        "botch": "bgb_detras_pifia",
+        "partial": "bgb_detras_parcial",
+        "success": "bgb_detras_exito",
+        "critical": "bgb_detras_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bgb_rescate_parte": {
+       "via": "bgb_detras_parcial",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3657",
+         "cual": "b3_rev_viga",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bgb_rescate_todos": {
+       "via": "bgb_detras_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3656",
+         "cual": "b3_rev_viga",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bgd_capucha",
+      "bnd1_unido_al_culto"
+     ]
+    },
+    {
+     "texto": "Echarles",
+     "linea": 7148,
+     "despedida": false,
+     "pone": [
+      "bgb_detras_ganada",
+      "bgb_detras_perdida",
+      "bgb_detras_perdida"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [
+      {
+       "enemigos": [
+        "perdido_devoto x2"
+       ],
+       "flags": {
+        "victory": "bgb_detras_ganada",
+        "defeat": "bgb_detras_perdida",
+        "huida": "bgb_detras_perdida"
+       }
+      }
+     ],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bgb_rescate_todos": {
+       "via": "bgb_detras_ganada",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3656",
+         "cual": "b3_rev_viga",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "bgd_candela_s1",
+   "linea": 1632,
+   "peso": 1.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "«Tú no crees lo que lees.» [Persuasión]",
+     "linea": 1656,
+     "despedida": false,
+     "pone": [
+      "bnd_bgd_candela_t_dudas",
+      "bgd_candela_tirada",
+      "bgd_candela_pifia",
+      "bgd_candela_parcial",
+      "bgd_candela_exito",
+      "bgd_candela_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "persuasion",
+       "flags": {
+        "botch": "bgd_candela_pifia",
+        "partial": "bgd_candela_parcial",
+        "success": "bgd_candela_exito",
+        "critical": "bgd_candela_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bgd_candela_vuelta": {
+       "via": "bgd_candela_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4308",
+         "cual": "b3_candela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bgd_libro": {
+       "via": "bgd_candela_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:4212",
+         "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bgd_sabe_llaves",
+      "bnd_bgd_candela_t_dudas",
+      "bgd_candela_tirada"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "bg_skilla_hora",
+   "linea": 10582,
+   "peso": 1.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Subir a dormir",
+     "linea": 10640,
+     "despedida": false,
+     "pone": [
+      "bndg_a_dormir"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bndg_dia_cerrado": {
+       "via": "bg_cierre_furia",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:580",
+         "cual": "b2_amanece",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        },
+        {
+         "donde": "src/Engine/ApplicationBucle.cpp:255",
+         "cual": "codigo",
+         "tipo": "codigo",
+         "rol": "flag",
+         "dia": "motor"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_rosita_encargo_s1",
+   "linea": 11030,
+   "peso": 1.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "¿La Furia? ¿Como en las historias del borracho?",
+     "linea": 11056,
+     "despedida": false,
+     "pone": [
+      "bnd2_rosita_encargo_t_furia",
+      "bnd2_furia_sospecha"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_furia_sospecha": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:3503",
+        "cual": "b3_rosita_calle/Gracias, Furia.",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": [
+      "bnd2_rosita_encargo_t_furia"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "bgc_cajas",
+   "linea": 4225,
+   "peso": 0.5,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Abrir una sin romper el sello [Investigación]",
+     "linea": 4268,
+     "despedida": false,
+     "pone": [
+      "bgc_cajas_tirada",
+      "bgc_abrir_pifia",
+      "bgc_abrir_parcial",
+      "bgc_abrir_exito",
+      "bgc_abrir_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "investigacion",
+       "flags": {
+        "botch": "bgc_abrir_pifia",
+        "partial": "bgc_abrir_parcial",
+        "success": "bgc_abrir_exito",
+        "critical": "bgc_abrir_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bgc_frasco_prueba": {
+       "via": "bgc_abrir_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:4211",
+         "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "bgb_puntal",
+   "linea": 6389,
+   "peso": 0.5,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Mirarlo de cerca [Investigación]",
+     "linea": 6406,
+     "despedida": false,
+     "pone": [
+      "bgb_puntal_tirada",
+      "bgb_puntal_pifia",
+      "bgb_puntal_parcial",
+      "bgb_puntal_exito",
+      "bgb_puntal_critico"
+     ],
+     "quita": [],
+     "variables": [
+      "mina_aire+-1"
+     ],
+     "tiradas": [
+      {
+       "skill": "investigacion",
+       "flags": {
+        "botch": "bgb_puntal_pifia",
+        "partial": "bgb_puntal_parcial",
+        "success": "bgb_puntal_exito",
+        "critical": "bgb_puntal_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bgb_puntal_prueba": {
+       "via": "bgb_puntal_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:4210",
+         "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_v_preso",
+   "linea": 20414,
+   "peso": 0.5,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Doblar los barrotes [Atletismo]",
+     "linea": 20438,
+     "despedida": false,
+     "pone": [
+      "bnd2_preso_tirada",
+      "bnd2_preso_pifia",
+      "bnd2_preso_parcial",
+      "bnd2_preso_exito",
+      "bnd2_preso_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "atletismo",
+       "flags": {
+        "botch": "bnd2_preso_pifia",
+        "partial": "bnd2_preso_parcial",
+        "success": "bnd2_preso_exito",
+        "critical": "bnd2_preso_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_preso_libre": {
+       "via": "b2_v_preso_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3729",
+         "cual": "b3_rev_teobaldo",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bnd2_preso_tirada"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "b2_casa_cojo",
+   "linea": 22387,
+   "peso": 0.5,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Registrar la casa [Investigación]",
+     "linea": 22409,
+     "despedida": false,
+     "pone": [
+      "bnd2_casa_cojo_pifia",
+      "bnd2_casa_cojo_parcial",
+      "bnd2_casa_cojo_exito",
+      "bnd2_casa_cojo_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "investigacion",
+       "flags": {
+        "botch": "bnd2_casa_cojo_pifia",
+        "partial": "bnd2_casa_cojo_parcial",
+        "success": "bnd2_casa_cojo_exito",
+        "critical": "bnd2_casa_cojo_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_lista_cojo": {
+       "via": "b2_casa_cojo_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_segundo_dia.json:4208",
+         "cual": "b2_castillo_prueba/Ensenarle una prueba de los Pe",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "segundo_dia"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  }
+ ],
+ "avisos": [
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bgd_candela:1447",
+   "dato": "bgd_sabe_llaves",
+   "opcion": "¿Qué hace falta para abrirla?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bgd_candela_s1:1702",
+   "dato": "bgd_salir",
+   "opcion": "«Sácame de aquí.»"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bgd_gorran:2045",
+   "dato": "bnd2_gorran_contra_gris",
+   "opcion": "Que lo sepa por los mineros"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bgd_velas_hermano:2591",
+   "dato": "bgd_candela_con_aldea",
+   "opcion": "Volver a Candela contra ellos"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bgd_velas:2727",
+   "dato": "bgd_candela_con_aldea",
+   "opcion": "Volver a Candela contra ellos"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bgc_bet_s1:3714",
+   "dato": "bgc_salir",
+   "opcion": "Sácame por la Gola."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bgc_asalto:4501",
+   "dato": "bgc_lado_bet",
+   "opcion": "Proteger las cajas con Bet"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bgb_tecla_s1:5484",
+   "dato": "bgb_casco",
+   "opcion": "Bajo a ayudar."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bgb_tecla_s1:5484",
+   "dato": "bgb_voluntario",
+   "opcion": "Bajo a ayudar."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bgb_tecla_s1:5521",
+   "dato": "bgb_salir",
+   "opcion": "Sácame de aquí."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bgb_bru:5726",
+   "dato": "bgb_bru_raro",
+   "opcion": "¿Dónde estabas cuando cayó?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bga_serra_pide:7683",
+   "dato": "bga_aceptada",
+   "opcion": "«Me quedo. Nadie se la lleva.»"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bga_serra_pide:7683",
+   "dato": "bga_huesped",
+   "opcion": "«Me quedo. Nadie se la lleva.»"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bga_serra_pide:7699",
+   "dato": "bga_aceptada",
+   "opcion": "«¿Cuánto debías?»"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bga_serra_pide:7699",
+   "dato": "bga_huesped",
+   "opcion": "«¿Cuánto debías?»"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bga_neus:7755",
+   "dato": "bga_bata",
+   "opcion": "«Dame una bata de la casa.»"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bga_iris_s1:8115",
+   "dato": "bga_aceptada",
+   "opcion": "«Quédate. Te defiendo.»"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bga_ultimo:9983",
+   "dato": "bga_serra_ofendida",
+   "opcion": "Dejar que se la lleven"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bga_ganada:10120",
+   "dato": "bga_gorran_morvan",
+   "opcion": "Entregárselo a Gorran"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_calabozo:11451",
+   "dato": "bnd2_gorran_contra_cojo",
+   "opcion": "Enseñarle el trato y leérselo"
+  },
+  {
+   "tipo": "solo-diario",
+   "donde": "b2_calabozo:11451",
+   "dato": "bnd2_tiene_aliados",
+   "opcion": "Enseñarle el trato y leérselo; lo lee solo el diario: assets/adventures/boundington_segundo_dia.json:42"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_cueva_llegada:11608",
+   "dato": "bnd2_aldea_cliente",
+   "opcion": "Pagar el paso (5)"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_cueva_llegada:11629",
+   "dato": "bnd2_aldea_cliente",
+   "opcion": "«Vengo a ver la subasta.»"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_victor_s1:12550",
+   "dato": "bnd2_sabe_trampa_cojo",
+   "opcion": "Háblame del Cojo."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_victor_s2:12641",
+   "dato": "bnd2_fechorias_ofrecidas",
+   "opcion": "¿Qué planeáis?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_victor_s3:12763",
+   "dato": "bnd2_sabe_barca",
+   "opcion": "¿Y si hay que salir corriendo?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_victor_s3:12791",
+   "dato": "bnd2_farsa_pactada",
+   "opcion": "He encontrado a Joel."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "bg_tajo_cama:13038",
+   "dato": "bndg_dormir_tajo",
+   "opcion": "Dormir arriba"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_joel:13380",
+   "dato": "bnd2_joel_extorsion",
+   "opcion": "¿Qué te pasa?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_joel:13420",
+   "dato": "bnd2_sabe_comprador_joel",
+   "opcion": "¿Qué te obligan a hacer?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_joel_s0:13512",
+   "dato": "bnd2_joel_extorsion",
+   "opcion": "¿Qué te pasa?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_joel_s0:13552",
+   "dato": "bnd2_sabe_comprador_joel",
+   "opcion": "¿Qué te obligan a hacer?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_joel_p0:13771",
+   "dato": "bnd2_joel_extorsion",
+   "opcion": "¿Qué te pasa?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_joel_p0:13811",
+   "dato": "bnd2_sabe_comprador_joel",
+   "opcion": "¿Qué te obligan a hacer?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_cojo:14004",
+   "dato": "bnd2_apuesta_hecha",
+   "opcion": "Echar una partida [Percepción]"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_libros_cojo:14468",
+   "dato": "bnd_pruebas_suficientes",
+   "opcion": "Llevarte el trato"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_libros_cojo:14506",
+   "dato": "bnd2_trato_copia",
+   "opcion": "Copiarlo y dejarlo"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_serra:14604",
+   "dato": "bnd2_sabe_mina",
+   "opcion": "¿Quién entra en la aldea?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_serra_s0:14736",
+   "dato": "bnd2_sabe_mina",
+   "opcion": "¿Quién entra en la aldea?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_serra_p0:14869",
+   "dato": "bnd2_sabe_mina",
+   "opcion": "¿Quién entra en la aldea?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_gorran_trato:16180",
+   "dato": "bnd2_gorran_contra_cojo",
+   "opcion": "Leérselo en voz alta"
+  },
+  {
+   "tipo": "solo-diario",
+   "donde": "b2_gorran_trato:16180",
+   "dato": "bnd2_tiene_aliados",
+   "opcion": "Leérselo en voz alta; lo lee solo el diario: assets/adventures/boundington_segundo_dia.json:42"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_gorran_tregua:16276",
+   "dato": "bnd2_gorran_tregua",
+   "opcion": "Proponerle una tregua"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_gorran_tregua:16299",
+   "dato": "bnd2_gorran_tregua_ofrecida",
+   "opcion": "Dejarlo para luego"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_dados:16582",
+   "dato": "bnd2_dados_cambiados",
+   "opcion": "Cambiar los dados"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_dados:16582",
+   "dato": "bnd2_cojo_humillado",
+   "opcion": "Cambiar los dados"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_dados:16618",
+   "dato": "bnd2_gorran_avisado",
+   "opcion": "Avisar a Gorran de la trampa"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_gorran_v0:17993",
+   "dato": "bnd2_pista_gorran",
+   "opcion": "¿Quién te la encargó?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_gorran_v0:18024",
+   "dato": "bnd2_gorran_asustado",
+   "opcion": "Es de la Furia."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_gorran:18127",
+   "dato": "bnd2_pista_gorran",
+   "opcion": "¿Quién te la encargó?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_gorran:18158",
+   "dato": "bnd2_gorran_asustado",
+   "opcion": "Es de la Furia."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_gorran_s0_a:18256",
+   "dato": "bnd2_pista_gorran",
+   "opcion": "¿Quién te la encargó?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_gorran_s0_a:18287",
+   "dato": "bnd2_gorran_asustado",
+   "opcion": "Es de la Furia."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_gorran_p0_a:18389",
+   "dato": "bnd2_pista_gorran",
+   "opcion": "¿Quién te la encargó?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_gorran_p0_a:18420",
+   "dato": "bnd2_gorran_asustado",
+   "opcion": "Es de la Furia."
+  },
+  {
+   "tipo": "solo-diario",
+   "donde": "b2_gorran_victoria:18665",
+   "dato": "bnd2_tiene_aliados",
+   "opcion": "Suelta a los presos y estamos en paz.; lo lee solo el diario: assets/adventures/boundington_segundo_dia.json:42"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_gorran_victoria:18665",
+   "dato": "bnd2_gorran_decidido",
+   "opcion": "Suelta a los presos y estamos en paz."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_gorran_victoria:18727",
+   "dato": "bnd2_gorran_decidido",
+   "opcion": "Acabar con él (no volverá a ayudarte)"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_v_borracho:18933",
+   "dato": "bnd2_sabe_trampa_cojo",
+   "opcion": "¿El Cojo hace trampas?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_v_borracho_s0:19025",
+   "dato": "bnd2_sabe_trampa_cojo",
+   "opcion": "¿El Cojo hace trampas?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_v_borracho_p0:19118",
+   "dato": "bnd2_sabe_trampa_cojo",
+   "opcion": "¿El Cojo hace trampas?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_v_baul_amigos:19292",
+   "dato": "bnd2_cuchara_amigos",
+   "opcion": "Llevarte la cuchara"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_v_cama_recadero:19337",
+   "dato": "bnd2_robo_recadero",
+   "opcion": "Quedártela"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_v_cama_recadero:19360",
+   "dato": "bnd2_sabe_libro_deudas",
+   "opcion": "Dejarla y decírselo al chico"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_v_contable:19462",
+   "dato": "bnd2_sabe_cajas_cojo",
+   "opcion": "¿Qué entra por la galería?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_v_contable_s0:19574",
+   "dato": "bnd2_sabe_cajas_cojo",
+   "opcion": "¿Qué entra por la galería?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_v_contable_p0:19687",
+   "dato": "bnd2_sabe_cajas_cojo",
+   "opcion": "¿Qué entra por la galería?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_v_escribiente:19911",
+   "dato": "bnd2_escribiente_cojo",
+   "opcion": "¿Quién te paga por eso?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_v_carpintero:20796",
+   "dato": "bnd2_v_carpintero_no",
+   "opcion": "Ahora no"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_v_agotado:20826",
+   "dato": "bnd2_sabe_ruta_cojo",
+   "opcion": "Darle agua y vendarle las manos"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_v_sectario:20958",
+   "dato": "bnd2_sectarios_mina_huido",
+   "opcion": "Echarles de la mina"
+  },
+  {
+   "tipo": "opciones-iguales",
+   "donde": "bga_serra_pide:7683",
+   "dato": "«Me quedo. Nadie se la lleva.» | «¿Cuánto debías?»",
+   "opcion": "bga_aceptada,bga_huesped"
+  },
+  {
+   "tipo": "opciones-iguales",
+   "donde": "b2_porton:15969",
+   "dato": "«Vengo de parte de Doña Serra.» | Esperar al cuerno y pasar",
+   "opcion": "bnd2_porton_resuelto"
+  }
+ ]
+}

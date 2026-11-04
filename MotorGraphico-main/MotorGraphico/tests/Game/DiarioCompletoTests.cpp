@@ -19,10 +19,12 @@
 #include "Game/DiarioMisiones.h"
 #include "HUD/Pergamino/PaginaMisiones.h"
 #include "RPG/Narrative/AdventureScript.h"
+#include "RPG/Narrative/EventosDelMundo.h"
 #include "RPG/Narrative/NarrativeState.h"
 #include "TestHarness.h"
 
 #include <algorithm>
+#include <filesystem>
 #include <fstream>
 #include <set>
 #include <sstream>
@@ -31,7 +33,7 @@
 
 namespace {
 
-const char* const kAventuras[] = {"boundington_prologo", "boundington_primer_dia", "boundington_segundo_dia",
+const char* const kAventuras[] = {"boundington_prologo", "boundington_primer_dia", "boundington_dia_gorran", "boundington_segundo_dia",
                                   "boundington_ocaso"};
 
 std::vector<RPG::AdventureScript> boundington() {
@@ -66,11 +68,24 @@ void apunta(const std::vector<RPG::NarrativeEffect>& efectos, std::set<std::stri
 // Todas las flags que las cuatro aventuras pueden encender, y las que
 // enciende la Application al saltar de capitulo (capituloDeLaCampana).
 std::set<std::string> flagsEncendibles(const std::vector<RPG::AdventureScript>& aventuras) {
-    std::set<std::string> flags = {"bnd_dia1_empezado", "bnd_dia2_empezado", "bnd_ocaso_empezado"};
+    std::set<std::string> flags = {"bnd_dia1_empezado", "bndg_empezado", "bnd_dia2_empezado", "bnd_ocaso_empezado"};
     for (const RPG::AdventureScript& a : aventuras) {
         for (const RPG::NarrativeBeat& b : a.beats) {
             apunta(b.effects, flags);
             for (const RPG::OpcionDeDialogo& o : b.opciones) apunta(o.efectos, flags);
+        }
+    }
+    // C8-04b: los eventos del mundo (assets/eventos/*.json) tambien encienden flags.
+    std::error_code ec;
+    for (const auto& f : std::filesystem::directory_iterator("assets/eventos", ec)) {
+        if (f.path().extension() != ".json") continue;
+        const auto cat = RPG::eventos::cargaCatalogo(f.path().generic_string());
+        MOTOR_CHECK(cat.isOk());
+        if (!cat.isOk()) continue;
+        for (const RPG::eventos::Evento& e : cat.value().eventos) {
+            apunta(e.efectos, flags);
+            apunta(e.alCaducar, flags);
+            for (const RPG::eventos::Fase& fase : e.fases) apunta(fase.efectos, flags);
         }
     }
     flags.erase("");
@@ -107,7 +122,7 @@ MOTOR_TEST_CASE(las_fichas_de_boundington_casan_con_sus_aventuras) {
     const std::vector<RPG::AdventureScript> aventuras = boundington();
     const Game::FichasDeMisiones todas = fichas();
     const std::set<std::string> encendibles = flagsEncendibles(aventuras);
-    MOTOR_CHECK(aventuras.size() == 4);
+    MOTOR_CHECK(aventuras.size() == 5);  // GORRAN-DIA2: cuatro dias y el prologo
     int conAventura = 0;
     for (const RPG::QuestDefinition& q : todas) {
         if (q.adventureId.empty()) continue;
@@ -307,10 +322,10 @@ MOTOR_TEST_CASE(el_cuaderno_ensena_la_mision_entera_con_sus_decisiones) {
     const Game::DiarioDatos d = Game::construirDiario(campana(aventuras), dia1, estado, todas);
 
     // Las filas: el Dia 1 (activo) con sus 3 apartados y 2 decisiones; el
-    // prologo empezado con sus 3 apartados y 1 decision; el Dia 2 y el Ocaso,
+    // prologo empezado con sus 3 apartados y 1 decision; Gorran, el Dia 2 y el Ocaso,
     // sin empezar, una fila cada uno.
     const std::vector<Pergamino::FilaDiario> filas = Pergamino::filasDelDiario(d);
-    MOTOR_CHECK(filas.size() == 1 + 3 + 2 + 1 + 3 + 1 + 1 + 1);
+    MOTOR_CHECK(filas.size() == 1 + 3 + 2 + 1 + 3 + 1 + 1 + 1 + 1);  // + el dia de Gorran, sin empezar
     Pergamino::PaginaCuaderno pg = Pergamino::paginaMisiones(d, 0);
     MOTOR_CHECK(pg.filas.size() == filas.size());
     MOTOR_CHECK(pg.filas[0].nombre == "El Primer Día en Boundington");

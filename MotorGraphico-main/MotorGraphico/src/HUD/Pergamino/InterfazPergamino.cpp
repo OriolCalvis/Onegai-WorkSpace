@@ -179,9 +179,9 @@ void InterfazPergamino::avanza(float segundos) {
 void InterfazPergamino::actualiza(const EstadoJuego& e) {
     m_salidas.clear();  // AV16-06: las vuelve a poner pintaExploracion
     m_capas.baja.limpia();
-    m_capas.alta.limpia();
-    m_capas.hoja.limpia();
+    m_capas.alta.limpia(); m_capas.hoja.limpia();
     m_capas.hojaVisible = false;
+    m_retratos.nuevoFotograma();  // PERF-2: el cupo de montajes de retratos, por cada actualiza
     if ((e.titulo != nullptr || e.creacion != nullptr) && cargada()) {
         m_cuadernoAbierto = false;
         m_dialogo.cierra();
@@ -300,6 +300,7 @@ void InterfazPergamino::pintaExploracion(const EstadoJuego& e, bool compacto) {
     if (!compacto) m_salidas = salidasCercanas(e);  // AV16-06: la flecha de suelo de cada salida
     if (!compacto) pintaCarteles(m_capas.baja, p, e, d.avisoDestino);  // AV15-02: el nombre sobre cada puerta
     if (!compacto) pintaBocadillosPnj(m_capas.baja, p, e, d.avisoDestino);  // PNJ-02: el oficio y las frases de los PNJ
+    if (!compacto) pintaEmociones(m_capas.baja, p, e);  // C2-04d: "!" y compania de las cinematicas
     m_retales.pinta(m_capas.baja, p, d, e.anchoVista, e.altoVista);
     const GuiaMapa::Vista vista{e.anchoVista, e.altoVista, e.camaraX, e.camaraY, e.zoom, e.mapa ? e.mapa->getTileWidth() : 0,
                                 e.mapa ? e.mapa->getTileHeight() : 0, e.animacionesReducidas};

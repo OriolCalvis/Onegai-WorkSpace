@@ -181,17 +181,18 @@ const Pergamino::InterfazPergamino* interfazDe(const std::unique_ptr<Render::Per
     return pergamino && pergamino->listo() ? &pergamino->interfaz() : nullptr;
 }
 
-// MAPA-02 — El mapa grande (M): flechas o WASD mueven el cursor (mantenidas, a saltos), ENTER o un
-// clic ponen o quitan una chincheta, M o ESC lo cierran. El raton senala la casilla.
+// MAPA-02 — El mapa grande (M): W A S D (como al andar) o las flechas mueven el cursor
+// (mantenidas, a saltos), ENTER o un clic ponen o quitan una chincheta, M o ESC lo cierran. El raton
+// senala la casilla.
 void teclasMapa(Pergamino::GuiaMapa& guia, const Engine::Input::InputSnapshot& input) {
     using A = Engine::Input::InputAction;
     if (input.pressed(A::ToggleMap) || input.pressed(A::Quit)) return guia.cierra();
     const auto pulsa = [&](A a, A b) { return input.pressed(a) || input.pressed(b); };
     const auto tiene = [&](A a, A b) { return input.held(a) || input.held(b); };
-    const int dx = tiene(A::MenuRight, A::MoveEast) - tiene(A::MenuLeft, A::MoveWest);
-    const int dy = tiene(A::MenuDown, A::MoveSouth) - tiene(A::MenuUp, A::MoveNorth);
-    guia.mueveCursor(dx, dy, pulsa(A::MenuRight, A::MoveEast) || pulsa(A::MenuLeft, A::MoveWest) ||
-                                 pulsa(A::MenuDown, A::MoveSouth) || pulsa(A::MenuUp, A::MoveNorth));
+    const int dx = tiene(A::CursorRight, A::MoveEast) - tiene(A::CursorLeft, A::MoveWest);
+    const int dy = tiene(A::CursorDown, A::MoveSouth) - tiene(A::CursorUp, A::MoveNorth);
+    guia.mueveCursor(dx, dy, pulsa(A::CursorRight, A::MoveEast) || pulsa(A::CursorLeft, A::MoveWest) ||
+                                 pulsa(A::CursorDown, A::MoveSouth) || pulsa(A::CursorUp, A::MoveNorth));
     const Engine::Input::InputSnapshot::Mouse& m = input.mouse();
     GridCoord celda;
     const bool raton = m.inside && (m.moved || m.leftPressed) && guia.celdaBajo(m.x, m.y, celda);
@@ -377,8 +378,7 @@ Result<bool> Application::init(int width, int height, const std::string& title,
     // Sprite de personaje: el bebé de personaje.png, no el tileset.
     m_player->setCharacterSprite(m_characterAtlas.get(), kCharacterDrawW, kCharacterDrawH,
                                  characterAnchor());
-    // Los ciclos de andar del reparto real de la hoja (ver arriba). Al crear
-    // personaje, PantallaNuevaPartida::vestir() le pone su propia hoja.
+    // Ciclos de andar de la hoja real (ver arriba); el creador, o vestirPorDefecto() con --nivel, le pone su hoja.
     HojaPersonaje::animar(*m_player);
     m_player->play("idle");  // frame valido desde el primer render()
 
@@ -403,12 +403,14 @@ Result<bool> Application::init(int width, int height, const std::string& title,
     // antes (ciudad + combate). Por eso m_narrativaLista.
     auto prologoR = RPG::AdventureScript::loadFromFile("assets/adventures/boundington_prologo.json");
     auto dia1R = RPG::AdventureScript::loadFromFile("assets/adventures/boundington_primer_dia.json");
+    auto diaGorranR = RPG::AdventureScript::loadFromFile("assets/adventures/boundington_dia_gorran.json");
     auto dia2R = RPG::AdventureScript::loadFromFile("assets/adventures/boundington_segundo_dia.json");
     auto ocasoR = RPG::AdventureScript::loadFromFile("assets/adventures/boundington_ocaso.json");
     auto nd6R = m_nd6Skills.loadFromFile("assets/catalogs/skills.json");
-    if (prologoR.isOk() && dia1R.isOk() && dia2R.isOk() && ocasoR.isOk() && nd6R.isOk()) {
+    if (prologoR.isOk() && dia1R.isOk() && diaGorranR.isOk() && dia2R.isOk() && ocasoR.isOk() && nd6R.isOk()) {
         m_prologo = prologoR.value();
         m_dia1 = dia1R.value();
+        m_diaGorran = diaGorranR.value();
         m_dia2 = dia2R.value();
         m_ocaso = ocasoR.value();
         m_narrative.setAdventure(&m_prologo);  // arrancamos por el prologo
@@ -433,7 +435,9 @@ Result<bool> Application::init(int width, int height, const std::string& title,
                                            prologoR.errorMessage().c_str());
         if (!dia1R.isOk())    std::fprintf(stderr, "init: Dia 1 NO cargo: %s\n",
                                            dia1R.errorMessage().c_str());
-        if (!dia2R.isOk())    std::fprintf(stderr, "init: Dia 2 NO cargo: %s\n",
+        if (!diaGorranR.isOk()) std::fprintf(stderr, "init: Dia de Gorran NO cargo: %s\n",
+                                           diaGorranR.errorMessage().c_str());
+        if (!dia2R.isOk())    std::fprintf(stderr, "init: Dia 3 NO cargo: %s\n",
                                            dia2R.errorMessage().c_str());
         if (!ocasoR.isOk())   std::fprintf(stderr, "init: Ocaso NO cargo: %s\n",
                                            ocasoR.errorMessage().c_str());
@@ -713,6 +717,7 @@ Result<bool> Application::init(int width, int height, const std::string& title,
     m_gameOverScreen = std::make_unique<Game::GameOverScreen>(Game::GameOverScreen::create());
     m_inventoryScreen = std::make_unique<Game::InventoryScreen>(*m_session);
     createIconWidgets();
+    if (!startAtTitle && m_nuevaPartida) m_nuevaPartida->vestirPorDefecto(*m_player);  // E-GUION-01: sin creador, humano por defecto
     m_hud.addElement(m_pergamino->capaAlta());  // cuaderno y papiros: encima de todo
 
     auto sceneStarted = m_scenes.start(makeScene(startAtTitle && m_title != nullptr));
@@ -862,17 +867,7 @@ bool Application::loadSlot(int index) {
         m_session->logNote("No se pudo cargar: " + leida.errorMessage());
         return false;
     }
-    const SaveGameData data = leida.value();  // copia: el dato entra en la lambda
-    const auto requested = m_scenes.requestReplace(makeScene(false, [this, data] {
-        auto loaded = loadLevel(data.levelPath, false, GridCoord{}, [this, &data] {
-            m_narrativeState.reset();
-            applyNarrativeState(data, m_narrativeState);
-            if (m_pergamino) m_pergamino->interfaz().guia().marcas() = data.marcasMapa;  // MAPA-02
-        }, &data);
-        if (loaded.isOk()) m_session->logNote("Partida cargada.");
-        return loaded;
-    }));
-    return requested.isOk();
+    return ApplicationCinematica::cargaPartida(*this, leida.value());
 }
 
 bool Application::quickLoad() { return loadSlot(Game::SaveSlots::kQuickSlot); }
@@ -911,8 +906,8 @@ void Application::requestResume() {
 
 void Application::processInput() {
     using Engine::Input::InputAction;
-    const auto input = m_window->hasInputFocus() ? m_input.update(readGameInput(*m_window, m_width, m_height))
-                                                 : m_input.releaseAll();
+    const bool conFoco = m_captura.guionado() || m_window->hasInputFocus();  // E-GUION-01: el guion no necesita foco
+    const auto input = conFoco ? m_input.update(m_captura.guionado() ? m_captura.teclas() : readGameInput(*m_window, m_width, m_height)) : m_input.releaseAll();  // con guion sus teclas SUSTITUYEN a GLFW y al raton
     if (m_nuevaPartida && m_nuevaPartida->activa()) {
         m_nuevaPartida->procesar(input, interfazDe(m_pergamino));
         refreshHud();
@@ -927,12 +922,12 @@ void Application::processInput() {
         teclasMapa(m_pergamino->interfaz().guia(), input);
         return;
     }
-    const bool canWalk = m_window->hasInputFocus() && !isAtTitle() && m_session &&
+    const bool canWalk = conFoco && !isAtTitle() && m_session &&
         m_session->mode() == GameMode::Exploration && !m_showInventory &&
         !m_scenes.hasPendingTransition() && !input.pressed(InputAction::Quit) &&
         !input.pressed(InputAction::ToggleInventory) && !input.pressed(InputAction::Interact) &&
         !input.pressed(InputAction::QuickLoad);
-    const GridCoord step = m_player->movementCommand(input, glfwGetTime(), canWalk);
+    const GridCoord step = m_player->movementCommand(input, m_captura.reloj(glfwGetTime()), canWalk);
     // La marca AFK se actualiza únicamente si hubo actividad real. Antes se
     // actualizaba por el mero hecho de sondear cada frame, de modo que el
     // temporizador narrativo nunca llegaba a considerar al jugador ausente.
@@ -964,16 +959,17 @@ void Application::processInput() {
     // El mismo lenguaje de menú que en combate/tienda (W/S + ENTER); el
     // ESC ya salió del proceso arriba, igual que la entrada "Salir".
     if (isAtTitle()) {
+        const auto anterior = m_title->selected();
         if (input.pressed(InputAction::MenuUp)) m_title->moveUp();
         if (input.pressed(InputAction::MenuDown)) m_title->moveDown();
-        // UI-BG3-01: tambien con el raton (pasar por encima y clic).
-        if (Engine::ratonEnPapiro(*m_title, m_title->items().size(), interfazDe(m_pergamino), input) ||
-            input.pressed(InputAction::Confirm)) {
-            confirmTitleSelection();
-        }
+        const bool clic = Engine::ratonEnPapiro(*m_title, m_title->items().size(), interfazDe(m_pergamino), input);
+        if (m_title->selected() != anterior) refreshHud();
+        if (clic || input.pressed(InputAction::Confirm)) confirmTitleSelection();
         return;
     }
 
+    if (m_session->mode() != GameMode::Exploration || m_showInventory || m_scenes.hasPendingTransition())
+        m_rutaRaton.clear();  // el camino del raton no sigue en un dialogo, combate o cambio de mapa
     if (m_session->mode() == GameMode::Exploration && !m_showInventory && !ApplicationCinematica::enCurso(*this)) {
         // H0-05 — Guardado rapido. Solo aqui: en combate, dialogo o
         // tienda las teclas no hacen nada (ver quickSave/loadSlot en el .h).
@@ -1002,10 +998,35 @@ void Application::processInput() {
             m_interactPressedThisFrame = false;
         }
 
+        // Oriol (22/10): clic en el suelo = andar hasta alli (fuera de los papiros y retales del HUD).
+        const auto& raton = input.mouse();
+        if (raton.leftPressed && raton.inside && m_camera) {
+            const Pergamino::InterfazPergamino* ui = interfazDe(m_pergamino);
+            if (ui == nullptr || ui->zonaEn(raton.x, raton.y) == nullptr) {
+                // Como el suelo del combate (sueloCombate): el rombo va corrido medio ancho y el pie.
+                const Vector2 mundo = m_camera->screenToWorld(Vector2{raton.x, raton.y});
+                const Vector2 ajuste{kTileW * 0.5f, kTileH * 0.9f - kTileH * 0.5f};
+                const GridCoord c = IsoMath::screenToGrid(mundo - ajuste, static_cast<float>(kTileW),
+                                                          static_cast<float>(kTileH));
+                m_rutaRaton = m_session->rutaAndando(c);
+                m_rutaRatonSiguiente = 0.0;
+            }
+        }
+        if (step.x != 0 || step.y != 0 || m_interactPressedThisFrame) m_rutaRaton.clear();
         // La sesion manda sobre colisiones y pasos; el sprite solo interpola.
         if (step.x != 0 || step.y != 0) {
             if (!m_session->tryMovePlayer(step.x, step.y)) { m_player->bump(step); return; }
             m_player->moveTo(m_session->playerPosition());
+        } else if (!m_rutaRaton.empty() && glfwGetTime() >= m_rutaRatonSiguiente) {
+            const GridCoord aqui = m_session->playerPosition(), alli = m_rutaRaton.front();
+            m_rutaRaton.erase(m_rutaRaton.begin());
+            if (std::abs(alli.x - aqui.x) + std::abs(alli.y - aqui.y) != 1 ||
+                !m_session->tryMovePlayer(alli.x - aqui.x, alli.y - aqui.y)) {
+                m_rutaRaton.clear();  // algo se ha puesto en medio (o ha empezado un combate)
+            } else {
+                m_player->moveTo(m_session->playerPosition());
+                m_rutaRatonSiguiente = glfwGetTime() + 0.17;  // el paso del teclado dura 160 ms
+            }
         }
     } else if (m_session->mode() == GameMode::Battle) {
         teclasCombate(input);  // UI-BG3-01: la barra de cartas (1-0, A/D, ENTER, F, L y raton)

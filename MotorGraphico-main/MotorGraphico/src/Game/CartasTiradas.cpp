@@ -451,6 +451,7 @@ bool CartasEnCombate::resolverEnemigo(ContextoBatalla& c, std::size_t enemigo) {
         c.log.push_back(p.name + " usa " + elegida->name + " (+" + std::to_string(r.hpChange) + " PV).");
         return true;
     }
+    if (elegida == nullptr && jugarRepertorio(c, enemigo, objetivo, hay(mios, T::Desarmado))) return true;  // AV18-06
     if (elegida == nullptr && hay(mios, T::Desarmado)) {
         c.log.push_back(p.name + " esta desarmado y no puede atacar.");
         return true;

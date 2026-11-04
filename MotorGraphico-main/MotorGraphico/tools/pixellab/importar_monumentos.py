@@ -19,7 +19,8 @@ Sin argumentos lee pixellab/monumentos.json y, si existen, iso/peces.json (las
 piezas del kit isometrico: "escala": false y "anclaje" exacto, sin reescalar)
 e iso/monuments/monuments.json (MON-01: los siete monumentos del kit) e
 iso/interiors/peces_grans.json (INT-01: las piezas grandes de los interiores).
-Una entrada con "retirado": true se conserva en el indice pero no se importa.
+Una entrada con "retirado": true se conserva en el indice pero no se importa, y se
+borran su hoja, su .png/.json y su alta en sprites.json (las fuentes siguen en lote*/).
 """
 import json
 import math
@@ -31,6 +32,11 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[2]
 TEX = ROOT / "assets/textures"
 TIRA = 32
+# J-4: las casas de tile antiguo (las del Excel de ciudades y pueblos) toman el edificio entero del kit de su
+# familia: viejo_chabola -> barraca, viejo_casa_madera -> cabana, viejo_casa_piedra -> edifici (el sprite
+# edifici es piedra beige con tejado de color, no la piedra gris fria de la fortaleza). Cada pieza <base>_oN
+# da una definicion mas con el tile antiguo y su «orientacion» (Game::Monumentos elige la que mira a la puerta).
+ANTIGUOS = {"barraca": "viejo_chabola", "cabana": "viejo_casa_madera", "edifici": "viejo_casa_piedra"}
 
 
 def prepara(img, ancho, alto):
@@ -74,10 +80,13 @@ def importar(*indices):
     registro = json.loads((TEX / "sprites.json").read_text())
     salida = []
     entradas = []
+    retirados = set()
     for indice in indices:
         indice = Path(indice)
         if indice.exists():
-            entradas += [(indice, m) for m in json.loads(indice.read_text())["monumentos"] if not m.get("retirado")]
+            todos = json.loads(indice.read_text())["monumentos"]
+            entradas += [(indice, m) for m in todos if not m.get("retirado")]
+            retirados |= {m["id"] for m in todos if m.get("retirado")}
     for indice, m in entradas:
         img = Image.open(indice.parent / m["imagen"])
         if m.get("escala") is False:                    # ISO: pieza exacta con su anclaje
@@ -85,7 +94,9 @@ def importar(*indices):
         else:
             hoja, (ax, ay), columnas = prepara(img, int(m["ancho"]), int(m["alto"]))
         hid = f"monumento_{m['id']}"
-        hoja.save(TEX / "monumentos" / f"{m['id']}.png")
+        destino = TEX / "monumentos" / f"{m['id']}.png"
+        if not (destino.exists() and Image.open(destino).convert("RGBA").tobytes() == hoja.tobytes() and Image.open(destino).size == hoja.size):
+            hoja.save(destino)
         (TEX / "monumentos" / f"{m['id']}.json").write_text(json.dumps({
             "_nota": "Monumento de PixelLab en tiras (tools/pixellab/importar_monumentos.py): no editar a mano. Una fila; cada frame es una tira de 32 px de ancho por todo el alto. TextureManager invierte los PNG al cargarlos.",
             "generador": "tools/pixellab/importar_monumentos.py",
@@ -99,12 +110,19 @@ def importar(*indices):
                    "pixellab_id": m.get("pixellab_id", "")}
         if m.get("posaderos"):                          # MASC-01: on es posen els coloms (peces del kit)
             entrada["posaderos"] = m["posaderos"]
+        if m.get("libres"):                             # H-CIU-2: cel·les de la planta que el sprite no ocupa (es trepitgen)
+            entrada["libres"] = m["libres"]
         salida.append(entrada)
+        if len(m["tiles"]) == 1 and m["tiles"][0][:-3] in ANTIGUOS and m["tiles"][0][-3:-1] == "_o" and m["tiles"][0][-1] in "0123":
+            salida.append({**entrada, "id": f"{m['id']}_{ANTIGUOS[m['tiles'][0][:-3]]}",
+                           "tiles": [ANTIGUOS[m["tiles"][0][:-3]]], "orientacion": int(m["tiles"][0][-1])})
         print(f"{m['id']}: hoja {hoja.width}x{hoja.height}, {columnas} tiras, anclaje ({ax}, {ay})")
     # ISO: las piezas del kit (ids iso_*) que ya no estan en su indice se quitan del
     # registro y de assets/textures/monumentos (el kit las regenera todas).
+    # Los "retirado": true (cualquier id) tambien se quitan: no los elige ningun mapa.
     vivas = {f"monumento_{m['id']}" for m in salida}
-    for h in [h for h in registro["hojas"] if h["id"].startswith("monumento_iso_") and h["id"] not in vivas]:
+    for h in [h for h in registro["hojas"] if h["id"] not in vivas and h["id"].startswith("monumento_")
+              and (h["id"].startswith("monumento_iso_") or h["id"][len("monumento_"):] in retirados)]:
         registro["hojas"].remove(h)
         nombre = h["id"][len("monumento_"):]
         for ext in (".png", ".json"):

@@ -172,6 +172,25 @@ ARMA_POR_ETIQUETA = [("Proyectil", "arma", "arco_roble"), ("Escudo", "mano_izq",
 
 
 def pieza_de_objeto(o):
+    """(Forja de Onegai, 23/10) Si en tools/ajustes_fichas.json («objetos_visual») se ha elegido a mano qué
+    pieza se ve puesta para este objeto, esa; si no, la de las reglas."""
+    propio = _OBJETOS_VISUAL.get(o.get("id")) if isinstance(o, dict) else None
+    if propio and propio.get("ranura") and propio.get("pieza"):
+        return propio["ranura"], propio["pieza"]
+    return _pieza_de_objeto(o)
+
+
+def _cargar_objetos_visual():
+    ruta = Path(__file__).resolve().with_name("ajustes_fichas.json")
+    if not ruta.exists():
+        return {}
+    return json.loads(ruta.read_text(encoding="utf-8")).get("objetos_visual", {})
+
+
+_OBJETOS_VISUAL = _cargar_objetos_visual()
+
+
+def _pieza_de_objeto(o):
     """(ranura, pieza) de un objeto de equipment.json: por nombre, y si no,
     por etiquetas (grantedTags) y peso (weightCategory)."""
     nombre = o.get("name") or o.get("nombre") or o.get("id") or ""

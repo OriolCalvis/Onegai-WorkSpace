@@ -75,7 +75,9 @@ TALLAS = ["medio", "bajo", "pequeno", "grande"]
 def combos_pelo():
     import actores_pelo as pelo
     out = {(e, c) for e in pelo.ESTILOS for c in COLORES_PELO}
-    return out | {(e, c) for e in ("corto", "largo") for c in COLORES_PELO_RAZA}
+    # Oriol (23/10): el pelo de llama de los elfos del fuego y los elementales de fuego (actores_razas, 2000 b.f.)
+    return out | {(e, c) for e in ("corto", "largo") for c in COLORES_PELO_RAZA} | {("largo", "pelo_llama"),
+                                                                                 ("cresta", "pelo_llama")}
 
 
 def normalizar(texto):
@@ -129,8 +131,12 @@ PNJ = {
                         "arma": "martillo_acero"}),
     "luisarda": P("Luisarda, hija de Boundington", AEG, "f", ojos="verde", pelo=("coleta", "pelo_pelirrojo"),
                   barba=None, equipo={"torso": "vestido_rojo_delantal", "pies": "zapatos"}),
-    "xila": P("Xila", AEG, "f", piel="piel_palida", ojos="violeta", pelo=("largo", "pelo_blanco"), barba=None,
-              equipo={"torso": "vestido_purpura", "pies": "zapatos"}),
+    # I-XILA-1: Xila es un hombre (antiguo mercader caido en desgracia): ropa buena y gastada, la capa buena
+    # («un hombre en el rincon del fondo, con una capa demasiado buena para ese suelo»), botas cosidas a mano.
+    "xila": P("Xila", AEG, "m", piel="piel_palida", ojos="violeta", pelo=("corto", "pelo_gris"),
+              barba=("BARBA_CORTA", "pelo_gris"),
+              equipo={"torso": "camisa_chaleco_oscuro", "piernas": "pantalon_negro", "pies": "botas_altas",
+                      "capa": "capa_granate"}),
     "ben_kafka": P("Ben Kafka", AEG, "m", ojos="marron", pelo=("corto", "pelo_oscuro"),
                    barba=("BARBA_CORTA", "pelo_oscuro"),
                    equipo={"cabeza": "sombrero_cuero", "torso": "cuero", "piernas": "pantalon_oliva",
@@ -872,10 +878,44 @@ def cartas(raiz=ROOT):
     return {e["id"]: e for e in json.loads(ruta.read_text(encoding="utf-8")).get("entries", [])}
 
 
+# Oriol (22/10): «¿tengo alguna manera de editar su apariencia?». El editor de aspecto
+# (tools/editor_aspecto.html, de tools/exportar_editor_aspecto.py) guarda tools/ajustes_pnj.json:
+# {id: {"equipo": {ranura: pieza o null}, "pelo": [estilo, color] o null, "barba": [estilo, color] o null}}.
+# Lo que no dice, se queda como esta. Las variantes de un PNJ repetido salen de la base ya ajustada.
+_RUTA_AJUSTES = Path(__file__).resolve().with_name("ajustes_pnj.json")
+
+
+def ajustes():
+    if not _RUTA_AJUSTES.exists():
+        return {}
+    datos = json.loads(_RUTA_AJUSTES.read_text(encoding="utf-8"))
+    return {k: v for k, v in datos.items() if not k.startswith("_")}
+
+
+def ajusta(oid, base, cambios=None):
+    aj = (ajustes() if cambios is None else cambios).get(oid)
+    if not aj:
+        return base
+    base = {k: (dict(v) if isinstance(v, dict) else v) for k, v in base.items()}
+    if "equipo" in aj:
+        eq = dict(base.get("equipo", {}))
+        for ranura, pieza in aj["equipo"].items():
+            if pieza:
+                eq[ranura] = pieza
+            else:
+                eq.pop(ranura, None)
+        base["equipo"] = eq
+    for k in ("pelo", "barba"):
+        if k in aj:
+            base[k] = tuple(aj[k]) if aj[k] else None
+    return base
+
+
 def todos(raiz=ROOT):
     """id -> [composicion, variante 2, ...] de todos los PNJ, ya comprobados."""
     defs, usos, fichas = definiciones(raiz), colocaciones(raiz), cartas(raiz)
     naciones = naciones_colocadas(raiz)
+    cambios = ajustes()
     out = {}
     for oid in sorted(defs):
         defn, _cat = defs[oid]
@@ -886,6 +926,7 @@ def todos(raiz=ROOT):
         else:
             carta = fichas.get(oid.replace("npc_npc_", "npc_", 1))
             base = reglas(oid, defn, carta, naciones.get(oid))
+        base = ajusta(oid, base, cambios)  # Oriol (22/10): lo cambiado a mano en el editor de aspecto
         n = 1 if base.get("_unico") else max(1, min(MAX_VARIANTES, usos.get(oid, 0)))  # PROLOGO-02
         out[oid] = [base] + [variante(base, oid, k) for k in range(1, n)]
     unicas(out)
@@ -925,14 +966,14 @@ PNJ.update({
     "sandes_joven": P("Sandes, 756", AEG, "m", **_SANDES,
                       equipo={"torso": "casaca_granate", "piernas": "calzas_rojas", "pies": "botas_altas",
                               "capa": "capa_corta_roja", "mano_izq": "jarra"}),
+    # Oriol (22/10): en el sueño de la puerta (757) ya son de los que escuchan: la túnica morada
+    # con su capucha, no la ropa de calle con una capa encima.
     "verina_puerta": P("Verina, 757", AEG, "f", **_VERINA,
-                       equipo={"cabeza": "capucha_purpura", "torso": "vestido_azul", "pies": "zapatos"}),
+                       equipo={"cabeza": "capucha_purpura", "torso": "habito_purpura", "pies": "sandalias"}),
     "edul_puerta": P("Edul, 757", AEG, "m", **_EDUL,
-                     equipo={"cabeza": "capucha_purpura", "torso": "camisa_chaleco_granate",
-                             "piernas": "pantalon_pardo", "pies": "botas"}),
+                     equipo={"cabeza": "capucha_purpura", "torso": "habito_purpura", "pies": "sandalias"}),
     "sandes_puerta": P("Sandes, 757", AEG, "m", **_SANDES,
-                       equipo={"cabeza": "capucha_purpura", "torso": "casaca_granate", "piernas": "calzas_rojas",
-                               "pies": "botas_altas", "capa": "capa_corta_roja"}),
+                       equipo={"cabeza": "capucha_purpura", "torso": "habito_purpura", "pies": "botas_altas"}),
     "capitan_aegroum": P("Capitán de la guardia real", AEG, "m", ojos="marron", pelo=("corto", "pelo_gris"),
                          barba=("BARBA", "pelo_gris"),
                          equipo={"torso": "sobrevesta_azul", "piernas": "pantalon_gris", "pies": "botas_altas",
@@ -1002,3 +1043,562 @@ PNJ.update({
                                equipo={"torso": "camisa_chaleco_oscuro", "piernas": "pantalon_negro", "pies": "botas",
                                        "arma": "hacha_hierro", "mano_izq": "farol"}, _unico=True),
 })
+
+# AV19-08 (19/10/2026) — la cripta en cinco mapas: Edul y Verina en la sala de estudio (con la capucha
+# de la cripta), Sandes en la cámara honda y el sereno encadenado (su casaca azul, sin lo demás).
+PNJ.update({
+    "edul_cripta": P("Edul", AEG, "m", **_EDUL,
+                     equipo={"cabeza": "capucha_purpura", "torso": "camisa_chaleco_granate", "piernas": "pantalon_pardo",
+                             "pies": "botas", "mano_izq": "pocion"}, _unico=True),
+    "verina_cripta": P("Verina", AEG, "f", **_VERINA,
+                       equipo={"cabeza": "capucha_purpura", "torso": "vestido_azul", "pies": "zapatos", "mano_izq": "grimorio"},
+                       _unico=True),
+    "sandes_cripta": P("Sandes", AEG, "m", **_SANDES,
+                       equipo={"torso": "casaca_granate", "piernas": "calzas_rojas", "pies": "botas_altas",
+                               "capa": "capa_corta_roja"}, _unico=True),
+    "prisionero_cripta": P("Sereno encadenado", AEG, "m", ojos="marron", pelo=("greñas", "pelo_castano"),
+                           barba=("BARBA_CORTA", "pelo_castano"),
+                           equipo={"torso": "casaca_azul", "piernas": "pantalon_gris"}, _unico=True),
+})
+
+# ESCENAS-02 guardia_castillo
+import copy as _c02
+PNJ['guardia_castillo'] = _c02.deepcopy(PNJ['guardia'])
+PNJ['guardia_castillo']["ojos"] = "verde"
+
+# ESCENAS-02 capitan_guardia
+import copy as _c02
+PNJ['capitan_guardia'] = _c02.deepcopy(PNJ['sargento'])
+PNJ['capitan_guardia']["ojos"] = "verde"
+
+# ESCENAS-02 venides_castillo
+import copy as _c02
+PNJ['venides_castillo'] = _c02.deepcopy(PNJ['venides'])
+PNJ['venides_castillo']["ojos"] = "verde"
+
+# ESCENAS-02 vecina_ventana
+import copy as _c02
+PNJ['vecina_ventana'] = _c02.deepcopy(PNJ['bordadora'])
+PNJ['vecina_ventana']["ojos"] = "verde"
+
+# ESCENAS-02 xila_noche
+import copy as _c02
+PNJ['xila_noche'] = _c02.deepcopy(PNJ['xila'])
+PNJ['xila_noche']["ojos"] = "verde"
+
+# ESCENAS-07 hijo_de_aigren
+import copy as _c07
+PNJ['hijo_de_aigren'] = _c07.deepcopy(PNJ['nino'])
+PNJ['hijo_de_aigren']["ojos"] = "verde"
+
+# ESCENAS-07 aigren_carro
+import copy as _c07
+PNJ['aigren_carro'] = _c07.deepcopy(PNJ['aigren'])
+PNJ['aigren_carro']["ojos"] = "verde"
+
+# ESCENAS-07 sastre_enfrente
+import copy as _c07
+PNJ['sastre_enfrente'] = _c07.deepcopy(PNJ['sastre'])
+PNJ['sastre_enfrente']["ojos"] = "verde"
+
+# ESCENAS-07 xila_escalon
+import copy as _c07
+PNJ['xila_escalon'] = _c07.deepcopy(PNJ['xila'])
+PNJ['xila_escalon']["ojos"] = "verde"
+
+# ESCENAS-07 xila_tienda
+import copy as _c07
+PNJ['xila_tienda'] = _c07.deepcopy(PNJ['xila'])
+PNJ['xila_tienda']["ojos"] = "verde"
+
+# ESCENAS-07 instructor_perdido
+import copy as _c07
+PNJ['instructor_perdido'] = _c07.deepcopy(PNJ['sectario_perdido'])
+PNJ['instructor_perdido']["ojos"] = "verde"
+
+# ESCENAS-07 sandes_culto_d2
+import copy as _c07
+PNJ['sandes_culto_d2'] = _c07.deepcopy(PNJ['sectario_perdido'])
+PNJ['sandes_culto_d2']["ojos"] = "verde"
+
+# ESCENAS-07 sandes_culto_d3
+import copy as _c07
+PNJ['sandes_culto_d3'] = _c07.deepcopy(PNJ['sectario_perdido'])
+PNJ['sandes_culto_d3']["ojos"] = "verde"
+
+# ESCENAS-03 cobrador_fiesta
+import copy as _c03
+PNJ['cobrador_fiesta'] = _c03.deepcopy(PNJ['mercader'])
+PNJ['cobrador_fiesta']["ojos"] = "verde"
+
+# ESCENAS-03 vigilante_fiesta
+import copy as _c03
+PNJ['vigilante_fiesta'] = _c03.deepcopy(PNJ['sargento'])
+PNJ['vigilante_fiesta']["ojos"] = "verde"
+
+# ESCENAS-03 edul_mascara
+import copy as _c03
+PNJ['edul_mascara'] = _c03.deepcopy(PNJ['edul'])
+PNJ['edul_mascara']["ojos"] = "verde"
+
+# ESCENAS-03 invitado_noble
+import copy as _c03
+PNJ['invitado_noble'] = _c03.deepcopy(PNJ['chambelan'])
+PNJ['invitado_noble']["ojos"] = "verde"
+
+# ESCENAS-03 invitado_mercader
+import copy as _c03
+PNJ['invitado_mercader'] = _c03.deepcopy(PNJ['mercader'])
+PNJ['invitado_mercader']["ojos"] = "verde"
+
+# ESCENAS-03 seguidor_brinda
+import copy as _c03
+PNJ['seguidor_brinda'] = _c03.deepcopy(PNJ['parroquiano_humilde'])
+PNJ['seguidor_brinda']["ojos"] = "verde"
+
+# ESCENAS-03 musico_fiesta
+import copy as _c03
+PNJ['musico_fiesta'] = _c03.deepcopy(PNJ['bardo'])
+PNJ['musico_fiesta']["ojos"] = "verde"
+
+# ESCENAS-03 criado_fiesta
+import copy as _c03
+PNJ['criado_fiesta'] = _c03.deepcopy(PNJ['tendero_mercado'])
+PNJ['criado_fiesta']["ojos"] = "verde"
+
+# ESCENAS-03 anfitrion_fiesta
+import copy as _c03
+PNJ['anfitrion_fiesta'] = _c03.deepcopy(PNJ['chambelan'])
+PNJ['anfitrion_fiesta']["ojos"] = "verde"
+
+# ESCENAS-03 anfitriona_fiesta
+import copy as _c03
+PNJ['anfitriona_fiesta'] = _c03.deepcopy(PNJ['anfitriona'])
+PNJ['anfitriona_fiesta']["ojos"] = "verde"
+
+# ESCENAS-03 portero_fiesta
+import copy as _c03
+PNJ['portero_fiesta'] = _c03.deepcopy(PNJ['guardia'])
+PNJ['portero_fiesta']["ojos"] = "verde"
+
+# ESCENAS-03 noble_recuerda
+import copy as _c03
+PNJ['noble_recuerda'] = _c03.deepcopy(PNJ['chambelan'])
+PNJ['noble_recuerda']["ojos"] = "verde"
+
+# ESCENAS-03 mascaras provisionales hasta mascara_media de Pixel
+PNJ['invitado_noble'].setdefault("equipo", {})["cabeza"] = "sombrero_pluma"
+PNJ['invitado_noble']["_varia"] = {"cabeza": ["sombrero_pluma", "capucha_gris"], "pies": ["botas", "zapatos"]}
+PNJ['invitado_mercader'].setdefault("equipo", {})["cabeza"] = "sombrero_pluma"
+PNJ['invitado_mercader']["_varia"] = {"cabeza": ["sombrero_pluma", "capucha_gris"], "pies": ["botas", "zapatos"]}
+PNJ['seguidor_brinda'].setdefault("equipo", {})["cabeza"] = "sombrero_pluma"
+PNJ['seguidor_brinda']["_varia"] = {"cabeza": ["sombrero_pluma", "capucha_gris"], "pies": ["botas", "zapatos"]}
+PNJ['musico_fiesta'].setdefault("equipo", {})["cabeza"] = "sombrero_pluma"
+PNJ['musico_fiesta']["_varia"] = {"cabeza": ["sombrero_pluma", "capucha_gris"], "pies": ["botas", "zapatos"]}
+PNJ["edul_mascara"].setdefault("equipo", {})["cabeza"] = "mascara_porcelana"
+
+# CRIPTA-25 (21/10/2026) — la gente de la cripta, con la capucha de los Perdidos.
+import copy as _c25
+for _id, _nombre, _sexo, _torso, _mano in (
+        ("guardia_trampilla", "Sectario de guardia", "m", "habito_harapiento", None),
+        ("guardia_trampilla_2", "Sectario de guardia", "m", "habito_gris", None),
+        ("novicio_candil", "Novicio del candil", "m", "habito_gris", "farol"),
+        ("copista_cripta", "Novicia copista", "f", "habito_gris", "grimorio"),
+        ("archivero_cripta", "Archivero de los Perdidos", "m", "habito_harapiento", "libro_cuentas"),
+        ("novicio_litera", "Novicio dormido", "m", "habito_gris", None),
+        ("fiel_cripta", "Perdido", "m", "habito_harapiento", None),
+        ("oficiante_cripta", "Oficiante", "m", "habito_harapiento", "grimorio")):
+    PNJ[_id] = _c25.deepcopy(PNJ["sectario_perdido"])
+    PNJ[_id]["nombre"] = _nombre
+    PNJ[_id]["_sexo"] = _sexo
+    PNJ[_id]["equipo"] = dict(PNJ[_id]["equipo"], torso=_torso)
+    PNJ[_id]["equipo"].pop("arma", None)
+    if _mano:
+        PNJ[_id]["equipo"]["mano_izq"] = _mano
+    PNJ[_id]["_unico"] = True
+PNJ["guardia_trampilla"]["equipo"]["arma"] = "daga_hierro"
+PNJ["guardia_trampilla_2"]["equipo"]["arma"] = "daga_hierro"
+PNJ["fiel_cripta"]["_varia"] = {"torso": ["habito_harapiento", "habito_gris"]}
+PNJ["fiel_cripta"]["_sexo_varia"] = True
+PNJ["fiel_cripta"].pop("_unico", None)
+PNJ["edul_rescate"] = _c25.deepcopy(PNJ["edul_cripta"])
+
+# ESCENAS-04 sandes_plaza
+import copy as _c04
+PNJ['sandes_plaza'] = _c04.deepcopy(PNJ['sandes_cripta'])
+PNJ['sandes_plaza']["ojos"] = "verde"
+
+# ESCENAS-04 verina_estrado
+import copy as _c04
+PNJ['verina_estrado'] = _c04.deepcopy(PNJ['verina_cripta'])
+PNJ['verina_estrado']["ojos"] = "verde"
+
+# ESCENAS-04 edul_plaza
+import copy as _c04
+PNJ['edul_plaza'] = _c04.deepcopy(PNJ['edul_cripta'])
+PNJ['edul_plaza']["ojos"] = "verde"
+
+# ESCENAS-04 captor_estrado
+import copy as _c04
+PNJ['captor_estrado'] = _c04.deepcopy(PNJ['sectario_perdido'])
+PNJ['captor_estrado']["ojos"] = "verde"
+
+# ESCENAS-04 venides_base
+import copy as _c04
+PNJ['venides_base'] = _c04.deepcopy(PNJ['venides'])
+PNJ['venides_base']["ojos"] = "verde"
+
+# ESCENAS-04 soldado_20
+import copy as _c04
+PNJ['soldado_20'] = _c04.deepcopy(PNJ['guardia'])
+PNJ['soldado_20']["ojos"] = "verde"
+
+# ESCENAS-04 soldado_10
+import copy as _c04
+PNJ['soldado_10'] = _c04.deepcopy(PNJ['guardia'])
+PNJ['soldado_10']["ojos"] = "verde"
+
+# ESCENAS-04 explorador_herido
+import copy as _c04
+PNJ['explorador_herido'] = _c04.deepcopy(PNJ['guardia'])
+PNJ['explorador_herido']["ojos"] = "verde"
+
+# ESCENAS-04 saqueador_muralla
+import copy as _c04
+PNJ['saqueador_muralla'] = _c04.deepcopy(PNJ['sectario_perdido'])
+PNJ['saqueador_muralla']["ojos"] = "verde"
+
+# ESCENAS-04 fanatico_tejado
+import copy as _c04
+PNJ['fanatico_tejado'] = _c04.deepcopy(PNJ['sectario_perdido'])
+PNJ['fanatico_tejado']["ojos"] = "verde"
+
+# ESCENAS-04 xila_base
+import copy as _c04
+PNJ['xila_base'] = _c04.deepcopy(PNJ['xila'])
+PNJ['xila_base']["ojos"] = "verde"
+
+# ESCENAS-04 aigren_base
+import copy as _c04
+PNJ['aigren_base'] = _c04.deepcopy(PNJ['aigren'])
+PNJ['aigren_base']["ojos"] = "verde"
+
+# ESCENAS-04 capitan_base
+import copy as _c04
+PNJ['capitan_base'] = _c04.deepcopy(PNJ['capitan_guardia'])
+PNJ['capitan_base']["ojos"] = "verde"
+
+# ESCENAS-05 verina_retenida
+import copy as _c05
+PNJ['verina_retenida'] = _c05.deepcopy(PNJ['verina_cripta'])
+PNJ['verina_retenida']["ojos"] = "verde"
+
+# ESCENAS-05 verina_camino
+import copy as _c05
+PNJ['verina_camino'] = _c05.deepcopy(PNJ['verina_cripta'])
+PNJ['verina_camino']["ojos"] = "verde"
+
+# ESCENAS-05 captor_verina
+import copy as _c05
+PNJ['captor_verina'] = _c05.deepcopy(PNJ['sectario_perdido'])
+PNJ['captor_verina']["ojos"] = "verde"
+
+# ESCENAS-05 devoto_verina
+import copy as _c05
+PNJ['devoto_verina'] = _c05.deepcopy(PNJ['sectario_perdido'])
+PNJ['devoto_verina']["ojos"] = "verde"
+
+# ESCENAS-05 venides_casco
+import copy as _c05
+PNJ['venides_casco'] = _c05.deepcopy(PNJ['venides'])
+PNJ['venides_casco']["ojos"] = "verde"
+
+PNJ["captor_verina"].setdefault("equipo", {})["cabeza"] = "capucha_parda"
+PNJ["captor_verina"]["_varia"] = {"cabeza": ["capucha_parda"]}
+
+PNJ["devoto_verina"].setdefault("equipo", {})["cabeza"] = "capucha_purpura"
+PNJ["devoto_verina"]["_varia"] = {"cabeza": ["capucha_purpura"]}
+
+PNJ["verina_retenida"].setdefault("equipo", {}).pop("mano_izq", None)
+
+# ESCENAS-05 skilla_furia
+import copy as _c05
+PNJ['skilla_furia'] = _c05.deepcopy(PNJ['skilla'])
+PNJ['skilla_furia']["ojos"] = "verde"
+
+# ESCENAS-05 perdido_antorcha
+import copy as _c05
+PNJ['perdido_antorcha'] = _c05.deepcopy(PNJ['saqueador_antorcha'])
+PNJ['perdido_antorcha']["ojos"] = "verde"
+
+# ESCENAS-05 pulga_tejado
+import copy as _c05
+PNJ['pulga_tejado'] = _c05.deepcopy(PNJ['carterista'])
+PNJ['pulga_tejado']["ojos"] = "verde"
+
+PNJ["skilla_furia"].setdefault("equipo", {})["arma"] = "espada_ceniza"
+
+# ESCENAS-05 sandes_ocaso
+import copy as _c05
+PNJ['sandes_ocaso'] = _c05.deepcopy(PNJ['sandes_cripta'])
+PNJ['sandes_ocaso']["ojos"] = "verde"
+
+# ESCENAS-05 sectario_portal
+import copy as _c05
+PNJ['sectario_portal'] = _c05.deepcopy(PNJ['sectario_perdido'])
+PNJ['sectario_portal']["ojos"] = "verde"
+
+# ESCENAS-05 fanatico_escalera
+import copy as _c05
+PNJ['fanatico_escalera'] = _c05.deepcopy(PNJ['sectario_perdido'])
+PNJ['fanatico_escalera']["ojos"] = "verde"
+
+# ESCENAS-05 verina_segunda
+import copy as _c05
+PNJ['verina_segunda'] = _c05.deepcopy(PNJ['verina_cripta'])
+PNJ['verina_segunda']["ojos"] = "verde"
+
+PNJ["sectario_portal"].setdefault("equipo", {})["cabeza"] = "capucha_negra"
+PNJ["sectario_portal"]["_varia"] = {"cabeza": ["capucha_negra"]}
+
+PNJ["fanatico_escalera"].setdefault("equipo", {})["cabeza"] = "capucha_roja"
+PNJ["fanatico_escalera"]["_varia"] = {"cabeza": ["capucha_roja"]}
+
+PNJ["verina_segunda"].setdefault("equipo", {}).pop("mano_izq", None)
+
+# ESCENAS-06 sandes_final
+import copy as _c06
+PNJ['sandes_final'] = _c06.deepcopy(PNJ['sandes_cripta'])
+PNJ['sandes_final']["ojos"] = "verde"
+
+# ESCENAS-06 venides_final
+import copy as _c06
+PNJ['venides_final'] = _c06.deepcopy(PNJ['venides'])
+PNJ['venides_final']["ojos"] = "verde"
+
+# ESCENAS-06 mago_de_las_tinieblas
+import copy as _c06
+PNJ['mago_de_las_tinieblas'] = _c06.deepcopy(PNJ['estudiante'])
+PNJ['mago_de_las_tinieblas']["ojos"] = "verde"
+
+# ESCENAS-06 guardabosques
+import copy as _c06
+PNJ['guardabosques'] = _c06.deepcopy(PNJ['ben_kafka'])
+PNJ['guardabosques']["ojos"] = "verde"
+
+# ESCENAS-06 guerrero_demoniaco
+import copy as _c06
+PNJ['guerrero_demoniaco'] = _c06.deepcopy(PNJ['guardia'])
+PNJ['guerrero_demoniaco']["ojos"] = "verde"
+
+# ESCENAS-06 edul_retenido
+import copy as _c06
+PNJ['edul_retenido'] = _c06.deepcopy(PNJ['edul_cripta'])
+PNJ['edul_retenido']["ojos"] = "verde"
+
+# ESCENAS-06 edul_retenido_fuera
+import copy as _c06
+PNJ['edul_retenido_fuera'] = _c06.deepcopy(PNJ['edul_cripta'])
+PNJ['edul_retenido_fuera']["ojos"] = "verde"
+
+# ESCENAS-06 captor_edul
+import copy as _c06
+PNJ['captor_edul'] = _c06.deepcopy(PNJ['sectario_perdido'])
+PNJ['captor_edul']["ojos"] = "verde"
+
+# ESCENAS-06 guardia_edul
+import copy as _c06
+PNJ['guardia_edul'] = _c06.deepcopy(PNJ['guardia'])
+PNJ['guardia_edul']["ojos"] = "verde"
+
+# ESCENAS-06 devoto_edul
+import copy as _c06
+PNJ['devoto_edul'] = _c06.deepcopy(PNJ['sectario_perdido'])
+PNJ['devoto_edul']["ojos"] = "verde"
+
+# ESCENAS-06 edul_afueras
+import copy as _c06
+PNJ['edul_afueras'] = _c06.deepcopy(PNJ['edul_cripta'])
+PNJ['edul_afueras']["ojos"] = "verde"
+
+# ESCENAS-06 verina_abrazo
+import copy as _c06
+PNJ['verina_abrazo'] = _c06.deepcopy(PNJ['verina_cripta'])
+PNJ['verina_abrazo']["ojos"] = "verde"
+
+PNJ["captor_edul"].setdefault("equipo", {})["cabeza"] = "capucha_verde"
+PNJ["captor_edul"]["_varia"] = {"cabeza": ["capucha_verde"]}
+
+PNJ["devoto_edul"].setdefault("equipo", {})["cabeza"] = "capucha_gris"
+PNJ["devoto_edul"]["_varia"] = {"cabeza": ["capucha_gris"]}
+
+PNJ["edul_retenido_fuera"].setdefault("equipo", {}).pop("arma", None)
+PNJ["edul_retenido"].setdefault("equipo", {}).pop("arma", None)
+PNJ["edul_afueras"].setdefault("equipo", {}).pop("arma", None)
+
+# ESCENAS-06 gorran_afueras
+import copy as _c06
+PNJ['gorran_afueras'] = _c06.deepcopy(PNJ['gorran'])
+PNJ['gorran_afueras']["ojos"] = "verde"
+
+# ESCENAS-06 bandido_gorran_afueras
+import copy as _c06
+PNJ['bandido_gorran_afueras'] = _c06.deepcopy(PNJ['bandido_gorran'])
+PNJ['bandido_gorran_afueras']["ojos"] = "verde"
+
+# ESCENAS-06 zarela_afueras
+import copy as _c06
+PNJ['zarela_afueras'] = _c06.deepcopy(PNJ['zarela'])
+PNJ['zarela_afueras']["ojos"] = "verde"
+
+# ESCENAS-06 guerrero_afueras
+import copy as _c06
+PNJ['guerrero_afueras'] = _c06.deepcopy(PNJ['guerrero_gitano'])
+PNJ['guerrero_afueras']["ojos"] = "verde"
+
+# ESCENAS-06 teo_afueras
+import copy as _c06
+PNJ['teo_afueras'] = _c06.deepcopy(PNJ['cabecilla_saqueadores'])
+PNJ['teo_afueras']["ojos"] = "verde"
+
+# ESCENAS-06 venides_rodillas
+import copy as _c06
+PNJ['venides_rodillas'] = _c06.deepcopy(PNJ['venides'])
+PNJ['venides_rodillas']["ojos"] = "verde"
+
+# ESCENAS-06 guardia_venides
+import copy as _c06
+PNJ['guardia_venides'] = _c06.deepcopy(PNJ['guardia'])
+PNJ['guardia_venides']["ojos"] = "verde"
+
+# ESCENAS-06 venides_huida
+import copy as _c06
+PNJ['venides_huida'] = _c06.deepcopy(PNJ['venides'])
+PNJ['venides_huida']["ojos"] = "verde"
+
+# ESCENAS-06 zarela_huida
+import copy as _c06
+PNJ['zarela_huida'] = _c06.deepcopy(PNJ['zarela'])
+PNJ['zarela_huida']["ojos"] = "verde"
+
+# GORRAN-TRAMA (22/10/2026) — la gente de la aldea de Gorran. Victor, Asdrugal y Joel son de Oriol; el resto, propuesta.
+import copy as _cg
+PNJ["victor_yungblood"] = P("Victor Yungblood", AEG, "m", ojos="azul", pelo=("corto", "pelo_gris"),
+                            barba=("BARBA_CORTA", "pelo_gris"),
+                            equipo={"cabeza": "sombrero_cuero", "torso": "aventurero_pardo", "piernas": "pantalon_pardo",
+                                    "pies": "botas", "arma": "daga_hierro"}, _unico=True)
+PNJ["asdrugal_viejo"] = P("Asdrugal el Viejo", AEG, "m", ojos="marron", pelo=("largo", "pelo_blanco"),
+                          barba=("BARBA", "pelo_blanco"),
+                          equipo={"torso": "tunica_parda", "piernas": "pantalon_gris", "pies": "botas",
+                                  "arma": "baston_roble", "mano_izq": "jarra"}, _unico=True)
+PNJ["joel_joran"] = P("Joel Joran", "orcos_dramaticos", "m", ojos="amarillo",
+                      equipo={"torso": "camisa_chaleco_granate", "piernas": "calzas_rojas", "pies": "zapatos",
+                              "capa": "capa_corta_roja"}, _unico=True)
+PNJ["joel_pujador"] = _cg.deepcopy(PNJ["joel_joran"])
+PNJ["joel_pujador"]["nombre"] = "Pujador enmascarado"
+PNJ["joel_pujador"]["equipo"] = dict(PNJ["joel_pujador"]["equipo"], cabeza="mascara_porcelana", capa="capa_roja",
+                                     torso="casaca_granate")
+for _id, _base in (("victor_subasta", "victor_yungblood"), ("asdrugal_subasta", "asdrugal_viejo")):
+    PNJ[_id] = _cg.deepcopy(PNJ[_base])
+for _id in ("gorran_tajo", "gorran_subasta"):
+    PNJ[_id] = _cg.deepcopy(PNJ["gorran"])
+    PNJ[_id]["_unico"] = True
+PNJ["cojo"] = P("El Cojo", AEG, "m", ojos="negro", pelo=("corto", "pelo_negro"), barba=("BARBA_CORTA", "pelo_negro"),
+                equipo={"torso": "casaca_granate", "piernas": "pantalon_negro", "pies": "botas_altas",
+                        "arma": "baston_roble", "mano_izq": "libro_cuentas"}, _unico=True)
+for _id in ("cojo_tajo", "cojo_subasta"):
+    PNJ[_id] = _cg.deepcopy(PNJ["cojo"])
+PNJ["matones_cojo"] = _cg.deepcopy(PNJ["bandido_gorran"])
+PNJ["matones_cojo"]["nombre"] = "Matón del Cojo"
+PNJ["reclutador_gorran"] = _cg.deepcopy(PNJ["bandido_gorran"])
+PNJ["reclutador_gorran"]["nombre"] = "Reclutador"
+PNJ["tabernera_tajo"] = P("La tabernera de El Tajo", AEG, "f", ojos="verde", pelo=("recogido", "pelo_castano"), barba=None,
+                          equipo={"torso": "blusa_corse", "piernas": "falda_verde", "pies": "zapatos", "mano_izq": "jarra"},
+                          _unico=True)
+PNJ["serra"] = P("Doña Serra", AEG, "f", ojos="ambar", pelo=("recogido", "pelo_negro"), barba=None,
+                 equipo={"torso": "vestido_rojo_delantal", "pies": "zapatos"}, _unico=True)
+PNJ["herrero_sucio"] = _cg.deepcopy(PNJ["aigren"])
+PNJ["herrero_sucio"]["nombre"] = "El herrero sucio"
+PNJ["herrero_sucio"]["ojos"] = "marron"
+PNJ["recadero"] = P("El recadero", AEG, "m", ojos="marron", pelo=("greñas", "pelo_castano"), barba=None,
+                    equipo={"torso": "camisa_chaleco", "piernas": "pantalon_pardo", "pies": "zuecos"}, _unico=True)
+PNJ["contrabandista"] = _cg.deepcopy(PNJ["bandido_gorran"])
+PNJ["contrabandista"]["nombre"] = "Contrabandista"
+PNJ["herido_aldea"] = _cg.deepcopy(PNJ["parroquiano_humilde"])
+PNJ["herido_aldea"]["nombre"] = "Un herido"
+PNJ["herido_aldea"].pop("_varia", None)
+PNJ["madre_aldea"] = _cg.deepcopy(PNJ["bordadora"])
+PNJ["madre_aldea"]["nombre"] = "Una madre de la aldea"
+PNJ["pujador_mercader"] = _cg.deepcopy(PNJ["mercader"])
+PNJ["pujador_mercader"]["nombre"] = "Pujador de Killville"
+PNJ["pujador_mercader"].pop("_varia", None)
+PNJ["pujador_noble"] = _cg.deepcopy(PNJ["mercader"])
+PNJ["pujador_noble"]["nombre"] = "Pujador con anillos"
+PNJ["pujador_noble"].pop("_varia", None)
+PNJ["pujador_noble"]["ojos"] = "azul"
+for _id in ("reclutador_gorran", "matones_cojo", "contrabandista", "herrero_sucio", "herido_aldea", "madre_aldea",
+            "pujador_mercader", "pujador_noble", "victor_subasta", "asdrugal_subasta", "cojo_tajo", "cojo_subasta",
+            "joel_pujador"):
+    PNJ[_id]["_unico"] = True
+
+# GORRAN-VIDA (22/10/2026): la gente de las notas de escena de los mapas de Gorran.
+PNJ['nino_aldea'] = P('Un crío de la aldea', AEG, 'm', ojos='marron', pelo=('greñas', 'pelo_castano'), barba=None, equipo={'torso': 'tunica_parda', 'piernas': 'pantalon_pardo', 'pies': 'zuecos'}, _unico=True)
+PNJ['nina_aldea'] = P('Una niña con un palo', AEG, 'f', ojos='verde', pelo=('coleta', 'pelo_rubio'), barba=None, equipo={'torso': 'vestido_azul_delantal', 'pies': 'zuecos'}, _unico=True)
+PNJ['lavandera_aldea'] = P('La lavandera', AEG, 'f', ojos='marron', pelo=('recogido', 'pelo_negro'), barba=None, equipo={'cabeza': 'panuelo_azul', 'torso': 'vestido_lino', 'pies': 'zuecos', 'mano_izq': 'cesta'}, _unico=True)
+PNJ['pescador_aldea'] = P('Un viejo que pesca', AEG, 'm', ojos='azul', pelo=('corto', 'pelo_blanco'), barba=('BARBA', 'pelo_blanco'), equipo={'cabeza': 'sombrero_paja', 'torso': 'tunica_gris', 'piernas': 'pantalon_pardo', 'pies': 'botas'}, _unico=True)
+PNJ['borracho_tajo'] = P('Un borracho', AEG, 'm', ojos='marron', pelo=('greñas', 'pelo_negro'), barba=('BARBA_CORTA', 'pelo_negro'), equipo={'torso': 'camisa_chaleco', 'piernas': 'pantalon_oliva', 'pies': 'zuecos', 'mano_izq': 'jarra'}, _unico=True)
+PNJ['setera_aldea'] = P('La vieja de las setas', AEG, 'f', ojos='ambar', pelo=('recogido', 'pelo_gris'), barba=None, equipo={'cabeza': 'toca', 'torso': 'vestido_ocre', 'pies': 'zapatos', 'mano_izq': 'cesta'}, _unico=True)
+PNJ['ancianos_familias'] = P('Dos ancianos desconfiados', AEG, 'm', ojos='azul', pelo=('corto', 'pelo_gris'), barba=('BARBA', 'pelo_gris'), equipo={'torso': 'tunica_parda', 'piernas': 'pantalon_gris', 'pies': 'zuecos'}, _unico=True)
+PNJ['neus_serra'] = P('Neus', AEG, 'f', ojos='verde', pelo=('largo', 'pelo_pelirrojo'), barba=None, equipo={'torso': 'vestido_teja', 'pies': 'zapatos'}, _unico=True)
+PNJ['bandido_cuartel'] = P('Bandido fuera de turno', AEG, 'm', ojos='marron', pelo=('corto', 'pelo_castano'), barba=('BARBA_CORTA', 'pelo_castano'), equipo={'torso': 'cuero', 'piernas': 'pantalon_gris', 'pies': 'botas'}, _unico=True)
+PNJ['bandido_cuartel_2'] = P('Bandido que afila', AEG, 'm', ojos='negro', pelo=('greñas', 'pelo_negro'), barba=None, equipo={'cabeza': 'cp_panuelo_forajido', 'torso': 'cuero_oscuro', 'piernas': 'pantalon_pardo', 'pies': 'botas', 'arma': 'hacha_hierro'}, _unico=True)
+PNJ['contable_almacen'] = P('El contable del almacén', AEG, 'm', ojos='azul', pelo=('corto', 'pelo_oscuro'), barba=None, equipo={'torso': 'casaca_negra', 'piernas': 'pantalon_negro', 'pies': 'zapatos', 'mano_izq': 'libro_cuentas'}, _unico=True)
+PNJ['escribiente_gorran'] = P('El escribiente de Gorran', AEG, 'm', ojos='marron', pelo=('corto', 'pelo_rubio'), barba=None, equipo={'cabeza': 'birrete', 'torso': 'tunica_azul', 'piernas': 'pantalon_gris', 'pies': 'zapatos', 'mano_izq': 'libro_cuentas'}, _unico=True)
+PNJ['cocinera_recinto'] = P('La cocinera', AEG, 'f', ojos='marron', pelo=('recogido', 'pelo_castano'), barba=None, equipo={'cabeza': 'cofia', 'torso': 'vestido_verde_delantal', 'pies': 'zuecos'}, _unico=True)
+PNJ['pinche_recinto'] = P('El pinche', AEG, 'm', ojos='azul', pelo=('greñas', 'pelo_rubio'), barba=None, equipo={'torso': 'camisa_sin_mangas', 'piernas': 'pantalon_pardo', 'pies': 'zuecos'}, _unico=True)
+PNJ['musico_recinto'] = P('Un músico contratado', AEG, 'm', ojos='verde', pelo=('largo', 'pelo_castano'), barba=None, equipo={'cabeza': 'sombrero_pluma', 'torso': 'camisa_chaleco_verde', 'piernas': 'calzas_verdes', 'pies': 'botas_claras', 'capa': 'capa_corta_parda'}, _unico=True)
+PNJ['juerguista_recinto'] = P('Un bandido de juerga', AEG, 'm', ojos='marron', pelo=('corto', 'pelo_negro'), barba=('BARBA', 'pelo_negro'), equipo={'torso': 'cuero', 'piernas': 'pantalon_gris', 'pies': 'botas', 'mano_izq': 'jarra'}, _unico=True)
+PNJ['juerguista_recinto_2'] = P('Una contrabandista de juerga', AEG, 'f', ojos='ambar', pelo=('coleta', 'pelo_negro'), barba=None, equipo={'torso': 'cuero_oscuro', 'piernas': 'pantalon_negro', 'pies': 'botas_altas', 'mano_izq': 'jarra'}, _unico=True)
+PNJ['preso_calabozo'] = P('Teobaldo, mercader de Killville', AEG, 'm', ojos='azul', pelo=('corto', 'pelo_gris'), barba=('BARBA_CORTA', 'pelo_gris'), equipo={'torso': 'tunica_mercader', 'pies': 'zapatos'}, _unico=True)
+PNJ['criada_gorran'] = P('La criada de la casa', AEG, 'f', ojos='verde', pelo=('recogido', 'pelo_rubio'), barba=None, equipo={'cabeza': 'cofia', 'torso': 'vestido_gris', 'pies': 'zapatos'}, _unico=True)
+PNJ['bandido_patio'] = P('Bandido que entrena', AEG, 'm', ojos='marron', pelo=('corto', 'pelo_castano'), barba=None, equipo={'torso': 'camisa_sin_mangas', 'piernas': 'pantalon_gris', 'pies': 'botas', 'arma': 'espada_hierro'}, _unico=True)
+PNJ['bandido_patio_2'] = P('Bandida que entrena', AEG, 'f', ojos='negro', pelo=('coleta', 'pelo_castano'), barba=None, equipo={'torso': 'cuero', 'piernas': 'pantalon_pardo', 'pies': 'botas', 'arma': 'lanza_hierro'}, _unico=True)
+PNJ['aduanero_galeria'] = P('El aduanero', AEG, 'm', ojos='marron', pelo=('corto', 'pelo_gris'), barba=('BARBA_CORTA', 'pelo_gris'), equipo={'cabeza': 'chapel', 'torso': 'casaca_negra', 'piernas': 'pantalon_gris', 'pies': 'botas', 'mano_izq': 'libro_cuentas'}, _unico=True)
+PNJ['estibador_galeria'] = P('Un estibador', AEG, 'm', ojos='marron', pelo=('greñas', 'pelo_castano'), barba=None, equipo={'torso': 'camisa_sin_mangas', 'piernas': 'pantalon_oliva', 'pies': 'botas'}, _unico=True)
+PNJ['estibadora_galeria'] = P('Una estibadora', AEG, 'f', ojos='marron', pelo=('recogido', 'pelo_negro'), barba=None, equipo={'torso': 'camisa_chaleco_oscuro', 'piernas': 'pantalon_pardo', 'pies': 'botas'}, _unico=True)
+PNJ['carpintero_galeria'] = P('El carpintero del taller', AEG, 'm', ojos='azul', pelo=('corto', 'pelo_rubio'), barba=('BARBA', 'pelo_rubio'), equipo={'torso': 'mandil_herrero', 'piernas': 'pantalon_pardo', 'pies': 'botas', 'arma': 'martillo_acero'}, _unico=True)
+PNJ['agotado_galeria'] = P('Un trabajador agotado', AEG, 'm', ojos='marron', pelo=('greñas', 'pelo_oscuro'), barba=('BARBA_CORTA', 'pelo_oscuro'), equipo={'torso': 'harapos', 'piernas': 'pantalon_pardo', 'pies': 'sandalias'}, _unico=True)
+PNJ['minero_literas'] = P('Un minero que descansa', AEG, 'm', ojos='marron', pelo=('corto', 'pelo_negro'), barba=('BARBA', 'pelo_negro'), equipo={'cabeza': 'gorro_gris', 'torso': 'camisa_sin_mangas', 'piernas': 'pantalon_gris', 'pies': 'botas'}, _unico=True)
+PNJ['minera_comedor'] = P('Una minera que come', AEG, 'f', ojos='verde', pelo=('coleta', 'pelo_castano'), barba=None, equipo={'cabeza': 'panuelo_rojo', 'torso': 'camisa_chaleco', 'piernas': 'pantalon_oliva', 'pies': 'botas'}, _unico=True)
+PNJ['minero_extraccion'] = P('Un minero con pico', AEG, 'm', ojos='azul', pelo=('corto', 'pelo_castano'), barba=None, equipo={'cabeza': 'gorro_gris', 'torso': 'camisa_sin_mangas', 'piernas': 'pantalon_pardo', 'pies': 'botas', 'arma': 'martillo_acero'}, _unico=True)
+PNJ['sectario_mina'] = P('Un hombre de capa gris', AEG, 'm', ojos='negro', pelo=('corto', 'pelo_negro'), barba=None, equipo={'cabeza': 'capucha_gris', 'torso': 'habito_gris', 'pies': 'sandalias'}, _unico=True)
+PNJ['sectaria_mina'] = P('Una mujer de capa gris', AEG, 'f', ojos='azul', pelo=('largo', 'pelo_negro'), barba=None, equipo={'cabeza': 'capucha_gris', 'torso': 'habito_gris', 'pies': 'sandalias'}, _unico=True)
+PNJ['viejo_minero_mina2'] = P('El último minero', AEG, 'm', ojos='azul', pelo=('largo', 'pelo_blanco'), barba=('BARBA', 'pelo_blanco'), equipo={'torso': 'tunica_gris', 'piernas': 'pantalon_gris', 'pies': 'botas', 'arma': 'baston_roble'}, _unico=True)
+PNJ['vigia_cojo'] = P('El vigía del Cojo', AEG, 'm', ojos='negro', pelo=('corto', 'pelo_negro'), barba=None, equipo={'cabeza': 'capucha_negra', 'torso': 'cuero_oscuro', 'piernas': 'pantalon_negro', 'pies': 'botas', 'arma': 'daga_hierro'}, _unico=True)
+
+# GORRAN-DIA2 misión A
+PNJ['iris_serra'] = P('Iris', AEG, 'f', ojos='verde', pelo=('largo', 'pelo_pelirrojo'), barba=None, equipo={'torso': 'vestido_verde_delantal', 'pies': 'zapatos'}, _unico=True)
+PNJ['mercenario_tajo'] = P('Mercenario de Killville', AEG, 'm', ojos='marron', pelo=('corto', 'pelo_negro'), barba=('BARBA_CORTA', 'pelo_negro'), equipo={'cabeza': 'casco_cuernos', 'torso': 'gambeson', 'piernas': 'grebas_cuero', 'pies': 'botas', 'arma': 'espada_hierro'}, _unico=True)
+PNJ['morvan'] = P('Morvan Tallapedra', AEG, 'm', ojos='negro', pelo=('corto', 'pelo_gris'), barba=('BARBA', 'pelo_gris'), equipo={'torso': 'escamas_bronce', 'piernas': 'grebas_malla', 'pies': 'botas_acero', 'capa': 'capa_parda', 'arma': 'espada_acero'}, _unico=True)
+PNJ['garsa'] = P('La Garsa', AEG, 'f', ojos='ambar', pelo=('coleta', 'pelo_negro'), barba=None, equipo={'torso': 'cuero_oscuro', 'piernas': 'pantalon_negro', 'pies': 'botas_altas', 'arma': 'daga_hierro'}, _unico=True)
+PNJ['mercenario_morvan'] = P('Mercenario de Morvan', AEG, 'm', ojos='azul', pelo=('greñas', 'pelo_rubio'), barba=('BARBA_CORTA', 'pelo_rubio'), equipo={'torso': 'gambeson', 'piernas': 'grebas_cuero', 'pies': 'botas', 'arma': 'hacha_hierro'}, _unico=True)
+
+# GORRAN-DIA2 misión B
+PNJ['tecla_rocafort'] = P('Tecla Rocafort, la capataz', AEG, 'f', ojos='marron', pelo=('recogido', 'pelo_gris'), barba=None, equipo={'cabeza': 'gorro_gris', 'torso': 'cuero', 'piernas': 'pantalon_pardo', 'pies': 'botas', 'mano_izq': 'farol'}, _unico=True)
+PNJ['bru_minero'] = P('Bru, minero', AEG, 'm', ojos='azul', pelo=('greñas', 'pelo_castano'), barba=('BARBA_CORTA', 'pelo_castano'), equipo={'cabeza': 'gorro_gris', 'torso': 'camisa_sin_mangas', 'piernas': 'pantalon_gris', 'pies': 'botas'}, _unico=True)
+PNJ['ramon_sisdits'] = P('Ramon Sisdits', AEG, 'm', ojos='marron', pelo=('corto', 'pelo_negro'), barba=('BARBA', 'pelo_negro'), equipo={'cabeza': 'gorro_gris', 'torso': 'camisa_sin_mangas', 'piernas': 'pantalon_pardo', 'pies': 'botas', 'arma': 'martillo_acero'}, _unico=True)
+PNJ['mineros_atrapados'] = P('Mineros atrapados', AEG, 'm', ojos='verde', pelo=('corto', 'pelo_castano'), barba=None, equipo={'cabeza': 'gorro_gris', 'torso': 'harapos', 'piernas': 'pantalon_gris', 'pies': 'botas'}, _unico=True)
+PNJ['mineros_salvados'] = P('Los mineros de la Veta Honda', AEG, 'm', ojos='marron', pelo=('corto', 'pelo_negro'), barba=('BARBA', 'pelo_negro'), equipo={'cabeza': 'gorro_gris', 'torso': 'camisa_sin_mangas', 'piernas': 'pantalon_pardo', 'pies': 'botas', 'mano_izq': 'jarra'}, _unico=True)
+
+# GORRAN-DIA2 misión C
+PNJ['bet_saldana'] = P('Bet Saldaña, la jefa del muelle', AEG, 'f', ojos='azul', pelo=('corto', 'pelo_rubio'), barba=None, equipo={'cabeza': 'panuelo_azul', 'torso': 'cuero', 'piernas': 'pantalon_azul', 'pies': 'botas_altas', 'mano_izq': 'libro_cuentas'}, _unico=True)
+PNJ['gil_fumat'] = P('Gil Fumat', AEG, 'm', ojos='negro', pelo=('greñas', 'pelo_negro'), barba=('BARBA_CORTA', 'pelo_negro'), equipo={'cabeza': 'capucha_negra', 'torso': 'cuero_oscuro', 'piernas': 'pantalon_negro', 'pies': 'botas', 'arma': 'daga_hierro'}, _unico=True)
+PNJ['lluc_fumat'] = P('Lluc Fumat', AEG, 'm', ojos='negro', pelo=('greñas', 'pelo_castano'), barba=None, equipo={'torso': 'camisa_chaleco_oscuro', 'piernas': 'pantalon_pardo', 'pies': 'botas', 'arma': 'daga_hierro'}, _unico=True)
+PNJ['fumat_galeria'] = P('Los hermanos Fumat', AEG, 'm', ojos='negro', pelo=('greñas', 'pelo_negro'), barba=('BARBA_CORTA', 'pelo_negro'), equipo={'cabeza': 'capucha_negra', 'torso': 'cuero_oscuro', 'piernas': 'pantalon_negro', 'pies': 'botas', 'arma': 'daga_hierro'}, _unico=True)
+
+# GORRAN-DIA2 misión D
+PNJ['candela'] = P('La hermana Candela', AEG, 'f', ojos='verde', pelo=('largo', 'pelo_castano'), barba=None, equipo={'cabeza': 'capucha_gris', 'torso': 'habito_gris', 'pies': 'sandalias', 'mano_izq': 'grimorio'}, _unico=True)
+PNJ['orfeu'] = P('El diácono Orfeu', AEG, 'm', ojos='negro', pelo=('corto', 'pelo_blanco'), barba=None, equipo={'cabeza': 'capucha_purpura', 'torso': 'casulla', 'pies': 'sandalias', 'arma': 'baston_cristal'}, _unico=True)
+PNJ['devoto_puerta'] = P('Un devoto de gris', AEG, 'm', ojos='marron', pelo=('corto', 'pelo_castano'), barba=('BARBA_CORTA', 'pelo_castano'), equipo={'cabeza': 'capucha_gris', 'torso': 'habito_harapiento', 'pies': 'sandalias', 'arma': 'daga_hierro'}, _unico=True)
+PNJ['tinet_atado'] = P('Tinet', AEG, 'm', ojos='marron', pelo=('greñas', 'pelo_castano'), barba=None, equipo={'torso': 'tunica_parda', 'piernas': 'pantalon_pardo', 'pies': 'zuecos'}, _unico=True)
+PNJ['mia_atada'] = P('Mia', AEG, 'f', ojos='verde', pelo=('coleta', 'pelo_rubio'), barba=None, equipo={'torso': 'vestido_azul_delantal', 'pies': 'zuecos'}, _unico=True)

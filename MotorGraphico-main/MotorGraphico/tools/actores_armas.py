@@ -23,7 +23,18 @@ Mano derecha ("arma"): la minuscula de frente, la mayuscula de espaldas y de
 perfil (la de delante). Mano izquierda ("mano_izq": escudos, libros, orbes):
 la otra.
 """
+import json
+from pathlib import Path
+
 import numpy as np
+
+# Oriol (22/10): lo que se cambia a mano con el editor de armas (tools/editor_armas.html, que guarda
+# este fichero; tools/exportar_editor_armas.py le da los datos). Sin fichero, nada cambia.
+#   desplazamientos {familia: {frame: [dx, dy]}} · dibujos {familia: {dibujo: {vista: [filas]}}}
+#   giros {familia: {frame: grados}} · capas {familia: {frame: "delante" | "detras"}} (el arma respecto
+#   al cuerpo) · manos {familia: {frame: "delante" | "detras"}} (respecto a la mano que la coge)   (23/10)
+_RUTA_AJUSTES = Path(__file__).resolve().with_name("ajustes_armas.json")
+AJUSTES = json.loads(_RUTA_AJUSTES.read_text(encoding="utf-8")) if _RUTA_AJUSTES.exists() else {}
 
 ORDEN_MANOS = {  # ranura -> direccion -> orden de dibujo (ver actores_capas.ORDEN)
     "arma": {"abajo": 80, "arriba": 8, "derecha": 80, "izquierda": 80},
@@ -415,9 +426,98 @@ def ranura_de(ident):
     return "mano_izq" if ARMAS[ident][0] in MANO_IZQUIERDA else "arma"
 
 
+DELANTE, DETRAS = 80, 8  # el orden de dibujo de un arma puesta delante o detras del cuerpo
+
+
+def capa_en_frame(familia):
+    """Oriol (23/10): en la Forja se pone el arma delante o detras del personaje frame a frame.
+    {frame: "delante" | "detras"} de esa familia (vacio si no se ha tocado)."""
+    return {int(f): v for f, v in AJUSTES.get("capas", {}).get(familia, {}).items() if v in ("delante", "detras")}
+
+
+def mano_en_frame(familia):
+    """Oriol (23/10): «poner las manos y el cuerpo en dos capas distintas, para mostrar el arma por detras
+    del cuerpo pero cogida por la mano». {frame: "delante" | "detras"}: el arma respecto a la mano que la
+    coge (y su antebrazo), aparte de respecto al cuerpo (capa_en_frame)."""
+    return {int(f): v for f, v in AJUSTES.get("manos", {}).get(familia, {}).items() if v in ("delante", "detras")}
+
+
+def brazo_de(mano):
+    return "a" if mano == "m" else "A"
+
+
+def tras_la_mano(ident, f):
+    """Si la mano que coge el arma se ve por encima de ella en el frame f (lo normal: el puno tapa la
+    empunadura; no en lo que se lleva embrazado, TAPAN_EL_PUNO)."""
+    familia = ARMAS[ident][0]
+    propio = mano_en_frame(familia).get(f)
+    if propio:
+        return propio == "detras"
+    return familia not in TAPAN_EL_PUNO
+
+
+def con_capas_propias(ident, f):
+    familia = ARMAS[ident][0]
+    return f in capa_en_frame(familia) or f in mano_en_frame(familia)
+
+
+def orden_en_frame(ident, f, d):
+    """El orden de dibujo del arma en un frame con capas de la Forja: detras de todo (8) si va detras del
+    cuerpo y de la mano; si no, encima (80), y capa_arma borra lo que tapan el cuerpo o la mano."""
+    return DETRAS if (not delante_en(ident, f, d) and tras_la_mano(ident, f)) else DELANTE
+
+
+def giro_en_frame(familia, f):
+    """Oriol (23/10): los grados que la Forja gira el arma en el frame f (alrededor del puño; positivo,
+    en el sentido de las agujas del reloj, tal como se ve en pantalla)."""
+    return float(AJUSTES.get("giros", {}).get(familia, {}).get(str(f), 0) or 0)
+
+
+def delante_en(ident, f, d):
+    """Si el arma va por encima del cuerpo en el frame f (direccion d)."""
+    familia = ARMAS[ident][0]
+    propio = capa_en_frame(familia).get(f)
+    if propio:
+        return propio == "delante"
+    base = ORDEN_PAREJA if familia in PAREJA else ORDEN_MANOS[ranura_de(ident)]
+    return base[d] > 50
+
+
 def orden_de(ident):
-    """SP-02: el orden de dibujo propio de la fila (por direccion), o None si es el de su ranura."""
-    return dict(ORDEN_PAREJA) if ident in ARMAS and ARMAS[ident][0] in PAREJA else None
+    """SP-02: el orden de dibujo propio de la fila (por direccion), o None si es el de su ranura.
+    Con la Forja (capas), ademas «f<n>»: el orden de ese frame, que manda sobre el de su direccion."""
+    if ident not in ARMAS:
+        return None
+    familia = ARMAS[ident][0]
+    frames = sorted(set(capa_en_frame(familia)) | set(mano_en_frame(familia)))
+    if familia not in PAREJA and not frames:
+        return None
+    orden = dict(ORDEN_PAREJA if familia in PAREJA else ORDEN_MANOS[ranura_de(ident)])
+    if familia not in PAREJA:
+        import actores_partes as partes
+        for f in frames:
+            orden[f"f{f}"] = orden_en_frame(ident, f, partes.DIRECCION[f])
+    return orden
+
+
+def gira_capa(capa, centro, grados):
+    """La capa (alto x ancho x 4) girada «grados» alrededor del pixel centro (x, y), vecino mas proximo
+    (lo mismo que hace la vista previa de la Forja: lo que se ve alli es lo que sale)."""
+    if not grados:
+        return capa
+    import math
+    a = math.radians(grados)
+    co, si = math.cos(a), math.sin(a)
+    alto, ancho = capa.shape[:2]
+    ys, xs = np.mgrid[0:alto, 0:ancho]
+    u = xs + 0.5 - (centro[0] + 0.5)
+    v = ys + 0.5 - (centro[1] + 0.5)
+    sx = np.floor(centro[0] + 0.5 + co * u + si * v).astype(int)
+    sy = np.floor(centro[1] + 0.5 - si * u + co * v).astype(int)
+    dentro = (sx >= 0) & (sx < ancho) & (sy >= 0) & (sy < alto)
+    out = np.zeros_like(capa)
+    out[dentro] = capa[sy[dentro], sx[dentro]]
+    return out
 
 
 def _ancla(lab, etiqueta, reserva):
@@ -835,6 +935,11 @@ def formas_en_talla(talla, familia, ranura):
                         break
                 for i, p in enumerate(pasos):
                     res[p][clave] = mejor[1][i]
+    # Oriol (22/10): los dibujos cambiados a mano en el editor de armas (tools/ajustes_armas.json).
+    for dib, vistas in AJUSTES.get("dibujos", {}).get(familia, {}).items():
+        for vista, filas in vistas.items():
+            if dib in res and vista in res[dib] and filas:
+                res[dib][vista] = list(filas)
     _FORMAS_EN_TALLA[cache] = (talla, res)
     return res
 
@@ -887,7 +992,7 @@ def pixeles_en_la_cara(talla, ident):
     orden = orden_de(ident) or ORDEN_MANOS[ranura]
     total = 0
     for f, capa in zip(range(1, talla.n_frames + 1), frames):
-        if orden[talla.direccion(f)] <= 50:
+        if orden.get(f"f{f}", orden[talla.direccion(f)]) <= 50:
             continue
         cara = _cara(talla, f)
         if cara is not None:
@@ -941,10 +1046,30 @@ def capa_arma(talla, ident, materiales):
         mano = MANO[ranura][d]
         otra = "M" if mano == "m" else "m"
         ancla = _ancla(lab, mano, otra)
+        mover = AJUSTES.get("desplazamientos", {}).get(familia, {}).get(str(f))
+        if ancla is not None and mover:  # Oriol (22/10): el editor de armas lo corre unos pixeles
+            ancla = (ancla[0] + int(mover[0]), ancla[1] + int(mover[1]))
+        if ancla is not None and con_capas_propias(ident, f):
+            # Oriol (23/10): la Forja separa el cuerpo y la mano: el arma delante o detras de cada uno.
+            # Se pinta entera, se gira y despues se borra lo que tapan (en la pantalla, ya girada).
+            sobre_cuerpo, bajo_mano = delante_en(ident, f, d), tras_la_mano(ident, f)
+            giro = giro_en_frame(familia, f)
+            pintar_arma(capa, formas[_dibujo_de(f)], d, ancla, materiales[n1], materiales[n2], None, None,
+                        materiales[n3] if n3 else None, materiales[n4] if n4 else None, None,
+                        np.asarray(talla.alfa[f]) > 0 if (sobre_cuerpo and not giro) else None)
+            capa = gira_capa(capa, ancla, giro)
+            if sobre_cuerpo or not bajo_mano:  # va encima de todo (orden 80): se borra lo que lo tapa
+                mano_y_brazo = np.isin(lab, [mano, brazo_de(mano)])
+                if bajo_mano:
+                    capa[lab == mano] = 0  # el puno, por encima del arma
+                if not sobre_cuerpo:
+                    capa[(np.asarray(talla.alfa[f]) > 0) & ~mano_y_brazo] = 0  # el cuerpo, por encima
+            frames.append(capa)
+            continue
         if ancla is not None:
             # el puno se ve por encima de lo que agarra, salvo lo que se lleva
             # embrazado (escudos nuevos, brazales): eso lo tapa
-            delante = ORDEN_MANOS[ranura][d] > 50 and familia not in TAPAN_EL_PUNO
+            delante = delante_en(ident, f, d) and familia not in TAPAN_EL_PUNO
             oculta = (_tras_la_cabeza(talla, f, formas[_dibujo_de(f)], d, ancla)
                       if delante and poses.tapada_por_la_cabeza(familia, d) else None)
             pintar_arma(capa, formas[_dibujo_de(f)], d, ancla, materiales[n1], materiales[n2],
@@ -955,5 +1080,53 @@ def capa_arma(talla, ident, materiales):
                         mano.lower().replace("m", "a") if (delante and d == "abajo" and
                                                            poses.grupo_de(familia) in poses.MANGO_TRAS_EL_BRAZO)
                         else None)
+            capa = gira_capa(capa, ancla, giro_en_frame(familia, f))  # Oriol (23/10): la Forja lo gira
         frames.append(capa)
+    if AJUSTES.get("desplazamientos", {}).get(familia) or AJUSTES.get("giros", {}).get(familia):
+        # lo que la Forja corre o gira puede llegar al borde en otra talla: se recorta (se veria en el vecino)
+        for capa in frames:
+            capa[0] = capa[-1] = 0
+            capa[:, 0] = capa[:, -1] = 0
     return ranura, frames
+
+
+# --- Oriol (23/10): «también todas las armas y crear nuevas» (la Forja de Onegai, pestaña Armas) -----------
+#   armas_nuevas   {id: {familia, materiales: [m1, m2, m3?, m4?], nombre}}   un arma nueva con una forma que ya hay
+#   armas_cambios  {id: {nombre?, materiales?}}                               otro nombre u otros materiales
+#   familias_nuevas {familia: {base}}   una forma propia: empieza como la de «base» (se coge igual) y su
+#                                       dibujo es el de «dibujos» de la misma familia
+def aplicar_forja():
+    """Mete en ARMAS y FORMAS lo de la Forja (idempotente: lo que pide una forma que aun no esta, p. ej.
+    una de actores_formas antes de registrar(), se queda para la siguiente llamada)."""
+    global MANO_IZQUIERDA
+    import copy
+
+    import actores_poses as poses
+    for fam, d in AJUSTES.get("familias_nuevas", {}).items():
+        base = d.get("base")
+        if fam in FORMAS or base not in FORMAS:
+            continue
+        FORMAS[fam] = copy.deepcopy(FORMAS[base])
+        poses.FAMILIA_DE[fam] = poses.familia_base(base)
+        if base in PAREJA:
+            PAREJA.add(fam)
+        if base in TAPAN_EL_PUNO:
+            TAPAN_EL_PUNO.add(fam)
+        if base in MANO_IZQUIERDA and fam not in MANO_IZQUIERDA:
+            MANO_IZQUIERDA = MANO_IZQUIERDA + (fam,)
+    for ident, d in AJUSTES.get("armas_nuevas", {}).items():
+        mats = [m for m in d.get("materiales", []) if m]
+        if ident in ARMAS or d.get("familia") not in FORMAS or not mats:
+            continue
+        ARMAS[ident] = (d["familia"], mats[0], mats[1] if len(mats) > 1 else mats[0], d.get("nombre", ident),
+                        *mats[2:4])
+    for ident, d in AJUSTES.get("armas_cambios", {}).items():
+        if ident not in ARMAS:
+            continue
+        fila = ARMAS[ident]
+        mats = [m for m in d.get("materiales", []) if m] or [fila[1], fila[2], *fila[4:6]]
+        ARMAS[ident] = (fila[0], mats[0], mats[1] if len(mats) > 1 else mats[0], d.get("nombre", fila[3]),
+                        *mats[2:4])
+
+
+aplicar_forja()

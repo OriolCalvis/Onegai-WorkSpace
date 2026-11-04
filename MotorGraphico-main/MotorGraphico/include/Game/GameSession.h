@@ -37,6 +37,7 @@ class ObjectCatalog;
 struct ObjectDefinition;
 // El DTO del guardado se declara por adelantado: se define en SaveGame.h.
 struct SaveGameData;
+namespace RPG { namespace eventos { struct Catalogo; } }  // C8-03c
 namespace Game { class CatalogoCartas; class RutinasPnj; class Contenedores; }  // H2-06; PNJ-02
 
 // Estado de una PARTIDA en curso: el pegamento entre todo lo construido
@@ -91,7 +92,7 @@ public:
 
     GameMode mode() const { return m_data->m_mode; }
     const GridCoord& playerPosition() const { return m_data->m_playerPosition; }
-
+    void situaJugador(const GridCoord& c) { m_data->m_playerPosition = c; }  // D0026.2: sin andar (el fundido de `lleva`)
     // C-17 — El World es la unica fuente de verdad de entidades. Esta
     // clase lo usa internamente; el render lo necesita para enganchar
     // marcadores por handle (Application) y para leer sin copias
@@ -124,6 +125,11 @@ public:
     //    nullptr. Devuelve false (no hubo movimiento) pero el modo
     //    cambio: quien llame debe mirar mode(), no solo el bool.
     bool tryMovePlayer(int dx, int dy);
+    // Oriol (22/10): andar con el raton fuera del combate. El camino mas corto (4 vecinos) desde el
+    // jugador hasta `destino` por casillas que se pueden pisar (sin muros, objetos que tapan, enemigos
+    // ni acantilados). Si el destino no se pisa (un PNJ, un mostrador), llega a la casilla de al lado.
+    // Vacio si no hay camino, si ya esta ahi o si no es exploracion. Sin el origen.
+    std::vector<GridCoord> rutaAndando(const GridCoord& destino, int maxCasillas = 6000) const;
 
     // Ids recogidos en esta celda o nullptr si no hay pickup (util para
     // el log/HUD sin duplicar la busqueda).
@@ -249,11 +255,13 @@ public:
     //
     // El motor va const y el estado no: la aventura es contenido de solo
     // lectura, las flags son la partida.
-    void setNarrative(const RPG::NarrativeEngine* engine, RPG::NarrativeState* state) {
-        m_data->m_narrative = engine;
-        m_data->m_narrativeState = state;
-    }
+    // BND-04: al enchufarla, el estado copia ya la reputacion de la ficha.
+    void setNarrative(const RPG::NarrativeEngine* engine, RPG::NarrativeState* state);
+    void reflejaReputacion();  // BND-04: ficha -> estado, antes de evaluar beats
     const RPG::NarrativeState* narrativeState() const { return m_data->m_narrativeState; }
+    // C8-03c — Catalogo de eventos del mundo (no propietario, como setNarrative). nullptr = sin eventos.
+    void setEventosDelMundo(const RPG::eventos::Catalogo* c);
+    void avaluaEventosDelMundo();  // EventosDeLaSesion.cpp: evalua y, si saltó algo, un tick
 
     // Interruptores locales A-D de un evento. El estado vive en
     // NarrativeState, donde vive el resto de la partida; esto es solo el
@@ -531,6 +539,7 @@ private:
     int basePriceOf(const std::string& objectId) const;
     void startInteraction(const ObjectDefinition& def);
     bool applyNarrative(const RPG::NarrativeResult& result);
+    bool cierraPuerta(const ObjectSpawn& puerta);  // G4-01 (GameSessionNarrativa.cpp)
     void resolveSkillChecks(const std::vector<RPG::SkillCheckRequest>& checks);
     void resolveBattles(const std::vector<RPG::BattleRequest>& battles);
     Engine::EntityHandle spawnEnemyFromCatalog(const std::string& objectId,

@@ -9,7 +9,7 @@ namespace Game {
 namespace {
 
 constexpr int kLado = MontajePersonajes::kLado;
-constexpr int kFrames = MontajePersonajes::kFrames;
+constexpr int kFramesMax = MontajePersonajes::kFramesDiagonal;  // Oriol (24/10): 20 o 40, lo dice la hoja
 constexpr double kPi = 3.14159265358979323846;
 
 bool esRopa(const std::string& ranura) { return ranura != "arma" && ranura != "mano_izq"; }
@@ -88,7 +88,8 @@ EscalonDeBrillo escalonDe(const FuenteDeBrillo& f) {
 HojaDeBrillo montarBrillo(const imagen::ImagenRGBA& hoja, const MapaDeCapas& mapa,
                           const std::map<std::string, BrilloDePieza>& brillos) {
     HojaDeBrillo out;
-    const int ancho = kLado * kFrames;
+    const int nFrames = std::min(kFramesMax, hoja.ancho / kLado);
+    const int ancho = kLado * nFrames;
     out.halo.ancho = ancho;
     out.halo.alto = kLado;
     out.halo.pixeles.assign(static_cast<std::size_t>(ancho) * kLado * 4, 0);
@@ -118,7 +119,7 @@ HojaDeBrillo montarBrillo(const imagen::ImagenRGBA& hoja, const MapaDeCapas& map
         // PART-02b: un abalorio con sitio echa desde su ancla en cada frame (el anillo, del puno; el collar,
         // de debajo del cuello; el cinturon, de la linea del cinturon, a lo ancho)
         const std::vector<AnclasDeTalla::Punto>* anclas = abalorio ? mapa.anclas.de(brillo.sitio) : nullptr;
-        for (int f = 0; f < kFrames; ++f) {
+        for (int f = 0; f < nFrames; ++f) {
             if (anclas != nullptr && static_cast<std::size_t>(f) < anclas->size()) {
                 const auto& [ax, ay] = (*anclas)[static_cast<std::size_t>(f)];
                 const bool cintura = brillo.sitio == "cintura";
@@ -202,7 +203,7 @@ float latidoDeBrillo(const HojaDeBrillo& brillo, double segundos) {
 }
 
 void destellosDeBrillo(const HojaDeBrillo& brillo, int frame, double segundos, std::vector<Destello>& out) {
-    const std::size_t f = static_cast<std::size_t>(std::max(1, std::min(kFrames, frame)) - 1);
+    const std::size_t f = static_cast<std::size_t>(std::max(1, std::min(kFramesMax, frame)) - 1);
     for (std::size_t k = 0; k < brillo.fuentes.size(); ++k) {
         const FuenteDeBrillo& fuente = brillo.fuentes[k];
         const auto& pix = fuente.pixeles[f];

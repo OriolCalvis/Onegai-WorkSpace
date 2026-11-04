@@ -89,8 +89,9 @@ struct SavedHero {
     std::vector<std::string> equipped;  // una por ranura (RPG::EquipSlot); "" = nada
     // El aspecto (Game::Apariencia), lo pone la creacion de personaje.
     std::string raza, piel, talla, ojos, peloEstilo, peloColor, barbaEstilo, barbaColor;
-    std::map<std::string, std::string> ropa;  // ranura -> pieza, la ropa de diario
+    std::map<std::string, std::string> ropa;  // ranura -> pieza, la ropa de diario (y alas, cola, cuernos)
     std::vector<std::string> quitarCapas;
+    std::vector<std::string> marcas;  // EDITOR-PERSONALIZACION-01: las marcas de la piel
     // AV14-23 (D-MOR-09) — La reputación por facción (CharacterSheet::factionRep):
     // la mueven los actos y la leen la tienda y la ficha. Aditiva: un guardado
     // de antes la trae vacía.

@@ -24,4 +24,9 @@ std::vector<std::string> asientaNoche(SessionData& d);
 // asentada del estado de la aventura.
 void reflejaEnLaAventura(SessionData& d);
 
+// BND-04 — Solo la reputación de la ficha, para requires.reputacion. Se llama
+// antes de cada evaluación de beats (charla, tick, entrar al nivel) y al
+// enchufar la narrativa: la ficha manda, el estado de la aventura la copia.
+void reflejaLaReputacion(SessionData& d);
+
 }  // namespace moral

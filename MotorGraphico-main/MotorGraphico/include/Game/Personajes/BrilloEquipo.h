@@ -61,7 +61,7 @@ struct FuenteDeBrillo {
     bool esAbalorio = false;
     // (x, y) dentro del frame: lo que se ve de la pieza; de un abalorio, su sitio (unos
     // pixeles alrededor de su ancla) o, sin sitio, el cuerpo entero
-    std::array<std::vector<std::array<std::uint8_t, 2>>, MontajePersonajes::kFrames> pixeles;
+    std::array<std::vector<std::array<std::uint8_t, 2>>, MontajePersonajes::kFramesDiagonal> pixeles;  // hasta 40 frames
     // PART-02b: un abalorio con dos efectos son dos fuentes en el mismo sitio, cada una
     // con la mitad de las particulas (`parte`) y solo la primera con destellos.
     float parte = 1.0f;

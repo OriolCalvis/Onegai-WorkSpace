@@ -1022,6 +1022,23 @@ ICONOS = [
         "..............",
         "..............",
     ]),
+    # PO-48: una celda nueva al final conserva los 56 frames anteriores.
+    ("cana_pescar", "Cana de pescar", "marron", [
+        "......kkk.....",
+        ".....khhkk....",
+        "....khhk.ww...",
+        "...khhk...w...",
+        "..khhk....w...",
+        ".khhk.....w...",
+        ".khk......w...",
+        ".kak......w...",
+        ".kbk......w...",
+        ".kbk....w.w...",
+        ".kkk....www...",
+        "..............",
+        "..............",
+        "..............",
+    ]),
 ]
 
 STATS = {"CON": "con", "DES": "des", "INT": "int", "CAR": "car"}

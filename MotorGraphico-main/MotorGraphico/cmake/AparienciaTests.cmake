@@ -25,7 +25,8 @@ if(BUILD_TESTING AND TARGET motor_level)
     endif()
     add_test(NAME test_personajes_capas COMMAND test_personajes_capas)
     set_tests_properties(test_personajes_capas PROPERTIES
-        LABELS "unit;gl-free"
+        LABELS "unit;gl-free;lenta"
+        TIMEOUT 600
         WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
     set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_personajes_capas)
     if(TARGET suite_gl_free)
@@ -51,7 +52,7 @@ if(BUILD_TESTING AND TARGET motor_level)
         add_dependencies(suite_gl_free test_brillo_equipo)
     endif()
 
-    add_executable(test_editor_apariencia tests/Game/EditorAparienciaTests.cpp)
+    add_executable(test_editor_apariencia tests/Game/EditorAparienciaTests.cpp tests/Game/RasgosAparienciaTests.cpp)
     target_include_directories(test_editor_apariencia PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/tests"
         "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -66,5 +67,59 @@ if(BUILD_TESTING AND TARGET motor_level)
     set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_editor_apariencia)
     if(TARGET suite_gl_free)
         add_dependencies(suite_gl_free test_editor_apariencia)
+    endif()
+
+    # CAR-1: pelo, barba y ojos solo donde la raza los admite (editor, «Al azar» y partida vieja).
+    add_executable(test_editor_apariencia_razas tests/Game/EditorAparienciaRazasTests.cpp)
+    target_include_directories(test_editor_apariencia_razas PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    target_link_libraries(test_editor_apariencia_razas PRIVATE motor_level motor_map motor_rpg motor_json)
+    if(TARGET copiar_assets)
+        add_dependencies(test_editor_apariencia_razas copiar_assets)
+    endif()
+    add_test(NAME test_editor_apariencia_razas COMMAND test_editor_apariencia_razas)
+    set_tests_properties(test_editor_apariencia_razas PROPERTIES
+        LABELS "unit;gl-free"
+        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_editor_apariencia_razas)
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_editor_apariencia_razas)
+    endif()
+
+    # NET-E1a: el color del pelo y de la barba con los atlas completos y con los recortados a la fila castana.
+    add_executable(test_editor_apariencia_colores tests/Game/EditorAparienciaColoresTests.cpp)
+    target_include_directories(test_editor_apariencia_colores PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    target_link_libraries(test_editor_apariencia_colores PRIVATE motor_level motor_map motor_rpg motor_json)
+    if(TARGET copiar_assets)
+        add_dependencies(test_editor_apariencia_colores copiar_assets)
+    endif()
+    add_test(NAME test_editor_apariencia_colores COMMAND test_editor_apariencia_colores)
+    set_tests_properties(test_editor_apariencia_colores PROPERTIES
+        LABELS "unit;gl-free"
+        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_editor_apariencia_colores)
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_editor_apariencia_colores)
+    endif()
+
+    # H-PEL-1: el pelo propio de la raza y el de sus razas germanas en el creador.
+    add_executable(test_editor_apariencia_pelo_propio tests/Game/EditorAparienciaPeloPropioTests.cpp)
+    target_include_directories(test_editor_apariencia_pelo_propio PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    target_link_libraries(test_editor_apariencia_pelo_propio PRIVATE motor_level motor_map motor_rpg motor_json)
+    if(TARGET copiar_assets)
+        add_dependencies(test_editor_apariencia_pelo_propio copiar_assets)
+    endif()
+    add_test(NAME test_editor_apariencia_pelo_propio COMMAND test_editor_apariencia_pelo_propio)
+    set_tests_properties(test_editor_apariencia_pelo_propio PROPERTIES
+        LABELS "unit;gl-free"
+        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
+    set_property(GLOBAL APPEND PROPERTY MOTOR_GL_FREE_TARGETS test_editor_apariencia_pelo_propio)
+    if(TARGET suite_gl_free)
+        add_dependencies(suite_gl_free test_editor_apariencia_pelo_propio)
     endif()
 endif()

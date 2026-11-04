@@ -1,0 +1,57 @@
+# Deuda aceptada en el rebase de linea_base_core (UNI-02-11, 03/11, decision de Oriol)
+
+Estado previo al rebase (`python3 tools/linea_base_core.py`): 53 «DEUDA NUEVA» respecto a la linea base del 2026-09-28, ya presentes en la base caa7565a. Pagarla es trabajo aparte.
+
+- editor/src/AssetBrowserPanel.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- editor/src/ExportPanel.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/Core/Log/MemorySink.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/Editor/AssetBrowserPanel.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/Editor/ExportState.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/Editor/MapPropertiesPanel.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/Editor/ProblemsInternal.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/Editor/ProjectHub.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/Game/AudioDirector.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/Game/BattleMenuState.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/Game/Companeros.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/Game/OptionsFile.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/Game/QuestLogState.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/Game/ShopEngine.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/Game/TargetSelection.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/Game/TitleScreen.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/Game/WorldTravelState.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/HUD/ConditionWidget.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/HUD/DiceRollWidget.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/HUD/HudTimer.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/HUD/MissionTimerWidget.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/Level/LevelSerializer.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/RPG/AdventureSerializer.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/RPG/Catalogs/CatalogLoadersMisiones.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/RPG/Definitions/DefinicionesMisiones.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/RPG/EventosInterno.h: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- src/Editor/AssetBrowserState.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- src/Editor/ProblemsNavigation.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- src/Editor/ProjectHub.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- src/Game/BattleMenuState.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- src/Game/Companeros.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- src/Game/OptionsFile.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- src/Game/QuestLogState.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- src/Game/ShopEngine.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- src/Game/TargetSelection.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- src/Game/TitleScreen.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- src/Game/WorldTravelState.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- src/HUD/ConditionWidget.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- src/HUD/DiceRollWidget.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- src/HUD/HudTimer.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- src/HUD/MissionTimerWidget.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- src/Level/LevelSerializer.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- src/RPG/AdventureSerializer.cpp: no lo alcanza ningun ejecutable. No estaba en la linea base del 2026-09-28
+- include/Game/BattleMenuState.h: paquete cerrado que no llega a nadie. No estaba en la linea base del 2026-09-28
+- include/Engine/Application.h: ha crecido de 519 a 526 lineas y ya estaba por encima del techo de 500. Lo que anadas aqui va en 
+- include/Game/GameSession.h: ha crecido de 546 a 554 lineas y ya estaba por encima del techo de 500. Lo que anadas aqui va en un
+- src/Engine/ApplicationNivel.cpp: 517 lineas, ha pasado el techo de 500. Un fichero nuevo no nace grande: parte lo que estes ana
+- src/Game/Cinematica.cpp: 601 lineas, ha pasado el techo de 500. Un fichero nuevo no nace grande: parte lo que estes anadiendo e
+- src/Game/Personajes/EditorApariencia.cpp: 714 lineas, ha pasado el techo de 500. Un fichero nuevo no nace grande: parte lo que 
+- include/Game/SessionData.h: ha pasado de 40 a 42 miembros. Cada miembro nuevo de una clase asi hay que justificarlo por escrito
+- include/HUD/Pergamino/InterfazPergamino.h: su clase declara 16 miembros (umbral 15). Lo que ibas a guardar va en una clase de d
+- include/Render/Entity.h: su clase declara 18 miembros (umbral 15). Lo que ibas a guardar va en una clase de datos que se pasa c
+- motor_core: de 17 a 22 fuentes GL-free atrapadas en una libreria con GL. Cada una es una prueba que ahora necesita ventana. Sac

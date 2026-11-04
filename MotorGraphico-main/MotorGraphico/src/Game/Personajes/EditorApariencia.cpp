@@ -1,4 +1,5 @@
 // APARIENCIA-01 — ver include/Game/Personajes/EditorApariencia.h.
+#include "Game/Personajes/RasgosApariencia.h"
 #include "Game/Personajes/EditorApariencia.h"
 
 #include <algorithm>
@@ -58,11 +59,23 @@ std::vector<std::string> idsDe(const GrupoDeCapas& grupo, const std::string& ran
     return out;
 }
 
-// Los estilos de pelo o barba, en el orden del atlas y sin repetir.
+// Los estilos de pelo o barba de siempre (los que se dibujan en todas las tallas), en el orden del atlas y sin
+// repetir. H-PEL-2: las filas con `tallas` no son de estas: salen en estilosCompartidos().
 std::vector<std::string> estilos(const GrupoDeCapas& grupo) {
     std::vector<std::string> out;
     for (const FilaDeCapa& f : grupo.filas) {
-        if (!f.estilo.empty() && !contiene(out, f.estilo))
+        if (!f.estilo.empty() && f.tallas.empty() && !contiene(out, f.estilo))
+            out.push_back(f.estilo);
+    }
+    return out;
+}
+
+// H-PEL-2: los pentinados que solo existen en algunas tallas (los mejores pelos de raza, para todos), solo si
+// la fila tiene dibujo en `talla`: que ninguna raza vea un pentinado invisible.
+std::vector<std::string> estilosCompartidos(const GrupoDeCapas& grupo, const std::string& talla) {
+    std::vector<std::string> out;
+    for (const FilaDeCapa& f : grupo.filas) {
+        if (!f.estilo.empty() && !f.tallas.empty() && contiene(f.tallas, talla) && !contiene(out, f.estilo))
             out.push_back(f.estilo);
     }
     return out;
@@ -75,6 +88,45 @@ std::vector<std::string> colores(const GrupoDeCapas& grupo, const std::string& e
             out.push_back(f.color);
     }
     return out;
+}
+
+// EDITOR-PERSONALIZACION-01: los colores de pelo que admite un estilo. Si el atlas trae su fila castana, el
+// montaje la tine a cualquier material «pelo_*» con paleta (MontajePersonajes): todos, los del atlas primero
+// y el resto por orden. Si no (el pelo propio de una raza), solo los que traiga el atlas.
+// NET-E1a: el orden de los de siempre es fijo (con el atlas recortado a la fila castana tambien salen igual):
+// Castano, Rubio, Negro, Pelirrojo, Oscuro, Blanco, Gris, Plata lila, Verde musgo, Azul hielo y, despues,
+// el resto de materiales «pelo_*» (por nombre).
+std::vector<std::string> coloresDePelo(const ManifiestoPersonajes& m, const GrupoDeCapas& grupo,
+                                       const std::string& estilo) {
+    std::vector<std::string> out = colores(grupo, estilo);
+    if (grupo.buscar(estilo + "/pelo_castano") == nullptr || m.paletas.count("pelo_castano") == 0)
+        return out;
+    static const char* const kOrden[] = {"pelo_castano",  "pelo_rubio",       "pelo_negro",
+                                         "pelo_pelirrojo", "pelo_oscuro",      "pelo_blanco",
+                                         "pelo_gris",      "pelo_plata_lila",  "pelo_verde_musgo",
+                                         "pelo_azul_hielo"};
+    for (const char* material : kOrden) {
+        if (m.paletas.count(material) != 0 && !contiene(out, material))
+            out.push_back(material);
+    }
+    for (const auto& [material, tonos] : m.paletas) {
+        (void)tonos;
+        if (material.rfind("pelo_", 0) == 0 && !contiene(out, material))
+            out.push_back(material);
+    }
+    return out;
+}
+
+std::vector<std::string> idsDeMarcas(const GrupoDeCapas& grupo) {
+    std::vector<std::string> out;
+    for (const FilaDeCapa& f : grupo.filas)
+        out.push_back(f.id);
+    return out;
+}
+
+// La posicion de una fila MARCA (0, 1, 2) o -1.
+int indiceDeMarca(Fila fila) {
+    return fila == Fila::Marca1 ? 0 : fila == Fila::Marca2 ? 1 : fila == Fila::Marca3 ? 2 : -1;
 }
 
 // Lo que se pinta de cada fila: etiqueta, icono de iconos.json, la ranura
@@ -103,6 +155,12 @@ const DatosDeFila kFilas[] = {
     {Fila::Piernas, "PIERNAS", "ranura_piernas", "piernas", kRopa},
     {Fila::Pies, "PIES", "ranura_pies", "pies", kRopa},
     {Fila::Capa, "CAPA", "ranura_accesorio", "capa", kRopa},
+    {Fila::Marca1, "MARCA", "rasgo", nullptr, "Pecas, manchas, un tatuaje, una cicatriz... Hasta tres."},
+    {Fila::Marca2, "MARCA", "rasgo", nullptr, "Otra marca de la piel."},
+    {Fila::Marca3, "MARCA", "rasgo", nullptr, "Otra marca de la piel."},
+    {Fila::Alas, "ALAS", "rasgo", "alas", "Alas en la espalda: de murcielago, de plumas, de libelula..."},
+    {Fila::Cola, "COLA", "rasgo", "cola", "Una cola: de diablo, de gato, de lagarto, de zorro, de lobo."},
+    {Fila::Cuernos, "CUERNOS", "rasgo", "cuernos", "Cuernos en la cabeza: rectos, de carnero, astas..."},
     {Fila::AlAzar, "AL AZAR", "inspiracion", nullptr,
      "Izquierda o derecha: otra combinacion al azar, dentro de lo que admite tu pueblo."},
     {Fila::ComoSuRaza, "COMO TU PUEBLO", "lore", nullptr,
@@ -137,7 +195,17 @@ const std::map<std::string, std::string>& nombres() {
         {"pelo_castano", "Castaño"}, {"pelo_rubio", "Rubio"}, {"pelo_negro", "Negro"},
         {"pelo_pelirrojo", "Pelirrojo"}, {"pelo_oscuro", "Oscuro"}, {"pelo_blanco", "Blanco"},
         {"pelo_gris", "Gris"}, {"pelo_plata_lila", "Plata lila"}, {"pelo_verde_musgo", "Verde musgo"},
-        {"pelo_azul_hielo", "Azul hielo"}, {"BARBA", "Larga"}, {"BARBA_CORTA", "Corta"}};
+        {"pelo_azul_hielo", "Azul hielo"}, {"pelo_llama", "Llama"}, {"BARBA", "Larga"}, {"BARBA_CORTA", "Corta"},
+        // EDITOR-PERSONALIZACION-01: los peinados y barbas de PL-ROPA-01
+        {"rapado", "Rapado"}, {"flequillo", "Flequillo"}, {"lado", "Mechón ladeado"}, {"tupe", "Tupé"},
+        {"puntas", "De punta"}, {"entradas", "Con entradas"}, {"afro", "Afro"},
+        {"mohicano", "Mohicano"}, {"mono_alto", "Moño alto"}, {"coletas", "Coletas"}, {"trenza", "Trenza"},
+        {"melena_larga", "Melena larga"}, {"media_melena", "Media melena"}, {"ondulado", "Ondulado"},
+        {"trenzas", "Trenzas"}, {"coleta_alta", "Coleta alta"}, {"rastas", "Rastas"}, {"tazon", "A tazón"},
+        {"undercut", "Rapado a los lados"}, {"PERILLA", "Perilla"}, {"BIGOTE", "Bigote"}, {"PATILLAS", "Patillas"},
+        {"BARBA_LARGA", "Hasta el pecho"}, {"BARBA_PARTIDA", "Partida"},
+        {"CANDADO", "Candado"}, {"CHIVO", "De chivo"}, {"BIGOTE_MANILLAR", "Bigote de manillar"},
+        {"BIGOTE_GRANDE", "Bigote de morsa"}};
     // clang-format on
     return tabla;
 }
@@ -154,31 +222,51 @@ void EditorApariencia::empezar(const std::string& razaId) {
         m_apariencia.raza = razaId;
         m_filas.clear();
         m_marcada = 0;
+        m_colorGenerico.clear();
     }
     rehacerFilas();
 }
 
 void EditorApariencia::rehacerFilas() {
     const Fila antes = filaMarcada();
+    if (!m_apariencia.peloEstilo.empty() && m_apariencia.peloEstilo != "propio" && !m_apariencia.peloColor.empty())
+        m_colorGenerico = m_apariencia.peloColor;
     const bool habiaFilas = !m_filas.empty();
     const RazaVisual* raza = m_manifiesto.raza(m_apariencia.raza);
     const auto admite = [&](const char* ranura) { return raza == nullptr || raza->admite(ranura); };
 
     m_filas.clear();
-    if (raza != nullptr && raza->cuerpoLiso) {
+    // EDITOR-PERSONALIZACION-01: la piel, para cualquier raza con «pieles» en su talla (el tinte del cuerpo)
+    const std::string talla = m_apariencia.talla.empty() && raza != nullptr ? raza->talla : m_apariencia.talla;
+    const bool conPieles = raza != nullptr && m_manifiesto.pieles.count(talla) != 0;
+    if (raza != nullptr && (raza->cuerpoLiso || conPieles))
         m_filas.push_back(Fila::Piel);
+    if (raza != nullptr && raza->cuerpoLiso)
         m_filas.push_back(Fila::Talla);
-    }
-    m_filas.push_back(Fila::Ojos);
-    // Pelo y barba, solo si el pueblo tiene pelo (ni plumas ni escamas).
+    // CAR-1: ojos, pelo y barba solo en las razas que los admiten; CAR-2b: ojos tampoco en cuerpo liso sin capa (grande)
+    if (admite("ojos") && (raza == nullptr || !raza->cuerpoLiso || m_manifiesto.ojos.atlas.count(talla) != 0))
+        m_filas.push_back(Fila::Ojos);
     if (admite("pelo")) {
         m_filas.push_back(Fila::Peinado);
-        if (!m_apariencia.peloEstilo.empty())
+        // H-PEL-1: el pelo propio lleva sus colores: no hay fila de color
+        if (!m_apariencia.peloEstilo.empty() && m_apariencia.peloEstilo != "propio")
             m_filas.push_back(Fila::ColorPelo);
+    }
+    if (admite("barba")) {
         m_filas.push_back(Fila::Barba);
         if (!m_apariencia.barbaEstilo.empty())
             m_filas.push_back(Fila::ColorBarba);
     }
+    // EDITOR-PERSONALIZACION-01: las marcas (tres filas; la segunda y la tercera salen cuando hay una antes)
+    if (!m_manifiesto.marcas.filas.empty() && m_manifiesto.marcas.atlas.count(talla) != 0) {
+        m_filas.push_back(Fila::Marca1);
+        if (m_apariencia.marcas.size() >= 1)
+            m_filas.push_back(Fila::Marca2);
+        if (m_apariencia.marcas.size() >= 2)
+            m_filas.push_back(Fila::Marca3);
+    }
+    const auto rasgos = RasgosApariencia::filas(m_manifiesto, raza, talla);
+    m_filas.insert(m_filas.end(), rasgos.begin(), rasgos.end());
     for (Fila f : {Fila::Cabeza, Fila::Torso, Fila::Piernas, Fila::Pies, Fila::Capa}) {
         if (admite(ranuraDe(f)))
             m_filas.push_back(f);
@@ -209,9 +297,21 @@ void EditorApariencia::derecha() { cambiar(filaMarcada(), +1); }
 
 std::vector<std::string> EditorApariencia::opciones(Fila fila) const {
     const ManifiestoPersonajes& m = m_manifiesto;
+    const RazaVisual* raza = m.raza(m_apariencia.raza);
+    const std::string talla = m_apariencia.talla.empty() && raza != nullptr ? raza->talla : m_apariencia.talla;
+    const auto pieles = m.pieles.find(talla);
     switch (fila) {
-        case Fila::Piel:
-            return ids(m.cuerpos);
+        case Fila::Piel: {
+            // EDITOR-PERSONALIZACION-01: con «pieles», la de tu pueblo ("") y las demas; si no, el atlas de cuerpos
+            if (pieles == m.pieles.end())
+                return ids(m.cuerpos);
+            std::vector<std::string> out{""};
+            for (const std::string& id : pieles->second.orden) {
+                if (raza == nullptr || id != raza->id)
+                    out.push_back(id);
+            }
+            return out;
+        }
         case Fila::Talla: {
             std::vector<std::string> out;
             for (const char* t : {"medio", "bajo", "pequeno", "grande"}) {
@@ -222,14 +322,10 @@ std::vector<std::string> EditorApariencia::opciones(Fila fila) const {
         }
         case Fila::Ojos:
             return ids(m.ojos);
-        case Fila::Peinado: {
-            std::vector<std::string> out{""};
-            for (const std::string& e : estilos(m.pelo))
-                out.push_back(e);
-            return out;
-        }
+        case Fila::Peinado:
+            return peinados();
         case Fila::ColorPelo:
-            return colores(m.pelo, m_apariencia.peloEstilo);
+            return coloresDePelo(m, m.pelo, m_apariencia.peloEstilo);
         case Fila::Barba: {
             std::vector<std::string> out{""};
             for (const std::string& e : estilos(m.barba))
@@ -237,15 +333,24 @@ std::vector<std::string> EditorApariencia::opciones(Fila fila) const {
             return out;
         }
         case Fila::ColorBarba:
-            return colores(m.barba, m_apariencia.barbaEstilo);
+            return coloresDePelo(m, m.barba, m_apariencia.barbaEstilo);
+        case Fila::Marca1:
+        case Fila::Marca2:
+        case Fila::Marca3: {
+            std::vector<std::string> out{""};
+            for (const std::string& id : idsDeMarcas(m.marcas))
+                out.push_back(id);
+            return out;
+        }
         case Fila::AlAzar:
         case Fila::ComoSuRaza:
             return {};
         default:
             break;
     }
-    std::vector<std::string> out{""};
-    const auto grupo = m.equipo.find(ranuraDe(fila));
+    const std::string ranura = ranuraDe(fila);
+    std::vector<std::string> out = RasgosApariencia::esRasgo(ranura) ? RasgosApariencia::opciones(raza, ranura) : std::vector<std::string>{""};
+    const auto grupo = m.equipo.find(ranura);
     if (grupo != m.equipo.end()) {
         for (const std::string& id : idsDe(grupo->second, ranuraDe(fila)))
             out.push_back(id);
@@ -253,11 +358,49 @@ std::vector<std::string> EditorApariencia::opciones(Fila fila) const {
     return out;
 }
 
+std::vector<std::string> EditorApariencia::pelosPropios() const {
+    std::vector<std::string> out;
+    const RazaVisual* raza = m_manifiesto.raza(m_apariencia.raza);
+    if (raza == nullptr)
+        return out;
+    // con otra talla (piel/talla de cuerpo liso) las filas propias no estan en su atlas
+    if (!m_apariencia.talla.empty() && m_apariencia.talla != raza->talla)
+        return out;
+    const std::string propio = "propio/" + raza->id;
+    if (m_manifiesto.pelo.buscar(propio) != nullptr)
+        out.push_back(propio);
+    for (const FilaDeCapa& f : m_manifiesto.pelo.filas) {
+        if (f.id.rfind("propio/", 0) == 0 && f.id != propio && contiene(f.razas, raza->id))
+            out.push_back(f.id);
+    }
+    return out;
+}
+
+std::vector<std::string> EditorApariencia::peinados() const {
+    std::vector<std::string> out{""};
+    for (const std::string& e : pelosPropios())
+        out.push_back(e);
+    // H-PEL-2: despues de los propios, los pentinados compartidos de la talla de la raza; luego los de siempre
+    const RazaVisual* raza = m_manifiesto.raza(m_apariencia.raza);
+    const std::string talla = m_apariencia.talla.empty() && raza != nullptr ? raza->talla : m_apariencia.talla;
+    for (const std::string& e : estilosCompartidos(m_manifiesto.pelo, talla))
+        out.push_back(e);
+    for (const std::string& e : estilos(m_manifiesto.pelo))
+        out.push_back(e);
+    return out;
+}
+
 std::string EditorApariencia::actual(Fila fila) const {
     const Apariencia& a = m_apariencia;
     switch (fila) {
-        case Fila::Piel:
+        case Fila::Piel: {
+            // EDITOR-PERSONALIZACION-01: con «pieles», la de la raza es ""
+            const RazaVisual* raza = m_manifiesto.raza(a.raza);
+            const std::string talla = a.talla.empty() && raza != nullptr ? raza->talla : a.talla;
+            if (raza != nullptr && m_manifiesto.pieles.count(talla) != 0 && (a.piel == raza->piel || a.piel == raza->id))
+                return "";
             return a.piel;
+        }
         case Fila::Talla:
             return a.talla;
         case Fila::Ojos: {
@@ -265,31 +408,40 @@ std::string EditorApariencia::actual(Fila fila) const {
             return a.ojos.empty() && raza != nullptr ? raza->ojos : a.ojos;
         }
         case Fila::Peinado:
-            return a.peloEstilo;
+            return a.peloEstilo == "propio" ? "propio/" + a.peloColor : a.peloEstilo;
         case Fila::ColorPelo:
             return a.peloColor;
         case Fila::Barba:
             return a.barbaEstilo;
         case Fila::ColorBarba:
             return a.barbaColor;
+        case Fila::Marca1:
+        case Fila::Marca2:
+        case Fila::Marca3: {
+            const int i = indiceDeMarca(fila);
+            return static_cast<std::size_t>(i) < a.marcas.size() ? a.marcas[static_cast<std::size_t>(i)] : std::string();
+        }
         case Fila::AlAzar:
         case Fila::ComoSuRaza:
             return "";
         default:
             break;
     }
+    if ((ranuraDe(fila) != nullptr && RasgosApariencia::esRasgo(ranuraDe(fila))))
+        return RasgosApariencia::actual(a, m_manifiesto.raza(a.raza), ranuraDe(fila));
     const auto it = a.ropa.find(ranuraDe(fila));
     return it == a.ropa.end() ? std::string() : it->second;
 }
 
 void EditorApariencia::poner(Fila fila, const std::string& valor) {
     Apariencia& a = m_apariencia;
+    if ((ranuraDe(fila) != nullptr && RasgosApariencia::esRasgo(ranuraDe(fila)))) { RasgosApariencia::poner(a, m_manifiesto.raza(a.raza), ranuraDe(fila), valor); return; }
     const RazaVisual* raza = m_manifiesto.raza(a.raza);
     // Al elegir un estilo se conserva el color si ese estilo lo tiene; si no,
     // el de la raza, el del pelo (para la barba) o el primero que haya.
     const auto colorPara = [&](const GrupoDeCapas& grupo, const std::string& estilo,
                                std::initializer_list<std::string> preferidos) {
-        const std::vector<std::string> hay = colores(grupo, estilo);
+        const std::vector<std::string> hay = coloresDePelo(m_manifiesto, grupo, estilo);
         for (const std::string& c : preferidos) {
             if (!c.empty() && contiene(hay, c))
                 return c;
@@ -297,27 +449,47 @@ void EditorApariencia::poner(Fila fila, const std::string& valor) {
         return hay.empty() ? std::string() : hay.front();
     };
     switch (fila) {
-        case Fila::Piel:
-            a.piel = valor;
+        case Fila::Piel: {
+            // EDITOR-PERSONALIZACION-01: "" = la de la raza
+            const std::string talla = a.talla.empty() && raza != nullptr ? raza->talla : a.talla;
+            if (valor.empty() && raza != nullptr && m_manifiesto.pieles.count(talla) != 0)
+                a.piel = raza->piel;
+            else
+                a.piel = valor;
             break;
+        }
         case Fila::Talla:
             a.talla = valor;
+            if (!valor.empty() && raza && raza->cuerpoLiso && !m_manifiesto.ojos.atlas.count(valor)) a.ojos.clear();  // CAR-2b
+            // H-PEL-2: un pentinado compartido que no se dibuja en la talla nueva pasa a «corto»
+            for (const FilaDeCapa& f : m_manifiesto.pelo.filas) {
+                if (f.estilo == a.peloEstilo && !f.tallas.empty() && !contiene(f.tallas, valor)) {
+                    a.peloEstilo = "corto";
+                    break;
+                }
+            }
             break;
         case Fila::Ojos:
             a.ojos = valor;
             break;
         case Fila::Peinado:
+            if (valor.rfind("propio/", 0) == 0) {
+                // H-PEL-1: un pelo propio (de tu raza o de una germana) lleva sus colores: no se tine
+                a.peloEstilo = "propio";
+                a.peloColor = valor.substr(7);
+                break;
+            }
             a.peloEstilo = valor;
             if (!valor.empty()) {
                 a.peloColor = colorPara(m_manifiesto.pelo, valor,
-                                        {a.peloColor, raza != nullptr ? raza->peloColor : ""});
+                                        {a.peloColor, m_colorGenerico, raza != nullptr ? raza->peloColor : ""});
             }
             break;
         case Fila::ColorPelo: {
             // La barba sigue al pelo si iban a juego.
             const bool aJuego = !a.barbaEstilo.empty() && a.barbaColor == a.peloColor;
             a.peloColor = valor;
-            if (aJuego && contiene(colores(m_manifiesto.barba, a.barbaEstilo), valor))
+            if (aJuego && contiene(coloresDePelo(m_manifiesto, m_manifiesto.barba, a.barbaEstilo), valor))
                 a.barbaColor = valor;
             break;
         }
@@ -330,6 +502,21 @@ void EditorApariencia::poner(Fila fila, const std::string& valor) {
         case Fila::ColorBarba:
             a.barbaColor = valor;
             break;
+        case Fila::Marca1:
+        case Fila::Marca2:
+        case Fila::Marca3: {
+            const auto i = static_cast<std::size_t>(indiceDeMarca(fila));
+            if (valor.empty()) {
+                if (i < a.marcas.size())
+                    a.marcas.erase(a.marcas.begin() + static_cast<std::ptrdiff_t>(i));
+            } else {
+                if (i >= a.marcas.size())
+                    a.marcas.push_back(valor);
+                else
+                    a.marcas[i] = valor;
+            }
+            break;
+        }
         case Fila::AlAzar:
         case Fila::ComoSuRaza:
             break;
@@ -381,26 +568,59 @@ void EditorApariencia::alAzar() {
     const ManifiestoPersonajes& m = m_manifiesto;
     Apariencia a = Apariencia::deRaza(*raza);  // la talla de la raza se queda
     a.ropa.clear();
-    if (raza->cuerpoLiso)
+    const auto pieles = m.pieles.find(raza->talla);
+    if (pieles != m.pieles.end()) {
+        // EDITOR-PERSONALIZACION-01: una de cada cuatro veces, otra piel (de otra raza o un material)
+        if (tirada(100) < 25)
+            a.piel = uno(pieles->second.orden);
+    } else if (raza->cuerpoLiso) {
         a.piel = uno(ids(m.cuerpos));
-    a.ojos = uno(ids(m.ojos));
+    }
+    // CAR-2: «Al azar» cambia los ojos solo en las razas que los admiten; en las demas, los de su cuerpo
+    if (raza->admite("ojos"))
+        a.ojos = uno(ids(m.ojos));
     if (raza->admite("pelo")) {
-        a.peloEstilo = tirada(100) < 85 ? uno(estilos(m.pelo)) : "";
-        if (!a.peloEstilo.empty())
-            a.peloColor = uno(colores(m.pelo, a.peloEstilo));
+        std::vector<std::string> hay = peinados();  // H-PEL-1: con los propios de la raza y sus germanas
+        hay.erase(hay.begin());
+        const std::string elegido = tirada(100) < 85 ? uno(hay) : "";
+        if (elegido.rfind("propio/", 0) == 0) {
+            a.peloEstilo = "propio";
+            a.peloColor = elegido.substr(7);
+        } else {
+            a.peloEstilo = elegido;
+            if (!a.peloEstilo.empty())
+                a.peloColor = uno(coloresDePelo(m, m.pelo, a.peloEstilo));
+        }
+    }
+    if (raza->admite("barba")) {
         a.barbaEstilo = tirada(100) < 30 ? uno(estilos(m.barba)) : "";
         if (!a.barbaEstilo.empty()) {
-            const std::vector<std::string> hay = colores(m.barba, a.barbaEstilo);
+            const std::vector<std::string> hay = coloresDePelo(m, m.barba, a.barbaEstilo);
             a.barbaColor = contiene(hay, a.peloColor) ? a.peloColor : uno(hay);
         }
+    }
+    // EDITOR-PERSONALIZACION-01: marcas (1 de cada 3 veces una; 1 de cada 10, dos), alas, cola y cuernos (1 de 10)
+    a.marcas.clear();
+    if (!m.marcas.filas.empty() && m.marcas.atlas.count(raza->talla) != 0) {
+        const int cuantas = tirada(100) < 10 ? 2 : tirada(100) < 33 ? 1 : 0;
+        for (int i = 0; i < cuantas; ++i) {
+            const std::string id = uno(idsDeMarcas(m.marcas));
+            if (!contiene(a.marcas, id))
+                a.marcas.push_back(id);
+        }
+    }
+    for (const char* ranura : kRanurasDeRasgos) {
+        const auto grupo = m.equipo.find(ranura);
+        if (grupo != m.equipo.end() && !contiene(raza->capas, ranura) && grupo->second.atlas.count(raza->talla) != 0 &&
+            tirada(100) < 10)
+            a.ropa[ranura] = uno(idsDe(grupo->second, ranura));
     }
     const std::pair<const char*, int> ropa[] = {
         {"cabeza", 35}, {"torso", 100}, {"piernas", 80}, {"pies", 85}, {"capa", 35}};
     for (const auto& [ranura, probabilidad] : ropa) {
         const auto grupo = m.equipo.find(ranura);
-        if (grupo == m.equipo.end() || !raza->admite(ranura) || tirada(100) >= probabilidad)
-            continue;
-        a.ropa[ranura] = uno(idsDe(grupo->second, ranura));
+        if (grupo != m.equipo.end() && raza->admite(ranura) && tirada(100) < probabilidad)
+            a.ropa[ranura] = uno(idsDe(grupo->second, ranura));
     }
     m_apariencia = a;
     rehacerFilas();
@@ -412,16 +632,55 @@ const char* EditorApariencia::icono(Fila fila) { return datosDe(fila).icono; }
 
 std::string EditorApariencia::valor(Fila fila) const {
     const std::string v = actual(fila);
+    if (v == "__raza__") return "De tu pueblo";
     switch (fila) {
         case Fila::AlAzar:
             return "Otra combinacion";
         case Fila::ComoSuRaza:
             return "Como viste tu pueblo";
-        case Fila::Peinado:
-            return v.empty() ? "Sin pelo" : nombreDe(v);
+        case Fila::Peinado: {
+            if (v.empty())
+                return "Sin pelo";
+            const RazaVisual* de = v.rfind("propio/", 0) == 0 ? m_manifiesto.raza(v.substr(7)) : nullptr;
+            if (de != nullptr)
+                return de->nombre;
+            // H-PEL-2: los pentinados compartidos traen su nombre en personajes.json
+            for (const FilaDeCapa& f : m_manifiesto.pelo.filas) {
+                if (f.estilo == v && !f.tallas.empty() && !f.nombre.empty())
+                    return f.nombre;
+            }
+            return nombreDe(v);
+        }
         case Fila::Barba:
             return v.empty() ? "Sin barba" : nombreDe(v);
-        case Fila::Piel:
+        case Fila::Piel: {
+            // EDITOR-PERSONALIZACION-01: el nombre de la opcion de «pieles» (una raza o un material)
+            const RazaVisual* raza = m_manifiesto.raza(m_apariencia.raza);
+            const std::string talla = m_apariencia.talla.empty() && raza != nullptr ? raza->talla : m_apariencia.talla;
+            const auto pieles = m_manifiesto.pieles.find(talla);
+            if (pieles != m_manifiesto.pieles.end()) {
+                if (v.empty())
+                    return "La de tu pueblo";
+                const auto op = pieles->second.opciones.find(v);
+                if (op != pieles->second.opciones.end())
+                    return op->second.raza ? "Como " + op->second.nombre : nombreDe(v);
+            }
+            return nombreDe(v);
+        }
+        case Fila::Marca1:
+        case Fila::Marca2:
+        case Fila::Marca3: {
+            if (v.empty())
+                return "Ninguna";
+            const FilaDeCapa* marca = m_manifiesto.marcas.buscar(v);
+            return marca != nullptr && !marca->nombre.empty() ? marca->nombre : nombreDe(v);
+        }
+        case Fila::Alas:
+        case Fila::Cola:
+        case Fila::Cuernos:
+            if (v.empty())
+                return fila == Fila::Cuernos ? "Ningunos" : fila == Fila::Alas ? "Ningunas" : "Ninguna";
+            break;
         case Fila::Talla:
         case Fila::Ojos:
         case Fila::ColorPelo:

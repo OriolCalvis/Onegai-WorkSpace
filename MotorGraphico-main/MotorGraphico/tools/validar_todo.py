@@ -30,7 +30,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from project_manifest import load_manifest, resolve_entry
+from project_manifest import load_manifest, resolve_entry; import validar_reputacion  # BND-04
 
 TOOLS = Path(__file__).resolve().parent
 MOTOR = TOOLS.parent
@@ -38,6 +38,7 @@ ASSETS = MOTOR / "assets"
 CATALOGEAR = ["enlaces", "conectividad", "mundo_unido", "catalogos_rpg", "libreria_dnd"]
 
 VALIDADORES_EXISTENTES = [
+    "validar_monstruos_acciones.py",
     "validar_botin.py",
     "validar_recetas.py",
     "validar_enlaces.py",
@@ -46,15 +47,27 @@ VALIDADORES_EXISTENTES = [
     "validar_catalogos_rpg.py",
     "validar_libreria_dnd.py",
     "validar_pnj.py",  # PNJ-01: todos los PNJ con las piezas del jugador
+    ("laminas_desde_capas.py", "--comprobar", "--rapido"),  # CAR-4: laminas al dia con las capas (rapido si no hay cambios)
+    ("trocejar_atlas_personajes.py", "--comprobar"),  # PERF-4: los .filas de los atlas de personajes al dia con su PNG
     "validar_cinematicas.py",  # PROLOGO-02: niveles, actores, beats y flags de las cinematicas
+    "validar_eventos.py",  # C8-03a: eventos del mundo, sin lugar ni escenas vistas como causa
+    "validar_beats_auto.py",  # UNI-02-11 B1: ningun beat auto pegajoso (soft-lock por bucle)
+    "validar_opciones_beat.py",  # E-MATRIZ-02 A0: ningun beat con mas de kMaxOpciones opciones (el cargador rechaza la aventura)
 ]
 
 errores: list[str] = []
 avisos: list[str] = []
+accesos: list[str] = []
 
 
 def err(fichero: str, entidad: str, campo: str, problema: str) -> None:
     errores.append(f"  {fichero} :: {entidad} :: {campo} :: {problema}")
+
+
+def acceso(fichero: str, entidad: str, campo: str, problema: str) -> None:
+    """Una comprobacion que no se pudo ejecutar (fichero ilegible, iCloud...): no es un error de
+    contenido, pero el resultado no puede ser OK (Oriol, 28/10)."""
+    accesos.append(f"  {fichero} :: {entidad} :: {campo} :: {problema}")
 
 
 def aviso(fichero: str, entidad: str, campo: str, problema: str) -> None:
@@ -98,14 +111,15 @@ def ids_de(ruta: Path) -> set[str]:
 def validar_existentes() -> bool:
     print("[1/5] Validadores existentes")
     todos_ok = True
-    for nombre in VALIDADORES_EXISTENTES:
+    for entrada in VALIDADORES_EXISTENTES:
+        nombre, *args = (entrada,) if isinstance(entrada, str) else entrada
         ruta = TOOLS / nombre
         if not ruta.exists():
             err(f"tools/{nombre}", "-", "-", "el validador no existe")
             todos_ok = False
             continue
         r = subprocess.run(
-            [sys.executable, str(ruta)],
+            [sys.executable, str(ruta), *args],
             cwd=MOTOR, capture_output=True, text=True, timeout=600,
         )
         salida = (r.stdout or "").strip().splitlines()
@@ -596,6 +610,7 @@ def validar_aventuras() -> None:
     # estaba en ninguno y la primera mision no se podia acabar)
     colocados: set[str] = set()
     en_nivel: dict[str, set[str]] = {}  # DIALOGOS-01: "assets/levels/x.json" -> objectIds
+    beats_de_puerta: set[str] = set()  # G4-01: ids de "beatCerrada" de las puertas
     for ruta in sorted((ASSETS / "levels").glob("*.json")):
         nivel = leer_json(ruta)
         clave = "assets/levels/" + ruta.name
@@ -604,6 +619,8 @@ def validar_aventuras() -> None:
             if isinstance(o, dict) and isinstance(o.get("objectId"), str):
                 colocados.add(o["objectId"])
                 en_nivel[clave].add(o["objectId"])
+            if isinstance(o, dict) and isinstance(o.get("beatCerrada"), str) and o["beatCerrada"]:
+                beats_de_puerta.add(o["beatCerrada"])  # G4-01: lo dispara una puerta cerrada, no un PNJ
 
     for ruta in sorted((ASSETS / "adventures").glob("*.json")):
         d = leer_json(ruta)
@@ -617,7 +634,9 @@ def validar_aventuras() -> None:
             trig = beat.get("trigger") or {}
             if trig.get("type") == "talk":
                 tgt = trig.get("target")
-                if isinstance(tgt, str) and tgt and tgt not in objetos:
+                if tgt in beats_de_puerta:
+                    pass  # G4-01: target = id del beat de una puerta cerrada
+                elif isinstance(tgt, str) and tgt and tgt not in objetos:
                     err(f"assets/adventures/{nombre}", bid, "trigger.target",
                         f"'{tgt}' no existe en ningún catálogo de objetos")
                 elif isinstance(tgt, str) and tgt and tgt not in colocados:
@@ -653,8 +672,8 @@ def validar_aventuras() -> None:
                         err(f"assets/adventures/{nombre}", bid, "opciones." + campo, "es true o false")
             if "pagina" in beat and not isinstance(beat["pagina"], bool):  # DIALOGOS-01: página de charla
                 err(f"assets/adventures/{nombre}", bid, "pagina", "es true o false")
-            # MORAL-01: el tramo de moral que piden, de -100 a 100
-            for req in requisitos_de(beat):
+            for req in requisitos_de(beat):  # MORAL-01: el tramo de moral, de -100 a 100 (y BND-04: la reputación)
+                validar_reputacion.revisa(req, err, f"assets/adventures/{nombre}", bid)
                 m = req.get("moral") if isinstance(req, dict) else None
                 if m is None:
                     continue
@@ -731,15 +750,33 @@ def main() -> int:
     validar_referencias_catalogos()
     validar_proyectos(solo)
     validar_aventuras()
-    # AV14-20: puertas de los niveles. Es AVISO, no error (ver tools/validar_puertas.py).
+    # AV14-20: puertas de los niveles. Desde el 28/10 (Oriol) son ERROR: una puerta bloqueada,
+    # sin vuelta o con destino inexistente rompe el juego. Las ilegibles (iCloud) van a ACCESO.
     try:
-        from validar_puertas import comprueba as _comprueba_puertas
+        from validar_puertas import comprueba as _comprueba_puertas, es_acceso as _es_acceso
         _niv, _pue, _probs = _comprueba_puertas(MOTOR)
+        _n_acc = 0
         for _nivel, _obj, _campo, _txt in _probs:
-            aviso(_nivel, _obj, _campo, _txt)
-        print(f"[extra] Puertas de los niveles: {_pue} en {_niv} niveles, {len(_probs)} aviso(s)")
+            if _es_acceso(_txt):
+                acceso(_nivel, _obj, _campo, _txt); _n_acc += 1
+            else:
+                err(_nivel, _obj, _campo, _txt)
+        print(f"[extra] Puertas de los niveles: {_pue} en {_niv} niveles, "
+              f"{len(_probs) - _n_acc} error(es), {_n_acc} sin poder leer")
     except Exception as _exc:
-        aviso("tools/validar_puertas.py", "-", "-", f"no se pudo comprobar: {_exc}")
+        acceso("tools/validar_puertas.py", "-", "-", f"no se pudo comprobar: {_exc}")
+    # H-CIU-1: ninguna casa ni tienda de ciudades y pueblos con bloques de piedra gris / fortaleza (regla de Oriol).
+    try:
+        from validar_edificis import comprueba as _comprueba_edificis
+        _errs_e, _avs_e, _niv_e, _nb_e = _comprueba_edificis(MOTOR)
+        for _f, _e, _c, _t in _errs_e:
+            err(_f, _e, _c, _t)
+        for _f, _e, _c, _t in _avs_e:
+            aviso(_f, _e, _c, _t)
+        print(f"[extra] Edificios de ciudades y pueblos: {_niv_e} niveles, {_nb_e} casas/tiendas a bloques, "
+              f"{len(_errs_e)} error(es), {len(_avs_e)} aviso(s)")
+    except Exception as _exc:
+        acceso("tools/validar_edificis.py", "-", "-", f"no se pudo comprobar: {_exc}")
     # AV18-08: recompensas de las escenas de Boundington contra ECONOMIA.md.
     try:
         from auditar_recompensas_escenas import comprueba as _comprueba_recompensas
@@ -752,7 +789,7 @@ def main() -> int:
             f"d{_d} {_r['misiones']}/{_r['presupuesto_misiones']}" for _d, _r in _res.items()) +
             f", {len(_errs)} error(es)")
     except Exception as _exc:
-        aviso("tools/auditar_recompensas_escenas.py", "-", "-", f"no se pudo comprobar: {_exc}")
+        acceso("tools/auditar_recompensas_escenas.py", "-", "-", f"no se pudo comprobar: {_exc}")
 
     print()
     if avisos:
@@ -761,12 +798,19 @@ def main() -> int:
             print(a)
         if len(avisos) > 25:
             print(f"  ... y {len(avisos) - 25} más")
+    if accesos:
+        print(f"SIN COMPROBAR ({len(accesos)}): no se pudieron leer; no cuentan como superadas")
+        for a in accesos:
+            print(a)
     if errores:
         print(f"ERRORES ({len(errores)}):")
         for e in errores:
             print(e)
-        print(f"\nRESULTADO: FAIL — {len(errores)} error(es), {len(avisos)} aviso(s)")
+        print(f"\nRESULTADO: FAIL — {len(errores)} error(es), {len(accesos)} sin comprobar, {len(avisos)} aviso(s)")
         return 1
+    if accesos:
+        print(f"\nRESULTADO: INCOMPLETO — 0 errores, {len(accesos)} comprobacion(es) sin poder ejecutar, {len(avisos)} aviso(s)")
+        return 2
     print(f"RESULTADO: OK — 0 errores, {len(avisos)} aviso(s)")
     return 0
 

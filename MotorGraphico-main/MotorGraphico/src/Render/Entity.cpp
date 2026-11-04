@@ -2,6 +2,7 @@
 
 #include "Core/Math/IsoMath.h"
 #include "Core/Resources/TextureAtlas.h"
+#include "Game/CuadroGirado.h"
 #include "Render/SpriteBatch.h"
 
 #include <algorithm>
@@ -62,6 +63,10 @@ void Entity::render(SpriteBatch& batch) {
         // orientacion clara, por eso lo destapa. El swap se queda en este
         // camino para no alterar la carga de tiles existente.
         std::swap(uv.v0, uv.v1);
+        if (m_giro != 0.0f || m_aplasta != 1.0f) {  // C2-04b: tumbado o encorvado
+            submitPostura(batch, finalPos, size, uv, m_characterAtlas->texture());
+            return;
+        }
         batch.submit(finalPos, size, uv, m_characterAtlas->texture(), m_tint);
         return;
     }
@@ -71,7 +76,20 @@ void Entity::render(SpriteBatch& batch) {
     Vector2 finalPos = basePos + m_offset +
                        Vector2{(originalSize.x - size.x) * 0.5f, originalSize.y - size.y};
 
+    if (m_giro != 0.0f || m_aplasta != 1.0f) {  // C2-04b
+        submitPostura(batch, finalPos, size, m_atlas->getUV(m_spriteID), m_atlas->texture());
+        return;
+    }
     batch.submit(finalPos, size, m_atlas->getUV(m_spriteID), m_atlas->texture(), m_tint);
+}
+
+void Entity::submitPostura(SpriteBatch& batch, const Vector2& pos, const Vector2& size, const UVRect& uv,
+                           Texture* tex) {
+    const auto q = Game::cuadroGirado(pos, size, m_giro, m_aplasta);
+    const Vector2 esquinas[4] = {q[0], q[1], q[2], q[3]};
+    // Las mismas UV que submit(): arriba (v0) a la izquierda y a la derecha, abajo (v1) al revés.
+    const Vector2 uvs[4] = {{uv.u0, uv.v0}, {uv.u1, uv.v0}, {uv.u1, uv.v1}, {uv.u0, uv.v1}};
+    batch.submitQuad(esquinas, uvs, tex, m_tint);
 }
 
 int Entity::getSortKey() const {
@@ -98,6 +116,12 @@ void Entity::renderShadow(SpriteBatch& batch, Texture* shadowTexture) {
     if (shadowTexture == nullptr || !m_sombraBlob) {
         return;
     }
+    // Oriol (22/10): «las sombras de los que estan escondidos no se deberian ver». Las apariciones
+    // esconden con el alfa del tinte (ApplicationCinematica::tintes): la sombra va con el mismo alfa.
+    const float alfa = std::clamp(m_tint.w, 0.0f, 1.0f);
+    if (alfa <= 0.01f) {
+        return;
+    }
     Vector2 basePos = IsoMath::gridToScreen(m_gridPosition, static_cast<float>(m_tileWidth),
                                             static_cast<float>(m_tileHeight));
     basePos.y += elevacion();  // AV19-02
@@ -118,5 +142,5 @@ void Entity::renderShadow(SpriteBatch& batch, Texture* shadowTexture) {
     // BlobShadow.h): el alpha final es alpha_textura * 0.45, asi el
     // centro de la sombra oscurece moderadamente y el borde se funde.
     batch.submit(shadowPos, shadowSize, UVRect{0.0f, 0.0f, 1.0f, 1.0f}, shadowTexture,
-                Vector4{0.0f, 0.0f, 0.0f, 0.45f});
+                Vector4{0.0f, 0.0f, 0.0f, 0.45f * alfa});
 }

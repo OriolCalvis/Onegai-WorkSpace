@@ -282,6 +282,9 @@ MOTOR_TEST_CASE(capas_por_id_de_objeto) {
     MOTOR_CHECK(CapasDeDibujo::capaDeObjeto("salida_interior_taberna") == CapaDeDibujo::Plano);
     MOTOR_CHECK(CapasDeDibujo::capaDeObjeto("tejado_casa") == CapaDeDibujo::Encima);
     MOTOR_CHECK(CapasDeDibujo::capaDeObjeto("farola") == CapaDeDibujo::DePie);
+    // C2-01: el estrado es suelo para el dibujo; un PNJ que se llama «verina_estrado» sigue de pie.
+    MOTOR_CHECK(CapasDeDibujo::capaDeObjeto("estrado_sermon") == CapaDeDibujo::Plano);
+    MOTOR_CHECK(CapasDeDibujo::capaDeObjeto("verina_estrado") == CapaDeDibujo::DePie);
     bool conocida = true;
     MOTOR_CHECK(CapasDeDibujo::desdeTexto("plano", &conocida) == CapaDeDibujo::Plano && conocida);
     CapasDeDibujo::desdeTexto("raro", &conocida);

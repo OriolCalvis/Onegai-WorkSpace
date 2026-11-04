@@ -62,7 +62,7 @@ void GameSession::startInteraction(const ObjectDefinition& def) {
     // -- sin editar el catalogo de objetos ni el nivel.
     bool narrado = false;
     if (sessionData()->m_narrative != nullptr && sessionData()->m_narrativeState != nullptr) {
-        const RPG::NarrativeResult narrated = sessionData()->m_narrative->talkTo(def.id, *sessionData()->m_narrativeState);
+        reflejaReputacion();  const RPG::NarrativeResult narrated = sessionData()->m_narrative->talkTo(def.id, *sessionData()->m_narrativeState);
         if (narrated.fired) {
             // Un solo sitio para aplicar NarrativeResult (oro, log, y ahora
             // skillChecks Nd6): antes esto estaba duplicado aqui y en
@@ -104,6 +104,7 @@ bool GameSession::interact() {
     if (here.valid()) {
         const ObjectSpawn& spawn = sessionData()->m_world->get(here)->object;
         if (!spawn.targetLevel.empty()) {
+            if (cierraPuerta(spawn)) return true;  // G4-01
             LevelTransition& t = sessionData()->m_transition;
             t.pending = true;
             t.levelPath = spawn.targetLevel;
@@ -202,7 +203,7 @@ void GameSession::closeInteraction() {
     // mismo). La tienda espera a que acabe la conversacion.
     if (sessionData()->m_mode == GameMode::Dialogue && sessionData()->m_battle == nullptr &&
         sessionData()->m_narrative != nullptr && sessionData()->m_narrativeState != nullptr) {
-        const auto ofertas = sessionData()->m_shopOffers;
+        const auto ofertas = sessionData()->m_shopOffers;  reflejaReputacion();
         RPG::NarrativeResult r = sessionData()->m_narrative->tick(*sessionData()->m_narrativeState);
         if (!r.fired) r = sessionData()->m_narrative->sigue(*sessionData()->m_narrativeState);
         if (r.fired) {
@@ -239,7 +240,7 @@ void GameSession::closeInteraction() {
     // que un contenido mal escrito cuelgue el juego en un bucle
     // infinito de beats que se retroalimentan.
     if (sessionData()->m_narrative != nullptr && sessionData()->m_narrativeState != nullptr) {
-        applyNarrative(sessionData()->m_narrative->tick(*sessionData()->m_narrativeState));
+        reflejaReputacion();  applyNarrative(sessionData()->m_narrative->tick(*sessionData()->m_narrativeState));
     }
 }
 

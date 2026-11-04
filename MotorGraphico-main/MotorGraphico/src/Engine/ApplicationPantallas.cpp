@@ -185,8 +185,8 @@ void Application::teclasTienda(const Engine::Input::InputSnapshot& input) {
     const std::size_t filas = Game::TiendaEstado::filas(*m_session, m_tienda.pestana()).size();
     if (input.pressed(InputAction::MenuUp)) m_tienda.mueve(-1, filas);
     if (input.pressed(InputAction::MenuDown)) m_tienda.mueve(+1, filas);
-    if (input.pressed(InputAction::MenuLeft) || input.pressed(InputAction::MoveWest)) m_tienda.cambiaPestana(-1);
-    if (input.pressed(InputAction::MenuRight) || input.pressed(InputAction::MoveEast)) m_tienda.cambiaPestana(+1);
+    if (input.pressed(InputAction::MenuLeft) || input.pressed(InputAction::SideLeft)) m_tienda.cambiaPestana(-1);
+    if (input.pressed(InputAction::MenuRight) || input.pressed(InputAction::SideRight)) m_tienda.cambiaPestana(+1);
     bool acepta = input.pressed(InputAction::Confirm);
     const auto& raton = input.mouse();
     if (m_pergamino && m_pergamino->listo() && raton.inside && (raton.moved || raton.leftPressed)) {
@@ -242,14 +242,14 @@ void Application::teclasCombate(const Engine::Input::InputSnapshot& input) {
     };
     for (std::size_t n = 0; n < Engine::Input::kSlotCount; ++n)
         if (input.pressed(Engine::Input::slotAction(n))) junta(m_barra.tecla(v, static_cast<int>(n)));
-    if (input.pressed(InputAction::MenuLeft) || input.pressed(InputAction::MoveWest)) m_barra.mueve(v, -1);
-    if (input.pressed(InputAction::MenuRight) || input.pressed(InputAction::MoveEast)) m_barra.mueve(v, +1);
+    if (input.pressed(InputAction::MenuLeft) || input.pressed(InputAction::SideLeft)) m_barra.mueve(v, -1);
+    if (input.pressed(InputAction::MenuRight) || input.pressed(InputAction::SideRight)) m_barra.mueve(v, +1);
     if (input.pressed(InputAction::Confirm)) junta(m_barra.acepta(v));
     if (input.pressed(InputAction::EndTurn)) junta(m_barra.pasa());
     if (input.pressed(InputAction::ToggleLog)) m_barra.alternaRegistro();
     // H2-02: W/S o arriba/abajo, a quien apunta la carta senalada.
-    if (input.pressed(InputAction::MenuUp) || input.pressed(InputAction::MoveNorth)) m_barra.mueveObjetivo(v, -1);
-    if (input.pressed(InputAction::MenuDown) || input.pressed(InputAction::MoveSouth)) m_barra.mueveObjetivo(v, +1);
+    if (input.pressed(InputAction::MenuUp)) m_barra.mueveObjetivo(v, -1);
+    if (input.pressed(InputAction::MenuDown)) m_barra.mueveObjetivo(v, +1);
     const auto& raton = input.mouse();
     if (m_pergamino && m_pergamino->listo() && raton.inside && (raton.moved || raton.leftPressed)) {
         const Pergamino::Zona* z = m_pergamino->interfaz().zonaEn(raton.x, raton.y);
@@ -426,9 +426,9 @@ void ApplicationCinematica::golpesALaVista(Application& app, const BattleState& 
             fuerza = 0.45f + std::min(0.55f, static_cast<float>(-g.cambio) / maximo * 2.5f);
             if (e.pvFantasma < 0.0f) e.pvFantasma = static_cast<float>(p->combatant->health() - g.cambio);
             e.esperaFantasma = 0.4f;
-            e.sacudida = std::max(e.sacudida, 0.14f);
+            ApplicationCamara::sacude(e.camara, ApplicationCamara::kSacudidaMundoPx * (app.m_camera ? app.m_camera->zoom() : 1.0f), ApplicationCamara::kSacudidaDanio, static_cast<std::uint32_t>(g.numero));
         }
-        if (g.grado == Grado::Critico) e.sacudida = std::max(e.sacudida, 0.24f);
+        if (g.grado == Grado::Critico) ApplicationCamara::sacude(e.camara, ApplicationCamara::kSacudidaMundoPx * (app.m_camera ? app.m_camera->zoom() : 1.0f), ApplicationCamara::kSacudidaCritico, static_cast<std::uint32_t>(g.numero));
         e.efectos.golpe(g, direccion, fuerza);
         // AV14-03 — Lo que entra salpica: el roce, polvo; el acierto, chispas; el critico, chispas y
         // sangre (el doble). El fallo, nada. (La carta ya echa las de su elemento al jugarse.)

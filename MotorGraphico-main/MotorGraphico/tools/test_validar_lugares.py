@@ -38,12 +38,13 @@ class LugaresTests(unittest.TestCase):
         self.assertEqual([], self.errores())
         self.assertEqual("La Caja Firme", examina(self.motor)[1][0]["nombre"])
 
-    def test_detecta_dos_puertas_al_mismo_local(self):
+    def test_dos_puertas_al_mismo_local_son_validas(self):
         self.puertas.append({"objectId": "puerta_banco_sur", "targetLevel": self.sitios[0]["nivel"]})
-        self.assertTrue(any("local repetido" in e and "puerta_banco_sur" in e for e in self.errores()))
+        self.assertEqual([], self.errores())
+        self.assertEqual(2, len(examina(self.motor)[1]))
 
     def test_copias_con_nombres_distintos_son_validas(self):
-        self.sitios.append({"nivel": "assets/levels/interior_banco_sur.json", "nombre": "La Moneda Chica",
+        self.sitios.append({"nivel": "assets/levels/interior_banco_sur.json", "nombre": "La Otra Caja",
                             "funcion": "banco y cambio"})
         self.puertas.append({"objectId": "puerta_banco_sur", "targetLevel": self.sitios[1]["nivel"]})
         self.assertEqual([], self.errores())
@@ -72,7 +73,8 @@ class LugaresTests(unittest.TestCase):
         self.prepara()
         self.escribe("assets/proyectos/boundington.json", {"levels": ["ciudad_nueva.json", "ciudad_futura.json"]})
         self.escribe("assets/levels/ciudad_futura.json", {"objects": self.puertas})
-        self.assertTrue(any("local repetido" in e for e in examina(self.motor)[0]))
+        self.assertEqual([], examina(self.motor)[0])
+        self.assertEqual(2, len(examina(self.motor)[1]))
 
     def test_no_confunde_pasajes_entre_barrios_con_locales(self):
         self.puertas.append({"objectId": "paso", "targetLevel": "assets/levels/ciudad_vecina.json"})
@@ -99,6 +101,26 @@ class LugaresTests(unittest.TestCase):
     def test_nivel_repetido_por_otra_ruta(self):
         self.sitios.append({**self.sitios[0], "nivel": "assets/levels/./interior_banco.json", "nombre": "Otro"})
         self.assertTrue(any("nivel repetido" in e for e in self.errores()))
+
+    def test_tres_accesos_no_necesitan_lista_de_permisos(self):
+        self.puertas.extend([
+            {"objectId": "puerta_banco_sur", "targetLevel": self.sitios[0]["nivel"]},
+            {"objectId": "puerta_banco_este", "targetLevel": self.sitios[0]["nivel"]},
+        ])
+        self.assertEqual([], self.errores())
+        self.assertEqual(3, len(examina(self.motor)[1]))
+
+    def test_accesos_con_rutas_equivalentes_comparten_ficha(self):
+        self.puertas.append({"objectId": "puerta_sur", "targetLevel": "assets/levels/./interior_banco.json"})
+        self.assertEqual([], self.errores())
+        self.assertEqual(1, len({p["destino"] for p in examina(self.motor)[1]}))
+
+    def test_compartir_local_no_oculta_una_puerta_sin_ficha(self):
+        self.puertas.extend([
+            {"objectId": "puerta_banco_sur", "targetLevel": self.sitios[0]["nivel"]},
+            {"objectId": "puerta_sin_ficha", "targetLevel": "assets/levels/interior_ausente.json"},
+        ])
+        self.assertTrue(any("puerta sin sitio" in e and "puerta_sin_ficha" in e for e in self.errores()))
 
 
 if __name__ == "__main__":

@@ -25,7 +25,7 @@ NEGOCIOS = {
  "puerta_posada_sur":  ("Posada del sur",      1200, 28),
  "puerta_taberna":     ("Taberna",             800,  20),
  "puerta_sastreria":   ("Sastrería",          1000,  24),
- "puerta_ropa_sur":    ("Tienda de ropa",      850,  21),
+ "puerta_ropa_sur":    ("El Zurrón del Vado",  850,  21),
  "puerta_joyeria":     ("Joyería",            2600,  55),
  "puerta_banco":       ("Banco",              4200,  85),
  "puerta_banco_sur":   ("Casa de cambio",     2200,  48),

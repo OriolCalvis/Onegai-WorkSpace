@@ -403,6 +403,34 @@ MOTOR_TEST_CASE(aura_alas_en_el_sprite_segun_hacia_donde_mira) {
     }
 }
 
+// PL-JUEGO-01: con la hoja en diagonal de PixelLab (40 frames), las alas siguen hacia donde mira: la
+// cercana casi entera y la lejana encogida y mas alta; mirando al sur, detras; al norte, delante.
+MOTOR_TEST_CASE(aura_alas_en_diagonal) {
+    using Game::Reparto;
+    const Reparto d = Reparto::Diagonal;
+    Game::AlaEnSprite alas[2];
+    MOTOR_CHECK(Game::alasEnSprite(Game::aspectoAura(0), 13, 0.0f, alas, d) == 0);
+    for (const int valor : {75, 92, 100, -80, -100}) {
+        const Game::AspectoAura a = Game::aspectoAura(valor);
+        // frames de andar y de respirar de los cuatro rumbos: noreste, sureste, suroeste, noroeste
+        const int frames[8] = {1, 7, 13, 19, 25, 29, 33, 37};
+        for (int i = 0; i < 8; ++i) {
+            const int f = frames[i];
+            const Game::Rumbo r = Game::rumboDeFrame(f, d);
+            MOTOR_CHECK(Game::alasEnSprite(a, f, 1.3f, alas, d) == 2);
+            const bool norte = r == Game::Rumbo::Arriba || r == Game::Rumbo::Izquierda;
+            MOTOR_CHECK(alas[0].delante == norte && alas[1].delante == norte);
+            // la lejana primero: mas estrecha y mas alta
+            MOTOR_CHECK(alas[0].ancho < alas[1].ancho && alas[0].hombroY < alas[1].hombroY);
+            MOTOR_CHECK(alas[0].espejo != alas[1].espejo);
+            // la cercana va hacia la izquierda de la pantalla mirando al sureste y al noroeste
+            const bool cercaIzquierda = r == Game::Rumbo::Derecha || r == Game::Rumbo::Izquierda;
+            MOTOR_CHECK(alas[1].espejo == cercaIzquierda);
+            MOTOR_CHECK(std::fabs(alas[1].hombroY - Game::kHombroDiagonalY) < 1e-3f);
+        }
+    }
+}
+
 MOTOR_TEST_CASE(aura_rayos_acotados) {
     for (const int valor : {65, 70, -65, -70}) {
         const Game::AspectoAura a = Game::aspectoAura(valor);

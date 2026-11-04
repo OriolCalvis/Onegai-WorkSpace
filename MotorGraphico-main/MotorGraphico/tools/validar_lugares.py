@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import json
 import unicodedata
-from collections import defaultdict
 from pathlib import Path
 
 
@@ -28,7 +27,7 @@ def ruta_local(motor: Path, valor: str) -> Path | None:
 
 
 def examina(motor: Path) -> tuple[list[str], list[dict]]:
-    """Devuelve todos los errores y el inventario, también cuando hay duplicados."""
+    """Una ficha por local; varias puertas pueden llevar a esa misma ficha (PO-48)."""
     errores: list[str] = []
     inventario: list[dict] = []
     catalogo = lee(motor / "assets/catalogs/lugares.json", errores)
@@ -67,7 +66,6 @@ def examina(motor: Path) -> tuple[list[str], list[dict]]:
         errores.append("boundington.json :: levels :: se esperaba una lista")
         return errores, inventario
 
-    destinos: dict[str, list[str]] = defaultdict(list)
     ciudades = 0
     for nombre_nivel in manifiesto["levels"]:
         if not isinstance(nombre_nivel, str):
@@ -104,14 +102,10 @@ def examina(motor: Path) -> tuple[list[str], list[dict]]:
             sitio = sitios.get(destino)
             if sitio is None:
                 errores.append(f"{identificador} :: targetLevel :: puerta sin sitio: {destino}")
-            destinos[destino].append(identificador)
             inventario.append({"ciudad": nombre_nivel, "puerta": puerta.get("objectId", "?"),
                                "destino": destino, "nombre": sitio["nombre"] if sitio else ""})
     if ciudades == 0:
         errores.append("boundington.json :: levels :: no se ha comprobado ninguna ciudad")
-    for destino, puertas in destinos.items():
-        if len(puertas) > 1:
-            errores.append(f"{destino} :: local repetido en puertas: {', '.join(puertas)}")
     return errores, inventario
 
 

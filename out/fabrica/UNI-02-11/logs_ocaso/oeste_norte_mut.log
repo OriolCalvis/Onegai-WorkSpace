@@ -1,0 +1,37 @@
+# oeste_norte  2026-11-04 10:48:30  HEAD 4898fb94
+md5: ../../assets/adventures/boundington_ocaso.json: No such file or directory
+# Mutacion sobre copia temporal de boundington_ocaso.json (el original no se toca): md5 original a038b568c295ae4b01ef818bca69c5df fuente 
+## 1. ORIGINAL (esperado: verde)
+  [oeste_norte] verde: final bnd3_final_oeste, 244 beats jugados
+  [oeste_norte] mutacion (b3_esc04_camino_norte /  / bnd3_esc04_ruta_norte) en rojo: 17 fallos, el primero: falta el final bnd3_final_oeste
+[PASS] cada_final_del_ocaso_deja_lo_que_dice_la_matriz
+Ejecutados 5 test(s); 0 fallo(s).
+exit=
+## 2. MUTADA (esperado: ROJO)
+  [oeste_norte] MUTADO: b3_esc04_camino_norte /  / bnd3_esc04_ruta_norte -> zz_mutada
+  [oeste_norte] falta el final bnd3_final_oeste
+  [oeste_norte] falta bnd3_fuera
+  [oeste_norte] falta bnd3_ruta_norte
+  [oeste_norte] falta bnd3_edul_salvado
+  [oeste_norte] falta bnd3_norte_vencido
+  [oeste_norte] no disparado b3_esc04_camino_norte
+  [oeste_norte] no disparado b3_norte
+  [oeste_norte] no disparado b3_norte_pasado
+  [oeste_norte] no disparado b3_edul_sin_verina
+  [oeste_norte] no disparado b3_huida_gitanos
+  [oeste_norte] no disparado b3_epi_venides_contigo
+  [oeste_norte] oro=170 != 330
+  [oeste_norte] moral=11 != 25
+  [oeste_norte] nivel 5 (47 %) != 7 (47 %)
+  [oeste_norte] el diario no ensena la decision bnd3_ruta
+  [oeste_norte] el diario no ensena la decision bnd3_edul
+  [oeste_norte] diario: el objetivo obj3_salir deberia estar hecho
+[FAIL] cada_final_del_ocaso_deja_lo_que_dice_la_matriz: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/MatrizOcasoTests.cpp:53 -- comprobación fallida: fallos.empty()
+  [oeste_norte] mutacion (b3_esc04_camino_norte /  / bnd3_esc04_ruta_norte) en rojo: 17 fallos, el primero: falta el final bnd3_final_oeste
+Ejecutados 5 test(s); 1 fallo(s).
+exit=
+## 3. RESTAURADA (original otra vez, verde)
+[PASS] cada_final_del_ocaso_deja_lo_que_dice_la_matriz
+Ejecutados 5 test(s); 0 fallo(s).
+exit=
+## md5 tras: a038b568c295ae4b01ef818bca69c5df

@@ -1,0 +1,20 @@
+H2 mutaciones Mon Nov  2 23:45:42 CET 2026
+== M1: duerme() sin subeAlCuarto()
+[demo_boundington]   MAL DIA 1: el forastero que pregunta
+[demo_boundington]         falta bnd_dia_cerrado
+[demo_boundington]         no se vio cierre_creadores
+[demo_boundington] CHECK FALLO en /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/examples/demo_boundington_partida.h:387 -- fallos.empty()
+[demo_campana_boundington] CHECK FALLO en /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/examples/demo_campana_boundington.cpp:92 -- j.s.hasFlag("bnd_dia_cerrado")
+== M2: json sin entrada a taberna_p1 (el test ya estaba rojo por otra causa: ver abajo)
+ValueError: Recorrido nativo: Ruta incompleta: falta bnd3_fuera
+0% tests passed, 1 tests failed out of 1
+== Evidencia: la ruta 'historia' recortada al dia 1 con la entrada a taberna_p1 NO llega a bnd0_dormido (recorrer_recompensas.cpp no ejecuta cinematicas: grep 0 hits; bnd0_rosita_te_sube / venides_llama salen de cinematicas.json)
+1/8 Test  #33: test_fase_uno_boundington ........   Passed    0.01 sec
+2/8 Test  #47: test_simular_economia ............   Passed    0.31 sec
+3/8 Test  #48: test_recompensas_economia ........***Failed    0.21 sec
+4/8 Test #113: demo_boundington .................Subprocess aborted***Exception:   0.09 sec
+5/8 Test #114: demo_precuela_boundington ........   Passed    0.00 sec
+6/8 Test #115: demo_campana_boundington .........Subprocess aborted***Exception:   0.08 sec
+7/8 Test #190: test_boundington_tutorial ........   Passed    0.45 sec
+8/8 Test #191: test_boundington_dia1 ............   Passed    0.38 sec
+63% tests passed, 3 tests failed out of 8

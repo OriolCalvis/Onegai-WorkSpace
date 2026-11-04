@@ -1,0 +1,184 @@
+UpdateCTestConfiguration  from :/Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug/DartConfiguration.tcl
+Parse Config file:/Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug/DartConfiguration.tcl
+Test project /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 9
+    Start  9: test_emisor
+
+9: Test command: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug/test_emisor
+9: Working Directory: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug
+9: Test timeout computed to be: 1500
+9: [PASS] json_valido_da_los_campos_exactos
+9: [PASS] semilla_borde_2_53
+9: [PASS] opacidad_que_se_vuelve_cero_en_float_es_error
+9: [PASS] familia_no_texto_dice_obligatoria
+9: [PASS] minimo_usa_los_por_defecto
+9: [PASS] acepta_las_40_familias
+9: [PASS] acepta_los_extremos_de_los_limites
+9: [PASS] familia_inexistente_es_error_y_dice_cual
+9: [PASS] clave_desconocida_dice_la_ruta_y_la_clave
+9: [PASS] tasa_y_vida_fuera_de_limites_dicen_el_campo
+9: [PASS] cada_caso_negativo_es_error
+9: [PASS] emisiones_residuo_exacto_entre_pasos
+9: [PASS] emisiones_tasa_cero_y_dt_cero_dejan_el_estado_intacto
+9: [PASS] emisiones_entradas_invalidas_son_error
+9: [PASS] emisiones_recorte_de_catch_up
+9: [PASS] emisiones_tolerancia_numerica
+9: [PASS] emisiones_particion_equivalente
+9: [PASS] emisiones_determinista_y_residuo_acotado
+9: [PASS] emisiones_polvo_recuento_exacto_y_corte_en_duracion
+9: Ejecutados 19 test(s); 0 fallo(s).
+1/7 Test  #9: test_emisor ......................   Passed    0.30 sec
+test 10
+    Start 10: test_emisor_particula
+
+10: Test command: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug/test_emisor_particula
+10: Working Directory: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug
+10: Test timeout computed to be: 1500
+10: [PASS] mezclar_semilla_valores_de_referencia_splitmix64
+10: [PASS] uniforme01_en_pasos_de_1e6_y_nunca_1
+10: [PASS] misma_semilla_misma_secuencia_bit_a_bit_y_otra_distinta
+10: [PASS] azar_del_emisor_es_mezcla_mas_cuatro_descartes
+10: [PASS] descarte_de_cuatro_con_valores_dorados_independientes
+10: [PASS] sin_contraste_ni_otraforma_los_ceros_no_marcan_nada
+10: [PASS] orden_de_sorteos_cada_uno_mueve_solo_su_campo
+10: [PASS] siempre_nueve_sorteos_aunque_no_hagan_falta
+10: [PASS] rangos_en_diez_mil_particulas
+10: [PASS] casos_borde_de_abanico_velocidad_y_vida
+10: [PASS] contraste_otraforma_y_variante
+10: [PASS] dos_emisores_con_semillas_distintas_no_comparten_estado
+10: Ejecutados 12 test(s); 0 fallo(s).
+2/7 Test #10: test_emisor_particula ............   Passed    0.24 sec
+test 11
+    Start 11: test_emisor_avance
+
+11: Test command: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug/test_emisor_avance
+11: Working Directory: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug
+11: Test timeout computed to be: 1500
+11: [PASS] buffer_aforo_fijo_y_compactacion_estable
+11: [PASS] dt_invalido_es_error_y_el_emisor_no_cambia
+11: [PASS] dt_cero_no_cambia_nada
+11: [PASS] recorte_a_kMaxPasoEmision_con_recortado
+11: [PASS] caducidad_exacta_y_recorte_en_casos_separados
+11: [PASS] duracion_y_escalaTasa_con_avanzarEmisor_real
+11: [PASS] corte_en_duracion_vacia_y_no_nace_nada
+11: [PASS] k_es_nacidas_modulo_65536_y_no_se_desborda
+11: [PASS] determinismo_con_semilla
+11: [PASS] capacidad_constante_y_orden_estable_tras_caducar
+11: [PASS] poda_de_vector_conserva_el_generador_de_los_supervivientes
+11: Ejecutados 11 test(s); 0 fallo(s).
+3/7 Test #11: test_emisor_avance ...............   Passed    0.28 sec
+test 12
+    Start 12: test_emisor_presupuesto
+
+12: Test command: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug/test_emisor_presupuesto
+12: Working Directory: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug
+12: Test timeout computed to be: 1500
+12: [PASS] presupuesto_reserva_libera_y_recuenta
+12: [PASS] reserva_antes_de_sortear_el_rechazo_no_consume_azar
+12: [PASS] aforo_lleno_rechaza_antes_de_sortear
+12: [PASS] las_caducadas_liberan_antes_de_nacer_las_nuevas_del_mismo_paso
+12: [PASS] presupuesto_compartido_por_64_emisores_en_orden_de_creacion
+12: [PASS] fuga_de_presupuesto_x100_se_corrige_con_recuenta
+12: [PASS] olvida_y_poda_recuentan
+12: [PASS] forma_cerrada_el_troceado_no_cambia_la_posicion
+12: [PASS] valores_concretos_de_cada_formula
+12: [PASS] fase_k_vida_de_la_particula_vy0_y_colocacion_al_nacer
+12: [PASS] orbita_reescala_radio0_de_6_10_a_5_8
+12: [PASS] rayo_y_chispazo_se_ocultan_pasados_0_12_s
+12: Ejecutados 12 test(s); 0 fallo(s).
+4/7 Test #12: test_emisor_presupuesto ..........   Passed    0.25 sec
+test 13
+    Start 13: test_emisor_proyeccion
+
+13: Test command: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug/test_emisor_proyeccion
+13: Working Directory: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug
+13: Test timeout computed to be: 1500
+13: [PASS] mundo_de_pixel_grupos_y_redondeo
+13: [PASS] paridad_de_color_opacidad_y_contraste
+13: [PASS] envolvente_de_entrada_y_salida_con_cortar
+13: [PASS] corte_duro_y_cortar_false_sin_salida
+13: [PASS] calaveras_cuentan_34_quads_y_tope_global
+13: [PASS] ocultas_caducadas_acumulacion_y_escala
+13: [PASS] expande_dibuja_10_puntos_en_aro_aplastado
+13: [PASS] dragon_cuerpo_y_contorno_salen_de_mundo_de_pixel
+13: [PASS] corte_duro_exacto_y_tolerancia
+13: [PASS] color_por_variante_y_suma_de_la_familia
+13: [PASS] alfa_cero_no_cuesta_quads
+13: [PASS] tope_exacto_y_aro_atomico
+13: [PASS] formas_gira_otraforma_y_trazo_de_salpica
+13: Ejecutados 13 test(s); 0 fallo(s).
+5/7 Test #13: test_emisor_proyeccion ...........   Passed    0.25 sec
+test 14
+    Start 14: test_polvo_pasos
+
+14: Test command: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug/test_polvo_pasos
+14: Working Directory: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug
+14: Test timeout computed to be: 1500
+14: [PASS] nube_normal_de_6_y_reducida_de_1
+14: [PASS] adyacente_si_muro_no_salto_olvida_centinela_olvida
+14: [PASS] pies_en_la_celda_que_se_deja_con_desfase
+14: [PASS] dt_polvo_cero_congela_todo
+14: [PASS] tope_de_16_emisores_sin_evictar
+14: [PASS] presupuesto_256_y_recuenta
+14: [PASS] caminar_sin_parar_diez_segundos
+14: [PASS] semillas_por_paso_y_determinismo
+14: [PASS] listo_falso_sin_blanco
+14: [PASS] proyeccion_de_una_nube_con_el_estilo_del_polvo
+14: [PASS] definicion_del_polvo_campo_a_campo
+14: [PASS] monta_reinicia_contador_y_desmonta_anula_alturas
+14: [PASS] cien_ciclos_y_dos_segundos_sin_pasos
+14: [PASS] sin_polvo_en_combate_d_o7
+14: [PASS] pausa_del_polvo_en_application_bucle
+14: [PASS] cableado_de_hud_y_vida_nivel
+14: Ejecutados 16 test(s); 0 fallo(s).
+6/7 Test #14: test_polvo_pasos .................   Passed    0.25 sec
+test 15
+    Start 15: test_emisor_carga
+
+15: Test command: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug/test_emisor_carga
+15: Working Directory: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/out/build/macos-debug
+15: Test timeout computed to be: 1500
+15: [E08] hash 600 pasos: 0x1791f325d92eea25 (semilla 1000), tras 120 mas: 0xe096bc86a510294f, traza de esos 120: 0xe287b08acebb88f9
+15: [PASS] dos_runs_misma_entrada_mismo_hash_y_otra_semilla_distinto
+15: [PASS] emisores_independientes_el_rng_no_se_comparte
+15: [E08] carga 64x256 veneno 10 s: vivas/emisor max 33, vivas global max 2048, nacidas 17941, rechazadas 302059
+15: [E08] carga: destellos/fotograma max 240, quads/fotograma max 8160 (tope 8192), descartados max 1808
+15: [E08] CPU Debug por tick (informativo): avance mediana 0.066 ms max 0.107 ms; proyeccion mediana 0.110 ms max 0.131 ms
+15: [PASS] carga_64_emisores_respeta_aforo_presupuesto_y_quads
+15: [E08] 4 emisores veneno: vivas/emisor max 256, global max 1024, rechazadas 5483, quads max 8160, descartados max 784
+15: [PASS] aforo_de_un_emisor_con_pocos_emisores_llega_a_256
+15: [PASS] caso_peor_calavera_quads_contra_recuento_independiente
+15: [PASS] el_hash_cubre_origen_grupo_definicion_y_tipo
+15: [E08] frontera presupuesto: nacimiento 2048 admitido, 2049 rechazado (sin caducidades)
+15: [PASS] presupuesto_global_el_nacimiento_2048_entra_y_el_2049_se_rechaza
+15: [E08] frontera quads: 240 calaveras + 32 puntos = 8192 admitidos enteros; el 8193 se descarta
+15: [PASS] proyeccion_exacta_8192_quads_se_admite_entera_y_la_siguiente_unidad_se_descarta
+15: [PASS] proyectar_con_distinto_presupuesto_no_cambia_la_simulacion
+15: [E08] polvo 30 s paso/0,16 s normal: emisores max 7 (tope 16), vivas max 31 (tope 256), quads max 124, CPU Debug avanza mediana 0.0020 ms max 0.0095 ms
+15: [E08] polvo 30 s paso/0,16 s reducido: emisores max 7 (tope 16), vivas max 6 (tope 256), quads max 24, CPU Debug avanza mediana 0.0012 ms max 0.0062 ms
+15: [PASS] caminar_sin_parar_mantiene_los_topes_del_polvo
+15: Ejecutados 10 test(s); 0 fallo(s).
+7/7 Test #15: test_emisor_carga ................   Passed    0.75 sec
+
+The following tests passed:
+	test_emisor
+	test_emisor_particula
+	test_emisor_avance
+	test_emisor_presupuesto
+	test_emisor_proyeccion
+	test_polvo_pasos
+	test_emisor_carga
+
+100% tests passed out of 7
+
+Label Time Summary:
+gl-free    =   2.33 sec*proc (7 tests)
+unit       =   2.33 sec*proc (7 tests)
+
+Total Test time (real) =   2.34 sec

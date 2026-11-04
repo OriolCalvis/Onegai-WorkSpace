@@ -1,0 +1,97 @@
+{
+  "_nota": "Configuración de la fábrica. Los checks son los de AGENTS.md §2.6. Las regex marcadas con _ajustar se han escrito sin ver la salida real: compruébalas con 'fabrica.py depurar <id>' la primera vez.",
+
+  "registros": "out/fabrica",
+
+  "_disco": "GB libres que exigen las fases que compilan (checks con necesita_disco) y el clon de la entrega. FABRICA_DISCO_MIN_GB lo cambia.",
+  "disco_minimo_gb": 3,
+
+  "variables": {
+    "motor": "MotorGraphico-main/MotorGraphico"
+  },
+
+  "preset": {
+    "darwin": "macos-debug",
+    "win32": "windows-vs2022-debug",
+    "linux": "linux-debug"
+  },
+
+  "versiones": {
+    "git": "git --version",
+    "cmake": "cmake --version",
+    "python": "{python} --version",
+    "compilador_mac_linux": "c++ --version",
+    "compilador_windows": "cl 2>&1"
+  },
+
+  "vigilar": ["*.cpp", "*.h", "*.hpp", "*.py", "*.json", "*.txt", "*.tmx", "*.md"],
+  "ignorar": ["out/*", "build/*", "*/build/*", "*/out/*", "node_modules/*", "*/__pycache__/*", "*.pyc", "*.log"],
+
+  "patrones_error": ["error:", "Error", "FAILED", "Traceback", "Assertion", "require\\(", "Failed", "✗"],
+
+  "checks": [
+    {
+      "id": "validar_todo",
+      "fase": "rapida",
+      "cwd": "{motor}",
+      "cmd": "{python} tools/validar_todo.py",
+      "errores_regex": "(\\d+) errores?",
+      "avisos_regex": "(\\d+) avisos?",
+      "items_regex": "^\\s*(?:ERROR|Error|✗)[:\\s]+(.+)$",
+      "_ajustar": "items_regex: el formato de cada error de validar_todo",
+      "timeout": 600
+    },
+    {
+      "id": "validar_puertas",
+      "fase": "rapida",
+      "cwd": "{motor}",
+      "cmd": "{python} tools/validar_puertas.py",
+      "timeout": 300
+    },
+    {
+      "id": "explorar_aventuras",
+      "fase": "rapida",
+      "cwd": "{motor}",
+      "cmd": "{python} tools/explorar_aventura.py",
+      "timeout": 300
+    },
+    {
+      "id": "validar_audio",
+      "fase": "rapida",
+      "cwd": "{motor}",
+      "cmd": "{python} tools/validar_audio.py",
+      "timeout": 120
+    },
+    {
+      "id": "linea_base_core",
+      "fase": "rapida",
+      "cwd": "{motor}",
+      "cmd": "{python} tools/linea_base_core.py",
+      "items_regex": "^\\s*((?:src|include|editor)/\\S+)\\s.*(?:>|supera|excede|crece).*$",
+      "_ajustar": "items_regex: cómo nombra linea_base_core los ficheros de más de 600 líneas",
+      "timeout": 300
+    },
+    {
+      "id": "compilar",
+      "fase": "completa",
+      "corta": true,
+      "necesita_disco": true,
+      "cwd": "{motor}",
+      "cmd": "cmake --preset {preset} && cmake --build --preset {preset}",
+      "depurar": "cmake --build --preset {preset} --verbose -j1",
+      "items_regex": "^(\\S+\\.(?:cpp|h|hpp)):\\d+(?::\\d+)?: (?:fatal )?error",
+      "timeout": 3600
+    },
+    {
+      "id": "ctest_gl_free",
+      "fase": "completa",
+      "cwd": "{motor}",
+      "cmd": "ctest --test-dir out/build/{preset} -L gl-free --output-on-failure",
+      "depurar": "ctest --test-dir out/build/{preset} -L gl-free --rerun-failed --output-on-failure -V",
+      "items_regex": "^\\s*\\d+ - (\\S+) \\((?:Failed|SEGFAULT|Timeout|Not Run|Exception|Subprocess aborted|Child aborted)\\)",
+      "timeout": 1800
+    }
+  ],
+
+  "clon_copiar": []
+}

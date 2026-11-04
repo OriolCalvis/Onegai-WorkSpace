@@ -41,6 +41,11 @@ public:
     const Imagen& imagen() const { return m_imagen; }
     int version() const { return m_version; }
     void vacia();
+    void guardaAviso(const std::string& clave, std::string aviso) { m_avisos[clave] = std::move(aviso); }
+    std::string aviso(const std::string& clave) const {
+        const auto it = m_avisos.find(clave);
+        return it == m_avisos.end() ? std::string{} : it->second;
+    }
 
     // La ultima tira de frames montada (la hoja de 12 de un personaje): la
     // vista previa pide sus frames de uno en uno mientras anda, y asi se
@@ -53,14 +58,26 @@ public:
         m_tira = std::move(tira);
     }
 
+    // PERF-2: cuantos personajes se han montado en este fotograma para las
+    // rejillas de retratos. InterfazPergamino lo pone a cero UNA vez por
+    // fotograma; el Retratista no monta mas de kMontajesPorFotograma.
+    static constexpr int kMontajesPorFotograma = 2;
+    void nuevoFotograma() { m_montajes = 0; }
+    int montajes() const { return m_montajes; }
+    bool hayCupo() const { return m_montajes < kMontajesPorFotograma; }
+    void cuentaMontaje() { ++m_montajes; }
+
 private:
     Rect uvDe(int celda) const;
+    int m_montajes = 0;
 
     Imagen m_imagen;
     std::unordered_map<std::string, int> m_celdas;
     int m_version = 0;
     std::string m_claveTira;
     Imagen m_tira;
+    std::unordered_map<std::string, std::string> m_avisos;  // acompana las celdas de la cache
+
 };
 
 // Copia el frame `frame` (0-based) de una tira horizontal de frames de

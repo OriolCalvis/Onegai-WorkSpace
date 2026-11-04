@@ -1,0 +1,12 @@
+MUTACION una_sola_accion
+fichero: tools/validar_cinematicas.py
+viejo: 'if not isinstance(acc, dict) or len(acc) != 1:'
+nuevo: 'if not isinstance(acc, dict):'
+fecha: 2026-11-04 13:24:38
+
+test rc=1
+FAIL: test_dos_acciones_o_ninguna (__main__.DisparadorTests.test_dos_acciones_o_ninguna)
+Ran 22 tests in 0.170s
+FAILED (failures=1)
+RESULTADO: MUTANTE MUERTO (el test falla)
+restaurado: test rc=0

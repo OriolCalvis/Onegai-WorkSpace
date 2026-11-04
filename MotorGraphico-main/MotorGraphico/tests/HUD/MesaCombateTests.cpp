@@ -131,9 +131,15 @@ MOTOR_TEST_CASE(combate_registro_oculto_y_turno_del_rival) {
     MOTOR_CHECK(oculto.cuantos() < conRegistro);
     const auto retal = zonas(oculto, Z::Registro);
     MOTOR_CHECK(retal.size() == 1 && retal[0]->rect.w < 200.0f);  // el retal pequeno «L Registro»
-    // El rotulo del turno del rival suma su retal.
+    // AV16-11: en el turno del rival no hay mano ni barra tuyas (pintaCombate), solo su cartel
+    // «Turno de ...» (pintaTurnoRival, en y = 520..632): se pinta menos, no mas.
     b.esperaRival("Perdido saqueador");
-    MOTOR_CHECK(pinta(v, b).cuantos() > oculto.cuantos());
+    const Lienzo turno = pinta(v, b);
+    MOTOR_CHECK(turno.cuantos() < oculto.cuantos());
+    MOTOR_CHECK(zonas(turno, Z::Carta).empty() && zonas(turno, Z::Pasar).empty());
+    bool cartel = false;
+    for (const Trazo& t : turno.trazos()) cartel = cartel || (t.p[0].y >= 520.0f && t.p[0].y < 632.0f);
+    MOTOR_CHECK(cartel);
 }
 
 MOTOR_TEST_CASE(combate_en_una_vista_mayor_baja_y_se_centra) {
@@ -209,9 +215,9 @@ MOTOR_TEST_CASE(combate_los_estados_del_heroe_van_bajo_su_retrato) {
     const Lienzo l = pinta(v, b);
     const auto fichas = zonas(l, Z::Estado);
     MOTOR_CHECK(fichas.size() == 1 && fichas[0]->indice == 0 && fichas[0]->rect.w == 20.0f);
-    // Bajo el retrato del orden de turno (y 28..98), dentro de su retal, que
-    // crece hasta y = 138 sin llegar al registro ni a la carta grande (148).
-    MOTOR_CHECK(fichas[0]->rect.y > 98.0f && fichas[0]->rect.abajo() < 138.0f);
+    // AV16-11: bajo el retrato del orden de turno (caja de 86 de alto desde y = 38: acaba en 124),
+    // dentro de su retal, que con estados mide 148 desde y = 14 (acaba en 162, sobre las placas).
+    MOTOR_CHECK(fichas[0]->rect.y > 124.0f && fichas[0]->rect.abajo() < 162.0f);
     // Tres caben; con cinco, dos y «+3».
     Game::VistaBarra cinco = v;
     for (int i = 0; i < 4; ++i) cinco.estadosHeroe.push_back(estado("mejora", i + 1, Game::EstadoVisible::Signo::AFavor));
@@ -297,7 +303,19 @@ MOTOR_TEST_CASE(combate_un_grupo_de_cinco_lleva_las_placas_compactas) {
     MOTOR_CHECK(placas(dos).size() == 2);
     const std::vector<const Zona*> p5 = placas(cinco);
     MOTOR_CHECK(p5.size() == 5);
-    for (const Zona* z : p5) MOTOR_CHECK(z->rect.y >= 110.0f && z->rect.y + z->rect.h <= 446.0f);
+    // Bajo el retal del orden de turno (acaba en 162) y encima del rotulo del turno (446), sin pisarse.
+    for (const Zona* z : p5) MOTOR_CHECK(z->rect.y >= 162.0f && z->rect.abajo() <= 446.0f);
+    for (std::size_t i = 1; i < p5.size(); ++i) MOTOR_CHECK(p5[i]->rect.y >= p5[i - 1]->rect.abajo());
+    // Con estados, sus fichas caben dentro de la placa compacta.
+    Game::VistaBarra conEstados = v;
+    conEstados.estadosEnemigos.assign(5, {});
+    conEstados.estadosEnemigos[4].push_back(estado("envenenado", 2, Game::EstadoVisible::Signo::Contra));
+    conEstados.estadosEnemigos[4].push_back(estado("sangrado", 1, Game::EstadoVisible::Signo::Contra));
+    const Lienzo cEst = pinta(conEstados, b, 1280, 720, 5);
+    const std::vector<const Zona*> q5 = placas(cEst);
+    const auto fichasEst = zonas(cEst, Z::Estado);
+    MOTOR_CHECK(q5.size() == 5 && fichasEst.size() == 2);
+    for (const Zona* f : fichasEst) MOTOR_CHECK(q5.size() == 5 && dentroDe(f->rect, q5[4]->rect));
     MOTOR_CHECK(!placas(dos).empty() && placas(dos)[0]->rect.y == 186.0f);  // con dos, como siempre
 }
 
@@ -348,7 +366,7 @@ MOTOR_TEST_CASE(combate_los_acompanantes_van_en_el_orden_de_turno) {
     const Pincel p(tinta().letras, tinta().iconos);
     pintaCombate(l, p, d, retratos, 1280, 720);
     // En el orden de turno (arriba): el heroe (0), Venides (1), Xila (2) y el
-    // lobo, cada caja 74 px a la derecha de la anterior.
+    // lobo, cada caja 92 px a la derecha de la anterior (AV16-11: retratos de 80, paso 92).
     std::vector<const Zona*> arriba;
     for (const Zona& z : l.zonas())
         if (z.tipo == static_cast<int>(Z::Objetivo) && z.rect.y < 60.0f) arriba.push_back(&z);
@@ -356,14 +374,24 @@ MOTOR_TEST_CASE(combate_los_acompanantes_van_en_el_orden_de_turno) {
     if (arriba.size() == 4) {
         MOTOR_CHECK(arriba[0]->indice == 0 && arriba[1]->indice == 1 && arriba[2]->indice == 2 &&
                     arriba[3]->indice == Game::BarraCombate::kObjetivoEnemigo);
-        MOTOR_CHECK(arriba[1]->rect.x - arriba[0]->rect.x == 74.0f && arriba[2]->rect.x - arriba[1]->rect.x == 74.0f);
+        MOTOR_CHECK(arriba[1]->rect.x - arriba[0]->rect.x == 92.0f && arriba[2]->rect.x - arriba[1]->rect.x == 92.0f);
     }
-    // Las dos curas de Xila: dos marcas verdes de 8x8 debajo de su caja.
+    // Las dos curas de Xila: dos marcas verdes de 8x8, 4 px por debajo de su caja (AV16-11: de 86 de alto).
     int marcas = 0;
     for (const Trazo& t : l.trazos())
-        if (t.p[0].y > 100.0f && t.p[0].y < 120.0f && t.color.y > t.color.x &&
-            arriba.size() == 4 && t.p[0].x >= arriba[2]->rect.x && t.p[0].x < arriba[2]->rect.x + 64.0f)
+        if (arriba.size() == 4 && t.color.y > t.color.x && t.p[0].y >= arriba[2]->rect.abajo() &&
+            t.p[0].y < arriba[2]->rect.abajo() + 12.0f && t.p[0].x >= arriba[2]->rect.x &&
+            t.p[0].x < arriba[2]->rect.derecha())
             ++marcas;
     MOTOR_CHECK(marcas >= 2);
     MOTOR_CHECK(dentro(l, 1280.0f, 720.0f));
+}
+
+// J-3 — El retrato «de cara y quieto» sale del frame correcto segun las columnas de la hoja.
+MOTOR_TEST_CASE(combate_retrato_de_cara_segun_columnas_de_la_hoja) {
+    MOTOR_CHECK(columnaDeCaraQuieta(12) == 7);   // 12 columnas: el frame 8
+    MOTOR_CHECK(columnaDeCaraQuieta(20) == 7);
+    MOTOR_CHECK(columnaDeCaraQuieta(40) == 32);  // 40 (PixelLab): el frame 33, respirar de cara (suroeste)
+    MOTOR_CHECK(columnaDeCaraQuieta(40) + 1 == Game::frameQuieto(Game::Rumbo::Abajo, Game::Reparto::Diagonal));
+    MOTOR_CHECK(columnaDeCaraQuieta(12) + 1 == Game::frameQuieto(Game::Rumbo::Abajo, Game::Reparto::Clasico));
 }

@@ -96,6 +96,12 @@ Ejemplo completo y verificado: `assets/levels/ejemplo_nivel.json` con
 | `loot` | array de strings | No | `[]` |
 | `lootTable` | string | No | `""` |
 | `eventId` | string | No | `""` |
+| `vueltaPorTierra` | string | No | `""` (solo herramientas: ver abajo) |
+
+`vueltaPorTierra` (28/10, solo lo leen las herramientas): en una puerta que no se puede desandar
+(el río de Gorran solo baja), el nivel al que se vuelve andando. `tools/validar_puertas.py` no exige
+entonces puerta directa de vuelta, pero comprueba que desde el destino se llega a ese nivel por
+puertas sin pasar por el origen y que ese nivel tiene puerta al origen.
 
 `patrolMin`/`patrolMax` solo tienen sentido para objetos de categoría
 `enemy`; en props y pickups se ignoran.
@@ -109,6 +115,12 @@ panel escribe.
 - **`targetLevel` + `targetPosition`:** convierten el objeto en una
   salida a otro nivel. Sin `targetPosition`, el jugador aparece en el
   `playerStart` del nivel destino.
+- **`cerradaSi` + `beatCerrada` (G4-01):** puerta cerrada por flags.
+  `"cerradaSi": {"todas": ["a"], "ninguna": ["b"]}` = cerrada mientras
+  estén encendidas todas las de `todas` y ninguna de `ninguna` (las dos
+  listas vacías = abierta). Cerrada no hay transición: se dispara el beat
+  `beatCerrada` (un `talk` cuyo `target` es ese mismo id; si no hay beat, la
+  línea «La puerta está cerrada.»). Ver FORMATO_AVENTURAS.md.
 - **`loot`:** ids del catálogo de objetos que suelta esta instancia
   (el cofre del atrio puede llevar una llave aunque los demás cofres
   no). **`lootTable`:** referencia opcional a una tabla del catálogo
@@ -544,3 +556,26 @@ desplazada media casilla (dual-grid) con recortes de borde difuminado entre mate
 - Sin `transiciones.json`, o con un tileset que no sea `terreno_mundo.png`, no se pinta nada: el suelo es el de siempre.
 - Donde el terreno cambia de altura no se dibuja la unión (ahí se ve la pared).
 - La decisión (qué capas lleva cada celda) es `Game::Transiciones` y tiene pruebas (`test_transiciones`).
+
+
+## Triggers de region en las paginas de evento (U3-02.E06a)
+
+Una pagina de evento (`layers[type=event].events[].pages[]`) admite tres `trigger` nuevos, ademas de
+`interact`, `touch`, `autorun` y `parallel`: `region_enter`, `region_stay` y `region_exit`. La **pagina** dice a
+que region escucha; el formato de las regiones no cambia. La clave `region` es obligatoria si y solo si el
+trigger es de region, y no puede aparecer con los demas:
+
+```json
+{ "id": "vigia_p1", "name": "Vigia", "trigger": "region_enter",
+  "region": { "layer": "regiones", "id": "zona_norte" },
+  "requiresAllConditions": true, "appearanceObjectId": "", "conditions": [], "commands": [] }
+```
+
+`layer` es el id de una capa de tipo `region` del mismo mapa e `id` el de una region de esa capa (un `RegionId`
+solo es unico dentro de su capa). Si no existen, el mapa no carga. Los mapas sin `region` se leen y se
+escriben exactamente igual que antes (cambio aditivo, `schemaVersion` sigue en 1).
+
+Semantica: `region_enter` al pasar de fuera a dentro (tambien al aparecer dentro, D5); `region_stay` cada N ms
+mientras sigue dentro, por region y sin recuperar tiempo perdido (D7); `region_exit` al salir. Orden de
+hechos simultaneos: Exit, Enter, Stay (D3). **El despacho llega en U3-02.E06b: hoy ningun runner arranca
+estas paginas**, y el editor no las ofrece todavia.

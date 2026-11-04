@@ -71,9 +71,12 @@ def main(argv):
         canon.setdefault(C.clase_de_tile(gid_nombre.get(g)), g)
 
     hoja = wb["Mapa"]
-    originales = {}  # (objectId, x, y) -> objeto original
-    for o in nivel.get("objects", []):
-        originales[(o["objectId"], o["position"]["x"], o["position"]["y"])] = o
+    originales = {}  # (objectId, x, y) -> objeto original (el primero, para letras y avisos)
+    pendientes = {}  # (objectId, x, y) -> objetos originales aún sin reclamar, en orden (C7-01: dos iguales
+    for o in nivel.get("objects", []):  # en la misma casilla con propiedades distintas no se pisan)
+        k = (o["objectId"], o["position"]["x"], o["position"]["y"])
+        originales.setdefault(k, o)
+        pendientes.setdefault(k, []).append(o)
 
     nuevos_gids = list(gids)
     cambios_suelo = 0
@@ -87,7 +90,7 @@ def main(argv):
             clase_vieja = C.clase_de_tile(gid_nombre.get(gids[idx]))
             if col is None:
                 avisos.append(f"({x},{y}) sin color de fondo: se deja el suelo como estaba")
-            elif col != C.color_de_clase(clase_vieja):
+            elif col != C.color_de_clase(clase_vieja) and colores.get(col) != C.FAMILIA.get(clase_vieja):
                 clase = colores.get(col)
                 if clase is None:
                     avisos.append(f"({x},{y}) color {col} que no está en la leyenda: se deja el suelo como estaba")
@@ -123,7 +126,8 @@ def main(argv):
             if pedido is None and previos:
                 # objetos de siempre, movidos o no: se conservan con todos sus datos
                 for oid, ox, oy in previos:
-                    orig = originales.get((oid, ox, oy))
+                    cola = pendientes.get((oid, ox, oy))
+                    orig = cola.pop(0) if cola else None
                     if orig is None:
                         avisos.append(f"({x},{y}) el comentario habla de {oid} ({ox},{oy}), que no está en el nivel: se ignora")
                         continue
@@ -192,6 +196,35 @@ def main(argv):
         avisos.append("no hay ★: el jugador empieza donde empezaba")
     if cambios_suelo and "mapDocument" in nivel:
         errores.append("el nivel tiene mapDocument (autoría del editor): el suelo se cambia en el editor, no aquí")
+
+    # Oriol (22/10): «está puto dibujado cada monumento en morado al Excel». Una manzana nueva pintada con
+    # cualquier morado de monumento es el monumento de la PUERTA que tiene delante (puerta_iglesia -> la
+    # iglesia, puerta_coliseo -> el coliseo...), no el del tono exacto, que a ojo no se distingue.
+    mon_gids = {nombre_gid[t]: t for t in C.MON_TILE if t in nombre_gid}
+    cambiadas = {(i % ancho, i // ancho) for i in range(len(gids)) if nuevos_gids[i] != gids[i] and nuevos_gids[i] in mon_gids}
+    visto_m = set()
+    for semilla in sorted(cambiadas):
+        if semilla in visto_m:
+            continue
+        grupo, pila = {semilla}, [semilla]
+        while pila:
+            x, y = pila.pop()
+            for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+                if 0 <= nx < ancho and 0 <= ny < alto and (nx, ny) not in grupo and nuevos_gids[ny * ancho + nx] in mon_gids:
+                    grupo.add((nx, ny))
+                    pila.append((nx, ny))
+        visto_m |= grupo
+        puertas_cerca = sorted({o["objectId"] for o in objetos if o.get("targetLevel")
+                                and any(abs(o["position"]["x"] - x) + abs(o["position"]["y"] - y) <= 1 for x, y in grupo)})
+        tile = next((C.PUERTA_MONUMENTO[p] for p in puertas_cerca if p in C.PUERTA_MONUMENTO), None)
+        if tile is None or tile not in nombre_gid:
+            continue
+        cambio = sum(1 for x, y in grupo if nuevos_gids[y * ancho + x] != nombre_gid[tile])
+        if cambio:
+            for x, y in grupo:
+                nuevos_gids[y * ancho + x] = nombre_gid[tile]
+            cambios_suelo = sum(1 for i in range(len(gids)) if nuevos_gids[i] != gids[i])
+            print(f"Monumento por su puerta: {len(grupo)} casillas junto a {', '.join(puertas_cerca)} -> {tile}")
 
     # lo conservado se identifica por objeto; lo quitado es lo que ninguna casilla reclamó
     quitados = [k for k in originales if k not in vistos]

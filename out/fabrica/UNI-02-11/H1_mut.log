@@ -1,0 +1,39 @@
+== M1 quitar 'silenciado' de conditions.json -> test_catalog_content
+1/1 Test #184: test_catalog_content .............***Failed    0.70 sec
+[PASS] las_utilitarias_de_check_no_hacen_dano
+[FAIL] sangrado_dice_lo_que_dice_su_carta: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/RPG/CatalogContentTests.cpp:223 -- comprobación fallida: cat.size() == 20
+0% tests passed, 1 tests failed out of 1
+== M3 CofreKit.cpp:53 bono '+1 CAR' en la pieza -> test_kit_basico
+        Pieza p{e->name, ranuraLegible(*e), ""};  // AV16-02: las prendas del kit no dicen que sumen
+        Pieza p{e->name, ranuraLegible(*e), "+1 CAR"};  // AV16-02: las prendas del kit no dicen que sumen
+1/1 Test #262: test_kit_basico ..................***Failed    2.71 sec
+[FAIL] abrir_deja_el_kit_en_la_mochila_y_quita_el_cofre: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/CofreKitTests.cpp:65 -- comprobación fallida: p->piezas[0].ranura == "Arma" && p->piezas[0].bono.empty()
+0% tests passed, 1 tests failed out of 1
+The following tests FAILED:
+== M4 espectros playable:true -> demo_creacion_personaje (opciones 70 != 69)
+CHECK FALLO en /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/examples/demo_creacion_personaje.cpp:153 -- p.opciones().size() == 69
+0% tests passed, 1 tests failed out of 1
+The following tests FAILED:
+== M5 quitar una raza de races.json -> demo_creacion_personaje (71 != 72)
+CHECK FALLO en /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/examples/demo_creacion_personaje.cpp:43 -- cc.races().size() == 72
+0% tests passed, 1 tests failed out of 1
+The following tests FAILED:
+== M2 quitar el objeto botin_cueva_escondite_60 de botin_boundington.json (42 contenedores) -> test_botin_equipo
+1/1 Test #45: test_botin_equipo ................***Failed    2.34 sec
+[FAIL] las_tablas_publicadas_generan_con_el_catalogo_real: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/BotinEquipoTests.cpp:92 -- comprobación fallida: comprobados==43
+0% tests passed, 1 tests failed out of 1
+The following tests FAILED:
+== M6 anadir 'estado_futuro_inexistente_de_prueba' a conditions.json -> test_validar_monstruos_acciones
+FAIL: test_estado_futuro_no_cuela (test_validar_monstruos_acciones.AccionesTests.test_estado_futuro_no_cuela)
+AssertionError: 'estado_futuro_inexistente_de_prueba' unexpectedly found in {'marcado', 'silenciado', 'congelado', 'encantado', 'enfurecido', 'ralentizado', 'sangrado', 'paralizado', 'caido', 'agarrado', 'cegado', 'envenenado', 'fatiga', 'estado_futuro_inexistente_de_prueba', 'inconsciente', 'anclado', 'endeudado', 'aturdido', 'guardia_rota', 'asustado', 'quemado'}
+Ran 10 tests in 0.267s
+FAILED (failures=1)
+== M7 test_ruta_casillas: lectura. kLimiteMs=5.0 bajo #ifdef NDEBUG (Release), 20.0 en Debug; Debug medido 10 pasadas: 8.7 (fria), 5.88 5.84 5.83 5.68 5.75 5.82 5.69 5.89 5.76 ms
+== Restauracion: conditions/botin/races/CofreKit con git checkout + touch; ctest final abajo
+1/6 Test  #41: test_ruta_casillas ................   Passed    0.16 sec
+2/6 Test  #45: test_botin_equipo .................   Passed    2.27 sec
+3/6 Test  #50: test_validar_monstruos_acciones ...   Passed    0.29 sec
+4/6 Test #102: demo_creacion_personaje ...........   Passed    0.02 sec
+5/6 Test #184: test_catalog_content ..............   Passed    0.70 sec
+6/6 Test #262: test_kit_basico ...................   Passed    2.68 sec
+100% tests passed out of 6

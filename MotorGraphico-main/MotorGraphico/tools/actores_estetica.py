@@ -28,7 +28,7 @@ nuevas estan en actores_materiales.
 import re
 
 import particulas as _particulas
-from actores_catalogo import _casa, normalizar, pieza_de_objeto
+from actores_catalogo import _OBJETOS_VISUAL, _casa, normalizar, pieza_de_objeto
 import actores_formas
 
 # --- que es cada material ---------------------------------------------------------------
@@ -985,8 +985,14 @@ def estetica(o, materiales_de_pieza, paletas):
     if slot in ("ring", "ring2", "neck", "belt", "accessory"):
         return None
 
-    # 1. la forma
-    if slot == "mainhand":
+    # 1. la forma (la elegida a mano en la Forja de Onegai, pestaña Clases, si la hay)
+    propio = _OBJETOS_VISUAL.get(o.get("id")) or {}
+    if propio.get("pieza") in actores_formas.BASES:
+        pieza = propio["pieza"]
+        ranura = "mano_izq" if actores_formas.BASES[pieza][0] in _mano_izquierda() else "arma"
+    elif propio.get("ranura") and propio.get("pieza"):
+        ranura, pieza = propio["ranura"], propio["pieza"]
+    elif slot == "mainhand":
         propia = f"f_u_{o.get('id')}"
         if propia in actores_formas.BASES:  # las unicas con dibujo propio (actores_formas.UNICAS)
             pieza = propia

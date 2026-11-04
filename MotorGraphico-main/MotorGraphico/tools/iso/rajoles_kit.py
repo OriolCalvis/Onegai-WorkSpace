@@ -20,10 +20,14 @@ ARREL = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__
 TILES = os.path.join(ARREL, "assets", "textures", "pixellab", "tiles.json")
 BLOQUES = os.path.join(ARREL, "assets", "textures", "bloques.json")
 COSTAT = ["+y", "-x", "-y", "+x"]
-PEDRA = {"material": ["piedra", "aegroum"], "bandas": [1, 2], "pesos": [1, 2], "pesosMaterial": [1, 1]}
-BLOC_FAMILIA = {"edifici": PEDRA, "noble": {"material": ["noble", "nobleb"], "bandas": 2, "pesosMaterial": [1, 1]},
-                "cabana": {"material": ["madera", "maderab"], "bandas": 1, "pesosMaterial": [1, 1]},
-                "caserna": {"material": "piedra", "bandas": 1}, "barraca": {"material": "chabola", "bandas": 1},
+# Oriol (22/10, 29/10): ni «caserna» (antes aegroum) ni piedra gris (piedra_publica, fortaleza, muralla) en
+# casas ni tiendas; solo los edificios públicos (banc, banys) llevan piedra_publica. tools/validar_edificis.py ho vigila.
+ENTRAMAT = {"material": ["entramado", "entramado_balcon"], "bandas": [1, 2], "pesos": [1, 2], "pesosMaterial": [3, 2]}
+PUBLIC = {"material": "piedra_publica", "bandas": [1, 2], "pesos": [1, 2]}
+OFICIS_PUBLICS = ("banc", "banys")
+BLOC_FAMILIA = {"edifici": ENTRAMAT, "noble": {"material": ["senorial", "senorial_balcon"], "bandas": 2, "pesosMaterial": [1, 1]},
+                "cabana": {"material": ["entramado", "entramado_balcon"], "bandas": 1, "pesosMaterial": [1, 1]},
+                "caserna": {"material": "entramado", "bandas": 1}, "barraca": {"material": "chabola", "bandas": 1},
                 "tenda": {"material": "chabola", "bandas": 1}}
 
 
@@ -31,7 +35,7 @@ def blocs_de_reserva():
     b = json.load(open(BLOQUES))
     nous = 0
     for o in range(4):
-        for nom, tipus in [(rajola_familia(f, o), BLOC_FAMILIA[f]) for f in FAMILIES] + [(rajola_ofici(of, o), PEDRA) for of in OFICIS]:
+        for nom, tipus in [(rajola_familia(f, o), BLOC_FAMILIA[f]) for f in FAMILIES] + [(rajola_ofici(of, o), PUBLIC if of in OFICIS_PUBLICS else ENTRAMAT) for of in OFICIS]:
             if nom not in b["tipos"]:
                 b["tipos"][nom] = dict(tipus)
                 nous += 1

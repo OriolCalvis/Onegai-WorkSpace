@@ -9,7 +9,8 @@
 if(BUILD_TESTING AND TARGET motor_level)
     add_executable(test_cartas_combate tests/Game/CartasEnCombateTests.cpp
         tests/Game/CartasClasesTests.cpp
-        tests/Game/AcompanantesTests.cpp)  # ACOMPANANTES-01: Venides y Xila en la mesa
+        tests/Game/AcompanantesTests.cpp  # ACOMPANANTES-01: Venides y Xila en la mesa
+        tests/Game/CartasEnemigasTests.cpp)  # AV18-06: el repertorio nativo de los enemigos
     target_include_directories(test_cartas_combate PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/tests"
         "${CMAKE_CURRENT_SOURCE_DIR}/include")

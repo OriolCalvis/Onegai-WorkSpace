@@ -49,6 +49,50 @@ class NivelExcelTests(unittest.TestCase):
         self.assertEqual(self._objetos(), antes_objetos)
         self.assertEqual(self.tmx.read_text(encoding="utf-8"), antes_tmx)
 
+    def _casilla_con_puerta_y_pnj(self):
+        """C7-01: una puerta y un PNJ (con todas sus propiedades) y dos PNJ iguales en una misma casilla libre."""
+        nivel = json.loads(self.nivel.read_text(encoding="utf-8"))
+        ocupadas = {(o["position"]["x"], o["position"]["y"]) for o in nivel["objects"]}
+        x, y = next((x, y) for y in range(5, 60) for x in range(5, 60) if (x, y) not in ocupadas)
+        extra = [
+            {"objectId": "puerta_prueba_c7", "position": {"x": x, "y": y},
+             "targetLevel": "assets/levels/interior_taberna.json", "targetPosition": {"x": 3, "y": 4},
+             "llegada": "norte", "sentido": "entrar"},
+            {"objectId": "pnj_prueba_c7", "position": {"x": x, "y": y},
+             "rutina": "vigilar", "dialogo": "d_prueba", "flags": ["a", "b"], "mira": "fijo:abajo"},
+            {"objectId": "pnj_doble_c7", "position": {"x": x, "y": y}, "nota": "primero"},
+            {"objectId": "pnj_doble_c7", "position": {"x": x, "y": y}, "nota": "segundo"},
+        ]
+        nivel["objects"] += extra
+        self.nivel.write_text(json.dumps(nivel, ensure_ascii=False, indent=2), encoding="utf-8")
+        self.assertEqual(self._corre("nivel_a_excel.py", NIVEL, "-o", str(self.excel)).returncode, 0)
+        return x, y, extra
+
+    def test_varios_objetos_en_una_casilla(self):
+        _, _, extra = self._casilla_con_puerta_y_pnj()
+        antes = self._objetos()
+        r = self._corre("excel_a_nivel.py", str(self.excel))
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self._objetos(), antes)  # la lista entera, con todas las propiedades
+        for o in extra:
+            self.assertIn(json.dumps(o, sort_keys=True), self._objetos())
+
+    def test_mover_una_casilla_con_varios_objetos(self):
+        x, y, extra = self._casilla_con_puerta_y_pnj()
+        wb = load_workbook(self.excel)
+        h = wb["Mapa"]
+        origen, destino = h.cell(y + 2, x + 2), h.cell(y + 2, x + 3)
+        self.assertIsNone(destino.value)
+        destino.value, destino.comment = origen.value, origen.comment
+        origen.value, origen.comment = None, None
+        wb.save(self.excel)
+        r = self._corre("excel_a_nivel.py", str(self.excel))
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        objs = [json.dumps(o, sort_keys=True) for o in json.loads(self.nivel.read_text(encoding="utf-8"))["objects"]]
+        for o in extra:
+            movido = dict(o, position={"x": x + 1, "y": y})
+            self.assertIn(json.dumps(movido, sort_keys=True), objs)
+
     def test_mover_borrar_y_poner(self):
         wb = load_workbook(self.excel)
         h = wb["Mapa"]
@@ -84,7 +128,8 @@ class NivelExcelTests(unittest.TestCase):
     def test_cambiar_el_suelo(self):
         wb = load_workbook(self.excel)
         h = wb["Mapa"]
-        leyenda = {wb["Leyenda"].cell(r, 2).value: wb["Leyenda"].cell(r, 1).fill.fgColor.rgb for r in range(5, 25)}
+        leyenda = {wb["Leyenda"].cell(r, 2).value: wb["Leyenda"].cell(r, 1).fill.fgColor.rgb  # toda la leyenda: ha crecido
+                   for r in range(1, wb["Leyenda"].max_row + 1)}
         celda = h.cell(4, 4)
         celda.fill = PatternFill("solid", fgColor=leyenda["Mármol (plaza)"])
         wb.save(self.excel)

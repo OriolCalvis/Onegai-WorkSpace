@@ -1,0 +1,13 @@
+# E-MATRIZ-03 — Dia 3, la fiesta del Barrio Alto: camino «fiesta_dentro» (tregua con Gorran). El jugador ha llegado de noche a ciudad_este sin acostarse
+# (b2_fiesta_puerta), ha pasado al vigilante y ha entrado en la mansion (bnd2_fiesta_dentro); el guardado esta junto al noble que brinda
+# (seguidor_brinda, que solo se ve dentro de la fiesta). Se habla con el (E): b2_fiesta_copas ofrece «Tres copas de mi cuenta (6 de oro)» o
+# «Prefiero hacerle preguntas».
+# Uso (desde out/build/macos-debug):
+#   ./fabricar_guardados --capturas-dia3 guardados
+#   ./juego --guardado guardados/m3_fiesta.json --guion ../../../tools/guiones/m3_fiesta.txt
+20 captura fiesta_mansion
+40 toca E
+70 captura fiesta_noble
+90 toca 2
+130 captura fiesta_sala_tras_eleccion
+160 fin

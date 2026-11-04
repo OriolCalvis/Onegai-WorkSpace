@@ -40,20 +40,29 @@ public:
 
     // Activa la animacion "name". Si ya es la animacion activa, no hace
     // nada (evita reiniciar el ciclo de frames cada vez que se llama
-    // play() con la misma tecla mantenida, ver Player::handleInput). Si
+    // play() con la misma tecla mantenida, ver Player::handleInput), salvo si un clip
+    // la controla (ponerFotograma): entonces reinicia y devuelve el control. Si
     // "name" no esta registrada, se ignora en silencio -- igual que
     // TextureAtlas::getUV() con un id sin definir (ver su comentario):
     // es una llamada de hot path, no un error irrecuperable.
     void play(const std::string& name);
 
-    // Muestra el primer frame del rumbo actual sin reiniciar su fase.
+    // Muestra el primer frame del rumbo actual sin reiniciar su fase. No hace nada mientras un clip
+    // controla el sprite (ponerFotograma).
     // El consumidor deja de llamar update() mientras descansa.
     void showRestFrame();
+
+    // U3-05.E07a: fija el sprite mostrado desde fuera (un reproductor de clips, Game::ClipActor,
+    // que no conoce Render). A partir de aqui update() NO toca el sprite ni el reloj interno:
+    // el control es del clip. play() devuelve el control a la animacion propia.
+    void ponerFotograma(int sprite);
 
     // No estan en el diagrama de clases: necesarios para poder verificar
     // el ciclo de animacion (que frame esta activo, cuantos frames tiene
     // la animacion actual) sin tener que inspeccionar pixeles de un
     // framebuffer, mismo criterio que Entity::gridPosition()/offset().
+    // true mientras un clip controla el sprite (tras ponerFotograma(), hasta que play() lo devuelva).
+    bool controlExterno() const { return m_controlExterno; }
     const std::string& currentAnimation() const { return m_currentAnimation; }
     int currentFrame() const { return m_currentFrame; }
 
@@ -63,4 +72,5 @@ private:
     float m_frameTime;
     float m_elapsedTime = 0.0f;
     int m_currentFrame = 0;
+    bool m_controlExterno = false;  // true tras ponerFotograma(); play() lo apaga
 };

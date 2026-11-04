@@ -140,6 +140,18 @@ std::string exitos(float n) {
     return s;
 }
 
+RPG::PoolResult rodando(const RPG::PoolResult& r, float t) {
+    RPG::PoolResult v = r;
+    v.botch = false;
+    const unsigned tramo = static_cast<unsigned>(std::max(0.0f, t) * 14.0f);
+    for (std::size_t i = 0; i < v.rolls.size(); ++i) {
+        unsigned h = (tramo + 1u) * 2654435761u ^ (static_cast<unsigned>(i) + 7u) * 40503u;
+        h ^= h >> 13;
+        v.rolls[i] = 1 + static_cast<int>(h % 6u);
+    }
+    return v;
+}
+
 }  // namespace dados
 
 namespace {
@@ -175,8 +187,15 @@ float rotuloGrado(Lienzo& l, const Pincel& p, const RPG::TiradaVisible& t, float
 
 }  // namespace
 
-float pintaTiradaCombate(Lienzo& l, const Pincel& p, const RPG::TiradaVisible& t, float x, float y,
-                         float brillo, int de, int en) {
+float pintaTiradaCombate(Lienzo& l, const Pincel& p, const RPG::TiradaVisible& quieta, float x, float y,
+                         float brillo, int de, int en, float rodar) {
+    // Rodando: las caras cambian y el resultado (marco, grado y exitos) espera a que paren.
+    const bool rueda = rodar >= 0.0f;
+    RPG::TiradaVisible t = quieta;
+    if (rueda) {
+        t.tirada = dados::rodando(quieta.tirada, rodar);
+        t.rival = dados::rodando(quieta.rival, rodar + 0.37f);
+    }
     const float w = 280.0f;
     const float h = t.enfrentada ? 112.0f : 82.0f;
     if (brillo > 0.0f) {
@@ -187,10 +206,10 @@ float pintaTiradaCombate(Lienzo& l, const Pincel& p, const RPG::TiradaVisible& t
             l.color(Rect{x - a[0], y - a[0], w + 2.0f * a[0], h + 2.0f * a[0]}, rgb(255, 214, 102, a[1] * b));
     }
     l.materialConSombra(hoja(static_cast<int>(w), static_cast<int>(h), 90, 2, 0, 1), Vector2{x, y}, Color::kSombra);
-    marcoDelResultado(l, t, x + 2.0f, y + 2.0f, w - 4.0f, h - 4.0f);  // verde, rojo o ámbar
+    if (!rueda) marcoDelResultado(l, t, x + 2.0f, y + 2.0f, w - 4.0f, h - 4.0f);  // verde, rojo o ámbar
     const float xc = x + 16.0f, derecha = x + w - 16.0f;
     // Cabecera: qué se tira, cuál de las de su acción («2/3») y el grado.
-    float wGrado = rotuloGrado(l, p, t, derecha, y + 15.0f);
+    float wGrado = rueda ? 0.0f : rotuloGrado(l, p, t, derecha, y + 15.0f);
     if (en > 1) {
         const std::string cuenta = std::to_string(de) + "/" + std::to_string(en);
         const float wc = p.anchoPixel(cuenta, 2);
@@ -203,7 +222,7 @@ float pintaTiradaCombate(Lienzo& l, const Pincel& p, const RPG::TiradaVisible& t
     // bono: «(+0,5) 2,5» si el rival sangra) y pegados a ellos los dados; el
     // nombre se queda con lo que sobra.
     auto lado = [&](const std::string& nombre, const RPG::PoolResult& r, float bono, float yy, bool rival) {
-        const std::string e = dados::exitos(r.successes + bono);
+        const std::string e = rueda ? std::string("?") : dados::exitos(r.successes + bono);
         float xd = derecha - p.anchoPixel(e, 2);
         p.pixel(l, e, xd, yy + 5.0f, 2, Color::kTinta);
         if (bono != 0.0f) {
@@ -235,33 +254,44 @@ float pintaTiradaCombate(Lienzo& l, const Pincel& p, const RPG::TiradaVisible& t
     return h;
 }
 
-void pintaTiradaDialogo(Lienzo& l, const Pincel& p, const RPG::TiradaVisible& t, float derecha, float abajo) {
-    // [QUÉ] dados éxitos · contra dados éxitos · GRADO, en una sola tira.
+void pintaTiradaDialogo(Lienzo& l, const Pincel& p, const RPG::TiradaVisible& quieta, float derecha, float abajo,
+                        float rodar) {
+    // [QUÉ] dados éxitos · contra dados éxitos · GRADO, en una sola tira. Rodando: las caras cambian
+    // y saltan un poco; el grado, el marco y los éxitos salen al parar.
+    const bool rueda = rodar >= 0.0f;
+    RPG::TiradaVisible t = quieta;
+    if (rueda) {
+        t.tirada = dados::rodando(quieta.tirada, rodar);
+        t.rival = dados::rodando(quieta.rival, rodar + 0.37f);
+    }
+    const float salto = rueda ? -std::round(std::fabs(std::sin(rodar * 18.0f)) * 4.0f) : 0.0f;
     const float h = 44.0f;
     const std::string que = t.que;
     const float wQue = static_cast<float>(p.letras().ancho(Letra::Lora18b, que));
     const auto anchoFila = [](const RPG::PoolResult& r) { return dados::anchoFila(r.rolls.size(), 1e6f); };
-    const std::string e1 = dados::exitos(t.exitos()), e2 = dados::exitos(t.rival.successes);
+    const std::string e1 = rueda ? std::string("?") : dados::exitos(t.exitos());
+    const std::string e2 = rueda ? std::string("?") : dados::exitos(t.rival.successes);
     const bool conRival = t.enfrentada && !t.rival.rolls.empty();
-    const std::string grado = dados::rotulo(t);
-    float w = 20.0f + wQue + 14.0f + anchoFila(t.tirada) + 10.0f + p.anchoPixel(e1, 2) + 20.0f +
+    const std::string grado = dados::rotulo(quieta);
+    // El ancho, con los exitos de verdad: la tira no cambia de tamano al parar los dados.
+    float w = 20.0f + wQue + 14.0f + anchoFila(t.tirada) + 10.0f + p.anchoPixel(dados::exitos(quieta.exitos()), 2) + 20.0f +
               p.anchoPixel(grado, 2) + (t.pifia() ? 16.0f : 0.0f) + 20.0f;
     const float wContra = static_cast<float>(p.letras().ancho(Letra::Lora16, "contra"));
-    if (conRival) w += wContra + 10.0f + anchoFila(t.rival) + 10.0f + p.anchoPixel(e2, 2) + 20.0f;
+    if (conRival) w += wContra + 10.0f + anchoFila(t.rival) + 10.0f + p.anchoPixel(dados::exitos(quieta.rival.successes), 2) + 20.0f;
     w = std::ceil(w / 2.0f) * 2.0f;
     const float x = std::round(derecha - w), y = std::round(abajo - h);
     l.materialConSombra(hoja(static_cast<int>(w), static_cast<int>(h), 91, 1, 0, 0), Vector2{x, y}, Color::kSombra);
-    marcoDelResultado(l, t, x, y, w, h);
+    if (!rueda) marcoDelResultado(l, t, x, y, w, h);
     float cx = x + 20.0f;
     cx += p.texto(l, Letra::Lora18b, que, cx, y + 9.0f, 26.0f, Color::kTinta) + 14.0f;
-    cx += dados::fila(l, t.tirada, cx, y + 12.0f, anchoFila(t.tirada)) + 10.0f;
+    cx += dados::fila(l, t.tirada, cx, y + 12.0f + salto, anchoFila(t.tirada)) + 10.0f;
     cx += p.pixel(l, e1, cx, y + 15.0f, 2, Color::kTinta) + 20.0f;
     if (conRival) {
         cx += p.texto(l, Letra::Lora16, "contra", cx, y + 10.0f, 24.0f, Color::kTinta3) + 10.0f;
-        cx += dados::fila(l, t.rival, cx, y + 12.0f, anchoFila(t.rival)) + 10.0f;
+        cx += dados::fila(l, t.rival, cx, y + 12.0f + salto, anchoFila(t.rival)) + 10.0f;
         cx += p.pixel(l, e2, cx, y + 15.0f, 2, Color::kTinta) + 20.0f;
     }
-    rotuloGrado(l, p, t, x + w - 20.0f, y + 15.0f);
+    if (!rueda) rotuloGrado(l, p, t, x + w - 20.0f, y + 15.0f);
 }
 
 }  // namespace Pergamino

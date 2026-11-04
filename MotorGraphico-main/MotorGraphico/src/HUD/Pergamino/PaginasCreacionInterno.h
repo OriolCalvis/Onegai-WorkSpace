@@ -58,7 +58,7 @@ float chip(const Contexto& k, const std::string& texto, float x, float y, bool a
 void sombraRombo(const Contexto& k, float cx, float cy, float semiAncho, float semiAlto);
 // El personaje de la vista previa a escala `escala` con los pies en
 // (cx, yPies), andando y girando (o quieto mirando a c.rumbo()).
-void pintaVista(const Contexto& k, const Cuaderno::Vista& v, float cx, float yPies, int escala);
+void pintaVista(const Contexto& k, const Cuaderno::Vista& v, float cx, float yPies, int escala, int orientacion = -1);
 // «AL EMPEZAR» o «CON EL KIT PUESTO»: las cuatro cajas de atributo.
 void pintaAtributos(const Contexto& k, const Cuaderno::Vista& v, float x, float y);
 // La columna del centro: personaje, girar y atributos (Raza, Origen, Deidad).

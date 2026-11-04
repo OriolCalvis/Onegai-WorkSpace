@@ -1,0 +1,11 @@
+guardados_q1c/q1c_venides_noche.json: venides_noche en assets/levels/interior_taberna.json (4,8) oro 150
+   BEAT b0_venides [Venides] lineas=1 «Tú no eres de aquí. Bien. Siéntate, que los de aquí no m»
+   CIERRE bnd0_venides_visto
+   MENU b0_venides -> 2  {1. ¿Qué te trae a Boundington? | 2. ¿Qué escribes? | 3. Hablar de otra cosa | 4. Dejarle con su cuaderno}
+   BEAT b0_venides [Venides] lineas=1 «Lo que pasa. Quién estaba, qué dijo. Alguien tendrá que a»
+   BEAT b0_venides_n_escribes [Venides] lineas=1 «Sopla la tinta, aunque no ha escrito nada.»
+   MENU b0_venides_n_escribes -> 2  {1. ¿Voy a salir yo? | 2. Dejarlo ahí}
+   BEAT b0_venides_n_escribes [Venides] lineas=0
+   BEAT b0_venides_s0 [] lineas=1 «Venides moja la pluma y no escribe nada.»
+   MENU b0_venides_s0 -> 3  {1. ¿Qué te trae a Boundington? | 2. Hablar de otra cosa | 3. Dejarle con su cuaderno}
+   BEAT b0_venides_s0 [] lineas=0

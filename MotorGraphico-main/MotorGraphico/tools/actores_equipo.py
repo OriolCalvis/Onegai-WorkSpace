@@ -417,8 +417,73 @@ def _pintar_capa(capa, mascara, m, x_luz):
         capa[y, x, 3] = m.alfa
 
 
+def _lado_lejano(talla, f):
+    """PL-ROPA-01: en diagonal, hacia que lado (en x: -1 izquierda, +1 derecha) queda la espalda del
+    personaje: el hombro con menos profundidad (z) en el esqueleto de PixelLab."""
+    k = {p["label"]: p for p in talla.esqueletos[f]}
+    a, b = k["LEFT SHOULDER"], k["RIGHT SHOULDER"]
+    lejos = a if a.get("z_index", 0) < b.get("z_index", 0) else b
+    cerca = b if lejos is a else a
+    return 1 if lejos["x"] > cerca["x"] else -1
+
+
+def capa_capa_pl(talla, material, largo="larga"):
+    """PL-ROPA-01: la capa (la prenda) sobre el cuerpo en diagonal de PixelLab. Cuelga de los hombros del
+    esqueleto y va corrida hacia la espalda: de frente (diagonales del sur) queda detras del cuerpo y asoma
+    2 px por el lado de la espalda y 1 por el otro; de espaldas (las del norte) tapa la espalda entera. El
+    balanceo al andar sigue el ciclo de seis frames."""
+    frames = []
+    balanceo = {0: -1, 2: 1, 3: 1, 5: -1}
+    for f in range(1, talla.n_frames + 1):
+        lab, d = talla.labs[f], talla.direccion(f)
+        capa = np.zeros((talla.alto, talla.ancho, 4), np.uint8)
+        cuerpo = np.isin(lab, PARTES_CUERPO)
+        filas_t = np.nonzero((lab == "t").any(axis=1))[0]
+        if not len(filas_t):
+            frames.append(capa)
+            continue
+        hombros = int(filas_t.min())
+        pies = [v for v in (top_pie(lab, "f"), top_pie(lab, "F")) if v is not None]
+        if not pies:  # nagas y espectros: la capa llega a la cadera
+            fondo = int(np.nonzero((lab == "p").any(axis=1))[0].max()) + 1
+        else:
+            fondo = (min(pies) - 2) if largo == "larga" else rodilla(lab) - 1
+        lado = _lado_lejano(talla, f)
+        i = (f - 1) % 6 if f <= 24 else -1
+        mascara = np.zeros(lab.shape, bool)
+        mitad = (hombros + fondo) / 2
+        for y in range(hombros - 1, fondo + 1):
+            xs = np.nonzero(cuerpo[max(y, hombros)])[0]
+            if not len(xs):
+                continue
+            vuelo = max(0, (y - hombros) // 6)
+            sway = int(round(balanceo.get(i, 0) * max(0.0, (y - mitad) / max(1.0, fondo - mitad)))) * lado
+            if d == "abajo":
+                # detras del cuerpo: 2 px hacia la espalda, 1 hacia el pecho
+                x0, x1 = xs.min() - 1 - vuelo, xs.max() + 1 + vuelo
+                if lado > 0:
+                    x0, x1 = x0 + 1, x1 + 1
+                else:
+                    x0, x1 = x0 - 1, x1 - 1
+            else:
+                x0, x1 = xs.min() - vuelo, xs.max() + vuelo
+                if lado > 0:
+                    x1 += 1
+                else:
+                    x0 -= 1
+            if y == hombros - 1:
+                x0, x1 = x0 + 2, x1 - 2
+            x0, x1 = x0 + sway, x1 + sway
+            mascara[y, max(1, x0):min(talla.ancho - 1, x1 + 1)] = True
+        _pintar_capa(capa, mascara, material, 0)
+        frames.append(capa)
+    return frames
+
+
 def capa_capa(talla, material, largo="larga"):
     """Capa de 12 frames con una capa (la prenda) larga o corta."""
+    if hasattr(talla, "esqueletos"):
+        return capa_capa_pl(talla, material, largo)
     frames = []
     for f in range(1, talla.n_frames + 1):
         lab, d = talla.labs[f], talla.direccion(f)

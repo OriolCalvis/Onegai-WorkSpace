@@ -100,6 +100,7 @@ private:
                        const Vector2& esquina);  // MORAL-02
     void renderDetras(SpriteBatch& batch);
     float segundos() const;
+    Game::Reparto reparto() const;  // PL-JUEGO-01: el de la hoja del jugador
     Texture* texturaAlas();
     // El dibujo del sprite (Entity::dibujoDePersonaje) o, sin hoja de personaje, uno de 64 px sobre la baldosa.
     void dibujo(Vector2& esquina, Vector2& tam, int& region) const;

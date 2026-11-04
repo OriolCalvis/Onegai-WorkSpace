@@ -59,12 +59,12 @@ if(BUILD_TESTING)
     # la cinta del foco, cuanto mide el papiro, que la hoja que cae no pase
     # de las tapas) y las reglas de la vuelta de hoja y del aura de la moral.
     # H2-01: los dados de la ultima tirada (DadosPergaminoTests).
-    add_executable(test_pergamino tests/HUD/PergaminoTests.cpp tests/HUD/PergaminoPantallasTests.cpp
+    add_executable(test_pergamino tests/HUD/CartelesPuertasTests.cpp tests/HUD/PergaminoTests.cpp tests/HUD/PergaminoPantallasTests.cpp
                                   tests/HUD/BancoMaterialesTests.cpp tests/HUD/PaginasCreacionTests.cpp
                                   tests/HUD/MesaCombateTests.cpp tests/HUD/DadosPergaminoTests.cpp
                                   tests/HUD/TiendaHojaTests.cpp tests/HUD/CicatricesCuadernoTests.cpp)
     target_include_directories(test_pergamino PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
-    target_link_libraries(test_pergamino PRIVATE motor_pergamino)
+    target_link_libraries(test_pergamino PRIVATE motor_pergamino motor_saves)
     if(TARGET copiar_assets)
         add_dependencies(test_pergamino copiar_assets)
     endif()

@@ -96,6 +96,8 @@ void writeHero(JsonWriter& out, const SavedHero& heroe) {
     for (const auto& [ranura, pieza] : heroe.ropa) out.member(ranura, pieza);
     out.endObject();
     writeStringArray(out, "quitarCapas", heroe.quitarCapas);
+    if (!heroe.marcas.empty())  // EDITOR-PERSONALIZACION-01: aditivo, un guardado de antes no lo trae
+        writeStringArray(out, "marcas", heroe.marcas);
     out.endObject();
     if (!heroe.reputacion.empty()) {  // AV14-23: solo si alguna faccion te ha visto
         out.key("reputacion");
@@ -117,6 +119,7 @@ SavedHero readHero(const JsonValue& node) {
         for (const auto& [ranura, pieza] : aspecto["ropa"].objectValues()) heroe.ropa[ranura] = pieza.asString("");
     }
     heroe.quitarCapas = readStringArray(aspecto["quitarCapas"]);
+    heroe.marcas = readStringArray(aspecto["marcas"]);
     if (node["reputacion"].isObject()) {  // AV14-23
         for (const auto& [faccion, valor] : node["reputacion"].objectValues()) heroe.reputacion[faccion] = valor.asInt(0);
     }

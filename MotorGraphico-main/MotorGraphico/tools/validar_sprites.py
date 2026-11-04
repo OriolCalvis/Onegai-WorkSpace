@@ -39,6 +39,10 @@ TEX = ROOT / "assets/textures"
 POR_DEFECTO = ["personaje.json", "actores_capas.json", "razas_andando.json",
                "personajes_historia.json", "props_p0.json", "pickups_p0.json",
                "boundington_story_actors_idle.json", "personajes.json"]
+MIN_PX_CUERPO = 300  # px opacos por frame en cada fila de razas/cuerpo.png
+# razas de talla baja: su cuerpo sano llega a 266 px en algunos frames (medido en CAR-3b), no es un cuerpo vacio
+MIN_PX_CUERPO_BAJO = {"medianos_del_bosque": 250, "medianos_urbanos": 250,
+                      "trasgos_de_gliaddokx": 250, "gnomos_de_la_isla": 250}
 DIRECCIONES = ("abajo", "arriba", "derecha", "izquierda")
 
 
@@ -112,6 +116,17 @@ def validar_personajes(ruta_json, man):
                 errores.append(f"{nombre}: {ruta}: un dibujo toca el borde de su celda "
                                f"(fila {ys[0] // fh + 1}, frame {xs[0] // fw + 1})")
             imgs[ruta] = a
+            # CAR-3b: un cuerpo casi vacio no se ve en partida (minimos medidos en celdas de 64x64;
+            # los manifiestos de prueba con celdas pequenas no se miran)
+            if sec == "razas" and clave == "cuerpo" and fw >= 64 and fh >= 64:
+                ids = {r["fila"]: r["id"] for r in man["razas"]["lista"]}
+                for k in range(filas):
+                    for f in range(cols):
+                        n = int(a[k * fh:(k + 1) * fh, f * fw:(f + 1) * fw].sum())
+                        minimo = MIN_PX_CUERPO_BAJO.get(ids.get(k + 1), MIN_PX_CUERPO)
+                        if n < minimo:
+                            errores.append(f"{nombre}: {ruta}: raza {ids.get(k + 1, k + 1)} (fila {k + 1}) "
+                                           f"frame {f + 1}: cuerpo con {n} px opacos (minimo {minimo})")
     llenas = {}
     for sec, atlas, filas in _atlas_capas(man):
         for clave, ruta in atlas.items():
@@ -119,8 +134,12 @@ def validar_personajes(ruta_json, man):
                 por_fila = imgs[ruta].reshape(filas, fh, -1).any(axis=(1, 2))
                 llenas[ruta] = por_fila
                 if sec != "razas":
+                    # H-PEL-2: una fila con `tallas` solo se dibuja en esas tallas; en las demas atlas es transparente
+                    ajenas = {f["fila"] for f in man[sec]["filas"] if f.get("tallas") and clave not in f["tallas"]} \
+                        if sec in man and isinstance(man[sec], dict) and "filas" in man[sec] else set()
                     for n in np.nonzero(~por_fila)[0]:
-                        errores.append(f"{nombre}: {ruta}: la fila {n + 1} esta vacia")
+                        if int(n) + 1 not in ajenas:
+                            errores.append(f"{nombre}: {ruta}: la fila {n + 1} esta vacia")
     for r in man["razas"]["lista"]:
         for capa, ruta in man["razas"]["atlas"].items():
             if ruta not in llenas:
@@ -139,8 +158,10 @@ def validar_personajes(ruta_json, man):
     for k, e in man["equipo"].items():
         for p in e["piezas"]:
             propio = p.get("orden")
-            if propio is not None and (not isinstance(propio, dict) or any(
-                    d not in DIRECCIONES or not isinstance(z, int) for d, z in propio.items())):
+            # (y, desde la Forja de Onegai, «f<n>»: el orden de un frame suelto, 1..20)
+            if propio is not None and (not isinstance(propio, dict) or any(d not in propio for d in DIRECCIONES) or any(
+                    (d not in DIRECCIONES and not (d[:1] == "f" and d[1:].isdigit() and 1 <= int(d[1:]) <= 20))
+                    or not isinstance(z, int) for d, z in propio.items())):
                 errores.append(f"{nombre}: equipo.{k}: la pieza {p['id']} trae un orden propio que no vale: {propio}")
     # PART-02b: las anclas de cada talla (la mano del arma, la otra, el pecho y la cintura), un punto
     # "x,y" dentro del frame por cada frame de la fila

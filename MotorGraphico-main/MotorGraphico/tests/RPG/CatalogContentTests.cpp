@@ -220,7 +220,7 @@ const RPG::ConditionDefinition* cond(const ConditionCatalog& cat, const char* id
 
 MOTOR_TEST_CASE(sangrado_dice_lo_que_dice_su_carta) {
     const ConditionCatalog cat = carga_conditions();
-    MOTOR_CHECK(cat.size() == 16);
+    MOTOR_CHECK(cat.size() == 20);  // PO-37: + quemado, congelado, aturdido, silenciado
     const RPG::ConditionDefinition* d = cond(cat, "sangrado");
     if (d == nullptr) return;
 

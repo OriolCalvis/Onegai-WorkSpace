@@ -42,6 +42,12 @@ struct FilaDeCapa {
     // AV16-03: la ropa que no encaja en el cuerpo (sobresale o deja al aire lo que no toca) segun
     // tools/auditar_ropa.py. Se monta igual (los PNJ la llevan), pero el creador no la ofrece.
     bool noEncaja = false;
+    // H-PEL-1: solo en las filas «propio/<raza>» del pelo: las razas a las que el creador ofrece ese pelo (la
+    // propia y sus razas germanas: misma cabeza, tools/pelo_germanos.py). Vacio = solo a la raza del id.
+    std::vector<std::string> razas;
+    // H-PEL-2: solo en las filas de pelo «compartidas» (tools/pelos_compartidos.py): las tallas en cuyo atlas la fila
+    // tiene dibujo. Vacio = todas (los pentinados de siempre). El creador no ofrece la fila a otra talla.
+    std::vector<std::string> tallas;
     // SP-02: el orden de dibujo propio de la fila, por rumbo ("arriba" -> z),
     // cuando no es el de su ranura: los guanteletes del Artista Marcial van en
     // las dos manos y encima del cuerpo tambien de espaldas (un arma va detras).
@@ -71,6 +77,11 @@ struct RazaVisual {
     // Solo una raza de cuerpo liso, en una piel del atlas de cuerpos, admite
     // otra piel u otra talla: el cuerpo sale entonces de ese atlas (probador).
     bool cuerpoLiso = false;
+    // PL-JUEGO-01: lo que dice personajes.json («liso») de una raza de PixelLab que trae su cabeza y su
+    // pelo pintados encima de la familia (capas cuerpo + rasgos) pero en el catalogo no tiene rasgos
+    // propios: con otra piel u otra talla se monta con el cuerpo liso de la familia, como el horneador.
+    // -1: no lo dice (la regla de las capas de siempre).
+    int lisoDeclarado = -1;
     bool admite(const std::string& ranura) const;  // la ranura no esta en `sin`
 };
 
@@ -83,12 +94,18 @@ struct Apariencia {
     std::string ojos;                         // vacio = los de la raza
     std::string peloEstilo, peloColor;        // estilo vacio = sin pelo
     std::string barbaEstilo, barbaColor;      // estilo vacio = sin barba
-    std::map<std::string, std::string> ropa;  // ranura -> pieza
+    std::map<std::string, std::string> ropa;  // ranura -> pieza (tambien alas, cola y cuernos)
     std::vector<std::string> quitarCapas;     // capas de la raza que no se pintan
+    // EDITOR-PERSONALIZACION-01 (Oriol, 26/10): las marcas de la piel (pecas, tatuajes, cicatrices...), ids
+    // de ManifiestoPersonajes::marcas, varias a la vez, con tinte si se quiere ("tatuaje_cara:tinta_negra>plaga").
+    std::vector<std::string> marcas;
 
     // La raza tal cual la viste personajes.json. conArmas=false deja fuera
     // arma y mano_izq: el jugador las lleva cuando equipa un objeto.
     static Apariencia deRaza(const RazaVisual& raza, bool conArmas = false);
+    // CAR-1: quita el pelo, la barba y los ojos que la raza no admite (partida desada del jugador). Los PNJ no
+    // pasan por aqui: montar() sigue dibujando lo que diga su composicion.
+    void limpiarSegunRaza(const RazaVisual& raza);
     // Texto estable: dos apariencias con la misma clave montan la misma hoja.
     std::string clave() const;
 };
@@ -168,14 +185,37 @@ using TonosDeMaterial = std::array<std::array<std::uint8_t, 3>, 5>;
 // la talla de ropa de la raza: nagas y espectros visten sin piernas).
 extern const char* const kRanurasDeEquipo[7];
 bool esRanuraDeRopa(const std::string& ranura);
+// EDITOR-PERSONALIZACION-01 — Rasgos a elegir que se montan como piezas (van en Apariencia::ropa y en
+// ManifiestoPersonajes::equipo, como la ropa) pero no son equipo del inventario: alas, cola y cuernos.
+extern const char* const kRanurasDeRasgos[3];
+
+// EDITOR-PERSONALIZACION-01 — Una piel que puede llevar cualquier raza de una talla: la de otra raza o un
+// material («piel_clara»). El cuerpo de cada raza usa exactamente un color por cada color del cuerpo de su
+// familia (tools/pixellab_razas.mapa_canonico), asi que cambiar la piel es sustituir, color a color, los de
+// la raza por los de la opcion elegida: el mismo tinte de ESTETICA-01, con pares que vienen de aqui.
+struct OpcionDePiel {
+    std::string nombre;
+    bool raza = false;                                   // es la piel de una raza (id = la raza)
+    std::vector<std::array<std::uint8_t, 3>> colores;  // uno por color de la familia
+};
+struct PielesDeTalla {
+    std::vector<std::array<std::uint8_t, 3>> familia;
+    std::vector<std::string> orden;                  // las opciones como las lista personajes.json
+    std::map<std::string, OpcionDePiel> opciones;
+};
 
 struct ManifiestoPersonajes {
+    // Oriol (24/10): los frames de cada fila de los atlas. 20 es el reparto de siempre (cuatro vistas
+    // rectas); 40, el de PixelLab en diagonal (andar de 6 y respirar de 4 por rumbo). Ver Game::Reparto.
+    int frames = 20;
     std::map<std::string, std::map<std::string, int>> orden;  // ranura -> direccion -> z
     std::map<std::string, std::string> nombreDeTalla;         // "medio" -> "Normal"
     std::map<std::string, std::string> atlasDeRaza;           // capa -> ruta
     std::vector<RazaVisual> razas;                            // orden de races.json
     GrupoDeCapas cuerpos, ojos, pelo, barba;
-    std::map<std::string, GrupoDeCapas> equipo;          // ranura -> piezas
+    GrupoDeCapas marcas;                                 // EDITOR-PERSONALIZACION-01: las marcas de la piel
+    std::map<std::string, PielesDeTalla> pieles;         // EDITOR-PERSONALIZACION-01: talla -> pieles
+    std::map<std::string, GrupoDeCapas> equipo;          // ranura -> piezas (y alas, cola, cuernos)
     std::map<std::string, Apariencia> personajes;        // actores + historia
     std::map<std::string, PiezaDeObjeto> piezaDeObjeto;  // objeto -> pieza
     std::map<std::string, TonosDeMaterial> paletas;      // ESTETICA-01: material -> tonos

@@ -1,0 +1,69 @@
+{
+  "momentos": {
+    "ocaso_tarde": {"dia": 4, "franja": 1},
+    "ocaso_puesta": {"dia": 4, "franja": 2}
+  },
+  "banderasDeObservacion": ["bnd3_plaza_vista", "bnd3_arenga"],
+  "eventos": [
+    {
+      "id": "comienza_ocaso",
+      "ausencia": "avanza",
+      "condiciones": {"notFlags": ["bnd3_campanas"]},
+      "disparadores": [
+        {"id": "aviso_venides", "senal": "bnd3_avisado"},
+        {"id": "aviso_xila", "senal": "bnd3_xila_avisa"},
+        {"id": "puesta_sol", "cruzaMomento": "ocaso_puesta"}
+      ],
+      "efectos": [{"type": "setFlag", "arg": "bnd3_campanas"}],
+      "escenas": [
+        {"cinematica": "base_campanas"},
+        {"beat": "b3_campanas"},
+        {"beat": "b3_campanas_solas"}
+      ]
+    },
+    {
+      "id": "xila_avisa_a_venides",
+      "ausencia": "avanza",
+      "condiciones": {"allFlags": ["bnd1_xila_honor"], "notFlags": ["bnd1_xila_borracho", "bnd2_venides_sin_aviso"]},
+      "disparadores": [
+        {"id": "tarde_sin_campanas", "cruzaMomento": "ocaso_tarde", "condiciones": {"notFlags": ["bnd3_campanas"]}},
+        {"id": "tarde_tras_avisar", "cruzaMomento": "ocaso_tarde", "condiciones": {"allFlags": ["bnd3_avisado"]}}
+      ],
+      "efectos": [{"type": "setFlag", "arg": "bnd3_xila_avisa"}],
+      "escenas": [
+        {"beat": "b3_xila_avisa"}
+      ],
+      "_nota": "C8-04c (Oriol, 29/10): Xila aliado y sobrio oye a dos Perdidos la tarde del Ocaso y corre a avisar a Venides. No si Venides ya salió solo hacia Las Afueras (bnd2_venides_sin_aviso): no está en la base. D0025.3 (Oriol, 04/11): tambien vale un Xila recuperado de la resaca (b2_xila_resaca_bien pone bnd1_xila_honor y quita bnd1_xila_borracho) y haber corrido a avisar a Venides (bnd3_avisado): las campanas ya suenan, pero Xila oye igual a los Perdidos la tarde."
+    },
+    {
+      "id": "venides_retenido",
+      "ausencia": "avanza",
+      "condiciones": {"allFlags": ["bnd2_venides_sin_aviso"]},
+      "disparadores": [
+        {"eventoPrevio": "comienza_ocaso"}
+      ],
+      "efectos": [{"type": "setFlag", "arg": "bnd3_sin_venides"}],
+      "escenas": [
+        {"beat": "b3_venides_arenga_20"},
+        {"beat": "b3_venides_arenga_10"},
+        {"beat": "b3_venides_arenga_solo"},
+        {"beat": "b3_venides_retenido"}
+      ]
+    },
+    {
+      "id": "venides_sale_con_su_tropa",
+      "ausencia": "avanza",
+      "condiciones": {"notFlags": ["bnd2_venides_sin_aviso"]},
+      "disparadores": [
+        {"eventoPrevio": "comienza_ocaso"}
+      ],
+      "efectos": [{"type": "setFlag", "arg": "bnd3_venides_sale"}],
+      "escenas": [
+        {"beat": "b3_venides_arenga_20"},
+        {"beat": "b3_venides_arenga_10"},
+        {"beat": "b3_venides_arenga_solo"},
+        {"beat": "b3_venides_retenido"}
+      ]
+    }
+  ]
+}

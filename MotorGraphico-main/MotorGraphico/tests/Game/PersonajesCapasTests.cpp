@@ -66,15 +66,18 @@ JsonValue leerJson(const std::string& ruta) {
 }
 
 // Cuantos bytes difieren entre la hoja montada y la fila `fila` del atlas.
-int diferencias(const imagen::ImagenRGBA& hoja, const imagen::ImagenRGBA& atlas, int fila) {
+int diferencias(const imagen::ImagenRGBA& hoja, const imagen::ImagenRGBA& atlas, int fila,
+                std::set<int>* frames = nullptr) {
     int distintos = 0;
     const int y0 = (fila - 1) * 64;
     for (int y = 0; y < 64; ++y) {
-        for (int x = 0; x < 768; ++x) {
+        for (int x = 0; x < std::min(hoja.ancho, atlas.ancho); ++x) {
             const std::uint8_t* a = hoja.pixel(x, y);
             const std::uint8_t* b = atlas.pixel(x, y0 + y);
-            for (int c = 0; c < 4; ++c)
+            for (int c = 0; c < 4; ++c) {
                 distintos += a[c] != b[c] ? 1 : 0;
+                if (a[c] != b[c] && frames != nullptr) frames->insert(x / 64 + 1);
+            }
         }
     }
     return distintos;
@@ -93,9 +96,15 @@ MOTOR_TEST_CASE(apariencia_manifiesto_entero) {
     auto r = Game::ManifiestoPersonajes::cargar(kTexturas);
     MOTOR_CHECK(r.isOk());
     const Game::ManifiestoPersonajes& m = r.value();
-    MOTOR_CHECK(m.razas.size() == 45);  // DIALOGOS-01: + dos de Ayashii
-    MOTOR_CHECK(m.pelo.filas.size() == 55);
-    MOTOR_CHECK(m.barba.filas.size() == 14);
+    MOTOR_CHECK(m.razas.size() == 72);  // DIALOGOS-01: + dos de Ayashii; + 27 del 2000 b.f.
+    // PL-ROPA-01: 27 peinados y 12 barbas por colores, mas el pelo propio de cada raza sobre familia
+    MOTOR_CHECK(m.pelo.filas.size() >= 57);
+    MOTOR_CHECK(m.barba.filas.size() >= 14);
+    // EDITOR-PERSONALIZACION-01: las marcas de la piel y las pieles de cada talla
+    MOTOR_CHECK(m.marcas.filas.size() == 11);
+    MOTOR_CHECK(m.pieles.count("medio") == 1 && m.pieles.at("medio").opciones.count("race_human_marches") == 1 &&
+                m.pieles.at("medio").opciones.count("piel_oscura") == 1);
+    MOTOR_CHECK(m.equipo.count("alas") == 1 && m.equipo.count("cola") == 1 && m.equipo.count("cuernos") == 1);
     MOTOR_CHECK(m.cuerpos.filas.size() == 9);
     MOTOR_CHECK(m.ojos.filas.size() == 10);
     std::size_t piezas = 0;
@@ -121,7 +130,15 @@ MOTOR_TEST_CASE(apariencia_manifiesto_entero) {
     int lisas = 0;
     for (const auto& raza : m.razas)
         lisas += raza.cuerpoLiso ? 1 : 0;
-    MOTOR_CHECK(lisas == 14);
+    // PL-JUEGO-01: con PixelLab muchos traen su cabeza y su pelo encima de la familia («rasgos»), pero los
+    // que no tienen rasgos propios en el catalogo siguen admitiendo otra piel («liso» en personajes.json),
+    // la misma regla que el horneador (actores_personajes.cambia_cuerpo). Antes 19: los de marcas en la
+    // piel (navegantes, cruzados, archivistas, enanos de obsidiana e historiadores, genasi y nobles de
+    // Ascaria) la perdian al cambiar de piel; ahora la conservan y no cambian de piel.
+    MOTOR_CHECK(lisas == 12);
+    // PL-ROPA-01: el pelo que PixelLab pinto a los enanos forjadores ya no va en «rasgos» (iba a trozos):
+    // va en la capa de pelo («propio/enanos_forjadores»), y «rasgos» queda vacia y no se lista.
+    MOTOR_CHECK(m.raza("enanos_forjadores")->capas.size() == 1 && m.raza("enanos_forjadores")->cuerpoLiso);
 }
 
 MOTOR_TEST_CASE(apariencia_mezcla_como_pillow) {
@@ -197,19 +214,23 @@ MOTOR_TEST_CASE(apariencia_horneados_byte_a_byte) {
             auto hoja = m->montar(apariencia.value());
             if (!hoja.isOk())
                 MOTOR_CHECK_FAIL(actor["id"].asString() + ": " + hoja.errorMessage());
-            // La hoja montada lleva el reposo (1280x64); las horneadas, solo
-            // los 12 de andar: se comparan esos.
-            MOTOR_CHECK(hoja.value().ancho == 1280 && hoja.value().alto == 64);
-            const int distintos = diferencias(hoja.value(), atlas.value(), actor["fila"].asInt());
+            // PL-JUEGO-01: la hoja montada lleva los 40 frames de PixelLab (2560x64), andar y respirar
+            // en las cuatro diagonales, igual que las horneadas: se comparan enteras.
+            MOTOR_CHECK(hoja.value().ancho == 64 * m->manifiesto().frames && hoja.value().alto == 64);
+            MOTOR_CHECK(atlas.value().ancho == hoja.value().ancho);
+            std::set<int> frames;
+            const int distintos = diferencias(hoja.value(), atlas.value(), actor["fila"].asInt(), &frames);
             if (distintos != 0) {
+                std::string cuales;
+                for (const int f : frames) cuales += " " + std::to_string(f);
                 MOTOR_CHECK_FAIL(nombre + "/" + actor["id"].asString() + ": " +
-                                 std::to_string(distintos) + " bytes distintos del horneado");
+                                 std::to_string(distintos) + " bytes distintos del horneado (frames" + cuales + ")");
             }
             ++comprobados;
             pnj += nombre.rfind("pnj_", 0) == 0 ? 1 : 0;
         }
     }
-    MOTOR_CHECK(comprobados == 64 + pnj);  // DIALOGOS-01: 45 razas andando (antes 43), 10 de historia y 9 actores
+    MOTOR_CHECK(comprobados == 91 + pnj);  // 72 razas andando (45 + 27 del 2000 b.f.), 10 de historia y 9 actores
     MOTOR_CHECK(pnj >= 250);  // un PNJ por objeto npc de assets/objects, y sus variantes
     m->vaciarCache();
 }
@@ -221,8 +242,9 @@ MOTOR_TEST_CASE(apariencia_capas_como_el_probador) {
     // La naga del rio: sin capucha ni morro de serpiente, con pelo de persona.
     auto naga = m->capas(man.personajes.at("naga_del_rio"));
     MOTOR_CHECK(naga.isOk());
-    MOTOR_CHECK(
-        (ranuras(naga.value()) == std::vector<std::string>{"cuerpo", "pelo", "torso", "arma"}));
+    // PL-JUEGO-01: con su cabeza de PixelLab (lo que sale de la de la familia va en «rasgos»).
+    MOTOR_CHECK((ranuras(naga.value()) ==
+                 std::vector<std::string>{"cuerpo", "rasgos", "pelo", "torso", "arma"}));
 
     // Otra piel en un humano: el cuerpo sale del atlas de cuerpos lisos, que
     // trae ojos azules, asi que los ojos de la raza (marrones) van encima.
@@ -234,14 +256,14 @@ MOTOR_TEST_CASE(apariencia_capas_como_el_probador) {
     MOTOR_CHECK(h.value()[0].atlas == "personajes/cuerpos/cuerpos_medio.png");
     MOTOR_CHECK(h.value()[1].ranura == "ojos");
 
-    // Un yelmo cerrado tapa el pelo; una capucha no.
+    // Un yelmo cerrado tapa el pelo; un sombrero de paja no (PL-ROPA-01: la capucha de PixelLab tambien lo tapa).
     humano.ropa["cabeza"] = "yelmo";
     auto conYelmo = m->capas(humano);
     MOTOR_CHECK(conYelmo.isOk());
     for (const auto& capa : conYelmo.value())
         MOTOR_CHECK(capa.ranura != "pelo");
     // Lo puesto manda sobre la ropa elegida.
-    auto conEquipo = m->capas(humano, {{"cabeza", "capucha_gris"}, {"arma", "espada_hierro"}});
+    auto conEquipo = m->capas(humano, {{"cabeza", "sombrero_paja"}, {"arma", "espada_hierro"}});
     MOTOR_CHECK(conEquipo.isOk());
     bool hayPelo = false, hayEspada = false;
     for (const auto& capa : conEquipo.value()) {
@@ -271,9 +293,15 @@ MOTOR_TEST_CASE(apariencia_lo_que_no_existe_es_error) {
     MOTOR_CHECK(!r.isOk());
     MOTOR_CHECK(r.errorMessage().find("armadura_imaginaria") != std::string::npos);
 
-    // Un minotauro no admite otra piel: su cuerpo lleva rasgos propios.
+    // EDITOR-PERSONALIZACION-01: un minotauro admite otra piel de «pieles» (el cuerpo se tine), pero no
+    // una que no exista ni otra talla.
     Game::Apariencia toro = Game::Apariencia::deRaza(*man.raza("minotauros_de_la_llanura"));
     toro.piel = "piel_clara";
+    MOTOR_CHECK(m->capas(toro).isOk());
+    toro.piel = "piel_que_no_existe";
+    MOTOR_CHECK(!m->montar(toro).isOk());
+    toro.piel = "";
+    toro.talla = "medio";
     MOTOR_CHECK(!m->montar(toro).isOk());
 }
 
@@ -313,9 +341,9 @@ MOTOR_TEST_CASE(apariencia_reparto_de_la_hoja) {
     MOTOR_CHECK(Game::rumboDeFrame(16) == Rumbo::Derecha);
     MOTOR_CHECK(Game::rumboDeFrame(17) == Rumbo::Abajo);
     MOTOR_CHECK(Game::rumboDeFrame(20) == Rumbo::Izquierda);
-    MOTOR_CHECK((Game::framesDeReposo(Rumbo::Abajo) == std::array<int, 2>{17, 18}));
-    MOTOR_CHECK((Game::framesDeReposo(Rumbo::Arriba) == std::array<int, 2>{13, 14}));
-    MOTOR_CHECK((Game::framesDeReposo(Rumbo::Izquierda) == std::array<int, 2>{19, 20}));
+    MOTOR_CHECK((Game::framesDeReposo(Rumbo::Abajo) == std::vector<int>{17, 18}));
+    MOTOR_CHECK((Game::framesDeReposo(Rumbo::Arriba) == std::vector<int>{13, 14}));
+    MOTOR_CHECK((Game::framesDeReposo(Rumbo::Izquierda) == std::vector<int>{19, 20}));
     const std::vector<int> reposo = Game::cicloDeReposo(Rumbo::Derecha);
     MOTOR_CHECK(reposo.front() == 15 && reposo.back() == 16);
     MOTOR_CHECK(std::count(reposo.begin(), reposo.end(), 15) > std::count(reposo.begin(), reposo.end(), 16));
@@ -328,6 +356,43 @@ MOTOR_TEST_CASE(apariencia_reparto_de_la_hoja) {
     MOTOR_CHECK(Game::rumboDeFrame(Game::frameDeVistaPrevia(0.17 * 32 + 0.01)) == Rumbo::Arriba);
     MOTOR_CHECK(Game::rumboDeFrame(Game::frameDeVistaPrevia(0.17 * 48 + 0.01)) == Rumbo::Izquierda);
     MOTOR_CHECK(Game::frameDeVistaPrevia(-3.0) == 7);
+}
+
+// Oriol (24/10): el reparto en diagonal de los cuerpos de PixelLab, 40 frames: andar 1-24 (seis por
+// rumbo: noreste, sureste, suroeste, noroeste) y respirar 25-40 (cuatro por rumbo).
+MOTOR_TEST_CASE(apariencia_reparto_en_diagonal) {
+    using Game::Reparto;
+    using Game::Rumbo;
+    const Reparto d = Reparto::Diagonal;
+    MOTOR_CHECK(Game::repartoDeColumnas(12) == Reparto::Clasico);
+    MOTOR_CHECK(Game::repartoDeColumnas(20) == Reparto::Clasico);
+    MOTOR_CHECK(Game::repartoDeColumnas(40) == d);
+    MOTOR_CHECK(Game::framesDeReparto(d) == 40);
+    MOTOR_CHECK(Game::rumboDeFrame(1, d) == Rumbo::Arriba);
+    MOTOR_CHECK(Game::rumboDeFrame(7, d) == Rumbo::Derecha);
+    MOTOR_CHECK(Game::rumboDeFrame(18, d) == Rumbo::Abajo);
+    MOTOR_CHECK(Game::rumboDeFrame(24, d) == Rumbo::Izquierda);
+    MOTOR_CHECK(Game::rumboDeFrame(25, d) == Rumbo::Arriba);
+    MOTOR_CHECK(Game::rumboDeFrame(32, d) == Rumbo::Derecha);
+    MOTOR_CHECK(Game::rumboDeFrame(33, d) == Rumbo::Abajo);
+    MOTOR_CHECK(Game::rumboDeFrame(40, d) == Rumbo::Izquierda);
+    MOTOR_CHECK((Game::cicloDeAndar(Rumbo::Abajo, d) == std::vector<int>{13, 14, 15, 16, 17, 18}));
+    MOTOR_CHECK((Game::framesDeReposo(Rumbo::Derecha, d) == std::vector<int>{29, 30, 31, 32}));
+    MOTOR_CHECK(Game::frameQuieto(Rumbo::Izquierda, d) == 37);
+    // las capas se ordenan como de frente (sureste, suroeste) o de espaldas (noreste, noroeste)
+    MOTOR_CHECK(std::string(Game::vistaDeFrame(1, d)) == "arriba");
+    MOTOR_CHECK(std::string(Game::vistaDeFrame(10, d)) == "abajo");
+    MOTOR_CHECK(std::string(Game::vistaDeFrame(35, d)) == "abajo");
+    MOTOR_CHECK(std::string(Game::vistaDeFrame(40, d)) == "arriba");
+    MOTOR_CHECK(std::string(Game::vistaDeFrame(5)) == "derecha");  // el clasico, como siempre
+    const std::vector<int> reposo = Game::cicloDeReposo(Rumbo::Abajo, d);
+    MOTOR_CHECK(reposo.size() == 20 && reposo.front() == 33 && reposo.back() == 36);
+    // la vista previa: suroeste andando, respira y gira al sureste
+    MOTOR_CHECK(Game::frameDeVistaPrevia(0.0, d) == 13);
+    MOTOR_CHECK(Game::frameDeVistaPrevia(0.12 * 5 + 0.01, d) == 18);
+    MOTOR_CHECK(Game::frameDeVistaPrevia(0.12 * 12 + 0.01, d) == 33);
+    MOTOR_CHECK(Game::frameDeVistaPrevia(0.12 * 14 + 0.01, d) == 34);
+    MOTOR_CHECK(Game::rumboDeFrame(Game::frameDeVistaPrevia(0.12 * 28 + 0.01, d), d) == Rumbo::Derecha);
 }
 
 int main() { return motor_test::runAllTests(); }
@@ -410,7 +475,8 @@ MOTOR_TEST_CASE(estetica_todos_los_objetos_se_montan) {
     }
     MOTOR_CHECK(montados == static_cast<int>(man.piezaDeObjeto.size()));
     MOTOR_CHECK(man.piezaDeObjeto.size() >= 400);
-    MOTOR_CHECK(aspectos.size() + 6 >= man.piezaDeObjeto.size());
+    // + los siete únicos de Boundington (bnd_unico_*): llevan la pieza de su base y los distingue el brillo
+    MOTOR_CHECK(aspectos.size() + 13 >= man.piezaDeObjeto.size());
 }
 
 MOTOR_TEST_CASE(sp02_los_guanteletes_van_en_las_dos_manos_y_encima_tambien_de_espaldas) {
@@ -420,22 +486,28 @@ MOTOR_TEST_CASE(sp02_los_guanteletes_van_en_las_dos_manos_y_encima_tambien_de_es
     auto m = montaje();
     const auto& man = m->manifiesto();
     const Game::FilaDeCapa* guantes = man.equipo.at("arma").buscar("f_guanteletes");
-    const Game::FilaDeCapa* espada = man.equipo.at("arma").buscar("f_espada");
+    // (la espada no: Oriol la pone delante en unos frames desde la Forja; un hacha sigue normal)
+    const Game::FilaDeCapa* espada = man.equipo.at("arma").buscar("f_hacha");
     MOTOR_CHECK(guantes != nullptr && espada != nullptr);
     if (guantes == nullptr || espada == nullptr)
         return;
     MOTOR_CHECK(guantes->orden.size() == 4);
     MOTOR_CHECK(guantes->orden.count("arriba") == 1 && guantes->orden.at("arriba") > man.orden.at("cuerpo").at("arriba"));
-    MOTOR_CHECK(espada->orden.empty());
+    // PL-JUEGO-01: un arma de PixelLab trae su orden frame a frame (delante o detras del cuerpo segun la
+    // muneca este mas cerca o mas lejos de la camara que los hombros) y, si otra talla cambia, «<talla>/f<n>».
+    MOTOR_CHECK(espada->orden.size() >= 4 + 40 && espada->orden.count("f25") == 1);
     MOTOR_CHECK(man.orden.at("arma").at("arriba") < man.orden.at("cuerpo").at("arriba"));
     // Los guanteletes de Viaje del catalogo son esa pieza (con el tinte de Viaje).
     MOTOR_CHECK(man.piezaDeObjeto.count("guanteletes_de_viaje") == 1);
     MOTOR_CHECK(man.piezaDeObjeto.at("guanteletes_de_viaje").pieza == "f_guanteletes");
 
-    // De espaldas (frame 2, quieto), en las dos manos (26,48) y (38,48) del
-    // humano de talla media: encima queda el guantelete; con una espada, la mano.
+    // De espaldas y quieto (PL-JUEGO-01: el primer frame de respirar al noreste, el 25; el 2 antes), en
+    // las dos manos del humano de talla media (sus anclas): encima queda el guantelete; con un hacha, la mano.
     const Game::Apariencia humano = Game::Apariencia::deRaza(*man.raza("race_human_marches"));
-    for (const char* pieza : {"f_guanteletes", "f_espada"}) {
+    const int espaldas = Game::frameQuieto(Game::Rumbo::Arriba, Game::repartoDeColumnas(man.frames));
+    const auto& anclas = man.anclas.at("medio");
+    const std::size_t qi = static_cast<std::size_t>(espaldas - 1);
+    for (const char* pieza : {"f_guanteletes", "f_hacha"}) {
         Game::MapaDeCapas mapa;
         auto hoja = m->montar(humano, {{"arma", pieza}}, &mapa);
         MOTOR_CHECK(hoja.isOk());
@@ -445,13 +517,152 @@ MOTOR_TEST_CASE(sp02_los_guanteletes_van_en_las_dos_manos_y_encima_tambien_de_es
         MOTOR_CHECK(it != mapa.ranuras.end());
         const int arma = static_cast<int>(it - mapa.ranuras.begin()) + 1;
         const int ancho = hoja.value().ancho;
-        const int x0 = 64;  // el frame 2
-        for (const int x : {26, 38}) {
-            const int arriba = mapa.arriba[static_cast<std::size_t>(48 * ancho + x0 + x)];
+        const int x0 = 64 * (espaldas - 1);
+        for (const auto& punto : {anclas.mano[qi], anclas.otraMano[qi]}) {
+            const int arriba = mapa.arriba[static_cast<std::size_t>(punto[1] * ancho + x0 + punto[0])];
             if (std::string(pieza) == "f_guanteletes")
                 MOTOR_CHECK(arriba == arma);
             else
                 MOTOR_CHECK(arriba != arma);
         }
     }
+}
+
+MOTOR_TEST_CASE(forja_un_frame_suelto_puede_poner_el_arma_delante) {
+    // Oriol (23/10): la Forja de Onegai pone el arma delante o detras del personaje frame a frame. La fila
+    // trae «f<n>» en su orden, que manda sobre el de la direccion: con la espada en un frame en que va
+    // detras del cuerpo (PL-JUEGO-01: el primero de la talla media; antes, el 2, de espaldas) puesta
+    // delante, se ve mas espada.
+    auto m = montaje();
+    const auto& man = m->manifiesto();
+    const Game::FilaDeCapa* espada = man.equipo.at("arma").buscar("f_espada");
+    MOTOR_CHECK(espada != nullptr);
+    if (espada == nullptr)
+        return;
+    const Game::Apariencia humano = Game::Apariencia::deRaza(*man.raza("race_human_marches"));
+    int frame = 0;
+    for (int f = 1; f <= man.frames && frame == 0; ++f) {
+        const auto it = espada->orden.find("f" + std::to_string(f));
+        if (it != espada->orden.end() && it->second < man.orden.at("cuerpo").at("abajo")) frame = f;
+    }
+    MOTOR_CHECK(frame > 0);
+    if (frame == 0)
+        return;
+    const std::string clave = "f" + std::to_string(frame);
+    auto cuenta = [&]() {
+        Game::MapaDeCapas mapa;
+        auto hoja = m->montar(humano, {{"arma", "f_espada"}}, &mapa);
+        MOTOR_CHECK(hoja.isOk());
+        if (!hoja.isOk())
+            return -1;
+        const int arma = static_cast<int>(std::find(mapa.ranuras.begin(), mapa.ranuras.end(), "arma") - mapa.ranuras.begin()) + 1;
+        const int ancho = hoja.value().ancho;
+        int n = 0;
+        const int x0 = 64 * (frame - 1);
+        for (int y = 0; y < 64; ++y)
+            for (int x = x0; x < x0 + 64; ++x) n += mapa.arriba[static_cast<std::size_t>(y * ancho + x)] == arma ? 1 : 0;
+        return n;
+    };
+    const int detras = cuenta();
+    auto& fila = const_cast<Game::FilaDeCapa&>(*espada);  // solo en la prueba: el manifiesto ya cargado
+    const int antes = fila.orden.at(clave);
+    fila.orden[clave] = 90;
+    const int delante = cuenta();
+    fila.orden[clave] = antes;
+    MOTOR_CHECK(detras >= 0 && delante > detras);
+}
+
+// EDITOR-PERSONALIZACION-01 (Oriol, 26/10): cualquier piel, cualquier color de pelo, marcas, alas, cola y
+// cuernos, para cualquier raza.
+MOTOR_TEST_CASE(personalizacion_piel_pelo_marcas_y_rasgos) {
+    auto m = montaje();
+    const auto& man = m->manifiesto();
+
+    // Un dracónido (cabeza propia, rasgos) con la piel de un orco: las capas de la raza, el cuerpo tenido
+    // color a color con los pares de «pieles»; los rasgos (cuernos, escamas) sin tocar.
+    Game::Apariencia dragon = Game::Apariencia::deRaza(*man.raza("draconidos_de_fuego"));
+    dragon.piel = "orcos_del_consejo";
+    auto d = m->capas(dragon);
+    MOTOR_CHECK(d.isOk());
+    if (d.isOk()) {
+        bool cuerpoTenido = false;
+        for (const auto& capa : d.value()) {
+            if (capa.ranura == "cuerpo")
+                cuerpoTenido = !capa.cambios.empty();
+            else if (capa.ranura != "orejas" && capa.ranura != "morro")
+                MOTOR_CHECK(capa.cambios.empty());
+        }
+        MOTOR_CHECK(cuerpoTenido);
+        auto hoja = m->montar(dragon);
+        MOTOR_CHECK(hoja.isOk());
+    }
+    // Una piel que no esta en «pieles» ni en el atlas de cuerpos: error claro.
+    dragon.piel = "piel_de_mentira";
+    MOTOR_CHECK(!m->capas(dragon).isOk());
+
+    // Un aarakocra con melena larga de color llama: el pelo ya no esta en «sin», y como el atlas no trae
+    // «melena_larga/pelo_llama», se tine la fila castana.
+    Game::Apariencia pajaro = Game::Apariencia::deRaza(*man.raza("aarakocra_de_las_montanas"));
+    pajaro.peloEstilo = "melena_larga";
+    pajaro.peloColor = "pelo_llama";
+    pajaro.barbaEstilo = "BARBA_LARGA";
+    pajaro.barbaColor = "pelo_azul_hielo";
+    auto p = m->capas(pajaro);
+    MOTOR_CHECK(p.isOk());
+    if (p.isOk()) {
+        bool pelo = false, barba = false;
+        for (const auto& capa : p.value()) {
+            if (capa.ranura == "pelo") {
+                pelo = true;
+                MOTOR_CHECK(capa.fila == man.pelo.buscar("melena_larga/pelo_castano")->fila && capa.cambios.size() == 5);
+            }
+            if (capa.ranura == "barba")
+                barba = true;
+        }
+        MOTOR_CHECK(pelo && barba);
+    }
+    // El color que el atlas trae se usa tal cual, sin tinte; NET-E1a: si el atlas va recortado a la fila
+    // castana (sin «melena_larga/pelo_rubio»), la castana tenida: mismo resultado, otra via.
+    pajaro.peloColor = "pelo_rubio";
+    p = m->capas(pajaro);
+    MOTOR_CHECK(p.isOk());
+    const auto* filaRubia = man.pelo.buscar("melena_larga/pelo_rubio");
+    const auto* filaCastana = man.pelo.buscar("melena_larga/pelo_castano");
+    MOTOR_CHECK(filaCastana != nullptr);
+    if (p.isOk() && filaCastana != nullptr)
+        for (const auto& capa : p.value())
+            if (capa.ranura == "pelo")
+                MOTOR_CHECK(filaRubia != nullptr ? (capa.cambios.empty() && capa.fila == filaRubia->fila)
+                                                  : (!capa.cambios.empty() && capa.fila == filaCastana->fila));
+
+    // Marcas (dos, una con tinte), alas, cola y cuernos en un humano: cada una su capa y su orden.
+    Game::Apariencia humano = Game::Apariencia::deRaza(*man.raza("race_human_marches"));
+    humano.marcas = {"tatuaje_cara:tinta_negra>plaga", "cicatriz_pecho"};
+    humano.ropa["alas"] = "alas_libelula";
+    humano.ropa["cola"] = "cola_zorro";
+    humano.ropa["cuernos"] = "cuernos_astas";
+    auto h = m->capas(humano);
+    MOTOR_CHECK(h.isOk());
+    if (h.isOk()) {
+        int marcas = 0;
+        bool alas = false, cola = false, cuernos = false, tinte = false;
+        for (const auto& capa : h.value()) {
+            if (capa.ranura == "marcas") {
+                ++marcas;
+                tinte = tinte || !capa.cambios.empty();
+            }
+            alas = alas || capa.ranura == "alas";
+            cola = cola || capa.ranura == "cola";
+            cuernos = cuernos || capa.ranura == "cuernos";
+        }
+        MOTOR_CHECK(marcas == 2 && tinte && alas && cola && cuernos);
+        MOTOR_CHECK(man.orden.at("marcas").at("abajo") == 12 && man.orden.at("cuernos").at("abajo") == 66);
+        auto hoja = m->montar(humano);
+        MOTOR_CHECK(hoja.isOk());
+    }
+    // La clave distingue las marcas.
+    Game::Apariencia sinMarcas = humano;
+    sinMarcas.marcas.clear();
+    MOTOR_CHECK(humano.clave() != sinMarcas.clave());
+    m->vaciarCache();
 }

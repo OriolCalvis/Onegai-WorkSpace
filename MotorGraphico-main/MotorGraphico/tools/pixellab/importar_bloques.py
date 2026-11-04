@@ -17,9 +17,9 @@ bloque entero con cara «v» o «p» (nunca puerta), las intermedias solo caras
 fila: el motor las apoya en la base del rombo (Render/BloquesNivel).
 
 Lee assets/textures/pixellab/bloques.json:
-    {"materiales": {"piedra": {"pp": "lote8/piedra_pp.png", "dv": "...", "vd": "..."},
+    {"materiales": {"piedra_publica": {"pp": "lote8/piedra_pp.png", "dv": "...", "vd": "..."},
                     "muralla": {"pp": "lote8/muralla_pp.png"},
-                    "maderab": {"pp": "...", "dv": "...", "vd": "...", "plantaBaja": "madera"}}}
+                    "entramado_balcon": {"pp": "...", "dv": "...", "vd": "...", "plantaBaja": "entramado"}}}
 Un material con «plantaBaja» es una variante de plantas altas (balcones...):
 la planta baja sale de los bloques del material base y las de arriba de los
 suyos; en bloques.json se reparte por edificio con «pesosMaterial».

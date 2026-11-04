@@ -80,6 +80,12 @@ public:
     // APARIENCIA-01 — Pone al jugador el aspecto del personaje creado (su
     // hoja y los ciclos de andar). Sin personaje creado no hace nada.
     void vestir(Player& jugador) const;
+    // E-GUION-01 — Para el jugador que no ha pasado por el creador (`juego --nivel`,
+    // `--guion`): le pone el aspecto por defecto de un humano (race_human_marches:
+    // su pelo y su ropa basica, sin armas) por el mismo camino que el creador, en
+    // lugar del marcador provisional personaje.png. false (y no toca nada) si no
+    // hay personajes.json o no se pudo montar la hoja. No crea ficha.
+    bool vestirPorDefecto(Player& jugador);
     // Cada fotograma de partida: si cambio lo que lleva puesto la ficha,
     // vuelve a montar la hoja del jugador (y el equipo nuevo se ve, con su
     // brillo: ESTETICA-01).

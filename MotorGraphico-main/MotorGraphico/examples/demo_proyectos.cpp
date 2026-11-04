@@ -50,7 +50,8 @@ int main() {
     // gana contenido; una prueba que se rompe porque el trabajo avanza no
     // esta comprobando nada util, solo estorbando.
     const char* kCampana[] = {"boundington_prologo.json", "boundington_primer_dia.json",
-                              "boundington_segundo_dia.json", "boundington_ocaso.json"};
+                              "boundington_dia_gorran.json", "boundington_segundo_dia.json",
+                              "boundington_ocaso.json"};
     for (const char* av : kCampana) {
         bool esta = false;
         for (const std::string& s : b->adventures) {

@@ -31,7 +31,7 @@ Rect Retratista::enemigo(const Game::RegistroSprites& registro, const std::strin
         const imagen::ImagenRGBA& im = png.value();
         int x0 = 0, y0 = 0;
         if (actor != nullptr) {
-            x0 = 7 * hoja->celdaAncho;  // el frame 8: de frente y quieto
+            x0 = columnaDeCaraQuieta(hoja->columnas) * hoja->celdaAncho;  // de frente y quieto (J-3: segun las columnas)
             y0 = (actor->fila - 1) * hoja->celdaAlto;
         } else {
             const int f = std::max(0, fijo->frame - 1);
@@ -158,7 +158,7 @@ void pintaOrden(const Ctx& k, const DatosCombate& d) {
         k.l.zona(cajaHeroe, static_cast<int>(Z::Objetivo), 0);
         if (alcanzado(afectados, true, 0)) reticula(k, cajaHeroe);
         Rect uv{};
-        if (d.retratoHeroe != nullptr) uv = k.r.frame(*d.retratoHeroe, 7);
+        if (d.retratoHeroe != nullptr) uv = k.r.frame(*d.retratoHeroe, Game::frameQuieto(Game::Rumbo::Abajo, k.r.reparto()) - 1);  // de frente, quieto
         if (uv.w > 0.0f) k.l.rect(Fuente::Retratos, Rect{cajaHeroe.x, cajaHeroe.y + 2.0f, kRet, kRet}, uv, Color::kBlanco);
         else k.p.icono(k.l, "personaje", cajaHeroe.x + 24.0f, cajaHeroe.y + 26.0f, 2);
         if (conEstados) pintaEstadosHeroe(k, d.vista->estadosHeroe, cajaHeroe.x, cajaHeroe.abajo() + 6.0f);
@@ -239,7 +239,7 @@ void pintaOrden(const Ctx& k, const DatosCombate& d) {
     }
 }
 
-// La placa compacta (60 de alto): el nombre a la izquierda y «12/22» a la
+// La placa compacta (50 de alto): el nombre a la izquierda y «12/22» a la
 // derecha en la misma fila; debajo, la barra y, a su lado, sus estados en
 // fichas.
 static void pintaPlacaCompacta(const Ctx& k, const EnemigoEnMesa& e,
@@ -266,7 +266,7 @@ static void pintaPlacaCompacta(const Ctx& k, const EnemigoEnMesa& e,
     const float anchoBarra = estados.empty() ? r.w - 32.0f : 132.0f;
     k.p.barra(k.l, Rect{x, r.y + 40.0f, anchoBarra, 8.0f},
               e.pvMax > 0 ? static_cast<float>(e.pv) / static_cast<float>(e.pvMax) : 0.0f, Color::kPv);
-    pintaEstadosPlaca(k, estados, i + 1, x + anchoBarra + 8.0f, r.y + 32.0f, r.w - 32.0f - anchoBarra - 8.0f, true);
+    pintaEstadosPlaca(k, estados, i + 1, x + anchoBarra + 8.0f, r.y + 26.0f, r.w - 32.0f - anchoBarra - 8.0f, true);
 }
 
 void pintaPlaca(const Ctx& k, const DatosCombate& d) {
@@ -290,7 +290,7 @@ void pintaPlaca(const Ctx& k, const DatosCombate& d) {
         if (!e.vivo) continue;
         const std::vector<Game::EstadoVisible>& estados = estadosDe(i);
         if (compacta) {
-            const float alto = 60.0f;
+            const float alto = 50.0f;  // 170 + 5*(50+6) - 6 = 444 <= 446: caben cinco
             if (y + alto > hasta) break;
             pintaPlacaCompacta(k, e, estados, static_cast<int>(i), Rect{688.0f, y, 250.0f, alto},
                                alcanzado(afectados, false, i));

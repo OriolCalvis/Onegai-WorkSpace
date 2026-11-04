@@ -127,6 +127,9 @@ const char* eventTriggerToText(EventTrigger trigger) {
         case EventTrigger::Touch:    return "touch";
         case EventTrigger::Autorun:  return "autorun";
         case EventTrigger::Parallel: return "parallel";
+        case EventTrigger::RegionEnter: return "region_enter";
+        case EventTrigger::RegionStay:  return "region_stay";
+        case EventTrigger::RegionExit:  return "region_exit";
     }
     return "interact";
 }
@@ -136,6 +139,9 @@ Result<EventTrigger> eventTriggerFromText(const std::string& text, const char* c
     if (text == "touch")    return Result<EventTrigger>::Ok(EventTrigger::Touch);
     if (text == "autorun")  return Result<EventTrigger>::Ok(EventTrigger::Autorun);
     if (text == "parallel") return Result<EventTrigger>::Ok(EventTrigger::Parallel);
+    if (text == "region_enter") return Result<EventTrigger>::Ok(EventTrigger::RegionEnter);
+    if (text == "region_stay")  return Result<EventTrigger>::Ok(EventTrigger::RegionStay);
+    if (text == "region_exit")  return Result<EventTrigger>::Ok(EventTrigger::RegionExit);
     // No se cae a un valor por defecto: un disparador que no se entiende
     // convertiria una pagina que espera al jugador en una que arranca
     // sola, y el autor no veria ningun error.

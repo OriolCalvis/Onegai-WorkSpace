@@ -25,7 +25,7 @@ import numpy as np
 import actores_cascos as cascos
 import actores_equipo as equipo
 from actores_materiales import MATERIALES
-from actores_pintura import Material as M
+from actores_pintura import cubierto, Material as M
 from actores_pintura import _tramo_torso, es_contorno, filas_torso, pintar, top_pie
 from actores_siluetas import plantilla
 
@@ -573,7 +573,7 @@ def banda_central(material, ancho=1):
         cx = (tr[0] + tr[1]) // 2
         for y in range(y0 + 1, lab.shape[0]):
             for x in range(cx - ancho + 1, cx + ancho + 1):
-                if (y, x) in ctx["cubre"] and lab[y, x] not in DELANTE:
+                if cubierto(ctx, y, x) and lab[y, x] not in DELANTE:
                     pintar(ctx, y, x, m, "H" if x == cx - ancho + 1 else "s")
     return fn
 
@@ -640,11 +640,13 @@ def faja(material, cabos=4):
         if cint is None:
             return
         m = ctx["mat"][material]
-        xs = [x for x in range(lab.shape[1]) if lab[cint, x] in ("p", "t") or (cint, x) in ctx["cubre"]]
+        xs = [x for x in range(lab.shape[1]) if lab[cint, x] in ("p", "t") or cubierto(ctx, cint, x)]
         if not xs:
             return
         for y in (cint - 1, cint):
             for x in range(min(xs), max(xs) + 1):
+                if lab[y, x] in ("a", "A", "m", "M"):
+                    continue  # PL-ROPA-01: la faja no tapa los brazos ni las manos (en diagonal cuelgan a la cintura)
                 pintar(ctx, y, x, m, "H" if y == cint - 1 else "s")
         if d == "arriba":
             return
@@ -838,7 +840,7 @@ def cruce_gi(solapa, interior=None, punto=6):
                 if k <= punto:
                     w = (punto - k) * 3 // 5
                     for x in range(cx - w, cx + w + 1):
-                        if lab[y, x] == "t" and (y, x) in ctx["cubre"]:
+                        if lab[y, x] == "t" and cubierto(ctx, y, x):
                             if mi is not None:
                                 pintar(ctx, y, x, mi, "s" if abs(x - cx) < w else "d")
                             else:
@@ -1051,7 +1053,7 @@ def bolsas_cinturon(material, n=2):
         if cint is None:
             return
         m = ctx["mat"][material]
-        xs = [x for x in range(lab.shape[1]) if lab[cint, x] in ("p", "t") or (cint, x) in ctx["cubre"]]
+        xs = [x for x in range(lab.shape[1]) if lab[cint, x] in ("p", "t") or cubierto(ctx, cint, x)]
         if not xs:
             return
         x0, x1 = min(xs), max(xs)

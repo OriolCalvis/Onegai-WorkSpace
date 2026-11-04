@@ -1,6 +1,7 @@
 // PERGAMINO-01 — ver include/HUD/Pergamino/DialogoHoja.h.
 #include "HUD/Pergamino/DialogoHoja.h"
 
+#include <cstdlib>
 #include <algorithm>
 #include <cmath>
 
@@ -144,7 +145,10 @@ void DialogoHoja::miraTirada(const RPG::TiradaVisible& t) {
     // Distinto y no mayor: una partida nueva o cargada vuelve a contar.
     if (t.numero == m_tiradaVista) return;
     m_tiradaVista = t.numero;
-    if (t.numero > 0 && !m_paginas.empty()) m_tirada = t;
+    if (t.numero > 0 && !m_paginas.empty()) {
+        m_tirada = t;
+        m_tiradaRodando = false;  // empieza a rodar cuando se vea (pinta)
+    }
 }
 
 bool DialogoHoja::avanza() {
@@ -211,7 +215,17 @@ void DialogoHoja::pinta(Lienzo& l, const Pincel& p, int anchoVista, int altoVist
     }
     // H2-01: la tirada, en la ultima pagina (la que dice «Tirada de...»),
     // apoyada encima de la hoja por la derecha.
-    if (conTirada() && ultima()) pintaTiradaDialogo(l, p, m_tirada, x + kAncho - 24.0f, y - 8.0f);
+    if (conTirada() && ultima()) {
+        static const bool reducidas = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;
+        const auto ahora = std::chrono::steady_clock::now();
+        if (!m_tiradaRodando) {
+            m_tiradaRodando = true;
+            m_tiradaDesde = ahora;
+        }
+        const float t = std::chrono::duration<float>(ahora - m_tiradaDesde).count();
+        pintaTiradaDialogo(l, p, m_tirada, x + kAncho - 24.0f, y - 8.0f,
+                           !reducidas && t < dados::kRodar ? t : -1.0f);
+    }
 }
 
 }  // namespace Pergamino

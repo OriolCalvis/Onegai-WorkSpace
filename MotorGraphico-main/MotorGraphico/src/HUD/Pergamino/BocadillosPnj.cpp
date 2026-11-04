@@ -11,6 +11,7 @@
 
 #include "Core/Math/IsoMath.h"
 #include "Game/GameSession.h"
+#include "Game/PosicionBocadillo.h"
 #include "Game/RutinasPnj.h"
 #include "HUD/Pergamino/Materiales.h"
 #include "HUD/Pergamino/Pincel.h"
@@ -38,13 +39,13 @@ void pintaBocadillosPnj(Lienzo& l, const Pincel& p, const EstadoJuego& e, const 
         // Sus pies a pantalla, con lo que le falte del paso (el dibujo va detras del juego).
         const Vector2 celda = IsoMath::gridToScreen(pnj.casilla, tw, th);
         const float dx = pnj.desfaseX(), dy = pnj.desfaseY();
-        const float x = (celda.x + tw * 0.5f + (dx - dy) * tw * 0.5f - e.camaraX) * e.zoom + static_cast<float>(e.anchoVista) * 0.5f;
-        const float pies = (celda.y + th * 0.9f + (dx + dy) * th * 0.5f - e.camaraY) * e.zoom + static_cast<float>(e.altoVista) * 0.5f;
-        const float wTexto = habla ? p.anchoTexto(Letra::Lora16, pnj.frase) : 0.0f;
-        const float w = std::round(habla ? wTexto + 24.0f + (icono.empty() ? 0.0f : 22.0f) : 32.0f);
+        const float w0 = habla ? p.anchoTexto(Letra::Lora16, pnj.frase) : 0.0f;
+        const float w = std::round(habla ? w0 + 24.0f + (icono.empty() ? 0.0f : 22.0f) : 32.0f);
         const float h = habla ? 34.0f : 30.0f;
-        const float x0 = std::round(x - w * 0.5f), y0 = std::round(pies - 58.0f * e.zoom - h - 8.0f);
-        if (x0 + w < 0.0f || x0 > static_cast<float>(e.anchoVista) || y0 + h < 0.0f || y0 > static_cast<float>(e.altoVista)) continue;
+        const Game::PosicionBocadillo pos = Game::posicionBocadillo(celda.x + tw * 0.5f + (dx - dy) * tw * 0.5f,
+            celda.y + th * 0.9f + (dx + dy) * th * 0.5f, e.camaraX, e.camaraY, e.zoom, e.anchoVista, e.altoVista, w, h);
+        if (!pos.visible) continue;
+        const float x = pos.x, x0 = pos.x0, y0 = pos.y0;
         l.materialConSombra(hoja(static_cast<int>(w), static_cast<int>(h), 23, 1, 0, 0), Vector2{x0, y0}, Color::kSombra);
         l.material(pieza(Material::Flecha), Vector2{std::round(x) - 6.0f, y0 + h - 1.0f});
         float xt = x0 + (habla ? 12.0f : 8.0f);

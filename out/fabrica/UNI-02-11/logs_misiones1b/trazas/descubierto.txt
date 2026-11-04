@@ -1,0 +1,11 @@
+guardados_q1c/q1c_descubierto.json: descubierto en assets/levels/interior_iglesia.json (19,2) oro 125
+   BEAT b1_guarida_puerta [] lineas=2 «La nave de abajo: sarcófagos, nichos con velas y, al fondo,»
+   MENU b1_guarida_puerta -> 1  {1. Dejar las armas | 2. «Vengo de parte del herrero.» [Engaño] | 3. Darte la vuelta}
+   BEAT b1_guarida_puerta [] lineas=1 «Sueltas el arma en el cesto. Algo frío te pasa por la nuca.»
+   BEAT b1_cripta_descubierto [] lineas=2 «Una mano en el hombro. No es la de un novicio.»
+   MENU b1_cripta_descubierto -> 2  {1. «Sandes me ha mandado a mí.» [Engaño] | 2. Rendirte | 3. Correr hacia la salida [Atletismo] | 4. Pelear}
+   BEAT b1_cripta_descubierto [] lineas=1 «Levantas las manos. El carcelero te las ata a la espalda sin»
+   BEAT b1_capturado [] lineas=2 «La cámara honda. Una argolla en la pared y tus muñecas en »
+   MENU b1_capturado -> 2  {1. Romper las cadenas [Atletismo] | 2. Esperar a que te suelten}
+   BEAT b1_capturado [] lineas=2 «Esperas. Arriba se apaga el canto. Al rato baja Sandes, con »
+   CIERRE bnd1_capturado_resuelto

@@ -2049,4 +2049,43 @@ MOTOR_TEST_CASE(el_efecto_grantmilestone_se_lee_se_escribe_y_se_valida) {
         "trigger": {"type": "auto"}, "requires": {"nivelMinimo": 101}, "effects": []}]})").isOk());
 }
 
+// Oriol (22/10): andar con el raton fuera del combate. Un muro en x = 2 con un hueco abajo: el camino lo
+// rodea; a un PNJ (objeto que tapa) se llega a la casilla de al lado; en combate, nada.
+MOTOR_TEST_CASE(el_camino_del_raton_rodea_los_muros_y_se_para_al_lado_del_pnj) {
+    struct Patio : RuntimeTileMap {
+        Patio() {
+            RuntimeTileLayer capa;
+            for (int y = 0; y < 5; ++y)
+                for (int x = 0; x < 5; ++x) capa.tiles.emplace_back(1, x == 2 && y < 4);
+            replaceCompiledData(5, 5, 64, 32, {capa});
+        }
+    } patio;
+    ObjectCatalog catalog;
+    MOTOR_CHECK(catalog.loadFromString(R"({"objects": [{"id": "tendero", "name": "Tendero", "category": "prop", "blocksMovement": true}]})")
+                    .isOk());
+    SkillCatalog skills;
+    TestCombatant body{60};
+    SkillSet playerSkills{10};
+    std::vector<std::string> inventory;
+    GameSession session(&patio, &catalog, &skills, makeLevelConObjeto("Patio", "tendero", GridCoord{4, 2}), &body,
+                        &playerSkills, &inventory);
+    const auto ruta = session.rutaAndando(GridCoord{4, 0});
+    MOTOR_CHECK(!ruta.empty() && ruta.back().x == 4 && ruta.back().y == 0);
+    bool porElHueco = false;
+    GridCoord antes{0, 0};
+    for (const GridCoord& c : ruta) {
+        MOTOR_CHECK(std::abs(c.x - antes.x) + std::abs(c.y - antes.y) == 1);
+        MOTOR_CHECK(!(c.x == 2 && c.y < 4));
+        porElHueco |= c.x == 2 && c.y == 4;
+        antes = c;
+    }
+    MOTOR_CHECK(porElHueco);
+    const auto alTendero = session.rutaAndando(GridCoord{4, 2});
+    MOTOR_CHECK(!alTendero.empty());
+    const GridCoord fin = alTendero.back();
+    MOTOR_CHECK(std::abs(fin.x - 4) + std::abs(fin.y - 2) == 1);
+    MOTOR_CHECK(session.rutaAndando(GridCoord{0, 0}).empty());  // ya esta ahi
+    MOTOR_CHECK(session.rutaAndando(GridCoord{9, 9}).empty());  // fuera del mapa
+}
+
 int main() { return motor_test::runAllTests(); }

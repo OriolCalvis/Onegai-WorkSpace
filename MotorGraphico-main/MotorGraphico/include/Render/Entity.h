@@ -10,6 +10,8 @@
 
 class TextureAtlas;
 class SpriteBatch;
+class Texture;
+struct UVRect;
 
 // Objeto dibujable posicionado en el grid isometrico (jugador, enemigo,
 // prop...). AnimatedEntity/Player/Enemy (motor_grafico_clases.puml, ver
@@ -99,6 +101,8 @@ public:
         m_characterAnchor = anchorOffset;
     }
     void clearCharacterSprite() { m_characterAtlas = nullptr; }
+    // Oriol (24/10): la hoja de personaje puesta (HojaPersonaje::animar mira sus columnas: 20 o 40 frames).
+    TextureAtlas* characterAtlas() const { return m_characterAtlas; }
 
     // ESTETICA-01: donde dibuja render() el sprite de personaje (esquina y
     // tamano en pantalla) y con que region de su atlas, para pintar encima
@@ -118,6 +122,16 @@ public:
     // (ej. parpadeo de dano, highlight de seleccion).
     void setTint(const Vector4& tint) { m_tint = tint; }
     const Vector4& tint() const { return m_tint; }
+
+    // C2-04b — Postura (tumba/levanta): `giro` en radianes alrededor de los pies y
+    // `aplasta` = factor de alto (1 = entero), pies fijos. (0, 1) = el camino de
+    // siempre; cualquier otro valor dibuja con submitQuad (Game/CuadroGirado.h).
+    void setPostura(float giro, float aplasta) {
+        m_giro = giro;
+        m_aplasta = aplasta;
+    }
+    float giro() const { return m_giro; }
+    float aplasta() const { return m_aplasta; }
 
     // Cambia el atlas contra el que se dibuja. Necesario al cambiar de
     // nivel: cada mapa declara su tileset (ver TileMap::
@@ -144,8 +158,11 @@ protected:
     Vector2 m_characterAnchor{0.0f, 0.0f};
     float m_visualScale = 1.0f;
     bool m_sombraBlob = true;  // INT-03: ver setSombraBlob()
+    float m_giro = 0.0f;       // C2-04b: ver setPostura()
+    float m_aplasta = 1.0f;
 
 private:
+    void submitPostura(SpriteBatch& batch, const Vector2& pos, const Vector2& size, const UVRect& uv, Texture* tex);
     int m_tileWidth;
     int m_tileHeight;
 };

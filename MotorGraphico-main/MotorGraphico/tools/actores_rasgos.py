@@ -496,3 +496,69 @@ BARBA_CORTA = {
 from actores_corrupcion import (ASTAS_RAMAS, ASTAS_RETORCIDAS, CORONA_PIEDRAS,  # noqa: E402,F401
                                 CORTEZA_CARA, CORTEZA_MANDIBULA, CUERNOS_CARNERO, MUSGO_HOMBROS,
                                 PLACAS_PIEDRA, TERCER_OJO)
+
+
+# --- marcas de Egaroth ----------------------------------------------------------------------
+# Oriol (23/10): a las razas que sin ropa eran iguales que otra, «alguna marca racial diferencial, como manchas
+# de diferentes colores, tocadas por la energía de Egaroth, el planeta / padre elemental». No es una plantilla
+# de cabeza: son manchas sobre las partes del cuerpo (actores_personajes.capa_manchas), en el sitio relativo de
+# cada parte, así que siguen al cuerpo en todos los frames y tallas. (parte, x, y, tamaño, material):
+# x e y de 0 a 1 dentro de la parte; tamaño 1 una mancha pequeña, 2 una grande; material 1 o 2.
+MANCHAS_EGAROTH_PIEDRA = [  # enanos historiadores: dormienta (gris azul) y ámbar, como vetas de mena
+    ("h", 0.22, 0.62, 1, 1), ("h", 0.78, 0.35, 1, 2), ("t", 0.30, 0.25, 2, 1), ("t", 0.72, 0.62, 1, 2),
+    ("a", 0.50, 0.40, 1, 2), ("A", 0.50, 0.70, 1, 1), ("l", 0.50, 0.45, 1, 1), ("L", 0.50, 0.30, 2, 2),
+]
+# Oriol (23/10): «la marca racial diferencial... alguns més fosques, altres com si hi hagués una gema negra
+# i obscura com l'obsidiana». Partes: h cabeza, n cuello, t torso, p cadera, a/A brazos, m/M manos,
+# l/L piernas; (parte, x relativa, y relativa, tamaño 1|2, material 1|2).
+MANCHAS_EGAROTH_SOL = [  # pecas de luz en la cara y los hombros
+    ("h", 0.30, 0.62, 1, 1), ("h", 0.70, 0.62, 1, 1), ("h", 0.50, 0.70, 1, 2), ("t", 0.20, 0.10, 1, 1),
+    ("t", 0.80, 0.10, 1, 2), ("a", 0.50, 0.15, 1, 1), ("A", 0.50, 0.15, 1, 2), ("t", 0.50, 0.30, 1, 1),
+]
+MANCHAS_EGAROTH_ESTIGMAS = [  # en el dorso de las manos y en la frente: la marca de la Proclama
+    ("m", 0.50, 0.50, 1, 1), ("M", 0.50, 0.50, 1, 1), ("h", 0.50, 0.45, 1, 2), ("t", 0.50, 0.25, 2, 2),
+]
+MANCHAS_EGAROTH_VETAS = [  # gotas de tinta en fila por los brazos y el cuello
+    ("a", 0.50, 0.20, 1, 1), ("a", 0.50, 0.50, 1, 2), ("a", 0.50, 0.80, 1, 1), ("A", 0.50, 0.20, 1, 1),
+    ("A", 0.50, 0.50, 1, 2), ("A", 0.50, 0.80, 1, 1), ("n", 0.30, 0.50, 1, 2), ("h", 0.20, 0.75, 1, 1),
+]
+MANCHAS_EGAROTH_MOTAS = [  # muchas motas pequeñas por todo el cuerpo
+    ("h", 0.25, 0.70, 1, 1), ("h", 0.75, 0.40, 1, 2), ("t", 0.25, 0.20, 1, 2), ("t", 0.70, 0.45, 1, 1),
+    ("t", 0.40, 0.80, 1, 2), ("a", 0.50, 0.30, 1, 1), ("A", 0.50, 0.65, 1, 2), ("m", 0.50, 0.50, 1, 1),
+    ("l", 0.50, 0.30, 1, 2), ("L", 0.50, 0.60, 1, 1), ("p", 0.30, 0.50, 1, 1),
+]
+MANCHAS_EGAROTH_LEOPARDO = [  # rosetas en el pelaje
+    ("h", 0.20, 0.30, 1, 1), ("h", 0.80, 0.30, 1, 1), ("t", 0.20, 0.20, 2, 1), ("t", 0.70, 0.30, 1, 2),
+    ("t", 0.35, 0.65, 2, 1), ("t", 0.75, 0.80, 1, 1), ("a", 0.50, 0.30, 1, 1), ("a", 0.50, 0.75, 1, 2),
+    ("A", 0.50, 0.40, 1, 1), ("l", 0.50, 0.25, 2, 1), ("L", 0.50, 0.55, 1, 2), ("p", 0.70, 0.40, 1, 1),
+]
+MANCHAS_EGAROTH_GRIETAS = [  # grietas de lava en la obsidiana: grandes y encendidas
+    ("t", 0.30, 0.25, 2, 1), ("t", 0.65, 0.60, 2, 2), ("h", 0.70, 0.30, 1, 1), ("a", 0.50, 0.40, 2, 1),
+    ("A", 0.50, 0.60, 1, 2), ("l", 0.50, 0.40, 1, 1), ("L", 0.50, 0.30, 2, 2), ("p", 0.50, 0.50, 1, 1),
+]
+MANCHAS_OBSIDIANA = [  # esquirlas de obsidiana que asoman en la piel (material 1: la gema, 2: su brillo)
+    ("a", 0.50, 0.25, 2, 1), ("A", 0.50, 0.25, 2, 1), ("m", 0.50, 0.40, 1, 1), ("M", 0.50, 0.40, 1, 1),
+    ("h", 0.80, 0.35, 1, 2), ("t", 0.50, 0.20, 2, 1), ("t", 0.30, 0.70, 1, 2),
+]
+MANCHAS_EGAROTH_CONSTELACION = [  # pocas, sueltas y brillantes, como estrellas
+    ("h", 0.80, 0.70, 1, 1), ("t", 0.30, 0.35, 1, 2), ("t", 0.75, 0.75, 1, 1), ("a", 0.50, 0.60, 1, 2),
+    ("L", 0.50, 0.45, 1, 1), ("M", 0.50, 0.50, 1, 2),
+]
+MANCHAS_EGAROTH_FUEGO_AGUA = [  # genasi del Cónclave (1 de 2): fuego y agua
+    ("h", 0.25, 0.65, 1, 1), ("t", 0.30, 0.25, 2, 1), ("a", 0.50, 0.45, 1, 1), ("t", 0.75, 0.70, 2, 2),
+    ("A", 0.50, 0.45, 1, 2), ("L", 0.50, 0.40, 1, 2),
+]
+MANCHAS_EGAROTH_TIERRA_AIRE = [  # genasi del Cónclave (2 de 2): tierra y aire
+    ("h", 0.75, 0.65, 1, 1), ("t", 0.70, 0.25, 1, 1), ("l", 0.50, 0.40, 2, 1), ("t", 0.30, 0.70, 1, 2),
+    ("m", 0.50, 0.50, 1, 2), ("n", 0.50, 0.50, 1, 1),
+]
+# la gema negra en la frente (material 1: la obsidiana, 2: el brillo del corazón)
+GEMA_FRENTE = {
+    "abajo": (25, ["..........4", ".........414", "........43w34", ".........434", "..........4"]),
+    "derecha": (25, ["...............4", "..............41", "..............3w", "..............4"]),
+}
+
+MANCHAS_EGAROTH_AGUA = [  # nobles de Ascaria: turquesa y violeta, como reflejos de agua
+    ("h", 0.70, 0.70, 1, 1), ("n", 0.50, 0.50, 1, 2), ("t", 0.65, 0.30, 2, 2), ("t", 0.25, 0.70, 1, 1),
+    ("a", 0.50, 0.75, 1, 1), ("A", 0.50, 0.35, 2, 2), ("p", 0.40, 0.50, 1, 1), ("l", 0.50, 0.70, 1, 2),
+]

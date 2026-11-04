@@ -261,8 +261,10 @@ std::vector<std::string> lineasDiario(const DiarioDatos& diario) {
 }
 
 int capituloDeLaCampana(const RPG::NarrativeState& estado) {
-    if (estado.hasFlag("bnd_ocaso_empezado")) return 3;
-    if (estado.hasFlag("bnd_dia2_empezado")) return 2;
+    // GORRAN-DIA2: prologo 0, dia 1, dia de Gorran 2, dia 3 (boundington_segundo_dia) 3, Ocaso 4.
+    if (estado.hasFlag("bnd_ocaso_empezado")) return 4;
+    if (estado.hasFlag("bnd_dia2_empezado")) return 3;
+    if (estado.hasFlag("bnd_diag_empezado")) return 2;
     if (estado.hasFlag("bnd_dia1_empezado")) return 1;
     return 0;
 }

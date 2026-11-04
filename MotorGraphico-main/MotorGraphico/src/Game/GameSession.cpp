@@ -34,6 +34,7 @@
 #include "Game/Actuacion.h"  // ACTUAR-01
 #include "Game/RutinasPnj.h"  // PNJ-02
 #include "Game/SessionData.h"
+#include "Game/MoralDeLaSesion.h"  // BND-04
 #include "Game/EnemyCatalogBridge.h"
 
 #include "RPG/InventoryEngine.h"  // G-12
@@ -144,6 +145,58 @@ bool GameSession::tileBlocks(int x, int y) const {
         }
     }
     return false;
+}
+
+std::vector<GridCoord> GameSession::rutaAndando(const GridCoord& destino, int maxCasillas) const {
+    std::vector<GridCoord> ruta;
+    if (sessionData()->m_mode != GameMode::Exploration || sessionData()->m_map == nullptr) return ruta;
+    const GridCoord origen = sessionData()->m_playerPosition;
+    if (origen.x == destino.x && origen.y == destino.y) return ruta;
+    const int w = sessionData()->m_map->getWidth(), h = sessionData()->m_map->getHeight();
+    if (destino.x < 0 || destino.y < 0 || destino.x >= w || destino.y >= h) return ruta;
+    auto pisable = [&](int x, int y) {
+        if (tileBlocks(x, y) || enemyAt(x, y).valid()) return false;
+        const Engine::EntityHandle o = objectAt(x, y);
+        if (!o.valid()) return true;
+        const Engine::WorldEntity* e = sessionData()->m_world->get(o);
+        const ObjectDefinition* def = e != nullptr && sessionData()->m_catalog != nullptr
+                                          ? sessionData()->m_catalog->find(e->object.objectId)
+                                          : nullptr;
+        return def == nullptr || !def->blocksMovement;
+    };
+    const bool destinoPisable = pisable(destino.x, destino.y);
+    std::vector<int> previo(static_cast<std::size_t>(w * h), -2);
+    std::vector<int> cola{origen.y * w + origen.x};
+    previo[static_cast<std::size_t>(cola[0])] = -1;
+    int llegada = -1;
+    static const int dx[4] = {1, -1, 0, 0}, dy[4] = {0, 0, 1, -1};
+    for (std::size_t i = 0; i < cola.size() && static_cast<int>(i) < maxCasillas && llegada < 0; ++i) {
+        const int x = cola[i] % w, y = cola[i] / w;
+        for (int k = 0; k < 4; ++k) {
+            const int nx = x + dx[k], ny = y + dy[k];
+            if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+            const std::size_t n = static_cast<std::size_t>(ny * w + nx);
+            if (previo[n] != -2) continue;
+            if (!sessionData()->m_map->alturas().sePuedePasar(GridCoord{x, y}, GridCoord{nx, ny})) continue;
+            const bool esDestino = nx == destino.x && ny == destino.y;
+            if (esDestino && !destinoPisable) {  // al lado del PNJ o del mostrador: aqui se para
+                llegada = cola[i];
+                break;
+            }
+            if (!pisable(nx, ny)) continue;
+            previo[n] = cola[i];
+            if (esDestino) {
+                llegada = static_cast<int>(n);
+                break;
+            }
+            cola.push_back(static_cast<int>(n));
+        }
+    }
+    if (llegada < 0) return ruta;
+    for (int c = llegada; c >= 0 && c != origen.y * w + origen.x; c = previo[static_cast<std::size_t>(c)])
+        ruta.push_back(GridCoord{c % w, c / w});
+    std::reverse(ruta.begin(), ruta.end());
+    return ruta;
 }
 
 bool GameSession::tryMovePlayer(int dx, int dy) {
@@ -348,6 +401,7 @@ void GameSession::applyCarryOver(const PlayerCarryOver& state) {
     sessionData()->m_morality.setValue(state.moralityValue);
     sessionData()->m_morality.restauraEstado(state.moral);  // MORAL-01
     if (sessionData()->m_narrativeState != nullptr) sessionData()->m_narrativeState->ponMoral(state.moralityValue);
+    moral::reflejaEnLaAventura(*sessionData());  // BND-04: y la reputacion de la ficha
     sessionData()->m_stepsSinceRent = std::max(0, state.stepsSinceRent);
     sessionData()->m_businesses = state.businesses;
 }

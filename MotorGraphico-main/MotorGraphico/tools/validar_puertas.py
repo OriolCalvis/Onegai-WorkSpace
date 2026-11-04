@@ -14,11 +14,15 @@ Recorre assets/levels/*.json. Cada objeto con "targetLevel" es una puerta, y com
      Los objetos se miran con el catalogo de los proyectos que listan el nivel
      (si ninguno lo lista, con todos los catalogos de assets/objects/).
   4. El destino tiene una puerta de vuelta: algun objeto suyo lleva "targetLevel"
-     al nivel de origen.
+     al nivel de origen. Si la puerta declara "vueltaPorTierra": <nivel> (un paso que no se
+     desanda, como el rio de Gorran), en vez de eso se exige un camino de puertas del destino a
+     ese nivel sin pasar por el origen, y una puerta de ese nivel al origen.
 
 Solo stdlib. Sin argumentos valida el repo entero; "--raiz <dir>" sirve para las pruebas.
 Salida: una linea por problema, con nivel, objeto, campo y motivo. Exit 1 si hay problemas.
-validar_todo.py lo llama como AVISO, no como error.
+validar_todo.py los cuenta como ERROR (Oriol, 28/10): una puerta bloqueada, sin vuelta o con
+destino inexistente rompe el juego. Las que no se pudieron leer (iCloud) salen como ACCESO:
+no son error de contenido, pero la comprobacion no se dio por buena.
 
 Limites heredados del motor (no inventados aqui):
   - TMX con <tileset> embebido y <data encoding="csv"> (FORMATO_NIVELES.md, seccion 3).
@@ -225,10 +229,95 @@ def revisa_puerta(ctx: Contexto, nombre: str, o: dict, problemas: list) -> None:
         if motivo:
             P("targetPosition", f"llegada ({x},{y}) en {destino}: {motivo}")
 
+    # Vuelta por tierra (Oriol, 28/10): un paso que no se puede desandar (el río de Gorran solo
+    # baja) declara "vueltaPorTierra": <nivel>. Entonces no se exige una puerta directa de vuelta,
+    # pero se comprueba de verdad que desde el destino se llega a ese nivel por puertas sin pasar
+    # por el origen, y que ese nivel tiene puerta al origen (el círculo se cierra).
+    vuelta = o.get("vueltaPorTierra")
+    if isinstance(vuelta, str) and vuelta:
+        hasta = _norma(vuelta)
+        if not (ctx.raiz / vuelta).is_file():
+            P("vueltaPorTierra", f"el nivel '{vuelta}' no existe")
+        elif not _camino(ctx, _norma(destino), hasta, _norma(origen)):
+            P("vueltaPorTierra", f"no hay camino de vuelta por puertas de {destino} a {vuelta} sin pasar por {origen}")
+        elif _norma(origen) not in _salidas(ctx, hasta):
+            P("vueltaPorTierra", f"{vuelta} no tiene puerta a {origen}: la vuelta por tierra no cierra el círculo")
+        return
+
     if not any(isinstance(d, dict) and isinstance(d.get("targetLevel"), str)
                and _norma(d["targetLevel"]) == _norma(origen)
                for d in dnivel.get("objects") or []):
         P("targetLevel", f"{destino} no tiene puerta de vuelta a {origen}")
+
+
+def _beats_de(raiz: Path) -> dict:
+    """id de beat -> beat, de todas las aventuras (assets/adventures/*.json)."""
+    out: dict = {}
+    for ruta in sorted((raiz / "assets" / "adventures").glob("*.json")):
+        try:
+            for b in _json(ruta).get("beats") or []:
+                if isinstance(b, dict) and isinstance(b.get("id"), str):
+                    out[b["id"]] = b
+        except (OSError, ValueError, AttributeError):
+            continue
+    return out
+
+
+def revisa_cerrada(ctx: Contexto, nombre: str, o: dict, problemas: list) -> None:
+    """G4-01: "cerradaSi" {"todas": [...], "ninguna": [...]} y "beatCerrada" (un beat que existe)."""
+    def P(campo, texto):
+        problemas.append((f"{DIR_NIVELES}/{nombre}", str(o.get("objectId", "?")), campo, texto))
+
+    cs = o.get("cerradaSi")
+    if cs is not None:
+        if not isinstance(cs, dict) or any(k not in ("todas", "ninguna") for k in cs):
+            P("cerradaSi", 'debe ser {"todas": [...], "ninguna": [...]}')
+        else:
+            for k in ("todas", "ninguna"):
+                v = cs.get(k, [])
+                if not isinstance(v, list) or not all(isinstance(f, str) and f for f in v):
+                    P("cerradaSi", f'"{k}" debe ser una lista de flags')
+    bc = o.get("beatCerrada")
+    if bc is None:
+        return
+    if cs is None:
+        P("beatCerrada", "hay beatCerrada pero no cerradaSi")
+    if not isinstance(bc, str) or not bc:
+        P("beatCerrada", "debe ser el id de un beat")
+        return
+    beats = getattr(ctx, "_beats", None)
+    if beats is None:
+        beats = ctx._beats = _beats_de(ctx.raiz)
+    if bc not in beats:
+        P("beatCerrada", f"el beat '{bc}' no existe en assets/adventures")
+    elif (beats[bc].get("trigger") or {}).get("target") != bc:
+        P("beatCerrada", f"el beat '{bc}' debe ser un talk con target '{bc}' (así lo dispara la puerta)")
+
+
+def _salidas(ctx: Contexto, rel: str) -> set:
+    """Los niveles a los que lleva alguna puerta de 'rel' (vacío si no se lee)."""
+    try:
+        n = ctx.nivel(rel)
+    except (OSError, ValueError):
+        return set()
+    if not isinstance(n, dict):
+        return set()
+    return {_norma(d["targetLevel"]) for d in n.get("objects") or []
+            if isinstance(d, dict) and isinstance(d.get("targetLevel"), str) and d["targetLevel"]}
+
+
+def _camino(ctx: Contexto, desde: str, hasta: str, sin: str) -> bool:
+    """¿Se llega de 'desde' a 'hasta' encadenando puertas, sin pasar por 'sin'?"""
+    vistos, cola = {desde}, [desde]
+    while cola:
+        actual = cola.pop()
+        if actual == hasta:
+            return True
+        for s in _salidas(ctx, actual):
+            if s not in vistos and s != sin and (ctx.raiz / s).is_file():
+                vistos.add(s)
+                cola.append(s)
+    return False
 
 
 def comprueba(raiz: Path = MOTOR):
@@ -251,6 +340,7 @@ def comprueba(raiz: Path = MOTOR):
             if not isinstance(o, dict) or not o.get("targetLevel"):
                 continue
             puertas += 1
+            revisa_cerrada(ctx, ruta.name, o, problemas)  # G4-01
             try:
                 revisa_puerta(ctx, ruta.name, o, problemas)
             except Exception as e:  # una puerta rara no tumba el resto
@@ -277,6 +367,11 @@ def resum(probs: list[tuple]) -> dict[str, int]:
     return out
 
 
+def es_acceso(texto: str) -> bool:
+    """El problema es que no se pudo leer un fichero (iCloud sin descargar...), no el contenido."""
+    return texto.startswith("no se pudo comprobar")
+
+
 def main(argv=None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     raiz = MOTOR
@@ -285,7 +380,8 @@ def main(argv=None) -> int:
         raiz = Path(argv[i + 1]).resolve()
     niveles, puertas, problemas = comprueba(raiz)
     for nivel, oid, campo, texto in problemas:
-        print(f"[AVISO] {nivel} :: {oid} :: {campo} :: {texto}")
+        etiqueta = "ACCESO" if es_acceso(texto) else "ERROR"
+        print(f"[{etiqueta}] {nivel} :: {oid} :: {campo} :: {texto}")
     print(f"{niveles} niveles, {puertas} puertas comprobadas, {len(problemas)} problema(s)")
     return 1 if problemas else 0
 

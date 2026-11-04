@@ -30,6 +30,8 @@ ORDEN = {
     "morro":   {"abajo": 45, "arriba": 45, "derecha": 45, "izquierda": 45},
     "barba":   {"abajo": 50, "arriba": 50, "derecha": 50, "izquierda": 50},
     "pelo":    {"abajo": 60, "arriba": 60, "derecha": 60, "izquierda": 60},
+    "orejas":  {"abajo": 65, "arriba": 65, "derecha": 65, "izquierda": 65},
+    "cuernos": {"abajo": 66, "arriba": 66, "derecha": 66, "izquierda": 66},
     "rasgos":  {"abajo": 65, "arriba": 65, "derecha": 65, "izquierda": 65},
     "cabeza":  {"abajo": 70, "arriba": 70, "derecha": 70, "izquierda": 70},
     # armas (actores_armas): de espaldas van detras del cuerpo; de perfil el
@@ -119,11 +121,18 @@ def componer(capas):
     capa con menos: las hojas horneadas cortan a 12)."""
     import actores_partes as partes
     salida = []
-    for f in range(1, min(len(fr) for _r, fr in capas) + 1):
-        d = partes.DIRECCION[f]
+    n = min(len(fr) for _r, fr in capas)
+    if n == 40:  # Oriol (24/10): la hoja de PixelLab, en diagonal (pixellab_cuerpo)
+        import pixellab_cuerpo
+        vista = pixellab_cuerpo.direccion_de_frame
+    else:
+        vista = partes.DIRECCION.__getitem__
+    for f in range(1, n + 1):
+        d = vista(f)
         orden = []
         for i, (ranura, frames) in enumerate(capas):
-            z = ORDEN[ranura][d] if isinstance(ranura, str) else ranura[d]
+            # Oriol (23/10): un orden propio puede traer «f<n>» (la Forja pone el arma delante o detras en un frame)
+            z = ORDEN[ranura][d] if isinstance(ranura, str) else ranura.get(f"f{f}", ranura[d])
             orden.append((z, i, frames[f - 1]))
         base = Image.new("RGBA", (frames[f - 1].shape[1], frames[f - 1].shape[0]), (0, 0, 0, 0))
         for _z, _i, px in sorted(orden, key=lambda t: (t[0], t[1])):

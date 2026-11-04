@@ -114,7 +114,7 @@ RPG::AdventureScript precuelaAutonoma() {
 // decisió compartida de veritat— i darrere hi ha la mateixa cascada de
 // flags que hi ha a `Application::update()`. Retorna quin salt de capítol
 // demanaria aquest frame.
-enum class Salt { Cap, Dia1, Dia2, Ocaso };
+enum class Salt { Cap, Dia1, DiaGorran, Dia2, Ocaso };
 
 Salt directorDeCampanya(const Wiring& wiring, const RPG::NarrativeState& state) {
     if (!wiring.chainCampaignTimeline) {
@@ -123,7 +123,10 @@ Salt directorDeCampanya(const Wiring& wiring, const RPG::NarrativeState& state) 
     if (state.hasFlag("bnd_prologo_terminado") && !state.hasFlag("bnd_dia1_empezado")) {
         return Salt::Dia1;
     }
-    if (state.hasFlag("bnd_dia_cerrado") && !state.hasFlag("bnd_dia2_empezado")) {
+    if (state.hasFlag("bnd_dia_cerrado") && !state.hasFlag("bnd_diag_empezado")) {
+        return Salt::DiaGorran;
+    }
+    if (state.hasFlag("bndg_dia_cerrado") && !state.hasFlag("bnd_dia2_empezado")) {
         return Salt::Dia2;
     }
     if (state.hasFlag("bnd2_dia_cerrado") && !state.hasFlag("bnd_ocaso_empezado")) {
@@ -282,6 +285,10 @@ MOTOR_TEST_CASE(c07_la_campanya_si_encadena_els_seus_capitols) {
 
     state.setFlag("bnd_dia1_empezado");
     state.setFlag("bnd_dia_cerrado");
+    MOTOR_CHECK(directorDeCampanya(wiring, state) == Salt::DiaGorran);
+
+    state.setFlag("bnd_diag_empezado");
+    state.setFlag("bndg_dia_cerrado");
     MOTOR_CHECK(directorDeCampanya(wiring, state) == Salt::Dia2);
 
     state.setFlag("bnd_dia2_empezado");

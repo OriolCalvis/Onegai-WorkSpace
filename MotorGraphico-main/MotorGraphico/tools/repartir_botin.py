@@ -77,6 +77,8 @@ def region_de(nombre):
     if nombre.startswith("interior_") or nombre.startswith("mansion_") \
             or nombre == "tienda_abandonada":
         return "interiores"
+    if nombre.startswith("huida_"):
+        return None
     if nombre.startswith("afueras_") or nombre.startswith("montana_"):
         return "afueras"
     if nombre.startswith("cueva_"):
@@ -91,7 +93,7 @@ def region_de(nombre):
 def primer_dia(nombre):
     if nombre.startswith("cueva_") or nombre.startswith("montana_"):
         return 2
-    if nombre == "ciudad_centro_ocaso":
+    if nombre == "ciudad_centro_ocaso" or nombre.endswith("_ocaso") or nombre.startswith("huida_"):
         return 3
     return 1
 

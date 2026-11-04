@@ -130,8 +130,8 @@ void FogOfWar::updateTexture(const Camera& camera) {
     const float halfVpY = static_cast<float>(m_viewportHeight) * 0.5f;
 
     auto worldToScreen = [&](const Vector2& world) -> Vector2 {
-        return Vector2{(world.x - camera.position().x) * zoom + halfVpX,
-                       (world.y - camera.position().y) * zoom + halfVpY};
+        return Vector2{(world.x - camera.posicionVista().x) * zoom + halfVpX,
+                       (world.y - camera.posicionVista().y) * zoom + halfVpY};
     };
 
     const float tileWF = static_cast<float>(m_tileWidth) * zoom;

@@ -182,7 +182,8 @@ inline bool hero(const JsonValue& node, const std::string& path, std::string* er
             if (!expect(pieza.second, Kind::Text, child(child(ruta, "ropa"), pieza.first), error)) return false;
         }
     }
-    return array(aspecto, "quitarCapas", ruta, text, error);
+    if (!array(aspecto, "quitarCapas", ruta, text, error)) return false;
+    return array(aspecto, "marcas", ruta, text, error);  // EDITOR-PERSONALIZACION-01: opcional
 }
 
 inline bool optionalFields(const JsonValue& root, std::string* error) {

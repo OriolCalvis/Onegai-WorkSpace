@@ -1,6 +1,8 @@
 // AV15-02b — Contrato de los rotulos: datos reales, sin GL ni logica de juego.
 // Se leen los assets fuente (CTest fija el directorio), nunca una copia vieja.
 #include "Core/Json/JsonValue.h"
+#include "Level/ObjectCatalog.h"
+#include "Game/RutinasPnj.h"
 #include "TestHarness.h"
 
 #include <filesystem>
@@ -61,7 +63,7 @@ MOTOR_TEST_CASE(lugares_formato_y_campos_del_contrato) {
         std::string palabra;
         int palabras = 0;
         while (funcion >> palabra) ++palabras;
-        MOTOR_CHECK(palabras >= 2 && palabras <= 3);
+        MOTOR_CHECK(palabras >= 2 && palabras <= 5);
     }
 }
 
@@ -73,7 +75,8 @@ MOTOR_TEST_CASE(lugares_cada_puerta_interior_tiene_una_ficha_sin_sobrantes) {
         if (++fichas[nivel] != 1) MOTOR_CHECK_FAIL("nivel repetido: " + nivel);
     }
     std::set<std::string> destinos;
-    for (const char* ciudad : {"ciudad_centro", "ciudad_este", "ciudad_oeste"}) {
+    // AV19-11: la puerta del cuartel esta en el patio de armas (base_militar), no en la calle de ciudad_oeste.
+    for (const char* ciudad : {"ciudad_centro", "ciudad_este", "ciudad_oeste", "base_militar"}) {
         const auto nivel = leeJson("assets/levels/" + std::string(ciudad) + ".json");
         MOTOR_CHECK(nivel["objects"].isArray());
         for (std::size_t i = 0; i < nivel["objects"].size(); ++i) {
@@ -138,7 +141,11 @@ MOTOR_TEST_CASE(av15_02_los_lugares_se_encuentran_por_su_nivel) {
     MOTOR_CHECK(r.isOk());
     if (!r.isOk()) return;
     const Game::Lugares& l = r.value();
-    MOTOR_CHECK(l.todos().size() == 17);
+    MOTOR_CHECK(l.todos().size() == 18);
+    const Game::Lugar* pesca = l.de("assets/levels/interior_pesca_caza.json");
+    MOTOR_CHECK(pesca != nullptr && pesca->nombre == "El Zurrón del Vado");
+    MOTOR_CHECK(pesca != nullptr && pesca->funcion == "pesca, caza y huerto");
+    MOTOR_CHECK(pesca != nullptr && pesca->icono() == "cana_pescar");
     const Game::Lugar* sastre = l.de("assets/levels/interior_sastreria.json");
     MOTOR_CHECK(sastre != nullptr && sastre->nombre == "La Boutique de Madame" && sastre->funcion == "sastre y tela");
     const Game::Lugar* herreria = l.de("/Users/oriol/MotorGraphico/assets/levels/interior_herreria.json");
@@ -186,6 +193,34 @@ MOTOR_TEST_CASE(av16_06_toda_salida_de_todo_nivel_sabe_adonde_lleva) {
         }
     }
     MOTOR_CHECK(salidas > 50);
+}
+
+MOTOR_TEST_CASE(av16_08_la_tienda_vende_los_utiles_de_oficio_y_suministros) {
+    ObjectCatalog catalogo;
+    const auto manifiesto = leeJson("assets/proyectos/boundington.json");
+    for (std::size_t i = 0; i < manifiesto["catalogs"].size(); ++i)
+        MOTOR_CHECK(catalogo.loadFromFile("assets/objects/" + manifiesto["catalogs"][i].asString()).isOk());
+    const auto* tendero = catalogo.find("dependiente_pesca_caza");
+    MOTOR_CHECK(tendero != nullptr);
+    if (!tendero) return;
+    MOTOR_CHECK(tendero->category == ObjectCategory::Npc);
+    MOTOR_CHECK(!tendero->dialogue.lines.empty());
+    std::set<std::string> ofertas;
+    for (const auto& oferta : tendero->shop.items) {
+        const auto* objeto = catalogo.find(oferta.objectId);
+        MOTOR_CHECK(objeto != nullptr);
+        MOTOR_CHECK(objeto && objeto->category == ObjectCategory::Pickup && objeto->pickup.price > 0);
+        MOTOR_CHECK(ofertas.insert(oferta.objectId).second);
+    }
+    for (const char* id : {"cana_de_pescar", "cebo_pesca", "trampa_caza", "semillas_huerto", "pala", "pico_de_minero", "cuerda_de_canamo"})
+        MOTOR_CHECK(ofertas.count(id) == 1);
+    const auto oficios = leeJson("assets/catalogs/oficios.json");
+    for (const char* oficio : {"pescar", "cuidar_huerto"})
+        MOTOR_CHECK(ofertas.count(oficios["oficios"][oficio]["herramienta"].asString()) == 1);
+    const auto& rutina = Game::CatalogoRutinasPnj::delJuego().para("dependiente_pesca_caza");
+    MOTOR_CHECK(rutina.radio == 0 && rutina.rutina == Game::RutinaPnj::Actividad);
+    const auto* cartel = catalogo.find("cartel_ropa_sur");
+    MOTOR_CHECK(cartel && cartel->business.businessName == "El Zurrón del Vado");
 }
 
 int main() { return motor_test::runAllTests(); }

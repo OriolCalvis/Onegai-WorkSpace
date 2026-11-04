@@ -26,6 +26,18 @@ const RuntimeTile& RuntimeTileMap::getTile(int layer, int x, int y) const {
     return selectedLayer.tiles[tileIndex(x, y)];
 }
 
+bool RuntimeTileMap::quitaColision(int x, int y) {
+    if (x < 0 || y < 0 || x >= m_width || y >= m_height) return false;
+    bool bloqueaba = false;
+    for (RuntimeTileLayer& capa : m_layers) {
+        RuntimeTile& t = capa.tiles[tileIndex(x, y)];
+        if (!t.hasCollision()) continue;
+        t = RuntimeTile(t.getTilesetID(), false, t.getVariant());
+        bloqueaba = true;
+    }
+    return bloqueaba;
+}
+
 GridCoord RuntimeTileMap::screenToGrid(const Vector2& screenPos) const {
     return IsoMath::screenToGrid(screenPos, static_cast<float>(m_tileWidth),
                                  static_cast<float>(m_tileHeight));

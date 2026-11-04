@@ -254,19 +254,25 @@ MOTOR_TEST_CASE(brillo_los_abalorios_echan_desde_su_sitio) {
     MOTOR_CHECK(man.brilloDeAbalorio.at("anillo_de_vitalidad").sitio == "mano");
     MOTOR_CHECK(man.brilloDeAbalorio.at("amuleto_de_foco").sitio == "pecho");
 
-    // Las anclas de las cuatro tallas, en los 20 frames. El humano (talla media) de frente y quieto (frame 8):
-    // el puno de la mano del arma a la izquierda de la imagen, el de la otra a la derecha, el pecho debajo
-    // del cuello y la cintura en la linea del cinturon.
+    // Las anclas de las cuatro tallas, una por frame de la fila (PL-JUEGO-01: los 40 de PixelLab; 20 con los
+    // personajes de antes). El humano (talla media) de frente y quieto (el primer frame de respirar mirando
+    // al suroeste, el 33; el 8 antes): el puno de la mano del arma a la derecha de la imagen, el de la otra a
+    // la izquierda y mas arriba, el pecho debajo del cuello y la cintura en la linea del cinturon.
+    const std::size_t frames = static_cast<std::size_t>(man.frames);
+    const Game::Reparto reparto = Game::repartoDeColumnas(man.frames);
+    const int quieto = Game::frameQuieto(Game::Rumbo::Abajo, reparto);
+    const std::size_t q = static_cast<std::size_t>(quieto - 1);
+    MOTOR_CHECK(man.frames == 40 && quieto == 33);
     for (const char* talla : {"medio", "bajo", "pequeno", "grande"}) {
         MOTOR_CHECK(man.anclas.count(talla) == 1);
         if (man.anclas.count(talla) == 1)
-            MOTOR_CHECK(man.anclas.at(talla).mano.size() == 20 && man.anclas.at(talla).cintura.size() == 20);
+            MOTOR_CHECK(man.anclas.at(talla).mano.size() == frames && man.anclas.at(talla).cintura.size() == frames);
     }
     const Game::AnclasDeTalla& medio = man.anclas.at("medio");
-    MOTOR_CHECK((medio.mano[7] == Game::AnclasDeTalla::Punto{26, 48}));
-    MOTOR_CHECK((medio.otraMano[7] == Game::AnclasDeTalla::Punto{38, 48}));
-    MOTOR_CHECK((medio.pecho[7] == Game::AnclasDeTalla::Punto{32, 37}));
-    MOTOR_CHECK((medio.cintura[7] == Game::AnclasDeTalla::Punto{32, 47}));
+    MOTOR_CHECK((medio.mano[q] == Game::AnclasDeTalla::Punto{38, 48}));  // PL-ROPA-01: el mapa de partes nuevo
+    MOTOR_CHECK((medio.otraMano[q] == Game::AnclasDeTalla::Punto{26, 45}));
+    MOTOR_CHECK((medio.pecho[q] == Game::AnclasDeTalla::Punto{33, 40}));
+    MOTOR_CHECK((medio.cintura[q] == Game::AnclasDeTalla::Punto{29, 46}));
     MOTOR_CHECK(medio.de("pecho") == &medio.pecho && medio.de("cuerpo") == nullptr);
 
     // Puestos: el anillo en las dos manos y el amuleto en el cuello.
@@ -288,7 +294,7 @@ MOTOR_TEST_CASE(brillo_los_abalorios_echan_desde_su_sitio) {
     auto hoja = m->montar(Game::Apariencia::deRaza(*man.raza("race_human_marches")),
                           {{espada.ranura, espada.visible()}}, &mapa);
     MOTOR_CHECK(hoja.isOk());
-    MOTOR_CHECK(!mapa.anclas.vacia() && mapa.anclas.mano[7] == medio.mano[7]);
+    MOTOR_CHECK(!mapa.anclas.vacia() && mapa.anclas.mano[q] == medio.mano[q]);
     std::map<std::string, Game::BrilloDePieza> abalorios;
     for (const auto& [clave, b] : brillos)
         if (b.abalorio) abalorios[clave] = b;
@@ -302,7 +308,7 @@ MOTOR_TEST_CASE(brillo_los_abalorios_echan_desde_su_sitio) {
     };
     for (const Game::FuenteDeBrillo& f : b.fuentes) {
         MOTOR_CHECK(f.esAbalorio && f.parte == 1.0f && f.conDestellos);
-        for (int frame = 1; frame <= 20; ++frame) {
+        for (int frame = 1; frame <= man.frames; ++frame) {
             const auto i = static_cast<std::size_t>(frame - 1);
             if (f.ranura == "abalorio:mano:anillo_de_vitalidad") {
                 MOTOR_CHECK(cerca(f, frame, medio.mano[i], 1));
@@ -313,20 +319,21 @@ MOTOR_TEST_CASE(brillo_los_abalorios_echan_desde_su_sitio) {
                 MOTOR_CHECK(cerca(f, frame, medio.pecho[i], 1));
             }
         }
-        MOTOR_CHECK(f.pixeles[7].size() == 9);  // un puno: 3x3 alrededor del ancla
+        MOTOR_CHECK(f.pixeles[q].size() == 9);  // un puno: 3x3 alrededor del ancla
     }
     MOTOR_CHECK(std::all_of(b.halo.pixeles.begin(), b.halo.pixeles.end(), [](std::uint8_t c) { return c == 0; }));
-    // Y sus particulas nacen alli: las del anillo de la mano principal, al lado del puno (frame 8).
+    // Y sus particulas nacen alli: las del anillo de la mano principal, al lado del puno (de frente y quieto).
     std::map<std::string, Game::BrilloDePieza> soloElAnillo{
         {"abalorio:mano:anillo_de_vitalidad", brillos.at("abalorio:mano:anillo_de_vitalidad")}};
     const Game::HojaDeBrillo anillo = Game::montarBrillo(hoja.value(), mapa, soloElAnillo);
     int particulas = 0, lejos = 0;
     for (int i = 0; i < 30; ++i) {
         std::vector<Game::Destello> d;
-        Game::destellosDeBrillo(anillo, 8, 0.2 * i, d);
+        Game::destellosDeBrillo(anillo, quieto, 0.2 * i, d);
         for (const auto& x : d) {
             particulas += 1;
-            lejos += std::abs(x.x - 26.0f) > 6.0f || x.y > 50.0f || x.y < 26.0f ? 1 : 0;
+            const float mx = static_cast<float>(medio.mano[q][0]), my = static_cast<float>(medio.mano[q][1]);
+            lejos += std::abs(x.x - mx) > 6.0f || x.y > my + 2.0f || x.y < my - 22.0f ? 1 : 0;
         }
     }
     MOTOR_CHECK(particulas > 0 && lejos == 0);
@@ -337,8 +344,8 @@ MOTOR_TEST_CASE(brillo_los_abalorios_echan_desde_su_sitio) {
     cinturon.abalorio = true;
     cinturon.sitio = "cintura";
     const Game::HojaDeBrillo cint = Game::montarBrillo(hoja.value(), mapa, {{"abalorio:cintura:prueba", cinturon}});
-    MOTOR_CHECK(cint.fuentes.size() == 1 && cint.fuentes[0].pixeles[7].size() == 14);
-    MOTOR_CHECK(cerca(cint.fuentes[0], 8, medio.cintura[7], 3));
+    MOTOR_CHECK(cint.fuentes.size() == 1 && cint.fuentes[0].pixeles[q].size() == 14);
+    MOTOR_CHECK(cerca(cint.fuentes[0], quieto, medio.cintura[q], 3));
 
     // Sin anclas (un manifiesto sin ellas) o sin sitio, del cuerpo entero, como antes.
     Game::MapaDeCapas sinAnclas = mapa;

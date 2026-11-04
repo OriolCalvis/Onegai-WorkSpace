@@ -1,0 +1,6 @@
+# 2026-11-03 — claude — Respuestas de Oriol, modo guion y Gorran
+
+- **Rama:** `agente/claude/UNI-02-11` (rama de integración, D0022 1.1), publicada como rama nueva en `OriolCalvis/Onegai-WorkSpace` (03/11, a `e7e39281`; los commits posteriores no están subidos).
+- **Hecho:** D0022 y D0023 (respuestas de Oriol); capturas reales del juego (`out/fabrica/UNI-02-11/capturas/`); E-GUION-01 `78827571` (`juego --guion`: teclas y capturas, jugador vestido sin creador); GORRAN-LIOS `3a8bda1a` (los 4 líos jugados de verdad); GORRAN-FIX `653ad9ff` (lío C una vez, campana a la primera, solo Tinet, tregua con Gorran); E-GUION-02 `bbcb30f2` (`juego --guardado`, `fabricar_guardados`, capturas de sectarios, Ocaso y combate de 5). Suite gl-free 292/292. Mutaciones de cada prueba nueva comprobadas.
+- **Fable:** `agente/fable/UNI-RESTAURA` (`01faa552` decorado del Ocaso, `92b3c0a5` icono CON); propuesta del bloque 7 en `out/fabrica/UNI-02-11/fable/F-ANTIC_PROPUESTA.md` (con una corrección de Claude: los carteles de puertas sí se pintan).
+- **Deja esperando a Oriol:** el guardado no se restaura en `ciudad_centro` (dos objetos en la misma casilla: (41,25), (6,59), (16,59); `src/Game/SaveGame.cpp:199` busca solo por posición); fusionar o no `agente/fable/UNI-RESTAURA`; subir los commits nuevos; PixelLab (`out/fabrica/UNI-02-11/PIXELLAB_ENCARREC.md`).

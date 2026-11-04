@@ -202,6 +202,15 @@ def taberna():
     s = p0()
     s.nivell = "recuerdo_taberna"
     s.nom = "Boundington, 757: la Taberna Humilde"
+    # El recuerdo es un espacio cerrado, como los otros tres: se entra y se sale por cinemática.
+    # La escalera de la planta real queda de decorado: si llevara a interior_taberna_p1 (el presente),
+    # el jugador saldría del recuerdo subiendo (Oriol, 28/10).
+    # Y para que no parezca una escalera que se puede usar y no responde: sin el disparador de la
+    # escalera y con barriles apilados al pie (el dibujo de la escalera, escalera_sube_alto, se queda).
+    for oid, cel, *_ in list(s.escales):
+        s.obj.pop(cel, None)
+    s.escales = []
+    s.posa("barriles_pila", 12, 2)
     pnj = {"skilla": (6, 3), "venides": (2, 10), "bordadora": (8, 5), "carretero_jubilado": (10, 5),
            "marido_bordadora": (10, 7), "tomas_jornalero": (11, 9), "berto_jornalero": (11, 8),
            "jornalero_callado": (12, 10), "encapuchado": (4, 11)}

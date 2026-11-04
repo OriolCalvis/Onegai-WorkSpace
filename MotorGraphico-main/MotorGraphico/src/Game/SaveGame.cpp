@@ -196,7 +196,14 @@ bool GameSession::restoreSaveGame(const SaveGameData& data, std::string* error) 
     std::vector<Engine::EntityHandle> objectHandles;
     objectHandles.reserve(data.worldObjects.size());
     for (const SavedWorldObject& object : data.worldObjects) {
-        const Engine::EntityHandle handle = objectAt(object.position.x, object.position.y);
+        // Dos objetos pueden compartir casilla (en ciudad_centro, una puerta y el PNJ que espera
+        // delante): se busca el de la casilla con el mismo id, no el primero que aparezca.
+        Engine::EntityHandle handle = objectAt(object.position.x, object.position.y);
+        sessionData()->m_world->eachEntity([&](Engine::EntityHandle h, const Engine::WorldEntity& e) {
+            if (e.kind == Engine::EntityKind::Object && e.object.position.x == object.position.x &&
+                e.object.position.y == object.position.y && mismoObjeto(object.objectId, e.objectId()))
+                handle = h;
+        });
         if (!handle.valid()) {
             return fail(error, "el guardado no encaja con el nivel: no hay ningun objeto en (" +
                                    std::to_string(object.position.x) + "," +

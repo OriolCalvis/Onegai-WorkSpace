@@ -70,9 +70,12 @@ FetchContent_MakeAvailable(glm)
 
 add_library(motor_math src/Render/Camera.cpp)
 target_link_libraries(motor_math PUBLIC glm::glm)
+include(cmake/Interpolacion.cmake)  # U3-07: progreso temporal e interpolacion (GL-free)
 
 add_executable(demo_camera examples/demo_camera.cpp)
 target_link_libraries(demo_camera PRIVATE motor_math)
+include(cmake/PoliticaCamara.cmake)  # U4-01: politica pura de camara (GL-free)
+include(cmake/ApplicationCamara.cmake)  # U4-01.E06: adaptador de camara en juego (GL-free)
 
 # RUN-01 — El reloj y el contrato del bucle no dependen de GLFW ni de GL.
 # Mantenerlos en su propio target permite probar la salida y el timestep sin
@@ -82,6 +85,7 @@ add_library(motor_engine_loop src/Engine/ApplicationLoop.cpp)
 # RUN-02 — Estado de teclado, bindings y snapshots de acciones. Es un núcleo
 # puro: GLFW se adapta desde Application y los tests usan teclas simuladas.
 add_library(motor_input src/Engine/Input/InputSystem.cpp)
+include(cmake/GuionCaptura.cmake)  # E-GUION-01: guion de captura (GL-free)
 
 # --- Fase 6 de motor_grafico_gantt_rpg.puml (sistema de niveles y
 # contenido): JsonValue (parser JSON propio, sin dependencias de terceros
@@ -127,9 +131,11 @@ add_library(motor_rpg
     src/RPG/Narrative/AdventureScriptLoader.cpp
     src/RPG/Narrative/AcompanantesAventura.cpp  # ACOMPANANTES-01: los acompañantes de la aventura
     src/RPG/Narrative/MoralAventura.cpp  # MORAL-01: acto, herida, requires.moral y exitos fijos
+    src/RPG/Narrative/ReputacionAventura.cpp  # BND-04: requires.reputacion
     src/RPG/Narrative/CharlaAventura.cpp  # DIALOGOS-01: requires.lugar y los papeles de las opciones
     src/RPG/Narrative/BeatsAventura.cpp  # VARIABLES-01 / OPCIONES-01: condiciones, efectos y opciones de un beat
     src/RPG/Narrative/FranjasDelDia.cpp  # FASE1-BND-01: el dia y la franja de la historia
+    src/RPG/Narrative/EventosDelMundo.cpp  # C8-03b: eventos del mundo
     src/RPG/Narrative/HeroeEnLaHistoria.cpp  # HEROE-01: lo que la historia sabe del heroe creado
 )
 # motor_rpg = Motor Onegai Nd6. GL-free puro: contiene DicePoolEngine,
@@ -181,7 +187,8 @@ add_library(motor_map_document
     src/Map/TileLayerDocument.cpp
     src/Map/EntityLayerDocument.cpp
     src/Map/RegionLayerDocument.cpp
-    src/Map/MapDocumentEdits.cpp src/Map/EventLayerDocument.cpp)
+    src/Map/MapDocumentEdits.cpp src/Map/EventLayerDocument.cpp
+    src/Map/RegionPresence.cpp)
 target_link_libraries(motor_map_document PUBLIC motor_json motor_project)
 
 # RUN-03 — Máquina de escenas sin ventana. Una Scene concreta decide cómo
@@ -264,6 +271,8 @@ add_library(motor_level
     # jugador. Vive en motor_level y no en motor_rpg porque elige pagina con
     # ActivePageWithInventory, que esta en SessionCommandHost.cpp.
     src/RPG/MapEventRunner.cpp
+    # U3-02.E06b: despacho de triggers de region al interprete (API publica).
+    src/RPG/RegionTriggerDispatch.cpp
     # H3-01 (Fase H): el atlas (WorldTopology) conectado a LevelTransition.
     # Vive en motor_level porque necesita las dos puntas: las puertas del
     # nivel (Level/) y la transicion que ejecuta Application (Game/SessionTipos).
@@ -279,6 +288,7 @@ add_library(motor_level
     # aventura apunta en la moral de la sesion (MoralDeLaSesion).
     src/Game/ReglasMoral.cpp
     src/Game/MoralDeLaSesion.cpp
+    src/Game/EventosDeLaSesion.cpp  # C8-03c
     src/Game/EnemyBrain.cpp
     src/Game/PauseMenu.cpp
     src/Game/OptionsState.cpp
@@ -351,6 +361,7 @@ add_library(motor_level
     src/Game/CartasJugar.cpp
     src/Game/CartasTiradas.cpp
     src/Game/CartasBloqueo.cpp  # AV13-30: el critico contra el bloqueo y la pifia que da ataque de oportunidad
+    src/Game/CartasEnemigas.cpp  # AV18-06: los enemigos juegan las cartas nativas de su repertorio
     src/Game/CartasAcompanantes.cpp  # ACOMPANANTES-01: los acompanantes de la historia en la mesa
     src/Game/Refuerzos.cpp  # ROSITA-01: los que llegan a mitad del combate (la compania de Rosita)
     # APARIENCIA-01: personajes por capas (manifiesto, montaje byte a byte
@@ -358,8 +369,12 @@ add_library(motor_level
     # puesto). GL-free; la textura la sube Render/HojaPersonaje.
     src/Game/Personajes/ManifiestoPersonajes.cpp
     src/Game/Personajes/MontajePersonajes.cpp
+    src/Game/Personajes/MontajeCache.cpp
+    src/Game/Personajes/MontajeFilas.cpp
     src/Game/Personajes/BrilloEquipo.cpp
     src/Game/Personajes/FamiliasDeParticulas.cpp  # PART-01: las familias de particulas (equipo y cartas)
+    src/Game/Personajes/VisibilidadRasgos.cpp
+    src/Game/Personajes/RasgosApariencia.cpp
     src/Game/Personajes/EditorApariencia.cpp
     src/Game/Personajes/Vestuario.cpp
     src/Game/Personajes/KitBasico.cpp  # UI-BG3-01: el kit del cofre de El Vacio, con una regla
@@ -380,7 +395,10 @@ add_library(motor_level
     src/Game/Mascotes.cpp  # MASC-01: mascotas que pasean, saludan o huyen (GL-free)
     src/Game/FullaMascotes.cpp  # MASC-01: la hoja de mascotas como datos (GL-free)
     src/Game/Monumentos.cpp  # BLOQUES-03: edificios con sprite propio (GL-free)
+    src/Game/CinematicaDisparador.cpp  # E-DISPARADORES-1: el punto de entrada y el disparador de las cinematicas
     src/Game/Cinematica.cpp  # PROLOGO-02: las cinematicas (ordenes, espectros y apariciones; GL-free)
+    src/Game/EscenaViva.cpp  # C2-04a: estado vivo de la escena (GL-free)
+    src/Game/FuegoCeldas.cpp  # C2-04c: casillas de fuego y semilla (GL-free)
 )
 # GameSession.cpp usa TileMap (motor_map) para la colision, pero
 # motor_map se declara mas abajo en este archivo: en vez de reordenar
@@ -389,6 +407,7 @@ add_library(motor_level
 # demo_editor_state. Ninguna de las dos trae GLAD/GLFW: siguen siendo
 # GL-free.
 target_link_libraries(motor_level PUBLIC motor_json motor_project motor_rpg motor_runtime_map motor_world motor_imagen)
+include(cmake/Emisor.cmake)  # U4-07: emisor de particulas generico (GL-free)
 
 # H0-05 — Selector de guardados (G-08/G-11) como libreria GL-free propia:
 # TitleMenuState y SaveSlotState viven aqui y ya no se compilan sueltos en
@@ -802,11 +821,13 @@ if (EXISTS ${GLAD_DIR}/src/glad.c AND EXISTS ${STB_DIR}/stb_image.h)
         # Sustituyen a HudMinimap, HudFicha y ApplicationMenuJugador.
         src/Render/PergaminoGL.cpp
         src/Render/AuraJugador.cpp
+        src/Render/FuegoNivel.cpp  # C2-04c: el fuego de arde/apaga
         src/Render/PintaDestellos.cpp  # PART-02d: las particulas sobre un sprite y las cartas jugadas
         # SPRITES-01 — las hojas de sprites del registro, subidas y recortadas.
         src/Render/BancoAtlas.cpp
         src/Render/BloquesNivel.cpp  # BLOQUES-01: los bloques del nivel en la cola del renderer
         src/Render/VidaNivel.cpp  # BLOQUES-02 + MASC-01: la capa de vida (palomas y mascotas)
+        src/Render/PolvoDePasos.cpp  # U4-07.E07: el polvo de pasos del jugador (GL)
         src/Render/HojaPersonaje.cpp  # APARIENCIA-01: hoja montada en la GPU + vista previa
         src/Render/DynamicLightMap.cpp
         src/Render/BlobShadow.cpp
@@ -829,6 +850,9 @@ if (EXISTS ${GLAD_DIR}/src/glad.c AND EXISTS ${STB_DIR}/stb_image.h)
         src/Engine/ApplicationHud.cpp
         src/Engine/ApplicationNivel.cpp
         src/Engine/ApplicationCinematica.cpp  # PROLOGO-02: las cinematicas en el juego
+        src/Engine/ApplicationCinematicaEscena.cpp  # C2-04b: la escena viva en el juego
+        src/Engine/ApplicationCinematicaTitulo.cpp
+        src/Engine/ApplicationCamara.cpp  # U4-01.E06
         ${GLAD_DIR}/src/glad.c
         ${CMAKE_BINARY_DIR}/stb_image_impl.cpp
     )
@@ -840,7 +864,7 @@ if (EXISTS ${GLAD_DIR}/src/glad.c AND EXISTS ${STB_DIR}/stb_image.h)
     # expone en su propia interfaz publica, y no trae GLAD/GLFW consigo
     # (ver comentario mas arriba), asi que no reintroduce ninguna
     # dependencia nueva sobre motor_core.
-    target_link_libraries(motor_core PUBLIC glfw glm::glm motor_map motor_engine_loop motor_input motor_scene motor_saves motor_captura_gl motor_i18n motor_pergamino)
+    target_link_libraries(motor_core PUBLIC glfw glm::glm motor_map motor_engine_loop motor_input motor_guion_captura motor_scene motor_saves motor_captura_gl motor_i18n motor_pergamino)
 
     add_executable(sandbox_window examples/sandbox_window.cpp)
     target_link_libraries(sandbox_window PRIVATE motor_core)
@@ -967,6 +991,12 @@ if(BUILD_TESTING)
     include(cmake/ProjectLevelsTests.cmake)
     # E-02 — variables narrativas e interruptores locales A-D.
     include(cmake/NarrativeVariablesTests.cmake)
+    include(cmake/PuertaCerradaTests.cmake)  # G4-01: puertas cerradas por flags
+    # C8-03b — catálogo de eventos del mundo (lectura y validación).
+    include(cmake/EventosDelMundoTests.cmake)
+    include(cmake/EscenaVivaTests.cmake)  # C2-04a: posturas, fuego y emociones
+    include(cmake/PosicionBocadilloTests.cmake)  # C2-04d: posicion del bocadillo
+    include(cmake/FuegoNivelTests.cmake)  # C2-04c: casillas de fuego y semilla
     # E-03 — planificador de eventos (esperas, paralelos, orden determinista).
     include(cmake/EventInterpreterTests.cmake)
     # E-04 — juego de comandas y su integracion con el planificador.
@@ -976,16 +1006,19 @@ if(BUILD_TESTING)
     include(cmake/OpcionesDialogoTests.cmake)  # OPCIONES-01 / VARIABLES-01
     include(cmake/FaseUnoBoundingtonTests.cmake)  # FASE1-BND-01: franjas, tabla, descanso, huir y sin matar
     include(cmake/MoralTests.cmake)  # MORAL-01: la moral de varios factores
+    include(cmake/ReputacionAventuraTests.cmake)  # BND-04: requires.reputacion
     include(cmake/HeroeEnLaHistoria.cmake)  # HEROE-01: la historia sabe quien es el heroe creado
     include(cmake/Charlas.cmake)  # DIALOGOS-01: lugar, "sigue" y las paginas de charla
     include(cmake/Cinematica.cmake)  # PROLOGO-02: las cinematicas del prologo
     include(cmake/RumboNiveles.cmake)  # MAPA-01: el objetivo en el minimapa
     include(cmake/TableroCombate.cmake)  # AV13-06: el tablero del combate a lo BG3
     include(cmake/RutaCasillas.cmake)  # AV13-07: la ruta por casillas
+    include(cmake/RegionTriggersTests.cmake)  # U3-02.E02: pertenencia de casilla a regiones
     include(cmake/PlantillaArea.cmake)  # AV13-08 (ChatGPT): las plantillas de area
     include(cmake/Contenedores.cmake)
 include(cmake/Botin.cmake)
-include(cmake/SimularEconomia.cmake)  # AV18-02: datos, persistencia y papiro de botín
+include(cmake/SimularEconomia.cmake)
+include(cmake/MonstruosAcciones.cmake)  # AV18-02: datos, persistencia y papiro de botín
     include(cmake/Lugares.cmake)  # AV15-02b (ChatGPT): los sitios de Boundington por su nombre
     include(cmake/OrdenDeTurno.cmake)  # AV13-11: el orden de turno por iniciativa
     include(cmake/EfectosDeGolpe.cmake)  # AV14-02: el golpe en el cuerpo y en la hoja
@@ -1000,6 +1033,7 @@ include(cmake/SimularEconomia.cmake)  # AV18-02: datos, persistencia y papiro de
     # H0-08 (Fase H) — MapEventRunner: los cuatro disparadores conducidos por
     # casillas, jugados sobre el asset publicado assets/misiones/mision_llave.
     include(cmake/MapEventRunnerTests.cmake)
+    include(cmake/RegionTriggerDispatchTests.cmake)  # U3-02.E06b
     # H6-01 (Fase H) — AudioDirector: la politica de sonido, probada contra un
     # doble de AudioEngine (sin dispositivo, sin assets, corre en CI).
     include(cmake/AudioDirectorTests.cmake)
@@ -1190,6 +1224,9 @@ include(cmake/SimularEconomia.cmake)  # AV18-02: datos, persistencia y papiro de
     # desconocido que no pierden datos, y limite de anidamiento.
     add_motor_unit_test(test_event_layer_document tests/Map/EventLayerDocumentTests.cpp)
     target_link_libraries(test_event_layer_document PRIVATE motor_map_document motor_project)
+    # U3-02.E06a — Triggers de region en paginas de evento (referencias, ediciones, carga).
+    add_motor_unit_test(test_event_region_trigger tests/Map/EventRegionTriggerTests.cpp)
+    target_link_libraries(test_event_region_trigger PRIVATE motor_map_document motor_project)
     target_link_libraries(test_map_document PRIVATE motor_map_document)
 
     add_motor_unit_test(test_runtime_tilemap tests/Runtime/RuntimeTileMapBuilderTests.cpp)
@@ -1198,6 +1235,10 @@ include(cmake/SimularEconomia.cmake)  # AV18-02: datos, persistencia y papiro de
     # AV19-02 — La altura del terreno (rejilla, rampas, regla de paso, JSON del nivel).
     add_motor_unit_test(test_alturas tests/Level/AlturasTests.cpp)
     target_link_libraries(test_alturas PRIVATE motor_level motor_json)
+
+    # E-DISPARADORES-1 E2b — la linea de vision compartida, el ambito del nivel y tapaVista de los objetos.
+    add_motor_unit_test(test_vision_y_ambito tests/Level/VisionYAmbitoTests.cpp)
+    target_link_libraries(test_vision_y_ambito PRIVATE motor_level motor_json)
 
     add_motor_unit_test(test_tmx_importer tests/Import/TmxImporterTests.cpp)
     target_link_libraries(test_tmx_importer PRIVATE motor_tmx_import)
@@ -1231,6 +1272,8 @@ include(cmake/SimularEconomia.cmake)  # AV18-02: datos, persistencia y papiro de
     # assets, igual que test_save_game.
     add_motor_unit_test(test_game_session tests/Game/GameSessionTests.cpp)
     target_link_libraries(test_game_session PRIVATE motor_level motor_map motor_rpg motor_json)
+    # C8-03c — la sesión evalúa los eventos del mundo.
+    include(cmake/EventosDeLaSesionTests.cmake)
     # ACTUAR-01 — Actuar en la calle: la tirada, el publico, el oro y el descanso de cada sitio.
     add_motor_unit_test(test_actuacion tests/Game/ActuacionTests.cpp)
     target_link_libraries(test_actuacion PRIVATE motor_level motor_map motor_rpg motor_json)
@@ -1492,6 +1535,7 @@ include(cmake/ApplicationNarrativeWiringTests.cmake)
 
 # Tutorial de Boundington en la zona principal — comerciantes, emboscada y combate.
 include(cmake/BoundingtonTutorialTests.cmake)
+include(cmake/BoundingtonDia1Tests.cmake)
 
 # D-06 — Creació de personatge: bonificacions de classe/raça/trasfond
 # i set eleccions narratives arriben a la CharacterSheet.
@@ -1560,6 +1604,7 @@ include(cmake/AssetBrowserStateTests.cmake)
 include(cmake/AssetBrowserTests.cmake)
 include(cmake/ProjectDatabaseTests.cmake)
 include(cmake/NewGameFlowTests.cmake)
+include(cmake/FabricarGuardados.cmake)  # E-GUION-02: guardados para el modo guion (GL-free)
 include(cmake/MapPropertiesTests.cmake)
 include(cmake/EditorToolsTests.cmake)
 include(cmake/CatalogLoaderContractCheck.cmake)
@@ -1574,9 +1619,11 @@ include(cmake/DiarioCompleto.cmake)
 include(cmake/ComercioReputacion.cmake)
 # PNJ-02 (ronda 15/10, pnj_motor) — los PNJ andan y hacen su oficio (rutinas_pnj.json).
 include(cmake/RutinasPnj.cmake)
+include(cmake/ClipsAnimacion.cmake)
 # AV15-05a — confirmar lo caro e irreversible (EH-22, 23, 29, 30).
 include(cmake/Confirmar.cmake)
 include(cmake/AparienciaTests.cmake)
+include(cmake/MontajeCacheTests.cmake)  # PERF-1: la cache de atlas del montaje
 include(cmake/CreacionBg3Tests.cmake)  # UI-BG3-01: kit del cofre, cuaderno de creacion y barra de cartas
 # SPRITES-01 — el indice de hojas de sprites y sus reglas de busqueda.
 include(cmake/RegistroSpritesTests.cmake)

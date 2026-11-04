@@ -11,6 +11,7 @@
 // (1144, 640).
 #include "HUD/Pergamino/MesaCombateHud.h"
 
+#include <cstdlib>
 #include <algorithm>
 #include <cctype>
 #include <cmath>
@@ -415,9 +416,14 @@ void pintaCombate(Lienzo& l, const Pincel& p, const DatosCombate& d, Retratista&
     // barra aun no ha mirado ninguna, la ultima de la vista.
     const RPG::TiradaVisible& tirada =
         d.barra->tiradaEnPantalla().numero > 0 ? d.barra->tiradaEnPantalla() : d.vista->tirada;
-    if (tirada.numero > 0)
+    if (tirada.numero > 0) {
+        // Oriol (22/10): los dados ruedan los primeros kRodar segundos del brillo antes de dar el resultado.
+        static const bool reducidas = std::getenv("MOTOR_MOVIMIENTO_REDUCIDO") != nullptr;
+        const float desde = (1.0f - d.barra->brilloTirada()) * Game::BarraCombate::kBrilloTirada;
+        const float rodar = !reducidas && d.barra->brilloTirada() > 0.0f && desde < dados::kRodar ? desde : -1.0f;
         pintaTiradaCombate(l, p, tirada, 972.0f, 428.0f, d.barra->brilloTirada(), d.barra->tiradaDe(),
-                           d.barra->tiradaEn());
+                           d.barra->tiradaEn(), rodar);
+    }
     // AV16-11: en el turno del rival no hay mano ni barra tuyas, solo su cartel.
     if (!d.barra->rivalPendiente()) combate::pintaBandeja(k, *d.vista, *d.barra, rival);
     combate::pintaAvisoReaccion(k, *d.barra);

@@ -44,6 +44,13 @@ void AuraJugador::desencolar(IsometricRenderer& renderer) {
     renderer.removeFromQueue(&m_detras);
 }
 
+Game::Reparto AuraJugador::reparto() const {
+    // PL-JUEGO-01: el de la hoja que lleva el jugador (40 columnas = en diagonal, la de PixelLab)
+    const TextureAtlas* atlas = m_jugador != nullptr ? m_jugador->characterAtlas() : nullptr;
+    if (atlas == nullptr || atlas->texture() == nullptr) return Game::Reparto::Clasico;
+    return Game::repartoDeColumnas(atlas->texture()->getWidth() / Game::kCeldaSprite);
+}
+
 float AuraJugador::segundos() const {
     return std::chrono::duration<float>(std::chrono::steady_clock::now() - m_inicio).count();
 }
@@ -173,7 +180,8 @@ void AuraJugador::renderRayos(SpriteBatch& batch, float t) {
     int region = 0;
     dibujo(esquina, tam, region);
     const float s = tam.x / static_cast<float>(Game::kCeldaSprite);
-    const Vector2 pecho{esquina.x + Game::kPechoX * s, esquina.y + Game::kPechoY * tam.y / Game::kCeldaSprite};
+    const float pechoY = reparto() == Game::Reparto::Diagonal ? Game::kPechoDiagonalY : Game::kPechoY;  // PL-JUEGO-01
+    const Vector2 pecho{esquina.x + Game::kPechoX * s, esquina.y + pechoY * tam.y / Game::kCeldaSprite};
     const Vector2 uv[4] = {Vector2{0.5f, 0.0f}, Vector2{1.0f, 0.0f}, Vector2{1.0f, 1.0f}, Vector2{0.5f, 1.0f}};
     const auto pinta = [&](const Vector4& color) {
         for (int i = 0; i < m_aspecto.rayos; ++i) {
@@ -227,7 +235,7 @@ void AuraJugador::renderAlas(SpriteBatch& batch, float t, bool delante) {
     int region = 0;
     dibujo(esquina, tam, region);
     Game::AlaEnSprite alas[2];
-    const int n = Game::alasEnSprite(m_aspecto, region, t, alas);
+    const int n = Game::alasEnSprite(m_aspecto, region, t, alas, reparto());
     if (n == 0 || alas[0].delante != delante) return;
     Texture* tex = texturaAlas();
     if (tex == nullptr) return;

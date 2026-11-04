@@ -7,6 +7,7 @@
 // Aislarlo es lo que permite leerlo entero de una sentada.
 
 #include "Engine/Application.h"
+#include "Engine/ApplicationCinematica.h"
 
 #include "Core/Math/IsoMath.h"
 #include "Core/Resources/Shader.h"
@@ -129,6 +130,7 @@ void Application::shutdown() {
     // antes que el Player al que sigue.
     if (m_renderer && m_aura) m_aura->desencolar(*m_renderer);
     m_aura.reset();
+    if (m_renderer && m_cine && m_cine->fuego.montado()) m_cine->fuego.desmonta(*m_renderer);  // C2-04c
     // BLOQUES-01 — sus entidades salen de la cola antes que el renderer.
     if (m_renderer && m_vida) m_vida->desmonta(*m_renderer);
     m_vida.reset();

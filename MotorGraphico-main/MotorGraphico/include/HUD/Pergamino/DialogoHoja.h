@@ -18,6 +18,7 @@
 // Sin OpenGL.
 #pragma once
 
+#include <chrono>
 #include <string>
 #include <vector>
 
@@ -103,6 +104,9 @@ private:
     int m_pagina = 0;
     RPG::TiradaVisible m_tirada;  // la de este dialogo (numero 0 = ninguna)
     int m_tiradaVista = 0;        // numero de la ultima tirada mirada
+    // Oriol (22/10): los dados ruedan un momento al salir la tira (en la ultima pagina).
+    mutable bool m_tiradaRodando = false;
+    mutable std::chrono::steady_clock::time_point m_tiradaDesde{};
     std::vector<std::string> m_opciones;  // OPCIONES-01: las de la eleccion pendiente
     int m_opcion = 0;                     // la elegida (subrayada)
 };

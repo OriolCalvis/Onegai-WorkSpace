@@ -32,6 +32,7 @@
 #include "RPG/CharacterCreation.h"
 #include "RPG/CharacterSheet.h"
 #include "RPG/NarrativeEngine.h"
+#include "RPG/Narrative/EventosDelMundo.h"  // E-OCASO-ATASCO: el mundo se mueve solo, como en GameSession
 #include "Game/Cinematica.h"  // PROLOGO-02
 #include "RPG/Narrative/HeroeEnLaHistoria.h"
 
@@ -47,16 +48,28 @@ struct Fase {
     const char* flagFin;
 };
 
+// E-OCASO-ATASCO: GameSession::avaluaEventosDelMundo() corre una vez por fotograma; el
+// explorador lo hacia nunca y el Ocaso (bnd3_campanas, evt_*) no arrancaba jamas.
+const RPG::eventos::Catalogo& eventosDelMundo() {
+    static const RPG::eventos::Catalogo cat = [] {
+        auto r = RPG::eventos::cargaCatalogo("assets/eventos/boundington.json");
+        if (!r.isOk()) { std::printf("No se cargan los eventos: %s\n", r.errorMessage().c_str()); std::exit(2); }
+        return r.value();
+    }();
+    return cat;
+}
+
 const Fase kFases[] = {
     {"prologo", "assets/adventures/boundington_prologo.json", "", "assets/levels/prado_del_rio.json",
      "bnd_prologo_terminado"},
     {"dia1", "assets/adventures/boundington_primer_dia.json", "bnd_dia1_empezado",
      "assets/levels/interior_taberna.json", "bnd_dia_cerrado"},
+    {"dia_gorran", "assets/adventures/boundington_dia_gorran.json", "bnd_diag_empezado", "", "bndg_dia_cerrado"},
     {"dia2", "assets/adventures/boundington_segundo_dia.json", "bnd_dia2_empezado", "", "bnd2_dia_cerrado"},
     {"ocaso", "assets/adventures/boundington_ocaso.json", "bnd_ocaso_empezado", "assets/levels/ciudad_centro.json",
      "bnd3_fuera"},
 };
-constexpr int kNumFases = 4;
+constexpr int kNumFases = 5;
 constexpr int kMaxPasos = 900;        // por fase
 constexpr int kMaxRepeticiones = 3;   // un beat repetible, como mucho, en una partida
 
@@ -193,6 +206,13 @@ public:
                 ++m_t.rescates[f.nombre];
             }
             if (!atasco.empty()) {
+                if (std::getenv("EXPLORAR_TRAZA"))  // que puede hacer el jugador donde se atasca
+                    for (const Accion& a : m_acciones) {
+                        NarrativeState c = m_s;
+                        const NarrativeResult r = haz(a, c);
+                        std::fprintf(stderr, "  traza: %s %s en %s -> %s\n", a.tipo == TriggerType::Enter ? "enter" : "talk",
+                                     a.objetivo.c_str(), a.lugar.c_str(), r.fired ? r.beatId.c_str() : "-");
+                    }
                 const std::string clave = std::string(f.nombre) + " · " + atasco + " tras «" + m_ultimo + "»";
                 if (m_t.atascos[clave]++ < 1 && m_t.ejemplosAtasco.size() < 12) m_t.ejemplosAtasco.push_back(describeAtasco(clave));
                 break;
@@ -242,6 +262,13 @@ private:
             }
             for (const std::string& nivel : it->second) m_acciones.push_back({b.trigger.type, b.trigger.target, nivel});
         }
+        // E-OCASO-ATASCO — Los niveles a los que el jugador puede ir a buscar algo aunque nadie
+        // le hable alli: donde piden estar los beats automaticos y donde empiezan las cinematicas.
+        m_lugares.clear();
+        for (const NarrativeBeat& b : g.beats)
+            for (const std::string& l : b.requirements.lugares) m_lugares.insert(l);
+        for (const Game::Cinematica& c : cinematicas().lista)
+            if (!c.nivel.empty()) m_lugares.insert(c.nivel);
         m_timers.clear();
         for (const TimerDefinition& t : g.timers) m_timers.push_back(&t);
         // Las flags que pide la aventura y que no pone ella: las pone el juego
@@ -269,10 +296,19 @@ private:
         for (const AdventureScript& otra : m_guiones)
             for (const TimerDefinition& t : otra.timers) puestas.insert(t.flagExpira);
         for (const Fase& f : kFases) puestas.insert(f.flagEmpieza);
+        for (const RPG::eventos::Evento& ev : eventosDelMundo().eventos) {  // los pone el evaluador
+            puestas.insert("evt_" + ev.id);
+            pone(ev.efectos);
+            pone(ev.alCaducar);
+            for (const RPG::eventos::Fase& fa : ev.fases) { puestas.insert("evt_" + ev.id + "__" + fa.id); pone(fa.efectos); }
+        }
         for (const Game::Cinematica& c : cinematicas().lista) {  // PROLOGO-02: las ponen las cinematicas
             puestas.insert(c.vista());
             puestas.insert(c.alTerminar.begin(), c.alTerminar.end());
-            for (const Game::PasoCinematica& p : c.pasos) puestas.insert(p.texto);
+            for (const Game::PasoCinematica& p : cinematicas().pasosEfectivos(c)) {  // E-DISPARADORES-1: con lleva y accion
+                puestas.insert(p.texto);
+                if (p.tipo == Game::PasoCinematica::Tipo::Combate) puestas.insert({p.flagGana, p.flagPierde});  // E4
+            }
         }
         for (const NarrativeBeat& b : g.beats) {
             pide(b.requirements);
@@ -290,6 +326,7 @@ private:
 
     const Game::Cinematica* m_cine = nullptr;  // PROLOGO-02: la que esta en curso
     std::size_t m_cinePaso = 0;
+    std::vector<Game::PasoCinematica> m_cinePasos;  // E-DISPARADORES-1: los pasos efectivos de m_cine
 
     std::string clave(const std::string& beat) const { return std::string(kFases[m_fase].nombre) + "/" + beat; }
 
@@ -316,19 +353,27 @@ private:
                 return true;
             }
         }
+        // E-OCASO-ATASCO — El mundo (eventos por hora, senal o evento previo), como en el
+        // juego: cuando la historia se queda quieta; si algo salto, se vuelve a mirar.
+        if (!RPG::eventos::evalua(eventosDelMundo(), m_s).empty()) {
+            m_ultimo = "(evento del mundo)";
+            return true;
+        }
         // PROLOGO-02 — Una cinematica: lo que pide a la historia, una orden por
         // paso (el jugador acaba siempre llegando a la orilla del barquero).
         if (m_cine == nullptr) {
-            m_cine = cinematicas().laQueEmpieza(m_s.lugar(), GridCoord{12, 9},
-                                                [this](const std::string& f) { return m_s.hasFlag(f); });
+            m_cine = cineQueEmpieza(m_s.lugar(), m_s);
             m_cinePaso = 0;
+            if (m_cine != nullptr) m_cinePasos = cinematicas().pasosEfectivos(*m_cine);  // E-DISPARADORES-1: lleva + accion
         }
         if (m_cine != nullptr) {
             using Tipo = Game::PasoCinematica::Tipo;
-            if (m_cinePaso < m_cine->pasos.size()) {
-                const Game::PasoCinematica& p = m_cine->pasos[m_cinePaso++];
+            if (m_cinePaso < m_cinePasos.size()) {
+                const Game::PasoCinematica& p = m_cinePasos[m_cinePaso++];
                 if (p.tipo == Tipo::Beat || p.tipo == Tipo::Flag) {
                     m_s.setFlag(p.texto);
+                } else if (p.tipo == Tipo::Combate) {  // E4: 80 % de victoria, como un startBattle
+                    m_s.setFlag(std::uniform_int_distribution<int>(0, 99)(m_azar) < 80 ? p.flagGana : p.flagPierde);
                 } else if (p.tipo == Tipo::Nivel) {
                     m_s.ponLugar(p.texto);
                     procesa(m_e.enterLevel(p.texto, m_s));
@@ -355,6 +400,16 @@ private:
         }
         const std::vector<std::size_t>& pool = !nuevas.empty() ? nuevas : otras;
         if (pool.empty()) {
+            // E-OCASO-ATASCO — Ir a otro nivel donde algo arranca solo (un beat automatico que
+            // pide estar alli, una cinematica de entrada): el jugador siempre puede caminar.
+            for (const std::string& destino : m_lugares) {
+                if (destino == m_s.lugar() || !llegarServe(destino)) continue;
+                m_s.ponLugar(destino);
+                m_ultimo = "(vas a " + destino + ")";
+                procesa(m_e.enterLevel(destino, m_s));
+                m_cine = nullptr;
+                return true;
+            }
             // El tiempo pasa: los temporizadores arrancados expiran.
             for (const TimerDefinition* t : m_timers) {
                 const bool arrancado = (!t->arrancaPor.empty() && m_s.hasFlag(t->arrancaPor)) || m_s.timerRef(t->id).activo;
@@ -443,6 +498,26 @@ private:
             if (sig.fired && util(s, c2, hondo - 1, conRechazos)) return true;
         }
         return false;
+    }
+
+    // La cinematica que empieza en `nivel`. Las que piden una zona (el sermon de la plaza, la
+    // orilla del barquero) empiezan cuando el jugador la pisa: el jugador va hacia ella.
+    static const Game::Cinematica* cineQueEmpieza(const std::string& nivel, const NarrativeState& s) {
+        const auto tiene = [&s](const std::string& f) { return s.hasFlag(f); };
+        for (const Game::Cinematica& c : cinematicas().lista) {
+            const GridCoord donde = c.puntoDeEntrada();
+            if (cinematicas().laQueEmpieza(nivel, donde, tiene) == &c) return &c;
+        }
+        return nullptr;
+    }
+
+    // ¿Pasa algo al llegar a `destino`: salta un beat (de entrada o automatico) o empieza una cinematica?
+    bool llegarServe(const std::string& destino) const {
+        NarrativeState c = m_s;
+        c.ponLugar(destino);
+        if (m_e.enterLevel(destino, c).fired) return true;
+        if (m_e.tick(c).fired) return true;
+        return cineQueEmpieza(destino, c) != nullptr;
     }
 
     // Ir al lugar de la accion (si no se esta: salta su beat «enter», si lo hay)
@@ -574,7 +649,8 @@ private:
     }
 
     std::string describeAtasco(const std::string& clave) const {
-        std::string s = clave + "\n        flags:";
+        std::string s = clave + "\n        en " + m_s.lugar() + ", dia " + std::to_string(m_s.variable("dia")) + " franja " +
+                        std::to_string(m_s.variable("franja")) + "\n        flags:";
         for (const std::string& f : m_s.flags())
             if (f.rfind("heroe_", 0) != 0) s += " " + f;
         return s;
@@ -594,6 +670,7 @@ private:
     int m_fase = 0;
     int m_nivel = 1;
     std::vector<Accion> m_acciones;
+    std::set<std::string> m_lugares;
     std::vector<const TimerDefinition*> m_timers;
     std::vector<std::string> m_externas;
     std::set<std::string> m_rechazadas;
