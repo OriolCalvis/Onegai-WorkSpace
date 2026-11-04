@@ -32,6 +32,11 @@ if (BUILD_TESTING AND MOTOR_PYTHON3)
         COMMAND ${MOTOR_PYTHON3} -I "${CMAKE_CURRENT_SOURCE_DIR}/tools/test_matriz_decisiones.py"
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
     set_tests_properties(test_matriz_decisiones PROPERTIES LABELS "unit;gl-free")
+    # E-MISIONES-01: el inventario de misiones del dia 1 (todos los beats en una mision; alcanzabilidad estatica).
+    add_test(NAME test_matriz_misiones
+        COMMAND ${MOTOR_PYTHON3} -I "${CMAKE_CURRENT_SOURCE_DIR}/tools/test_matriz_misiones.py"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    set_tests_properties(test_matriz_misiones PROPERTIES LABELS "unit;gl-free")
     add_test(NAME validar_opciones_beat
         COMMAND ${MOTOR_PYTHON3} "${CMAKE_CURRENT_SOURCE_DIR}/tools/validar_opciones_beat.py"
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")

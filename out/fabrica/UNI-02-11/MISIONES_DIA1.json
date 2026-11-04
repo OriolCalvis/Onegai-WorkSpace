@@ -1,0 +1,4638 @@
+{
+ "dia": "primer_dia",
+ "ruta": "assets/adventures/boundington_primer_dia.json",
+ "n_beats": 393,
+ "sin_mision": [],
+ "dobles": [],
+ "misiones": [
+  {
+   "id": "llegada_cama",
+   "nombre": "La primera noche: cama y rumores en la Taberna Humilde",
+   "tipo": "mision",
+   "beats": [
+    "b0_llegada",
+    "b0_se_oye_forastero",
+    "b0_se_oye",
+    "b0_rosita_sube",
+    "b0_subiendo_oido",
+    "b0_subiendo",
+    "b0_subir_oido",
+    "b0_subir",
+    "b0_puerta_cerrada",
+    "b0_calle_sin_cama",
+    "b0_calle",
+    "b0_rosita_n_cama",
+    "b0_rosita_n_perdidos",
+    "b0_rosita_n_ella",
+    "b0_rosita_n_furia",
+    "b0_rosita",
+    "b0_rosita_s0",
+    "b0_rosita_s1",
+    "b0_rosita_s2",
+    "b0_rosita_p0",
+    "b1_skilla_hora",
+    "b1_posadero_hora"
+   ],
+   "n": 22,
+   "abre": {
+    "beat": "b0_llegada",
+    "linea": 68,
+    "trigger": "enter",
+    "objetivo": "assets/levels/interior_taberna.json",
+    "requires": "no: bnd0_noche"
+   },
+   "pnj": [
+    "b0_puerta_cerrada",
+    "skilla",
+    "posadero"
+   ],
+   "niveles": [
+    "assets/levels/interior_taberna.json",
+    "assets/levels/ciudad_centro.json",
+    "assets/levels/interior_taberna_p1.json",
+    "assets/levels/recuerdo_taberna.json",
+    "assets/levels/interior_posada.json"
+   ],
+   "cierre_flags": [
+    "bnd0_dormido"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b0_subir_oido",
+     "linea": 265,
+     "pone": [
+      "bnd0_dormido"
+     ]
+    },
+    {
+     "beat": "b0_subir",
+     "linea": 314,
+     "pone": [
+      "bnd0_dormido"
+     ]
+    }
+   ],
+   "salidas": [],
+   "recompensa": {
+    "oro_pos": 0,
+    "oro_neg": -105,
+    "oro_por_beat": {
+     "b0_calle_sin_cama": -25,
+     "b0_rosita": -25,
+     "b0_rosita_s0": -25,
+     "b0_rosita_p0": -25,
+     "b1_skilla_hora": -5
+    },
+    "niveles": 0.0,
+    "objetos": [],
+    "heridas": [],
+    "actos": [],
+    "descansos": 2
+   },
+   "diario": [
+    {
+     "id": "obj_posada",
+     "texto": "Buscar cama en la Taberna Humilde",
+     "doneFlag": "bnd_skilla",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:39"
+    },
+    {
+     "id": "obj_preguntar",
+     "texto": "Preguntar por la ciudad (Rosita, en la Taberna Humilde, sabe de todo).",
+     "doneFlag": "bnd_rumor",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:45"
+    }
+   ],
+   "cobertura": {
+    "vistos": 20,
+    "total": 22,
+    "no_vistos": [
+     "b0_rosita_n_perdidos",
+     "b0_rosita_n_furia"
+    ],
+    "solo_heroe": [],
+    "no_elegidas": [
+     "b0_rosita_n_cama#0 «¿Luisarda es amiga tuya?»",
+     "b0_rosita_n_perdidos#0 «¿Qué se dice de los Perdidos?»",
+     "b0_rosita_n_perdidos#1 «Bajar la voz y preguntar por los Perdidos»",
+     "b0_rosita_n_perdidos#2 «Dejarlo ahí»",
+     "b0_rosita_n_ella#0 «¿Cómo te llamas?»",
+     "b0_rosita_n_ella#1 «Presentarte: me llamo {nombre}»",
+     "b0_rosita_n_ella#3 «¿Qué hay de cenar?»",
+     "b0_rosita_n_furia#0 «¿Siete trolls?»",
+     "b0_rosita_n_furia#1 «¿Quién es la Furia?»",
+     "b0_rosita_n_furia#2 «Dejarlo ahí»",
+     "b0_rosita_s0#0 «Pagar la cama»",
+     "b0_rosita_s0#2 «Hablar de otra cosa»",
+     "b0_rosita_s0#3 «Nada más»",
+     "b0_rosita_s1#0 «Preguntar por los Perdidos»",
+     "b0_rosita_s2#1 «Preguntar por la Furia»",
+     "b0_rosita_s2#2 «Hablar de otra cosa»",
+     "b0_rosita_p0#0 «Pagar la cama»",
+     "b0_rosita_p0#1 «Subir a dormir»",
+     "b0_rosita_p0#3 «Nada más»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b0_subir_oido",
+      "linea": 265,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b0_subir",
+      "linea": 314,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "ventana",
+   "nombre": "Los vecinos de la ventana",
+   "tipo": "charla",
+   "beats": [
+    "b0_bordadora",
+    "b0_carretero",
+    "b0_marido",
+    "b0_ventana_n_donde_a",
+    "b0_ventana_v0",
+    "b0_ventana",
+    "b0_ventana_s0_a",
+    "b0_ventana_s1_a",
+    "b0_ventana_p0_a"
+   ],
+   "n": 9,
+   "abre": {
+    "beat": "b0_bordadora",
+    "linea": 2499,
+    "trigger": "talk",
+    "objetivo": "bordadora",
+    "requires": "todas: bnd0_noche; no: bnd0_dormido, bnd0_ventana_abierta"
+   },
+   "pnj": [
+    "bordadora",
+    "carretero_jubilado",
+    "marido_bordadora"
+   ],
+   "niveles": [
+    "assets/levels/cueva_gorran.json",
+    "assets/levels/interior_taberna.json",
+    "assets/levels/recuerdo_taberna.json"
+   ],
+   "cierre_flags": [
+    "bnd0_ventana_visto"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b0_ventana_v0",
+     "linea": 2953,
+     "pone": [
+      "bnd0_ventana_visto"
+     ]
+    },
+    {
+     "beat": "b0_ventana",
+     "linea": 3070,
+     "pone": [
+      "bnd0_ventana_visto"
+     ]
+    }
+   ],
+   "salidas": [],
+   "recompensa": {
+    "oro_pos": 0,
+    "oro_neg": 0,
+    "oro_por_beat": {},
+    "niveles": 0.0,
+    "objetos": [],
+    "heridas": [],
+    "actos": [],
+    "descansos": 0
+   },
+   "diario": [
+    {
+     "id": "obj_preguntar",
+     "texto": "Preguntar por la ciudad (Rosita, en la Taberna Humilde, sabe de todo).",
+     "doneFlag": "bnd_rumor",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:45"
+    }
+   ],
+   "cobertura": {
+    "vistos": 9,
+    "total": 9,
+    "no_vistos": [],
+    "solo_heroe": [],
+    "no_elegidas": [
+     "b0_ventana_v0#3 «Volver a tu mesa»",
+     "b0_ventana#2 «Hablar de otra cosa»",
+     "b0_ventana_p0_a#0 «Contestar de dónde vienes»",
+     "b0_ventana_p0_a#3 «Volver a tu mesa»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b0_ventana_v0",
+      "linea": 2953,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b0_ventana",
+      "linea": 3070,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "jornaleros",
+   "nombre": "El rincon de los jornaleros (Tomas, Berto y el tercero)",
+   "tipo": "mision",
+   "beats": [
+    "b0_tomas",
+    "b0_berto",
+    "b0_tercero",
+    "b0_tomas_amigo",
+    "b0_tomas_ofendido",
+    "b0_tomas_despues",
+    "b0_berto_despues",
+    "b0_berto_ya",
+    "b0_tercero_despues",
+    "b0_rincon",
+    "b1_rincon_ofendido",
+    "b1_rincon_amigos",
+    "beat_parroquiano"
+   ],
+   "n": 13,
+   "abre": {
+    "beat": "b0_tomas",
+    "linea": 2577,
+    "trigger": "talk",
+    "objetivo": "tomas_jornalero",
+    "requires": "todas: bnd0_noche; no: bnd0_dormido, bnd0_rincon_hecho, bnd0_rincon_abierto"
+   },
+   "pnj": [
+    "tomas_jornalero",
+    "berto_jornalero",
+    "jornalero_callado",
+    "parroquiano_humilde"
+   ],
+   "niveles": [
+    "assets/levels/interior_taberna.json",
+    "assets/levels/recuerdo_taberna.json",
+    "assets/levels/ciudad_centro.json",
+    "assets/levels/ciudad_oeste.json",
+    "assets/levels/ciudad_surysal.json",
+    "assets/levels/cueva_gorran.json"
+   ],
+   "cierre_flags": [
+    "bnd0_rincon_hecho",
+    "bnd_rumor_parroquiano"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b0_rincon",
+     "linea": 3534,
+     "pone": [
+      "bnd0_rincon_hecho"
+     ]
+    },
+    {
+     "beat": "b1_rincon_amigos",
+     "linea": 5014,
+     "pone": [
+      "bnd_rumor_parroquiano"
+     ]
+    },
+    {
+     "beat": "beat_parroquiano",
+     "linea": 5047,
+     "pone": [
+      "bnd_rumor_parroquiano"
+     ]
+    }
+   ],
+   "salidas": [],
+   "recompensa": {
+    "oro_pos": 0,
+    "oro_neg": 0,
+    "oro_por_beat": {},
+    "niveles": 0.0,
+    "objetos": [],
+    "heridas": [],
+    "actos": [
+     {
+      "acto": "reirse_de_tomas",
+      "gravedad": "menor",
+      "signo": -1,
+      "beat": "b0_rincon"
+     }
+    ],
+    "descansos": 0
+   },
+   "diario": [
+    {
+     "id": "obj_preguntar",
+     "texto": "Preguntar por la ciudad (Rosita, en la Taberna Humilde, sabe de todo).",
+     "doneFlag": "bnd_rumor",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:45"
+    }
+   ],
+   "cobertura": {
+    "vistos": 11,
+    "total": 13,
+    "no_vistos": [
+     "b0_tomas_amigo",
+     "b0_berto_ya"
+    ],
+    "solo_heroe": [],
+    "no_elegidas": [],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b0_rincon",
+      "linea": 3534,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_rincon_amigos",
+      "linea": 5014,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "beat_parroquiano",
+      "linea": 5047,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "encapuchado",
+   "nombre": "El hombre de la capucha",
+   "tipo": "charla",
+   "beats": [
+    "b0_capucha_te_mira",
+    "b0_capucha",
+    "b0_capucha_otra"
+   ],
+   "n": 3,
+   "abre": {
+    "beat": "b0_capucha",
+    "linea": 2825,
+    "trigger": "talk",
+    "objetivo": "encapuchado",
+    "requires": "todas: bnd0_noche; no: bnd0_dormido, bnd0_capucha_vista"
+   },
+   "pnj": [
+    "encapuchado"
+   ],
+   "niveles": [
+    "assets/levels/interior_taberna.json",
+    "assets/levels/recuerdo_taberna.json"
+   ],
+   "cierre_flags": [
+    "bnd0_capucha_vista"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b0_capucha",
+     "linea": 2825,
+     "pone": [
+      "bnd0_capucha_vista"
+     ]
+    }
+   ],
+   "salidas": [],
+   "recompensa": {
+    "oro_pos": 0,
+    "oro_neg": 0,
+    "oro_por_beat": {},
+    "niveles": 0.0,
+    "objetos": [],
+    "heridas": [],
+    "actos": [],
+    "descansos": 0
+   },
+   "diario": [],
+   "cobertura": {
+    "vistos": 1,
+    "total": 3,
+    "no_vistos": [
+     "b0_capucha_te_mira",
+     "b0_capucha_otra"
+    ],
+    "solo_heroe": [],
+    "no_elegidas": [],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b0_capucha",
+      "linea": 2825,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "venides_noche",
+   "nombre": "El caballero que escribe (Venides, de noche)",
+   "tipo": "charla",
+   "beats": [
+    "b0_venides_n_escribes",
+    "b0_venides_n_el",
+    "b0_venides_v0",
+    "b0_venides_v1",
+    "b0_venides",
+    "b0_venides_s0",
+    "b0_venides_s1",
+    "b0_venides_s2",
+    "b0_venides_p0"
+   ],
+   "n": 9,
+   "abre": {
+    "beat": "b0_venides",
+    "linea": 1941,
+    "trigger": "talk",
+    "objetivo": "venides",
+    "requires": "todas: bnd0_noche; no: bnd0_dormido, bnd0_venides_visto"
+   },
+   "pnj": [
+    "venides"
+   ],
+   "niveles": [
+    "assets/levels/interior_taberna.json",
+    "assets/levels/recuerdo_taberna.json"
+   ],
+   "cierre_flags": [
+    "bnd0_venides_visto"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b0_venides_v0",
+     "linea": 1703,
+     "pone": [
+      "bnd0_venides_visto"
+     ]
+    },
+    {
+     "beat": "b0_venides_v1",
+     "linea": 1822,
+     "pone": [
+      "bnd0_venides_visto"
+     ]
+    },
+    {
+     "beat": "b0_venides",
+     "linea": 1941,
+     "pone": [
+      "bnd0_venides_visto"
+     ]
+    }
+   ],
+   "salidas": [],
+   "recompensa": {
+    "oro_pos": 0,
+    "oro_neg": 0,
+    "oro_por_beat": {},
+    "niveles": 0.0,
+    "objetos": [],
+    "heridas": [],
+    "actos": [],
+    "descansos": 0
+   },
+   "diario": [
+    {
+     "id": "obj_preguntar",
+     "texto": "Preguntar por la ciudad (Rosita, en la Taberna Humilde, sabe de todo).",
+     "doneFlag": "bnd_rumor",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:45"
+    }
+   ],
+   "cobertura": {
+    "vistos": 7,
+    "total": 9,
+    "no_vistos": [
+     "b0_venides_v0",
+     "b0_venides_p0"
+    ],
+    "solo_heroe": [
+     "b0_venides_v0"
+    ],
+    "no_elegidas": [
+     "b0_venides_n_escribes#1 «Dejarlo ahí»",
+     "b0_venides_n_el#1 «¿De dónde eres?»",
+     "b0_venides_n_el#2 «Pareces preocupado.»",
+     "b0_venides_n_el#3 «Dejarlo ahí»",
+     "b0_venides_v0#0 «¿Qué te trae a Boundington?»",
+     "b0_venides_v0#1 «¿Qué escribes?»",
+     "b0_venides_v0#2 «Hablar de otra cosa»",
+     "b0_venides_v0#3 «Dejarle con su cuaderno»",
+     "b0_venides_v1#0 «¿Qué te trae a Boundington?»",
+     "b0_venides_v1#3 «Dejarle con su cuaderno»",
+     "b0_venides#0 «¿Qué te trae a Boundington?»",
+     "b0_venides#1 «¿Qué escribes?»",
+     "b0_venides#2 «Hablar de otra cosa»",
+     "b0_venides_s2#2 «Dejarle con su cuaderno»",
+     "b0_venides_p0#0 «¿Qué te trae a Boundington?»",
+     "b0_venides_p0#1 «¿Qué escribes?»",
+     "b0_venides_p0#2 «Hablar de otra cosa»",
+     "b0_venides_p0#3 «Dejarle con su cuaderno»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b0_venides_v0",
+      "linea": 1703,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b0_venides_v1",
+      "linea": 1822,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b0_venides",
+      "linea": 1941,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "desayuno",
+   "nombre": "El desayuno con Venides y su encargo",
+   "tipo": "mision",
+   "beats": [
+    "b0_puerta_cerrada_venides",
+    "b1_desayuno_n_trabajo_a",
+    "b1_desayuno_n_perdidos_a",
+    "b1_desayuno_n_llegaste_a",
+    "b1_desayuno_n_rosita_a",
+    "b1_desayuno_n_charla_a",
+    "b1_desayuno_v0",
+    "b1_desayuno",
+    "b1_desayuno_s0_a",
+    "b1_desayuno_s1_a",
+    "b1_desayuno_s2_a",
+    "b1_venides_llama",
+    "b1_desayuno_habla",
+    "b1_venides_dia"
+   ],
+   "n": 14,
+   "abre": {
+    "beat": "b1_desayuno",
+    "linea": 4152,
+    "trigger": "auto",
+    "objetivo": "",
+    "requires": "todas: bnd0_dormido, bnd1_desayuno_llamado; no: bnd1_desayuno_hecho, bnd1_desayuno_visto"
+   },
+   "pnj": [
+    "b0_puerta_cerrada",
+    "venides"
+   ],
+   "niveles": [
+    "assets/levels/interior_taberna.json",
+    "assets/levels/recuerdo_taberna.json"
+   ],
+   "cierre_flags": [
+    "bnd1_desayuno_hecho"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b1_desayuno_v0",
+     "linea": 3996,
+     "pone": [
+      "bnd1_desayuno_hecho"
+     ]
+    },
+    {
+     "beat": "b1_desayuno",
+     "linea": 4152,
+     "pone": [
+      "bnd1_desayuno_hecho"
+     ]
+    },
+    {
+     "beat": "b1_desayuno_s0_a",
+     "linea": 4307,
+     "pone": [
+      "bnd1_desayuno_hecho"
+     ]
+    },
+    {
+     "beat": "b1_desayuno_s1_a",
+     "linea": 4451,
+     "pone": [
+      "bnd1_desayuno_hecho"
+     ]
+    },
+    {
+     "beat": "b1_desayuno_s2_a",
+     "linea": 4593,
+     "pone": [
+      "bnd1_desayuno_hecho"
+     ]
+    }
+   ],
+   "salidas": [],
+   "recompensa": {
+    "oro_pos": 0,
+    "oro_neg": 0,
+    "oro_por_beat": {},
+    "niveles": 0.0,
+    "objetos": [],
+    "heridas": [],
+    "actos": [],
+    "descansos": 0
+   },
+   "diario": [
+    {
+     "id": "obj_preguntar",
+     "texto": "Preguntar por la ciudad (Rosita, en la Taberna Humilde, sabe de todo).",
+     "doneFlag": "bnd_rumor",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:45"
+    }
+   ],
+   "cobertura": {
+    "vistos": 14,
+    "total": 14,
+    "no_vistos": [],
+    "solo_heroe": [],
+    "no_elegidas": [
+     "b1_desayuno_n_rosita_a#1 «Dejarlo ahí»",
+     "b1_desayuno#2 «Hablar de otra cosa»",
+     "b1_desayuno#3 «Ponerse en marcha»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b1_desayuno_v0",
+      "linea": 3996,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_desayuno",
+      "linea": 4152,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_desayuno_s0_a",
+      "linea": 4307,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_desayuno_s1_a",
+      "linea": 4451,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_desayuno_s2_a",
+      "linea": 4593,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "presentaciones",
+   "nombre": "Presentarte a los tenderos y la emboscada de la plaza",
+   "tipo": "mision",
+   "beats": [
+    "beat_llegada",
+    "tut_tendero",
+    "tut_joyero",
+    "tut_sastre",
+    "tut_emboscada",
+    "b1_reloj",
+    "tut_encargo",
+    "tut_victoria",
+    "tut_derrota",
+    "tut_huida"
+   ],
+   "n": 10,
+   "abre": {
+    "beat": "beat_llegada",
+    "linea": 4725,
+    "trigger": "enter",
+    "objetivo": "assets/levels/ciudad_centro.json",
+    "requires": "no: bnd_llegada"
+   },
+   "pnj": [
+    "tendero_mercado",
+    "joyero",
+    "sastre"
+   ],
+   "niveles": [
+    "assets/levels/ciudad_centro.json",
+    "assets/levels/interior_mercado.json",
+    "assets/levels/interior_joyeria.json",
+    "assets/levels/interior_sastreria.json"
+   ],
+   "cierre_flags": [
+    "bnd_tut_cerrado"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "tut_victoria",
+     "linea": 17882,
+     "pone": [
+      "bnd_tut_cerrado"
+     ]
+    },
+    {
+     "beat": "tut_derrota",
+     "linea": 17923,
+     "pone": [
+      "bnd_tut_cerrado"
+     ]
+    },
+    {
+     "beat": "tut_huida",
+     "linea": 17967,
+     "pone": [
+      "bnd_tut_cerrado"
+     ]
+    }
+   ],
+   "salidas": [
+    {
+     "beat": "tut_emboscada",
+     "opcion": null,
+     "tipo": "combate",
+     "que": "perdido_saqueador",
+     "flags": {
+      "victory": "bnd_tut_saqueador_vencido",
+      "defeat": "bnd_tut_saqueador_gana",
+      "huida": "bnd_tut_saqueador_huido"
+     }
+    }
+   ],
+   "recompensa": {
+    "oro_pos": 15,
+    "oro_neg": -15,
+    "oro_por_beat": {
+     "tut_derrota": -15,
+     "tut_huida": 15
+    },
+    "niveles": 1.8,
+    "objetos": [],
+    "heridas": [],
+    "actos": [],
+    "descansos": 0
+   },
+   "diario": [
+    {
+     "id": "obj_tut_tendero",
+     "texto": "Preséntate al tendero: el mercado, en la fila de tiendas del norte de la plaza.",
+     "doneFlag": "bnd_tut_tendero",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:15"
+    },
+    {
+     "id": "obj_tut_joyero",
+     "texto": "Preséntate al joyero: la joyería, en la esquina noroeste de la plaza.",
+     "doneFlag": "bnd_tut_joyero",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:21"
+    },
+    {
+     "id": "obj_tut_sastre",
+     "texto": "Preséntate al sastre: la sastrería, al norte de la plaza, junto al mercado.",
+     "doneFlag": "bnd_tut_sastre",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:27"
+    },
+    {
+     "id": "obj_tut_emboscada",
+     "texto": "Vuelve a la plaza: alguien te sigue desde el mercado.",
+     "doneFlag": "bnd_tut_emboscada_resuelta",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:33"
+    }
+   ],
+   "cobertura": {
+    "vistos": 9,
+    "total": 10,
+    "no_vistos": [
+     "b1_reloj"
+    ],
+    "solo_heroe": [],
+    "no_elegidas": [],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "tut_victoria",
+      "linea": 17882,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "tut_derrota",
+      "linea": 17923,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "tut_huida",
+      "linea": 17967,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "plaza",
+   "nombre": "Recorrer la plaza y escuchar al vecindario",
+   "tipo": "mision",
+   "beats": [
+    "b1_vieja",
+    "b1_vieja_s0",
+    "b1_vieja_p0",
+    "tut_plaza",
+    "tut_plaza_ya",
+    "b1_vecina_plaza",
+    "b1_vecina_plaza_pista",
+    "b1_vecina_plaza_ya"
+   ],
+   "n": 8,
+   "abre": {
+    "beat": "tut_plaza",
+    "linea": 13830,
+    "trigger": "enter",
+    "objetivo": "assets/levels/ciudad_centro.json",
+    "requires": "todas: bnd_tut_cerrado; no: bnd1_plaza_explorada"
+   },
+   "pnj": [
+    "anciana",
+    "vecino_de_plaza"
+   ],
+   "niveles": [
+    "assets/levels/ciudad_centro.json",
+    "assets/levels/ciudad_oeste.json",
+    "assets/levels/ciudad_surysal.json"
+   ],
+   "cierre_flags": [
+    "bnd1_plaza_explorada"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "tut_plaza",
+     "linea": 13830,
+     "pone": [
+      "bnd1_plaza_explorada"
+     ]
+    },
+    {
+     "beat": "tut_plaza_ya",
+     "linea": 13859,
+     "pone": [
+      "bnd1_plaza_explorada"
+     ]
+    }
+   ],
+   "salidas": [],
+   "recompensa": {
+    "oro_pos": 0,
+    "oro_neg": 0,
+    "oro_por_beat": {},
+    "niveles": 0.0,
+    "objetos": [],
+    "heridas": [],
+    "actos": [],
+    "descansos": 0
+   },
+   "diario": [
+    {
+     "id": "obj_preguntar",
+     "texto": "Preguntar por la ciudad (Rosita, en la Taberna Humilde, sabe de todo).",
+     "doneFlag": "bnd_rumor",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:45"
+    },
+    {
+     "id": "obj_plaza",
+     "texto": "Recorrer la plaza principal y escuchar lo que se cuenta.",
+     "doneFlag": "bnd1_plaza_explorada",
+     "visibleFlag": "bnd_tut_cerrado",
+     "fuente": "assets/catalogs/quests.json:181"
+    }
+   ],
+   "cobertura": {
+    "vistos": 7,
+    "total": 8,
+    "no_vistos": [
+     "tut_plaza"
+    ],
+    "solo_heroe": [],
+    "no_elegidas": [],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "tut_plaza",
+      "linea": 13830,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "tut_plaza_ya",
+      "linea": 13859,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "carterista",
+   "nombre": "El carterista de la plaza (la pulga)",
+   "tipo": "mision",
+   "beats": [
+    "b1_carterista_rapido",
+    "b1_carterista",
+    "b1_carterista_pillado",
+    "b1_pulga",
+    "b1_pulga_amigo",
+    "b1_pulga_robado",
+    "b1_pulga_s0_a",
+    "b1_pulga_s1_a",
+    "b1_pulga_p0_a",
+    "b1_carterista_robo"
+   ],
+   "n": 10,
+   "abre": {
+    "beat": "b1_carterista",
+    "linea": 13784,
+    "trigger": "enter",
+    "objetivo": "assets/levels/ciudad_centro.json",
+    "requires": "todas: bnd_llegada, bnd_tut_cerrado, bnd1_desayuno_hecho; no: bnd1_carterista_visto; vars: {\"franja\": {\"max\": 1}}"
+   },
+   "pnj": [
+    "carterista"
+   ],
+   "niveles": [
+    "assets/levels/ciudad_centro.json"
+   ],
+   "cierre_flags": [
+    "bnd1_carterista_resuelto"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b1_carterista_pillado",
+     "linea": 26071,
+     "pone": [
+      "bnd1_carterista_resuelto"
+     ]
+    },
+    {
+     "beat": "b1_carterista_robo",
+     "linea": 26666,
+     "pone": [
+      "bnd1_carterista_resuelto"
+     ]
+    }
+   ],
+   "salidas": [
+    {
+     "beat": "b1_carterista",
+     "opcion": null,
+     "tipo": "tirada",
+     "que": "percepcion",
+     "flags": {
+      "botch": "bnd1_carterista_pifia",
+      "partial": "bnd1_carterista_parcial",
+      "success": "bnd1_carterista_exito",
+      "critical": "bnd1_carterista_critico"
+     }
+    }
+   ],
+   "recompensa": {
+    "oro_pos": 10,
+    "oro_neg": -10,
+    "oro_por_beat": {
+     "b1_pulga_s1_a": 10,
+     "b1_carterista_robo": -10
+    },
+    "niveles": 0.0,
+    "objetos": [],
+    "heridas": [],
+    "actos": [
+     {
+      "acto": "carterista_perdonado",
+      "gravedad": "menor",
+      "signo": 1,
+      "beat": "b1_pulga"
+     },
+     {
+      "acto": "robar_al_ladron",
+      "gravedad": "menor",
+      "signo": -1,
+      "beat": "b1_pulga_s1_a"
+     }
+    ],
+    "descansos": 0
+   },
+   "diario": [
+    {
+     "id": "obj_preguntar",
+     "texto": "Preguntar por la ciudad (Rosita, en la Taberna Humilde, sabe de todo).",
+     "doneFlag": "bnd_rumor",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:45"
+    }
+   ],
+   "cobertura": {
+    "vistos": 7,
+    "total": 10,
+    "no_vistos": [
+     "b1_carterista_rapido",
+     "b1_pulga_p0_a",
+     "b1_carterista_robo"
+    ],
+    "solo_heroe": [
+     "b1_carterista_rapido"
+    ],
+    "no_elegidas": [
+     "b1_pulga_p0_a#0 «¿Cómo te llamas?»",
+     "b1_pulga_p0_a#1 «¿Por qué robas?»",
+     "b1_pulga_p0_a#2 «Hablar de otra cosa»",
+     "b1_pulga_p0_a#3 «Dejarle ir»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b1_carterista_pillado",
+      "linea": 26071,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_carterista_robo",
+      "linea": 26666,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "aigren",
+   "nombre": "Aigren, el herrero (por su hijo o por los Perdidos)",
+   "tipo": "mision",
+   "beats": [
+    "b1_aigren_charla_n_acero",
+    "b1_aigren_charla_n_solo",
+    "b1_aigren_charla_n_ceaseton",
+    "b1_aigren_charla_n_ciudad",
+    "b1_aigren_charla",
+    "b1_aigren_charla_s0",
+    "b1_aigren_charla_s1",
+    "b1_aigren_charla_s2",
+    "b1_aigren_charla_p0",
+    "b1_aigren_vuelve_se_va",
+    "b1_aigren_vuelve_presionado",
+    "b1_aigren_vuelve_costa",
+    "b1_aigren_envio",
+    "b1_aigren_noche",
+    "b1_aigren_cerrado",
+    "b1_aigren_hijo",
+    "b1_aigren_perdidos",
+    "b1_aigren_redimido",
+    "b1_aigren_se_va",
+    "b1_aigren_asedio",
+    "b1_aigren_otra_cosa",
+    "b1_aigren_papel",
+    "b1_aigren_discurso",
+    "b1_aigren_lider",
+    "b1_aigren_nada"
+   ],
+   "n": 25,
+   "abre": {
+    "beat": "b1_aigren_charla",
+    "linea": 5478,
+    "trigger": "talk",
+    "objetivo": "aigren",
+    "requires": "no: bnd1_aigren_visto, bnd1_aigren_charla_visto"
+   },
+   "pnj": [
+    "aigren"
+   ],
+   "niveles": [
+    "assets/levels/interior_herreria.json"
+   ],
+   "cierre_flags": [
+    "bnd1_aigren_resuelto"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b1_aigren_envio",
+     "linea": 6130,
+     "pone": [
+      "bnd1_aigren_resuelto"
+     ]
+    },
+    {
+     "beat": "b1_aigren_perdidos",
+     "linea": 18107,
+     "pone": [
+      "bnd1_aigren_resuelto"
+     ]
+    },
+    {
+     "beat": "b1_aigren_redimido",
+     "linea": 18197,
+     "pone": [
+      "bnd1_aigren_resuelto"
+     ]
+    },
+    {
+     "beat": "b1_aigren_se_va",
+     "linea": 18250,
+     "pone": [
+      "bnd1_aigren_resuelto"
+     ]
+    },
+    {
+     "beat": "b1_aigren_asedio",
+     "linea": 18304,
+     "pone": [
+      "bnd1_aigren_resuelto"
+     ]
+    },
+    {
+     "beat": "b1_aigren_discurso",
+     "linea": 18420,
+     "pone": [
+      "bnd1_aigren_resuelto"
+     ]
+    },
+    {
+     "beat": "b1_aigren_lider",
+     "linea": 18446,
+     "pone": [
+      "bnd1_aigren_resuelto"
+     ]
+    },
+    {
+     "beat": "b1_aigren_nada",
+     "linea": 18488,
+     "pone": [
+      "bnd1_aigren_resuelto"
+     ]
+    }
+   ],
+   "salidas": [
+    {
+     "beat": "b1_aigren_hijo",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "persuasion",
+     "flags": {
+      "botch": "bnd1_aigren_a_pifia",
+      "partial": "bnd1_aigren_a_parcial",
+      "success": "bnd1_aigren_a_exito",
+      "critical": "bnd1_aigren_a_critico"
+     }
+    },
+    {
+     "beat": "b1_aigren_hijo",
+     "opcion": 1,
+     "tipo": "tirada",
+     "que": "intimidacion",
+     "flags": {
+      "botch": "bnd1_aigren_b_pifia",
+      "partial": "bnd1_aigren_b_parcial",
+      "success": "bnd1_aigren_b_exito",
+      "critical": "bnd1_aigren_b_critico"
+     }
+    },
+    {
+     "beat": "b1_aigren_perdidos",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "persuasion",
+     "flags": {
+      "botch": "bnd1_aigren_c_pifia",
+      "partial": "bnd1_aigren_c_parcial",
+      "success": "bnd1_aigren_c_exito",
+      "critical": "bnd1_aigren_c_critico"
+     }
+    }
+   ],
+   "recompensa": {
+    "oro_pos": 0,
+    "oro_neg": 0,
+    "oro_por_beat": {},
+    "niveles": 0.0,
+    "objetos": [],
+    "heridas": [],
+    "actos": [
+     {
+      "acto": "aigren_presionado",
+      "gravedad": "medio",
+      "signo": -1,
+      "beat": "b1_aigren_hijo"
+     },
+     {
+      "acto": "aigren_redimido",
+      "gravedad": "medio",
+      "signo": 1,
+      "beat": "b1_aigren_redimido"
+     },
+     {
+      "acto": "aigren_saca_a_su_hijo",
+      "gravedad": "menor",
+      "signo": 1,
+      "beat": "b1_aigren_se_va"
+     }
+    ],
+    "descansos": 0
+   },
+   "diario": [
+    {
+     "id": "obj_preguntar",
+     "texto": "Preguntar por la ciudad (Rosita, en la Taberna Humilde, sabe de todo).",
+     "doneFlag": "bnd_rumor",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:45"
+    },
+    {
+     "id": "bnd1_op_aigren_segunda",
+     "texto": "Ayuda a Aigren con el envío de esta noche: la herrería Lingote de Oro.",
+     "doneFlag": "bnd1_aigren_enterado",
+     "visibleFlag": "bnd1_aigren_segunda",
+     "fuente": "assets/catalogs/quests.json:227"
+    }
+   ],
+   "cobertura": {
+    "vistos": 23,
+    "total": 25,
+    "no_vistos": [
+     "b1_aigren_discurso",
+     "b1_aigren_nada"
+    ],
+    "solo_heroe": [],
+    "no_elegidas": [
+     "b1_aigren_charla_n_ceaseton#0 «¿Por qué te fuiste?»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b1_aigren_envio",
+      "linea": 6130,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_aigren_perdidos",
+      "linea": 18107,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_aigren_redimido",
+      "linea": 18197,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_aigren_se_va",
+      "linea": 18250,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_aigren_asedio",
+      "linea": 18304,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_aigren_discurso",
+      "linea": 18420,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_aigren_lider",
+      "linea": 18446,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_aigren_nada",
+      "linea": 18488,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "luisarda",
+   "nombre": "Luisarda, la sastra: cenar con Rosita o sonsacarla",
+   "tipo": "mision",
+   "beats": [
+    "b1_rosita_luisarda",
+    "b1_luisarda_tienda_n_antorchas",
+    "b1_luisarda_tienda_n_rosita",
+    "b1_luisarda_tienda_n_charla",
+    "b1_luisarda_gracias",
+    "b1_luisarda_tienda",
+    "b1_luisarda_tienda_s0",
+    "b1_luisarda_tienda_s1",
+    "b1_luisarda_tienda_s2",
+    "b1_luisarda_tienda_p0",
+    "b1_luisarda_recado",
+    "b1_luisarda",
+    "b1_luisarda_ida",
+    "b1_luisarda_pociones_miedo",
+    "b1_luisarda_pociones",
+    "b1_luisarda_animada",
+    "b1_luisarda_sala",
+    "b1_sala",
+    "b1_sala_s0_a",
+    "b1_sala_p0_a",
+    "b1_luisarda_pide",
+    "b1_luisarda_otra_cosa",
+    "b1_luisarda_noche_hablada",
+    "b1_luisarda_favor_cumplido",
+    "b1_luisarda_esperando",
+    "b1_sastre_cobro",
+    "b1_luisarda_noche",
+    "b1_luisarda_calla"
+   ],
+   "n": 28,
+   "abre": {
+    "beat": "b1_luisarda_tienda",
+    "linea": 6511,
+    "trigger": "talk",
+    "objetivo": "luisarda",
+    "requires": "no: bnd1_luisarda_vista, bnd1_luisarda_con_rosita, bnd1_luisarda_tienda_visto"
+   },
+   "pnj": [
+    "skilla",
+    "luisarda",
+    "sastre"
+   ],
+   "niveles": [
+    "assets/levels/interior_sastreria.json",
+    "assets/levels/interior_taberna.json",
+    "assets/levels/interior_taberna_p1.json",
+    "assets/levels/recuerdo_taberna.json"
+   ],
+   "cierre_flags": [
+    "bnd1_luisarda_con_rosita",
+    "bnd1_luisarda_vista",
+    "bnd1_luisarda_dejada"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b1_luisarda_recado",
+     "linea": 7088,
+     "pone": [
+      "bnd1_luisarda_dejada",
+      "bnd1_luisarda_vista"
+     ]
+    },
+    {
+     "beat": "b1_luisarda",
+     "linea": 7209,
+     "pone": [
+      "bnd1_luisarda_dejada",
+      "bnd1_luisarda_vista"
+     ]
+    },
+    {
+     "beat": "b1_luisarda_pide",
+     "linea": 19003,
+     "pone": [
+      "bnd1_luisarda_con_rosita"
+     ]
+    },
+    {
+     "beat": "b1_luisarda_noche_hablada",
+     "linea": 19163,
+     "pone": [
+      "bnd1_luisarda_con_rosita"
+     ]
+    }
+   ],
+   "salidas": [
+    {
+     "beat": "b1_luisarda_recado",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "intimidacion",
+     "flags": {
+      "botch": "bnd1_luisarda_pifia",
+      "partial": "bnd1_luisarda_parcial",
+      "success": "bnd1_luisarda_exito",
+      "critical": "bnd1_luisarda_critico"
+     }
+    },
+    {
+     "beat": "b1_luisarda_recado",
+     "opcion": 1,
+     "tipo": "tirada",
+     "que": "engano",
+     "flags": {
+      "botch": "bnd1_luisarda_pifia",
+      "partial": "bnd1_luisarda_parcial",
+      "success": "bnd1_luisarda_exito",
+      "critical": "bnd1_luisarda_critico"
+     }
+    },
+    {
+     "beat": "b1_luisarda_recado",
+     "opcion": 2,
+     "tipo": "tirada",
+     "que": "persuasion",
+     "flags": {
+      "botch": "bnd1_luisarda_c_pifia",
+      "partial": "bnd1_luisarda_c_parcial",
+      "success": "bnd1_luisarda_c_exito",
+      "critical": "bnd1_luisarda_c_critico"
+     }
+    },
+    {
+     "beat": "b1_luisarda",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "intimidacion",
+     "flags": {
+      "botch": "bnd1_luisarda_pifia",
+      "partial": "bnd1_luisarda_parcial",
+      "success": "bnd1_luisarda_exito",
+      "critical": "bnd1_luisarda_critico"
+     }
+    },
+    {
+     "beat": "b1_luisarda",
+     "opcion": 1,
+     "tipo": "tirada",
+     "que": "engano",
+     "flags": {
+      "botch": "bnd1_luisarda_pifia",
+      "partial": "bnd1_luisarda_parcial",
+      "success": "bnd1_luisarda_exito",
+      "critical": "bnd1_luisarda_critico"
+     }
+    },
+    {
+     "beat": "b1_luisarda",
+     "opcion": 2,
+     "tipo": "tirada",
+     "que": "persuasion",
+     "flags": {
+      "botch": "bnd1_luisarda_c_pifia",
+      "partial": "bnd1_luisarda_c_parcial",
+      "success": "bnd1_luisarda_c_exito",
+      "critical": "bnd1_luisarda_c_critico"
+     }
+    }
+   ],
+   "recompensa": {
+    "oro_pos": 0,
+    "oro_neg": 0,
+    "oro_por_beat": {},
+    "niveles": 0.0,
+    "objetos": [
+     "pocion x2 (b1_rosita_luisarda)",
+     "pocion x2 (b1_luisarda_pociones_miedo)",
+     "pocion x2 (b1_luisarda_pociones)"
+    ],
+    "heridas": [],
+    "actos": [
+     {
+      "acto": "luisarda_malos_modos",
+      "gravedad": "menor",
+      "signo": -1,
+      "beat": "b1_luisarda_recado"
+     },
+     {
+      "acto": "luisarda_silencio",
+      "gravedad": "menor",
+      "signo": 1,
+      "beat": "b1_luisarda_pociones_miedo"
+     },
+     {
+      "acto": "luisarda_animada",
+      "gravedad": "menor",
+      "signo": 1,
+      "beat": "b1_luisarda_animada"
+     },
+     {
+      "acto": "luisarda_con_rosita",
+      "gravedad": "menor",
+      "signo": 1,
+      "beat": "b1_luisarda_pide"
+     }
+    ],
+    "descansos": 0
+   },
+   "diario": [
+    {
+     "id": "obj_preguntar",
+     "texto": "Preguntar por la ciudad (Rosita, en la Taberna Humilde, sabe de todo).",
+     "doneFlag": "bnd_rumor",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:45"
+    },
+    {
+     "id": "bnd1_op_luisarda",
+     "texto": "Convence a Luisarda, en La Boutique de Madame, de cenar con Rosita.",
+     "doneFlag": "bnd1_luisarda_con_rosita",
+     "visibleFlag": "bnd1_recado_luisarda",
+     "fuente": "assets/catalogs/quests.json:195"
+    },
+    {
+     "id": "bnd1_op_luisarda_segunda",
+     "texto": "Luisarda no habla con la puerta abierta: cóbrale al sastre el hilo de plata, o vuelve de noche a La Boutique de Madame.",
+     "doneFlag": "bnd_pista_luisarda",
+     "visibleFlag": "bnd1_luisarda_segunda",
+     "fuente": "assets/catalogs/quests.json:219"
+    }
+   ],
+   "cobertura": {
+    "vistos": 22,
+    "total": 28,
+    "no_vistos": [
+     "b1_luisarda_recado",
+     "b1_luisarda_pociones",
+     "b1_sala_p0_a",
+     "b1_luisarda_favor_cumplido",
+     "b1_luisarda_noche",
+     "b1_luisarda_calla"
+    ],
+    "solo_heroe": [],
+    "no_elegidas": [
+     "b1_luisarda_tienda_n_rosita#0 «Que allí tienes un plato caliente.»",
+     "b1_luisarda_tienda_s0#1 «Rosita dice que no vas a cenar.»",
+     "b1_luisarda_tienda_p0#1 «Rosita dice que no vas a cenar.»",
+     "b1_luisarda_recado#0 «Insistir, de malos modos [Intimidación]»",
+     "b1_luisarda_recado#1 «Hacerle creer que ya lo sabes todo [Engaño]»",
+     "b1_luisarda_recado#2 «Convencerla, con lo de Rosita [Persuasión]»",
+     "b1_luisarda_recado#3 «Dejarla tranquila»",
+     "b1_sala_p0_a#0 «¿Qué luz?»",
+     "b1_sala_p0_a#1 «¿Cómo era Sandes?»",
+     "b1_sala_p0_a#2 «¿Vienen más como él?»",
+     "b1_sala_p0_a#3 «Escuchar lo que te pide»",
+     "b1_luisarda_pide#1 «Ven a cenar a la taberna. Rosita te espera.»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b1_luisarda_recado",
+      "linea": 7088,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_luisarda",
+      "linea": 7209,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_luisarda_pide",
+      "linea": 19003,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_luisarda_noche_hablada",
+      "linea": 19163,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "sectarios",
+   "nombre": "Los sectarios de la plaza (la bolsa y la invitacion)",
+   "tipo": "mision",
+   "beats": [
+    "b1_secta_v0",
+    "b1_secta_v1",
+    "b1_secta",
+    "b1_secta_s0",
+    "b1_secta_s1",
+    "b1_secta_s2",
+    "b1_secta_s3",
+    "b1_secta_p0",
+    "b1_sectarios_seguir",
+    "b1_sectarios_despues",
+    "b1_secta_burla",
+    "b1_secta_vencidos",
+    "b1_secta_ganan",
+    "b1_sectarios_masacre",
+    "b1_sectarios_nada",
+    "b1_sectarios_seguidos",
+    "b1_sectarios_te_ven"
+   ],
+   "n": 17,
+   "abre": {
+    "beat": "b1_secta",
+    "linea": 7643,
+    "trigger": "talk",
+    "objetivo": "sectario_perdido",
+    "requires": "no: bnd1_sectarios_vistos, bnd1_secta_visto"
+   },
+   "pnj": [
+    "sectario_perdido"
+   ],
+   "niveles": [
+    "assets/levels/ciudad_centro.json"
+   ],
+   "cierre_flags": [
+    "bnd1_sectarios_resueltos"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b1_secta_s3",
+     "linea": 8089,
+     "pone": [
+      "bnd1_sectarios_resueltos"
+     ]
+    },
+    {
+     "beat": "b1_secta_burla",
+     "linea": 19384,
+     "pone": [
+      "bnd1_sectarios_resueltos"
+     ]
+    },
+    {
+     "beat": "b1_sectarios_masacre",
+     "linea": 19515,
+     "pone": [
+      "bnd1_sectarios_resueltos"
+     ]
+    },
+    {
+     "beat": "b1_sectarios_nada",
+     "linea": 19582,
+     "pone": [
+      "bnd1_sectarios_resueltos"
+     ]
+    }
+   ],
+   "salidas": [
+    {
+     "beat": "b1_secta_s2",
+     "opcion": 1,
+     "tipo": "tirada",
+     "que": "persuasion",
+     "flags": {
+      "botch": "bnd1_sectarios_pifia",
+      "partial": "bnd1_sectarios_parcial",
+      "success": "bnd1_sectarios_exito",
+      "critical": "bnd1_sectarios_critico"
+     }
+    },
+    {
+     "beat": "b1_sectarios_seguir",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "sigilo",
+     "flags": {
+      "botch": "bnd1_seguir_pifia",
+      "partial": "bnd1_seguir_parcial",
+      "success": "bnd1_seguir_exito",
+      "critical": "bnd1_seguir_critico"
+     }
+    },
+    {
+     "beat": "b1_secta_burla",
+     "opcion": 0,
+     "tipo": "combate",
+     "que": "perdido_devoto x3",
+     "flags": {
+      "victory": "bnd1_secta_vencidos",
+      "defeat": "bnd1_secta_ganan",
+      "huida": "bnd1_secta_huido"
+     }
+    }
+   ],
+   "recompensa": {
+    "oro_pos": 15,
+    "oro_neg": 0,
+    "oro_por_beat": {
+     "b1_secta_vencidos": 15
+    },
+    "niveles": 0.0,
+    "objetos": [],
+    "heridas": [],
+    "actos": [],
+    "descansos": 0
+   },
+   "diario": [
+    {
+     "id": "obj_preguntar",
+     "texto": "Preguntar por la ciudad (Rosita, en la Taberna Humilde, sabe de todo).",
+     "doneFlag": "bnd_rumor",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:45"
+    }
+   ],
+   "cobertura": {
+    "vistos": 15,
+    "total": 17,
+    "no_vistos": [
+     "b1_secta_ganan",
+     "b1_sectarios_seguidos"
+    ],
+    "solo_heroe": [],
+    "no_elegidas": [
+     "b1_secta_v0#0 «Sí. Mi bolsa.»",
+     "b1_secta_v0#1 «¿Quiénes sois?»",
+     "b1_secta_v0#2 «Hablar de otra cosa»",
+     "b1_secta_s2#0 «¿Qué luz?»",
+     "b1_secta_burla#1 «Dejarlo ahí»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b1_secta_s3",
+      "linea": 8089,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_secta_burla",
+      "linea": 19384,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_sectarios_masacre",
+      "linea": 19515,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_sectarios_nada",
+      "linea": 19582,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "xila",
+   "nombre": "Xila, el antiguo mercader de Pico Dragon",
+   "tipo": "mision",
+   "beats": [
+    "b1_xila_noche",
+    "b1_xila_desconocido_caster",
+    "b1_xila_desconocido_tank",
+    "b1_xila_desconocido_agile",
+    "b1_xila_desconocido",
+    "b1_xila_resentido",
+    "b1_xila_n_llegaste_a",
+    "b1_xila_n_de_donde_a",
+    "b1_xila_n_llegaste",
+    "b1_xila_n_de_donde",
+    "b1_xila",
+    "b1_xila_s0_a",
+    "b1_xila_s1_a",
+    "b1_xila_s2_a",
+    "b1_xila_s3_a",
+    "b1_xila_s4_a",
+    "b1_xila_s0",
+    "b1_xila_s1",
+    "b1_xila_s2",
+    "b1_xila_s3",
+    "b1_xila_s4",
+    "b1_xila_p0",
+    "b1_xila_tarde",
+    "b1_xila_despues",
+    "b1_xila_habla_sobrio",
+    "b1_xila_habla",
+    "b1_xila_no"
+   ],
+   "n": 27,
+   "abre": {
+    "beat": "b1_xila_desconocido",
+    "linea": 8693,
+    "trigger": "talk",
+    "objetivo": "xila",
+    "requires": "no: bnd1_xila_conocido, bnd1_xila_resuelto; vars: {\"franja\": {\"max\": 1}}"
+   },
+   "pnj": [
+    "xila"
+   ],
+   "niveles": [
+    "assets/levels/ciudad_oeste.json"
+   ],
+   "cierre_flags": [
+    "bnd1_xila_resuelto"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b1_xila_habla_sobrio",
+     "linea": 19679,
+     "pone": [
+      "bnd1_xila_resuelto"
+     ]
+    },
+    {
+     "beat": "b1_xila_habla",
+     "linea": 19739,
+     "pone": [
+      "bnd1_xila_resuelto"
+     ]
+    }
+   ],
+   "salidas": [
+    {
+     "beat": "b1_xila_s3_a",
+     "opcion": 1,
+     "tipo": "tirada",
+     "que": "persuasion",
+     "flags": {
+      "botch": "bnd1_xila_pifia",
+      "partial": "bnd1_xila_parcial",
+      "success": "bnd1_xila_exito",
+      "critical": "bnd1_xila_critico"
+     }
+    },
+    {
+     "beat": "b1_xila_s3",
+     "opcion": 1,
+     "tipo": "tirada",
+     "que": "persuasion",
+     "flags": {
+      "botch": "bnd1_xila_pifia",
+      "partial": "bnd1_xila_parcial",
+      "success": "bnd1_xila_exito",
+      "critical": "bnd1_xila_critico"
+     }
+    }
+   ],
+   "recompensa": {
+    "oro_pos": 0,
+    "oro_neg": -4,
+    "oro_por_beat": {
+     "b1_xila_resentido": -1,
+     "b1_xila_s4_a": -1,
+     "b1_xila_s4": -1,
+     "b1_xila_tarde": -1
+    },
+    "niveles": 0.0,
+    "objetos": [
+     "vendas x2 (b1_xila_habla_sobrio)"
+    ],
+    "heridas": [],
+    "actos": [
+     {
+      "acto": "xila_escuchado",
+      "gravedad": "menor",
+      "signo": 1,
+      "beat": "b1_xila_desconocido_caster"
+     },
+     {
+      "acto": "xila_maltratado",
+      "gravedad": "menor",
+      "signo": -1,
+      "beat": "b1_xila_desconocido_caster"
+     },
+     {
+      "acto": "xila_emborrachado",
+      "gravedad": "menor",
+      "signo": -1,
+      "beat": "b1_xila_resentido"
+     },
+     {
+      "acto": "xila_sin_alcohol",
+      "gravedad": "menor",
+      "signo": 1,
+      "beat": "b1_xila_habla_sobrio"
+     }
+    ],
+    "descansos": 0
+   },
+   "diario": [
+    {
+     "id": "obj_preguntar",
+     "texto": "Preguntar por la ciudad (Rosita, en la Taberna Humilde, sabe de todo).",
+     "doneFlag": "bnd_rumor",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:45"
+    },
+    {
+     "id": "obj_xila",
+     "texto": "Hablar con el antiguo mercader de la Taberna del Gremio de Ladrones, en Pico Dragón, al oeste.",
+     "doneFlag": "bnd1_xila_conocido",
+     "visibleFlag": "bnd1_xila_pista_plaza",
+     "fuente": "assets/catalogs/quests.json:188"
+    },
+    {
+     "id": "bnd1_op_xila",
+     "texto": "Haz que Xila, en Pico Dragón, te cuente lo que sabe estando sobrio.",
+     "doneFlag": "bnd1_aliado_xila",
+     "visibleFlag": "bnd1_xila_conocido",
+     "fuente": "assets/catalogs/quests.json:211"
+    }
+   ],
+   "cobertura": {
+    "vistos": 24,
+    "total": 27,
+    "no_vistos": [
+     "b1_xila_desconocido_caster",
+     "b1_xila_desconocido_tank",
+     "b1_xila_s4_a"
+    ],
+    "solo_heroe": [
+     "b1_xila_desconocido_caster",
+     "b1_xila_desconocido_tank"
+    ],
+    "no_elegidas": [
+     "b1_xila_desconocido_caster#0 «Sentarte con él, sin decir nada»",
+     "b1_xila_desconocido_caster#1 «¿Estás bien?»",
+     "b1_xila_desconocido_caster#2 «Tratarle con desprecio»",
+     "b1_xila_desconocido_caster#3 «Dejarle en paz»",
+     "b1_xila_desconocido_tank#0 «Sentarte con él, sin decir nada»",
+     "b1_xila_desconocido_tank#1 «¿Estás bien?»",
+     "b1_xila_desconocido_tank#2 «Tratarle con desprecio»",
+     "b1_xila_desconocido_tank#3 «Dejarle en paz»",
+     "b1_xila_desconocido_agile#3 «Dejarle en paz»",
+     "b1_xila_n_de_donde_a#1 «Nací en el {origen}.»",
+     "b1_xila_n_de_donde_a#2 «Dejarlo ahí»",
+     "b1_xila#3 «Irte»",
+     "b1_xila_s0_a#1 «¿Cómo llegaste aquí?»",
+     "b1_xila_s1_a#2 «Hablar de otra cosa»",
+     "b1_xila_s2_a#1 «¿Cómo se llamaban?»",
+     "b1_xila_s2_a#2 «Hablar de otra cosa»",
+     "b1_xila_s3_a#0 «¿Te suena un tal Sandes, de Killville?»",
+     "b1_xila_s3_a#2 «Hablar de otra cosa»",
+     "b1_xila_s4_a#0 «Invitarle a un trago (1)»",
+     "b1_xila_s4_a#1 «Hablar de otra cosa»",
+     "b1_xila_s4_a#2 «Irte»",
+     "b1_xila_s0#0 «¿Qué te pasó?»",
+     "b1_xila_s0#2 «Hablar de otra cosa»",
+     "b1_xila_s0#3 «Irte»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b1_xila_habla_sobrio",
+      "linea": 19679,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_xila_habla",
+      "linea": 19739,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "familia",
+   "nombre": "La familia de la puerta azul (el gato, los Verdaderos y la cena)",
+   "tipo": "mision",
+   "beats": [
+    "b1_mira_n_gato",
+    "b1_mira_n_caballero",
+    "b1_mira_v0",
+    "b1_mira",
+    "b1_mira_s0",
+    "b1_mira_s1",
+    "b1_mira_p0",
+    "b1_verdaderos_forastero",
+    "b1_verdaderos",
+    "b1_familia_despues_barriada",
+    "b1_familia_despues_cobrada",
+    "b1_familia_despues",
+    "b1_gato_bajado",
+    "b1_gato_no",
+    "b1_verdaderos_calmados",
+    "b1_verdaderos_pelea",
+    "b1_verdaderos_vencidos",
+    "b1_verdaderos_ganan",
+    "b1_familia_vuelve",
+    "b1_familia_mesa_manana",
+    "b1_familia_mesa_tarde",
+    "b1_familia_mesa_noche",
+    "b1_fuego",
+    "b1_fuego_s0_a",
+    "b1_fuego_s1_a",
+    "b1_fuego_s2_a",
+    "b1_fuego_s3_a",
+    "b1_fuego_p0_a",
+    "rec_fuego_regalo"
+   ],
+   "n": 29,
+   "abre": {
+    "beat": "b1_mira",
+    "linea": 10985,
+    "trigger": "talk",
+    "objetivo": "nina_del_gato",
+    "requires": "no: bnd1_gato_intentado, bnd1_familia_resuelta, bnd1_mira_visto; vars: {\"franja\": 0}"
+   },
+   "pnj": [
+    "nina_del_gato"
+   ],
+   "niveles": [
+    "assets/levels/ciudad_oeste.json",
+    "assets/levels/ciudad_surysal.json"
+   ],
+   "cierre_flags": [
+    "bnd1_familia_resuelta"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b1_verdaderos",
+     "linea": 11558,
+     "pone": [
+      "bnd1_familia_resuelta"
+     ]
+    },
+    {
+     "beat": "b1_verdaderos_ganan",
+     "linea": 20038,
+     "pone": [
+      "bnd1_familia_resuelta"
+     ]
+    },
+    {
+     "beat": "b1_fuego_s2_a",
+     "linea": 28431,
+     "pone": [
+      "bnd1_familia_resuelta"
+     ]
+    },
+    {
+     "beat": "b1_fuego_s3_a",
+     "linea": 28574,
+     "pone": [
+      "bnd1_familia_resuelta"
+     ]
+    }
+   ],
+   "salidas": [
+    {
+     "beat": "b1_mira_s1",
+     "opcion": 1,
+     "tipo": "tirada",
+     "que": "atletismo",
+     "flags": {
+      "botch": "bnd1_gato_pifia",
+      "partial": "bnd1_gato_parcial",
+      "success": "bnd1_gato_exito",
+      "critical": "bnd1_gato_critico"
+     }
+    },
+    {
+     "beat": "b1_verdaderos_forastero",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "persuasion",
+     "flags": {
+      "botch": "bnd1_verdaderos_pifia",
+      "partial": "bnd1_verdaderos_parcial",
+      "success": "bnd1_verdaderos_exito",
+      "critical": "bnd1_verdaderos_critico"
+     }
+    },
+    {
+     "beat": "b1_verdaderos_forastero",
+     "opcion": 1,
+     "tipo": "combate",
+     "que": "perdido_devoto x5",
+     "flags": {
+      "victory": "bnd1_verdaderos_vencidos",
+      "defeat": "bnd1_verdaderos_ganan",
+      "huida": "bnd1_verdaderos_huido"
+     }
+    },
+    {
+     "beat": "b1_verdaderos",
+     "opcion": 1,
+     "tipo": "tirada",
+     "que": "persuasion",
+     "flags": {
+      "botch": "bnd1_verdaderos_pifia",
+      "partial": "bnd1_verdaderos_parcial",
+      "success": "bnd1_verdaderos_exito",
+      "critical": "bnd1_verdaderos_critico"
+     }
+    },
+    {
+     "beat": "b1_verdaderos",
+     "opcion": 2,
+     "tipo": "combate",
+     "que": "perdido_devoto x5",
+     "flags": {
+      "victory": "bnd1_verdaderos_vencidos",
+      "defeat": "bnd1_verdaderos_ganan",
+      "huida": "bnd1_verdaderos_huido"
+     }
+    },
+    {
+     "beat": "b1_verdaderos_pelea",
+     "opcion": null,
+     "tipo": "combate",
+     "que": "perdido_devoto x5",
+     "flags": {
+      "victory": "bnd1_verdaderos_vencidos",
+      "defeat": "bnd1_verdaderos_ganan",
+      "huida": "bnd1_verdaderos_huido"
+     }
+    }
+   ],
+   "recompensa": {
+    "oro_pos": 50,
+    "oro_neg": 0,
+    "oro_por_beat": {
+     "b1_verdaderos_calmados": 20,
+     "b1_verdaderos_vencidos": 20,
+     "b1_fuego_s3_a": 10
+    },
+    "niveles": 0.5,
+    "objetos": [
+     "pastel x2 (rec_fuego_regalo)"
+    ],
+    "heridas": [],
+    "actos": [
+     {
+      "acto": "verdaderos_enfrentados",
+      "gravedad": "medio",
+      "signo": 1,
+      "beat": "b1_verdaderos_forastero"
+     },
+     {
+      "acto": "sumarse_verdaderos",
+      "gravedad": "medio",
+      "signo": -1,
+      "beat": "b1_verdaderos"
+     },
+     {
+      "acto": "gato_bajado",
+      "gravedad": "menor",
+      "signo": 1,
+      "beat": "b1_gato_bajado"
+     },
+     {
+      "acto": "verdaderos_calmados",
+      "gravedad": "menor",
+      "signo": 1,
+      "beat": "b1_verdaderos_calmados"
+     },
+     {
+      "acto": "familia_a_la_barriada",
+      "gravedad": "menor",
+      "signo": 1,
+      "beat": "b1_fuego_s2_a"
+     },
+     {
+      "acto": "cobrar_al_padre",
+      "gravedad": "menor",
+      "signo": -1,
+      "beat": "b1_fuego_s3_a"
+     }
+    ],
+    "descansos": 3
+   },
+   "diario": [
+    {
+     "id": "obj_preguntar",
+     "texto": "Preguntar por la ciudad (Rosita, en la Taberna Humilde, sabe de todo).",
+     "doneFlag": "bnd_rumor",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:45"
+    },
+    {
+     "id": "bnd1_op_familia",
+     "texto": "Ayudar a la familia de la puerta azul, en Pico Dragón",
+     "doneFlag": "bnd1_familia_resuelta",
+     "visibleFlag": "bnd1_mira_visto",
+     "fuente": "assets/catalogs/quests.json:203"
+    }
+   ],
+   "cobertura": {
+    "vistos": 26,
+    "total": 29,
+    "no_vistos": [
+     "b1_familia_despues_cobrada",
+     "b1_fuego_s3_a",
+     "b1_fuego_p0_a"
+    ],
+    "solo_heroe": [],
+    "no_elegidas": [
+     "b1_mira_v0#1 «¿Y tú cómo te llamas?»",
+     "b1_mira_v0#2 «Hablar de otra cosa»",
+     "b1_mira_v0#3 «Ahora no puedo»",
+     "b1_fuego_s0_a#0 «¿De dónde sois?»",
+     "b1_fuego_s0_a#3 «Dar las gracias e irte»",
+     "b1_fuego_s2_a#0 «¿Os molestan mucho?»",
+     "b1_fuego_s3_a#0 «Os he salvado la vida. Eso vale algo.»",
+     "b1_fuego_s3_a#1 «Hablar de otra cosa»",
+     "b1_fuego_s3_a#2 «Dar las gracias e irte»",
+     "b1_fuego_p0_a#0 «¿De dónde sois?»",
+     "b1_fuego_p0_a#1 «¿Por qué Boundington?»",
+     "b1_fuego_p0_a#2 «Hablar de otra cosa»",
+     "b1_fuego_p0_a#3 «Dar las gracias e irte»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b1_verdaderos",
+      "linea": 11558,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_verdaderos_ganan",
+      "linea": 20038,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_fuego_s2_a",
+      "linea": 28431,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_fuego_s3_a",
+      "linea": 28574,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "iglesia",
+   "nombre": "Las pruebas de la Iglesia de la Luz y el sacerdote",
+   "tipo": "mision",
+   "beats": [
+    "beat_iglesia",
+    "b1_sacerdote_v0",
+    "b1_sacerdote",
+    "b1_sacerdote_s0",
+    "b1_sacerdote_s1",
+    "b1_sacerdote_s2",
+    "b1_sacerdote_p0",
+    "beat_castillo_cerrado"
+   ],
+   "n": 8,
+   "abre": {
+    "beat": "beat_iglesia",
+    "linea": 12625,
+    "trigger": "enter",
+    "objetivo": "assets/levels/interior_iglesia.json",
+    "requires": "alguna: bnd_pista_xila, bnd0_pista_iglesia, bnd1_pista_iglesia_noche; no: bnd_iglesia_vista"
+   },
+   "pnj": [
+    "sacerdote"
+   ],
+   "niveles": [
+    "assets/levels/interior_iglesia.json",
+    "assets/levels/interior_castillo.json"
+   ],
+   "cierre_flags": [
+    "bnd_pruebas_suficientes"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "beat_iglesia",
+     "linea": 12625,
+     "pone": [
+      "bnd_pruebas_suficientes"
+     ]
+    }
+   ],
+   "salidas": [],
+   "recompensa": {
+    "oro_pos": 0,
+    "oro_neg": 0,
+    "oro_por_beat": {},
+    "niveles": 0.7,
+    "objetos": [],
+    "heridas": [],
+    "actos": [],
+    "descansos": 0
+   },
+   "diario": [
+    {
+     "id": "obj_pruebas",
+     "texto": "Reúne pruebas de lo que traman los Perdidos en la Iglesia de la Luz.",
+     "doneFlag": "bnd_pruebas_suficientes",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:51"
+    }
+   ],
+   "cobertura": {
+    "vistos": 6,
+    "total": 8,
+    "no_vistos": [
+     "b1_sacerdote_v0",
+     "b1_sacerdote_s2"
+    ],
+    "solo_heroe": [
+     "b1_sacerdote_v0",
+     "b1_sacerdote_s2"
+    ],
+    "no_elegidas": [
+     "b1_sacerdote_v0#0 «¿Qué pasa en esta iglesia?»",
+     "b1_sacerdote_v0#1 «¿Quién baja ahí?»",
+     "b1_sacerdote_v0#2 «Hablar de otra cosa»",
+     "b1_sacerdote_v0#3 «Irte»",
+     "b1_sacerdote_s2#0 «Rezar con él»",
+     "b1_sacerdote_s2#1 «Hablar de otra cosa»",
+     "b1_sacerdote_s2#2 «Irte»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "beat_iglesia",
+      "linea": 12625,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "ronda_noche",
+   "nombre": "La ronda de noche: el cuartel y el vigilante",
+   "tipo": "mision",
+   "beats": [
+    "b1_cuartel_noche",
+    "b1_vigilante",
+    "b1_vigilante_esquivado",
+    "b1_vigilante_te_para",
+    "b1_vigilante_convence",
+    "b1_vigilante_echa"
+   ],
+   "n": 6,
+   "abre": {
+    "beat": "b1_cuartel_noche",
+    "linea": 13955,
+    "trigger": "enter",
+    "objetivo": "assets/levels/interior_cuartel.json",
+    "requires": "no: bnd1_cuartel_visto, bnd1_noche_cortada, bnd1_a_dormir, bnd_noche; vars: {\"franja\": 2}"
+   },
+   "pnj": [],
+   "niveles": [
+    "assets/levels/interior_cuartel.json",
+    "assets/levels/ciudad_este.json"
+   ],
+   "cierre_flags": [
+    "bnd1_vigilante_visto",
+    "bnd1_cuartel_visto"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b1_cuartel_noche",
+     "linea": 13955,
+     "pone": [
+      "bnd1_cuartel_visto"
+     ]
+    },
+    {
+     "beat": "b1_vigilante",
+     "linea": 13984,
+     "pone": [
+      "bnd1_vigilante_visto"
+     ]
+    }
+   ],
+   "salidas": [
+    {
+     "beat": "b1_vigilante",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "sigilo",
+     "flags": {
+      "botch": "bnd1_sigilo_pifia",
+      "partial": "bnd1_sigilo_parcial",
+      "success": "bnd1_sigilo_exito",
+      "critical": "bnd1_sigilo_critico"
+     }
+    },
+    {
+     "beat": "b1_vigilante_te_para",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "persuasion",
+     "flags": {
+      "botch": "bnd1_vigilante_pifia",
+      "partial": "bnd1_vigilante_parcial",
+      "success": "bnd1_vigilante_exito",
+      "critical": "bnd1_vigilante_critico"
+     }
+    }
+   ],
+   "recompensa": {
+    "oro_pos": 0,
+    "oro_neg": 0,
+    "oro_por_beat": {},
+    "niveles": 0.0,
+    "objetos": [],
+    "heridas": [],
+    "actos": [],
+    "descansos": 0
+   },
+   "diario": [],
+   "cobertura": {
+    "vistos": 6,
+    "total": 6,
+    "no_vistos": [],
+    "solo_heroe": [],
+    "no_elegidas": [],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b1_cuartel_noche",
+      "linea": 13955,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_vigilante",
+      "linea": 13984,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "entrada_guarida",
+   "nombre": "Entrar en la guarida: el herrero, las armas y la puerta",
+   "tipo": "mision",
+   "beats": [
+    "b1_guarida_puerta",
+    "b1_herrero_exito",
+    "b1_herrero_parcial",
+    "b1_herrero_pifia",
+    "b1_puerta_ganada",
+    "b1_dep_llegada_dentro",
+    "b1_dep_llegada_osario",
+    "b1_dep_llegada_colarse",
+    "b1_colarse_exito",
+    "b1_colarse_parcial",
+    "b1_colarse_pifia",
+    "b1_novicio_exito",
+    "b1_novicio_parcial",
+    "b1_novicio_pifia",
+    "b1_guarida_por_aigren"
+   ],
+   "n": 15,
+   "abre": {
+    "beat": "b1_guarida_puerta",
+    "linea": 14957,
+    "trigger": "enter",
+    "objetivo": "assets/levels/interior_iglesia_s1.json",
+    "requires": "no: bnd1_guarida_dentro, bnd1_guarida_resuelta"
+   },
+   "pnj": [],
+   "niveles": [
+    "assets/levels/interior_iglesia_s1.json",
+    "assets/levels/dependencias_secta.json"
+   ],
+   "cierre_flags": [
+    "bnd1_guarida_dentro",
+    "bnd1_cripta_colado"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b1_guarida_puerta",
+     "linea": 14957,
+     "pone": [
+      "bnd1_guarida_dentro"
+     ]
+    },
+    {
+     "beat": "b1_herrero_exito",
+     "linea": 15062,
+     "pone": [
+      "bnd1_guarida_dentro"
+     ]
+    },
+    {
+     "beat": "b1_herrero_parcial",
+     "linea": 15105,
+     "pone": [
+      "bnd1_guarida_dentro"
+     ]
+    },
+    {
+     "beat": "b1_herrero_pifia",
+     "linea": 15153,
+     "pone": [
+      "bnd1_guarida_dentro"
+     ]
+    },
+    {
+     "beat": "b1_dep_llegada_osario",
+     "linea": 15311,
+     "pone": [
+      "bnd1_cripta_colado"
+     ]
+    },
+    {
+     "beat": "b1_colarse_exito",
+     "linea": 15462,
+     "pone": [
+      "bnd1_cripta_colado"
+     ]
+    },
+    {
+     "beat": "b1_novicio_exito",
+     "linea": 15628,
+     "pone": [
+      "bnd1_cripta_colado"
+     ]
+    },
+    {
+     "beat": "b1_novicio_parcial",
+     "linea": 15667,
+     "pone": [
+      "bnd1_cripta_colado"
+     ]
+    }
+   ],
+   "salidas": [
+    {
+     "beat": "b1_guarida_puerta",
+     "opcion": 2,
+     "tipo": "tirada",
+     "que": "engano",
+     "flags": {
+      "botch": "bnd1_herrero_pifia",
+      "partial": "bnd1_herrero_parcial",
+      "success": "bnd1_herrero_exito",
+      "critical": "bnd1_herrero_critico"
+     }
+    },
+    {
+     "beat": "b1_herrero_pifia",
+     "opcion": 1,
+     "tipo": "combate",
+     "que": "perdido_devoto x2",
+     "flags": {
+      "victory": "bnd1_puerta_ganada",
+      "defeat": "bnd1_guarida_perdida",
+      "huida": "bnd1_guarida_huida"
+     }
+    },
+    {
+     "beat": "b1_dep_llegada_colarse",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "sigilo",
+     "flags": {
+      "botch": "bnd1_colarse_pifia",
+      "partial": "bnd1_colarse_parcial",
+      "success": "bnd1_colarse_exito",
+      "critical": "bnd1_colarse_critico"
+     }
+    },
+    {
+     "beat": "b1_dep_llegada_colarse",
+     "opcion": 1,
+     "tipo": "tirada",
+     "que": "engano",
+     "flags": {
+      "botch": "bnd1_novicio_pifia",
+      "partial": "bnd1_novicio_parcial",
+      "success": "bnd1_novicio_exito",
+      "critical": "bnd1_novicio_critico"
+     }
+    },
+    {
+     "beat": "b1_dep_llegada_colarse",
+     "opcion": 2,
+     "tipo": "combate",
+     "que": "perdido_devoto x2+cultista_carcelero x1",
+     "flags": {
+      "victory": "bnd1_cripta_ganada",
+      "defeat": "bnd1_guarida_perdida",
+      "huida": "bnd1_guarida_huida"
+     }
+    },
+    {
+     "beat": "b1_colarse_parcial",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "engano",
+     "flags": {
+      "botch": "bnd1_novicio_pifia",
+      "partial": "bnd1_novicio_parcial",
+      "success": "bnd1_novicio_exito",
+      "critical": "bnd1_novicio_critico"
+     }
+    },
+    {
+     "beat": "b1_colarse_parcial",
+     "opcion": 1,
+     "tipo": "combate",
+     "que": "perdido_devoto x1+cultista_carcelero x1",
+     "flags": {
+      "victory": "bnd1_cripta_ganada",
+      "defeat": "bnd1_guarida_perdida",
+      "huida": "bnd1_guarida_huida"
+     }
+    },
+    {
+     "beat": "b1_colarse_pifia",
+     "opcion": null,
+     "tipo": "combate",
+     "que": "perdido_devoto x2+cultista_carcelero x1",
+     "flags": {
+      "victory": "bnd1_cripta_ganada",
+      "defeat": "bnd1_guarida_perdida",
+      "huida": "bnd1_guarida_huida"
+     }
+    },
+    {
+     "beat": "b1_novicio_pifia",
+     "opcion": null,
+     "tipo": "combate",
+     "que": "perdido_devoto x2+cultista_carcelero x1",
+     "flags": {
+      "victory": "bnd1_cripta_ganada",
+      "defeat": "bnd1_guarida_perdida",
+      "huida": "bnd1_guarida_huida"
+     }
+    },
+    {
+     "beat": "b1_guarida_por_aigren",
+     "opcion": 3,
+     "tipo": "combate",
+     "que": "perdido_devoto x3+perdido_fanatico x1",
+     "flags": {
+      "victory": "bnd1_guarida_exterminada",
+      "defeat": "bnd1_guarida_perdida",
+      "huida": "bnd1_guarida_huida"
+     }
+    }
+   ],
+   "recompensa": {
+    "oro_pos": 40,
+    "oro_neg": 0,
+    "oro_por_beat": {
+     "b1_guarida_por_aigren": 40
+    },
+    "niveles": 1.0,
+    "objetos": [
+     "pocion x1 (b1_guarida_por_aigren)"
+    ],
+    "heridas": [],
+    "actos": [
+     {
+      "acto": "bajar_sin_armas",
+      "gravedad": "menor",
+      "signo": 0,
+      "beat": "b1_guarida_puerta"
+     },
+     {
+      "acto": "verina_sacada_de_la_guarida",
+      "gravedad": "medio",
+      "signo": 1,
+      "beat": "b1_guarida_por_aigren"
+     },
+     {
+      "acto": "unirse_perdidos",
+      "gravedad": "menor",
+      "signo": 0,
+      "beat": "b1_guarida_por_aigren"
+     }
+    ],
+    "descansos": 0
+   },
+   "diario": [],
+   "cobertura": {
+    "vistos": 5,
+    "total": 15,
+    "no_vistos": [
+     "b1_guarida_puerta",
+     "b1_herrero_exito",
+     "b1_herrero_parcial",
+     "b1_herrero_pifia",
+     "b1_puerta_ganada",
+     "b1_dep_llegada_dentro",
+     "b1_colarse_pifia",
+     "b1_novicio_parcial",
+     "b1_novicio_pifia",
+     "b1_guarida_por_aigren"
+    ],
+    "solo_heroe": [],
+    "no_elegidas": [
+     "b1_guarida_puerta#0 «Dejar las armas»",
+     "b1_guarida_puerta#1 «Vengo de parte del herrero.»",
+     "b1_guarida_puerta#2 ««Vengo de parte del herrero.» [Engaño]»",
+     "b1_guarida_puerta#3 «Darte la vuelta»",
+     "b1_herrero_pifia#0 «Dejar las armas y bajar»",
+     "b1_herrero_pifia#1 «Apartarlos a las bravas»",
+     "b1_herrero_pifia#2 «Darte la vuelta»",
+     "b1_colarse_parcial#0 «Soy nuevo. Me manda el herrero. [Engaño]»",
+     "b1_guarida_por_aigren#0 «Sacar a Verina de aquí»",
+     "b1_guarida_por_aigren#1 «Sonsacar para Venides»",
+     "b1_guarida_por_aigren#2 «Unirte»",
+     "b1_guarida_por_aigren#3 «Intentar acabar con todos»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b1_guarida_puerta",
+      "linea": 14957,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_herrero_exito",
+      "linea": 15062,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_herrero_parcial",
+      "linea": 15105,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_herrero_pifia",
+      "linea": 15153,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_dep_llegada_osario",
+      "linea": 15311,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_colarse_exito",
+      "linea": 15462,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_novicio_exito",
+      "linea": 15628,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_novicio_parcial",
+      "linea": 15667,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "descubierto",
+   "nombre": "Descubierto en la cripta: calmar, correr, rendirse o pelear",
+   "tipo": "mision",
+   "beats": [
+    "b1_cripta_descubierto",
+    "b1_calma_exito",
+    "b1_calma_parcial",
+    "b1_calma_pifia",
+    "b1_carrera_exito",
+    "b1_carrera_parcial",
+    "b1_carrera_pifia",
+    "b1_capturado_solo",
+    "b1_capturado",
+    "b1_escape_exito",
+    "b1_escape_parcial",
+    "b1_escape_pifia",
+    "b1_cripta_ganada"
+   ],
+   "n": 13,
+   "abre": {
+    "beat": "b1_cripta_descubierto",
+    "linea": 14037,
+    "trigger": "auto",
+    "objetivo": "",
+    "requires": "no: bnd1_cripta_hostil, bnd1_cripta_descubierta, bnd1_cripta_capturado, bnd1_unido_al_culto, bnd1_edul_escoltado, bnd1_pozo_usado, bnd1_cripta_echado, bnd1_cripta_huida; vars: {\"cripta_sospecha\": {\"min\": 3}}"
+   },
+   "pnj": [],
+   "niveles": [],
+   "cierre_flags": [
+    "bnd1_capturado_resuelto",
+    "bnd1_cripta_huida",
+    "bnd1_calma_cerrado"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b1_calma_exito",
+     "linea": 14184,
+     "pone": [
+      "bnd1_calma_cerrado"
+     ]
+    },
+    {
+     "beat": "b1_calma_parcial",
+     "linea": 14219,
+     "pone": [
+      "bnd1_calma_cerrado"
+     ]
+    },
+    {
+     "beat": "b1_calma_pifia",
+     "linea": 14253,
+     "pone": [
+      "bnd1_calma_cerrado"
+     ]
+    },
+    {
+     "beat": "b1_carrera_exito",
+     "linea": 14298,
+     "pone": [
+      "bnd1_cripta_huida"
+     ]
+    },
+    {
+     "beat": "b1_carrera_parcial",
+     "linea": 14340,
+     "pone": [
+      "bnd1_cripta_huida"
+     ]
+    },
+    {
+     "beat": "b1_capturado_solo",
+     "linea": 14431,
+     "pone": [
+      "bnd1_capturado_resuelto"
+     ]
+    },
+    {
+     "beat": "b1_capturado",
+     "linea": 14537,
+     "pone": [
+      "bnd1_capturado_resuelto"
+     ]
+    },
+    {
+     "beat": "b1_escape_exito",
+     "linea": 14639,
+     "pone": [
+      "bnd1_capturado_resuelto"
+     ]
+    },
+    {
+     "beat": "b1_escape_parcial",
+     "linea": 14673,
+     "pone": [
+      "bnd1_capturado_resuelto"
+     ]
+    }
+   ],
+   "salidas": [
+    {
+     "beat": "b1_cripta_descubierto",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "engano",
+     "flags": {
+      "botch": "bnd1_calma_pifia",
+      "partial": "bnd1_calma_parcial",
+      "success": "bnd1_calma_exito",
+      "critical": "bnd1_calma_critico"
+     }
+    },
+    {
+     "beat": "b1_cripta_descubierto",
+     "opcion": 2,
+     "tipo": "tirada",
+     "que": "atletismo",
+     "flags": {
+      "botch": "bnd1_carrera_pifia",
+      "partial": "bnd1_carrera_parcial",
+      "success": "bnd1_carrera_exito",
+      "critical": "bnd1_carrera_critico"
+     }
+    },
+    {
+     "beat": "b1_cripta_descubierto",
+     "opcion": 3,
+     "tipo": "combate",
+     "que": "perdido_devoto x1+cultista_carcelero x1",
+     "flags": {
+      "victory": "bnd1_cripta_ganada",
+      "defeat": "bnd1_guarida_perdida",
+      "huida": "bnd1_guarida_huida"
+     }
+    },
+    {
+     "beat": "b1_capturado_solo",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "atletismo",
+     "flags": {
+      "botch": "bnd1_escape_pifia",
+      "partial": "bnd1_escape_parcial",
+      "success": "bnd1_escape_exito",
+      "critical": "bnd1_escape_critico"
+     }
+    },
+    {
+     "beat": "b1_capturado",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "atletismo",
+     "flags": {
+      "botch": "bnd1_escape_pifia",
+      "partial": "bnd1_escape_parcial",
+      "success": "bnd1_escape_exito",
+      "critical": "bnd1_escape_critico"
+     }
+    },
+    {
+     "beat": "b1_escape_parcial",
+     "opcion": null,
+     "tipo": "combate",
+     "que": "cultista_carcelero x2",
+     "flags": {
+      "victory": "bnd1_camara_ganada",
+      "defeat": "bnd1_guarida_perdida",
+      "huida": "bnd1_guarida_huida"
+     }
+    }
+   ],
+   "recompensa": {
+    "oro_pos": 0,
+    "oro_neg": 0,
+    "oro_por_beat": {},
+    "niveles": 0.5,
+    "objetos": [],
+    "heridas": [
+     "el carcelero de la cripta (4) (b1_carrera_parcial)",
+     "las cadenas de la cripta (4) (b1_escape_pifia)"
+    ],
+    "actos": [],
+    "descansos": 0
+   },
+   "diario": [],
+   "cobertura": {
+    "vistos": 1,
+    "total": 13,
+    "no_vistos": [
+     "b1_cripta_descubierto",
+     "b1_calma_exito",
+     "b1_calma_parcial",
+     "b1_calma_pifia",
+     "b1_carrera_exito",
+     "b1_carrera_parcial",
+     "b1_carrera_pifia",
+     "b1_capturado_solo",
+     "b1_capturado",
+     "b1_escape_exito",
+     "b1_escape_parcial",
+     "b1_escape_pifia"
+    ],
+    "solo_heroe": [],
+    "no_elegidas": [
+     "b1_cripta_descubierto#0 ««Sandes me ha mandado a mí.» [Engaño]»",
+     "b1_cripta_descubierto#1 «Rendirte»",
+     "b1_cripta_descubierto#2 «Correr hacia la salida [Atletismo]»",
+     "b1_cripta_descubierto#3 «Pelear»",
+     "b1_capturado_solo#0 «Romper las cadenas [Atletismo]»",
+     "b1_capturado_solo#1 «Esperar a Edul»",
+     "b1_capturado_solo#2 «Esperar a que te suelten»",
+     "b1_capturado#0 «Romper las cadenas [Atletismo]»",
+     "b1_capturado#1 «Esperar a Edul»",
+     "b1_capturado#2 «Esperar a que te suelten»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b1_calma_exito",
+      "linea": 14184,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_calma_parcial",
+      "linea": 14219,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_calma_pifia",
+      "linea": 14253,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_carrera_exito",
+      "linea": 14298,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_carrera_parcial",
+      "linea": 14340,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_capturado_solo",
+      "linea": 14431,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_capturado",
+      "linea": 14537,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_escape_exito",
+      "linea": 14639,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_escape_parcial",
+      "linea": 14673,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "ceremonia",
+   "nombre": "La ceremonia de los Perdidos y el idolo",
+   "tipo": "mision",
+   "beats": [
+    "b1_ceremonia_empieza",
+    "b1_ceremonia_aviso",
+    "b1_ceremonia_acaba_sereno",
+    "b1_ceremonia_acaba",
+    "b1_santuario_tarde",
+    "b1_guarida_ceremonia",
+    "b1_santuario_hostil",
+    "b1_santuario_intruso",
+    "b1_idolo_gurkazaal",
+    "b1_idolo_misterio",
+    "b1_ceremonia",
+    "b1_ceremonia_s0_a",
+    "b1_ceremonia_s1_a",
+    "b1_ceremonia_p0_a"
+   ],
+   "n": 14,
+   "abre": {
+    "beat": "b1_guarida_ceremonia",
+    "linea": 20283,
+    "trigger": "enter",
+    "objetivo": "assets/levels/santuario_subterraneo.json",
+    "requires": "alguna: bnd1_guarida_dentro, bnd1_cripta_colado; no: bnd1_guarida_vista, bnd1_cripta_hostil, bnd1_ceremonia_acabada"
+   },
+   "pnj": [],
+   "niveles": [
+    "assets/levels/santuario_subterraneo.json"
+   ],
+   "cierre_flags": [
+    "bnd1_ceremonia_acabada",
+    "bnd1_ceremonia_visto"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b1_ceremonia_acaba_sereno",
+     "linea": 14890,
+     "pone": [
+      "bnd1_ceremonia_acabada"
+     ]
+    },
+    {
+     "beat": "b1_ceremonia_acaba",
+     "linea": 14927,
+     "pone": [
+      "bnd1_ceremonia_acabada"
+     ]
+    },
+    {
+     "beat": "b1_ceremonia",
+     "linea": 27531,
+     "pone": [
+      "bnd1_ceremonia_visto"
+     ]
+    }
+   ],
+   "salidas": [
+    {
+     "beat": "b1_santuario_intruso",
+     "opcion": 1,
+     "tipo": "tirada",
+     "que": "engano",
+     "flags": {
+      "botch": "bnd1_novicio_pifia",
+      "partial": "bnd1_novicio_parcial",
+      "success": "bnd1_novicio_exito",
+      "critical": "bnd1_novicio_critico"
+     }
+    },
+    {
+     "beat": "b1_santuario_intruso",
+     "opcion": 2,
+     "tipo": "combate",
+     "que": "perdido_devoto x2+cultista_carcelero x1",
+     "flags": {
+      "victory": "bnd1_cripta_ganada",
+      "defeat": "bnd1_guarida_perdida",
+      "huida": "bnd1_guarida_huida"
+     }
+    },
+    {
+     "beat": "b1_ceremonia",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "conocimiento_arcano",
+     "flags": {
+      "botch": "bnd1_idolo_pifia",
+      "partial": "bnd1_idolo_parcial",
+      "success": "bnd1_idolo_exito",
+      "critical": "bnd1_idolo_critico"
+     }
+    },
+    {
+     "beat": "b1_ceremonia_s0_a",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "conocimiento_arcano",
+     "flags": {
+      "botch": "bnd1_idolo_pifia",
+      "partial": "bnd1_idolo_parcial",
+      "success": "bnd1_idolo_exito",
+      "critical": "bnd1_idolo_critico"
+     }
+    },
+    {
+     "beat": "b1_ceremonia_s1_a",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "persuasion",
+     "flags": {
+      "botch": "bnd1_charla_pifia",
+      "partial": "bnd1_charla_parcial",
+      "success": "bnd1_charla_exito",
+      "critical": "bnd1_charla_critico"
+     }
+    },
+    {
+     "beat": "b1_ceremonia_p0_a",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "conocimiento_arcano",
+     "flags": {
+      "botch": "bnd1_idolo_pifia",
+      "partial": "bnd1_idolo_parcial",
+      "success": "bnd1_idolo_exito",
+      "critical": "bnd1_idolo_critico"
+     }
+    }
+   ],
+   "recompensa": {
+    "oro_pos": 0,
+    "oro_neg": 0,
+    "oro_por_beat": {},
+    "niveles": 0.9,
+    "objetos": [],
+    "heridas": [],
+    "actos": [
+     {
+      "acto": "ver_ceremonia_gurkazaal",
+      "gravedad": "menor",
+      "signo": 0,
+      "beat": "b1_guarida_ceremonia"
+     }
+    ],
+    "descansos": 0
+   },
+   "diario": [
+    {
+     "id": "obj_pruebas",
+     "texto": "Reúne pruebas de lo que traman los Perdidos en la Iglesia de la Luz.",
+     "doneFlag": "bnd_pruebas_suficientes",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:51"
+    }
+   ],
+   "cobertura": {
+    "vistos": 8,
+    "total": 14,
+    "no_vistos": [
+     "b1_idolo_gurkazaal",
+     "b1_idolo_misterio",
+     "b1_ceremonia",
+     "b1_ceremonia_s0_a",
+     "b1_ceremonia_s1_a",
+     "b1_ceremonia_p0_a"
+    ],
+    "solo_heroe": [],
+    "no_elegidas": [
+     "b1_santuario_intruso#0 «Sentarte con los novicios, con tu túnica»",
+     "b1_ceremonia#0 «Mirar la estatua [Conocimiento arcano]»",
+     "b1_ceremonia#1 «Escuchar el canto»",
+     "b1_ceremonia#2 «Hablar de otra cosa»",
+     "b1_ceremonia#3 «Volver a subir»",
+     "b1_ceremonia_s0_a#0 «Mirar la estatua [Conocimiento arcano]»",
+     "b1_ceremonia_s0_a#1 «Escuchar el canto»",
+     "b1_ceremonia_s0_a#2 «Hablar de otra cosa»",
+     "b1_ceremonia_s0_a#3 «Volver a subir»",
+     "b1_ceremonia_s1_a#0 «Hablar con alguien [Persuasión]»",
+     "b1_ceremonia_s1_a#1 «Ir a por lo tuyo»",
+     "b1_ceremonia_s1_a#2 «Hablar de otra cosa»",
+     "b1_ceremonia_s1_a#3 «Volver a subir»",
+     "b1_ceremonia_p0_a#0 «Mirar la estatua [Conocimiento arcano]»",
+     "b1_ceremonia_p0_a#1 «Escuchar el canto»",
+     "b1_ceremonia_p0_a#2 «Hablar de otra cosa»",
+     "b1_ceremonia_p0_a#3 «Volver a subir»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b1_ceremonia_acaba_sereno",
+      "linea": 14890,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_ceremonia_acaba",
+      "linea": 14927,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_ceremonia",
+      "linea": 27531,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "archivo",
+   "nombre": "El archivo y las dependencias: copistas, literas, tunica y sabotaje",
+   "tipo": "mision",
+   "beats": [
+    "b1_archivo_aviso",
+    "b1_archivo_vigilado",
+    "b1_archivo_libre",
+    "b1_archivo_cuentas",
+    "b1_archivo_parcial",
+    "b1_archivo_pifia",
+    "b1_archivero",
+    "b1_archivero_eng_exito",
+    "b1_archivero_eng_parcial",
+    "b1_archivero_eng_pifia",
+    "b1_archivero_per_exito",
+    "b1_archivero_per_parcial",
+    "b1_archivero_per_pifia",
+    "b1_archivero_int_exito",
+    "b1_archivero_int_parcial",
+    "b1_archivero_int_pifia",
+    "b1_literas",
+    "b1_literas_vacias",
+    "b1_tunica_exito",
+    "b1_tunica_parcial",
+    "b1_tunica_pifia",
+    "b1_almacen",
+    "b1_almacen_otra",
+    "b1_sabotaje_exito",
+    "b1_sabotaje_parcial",
+    "b1_sabotaje_pifia",
+    "b1_copista",
+    "b1_copista_s0",
+    "b1_copista_s1",
+    "b1_copista_p0",
+    "b1_estudio_vuelta",
+    "b1_estudio"
+   ],
+   "n": 32,
+   "abre": {
+    "beat": "b1_archivo_aviso",
+    "linea": 15792,
+    "trigger": "talk",
+    "objetivo": "archivo_perdidos",
+    "requires": "todas: bnd1_dep_novicio_aviso; no: bnd1_archivero_fuera, bnd1_novicios_fuera, bnd1_cripta_hostil, bnd1_archivo_leido"
+   },
+   "pnj": [
+    "archivo_perdidos",
+    "archivero_cripta",
+    "literas_novicios",
+    "almacen_perdidos",
+    "copista_cripta"
+   ],
+   "niveles": [
+    "assets/levels/dependencias_secta.json"
+   ],
+   "cierre_flags": [
+    "bnd1_estudio_visto",
+    "bnd1_archivo_hecho",
+    "bnd1_sabotaje_hecho"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b1_estudio_vuelta",
+     "linea": 17764,
+     "pone": [
+      "bnd1_estudio_visto"
+     ]
+    },
+    {
+     "beat": "b1_estudio",
+     "linea": 17790,
+     "pone": [
+      "bnd1_estudio_visto"
+     ]
+    }
+   ],
+   "salidas": [
+    {
+     "beat": "b1_archivo_aviso",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "investigacion",
+     "flags": {
+      "botch": "bnd1_archivo_pifia",
+      "partial": "bnd1_archivo_parcial",
+      "success": "bnd1_archivo_exito",
+      "critical": "bnd1_archivo_critico"
+     }
+    },
+    {
+     "beat": "b1_archivo_vigilado",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "investigacion",
+     "flags": {
+      "botch": "bnd1_archivo_pifia",
+      "partial": "bnd1_archivo_parcial",
+      "success": "bnd1_archivo_exito",
+      "critical": "bnd1_archivo_critico"
+     }
+    },
+    {
+     "beat": "b1_archivero",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "engano",
+     "flags": {
+      "botch": "bnd1_archivero_eng_pifia",
+      "partial": "bnd1_archivero_eng_parcial",
+      "success": "bnd1_archivero_eng_exito",
+      "critical": "bnd1_archivero_eng_critico"
+     }
+    },
+    {
+     "beat": "b1_archivero",
+     "opcion": 1,
+     "tipo": "tirada",
+     "que": "persuasion",
+     "flags": {
+      "botch": "bnd1_archivero_per_pifia",
+      "partial": "bnd1_archivero_per_parcial",
+      "success": "bnd1_archivero_per_exito",
+      "critical": "bnd1_archivero_per_critico"
+     }
+    },
+    {
+     "beat": "b1_archivero",
+     "opcion": 2,
+     "tipo": "tirada",
+     "que": "intimidacion",
+     "flags": {
+      "botch": "bnd1_archivero_int_pifia",
+      "partial": "bnd1_archivero_int_parcial",
+      "success": "bnd1_archivero_int_exito",
+      "critical": "bnd1_archivero_int_critico"
+     }
+    },
+    {
+     "beat": "b1_literas",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "sigilo",
+     "flags": {
+      "botch": "bnd1_tunica_pifia",
+      "partial": "bnd1_tunica_parcial",
+      "success": "bnd1_tunica_exito",
+      "critical": "bnd1_tunica_critico"
+     }
+    },
+    {
+     "beat": "b1_almacen",
+     "opcion": 1,
+     "tipo": "tirada",
+     "que": "sigilo",
+     "flags": {
+      "botch": "bnd1_sabotaje_pifia",
+      "partial": "bnd1_sabotaje_parcial",
+      "success": "bnd1_sabotaje_exito",
+      "critical": "bnd1_sabotaje_critico"
+     }
+    },
+    {
+     "beat": "b1_almacen_otra",
+     "opcion": 1,
+     "tipo": "tirada",
+     "que": "sigilo",
+     "flags": {
+      "botch": "bnd1_sabotaje_pifia",
+      "partial": "bnd1_sabotaje_parcial",
+      "success": "bnd1_sabotaje_exito",
+      "critical": "bnd1_sabotaje_critico"
+     }
+    }
+   ],
+   "recompensa": {
+    "oro_pos": 0,
+    "oro_neg": 0,
+    "oro_por_beat": {},
+    "niveles": 0.8,
+    "objetos": [],
+    "heridas": [],
+    "actos": [],
+    "descansos": 0
+   },
+   "diario": [
+    {
+     "id": "obj_pruebas",
+     "texto": "Reúne pruebas de lo que traman los Perdidos en la Iglesia de la Luz.",
+     "doneFlag": "bnd_pruebas_suficientes",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:51"
+    },
+    {
+     "id": "bnd1_op_luisarda_segunda",
+     "texto": "Luisarda no habla con la puerta abierta: cóbrale al sastre el hilo de plata, o vuelve de noche a La Boutique de Madame.",
+     "doneFlag": "bnd_pista_luisarda",
+     "visibleFlag": "bnd1_luisarda_segunda",
+     "fuente": "assets/catalogs/quests.json:219"
+    }
+   ],
+   "cobertura": {
+    "vistos": 19,
+    "total": 32,
+    "no_vistos": [
+     "b1_archivo_aviso",
+     "b1_archivo_parcial",
+     "b1_archivo_pifia",
+     "b1_archivero_eng_pifia",
+     "b1_archivero_per_exito",
+     "b1_archivero_per_parcial",
+     "b1_archivero_per_pifia",
+     "b1_archivero_int_parcial",
+     "b1_archivero_int_pifia",
+     "b1_tunica_exito",
+     "b1_tunica_parcial",
+     "b1_tunica_pifia",
+     "b1_estudio_vuelta"
+    ],
+    "solo_heroe": [
+     "b1_archivo_aviso"
+    ],
+    "no_elegidas": [
+     "b1_archivo_aviso#0 «Leer de reojo [Investigación]»",
+     "b1_archivo_aviso#1 «Leer las Escrituras»",
+     "b1_archivo_aviso#2 «Volver luego»",
+     "b1_archivo_vigilado#1 «Leer las Escrituras»",
+     "b1_archivo_libre#1 «Leer las Escrituras»",
+     "b1_archivero#1 ««Quiero aprender a leerlas.» [Persuasión]»",
+     "b1_literas#0 «Coger una túnica [Sigilo]»",
+     "b1_literas#1 «Coger una túnica sin que se entere»",
+     "b1_literas#2 «Mirar el libro de la almohada»",
+     "b1_copista#2 «Hablar de otra cosa»",
+     "b1_copista_s0#0 «¿Qué copias?»",
+     "b1_copista_s0#2 «Hablar de otra cosa»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b1_estudio_vuelta",
+      "linea": 17764,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_estudio",
+      "linea": 17790,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "camara_sereno",
+   "nombre": "La camara honda: Sandes, el prisionero y el pozo",
+   "tipo": "mision",
+   "beats": [
+    "b1_camara_sandes_herrero",
+    "b1_camara_sandes_sospecha",
+    "b1_camara_sandes_tunica",
+    "b1_camara_sandes",
+    "b1_camara_hostil",
+    "b1_camara_ganada",
+    "b1_sandes_eng_exito",
+    "b1_sandes_eng_parcial",
+    "b1_sandes_eng_pifia",
+    "b1_camara_vacia",
+    "b1_sereno",
+    "b1_sereno_s0",
+    "b1_sereno_s1",
+    "b1_sereno_s2",
+    "b1_sereno_s3",
+    "b1_sereno_s4",
+    "b1_sereno_p0",
+    "b1_cadenas_exito",
+    "b1_cadenas_parcial",
+    "b1_cadenas_pifia",
+    "b1_pozo",
+    "b1_pozo_exito",
+    "b1_pozo_parcial",
+    "b1_pozo_pifia",
+    "b1_pozo_salida",
+    "b1_charla_sandes",
+    "b1_sandes_killville"
+   ],
+   "n": 27,
+   "abre": {
+    "beat": "b1_camara_sandes",
+    "linea": 20949,
+    "trigger": "enter",
+    "objetivo": "assets/levels/camara_profunda.json",
+    "requires": "no: bnd1_cripta_hostil, bnd1_camara_vista, bnd1_sereno_llevado, bnd1_cripta_capturado"
+   },
+   "pnj": [
+    "prisionero_cripta",
+    "pozo_cripta"
+   ],
+   "niveles": [
+    "assets/levels/camara_profunda.json"
+   ],
+   "cierre_flags": [
+    "bnd1_sereno_libre",
+    "bnd1_sereno_llevado",
+    "bnd1_salir_pozo"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b1_sereno_s2",
+     "linea": 21671,
+     "pone": [
+      "bnd1_sereno_libre"
+     ]
+    },
+    {
+     "beat": "b1_sereno_s3",
+     "linea": 21804,
+     "pone": [
+      "bnd1_sereno_libre"
+     ]
+    },
+    {
+     "beat": "b1_sereno_s4",
+     "linea": 21968,
+     "pone": [
+      "bnd1_sereno_libre"
+     ]
+    },
+    {
+     "beat": "b1_cadenas_exito",
+     "linea": 22190,
+     "pone": [
+      "bnd1_sereno_libre"
+     ]
+    },
+    {
+     "beat": "b1_cadenas_parcial",
+     "linea": 22228,
+     "pone": [
+      "bnd1_sereno_libre"
+     ]
+    },
+    {
+     "beat": "b1_pozo_salida",
+     "linea": 22451,
+     "pone": [
+      "bnd1_salir_pozo"
+     ]
+    }
+   ],
+   "salidas": [
+    {
+     "beat": "b1_camara_sandes_herrero",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "engano",
+     "flags": {
+      "botch": "bnd1_sandes_eng_pifia",
+      "partial": "bnd1_sandes_eng_parcial",
+      "success": "bnd1_sandes_eng_exito",
+      "critical": "bnd1_sandes_eng_critico"
+     }
+    },
+    {
+     "beat": "b1_camara_sandes_herrero",
+     "opcion": 2,
+     "tipo": "combate",
+     "que": "cultista_carcelero x2",
+     "flags": {
+      "victory": "bnd1_camara_ganada",
+      "defeat": "bnd1_guarida_perdida",
+      "huida": "bnd1_guarida_huida"
+     }
+    },
+    {
+     "beat": "b1_camara_sandes_sospecha",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "engano",
+     "flags": {
+      "botch": "bnd1_sandes_eng_pifia",
+      "partial": "bnd1_sandes_eng_parcial",
+      "success": "bnd1_sandes_eng_exito",
+      "critical": "bnd1_sandes_eng_critico"
+     }
+    },
+    {
+     "beat": "b1_camara_sandes_sospecha",
+     "opcion": 2,
+     "tipo": "combate",
+     "que": "cultista_carcelero x2",
+     "flags": {
+      "victory": "bnd1_camara_ganada",
+      "defeat": "bnd1_guarida_perdida",
+      "huida": "bnd1_guarida_huida"
+     }
+    },
+    {
+     "beat": "b1_camara_sandes_tunica",
+     "opcion": 2,
+     "tipo": "combate",
+     "que": "cultista_carcelero x2",
+     "flags": {
+      "victory": "bnd1_camara_ganada",
+      "defeat": "bnd1_guarida_perdida",
+      "huida": "bnd1_guarida_huida"
+     }
+    },
+    {
+     "beat": "b1_camara_sandes",
+     "opcion": 2,
+     "tipo": "combate",
+     "que": "cultista_carcelero x2",
+     "flags": {
+      "victory": "bnd1_camara_ganada",
+      "defeat": "bnd1_guarida_perdida",
+      "huida": "bnd1_guarida_huida"
+     }
+    },
+    {
+     "beat": "b1_sereno_s3",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "atletismo",
+     "flags": {
+      "botch": "bnd1_cadenas_pifia",
+      "partial": "bnd1_cadenas_parcial",
+      "success": "bnd1_cadenas_exito",
+      "critical": "bnd1_cadenas_critico"
+     }
+    },
+    {
+     "beat": "b1_pozo",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "percepcion",
+     "flags": {
+      "botch": "bnd1_pozo_pifia",
+      "partial": "bnd1_pozo_parcial",
+      "success": "bnd1_pozo_exito",
+      "critical": "bnd1_pozo_critico"
+     }
+    }
+   ],
+   "recompensa": {
+    "oro_pos": 0,
+    "oro_neg": 0,
+    "oro_por_beat": {},
+    "niveles": 1.8,
+    "objetos": [],
+    "heridas": [
+     "el borde del pozo (4) (b1_pozo_parcial)"
+    ],
+    "actos": [
+     {
+      "acto": "unirse_perdidos",
+      "gravedad": "menor",
+      "signo": 0,
+      "beat": "b1_camara_sandes_herrero"
+     },
+     {
+      "acto": "luisarda_delatada",
+      "gravedad": "medio",
+      "signo": -1,
+      "beat": "b1_charla_sandes"
+     }
+    ],
+    "descansos": 0
+   },
+   "diario": [],
+   "cobertura": {
+    "vistos": 20,
+    "total": 27,
+    "no_vistos": [
+     "b1_camara_sandes_herrero",
+     "b1_sandes_eng_exito",
+     "b1_sandes_eng_parcial",
+     "b1_sandes_eng_pifia",
+     "b1_sereno_s2",
+     "b1_charla_sandes",
+     "b1_sandes_killville"
+    ],
+    "solo_heroe": [
+     "b1_charla_sandes"
+    ],
+    "no_elegidas": [
+     "b1_camara_sandes_herrero#0 ««Me he perdido.» [Engaño]»",
+     "b1_camara_sandes_herrero#1 ««Vengo a unirme de verdad.»»",
+     "b1_camara_sandes_herrero#2 «Soltarlo ahora mismo»",
+     "b1_camara_sandes_herrero#3 «Volver escaleras arriba»",
+     "b1_camara_sandes_sospecha#0 ««Me he perdido.» [Engaño]»",
+     "b1_camara_sandes_sospecha#2 «Soltarlo ahora mismo»",
+     "b1_camara_sandes_sospecha#3 «Volver escaleras arriba»",
+     "b1_camara_sandes_tunica#2 «Soltarlo ahora mismo»",
+     "b1_camara_sandes_tunica#3 ««Tu padre te escribe desde Killville.»»",
+     "b1_camara_sandes#3 ««Tu padre te escribe desde Killville.»»",
+     "b1_sereno_s0#0 «¿Quién eres?»",
+     "b1_sereno_s0#1 «¿Cuántos han bajado aquí?»",
+     "b1_sereno_s2#0 «¿Qué cantan arriba?»",
+     "b1_sereno_s2#1 «Abrir el candado con la llave»",
+     "b1_sereno_s2#2 «Hablar de otra cosa»",
+     "b1_sereno_s2#3 «Todavía no»",
+     "b1_sereno_s3#1 «Arrancar la argolla de la pared»",
+     "b1_charla_sandes#0 «Quiero unirme.»",
+     "b1_charla_sandes#1 «Solo miraba.»",
+     "b1_charla_sandes#2 «¿Y tú quién eres para mandar?»",
+     "b1_charla_sandes#3 «Contarle lo de Luisarda»",
+     "b1_sandes_killville#0 «¿Killville?»",
+     "b1_sandes_killville#1 «Asentir y callar»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b1_sereno_s2",
+      "linea": 21671,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_sereno_s3",
+      "linea": 21804,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_sereno_s4",
+      "linea": 21968,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_cadenas_exito",
+      "linea": 22190,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_cadenas_parcial",
+      "linea": 22228,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_pozo_salida",
+      "linea": 22451,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "verina_edul",
+   "nombre": "Verina, Edul y la guarida: sacar, sonsacar, unirte o acabar",
+   "tipo": "mision",
+   "beats": [
+    "b1_edul_rescate",
+    "b1_charla_verina",
+    "b1_banco",
+    "b1_banco_s0_a",
+    "b1_banco_p0_a",
+    "b1_charla_edul",
+    "b1_frascos",
+    "b1_frascos_s0_a",
+    "b1_frascos_p0_a",
+    "b1_edul",
+    "b1_edul_oferta",
+    "b1_edul_cripta",
+    "b1_edul_cripta_s0",
+    "b1_edul_cripta_s1",
+    "b1_edul_cripta_s2",
+    "b1_edul_cripta_s3",
+    "b1_edul_cripta_s4",
+    "b1_edul_cripta_p0",
+    "b1_llave_exito",
+    "b1_llave_parcial",
+    "b1_llave_pifia",
+    "b1_verina_cripta_n_ven",
+    "b1_verina_cripta",
+    "b1_verina_cripta_s0",
+    "b1_verina_cripta_s1",
+    "b1_verina_cripta_s2",
+    "b1_verina_cripta_s3",
+    "b1_verina_cripta_s4",
+    "b1_verina_cripta_p0",
+    "b1_guarida_ganada",
+    "b1_guarida_exterminada",
+    "b1_guarida_perdida"
+   ],
+   "n": 32,
+   "abre": {
+    "beat": "b1_edul",
+    "linea": 23793,
+    "trigger": "auto",
+    "objetivo": "",
+    "requires": "todas: bnd1_con_edul; no: bnd1_edul_hablado"
+   },
+   "pnj": [
+    "edul_cripta",
+    "verina_cripta"
+   ],
+   "niveles": [
+    "assets/levels/dependencias_secta.json"
+   ],
+   "cierre_flags": [
+    "bnd1_guarida_resuelta"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b1_edul_rescate",
+     "linea": 14757,
+     "pone": [
+      "bnd1_guarida_resuelta"
+     ]
+    },
+    {
+     "beat": "b1_edul",
+     "linea": 23793,
+     "pone": [
+      "bnd1_guarida_resuelta"
+     ]
+    },
+    {
+     "beat": "b1_edul_cripta",
+     "linea": 23999,
+     "pone": [
+      "bnd1_guarida_resuelta"
+     ]
+    },
+    {
+     "beat": "b1_edul_cripta_s0",
+     "linea": 24139,
+     "pone": [
+      "bnd1_guarida_resuelta"
+     ]
+    },
+    {
+     "beat": "b1_edul_cripta_p0",
+     "linea": 24767,
+     "pone": [
+      "bnd1_guarida_resuelta"
+     ]
+    },
+    {
+     "beat": "b1_verina_cripta_n_ven",
+     "linea": 25005,
+     "pone": [
+      "bnd1_guarida_resuelta"
+     ]
+    },
+    {
+     "beat": "b1_guarida_ganada",
+     "linea": 25963,
+     "pone": [
+      "bnd1_guarida_resuelta"
+     ]
+    },
+    {
+     "beat": "b1_guarida_exterminada",
+     "linea": 25997,
+     "pone": [
+      "bnd1_guarida_resuelta"
+     ]
+    },
+    {
+     "beat": "b1_guarida_perdida",
+     "linea": 26045,
+     "pone": [
+      "bnd1_guarida_resuelta"
+     ]
+    }
+   ],
+   "salidas": [
+    {
+     "beat": "b1_edul",
+     "opcion": 2,
+     "tipo": "combate",
+     "que": "perdido_devoto x3",
+     "flags": {
+      "victory": "bnd1_guarida_ganada",
+      "defeat": "bnd1_guarida_perdida",
+      "huida": "bnd1_guarida_huida"
+     }
+    },
+    {
+     "beat": "b1_edul_cripta_s3",
+     "opcion": 0,
+     "tipo": "tirada",
+     "que": "persuasion",
+     "flags": {
+      "botch": "bnd1_llave_pifia",
+      "partial": "bnd1_llave_parcial",
+      "success": "bnd1_llave_exito",
+      "critical": "bnd1_llave_critico"
+     }
+    }
+   ],
+   "recompensa": {
+    "oro_pos": 120,
+    "oro_neg": 0,
+    "oro_por_beat": {
+     "b1_edul": 40,
+     "b1_guarida_ganada": 40,
+     "b1_guarida_exterminada": 40
+    },
+    "niveles": 0.3,
+    "objetos": [
+     "pocion x1 (b1_edul)"
+    ],
+    "heridas": [],
+    "actos": [
+     {
+      "acto": "unirse_perdidos",
+      "gravedad": "menor",
+      "signo": 0,
+      "beat": "b1_edul"
+     },
+     {
+      "acto": "plantar_cara_guarida",
+      "gravedad": "menor",
+      "signo": 0,
+      "beat": "b1_edul"
+     },
+     {
+      "acto": "dudas_en_verina",
+      "gravedad": "menor",
+      "signo": 1,
+      "beat": "b1_edul"
+     },
+     {
+      "acto": "verina_sacada_de_la_guarida",
+      "gravedad": "medio",
+      "signo": 1,
+      "beat": "b1_verina_cripta_n_ven"
+     },
+     {
+      "acto": "guarida_exterminada",
+      "gravedad": "menor",
+      "signo": 0,
+      "beat": "b1_guarida_exterminada"
+     }
+    ],
+    "descansos": 0
+   },
+   "diario": [],
+   "cobertura": {
+    "vistos": 17,
+    "total": 32,
+    "no_vistos": [
+     "b1_edul_rescate",
+     "b1_charla_verina",
+     "b1_banco",
+     "b1_banco_s0_a",
+     "b1_banco_p0_a",
+     "b1_charla_edul",
+     "b1_frascos",
+     "b1_frascos_s0_a",
+     "b1_frascos_p0_a",
+     "b1_llave_exito",
+     "b1_llave_parcial",
+     "b1_llave_pifia",
+     "b1_guarida_ganada",
+     "b1_guarida_exterminada",
+     "b1_guarida_perdida"
+    ],
+    "solo_heroe": [],
+    "no_elegidas": [
+     "b1_edul_rescate#0 ««Y el sereno?»»",
+     "b1_edul_rescate#1 «Subir con él»",
+     "b1_banco#0 «¿Qué lees?»",
+     "b1_banco#1 «¿De dónde eres?»",
+     "b1_banco#2 «¿Por qué estás aquí?»",
+     "b1_banco#3 «Fingir que crees»",
+     "b1_banco_s0_a#0 «¿Qué lees?»",
+     "b1_banco_s0_a#1 «¿De dónde eres?»",
+     "b1_banco_s0_a#2 «¿Por qué estás aquí?»",
+     "b1_banco_s0_a#3 «Fingir que crees»",
+     "b1_banco_p0_a#0 «¿Qué lees?»",
+     "b1_banco_p0_a#1 «¿De dónde eres?»",
+     "b1_banco_p0_a#2 «¿Por qué estás aquí?»",
+     "b1_banco_p0_a#3 «Fingir que crees»",
+     "b1_frascos#0 «¿Qué mezclas?»",
+     "b1_frascos#1 «¿Eres herrero? Tienes las manos de uno.»",
+     "b1_frascos#2 «¿Conoces a un caballero llamado Venides?»",
+     "b1_frascos#3 «Callar»",
+     "b1_frascos_s0_a#0 «¿Qué mezclas?»",
+     "b1_frascos_s0_a#1 «¿Eres herrero? Tienes las manos de uno.»",
+     "b1_frascos_s0_a#2 «¿Conoces a un caballero llamado Venides?»",
+     "b1_frascos_s0_a#3 «Callar»",
+     "b1_frascos_p0_a#0 «¿Qué mezclas?»",
+     "b1_frascos_p0_a#1 «¿Eres herrero? Tienes las manos de uno.»",
+     "b1_frascos_p0_a#2 «¿Conoces a un caballero llamado Venides?»",
+     "b1_frascos_p0_a#3 «Callar»",
+     "b1_edul#2 «Plantarles cara»",
+     "b1_edul_cripta#2 «Hablar de otra cosa»",
+     "b1_edul_cripta_s0#0 «Sí, acompáñame arriba»",
+     "b1_edul_cripta_s0#1 «¿Por qué no te vas tú?»",
+     "b1_edul_cripta_s1#3 «Todavía no»",
+     "b1_edul_cripta_s3#0 «Dame la llave. [Persuasión]»",
+     "b1_edul_cripta_s3#2 «Hablar de otra cosa»",
+     "b1_edul_cripta_s3#3 «Todavía no»",
+     "b1_edul_cripta_s4#0 «He mojado la lona del almacén.»",
+     "b1_verina_cripta#3 «Dejarla leer»",
+     "b1_verina_cripta_s0#2 «Hablar de otra cosa»",
+     "b1_verina_cripta_s3#1 «He leído tus notas del margen.»",
+     "b1_verina_cripta_p0#1 «¿De dónde eres?»",
+     "b1_verina_cripta_p0#2 «Hablar de otra cosa»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b1_edul_rescate",
+      "linea": 14757,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_edul",
+      "linea": 23793,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_edul_cripta",
+      "linea": 23999,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_edul_cripta_s0",
+      "linea": 24139,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_edul_cripta_p0",
+      "linea": 24767,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_verina_cripta_n_ven",
+      "linea": 25005,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_guarida_ganada",
+      "linea": 25963,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_guarida_exterminada",
+      "linea": 25997,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_guarida_perdida",
+      "linea": 26045,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "informe_venides",
+   "nombre": "El informe a Venides: las pruebas y el aviso antes del alba",
+   "tipo": "mision",
+   "beats": [
+    "b1_borracho_n_edul",
+    "b1_borracho_n_montanas",
+    "b1_borracho",
+    "b1_borracho_s0",
+    "b1_borracho_s1",
+    "b1_borracho_s2",
+    "b1_borracho_p0",
+    "b1_venides_tarde",
+    "b1_venides_pagina",
+    "b1_venides_informe_bastan",
+    "b1_venides_informe"
+   ],
+   "n": 11,
+   "abre": {
+    "beat": "b1_borracho",
+    "linea": 11969,
+    "trigger": "talk",
+    "objetivo": "venides",
+    "requires": "no: bnd1_venides_informe_hecho, bnd1_borracho_visto; vars: {\"franja\": 2}"
+   },
+   "pnj": [
+    "venides"
+   ],
+   "niveles": [
+    "assets/levels/interior_taberna.json",
+    "assets/levels/recuerdo_taberna.json"
+   ],
+   "cierre_flags": [
+    "bnd_aviso_dado",
+    "bnd1_venides_informe_hecho"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b1_venides_informe_bastan",
+     "linea": 28878,
+     "pone": [
+      "bnd1_venides_informe_hecho",
+      "bnd_aviso_dado"
+     ]
+    },
+    {
+     "beat": "b1_venides_informe",
+     "linea": 28991,
+     "pone": [
+      "bnd1_venides_informe_hecho",
+      "bnd_aviso_dado"
+     ]
+    }
+   ],
+   "salidas": [],
+   "recompensa": {
+    "oro_pos": 60,
+    "oro_neg": 0,
+    "oro_por_beat": {
+     "b1_venides_informe_bastan": 40,
+     "b1_venides_informe": 20
+    },
+    "niveles": 0.28,
+    "objetos": [],
+    "heridas": [],
+    "actos": [],
+    "descansos": 0
+   },
+   "diario": [
+    {
+     "id": "obj_pruebas",
+     "texto": "Reúne pruebas de lo que traman los Perdidos en la Iglesia de la Luz.",
+     "doneFlag": "bnd_pruebas_suficientes",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:51"
+    },
+    {
+     "id": "obj_venides",
+     "texto": "Cuéntaselo a Venides, en la Taberna Humilde, antes de que amanezca.",
+     "doneFlag": "bnd_aviso_dado",
+     "visibleFlag": "",
+     "fuente": "assets/adventures/boundington_primer_dia.json:57"
+    }
+   ],
+   "cobertura": {
+    "vistos": 10,
+    "total": 11,
+    "no_vistos": [
+     "b1_borracho_p0"
+    ],
+    "solo_heroe": [],
+    "no_elegidas": [
+     "b1_borracho_n_montanas#1 «Insistir otra vez»",
+     "b1_borracho_s0#3 «Hablar de lo que has averiguado»",
+     "b1_borracho_p0#0 «¿Quién es Edul?»",
+     "b1_borracho_p0#1 «¿Qué pasó en las Santas Montañas?»",
+     "b1_borracho_p0#2 «Hablar de otra cosa»",
+     "b1_borracho_p0#3 «Hablar de lo que has averiguado»",
+     "b1_venides_informe#1 «Confiar en él: «Bebe conmigo»»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b1_venides_informe_bastan",
+      "linea": 28878,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_venides_informe",
+      "linea": 28991,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "pelea_taberna",
+   "nombre": "La pelea de la taberna y el camorrista",
+   "tipo": "mision",
+   "beats": [
+    "b1_pelea_oido",
+    "b1_pelea",
+    "b1_pelea_apaleado",
+    "b1_camorrista_habla",
+    "b1_pelea_rosita",
+    "b1_pelea_perdida"
+   ],
+   "n": 6,
+   "abre": {
+    "beat": "b1_pelea",
+    "linea": 26905,
+    "trigger": "auto",
+    "objetivo": "",
+    "requires": "todas: bnd1_a_dormir; no: bnd1_pelea_lanzada"
+   },
+   "pnj": [],
+   "niveles": [],
+   "cierre_flags": [
+    "bnd1_camorrista_visto",
+    "bnd1_pelea_lanzada"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "b1_pelea_oido",
+     "linea": 26855,
+     "pone": [
+      "bnd1_pelea_lanzada"
+     ]
+    },
+    {
+     "beat": "b1_pelea",
+     "linea": 26905,
+     "pone": [
+      "bnd1_pelea_lanzada"
+     ]
+    },
+    {
+     "beat": "b1_pelea_apaleado",
+     "linea": 27045,
+     "pone": [
+      "bnd1_camorrista_visto"
+     ]
+    }
+   ],
+   "salidas": [
+    {
+     "beat": "b1_pelea_oido",
+     "opcion": 0,
+     "tipo": "combate",
+     "que": "perdido_devoto",
+     "flags": {
+      "victory": "bnd1_pelea_ganada",
+      "defeat": "bnd1_pelea_perdida",
+      "huida": "bnd1_pelea_huida"
+     }
+    },
+    {
+     "beat": "b1_pelea",
+     "opcion": 0,
+     "tipo": "combate",
+     "que": "perdido_devoto",
+     "flags": {
+      "victory": "bnd1_pelea_ganada",
+      "defeat": "bnd1_pelea_perdida",
+      "huida": "bnd1_pelea_huida"
+     }
+    }
+   ],
+   "recompensa": {
+    "oro_pos": 25,
+    "oro_neg": 0,
+    "oro_por_beat": {
+     "b1_pelea_apaleado": 25
+    },
+    "niveles": 0.0,
+    "objetos": [],
+    "heridas": [],
+    "actos": [
+     {
+      "acto": "camorrista_a_la_guardia",
+      "gravedad": "menor",
+      "signo": 1,
+      "beat": "b1_pelea_apaleado"
+     },
+     {
+      "acto": "camorrista_ejecutado",
+      "gravedad": "mayor",
+      "signo": -1,
+      "beat": "b1_pelea_rosita"
+     }
+    ],
+    "descansos": 0
+   },
+   "diario": [],
+   "cobertura": {
+    "vistos": 6,
+    "total": 6,
+    "no_vistos": [],
+    "solo_heroe": [],
+    "no_elegidas": [
+     "b1_pelea_rosita#1 «Soltarlo»"
+    ],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "b1_pelea_oido",
+      "linea": 26855,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_pelea",
+      "linea": 26905,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "b1_pelea_apaleado",
+      "linea": 27045,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  },
+  {
+   "id": "cierre_dia",
+   "nombre": "Subir al cuarto y cerrar el dia (la espera de los hombres de Venides)",
+   "tipo": "mision",
+   "beats": [
+    "b1_rosita_noche",
+    "b1_sube_al_cuarto",
+    "cierre_creadores",
+    "cierre_espera",
+    "cierre_silencio"
+   ],
+   "n": 5,
+   "abre": {
+    "beat": "b1_sube_al_cuarto",
+    "linea": 27375,
+    "trigger": "enter",
+    "objetivo": "assets/levels/interior_taberna_p1.json",
+    "requires": "todas: bnd_noche; no: bnd_dia_cerrado, bnd1_en_cuarto"
+   },
+   "pnj": [],
+   "niveles": [
+    "assets/levels/interior_taberna_p1.json"
+   ],
+   "cierre_flags": [
+    "bnd_dia_cerrado"
+   ],
+   "cierre_beats": [
+    {
+     "beat": "cierre_creadores",
+     "linea": 27402,
+     "pone": [
+      "bnd_dia_cerrado"
+     ]
+    },
+    {
+     "beat": "cierre_espera",
+     "linea": 27445,
+     "pone": [
+      "bnd_dia_cerrado"
+     ]
+    },
+    {
+     "beat": "cierre_silencio",
+     "linea": 27488,
+     "pone": [
+      "bnd_dia_cerrado"
+     ]
+    }
+   ],
+   "salidas": [],
+   "recompensa": {
+    "oro_pos": 0,
+    "oro_neg": 0,
+    "oro_por_beat": {},
+    "niveles": 1.8,
+    "objetos": [],
+    "heridas": [],
+    "actos": [],
+    "descansos": 3
+   },
+   "diario": [],
+   "cobertura": {
+    "vistos": 5,
+    "total": 5,
+    "no_vistos": [],
+    "solo_heroe": [],
+    "no_elegidas": [],
+    "partidas": 20
+   },
+   "cerrable": {
+    "ok": true,
+    "cierres": [
+     {
+      "beat": "cierre_creadores",
+      "linea": 27402,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "cierre_espera",
+      "linea": 27445,
+      "ok": true,
+      "motivo": ""
+     },
+     {
+      "beat": "cierre_silencio",
+      "linea": 27488,
+      "ok": true,
+      "motivo": ""
+     }
+    ],
+    "sin_cierre_en_el_grupo": false
+   },
+   "inalcanzables": []
+  }
+ ],
+ "log": "../../out/fabrica/UNI-02-11/explorar_20_post.log"
+}
