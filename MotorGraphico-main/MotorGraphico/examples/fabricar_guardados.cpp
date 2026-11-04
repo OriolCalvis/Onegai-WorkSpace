@@ -6,6 +6,9 @@
 //   ./fabricar_guardados [carpeta=guardados]            los tres momentos de E-GUION-02
 //   ./fabricar_guardados --matriz [carpeta=guardados]   E-MATRIZ-01: dia1_<camino>.json (un guardado por camino del dia 1,
 //                                                        con el dia cerrado) y las ranuras de «Continuar» (saves/<proyecto>/)
+//   ./fabricar_guardados --matriz-dia3 [carpeta]        E-MATRIZ-03: dia3_<camino>.json (un guardado por camino del dia 3, con el dia cerrado) y
+//                                                        las mismas ranuras (la ultima que se corre manda)
+//   ./fabricar_guardados --capturas-dia3 [carpeta]      E-MATRIZ-03 fase C: m3_{fiesta,informe}.json para los guiones tools/guiones/m3_*.txt
 //   ./fabricar_guardados --capturas-gorran [carpeta]    E-MATRIZ-02 fase C: m2_{tregua,mia_perdida,cuatro_lios,subasta}.json, parados antes
 //                                                        de la escena que enseñan los guiones tools/guiones/m2_*.txt
 //   ./fabricar_guardados --matriz-gorran [carpeta]      E-MATRIZ-02: gorran_<camino>.json (un guardado por camino del dia de Gorran,
@@ -73,6 +76,35 @@ int matrizGorran(const std::string& carpeta) {
                      [&](const fabricar::CaminoGorran& c) { return fabricar::gorran(g, heroe, c); });
 }
 
+int matrizDia3(const std::string& carpeta) {
+    const demo_bnd::Guiones g = demo_bnd::cargaTodo();
+    const fabricar::Heroe heroe = fabricar::creaHeroe();
+    return ranurasDe(carpeta, "dia3", fabricar::caminosDia3(), [&](const fabricar::CaminoDia3& c) { return fabricar::dia3(g, heroe, c); });
+}
+
+// E-MATRIZ-03 fase C: los guardados "justo antes" de las escenas de los guiones m3_*.txt.
+int capturasDia3(const std::string& carpeta) {
+    std::filesystem::create_directories(carpeta);
+    const demo_bnd::Guiones g = demo_bnd::cargaTodo();
+    const fabricar::Heroe heroe = fabricar::creaHeroe();
+    int fallos = 0;
+    const auto escribe = [&](const char* camino, const char* parada, const char* archivo) {
+        const SaveGameData data = fabricar::dia3(g, heroe, fabricar::caminoDia3(camino), nullptr, true, parada);
+        const std::string ruta = carpeta + "/" + archivo;
+        std::string error;
+        if (!writeSaveGameFile(ruta, data, &error)) {
+            std::cerr << "No se pudo escribir " << ruta << ": " << error << "\n";
+            ++fallos;
+            return;
+        }
+        std::cout << ruta << ": " << camino << " parado antes de " << parada << " en " << data.levelPath << " (" << data.playerPosition.x << ","
+                  << data.playerPosition.y << ")\n";
+    };
+    escribe("fiesta_dentro", "mansion", "m3_fiesta.json");   // ya dentro de la fiesta, junto al noble que brinda
+    escribe("informe_nada", "informe", "m3_informe.json");    // el informe a Venides: «No contarle nada»
+    return fallos == 0 ? 0 : 1;
+}
+
 // E-MATRIZ-02 fase C: los guardados "justo antes" de las tres escenas de los guiones m2_*.txt.
 int capturasGorran(const std::string& carpeta) {
     std::filesystem::create_directories(carpeta);
@@ -99,6 +131,8 @@ int capturasGorran(const std::string& carpeta) {
 }
 
 int main(int argc, char** argv) {
+    if (argc > 1 && std::string(argv[1]) == "--capturas-dia3") return capturasDia3(argc > 2 ? argv[2] : "guardados");
+    if (argc > 1 && std::string(argv[1]) == "--matriz-dia3") return matrizDia3(argc > 2 ? argv[2] : "guardados");
     if (argc > 1 && std::string(argv[1]) == "--capturas-gorran") return capturasGorran(argc > 2 ? argv[2] : "guardados");
     if (argc > 1 && std::string(argv[1]) == "--matriz") return matriz(argc > 2 ? argv[2] : "guardados");
     if (argc > 1 && std::string(argv[1]) == "--matriz-gorran") return matrizGorran(argc > 2 ? argv[2] : "guardados");

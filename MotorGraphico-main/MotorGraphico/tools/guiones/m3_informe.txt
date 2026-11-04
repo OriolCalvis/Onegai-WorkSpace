@@ -1,0 +1,11 @@
+# E-MATRIZ-03 — Dia 3, el informe a Venides: camino «informe_nada», parado en la taberna, junto a Venides, con la noche ya hecha. Se habla con el (E),
+# el informe (b2_venides_noche) ofrece, en este camino, dos respuestas (Contarselo todo / No contarle nada). Se elige la 2.a: bnd2_venides_sin_aviso (Venides no estara en la base el Ocaso).
+# Uso (desde out/build/macos-debug):
+#   ./fabricar_guardados --capturas-dia3 guardados
+#   ./juego --guardado guardados/m3_informe.json --guion ../../../tools/guiones/m3_informe.txt
+30 toca E
+50 captura informe_menu
+70 toca 2
+95 toca ENTER
+115 captura informe_callado
+150 fin

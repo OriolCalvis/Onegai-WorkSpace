@@ -1349,4 +1349,343 @@ inline const std::vector<CaminoGorran>& caminosGorran() {
 }
 
 
+
+// ===========================================================================================================
+// E-MATRIZ-03 — Un guardado por camino del dia 3 (boundington_segundo_dia).
+//
+// Cada CaminoDia3 parte de un final de Gorran (CaminoGorran: la tregua o la pelea), opcionalmente con otro dia 1 por detras (el de
+// Verina), lo juega con el arnes DE VERDAD (la espada de Rosita, el castillo, la Barriada, la fiesta del Barrio Alto, el informe a
+// Venides, dormir), fotografia la partida al cerrar el dia (bnd2_dia_cerrado) en el cuarto de la taberna, y la prueba
+// (tests/Engine/MatrizDia3Tests.cpp) la restaura en una sesion limpia, empieza el Ocaso y mira lo que inventaria
+// tools/matriz_decisiones.py --dia segundo_dia. Las ranuras salen de fabricar_guardados --matriz-dia3.
+// ===========================================================================================================
+struct DiaTres {
+    std::vector<std::string> antes;                                 // respuestas que van por delante de las de siempre
+    std::vector<std::pair<std::string, demo_bnd::Suerte>> tiradas;  // tiradas (por su flagBotch) con esta suerte aunque las demas salgan bien
+    bool fiesta = true;     // false = no sube al Barrio Alto de noche (va derecho a la taberna)
+    bool delata = false;    // tras la Barriada vuelve a la plaza y habla con el sectario (b2_sectarios: «La Barriada se arma»)
+    bool exige = true;      // false (las mutaciones): lo que no sale no aborta
+    std::string parada;     // capturas: "fiesta" = en ciudad_este JUSTO ANTES de pisar la calle; "mansion" = dentro, junto al noble que brinda; "informe" = en la taberna antes de hablar con Venides
+};
+
+struct CaminoDia3 {
+    const char* id;      // dia3_<id>.json
+    const char* gorran;  // id del CaminoGorran del que parte (el final de Gorran)
+    const char* desde1;  // "" = el dia 1 de ese camino; si no, el id del CaminoDia1 que lo sustituye
+    std::vector<std::string> mas1, dice1;  // rutas del dia 1 que se juegan ademas (recorre) y respuestas por delante
+    DiaTres dia;
+    std::vector<std::string> beats;                  // beats que se tienen que haber visto en el dia 3
+    std::vector<std::string> ve, noVe;               // flags al cerrar el dia
+    std::vector<std::pair<std::string, int>> igual;  // variable == n
+    std::vector<Lector> lectores;                    // beats del Ocaso que leen la decision: se ven o no
+    std::vector<std::string> ocasoVe, ocasoNoVe;     // beats que SALTAN al empezar el Ocaso (ocasoBase)
+    Mutacion mutacion;                               // una copia de boundington_segundo_dia.json en la que la decision no hace su efecto
+    const char* nota;
+    Cuenta cuenta;
+    Mutacion mutOro, mutMoral;
+    bool espera = false;  // el Ocaso empieza sin avisar a Venides: se espera a la tarde en la taberna (el aviso de Xila, evento xila_avisa_a_venides)
+};
+
+inline const std::vector<CaminoDia3>& caminosDia3();
+
+inline Mutacion m3(const char* beat, const char* opcion, const char* cadena, const char* hacia = "zz_mutada", int salta = 0) {
+    return Mutacion{beat, opcion, cadena, hacia, 1, salta, "segundo_dia"};
+}
+
+// Lo que contesta el heroe en el dia 3 cuando no hay nada propio (la ruta del heroe de demo_campana_boundington, del encargo de Rosita al Ocaso).
+inline const std::vector<std::string>& baseDia3() {
+    static const std::vector<std::string> b = [] {
+        std::vector<std::string> r;
+        bool dentro = false;
+        for (const std::string& x : kRutaDelHeroe) {
+            if (x == "Devolvérsela y contarle todo") dentro = true;
+            if (dentro && x != "Correr a avisar a Venides") r.push_back(x);
+        }
+        r.push_back("Venides hablaria por mi");
+        return r;
+    }();
+    return b;
+}
+
+// El dia 3 como lo juega el jugador (demo_campana_boundington: juegaHeroe), con las decisiones de `d`. Se llega con el tercer dia ya amanecido.
+inline void juegaElDia3(demo_bnd::Jugador& j, const DiaTres& d) {
+    const std::vector<std::string> antes = j.prefiere;
+    j.prefiere = d.antes;
+    j.prefiere.insert(j.prefiere.end(), baseDia3().begin(), baseDia3().end());
+    for (const auto& t : d.tiradas) j.tiradas[t.first] = t.second;
+    j.entra("interior_taberna");
+    j.habla("skilla");  // la espada devuelta (o no) y lo que Rosita cuenta
+    j.entra("interior_castillo");
+    j.entra("interior_castillo_p1");
+    for (int vez = 0; vez < 5 && !j.s.hasFlag("bnd2_capitan_hablado"); ++vez) j.habla("capitan_guardia");
+    for (int vez = 0; vez < 2 && !j.s.hasFlag("bnd2_guardia_preparada") && !j.s.hasFlag("b2_castillo_prueba_cerrada"); ++vez) j.habla("capitan_guardia");  // b2_castillo_prueba
+    j.entra("ciudad_oeste");
+    j.entra("tienda_abandonada");  // el disfraz
+    j.entra("ciudad_surysal");
+    j.habla("viejo_surysal");  // la Barriada: Zarela, los saqueadores, el ritual (y la noche)
+    if (d.delata) {
+        j.entra("ciudad_centro");
+        j.habla("sectario_perdido");
+    }
+    j.anochece();
+    if (d.fiesta) {
+        if (d.parada == "fiesta") {
+            j.prefiere = antes;
+            return;
+        }
+        j.entra("ciudad_este");  // b2_fiesta_puerta: el vigilante, el cobrador, Edul
+        j.entra("mansion_barrio_alto");
+        if (d.parada == "mansion") {
+            j.prefiere = antes;
+            return;
+        }
+        if (j.seVe("seguidor_brinda")) {  // dentro de la fiesta (bnd2_fiesta_dentro): el noble que brinda
+            j.habla("seguidor_brinda");
+            j.habla("seguidor_brinda");
+        } else {
+            require(!d.exige || false);
+        }
+    }
+    j.entra("interior_taberna");
+    if (d.parada == "informe") {
+        j.prefiere = antes;
+        return;
+    }
+    for (int vez = 0; vez < 3 && !j.s.hasFlag("bnd2_informe_dado") && !j.s.hasFlag("bnd2_informe_callado"); ++vez) j.habla("venides");  // el informe de la noche
+    j.duermeDia3();
+    j.prefiere = antes;
+}
+
+inline const CaminoDia3& caminoDia3(const std::string& id) {
+    for (const CaminoDia3& c : caminosDia3())
+        if (id == c.id) return c;
+    std::fprintf(stderr, "fabricar_guardados: no hay camino del dia 3 %s\n", id.c_str());
+    require(false);
+    return caminosDia3().front();
+}
+
+// Juega el dia 1 (el de `c`), el dia de Gorran (el de su CaminoGorran) y el dia 3, y fotografia el cierre del tercer dia.
+inline SaveGameData dia3(const demo_bnd::Guiones& g, const Heroe& h, const CaminoDia3& c, std::vector<std::string>* jugado = nullptr, bool exigeCierre = true,
+                         const std::string& parada = "") {
+    const CaminoGorran& cg = caminoGorran(c.gorran);
+    const CaminoDia1& d1 = caminoDia1(std::string(c.desde1).empty() ? cg.desde : c.desde1);
+    Partida p(g, h, d1.suerte);
+    demo_bnd::Jugador& j = p.j;
+    j.prefiere = c.dice1;
+    j.prefiere.insert(j.prefiere.end(), d1.dice.begin(), d1.dice.end());
+    j.prefiere.insert(j.prefiere.end(), {"Pagar la cama", "Subir a dormir"});
+    for (const auto& f : d1.fuerza) j.tiradas[f.first] = f.second;
+    for (const std::string& f : d1.pierde) j.pierde.insert(f);
+    for (const std::string& f : d1.huye) j.huyen.insert(f);
+    j.prologo();
+    fase(j, "dia1");
+    recorre(j, d1.ruta);
+    for (const std::string& r : c.mas1) recorre(j, r);
+    j.suerte = demo_bnd::Suerte::Buena;
+    require(cierraElDia1(j) || !exigeCierre);
+    j.prefiere.clear();
+    demo_bnd::Jugador::DiaDeGorran dg = cg.dia;
+    dg.amaneceElTercero = false;
+    dg.exige = exigeCierre;
+    fase(j, "dia_gorran");
+    j.juegaElDiaDeGorran(dg);
+    require(j.s.hasFlag("bndg_dia_cerrado") || !exigeCierre);
+    fase(j, "dia2");
+    j.drena();  // b2_amanece
+    DiaTres dt = c.dia;
+    dt.exige = exigeCierre;
+    if (!parada.empty()) dt.parada = parada;
+    juegaElDia3(j, dt);
+    if (exigeCierre && dt.parada.empty()) require(j.s.hasFlag("bnd2_dia_cerrado"));
+    if (jugado != nullptr) *jugado = j.vistos;
+    static const Momento kDia3{"dia3.json", "interior_taberna_p1", "", 0, 0};
+    static const Momento kFiesta{"m3_fiesta.json", "ciudad_este", "", 0, 0};
+    static const Momento kInforme{"m3_informe.json", "interior_taberna", "venides", 0, 1};
+    static const Momento kMansion{"m3_mansion.json", "mansion_barrio_alto", "seguidor_brinda", 0, 1};
+    return fotografia(j, h, dt.parada == "fiesta" ? kFiesta : dt.parada == "informe" ? kInforme : dt.parada == "mansion" ? kMansion : kDia3);
+}
+
+// El comienzo del Ocaso, como lo hace el juego al cargar: cambio de aventura y la base (el sermon, Venides, las campanas) o, con `espera`,
+// sin avisar a Venides: la taberna y «Esperar a la tarde» (cruza ocaso_tarde y salta el evento de Xila).
+inline void empiezaElOcaso(demo_bnd::Jugador& j, const CaminoDia3& c) {
+    fase(j, "ocaso");
+    if (c.espera) {
+        j.entra("ciudad_centro");
+        j.entra("interior_taberna");
+        j.prefiere.insert(j.prefiere.begin(), "Esperar a la tarde");
+        j.habla("skilla");
+        j.entra("interior_cuartel");
+        j.drena();
+    } else {
+        j.ocasoBase();
+    }
+}
+
+// Lo que tiene que cumplir el camino al restaurarse y al empezar el Ocaso. Devuelve las faltas.
+inline std::vector<std::string> compruebaDia3(const demo_bnd::Guiones& g, Restaurada& r, const CaminoDia3& c) {
+    std::vector<std::string> fallos;
+    demo_bnd::Jugador& j = *r.j;
+    const auto falta = [&](const std::string& s) { fallos.push_back(s); };
+    for (const std::string& f : c.ve)
+        if (!j.s.hasFlag(f)) falta("falta " + f);
+    for (const std::string& f : c.noVe)
+        if (j.s.hasFlag(f)) falta("sobra " + f);
+    for (const auto& v : c.igual)
+        if (j.s.variable(v.first) != v.second) falta(v.first + "=" + std::to_string(j.s.variable(v.first)) + " != " + std::to_string(v.second));
+    for (const std::string& b : c.beats)
+        if (!j.s.beatFired(b)) falta("no disparado " + b);
+    {
+        GameSession& sesion = *r.nivel->sesion;
+        const RPG::CharacterSheet* ficha = r.nivel->cuerpo->character_sheet();
+        if (sesion.gold() != c.cuenta.oro) falta("oro=" + std::to_string(sesion.gold()) + " != " + std::to_string(c.cuenta.oro));
+        if (sesion.morality().value() != c.cuenta.moral)
+            falta("moral=" + std::to_string(sesion.morality().value()) + " != " + std::to_string(c.cuenta.moral));
+        if (!sesion.morality().pendientes().empty()) falta("moral sin asentar: " + std::to_string(sesion.morality().pendientes().size()) + " actos pendientes");
+        if (ficha->nivel != c.cuenta.nivel || ficha->progresoNivel != c.cuenta.progreso)
+            falta("nivel " + std::to_string(ficha->nivel) + " (" + std::to_string(ficha->progresoNivel) + " %) != " + std::to_string(c.cuenta.nivel) + " (" +
+                  std::to_string(c.cuenta.progreso) + " %)");
+        std::vector<std::string> mochila = *sesion.inventory();
+        std::sort(mochila.begin(), mochila.end());
+        if (mochila != c.cuenta.mochila) {
+            std::string m;
+            for (const std::string& x : mochila) m += x + ",";
+            falta("mochila [" + m + "] != la esperada de " + std::to_string(c.cuenta.mochila.size()) + " objetos");
+        }
+    }
+    if (!j.s.hasFlag("bnd2_dia_cerrado")) falta("el dia 3 no esta cerrado");
+    if (j.s.hasFlag("bnd_ocaso_empezado")) falta("el guardado ya es del Ocaso");
+    for (const Lector& l : c.lectores) {
+        const bool ve = lectorSeVe(g, l, j.s, true, true);
+        if (ve != l.seVe)
+            falta(std::string(l.dia) + ":" + l.beat + (std::string(l.opcion).empty() ? "" : std::string("/") + l.opcion) +
+                  (l.seVe ? " deberia verse" : " no deberia verse"));
+    }
+    // El comienzo del Ocaso, como lo hace el juego al cargar: cambio de aventura y la base (el sermon, Venides, las campanas).
+    empiezaElOcaso(j, c);
+    for (const std::string& b : c.ocasoVe)
+        if (!j.visto(b)) falta("el Ocaso no cuenta " + b);
+    for (const std::string& b : c.ocasoNoVe)
+        if (j.visto(b)) falta("el Ocaso cuenta " + b);
+    return fallos;
+}
+
+// Diagnostico (MATRIZ_DIAG=1): lo que deja el camino, para escribir la tabla.
+inline void describeDia3(const demo_bnd::Guiones& g, Restaurada& r, const CaminoDia3& c) {
+    demo_bnd::Jugador& j = *r.j;
+    std::fprintf(stderr, "=== %s\n flags:", c.id);
+    for (const std::string& f : j.s.flags())
+        if (f.rfind("bnd2_", 0) == 0 || f.rfind("bnd1_", 0) == 0 || f == "bnd_venides_20" || f == "bnd_venides_10") std::fprintf(stderr, " %s", f.c_str());
+    std::fprintf(stderr, "\n vars:");
+    for (const auto& v : j.s.variables()) std::fprintf(stderr, " %s=%d", v.first.c_str(), v.second);
+    GameSession& sesion = *r.nivel->sesion;
+    const RPG::CharacterSheet* ficha = r.nivel->cuerpo->character_sheet();
+    std::vector<std::string> mochila = *sesion.inventory();
+    std::sort(mochila.begin(), mochila.end());
+    std::fprintf(stderr, "\n oro=%d moral=%d nivel=%d prog=%d mochila:", sesion.gold(), sesion.morality().value(), ficha->nivel, ficha->progresoNivel);
+    for (const std::string& m : mochila) std::fprintf(stderr, " %s", m.c_str());
+    empiezaElOcaso(j, c);
+    std::fprintf(stderr, "\n ocaso vistos:");
+    for (const std::string& b : j.vistos) std::fprintf(stderr, " %s", b.c_str());
+    std::fprintf(stderr, "\n ocaso flags:");
+    for (const std::string& f : j.s.flags())
+        if (f.rfind("bnd3_", 0) == 0) std::fprintf(stderr, " %s", f.c_str());
+    std::fprintf(stderr, "\n");
+    (void)g;
+}
+
+// --- Los caminos del dia 3 (la tabla de la prueba y de las ranuras) ---
+// Los lectores y los efectos esperados salen de out/fabrica/UNI-02-11/MATRIZ_DIA3.md (tools/matriz_decisiones.py --dia segundo_dia).
+inline const std::vector<CaminoDia3>& caminosDia3() {
+    using demo_bnd::Suerte;
+    static const std::vector<CaminoDia3> c = {
+        // Orden de campos: id, gorran, desde1, mas1, dice1, dia, beats, ve, noVe, igual, lectores, ocasoVe, ocasoNoVe, mutacion, nota, cuenta, mutOro, mutMoral, espera.
+        // --- la fiesta del Barrio Alto: se entra (vigilante, mansion, el noble que brinda) y se le senala a Venides ---
+        {"fiesta_dentro", "tregua", "", {}, {}, DiaTres{},
+         {"b2_fiesta_puerta", "b2_dentro", "b2_sonsaca_exito", "b2_venides_noche"},
+         {"bnd2_fiesta_dentro", "bnd2_fiesta_nobles", "bnd2_noble_senalado", "bnd2_conspiradores", "bnd2_informe_dado", "bnd2_venides_leal", "bnd_venides_10", "bnd2_dia_cerrado"},
+         {"bnd2_noble_chantajeado", "bnd2_venides_sin_aviso", "bnd2_barriada_delatada", "bnd2_rosita_verina"}, {},
+         {{"ocaso", "b3_plaza_vacia", "", false}, {"ocaso", "b3_sermon_s3_a", "Buscar al noble del brindis", true}, {"ocaso", "b3_zarela", "", true}},
+         {"b3_plaza", "b3_avisar_venides", "b3_venides_arenga_10", "b3_capitan_ronda"}, {"b3_plaza_vacia"},
+         m3("b2_sonsaca_exito", "Senalarselo a Venides", "bnd2_noble_senalado"), "la fiesta: se entra, se sonsaca al noble y se le senala a Venides",
+         {170, 11, 5, 47, {"amuleto_gitano", "entrada_opera", "vendas"}}, m3("b2_venides_noche", "Contarselo todo", "grantGold", "log"),
+         m3("b2_sonsaca_exito", "Senalarselo a Venides", "noble_senalado", "noble_chantajeado")},
+        // --- no entrar en la fiesta: el heroe no sube al Barrio Alto; la plaza del Ocaso queda vacia (nada que Sandes tema) ---
+        {"sin_fiesta", "tregua", "", {}, {}, [] { DiaTres d; d.fiesta = false; return d; }(),
+         {"b2_venides_noche", "b2_cierre"},
+         {"bnd2_informe_dado", "bnd2_dia_cerrado"},
+         {"bnd2_fiesta_dentro", "bnd2_fiesta_calle", "bnd2_fiesta_nobles", "bnd2_noble_senalado", "bnd2_conspiradores"}, {},
+         {{"ocaso", "b3_plaza_vacia", "", true}, {"ocaso", "b3_sermon_s3_a", "Buscar al noble del brindis", false}},
+         {"b3_plaza_vacia", "b3_campanas"}, {"b3_plaza"},
+         Mutacion{"b3_plaza_vacia", "", "bnd3_esc04_sermon", "zz_mutada", 1, 0, "ocaso"}, "no ir a la fiesta: la plaza del Ocaso sale vacia (b3_plaza_vacia)",
+         {170, 9, 5, 19, {"amuleto_gitano", "entrada_opera", "vendas"}}, m3("b2_venides_noche", "Contarselo todo", "grantGold", "log"),
+         m3("b2_saqueadores_vencidos", "", "barriada_defendida", "noble_chantajeado")},
+        // --- Verina: confianza_rosita >= 3 (Verina salvada de la guarida + proteger al borracho + devolver la espada y contarlo todo) ---
+        {"verina_arriba", "cuatro_lios", "aigren_verina", {"pelea"}, {"Proteger al borracho dormido"}, [] { DiaTres d; d.antes = {"Devolvérsela y contarle todo"}; return d; }(),
+         {"b2_skilla_espada_devuelta", "b2_rosita_revela", "b2_rosita_verina_arriba"},
+         {"bnd1_verina_salvada_guarida", "bnd1_pelea_rosita", "bnd2_rosita_revelada", "bnd2_rosita_verina", "bnd2_skilla_pagada", "bnd2_aliado_skilla"}, {"bnd2_rosita_desconfia"},
+         {{"confianza_rosita", 3}}, {}, {"b3_avisar_venides"}, {},
+         m3("b2_rosita_verina_arriba", "", "bnd1_verina_salvada_guarida", "bnd1_zz_mutada"), "Verina arriba: solo se alcanza con Verina salvada + proteger al borracho + devolver y contarlo todo (confianza 3)",
+         {240, 16, 5, 76, {"amuleto_gitano", "entrada_opera", "furia_de_alaro", "pocion", "vendas"}}, m3("b2_noche_rosita_informa", "Contarselo todo", "grantGold", "log"),
+         m3("b2_saqueadores_vencidos", "", "barriada_defendida", "noble_chantajeado")},
+        // --- decirle a Rosita que no encontraste la espada ---
+        {"espada_mentira", "cuatro_lios", "", {}, {}, [] { DiaTres d; d.antes = {"Decirle que no la encontraste"}; return d; }(),
+         {"b2_skilla_espada_devuelta", "b2_venides_noche_todo"},
+         {"bnd2_rosita_desconfia", "bnd2_skilla_pagada", "bnd2_furia_alaro", "bnd2_informe_dado"},
+         {"bnd2_aliado_skilla", "bnd2_rosita_revelada", "bnd2_rosita_verina"}, {},
+         {{"ocaso", "b3_rosita_calle", "", false}, {"ocaso", "b3_taberna_cerrada", "", true}}, {"b3_avisar_venides"}, {},
+         m3("b2_skilla_espada_devuelta", "Decirle que no la encontraste", "bnd2_rosita_desconfia"), "mentir a Rosita sobre la espada: desconfia (taberna cerrada en el Ocaso)",
+         {189, 6, 5, 17, {"amuleto_gitano", "entrada_opera", "furia_de_alaro", "vendas"}}, m3("b2_venides_noche_todo", "Contarselo todo", "grantGold", "log"),
+         m3("b2_skilla_espada_devuelta", "Decirle que no la encontraste", "furia_de_alaro_robada", "furia_de_alaro_devuelta")},
+        // --- no contarle nada a Venides: no esta en la base el dia del Ocaso (A0) ---
+        {"informe_nada", "tregua", "", {}, {}, [] { DiaTres d; d.antes = {"No contarle nada"}; return d; }(),
+         {"b2_venides_noche"},
+         {"bnd2_informe_callado", "bnd2_venides_sin_aviso"}, {"bnd2_informe_dado", "bnd2_venides_leal", "bnd_venides_10"}, {},
+         {{"ocaso", "b3_venides_retenido", "", true}, {"ocaso", "b3_aviso_en_base", "", false}}, {"b3_venides_retenido", "b3_campanas_solas"}, {"b3_avisar_venides", "b3_venides_arenga_10"},
+         m3("b2_venides_noche", "No contarle nada", "bnd2_venides_sin_aviso"), "no contarle nada a Venides: el Ocaso empieza sin el (b3_venides_retenido)",
+         {120, 9, 5, 47, {"amuleto_gitano", "entrada_opera", "vendas"}}, mg("b2_cueva_llegada", "Pagar el paso (5)", "grantGold", "log"),
+         m3("b2_saqueadores_vencidos", "", "barriada_defendida", "noble_chantajeado")},
+        // --- el aviso de Xila: Xila aliado (dia 1) corre a avisar a Venides la tarde del Ocaso... si Venides esta en la base ---
+        {"xila_avisa", "cuatro_lios", "informe_cuenta_todo", {}, {}, DiaTres{},
+         {"b2_noche_xila", "b2_noche_rosita_informa"},
+         {"bnd1_xila_honor", "bnd2_informe_dado", "bnd2_venides_leal"}, {"bnd2_venides_sin_aviso"}, {},
+         {}, {"b3_tarde_aviso", "b3_xila_avisa", "b3_aviso_en_base", "b3_xila_vendas"}, {},
+         m3("b2_noche_rosita_informa", "Contarselo todo", "bnd2_venides_leal", "bnd2_venides_sin_aviso"), "el aviso de Xila: aliado + informe dado, Xila avisa a Venides la tarde del Ocaso",
+         {280, 16, 6, 64, {"amuleto_gitano", "entrada_opera", "furia_de_alaro", "vendas", "vendas", "vendas"}}, m3("b2_noche_rosita_informa", "Contarselo todo", "grantGold", "log"),
+         m3("b2_saqueadores_vencidos", "", "barriada_defendida", "noble_chantajeado"), true},
+        // --- ... y si Venides no sabe nada, nadie avisa (xila_avisa_a_venides exige no bnd2_venides_sin_aviso) ---
+        {"xila_sin_aviso", "cuatro_lios", "informe_cuenta_todo", {}, {}, [] { DiaTres d; d.antes = {"No contarle nada"}; return d; }(),
+         {"b2_noche_xila", "b2_noche_rosita_informa"},
+         {"bnd1_xila_honor", "bnd2_informe_callado", "bnd2_venides_sin_aviso"}, {"bnd2_informe_dado"}, {},
+         {}, {"b3_tarde_aviso"}, {"b3_xila_avisa", "b3_aviso_en_base"},
+         m3("b2_noche_rosita_informa", "No contarle nada", "bnd2_venides_sin_aviso"), "Xila aliado pero Venides sin aviso: el evento del aviso de Xila no salta",
+         {230, 15, 6, 64, {"amuleto_gitano", "entrada_opera", "furia_de_alaro", "vendas", "vendas", "vendas"}}, mg("b2_cueva_llegada", "Pagar el paso (5)", "grantGold", "log"),
+         m3("b2_saqueadores_vencidos", "", "barriada_defendida", "noble_chantajeado"), true},
+        // --- chantajear al noble de la fiesta en vez de senalarlo ---
+        {"noble_chantaje", "tregua", "", {}, {}, [] { DiaTres d; d.antes = {"Chantajearle"}; return d; }(),
+         {"b2_sonsaca_exito"},
+         {"bnd2_noble_chantajeado", "bnd2_fiesta_dentro"}, {"bnd2_noble_senalado"}, {},
+         {{"ocaso", "b3_sermon_s3_a", "Buscar al noble del brindis", false}}, {"b3_plaza"}, {},
+         m3("b2_sonsaca_exito", "Chantajearle", "bnd2_noble_chantajeado"), "chantajear al noble: +30 de oro, moral a la baja y sin noble que senalar",
+         {200, 7, 5, 47, {"amuleto_gitano", "entrada_opera", "vendas"}}, m3("b2_sonsaca_exito", "Chantajearle", "grantGold", "log"),
+         m3("b2_sonsaca_exito", "Chantajearle", "noble_chantajeado", "noble_senalado")},
+        // --- delatar la Barriada a los sectarios ---
+        {"barriada_delata", "cuatro_lios", "", {}, {}, [] { DiaTres d; d.delata = true; d.antes = {"La Barriada se arma: empalizada y guerreros"}; return d; }(),
+         {"b2_sectarios"},
+         {"bnd2_barriada_delatada", "bnd2_aliado_gitanos"}, {}, {},
+         {{"ocaso", "b3_zarela", "", false}, {"ocaso", "b3_huida_gitanos", "", false}}, {"b3_avisar_venides"}, {},
+         m3("b2_sectarios", "La Barriada se arma: empalizada y guerreros", "bnd2_barriada_delatada"), "delatar a la Barriada: los gitanos no llegan a la huida (b3_zarela, b3_huida_gitanos)",
+         {240, 8, 5, 46, {"amuleto_gitano", "entrada_opera", "furia_de_alaro", "vendas"}}, m3("b2_noche_rosita_informa", "Contarselo todo", "grantGold", "log"),
+         m3("b2_sectarios", "La Barriada se arma: empalizada y guerreros", "barriada_delatada", "guardia_preparada")},
+        // --- retirarse ante el capitan: la guardia no se prepara ---
+        {"castillo_retirada", "tregua", "", {}, {}, [] { DiaTres d; d.antes = {"Retirarse"}; return d; }(),
+         {"b2_castillo_prueba"},
+         {"b2_castillo_prueba_cerrada"}, {"bnd2_guardia_preparada"}, {},
+         {{"ocaso", "b3_capitan_ronda", "", false}}, {"b3_avisar_venides"}, {"b3_capitan_ronda"},
+         m3("b2_castillo_prueba", "Retirarse", "b2_castillo_prueba_cerrada"), "retirarse ante el capitan: la guardia no se prepara (sin b3_capitan_ronda)",
+         {170, 9, 5, 47, {"amuleto_gitano", "entrada_opera", "vendas"}}, mg("b2_cueva_llegada", "Pagar el paso (5)", "grantGold", "log"),
+         m3("b2_saqueadores_vencidos", "", "barriada_defendida", "noble_chantajeado")},
+    };
+    return c;
+}
+
 }  // namespace fabricar
