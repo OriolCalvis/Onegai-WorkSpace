@@ -50,7 +50,7 @@
 namespace Game {
 
 struct PasoCinematica {
-    enum class Tipo { Anda, Coloca, Mira, Espera, Beat, Flag, Nivel, Funde, Trepa, Baja, Fuego, Postura, Emocion };
+    enum class Tipo { Anda, Coloca, Mira, Espera, Beat, Flag, Nivel, Funde, Trepa, Baja, Fuego, Postura, Emocion, Combate };
     Tipo tipo = Tipo::Espera;
     std::string actor;              // id del objeto en el nivel, o «jugador»
     std::vector<GridCoord> camino;  // Anda: los puntos, en orden
@@ -75,6 +75,8 @@ struct PasoCinematica {
     bool patrulla = false;
     int veces = 1;
     float altura = 1.5f;
+    // E-DISPARADORES-2 E4 — Combate: `texto` es el enemigo y estas, las flags de victoria y de derrota (o huida).
+    std::string flagGana, flagPierde;
 };
 
 struct Cinematica {
@@ -198,6 +200,9 @@ public:
     virtual void fuego(const GridCoord& /*celda*/, bool /*encendido*/) {}
     virtual void postura(const std::string& /*actor*/, const std::string& /*postura*/) {}
     virtual void emocion(const std::string& /*actor*/, const std::string& /*icono*/, float /*segundos*/) {}
+    // E4 (D0026.3) — Lanza el encuentro `enemigo` por la puerta de siempre (GameSession::startNarrativeBattle, la del efecto
+    // `startBattle` de un beat). La orden espera a que acabe (hablando() es true mientras dura el combate).
+    virtual void combate(const std::string& /*enemigo*/, const std::string& /*flagGana*/, const std::string& /*flagPierde*/) {}
 };
 
 class ReproductorCinematica {

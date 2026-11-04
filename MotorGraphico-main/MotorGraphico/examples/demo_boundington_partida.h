@@ -729,6 +729,12 @@ struct Jugador {
                 drena();
             } else if (p.tipo == Game::PasoCinematica::Tipo::Flag) {
                 s.setFlag(p.texto);
+            } else if (p.tipo == Game::PasoCinematica::Tipo::Combate) {  // E4: como un startBattle; huir cuenta como perder
+                const bool gana = !huyen.count(p.flagGana) && !pierde.count(p.flagGana) && buena();
+                pierde.erase(p.flagGana);
+                huyen.erase(p.flagGana);
+                s.setFlag(gana ? p.flagGana : p.flagPierde);
+                if (ruido) std::printf("      [combate %s: %s]\n", p.texto.c_str(), gana ? "victoria" : "derrota");
             } else if (p.tipo == Game::PasoCinematica::Tipo::Nivel) {
                 std::string n = p.texto.substr(p.texto.rfind('/') + 1);
                 entra(n.substr(0, n.size() - 5));  // sin «.json»

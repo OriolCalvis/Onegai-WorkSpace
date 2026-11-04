@@ -32,7 +32,6 @@
 
 using Engine::Interno::kTileH;
 using Engine::Interno::kTileW;
-
 EstadoCinematicas::EstadoCinematicas() = default;
 EstadoCinematicas::~EstadoCinematicas() = default;
 
@@ -204,6 +203,7 @@ void ApplicationCinematica::actualiza(Application& app, float dt) {
         void postura(const std::string& a, const std::string& p) override { app.m_cine->escena.postura(a, p); }
         void fuego(const GridCoord& c, bool on) override { app.m_cine->escena.fuego(c, on); }
         void emocion(const std::string& a, const std::string& i, float s) override { app.m_cine->escena.emocion(a, i, s); }
+        void combate(const std::string& e, const std::string& g, const std::string& p) override { lanzaCombate(app, e, g, p); }  // E4
     };
     Escenario escenario(app);
     estado.reproductor.avanza(dt, escenario);
@@ -264,7 +264,6 @@ void ApplicationCinematica::limpiaPantalla(const Application& app) {
     glClearColor(color.x, color.y, color.z, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
-
 
 // --- COMBATE-01: el combate a la vista ---------------------------------------
 

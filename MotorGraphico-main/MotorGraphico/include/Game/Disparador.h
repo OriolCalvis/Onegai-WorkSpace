@@ -3,8 +3,10 @@
 //
 //   "disparador": {
 //     "lleva":  {"a": [55, 53], "mira": "arriba", "como": "andando"},   // andando (defecto) | fundido
-//     "accion": {"cinematica": "plaza_sermon"},                         // cinematica (defecto: la propia) | beat | marca
-//     "once":   true,                                                   // E5 hara valer false (hoy: una vez por partida)
+//     "accion": {"cinematica": "plaza_sermon"},                         // cinematica (defecto: la propia) | beat | marca | combate
+//     "once":   true,                                                   // false: se rearma al salir de la zona (E5)
+//   `combate`: {"combate": "<enemigo>"} (D0026.3) lanza ese encuentro por la puerta del efecto `startBattle` de los beats
+//   (GameSession::startNarrativeBattle); gana: «cine_<id>_ganado»; pierde o huye: «cine_<id>_perdido».
 //     "radio":  5, "vision": false }                                    // opcionales: sobreescriben los del ambito
 //
 // Orden (D0026.5), en CatalogoCinematicas::laQueEmpieza: condiciones (nivel, requiere, sin, vista) -> la zona pisada
@@ -28,7 +30,7 @@ class JsonValue;
 namespace Game {
 
 struct Disparador {
-    enum class Accion { Cinematica, Beat, Marca };  // `combate` llega con E4
+    enum class Accion { Cinematica, Beat, Marca, Combate };  // Combate (E4): accionId = el enemigo del catalogo
     bool hay = false;
     bool hayLleva = false;
     GridCoord lleva;                // donde se pone al jugador (y el foco del radio y de la vision)

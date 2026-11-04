@@ -12,7 +12,7 @@
   - una aparición con «nivel» apunta a un nivel que existe y donde el objeto está colocado;
   - E-DISPARADORES-1 (D0026): el «disparador» de una cinemática. El foco (lleva.a o el centro de la zona) y el
     destino de «lleva» están dentro del nivel y son transitables (ni tile con colisión ni objeto que bloquee); una
-    sola «accion» (cinematica | beat | marca; combate es E4) que existe; «radio» 0..20; «ambito» del nivel válido;
+    sola «accion» (cinematica | beat | marca | combate: un enemigo del catálogo) que existe; «radio» 0..20; «ambito» del nivel válido;
     AVISO si menos del 50 % de las casillas transitables de la zona ven el foco (la zona sigue valiendo, pero el
     radio no cubre a quien llega por ahí); AVISO si el centro de una zona antigua no es transitable (el arnés y
     el explorador lo pisan); AVISO si «once» es false (E5 aún no rearma).
@@ -142,6 +142,7 @@ def main():
                         encendidas.add(e.get("arg"))
     for c in cat.get("cinematicas", []):
         encendidas.add(f"cine_{c['id']}_vista")
+        encendidas.update({f"cine_{c['id']}_ganado", f"cine_{c['id']}_perdido"})  # E4: las del disparador combate
         encendidas.update(lista(c.get("alTerminar")))
         for p in c.get("pasos", []):
             if "flag" in p:
@@ -254,15 +255,15 @@ def main():
         acc = d.get("accion")
         if acc is not None:
             if not isinstance(acc, dict) or len(acc) != 1:
-                errores.append(f"{donde}: disparador.accion lleva exactamente una clave (cinematica, beat o marca)")
+                errores.append(f"{donde}: disparador.accion lleva exactamente una clave (cinematica, beat, marca o combate)")
             else:
                 clave, valor = next(iter(acc.items()))
-                if clave == "combate":
-                    errores.append(f"{donde}: «combate» llega con E4 (D0026.3); el motor aún no lo entiende")
-                elif clave not in ("cinematica", "beat", "marca"):
-                    errores.append(f"{donde}: la accion «{clave}» no existe (cinematica, beat o marca)")
+                if clave not in ("cinematica", "beat", "marca", "combate"):
+                    errores.append(f"{donde}: la accion «{clave}» no existe (cinematica, beat, marca o combate)")
                 elif not isinstance(valor, str) or not valor:
                     errores.append(f"{donde}: disparador.accion.{clave} necesita un id")
+                elif clave == "combate" and defs.get(valor, {}).get("category") != "enemy":
+                    errores.append(f"{donde}: la accion combate «{valor}» no es un enemigo del catalogo")
                 elif clave == "cinematica" and valor not in ids_cine:
                     errores.append(f"{donde}: la accion apunta a la cinematica «{valor}», que no existe")
                 elif clave == "beat" and valor not in pedidas:

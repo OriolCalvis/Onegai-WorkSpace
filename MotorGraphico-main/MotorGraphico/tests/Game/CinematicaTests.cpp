@@ -72,6 +72,12 @@ struct Escenario : public EscenarioCinematica {
     void fuego(const GridCoord& c, bool si) override { fuegos[{c.x, c.y}] = si; }
     void postura(const std::string& a, const std::string& p) override { posturas[a] = p; }
     void emocion(const std::string& a, const std::string& icono, float) override { emociones.push_back(a + ":" + icono); }
+    // E-DISPARADORES-2 E4: el combate que pide la cinematica (el juego lo lanza por startNarrativeBattle y dura hasta que acaba).
+    std::vector<std::string> combates;  // «enemigo|gana|pierde»
+    void combate(const std::string& enemigo, const std::string& gana, const std::string& pierde) override {
+        combates.push_back(enemigo + "|" + gana + "|" + pierde);
+        dialogo = true;  // mode() != Exploration mientras dura: hablando()
+    }
 };
 
 CatalogoCinematicas catalogo(const std::string& texto) {
@@ -490,7 +496,9 @@ MOTOR_TEST_CASE(el_disparador_se_lee_y_rechaza_lo_raro) {
     };
     MOTOR_CHECK(!malo(R"({"accion": {"beat": "a", "marca": "b"}})"));        // una sola accion
     MOTOR_CHECK(!malo(R"({"accion": {}})"));
-    MOTOR_CHECK(!malo(R"({"accion": {"combate": "enc"}})"));                  // combate es E4
+    MOTOR_CHECK(malo(R"({"accion": {"combate": "enc"}})"));                   // combate (E4) vale; vacio, no
+    MOTOR_CHECK(!malo(R"({"accion": {"combate": ""}})"));
+    MOTOR_CHECK(!malo(R"({"accion": {"combate": 3}})"));
     MOTOR_CHECK(!malo(R"({"accion": {"baila": "x"}})"));
     MOTOR_CHECK(!malo(R"({"lleva": {"mira": "arriba"}})"));                   // sin «a»
     MOTOR_CHECK(!malo(R"({"lleva": {"a": [1, 1], "como": "volando"}})"));
@@ -631,6 +639,41 @@ MOTOR_TEST_CASE(lleva_andando_al_jugador_y_solo_luego_ejecuta_la_accion) {
     r2.empieza(cat.efectiva(*c, &alli));
     corre(r2, e2, 2.0f);
     MOTOR_CHECK(e2.pasosJugador == 0 && e2.flags.count("llegado") == 1 && e2.animaciones["jugador"] == "idle_up");
+}
+
+// E-DISPARADORES-2 E4 (D0026.3) — `combate <id>`: lleva al jugador, lanza el encuentro y la escena espera a que acabe.
+MOTOR_TEST_CASE(combate_lleva_lanza_el_encuentro_y_espera_a_que_acabe) {
+    const auto cat = catalogo(R"({"cinematicas": [{"id": "emboscada", "nivel": "assets/levels/n.json", "zona": [0, 0, 9, 0],
+        "alTerminar": ["fin_emboscada"],
+        "disparador": {"lleva": {"a": [2, 0], "mira": "derecha"}, "accion": {"combate": "perdido_saqueador"}}}]})");
+    const Cinematica* c = cat.busca("emboscada");
+    MOTOR_CHECK(c != nullptr && c->disparador.accion == Disparador::Accion::Combate && c->disparador.accionId == "perdido_saqueador");
+    Escenario e;
+    e.sitios["jugador"] = GridCoord{0, 0};
+    LlevaDelJugador lleva;
+    lleva.jugador = GridCoord{0, 0};
+    lleva.ruta = [](const GridCoord& d) {
+        std::vector<GridCoord> r;
+        for (int x = 1; x <= d.x; ++x) r.push_back(GridCoord{x, 0});
+        return r;
+    };
+    const std::vector<PasoCinematica> pasos = cat.pasosEfectivos(*c, &lleva);
+    MOTOR_CHECK(pasos.back().tipo == PasoCinematica::Tipo::Combate && pasos.back().texto == "perdido_saqueador");
+    ReproductorCinematica r;
+    r.empieza(cat.efectiva(*c, &lleva));
+    bool combateConElJugadorFuera = false;
+    for (float t = 0.0f; t < 10.0f && e.combates.empty(); t += 0.05f) {
+        r.avanza(0.05f, e);
+        if (!e.combates.empty() && e.sitios["jugador"].x != 2) combateConElJugadorFuera = true;
+    }
+    MOTOR_CHECK(!combateConElJugadorFuera);                                   // primero se le lleva, luego el combate
+    MOTOR_CHECK(e.combates.size() == 1 && e.combates[0] == "perdido_saqueador|cine_emboscada_ganado|cine_emboscada_perdido");
+    corre(r, e, 3.0f);                                                        // el combate sigue: la escena no acaba
+    MOTOR_CHECK(r.activa() && e.flags.count("cine_emboscada_vista") == 0 && e.flags.count("fin_emboscada") == 0);
+    e.dialogo = false;                                                        // acaba el combate
+    corre(r, e, 1.0f);
+    MOTOR_CHECK(!r.activa() && e.flags.count("cine_emboscada_vista") == 1 && e.flags.count("fin_emboscada") == 1);
+    MOTOR_CHECK(e.combates.size() == 1);                                      // y se lanza una sola vez
 }
 
 MOTOR_TEST_CASE(lleva_con_fundido_si_no_hay_camino_o_se_pide) {

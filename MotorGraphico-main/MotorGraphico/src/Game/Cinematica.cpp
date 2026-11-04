@@ -416,6 +416,9 @@ bool ReproductorCinematica::empiezaPaso(const PasoCinematica& p, EscenarioCinema
         case Tipo::Flag:
             e.enciende(p.texto);
             return true;
+        case Tipo::Combate:
+            e.combate(p.texto, p.flagGana, p.flagPierde);
+            return !e.hablando();
         case Tipo::Nivel:
             m_paseos.clear();  // los de este nivel se quedan donde estén
             quitaDesfaseDelJugador(e);
@@ -477,6 +480,7 @@ bool ReproductorCinematica::sigueEnPaso(const PasoCinematica& p, float dt, Escen
         case Tipo::Emocion:
             return m_reloj >= p.segundos;
         case Tipo::Beat:
+        case Tipo::Combate:
             return !e.hablando();
         case Tipo::Nivel:
             return !e.cargandoNivel();

@@ -305,7 +305,10 @@ private:
         for (const Game::Cinematica& c : cinematicas().lista) {  // PROLOGO-02: las ponen las cinematicas
             puestas.insert(c.vista());
             puestas.insert(c.alTerminar.begin(), c.alTerminar.end());
-            for (const Game::PasoCinematica& p : cinematicas().pasosEfectivos(c)) puestas.insert(p.texto);  // E-DISPARADORES-1: con lleva y accion
+            for (const Game::PasoCinematica& p : cinematicas().pasosEfectivos(c)) {  // E-DISPARADORES-1: con lleva y accion
+                puestas.insert(p.texto);
+                if (p.tipo == Game::PasoCinematica::Tipo::Combate) puestas.insert({p.flagGana, p.flagPierde});  // E4
+            }
         }
         for (const NarrativeBeat& b : g.beats) {
             pide(b.requirements);
@@ -369,6 +372,8 @@ private:
                 const Game::PasoCinematica& p = m_cinePasos[m_cinePaso++];
                 if (p.tipo == Tipo::Beat || p.tipo == Tipo::Flag) {
                     m_s.setFlag(p.texto);
+                } else if (p.tipo == Tipo::Combate) {  // E4: 80 % de victoria, como un startBattle
+                    m_s.setFlag(std::uniform_int_distribution<int>(0, 99)(m_azar) < 80 ? p.flagGana : p.flagPierde);
                 } else if (p.tipo == Tipo::Nivel) {
                     m_s.ponLugar(p.texto);
                     procesa(m_e.enterLevel(p.texto, m_s));

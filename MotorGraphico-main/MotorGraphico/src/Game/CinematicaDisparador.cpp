@@ -57,11 +57,11 @@ Result<Disparador> leeDisparador(const JsonValue& o, const std::string& id) {
         if (!a.isObject() || a.objectValues().size() != 1)
             return error("«accion» lleva exactamente una clave (cinematica, beat o marca)");
         const auto& [clave, valor] = *a.objectValues().begin();
-        if (clave == "combate") return error("«combate» llega con E4 (D0026.3), todavia no");
-        if (clave == "cinematica") d.accion = Disparador::Accion::Cinematica;
+        if (clave == "combate") d.accion = Disparador::Accion::Combate;
+        else if (clave == "cinematica") d.accion = Disparador::Accion::Cinematica;
         else if (clave == "beat") d.accion = Disparador::Accion::Beat;
         else if (clave == "marca") d.accion = Disparador::Accion::Marca;
-        else return error("la accion «" + clave + "» no existe (cinematica, beat o marca)");
+        else return error("la accion «" + clave + "» no existe (cinematica, beat, marca o combate)");
         if (!valor.isString() || valor.asString().empty()) return error("«" + clave + "» necesita un id");
         d.accionId = valor.asString();
     }
@@ -185,8 +185,12 @@ std::vector<PasoCinematica> CatalogoCinematicas::pasosEfectivos(const Cinematica
         if (otra != nullptr) out.insert(out.end(), otra->pasos.begin(), otra->pasos.end());
     } else {
         PasoCinematica p;
-        p.tipo = d.accion == Disparador::Accion::Beat ? Tipo::Beat : Tipo::Flag;
+        p.tipo = d.accion == Disparador::Accion::Beat ? Tipo::Beat : d.accion == Disparador::Accion::Combate ? Tipo::Combate : Tipo::Flag;
         p.texto = d.accionId;
+        if (p.tipo == Tipo::Combate) {  // E4: las flags del desenlace las pone el motor, con el id de la cinematica
+            p.flagGana = "cine_" + c.id + "_ganado";
+            p.flagPierde = "cine_" + c.id + "_perdido";
+        }
         out.push_back(p);
     }
     return out;

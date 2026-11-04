@@ -32,6 +32,15 @@ inline const Game::Cinematica* ApplicationCinematica::laQueEmpieza(Application& 
     return estado.catalogo.laQueEmpieza(app.m_currentLevelPath, app.m_session->playerPosition(), tiene, &vista);
 }
 
+inline void ApplicationCinematica::lanzaCombate(Application& app, const std::string& enemigo, const std::string& gana,
+                                                 const std::string& pierde) {
+    RPG::BattleRequest peticion;  // lo mismo que un beat con startBattle; huir cuenta como perder (flagHuida vacia)
+    peticion.monsterId = enemigo;
+    peticion.flagVictory = gana;
+    peticion.flagDefeat = pierde;
+    app.m_session->startNarrativeBattle(peticion);
+}
+
 inline Game::Cinematica ApplicationCinematica::efectiva(Application& app, const Game::Cinematica& c) {
     Game::LlevaDelJugador lleva;
     lleva.jugador = app.m_session->playerPosition();

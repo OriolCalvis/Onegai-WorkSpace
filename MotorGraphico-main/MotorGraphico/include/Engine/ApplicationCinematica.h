@@ -107,6 +107,9 @@ struct ApplicationCinematica {
     // pasos de llevar al jugador (GameSession::rutaAndando, o un fundido si no hay camino) y la accion.
     static const Game::Cinematica* laQueEmpieza(Application& app, const Game::TieneFlag& tiene);
     static Game::Cinematica efectiva(Application& app, const Game::Cinematica& c);
+    // E-DISPARADORES-2 E4 (D0026.3) — Lanza el encuentro `enemigo` de un disparador `combate` por la puerta del efecto
+    // `startBattle` de los beats (GameSession::startNarrativeBattle).
+    static void lanzaCombate(Application& app, const std::string& enemigo, const std::string& gana, const std::string& pierde);
     // En update, después de refreshHud (que pone el tinte de la moral).
     static void tintes(Application& app, float dt);
     // C2-04b — La escena viva, cada fotograma (tras tintes): avanza las emociones, la rehace si

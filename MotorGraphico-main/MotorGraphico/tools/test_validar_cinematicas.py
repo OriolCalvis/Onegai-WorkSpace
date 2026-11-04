@@ -117,8 +117,12 @@ class DisparadorTests(unittest.TestCase):
         self.espera_error(Mundo([cine(disparador={"accion": {"beat": "a", "marca": "b"}})]), "exactamente una clave")
         self.espera_error(Mundo([cine(disparador={"accion": {}})]), "exactamente una clave")
 
-    def test_combate_es_de_E4(self):
-        self.espera_error(Mundo([cine(disparador={"accion": {"combate": "enc"}})]), "llega con E4")
+    def test_combate_pide_un_enemigo_del_catalogo(self):
+        self.espera_error(Mundo([cine(disparador={"accion": {"combate": "silla"}})]), "no es un enemigo")  # un prop
+        self.espera_error(Mundo([cine(disparador={"accion": {"combate": "nadie"}})]), "no es un enemigo")  # no existe
+        codigo, salida = Mundo([cine(disparador={"accion": {"combate": "lobo"}})],
+                               catalogo=OBJETOS + [{"id": "lobo", "category": "enemy"}]).valida()
+        self.assertEqual(codigo, 0, salida)
 
     def test_la_accion_apunta_a_una_cinematica_que_existe(self):
         self.espera_error(Mundo([cine(disparador={"accion": {"cinematica": "no_existe"}})]), "no existe")
