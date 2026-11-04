@@ -36,6 +36,15 @@ En el checkout de Oriol (`Software/`), preset `macos-debug` (`out/build/macos-de
 - Suite completa de nuevo tras la limpieza (`ctest -L gl-free -j 6`): **303/303 en 152 s**.
 - No se ha jugado (ventana GL): los vistos visuales de 1.2 siguen pendientes.
 
+## Segundo merge (más tarde, misma noche): `f45edf58`
+
+La sesión que trabaja en el worktree `UNI-02-11` commiteó **E-HALLAZGOS-01** (bucle del explorador `b2_sectarios` y diario del Ocaso: salir, final, quedarse, avisar; 23 ficheros, 7 de motor/assets/tests y el resto evidencias). Oriol dijo «Sí, fusiona»:
+
+- `git merge --no-ff agente/claude/UNI-02-11` → **`0aa57918`**. Primer merge normal tras la integración: ya hay ancestro común y nada solapa con los commits locales.
+- Un conflicto, `out/fabrica/UNI-02-11/capturas/CAPTURAS.md`: la foto del 04/11 iba 36 líneas por detrás de la rama (le faltaba la sección de E-DISPARADORES-2). Se toma la versión de la rama entera.
+- Verificación: recompilación incremental sin errores (18 s). `ctest -L gl-free -j 6` sobre `0aa57918`: **301/303 en 1.337 s**, con 2 **Timeout** (`test_montaje_filas`, `linea_base_core`) porque la otra sesión pasaba a la vez sus propias pruebas en el mismo Mac (carga media 11–13; esa sesión relanzó justo esos dos tests). Repetidos aparte: `linea_base_core` **pasa en 38 s**; `test_montaje_filas` **pasa en 177 s** (en las pasadas verdes anteriores tardaba 135–152 s). Ningún fichero de la fusión toca atlas ni línea base: fueron timeouts de carga, no regresiones.
+- El worktree `UNI-02-11` sigue con trabajo sin commitear de esa sesión (`CMakeLists.txt`, `actos.json`, `moral.json`, `demo_boundington_partida.h`, `demo_game_session.cpp`): no se toca.
+
 ## Para Oriol
 
 1. **Tu rama `recuperat/software-copia-30-10` es ahora la base de integración** (contiene UNI-02-11 y UNI-RESTAURA). Lo que venga nuevo en `agente/claude/UNI-02-11` desde `916e75b0` (la sesión que trabaja ahí ahora) ya tiene ancestro común y se fusiona con un merge normal.
