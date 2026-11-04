@@ -82,7 +82,8 @@ def aplica(estado: dict, efectos: list[dict], rng: random.Random) -> None:
                 flags.add(sc[clave])
         elif t == "startBattle":
             sb = e.get("startBattle") or {}
-            clave = "flagVictory" if rng.random() < 0.5 else "flagDefeat"
+            # D0027: morir no enciende flagDefeat; la otra salida es huir (flagHuida o, sin ella, flagDefeat).
+            clave = "flagVictory" if rng.random() < 0.5 or sb.get("ineludible") else ("flagHuida" if sb.get("flagHuida") else "flagDefeat")
             if sb.get(clave):
                 flags.add(sb[clave])
 

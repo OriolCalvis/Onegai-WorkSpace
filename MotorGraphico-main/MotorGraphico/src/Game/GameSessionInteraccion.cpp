@@ -33,18 +33,6 @@
 #include <algorithm>
 #include <optional>
 
-namespace {
-
-// CAER-01 — Quien cae en un combate de la historia que no es ineludible se
-// levanta con un cuarto de su vida (1 como poco). Devuelve con cuanta.
-int levantaHeroe(ICombatant& heroe) {
-    const int objetivo = std::max(1, heroe.maxHealth() / 4);
-    if (heroe.health() < objetivo) heroe.heal(objetivo - heroe.health());
-    return heroe.health();
-}
-
-}  // namespace
-
 void GameSession::startInteraction(const ObjectDefinition& def) {
     if (def.category != ObjectCategory::Npc) {
         return;
@@ -298,6 +286,7 @@ void GameSession::startBattle(const std::vector<Engine::EntityHandle>& handles,
         aLadoTexto += (aLadoTexto.empty() ? "" : ", ") + def.nombre;
     }
 
+    tomaFoto(enCombate, aLado);  // D0027: a esto vuelve el combate si el heroe cae
     sessionData()->m_battle = std::make_unique<BattleState>(std::move(allies), std::move(enemies), sessionData()->m_skillCatalog,
                                              sessionData()->m_catalog);
     sessionData()->m_battle->setConditionCatalog(sessionData()->m_conditions);
@@ -335,6 +324,8 @@ bool GameSession::syncBattleOutcome() {
     for (const std::string& line : sessionData()->m_battle->log()) {
         sessionData()->m_log.push_back(line);
     }
+
+    if (outcome == BattleOutcome::Defeat && reviveAlInicio()) return true;  // D0027: el combate vuelve a empezar
 
     // H2-05 — Los ids se copian aqui, antes de que las entidades mueran con
     // el World: son la clave de su ficha de monstruo, y sin ellos no habria
@@ -403,7 +394,7 @@ bool GameSession::syncBattleOutcome() {
             // se levanta con un cuarto de la vida.
             for (const Engine::EntityHandle handle : sessionData()->m_battleEnemyHandles)
                 sessionData()->m_world->destroy(handle);
-            logLine("Te levantas con " + std::to_string(levantaHeroe(*sessionData()->m_playerBody)) + " PV.");
+            logLine("Te levantas con " + std::to_string(Game::levantaHeroe(*sessionData()->m_playerBody)) + " PV.");
             sessionData()->m_mode = GameMode::Exploration;
             break;
         case BattleOutcome::InProgress:

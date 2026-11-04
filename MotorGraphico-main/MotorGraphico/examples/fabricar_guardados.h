@@ -1001,10 +1001,12 @@ inline const std::vector<CaminoDia1>& caminosDia1() {
          {{"dia2", "b2_capitan_ronda", "", true}},
          {"b1_edul", "Plantarles cara", "bnd1_guardias_avisados"}, "b1_edul: plantarles cara a los sectarios (alguien llama a la guardia)",
          {165, 0, 2, 50, {}}, {"b1_guarida_ganada", "", "grantGold", "log"}, {"", "", ""}},
-        {"verdaderos_ganan", "verdaderos", {"Comer algo mientras pasa la mañana (5)", "Plantarles cara", "Contárselo todo"}, Suerte::Buena,
-         {"b1_verdaderos"}, {"bnd1_verdaderos_ganan", "bnd1_verdaderos_intentado"}, {"bnd1_verdaderos_vencidos", "bnd1_verdaderos_huido", "bnd1_verdaderos_unido"}, {},
+        // D0027 (E-REVIVIR-01): «perder» ya no enciende bnd1_verdaderos_ganan (morir reinicia el combate); el
+        // escenario «plantarles cara y perder» es huir: bnd1_verdaderos_huido, y ganan queda sin encender.
+        {"verdaderos_perder", "verdaderos", {"Comer algo mientras pasa la mañana (5)", "Plantarles cara", "Contárselo todo"}, Suerte::Buena,
+         {"b1_verdaderos"}, {"bnd1_verdaderos_huido", "bnd1_verdaderos_intentado"}, {"bnd1_verdaderos_vencidos", "bnd1_verdaderos_ganan", "bnd1_verdaderos_unido"}, {},
          {{"ocaso", "b3_cabecilla_pan", "", true}, {"ocaso", "b3_rufo_pan", "", false}},
-         {"b1_verdaderos", "Plantarles cara", "bnd1_verdaderos_ganan"}, "b1_verdaderos: plantarles cara y perder",
+         {"b1_verdaderos", "Plantarles cara", "bnd1_verdaderos_huido"}, "b1_verdaderos: plantarles cara y perder (D0027: es huir)",
          {120, 5, 2, 20, {}}, {"b0_rosita", "Pagar la cama", "grantGold", "log"}, {"b1_verdaderos", "Plantarles cara", "verdaderos_enfrentados", "sumarse_verdaderos"},
          {}, {}, {"bnd1_verdaderos_vencidos"}},
         {"verdaderos_huido", "verdaderos", {"Comer algo mientras pasa la mañana (5)", "Plantarles cara", "Contárselo todo"}, Suerte::Buena,

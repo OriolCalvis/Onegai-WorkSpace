@@ -41,6 +41,7 @@ Result<bool> leeParametros(const JsonValue& raiz, Parametros& p) {
     }
     if (raiz.has("topePorNoche")) p.tope = raiz["topePorNoche"].asInt(-1);
     if (raiz.has("resistencia")) p.resistencia = raiz["resistencia"].asInt(0);
+    if (raiz.has("alMorir")) p.actoAlMorir = raiz["alMorir"].asString("");  // D0027
     if (p.tope < 0 || p.tope > 100) return Result<bool>::Error("moral.json: topePorNoche va de 0 a 100");
     if (p.resistencia < 1 || p.resistencia > 1000) return Result<bool>::Error("moral.json: resistencia va de 1 a 1000");
     return Result<bool>::Ok(true);
@@ -128,6 +129,9 @@ Result<Reglas> Reglas::lee(const std::string& textoMoral, const std::string& tex
                 return Result<Reglas>::Error("actos.json: el id «" + id + "» está repetido");
         }
     }
+    if (!r.parametros.actoAlMorir.empty() && !textoActos.empty() && r.acto(r.parametros.actoAlMorir) == nullptr)
+        return Result<Reglas>::Error("moral.json: alMorir apunta al acto «" + r.parametros.actoAlMorir +
+                                     "», que no está en actos.json");
     return Result<Reglas>::Ok(std::move(r));
 }
 

@@ -366,7 +366,7 @@ void Application::refreshHud() {
     }
     estado.diario = &diario;
     estado.codice = &codice;
-    // AV15-08 — Las cicatrices en la ficha: las mismas que apunta ponCicatriz (mismo quien, misma ruta).
+    // AV15-08 — Las cicatrices en la ficha: las mismas que apunta la sesion al morir (GameSession::ponRutaCicatrices; mismo quien, misma ruta).
     if (cuaderno && m_session && m_session->characterSheet() != nullptr) {
         const RPG::CharacterSheet* ficha = m_session->characterSheet();
         const std::string quien = ficha->id.empty() ? ficha->displayName : ficha->id;
@@ -393,23 +393,9 @@ void Application::refreshHud() {
     m_pergamino->interfaz().actualiza(estado);
 }
 
-// AV13-33 (Oriol, 14/10, D0015 §7) — Morir deja cicatriz: se apunta FUERA de la partida
-// (saves/<proyecto>/cicatrices.txt), asi cargar no la borra, y «Has caído» lo dice.
-void ApplicationCinematica::ponCicatriz(Application& app) {
-    const RPG::CharacterSheet* ficha = app.m_session ? app.m_session->characterSheet() : nullptr;
-    if (ficha == nullptr || !app.m_gameOverScreen) return;
-    const std::string quien = ficha->id.empty() ? ficha->displayName : ficha->id;
-    const std::string ruta = "saves/" + (app.m_projectId.empty() ? std::string("sin_proyecto") : app.m_projectId) + "/cicatrices.txt";
-    Game::Cicatrices cicatrices = Game::Cicatrices::carga(ruta);
-    const int cuantas = cicatrices.suma(quien);
-    if (!cicatrices.guarda(ruta)) std::cerr << "cicatrices: no se pudo guardar " << ruta << "\n";
-    app.m_gameOverScreen->ponNota(Game::Cicatrices::nota(cuantas));
-}
-
-// AV13-33 — Al caer: la cicatriz y la escena (Game::EscenaNoqueo). Rescate si alguno de los tuyos
+// AV13-33 — Al caer: la escena (Game::EscenaNoqueo). Rescate si alguno de los tuyos
 // seguia en pie cuando se perdio la batalla (combate() lo apunta en `rescatador`).
 void ApplicationCinematica::empiezaNoqueo(Application& app) {
-    ponCicatriz(app);
     if (!app.m_cine) return;
     app.m_cine->noqueo = std::make_unique<Game::EscenaNoqueo>(Game::EscenaNoqueo::para(app.m_cine->rescatador));
     app.m_cine->rescatador.clear();

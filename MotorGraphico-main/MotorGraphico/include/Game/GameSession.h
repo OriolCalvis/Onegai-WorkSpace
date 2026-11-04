@@ -30,6 +30,7 @@
 #include "RPG/Catalogs/RpgCatalogs.h"  // RPG::SkillCatalog (Nd6, distinto del SkillCatalog legacy de Game/Skill.h)
 #include "World/World.h"  // C-17 — el unico propietario de entidades del mundo
 #include "Game/EnemyCatalogBridge.h"
+#include "Game/FotoCombate.h"  // D0027
 #include "Game/SessionData.h"  // D-08 — EnemyCatalog::createEnemy()
 
 class RuntimeTileMap;
@@ -466,8 +467,8 @@ public:
     //  - Victory: el enemigo desaparece del mundo, vuelta a Exploration.
     //  - Fled:    el enemigo SIGUE ahi (huir no lo mata), vuelta a
     //             Exploration -- el jugador tendra que rodearlo.
-    //  - Defeat:  GameOver (terminal) en un combate del mapa o ineludible;
-    //             en uno de la historia, el heroe se levanta (CAER-01).
+    //  - Defeat:  D0027, el combate vuelve a empezar (cicatriz +1, moral abajo); solo en una
+    //             pelea sinMatar el heroe se levanta y sigue la historia (CAER-01).
     // No-op si no hay combate o sigue InProgress. Devuelve true si
     // efectivamente cerro un combate.
     bool syncBattleOutcome();
@@ -486,16 +487,9 @@ public:
 
     // --- Guardado de partida (RUN-10, ver Game/SaveGame.h) ---
 
-    // Fotografia del estado ACTUAL. "levelPath" lo pasa quien guarda: la
-    // sesion no conoce rutas de assets (mismo criterio que con
-    // LevelTransition), solo sabe que le pidieron etiquetar la partida
-    // con ese nivel.
-    //
-    // No se guarda si hay un combate a medias: mode()==Battle se
-    // fotografia como el mundo ANTES del combate (el enemigo sigue vivo
-    // con la vida que le quede). Guardar en mitad de un turno obligaria a
-    // serializar el BattleState entero para nada -- reabrir el combate al
-    // cargar es equivalente y mucho mas simple.
+    // Fotografia del estado ACTUAL; "levelPath" lo pasa quien guarda (la sesion no conoce rutas de
+    // assets). Con un combate a medias (mode()==Battle) se fotografia el mundo ANTES del combate:
+    // serializar el BattleState entero no merece la pena, reabrirlo al cargar es equivalente.
     SaveGameData captureSaveGame(const std::string& levelPath) const;
 
     // Aplica un guardado sobre esta sesion. La sesion debe estar RECIEN
@@ -509,13 +503,14 @@ public:
     // de error, porque el jugador no ve que le falta hasta mucho despues.
     bool restoreSaveGame(const SaveGameData& data, std::string* error);
 
-    // Anade una linea al log de la partida desde fuera. Existe para los
-    // avisos que NO nacen de una regla del juego sino de una accion del
-    // jugador sobre el propio juego -- "Partida guardada", "No se pudo
-    // cargar" (RUN-10). Van al mismo log que el resto porque el jugador
-    // no distingue de donde viene un mensaje: los lee todos en la misma
-    // caja del HUD.
+    // Anade una linea al log desde fuera: los avisos que nacen de una accion del jugador sobre el
+    // propio juego ("Partida guardada", RUN-10). Van al mismo log: el HUD los lee todos en la misma caja.
     void logNote(const std::string& line) { logLine(line); }
+    // D0027 (GameSessionRevivir.cpp) — Morir en combate: el combate vuelve a empezar, con una cicatriz
+    // mas (en `ruta`, fuera de la partida guardada) y su acto en la moral. Sin ruta, solo en la sesion.
+    void ponRutaCicatrices(const std::string& ruta);
+    int muertes() const { return m_muerte.n; }
+    int cicatrices() const;  // las del heroe, ahora
 
     // Log de la partida (exploracion Y combate): el HUD (Fase 9, HudDialogueBox) muestra las ultimas
     // N lineas sin distinguir de donde vienen. El log del BattleState se copia aqui al cerrar el
@@ -530,6 +525,8 @@ private:
     Engine::EntityHandle objectAt(int x, int y) const;
     void startBattle(const std::vector<Engine::EntityHandle>& enemies, const std::vector<RPG::AcompananteDef>& aLado = {});
     bool tileBlocks(int x, int y) const;
+    void tomaFoto(const std::vector<Engine::EntityHandle>& enemies, const std::vector<RPG::AcompananteDef>& aLado);
+    bool reviveAlInicio();  // D0027: la foto del inicio de la oleada, devuelta
     void montaTablero();  // AV13-10 (GameSessionTablero.cpp): cada uno en su casilla al empezar el combate
 
     void resolveShopOffers(const ObjectDefinition& def);
@@ -549,6 +546,7 @@ private:
     std::unique_ptr<SessionData> m_data;
     const Game::CatalogoCartas* m_cartas = nullptr;  // H2-06, no propietario
     std::shared_ptr<Game::RutinasPnj> m_rutinas;  // PNJ-02 (RutinasPnj.h): siempre existe
+    Game::Muertes m_muerte;                        // D0027: la foto del combate, las muertes y sus cicatrices
     SessionData* sessionData() { return m_data.get(); }
     const SessionData* sessionData() const { return m_data.get(); }
 };

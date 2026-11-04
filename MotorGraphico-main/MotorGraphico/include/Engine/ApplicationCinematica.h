@@ -162,10 +162,9 @@ struct ApplicationCinematica {
     static void golpesALaVista(Application& app, const BattleState& b, float dt);
     // AV14-08 — Quien juega ahora (a quien mira la camara): el enemigo en su turno, o tu.
     static std::string actorDe(const Application& app, const BattleState& b);
-    // AV13-33 — Has caido: una cicatriz mas para tu personaje (saves/<proyecto>/cicatrices.txt, fuera de
-    // las partidas, para que cargar no la borre) y la pantalla de «Has caído» lo dice.
-    static void ponCicatriz(Application& app);
-    // AV13-33 (ApplicationHud.cpp) — Al caer: la cicatriz y la escena de noqueo o rescate. Cada
+    // D0027 — La cicatriz ya no se apunta aqui: la suma la sesion al morir en combate
+    // (GameSession::reviveAlInicio, en saves/<proyecto>/cicatrices.txt).
+    // AV13-33 (ApplicationHud.cpp) — Al caer: la escena de noqueo o rescate. Cada
     // fotograma de la derrota, la escena avanza y el heroe se hunde; noqueoTecla se come el ENTER
     // mientras dura (pasa la frase) y devuelve false cuando ya toca el menu de «Has caído».
     static void empiezaNoqueo(Application& app);

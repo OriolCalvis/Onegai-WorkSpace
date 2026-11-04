@@ -1,11 +1,18 @@
 # Índice de sesiones — regenerado, no editar a mano
 
-_Regenerado: 2026-10-29 · 247 sesiones_
+_Regenerado: 2026-11-04T22:09 · 258 sesiones_
 
 | Fecha | Autor | Sesión | Commits | Esperando a Oriol |
 |---|---|---|---|---|
+| 2026-11-04 | claude | [revivir al inicio del combate](2026-11-04-claude-revivir-al-inicio-del-combate.md) | — | confirmar D0027 §4–6 (valores por defecto del Brain); decidir qué hacer con lo de REVIVIR_1.md (no se ha reescrito historia); la reputación por muerte (`aegroum` −2) es un número mío. |
+| 2026-11-03 | claude | [respuestas y guion](2026-11-03-claude-respuestas-y-guion.md) | — | el guardado no se restaura en `ciudad_centro` (dos objetos en la misma casilla: (41,25), (6,59), (16,59); `src/Game/SaveGame.cpp:199` busca solo por posición); fusionar o no `agente/fable/UNI-RESTAURA`; subir los commits nuevos; PixelLab (`out/fabrica/UNI-02-11/PIXELLAB_ENCARREC.md`). |
+| 2026-11-02 | claude | [uni 02 11](2026-11-02-claude-uni-02-11.md) | — | — |
+| 2026-10-29 | codex | [boundington contenido](2026-10-29-codex-boundington-contenido.md) | — | — |
+| 2026-10-29 | codex | [comparativa boundington](2026-10-29-codex-comparativa-boundington.md) | — | — |
+| 2026-10-29 | codex | [perfilador motor](2026-10-29-codex-perfilador-motor.md) | `7fa2117` (implementación probada); commit posterior de evidencia documental en la misma rama. | aceptación jugable del CSV y decisión posterior de integración con el árbol compartido; no se presupone el visto. |
+| 2026-10-29 | codex | [recursos referencias](2026-10-29-codex-recursos-referencias.md) | `c9b6b81` (implementación probada); commit posterior de cierre documental en la misma rama. | aceptación jugable; no se atribuye un visto ni se cambia la integración del árbol principal. |
 | 2026-10-29 | codex | [ruta simulacion](2026-10-29-codex-ruta-simulacion.md) | `8f6ab76` (implementación probada); cierre documental posterior en codex/perfilador-motor. | aceptación jugable y Windows; aplicación de migraciones queda fuera de este lote. |
-| 2026-10-29 | codex | [skills replica](2026-10-29-codex-skills-replica.md) | commit de esta sesión, localizable con `git log --grep="Integrar skills de reconocimiento"`; comprobación limpia registrada después. | nada para instalar las skills; los paquetes de producto siguen su autorización y aceptación propias. |
+| 2026-10-29 | codex | [skills replica](2026-10-29-codex-skills-replica.md) | `5b72554` (integración); commit posterior de cierre con adaptación a dependencias locales y verificación. | nada para instalar las skills; los paquetes de producto siguen su autorización y aceptación propias. |
 | 2026-10-28 | codex | [plau plan se](2026-10-28-codex-plau-plan-se.md) | `d296ccf45fb1cd1ad8cb5fab69f518ed5810c17f` + commit de tancament a `codex/plau-plan-se`; només planificació i fragments propis. La branca compartida no canvia. | Revisar escala, sostre E proposat de 90 min i decisions del primer lot. Aquest pla no autoritza implementar el contingut dels adjunts. |
 | 2026-10-26 | codex | [compilar juego](2026-10-26-codex-compilar-juego.md) | — | — |
 | 2026-10-26 | codex | [creador corregido](2026-10-26-codex-creador-corregido.md) | — | — |
@@ -18,12 +25,10 @@ _Regenerado: 2026-10-29 · 247 sesiones_
 | 2026-10-21 | codex | [escenas04](2026-10-21-codex-escenas04.md) | — | — |
 | 2026-10-21 | codex | [escenas05](2026-10-21-codex-escenas05.md) | — | — |
 | 2026-10-21 | codex | [escenas06](2026-10-21-codex-escenas06.md) | commit local de agente/codex/ESCENAS-06 (sobre e2f5a69). | acabado artístico de ligaduras, estrado y espada; compañía usa refuerzos nativos y gesto posterior al combate. |
-
-| 2026-10-21 | qwen | [av19 12 mansion fiesta](2026-10-20-qwen-av19-12-mansion-fiesta.md) | rama `agente/qwen/AV19-12` | `tienda_abandonada` sigue sin paredes (defecto de AV19-05) |
-| 2026-10-20 | qwen | [av19 11 base militar](2026-10-20-qwen-av19-11-base-militar.md) | rama `agente/qwen/AV19-11` | el patio de armas del día 2 es el de la base, no el del castillo || 2026-10-20 | qwen | [av19 09 ocaso huida](2026-10-20-qwen-av19-09-ocaso-huida.md) | rama `agente/qwen/AV19-09` | PO-57 (el botín del día 3 está en los mapas de día) |
-| 2026-10-20 | qwen | [av19 10 afueras ocaso](2026-10-20-qwen-av19-10-afueras-ocaso.md) | rama `agente/qwen/AV19-10` | ¿puerta real Afueras ↔ Barriada en el Ocaso? |
-| 2026-10-20 | qwen | [av19 11 base militar](2026-10-20-qwen-av19-11-base-militar.md) | rama `agente/qwen/AV19-11` | el patio de armas del día 2 es el de la base, no el del castillo |
-| 2026-10-20 | qwen | [av19 09 ocaso huida](2026-10-20-qwen-av19-09-ocaso-huida.md) | rama `agente/qwen/AV19-09` | PO-57 (el botín del día 3 está en los mapas de día) |
+| 2026-10-20 | qwen | [av19 09 ocaso huida](2026-10-20-qwen-av19-09-ocaso-huida.md) | — | — |
+| 2026-10-20 | qwen | [av19 10 afueras ocaso](2026-10-20-qwen-av19-10-afueras-ocaso.md) | — | — |
+| 2026-10-20 | qwen | [av19 11 base militar](2026-10-20-qwen-av19-11-base-militar.md) | — | — |
+| 2026-10-20 | qwen | [av19 12 mansion fiesta](2026-10-20-qwen-av19-12-mansion-fiesta.md) | — | — |
 | 2026-10-19 | codex | [escenas02](2026-10-19-codex-escenas02.md) | — | — |
 | 2026-10-19 | codex | [escenas03](2026-10-19-codex-escenas03.md) | — | — |
 | 2026-10-19 | codex | [escenas07](2026-10-19-codex-escenas07.md) | — | — |

@@ -360,6 +360,14 @@ void ApplicationCinematica::combate(Application& app, float dt) {
     if (b != e.combateVisto) {
         // Un combate nuevo: sus dados (antes todos tiraban con la misma semilla y
         // cada combate empezaba con los mismos dados) y la camara, cerca.
+        if (e.combateVisto != nullptr) {  // D0027: el mismo combate vuelve a empezar (sin pasar por «ninguno»)
+            e.efectos.olvida();
+            e.basesGolpe.clear();
+            e.pvFantasma = -1.0f;
+            e.rivalesPorPegar = false;
+            e.rutaHeroe.clear();
+            e.rutasEnemigos.clear();
+        }
         e.combateVisto = b;
         e.dados = std::make_unique<RPG::Xoroshiro128p>(semillaNueva());
         b->setRandomEngine(*e.dados);

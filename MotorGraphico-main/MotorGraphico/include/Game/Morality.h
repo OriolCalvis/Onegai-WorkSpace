@@ -46,6 +46,8 @@ struct Parametros {
     std::vector<double> repeticion{1.0, 0.5, 0.25, 0.0};
     int tope = 10;          // por noche, para los menores y los medios
     int resistencia = 100;  // un acto vale × (1 − distancia al 0 / resistencia) si te aleja del 0
+    // D0027 — El acto del catálogo que cuesta cada muerte en combate (vacío: ninguno).
+    std::string actoAlMorir;
 };
 
 // Lo que se guarda además del valor: la pureza (Oriol, 08/10: lo que te ha

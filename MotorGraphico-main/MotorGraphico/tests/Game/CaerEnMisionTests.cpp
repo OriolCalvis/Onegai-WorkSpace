@@ -6,14 +6,16 @@
 // entrada, no tienes ninguna obligacion de terminarla [...] a no ser que
 // sean momentos de historia ineludibles».
 //
-// Lo que se prueba:
-//   - caer en un combate de la historia no acaba la partida: el heroe se
-//     levanta con un cuarto de la vida, los que ganaron se van y se
-//     enciende flagDefeat (y las oleadas que faltaban se dan por perdidas);
+// D0027 (04/11) cambia lo de caer: ya no se levanta con un cuarto de vida ni se
+// enciende flagDefeat; el combate vuelve a empezar (el detalle, en
+// RevivirAlInicioTests.cpp). Lo que se prueba aqui:
+//   - caer en un combate de la historia reinicia el combate; solo en una pelea
+//     sinMatar el heroe se levanta con un cuarto de la vida, los que ganaron
+//     se van y se enciende flagDefeat (y las oleadas que faltaban se dan por perdidas);
 //   - huir enciende flagHuida si la aventura la distingue;
 //   - de un combate ineludible no se huye (ni se gasta el turno, y la carta
-//     sale bloqueada) y caer en el acaba la partida;
-//   - los combates del mapa, sin aventura, siguen acabandola;
+//     sale bloqueada), y caer en el tambien reinicia;
+//   - los combates del mapa, sin aventura, tambien reinician (no hay GameOver);
 //   - el formato: flagHuida e ineludible se leen, se escriben solo si estan
 //     y se validan; y el comando de evento lleva lo mismo.
 #include "TestHarness.h"
@@ -104,11 +106,29 @@ struct Partida {
 
 }  // namespace
 
-MOTOR_TEST_CASE(caer_en_un_combate_de_la_historia_no_acaba_la_partida) {
+MOTOR_TEST_CASE(caer_en_un_combate_de_la_historia_reinicia_el_combate) {
     Partida p;
     p.sesion.startNarrativeBattle({.monsterId = "llop", .flagVictory = "v", .flagDefeat = "d"});
     MOTOR_CHECK(p.sesion.mode() == GameMode::Battle);
     MOTOR_CHECK(p.sesion.battle() != nullptr && p.sesion.battle()->sePuedeHuir());
+    p.caer();
+    MOTOR_CHECK(p.sesion.battle() != nullptr && p.sesion.battle()->outcome() == BattleOutcome::Defeat);
+    MOTOR_CHECK(p.sesion.syncBattleOutcome());
+    // D0027: el combate vuelve a empezar, sin flag de derrota ni de victoria.
+    MOTOR_CHECK(p.sesion.mode() == GameMode::Battle);
+    MOTOR_CHECK(p.sesion.battle() != nullptr && p.sesion.battle()->outcome() == BattleOutcome::InProgress);
+    MOTOR_CHECK(!p.trama.hasFlag("d") && !p.trama.hasFlag("v"));
+    // Con la vida con la que empezo (1) y el mismo enemigo, entero.
+    MOTOR_CHECK(p.heroe.health() == 1);
+    MOTOR_CHECK(p.sesion.enemies().size() == 1);
+    MOTOR_CHECK(p.enRegistro("Has caído derrotado."));
+    MOTOR_CHECK(!p.enRegistro("Te levantas con 10 PV."));
+}
+
+MOTOR_TEST_CASE(caer_en_una_pelea_sin_matar_se_levanta_y_sigue_la_historia) {
+    Partida p;
+    p.sesion.startNarrativeBattle({.monsterId = "llop", .flagVictory = "v", .flagDefeat = "d", .sinMatar = true});
+    MOTOR_CHECK(p.sesion.mode() == GameMode::Battle);
     p.caer();
     MOTOR_CHECK(p.sesion.battle() != nullptr && p.sesion.battle()->outcome() == BattleOutcome::Defeat);
     MOTOR_CHECK(p.sesion.syncBattleOutcome());
@@ -122,9 +142,9 @@ MOTOR_TEST_CASE(caer_en_un_combate_de_la_historia_no_acaba_la_partida) {
     MOTOR_CHECK(p.enRegistro("Te levantas con 10 PV."));
 }
 
-MOTOR_TEST_CASE(caer_da_por_perdidas_las_oleadas_que_faltaban) {
+MOTOR_TEST_CASE(en_una_pelea_sin_matar_las_oleadas_que_faltaban_se_dan_por_perdidas) {
     Partida p;
-    p.sesion.startNarrativeBattle({.monsterId = "llop", .flagVictory = "v1", .flagDefeat = "d1"});
+    p.sesion.startNarrativeBattle({.monsterId = "llop", .flagVictory = "v1", .flagDefeat = "d1", .sinMatar = true});
     p.sesion.startNarrativeBattle({.monsterId = "llop", .flagVictory = "v2", .flagDefeat = "d2"});  // encolada
     p.caer();
     MOTOR_CHECK(p.sesion.syncBattleOutcome());
@@ -133,6 +153,17 @@ MOTOR_TEST_CASE(caer_da_por_perdidas_las_oleadas_que_faltaban) {
     MOTOR_CHECK(p.sesion.mode() == GameMode::Exploration);
     MOTOR_CHECK(p.trama.hasFlag("d1") && p.trama.hasFlag("d2"));
     MOTOR_CHECK(!p.trama.hasFlag("v2"));
+}
+
+MOTOR_TEST_CASE(caer_en_una_oleada_no_da_por_perdidas_las_que_faltaban) {
+    Partida p;
+    p.sesion.startNarrativeBattle({.monsterId = "llop", .flagVictory = "v1", .flagDefeat = "d1"});
+    p.sesion.startNarrativeBattle({.monsterId = "llop", .flagVictory = "v2", .flagDefeat = "d2"});  // encolada
+    p.caer();
+    MOTOR_CHECK(p.sesion.syncBattleOutcome());
+    // D0027: sigue la primera oleada, sin ninguna flag; la segunda espera en la cola.
+    MOTOR_CHECK(p.sesion.battle() != nullptr && p.sesion.mode() == GameMode::Battle);
+    MOTOR_CHECK(!p.trama.hasFlag("d1") && !p.trama.hasFlag("d2") && !p.trama.hasFlag("v1") && !p.trama.hasFlag("v2"));
 }
 
 MOTOR_TEST_CASE(huir_enciende_la_flag_de_huida_si_la_aventura_la_distingue) {
@@ -152,7 +183,7 @@ MOTOR_TEST_CASE(huir_enciende_la_flag_de_huida_si_la_aventura_la_distingue) {
     MOTOR_CHECK(p.heroe.health() == 1);
 }
 
-MOTOR_TEST_CASE(de_un_combate_ineludible_no_se_huye_y_caer_acaba_la_partida) {
+MOTOR_TEST_CASE(de_un_combate_ineludible_no_se_huye_y_caer_lo_reinicia) {
     Partida p;
     p.sesion.startNarrativeBattle(
         {.monsterId = "llop", .flagVictory = "v", .flagDefeat = "d", .ineludible = true});
@@ -171,15 +202,17 @@ MOTOR_TEST_CASE(de_un_combate_ineludible_no_se_huye_y_caer_acaba_la_partida) {
     combate->resolveAllyAction(0, correr);
     MOTOR_CHECK(combate->outcome() == BattleOutcome::InProgress);
     MOTOR_CHECK(!combate->log().empty() && combate->log().back() == "De este combate no se huye.");
-    // Caer en un momento ineludible si acaba la partida.
+    // Caer en un momento ineludible ya no acaba la partida (D0027): el combate vuelve a empezar,
+    // y sigue siendo ineludible.
     p.caer();
     MOTOR_CHECK(combate->outcome() == BattleOutcome::Defeat);
     MOTOR_CHECK(p.sesion.syncBattleOutcome());
-    MOTOR_CHECK(p.sesion.mode() == GameMode::GameOver);
-    MOTOR_CHECK(p.heroe.health() == 0);
+    MOTOR_CHECK(p.sesion.mode() == GameMode::Battle);
+    MOTOR_CHECK(p.sesion.battle() != nullptr && !p.sesion.battle()->sePuedeHuir());
+    MOTOR_CHECK(p.heroe.health() == 1 && !p.trama.hasFlag("d"));
 }
 
-MOTOR_TEST_CASE(un_combate_del_mapa_sigue_acabando_la_partida) {
+MOTOR_TEST_CASE(un_combate_del_mapa_tambien_se_reinicia_al_caer) {
     LevelDefinition level = nivel();
     ObjectSpawn lobo;
     lobo.objectId = "llop";
@@ -193,7 +226,8 @@ MOTOR_TEST_CASE(un_combate_del_mapa_sigue_acabando_la_partida) {
     MOTOR_CHECK(p.sesion.battle() != nullptr && p.sesion.battle()->sePuedeHuir());
     p.caer();
     MOTOR_CHECK(p.sesion.syncBattleOutcome());
-    MOTOR_CHECK(p.sesion.mode() == GameMode::GameOver);
+    MOTOR_CHECK(p.sesion.mode() == GameMode::Battle && p.sesion.battle() != nullptr);
+    MOTOR_CHECK(p.sesion.enemies().size() == 1 && p.heroe.health() == 1);
 }
 
 MOTOR_TEST_CASE(huida_e_ineludible_se_leen_se_escriben_y_se_validan) {

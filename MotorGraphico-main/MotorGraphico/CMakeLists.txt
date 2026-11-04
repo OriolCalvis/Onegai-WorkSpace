@@ -262,6 +262,7 @@ add_library(motor_level
     src/Game/GameSessionNarrativa.cpp
     src/Game/GameSessionInteraccion.cpp
     src/Game/GameSessionTablero.cpp  # AV13-10: cada uno en su casilla al empezar el combate
+    src/Game/GameSessionRevivir.cpp  # D0027: morir reinicia el combate
     src/Game/GameSessionInventario.cpp
     src/Game/Actuacion.cpp  # ACTUAR-01: actuar en la calle (la tirada, el publico y el oro)
     src/RPG/SessionCommandHost.cpp
@@ -1327,6 +1328,10 @@ include(cmake/MonstruosAcciones.cmake)  # AV18-02: datos, persistencia y papiro 
     # su flag; los combates del mapa siguen acabandola.
     add_motor_unit_test(test_caer_en_mision tests/Game/CaerEnMisionTests.cpp)
     target_link_libraries(test_caer_en_mision PRIVATE motor_level motor_map motor_rpg motor_json)
+
+    # E-REVIVIR-01 (D0027) — Morir reinicia el combate: foto, cicatriz, moral, flags.
+    add_motor_unit_test(test_revivir_al_inicio tests/Game/RevivirAlInicioTests.cpp)
+    target_link_libraries(test_revivir_al_inicio PRIVATE motor_level motor_map motor_rpg motor_json)
 
     # C-24 — La resolución de combate Nd6 (ApplyBasicAttackNd6 y
     # ApplySkillEffect) y SkillSet/SkillCatalog. ScriptedRng escribe la

@@ -97,6 +97,8 @@ public:
     // tiene que llamar a canUse() para decidir si ofrecer la opcion.
     void spend(const Skill& skill);
     void restoreMana(int amount);
+    // D0027 — Devuelve el mana a un valor exacto (la foto de un combate), dentro de 0..max.
+    void ponMana(int mana) { m_mana = mana < 0 ? 0 : (mana > m_maxMana ? m_maxMana : mana); }
 
 private:
     int m_mana;

@@ -202,8 +202,9 @@ const std::vector<Eco>& ecos() {
         // 8. Los Verdaderos: vencidos / ganan / huido -> el reparto de pan
         {"pan_rufo", "verdaderos_cara", Hasta::Sermon, {}, {"Rufo, con la nariz torcida"}, {"cabecilla de la puerta azul con capa gris nueva"}, 0, false,
          {"b3_rufo_pan", "", "bnd1_verdaderos_vencidos", "zz_mutada", 1, 0, "ocaso"}},
-        {"pan_cabecilla_ganan", "verdaderos_ganan", Hasta::Sermon, {}, {"cabecilla de la puerta azul con capa gris nueva"}, {"Rufo, con la nariz torcida"}, 0, false,
-         {"b3_cabecilla_pan", "", "bnd1_verdaderos_ganan", "zz_mutada", 1, 0, "ocaso"}},
+        // D0027: perder ya no enciende bnd1_verdaderos_ganan; «perder» es huir, y la cabecilla sale por huido.
+        {"pan_cabecilla_perder", "verdaderos_perder", Hasta::Sermon, {}, {"cabecilla de la puerta azul con capa gris nueva"}, {"Rufo, con la nariz torcida"}, 0, false,
+         {"b3_cabecilla_pan", "", "bnd1_verdaderos_huido", "zz_mutada", 1, 0, "ocaso"}},
         {"pan_cabecilla_huido", "verdaderos_huido", Hasta::Sermon, {}, {"cabecilla de la puerta azul con capa gris nueva"}, {"Rufo, con la nariz torcida"}, 0, false,
          {"b3_cabecilla_pan", "", "bnd1_verdaderos_huido", "zz_mutada", 1, 0, "ocaso"}},
         {"pan_sin_rastro", "verdaderos_sumarse", Hasta::Sermon, {}, {}, {"Rufo, con la nariz torcida", "cabecilla de la puerta azul con capa gris nueva"}},

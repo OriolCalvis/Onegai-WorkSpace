@@ -1,0 +1,42 @@
+MUTACION E-REVIVIR-01: las curas gastadas en el intento perdido se apuntan para toda la aventura
+prueba: los_acompanantes_y_sus_curas_vuelven_como_al_empezar
+fichero: src/Game/GameSessionRevivir.cpp
+antes: '    startBattle(foto.handles, foto.aLado);'
+despues: '    for (const BattleParticipant& p : d.m_battle->allies()) {\n        const auto* a = dynamic_cast<const Game::Acompanante*>(p.combatant);\n        if (a != nullptr && a->cura() && d.m_narrativeState != nullptr && d.m_narrative != nullptr && d.m_narrative->adventure() != nullptr)\n            d.m_narrativeState->setVariable(Game::Acompanante::claveCuras(d.m_narrative->adventure()->id, a->def().id), a->def().cura.veces - a->curasQueQuedan());\n    }\n    startBattle(foto.handles, foto.aLado);'
+
+=== ROJO (con la mutacion) ===
+rc=0
+ld: warning: ignoring duplicate libraries: 'libmotor_json.a', 'libmotor_map_document.a', 'libmotor_project.a'
+[100%] Built target test_revivir_al_inicio
+
+[PASS] morir_reinicia_el_combate_con_todo_como_al_empezar
+[PASS] reiniciar_vuelve_a_la_oleada_donde_se_cayo_y_no_a_la_primera
+[FAIL] los_acompanantes_y_sus_curas_vuelven_como_al_empezar: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Game/RevivirAlInicioTests.cpp:196 -- comprobación fallida: otra != nullptr && otra != xila && otra->curasQueQuedan() == 2 && otra->health() == 6
+[PASS] morir_no_enciende_la_flag_de_derrota_pero_huir_si_enciende_la_suya
+[PASS] sin_flag_de_huida_huir_enciende_la_de_derrota_como_siempre
+[PASS] cada_muerte_suma_una_cicatriz_que_no_va_en_la_partida_guardada
+[PASS] las_cicatrices_se_leen_del_fichero_al_empezar_la_sesion
+[PASS] cada_muerte_baja_la_moral_y_repetirla_vuelve_a_costar
+[PASS] una_pelea_sin_matar_sigue_como_siempre
+[PASS] un_combate_ineludible_y_uno_del_mapa_tambien_reinician
+[PASS] la_regla_de_moral_de_la_muerte_es_un_dato
+Ejecutados 11 test(s); 1 fallo(s).
+
+=== VERDE (restaurado) ===
+rc=0
+ld: warning: ignoring duplicate libraries: 'libmotor_json.a', 'libmotor_map_document.a', 'libmotor_project.a'
+[100%] Built target test_revivir_al_inicio
+
+[PASS] morir_reinicia_el_combate_con_todo_como_al_empezar
+[PASS] reiniciar_vuelve_a_la_oleada_donde_se_cayo_y_no_a_la_primera
+[PASS] los_acompanantes_y_sus_curas_vuelven_como_al_empezar
+[PASS] morir_no_enciende_la_flag_de_derrota_pero_huir_si_enciende_la_suya
+[PASS] sin_flag_de_huida_huir_enciende_la_de_derrota_como_siempre
+[PASS] cada_muerte_suma_una_cicatriz_que_no_va_en_la_partida_guardada
+[PASS] las_cicatrices_se_leen_del_fichero_al_empezar_la_sesion
+[PASS] cada_muerte_baja_la_moral_y_repetirla_vuelve_a_costar
+[PASS] una_pelea_sin_matar_sigue_como_siempre
+[PASS] un_combate_ineludible_y_uno_del_mapa_tambien_reinician
+[PASS] la_regla_de_moral_de_la_muerte_es_un_dato
+Ejecutados 11 test(s); 0 fallo(s).
+

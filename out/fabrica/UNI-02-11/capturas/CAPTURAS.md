@@ -144,3 +144,14 @@ Guardado `ocaso_caido.json` (`./fabricar_guardados --matriz-ocaso guardados_h1`,
 | `m4_diario_caido_final.png` | f190 | La decision nueva abierta (DECIDIDO): «Elegiste: **Caíste en Boundington.**», «Lo que pasó: La calle se te acabó antes que las fuerzas. Boundington ardió igual, con o sin ti.». |
 
 Limites: solo se ha capturado el camino «caido». Los otros efectos (quedarse ≠ oeste, Venides sin aviso 3/3, finales oeste/solos) los fijan las pruebas de `MatrizOcasoTests` (logs `logs_hallazgos1/*_mut.log`), no una captura. En la captura el hero cae pero la mision sigue «SEGUIDA» (no «fallida»): ver la pregunta para Oriol en `HALLAZGOS_1.md`.
+
+# E-REVIVIR-01 (04/11) — morir y volver al inicio del combate (D0027, VENTANA real)
+Guion `tools/guiones/r1_morir.txt` (de `combate5.json` con el héroe a 1 PV: `sed 's/"playerHealth": 11/"playerHealth": 1/' guardados/combate5.json > guardados/r1_morir.json`): Pico Dragon, cinco devotos de los Perdidos; el héroe pasa turno (F) hasta que cae. Las capturas son fotogramas del mismo run (el guion captura cada 20 fotogramas y se buscó el cambio por la ronda y las barras).
+
+| PNG | Que se ve de verdad |
+|---|---|
+| `r1_inicio.png` (f200) | El combate recién empezado: «RONDA 1», Ilse con PV 1/11 (aviso rojo «!»), los cinco devotos a 8/8, el registro solo con la iniciativa. |
+| `r1_cae.png` (f3820) | El instante de caer: Ilse **0/11** (barra vacía), «RONDA 2»; el registro cuenta el golpe del devoto 2 («1 de daño (solo roza)»). Los devotos siguen a 8/8 en esta captura. |
+| `r1_reinicia.png` (f3840) | El combate **vuelve a empezar**: «RONDA 1», Ilse 1/11, los cinco devotos 8/8, nueva iniciativa; el registro empieza con «Has caído derrotado.», «Una cicatriz más: ya llevas 3.», «Vuelves al inicio del combate.». |
+
+Límites: en esta tirada la cicatriz sale «3» porque el héroe ya había caído dos veces antes en el mismo run sin capturar (el contador del fichero se vació antes de empezar y acabó el run en 5). Los PNG no prueban que el oro, la mochila o las curas se restauren (eso lo hacen las pruebas GL-free); solo vida de héroe y enemigos, ronda y registro se ven. En una tirada anterior (no guardada) se vio además un devoto a 4/8 antes de caer y a 8/8 después. El moral no se ve en pantalla (se asienta al dormir).

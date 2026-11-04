@@ -47,7 +47,7 @@ using RPG::SkillCheckRequest;
 using RPG::TablaAleatoriaRequest;
 
 // Los cuatro grados del Nd6 (GDD 7.1). Con Critica/Buena se ganan los
-// combates; con Regular/Mala, se pierden.
+// combates; con Regular/Mala, se pierden (D0027: perder = huir; morir solo reinicia el combate).
 enum class Suerte { Critica, Buena, Regular, Mala };
 
 inline const char* nombre(Suerte s) {
@@ -150,7 +150,8 @@ struct Jugador {
     bool enCine = false;  // dentro de cinematica(): no se encadenan otras desde drena()
     std::vector<std::string> prefiere;    // lo que contesta, por orden de gusto
     std::set<std::string> usadas;         // "beat|texto": no repite en la misma pantalla
-    std::set<std::string> pierde;         // flagVictory de combates que pierde (una vez cada uno)
+    std::set<std::string> pierde;         // flagVictory de combates que «pierde» (una vez cada uno): D0027, es huir
+    int ineludiblesGanados = 0;           // combates ineludibles cuyo escenario pedia perder: se ganan (no se huye)
     std::map<std::string, Suerte> tiradas;  // E-MATRIZ-01b: la suerte que sale en UNA tirada (por su flagBotch); las demas, `suerte`
     std::vector<std::string>* anotador = nullptr;  // cobertura: cada beat que dispara
     std::vector<std::string> vistos;               // los de esta partida
@@ -242,12 +243,25 @@ struct Jugador {
             // Un combate NO se resuelve en el mismo instante que el beat que lo
             // pide: en el juego real pasan turnos y la flag la enciende
             // syncBattleOutcome. Aqui se simula ese "despues" encendiendola ya.
+            // D0027 (E-REVIVIR-01): morir NO enciende flagDefeat (el combate vuelve a empezar); la rama de
+            // «perder» solo se alcanza huyendo, que enciende flagHuida o, sin ella, flagDefeat (como
+            // GameSession::syncBattleOutcome). De un combate ineludible no se huye: se acaba ganando.
             const bool huye = huyen.count(b.flagVictory) != 0 && !b.flagHuida.empty();  // E-DIA1-CONSEC
             const bool gana = !huye && buena() && pierde.count(b.flagVictory) == 0;
             pierde.erase(b.flagVictory);
             huyen.erase(b.flagVictory);
-            s.setFlag(huye ? b.flagHuida : gana || b.flagDefeat.empty() ? b.flagVictory : b.flagDefeat);
-            if (ruido) std::printf("      [combate: %s]\n", huye ? "huida" : gana ? "victoria" : "derrota");
+            // D0027 §6: en una pelea sinMatar (nadie muere) perder sigue siendo perder: te levantas y flagDefeat.
+            if (b.sinMatar) {
+                const bool pierdeSinMatar = !gana;
+                s.setFlag(!pierdeSinMatar || b.flagDefeat.empty() ? b.flagVictory : (huye ? b.flagHuida : b.flagDefeat));
+                if (ruido) std::printf("      [combate: %s]\n", pierdeSinMatar ? "derrota (sin matar)" : "victoria");
+                continue;
+            }
+            const bool seVa = !gana && !b.ineludible;
+            const std::string& salida = !seVa ? b.flagVictory : !b.flagHuida.empty() ? b.flagHuida : b.flagDefeat.empty() ? b.flagVictory : b.flagDefeat;
+            if (!gana && b.ineludible) ++ineludiblesGanados;  // la rama «perdida» de un ineludible no existe
+            s.setFlag(salida);
+            if (ruido) std::printf("      [combate: %s]\n", seVa ? "huida" : "victoria");
         }
         for (const TablaAleatoriaRequest& t : r.tablas)
             if (!t.flags.empty()) s.setFlag(buena() ? t.flags.front() : t.flags.back());
@@ -739,7 +753,7 @@ struct Jugador {
                 drena();
             } else if (p.tipo == Game::PasoCinematica::Tipo::Flag) {
                 s.setFlag(p.texto);
-            } else if (p.tipo == Game::PasoCinematica::Tipo::Combate) {  // E4: como un startBattle; huir cuenta como perder
+            } else if (p.tipo == Game::PasoCinematica::Tipo::Combate) {  // E4: como un startBattle; huir cuenta como perder (D0027: morir no la enciende)
                 const bool gana = !huyen.count(p.flagGana) && !pierde.count(p.flagGana) && buena();
                 pierde.erase(p.flagGana);
                 huyen.erase(p.flagGana);
