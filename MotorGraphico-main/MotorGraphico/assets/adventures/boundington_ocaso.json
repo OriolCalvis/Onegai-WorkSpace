@@ -5159,7 +5159,7 @@
       ]
     },
     {
-      "id": "b3_rodeo_caido",
+      "id": "b3_rodeo_huida",
       "trigger": {
         "type": "auto"
       },
@@ -5175,20 +5175,34 @@
       },
       "speaker": "",
       "lines": [
-        "La calle se te acaba antes que las fuerzas."
+        "Das la espalda a la pelea y echas a correr por donde aun se puede."
       ],
       "effects": [
         {
           "type": "setFlag",
-          "arg": "bnd3_final_caido"
+          "arg": "bnd3_final_huido"
         },
         {
           "type": "setFlag",
           "arg": "bnd3_fuera"
         },
         {
+          "type": "setFlag",
+          "arg": "bnd3_salio_vivo"
+        },
+        {
+          "type": "grantLevel",
+          "value": 2,
+          "arg": "salir vivo de Boundington"
+        },
+        {
+          "type": "grantMilestone",
+          "value": 1,
+          "arg": "sobrevivir a la caída de Boundington"
+        },
+        {
           "type": "log",
-          "arg": "FINAL: caído en Boundington."
+          "arg": "FINAL: huida de Boundington."
         }
       ]
     },
@@ -6654,7 +6668,7 @@
       ]
     },
     {
-      "id": "b3_caida",
+      "id": "b3_huida_perdida",
       "trigger": {
         "type": "auto"
       },
@@ -6671,7 +6685,7 @@
       },
       "speaker": "",
       "lines": [
-        "La calle se te acaba antes que las fuerzas.",
+        "Das la espalda a la pelea y echas a correr. Nadie te sigue: esta noche hay presas mas faciles.",
         "Boundington arderá igual esta noche, con o sin ti. Esa era la parte que no dependía de nadie.",
         "La otra parte, la de cuánta gente sale, esa sí dependía. Y hoy sale menos."
       ],
@@ -6682,11 +6696,25 @@
         },
         {
           "type": "setFlag",
-          "arg": "bnd3_final_caido"
+          "arg": "bnd3_final_huido"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_salio_vivo"
+        },
+        {
+          "type": "grantLevel",
+          "value": 2,
+          "arg": "salir vivo de Boundington"
+        },
+        {
+          "type": "grantMilestone",
+          "value": 1,
+          "arg": "sobrevivir a la caída de Boundington"
         },
         {
           "type": "log",
-          "arg": "FINAL: caído en Boundington."
+          "arg": "FINAL: huida de Boundington."
         }
       ]
     },
@@ -6718,14 +6746,14 @@
       ]
     },
     {
-      "id": "b3_epilogo_caido",
+      "id": "b3_epilogo_huido",
       "trigger": {
         "type": "auto"
       },
       "requires": {
         "allFlags": [
           "bnd3_fuera",
-          "bnd3_final_caido"
+          "bnd3_final_huido"
         ],
         "notFlags": [
           "bnd3_epilogo",

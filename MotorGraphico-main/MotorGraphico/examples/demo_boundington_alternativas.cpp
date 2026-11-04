@@ -959,7 +959,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.rutaOcaso = "base_ruta_norte";
         e.j.ocasoBase();
         e.j.ocasoRecorrido("base_ruta_norte");
-        e.ve({"bnd3_final_caido", "bnd3_epilogo"});
+        e.ve({"bnd3_final_huido", "bnd3_epilogo"});
         e.fin();
     } while (false);
 

@@ -90,7 +90,7 @@ CINEMATICAS = [
     },
     {
         "id": "epilogo_barca",
-        "_nota": "C4 / AV17-07 — El epílogo (b3_epilogo / b3_epilogo_caido encienden bnd3_epi_empezado): fundido a blanco, el prado del río, la barca de Sho-Noco con él en la popa y tú en la proa, como en la subida del prólogo. b3_barca espera a cine_epilogo_barca_vista.",
+        "_nota": "C4 / AV17-07 — El epílogo (b3_epilogo / b3_epilogo_huido encienden bnd3_epi_empezado): fundido a blanco, el prado del río, la barca de Sho-Noco con él en la popa y tú en la proa, como en la subida del prólogo. b3_barca espera a cine_epilogo_barca_vista.",
         "requiere": ["bnd3_epi_empezado"],
         "pasos": [
             {"espera": 0.6},

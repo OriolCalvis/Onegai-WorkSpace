@@ -1816,7 +1816,7 @@ struct CaminoOcaso {
     const char* id;     // ocaso_<id>.json
     const char* dia3;   // id del CaminoDia3 del que parte
     DiaOcaso ocaso;
-    const char* final;  // bnd3_final_oeste | bnd3_final_solos | bnd3_final_caido
+    const char* final;  // bnd3_final_oeste | bnd3_final_solos | bnd3_final_huido
     std::vector<std::string> ve, noVe;               // flags al acabar (quien vive, quien no, la compania...)
     std::vector<std::string> beats, noBeats;         // beats que se tienen que haber visto / no
     std::vector<DiarioEsperado> diario;              // decisiones que el diario ensena
@@ -1894,7 +1894,7 @@ inline std::vector<std::string> compruebaOcaso(const demo_bnd::Guiones& g, Resta
     std::vector<std::string> fallos;
     demo_bnd::Jugador& j = *r.j;
     const auto falta = [&](const std::string& s) { fallos.push_back(s); };
-    for (const char* f : {"bnd3_final_oeste", "bnd3_final_solos", "bnd3_final_caido"}) {
+    for (const char* f : {"bnd3_final_oeste", "bnd3_final_solos", "bnd3_final_huido"}) {
         const bool es = std::string(f) == c.final;
         if (es && !j.s.hasFlag(f)) falta(std::string("falta el final ") + f);
         if (!es && j.s.hasFlag(f)) falta(std::string("sobra el final ") + f);
@@ -2084,17 +2084,17 @@ inline const std::vector<CaminoOcaso>& caminosOcaso() {
          mo("b3_esc04_camino_norte", "", "bnd3_esc04_ruta_norte"),
          "sale por el norte: pelea en las calles, no pasa por la ciudad del Ocaso (ni Verina ni Sandes)",
          {330, 25, 7, 47, {"amuleto_gitano", "entrada_opera", "vendas"}}},
-        // --- pierde el primer combate de la salida (los saqueadores): cae en Boundington ---
-        {"caido", "fiesta_dentro", [] { DiaOcaso d; d.pierde = {"bnd3_saqueadores_vencidos"}; return d; }(), "bnd3_final_caido",
+        // --- huye del primer combate de la salida (los saqueadores): D0028, sale de Boundington a la carrera ---
+        {"huido", "fiesta_dentro", [] { DiaOcaso d; d.pierde = {"bnd3_saqueadores_vencidos"}; return d; }(), "bnd3_final_huido",
          {"bnd3_saqueadores_ganan", "bnd3_con_venides"},
          {"bnd3_verina_salvada", "bnd3_edul_salvado", "bnd3_final_oeste", "bnd3_final_solos", "bnd3_sandes_vencido"},
-         {"b3_saqueadores_10", "b3_caida", "b3_epilogo_caido", "b3_epi_venides_contigo"},
+         {"b3_saqueadores_10", "b3_huida_perdida", "b3_epilogo_huido", "b3_epi_venides_contigo"},
          {"b3_huida_gitanos", "b3_huida_sola", "b3_epilogo", "b3_epi_verina_viva"},
-         {{"bnd3_ruta", "oeste", ""}, {"bnd3_final", "Caíste", ""}},
-         {"bnd3_verina", "bnd3_sandes", "bnd3_edul", "bnd3_venides"}, {"obj3_plaza", "obj3_avisar"}, {"obj3_salir"},
-         mo("b3_caida", "", "bnd3_final_caido"),
-         "pierde contra los saqueadores y cae: el diario NO marca «Sal de Boundington con vida» (bnd3_salio_vivo) y cuenta que caiste",
-         {170, 11, 5, 47, {"amuleto_gitano", "entrada_opera", "vendas"}}},
+         {{"bnd3_ruta", "oeste", ""}, {"bnd3_final", "Huiste", ""}},
+         {"bnd3_verina", "bnd3_sandes", "bnd3_edul", "bnd3_venides"}, {"obj3_plaza", "obj3_avisar", "obj3_salir"}, {},
+         mo("b3_huida_perdida", "", "bnd3_final_huido"),
+         "huye de los saqueadores: el diario marca «Sal de Boundington con vida» (bnd3_salio_vivo) y cuenta que huiste",
+         {170, 11, 7, 47, {"amuleto_gitano", "entrada_opera", "vendas"}}},
         // --- Verina libre, pero Edul se queda atado, y Venides de rodillas: se le ataca (huye) ---
         {"sacrificios", "informe_nada", [] { DiaOcaso d; d.dice = {"Liberarla", "Intentar acabar con él", "Dejarle"}; return d; }(), "bnd3_final_oeste",
          {"bnd3_sin_venides", "bnd3_verina_salvada", "bnd3_edul_abandonado", "bnd3_venides_huye"},
