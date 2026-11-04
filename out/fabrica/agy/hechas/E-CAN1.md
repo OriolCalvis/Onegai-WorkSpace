@@ -1,4 +1,4 @@
-Base: claude/unificacion-28-10
+Base: agente/claude/UNI-02-11
 Origen: orquestador/front01/E-CAN1.md (antes asignada a Nemotron; reasignada a Antigravity el 29-10 porque Nemotron no sirve para lore propio)
 ---
 # E-CAN1 — Venides: ojos y aspecto físico (agente: Antigravity, noche)
@@ -32,3 +32,22 @@ Orden de autoridad:
 - **Propuesta** para Oriol, en una línea, marcada como propuesta.
 
 No escribas nada en la vault ni en el juego.
+
+
+## Corrección pedida (revisión 2026-11-02)
+No es una devolución: la E no llegó a ejecutarse (01-11 y 02-11 BLOQUEADO creando el worktree, `fatal: referencia inválida: claude/unificacion-28-10`; esa rama se perdió en la desaparición del repo del 29-10 y no se recuperó). Claude cambia la base a `prueba/claude/integracion-I-30-10` (tiene `Onegai 2/Onegai/` y `orquestador/front01/`).
+
+**Importante para Antigravity:** esta E es solo de lectura. **No intentes escribir ningún fichero, tampoco `.agy_relevo.md`**: en el modo nocturno escribir está denegado y la ejecución se corta sin respuesta (pasó el 29-10 y el 31-10). Pon el relevo completo, con el formato pedido, **solo en tu respuesta final**, e indica en «Estado» que no se escribió ningún fichero a propósito.
+
+## Corrección pedida (revisión 2026-11-03)
+No es una devolución (cuenta 0/2): el 03-11 el worktree se creó bien (HEAD b41f8a43), pero la ejecución se cortó a los 10 s con la respuesta vacía porque Antigravity intentó **ejecutar un comando de shell** (`denied_actions: RunCommand`; stderr: «a tool required the "command" permission that headless mode cannot prompt for, so it was auto-denied»). En el modo nocturno cualquier herramienta que pida permiso corta la ejecución entera.
+
+**Importante para Antigravity, por encima de lo que digan las instrucciones de arriba:**
+- **No ejecutes ningún comando de terminal** (ni `grep`, ni `sed`, ni `ls`): están denegados. Donde la E dice `grep`/`sed`, usa solo tus herramientas internas de lectura y búsqueda de ficheros (buscar texto en ficheros, buscar por nombre, listar carpeta, ver un fichero por rango de líneas).
+- **No escribas ningún fichero**, tampoco `.agy_relevo.md` (escribir también está denegado).
+- Pon el relevo completo **solo en tu respuesta final**, e indica en «Estado» que no se ejecutó ningún comando ni se escribió ningún fichero a propósito.
+- Si hasta las herramientas de lectura te piden permiso, termina enseguida con un relevo «bloqueado» que lo diga.
+
+
+## Actualizacion 03-11 (Claude)
+La pregunta 1 ya esta contestada por Oriol (D0022 6.1): los ojos de Venides son **azul grisaceo**. No la busques. Quedan las preguntas 2 y 3. Base nueva: `agente/claude/UNI-02-11` (D0022 1.1).

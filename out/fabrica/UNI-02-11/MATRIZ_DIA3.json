@@ -1,0 +1,3106 @@
+{
+ "dia": "segundo_dia",
+ "decisiones": [
+  {
+   "beat": "b2_skilla_espada_devuelta_vista",
+   "linea": 713,
+   "peso": 25.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Devolvérsela",
+     "linea": 736,
+     "despedida": false,
+     "pone": [
+      "bnd2_skilla_pagada",
+      "bnd2_aliado_skilla",
+      "bnd2_tiene_aliados"
+     ],
+     "quita": [],
+     "variables": [
+      "confianza_rosita+1"
+     ],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "furia_de_alaro_devuelta",
+       "gravedad": "menor",
+       "signo": 1,
+       "reputacion": {}
+      }
+     ],
+     "oro": 50,
+     "nivel": 0.29,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_aliado_skilla": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:3456",
+        "cual": "b3_rosita_calle",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ],
+      "confianza_rosita": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:6167",
+        "cual": "b3_compania",
+        "tipo": "beat",
+        "rol": "var",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {
+      "bnd2_rosita_revelada": {
+       "via": "b2_rosita_revela",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3502",
+         "cual": "b3_rosita_calle/Gracias, Furia.",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    },
+    {
+     "texto": "Devolvérsela y contarle todo",
+     "linea": 786,
+     "despedida": false,
+     "pone": [
+      "bnd2_skilla_pagada",
+      "bnd2_aliado_skilla",
+      "bnd2_tiene_aliados",
+      "bnd2_rosita_lo_sabe"
+     ],
+     "quita": [],
+     "variables": [
+      "confianza_rosita+1",
+      "confianza_rosita+1",
+      "afecto_venides+1"
+     ],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "furia_de_alaro_devuelta",
+       "gravedad": "menor",
+       "signo": 1,
+       "reputacion": {}
+      }
+     ],
+     "oro": 50,
+     "nivel": 0.29,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_aliado_skilla": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:3456",
+        "cual": "b3_rosita_calle",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ],
+      "confianza_rosita": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:6167",
+        "cual": "b3_compania",
+        "tipo": "beat",
+        "rol": "var",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {
+      "bnd2_rosita_revelada": {
+       "via": "b2_rosita_revela",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3502",
+         "cual": "b3_rosita_calle/Gracias, Furia.",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    },
+    {
+     "texto": "Decirle que no la encontraste",
+     "linea": 855,
+     "despedida": false,
+     "pone": [
+      "bnd2_skilla_pagada",
+      "bnd2_rosita_desconfia"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "furia_de_alaro_robada",
+       "gravedad": "medio",
+       "signo": -1,
+       "reputacion": {}
+      }
+     ],
+     "oro": -1,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_rosita_desconfia": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:3462",
+        "cual": "b3_rosita_calle",
+        "tipo": "beat",
+        "rol": "noflag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:3533",
+        "cual": "b3_taberna_cerrada",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {
+      "bnd2_rosita_revelada": {
+       "via": "b2_rosita_revela",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:3502",
+         "cual": "b3_rosita_calle/Gracias, Furia.",
+         "tipo": "opcion",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_noche_rosita_informa",
+   "linea": 13669,
+   "peso": 24.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Contarselo todo",
+     "linea": 13694,
+     "despedida": false,
+     "pone": [
+      "bnd2_informe_dado",
+      "bnd2_venides_leal"
+     ],
+     "quita": [],
+     "variables": [
+      "afecto_venides+1"
+     ],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 50,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd_venides_10": {
+       "via": "b2_venides_hombres",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:1840",
+         "cual": "b3_venides_arenga_10",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:2292",
+         "cual": "b3_saqueadores_10",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bnd1_venides_desconfianza"
+     ]
+    },
+    {
+     "texto": "Contarselo todo y ensenarle las pruebas",
+     "linea": 13739,
+     "despedida": false,
+     "pone": [
+      "bnd2_informe_dado",
+      "bnd2_venides_leal"
+     ],
+     "quita": [],
+     "variables": [
+      "afecto_venides+1"
+     ],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 50,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd_venides_10": {
+       "via": "b2_venides_hombres",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:1840",
+         "cual": "b3_venides_arenga_10",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:2292",
+         "cual": "b3_saqueadores_10",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bnd1_venides_desconfianza",
+      "bnd2_documentos",
+      "bnd2_documentos_fiesta"
+     ]
+    },
+    {
+     "texto": "Contarle el ataque, pero no lo de Edul y Verina",
+     "linea": 13788,
+     "despedida": false,
+     "pone": [
+      "bnd2_informe_dado",
+      "bnd2_venides_enganado"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "venides_enganado",
+       "gravedad": "menor",
+       "signo": -1,
+       "reputacion": {}
+      }
+     ],
+     "oro": 25,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd_venides_10": {
+       "via": "b2_venides_hombres",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:1840",
+         "cual": "b3_venides_arenga_10",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:2292",
+         "cual": "b3_saqueadores_10",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bnd1_edul_hablado",
+      "bnd1_verina_vista",
+      "bnd1_venides_desconfianza"
+     ]
+    },
+    {
+     "texto": "No contarle nada",
+     "linea": 13833,
+     "despedida": false,
+     "pone": [
+      "bnd2_informe_callado",
+      "bnd2_venides_sin_aviso"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "venides_enganado",
+       "gravedad": "menor",
+       "signo": -1,
+       "reputacion": {}
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_venides_sin_aviso": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:1738",
+        "cual": "b3_aviso_en_base",
+        "tipo": "beat",
+        "rol": "noflag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:1766",
+        "cual": "b3_venides_retenido",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/eventos/boundington.json:27",
+        "cual": "xila_avisa_a_venides",
+        "tipo": "evento",
+        "rol": "noflag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/eventos/boundington.json:40",
+        "cual": "venides_retenido",
+        "tipo": "evento",
+        "rol": "flag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/eventos/boundington.json:55",
+        "cual": "venides_sale_con_su_tropa",
+        "tipo": "evento",
+        "rol": "noflag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_noche_rosita_informa_confianza",
+   "linea": 13530,
+   "peso": 18.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Contarselo todo",
+     "linea": 13555,
+     "despedida": false,
+     "pone": [
+      "bnd2_informe_dado",
+      "bnd2_venides_leal"
+     ],
+     "quita": [],
+     "variables": [
+      "afecto_venides+1"
+     ],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 50,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd_venides_10": {
+       "via": "b2_venides_hombres",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:1840",
+         "cual": "b3_venides_arenga_10",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:2292",
+         "cual": "b3_saqueadores_10",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    },
+    {
+     "texto": "Contarle el ataque, pero no lo de Edul y Verina",
+     "linea": 13595,
+     "despedida": false,
+     "pone": [
+      "bnd2_informe_dado",
+      "bnd2_venides_enganado"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "venides_enganado",
+       "gravedad": "menor",
+       "signo": -1,
+       "reputacion": {}
+      }
+     ],
+     "oro": 25,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd_venides_10": {
+       "via": "b2_venides_hombres",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:1840",
+         "cual": "b3_venides_arenga_10",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:2292",
+         "cual": "b3_saqueadores_10",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bnd1_edul_hablado",
+      "bnd1_verina_vista",
+      "bnd1_venides_desconfianza"
+     ]
+    },
+    {
+     "texto": "No contarle nada",
+     "linea": 13640,
+     "despedida": false,
+     "pone": [
+      "bnd2_informe_callado",
+      "bnd2_venides_sin_aviso"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "venides_enganado",
+       "gravedad": "menor",
+       "signo": -1,
+       "reputacion": {}
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_venides_sin_aviso": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:1738",
+        "cual": "b3_aviso_en_base",
+        "tipo": "beat",
+        "rol": "noflag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:1766",
+        "cual": "b3_venides_retenido",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/eventos/boundington.json:27",
+        "cual": "xila_avisa_a_venides",
+        "tipo": "evento",
+        "rol": "noflag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/eventos/boundington.json:40",
+        "cual": "venides_retenido",
+        "tipo": "evento",
+        "rol": "flag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/eventos/boundington.json:55",
+        "cual": "venides_sale_con_su_tropa",
+        "tipo": "evento",
+        "rol": "noflag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_sonsaca_exito",
+   "linea": 13350,
+   "peso": 11.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Senalarselo a Venides",
+     "linea": 13389,
+     "despedida": false,
+     "pone": [
+      "bnd2_noble_senalado"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "noble_senalado",
+       "gravedad": "menor",
+       "signo": 1,
+       "reputacion": {
+        "perdidos": -5,
+        "aegroum": 5
+       }
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_noble_senalado": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:129",
+        "cual": "b3_noble_copas",
+        "tipo": "beat",
+        "rol": "noflag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:1071",
+        "cual": "b3_sermon_s3_a_miraba/Buscar al noble del brindis",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:1192",
+        "cual": "b3_sermon_s3_a_desafiado/Buscar al noble del brindis",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:1312",
+        "cual": "b3_sermon_s3_a/Buscar al noble del brindis",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": []
+    },
+    {
+     "texto": "Chantajearle",
+     "linea": 13405,
+     "despedida": false,
+     "pone": [
+      "bnd2_noble_chantajeado"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "noble_chantajeado",
+       "gravedad": "menor",
+       "signo": -1,
+       "reputacion": {}
+      }
+     ],
+     "oro": 30,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_castillo_prueba",
+   "linea": 4176,
+   "peso": 9.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Ensenarle una prueba de los Perdidos",
+     "linea": 4197,
+     "despedida": false,
+     "pone": [
+      "bnd2_guardia_preparada",
+      "bnd2_tiene_aliados"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "guardia_preparada",
+       "gravedad": "menor",
+       "signo": 1,
+       "reputacion": {
+        "aegroum": 5
+       }
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_guardia_preparada": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:1918",
+        "cual": "b3_capitan_ronda",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:2344",
+        "cual": "b3_saqueadores_guardia",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/catalogs/quests.json:1183",
+        "cual": "bnd2_op_capitan_prueba",
+        "tipo": "diario",
+        "rol": "flag",
+        "dia": "diario"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": [
+      "bnd1_pista_espadas",
+      "bnd_pista_aigren",
+      "bnd1_pista_guarida",
+      "bnd1_sabe_barricadas",
+      "bnd2_documentos",
+      "bnd_pista_luisarda",
+      "bnd2_trato_venta",
+      "bnd2_cartas_secta",
+      "bnd2_lista_cojo",
+      "bga_contrato",
+      "bgb_puntal_prueba",
+      "bgc_frasco_prueba",
+      "bgd_libro"
+     ]
+    },
+    {
+     "texto": "Venides hablaria por mi",
+     "linea": 4240,
+     "despedida": false,
+     "pone": [
+      "bnd2_guardia_preparada",
+      "bnd2_tiene_aliados"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "guardia_preparada",
+       "gravedad": "menor",
+       "signo": 1,
+       "reputacion": {
+        "aegroum": 5
+       }
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_guardia_preparada": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:1918",
+        "cual": "b3_capitan_ronda",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:2344",
+        "cual": "b3_saqueadores_guardia",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/catalogs/quests.json:1183",
+        "cual": "bnd2_op_capitan_prueba",
+        "tipo": "diario",
+        "rol": "flag",
+        "dia": "diario"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": [
+      "bnd2_capitan_con_venides",
+      "bnd2_venides_leal"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "b2_sectarios",
+   "linea": 10214,
+   "peso": 7.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "La Barriada se arma: empalizada y guerreros",
+     "linea": 10234,
+     "despedida": false,
+     "pone": [
+      "bnd2_barriada_delatada"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "barriada_delatada",
+       "gravedad": "medio",
+       "signo": -1,
+       "reputacion": {
+        "perdidos": 15,
+        "barriada_surysal": -15
+       }
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_barriada_delatada": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:4625",
+        "cual": "b3_zarela",
+        "tipo": "beat",
+        "rol": "noflag",
+        "dia": "ocaso"
+       },
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:6408",
+        "cual": "b3_huida_gitanos",
+        "tipo": "beat",
+        "rol": "noflag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": [
+      "bnd2_zarela_confia",
+      "bnd2_surysal_visto"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "b2_invitados",
+   "linea": 13028,
+   "peso": 6.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Sonsacar al noble que brinda [Engano]",
+     "linea": 13059,
+     "despedida": false,
+     "pone": [
+      "bnd2_sonsaca_pifia",
+      "bnd2_sonsaca_parcial",
+      "bnd2_sonsaca_exito",
+      "bnd2_sonsaca_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "engano",
+       "flags": {
+        "botch": "bnd2_sonsaca_pifia",
+        "partial": "bnd2_sonsaca_parcial",
+        "success": "bnd2_sonsaca_exito",
+        "critical": "bnd2_sonsaca_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_conspiradores": {
+       "via": "b2_sonsaca_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:190",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bnd2_roto_culo",
+      "bnd2_roto_axilas",
+      "bnd2_roto_espalda"
+     ]
+    },
+    {
+     "texto": "Sonsacarle, con el traje roto [Engano]",
+     "linea": 13085,
+     "despedida": false,
+     "pone": [
+      "bnd2_sonsaca_pifia",
+      "bnd2_sonsaca_parcial",
+      "bnd2_sonsaca_exito",
+      "bnd2_sonsaca_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "engano",
+       "flags": {
+        "botch": "bnd2_sonsaca_pifia",
+        "partial": "bnd2_sonsaca_parcial",
+        "success": "bnd2_sonsaca_exito",
+        "critical": "bnd2_sonsaca_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_conspiradores": {
+       "via": "b2_sonsaca_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:190",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bnd2_roto_culo",
+      "bnd2_roto_axilas",
+      "bnd2_roto_espalda"
+     ]
+    },
+    {
+     "texto": "Robar en el guardarropa [Sigilo]",
+     "linea": 13111,
+     "despedida": false,
+     "pone": [
+      "bnd2_robo_pifia",
+      "bnd2_robo_parcial",
+      "bnd2_robo_exito",
+      "bnd2_robo_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "sigilo",
+       "flags": {
+        "botch": "bnd2_robo_pifia",
+        "partial": "bnd2_robo_parcial",
+        "success": "bnd2_robo_exito",
+        "critical": "bnd2_robo_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "robo_en_la_fiesta",
+       "gravedad": "medio",
+       "signo": -1,
+       "reputacion": {}
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_saq_llegan",
+   "linea": 9221,
+   "peso": 5.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "«Zarela conoce a vuestras madres.» [Persuasión]",
+     "linea": 9261,
+     "despedida": false,
+     "pone": [
+      "bnd2_saq_decidido",
+      "bnd2_saq_persu_pifia",
+      "bnd2_saq_persu_parcial",
+      "bnd2_saq_persu_exito",
+      "bnd2_saq_persu_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "persuasion",
+       "flags": {
+        "botch": "bnd2_saq_persu_pifia",
+        "partial": "bnd2_saq_persu_parcial",
+        "success": "bnd2_saq_persu_exito",
+        "critical": "bnd2_saq_persu_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_guerreros_gitanos": {
+       "via": "b2_saq_persu_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4620",
+         "cual": "b3_zarela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bnd2_aliado_gitanos": {
+       "via": "b2_saq_persu_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6403",
+         "cual": "b3_huida_gitanos",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    },
+    {
+     "texto": "Desenvainar la Furia de Alaro [Intimidación]",
+     "linea": 9286,
+     "despedida": false,
+     "pone": [
+      "bnd2_saq_decidido",
+      "bnd2_furia_vista_saqueadores",
+      "bnd2_saq_furia_pifia",
+      "bnd2_saq_furia_parcial",
+      "bnd2_saq_furia_exito",
+      "bnd2_saq_furia_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "intimidacion",
+       "flags": {
+        "botch": "bnd2_saq_furia_pifia",
+        "partial": "bnd2_saq_furia_parcial",
+        "success": "bnd2_saq_furia_exito",
+        "critical": "bnd2_saq_furia_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_guerreros_gitanos": {
+       "via": "b2_saq_furia_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:4620",
+         "cual": "b3_zarela",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bnd2_aliado_gitanos": {
+       "via": "b2_saq_furia_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6403",
+         "cual": "b3_huida_gitanos",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bnd2_furia_alaro",
+      "bnd2_skilla_pagada"
+     ]
+    },
+    {
+     "texto": "Comprarles la noche (30 de oro)",
+     "linea": 9324,
+     "despedida": false,
+     "pone": [
+      "bnd2_saq_decidido",
+      "bnd2_saq_pagados"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "saqueadores_pagados",
+       "gravedad": "menor",
+       "signo": 0,
+       "reputacion": {
+        "barriada_surysal": 5
+       }
+      }
+     ],
+     "oro": -30,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_edul_fiesta",
+   "linea": 10822,
+   "peso": 4.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Hablarle de Venides",
+     "linea": 10846,
+     "despedida": false,
+     "pone": [
+      "bnd2_edul_fiesta_hecho",
+      "bnd2_edul_sabe_venides",
+      "bnd2_con_edul",
+      "bnd2_fiesta_dentro",
+      "bnd2_fiesta_intentada",
+      "bnd2_vigilante_resuelto"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "dudas_en_edul",
+       "gravedad": "menor",
+       "signo": 1,
+       "reputacion": {}
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_edul_sabe_venides": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:5618",
+        "cual": "b3_edul_fiesta",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {
+      "bnd2_fiesta_nobles": {
+       "via": "b2_dentro",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:186",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    },
+    {
+     "texto": "¿Quien es el anfitrion?",
+     "linea": 10885,
+     "despedida": false,
+     "pone": [
+      "bnd2_edul_fiesta_hecho",
+      "bnd2_con_edul",
+      "bnd2_fiesta_dentro",
+      "bnd2_fiesta_intentada",
+      "bnd2_vigilante_resuelto"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_fiesta_nobles": {
+       "via": "b2_dentro",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:186",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_luisarda_disfraz",
+   "linea": 16381,
+   "peso": 4.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Comprar el traje de gala (40)",
+     "linea": 16414,
+     "despedida": false,
+     "pone": [
+      "bnd2_disfraz",
+      "bnd2_disfraz_musico",
+      "bnd2_disfraz_resuelto"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": -40,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_boutique_robo_mal",
+   "linea": 16513,
+   "peso": 4.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Pagar (40)",
+     "linea": 16541,
+     "despedida": false,
+     "pone": [
+      "bnd2_disfraz",
+      "bnd2_disfraz_musico",
+      "bnd2_disfraz_resuelto"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": -40,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_xila_resaca",
+   "linea": 16012,
+   "peso": 3.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Despertarle y hablarle claro [Persuasión]",
+     "linea": 16040,
+     "despedida": false,
+     "pone": [
+      "bnd2_resaca_pifia",
+      "bnd2_resaca_parcial",
+      "bnd2_resaca_exito",
+      "bnd2_resaca_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "persuasion",
+       "flags": {
+        "botch": "bnd2_resaca_pifia",
+        "partial": "bnd2_resaca_parcial",
+        "success": "bnd2_resaca_exito",
+        "critical": "bnd2_resaca_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd1_aliado_xila": {
+       "via": "b2_xila_resaca_bien",
+       "lecturas": [
+        {
+         "donde": "assets/catalogs/quests.json:214",
+         "cual": "bnd1_op_xila",
+         "tipo": "diario",
+         "rol": "flag",
+         "dia": "diario"
+        }
+       ]
+      },
+      "bnd1_xila_honor": {
+       "via": "b2_xila_resaca_bien",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:2037",
+         "cual": "b3_xila_vendas",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6864",
+         "cual": "b3_epi_xila",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/eventos/boundington.json:27",
+         "cual": "xila_avisa_a_venides",
+         "tipo": "evento",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    },
+    {
+     "texto": "Pagarle un desayuno caliente (6)",
+     "linea": 16060,
+     "despedida": false,
+     "pone": [
+      "bnd2_resaca_exito"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": -6,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd1_aliado_xila": {
+       "via": "b2_xila_resaca_bien",
+       "lecturas": [
+        {
+         "donde": "assets/catalogs/quests.json:214",
+         "cual": "bnd1_op_xila",
+         "tipo": "diario",
+         "rol": "flag",
+         "dia": "diario"
+        }
+       ]
+      },
+      "bnd1_xila_honor": {
+       "via": "b2_xila_resaca_bien",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:2037",
+         "cual": "b3_xila_vendas",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6864",
+         "cual": "b3_epi_xila",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/eventos/boundington.json:27",
+         "cual": "xila_avisa_a_venides",
+         "tipo": "evento",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_rosita_revela",
+   "linea": 1057,
+   "peso": 2.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "¿Qué fue de los otros tres?",
+     "linea": 1094,
+     "despedida": false,
+     "pone": [
+      "bnd2_rosita_semilla"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_rosita_semilla": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:6159",
+        "cual": "b3_compania",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": []
+    },
+    {
+     "texto": "No preguntar más",
+     "linea": 1112,
+     "despedida": false,
+     "pone": [
+      "bnd2_rosita_semilla"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_rosita_semilla": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:6159",
+        "cual": "b3_compania",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_capitan",
+   "linea": 3940,
+   "peso": 2.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Pedirle que prepare a la guardia [Persuasion]",
+     "linea": 3964,
+     "despedida": false,
+     "pone": [
+      "bnd2_capitan_hablado",
+      "bnd2_capitan_pifia",
+      "bnd2_capitan_parcial",
+      "bnd2_capitan_exito",
+      "bnd2_capitan_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "persuasion",
+       "flags": {
+        "botch": "bnd2_capitan_pifia",
+        "partial": "bnd2_capitan_parcial",
+        "success": "bnd2_capitan_exito",
+        "critical": "bnd2_capitan_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_orden_capitan": {
+       "via": "b2_capitan_orden",
+       "lecturas": [
+        {
+         "donde": "assets/catalogs/quests.json:238",
+         "cual": "bnd1_op_aigren_orden",
+         "tipo": "diario",
+         "rol": "flag",
+         "dia": "diario"
+        }
+       ]
+      },
+      "bnd2_guardia_preparada": {
+       "via": "b2_capitan_convencido",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:1918",
+         "cual": "b3_capitan_ronda",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:2344",
+         "cual": "b3_saqueadores_guardia",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/catalogs/quests.json:1183",
+         "cual": "bnd2_op_capitan_prueba",
+         "tipo": "diario",
+         "rol": "flag",
+         "dia": "diario"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bnd1_capitan_te_conoce"
+     ]
+    },
+    {
+     "texto": "Soy el que te trajo al camorrista anoche.",
+     "linea": 3994,
+     "despedida": false,
+     "pone": [
+      "bnd2_capitan_hablado",
+      "bnd2_capitan_exito"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_orden_capitan": {
+       "via": "b2_capitan_orden",
+       "lecturas": [
+        {
+         "donde": "assets/catalogs/quests.json:238",
+         "cual": "bnd1_op_aigren_orden",
+         "tipo": "diario",
+         "rol": "flag",
+         "dia": "diario"
+        }
+       ]
+      },
+      "bnd2_guardia_preparada": {
+       "via": "b2_capitan_convencido",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:1918",
+         "cual": "b3_capitan_ronda",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:2344",
+         "cual": "b3_saqueadores_guardia",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/catalogs/quests.json:1183",
+         "cual": "bnd2_op_capitan_prueba",
+         "tipo": "diario",
+         "rol": "flag",
+         "dia": "diario"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bnd1_capitan_te_conoce"
+     ]
+    },
+    {
+     "texto": "No molestarle",
+     "linea": 4040,
+     "despedida": false,
+     "pone": [
+      "bnd2_capitan_hablado"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_orden_capitan": {
+       "via": "b2_capitan_orden",
+       "lecturas": [
+        {
+         "donde": "assets/catalogs/quests.json:238",
+         "cual": "bnd1_op_aigren_orden",
+         "tipo": "diario",
+         "rol": "flag",
+         "dia": "diario"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_cobrador",
+   "linea": 10611,
+   "peso": 2.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Pagar (20)",
+     "linea": 10633,
+     "despedida": false,
+     "pone": [
+      "bnd2_cobrador_resuelto",
+      "bnd2_en_la_mansion",
+      "bnd2_fiesta_intentada",
+      "bnd2_vigilante_resuelto"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": -20,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_fiesta_nobles",
+   "linea": 11495,
+   "peso": 2.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Como va la noche?",
+     "linea": 11522,
+     "despedida": false,
+     "pone": [
+      "bnd2_fiesta_nobles_t_fiesta",
+      "bnd2_fiesta_nobles"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_fiesta_nobles": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:186",
+        "cual": "b3_plaza_vacia",
+        "tipo": "beat",
+        "rol": "noflag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {
+      "bnd2_dia_cerrado": {
+       "via": "b2_cierre_todo_xila_vela",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:178",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:235",
+         "cual": "b3_plaza",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "src/Engine/ApplicationBucle.cpp:266",
+         "cual": "codigo",
+         "tipo": "codigo",
+         "rol": "flag",
+         "dia": "motor"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bnd2_fiesta_nobles_t_fiesta"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "b2_gitanos_puerta_cerrada",
+   "linea": 16655,
+   "peso": 2.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Volver con un saco de grano (10) y cargar tablas",
+     "linea": 16686,
+     "despedida": false,
+     "pone": [
+      "bnd2_zarela_confia",
+      "bnd2_aliado_gitanos",
+      "bnd2_tiene_aliados",
+      "bnd2_gitanos_resuelto"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": -10,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_aliado_gitanos": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:6403",
+        "cual": "b3_huida_gitanos",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_skilla_hora",
+   "linea": 1203,
+   "peso": 1.5,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Subir a dormir",
+     "linea": 1261,
+     "despedida": false,
+     "pone": [
+      "bnd2_a_dormir"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_dia_cerrado": {
+       "via": "b2_cierre_todo_xila_vela",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:178",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:235",
+         "cual": "b3_plaza",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "src/Engine/ApplicationBucle.cpp:266",
+         "cual": "codigo",
+         "tipo": "codigo",
+         "rol": "flag",
+         "dia": "motor"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "franja"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "b2_fiesta_copas",
+   "linea": 12964,
+   "peso": 1.5,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Tres copas de mi cuenta (6 de oro)",
+     "linea": 12986,
+     "despedida": false,
+     "pone": [
+      "bnd2_noble_borracho",
+      "bnd2_sonsaca_exito",
+      "bnd2_noble_copas_ofrecidas"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "noble_emborrachado",
+       "gravedad": "menor",
+       "signo": 0,
+       "reputacion": {}
+      }
+     ],
+     "oro": -6,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_noble_borracho": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:126",
+        "cual": "b3_noble_copas",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {
+      "bnd2_conspiradores": {
+       "via": "b2_sonsaca_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:190",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_sonsaca_fallo",
+   "linea": 13433,
+   "peso": 1.5,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Invitarle a tres copas (6 de oro)",
+     "linea": 13460,
+     "despedida": false,
+     "pone": [
+      "bnd2_noble_borracho",
+      "bnd2_sonsaca_exito"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "noble_emborrachado",
+       "gravedad": "menor",
+       "signo": 0,
+       "reputacion": {}
+      }
+     ],
+     "oro": -6,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_noble_borracho": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:126",
+        "cual": "b3_noble_copas",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {
+      "bnd2_conspiradores": {
+       "via": "b2_sonsaca_exito",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:190",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_xila_resaca_mal",
+   "linea": 16134,
+   "peso": 1.5,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Pagarle el desayuno de todas formas (6)",
+     "linea": 16162,
+     "despedida": false,
+     "pone": [
+      "bnd2_resaca_exito"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": -6,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd1_aliado_xila": {
+       "via": "b2_xila_resaca_bien",
+       "lecturas": [
+        {
+         "donde": "assets/catalogs/quests.json:214",
+         "cual": "bnd1_op_xila",
+         "tipo": "diario",
+         "rol": "flag",
+         "dia": "diario"
+        }
+       ]
+      },
+      "bnd1_xila_honor": {
+       "via": "b2_xila_resaca_bien",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:2037",
+         "cual": "b3_xila_vendas",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:6864",
+         "cual": "b3_epi_xila",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/eventos/boundington.json:27",
+         "cual": "xila_avisa_a_venides",
+         "tipo": "evento",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_edul_herreria_s1",
+   "linea": 1750,
+   "peso": 1.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "¿Que hay en esos frascos?",
+     "linea": 1803,
+     "despedida": false,
+     "pone": [
+      "bnd2_edul_herreria_t_frascos",
+      "bnd2_edul_frascos",
+      "bnd1_edul_mezcla"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_edul_frascos": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:5012",
+        "cual": "b3_barricada_rota/Buscar dónde no hay frascos",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ],
+      "bnd1_edul_mezcla": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:5011",
+        "cual": "b3_barricada_rota/Buscar dónde no hay frascos",
+        "tipo": "opcion",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": [
+      "bnd2_edul_herreria_t_frascos"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "b2_capitan_muerto",
+   "linea": 3848,
+   "peso": 1.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Pedirle que prepare a la guardia [Persuasion]",
+     "linea": 3872,
+     "despedida": false,
+     "pone": [
+      "bnd2_capitan_hablado",
+      "bnd2_capitan_pifia",
+      "bnd2_capitan_parcial",
+      "bnd2_capitan_exito",
+      "bnd2_capitan_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "persuasion",
+       "flags": {
+        "botch": "bnd2_capitan_pifia",
+        "partial": "bnd2_capitan_parcial",
+        "success": "bnd2_capitan_exito",
+        "critical": "bnd2_capitan_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_orden_capitan": {
+       "via": "b2_capitan_orden",
+       "lecturas": [
+        {
+         "donde": "assets/catalogs/quests.json:238",
+         "cual": "bnd1_op_aigren_orden",
+         "tipo": "diario",
+         "rol": "flag",
+         "dia": "diario"
+        }
+       ]
+      },
+      "bnd2_guardia_preparada": {
+       "via": "b2_capitan_convencido",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:1918",
+         "cual": "b3_capitan_ronda",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:2344",
+         "cual": "b3_saqueadores_guardia",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/catalogs/quests.json:1183",
+         "cual": "bnd2_op_capitan_prueba",
+         "tipo": "diario",
+         "rol": "flag",
+         "dia": "diario"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bnd1_capitan_te_conoce"
+     ]
+    },
+    {
+     "texto": "No molestarle",
+     "linea": 3926,
+     "despedida": false,
+     "pone": [
+      "bnd2_capitan_hablado"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_orden_capitan": {
+       "via": "b2_capitan_orden",
+       "lecturas": [
+        {
+         "donde": "assets/catalogs/quests.json:238",
+         "cual": "bnd1_op_aigren_orden",
+         "tipo": "diario",
+         "rol": "flag",
+         "dia": "diario"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_mansion",
+   "linea": 11072,
+   "peso": 1.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Entrar por la puerta, con disfraz [Interpretacion]",
+     "linea": 11094,
+     "despedida": false,
+     "pone": [
+      "bnd2_mansion_vista",
+      "bnd2_interpreta_pifia",
+      "bnd2_interpreta_parcial",
+      "bnd2_interpreta_exito",
+      "bnd2_interpreta_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "interpretacion",
+       "flags": {
+        "botch": "bnd2_interpreta_pifia",
+        "partial": "bnd2_interpreta_parcial",
+        "success": "bnd2_interpreta_exito",
+        "critical": "bnd2_interpreta_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_fiesta_nobles": {
+       "via": "b2_disfraz_sospechas",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:186",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": [
+      "bnd2_disfraz"
+     ]
+    },
+    {
+     "texto": "Escuchar desde el jardin [Percepcion]",
+     "linea": 11123,
+     "despedida": false,
+     "pone": [
+      "bnd2_mansion_vista",
+      "bnd2_escucha_pifia",
+      "bnd2_escucha_parcial",
+      "bnd2_escucha_exito",
+      "bnd2_escucha_critico"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [
+      {
+       "skill": "percepcion",
+       "flags": {
+        "botch": "bnd2_escucha_pifia",
+        "partial": "bnd2_escucha_parcial",
+        "success": "bnd2_escucha_exito",
+        "critical": "bnd2_escucha_critico"
+       }
+      }
+     ],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_fiesta_rumores": {
+       "via": "b2_escucha_rumores",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:185",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      },
+      "bnd2_fiesta_nobles": {
+       "via": "b2_escucha_rumores",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:186",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_noche_papeles",
+   "linea": 13862,
+   "peso": 1.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Dejarle los papeles sin hablar",
+     "linea": 13889,
+     "despedida": false,
+     "pone": [
+      "bnd2_informe_dado",
+      "bnd2_papeles_mostrados"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd_venides_10": {
+       "via": "b2_venides_hombres",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:1840",
+         "cual": "b3_venides_arenga_10",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        },
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:2292",
+         "cual": "b3_saqueadores_10",
+         "tipo": "beat",
+         "rol": "flag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_vecina_ventana",
+   "linea": 13917,
+   "peso": 1.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Que has visto?",
+     "linea": 13944,
+     "despedida": false,
+     "pone": [
+      "bnd2_vecina_ventana_t_cortinas",
+      "bnd2_pista_cortinas"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_pista_cortinas": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:191",
+        "cual": "b3_plaza_vacia",
+        "tipo": "beat",
+        "rol": "noflag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": [
+      "bnd2_vecina_ventana_t_cortinas"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "b2_gitanos_recelo",
+   "linea": 16574,
+   "peso": 1.0,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Cargar agua del río hasta llenar los cubos",
+     "linea": 16604,
+     "despedida": false,
+     "pone": [
+      "bnd2_zarela_confia",
+      "bnd2_aliado_gitanos",
+      "bnd2_tiene_aliados",
+      "bnd2_gitanos_resuelto"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.25,
+     "objetos": [],
+     "heridas": [],
+     "directas": {
+      "bnd2_aliado_gitanos": [
+       {
+        "donde": "assets/adventures/boundington_ocaso.json:6403",
+        "cual": "b3_huida_gitanos",
+        "tipo": "beat",
+        "rol": "flag",
+        "dia": "ocaso"
+       }
+      ]
+     },
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b2_fiesta_cocina",
+   "linea": 10298,
+   "peso": 0.5,
+   "top": false,
+   "opciones": [
+    {
+     "texto": "Entrar por la cocina",
+     "linea": 10320,
+     "despedida": false,
+     "pone": [
+      "bnd2_fiesta_segunda_usada",
+      "bnd2_fiesta_dentro"
+     ],
+     "quita": [
+      "bnd2_fiesta_resuelta",
+      "bnd2_convence_pifia",
+      "bnd2_convence_parcial",
+      "bnd2_echado",
+      "bnd2_arriba_pifia",
+      "bnd2_arriba_parcial",
+      "bnd2_robo_pifia",
+      "bnd2_robo_parcial",
+      "bnd2_despacho_intentado"
+     ],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd2_fiesta_nobles": {
+       "via": "b2_dentro",
+       "lecturas": [
+        {
+         "donde": "assets/adventures/boundington_ocaso.json:186",
+         "cual": "b3_plaza_vacia",
+         "tipo": "beat",
+         "rol": "noflag",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  }
+ ],
+ "avisos": [
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_skilla_espada_devuelta_vista:736",
+   "dato": "bnd2_tiene_aliados",
+   "opcion": "Devolvérsela"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_skilla_espada_devuelta_vista:786",
+   "dato": "bnd2_tiene_aliados",
+   "opcion": "Devolvérsela y contarle todo"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_skilla_espada_devuelta:907",
+   "dato": "bnd2_tiene_aliados",
+   "opcion": "Devolvérsela"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_skilla_espada_devuelta:957",
+   "dato": "bnd2_tiene_aliados",
+   "opcion": "Devolvérsela y contarle todo"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_capitan_muerto:3902",
+   "dato": "bnd2_pista_guardia",
+   "opcion": "¿Cuantos hombres tienes?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_capitan:4016",
+   "dato": "bnd2_pista_guardia",
+   "opcion": "¿Cuantos hombres tienes?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_castillo_prueba:4197",
+   "dato": "bnd2_tiene_aliados",
+   "opcion": "Ensenarle una prueba de los Perdidos"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_castillo_prueba:4240",
+   "dato": "bnd2_tiene_aliados",
+   "opcion": "Venides hablaria por mi"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_disfraz_hallado_xila:4503",
+   "dato": "bnd2_disfraz_noble",
+   "opcion": "De noble excéntrico de Ascaria"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_disfraz_hallado_xila:4522",
+   "dato": "bnd2_disfraz_actor",
+   "opcion": "De actor"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_disfraz_hallado:4594",
+   "dato": "bnd2_disfraz_noble",
+   "opcion": "De noble excéntrico de Ascaria"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_disfraz_hallado:4613",
+   "dato": "bnd2_disfraz_actor",
+   "opcion": "De actor"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_xila_escalon:4710",
+   "dato": "bnd2_xila_te_lleva",
+   "opcion": "¿Que sabes hoy?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_xila_escalon_s0:4816",
+   "dato": "bnd2_xila_te_lleva",
+   "opcion": "¿Que sabes hoy?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_xila_escalon_p0:4923",
+   "dato": "bnd2_xila_te_lleva",
+   "opcion": "¿Que sabes hoy?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_forjador:5082",
+   "dato": "bnd2_pista_surysal_prisa",
+   "opcion": "¿Para qué tanta prisa?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_forjador:5108",
+   "dato": "bnd1_pista_oro_nuevo",
+   "opcion": "¿Quién os paga?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_forjador:5137",
+   "dato": "bnd2_pista_surysal_instructor",
+   "opcion": "¿Quién os enseña a pelear?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_forjador_s0:5207",
+   "dato": "bnd2_pista_surysal_prisa",
+   "opcion": "¿Para qué tanta prisa?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_forjador_s0:5233",
+   "dato": "bnd1_pista_oro_nuevo",
+   "opcion": "¿Quién os paga?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_forjador_p0:5306",
+   "dato": "bnd2_pista_surysal_prisa",
+   "opcion": "¿Para qué tanta prisa?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_forjador_p0:5332",
+   "dato": "bnd1_pista_oro_nuevo",
+   "opcion": "¿Quién os paga?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_vecina_horca:5406",
+   "dato": "bnd2_pista_surysal_horcas",
+   "opcion": "¿Una horca como una lanza?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_vecina_horca_s0:5514",
+   "dato": "bnd2_pista_surysal_horcas",
+   "opcion": "¿Una horca como una lanza?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_vecina_horca_s1:5646",
+   "dato": "bnd2_pista_surysal_campanas",
+   "opcion": "¿Qué día es «el día»?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_vecina_horca_p0:5734",
+   "dato": "bnd2_pista_surysal_horcas",
+   "opcion": "¿Una horca como una lanza?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_guardian_charla:5867",
+   "dato": "bnd2_pista_puente_vigilado",
+   "opcion": "¿Qué pasa en el puente?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_guardian_charla_s0:5973",
+   "dato": "bnd2_pista_puente_vigilado",
+   "opcion": "¿Qué pasa en el puente?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_guardian_charla_p0:6185",
+   "dato": "bnd2_pista_puente_vigilado",
+   "opcion": "¿Qué pasa en el puente?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_padre_barriada:7090",
+   "dato": "bnd2_pista_padre_arde",
+   "opcion": "¿Volveréis a la ciudad?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_padre_barriada_s0:7204",
+   "dato": "bnd2_pista_padre_arde",
+   "opcion": "¿Volveréis a la ciudad?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_padre_barriada_p0:7321",
+   "dato": "bnd2_pista_padre_arde",
+   "opcion": "¿Volveréis a la ciudad?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_guardian_segunda:7396",
+   "dato": "bnd2_guardian_favor",
+   "opcion": "¿Qué favor?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_instructor_gris:7653",
+   "dato": "bnd2_instructor_puente_preguntado",
+   "opcion": "Quien vigila el puente?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_instructor_gris_s0:7787",
+   "dato": "bnd2_instructor_puente_preguntado",
+   "opcion": "Quien vigila el puente?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_instructor_gris_p0:7922",
+   "dato": "bnd2_instructor_puente_preguntado",
+   "opcion": "Quien vigila el puente?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_instructor_fallo:8068",
+   "dato": "bnd2_pista_puente",
+   "opcion": "Preguntar por el puente"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_zarela_s2_a:8589",
+   "dato": "bnd2_pista_perdidos_cuentan",
+   "opcion": "¿Han venido los Perdidos por aquí?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_saqueadores_ganan:9943",
+   "dato": "rec_amuleto_velar",
+   "opcion": "Quedarte a velar la noche con ellos"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_cocina:10320",
+   "dato": "bnd2_fiesta_segunda_usada",
+   "opcion": "Entrar por la cocina"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_puerta:10414",
+   "dato": "bnd2_fiesta_intentada",
+   "opcion": "Esquivar al vigilante [Sigilo]"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_vigilante_charla:10579",
+   "dato": "bnd2_vigilante_amigo",
+   "opcion": "¿Muchos anos de vigilante?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_cobrador:10696",
+   "dato": "bnd2_cobrador_amenazado",
+   "opcion": "Amenazarle"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_cobrador:10730",
+   "dato": "bnd2_cobrador_hablado",
+   "opcion": "¿Quien no paga en este barrio? [Persuasion]"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_edul_fiesta:10846",
+   "dato": "bnd2_con_edul",
+   "opcion": "Hablarle de Venides"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_edul_fiesta:10885",
+   "dato": "bnd2_con_edul",
+   "opcion": "¿Quien es el anfitrion?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_vigilante_te_para:10940",
+   "dato": "bnd2_vigilante_hablado",
+   "opcion": "Convencerle de que te deje pasar [Persuasion]"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_vigilante_te_para:10964",
+   "dato": "bnd2_vigilante_hablado",
+   "opcion": "Buscar otra ruta por los jardines"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_vigilante_te_para:10964",
+   "dato": "bnd2_por_los_jardines",
+   "opcion": "Buscar otra ruta por los jardines"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_vigilante_te_para:10989",
+   "dato": "bnd2_vigilante_hablado",
+   "opcion": "Irte"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_mansion:11146",
+   "dato": "bnd2_escalada_pedida",
+   "opcion": "Saltar la verja y entrar por una ventana [Atletismo]"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_mercaderes:11801",
+   "dato": "bnd2_fiesta_mercaderes",
+   "opcion": "Como va la noche?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_mercaderes_s0:11893",
+   "dato": "bnd2_fiesta_mercaderes",
+   "opcion": "Como va la noche?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_mercaderes_p0:11986",
+   "dato": "bnd2_fiesta_mercaderes",
+   "opcion": "Como va la noche?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_musicos:12080",
+   "dato": "bnd2_cuarteto_pista",
+   "opcion": "Como va la noche?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_musicos_s0:12172",
+   "dato": "bnd2_cuarteto_pista",
+   "opcion": "Como va la noche?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_musicos_p0:12265",
+   "dato": "bnd2_cuarteto_pista",
+   "opcion": "Como va la noche?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_criados:12359",
+   "dato": "bnd2_criado_pista",
+   "opcion": "Como va la noche?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_criados_s0:12451",
+   "dato": "bnd2_criado_pista",
+   "opcion": "Como va la noche?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_criados_p0:12544",
+   "dato": "bnd2_criado_pista",
+   "opcion": "Como va la noche?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_anfitriona:12638",
+   "dato": "bnd2_traje_notado",
+   "opcion": "Como va la noche?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_anfitriona_s0:12730",
+   "dato": "bnd2_traje_notado",
+   "opcion": "Como va la noche?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_anfitriona_p0:12823",
+   "dato": "bnd2_traje_notado",
+   "opcion": "Como va la noche?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_dentro:12930",
+   "dato": "bnd2_despacho_buscado",
+   "opcion": "Subir al despacho"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_copas:12986",
+   "dato": "bnd2_noble_copas_ofrecidas",
+   "opcion": "Tres copas de mi cuenta (6 de oro)"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_copas:13012",
+   "dato": "bnd2_noble_copas_ofrecidas",
+   "opcion": "Prefiero hacerle preguntas"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_sonsaca_exito:13405",
+   "dato": "bnd2_noble_chantajeado",
+   "opcion": "Chantajearle"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_noche_rosita_informa_confianza:13595",
+   "dato": "bnd2_venides_enganado",
+   "opcion": "Contarle el ataque, pero no lo de Edul y Verina"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_noche_rosita_informa:13788",
+   "dato": "bnd2_venides_enganado",
+   "opcion": "Contarle el ataque, pero no lo de Edul y Verina"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_noche_papeles:13889",
+   "dato": "bnd2_papeles_mostrados",
+   "opcion": "Dejarle los papeles sin hablar"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_noche_papeles:13905",
+   "dato": "bnd2_papeles_prefiere_hablar",
+   "opcion": "Prefiero contartelo yo"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_venides_noche_rosita:14385",
+   "dato": "bnd2_venides_enganado",
+   "opcion": "Contarle el ataque, pero no lo de Edul y Verina"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_venides_noche_todo:14580",
+   "dato": "bnd2_venides_enganado",
+   "opcion": "Contarle el ataque, pero no lo de Edul y Verina"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_venides_noche_rosita2:14782",
+   "dato": "bnd2_venides_enganado",
+   "opcion": "Contarle el ataque, pero no lo de Edul y Verina"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_venides_noche:14982",
+   "dato": "bnd2_venides_enganado",
+   "opcion": "Contarle el ataque, pero no lo de Edul y Verina"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_gitanos_recelo:16604",
+   "dato": "bnd2_tiene_aliados",
+   "opcion": "Cargar agua del río hasta llenar los cubos"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_gitanos_puerta_cerrada:16686",
+   "dato": "bnd2_tiene_aliados",
+   "opcion": "Volver con un saco de grano (10) y cargar tablas"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_vuelta:16764",
+   "dato": "bnd2_fiesta_vuelta_usada",
+   "opcion": "Volver y pagar al portero (10)"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b2_fiesta_vuelta:16804",
+   "dato": "bnd2_fiesta_vuelta_usada",
+   "opcion": "Dejarlo estar"
+  },
+  {
+   "tipo": "opciones-iguales",
+   "donde": "b2_rosita_revela:1094",
+   "dato": "¿Qué fue de los otros tres? | No preguntar más",
+   "opcion": "bnd2_rosita_semilla"
+  },
+  {
+   "tipo": "opciones-iguales",
+   "donde": "b2_castillo_prueba:4197",
+   "dato": "Ensenarle una prueba de los Perdidos | Venides hablaria por mi",
+   "opcion": "bnd2_guardia_preparada,bnd2_tiene_aliados"
+  },
+  {
+   "tipo": "opciones-iguales",
+   "donde": "b2_vigilante_charla:10503",
+   "dato": "Convencerle de que te deje pasar [Persuasion] | Vengo a tocar en la fiesta. [Persuasion]",
+   "opcion": "bnd2_convence_critico,bnd2_convence_exito,bnd2_convence_parcial,bnd2_convence_pifia,bnd2_fiesta_intentada,bnd2_vigilante_charlado,bnd2_vigilante_hablado"
+  },
+  {
+   "tipo": "opciones-iguales",
+   "donde": "b2_invitados:13059",
+   "dato": "Sonsacar al noble que brinda [Engano] | Sonsacarle, con el traje roto [Engano]",
+   "opcion": "bnd2_sonsaca_critico,bnd2_sonsaca_exito,bnd2_sonsaca_parcial,bnd2_sonsaca_pifia"
+  },
+  {
+   "tipo": "opciones-iguales",
+   "donde": "b2_noche_rosita_informa:13694",
+   "dato": "Contarselo todo | Contarselo todo y ensenarle las pruebas",
+   "opcion": "bnd2_informe_dado,bnd2_venides_leal"
+  },
+  {
+   "tipo": "opciones-iguales",
+   "donde": "b2_venides_noche_rosita:14291",
+   "dato": "Contarselo todo | Contarselo todo y ensenarle las pruebas",
+   "opcion": "bnd2_informe_dado,bnd2_venides_leal"
+  },
+  {
+   "tipo": "opciones-iguales",
+   "donde": "b2_venides_noche_todo:14486",
+   "dato": "Contarselo todo | Contarselo todo y ensenarle las pruebas",
+   "opcion": "bnd2_informe_dado,bnd2_venides_leal"
+  },
+  {
+   "tipo": "opciones-iguales",
+   "donde": "b2_venides_noche_rosita2:14688",
+   "dato": "Contarselo todo | Contarselo todo y ensenarle las pruebas",
+   "opcion": "bnd2_informe_dado,bnd2_venides_leal"
+  },
+  {
+   "tipo": "opciones-iguales",
+   "donde": "b2_venides_noche:14888",
+   "dato": "Contarselo todo | Contarselo todo y ensenarle las pruebas",
+   "opcion": "bnd2_informe_dado,bnd2_venides_leal"
+  }
+ ]
+}
