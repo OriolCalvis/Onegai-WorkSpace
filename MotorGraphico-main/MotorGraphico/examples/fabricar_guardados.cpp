@@ -13,6 +13,8 @@
 //   ./fabricar_guardados --capturas-dia3 [carpeta]      E-MATRIZ-03 fase C: m3_{fiesta,informe}.json para los guiones tools/guiones/m3_*.txt
 //   ./fabricar_guardados --capturas-gorran [carpeta]    E-MATRIZ-02 fase C: m2_{tregua,mia_perdida,cuatro_lios,subasta}.json, parados antes
 //                                                        de la escena que enseñan los guiones tools/guiones/m2_*.txt
+//   ./fabricar_guardados --capturas-disparadores [carpeta]  E-DISPARADORES-2 E6: d_sermon.json y d_velas.json, con el jugador FUERA de la zona de
+//                                                        plaza_sermon / bgd_velas pero dentro de su radio (guiones tools/guiones/d_*.txt)
 //   ./fabricar_guardados --matriz-gorran [carpeta]      E-MATRIZ-02: gorran_<camino>.json (un guardado por camino del dia de Gorran,
 //                                                        con el dia cerrado) y las mismas ranuras (las 7 primeras: los 20 del dia 1
 //                                                        ya llenan las de --matriz, asi que van aparte; la ultima que se corre manda)
@@ -322,6 +324,65 @@ int capturasGorran(const std::string& carpeta) {
     return fallos == 0 ? 0 : 1;
 }
 
+// E-DISPARADORES-2 E6: dos guardados para ver en ventana el disparador por radio y vision (juego --guardado ... --guion tools/guiones/d_*.txt).
+//   d_sermon.json  Ocaso, ciudad_centro, en (62,54): fuera de la zona [49,49,61,58] de plaza_sermon, a 7 del foco (55,55), con vision.
+//   d_velas.json   Gorran, mina2_gorran, en (21,35): fuera de la zona [15,23,27,31] de bgd_velas, a 5 del foco (21,30) (interior grande: radio 5),
+//                  con el rapto hecho (bgd_gancho) y sin cerrar el lio de la mina.
+int capturasDisparadores(const std::string& carpeta) {
+    std::filesystem::create_directories(carpeta);
+    const demo_bnd::Guiones g = demo_bnd::cargaTodo();
+    const fabricar::Heroe heroe = fabricar::creaHeroe();
+    int fallos = 0;
+    const auto escribe = [&](const SaveGameData& data, const char* archivo) {
+        const std::string ruta = carpeta + "/" + archivo;
+        std::string error;
+        if (!writeSaveGameFile(ruta, data, &error)) {
+            std::cerr << "No se pudo escribir " << ruta << ": " << error << "\n";
+            ++fallos;
+            return;
+        }
+        std::cout << ruta << ": " << data.levelPath << " (" << data.playerPosition.x << "," << data.playerPosition.y << ")\n";
+    };
+    {  // El sermon: el Ocaso en la plaza, antes de pisar la zona.
+        fabricar::CaminoDia3 c3 = fabricar::caminoDia3("fiesta_dentro");
+        c3.desde1 = "edul_dudas";
+        fabricar::Partida p(g, heroe, fabricar::caminoDia1("edul_dudas").suerte);
+        fabricar::juegaHastaElDia3(p, c3, true);
+        fabricar::fase(p.j, "ocaso");
+        require(p.j.s.hasFlag("bnd2_dia_cerrado") && !p.j.s.hasFlag("bnd3_campanas") && !p.j.s.hasFlag("cine_plaza_sermon_vista"));
+        static const fabricar::Momento fuera{"d_sermon.json", "ciudad_centro", "", 0, 0, 62, 54};
+        escribe(fabricar::fotografia(p.j, heroe, fuera), "d_sermon.json");
+    }
+    {  // Las velas: el dia de Gorran con los lios B y A cerrados (el rapto de Tinet y Mia, bgd_gancho) y sin entrar aun en la mina vieja.
+        const fabricar::CaminoDia1& d1 = fabricar::caminoDia1("edul_dudas");
+        fabricar::Partida pa(g, heroe, d1.suerte);
+        demo_bnd::Jugador& j = pa.j;
+        j.prefiere = d1.dice;
+        j.prefiere.insert(j.prefiere.end(), {"Pagar la cama", "Subir a dormir"});
+        for (const auto& f : d1.fuerza) j.tiradas[f.first] = f.second;
+        for (const std::string& f : d1.pierde) j.pierde.insert(f);
+        for (const std::string& f : d1.huye) j.huyen.insert(f);
+        j.prologo();
+        fabricar::fase(j, "dia1");
+        fabricar::recorre(j, d1.ruta);
+        j.suerte = demo_bnd::Suerte::Buena;
+        require(fabricar::cierraElDia1(j));
+        j.prefiere.clear();
+        demo_bnd::Jugador::DiaDeGorran dg;
+        dg.lios = "BA";
+        dg.cuantos = 2;
+        dg.parada = "subasta";
+        dg.amaneceElTercero = false;
+        fabricar::fase(j, "dia_gorran");
+        j.juegaElDiaDeGorran(dg);
+        std::cout << "velas: bgd_gancho=" << j.s.hasFlag("bgd_gancho") << " bgd_cerrada=" << j.s.hasFlag("bgd_cerrada") << " vista=" << j.s.hasFlag("cine_bgd_velas_vista") << "\n";
+        require(j.s.hasFlag("bgd_gancho") && !j.s.hasFlag("bgd_cerrada") && !j.s.hasFlag("cine_bgd_velas_vista"));
+        static const fabricar::Momento fuera{"d_velas.json", "mina2_gorran", "", 0, 0, 21, 35};
+        escribe(fabricar::fotografia(j, heroe, fuera), "d_velas.json");
+    }
+    return fallos == 0 ? 0 : 1;
+}
+
 int main(int argc, char** argv) {
     if (argc > 1 && std::string(argv[1]) == "--capturas-cierre") {
         const std::string solo = argc > 3 ? argv[3] : "";
@@ -331,6 +392,7 @@ int main(int argc, char** argv) {
     if (argc > 1 && std::string(argv[1]) == "--capturas-dia3") return capturasDia3(argc > 2 ? argv[2] : "guardados");
     if (argc > 1 && std::string(argv[1]) == "--matriz-ocaso") return matrizOcaso(argc > 2 ? argv[2] : "guardados");
     if (argc > 1 && std::string(argv[1]) == "--capturas-ocaso-m1") return capturasOcasoM1(argc > 2 ? argv[2] : "guardados");
+    if (argc > 1 && std::string(argv[1]) == "--capturas-disparadores") return capturasDisparadores(argc > 2 ? argv[2] : "guardados");
     if (argc > 1 && std::string(argv[1]) == "--matriz-dia3") return matrizDia3(argc > 2 ? argv[2] : "guardados");
     if (argc > 1 && std::string(argv[1]) == "--capturas-gorran") return capturasGorran(argc > 2 ? argv[2] : "guardados");
     if (argc > 1 && std::string(argv[1]) == "--matriz") return matriz(argc > 2 ? argv[2] : "guardados");

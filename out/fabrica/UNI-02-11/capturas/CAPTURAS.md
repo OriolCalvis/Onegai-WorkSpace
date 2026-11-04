@@ -98,3 +98,22 @@ Lo que el juego hace al cargar (importa para entender los guardados): un beat `a
 | cierre_dia | Narracion 4/4 de cierre_silencio: «y manana nadie estara mirando hacia alli.» (dia_cerrado) |
 
 Limites honestos: (1) en ventana, venides_noche, encapuchado y ceremonia el cierre es una flag de «visto» que enciende el primer beat, asi que la captura enseña ese dialogo, no un final distinto. (2) En archivo se ve la escena de la sala de estudio (el flag cierra al pisar la zona), no un dialogo propio del archivo. (3) Las tiradas no se forzaron en el juego: se sembro la flag del resultado (aigren, carterista, sectarios, familia, presentaciones). (4) `edul_hablado` se siembra a mano en la escena `edul_rescate` de la prueba (no en las capturas). Borradas por no ensenar el dialogo: `q1_almacen_dialogo.png` (sin dialogo) y `q1_{aigren,luisarda,xila,familia}_dialogo.png` (solo la narracion de entrada); se quedan `q1_{ventana,jornaleros,venides_noche,encapuchado}_dialogo.png`.
+
+---
+
+# E-DISPARADORES-2 (04/11) — disparadores por proximidad en la VENTANA real (OpenGL), `juego --guardado ... --guion ...`
+
+Guardados: `out/fabrica/UNI-02-11/guardados_disparadores/` (`fabricar_guardados --capturas-disparadores`), guiones `tools/guiones/d_{sermon,velas,sermon_tapado}.txt`, `perl -e 'alarm 150; exec @ARGV'`. Todas miradas con Read, una a una. Trazas en `logs_disparadores2/juego_d_*.log` (un parche de depuracion TEMPORAL, no commiteado, imprimia la ruta que calcula el motor y cada paso del jugador). Camara: tarda unos 100 fotogramas en asentarse sobre el jugador tras cargar el guardado, y no sigue al jugador de forma que se aprecie el paseo (el jugador sale a veces tras una casa, que se vuelve translucida): el PASEO se demuestra por la traza (8 pasos de (62,54) a (55,55) / 5 de (21,35) a (21,30)), no solo por las imagenes.
+
+| PNG | Que se ve de verdad |
+|---|---|
+| `d_sermon_0_fuera.png` (f30) | Casco Antiguo, de noche (dia 3): la iglesia en ruinas, el jugador (pelo naranja, espada) al borde este del mapa, junto a las casas, FUERA de la zona de la plaza [49,49,61,58] (esta en (62,54)). Sin dialogo; HUD con el objetivo «Ve a la plaza del Casco Antiguo y mira que pasa». |
+| `d_sermon_1_camina.png`, `d_sermon_2_camina.png` (f60, f90) | La misma vista con la camara desplazandose; el jugador ya se mueve hacia la plaza (la traza dice: 8 pasos, primero `-1,0` desde (62,54)). Todavia sin dialogo. |
+| `d_sermon_3_llega.png`, `d_sermon_4_escena.png` (f120, f150) | El jugador pasa por detras de la casa de tejado azul (que se vuelve translucida) camino del foco (55,55), delante del estrado. Aun sin dialogo. |
+| `d_sermon_5_dialogo.png` (f260) | Arranca la escena: caja «SANDES» «La luz se perdio porque os la quitaron. Lo que se quita, se recupera.» 1/5 (beat `bnd3_esc04_sermon`). El jugador no ha pulsado nada. |
+| `d_sermon_tapado_0/1/2.png` (f30, f120, f260) | EL MISMO guardado, con tres `carro_o1` (`tapaVista`) puestos en (59..61,54) en la copia del nivel de la build (se ven al lado del jugador): el jugador se queda quieto y NO sale ningun dialogo en 260 fotogramas; la traza no tiene linea `efectiva` (no empezo la escena). Es la prueba de que el objeto tapa la vista. |
+| `d_velas_0_fuera.png` (f5) | Mina vieja del Cojo (dia 2, manana): el jugador en la parte baja (21,35), FUERA de la zona [15,23,27,31], los PNJ de la escena (Tinet y Mia, el diacono) arriba, sin dialogo. |
+| `d_velas_1_camina.png`, `d_velas_2_llega.png` (f30, f80) | El jugador sube hacia la puerta de piedra: la traza dice 5 pasos `0,-1` de (21,35) a (21,30); en f80 va a medio camino, cerca de los dos sectarios. |
+| `d_velas_3_escena.png`, `d_velas_4_escena.png` (f150, f260) | f150: el jugador ya en (21,30), mirando arriba, sin dialogo aun; f260: narracion «El gran corte de la mina vieja. Velas en circulo alrededor de la puerta de piedra; la piedra suda.» 1/3 (beat `bgd_cine_velas`). |
+
+Limites honestos: (1) no se capturo un combate disparado (`accion: combate`) ni una zona `once: false` en ventana: ninguna escena del juego los usa todavia; solo pruebas gl-free con mutacion. (2) El caso `tapaVista` usa objetos puestos a mano en la build (el save se fabrico con ellos); el nivel del repo no los lleva. (3) `d_sermon_0` es f30 porque en f5 la camara aun esta en el centro de la ciudad (no se ve al jugador). (4) Las capturas del modo `once` (por defecto) solo muestran que la escena arranca una vez.

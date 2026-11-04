@@ -2,7 +2,7 @@
 
 Generado por `MotorGraphico/tools/matriz_misiones.py --dia primer_dia` (no editar a mano: se regenera). Fuente: `assets/adventures/boundington_primer_dia.json` (393 beats, todos asignados a una misión: 0 sin misión, 0 en dos).
 
-**25 misiones**, **25** se pueden cerrar (alcanzabilidad estática: el beat que enciende el cierre tiene requisitos alcanzables, PNJ en un nivel y no escondido por `ocultoSi`). Cobertura del explorador (../../out/fabrica/UNI-02-11/explorar_20_post.log, 20 partidas): ver columna «vistos».
+**25 misiones**, **25** se pueden cerrar (alcanzabilidad estática: el beat que enciende el cierre tiene requisitos alcanzables, PNJ en un nivel y no escondido por `ocultoSi`). Cobertura del explorador (../../out/fabrica/UNI-02-11/explorar_20_disp2.log, 20 partidas): ver columna «vistos».
 
 Una misión = grupo de beats con un comienzo y un cierre. `mision` tiene cierre propio; `charla` es ambiente de un PNJ (su cierre es despedirse; la flag es la de «visto»).
 
@@ -10,26 +10,26 @@ Una misión = grupo de beats con un comienzo y un cierre. `mision` tiene cierre 
 
 | # | misión | tipo | empieza (PNJ / nivel) | se abre con | se cierra con | recompensa | diario | vistos | ¿cierra? |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | **La primera noche: cama y rumores en la Taberna Humilde** `llegada_cama` | mision | b0_puerta_cerrada, skilla / interior_taberna | `b0_llegada:68` enter `interior_taberna.json` | `bnd0_dormido` (b0_subir_oido:265, b0_subir:314) | oro +0/-105 | obj_posada, obj_preguntar | 20/22 | sí |
+| 1 | **La primera noche: cama y rumores en la Taberna Humilde** `llegada_cama` | mision | b0_puerta_cerrada, skilla / interior_taberna | `b0_llegada:68` enter `interior_taberna.json` | `bnd0_dormido` (b0_subir_oido:265, b0_subir:314) | oro +0/-105 | obj_posada, obj_preguntar | 19/22 | sí |
 | 2 | **Los vecinos de la ventana** `ventana` | charla | bordadora, carretero_jubilado / cueva_gorran | `b0_bordadora:2499` talk `bordadora` | `bnd0_ventana_visto` (b0_ventana_v0:2953, b0_ventana:3070) | — | obj_preguntar | 9/9 | sí |
 | 3 | **El rincon de los jornaleros (Tomas, Berto y el tercero)** `jornaleros` | mision | tomas_jornalero, berto_jornalero / interior_taberna | `b0_tomas:2577` talk `tomas_jornalero` | `bnd0_rincon_hecho`, `bnd_rumor_parroquiano` (b0_rincon:3534, b1_rincon_amigos:5014, beat_parroquiano:5047) | moral: reirse_de_tomas(menor-) | obj_preguntar | 11/13 | sí |
-| 4 | **El hombre de la capucha** `encapuchado` | charla | encapuchado / interior_taberna | `b0_capucha:2825` talk `encapuchado` | `bnd0_capucha_vista` (b0_capucha:2825) | — | — | 1/3 | sí |
-| 5 | **El caballero que escribe (Venides, de noche)** `venides_noche` | charla | venides / interior_taberna | `b0_venides:1941` talk `venides` | `bnd0_venides_visto` (b0_venides_v0:1703, b0_venides_v1:1822, b0_venides:1941) | — | obj_preguntar | 7/9 | sí |
+| 4 | **El hombre de la capucha** `encapuchado` | charla | encapuchado / interior_taberna | `b0_capucha:2825` talk `encapuchado` | `bnd0_capucha_vista` (b0_capucha:2825) | — | — | 3/3 | sí |
+| 5 | **El caballero que escribe (Venides, de noche)** `venides_noche` | charla | venides / interior_taberna | `b0_venides:1941` talk `venides` | `bnd0_venides_visto` (b0_venides_v0:1703, b0_venides_v1:1822, b0_venides:1941) | — | obj_preguntar | 5/9 | sí |
 | 6 | **El desayuno con Venides y su encargo** `desayuno` | mision | b0_puerta_cerrada, venides / interior_taberna | `b1_desayuno:4152` auto `` | `bnd1_desayuno_hecho` (b1_desayuno_v0:3996, b1_desayuno:4152, b1_desayuno_s0_a:4307) | — | obj_preguntar | 14/14 | sí |
 | 7 | **Presentarte a los tenderos y la emboscada de la plaza** `presentaciones` | mision | tendero_mercado, joyero / ciudad_centro | `beat_llegada:4725` enter `ciudad_centro.json` | `bnd_tut_cerrado` (tut_victoria:17882, tut_derrota:17923, tut_huida:17967) | oro +15/-15; nivel +1.8 | obj_tut_tendero, obj_tut_joyero, obj_tut_sastre (+1) | 9/10 | sí |
 | 8 | **Recorrer la plaza y escuchar al vecindario** `plaza` | mision | anciana, vecino_de_plaza / ciudad_centro | `tut_plaza:13830` enter `ciudad_centro.json` | `bnd1_plaza_explorada` (tut_plaza:13830, tut_plaza_ya:13859) | — | obj_preguntar, obj_plaza | 7/8 | sí |
 | 9 | **El carterista de la plaza (la pulga)** `carterista` | mision | carterista / ciudad_centro | `b1_carterista:13784` enter `ciudad_centro.json` | `bnd1_carterista_resuelto` (b1_carterista_pillado:26069, b1_carterista_robo:26664) | oro +10/-10; moral: carterista_perdonado(menor+), robar_al_ladron(menor-) | obj_preguntar | 7/10 | sí |
-| 10 | **Aigren, el herrero (por su hijo o por los Perdidos)** `aigren` | mision | aigren / interior_herreria | `b1_aigren_charla:5478` talk `aigren` | `bnd1_aigren_resuelto` (b1_aigren_envio:6130, b1_aigren_perdidos:18107, b1_aigren_redimido:18197) | moral: aigren_presionado(medio-), aigren_redimido(medio+), aigren_saca_a_su_hijo(menor+) | obj_preguntar, bnd1_op_aigren_segunda | 23/25 | sí |
+| 10 | **Aigren, el herrero (por su hijo o por los Perdidos)** `aigren` | mision | aigren / interior_herreria | `b1_aigren_charla:5478` talk `aigren` | `bnd1_aigren_resuelto` (b1_aigren_envio:6130, b1_aigren_perdidos:18107, b1_aigren_redimido:18197) | moral: aigren_presionado(medio-), aigren_redimido(medio+), aigren_saca_a_su_hijo(menor+) | obj_preguntar, bnd1_op_aigren_segunda | 21/25 | sí |
 | 11 | **Luisarda, la sastra: cenar con Rosita o sonsacarla** `luisarda` | mision | skilla, luisarda / interior_sastreria | `b1_luisarda_tienda:6511` talk `luisarda` | `bnd1_luisarda_con_rosita`, `bnd1_luisarda_vista`, `bnd1_luisarda_dejada` (b1_luisarda_recado:7088, b1_luisarda:7209, b1_luisarda_pide:19001) | objetos: pocion x2, pocion x2, pocion x2; moral: luisarda_malos_modos(menor-), luisarda_silencio(menor+), luisarda_animada(menor+), luisarda_con_rosita(menor+) | obj_preguntar, bnd1_op_luisarda, bnd1_op_luisarda_segunda | 22/28 | sí |
 | 12 | **Los sectarios de la plaza (la bolsa y la invitacion)** `sectarios` | mision | sectario_perdido / ciudad_centro | `b1_secta:7643` talk `sectario_perdido` | `bnd1_sectarios_resueltos` (b1_secta_s3:8089, b1_secta_burla:19382, b1_sectarios_masacre:19513) | oro +15/0 | obj_preguntar | 15/17 | sí |
-| 13 | **Xila, el antiguo mercader de Pico Dragon** `xila` | mision | xila / ciudad_oeste | `b1_xila_desconocido:8693` talk `xila` | `bnd1_xila_resuelto` (b1_xila_habla_sobrio:19677, b1_xila_habla:19737) | oro +0/-4; objetos: vendas x2; moral: xila_escuchado(menor+), xila_maltratado(menor-), xila_emborrachado(menor-), xila_sin_alcohol(menor+) | obj_preguntar, obj_xila, bnd1_op_xila | 24/27 | sí |
+| 13 | **Xila, el antiguo mercader de Pico Dragon** `xila` | mision | xila / ciudad_oeste | `b1_xila_desconocido:8693` talk `xila` | `bnd1_xila_resuelto` (b1_xila_habla_sobrio:19677, b1_xila_habla:19737) | oro +0/-4; objetos: vendas x2; moral: xila_escuchado(menor+), xila_maltratado(menor-), xila_emborrachado(menor-), xila_sin_alcohol(menor+) | obj_preguntar, obj_xila, bnd1_op_xila | 25/27 | sí |
 | 14 | **La familia de la puerta azul (el gato, los Verdaderos y la cena)** `familia` | mision | nina_del_gato / ciudad_oeste | `b1_mira:10985` talk `nina_del_gato` | `bnd1_familia_resuelta` (b1_verdaderos:11558, b1_verdaderos_ganan:20036, b1_fuego_s2_a:28429) | oro +50/0; nivel +0.5; objetos: pastel x2; moral: verdaderos_enfrentados(medio+), sumarse_verdaderos(medio-), gato_bajado(menor+), verdaderos_calmados(menor+) (+2) | obj_preguntar, bnd1_op_familia | 26/29 | sí |
-| 15 | **Las pruebas de la Iglesia de la Luz y el sacerdote** `iglesia` | mision | sacerdote / interior_iglesia | `beat_iglesia:12625` enter `interior_iglesia.json` | `bnd_pruebas_suficientes` (beat_iglesia:12625) | nivel +0.7 | obj_pruebas | 6/8 | sí |
+| 15 | **Las pruebas de la Iglesia de la Luz y el sacerdote** `iglesia` | mision | sacerdote / interior_iglesia | `beat_iglesia:12625` enter `interior_iglesia.json` | `bnd_pruebas_suficientes` (beat_iglesia:12625) | nivel +0.7 | obj_pruebas | 7/8 | sí |
 | 16 | **La ronda de noche: el cuartel y el vigilante** `ronda_noche` | mision | — / interior_cuartel | `b1_cuartel_noche:13955` enter `interior_cuartel.json` | `bnd1_vigilante_visto`, `bnd1_cuartel_visto` (b1_cuartel_noche:13955, b1_vigilante:13984) | — | — | 6/6 | sí |
 | 17 | **Entrar en la guarida: el herrero, las armas y la puerta** `entrada_guarida` | mision | — / interior_iglesia_s1 | `b1_guarida_puerta:14957` enter `interior_iglesia_s1.json` | `bnd1_guarida_dentro`, `bnd1_cripta_colado` (b1_guarida_puerta:14957, b1_herrero_exito:15062, b1_herrero_parcial:15105) | oro +40/0; nivel +1.0; objetos: pocion x1; moral: bajar_sin_armas(menor0), verina_sacada_de_la_guarida(medio+), unirse_perdidos(menor0) | — | 5/15 | sí |
 | 18 | **Descubierto en la cripta: calmar, correr, rendirse o pelear** `descubierto` | mision | — / — | `b1_cripta_descubierto:14037` auto `` | `bnd1_capturado_resuelto`, `bnd1_cripta_huida`, `bnd1_calma_cerrado` (b1_calma_exito:14184, b1_calma_parcial:14219, b1_calma_pifia:14253) | nivel +0.5; heridas 2 | — | 1/13 | sí |
 | 19 | **La ceremonia de los Perdidos y el idolo** `ceremonia` | mision | — / santuario_subterraneo | `b1_guarida_ceremonia:20281` enter `santuario_subterraneo.json` | `bnd1_ceremonia_acabada`, `bnd1_ceremonia_visto` (b1_ceremonia_acaba_sereno:14890, b1_ceremonia_acaba:14927, b1_ceremonia:27529) | nivel +0.9; moral: ver_ceremonia_gurkazaal(menor0) | obj_pruebas | 8/14 | sí |
-| 20 | **El archivo y las dependencias: copistas, literas, tunica y sabotaje** `archivo` | mision | archivo_perdidos, archivero_cripta / dependencias_secta | `b1_archivo_aviso:15792` talk `archivo_perdidos` | `bnd1_estudio_visto`, `bnd1_archivo_hecho`, `bnd1_sabotaje_hecho` (b1_estudio_vuelta:17764, b1_estudio:17790) | nivel +0.8 | obj_pruebas, bnd1_op_luisarda_segunda | 19/32 | sí |
+| 20 | **El archivo y las dependencias: copistas, literas, tunica y sabotaje** `archivo` | mision | archivo_perdidos, archivero_cripta / dependencias_secta | `b1_archivo_aviso:15792` talk `archivo_perdidos` | `bnd1_estudio_visto`, `bnd1_archivo_hecho`, `bnd1_sabotaje_hecho` (b1_estudio_vuelta:17764, b1_estudio:17790) | nivel +0.8 | obj_pruebas, bnd1_op_luisarda_segunda | 21/32 | sí |
 | 21 | **La camara honda: Sandes, el prisionero y el pozo** `camara_sereno` | mision | prisionero_cripta, pozo_cripta / camara_profunda | `b1_camara_sandes:20947` enter `camara_profunda.json` | `bnd1_sereno_libre`, `bnd1_sereno_llevado`, `bnd1_salir_pozo` (b1_sereno_s2:21669, b1_sereno_s3:21802, b1_sereno_s4:21966) | nivel +1.8; moral: unirse_perdidos(menor0), luisarda_delatada(medio-); heridas 1 | — | 20/27 | sí |
 | 22 | **Verina, Edul y la guarida: sacar, sonsacar, unirte o acabar** `verina_edul` | mision | edul_cripta, verina_cripta / dependencias_secta | `b1_edul:23791` auto `` | `bnd1_guarida_resuelta` (b1_edul_rescate:14757, b1_edul:23791, b1_edul_cripta:23997) | oro +120/0; nivel +0.3; objetos: pocion x1; moral: unirse_perdidos(menor0), plantar_cara_guarida(menor0), dudas_en_verina(menor+), verina_sacada_de_la_guarida(medio+) (+1) | — | 17/32 | sí |
 | 23 | **El informe a Venides: las pruebas y el aviso antes del alba** `informe_venides` | mision | venides / interior_taberna | `b1_borracho:11969` talk `venides` | `bnd_aviso_dado`, `bnd1_venides_informe_hecho` (b1_venides_informe_bastan:28876, b1_venides_informe:28989) | oro +60/0; nivel +0.28 | obj_pruebas, obj_venides | 10/11 | sí |
@@ -45,8 +45,8 @@ Una misión = grupo de beats con un comienzo y un cierre. `mision` tiene cierre 
 - **Se cierra** (flags `bnd0_dormido`): `b0_subir_oido:265` pone bnd0_dormido; `b0_subir:314` pone bnd0_dormido.
 - **Recompensa**: oro neto -105 (cobros 0, pagos -105).
 - **Diario**: `obj_posada` (doneFlag `bnd_skilla`, assets/adventures/boundington_primer_dia.json:39); `obj_preguntar` (doneFlag `bnd_rumor`, assets/adventures/boundington_primer_dia.json:45).
-- **Explorador**: 20/22 beats vistos. Sin ver: b0_rosita_n_perdidos, b0_rosita_n_furia
-  - Opciones que no ha elegido nadie (19): b0_rosita_n_cama#0 «¿Luisarda es amiga tuya?», b0_rosita_n_perdidos#0 «¿Qué se dice de los Perdidos?», b0_rosita_n_perdidos#1 «Bajar la voz y preguntar por los Perdidos», b0_rosita_n_perdidos#2 «Dejarlo ahí», b0_rosita_n_ella#0 «¿Cómo te llamas?», b0_rosita_n_ella#1 «Presentarte: me llamo {nombre}» (+13)
+- **Explorador**: 19/22 beats vistos. Sin ver: b0_rosita_n_perdidos, b0_rosita_n_furia, b0_rosita_p0
+  - Opciones que no ha elegido nadie (19): b0_rosita_n_perdidos#0 «¿Qué se dice de los Perdidos?», b0_rosita_n_perdidos#1 «Bajar la voz y preguntar por los Perdidos», b0_rosita_n_perdidos#2 «Dejarlo ahí», b0_rosita_n_ella#0 «¿Cómo te llamas?», b0_rosita_n_ella#1 «Presentarte: me llamo {nombre}», b0_rosita_n_ella#3 «¿Qué hay de cenar?» (+13)
 - **¿Se puede cerrar?** sí: `b0_subir_oido:265`, `b0_subir:314`
 
 ### 2. Los vecinos de la ventana (`ventana`, charla)
@@ -57,7 +57,7 @@ Una misión = grupo de beats con un comienzo y un cierre. `mision` tiene cierre 
 - **Recompensa**: oro neto +0 (cobros 0, pagos 0).
 - **Diario**: `obj_preguntar` (doneFlag `bnd_rumor`, assets/adventures/boundington_primer_dia.json:45).
 - **Explorador**: 9/9 beats vistos.
-  - Opciones que no ha elegido nadie (4): b0_ventana_v0#3 «Volver a tu mesa», b0_ventana#2 «Hablar de otra cosa», b0_ventana_p0_a#0 «Contestar de dónde vienes», b0_ventana_p0_a#3 «Volver a tu mesa»
+  - Opciones que no ha elegido nadie (5): b0_ventana#2 «Hablar de otra cosa», b0_ventana#3 «Volver a tu mesa», b0_ventana_p0_a#0 «Contestar de dónde vienes», b0_ventana_p0_a#2 «Hablar de otra cosa», b0_ventana_p0_a#3 «Volver a tu mesa»
 - **¿Se puede cerrar?** sí: `b0_ventana_v0:2953`, `b0_ventana:3070`
 
 ### 3. El rincon de los jornaleros (Tomas, Berto y el tercero) (`jornaleros`, mision)
@@ -77,7 +77,7 @@ Una misión = grupo de beats con un comienzo y un cierre. `mision` tiene cierre 
 - **Se cierra** (flags `bnd0_capucha_vista`): `b0_capucha:2825` pone bnd0_capucha_vista.
 - **Recompensa**: oro neto +0 (cobros 0, pagos 0).
 - **Diario**: sin entrada: ningún objetivo ni misión de quests.json se completa con esta misión.
-- **Explorador**: 1/3 beats vistos. Sin ver: b0_capucha_te_mira, b0_capucha_otra
+- **Explorador**: 3/3 beats vistos.
 - **¿Se puede cerrar?** sí: `b0_capucha:2825`
 
 ### 5. El caballero que escribe (Venides, de noche) (`venides_noche`, charla)
@@ -87,8 +87,8 @@ Una misión = grupo de beats con un comienzo y un cierre. `mision` tiene cierre 
 - **Se cierra** (flags `bnd0_venides_visto`): `b0_venides_v0:1703` pone bnd0_venides_visto; `b0_venides_v1:1822` pone bnd0_venides_visto; `b0_venides:1941` pone bnd0_venides_visto.
 - **Recompensa**: oro neto +0 (cobros 0, pagos 0).
 - **Diario**: `obj_preguntar` (doneFlag `bnd_rumor`, assets/adventures/boundington_primer_dia.json:45).
-- **Explorador**: 7/9 beats vistos (1 solo del héroe creado). Sin ver: b0_venides_v0, b0_venides_p0
-  - Opciones que no ha elegido nadie (18): b0_venides_n_escribes#1 «Dejarlo ahí», b0_venides_n_el#1 «¿De dónde eres?», b0_venides_n_el#2 «Pareces preocupado.», b0_venides_n_el#3 «Dejarlo ahí», b0_venides_v0#0 «¿Qué te trae a Boundington?», b0_venides_v0#1 «¿Qué escribes?» (+12)
+- **Explorador**: 5/9 beats vistos (2 solo del héroe creado). Sin ver: b0_venides_n_el, b0_venides_v0, b0_venides_s2, b0_venides_p0
+  - Opciones que no ha elegido nadie (27): b0_venides_n_escribes#1 «Dejarlo ahí», b0_venides_n_el#0 «¿Un caballero bebiendo solo?», b0_venides_n_el#1 «¿De dónde eres?», b0_venides_n_el#2 «Pareces preocupado.», b0_venides_n_el#3 «Dejarlo ahí», b0_venides_v0#0 «¿Qué te trae a Boundington?» (+21)
 - **¿Se puede cerrar?** sí: `b0_venides_v0:1703`, `b0_venides_v1:1822`, `b0_venides:1941`
 
 ### 6. El desayuno con Venides y su encargo (`desayuno`, mision)
@@ -99,7 +99,7 @@ Una misión = grupo de beats con un comienzo y un cierre. `mision` tiene cierre 
 - **Recompensa**: oro neto +0 (cobros 0, pagos 0).
 - **Diario**: `obj_preguntar` (doneFlag `bnd_rumor`, assets/adventures/boundington_primer_dia.json:45).
 - **Explorador**: 14/14 beats vistos.
-  - Opciones que no ha elegido nadie (3): b1_desayuno_n_rosita_a#1 «Dejarlo ahí», b1_desayuno#2 «Hablar de otra cosa», b1_desayuno#3 «Ponerse en marcha»
+  - Opciones que no ha elegido nadie (2): b1_desayuno_n_rosita_a#1 «Dejarlo ahí», b1_desayuno#2 «Hablar de otra cosa»
 - **¿Se puede cerrar?** sí: `b1_desayuno_v0:3996`, `b1_desayuno:4152`, `b1_desayuno_s0_a:4307`, `b1_desayuno_s1_a:4451` (+1)
 
 ### 7. Presentarte a los tenderos y la emboscada de la plaza (`presentaciones`, mision)
@@ -143,8 +143,8 @@ Una misión = grupo de beats con un comienzo y un cierre. `mision` tiene cierre 
 - **Salidas** (tiradas y combates, 3): tirada `b1_aigren_hijo` [persuasion] → bnd1_aigren_a_pifia/bnd1_aigren_a_parcial/bnd1_aigren_a_exito/bnd1_aigren_a_critico; tirada `b1_aigren_hijo` [intimidacion] → bnd1_aigren_b_pifia/bnd1_aigren_b_parcial/bnd1_aigren_b_exito/bnd1_aigren_b_critico; tirada `b1_aigren_perdidos` [persuasion] → bnd1_aigren_c_pifia/bnd1_aigren_c_parcial/bnd1_aigren_c_exito/bnd1_aigren_c_critico
 - **Recompensa**: oro neto +0 (cobros 0, pagos 0), actos aigren_presionado (medio-), aigren_redimido (medio+), aigren_saca_a_su_hijo (menor+).
 - **Diario**: `obj_preguntar` (doneFlag `bnd_rumor`, assets/adventures/boundington_primer_dia.json:45); `bnd1_op_aigren_segunda` (doneFlag `bnd1_aigren_enterado`, assets/catalogs/quests.json:227).
-- **Explorador**: 23/25 beats vistos. Sin ver: b1_aigren_discurso, b1_aigren_nada
-  - Opciones que no ha elegido nadie (1): b1_aigren_charla_n_ceaseton#0 «¿Por qué te fuiste?»
+- **Explorador**: 21/25 beats vistos. Sin ver: b1_aigren_envio, b1_aigren_otra_cosa, b1_aigren_papel, b1_aigren_nada
+  - Opciones que no ha elegido nadie (3): b1_aigren_charla_n_ceaseton#0 «¿Por qué te fuiste?», b1_aigren_charla_s0#0 «Buen acero. ¿Para quién es tanta hoja?», b1_aigren_hijo#2 «Dejarlo estar»
 - **¿Se puede cerrar?** sí: `b1_aigren_envio:6130`, `b1_aigren_perdidos:18107`, `b1_aigren_redimido:18197`, `b1_aigren_se_va:18250` (+4)
 
 ### 11. Luisarda, la sastra: cenar con Rosita o sonsacarla (`luisarda`, mision)
@@ -156,7 +156,7 @@ Una misión = grupo de beats con un comienzo y un cierre. `mision` tiene cierre 
 - **Recompensa**: oro neto +0 (cobros 0, pagos 0), objetos pocion x2 (b1_rosita_luisarda), pocion x2 (b1_luisarda_pociones_miedo), pocion x2 (b1_luisarda_pociones), actos luisarda_malos_modos (menor-), luisarda_silencio (menor+), luisarda_animada (menor+), luisarda_con_rosita (menor+).
 - **Diario**: `obj_preguntar` (doneFlag `bnd_rumor`, assets/adventures/boundington_primer_dia.json:45); `bnd1_op_luisarda` (doneFlag `bnd1_luisarda_con_rosita`, assets/catalogs/quests.json:195); `bnd1_op_luisarda_segunda` (doneFlag `bnd_pista_luisarda`, assets/catalogs/quests.json:219).
 - **Explorador**: 22/28 beats vistos. Sin ver: b1_luisarda_recado, b1_luisarda_pociones, b1_sala_p0_a, b1_luisarda_favor_cumplido, b1_luisarda_noche, b1_luisarda_calla
-  - Opciones que no ha elegido nadie (12): b1_luisarda_tienda_n_rosita#0 «Que allí tienes un plato caliente.», b1_luisarda_tienda_s0#1 «Rosita dice que no vas a cenar.», b1_luisarda_tienda_p0#1 «Rosita dice que no vas a cenar.», b1_luisarda_recado#0 «Insistir, de malos modos [Intimidación]», b1_luisarda_recado#1 «Hacerle creer que ya lo sabes todo [Engaño]», b1_luisarda_recado#2 «Convencerla, con lo de Rosita [Persuasión]» (+6)
+  - Opciones que no ha elegido nadie (13): b1_luisarda_tienda_s0#1 «Rosita dice que no vas a cenar.», b1_luisarda_tienda_s0#3 «Irte», b1_luisarda_tienda_p0#1 «Rosita dice que no vas a cenar.», b1_luisarda_recado#0 «Insistir, de malos modos [Intimidación]», b1_luisarda_recado#1 «Hacerle creer que ya lo sabes todo [Engaño]», b1_luisarda_recado#2 «Convencerla, con lo de Rosita [Persuasión]» (+7)
 - **¿Se puede cerrar?** sí: `b1_luisarda_recado:7088`, `b1_luisarda:7209`, `b1_luisarda_pide:19001`, `b1_luisarda_noche_hablada:19161`
 
 ### 12. Los sectarios de la plaza (la bolsa y la invitacion) (`sectarios`, mision)
@@ -179,8 +179,8 @@ Una misión = grupo de beats con un comienzo y un cierre. `mision` tiene cierre 
 - **Salidas** (tiradas y combates, 2): tirada `b1_xila_s3_a` [persuasion] → bnd1_xila_pifia/bnd1_xila_parcial/bnd1_xila_exito/bnd1_xila_critico; tirada `b1_xila_s3` [persuasion] → bnd1_xila_pifia/bnd1_xila_parcial/bnd1_xila_exito/bnd1_xila_critico
 - **Recompensa**: oro neto -4 (cobros 0, pagos -4), objetos vendas x2 (b1_xila_habla_sobrio), actos xila_escuchado (menor+), xila_maltratado (menor-), xila_emborrachado (menor-), xila_sin_alcohol (menor+).
 - **Diario**: `obj_preguntar` (doneFlag `bnd_rumor`, assets/adventures/boundington_primer_dia.json:45); `obj_xila` (doneFlag `bnd1_xila_conocido`, assets/catalogs/quests.json:188); `bnd1_op_xila` (doneFlag `bnd1_aliado_xila`, assets/catalogs/quests.json:211).
-- **Explorador**: 24/27 beats vistos (2 solo del héroe creado). Sin ver: b1_xila_desconocido_caster, b1_xila_desconocido_tank, b1_xila_s4_a
-  - Opciones que no ha elegido nadie (24): b1_xila_desconocido_caster#0 «Sentarte con él, sin decir nada», b1_xila_desconocido_caster#1 «¿Estás bien?», b1_xila_desconocido_caster#2 «Tratarle con desprecio», b1_xila_desconocido_caster#3 «Dejarle en paz», b1_xila_desconocido_tank#0 «Sentarte con él, sin decir nada», b1_xila_desconocido_tank#1 «¿Estás bien?» (+18)
+- **Explorador**: 25/27 beats vistos (2 solo del héroe creado). Sin ver: b1_xila_desconocido_caster, b1_xila_desconocido_tank
+  - Opciones que no ha elegido nadie (23): b1_xila_desconocido_caster#0 «Sentarte con él, sin decir nada», b1_xila_desconocido_caster#1 «¿Estás bien?», b1_xila_desconocido_caster#2 «Tratarle con desprecio», b1_xila_desconocido_caster#3 «Dejarle en paz», b1_xila_desconocido_tank#0 «Sentarte con él, sin decir nada», b1_xila_desconocido_tank#1 «¿Estás bien?» (+17)
 - **¿Se puede cerrar?** sí: `b1_xila_habla_sobrio:19677`, `b1_xila_habla:19737`
 
 ### 14. La familia de la puerta azul (el gato, los Verdaderos y la cena) (`familia`, mision)
@@ -202,8 +202,8 @@ Una misión = grupo de beats con un comienzo y un cierre. `mision` tiene cierre 
 - **Se cierra** (flags `bnd_pruebas_suficientes`): `beat_iglesia:12625` pone bnd_pruebas_suficientes.
 - **Recompensa**: oro neto +0 (cobros 0, pagos 0), nivel +0.7.
 - **Diario**: `obj_pruebas` (doneFlag `bnd_pruebas_suficientes`, assets/adventures/boundington_primer_dia.json:51).
-- **Explorador**: 6/8 beats vistos (2 solo del héroe creado). Sin ver: b1_sacerdote_v0, b1_sacerdote_s2
-  - Opciones que no ha elegido nadie (7): b1_sacerdote_v0#0 «¿Qué pasa en esta iglesia?», b1_sacerdote_v0#1 «¿Quién baja ahí?», b1_sacerdote_v0#2 «Hablar de otra cosa», b1_sacerdote_v0#3 «Irte», b1_sacerdote_s2#0 «Rezar con él», b1_sacerdote_s2#1 «Hablar de otra cosa» (+1)
+- **Explorador**: 7/8 beats vistos (1 solo del héroe creado). Sin ver: b1_sacerdote_s2
+  - Opciones que no ha elegido nadie (6): b1_sacerdote_v0#0 «¿Qué pasa en esta iglesia?», b1_sacerdote_v0#1 «¿Quién baja ahí?», b1_sacerdote_v0#3 «Irte», b1_sacerdote_s2#0 «Rezar con él», b1_sacerdote_s2#1 «Hablar de otra cosa», b1_sacerdote_s2#2 «Irte»
 - **¿Se puede cerrar?** sí: `beat_iglesia:12625`
 
 ### 16. La ronda de noche: el cuartel y el vigilante (`ronda_noche`, mision)
@@ -261,8 +261,8 @@ Una misión = grupo de beats con un comienzo y un cierre. `mision` tiene cierre 
 - **Salidas** (tiradas y combates, 8): tirada `b1_archivo_aviso` [investigacion] → bnd1_archivo_pifia/bnd1_archivo_parcial/bnd1_archivo_exito/bnd1_archivo_critico; tirada `b1_archivo_vigilado` [investigacion] → bnd1_archivo_pifia/bnd1_archivo_parcial/bnd1_archivo_exito/bnd1_archivo_critico; tirada `b1_archivero` [engano] → bnd1_archivero_eng_pifia/bnd1_archivero_eng_parcial/bnd1_archivero_eng_exito/bnd1_archivero_eng_critico; tirada `b1_archivero` [persuasion] → bnd1_archivero_per_pifia/bnd1_archivero_per_parcial/bnd1_archivero_per_exito/bnd1_archivero_per_critico; tirada `b1_archivero` [intimidacion] → bnd1_archivero_int_pifia/bnd1_archivero_int_parcial/bnd1_archivero_int_exito/bnd1_archivero_int_critico; tirada `b1_literas` [sigilo] → bnd1_tunica_pifia/bnd1_tunica_parcial/bnd1_tunica_exito/bnd1_tunica_critico (+2 más)
 - **Recompensa**: oro neto +0 (cobros 0, pagos 0), nivel +0.8.
 - **Diario**: `obj_pruebas` (doneFlag `bnd_pruebas_suficientes`, assets/adventures/boundington_primer_dia.json:51); `bnd1_op_luisarda_segunda` (doneFlag `bnd_pista_luisarda`, assets/catalogs/quests.json:219).
-- **Explorador**: 19/32 beats vistos (1 solo del héroe creado). Sin ver: b1_archivo_aviso, b1_archivo_parcial, b1_archivo_pifia, b1_archivero_eng_pifia, b1_archivero_per_exito, b1_archivero_per_parcial, b1_archivero_per_pifia, b1_archivero_int_parcial, b1_archivero_int_pifia, b1_tunica_exito (+3)
-  - Opciones que no ha elegido nadie (12): b1_archivo_aviso#0 «Leer de reojo [Investigación]», b1_archivo_aviso#1 «Leer las Escrituras», b1_archivo_aviso#2 «Volver luego», b1_archivo_vigilado#1 «Leer las Escrituras», b1_archivo_libre#1 «Leer las Escrituras», b1_archivero#1 ««Quiero aprender a leerlas.» [Persuasión]» (+6)
+- **Explorador**: 21/32 beats vistos (1 solo del héroe creado). Sin ver: b1_archivo_aviso, b1_archivo_parcial, b1_archivo_pifia, b1_archivero_eng_pifia, b1_archivero_per_exito, b1_archivero_per_parcial, b1_archivero_int_parcial, b1_archivero_int_pifia, b1_tunica_parcial, b1_tunica_pifia (+1)
+  - Opciones que no ha elegido nadie (9): b1_archivo_aviso#0 «Leer de reojo [Investigación]», b1_archivo_aviso#1 «Leer las Escrituras», b1_archivo_aviso#2 «Volver luego», b1_archivo_vigilado#1 «Leer las Escrituras», b1_archivo_libre#1 «Leer las Escrituras», b1_literas#1 «Coger una túnica sin que se entere» (+3)
 - **¿Se puede cerrar?** sí: `b1_estudio_vuelta:17764`, `b1_estudio:17790`
 
 ### 21. La camara honda: Sandes, el prisionero y el pozo (`camara_sereno`, mision)
@@ -274,7 +274,7 @@ Una misión = grupo de beats con un comienzo y un cierre. `mision` tiene cierre 
 - **Recompensa**: oro neto +0 (cobros 0, pagos 0), nivel +1.8, heridas el borde del pozo (4) (b1_pozo_parcial), actos unirse_perdidos (menor0), luisarda_delatada (medio-).
 - **Diario**: sin entrada: ningún objetivo ni misión de quests.json se completa con esta misión.
 - **Explorador**: 20/27 beats vistos (1 solo del héroe creado). Sin ver: b1_camara_sandes_herrero, b1_sandes_eng_exito, b1_sandes_eng_parcial, b1_sandes_eng_pifia, b1_sereno_s2, b1_charla_sandes, b1_sandes_killville
-  - Opciones que no ha elegido nadie (23): b1_camara_sandes_herrero#0 ««Me he perdido.» [Engaño]», b1_camara_sandes_herrero#1 ««Vengo a unirme de verdad.»», b1_camara_sandes_herrero#2 «Soltarlo ahora mismo», b1_camara_sandes_herrero#3 «Volver escaleras arriba», b1_camara_sandes_sospecha#0 ««Me he perdido.» [Engaño]», b1_camara_sandes_sospecha#2 «Soltarlo ahora mismo» (+17)
+  - Opciones que no ha elegido nadie (21): b1_camara_sandes_herrero#0 ««Me he perdido.» [Engaño]», b1_camara_sandes_herrero#1 ««Vengo a unirme de verdad.»», b1_camara_sandes_herrero#2 «Soltarlo ahora mismo», b1_camara_sandes_herrero#3 «Volver escaleras arriba», b1_camara_sandes_sospecha#0 ««Me he perdido.» [Engaño]», b1_camara_sandes_sospecha#2 «Soltarlo ahora mismo» (+15)
 - **¿Se puede cerrar?** sí: `b1_sereno_s2:21669`, `b1_sereno_s3:21802`, `b1_sereno_s4:21966`, `b1_cadenas_exito:22188` (+2)
 
 ### 22. Verina, Edul y la guarida: sacar, sonsacar, unirte o acabar (`verina_edul`, mision)
@@ -286,7 +286,7 @@ Una misión = grupo de beats con un comienzo y un cierre. `mision` tiene cierre 
 - **Recompensa**: oro neto +120 (cobros 120, pagos 0), nivel +0.3, objetos pocion x1 (b1_edul), actos unirse_perdidos (menor0), plantar_cara_guarida (menor0), dudas_en_verina (menor+), verina_sacada_de_la_guarida (medio+), guarida_exterminada (menor0).
 - **Diario**: sin entrada: ningún objetivo ni misión de quests.json se completa con esta misión.
 - **Explorador**: 17/32 beats vistos. Sin ver: b1_edul_rescate, b1_charla_verina, b1_banco, b1_banco_s0_a, b1_banco_p0_a, b1_charla_edul, b1_frascos, b1_frascos_s0_a, b1_frascos_p0_a, b1_llave_exito (+5)
-  - Opciones que no ha elegido nadie (40): b1_edul_rescate#0 ««Y el sereno?»», b1_edul_rescate#1 «Subir con él», b1_banco#0 «¿Qué lees?», b1_banco#1 «¿De dónde eres?», b1_banco#2 «¿Por qué estás aquí?», b1_banco#3 «Fingir que crees» (+34)
+  - Opciones que no ha elegido nadie (38): b1_edul_rescate#0 ««Y el sereno?»», b1_edul_rescate#1 «Subir con él», b1_banco#0 «¿Qué lees?», b1_banco#1 «¿De dónde eres?», b1_banco#2 «¿Por qué estás aquí?», b1_banco#3 «Fingir que crees» (+32)
 - **¿Se puede cerrar?** sí: `b1_edul_rescate:14757`, `b1_edul:23791`, `b1_edul_cripta:23997`, `b1_edul_cripta_s0:24137` (+5)
 
 ### 23. El informe a Venides: las pruebas y el aviso antes del alba (`informe_venides`, mision)
