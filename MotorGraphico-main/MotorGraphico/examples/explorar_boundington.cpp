@@ -498,8 +498,7 @@ private:
     static const Game::Cinematica* cineQueEmpieza(const std::string& nivel, const NarrativeState& s) {
         const auto tiene = [&s](const std::string& f) { return s.hasFlag(f); };
         for (const Game::Cinematica& c : cinematicas().lista) {
-            const GridCoord donde = c.hayZona ? GridCoord{(c.zonaDesde.x + c.zonaHasta.x) / 2, (c.zonaDesde.y + c.zonaHasta.y) / 2}
-                                              : GridCoord{-1, -1};
+            const GridCoord donde = c.puntoDeEntrada();
             if (cinematicas().laQueEmpieza(nivel, donde, tiene) == &c) return &c;
         }
         return nullptr;

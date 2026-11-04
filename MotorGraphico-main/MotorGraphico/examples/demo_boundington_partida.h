@@ -452,7 +452,7 @@ struct Jugador {
         }();
         for (const Game::Cinematica& c : cat.lista) {
             if (c.id != id || !c.hayZona || c.nivel != s.lugar()) continue;
-            return cinematica(GridCoord{(c.zonaDesde.x + c.zonaHasta.x) / 2, (c.zonaDesde.y + c.zonaHasta.y) / 2});
+            return cinematica(c.puntoDeEntrada());
         }
         return false;
     }
@@ -657,7 +657,7 @@ struct Jugador {
             if (!c.hayZona || c.nivel != s.lugar()) continue;
             if (c.id.rfind("base_ruta_", 0) == 0 && c.id != ruta) continue;
             if (std::find(zonasEvita.begin(), zonasEvita.end(), c.id) != zonasEvita.end()) continue;
-            const GridCoord centro{(c.zonaDesde.x + c.zonaHasta.x) / 2, (c.zonaDesde.y + c.zonaHasta.y) / 2};
+            const GridCoord centro = c.puntoDeEntrada();
             if (cat.laQueEmpieza(s.lugar(), centro, tiene) != &c) continue;
             return cinematica(centro);
         }

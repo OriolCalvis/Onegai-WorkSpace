@@ -131,6 +131,23 @@ MOTOR_TEST_CASE(empieza_en_su_nivel_su_zona_y_con_sus_flags_una_vez) {
     MOTOR_CHECK(c != nullptr && c->id == "otra");
 }
 
+MOTOR_TEST_CASE(punto_de_entrada_es_el_centro_de_la_zona_y_transitable_si_se_pide) {
+    const auto cat = catalogo(R"({"cinematicas": [
+        {"id": "a", "zona": [4, 2, 8, 6]}, {"id": "b", "zona": [0, 0, 1, 1]}, {"id": "sin"}]})");
+    const Cinematica* a = cat.busca("a");
+    MOTOR_CHECK(a != nullptr);
+    if (a == nullptr) return;
+    MOTOR_CHECK(a->puntoDeEntrada().x == 6 && a->puntoDeEntrada().y == 4);        // el centro
+    MOTOR_CHECK(cat.busca("b")->puntoDeEntrada().x == 0);                          // division entera, como siempre
+    MOTOR_CHECK(cat.busca("sin")->puntoDeEntrada().x == -1);                       // sin zona: {-1, -1}
+    // El centro (6, 4) es un muro: la casilla transitable mas cercana de la zona.
+    auto sinCentro = [](const GridCoord& c) { return !(c.x == 6 && c.y == 4); };
+    const GridCoord p = a->puntoDeEntrada(sinCentro);
+    MOTOR_CHECK(p.x == 5 && p.y == 3);  // anillo 1: primero la fila de arriba, de izquierda a derecha
+    // Ninguna transitable: devuelve el centro (el validador lo avisa).
+    MOTOR_CHECK(a->puntoDeEntrada([](const GridCoord&) { return false; }).x == 6);
+}
+
 MOTOR_TEST_CASE(aparicion_limitada_a_un_nivel) {
     const auto cat = catalogo(R"({"apariciones": [
         {"objeto": "mercader", "visibleSi": {"todas": ["fiesta"]}, "nivel": "assets/levels/mansion.json"},

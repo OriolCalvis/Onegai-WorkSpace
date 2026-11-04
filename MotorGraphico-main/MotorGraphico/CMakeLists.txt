@@ -395,6 +395,7 @@ add_library(motor_level
     src/Game/Mascotes.cpp  # MASC-01: mascotas que pasean, saludan o huyen (GL-free)
     src/Game/FullaMascotes.cpp  # MASC-01: la hoja de mascotas como datos (GL-free)
     src/Game/Monumentos.cpp  # BLOQUES-03: edificios con sprite propio (GL-free)
+    src/Game/CinematicaDisparador.cpp  # E-DISPARADORES-1: el punto de entrada y el disparador de las cinematicas
     src/Game/Cinematica.cpp  # PROLOGO-02: las cinematicas (ordenes, espectros y apariciones; GL-free)
     src/Game/EscenaViva.cpp  # C2-04a: estado vivo de la escena (GL-free)
     src/Game/FuegoCeldas.cpp  # C2-04c: casillas de fuego y semilla (GL-free)

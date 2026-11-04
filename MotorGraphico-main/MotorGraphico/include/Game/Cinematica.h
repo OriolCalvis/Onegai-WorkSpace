@@ -85,6 +85,11 @@ struct Cinematica {
     std::vector<PasoCinematica> pasos;
     std::vector<std::string> alTerminar;
     std::string vista() const { return "cine_" + id + "_vista"; }
+    // E-DISPARADORES-1 (D0026) — Donde se pone el jugador para que la cinematica empiece: el centro de su
+    // zona ({-1, -1} si no tiene). Si se pasa `transitable` y el centro no lo es, la casilla transitable
+    // de la zona mas cercana al centro (Chebyshev; a igualdad, la de menor y y luego x). El motor, el
+    // arnes (`pisaLaZona`) y el explorador usan ESTA cuenta, no una copia.
+    GridCoord puntoDeEntrada(const std::function<bool(const GridCoord&)>& transitable = nullptr) const;
 };
 
 // Los que andan entre recuerdos: translúcidos y azulados mientras `flag`.
