@@ -101,7 +101,7 @@
     {
       "id": "obj3_avisar",
       "text": "Avisa a Venides de lo que has visto, en la Taberna Humilde.",
-      "doneFlag": "bnd3_avisado",
+      "doneFlag": "bnd3_aviso_resuelto",
       "donde": [
         "assets/levels/interior_taberna.json",
         "venides"
@@ -110,7 +110,7 @@
     {
       "id": "obj3_salir",
       "text": "Sal de Boundington con vida: el oeste arde menos.",
-      "doneFlag": "bnd3_fuera",
+      "doneFlag": "bnd3_salio_vivo",
       "donde": "assets/levels/ciudad_oeste.json"
     }
   ],
@@ -1589,6 +1589,10 @@
           "arg": "bnd3_avisado"
         },
         {
+          "type": "setFlag",
+          "arg": "bnd3_aviso_resuelto"
+        },
+        {
           "type": "log",
           "arg": "Venides sabe que son sus amigos. Empieza el Ocaso."
         }
@@ -1752,6 +1756,10 @@
         {
           "type": "setFlag",
           "arg": "bnd3_avisado"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_aviso_resuelto"
         }
       ]
     },
@@ -6508,6 +6516,10 @@
           "arg": "bnd3_fuera"
         },
         {
+          "type": "setFlag",
+          "arg": "bnd3_salio_vivo"
+        },
+        {
           "type": "grantLevel",
           "value": 2,
           "arg": "salir vivo de Boundington"
@@ -6565,6 +6577,10 @@
           "arg": "bnd3_fuera"
         },
         {
+          "type": "setFlag",
+          "arg": "bnd3_salio_vivo"
+        },
+        {
           "type": "grantLevel",
           "value": 2,
           "arg": "salir vivo de Boundington"
@@ -6615,6 +6631,10 @@
         {
           "type": "setFlag",
           "arg": "bnd3_fuera"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_salio_vivo"
         },
         {
           "type": "grantLevel",

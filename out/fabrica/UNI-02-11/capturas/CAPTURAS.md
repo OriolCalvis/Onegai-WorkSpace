@@ -98,3 +98,49 @@ Lo que el juego hace al cargar (importa para entender los guardados): un beat `a
 | cierre_dia | Narracion 4/4 de cierre_silencio: «y manana nadie estara mirando hacia alli.» (dia_cerrado) |
 
 Limites honestos: (1) en ventana, venides_noche, encapuchado y ceremonia el cierre es una flag de «visto» que enciende el primer beat, asi que la captura enseña ese dialogo, no un final distinto. (2) En archivo se ve la escena de la sala de estudio (el flag cierra al pisar la zona), no un dialogo propio del archivo. (3) Las tiradas no se forzaron en el juego: se sembro la flag del resultado (aigren, carterista, sectarios, familia, presentaciones). (4) `edul_hablado` se siembra a mano en la escena `edul_rescate` de la prueba (no en las capturas). Borradas por no ensenar el dialogo: `q1_almacen_dialogo.png` (sin dialogo) y `q1_{aigren,luisarda,xila,familia}_dialogo.png` (solo la narracion de entrada); se quedan `q1_{ventana,jornaleros,venides_noche,encapuchado}_dialogo.png`.
+
+---
+
+# E-DISPARADORES-2 (04/11) — disparadores por proximidad en la VENTANA real (OpenGL), `juego --guardado ... --guion ...`
+
+Guardados: `out/fabrica/UNI-02-11/guardados_disparadores/` (`fabricar_guardados --capturas-disparadores`), guiones `tools/guiones/d_{sermon,velas,sermon_tapado}.txt`, `perl -e 'alarm 150; exec @ARGV'`. Todas miradas con Read, una a una. Trazas en `logs_disparadores2/juego_d_*.log` (un parche de depuracion TEMPORAL, no commiteado, imprimia la ruta que calcula el motor y cada paso del jugador). Camara: tarda unos 100 fotogramas en asentarse sobre el jugador tras cargar el guardado, y no sigue al jugador de forma que se aprecie el paseo (el jugador sale a veces tras una casa, que se vuelve translucida): el PASEO se demuestra por la traza (8 pasos de (62,54) a (55,55) / 5 de (21,35) a (21,30)), no solo por las imagenes.
+
+| PNG | Que se ve de verdad |
+|---|---|
+| `d_sermon_0_fuera.png` (f30) | Casco Antiguo, de noche (dia 3): la iglesia en ruinas, el jugador (pelo naranja, espada) al borde este del mapa, junto a las casas, FUERA de la zona de la plaza [49,49,61,58] (esta en (62,54)). Sin dialogo; HUD con el objetivo «Ve a la plaza del Casco Antiguo y mira que pasa». |
+| `d_sermon_1_camina.png`, `d_sermon_2_camina.png` (f60, f90) | La misma vista con la camara desplazandose; el jugador ya se mueve hacia la plaza (la traza dice: 8 pasos, primero `-1,0` desde (62,54)). Todavia sin dialogo. |
+| `d_sermon_3_llega.png`, `d_sermon_4_escena.png` (f120, f150) | El jugador pasa por detras de la casa de tejado azul (que se vuelve translucida) camino del foco (55,55), delante del estrado. Aun sin dialogo. |
+| `d_sermon_5_dialogo.png` (f260) | Arranca la escena: caja «SANDES» «La luz se perdio porque os la quitaron. Lo que se quita, se recupera.» 1/5 (beat `bnd3_esc04_sermon`). El jugador no ha pulsado nada. |
+| `d_sermon_tapado_0/1/2.png` (f30, f120, f260) | EL MISMO guardado, con tres `carro_o1` (`tapaVista`) puestos en (59..61,54) en la copia del nivel de la build (se ven al lado del jugador): el jugador se queda quieto y NO sale ningun dialogo en 260 fotogramas; la traza no tiene linea `efectiva` (no empezo la escena). Es la prueba de que el objeto tapa la vista. |
+| `d_velas_0_fuera.png` (f5) | Mina vieja del Cojo (dia 2, manana): el jugador en la parte baja (21,35), FUERA de la zona [15,23,27,31], los PNJ de la escena (Tinet y Mia, el diacono) arriba, sin dialogo. |
+| `d_velas_1_camina.png`, `d_velas_2_llega.png` (f30, f80) | El jugador sube hacia la puerta de piedra: la traza dice 5 pasos `0,-1` de (21,35) a (21,30); en f80 va a medio camino, cerca de los dos sectarios. |
+| `d_velas_3_escena.png`, `d_velas_4_escena.png` (f150, f260) | f150: el jugador ya en (21,30), mirando arriba, sin dialogo aun; f260: narracion «El gran corte de la mina vieja. Velas en circulo alrededor de la puerta de piedra; la piedra suda.» 1/3 (beat `bgd_cine_velas`). |
+
+Limites honestos: (1) no se capturo un combate disparado (`accion: combate`) ni una zona `once: false` en ventana: ninguna escena del juego los usa todavia; solo pruebas gl-free con mutacion. (2) El caso `tapaVista` usa objetos puestos a mano en la build (el save se fabrico con ellos); el nivel del repo no los lleva. (3) `d_sermon_0` es f30 porque en f5 la camara aun esta en el centro de la ciudad (no se ve al jugador). (4) Las capturas del modo `once` (por defecto) solo muestran que la escena arranca una vez.
+
+
+---
+
+# E-DISPARADORES-3 (04/11) — la salida del Ocaso se elige en el DIALOGO y el juego lleva al jugador (VENTANA real)
+
+Guardados: `guardados_disparadores/d_ruta_{oeste,norte,quedarse}.json` (`fabricar_guardados --capturas-disparadores`: el Ocaso jugado con el arnes hasta la base, `b3_por_donde` contestado, y el jugador en ciudad_oeste (8,11), la puerta de la base), guiones `tools/guiones/d_ruta_*.txt`, `MOTOR_TRACE=1 perl -e 'alarm 150; exec @ARGV' ./juego --guardado ... --guion ...`; trazas en `logs_disparadores3/juego_d_ruta_*.log` (una sola linea `cinematica: empieza` en cada una). Todas miradas con Read.
+
+| PNG | Que se ve de verdad |
+|---|---|
+| `d_ruta_oeste_0_sale.png` (f30) | La base, de noche; el jugador (espada) en la puerta del cuartel; el fundido a negro empieza (se ve mas oscuro). Sin dialogo. |
+| `d_ruta_oeste_1/2_camina.png` | Fundido y paso de la camara: no hay camino desde (8,11) (esta cerrada por la puerta y los PNJ), asi que el juego lo lleva con fundido (D0026.2). |
+| `d_ruta_oeste_3_llega.png`, `d_ruta_oeste_5_dialogo.png` (f320, f520) | El jugador ya esta fuera, al oeste del recinto, junto a los dos sectarios del muro (3,12); caja «VENIDES»: «Vamos.» (beat `b3_esc04_camino_oeste`). |
+| `d_ruta_norte_5_dialogo.png` | El jugador esta al este, junto al coliseo, en (28,13) (cerca del paso al norte, (31,12..14)); «VENIDES: Vamos.». |
+| `d_ruta_quedarse_5_dialogo.png` | El jugador esta delante del cuartel, al este de la puerta, en (12,12), mirando a la izquierda; «VENIDES: Vamos.». |
+
+Limites honestos: (1) el MENU de las tres salidas (`b3_por_donde`) NO esta capturado en ventana: con un guardado en la base y las flags borradas el beat no volvio a saltar; la eleccion se prueba gl-free (`elegir_la_salida_en_el_dialogo_...`) y el arnes la juega en cada final del Ocaso. (2) Desde (8,11) no hay camino, asi que en ventana se ve el FUNDIDO, no el paseo; el paseo con camino real (36-45 pasos hasta cada casilla desde el inicio del nivel) lo prueba el test gl-free con `rutaAndando`. (3) Al probar el fundido en ventana salio un fallo real de E2: `Coloca` del jugador solo movia el dibujo, no la casilla (el jugador seguia en (8,11) y la camara no se movia); arreglado (`GameSession::situaJugador`, `PasoCinematica::lleva`) con prueba y mutacion.
+
+# E-HALLAZGOS-01 (04/11) — el diario del Ocaso tras el arreglo: `m4_diario_caido_*`
+Guardado `ocaso_caido.json` (`./fabricar_guardados --matriz-ocaso guardados_h1`, camino «caido» de la matriz: pierde contra los saqueadores y cae) y guion `tools/guiones/m4_diario_caido.txt` (`./juego --guardado guardados_h1/ocaso_caido.json --guion ../../../tools/guiones/m4_diario_caido.txt`; TAB abre el cuaderno, 4×DERECHA llevan a Misiones, 5×S bajan a la decision). Vistas con Read.
+
+| Captura | Fotograma | Lo que se ve de verdad |
+|---|---|---|
+| `m4_diario_caido_misiones.png` | f110 | Hoja MISIONES, «El Ocaso de Boundington **2/3**» (SEGUIDA, 170 de oro). Apartados: La plaza del Casco Antiguo 1/1, Avisar a Venides 1/1, **Salir de Boundington 0/1** (antes del arreglo salia hecho). «Ahora: Sal de Boundington con vida…». Dos decisiones en la lista: «Por dónde salir» y la nueva **«Cómo acabó la noche»**. Abajo, «Prólogo: Los Perdidos de Bou… 5/5». |
+| `m4_diario_caido_final.png` | f190 | La decision nueva abierta (DECIDIDO): «Elegiste: **Caíste en Boundington.**», «Lo que pasó: La calle se te acabó antes que las fuerzas. Boundington ardió igual, con o sin ti.». |
+
+Limites: solo se ha capturado el camino «caido». Los otros efectos (quedarse ≠ oeste, Venides sin aviso 3/3, finales oeste/solos) los fijan las pruebas de `MatrizOcasoTests` (logs `logs_hallazgos1/*_mut.log`), no una captura. En la captura el hero cae pero la mision sigue «SEGUIDA» (no «fallida»): ver la pregunta para Oriol en `HALLAZGOS_1.md`.

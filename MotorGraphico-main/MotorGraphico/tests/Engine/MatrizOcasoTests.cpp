@@ -121,26 +121,106 @@ MOTOR_TEST_CASE(hallazgo_el_final_con_los_perdidos_queda_tapado_por_la_huida_de_
     MOTOR_CHECK(posGitanos >= 0 && posGitanos < posSola && posSola < posAliado);
 }
 
-// ⚠ Hallazgo: el diario marca «Sal de Boundington con vida» (obj3_salir, doneFlag bnd3_fuera) como hecho aunque el heroe CAIGA (b3_caida pone
-// bnd3_fuera y bnd3_final_caido), y el final (oeste / solos / caido) no sale en ninguna decision del diario.
-MOTOR_TEST_CASE(hallazgo_el_diario_da_por_hecha_la_salida_aunque_el_heroe_caiga) {
-    Fabrica f;
+// E-HALLAZGOS-01 (hallazgos 2 y 3 de la matriz): el diario del Ocaso solo da por hecho «Sal de Boundington con vida» (obj3_salir) si el heroe sale
+// (bnd3_salio_vivo, que ponen las tres salidas; ya no bnd3_fuera, que b3_caida tambien pone) y cuenta como acabo la noche (decision bnd3_final).
+namespace {
+struct DiarioDelOcaso {
+    bool salirHecho = false, hayMision = false;
+    std::string final, ruta;  // lo que ensenan las decisiones bnd3_final / bnd3_ruta ("" = ninguna)
+};
+DiarioDelOcaso diarioDelOcaso(const demo_bnd::Guiones& g, std::initializer_list<const char*> flags) {
     RPG::NarrativeState s;
     s.setFlag("bnd_ocaso_empezado");
-    s.setFlag("bnd3_fuera");
-    s.setFlag("bnd3_final_caido");
+    for (const char* f : flags) s.setFlag(f);
+    const std::vector<const RPG::AdventureScript*> campana = {&g.prologo, &g.dia1, &g.gorran, &g.dia2, &g.ocaso};
+    const Game::DiarioDatos d = Game::construirDiario(campana, &g.ocaso, s);
+    DiarioDelOcaso r;
+    for (const Game::DiarioMision& m : d.misiones) {
+        if (m.id != "adv_boundington_ocaso") continue;
+        r.hayMision = true;
+        for (const Game::DiarioObjetivo& o : m.objetivos)
+            if (o.id == "obj3_salir") r.salirHecho = o.hecho;
+        for (const Game::DiarioDecision& x : m.decisiones) {
+            if (x.id == "bnd3_final") r.final = x.eleccion;
+            if (x.id == "bnd3_ruta") r.ruta = x.eleccion;
+        }
+    }
+    return r;
+}
+}  // namespace
+
+MOTOR_TEST_CASE(el_diario_no_da_por_hecha_la_salida_si_el_heroe_cae_y_cuenta_como_acabo_la_noche) {
+    Fabrica f;
+    const DiarioDelOcaso caido = diarioDelOcaso(f.g, {"bnd3_fuera", "bnd3_final_caido"});
+    MOTOR_CHECK(caido.hayMision);
+    MOTOR_CHECK(!caido.salirHecho);                               // caer no es «salir con vida»
+    MOTOR_CHECK(caido.final.find("Caíste") != std::string::npos);
+    const DiarioDelOcaso oeste = diarioDelOcaso(f.g, {"bnd3_fuera", "bnd3_salio_vivo", "bnd3_final_oeste"});
+    MOTOR_CHECK(oeste.salirHecho && oeste.final.find("con los gitanos") != std::string::npos);
+    const DiarioDelOcaso solos = diarioDelOcaso(f.g, {"bnd3_fuera", "bnd3_salio_vivo", "bnd3_final_solos"});
+    MOTOR_CHECK(solos.salirHecho && solos.final.find("sin los gitanos") != std::string::npos);
+    const DiarioDelOcaso antes = diarioDelOcaso(f.g, {});         // antes del final no se anuncia nada
+    MOTOR_CHECK(!antes.salirHecho && antes.final.empty());
+    // Las tres salidas de verdad ponen bnd3_salio_vivo y las dos caidas no.
+    for (const char* b : {"b3_huida_gitanos", "b3_huida_sola", "b3_aliado_fuera", "b3_caida", "b3_rodeo_caido"}) {
+        bool pone = false;
+        for (const RPG::NarrativeBeat& beat : f.g.ocaso.beats)
+            if (beat.id == b)
+                for (const RPG::NarrativeEffect& e : beat.effects) pone = pone || (e.type == RPG::EffectType::SetFlag && e.arg == "bnd3_salio_vivo");
+        MOTOR_CHECK(pone == (std::string(b).find("caid") == std::string::npos));
+    }
+}
+
+// E-HALLAZGOS-01 (hallazgo 4): quedarse a luchar en la base pone bnd3_ruta_quedarse y, al caer la base (b3_base_cae), tambien bnd3_ruta_oeste. El
+// diario cuenta lo que elegiste («te quedaste»), no solo hacia donde acabaste huyendo.
+MOTOR_TEST_CASE(quedarse_en_la_base_se_ve_en_el_diario_como_quedarse_y_no_como_ir_al_oeste) {
+    Fabrica f;
+    const DiarioDelOcaso quedarse = diarioDelOcaso(f.g, {"bnd3_ruta", "bnd3_ruta_quedarse", "bnd3_ruta_oeste", "bnd3_base_caida"});
+    MOTOR_CHECK(quedarse.ruta.find("quedaste") != std::string::npos);
+    MOTOR_CHECK(quedarse.ruta.find("oeste") == std::string::npos);
+    const DiarioDelOcaso oeste = diarioDelOcaso(f.g, {"bnd3_ruta", "bnd3_ruta_oeste"});
+    MOTOR_CHECK(oeste.ruta.find("oeste") != std::string::npos);
+    const DiarioDelOcaso norte = diarioDelOcaso(f.g, {"bnd3_ruta", "bnd3_ruta_norte"});
+    MOTOR_CHECK(norte.ruta.find("norte") != std::string::npos);
+    // El juego pone las dos flags al caer la base tras quedarse (b3_base_cae), como dice la ficha.
+    bool poneOeste = false;
+    for (const RPG::NarrativeBeat& b : f.g.ocaso.beats)
+        if (b.id == "b3_base_cae")
+            for (const RPG::NarrativeEffect& e : b.effects) poneOeste = poneOeste || (e.type == RPG::EffectType::SetFlag && e.arg == "bnd3_ruta_oeste");
+    MOTOR_CHECK(poneOeste);
+}
+
+// E-HALLAZGOS-01 (hallazgo 6): con Venides sin aviso (bnd2_venides_sin_aviso: salio solo a Las Afueras) nadie puede avisarle; al sonar las campanas
+// el evento venides_retenido pone bnd3_aviso_resuelto y el diario da el objetivo por cerrado (antes se quedaba en 2/3 para siempre). Avisarle de
+// verdad (b3_avisar_venides) tambien lo pone.
+MOTOR_TEST_CASE(con_venides_sin_aviso_el_diario_cierra_el_objetivo_de_avisar_al_sonar_las_campanas) {
+    Fabrica f;
+    demo_bnd::Jugador j(f.g, demo_bnd::Suerte::Buena);
+    fase(j, "ocaso");
+    j.s.setFlag("bnd2_dia_cerrado");
+    j.s.setFlag("bnd2_venides_sin_aviso");
+    j.s.setVariable("dia", 4);
+    j.s.setVariable("franja", 2);
+    MOTOR_CHECK(!j.s.hasFlag("bnd3_aviso_resuelto"));
+    for (int i = 0; i < 4 && j.evaluaEventos(); ++i) {}
+    MOTOR_CHECK(j.s.hasFlag("bnd3_campanas") && j.s.hasFlag("bnd3_sin_venides"));
+    MOTOR_CHECK(j.s.hasFlag("bnd3_aviso_resuelto") && !j.s.hasFlag("bnd3_avisado"));
     const std::vector<const RPG::AdventureScript*> campana = {&f.g.prologo, &f.g.dia1, &f.g.gorran, &f.g.dia2, &f.g.ocaso};
-    const Game::DiarioDatos d = Game::construirDiario(campana, &f.g.ocaso, s);
-    const Game::DiarioMision* m = nullptr;
-    for (const Game::DiarioMision& x : d.misiones)
-        if (x.id == "adv_boundington_ocaso") m = &x;
-    MOTOR_CHECK(m != nullptr);
-    if (m == nullptr) return;
-    bool salirHecho = false;
-    for (const Game::DiarioObjetivo& o : m->objetivos)
-        if (o.id == "obj3_salir") salirHecho = o.hecho;
-    MOTOR_CHECK(salirHecho);          // el hallazgo: caido y «salir con vida» hecho
-    MOTOR_CHECK(m->decisiones.empty());  // ninguna decision de la ficha nombra el final caido / oeste / solos
+    const Game::DiarioDatos d = Game::construirDiario(campana, &f.g.ocaso, j.s);
+    bool avisarHecho = false;
+    for (const Game::DiarioMision& m : d.misiones)
+        if (m.id == "adv_boundington_ocaso")
+            for (const Game::DiarioObjetivo& o : m.objetivos)
+                if (o.id == "obj3_avisar") avisarHecho = o.hecho;
+    MOTOR_CHECK(avisarHecho);
+    // Con Venides en su sitio y sin avisar, el objetivo sigue pendiente hasta que se le avisa.
+    demo_bnd::Jugador k(f.g, demo_bnd::Suerte::Buena);
+    fase(k, "ocaso");
+    k.s.setFlag("bnd2_dia_cerrado");
+    k.s.setVariable("dia", 4);
+    k.s.setVariable("franja", 1);
+    for (int i = 0; i < 4 && k.evaluaEventos(); ++i) {}
+    MOTOR_CHECK(!k.s.hasFlag("bnd3_aviso_resuelto") && !k.s.hasFlag("bnd3_sin_venides"));
 }
 
 // E-DISPARADORES-3 (decision de Oriol, 04/11: «Portar-hi per dialeg»): la salida del Ocaso se elige en el DIALOGO de la base
