@@ -3,8 +3,8 @@
 - **Fecha:** 2026-11-04
 - **Autor:** Claude (Code tab, Fable 5.1)
 - **Encargo:** petición directa de Oriol: analizar el plugin `everything-claude-code` que acababa de instalar y dejarlo usable también desde Qwen y Codex.
-- **Commits:** ninguno. Esta sesión no toca código ni ramas; solo configuración global de las tres herramientas (fuera del repo) y este registro.
-- **Deja esperando a Oriol:** nada bloqueante. Decidió «paquete entero disponible, pero cada proyecto carga solo lo útil»; aplicado (ver «Cierre»). Queda a su criterio commitear `.claude/` del workspace.
+- **Commits:** `8e0a5b19` (rama `recuperat/software-copia-30-10`: `.claude/` del workspace, TABLERO, índice y esta nota) + commit de cierre que anota este hash. Sin cambios de código; la configuración de Codex y Qwen vive fuera del repo.
+- **Deja esperando a Oriol:** nada bloqueante. Decidió «paquete entero disponible, pero cada proyecto carga solo lo útil»; aplicado (ver «Cierre»). Pidió commitear `.claude/`; hecho.
 
 ## Qué había
 
@@ -42,7 +42,7 @@ Clon de referencia del upstream (temporal, fuera del repo): scratchpad de la ses
   - Descartados a propósito: `cpp-test`/`cpp-testing` (GoogleTest), `tdd-guide`/`tdd-workflow` (80 % de cobertura), `commit-reviewer`/`conventional-commit-review` (commits en inglés), `refactor-cleaner` (herramientas JS), `continuous-learning*` (necesita hooks), todo lo web, móvil, negocio y dominio.
 - **Coste:** la selección añade del orden de 1–2k tokens fijos (descripciones) frente a los ~48k del plugin completo; las reglas C++/Python solo entran al tocar esos ficheros.
 - **Codex y Qwen Code** se quedan con el paquete completo (Codex tiene `skill_search`; Qwen trabaja con 1M de contexto).
-- `Software/.claude/` queda **sin commitear** (no está en `.gitignore`): Oriol decide si entra en el repo para que lo compartan todas las sesiones de Claude.
+- `Software/.claude/` **commiteado** a petición de Oriol (`8e0a5b19`) para que lo compartan todas las sesiones de Claude abiertas en `Software/`.
 
 ## Pendiente
 
