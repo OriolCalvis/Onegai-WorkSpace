@@ -1,0 +1,23 @@
+# salida: mutacion = adventures/boundington_ocaso.json: «"doneFlag": "bnd3_salio_vivo"» -> «"doneFlag": "bnd3_fuera"»
+## ROJO (assets mutados)
+$ (cwd con assets MUTADOS) test_matriz_ocaso  -> exit 1
+[PASS] sin_el_efecto_de_la_decision_el_final_del_ocaso_falla
+[PASS] estan_los_finales_y_caminos_que_pide_la_matriz_del_ocaso
+[PASS] hallazgo_el_final_con_los_perdidos_queda_tapado_por_la_huida_de_los_gitanos_y_la_huida_sola
+[PASS] quedarse_en_la_base_se_ve_en_el_diario_como_quedarse_y_no_como_ir_al_oeste
+[PASS] con_venides_sin_aviso_el_diario_cierra_el_objetivo_de_avisar_al_sonar_las_campanas
+[PASS] elegir_la_salida_en_el_dialogo_lleva_al_jugador_y_arranca_la_cinematica
+Ejecutados 8 test(s); 2 fallo(s).
+[FAIL] cada_final_del_ocaso_deja_lo_que_dice_la_matriz: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/MatrizOcasoTests.cpp:53 -- comprobación fallida: fallos.empty()
+[FAIL] el_diario_no_da_por_hecha_la_salida_si_el_heroe_cae_y_cuenta_como_acabo_la_noche: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/MatrizOcasoTests.cpp:156 -- comprobación fallida: !caido.salirHecho
+## VERDE (assets del arbol)
+$ (cwd con assets reales) test_matriz_ocaso  -> exit 0
+[PASS] cada_final_del_ocaso_deja_lo_que_dice_la_matriz
+[PASS] sin_el_efecto_de_la_decision_el_final_del_ocaso_falla
+[PASS] estan_los_finales_y_caminos_que_pide_la_matriz_del_ocaso
+[PASS] hallazgo_el_final_con_los_perdidos_queda_tapado_por_la_huida_de_los_gitanos_y_la_huida_sola
+[PASS] el_diario_no_da_por_hecha_la_salida_si_el_heroe_cae_y_cuenta_como_acabo_la_noche
+[PASS] quedarse_en_la_base_se_ve_en_el_diario_como_quedarse_y_no_como_ir_al_oeste
+[PASS] con_venides_sin_aviso_el_diario_cierra_el_objetivo_de_avisar_al_sonar_las_campanas
+[PASS] elegir_la_salida_en_el_dialogo_lleva_al_jugador_y_arranca_la_cinematica
+Ejecutados 8 test(s); 0 fallo(s).

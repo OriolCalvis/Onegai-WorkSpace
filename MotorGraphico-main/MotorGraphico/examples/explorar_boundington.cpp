@@ -72,6 +72,7 @@ const Fase kFases[] = {
 constexpr int kNumFases = 5;
 constexpr int kMaxPasos = 900;        // por fase
 constexpr int kMaxRepeticiones = 3;   // un beat repetible, como mucho, en una partida
+constexpr int kMaxVacias = 8;         // E-HALLAZGOS-01: veces seguidas que una accion puede dejar la historia igual
 
 enum class Estilo { Azar, Bondadoso, Cruel };
 const char* nombreEstilo(Estilo e) { return e == Estilo::Azar ? "azar" : e == Estilo::Bondadoso ? "bondadoso" : "cruel"; }
@@ -178,6 +179,8 @@ public:
         m_vistosPartida.clear();
         m_repeticiones.clear();
         m_rechazadas.clear();
+        m_vacias.clear();
+        m_accionPrevia = kNinguna;
         m_nivel = 1;
         m_cine = nullptr;  // PROLOGO-02
         m_s.ponHeroe(1, 1);
@@ -203,6 +206,7 @@ public:
                 // repeticiones (un jugador volvería a la barra a esperar la noche).
                 if (m_rescate) { atasco = "nada que hacer"; break; }
                 m_rescate = true;
+                m_vacias.clear();  // el rescate empieza con la cuenta de repeticiones en blanco
                 ++m_t.rescates[f.nombre];
             }
             if (!atasco.empty()) {
@@ -244,6 +248,8 @@ public:
 private:
     void prepara() {
         m_acciones.clear();
+        m_vacias.clear();
+        m_accionPrevia = kNinguna;
         m_visitas.clear();
         std::set<std::pair<int, std::string>> vistas;
         const AdventureScript& g = m_guiones[static_cast<std::size_t>(m_fase)];
@@ -332,6 +338,15 @@ private:
 
     // Un paso: elegir, si hay elección; si no, lo automático; si no, una acción.
     bool paso() {
+        // E-HALLAZGOS-01 — Cuando la charla de la ultima accion ya se ha cerrado, ¿cambio algo de la historia?
+        // Un jugador que habla otra vez con alguien y no saca nada, al cabo de unas veces se va a otra parte
+        // (el explorador, con estilo bondadoso, rechazaba siempre la unica opcion que cambiaba algo, pero esa
+        // opcion seguia contando como «util» y no salia nunca de la conversacion).
+        if (m_accionPrevia != kNinguna && !m_s.eleccion().activa()) {
+            if (!identico(m_antes, m_s)) m_vacias.clear();
+            else ++m_vacias[m_accionPrevia];
+            m_accionPrevia = kNinguna;
+        }
         if (m_s.eleccion().activa()) {
             const EleccionPendiente el = m_s.eleccion();
             const int k = eligeOpcion(el);
@@ -390,6 +405,7 @@ private:
         std::vector<std::size_t> nuevas, otras;
         for (std::size_t i = 0; i < m_acciones.size(); ++i) {
             NarrativeState copia = m_s;
+            if (m_vacias[i] >= kMaxVacias) continue;  // E-HALLAZGOS-01: ya se vio que no da nada
             const NarrativeResult r = haz(m_acciones[i], copia);
             if (!r.fired) continue;
             if (!m_vistosPartida.count(r.beatId)) nuevas.push_back(i);
@@ -430,6 +446,8 @@ private:
         }
         const std::size_t elegida = pool[std::uniform_int_distribution<std::size_t>(0, pool.size() - 1)(m_azar)];
         ++m_visitas[elegida];
+        m_antes = m_s;
+        m_accionPrevia = elegida;
         procesa(haz(m_acciones[elegida], m_s));
         return true;
     }
@@ -453,6 +471,10 @@ private:
         for (const auto& [n, v] : vb)
             if (!deLibro(n) && !va.count(n) && v != 0) return true;
         return false;
+    }
+    // E-HALLAZGOS-01 — Exactamente la misma historia (tambien la contabilidad de las charlas: pasar de pagina cuenta).
+    static bool identico(const NarrativeState& a, const NarrativeState& b) {
+        return a.flags() == b.flags() && a.variables() == b.variables();
     }
     const NarrativeBeat* beatDe(const std::string& id) const {
         for (const NarrativeBeat& b : m_guiones[static_cast<std::size_t>(m_fase)].beats)
@@ -675,6 +697,10 @@ private:
     std::vector<std::string> m_externas;
     std::set<std::string> m_rechazadas;
     std::map<std::size_t, int> m_visitas;
+    static constexpr std::size_t kNinguna = static_cast<std::size_t>(-1);
+    std::map<std::size_t, int> m_vacias;  // E-HALLAZGOS-01: accion -> veces seguidas que no cambio nada
+    std::size_t m_accionPrevia = kNinguna;
+    NarrativeState m_antes;
     bool m_rescate = false;
     std::set<std::string> m_vistosPartida;
     std::map<std::string, int> m_repeticiones;

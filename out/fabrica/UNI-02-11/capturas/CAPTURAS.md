@@ -134,3 +134,13 @@ Guardados: `guardados_disparadores/d_ruta_{oeste,norte,quedarse}.json` (`fabrica
 | `d_ruta_quedarse_5_dialogo.png` | El jugador esta delante del cuartel, al este de la puerta, en (12,12), mirando a la izquierda; «VENIDES: Vamos.». |
 
 Limites honestos: (1) el MENU de las tres salidas (`b3_por_donde`) NO esta capturado en ventana: con un guardado en la base y las flags borradas el beat no volvio a saltar; la eleccion se prueba gl-free (`elegir_la_salida_en_el_dialogo_...`) y el arnes la juega en cada final del Ocaso. (2) Desde (8,11) no hay camino, asi que en ventana se ve el FUNDIDO, no el paseo; el paseo con camino real (36-45 pasos hasta cada casilla desde el inicio del nivel) lo prueba el test gl-free con `rutaAndando`. (3) Al probar el fundido en ventana salio un fallo real de E2: `Coloca` del jugador solo movia el dibujo, no la casilla (el jugador seguia en (8,11) y la camara no se movia); arreglado (`GameSession::situaJugador`, `PasoCinematica::lleva`) con prueba y mutacion.
+
+# E-HALLAZGOS-01 (04/11) — el diario del Ocaso tras el arreglo: `m4_diario_caido_*`
+Guardado `ocaso_caido.json` (`./fabricar_guardados --matriz-ocaso guardados_h1`, camino «caido» de la matriz: pierde contra los saqueadores y cae) y guion `tools/guiones/m4_diario_caido.txt` (`./juego --guardado guardados_h1/ocaso_caido.json --guion ../../../tools/guiones/m4_diario_caido.txt`; TAB abre el cuaderno, 4×DERECHA llevan a Misiones, 5×S bajan a la decision). Vistas con Read.
+
+| Captura | Fotograma | Lo que se ve de verdad |
+|---|---|---|
+| `m4_diario_caido_misiones.png` | f110 | Hoja MISIONES, «El Ocaso de Boundington **2/3**» (SEGUIDA, 170 de oro). Apartados: La plaza del Casco Antiguo 1/1, Avisar a Venides 1/1, **Salir de Boundington 0/1** (antes del arreglo salia hecho). «Ahora: Sal de Boundington con vida…». Dos decisiones en la lista: «Por dónde salir» y la nueva **«Cómo acabó la noche»**. Abajo, «Prólogo: Los Perdidos de Bou… 5/5». |
+| `m4_diario_caido_final.png` | f190 | La decision nueva abierta (DECIDIDO): «Elegiste: **Caíste en Boundington.**», «Lo que pasó: La calle se te acabó antes que las fuerzas. Boundington ardió igual, con o sin ti.». |
+
+Limites: solo se ha capturado el camino «caido». Los otros efectos (quedarse ≠ oeste, Venides sin aviso 3/3, finales oeste/solos) los fijan las pruebas de `MatrizOcasoTests` (logs `logs_hallazgos1/*_mut.log`), no una captura. En la captura el hero cae pero la mision sigue «SEGUIDA» (no «fallida»): ver la pregunta para Oriol en `HALLAZGOS_1.md`.

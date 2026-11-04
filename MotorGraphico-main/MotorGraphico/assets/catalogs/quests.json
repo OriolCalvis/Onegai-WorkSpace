@@ -1224,6 +1224,9 @@
           "choices": [
             {
               "flag": "bnd3_ruta_oeste",
+              "notFlags": [
+                "bnd3_ruta_quedarse"
+              ],
               "choice": "Fuiste hacia el oeste: el camino más largo, el que menos arde.",
               "consequence": "«Si los gitanos están con nosotros, nos abrirán paso.»"
             },
@@ -1421,6 +1424,28 @@
                   "text": "Sho-Noco: «El caballero corrió hasta dejar atrás la ciudad, al norte, hasta Nefaria. No miró atrás. Esa noche no escribió nada»."
                 }
               ]
+            }
+          ]
+        },
+        {
+          "id": "bnd3_final",
+          "title": "Cómo acabó la noche",
+          "section": "Salir de Boundington",
+          "choices": [
+            {
+              "flag": "bnd3_final_oeste",
+              "choice": "Saliste de Boundington con los gitanos de Surysal.",
+              "consequence": "Zarela te dio un mapa dibujado a carboncillo: los caminos que usan ellos, los que los reyes no tienen."
+            },
+            {
+              "flag": "bnd3_final_solos",
+              "choice": "Saliste de Boundington sin los gitanos.",
+              "consequence": "Detrás, la ciudad ardía. Delante, nadie te esperaba."
+            },
+            {
+              "flag": "bnd3_final_caido",
+              "choice": "Caíste en Boundington.",
+              "consequence": "La calle se te acabó antes que las fuerzas. Boundington ardió igual, con o sin ti."
             }
           ]
         }
