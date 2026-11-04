@@ -671,7 +671,7 @@ inline Restaurada restaura(const demo_bnd::Guiones& g, const Heroe& h, const Sav
 
 // ¿Se puede ver el beat (u opcion) lector con los hechos del dia 1 de `base`? Los requisitos de los dias posteriores
 // (flags que no son bnd0_/bnd1_, variables ajenas al dia 1) se dan por cumplidos; los del dia 1 se leen del guardado.
-inline bool lectorSeVe(const demo_bnd::Guiones& g, const Lector& l, const RPG::NarrativeState& base, bool tambienGorran = false) {
+inline bool lectorSeVe(const demo_bnd::Guiones& g, const Lector& l, const RPG::NarrativeState& base, bool tambienGorran = false, bool tambienDia3 = false) {
     const RPG::AdventureScript& guion = g.por(l.dia);
     const RPG::NarrativeBeat* beat = nullptr;
     for (const RPG::NarrativeBeat& b : guion.beats)
@@ -698,6 +698,12 @@ inline bool lectorSeVe(const demo_bnd::Guiones& g, const Lector& l, const RPG::N
     }
     if (tambienGorran) {  // E-MATRIZ-02: el guardado es del final del dia de Gorran: tambien son hechos suyos los del dia 2
         for (const RPG::NarrativeBeat& b : g.gorran.beats) {
+            recoge(b.effects);
+            for (const RPG::OpcionDeDialogo& o : b.opciones) recoge(o.efectos);
+        }
+    }
+    if (tambienDia3) {  // E-MATRIZ-03: el guardado es del final del dia 3: tambien son hechos suyos los de boundington_segundo_dia
+        for (const RPG::NarrativeBeat& b : g.dia2.beats) {
             recoge(b.effects);
             for (const RPG::OpcionDeDialogo& o : b.opciones) recoge(o.efectos);
         }

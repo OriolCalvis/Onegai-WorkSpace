@@ -60,4 +60,21 @@ with tempfile.TemporaryDirectory() as d:
     for ext in ("md", "json"):
         comprueba(open(os.path.join(d, "g1." + ext), encoding="utf-8").read() == open(os.path.join(d, "g2." + ext), encoding="utf-8").read(),
                   "la salida del dia de Gorran (%s) es estable" % ext)
+# E-MATRIZ-03 — el dia 3 (boundington_segundo_dia): inventario reproducible; el informe a Venides y la fiesta se leen en el Ocaso.
+tf, tb, tr, tl = m.inventario("segundo_dia")
+t_por = {f["beat"]: f for f in tf}
+informe = t_por["b2_noche_rosita_informa"]
+callar = [o for o in informe["opciones"] if o["texto"] == "No contarle nada"][0]
+comprueba(any(x["dia"] == "ocaso" and x["cual"] == "b3_venides_retenido" for x in callar["directas"].get("bnd2_venides_sin_aviso", [])),
+          "no contarle nada a Venides lo lee el Ocaso (b3_venides_retenido)")
+comprueba(any(x["tipo"] == "evento" for x in callar["directas"].get("bnd2_venides_sin_aviso", [])), "... y el evento xila_avisa_a_venides")
+comprueba(m.es_importante(callar), "no contarle nada es importante")
+cocina = t_por["b2_fiesta_cocina"]
+comprueba(any(o["texto"] == "Entrar por la cocina" for o in cocina["opciones"]), "la cocina es una opcion de la fiesta")
+with tempfile.TemporaryDirectory() as d:
+    for n in (1, 2):
+        m.main(["--dia", "segundo_dia", "--md", os.path.join(d, "t%d.md" % n), "--json", os.path.join(d, "t%d.json" % n)])
+    for ext in ("md", "json"):
+        comprueba(open(os.path.join(d, "t1." + ext), encoding="utf-8").read() == open(os.path.join(d, "t2." + ext), encoding="utf-8").read(),
+                  "la salida del dia 3 (%s) es estable" % ext)
 print("OK matriz_decisiones: %d beats con alguna opcion importante en el dia 1" % sum(1 for f in filas if any(m.es_importante(o) for o in f["opciones"])))

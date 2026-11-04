@@ -342,19 +342,11 @@ struct Jugador {
 
     NarrativeResult habla(const std::string& npc) {
         if (!seVe(npc)) {
-            // HALLAZGOS que E-GORRAN-TREGUA destapo fuera de Gorran y NO resolvio (MATRIZ_GORRAN.md, «Hallazgos del arnes»): los caminos de la campana
-            // y del dia 1 hablan con `seguidor_brinda` (mansion, sin haber entrado en la fiesta: bnd2_fiesta_dentro) y con `venides_base` (cuartel del Ocaso,
-            // oculto) cuando ya no estan. Se avisan una vez y se siguen jugando; cualquier otro oculto (Gorran incluido) hace fallar la prueba.
-            static const std::set<std::string> pendientes = {"seguidor_brinda", "venides_base"};
-            static std::set<std::string> avisados;
-            if (pendientes.count(npc) != 0) {
-                if (avisados.insert(npc).second)
-                    std::printf("    ?? HALLAZGO: se habla con «%s», oculto en %s (cinematicas.json); pendiente de arreglar el camino\n", npc.c_str(), s.lugar().c_str());
-            } else {
-                std::printf("    !! habla: «%s» esta oculto en %s con estas flags (ocultoSi/visibleSi de cinematicas.json): el jugador no lo ve ni puede hablarle\n",
-                            npc.c_str(), s.lugar().c_str());
-                if (std::getenv("BND_OCULTO_AVISA") == nullptr) require(false);  // para diagnosticar: lista todos los que se tocan sin abortar
-            }
+            // E-MATRIZ-03 A0: sin lista de pendientes. Hablar con quien esta oculto es un fallo del camino (los dos casos que
+            // quedaban, seguidor_brinda y venides_base, se resolvieron en el jugador: anochece() y ocasoBase()).
+            std::printf("    !! habla: «%s» esta oculto en %s con estas flags (ocultoSi/visibleSi de cinematicas.json): el jugador no lo ve ni puede hablarle\n",
+                        npc.c_str(), s.lugar().c_str());
+            if (std::getenv("BND_OCULTO_AVISA") == nullptr) require(false);  // para diagnosticar: lista todos los que se tocan sin abortar
         }
         if (ruido) std::printf("\n  [hablas con %s]\n", npc.c_str());
         NarrativeResult r = e.talkTo(npc, s);
@@ -664,7 +656,9 @@ struct Jugador {
     void ocasoBase() {
         entra("ciudad_centro");
         entra("interior_cuartel");
-        habla("venides_base");
+        // E-MATRIZ-03 A0: con bnd2_venides_sin_aviso (callaste el informe) Venides no esta en la base (cinematicas.json, «venides_base»):
+        // no se le habla; las campanas suenan solas al ponerse el sol y b3_venides_retenido cuenta que salio solo.
+        if (seVe("venides_base")) habla("venides_base");
         if (!s.hasFlag("bnd3_campanas")) {  // nadie ha avisado: suenan solas al ponerse el sol (evento ocaso_puesta)
             entra("interior_taberna");
             anochece();
@@ -682,7 +676,10 @@ struct Jugador {
     }
 
     // Rosita lleva la hora: «Esperar a que anochezca».
+    // E-MATRIZ-03 A0: si ya es de noche (franja >= 2: p. ej. tras la Barriada) no hay nada que esperar; hablar con Rosita
+    // aqui ofrece «Subir a dormir» y el jugador se acostaria antes de la fiesta (b2_fiesta_puerta exige no bnd2_a_dormir).
     void anochece() {
+        if (guion == &g.dia2 && s.variable("franja") >= 2) return;  // (solo el dia 3 lleva la franja)
         prefiere.insert(prefiere.begin(), "Esperar a que anochezca");
         habla("skilla");
         prefiere.erase(prefiere.begin());

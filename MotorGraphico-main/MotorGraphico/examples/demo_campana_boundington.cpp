@@ -121,8 +121,12 @@ void juegaHeroe(Jugador& j) {
     j.anochece();
     j.entra("ciudad_este");          // la fiesta de los nobles: el vigilante, la mansion
     j.entra("mansion_barrio_alto");
-    j.habla("seguidor_brinda");
-    j.habla("seguidor_brinda");      // los invitados: el noble que brinda
+    // E-MATRIZ-03 A0: con mala suerte (el vigilante, la puerta) no se entra en la fiesta (bnd2_fiesta_dentro) y el noble no esta:
+    // el jugador no le habla a quien no ve.
+    if (j.seVe("seguidor_brinda")) {
+        j.habla("seguidor_brinda");
+        j.habla("seguidor_brinda");  // los invitados: el noble que brinda
+    }
     j.entra("interior_taberna");
     j.habla("venides");              // el informe de la noche
     j.duermeDia3();                  // a dormir
