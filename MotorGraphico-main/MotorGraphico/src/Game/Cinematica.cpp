@@ -400,6 +400,7 @@ bool ReproductorCinematica::empiezaPaso(const PasoCinematica& p, EscenarioCinema
         case Tipo::Coloca:
             suelta(p.actor);
             if (p.hayDesfase) m_desfases[p.actor] = {p.desfaseX, p.desfaseY};
+            if (p.lleva && p.actor == "jugador") e.situaJugador(p.celda);
             pon(e, p.actor, p.celda, 0.0f, 0.0f, "idle");
             return true;
         case Tipo::Mira: {

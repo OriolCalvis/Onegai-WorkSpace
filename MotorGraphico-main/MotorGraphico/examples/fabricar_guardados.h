@@ -1855,6 +1855,7 @@ inline void juegaElOcaso(demo_bnd::Jugador& j, const CaminoDia3& c3, const DiaOc
     for (const std::string& f : o.huye) j.huyen.insert(f);
     j.zonasPrimero = o.zonasPrimero;
     j.zonasEvita = o.zonasEvita;
+    j.rutaOcaso = o.ruta;
     empiezaElOcaso(j, c3);
     if (!j.s.hasFlag("bnd3_campanas")) {  // la espera de la tarde (Xila no avisa): se aguarda al ponerse el sol y suenan solas (evento ocaso_puesta)
         j.entra("interior_taberna");

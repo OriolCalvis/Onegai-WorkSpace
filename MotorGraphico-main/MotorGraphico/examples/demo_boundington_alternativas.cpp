@@ -932,6 +932,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_10", "bnd2_documentos"});
         e.j.fase("ocaso");
+        e.j.rutaOcaso = "base_ruta_norte";
         e.j.ocasoBase();
         e.j.ocasoRecorrido("base_ruta_norte");
         e.visto({"b3_venides_arenga_10"});
@@ -955,6 +956,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_10", "bnd2_documentos"});
         e.j.fase("ocaso");
+        e.j.rutaOcaso = "base_ruta_norte";
         e.j.ocasoBase();
         e.j.ocasoRecorrido("base_ruta_norte");
         e.ve({"bnd3_final_caido", "bnd3_epilogo"});
@@ -977,6 +979,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.ve({"bnd2_dia_cerrado"});
         e.pon({"bnd_venides_20", "bnd2_documentos"});
         e.j.fase("ocaso");
+        e.j.rutaOcaso = "base_ruta_quedarse";
         e.j.ocasoBase();
         e.j.ocasoRecorrido("base_ruta_quedarse");
         e.visto({"b3_oleada"});

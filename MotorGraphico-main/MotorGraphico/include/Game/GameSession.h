@@ -92,7 +92,7 @@ public:
 
     GameMode mode() const { return m_data->m_mode; }
     const GridCoord& playerPosition() const { return m_data->m_playerPosition; }
-
+    void situaJugador(const GridCoord& c) { m_data->m_playerPosition = c; }  // D0026.2: sin andar (el fundido de `lleva`)
     // C-17 — El World es la unica fuente de verdad de entidades. Esta
     // clase lo usa internamente; el render lo necesita para enganchar
     // marcadores por handle (Application) y para leer sin copias

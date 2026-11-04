@@ -180,6 +180,7 @@ void ApplicationCinematica::actualiza(Application& app, float dt) {
             app.m_player->moveTo(app.m_session->playerPosition(), m_segundosPorCelda);
             return true;
         }
+        void situaJugador(const GridCoord& celda) override { app.m_session->situaJugador(celda); app.m_player->setGridPosition(celda); }
         void ritmoDelJugador(float segundosPorCelda) override { m_segundosPorCelda = segundosPorCelda; }
         float m_segundosPorCelda = 0.0f;
         void enciende(const std::string& flag) override { app.m_narrativeState.setFlag(flag); }

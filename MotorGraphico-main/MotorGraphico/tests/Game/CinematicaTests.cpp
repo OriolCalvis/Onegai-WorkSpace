@@ -40,6 +40,11 @@ struct Escenario : public EscenarioCinematica {
         desfases[actor] = {dx, dy};
         if (!anim.empty()) animaciones[actor] = anim;
     }
+    int situados = 0;  // E-DISPARADORES-3: las veces que se pidio poner al jugador en una casilla (el juego real no lo mueve con `pon`)
+    void situaJugador(const GridCoord& c) override {
+        sitios["jugador"] = c;
+        ++situados;
+    }
     float ritmo = 0.0f;
     void ritmoDelJugador(float segundos) override { ritmo = segundos; }
     bool pasoDelJugador(int dx, int dy) override {
@@ -729,6 +734,7 @@ MOTOR_TEST_CASE(lleva_con_fundido_si_no_hay_camino_o_se_pide) {
         MOTOR_CHECK(velo > 0.9f);  // la pantalla se fundio a negro
         MOTOR_CHECK(!r.veloBlanco());
         MOTOR_CHECK(e.pasosJugador == 0 && e.sitios["jugador"].x == 7 && e.sitios["jugador"].y == 7);
+        MOTOR_CHECK(e.situados == 1);  // el jugador cambia de casilla de verdad (no solo el dibujo): GameSession::situaJugador
         MOTOR_CHECK(!marcaAntesDeColocar && e.flags.count("llegado") == 1);
     }
 }

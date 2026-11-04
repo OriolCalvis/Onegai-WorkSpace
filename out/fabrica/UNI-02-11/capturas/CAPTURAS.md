@@ -117,3 +117,20 @@ Guardados: `out/fabrica/UNI-02-11/guardados_disparadores/` (`fabricar_guardados 
 | `d_velas_3_escena.png`, `d_velas_4_escena.png` (f150, f260) | f150: el jugador ya en (21,30), mirando arriba, sin dialogo aun; f260: narracion «El gran corte de la mina vieja. Velas en circulo alrededor de la puerta de piedra; la piedra suda.» 1/3 (beat `bgd_cine_velas`). |
 
 Limites honestos: (1) no se capturo un combate disparado (`accion: combate`) ni una zona `once: false` en ventana: ninguna escena del juego los usa todavia; solo pruebas gl-free con mutacion. (2) El caso `tapaVista` usa objetos puestos a mano en la build (el save se fabrico con ellos); el nivel del repo no los lleva. (3) `d_sermon_0` es f30 porque en f5 la camara aun esta en el centro de la ciudad (no se ve al jugador). (4) Las capturas del modo `once` (por defecto) solo muestran que la escena arranca una vez.
+
+
+---
+
+# E-DISPARADORES-3 (04/11) — la salida del Ocaso se elige en el DIALOGO y el juego lleva al jugador (VENTANA real)
+
+Guardados: `guardados_disparadores/d_ruta_{oeste,norte,quedarse}.json` (`fabricar_guardados --capturas-disparadores`: el Ocaso jugado con el arnes hasta la base, `b3_por_donde` contestado, y el jugador en ciudad_oeste (8,11), la puerta de la base), guiones `tools/guiones/d_ruta_*.txt`, `MOTOR_TRACE=1 perl -e 'alarm 150; exec @ARGV' ./juego --guardado ... --guion ...`; trazas en `logs_disparadores3/juego_d_ruta_*.log` (una sola linea `cinematica: empieza` en cada una). Todas miradas con Read.
+
+| PNG | Que se ve de verdad |
+|---|---|
+| `d_ruta_oeste_0_sale.png` (f30) | La base, de noche; el jugador (espada) en la puerta del cuartel; el fundido a negro empieza (se ve mas oscuro). Sin dialogo. |
+| `d_ruta_oeste_1/2_camina.png` | Fundido y paso de la camara: no hay camino desde (8,11) (esta cerrada por la puerta y los PNJ), asi que el juego lo lleva con fundido (D0026.2). |
+| `d_ruta_oeste_3_llega.png`, `d_ruta_oeste_5_dialogo.png` (f320, f520) | El jugador ya esta fuera, al oeste del recinto, junto a los dos sectarios del muro (3,12); caja «VENIDES»: «Vamos.» (beat `b3_esc04_camino_oeste`). |
+| `d_ruta_norte_5_dialogo.png` | El jugador esta al este, junto al coliseo, en (28,13) (cerca del paso al norte, (31,12..14)); «VENIDES: Vamos.». |
+| `d_ruta_quedarse_5_dialogo.png` | El jugador esta delante del cuartel, al este de la puerta, en (12,12), mirando a la izquierda; «VENIDES: Vamos.». |
+
+Limites honestos: (1) el MENU de las tres salidas (`b3_por_donde`) NO esta capturado en ventana: con un guardado en la base y las flags borradas el beat no volvio a saltar; la eleccion se prueba gl-free (`elegir_la_salida_en_el_dialogo_...`) y el arnes la juega en cada final del Ocaso. (2) Desde (8,11) no hay camino, asi que en ventana se ve el FUNDIDO, no el paseo; el paseo con camino real (36-45 pasos hasta cada casilla desde el inicio del nivel) lo prueba el test gl-free con `rutaAndando`. (3) Al probar el fundido en ventana salio un fallo real de E2: `Coloca` del jugador solo movia el dibujo, no la casilla (el jugador seguia en (8,11) y la camara no se movia); arreglado (`GameSession::situaJugador`, `PasoCinematica::lleva`) con prueba y mutacion.

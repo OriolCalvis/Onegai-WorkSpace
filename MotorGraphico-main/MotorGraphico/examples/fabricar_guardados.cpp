@@ -380,6 +380,27 @@ int capturasDisparadores(const std::string& carpeta) {
         static const fabricar::Momento fuera{"d_velas.json", "mina2_gorran", "", 0, 0, 21, 35};
         escribe(fabricar::fotografia(j, heroe, fuera), "d_velas.json");
     }
+    {  // E-DISPARADORES-3: la salida del Ocaso se elige en el dialogo de la base y el juego lleva al jugador a la casilla de su cinematica.
+        //   d_ruta_{oeste,norte,quedarse}.json  ciudad_oeste en (8, 11) (la puerta de la base), con la salida ya elegida: el juego lo lleva andando
+        //   (o con fundido si no hay camino) a (3,12) / (28,13) / (12,12) y arranca base_ruta_*.
+        fabricar::CaminoDia3 c3 = fabricar::caminoDia3("fiesta_dentro");
+        c3.desde1 = "edul_dudas";
+        fabricar::Partida p(g, heroe, fabricar::caminoDia1("edul_dudas").suerte);
+        fabricar::juegaHastaElDia3(p, c3, true);
+        fabricar::fase(p.j, "ocaso");
+        p.j.rutaOcaso = "base_ruta_oeste";
+        p.j.ocasoBase();
+        require(p.j.s.hasFlag("bnd3_elige_oeste") && p.j.s.hasFlag("bnd3_salidas_explicadas") && !p.j.s.hasFlag("bnd3_ruta"));
+        const char* salidas[] = {"oeste", "norte", "quedarse"};
+        for (const char* ruta : salidas) {
+            for (const char* otra : salidas) p.j.s.clearFlag(std::string("bnd3_elige_") + otra);
+            p.j.s.setFlag(std::string("bnd3_elige_") + ruta);
+            const std::string archivo = std::string("d_ruta_") + ruta + ".json";
+            static fabricar::Momento m{"", "ciudad_oeste", "", 0, 0, 8, 11};
+            m.archivo = "d_ruta.json";
+            escribe(fabricar::fotografia(p.j, heroe, m), archivo.c_str());
+        }
+    }
     return fallos == 0 ? 0 : 1;
 }
 

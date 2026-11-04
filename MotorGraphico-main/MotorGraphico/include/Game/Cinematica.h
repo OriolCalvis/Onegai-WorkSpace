@@ -60,6 +60,7 @@ struct PasoCinematica {
     float valor = 0.0f;             // Funde: la opacidad final
     float velocidad = 2.5f;         // Anda: celdas por segundo
     bool espera = true;             // Anda: la orden siguiente espera a que llegue
+    bool lleva = false;             // Coloca del `lleva` con fundido: el jugador SI cambia de casilla (D0026.2)
     // PROLOGO-02 (14/10) — Anda y Coloca: «desfase» [dx, dy] en celdas, el
     // dibujo corrido dentro de su celda y hasta que la cinematica acabe (Sho-Noco
     // en la popa de la barca, tu en la proa). El del jugador se quita al cargar
@@ -188,6 +189,7 @@ public:
     virtual void pon(const std::string& actor, const GridCoord& celda, float dx, float dy,
                      const std::string& animacion) = 0;
     virtual bool pasoDelJugador(int dx, int dy) = 0;  // false: no puede
+    virtual void situaJugador(const GridCoord& /*celda*/) {}  // E-DISPARADORES-3: lo pone en la casilla, sin andar
     // Oriol (22/10): «Sho-Noco se pone debajo de la barca». El actor va DENTRO de lo que lo lleva (tiene
     // «desfase»: la barca, en su misma celda) y se dibuja encima; andar sin desfase no cambia el orden.
     // Se llama antes de cada pon(). Por defecto, nada (las pruebas).

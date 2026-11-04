@@ -203,6 +203,7 @@ std::vector<PasoCinematica> CatalogoCinematicas::pasosEfectivos(const Cinematica
             coloca.tipo = Tipo::Coloca;
             coloca.actor = "jugador";
             coloca.celda = d.lleva;
+            coloca.lleva = true;  // el jugador SI cambia de casilla
             out.push_back(coloca);
             f.valor = 0.0f;
             out.push_back(f);

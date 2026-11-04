@@ -145,6 +145,8 @@ struct Jugador {
     bool vigilaSiempre = false;  // E-MISIONES-01b: como en el juego, un beat que salta sin cambiar nada no se repite en bucle (ver drena); lo pide quien muta el guion
     std::vector<std::string> zonasPrimero;  // cinematicas con zona a las que va antes que a las demas (pisaUnaZona)
     std::vector<std::string> zonasEvita;    // ... y a las que no va nunca
+    // E-DISPARADORES-3: la salida que elige en el dialogo de la base (b3_por_donde): base_ruta_oeste / _norte / _quedarse.
+    std::string rutaOcaso = "base_ruta_oeste";
     bool enCine = false;  // dentro de cinematica(): no se encadenan otras desde drena()
     std::vector<std::string> prefiere;    // lo que contesta, por orden de gusto
     std::set<std::string> usadas;         // "beat|texto": no repite en la misma pantalla
@@ -257,6 +259,11 @@ struct Jugador {
         const std::string id = s.eleccion().beatId;
         auto libre = [&](std::size_t i) { return usadas.count(id + "|" + textos[i]) == 0; };
         int k = -1;
+        if (id.rfind("b3_por_donde", 0) == 0) {  // la salida: la opcion de rutaOcaso
+            const char* texto = rutaOcaso == "base_ruta_norte" ? "Ir por el paso norte" : rutaOcaso == "base_ruta_quedarse" ? "Mantener la puerta" : "Salir por el oeste";
+            for (std::size_t i = 0; i < textos.size() && k < 0; ++i)
+                if (textos[i] == texto) k = static_cast<int>(i);
+        }
         for (std::size_t p = 0; p < prefiere.size() && k < 0; ++p)
             for (std::size_t i = 0; i < textos.size() && k < 0; ++i)
                 if (textos[i] == prefiere[p] && libre(i)) k = static_cast<int>(i);
@@ -667,6 +674,7 @@ struct Jugador {
     // El Ocaso desde la base hasta la huida: la salida elegida (zona de ciudad_oeste), la ciudad
     // del Ocaso, Las Afueras y la huida. En cada sitio pisa las zonas que van saliendo.
     void ocasoRecorrido(const std::string& ruta = "base_ruta_oeste") {
+        if (!s.hasFlag("bnd3_ruta")) require(s.hasFlag("bnd3_elige_" + ruta.substr(10)));  // la salida se elige en el dialogo (b3_por_donde)
         for (const char* nivel : {"ciudad_oeste", "afueras_boundington_ocaso", "huida_boundington"}) {
             entra(nivel);
             for (int vez = 0; vez < 12 && pisaUnaZona(ruta); ++vez) {

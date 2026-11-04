@@ -143,4 +143,65 @@ MOTOR_TEST_CASE(hallazgo_el_diario_da_por_hecha_la_salida_aunque_el_heroe_caiga)
     MOTOR_CHECK(m->decisiones.empty());  // ninguna decision de la ficha nombra el final caido / oeste / solos
 }
 
+// E-DISPARADORES-3 (decision de Oriol, 04/11: «Portar-hi per dialeg»): la salida del Ocaso se elige en el DIALOGO de la base
+// (b3_por_donde) y el juego lleva al jugador a la casilla de su cinematica base_ruta_* (disparador.lleva) y la arranca. Sin elegir, no
+// salta ninguna; elegida una, solo salta esa; el jugador acaba en la casilla (camino real de GameSession::rutaAndando) y la cinematica pone
+// su ruta. El norte no tiene casilla transitable en su zona: lleva.a es una casilla de la calle junto a su paso.
+MOTOR_TEST_CASE(elegir_la_salida_en_el_dialogo_lleva_al_jugador_y_arranca_la_cinematica) {
+    Fabrica f;
+    auto cat = Game::CatalogoCinematicas::carga("assets/cinematicas/cinematicas.json");
+    MOTOR_CHECK(cat.isOk());
+    if (!cat.isOk()) return;
+    const std::string nivel = "assets/levels/ciudad_oeste.json";
+    const struct { const char* cine; const char* ruta; const char* flag; GridCoord casilla; } rutas[] = {
+        {"base_ruta_oeste", "oeste", "bnd3_elige_oeste", {3, 12}},
+        {"base_ruta_norte", "norte", "bnd3_elige_norte", {28, 13}},
+        {"base_ruta_quedarse", "quedarse", "bnd3_elige_quedarse", {12, 12}}};
+    for (const auto& r : rutas) {
+        demo_bnd::Jugador j(f.g, demo_bnd::Suerte::Buena);
+        fase(j, "ocaso");
+        for (const char* fl : {"bnd2_dia_cerrado", "bnd3_arenga"}) j.s.setFlag(fl);
+        j.rutaOcaso = r.cine;
+        j.entra("interior_cuartel");
+        j.drena();  // b3_por_donde: el menu de las tres salidas; contesta la de rutaOcaso
+        MOTOR_CHECK(j.visto("b3_por_donde"));
+        MOTOR_CHECK(j.s.hasFlag("bnd3_salidas_explicadas") && !j.s.hasFlag("bnd3_ruta"));
+        for (const auto& otra : rutas) MOTOR_CHECK(j.s.hasFlag(otra.flag) == (otra.flag == std::string(r.flag)));
+        // En ciudad_oeste (desde la puerta de la base, (8, 11)): solo salta la elegida, con el radio y sin vision.
+        j.entra("ciudad_oeste");
+        const auto tiene = [&j](const std::string& fl) { return j.s.hasFlag(fl); };
+        const Game::VistaDelNivel vista;  // exterior, nada tapa
+        const Game::Cinematica* c = cat.value().laQueEmpieza(nivel, GridCoord{8, 11}, tiene, &vista);
+        MOTOR_CHECK(c != nullptr && c->id == r.cine);
+        if (c == nullptr || c->id != r.cine) continue;
+        MOTOR_CHECK(c->puntoDeEntrada().x == r.casilla.x && c->puntoDeEntrada().y == r.casilla.y);
+        // El camino: el de la sesion real sobre el mapa real; acaba EN la casilla y no es un salto.
+        const RPG::CharacterSheet ficha = creaHeroe().ficha;
+        auto montado = montaNivel("ciudad_oeste", ficha);
+        const GridCoord desde = montado->nivel.playerStart;
+        Game::LlevaDelJugador lleva;
+        lleva.jugador = desde;
+        lleva.ruta = [&](const GridCoord& d) { return montado->sesion->rutaAndando(d); };
+        const std::vector<Game::PasoCinematica> pasos = cat.value().pasosEfectivos(*c, &lleva);
+        MOTOR_CHECK(pasos.size() >= 3);
+        if (pasos.size() < 3) continue;
+        MOTOR_CHECK(pasos.front().tipo == Game::PasoCinematica::Tipo::Anda && pasos.front().actor == "jugador");
+        MOTOR_CHECK(!pasos.front().camino.empty() && pasos.front().camino.back().x == r.casilla.x && pasos.front().camino.back().y == r.casilla.y);
+        MOTOR_CHECK(pasos.back().tipo == Game::PasoCinematica::Tipo::Beat);
+        // La cinematica pone su ruta (el beat «Vamos») y nada mas se decide: bnd3_ruta_<x>.
+        MOTOR_CHECK(j.cinematica(c->puntoDeEntrada()));
+        MOTOR_CHECK(j.s.hasFlag("bnd3_ruta") && j.s.hasFlag(std::string("bnd3_ruta_") + r.ruta));
+        MOTOR_CHECK(j.s.hasFlag(c->vista()));
+        std::fprintf(stderr, "  [%s] elige «%s», %d pasos hasta (%d,%d), ruta %s\n", r.cine, r.flag, static_cast<int>(pasos.front().camino.size()), r.casilla.x, r.casilla.y, r.ruta);
+    }
+    // Sin elegir (b3_por_donde aun no ha preguntado), ninguna de las tres salta, ni en su casilla ni en la puerta.
+    std::set<std::string> flags = {"bnd3_salidas_explicadas", "bnd3_arenga"};
+    const auto sin = [&flags](const std::string& fl) { return flags.count(fl) != 0; };
+    const Game::VistaDelNivel vista;
+    for (const GridCoord donde : {GridCoord{8, 11}, GridCoord{3, 12}, GridCoord{28, 13}, GridCoord{12, 12}, GridCoord{4, 10}, GridCoord{7, 7}}) {
+        const Game::Cinematica* c = cat.value().laQueEmpieza(nivel, donde, sin, &vista);
+        MOTOR_CHECK(c == nullptr || c->id.rfind("base_ruta_", 0) != 0);
+    }
+}
+
 int main() { return motor_test::runAllTests(); }
