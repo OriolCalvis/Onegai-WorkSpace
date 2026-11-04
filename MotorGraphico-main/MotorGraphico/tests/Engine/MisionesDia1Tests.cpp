@@ -232,7 +232,10 @@ const std::vector<Esc>& escenas() {
          {"b1_aigren_perdidos", "b1_aigren_redimido"}, {"bnd1_aigren_c_exito", "bnd1_aigren_redimido", "bnd1_aigren_resuelto"}, {"bnd1_aigren_c_pifia"},
          {"b1_aigren_redimido", "", "bnd1_aigren_resuelto"}},
         {"aigren_discurso", "aigren", false, junta(kCama, {"E:interior_herreria", "H:aigren"}), {"Preguntarle por los Perdidos", "Convencerle de que son el mal [Persuasión]"}, Suerte::Regular,
-         {"b1_aigren_perdidos", "b1_aigren_papel"}, {"bnd1_aigren_c_parcial", "bnd1_aigren_orden_pedida"}, {"bnd1_aigren_redimido", "bnd1_aigren_resuelto"}, {}, {"b1_aigren_discurso"}},
+         {"b1_aigren_perdidos", "b1_aigren_papel"}, {"bnd1_aigren_c_parcial", "bnd1_aigren_orden_pedida"}, {"bnd1_aigren_redimido", "bnd1_aigren_resuelto", "bnd1_aigren_c_pifia"}, {"b1_aigren_papel", "", "bnd1_aigren_orden_pedida"}, {"b1_aigren_discurso"}},
+        // E-DISPARADORES-2 A (Oriol, 04/11): la pifia ya no pide el papel; recibe el discurso y se cierra. Papel solo con c_parcial, discurso solo con c_pifia.
+        {"aigren_pifia_discurso", "aigren", false, junta(kCama, {"E:interior_herreria", "T:bnd1_aigren_c_pifia=mala", "H:aigren"}), {"Preguntarle por los Perdidos", "Convencerle de que son el mal [Persuasión]"}, Suerte::Buena,
+         {"b1_aigren_perdidos", "b1_aigren_discurso"}, {"bnd1_aigren_c_pifia", "bnd1_aigren_resuelto"}, {"bnd1_aigren_c_parcial", "bnd1_aigren_orden_pedida", "bnd1_aigren_redimido"}, {"b1_aigren_discurso", "", "bnd1_aigren_resuelto"}, {"b1_aigren_papel"}},
         // 11 --- Luisarda
         {"luisarda", "luisarda", true, junta(kCama, {"E:interior_herreria", "H:aigren", "H:aigren", "E:interior_sastreria", "H:luisarda", "E:interior_taberna", "H:skilla"}),
          junta({"Ven a cenar a la taberna. Rosita te espera."}, {"¿Trabajas solo?", "Pues suena muy sano.", "Presionarle con su hijo [Intimidación]", "Busco antorchas.",
