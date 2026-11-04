@@ -1,13 +1,17 @@
-# E-GUION-02 — El Ocaso (dia 4), en la base militar: el aviso a Venides ya esta dado y el evento comienza_ocaso sin
-# evaluar, asi que al cargar el mundo lo evalua y suenan las campanas (cinematica base_campanas, beat b3_campanas).
+# E-GUION-02 / E-MATRIZ-04 — El Ocaso (dia 4), en la base militar: el aviso a Venides ya esta dado y el evento comienza_ocaso sin evaluar,
+# asi que al cargar el mundo lo evalua: fundido a negro (base_campanas), entra el explorador herido y avisa («¡Los Perdidos estan en la
+# ciudad!», b3_campanas) y Venides arenga delante de sus veinte hombres (b3_venides_arenga_20, tres paginas). Cada ENTER pasa una pagina.
+# Tiempos medidos con captura densa (cada 12 fotogramas): fundido 28-136, dialogo del explorador desde ~170.
 # Uso (desde out/build/macos-debug):
-#   ./fabricar_guardados
-#   ./juego --guardado guardados/ocaso.json --guion ../../../tools/guiones/ocaso.txt
-3 captura cuartel
-40 captura campanas_1
-60 captura campanas_2
-80 captura campanas_3
-100 captura campanas_4
-120 captura campanas_5
-160 captura arenga
-200 fin
+#   ./fabricar_guardados <carpeta>
+#   ./juego --guardado <carpeta>/ocaso.json --guion ../../../tools/guiones/ocaso.txt
+3 captura ocaso_cuartel_antes
+80 captura ocaso_fundido_negro
+178 captura ocaso_campanas_explorador
+180 toca ENTER
+198 captura ocaso_arenga_1
+200 toca ENTER
+218 captura ocaso_arenga_2
+220 toca ENTER
+238 captura ocaso_arenga_3
+260 fin

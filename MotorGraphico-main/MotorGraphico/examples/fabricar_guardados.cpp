@@ -8,6 +8,8 @@
 //                                                        con el dia cerrado) y las ranuras de «Continuar» (saves/<proyecto>/)
 //   ./fabricar_guardados --matriz-dia3 [carpeta]        E-MATRIZ-03: dia3_<camino>.json (un guardado por camino del dia 3, con el dia cerrado) y
 //                                                        las mismas ranuras (la ultima que se corre manda)
+//   ./fabricar_guardados --matriz-ocaso [carpeta]       E-MATRIZ-04: ocaso_<camino>.json (un guardado por final del Ocaso, al acabar el epilogo) y
+//                                                        las mismas ranuras (la ultima que se corre manda)
 //   ./fabricar_guardados --capturas-dia3 [carpeta]      E-MATRIZ-03 fase C: m3_{fiesta,informe}.json para los guiones tools/guiones/m3_*.txt
 //   ./fabricar_guardados --capturas-gorran [carpeta]    E-MATRIZ-02 fase C: m2_{tregua,mia_perdida,cuatro_lios,subasta}.json, parados antes
 //                                                        de la escena que enseñan los guiones tools/guiones/m2_*.txt
@@ -82,6 +84,41 @@ int matrizDia3(const std::string& carpeta) {
     return ranurasDe(carpeta, "dia3", fabricar::caminosDia3(), [&](const fabricar::CaminoDia3& c) { return fabricar::dia3(g, heroe, c); });
 }
 
+// E-MATRIZ-04: un guardado por final del Ocaso (ocaso_<camino>.json, al acabar el epilogo) y las mismas ranuras.
+int matrizOcaso(const std::string& carpeta) {
+    const demo_bnd::Guiones g = demo_bnd::cargaTodo();
+    const fabricar::Heroe heroe = fabricar::creaHeroe();
+    return ranurasDe(carpeta, "ocaso", fabricar::caminosOcaso(), [&](const fabricar::CaminoOcaso& c) { return fabricar::ocaso(g, heroe, c); });
+}
+
+// E-MATRIZ-04 fase C: m1_{unirse,dudas}_plaza.json — el mismo dia 1 con las dos salidas de b1_edul («Unirte de verdad» / «Sembrar dudas en
+// Verina»), jugados Gorran (tregua) y el dia 3 de verdad hasta el Ocaso, parados en la plaza del Casco Antiguo antes del sermon de Sandes:
+// el sermon cambia segun hayas sido del culto (b3_sermon_po54) o no (b3_sermon). Con el oro y la moral de la partida.
+int capturasOcasoM1(const std::string& carpeta) {
+    std::filesystem::create_directories(carpeta);
+    const demo_bnd::Guiones g = demo_bnd::cargaTodo();
+    const fabricar::Heroe heroe = fabricar::creaHeroe();
+    int fallos = 0;
+    for (const char* d1 : {"edul_unirse", "edul_dudas"}) {
+        fabricar::CaminoDia3 c3 = fabricar::caminoDia3("fiesta_dentro");
+        c3.desde1 = d1;
+        fabricar::Partida p(g, heroe, fabricar::caminoDia1(d1).suerte);
+        fabricar::juegaHastaElDia3(p, c3, true);
+        fabricar::fase(p.j, "ocaso");
+        static const fabricar::Momento plaza{"m1_plaza.json", "ciudad_centro", "", 0, 0, 54, 54};
+        const SaveGameData data = fabricar::fotografia(p.j, heroe, plaza);
+        const std::string ruta = carpeta + "/m1_" + (std::string(d1) == "edul_unirse" ? "unirse" : "dudas") + "_plaza.json";
+        std::string error;
+        if (!writeSaveGameFile(ruta, data, &error)) {
+            std::cerr << "No se pudo escribir " << ruta << ": " << error << "\n";
+            ++fallos;
+            continue;
+        }
+        std::cout << ruta << ": " << d1 << " en " << data.levelPath << " oro " << data.gold << "\n";
+    }
+    return fallos == 0 ? 0 : 1;
+}
+
 // E-MATRIZ-03 fase C: los guardados "justo antes" de las escenas de los guiones m3_*.txt.
 int capturasDia3(const std::string& carpeta) {
     std::filesystem::create_directories(carpeta);
@@ -132,6 +169,8 @@ int capturasGorran(const std::string& carpeta) {
 
 int main(int argc, char** argv) {
     if (argc > 1 && std::string(argv[1]) == "--capturas-dia3") return capturasDia3(argc > 2 ? argv[2] : "guardados");
+    if (argc > 1 && std::string(argv[1]) == "--matriz-ocaso") return matrizOcaso(argc > 2 ? argv[2] : "guardados");
+    if (argc > 1 && std::string(argv[1]) == "--capturas-ocaso-m1") return capturasOcasoM1(argc > 2 ? argv[2] : "guardados");
     if (argc > 1 && std::string(argv[1]) == "--matriz-dia3") return matrizDia3(argc > 2 ? argv[2] : "guardados");
     if (argc > 1 && std::string(argv[1]) == "--capturas-gorran") return capturasGorran(argc > 2 ? argv[2] : "guardados");
     if (argc > 1 && std::string(argv[1]) == "--matriz") return matriz(argc > 2 ? argv[2] : "guardados");

@@ -1,0 +1,702 @@
+{
+ "dia": "ocaso",
+ "decisiones": [
+  {
+   "beat": "b3_barricada_rota",
+   "linea": 4926,
+   "peso": 27.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Derribarla a golpes",
+     "linea": 4953,
+     "despedida": false,
+     "pone": [
+      "bnd3_barricada_resuelta"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "atrapados_rescatados",
+       "gravedad": "medio",
+       "signo": 1,
+       "reputacion": {
+        "aegroum": 5
+       }
+      }
+     ],
+     "oro": 40,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [
+      "el fuego blanco (4)"
+     ],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    },
+    {
+     "texto": "Romperla a distancia",
+     "linea": 4983,
+     "despedida": false,
+     "pone": [
+      "bnd3_barricada_resuelta"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "atrapados_rescatados",
+       "gravedad": "medio",
+       "signo": 1,
+       "reputacion": {
+        "aegroum": 5
+       }
+      }
+     ],
+     "oro": 40,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    },
+    {
+     "texto": "Buscar dónde no hay frascos",
+     "linea": 5008,
+     "despedida": false,
+     "pone": [
+      "bnd3_barricada_resuelta"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "atrapados_rescatados",
+       "gravedad": "medio",
+       "signo": 1,
+       "reputacion": {
+        "aegroum": 5
+       }
+      }
+     ],
+     "oro": 40,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": [
+      "bnd1_edul_mezcla",
+      "bnd2_edul_frascos",
+      "bnd1_almacen_saboteado"
+     ]
+    }
+   ]
+  },
+  {
+   "beat": "b3_sandes_verina",
+   "linea": 3816,
+   "peso": 25.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Entregársela",
+     "linea": 3844,
+     "despedida": false,
+     "pone": [
+      "bnd3_verina_entregada",
+      "bnd3_aliado_sandes",
+      "bnd3_venides_huye",
+      "bnd3_casco_resuelto"
+     ],
+     "quita": [
+      "bnd3_verina_con_grupo",
+      "bnd3_con_venides"
+     ],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "verina_entregada",
+       "gravedad": "mayor",
+       "signo": -1,
+       "reputacion": {
+        "perdidos": 40
+       }
+      }
+     ],
+     "oro": 80,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    },
+    {
+     "texto": "No.",
+     "linea": 3892,
+     "despedida": false,
+     "pone": [
+      "bnd3_sandes_pelea",
+      "bnd3_sandes_huye_casco",
+      "bnd3_sandes_gana_casco"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [
+      {
+       "enemigos": [
+        "sandes x1",
+        "perdido_devoto x2"
+       ],
+       "flags": {
+        "victory": "bnd3_sandes_huye_casco",
+        "defeat": "bnd3_sandes_gana_casco"
+       }
+      }
+     ],
+     "moral": [
+      {
+       "acto": "sandes_enfrentado",
+       "gravedad": "medio",
+       "signo": 1,
+       "reputacion": {
+        "perdidos": -40,
+        "aegroum": 15
+       }
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b3_verina_salvada_dudas",
+   "linea": 3115,
+   "peso": 24.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Vamos a por el.",
+     "linea": 3163,
+     "despedida": false,
+     "pone": [
+      "bnd3_verina_con_grupo",
+      "bnd3_promesa_edul"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "verina_liberada",
+       "gravedad": "mayor",
+       "signo": 1,
+       "reputacion": {
+        "perdidos": -15,
+        "aegroum": 5
+       }
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    },
+    {
+     "texto": "No podemos. No hay tiempo.",
+     "linea": 3188,
+     "despedida": false,
+     "pone": [
+      "bnd3_verina_sola"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "verina_liberada",
+       "gravedad": "mayor",
+       "signo": 1,
+       "reputacion": {
+        "perdidos": -15,
+        "aegroum": 5
+       }
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b3_venides_rodillas",
+   "linea": 5760,
+   "peso": 17.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Intentar acabar con él",
+     "linea": 5817,
+     "despedida": false,
+     "pone": [
+      "bnd3_venides_huye"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "venides_atacado",
+       "gravedad": "mayor",
+       "signo": -1,
+       "reputacion": {
+        "aegroum": -40
+       }
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    },
+    {
+     "texto": "Dejarle",
+     "linea": 5833,
+     "despedida": false,
+     "pone": [
+      "bnd3_venides_dejado"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "venides_abandonado",
+       "gravedad": "medio",
+       "signo": -1,
+       "reputacion": {}
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b3_sandes_oferta",
+   "linea": 3941,
+   "peso": 13.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Acepto.",
+     "linea": 3964,
+     "despedida": false,
+     "pone": [
+      "bnd3_sandes_decidido",
+      "bnd3_aliado_sandes",
+      "bnd3_venides_huye",
+      "bnd3_casco_resuelto"
+     ],
+     "quita": [
+      "bnd3_con_venides"
+     ],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "aliarse_con_sandes",
+       "gravedad": "menor",
+       "signo": 0,
+       "reputacion": {
+        "perdidos": 40,
+        "aegroum": -15
+       }
+      }
+     ],
+     "oro": 80,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    },
+    {
+     "texto": "No.",
+     "linea": 4025,
+     "despedida": false,
+     "pone": [
+      "bnd3_sandes_decidido",
+      "bnd3_sandes_pelea",
+      "bnd3_sandes_huye_casco",
+      "bnd3_sandes_gana_casco"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [
+      {
+       "enemigos": [
+        "sandes x1",
+        "perdido_devoto x2"
+       ],
+       "flags": {
+        "victory": "bnd3_sandes_huye_casco",
+        "defeat": "bnd3_sandes_gana_casco"
+       }
+      }
+     ],
+     "moral": [
+      {
+       "acto": "sandes_enfrentado",
+       "gravedad": "medio",
+       "signo": 1,
+       "reputacion": {
+        "perdidos": -40,
+        "aegroum": 15
+       }
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b3_edul_fiesta",
+   "linea": 5611,
+   "peso": 12.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Es verdad.",
+     "linea": 5636,
+     "despedida": false,
+     "pone": [
+      "bnd3_edul_cerrado",
+      "bnd3_edul_salvado",
+      "bnd3_edul_con_grupo"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "edul_liberado",
+       "gravedad": "mayor",
+       "signo": 1,
+       "reputacion": {}
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b3_verina_cautiva",
+   "linea": 2807,
+   "peso": 5.0,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Seguir tu camino",
+     "linea": 2890,
+     "despedida": false,
+     "pone": [
+      "bnd3_verina_cerrada",
+      "bnd3_verina_abandonada"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [
+      {
+       "acto": "verina_abandonada",
+       "gravedad": "medio",
+       "signo": -1,
+       "reputacion": {}
+      }
+     ],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {},
+     "requires": []
+    }
+   ]
+  },
+  {
+   "beat": "b3_sermon_po54",
+   "linea": 396,
+   "peso": 0.5,
+   "top": true,
+   "opciones": [
+    {
+     "texto": "Correr a avisar a Venides",
+     "linea": 500,
+     "despedida": true,
+     "pone": [
+      "bnd3_a_la_base"
+     ],
+     "quita": [],
+     "variables": [],
+     "tiradas": [],
+     "combates": [],
+     "moral": [],
+     "oro": 0,
+     "nivel": 0.0,
+     "objetos": [],
+     "heridas": [],
+     "directas": {},
+     "indirectas": {
+      "bnd3_avisado": {
+       "via": "b3_aviso_en_base",
+       "lecturas": [
+        {
+         "donde": "assets/eventos/boundington.json:13",
+         "cual": "comienza_ocaso",
+         "tipo": "evento",
+         "rol": "senal",
+         "dia": "ocaso"
+        }
+       ]
+      }
+     },
+     "requires": []
+    }
+   ]
+  }
+ ],
+ "avisos": [
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_sermon_po54:428",
+   "dato": "bnd3_pista_campanas",
+   "opcion": "Escuchar entre la gente"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_sermon:556",
+   "dato": "bnd3_pista_campanas",
+   "opcion": "Escuchar entre la gente"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_sermon_s0_a:678",
+   "dato": "bnd3_pista_campanas",
+   "opcion": "Escuchar entre la gente"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_sermon_p0_a:1402",
+   "dato": "bnd3_pista_campanas",
+   "opcion": "Escuchar entre la gente"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_rosita_ocaso:1639",
+   "dato": "bnd3_sin_aviso_hoy",
+   "opcion": "Esperar a que anochezca"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_verina_salvada_dudas:3163",
+   "dato": "bnd3_promesa_edul",
+   "opcion": "Vamos a por el."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_verina_salvada_dudas:3188",
+   "dato": "bnd3_verina_sola",
+   "opcion": "No podemos. No hay tiempo."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_verina_salvada:3257",
+   "dato": "bnd3_promesa_edul",
+   "opcion": "Vamos a por el."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_verina_salvada:3282",
+   "dato": "bnd3_verina_sola",
+   "opcion": "No podemos. No hay tiempo."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_verina_salvada_sola:3348",
+   "dato": "bnd3_promesa_edul",
+   "opcion": "Vamos a por el."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_verina_salvada_sola:3373",
+   "dato": "bnd3_verina_sola",
+   "opcion": "No podemos. No hay tiempo."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_pulga:3583",
+   "dato": "bnd3_esc05_pulga_guia",
+   "opcion": "Seguir a Pulga"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_sandes_verina:3892",
+   "dato": "bnd3_sandes_pelea",
+   "opcion": "No."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_sandes_oferta:4007",
+   "dato": "bnd3_sandes_gana_pregunta",
+   "opcion": "¿Y tú qué ganas?"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_sandes_oferta:4025",
+   "dato": "bnd3_sandes_pelea",
+   "opcion": "No."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_edul_casco:5185",
+   "dato": "bnd3_edul_pelea",
+   "opcion": "Liberarle"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_edul_killville:5352",
+   "dato": "bnd3_edul_pelea",
+   "opcion": "Liberarle"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_edul_killville:5388",
+   "dato": "bnd3_edul_abandonado",
+   "opcion": "Dejarle"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_edul:5438",
+   "dato": "bnd3_edul_pelea",
+   "opcion": "Liberarle"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_edul:5474",
+   "dato": "bnd3_edul_abandonado",
+   "opcion": "Dejarle"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_edul_ofrece_compania:5524",
+   "dato": "bnd3_con_edul",
+   "opcion": "Ven con nosotros"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_edul_ofrece_compania:5538",
+   "dato": "bnd3_edul_a_salvo",
+   "opcion": "Busca un lugar seguro"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_edul_fiesta:5636",
+   "dato": "bnd3_edul_con_grupo",
+   "opcion": "Es verdad."
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_venides_rodillas:5789",
+   "dato": "bnd3_venides_perdido",
+   "opcion": "Ayudarle a escapar"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_venides_rodillas:5833",
+   "dato": "bnd3_venides_dejado",
+   "opcion": "Dejarle"
+  },
+  {
+   "tipo": "flag-sin-lector",
+   "donde": "b3_barca_s1_a:7271",
+   "dato": "bnd3_asentado",
+   "opcion": "¿Lo que hice ha cambiado algo?"
+  },
+  {
+   "tipo": "opciones-iguales",
+   "donde": "b3_barricada_rota:4953",
+   "dato": "Derribarla a golpes | Romperla a distancia | Buscar dónde no hay frascos",
+   "opcion": "bnd3_barricada_resuelta"
+  },
+  {
+   "tipo": "lectura-sin-escritor",
+   "donde": "assets/eventos/boundington.json:11",
+   "dato": "bnd3_campanas",
+   "opcion": ""
+  },
+  {
+   "tipo": "lectura-sin-escritor",
+   "donde": "assets/eventos/boundington.json:14",
+   "dato": "bnd3_xila_avisa",
+   "opcion": ""
+  }
+ ]
+}

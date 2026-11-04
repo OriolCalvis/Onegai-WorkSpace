@@ -1,0 +1,24 @@
+# oeste_todos  2026-11-04 10:48:01  HEAD 4898fb94
+md5: ../../assets/adventures/boundington_ocaso.json: No such file or directory
+# Mutacion sobre copia temporal de boundington_ocaso.json (el original no se toca): md5 original a038b568c295ae4b01ef818bca69c5df fuente 
+## 1. ORIGINAL (esperado: verde)
+  [oeste_todos] verde: final bnd3_final_oeste, 340 beats jugados
+  [oeste_todos] mutacion (b3_edul_con_verina /  / bnd3_edul_salvado) en rojo: 4 fallos, el primero: falta bnd3_edul_salvado
+[PASS] cada_final_del_ocaso_deja_lo_que_dice_la_matriz
+Ejecutados 5 test(s); 0 fallo(s).
+exit=
+## 2. MUTADA (esperado: ROJO)
+  [oeste_todos] MUTADO: b3_edul_con_verina /  / bnd3_edul_salvado -> zz_mutada
+  [oeste_todos] falta bnd3_edul_salvado
+  [oeste_todos] no disparado b3_epi_verina_viva
+  [oeste_todos] diario bnd3_verina: sin la consecuencia «abrazaron»
+  [oeste_todos] el diario no ensena la decision bnd3_edul
+[FAIL] cada_final_del_ocaso_deja_lo_que_dice_la_matriz: /Users/admin/onegai-ramas/UNI-02-11/MotorGraphico-main/MotorGraphico/tests/Engine/MatrizOcasoTests.cpp:53 -- comprobación fallida: fallos.empty()
+  [oeste_todos] mutacion (b3_edul_con_verina /  / bnd3_edul_salvado) en rojo: 4 fallos, el primero: falta bnd3_edul_salvado
+Ejecutados 5 test(s); 1 fallo(s).
+exit=
+## 3. RESTAURADA (original otra vez, verde)
+[PASS] cada_final_del_ocaso_deja_lo_que_dice_la_matriz
+Ejecutados 5 test(s); 0 fallo(s).
+exit=
+## md5 tras: a038b568c295ae4b01ef818bca69c5df

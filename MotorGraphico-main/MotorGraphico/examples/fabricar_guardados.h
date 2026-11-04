@@ -35,6 +35,7 @@
 #include "Game/NewGameFlow.h"
 #include "Game/SaveGame.h"
 #include "Game/BattleState.h"
+#include "Game/DiarioMisiones.h"
 #include "Game/GameSession.h"
 #include "Game/MoralDeLaSesion.h"
 #include "Game/SessionData.h"
@@ -1483,12 +1484,11 @@ inline const CaminoDia3& caminoDia3(const std::string& id) {
     return caminosDia3().front();
 }
 
-// Juega el dia 1 (el de `c`), el dia de Gorran (el de su CaminoGorran) y el dia 3, y fotografia el cierre del tercer dia.
-inline SaveGameData dia3(const demo_bnd::Guiones& g, const Heroe& h, const CaminoDia3& c, std::vector<std::string>* jugado = nullptr, bool exigeCierre = true,
-                         const std::string& parada = "") {
+// Juega el dia 1 (el de `c`), el dia de Gorran (el de su CaminoGorran) y el dia 3 en la partida `p` (E-MATRIZ-04: el Ocaso sigue con ella).
+// Devuelve las decisiones del dia 3 con que se jugo.
+inline DiaTres juegaHastaElDia3(Partida& p, const CaminoDia3& c, bool exigeCierre, const std::string& parada = "") {
     const CaminoGorran& cg = caminoGorran(c.gorran);
     const CaminoDia1& d1 = caminoDia1(std::string(c.desde1).empty() ? cg.desde : c.desde1);
-    Partida p(g, h, d1.suerte);
     demo_bnd::Jugador& j = p.j;
     j.prefiere = c.dice1;
     j.prefiere.insert(j.prefiere.end(), d1.dice.begin(), d1.dice.end());
@@ -1524,6 +1524,17 @@ inline SaveGameData dia3(const demo_bnd::Guiones& g, const Heroe& h, const Camin
     if (!parada.empty()) dt.parada = parada;
     juegaElDia3(j, dt);
     if (exigeCierre && dt.parada.empty()) require(j.s.hasFlag("bnd2_dia_cerrado"));
+    return dt;
+}
+
+// Juega el dia 1 (el de `c`), el dia de Gorran (el de su CaminoGorran) y el dia 3, y fotografia el cierre del tercer dia.
+inline SaveGameData dia3(const demo_bnd::Guiones& g, const Heroe& h, const CaminoDia3& c, std::vector<std::string>* jugado = nullptr, bool exigeCierre = true,
+                         const std::string& parada = "") {
+    const CaminoGorran& cg = caminoGorran(c.gorran);
+    const CaminoDia1& d1 = caminoDia1(std::string(c.desde1).empty() ? cg.desde : c.desde1);
+    Partida p(g, h, d1.suerte);
+    demo_bnd::Jugador& j = p.j;
+    const DiaTres dt = juegaHastaElDia3(p, c, exigeCierre, parada);
     if (jugado != nullptr) *jugado = j.vistos;
     static const Momento kDia3{"dia3.json", "interior_taberna_p1", "", 0, 0};
     static const Momento kFiesta{"m3_fiesta.json", "ciudad_este", "", 0, 0};
@@ -1741,6 +1752,329 @@ inline const std::vector<CaminoDia3>& caminosDia3() {
          m3("b2_castillo_prueba", "Retirarse", "b2_castillo_prueba_cerrada"), "retirarse ante el capitan: la guardia no se prepara (sin b3_capitan_ronda)",
          {170, 9, 5, 47, {"amuleto_gitano", "entrada_opera", "vendas"}}, mg("b2_cueva_llegada", "Pagar el paso (5)", "grantGold", "log"),
          m3("b2_saqueadores_vencidos", "", "barriada_defendida", "noble_chantajeado")},
+    };
+    return c;
+}
+
+
+// ===========================================================================================================
+// E-MATRIZ-04 — Un guardado y una prueba por final del Ocaso (boundington_ocaso).
+//
+// Cada CaminoOcaso parte de un camino del dia 3 (CaminoDia3: el aviso de Xila si/no, Venides sin aviso, la Barriada delatada...),
+// juega el dia 1, Gorran, el dia 3 y el OCASO de verdad con el arnes (el sermon, correr a avisar a Venides, las campanas, la arenga, la
+// salida, los combates, Verina, Sandes, Edul, Las Afueras, la huida y el epilogo) y fotografia la partida al acabar (bnd3_fuera). La
+// prueba (tests/Engine/MatrizOcasoTests.cpp) la restaura en una sesion limpia y comprueba el final, quien vive, las cuentas y el DIARIO
+// (Game::construirDiario con el estado restaurado). Las ranuras salen de fabricar_guardados --matriz-ocaso.
+// ===========================================================================================================
+struct DiaOcaso {
+    std::vector<std::string> dice;                                   // respuestas por delante de las de siempre (baseOcaso)
+    std::vector<std::string> pierde, huye;                           // combates (por su flagVictory) que se pierden / de los que se huye
+    std::vector<std::pair<std::string, demo_bnd::Suerte>> tiradas;   // tiradas (por su flagBotch) con esta suerte
+    std::string ruta = "base_ruta_oeste";                            // la salida de la base (zona de ciudad_oeste)
+    std::vector<std::string> zonasPrimero, zonasEvita;               // cinematicas con zona a las que va antes / nunca
+    std::string nivelFin = "huida_boundington";                      // donde se fotografia la partida
+    bool exige = true;                                               // false (las mutaciones): lo que no sale no aborta
+};
+
+struct DiarioEsperado {
+    const char* decision;   // id de la decision del diario (quests.json, adv_boundington_ocaso)
+    const char* eleccion;   // trozo de lo que ensena como «elegiste»
+    const char* despues;    // "" = no se mira; si no, trozo de una consecuencia posterior que tiene que salir
+};
+
+struct CaminoOcaso {
+    const char* id;     // ocaso_<id>.json
+    const char* dia3;   // id del CaminoDia3 del que parte
+    DiaOcaso ocaso;
+    const char* final;  // bnd3_final_oeste | bnd3_final_solos | bnd3_final_caido
+    std::vector<std::string> ve, noVe;               // flags al acabar (quien vive, quien no, la compania...)
+    std::vector<std::string> beats, noBeats;         // beats que se tienen que haber visto / no
+    std::vector<DiarioEsperado> diario;              // decisiones que el diario ensena
+    std::vector<std::string> sinDecision;            // decisiones que el diario NO ensena
+    std::vector<std::string> objetivosHechos, objetivosPendientes;  // ids de objetivos (obj3_*)
+    Mutacion mutacion;                               // el efecto que lleva a este final, quitado en una copia del JSON del Ocaso
+    const char* nota;
+    Cuenta cuenta;
+};
+
+inline const std::vector<CaminoOcaso>& caminosOcaso();
+
+inline Mutacion mo(const char* beat, const char* opcion, const char* cadena, const char* hacia = "zz_mutada", int salta = 0) {
+    return Mutacion{beat, opcion, cadena, hacia, 1, salta, "ocaso"};
+}
+
+// Lo que contesta el heroe en el Ocaso cuando no hay nada propio (la ruta A de demo_campana_boundington).
+inline const std::vector<std::string>& baseOcaso() {
+    static const std::vector<std::string> b = {"Correr a avisar a Venides", "Al oeste", "Vamos a por el.", "Ven con nosotros.", "Liberarle"};
+    return b;
+}
+
+inline const CaminoOcaso& caminoOcaso(const std::string& id) {
+    for (const CaminoOcaso& c : caminosOcaso())
+        if (id == c.id) return c;
+    std::fprintf(stderr, "fabricar_guardados: no hay camino del Ocaso %s\n", id.c_str());
+    require(false);
+    return caminosOcaso().front();
+}
+
+// Juega el Ocaso entero en la partida `j` (ya con el dia 3 cerrado) hasta el epilogo.
+inline void juegaElOcaso(demo_bnd::Jugador& j, const CaminoDia3& c3, const DiaOcaso& o) {
+    const std::vector<std::string> antes = j.prefiere;
+    j.prefiere = o.dice;
+    j.prefiere.insert(j.prefiere.end(), baseOcaso().begin(), baseOcaso().end());
+    for (const auto& t : o.tiradas) j.tiradas[t.first] = t.second;
+    for (const std::string& f : o.pierde) j.pierde.insert(f);
+    for (const std::string& f : o.huye) j.huyen.insert(f);
+    j.zonasPrimero = o.zonasPrimero;
+    j.zonasEvita = o.zonasEvita;
+    empiezaElOcaso(j, c3);
+    if (!j.s.hasFlag("bnd3_campanas")) {  // la espera de la tarde (Xila no avisa): se aguarda al ponerse el sol y suenan solas (evento ocaso_puesta)
+        j.entra("interior_taberna");
+        j.prefiere.insert(j.prefiere.begin(), "Esperar a que anochezca");
+        j.habla("skilla");
+        j.prefiere.erase(j.prefiere.begin());
+        j.entra("interior_cuartel");
+        j.drena();
+    }
+    j.ocasoRecorrido(o.ruta);
+    j.prefiere = antes;
+}
+
+// Juega el dia 1, Gorran, el dia 3 y el Ocaso del camino `c` y fotografia el final. `jugado`: los beats vistos (en todo el recorrido).
+inline SaveGameData ocaso(const demo_bnd::Guiones& g, const Heroe& h, const CaminoOcaso& c, std::vector<std::string>* jugado = nullptr, bool exigeFinal = true) {
+    const CaminoDia3& c3 = caminoDia3(c.dia3);
+    const CaminoGorran& cg = caminoGorran(c3.gorran);
+    const CaminoDia1& d1 = caminoDia1(std::string(c3.desde1).empty() ? cg.desde : c3.desde1);
+    Partida p(g, h, d1.suerte);
+    demo_bnd::Jugador& j = p.j;
+    juegaHastaElDia3(p, c3, true);
+    DiaOcaso o = c.ocaso;
+    o.exige = exigeFinal;
+    j.suerte = demo_bnd::Suerte::Buena;
+    juegaElOcaso(j, c3, o);
+    if (exigeFinal) require(j.s.hasFlag(c.final) && j.s.hasFlag("bnd3_fuera"));
+    if (jugado != nullptr) *jugado = j.vistos;
+    const Momento fin{"ocaso_fin.json", o.nivelFin.c_str(), "", 0, 0};
+    return fotografia(j, h, fin);
+}
+
+// Lo que cumple el guardado restaurado: el final (y solo ese), quien vive, las cuentas y el diario. Devuelve las faltas.
+inline std::vector<std::string> compruebaOcaso(const demo_bnd::Guiones& g, Restaurada& r, const CaminoOcaso& c) {
+    std::vector<std::string> fallos;
+    demo_bnd::Jugador& j = *r.j;
+    const auto falta = [&](const std::string& s) { fallos.push_back(s); };
+    for (const char* f : {"bnd3_final_oeste", "bnd3_final_solos", "bnd3_final_caido"}) {
+        const bool es = std::string(f) == c.final;
+        if (es && !j.s.hasFlag(f)) falta(std::string("falta el final ") + f);
+        if (!es && j.s.hasFlag(f)) falta(std::string("sobra el final ") + f);
+    }
+    if (!j.s.hasFlag("bnd3_fuera")) falta("falta bnd3_fuera");
+    for (const std::string& f : c.ve)
+        if (!j.s.hasFlag(f)) falta("falta " + f);
+    for (const std::string& f : c.noVe)
+        if (j.s.hasFlag(f)) falta("sobra " + f);
+    for (const std::string& b : c.beats)
+        if (!j.s.beatFired(b)) falta("no disparado " + b);
+    for (const std::string& b : c.noBeats)
+        if (j.s.beatFired(b)) falta("disparado " + b);
+    {
+        GameSession& sesion = *r.nivel->sesion;
+        const RPG::CharacterSheet* ficha = r.nivel->cuerpo->character_sheet();
+        if (sesion.gold() != c.cuenta.oro) falta("oro=" + std::to_string(sesion.gold()) + " != " + std::to_string(c.cuenta.oro));
+        if (sesion.morality().value() != c.cuenta.moral)
+            falta("moral=" + std::to_string(sesion.morality().value()) + " != " + std::to_string(c.cuenta.moral));
+        if (ficha->nivel != c.cuenta.nivel || ficha->progresoNivel != c.cuenta.progreso)
+            falta("nivel " + std::to_string(ficha->nivel) + " (" + std::to_string(ficha->progresoNivel) + " %) != " + std::to_string(c.cuenta.nivel) + " (" +
+                  std::to_string(c.cuenta.progreso) + " %)");
+        std::vector<std::string> mochila = *sesion.inventory();
+        std::sort(mochila.begin(), mochila.end());
+        std::vector<std::string> quiero = c.cuenta.mochila;
+        std::sort(quiero.begin(), quiero.end());
+        if (mochila != quiero) {
+            std::string m;
+            for (const std::string& x : mochila) m += x + ",";
+            falta("mochila [" + m + "] != la esperada de " + std::to_string(quiero.size()) + " objetos");
+        }
+    }
+    // El diario, tal como lo ve el jugador al cargar el guardado.
+    const std::vector<const RPG::AdventureScript*> campana = {&g.prologo, &g.dia1, &g.gorran, &g.dia2, &g.ocaso};
+    const Game::DiarioDatos diario = Game::construirDiario(campana, &g.ocaso, j.s);
+    const Game::DiarioMision* m = nullptr;
+    for (const Game::DiarioMision& x : diario.misiones)
+        if (x.id == "adv_boundington_ocaso") m = &x;
+    if (m == nullptr) {
+        falta("el diario no tiene la mision del Ocaso");
+        return fallos;
+    }
+    for (const DiarioEsperado& e : c.diario) {
+        const Game::DiarioDecision* d = nullptr;
+        for (const Game::DiarioDecision& x : m->decisiones)
+            if (x.id == e.decision) d = &x;
+        if (d == nullptr) {
+            falta(std::string("el diario no ensena la decision ") + e.decision);
+            continue;
+        }
+        if (d->eleccion.find(e.eleccion) == std::string::npos) falta(std::string("diario ") + e.decision + ": «" + d->eleccion + "» no contiene «" + e.eleccion + "»");
+        if (!std::string(e.despues).empty()) {
+            bool hay = false;
+            for (const std::string& x : d->despues) hay = hay || x.find(e.despues) != std::string::npos;
+            if (!hay) falta(std::string("diario ") + e.decision + ": sin la consecuencia «" + e.despues + "»");
+        }
+    }
+    for (const std::string& id : c.sinDecision)
+        for (const Game::DiarioDecision& x : m->decisiones)
+            if (x.id == id) falta("el diario ensena la decision " + id + " («" + x.eleccion + "»)");
+    const auto objetivo = [&](const std::string& id) -> const Game::DiarioObjetivo* {
+        for (const Game::DiarioObjetivo& o : m->objetivos)
+            if (o.id == id) return &o;
+        return nullptr;
+    };
+    for (const std::string& id : c.objetivosHechos) {
+        const Game::DiarioObjetivo* o = objetivo(id);
+        if (o == nullptr || !o->hecho) falta("diario: el objetivo " + id + " deberia estar hecho");
+    }
+    for (const std::string& id : c.objetivosPendientes) {
+        const Game::DiarioObjetivo* o = objetivo(id);
+        if (o != nullptr && o->hecho) falta("diario: el objetivo " + id + " no deberia estar hecho");
+    }
+    return fallos;
+}
+
+// Diagnostico (MATRIZ_DIAG=1): lo que deja el camino, para escribir la tabla.
+inline void describeOcaso(const demo_bnd::Guiones& g, Restaurada& r, const CaminoOcaso& c, const std::vector<std::string>& jugado) {
+    demo_bnd::Jugador& j = *r.j;
+    std::fprintf(stderr, "=== %s\n flags bnd3:", c.id);
+    for (const std::string& f : j.s.flags())
+        if (f.rfind("bnd3_", 0) == 0) std::fprintf(stderr, " %s", f.c_str());
+    GameSession& sesion = *r.nivel->sesion;
+    const RPG::CharacterSheet* ficha = r.nivel->cuerpo->character_sheet();
+    std::vector<std::string> mochila = *sesion.inventory();
+    std::sort(mochila.begin(), mochila.end());
+    std::fprintf(stderr, "\n oro=%d moral=%d nivel=%d prog=%d mochila:", sesion.gold(), sesion.morality().value(), ficha->nivel, ficha->progresoNivel);
+    for (const std::string& m : mochila) std::fprintf(stderr, " %s", m.c_str());
+    std::fprintf(stderr, "\n beats b3_:");
+    for (const std::string& b : jugado)
+        if (b.rfind("b3_", 0) == 0) std::fprintf(stderr, " %s", b.c_str());
+    const std::vector<const RPG::AdventureScript*> campana = {&g.prologo, &g.dia1, &g.gorran, &g.dia2, &g.ocaso};
+    const Game::DiarioDatos diario = Game::construirDiario(campana, &g.ocaso, j.s);
+    for (const Game::DiarioMision& m : diario.misiones)
+        if (m.id == "adv_boundington_ocaso") {
+            std::fprintf(stderr, "\n diario %d/%d:", m.hechos, m.total);
+            for (const Game::DiarioObjetivo& o : m.objetivos) std::fprintf(stderr, " [%c]%s", o.hecho ? 'x' : ' ', o.id.c_str());
+            for (const Game::DiarioDecision& d : m.decisiones) {
+                std::fprintf(stderr, "\n   ~ %s: %s ->", d.id.c_str(), d.eleccion.c_str());
+                for (const std::string& x : d.despues) std::fprintf(stderr, " | %s", x.substr(0, 60).c_str());
+            }
+        }
+    std::fprintf(stderr, "\n");
+}
+
+
+// --- Los caminos del Ocaso (la tabla de la prueba y de las ranuras) ---
+inline const std::vector<CaminoOcaso>& caminosOcaso() {
+    using demo_bnd::Suerte;
+    static const std::vector<CaminoOcaso> c = {
+        // Orden de campos: id, dia3, ocaso, final, ve, noVe, beats, noBeats, diario, sinDecision, objetivosHechos, objetivosPendientes, mutacion, nota, cuenta.
+        // Los valores salen de MATRIZ_DIAG=1 ./test_matriz_ocaso y de out/fabrica/UNI-02-11/MATRIZ_OCASO.md.
+        // --- el heroe corre a avisar a Venides (campanas, arenga) y Xila, aliado, avisa igual: sale con todos por el oeste ---
+        {"oeste_todos", "xila_corre", DiaOcaso{}, "bnd3_final_oeste",
+         {"bnd3_con_xila", "bnd3_xila_avisa", "bnd3_con_venides", "bnd3_verina_con_grupo", "bnd3_verina_salvada", "bnd3_edul_salvado", "bnd3_sandes_vencido"},
+         {"bnd3_sin_venides", "bnd3_aliado_sandes", "bnd3_verina_muerta", "bnd3_edul_abandonado"},
+         {"b3_avisar_venides", "b3_campanas", "b3_venides_arenga_20", "b3_xila_vendas", "b3_huida_gitanos", "b3_epi_verina_viva", "b3_epi_xila", "b3_epi_venides_contigo"},
+         {"b3_xila_avisa", "b3_campanas_solas", "b3_epi_verina_muerta", "b3_huida_sola"},
+         {{"bnd3_ruta", "oeste", ""}, {"bnd3_verina", "Liberaste a Verina", "abrazaron"}, {"bnd3_sandes", "hiciste huir", ""}, {"bnd3_edul", "Liberaste a Edul", ""}},
+         {"bnd3_venides"}, {"obj3_plaza", "obj3_avisar", "obj3_salir"}, {},
+         mo("b3_edul_con_verina", "", "bnd3_edul_salvado"),
+         "corre a avisar a Venides, Xila avisa igual (bnd3_xila_avisa pero SIN b3_xila_avisa: la escena exige no bnd3_arenga), Verina y Edul vivos, final con los gitanos",
+         {510, 42, 8, 92, {"amuleto_gitano", "entrada_opera", "escudo_madera", "eter", "furia_de_alaro", "vendas", "vendas", "vendas", "vendas", "vendas"}}},
+        // --- el heroe espera la tarde: Xila avisa a Venides ANTES de las campanas y b3_xila_avisa se ve ---
+        {"oeste_xila_avisa", "xila_avisa", DiaOcaso{}, "bnd3_final_oeste",
+         {"bnd3_con_xila", "bnd3_xila_avisa", "bnd3_con_venides", "bnd3_verina_salvada", "bnd3_edul_salvado"},
+         {"bnd3_sin_venides"},
+         {"b3_tarde_aviso", "b3_dia_pasa", "b3_xila_avisa", "b3_campanas", "b3_aviso_en_base", "b3_venides_arenga_20", "b3_xila_vendas", "b3_huida_gitanos", "b3_epi_xila"},
+         {"b3_avisar_venides", "b3_campanas_solas", "b3_venides_retenido"},
+         {{"bnd3_ruta", "oeste", ""}, {"bnd3_verina", "Liberaste a Verina", "abrazaron"}, {"bnd3_edul", "Liberaste a Edul", ""}},
+         {"bnd3_venides"}, {"obj3_plaza", "obj3_avisar", "obj3_salir"}, {},
+         mo("b3_xila_avisa", "", "evt_xila_avisa_a_venides"),
+         "espera la tarde en la taberna: Xila avisa a Venides antes de las campanas (b3_xila_avisa) y Venides ya esta en la base",
+         {510, 42, 8, 92, {"amuleto_gitano", "entrada_opera", "escudo_madera", "eter", "furia_de_alaro", "vendas", "vendas", "vendas", "vendas", "vendas"}}},
+        // --- Xila aliado pero Venides sin aviso: nadie avisa, las campanas suenan solas y el heroe sale con Xila ---
+        {"oeste_xila_sin_aviso", "xila_sin_aviso", DiaOcaso{}, "bnd3_final_oeste",
+         {"bnd3_con_xila", "bnd3_sin_venides", "bnd3_verina_abandonada", "bnd3_edul_salvado", "bnd3_venides_dejado"},
+         {"bnd3_xila_avisa", "bnd3_con_venides", "bnd3_avisado", "bnd3_verina_salvada"},
+         {"b3_tarde_aviso", "b3_campanas_solas", "b3_venides_retenido", "b3_xila_vendas", "b3_venides_rodillas", "b3_huida_gitanos", "b3_epi_xila", "b3_epi_venides_lejos", "b3_epi_verina_muerta"},
+         {"b3_xila_avisa", "b3_aviso_en_base", "b3_avisar_venides", "b3_dia_pasa"},
+         {{"bnd3_verina", "dejaste a Verina", "no sali"}, {"bnd3_edul", "Liberaste a Edul", ""}, {"bnd3_venides", "Dejaste a Venides", "caballero corri"}},
+         {}, {"obj3_plaza", "obj3_salir"}, {"obj3_avisar"},
+         mo("b3_xila_vendas", "", "bnd3_con_xila"),
+         "Xila aliado y Venides sin aviso: no hay aviso de Xila, las campanas suenan solas; sale con Xila, sin Venides y sin Verina",
+         {460, 27, 8, 64, {"amuleto_gitano", "entrada_opera", "escudo_madera", "furia_de_alaro", "vendas", "vendas", "vendas", "vendas", "vendas"}}},
+        // --- «No contarle nada» a Venides y ni Xila ni Verina: el heroe sale solo (el final con menos gente) ---
+        {"oeste_sin_venides", "informe_nada", DiaOcaso{}, "bnd3_final_oeste",
+         {"bnd3_sin_venides", "bnd3_verina_abandonada", "bnd3_edul_salvado", "bnd3_venides_dejado"},
+         {"bnd3_con_venides", "bnd3_con_xila", "bnd3_avisado", "bnd3_verina_salvada"},
+         {"b3_campanas_solas", "b3_venides_retenido", "b3_por_donde_solo", "b3_saqueadores_guardia", "b3_verina_segunda", "b3_final", "b3_venides_rodillas", "b3_epi_venides_lejos", "b3_epi_verina_muerta"},
+         {"b3_avisar_venides", "b3_aviso_en_base", "b3_xila_vendas", "b3_epi_xila", "b3_epi_verina_viva"},
+         {{"bnd3_verina", "dejaste a Verina", "no sali"}, {"bnd3_edul", "Liberaste a Edul", ""}, {"bnd3_venides", "Dejaste a Venides", "caballero corri"}},
+         {}, {"obj3_plaza", "obj3_salir"}, {"obj3_avisar"},
+         mo("b3_venides_rodillas", "Dejarle", "bnd3_venides_dejado"),
+         "Venides sin aviso, sin Xila: sale solo; Verina se queda en la barricada y Venides de rodillas",
+         {280, 22, 7, 47, {"amuleto_gitano", "entrada_opera", "vendas"}}},
+        // --- Barriada delatada: los gitanos no abren paso (b3_huida_gitanos exige no bnd2_barriada_delatada) ---
+        {"solos_delatada", "barriada_delata", DiaOcaso{}, "bnd3_final_solos",
+         {"bnd3_con_venides", "bnd3_verina_salvada", "bnd3_edul_salvado"},
+         {"bnd3_aliado_sandes", "bnd3_sin_venides"},
+         {"b3_huida_sola", "b3_epi_solo", "b3_epi_verina_viva"},
+         {"b3_huida_gitanos", "b3_zarela", "b3_aliado_fuera"},
+         {{"bnd3_ruta", "oeste", ""}, {"bnd3_verina", "Liberaste a Verina", "abrazaron"}, {"bnd3_edul", "Liberaste a Edul", ""}},
+         {"bnd3_venides"}, {"obj3_plaza", "obj3_avisar", "obj3_salir"}, {},
+         mo("b3_huida_sola", "", "bnd3_final_solos"),
+         "Barriada delatada: sin gitanos, sale sin ayuda (b3_huida_sola) y recibe el mapa de la region",
+         {420, 36, 7, 74, {"amuleto_gitano", "entrada_opera", "eter", "furia_de_alaro", "mapa_region", "vendas"}}},
+        // --- «Acepto.» a Sandes (quedandose en la base: Verina muere esperando): aliado de los Perdidos ---
+        {"sandes_aliado", "fiesta_dentro", [] { DiaOcaso d; d.dice = {"Acepto."}; d.ruta = "base_ruta_quedarse"; return d; }(), "bnd3_final_oeste",
+         {"bnd3_aliado_sandes", "bnd3_venides_huye", "bnd3_ruta_quedarse", "bnd3_sandes_cerrado", "bnd3_verina_perdida_tarde"},
+         {"bnd3_sandes_vencido", "bnd3_verina_salvada", "bnd3_edul_salvado", "bnd3_con_venides"},
+         {"b3_oleada", "b3_base_cae", "b3_verina_tarde", "b3_sandes_oferta", "b3_esc06_pacto_salida", "b3_edul_furia_casco", "b3_huida_gitanos", "b3_epi_sandes", "b3_epi_venides_lejos"},
+         {"b3_aliado_fuera", "b3_final_venides", "b3_sandes_huye_casco", "b3_epi_verina_viva"},
+         {{"bnd3_ruta", "oeste", ""}, {"bnd3_sandes", "Aceptaste", "recuerda"}},
+         {"bnd3_verina", "bnd3_edul"}, {"obj3_plaza", "obj3_avisar", "obj3_salir"}, {},
+         mo("b3_sandes_oferta", "Acepto.", "bnd3_aliado_sandes"),
+         "se queda a luchar en la base y acepta a Sandes: b3_aliado_fuera (el final «con los Perdidos») queda tapado por b3_huida_gitanos",
+         {340, 3, 7, 47, {"amuleto_gitano", "entrada_opera", "vendas"}}},
+        // --- por el norte (donde arde): se salta Verina y Sandes en la ciudad del Ocaso ---
+        {"oeste_norte", "fiesta_dentro", [] { DiaOcaso d; d.ruta = "base_ruta_norte"; return d; }(), "bnd3_final_oeste",
+         {"bnd3_ruta_norte", "bnd3_con_venides", "bnd3_edul_salvado", "bnd3_norte_vencido"},
+         {"bnd3_verina_salvada", "bnd3_verina_con_grupo", "bnd3_ruta_oeste"},
+         {"b3_esc04_camino_norte", "b3_norte", "b3_norte_pasado", "b3_edul_sin_verina", "b3_huida_gitanos", "b3_epi_venides_contigo"},
+         {"b3_esc04_camino_oeste", "b3_verina_cautiva", "b3_verina_cautiva_escolta", "b3_epi_verina_viva", "b3_epi_verina_muerta"},
+         {{"bnd3_ruta", "norte", ""}, {"bnd3_edul", "Liberaste a Edul", ""}},
+         {"bnd3_verina", "bnd3_sandes"}, {"obj3_plaza", "obj3_avisar", "obj3_salir"}, {},
+         mo("b3_esc04_camino_norte", "", "bnd3_esc04_ruta_norte"),
+         "sale por el norte: pelea en las calles, no pasa por la ciudad del Ocaso (ni Verina ni Sandes)",
+         {330, 25, 7, 47, {"amuleto_gitano", "entrada_opera", "vendas"}}},
+        // --- pierde el primer combate de la salida (los saqueadores): cae en Boundington ---
+        {"caido", "fiesta_dentro", [] { DiaOcaso d; d.pierde = {"bnd3_saqueadores_vencidos"}; return d; }(), "bnd3_final_caido",
+         {"bnd3_saqueadores_ganan", "bnd3_con_venides"},
+         {"bnd3_verina_salvada", "bnd3_edul_salvado", "bnd3_final_oeste", "bnd3_final_solos", "bnd3_sandes_vencido"},
+         {"b3_saqueadores_10", "b3_caida", "b3_epilogo_caido", "b3_epi_venides_contigo"},
+         {"b3_huida_gitanos", "b3_huida_sola", "b3_epilogo", "b3_epi_verina_viva"},
+         {{"bnd3_ruta", "oeste", ""}},
+         {"bnd3_verina", "bnd3_sandes", "bnd3_edul", "bnd3_venides"}, {"obj3_plaza", "obj3_avisar"}, {},
+         mo("b3_caida", "", "bnd3_final_caido"),
+         "pierde contra los saqueadores y cae: el diario marca «Sal de Boundington con vida» como hecho (bnd3_fuera)",
+         {170, 11, 5, 47, {"amuleto_gitano", "entrada_opera", "vendas"}}},
+        // --- Verina libre, pero Edul se queda atado, y Venides de rodillas: se le ataca (huye) ---
+        {"sacrificios", "informe_nada", [] { DiaOcaso d; d.dice = {"Liberarla", "Intentar acabar con él", "Dejarle"}; return d; }(), "bnd3_final_oeste",
+         {"bnd3_sin_venides", "bnd3_verina_salvada", "bnd3_edul_abandonado", "bnd3_venides_huye"},
+         {"bnd3_edul_salvado", "bnd3_venides_dejado", "bnd3_venides_libre"},
+         {"b3_verina_salvada_sola", "b3_edul", "b3_venides_rodillas", "b3_epi_verina_sola", "b3_epi_venides_lejos"},
+         {"b3_edul_con_verina", "b3_edul_sin_verina", "b3_epi_verina_viva", "b3_epi_verina_muerta"},
+         {{"bnd3_verina", "Liberaste a Verina", ""}, {"bnd3_edul", "Dejaste a Edul", ""}, {"bnd3_venides", "Intentaste acabar", ""}},
+         {}, {"obj3_plaza", "obj3_salir"}, {"obj3_avisar"},
+         mo("b3_edul", "Dejarle", "bnd3_edul_abandonado"),
+         "Venides sin aviso: libera a Verina (sola), deja a Edul atado y ataca a Venides, que huye",
+         {280, 13, 7, 75, {"amuleto_gitano", "entrada_opera", "vendas"}}},
     };
     return c;
 }
