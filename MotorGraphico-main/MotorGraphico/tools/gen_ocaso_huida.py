@@ -35,6 +35,18 @@ SECO = "--seco" in sys.argv
 ROCA = "roca"
 
 
+# Decorado de Qwen (AV19-10, `afueras_ocaso.json` del 20/10, recuperado en F-REST.1): props que la
+# version del Excel ponia en las Afueras esa noche y que el nivel de caa no tenia. Se dejan fuera el
+# cofre (16,2) y los juncos (24,9), que hoy ocupan botin_afueras_cofre_40 / botin_afueras_escondite,
+# y los tres enemigos perdido_* con patrulla (no son decorado: decision de Oriol si entran).
+DECORADO_QWEN_OCASO = [
+    ("molino", 6, 5), ("baul", 7, 23), ("barriles_pila", 19, 25), ("fuego_blanco", 20, 25),
+    ("carro_o1", 21, 25), ("carro", 30, 16), ("fuego", 31, 16), ("cajas_almacen", 32, 16),
+    ("runa", 31, 18), ("runa_b", 31, 19), ("columna_rota", 36, 18), ("arbol_grande", 33, 26),
+    ("abrevadero", 31, 28),
+]
+
+
 def afueras_ocaso():
     dia = json.load(open(BASE + "assets/levels/afueras_boundington.json", encoding="utf-8"))
     n = Nivel("afueras_boundington_ocaso", "Las Afueras de Boundington, al ocaso", 40, 32,
@@ -48,6 +60,8 @@ def afueras_ocaso():
         if oid.startswith("botin_") or o.get("targetLevel"):
             continue
         n.objetos.append(json.loads(json.dumps(o)))
+    for oid, x, y in DECORADO_QWEN_OCASO:
+        n.objetos.append({"objectId": oid, "position": {"x": x, "y": y}})
     # Sin la bajada a la montana: esa noche no se sube (si Oriol la quiere, la pone en el Excel).
     # Al norte, de vuelta al Casco en llamas: se llega a (64,61), el hueco que Oriol dejo entre las barricadas
     # de la fila 62, justo encima del paso del sur.
