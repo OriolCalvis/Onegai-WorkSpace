@@ -2094,7 +2094,7 @@ inline const std::vector<CaminoOcaso>& caminosOcaso() {
          {"bnd3_verina", "bnd3_sandes", "bnd3_edul", "bnd3_venides"}, {"obj3_plaza", "obj3_avisar", "obj3_salir"}, {},
          mo("b3_huida_perdida", "", "bnd3_final_huido"),
          "huye de los saqueadores: el diario marca «Sal de Boundington con vida» (bnd3_salio_vivo) y cuenta que huiste",
-         {170, 11, 7, 47, {"amuleto_gitano", "entrada_opera", "vendas"}}},
+         {170, 11, 5, 47, {"amuleto_gitano", "entrada_opera", "vendas"}}},
         // --- Verina libre, pero Edul se queda atado, y Venides de rodillas: se le ataca (huye) ---
         {"sacrificios", "informe_nada", [] { DiaOcaso d; d.dice = {"Liberarla", "Intentar acabar con él", "Dejarle"}; return d; }(), "bnd3_final_oeste",
          {"bnd3_sin_venides", "bnd3_verina_salvada", "bnd3_edul_abandonado", "bnd3_venides_huye"},

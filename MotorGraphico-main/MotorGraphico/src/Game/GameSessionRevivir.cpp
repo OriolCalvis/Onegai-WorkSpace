@@ -1,7 +1,7 @@
-// D0027 — Morir en un combate: el heroe revive al inicio de ese mismo combate (de la oleada donde
-// cayo), con una cicatriz mas y el coste moral de que lo vean caer. Ver decisiones/D0027-*.md.
+// D0027, D0030 — Morir en un combate: el heroe revive al inicio de ese mismo combate (en su primera
+// oleada), con una cicatriz mas y el coste moral de que lo vean caer. Ver decisiones/D0027-*.md.
 //
-// La foto se toma al empezar cada oleada (startBattle -> tomaFoto) y se devuelve al morir
+// La foto se toma al empezar el combate (startBattle -> tomaFoto) y se devuelve al morir
 // (reviveAlInicio): el heroe (vida, mana, mochila, oro, casilla), los enemigos (vida, mana,
 // casilla), el pedido de la historia con sus refuerzos y las flags. Las curas
 // de los acompanantes y los estados de la mesa no hacen falta: las primeras solo se apuntan al
@@ -15,6 +15,7 @@
 #include "Game/MoralDeLaSesion.h"
 #include "Game/ReglasMoral.h"
 #include "RPG/CharacterSheet.h"
+#include "RPG/RandomEngine.h"
 #include "RPG/Narrative/NarrativeState.h"
 
 namespace {
@@ -38,6 +39,15 @@ int levantaHeroe(ICombatant& heroe) {
     return heroe.health();
 }
 
+std::string pagaLaHuida(int& oro, RPG::RandomEngine& dado) {
+    if (oro <= 0) return "";
+    const int cara = dado.roll_d6();
+    const int perdido = cara <= 3 ? std::max(1, oro * (4 - cara) / 10) : 0;
+    oro -= perdido;
+    return "Tiras un dado al huir: sale un " + std::to_string(cara) +
+           (perdido > 0 ? ". Se te caen " + std::to_string(perdido) + " de oro." : ". No pierdes nada.");
+}
+
 }  // namespace Game
 
 void GameSession::ponRutaCicatrices(const std::string& ruta) {
@@ -55,6 +65,7 @@ int GameSession::cicatrices() const { return m_muerte.cicatrices.de(quienEs(char
 void GameSession::tomaFoto(const std::vector<Engine::EntityHandle>& enemies,
                            const std::vector<RPG::AcompananteDef>& aLado) {
     SessionData& d = *sessionData();
+    if (m_muerte.sigueLaOleada && m_muerte.foto) return;
     Game::FotoCombate foto;
     foto.handles = enemies;
     foto.aLado = aLado;
@@ -74,7 +85,10 @@ void GameSession::tomaFoto(const std::vector<Engine::EntityHandle>& enemies,
         foto.enemigos.push_back(e);
     }
     foto.pedido = d.m_pendingBattle;
-    if (d.m_narrativeState != nullptr) foto.flags = d.m_narrativeState->flags();
+    if (d.m_narrativeState != nullptr) {
+        foto.flags = d.m_narrativeState->flags();
+        foto.variables = d.m_narrativeState->variables();
+    }
     m_muerte.foto = std::move(foto);
 }
 
@@ -83,10 +97,12 @@ bool GameSession::reviveAlInicio() {
     if (!m_muerte.foto || d.m_battle == nullptr || d.m_playerBody == nullptr) return false;
     // D0027 §6: las peleas en las que nadie muere siguen como siempre (te levantas y sigue la historia).
     if (d.m_pendingBattle.has_value() && d.m_pendingBattle->sinMatar) return false;
-    // Los enemigos tienen que seguir ahi para volver a montar el mismo combate.
+    // Los enemigos tienen que seguir ahi para volver a montar el mismo combate; los de una oleada
+    // ya ganada no siguen, pero se vuelven a invocar con su pedido.
+    if (m_muerte.foto->oleadaGanada && !m_muerte.foto->pedido.has_value()) return false;
     for (const Engine::EntityHandle h : m_muerte.foto->handles) {
         const Engine::WorldEntity* ent = d.m_world->get(h);
-        if (ent == nullptr || ent->kind != Engine::EntityKind::Enemy) return false;
+        if (!m_muerte.foto->oleadaGanada && (ent == nullptr || ent->kind != Engine::EntityKind::Enemy)) return false;
     }
     Game::FotoCombate foto = std::move(*m_muerte.foto);
     m_muerte.foto.reset();
@@ -126,11 +142,27 @@ bool GameSession::reviveAlInicio() {
         const std::set<std::string> antes(foto.flags.begin(), foto.flags.end());
         for (const std::string& flag : d.m_narrativeState->flags())
             if (antes.count(flag) == 0) d.m_narrativeState->clearFlag(flag);  // las de un refuerzo que ya no ha llegado
+        for (const auto& [nombre, valor] : d.m_narrativeState->variables()) {
+            const auto entonces = foto.variables.find(nombre);
+            const int vuelve = entonces != foto.variables.end() ? entonces->second : 0;
+            if (valor != vuelve) d.m_narrativeState->setVariable(nombre, vuelve);
+        }
     }
 
     // Y el combate, desde el principio (el BattleState nuevo sustituye al viejo).
-    startBattle(foto.handles, foto.aLado);
-    if (d.m_battle != nullptr && foto.pedido.has_value() && foto.pedido->ineludible) d.m_battle->prohibeHuida();
+    if (foto.oleadaGanada) {
+        // Se cayo en una oleada posterior: sus enemigos se van y vuelve la primera, con las que le seguian.
+        for (const Engine::EntityHandle h : d.m_battleEnemyHandles) d.m_world->destroy(h);
+        d.m_battleEnemyHandles.clear();
+        d.m_battle.reset();
+        d.m_pendingBattle.reset();
+        quitaAcompanantes();
+        d.m_battleQueue = foto.cola;
+        resolveBattles({*foto.pedido});
+    } else {
+        startBattle(foto.handles, foto.aLado);
+        if (d.m_battle != nullptr && foto.pedido.has_value() && foto.pedido->ineludible) d.m_battle->prohibeHuida();
+    }
     // En combate el jugador lee el registro de la batalla, no el de la partida: que ahi tambien se entienda.
     if (d.m_battle != nullptr)
         for (const std::string& linea : notas) d.m_battle->anota(linea);

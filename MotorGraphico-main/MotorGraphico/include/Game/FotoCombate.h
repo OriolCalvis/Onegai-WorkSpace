@@ -1,8 +1,9 @@
 #pragma once
-// D0027 — La foto del inicio de un combate (o de una oleada): lo que hace falta para que, si el
+// D0027, D0030 — La foto del inicio de un combate (de su primera oleada): lo que hace falta para que, si el
 // heroe muere, el combate vuelva a empezar tal como empezo. GL-free; la toma y la devuelve
 // GameSession (GameSessionRevivir.cpp).
 
+#include <map>
 #include <optional>
 #include <string>
 #include <vector>
@@ -14,11 +15,16 @@
 #include "World/World.h"
 
 class ICombatant;
+namespace RPG { class RandomEngine; }
 
 namespace Game {
 
 // CAER-01 — Sube la vida del heroe a un cuarto del maximo (1 como poco) y devuelve la que tiene.
 int levantaHeroe(ICombatant& heroe);
+
+// D0030 — Al huir se tira un dado por lo que se cae en la carrera: con un 1, el 30 % del oro; con un 2,
+// el 20 %; con un 3, el 10 %; con 4 o mas, nada. Sin oro no hay tirada. Devuelve la linea del registro.
+std::string pagaLaHuida(int& oro, RPG::RandomEngine& dado);
 
 struct FotoCombate {
     // Quienes pelean y a quien se llevaba a su lado: con esto se vuelve a montar el mismo combate.
@@ -42,15 +48,20 @@ struct FotoCombate {
 
     // La historia: el pedido en curso (con los refuerzos que le quedaban) y las flags de entonces
     // (un refuerzo enciende las suyas a mitad del combate). La cola de oleadas no se toca mientras
-    // se pelea, asi que no hace falta fotografiarla.
+    // se pelea, asi que basta con apuntarla al ganar la primera oleada (cola). Las variables, porque
+    // al cerrar una oleada se apuntan las curas gastadas de los acompanantes.
     std::optional<RPG::BattleRequest> pedido;
     std::vector<std::string> flags;
+    std::map<std::string, int> variables;
+    std::vector<RPG::BattleRequest> cola;
+    bool oleadaGanada = false;  // ya se gano alguna: sus enemigos no existen y hay que volver a invocarlos
 };
 
-// Lo de la sesion que tiene que ver con morir en combate: la foto de la oleada en curso, cuantas
+// Lo de la sesion que tiene que ver con morir en combate: la foto del inicio del combate, cuantas
 // veces ha caido el heroe en esta sesion y sus cicatrices (con el fichero donde se guardan).
 struct Muertes {
     std::optional<FotoCombate> foto;
+    bool sigueLaOleada = false;  // la oleada que empieza sigue a una ganada: la foto no cambia
     int n = 0;
     Cicatrices cicatrices;
     std::string ruta;

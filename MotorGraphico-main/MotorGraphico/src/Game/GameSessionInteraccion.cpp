@@ -382,6 +382,8 @@ bool GameSession::syncBattleOutcome() {
             for (std::size_t i = 0; i < sessionData()->m_battleEnemyHandles.size(); ++i)
                 if (grupo && caidos[i]) sessionData()->m_world->destroy(sessionData()->m_battleEnemyHandles[i]);
             logLine(grupo ? std::string("Escapas.") : "Escapas del " + enemyName + ".");
+            if (sessionData()->m_rngInUse != nullptr)
+                if (const std::string caida = Game::pagaLaHuida(sessionData()->m_gold, *sessionData()->m_rngInUse); !caida.empty()) logLine(caida);
             sessionData()->m_mode = GameMode::Exploration;
             break;
         case BattleOutcome::Defeat:
@@ -433,12 +435,19 @@ bool GameSession::syncBattleOutcome() {
     sessionData()->m_battleEnemyHandles.clear();  // AV13-29/33: los tuyos se quedan mientras ves que te rescatan
     if (sessionData()->m_mode != GameMode::GameOver) quitaAcompanantes();
 
+    // D0030: si cae en una oleada posterior, el combate vuelve a la primera.
+    if (outcome == BattleOutcome::Victory && m_muerte.foto && !sessionData()->m_battleQueue.empty()) {
+        if (!m_muerte.foto->oleadaGanada) m_muerte.foto->cola = sessionData()->m_battleQueue;
+        m_muerte.foto->oleadaGanada = true;
+        m_muerte.sigueLaOleada = true;
+    }
     // Siguiente combate encolado, si lo hay (oleadas).
     if (!sessionData()->m_battleQueue.empty() && sessionData()->m_mode != GameMode::GameOver) {
         std::vector<RPG::BattleRequest> siguiente{sessionData()->m_battleQueue.front()};
         sessionData()->m_battleQueue.erase(sessionData()->m_battleQueue.begin());
         resolveBattles(siguiente);
     }
+    m_muerte.sigueLaOleada = false;
     // TUTORIAL-01 — Acabado el combate, la aventura dice lo suyo, como al cerrar un
     // dialogo: sin este tick, «tut_victoria» esperaba a la siguiente charla.
     if (sessionData()->m_mode == GameMode::Exploration && sessionData()->m_narrative != nullptr &&

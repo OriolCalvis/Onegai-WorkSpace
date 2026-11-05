@@ -1,9 +1,9 @@
 // E-REVIVIR-01 / D0027 — Morir en un combate: el heroe revive al inicio de ese mismo combate.
 //
 // Lo que se prueba, todo sin ventana:
-//   - el combate vuelve a empezar con todo como al empezar la oleada (heroe, mochila, oro, mana,
-//     enemigos, acompanantes y sus curas) y en la misma oleada;
-//   - morir no enciende flagDefeat; huir sigue encendiendo su flag;
+//   - el combate vuelve a empezar con todo como al empezar (heroe, mochila, oro, mana, enemigos,
+//     acompanantes y sus curas), desde su primera oleada (D0030);
+//   - morir no enciende flagDefeat; huir sigue encendiendo su flag y tira un dado por el oro (D0030);
 //   - cada muerte suma una cicatriz (fuera de la partida guardada) y baja la moral, y repetir la
 //     muerte vuelve a costar;
 //   - las peleas sinMatar siguen como siempre;
@@ -149,25 +149,97 @@ MOTOR_TEST_CASE(morir_reinicia_el_combate_con_todo_como_al_empezar) {
     MOTOR_CHECK(p.sesion.battle()->enemies()[0].name == "Llop");
 }
 
-MOTOR_TEST_CASE(reiniciar_vuelve_a_la_oleada_donde_se_cayo_y_no_a_la_primera) {
+MOTOR_TEST_CASE(reiniciar_vuelve_a_la_primera_oleada_y_no_a_donde_se_cayo) {
     Partida p;
     p.sesion.startNarrativeBattle({.monsterId = "llop", .flagVictory = "v1", .flagDefeat = "d1"});
     p.sesion.startNarrativeBattle({.monsterId = "llop", .flagVictory = "v2", .flagDefeat = "d2"});  // encolada
+    p.sesion.addGold(50);  // lo de despues de la foto se pierde
     p.heroe.takeDamage(10);  // la primera oleada le cuesta 10 PV
     p.ganaYSeResuelve();
     MOTOR_CHECK(p.trama.hasFlag("v1") && !p.trama.hasFlag("v2"));
     MOTOR_CHECK(p.sesion.mode() == GameMode::Battle && p.sesion.battle() != nullptr);
     if (p.sesion.battle() == nullptr) return;
     MOTOR_CHECK(p.heroe.health() == 30);  // entra en la segunda con 30
-    p.heroe.heal(5);                      // y a mitad de ella se cura algo
     p.caeYSeResuelve();
-    // Se reinicia la SEGUNDA: con los 30 PV con los que entro, la primera ya ganada, y sin colas de mas.
+    // Vuelve a la PRIMERA: con los 40 PV del principio, sin el oro ni la flag de haberla ganado.
     MOTOR_CHECK(p.sesion.mode() == GameMode::Battle && p.sesion.battle() != nullptr);
-    MOTOR_CHECK(p.heroe.health() == 30);
-    MOTOR_CHECK(p.trama.hasFlag("v1") && !p.trama.hasFlag("v2") && !p.trama.hasFlag("d1") && !p.trama.hasFlag("d2"));
+    MOTOR_CHECK(p.heroe.health() == 40);
+    MOTOR_CHECK(p.sesion.gold() == 0);
+    MOTOR_CHECK(p.sesion.enemies().size() == 1);
+    MOTOR_CHECK(!p.trama.hasFlag("v1") && !p.trama.hasFlag("v2") && !p.trama.hasFlag("d1") && !p.trama.hasFlag("d2"));
+    // Y las dos oleadas siguen por delante, una vez cada una; caer otra vez en la segunda vuelve a la primera.
     p.ganaYSeResuelve();
-    MOTOR_CHECK(p.trama.hasFlag("v2"));
+    MOTOR_CHECK(p.trama.hasFlag("v1") && !p.trama.hasFlag("v2") && p.sesion.battle() != nullptr);
+    if (p.sesion.battle() == nullptr) return;
+    p.caeYSeResuelve();
+    MOTOR_CHECK(!p.trama.hasFlag("v1"));
+    p.ganaYSeResuelve();
+    p.ganaYSeResuelve();
+    MOTOR_CHECK(p.trama.hasFlag("v1") && p.trama.hasFlag("v2"));
     MOTOR_CHECK(p.sesion.battle() == nullptr && p.sesion.mode() == GameMode::Exploration);
+    MOTOR_CHECK(p.sesion.cicatrices() == 2);
+    // Un combate posterior hace su propia foto.
+    p.sesion.startNarrativeBattle({.monsterId = "llop", .flagVictory = "v3", .flagDefeat = "d3"});
+    p.heroe.takeDamage(5);
+    const int vida = p.heroe.health();
+    p.caeYSeResuelve();
+    MOTOR_CHECK(p.heroe.health() == vida + 5 && p.trama.hasFlag("v1") && p.trama.hasFlag("v2"));
+}
+
+// D0030 — Al huir se tira un dado por lo que se cae en la carrera.
+MOTOR_TEST_CASE(huir_tira_un_dado_y_puede_costar_oro) {
+    struct DadoFijo : RPG::RandomEngine {
+        int cara = 1;
+        int veces = 0;
+        int roll_d6() override { ++veces; return cara; }
+        int roll_in_range(int a, int /*b*/) override { return a; }
+        uint64_t seed() const override { return 0; }
+    };
+    const struct { int cara, oro, queda; } casos[] = {{1, 100, 70}, {2, 100, 80}, {3, 100, 90}, {4, 100, 100}, {6, 100, 100}, {1, 1, 0}};
+    for (const auto& c : casos) {
+        Partida p;
+        DadoFijo dado;
+        dado.cara = c.cara;
+        p.sesion.setRandomEngine(dado);
+        p.sesion.addGold(c.oro);
+        p.sesion.startNarrativeBattle({.monsterId = "llop", .flagVictory = "v", .flagDefeat = "d", .flagHuida = "h"});
+        BattleAction correr;
+        correr.type = BattleActionType::Flee;
+        p.combate().resolveAllyAction(0, correr);
+        MOTOR_CHECK(p.sesion.syncBattleOutcome());
+        MOTOR_CHECK(p.sesion.gold() == c.queda);
+        MOTOR_CHECK(p.enRegistro("Tiras un dado al huir") == 1);
+    }
+    // Sin oro no hay tirada.
+    Partida p;
+    DadoFijo dado;
+    p.sesion.setRandomEngine(dado);
+    p.sesion.startNarrativeBattle({.monsterId = "llop", .flagVictory = "v", .flagDefeat = "d", .flagHuida = "h"});
+    BattleAction correr;
+    correr.type = BattleActionType::Flee;
+    p.combate().resolveAllyAction(0, correr);
+    MOTOR_CHECK(p.sesion.syncBattleOutcome());
+    MOTOR_CHECK(dado.veces == 0 && p.enRegistro("Tiras un dado al huir") == 0);
+}
+
+// D0030 — Huir no da nivel ni hito: ni el final de la huida ni la del tutorial.
+MOTOR_TEST_CASE(las_huidas_no_dan_recompensa) {
+    auto ocaso = RPG::AdventureScript::loadFromFile("assets/adventures/boundington_ocaso.json");
+    auto dia1 = RPG::AdventureScript::loadFromFile("assets/adventures/boundington_primer_dia.json");
+    MOTOR_CHECK(ocaso.isOk() && dia1.isOk());
+    if (!ocaso.isOk() || !dia1.isOk()) return;
+    const struct { const RPG::AdventureScript* guion; const char* beat; } huidas[] = {
+        {&ocaso.value(), "b3_huida_perdida"}, {&ocaso.value(), "b3_rodeo_huida"}, {&dia1.value(), "tut_huida"}};
+    for (const auto& h : huidas) {
+        bool visto = false;
+        for (const RPG::NarrativeBeat& beat : h.guion->beats) {
+            if (beat.id != h.beat) continue;
+            visto = true;
+            for (const RPG::NarrativeEffect& e : beat.effects)
+                MOTOR_CHECK(e.type != RPG::EffectType::GrantLevel && e.type != RPG::EffectType::GrantMilestone && e.type != RPG::EffectType::GrantGold);
+        }
+        MOTOR_CHECK(visto);
+    }
 }
 
 MOTOR_TEST_CASE(los_acompanantes_y_sus_curas_vuelven_como_al_empezar) {
