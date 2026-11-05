@@ -7,3 +7,4 @@
 - Arnés y demos adaptados: `demo_boundington_partida.h`, `demo_boundington_alternativas.cpp`, `demo_campana_boundington.cpp` (de 30 a 29 momentos clave).
 - Pruebas en `test_revivir_al_inicio`; 4 mutaciones en rojo y verde en `out/fabrica/UNI-02-11/logs_d0031/`; suite en `ctest_final24.log`, explorador en `explorar_20_d0031.log`.
 - Sin comprobar: si estos combates se pueden ganar con cualquier personaje. Sin huida ni límite de reintentos, uno imposible dejaría la partida atascada. Nada se ha visto en pantalla.
+- Después: `decisiones/D0032-sin-limite-de-reintentos.md`. La duda de si se pueden ganar deja de ser pendiente: es decisión de Oriol que sean un reto.

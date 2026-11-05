@@ -1,6 +1,6 @@
 # Índice de sesiones — regenerado, no editar a mano
 
-_Regenerado: 2026-11-05T11:10 · 262 sesiones_
+_Regenerado: 2026-11-05T11:29 · 262 sesiones_
 
 | Fecha | Autor | Sesión | Commits | Esperando a Oriol |
 |---|---|---|---|---|
