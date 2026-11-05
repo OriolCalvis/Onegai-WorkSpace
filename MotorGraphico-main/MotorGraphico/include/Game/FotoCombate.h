@@ -10,6 +10,7 @@
 
 #include "Core/Math/GridCoord.h"
 #include "Game/Cicatrices.h"
+#include "Game/SaveGame.h"
 #include "RPG/NarrativeEngine.h"
 #include "RPG/Narrative/AdventureScript.h"
 #include "World/World.h"
@@ -54,6 +55,7 @@ struct FotoCombate {
     std::vector<std::string> flags;
     std::map<std::string, int> variables;
     std::vector<RPG::BattleRequest> cola;
+    SaveGameData guardado;  // D0033: la partida tal como estaba; es lo que guarda F5 en combate
     bool oleadaGanada = false;  // ya se gano alguna: sus enemigos no existen y hay que volver a invocarlos
 };
 

@@ -14,7 +14,10 @@
 #include "Game/Cicatrices.h"
 #include "Game/MoralDeLaSesion.h"
 #include "Game/ReglasMoral.h"
+#include "Core/Json/JsonValue.h"
+#include "Core/Json/JsonWriter.h"
 #include "RPG/CharacterSheet.h"
+#include "../RPG/Narrative/BeatsAventura.h"
 #include "RPG/RandomEngine.h"
 #include "RPG/Narrative/NarrativeState.h"
 
@@ -85,6 +88,13 @@ void GameSession::tomaFoto(const std::vector<Engine::EntityHandle>& enemies,
         foto.enemigos.push_back(e);
     }
     foto.pedido = d.m_pendingBattle;
+    foto.guardado = captureSaveGame("");
+    for (const Engine::EntityHandle h : enemies) {
+        const Engine::WorldEntity* ent = d.m_world->get(h);
+        if (ent != nullptr && ent->kind == Engine::EntityKind::Enemy)
+            foto.guardado.combate.enemigos.push_back({ent->enemy.summoned, ent->enemy.spawnIndex, ent->enemy.objectId});
+    }
+    for (const RPG::AcompananteDef& def : aLado) foto.guardado.combate.aLado.push_back(def.id);
     if (d.m_narrativeState != nullptr) {
         foto.flags = d.m_narrativeState->flags();
         foto.variables = d.m_narrativeState->variables();
@@ -177,5 +187,71 @@ bool GameSession::reviveAlInicio() {
     // En combate el jugador lee el registro de la batalla, no el de la partida: que ahi tambien se entienda.
     if (d.m_battle != nullptr)
         for (const std::string& linea : notas) d.m_battle->anota(linea);
+    return true;
+}
+
+// D0033 — Guardar en combate guarda su inicio: un combate no se guarda a medias, se repite (como al morir).
+std::optional<SaveGameData> GameSession::guardadoDelCombate(const std::string& levelPath) const {
+    const SessionData& d = *sessionData();
+    if (d.m_battle == nullptr || !m_muerte.foto || !m_muerte.foto->guardado.combate.hay()) return std::nullopt;
+    const Game::FotoCombate& foto = *m_muerte.foto;
+    SaveGameData data = foto.guardado;
+    data.levelPath = levelPath;
+    if (foto.pedido.has_value()) {
+        std::vector<RPG::NarrativeEffect> pedidos(1);
+        pedidos[0].type = RPG::EffectType::StartBattle;
+        pedidos[0].battle = *foto.pedido;
+        for (const RPG::BattleRequest& siguiente : foto.oleadaGanada ? foto.cola : d.m_battleQueue) {
+            pedidos.emplace_back();
+            pedidos.back().type = RPG::EffectType::StartBattle;
+            pedidos.back().battle = siguiente;
+        }
+        JsonWriter w;
+        w.beginObject();
+        RPG::beats::escribeEfectos(w, pedidos);
+        w.endObject();
+        data.combate.pedidos = w.str();
+    }
+    return data;
+}
+
+bool GameSession::reanudaCombate(const SaveGameData& data) {
+    SessionData& d = *sessionData();
+    if (!data.combate.hay()) return false;
+    const RPG::AdventureScript* aventura = d.m_narrative != nullptr ? d.m_narrative->adventure() : nullptr;
+    std::vector<RPG::BattleRequest> pedidos;
+    if (!data.combate.pedidos.empty()) {
+        const auto json = JsonValue::parse(data.combate.pedidos);
+        if (!json.isOk()) return false;
+        const auto efectos = RPG::beats::leeEfectos(json.value()["effects"], "guardado.combate",
+                                                    aventura != nullptr ? aventura->acompanantes : std::vector<RPG::AcompananteDef>{});
+        if (!efectos.isOk()) return false;
+        for (const RPG::NarrativeEffect& e : efectos.value()) pedidos.push_back(e.battle);
+    }
+    std::vector<Engine::EntityHandle> handles;
+    for (const CombateGuardado::Enemigo& quien : data.combate.enemigos) {
+        Engine::EntityHandle hallado;
+        d.m_world->eachEntity([&](Engine::EntityHandle h, const Engine::WorldEntity& ent) {
+            if (!hallado.valid() && ent.kind == Engine::EntityKind::Enemy && ent.enemy.summoned == quien.summoned &&
+                ent.enemy.spawnIndex == quien.spawnIndex && ent.enemy.objectId == quien.objectId &&
+                std::find(handles.begin(), handles.end(), h) == handles.end())
+                hallado = h;
+        });
+        if (!hallado.valid()) return false;
+        handles.push_back(hallado);
+    }
+    std::vector<RPG::AcompananteDef> aLado;
+    for (const std::string& id : data.combate.aLado) {
+        const RPG::AcompananteDef* def = aventura != nullptr ? aventura->acompanante(id) : nullptr;
+        if (def != nullptr) aLado.push_back(*def);
+    }
+    if (!pedidos.empty()) {
+        d.m_pendingBattle = pedidos.front();
+        d.m_battleQueue.assign(pedidos.begin() + 1, pedidos.end());
+    }
+    startBattle(handles, aLado);
+    if (d.m_battle == nullptr) return false;
+    if (d.m_pendingBattle.has_value() && d.m_pendingBattle->ineludible) d.m_battle->prohibeHuida();
+    d.m_battle->anota("Vuelves al inicio del combate.");
     return true;
 }

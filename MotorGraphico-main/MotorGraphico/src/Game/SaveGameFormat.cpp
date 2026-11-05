@@ -180,6 +180,26 @@ std::string serializeSaveGame(const SaveGameData& data) {
         writeGridCoord(out, "returnDoor", data.returnDoor);
     }
     Game::escribeMarcasMapa(out, data.marcasMapa);  // MAPA-02: solo si hay algo marcado
+    if (data.combate.hay()) {  // D0033
+        out.key("combate");
+        out.beginObject();
+        out.key("enemigos");
+        out.beginArray();
+        for (const CombateGuardado::Enemigo& e : data.combate.enemigos) {
+            out.beginObject();
+            out.member("summoned", e.summoned);
+            out.member("spawnIndex", e.spawnIndex);
+            out.member("objectId", e.objectId);
+            out.endObject();
+        }
+        out.endArray();
+        out.key("aLado");
+        out.beginArray();
+        for (const std::string& id : data.combate.aLado) out.value(id);
+        out.endArray();
+        out.member("pedidos", data.combate.pedidos);
+        out.endObject();
+    }
 
     writeStringArray(out, "inventory", data.inventory);
     out.member("gold", data.gold);
@@ -337,6 +357,13 @@ bool parseSaveGame(const std::string& text, SaveGameData* out, std::string* erro
     data.returnLevel = root["returnLevel"].asString("");  // PUERTAS-01: sin clave, vacio
     data.returnDoor = readGridCoord(root["returnDoor"]);
     data.marcasMapa = Game::leeMarcasMapa(root["mapa"]);  // MAPA-02: sin clave, sin marcas
+    const JsonValue& combate = root["combate"];  // D0033: sin clave, sin combate
+    for (std::size_t i = 0; i < combate["enemigos"].size(); ++i) {
+        const JsonValue& e = combate["enemigos"][i];
+        data.combate.enemigos.push_back({e["summoned"].asBool(false), e["spawnIndex"].asInt(-1), e["objectId"].asString("")});
+    }
+    for (std::size_t i = 0; i < combate["aLado"].size(); ++i) data.combate.aLado.push_back(combate["aLado"][i].asString(""));
+    data.combate.pedidos = combate["pedidos"].asString("");
 
     data.inventory = readStringArray(root["inventory"]);
     data.gold = root["gold"].asInt(0);

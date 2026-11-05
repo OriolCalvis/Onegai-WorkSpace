@@ -835,12 +835,13 @@ bool Application::quickSave() {
     if (m_session == nullptr || m_saveSlots == nullptr) {
         return false;
     }
-    const Game::SaveGate puerta = Game::CanSaveNow(m_session->mode(), /*eventRunning=*/false);
+    const std::optional<SaveGameData> delCombate = m_session->guardadoDelCombate(m_currentLevelPath);  // D0033
+    const Game::SaveGate puerta = delCombate ? Game::SaveGate{} : Game::CanSaveNow(m_session->mode(), /*eventRunning=*/false);
     if (!puerta.allowed) {
         m_session->logNote("No se puede guardar: " + puerta.reason);
         return false;
     }
-    SaveGameData data = m_session->captureSaveGame(m_currentLevelPath);
+    SaveGameData data = delCombate ? *delCombate : m_session->captureSaveGame(m_currentLevelPath);
     if (m_nuevaPartida) m_nuevaPartida->apuntaAspecto(data);
     if (m_pergamino) data.marcasMapa = m_pergamino->interfaz().guia().marcas();  // MAPA-02
     auto guardado = m_saveSlots->save(Game::SaveSlots::kQuickSlot, data);
@@ -1029,6 +1030,12 @@ void Application::processInput() {
             }
         }
     } else if (m_session->mode() == GameMode::Battle) {
+        if (!ApplicationCinematica::enCurso(*this) && input.pressed(InputAction::QuickSave))  // D0033: F5 guarda el inicio del combate
+            m_session->battle()->anota(quickSave() ? "Partida guardada: al cargar, este combate vuelve a empezar." : "No se ha podido guardar.");
+        if (!ApplicationCinematica::enCurso(*this) && input.pressed(InputAction::QuickLoad)) {
+            if (quickLoad()) return;
+            m_session->battle()->anota("No hay ninguna partida que cargar.");
+        }
         teclasCombate(input);  // UI-BG3-01: la barra de cartas (1-0, A/D, ENTER, F, L y raton)
     } else if (m_session->mode() == GameMode::Shop) {
         teclasTienda(input);  // TIENDA-02: pestanas Comprar/Vender, W/S + ENTER y el raton

@@ -37,6 +37,16 @@ EstadoCinematicas::~EstadoCinematicas() = default;
 
 namespace {
 
+// Lo que se ve de un combate: al reiniciarlo o al cargar una partida en plena pelea, de cero.
+void olvidaCombate(EstadoCinematicas& e) {
+    e.efectos.olvida();
+    e.basesGolpe.clear();
+    e.pvFantasma = -1.0f;
+    e.rivalesPorPegar = false;
+    e.rutaHeroe.clear();
+    e.rutasEnemigos.clear();
+}
+
 float acerca(float v, float objetivo, float paso) {
     return v < objetivo ? std::min(objetivo, v + paso) : std::max(objetivo, v - paso);
 }
@@ -360,14 +370,7 @@ void ApplicationCinematica::combate(Application& app, float dt) {
     if (b != e.combateVisto) {
         // Un combate nuevo: sus dados (antes todos tiraban con la misma semilla y
         // cada combate empezaba con los mismos dados) y la camara, cerca.
-        if (e.combateVisto != nullptr) {  // D0027: el mismo combate vuelve a empezar (sin pasar por «ninguno»)
-            e.efectos.olvida();
-            e.basesGolpe.clear();
-            e.pvFantasma = -1.0f;
-            e.rivalesPorPegar = false;
-            e.rutaHeroe.clear();
-            e.rutasEnemigos.clear();
-        }
+        if (e.combateVisto != nullptr) olvidaCombate(e);  // D0027: el mismo combate vuelve a empezar (sin pasar por «ninguno»)
         e.combateVisto = b;
         e.dados = std::make_unique<RPG::Xoroshiro128p>(semillaNueva());
         b->setRandomEngine(*e.dados);
@@ -472,12 +475,19 @@ void ApplicationCinematica::avisoYa(Application& app, const std::string& texto) 
 bool ApplicationCinematica::cargaPartida(Application& app, const SaveGameData& datos) {
     const SaveGameData data = datos;  // copia: el dato entra en la lambda y la escena se monta al final del fotograma
     const auto requested = app.m_scenes.requestReplace(app.makeScene(false, [&app, data] {
+        // D0033: cargar en pleno combate no deja nada suyo a la vista; el combate nuevo puede nacer en la misma direccion.
+        app.m_barra = Game::BarraCombate{};
+        if (app.m_cine) {
+            olvidaCombate(*app.m_cine);
+            app.m_cine->combateVisto = nullptr;
+        }
         auto loaded = app.loadLevel(data.levelPath, false, GridCoord{}, [&app, &data] {
             app.m_narrativeState.reset();
             applyNarrativeState(data, app.m_narrativeState);
             if (app.m_pergamino) app.m_pergamino->interfaz().guia().marcas() = data.marcasMapa;  // MAPA-02
         }, &data);
         if (loaded.isOk()) app.m_session->logNote("Partida cargada.");
+        if (loaded.isOk()) app.m_session->reanudaCombate(data);  // D0033: si se guardo en combate, se vuelve a el
         else std::cerr << "No se pudo cargar la partida: " << loaded.errorMessage() << "\n";
         return loaded;
     }));

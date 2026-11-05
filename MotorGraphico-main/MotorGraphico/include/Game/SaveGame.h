@@ -100,6 +100,21 @@ struct SavedHero {
     bool empty() const { return classId.empty(); }
 };
 
+// D0033 — Un combate a medias: quienes pelean (ya estan en SaveGameData::enemies), quien va al lado y
+// los pedidos de la historia en texto JSON (el primero es el combate; el resto, las oleadas que siguen).
+// Sin clave en el fichero, no hay combate.
+struct CombateGuardado {
+    struct Enemigo {
+        bool summoned = false;
+        int spawnIndex = -1;
+        std::string objectId;
+    };
+    std::vector<Enemigo> enemigos;
+    std::vector<std::string> aLado;
+    std::string pedidos;
+    bool hay() const { return !enemigos.empty(); }
+};
+
 struct SaveGameData {
     // Version del ESQUEMA del guardado, no del juego (RUN-10.4). Sube
     // cuando el formato deja de poder leerse tal cual. Un guardado con
@@ -153,6 +168,7 @@ struct SaveGameData {
     std::vector<OwnedBusiness> businesses;
     std::vector<SavedWorldObject> worldObjects;
     std::vector<SavedEnemy> enemies;
+    CombateGuardado combate;  // D0033
 
     // Aventura: flags encendidas, beats ya disparados y temporizadores.
     // Sin esto, cargar una partida repetiria el prologo y volveria a dar

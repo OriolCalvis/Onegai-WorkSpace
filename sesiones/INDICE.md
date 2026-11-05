@@ -1,11 +1,12 @@
 # Índice de sesiones — regenerado, no editar a mano
 
-_Regenerado: 2026-11-05T11:29 · 262 sesiones_
+_Regenerado: 2026-11-05T12:06 · 263 sesiones_
 
 | Fecha | Autor | Sesión | Commits | Esperando a Oriol |
 |---|---|---|---|---|
 | 2026-11-05 | claude | [combates importantes](2026-11-05-claude-combates-importantes.md) | — | — |
 | 2026-11-05 | claude | [final huida](2026-11-05-claude-final-huida.md) | — | — |
+| 2026-11-05 | claude | [guardado en combate](2026-11-05-claude-guardado-en-combate.md) | — | — |
 | 2026-11-05 | claude | [huir sin recompensa](2026-11-05-claude-huir-sin-recompensa.md) | — | — |
 | 2026-11-05 | claude | [ramas de huida](2026-11-05-claude-ramas-de-huida.md) | — | — |
 | 2026-11-04 | claude | [revivir al inicio del combate](2026-11-04-claude-revivir-al-inicio-del-combate.md) | — | confirmar D0027 §4–6 (valores por defecto del Brain); decidir qué hacer con lo de REVIVIR_1.md (no se ha reescrito historia); la reputación por muerte (`aegroum` −2) es un número mío. |

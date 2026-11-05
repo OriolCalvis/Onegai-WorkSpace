@@ -403,6 +403,62 @@ MOTOR_TEST_CASE(un_combate_ineludible_y_uno_del_mapa_tambien_reinician) {
     MOTOR_CHECK(q.sesion.enemies().size() == 1 && q.sesion.cicatrices() == 1);
 }
 
+// D0033 — Guardar en combate guarda su inicio; al cargar, el combate vuelve a empezar, con sus oleadas.
+MOTOR_TEST_CASE(guardar_en_combate_guarda_su_inicio_y_cargar_vuelve_a_el) {
+    SaveGameData leida;
+    {
+        Partida p;
+        p.sesion.addGold(30);
+        MOTOR_CHECK(!p.sesion.guardadoDelCombate("n.json").has_value());  // fuera de combate no hay nada
+        p.sesion.startNarrativeBattle({.monsterId = "llop", .flagVictory = "v1", .flagDefeat = "d1", .ineludible = true});
+        p.sesion.startNarrativeBattle({.monsterId = "llop", .flagVictory = "v2", .flagDefeat = "d2"});
+        p.heroe.takeDamage(15);  // a mitad del combate
+        p.mochila.pop_back();
+        const auto guardado = p.sesion.guardadoDelCombate("n.json");
+        MOTOR_CHECK(guardado.has_value());
+        if (!guardado.has_value()) return;
+        MOTOR_CHECK(guardado->levelPath == "n.json" && guardado->playerHealth == 40 && guardado->inventory.size() == 2);
+        std::string error;
+        MOTOR_CHECK(parseSaveGame(serializeSaveGame(*guardado), &leida, &error));
+    }
+    Partida q;
+    std::string error;
+    MOTOR_CHECK(q.sesion.restoreSaveGame(leida, &error));
+    MOTOR_CHECK(q.sesion.reanudaCombate(leida));
+    MOTOR_CHECK(q.sesion.mode() == GameMode::Battle && q.sesion.battle() != nullptr);
+    if (q.sesion.battle() == nullptr) return;
+    MOTOR_CHECK(q.heroe.health() == 40 && q.mochila.size() == 2 && q.sesion.gold() == 30);
+    MOTOR_CHECK(!q.sesion.battle()->sePuedeHuir());
+    q.ganaYSeResuelve();
+    MOTOR_CHECK(q.trama.hasFlag("v1") && !q.trama.hasFlag("v2") && q.sesion.battle() != nullptr);
+    if (q.sesion.battle() == nullptr) return;
+    MOTOR_CHECK(q.sesion.battle()->sePuedeHuir());
+    q.ganaYSeResuelve();
+    MOTOR_CHECK(q.trama.hasFlag("v2") && q.sesion.mode() == GameMode::Exploration);
+}
+
+// D0033 — Un combate del mapa tambien vuelve, y un guardado sin combate no monta ninguno.
+MOTOR_TEST_CASE(un_combate_del_mapa_guardado_vuelve_y_sin_combate_no_pasa_nada) {
+    LevelDefinition level = nivel();
+    ObjectSpawn lobo;
+    lobo.objectId = "llop";
+    lobo.position = GridCoord{1, 0};
+    lobo.patrolMin = GridCoord{1, 0};
+    lobo.patrolMax = GridCoord{1, 0};
+    level.objects.push_back(lobo);
+    Partida p(level);
+    MOTOR_CHECK(!p.sesion.reanudaCombate(p.sesion.captureSaveGame("n.json")));
+    MOTOR_CHECK(!p.sesion.tryMovePlayer(1, 0));
+    const auto guardado = p.sesion.guardadoDelCombate("n.json");
+    MOTOR_CHECK(guardado.has_value() && guardado->combate.pedidos.empty());
+    if (!guardado.has_value()) return;
+    Partida q(level);
+    std::string error;
+    MOTOR_CHECK(q.sesion.restoreSaveGame(*guardado, &error));
+    MOTOR_CHECK(q.sesion.reanudaCombate(*guardado));
+    MOTOR_CHECK(q.sesion.mode() == GameMode::Battle && q.sesion.battle() != nullptr);
+}
+
 // D0031 — Un combate ineludible no se puede huir, y al morir se reinicia salvo que salte su rescate.
 MOTOR_TEST_CASE(el_rescate_al_morir_cierra_el_combate_solo_si_su_beat_puede_saltar) {
     const auto aventura = RPG::AdventureScript::loadFromString(R"({

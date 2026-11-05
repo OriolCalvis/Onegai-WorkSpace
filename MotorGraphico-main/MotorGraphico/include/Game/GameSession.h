@@ -491,6 +491,8 @@ public:
     // assets). Con un combate a medias (mode()==Battle) se fotografia el mundo ANTES del combate:
     // serializar el BattleState entero no merece la pena, reabrirlo al cargar es equivalente.
     SaveGameData captureSaveGame(const std::string& levelPath) const;
+    std::optional<SaveGameData> guardadoDelCombate(const std::string& levelPath) const;  // D0033: el inicio del combate en curso
+    bool reanudaCombate(const SaveGameData& data);  // D0033: vuelve a montar el combate de un guardado
 
     // Aplica un guardado sobre esta sesion. La sesion debe estar RECIEN
     // construida sobre el mismo nivel que dice el guardado: aqui no se
