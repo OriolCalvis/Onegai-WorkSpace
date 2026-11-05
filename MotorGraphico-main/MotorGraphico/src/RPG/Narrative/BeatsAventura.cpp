@@ -234,6 +234,7 @@ Result<NarrativeEffect> leeEfecto(const JsonValue& effectEntry, const std::strin
         if (effect.battle.ineludible && !effect.battle.flagHuida.empty())
             return Result<NarrativeEffect>::Error(dondeCombate + ": de un combate ineludible no se huye, "
                                                           "sobra flagHuida");
+        effect.battle.rescateAlMorir = bt["rescateAlMorir"].asString("");  // D0031
         // FASE1-BND-01 — Los que huyen a 0 PV tienen que estar en el grupo.
         effect.battle.huyen = cadenas(bt["huyen"]);
         const std::vector<std::string> todos = effect.battle.grupo();
@@ -454,6 +455,7 @@ void escribeEfectos(JsonWriter& w, const std::vector<NarrativeEffect>& efectos) 
             // CAER-01 — Solo si estan: lo de antes se escribe igual que antes.
             if (!effect.battle.flagHuida.empty()) w.member("flagHuida", effect.battle.flagHuida);
             if (effect.battle.ineludible) w.member("ineludible", true);
+            if (!effect.battle.rescateAlMorir.empty()) w.member("rescateAlMorir", effect.battle.rescateAlMorir);  // D0031
             if (!effect.battle.huyen.empty()) escribeCadenas(w, "huyen", effect.battle.huyen);  // FASE1-BND-01
             if (effect.battle.sinMatar) w.member("sinMatar", true);
             w.endObject();

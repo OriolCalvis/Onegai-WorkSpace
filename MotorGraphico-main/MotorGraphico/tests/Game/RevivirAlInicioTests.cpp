@@ -403,6 +403,60 @@ MOTOR_TEST_CASE(un_combate_ineludible_y_uno_del_mapa_tambien_reinician) {
     MOTOR_CHECK(q.sesion.enemies().size() == 1 && q.sesion.cicatrices() == 1);
 }
 
+// D0031 — Un combate ineludible no se puede huir, y al morir se reinicia salvo que salte su rescate.
+MOTOR_TEST_CASE(el_rescate_al_morir_cierra_el_combate_solo_si_su_beat_puede_saltar) {
+    const auto aventura = RPG::AdventureScript::loadFromString(R"({
+        "id": "prueba", "name": "Prueba",
+        "beats": [
+            {"id": "rescate", "trigger": {"type": "auto"},
+             "requires": {"allFlags": ["d", "con_amigos"], "notFlags": ["rescate_visto"]},
+             "speaker": "", "lines": ["Llegan los tuyos."],
+             "effects": [{"type": "setFlag", "arg": "rescate_visto"}]}
+        ]
+    })");
+    MOTOR_CHECK(aventura.isOk());
+    if (!aventura.isOk()) return;
+    const RPG::BattleRequest pelea{.monsterId = "llop", .flagVictory = "v", .flagDefeat = "d", .ineludible = true, .rescateAlMorir = "rescate"};
+    {   // Sin los requisitos: se reinicia, con cicatriz, y la flag de derrota sigue apagada.
+        Partida p(nivel(), &aventura.value());
+        p.sesion.startNarrativeBattle(pelea);
+        p.caeYSeResuelve();
+        MOTOR_CHECK(p.sesion.mode() == GameMode::Battle && p.sesion.cicatrices() == 1);
+        MOTOR_CHECK(!p.trama.hasFlag("d") && !p.trama.hasFlag("rescate_visto"));
+    }
+    {   // Con los requisitos: el combate se cierra, sin cicatriz, y salta el rescate.
+        Partida p(nivel(), &aventura.value());
+        p.trama.setFlag("con_amigos");
+        p.sesion.startNarrativeBattle(pelea);
+        p.caeYSeResuelve();
+        MOTOR_CHECK(p.sesion.battle() == nullptr && p.sesion.mode() == GameMode::Dialogue);
+        MOTOR_CHECK(p.sesion.cicatrices() == 0 && p.heroe.health() == 10);
+        MOTOR_CHECK(p.trama.hasFlag("d") && p.trama.hasFlag("rescate_visto"));
+    }
+}
+
+// D0031 — Los combates importantes de la historia: de los caps, los rescates y la Barriada no se huye.
+MOTOR_TEST_CASE(de_los_combates_importantes_no_se_huye) {
+    int ineludibles = 0, conRescate = 0;
+    for (const char* ruta : {"assets/adventures/boundington_ocaso.json", "assets/adventures/boundington_dia_gorran.json",
+                             "assets/adventures/boundington_segundo_dia.json"}) {
+        const auto guion = RPG::AdventureScript::loadFromFile(ruta);
+        MOTOR_CHECK(guion.isOk());
+        if (!guion.isOk()) continue;
+        for (const RPG::NarrativeBeat& beat : guion.value().beats)
+            for (const RPG::NarrativeEffect& e : beat.effects) {
+                if (e.type != RPG::EffectType::StartBattle) continue;
+                const std::string& d = e.battle.flagDefeat;
+                const bool importante = e.battle.monsterId == "sandes" || e.battle.monsterId == "diacono_orfeu" || e.battle.monsterId == "edul_furioso" ||
+                                        d == "bnd3_verina_muerta" || d == "bnd3_edul_perdido" || d == "bnd3_venides_perdido" || d == "bnd2_saqueadores_ganan";
+                MOTOR_CHECK(e.battle.ineludible == importante);
+                ineludibles += e.battle.ineludible ? 1 : 0;
+                conRescate += e.battle.rescateAlMorir == "b3_compania" ? 1 : 0;
+            }
+    }
+    MOTOR_CHECK(ineludibles >= 1 && conRescate >= 1);
+}
+
 MOTOR_TEST_CASE(la_regla_de_moral_de_la_muerte_es_un_dato) {
     const moral::Reglas& r = moral::reglas();
     MOTOR_CHECK(r.parametros.actoAlMorir == "heroe_cae_en_combate");

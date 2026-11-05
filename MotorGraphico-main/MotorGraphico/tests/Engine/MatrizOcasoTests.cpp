@@ -185,7 +185,7 @@ MOTOR_TEST_CASE(las_ramas_a_las_que_se_llega_huyendo_cuentan_una_huida) {
     } ramas[] = {
         {&f.g.gorran, "bgd_perdida", "Echas a correr"},   {&f.g.gorran, "bgb_detras_perdida", "Echas a correr"},
         {&f.g.dia2, "b2_saqueadores_ganan", "corres"},    {&f.g.dia1, "b1_secta_ganan", "Te escapas"},
-        {&f.g.ocaso, "b3_sandes_gana_casco", "corres"},   {&f.g.ocaso, "b3_compania", "Echas a correr"},
+        {&f.g.ocaso, "b3_sandes_gana_casco", "corres"},
         {&f.g.ocaso, "b3_sandes_sigue", "Corres"},
     };
     for (const auto& rama : ramas) {
@@ -203,8 +203,9 @@ MOTOR_TEST_CASE(las_ramas_a_las_que_se_llega_huyendo_cuentan_una_huida) {
     // El diario cuenta la huida con la flag que de verdad se enciende.
     std::ifstream quests("assets/catalogs/quests.json");
     const std::string diario((std::istreambuf_iterator<char>(quests)), std::istreambuf_iterator<char>());
-    for (const char* viva : {"\"bnd1_guarida_huida\"", "\"bnd2_saqueadores_huido\""}) MOTOR_CHECK(diario.find(viva) != std::string::npos);
-    for (const char* muerta : {"\"bnd1_guarida_perdida\"", "\"bnd2_saqueadores_ganan\""}) MOTOR_CHECK(diario.find(muerta) == std::string::npos);
+    MOTOR_CHECK(diario.find("\"bnd1_guarida_huida\"") != std::string::npos);
+    // D0031: de los saqueadores de la Barriada ya no se huye, asi que no hay entrada de huir ni de perder.
+    for (const char* muerta : {"\"bnd1_guarida_perdida\"", "\"bnd2_saqueadores_ganan\"", "\"bnd2_saqueadores_huido\""}) MOTOR_CHECK(diario.find(muerta) == std::string::npos);
 }
 
 // E-HALLAZGOS-01 (hallazgo 4): quedarse a luchar en la base pone bnd3_ruta_quedarse y, al caer la base (b3_base_cae), tambien bnd3_ruta_oeste. El

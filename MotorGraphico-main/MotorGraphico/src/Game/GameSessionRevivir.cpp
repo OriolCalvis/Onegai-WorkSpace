@@ -97,6 +97,17 @@ bool GameSession::reviveAlInicio() {
     if (!m_muerte.foto || d.m_battle == nullptr || d.m_playerBody == nullptr) return false;
     // D0027 §6: las peleas en las que nadie muere siguen como siempre (te levantas y sigue la historia).
     if (d.m_pendingBattle.has_value() && d.m_pendingBattle->sinMatar) return false;
+    // D0031: si con la derrota ya saltaria el beat de rescate, no se reinicia: el combate se cierra
+    // como una derrota de las que se levantan y el beat sigue la historia. Se prueba en una copia.
+    if (d.m_pendingBattle.has_value() && !d.m_pendingBattle->rescateAlMorir.empty() && d.m_narrative != nullptr &&
+        d.m_narrativeState != nullptr) {
+        RPG::NarrativeState copia = *d.m_narrativeState;
+        copia.setFlag(d.m_pendingBattle->flagDefeat);
+        if (d.m_narrative->tick(copia).beatId == d.m_pendingBattle->rescateAlMorir) {
+            d.m_pendingBattle->ineludible = false;
+            return false;
+        }
+    }
     // Los enemigos tienen que seguir ahi para volver a montar el mismo combate; los de una oleada
     // ya ganada no siguen, pero se vuelven a invocar con su pedido.
     if (m_muerte.foto->oleadaGanada && !m_muerte.foto->pedido.has_value()) return false;

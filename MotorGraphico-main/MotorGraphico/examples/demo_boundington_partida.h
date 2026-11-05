@@ -257,6 +257,16 @@ struct Jugador {
                 if (ruido) std::printf("      [combate: %s]\n", pierdeSinMatar ? "derrota (sin matar)" : "victoria");
                 continue;
             }
+            // D0031: caer en un ineludible cierra el combate si con la derrota ya salta su rescate.
+            if (!gana && b.ineludible && !b.rescateAlMorir.empty()) {
+                NarrativeState copia = s;
+                copia.setFlag(b.flagDefeat);
+                if (e.tick(copia).beatId == b.rescateAlMorir) {
+                    s.setFlag(b.flagDefeat);
+                    if (ruido) std::printf("      [combate: rescate]\n");
+                    continue;
+                }
+            }
             const bool seVa = !gana && !b.ineludible;
             const std::string& salida = !seVa ? b.flagVictory : !b.flagHuida.empty() ? b.flagHuida : b.flagDefeat.empty() ? b.flagVictory : b.flagDefeat;
             if (!gana && b.ineludible) ++ineludiblesGanados;  // la rama «perdida» de un ineludible no existe
