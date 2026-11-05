@@ -1,10 +1,11 @@
 # Índice de sesiones — regenerado, no editar a mano
 
-_Regenerado: 2026-11-05T00:51 · 259 sesiones_
+_Regenerado: 2026-11-05T07:59 · 260 sesiones_
 
 | Fecha | Autor | Sesión | Commits | Esperando a Oriol |
 |---|---|---|---|---|
 | 2026-11-05 | claude | [final huida](2026-11-05-claude-final-huida.md) | — | — |
+| 2026-11-05 | claude | [ramas de huida](2026-11-05-claude-ramas-de-huida.md) | — | — |
 | 2026-11-04 | claude | [revivir al inicio del combate](2026-11-04-claude-revivir-al-inicio-del-combate.md) | — | confirmar D0027 §4–6 (valores por defecto del Brain); decidir qué hacer con lo de REVIVIR_1.md (no se ha reescrito historia); la reputación por muerte (`aegroum` −2) es un número mío. |
 | 2026-11-03 | claude | [respuestas y guion](2026-11-03-claude-respuestas-y-guion.md) | — | el guardado no se restaura en `ciudad_centro` (dos objetos en la misma casilla: (41,25), (6,59), (16,59); `src/Game/SaveGame.cpp:199` busca solo por posición); fusionar o no `agente/fable/UNI-RESTAURA`; subir los commits nuevos; PixelLab (`out/fabrica/UNI-02-11/PIXELLAB_ENCARREC.md`). |
 | 2026-11-02 | claude | [uni 02 11](2026-11-02-claude-uni-02-11.md) | — | — |
