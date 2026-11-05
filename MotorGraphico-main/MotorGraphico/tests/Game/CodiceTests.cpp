@@ -62,6 +62,28 @@ MOTOR_TEST_CASE(codice_solo_conoce_lo_vivido) {
     MOTOR_CHECK(lore->texto == "Una noche larga.");
 }
 
+// D0037 — El Codice reconoce a alguien por su id; el rotulo de un beat, aunque coincida con un nombre, no identifica.
+MOTOR_TEST_CASE(codice_identifica_por_id_y_no_por_el_rotulo) {
+    const auto r = RPG::AdventureScript::loadFromString(R"({
+      "id": "prueba", "name": "Prueba", "objectives": [],
+      "beats": [
+        {"id": "por_rotulo", "trigger": {"type": "auto"}, "speaker": "Bastià de la Esquina", "lines": ["Hola."], "effects": []},
+        {"id": "por_id", "trigger": {"type": "auto"}, "speaker": "Un desconocido", "speakerId": "npc_bastia_de_la_esquina", "lines": ["Hola."], "effects": []}
+      ]})");
+    MOTOR_CHECK(r.isOk());
+    if (!r.isOk()) return;
+    RPG::NarrativeState estado;
+    estado.markBeatFired("por_rotulo");
+    Game::CodiceDatos d = codice().construir({&r.value()}, estado, nullptr, "");
+    MOTOR_CHECK(d.cuantas("personaje") == 1 && !tiene(d, "personaje", "npc_bastia_de_la_esquina"));
+    RPG::NarrativeState otro;
+    otro.markBeatFired("por_id");
+    d = codice().construir({&r.value()}, otro, nullptr, "");
+    MOTOR_CHECK(tiene(d, "personaje", "npc_bastia_de_la_esquina"));
+    const auto e = std::find_if(d.entradas.begin(), d.entradas.end(), [](const Game::CodiceEntrada& x) { return x.tipo == "personaje"; });
+    MOTOR_CHECK(e != d.entradas.end() && e->titulo == "Bastià de la Esquina");  // la ficha, no el rotulo
+}
+
 MOTOR_TEST_CASE(codice_usa_la_ficha_para_deidad_clase_y_raza) {
     RPG::CharacterSheet f;
     f.raceId = "race_human_marches";

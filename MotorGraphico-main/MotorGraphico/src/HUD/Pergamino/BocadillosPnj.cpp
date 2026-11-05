@@ -21,7 +21,7 @@
 
 namespace Pergamino {
 
-void pintaBocadillosPnj(Lienzo& l, const Pincel& p, const EstadoJuego& e, const std::string& salvo) {
+void pintaBocadillosPnj(Lienzo& l, const Pincel& p, const EstadoJuego& e, std::optional<GridCoord> salvo) {
     if (e.sesion == nullptr || e.mapa == nullptr || e.sesion->mode() != GameMode::Exploration) return;
     const Game::RutinasPnj& rutinas = e.sesion->rutinasPnj();
     if (!rutinas.activa()) return;
@@ -35,7 +35,7 @@ void pintaBocadillosPnj(Lienzo& l, const Pincel& p, const EstadoJuego& e, const 
         if (!habla && (icono.empty() || lejos > 8 || p.iconos().frame(icono) <= 0)) continue;
         // Quien atiende a la E ya lleva encima su «[E] Hablar»: no se le tapa.
         const ObjectDefinition* def = e.sesion->objectCatalog() != nullptr ? e.sesion->objectCatalog()->find(pnj.objectId) : nullptr;
-        if (!salvo.empty() && def != nullptr && def->name == salvo) continue;
+        if (salvo && salvo->x == pnj.casilla.x && salvo->y == pnj.casilla.y) continue;  // D0037
         // Sus pies a pantalla, con lo que le falte del paso (el dibujo va detras del juego).
         const Vector2 celda = IsoMath::gridToScreen(pnj.casilla, tw, th);
         const float dx = pnj.desfaseX(), dy = pnj.desfaseY();

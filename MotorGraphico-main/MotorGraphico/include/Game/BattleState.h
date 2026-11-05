@@ -177,6 +177,7 @@ public:
     // tirarla, el turno de siempre: tu, y luego todos los enemigos de golpe.
     void tiraIniciativa();
     const Game::OrdenDeTurno& orden() const { return m_campo.orden; }
+    void colocaLosNuevos();  // D0037
     int enemigoEnTurno() const;  // a que enemigo le toca; -1: a un aliado, o sin iniciativa
     // AV13-29 — A que aliado le toca (0 el heroe; -1: a un enemigo). Sin iniciativa, al heroe.
     int aliadoEnTurno() const;

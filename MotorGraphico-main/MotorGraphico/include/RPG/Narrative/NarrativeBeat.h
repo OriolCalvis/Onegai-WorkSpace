@@ -356,6 +356,7 @@ struct NarrativeBeat {
     // Lo que se muestra. speaker vacio = voz del narrador (un cierre, una
     // consecuencia): el HUD decide si dibuja marco de dialogo o no.
     std::string speaker;
+    std::string speakerId;  // D0037: la ficha de quien habla (opcional); `speaker` solo se enseña
     std::vector<std::string> lines;
 
     std::vector<NarrativeEffect> effects;

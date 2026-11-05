@@ -91,7 +91,7 @@ void detalleApartado(DetallePagina& d, const Game::DiarioMision& m, const Game::
     for (std::size_t i : a.objetivos) d.lista.push_back(filaObjetivo(m.objetivos[i]));
     std::string aqui;
     for (const Game::DiarioDecision& dd : m.decisiones) {
-        if (dd.apartado != a.titulo) continue;
+        if (dd.apartado != a.id) continue;
         aqui += (aqui.empty() ? "" : ", ") + dd.titulo;
     }
     if (!aqui.empty()) d.nota = "Lo que decidiste aquí: " + aqui + ".";

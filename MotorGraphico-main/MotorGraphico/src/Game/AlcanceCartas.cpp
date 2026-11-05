@@ -1,6 +1,10 @@
 // AV13-13 — ver include/Game/AlcanceCartas.h.
 #include "Game/AlcanceCartas.h"
+#include "Core/Json/JsonValue.h"
 #include "Game/AreaDeCarta.h"
+#include <map>
+#include <iterator>
+#include <fstream>
 #include <cstdlib>
 #include <cctype>
 
@@ -81,29 +85,46 @@ void ponAlcances(VistaBarra& v, const BattleState& batalla) {
 
 bool esMuro(const TableroCombate& t, GridCoord c) { return !t.transitable(c) && t.quienEsta(c) == nullptr; }
 
+// D0037 — Las formas que no son la de siempre, de assets/rules/areas_de_cartas.json: es un dato, no el texto de la carta.
+static const std::map<std::string, EntradaAreaDeCarta>& areasDeCartas() {
+    static const std::map<std::string, EntradaAreaDeCarta> tabla = [] {
+        std::map<std::string, EntradaAreaDeCarta> out;
+        std::ifstream fh("assets/rules/areas_de_cartas.json", std::ios::binary);
+        const std::string texto((std::istreambuf_iterator<char>(fh)), std::istreambuf_iterator<char>());
+        const auto json = JsonValue::parse(texto);
+        if (!json.isOk()) return out;
+        const JsonValue& areas = json.value()["areas"];
+        for (const auto& [id, v] : areas.objectValues()) {
+            EntradaAreaDeCarta e;
+            e.forma = v["forma"].asString("circulo");
+            e.radio = v["radio"].asInt(0);
+            e.enTi = v["enTi"].asBool(false);
+            out[id] = e;
+        }
+        return out;
+    }();
+    return tabla;
+}
+
 // AV13-14 — El area de la carta (ver Game/AreaDeCarta.h).
 std::optional<AreaDeCarta> areaDe(const RPG::SkillDefinition& def) {
     using T = RPG::SkillTarget;
     if (def.target != T::ZONE_RADIUS && def.target != T::ALL_ENEMIES) return std::nullopt;
-    std::string texto = def.description;
-    std::transform(texto.begin(), texto.end(), texto.begin(), [](unsigned char ch) { return static_cast<char>(std::tolower(ch)); });
-    const auto dice = [&](const char* trozo) { return texto.find(trozo) != std::string::npos; };
     AreaDeCarta a;
     const int alcance = std::max(4, casillasDeAlcance(def.range, def.target));
-    if (dice("línea") || dice("linea")) {
+    const auto& tabla = areasDeCartas();
+    const auto dato = tabla.find(def.id);
+    const std::string forma = dato != tabla.end() ? dato->second.forma : "circulo";
+    if (forma == "linea") {
         a.plantilla = PlantillaArea{PlantillaArea::Forma::Linea, alcance};
         a.enTi = true;
-    } else if (dice("cono")) {
+    } else if (forma == "cono") {
         a.plantilla = PlantillaArea{PlantillaArea::Forma::Cono, alcance};
         a.enTi = true;
     } else {
-        int radio = def.target == T::ALL_ENEMIES ? 2 : 1;
-        if (const std::size_t i = texto.find("radio de "); i != std::string::npos) {
-            const int pies = std::atoi(texto.c_str() + i + 9);
-            if (pies > 0) radio = std::max(1, (pies + 2) / 5);  // 5 pies, una casilla
-        }
+        const int radio = dato != tabla.end() && dato->second.radio > 0 ? dato->second.radio : def.target == T::ALL_ENEMIES ? 2 : 1;
         a.plantilla = PlantillaArea{PlantillaArea::Forma::Circulo, radio};
-        a.enTi = dice("a tu alrededor") || dice("alrededor de ti");
+        a.enTi = dato != tabla.end() && dato->second.enTi;
     }
     return a;
 }

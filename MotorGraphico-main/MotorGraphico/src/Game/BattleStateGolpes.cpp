@@ -39,6 +39,7 @@ BattleState::FotoVidas BattleState::fotoVidas() const {
 }
 
 void BattleState::anotaGolpes(const FotoVidas& antes, const std::string& de, Game::GolpeCombate::Grado porDefecto) {
+    colocaLosNuevos();  // D0037: una carta puede haber invocado a alguien
     using Grado = Game::GolpeCombate::Grado;
     std::vector<const RPG::TiradaVisible*> nuevas;
     if (m_mesa != nullptr)

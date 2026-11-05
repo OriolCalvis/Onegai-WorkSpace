@@ -128,6 +128,21 @@ std::vector<std::pair<Engine::EntityHandle, std::pair<GridCoord, GridCoord>>> Ga
     std::vector<std::pair<Engine::EntityHandle, std::pair<GridCoord, GridCoord>>> movidos;
     BattleState* b = sessionData()->m_battle.get();
     if (b == nullptr || b->tablero() == nullptr || sessionData()->m_world == nullptr) return movidos;
+    // D0037 — El que acaba de llegar a la mesa (un refuerzo) tiene su dibujo como los demas.
+    for (std::size_t i = 1; i < b->allies().size(); ++i) {
+        const BattleParticipant& p = b->allies()[i];
+        const auto donde = b->tablero()->dondeEsta(p.id);
+        if (!donde || p.combatant == nullptr) continue;
+        const std::string objeto = kAcompanante + p.combatant->combatant_id();
+        bool hay = false;
+        sessionData()->m_world->eachEntity([&](Engine::EntityHandle, const Engine::WorldEntity& e) { hay = hay || (e.kind == Engine::EntityKind::Object && e.object.objectId == objeto); });
+        if (hay) continue;
+        ObjectSpawn s;
+        s.objectId = objeto;
+        s.position = s.patrolMin = s.patrolMax = *donde;
+        sessionData()->m_world->createObject(s);
+        sessionData()->m_world->flushPendingChanges();
+    }
     const std::vector<Engine::EntityHandle>& handles = sessionData()->m_battleEnemyHandles;
     for (std::size_t i = 0; i < handles.size() && i < b->enemies().size(); ++i) {
         const auto donde = b->tablero()->dondeEsta(b->enemies()[i].id);

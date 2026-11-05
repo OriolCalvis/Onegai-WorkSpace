@@ -571,10 +571,18 @@ MOTOR_TEST_CASE(el_id_del_personaje_no_se_sale_de_su_carpeta) {
 }
 
 // D0035 — El UUID: formato de la version 4, y no se repite.
-MOTOR_TEST_CASE(un_guardado_antiguo_tiene_siempre_el_mismo_id) {
-    MOTOR_CHECK(idDeGuardadoAntiguo("Ilse", "guerrero") == idDeGuardadoAntiguo("Ilse", "guerrero"));
-    MOTOR_CHECK(idDeGuardadoAntiguo("Ilse", "guerrero") != idDeGuardadoAntiguo("Ilse", "mago"));
-    MOTOR_CHECK(idDeGuardadoAntiguo("../x", "") .find('/') == std::string::npos);
+// D0037 — Una partida de antes del UUID lo estrena al cargarla, y es el mismo la vez siguiente.
+MOTOR_TEST_CASE(una_partida_antigua_estrena_uuid_y_se_queda_con_el) {
+    LimpiaPartidas limpia;
+    SaveSlots s = partidasDelPersonaje(kRaiz, "b", "uuid-a");
+    SaveGameData d = deIlse("Ilse", fecha(1));
+    d.hero.classId = "guerrero";
+    MOTOR_CHECK(d.hero.uuid.empty() && s.save(1, d).isOk());
+    const auto una = s.load(1);
+    MOTOR_CHECK(una.isOk() && una.value().hero.uuid.size() == 36);
+    const auto otra = s.load(1);
+    MOTOR_CHECK(otra.isOk() && otra.value().hero.uuid == una.value().hero.uuid);
+    MOTOR_CHECK(otra.value().savedAt == fecha(1));  // la fecha es la de cuando se jugo, no la de cargarla
 }
 
 MOTOR_TEST_CASE(cada_personaje_estrena_un_uuid_distinto) {

@@ -142,7 +142,8 @@ MOTOR_TEST_CASE(las_fichas_de_boundington_casan_con_sus_aventuras) {
         std::set<std::string> titulos;
         for (const RPG::QuestSection& s : q.sections) {
             MOTOR_CHECK(!s.title.empty());
-            titulos.insert(s.title);
+            MOTOR_CHECK(!s.id.empty());  // D0037: lo que nombran las decisiones
+            titulos.insert(s.id);
             for (const std::string& id : s.objectiveIds) {
                 bool existe = std::any_of(q.objectives.begin(), q.objectives.end(),
                                           [&](const RPG::QuestObjective& o) { return o.id == id; }) ||
@@ -205,7 +206,7 @@ MOTOR_TEST_CASE(una_decision_tomada_sale_con_su_consecuencia) {
     MOTOR_CHECK(luisarda != nullptr);
     MOTOR_CHECK(luisarda->eleccion.find("cenar con Rosita") != std::string::npos);
     MOTOR_CHECK(luisarda->consecuencia.find("Rosita te debe una") != std::string::npos);
-    MOTOR_CHECK(luisarda->apartado == "Encargos de la ciudad");
+    MOTOR_CHECK(luisarda->apartado == "encargos_de_la_ciudad");
     MOTOR_CHECK(luisarda->despues.empty());  // el Dia 2 aun no ha llegado
     // Y el encargo opcional ya se ve, y cumplido.
     MOTOR_CHECK(m->apartados.size() == 4);
@@ -360,6 +361,31 @@ MOTOR_TEST_CASE(el_cuaderno_ensena_la_mision_entera_con_sus_decisiones) {
     MOTOR_CHECK(pg.detalle.insignia == "PENDIENTE" && pg.detalle.lista.empty());
     // Fuera de rango se queda en la ultima.
     MOTOR_CHECK(Pergamino::paginaMisiones(d, 999).foco == static_cast<int>(filas.size()) - 1);
+}
+
+// D0037 — Una decision va con su apartado por el id: se puede cambiar el titulo, y dos iguales no se confunden.
+MOTOR_TEST_CASE(lo_que_decidiste_aqui_va_por_el_id_del_apartado) {
+    Game::DiarioDatos d;
+    Game::DiarioMision m;
+    m.nombre = "Mision";
+    Game::DiarioApartado uno, dos;
+    uno.id = "uno", uno.titulo = "Mismo titulo";
+    dos.id = "dos", dos.titulo = "Mismo titulo";
+    m.apartados = {uno, dos};
+    Game::DiarioDecision dd;
+    dd.titulo = "Cenar con Rosita";
+    dd.apartado = "dos";
+    m.decisiones = {dd};
+    d.misiones = {m};
+    const auto filas = Pergamino::filasDelDiario(d);
+    int conNota = 0, sinNota = 0;
+    for (std::size_t i = 0; i < filas.size(); ++i) {
+        if (filas[i].tipo != Pergamino::FilaDiario::Tipo::Apartado) continue;
+        const Pergamino::PaginaCuaderno pg = Pergamino::paginaMisiones(d, i);
+        if (filas[i].indice == 1) conNota += pg.detalle.nota.find("Cenar con Rosita") != std::string::npos ? 1 : 0;
+        else sinNota += pg.detalle.nota.empty() ? 1 : 0;
+    }
+    MOTOR_CHECK(conNota == 1 && sinNota == 1);
 }
 
 int main() { return motor_test::runAllTests(); }

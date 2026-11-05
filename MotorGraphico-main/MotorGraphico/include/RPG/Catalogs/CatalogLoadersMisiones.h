@@ -38,6 +38,7 @@ inline std::vector<QuestSection> apartados(const JsonValue& v) {
     if (!v.isArray()) return out;
     for (std::size_t i = 0; i < v.size(); ++i) {
         QuestSection a;
+        a.id = v[i]["id"].asString("");  // D0037
         a.title = v[i]["title"].asString("");
         a.summary = v[i]["summary"].asString("");
         a.objectiveIds = copy_json_string_vec(v[i]["objectives"]);

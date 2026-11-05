@@ -254,6 +254,11 @@ Result<SaveGameData> SaveSlots::load(int index) const {
     if (!readSaveGameFile(pathFor(index), &data, &error)) {
         return Result<SaveGameData>::Error(error);
     }
+    // D0037 — Una partida de antes del UUID estrena el suyo y se queda con el: en el fichero, para siempre.
+    if (data.hero.uuid.empty() && !data.hero.empty()) {
+        data.hero.uuid = nuevoUuid();
+        if (!writeSaveGameFile(pathFor(index), data, &error)) return Result<SaveGameData>::Error(error);
+    }
     return Result<SaveGameData>::Ok(std::move(data));
 }
 
@@ -357,10 +362,6 @@ std::string nuevoUuid() {
         uuid[static_cast<std::size_t>(i)] = hex[digito];
     }
     return uuid;
-}
-
-std::string idDeGuardadoAntiguo(const std::string& nombre, const std::string& clase) {
-    return "antiguo-" + carpetaDelPersonaje(nombre) + "-" + carpetaDelPersonaje(clase);
 }
 
 std::string carpetaDelPersonaje(const std::string& id) {

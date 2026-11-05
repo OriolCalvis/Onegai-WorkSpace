@@ -181,7 +181,7 @@ RPG::CharacterSheet* PantallaNuevaPartida::restaurarHeroe(const SaveGameData& da
         return nullptr;
     }
     m_ficha = std::move(ficha.value());
-    m_ficha.id = data.hero.uuid.empty() ? Game::idDeGuardadoAntiguo(data.characterName, data.hero.classId) : data.hero.uuid;  // D0036
+    m_ficha.id = data.hero.uuid.empty() ? Game::nuevoUuid() : data.hero.uuid;  // D0037: SaveSlots::load ya se lo ha dado
     // Su aspecto, con lo que lleva puesto y su brillo.
     if (m_datos.montaje && !data.hero.raza.empty()) {
         const auto& manifiesto = m_datos.montaje->manifiesto();

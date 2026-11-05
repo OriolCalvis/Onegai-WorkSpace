@@ -94,7 +94,7 @@ MOTOR_TEST_CASE(cartel_y_flecha_unicos_sin_contorno_negro) {
         ent.object.objectId = "puerta_banco";
     });
     Lienzo l;
-    pintaCarteles(l, p, e, "");
+    pintaCarteles(l, p, e, std::nullopt);
     int hojas = 0, luz = 0, emblemas = 0;
     for (const auto& t : l.trazos()) {
         if (t.fuente == Fuente::Iconos) {  // el emblema de la ficha («oro»), no el generico «lugar»
@@ -114,6 +114,11 @@ MOTOR_TEST_CASE(cartel_y_flecha_unicos_sin_contorno_negro) {
     MOTOR_CHECK(luz == 7);
     MOTOR_CHECK(emblemas == 1); // el emblema de la ficha (interior_banco: oro)
     Lienzo oculto;
-    pintaCarteles(oculto, p, e, "La Caja Firme");
+    GridCoord puerta{};
+    sesion.world()->eachEntity([&](Engine::EntityHandle, Engine::WorldEntity& ent) { puerta = ent.position(); });
+    pintaCarteles(oculto, p, e, puerta);  // D0037: de la puerta de esa casilla ya habla el aviso
     MOTOR_CHECK(oculto.vacio());
+    Lienzo otra;
+    pintaCarteles(otra, p, e, GridCoord{puerta.x + 20, puerta.y});  // el aviso habla de otra cosa: esta se sigue viendo
+    MOTOR_CHECK(!otra.vacio());
 }

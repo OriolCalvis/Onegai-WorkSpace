@@ -73,6 +73,7 @@ struct QuestSection {
     std::string title;
     std::string summary;  // una linea opcional bajo el titulo
     std::vector<std::string> objectiveIds;
+    std::string id;  // D0037: lo que nombran las decisiones; el titulo se puede cambiar
 };
 
 // AV14-22 — Cuando se cumple algo de la ficha: TODAS las flags de `flags`
@@ -106,7 +107,7 @@ struct QuestChoice {
 struct QuestDecision {
     std::string id;
     std::string title;
-    std::string section;  // titulo del apartado al que pertenece (opcional)
+    std::string section;  // id del apartado al que pertenece (opcional; D0037)
     std::vector<QuestChoice> choices;
 };
 

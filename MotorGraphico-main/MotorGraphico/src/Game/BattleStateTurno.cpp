@@ -93,9 +93,21 @@ void BattleState::resuelveAliadoSolo(std::size_t aliado) {
     checkOutcome();
 }
 
+// D0037 — Quien entra a mitad del combate (invocado o refuerzo) pisa el tablero: la casilla libre mas cerca del heroe.
+void BattleState::colocaLosNuevos() {
+    if (!m_campo.tablero || m_allies.empty()) return;
+    const auto heroe = m_campo.tablero->dondeEsta(m_allies.front().id);
+    if (!heroe) return;
+    for (const BattleParticipant& p : m_allies) {
+        if (p.combatant == nullptr || !p.combatant->isAlive() || m_campo.tablero->dondeEsta(p.id)) continue;
+        if (const auto libre = m_campo.tablero->libreMasCercana(*heroe)) m_campo.tablero->pon(p.id, *libre);
+    }
+}
+
 void BattleState::sumaAliado(BattleParticipant aliado) {
     aliado.id = "a" + std::to_string(m_allies.size());  // D0036
     m_allies.push_back(std::move(aliado));
+    colocaLosNuevos();
     if (!m_campo.orden.vacio()) {  // AV13-29: con iniciativa, juega el ultimo de la ronda
         const ICombatant* cuerpo = m_allies.back().combatant;
         m_campo.orden.anade(Game::Puesto{false, m_allies.size() - 1, 0, cuerpo ? cuerpo->initiative_bonus() : 0});

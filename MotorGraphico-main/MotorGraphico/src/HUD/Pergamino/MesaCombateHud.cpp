@@ -374,15 +374,19 @@ void pintaTurnoRival(const Ctx& k, const DatosCombate& d) {
     const Rect r{std::round(640.0f - w * 0.5f), 520.0f, w, h};
     k.l.materialConSombra(hoja(static_cast<int>(r.w), static_cast<int>(r.h), 89, 2, 0, 1), Vector2{r.x, r.y},
                           Color::kSombra);
-    // Su retrato: el enemigo (o el aliado) que se llama como el rotulo.
+    // Su retrato: el del enemigo (o el aliado) al que le toca; sin iniciativa, el primero en pie (D0037).
     Rect uv{};
     if (d.sprites != nullptr) {
-        for (const EnemigoEnMesa& e : d.enemigos)
-            if (uv.w <= 0.0f && e.vivo && b.rival().find(e.nombre) != std::string::npos && !e.objectId.empty())
-                uv = k.r.enemigo(*d.sprites, e.objectId);
-        for (const AliadoEnMesa& a : d.aliados)
-            if (uv.w <= 0.0f && a.vivo && b.rival().find(a.nombre) != std::string::npos && !a.objectId.empty())
-                uv = k.r.enemigo(*d.sprites, a.objectId);
+        const auto i = static_cast<std::size_t>(std::max(0, d.turnoEnemigo));
+        if (d.turnoAliado > 0 && d.turnoEnemigo < 0 && static_cast<std::size_t>(d.turnoAliado) <= d.aliados.size()) {
+            const AliadoEnMesa& a = d.aliados[static_cast<std::size_t>(d.turnoAliado) - 1];
+            if (!a.objectId.empty()) uv = k.r.enemigo(*d.sprites, a.objectId);
+        } else if (d.turnoEnemigo >= 0 && i < d.enemigos.size()) {
+            if (!d.enemigos[i].objectId.empty()) uv = k.r.enemigo(*d.sprites, d.enemigos[i].objectId);
+        } else {
+            for (const EnemigoEnMesa& e : d.enemigos)
+                if (uv.w <= 0.0f && e.vivo && !e.objectId.empty()) uv = k.r.enemigo(*d.sprites, e.objectId);
+        }
     }
     const Rect ret{r.x + 20.0f, r.y + 14.0f, 84.0f, 84.0f};
     k.l.color(Rect{ret.x - 3.0f, ret.y - 3.0f, ret.w + 6.0f, ret.h + 6.0f}, Color::kCarmin);

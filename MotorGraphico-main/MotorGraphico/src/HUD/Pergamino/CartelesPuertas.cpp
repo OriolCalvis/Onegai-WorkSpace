@@ -81,7 +81,7 @@ std::vector<MarcaSalida> salidasCercanas(const EstadoJuego& e) {
     return fuera;
 }
 
-void pintaCarteles(Lienzo& l, const Pincel& p, const EstadoJuego& e, const std::string& salvo) {
+void pintaCarteles(Lienzo& l, const Pincel& p, const EstadoJuego& e, std::optional<GridCoord> salvo) {
     const Engine::World* mundo = e.sesion != nullptr ? e.sesion->world() : nullptr;
     if (mundo == nullptr || e.mapa == nullptr) return;
     const Game::Lugares& lugares = Game::Lugares::delJuego();
@@ -89,15 +89,18 @@ void pintaCarteles(Lienzo& l, const Pincel& p, const EstadoJuego& e, const std::
     const float th = static_cast<float>(e.mapa->getTileHeight() > 0 ? e.mapa->getTileHeight() : 32);
     const GridCoord yo = e.sesion->playerPosition();
     constexpr int kCerca = 8;
+    const Engine::WorldEntity* avisada = salvo ? mundo->get(mundo->findObjectAt(salvo->x, salvo->y)) : nullptr;
     for (const auto* puerta : puertasAgrupadas(*mundo)) {
       const auto pinta = [&] {
         const auto& ent = *puerta;
         const GridCoord c = ent.position();
         if (std::max(std::abs(c.x - yo.x), std::abs(c.y - yo.y)) > kCerca) return;
+        // D0037: de esa puerta (o de su tramo, que va al mismo sitio y esta al lado) ya habla el aviso.
+        if (avisada != nullptr && avisada->object.targetLevel == ent.object.targetLevel && std::max(std::abs(c.x - salvo->x), std::abs(c.y - salvo->y)) <= 3) return;
         if (Game::Lugares::esSalida(ent.object.objectId)) {
             // AV16-06: la salida lleva su rotulo «Hacia …» con el nombre de lo que hay fuera.
             const std::string nombre = lugares.nombreDeDestino(ent.object.targetLevel);
-            if (nombre.empty() || nombre == salvo) return;
+            if (nombre.empty()) return;
             const std::string texto = "Hacia " + nombre;
             const Vector2 celda = IsoMath::gridToScreen(c, tw, th);
             const float x = (celda.x + tw * 0.5f - e.camaraX) * e.zoom + static_cast<float>(e.anchoVista) * 0.5f;
@@ -110,7 +113,7 @@ void pintaCarteles(Lienzo& l, const Pincel& p, const EstadoJuego& e, const std::
             return;
         }
         const Game::Lugar* lugar = lugares.de(ent.object.targetLevel);
-        if (lugar == nullptr || lugar->nombre == salvo) return;
+        if (lugar == nullptr) return;
         // Los pies de la puerta, a pantalla (como el aviso de interaccion), y el cartel encima.
         const Vector2 celda = IsoMath::gridToScreen(c, tw, th);
         const float x = (celda.x + tw * 0.5f - e.camaraX) * e.zoom + static_cast<float>(e.anchoVista) * 0.5f;

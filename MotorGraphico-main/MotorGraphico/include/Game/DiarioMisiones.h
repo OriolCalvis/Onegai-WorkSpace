@@ -44,6 +44,7 @@ struct DiarioApartado {
     std::vector<std::size_t> objetivos;
     int hechos = 0;  // obligatorios cumplidos
     int total = 0;   // obligatorios
+    std::string id;  // D0037: lo que nombran las decisiones
     bool completo() const { return total > 0 && hechos == total; }
 };
 

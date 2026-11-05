@@ -3,15 +3,14 @@
 // de AV13-08) y desde dónde sale. «A todos los enemigos» deja de ser magia: es un área, y pilla a
 // todos los que estén dentro, aliados incluidos.
 //
-// Las cartas aún no dicen su forma (se rellenará aguas arriba, AV13-09); hasta entonces se deduce:
-//   - una zona (ZONE_RADIUS) es un círculo de radio 1 en la casilla del objetivo, o el radio que diga
-//     su texto («radio de 8 pies»: 5 pies por casilla);
+// D0037 — La forma es un dato, no el texto de la carta: por defecto,
+//   - una zona (ZONE_RADIUS) es un círculo de radio 1 en la casilla del objetivo;
 //   - «todos los enemigos» (ALL_ENEMIES), un círculo de radio 2;
-//   - si el texto dice «línea» o «cono», esa forma, desde quien la lanza hacia el objetivo;
-//   - «a tu alrededor»: centrada en quien la lanza.
+// y assets/rules/areas_de_cartas.json dice las que son línea, cono, otro radio o centradas en quien la lanza.
 // GL-free; areaDe y casillasDelArea viven en AlcanceCartas.cpp.
 
 #include <functional>
+#include <string>
 #include <optional>
 #include <vector>
 
@@ -21,6 +20,12 @@
 namespace RPG { struct SkillDefinition; }
 
 namespace Game {
+
+struct EntradaAreaDeCarta {  // una fila de areas_de_cartas.json
+    std::string forma = "circulo";
+    int radio = 0;  // 0: el de siempre
+    bool enTi = false;
+};
 
 struct AreaDeCarta {
     PlantillaArea plantilla;

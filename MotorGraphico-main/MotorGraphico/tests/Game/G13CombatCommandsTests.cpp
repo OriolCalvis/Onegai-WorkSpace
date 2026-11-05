@@ -125,6 +125,20 @@ MOTOR_TEST_CASE(av13_el_rival_lejos_se_acerca_y_no_pega_hasta_llegar) {
 }
 
 // D0036 — Dos con el mismo nombre son dos: cada uno en su casilla, y si cae uno el otro sigue en el tablero.
+// D0037 — Quien llega a mitad del combate pisa el tablero: se le puede alcanzar y puede andar.
+MOTOR_TEST_CASE(quien_llega_a_mitad_del_combate_tiene_su_casilla) {
+    TestCombatant heroe(40, 40, RPG::Stat::DES, 0, 1, "h");
+    TestCombatant refuerzo(40, 40, RPG::Stat::DES, 0, 1, "r");
+    TestCombatant lobo(40, 40, RPG::Stat::DES, 3, 1, "l");
+    BattleState b({BattleParticipant{"Heroe", &heroe, nullptr}}, {BattleParticipant{"Lobo", &lobo, nullptr}}, nullptr);
+    conMesa(b, heroe);
+    b.ponTablero(pasillo({{"a0", GridCoord{0, 1}}, {"e0", GridCoord{9, 1}}}));
+    b.sumaAliado(BattleParticipant{"Refuerzo", &refuerzo, nullptr});
+    const auto donde = b.tablero()->dondeEsta("a1");
+    MOTOR_CHECK(donde.has_value());
+    MOTOR_CHECK(donde && Game::TableroCombate::distancia(*donde, GridCoord{0, 1}) == 1);
+}
+
 MOTOR_TEST_CASE(dos_con_el_mismo_nombre_tienen_cada_uno_su_casilla) {
     TestCombatant heroe(40, 40, RPG::Stat::DES, 0, 1, "h");
     TestCombatant uno(40, 40, RPG::Stat::DES, 0, 1, "m");
@@ -268,12 +282,13 @@ MOTOR_TEST_CASE(av14_los_golpes_de_la_batalla_suman_lo_perdido) {
     MOTOR_CHECK(std::string(Game::nombreDe(Game::GolpeCombate::Grado::Critico)) == "Crítico");
 }
 
-// AV13-14 — La forma del area sale de la carta: una zona es un circulo en el objetivo (su radio, del
-// texto: 5 pies por casilla); «todos los enemigos», radio 2; «linea», desde quien la lanza.
+// AV13-14, D0037 — La forma del area es un dato (areas_de_cartas.json), no el texto: por defecto una zona es un
+// circulo de radio 1 en el objetivo y «todos los enemigos», de radio 2.
 MOTOR_TEST_CASE(av13_el_area_de_una_carta) {
     RPG::SkillDefinition zona;
+    zona.id = "corte_real";
     zona.target = RPG::SkillTarget::ZONE_RADIUS;
-    zona.description = "Lanzas una bola de fuego en un radio de 8 pies.";
+    zona.description = "Un texto cualquiera, en una linea, en cono, a tu alrededor y en un radio de 40 pies.";
     const auto a = Game::areaDe(zona);
     MOTOR_CHECK(a && a->plantilla.forma == Game::PlantillaArea::Forma::Circulo && a->plantilla.tamano == 2 && !a->enTi);
     RPG::SkillDefinition todos;
@@ -281,10 +296,21 @@ MOTOR_TEST_CASE(av13_el_area_de_una_carta) {
     const auto b = Game::areaDe(todos);
     MOTOR_CHECK(b && b->plantilla.tamano == 2);
     RPG::SkillDefinition linea;
+    linea.id = "puno_hidraulico_golpe_de_dragon";
     linea.target = RPG::SkillTarget::ZONE_RADIUS;
-    linea.description = "Disparas en línea recta a los enemigos en fila.";
     const auto l = Game::areaDe(linea);
     MOTOR_CHECK(l && l->plantilla.forma == Game::PlantillaArea::Forma::Linea && l->enTi);
+    RPG::SkillDefinition sinFila;
+    sinFila.id = "no_esta_en_la_tabla";
+    sinFila.target = RPG::SkillTarget::ZONE_RADIUS;
+    sinFila.description = "Disparas en linea recta, en un radio de 40 pies.";
+    const auto s = Game::areaDe(sinFila);
+    MOTOR_CHECK(s && s->plantilla.forma == Game::PlantillaArea::Forma::Circulo && s->plantilla.tamano == 1);
+    RPG::SkillDefinition enTi;
+    enTi.id = "ninja_tormenta_de_espadas";
+    enTi.target = RPG::SkillTarget::ALL_ENEMIES;
+    const auto ti = Game::areaDe(enTi);
+    MOTOR_CHECK(ti && ti->enTi && ti->plantilla.tamano == 2);
     RPG::SkillDefinition uno;
     uno.target = RPG::SkillTarget::SINGLE_ENEMY;
     MOTOR_CHECK(!Game::areaDe(uno));

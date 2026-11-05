@@ -139,6 +139,7 @@ Result<AdventureScript> AdventureScript::loadFromString(const std::string& jsonT
         beat.requirements = std::move(condicion.value());
 
         beat.speaker = entry["speaker"].asString();
+        beat.speakerId = entry["speakerId"].asString("");  // D0037
         beat.lines = beats::cadenas(entry["lines"]);
         beat.once = entry["once"].asBool(false);
         beat.pagina = entry["pagina"].asBool(false);  // DIALOGOS-01

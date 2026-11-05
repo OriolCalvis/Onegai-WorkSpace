@@ -51,6 +51,7 @@ std::vector<AliadoEnMesa> aliadosEnMesa(const BattleState& batalla) {
     for (std::size_t i = 1; i < batalla.allies().size(); ++i) {
         const BattleParticipant& b = batalla.allies()[i];
         AliadoEnMesa a;
+        a.id = b.id;
         a.nombre = b.name;
         if (b.combatant != nullptr) {
             a.objectId = b.combatant->combatant_id();
@@ -149,9 +150,9 @@ void pintaOrden(const Ctx& k, const DatosCombate& d) {
     const auto afectados = d.barra->afectados(*d.vista);
     // ACOMPANANTES-01: mientras se ve la tirada de un acompanante, el marco es suyo.
     const RPG::TiradaVisible& enPantalla = d.barra->tiradaEnPantalla();
-    const std::string tira = enPantalla.numero > 0 && enPantalla.delJugador && !d.barra->tiradasVistas() ? enPantalla.quien : "";
+    const std::string tira = enPantalla.numero > 0 && enPantalla.delJugador && !d.barra->tiradasVistas() ? enPantalla.quienId : "";
     const bool tiraAliado = std::any_of(d.aliados.begin(), d.aliados.end(),
-                                        [&](const AliadoEnMesa& a) { return a.vivo && a.nombre == tira; });
+                                        [&](const AliadoEnMesa& a) { return a.vivo && a.id == tira; });
     // El heroe, con sus estados debajo.
     auto heroe = [&](bool activo, const Game::Puesto* p) {
         const Rect cajaHeroe = caja(activo, true);
@@ -170,7 +171,7 @@ void pintaOrden(const Ctx& k, const DatosCombate& d) {
     auto aliado = [&](std::size_t i, bool activo, const Game::Puesto* p) {
         if (i >= d.aliados.size()) return;
         const AliadoEnMesa& a = d.aliados[i];
-        const Rect c = caja(a.vivo && (activo || a.nombre == tira), a.vivo);
+        const Rect c = caja(a.vivo && (activo || a.id == tira), a.vivo);
         if (a.vivo) k.l.zona(c, static_cast<int>(Z::Objetivo), static_cast<int>(i) + 1);
         if (a.vivo && alcanzado(afectados, true, i + 1)) reticula(k, c);
         Rect uvA{};
