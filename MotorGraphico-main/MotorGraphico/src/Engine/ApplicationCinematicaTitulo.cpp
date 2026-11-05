@@ -73,68 +73,132 @@ std::function<Result<bool>()> ApplicationCinematica::alSalirDelTitulo(Applicatio
     return [a] { return a->partidaDeCero(); };
 }
 
-// D0034 — La lista de partidas del papiro de la pausa: elegir donde guardar y que cargar.
+// D0034, D0035 — La lista de partidas del papiro de la pausa: elegir donde guardar, que cargar y que borrar,
+// y las de otros personajes.
 namespace {
 
-std::string nombreDelHeroe(GameSession& sesion, const std::string& nivel) { return sesion.captureSaveGame(nivel).characterName; }
+std::string idDelHeroe(GameSession& sesion, const std::string& nivel) { return sesion.captureSaveGame(nivel).hero.uuid; }
 
 }  // namespace
 
 void ApplicationCinematica::abrePartidas(Application& app, Game::PauseAction accion, int pagina) {
     if (!app.m_saveSlots || !app.m_session || !app.m_pauseMenu) return;
+    Game::PauseMenu& menu = *app.m_pauseMenu;
+    if (app.m_pergamino) app.m_pergamino->interfaz().avisaPausa(true, "", "");  // el aviso de antes ya se ha leido
     app.m_saveSlots->refresh();
-    const Game::SaveSlots partidas = Game::partidasDelPersonaje("saves", app.m_saveSlots->projectId(), nombreDelHeroe(*app.m_session, app.m_currentLevelPath));
+    const std::string& proyecto = app.m_saveSlots->projectId();
+    const std::string actual = Game::carpetaDelPersonaje(idDelHeroe(*app.m_session, app.m_currentLevelPath));
+    const std::string quien = menu.personaje();
+    const bool propio = quien.empty() || quien == actual;
+    const Game::SaveSlots partidas = Game::partidasDelPersonaje("saves", proyecto, propio ? actual : quien);
     const bool guardar = accion == Game::PauseAction::Save;
-    const std::string detalle = app.m_session->battle() != nullptr && guardar ? "Se guarda el inicio de este combate." : "Hasta " + std::to_string(Game::SaveSlots::kSlotCount) + " partidas por personaje.";
-    app.m_pauseMenu->eligePartida(accion, guardar ? "GUARDAR PARTIDA" : "CARGAR PARTIDA", detalle,
-                                  Game::filasDePartidas(accion, partidas, app.m_saveSlots->quick(), pagina), pagina);
+    std::vector<Game::FilaPartida> filas = Game::filasDePartidas(accion, partidas, app.m_saveSlots->quick(), pagina, propio);
+    bool hayOtros = false;
+    for (const Game::PersonajeGuardado& p : Game::personajesGuardados("saves", proyecto)) hayOtros = hayOtros || p.id != actual;
+    if (!guardar && hayOtros) filas.insert(filas.end() - 1, {"Otros personajes", Game::FilaPartida::kOtros});
+    const std::string detalle = guardar && app.m_session->battle() != nullptr ? "Se guarda el inicio de este combate."
+                                : propio ? "Hasta " + std::to_string(Game::SaveSlots::kSlotCount) + " partidas por personaje." : "Otro personaje: al cargar, juegas con él.";
+    const std::string quienSigue = quien;
+    menu.eligePartida(accion, guardar ? "GUARDAR PARTIDA" : "CARGAR PARTIDA", detalle, filas, pagina);
+    menu.ponPersonaje(quienSigue);
 }
 
 bool ApplicationCinematica::confirmaPartidas(Application& app) {
     Game::PauseMenu& menu = *app.m_pauseMenu;
-    const Game::PauseAction accion = menu.pendiente();
-    const bool guardar = accion == Game::PauseAction::Save;
-    int ranura = Game::FilaPartida::kNinguna;
+    if (!app.m_saveSlots || !app.m_session) return false;
+    if (app.m_pergamino && (menu.eligiendoPartida() || menu.partidaPendiente() != Game::FilaPartida::kNinguna)) app.m_pergamino->interfaz().avisaPausa(true, "", "");
+    const std::string& proyecto = app.m_saveSlots->projectId();
+    const std::string actual = Game::carpetaDelPersonaje(idDelHeroe(*app.m_session, app.m_currentLevelPath));
+    const std::string quien = menu.personaje();
+    const bool propio = quien.empty() || quien == actual;
+    const std::string carpeta = propio ? actual : quien;
+    Game::SaveSlots partidas = Game::partidasDelPersonaje("saves", proyecto, carpeta);
+    const Game::PauseAction base = menu.pendiente();
+    const auto slot = [&](int ranura) -> const Game::SaveSlot* { return ranura == Game::SaveSlots::kQuickSlot ? &app.m_saveSlots->quick() : partidas.find(ranura); };
+    const auto personajes = [&] {
+        std::vector<Game::FilaPartida> filas;
+        const auto todos = Game::personajesGuardados("saves", proyecto);
+        for (std::size_t i = 0; i < todos.size(); ++i)
+            if (todos[i].id != actual && static_cast<int>(filas.size()) < 7)
+                filas.push_back({todos[i].nombre + " - " + std::to_string(todos[i].partidas) + (todos[i].partidas == 1 ? " partida - " : " partidas - ") + todos[i].ultima, Game::FilaPartida::kPrimerPersonaje + static_cast<int>(i)});
+        filas.push_back({"Volver", Game::FilaPartida::kVolver});
+        menu.eligePartida(Game::PauseAction::Load, "OTROS PERSONAJES", "Elige con quién seguir.", filas, 0, Game::VistaPartidas::Personajes);
+    };
     if (menu.eligiendoPartida()) {
         const int fila = menu.filaElegida();
         if (fila == Game::FilaPartida::kNada) return true;
+        switch (menu.vistaPartidas()) {
+            case Game::VistaPartidas::Personajes:
+                if (fila == Game::FilaPartida::kVolver) {
+                    menu.ponPersonaje("");
+                    abrePartidas(app, Game::PauseAction::Load, 0);
+                } else {
+                    const auto todos = Game::personajesGuardados("saves", proyecto);
+                    const auto i = static_cast<std::size_t>(fila - Game::FilaPartida::kPrimerPersonaje);
+                    if (i < todos.size()) menu.ponPersonaje(todos[i].id);
+                    abrePartidas(app, Game::PauseAction::Load, 0);
+                }
+                return true;
+            case Game::VistaPartidas::Acciones: {
+                const int ranura = menu.partidaPendiente();
+                if (fila == Game::FilaPartida::kVolver) abrePartidas(app, base, 0);
+                else if (fila == Game::FilaPartida::kCargar) menu.preguntaPorPartida(Game::PauseAction::Load, ranura, "¿CARGAR?", "Se perderá lo jugado desde el último guardado.", "No, seguir jugando", "Sí, cargar");
+                else if (fila == Game::FilaPartida::kSobrescribir) menu.preguntaPorPartida(Game::PauseAction::Save, ranura, "¿SOBRESCRIBIR?", "Se perderá lo que había en esa partida.", "No, volver", "Sí, sobrescribir");
+                else if (fila == Game::FilaPartida::kBorrar) menu.preguntaPorPartida(Game::PauseAction::Delete, ranura, "¿BORRAR?", "No se puede deshacer.", "No, volver", "Sí, borrar");
+                menu.ponPersonaje(quien);
+                return true;
+            }
+            case Game::VistaPartidas::Lista:
+                break;
+        }
         if (fila == Game::FilaPartida::kVolver) {
-            menu.olvidaPregunta();
+            if (propio) menu.olvidaPregunta();
+            else personajes();
+            return true;
+        }
+        if (fila == Game::FilaPartida::kOtros) {
+            personajes();
             return true;
         }
         if (fila == Game::FilaPartida::kMas) {
-            abrePartidas(app, accion, menu.pagina() + 1);
+            abrePartidas(app, base, menu.pagina() + 1);
             return true;
         }
-        const Game::SaveSlots partidas = Game::partidasDelPersonaje("saves", app.m_saveSlots->projectId(), nombreDelHeroe(*app.m_session, app.m_currentLevelPath));
-        const Game::SaveSlot* s = partidas.find(fila);
-        if (!guardar || (s != nullptr && s->occupied())) {
-            menu.preguntaPorPartida(fila, guardar ? "\u00bfSOBRESCRIBIR?" : "\u00bfCARGAR?", guardar ? "Se perderá lo que había en esa partida." : "Se perderá lo jugado desde el último guardado.",
-                                    guardar ? "No, volver" : "No, seguir jugando", guardar ? "Sí, sobrescribir" : "Sí, cargar");
+        const Game::SaveSlot* s = slot(fila);
+        if (s == nullptr) return true;
+        if (s->occupied()) {
+            menu.eligePartida(base, "PARTIDA", s->savedAt.empty() ? s->reason : s->savedAt, Game::filasDeAcciones(*s, propio), 0, Game::VistaPartidas::Acciones);
+            menu.ponPartida(fila);
+            menu.ponPersonaje(quien);
             return true;
         }
-        ranura = fila;
-    } else if (menu.partidaPendiente() != Game::FilaPartida::kNinguna) {
-        const bool si = menu.siElegido();
-        ranura = menu.partidaPendiente();
-        if (!si) {
-            menu.olvidaPregunta();
-            return true;
-        }
-    } else {
+    } else if (menu.partidaPendiente() == Game::FilaPartida::kNinguna) {
         return false;
+    } else if (!menu.siElegido()) {
+        menu.olvidaPregunta();
+        return true;
     }
-    menu.olvidaPregunta();
 
+    // Hacer lo elegido: guardar en una libre, o lo que se ha confirmado.
+    const bool libre = menu.eligiendoPartida();
+    const int ranura = libre ? menu.filaElegida() : menu.partidaPendiente();
+    const Game::PauseAction accion = libre ? Game::PauseAction::Save : base;
+    menu.olvidaPregunta();
     GameSession& sesion = *app.m_session;
-    Game::SaveSlots partidas = Game::partidasDelPersonaje("saves", app.m_saveSlots->projectId(), nombreDelHeroe(sesion, app.m_currentLevelPath));
-    auto aviso = [&app](bool ok, const std::string& texto, const std::string& detalle) {
+    const auto aviso = [&app](bool ok, const std::string& texto, const std::string& detalle) {
         if (app.m_pergamino) app.m_pergamino->interfaz().avisaPausa(ok, texto, detalle);
     };
-    if (!guardar) {
+    if (accion == Game::PauseAction::Load) {
         auto leida = ranura == Game::SaveSlots::kQuickSlot ? app.m_saveSlots->load(ranura) : partidas.load(ranura);
         if (!leida.isOk()) aviso(false, "No se ha podido cargar", leida.errorMessage());
-        else ApplicationCinematica::cargaPartida(app, leida.value());
+        else cargaPartida(app, leida.value());
+        return true;
+    }
+    if (accion == Game::PauseAction::Delete) {
+        const auto borrada = ranura == Game::SaveSlots::kQuickSlot ? app.m_saveSlots->remove(ranura) : partidas.remove(ranura);
+        menu.ponPersonaje(quien);
+        abrePartidas(app, Game::PauseAction::Load, 0);
+        aviso(borrada.isOk(), borrada.isOk() ? "Partida borrada" : "No se ha podido borrar", borrada.isOk() ? "" : borrada.errorMessage());
         return true;
     }
     const std::optional<SaveGameData> delCombate = sesion.guardadoDelCombate(app.m_currentLevelPath);

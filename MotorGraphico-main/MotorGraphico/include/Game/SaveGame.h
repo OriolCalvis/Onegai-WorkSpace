@@ -84,6 +84,7 @@ struct SavedEnemy {
 // Clave aditiva, sin subir kSchemaVersion (como characterName): un guardado
 // sin ella carga como antes, sin ficha, y solo se escribe con clase.
 struct SavedHero {
+    std::string uuid;  // D0035: quien es, para siempre; el nombre se repite y puede cambiar
     std::string raceId, classId, backgroundId, deityId;
     std::string bondId, fearId, flawId, goalId, idealId, personalityId, virtueId;
     std::vector<std::string> equipped;  // una por ranura (RPG::EquipSlot); "" = nada

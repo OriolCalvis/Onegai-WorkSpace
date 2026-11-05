@@ -14,6 +14,8 @@
 #include "Core/Json/JsonValue.h"
 #include "Game/SaveGameValidation.h"
 
+#include <random>
+#include <cstdint>
 #include <cctype>
 #include <algorithm>
 #include <ctime>
@@ -342,14 +344,29 @@ std::string textoDe(const std::string& nombre, const SaveSlot& s) {
 
 }  // namespace
 
-std::string carpetaDelPersonaje(const std::string& nombre) {
-    std::string carpeta;
-    for (const char c : nombre) carpeta += std::isalnum(static_cast<unsigned char>(c)) != 0 ? c : '_';
-    return carpeta.empty() ? "sin_nombre" : carpeta;
+std::string nuevoUuid() {
+    std::random_device azar;
+    std::mt19937_64 dado((static_cast<std::uint64_t>(azar()) << 32) ^ azar());
+    const char* hex = "0123456789abcdef";
+    std::string uuid(36, '-');
+    for (int i = 0; i < 36; ++i) {
+        if (i == 8 || i == 13 || i == 18 || i == 23) continue;
+        int digito = static_cast<int>(dado() & 15U);
+        if (i == 14) digito = 4;
+        if (i == 19) digito = 8 + (digito & 3);
+        uuid[static_cast<std::size_t>(i)] = hex[digito];
+    }
+    return uuid;
 }
 
-SaveSlots partidasDelPersonaje(const std::string& raiz, const std::string& proyecto, const std::string& nombre) {
-    SaveSlots partidas(raiz + "/" + proyecto + "/personajes", carpetaDelPersonaje(nombre));
+std::string carpetaDelPersonaje(const std::string& id) {
+    std::string carpeta;
+    for (const char c : id) carpeta += std::isalnum(static_cast<unsigned char>(c)) != 0 || c == '-' ? c : '_';
+    return carpeta.empty() ? "sin_id" : carpeta;
+}
+
+SaveSlots partidasDelPersonaje(const std::string& raiz, const std::string& proyecto, const std::string& id) {
+    SaveSlots partidas(raiz + "/" + proyecto + "/personajes", carpetaDelPersonaje(id));
     partidas.refresh();
     return partidas;
 }
@@ -360,20 +377,42 @@ int ranuraLibre(const SaveSlots& partidas) {
     return -1;
 }
 
-std::vector<FilaPartida> filasDePartidas(PauseAction accion, const SaveSlots& partidas, const SaveSlot& rapido, int pagina) {
+std::vector<PersonajeGuardado> personajesGuardados(const std::string& raiz, const std::string& proyecto) {
+    std::vector<PersonajeGuardado> todos;
+    std::error_code ec;
+    for (const auto& carpeta : fs::directory_iterator(fs::u8path(raiz + "/" + proyecto + "/personajes"), ec)) {
+        const SaveSlots partidas = partidasDelPersonaje(raiz, proyecto, carpeta.path().filename().u8string());
+        PersonajeGuardado p;
+        p.id = carpeta.path().filename().u8string();
+        for (const SaveSlot& s : partidas.slots()) {
+            if (!s.occupied()) continue;
+            ++p.partidas;
+            if (s.savedAt >= p.ultima) {
+                p.ultima = s.savedAt;
+                p.nombre = s.characterName;
+            }
+        }
+        if (p.partidas > 0) todos.push_back(p);
+    }
+    std::sort(todos.begin(), todos.end(), [](const PersonajeGuardado& a, const PersonajeGuardado& b) {
+        return a.ultima != b.ultima ? a.ultima > b.ultima : a.id < b.id;
+    });
+    return todos;
+}
+
+std::vector<FilaPartida> filasDePartidas(PauseAction accion, const SaveSlots& partidas, const SaveSlot& rapido, int pagina, bool propio) {
     std::vector<FilaPartida> todas;
     const bool guardar = accion == PauseAction::Save;
     const int libre = ranuraLibre(partidas);
     if (guardar && libre >= 0) todas.push_back({"Partida nueva", libre});
-    if (!guardar && rapido.loadable()) todas.push_back({textoDe("Último guardado", rapido), SaveSlots::kQuickSlot});
+    if (!guardar && propio && rapido.occupied()) todas.push_back({textoDe("Último guardado", rapido), SaveSlots::kQuickSlot});
     std::vector<const SaveSlot*> ocupadas;
     for (const SaveSlot& s : partidas.slots())
         if (s.occupied()) ocupadas.push_back(&s);
     std::stable_sort(ocupadas.begin(), ocupadas.end(), [](const SaveSlot* a, const SaveSlot* b) { return a->savedAt > b->savedAt; });
     for (const SaveSlot* s : ocupadas) {
         const std::string nombre = "Partida " + std::to_string(s->index);
-        if (!s->loadable()) todas.push_back({nombre + " - no se puede leer", guardar ? s->index : FilaPartida::kNada});
-        else todas.push_back({textoDe(nombre, *s), s->index});
+        todas.push_back({s->loadable() ? textoDe(nombre, *s) : nombre + " - no se puede leer", s->index});
     }
     std::vector<FilaPartida> filas;
     const int total = static_cast<int>(todas.size());
@@ -381,6 +420,15 @@ std::vector<FilaPartida> filasDePartidas(PauseAction accion, const SaveSlots& pa
     const int inicio = (pagina % paginas) * kFilasPorPagina;
     for (int i = inicio; i < total && i < inicio + kFilasPorPagina; ++i) filas.push_back(todas[static_cast<std::size_t>(i)]);
     if (paginas > 1) filas.push_back({"Más partidas", FilaPartida::kMas});
+    filas.push_back({"Volver", FilaPartida::kVolver});
+    return filas;
+}
+
+std::vector<FilaPartida> filasDeAcciones(const SaveSlot& partida, bool propio) {
+    std::vector<FilaPartida> filas;
+    if (partida.loadable()) filas.push_back({"Cargar", FilaPartida::kCargar});
+    if (propio && partida.index != SaveSlots::kQuickSlot) filas.push_back({"Sobrescribir", FilaPartida::kSobrescribir});
+    filas.push_back({"Borrar", FilaPartida::kBorrar});
     filas.push_back({"Volver", FilaPartida::kVolver});
     return filas;
 }

@@ -13,6 +13,7 @@
 
 #include "TestHarness.h"
 
+#include <set>
 #include <chrono>
 #include <filesystem>
 #include <fstream>
@@ -563,10 +564,61 @@ MOTOR_TEST_CASE(hay_quince_partidas_y_cada_personaje_tiene_las_suyas) {
     MOTOR_CHECK(ranuraLibre(ilse) == -1);
 }
 
-MOTOR_TEST_CASE(el_nombre_del_personaje_no_se_sale_de_su_carpeta) {
-    MOTOR_CHECK(carpetaDelPersonaje("Ilse") == "Ilse");
+MOTOR_TEST_CASE(el_id_del_personaje_no_se_sale_de_su_carpeta) {
+    MOTOR_CHECK(carpetaDelPersonaje("1b4e28ba-2fa1-41d2-883f-0016d3cca427") == "1b4e28ba-2fa1-41d2-883f-0016d3cca427");
     MOTOR_CHECK(carpetaDelPersonaje("../otra cosa") == "___otra_cosa");
-    MOTOR_CHECK(carpetaDelPersonaje("") == "sin_nombre");
+    MOTOR_CHECK(carpetaDelPersonaje("") == "sin_id");
+}
+
+// D0035 — El UUID: formato de la version 4, y no se repite.
+MOTOR_TEST_CASE(cada_personaje_estrena_un_uuid_distinto) {
+    std::set<std::string> vistos;
+    for (int i = 0; i < 1000; ++i) {
+        const std::string u = nuevoUuid();
+        MOTOR_CHECK(u.size() == 36 && u[8] == '-' && u[13] == '-' && u[14] == '4' && u[18] == '-' && u[23] == '-');
+        MOTOR_CHECK(u[19] == '8' || u[19] == '9' || u[19] == 'a' || u[19] == 'b');
+        vistos.insert(u);
+    }
+    MOTOR_CHECK(vistos.size() == 1000);
+}
+
+// D0035 — Dos personajes con el mismo nombre no comparten partidas; el UUID viaja en el fichero.
+MOTOR_TEST_CASE(dos_personajes_con_el_mismo_nombre_tienen_partidas_distintas) {
+    LimpiaPartidas limpia;
+    SaveSlots a = partidasDelPersonaje(kRaiz, "b", "uuid-a");
+    SaveSlots b = partidasDelPersonaje(kRaiz, "b", "uuid-b");
+    SaveGameData d = deIlse("Ilse", fecha(1));
+    d.hero.classId = "guerrero";
+    d.hero.uuid = "uuid-a";
+    MOTOR_CHECK(a.save(1, d).isOk());
+    MOTOR_CHECK(ranuraLibre(b) == 1);
+    const auto leida = a.load(1);
+    MOTOR_CHECK(leida.isOk() && leida.value().hero.uuid == "uuid-a");
+    d.savedAt = fecha(5);
+    d.hero.uuid = "uuid-b";
+    MOTOR_CHECK(b.save(1, d).isOk());
+    const auto todos = personajesGuardados(kRaiz, "b");
+    MOTOR_CHECK(todos.size() == 2 && todos[0].id == "uuid-b" && todos[1].id == "uuid-a");
+    MOTOR_CHECK(todos[0].nombre == "Ilse" && todos[0].partidas == 1 && todos[0].ultima == fecha(5));
+}
+
+// D0035 — Sobrescribir y borrar, siempre; una rota tambien se puede borrar.
+MOTOR_TEST_CASE(toda_partida_se_puede_borrar_y_las_propias_sobrescribir) {
+    LimpiaPartidas limpia;
+    SaveSlots s = partidasDelPersonaje(kRaiz, "b", "uuid-a");
+    MOTOR_CHECK(s.save(1, deIlse("Ilse", fecha(1))).isOk());
+    MOTOR_CHECK(s.save(2, deIlse("Ilse", fecha(2))).isOk());
+    { std::ofstream rota(s.pathFor(2)); rota << "{ esto no es"; }
+    s.refresh();
+    const auto tiene = [](const std::vector<FilaPartida>& f, int i) { for (const FilaPartida& x : f) if (x.indice == i) return true; return false; };
+    const auto buena = filasDeAcciones(*s.find(1), true);
+    MOTOR_CHECK(tiene(buena, FilaPartida::kCargar) && tiene(buena, FilaPartida::kSobrescribir) && tiene(buena, FilaPartida::kBorrar));
+    const auto rota = filasDeAcciones(*s.find(2), true);
+    MOTOR_CHECK(!tiene(rota, FilaPartida::kCargar) && tiene(rota, FilaPartida::kBorrar));
+    const auto ajena = filasDeAcciones(*s.find(1), false);
+    MOTOR_CHECK(tiene(ajena, FilaPartida::kCargar) && !tiene(ajena, FilaPartida::kSobrescribir) && tiene(ajena, FilaPartida::kBorrar));
+    MOTOR_CHECK(s.remove(2).isOk() && !s.find(2)->occupied());
+    MOTOR_CHECK(s.remove(1).isOk() && personajesGuardados(kRaiz, "b").empty());
 }
 
 MOTOR_TEST_CASE(la_lista_para_guardar_ofrece_una_nueva_y_las_ocupadas_por_fecha) {
@@ -612,7 +664,7 @@ MOTOR_TEST_CASE(el_menu_de_pausa_elige_partida_y_vuelve) {
     m.moveDown();
     MOTOR_CHECK(m.filaElegida() == FilaPartida::kVolver);
     m.moveUp();
-    m.preguntaPorPartida(1, "¿SOBRESCRIBIR?", "", "No", "Si");
+    m.preguntaPorPartida(PauseAction::Save, 1, "¿SOBRESCRIBIR?", "", "No", "Si");
     MOTOR_CHECK(!m.eligiendoPartida() && m.partidaPendiente() == 1 && !m.siElegido());
     m.olvidaPregunta();
     MOTOR_CHECK(!m.preguntando() && m.partidaPendiente() == FilaPartida::kNinguna);

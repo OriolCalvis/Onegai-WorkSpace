@@ -151,16 +151,30 @@ private:
 
 // --- D0034: las partidas de cada personaje, en saves/<proyecto>/personajes/<nombre>/ ---
 
-// El nombre de la carpeta: letras y numeros ASCII; lo demas, «_». Sin nombre, «sin_nombre».
-std::string carpetaDelPersonaje(const std::string& nombre);
-SaveSlots partidasDelPersonaje(const std::string& raiz, const std::string& proyecto, const std::string& nombre);
+// D0035 — El UUID de un personaje nuevo (version 4). Lo identifica aunque se repita o cambie el nombre.
+std::string nuevoUuid();
+
+// La carpeta de un personaje sale de su id: letras, numeros y «-» ASCII; lo demas, «_».
+std::string carpetaDelPersonaje(const std::string& id);
+SaveSlots partidasDelPersonaje(const std::string& raiz, const std::string& proyecto, const std::string& id);
 
 // La primera ranura libre, o -1 si ya estan todas ocupadas.
 int ranuraLibre(const SaveSlots& partidas);
 
-// Las filas de una pagina de la lista. Guardar: partida nueva, si cabe, y las ocupadas (se sobrescriben).
-// Cargar: el guardado rapido y las ocupadas. Las mas recientes primero; las rotas se ven y no se eligen.
-std::vector<FilaPartida> filasDePartidas(PauseAction accion, const SaveSlots& partidas, const SaveSlot& rapido, int pagina);
+// Los personajes con alguna partida, el mas reciente primero (el nombre y la fecha salen de ella).
+struct PersonajeGuardado {
+    std::string id;
+    std::string nombre;
+    std::string ultima;
+    int partidas = 0;
+};
+std::vector<PersonajeGuardado> personajesGuardados(const std::string& raiz, const std::string& proyecto);
+
+// Las filas de una pagina de la lista. Guardar: partida nueva, si cabe, y las ocupadas. Cargar: el ultimo
+// guardado, si `propio`, y las ocupadas. Las mas recientes primero; las rotas tambien se ven: se pueden borrar.
+std::vector<FilaPartida> filasDePartidas(PauseAction accion, const SaveSlots& partidas, const SaveSlot& rapido, int pagina, bool propio = true);
+// Lo que se puede hacer con una partida ya elegida.
+std::vector<FilaPartida> filasDeAcciones(const SaveSlot& partida, bool propio);
 
 // --- DEC-09: puntos seguros -------------------------------------------
 

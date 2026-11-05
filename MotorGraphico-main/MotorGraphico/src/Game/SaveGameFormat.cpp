@@ -86,6 +86,7 @@ const CampoHeroe kAspectoDelHeroe[] = {
 void writeHero(JsonWriter& out, const SavedHero& heroe) {
     out.key("hero");
     out.beginObject();
+    if (!heroe.uuid.empty()) out.member("uuid", heroe.uuid);  // D0035: sin clave en un guardado de antes
     for (const CampoHeroe& c : kIdsDelHeroe) out.member(c.clave, heroe.*c.campo);
     writeStringArray(out, "equipped", heroe.equipped);
     out.key("appearance");
@@ -111,6 +112,7 @@ void writeHero(JsonWriter& out, const SavedHero& heroe) {
 SavedHero readHero(const JsonValue& node) {
     SavedHero heroe;
     if (!node.isObject()) return heroe;
+    heroe.uuid = node["uuid"].asString("");  // D0035
     for (const CampoHeroe& c : kIdsDelHeroe) heroe.*c.campo = node[c.clave].asString("");
     heroe.equipped = readStringArray(node["equipped"]);
     const JsonValue& aspecto = node["appearance"];

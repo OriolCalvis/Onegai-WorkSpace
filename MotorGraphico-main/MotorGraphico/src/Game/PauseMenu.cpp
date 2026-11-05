@@ -90,10 +90,12 @@ void PauseMenu::olvidaPregunta() {
     m_filas.clear();
     m_pagina = 0;
     m_partida = FilaPartida::kNinguna;
+    m_vista = VistaPartidas::Lista;
+    m_personaje.clear();
 }
 
 void PauseMenu::eligePartida(PauseAction accion, const std::string& titulo, const std::string& detalle,
-                             const std::vector<FilaPartida>& filas, int pagina) {
+                             const std::vector<FilaPartida>& filas, int pagina, VistaPartidas vista) {
     if (accion == PauseAction::None || filas.empty()) return;
     if (!preguntando()) m_menu = m_entries;
     m_entries.clear();
@@ -104,10 +106,10 @@ void PauseMenu::eligePartida(PauseAction accion, const std::string& titulo, cons
     m_titulo = titulo;
     m_detalle = detalle;
     m_pagina = pagina;
+    m_vista = vista;
 }
 
-void PauseMenu::preguntaPorPartida(int ranura, const std::string& titulo, const std::string& detalle, const std::string& no, const std::string& si) {
-    const PauseAction accion = m_pendiente;
+void PauseMenu::preguntaPorPartida(PauseAction accion, int ranura, const std::string& titulo, const std::string& detalle, const std::string& no, const std::string& si) {
     m_filas.clear();
     pregunta(accion, titulo, detalle, no, si);
     m_partida = ranura;

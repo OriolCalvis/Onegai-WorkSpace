@@ -1,5 +1,6 @@
 // NUEVA-PARTIDA-01 — ver include/Engine/PantallaNuevaPartida.h.
 #include "Engine/PantallaNuevaPartida.h"
+#include "Game/SaveSlotState.h"
 
 #include <iostream>
 #include <utility>
@@ -180,6 +181,7 @@ RPG::CharacterSheet* PantallaNuevaPartida::restaurarHeroe(const SaveGameData& da
         return nullptr;
     }
     m_ficha = std::move(ficha.value());
+    m_ficha.id = data.hero.uuid.empty() ? Game::nuevoUuid() : data.hero.uuid;  // D0035: un guardado de antes estrena el suyo
     // Su aspecto, con lo que lleva puesto y su brillo.
     if (m_datos.montaje && !data.hero.raza.empty()) {
         const auto& manifiesto = m_datos.montaje->manifiesto();
@@ -250,6 +252,7 @@ void PantallaNuevaPartida::terminar() {
         return;
     }
     m_ficha = std::move(ficha.value());
+    m_ficha.id = Game::nuevoUuid();  // D0035
     m_estado = Estado::Terminada;
     // El aspecto vivo del jugador: lo elegido, sin nada puesto (el kit esta
     // en el cofre de El Vacio).

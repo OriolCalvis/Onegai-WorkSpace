@@ -44,7 +44,7 @@ const char* textoPausa(Game::PauseAction a) {
         case Game::PauseAction::Options: return "Opciones";
         case Game::PauseAction::Title: return "Volver al título";
         case Game::PauseAction::Quit: return "Salir del juego";
-        case Game::PauseAction::None: break;
+        case Game::PauseAction::None: case Game::PauseAction::Delete: break;
     }
     return "";
 }
