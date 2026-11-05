@@ -98,14 +98,6 @@ std::string comoTeVen(int r) {
     return "Eres de los suyos";
 }
 
-std::string tenderoPorNombre(const ReglasFacciones& reglas, const ObjectCatalog* catalogo, const std::string& nombre) {
-    if (catalogo == nullptr || nombre.empty()) return {};
-    for (const Faccion& f : reglas.facciones)
-        for (const std::string& id : f.tiendas)
-            if (const ObjectDefinition* def = catalogo->find(id); def != nullptr && def->name == nombre) return id;
-    return {};
-}
-
 std::string lineaDeLaTienda(const ReglasFacciones& reglas, const RPG::CharacterSheet* ficha,
                             const std::string& idTendero) {
     const Faccion* f = reglas.deTienda(idTendero);

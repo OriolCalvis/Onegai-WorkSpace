@@ -104,6 +104,7 @@ struct ApplicationCinematica {
     // D0034 — La lista de partidas de la pausa. confirmaPartidas atiende el ENTER si el papiro esta en ella.
     static void abrePartidas(Application& app, Game::PauseAction accion, int pagina);
     static bool confirmaPartidas(Application& app);
+    static void abrePersonajes(Application& app, int pagina);  // D0036: tambien desde el titulo
     // En update, después del cambio de nivel pendiente.
     static void actualiza(Application& app, float dt);
     // E-DISPARADORES-1 (D0026; codigo en src/Engine/ApplicationCinematicaDisparador.h) — La que empieza ahora: con el

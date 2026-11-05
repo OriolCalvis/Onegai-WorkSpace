@@ -206,7 +206,7 @@ void ponEstados(VistaBarra& v, const BattleState& batalla) {
     }
     ponAlcances(v, batalla);  // AV13-13: con tablero, a quien llega cada carta
     if (batalla.tablero() != nullptr && !batalla.allies().empty()) {  // AV13-15: lo que te queda por andar
-        const std::string& enTurno = batalla.allies()[static_cast<std::size_t>(std::max(0, batalla.aliadoEnTurno()))].name;
+        const std::string& enTurno = batalla.allies()[static_cast<std::size_t>(std::max(0, batalla.aliadoEnTurno()))].id;
         v.pasos = batalla.tablero()->pasos(enTurno);
         v.pasosMax = batalla.tablero()->pasosMax(enTurno);  // AV16-12: 4 de base, +1 con DES 3+
     }

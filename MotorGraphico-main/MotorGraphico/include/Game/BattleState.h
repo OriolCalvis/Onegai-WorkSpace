@@ -85,6 +85,9 @@ struct BattleParticipant {
     // deben desaparecer del inventario REAL del jugador, no de una
     // copia). nullptr = sin inventario (enemigos, en este MVP).
     std::vector<std::string>* inventory = nullptr;
+    // D0036 — Quien es en este combate («a0», «e3»: bando e indice). El nombre solo se enseña y se repite.
+    // Lo pone la batalla al recibirlo.
+    std::string id;
 };
 
 class BattleState {

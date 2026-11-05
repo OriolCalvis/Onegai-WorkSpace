@@ -342,7 +342,7 @@ void ApplicationCinematica::sueloCombate(Application& app, const Engine::Input::
     const Vector2 ajuste{s.anchoBaldosa * 0.5f, s.altoBaldosa * s.pies - s.altoBaldosa * 0.5f};
     const GridCoord c = IsoMath::screenToGrid(mundo - ajuste, s.anchoBaldosa, s.altoBaldosa);
     const std::size_t activo = static_cast<std::size_t>(std::max(0, b->aliadoEnTurno()));  // AV13-29
-    const std::string& heroe = b->allies()[activo].name;
+    const std::string& heroe = b->allies()[activo].id;
     if (c.x != e.sueloSenalado.x || c.y != e.sueloSenalado.y) {
         e.sueloSenalado = c;
         s.ruta = b->tablero()->rutaHasta(heroe, c);
@@ -401,8 +401,8 @@ void ApplicationCinematica::golpesALaVista(Application& app, const BattleState& 
     EstadoCinematicas& e = *app.m_cine;
     Pergamino::GolpesEnPantalla* golpes = app.m_pergamino ? &app.m_pergamino->golpes() : nullptr;
     const auto quien = [&](bool aliado, std::size_t i) { const auto& l = aliado ? b.allies() : b.enemies(); return i < l.size() ? &l[i] : nullptr; };
-    const auto porNombre = [&](const std::string& n) -> const BattleParticipant* {
-        for (const auto* lado : {&b.allies(), &b.enemies()}) for (const BattleParticipant& p : *lado) if (!n.empty() && p.name == n) return &p;
+    const auto porId = [&](const std::string& n) -> const BattleParticipant* {
+        for (const auto* lado : {&b.allies(), &b.enemies()}) for (const BattleParticipant& p : *lado) if (!n.empty() && p.id == n) return &p;
         return nullptr;
     };
     for (const Game::GolpeCombate& g : b.golpes()) {
@@ -418,7 +418,7 @@ void ApplicationCinematica::golpesALaVista(Application& app, const BattleState& 
                 golpes->lanza(cabeza, Game::nombreDe(g.grado), Tipo::Nada);
         }
         Vector2 direccion{};
-        if (const BattleParticipant* q = porNombre(g.de); q != nullptr && q->combatant != nullptr && cabezaDe(app, q->combatant, suya))
+        if (const BattleParticipant* q = porId(g.deId); q != nullptr && q->combatant != nullptr && cabezaDe(app, q->combatant, suya))
             direccion = cabeza - suya;
         float fuerza = 0.0f;
         if (g.aAliado && g.i == 0 && g.cambio < 0) {

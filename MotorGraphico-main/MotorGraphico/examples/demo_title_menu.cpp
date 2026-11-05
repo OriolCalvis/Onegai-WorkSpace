@@ -51,20 +51,21 @@ void verificarProjecteReal() {
     require(t.title() == "Los Perdidos de Boundington");
     require(t.subtitle() == t.project().description);
 
-    // El menú té 4 entrades: Continue, Nueva partida, Opciones, Salir.
+    // El menú té 5 entrades: Continue, Cargar partida, Nueva partida, Opciones, Salir.
     const auto& items = t.items();
-    require(items.size() == 4);
+    require(items.size() == 5);
     require(items[0].command == TitleCommand::Continue);
-    require(items[1].command == TitleCommand::NewGame);
-    require(items[2].command == TitleCommand::Options);
-    require(items[3].command == TitleCommand::Quit);
+    require(items[1].command == TitleCommand::LoadGame);
+    require(items[2].command == TitleCommand::NewGame);
+    require(items[3].command == TitleCommand::Options);
+    require(items[4].command == TitleCommand::Quit);
     // Sense guardats: Continuar està deshabilitat amb motiu.
     require(!items[0].enabled);
     require(!items[0].reason.empty());
     std::cout << "  Continuar: DISABLE (" << items[0].reason << ")\n";
     // Nueva partida: habilitada perquè l'entrada existeix.
-    require(items[1].enabled);
-    require(items[1].reason.empty());
+    require(items[2].enabled);
+    require(items[2].reason.empty());
     require(!t.entryPath().empty());
     // L'entrada existeix fisicament.
     require(fs::exists(t.entryPath()));
@@ -137,7 +138,8 @@ void verificarNavegacio() {
     require(!t.message().empty());
     std::cout << "  confirm() sobre Continue (disabled): None + \"" << t.message() << "\"\n";
 
-    // moveDown a Nueva partida i confirm: NewGame.
+    // moveDown (passant per Cargar partida, apagada) a Nueva partida i confirm: NewGame.
+    t.moveDown();
     t.moveDown();
     require(t.selectedItem().command == TitleCommand::NewGame);
     cmd = t.confirm();
@@ -145,7 +147,8 @@ void verificarNavegacio() {
     require(t.message().empty());
     std::cout << "  confirm() sobre NewGame (enabled): NewGame\n";
 
-    // moveUp torna enrere.
+    // moveUp torna enrere, passant per Cargar partida.
+    t.moveUp();
     t.moveUp();
     require(t.selectedItem().command == TitleCommand::Continue);
     std::cout << "  moveUp: NewGame -> Continue\n";

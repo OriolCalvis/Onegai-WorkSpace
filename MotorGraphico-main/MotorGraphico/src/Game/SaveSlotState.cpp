@@ -359,6 +359,10 @@ std::string nuevoUuid() {
     return uuid;
 }
 
+std::string idDeGuardadoAntiguo(const std::string& nombre, const std::string& clase) {
+    return "antiguo-" + carpetaDelPersonaje(nombre) + "-" + carpetaDelPersonaje(clase);
+}
+
 std::string carpetaDelPersonaje(const std::string& id) {
     std::string carpeta;
     for (const char c : id) carpeta += std::isalnum(static_cast<unsigned char>(c)) != 0 || c == '-' ? c : '_';

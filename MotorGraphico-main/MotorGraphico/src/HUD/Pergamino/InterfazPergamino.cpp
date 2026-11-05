@@ -187,7 +187,7 @@ void InterfazPergamino::actualiza(const EstadoJuego& e) {
         m_dialogo.cierra();
         m_marca = MarcaSuelo{};
         if (e.creacion != nullptr) pintaCreacion(e);
-        else pintaTitulo(e);
+        else if (e.pausa != nullptr && e.pausa->preguntando()) pintaPausa(e); else pintaTitulo(e);  // D0036: o la lista de «Cargar partida»
         return;
     }
     if (e.oculta || e.sesion == nullptr || !cargada()) {

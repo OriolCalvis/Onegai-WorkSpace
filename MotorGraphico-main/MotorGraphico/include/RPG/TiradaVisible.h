@@ -32,6 +32,7 @@ struct TiradaVisible {
     int accion = 0;             // la acción que la hizo: las de un área comparten número
     std::string que;            // la carta o la prueba: «Atacar», «Percepción»
     std::string quien;          // quien tira
+    std::string quienId, contraId;  // D0036: los mismos, por su id en el combate: es lo que los identifica
     std::string contra;         // contra quién ("" = una prueba sin nombre de rival)
     bool delJugador = true;     // la tira el héroe (o algo de su bando)
     PoolResult tirada;          // sus dados y sus éxitos

@@ -153,6 +153,8 @@ private:
 
 // D0035 — El UUID de un personaje nuevo (version 4). Lo identifica aunque se repita o cambie el nombre.
 std::string nuevoUuid();
+// D0036 — El de una partida de antes del UUID: el mismo en cada carga, para no repartir sus cicatrices y partidas.
+std::string idDeGuardadoAntiguo(const std::string& nombre, const std::string& clase);
 
 // La carpeta de un personaje sale de su id: letras, numeros y «-» ASCII; lo demas, «_».
 std::string carpetaDelPersonaje(const std::string& id);

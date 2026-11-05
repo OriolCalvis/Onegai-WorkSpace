@@ -332,9 +332,9 @@ std::uint64_t semillaNueva() {
 std::string ApplicationCinematica::actorDe(const Application& app, const BattleState& b) {
     const int e = b.enemigoEnTurno();
     const bool suyo = app.m_barra.rivalPendiente() || ApplicationCinematica::turnoRivalEnMarcha(app);
-    if (e >= 0 && suyo) return b.enemies()[static_cast<std::size_t>(e)].name;
+    if (e >= 0 && suyo) return b.enemies()[static_cast<std::size_t>(e)].id;
     const int a = std::max(0, b.aliadoEnTurno());  // AV13-29: el heroe o el acompañante que juega
-    return static_cast<std::size_t>(a) < b.allies().size() ? b.allies()[static_cast<std::size_t>(a)].name : std::string();
+    return static_cast<std::size_t>(a) < b.allies().size() ? b.allies()[static_cast<std::size_t>(a)].id : std::string();
 }
 
 void ApplicationCinematica::combate(Application& app, float dt) {
@@ -445,7 +445,7 @@ void ApplicationCinematica::combate(Application& app, float dt) {
         const bool tuTurno = !app.m_barra.rivalPendiente() && b->outcome() == BattleOutcome::InProgress && !andaban;
         const std::size_t activo = static_cast<std::size_t>(std::max(0, b->aliadoEnTurno()));  // AV13-29
         if (tuTurno && activo < b->allies().size())
-            for (const auto& a : b->tablero()->alcanzables(b->allies()[activo].name)) s.alcance.push_back(a.casilla);
+            for (const auto& a : b->tablero()->alcanzables(b->allies()[activo].id)) s.alcance.push_back(a.casilla);
         if (!tuTurno) s.ruta.clear();
     }
 }

@@ -1,9 +1,10 @@
 # Índice de sesiones — regenerado, no editar a mano
 
-_Regenerado: 2026-11-05T13:59 · 265 sesiones_
+_Regenerado: 2026-11-05T14:41 · 266 sesiones_
 
 | Fecha | Autor | Sesión | Commits | Esperando a Oriol |
 |---|---|---|---|---|
+| 2026-11-05 | claude | [combate por id](2026-11-05-claude-combate-por-id.md) | — | — |
 | 2026-11-05 | claude | [combates importantes](2026-11-05-claude-combates-importantes.md) | — | — |
 | 2026-11-05 | claude | [final huida](2026-11-05-claude-final-huida.md) | — | — |
 | 2026-11-05 | claude | [guardado en combate](2026-11-05-claude-guardado-en-combate.md) | — | — |

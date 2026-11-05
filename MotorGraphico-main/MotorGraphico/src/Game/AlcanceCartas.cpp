@@ -39,11 +39,11 @@ bool llega(const TableroCombate& t, const std::string& desde, const std::string&
 void ponUna(CartaBarra& c, const BattleState& batalla, const TableroCombate& t) {
     if (c.id == "#pocion" || c.id == "#huir") return;
     c.alcance = casillasDeAlcance(c.rango, c.objetivo);
-    const std::string& heroe = batalla.allies()[static_cast<std::size_t>(std::max(0, batalla.aliadoEnTurno()))].name;  // AV13-29: el que juega
+    const std::string& heroe = batalla.allies()[static_cast<std::size_t>(std::max(0, batalla.aliadoEnTurno()))].id;  // AV13-29: el que juega
     for (const BattleParticipant& p : batalla.allies())
-        c.aliadosATiro.push_back(enPie(p) && (p.name == heroe || llega(t, heroe, p.name, c.alcance)));
+        c.aliadosATiro.push_back(enPie(p) && (p.id == heroe || llega(t, heroe, p.id, c.alcance)));
     for (const BattleParticipant& p : batalla.enemies())
-        c.enemigosATiro.push_back(enPie(p) && llega(t, heroe, p.name, c.alcance));
+        c.enemigosATiro.push_back(enPie(p) && llega(t, heroe, p.id, c.alcance));
     // Una carta contra enemigos que no llega a ninguno no se puede jugar: dice por que.
     const bool contraEnemigos = c.objetivo == RPG::SkillTarget::SINGLE_ENEMY ||
                                 c.objetivo == RPG::SkillTarget::ZONE_RADIUS ||

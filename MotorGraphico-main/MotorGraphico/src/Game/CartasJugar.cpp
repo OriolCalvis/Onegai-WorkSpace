@@ -127,6 +127,12 @@ EstadoCarta CartasEnCombate::estadoDeCondicion(const std::string& id, int rondas
     return e;
 }
 
+// D0036 — Quien es, por su id.
+std::string CartasEnCombate::idDe(const ContextoBatalla& c, Ref q) {
+    const auto& lado = q.lado == Lado::Aliado ? c.aliados : c.enemigos;
+    return q.i < lado.size() ? lado[q.i].id : std::string();
+}
+
 void CartasEnCombate::ponerEstado(ContextoBatalla& c, Ref quien, const EstadoCarta& estado) {
     auto& estados = situ(quien).estados;
     for (EstadoCarta& e : estados) {
@@ -213,7 +219,7 @@ void CartasEnCombate::invocar(ContextoBatalla& c, const std::string& id, int ron
     inv->cuerpo = std::make_unique<Invocado>(def->id, def->maxHealth > 0 ? def->maxHealth : 1, def->stats);
     inv->aliado = c.aliados.size();
     inv->rondas = rondas;
-    c.aliados.push_back(BattleParticipant{def->name, inv->cuerpo.get(), nullptr, nullptr});
+    c.aliados.push_back(BattleParticipant{def->name, inv->cuerpo.get(), nullptr, nullptr, "a" + std::to_string(c.aliados.size())});
     asegurarTamanos(c);
     c.log.push_back(c.aliados[0].name + " invoca a " + def->name + " (" + turnos(rondas) + ").");
     m_invocaciones.push_back(std::move(inv));

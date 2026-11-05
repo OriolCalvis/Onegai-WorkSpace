@@ -104,6 +104,7 @@ void Application::refreshHud() {
         // UI-BG3-01: el titulo es un papiro del tema (maqueta C01).
         const bool creando = m_nuevaPartida && m_nuevaPartida->activa();
         estado.titulo = creando ? nullptr : m_title.get();
+        estado.pausa = m_pauseMenu.get();  // D0036: la lista de «Cargar partida»
         estado.creacion = creando ? m_nuevaPartida->cuaderno() : nullptr;  // las siete hojas (C02)
         estado.montaje = m_nuevaPartida ? m_nuevaPartida->montaje() : nullptr;
         if (m_pergamino) m_pergamino->interfaz().actualiza(estado);
@@ -166,7 +167,7 @@ void Application::refreshHud() {
             const Game::CartaBarra* c = Game::BarraCombate::carta(vistaBarra, m_barra.foco());
             if (c != nullptr && c->alcance >= 1 && battle->tablero() != nullptr && !m_barra.rivalPendiente() &&
                 !ApplicationCinematica::turnoRivalEnMarcha(*this) && !battle->allies().empty())
-                tiro = Game::casillasATiro(*battle->tablero(), battle->allies()[static_cast<std::size_t>(std::max(0, battle->aliadoEnTurno()))].name, c->alcance);
+                tiro = Game::casillasATiro(*battle->tablero(), battle->allies()[static_cast<std::size_t>(std::max(0, battle->aliadoEnTurno()))].id, c->alcance);
             areaALaVista(*battle, vistaBarra);  // AV13-14
         }
     } else if (battle == nullptr) {
@@ -436,15 +437,15 @@ void Application::areaALaVista(const BattleState& battle, Game::VistaBarra& v) {
     int e = m_barra.objetivoDe(v, *c);
     for (std::size_t i = 0; e < 0 && i < battle.enemies().size(); ++i)
         if (battle.enemies()[i].combatant != nullptr && battle.enemies()[i].combatant->isAlive()) e = static_cast<int>(i);
-    const auto yo = t->dondeEsta(battle.allies().front().name);
-    const auto diana = e >= 0 ? t->dondeEsta(battle.enemies()[static_cast<std::size_t>(e)].name) : std::nullopt;
+    const auto yo = t->dondeEsta(battle.allies().front().id);
+    const auto diana = e >= 0 ? t->dondeEsta(battle.enemies()[static_cast<std::size_t>(e)].id) : std::nullopt;
     if (!yo || !diana) return;
     for (const GridCoord& z : Game::casillasDelArea(c->area, *yo, *diana, [t](int x, int y) { return Game::esMuro(*t, GridCoord{x, y}); }))
         if (t->transitable(z) || t->quienEsta(z) != nullptr) area.push_back(z);
     const auto dentro = [&](const std::vector<BattleParticipant>& lado, std::vector<bool>& marca, std::size_t desde) {
         marca.assign(lado.size(), false);
         for (std::size_t i = desde; i < lado.size(); ++i) {
-            const auto donde = t->dondeEsta(lado[i].name);
+            const auto donde = t->dondeEsta(lado[i].id);
             marca[i] = donde && lado[i].combatant != nullptr && lado[i].combatant->isAlive() &&
                        std::any_of(area.begin(), area.end(), [&](GridCoord z) { return z.x == donde->x && z.y == donde->y; });
         }

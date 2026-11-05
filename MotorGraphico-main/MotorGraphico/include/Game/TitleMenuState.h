@@ -32,7 +32,7 @@
 
 namespace Game {
 
-enum class TitleCommand { None, NewGame, Continue, Options, Quit };
+enum class TitleCommand { None, NewGame, Continue, LoadGame, Options, Quit };
 
 struct TitleMenuItem {
     TitleCommand command = TitleCommand::None;
@@ -92,6 +92,7 @@ private:
     std::string m_entryPath;
     std::string m_newGameReason;
     std::string m_continueReason;
+    std::string m_loadReason;  // D0036
     int m_continueSlot = -1;
     std::string m_continueSummary;
     std::vector<TitleMenuItem> m_items;

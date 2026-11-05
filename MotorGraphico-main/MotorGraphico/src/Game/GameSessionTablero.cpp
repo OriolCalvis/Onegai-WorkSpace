@@ -65,20 +65,20 @@ void GameSession::montaTablero() {
     const std::vector<BattleParticipant>& aliados = b->allies();
     for (std::size_t i = 0; i < aliados.size(); ++i) {
         const GridCoord deseada = sessionData()->m_playerPosition;
-        if (i == 0 && t.pon(aliados[i].name, deseada)) continue;
-        if (const auto libre = t.libreMasCercana(deseada)) t.pon(aliados[i].name, *libre);
+        if (i == 0 && t.pon(aliados[i].id, deseada)) continue;
+        if (const auto libre = t.libreMasCercana(deseada)) t.pon(aliados[i].id, *libre);
     }
     for (std::size_t i = 0; i < b->enemies().size() && i < enemigos.size(); ++i) {
-        if (t.pon(b->enemies()[i].name, enemigos[i])) continue;
-        if (const auto libre = t.libreMasCercana(enemigos[i])) t.pon(b->enemies()[i].name, *libre);
+        if (t.pon(b->enemies()[i].id, enemigos[i])) continue;
+        if (const auto libre = t.libreMasCercana(enemigos[i])) t.pon(b->enemies()[i].id, *libre);
     }
     // Si su casilla no valia (fuera del mapa, bloqueada), el heroe va a la libre mas cercana: ahi esta.
-    if (const auto heroe = aliados.empty() ? std::nullopt : t.dondeEsta(aliados[0].name)) sessionData()->m_playerPosition = *heroe;
+    if (const auto heroe = aliados.empty() ? std::nullopt : t.dondeEsta(aliados[0].id)) sessionData()->m_playerPosition = *heroe;
     // AV13-29 — Los acompanantes, en el mundo mientras dura el combate: un objeto
     // "acompanante_<id>" en su casilla (la Application le pone el dibujo del PNJ <id>).
     quitaAcompanantes();
     for (std::size_t i = 1; i < aliados.size(); ++i) {
-        const auto donde = t.dondeEsta(aliados[i].name);
+        const auto donde = t.dondeEsta(aliados[i].id);
         if (!donde || aliados[i].combatant == nullptr) continue;
         ObjectSpawn s;
         s.objectId = kAcompanante + aliados[i].combatant->combatant_id();
@@ -92,7 +92,7 @@ void GameSession::montaTablero() {
     auto ponBonos = [&t](const std::vector<BattleParticipant>& quienes) {
         for (const BattleParticipant& p : quienes)
             if (p.combatant != nullptr)
-                t.ponBono(p.name, Game::TableroCombate::bonoDeDestreza(p.combatant->stat(RPG::Stat::DES)));
+                t.ponBono(p.id, Game::TableroCombate::bonoDeDestreza(p.combatant->stat(RPG::Stat::DES)));
     };
     ponBonos(aliados);
     ponBonos(b->enemies());
@@ -101,7 +101,7 @@ void GameSession::montaTablero() {
         t.ponVelocidad([b, cartas](const std::string& quien) {
             const auto busca = [&quien](const std::vector<BattleParticipant>& v) -> const BattleParticipant* {
                 for (const BattleParticipant& p : v)
-                    if (p.name == quien) return &p;
+                    if (p.id == quien) return &p;
                 return nullptr;
             };
             if (const BattleParticipant* p = busca(b->allies()))
@@ -119,7 +119,7 @@ std::vector<GridCoord> GameSession::mueveEnCombate(GridCoord destino, std::size_
     BattleState* b = sessionData()->m_battle.get();
     if (b == nullptr || b->tablero() == nullptr || b->outcome() != BattleOutcome::InProgress || aliado >= b->allies().size())
         return {};
-    std::vector<GridCoord> ruta = b->tablero()->anda(b->allies()[aliado].name, destino);
+    std::vector<GridCoord> ruta = b->tablero()->anda(b->allies()[aliado].id, destino);
     if (!ruta.empty() && aliado == 0) sessionData()->m_playerPosition = destino;
     return ruta;
 }
@@ -130,7 +130,7 @@ std::vector<std::pair<Engine::EntityHandle, std::pair<GridCoord, GridCoord>>> Ga
     if (b == nullptr || b->tablero() == nullptr || sessionData()->m_world == nullptr) return movidos;
     const std::vector<Engine::EntityHandle>& handles = sessionData()->m_battleEnemyHandles;
     for (std::size_t i = 0; i < handles.size() && i < b->enemies().size(); ++i) {
-        const auto donde = b->tablero()->dondeEsta(b->enemies()[i].name);
+        const auto donde = b->tablero()->dondeEsta(b->enemies()[i].id);
         Engine::WorldEntity* e = sessionData()->m_world->get(handles[i]);
         if (!donde || e == nullptr || e->kind != Engine::EntityKind::Enemy) continue;
         const GridCoord antes = e->enemy.position;
@@ -146,7 +146,7 @@ std::vector<std::pair<Engine::EntityHandle, std::pair<GridCoord, GridCoord>>> Ga
             if (aliados[i].combatant == nullptr ||
                 e.object.objectId != kAcompanante + aliados[i].combatant->combatant_id())
                 continue;
-            const auto donde = b->tablero()->dondeEsta(aliados[i].name);
+            const auto donde = b->tablero()->dondeEsta(aliados[i].id);
             const GridCoord antes = e.object.position;
             if (!donde || (antes.x == donde->x && antes.y == donde->y)) return;
             movidos.push_back({h, {antes, *donde}});

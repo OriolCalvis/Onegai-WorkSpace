@@ -223,6 +223,7 @@ private:
     // Tiradas, golpes y reacciones (CartasTiradas.cpp)
     ICombatant* combatiente(const ContextoBatalla& c, Ref quien) const;
     const std::string& nombre(const ContextoBatalla& c, Ref quien) const;
+    static std::string idDe(const ContextoBatalla& c, Ref quien);  // D0036: quien es, por su id
     bool vivo(const ContextoBatalla& c, Ref quien) const;
     SituacionCombate& situ(Ref quien);
     int primerVivo(const ContextoBatalla& c, Lado lado) const;

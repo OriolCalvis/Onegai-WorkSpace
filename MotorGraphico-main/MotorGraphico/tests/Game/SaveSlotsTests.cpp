@@ -571,6 +571,12 @@ MOTOR_TEST_CASE(el_id_del_personaje_no_se_sale_de_su_carpeta) {
 }
 
 // D0035 — El UUID: formato de la version 4, y no se repite.
+MOTOR_TEST_CASE(un_guardado_antiguo_tiene_siempre_el_mismo_id) {
+    MOTOR_CHECK(idDeGuardadoAntiguo("Ilse", "guerrero") == idDeGuardadoAntiguo("Ilse", "guerrero"));
+    MOTOR_CHECK(idDeGuardadoAntiguo("Ilse", "guerrero") != idDeGuardadoAntiguo("Ilse", "mago"));
+    MOTOR_CHECK(idDeGuardadoAntiguo("../x", "") .find('/') == std::string::npos);
+}
+
 MOTOR_TEST_CASE(cada_personaje_estrena_un_uuid_distinto) {
     std::set<std::string> vistos;
     for (int i = 0; i < 1000; ++i) {

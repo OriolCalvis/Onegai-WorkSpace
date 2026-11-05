@@ -197,8 +197,8 @@ Tirada CartasEnCombate::tirar(ContextoBatalla& c, Ref atacante, Ref defensor,
     // H2-01 — La foto para el HUD: los dados de los dos y el grado final.
     RPG::TiradaVisible vista;  // numero y accion los pone el historial
     vista.que = nombreDeTirada(def);
-    vista.quien = nombre(c, atacante);
-    vista.contra = nombre(c, defensor);
+    vista.quien = nombre(c, atacante), vista.quienId = idDe(c, atacante);
+    vista.contra = nombre(c, defensor), vista.contraId = idDe(c, defensor);
     vista.delJugador = atacante.lado == Lado::Aliado;
     vista.tirada = out.pool;
     vista.bono = out.effective_successes - out.pool.successes;
@@ -229,7 +229,7 @@ Tirada CartasEnCombate::tirarSinRival(ContextoBatalla& c, Ref quien, const RPG::
     t.resumen = frases::sinRival(t.grado, out.effective_successes, out.pool.botch);
     RPG::TiradaVisible vista;  // H2-01, sin rival
     vista.que = nombreDeTirada(def);
-    vista.quien = nombre(c, quien);
+    vista.quien = nombre(c, quien), vista.quienId = idDe(c, quien);
     vista.delJugador = quien.lado == Lado::Aliado;
     vista.tirada = out.pool;
     vista.bono = out.effective_successes - out.pool.successes;

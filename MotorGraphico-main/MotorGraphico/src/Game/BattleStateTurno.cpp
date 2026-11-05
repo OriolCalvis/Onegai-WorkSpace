@@ -21,20 +21,20 @@ int BattleState::alcanceDe(const BattleParticipant& enemigo) const {
 }
 
 bool BattleState::llegaA(const BattleParticipant& enemigo, const BattleParticipant& aliado) const {
-    return !m_campo.tablero || m_campo.tablero->aTiro(enemigo.name, aliado.name, alcanceDe(enemigo));
+    return !m_campo.tablero || m_campo.tablero->aTiro(enemigo.id, aliado.id, alcanceDe(enemigo));
 }
 
 bool BattleState::acercaEnemigos(int solo) {
     if (!m_campo.tablero || m_outcome != BattleOutcome::InProgress) return false;
     std::vector<std::string> vivos;
     for (const BattleParticipant& a : m_allies)
-        if (enPie(a)) vivos.push_back(a.name);
+        if (enPie(a)) vivos.push_back(a.id);
     bool alguno = false;
     for (std::size_t i = 0; i < m_enemies.size(); ++i) {
         const BattleParticipant& enemy = m_enemies[i];
         if (!enPie(enemy) || (solo >= 0 && static_cast<std::size_t>(solo) != i)) continue;
         std::vector<GridCoord> andada;
-        const bool llega = m_campo.tablero->acerca(enemy.name, vivos, alcanceDe(enemy), &andada);
+        const bool llega = m_campo.tablero->acerca(enemy.id, vivos, alcanceDe(enemy), &andada);
         if (andada.empty()) continue;
         alguno = true;
         logLine(enemy.name + (llega ? " se acerca." : " se acerca, pero no llega."));
@@ -79,14 +79,14 @@ void BattleState::resuelveAliadoSolo(std::size_t aliado) {
     if (m_outcome != BattleOutcome::InProgress || aliado >= m_allies.size() || !enPie(m_allies[aliado]) || !m_mesa)
         return;
     struct Apunta { BattleState* b; FotoVidas antes; std::string de; ~Apunta() { b->anotaGolpes(antes, de, Game::GolpeCombate::Grado::Acierto); } };
-    const Apunta apunta{this, fotoVidas(), m_allies[aliado].name};
+    const Apunta apunta{this, fotoVidas(), m_allies[aliado].id};
     if (m_campo.tablero) {  // anda antes de actuar: a por los enemigos si pega; si no (Xila), junto al heroe
         const auto* a = dynamic_cast<const Game::Acompanante*>(m_allies[aliado].combatant);
         const bool pega = a != nullptr && a->def().ataques > 0;
         std::vector<std::string> hacia;
         for (const BattleParticipant& e : pega ? m_enemies : std::vector<BattleParticipant>{m_allies.front()})
-            if (enPie(e)) hacia.push_back(e.name);
-        m_campo.tablero->acerca(m_allies[aliado].name, hacia, 1);
+            if (enPie(e)) hacia.push_back(e.id);
+        m_campo.tablero->acerca(m_allies[aliado].id, hacia, 1);
     }
     Game::ContextoBatalla c = contexto();
     m_mesa->actuaSolo(c, aliado);
@@ -94,6 +94,7 @@ void BattleState::resuelveAliadoSolo(std::size_t aliado) {
 }
 
 void BattleState::sumaAliado(BattleParticipant aliado) {
+    aliado.id = "a" + std::to_string(m_allies.size());  // D0036
     m_allies.push_back(std::move(aliado));
     if (!m_campo.orden.vacio()) {  // AV13-29: con iniciativa, juega el ultimo de la ronda
         const ICombatant* cuerpo = m_allies.back().combatant;

@@ -8,7 +8,7 @@
 //
 // El combate no cambia de pantalla: se juega en las casillas del nivel donde
 // empieza, dentro de un recuadro de kLado x kLado (11) alrededor de los que pelean
-// (recortado al nivel). Aqui se sabe que casillas cuentan, quien esta en cada
+// (recortado al nivel; cada quien, por su BattleParticipant::id: D0036). Aqui se sabe que casillas cuentan, quien esta en cada
 // una, cuanto distan y si se ven. La ruta y el area son de otras piezas
 // (Game::RutaCasillas, Game::PlantillaArea): este tablero les da los
 // callbacks de transitable y ocupada.

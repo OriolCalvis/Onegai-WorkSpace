@@ -107,21 +107,60 @@ MOTOR_TEST_CASE(av13_el_rival_lejos_se_acerca_y_no_pega_hasta_llegar) {
     TestCombatant lobo(40, 40, RPG::Stat::DES, 3, 1, "l");
     BattleState b({BattleParticipant{"Heroe", &heroe, nullptr}}, {BattleParticipant{"Lobo", &lobo, nullptr}}, nullptr);
     conMesa(b, heroe);
-    b.ponTablero(pasillo({{"Heroe", GridCoord{0, 1}}, {"Lobo", GridCoord{9, 1}}}));
+    b.ponTablero(pasillo({{"a0", GridCoord{0, 1}}, {"e0", GridCoord{9, 1}}}));
     // Ronda 1: anda sus 4 casillas (AV16-12), no llega y no pega.
     MOTOR_CHECK(b.acercaEnemigos());
     MOTOR_CHECK(registroDice(b, "Lobo se acerca, pero no llega."));
-    MOTOR_CHECK(b.tablero()->dondeEsta("Lobo")->x == 5);
+    MOTOR_CHECK(b.tablero()->dondeEsta("e0")->x == 5);
     b.resolveEnemyTurn();
     MOTOR_CHECK(heroe.health() == 40);
     MOTOR_CHECK(b.log().back() == "Lobo se acerca, pero no llega.");
     // Ronda 2: con los pasos repuestos llega al lado; resolveEnemyTurn ya no lo mueve.
     b.tickRound();
     MOTOR_CHECK(b.acercaEnemigos());
-    MOTOR_CHECK(b.tablero()->dondeEsta("Lobo")->x == 1);
+    MOTOR_CHECK(b.tablero()->dondeEsta("e0")->x == 1);
     MOTOR_CHECK(!b.acercaEnemigos());  // ya esta a tiro: no anda mas
     b.resolveEnemyTurn();
     MOTOR_CHECK(b.log().back() != "Lobo se acerca.");  // ha actuado
+}
+
+// D0036 — Dos con el mismo nombre son dos: cada uno en su casilla, y si cae uno el otro sigue en el tablero.
+MOTOR_TEST_CASE(dos_con_el_mismo_nombre_tienen_cada_uno_su_casilla) {
+    TestCombatant heroe(40, 40, RPG::Stat::DES, 0, 1, "h");
+    TestCombatant uno(40, 40, RPG::Stat::DES, 0, 1, "m");
+    TestCombatant otro(40, 40, RPG::Stat::DES, 0, 1, "m");
+    TestCombatant lobo(40, 40, RPG::Stat::DES, 3, 1, "l");
+    BattleState b({BattleParticipant{"Minero", &heroe, nullptr}, BattleParticipant{"Minero", &uno, nullptr}, BattleParticipant{"Minero", &otro, nullptr}},
+                  {BattleParticipant{"Minero", &lobo, nullptr}}, nullptr);
+    MOTOR_CHECK(b.allies()[0].id == "a0" && b.allies()[1].id == "a1" && b.allies()[2].id == "a2" && b.enemies()[0].id == "e0");
+    conMesa(b, heroe);
+    b.ponTablero(pasillo({{"a0", GridCoord{0, 1}}, {"a1", GridCoord{3, 1}}, {"a2", GridCoord{6, 1}}, {"e0", GridCoord{9, 1}}}));
+    MOTOR_CHECK(b.tablero()->ocupantes().size() == 4);
+    uno.takeDamage(1000);
+    b.tickRound();
+    MOTOR_CHECK(!b.tablero()->dondeEsta("a1").has_value());  // cayo: su casilla, libre
+    MOTOR_CHECK(b.tablero()->dondeEsta("a0").has_value() && b.tablero()->dondeEsta("a2").has_value());
+    MOTOR_CHECK(b.tablero()->dondeEsta("e0").has_value());
+}
+
+// D0036 — La tirada, acierte o falle, se apunta al que la recibe aunque otro se llame igual.
+MOTOR_TEST_CASE(el_golpe_se_apunta_al_que_lo_recibe_aunque_otro_se_llame_igual) {
+    TestCombatant heroe(4000, 4000, RPG::Stat::DES, 0, 1, "h");
+    TestCombatant uno(4000, 4000, RPG::Stat::DES, 6, 1, "l");  // con DES alta tambien hay fallos, los que se buscan aqui
+    TestCombatant otro(4000, 4000, RPG::Stat::DES, 6, 1, "l");
+    BattleState b({BattleParticipant{"Heroe", &heroe, nullptr}}, {BattleParticipant{"Lobo", &uno, nullptr}, BattleParticipant{"Lobo", &otro, nullptr}}, nullptr);
+    conMesa(b, heroe);
+    for (int i = 0; i < 40 && b.outcome() == BattleOutcome::InProgress; ++i) {
+        b.resolveAllyAction(0, BattleAction{BattleActionType::Attack, "", 1, ""});
+        b.tickRound();
+    }
+    int alSegundo = 0;
+    for (const Game::GolpeCombate& g : b.golpes()) {
+        if (g.aAliado) continue;
+        MOTOR_CHECK(g.i == 1);  // al primer lobo nadie le ha tirado
+        ++alSegundo;
+    }
+    MOTOR_CHECK(alSegundo > 0);
 }
 
 MOTOR_TEST_CASE(av13_el_rival_pega_a_quien_tiene_al_lado_no_al_heroe_lejano) {
@@ -131,7 +170,7 @@ MOTOR_TEST_CASE(av13_el_rival_pega_a_quien_tiene_al_lado_no_al_heroe_lejano) {
     BattleState b({BattleParticipant{"Heroe", &heroe, nullptr}, BattleParticipant{"Rosa", &rosa, nullptr}},
                   {BattleParticipant{"Lobo", &lobo, nullptr}}, nullptr);
     conMesa(b, heroe);
-    b.ponTablero(pasillo({{"Heroe", GridCoord{0, 1}}, {"Rosa", GridCoord{12, 1}}, {"Lobo", GridCoord{13, 1}}}));
+    b.ponTablero(pasillo({{"a0", GridCoord{0, 1}}, {"a1", GridCoord{12, 1}}, {"e0", GridCoord{13, 1}}}));
     MOTOR_CHECK(!b.acercaEnemigos());  // Rosa ya esta al lado
     for (int i = 0; i < 5; ++i) b.resolveEnemyTurn();
     MOTOR_CHECK(heroe.health() == 40);
@@ -177,7 +216,7 @@ MOTOR_TEST_CASE(av13_el_alcance_de_las_cartas_elige_y_bloquea) {
     BattleState b({BattleParticipant{"Heroe", &heroe, nullptr}},
                   {BattleParticipant{"Lobo", &lobo, nullptr}, BattleParticipant{"Cuervo", &cuervo, nullptr}}, nullptr);
     // El lobo a 6 casillas; el cuervo a 3.
-    b.ponTablero(pasillo({{"Heroe", GridCoord{0, 1}}, {"Lobo", GridCoord{6, 1}}, {"Cuervo", GridCoord{3, 1}}}));
+    b.ponTablero(pasillo({{"a0", GridCoord{0, 1}}, {"e0", GridCoord{6, 1}}, {"e1", GridCoord{3, 1}}}));
     Game::VistaBarra v = Game::vistaDeBatalla(b);
     const Game::CartaBarra& atacar = v.basicas[0];
     MOTOR_CHECK(atacar.alcance == 1);
@@ -202,7 +241,7 @@ MOTOR_TEST_CASE(av13_el_alcance_de_las_cartas_elige_y_bloquea) {
     barra.senala(v, Zona::Objetivo, Game::BarraCombate::kObjetivoEnemigo + 0);  // el lobo: fuera de alcance, no se deja
     MOTOR_CHECK(barra.objetivoDe(v, f) == 1);
     // En el suelo: las casillas a 4 o menos, sin la del heroe.
-    const auto tiro = Game::casillasATiro(*b.tablero(), "Heroe", 4);
+    const auto tiro = Game::casillasATiro(*b.tablero(), "a0", 4);
     MOTOR_CHECK(!tiro.empty());
     for (const GridCoord& c : tiro) MOTOR_CHECK(Game::TableroCombate::distancia(GridCoord{0, 1}, c) <= 4 && !(c.x == 0 && c.y == 1));
 }

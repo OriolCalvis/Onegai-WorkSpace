@@ -45,11 +45,16 @@ void BattleState::anotaGolpes(const FotoVidas& antes, const std::string& de, Gam
         if (const auto* ts = m_mesa->tiradasVisibles())
             for (const RPG::TiradaVisible& t : *ts)
                 if (t.numero > antes.tirada && t.enfrentada) nuevas.push_back(&t);
-    const auto suTirada = [&](const std::string& nombre) -> const RPG::TiradaVisible* {
+    const auto suTirada = [&](const std::string& id) -> const RPG::TiradaVisible* {
         for (auto it = nuevas.rbegin(); it != nuevas.rend(); ++it)
-            if ((*it)->contra == nombre) return *it;
+            if ((*it)->contraId == id) return *it;
         return nullptr;
     };
+    // D0036: `de` llega como id; el nombre es lo que se cuenta.
+    std::string nombreDe;
+    for (const auto* gente : {&m_allies, &m_enemies})
+        for (const BattleParticipant& p : *gente)
+            if (p.id == de) nombreDe = p.name;
     std::vector<std::string> vistos;
     const auto lado = [&](const std::vector<BattleParticipant>& gente, const std::vector<int>& vidas, bool aliado) {
         for (std::size_t i = 0; i < gente.size() && i < vidas.size(); ++i) {
@@ -59,17 +64,19 @@ void BattleState::anotaGolpes(const FotoVidas& antes, const std::string& de, Gam
             g.aAliado = aliado;
             g.i = i;
             g.a = p.name;
-            g.de = de;
+            g.de = nombreDe;
+            g.deId = de;
             g.cambio = p.combatant->health() - vidas[i];
             g.grado = g.cambio > 0 ? Grado::Cura : porDefecto;
-            if (const RPG::TiradaVisible* t = suTirada(p.name); t != nullptr && g.cambio < 0) {
+            if (const RPG::TiradaVisible* t = suTirada(p.id); t != nullptr && g.cambio < 0) {
                 g.de = t->quien;
+                g.deId = t->quienId;
                 g.que = t->que;
                 g.grado = t->grado == RPG::Degree::CRITICAL ? Grado::Critico
                         : t->grado == RPG::Degree::PARTIAL  ? Grado::Roce
                                                             : Grado::Acierto;
             }
-            vistos.push_back(p.name);
+            vistos.push_back(p.id);
             m_campo.apunta(std::move(g));
         }
     };
@@ -77,13 +84,13 @@ void BattleState::anotaGolpes(const FotoVidas& antes, const std::string& de, Gam
     lado(m_enemies, antes.enemigos, false);
     // Lo que no entro: la tirada enfrentada que se quedo corta, sobre quien no cambio de vida.
     for (const RPG::TiradaVisible* t : nuevas) {
-        if (t->grado >= RPG::Degree::SUCCESS || std::find(vistos.begin(), vistos.end(), t->contra) != vistos.end())
+        if (t->grado >= RPG::Degree::SUCCESS || std::find(vistos.begin(), vistos.end(), t->contraId) != vistos.end())
             continue;
         Game::GolpeCombate g;
         bool hallado = false;
         for (const auto* gente : {&m_allies, &m_enemies})
             for (std::size_t i = 0; i < gente->size() && !hallado; ++i)
-                if ((*gente)[i].name == t->contra) {
+                if ((*gente)[i].id == t->contraId) {
                     hallado = true;
                     g.aAliado = gente == &m_allies;
                     g.i = i;
@@ -91,9 +98,10 @@ void BattleState::anotaGolpes(const FotoVidas& antes, const std::string& de, Gam
         if (!hallado) continue;
         g.a = t->contra;
         g.de = t->quien;
+        g.deId = t->quienId;
         g.que = t->que;
         g.grado = t->pifia() ? Grado::Pifia : t->grado == RPG::Degree::PARTIAL ? Grado::Roce : Grado::Fallo;
-        vistos.push_back(t->contra);
+        vistos.push_back(t->contraId);
         m_campo.apunta(std::move(g));
     }
     // AV13-29 — Quien cae deja libre su casilla (el heroe no: con el se acaba el combate).
@@ -101,5 +109,5 @@ void BattleState::anotaGolpes(const FotoVidas& antes, const std::string& de, Gam
         for (const auto* gente : {&m_allies, &m_enemies})
             for (std::size_t i = 0; i < gente->size(); ++i)
                 if ((gente != &m_allies || i > 0) && (*gente)[i].combatant != nullptr && !(*gente)[i].combatant->isAlive())
-                    m_campo.tablero->quita((*gente)[i].name);
+                    m_campo.tablero->quita((*gente)[i].id);
 }

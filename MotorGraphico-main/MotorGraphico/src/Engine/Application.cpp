@@ -744,10 +744,10 @@ void Application::confirmBattleCommand(std::size_t index, int objetivo) {
         // no hay nadie senalado, al primero que este al lado).
         if (const Game::TableroCombate* t = battle->tablero()) {
             const auto& en = battle->enemies();
-            const std::string& heroe = battle->allies()[activo].name;  // AV13-29: o el acompañante
+            const std::string& heroe = battle->allies()[activo].id;  // AV13-29: o el acompañante
             int aLado = -1;
             for (std::size_t i = 0; i < en.size() && aLado < 0; ++i)
-                if (en[i].combatant && en[i].combatant->isAlive() && t->aTiro(heroe, en[i].name, 1) &&
+                if (en[i].combatant && en[i].combatant->isAlive() && t->aTiro(heroe, en[i].id, 1) &&
                     (objetivo < 0 || static_cast<int>(i) == objetivo)) aLado = static_cast<int>(i);
             if (aLado < 0) {
                 const std::size_t q = static_cast<std::size_t>(std::min<int>(elegido, static_cast<int>(en.size()) - 1));
@@ -925,6 +925,11 @@ void Application::processInput() {
         m_barra.cancela();
         return;
     }
+    if (input.pressed(InputAction::Quit) && isAtTitle() && m_pauseMenu && m_pauseMenu->preguntando()) {
+        m_pauseMenu->olvidaPregunta();  // D0036: ESC vuelve de la lista, no sale del juego
+        refreshHud();
+        return;
+    }
     if (input.pressed(InputAction::Quit)) {
         const auto mode = m_session ? m_session->mode() : GameMode::Exploration;
         switch (PlayerControls::escapeAction(mode, isAtTitle() || !m_session, m_showInventory)) {
@@ -943,6 +948,14 @@ void Application::processInput() {
     // El mismo lenguaje de menú que en combate/tienda (W/S + ENTER); el
     // ESC ya salió del proceso arriba, igual que la entrada "Salir".
     if (isAtTitle()) {
+        if (m_pauseMenu && m_pauseMenu->preguntando()) {  // D0036: la lista de «Cargar partida»
+            if (input.pressed(InputAction::MenuUp)) m_pauseMenu->moveUp();
+            if (input.pressed(InputAction::MenuDown)) m_pauseMenu->moveDown();
+            if (Engine::ratonEnPapiro(*m_pauseMenu, m_pauseMenu->entries().size(), interfazDe(m_pergamino), input) || input.pressed(InputAction::Confirm))
+                ApplicationCinematica::confirmaPartidas(*this);
+            refreshHud();
+            return;
+        }
         const auto anterior = m_title->selected();
         if (input.pressed(InputAction::MenuUp)) m_title->moveUp();
         if (input.pressed(InputAction::MenuDown)) m_title->moveDown();
@@ -1136,6 +1149,9 @@ void Application::confirmTitleSelection() {
         // proyecto (la calculo TitleMenuState desde el mismo servicio).
         ApplicationCinematica::avisoYa(*this, "Cargando la partida…");  // TITULO-01
         loadSlot(m_title->continueSlot());
+    } else if (action == Game::TitleCommand::LoadGame) {
+        ApplicationCinematica::abrePersonajes(*this, 0);  // D0036
+        refreshHud();
     } else if (action == Game::TitleCommand::Options) {
         // G-10 — sin pantalla propia aun; la linea de estado del papiro lo dice.
         if (m_pergamino) m_pergamino->interfaz().avisaPausa(false, "Opciones: aún sin pantalla propia", "");
