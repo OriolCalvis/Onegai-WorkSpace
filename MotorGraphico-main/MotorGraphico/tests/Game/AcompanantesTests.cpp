@@ -418,25 +418,25 @@ MOTOR_TEST_CASE(con_tablero_el_de_ia_anda_hasta_el_enemigo_y_quien_cae_deja_su_c
     solo.soloIA = true;
     Grupo g({solo});
     Game::TableroCombate t = Game::TableroCombate::alrededor({{2, 5}, {7, 5}}, 20, 20, [](int, int) { return false; });
-    MOTOR_CHECK(t.pon("Heroe", {2, 5}) && t.pon("Venides", {2, 6}) && t.pon("Lobo", {7, 5}) && t.pon("Lobo gris", {7, 6}));
+    MOTOR_CHECK(t.pon("a0", {2, 5}) && t.pon("a1", {2, 6}) && t.pon("e0", {7, 5}) && t.pon("e1", {7, 6}));
     g.batalla->ponTablero(std::move(t));
     const Game::TableroCombate& tb = *g.batalla->tablero();
-    MOTOR_CHECK(!tb.aTiro("Venides", "Lobo", 1) && !tb.aTiro("Venides", "Lobo gris", 1));
+    MOTOR_CHECK(!tb.aTiro("a1", "e0", 1) && !tb.aTiro("a1", "e1", 1));
     const int antes = g.lobo.health() + g.lobo2.health();
     g.batalla->resuelveAliadoSolo(1);
-    MOTOR_CHECK(tb.aTiro("Venides", "Lobo", 1) || tb.aTiro("Venides", "Lobo gris", 1));  // ha andado hasta ellos
+    MOTOR_CHECK(tb.aTiro("a1", "e0", 1) || tb.aTiro("a1", "e1", 1));  // ha andado hasta ellos
     MOTOR_CHECK(g.lobo.health() + g.lobo2.health() < antes);                           // y ha pegado
     g.lobo.ponerVida(0);
     g.batalla->resolveAllyAction(0, BattleAction{BattleActionType::UseSkill, Game::kAccionPasar, 0, ""});
-    MOTOR_CHECK(!tb.dondeEsta("Lobo").has_value());   // cayo: su casilla, libre
-    MOTOR_CHECK(tb.dondeEsta("Lobo gris").has_value());
+    MOTOR_CHECK(!tb.dondeEsta("e0").has_value());   // cayo: su casilla, libre
+    MOTOR_CHECK(tb.dondeEsta("e1").has_value());
 }
 
 // AV13-29 — Si el primer golpe de Venides tumba a uno, el segundo va a otro que tenga al lado.
 MOTOR_TEST_CASE(el_segundo_golpe_de_venides_va_a_otro_si_el_primero_mata) {
     Grupo g({venides()});
     Game::TableroCombate t = Game::TableroCombate::alrededor({{2, 5}, {3, 6}}, 20, 20, [](int, int) { return false; });
-    MOTOR_CHECK(t.pon("Heroe", {1, 5}) && t.pon("Venides", {2, 6}) && t.pon("Lobo", {3, 6}) && t.pon("Lobo gris", {2, 7}));
+    MOTOR_CHECK(t.pon("a0", {1, 5}) && t.pon("a1", {2, 6}) && t.pon("e0", {3, 6}) && t.pon("e1", {2, 7}));
     g.batalla->ponTablero(std::move(t));
     g.lobo.ponerVida(1);
     g.batalla->resolveAllyAction(1, BattleAction{BattleActionType::Attack, "", 0, ""});
@@ -450,7 +450,7 @@ MOTOR_TEST_CASE(el_segundo_golpe_de_venides_va_a_otro_si_el_primero_mata) {
 MOTOR_TEST_CASE(un_area_pilla_a_todos_los_de_dentro_aliados_incluidos) {
     Grupo g({venides()});
     Game::TableroCombate t = Game::TableroCombate::alrededor({{1, 5}, {7, 9}}, 20, 20, [](int, int) { return false; });
-    MOTOR_CHECK(t.pon("Heroe", {3, 5}) && t.pon("Venides", {6, 5}) && t.pon("Lobo", {7, 5}) && t.pon("Lobo gris", {7, 9}));
+    MOTOR_CHECK(t.pon("a0", {3, 5}) && t.pon("a1", {6, 5}) && t.pon("e0", {7, 5}) && t.pon("e1", {7, 9}));
     g.batalla->ponTablero(std::move(t));
     int fila = -1;
     const auto filas = g.cartas->filas();

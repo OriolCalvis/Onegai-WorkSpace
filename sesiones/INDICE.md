@@ -1,12 +1,22 @@
 # Índice de sesiones — regenerado, no editar a mano
 
-_Regenerado: 2026-11-04T22:55 · 260 sesiones_
+_Regenerado: 2026-11-05T15:14 · 270 sesiones_
 
 | Fecha | Autor | Sesión | Commits | Esperando a Oriol |
 |---|---|---|---|---|
+| 2026-11-05 | claude | [combate por id](2026-11-05-claude-combate-por-id.md) | — | — |
+| 2026-11-05 | claude | [combates importantes](2026-11-05-claude-combates-importantes.md) | — | — |
+| 2026-11-05 | claude | [final huida](2026-11-05-claude-final-huida.md) | — | — |
+| 2026-11-05 | claude | [guardado en combate](2026-11-05-claude-guardado-en-combate.md) | — | — |
+| 2026-11-05 | claude | [huir sin recompensa](2026-11-05-claude-huir-sin-recompensa.md) | — | — |
+| 2026-11-05 | claude | [ramas de huida](2026-11-05-claude-ramas-de-huida.md) | — | — |
+| 2026-11-05 | claude | [resto de identidades](2026-11-05-claude-resto-de-identidades.md) | — | — |
+| 2026-11-05 | claude | [uuid y borrar partidas](2026-11-05-claude-uuid-y-borrar-partidas.md) | — | — |
+| 2026-11-05 | claude | [varias partidas](2026-11-05-claude-varias-partidas.md) | — | — |
 | 2026-11-04 | claude | [ecc tres harnesses](2026-11-04-claude-ecc-tres-harnesses.md) | `8e0a5b19` (rama `recuperat/software-copia-30-10`: `.claude/` del workspace, TABLERO, índice y esta nota) + commit de cierre que anota este hash. Sin cambios de código; la configuración de Codex y Qwen vive fuera del repo. | nada bloqueante. Decidió «paquete entero disponible, pero cada proyecto carga solo lo útil»; aplicado (ver «Cierre»). Pidió commitear `.claude/`; hecho. |
 | 2026-11-04 | claude | [f rest zonas 4 2 a 4 4](2026-11-04-claude-f-rest-zonas-4-2-a-4-4.md) | — | nada bloqueante; dos hallazgos abajo. |
 | 2026-11-04 | claude | [integracion uni 02 11](2026-11-04-claude-integracion-uni-02-11.md) | — | nada bloqueante. Ver «Para Oriol». |
+| 2026-11-04 | claude | [revivir al inicio del combate](2026-11-04-claude-revivir-al-inicio-del-combate.md) | — | confirmar D0027 §4–6 (valores por defecto del Brain); decidir qué hacer con lo de REVIVIR_1.md (no se ha reescrito historia); la reputación por muerte (`aegroum` −2) es un número mío. |
 | 2026-11-03 | claude | [respuestas y guion](2026-11-03-claude-respuestas-y-guion.md) | — | el guardado no se restaura en `ciudad_centro` (dos objetos en la misma casilla: (41,25), (6,59), (16,59); `src/Game/SaveGame.cpp:199` busca solo por posición); fusionar o no `agente/fable/UNI-RESTAURA`; subir los commits nuevos; PixelLab (`out/fabrica/UNI-02-11/PIXELLAB_ENCARREC.md`). |
 | 2026-11-02 | claude | [uni 02 11](2026-11-02-claude-uni-02-11.md) | — | — |
 | 2026-10-29 | codex | [boundington contenido](2026-10-29-codex-boundington-contenido.md) | — | — |

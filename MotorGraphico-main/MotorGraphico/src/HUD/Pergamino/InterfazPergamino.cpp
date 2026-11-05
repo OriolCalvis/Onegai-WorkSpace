@@ -44,7 +44,7 @@ const char* textoPausa(Game::PauseAction a) {
         case Game::PauseAction::Options: return "Opciones";
         case Game::PauseAction::Title: return "Volver al título";
         case Game::PauseAction::Quit: return "Salir del juego";
-        case Game::PauseAction::None: break;
+        case Game::PauseAction::None: case Game::PauseAction::Delete: break;
     }
     return "";
 }
@@ -187,7 +187,7 @@ void InterfazPergamino::actualiza(const EstadoJuego& e) {
         m_dialogo.cierra();
         m_marca = MarcaSuelo{};
         if (e.creacion != nullptr) pintaCreacion(e);
-        else pintaTitulo(e);
+        else if (e.pausa != nullptr && e.pausa->preguntando()) pintaPausa(e); else pintaTitulo(e);  // D0036: o la lista de «Cargar partida»
         return;
     }
     if (e.oculta || e.sesion == nullptr || !cargada()) {
@@ -270,6 +270,7 @@ void InterfazPergamino::pintaExploracion(const EstadoJuego& e, bool compacto) {
         d.pv = cuerpo->health();
         d.pvMax = cuerpo->maxHealth();
     }
+    std::optional<GridCoord> avisoEn;  // D0037: la casilla de la que ya habla el aviso
     if (!compacto) {
         objetivoSeguido(e.diario, d);
         m_retales.observaObjetivo(d.paso);
@@ -287,8 +288,7 @@ void InterfazPergamino::pintaExploracion(const EstadoJuego& e, bool compacto) {
             const Vector2 celda = IsoMath::gridToScreen(GridCoord{a.celdaX, a.celdaY}, tw, th);
             const Vector2 pies{(celda.x + tw * 0.5f - e.camaraX) * e.zoom + static_cast<float>(e.anchoVista) * 0.5f,
                                (celda.y + th * kPies - e.camaraY) * e.zoom + static_cast<float>(e.altoVista) * 0.5f};
-            d.avisoVerbo = a.verbo;
-            d.avisoDestino = a.destino;
+            d.avisoVerbo = a.verbo, d.avisoDestino = a.destino, avisoEn = GridCoord{a.celdaX, a.celdaY};
             if (!a.enLaCelda) m_marca = MarcaSuelo{true, a.celdaX, a.celdaY, tw, th, kPies, a.destino};
             d.avisoAncla = Vector2{pies.x, pies.y - 54.0f * e.zoom};
         }
@@ -298,8 +298,8 @@ void InterfazPergamino::pintaExploracion(const EstadoJuego& e, bool compacto) {
     }
     const std::size_t desdeHud = m_capas.baja.cuantos();  // MAPA-02: la flecha no pisa carteles ni retales
     if (!compacto) m_salidas = salidasCercanas(e);  // AV16-06: la flecha de suelo de cada salida
-    if (!compacto) pintaCarteles(m_capas.baja, p, e, d.avisoDestino);  // AV15-02: el nombre sobre cada puerta
-    if (!compacto) pintaBocadillosPnj(m_capas.baja, p, e, d.avisoDestino);  // PNJ-02: el oficio y las frases de los PNJ
+    if (!compacto) pintaCarteles(m_capas.baja, p, e, avisoEn);  // AV15-02: el nombre sobre cada puerta
+    if (!compacto) pintaBocadillosPnj(m_capas.baja, p, e, avisoEn);  // PNJ-02: el oficio y las frases de los PNJ
     if (!compacto) pintaEmociones(m_capas.baja, p, e);  // C2-04d: "!" y compania de las cinematicas
     m_retales.pinta(m_capas.baja, p, d, e.anchoVista, e.altoVista);
     const GuiaMapa::Vista vista{e.anchoVista, e.altoVista, e.camaraX, e.camaraY, e.zoom, e.mapa ? e.mapa->getTileWidth() : 0,
@@ -358,7 +358,7 @@ void InterfazPergamino::pintaPausa(const EstadoJuego& e) {
             fila.separadorAntes = entrada.action == Game::PauseAction::Title;
             d.entradas.push_back(fila);
         }
-        d.foco = static_cast<int>(e.pausa->selected());
+        d.foco = static_cast<int>(e.pausa->selected()), d.ancho = e.pausa->eligiendoPartida() ? 720.0f : d.ancho;  // D0034: fecha y lugar en la fila
         d.pie = {{{"ENTER"}, "Aceptar"}, {{"ESC"}, e.pausa->preguntando() ? "Volver" : "Reanudar"}};
     } else {
         return;
@@ -477,7 +477,7 @@ void InterfazPergamino::pintaCombate(const EstadoJuego& e) {
     d.retratoHeroe = e.retratoHeroe;
     d.sprites = e.sprites;
     d.registro = batalla->log();
-    d.aliados = aliadosEnMesa(*batalla);  // ACOMPANANTES-01
+    d.aliados = aliadosEnMesa(*batalla), d.turnoEnemigo = batalla->enemigoEnTurno(), d.turnoAliado = batalla->aliadoEnTurno();  // ACOMPANANTES-01, D0037
     for (std::size_t i = 0; i < batalla->enemies().size(); ++i) {
         const BattleParticipant& b = batalla->enemies()[i];
         EnemigoEnMesa en;

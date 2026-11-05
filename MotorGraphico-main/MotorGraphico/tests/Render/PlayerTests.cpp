@@ -806,7 +806,7 @@ MOTOR_TEST_CASE(player_escape_closes_interactions_and_never_quits_a_running_batt
     MOTOR_CHECK(PlayerControls::escapeAction(GameMode::Dialogue, false, false) == Action::CloseInteraction);
     MOTOR_CHECK(PlayerControls::escapeAction(GameMode::Shop, false, false) == Action::CloseInteraction);
     MOTOR_CHECK(PlayerControls::escapeAction(GameMode::Business, false, false) == Action::CloseInteraction);
-    MOTOR_CHECK(PlayerControls::escapeAction(GameMode::Battle, false, false) == Action::None);
+    MOTOR_CHECK(PlayerControls::escapeAction(GameMode::Battle, false, false) == Action::Pause);
     MOTOR_CHECK(PlayerControls::escapeAction(GameMode::GameOver, false, false) == Action::None);
 }
 

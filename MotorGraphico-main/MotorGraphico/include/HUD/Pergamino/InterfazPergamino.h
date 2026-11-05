@@ -13,6 +13,7 @@
 // decide esto, y se prueba sin ventana. El dibujo lo hace Render/PergaminoGL.
 #pragma once
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -116,10 +117,10 @@ struct AvisoInteraccion {
 };
 AvisoInteraccion avisoInteraccion(const GameSession& sesion);
 // AV15-02 (CartelesPuertas.cpp) — Sobre cada puerta cercana que lleva a un sitio con nombre, su cartel:
-// el emblema, el nombre y la funcion. No sobre `salvo` (la que ya dice el aviso «Entrar en …»).
-void pintaCarteles(Lienzo& l, const Pincel& p, const EstadoJuego& e, const std::string& salvo);
+// el emblema, el nombre y la funcion. No sobre la casilla `salvo` (la que ya dice el aviso «Entrar en …»; D0037).
+void pintaCarteles(Lienzo& l, const Pincel& p, const EstadoJuego& e, std::optional<GridCoord> salvo);
 // PNJ-02 (BocadillosPnj.cpp) — Sobre los PNJ: el icono de su oficio mientras lo hacen y sus frases (a 4 casillas o menos).
-void pintaBocadillosPnj(Lienzo& l, const Pincel& p, const EstadoJuego& e, const std::string& salvo);
+void pintaBocadillosPnj(Lienzo& l, const Pincel& p, const EstadoJuego& e, std::optional<GridCoord> salvo);
 // C2-04d (BocadillosEmocion.cpp) — Las emociones de las cinematicas: la misma bafarada, con alfa de
 // entrada/salida; el texto literal ("!", "...") si el icono no esta en el atlas.
 void pintaEmociones(Lienzo& l, const Pincel& p, const EstadoJuego& e);

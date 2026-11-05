@@ -28,6 +28,7 @@ struct GolpeCombate {
     bool aAliado = false;   // lo recibe tu bando
     std::size_t i = 0;      // su indice en ese bando
     std::string de, a;      // nombres ("" de: nadie, como el veneno)
+    std::string deId;       // D0036: quien pega, por su id
     std::string que;        // la carta o el arma («Atacar», «Lluvia de balas»)
     int cambio = 0;         // vida: negativo, dano; positivo, cura; 0, no entro
     Grado grado = Grado::Acierto;

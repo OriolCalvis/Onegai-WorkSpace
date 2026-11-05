@@ -164,6 +164,7 @@ struct Totales {
     std::set<std::string> sinColocar;
     std::map<std::string, int> rescates;
     int partidas = 0;
+    int muertes = 0, combatesConMuerte = 0, maxMuertesEnUno = 0, huidasTrasMorir = 0;  // D0027: morir reinicia el combate
 };
 
 class Explorador {
@@ -286,7 +287,7 @@ private:
                 for (const std::string* f : {&e.skillCheck.flagBotch, &e.skillCheck.flagPartial,
                                              &e.skillCheck.flagSuccess, &e.skillCheck.flagCritical,
                                              &e.battle.flagVictory, &e.battle.flagDefeat, &e.battle.flagHuida})
-                    puestas.insert(*f);
+                    if (!(e.battle.ineludible && (f == &e.battle.flagDefeat || f == &e.battle.flagHuida))) puestas.insert(*f);  // D0027: de un ineludible no se huye ni se pierde
                 for (const std::string& f : e.tabla.flags) puestas.insert(f);
             }
         };
@@ -643,10 +644,36 @@ private:
             for (const BattleRequest::Refuerzo& rf : b.refuerzos)
                 if (rf.requiere.isSatisfiedBy(m_s) && std::uniform_int_distribution<int>(0, 99)(m_azar) < 85)
                     for (const std::string& f : rf.flags) m_s.setFlag(f);
+            // Huir enciende flagHuida o, sin ella, flagDefeat (GameSession::syncBattleOutcome).
+            const auto huye = [&] { m_s.setFlag(!b.flagHuida.empty() ? b.flagHuida : b.flagDefeat.empty() ? b.flagVictory : b.flagDefeat); };
             const int d = std::uniform_int_distribution<int>(0, 99)(m_azar);
-            if (!b.flagHuida.empty() && !b.ineludible && d < 15) m_s.setFlag(b.flagHuida);
-            else if (d < 80) m_s.setFlag(b.flagVictory);
-            else m_s.setFlag(b.flagDefeat.empty() ? b.flagVictory : b.flagDefeat);
+            if (b.sinMatar) {  // D0027 §6: en una pelea sin matar se pierde y sigue la historia (flagDefeat)
+                m_s.setFlag(d < 80 || b.flagDefeat.empty() ? b.flagVictory : b.flagDefeat);
+                continue;
+            }
+            // D0027 — Morir NO enciende flagDefeat: el combate vuelve a empezar (con una cicatriz y un
+            // acto en la moral). Se sale ganando o huyendo (si se puede: un ineludible no se huye). Como
+            // el juego real no pone tope, el explorador se cansa a las kMaxMuertes y huye (o, sin salida,
+            // sigue hasta ganar).
+            constexpr int kMaxMuertes = 3, kTopeIneludible = 50;
+            int muertes = 0;
+            for (int intento = d;; intento = std::uniform_int_distribution<int>(0, 99)(m_azar)) {
+                if (intento < 65 || muertes >= kTopeIneludible) { m_s.setFlag(b.flagVictory); break; }
+                if (!b.ineludible && (intento < 80 || muertes >= kMaxMuertes)) {
+                    huye();
+                    if (muertes > 0) ++m_t.huidasTrasMorir;
+                    break;
+                }
+                ++muertes;
+                ++m_t.muertes;
+                const std::string& acto = moral::reglas().parametros.actoAlMorir;
+                if (const moral::DefinicionActo* a = moral::reglas().acto(acto)) {
+                    ++m_t.actosVistos[acto];
+                    m_moral.apunta(a->apuntado());
+                }
+            }
+            if (muertes > 0) ++m_t.combatesConMuerte;
+            m_t.maxMuertesEnUno = std::max(m_t.maxMuertesEnUno, muertes);
         }
         for (const TablaAleatoriaRequest& t : r.tablas)
             if (!t.flags.empty())
@@ -839,6 +866,8 @@ int main(int argc, char** argv) {
         std::printf("\n");
     }
 
+    std::printf("\n-- Muertes en combate (D0027: reinician el combate; sin flag): %d en %d combates, hasta %d en uno; %d combates acabaron huyendo tras morir\n",
+                t.muertes, t.combatesConMuerte, t.maxMuertesEnUno, t.huidasTrasMorir);
     std::printf("\n-- Actos que han pesado (veces)\n  ");
     for (const auto& [a, n] : t.actosVistos) std::printf(" %s %d ·", a.c_str(), n);
     std::printf("\n");

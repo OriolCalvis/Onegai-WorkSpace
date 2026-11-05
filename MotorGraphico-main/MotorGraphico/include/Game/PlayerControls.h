@@ -15,7 +15,7 @@ public:
     static PlayerEscapeAction escapeAction(GameMode mode, bool atTitle, bool inventoryOpen) {
         if (atTitle) return PlayerEscapeAction::Quit;
         if (inventoryOpen) return PlayerEscapeAction::CloseInventory;
-        if (mode == GameMode::Exploration) return PlayerEscapeAction::Pause;
+        if (mode == GameMode::Exploration || mode == GameMode::Battle) return PlayerEscapeAction::Pause;  // D0034
         if (mode == GameMode::Pause) return PlayerEscapeAction::Resume;
         if (mode == GameMode::Dialogue || mode == GameMode::Shop || mode == GameMode::Business)
             return PlayerEscapeAction::CloseInteraction;

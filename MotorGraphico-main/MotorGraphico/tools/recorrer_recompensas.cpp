@@ -75,7 +75,8 @@ void resultado(const RPG::NarrativeResult& r, const JsonValue& ruta, Partida& p,
         const bool gana = ruta["victoria"].asBool();
         if (gana) for (const auto& rf : b.refuerzos)
             if (rf.requiere.isSatisfiedBy(p.estado)) for (const auto& f : rf.flags) p.estado.setFlag(f);
-        const std::string f = gana ? b.flagVictory : b.flagDefeat;
+        // D0027: morir no enciende flagDefeat; perder es huir (flagHuida, o flagDefeat si no la hay).
+        const std::string f = gana || b.ineludible ? b.flagVictory : !b.flagHuida.empty() ? b.flagHuida : b.flagDefeat;
         exige(!f.empty(), "Combate sin salida del escenario");
         p.estado.setFlag(f);
     }

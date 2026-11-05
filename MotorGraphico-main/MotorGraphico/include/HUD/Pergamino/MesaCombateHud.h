@@ -44,6 +44,7 @@ struct EnemigoEnMesa {
 // sale en el orden de turno detras de el, con su vida o, si cura, las curas
 // que le quedan.
 struct AliadoEnMesa {
+    std::string id;  // D0037: BattleParticipant::id
     std::string nombre;
     std::string objectId;  // su retrato: el id del PNJ
     int pv = 0, pvMax = 0;
@@ -61,6 +62,7 @@ struct DatosCombate {
     const Game::CuadernoCreacion::Vista* retratoHeroe = nullptr;  // su aspecto, si lo hay
     std::vector<AliadoEnMesa> aliados;  // ACOMPANANTES-01
     std::vector<EnemigoEnMesa> enemigos;
+    int turnoEnemigo = -1, turnoAliado = 0;  // D0037: a quien le toca, por su indice
     std::vector<std::string> registro;  // el log del combate, el ultimo al final
     const Game::RegistroSprites* sprites = nullptr;
     // AV13-11 — El orden de la iniciativa (vacio: el de siempre) y a quien le toca.

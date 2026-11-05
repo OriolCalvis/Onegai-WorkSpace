@@ -18,6 +18,7 @@
 #include <utility>
 #include <vector>
 
+#include "Game/PauseMenu.h"
 #include "Core/Errors/Result.h"
 
 #include "Core/Math/Vector2.h"
@@ -100,6 +101,10 @@ struct ApplicationCinematica {
     // Partida nueva: nada a medias.
     static void reinicia(Application& app);
     static bool enCurso(const Application& app);
+    // D0034 — La lista de partidas de la pausa. confirmaPartidas atiende el ENTER si el papiro esta en ella.
+    static void abrePartidas(Application& app, Game::PauseAction accion, int pagina);
+    static bool confirmaPartidas(Application& app);
+    static void abrePersonajes(Application& app, int pagina);  // D0036: tambien desde el titulo
     // En update, después del cambio de nivel pendiente.
     static void actualiza(Application& app, float dt);
     // E-DISPARADORES-1 (D0026; codigo en src/Engine/ApplicationCinematicaDisparador.h) — La que empieza ahora: con el
@@ -162,10 +167,9 @@ struct ApplicationCinematica {
     static void golpesALaVista(Application& app, const BattleState& b, float dt);
     // AV14-08 — Quien juega ahora (a quien mira la camara): el enemigo en su turno, o tu.
     static std::string actorDe(const Application& app, const BattleState& b);
-    // AV13-33 — Has caido: una cicatriz mas para tu personaje (saves/<proyecto>/cicatrices.txt, fuera de
-    // las partidas, para que cargar no la borre) y la pantalla de «Has caído» lo dice.
-    static void ponCicatriz(Application& app);
-    // AV13-33 (ApplicationHud.cpp) — Al caer: la cicatriz y la escena de noqueo o rescate. Cada
+    // D0027 — La cicatriz ya no se apunta aqui: la suma la sesion al morir en combate
+    // (GameSession::reviveAlInicio, en saves/<proyecto>/cicatrices.txt).
+    // AV13-33 (ApplicationHud.cpp) — Al caer: la escena de noqueo o rescate. Cada
     // fotograma de la derrota, la escena avanza y el heroe se hunde; noqueoTecla se come el ENTER
     // mientras dura (pasa la frase) y devuelve false cuando ya toca el menu de «Has caído».
     static void empiezaNoqueo(Application& app);

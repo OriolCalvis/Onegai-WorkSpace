@@ -2863,6 +2863,7 @@
             "monsterId": "cultista_carcelero",
             "flagVictory": "bnd3_verina_libre",
             "flagDefeat": "bnd3_verina_muerta",
+            "ineludible": true,
             "enemigos": [
               {
                 "id": "cultista_carcelero",
@@ -2946,6 +2947,7 @@
                 "monsterId": "cultista_carcelero",
                 "flagVictory": "bnd3_verina_libre",
                 "flagDefeat": "bnd3_verina_muerta",
+                "ineludible": true,
                 "enemigos": [
                   {
                     "id": "cultista_carcelero",
@@ -3035,6 +3037,7 @@
                 "monsterId": "cultista_carcelero",
                 "flagVictory": "bnd3_verina_libre",
                 "flagDefeat": "bnd3_verina_muerta",
+                "ineludible": true,
                 "enemigos": [
                   {
                     "id": "cultista_carcelero",
@@ -3124,6 +3127,7 @@
                 "monsterId": "cultista_carcelero",
                 "flagVictory": "bnd3_verina_libre",
                 "flagDefeat": "bnd3_verina_muerta",
+                "ineludible": true,
                 "enemigos": [
                   {
                     "id": "cultista_carcelero",
@@ -3992,6 +3996,7 @@
                 "monsterId": "sandes",
                 "flagVictory": "bnd3_sandes_huye_casco",
                 "flagDefeat": "bnd3_sandes_gana_casco",
+                "ineludible": true,
                 "enemigos": [
                   {
                     "id": "sandes",
@@ -4130,6 +4135,7 @@
                 "monsterId": "sandes",
                 "flagVictory": "bnd3_sandes_huye_casco",
                 "flagDefeat": "bnd3_sandes_gana_casco",
+                "ineludible": true,
                 "enemigos": [
                   {
                     "id": "sandes",
@@ -4220,6 +4226,7 @@
                 ],
                 "flagVictory": "bnd3_verina_libre",
                 "flagDefeat": "bnd3_verina_muerta",
+                "ineludible": true,
                 "acompanantes": [
                   {
                     "id": "venides",
@@ -4317,7 +4324,7 @@
       },
       "speaker": "",
       "lines": [
-        "Las cadenas de Sandes te dejan en el suelo de la plaza. Cuando consigues levantarte, el estrado arde vacío.",
+        "Te zafas de las cadenas de Sandes y corres hasta el otro lado de la plaza. Cuando miras atras, el estrado arde vacio.",
         "Sandes se ha ido hacia Las Afueras, sin prisa. Como quien va a una cita."
       ],
       "effects": [
@@ -5159,7 +5166,7 @@
       ]
     },
     {
-      "id": "b3_rodeo_caido",
+      "id": "b3_rodeo_huida",
       "trigger": {
         "type": "auto"
       },
@@ -5175,20 +5182,24 @@
       },
       "speaker": "",
       "lines": [
-        "La calle se te acaba antes que las fuerzas."
+        "Das la espalda a la pelea y echas a correr por donde aun se puede."
       ],
       "effects": [
         {
           "type": "setFlag",
-          "arg": "bnd3_final_caido"
+          "arg": "bnd3_final_huido"
         },
         {
           "type": "setFlag",
           "arg": "bnd3_fuera"
         },
         {
+          "type": "setFlag",
+          "arg": "bnd3_salio_vivo"
+        },
+        {
           "type": "log",
-          "arg": "FINAL: caído en Boundington."
+          "arg": "FINAL: huida de Boundington."
         }
       ]
     },
@@ -5227,6 +5238,7 @@
             "monsterId": "edul_furioso",
             "flagVictory": "bnd3_edul_cae",
             "flagDefeat": "bnd3_edul_gana",
+            "ineludible": true,
             "acompanantes": [
               {
                 "id": "xila",
@@ -5281,6 +5293,7 @@
                 "monsterId": "cultista_carcelero",
                 "flagVictory": "bnd3_edul_libre",
                 "flagDefeat": "bnd3_edul_perdido",
+                "ineludible": true,
                 "enemigos": [
                   {
                     "id": "cultista_carcelero",
@@ -5393,6 +5406,7 @@
             "monsterId": "edul_furioso",
             "flagVictory": "bnd3_edul_cae",
             "flagDefeat": "bnd3_edul_gana",
+            "ineludible": true,
             "acompanantes": [
               {
                 "id": "xila",
@@ -5448,6 +5462,7 @@
                 "monsterId": "guardia_comprado",
                 "flagVictory": "bnd3_edul_libre",
                 "flagDefeat": "bnd3_edul_perdido",
+                "ineludible": true,
                 "enemigos": [
                   {
                     "id": "guardia_comprado",
@@ -5534,6 +5549,7 @@
                 "monsterId": "guardia_comprado",
                 "flagVictory": "bnd3_edul_libre",
                 "flagDefeat": "bnd3_edul_perdido",
+                "ineludible": true,
                 "enemigos": [
                   {
                     "id": "guardia_comprado",
@@ -5881,6 +5897,7 @@
                 "monsterId": "guardia_comprado",
                 "flagVictory": "bnd3_venides_libre",
                 "flagDefeat": "bnd3_venides_perdido",
+                "ineludible": true,
                 "enemigos": [
                   {
                     "id": "guardia_comprado",
@@ -6026,6 +6043,8 @@
             "monsterId": "sandes",
             "flagVictory": "bnd3_sandes_vencido",
             "flagDefeat": "bnd3_sandes_gana",
+            "ineludible": true,
+            "rescateAlMorir": "b3_compania",
             "acompanantes": [
               {
                 "id": "venides",
@@ -6143,6 +6162,8 @@
             "monsterId": "sandes",
             "flagVictory": "bnd3_sandes_vencido",
             "flagDefeat": "bnd3_sandes_gana",
+            "ineludible": true,
+            "rescateAlMorir": "b3_compania",
             "acompanantes": [
               {
                 "id": "venides",
@@ -6282,6 +6303,7 @@
             "monsterId": "sandes",
             "flagVictory": "bnd3_sandes_vencido",
             "flagDefeat": "bnd3_sandes_gana_del_todo",
+            "ineludible": true,
             "acompanantes": [
               {
                 "id": "mago_de_las_tinieblas"
@@ -6413,7 +6435,7 @@
       },
       "speaker": "",
       "lines": [
-        "Te levantas como puedes. Sandes ya no está: tiene una ciudad que quemar y un plan que seguir."
+        "Corres hasta que te falta el aire. Sandes no te sigue: tiene una ciudad que quemar y un plan que seguir."
       ],
       "effects": [
         {
@@ -6654,7 +6676,7 @@
       ]
     },
     {
-      "id": "b3_caida",
+      "id": "b3_huida_perdida",
       "trigger": {
         "type": "auto"
       },
@@ -6671,7 +6693,7 @@
       },
       "speaker": "",
       "lines": [
-        "La calle se te acaba antes que las fuerzas.",
+        "Das la espalda a la pelea y echas a correr. Nadie te sigue: esta noche hay presas mas faciles.",
         "Boundington arderá igual esta noche, con o sin ti. Esa era la parte que no dependía de nadie.",
         "La otra parte, la de cuánta gente sale, esa sí dependía. Y hoy sale menos."
       ],
@@ -6682,11 +6704,15 @@
         },
         {
           "type": "setFlag",
-          "arg": "bnd3_final_caido"
+          "arg": "bnd3_final_huido"
+        },
+        {
+          "type": "setFlag",
+          "arg": "bnd3_salio_vivo"
         },
         {
           "type": "log",
-          "arg": "FINAL: caído en Boundington."
+          "arg": "FINAL: huida de Boundington."
         }
       ]
     },
@@ -6718,14 +6744,14 @@
       ]
     },
     {
-      "id": "b3_epilogo_caido",
+      "id": "b3_epilogo_huido",
       "trigger": {
         "type": "auto"
       },
       "requires": {
         "allFlags": [
           "bnd3_fuera",
-          "bnd3_final_caido"
+          "bnd3_final_huido"
         ],
         "notFlags": [
           "bnd3_epilogo",

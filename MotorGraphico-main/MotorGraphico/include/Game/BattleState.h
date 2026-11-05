@@ -85,6 +85,9 @@ struct BattleParticipant {
     // deben desaparecer del inventario REAL del jugador, no de una
     // copia). nullptr = sin inventario (enemigos, en este MVP).
     std::vector<std::string>* inventory = nullptr;
+    // D0036 — Quien es en este combate («a0», «e3»: bando e indice). El nombre solo se enseña y se repite.
+    // Lo pone la batalla al recibirlo.
+    std::string id;
 };
 
 class BattleState {
@@ -174,6 +177,7 @@ public:
     // tirarla, el turno de siempre: tu, y luego todos los enemigos de golpe.
     void tiraIniciativa();
     const Game::OrdenDeTurno& orden() const { return m_campo.orden; }
+    void colocaLosNuevos();  // D0037
     int enemigoEnTurno() const;  // a que enemigo le toca; -1: a un aliado, o sin iniciativa
     // AV13-29 — A que aliado le toca (0 el heroe; -1: a un enemigo). Sin iniciativa, al heroe.
     int aliadoEnTurno() const;

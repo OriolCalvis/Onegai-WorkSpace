@@ -1,0 +1,9 @@
+# 2026-11-04 — claude — Revivir al inicio del combate (E-REVIVIR-01, D0027)
+
+- **Rama:** `agente/claude/UNI-02-11` (worktree `~/onegai-ramas/UNI-02-11`).
+- **Hecho:** D0027 en la sesión, GL-free: al empezar cada oleada se toma una foto (`Game::FotoCombate`: héroe —vida, mana, mochila, oro, casilla—, enemigos —vida, mana, casilla—, pedido con refuerzos y flags) y, si el héroe cae, se devuelve y el combate vuelve a empezar (`GameSession::reviveAlInicio`, `src/Game/GameSessionRevivir.cpp`). Cada muerte suma una cicatriz (fuera de la partida guardada; la suma la sesión, ya no la Application), apunta el acto `heroe_cae_en_combate` (menor, `moral.json` → `alMorir`, `actos.json`) y deja tres líneas en el registro del combate. `flagDefeat` ya no se enciende al morir; las peleas `sinMatar` siguen como siempre.
+- **Pruebas:** `tests/Game/RevivirAlInicioTests.cpp` (11, con mutación roja/verde en `out/fabrica/UNI-02-11/logs_revivir1/*_mut.log`); `CaerEnMisionTests`, `demo_game_session`, `demo_narrativa_combate` y los caminos de matriz que forzaban «perder» pasan a afirmar D0027.
+- **Hallazgos para Oriol:** `out/fabrica/UNI-02-11/REVIVIR_1.md` (8 `flagDefeat` inalcanzables, 2 beats muertos, el final «Caíste en Boundington» y el objetivo «Salir de Boundington» alcanzables solo huyendo, 3 entradas de diario muertas).
+- **Captura real:** `capturas/r1_inicio.png`, `r1_cae.png`, `r1_reinicia.png` (guion `tools/guiones/r1_morir.txt`, héroe a 1 PV en Pico Dragon).
+- **Deja esperando a Oriol:** confirmar D0027 §4–6 (valores por defecto del Brain); decidir qué hacer con lo de REVIVIR_1.md (no se ha reescrito historia); la reputación por muerte (`aegroum` −2) es un número mío.
+- **No comprobado:** el combate real de los de «ineludible» (no hay ninguno en el contenido); la persistencia de la cicatriz solo se vio en el fichero `saves/boundington/cicatrices.txt` del build.

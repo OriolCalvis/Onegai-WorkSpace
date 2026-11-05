@@ -1,5 +1,7 @@
 #include "Game/PauseMenu.h"
 
+#include <algorithm>
+
 namespace Game {
 
 namespace {
@@ -23,6 +25,14 @@ PauseMenu PauseMenu::create() {
     menu.m_entries.push_back(PauseEntry{"Sortir", PauseAction::Quit});
 
     menu.m_selected = 0;
+    return menu;
+}
+
+PauseMenu PauseMenu::createEnCombate() {
+    PauseMenu menu = create();
+    menu.m_entries.erase(std::remove_if(menu.m_entries.begin(), menu.m_entries.end(),
+                                        [](const PauseEntry& e) { return e.action == PauseAction::Character || e.action == PauseAction::Inventory; }),
+                         menu.m_entries.end());
     return menu;
 }
 
@@ -77,6 +87,32 @@ void PauseMenu::olvidaPregunta() {
     m_pendiente = PauseAction::None;
     m_titulo.clear();
     m_detalle.clear();
+    m_filas.clear();
+    m_pagina = 0;
+    m_partida = FilaPartida::kNinguna;
+    m_vista = VistaPartidas::Lista;
+    m_personaje.clear();
+}
+
+void PauseMenu::eligePartida(PauseAction accion, const std::string& titulo, const std::string& detalle,
+                             const std::vector<FilaPartida>& filas, int pagina, VistaPartidas vista) {
+    if (accion == PauseAction::None || filas.empty()) return;
+    if (!preguntando()) m_menu = m_entries;
+    m_entries.clear();
+    for (const FilaPartida& f : filas) m_entries.push_back(PauseEntry{f.texto, PauseAction::None});
+    m_filas = filas;
+    m_selected = 0;
+    m_pendiente = accion;
+    m_titulo = titulo;
+    m_detalle = detalle;
+    m_pagina = pagina;
+    m_vista = vista;
+}
+
+void PauseMenu::preguntaPorPartida(PauseAction accion, int ranura, const std::string& titulo, const std::string& detalle, const std::string& no, const std::string& si) {
+    m_filas.clear();
+    pregunta(accion, titulo, detalle, no, si);
+    m_partida = ranura;
 }
 
 }  // namespace Game

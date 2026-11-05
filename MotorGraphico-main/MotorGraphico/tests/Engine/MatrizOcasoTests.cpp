@@ -11,6 +11,8 @@
 // MATRIZ_MUTAR=1 hace que la prueba verde use la copia mutada (sale en ROJO: es como se deja el log de cada mutacion).
 #include <algorithm>
 #include <filesystem>
+#include <fstream>
+#include <iterator>
 #include <string>
 
 #include "TestHarness.h"
@@ -80,7 +82,7 @@ MOTOR_TEST_CASE(sin_el_efecto_de_la_decision_el_final_del_ocaso_falla) {
     }
 }
 
-// Los caminos listados son los que pide la matriz: los tres finales (oeste, solos, caido), el aviso de Xila (si / no / tras correr), Venides sin
+// Los caminos listados son los que pide la matriz: los tres finales (oeste, solos, huido), el aviso de Xila (si / no / tras correr), Venides sin
 // aviso, la Barriada delatada, Sandes aliado, el norte y los sacrificios; y a lo sumo 10.
 MOTOR_TEST_CASE(estan_los_finales_y_caminos_que_pide_la_matriz_del_ocaso) {
     std::set<std::string> ids, finales;
@@ -88,10 +90,10 @@ MOTOR_TEST_CASE(estan_los_finales_y_caminos_que_pide_la_matriz_del_ocaso) {
         ids.insert(c.id);
         finales.insert(c.final);
     }
-    for (const char* quiero : {"oeste_todos", "oeste_xila_avisa", "oeste_xila_sin_aviso", "oeste_sin_venides", "solos_delatada", "sandes_aliado", "oeste_norte", "caido", "sacrificios"})
+    for (const char* quiero : {"oeste_todos", "oeste_xila_avisa", "oeste_xila_sin_aviso", "oeste_sin_venides", "solos_delatada", "sandes_aliado", "oeste_norte", "huido", "sacrificios"})
         MOTOR_CHECK(ids.count(quiero) == 1);
     MOTOR_CHECK(caminosOcaso().size() <= 10);
-    MOTOR_CHECK(finales.count("bnd3_final_oeste") == 1 && finales.count("bnd3_final_solos") == 1 && finales.count("bnd3_final_caido") == 1);
+    MOTOR_CHECK(finales.count("bnd3_final_oeste") == 1 && finales.count("bnd3_final_solos") == 1 && finales.count("bnd3_final_huido") == 1);
     // Cada camino parte de un dia 3 que existe, y ese dia 3 es uno de los de la matriz del dia 3.
     for (const CaminoOcaso& c : caminosOcaso()) MOTOR_CHECK(std::string(caminoDia3(c.dia3).id) == c.dia3);
 }
@@ -121,8 +123,8 @@ MOTOR_TEST_CASE(hallazgo_el_final_con_los_perdidos_queda_tapado_por_la_huida_de_
     MOTOR_CHECK(posGitanos >= 0 && posGitanos < posSola && posSola < posAliado);
 }
 
-// E-HALLAZGOS-01 (hallazgos 2 y 3 de la matriz): el diario del Ocaso solo da por hecho «Sal de Boundington con vida» (obj3_salir) si el heroe sale
-// (bnd3_salio_vivo, que ponen las tres salidas; ya no bnd3_fuera, que b3_caida tambien pone) y cuenta como acabo la noche (decision bnd3_final).
+// E-HALLAZGOS-01 y D0028: el diario del Ocaso solo da por hecho «Sal de Boundington con vida» (obj3_salir) si el heroe sale (bnd3_salio_vivo,
+// que ponen todas las salidas, tambien la huida a la carrera) y cuenta como acabo la noche (decision bnd3_final).
 namespace {
 struct DiarioDelOcaso {
     bool salirHecho = false, hayMision = false;
@@ -149,26 +151,61 @@ DiarioDelOcaso diarioDelOcaso(const demo_bnd::Guiones& g, std::initializer_list<
 }
 }  // namespace
 
-MOTOR_TEST_CASE(el_diario_no_da_por_hecha_la_salida_si_el_heroe_cae_y_cuenta_como_acabo_la_noche) {
+MOTOR_TEST_CASE(el_diario_da_por_hecha_la_salida_solo_al_salir_y_cuenta_como_acabo_la_noche) {
     Fabrica f;
-    const DiarioDelOcaso caido = diarioDelOcaso(f.g, {"bnd3_fuera", "bnd3_final_caido"});
-    MOTOR_CHECK(caido.hayMision);
-    MOTOR_CHECK(!caido.salirHecho);                               // caer no es «salir con vida»
-    MOTOR_CHECK(caido.final.find("Caíste") != std::string::npos);
+    const DiarioDelOcaso huido = diarioDelOcaso(f.g, {"bnd3_fuera", "bnd3_salio_vivo", "bnd3_final_huido"});
+    MOTOR_CHECK(huido.hayMision);
+    MOTOR_CHECK(huido.salirHecho);                                // huir tambien es «salir con vida» (D0028)
+    MOTOR_CHECK(huido.final.find("Huiste") != std::string::npos);
+    const DiarioDelOcaso sinSalir = diarioDelOcaso(f.g, {"bnd3_fuera"});  // estar fuera de la historia no basta
+    MOTOR_CHECK(!sinSalir.salirHecho);
     const DiarioDelOcaso oeste = diarioDelOcaso(f.g, {"bnd3_fuera", "bnd3_salio_vivo", "bnd3_final_oeste"});
     MOTOR_CHECK(oeste.salirHecho && oeste.final.find("con los gitanos") != std::string::npos);
     const DiarioDelOcaso solos = diarioDelOcaso(f.g, {"bnd3_fuera", "bnd3_salio_vivo", "bnd3_final_solos"});
     MOTOR_CHECK(solos.salirHecho && solos.final.find("sin los gitanos") != std::string::npos);
     const DiarioDelOcaso antes = diarioDelOcaso(f.g, {});         // antes del final no se anuncia nada
     MOTOR_CHECK(!antes.salirHecho && antes.final.empty());
-    // Las tres salidas de verdad ponen bnd3_salio_vivo y las dos caidas no.
-    for (const char* b : {"b3_huida_gitanos", "b3_huida_sola", "b3_aliado_fuera", "b3_caida", "b3_rodeo_caido"}) {
+    // Todas las salidas ponen bnd3_salio_vivo: nadie muere en el final (D0027, D0028).
+    for (const char* b : {"b3_huida_gitanos", "b3_huida_sola", "b3_aliado_fuera", "b3_huida_perdida", "b3_rodeo_huida"}) {
         bool pone = false;
         for (const RPG::NarrativeBeat& beat : f.g.ocaso.beats)
             if (beat.id == b)
                 for (const RPG::NarrativeEffect& e : beat.effects) pone = pone || (e.type == RPG::EffectType::SetFlag && e.arg == "bnd3_salio_vivo");
-        MOTOR_CHECK(pone == (std::string(b).find("caid") == std::string::npos));
+        MOTOR_CHECK(pone);
     }
+}
+
+// D0029: a estas ramas solo se llega huyendo (D0027: morir reinicia el combate), asi que su texto cuenta una huida y no una caida.
+MOTOR_TEST_CASE(las_ramas_a_las_que_se_llega_huyendo_cuentan_una_huida) {
+    Fabrica f;
+    const struct {
+        const RPG::AdventureScript* guion;
+        const char* beat;
+        const char* dice;
+    } ramas[] = {
+        {&f.g.gorran, "bgd_perdida", "Echas a correr"},   {&f.g.gorran, "bgb_detras_perdida", "Echas a correr"},
+        {&f.g.dia2, "b2_saqueadores_ganan", "corres"},    {&f.g.dia1, "b1_secta_ganan", "Te escapas"},
+        {&f.g.ocaso, "b3_sandes_gana_casco", "corres"},
+        {&f.g.ocaso, "b3_sandes_sigue", "Corres"},
+    };
+    for (const auto& rama : ramas) {
+        bool visto = false;
+        for (const RPG::NarrativeBeat& beat : rama.guion->beats) {
+            if (beat.id != rama.beat) continue;
+            visto = true;
+            std::string texto;
+            for (const std::string& l : beat.lines) texto += l + "\n";
+            MOTOR_CHECK(texto.find(rama.dice) != std::string::npos);
+            for (const char* caida : {"Caes", "Despiertas", "levantas", "levantarte"}) MOTOR_CHECK(texto.find(caida) == std::string::npos);
+        }
+        MOTOR_CHECK(visto);
+    }
+    // El diario cuenta la huida con la flag que de verdad se enciende.
+    std::ifstream quests("assets/catalogs/quests.json");
+    const std::string diario((std::istreambuf_iterator<char>(quests)), std::istreambuf_iterator<char>());
+    MOTOR_CHECK(diario.find("\"bnd1_guarida_huida\"") != std::string::npos);
+    // D0031: de los saqueadores de la Barriada ya no se huye, asi que no hay entrada de huir ni de perder.
+    for (const char* muerta : {"\"bnd1_guarida_perdida\"", "\"bnd2_saqueadores_ganan\"", "\"bnd2_saqueadores_huido\""}) MOTOR_CHECK(diario.find(muerta) == std::string::npos);
 }
 
 // E-HALLAZGOS-01 (hallazgo 4): quedarse a luchar en la base pone bnd3_ruta_quedarse y, al caer la base (b3_base_cae), tambien bnd3_ruta_oeste. El

@@ -64,6 +64,7 @@ void GameSession::resolveShopOffers(const ObjectDefinition& def) {
     const RPG::CharacterSheet* ficha =
         sessionData()->m_playerBody != nullptr ? sessionData()->m_playerBody->character_sheet() : nullptr;
     const int ajuste = Game::ajustePrecioPct(Game::facciones(), ficha, def.id);
+    sessionData()->m_currentBusinessId = def.id;  // D0036: de quien es la tienda abierta; el nombre se repite
     sessionData()->m_shopBuybackPercent = Game::recompraConAjuste(def.shop.buybackPercent, ajuste);
     for (const ShopItem& item : def.shop.items) {
         const ObjectDefinition* itemDef =

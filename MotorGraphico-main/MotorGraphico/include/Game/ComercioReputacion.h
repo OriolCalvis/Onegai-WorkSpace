@@ -59,10 +59,6 @@ int recompraConAjuste(int recompraPct, int ajustePct);
 // «Te aprecian», «Te estiman», «Eres de los suyos».
 std::string comoTeVen(int reputacion);
 
-// El tendero abierto, por su nombre (la sesión solo guarda cómo se llama):
-// el id del PNJ de alguna facción que se llama así, o vacío.
-std::string tenderoPorNombre(const ReglasFacciones& reglas, const ObjectCatalog* catalogo,
-                             const std::string& nombre);
 // La línea de la tienda: «Aegroum te aprecia (+12): pagas un 9 % menos.»
 // Vacía si su facción no cambia el precio.
 std::string lineaDeLaTienda(const ReglasFacciones& reglas, const RPG::CharacterSheet* ficha,

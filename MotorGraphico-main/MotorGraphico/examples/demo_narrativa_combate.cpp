@@ -175,7 +175,7 @@ int main() {
     // ---------------------------------------------------------------
     // 2. Perder enciende flagDefeat.
     // ---------------------------------------------------------------
-    std::printf("\n[2] perder enciende la otra flag\n");
+    std::printf("\n[2] caer no enciende la flag de derrota (D0027): el combate se reinicia y huir enciende la otra flag\n");
     {
         Muneco heroe(1);     // se cae con nada
         SkillSet skills(0);
@@ -199,11 +199,18 @@ int main() {
             b->resolveAllyAction(0, ataque);
             b->resolveEnemyTurn();
             s.syncBattleOutcome();
+            if (s.muertes() >= 1 && s.mode() == GameMode::Battle && s.battle() != nullptr) {
+                // D0027: morir reinicia el combate sin encender ninguna flag; la derrota solo llega huyendo.
+                require(!estado.hasFlag("emboscada_perdida") && !estado.hasFlag("emboscada_ganada"));
+                s.battle()->resolveAllyAction(0, BattleAction{BattleActionType::Flee, "", 0, ""});
+                s.syncBattleOutcome();
+            }
         }
         const bool gano = estado.hasFlag("emboscada_ganada");
         const bool perdio = estado.hasFlag("emboscada_perdida");
-        std::printf("    resultado: %s\n", gano ? "victoria" : (perdio ? "derrota" : "NINGUNA"));
+        std::printf("    resultado: %s (muertes: %d)\n", gano ? "victoria" : (perdio ? "huida (flag de derrota)" : "NINGUNA"), s.muertes());
         require(gano || perdio);   // una de las dos, nunca ninguna
+        require(gano || s.muertes() >= 1);  // quien no gana, antes murio
     }
 
     // ---------------------------------------------------------------

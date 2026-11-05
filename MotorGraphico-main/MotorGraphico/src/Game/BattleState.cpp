@@ -48,11 +48,17 @@ int firstAliveIndex(const std::vector<BattleParticipant>& side) {
 
 }  // namespace
 
+// D0036 — El id de cada participante, por bando e indice: nunca se quita a nadie de un bando.
+static std::vector<BattleParticipant> conIds(std::vector<BattleParticipant> gente, const char* bando) {
+    for (std::size_t i = 0; i < gente.size(); ++i) gente[i].id = bando + std::to_string(i);
+    return gente;
+}
+
 BattleState::BattleState(std::vector<BattleParticipant> allies,
                          std::vector<BattleParticipant> enemies, SkillCatalog* catalog,
                          ObjectCatalog* objectCatalog)
-    : m_allies(std::move(allies))
-    , m_enemies(std::move(enemies))
+    : m_allies(conIds(std::move(allies), "a"))
+    , m_enemies(conIds(std::move(enemies), "e"))
     , m_catalog(catalog)
     , m_objectCatalog(objectCatalog) {
     checkOutcome();
@@ -76,7 +82,7 @@ Game::ContextoBatalla BattleState::contexto() {
     if (m_campo.tablero)
         c.casillaDe = [this](bool aliado, std::size_t i) -> std::optional<GridCoord> {
             const auto& lado = aliado ? m_allies : m_enemies;
-            return i < lado.size() ? m_campo.tablero->dondeEsta(lado[i].name) : std::nullopt;
+            return i < lado.size() ? m_campo.tablero->dondeEsta(lado[i].id) : std::nullopt;
         };
     if (m_campo.tablero)
         c.muro = [this](int x, int y) {  // como Game::esMuro: no se pisa y no hay nadie
@@ -84,7 +90,7 @@ Game::ContextoBatalla BattleState::contexto() {
         };
     if (m_campo.tablero)
         c.alLado = [this](std::size_t a, std::size_t e) {
-            return a < m_allies.size() && e < m_enemies.size() && m_campo.tablero->aTiro(m_allies[a].name, m_enemies[e].name, 1);
+            return a < m_allies.size() && e < m_enemies.size() && m_campo.tablero->aTiro(m_allies[a].id, m_enemies[e].id, 1);
         };
     return c;
 }
@@ -110,7 +116,7 @@ void BattleState::resolveAllyAction(std::size_t allyIndex, const BattleAction& a
     }
     // AV14-01: al acabar, lo que ha cambiado, como golpes.
     struct Apunta { BattleState* b; FotoVidas antes; std::string de; ~Apunta() { b->anotaGolpes(antes, de, Game::GolpeCombate::Grado::Acierto); } };
-    const Apunta apunta{this, fotoVidas(), m_allies[allyIndex].name};
+    const Apunta apunta{this, fotoVidas(), m_allies[allyIndex].id};
     // CAER-01 — Antes que la mesa: si no, la mesa daria el turno por cerrado.
     if (action.type == BattleActionType::Flee && m_sinHuida) {
         logLine("De este combate no se huye.");
@@ -208,7 +214,7 @@ void BattleState::resuelveEnemigo(std::size_t indice) {
     BattleParticipant& enemy = m_enemies[indice];
     // AV14-01: al acabar, lo que ha cambiado, como golpes.
     struct Apunta { BattleState* b; FotoVidas antes; std::string de; ~Apunta() { b->anotaGolpes(antes, de, Game::GolpeCombate::Grado::Acierto); } };
-    const Apunta apunta{this, fotoVidas(), enemy.name};
+    const Apunta apunta{this, fotoVidas(), enemy.id};
     struct Guion { BattleState* b; std::size_t i; ~Guion() { b->guionGolpeMortal(i); } };  // AV13-34, antes que Apunta
     const Guion guion{this, indice};
     {
@@ -287,7 +293,7 @@ void BattleState::tickRound() {
         m_campo.tablero->reponPasos();
         for (const auto* lado : {&m_allies, &m_enemies})
             for (const BattleParticipant& p : *lado)
-                if (!participantAlive(p)) m_campo.tablero->quita(p.name);
+                if (!participantAlive(p)) m_campo.tablero->quita(p.id);
     }
     // H2-06 — Los estados de las cartas tambien avanzan (dano por turno,
     // duraciones, invocaciones que se acaban).

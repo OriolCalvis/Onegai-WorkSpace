@@ -216,7 +216,7 @@ void testFleeKeepsEnemyAndDefeatIsTerminal() {
         require(session.mode() == GameMode::Battle);
     }
 
-    // --- Derrota: GameOver terminal ---
+    // --- Derrota: el combate vuelve a empezar (D0027) ---
     {
         LevelDefinition level = makeLevel();
         // Cambiar el slime por el goblin de 200 PV (imposible de matar a
@@ -236,13 +236,18 @@ void testFleeKeepsEnemyAndDefeatIsTerminal() {
             session.battle()->resolveEnemyTurn();
         require(session.battle()->outcome() == BattleOutcome::Defeat);
         require(session.syncBattleOutcome());
-        require(session.mode() == GameMode::GameOver);
-        // Terminal: ni se explora ni se sale de ahi.
+        // D0027: no hay GameOver. El combate vuelve a empezar con la vida con la que empezo (15) y una cicatriz mas.
+        require(session.mode() == GameMode::Battle && session.battle() != nullptr);
+        require(session.battle()->outcome() == BattleOutcome::InProgress);
+        require(player.health() == 15 && session.muertes() == 1 && session.cicatrices() == 1);
+        // En combate no se explora; se sale huyendo, y el goblin sigue ahi.
         require(!session.tryMovePlayer(0, -1));
-        require(session.mode() == GameMode::GameOver);
+        session.battle()->resolveAllyAction(0, BattleAction{BattleActionType::Flee, "", 0, ""});
+        require(session.syncBattleOutcome());
+        require(session.mode() == GameMode::Exploration && session.enemies().size() == 1);
     }
 
-    std::cout << "[SESION] huida (enemigo intacto) y derrota (GameOver terminal) correctas.\n";
+    std::cout << "[SESION] huida (enemigo intacto) y derrota (el combate se reinicia, D0027) correctas.\n";
 }
 
 void testPlayerStateCarriesOver() {

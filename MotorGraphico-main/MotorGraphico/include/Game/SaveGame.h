@@ -84,6 +84,7 @@ struct SavedEnemy {
 // Clave aditiva, sin subir kSchemaVersion (como characterName): un guardado
 // sin ella carga como antes, sin ficha, y solo se escribe con clase.
 struct SavedHero {
+    std::string uuid;  // D0035: quien es, para siempre; el nombre se repite y puede cambiar
     std::string raceId, classId, backgroundId, deityId;
     std::string bondId, fearId, flawId, goalId, idealId, personalityId, virtueId;
     std::vector<std::string> equipped;  // una por ranura (RPG::EquipSlot); "" = nada
@@ -98,6 +99,21 @@ struct SavedHero {
     std::map<std::string, int> reputacion;
 
     bool empty() const { return classId.empty(); }
+};
+
+// D0033 — Un combate a medias: quienes pelean (ya estan en SaveGameData::enemies), quien va al lado y
+// los pedidos de la historia en texto JSON (el primero es el combate; el resto, las oleadas que siguen).
+// Sin clave en el fichero, no hay combate.
+struct CombateGuardado {
+    struct Enemigo {
+        bool summoned = false;
+        int spawnIndex = -1;
+        std::string objectId;
+    };
+    std::vector<Enemigo> enemigos;
+    std::vector<std::string> aLado;
+    std::string pedidos;
+    bool hay() const { return !enemigos.empty(); }
 };
 
 struct SaveGameData {
@@ -153,6 +169,7 @@ struct SaveGameData {
     std::vector<OwnedBusiness> businesses;
     std::vector<SavedWorldObject> worldObjects;
     std::vector<SavedEnemy> enemies;
+    CombateGuardado combate;  // D0033
 
     // Aventura: flags encendidas, beats ya disparados y temporizadores.
     // Sin esto, cargar una partida repetiria el prologo y volveria a dar

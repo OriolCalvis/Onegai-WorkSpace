@@ -115,9 +115,10 @@ MOTOR_TEST_CASE(dos_proyectos_con_nombres_y_entradas_distintos) {
     MOTOR_CHECK(fs::path(b.entryPath()).filename() == "cripta_puerta.json");
     MOTOR_CHECK(fs::exists(a.entryPath()));
 
-    const std::vector<TitleCommand> esperado{TitleCommand::Continue, TitleCommand::NewGame,
+    const std::vector<TitleCommand> esperado{TitleCommand::Continue, TitleCommand::LoadGame, TitleCommand::NewGame,
                                              TitleCommand::Options, TitleCommand::Quit};
     MOTOR_CHECK(comandos(a) == esperado);
+    MOTOR_CHECK(!item(a, TitleCommand::LoadGame).enabled);  // D0036: sin partidas de nadie, apagada con su motivo
     MOTOR_CHECK(item(a, TitleCommand::NewGame).enabled);
     // Sin guardados el cursor empieza en Nueva partida, no en la apagada.
     MOTOR_CHECK(a.selectedItem().command == TitleCommand::NewGame);
@@ -166,6 +167,7 @@ MOTOR_TEST_CASE(continuar_apagado_dice_por_que_y_no_se_ejecuta) {
     MOTOR_CHECK(seguir.reason == "No hay ninguna partida guardada.");
     MOTOR_CHECK(t.continueSlot() == -1);
     // Se puede señalar (para leer el motivo), pero no se ejecuta.
+    t.moveUp();  // «Cargar partida», apagada
     t.moveUp();
     MOTOR_CHECK(t.selectedItem().command == TitleCommand::Continue);
     MOTOR_CHECK(t.confirm() == TitleCommand::None);
@@ -215,6 +217,18 @@ MOTOR_TEST_CASE(continuar_apunta_a_la_partida_mas_reciente_del_proyecto) {
     MOTOR_CHECK(ranuras.save(Game::SaveSlots::kQuickSlot, partida("Kael", "2026-09-16 08:00")).isOk());
     const auto u = TitleMenuState::fromManifest(j.manifiesto("la_llave"), j.base.string(), j.saves());
     MOTOR_CHECK(u.continueSlot() == Game::SaveSlots::kQuickSlot);
+}
+
+// D0036 — «Cargar partida» se enciende con las partidas de cualquier personaje, aunque no haya guardado rapido.
+MOTOR_TEST_CASE(cargar_partida_se_enciende_con_las_partidas_de_un_personaje) {
+    Juego j;
+    j.proyecto("la_llave", "La llave", "entrada.json");
+    Game::SaveSlots partidas = Game::partidasDelPersonaje(j.saves(), "la_llave", "uuid-kael");
+    MOTOR_CHECK(partidas.save(1, partida("Kael", "2026-09-10 10:00")).isOk());
+    auto t = TitleMenuState::fromManifest(j.manifiesto("la_llave"), j.base.string(), j.saves());
+    MOTOR_CHECK(item(t, TitleCommand::LoadGame).enabled);
+    MOTOR_CHECK(t.selectedItem().command == TitleCommand::LoadGame);
+    MOTOR_CHECK(t.confirm() == TitleCommand::LoadGame);
 }
 
 MOTOR_TEST_CASE(solo_guardados_rotos_o_de_otra_version) {

@@ -230,7 +230,7 @@ Result<bool> Application::loadLevel(const std::string& levelPath, bool useEntry,
                                               &m_inventory, m_world.get(), &m_monsterCatalog);
     m_session->applyCarryOver(carried);
     if (!nivelDeAntes.empty()) m_session->ponVuelta(nivelDeAntes, puertaDeAntes);
-    m_session->setConditionCatalog(&m_conditions);
+    m_session->setConditionCatalog(&m_conditions);  m_session->ponRutaCicatrices("saves/" + (m_projectId.empty() ? std::string("sin_proyecto") : m_projectId) + "/cicatrices.txt");  // D0027
     // H2-06 — Las cartas de clase en combate (se cargan la primera vez).
     if (!m_cartas) {
         auto cartas = Game::CatalogoCartas::cargar("assets/catalogs");

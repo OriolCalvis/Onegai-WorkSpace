@@ -1,0 +1,60 @@
+=== validar_todo.py (todo el contenido) ===
+[1/5] Validadores existentes
+    OK  validar_monstruos_acciones.py: AVISO: pendiente: SkillCatalog legado no carga estas cartas nativas
+    OK  validar_botin.py: Botín: 50 reutilizables, 12 únicos, 30 tablas, 55 instancias de campaña
+    OK  validar_recetas.py: 27 recetas; 0 errores, 0 avisos
+    OK  validar_enlaces.py: 93 niveles, 273 puertas comprobadas, 0 problemas
+    OK  conectividad.py:    todas las 36 puertas alcanzables
+    OK  validar_mundo_unido.py:   todo se alcanza y de todo se vuelve
+    OK  validar_catalogos_rpg.py: [OK] Sin fallos.
+    OK  validar_libreria_dnd.py: === TODOS LOS ARCHIVOS PASAN LA VALIDACION ESTRUCTURAL ===
+    OK  validar_pnj.py: validar_pnj: 440 PNJ, 592 aspectos distintos montados con las piezas del jugador (9 piezas solo 
+    OK  laminas_desde_capas.py: laminas_desde_capas: capas y laminas sin cambios desde el ultimo registro (0.3s)
+    OK  trocejar_atlas_personajes.py: 149/149 .filas al dia
+    OK  validar_cinematicas.py: validar_cinematicas: 113 cinematicas, 0 errores, 14 avisos
+    OK  validar_eventos.py: validar_eventos: 4 eventos en 1 catálogos; 0 errores, 2 avisos
+    OK  validar_beats_auto.py: validar_beats_auto: 739 beats auto sin once revisados; 0 problemas (pegajosos o tapados)
+    OK  validar_opciones_beat.py: validar_opciones_beat: 507 beats con opciones revisados, 0 problemas
+[2/5] Referencias internas de assets/catalogs/
+    referencias comprobadas; 0 error(es) hasta ahora
+[3/5] Proyectos: objectIds de niveles contra sus catálogos
+    OK  boundington: 81 niveles contra 2935 objetos de sus catálogos
+    OK  este_norte: 55 niveles contra 1739 objetos de sus catálogos
+    OK  este_sur: 3 niveles contra 28 objetos de sus catálogos
+    OK  mundo: 9 niveles contra 353 objetos de sus catálogos
+    OK  oeste_norte: 4 niveles contra 166 objetos de sus catálogos
+    OK  ejemplos: 2 niveles contra 9 objetos de sus catálogos
+[4/5] Proyectos: entrada
+    OK  este_sur -> assets/levels/es_taurengrad.json
+    OK  oeste_norte -> assets/adventures/on_camino_del_norte.json
+    OK  este_norte -> assets/levels/ciudad_en_guskedor.json
+    OK  ejemplos -> assets/levels/ejemplos_objetos.json
+    OK  boundington -> assets/adventures/boundington_prologo.json
+    OK  mundo -> assets/levels/mapamundi.json
+[5/5] Aventuras: beats contra catálogos
+[extra] Puertas de los niveles: 440 en 156 niveles, 0 error(es), 0 sin poder leer
+[extra] Edificios de ciudades y pueblos: 30 niveles, 57 casas/tiendas a bloques, 0 error(es), 10 aviso(s)
+[extra] Recompensas de escenas: d1 259/280, d2 541/480, d3 421/400, 0 error(es)
+
+AVISOs (20):
+  assets/catalogs/adventures.json :: 12 :: deidadIds :: 'el_toro_de_gongorguma' no existe en deities.json
+  assets/catalogs/adventures.json :: 15 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 35 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 39 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 40 :: deidadIds :: 'la_serpiente_de_contratos' no existe en deities.json
+  assets/catalogs/adventures.json :: 45 :: deidadIds :: 'el_sepulturero_amable' no existe en deities.json
+  assets/catalogs/adventures.json :: 47 :: deidadIds :: 'la_luna_hueca' no existe en deities.json
+  assets/catalogs/adventures.json :: 7 :: enemigoIds :: 'paje_traslucido' no existe en monsters.json
+  assets/catalogs/adventures.json :: 7 :: deidadIds :: 'el_toro_de_gongorguma' no existe en deities.json
+  assets/catalogs/adventures.json :: 7 :: deidadIds :: 'la_luna_hueca' no existe en deities.json
+  assets/levels/ciudad_centro.json :: puertas :: identidad :: interior 'interior_banco.json' en 2 edificios distintos: puerta_banco_sur@6,40, puerta_banco@19,25
+  assets/levels/ciudad_centro.json :: puertas :: identidad :: interior 'interior_banos.json' en 2 edificios distintos: puerta_banos_sur@14,40, puerta_banos@47,59
+  assets/levels/ciudad_centro.json :: puertas :: identidad :: interior 'interior_mercado.json' en 2 edificios distintos: puerta_mercado_sur@19,40, puerta_mercado@54,25
+  assets/levels/ciudad_centro.json :: puertas :: identidad :: interior 'interior_posada.json' en 2 edificios distintos: puerta_posada_sur@48,40, puerta_posada@56,40
+  assets/levels/ciudad_centro.json :: puertas :: identidad :: nombre 'Banco' en 2 edificios distintos: puerta_banco_sur@6,40, puerta_banco@19,25
+  assets/levels/ciudad_centro.json :: puertas :: identidad :: nombre 'Baños públicos' en 2 edificios distintos: puerta_banos_sur@14,40, puerta_banos@47,59
+  assets/levels/ciudad_centro.json :: puertas :: identidad :: nombre 'Mercado' en 2 edificios distintos: puerta_mercado_sur@19,40, puerta_mercado@54,25
+  assets/levels/ciudad_centro.json :: puertas :: identidad :: nombre 'Posada del viajero' en 2 edificios distintos: puerta_posada_sur@48,40, puerta_posada@56,40
+  assets/maps/ciudad_centro.tmx :: 6 edificio(s) :: sprite por familia :: edifici (11,21) 2x3: 2 casilla(s) a bloques, cabria sprite _o0; edifici (14,21) 2x3: 2 casilla(s) a bloques, cabria sprite _o0; edifici (35,21) 2x3: 2 casilla(s) a bloques, cabria sprite _o0; edifici (49,21) 2x3: 2 casilla(s) a bloques, cabria sprite _o0 ... (H-CIU-2)
+  assets/maps/ciudad_centro_ocaso.tmx :: 1 edificio(s) :: sprite por familia :: edifici (72,52) 3x3: 5 casilla(s) a bloques, cabria sprite _o0 (H-CIU-2)
+RESULTADO: OK — 0 errores, 20 aviso(s)

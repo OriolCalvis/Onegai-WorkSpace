@@ -33,18 +33,6 @@
 #include <algorithm>
 #include <optional>
 
-namespace {
-
-// CAER-01 — Quien cae en un combate de la historia que no es ineludible se
-// levanta con un cuarto de su vida (1 como poco). Devuelve con cuanta.
-int levantaHeroe(ICombatant& heroe) {
-    const int objetivo = std::max(1, heroe.maxHealth() / 4);
-    if (heroe.health() < objetivo) heroe.heal(objetivo - heroe.health());
-    return heroe.health();
-}
-
-}  // namespace
-
 void GameSession::startInteraction(const ObjectDefinition& def) {
     if (def.category != ObjectCategory::Npc) {
         return;
@@ -173,9 +161,7 @@ void GameSession::ponVuelta(const std::string& nivel, GridCoord puerta) {
 }
 
 bool GameSession::pause() {
-    if (sessionData()->m_mode != GameMode::Exploration) {
-        return false;
-    }
+    if (sessionData()->m_mode != GameMode::Exploration && sessionData()->m_mode != GameMode::Battle) return false;
     sessionData()->m_mode = GameMode::Pause;
     return true;
 }
@@ -184,7 +170,7 @@ bool GameSession::resume() {
     if (sessionData()->m_mode != GameMode::Pause) {
         return false;
     }
-    sessionData()->m_mode = GameMode::Exploration;
+    sessionData()->m_mode = sessionData()->m_battle != nullptr ? GameMode::Battle : GameMode::Exploration;  // D0034
     return true;
 }
 
@@ -298,6 +284,7 @@ void GameSession::startBattle(const std::vector<Engine::EntityHandle>& handles,
         aLadoTexto += (aLadoTexto.empty() ? "" : ", ") + def.nombre;
     }
 
+    tomaFoto(enCombate, aLado);  // D0027: a esto vuelve el combate si el heroe cae
     sessionData()->m_battle = std::make_unique<BattleState>(std::move(allies), std::move(enemies), sessionData()->m_skillCatalog,
                                              sessionData()->m_catalog);
     sessionData()->m_battle->setConditionCatalog(sessionData()->m_conditions);
@@ -335,6 +322,8 @@ bool GameSession::syncBattleOutcome() {
     for (const std::string& line : sessionData()->m_battle->log()) {
         sessionData()->m_log.push_back(line);
     }
+
+    if (outcome == BattleOutcome::Defeat && reviveAlInicio()) return true;  // D0027: el combate vuelve a empezar
 
     // H2-05 — Los ids se copian aqui, antes de que las entidades mueran con
     // el World: son la clave de su ficha de monstruo, y sin ellos no habria
@@ -391,6 +380,8 @@ bool GameSession::syncBattleOutcome() {
             for (std::size_t i = 0; i < sessionData()->m_battleEnemyHandles.size(); ++i)
                 if (grupo && caidos[i]) sessionData()->m_world->destroy(sessionData()->m_battleEnemyHandles[i]);
             logLine(grupo ? std::string("Escapas.") : "Escapas del " + enemyName + ".");
+            if (sessionData()->m_rngInUse != nullptr)
+                if (const std::string caida = Game::pagaLaHuida(sessionData()->m_gold, *sessionData()->m_rngInUse); !caida.empty()) logLine(caida);
             sessionData()->m_mode = GameMode::Exploration;
             break;
         case BattleOutcome::Defeat:
@@ -403,7 +394,7 @@ bool GameSession::syncBattleOutcome() {
             // se levanta con un cuarto de la vida.
             for (const Engine::EntityHandle handle : sessionData()->m_battleEnemyHandles)
                 sessionData()->m_world->destroy(handle);
-            logLine("Te levantas con " + std::to_string(levantaHeroe(*sessionData()->m_playerBody)) + " PV.");
+            logLine("Te levantas con " + std::to_string(Game::levantaHeroe(*sessionData()->m_playerBody)) + " PV.");
             sessionData()->m_mode = GameMode::Exploration;
             break;
         case BattleOutcome::InProgress:
@@ -442,12 +433,19 @@ bool GameSession::syncBattleOutcome() {
     sessionData()->m_battleEnemyHandles.clear();  // AV13-29/33: los tuyos se quedan mientras ves que te rescatan
     if (sessionData()->m_mode != GameMode::GameOver) quitaAcompanantes();
 
+    // D0030: si cae en una oleada posterior, el combate vuelve a la primera.
+    if (outcome == BattleOutcome::Victory && m_muerte.foto && !sessionData()->m_battleQueue.empty()) {
+        if (!m_muerte.foto->oleadaGanada) m_muerte.foto->cola = sessionData()->m_battleQueue;
+        m_muerte.foto->oleadaGanada = true;
+        m_muerte.sigueLaOleada = true;
+    }
     // Siguiente combate encolado, si lo hay (oleadas).
     if (!sessionData()->m_battleQueue.empty() && sessionData()->m_mode != GameMode::GameOver) {
         std::vector<RPG::BattleRequest> siguiente{sessionData()->m_battleQueue.front()};
         sessionData()->m_battleQueue.erase(sessionData()->m_battleQueue.begin());
         resolveBattles(siguiente);
     }
+    m_muerte.sigueLaOleada = false;
     // TUTORIAL-01 — Acabado el combate, la aventura dice lo suyo, como al cerrar un
     // dialogo: sin este tick, «tut_victoria» esperaba a la siguiente charla.
     if (sessionData()->m_mode == GameMode::Exploration && sessionData()->m_narrative != nullptr &&

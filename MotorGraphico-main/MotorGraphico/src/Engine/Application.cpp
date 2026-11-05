@@ -200,24 +200,6 @@ void teclasMapa(Pergamino::GuiaMapa& guia, const Engine::Input::InputSnapshot& i
     if (input.pressed(A::Confirm) || (raton && m.leftPressed)) guia.alternaChincheta();
 }
 
-// PERGAMINO-01 — «Centro de Boundington · 17:42» (P05a): donde y a que
-// hora se ha guardado, bajo el «Partida guardada» del papiro de pausa.
-std::string detalleGuardado(const std::string& zona) {
-    const std::time_t ahora = std::time(nullptr);
-    char hora[8] = "";
-    if (const std::tm* local = std::localtime(&ahora)) std::strftime(hora, sizeof hora, "%H:%M", local);
-    return zona.empty() ? std::string(hora) : zona + " · " + hora;
-}
-
-// El motivo de un guardado o carga fallidos: la ultima nota del registro
-// sin su prefijo («No se puede guardar: <motivo>»).
-std::string motivoDeLaNota(const GameSession& sesion) {
-    if (sesion.log().empty()) return {};
-    const std::string& nota = sesion.log().back();
-    const auto dos = nota.find(": ");
-    return dos == std::string::npos ? nota : nota.substr(dos + 2);
-}
-
 }  // namespace
 
 Application::Application() : m_playerSkills(/*maxMana=*/8) {}
@@ -762,10 +744,10 @@ void Application::confirmBattleCommand(std::size_t index, int objetivo) {
         // no hay nadie senalado, al primero que este al lado).
         if (const Game::TableroCombate* t = battle->tablero()) {
             const auto& en = battle->enemies();
-            const std::string& heroe = battle->allies()[activo].name;  // AV13-29: o el acompañante
+            const std::string& heroe = battle->allies()[activo].id;  // AV13-29: o el acompañante
             int aLado = -1;
             for (std::size_t i = 0; i < en.size() && aLado < 0; ++i)
-                if (en[i].combatant && en[i].combatant->isAlive() && t->aTiro(heroe, en[i].name, 1) &&
+                if (en[i].combatant && en[i].combatant->isAlive() && t->aTiro(heroe, en[i].id, 1) &&
                     (objetivo < 0 || static_cast<int>(i) == objetivo)) aLado = static_cast<int>(i);
             if (aLado < 0) {
                 const std::size_t q = static_cast<std::size_t>(std::min<int>(elegido, static_cast<int>(en.size()) - 1));
@@ -835,12 +817,13 @@ bool Application::quickSave() {
     if (m_session == nullptr || m_saveSlots == nullptr) {
         return false;
     }
-    const Game::SaveGate puerta = Game::CanSaveNow(m_session->mode(), /*eventRunning=*/false);
+    const std::optional<SaveGameData> delCombate = m_session->guardadoDelCombate(m_currentLevelPath);  // D0033
+    const Game::SaveGate puerta = delCombate ? Game::SaveGate{} : Game::CanSaveNow(m_session->mode(), /*eventRunning=*/false);
     if (!puerta.allowed) {
         m_session->logNote("No se puede guardar: " + puerta.reason);
         return false;
     }
-    SaveGameData data = m_session->captureSaveGame(m_currentLevelPath);
+    SaveGameData data = delCombate ? *delCombate : m_session->captureSaveGame(m_currentLevelPath);
     if (m_nuevaPartida) m_nuevaPartida->apuntaAspecto(data);
     if (m_pergamino) data.marcasMapa = m_pergamino->interfaz().guia().marcas();  // MAPA-02
     auto guardado = m_saveSlots->save(Game::SaveSlots::kQuickSlot, data);
@@ -894,6 +877,7 @@ int Application::newestLoadableSlot() {
 
 void Application::requestPause() {
     if (m_session != nullptr) {
+        m_pauseMenu = std::make_unique<Game::PauseMenu>(m_session->mode() == GameMode::Battle ? Game::PauseMenu::createEnCombate() : Game::PauseMenu::create());
         m_session->pause();
     }
 }
@@ -941,6 +925,11 @@ void Application::processInput() {
         m_barra.cancela();
         return;
     }
+    if (input.pressed(InputAction::Quit) && isAtTitle() && m_pauseMenu && m_pauseMenu->preguntando()) {
+        m_pauseMenu->olvidaPregunta();  // D0036: ESC vuelve de la lista, no sale del juego
+        refreshHud();
+        return;
+    }
     if (input.pressed(InputAction::Quit)) {
         const auto mode = m_session ? m_session->mode() : GameMode::Exploration;
         switch (PlayerControls::escapeAction(mode, isAtTitle() || !m_session, m_showInventory)) {
@@ -959,6 +948,14 @@ void Application::processInput() {
     // El mismo lenguaje de menú que en combate/tienda (W/S + ENTER); el
     // ESC ya salió del proceso arriba, igual que la entrada "Salir".
     if (isAtTitle()) {
+        if (m_pauseMenu && m_pauseMenu->preguntando()) {  // D0036: la lista de «Cargar partida»
+            if (input.pressed(InputAction::MenuUp)) m_pauseMenu->moveUp();
+            if (input.pressed(InputAction::MenuDown)) m_pauseMenu->moveDown();
+            if (Engine::ratonEnPapiro(*m_pauseMenu, m_pauseMenu->entries().size(), interfazDe(m_pergamino), input) || input.pressed(InputAction::Confirm))
+                ApplicationCinematica::confirmaPartidas(*this);
+            refreshHud();
+            return;
+        }
         const auto anterior = m_title->selected();
         if (input.pressed(InputAction::MenuUp)) m_title->moveUp();
         if (input.pressed(InputAction::MenuDown)) m_title->moveDown();
@@ -1029,6 +1026,12 @@ void Application::processInput() {
             }
         }
     } else if (m_session->mode() == GameMode::Battle) {
+        if (!ApplicationCinematica::enCurso(*this) && input.pressed(InputAction::QuickSave))  // D0033: F5 guarda el inicio del combate
+            m_session->battle()->anota(quickSave() ? "Partida guardada: al cargar, este combate vuelve a empezar." : "No se ha podido guardar.");
+        if (!ApplicationCinematica::enCurso(*this) && input.pressed(InputAction::QuickLoad)) {
+            if (quickLoad()) return;
+            m_session->battle()->anota("No hay ninguna partida que cargar.");
+        }
         teclasCombate(input);  // UI-BG3-01: la barra de cartas (1-0, A/D, ENTER, F, L y raton)
     } else if (m_session->mode() == GameMode::Shop) {
         teclasTienda(input);  // TIENDA-02: pestanas Comprar/Vender, W/S + ENTER y el raton
@@ -1146,6 +1149,9 @@ void Application::confirmTitleSelection() {
         // proyecto (la calculo TitleMenuState desde el mismo servicio).
         ApplicationCinematica::avisoYa(*this, "Cargando la partida…");  // TITULO-01
         loadSlot(m_title->continueSlot());
+    } else if (action == Game::TitleCommand::LoadGame) {
+        ApplicationCinematica::abrePersonajes(*this, 0);  // D0036
+        refreshHud();
     } else if (action == Game::TitleCommand::Options) {
         // G-10 — sin pantalla propia aun; la linea de estado del papiro lo dice.
         if (m_pergamino) m_pergamino->interfaz().avisaPausa(false, "Opciones: aún sin pantalla propia", "");
@@ -1155,6 +1161,7 @@ void Application::confirmTitleSelection() {
 // GDB-12.5 — Confirmar comando del menú de pausa
 void Application::confirmPauseCommand() {
     if (!m_pauseMenu || m_scenes.hasPendingTransition()) return;
+    if (ApplicationCinematica::confirmaPartidas(*this)) return;  // D0034
     auto action = m_pauseMenu->confirm();
     // AV15-05a (EH-22, EH-23): salir, volver al titulo, cargar y guardar encima se confirman, salvo
     // que no haya nada que perder (la partida de ahora es igual que la guardada en la ranura rapida).
@@ -1162,8 +1169,7 @@ void Application::confirmPauseCommand() {
         action = m_pauseMenu->siElegido() ? m_pauseMenu->pendiente() : Game::PauseAction::None;
         m_pauseMenu->olvidaPregunta();
         if (action == Game::PauseAction::None) return;
-    } else if (action == Game::PauseAction::Quit || action == Game::PauseAction::Title ||
-               action == Game::PauseAction::Load || action == Game::PauseAction::Save) {
+    } else if (action == Game::PauseAction::Quit || action == Game::PauseAction::Title) {
         Game::UltimaPartida ultima;
         if (m_saveSlots && m_session && m_saveSlots->refresh().isOk() && m_saveSlots->quick().loadable()) {
             ultima.hay = true;
@@ -1197,16 +1203,8 @@ void Application::confirmPauseCommand() {
         for (int i = 0; action == Game::PauseAction::Character && i < static_cast<int>(Game::InventoryFocus::COUNT) &&
                         m_inventoryScreen->focus() != Game::InventoryFocus::Status; ++i)
             m_inventoryScreen->moveTabRight();
-    } else if (action == Game::PauseAction::Save) {
-        // H0-05: la ranura rapida del proyecto. El papiro dice como ha ido.
-        const bool ok = quickSave();
-        if (m_pergamino)
-            m_pergamino->interfaz().avisaPausa(ok, ok ? "Partida guardada" : "No se ha podido guardar",
-                                               ok ? detalleGuardado(m_pergamino->interfaz().zona())
-                                                  : motivoDeLaNota(*m_session));
-    } else if (action == Game::PauseAction::Load) {
-        if (!quickLoad() && m_pergamino)
-            m_pergamino->interfaz().avisaPausa(false, "No se ha podido cargar", motivoDeLaNota(*m_session));
+    } else if (action == Game::PauseAction::Save || action == Game::PauseAction::Load) {
+        ApplicationCinematica::abrePartidas(*this, action, 0);  // D0034
     } else if (action == Game::PauseAction::Options) {
         // H1-03 — el submenu de opciones se abre encima de la pausa; el
         // menu de pausa no se cierra, asi «Volver» cae de vuelta en el.
@@ -1268,5 +1266,3 @@ void Application::confirmGameOverCommand() {
         m_scenes.requestReplace(makeScene(true, [this] { return partidaDeCero(); }));  // ver la pausa
     }
 }
-
-

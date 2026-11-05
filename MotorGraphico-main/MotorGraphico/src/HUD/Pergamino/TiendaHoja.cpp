@@ -99,7 +99,7 @@ DatosTienda datosTienda(const Game::TiendaEstado& tienda, const GameSession& s) 
     d.estado = tienda.estado();
     d.estadoError = tienda.estadoError();
     d.reputacion = Game::lineaDeLaTienda(Game::facciones(), s.characterSheet(),
-                                         Game::tenderoPorNombre(Game::facciones(), s.objectCatalog(), d.tendero));
+                                         s.currentBusinessId());
     PaginaCuaderno& pg = d.pagina;
     pg.titulo = comprar ? "COMPRAR" : "VENDER";
     pg.cabeceraIzq = "OBJETO";

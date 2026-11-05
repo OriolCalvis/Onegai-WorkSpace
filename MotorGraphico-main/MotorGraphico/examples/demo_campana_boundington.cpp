@@ -234,7 +234,7 @@ int main() {
         juegaJusto(j);
         const NarrativeState& s = j.s;
         for (const char* f : {"bnd_venides_10", "bnd_venides_20", "bnd2_aliado_gitanos", "bnd3_compania",
-                              "bnd3_final_oeste", "bnd3_final_caido"})
+                              "bnd3_final_oeste", "bnd3_final_huido"})
             cuenta(s, f);
         require(s.hasFlag("bnd_venides_10"));        // solo diez hombres, y el tercer dia
         require(!s.hasFlag("bnd_venides_20"));
@@ -259,7 +259,7 @@ int main() {
                 require(j.s.hasFlag("bnd3_campanas"));  // la Matanza ocurre
                 require(j.s.hasFlag("bnd3_epilogo"));   // y la campana cierra
                 std::string fin = "?";
-                for (const char* f : {"bnd3_final_oeste", "bnd3_final_solos", "bnd3_final_caido"})
+                for (const char* f : {"bnd3_final_oeste", "bnd3_final_solos", "bnd3_final_huido"})
                     if (j.s.hasFlag(f)) fin = f + 11;
                 std::printf("  %-8s %-6s -> final %s\n", nombre(suerte), heroe ? "heroe" : "justo", fin.c_str());
             }
@@ -269,7 +269,7 @@ int main() {
 
     // ---------------------------------------------------------------
     // Una rama que una partida con la suerte uniforme no toma: GANAR los
-    // dos combates del Ocaso y PERDER el de Verina. Se prueba aparte,
+    // dos combates del Ocaso y CAER en el de Verina. Se prueba aparte,
     // montando el estado a mano.
     // ---------------------------------------------------------------
     {
@@ -284,9 +284,10 @@ int main() {
         j.drena();
         j.entra("interior_cuartel");  // b3_por_donde: la salida oeste, el paso norte o mantener la puerta
         j.ocasoRecorrido();           // la salida oeste, la barricada, Verina, Edul, el final
-        require(j.s.hasFlag("bnd3_verina_muerta"));
+        // D0031: de este rescate no se huye; quien lo pierde lo repite hasta ganarlo.
+        require(!j.s.hasFlag("bnd3_verina_muerta"));
         require(j.s.hasFlag("bnd3_fuera"));
-        std::printf("\n  Verina perdida en la barricada: la partida sigue y termina. OK\n");
+        std::printf("\n  Verina: del rescate no se huye, la partida sigue y termina. OK\n");
     }
 
     // ---------------------------------------------------------------
@@ -312,7 +313,7 @@ int main() {
                                   "cierre_espera", "b2_capitan", "b2_gorran_victoria", "b2_zarela_pide",
                                   "b2_rosita_revela", "b2_mansion", "b2_venides_hombres", "b3_sermon",
                                   "b3_por_donde", "b3_verina_salvada", "b3_rosita_calle", "b3_edul",
-                                  "b3_compania", "b3_huida_gitanos", "b3_verina_perdida", "b3_caida",
+                                  "b3_compania", "b3_huida_gitanos", "b3_huida_perdida",
                                   "b3_epilogo", "b3_barca"}) {
             bool visto = false;
             for (const auto& v : vistos)
@@ -320,7 +321,7 @@ int main() {
             if (!visto) std::printf("    !! sin disparar: %s\n", clave);
             require(visto);
         }
-        std::printf("  -> los 30 momentos clave salen. OK\n");
+        std::printf("  -> los 29 momentos clave salen. OK\n");
     }
 
     std::printf("\ntodas las comprobaciones han pasado\n");

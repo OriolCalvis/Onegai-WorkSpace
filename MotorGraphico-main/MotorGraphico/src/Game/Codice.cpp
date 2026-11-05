@@ -26,17 +26,10 @@ std::string unir(const std::vector<std::string>& partes, const char* sep) {
     return out;
 }
 
-// Busca por id, y si no, por nombre (los beats hablan con "Guardia", no
-// con "npc_guardia_03").
+// D0037 — Por id. Lo que un beat dice en `speaker` es un rotulo: no identifica a nadie, y sin ficha sale como «Conocido en…».
 template <typename T>
 const T* buscar(const RPG::Catalogs::Catalog<T>* catalogo, const std::string& clave) {
-    if (catalogo == nullptr || clave.empty()) return nullptr;
-    if (const T* def = catalogo->find(clave)) return def;
-    const T* porNombre = nullptr;
-    catalogo->forEach([&](const T& def) {
-        if (porNombre == nullptr && def.name == clave) porNombre = &def;
-    });
-    return porNombre;
+    return catalogo == nullptr || clave.empty() ? nullptr : catalogo->find(clave);
 }
 }  // namespace
 
@@ -120,7 +113,8 @@ CodiceDatos Codice::construir(const std::vector<const RPG::AdventureScript*>& ca
             if (!estado.beatFired(beat.id)) continue;
             empezada = true;
             const std::string origen = aventura->name.empty() ? aventura->id : aventura->name;
-            if (!beat.speaker.empty()) anadir(personajes, beat.speaker, origen);
+            if (!beat.speakerId.empty()) anadir(personajes, beat.speakerId, origen);  // D0037: su ficha, si el beat la nombra
+            else if (!beat.speaker.empty()) anadir(personajes, beat.speaker, origen);
             if (beat.trigger.type == RPG::TriggerType::Talk) anadir(personajes, beat.trigger.target, origen);
             // El destino de un «enter» es la ruta del nivel: se guarda su id,
             // como el nivel actual (sin la ruta en el titulo y sin repetirlo).

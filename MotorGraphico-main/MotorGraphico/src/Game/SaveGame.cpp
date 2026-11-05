@@ -117,6 +117,7 @@ SaveGameData GameSession::captureSaveGame(const std::string& levelPath) const {
             // puesto. El aspecto lo pone la creacion (PantallaNuevaPartida).
             data.characterName = ficha->displayName;
             SavedHero& h = data.hero;
+            h.uuid = ficha->id;  // D0035
             h.raceId = ficha->raceId;
             h.classId = ficha->classId;
             h.backgroundId = ficha->backgroundId;

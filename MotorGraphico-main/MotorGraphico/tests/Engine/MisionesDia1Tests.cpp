@@ -212,8 +212,10 @@ const std::vector<Esc>& escenas() {
          {"beat_llegada", "tut_encargo", "tut_tendero", "tut_joyero", "tut_sastre", "tut_emboscada", "tut_victoria"},
          {"bnd_tut_tendero", "bnd_tut_joyero", "bnd_tut_sastre", "bnd_tut_saqueador_vencido", "bnd_tut_emboscada_resuelta", "bnd_tut_cerrado"}, {"bnd_tut_saqueador_gana"},
          {"tut_sastre", "", "bnd_tut_sastre"}},
-        {"emboscada_derrota", "presentaciones", false, junta({"L:bnd_tut_saqueador_vencido"}, kTutorial), {}, Suerte::Buena,
-         {"tut_emboscada", "tut_derrota"}, {"bnd_tut_saqueador_gana", "bnd_tut_cerrado"}, {"bnd_tut_saqueador_vencido"}, {}},
+        // D0027 (E-REVIVIR-01): perder la emboscada ya no enciende bnd_tut_saqueador_gana (morir reinicia el
+        // combate); «perder» es huir, y tut_derrota queda sin camino.
+        {"emboscada_perder_es_huir", "presentaciones", false, junta({"L:bnd_tut_saqueador_vencido"}, kTutorial), {}, Suerte::Buena,
+         {"tut_emboscada", "tut_huida"}, {"bnd_tut_saqueador_huido", "bnd_tut_cerrado"}, {"bnd_tut_saqueador_vencido", "bnd_tut_saqueador_gana"}, {}},
         {"emboscada_huida", "presentaciones", false, junta({"U:bnd_tut_saqueador_vencido"}, kTutorial), {}, Suerte::Buena,
          {"tut_emboscada", "tut_huida"}, {"bnd_tut_saqueador_huido", "bnd_tut_cerrado"}, {"bnd_tut_saqueador_vencido"}, {}},
         // 8 --- Recorrer la plaza
@@ -338,8 +340,9 @@ const std::vector<Esc>& escenas() {
          {"b1_luisarda_pide", "b1_luisarda_pociones"}, {"bnd1_luisarda_silencio", "bnd1_luisarda_pociones"}, {"bnd1_luisarda_con_rosita", "bnd1_luisarda_asustada"},
          {"b1_luisarda_pociones", "", "bnd1_luisarda_pociones"}},
         // 12 --- Sectarios: la pelea perdida y el sigilo
-        {"secta_ganan", "sectarios", false, junta(kCama, {"L:bnd1_secta_vencidos", "E:ciudad_centro", "H:sectario_perdido"}), {"Reírte de ellos", "Insistir en la burla"}, Suerte::Buena,
-         {"b1_secta_burla", "b1_secta_ganan"}, {"bnd1_secta_ganan", "bnd1_secta_fin", "bnd1_sectarios_resueltos"}, {"bnd1_secta_vencidos"}, {"b1_secta_ganan", "", "bnd1_secta_fin"}},
+        // D0027: perder la burla ya no enciende bnd1_secta_ganan (morir reinicia el combate); perder es huir.
+        {"secta_perder_es_huir", "sectarios", false, junta(kCama, {"L:bnd1_secta_vencidos", "E:ciudad_centro", "H:sectario_perdido"}), {"Reírte de ellos", "Insistir en la burla"}, Suerte::Buena,
+         {"b1_secta_burla", "b1_secta_ganan"}, {"bnd1_secta_huido", "bnd1_secta_fin", "bnd1_sectarios_resueltos"}, {"bnd1_secta_vencidos", "bnd1_secta_ganan"}, {"b1_secta_ganan", "", "bnd1_secta_fin"}},
         {"sectarios_seguidos", "sectarios", false, junta(kCama, {"E:ciudad_centro", "H:sectario_perdido", "H:sectario_perdido"}),
          {"Reírte de ellos", "Dejarlo ahí", "Seguirles de lejos [Sigilo]"}, Suerte::Buena,
          {"b1_secta_burla", "b1_sectarios_seguir", "b1_sectarios_seguidos"}, {"bnd_pista_sectarios", "bnd1_sectarios_resueltos"}, {"bnd1_invitado_guarida"}, {}},
@@ -392,8 +395,9 @@ const std::vector<Esc>& escenas() {
          {"b1_charla_edul", "b1_frascos", "b1_edul"}, {"bnd1_frascos_visto", "bnd1_edul_mezcla", "bnd1_edul_venides", "bnd1_con_edul"}, {"bnd1_banco_abierta"}, {}},
         {"guarida_ganada", "verina_edul", false, junta({"T:bnd1_charla_pifia=regular"}, kSantuario), junta({"Fingir que crees", "Plantarles cara"}, kDiceSantuario), Suerte::Buena,
          {"b1_banco", "b1_edul", "b1_guarida_ganada"}, {"bnd1_guarida_ganada", "bnd1_guarida_resuelta", "bnd1_guarida_pelea"}, {"bnd1_guarida_perdida"}, {"b1_guarida_ganada", "", "bnd1_guarida_resuelta"}},
-        {"guarida_perdida", "verina_edul", false, junta({"T:bnd1_charla_pifia=regular", "L:bnd1_guarida_ganada"}, kSantuario), junta({"Fingir que crees", "Plantarles cara"}, kDiceSantuario), Suerte::Buena,
-         {"b1_banco", "b1_edul", "b1_guarida_perdida"}, {"bnd1_guarida_perdida", "bnd1_guarida_resuelta"}, {"bnd1_guarida_ganada"}, {"b1_guarida_perdida", "", "bnd1_guarida_resuelta"}},
+        // D0027: perder la guarida ya no enciende bnd1_guarida_perdida (morir reinicia el combate); perder es huir.
+        {"guarida_perder_es_huir", "verina_edul", false, junta({"T:bnd1_charla_pifia=regular", "L:bnd1_guarida_ganada"}, kSantuario), junta({"Fingir que crees", "Plantarles cara"}, kDiceSantuario), Suerte::Buena,
+         {"b1_banco", "b1_edul", "b1_guarida_perdida"}, {"bnd1_guarida_huida", "bnd1_guarida_resuelta"}, {"bnd1_guarida_ganada", "bnd1_guarida_perdida"}, {"b1_guarida_perdida", "", "bnd1_guarida_resuelta"}},
         {"guarida_exterminada", "verina_edul", false, junta(kCama, {"E:interior_herreria", "H:aigren", "E:interior_iglesia_s1", "E:santuario_subterraneo"}),
          {"Intentar acabar con todos", "Contárselo todo", "Preguntarle por los Perdidos", "Decirle que te interesan", "Vengo de parte del herrero.", "Ir a por lo tuyo"}, Suerte::Buena,
          {"b1_guarida_por_aigren", "b1_guarida_exterminada"}, {"bnd1_guarida_exterminada", "bnd1_guarida_resuelta", "bnd1_sabe_sandes"}, {"bnd1_guarida_perdida"}, {"b1_guarida_exterminada", "", "bnd1_guarida_resuelta"}},

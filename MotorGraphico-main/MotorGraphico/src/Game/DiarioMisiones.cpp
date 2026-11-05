@@ -106,6 +106,7 @@ void porApartados(DiarioMision& m, const RPG::QuestDefinition& ficha,
     for (int pasada = 0; pasada < 2; ++pasada) {
         for (std::size_t i = 0; i < secciones.size(); ++i) {
             DiarioApartado& a = apartados[i];
+            a.id = secciones[i].id;
             a.titulo = secciones[i].title;
             a.resumen = secciones[i].summary;
             for (const std::string& id : secciones[i].objectiveIds) {

@@ -959,7 +959,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.rutaOcaso = "base_ruta_norte";
         e.j.ocasoBase();
         e.j.ocasoRecorrido("base_ruta_norte");
-        e.ve({"bnd3_final_caido", "bnd3_epilogo"});
+        e.ve({"bnd3_final_huido", "bnd3_epilogo"});
         e.fin();
     } while (false);
 
@@ -1256,7 +1256,7 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
     } while (false);
 
     do {
-        Escena e(g, "OCASO: sin la compania, Sandes gana", Suerte::Buena, {"heroe_pueblo_humano"},
+        Escena e(g, "OCASO: sin la compania, caer contra Sandes reinicia el combate", Suerte::Buena, {"heroe_pueblo_humano"},
                  {"Correr a avisar a Venides", "Al oeste", "Vamos a por el.", "No.", "Liberarle"}, vistos);
         e.di({"Pagar la cama", "Subir a dormir"});
         e.j.prologo();
@@ -1275,8 +1275,8 @@ void escenasOcaso(const Guiones& g, std::vector<std::string>* vistos) {
         e.j.pierde.insert("bnd3_sandes_vencido");
         e.j.ocasoBase();
         e.j.ocasoRecorrido("base_ruta_oeste");
-        e.nove({"bnd3_compania"});
-        e.ve({"bnd3_sandes_gana", "bnd3_fuera", "bnd3_epilogo"});
+        e.nove({"bnd3_compania", "bnd3_sandes_gana"});
+        e.ve({"bnd3_sandes_vencido", "bnd3_fuera", "bnd3_epilogo"});
         e.fin();
     } while (false);
 

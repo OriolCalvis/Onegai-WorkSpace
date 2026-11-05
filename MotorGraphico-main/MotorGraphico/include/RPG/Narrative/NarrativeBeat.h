@@ -239,10 +239,13 @@ struct BattleRequest {
     // cuarto de la vida, los que ganaron se van y se enciende flagDefeat.
     //  - flagHuida: se enciende al huir. Vacia = flagDefeat, como antes.
     //  - ineludible: un momento que no se puede esquivar. No se puede huir
-    //    (la carta sale bloqueada) y caer acaba la partida.
+    //    (la carta sale bloqueada) y caer reinicia el combate (D0027).
+    //  - rescateAlMorir (D0031): beat que, si ya puede saltar, evita el reinicio:
+    //    se enciende flagDefeat, el heroe se levanta y salta el beat, sin cicatriz.
     // Van al final para no mover a nadie que rellene los de arriba por nombre.
     std::string flagHuida;
     bool ineludible = false;
+    std::string rescateAlMorir;
     // FASE1-BND-01 — «Huir a 0 PV y pelear sin matar» (Campaña 01: Sandes
     // «escapará al quedarse a 0 de vida»; la pelea de taberna, «si apalean,
     // pero no matan al que la inicia»). huyen: los ids del grupo que a 0 PV
@@ -353,6 +356,7 @@ struct NarrativeBeat {
     // Lo que se muestra. speaker vacio = voz del narrador (un cierre, una
     // consecuencia): el HUD decide si dibuja marco de dialogo o no.
     std::string speaker;
+    std::string speakerId;  // D0037: la ficha de quien habla (opcional); `speaker` solo se enseña
     std::vector<std::string> lines;
 
     std::vector<NarrativeEffect> effects;

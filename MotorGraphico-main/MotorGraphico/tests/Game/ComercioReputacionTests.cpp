@@ -211,8 +211,6 @@ MOTOR_TEST_CASE(la_tienda_y_la_ficha_lo_dicen_en_palabras) {
 
     // El tendero abierto, por su nombre.
     Tienda t;
-    MOTOR_CHECK(Game::tenderoPorNombre(*r, &t.catalogo, "Rosita") == "skilla");
-    MOTOR_CHECK(Game::tenderoPorNombre(*r, &t.catalogo, "Buhonero").empty());
 }
 
 MOTOR_TEST_CASE(la_reputacion_viaja_en_el_guardado) {

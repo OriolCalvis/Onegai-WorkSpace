@@ -122,6 +122,8 @@ TitleMenuState TitleMenuState::fromManifest(const std::string& manifestPath,
             t.m_continueReason = "No hay ninguna partida guardada.";
         }
     }
+    // D0036: Cargar partida, si algun personaje tiene alguna.
+    t.m_loadReason = savesRoot.empty() || personajesGuardados(savesRoot, p.id).empty() ? "No hay partidas de ningún personaje." : "";
     t.buildItems();
     return t;
 }
@@ -138,6 +140,7 @@ void TitleMenuState::buildItems() {
     };
     if (ok()) {
         poner(TitleCommand::Continue, "Continuar", m_continueReason);
+        poner(TitleCommand::LoadGame, "Cargar partida", m_loadReason);
         poner(TitleCommand::NewGame, "Nueva partida", m_newGameReason);
         poner(TitleCommand::Options, "Opciones", "");
     }

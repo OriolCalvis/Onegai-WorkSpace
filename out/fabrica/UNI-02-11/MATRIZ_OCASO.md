@@ -92,3 +92,5 @@ Finales (flag, `b3_*`): **oeste con los gitanos** (`b3_huida_gitanos`: `bnd2_ali
 
 ## Cómo reproducir
 `python3 MotorGraphico/tools/matriz_decisiones.py --dia ocaso --top 8` · `./fabricar_guardados --matriz-ocaso <carpeta>` · `ctest -L gl-free` (`test_matriz_ocaso`) · mutación de un camino: `MATRIZ_SOLO=<id> MATRIZ_MUTAR=1 ./test_matriz_ocaso`.
+
+> **D0028 (05/11):** el camino `caido` de esta matriz es ahora `huido` (`bnd3_final_huido`, `b3_huida_perdida`, `b3_rodeo_huida`, `b3_epilogo_huido`): se llega huyendo, sale vivo y sube 2 niveles. Las menciones a «caido» de arriba son del estado anterior.

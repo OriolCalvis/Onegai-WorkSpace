@@ -1200,7 +1200,7 @@ MOTOR_TEST_CASE(pausar_congela_el_mundo_y_reanudar_lo_suelta) {
     MOTOR_CHECK(patrullaSigue);
 }
 
-MOTOR_TEST_CASE(la_pausa_solo_entra_en_exploracion) {
+MOTOR_TEST_CASE(la_pausa_entra_en_exploracion_y_en_combate) {
     ObjectCatalog objects;
     MOTOR_CHECK(objects.loadFromString(R"({
         "objects": [
@@ -1240,8 +1240,10 @@ MOTOR_TEST_CASE(la_pausa_solo_entra_en_exploracion) {
     session.tryMovePlayer(1, 0);
     MOTOR_CHECK(session.mode() == GameMode::Battle);
 
-    // En combate la pausa no entra: no-op y el modo se queda como estaba.
-    MOTOR_CHECK(!session.pause());
+    // D0034: en combate la pausa tambien entra, y reanudar vuelve al combate.
+    MOTOR_CHECK(session.pause());
+    MOTOR_CHECK(session.mode() == GameMode::Pause);
+    MOTOR_CHECK(session.resume());
     MOTOR_CHECK(session.mode() == GameMode::Battle);
 }
 
@@ -1836,6 +1838,54 @@ MOTOR_TEST_CASE(un_combate_de_la_aventura_trae_a_sus_acompanantes_y_sus_curas_du
 
 // AV13-29 — Con mapa, el combate monta su tablero: Venides esta en el mundo (un objeto
 // "acompanante_venides" en su casilla, para su dibujo), no se guarda, y al acabar se va.
+// D0036 — Los datos de verdad tienen dos mineros que se llaman igual, y el jugador puede llamarse como un enemigo.
+MOTOR_TEST_CASE(en_el_tablero_nadie_se_confunde_por_llamarse_igual) {
+    auto cartas = Game::CatalogoCartas::cargar("assets/catalogs");
+    MOTOR_CHECK(cartas.isOk());
+    if (!cartas.isOk()) return;
+    const auto aventura = RPG::AdventureScript::loadFromString(R"({"id": "x",
+      "acompanantes": [{"id": "minero_1", "nombre": "Minero", "vida": 16, "ataques": 1},
+                       {"id": "minero_2", "nombre": "Minero", "vida": 16, "ataques": 1}], "beats": []})");
+    MOTOR_CHECK(aventura.isOk());
+    if (!aventura.isOk()) return;
+    ObjectCatalog objects;
+    MOTOR_CHECK(objects.loadFromString(R"({"objects": [{"id": "oso", "name": "Minero", "category": "enemy",
+        "combat": {"maxHealth": 200, "maxMana": 0, "skills": []}}]})").isOk());
+    RPG::CharacterSheet ficha;
+    ficha.tier = 1;
+    ficha.displayName = "Minero";
+    ficha.knownSkillIds = {"cancion_del_otono"};
+    CuerpoConFicha heroe(&ficha);
+    SkillCatalog skills;
+    SkillSet playerSkills{10};
+    std::vector<std::string> inventory;
+    RPG::NarrativeEngine engine;
+    engine.setAdventure(&aventura.value());
+    RPG::NarrativeState state;
+    struct Prado : RuntimeTileMap {
+        Prado() {
+            RuntimeTileLayer capa;
+            for (int i = 0; i < 20 * 20; ++i) capa.tiles.emplace_back(1, false);
+            replaceCompiledData(20, 20, 64, 32, {capa});
+        }
+    } prado;
+    GameSession session(&prado, &objects, &skills, makeLevel("Ciudad"), &heroe, &playerSkills, &inventory);
+    session.setNarrative(&engine, &state);
+    session.setCatalogoCartas(cartas.value().get());
+    const GridCoord antes = session.playerPosition();
+    RPG::BattleRequest pide{.monsterId = "oso", .flagVictory = "v", .flagDefeat = "d"};
+    pide.acompanantes = {{"minero_1", ""}, {"minero_2", ""}};
+    session.startNarrativeBattle(pide);
+    MOTOR_CHECK(session.battle() != nullptr && session.battle()->tablero() != nullptr);
+    if (session.battle() == nullptr || session.battle()->tablero() == nullptr) return;
+    const Game::TableroCombate& t = *session.battle()->tablero();
+    MOTOR_CHECK(t.ocupantes().size() == 4);  // heroe, dos mineros y el oso: cuatro casillas
+    const auto heroeEn = t.dondeEsta("a0");
+    const auto osoEn = t.dondeEsta("e0");
+    MOTOR_CHECK(heroeEn && osoEn && (heroeEn->x != osoEn->x || heroeEn->y != osoEn->y));
+    MOTOR_CHECK(heroeEn && heroeEn->x == antes.x && heroeEn->y == antes.y);  // el heroe no salta a la casilla del oso
+}
+
 MOTOR_TEST_CASE(en_el_tablero_el_acompanante_esta_en_el_mundo_hasta_que_acaba) {
     auto cartas = Game::CatalogoCartas::cargar("assets/catalogs");
     MOTOR_CHECK(cartas.isOk());
@@ -1880,13 +1930,13 @@ MOTOR_TEST_CASE(en_el_tablero_el_acompanante_esta_en_el_mundo_hasta_que_acaba) {
         });
     };
     busca();
-    const auto casilla = session.battle()->tablero()->dondeEsta("Venides");
+    const auto casilla = session.battle()->tablero()->dondeEsta("a1");
     MOTOR_CHECK(dibujo && casilla && dibujo->x == casilla->x && dibujo->y == casilla->y);
     // Anda (su turno o no: el tablero manda) y su objeto le sigue.
     const auto libre = session.battle()->tablero()->libreMasCercana(GridCoord{casilla->x + 2, casilla->y});
     MOTOR_CHECK(libre.has_value());
     if (libre) {
-        session.battle()->tablero()->mueve("Venides", *libre);
+        session.battle()->tablero()->mueve("a1", *libre);
         MOTOR_CHECK(!session.sincronizaTablero().empty());
         busca();
         MOTOR_CHECK(dibujo && dibujo->x == libre->x && dibujo->y == libre->y);

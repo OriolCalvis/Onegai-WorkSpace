@@ -99,6 +99,7 @@ std::string serializeAdventure(const AdventureScript& adv) {
         beats::escribeCondicion(w, beat.requirements);  // solo si tiene algo
 
         w.member("speaker", beat.speaker);
+        if (!beat.speakerId.empty()) w.member("speakerId", beat.speakerId);  // D0037
         writeStringArray(w, "lines", beat.lines);
         w.member("once", beat.once);
         if (beat.pagina) w.member("pagina", true);  // DIALOGOS-01
