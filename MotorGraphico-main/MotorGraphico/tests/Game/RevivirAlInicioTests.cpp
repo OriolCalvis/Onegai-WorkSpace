@@ -13,6 +13,7 @@
 #include "Game/Acompanante.h"
 #include "Game/Cicatrices.h"
 #include "Game/GameSession.h"
+#include "Game/PlayerControls.h"
 #include "Game/ReglasMoral.h"
 #include "Game/SaveGame.h"
 #include "Level/ObjectCatalog.h"
@@ -435,6 +436,20 @@ MOTOR_TEST_CASE(guardar_en_combate_guarda_su_inicio_y_cargar_vuelve_a_el) {
     MOTOR_CHECK(q.sesion.battle()->sePuedeHuir());
     q.ganaYSeResuelve();
     MOTOR_CHECK(q.trama.hasFlag("v2") && q.sesion.mode() == GameMode::Exploration);
+}
+
+// D0034 — ESC tambien pausa un combate, y reanudar vuelve a el, no a explorar.
+MOTOR_TEST_CASE(pausar_un_combate_y_reanudar_vuelve_al_combate) {
+    MOTOR_CHECK(PlayerControls::escapeAction(GameMode::Battle, false, false) == PlayerEscapeAction::Pause);
+    Partida p;
+    MOTOR_CHECK(p.sesion.pause() && p.sesion.resume());
+    MOTOR_CHECK(p.sesion.mode() == GameMode::Exploration);
+    p.sesion.startNarrativeBattle({.monsterId = "llop", .flagVictory = "v", .flagDefeat = "d"});
+    MOTOR_CHECK(p.sesion.pause());
+    MOTOR_CHECK(p.sesion.mode() == GameMode::Pause && p.sesion.battle() != nullptr);
+    MOTOR_CHECK(p.sesion.guardadoDelCombate("n.json").has_value());  // se puede guardar desde la pausa
+    MOTOR_CHECK(p.sesion.resume());
+    MOTOR_CHECK(p.sesion.mode() == GameMode::Battle);
 }
 
 // D0033 — Un combate del mapa tambien vuelve, y un guardado sin combate no monta ninguno.

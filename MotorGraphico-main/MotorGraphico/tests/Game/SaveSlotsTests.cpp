@@ -527,4 +527,96 @@ MOTOR_TEST_CASE(guardar_sobre_una_ranura_ocupada_se_deja_hacer_pero_se_puede_avi
 
 }  // namespace
 
+// --- D0034: las partidas de cada personaje y su lista ---
+namespace {
+
+const char* kRaiz = "test_partidas_tmp";
+
+SaveGameData deIlse(const std::string& nombre, const std::string& fecha) {
+    SaveGameData d;
+    d.levelPath = "assets/levels/plaza_mayor.json";
+    d.characterName = nombre;
+    d.savedAt = fecha;
+    return d;
+}
+
+struct LimpiaPartidas {
+    LimpiaPartidas() { std::filesystem::remove_all(kRaiz); }
+    ~LimpiaPartidas() { std::filesystem::remove_all(kRaiz); }
+};
+
+std::string fecha(int i) { return "2026-11-05 10:" + std::string(i < 10 ? "0" : "") + std::to_string(i); }
+
+}  // namespace
+
+MOTOR_TEST_CASE(hay_quince_partidas_y_cada_personaje_tiene_las_suyas) {
+    LimpiaPartidas limpia;
+    MOTOR_CHECK(SaveSlots::kSlotCount == 15);
+    SaveSlots ilse = partidasDelPersonaje(kRaiz, "b", "Ilse");
+    MOTOR_CHECK(ilse.save(1, deIlse("Ilse", fecha(1))).isOk());
+    MOTOR_CHECK(ranuraLibre(ilse) == 2);
+    const SaveSlots otro = partidasDelPersonaje(kRaiz, "b", "Kael");
+    MOTOR_CHECK(ranuraLibre(otro) == 1);
+    for (int i = 2; i <= 15; ++i) MOTOR_CHECK(ilse.save(i, deIlse("Ilse", fecha(i))).isOk());
+    MOTOR_CHECK(!ilse.save(16, deIlse("Ilse", fecha(16))).isOk());
+    ilse.refresh();
+    MOTOR_CHECK(ranuraLibre(ilse) == -1);
+}
+
+MOTOR_TEST_CASE(el_nombre_del_personaje_no_se_sale_de_su_carpeta) {
+    MOTOR_CHECK(carpetaDelPersonaje("Ilse") == "Ilse");
+    MOTOR_CHECK(carpetaDelPersonaje("../otra cosa") == "___otra_cosa");
+    MOTOR_CHECK(carpetaDelPersonaje("") == "sin_nombre");
+}
+
+MOTOR_TEST_CASE(la_lista_para_guardar_ofrece_una_nueva_y_las_ocupadas_por_fecha) {
+    LimpiaPartidas limpia;
+    SaveSlots s = partidasDelPersonaje(kRaiz, "b", "Ilse");
+    MOTOR_CHECK(s.save(1, deIlse("Ilse", fecha(1))).isOk());
+    MOTOR_CHECK(s.save(2, deIlse("Ilse", fecha(2))).isOk());
+    s.refresh();
+    const auto filas = filasDePartidas(PauseAction::Save, s, s.quick(), 0);
+    MOTOR_CHECK(filas.size() == 4);
+    MOTOR_CHECK(filas[0].texto == "Partida nueva" && filas[0].indice == 3);
+    MOTOR_CHECK(filas[1].indice == 2 && filas[2].indice == 1);  // la mas reciente, antes
+    MOTOR_CHECK(filas[1].texto.find("plaza mayor") != std::string::npos && filas[1].texto.find(fecha(2)) != std::string::npos);
+    MOTOR_CHECK(filas[3].indice == FilaPartida::kVolver);
+}
+
+MOTOR_TEST_CASE(la_lista_para_cargar_empieza_por_el_ultimo_guardado_y_pagina) {
+    LimpiaPartidas limpia;
+    SaveSlots s = partidasDelPersonaje(kRaiz, "b", "Ilse");
+    MOTOR_CHECK(s.save(SaveSlots::kQuickSlot, deIlse("Ilse", fecha(30))).isOk());
+    for (int i = 1; i <= 15; ++i) MOTOR_CHECK(s.save(i, deIlse("Ilse", fecha(i))).isOk());
+    s.refresh();
+    const auto uno = filasDePartidas(PauseAction::Load, s, s.quick(), 0);
+    MOTOR_CHECK(uno.size() == 8);  // 6, «Mas partidas» y «Volver»
+    MOTOR_CHECK(uno[0].indice == SaveSlots::kQuickSlot && uno[1].indice == 15);
+    MOTOR_CHECK(uno[6].indice == FilaPartida::kMas && uno[7].indice == FilaPartida::kVolver);
+    const auto dos = filasDePartidas(PauseAction::Load, s, s.quick(), 2);
+    MOTOR_CHECK(dos.size() == 6 && dos[0].indice == 4 && dos[3].indice == 1);  // 16 filas: la ultima pagina tiene 4
+    const auto vuelta = filasDePartidas(PauseAction::Load, s, s.quick(), 3);
+    MOTOR_CHECK(vuelta[0].indice == SaveSlots::kQuickSlot);
+    MOTOR_CHECK(ranuraLibre(s) == -1);
+    const auto llena = filasDePartidas(PauseAction::Save, s, s.quick(), 0);
+    MOTOR_CHECK(llena[0].indice == 15);  // sin sitio, solo se sobrescribe
+}
+
+MOTOR_TEST_CASE(el_menu_de_pausa_elige_partida_y_vuelve) {
+    PauseMenu combate = PauseMenu::createEnCombate();
+    MOTOR_CHECK(combate.entries().size() == PauseMenu::create().entries().size() - 2);
+    for (const PauseEntry& e : combate.entries()) MOTOR_CHECK(e.action != PauseAction::Character && e.action != PauseAction::Inventory);
+    PauseMenu m = PauseMenu::create();
+    m.eligePartida(PauseAction::Save, "GUARDAR", "", {{"Partida nueva", 1}, {"Volver", FilaPartida::kVolver}}, 0);
+    MOTOR_CHECK(m.eligiendoPartida() && m.preguntando() && m.filaElegida() == 1);
+    m.moveDown();
+    MOTOR_CHECK(m.filaElegida() == FilaPartida::kVolver);
+    m.moveUp();
+    m.preguntaPorPartida(1, "¿SOBRESCRIBIR?", "", "No", "Si");
+    MOTOR_CHECK(!m.eligiendoPartida() && m.partidaPendiente() == 1 && !m.siElegido());
+    m.olvidaPregunta();
+    MOTOR_CHECK(!m.preguntando() && m.partidaPendiente() == FilaPartida::kNinguna);
+    MOTOR_CHECK(m.confirm() == PauseAction::Save);
+}
+
 int main() { return motor_test::runAllTests(); }

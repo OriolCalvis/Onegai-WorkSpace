@@ -1,4 +1,7 @@
 // PROLOGO-02 — el fondo del titulo (extraido mecanicamente de ApplicationCinematica.cpp, U4-01.E06a).
+#include <optional>
+#include "HUD/Pergamino/InterfazPergamino.h"
+#include "Render/PergaminoGL.h"
 #include "Engine/ApplicationCinematica.h"
 
 #include <functional>
@@ -68,4 +71,79 @@ std::function<Result<bool>()> ApplicationCinematica::alSalirDelTitulo(Applicatio
     if (!app.m_cine || !acabaEn(app.m_currentLevelPath, app.m_cine->catalogo.titulo.nivel)) return {};
     Application* a = &app;
     return [a] { return a->partidaDeCero(); };
+}
+
+// D0034 — La lista de partidas del papiro de la pausa: elegir donde guardar y que cargar.
+namespace {
+
+std::string nombreDelHeroe(GameSession& sesion, const std::string& nivel) { return sesion.captureSaveGame(nivel).characterName; }
+
+}  // namespace
+
+void ApplicationCinematica::abrePartidas(Application& app, Game::PauseAction accion, int pagina) {
+    if (!app.m_saveSlots || !app.m_session || !app.m_pauseMenu) return;
+    app.m_saveSlots->refresh();
+    const Game::SaveSlots partidas = Game::partidasDelPersonaje("saves", app.m_saveSlots->projectId(), nombreDelHeroe(*app.m_session, app.m_currentLevelPath));
+    const bool guardar = accion == Game::PauseAction::Save;
+    const std::string detalle = app.m_session->battle() != nullptr && guardar ? "Se guarda el inicio de este combate." : "Hasta " + std::to_string(Game::SaveSlots::kSlotCount) + " partidas por personaje.";
+    app.m_pauseMenu->eligePartida(accion, guardar ? "GUARDAR PARTIDA" : "CARGAR PARTIDA", detalle,
+                                  Game::filasDePartidas(accion, partidas, app.m_saveSlots->quick(), pagina), pagina);
+}
+
+bool ApplicationCinematica::confirmaPartidas(Application& app) {
+    Game::PauseMenu& menu = *app.m_pauseMenu;
+    const Game::PauseAction accion = menu.pendiente();
+    const bool guardar = accion == Game::PauseAction::Save;
+    int ranura = Game::FilaPartida::kNinguna;
+    if (menu.eligiendoPartida()) {
+        const int fila = menu.filaElegida();
+        if (fila == Game::FilaPartida::kNada) return true;
+        if (fila == Game::FilaPartida::kVolver) {
+            menu.olvidaPregunta();
+            return true;
+        }
+        if (fila == Game::FilaPartida::kMas) {
+            abrePartidas(app, accion, menu.pagina() + 1);
+            return true;
+        }
+        const Game::SaveSlots partidas = Game::partidasDelPersonaje("saves", app.m_saveSlots->projectId(), nombreDelHeroe(*app.m_session, app.m_currentLevelPath));
+        const Game::SaveSlot* s = partidas.find(fila);
+        if (!guardar || (s != nullptr && s->occupied())) {
+            menu.preguntaPorPartida(fila, guardar ? "\u00bfSOBRESCRIBIR?" : "\u00bfCARGAR?", guardar ? "Se perderá lo que había en esa partida." : "Se perderá lo jugado desde el último guardado.",
+                                    guardar ? "No, volver" : "No, seguir jugando", guardar ? "Sí, sobrescribir" : "Sí, cargar");
+            return true;
+        }
+        ranura = fila;
+    } else if (menu.partidaPendiente() != Game::FilaPartida::kNinguna) {
+        const bool si = menu.siElegido();
+        ranura = menu.partidaPendiente();
+        if (!si) {
+            menu.olvidaPregunta();
+            return true;
+        }
+    } else {
+        return false;
+    }
+    menu.olvidaPregunta();
+
+    GameSession& sesion = *app.m_session;
+    Game::SaveSlots partidas = Game::partidasDelPersonaje("saves", app.m_saveSlots->projectId(), nombreDelHeroe(sesion, app.m_currentLevelPath));
+    auto aviso = [&app](bool ok, const std::string& texto, const std::string& detalle) {
+        if (app.m_pergamino) app.m_pergamino->interfaz().avisaPausa(ok, texto, detalle);
+    };
+    if (!guardar) {
+        auto leida = ranura == Game::SaveSlots::kQuickSlot ? app.m_saveSlots->load(ranura) : partidas.load(ranura);
+        if (!leida.isOk()) aviso(false, "No se ha podido cargar", leida.errorMessage());
+        else ApplicationCinematica::cargaPartida(app, leida.value());
+        return true;
+    }
+    const std::optional<SaveGameData> delCombate = sesion.guardadoDelCombate(app.m_currentLevelPath);
+    SaveGameData data = delCombate ? *delCombate : sesion.captureSaveGame(app.m_currentLevelPath);
+    if (app.m_nuevaPartida) app.m_nuevaPartida->apuntaAspecto(data);
+    if (app.m_pergamino) data.marcasMapa = app.m_pergamino->interfaz().guia().marcas();
+    const auto guardado = partidas.save(ranura, data);
+    // La ultima guardada es tambien la de F9 y la de «Continuar».
+    if (guardado.isOk()) app.m_saveSlots->save(Game::SaveSlots::kQuickSlot, data);
+    aviso(guardado.isOk(), guardado.isOk() ? "Partida guardada" : "No se ha podido guardar", guardado.isOk() ? "Partida " + std::to_string(ranura) : guardado.errorMessage());
+    return true;
 }

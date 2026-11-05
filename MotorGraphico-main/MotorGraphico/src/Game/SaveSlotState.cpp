@@ -14,6 +14,8 @@
 #include "Core/Json/JsonValue.h"
 #include "Game/SaveGameValidation.h"
 
+#include <cctype>
+#include <algorithm>
 #include <ctime>
 #include <filesystem>
 #include <fstream>
@@ -318,6 +320,69 @@ SaveGate CanSaveNow(GameMode mode, bool eventRunning) {
             break;
     }
     return puerta;
+}
+
+// D0034
+namespace {
+
+constexpr int kFilasPorPagina = 6;
+
+std::string lugarDe(const std::string& nivel) {
+    const std::size_t barra = nivel.find_last_of('/');
+    std::string lugar = barra == std::string::npos ? nivel : nivel.substr(barra + 1);
+    const std::size_t punto = lugar.rfind(".json");
+    if (punto != std::string::npos) lugar.erase(punto);
+    std::replace(lugar.begin(), lugar.end(), '_', ' ');
+    return lugar;
+}
+
+std::string textoDe(const std::string& nombre, const SaveSlot& s) {
+    return nombre + " - " + s.savedAt + " - " + lugarDe(s.levelPath);
+}
+
+}  // namespace
+
+std::string carpetaDelPersonaje(const std::string& nombre) {
+    std::string carpeta;
+    for (const char c : nombre) carpeta += std::isalnum(static_cast<unsigned char>(c)) != 0 ? c : '_';
+    return carpeta.empty() ? "sin_nombre" : carpeta;
+}
+
+SaveSlots partidasDelPersonaje(const std::string& raiz, const std::string& proyecto, const std::string& nombre) {
+    SaveSlots partidas(raiz + "/" + proyecto + "/personajes", carpetaDelPersonaje(nombre));
+    partidas.refresh();
+    return partidas;
+}
+
+int ranuraLibre(const SaveSlots& partidas) {
+    for (const SaveSlot& s : partidas.slots())
+        if (!s.occupied()) return s.index;
+    return -1;
+}
+
+std::vector<FilaPartida> filasDePartidas(PauseAction accion, const SaveSlots& partidas, const SaveSlot& rapido, int pagina) {
+    std::vector<FilaPartida> todas;
+    const bool guardar = accion == PauseAction::Save;
+    const int libre = ranuraLibre(partidas);
+    if (guardar && libre >= 0) todas.push_back({"Partida nueva", libre});
+    if (!guardar && rapido.loadable()) todas.push_back({textoDe("Último guardado", rapido), SaveSlots::kQuickSlot});
+    std::vector<const SaveSlot*> ocupadas;
+    for (const SaveSlot& s : partidas.slots())
+        if (s.occupied()) ocupadas.push_back(&s);
+    std::stable_sort(ocupadas.begin(), ocupadas.end(), [](const SaveSlot* a, const SaveSlot* b) { return a->savedAt > b->savedAt; });
+    for (const SaveSlot* s : ocupadas) {
+        const std::string nombre = "Partida " + std::to_string(s->index);
+        if (!s->loadable()) todas.push_back({nombre + " - no se puede leer", guardar ? s->index : FilaPartida::kNada});
+        else todas.push_back({textoDe(nombre, *s), s->index});
+    }
+    std::vector<FilaPartida> filas;
+    const int total = static_cast<int>(todas.size());
+    const int paginas = std::max(1, (total + kFilasPorPagina - 1) / kFilasPorPagina);
+    const int inicio = (pagina % paginas) * kFilasPorPagina;
+    for (int i = inicio; i < total && i < inicio + kFilasPorPagina; ++i) filas.push_back(todas[static_cast<std::size_t>(i)]);
+    if (paginas > 1) filas.push_back({"Más partidas", FilaPartida::kMas});
+    filas.push_back({"Volver", FilaPartida::kVolver});
+    return filas;
 }
 
 }  // namespace Game

@@ -358,7 +358,7 @@ void InterfazPergamino::pintaPausa(const EstadoJuego& e) {
             fila.separadorAntes = entrada.action == Game::PauseAction::Title;
             d.entradas.push_back(fila);
         }
-        d.foco = static_cast<int>(e.pausa->selected());
+        d.foco = static_cast<int>(e.pausa->selected()), d.ancho = e.pausa->eligiendoPartida() ? 720.0f : d.ancho;  // D0034: fecha y lugar en la fila
         d.pie = {{{"ENTER"}, "Aceptar"}, {{"ESC"}, e.pausa->preguntando() ? "Volver" : "Reanudar"}};
     } else {
         return;

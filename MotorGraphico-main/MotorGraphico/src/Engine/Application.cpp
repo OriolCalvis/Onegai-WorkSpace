@@ -200,24 +200,6 @@ void teclasMapa(Pergamino::GuiaMapa& guia, const Engine::Input::InputSnapshot& i
     if (input.pressed(A::Confirm) || (raton && m.leftPressed)) guia.alternaChincheta();
 }
 
-// PERGAMINO-01 — «Centro de Boundington · 17:42» (P05a): donde y a que
-// hora se ha guardado, bajo el «Partida guardada» del papiro de pausa.
-std::string detalleGuardado(const std::string& zona) {
-    const std::time_t ahora = std::time(nullptr);
-    char hora[8] = "";
-    if (const std::tm* local = std::localtime(&ahora)) std::strftime(hora, sizeof hora, "%H:%M", local);
-    return zona.empty() ? std::string(hora) : zona + " · " + hora;
-}
-
-// El motivo de un guardado o carga fallidos: la ultima nota del registro
-// sin su prefijo («No se puede guardar: <motivo>»).
-std::string motivoDeLaNota(const GameSession& sesion) {
-    if (sesion.log().empty()) return {};
-    const std::string& nota = sesion.log().back();
-    const auto dos = nota.find(": ");
-    return dos == std::string::npos ? nota : nota.substr(dos + 2);
-}
-
 }  // namespace
 
 Application::Application() : m_playerSkills(/*maxMana=*/8) {}
@@ -895,6 +877,7 @@ int Application::newestLoadableSlot() {
 
 void Application::requestPause() {
     if (m_session != nullptr) {
+        m_pauseMenu = std::make_unique<Game::PauseMenu>(m_session->mode() == GameMode::Battle ? Game::PauseMenu::createEnCombate() : Game::PauseMenu::create());
         m_session->pause();
     }
 }
@@ -1162,6 +1145,7 @@ void Application::confirmTitleSelection() {
 // GDB-12.5 — Confirmar comando del menú de pausa
 void Application::confirmPauseCommand() {
     if (!m_pauseMenu || m_scenes.hasPendingTransition()) return;
+    if (ApplicationCinematica::confirmaPartidas(*this)) return;  // D0034
     auto action = m_pauseMenu->confirm();
     // AV15-05a (EH-22, EH-23): salir, volver al titulo, cargar y guardar encima se confirman, salvo
     // que no haya nada que perder (la partida de ahora es igual que la guardada en la ranura rapida).
@@ -1169,8 +1153,7 @@ void Application::confirmPauseCommand() {
         action = m_pauseMenu->siElegido() ? m_pauseMenu->pendiente() : Game::PauseAction::None;
         m_pauseMenu->olvidaPregunta();
         if (action == Game::PauseAction::None) return;
-    } else if (action == Game::PauseAction::Quit || action == Game::PauseAction::Title ||
-               action == Game::PauseAction::Load || action == Game::PauseAction::Save) {
+    } else if (action == Game::PauseAction::Quit || action == Game::PauseAction::Title) {
         Game::UltimaPartida ultima;
         if (m_saveSlots && m_session && m_saveSlots->refresh().isOk() && m_saveSlots->quick().loadable()) {
             ultima.hay = true;
@@ -1204,16 +1187,8 @@ void Application::confirmPauseCommand() {
         for (int i = 0; action == Game::PauseAction::Character && i < static_cast<int>(Game::InventoryFocus::COUNT) &&
                         m_inventoryScreen->focus() != Game::InventoryFocus::Status; ++i)
             m_inventoryScreen->moveTabRight();
-    } else if (action == Game::PauseAction::Save) {
-        // H0-05: la ranura rapida del proyecto. El papiro dice como ha ido.
-        const bool ok = quickSave();
-        if (m_pergamino)
-            m_pergamino->interfaz().avisaPausa(ok, ok ? "Partida guardada" : "No se ha podido guardar",
-                                               ok ? detalleGuardado(m_pergamino->interfaz().zona())
-                                                  : motivoDeLaNota(*m_session));
-    } else if (action == Game::PauseAction::Load) {
-        if (!quickLoad() && m_pergamino)
-            m_pergamino->interfaz().avisaPausa(false, "No se ha podido cargar", motivoDeLaNota(*m_session));
+    } else if (action == Game::PauseAction::Save || action == Game::PauseAction::Load) {
+        ApplicationCinematica::abrePartidas(*this, action, 0);  // D0034
     } else if (action == Game::PauseAction::Options) {
         // H1-03 — el submenu de opciones se abre encima de la pausa; el
         // menu de pausa no se cierra, asi «Volver» cae de vuelta en el.
@@ -1275,5 +1250,3 @@ void Application::confirmGameOverCommand() {
         m_scenes.requestReplace(makeScene(true, [this] { return partidaDeCero(); }));  // ver la pausa
     }
 }
-
-

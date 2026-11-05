@@ -161,9 +161,7 @@ void GameSession::ponVuelta(const std::string& nivel, GridCoord puerta) {
 }
 
 bool GameSession::pause() {
-    if (sessionData()->m_mode != GameMode::Exploration) {
-        return false;
-    }
+    if (sessionData()->m_mode != GameMode::Exploration && sessionData()->m_mode != GameMode::Battle) return false;
     sessionData()->m_mode = GameMode::Pause;
     return true;
 }
@@ -172,7 +170,7 @@ bool GameSession::resume() {
     if (sessionData()->m_mode != GameMode::Pause) {
         return false;
     }
-    sessionData()->m_mode = GameMode::Exploration;
+    sessionData()->m_mode = sessionData()->m_battle != nullptr ? GameMode::Battle : GameMode::Exploration;  // D0034
     return true;
 }
 

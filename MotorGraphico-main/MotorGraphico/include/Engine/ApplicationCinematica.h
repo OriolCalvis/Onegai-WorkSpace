@@ -18,6 +18,7 @@
 #include <utility>
 #include <vector>
 
+#include "Game/PauseMenu.h"
 #include "Core/Errors/Result.h"
 
 #include "Core/Math/Vector2.h"
@@ -100,6 +101,9 @@ struct ApplicationCinematica {
     // Partida nueva: nada a medias.
     static void reinicia(Application& app);
     static bool enCurso(const Application& app);
+    // D0034 — La lista de partidas de la pausa. confirmaPartidas atiende el ENTER si el papiro esta en ella.
+    static void abrePartidas(Application& app, Game::PauseAction accion, int pagina);
+    static bool confirmaPartidas(Application& app);
     // En update, después del cambio de nivel pendiente.
     static void actualiza(Application& app, float dt);
     // E-DISPARADORES-1 (D0026; codigo en src/Engine/ApplicationCinematicaDisparador.h) — La que empieza ahora: con el

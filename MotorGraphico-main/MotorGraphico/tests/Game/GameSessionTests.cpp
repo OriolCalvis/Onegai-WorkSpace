@@ -1200,7 +1200,7 @@ MOTOR_TEST_CASE(pausar_congela_el_mundo_y_reanudar_lo_suelta) {
     MOTOR_CHECK(patrullaSigue);
 }
 
-MOTOR_TEST_CASE(la_pausa_solo_entra_en_exploracion) {
+MOTOR_TEST_CASE(la_pausa_entra_en_exploracion_y_en_combate) {
     ObjectCatalog objects;
     MOTOR_CHECK(objects.loadFromString(R"({
         "objects": [
@@ -1240,8 +1240,10 @@ MOTOR_TEST_CASE(la_pausa_solo_entra_en_exploracion) {
     session.tryMovePlayer(1, 0);
     MOTOR_CHECK(session.mode() == GameMode::Battle);
 
-    // En combate la pausa no entra: no-op y el modo se queda como estaba.
-    MOTOR_CHECK(!session.pause());
+    // D0034: en combate la pausa tambien entra, y reanudar vuelve al combate.
+    MOTOR_CHECK(session.pause());
+    MOTOR_CHECK(session.mode() == GameMode::Pause);
+    MOTOR_CHECK(session.resume());
     MOTOR_CHECK(session.mode() == GameMode::Battle);
 }
 

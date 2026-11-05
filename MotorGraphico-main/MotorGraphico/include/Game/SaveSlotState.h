@@ -18,6 +18,7 @@
 // EST-23b — solo hacen falta los tipos de valor de una partida
 // (OwnedBusiness, GameMode), no la clase entera con BattleState,
 // NarrativeEngine, World y los veinte catalogos Nd6 detras.
+#include "Game/PauseMenu.h"
 #include "Game/SessionTipos.h"
 #include "Game/SaveGame.h"
 
@@ -97,7 +98,7 @@ class SaveSlots {
 public:
     // Cuántas ranuras se ofrecen. Un número fijo y visible es lo que
     // permite decir «ranura 3» y que signifique siempre lo mismo.
-    static constexpr int kSlotCount = 6;
+    static constexpr int kSlotCount = 15;  // D0034: por personaje
     // La de F5/F9. Vive aparte de las numeradas para que un guardado
     // rápido no pise una partida que el jugador guardó a propósito.
     static constexpr int kQuickSlot = 0;
@@ -147,6 +148,19 @@ private:
     std::vector<SaveSlot> m_slots;
     SaveSlot m_quick;
 };
+
+// --- D0034: las partidas de cada personaje, en saves/<proyecto>/personajes/<nombre>/ ---
+
+// El nombre de la carpeta: letras y numeros ASCII; lo demas, «_». Sin nombre, «sin_nombre».
+std::string carpetaDelPersonaje(const std::string& nombre);
+SaveSlots partidasDelPersonaje(const std::string& raiz, const std::string& proyecto, const std::string& nombre);
+
+// La primera ranura libre, o -1 si ya estan todas ocupadas.
+int ranuraLibre(const SaveSlots& partidas);
+
+// Las filas de una pagina de la lista. Guardar: partida nueva, si cabe, y las ocupadas (se sobrescriben).
+// Cargar: el guardado rapido y las ocupadas. Las mas recientes primero; las rotas se ven y no se eligen.
+std::vector<FilaPartida> filasDePartidas(PauseAction accion, const SaveSlots& partidas, const SaveSlot& rapido, int pagina);
 
 // --- DEC-09: puntos seguros -------------------------------------------
 
