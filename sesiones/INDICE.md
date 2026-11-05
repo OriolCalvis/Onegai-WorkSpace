@@ -1,6 +1,6 @@
 # Índice de sesiones — regenerado, no editar a mano
 
-_Regenerado: 2026-11-05T15:14 · 270 sesiones_
+_Regenerado: 2026-11-05T15:18 · 271 sesiones_
 
 | Fecha | Autor | Sesión | Commits | Esperando a Oriol |
 |---|---|---|---|---|
@@ -9,6 +9,7 @@ _Regenerado: 2026-11-05T15:14 · 270 sesiones_
 | 2026-11-05 | claude | [final huida](2026-11-05-claude-final-huida.md) | — | — |
 | 2026-11-05 | claude | [guardado en combate](2026-11-05-claude-guardado-en-combate.md) | — | — |
 | 2026-11-05 | claude | [huir sin recompensa](2026-11-05-claude-huir-sin-recompensa.md) | — | — |
+| 2026-11-05 | claude | [integracion tanda d0027 d0037](2026-11-05-claude-integracion-tanda-d0027-d0037.md) | — | — |
 | 2026-11-05 | claude | [ramas de huida](2026-11-05-claude-ramas-de-huida.md) | — | — |
 | 2026-11-05 | claude | [resto de identidades](2026-11-05-claude-resto-de-identidades.md) | — | — |
 | 2026-11-05 | claude | [uuid y borrar partidas](2026-11-05-claude-uuid-y-borrar-partidas.md) | — | — |
